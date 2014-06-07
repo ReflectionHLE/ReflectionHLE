@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -147,11 +147,11 @@ static  boolean USL_ConfigCustom(UserCall call,struct UserItem far *item),
 				USL_LoadCustom(UserCall call,struct UserItem far *item),
 				USL_SaveCustom(UserCall call,struct UserItem far *item),
 				USL_ScoreCustom(UserCall call,struct UserItem far *item),
-				USL_CompCustom(UserCall call,struct UserItem far *item),
+				USL_CompCustom(UserCall call,struct UserItem far *item);
 #ifdef KEEN
 				USL_TwoCustom(UserCall call,struct UserItem far *item),
 #endif
-				USL_PongCustom(UserCall call,struct UserItem far *item);
+//				USL_PongCustom(UserCall call,struct UserItem far *item);
 
 #define DefButton(key,text)                             uii_Button,ui_Normal,key,text
 #define DefRButton(key,text)                    uii_RadioButton,ui_Normal,key,text
@@ -281,7 +281,7 @@ static  boolean USL_ConfigCustom(UserCall call,struct UserItem far *item),
 	UserItemGroup   far configgroup = {8,0,CP_CONFIGMENUPIC,sc_None,configi,USL_ConfigCustom};
 
 	// Main menu
-	UserItemGroup   far ponggroup = {0,0,0,sc_None,0,USL_PongCustom};
+//	UserItemGroup   far ponggroup = {0,0,0,sc_None,0,USL_PongCustom};
 	UserItem far rooti[] =
 	{
 		{DefFolder(sc_N,"NEW GAME",&newgamegroup)},
@@ -290,7 +290,7 @@ static  boolean USL_ConfigCustom(UserCall call,struct UserItem far *item),
 		{DefFolder(sc_C,"CONFIGURE",&configgroup)},
 		{DefButton(sc_R,nil),uc_Return},        // Return to Game/Demo
 		{DefButton(sc_E,"END GAME"),uc_Abort},
-		{DefFolder(sc_B,"SKULL 'N' BONES",&ponggroup)},
+//		{DefFolder(sc_B,"SKULL 'N' BONES",&ponggroup)},
 		{DefButton(sc_Q,"QUIT"),uc_Quit},
 		{uii_Bad}
 	};
@@ -1150,6 +1150,8 @@ USL_SaveCustom(UserCall call,UserItem far *item)
 	return(USL_LoadCustom(call,item));
 }
 
+#if 0
+
 #define PaddleMinX      (CtlPanelSX + 3)
 #define PaddleMaxX      (CtlPanelEX - 15)
 #define BallMinX        (CtlPanelSX + 2)
@@ -1352,6 +1354,8 @@ USL_PongCustom(UserCall call,struct UserItem far *item)
 	return(true);
 }
 
+#endif
+
 //      Flag management stuff
 static void
 USL_ClearFlags(UserItemGroup far *node)
@@ -1550,8 +1554,8 @@ USL_SetUpCtlPanel(void)
 	CA_UpLevel();
 	for (i = CONTROLS_LUMP_START;i <= CONTROLS_LUMP_END;i++)
 		CA_MarkGrChunk(i);
-	for (i = PADDLE_LUMP_START;i <= PADDLE_LUMP_END;i++)
-		CA_MarkGrChunk(i);
+//	for (i = PADDLE_LUMP_START;i <= PADDLE_LUMP_END;i++)
+//		CA_MarkGrChunk(i);
 	CA_MarkGrChunk(STARTFONT+1);            // Little font
 	CA_MarkGrChunk(CP_MENUMASKPICM);        // Mask for dialogs
 	CA_CacheMarks("Control Panel");

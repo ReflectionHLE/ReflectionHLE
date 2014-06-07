@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,8 @@
 //			NeedsDigitized - load digitized sounds?
 //			NeedsMusic - load music?
 //
+
+#define USE_MUSIC	0
 
 #pragma hdrstop		// Wierdo thing with MUSE
 
@@ -736,6 +738,7 @@ asm	out	dx,al
 
 	HackCount++;
 
+#if USE_MUSIC
 	if (MusicMode == smm_AdLib)
 	{
 		SDL_ALService();
@@ -760,6 +763,7 @@ asm	out	dx,al
 		}
 	}
 	else
+#endif
 	{
 		if (!(++count & 1))
 		{
@@ -856,9 +860,11 @@ SDL_SetTimerSpeed(void)
 {
 	word	rate;
 
+#if USE_MUSIC
 	if (MusicMode == smm_AdLib)
 		rate = TickBase * 8;
 	else
+#endif
 		rate = TickBase * 2;
 	SDL_SetIntsPerSec(rate);
 }
@@ -927,6 +933,7 @@ SD_SetSoundMode(SDMode mode)
 boolean
 SD_SetMusicMode(SMMode mode)
 {
+#if USE_MUSIC
 	boolean	result;
 
 	SD_FadeOutMusic();
@@ -957,6 +964,7 @@ SD_SetMusicMode(SMMode mode)
 	SDL_SetTimerSpeed();
 
 	return(result);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -997,7 +1005,9 @@ SD_Startup(void)
 	LocalTime = TimeCount = alTimeCount = 0;
 
 	SD_SetSoundMode(sdm_Off);
+#if USE_MUSIC
 	SD_SetMusicMode(smm_Off);
+#endif
 
 	if (!alNoCheck)
 		AdLibPresent = SDL_DetectAdLib();
@@ -1055,8 +1065,10 @@ SD_Default(boolean gotit,SDMode sd,SMMode sm)
 		if (AdLibPresent)
 			sm = smm_AdLib;
 	}
+#if USE_MUSIC
 	if (sm != MusicMode)
 		SD_SetMusicMode(sm);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1071,7 +1083,9 @@ SD_Shutdown(void)
 	if (!SD_Started)
 		return;
 
+#if USE_MUSIC
 	SD_MusicOff();
+#endif
 	SDL_ShutDevice();
 	SDL_CleanDevice();
 
@@ -1202,7 +1216,9 @@ SD_WaitSoundDone(void)
 void
 SD_MusicOn(void)
 {
+#if USE_MUSIC
 	sqActive = true;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1213,6 +1229,7 @@ SD_MusicOn(void)
 void
 SD_MusicOff(void)
 {
+#if USE_MUSIC
 	word	i;
 
 
@@ -1226,6 +1243,7 @@ SD_MusicOff(void)
 		break;
 	}
 	sqActive = false;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1236,6 +1254,7 @@ SD_MusicOff(void)
 void
 SD_StartMusic(MusicGroup far *music)
 {
+#if USE_MUSIC
 	SD_MusicOff();
 asm	pushf
 asm	cli
@@ -1250,6 +1269,7 @@ asm	cli
 	}
 
 asm	popf
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1261,6 +1281,7 @@ asm	popf
 void
 SD_FadeOutMusic(void)
 {
+#if USE_MUSIC
 	switch (MusicMode)
 	{
 	case smm_AdLib:
@@ -1268,6 +1289,7 @@ SD_FadeOutMusic(void)
 		SD_MusicOff();
 		break;
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1279,6 +1301,7 @@ SD_FadeOutMusic(void)
 boolean
 SD_MusicPlaying(void)
 {
+#if USE_MUSIC
 	boolean	result;
 
 	switch (MusicMode)
@@ -1292,4 +1315,5 @@ SD_MusicPlaying(void)
 	}
 
 	return(result);
+#endif
 }

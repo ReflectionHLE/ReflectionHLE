@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,10 @@
 
 // C3_GAME.C
 
-#include "C3_DEF.H"
+#include <stdlib.h>
+
+#include "DEF.H"
+#include "gelib.h"
 #pragma hdrstop
 
 #ifdef PROFILE
@@ -34,37 +37,50 @@
 =============================================================================
 */
 
-#define NUMLUMPS        25
+#define NUMLUMPS        36
 
-#define CONTROLSLUMP    0
-#define ORCLUMP         1
-#define TROLLLUMP        2
-#define WARPLUMP        3
-#define BOLTLUMP        4
-#define NUKELUMP        5
-#define POTIONLUMP      6
-#define RKEYLUMP        7
-#define YKEYLUMP        8
-#define GKEYLUMP        9
-#define BKEYLUMP        10
-#define SCROLLLUMP      11
-#define CHESTLUMP       12
-#define PLAYERLUMP      13
-#define WALL1LUMP       14
-#define WALL2LUMP       15
-#define BDOORLUMP       16
-#define DEMONLUMP               17
-#define MAGELUMP                18
-#define BATLUMP                 19
-#define GRELLUMP                20
-#define GOALLUMP                21
+#define ORCLUMP         		0
+#define TROLLLUMP       		1
+#define BOLTLUMP        		2
+#define NUKELUMP        		3
+#define POTIONLUMP      		4
+#define RKEYLUMP        5
+#define YKEYLUMP        6
+#define GKEYLUMP        7
+#define BKEYLUMP        8
+#define SCROLLLUMP      9
+#define CHESTLUMP       10
+#define PLAYERLUMP      11
+#define WALL1LUMP       12
+#define WALL2LUMP       13
+#define BDOORLUMP       14
+#define DEMONLUMP               15
+#define MAGELUMP                16
+#define BATLUMP                 17
+#define GRELLUMP                18
+#define TOMBSTONESLUMP			  19
+#define ZOMBIELUMP				  20
+#define SPOOKLUMP					  21
+#define SKELETONLUMP				  22
+#define RGEMLUMP					  23
+#define GGEMLUMP					  24
+#define BGEMLUMP					  25
+#define YGEMLUMP					  26
+#define PGEMLUMP					  27
+#define RKEY2LUMP					  28
+#define WETMANLUMP				  29
+#define OBJ_WARPLUMP				  30
+#define EYELUMP					  31
+#define REDDEMONLUMP            32
+#define PITLUMP					  33
+#define FTIMELUMP					  34
+#define WATERCHESTLUMP			  35
+
 
 
 int     lumpstart[NUMLUMPS] = {
-CONTROLS_LUMP_START,
 ORC_LUMP_START,
 TROLL_LUMP_START,
-WARP_LUMP_START,
 BOLT_LUMP_START,
 NUKE_LUMP_START,
 POTION_LUMP_START,
@@ -75,22 +91,37 @@ BKEY_LUMP_START,
 SCROLL_LUMP_START,
 CHEST_LUMP_START,
 PLAYER_LUMP_START,
-WALL1_LUMP_START,
-WALL2_LUMP_START,
-BDOOR_LUMP_START,
+//WALL1_LUMP_START,
+//WALL2_LUMP_START,
+//BDOOR_LUMP_START,
+0,0,0,
 DEMON_LUMP_START,
 MAGE_LUMP_START,
 BAT_LUMP_START,
 GREL_LUMP_START,
-NEMESISPIC
+TOMBSTONES_LUMP_START,
+ZOMBIE_LUMP_START,
+SPOOK_LUMP_START,
+SKELDUDE_LUMP_START,
+RGEM_LUMP_START,
+GGEM_LUMP_START,
+BGEM_LUMP_START,
+YGEM_LUMP_START,
+PGEM_LUMP_START,
+RKEY2_LUMP_START,
+WETMAN_LUMP_START,
+OBJ_WARP_LUMP_START,
+EYE_LUMP_START,
+REDDEMON_LUMP_START,
+PIT_LUMP_START,
+TIME_LUMP_START,
+O_WATER_CHEST_LUMP_START,
 };
 
 
 int     lumpend[NUMLUMPS] = {
-CONTROLS_LUMP_END,
 ORC_LUMP_END,
 TROLL_LUMP_END,
-WARP_LUMP_END,
 BOLT_LUMP_END,
 NUKE_LUMP_END,
 POTION_LUMP_END,
@@ -101,15 +132,33 @@ BKEY_LUMP_END,
 SCROLL_LUMP_END,
 CHEST_LUMP_END,
 PLAYER_LUMP_END,
-WALL1_LUMP_END,
-WALL2_LUMP_END,
-BDOOR_LUMP_END,
+//WALL1_LUMP_END,
+//WALL2_LUMP_END,
+//BDOOR_LUMP_END,
+0,0,0,
 DEMON_LUMP_END,
 MAGE_LUMP_END,
 BAT_LUMP_END,
 GREL_LUMP_END,
-NEMESISPIC
+TOMBSTONES_LUMP_END,
+ZOMBIE_LUMP_END,
+SPOOK_LUMP_END,
+SKELDUDE_LUMP_END,
+RGEM_LUMP_END,
+GGEM_LUMP_END,
+BGEM_LUMP_END,
+YGEM_LUMP_END,
+PGEM_LUMP_END,
+RKEY2_LUMP_END,
+WETMAN_LUMP_END,
+OBJ_WARP_LUMP_END,
+EYE_LUMP_END,
+REDDEMON_LUMP_END,
+PIT_LUMP_END,
+TIME_LUMP_END,
+O_WATER_CHEST_LUMP_END,
 };
+
 
 
 
@@ -125,6 +174,8 @@ unsigned        latchpics[NUMLATCHPICS];
 unsigned        tileoffsets[NUMTILE16];
 unsigned        textstarts[27];
 
+boolean splitscreen=false;
+
 /*
 =============================================================================
 
@@ -137,6 +188,17 @@ boolean lumpneeded[NUMLUMPS];
 
 
 //===========================================================================
+
+//==========================================================================
+//
+//
+//							LOCAL PROTOTYPES
+//
+//
+//==========================================================================
+
+void CashPoints(void);
+
 
 
 /*
@@ -151,6 +213,9 @@ boolean lumpneeded[NUMLUMPS];
 
 void ScanInfoPlane (void)
 {
+	extern unsigned gnd_colors[];
+
+	char hibyte;
 	unsigned        x,y,i,j;
 	int                     tile;
 	unsigned        far     *start;
@@ -164,6 +229,8 @@ void ScanInfoPlane (void)
 		for (x=0;x<mapwidth;x++)
 		{
 			tile = *start++;
+			hibyte = tile >> 8;
+			tile &= 0xff;
 			if (!tile)
 				continue;
 
@@ -188,6 +255,20 @@ void ScanInfoPlane (void)
 				SpawnBonus(x,y,tile-5);
 				break;
 
+			case 29:
+				lumpneeded[RKEY2LUMP] = true;
+				SpawnBonus(x,y,B_RKEY2);
+			break;
+
+			case 58:
+			case 59:
+			case 60:
+			case 61:
+			case 62:
+				lumpneeded[tile-58+RGEMLUMP] = true;
+				SpawnBonus(x,y,tile-58+B_RGEM);
+			break;
+
 			case 12:
 			case 13:
 			case 14:
@@ -200,21 +281,30 @@ void ScanInfoPlane (void)
 				SpawnBonus(x,y,B_SCROLL1+tile-12);
 				break;
 
+#if 0
 			case 20:        // goal
 				lumpneeded[GOALLUMP] = true;
 				SpawnBonus(x,y,B_GOAL);
 				break;
+#endif
 
 			case 21:        // chest
-				lumpneeded[CHESTLUMP] = true;
+				if (gnd_colors[gamestate.mapon] == 0x0101)
+					lumpneeded[WATERCHESTLUMP] = true;
+				else
+					lumpneeded[CHESTLUMP] = true;
 				SpawnBonus(x,y,B_CHEST);
+			break;
+
+			case 31:
+			case 32:
+			case 33:
+			case 34:
+			case 35:
+				lumpneeded[OBJ_WARPLUMP] = true;
+				SpawnWarp (x,y,tile-30);
 				break;
 
-			case 24:
-				lumpneeded[WARPLUMP] = true;
-				SpawnWarp (x,y,0);
-				break;
-//------
 			case 41:
 				if (gamestate.difficulty <gd_Hard)
 					break;
@@ -271,10 +361,11 @@ void ScanInfoPlane (void)
 				break;
 
 			case 28:
-				lumpneeded[GRELLUMP] = true;
-				SpawnNemesis (x,y);
+				lumpneeded[RKEYLUMP] = lumpneeded[GRELLUMP] = true;
+				SpawnGrelminar (x,y);
 				break;
 
+#if 0
 			case 29:
 				SpawnBounce (x,y,0);
 				break;
@@ -282,13 +373,90 @@ void ScanInfoPlane (void)
 			case 30:
 				SpawnBounce (x,y,1);
 				break;
+#endif
 
-			case 31:
-			case 32:
-			case 33:
-			case 34:
-				lumpneeded[WARPLUMP] = true;
-				SpawnWarp (x,y,tile-30);
+			case 46:
+			case 47:
+			case 48:
+				lumpneeded[TOMBSTONESLUMP] = true;
+				SpawnTombstone(x,y,tile-46);
+			break;
+
+			case 54:
+				lumpneeded[PITLUMP]	= true;
+				SpawnWarp(x,y,0);
+				break;
+
+			case 53:
+				if (gamestate.difficulty <gd_Normal)
+					break;
+			case 52:
+				lumpneeded[ZOMBIELUMP] = true;
+				SpawnZombie(x,y);
+			break;
+
+			case 51:
+				if (gamestate.difficulty <gd_Hard)
+					break;
+			case 50:
+				if (gamestate.difficulty <gd_Normal)
+					break;
+			case 49:
+				lumpneeded[SPOOKLUMP] = true;
+				SpawnSpook(x,y);
+				break;
+
+			case 57:
+				lumpneeded[FTIMELUMP] = true;
+				SpawnFTime(x,y);
+				break;
+
+			case 56:
+				if (gamestate.difficulty <gd_Normal)
+					break;
+			case 55:
+				lumpneeded[SKELETONLUMP] = true;
+				SpawnSkeleton(x,y);
+				break;
+
+			case 65:
+				if (gamestate.difficulty <gd_Hard)
+					break;
+			case 64:
+				if (gamestate.difficulty <gd_Normal)
+					break;
+			case 63:
+				lumpneeded[WETMANLUMP] = true;
+				SpawnWetMan(x,y);
+				break;
+
+			case 68:
+				if (gamestate.difficulty <gd_Hard)
+					break;
+			case 67:
+				if (gamestate.difficulty <gd_Normal)
+					break;
+			case 66:
+				lumpneeded[EYELUMP] = true;
+				SpawnEye(x,y);
+				break;
+
+			case 71:
+				if (gamestate.difficulty <gd_Hard)
+					break;
+			case 70:
+				if (gamestate.difficulty <gd_Normal)
+					break;
+			case 69:
+				lumpneeded[SKELETONLUMP] = true;
+				SpawnWallSkeleton(x,y);
+				break;
+
+			case 20:
+			case 24:
+			case 30:
+				lumpneeded[REDDEMONLUMP] = true;
+				SpawnRedDemon (x,y);
 				break;
 			}
 		}
@@ -340,41 +508,39 @@ void ScanText (void)
 
 static  char    *levelnames[] =
 				{
-					"The Approach",
-					"Nemesis's Keep",
-					"Ground Floor",
-					"Second Floor",
-					"Third Floor",
-					"Tower One",
-					"Tower Two",
-					"Secret Halls",
-					"Access Floor",
-					"The Dungeon",
-					"Lower Dungeon",
-					"Catacomb",
-					"Lower Reaches",
-					"The Warrens",
-					"Hidden Caverns",
-					"The Fens of Insanity",
-					"Chaos Corridors",
-					"The Labyrinth",
-					"Halls of Blood",
-					"Nemesis's Lair"
+					"The Towne Cemetery",
+					"The Garden of Tears",
+					"The Den of Zombies",
+					"The Mausoleum Grounds",
+					"The Main Floor of the Mausoleum",
+					"Mike's Blastable Passage",
+					"The Crypt of Nemesis the Undead",
+					"The Subterranean Vault",
+					"The Ancient Aqueduct",
+					"The Orc Mines",
+					"The Lair of the Troll",
+					"The Demon's Inferno",
+					"The Battleground of the Titans",
+					"The Coven of Mages",
+					"The Inner Sanctum",
+					"The Haunt of Nemesis",
+					"The Passage to the Surface",
+					"Big Jim's Domain",
+					"Nolan's Nasty",
 				};
+
 void DrawEnterScreen (void)
 {
-	int     x,y;
+	int width;
 
-	VW_Bar(0,0,VIEWWIDTH,VIEWHEIGHT,9);     // Medium blue
-
-	x = (VIEWWIDTH - (18 * 8)) / 2 -3;
-	y = (VIEWHEIGHT - (5 * 8)) / 2;
-	VW_DrawPic(x / 8,y,ENTERPLAQUEPIC);
-
-	WindowX = x;
-	WindowW = 18 * 8;
-	PrintY = (VIEWHEIGHT/2) + 3;
-	US_CPrint (levelnames[gamestate.mapon]);
+	bufferofs = displayofs = screenloc[screenpage];
+	VW_Bar(0,0,VIEWWIDTH,VIEWHEIGHT,0);
+	width = strlen(levelnames[gamestate.mapon]);
+	if (width < 20)
+		width = 20;
+	CenterWindow(width,5);
+	US_CPrint("\nYou have arrived at\n");
+	US_CPrint(levelnames[gamestate.mapon]);
 }
 
 //==========================================================================
@@ -452,21 +618,23 @@ void CacheScaleds (void)
 ==================
 */
 
-void SetupGameLevel (void)
+void SetupGameLevel ()
 {
-	int     x,y,i;
-	unsigned        far *map,tile,spot;
+	int     x,y,i,loop;
+	unsigned        far *map,tile,far *spotptr,spot;
 
 	memset (tileneeded,0,sizeof(tileneeded));
 //
 // randomize if not a demo
 //
+#if 0
 	if (DemoMode)
 	{
 		US_InitRndT(false);
 		gamestate.difficulty = gd_Normal;
 	}
 	else
+#endif
 		US_InitRndT(true);
 
 //
@@ -493,29 +661,47 @@ void SetupGameLevel (void)
 	memset (tilemap,0,sizeof(tilemap));
 	memset (actorat,0,sizeof(actorat));
 	map = mapsegs[0];
+	spotptr = mapsegs[2];
 	for (y=0;y<mapheight;y++)
 		for (x=0;x<mapwidth;x++)
 		{
 			tile = *map++;
+
+			if (((*spotptr)>>8) == EXP_WALL_CODE)
+			{
+				extern unsigned gnd_colors[];
+
+				if (gnd_colors[gamestate.mapon] == 0x0101)
+					tileneeded[WATEREXP] = tileneeded[WATEREXP+1] = tileneeded[WATEREXP+2] = true;
+				else
+					tileneeded[WALLEXP] = tileneeded[WALLEXP+1] = tileneeded[WALLEXP+2] = true;
+			}
+
 			if (tile<NUMFLOORS)
 			{
+				if (tile == WALL_SKELETON_CODE)
+					tileneeded[tile+1] = tileneeded[tile+2] = true;
+
 				tileneeded[tile] = true;
 				tilemap[x][y] = tile;
-				if (tile>=EXPWALLSTART && tile<EXPWALLSTART+NUMEXPWALLS)
-				{
-					tileneeded[WALLEXP] = tileneeded[WALLEXP+1]
-					= tileneeded[WALLEXP+2] = true;
-				}
-
 				if (tile>0)
 					(unsigned)actorat[x][y] = tile;
 			}
+			spotptr++;
 		}
 
+
+	//
+	// Mark any gfx chunks needed
+	//
+
+//	CA_MarkGrChunk(NORTHICONSPR);
+//	CA_CacheMarks(NULL);
 
 //
 // decide which graphics are needed and spawn actors
 //
+	zombie_base_delay = 0;	// (1*60) + random(1*60);
 	ScanInfoPlane ();
 
 //
@@ -523,7 +709,6 @@ void SetupGameLevel (void)
 // are in memory
 //
 	CA_LoadAllSounds ();
-
 }
 
 
@@ -586,32 +771,64 @@ asm     mov     ds,ax                                   // restore turbo's data 
 =====================
 */
 
-void Victory (void)
+void Victory (boolean playsounds)
 {
-	FreeUpMemory ();
-	NormalScreen ();
+	struct Shape shape;
+
+	if (playsounds)
+	{
+		SD_PlaySound (GETBOLTSND);
+		SD_WaitSoundDone ();
+		SD_PlaySound (GETNUKESND);
+		SD_WaitSoundDone ();
+		SD_PlaySound (GETPOTIONSND);
+		SD_WaitSoundDone ();
+		SD_PlaySound (GETKEYSND);
+		SD_WaitSoundDone ();
+		SD_PlaySound (GETSCROLLSND);
+		SD_WaitSoundDone ();
+		SD_PlaySound (GETPOINTSSND);
+	}
+
+
+	FreeUpMemory();
+
+	if (!screenfaded)
+		VW_FadeOut();
+
+	screenpage = 1;
+	VW_SetScreen (screenloc[screenpage],0);
+	bufferofs = displayofs = screenloc[screenpage];
+	VW_Bar (0,0,320,120,0);
+
 	CA_CacheGrChunk (FINALEPIC);
-	VWB_DrawPic (0,0,FINALEPIC);
 	UNMARKGRCHUNK(FINALEPIC);
-	VW_UpdateScreen ();
-	SD_PlaySound (GETBOLTSND);
-	SD_WaitSoundDone ();
-	SD_PlaySound (GETNUKESND);
-	SD_WaitSoundDone ();
-	SD_PlaySound (GETPOTIONSND);
-	SD_WaitSoundDone ();
-	SD_PlaySound (GETKEYSND);
-	SD_WaitSoundDone ();
-	SD_PlaySound (GETSCROLLSND);
-	SD_WaitSoundDone ();
-	SD_PlaySound (GETPOINTSSND);
-	SD_WaitSoundDone ();
-	IN_ClearKeysDown ();
-	IN_Ack();
+	VW_DrawPic(0, 0, FINALEPIC);
+
+	VW_FadeIn();
+
+#if 0
+	FreeUpMemory();
+
+	if (!screenfaded)
+		VW_FadeOut();
+	screenpage = 1;
+	VW_SetScreen (screenloc[screenpage],0);
+	if (!FindFile("FINALE."EXT,NULL,1))
+		Quit("Error: Can't find victory screen.");
+	if (LoadShape("FINALE."EXT,&shape))
+		TrashProg("Can't load FINALE."EXT);
+	bufferofs = displayofs = screenloc[screenpage];
+	VW_Bar (0,0,320,120,0);
+	UnpackEGAShapeToScreen(&shape,(320-shape.bmHdr.w)/2,0);
+	FreeShape(&shape);
+	VW_FadeIn();
+#endif
 }
 
 //==========================================================================
 
+#if 0
 /*
 ===================
 =
@@ -629,12 +846,16 @@ void Died (void)
 	FreeUpMemory ();
 	SD_PlaySound (GAMEOVERSND);
 	bufferofs = screenloc[(screenpage+1)%3];
-	LatchDrawPic(0,0,DEADPIC);
-	FizzleFade(bufferofs,displayofs,VIEWWIDTH,VIEWHEIGHT,false);
+	DisplayMsg("Though fallen, your Spirit ...",NULL);
+//	LatchDrawPic(0,0,DEADPIC);
+//	FizzleFade(bufferofs,displayofs,VIEWWIDTH,VIEWHEIGHT,false);
 	IN_ClearKeysDown();
-	IN_Ack();
+	while (!Keyboard[sc_Enter]);
+//	IN_Ack();
 	VW_SetScreen (bufferofs,0);
+	VW_ColorBorder(0);
 }
+#endif
 
 //==========================================================================
 
@@ -654,6 +875,7 @@ void NormalScreen (void)
 	 bufferofs = SCREEN2START;
 	 VW_Bar(0,0,320,200,0);
 	 VW_SetScreen (displayofs,0);
+	 splitscreen = false;
 }
 
 //==========================================================================
@@ -673,33 +895,24 @@ void DrawPlayScreen (void)
 	screenpage = 0;
 
 	bufferofs = 0;
-	VW_Bar (0,0,320,STATUSLINES,7);
+	VW_Bar (0,0,320,STATUSLINES,0);
 	for (i=0;i<3;i++)
 	{
 		bufferofs = screenloc[i];
-		VW_Bar (0,0,320,VIEWHEIGHT,7);
+		VW_Bar (0,0,320,VIEWHEIGHT,0);
 	}
 
-
-	VW_SetSplitScreen(144);
+	splitscreen = true;
+	VW_SetSplitScreen(120);
 	VW_SetScreen(screenloc[0],0);
-	bufferofs = 0;
 
 	CA_CacheGrChunk (STATUSPIC);
-	CA_CacheGrChunk (SIDEBARSPIC);
 
+	bufferofs = 0;
 	VW_DrawPic (0,0,STATUSPIC);
 
-	for (i=0;i<3;i++)
-	{
-		bufferofs = screenloc[i];
-		VW_DrawPic (33,0,SIDEBARSPIC);
-	}
-
-	grneeded[STATUSPIC]&= ~ca_levelbit;
-	grneeded[SIDEBARSPIC]&= ~ca_levelbit;
+	grneeded[STATUSPIC] &= ~ca_levelbit;
 	MM_SetPurge(&grsegs[STATUSPIC],3);
-	MM_SetPurge(&grsegs[SIDEBARSPIC],3);
 
 	RedrawStatusWindow ();
 	bufferofs = displayofs = screenloc[0];
@@ -804,163 +1017,6 @@ void LoadLatchMem (void)
 /*
 ===================
 =
-= FizzleFade
-=
-===================
-*/
-
-#define PIXPERFRAME     1600
-
-void FizzleFade (unsigned source, unsigned dest,
-	unsigned width,unsigned height, boolean abortable)
-{
-	unsigned        drawofs,pagedelta;
-	unsigned        char maskb[8] = {1,2,4,8,16,32,64,128};
-	unsigned        x,y,p,frame;
-	long            rndval;
-
-	pagedelta = dest-source;
-	VW_SetScreen (dest,0);
-	rndval = 1;
-	y = 0;
-
-asm     mov     es,[screenseg]
-asm     mov     dx,SC_INDEX
-asm     mov     al,SC_MAPMASK
-asm     out     dx,al
-
-	TimeCount=frame=0;
-	do      // while (1)
-	{
-		if (abortable)
-		{
-			IN_ReadControl(0,&c);
-			if (c.button0 || c.button1 || Keyboard[sc_Space]
-			|| Keyboard[sc_Enter])
-			{
-				VW_ScreenToScreen (source,dest,width/8,height);
-				return;
-			}
-		}
-
-		for (p=0;p<PIXPERFRAME;p++)
-		{
-			//
-			// seperate random value into x/y pair
-			//
-			asm     mov     ax,[WORD PTR rndval]
-			asm     mov     dx,[WORD PTR rndval+2]
-			asm     mov     bx,ax
-			asm     dec     bl
-			asm     mov     [BYTE PTR y],bl                 // low 8 bits - 1 = y xoordinate
-			asm     mov     bx,ax
-			asm     mov     cx,dx
-			asm     shr     cx,1
-			asm     rcr     bx,1
-			asm     shr     bx,1
-			asm     shr     bx,1
-			asm     shr     bx,1
-			asm     shr     bx,1
-			asm     shr     bx,1
-			asm     shr     bx,1
-			asm     shr     bx,1
-			asm     mov     [x],bx                                  // next 9 bits = x xoordinate
-			//
-			// advance to next random element
-			//
-			asm     shr     dx,1
-			asm     rcr     ax,1
-			asm     jnc     noxor
-			asm     xor     dx,0x0001
-			asm     xor     ax,0x2000
-noxor:
-			asm     mov     [WORD PTR rndval],ax
-			asm     mov     [WORD PTR rndval+2],dx
-
-			if (x>width || y>height)
-				continue;
-			drawofs = source+ylookup[y];
-
-			asm     mov     cx,[x]
-			asm     mov     si,cx
-			asm     and     si,7
-			asm     mov dx,GC_INDEX
-			asm     mov al,GC_BITMASK
-			asm     mov     ah,BYTE PTR [maskb+si]
-			asm     out dx,ax
-
-			asm     mov     si,[drawofs]
-			asm     shr     cx,1
-			asm     shr     cx,1
-			asm     shr     cx,1
-			asm     add     si,cx
-			asm     mov     di,si
-			asm     add     di,[pagedelta]
-
-			asm     mov     dx,GC_INDEX
-			asm     mov     al,GC_READMAP                   // leave GC_INDEX set to READMAP
-			asm     out     dx,al
-
-			asm     mov     dx,SC_INDEX+1
-			asm     mov     al,1
-			asm     out     dx,al
-			asm     mov     dx,GC_INDEX+1
-			asm     mov     al,0
-			asm     out     dx,al
-
-			asm     mov     bl,[es:si]
-			asm     xchg [es:di],bl
-
-			asm     mov     dx,SC_INDEX+1
-			asm     mov     al,2
-			asm     out     dx,al
-			asm     mov     dx,GC_INDEX+1
-			asm     mov     al,1
-			asm     out     dx,al
-
-			asm     mov     bl,[es:si]
-			asm     xchg [es:di],bl
-
-			asm     mov     dx,SC_INDEX+1
-			asm     mov     al,4
-			asm     out     dx,al
-			asm     mov     dx,GC_INDEX+1
-			asm     mov     al,2
-			asm     out     dx,al
-
-			asm     mov     bl,[es:si]
-			asm     xchg [es:di],bl
-
-			asm     mov     dx,SC_INDEX+1
-			asm     mov     al,8
-			asm     out     dx,al
-			asm     mov     dx,GC_INDEX+1
-			asm     mov     al,3
-			asm     out     dx,al
-
-			asm     mov     bl,[es:si]
-			asm     xchg [es:di],bl
-
-			if (rndval == 1)                // entire sequence has been completed
-			{
-				EGABITMASK(255);
-				EGAMAPMASK(15);
-				return;
-			};
-		}
-		frame++;
-		while (TimeCount<frame)         // don't go too fast
-		;
-	} while (1);
-
-
-}
-
-//==========================================================================
-
-/*
-===================
-=
 = FizzleOut
 =
 ===================
@@ -1002,6 +1058,8 @@ void FreeUpMemory (void)
 }
 
 //==========================================================================
+
+#if 0
 
 /*
 ==================
@@ -1111,6 +1169,8 @@ void    CheckHighScore (long score,word other)
 	}
 }
 
+#endif
+
 
 //==========================================================================
 
@@ -1124,6 +1184,7 @@ void    CheckHighScore (long score,word other)
 
 void GameLoop (void)
 {
+	boolean wait = false;
 	int i,xl,yl,xh,yh;
 	char num[20];
 #ifdef PROFILE
@@ -1131,6 +1192,7 @@ void GameLoop (void)
 #endif
 
 	DrawPlayScreen ();
+	IN_ClearKeysDown();
 
 restart:
 	if (!loadedgame)
@@ -1138,6 +1200,9 @@ restart:
 		gamestate.difficulty = restartgame;
 		restartgame = gd_Continue;
 		DrawEnterScreen ();
+		if (gamestate.mapon != 8)
+			fizzlein = true;
+		wait = true;
 	}
 
 	do
@@ -1148,14 +1213,33 @@ restart:
 		else
 			loadedgame = false;
 
+		FreeUpMemory();
+		LoadLatchMem();
 		CacheScaleds ();
+
+		if (EASYMODEON)
+			DisplaySMsg("*** NOVICE ***", NULL);
+		else
+			DisplaySMsg("*** WARRIOR ***", NULL);
+
+		status_delay = 250;
+
+		RedrawStatusWindow();
+		if (wait)
+		{
+			VW_WaitVBL(120);
+			wait = false;
+		}
+
 
 #ifdef PROFILE
 start = clock();
 while (start == clock());
 start++;
 #endif
+
 		PlayLoop ();
+
 #ifdef PROFILE
 end = clock();
 itoa(end-start,str,10);
@@ -1165,35 +1249,40 @@ itoa(end-start,str,10);
 
 		switch (playstate)
 		{
-		case ex_died:
-			Died ();
-			NormalScreen ();
-			FreeUpMemory ();
-			CheckHighScore (gamestate.score,gamestate.mapon+1);
-			return;
-		case ex_warped:
-			FizzleOut (true);
-			if (gamestate.mapon >= NUMLEVELS)
-			{
-				Victory ();
-				FreeUpMemory ();
-				CheckHighScore(gamestate.score,gamestate.mapon+1);
-				return;
-			}
-			break;
 		case ex_abort:
 			FreeUpMemory ();
 			return;
 		case ex_resetgame:
+			NewGame();
 		case ex_loadedgame:
+		case ex_warped:
 			goto restart;
-		case ex_victorious:
-			Victory ();
-			FreeUpMemory();
-			CheckHighScore(gamestate.score,gamestate.mapon+1);
-			return;
+		break;
 		}
 
 	} while (1);
 
 }
+
+
+#if 0
+//
+// make wall pictures purgable
+//
+	for (i=0;i<NUMSCALEWALLS;i++)
+		if (walldirectory[i])
+			MM_SetPurge (&(memptr)walldirectory[i],3);
+
+
+//
+// cache wall pictures back in
+//
+	for (i=1;i<NUMFLOORS;i++)
+		if (tileneeded[i])
+		{
+			SetupScaleWall (walllight1[i]);
+			SetupScaleWall (walllight2[i]);
+			SetupScaleWall (walldark1[i]);
+			SetupScaleWall (walldark2[i]);
+		}
+#endif

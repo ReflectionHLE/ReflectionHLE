@@ -1,4 +1,4 @@
-; Catacomb 3-D Source Code
+; Catacomb Abyss Source Code
 ; Copyright (C) 1993-2014 Flat Rock Software
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,9 @@ IDEAL
 
 MODEL	MEDIUM,C
 
-VIEWWIDTH	=	(33*8)
+INCLUDE	"ID_ASM.EQU"
+
+VIEWWIDTH	=	(40*8)			;33
 GC_INDEX	=	03CEh
 
 DATASEG
@@ -103,6 +105,8 @@ EXTRN	scaledirectory:WORD			; array of MAXSCALE segment pointers to
 									; compiled scalers
 EXTRN	screenseg:WORD				; basically just 0xa000
 EXTRN	bufferofs:WORD				; offset of the current work screen
+EXTRN ylookup:WORD
+EXTRN screenpage:WORD
 
 CODESEG
 
@@ -192,6 +196,53 @@ done:
 
 ENDP
 
+;---------------------------------------------------------------------------
+;
+; RadarBlip()
+;
+; Displays a 'blip' (1 pixel wide X 2 pixel high) on the radar at
+; an (X,Y) relative to (RADAR_X,RADAR_Y) (defined below...)
+;
+;---------------------------------------------------------------------------
+
+PROC	RadarBlip x:WORD, y:WORD, color:WORD
+USES	SI,DI
+PUBLIC	RadarBlip
+
+	mov	ax,[screenseg]
+
+	mov	es,ax
+	xor	di,di
+
+	lea	si,[ylookup]
+	add	si,[y]
+	add	si,[y]
+	add	di,[si]
+
+	mov	ax,[x]
+	shr	ax,1
+	shr	ax,1
+	shr	ax,1
+	add	di,ax
+
+	mov	ax,[x]
+	and	ax,7
+	mov	cl,al
+	mov	ah,080h
+	shr	ah,cl
+	cli
+	mov	al,GC_BITMASK
+	mov	dx,GC_INDEX
+	out	dx,ax
+	sti
+
+	mov	ax,[color]
+	mov	ah,[es:di]						; read into latches
+	mov	[es:di],al						; write latches / color bit
+
+	ret
+
+ENDP
 
 END
 

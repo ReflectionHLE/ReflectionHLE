@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,18 +17,20 @@
  */
 
 // C3_MAIN.C
+#define CATALOG
 
-#include "C3_DEF.H"
+
+#include <time.h>
+#include <stdarg.h>
+
+#include "DEF.H"
+#include "GELIB.H"
 #pragma hdrstop
+#include <dir.h>
 
 /*
 =============================================================================
 
-						   CATACOMB 3-D
-
-					  An Id Software production
-
-						   by John Carmack
 
 =============================================================================
 */
@@ -50,12 +52,26 @@
 =============================================================================
 */
 
+textinfo MainHelpText;
+
+GameDiff restartgame;
+boolean loadedgame,abortgame,ingame;
+
+
 memptr		scalesegs[NUMPICS];
 char		str[80],str2[20];
 unsigned	tedlevelnum;
 boolean		tedlevel;
 gametype	gamestate;
 exittype	playstate;
+char	SlowMode = 0;
+int starting_level;
+boolean EASYMODEON;
+
+short NumGames=0;
+unsigned Flags=0;
+
+void DisplayIntroText(void);
 
 /*
 =============================================================================
@@ -69,6 +85,7 @@ exittype	playstate;
 
 //===========================================================================
 
+#if 0
 // JAB Hack begin
 #define	MyInterrupt	0x60
 void interrupt (*intaddr)();
@@ -102,6 +119,7 @@ jabunhack(void)
 	setvect(MyInterrupt,oldintaddr);
 }
 //	JAB Hack end
+#endif
 
 //===========================================================================
 
@@ -117,9 +135,20 @@ jabunhack(void)
 
 void NewGame (void)
 {
-	memset (&gamestate,0,sizeof(gamestate));
-	gamestate.mapon = 0;
-	gamestate.body = MAXBODY;
+	if (!loadedgame)
+	{
+		memset (&gamestate,0,sizeof(gamestate));
+		gamestate.mapon = starting_level;
+		gamestate.body = MAXBODY;
+	}
+
+	BGFLAGS = 0;
+	Flags &= FL_CLEAR;
+
+	boltsleft = bolttimer = 0;
+	FreezeTime = 0;
+
+//	memset (gamestate.levels,-1,sizeof(gamestate.levels));
 }
 
 //===========================================================================
@@ -140,7 +169,13 @@ boolean	SaveTheGame(int file)
 	objtype	*o;
 	memptr	bigbuffer;
 
+	if (!CA_FarWrite(file,(void far *)&FreezeTime,sizeof(FreezeTime)))
+		return(false);
+
 	if (!CA_FarWrite(file,(void far *)&gamestate,sizeof(gamestate)))
+		return(false);
+
+	if (!CA_FarWrite(file,(void far *)&EASYMODEON,sizeof(EASYMODEON)))
 		return(false);
 
 	expanded = mapwidth * mapheight * 2;
@@ -193,10 +228,23 @@ boolean	LoadTheGame(int file)
 	unsigned	far *map,tile;
 	memptr		bigbuffer;
 
+	screenpage = 0;
+	FreeUpMemory();
+
+	playstate = ex_loadedgame;
+	if (!CA_FarRead(file,(void far *)&FreezeTime,sizeof(FreezeTime)))
+		return(false);
+
 	if (!CA_FarRead(file,(void far *)&gamestate,sizeof(gamestate)))
 		return(false);
 
+	if (!CA_FarRead(file,(void far *)&EASYMODEON,sizeof(EASYMODEON)))
+		return(false);
+
 	SetupGameLevel ();		// load in and cache the base old level
+
+	if (!FindFile(Filename,"SAVE GAME",-1))
+		Quit("Error: Can't find saved game file!");
 
 	expanded = mapwidth * mapheight * 2;
 	MM_GetPtr (&bigbuffer,expanded);
@@ -346,6 +394,7 @@ void InitGame (void)
 
 	US_SetLoadSaveHooks(LoadTheGame,SaveTheGame,ResetGame);
 
+
 //
 // load in and lock down some basic chunks
 //
@@ -356,17 +405,14 @@ void InitGame (void)
 	CA_MarkGrChunk(STARTTILE8);
 	CA_MarkGrChunk(STARTTILE8M);
 	CA_MarkGrChunk(HAND1PICM);
-	CA_MarkGrChunk(HAND2PICM);
-	CA_MarkGrChunk(ENTERPLAQUEPIC);
 
+	CA_MarkGrChunk(NORTHICONSPR);
 	CA_CacheMarks (NULL);
 
 	MM_SetLock (&grsegs[STARTFONT],true);
 	MM_SetLock (&grsegs[STARTTILE8],true);
 	MM_SetLock (&grsegs[STARTTILE8M],true);
 	MM_SetLock (&grsegs[HAND1PICM],true);
-	MM_SetLock (&grsegs[HAND2PICM],true);
-	MM_SetLock (&grsegs[ENTERPLAQUEPIC],true);
 
 	fontcolor = WHITE;
 
@@ -393,6 +439,7 @@ void InitGame (void)
 //	US_FinishTextScreen();
 #endif
 
+#if 0
 //
 // reclaim the memory from the linked in text screen
 //
@@ -403,11 +450,12 @@ void InitGame (void)
 		segstart++;
 		seglength--;
 	}
-
 	MML_UseSpace (segstart,seglength);
+#endif
 
 	VW_SetScreenMode (GRMODE);
-	VW_ColorBorder (3);
+	ge_textmode = false;
+//	VW_ColorBorder (3);
 	VW_ClearVideo (BLACK);
 
 //
@@ -432,36 +480,65 @@ void clrscr (void);		// can't include CONIO.H because of name conflicts...
 ==========================
 */
 
-void Quit (char *error)
+void Quit (char *error, ...)
 {
+	short exit_code=0;
 	unsigned	finscreen;
 
-#if 0
+	va_list ap;
+
+	va_start(ap,error);
+
 	if (!error)
 	{
 		CA_SetAllPurge ();
+#ifndef CATALOG
 		CA_CacheGrChunk (PIRACY);
 		finscreen = (unsigned)grsegs[PIRACY];
-	}
 #endif
-
+	}
 	ShutdownId ();
+
 	if (error && *error)
 	{
-	  puts(error);
-	  exit(1);
+		vprintf(error,ap);
+		exit_code = 1;
 	}
 
-#if 0
-	if (!NoWait)
+#ifndef CATALOG
+	else
 	{
 		movedata (finscreen,0,0xb800,0,4000);
+
+		if (kbhit())
+		{
+			while (kbhit())
+				bioskey(0);
+		}
+
 		bioskey (0);
-		clrscr();
 	}
 #endif
 
-	exit(0);
+	va_end(ap);
+
+#ifndef CATALOG
+	if (!error)
+	{
+		_argc = 2;
+		_argv[1] = "LAST.SHL";
+		_argv[2] = "ENDSCN.SCN";
+		_argv[3] = NULL;
+		if (execv("LOADSCN.EXE", _argv) == -1)
+		{
+			clrscr();
+			puts("Couldn't find executable LOADSCN.EXE.\n");
+			exit(1);
+		}
+	}
+#endif
+
+	exit(exit_code);
 }
 
 //===========================================================================
@@ -490,80 +567,111 @@ void	TEDDeath(void)
 =====================
 */
 
-static	char *ParmStrings[] = {"easy","normal","hard",""};
-
 void	DemoLoop (void)
 {
-	int	i,level;
-
-//
-// check for launch from ted
-//
-	if (tedlevel)
-	{
-		NewGame();
-		gamestate.mapon = tedlevelnum;
-		restartgame = gd_Normal;
-		for (i = 1;i < _argc;i++)
-		{
-			if ( (level = US_CheckParm(_argv[i],ParmStrings)) == -1)
-				continue;
-
-			restartgame = gd_Easy+level;
-			break;
-		}
-		GameLoop();
-		TEDDeath();
-	}
-
-
-//
+/////////////////////////////////////////////////////////////////////////////
 // main game cycle
+/////////////////////////////////////////////////////////////////////////////
+
+//	displayofs = bufferofs = 0;
+//	VW_Bar (0,0,320,200,0);
+//	VW_SetScreen(0,0);
+
+//	set EASYMODE
 //
-	displayofs = bufferofs = 0;
-	VW_Bar (0,0,320,200,0);
+	if (stricmp(_argv[2], "1") == 0)
+		EASYMODEON = true;
+	else
+		EASYMODEON = false;
 
-	while (1)
+// restore game
+//
+	if (stricmp(_argv[3], "1") == 0)
 	{
-		CA_CacheGrChunk (TITLEPIC);
-		bufferofs = SCREEN2START;
-		displayofs = SCREEN1START;
-		VWB_DrawPic (0,0,TITLEPIC);
-		MM_SetPurge (&grsegs[TITLEPIC],3);
-		UNMARKGRCHUNK(TITLEPIC);
-		FizzleFade (bufferofs,displayofs,320,200,true);
-
-		if (!IN_UserInput(TickBase*3,false))
+		VW_FadeOut();
+		bufferofs = displayofs = 0;
+		VW_Bar(0,0,320,200,0);
+		if (GE_LoadGame())
 		{
-			CA_CacheGrChunk (CREDITSPIC);
-			VWB_DrawPic (0,0,CREDITSPIC);
-			MM_SetPurge (&grsegs[CREDITSPIC],3);
-			UNMARKGRCHUNK(CREDITSPIC);
-			FizzleFade (bufferofs,displayofs,320,200,true);
-
+			loadedgame = true;
+			playstate = ex_loadedgame;
+			Keyboard[sc_Enter] = true;
+			VW_Bar(0,0,320,200,0);
+			ColoredPalette();
 		}
-
-		if (!IN_UserInput(TickBase*3,false))
-		{
-highscores:
-			DrawHighScores ();
-			FizzleFade (bufferofs,displayofs,320,200,true);
-			IN_UserInput(TickBase*3,false);
-		}
-
-		if (IN_IsUserInput())
-		{
-			US_ControlPanel ();
-
-			if (restartgame || loadedgame)
-			{
-				GameLoop ();
-				goto highscores;
-			}
-		}
-
+		VW_Bar(0,0,320,200,0);
+		VW_FadeIn();
 	}
+
+	// Play a game
+	//
+		restartgame = gd_Normal;
+		NewGame();
+		GameLoop();
 }
+
+//-------------------------------------------------------------------------
+// DisplayIntroText()
+//-------------------------------------------------------------------------
+void DisplayIntroText()
+{
+	char *toptext = "You stand before the gate leading into the Towne "
+						 "Cemetery. Night is falling as mournful wails mingle "
+						 "with the sound of your pounding heart.";
+
+	char *bottomtext = "Equipped with your wits and the Secret Knowledge of "
+							 "Magick, you venture forth on your quest to upset "
+							 "the dark schemes of Nemesis, your arch rival.";
+
+	char oldfontcolor=fontcolor;
+
+	fontcolor = 14;
+	WindowX=WindowY=0;
+	PPT_RightEdge=319;
+	PPT_LeftEdge=0;
+
+	PrintY = 1;
+	PrintPropText(toptext);
+
+	PrintY = 160;
+	PrintPropText(bottomtext);
+
+	fontcolor = oldfontcolor;
+}
+
+#if 0
+boolean ChooseGameLevel()
+{
+	char choices[] = {sc_Escape,sc_E,sc_N,sc_H,0},ch;
+
+	CenterWindow(20,10);
+
+	US_Print("\n   Choose difficulty level:\n");
+	US_Print("       (E)asy\n");
+	US_Print("       (N)ormal\n");
+	US_Print("       (H)ard\n");
+	US_Print("\n      (ESC)ape aborts\n");
+
+//	VW_UpdateScreen();
+	if ((ch=GetKeyChoice(choices)) == sc_Escape)
+	{
+		while (Keyboard[sc_Escape]);
+		LastScan = 0;
+		return(false);
+	}
+
+	if (ch == sc_E)
+		restartgame = gd_Easy;
+	else
+	if (ch == sc_N)
+		restartgame = gd_Normal;
+	else
+		restartgame = gd_Hard;
+
+	return(true);
+}
+#endif
+
 
 //===========================================================================
 
@@ -578,6 +686,9 @@ highscores:
 void SetupScalePic (unsigned picnum)
 {
 	unsigned	scnum;
+
+	if (picnum == 1)
+		return;
 
 	scnum = picnum-FIRSTSCALEPIC;
 
@@ -609,6 +720,9 @@ void SetupScaleWall (unsigned picnum)
 	int		x,y;
 	unsigned	scnum;
 	byte	far *dest;
+
+	if (picnum == 1)
+		return;
 
 	scnum = picnum-FIRSTWALLPIC;
 
@@ -664,6 +778,7 @@ void HelpScreens (void)
 }
 
 
+#if 0
 /*
 ==================
 =
@@ -672,11 +787,14 @@ void HelpScreens (void)
 ==================
 */
 
-#define MINMEMORY	335000l
+#define MINMEMORY	400000l
 
 void	CheckMemory(void)
 {
 	unsigned	finscreen;
+
+	if (Flags & FL_NOMEMCHECK)
+		return;
 
 	if (mminfo.nearheap+mminfo.farheap+mminfo.EMSmem+mminfo.XMSmem
 		>= MINMEMORY)
@@ -689,6 +807,7 @@ void	CheckMemory(void)
 	gotoxy (1,24);
 	exit(1);
 }
+#endif
 
 //===========================================================================
 
@@ -701,46 +820,53 @@ void	CheckMemory(void)
 ==========================
 */
 
+char			*MainParmStrings[] = {"q","l","ver","nomemcheck",nil};
+boolean		LaunchedFromShell = false;
+
 void main (void)
 {
 	short i;
 
-	if (stricmp(_argv[1], "/VER") == 0)
+	starting_level = 0;
+
+	for (i = 1;i < _argc;i++)
 	{
-		printf("Catacomb 3-D version 1.22  (Rev 1)\n");
-		printf("Copyright 1991-93 Softdisk Publishing\n");
-		printf("Developed for use with 100%% IBM compatibles\n");
-		printf("that have 640K memory and DOS version 3.3 or later\n");
-		printf("and EGA graphics or better.\n");
+		switch (US_CheckParm(_argv[i],MainParmStrings))
+		{
+			case 0:
+				Flags |= FL_QUICK;
+			break;
+
+			case 1:
+				starting_level = atoi(_argv[i]+1);
+				if ((starting_level < 0) || (starting_level > LASTMAP-1))
+					starting_level = 0;
+			break;
+
+			case 2:
+				printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
+				exit(0);
+			break;
+
+			case 3:
+				Flags |= FL_NOMEMCHECK;
+			break;
+		}
+	}
+
+	if (!stricmp(_argv[1], "^(a@&r`"))
+			LaunchedFromShell = true;
+
+	if (!LaunchedFromShell)
+	{
+		clrscr();
+		puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
 		exit(0);
 	}
 
-	if (stricmp(_argv[1], "/?") == 0)
-	{
-		printf("Catacomb 3-D version 1.22\n");
-		printf("Copyright 1991-93 Softdisk Publishing\n\n");
-		printf("Syntax:\n");
-		printf("CAT3D [/<switch>]\n\n");
-		printf("Switch       What it does\n");
-		printf("/?           This Information\n");
-		printf("/VER         Display Program Version Information\n");
-		printf("/COMP        Fix problems with SVGA screens\n");
-		printf("/NOAL        No AdLib or SoundBlaster detection\n");
-		printf("/NOJOYS      Tell program to ignore joystick\n");
-		printf("/NOMOUSE     Tell program to ignore mouse\n");
-		printf("/HIDDENCARD  Overrides video detection\n\n");
-		printf("Each switch must include a '/' and multiple switches\n");
-		printf("must be seperated by at least one space.\n\n");
-
-		exit(0);
-	}
-
-	jabhack();
+	randomize();
 
 	InitGame ();
-
-	CheckMemory ();
-
 	LoadLatchMem ();
 
 #ifdef PROFILE
@@ -748,9 +874,6 @@ void main (void)
 	GameLoop ();
 #endif
 
-//NewGame ();
-//GameLoop ();
-
 	DemoLoop();
-	Quit("Demo loop exited???");
+	Quit(NULL);
 }

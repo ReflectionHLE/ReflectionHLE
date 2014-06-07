@@ -1,4 +1,4 @@
-; Catacomb 3-D Source Code
+; Catacomb Abyss Source Code
 ; Copyright (C) 1993-2014 Flat Rock Software
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -1075,8 +1075,8 @@ propchar	dw	?			; the character number to shift
 stringptr	dw	?,?
 
 
-BUFFWIDTH	=	50
-BUFFHEIGHT	=   32			; must be twice as high as font for masked fonts
+BUFFWIDTH	=	80			; MDM (GAMERS EDGE) - increased from 50
+BUFFHEIGHT	=   20			; must be twice as high as font for masked fonts
 
 databuffer	db	BUFFWIDTH*BUFFHEIGHT dup (?)
 

@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -124,6 +124,7 @@ typedef	enum		{
 						demo_Off,demo_Record,demo_Playback,demo_PlayDone
 					} Demo;
 typedef	enum		{
+						ctrl_None,				// MDM (GAMERS EDGE) - added
 						ctrl_Keyboard,
 							ctrl_Keyboard1 = ctrl_Keyboard,ctrl_Keyboard2,
 						ctrl_Joystick,
@@ -173,6 +174,9 @@ extern	ScanCode	LastScan;
 extern	KeyboardDef	KbdDefs[];
 extern	JoystickDef	JoyDefs[];
 extern	ControlType	Controls[MaxPlayers];
+
+extern	boolean JoystickCalibrated;				// MDM (GAMERS EDGE) - added
+extern	ControlType ControlTypeUsed;				// MDM (GAMERS EDGE) - added
 
 extern	Demo		DemoMode;
 extern	byte _seg	*DemoBuffer;

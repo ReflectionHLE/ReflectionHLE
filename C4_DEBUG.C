@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,8 @@
 
 // C3_DEBUG.C
 
-#include "C3_DEF.H"
+#include "DEF.H"
+#include "gelib.h"
 #pragma hdrstop
 
 /*
@@ -28,6 +29,9 @@
 
 =============================================================================
 */
+
+#define DEBUG_OVERHEAD 0
+
 
 #define VIEWTILEX	20
 #define VIEWTILEY	(VIEWHEIGHT/16)
@@ -49,15 +53,14 @@
 =============================================================================
 */
 
-
+boolean autofire=false;
 int	maporgx;
 int	maporgy;
-enum {mapview,tilemapview,actoratview,visview}	viewtype;
+enum {mapview,tilemapview,actoratview,visview,mapseg2,lastview}	viewtype;
 
 void ViewMap (void);
 
 //===========================================================================
-
 
 
 /*
@@ -76,7 +79,7 @@ void DebugMemory (void)
 	spritetype _seg	*block;
 
 	VW_FixRefreshBuffer ();
-	US_CenterWindow (16,7);
+	CenterWindow (16,7);
 
 #if 0
 	CA_OpenDebug ();
@@ -109,6 +112,7 @@ void DebugMemory (void)
 
 //===========================================================================
 
+#if 0
 /*
 ================
 =
@@ -124,7 +128,7 @@ void PicturePause (void)
 
 	source = displayofs+panadjust;
 
-	VW_ColorBorder (15);
+//	VW_ColorBorder (15);
 	VW_SetLineWidth (40);
 	VW_SetScreen (0,0);
 
@@ -152,23 +156,10 @@ void PicturePause (void)
 	VW_WaitVBL(70);
 	Quit (NULL);
 }
+#endif
 
 
 //===========================================================================
-
-/*
-================
-=
-= ShapeTest
-=
-================
-*/
-
-void ShapeTest (void)
-{
-
-}
-
 
 //===========================================================================
 
@@ -198,6 +189,160 @@ int DebugKeys (void)
 	boolean esc;
 	int level,i;
 
+#if 0
+	if (Keyboard[sc_A])
+	{
+		char levelstr[50];
+		unsigned org_tile,org_mapon,msgnum;
+		boolean newmsg=true,newlevel=false;
+
+		VW_FixRefreshBuffer ();
+		CenterWindow (16,3);
+		US_Print("\n");
+		US_CPrint("Message Test");
+		VW_UpdateScreen();
+
+		org_mapon = mapon;
+		msgnum = (org_tile = *(mapsegs[0]+farmapylookup[player->tiley]+player->tilex))-NAMESTART;
+		while (1)
+		{
+	// Get outta' here
+	//
+			if (Keyboard[sc_Escape])
+			{
+				while (Keyboard[sc_Escape]);
+				break;
+			}
+
+	// Move to previous message
+	//
+			if (Keyboard[sc_UpArrow])
+			{
+				if (msgnum)
+				{
+					msgnum--;
+					newmsg = true;
+				}
+			}
+
+	// Move to next message
+	//
+			if (Keyboard[sc_DownArrow])
+			{
+				if (msgnum < 24)
+				{
+					msgnum++;
+					newmsg = true;
+				}
+			}
+
+	// Move to previous level
+	//
+			if (Keyboard[sc_LeftArrow])
+			{
+				if (mapon)
+				{
+					MM_SetPurge(&grsegs[LEVEL1TEXT+mapon],3);
+					mapon--;
+					newlevel = true;
+				}
+			}
+
+	// Move to next level
+	//
+			if (Keyboard[sc_RightArrow])
+			{
+				if (mapon < LASTMAP-2)
+				{
+					MM_SetPurge(&grsegs[LEVEL1TEXT+mapon],3);
+					mapon++;
+					newlevel = true;
+				}
+			}
+
+	// Load new level text
+	//
+			if (newlevel)
+			{
+				CA_CacheGrChunk(LEVEL1TEXT+mapon);
+				ScanText();
+				newmsg = true;
+				newlevel=false;
+			}
+
+	// Display new message text
+	//
+			if (newmsg)
+			{
+				*(mapsegs[0]+farmapylookup[player->tiley]+player->tilex) = msgnum+NAMESTART;
+				DrawText(true);
+				strcpy(levelstr,"Level: ");
+				itoa(mapon,levelstr+strlen(levelstr),10);
+				strcat(levelstr,"  Msg: ");
+				itoa(msgnum,levelstr+strlen(levelstr),10);
+				DisplaySMsg(levelstr,NULL);
+				newmsg = false;
+
+				if (Keyboard[sc_UpArrow] || Keyboard[sc_DownArrow] || Keyboard[sc_LeftArrow] || Keyboard[sc_RightArrow])
+					VW_WaitVBL(6);
+			}
+
+		}
+// Restore game
+//
+		MM_SetPurge(&grsegs[LEVEL1TEXT+mapon],3);
+		mapon = org_mapon;
+		CA_CacheGrChunk(LEVEL1TEXT+mapon);
+		ScanText();
+		*(mapsegs[0]+farmapylookup[player->tiley]+player->tilex) = org_tile;
+		DrawText(true);
+		status_flag = 0;
+	}
+#endif
+
+	if (Keyboard[sc_T])
+	{
+		VW_FixRefreshBuffer ();
+		CenterWindow (16,4);
+
+		US_Print("Tics      :");
+		US_PrintUnsigned (tics);
+		US_Print("\nReal Tics :");
+		US_PrintUnsigned(realtics);
+		VW_UpdateScreen();
+		IN_Ack ();
+	}
+
+	if (Keyboard[sc_V])
+	{
+		displayofs = bufferofs = screenloc[screenpage];
+		CenterWindow (20,5);
+		US_CPrint("\n"GAMENAME);
+		US_CPrint(VERSION);
+		US_CPrint(REVISION);
+		VW_UpdateScreen();
+		IN_Ack ();
+	}
+
+	if (Keyboard[sc_Q])			// Q = Insta-Quit!
+		Quit("Insta-Quit!");
+
+	if (Keyboard[sc_Z])		// Z = freeze Time
+	{
+		if (FreezeTime)
+		  FreezeTime = 1;		// Allow refresh to dec to zero..
+		else
+			StopTime();
+
+		IN_Ack();
+		return 1;
+	}
+
+//	if (Keyboard[sc_E])
+//		FaceDoor((player->x>>16l)+1,(player->y>>16l));
+//		FaceAngle(90);
+
+#if 0
 	if (Keyboard[sc_B])		// B = border color
 	{
 		CenterWindow(24,3);
@@ -213,9 +358,9 @@ int DebugKeys (void)
 		}
 		return 1;
 	}
+#endif
 
 #if 0
-
 	if (Keyboard[sc_C])		// C = count objects
 	{
 		CountObjects();
@@ -234,9 +379,9 @@ int DebugKeys (void)
 		}
 		return 1;
 	}
-
 #endif
 
+#if 0
 	if (Keyboard[sc_E])		// E = quit level
 	{
 		if (tedlevel)
@@ -244,7 +389,9 @@ int DebugKeys (void)
 		playstate = ex_warped;
 		gamestate.mapon++;
 	}
+#endif
 
+#if 0
 	if (Keyboard[sc_F])		// F = facing spot
 	{
 		CenterWindow (12,4);
@@ -258,6 +405,7 @@ int DebugKeys (void)
 		IN_Ack();
 		return 1;
 	}
+#endif
 
 	if (Keyboard[sc_G])		// G = god mode
 	{
@@ -271,12 +419,18 @@ int DebugKeys (void)
 		godmode ^= 1;
 		return 1;
 	}
+
+#if 0
 	if (Keyboard[sc_H])		// H = hurt self
 	{
 		TakeDamage (5);
 	}
-	else if (Keyboard[sc_I])			// I = item cheat
+#endif
+
+	if (Keyboard[sc_I])			// I = item cheat
 	{
+		extern boolean redraw_gems;
+
 		CenterWindow (12,3);
 		US_PrintCentered ("Free items!");
 		VW_UpdateScreen();
@@ -285,31 +439,43 @@ int DebugKeys (void)
 			GiveBolt ();
 			GiveNuke ();
 			GivePotion ();
-			if (!gamestate.keys[i])
+//			if (!gamestate.keys[i])
 				GiveKey (i);
+			gamestate.gems[i] = GEM_DELAY_TIME;
 		}
+		gamestate.gems[4] = GEM_DELAY_TIME;
+		redraw_gems = true;
 		for (i=0;i<8;i++)
 			GiveScroll (i,false);
 
 		IN_Ack ();
 		return 1;
 	}
-	else if (Keyboard[sc_M])			// M = memory info
+
+	if (Keyboard[sc_M])			// M = memory info
 	{
 		DebugMemory();
 		return 1;
 	}
-	else if (Keyboard[sc_O])			// O = overhead
+
+#if DEBUG_OVERHEAD
+	if (Keyboard[sc_O])			// O = overhead
 	{
 		ViewMap();
 		return 1;
 	}
-	else if (Keyboard[sc_P])			// P = pause with no screen disruptioon
+#endif
+
+#if 0
+	if (Keyboard[sc_P])			// P = pause with no screen disruptioon
 	{
 		PicturePause ();
 		return 1;
 	}
-	else if (Keyboard[sc_S])	// S = slow motion
+#endif
+
+#if 0
+	if (Keyboard[sc_S])	// S = slow motion
 	{
 		singlestep^=1;
 		CenterWindow (18,3);
@@ -321,12 +487,10 @@ int DebugKeys (void)
 		IN_Ack ();
 		return 1;
 	}
-	else if (Keyboard[sc_S])	// T = shape test
-	{
-		ShapeTest ();
-		return 1;
-	}
-	else if (Keyboard[sc_V])			// V = extra VBLs
+#endif
+
+#if 0
+	if (Keyboard[sc_V])			// V = extra VBLs
 	{
 		CenterWindow(30,3);
 		PrintY+=6;
@@ -341,25 +505,30 @@ int DebugKeys (void)
 		}
 		return 1;
 	}
-	else if (Keyboard[sc_W])	// W = warp to level
+#endif
+
+	if (Keyboard[sc_W])	// W = warp to level
 	{
 		CenterWindow(26,3);
 		PrintY+=6;
-		US_Print("  Warp to which level(1-21):");
+		US_Print("  Warp to which level(0-18):");
 		VW_UpdateScreen();
 		esc = !US_LineInput (px,py,str,NULL,true,2,0);
 		if (!esc)
 		{
 			level = atoi (str);
-			if (level>0 && level<21)
+			if (level>=0 && level<=LASTMAP-1)
 			{
-				gamestate.mapon = level-1;
+				gamestate.mapon = level;
 				playstate = ex_warped;
+				lasttext = -1;
 			}
 		}
 		return 1;
 	}
-	else if (Keyboard[sc_X])			// X = item cheat
+
+#if 0
+	if (Keyboard[sc_X])			// X = item cheat
 	{
 		CenterWindow (12,3);
 		US_PrintCentered ("Extra stuff!");
@@ -373,11 +542,9 @@ int DebugKeys (void)
 		IN_Ack ();
 		return 1;
 	}
-	else if (Keyboard[sc_Z])			// Z = game over
-	{
+#endif
 
-	}
-	else if (LastScan >= sc_1 && LastScan <= sc_8)	// free scrolls
+	if (LastScan >= sc_1 && LastScan <= sc_8)	// free scrolls
 	{
 		GiveScroll (LastScan-sc_1,false);
 		IN_ClearKeysDown ();
@@ -386,6 +553,8 @@ int DebugKeys (void)
 	return 0;
 }
 
+
+#if DEBUG_OVERHEAD
 
 /*
 =====================
@@ -437,7 +606,10 @@ asm	mov	ds,ax					// restore turbo's data segment
 	EGAWRITEMODE(0);
 }
 
+#endif
 
+
+#if DEBUG_OVERHEAD
 /*
 =====================
 =
@@ -480,8 +652,10 @@ asm	mov	ds,ax					// restore turbo's data segment
 
 	EGAWRITEMODE(0);
 }
+#endif
 
 
+#if DEBUG_OVERHEAD
 /*
 ===================
 =
@@ -527,6 +701,12 @@ void OverheadRefresh (void)
 			case visview:
 				tile = spotvis[x][y];
 				break;
+
+			case mapseg2:
+				tile = *(mapsegs[2]+farmapylookup[y]+x);
+				if (tile < 256)
+					tile = *(mapsegs[0]+farmapylookup[y]+x);
+			break;
 
 			}
 
@@ -574,24 +754,24 @@ void ViewMap (void)
 //
 // let user pan around
 //
-		IN_ReadControl(0,&c);
-		if (c.xaxis == -1 && maporgx>0)
+		IN_ReadControl(0,&control);
+		if (control.xaxis == -1 && maporgx>0)
 			maporgx--;
-		if (c.xaxis == 1 && maporgx<mapwidth-VIEWTILEX)
+		if (control.xaxis == 1 && maporgx<mapwidth-VIEWTILEX)
 			maporgx++;
-		if (c.yaxis == -1 && maporgy>0)
+		if (control.yaxis == -1 && maporgy>0)
 			maporgy--;
-		if (c.yaxis == 1 && maporgy<mapheight-VIEWTILEY)
+		if (control.yaxis == 1 && maporgy<mapheight-VIEWTILEY)
 			maporgy++;
 
-		if (c.button0 && !button0held)
+		if (control.button0 && !button0held)
 		{
 			button0held = true;
 			viewtype++;
-			if (viewtype>visview)
+			if (viewtype==lastview)
 				viewtype = mapview;
 		}
-		if (!c.button0)
+		if (!control.button0)
 			button0held = false;
 
 
@@ -602,5 +782,5 @@ void ViewMap (void)
 	IN_ClearKeysDown ();
 	DrawPlayScreen ();
 }
-
+#endif
 

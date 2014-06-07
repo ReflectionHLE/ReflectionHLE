@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,14 +36,30 @@
 
 //--------------------------------------------------------------------------
 
-#define	EXTENSION	"C3D"
+#define	EXT	"ABS"
 
 extern	char far introscn;
 
-#include "GFXE_C3D.H"
-#include "AUDIOC3D.H"
+#include "GFXE_ABS.H"
+#include "AUDIOABS.H"
+#include "MAPSABS.H"
 
 //--------------------------------------------------------------------------
+
+//
+// DEFINES THE TILE ATTRIBUTE CHECKING CONVENTION (macros).
+//
+// DEFINE CUSTOM BIT-FLAG NAMES...
+//
+
+
+#define tf_SOLID							0x01
+#define tf_SPECIAL						0x02
+#define tf_EMBEDDED_KEY_COLOR			0x04
+
+#define TILE_FLAGS(tile)   (tinf[FLAGS+(tile)])
+
+#define GATE_KEY_COLOR(tile)		((unsigned char)(TILE_FLAGS(tile)>>4))
 
 #define CAT3D
 
@@ -51,6 +67,9 @@ extern	char far introscn;
 #define	CGAGR	1
 #define	EGAGR	2
 #define	VGAGR	3
+
+#define  EGA320GR	10					// MDM (GAMERS EDGE)
+#define  EGA640GR	11					// MDM (GAMERS EDGE)
 
 #define GRMODE	EGAGR
 
@@ -99,7 +118,7 @@ typedef	struct
 #include "ID_US.H"
 
 
-void	Quit (char *error);		// defined in user program
+void	Quit (char *error, ...);		// defined in user program
 
 //
 // replacing refresh manager with custom routines
@@ -116,7 +135,7 @@ void	Quit (char *error);		// defined in user program
 
 #define	UPDATETERMINATE	0x0301
 
-extern	unsigned	mapwidth,mapheight,tics;
+extern	unsigned	mapwidth,mapheight,tics,realtics;
 extern	boolean		compatability;
 
 extern	byte		*updateptr;

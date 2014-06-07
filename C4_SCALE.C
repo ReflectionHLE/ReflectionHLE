@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,15 +18,15 @@
 
 // C3_SCALE.C
 
-#include "C3_DEF.H"
+#include "DEF.H"
 #pragma hdrstop
 
 //const	unsigned	viewheight = 144;
 const	unsigned	screenbwide = 40;
 const	byte		BACKGROUNDPIX	=   5;
 
-unsigned		shapesize[MAXSCALE+1];
-t_compscale _seg *scaledirectory[MAXSCALE+1];
+unsigned		shapesize[NUMSCALEPICS];
+t_compscale _seg *scaledirectory[NUMSCALEPICS];
 t_compshape _seg *shapedirectory[NUMSCALEPICS];
 memptr			walldirectory[NUMSCALEWALLS];
 
@@ -57,7 +57,7 @@ void DeplanePic (int picnum)
 	width = pictable[picnum-STARTPICS].width;
 	height = pictable[picnum-STARTPICS].height;
 
-	if (width>64 || height!=64)
+	if (width>8 || height!=64)
 		Quit ("DePlanePic: Bad size shape");
 
 	memset (spotvis,BACKGROUNDPIX,sizeof(spotvis));
@@ -430,6 +430,10 @@ unsigned BuildCompShape (t_compshape _seg **finalspot)
 // copy the final shape to a properly sized buffer
 //
 	totalsize = FP_OFF(code);
+
+	if (totalsize >= (PAGELEN*2))
+		Quit("BuildCompShape(): Shape is too complex!");
+
 	MM_GetPtr ((memptr *)finalspot,totalsize);
 	_fmemcpy ((byte _seg *)(*finalspot),(byte _seg *)work,totalsize);
 //	MM_FreePtr (&(memptr)work);
@@ -459,6 +463,9 @@ static	long		longtemp;
 
 void ScaleShape (int xcenter, t_compshape _seg *compshape, unsigned scale)
 {
+	#define MAX_OBJ_SCALE (MAXSCALE)
+
+
 	t_compscale _seg *comptable;
 	unsigned	width,scalewidth;
 	int			x,pixel,lastpixel,pixwidth,min;
@@ -472,8 +479,10 @@ void ScaleShape (int xcenter, t_compshape _seg *compshape, unsigned scale)
 	scale = (scale+1)/2;
 	if (!scale)
 		return;								// too far away
-	if (scale>MAXSCALE)
-		scale = MAXSCALE;
+
+	if (scale>MAX_OBJ_SCALE)
+		scale = MAX_OBJ_SCALE;
+
 	comptable = scaledirectory[scale];
 
 	width = compshape->width;
@@ -481,6 +490,7 @@ void ScaleShape (int xcenter, t_compshape _seg *compshape, unsigned scale)
 
 	pixel = xcenter - scalewidth/2;
 	lastpixel = pixel+scalewidth-1;
+
 	if (pixel >= VIEWWIDTH || lastpixel < 0)
 		return;								// totally off screen
 

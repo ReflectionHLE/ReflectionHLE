@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 // C3_DRAW.C
 
-#include "C3_DEF.H"
+#include "DEF.H"
 #pragma hdrstop
 
 //#define DRAWEACH				// draw walls one at a time for debugging
@@ -61,8 +61,8 @@ const	unsigned	BASESCALE		= 32;
 // maximum possible distance seperating them (for scaling overflow)
 //
 
-unsigned screenloc[3]= {0x900,0x2000,0x3700};
-unsigned freelatch = 0x4e00;
+unsigned screenloc[3]= {PAGE1START,PAGE2START,PAGE3START};
+unsigned freelatch = FREESTART;
 
 boolean		fizzlein;
 
@@ -160,6 +160,7 @@ void	BuildTables (void);
 //==========================================================================
 
 
+#if 0
 /*
 ==================
 =
@@ -366,6 +367,8 @@ asm	xchg	bh,[es:di]	// load latches and write pixels
 
 }
 
+#endif
+
 //==========================================================================
 
 
@@ -435,41 +438,152 @@ void near ScaleOneWall (int xl, int xh)
 
 #endif
 
+// EAST / WEST WALLS
+//
 int	walllight1[NUMFLOORS] = {0,
-	WALL1LPIC,WALL2LPIC,WALL3LPIC,WALL4LPIC,WALL5LPIC,WALL6LPIC,WALL7LPIC,
-	WALL1LPIC,WALL2LPIC,WALL3LPIC,WALL4LPIC,WALL5LPIC,WALL6LPIC,WALL7LPIC,
-	EXPWALL1PIC,EXPWALL2PIC,EXPWALL3PIC,
-	RDOOR1PIC,RDOOR2PIC,RDOOR1PIC,RDOOR2PIC,
-	YDOOR1PIC,YDOOR2PIC,YDOOR1PIC,YDOOR2PIC,
-	GDOOR1PIC,GDOOR2PIC,GDOOR1PIC,GDOOR2PIC,
-	BDOOR1PIC,BDOOR2PIC,BDOOR1PIC,BDOOR2PIC};
+	W_WARP1EWPIC,
+	W_NEMPICEWPIC,W_PENTAEWPIC,W_ALTER_LFPIC,W_ALTER_RTPIC,
+	W_SUB1EWPIC,W_SUB2EWPIC,W_SUB3EWPIC,
 
+	W_TORCH1PIC,W_TORCH2PIC,
+	W_LSUB_STONEPIC,
+	W_BLOODY_LSUB_STONEPIC,
+	W_BREATH_LWALL1PIC,W_BREATH_LWALL2PIC,
+
+	EXPWALL1PIC,EXPWALL2PIC,EXPWALL3PIC,
+
+	W_WOOD_DOORWAYPIC,W_WOOD_DOORWAY_GLOWPIC,
+
+	W_WATER1EWPIC,W_DRAIN1EWPIC,
+	W_WATER2EWPIC,W_DRAIN2EWPIC,
+
+	W_WOODEN_DOORPIC,W_WOOD_DOOREWPIC,W_METAL_DOORPIC,W_GLOW_DOORPIC,
+
+	W_FINALEXITPIC,
+
+	W_WATER_EXP1PIC,W_WATER_EXP2PIC,W_WATER_EXP3PIC,
+
+	W_PRE_CHEATSPIC,W_CHEAT_WARPPIC,W_CHEAT_FREEZEPIC,W_SURFACE_PLAQPIC,
+
+	W_WATER_GATEEW1PIC,
+	WALL8LPIC,WALL9LPIC,WALL10DPIC,WALL11LPIC,WALL12LPIC,WALL13LPIC,WALL14LPIC,WALL15LPIC,
+	WALL16LPIC,WALL17LPIC,W_WINDOWEWPIC,WALL19LPIC,WALL20LPIC,WALL21LPIC,
+	WALL22LPIC,WALL23LPIC,WALL24LPIC,WALL25LPIC,WALL26LPIC,WALL27LPIC,
+	WALL28LPIC,WALL29LPIC,WALL30LPIC,WALL31LPIC,
+	W_BREATH_LWALL4PIC,W_BREATH_LWALL3PIC,
+	MAGE_STATUEPIC,ZOMBIE_STATUEPIC,EYE_STATUEPIC,NEM_STATUEPIC,
+	SKELETON_STATUEPIC,SPOOK_STATUEPIC,ORCH_STATUEPIC,
+	};
+
+// NORTH / SOUTH WALLS
+//
 int	walldark1[NUMFLOORS] = {0,
-	WALL1DPIC,WALL2DPIC,WALL3DPIC,WALL4DPIC,WALL5DPIC,WALL6DPIC,WALL7DPIC,
-	WALL1DPIC,WALL2DPIC,WALL3DPIC,WALL4DPIC,WALL5DPIC,WALL6DPIC,WALL7DPIC,
-	EXPWALL1PIC,EXPWALL2PIC,EXPWALL3PIC,
-	RDOOR1PIC,RDOOR2PIC,RDOOR1PIC,RDOOR2PIC,
-	YDOOR1PIC,YDOOR2PIC,YDOOR1PIC,YDOOR2PIC,
-	GDOOR1PIC,GDOOR2PIC,GDOOR1PIC,GDOOR2PIC,
-	BDOOR1PIC,BDOOR2PIC,BDOOR1PIC,BDOOR2PIC};
+	W_WARP1NSPIC,
+	W_NEMPICEWPIC,W_PENTANSPIC,1,1,
+	W_SUB1NSPIC,W_SUB2NSPIC,W_SUB3NSPIC,
 
+	W_TORCH1PIC,W_TORCH2PIC,
+	W_DSUB_STONEPIC,
+	W_BLOODY_DSUB_STONEPIC,
+	W_BREATH_DWALL1PIC,W_BREATH_DWALL2PIC,
+
+	EXPWALL1PIC,EXPWALL2PIC,EXPWALL3PIC,
+
+	W_WOOD_DOORWAYPIC,W_WOOD_DOORWAY_GLOWPIC,
+
+	W_WATER1NSPIC,W_DRAIN1NSPIC,
+	W_WATER2NSPIC,W_DRAIN2NSPIC,
+	W_WOODEN_DOORPIC,W_WOOD_DOORNSPIC,W_METAL_DOORPIC,W_GLOW_DOORPIC,
+
+	W_FINALEXITPIC,
+
+	W_WATER_EXP1PIC,W_WATER_EXP2PIC,W_WATER_EXP3PIC,
+
+	W_CHEAT_GODPIC,W_CHEAT_ITEMSPIC,W_POST_CHEATPIC,W_SURFACE_PLAQPIC,
+
+	W_WATER_GATENS1PIC,
+	WALL8DPIC,WALL9DPIC,WALL10LPIC,WALL11DPIC,WALL12DPIC,WALL13DPIC,WALL14DPIC,WALL15DPIC,
+	WALL16DPIC,WALL17DPIC,W_WINDOWNSPIC,WALL19DPIC,WALL20DPIC,WALL21DPIC,
+	WALL22DPIC,WALL23DPIC,WALL24DPIC,WALL25DPIC,WALL26DPIC,WALL27DPIC,
+	WALL28DPIC,WALL29DPIC,WALL30DPIC,WALL31DPIC,
+	W_BREATH_DWALL4PIC,W_BREATH_DWALL3PIC,
+	MAGE_STATUEPIC,ZOMBIE_STATUEPIC,EYE_STATUEPIC,NEM_STATUEPIC,
+	SKELETON_STATUEPIC,SPOOK_STATUEPIC,ORCH_STATUEPIC,
+	};
+
+// EAST / WEST WALLS
+//
 int	walllight2[NUMFLOORS] = {0,
-	WALL1LPIC,WALL2LPIC,WALL3LPIC,WALL4LPIC,WALL5LPIC,WALL6LPIC,WALL7LPIC,
-	WALL1LPIC,WALL2LPIC,WALL3LPIC,WALL4LPIC,WALL5LPIC,WALL6LPIC,WALL7LPIC,
-	EXPWALL1PIC,EXPWALL2PIC,EXPWALL3PIC,
-	RDOOR2PIC,RDOOR1PIC,RDOOR2PIC,RDOOR1PIC,
-	YDOOR2PIC,YDOOR1PIC,YDOOR2PIC,YDOOR1PIC,
-	GDOOR2PIC,GDOOR1PIC,GDOOR2PIC,GDOOR1PIC,
-	BDOOR2PIC,BDOOR1PIC,BDOOR2PIC,BDOOR1PIC};
+	W_WARP2EWPIC,
+	W_NEMPICEWPIC,W_PENTAEWPIC,W_ALTER_LFPIC,W_ALTER_RTPIC,
+	W_SUB1EWPIC,W_SUB2EWPIC,W_SUB3EWPIC,
 
+	W_TORCH2PIC,W_TORCH1PIC,
+	W_LSUB_STONEPIC,
+	W_BLOODY_LSUB_STONEPIC,
+	W_BREATH_LWALL2PIC,W_BREATH_LWALL1PIC,
+
+	EXPWALL2PIC,EXPWALL1PIC,EXPWALL3PIC,
+
+	W_WOOD_DOORWAYPIC,W_WOOD_DOORWAY_GLOWPIC,
+
+	W_WATER2EWPIC,W_DRAIN2EWPIC,
+	W_WATER1EWPIC,W_DRAIN1EWPIC,
+
+	W_WOODEN_DOORPIC,W_WOOD_DOOREWPIC,W_METAL_DOORPIC,W_GLOW_DOORPIC,
+
+	W_FINALEXITPIC,
+
+	W_WATER_EXP2PIC,W_WATER_EXP1PIC,W_WATER_EXP1PIC,
+
+	W_PRE_CHEATSPIC,W_CHEAT_WARPPIC,W_CHEAT_FREEZEPIC,W_SURFACE_PLAQPIC,
+
+	W_WATER_GATEEW2PIC,
+	WALL8LPIC,WALL9LPIC,WALL10DPIC,WALL11LPIC,WALL12LPIC,WALL13LPIC,WALL14LPIC,WALL15LPIC,
+	WALL16LPIC,WALL17LPIC,W_WINDOWEWPIC,WALL19LPIC,WALL20LPIC,WALL21LPIC,
+	WALL22LPIC,WALL23LPIC,WALL24LPIC,WALL25LPIC,WALL26LPIC,WALL27LPIC,
+	WALL28LPIC,WALL29LPIC,WALL30LPIC,WALL31LPIC,
+	W_BREATH_LWALL3PIC,W_BREATH_LWALL4PIC,
+	MAGE_STATUEPIC,ZOMBIE_STATUEPIC,EYE_STATUEPIC,NEM_STATUEPIC,
+	SKELETON_STATUEPIC,SPOOK_STATUEPIC,ORCH_STATUEPIC,
+	};
+
+// NORTH / SOUTH WALLS
+//
 int	walldark2[NUMFLOORS] = {0,
-	WALL1DPIC,WALL2DPIC,WALL3DPIC,WALL4DPIC,WALL5DPIC,WALL6DPIC,WALL7DPIC,
-	WALL1DPIC,WALL2DPIC,WALL3DPIC,WALL4DPIC,WALL5DPIC,WALL6DPIC,WALL7DPIC,
-	EXPWALL1PIC,EXPWALL2PIC,EXPWALL3PIC,
-	RDOOR2PIC,RDOOR1PIC,RDOOR2PIC,RDOOR1PIC,
-	YDOOR2PIC,YDOOR1PIC,YDOOR2PIC,YDOOR1PIC,
-	GDOOR2PIC,GDOOR1PIC,GDOOR2PIC,GDOOR1PIC,
-	BDOOR2PIC,BDOOR1PIC,BDOOR2PIC,BDOOR1PIC};
+	W_WARP2NSPIC,
+	W_NEMPICEWPIC,W_PENTANSPIC,1,1,
+	W_SUB1NSPIC,W_SUB2NSPIC,W_SUB3NSPIC,
+
+	W_TORCH2PIC,W_TORCH1PIC,
+	W_DSUB_STONEPIC,
+	W_BLOODY_DSUB_STONEPIC,
+	W_BREATH_DWALL2PIC,W_BREATH_DWALL1PIC,
+
+	EXPWALL2PIC,EXPWALL1PIC,EXPWALL3PIC,
+
+	W_WOOD_DOORWAYPIC,W_WOOD_DOORWAY_GLOWPIC,
+
+	W_WATER2NSPIC,W_DRAIN2NSPIC,
+	W_WATER1NSPIC,W_DRAIN1NSPIC,
+
+	W_WOODEN_DOORPIC,W_WOOD_DOORNSPIC,W_METAL_DOORPIC,W_GLOW_DOORPIC,
+
+	W_FINALEXITPIC,
+
+	W_WATER_EXP2PIC,W_WATER_EXP1PIC,W_WATER_EXP1PIC,
+
+	W_CHEAT_GODPIC,W_CHEAT_ITEMSPIC,W_POST_CHEATPIC,W_SURFACE_PLAQPIC,
+
+	W_WATER_GATENS2PIC,
+	WALL8DPIC,WALL9DPIC,WALL10LPIC,WALL11DPIC,WALL12DPIC,WALL13DPIC,WALL14DPIC,WALL15DPIC,
+	WALL16DPIC,WALL17DPIC,W_WINDOWNSPIC,WALL19DPIC,WALL20DPIC,WALL21DPIC,
+	WALL22DPIC,WALL23DPIC,WALL24DPIC,WALL25DPIC,WALL26DPIC,WALL27DPIC,
+	WALL28DPIC,WALL29DPIC,WALL30DPIC,WALL31DPIC,
+	W_BREATH_DWALL3PIC,W_BREATH_DWALL4PIC,
+	MAGE_STATUEPIC,ZOMBIE_STATUEPIC,EYE_STATUEPIC,NEM_STATUEPIC,
+	SKELETON_STATUEPIC,SPOOK_STATUEPIC,ORCH_STATUEPIC,
+	};
 
 /*
 =====================
@@ -499,6 +613,8 @@ void DrawVWall (walltype *wallptr)
 	int			traceangle,angle;
 	int			mapadd;
 	unsigned	lastpix,lastsource,lastwidth;
+
+	short mike;
 
 
 	if (wallptr->rightclip < wallptr->leftclip)
@@ -540,6 +656,10 @@ void DrawVWall (walltype *wallptr)
 	//
 	if (wallptr->side)
 	{	// east or west wall
+
+		if (wallptr->color == 1)
+			mike = 1;
+
 		if (animframe)
 			wallpic = walllight2[wallptr->color];
 		else
@@ -560,6 +680,10 @@ void DrawVWall (walltype *wallptr)
 	}
 	else
 	{	// north or south wall
+
+		if (wallptr->color == 1)
+			mike = 1;
+
 		if (animframe)
 			wallpic = walldark2[wallptr->color];
 		else
@@ -874,6 +998,65 @@ ansok:;
 
 #pragma warn +rvl
 
+#if 0
+/*
+=========================
+=
+= FixedAdd
+=
+= add two 16 bit fixed point numbers
+= to subtract, invert the sign of B before invoking
+=
+=========================
+*/
+
+fixed FixedAdd (fixed a, fixed b)
+{
+  fixed value;
+
+asm	mov	ax,[WORD PTR a]
+asm	mov	dx,[WORD PTR a+2]
+
+asm	mov	bx,[WORD PTR b]
+asm	mov	cx,[WORD PTR b+2]
+
+asm	or	dx,dx
+asm	jns	aok:		// negative?
+asm	and	dx,0x7fff
+asm	not	ax		// convert a from signed magnitude to 2's compl
+asm	not	dx
+asm	add	ax,1
+asm	adc	dx,0
+aok:
+
+asm	or	cx,cx
+asm	jns	bok:		// negative?
+asm	and	cx,0x7fff
+asm	not	bx		// convert b from signed magnitude to 2's compl
+asm	not	cx
+asm	add	bx,1
+asm	adc	cx,0
+bok:
+
+asm	add	ax,bx		// perform the addition
+asm	adc	dx,cx
+asm	jns	done
+
+asm	and	dx,0x7fff	// value was negative
+asm	not	ax		// back to signed magnitude
+asm	not	dx
+asm	add	ax,1
+asm	adc	dx,0
+
+done:
+
+asm	mov	[WORD PTR value],ax
+asm	mov	[WORD PTR value+2],dx
+
+  return value;
+}
+#endif
+
 //==========================================================================
 
 
@@ -1137,6 +1320,8 @@ void BuildTables (void)
 
 void ClearScreen (void)
 {
+	unsigned topcolor=*skycolor, bottomcolor=*groundcolor;
+
   //
   // clear the screen
   //
@@ -1150,9 +1335,10 @@ asm	mov	dx,40-VIEWWIDTH/8
 asm	mov	bl,VIEWWIDTH/16
 asm	mov	bh,CENTERY+1
 
-asm	xor	ax,ax
+asm	mov	ax,topcolor
 asm	mov	es,[screenseg]
 asm	mov	di,[bufferofs]
+asm	add	di,((SCREENWIDTH*VIEWY)+(VIEWX/8))
 
 toploop:
 asm	mov	cl,bl
@@ -1163,7 +1349,7 @@ asm	dec	bh
 asm	jnz	toploop
 
 asm	mov	bh,CENTERY+1
-asm	mov	ax,0x0808
+asm	mov	ax,bottomcolor
 
 bottomloop:
 asm	mov	cl,bl
@@ -1280,9 +1466,6 @@ void DrawScaleds (void)
 
 	for (obj = player->next;obj;obj=obj->next)
 	{
-		if (!obj->state->shapenum)
-			continue;
-
 		tilespot = &tilemap[0][0]+(obj->tilex<<6)+obj->tiley;
 		visspot = &spotvis[0][0]+(obj->tilex<<6)+obj->tiley;
 		//
@@ -1298,14 +1481,23 @@ void DrawScaleds (void)
 		|| ( *(visspot+64) && !*(tilespot+64) )
 		|| ( *(visspot+63) && !*(tilespot+63) ) )
 		{
-			obj->active = true;
+			if ((obj->active == noalways) || (obj->active == always))
+				obj->active = always;
+			else
+				obj->active = yes;
 			TransformActor (obj);
 			if (!obj->viewheight || obj->viewheight > VIEWWIDTH)
 				continue;			// too close or far away
 
+			if (!obj->state->shapenum)
+				continue;
+
 			*vislist++ = obj;
 			numvisable++;
 		}
+		else
+			if ((obj->active != always) && (obj->active != noalways))
+				obj->active = no;
 	}
 
 	if (vislist == &depthsort[0])
@@ -1362,6 +1554,7 @@ void CalcTics (void)
 	if (lasttimecount > TimeCount)
 		TimeCount = lasttimecount;		// if the game was paused a LONG time
 
+#if 0
 	if (DemoMode)					// demo recording and playback needs
 	{								// to be constant
 //
@@ -1372,15 +1565,16 @@ void CalcTics (void)
 		;
 		lasttimecount = oldtimecount + DEMOTICS;
 		TimeCount = lasttimecount + DEMOTICS;
-		tics = DEMOTICS;
+		realtics = tics = DEMOTICS;
 	}
 	else
+#endif
 	{
 //
 // non demo, so report actual time
 //
 		newtime = TimeCount;
-		tics = newtime-lasttimecount;
+		realtics = tics = newtime-lasttimecount;
 		lasttimecount = newtime;
 
 #ifdef FILEPROFILE
@@ -1396,6 +1590,9 @@ void CalcTics (void)
 			TimeCount -= (tics-MAXTICS);
 			tics = MAXTICS;
 		}
+
+		if (realtics>MAXREALTICS)
+			realtics = MAXREALTICS;
 	}
 }
 
@@ -1413,16 +1610,18 @@ void CalcTics (void)
 
 void	DrawHand (void)
 {
-	int	picnum;
+	#define HAND_X_POS	((VIEWWIDTH/16)-(10/2))		// "10" = hand width in bytes
+
+	#define picnum HAND1PICM
+
 	memptr source;
 	unsigned dest,width,height;
 
-	picnum = HAND1PICM;
-	if (gamestate.shotpower || boltsleft)
-		picnum += (((unsigned)TimeCount>>3)&1);
+//	if (gamestate.shotpower || boltsleft)
+//		picnum += (((unsigned)TimeCount>>3)&1);
 
 	source = grsegs[picnum];
-	dest = ylookup[VIEWHEIGHT-handheight]+12+bufferofs;
+	dest = ylookup[VIEWHEIGHT-handheight]+HAND_X_POS+bufferofs;			// 12
 	width = picmtable[picnum-STARTPICM].width;
 	height = picmtable[picnum-STARTPICM].height;
 

@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -799,7 +799,6 @@ asm	mov	ds,ax
 =============================================================================
 */
 
-
 /*
 ======================
 =
@@ -832,9 +831,9 @@ void CAL_SetupGrFile (void)
 // load ???dict.ext (huffman dictionary for graphics files)
 //
 
-	if ((handle = open(GREXT"DICT."EXTENSION,
+	if ((handle = open(GREXT"DICT."EXT,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
+		Quit ("Can't open "GREXT"DICT."EXT"!");
 
 	read(handle, &grhuffman, sizeof(grhuffman));
 	close(handle);
@@ -844,9 +843,9 @@ void CAL_SetupGrFile (void)
 //
 	MM_GetPtr (&(memptr)grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
 
-	if ((handle = open(GREXT"HEAD."EXTENSION,
+	if ((handle = open(GREXT"HEAD."EXT,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
+		Quit ("Can't open "GREXT"HEAD."EXT"!");
 
 	CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 
@@ -858,9 +857,9 @@ void CAL_SetupGrFile (void)
 //
 // Open the graphics file, leaving it open until the game is finished
 //
-	grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
+	grhandle = open(GREXT"GRAPH."EXT, O_RDONLY | O_BINARY);
 	if (grhandle == -1)
-		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
+		Quit ("Cannot open "GREXT"GRAPH."EXT"!");
 
 
 //
@@ -915,9 +914,9 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef MAPHEADERLINKED
-	if ((handle = open("MAPHEAD."EXTENSION,
+	if ((handle = open("MAPHEAD."EXT,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open MAPHEAD."EXTENSION"!");
+		Quit ("Can't open MAPHEAD."EXT"!");
 	length = filelength(handle);
 	MM_GetPtr (&(memptr)tinf,length);
 	CA_FarRead(handle, tinf, length);
@@ -932,13 +931,13 @@ void CAL_SetupMapFile (void)
 // open the data file
 //
 #ifdef MAPHEADERLINKED
-	if ((maphandle = open("GAMEMAPS."EXTENSION,
+	if ((maphandle = open("GAMEMAPS."EXT,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open GAMEMAPS."EXTENSION"!");
+		Quit ("Can't open GAMEMAPS."EXT"!");
 #else
-	if ((maphandle = open("MAPTEMP."EXTENSION,
+	if ((maphandle = open("MAPTEMP."EXT,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open MAPTEMP."EXTENSION"!");
+		Quit ("Can't open MAPTEMP."EXT"!");
 #endif
 }
 
@@ -962,9 +961,9 @@ void CAL_SetupAudioFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef AUDIOHEADERLINKED
-	if ((handle = open("AUDIOHED."EXTENSION,
+	if ((handle = open("AUDIOHED."EXT,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open AUDIOHED."EXTENSION"!");
+		Quit ("Can't open AUDIOHED."EXT"!");
 	length = filelength(handle);
 	MM_GetPtr (&(memptr)audiostarts,length);
 	CA_FarRead(handle, (byte far *)audiostarts, length);
@@ -979,13 +978,13 @@ void CAL_SetupAudioFile (void)
 // open the data file
 //
 #ifndef AUDIOHEADERLINKED
-	if ((audiohandle = open("AUDIOT."EXTENSION,
+	if ((audiohandle = open("AUDIOT."EXT,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open AUDIOT."EXTENSION"!");
+		Quit ("Can't open AUDIOT."EXT"!");
 #else
-	if ((audiohandle = open("AUDIO."EXTENSION,
+	if ((audiohandle = open("AUDIO."EXT,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open AUDIO."EXTENSION"!");
+		Quit ("Can't open AUDIO."EXT"!");
 #endif
 }
 
@@ -1009,14 +1008,37 @@ void CA_Startup (void)
 	profilehandle = open("PROFILE.TXT", O_CREAT | O_WRONLY | O_TEXT);
 #endif
 
+// MDM begin - (GAMERS EDGE)
+//
+	if (!FindFile("AUDIO."EXT,NULL,2))
+		Quit("CA_Startup(): Can't find audio files.");
+//
+// MDM end
+
+#ifndef NOAUDIO
+	CAL_SetupAudioFile ();
+#endif
+
+// MDM begin - (GAMERS EDGE)
+//
+	if (!FindFile("GAMEMAPS."EXT,NULL,2))
+		Quit("CA_Startup(): Can't find level files.");
+//
+// MDM end
+
 #ifndef NOMAPS
 	CAL_SetupMapFile ();
 #endif
+
+// MDM begin - (GAMERS EDGE)
+//
+	if (!FindFile("EGAGRAPH."EXT,NULL,2))
+		Quit("CA_Startup(): Can't find graphics files.");
+//
+// MDM end
+
 #ifndef NOGRAPHICS
 	CAL_SetupGrFile ();
-#endif
-#ifndef NOAUDIO
-	CAL_SetupAudioFile ();
 #endif
 
 	mapon = -1;
@@ -1076,6 +1098,13 @@ void CA_CacheAudioChunk (int chunk)
 		MM_SetPurge (&(memptr)audiosegs[chunk],0);
 		return;							// allready in memory
 	}
+
+// MDM begin - (GAMERS EDGE)
+//
+	if (!FindFile("AUDIO."EXT,NULL,2))
+		Quit("CA_CacheAudioChunk(): Can't find audio files.");
+//
+// MDM end
 
 //
 // load the chunk into a buffer, either the miscbuffer if it fits, or allocate
@@ -1537,7 +1566,6 @@ void CAL_ReadGrChunk (int chunk)
 		MM_FreePtr(&bigbufferseg);
 }
 
-
 /*
 ======================
 =
@@ -1561,6 +1589,13 @@ void CA_CacheGrChunk (int chunk)
 		MM_SetPurge (&grsegs[chunk],0);
 		return;							// allready in memory
 	}
+
+// MDM begin - (GAMERS EDGE)
+//
+	if (!FindFile("EGAGRAPH."EXT,NULL,2))
+		Quit("CA_CacheGrChunk(): Can't find graphics files.");
+//
+// MDM end
 
 //
 // load the chunk into a buffer, either the miscbuffer if it fits, or allocate
@@ -1620,6 +1655,14 @@ void CA_CacheMap (int mapnum)
 	memptr	buffer2seg;
 	long	expanded;
 #endif
+
+
+// MDM begin - (GAMERS EDGE)
+//
+	if (!FindFile("GAMEMAPS."EXT,NULL,2))
+		Quit("CA_CacheMap(): Can't find level files.");
+//
+// MDM end
 
 
 //
@@ -2029,6 +2072,13 @@ void CA_CacheMarks (char *title)
 
 	if (!numcache)			// nothing to cache!
 		return;
+
+// MDM begin - (GAMERS EDGE)
+//
+	if (!FindFile("EGAGRAPH."EXT,NULL,2))
+		Quit("CA_CacheMarks(): Can't find graphics files.");
+//
+// MDM end
 
 	if (dialog)
 	{

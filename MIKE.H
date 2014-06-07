@@ -30,36 +30,20 @@
 =============================================================================
 */
 
-//
-// MAX_BASE - represents 100 percent in 1st base
-// MAX_PERC - represents 100 percent in 2nd base
-// PERC - fractional portion of 2nd base
-// SCALE - arbitrary scaling value (bigger number means more accurate)
-//
-// ex: PERCENTAGE(320,16,8,8)    returns  160
-//
-//
-#define PERCENTAGE(MAX_BASE,MAX_PERC,PERC,SCALE) ((unsigned)(MAX_BASE*((PERC<<SCALE)/MAX_PERC))>>SCALE)
-
 #define PI	3.141592657
 
+#define ROTATE_SPEED		(6)
 
-#define SIZE_TEST			0 //50000			// DO NOT USE!! ARGH!
+#define FL_QUICK 0x01
 
-#define FL_QUICK 			0x01
-#define FL_NOMEMCHECK	0x02
+#define FL_CLEAR		0x01
 
-#define FL_CLEAR		(FL_QUICK|FL_NOMEMCHECK)
-
-#define GEM_SHIFT		2
-#define FL_RGEM		0x04
-#define FL_GGEM		0x08
-#define FL_BGEM		0x10
-#define FL_YGEM		0x20
-#define FL_PGEM		0x40
-#define FL_DEAD		0x80
-
-
+#define GEM_SHIFT		1
+#define FL_RGEM		0x02
+#define FL_GGEM		0x04
+#define FL_BGEM		0x08
+#define FL_YGEM		0x10
+#define FL_PGEM		0x20
 
 #define MAXBOLTS		10
 #define MAXNUKES		10
@@ -84,8 +68,8 @@
 
 #define RADAR_RADIUS			17
 #define RADAR_RADIUS_NSEW	15
-#define RADAR_X_IRADIUS		(113/5)
-#define RADAR_Y_IRADIUS		(113/7)
+#define RADAR_X_IRADIUS		(110/5)
+#define RADAR_Y_IRADIUS		(110/7)
 #define RADAR_ICON_CENTER	4						// Center offset into icon.
 
 #define NAMESTART	180
@@ -96,6 +80,7 @@
 #define CANT_OPEN_CODE		0xfd
 #define EXP_WALL_CODE		0xfc
 
+#define WALL_SKELETON_CODE 6
 
 #define UNMARKGRCHUNK(chunk)	(grneeded[chunk]&=~ca_levelbit)
 
@@ -104,12 +89,12 @@
 #define EXPWALLSTART	8
 #define NUMEXPWALLS		7
 #define WALLEXP			15
-#define WATEREXP			29
-#define NUMFLOORS		71
 
-#define NUMLATCHPICS	 (FIRSTWALLPIC-FIRSTLATCHPIC) //+5
-#define NUMSCALEPICS	 (FIRSTWALLPIC-FIRSTSCALEPIC) //+5
-#define NUMSCALEWALLS (LASTWALLPIC-FIRSTWALLPIC) //+5
+#define NUMFLOORS		62+5
+
+#define NUMLATCHPICS	 (FIRSTWALLPIC-FIRSTLATCHPIC)+5
+#define NUMSCALEPICS	 (FIRSTWALLPIC-FIRSTSCALEPIC)+5
+#define NUMSCALEWALLS (LASTWALLPIC-FIRSTWALLPIC)+5
 
 
 #define FLASHCOLOR	12
@@ -135,7 +120,6 @@
 #define MINDIST		(2*GLOBAL1/5)
 #define FOCALLENGTH	(TILEGLOBAL)	// in global coordinates
 
-
 #define ANGLES		360		// must be divisable by 4
 
 #define MAPSIZE		64		// maps are 64*64 max
@@ -153,62 +137,57 @@
 #define	MAXSCALE	(VIEWWIDTH/2)
 
 
-#define MAXBODY		100
+#define MAXBODY			64
 #define MAXSHOTPOWER	56
 
 #define SCREEN1START	0
 #define SCREEN2START	8320
 
-#define STATUSLEN			0xc80
-#define PAGELEN			0x1700
+//#define STATUallptr);
+void	TraceRay (unsigned angle);
+fixed	FixedByFrac (fixed a, fixed b);
+void	TransformPoint (fixed gx, fixed gy, int *screenx, unsigned *screenheight);
+fixed	TransformX (fixed gx, fixed gy);
+int	FollowTrace (fixed tracex, fixed tracey, long deltax, long deltay, int max);
+void	ForwardTrace (void);
+int	FinishWall (void);
+int	TurnClockwise (void);
+int	TurnCounterClockwise (void);
+void	FollowWall (void);
 
-#define PAGE1START	STATUSLEN
-#define PAGE2START	(PAGE1START+PAGELEN)
-#define PAGE3START	(PAGE2START+PAGELEN)
-#define FREESTART		(PAGE3START+PAGELEN)
-
-#define PIXRADIUS		512
-
-#define STATUSLINES		(200-VIEWHEIGHT)
-
-enum bonusnumbers {B_BOLT,B_NUKE,B_POTION,B_RKEY,B_YKEY,B_GKEY,B_BKEY,B_SCROLL1,
- B_SCROLL2,B_SCROLL3,B_SCROLL4,B_SCROLL5,B_SCROLL6,B_SCROLL7,B_SCROLL8,
- B_GOAL,B_CHEST,B_RGEM,B_GGEM,B_BGEM,B_YGEM,B_PGEM,B_RKEY2};
-
-
-#define MAX_DOOR_STORAGE 5
-
-#define GEM_DELAY_TIME	(120*60)
-
-#define ROTATE_SPEED		(6)
-
-#define WALL_SKELETON_CODE 6
-
-#define MAXREALTICS (2*60)
-
-#define MAXFREEZETIME			(100*30)				// 50 secs (100 half)
-extern	boolean EASYMODEON;
+void	NewScene (void);
+void	BuildTables (void);
 
 
 /*
 =============================================================================
 
-						   GLOBAL TYPES
+						 C3_SCALE DEFINITIONS
 
 =============================================================================
 */
 
-enum {BLANKCHAR=9,BOLTCHAR,NUKECHAR,POTIONCHAR,KEYCHARS,SCROLLCHARS=17,
-	NUMBERCHARS=25};
 
-typedef long fixed;
-
-typedef struct {int x,y;} tilept;
-typedef struct {fixed x,y;} globpt;
+#define COMPSCALECODESTART	(65*6)		// offset to start of code in comp scaler
 
 typedef struct
 {
-  int	x1,x2,leftclip,rightclip;// first pixel of wall (may not be visable)
+	unsigned	codeofs[65];
+	unsigned	start[65];
+	unsigned	width[65];
+	byte		code[];
+}	t_compscale;
+
+typedef struct
+{
+	unsigned	width;
+	unsigned	codeofs[64];
+}	t_compshape;
+
+
+extern unsigned	scaleblockwidth,
+		scaleblockheight,
+		scalet pixel of wall (may not be visable)
   unsigned	height1,height2,color,walllength,side;
 	long	planecoord;
 } walltype;
@@ -216,8 +195,8 @@ typedef struct
 typedef enum
   {nothing,playerobj,bonusobj,orcobj,batobj,skeletonobj,trollobj,demonobj,
   mageobj,pshotobj,bigpshotobj,mshotobj,inertobj,bounceobj,grelmobj,
-  gateobj,zombieobj,spookobj,wetobj,expobj,eyeobj,wallskelobj,eshotobj,
-  gshotobj,reddemonobj,freezeobj,solidobj} classtype;
+  gateobj,zombieobj,spookobj,wetobj,expobj,eyeobj,eshotobj,wallskelobj,
+  solidobj} classtype;
 
 typedef enum {north,east,south,west,northeast,southeast,southwest,
 		  northwest,nodir} dirtype;		// a catacombs 2 carryover
@@ -231,8 +210,6 @@ typedef struct	statestruct
 	struct	statestruct	*next;
 } statetype;
 
-#define of_shootable		0x01
-#define of_damagedone	0x02
 
 typedef struct objstruct
 {
@@ -241,8 +218,8 @@ typedef struct objstruct
   classtype	obclass;
   statetype	*state;
 
-  unsigned char flags;
-//  boolean	tileobject;		// true if entirely inside one tile
+  boolean	shootable;
+  boolean	tileobject;		// true if entirely inside one tile
 
   long		distance;
   dirtype	dir;
@@ -264,13 +241,8 @@ typedef struct objstruct
 
 
 typedef	enum	{ex_stillplaying,ex_died,ex_warped,ex_resetgame
-	,ex_loadedgame,ex_victorious,ex_turning,ex_abort} exittype;
+	,ex_loadedgame,ex_victorious,ex_abort} exittype;
 
-
-typedef enum {S_NONE,     S_HELP,    S_SND,     S_SAVING,   S_RESTORING,
-			S_JOYSTICK, S_RETREAT, S_ADVANCE, S_SIDESTEP, S_QTURN,
-			S_MISSLE,   S_ZAPPER,  S_XTER,    S_CURING,   S_READ,
-			S_VIEWING,  S_ITEMDES,  S_DAMAGE,  S_TURN,    S_TIMESTOP} status_flags;
 
 typedef struct {
 	char x,y;
@@ -280,21 +252,17 @@ typedef struct {
 typedef struct {
 	char x,y;
 	short angle;
-	doorinfo doors[MAX_DOOR_STORAGE];
+//	doorinfo doors[MAX_DOOR_STORAGE];
 } levelinfo;
 
 typedef	struct
 {
 	int		difficulty;
 	int		mapon;
-	int		bolts,nukes,potions,keys[4],scrolls[8];
-
-	int		gems[5];				// "int allgems[5]" is used for 1:1 comparison
-										// in play loop for radar... CHANGE IT, TOO!
-
+	int		bolts,nukes,potions,keys[4],scrolls[8],gems[5];
 	long	score;
 	int		body,shotpower;
-//	levelinfo levels[NUMLEVELS];
+	levelinfo levels[NUMLEVELS];
 } gametype;
 
 /*
@@ -321,7 +289,7 @@ boolean	LoadTheGame(int file);
 void ResetGame(void);
 void ShutdownId (void);
 void InitGame (void);
-void Quit (char *error, ...);
+void Quit (char *error);
 void TEDDeath(void);
 void DemoLoop (void);
 void SetupScalePic (unsigned picnum);
@@ -352,7 +320,7 @@ extern	unsigned	textstarts[27];
 void ScanInfoPlane (void);
 void ScanText (void);
 void SetupGameLevel (void);
-void Victory (boolean playsounds);
+void Victory (void);
 void Died (void);
 void NormalScreen (void);
 void DrawPlayScreen (void);
@@ -375,11 +343,11 @@ void GameLoop (void);
 #define BGF_NIGHT					0x01			// it is officially night
 #define BGF_NOT_LIGHTNING		0x02			// lightning flash has ended
 
-extern byte BGFLAGS,bcolor;
+extern byte BGFLAGS;
 
 extern unsigned *skycolor,*groundcolor;
 
-extern	ControlInfo	control;
+extern	ControlInfo	c;
 extern	boolean		running,slowturn;
 
 extern	int			bordertime;
@@ -397,14 +365,8 @@ extern	byte		update[];
 extern	boolean		godmode,singlestep;
 extern	int			extravbls;
 
-extern int objectcount;
 extern	int			mousexmove,mouseymove;
 extern	int			pointcount,pointsleft;
-extern	status_flags    status_flag;
-extern  int             status_delay;
-
-extern 	objtype 		dummyobj;
-extern 	short 		BeepTime;				//
 
 
 void CenterWindow(word w,word h);
@@ -418,8 +380,8 @@ void RemoveObj (objtype *gone);
 void PollControlls (void);
 void PlayLoop (void);
 void InitBgChange(short stimer, unsigned *scolors, short gtimer, unsigned *gcolors, byte flag);
+char GetKeyChoice(char *choices,boolean clear);
 
-void DisplayStatus (status_flags *stat_flag);
 
 /*
 =============================================================================
@@ -429,17 +391,8 @@ void DisplayStatus (status_flags *stat_flag);
 =============================================================================
 */
 
-//void SpawnNewObj (unsigned x, unsigned y, statetype *state, unsigned size);
-//void SpawnNewObjFrac (long x, long y, statetype *state, unsigned size);
-
-void Internal_SpawnNewObj (unsigned x, unsigned y, statetype *state, unsigned size,boolean UseDummy);
-void Internal_SpawnNewObjFrac (long x, long y, statetype *state, unsigned size,boolean UseDummy);
-
-#define DSpawnNewObj(x, y, state, size)				Internal_SpawnNewObj(x,y,state,size,true)
-#define SpawnNewObj(x, y, state, size)					Internal_SpawnNewObj(x,y,state,size,false)
-#define SpawnNewObjFrac(x, y, state, size,Dummy)	Internal_SpawnNewObjFrac(x, y, state, size,false)
-#define DSpawnNewObjFrac(x, y, state, size)			Internal_SpawnNewObjFrac(x, y, state, size,true)
-
+void SpawnNewObj (unsigned x, unsigned y, statetype *state, unsigned size);
+void SpawnNewObjFrac (long x, long y, statetype *state, unsigned size);
 boolean CheckHandAttack (objtype *ob);
 void T_DoDamage (objtype *ob);
 boolean Walk (objtype *ob);
@@ -547,44 +500,28 @@ void	BuildTables (void);
 
 
 /*
-=============================================================================
-
-						 C3_SCALE DEFINITIONS
-
-=============================================================================
-*/
-
-
-#define COMPSCALECODESTART	(65*6)		// offset to start of code in comp scaler
-
-typedef struct
-{
-	unsigned	codeofs[65];
-	unsigned	start[65];
-	unsigned	width[65];
-	byte		code[];
-}	t_compscale;
-
-typedef struct
-{
-	unsigned	width;
-	unsigned	codeofs[64];
-}	t_compshape;
-
-
-extern unsigned	scaleblockwidth,
-		scaleblockheight,
-		scaleblockdest;
+===============================tarted% " TimerDelay25
+   TimerDelay10
+  pcLastSample  	alNoCheck%  pcLengthLeft  	SDL_Delayp alSoundq  
+SDL_ShutPCr  alFXReg
+  	pcarrierss  	modifierst  SoundNumber
+  alBlock
+  SDL_StartALu vSDL_CleanALv >	LocalTime  
+SDL_ShutALw pcSoundx  SDL_ALSoundServicey  TimerDivisor   
+MusicGroup/      
+AdLibSound byteSMMode'size_t
+	ptrdiff_tSoundCommon
+soundnames+ActiveTrackZlongwordSDMode#fpos_tPCSoundScanCoblockdest;
 
 extern	byte	plotpix[8];
 extern	byte	bitmasks1[8][8];
 extern	byte	bitmasks2[8][8];
 
 
-extern	t_compscale _seg *scaledirectory[NUMSCALEPICS];
+extern	t_compscale _seg *scaledirectory[MAXSCALE+1];
 extern	t_compshape _seg *shapedirectory[NUMSCALEPICS];
 extern	memptr			walldirectory[NUMSCALEWALLS];
-extern	unsigned	shapesize[NUMSCALEPICS];
+extern	unsigned	shapesize[MAXSCALE+1];
 
 void 		DeplanePic (int picnum);
 void ScaleShape (int xcenter, t_compshape _seg *compshape, unsigned scale);
@@ -621,18 +558,23 @@ void	ScaleWalls (void);
 
 #define MAXHANDHEIGHT	72
 
+extern	statetype s_pshot1;
+extern	statetype s_pshot2;
+
 extern statetype s_pshot_exp1;
 extern statetype s_pshot_exp2;
 extern statetype s_pshot_exp3;
 
 extern	long	lastnuke;
-extern   int lasttext;
 extern	int		handheight;
-extern	int		boltsleft,bolttimer;
+extern	int		boltsleft;
 extern short RadarXY[][3];
 
+void DrawText (boolean draw_text_whether_it_needs_it_or_not);
+char DisplayMsg(char *text,char *choices);
+
 extern short RotateAngle;
-extern short FreezeTime;
+extern boolean FreezeTime;
 
 //void FaceDir(short x, short y, boolean StopTime);
 //short CalcAngle(short dx, short dy);
@@ -642,15 +584,6 @@ void RotateView();
 void InitRotate(short DestAngle);
 short FaceDoor(short x, short y);
 
-char DisplayMsg(char *text,char *choices);
-char DisplaySMsg(char *text,char *choices);
-
-extern statetype s_explode;
-
-void SpawnExplosion(fixed x, fixed y,short Delay);
-void T_ExpThink(objtype *obj);
-void SpawnBigExplosion(fixed x, fixed y, short Delay, fixed Range);
-
 
 /*
 =============================================================================
@@ -659,9 +592,6 @@ void SpawnBigExplosion(fixed x, fixed y, short Delay, fixed Range);
 
 =============================================================================
 */
-
-int EasyHitPoints(int NrmHitPts);
-int EasyDoDamage(int Damage);
 
 extern short zombie_base_delay;
 
@@ -700,11 +630,6 @@ extern	statetype s_batdie1;
 
 extern	statetype s_zombie_death1;
 extern	statetype s_zombie_ouch;
-
-extern statetype s_zombie_rise1;
-extern statetype s_zombie_rise2;
-extern statetype s_zombie_rise3;
-extern statetype s_zombie_rise4;
 
 extern statetype s_spook0_1;
 extern statetype s_spook0_2;
@@ -783,17 +708,12 @@ extern statetype s_wet_die3;
 extern statetype s_wet_die4;
 extern statetype s_wet_die5;
 
-extern	statetype s_obj_gate1;
-extern	statetype s_obj_gate2;
-extern	statetype s_obj_gate3;
-extern	statetype s_obj_gate4;
 
 extern statetype s_eye_pause;
 
 extern statetype s_eye_1;
 extern statetype s_eye_2;
 extern statetype s_eye_3;
-extern statetype s_eye_4;
 
 //statetype s_eye_attack1 = {SKELETON_ATTACK_1PIC,20,NULL,&s_eye_attack2};
 //statetype s_eye_attack2 = {SKELETON_ATTACK_2PIC,10,T_DoDamage,&s_eye_attack3};
@@ -809,8 +729,8 @@ extern statetype s_eye_die3;
 extern	statetype s_mshot1;
 extern	statetype s_mshot2;
 
-extern statetype s_bonus_die;
+extern	statetype s_obj_gate1;
+extern	statetype s_obj_gate2;
+extern	statetype s_obj_gate3;
+extern	statetype s_obj_gate4;
 
-extern	statetype s_red_demonouch;
-
-extern	statetype s_red_demondie1;

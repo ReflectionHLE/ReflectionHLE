@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 // C3_WIZ.C
 
-#include "C3_DEF.H"
+#include "DEF.H"
 #pragma hdrstop
 
 /*
@@ -37,7 +37,7 @@
 #define NUMBOLTS	10
 #define BOLTTICS	6
 
-#define STATUSCOLOR	4
+#define STATUSCOLOR	8
 #define TEXTCOLOR	14
 
 #define SIDEBARWIDTH	5
@@ -45,27 +45,25 @@
 #define BODYLINE    8
 #define POWERLINE	80
 
-#define SPECTILESTART	18
-
+#define SPECTILESTART	0			// 18
 
 #define SHOTDAMAGE		1
 #define BIGSHOTDAMAGE	3
 
 
 #define PLAYERSPEED	5120
-#define RUNSPEED	8192
+#define RUNSPEED	(8192<<1)
 
 #define SHOTSPEED	10000
 
-#define LASTWALLTILE	17
-#define LASTSPECIALTILE	37
+//#define LASTWALLTILE	47
+//#define LASTSPECIALTILE	37
 
-#define FIRETIME	4	// DEBUG 60
+#define LASTTILE  (LASTWALLPIC-FIRSTWALLPIC)							// 47
+
+#define FIRETIME	2
 
 #define HANDPAUSE	60
-
-#define COMPASSX	33
-#define COMPASSY	0
 
 /*
 =============================================================================
@@ -76,8 +74,14 @@
 */
 
 long		lastnuke,lasthand;
+int			lasttext;
 int			handheight;
-int			boltsleft;
+int			boltsleft,bolttimer;
+short RadarXY[MAX_RADAR_BLIPS][3]={-1,-1,-1};
+short radarx=RADARX,radary=RADARY,radar_xcenter=RADAR_XCENTER,radar_ycenter=RADAR_YCENTER;
+int key_x[4]={20,23,23,20},key_y[4]={30,57,30,57};
+
+boolean redraw_gems,button0down;
 
 /*
 =============================================================================
@@ -87,15 +91,24 @@ int			boltsleft;
 =============================================================================
 */
 
-int			lasttext,lastcompass;
-int			bolttimer;
+int			lastradar;
 unsigned	lastfiretime;
 
 int	strafeangle[9] = {0,90,180,270,45,135,225,315,0};
 
+short RotateAngle = -1;				// -1 == No Angle to turn to...
+short FreezeTime = 0;				// Stops all think (except player)
+short RotateSpeed;					// Speed (and dir) to rotate..
+
+short turntime = 0;					// accumulated time for fast turning..
 
 //===========================================================================
 
+void CalcBounds(objtype *ob);
+boolean VerifyGateExit(void);
+void DrawNSEWIcons(void);
+void DrawGems(void);
+void DrawRadar (void);
 void DrawChar (unsigned x, unsigned y, unsigned tile);
 void RedrawStatusWindow (void);
 void GiveBolt (void);
@@ -108,10 +121,9 @@ void GiveKey (int keytype);
 void TakeKey (int keytype);
 void GiveScroll (int scrolltype,boolean show);
 void ReadScroll (int scroll);
-void GivePoints (int points);
-void DrawLevelNumber (int number);
-void DrawText (void);
-void DrawBars (void);
+void DrawScrolls(void);
+
+void DrawNum(short x,short y,short value,short maxdigits);
 
 //----------
 
@@ -122,12 +134,13 @@ void CastNuke (void);
 void DrinkPotion (void);
 
 //----------
+void DrawHealth(void);
 
 void SpawnPlayer (int tilex, int tiley, int dir);
 void Thrust (int angle, unsigned speed);
 void T_Player (objtype *ob);
 
-void AddPoints (int points);
+//void AddPoints (int points);
 
 void ClipMove (objtype *ob, long xmove, long ymove);
 boolean ShotClipMove (objtype *ob, long xmove, long ymove);
@@ -195,35 +208,21 @@ asm	mov	ds,ax
 
 void RedrawStatusWindow (void)
 {
-	int	i,j,x;
+	short keytype;
 
-	DrawLevelNumber (gamestate.mapon);
-	lasttext = -1;
-	lastcompass = -1;
+	EGABITMASK(0xff);
+	for (keytype=0; keytype<4; keytype++)
+		DrawNum(key_x[keytype],key_y[keytype],gamestate.keys[keytype],2);
+	DrawNum(17,54,gamestate.potions,2);
+	DrawNum(17,36,gamestate.nukes,2);
+	DrawNum(17,18,gamestate.bolts,2);
 
-	j = gamestate.bolts < SHOWITEMS ? gamestate.bolts : SHOWITEMS;
-	for (i=0;i<j;i++)
-		DrawChar(7+i,20,BOLTCHAR);
-	j = gamestate.nukes < SHOWITEMS ? gamestate.nukes : SHOWITEMS;
-	for (i=0;i<j;i++)
-		DrawChar(7+i,30,NUKECHAR);
-	j = gamestate.potions < SHOWITEMS ? gamestate.potions : SHOWITEMS;
-	for (i=0;i<j;i++)
-		DrawChar(7+i,40,POTIONCHAR);
-
-	x=24;
-	for (i=0;i<4;i++)
-		for (j=0;j<gamestate.keys[i];j++)
-			DrawChar(x++,20,KEYCHARS+i);
-
-	x=24;
-	for (i=0;i<8;i++)
-		if (gamestate.scrolls[i])
-			DrawChar(x++,30,SCROLLCHARS+i);
-
-	AddPoints(0);
-
-	DrawBars ();
+	DrawHealth();
+	DrawRadar();
+	EGAWRITEMODE(0);
+	DrawGems();
+	DrawScrolls();
+	redraw_gems = false;
 }
 
 
@@ -239,9 +238,11 @@ void RedrawStatusWindow (void)
 
 void GiveBolt (void)
 {
+	if (gamestate.bolts == 99)
+		return;
+
 	SD_PlaySound (GETBOLTSND);
-	if (++gamestate.bolts<=9)
-		DrawChar(6+gamestate.bolts,20,BOLTCHAR);
+	DrawNum(17,18,++gamestate.bolts,2);
 }
 
 
@@ -256,8 +257,7 @@ void GiveBolt (void)
 void TakeBolt (void)
 {
 	SD_PlaySound (USEBOLTSND);
-	if (--gamestate.bolts<=9)
-		DrawChar(7+gamestate.bolts,20,BLANKCHAR);
+	DrawNum(17,18,--gamestate.bolts,2);
 }
 
 //===========================================================================
@@ -272,9 +272,11 @@ void TakeBolt (void)
 
 void GiveNuke (void)
 {
+	if (gamestate.nukes == 99)
+		return;
+
 	SD_PlaySound (GETNUKESND);
-	if (++gamestate.nukes<=9)
-		DrawChar(6+gamestate.nukes,30,NUKECHAR);
+	DrawNum(17,36,++gamestate.nukes,2);
 }
 
 
@@ -289,8 +291,7 @@ void GiveNuke (void)
 void TakeNuke (void)
 {
 	SD_PlaySound (USENUKESND);
-	if (--gamestate.nukes<=9)
-		DrawChar(7+gamestate.nukes,30,BLANKCHAR);
+	DrawNum(17,36,--gamestate.nukes,2);
 }
 
 //===========================================================================
@@ -305,9 +306,11 @@ void TakeNuke (void)
 
 void GivePotion (void)
 {
+	if (gamestate.potions == 99)
+		return;
+
 	SD_PlaySound (GETPOTIONSND);
-	if (++gamestate.potions<=9)
-		DrawChar(6+gamestate.potions,40,POTIONCHAR);
+	DrawNum(17,54,++gamestate.potions,2);
 }
 
 
@@ -322,8 +325,7 @@ void GivePotion (void)
 void TakePotion (void)
 {
 	SD_PlaySound (USEPOTIONSND);
-	if (--gamestate.potions<=9)
-		DrawChar(7+gamestate.potions,40,BLANKCHAR);
+	DrawNum(17,54,--gamestate.potions,2);
 }
 
 //===========================================================================
@@ -340,14 +342,11 @@ void GiveKey (int keytype)
 {
 	int	i,j,x;
 
+	if (gamestate.keys[keytype] == 99)
+		return;
+
 	SD_PlaySound (GETKEYSND);
-	gamestate.keys[keytype]++;
-
-	x=24;
-	for (i=0;i<4;i++)
-		for (j=0;j<gamestate.keys[i];j++)
-			DrawChar(x++,20,KEYCHARS+i);
-
+	DrawNum(key_x[keytype],key_y[keytype],++gamestate.keys[keytype],2);
 }
 
 
@@ -362,16 +361,81 @@ void GiveKey (int keytype)
 void TakeKey (int keytype)
 {
 	int	i,j,x;
+	char *key_colors[] = {"a RED key",
+								 "a YELLOW key",
+								 "a GREEN key",
+								 "a BLUE key"};
+
 
 	SD_PlaySound (USEKEYSND);
-	gamestate.keys[keytype]--;
+	DrawNum(key_x[keytype],key_y[keytype],--gamestate.keys[keytype],2);
+	displayofs = bufferofs = screenloc[screenpage];
+	CenterWindow(20,5);
+	US_CPrint("\nYou use\n");
+	US_CPrint(key_colors[keytype]);
+	VW_UpdateScreen();
+	VW_WaitVBL(120);
+}
 
-	x=24;
-	for (i=0;i<4;i++)
-		for (j=0;j<gamestate.keys[i];j++)
-			DrawChar(x++,20,KEYCHARS+i);
 
-	DrawChar(x,20,BLANKCHAR);
+//===========================================================================
+
+/*
+===============
+=
+= GiveGem
+=
+===============
+*/
+
+void GiveGem (int gemtype)
+{
+#if 0
+	int	i,j,x;
+
+	SD_PlaySound (GETKEYSND);
+	DrawNum(key_x[keytype],key_y[keytype],++gamestate.keys[keytype],2);
+#endif
+}
+
+
+/*
+===============
+=
+= TakeGem
+=
+===============
+*/
+
+void TakeGem (int gemtype)
+{
+#if 0
+	int	i,j,x;
+
+	SD_PlaySound (USEKEYSND);
+	DrawNum(key_x[keytype],key_y[keytype],--gamestate.keys[keytype],2);
+#endif
+}
+
+/*
+===============
+=
+= DrawGem
+=
+===============
+*/
+
+void DrawGems()
+{
+	short loop;
+
+	redraw_gems = false;
+
+	bufferofs = 0;
+	LatchDrawPic (31,51,RADAR_BOTTOMPIC);
+	for (loop=0; loop<5; loop++)
+		if (gamestate.gems[loop])
+			LatchDrawPic (32+loop,53,RADAR_RGEMPIC+loop);
 }
 
 //===========================================================================
@@ -386,21 +450,46 @@ void TakeKey (int keytype)
 
 void GiveScroll (int scrolltype,boolean show)
 {
-	int	i,x;
+	int	i,j,x,y,scrollnum;
 
 	SD_PlaySound (GETSCROLLSND);
 	gamestate.scrolls[scrolltype] = true;
 
-	x=24;
-	for (i=0;i<8;i++)
-		if (gamestate.scrolls[i])
-			DrawChar(x++,30,SCROLLCHARS+i);
+	y = 30 + ((scrolltype > 3) * 10);
+	x = 26 + (scrolltype % 4);
+	DrawChar(x,y,SCROLLCHARS+scrolltype);
+
 	if (show)
 		ReadScroll(scrolltype);
 }
 
+/*
+===============
+=
+= DrawScrolls
+=
+= Force draw of all scrolls
+=
+===============
+*/
+void DrawScrolls()
+{
+	int loop,x,y;
+
+	VW_Bar(210,30,30,18,0xf);
+
+	for (loop=0;loop<8;loop++)
+		if (gamestate.scrolls[loop])
+		{
+			y = 30 + ((loop > 3) * 10);
+			x = 26 + (loop % 4);
+			DrawChar(x,y,SCROLLCHARS+loop);
+		}
+}
+
 //===========================================================================
 
+#if 0
 /*
 ===============
 =
@@ -414,10 +503,12 @@ void GivePoints (int points)
 	pointcount = 1;
 	pointsleft += points;
 }
+#endif
 
 
 //===========================================================================
 
+#if 0
 /*
 ===============
 =
@@ -440,7 +531,92 @@ void AddPoints (int points)
 	for (i=0;i<len;i++)
 		DrawChar(x++,40,NUMBERCHARS+str[i]-'0');
 }
+#endif
 
+
+//===========================================================================
+
+/*
+===============
+=
+= DrawHealth
+=
+===============
+*/
+void DrawHealth()
+{
+	char picnum;
+	int percentage;
+
+	percentage = PERCENTAGE(100,MAXBODY,gamestate.body,9);
+
+	DrawNum(9,57,percentage,3);
+
+	if (percentage > 75)
+		picnum = FACE1PIC;
+	else
+	if (percentage > 50)
+		picnum = FACE2PIC;
+	else
+	if (percentage > 25)
+		picnum = FACE3PIC;
+	else
+	if (percentage)
+		picnum = FACE4PIC;
+	else
+	{
+		picnum = FACE5PIC;
+		CA_CacheGrChunk (picnum);
+	}
+
+	bufferofs = 0;
+	if (!percentage)
+	{
+		UNMARKGRCHUNK(picnum);
+		VW_DrawPic(8,14,picnum);
+	}
+	else
+		LatchDrawPic(8,14,picnum);
+}
+
+//===========================================================================
+
+/*
+===============
+=
+= DrawFreezeTime
+=
+===============
+*/
+void DrawFreezeTime()
+{
+	long percentage;
+	percentage = PERCENTAGE(100,MAXFREEZETIME,(long)FreezeTime,7);
+	DrawNum(23,70,percentage,3);
+}
+
+//===========================================================================
+
+/*
+===============
+=
+= DrawNum
+=
+===============
+*/
+void DrawNum(short x,short y,short value,short maxdigits)
+{
+	char str[10],len,i;
+
+	itoa(value,str,10);
+	len=strlen(str);
+
+	for (i=len; i<maxdigits; i++)
+		DrawChar(x++,y,BLANKCHAR);
+
+	for (i=0;i<len;i++)
+		DrawChar(x++,y,NUMBERCHARS+str[i]-'0');
+}
 
 //===========================================================================
 
@@ -452,10 +628,27 @@ void AddPoints (int points)
 ===============
 */
 
-void GiveChest (void)
+void GiveChest(void)
 {
-	SD_PlaySound (GETPOINTSSND);
-	GivePoints ((gamestate.mapon+1)*100);
+	char i;
+
+	for (i=0;i<random(4);i++)
+	{
+		GiveBolt();
+		SD_WaitSoundDone();
+	}
+
+	for (i=0;i<random(3);i++)
+	{
+		GiveNuke();
+		SD_WaitSoundDone();
+	}
+
+	for (i=0;i<random(2);i++)
+	{
+		GivePotion();
+		SD_WaitSoundDone();
+	}
 }
 
 
@@ -472,13 +665,13 @@ void GiveChest (void)
 void GiveGoal (void)
 {
 	SD_PlaySound (GETPOINTSSND);
-	GivePoints (100000);
 	playstate = ex_victorious;
 }
 
 
 //===========================================================================
 
+#if 0
 /*
 ===============
 =
@@ -505,6 +698,7 @@ void DrawLevelNumber (int number)
 	US_PrintUnsigned (number+1);
 	fontcolor = temp;
 }
+#endif
 
 
 //===========================================================================
@@ -517,7 +711,7 @@ void DrawLevelNumber (int number)
 ===============
 */
 
-void DrawText (void)
+void DrawText (boolean draw_text_whether_it_needs_it_or_not)
 {
 	unsigned	number;
 	char		str[80];
@@ -532,25 +726,15 @@ void DrawText (void)
 	if ( number>26 )
 		number = 0;
 
-	if (number == lasttext)
+	if ((number == lasttext) && (!draw_text_whether_it_needs_it_or_not))
 		return;
 
-	bufferofs = 0;
 	lasttext = number;
-
-	PrintY = 4;
-	WindowX = 26;
-	WindowW = 232;
 
 	text = (char _seg *)grsegs[LEVEL1TEXT+mapon]+textstarts[number];
 
 	_fmemcpy (str,text,80);
-
-	VW_Bar (26,4,232,9,STATUSCOLOR);
-	temp = fontcolor;
-	fontcolor = TEXTCOLOR^STATUSCOLOR;
-	US_CPrintLine (str);
-	fontcolor = temp;
+	DisplayMsg(str,NULL);
 }
 
 //===========================================================================
@@ -558,38 +742,135 @@ void DrawText (void)
 /*
 ===============
 =
-= DrawCompass
+= DisplayMsg
 =
 ===============
 */
 
-void DrawCompass (void)
+char DisplayMsg(char *text,char *choices)
 {
-	int		angle,number;
-
-	//
-	// draw the compass if needed
-	//
-	angle = player->angle-ANGLES/4;
-	angle -= ANGLES/32;
-	if (angle<0)
-		angle+=ANGLES;
-	number = angle/(ANGLES/16);
-	if (number>15)					// because 360 angles doesn't divide by 16
-		number = 15;
-
-	if (number == lastcompass)
-		return;
-
-	lastcompass = number;
+	char ch=true;
+	short temp;
 
 	bufferofs = 0;
-	LatchDrawPic (COMPASSX,COMPASSY,COMPAS1PIC+15-number);
+	PrintY = 1;
+	WindowX = 20;
+	WindowW = 270;
+
+	VW_Bar (WindowX,2,WindowW,8,STATUSCOLOR);
+	temp = fontcolor;
+	fontcolor = TEXTCOLOR^STATUSCOLOR;
+	US_CPrintLine (text);
+	fontcolor = temp;
+
+	if (choices)
+	{
+		ch=GetKeyChoice(choices,true);
+		LastScan = 0;
+	}
+
+	return(ch);
+}
+
+/*
+===============
+=
+= DisplaySMsg
+=
+===============
+*/
+char DisplaySMsg(char *text,char *choices)
+{
+	char ch=true;
+	short temp;
+
+	bufferofs = 0;
+	PrintY = 69;
+	WindowX = 98;
+	WindowW = 115;
+
+	VW_Bar(WindowX,PrintY+1,WindowW,8,STATUSCOLOR);
+	temp = fontcolor;
+	fontcolor = TEXTCOLOR^STATUSCOLOR;
+	US_CPrintLine (text);
+	fontcolor = temp;
+
+	if (choices)
+	{
+		ch=GetKeyChoice(choices,true);
+		LastScan = 0;
+	}
+
+	return(ch);
+}
+
+//===========================================================================
+
+/*
+===============
+=
+= DrawRadar
+=
+===============
+*/
+
+void DrawRadar (void)
+{
+	int		angle,number;
+	short objnum;
+
+	bufferofs = 0;
+	LatchDrawPic (radarx,radary,RADAR_TOPPIC);
+
+	asm	cli
+	asm	mov	dx,GC_INDEX
+	asm	mov	ax,2*256+GC_MODE
+	asm	out	dx,ax						// write mode 2
+
+	asm	mov	ax,GC_DATAROTATE
+	asm	out	dx,ax                // no rotation / logical operation
+
+	asm	mov	dx,SC_INDEX
+	asm	mov	al,SC_MAPMASK
+	asm	mov	ah,15
+	asm	out	dx,ax						// write to all four planes
+	asm	sti
+
+	objnum = 0;
+	while (RadarXY[objnum][2] != -1)
+	{
+		RadarBlip(radar_xcenter+RadarXY[objnum][0],radar_ycenter+RadarXY[objnum][1],RadarXY[objnum][2]);
+		objnum++;
+	}
+
+	asm	cli
+	asm	mov	dx,GC_INDEX
+	asm	mov	ax,255*256+GC_BITMASK
+	asm	out	dx,ax						// reset bitmask to %11111111
+	asm	sti
 }
 
 //===========================================================================
 
 
+//--------------------------------------------------------------------------
+// DrawNSEWIcons(void)
+//--------------------------------------------------------------------------
+
+void DrawRadarObj(short dx, short dy, unsigned sprnum,signed long psin,signed long pcos);
+
+void DrawNSEWIcons()
+{
+	signed x,y;
+
+	x = -FixedByFrac(RADAR_X_IRADIUS,costable[player->angle]);
+	y = -FixedByFrac(RADAR_Y_IRADIUS,sintable[player->angle]);
+
+	VWB_DrawSprite(radar_xcenter+x-3,radar_ycenter+y-3,NORTHICONSPR);
+
+}
+
+#if 0
 /*
 ===============
 =
@@ -733,6 +1014,7 @@ newline3:
 
 	EGAWRITEMODE(0);
 }
+#endif
 
 
 /*
@@ -749,17 +1031,23 @@ void T_Pshot (objtype *ob);
 extern	statetype s_pshot1;
 extern	statetype s_pshot2;
 
-extern	statetype s_bigpshot1;
-extern	statetype s_bigpshot2;
+//extern	statetype s_bigpshot1;
+//extern	statetype s_bigpshot2;
 
 
 statetype s_pshot1 = {PSHOT1PIC,8,&T_Pshot,&s_pshot2};
 statetype s_pshot2 = {PSHOT2PIC,8,&T_Pshot,&s_pshot1};
 
-statetype s_shotexplode = {PSHOT2PIC,8,NULL,NULL};
 
-statetype s_bigpshot1 = {BIGPSHOT1PIC,8,&T_Pshot,&s_bigpshot2};
-statetype s_bigpshot2 = {BIGPSHOT2PIC,8,&T_Pshot,&s_bigpshot1};
+statetype s_pshot_exp1 = {PSHOT_EXP1PIC,7,NULL,&s_pshot_exp2};
+statetype s_pshot_exp2 = {PSHOT_EXP2PIC,7,NULL,&s_pshot_exp3};
+statetype s_pshot_exp3 = {PSHOT_EXP3PIC,7,NULL,NULL};
+
+
+//statetype s_shotexplode = {PSHOT2PIC,8,NULL,NULL};
+
+//statetype s_bigpshot1 = {BIGPSHOT1PIC,8,&T_Pshot,&s_bigpshot2};
+//statetype s_bigpshot2 = {BIGPSHOT2PIC,8,&T_Pshot,&s_bigpshot1};
 
 
 /*
@@ -772,18 +1060,84 @@ statetype s_bigpshot2 = {BIGPSHOT2PIC,8,&T_Pshot,&s_bigpshot1};
 
 void SpawnPShot (void)
 {
-	SpawnNewObjFrac (player->x,player->y,&s_pshot1,PIXRADIUS*14);
+	DSpawnNewObjFrac (player->x,player->y,&s_pshot1,PIXRADIUS*7);
 	new->obclass = pshotobj;
 	new->speed = SHOTSPEED;
 	new->angle = player->angle;
+	new->active = always;
 }
 
+#if 0
 void SpawnBigPShot (void)
 {
 	SpawnNewObjFrac (player->x,player->y,&s_bigpshot1,24*PIXRADIUS);
 	new->obclass = bigpshotobj;
 	new->speed = SHOTSPEED;
 	new->angle = player->angle;
+}
+#endif
+
+
+/*
+===================
+=
+= JimsShotClipMove
+=
+= Only checks corners, so the object better be less than one tile wide!
+=
+===================
+*/
+boolean JimsShotClipMove (objtype *ob, long xmove, long ymove)
+{
+	int			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
+	long		intersect,basex,basey,pointx,pointy;
+	unsigned	inside,total,tile;
+	objtype		*check;
+	boolean		moveok;
+
+//
+// move player and check to see if any corners are in solid tiles
+//
+//	basex = ob->x;
+//	basey = ob->y;
+
+//	ob->x += xmove;
+//	ob->y += ymove;
+
+//	CalcBounds (ob);
+
+	xl = ob->xl>>TILESHIFT;
+	yl = ob->yl>>TILESHIFT;
+
+	xh = ob->xh>>TILESHIFT;
+	yh = ob->yh>>TILESHIFT;
+
+	for (y=yl;y<=yh;y++)
+		for (x=xl;x<=xh;x++)
+		{
+			check = actorat[x][y];
+
+			if ((!check) || (check == player) || (!(check->flags & of_shootable)))
+				continue;
+
+			ob->x -= xmove;
+			ob->y -= ymove;
+
+			if (check->obclass != solidobj)
+			{
+				SD_PlaySound (SHOOTMONSTERSND);
+				if (ob->obclass == bigpshotobj)
+					ShootActor (check,BIGSHOTDAMAGE);
+				else
+					ShootActor (check,SHOTDAMAGE);
+			}
+			ob->state = &s_pshot_exp1;
+			ob->ticcount = ob->state->tictime;
+			return(true);
+		}
+
+	return(false);		// move is OK!
+
 }
 
 
@@ -794,7 +1148,7 @@ void SpawnBigPShot (void)
 =
 ===============
 */
-
+#if 0
 void T_Pshot (objtype *ob)
 {
 	objtype	*check;
@@ -804,18 +1158,23 @@ void T_Pshot (objtype *ob)
 // check current position for monsters having moved into it
 //
 	for (check = player->next; check; check=check->next)
-		if (check->shootable
+		if ((check->flags & of_shootable)
 		&& ob->xl <= check->xh
 		&& ob->xh >= check->xl
 		&& ob->yl <= check->yh
 		&& ob->yh >= check->yl)
 		{
-			SD_PlaySound (SHOOTMONSTERSND);
-			if (ob->obclass == bigpshotobj)
-				ShootActor (check,BIGSHOTDAMAGE);
-			else
-				ShootActor (check,SHOTDAMAGE);
-			ob->state = &s_shotexplode;
+
+			if (check->obclass != solidobj)
+			{
+				SD_PlaySound (SHOOTMONSTERSND);
+				if (ob->obclass == bigpshotobj)
+					ShootActor (check,BIGSHOTDAMAGE);
+				else
+					ShootActor (check,SHOTDAMAGE);
+			}
+
+			ob->state = &s_pshot_exp1;
 			ob->ticcount = ob->state->tictime;
 			return;
 		}
@@ -831,7 +1190,7 @@ void T_Pshot (objtype *ob)
 
 	if (ShotClipMove(ob,xmove,ymove))
 	{
-		ob->state = &s_shotexplode;
+		ob->state = &s_pshot_exp1;
 		ob->ticcount = ob->state->tictime;
 		return;
 	}
@@ -843,30 +1202,93 @@ void T_Pshot (objtype *ob)
 // check final position for monsters hit
 //
 	for (check = player->next; check; check=check->next)
-		if (ob->shootable
+		if ((ob->flags & of_shootable)
 		&& ob->xl <= check->xh
 		&& ob->xh >= check->xl
 		&& ob->yl <= check->yh
 		&& ob->yh >= check->yl)
 		{
 			ShootActor (check,SHOTDAMAGE);
-			ob->state = &s_shotexplode;
+			ob->state = &s_pshot_exp1;
+			ob->ticcount = ob->state->tictime;
+			return;
+		}
+}
+#endif
+
+
+
+void T_Pshot (objtype *ob)
+{
+	objtype	*check;
+	long	xmove,ymove,speed;
+	int			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
+	long		intersect,basex,basey,pointx,pointy;
+	unsigned	inside,total,tile;
+	boolean		moveok;
+
+//
+// check current position for monsters having moved into it
+//
+	for (check = player->next; check; check=check->next)
+		if ((check->flags & of_shootable)
+		&& ob->xl <= check->xh
+		&& ob->xh >= check->xl
+		&& ob->yl <= check->yh
+		&& ob->yh >= check->yl)
+		{
+
+			if (check->obclass != solidobj)
+			{
+				SD_PlaySound (SHOOTMONSTERSND);
+				if (ob->obclass == bigpshotobj)
+					ShootActor (check,BIGSHOTDAMAGE);
+				else
+					ShootActor (check,SHOTDAMAGE);
+			}
+
+			ob->state = &s_pshot_exp1;
+			ob->obclass = expobj;
 			ob->ticcount = ob->state->tictime;
 			return;
 		}
 
-}
 
+//
+// move ahead, possibly hitting a wall
+//
+	speed = ob->speed*tics;
+
+	xmove = FixedByFrac(speed,costable[ob->angle]);
+	ymove = -FixedByFrac(speed,sintable[ob->angle]);
+
+	if (ShotClipMove(ob,xmove,ymove))
+	{
+		ob->state = &s_pshot_exp1;
+		ob->obclass = expobj;
+		ob->ticcount = ob->state->tictime;
+		return;
+	}
+
+	ob->tilex = ob->x >> TILESHIFT;
+	ob->tiley = ob->y >> TILESHIFT;
+
+//
+// check final position for monsters hit
+//
+
+	JimsShotClipMove(obj,xmove,ymove);
+
+}
 
 
 /*
 =============================================================================
 
-						   PLAYER ACTIONS
+							PLAYER ACTIONS
 
 =============================================================================
 */
-
 
 /*
 ===============
@@ -886,7 +1308,7 @@ void BuildShotPower (void)
 		return;
 
 	newlines = 0;
-	for (i=lasttimecount-tics;i<lasttimecount;i++)
+	for (i=lasttimecount-realtics;i<lasttimecount;i++)
 		newlines += (i&1);
 
 	gamestate.shotpower += newlines;
@@ -896,50 +1318,6 @@ void BuildShotPower (void)
 		newlines -= (gamestate.shotpower - MAXSHOTPOWER);
 		gamestate.shotpower = MAXSHOTPOWER;
 	}
-
-	topline = MAXSHOTPOWER - gamestate.shotpower;
-
-	source = latchpics[L_SHOTBAR]+topline*SIDEBARWIDTH;
-	dest = (POWERLINE+topline)*SCREENWIDTH+34;
-
-	asm	mov	es,[screenseg]
-	asm	mov	si,[source]
-	asm	mov	di,[dest]
-
-	EGAWRITEMODE(1);
-
-	if (newlines)
-	{
-		asm	mov	cx,[newlines]
-newline:
-		asm	mov	al,[es:si]
-		asm	mov	[es:di+PAGE1START],al
-		asm	mov	[es:di+PAGE2START],al
-		asm	mov	[es:di+PAGE3START],al
-		asm	mov	al,[es:si+1]
-		asm	mov	[es:di+1+PAGE1START],al
-		asm	mov	[es:di+1+PAGE2START],al
-		asm	mov	[es:di+1+PAGE3START],al
-		asm	mov	al,[es:si+2]
-		asm	mov	[es:di+2+PAGE1START],al
-		asm	mov	[es:di+2+PAGE2START],al
-		asm	mov	[es:di+2+PAGE3START],al
-		asm	mov	al,[es:si+3]
-		asm	mov	[es:di+3+PAGE1START],al
-		asm	mov	[es:di+3+PAGE2START],al
-		asm	mov	[es:di+3+PAGE3START],al
-		asm	mov	al,[es:si+4]
-		asm	mov	[es:di+4+PAGE1START],al
-		asm	mov	[es:di+4+PAGE2START],al
-		asm	mov	[es:di+4+PAGE3START],al
-
-		asm	add	di,SCREENWIDTH
-		asm	add	si,5
-
-		asm	loop	newline
-	}
-
-	EGAWRITEMODE(0);
 }
 
 
@@ -957,6 +1335,7 @@ void ClearShotPower (void)
 {
 	unsigned	source,dest,topline;
 
+#if 0
 	topline = MAXSHOTPOWER - gamestate.shotpower;
 
 	source = latchpics[L_NOSHOT]+topline*SIDEBARWIDTH;
@@ -1000,6 +1379,7 @@ newline:
 	asm	loop	newline
 
 	EGAWRITEMODE(0);
+#endif
 
 	gamestate.shotpower = 0;
 }
@@ -1023,6 +1403,7 @@ void Shoot (void)
 
 //===========================================================================
 
+#if 0
 /*
 ===============
 =
@@ -1037,6 +1418,7 @@ void BigShoot (void)
 	SD_PlaySound (BIGSHOOTSND);
 	SpawnBigPShot ();
 }
+#endif
 
 //===========================================================================
 
@@ -1059,7 +1441,7 @@ void CastBolt (void)
 	TakeBolt ();
 	boltsleft = NUMBOLTS;
 	bolttimer = BOLTTICS;
-	BigShoot ();
+	Shoot ();
 }
 
 
@@ -1073,12 +1455,12 @@ void CastBolt (void)
 
 void ContinueBolt (void)
 {
-	bolttimer-=tics;
+	bolttimer-=realtics;
 	if (bolttimer<0)
 	{
 		boltsleft--;
 		bolttimer = BOLTTICS;
-		BigShoot ();
+		Shoot ();
 	}
 }
 
@@ -1108,10 +1490,11 @@ void CastNuke (void)
 
 	for (angle = 0; angle < ANGLES; angle+= ANGLES/16)
 	{
-		SpawnNewObjFrac (player->x,player->y,&s_bigpshot1,24*PIXRADIUS);
+		DSpawnNewObjFrac (player->x,player->y,&s_pshot1,24*PIXRADIUS);
 		new->obclass = bigpshotobj;
 		new->speed = SHOTSPEED;
 		new->angle = angle;
+		new->active = always;
 	}
 }
 
@@ -1135,9 +1518,13 @@ void DrinkPotion (void)
 		return;
 	}
 
+	DisplaySMsg("Curing", NULL);
 	TakePotion ();
 	gamestate.body = MAXBODY;
+	VW_WaitVBL(30);
+	status_flag    = S_NONE;
 
+#if 0
 //
 // draw a full up bar
 //
@@ -1178,6 +1565,7 @@ newline:
 	asm	loop	newline
 
 	EGAWRITEMODE(0);
+#endif
 }
 
 
@@ -1197,42 +1585,67 @@ extern	boolean	tileneeded[NUMFLOORS];
 void ReadScroll (int scroll)
 {
 	int	i;
+	unsigned *skytemp,*gndtemp,blackcolor=0;
 
-//
-// make wall pictures purgable
-//
-	for (i=0;i<NUMSCALEWALLS;i++)
-		if (walldirectory[i])
-			MM_SetPurge (&(memptr)walldirectory[i],3);
+	DisplaySMsg("Reading Scroll", NULL);
+	bufferofs = displayofs = screenloc[screenpage];
+
+	if (status_flag != S_TIMESTOP)
+		status_flag = S_NONE;
+
+	FreeUpMemory();
 
 	CA_CacheGrChunk (SCROLLTOPPIC);
 	CA_CacheGrChunk (SCROLL1PIC + scroll);
-	VW_DrawPic (0,0,SCROLLTOPPIC);
-	VW_DrawPic (0,32,SCROLL1PIC + scroll);
+	CA_CacheGrChunk (SCROLLBOTTOMPIC);
+
+	skytemp = skycolor;
+	gndtemp = groundcolor;
+	skycolor = groundcolor = &blackcolor;
+
+	VW_Bar(0,0,VIEWWIDTH,VIEWHEIGHT,0);
+	VW_DrawPic (10,0,SCROLLTOPPIC);
+	VW_DrawPic (10,32,SCROLL1PIC + scroll);
+	VW_DrawPic (10,88,SCROLLBOTTOMPIC);
+
+	skycolor = skytemp;
+	groundcolor = gndtemp;
+
 	UNMARKGRCHUNK(SCROLL1PIC + scroll);
 	UNMARKGRCHUNK(SCROLLTOPPIC);
+	UNMARKGRCHUNK(SCROLLBOTTOMPIC);
 	MM_FreePtr (&grsegs[SCROLL1PIC + scroll]);
 	MM_FreePtr (&grsegs[SCROLLTOPPIC]);
+	MM_FreePtr (&grsegs[SCROLLBOTTOMPIC]);
 
-//
-// cache wall pictures back in
-//
-	for (i=1;i<NUMFLOORS;i++)
-		if (tileneeded[i])
-		{
-			SetupScaleWall (walllight1[i]);
-			SetupScaleWall (walllight2[i]);
-			SetupScaleWall (walldark1[i]);
-			SetupScaleWall (walldark2[i]);
-		}
+	CacheScaleds();
 
-	VW_WaitVBL(80);
-waitkey:
 	IN_ClearKeysDown ();
-	IN_Ack();
+// MDM begin
+	lasttext = -1;
+	DisplayMsg("Press ENTER or ESC to exit.",NULL);
+	while ((!Keyboard[sc_Escape]) && (!Keyboard[sc_Enter]));
+// MDM end
+	IN_ClearKeysDown ();
 
+	if (status_flag == S_TIMESTOP)
+		DisplaySMsg("Time Stopped:     ",NULL);
 }
 
+
+//===============
+//
+// StopTime()
+//
+//
+//===============
+void StopTime()
+{
+	FreezeTime = MAXFREEZETIME;
+	SD_PlaySound(FREEZETIMESND);
+	DisplaySMsg("Time Stopped:     ",NULL);
+	status_flag = S_TIMESTOP;
+}
 
 
 /*
@@ -1247,17 +1660,22 @@ void TakeDamage (int points)
 {
 	unsigned	source,dest,topline;
 
-	if (!gamestate.body || bordertime || godmode)
+	if (!gamestate.body || (bordertime && bcolor==FLASHCOLOR) || godmode)
 		return;
 
 	if (points >= gamestate.body)
 	{
 		points = gamestate.body;
-		playstate = ex_died;
+		Flags |= FL_DEAD;
 	}
 
-	bordertime = points*FLASHTICS;
+	bordertime = FLASHTICS<<2;
+	bcolor = FLASHCOLOR;
 	VW_ColorBorder (FLASHCOLOR);
+
+	DisplaySMsg("Damaging blows!", NULL);
+	status_flag  = S_NONE;
+	status_delay = 80;
 
 	if (gamestate.body<MAXBODY/3)
 		SD_PlaySound (TAKEDMGHURTSND);
@@ -1265,52 +1683,7 @@ void TakeDamage (int points)
 		SD_PlaySound (TAKEDAMAGESND);
 
 	gamestate.body -= points;
-//
-// shrink the body bar
-//
-	source = latchpics[L_NOBODY]+gamestate.body*SIDEBARWIDTH;
-	dest = (BODYLINE+gamestate.body)*SCREENWIDTH+34;
-
-
-	asm	mov	es,[screenseg]
-	asm	mov	si,[source]
-	asm	mov	di,[dest]
-
-	EGAWRITEMODE(1);
-
-	asm	mov	cx,[points]
-newline:
-	asm	mov	al,[es:si]
-	asm	mov	[es:di+PAGE1START],al
-	asm	mov	[es:di+PAGE2START],al
-	asm	mov	[es:di+PAGE3START],al
-	asm	mov	al,[es:si+1]
-	asm	mov	[es:di+1+PAGE1START],al
-	asm	mov	[es:di+1+PAGE2START],al
-	asm	mov	[es:di+1+PAGE3START],al
-	asm	mov	al,[es:si+2]
-	asm	mov	[es:di+2+PAGE1START],al
-	asm	mov	[es:di+2+PAGE2START],al
-	asm	mov	[es:di+2+PAGE3START],al
-	asm	mov	al,[es:si+3]
-	asm	mov	[es:di+3+PAGE1START],al
-	asm	mov	[es:di+3+PAGE2START],al
-	asm	mov	[es:di+3+PAGE3START],al
-	asm	mov	al,[es:si+4]
-	asm	mov	[es:di+4+PAGE1START],al
-	asm	mov	[es:di+4+PAGE2START],al
-	asm	mov	[es:di+4+PAGE3START],al
-
-	asm	add	di,SCREENWIDTH
-	asm	add	si,5
-
-	asm	loop	newline
-
-	EGAWRITEMODE(0);
-
 }
-
-
 
 /*
 =============================================================================
@@ -1321,6 +1694,7 @@ newline:
 */
 
 
+#if 0
 /*
 ==================
 =
@@ -1369,7 +1743,65 @@ void OpenDoor (unsigned bx, unsigned by, unsigned doorbase)
 		y++;
 	}
 }
+#endif
 
+#if 0
+/*
+==================
+=
+= RemoveWalls - similar to OpenDoor(), but on a different plane
+=
+==================
+*/
+void RemoveWalls (unsigned bx, unsigned by, unsigned remove_code)
+{
+	int x,y;
+	unsigned	far *map,*p2;
+
+	x=bx;
+	y=by;
+	p2 = *(mapsegs[2]+farmapylookup[y]+x);
+	map = mapsegs[0]+farmapylookup[y]+x;
+	while (*p2 == remove_code)
+	{
+		tilemap[x][y] = (unsigned)actorat[x][y] = *map = 0;
+		map--;
+		p2--;
+		x--;
+	}
+	x=bx+1;
+	p2 = *(mapsegs[2]+farmapylookup[y]+x);
+	map = mapsegs[0]+farmapylookup[y]+x;
+	while (*p2 == remove_code)
+	{
+		tilemap[x][y] = (unsigned)actorat[x][y] = *map = 0;
+		map++;
+		p2++;
+		x++;
+	}
+	x=bx;
+	y=by-1;
+	p2 = *(mapsegs[2]+farmapylookup[y]+x);
+	map = mapsegs[0]+farmapylookup[y]+x;
+	while (*p2 == remove_code)
+	{
+		tilemap[x][y] = (unsigned)actorat[x][y] = *map = 0;
+		map-=mapwidth;
+		p2 -= mapwidth;
+		y--;
+	}
+	y=by+1;
+	p2 = *(mapsegs[2]+farmapylookup[y]+x);
+	map = mapsegs[0]+farmapylookup[y]+x;
+	while (*p2 == remove_code)
+	{
+		tilemap[x][y] = (unsigned)actorat[x][y] = *map = 0;
+		map+=mapwidth;
+		p2 += mapwidth;
+		y++;
+	}
+}
+#endif
 
 /*
 ==================
@@ -1383,53 +1815,140 @@ void OpenDoor (unsigned bx, unsigned by, unsigned doorbase)
 
 boolean HitSpecialTile (unsigned x, unsigned y, unsigned tile)
 {
+	objtype *check;
+	short keyspot;
+	unsigned	temp,spot,curmap=gamestate.mapon,newlevel;
+	char *key_colors[] = {"a RED key",
+								 "a YELLOW key",
+								 "a GREEN key",
+								 "a BLUE key"};
+
 	switch (tile)
 	{
-	case 0:
-	case 1:
-	case 2:
-	case 3:
-		if (!gamestate.keys[0])
-			return true;
-		TakeKey(0);
-		OpenDoor (x,y,SPECTILESTART+0);
-		return false;
+		case 28:
+			playstate = ex_victorious;
+		break;
 
-	case 4:
-	case 5:
-	case 6:
-	case 7:
-		if (!gamestate.keys[1])
-			return true;
-		TakeKey(1);
-		OpenDoor (x,y,SPECTILESTART+4);
-		return false;
+		case 36:			// Water gate
+		case 24:			// Steel gate (BLUE KEY REQ.)
+		case 25:			// Steel gate (RED KEY REQ.)
+		case 26:			// Steel gate (YELLOW KEY REQ.)
+		case 27:			// HOT Steel gate (YELLOW KEY REQ.)
+		case 18:			// Wooden Doorway
+		case 19:			// Wooden doorway with a GLOW - Oh, THATS's what IT is!
+		case 1:			// tile warp
+		case 54:			// DOWN stairs
+		case 56:			// UP stairs
+		case 51:			// generic door
+			if (!playstate && !FreezeTime)
+			{
 
-	case 8:
-	case 9:
-	case 10:
-	case 11:
-		if (!gamestate.keys[2])
-			return true;
-		TakeKey(2);
-		OpenDoor (x,y,SPECTILESTART+8);
-		return false;
+			// Is this an openable door? (Is "openable" a word?)
+			//
+				spot = (*(mapsegs[2]+farmapylookup[y]+x)) >> 8;
+				if (spot == CANT_OPEN_CODE)	// CAN'T EVER OPEN (it's just for looks)
+				{
+					CenterWindow(20,4);
+					US_CPrint("\nThe door is blocked");
+					VW_UpdateScreen();
+					IN_ClearKeysDown();
+					IN_Ack();
+					return;
+				}
 
-	case 12:
-	case 13:
-	case 14:
-	case 15:
-		if (!gamestate.keys[3])
-			return true;
-		TakeKey(3);
-		OpenDoor (x,y,SPECTILESTART+12);
-		return false;
+				// make sure player has key to get into door
+				//
 
+				if (TILE_FLAGS(tile) & tf_EMBEDDED_KEY_COLOR)
+					keyspot = GATE_KEY_COLOR(tile);
+				else
+					keyspot = (*(mapsegs[2]+farmapylookup[y+1]+x)) >> 8;
+
+				if (keyspot--)
+					if (!gamestate.keys[keyspot])
+					{
+						SD_PlaySound(HIT_GATESND);
+						CenterWindow(20,5);
+						US_CPrint("\nYou need\n");
+						US_CPrint(key_colors[keyspot]);
+						VW_UpdateScreen();
+						IN_ClearKeysDown();
+						IN_Ack();
+						return;
+					}
+
+			//
+			// deal with this gate (warp? simply open? whatever...)
+			//
+				switch (spot)
+				{
+					case NEXT_LEVEL_CODE:		// WARP TO NEXT LEVEL
+						newlevel = gamestate.mapon+1;
+						playstate = ex_warped;
+					break;
+
+					case REMOVE_DOOR_CODE:		// REMOVE DOOR
+						(unsigned)actorat[x][y] = tilemap[x][y] =	*(mapsegs[0]+farmapylookup[y]+x) = 0;
+						*(mapsegs[2]+farmapylookup[y+1]+x) = 0;	// key no longer needed
+						if (keyspot>=0)
+							TakeKey(keyspot);
+					break;
+
+					default:			// WARP TO A LEVEL
+						newlevel = spot;
+						playstate = ex_warped;
+					break;
+				}
+
+				if (playstate == ex_warped)
+				{
+					SD_PlaySound(HIT_GATESND);
+//					levelinfo *li=&gamestate.levels[curmap];
+
+//					OldAngle = FaceDoor(x,y);
+
+					if (!VerifyGateExit())
+					{
+						IN_ClearKeysDown ();
+						playstate = ex_stillplaying;
+						break;
+					}
+
+//					FaceAngle(OldAngle);
+
+					if (keyspot>=0)
+						TakeKey(keyspot);
+					*(mapsegs[2]+farmapylookup[y+1]+x) = 0;	// key no longer needed
+
+					gamestate.mapon = newlevel;
+					SD_PlaySound(WARPUPSND);
+					IN_ClearKeysDown ();
+
+//					li->x = player->tilex;
+//					li->y = player->tiley;
+//					li->angle = player->angle+180;
+//					if (li->angle > 360)
+//						li->angle -= 360;
+				}
+			}
+		break;
 	}
 
 	return true;
 }
 
+//-------------------------------------------------------------------------
+// VerifyGateExit()
+//-------------------------------------------------------------------------
+boolean VerifyGateExit()
+{
+	char choices[] = {sc_Escape,sc_Y,sc_N,0},ch;
+
+	ch=DisplayMsg("Pass this way?      Y/N",choices);
+	DrawText(true);
+
+	return(ch == sc_Y);
+}
 
 
 /*
@@ -1450,27 +1969,63 @@ boolean TouchActor (objtype *ob, objtype *check)
 
 	switch (check->obclass)
 	{
-	case bonusobj:
-		if (check->temp1 == B_BOLT)
-			GiveBolt ();
-		else if (check->temp1 == B_NUKE)
-			GiveNuke ();
-		else if (check->temp1 == B_POTION)
-			GivePotion ();
-		else if (check->temp1 >= B_RKEY && check->temp1 <= B_BKEY)
-			GiveKey (check->temp1-B_RKEY);
-		else if (check->temp1 >= B_SCROLL1 && check->temp1 <= B_SCROLL8)
-			GiveScroll (check->temp1-B_SCROLL1,true);
-		else if (check->temp1 == B_CHEST)
-			GiveChest ();
-		else if (check->temp1 == B_GOAL)
-			GiveGoal ();
-		(unsigned)actorat[check->tilex][check->tiley] = 0;
-		RemoveObj (check);
+		case bonusobj:
+			switch (check->temp1)
+			{
+				case B_BOLT:		GiveBolt ();		break;
 
-		return false;
+				case B_NUKE:		GiveNuke ();		break;
+
+				case B_POTION:		GivePotion ();		break;
+
+				case B_RKEY2:		GiveKey(B_RKEY-B_RKEY);					break;
+
+				case B_RKEY:
+				case B_YKEY:
+				case B_GKEY:
+				case B_BKEY:		GiveKey (check->temp1-B_RKEY);		break;
+
+				case B_SCROLL1:
+				case B_SCROLL2:
+				case B_SCROLL3:
+				case B_SCROLL4:
+				case B_SCROLL5:
+				case B_SCROLL6:
+				case B_SCROLL7:
+				case B_SCROLL8:	GiveScroll (check->temp1-B_SCROLL1,true);	break;
+
+				case B_CHEST:		GiveChest (); 		break;
+
+				case B_RGEM:
+				case B_YGEM:
+				case B_GGEM:
+				case B_BGEM:
+				case B_PGEM:
+					SD_PlaySound(GETGEMSND);
+					gamestate.gems[check->temp1-B_RGEM] = GEM_DELAY_TIME;
+					redraw_gems = true;
+				break;
+
+				default:
+					Quit("TouchActor(): INVALID BONUS");
+				break;
+			}
+
+			(unsigned)actorat[check->tilex][check->tiley] = 0;
+			RemoveObj (check);
+
+			return false;
+		break;
+
+		case freezeobj:
+			StopTime();
+			(unsigned)actorat[check->tilex][check->tiley] = 0;
+			RemoveObj(check);
+			return(false);
+		break;
 
 	}
+
 	return	true;
 }
 
@@ -1519,30 +2074,28 @@ boolean LocationInActor (objtype *ob)
 		for (y=ymin;y<ymax;y++)
 		{
 			check = actorat[x][y];
-			if (check>(objtype *)LASTSPECIALTILE
-			&& check->shootable
-			&& ob->xl <= check->xh
-			&& ob->xh >= check->xl
-			&& ob->yl <= check->yh
-			&& ob->yh >= check->yl)
-				return true;
+			if (check>(objtype *)LASTTILE
+				&& (check->flags & of_shootable)
+				&& ob->xl-SIZE_TEST <= check->xh
+				&& ob->xh+SIZE_TEST >= check->xl
+				&& ob->yl-SIZE_TEST <= check->yh
+				&& ob->yh+SIZE_TEST >= check->yl)
+					return true;
 		}
 
 	return false;
 }
 
-
 /*
 ===================
 =
-= ClipMove
+= ClipXMove
 =
 = Only checks corners, so the object better be less than one tile wide!
 =
 ===================
 */
-
-void ClipMove (objtype *ob, long xmove, long ymove)
+void ClipXMove (objtype *ob, long xmove)
 {
 	int			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
 	long		intersect,basex,basey,pointx,pointy;
@@ -1557,6 +2110,123 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 	basey = ob->y;
 
 	ob->x += xmove;
+
+	CalcBounds (ob);
+
+	xl = ob->xl>>TILESHIFT;
+	yl = ob->yl>>TILESHIFT;
+
+	xh = ob->xh>>TILESHIFT;
+	yh = ob->yh>>TILESHIFT;
+
+	for (y=yl;y<=yh;y++)
+		for (x=xl;x<=xh;x++)
+		{
+			check = actorat[x][y];
+
+			if (!check)
+				continue;		// blank floor, walk ok
+
+			if ((unsigned)check <= LASTTILE)
+			{
+				if (TILE_FLAGS((unsigned)check) & tf_SPECIAL)
+				{
+					HitSpecialTile(x,y,(unsigned)check-SPECTILESTART);
+					goto blockmove;
+				}
+
+				if (TILE_FLAGS((unsigned)check) & tf_SOLID)
+				{
+					goto blockmove;			// solid wall
+				}
+			}
+
+			TouchActor(ob,check);		// pick up items
+		}
+
+//
+// check nearby actors
+//
+	if (LocationInActor(ob))
+	{
+		ob->x -= xmove;
+		if (LocationInActor(ob))
+		{
+			ob->x += xmove;
+			if (LocationInActor(ob))
+				ob->x -= xmove;
+		}
+	}
+	return;		// move is OK!
+
+
+blockmove:
+
+//	if (!SD_SoundPlaying())
+//		SD_PlaySound (HITWALLSND);
+
+	moveok = false;
+
+	do
+	{
+		xmove /= 2;
+		if (moveok)
+		{
+			ob->x += xmove;
+		}
+		else
+		{
+			ob->x -= xmove;
+		}
+		CalcBounds (ob);
+		xl = ob->xl>>TILESHIFT;
+		yl = ob->yl>>TILESHIFT;
+		xh = ob->xh>>TILESHIFT;
+		yh = ob->yh>>TILESHIFT;
+		if (tilemap[xl][yl] || tilemap[xh][yl]
+		|| tilemap[xh][yh] || tilemap[xl][yh] )
+		{
+			moveok = false;
+			if (xmove>=-2048 && xmove <=2048)
+			{
+				ob->x = basex;
+				ob->y = basey;
+				return;
+			}
+		}
+		else
+		{
+			if (xmove>=-2048 && xmove <=2048)
+				return;
+			moveok = true;
+		}
+	} while (1);
+}
+
+
+/*
+===================
+=
+= ClipYMove
+=
+= Only checks corners, so the object better be less than one tile wide!
+=
+===================
+*/
+void ClipYMove (objtype *ob, long ymove)
+{
+	int			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
+	long		intersect,basex,basey,pointx,pointy;
+	unsigned	inside,total,tile;
+	objtype		*check;
+	boolean		moveok;
+
+//
+// move player and check to see if any corners are in solid tiles
+//
+	basex = ob->x;
+	basey = ob->y;
+
 	ob->y += ymove;
 
 	CalcBounds (ob);
@@ -1574,16 +2244,20 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 			if (!check)
 				continue;		// blank floor, walk ok
 
-			if ((unsigned)check<=LASTWALLTILE)
-				goto blockmove;	// solid wall
-
-			if ((unsigned)check<=LASTSPECIALTILE)
+			if ((unsigned)check <= LASTTILE)
 			{
-				if ( HitSpecialTile (x,y,(unsigned)check-SPECTILESTART) )
-					goto blockmove;		// whatever it was, it blocked the move
-				else
-					continue;
+				if (TILE_FLAGS((unsigned)check) & tf_SPECIAL)		// <=LASTSPECIALTILE)
+				{
+					HitSpecialTile (x,y,(unsigned)check-SPECTILESTART);
+					goto blockmove;
+				}
+
+				if (TILE_FLAGS((unsigned)check) & tf_SOLID)		// LASTWALLTILE)
+				{
+					goto blockmove;	// solid wall
+				}
 			}
+
 			TouchActor(ob,check);		// pick up items
 		}
 
@@ -1592,13 +2266,9 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 //
 	if (LocationInActor(ob))
 	{
-		ob->x -= xmove;
 		if (LocationInActor(ob))
 		{
-			ob->x += xmove;
 			ob->y -= ymove;
-			if (LocationInActor(ob))
-				ob->x -= xmove;
 		}
 	}
 	return;		// move is OK!
@@ -1606,23 +2276,20 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 
 blockmove:
 
-	if (!SD_SoundPlaying())
-		SD_PlaySound (HITWALLSND);
+//	if (!SD_SoundPlaying())
+//		SD_PlaySound (HITWALLSND);
 
 	moveok = false;
 
 	do
 	{
-		xmove /= 2;
 		ymove /= 2;
 		if (moveok)
 		{
-			ob->x += xmove;
 			ob->y += ymove;
 		}
 		else
 		{
-			ob->x -= xmove;
 			ob->y -= ymove;
 		}
 		CalcBounds (ob);
@@ -1634,7 +2301,7 @@ blockmove:
 		|| tilemap[xh][yh] || tilemap[xl][yh] )
 		{
 			moveok = false;
-			if (xmove>=-2048 && xmove <=2048 && ymove>=-2048 && ymove <=2048)
+			if (ymove>=-2048 && ymove <=2048)
 			{
 				ob->x = basex;
 				ob->y = basey;
@@ -1643,7 +2310,7 @@ blockmove:
 		}
 		else
 		{
-			if (xmove>=-2048 && xmove <=2048 && ymove>=-2048 && ymove <=2048)
+			if (ymove>=-2048 && ymove <=2048)
 				return;
 			moveok = true;
 		}
@@ -1668,7 +2335,7 @@ boolean ShotClipMove (objtype *ob, long xmove, long ymove)
 {
 	int			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
 	long		intersect,basex,basey,pointx,pointy;
-	unsigned	inside,total,tile;
+	unsigned	inside,total,spot,tile;
 	objtype		*check;
 	boolean		moveok;
 
@@ -1692,13 +2359,20 @@ boolean ShotClipMove (objtype *ob, long xmove, long ymove)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			tile = tilemap[x][y];
-			if (tile)
-			{
-				if ((unsigned)(tile-EXPWALLSTART)<NUMEXPWALLS)
-					ExplodeWall (x,y);
+			spot = (*(mapsegs[2]+farmapylookup[y]+x)) >> 8;
+			if (spot == EXP_WALL_CODE)
+				switch (ob->obclass)
+				{
+					case pshotobj:
+					case bigpshotobj:
+						ExplodeWall (x,y);
+						goto blockmove;
+					break;
+				}
+
+			tile = *(mapsegs[0]+farmapylookup[y]+x);
+			if (TILE_FLAGS(tile) & tf_SOLID)
 				goto blockmove;
-			}
 		}
 	return false;		// move is OK!
 
@@ -1753,7 +2427,7 @@ blockmove:
 /*
 =============================================================================
 
-						   PLAYER CONTROL
+							PLAYER CONTROL
 
 =============================================================================
 */
@@ -1774,16 +2448,29 @@ statetype s_player = {0,0,&T_Player,&s_player};
 
 void SpawnPlayer (int tilex, int tiley, int dir)
 {
+#if 0
+	levelinfo *li=&gamestate.levels[gamestate.mapon];
+
+	if (li->x != -1)
+	{
+		tilex = li->x;
+		tiley = li->y;
+		player->angle = li->angle;
+	}
+	else
+		player->angle = (1-dir)*90;
+#endif
+
 	player->obclass = playerobj;
-	player->active = true;
+	player->active = always;
 	player->tilex = tilex;
 	player->tiley = tiley;
 	player->x = ((long)tilex<<TILESHIFT)+TILEGLOBAL/2;
 	player->y = ((long)tiley<<TILESHIFT)+TILEGLOBAL/2;
 	player->state = &s_player;
-	player->angle = (1-dir)*90;
 	player->size = MINDIST;
-	CalcBounds (player);
+	CalcBounds(player);
+	player->angle = (1-dir)*90;
 	if (player->angle<0)
 		player->angle += ANGLES;
 }
@@ -1815,7 +2502,8 @@ void Thrust (int angle, unsigned speed)
 	xmove = FixedByFrac(speed,costable[angle]);
 	ymove = -FixedByFrac(speed,sintable[angle]);
 
-	ClipMove(player,xmove,ymove);
+	ClipXMove(player,xmove);
+	ClipYMove(player,ymove);
 	player->tilex = player->x >> TILESHIFT;
 	player->tiley = player->y >> TILESHIFT;
 }
@@ -1836,7 +2524,7 @@ void ControlMovement (objtype *ob)
 	long	speed;
 
 
-	if (c.button1)
+	if (control.button1)
 	{
 	//
 	// strafing
@@ -1851,19 +2539,13 @@ void ControlMovement (objtype *ob)
 		else
 			speed = -(long)mousexmove*300;
 
-		if (c.xaxis == -1)
+		if (control.xaxis == -1)
 		{
-			if (running)
-				speed += RUNSPEED*tics;
-			else
-				speed += PLAYERSPEED*tics;
+			speed += PLAYERSPEED*tics;
 		}
-		else if (c.xaxis == 1)
+		else if (control.xaxis == 1)
 		{
-			if (running)
-				speed -= RUNSPEED*tics;
-			else
-				speed -= PLAYERSPEED*tics;
+			speed -= PLAYERSPEED*tics;
 		}
 
 		if (speed > 0)
@@ -1892,19 +2574,22 @@ void ControlMovement (objtype *ob)
 	//
 
 		//
-		// turning
+		// TURNING
 		//
-		if (c.xaxis == 1)
+		if (control.xaxis == 1)
 		{
 			ob->angle -= tics;
-			if (running)				// fast turn
-				ob->angle -= tics;
+
+			if (running)
+				ob->angle -= (tics<<1);		// FAST turn
+
 		}
-		else if (c.xaxis == -1)
+		else if (control.xaxis == -1)
 		{
 			ob->angle+= tics;
-			if (running)				// fast turn
-				ob->angle += tics;
+
+			if (running)
+				ob->angle += (tics<<1);    // FAST turn
 		}
 
 		ob->angle -= (mousexmove/10);
@@ -1926,19 +2611,13 @@ void ControlMovement (objtype *ob)
 	else
 		speed = -(long)mouseymove*200;
 
-	if (c.yaxis == -1)
+	if (control.yaxis == -1)
 	{
-		if (running)
-			speed += RUNSPEED*tics;
-		else
-			speed += PLAYERSPEED*tics;
+		speed += PLAYERSPEED*tics;
 	}
-	else if (c.yaxis == 1)
+	else if (control.yaxis == 1)
 	{
-		if (running)
-			speed -= RUNSPEED*tics;
-		else
-			speed -= PLAYERSPEED*tics;
+		speed -= PLAYERSPEED*tics;
 	}
 
 	if (speed > 0)
@@ -1969,9 +2648,13 @@ void ControlMovement (objtype *ob)
 
 void	T_Player (objtype *ob)
 {
-	int	angle,speed,scroll;
+	extern boolean autofire;
+
+	int	angle,speed,scroll,loop;
 	unsigned	text,tilex,tiley;
 	long	lspeed;
+
+//	boolean radar_moved=false;
 
 
 	ControlMovement (ob);
@@ -1982,7 +2665,7 @@ void	T_Player (objtype *ob)
 	//
 	if (boltsleft)
 	{
-		handheight+=(tics<<2);
+		handheight+=(realtics<<2);
 		if (handheight>MAXHANDHEIGHT)
 			handheight = MAXHANDHEIGHT;
 
@@ -1991,9 +2674,36 @@ void	T_Player (objtype *ob)
 	}
 	else
 	{
-		if (c.button0)
+		if (control.button0)
 		{
-			handheight+=(tics<<2);
+			handheight+=(realtics<<2);
+			if (handheight>MAXHANDHEIGHT)
+				handheight = MAXHANDHEIGHT;
+			lasthand = lasttimecount;
+
+			if (!button0down)
+				Shoot();
+
+			if (!autofire)
+				button0down=true;
+		}
+		else
+		{
+			if (lasttimecount > lasthand+HANDPAUSE)
+			{
+				handheight-=(realtics<<1);
+				if (handheight<0)
+					handheight = 0;
+			}
+
+			button0down = false;
+		}
+}
+
+#if 0
+		if (control.button0)
+		{
+			handheight+=(realtics<<2);
 			if (handheight>MAXHANDHEIGHT)
 				handheight = MAXHANDHEIGHT;
 
@@ -2005,42 +2715,422 @@ void	T_Player (objtype *ob)
 		{
 			if (lasttimecount > lasthand+HANDPAUSE)
 			{
-				handheight-=(tics<<1);
+				handheight-=(realtics<<1);
 				if (handheight<0)
 					handheight = 0;
 			}
 
-			if (gamestate.shotpower == MAXSHOTPOWER)
-			{
-				lastfiretime = (unsigned)TimeCount/FIRETIME;
-				BigShoot ();
-			}
-			else if (gamestate.shotpower)
+			if (gamestate.shotpower)
 			{
 				lastfiretime = (unsigned)TimeCount/FIRETIME;
 				Shoot ();
 			}
 		}
 	}
+#endif
 
 	//
 	// special actions
 	//
 
-	if ( (Keyboard[sc_Space] || Keyboard[sc_H]) && gamestate.body != MAXBODY)
+	if ((Keyboard[sc_Space] || Keyboard[sc_C]) && gamestate.body != MAXBODY)
 		DrinkPotion ();
 
-	if (Keyboard[sc_B] && !boltsleft)
+	if (Keyboard[sc_Z] && !boltsleft)
 		CastBolt ();
 
-	if ( (Keyboard[sc_Enter] || Keyboard[sc_N]) && TimeCount-lastnuke > NUKETIME)
+	if ( (Keyboard[sc_Enter] || Keyboard[sc_X]) && ((TimeCount-lastnuke > NUKETIME) || (autofire)))
 		CastNuke ();
 
 	scroll = LastScan-2;
 	if ( scroll>=0 && scroll<NUMSCROLLS && gamestate.scrolls[scroll])
 		ReadScroll (scroll);
 
-	DrawText ();
-	DrawCompass ();
+	DrawText(false);
+	DrawHealth();
+	if (FreezeTime)
+		DrawFreezeTime();
+	DrawRadar();
+	EGAWRITEMODE(0);
+	DrawNSEWIcons();
+
+	if (redraw_gems)
+		DrawGems();
+
+#if 0
+// gems fade out over time...
+//
+	for (loop=0; loop<5; loop++)
+		if (gamestate.gems[loop])
+		{
+			gamestate.gems[loop] -= realtics;
+			if (gamestate.gems[loop] < 0)
+			{
+				gamestate.gems[loop] = 0;
+				redraw_gems = true;
+			}
+		}
+#endif
+}
+
+#if 0
+//------------------------------------------------------------------------
+// FaceDir() -
+//
+// PARAMS : x,y - pixle coords to bring in to view.
+//
+// NOTE : Params CAN NOT be shifted fracs!
+//------------------------------------------------------------------------
+void FaceDir(short x,short y,boolean StopTime)
+{
+	short diff;
+
+	RotateAngle = CalcAngle(x-(player->x>>16l),(player->y>>16l)-y);
+	FreezeTime = StopTime;
+
+	diff = player->angle - RotateAngle;
+
+	if (((diff>0) && (diff<180)) || ((diff<0) && (diff>-180)))
+		RotateSpeed = -ROTATE_SPEED;
+	else
+		RotateSpeed = ROTATE_SPEED;
+}
+#endif
+
+#if 0
+//------------------------------------------------------------------------
+// CalcAngle() -
+//
+// DESC: Calculates the angle from a given dy & dx
+//------------------------------------------------------------------------
+short CalcAngle(short dx,short dy)
+{
+	#define degtorad				(180/PI)
+	float angle;
+	short diff;
+	float rad_angle;
+
+	if (dx)
+	{
+		angle = atan((float)dy/dx)* degtorad;
+		if (angle<=0)
+			angle += 180;
+		if (dy>0)
+			angle += 180;
+	}
+	else
+	{
+		// 90 Deg shift
+
+		if (dy < 0)
+			angle = 0 + 90; 			// Above player (NORTH)
+		else
+			angle = 180 + 90;			// Below player (SOUTH)
+	}
+
+	if (!angle)				// HACK
+		angle++;
+
+	return((short)abs(angle));
+}
+
+#endif
+
+#if 0
+
+//-------------------------------------------------------------------------
+// RotateView() -
+//
+// DESC : Rotates view (current view of game) to a dest angle.
+//-------------------------------------------------------------------------
+void RotateView()
+{
+	short LastPos;
+
+	// Store old angle position then change angle...
+	//
+
+	LastPos = player->angle;
+
+	player->angle += RotateSpeed;
+
+	// Check to see if we cranked past out dest angle...
+	//
+
+
+	if ((player->angle>ANGLES) || (!player->angle))
+		player->angle = 1;
+	else
+	if (player->angle<1)
+		player->angle = ANGLES;
+
+	// Check to see if we over shot our dest angle...
+	//
+
+	if (((LastPos < RotateAngle) && (player->angle > RotateAngle) && (RotateSpeed > 0)) ||
+		((LastPos > RotateAngle) && (player->angle < RotateAngle) && (RotateSpeed < 0)))
+		player->angle = RotateAngle;
+
+	// Check for ending force turn....
+	//
+
+	if (player->angle == RotateAngle)
+		RotateAngle = -1;
 
 }
+
+
+//--------------------------------------------------------------------------
+// InitRotate()
+//--------------------------------------------------------------------------
+void InitRotate(short DestAngle)
+{
+	if (player->angle != DestAngle)
+	{
+		RotateAngle = DestAngle;
+
+		if (player->angle > DestAngle)
+			RotateSpeed = -ROTATE_SPEED;
+		else
+			RotateSpeed = ROTATE_SPEED;
+
+		if (abs(player->angle - RotateAngle) > 180)
+			RotateSpeed =- RotateSpeed;
+	}
+}
+
+
+
+//------------------------------------------------------------------------
+// FaceAngle() -
+//
+// PARAMS : DestAngle - Destination angle to turn to
+//------------------------------------------------------------------------
+void FaceAngle(short DestAngle)
+{
+	signed long dx,dy,radius,psin,pcos,newx,newy;
+	int		give;
+	short objnum,LastPos;
+	signed long ox,oy,xl,xh,yl,yh,px,py,norm_dx,norm_dy;
+	short o_radius;
+	void (*think)();
+
+
+	// Calculate the direction we want to turn to...
+	//
+
+	InitRotate(DestAngle);
+
+	RedrawStatusWindow();
+
+	while (RotateAngle != -1)
+	{
+
+		RotateView();
+
+//		PollControls();
+
+		objnum=0;
+
+		for (obj = player;obj;obj = obj->next)
+		{
+			if (obj->active >= yes)
+			{
+
+			// keep a list of objects around the player for radar updates
+			//
+				if (obj == player)
+				{
+					px = player->x;
+					py = player->y;
+					psin = sintable[player->angle];
+					pcos = costable[player->angle];
+					xl = px-((long)RADAR_WIDTH<<TILESHIFT)/2;
+					xh = px+((long)RADAR_WIDTH<<TILESHIFT)/2-1;
+					yl = py-((long)RADAR_HEIGHT<<TILESHIFT)/2;
+					yh = py+((long)RADAR_HEIGHT<<TILESHIFT)/2;
+				}
+
+				if (objnum > MAX_RADAR_BLIPS-2)
+					objnum = MAX_RADAR_BLIPS-2;
+
+				ox = obj->x;
+				oy = obj->y;
+
+
+				if ((ox >= xl) && (ox <= xh) && (oy >= yl) && (oy <= yh))
+				{
+					norm_dx = (dx = px-ox)>>TILESHIFT;
+					norm_dy = (dy = oy-py)>>TILESHIFT;
+
+					o_radius = IntSqrt((norm_dx * norm_dx) + (norm_dy * norm_dy));
+
+					if (o_radius < RADAR_RADIUS)
+					{
+						newx = FixedByFrac(dy,pcos)-FixedByFrac(dx,psin);
+						newy = FixedByFrac(dy,psin)+FixedByFrac(dx,pcos);
+
+						RadarXY[objnum][0]=newx>>TILESHIFT;
+						RadarXY[objnum][1]=newy>>TILESHIFT;
+
+						// Define color to use for this object...
+						//
+
+						switch (obj->obclass)
+						{
+							case playerobj:
+								RadarXY[objnum++][2]=15;
+							break;
+
+					// RED GEM
+					//
+							case demonobj:
+								if (gamestate.gems[B_RGEM-B_RGEM])
+									if (obj->active == always)
+										RadarXY[objnum++][2]=12;
+							break;
+
+					// GREEN GEM
+					//
+							case trollobj:
+								if (gamestate.gems[B_GGEM-B_RGEM])
+									if (obj->active == always)
+										RadarXY[objnum++][2]=10;
+							break;
+
+					// YELLOW GEM
+					//
+							case skeletonobj:
+								if (gamestate.gems[B_YGEM-B_RGEM])
+									if (obj->active == always)
+										RadarXY[objnum++][2]=14;
+							break;
+
+					// BLUE GEM
+					//
+							case mageobj:
+							case wetobj:
+								if (gamestate.gems[B_BGEM-B_RGEM])
+									if (obj->active == always)
+										RadarXY[objnum++][2]=9;
+							break;
+
+					// PURPLE GEM
+					//
+							case zombieobj:
+								if (gamestate.gems[B_PGEM-B_RGEM])
+									if (obj->active == always)
+										RadarXY[objnum++][2]=13;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		RadarXY[objnum][2]=-1;		// Signals end of RadarXY list...
+
+// refresh all
+//
+
+		ThreeDRefresh();
+		DrawRadar();
+		EGAWRITEMODE(0);
+		DrawNSEWIcons();
+
+//		CheckKeys();
+	}
+}
+
+
+//-------------------------------------------------------------------------
+// FaceDoor() - Turns the player to face a door (a tile) at a given TILE x & y
+//
+// RETURNS : Returns the orginal angle of the player.
+//------------------------------------------------------------------------
+short FaceDoor(short x, short y)
+{
+	short p_x,p_y,angle,old_angle;
+
+	old_angle = player->angle;
+
+	p_x = player->x>>16l;
+	p_y = player->y>>16l;
+
+	if (p_x != x)
+	{
+		if (p_x > x)
+			angle = 180;		// Face Left
+		else
+			angle = 1;			// Face Right
+	}
+
+	if (p_y != y)
+	{
+		if (p_y > y)
+			angle = 90;			// Face Up
+		else
+			angle = 270;		// Face Down
+	}
+
+	FaceAngle(angle);
+
+	return(old_angle);
+}
+
+
+#endif
+
+
+
+/*==========================================================================
+
+								EXPLOSION SPAWNING ROUTINES
+
+===========================================================================*/
+
+statetype s_explode = {0,1,T_ExpThink,&s_explode};
+
+//-------------------------------------------------------------------------
+// SpawnExplosion()
+//------------------------------------------------------------------------
+void SpawnExplosion(fixed x, fixed y, short Delay)
+{
+	DSpawnNewObjFrac(x,y,&s_explode,PIXRADIUS*7);
+	new->obclass = expobj;
+	new->active = always;
+	new->temp1 = Delay;
+}
+
+
+//---------------------------------------------------------------------------
+// T_ExpThink()
+//---------------------------------------------------------------------------
+void T_ExpThink(objtype *obj)
+{
+	if (obj->temp1)
+	{
+		if ((obj->temp1-=realtics) <= 0)
+			obj->temp1 = 0;
+	}
+	else
+	{
+		obj->state = &s_pshot_exp1;
+		obj->ticcount = obj->state->tictime;
+		SD_PlaySound(BOOMSND);
+	}
+}
+
+
+
+//-------------------------------------------------------------------------
+// SpawnBigExplosion()
+//------------------------------------------------------------------------
+void SpawnBigExplosion(fixed x, fixed y, short Delay, fixed Range)
+{
+	SpawnExplosion(x-random(Range),y+random(Range),random(Delay));
+	SpawnExplosion(x+random(Range),y-random(Range),random(Delay));
+	SpawnExplosion(x-random(Range),y-random(Range),random(Delay));
+	SpawnExplosion(x+random(Range),y+random(Range),random(Delay));
+}
+

@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -465,12 +465,12 @@ USL_ScreenDraw(word x,word y,char *s,byte attr)
 {
 	byte    far *screen;
 
-     //	screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
-     //	while (*s)
-     //	{
-     //		*screen++ = *s++;
-     //		*screen++ = attr;
-     //	}
+	screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
+	while (*s)
+	{
+		*screen++ = *s++;
+		*screen++ = attr;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -512,7 +512,7 @@ extern  char    far introscn;
 
 	USL_ClearTextScreen();
 
-//	_fmemcpy(MK_FP(0xb800,0),7 + &introscn,80 * 25 * 2);
+	_fmemcpy(MK_FP(0xb800,0),7 + &introscn,80 * 25 * 2);
 
 	// Check for TED launching here
 	for (i = 1;i < _argc;i++)
@@ -641,12 +641,12 @@ void
 US_FinishTextScreen(void)
 {
 	// Change Loading... to Press a Key
- //	USL_ScreenDraw(29,22," Ready - Press a Key     ",0x9a);
+	USL_ScreenDraw(29,22," Ready - Press a Key     ",0x9a);
 
 	if (!(tedlevel || NoWait))
 	{
 		IN_ClearKeysDown();
-	       //	IN_Ack();
+		IN_Ack();
 	}
 	IN_ClearKeysDown();
 

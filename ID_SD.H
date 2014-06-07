@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -177,6 +177,7 @@ extern	boolean		AdLibPresent,
 extern	SDMode		SoundMode;
 extern	SMMode		MusicMode;
 extern	longword	TimeCount;					// Global time in ticks
+extern 	SDMode		oldsoundmode;
 
 // Function prototypes
 extern	void	SD_Startup(void),

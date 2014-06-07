@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -77,6 +77,7 @@
 
 #define WHITE			15			// graphics mode independant colors
 #define BLACK			0
+#define LT_GREY		7
 #define FIRSTCOLOR		1
 #define SECONDCOLOR		12
 #define F_WHITE			0			// for XOR font drawing

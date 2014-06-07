@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 // C3_TRACE.C
 
-#include "C3_DEF.H"
+#include "DEF.H"
 #pragma hdrstop
 
 /*
@@ -393,8 +393,9 @@ int BackTrace (int finish)
     // rotate the X value to see if it is behind the view plane
     //
     if (TransformX (((long)tile.x<<16)+point1x[wall],
-		    ((long)tile.y<<16)+point1y[wall]) < FOCALLENGTH)
-    {
+			 ((long)tile.y<<16)+point1y[wall]) < FOCALLENGTH)
+//			 ((long)tile.y<<16)+point1y[wall]) < ((long)FOCALLENGTH+30000l))
+	 {
       tile.x = otx;
       tile.y = oty;
       return 0;
@@ -767,7 +768,7 @@ advance:
   //
   // somethiing got messed up!  Correct by thrusting ahead...
   //
-		VW_ColorBorder(6);
+//		VW_ColorBorder(6);
 		bordertime = 60;
 		Thrust(player->angle,TILEGLOBAL/4);
 		player->angle+=5;

@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -35,9 +35,6 @@
 #endif
 
 //#define	HELPTEXTLINKED
-
-#define	MaxX	320
-#define	MaxY	200
 
 #define	MaxHelpLines	500
 
@@ -81,6 +78,8 @@ typedef	enum
 extern	boolean		tedlevel;
 extern	word		tedlevelnum;
 extern	void		TEDDeath(void);
+
+extern word MaxX,MaxY;		// MDM (GAMERS EDGE)
 
 extern	boolean		ingame,		// Set by game code if a game is in progress
 					abortgame,	// Set if a game load failed

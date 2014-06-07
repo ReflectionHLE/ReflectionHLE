@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 // C3_STATE.C
 
-#include "C3_DEF.H"
+#include "DEF.H"
 #pragma hdrstop
 
 /*
@@ -60,14 +60,15 @@ dirtype opposite[9] =
 /*
 ===================
 =
-= SpawnNewObj
+= Internal_SpawnNewObj
 =
 ===================
 */
-
-void SpawnNewObj (unsigned x, unsigned y, statetype *state, unsigned size)
+void Internal_SpawnNewObj (unsigned x, unsigned y, statetype *state, unsigned size,boolean UseDummy)
 {
-	GetNewObj (false);
+	extern objtype dummyobj;
+
+	GetNewObj(UseDummy);
 	new->size = size;
 	new->state = state;
 	new->ticcount = random (state->tictime)+1;
@@ -78,17 +79,19 @@ void SpawnNewObj (unsigned x, unsigned y, statetype *state, unsigned size)
 	new->y = ((long)y<<TILESHIFT)+TILEGLOBAL/2;
 	CalcBounds(new);
 	new->dir = nodir;
+	new->active = noalways;
 
-	actorat[new->tilex][new->tiley] = new;
+	if (new != &dummyobj)
+		actorat[new->tilex][new->tiley] = new;
 }
 
-void SpawnNewObjFrac (long x, long y, statetype *state, unsigned size)
+void Internal_SpawnNewObjFrac (long x, long y, statetype *state, unsigned size,boolean UseDummy)
 {
-	GetNewObj (false);
+	GetNewObj(UseDummy);
 	new->size = size;
 	new->state = state;
 	new->ticcount = random (state->tictime)+1;
-	new->active = true;
+	new->active = noalways;
 
 	new->x = x;
 	new->y = y;
@@ -98,6 +101,7 @@ void SpawnNewObjFrac (long x, long y, statetype *state, unsigned size)
 	new->distance = 100;
 	new->dir = nodir;
 }
+
 
 
 
@@ -115,7 +119,7 @@ boolean CheckHandAttack (objtype *ob)
 {
 	long deltax,deltay,size;
 
-	size = (long)ob->size + player->size + ob->speed*tics;
+	size = (long)ob->size + player->size + ob->speed*tics + SIZE_TEST;
 	deltax = ob->x - player->x;
 	deltay = ob->y - player->y;
 
@@ -141,11 +145,7 @@ void T_DoDamage (objtype *ob)
 	int	points;
 
 
-	if (!CheckHandAttack (ob))
-	{
-		SD_PlaySound (MONSTERMISSSND);
-	}
-	else
+	if (CheckHandAttack(ob) && (!(ob->flags & of_damagedone)))
 	{
 		points = 0;
 
@@ -154,17 +154,30 @@ void T_DoDamage (objtype *ob)
 		case orcobj:
 			points = 4;
 			break;
+		case zombieobj:
 		case trollobj:
 			points = 8;
 			break;
+		case reddemonobj:
 		case demonobj:
 			points = 15;
 			break;
-		}
-		TakeDamage (points);
-	}
+		case spookobj:
+			points = 2;
+			break;
+		case skeletonobj:
+			points = 6;
+			break;
 
-	ob->state = ob->state->next;
+		case wetobj:
+			points = 7;
+			break;
+
+		}
+		TakeDamage (EasyDoDamage(points));
+
+		ob->flags |= of_damagedone;
+	}
 }
 
 
@@ -434,8 +447,10 @@ boolean Chase (objtype *ob, boolean diagonal)
 	long move;
 	long deltax,deltay,size;
 
+	ob->flags &= ~of_damagedone;
+
 	move = ob->speed*tics;
-	size = (long)ob->size + player->size + move;
+	size = (long)ob->size + player->size + move + SIZE_TEST;
 
 	while (move)
 	{
@@ -489,40 +504,91 @@ void ShootActor (objtype *ob, unsigned damage)
 	{
 		switch (ob->obclass)
 		{
+		case reddemonobj:
+			ob->state = &s_red_demondie1;
+			break;
 		case orcobj:
 			ob->state = &s_orcdie1;
-			GivePoints (100);
 			break;
 		case trollobj:
 			ob->state = &s_trolldie1;
-			GivePoints (400);
 			break;
 		case demonobj:
 			ob->state = &s_demondie1;
-			GivePoints (1000);
 			break;
 		case mageobj:
 			ob->state = &s_magedie1;
-			GivePoints (600);
 			break;
 		case batobj:
 			ob->state = &s_batdie1;
-			GivePoints (100);
 			break;
 		case grelmobj:
 			ob->state = &s_greldie1;
-			GivePoints (10000);
 			break;
 
+		case zombieobj:
+			ob->state = &s_zombie_death1;
+		break;
+
+		case skeletonobj:
+			ob->state = &s_skel_die1;
+		break;
+
+		case spookobj:
+			ob->state = &s_spookdie;
+		break;
+
+		case wetobj:
+			ob->state = &s_wet_die1;
+		break;
+
+		case eyeobj:
+			ob->state = &s_eye_die1;
+		break;
+
+		case eshotobj:
+		case mshotobj:
+			ob->state = &s_bonus_die;
+		break;
+
+		case bonusobj:
+		case freezeobj:
+			switch (ob->temp1)
+			{
+				case B_POTION:
+				case B_CHEST:
+				case B_NUKE:
+				case B_BOLT:
+					ob->state = &s_pshot_exp1;
+					ob->obclass = expobj;
+					ob->ticcount = ob->state->tictime;
+					SpawnBigExplosion(ob->x,ob->y,12,(16l<<16L));
+					bordertime = FLASHTICS<<2;
+					bcolor = 14;
+					VW_ColorBorder(14 | 56);
+					DisplaySMsg("Item destroyed", NULL);
+					status_flag  = S_NONE;
+					status_delay = 80;
+				break;
+			}
+		break;
+
 		}
-		ob->obclass = inertobj;
-		ob->shootable = false;
-		actorat[ob->tilex][ob->tiley] = NULL;
+
+		if (ob->obclass != solidobj)
+		{
+			ob->obclass = inertobj;
+			ob->flags &= ~of_shootable;
+			actorat[ob->tilex][ob->tiley] = NULL;
+		}
 	}
 	else
 	{
 		switch (ob->obclass)
 		{
+		case reddemonobj:
+			ob->state = &s_red_demonouch;
+			break;
 		case orcobj:
 			ob->state = &s_orcouch;
 			break;
@@ -535,9 +601,30 @@ void ShootActor (objtype *ob, unsigned damage)
 		case mageobj:
 			ob->state = &s_mageouch;
 			break;
+
 		case grelmobj:
 			ob->state = &s_grelouch;
 			break;
+
+		case zombieobj:
+			ob->state = &s_zombie_ouch;
+		break;
+
+		case spookobj:
+			ob->state = &s_spookouch;
+			break;
+
+		case skeletonobj:
+			ob->state = &s_skel_ouch;
+			break;
+
+		case wetobj:
+			ob->state = &s_wet_ouch;
+			break;
+
+		case eyeobj:
+			ob->state = &s_eye_ouch;
+		break;
 
 		}
 	}

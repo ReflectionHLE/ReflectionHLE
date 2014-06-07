@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 ///////////////////////////////////////
 //
-// TED5 Map Header for C3D
+// TED5 Map Header for ABS
 //
 ///////////////////////////////////////
 
@@ -26,26 +26,29 @@
 // Map Names
 //
 typedef enum {
-		APPROACH_MAP,            // 0
-		ENTRANCE_MAP,            // 1
-		GROUND_FLOOR_MAP,        // 2
-		SECOND_FLOOR_MAP,        // 3
-		THIRD_FLOOR_MAP,         // 4
-		TOWER_1_MAP,             // 5
-		TOWER_2_MAP,             // 6
-		SECRET_HALLS_MAP,        // 7
-		ACCESS_FLOOR_MAP,        // 8
-		DUNGEON_MAP,             // 9
-		LOWER_DUNGEON_MAP,       // 10
-		CATACOMB_MAP,            // 11
-		LOWER_REACHES_MAP,       // 12
-		WARRENS_MAP,             // 13
-		HIDDEN_CAVERNS_MAP,      // 14
-		FENSOFINSANITY_MAP,      // 15
-		CHAOSCORRIDORS_MAP,      // 16
-		LABYRINTH_MAP,           // 17
-		HALLS_OF_BLOOD_MAP,      // 18
-		NEMESISSLAIR_MAP,        // 19
+		TOWNE_CEMETARY_MAP,      // 0
+		GARDEN_OF_TEARS_MAP,     // 1
+		DEN_OF_ZOMBIES_MAP,      // 2
+		MAUSOLEUM_GROUN_MAP,     // 3
+		MAUSOLEUM_MAIN_MAP,      // 4
+		MIKES_LEVEL_MAP,         // 5
+		CRYPT_OF_UNDEAD_MAP,     // 6
+		SUBVAULT_1_MAP,          // 7
+		AQUADUCT_MAP,            // 8
+		ORC_MINES_MAP,           // 9
+		TROLLS_LAIR_MAP,         // 10
+		DEMON_INFERNO_MAP,       // 11
+		BATTLEGROUND_MAP,        // 12
+		COVEN_OF_MAGES_MAP,      // 13
+		INNER_SANCTUM_MAP,       // 14
+		NEMESIS_HAUNT_MAP,       // 15
+		PASSAGE_TO_SURF_MAP,     // 16
+		BIG_JIMS_DOMAIN_MAP,     // 17
+		NOLANS_NASTY_MAP,        // 18
+		TILE_TESTER_3_MAP,       // 19
+		TILE_TESTER_1_MAP,       // 20
+		TILE_TESTER_2_MAP,       // 21
+		GOOD_MAP_TO_USE_MAP,     // 22
 		LASTMAP
 	     } mapnames;
 
@@ -53,3 +56,4 @@ typedef enum {
 // TILEINFO offsets
 //
 #define ANIM		402
+#define FLAGS		(ANIM+NUMTILE16)

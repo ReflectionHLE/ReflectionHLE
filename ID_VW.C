@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -176,7 +176,26 @@ void VW_SetScreenMode (int grmode)
 	  case CGAGR: _AX = 4;
 		  geninterrupt (0x10);		// screenseg is actually a main mem buffer
 		  break;
+
+		case EGA320GR:						// MDM start (GAMERS EDGE)
+		  MaxX=320;
+		  MaxY=200;
+		  _AX = 0xd|128;
+		  geninterrupt (0x10);
+		  screenseg=0xa000;
+		break;
+
+		case EGA640GR:
+		  MaxX=640;
+		  MaxY=200;
+		  _AX = 0xe|128;
+		  geninterrupt (0x10);
+		  screenseg=0xa000;
+		break;						 		// MDM end (GAMERS EDGE)
+
 	  case EGAGR: _AX = 0xd;
+		  MaxX=320;
+		  MaxY=200;
 		  geninterrupt (0x10);
 		  screenseg=0xa000;
 		  break;
@@ -914,7 +933,7 @@ done:
 void
 VWL_MeasureString (char far *string, word *width, word *height, fontstruct _seg *font)
 {
-	*height = font->height;
+	*height = font->height-1;			// MDM (GAMERS EDGE) - squeeze font vertically...
 	for (*width = 0;*string;string++)
 		*width += font->width[*((byte far *)string)];	// proportional width
 }
@@ -1371,8 +1390,8 @@ void VWB_DrawTile8M (int x, int y, int tile)
 	x+=pansx;
 	y+=pansy;
 	xb = x/SCREENXDIV; 			// use intermediate because VW_DT8M is macro
-	if (VW_MarkUpdateBlock (x&SCREENXMASK,y,(x&SCREENXMASK)+7,y+7))
-		VW_DrawTile8M (xb,y,tile);
+//	if (VW_MarkUpdateBlock (x&SCREENXMASK,y,(x&SCREENXMASK)+7,y+7))	// MDM (GAMER EDGE)
+		VW_DrawTile8M (xb,y,tile);													// statement prevents drawing chars past 42
 }
 
 void VWB_DrawTile16 (int x, int y, int tile)

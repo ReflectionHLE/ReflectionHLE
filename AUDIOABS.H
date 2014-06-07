@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,13 +18,13 @@
 
 /////////////////////////////////////////////////
 //
-// MUSE Header for .C3D
-// Created Wed Oct 30 22:44:13 1991
+// MUSE Header for .ABS
+// Created Thu Apr 16 14:56:19 1992
 //
 /////////////////////////////////////////////////
 
-#define NUMSOUNDS		30
-#define NUMSNDCHUNKS		91
+#define NUMSOUNDS		34
+#define NUMSNDCHUNKS		103
 
 //
 // Sound names & indexes
@@ -55,11 +55,15 @@ typedef enum {
 		SHOOTMONSTERSND,         // 22
 		TAKEDMGHURTSND,          // 23
 		BALLBOUNCESND,           // 24
-		COMPSCOREDSND,           // 25
-		KEENSCOREDSND,           // 26
-		COMPPADDLESND,           // 27
-		KEENPADDLESND,           // 28
-		NOWAYSND,                // 29
+		NOWAYSND,                // 25
+		WARPSND,                 // 26
+		HIT_GATESND,             // 27
+		GETGEMSND,               // 28
+		BOOMSND,                 // 29
+		GRELM_DEADSND,           // 30
+		FREEZETIMESND,           // 31
+		TIMERETURNSND,           // 32
+		TICKSND,                 // 33
 		LASTSOUND
 	     } soundnames;
 
@@ -67,9 +71,9 @@ typedef enum {
 // Base offsets
 //
 #define STARTPCSOUNDS		0
-#define STARTADLIBSOUNDS	30
-#define STARTDIGISOUNDS		60
-#define STARTMUSIC		90
+#define STARTADLIBSOUNDS	34
+#define STARTDIGISOUNDS		68
+#define STARTMUSIC		102
 
 //
 // Music names & indexes

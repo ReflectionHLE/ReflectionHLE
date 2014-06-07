@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -66,6 +66,8 @@ extern  ScanCode        firescan;
 					HighScoresDirty;
 		word            PrintX,PrintY;
 		word            WindowX,WindowY,WindowW,WindowH;
+
+		word	MaxX=320,MaxY=200;	// MDM (GAMERS EDGE)
 
 //      Internal variables
 #define ConfigVersion   1
@@ -198,7 +200,7 @@ oh_kill_me:
 char *
 USL_GiveSaveName(word game)
 {
-static  char    name[] = "SAVEGAMx."EXTENSION;
+static  char    name[] = "SAVEGAMx."EXT;
 
 	name[7] = '0' + game;
 	return(name);
@@ -229,18 +231,18 @@ static void
 USL_ReadConfig(void)
 {
 	boolean         gotit;
-	char            sig[sizeof(EXTENSION)];
+	char            sig[sizeof(EXT)];
 	word            version;
 	int                     file;
 	SDMode          sd;
 	SMMode          sm;
 	ControlType     ctl;
 
-	if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
+	if ((file = open("CONFIG."EXT,O_BINARY | O_RDONLY)) != -1)
 	{
-		read(file,sig,sizeof(EXTENSION));
+		read(file,sig,sizeof(EXT));
 		read(file,&version,sizeof(version));
-		if (strcmp(sig,EXTENSION) || (version != ConfigVersion))
+		if (strcmp(sig,EXT) || (version != ConfigVersion))
 		{
 			close(file);
 			goto rcfailed;
@@ -293,11 +295,11 @@ USL_WriteConfig(void)
 	int             file;
 
 	version = ConfigVersion;
-	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
+	file = open("CONFIG."EXT,O_CREAT | O_BINARY | O_WRONLY,
 				S_IREAD | S_IWRITE | S_IFREG);
 	if (file != -1)
 	{
-		write(file,EXTENSION,sizeof(EXTENSION));
+		write(file,EXT,sizeof(EXT));
 		write(file,&version,sizeof(version));
 		write(file,Scores,sizeof(HighScore) * MaxScores);
 		write(file,&SoundMode,sizeof(SoundMode));
@@ -347,7 +349,7 @@ USL_CheckSavedGames(void)
 			if
 			(
 				(read(file,game,sizeof(*game)) == sizeof(*game))
-			&&      (!strcmp(game->signature,EXTENSION))
+			&&      (!strcmp(game->signature,EXT))
 			&&      (game->oldtest == &PrintX)
 			)
 				ok = true;
@@ -359,7 +361,7 @@ USL_CheckSavedGames(void)
 			game->present = true;
 		else
 		{
-			strcpy(game->signature,EXTENSION);
+			strcpy(game->signature,EXT);
 			game->present = false;
 			strcpy(game->name,"Empty");
 		}
@@ -465,6 +467,7 @@ US_CheckParm(char *parm,char **strings)
 	return(-1);
 }
 
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //      USL_ScreenDraw() - Draws a chunk of the text screen (called only by
@@ -490,6 +493,7 @@ USL_ScreenDraw(word x,word y,char *s,byte attr)
 			screen++;
 	}
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -514,6 +518,7 @@ USL_ClearTextScreen(void)
 	geninterrupt(0x10);
 }
 
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //      US_TextScreen() - Puts up the startup text screen
@@ -674,7 +679,7 @@ static  byte    colors[] = {4,6,13,15,15,15,15,15,15};
 
 	if (!(tedlevel || NoWait))
 	{
-	      //	IN_ClearKeysDown();
+		IN_ClearKeysDown();
 		for (i = 0,up = true;!IN_UserInput(4,true);)
 		{
 			c = colors[i];
@@ -689,15 +694,16 @@ static  byte    colors[] = {4,6,13,15,15,15,15,15,15};
 					i = 1,up = true;
 			}
 
-		   //	USL_ScreenDraw(29,22," Ready - Press a Key     ",0x00 + c);
+			USL_ScreenDraw(29,22," Ready - Press a Key     ",0x00 + c);
 		}
 	}
-      //	else
-      //		USL_ScreenDraw(29,22," Ready - Press a Key     ",0x9a);
-      //	IN_ClearKeysDown();
+	else
+		USL_ScreenDraw(29,22," Ready - Press a Key     ",0x9a);
+	IN_ClearKeysDown();
 
 	USL_ClearTextScreen();
 }
+#endif
 
 //      Window/Printing routines
 
@@ -752,6 +758,31 @@ US_Print(char *s)
 			PrintX += w;
 	}
 }
+
+// MDM - (GAMERS EDGE)	begin
+
+///////////////////////////////////////////////////////////////////////////
+//
+// US_Printxy()
+//
+void US_Printxy(word x, word y, char *text)
+{
+	word orgx, orgy;
+
+	orgx = PrintX;
+	orgy = PrintY;
+
+//	PrintX = WindowX+x;
+//	PrintY = WindowY+y;
+	PrintX = x;
+	PrintY = y;
+	US_Print(text);
+
+	PrintX = orgx;
+	PrintY = orgy;
+}
+
+// MDM - (GAMERS EDGE)	end
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -831,7 +862,7 @@ US_CPrintLine(char *s)
 	USL_MeasureString(s,&w,&h);
 
 	if (w > WindowW)
-		Quit("US_CPrintLine() - String exceeds width");
+		Quit("US_CPrintLine() - String exceeds width\n-->%s",s);
 	px = WindowX + ((WindowW - w) / 2);
 	py = PrintY;
 	USL_DrawString(s);
@@ -876,7 +907,7 @@ US_CPrint(char *s)
 void
 US_ClearWindow(void)
 {
-	VWB_Bar(WindowX,WindowY,WindowW,WindowH,WHITE);
+	VWB_Bar(WindowX,WindowY,WindowW,WindowH,LT_GREY);
 	PrintX = WindowX;
 	PrintY = WindowY;
 }
@@ -1283,3 +1314,4 @@ US_LineInput(int x,int y,char *buf,char *def,boolean escok,
 	IN_ClearKeysDown();
 	return(result);
 }
+

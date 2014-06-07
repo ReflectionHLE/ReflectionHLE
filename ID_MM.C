@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@
 /*
 =============================================================================
 
-		   ID software memory manager
-		   --------------------------
+			ID software memory manager
+			--------------------------
 
 Primary coder: John Carmack
 
@@ -47,6 +47,16 @@ EMS / XMS unmanaged routines
 
 #pragma warn -pro
 #pragma warn -use
+
+
+//#define OUT_OF_MEM_MSG	"MM_GetPtr: Out of memory!"
+
+#define OUT_OF_MEM_MSG "\n"                                                                          \
+							  "You need more free memory to run CATACOMB ABYSS.  Type START [ENTER]\n"  \
+							  "and read the \"INFORMATION YOU SHOULD KNOW BEFORE PLAYING\" section\n"       \
+							  "for more information about this.\n"
+
+
 
 /*
 =============================================================================
@@ -759,7 +769,7 @@ void MM_GetPtr (memptr *baseptr,unsigned long size)
 	}
 
 	if (bombonerror)
-		Quit ("MM_GetPtr: Out of memory!");
+		Quit (OUT_OF_MEM_MSG);
 	else
 		mmerror = true;
 }
@@ -909,8 +919,8 @@ void MM_SortMem (void)
 
 
 	SD_StopSound();
-	oldborder = bordercolor;
-	VW_ColorBorder (15);
+//	oldborder = bordercolor;
+//	VW_ColorBorder (15);
 
 	if (beforesort)
 		beforesort();
@@ -976,7 +986,7 @@ void MM_SortMem (void)
 	if (aftersort)
 		aftersort();
 
-	VW_ColorBorder (oldborder);
+//	VW_ColorBorder (oldborder);
 
 	if (playing)
 		MM_SetLock(&(memptr)audiosegs[playing],false);
@@ -985,6 +995,7 @@ void MM_SortMem (void)
 
 //==========================================================================
 
+#if 0
 /*
 =====================
 =
@@ -1049,6 +1060,7 @@ write (debughandle,scratch,strlen(scratch));
 	VW_SetLineWidth(64);
 	bufferofs = temp;
 }
+#endif
 
 //==========================================================================
 
