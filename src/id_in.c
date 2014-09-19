@@ -138,7 +138,7 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
 						dir_SouthWest,	dir_South,	dir_SouthEast
 					};
 
-static	id0_byte_t _seg	*DemoBuffer;
+static	id0_byte_t id0_seg	*DemoBuffer;
 static	id0_word_t		DemoOffset,DemoSize;
 
 static	void			(*INL_KeyHook)(void);
@@ -909,7 +909,7 @@ IN_StartDemoRecord(id0_word_t bufsize)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-IN_StartDemoPlayback(id0_byte_t _seg *buffer,id0_word_t bufsize)
+IN_StartDemoPlayback(id0_byte_t id0_seg *buffer,id0_word_t bufsize)
 {
 	DemoBuffer = buffer;
 	DemoMode = demo_Playback;

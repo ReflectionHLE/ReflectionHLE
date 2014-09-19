@@ -139,11 +139,11 @@ void	FixScoreBox (void)
 {
 	id0_unsigned_t	width, planesize;
 	id0_unsigned_t smallplane,bigplane;
-	spritetype	_seg	*block;
+	spritetype	id0_seg	*block;
 	id0_byte_t	id0_far	*dest;
 
 // draw boobus bomb if on level 15, else flower power
-	block = (spritetype _seg *)grsegs[SCOREBOXSPR];
+	block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 	width = block->width[0];
 	planesize = block->planesize[0];
 	dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
@@ -275,10 +275,10 @@ asm	mov	ds,ax
 void ShiftScore (void)
 {
 	spritetabletype id0_far *spr;
-	spritetype _seg *dest;
+	spritetype id0_seg *dest;
 
 	spr = &spritetable[SCOREBOXSPR-STARTSPRITES];
-	dest = (spritetype _seg *)grsegs[SCOREBOXSPR];
+	dest = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 
 	CAL_ShiftSprite (FP_SEG(dest),dest->sourceoffset[0],
 		dest->sourceoffset[1],spr->width,spr->height,2);
@@ -302,7 +302,7 @@ void ShiftScore (void)
 void ScoreThink (objtype *ob)
 {
 	id0_char_t		str[10],*ch;
-	spritetype	_seg	*block;
+	spritetype	id0_seg	*block;
 	id0_byte_t		id0_far *dest;
 	id0_unsigned_t	i, length, width, planesize, number;
 
@@ -312,7 +312,7 @@ void ScoreThink (objtype *ob)
 	if ((gamestate.score>>16) != ob->temp1
 		|| (unsigned)gamestate.score != ob->temp2 )
 	{
-		block = (spritetype _seg *)grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
@@ -347,7 +347,7 @@ void ScoreThink (objtype *ob)
 		number = gamestate.flowerpowers;
 	if (number != ob->temp3)
 	{
-		block = (spritetype _seg *)grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
@@ -380,7 +380,7 @@ void ScoreThink (objtype *ob)
 //
 	if (gamestate.lives != ob->temp4)
 	{
-		block = (spritetype _seg *)grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
@@ -965,7 +965,7 @@ void	CheckEnterLevel (objtype *ob)
 	for (y=ob->tiletop;y<=ob->tilebottom;y++)
 		for (x=ob->tileleft;x<=ob->tileright;x++)
 		{
-			tile = *((id0_unsigned_t _seg *)mapsegs[2]+mapbwidthtable[y]/2+x);
+			tile = *((id0_unsigned_t id0_seg *)mapsegs[2]+mapbwidthtable[y]/2+x);
 			if (tile >= 3 && tile <=18)
 			{
 			//
@@ -1429,10 +1429,10 @@ id0_boolean_t	CheckGrabPole (objtype *ob)
 		return false;
 
 	if (c.yaxis == -1)
-		map = (id0_unsigned_t _seg *)mapsegs[1]+
+		map = (id0_unsigned_t id0_seg *)mapsegs[1]+
 			mapbwidthtable[(ob->top+6*PIXGLOBAL)/TILEGLOBAL]/2;
 	else
-		map = (id0_unsigned_t _seg *)mapsegs[1]+
+		map = (id0_unsigned_t id0_seg *)mapsegs[1]+
 			mapbwidthtable[ob->tilebottom]/2;
 
 	x = (ob->left + (ob->right - ob->left)/2) >>G_T_SHIFT;
@@ -1990,7 +1990,7 @@ void	KeenClimbThink		(objtype *ob)
 {
 	id0_unsigned_t id0_far *map;
 
-	map = (id0_unsigned_t _seg *)mapsegs[1]+mapbwidthtable[ob->tiletop]/2+ob->temp4;
+	map = (id0_unsigned_t id0_seg *)mapsegs[1]+mapbwidthtable[ob->tiletop]/2+ob->temp4;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
 	{
@@ -2029,7 +2029,7 @@ void	KeenDropThink		(objtype *ob)
 {
 	id0_unsigned_t id0_far *map;
 
-	map = (id0_unsigned_t _seg *)mapsegs[1]+mapbwidthtable[ob->tilebottom]/2+ob->temp4;
+	map = (id0_unsigned_t id0_seg *)mapsegs[1]+mapbwidthtable[ob->tilebottom]/2+ob->temp4;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
 	{

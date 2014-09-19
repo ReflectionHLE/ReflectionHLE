@@ -64,13 +64,13 @@ typedef struct
 =============================================================================
 */
 
-id0_byte_t 		_seg	*tinf;
+id0_byte_t 		id0_seg	*tinf;
 id0_int_t			mapon;
 
-id0_unsigned_t	_seg	*mapsegs[3];
-maptype		_seg	*mapheaderseg[NUMMAPS];
-id0_byte_t		_seg	*audiosegs[NUMSNDCHUNKS];
-void		_seg	*grsegs[NUMCHUNKS];
+id0_unsigned_t	id0_seg	*mapsegs[3];
+maptype		id0_seg	*mapheaderseg[NUMMAPS];
+id0_byte_t		id0_seg	*audiosegs[NUMSNDCHUNKS];
+void		id0_seg	*grsegs[NUMCHUNKS];
 
 id0_byte_t		grneeded[NUMCHUNKS];
 id0_byte_t		ca_levelbit,ca_levelnum;
@@ -97,8 +97,8 @@ extern	id0_byte_t	id0_far	audiohead;
 extern	id0_byte_t	audiodict;
 
 
-id0_long_t		_seg *grstarts;	// array of offsets in egagraph, -1 for sparse
-id0_long_t		_seg *audiostarts;	// array of offsets in audio / audiot
+id0_long_t		id0_seg *grstarts;	// array of offsets in egagraph, -1 for sparse
+id0_long_t		id0_seg *audiostarts;	// array of offsets in audio / audiot
 
 #ifdef GRHEADERLINKED
 huffnode	*grhuffman;
@@ -472,11 +472,11 @@ void CAL_SetupGrFile (void)
 
 #if GRMODE == EGAGR
 	grhuffman = (huffnode *)&EGAdict;
-	grstarts = (id0_long_t _seg *)FP_SEG(&EGAhead);
+	grstarts = (id0_long_t id0_seg *)FP_SEG(&EGAhead);
 #endif
 #if GRMODE == CGAGR
 	grhuffman = (huffnode *)&CGAdict;
-	grstarts = (id0_long_t _seg *)FP_SEG(&CGAhead);
+	grstarts = (id0_long_t id0_seg *)FP_SEG(&CGAhead);
 #endif
 
 	CAL_OptimizeNodes (grhuffman);
@@ -586,7 +586,7 @@ void CAL_SetupMapFile (void)
 
 	maphuffman = (huffnode *)&mapdict;
 	CAL_OptimizeNodes (maphuffman);
-	tinf = (id0_byte_t _seg *)FP_SEG(&maphead);
+	tinf = (id0_byte_t id0_seg *)FP_SEG(&maphead);
 
 #endif
 
@@ -635,7 +635,7 @@ void CAL_SetupAudioFile (void)
 #else
 	audiohuffman = (huffnode *)&audiodict;
 	CAL_OptimizeNodes (audiohuffman);
-	audiostarts = (id0_long_t _seg *)FP_SEG(&audiohead);
+	audiostarts = (id0_long_t id0_seg *)FP_SEG(&audiohead);
 #endif
 
 //
@@ -909,7 +909,7 @@ void CAL_CacheSprite (id0_int_t chunk, id0_char_t id0_far *compressed)
 	id0_unsigned_t shiftstarts[5];
 	id0_unsigned_t smallplane,bigplane,expanded;
 	spritetabletype id0_far *spr;
-	spritetype _seg *dest;
+	spritetype id0_seg *dest;
 
 #if GRMODE == CGAGR
 //
@@ -918,7 +918,7 @@ void CAL_CacheSprite (id0_int_t chunk, id0_char_t id0_far *compressed)
 	spr = &spritetable[chunk-STARTSPRITES];
 	smallplane = spr->width*spr->height;
 	MM_GetPtr (&grsegs[chunk],smallplane*2+MAXSHIFTS*6);
-	dest = (spritetype _seg *)grsegs[chunk];
+	dest = (spritetype id0_seg *)grsegs[chunk];
 	dest->sourceoffset[0] = MAXSHIFTS*6;	// start data after 3 id0_unsigned_t tables
 	dest->planesize[0] = smallplane;
 	dest->width[0] = spr->width;
@@ -948,7 +948,7 @@ void CAL_CacheSprite (id0_int_t chunk, id0_char_t id0_far *compressed)
 
 	expanded = shiftstarts[spr->shifts];
 	MM_GetPtr (&grsegs[chunk],expanded);
-	dest = (spritetype _seg *)grsegs[chunk];
+	dest = (spritetype id0_seg *)grsegs[chunk];
 
 //
 // expand the unshifted shape
@@ -1239,7 +1239,7 @@ void CA_CacheMap (id0_int_t mapnum)
 //
 	if (!mapheaderseg[mapnum])
 	{
-		pos = ((mapfiletype	_seg *)tinf)->headeroffsets[mapnum];
+		pos = ((mapfiletype	id0_seg *)tinf)->headeroffsets[mapnum];
 		if (pos<0)						// $FFFFFFFF start is a sparse map
 		  Quit ("CA_CacheMap: Tried to load a non existant map!");
 
@@ -1254,7 +1254,7 @@ The general buffer size is too small!
 		//
 		// load in, then unhuffman to the destination
 		//
-		CA_FarRead (maphandle,bufferseg,((mapfiletype	_seg *)tinf)->headersize[mapnum]);
+		CA_FarRead (maphandle,bufferseg,((mapfiletype	id0_seg *)tinf)->headersize[mapnum]);
 		CAL_HuffExpand ((id0_byte_t id0_huge *)bufferseg,
 			(id0_byte_t id0_huge *)mapheaderseg[mapnum],sizeof(maptype),maphuffman);
 #else
@@ -1303,7 +1303,7 @@ The general buffer size is too small!
 		MM_GetPtr (&buffer2seg,expanded);
 		CAL_HuffExpand ((id0_byte_t id0_huge *)source, buffer2seg,expanded,maphuffman);
 		CA_RLEWexpand (((id0_unsigned_t id0_far *)buffer2seg)+1,*dest,size,
-		((mapfiletype _seg *)tinf)->RLEWtag);
+		((mapfiletype id0_seg *)tinf)->RLEWtag);
 		MM_FreePtr (&buffer2seg);
 
 #else
@@ -1311,7 +1311,7 @@ The general buffer size is too small!
 		// unRLEW, skipping expanded length
 		//
 		CA_RLEWexpand (source+1, *dest,size,
-		((mapfiletype _seg *)tinf)->RLEWtag);
+		((mapfiletype id0_seg *)tinf)->RLEWtag);
 #endif
 
 		if (compressed>BUFFERSIZE)
@@ -1557,7 +1557,7 @@ void CA_CacheMarks (id0_char_t *title)
 				&& bufferend>= endpos)
 				{
 				// data is allready in buffer
-					source = (id0_byte_t _seg *)bufferseg+(pos-bufferstart);
+					source = (id0_byte_t id0_seg *)bufferseg+(pos-bufferstart);
 				}
 				else
 				{

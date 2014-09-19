@@ -181,7 +181,7 @@ extern	void		IN_Startup(void),IN_Shutdown(void),
 					IN_GetJoyAbs(id0_word_t joy,id0_word_t *xp,id0_word_t *yp),
 					IN_SetupJoy(id0_word_t joy,id0_word_t minx,id0_word_t maxx,
 								id0_word_t miny,id0_word_t maxy),
-					IN_StartDemoPlayback(id0_byte_t _seg *buffer,id0_word_t bufsize),
+					IN_StartDemoPlayback(id0_byte_t id0_seg *buffer,id0_word_t bufsize),
 					IN_StopDemo(void),IN_FreeDemoBuffer(void),
 					IN_Ack(void),IN_AckBack(void);
 extern	id0_boolean_t		IN_UserInput(id0_longword_t delay,id0_boolean_t clear),

@@ -194,9 +194,9 @@ extern	id0_unsigned_t	ylookup[VIRTUALHEIGHT];
 
 extern	id0_boolean_t		screenfaded;
 
-extern	pictabletype	_seg *pictable;
-extern	pictabletype	_seg *picmtable;
-extern	spritetabletype _seg *spritetable;
+extern	pictabletype	id0_seg *pictable;
+extern	pictabletype	id0_seg *picmtable;
+extern	spritetabletype id0_seg *spritetable;
 
 extern	id0_int_t			px,py;
 extern	id0_byte_t		pdrawmode,fontcolor;

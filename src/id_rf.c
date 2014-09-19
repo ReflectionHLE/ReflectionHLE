@@ -1224,7 +1224,7 @@ void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 {
 	spritelisttype	register *sprite,*next;
 	spritetabletype id0_far *spr;
-	spritetype _seg	*block;
+	spritetype id0_seg	*block;
 	id0_unsigned_t	shift,pixx;
 
 	if (!spritenumber)
@@ -1285,7 +1285,7 @@ linknewspot:
 // write the new info to the sprite
 //
 	spr = &spritetable[spritenumber-STARTSPRITES];
-	block = (spritetype _seg *)grsegs[spritenumber];
+	block = (spritetype id0_seg *)grsegs[spritenumber];
 
 	globaly+=spr->orgy;
 	globalx+=spr->orgx;
@@ -1913,7 +1913,7 @@ void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 {
 	spritelisttype	register *sprite,*next;
 	spritetabletype id0_far *spr;
-	spritetype _seg	*block;
+	spritetype id0_seg	*block;
 	id0_unsigned_t	shift,pixx;
 
 	if (!spritenumber)
@@ -1970,7 +1970,7 @@ linknewspot:
 // write the new info to the sprite
 //
 	spr = &spritetable[spritenumber-STARTSPRITES];
-	block = (spritetype _seg *)grsegs[spritenumber];
+	block = (spritetype id0_seg *)grsegs[spritenumber];
 
 	globaly+=spr->orgy;
 	globalx+=spr->orgx;

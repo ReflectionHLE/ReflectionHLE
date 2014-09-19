@@ -933,7 +933,7 @@ void ApelThink (objtype *ob)
 		else
 			y = ob->tiletop;
 
-		map = (id0_unsigned_t _seg *)mapsegs[1]+
+		map = (id0_unsigned_t id0_seg *)mapsegs[1]+
 			mapbwidthtable[y]/2 + ob->tilemidx;
 
 		if ((tinf[INTILE+*map]&0x7f) == 1)
@@ -973,7 +973,7 @@ void ApelClimbThink (objtype *ob)
 {
 	id0_unsigned_t id0_far *map;
 
-	map = (id0_unsigned_t _seg *)mapsegs[1]+
+	map = (id0_unsigned_t id0_seg *)mapsegs[1]+
 		mapbwidthtable[ob->tiletop]/2 + ob->temp4;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
@@ -996,7 +996,7 @@ void ApelSlideThink (objtype *ob)
 {
 	id0_unsigned_t id0_far *map;
 
-	map = (id0_unsigned_t _seg *)mapsegs[1]+
+	map = (id0_unsigned_t id0_seg *)mapsegs[1]+
 		mapbwidthtable[ob->tilebottom]/2 + ob->temp4;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)

@@ -68,13 +68,13 @@ typedef	struct
 
 //===========================================================================
 
-extern	id0_byte_t 		_seg	*tinf;
+extern	id0_byte_t 		id0_seg	*tinf;
 extern	id0_int_t			mapon;
 
-extern	id0_unsigned_t	_seg	*mapsegs[3];
-extern	maptype		_seg	*mapheaderseg[NUMMAPS];
-extern	id0_byte_t		_seg	*audiosegs[NUMSNDCHUNKS];
-extern	void		_seg	*grsegs[NUMCHUNKS];
+extern	id0_unsigned_t	id0_seg	*mapsegs[3];
+extern	maptype		id0_seg	*mapheaderseg[NUMMAPS];
+extern	id0_byte_t		id0_seg	*audiosegs[NUMSNDCHUNKS];
+extern	void		id0_seg	*grsegs[NUMCHUNKS];
 
 extern	id0_byte_t		grneeded[NUMCHUNKS];
 extern	id0_byte_t		ca_levelbit,ca_levelnum;

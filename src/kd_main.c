@@ -118,7 +118,7 @@ void TestSprites(void)
 {
 	id0_int_t hx,hy,sprite,oldsprite,bottomy,topx,shift;
 	spritetabletype id0_far *spr;
-	spritetype _seg *block;
+	spritetype id0_seg *block;
 	id0_unsigned_t        mem,scan;
 
 
@@ -148,7 +148,7 @@ void TestSprites(void)
 			sprite = STARTSPRITES;
 
 		spr = &spritetable[sprite-STARTSPRITES];
-		block = (spritetype _seg *)grsegs[sprite];
+		block = (spritetype id0_seg *)grsegs[sprite];
 
 		VWB_Bar (hx,hy,TEXTWIDTH,bottomy-hy,WHITE);
 

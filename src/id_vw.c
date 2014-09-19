@@ -66,9 +66,9 @@ id0_unsigned_t	ylookup[VIRTUALHEIGHT];
 
 id0_boolean_t		screenfaded;
 
-pictabletype	_seg *pictable;
-pictabletype	_seg *picmtable;
-spritetabletype _seg *spritetable;
+pictabletype	id0_seg *pictable;
+pictabletype	id0_seg *picmtable;
+spritetabletype id0_seg *spritetable;
 
 /*
 =============================================================================
@@ -79,7 +79,7 @@ spritetabletype _seg *spritetable;
 */
 
 void	VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height,
-		fontstruct _seg *font);
+		fontstruct id0_seg *font);
 void 	VWL_DrawCursor (void);
 void 	VWL_EraseCursor (void);
 void 	VWL_DBSetup (void);
@@ -470,11 +470,11 @@ void VW_DrawMPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum)
 void VW_DrawSprite(id0_int_t x, id0_int_t y, id0_unsigned_t chunknum)
 {
 	spritetabletype id0_far *spr;
-	spritetype _seg	*block;
+	spritetype id0_seg	*block;
 	id0_unsigned_t	dest,shift;
 
 	spr = &spritetable[chunknum-STARTSPRITES];
-	block = (spritetype _seg *)grsegs[chunknum];
+	block = (spritetype id0_seg *)grsegs[chunknum];
 
 	y+=spr->orgy>>G_P_SHIFT;
 	x+=spr->orgx>>G_P_SHIFT;
@@ -813,7 +813,7 @@ done:
 
 #if NUMFONT+NUMFONTM>0
 void
-VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height, fontstruct _seg *font)
+VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height, fontstruct id0_seg *font)
 {
 	*height = font->height;
 	for (*width = 0;*string;string++)
@@ -822,12 +822,12 @@ VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *he
 
 void	VW_MeasurePropString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height)
 {
-	VWL_MeasureString(string,width,height,(fontstruct _seg *)grsegs[STARTFONT]);
+	VWL_MeasureString(string,width,height,(fontstruct id0_seg *)grsegs[STARTFONT]);
 }
 
 void	VW_MeasureMPropString  (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height)
 {
-	VWL_MeasureString(string,width,height,(fontstruct _seg *)grsegs[STARTFONTM]);
+	VWL_MeasureString(string,width,height,(fontstruct id0_seg *)grsegs[STARTFONTM]);
 }
 
 
@@ -1342,14 +1342,14 @@ void VWB_DrawMPropString (id0_char_t id0_far *string)
 void VWB_DrawSprite(id0_int_t x, id0_int_t y, id0_int_t chunknum)
 {
 	spritetabletype id0_far *spr;
-	spritetype _seg	*block;
+	spritetype id0_seg	*block;
 	id0_unsigned_t	dest,shift,width,height;
 
 	x+=pansx;
 	y+=pansy;
 
 	spr = &spritetable[chunknum-STARTSPRITES];
-	block = (spritetype _seg *)grsegs[chunknum];
+	block = (spritetype id0_seg *)grsegs[chunknum];
 
 	y+=spr->orgy>>G_P_SHIFT;
 	x+=spr->orgx>>G_P_SHIFT;
