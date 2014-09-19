@@ -532,7 +532,7 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
   if (xlb==xhb)
   {
   //
-  // entire line is in one byte
+  // entire line is in one id0_byte_t
   //
 
 	maskleft&=maskright;
@@ -623,7 +623,7 @@ asm	mov	es,[screenseg]
 	if (xlb==xhb)
 	{
 	//
-	// entire line is in one byte
+	// entire line is in one id0_byte_t
 	//
 		maskleft&=maskright;
 
@@ -725,7 +725,7 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 	if (xlb==xhb)
 	{
 	//
-	// entire line is in one byte
+	// entire line is in one id0_byte_t
 	//
 
 		maskleft&=maskright;

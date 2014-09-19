@@ -313,7 +313,7 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
 
 	// Ported from ASM
 	id0_byte_t id0_huge *srcptr = source, *dstptr = dest, *dstendptr = dest+length;
-	id0_byte_t byteval = *(srcptr++); // load first byte
+	id0_byte_t byteval = *(srcptr++); // load first id0_byte_t
 	id0_byte_t bitmask = 1;
 	do
 	{
@@ -321,7 +321,7 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
 		code = (byteval & bitmask) ? nodeon->bit1 : nodeon->bit0;
 		if (bitmask & 0x80)
 		{
-			byteval = *(srcptr++); // load next byte
+			byteval = *(srcptr++); // load next id0_byte_t
 			bitmask = 1; // back to first bit
 		}
 		else
@@ -860,14 +860,14 @@ void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_
 	for (id0_unsigned_t i = height; i; --i)
 	{
 		/** mask row **/
-		*destptr = 255; // 0xff first byte
+		*destptr = 255; // 0xff first id0_byte_t
 		for (id0_unsigned_t j = width; j; --j)
 		{
 			/** mask byte **/
 			val = currshifttable[(*(srcptr++)) ^ 0xFF]; // take shift into two bytes
 			val ^= 0xFFFF;
-			*(destptr++) &= (val & 0xFF); // and with first byte
-			*destptr = (val >> 8); // replace next byte
+			*(destptr++) &= (val & 0xFF); // and with first id0_byte_t
+			*destptr = (val >> 8); // replace next id0_byte_t
 		}
 		++destptr; // the last shifted byte has 1s in it
 	}
@@ -878,11 +878,11 @@ void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_
 
 	for (id0_unsigned_t i = height*4; i; --i) // four planes of data
 	{
-		*destptr = 0; // 0 first byte
+		*destptr = 0; // 0 first id0_byte_t
 		for (id0_unsigned_t j = width; j; --j)
 		{
 			val = currshifttable[*(srcptr++)]; // take shift into two bytes
-			*(destptr++) |= (val & 0xFF); // or with first byte
+			*(destptr++) |= (val & 0xFF); // or with first id0_byte_t
 			*destptr = (val >> 8); // replace next byte;
 		}
 		++destptr; // the last shifted byte has 0s in it
@@ -1070,7 +1070,7 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 	else
 	{
 	//
-	// everything else has an explicit size longword
+	// everything else has an explicit size id0_longword_t
 	//
 		expanded = *(id0_long_t id0_far *)source;
 		source += 4;			// skip over length

@@ -662,7 +662,7 @@ oddtoeven:
 @@lineloopOE:
 	mov	cx,[wide]
 	rep	movsw
-	movsb						;copy the last byte
+	movsb						;copy the last id0_byte_t
 
 	add	di,bx
 
@@ -1101,10 +1101,10 @@ MACRO	SHIFTNOXOR
 	shl	ax,1
 	mov	si,ax
 	mov	ax,[bp+si]		; table shift into two bytes
-	or	[di],al			; or with first byte
+	or	[di],al			; or with first id0_byte_t
 	inc	di
-	mov	[di],ah			; replace next byte
-	inc	bx				; next source byte
+	mov	[di],ah			; replace next id0_byte_t
+	inc	bx				; next source id0_byte_t
 ENDM
 
 MACRO	SHIFTWITHXOR
@@ -1114,10 +1114,10 @@ MACRO	SHIFTWITHXOR
 	mov	si,ax
 	mov	ax,[bp+si]		; table shift into two bytes
 	not	ax
-	and	[di],al			; and with first byte
+	and	[di],al			; and with first id0_byte_t
 	inc	di
-	mov	[di],ah			; replace next byte
-	inc	bx				; next source byte
+	mov	[di],ah			; replace next id0_byte_t
+	inc	bx				; next source id0_byte_t
 ENDM
 
 

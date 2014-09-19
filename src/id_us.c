@@ -136,7 +136,7 @@ static	HighScore	Scores[MaxScores] =
 ///////////////////////////////////////////////////////////////////////////
 #pragma	warn	-par
 #pragma	warn	-rch
-int
+id0_int_t
 USL_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si)
 {
 #define IGNORE  0
@@ -425,7 +425,7 @@ US_Shutdown(void)
 //		index of the string that matched, or -1 if no matches were found
 //
 ///////////////////////////////////////////////////////////////////////////
-int
+id0_int_t
 US_CheckParm(id0_char_t *parm,id0_char_t **strings)
 {
 	id0_char_t	cp,cs,
@@ -708,7 +708,7 @@ US_Print(id0_char_t *s)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	US_PrintUnsigned() - Prints an id0_unsigned_t long
+//	US_PrintUnsigned() - Prints an id0_unsigned_t id0_long_t
 //
 ///////////////////////////////////////////////////////////////////////////
 void
@@ -721,7 +721,7 @@ US_PrintUnsigned(id0_longword_t n)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	US_PrintSigned() - Prints a signed long
+//	US_PrintSigned() - Prints a id0_signed_long_t
 //
 ///////////////////////////////////////////////////////////////////////////
 void
@@ -992,7 +992,7 @@ US_ShutCursor(void)
 //		the Input Mgr and tells the View Mgr where the cursor is
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 US_UpdateCursor(void)
 {
 	CursorInfo	info;
@@ -1052,7 +1052,7 @@ USL_XORICursor(id0_int_t x,id0_int_t y,id0_char_t *s,id0_word_t cursor)
 //		returned
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean_t escok,
 				id0_int_t maxchars,id0_int_t maxwidth)
 {
@@ -1457,7 +1457,7 @@ USL_TurnOff(UserItem *ip)
 //		list
 //
 ///////////////////////////////////////////////////////////////////////////
-static int
+static id0_int_t
 USL_FindDown(UserItem *ip)
 {
 	id0_int_t	i;
@@ -1673,7 +1673,7 @@ USL_DoHit(id0_word_t hiti,id0_word_t hitn)
 //		index & number for lookup. If not, returns false.
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_IsInRect(id0_word_t x,id0_word_t y,id0_word_t *index,id0_word_t *number)
 {
 	UserItem	*item,**items;
@@ -1712,7 +1712,7 @@ USL_IsInRect(id0_word_t x,id0_word_t y,id0_word_t *index,id0_word_t *number)
 //		while the cursor was inside the item, or false if it wasn't.
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_TrackItem(id0_word_t hiti,id0_word_t hitn)
 {
 	id0_boolean_t		inside,last;
@@ -2031,7 +2031,7 @@ USL_FindRect(Rect r,Motion xd,Motion yd)
 //		Then it sets up and draws the appropriate top row of icons.
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_word_t		j;
@@ -2082,7 +2082,7 @@ USL_CtlButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 //		KbdDefs[0] member.
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlCKbdButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_boolean_t		state;
@@ -2169,7 +2169,7 @@ USL_CtlCKbdButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 //		calibration
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_boolean_t Done = false;
@@ -2260,7 +2260,7 @@ USL_ClearBottom(void)
 //		after len bytes or when it hits a tilde ('~'). Munges the text.
 //
 ///////////////////////////////////////////////////////////////////////////
-static word
+static id0_word_t
 USL_FormatHelp(id0_char_t id0_far *text,id0_long_t len)
 {
 	id0_word_t	line,
@@ -2301,7 +2301,7 @@ USL_FormatHelp(id0_char_t id0_far *text,id0_long_t len)
 			USL_MeasureString(l,&w,&h);
 			if (w >= WindowW)	// If string width exceeds window,
 			{
-				*s = c;			// Replace null id0_char_t with proper char
+				*s = c;			// Replace null id0_char_t with proper id0_char_t
 				*le = '\0';		// Go back to last line end
 				*off++ = l - text;	// Save offset of start of line
 				line++;			// Bump line number
@@ -2310,7 +2310,7 @@ USL_FormatHelp(id0_char_t id0_far *text,id0_long_t len)
 			else
 			{
 				*s = c;			// Width still ok - put id0_char_t back
-				le = s;			// And save ptr to last ok end of word
+				le = s;			// And save ptr to last ok end of id0_word_t
 			}
 		}
 	}
@@ -2557,7 +2557,7 @@ USL_DoHelp(memptr text,id0_long_t len)
 //	USL_CtlHButtonCustom() - The custom routine for all of the help buttons
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlHButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_word_t		j;
@@ -2664,7 +2664,7 @@ extern	id0_char_t	id0_far gametext,id0_far context,id0_far story;
 //		Sets up the bottom area of the window with the appropriate buttons
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlDButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_word_t		j;
@@ -2723,7 +2723,7 @@ USL_DLSRect(UserItem *ip)
 //	USL_CtlDLButtonCustom() - The load game custom routine
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_char_t		*filename,
@@ -2804,7 +2804,7 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 //	USL_CtlDSButtonCustom() - The save game custom routine
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_boolean_t		ok;
@@ -2895,7 +2895,7 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 //	USL_CtlSButtonCustom() - The custom routine for all of the sound buttons
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_word_t		j;
@@ -2931,7 +2931,7 @@ USL_CtlSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 //	USL_CtlPButtonCustom() - The custom routine for all of the start game btns
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlPButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_word_t		j;
@@ -2990,7 +2990,7 @@ USL_GiveAbortWarning(void)
 //	USL_CtlPSButtonCustom() - The custom routine for the start game button
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlPSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_boolean_t		result;
@@ -3033,7 +3033,7 @@ USL_CtlPSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 //	USL_CtlPRButtonCustom() - The custom routine for the resume game button
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlPRButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	if (call != uic_Hit)
@@ -3049,7 +3049,7 @@ USL_CtlPRButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 //	USL_CtlDEButtonCustom() - The custom routine for the exit to DOS button
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlDEButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_boolean_t		result;
@@ -3077,7 +3077,7 @@ USL_CtlDEButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 //		buttons
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CtlCButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_word_t		j;
@@ -3140,7 +3140,7 @@ USL_HitHotKey(id0_int_t i,id0_int_t n)
 //		to anything in the list of useritems. If so, selects the item.
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 USL_CheckScan(id0_word_t *ci,id0_word_t *cn)
 {
 	id0_word_t		i,n;

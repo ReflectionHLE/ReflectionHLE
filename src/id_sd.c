@@ -334,9 +334,9 @@ SDL_PCService(void)
 			asm	mov	al,0xb6			// Write to channel 2 (speaker) timer
 			asm	out	43h,al
 			asm	mov	al,bl
-			asm	out	42h,al			// Low byte
+			asm	out	42h,al			// Low id0_byte_t
 			asm	mov	al,bh
-			asm	out	42h,al			// High byte
+			asm	out	42h,al			// High id0_byte_t
 
 			asm	in	al,0x61			// Turn the speaker & gate on
 			asm	or	al,3
@@ -420,7 +420,7 @@ SDL_SBStopSample(void)
 //	 controller, and tells the SB to start doing DMA requests for DAC
 //
 ///////////////////////////////////////////////////////////////////////////
-static longword
+static id0_longword_t
 SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 {
 	id0_unsigned_t		datapage;
@@ -442,7 +442,7 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 
 	// Program the DMA controller
 	outportb(0x0a,5);							// Mask off channel 1 DMA
-	outportb(0x0c,0);							// Clear id0_byte_t ptr F/F to lower byte
+	outportb(0x0c,0);							// Clear id0_byte_t ptr F/F to lower id0_byte_t
 	outportb(0x0b,0x49);						// Set transfer mode for D/A conv
 	outportb(0x02,(byte)dataofs);				// Give LSB of address
 	outportb(0x02,(byte)(dataofs >> 8));		// Give MSB of address
@@ -549,7 +549,7 @@ SDL_SBPlaySample(SampledSound id0_far *sample)
 //		particular I/O location
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 SDL_CheckSB(id0_int_t port)
 {
 	id0_int_t	i;
@@ -585,7 +585,7 @@ SDL_CheckSB(id0_int_t port)
 //		it just passes it directly to SDL_CheckSB()
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 SDL_DetectSoundBlaster(id0_int_t port)
 {
 	id0_int_t	i;
@@ -792,7 +792,7 @@ SDL_ShutSS(void)
 //		location specified by the sound source variables
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 SDL_CheckSS(void)
 {
 	id0_boolean_t		present = false;
@@ -843,7 +843,7 @@ checkdone:
 	return(present);
 }
 
-static boolean
+static id0_boolean_t
 SDL_DetectSoundSource(void)
 {
 	for (ssPort = 1;ssPort <= 3;ssPort++)
@@ -1134,7 +1134,7 @@ SDL_StartAL(void)
 //		emulating an AdLib) present
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 SDL_DetectAdLib(void)
 {
 	id0_byte_t	status1,status2;
@@ -1280,7 +1280,7 @@ SDL_StartDevice(void)
 //	SD_SetSoundMode() - Sets which sound hardware to use for sound effects
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 SD_SetSoundMode(SDMode mode)
 {
 	id0_boolean_t	result;
@@ -1347,7 +1347,7 @@ SD_SetSoundMode(SDMode mode)
 //	SD_SetMusicMode() - sets the device to use for background music
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 SD_SetMusicMode(SMMode mode)
 {
 	id0_boolean_t	result;
@@ -1617,7 +1617,7 @@ SD_PlaySound(id0_word_t sound)
 //	SD_SoundPlaying() - returns the sound number that's playing, or 0 if
 //		no sound is playing
 ///////////////////////////////////////////////////////////////////////////
-word
+id0_word_t
 SD_SoundPlaying(void)
 {
 	id0_boolean_t	result = false;
@@ -1723,7 +1723,7 @@ SD_FadeOutMusic(void)
 //		not
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 SD_MusicPlaying(void)
 {
 	id0_boolean_t	result;

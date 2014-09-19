@@ -194,7 +194,7 @@ void StatusWindow (void)
 	IN_Ack();
 }
 
-boolean
+id0_boolean_t
 SaveGame(id0_int_t file)
 {
 	id0_word_t    i,size,compressed,expanded;
@@ -236,7 +236,7 @@ SaveGame(id0_int_t file)
 }
 
 
-boolean
+id0_boolean_t
 LoadGame(id0_int_t file)
 {
 	id0_word_t    i,j,size;
@@ -342,7 +342,7 @@ TEDDeath(void)
 }
 #endif
 
-static boolean
+static id0_boolean_t
 MoveTitleTo(id0_int_t offset)
 {
 	id0_boolean_t         done;
@@ -385,7 +385,7 @@ MoveTitleTo(id0_int_t offset)
 	return(false);
 }
 
-static boolean
+static id0_boolean_t
 Wait(id0_longword_t time)
 {
 	time += TimeCount;
@@ -397,7 +397,7 @@ Wait(id0_longword_t time)
 	return(IN_IsUserInput());
 }
 
-static boolean
+static id0_boolean_t
 ShowText(id0_int_t offset,WindowRec *wr,id0_char_t *s)
 {
 	if (MoveTitleTo(offset))

@@ -12,18 +12,23 @@
 if [ "$#" -ne 2 ]; then
 	echo "Wrong amount of arguments passed, please read script's notice before using."
 else
+	sed -i ':a;N;$!ba;s/\n'"$1"'\r/\n'"$2"'\r/g' *
 	sed -i ':a;N;$!ba;s/\n'"$1"'\n/\n'"$2"'\n/g' *
 	sed -i ':a;N;$!ba;s/\n'"$1"'\t/\n'"$2"'\t/g' *
 	sed -i ':a;N;$!ba;s/\n'"$1"' /\n'"$2"' /g' *
+	sed -i ':a;N;$!ba;s/\t'"$1"'\r/\t'"$2"'\r/g' *
 	sed -i ':a;N;$!ba;s/\t'"$1"'\n/\t'"$2"'\n/g' *
 	sed -i ':a;N;$!ba;s/\t'"$1"'\t/\t'"$2"'\t/g' *
 	sed -i ':a;N;$!ba;s/\t'"$1"' /\t'"$2"' /g' *
+	sed -i ':a;N;$!ba;s/ '"$1"'\r/ '"$2"'\r/g' *
 	sed -i ':a;N;$!ba;s/ '"$1"'\n/ '"$2"'\n/g' *
 	sed -i ':a;N;$!ba;s/ '"$1"'\t/ '"$2"'\t/g' *
 	sed -i ':a;N;$!ba;s/ '"$1"' / '"$2"' /g' *
+	sed -i ':a;N;$!ba;s/('"$1"'\r/('"$2"'\r/g' *
 	sed -i ':a;N;$!ba;s/('"$1"'\n/('"$2"'\n/g' *
 	sed -i ':a;N;$!ba;s/('"$1"'\t/('"$2"'\t/g' *
 	sed -i ':a;N;$!ba;s/('"$1"' /('"$2"' /g' *
+	sed -i ':a;N;$!ba;s/,'"$1"'\r/,'"$2"'\r/g' *
 	sed -i ':a;N;$!ba;s/,'"$1"'\n/,'"$2"'\n/g' *
 	sed -i ':a;N;$!ba;s/,'"$1"'\t/,'"$2"'\t/g' *
 	sed -i ':a;N;$!ba;s/,'"$1"' /,'"$2"' /g' *

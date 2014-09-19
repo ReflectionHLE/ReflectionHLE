@@ -245,7 +245,7 @@ INL_GetMouseDelta(id0_int_t *x,id0_int_t *y)
 //		mouse driver
 //
 ///////////////////////////////////////////////////////////////////////////
-static word
+static id0_word_t
 INL_GetMouseButtons(void)
 {
 	// TODO: (CHOCO KEEN): IMPLEMENT!
@@ -349,7 +349,7 @@ static	id0_longword_t	lasttime;
 //		joystick
 //
 ///////////////////////////////////////////////////////////////////////////
-static word
+static id0_word_t
 INL_GetJoyButtons(id0_word_t joy)
 {
 	// TODO: (CHOCO KEEN): IMPLEMENT!
@@ -362,7 +362,7 @@ INL_GetJoyButtons(id0_word_t joy)
 //		specified joystick
 //
 ///////////////////////////////////////////////////////////////////////////
-word
+id0_word_t
 IN_GetJoyButtonsDB(id0_word_t joy)
 {
 	id0_longword_t	lasttime;
@@ -415,7 +415,7 @@ INL_ShutKbd(void)
 //	INL_StartMouse() - Detects and sets up the mouse
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 INL_StartMouse(void)
 {
 	// TODO (CHOCO KEEN): Consider optionally returning false?
@@ -493,7 +493,7 @@ IN_SetupJoy(id0_word_t joy,id0_word_t minx,id0_word_t maxx,id0_word_t miny,id0_w
 //					The auto-config assumes the joystick is centered
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 INL_StartJoy(id0_word_t joy)
 {
 	id0_word_t x,y;
@@ -785,7 +785,7 @@ register	KeyboardDef	*def;
 
 	if (DemoMode == demo_Record)
 	{
-		// Pack the control info into a byte
+		// Pack the control info into a id0_byte_t
 		dbyte = (buttons << 4) | ((dx + 1) << 2) | (dy + 1);
 
 		if
@@ -828,7 +828,7 @@ IN_SetControlType(id0_int_t player,ControlType type)
 //		size passed. Returns if the buffer allocation was successful
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 IN_StartDemoRecord(id0_word_t bufsize)
 {
 	if (!bufsize)
@@ -921,7 +921,7 @@ IN_WaitForKey(void)
 //		returns the ASCII value
 //
 ///////////////////////////////////////////////////////////////////////////
-char
+id0_char_t
 IN_WaitForASCII(void)
 {
 	id0_char_t		result;
@@ -1002,7 +1002,7 @@ IN_Ack(void)
 //		is down
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 IN_IsUserInput(void)
 {
 	id0_boolean_t	result;
@@ -1030,7 +1030,7 @@ IN_IsUserInput(void)
 //		button up.
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 IN_UserInput(id0_longword_t delay,id0_boolean_t clear)
 {
 	id0_longword_t	lasttime;
