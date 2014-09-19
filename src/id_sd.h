@@ -161,7 +161,8 @@ extern	id0_boolean_t		SoundSourcePresent,SoundBlasterPresent,AdLibPresent,
 					NeedsDigitized,NeedsMusic;	// For Caching Mgr
 extern	SDMode		SoundMode;
 extern	SMMode		MusicMode;
-extern	id0_longword_t	TimeCount;					// Global time in ticks
+//NOT DECLARED HERE - USE SD_GetTimeCount AND/OR SD_SetTimeCount
+//extern	id0_longword_t	TimeCount;					// Global time in ticks
 
 extern	id0_boolean_t		ssIsTandy;					// For config file
 extern	id0_word_t		ssPort;

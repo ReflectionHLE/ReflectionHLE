@@ -84,7 +84,8 @@ static	id0_word_t			sqMode,sqFadeStep;
 				NeedsDigitized,NeedsMusic;
 	SDMode		SoundMode;
 	SMMode		MusicMode;
-	id0_longword_t	TimeCount;
+	// NEVER accessed directly now - done from backend via functions
+	//id0_longword_t	TimeCount;
 	id0_word_t		*SoundTable;	// Really * id0_seg *SoundTable, but that don't work
 	id0_boolean_t		ssIsTandy;
 	id0_word_t		ssPort = 2;

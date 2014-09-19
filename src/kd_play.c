@@ -105,8 +105,8 @@ id0_char_t		*levelnames[21] =
 =============================================================================
 */
 
-// for asm scaning of map planes
-id0_unsigned_t	mapx,mapy,mapxcount,mapycount,maptile,mapspot;
+// for asm scaning of map planes (UPDATE (CHOCO KEEN): Code ported to C)
+id0_unsigned_t	mapx,mapy,/*mapxcount,mapycount,*/maptile,/*mapspot*/;
 
 id0_int_t			plummet;
 
@@ -573,46 +573,22 @@ void ScanInfoPlane (void)
 
 	memset (lumpneeded,0,sizeof(lumpneeded));
 
-#if 0
+	// Ported from ASM
+
 	start = mapsegs[2];
 	for (y=0;y<mapheight;y++)
+	{
 		for (x=0;x<mapwidth;x++)
 		{
 			tile = *start++;
 			if (!tile)
+			{
+				maptile = tile;
+				HandleInfo();
+			}
 				continue;
 		}
-#endif
-
-//
-// This doesn't really need to be in asm.  I thought it was a bottleneck,
-// but I was wrong...
-//
-
-	asm	mov	es,[WORD PTR mapsegs+4]
-	asm	xor	si,si
-	asm	mov	[mapy],0
-	asm	mov	ax,[mapheight]
-	asm	mov	[mapycount],ax
-yloop:
-	asm	mov	[mapx],0
-	asm	mov	ax,[mapwidth]
-	asm	mov	[mapxcount],ax
-xloop:
-	asm	mov	ax,[es:si]
-	asm	or	ax,ax
-	asm	jz	nothing
-	asm	mov	[maptile],ax
-	HandleInfo ();						// si is saved
-	asm	mov	es,[WORD PTR mapsegs+4]
-nothing:
-	asm	inc	[mapx]
-	asm	add	si,2
-	asm	dec	[mapxcount]
-	asm	jnz	xloop
-	asm	inc	[mapy]
-	asm	dec	[mapycount]
-	asm	jnz	yloop
+	}
 
 	for (i=0;i<NUMLUMPS;i++)
 		if (lumpneeded[i])

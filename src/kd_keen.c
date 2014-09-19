@@ -176,90 +176,49 @@ void	FixScoreBox (void)
 
 #if GRMODE == EGAGR
 
-void MemDrawChar (id0_int_t char8,id0_byte_t id0_far *dest,id0_unsigned_t width,id0_unsigned_t planesize)
+void MemDrawChar (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t width, id0_unsigned_t planesize)
 {
-asm	mov	si,[char8]
-asm	shl	si,1
-asm	shl	si,1
-asm	shl	si,1
-asm	shl	si,1
-asm	shl	si,1		// index into id0_char_t 8 segment
+	// Ported from ASM
 
-asm	mov	ds,[WORD PTR grsegs+STARTTILE8*2]
-asm	mov	es,[WORD PTR dest+2]
+	id0_byte_t *srcPtr = (id0_byte_t *)grsegs[STARTTILE8] + 32*char8;
+	id0_byte_t *destPtr;
 
-asm	mov	cx,4		// draw four planes
-asm	mov	bx,[width]
-asm	dec	bx
+	for (id0_unsigned_t planeLoopVar = 4; planeLoopVar; --planeLoopVar)
+	{
+		destPtr = dest;
 
-planeloop:
+		*destPtr = *srcPtr;
+		*(destPtr += width) = *(++srcPtr);
+		*(destPtr += width) = *(++srcPtr);
+		*(destPtr += width) = *(++srcPtr);
+		*(destPtr += width) = *(++srcPtr);
+		*(destPtr += width) = *(++srcPtr);
+		*(destPtr += width) = *(++srcPtr);
+		*(destPtr += width) = *(++srcPtr);
 
-asm	mov	di,[WORD PTR dest]
-
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-
-asm	mov	ax,[planesize]
-asm	add	[WORD PTR dest],ax
-
-asm	loop	planeloop
-
-asm	mov	ax,ss
-asm	mov	ds,ax
-
+		dest += planesize;
+	}
 }
 #endif
 
 #if GRMODE == CGAGR
-void MemDrawChar (id0_int_t char8,id0_byte_t id0_far *dest,id0_unsigned_t width,id0_unsigned_t planesize)
+void MemDrawChar (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t width, id0_unsigned_t planesize)
 {
-asm	mov	si,[char8]
-asm	shl	si,1
-asm	shl	si,1
-asm	shl	si,1
-asm	shl	si,1		// index into id0_char_t 8 segment
+	// Ported from ASM
 
-asm	mov	ds,[WORD PTR grsegs+STARTTILE8*2]
-asm	mov	es,[WORD PTR dest+2]
+	(void)planesize; // shut the compiler up
 
-asm	mov	bx,[width]
-asm	sub	bx,2
+	id0_byte_t *srcPtr = (id0_byte_t *)grsegs[STARTTILE8] + 16*char8;
+	id0_byte_t *destPtr = dest;
 
-asm	mov	di,[WORD PTR dest]
-
-asm	movsw
-asm	add	di,bx
-asm	movsw
-asm	add	di,bx
-asm	movsw
-asm	add	di,bx
-asm	movsw
-asm	add	di,bx
-asm	movsw
-asm	add	di,bx
-asm	movsw
-asm	add	di,bx
-asm	movsw
-asm	add	di,bx
-asm	movsw
-
-asm	mov	ax,ss
-asm	mov	ds,ax
-
-	planesize++;		// shut the compiler up
+	memcpy(destPtr, srcPtr, 2);
+	memcpy(destPtr += width, srcPtr += 2, 2);
+	memcpy(destPtr += width, srcPtr += 2, 2);
+	memcpy(destPtr += width, srcPtr += 2, 2);
+	memcpy(destPtr += width, srcPtr += 2, 2);
+	memcpy(destPtr += width, srcPtr += 2, 2);
+	memcpy(destPtr += width, srcPtr += 2, 2);
+	memcpy(destPtr += width, srcPtr += 2, 2);
 }
 #endif
 
