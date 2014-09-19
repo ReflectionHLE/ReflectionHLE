@@ -1029,27 +1029,19 @@ void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
 
 void	RFL_OldRow (id0_unsigned_t updatespot,id0_unsigned_t count,id0_unsigned_t step)
 {
-
-asm	mov	si,[updatespot]			// pointer inside each map plane
-asm	mov	cx,[count]				// number of tiles to clear
-asm	mov	dx,[step]				// move to next tile
-asm	mov	es,[WORD PTR mapsegs]			// background plane
-asm	mov	ds,[WORD PTR mapsegs+2]			// foreground plane
-
-clearcache:
-asm	mov	bx,[si]
-asm	or	bx,bx
-asm	jnz	blockok					// if a foreground tile, block wasn't cached
-asm	mov	bx,[es:si]
-asm	shl	bx,1
-asm	mov	[WORD PTR ss:tilecache+bx],0  //tile is no longer in master screen cache
-blockok:
-asm	add	si,dx
-asm	loop	clearcache
-
-asm	mov	ax,ss
-asm	mov	ds,ax
-
+	// updatespot and step are measured in BYTES, should both be even
+	id0_byte_t *backPtr = (id0_byte_t *)mapsegs[0]+updatespot;  // pointer inside background plane
+	id0_byte_t *forePtr = (id0_byte_t *)mapsegs[1]+updatespot; // pointer inside foreground plane
+	// clearing 'count' tiles
+	for (id0_unsigned_t loopVar = count; loopVar; --loopVar, foreBytePtr += step, backBytePtr += step)
+	{
+		// if a foreground tile, block wasn't cached so we don't clear
+		if (!(*(id0_unsigned_t *)foreBytePtr))
+		{
+			// tile is no longer in master screen cache
+			tilecache[*(id0_unsigned_t *)backBytePtr] = 0;
+		}
+	}
 }
 
 

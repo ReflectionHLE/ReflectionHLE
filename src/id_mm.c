@@ -103,11 +103,30 @@ void		(* aftersort) (void);
 
 id0_boolean_t		mmstarted;
 
-void id0_far	*farheap;
-void		*nearheap;
+//void id0_far	*farheap;
+//void		*nearheap;
 
 mmblocktype	id0_far mmblocks[MAXBLOCKS]
 			,id0_far *mmhead,id0_far *mmfree,id0_far *mmrover,id0_far *mmnew;
+
+// A static memory buffer used for our allocations, made out of 16-bytes
+// long paragraphs (each of them beginning with some emulated "segment")
+static id0_byte_t mmEmulatedMemSpace[512*1024];
+// The very first "segment" in the emulated space
+#define EMULATED_FIRST_SEG 0
+// Different portions of the space being emulated - start points
+#define EMULATED_NEAR_SEG EMULATED_FIRST_SEG
+#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+4096)
+#define EMULATED_EMS_SEG (EMULATED_FAR_SEG+20544)
+#define EMULATED_XMS_SEG (EMULATED_EMS_SEG+4096)
+// Lengths in paragraphs of the different sections
+#define EMULATED_NEAR_PARAGRAPHS (EMULATED_FAR_SEG-EMULATED_NEAR_SEG)
+#define EMULATED_FAR_PARAGRAPHS (EMULATED_EMS_SEG-EMULATED_FAR_SEG)
+#define EMULATED_EMS_PARAGRAPHS (EMULATED_XMS_SEG-EMULATED_EMS_SEG)
+#define EMULATED_XMS_PARAGRAPHS (sizeof(mmEmulatedMemSpace)/16-EMULATED_NEAR_PARAGRAPHS-EMULATED_FAR_PARAGRAPHS-EMULATED_EMS_PARAGRAPHS)
+// Used to obtain a pointer to some location in mmEmulatedMemSpace
+#define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
+
 
 //==========================================================================
 
@@ -115,14 +134,15 @@ mmblocktype	id0_far mmblocks[MAXBLOCKS]
 // local prototypes
 //
 
-id0_boolean_t		MML_CheckForEMS (void);
-void 		MML_ShutdownEMS (void);
-void 		MM_MapEMS (void);
-id0_boolean_t 	MML_CheckForXMS (void);
-void 		MML_ShutdownXMS (void);
+//id0_boolean_t		MML_CheckForEMS (void);
+//void 		MML_ShutdownEMS (void);
+//void 		MM_MapEMS (void);
+//id0_boolean_t 	MML_CheckForXMS (void);
+//void 		MML_ShutdownXMS (void);
 
 //==========================================================================
 
+#if 0
 /*
 ======================
 =
@@ -235,6 +255,7 @@ void MML_ShutdownXMS (void)
 {
 
 }
+#endif
 
 //==========================================================================
 
@@ -263,7 +284,7 @@ void MM_Startup (void)
 	bombonerror = true;
 
 //
-// set up the linked list (everything in the free list;
+// set up the linked list (everything in the free list)
 //
 	mmhead = NULL;
 	mmfree = &mmblocks[0];
@@ -274,6 +295,11 @@ void MM_Startup (void)
 //
 // get all available near conventional memory segments
 //
+	seglength = EMULATED_NEAR_PARAGRAPHS;
+	segstart = EMULATED_NEAR_SEG;
+	length = seglength*16;
+	mminfo.nearheap = length;
+#if 0
 	length=coreleft();
 	start = (void id0_far *)(nearheap = malloc(length));
 
@@ -282,11 +308,12 @@ void MM_Startup (void)
 	seglength = length / 16;			// now in paragraphs
 	segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;
 	mminfo.nearheap = length;
+#endif
 
 	// locked block of unusable low memory
 	// from 0 to start of near heap
 	GETNEWBLOCK;
-	mmhead = mmnew;				// this will allways be the first node
+	mmhead = mmnew;				// this will always be the first node
 	mmnew->start = 0;
 	mmnew->length = segstart;
 	mmnew->attributes = LOCKBIT;
@@ -294,8 +321,14 @@ void MM_Startup (void)
 	mmrover = mmhead;
 
 //
-// get all available id0_far conventional memory segments
+// get all available far conventional memory segments
 //
+	seglength = EMULATED_FAR_PARAGRAPHS;
+	segstart = EMULATED_FAR_SEG;
+	length = seglength*16;
+	mminfo.farheap = length;
+	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
+#if 0
 	length=farcoreleft();
 	start = farheap = farmalloc(length);
 
@@ -305,6 +338,7 @@ void MM_Startup (void)
 	segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;
 	mminfo.farheap = length;
 	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
+#endif
 
 	// locked block of unusable near heap memory (usually just the stack)
 	// from end of near heap to start of id0_far heap
@@ -320,6 +354,11 @@ void MM_Startup (void)
 //
 // detect EMS and allocate 64K at page frame
 //
+	seglength = EMULATED_EMS_PARAGRAPHS;
+	segstart = EMULATED_EMS_SEG;
+	length = seglength*16;
+	mminfo.EMSmem = length;
+#if 0
 	if (MML_CheckForEMS())
 	{
 		MM_MapEMS();					// map in used pages
@@ -329,10 +368,16 @@ void MM_Startup (void)
 	{
 		mminfo.EMSmem = 0;
 	}
+#endif
 
 //
 // detect XMS and get upper memory blocks
 //
+	seglength = EMULATED_XMS_PARAGRAPHS;
+	segstart = EMULATED_XMS_SEG;
+	length = seglength*16;
+	mminfo.EMSmem = length;
+#if 0
 	if (MML_CheckForXMS())
 	{
 
@@ -341,6 +386,7 @@ void MM_Startup (void)
 	{
 		mminfo.XMSmem = 0;
 	}
+#endif
 
 
 //
@@ -377,6 +423,7 @@ void MM_Startup (void)
 
 void MM_Shutdown (void)
 {
+#if 0
   if (!mmstarted)
 	return;
 
@@ -384,6 +431,7 @@ void MM_Shutdown (void)
   free (nearheap);
   MML_ShutdownEMS ();
   MML_ShutdownXMS ();
+#endif
 }
 
 //==========================================================================
@@ -454,7 +502,8 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 			//
 				purge = lastscan->next;
 				lastscan->next = mmnew;
-				mmnew->start = *(id0_unsigned_t *)baseptr = startseg;
+				mmnew->start /*= *(id0_unsigned_t *)baseptr*/ = startseg;
+				*baseptr = EMULATED_SEG_TO_PTR(startseg);
 				mmnew->next = scan;
 				while ( purge != scan)
 				{	// free the purgable block
@@ -657,7 +706,8 @@ void MM_SortMem (void)
 					movedata(source,0,dest,0,length*16);
 
 					scan->start = start;
-					*(id0_unsigned_t *)scan->useptr = start;
+					//*(id0_unsigned_t *)scan->useptr = start;
+					*(scan->useptr) = EMULATED_SEG_TO_PTR(start);
 				}
 				start = scan->start + scan->length;
 			}
