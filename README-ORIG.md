@@ -4,7 +4,7 @@ This repository contains the source for Commander Keen in Keen Dreams.  It is re
 
 The release of the source code does not affect the licensing of the game data files, which you must still legally acquire.  This includes the static data included in this repository for your convenience.  However, you are permitted to link and distribute that data for the purposes of compatibility with the original game.
 
-This release was made possible by b crowdfunding effort.  It is brought to you by Javier M. Chavez and Chuck Naaden with additional support from:
+This release was made possible by a crowdfunding effort.  It is brought to you by Javier M. Chavez and Chuck Naaden with additional support from:
 
 * Dave Allen
 * Kirill Illenseer
@@ -29,7 +29,7 @@ You may now go to the root directory and type `bc` to open the project and build
 
 ### EGA/CGA Version
 
-Version 1.00 can be built for either EGA or CGA by changing b constant.  All later versions are specific to one mode.  The constant is `GRMODE` in ID_HEADS.H and ID_ASM.EQU.  Finally ensure that the proper static data files are being linked.  KDREDICT.OBJ/KDREHEAD.OBJ for EGA and KDRCDICT.OBJ/KDRCHEAD.OBJ for CGA.
+Version 1.00 can be built for either EGA or CGA by changing a constant.  All later versions are specific to one mode.  The constant is `GRMODE` in ID_HEADS.H and ID_ASM.EQU.  Finally ensure that the proper static data files are being linked.  KDREDICT.OBJ/KDREHEAD.OBJ for EGA and KDRCDICT.OBJ/KDRCHEAD.OBJ for CGA.
 
 ## Revision History
 
