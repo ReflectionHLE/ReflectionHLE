@@ -49,12 +49,12 @@
 
 id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
 id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType);
-void far lzwDecompress(void far *infile, void far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
-id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t far **MemPtr);
+void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
+id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t id0_far **MemPtr);
 
 id0_long_t FileSize(id0_char_t *filename);
 
-id0_boolean_t FarRead (id0_int_t handle, id0_char_t far *dest, id0_long_t length);
+id0_boolean_t FarRead (id0_int_t handle, id0_char_t id0_far *dest, id0_long_t length);
 
 int main(int argc, char **argv);
 void TrashProg(id0_char_t *OutMsg);
@@ -68,7 +68,7 @@ void TrashProg(id0_char_t *OutMsg);
 //=========================================================================
 
 
-id0_unsigned_char_t far LZW_ring_buffer[LZW_N + LZW_F - 1];
+id0_unsigned_char_t id0_far LZW_ring_buffer[LZW_N + LZW_F - 1];
 
 	// ring buffer of size LZW_N, with extra LZW_F-1 bytes to facilitate
 	//	string comparison
@@ -100,7 +100,7 @@ id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t 
 	switch (PtrType & DEST_TYPES)
 	{
 		case DEST_FILE:
-			write(*(id0_int_t far *)outfile,(id0_char_t *)&data,1);
+			write(*(id0_int_t id0_far *)outfile,(id0_char_t *)&data,1);
 		break;
 
 		case DEST_FFILE:
@@ -108,8 +108,8 @@ id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t 
 		break;
 
 		case DEST_MEM:
-//			*(*(id0_char_t far **)outfile++) = data;						// Do NOT delete
-			*((id0_char_t far *)*(id0_char_t far **)outfile)++ = data;
+//			*(*(id0_char_t id0_far **)outfile++) = data;						// Do NOT delete
+			*((id0_char_t id0_far *)*(id0_char_t id0_far **)outfile)++ = data;
 		break;
 
 		default:
@@ -139,17 +139,17 @@ id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType)
 	switch (PtrType & SRC_TYPES)
 	{
 		case SRC_FILE:
-			read(*(id0_int_t far *)infile,(id0_char_t *)&returnval,1);
+			read(*(id0_int_t id0_far *)infile,(id0_char_t *)&returnval,1);
 		break;
 
 		case SRC_FFILE:
-			returnval = fgetc((FILE far *)*(FILE far **)infile);
+			returnval = fgetc((FILE id0_far *)*(FILE id0_far **)infile);
 		break;
 
 
 		case SRC_MEM:
-			returnval = (id0_char_t)*(*(id0_char_t far **)infile++);
-//			returnval = *((id0_char_t far *)*(id0_char_t far **)infile)++;	// DO NOT DELETE!
+			returnval = (id0_char_t)*(*(id0_char_t id0_far **)infile++);
+//			returnval = *((id0_char_t id0_far *)*(id0_char_t id0_far **)infile)++;	// DO NOT DELETE!
 		break;
 
 		default:
@@ -181,7 +181,7 @@ id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType)
 //
 // NOTES    : Does not write ANY header information!
 //
-void far lzwDecompress(void far *infile, void far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes)
+void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes)
 {
 	id0_int_t  i, j, k, r, c;
 	id0_unsigned_int_t flags;
@@ -263,7 +263,7 @@ void far lzwDecompress(void far *infile, void far *outfile, id0_unsigned_long_t 
 //			false  - Error!
 //
 //----------------------------------------------------------------------------
-id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t far **MemPtr)
+id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t id0_far **MemPtr)
 {
 	id0_int_t handle;
 	id0_unsigned_long_t header;
@@ -436,7 +436,7 @@ id0_long_t FileSize(id0_char_t *filename)
 //--------------------------------------------------------------------------
 // FarRead()
 //-------------------------------------------------------------------------
-id0_boolean_t FarRead (id0_int_t handle, id0_char_t far *dest, id0_long_t length)
+id0_boolean_t FarRead (id0_int_t handle, id0_char_t id0_far *dest, id0_long_t length)
 {
 	if (length>0xffffl)
 		TrashProg("FarRead doesn't support 64K reads yet!");
@@ -469,7 +469,7 @@ done:
 //--------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-	id0_unsigned_char_t huge *bufferptr = NULL;
+	id0_unsigned_char_t id0_huge *bufferptr = NULL;
 
 	if (stricmp(argv[1], "/VER") == 0)
 	{
