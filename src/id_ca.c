@@ -77,7 +77,7 @@ id0_byte_t		ca_levelbit,ca_levelnum;
 
 id0_char_t		*titleptr[8];
 
-id0_int_t			profilehandle;
+int			profilehandle;
 
 /*
 =============================================================================
@@ -119,9 +119,9 @@ huffnode	audiohuffman[255];
 #endif
 
 
-id0_int_t			grhandle;		// handle to EGAGRAPH
-id0_int_t			maphandle;		// handle to MAPTEMP / GAMEMAPS
-id0_int_t			audiohandle;	// handle to AUDIOT / AUDIO
+int			grhandle;		// handle to EGAGRAPH
+int			maphandle;		// handle to MAPTEMP / GAMEMAPS
+int			audiohandle;	// handle to AUDIOT / AUDIO
 
 id0_long_t		chunkcomplen,chunkexplen;
 
@@ -164,29 +164,26 @@ void CAL_GetGrChunkLength (id0_int_t chunk)
 ==========================
 */
 
-id0_boolean_t CA_FarRead (id0_int_t handle, id0_byte_t id0_far *dest, id0_long_t length)
+id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length)
 {
 	if (length>0xffffl)
 		Quit ("CA_FarRead doesn't support 64K reads yet!");
+	// Ported from ASM
+	int bytesread = read(handle, dest, length);
+	if (bytesread < 0)
+	{
+		// Keep errno as set by read
+		return false;
+	}
 
-asm		push	ds
-asm		mov	bx,[handle]
-asm		mov	cx,[WORD PTR length]
-asm		mov	dx,[WORD PTR dest]
-asm		mov	ds,[WORD PTR dest+2]
-asm		mov	ah,0x3f				// READ w/handle
-asm		id0_int_t	21h
-asm		pop	ds
-asm		jnc	good
-	errno = _AX;
-	return	false;
-good:
-asm		cmp	ax,[WORD PTR length]
-asm		je	done
-	errno = EINVFMT;			// user manager knows this is bad read
-	return	false;
-done:
-	return	true;
+	if (bytesread < length)
+	{
+		/* FIXME (Chocolate Cat3D) - Is that the right way? */
+		errno = 11;
+		//errno = EINVFMT; // user manager knows this is bad read
+		return false;
+	}
+	return true;
 }
 
 
@@ -200,7 +197,7 @@ done:
 ==========================
 */
 
-id0_boolean_t CA_FarWrite (id0_int_t handle, id0_byte_t id0_far *source, id0_long_t length)
+id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t length)
 {
 	if (length>0xffffl)
 		Quit ("CA_FarWrite doesn't support 64K reads yet!");
@@ -239,7 +236,7 @@ done:
 
 id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 {
-	id0_int_t handle;
+	int handle;
 	id0_long_t size;
 
 	if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
@@ -650,7 +647,7 @@ asm	mov	ds,ax
 
 void CAL_SetupGrFile (void)
 {
-	id0_int_t handle;
+	int handle;
 	id0_long_t headersize,length;
 	memptr compseg;
 
@@ -749,7 +746,7 @@ void CAL_SetupGrFile (void)
 
 void CAL_SetupMapFile (void)
 {
-	id0_int_t handle,i;
+	int handle,i;
 	id0_long_t length;
 	id0_byte_t id0_far *buffer;
 
@@ -799,7 +796,7 @@ void CAL_SetupMapFile (void)
 
 void CAL_SetupAudioFile (void)
 {
-	id0_int_t handle,i;
+	int handle,i;
 	id0_long_t length;
 	id0_byte_t id0_far *buffer;
 

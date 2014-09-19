@@ -1,0 +1,22 @@
+C Files with inline ASM:
+
+id_ca.c
+id_in.c
+id_mm.c
+id_rf.c
+id_sd.c
+id_us.c
+id_vw.c
+
+asm globals defined in id_vw.h (EGA only)
+
+kd_keen.c
+kd_play.c
+
+Finally actual ASM files
+
+id_rf_a.asm
+id_us_a.asm
+id_vw_a.asm
+id_vw_ac.asm
+id_vw_ae.asm
