@@ -63,51 +63,51 @@
 #define	MaxScores	10
 typedef	struct
 		{
-			char	name[MaxHighName + 1];
-			long	score;
-			word	completed;
+			id0_char_t	name[MaxHighName + 1];
+			id0_long_t	score;
+			id0_word_t	completed;
 		} HighScore;
 
 #define	MaxGameName		32
 #define	MaxSaveGames	7
 typedef	struct
 		{
-			char	signature[4];
-			boolean	present;
-			char	name[MaxGameName + 1];
+			id0_char_t	signature[4];
+			id0_boolean_t	present;
+			id0_char_t	name[MaxGameName + 1];
 		} SaveGame;
 
 //	Hack import for TED launch support
-extern	boolean		tedlevel;
-extern	word		tedlevelnum;
+extern	id0_boolean_t		tedlevel;
+extern	id0_word_t		tedlevelnum;
 extern	void		TEDDeath(void);
-static	char		*ParmStrings[] = {"TEDLEVEL",""};
+static	id0_char_t		*ParmStrings[] = {"TEDLEVEL",""};
 
 
 //	Global variables
-		boolean		ingame,abortgame,loadedgame;
-		char		*abortprogram;
+		id0_boolean_t		ingame,abortgame,loadedgame;
+		id0_char_t		*abortprogram;
 		GameDiff	restartgame = gd_Continue;
-		word		PrintX,PrintY;
-		word		WindowX,WindowY,WindowW,WindowH;
+		id0_word_t		PrintX,PrintY;
+		id0_word_t		WindowX,WindowY,WindowW,WindowH;
 
 //	Internal variables
-static	boolean		US_Started;
-static	boolean		GameIsDirty,
+static	id0_boolean_t		US_Started;
+static	id0_boolean_t		GameIsDirty,
 					HighScoresDirty,
 					QuitToDos,
 					ResumeGame;
 
 static	memptr		LineOffsets;
 
-static	boolean		Button0,Button1,
+static	id0_boolean_t		Button0,Button1,
 					CursorBad;
-static	int			CursorX,CursorY;
+static	id0_int_t			CursorX,CursorY;
 
-static	void		(*USL_MeasureString)(char far *,word *,word *) = VW_MeasurePropString,
-					(*USL_DrawString)(char far *) = VWB_DrawPropString;
+static	void		(*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
+					(*USL_DrawString)(id0_char_t id0_far *) = VWB_DrawPropString;
 
-static	boolean		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
+static	id0_boolean_t		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
 static	void		(*USL_ResetGame)(void);
 static	SaveGame	Games[MaxSaveGames];
 static	HighScore	Scores[MaxScores] =
@@ -137,18 +137,18 @@ static	HighScore	Scores[MaxScores] =
 #pragma	warn	-par
 #pragma	warn	-rch
 int
-USL_HardError(word errval,int ax,int bp,int si)
+USL_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si)
 {
 #define IGNORE  0
 #define RETRY   1
 #define	ABORT   2
 extern	void	ShutdownId(void);
 
-static	char		buf[32];
+static	id0_char_t		buf[32];
 static	WindowRec	wr;
-static	boolean		oldleavedriveon;
-		int			di;
-		char		c,*s,*t;
+static	id0_boolean_t		oldleavedriveon;
+		id0_int_t			di;
+		id0_char_t		c,*s,*t;
 
 
 	di = _DI;
@@ -229,11 +229,11 @@ oh_kill_me:
 //		the filename to use for the specified save game
 //
 ///////////////////////////////////////////////////////////////////////////
-static char *
-USL_GiveSaveName(word game)
+static id0_char_t *
+USL_GiveSaveName(id0_word_t game)
 {
-static	char	filename[32];
-		char	*s,*t;
+static	id0_char_t	filename[32];
+		id0_char_t	*s,*t;
 
 	for (s = "SAVEGM",t = filename;*s;)
 		*t++ = *s++;
@@ -252,7 +252,7 @@ static	char	filename[32];
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetLoadSaveHooks(boolean (*load)(int),boolean (*save)(int),void (*reset)(void))
+US_SetLoadSaveHooks(id0_boolean_t (*load)(int),id0_boolean_t (*save)(int),void (*reset)(void))
 {
 	USL_LoadGame = load;
 	USL_SaveGame = save;
@@ -269,8 +269,8 @@ US_SetLoadSaveHooks(boolean (*load)(int),boolean (*save)(int),void (*reset)(void
 static void
 USL_ReadConfig(void)
 {
-	boolean		gotit;
-	int			file;
+	id0_boolean_t		gotit;
+	id0_int_t			file;
 	SDMode		sd;
 	SMMode		sm;
 	ControlType	ctl;
@@ -310,7 +310,7 @@ USL_ReadConfig(void)
 static void
 USL_WriteConfig(void)
 {
-	int	file;
+	id0_int_t	file;
 
 	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
 				S_IREAD | S_IWRITE | S_IFREG);
@@ -334,10 +334,10 @@ USL_WriteConfig(void)
 static void
 USL_CheckSavedGames(void)
 {
-	boolean		ok;
-	char		*filename;
-	word		i;
-	int			file;
+	id0_boolean_t		ok;
+	id0_char_t		*filename;
+	id0_word_t		i;
+	id0_int_t			file;
 	SaveGame	*game;
 
 	USL_SaveGame = 0;
@@ -426,11 +426,11 @@ US_Shutdown(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 int
-US_CheckParm(char *parm,char **strings)
+US_CheckParm(id0_char_t *parm,id0_char_t **strings)
 {
-	char	cp,cs,
+	id0_char_t	cp,cs,
 			*p,*s;
-	int		i;
+	id0_int_t		i;
 
 	while (!isalpha(*parm))	// Skip non-alphas
 		parm++;
@@ -460,9 +460,9 @@ US_CheckParm(char *parm,char **strings)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_ScreenDraw(word x,word y,char *s,byte attr)
+USL_ScreenDraw(id0_word_t x,id0_word_t y,id0_char_t *s,id0_byte_t attr)
 {
-	byte	far *screen;
+	id0_byte_t	id0_far *screen;
 
 	screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
 	while (*s)
@@ -505,7 +505,7 @@ USL_ClearTextScreen(void)
 void
 US_TextScreen(void)
 {
-	word	i,
+	id0_word_t	i,
 			sx,sy;
 
 	USL_ClearTextScreen();
@@ -540,12 +540,12 @@ US_TextScreen(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_Show(word x,word y,word w,boolean show,boolean hilight)
+USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t hilight)
 {
-	byte	far *screen;
+	id0_byte_t	id0_far *screen;
 
 	screen = MK_FP(0xb800,((x - 1) * 2) + (y * 80 * 2));
-	*screen++ = show? 251 : ' ';	// Checkmark char or space
+	*screen++ = show? 251 : ' ';	// Checkmark id0_char_t or space
 	*screen = 0x48;
 	if (show && hilight)
 	{
@@ -556,15 +556,15 @@ USL_Show(word x,word y,word w,boolean show,boolean hilight)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	USL_ShowMem() - Right justifies a longword in one of the memory fields on
+//	USL_ShowMem() - Right justifies a id0_longword_t in one of the memory fields on
 //		the text screen
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_ShowMem(word x,word y,long mem)
+USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 {
-	char	buf[16];
-	word	i;
+	id0_char_t	buf[16];
+	id0_word_t	i;
 
 	for (i = strlen(ltoa(mem,buf,10));i < 5;i++)
 		USL_ScreenDraw(x++,y," ",0x48);
@@ -580,10 +580,10 @@ USL_ShowMem(word x,word y,long mem)
 void
 US_UpdateTextScreen(void)
 {
-	boolean		b;
-	byte		far *screen;
-	word		i;
-	longword	totalmem;
+	id0_boolean_t		b;
+	id0_byte_t		id0_far *screen;
+	id0_word_t		i;
+	id0_longword_t	totalmem;
 
 #if 0
 	// Show video card info
@@ -662,7 +662,7 @@ US_FinishTextScreen(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetPrintRoutines(void (*measure)(char far *,word *,word *),void (*print)(char far *))
+US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),void (*print)(id0_char_t id0_far *))
 {
 	USL_MeasureString = measure;
 	USL_DrawString = print;
@@ -675,10 +675,10 @@ US_SetPrintRoutines(void (*measure)(char far *,word *,word *),void (*print)(char
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_Print(char *s)
+US_Print(id0_char_t *s)
 {
-	char	c,*se;
-	word	w,h;
+	id0_char_t	c,*se;
+	id0_word_t	w,h;
 
 	while (*s)
 	{
@@ -708,13 +708,13 @@ US_Print(char *s)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	US_PrintUnsigned() - Prints an unsigned long
+//	US_PrintUnsigned() - Prints an id0_unsigned_t long
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintUnsigned(longword n)
+US_PrintUnsigned(id0_longword_t n)
 {
-	char	buffer[32];
+	id0_char_t	buffer[32];
 
 	US_Print(ultoa(n,buffer,10));
 }
@@ -725,9 +725,9 @@ US_PrintUnsigned(longword n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintSigned(long n)
+US_PrintSigned(id0_long_t n)
 {
-	char	buffer[32];
+	id0_char_t	buffer[32];
 
 	US_Print(ltoa(n,buffer,10));
 }
@@ -738,9 +738,9 @@ US_PrintSigned(long n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_PrintInCenter(char *s,Rect r)
+USL_PrintInCenter(id0_char_t *s,Rect r)
 {
-	word	w,h,
+	id0_word_t	w,h,
 			rw,rh;
 
 	USL_MeasureString(s,&w,&h);
@@ -758,7 +758,7 @@ USL_PrintInCenter(char *s,Rect r)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintCentered(char *s)
+US_PrintCentered(id0_char_t *s)
 {
 	Rect	r;
 
@@ -777,9 +777,9 @@ US_PrintCentered(char *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrintLine(char *s)
+US_CPrintLine(id0_char_t *s)
 {
-	word	w,h;
+	id0_word_t	w,h;
 
 	USL_MeasureString(s,&w,&h);
 
@@ -798,10 +798,10 @@ US_CPrintLine(char *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrint(char *s)
+US_CPrint(id0_char_t *s)
 {
-	char	c,*se;
-	word	w,h;
+	id0_char_t	c,*se;
+	id0_word_t	w,h;
 
 	while (*s)
 	{
@@ -841,9 +841,9 @@ US_ClearWindow(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_DrawWindow(word x,word y,word w,word h)
+US_DrawWindow(id0_word_t x,id0_word_t y,id0_word_t w,id0_word_t h)
 {
-	word	i,
+	id0_word_t	i,
 			sx,sy,sw,sh;
 
 	WindowX = x * 8;
@@ -877,7 +877,7 @@ US_DrawWindow(word x,word y,word w,word h)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CenterWindow(word w,word h)
+US_CenterWindow(id0_word_t w,id0_word_t h)
 {
 	US_DrawWindow(((MaxX / 8) - w) / 2,((MaxY / 8) - h) / 2,w,h);
 }
@@ -889,9 +889,9 @@ US_CenterWindow(word w,word h)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CenterSaveWindow(word w,word h,memptr *save)
+US_CenterSaveWindow(id0_word_t w,id0_word_t h,memptr *save)
 {
-	word	x,y,
+	id0_word_t	x,y,
 			screen;
 
 	x = ((MaxX / 8) - w) / 2;
@@ -911,7 +911,7 @@ US_CenterSaveWindow(word w,word h,memptr *save)
 void
 US_RestoreSaveWindow(memptr *save)
 {
-	word	screen;
+	id0_word_t	screen;
 
 	screen = bufferofs + panadjust + ylookup[WindowY] + (WindowX * CHARWIDTH);
 	VW_MemToScreen(*save,screen,WindowW * CHARWIDTH,WindowH);
@@ -1028,10 +1028,10 @@ US_UpdateCursor(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_XORICursor(int x,int y,char *s,word cursor)
+USL_XORICursor(id0_int_t x,id0_int_t y,id0_char_t *s,id0_word_t cursor)
 {
-	char	buf[MaxString];
-	word	w,h;
+	id0_char_t	buf[MaxString];
+	id0_word_t	w,h;
 
 	strcpy(buf,s);
 	buf[cursor] = '\0';
@@ -1053,20 +1053,20 @@ USL_XORICursor(int x,int y,char *s,word cursor)
 //
 ///////////////////////////////////////////////////////////////////////////
 boolean
-US_LineInput(int x,int y,char *buf,char *def,boolean escok,
-				int maxchars,int maxwidth)
+US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean_t escok,
+				id0_int_t maxchars,id0_int_t maxwidth)
 {
-	boolean		redraw,
+	id0_boolean_t		redraw,
 				cursorvis,cursormoved,
 				done,result;
 	ScanCode	sc;
-	char		c,
+	id0_char_t		c,
 				s[MaxString],olds[MaxString];
-	word		i,
+	id0_word_t		i,
 				cursor,
 				w,h,
 				len;
-	longword	lasttime;
+	id0_longword_t	lasttime;
 
 	VW_HideCursor();
 
@@ -1238,7 +1238,7 @@ US_LineInput(int x,int y,char *buf,char *def,boolean escok,
 
 //	Control panel routines
 
-static	boolean		FlushHelp;
+static	id0_boolean_t		FlushHelp;
 static	WindowRec	HelpWindow,BottomWindow;
 typedef	enum
 		{
@@ -1253,7 +1253,7 @@ typedef	enum
 #define	ui_Disabled	2
 
 					// Prototype the custom routines
-static	boolean		USL_CtlButtonCustom(UserCall,word,word),
+static	id0_boolean_t		USL_CtlButtonCustom(UserCall,word,word),
 					USL_CtlPButtonCustom(UserCall,word,word),
 					USL_CtlPSButtonCustom(UserCall,word,word),
 					USL_CtlPRButtonCustom(UserCall,word,word),
@@ -1271,16 +1271,16 @@ static	boolean		USL_CtlButtonCustom(UserCall,word,word),
 typedef	struct	{
 					Rect		r;				// The enclosing rectangle
 					UIType		type;			// The type of item
-					int			picup,picdown;	// What to draw when up/down
-					char		*help;			// Floating help string
+					id0_int_t			picup,picdown;	// What to draw when up/down
+					id0_char_t		*help;			// Floating help string
 					ScanCode	key;			// Key equiv
-					word		sel;			// Interaction flags (ui_XXX)
-					boolean		(*custom)(UserCall,word,word);	// Custom routine
-					char		*text;			// Text for some items
+					id0_word_t		sel;			// Interaction flags (ui_XXX)
+					id0_boolean_t		(*custom)(UserCall,word,word);	// Custom routine
+					id0_char_t		*text;			// Text for some items
 				} UserItem;
 typedef	struct	{
 					ScanCode	key;
-					word		i,n,		// Hit CtlPanels2[i][n]
+					id0_word_t		i,n,		// Hit CtlPanels2[i][n]
 								toi,ton;	// Move to CtlPanels2[toi][ton]
 				} HotKey;	// MARK
 
@@ -1433,7 +1433,7 @@ static	UserItem	CtlPanels[] =
 						CtlMPanels	// Music
 					},
 					*TheItems[4] = {CtlPanels};
-static	int			CtlPanelButton;
+static	id0_int_t			CtlPanelButton;
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1460,7 +1460,7 @@ USL_TurnOff(UserItem *ip)
 static int
 USL_FindDown(UserItem *ip)
 {
-	int	i;
+	id0_int_t	i;
 
 	for (i = 0;ip->type != uii_Bad;i++,ip++)
 		if (ip->sel & ui_Selected)
@@ -1474,7 +1474,7 @@ USL_FindDown(UserItem *ip)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_ShowHelp(char *s)
+USL_ShowHelp(id0_char_t *s)
 {
 	WindowRec	wr;
 
@@ -1496,9 +1496,9 @@ USL_ShowHelp(char *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_HandleError(int num)
+USL_HandleError(id0_int_t num)
 {
-	char	buf[64];
+	id0_char_t	buf[64];
 
 	strcpy(buf,"Error: ");
 	if (num < 0)
@@ -1533,12 +1533,12 @@ USL_HandleError(int num)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_DrawItem(word hiti,word hitn)
+USL_DrawItem(id0_word_t hiti,id0_word_t hitn)
 {
-	boolean		handled,centered;
-	char		*text;
-	word		w,h;
-	int			picup,picdown;
+	id0_boolean_t		handled,centered;
+	id0_char_t		*text;
+	id0_word_t		w,h;
+	id0_int_t			picup,picdown;
 	Rect		r;
 	UserItem	*ip;
 
@@ -1609,10 +1609,10 @@ USL_DrawItem(word hiti,word hitn)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_DoHit(word hiti,word hitn)
+USL_DoHit(id0_word_t hiti,id0_word_t hitn)
 {
-	boolean		handled;
-	word		i;
+	id0_boolean_t		handled;
+	id0_word_t		i;
 	UserItem	*ip;
 
 	ip = &TheItems[hiti][hitn];
@@ -1674,7 +1674,7 @@ USL_DoHit(word hiti,word hitn)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_IsInRect(word x,word y,word *index,word *number)
+USL_IsInRect(id0_word_t x,id0_word_t y,id0_word_t *index,id0_word_t *number)
 {
 	UserItem	*item,**items;
 
@@ -1713,10 +1713,10 @@ USL_IsInRect(word x,word y,word *index,word *number)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_TrackItem(word hiti,word hitn)
+USL_TrackItem(id0_word_t hiti,id0_word_t hitn)
 {
-	boolean		inside,last;
-	word		ini,inn,
+	id0_boolean_t		inside,last;
+	id0_word_t		ini,inn,
 				on,
 				sel,othersel;
 	UserItem	*ip,*op;
@@ -1811,10 +1811,10 @@ USL_TrackItem(word hiti,word hitn)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_GlideCursor(long newx,long newy)
+USL_GlideCursor(id0_long_t newx,id0_long_t newy)
 {
-	word	steps;
-	long	x,y,
+	id0_word_t	steps;
+	id0_long_t	x,y,
 			dx,dy;
 
 	if (grmode == CGAGR)
@@ -1849,7 +1849,7 @@ USL_GlideCursor(long newx,long newy)
 static void
 USL_FindRect(Rect r,Motion xd,Motion yd)
 {
-	word		i,i1,i2,i3;
+	id0_word_t		i,i1,i2,i3;
 	Motion		m1,m2;
 	Point		diffs[9],diff,*dp;
 	Rect		*rp,*good,*goods[9];
@@ -2032,9 +2032,9 @@ USL_FindRect(Rect r,Motion xd,Motion yd)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlButtonCustom(UserCall call,word i,word n)
+USL_CtlButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	word		j;
+	id0_word_t		j;
 	UserItem	*ip;
 
 	if (call != uic_Hit)
@@ -2083,12 +2083,12 @@ USL_CtlButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlCKbdButtonCustom(UserCall call,word i,word n)
+USL_CtlCKbdButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	boolean		state;
-	word		j;
+	id0_boolean_t		state;
+	id0_word_t		j;
 	ScanCode	scan;
-	longword	time;
+	id0_longword_t	time;
 	UserItem	*ip;
 
 	if (call != uic_Hit)
@@ -2170,10 +2170,10 @@ USL_CtlCKbdButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlCJoyButtonCustom(UserCall call,word i,word n)
+USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	boolean Done = false;
-	word	joy,
+	id0_boolean_t Done = false;
+	id0_word_t	joy,
 			minx,maxx,
 			miny,maxy;
 
@@ -2261,19 +2261,19 @@ USL_ClearBottom(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 static word
-USL_FormatHelp(char far *text,long len)
+USL_FormatHelp(id0_char_t id0_far *text,id0_long_t len)
 {
-	word	line,
+	id0_word_t	line,
 			w,h,
-			far *off;
-	char	c,
-			far *s,far *l,far *le;
+			id0_far *off;
+	id0_char_t	c,
+			id0_far *s,id0_far *l,id0_far *le;
 
 	WindowX += 4;
 	WindowW -= 4;
 
 	MM_GetPtr(&LineOffsets,MaxHelpLines * sizeof(word));
-	off = (word far *)LineOffsets;
+	off = (id0_word_t id0_far *)LineOffsets;
 	for (line = 0,le = l = s = text;(s - text < len) && (*s != '~');s++)
 	{
 		if ((c = *s) == '\n')
@@ -2301,7 +2301,7 @@ USL_FormatHelp(char far *text,long len)
 			USL_MeasureString(l,&w,&h);
 			if (w >= WindowW)	// If string width exceeds window,
 			{
-				*s = c;			// Replace null char with proper char
+				*s = c;			// Replace null id0_char_t with proper char
 				*le = '\0';		// Go back to last line end
 				*off++ = l - text;	// Save offset of start of line
 				line++;			// Bump line number
@@ -2309,7 +2309,7 @@ USL_FormatHelp(char far *text,long len)
 			}
 			else
 			{
-				*s = c;			// Width still ok - put char back
+				*s = c;			// Width still ok - put id0_char_t back
 				le = s;			// And save ptr to last ok end of word
 			}
 		}
@@ -2327,7 +2327,7 @@ USL_FormatHelp(char far *text,long len)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_DrawHelp(char far *text,word start,word end,word line,word h,word far *lp)
+USL_DrawHelp(id0_char_t id0_far *text,id0_word_t start,id0_word_t end,id0_word_t line,id0_word_t h,id0_word_t id0_far *lp)
 {
 	px = WindowX + 4;
 	py = WindowY + (line * h);
@@ -2341,20 +2341,20 @@ USL_DrawHelp(char far *text,word start,word end,word line,word h,word far *lp)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_DoHelp(memptr text,long len)
+USL_DoHelp(memptr text,id0_long_t len)
 {
-	boolean		done,
+	id0_boolean_t		done,
 				moved;
-	int			scroll;
-	word		i,
+	id0_int_t			scroll;
+	id0_word_t		i,
 				pixdiv,
 				w,h,
 				lines,cur,page,
 				top,num,loc,
-				far *lp,
+				id0_far *lp,
 				base,srcbase,destbase;
 	ScanCode	waitkey;
-	longword	lasttime;
+	id0_longword_t	lasttime;
 	WindowRec	wr;
 	CursorInfo	info;
 
@@ -2368,7 +2368,7 @@ USL_DoHelp(memptr text,long len)
 	VW_HideCursor();
 	VW_UpdateScreen();
 
-	lines = USL_FormatHelp((char far *)text,len);
+	lines = USL_FormatHelp((id0_char_t id0_far *)text,len);
 	USL_MeasureString("",&w,&h);
 	page = WindowH / h;
 	cur = 0;
@@ -2416,7 +2416,7 @@ USL_DoHelp(memptr text,long len)
 				else if (grmode == EGAGR)
 				{
 					VWB_Bar(WindowX,WindowY + (loc * h),WindowW,num * h,WHITE);
-					USL_DrawHelp((char far *)text,top,top + num,loc,h,lp);
+					USL_DrawHelp((id0_char_t id0_far *)text,top,top + num,loc,h,lp);
 
 					pixdiv = 8;
 					base = displayofs + panadjust + (WindowX / pixdiv);
@@ -2448,7 +2448,7 @@ USL_DoHelp(memptr text,long len)
 				if (grmode == CGAGR)
 				{
 					VWB_Bar(WindowX,WindowY + (loc * h),WindowW,num * h,WHITE);
-					USL_DrawHelp((char far *)text,top,top + num,loc,h,lp);
+					USL_DrawHelp((id0_char_t id0_far *)text,top,top + num,loc,h,lp);
 					VW_UpdateScreen();
 				}
 				else if (grmode == EGAGR)
@@ -2462,7 +2462,7 @@ USL_DoHelp(memptr text,long len)
 			else
 			{
 				US_ClearWindow();
-				USL_DrawHelp((char far *)text,top,top + num,loc,h,lp);
+				USL_DrawHelp((id0_char_t id0_far *)text,top,top + num,loc,h,lp);
 				VW_UpdateScreen();
 			}
 
@@ -2558,9 +2558,9 @@ USL_DoHelp(memptr text,long len)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlHButtonCustom(UserCall call,word i,word n)
+USL_CtlHButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	word		j;
+	id0_word_t		j;
 	UserItem	*ip;
 
 	if (call != uic_Hit)
@@ -2581,8 +2581,8 @@ USL_CtlHButtonCustom(UserCall call,word i,word n)
 
 #ifdef	HELPTEXTLINKED	// Ugly hack because of lack of disk space...
 	{
-extern	char	far gametext,far context,far story;
-		char	far *buf;
+extern	id0_char_t	id0_far gametext,id0_far context,id0_far story;
+		id0_char_t	id0_far *buf;
 		memptr	dupe;
 
 		switch (n)
@@ -2599,7 +2599,7 @@ extern	char	far gametext,far context,far story;
 		}
 
 		MM_GetPtr(&dupe,5000);
-		_fmemcpy((char far *)dupe,buf,5000);
+		_fmemcpy((id0_char_t id0_far *)dupe,buf,5000);
 
 		USL_DoHelp(dupe,5000);
 
@@ -2609,9 +2609,9 @@ extern	char	far gametext,far context,far story;
 	}
 #else
 	{
-		char	*name;
-		int		file;
-		long	len;
+		id0_char_t	*name;
+		id0_int_t		file;
+		id0_long_t	len;
 		memptr	buf;
 
 		switch (n)
@@ -2636,7 +2636,7 @@ extern	char	far gametext,far context,far story;
 			len = filelength(file);
 			MM_GetPtr(&buf,len);
 
-			if (CA_FarRead(file,(byte far *)buf,len))
+			if (CA_FarRead(file,(id0_byte_t id0_far *)buf,len))
 				USL_DoHelp(buf,len);
 			else
 				USL_HandleError(errno);
@@ -2665,9 +2665,9 @@ extern	char	far gametext,far context,far story;
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlDButtonCustom(UserCall call,word i,word n)
+USL_CtlDButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	word		j;
+	id0_word_t		j;
 	UserItem	*ip;
 
 	if (call != uic_Hit)
@@ -2724,12 +2724,12 @@ USL_DLSRect(UserItem *ip)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlDLButtonCustom(UserCall call,word i,word n)
+USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	char		*filename,
+	id0_char_t		*filename,
 				msg[MaxGameName + 12];
-	word		err;
-	int			file;
+	id0_word_t		err;
+	id0_int_t			file;
 	UserItem	*ip;
 	SaveGame	*game;
 	WindowRec 	wr;
@@ -2805,12 +2805,12 @@ USL_CtlDLButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlDSButtonCustom(UserCall call,word i,word n)
+USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	boolean		ok;
-	char		*filename;
-	word		err;
-	int			file;
+	id0_boolean_t		ok;
+	id0_char_t		*filename;
+	id0_word_t		err;
+	id0_int_t			file;
 	Rect		r;
 	UserItem	*ip;
 	SaveGame	*game;
@@ -2896,9 +2896,9 @@ USL_CtlDSButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlSButtonCustom(UserCall call,word i,word n)
+USL_CtlSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	word		j;
+	id0_word_t		j;
 	UserItem	*ip;
 
 	if (call != uic_Hit)
@@ -2932,9 +2932,9 @@ USL_CtlSButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlPButtonCustom(UserCall call,word i,word n)
+USL_CtlPButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	word		j;
+	id0_word_t		j;
 	UserItem	*ip;
 
 	if (call != uic_Hit)
@@ -2991,9 +2991,9 @@ USL_GiveAbortWarning(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlPSButtonCustom(UserCall call,word i,word n)
+USL_CtlPSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	boolean		result;
+	id0_boolean_t		result;
 	UserItem	*ip;
 
 	i++;	// Shut the compiler up
@@ -3034,7 +3034,7 @@ USL_CtlPSButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlPRButtonCustom(UserCall call,word i,word n)
+USL_CtlPRButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	if (call != uic_Hit)
 		return(false);
@@ -3050,9 +3050,9 @@ USL_CtlPRButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlDEButtonCustom(UserCall call,word i,word n)
+USL_CtlDEButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	boolean		result;
+	id0_boolean_t		result;
 	UserItem	*ip;
 
 	i++,n++;	// Shut the compiler up
@@ -3078,9 +3078,9 @@ USL_CtlDEButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CtlCButtonCustom(UserCall call,word i,word n)
+USL_CtlCButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	word		j;
+	id0_word_t		j;
 	Point		p;
 	UserItem	*ip;
 
@@ -3119,7 +3119,7 @@ USL_CtlCButtonCustom(UserCall call,word i,word n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_HitHotKey(int i,int n)
+USL_HitHotKey(id0_int_t i,id0_int_t n)
 {
 	UserItem	*ip;
 
@@ -3141,9 +3141,9 @@ USL_HitHotKey(int i,int n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-USL_CheckScan(word *ci,word *cn)
+USL_CheckScan(id0_word_t *ci,id0_word_t *cn)
 {
-	word		i,n;
+	id0_word_t		i,n;
 	UserItem	*ip;
 
 	if (!LastScan)
@@ -3225,7 +3225,7 @@ USL_CheckScan(word *ci,word *cn)
 static void
 USL_SetUpCtlPanel(void)
 {
-	word	i,j;
+	id0_word_t	i,j;
 
 	GameIsDirty = ingame;
 
@@ -3300,7 +3300,7 @@ USL_SetUpCtlPanel(void)
 static void
 USL_TearDownCtlPanel(void)
 {
-	int	i;
+	id0_int_t	i;
 
 	i = USL_FindDown(CtlCPanels);
 	if (i != -1)
@@ -3347,15 +3347,15 @@ USL_TearDownCtlPanel(void)
 void
 US_ControlPanel(void)
 {
-	char		gamename[MaxGameName + 10 + 1];
+	id0_char_t		gamename[MaxGameName + 10 + 1];
 	ScanCode	c;
-	boolean		done,
+	id0_boolean_t		done,
 				buttondown,inrect;
-	word		hiti,hitn,
+	id0_word_t		hiti,hitn,
 				i,n,
 				lasti,lastn,
 				lastx,lasty;
-	longword	lasttime;
+	id0_longword_t	lasttime;
 	Point		p;
 	Rect		userect;
 	UserItem	*ip;
@@ -3585,10 +3585,10 @@ US_ControlPanel(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_DisplayHighScores(int which)
+US_DisplayHighScores(id0_int_t which)
 {
-	char		buffer[16],*str;
-	word		i,
+	id0_char_t		buffer[16],*str;
+	id0_word_t		i,
 				w,h,
 				x,y;
 	HighScore	*s;
@@ -3663,9 +3663,9 @@ US_DisplayHighScores(int which)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CheckHighScore(long score,word other)
+US_CheckHighScore(id0_long_t score,id0_word_t other)
 {
-	word		i,j,
+	id0_word_t		i,j,
 				n;
 	HighScore	myscore;
 

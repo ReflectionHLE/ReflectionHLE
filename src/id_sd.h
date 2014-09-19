@@ -47,8 +47,8 @@ typedef	enum	{
 
 typedef	struct
 		{
-			longword	length;
-			word		priority;
+			id0_longword_t	length;
+			id0_word_t		priority;
 		} SoundCommon;
 
 //	PC Sound stuff
@@ -61,7 +61,7 @@ typedef	struct
 typedef	struct
 		{
 			SoundCommon	common;
-			byte		data[1];
+			id0_byte_t		data[1];
 		} PCSound;
 
 // 	Registers for the Sound Blaster card - needs to be offset by n0
@@ -75,8 +75,8 @@ typedef	struct
 typedef	struct
 		{
 			SoundCommon	common;
-			word		hertz;
-			byte		bits,
+			id0_word_t		hertz;
+			id0_byte_t		bits,
 						reference,
 						data[1];
 		} SampledSound;
@@ -97,7 +97,7 @@ typedef	struct
 
 typedef	struct
 		{
-			byte	mChar,cChar,
+			id0_byte_t	mChar,cChar,
 					mScale,cScale,
 					mAttack,cAttack,
 					mSus,cSus,
@@ -110,7 +110,7 @@ typedef	struct
 		{
 			SoundCommon	common;
 			Instrument	inst;
-			byte		block,
+			id0_byte_t		block,
 						data[1];
 		} AdLibSound;
 
@@ -132,7 +132,7 @@ typedef	struct
 
 typedef	struct
 		{
-			word	flags,
+			id0_word_t	flags,
 					count,
 					offsets[1];
 		} MusicGroup;
@@ -140,12 +140,12 @@ typedef	struct
 typedef	struct
 		{
 			/* This part needs to be set up by the user */
-			word        mood,*moods[sqMaxMoods];
+			id0_word_t        mood,*moods[sqMaxMoods];
 
 			/* The rest is set up by the code */
 			Instrument	inst;
-			word		*seq;
-			longword	nextevent;
+			id0_word_t		*seq;
+			id0_longword_t	nextevent;
 		} ActiveTrack;
 
 #define	sqmode_Normal		0
@@ -156,39 +156,39 @@ typedef	struct
 
 
 // Global variables
-extern	boolean		LeaveDriveOn;
-extern	boolean		SoundSourcePresent,SoundBlasterPresent,AdLibPresent,
+extern	id0_boolean_t		LeaveDriveOn;
+extern	id0_boolean_t		SoundSourcePresent,SoundBlasterPresent,AdLibPresent,
 					NeedsDigitized,NeedsMusic;	// For Caching Mgr
 extern	SDMode		SoundMode;
 extern	SMMode		MusicMode;
-extern	longword	TimeCount;					// Global time in ticks
+extern	id0_longword_t	TimeCount;					// Global time in ticks
 
-extern	boolean		ssIsTandy;					// For config file
-extern	word		ssPort;
+extern	id0_boolean_t		ssIsTandy;					// For config file
+extern	id0_word_t		ssPort;
 
 // Function prototypes
 extern	void	SD_Startup(void),
 				SD_Shutdown(void),
-				SD_Default(boolean gotit,SDMode sd,SMMode sm),
-				SD_PlaySound(word sound),
+				SD_Default(id0_boolean_t gotit,SDMode sd,SMMode sm),
+				SD_PlaySound(id0_word_t sound),
 				SD_StopSound(void),
 				SD_WaitSoundDone(void),
-				SD_StartMusic(Ptr music),	// DEBUG - this shouldn't be a Ptr
+				SD_StartMusic(id0_ptr_t music),	// DEBUG - this shouldn't be a Ptr
 				SD_FadeOutMusic(void),
 				SD_SetUserHook(void (*hook)(void));
-extern	boolean	SD_MusicPlaying(void),
+extern	id0_boolean_t	SD_MusicPlaying(void),
 				SD_SetSoundMode(SDMode mode),
 				SD_SetMusicMode(SMMode mode);
-extern	word	SD_SoundPlaying(void);
+extern	id0_word_t	SD_SoundPlaying(void);
 
 #ifdef	_MUSE_	// MUSE Goes directly to the lower level routines
-extern	void	SDL_PCPlaySound(PCSound far *sound),
+extern	void	SDL_PCPlaySound(PCSound id0_far *sound),
 				SDL_PCStopSound(void),
-				SDL_ALPlaySound(AdLibSound far *sound),
+				SDL_ALPlaySound(AdLibSound id0_far *sound),
 				SDL_ALStopSound(void),
-				SDL_SBPlaySample(SampledSound far *sample),
+				SDL_SBPlaySample(SampledSound id0_far *sample),
 				SDL_SBStopSample(void),
-				SDL_SSPlaySample(SampledSound far *sample),
+				SDL_SSPlaySample(SampledSound id0_far *sample),
 				SDL_SSStopSample(void);
 #endif
 

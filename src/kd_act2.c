@@ -87,7 +87,7 @@ statetype s_taterattack3= {TATERTROOPLUNGEL1SPR,TATERTROOPLUNGER1SPR,step,false,
 ====================
 */
 
-void SpawnTater (int tilex, int tiley)
+void SpawnTater (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -110,7 +110,7 @@ void SpawnTater (int tilex, int tiley)
 
 void TaterThink (objtype *ob)
 {
-	int delta;
+	id0_int_t delta;
 
 	if (ob->top > player->bottom || ob->bottom < player->top)
 		return;
@@ -195,7 +195,7 @@ statetype s_cartroll2	= {CANTCARTL2SPR,CANTCARTL2SPR,slide,true,
 ====================
 */
 
-void SpawnCart (int tilex, int tiley)
+void SpawnCart (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -220,7 +220,7 @@ void SpawnCart (int tilex, int tiley)
 
 void CartReact (objtype *ob)
 {
-	unsigned far *map;
+	id0_unsigned_t id0_far *map;
 
 	if (ob->xdir == 1 && ob->hitwest)
 	{
@@ -321,7 +321,7 @@ statetype s_fry2		= {FRENCHFRY2SPR,FRENCHFRY2SPR,stepthink,false,
 ====================
 */
 
-void SpawnFrenchy (int tilex, int tiley)
+void SpawnFrenchy (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -391,7 +391,7 @@ void FrenchyThrow (objtype *ob)
 
 void FrenchyThink (objtype *ob)
 {
-	int delta;
+	id0_int_t delta;
 
 	if ( abs(ob->y - player->y) > 3*TILEGLOBAL )
 	{
@@ -507,7 +507,7 @@ statetype s_melonseedd2	= {MELONSEEDD2SPR,MELONSEEDD2SPR,stepthink,false,
 ====================
 */
 
-void SpawnMelon (int tilex, int tiley,int dir)
+void SpawnMelon (id0_int_t tilex, id0_int_t tiley,id0_int_t dir)
 {
 	GetNewObj (false);
 
@@ -582,8 +582,8 @@ void MelonSpitThink (objtype *ob)
 
 void	ProjectileReact (objtype *ob)
 {
-	unsigned wall,absx,absy,angle,newangle;
-	unsigned long speed;
+	id0_unsigned_t wall,absx,absy,angle,newangle;
+	id0_unsigned_long_t speed;
 
 	PLACESPRITE;
 	if (ob->hiteast || ob->hitwest)
@@ -747,7 +747,7 @@ statetype s_squasherwait	= {SQUASHERJUMPL2SPR,SQUASHERJUMPR2SPR,step,false,
 ====================
 */
 
-void SpawnSquasher (int tilex, int tiley)
+void SpawnSquasher (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -769,7 +769,7 @@ void SpawnSquasher (int tilex, int tiley)
 
 void SquasherThink (objtype *ob)
 {
-	int delta;
+	id0_int_t delta;
 
 	if ( abs(ob->y - player->y) > 3*TILEGLOBAL )
 	{
@@ -897,7 +897,7 @@ statetype s_apelfall = {APELWALKL1SPR,APELWALKR1SPR,think,false,
 ====================
 */
 
-void SpawnApel (int tilex, int tiley)
+void SpawnApel (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -920,8 +920,8 @@ void SpawnApel (int tilex, int tiley)
 
 void ApelThink (objtype *ob)
 {
-	int	x,y;
-	unsigned far *map;
+	id0_int_t	x,y;
+	id0_unsigned_t id0_far *map;
 
 	if (ob->top > player->bottom || ob->bottom < player->top)
 	{
@@ -933,7 +933,7 @@ void ApelThink (objtype *ob)
 		else
 			y = ob->tiletop;
 
-		map = (unsigned _seg *)mapsegs[1]+
+		map = (id0_unsigned_t _seg *)mapsegs[1]+
 			mapbwidthtable[y]/2 + ob->tilemidx;
 
 		if ((tinf[INTILE+*map]&0x7f) == 1)
@@ -971,9 +971,9 @@ void ApelThink (objtype *ob)
 
 void ApelClimbThink (objtype *ob)
 {
-	unsigned far *map;
+	id0_unsigned_t id0_far *map;
 
-	map = (unsigned _seg *)mapsegs[1]+
+	map = (id0_unsigned_t _seg *)mapsegs[1]+
 		mapbwidthtable[ob->tiletop]/2 + ob->temp4;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
@@ -994,9 +994,9 @@ void ApelClimbThink (objtype *ob)
 
 void ApelSlideThink (objtype *ob)
 {
-	unsigned far *map;
+	id0_unsigned_t id0_far *map;
 
-	map = (unsigned _seg *)mapsegs[1]+
+	map = (id0_unsigned_t _seg *)mapsegs[1]+
 		mapbwidthtable[ob->tilebottom]/2 + ob->temp4;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
@@ -1081,7 +1081,7 @@ statetype s_peabrainwalk4	= {PEABRAINWALKL4SPR,PEABRAINWALKR4SPR,step,false,
 ====================
 */
 
-void SpawnPeaBrain (int tilex, int tiley)
+void SpawnPeaBrain (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -1175,7 +1175,7 @@ statetype s_peapodspit2	= {PEAPODSPITLSPR,PEAPODSPITRSPR,step,false,
 ====================
 */
 
-void SpawnPeaPod (int tilex, int tiley)
+void SpawnPeaPod (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -1228,7 +1228,7 @@ void SpitPeaBrain (objtype *ob)
 
 void PeaPodThink (objtype *ob)
 {
-	int delta;
+	id0_int_t delta;
 
 	if ( abs(ob->y - player->y) > 3*TILEGLOBAL )
 		return;
@@ -1332,7 +1332,7 @@ statetype s_deathboom6	= {POOF4SPR,POOF4SPR,step,false,
 ====================
 */
 
-void SpawnBoobus (int tilex, int tiley)
+void SpawnBoobus (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -1400,8 +1400,8 @@ void FinishThink (objtype *ob)
 
 void BoobusThink (objtype *ob)
 {
-	unsigned	move;
-	boolean	inline = false;
+	id0_unsigned_t	move;
+	id0_boolean_t	inline = false;
 
 	if (ob->left > player->right)
 		ob->xdir = -1;

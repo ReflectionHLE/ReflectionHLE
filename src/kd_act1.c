@@ -50,7 +50,7 @@
 =============================================================================
 */
 
-int	flowertime[4] = {700,700,350,175};
+id0_int_t	flowertime[4] = {700,700,350,175};
 
 /*
 =============================================================================
@@ -73,7 +73,7 @@ int	flowertime[4] = {700,700,350,175};
 
 void DoGravity (objtype *ob)
 {
-	long	i;
+	id0_long_t	i;
 //
 // only accelerate on odd tics, because of limited precision
 //
@@ -105,10 +105,10 @@ void DoGravity (objtype *ob)
 ===============
 */
 
-void AccelerateX (objtype *ob,int dir,int max)
+void AccelerateX (objtype *ob,id0_int_t dir,id0_int_t max)
 {
-	long	i;
-	unsigned	olddir;
+	id0_long_t	i;
+	id0_unsigned_t	olddir;
 
 	olddir = ob->xspeed & 0x8000;
 //
@@ -144,9 +144,9 @@ void AccelerateX (objtype *ob,int dir,int max)
 
 void FrictionX (objtype *ob)
 {
-	long	i;
-	int		dir;
-	unsigned	olddir;
+	id0_long_t	i;
+	id0_int_t		dir;
+	id0_unsigned_t	olddir;
 
 	olddir = ob->xspeed & 0x8000;
 
@@ -315,7 +315,7 @@ statetype s_doorraise = {DOORSPR,DOORSPR,slide,false,
 ======================
 */
 
-void	SpawnDoor (int tilex, int tiley)
+void	SpawnDoor (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -486,7 +486,7 @@ void ChangeFromFlower (objtype *ob)
 {
 	objtype *flower;
 	statetype *state;
-	unsigned	oldbottom;
+	id0_unsigned_t	oldbottom;
 
 	SD_PlaySound (UNFLOWERPOWERSND);
 	flower = (objtype *)ob->temp1;
@@ -534,11 +534,11 @@ statetype s_bonusrise  	 = {NULL,NULL,slide,false,
 ====================
 */
 
-int bonusshape[12] = {PEPPERMINT1SPR,COOKIE1SPR,CANDYCANE1SPR,CANDYBAR1SPR,
+id0_int_t bonusshape[12] = {PEPPERMINT1SPR,COOKIE1SPR,CANDYCANE1SPR,CANDYBAR1SPR,
 	LOLLIPOP1SPR,COTTONCANDY1SPR,EXTRAKEEN1SPR,SUPERBONUS1SPR,FLOWERPOWER1SPR,
 	FLOWERPOWERUP1SPR,BOOBUSBOMB1SPR,MAGICKEY1SPR};
 
-void SpawnBonus (int tilex, int tiley, int type)
+void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t type)
 {
 	GetNewObj (false);
 
@@ -644,7 +644,7 @@ statetype s_broccosmash9 = {BROCCOLASHRUNL1SPR,BROCCOLASHRUNR1SPR,step,true,
 ====================
 */
 
-void SpawnBrocco (int tilex, int tiley)
+void SpawnBrocco (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -679,7 +679,7 @@ void BroccoGetUp (objtype *ob)
 
 void BroccoThink (objtype *ob)
 {
-	int delta;
+	id0_int_t delta;
 
 	if (ob->top > player->bottom || ob->bottom < player->top)
 		return;
@@ -755,7 +755,7 @@ statetype s_tomatbounce2 = {TOMATOOTHL2SPR,TOMATOOTHR2SPR,stepthink,false,
 ====================
 */
 
-void SpawnTomat (int tilex, int tiley)
+void SpawnTomat (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -888,7 +888,7 @@ statetype s_carrotleap	 = {CARROTLEAPL1SPR,CARROTLEAPR1SPR,think,false,
 ====================
 */
 
-void SpawnCarrot (int tilex, int tiley)
+void SpawnCarrot (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -912,7 +912,7 @@ void SpawnCarrot (int tilex, int tiley)
 
 void CarrotReact (objtype *ob)
 {
-	unsigned x, width, bot, far *map;
+	id0_unsigned_t x, width, bot, id0_far *map;
 
 	if (ob->xdir == 1 && ob->hitwest)
 	{
@@ -993,7 +993,7 @@ statetype s_asparwalk4	 = {ASPARAGUSRUNL4SPR,ASPARAGUSRUNR4SPR,step,false,
 ====================
 */
 
-void SpawnAspar (int tilex, int tiley)
+void SpawnAspar (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -1045,7 +1045,7 @@ statetype s_graperise	= {GRAPEONVINESPR,GRAPEONVINESPR,slide,false,
 ====================
 */
 
-void SpawnGrape (int tilex, int tiley)
+void SpawnGrape (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
@@ -1068,7 +1068,7 @@ void SpawnGrape (int tilex, int tiley)
 
 void GrapeThink (objtype *ob)
 {
-	unsigned y,starty,endy, far *map;
+	id0_unsigned_t y,starty,endy, id0_far *map;
 
 	if (player->left > ob->right
 		|| player->right < ob->left

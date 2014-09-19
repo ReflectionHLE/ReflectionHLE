@@ -26,13 +26,13 @@
 #include "ID_TYPES.H"
 #endif
 
-void Quit (char *error);
+void Quit (id0_char_t *error);
 
 
 //==========================================================================
 
 #define SAVENEARHEAP	0x400		// space to leave in data segment
-#define SAVEFARHEAP		0			// space to leave in far heap
+#define SAVEFARHEAP		0			// space to leave in id0_far heap
 
 #define	BUFFERSIZE		0x1000		// miscelanious, allways available buffer
 
@@ -44,14 +44,14 @@ typedef void _seg * memptr;
 
 typedef struct
 {
-	long	nearheap,farheap,EMSmem,XMSmem,mainmem;
+	id0_long_t	nearheap,farheap,EMSmem,XMSmem,mainmem;
 } mminfotype;
 
 //==========================================================================
 
 extern	mminfotype	mminfo;
 extern	memptr		bufferseg;
-extern	boolean		bombonerror;
+extern	id0_boolean_t		bombonerror;
 
 extern	void		(* beforesort) (void);
 extern	void		(* aftersort) (void);
@@ -62,17 +62,17 @@ void MM_Startup (void);
 void MM_Shutdown (void);
 void MM_MapEMS (void);
 
-void MM_GetPtr (memptr *baseptr,unsigned long size);
+void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size);
 void MM_FreePtr (memptr *baseptr);
 
-void MM_SetPurge (memptr *baseptr, int purge);
-void MM_SetLock (memptr *baseptr, boolean locked);
+void MM_SetPurge (memptr *baseptr, id0_int_t purge);
+void MM_SetLock (memptr *baseptr, id0_boolean_t locked);
 void MM_SortMem (void);
 
 void MM_ShowMemory (void);
 
-long MM_UnusedMemory (void);
-long MM_TotalFree (void);
+id0_long_t MM_UnusedMemory (void);
+id0_long_t MM_TotalFree (void);
 
 
 #endif

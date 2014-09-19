@@ -28,7 +28,7 @@
 //==========================================================================
 
 #ifndef MakeID
-#define MakeID(a,b,c,d)			(((long)(d)<<24L)|((long)(c)<<16L)|((long)(b)<<8L)|(long)(a))
+#define MakeID(a,b,c,d)			(((id0_long_t)(d)<<24L)|((id0_long_t)(c)<<16L)|((id0_long_t)(b)<<8L)|(id0_long_t)(a))
 #endif
 
 
@@ -79,8 +79,8 @@ typedef enum LibFileTypes
 
 typedef struct SoftLibHdr
 {
-	unsigned Version;									// Library Version Num
-	unsigned FileCount;
+	id0_unsigned_t Version;									// Library Version Num
+	id0_unsigned_t FileCount;
 } SoftlibHdr;
 
 
@@ -93,11 +93,11 @@ typedef struct SoftLibHdr
 
 typedef struct FileEntryHdr
 {
-	char FileName[SL_FILENAMESIZE];		  	// NOTE : May not be null terminated!
-	unsigned long Offset;
-	unsigned long ChunkLen;
-	unsigned long OrginalLength;
-	short Compression;								// ct_TYPES
+	id0_char_t FileName[SL_FILENAMESIZE];		  	// NOTE : May not be null terminated!
+	id0_unsigned_long_t Offset;
+	id0_unsigned_long_t ChunkLen;
+	id0_unsigned_long_t OrginalLength;
+	id0_short_t Compression;								// ct_TYPES
 } FileEntryHdr;
 
 
@@ -108,9 +108,9 @@ typedef struct FileEntryHdr
 
 typedef struct ChunkHeader
 {
-	unsigned long HeaderID;
-	unsigned long OrginalLength;
-	short Compression;								// ct_TYPES
+	id0_unsigned_long_t HeaderID;
+	id0_unsigned_long_t OrginalLength;
+	id0_short_t Compression;								// ct_TYPES
 } ChunkHeader;
 
 

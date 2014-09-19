@@ -73,27 +73,27 @@
 //	Stuff I need
 //
 // This table maps channel numbers to carrier and modulator op cells
-static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
+static	id0_byte_t			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 						modifiers[9] = { 0, 1, 2, 8, 9,10,16,17,18};
 static	ActiveTrack		*tracks[sqMaxTracks];
-static	word			sqMode,sqFadeStep;
+static	id0_word_t			sqMode,sqFadeStep;
 
 //	Global variables
-	boolean		LeaveDriveOn,
+	id0_boolean_t		LeaveDriveOn,
 				SoundSourcePresent,SoundBlasterPresent,AdLibPresent,
 				NeedsDigitized,NeedsMusic;
 	SDMode		SoundMode;
 	SMMode		MusicMode;
-	longword	TimeCount;
-	word		*SoundTable;	// Really * _seg *SoundTable, but that don't work
-	boolean		ssIsTandy;
-	word		ssPort = 2;
+	id0_longword_t	TimeCount;
+	id0_word_t		*SoundTable;	// Really * _seg *SoundTable, but that don't work
+	id0_boolean_t		ssIsTandy;
+	id0_word_t		ssPort = 2;
 
 //	Internal variables
-static	boolean			SD_Started;
-static	boolean			TimerDone;
-static	word			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
-static	char			*ParmStrings[] =
+static	id0_boolean_t			SD_Started;
+static	id0_boolean_t			TimerDone;
+static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
+static	id0_char_t			*ParmStrings[] =
 						{
 							"noal",
 							"nosb",
@@ -106,48 +106,48 @@ static	char			*ParmStrings[] =
 							nil
 						};
 static	void			(*SoundUserHook)(void);
-static	word			SoundNumber,SoundPriority;
+static	id0_word_t			SoundNumber,SoundPriority;
 static	void interrupt	(*t0OldService)(void);
-static	word			t0CountTable[] = {2,2,2,2,10,10};
-static	long			LocalTime;
+static	id0_word_t			t0CountTable[] = {2,2,2,2,10,10};
+static	id0_long_t			LocalTime;
 
 //	PC Sound variables
-static	byte			pcLastSample,far *pcSound;
-static	longword		pcLengthLeft;
-static	word			pcSoundLookup[255];
+static	id0_byte_t			pcLastSample,id0_far *pcSound;
+static	id0_longword_t		pcLengthLeft;
+static	id0_word_t			pcSoundLookup[255];
 
 //	SoundBlaster variables
-static	boolean			sbNoCheck,
+static	id0_boolean_t			sbNoCheck,
 						sbSamplePlaying,
 						sbIsCompressed,sbCompFirst;
-static	byte			sbOldIntMask = -1;
-static	byte			huge *sbNextSegPtr;
-static	int				sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
+static	id0_byte_t			sbOldIntMask = -1;
+static	id0_byte_t			id0_huge *sbNextSegPtr;
+static	id0_int_t				sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
 						sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf};
-static	longword		sbNextSegLen;
-static	SampledSound	huge *sbSamples;
+static	id0_longword_t		sbNextSegLen;
+static	SampledSound	id0_huge *sbSamples;
 static	void interrupt	(*sbOldIntHand)(void);
 
 //	SoundSource variables
-static	boolean			ssNoCheck,
+static	id0_boolean_t			ssNoCheck,
 						ssIsCompressed,ssCompFirst,
 						ssIsSlow;
-static	word			ssControl,ssStatus,ssData,
+static	id0_word_t			ssControl,ssStatus,ssData,
 						ssHoldOver;
-static	byte			ssOn,ssOff,
-						far *ssSample;
-static	longword		ssLengthLeft;
+static	id0_byte_t			ssOn,ssOff,
+						id0_far *ssSample;
+static	id0_longword_t		ssLengthLeft;
 
 //	AdLib variables
-static	boolean			alNoCheck;
-static	byte			far *alSound;
-static	word			alBlock;
-static	longword		alLengthLeft;
+static	id0_boolean_t			alNoCheck;
+static	id0_byte_t			id0_far *alSound;
+static	id0_word_t			alBlock;
+static	id0_longword_t		alLengthLeft;
 
 //	Sequencer variables
-static	boolean			sqActive;
-static	word  			*sqTracks[sqMaxTracks];
-static	word			alFXReg;
+static	id0_boolean_t			sqActive;
+static	id0_word_t  			*sqTracks[sqMaxTracks];
+static	id0_word_t			alFXReg;
 
 //	Internal routines
 
@@ -157,7 +157,7 @@ static	word			alFXReg;
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-SDL_SetTimer0(word speed)
+SDL_SetTimer0(id0_word_t speed)
 {
 #ifndef TPROF	// If using Borland's profiling, don't screw with the timer
 	outportb(0x43,0x36);				// Change timer 0
@@ -175,7 +175,7 @@ SDL_SetTimer0(word speed)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-SDL_SetIntsPerSec(word ints)
+SDL_SetIntsPerSec(id0_word_t ints)
 {
 	SDL_SetTimer0(1192755 / ints);
 }
@@ -203,8 +203,8 @@ SDL_TimingService(void)
 static void
 SDL_InitDelay(void)
 {
-	int		i;
-	word	timer,speed;
+	id0_int_t		i;
+	id0_word_t	timer,speed;
 
 	setvect(8,SDL_TimingService);		// Set to my timer 0 ISR
 
@@ -243,7 +243,7 @@ done:
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-SDL_Delay(word delay)
+SDL_Delay(id0_word_t delay)
 {
 	if (!delay)
 		return;
@@ -270,7 +270,7 @@ void
 #else
 static void
 #endif
-SDL_PCPlaySound(PCSound far *sound)
+SDL_PCPlaySound(PCSound id0_far *sound)
 {
 asm	pushf
 asm	cli
@@ -314,8 +314,8 @@ asm	popf
 static void
 SDL_PCService(void)
 {
-	byte	s;
-	word	t;
+	id0_byte_t	s;
+	id0_word_t	t;
 
 	if (pcSound)
 	{
@@ -395,7 +395,7 @@ static void
 #endif
 SDL_SBStopSample(void)
 {
-	byte	is;
+	id0_byte_t	is;
 
 	if (sbSamplePlaying)
 	{
@@ -421,10 +421,10 @@ SDL_SBStopSample(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 static longword
-SDL_SBPlaySeg(byte huge *data,longword length)
+SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 {
-	unsigned		datapage;
-	longword		dataofs,uselen;
+	id0_unsigned_t		datapage;
+	id0_longword_t		dataofs,uselen;
 
 	uselen = length;
 	datapage = FP_SEG(data) >> 12;
@@ -442,7 +442,7 @@ SDL_SBPlaySeg(byte huge *data,longword length)
 
 	// Program the DMA controller
 	outportb(0x0a,5);							// Mask off channel 1 DMA
-	outportb(0x0c,0);							// Clear byte ptr F/F to lower byte
+	outportb(0x0c,0);							// Clear id0_byte_t ptr F/F to lower byte
 	outportb(0x0b,0x49);						// Set transfer mode for D/A conv
 	outportb(0x02,(byte)dataofs);				// Give LSB of address
 	outportb(0x02,(byte)(dataofs >> 8));		// Give MSB of address
@@ -470,7 +470,7 @@ SDL_SBPlaySeg(byte huge *data,longword length)
 static void interrupt
 SDL_SBService(void)
 {
-	longword	used;
+	id0_longword_t	used;
 
 	sbIn(sbDataAvail);	// Ack interrupt to SB
 
@@ -505,15 +505,15 @@ void
 #else
 static void
 #endif
-SDL_SBPlaySample(SampledSound far *sample)
+SDL_SBPlaySample(SampledSound id0_far *sample)
 {
-	byte			huge *data,
+	id0_byte_t			id0_huge *data,
 					timevalue;
-	longword		used;
+	id0_longword_t		used;
 
 	SDL_SBStopSample();
 
-	data = (byte huge *)(sample->data);
+	data = (id0_byte_t id0_huge *)(sample->data);
 	timevalue = 256 - (1000000 / sample->hertz);
 
 	// DEBUG - deal with compressed sounds
@@ -550,9 +550,9 @@ SDL_SBPlaySample(SampledSound far *sample)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-SDL_CheckSB(int port)
+SDL_CheckSB(id0_int_t port)
 {
-	int	i;
+	id0_int_t	i;
 
 	sbLocation = port << 4;		// Initialize stuff for later use
 
@@ -586,9 +586,9 @@ SDL_CheckSB(int port)
 //
 ///////////////////////////////////////////////////////////////////////////
 static boolean
-SDL_DetectSoundBlaster(int port)
+SDL_DetectSoundBlaster(id0_int_t port)
 {
-	int	i;
+	id0_int_t	i;
 
 	if (port == 0)					// If user specifies default, use 2
 		port = 2;
@@ -659,8 +659,8 @@ SDL_SSStopSample(void)
 static void
 SDL_SSService(void)
 {
-	boolean	gotit;
-	byte	v;
+	id0_boolean_t	gotit;
+	id0_byte_t	v;
 
 	while (ssSample)
 	{
@@ -714,7 +714,7 @@ SDL_SSService(void)
 		asm	mov		al,[ssOn]
 		asm	out		dx,al
 
-		asm	push	ax				// Delay a short while
+		asm	push	ax				// Delay a id0_short_t while
 		asm	pop		ax
 		asm	push	ax
 		asm	pop		ax
@@ -734,7 +734,7 @@ void
 #else
 static void
 #endif
-SDL_SSPlaySample(SampledSound far *sample)
+SDL_SSPlaySample(SampledSound id0_far *sample)
 {
 asm	pushf
 asm	cli
@@ -795,8 +795,8 @@ SDL_ShutSS(void)
 static boolean
 SDL_CheckSS(void)
 {
-	boolean		present = false;
-	longword	lasttime;
+	id0_boolean_t		present = false;
+	id0_longword_t	lasttime;
 
 	// Turn the Sound Source on and wait awhile (4 ticks)
 	SDL_StartSS();
@@ -824,7 +824,7 @@ asm	pop		ax
 asm	mov		al,[ssOn]
 asm	out		dx,al
 
-asm	push	ax				// Delay a short while before we do this again
+asm	push	ax				// Delay a id0_short_t while before we do this again
 asm	pop		ax
 asm	push	ax
 asm	pop		ax
@@ -860,7 +860,7 @@ SDL_DetectSoundSource(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-alOut(byte n,byte b)
+alOut(id0_byte_t n,id0_byte_t b)
 {
 	asm	pushf
 	asm	cli
@@ -885,9 +885,9 @@ alOut(byte n,byte b)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-SDL_SetInstrument(int which,Instrument *inst)
+SDL_SetInstrument(id0_int_t which,Instrument *inst)
 {
-	byte		c,m;
+	id0_byte_t		c,m;
 
 	// DEBUG - what about percussive instruments?
 
@@ -940,10 +940,10 @@ void
 #else
 static void
 #endif
-SDL_ALPlaySound(AdLibSound far *sound)
+SDL_ALPlaySound(AdLibSound id0_far *sound)
 {
-	byte		c,m;
-	Instrument	far *inst;
+	id0_byte_t		c,m;
+	Instrument	id0_far *inst;
 
 asm	pushf
 asm	cli
@@ -982,7 +982,7 @@ asm	popf
 static void
 SDL_ALSoundService(void)
 {
-	byte	s;
+	id0_byte_t	s;
 
 	if (alSound)
 	{
@@ -1025,10 +1025,10 @@ SDL_SelectMeasure(ActiveTrack *track)
 static void
 SDL_ALService(void)
 {
-	boolean		update;
-	word		*seq;
-	longword	next;
-	int			i;
+	id0_boolean_t		update;
+	id0_word_t		*seq;
+	id0_longword_t	next;
+	id0_int_t			i;
 	Instrument	*ins;
 	ActiveTrack	*track;
 
@@ -1065,7 +1065,7 @@ SDL_ALService(void)
 			case sev_NewInst:
 				ins = (Instrument *)seq;
 				SDL_SetInstrument(i,ins++);
-				seq = (word *)(ins);
+				seq = (id0_word_t *)(ins);
 				next = TimeCount + *seq;
 				break;
 			case sev_NewPerc:
@@ -1109,7 +1109,7 @@ SDL_ALService(void)
 static void
 SDL_ShutAL(void)
 {
-	word	i;
+	id0_word_t	i;
 
 	alOut(alEffects,0);
 	alOut(alFreqH + 0,0);
@@ -1137,8 +1137,8 @@ SDL_StartAL(void)
 static boolean
 SDL_DetectAdLib(void)
 {
-	byte	status1,status2;
-	int		i;
+	id0_byte_t	status1,status2;
+	id0_int_t		i;
 
 	alOut(4,0x60);	// Reset T1 & T2
 	alOut(4,0x80);	// Reset IRQ
@@ -1166,8 +1166,8 @@ SDL_DetectAdLib(void)
 static void interrupt
 SDL_t0Service(void)
 {
-	byte		sdcount;
-static	word	count = 1,
+	id0_byte_t		sdcount;
+static	id0_word_t	count = 1,
 				alcount = 1,
 				drivecount = 1;
 
@@ -1283,8 +1283,8 @@ SDL_StartDevice(void)
 boolean
 SD_SetSoundMode(SDMode mode)
 {
-	boolean	result;
-	word	rate,speed,
+	id0_boolean_t	result;
+	id0_word_t	rate,speed,
 			tableoffset;
 
 	SD_StopSound();
@@ -1331,7 +1331,7 @@ SD_SetSoundMode(SDMode mode)
 		SDL_ShutDevice();
 		SoundMode = mode;
 #ifndef	_MUSE_
-		SoundTable = (word *)(&audiosegs[tableoffset]);
+		SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
 #endif
 		SDL_StartDevice();
 	}
@@ -1350,7 +1350,7 @@ SD_SetSoundMode(SDMode mode)
 boolean
 SD_SetMusicMode(SMMode mode)
 {
-	boolean	result;
+	id0_boolean_t	result;
 
 	SD_FadeOutMusic();
 	while (SD_MusicPlaying())
@@ -1389,7 +1389,7 @@ SD_SetMusicMode(SMMode mode)
 void
 SD_Startup(void)
 {
-	int	i;
+	id0_int_t	i;
 
 	if (SD_Started)
 		return;
@@ -1470,9 +1470,9 @@ SD_Startup(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-SD_Default(boolean gotit,SDMode sd,SMMode sm)
+SD_Default(id0_boolean_t gotit,SDMode sd,SMMode sm)
 {
-	boolean	gotsd,gotsm;
+	id0_boolean_t	gotsd,gotsm;
 
 	gotsd = gotsm = gotit;
 
@@ -1579,9 +1579,9 @@ SD_SetUserHook(void (* hook)(void))
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-SD_PlaySound(word sound)
+SD_PlaySound(id0_word_t sound)
 {
-	SoundCommon	far *s;
+	SoundCommon	id0_far *s;
 
 	if (SoundMode == sdm_Off)
 		return;
@@ -1595,16 +1595,16 @@ SD_PlaySound(word sound)
 	switch (SoundMode)
 	{
 	case sdm_PC:
-		SDL_PCPlaySound((void far *)s);
+		SDL_PCPlaySound((void id0_far *)s);
 		break;
 	case sdm_AdLib:
-		SDL_ALPlaySound((void far *)s);
+		SDL_ALPlaySound((void id0_far *)s);
 		break;
 	case sdm_SoundBlaster:
-		SDL_SBPlaySample((void far *)s);
+		SDL_SBPlaySample((void id0_far *)s);
 		break;
 	case sdm_SoundSource:
-		SDL_SSPlaySample((void far *)s);
+		SDL_SSPlaySample((void id0_far *)s);
 		break;
 	}
 
@@ -1620,7 +1620,7 @@ SD_PlaySound(word sound)
 word
 SD_SoundPlaying(void)
 {
-	boolean	result = false;
+	id0_boolean_t	result = false;
 
 	switch (SoundMode)
 	{
@@ -1689,7 +1689,7 @@ SD_WaitSoundDone(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-SD_StartMusic(Ptr music)	// DEBUG - this shouldn't be a Ptr...
+SD_StartMusic(id0_ptr_t music)	// DEBUG - this shouldn't be a Ptr...
 {
 	switch (MusicMode)
 	{
@@ -1726,7 +1726,7 @@ SD_FadeOutMusic(void)
 boolean
 SD_MusicPlaying(void)
 {
-	boolean	result;
+	id0_boolean_t	result;
 
 	switch (MusicMode)
 	{

@@ -60,7 +60,7 @@
 
 struct COMPStruct
 {
-	unsigned long DecompLen;
+	id0_unsigned_long_t DecompLen;
 
 };
 
@@ -68,7 +68,7 @@ struct COMPStruct
 struct CMP2Header
 {
 	unsigned CompType;
-	unsigned long DecompLen;
+	id0_unsigned_long_t DecompLen;
 
 };
 #endif
@@ -102,22 +102,22 @@ struct CMP2Header
 #if 0
 
 //void DecompressFILEtoFILE(FILE *infile, FILE *outfile);
-//unsigned long CompressFILEtoFILE(FILE *infile, FILE *outfile,unsigned long DataLength);
+//id0_unsigned_long_t CompressFILEtoFILE(FILE *infile, FILE *outfile, id0_unsigned_long_t DataLength);
 
 
-unsigned long lzwCompress(void far *infile, void far *outfile,unsigned long DataLength,unsigned PtrTypes);
-void lzwDecompress(void far *infile, void far *outfile,unsigned long DataLength,unsigned PtrTypes);
+id0_unsigned_long_t lzwCompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
+void lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
 
-int WritePtr(long outfile, unsigned char data, unsigned PtrType);
-int ReadPtr(long infile, unsigned PtrType);
+id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
+id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType);
 
-memptr InitBufferedIO(int handle, BufferedIO *bio);
+memptr InitBufferedIO(id0_int_t handle, BufferedIO *bio);
 void FreeBufferedIO(BufferedIO *bio);
-byte bio_readch(BufferedIO *bio);
+id0_byte_t bio_readch(BufferedIO *bio);
 
-//unsigned long BLoad(char *SourceFile, memptr *DstPtr);
-memptr LoadLIBFile(char *LibName,char *FileName,memptr *MemPtr);
-int LoadLIBShape(char *SLIB_Filename, char *Filename,struct Shape *SHP);
-long FileSize(char *filename)
+//id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr);
+memptr LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, memptr *MemPtr);
+id0_int_t LoadLIBShape(id0_char_t *SLIB_Filename, id0_char_t *Filename, struct Shape *SHP);
+id0_long_t FileSize(id0_char_t *filename)
 
 #endif

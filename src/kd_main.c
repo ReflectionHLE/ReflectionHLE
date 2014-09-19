@@ -51,9 +51,9 @@
 =============================================================================
 */
 
-char            str[80],str2[20];
-boolean         singlestep,jumpcheat,godmode,tedlevel;
-unsigned        tedlevelnum;
+id0_char_t            str[80],str2[20];
+id0_boolean_t         singlestep,jumpcheat,godmode,tedlevel;
+id0_unsigned_t        tedlevelnum;
 
 /*
 =============================================================================
@@ -65,9 +65,9 @@ unsigned        tedlevelnum;
 
 void    DebugMemory (void);
 void    TestSprites(void);
-int             DebugKeys (void);
+id0_int_t             DebugKeys (void);
 void    ShutdownId (void);
-void    Quit (char *error);
+void    Quit (id0_char_t *error);
 void    InitGame (void);
 void    main (void);
 
@@ -116,10 +116,10 @@ void DebugMemory (void)
 #define TEXTWIDTH   40
 void TestSprites(void)
 {
-	int hx,hy,sprite,oldsprite,bottomy,topx,shift;
-	spritetabletype far *spr;
+	id0_int_t hx,hy,sprite,oldsprite,bottomy,topx,shift;
+	spritetabletype id0_far *spr;
 	spritetype _seg *block;
-	unsigned        mem,scan;
+	id0_unsigned_t        mem,scan;
 
 
 	VW_FixRefreshBuffer ();
@@ -233,10 +233,10 @@ void TestSprites(void)
 =
 ================
 */
-int DebugKeys (void)
+id0_int_t DebugKeys (void)
 {
-	boolean esc;
-	int level;
+	id0_boolean_t esc;
+	id0_int_t level;
 
 #if FRILLS
 	if (Keyboard[0x12] && ingame)   // DEBUG: end + 'E' to quit level
@@ -371,7 +371,7 @@ void ShutdownId (void)
 ==========================
 */
 
-void Quit (char *error)
+void Quit (id0_char_t *error)
 {
   ShutdownId ();
   if (error && *error)
@@ -414,7 +414,7 @@ void Quit (char *error)
 
 void InitGame (void)
 {
-	int i;
+	id0_int_t i;
 
 	MM_Startup ();
 
@@ -503,12 +503,12 @@ void InitGame (void)
 ==========================
 */
 
-static  char                    *EntryParmStrings[] = {"detour",nil};
+static  id0_char_t                    *EntryParmStrings[] = {"detour",nil};
 
 void main (void)
 {
-	boolean LaunchedFromShell = false;
-	short i;
+	id0_boolean_t LaunchedFromShell = false;
+	id0_short_t i;
 
 	textcolor(7);
 	textbackground(0);

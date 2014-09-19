@@ -19,18 +19,18 @@
 // ID_GLOB.H
 
 
-#include <ALLOC.H>
+//#include <ALLOC.H>
 #include <ctype.h>
-#include <DOS.H>
-#include <ERRNO.H>
-#include <FCNTL.H>
-#include <IO.H>
-#include <MEM.H>
-#include <process.h>
-#include <STDIO.H>
-#include <STDLIB.H>
-#include <STRING.H>
-#include <SYS\STAT.H>
+//#include <DOS.H>
+#include <errno.h>
+#include <fcntl.h>
+//#include <IO.H>
+//#include <MEM.H>
+//#include <process.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+//#include <SYS\STAT.H>
 
 #define __ID_GLOB__
 
@@ -64,22 +64,41 @@
 #ifndef	__TYPES__
 #define	__TYPES__
 
-typedef	enum	{false,true}	boolean;
-typedef	unsigned	char		byte;
-typedef	unsigned	int			word;
-typedef	unsigned	long		longword;
-typedef	byte *					Ptr;
+#include <stdint.h>
+#include <stdbool.h>
+
+typedef	bool id0_boolean_t;
+typedef int8_t id0_char_t;
+typedef int8_t id0_signed_char_t;
+typedef uint8_t id0_unsigned_char_t;
+typedef int16_t id0_short_t; // "short" was used just once in kd_main.c, but...
+typedef int16_t id0_int_t;
+typedef uint16_t id0_unsigned_t;
+typedef int32_t id0_long_t;
+typedef uint32_t id0_unsigned_long_t;
+
+typedef uint8_t id0_byte_t;
+typedef uint16_t id0_word_t;
+typedef uint32_t id0_longword_t;
+// TODO (CHOCO KEEN) Used just in SD_StartMusic, but there's no music
+// in the original game and it was commented that Ptr shouldn't be used...
+typedef uint8_t * id0_ptr_t;
 
 typedef	struct
 		{
-			int	x,y;
+			id0_int_t	x,y;
 		} Point;
 typedef	struct
 		{
 			Point	ul,lr;
 		} Rect;
 
-#define	nil	((void *)0)
+#define	id0_nil_t	((void *)0)
+
+// TODO (CHOCO KEEN): These should really be removed, but just for now and to document...
+#define id0_far
+#define id0_huge
+#define id0_seg
 
 #endif
 

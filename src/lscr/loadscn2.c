@@ -44,19 +44,20 @@
 //===========================================================================
 
 
-typedef enum {false=0,true} boolean;
+//UPDATE (CHOCO KEEN) We define these types externally now
+//typedef enum {false=0,true} boolean;
 
-int WritePtr(long outfile, unsigned char data, unsigned PtrType);
-int ReadPtr(long infile, unsigned PtrType);
-void far lzwDecompress(void far *infile, void far *outfile,unsigned long DataLength,unsigned PtrTypes);
-boolean LoadLIBFile(char *LibName,char *FileName,char far **MemPtr);
+id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
+id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType);
+void far lzwDecompress(void far *infile, void far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
+id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t far **MemPtr);
 
-long FileSize(char *filename);
+id0_long_t FileSize(id0_char_t *filename);
 
-boolean FarRead (int handle, char far *dest, long length);
+id0_boolean_t FarRead (id0_int_t handle, id0_char_t far *dest, id0_long_t length);
 
-int main(int argc,char **argv);
-void TrashProg(char *OutMsg);
+int main(int argc, char **argv);
+void TrashProg(id0_char_t *OutMsg);
 
 
 
@@ -67,7 +68,7 @@ void TrashProg(char *OutMsg);
 //=========================================================================
 
 
-unsigned char far LZW_ring_buffer[LZW_N + LZW_F - 1];
+id0_unsigned_char_t far LZW_ring_buffer[LZW_N + LZW_F - 1];
 
 	// ring buffer of size LZW_N, with extra LZW_F-1 bytes to facilitate
 	//	string comparison
@@ -92,14 +93,14 @@ unsigned char far LZW_ring_buffer[LZW_N + LZW_F - 1];
 // NOTE : For PtrTypes DEST_MEM a ZERO (0) is always returned.
 //
 //---------------------------------------------------------------------------
-int WritePtr(long outfile, unsigned char data, unsigned PtrType)
+id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType)
 {
-	int returnval = 0;
+	id0_int_t returnval = 0;
 
 	switch (PtrType & DEST_TYPES)
 	{
 		case DEST_FILE:
-			write(*(int far *)outfile,(char *)&data,1);
+			write(*(id0_int_t far *)outfile,(id0_char_t *)&data,1);
 		break;
 
 		case DEST_FFILE:
@@ -107,8 +108,8 @@ int WritePtr(long outfile, unsigned char data, unsigned PtrType)
 		break;
 
 		case DEST_MEM:
-//			*(*(char far **)outfile++) = data;						// Do NOT delete
-			*((char far *)*(char far **)outfile)++ = data;
+//			*(*(id0_char_t far **)outfile++) = data;						// Do NOT delete
+			*((id0_char_t far *)*(id0_char_t far **)outfile)++ = data;
 		break;
 
 		default:
@@ -131,14 +132,14 @@ int WritePtr(long outfile, unsigned char data, unsigned PtrType)
 //
 //
 //---------------------------------------------------------------------------
-int ReadPtr(long infile, unsigned PtrType)
+id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType)
 {
-	int returnval = 0;
+	id0_int_t returnval = 0;
 
 	switch (PtrType & SRC_TYPES)
 	{
 		case SRC_FILE:
-			read(*(int far *)infile,(char *)&returnval,1);
+			read(*(id0_int_t far *)infile,(id0_char_t *)&returnval,1);
 		break;
 
 		case SRC_FFILE:
@@ -147,8 +148,8 @@ int ReadPtr(long infile, unsigned PtrType)
 
 
 		case SRC_MEM:
-			returnval = (char)*(*(char far **)infile++);
-//			returnval = *((char far *)*(char far **)infile)++;	// DO NOT DELETE!
+			returnval = (id0_char_t)*(*(id0_char_t far **)infile++);
+//			returnval = *((id0_char_t far *)*(id0_char_t far **)infile)++;	// DO NOT DELETE!
 		break;
 
 		default:
@@ -180,10 +181,10 @@ int ReadPtr(long infile, unsigned PtrType)
 //
 // NOTES    : Does not write ANY header information!
 //
-void far lzwDecompress(void far *infile, void far *outfile,unsigned long DataLength,unsigned PtrTypes)
+void far lzwDecompress(void far *infile, void far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes)
 {
-	int  i, j, k, r, c;
-	unsigned int flags;
+	id0_int_t  i, j, k, r, c;
+	id0_unsigned_int_t flags;
 
 	for (i = 0; i < LZW_N - LZW_F; i++)
 		LZW_ring_buffer[i] = ' ';
@@ -195,7 +196,7 @@ void far lzwDecompress(void far *infile, void far *outfile,unsigned long DataLen
 	 {
 			if (((flags >>= 1) & 256) == 0)
 			{
-				c = ReadPtr((long)&infile,PtrTypes);
+				c = ReadPtr((id0_long_t)&infile,PtrTypes);
 				if (!DataLength--)
 					return;
 
@@ -204,22 +205,22 @@ void far lzwDecompress(void far *infile, void far *outfile,unsigned long DataLen
 
 			if (flags & 1)
 			{
-				c = ReadPtr((long)&infile,PtrTypes);		// Could test for EOF iff FFILE type
+				c = ReadPtr((id0_long_t)&infile,PtrTypes);		// Could test for EOF iff FFILE type
 				if (!DataLength--)
 					return;
 
-				WritePtr((long)&outfile,c,PtrTypes);
+				WritePtr((id0_long_t)&outfile,c,PtrTypes);
 
 				LZW_ring_buffer[r++] = c;
 				r &= (LZW_N - 1);
 			}
 			else
 			{
-				i = ReadPtr((long)&infile,PtrTypes);
+				i = ReadPtr((id0_long_t)&infile,PtrTypes);
 				if (!DataLength--)
 					return;
 
-				j = ReadPtr((long)&infile,PtrTypes);
+				j = ReadPtr((id0_long_t)&infile,PtrTypes);
 				if (!DataLength--)
 					return;
 
@@ -230,7 +231,7 @@ void far lzwDecompress(void far *infile, void far *outfile,unsigned long DataLen
 				{
 					 c = LZW_ring_buffer[(i + k) & (LZW_N - 1)];
 
-					 WritePtr((long)&outfile,c,PtrTypes);
+					 WritePtr((id0_long_t)&outfile,c,PtrTypes);
 
 					 LZW_ring_buffer[r++] = c;
 					 r &= (LZW_N - 1);
@@ -262,20 +263,20 @@ void far lzwDecompress(void far *infile, void far *outfile,unsigned long DataLen
 //			false  - Error!
 //
 //----------------------------------------------------------------------------
-boolean LoadLIBFile(char *LibName,char *FileName,char far **MemPtr)
+id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t far **MemPtr)
 {
-	int handle;
-	unsigned long header;
+	id0_int_t handle;
+	id0_unsigned_long_t header;
 	struct ChunkHeader Header;
-	unsigned long ChunkLen;
-	short x;
+	id0_unsigned_long_t ChunkLen;
+	id0_short_t x;
 	struct FileEntryHdr FileEntry;     			// Storage for file once found
 	struct FileEntryHdr FileEntryHeader;		// Header used durring searching
 	struct SoftLibHdr LibraryHeader;				// Library header - Version Checking
-	boolean FileFound = false;
-	unsigned long id_slib = ID_SLIB;
-	unsigned long id_chunk = ID_CHUNK;
-	boolean Success = true;
+	id0_boolean_t FileFound = false;
+	id0_unsigned_long_t id_slib = ID_SLIB;
+	id0_unsigned_long_t id_chunk = ID_CHUNK;
+	id0_boolean_t Success = true;
 
 
 	//
@@ -350,7 +351,7 @@ boolean LoadLIBFile(char *LibName,char *FileName,char far **MemPtr)
 		// READ CHUNK HEADER - Verify we are at the beginning of a chunk..
 		//
 
-		if (read(handle,(char *)&Header,sizeof(struct ChunkHeader)) == -1)
+		if (read(handle,(id0_char_t *)&Header,sizeof(struct ChunkHeader)) == -1)
 			TrashProg("LIB File - Unable to read Header!");
 
 		if (Header.HeaderID != id_chunk)
@@ -414,10 +415,10 @@ boolean LoadLIBFile(char *LibName,char *FileName,char far **MemPtr)
 //---------------------------------------------------------------------------
 //  FileSize() - Returns the size of a file on disk. (-1 = error)
 //---------------------------------------------------------------------------
-long FileSize(char *filename)
+id0_long_t FileSize(id0_char_t *filename)
 {
-	  long filesize;
-	  int handle;
+	  id0_long_t filesize;
+	  id0_int_t handle;
 
 	  if ((handle = open(filename,O_RDONLY)) != -1)
 	  {
@@ -435,7 +436,7 @@ long FileSize(char *filename)
 //--------------------------------------------------------------------------
 // FarRead()
 //-------------------------------------------------------------------------
-boolean FarRead (int handle, char far *dest, long length)
+id0_boolean_t FarRead (id0_int_t handle, id0_char_t far *dest, id0_long_t length)
 {
 	if (length>0xffffl)
 		TrashProg("FarRead doesn't support 64K reads yet!");
@@ -466,9 +467,9 @@ done:
 //--------------------------------------------------------------------------
 //  MAIN
 //--------------------------------------------------------------------------
-int main(int argc,char **argv)
+int main(int argc, char **argv)
 {
-	unsigned char huge *bufferptr = NULL;
+	id0_unsigned_char_t huge *bufferptr = NULL;
 
 	if (stricmp(argv[1], "/VER") == 0)
 	{
@@ -510,9 +511,9 @@ int main(int argc,char **argv)
 //---------------------------------------------------------------------------
 //  TrashProg() --
 //---------------------------------------------------------------------------
-void TrashProg(char *OutMsg)
+void TrashProg(id0_char_t *OutMsg)
 {
-	int error = 0;
+	id0_int_t error = 0;
 
 	_setcursortype(_NORMALCURSOR);
 

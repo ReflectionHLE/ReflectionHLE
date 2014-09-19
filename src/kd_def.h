@@ -70,14 +70,14 @@ typedef	enum	{nothing,keenobj,powerobj,doorobj,
 
 typedef struct
 {
-  int 		leftshapenum,rightshapenum;
+  id0_int_t 		leftshapenum,rightshapenum;
   enum		{step,slide,think,stepthink,slidethink} progress;
-  boolean	skippable;
+  id0_boolean_t	skippable;
 
-  boolean	pushtofloor;
-  int tictime;
-  int xmove;
-  int ymove;
+  id0_boolean_t	pushtofloor;
+  id0_int_t tictime;
+  id0_int_t xmove;
+  id0_int_t ymove;
   void (*think) ();
   void (*contact) ();
   void (*react) ();
@@ -87,15 +87,15 @@ typedef struct
 
 typedef	struct
 {
-	unsigned	worldx,worldy;
-	boolean	leveldone[GAMELEVELS];
-	long	score,nextextra;
-	int		flowerpowers;
-	int		boobusbombs,bombsthislevel;
-	int		keys;
-	int		mapon;
-	int		lives;
-	int		difficulty;
+	id0_unsigned_t	worldx,worldy;
+	id0_boolean_t	leveldone[GAMELEVELS];
+	id0_long_t	score,nextextra;
+	id0_int_t		flowerpowers;
+	id0_int_t		boobusbombs,bombsthislevel;
+	id0_int_t		keys;
+	id0_int_t		mapon;
+	id0_int_t		lives;
+	id0_int_t		difficulty;
 } gametype;
 
 
@@ -103,27 +103,27 @@ typedef struct	objstruct
 {
 	classtype	obclass;
 	enum		{no,yes,allways,removable} active;
-	boolean		needtoreact,needtoclip;
-	unsigned	nothink;
-	unsigned	x,y;
+	id0_boolean_t		needtoreact,needtoclip;
+	id0_unsigned_t	nothink;
+	id0_unsigned_t	x,y;
 
-	int			xdir,ydir;
-	int			xmove,ymove;
-	int			xspeed,yspeed;
+	id0_int_t			xdir,ydir;
+	id0_int_t			xmove,ymove;
+	id0_int_t			xspeed,yspeed;
 
-	int			ticcount,ticadjust;
+	id0_int_t			ticcount,ticadjust;
 	statetype	*state;
 
-	unsigned	shapenum;
+	id0_unsigned_t	shapenum;
 
-	unsigned	left,top,right,bottom;	// hit rectangle
-	unsigned	midx;
-	unsigned	tileleft,tiletop,tileright,tilebottom;	// hit rect in tiles
-	unsigned	tilemidx;
+	id0_unsigned_t	left,top,right,bottom;	// hit rectangle
+	id0_unsigned_t	midx;
+	id0_unsigned_t	tileleft,tiletop,tileright,tilebottom;	// hit rect in tiles
+	id0_unsigned_t	tilemidx;
 
-	int			hitnorth,hiteast,hitsouth,hitwest;	// wall numbers contacted
+	id0_int_t			hitnorth,hiteast,hitsouth,hitwest;	// wall numbers contacted
 
-	int			temp1,temp2,temp3,temp4;
+	id0_int_t			temp1,temp2,temp3,temp4;
 
 	void		*sprite;
 
@@ -139,16 +139,16 @@ typedef struct	objstruct
 =============================================================================
 */
 
-extern	char	str[80],str2[20];
-extern	boolean	singlestep,jumpcheat,godmode,tedlevel;
-extern	unsigned	tedlevelnum;
+extern	id0_char_t	str[80],str2[20];
+extern	id0_boolean_t	singlestep,jumpcheat,godmode,tedlevel;
+extern	id0_unsigned_t	tedlevelnum;
 
 void	DebugMemory (void);
 void	TestSprites(void);
-int		DebugKeys (void);
+id0_int_t		DebugKeys (void);
 void	StartupId (void);
 void	ShutdownId (void);
-void	Quit (char *error);
+void	Quit (id0_char_t *error);
 void	InitGame (void);
 void	main (void);
 
@@ -168,8 +168,8 @@ void	StatusWindow (void);
 void	NewGame (void);
 void	TEDDeath (void);
 
-boolean	LoadGame (int file);
-boolean	SaveGame (int file);
+id0_boolean_t	LoadGame (id0_int_t file);
+id0_boolean_t	SaveGame (id0_int_t file);
 void	ResetGame (void);
 
 /*
@@ -182,37 +182,37 @@ void	ResetGame (void);
 
 extern	gametype	gamestate;
 extern	exittype	playstate;
-extern	boolean		button0held,button1held;
-extern	unsigned	originxtilemax,originytilemax;
+extern	id0_boolean_t		button0held,button1held;
+extern	id0_unsigned_t	originxtilemax,originytilemax;
 extern	objtype		*new,*check,*player,*scoreobj;
 
 extern	ControlInfo	c;
 
 extern	objtype dummyobj;
 
-extern	char		*levelnames[21];
+extern	id0_char_t		*levelnames[21];
 
 void	CheckKeys (void);
 void	CalcInactivate (void);
 void 	InitObjArray (void);
-void 	GetNewObj (boolean usedummy);
+void 	GetNewObj (id0_boolean_t usedummy);
 void	RemoveObj (objtype *gone);
 void 	ScanInfoPlane (void);
 void 	PatchWorldMap (void);
 void 	MarkTileGraphics (void);
 void 	FadeAndUnhook (void);
-void 	SetupGameLevel (boolean loadnow);
+void 	SetupGameLevel (id0_boolean_t loadnow);
 void 	ScrollScreen (void);
-void 	MoveObjVert (objtype *ob, int ymove);
-void 	MoveObjHoriz (objtype *ob, int xmove);
-void 	GivePoints (unsigned points);
+void 	MoveObjVert (objtype *ob, id0_int_t ymove);
+void 	MoveObjHoriz (objtype *ob, id0_int_t xmove);
+void 	GivePoints (id0_unsigned_t points);
 void 	ClipToEnds (objtype *ob);
 void 	ClipToEastWalls (objtype *ob);
 void 	ClipToWestWalls (objtype *ob);
 void 	ClipToWalls (objtype *ob);
-void	ClipToSprite (objtype *push, objtype *solid, boolean squish);
+void	ClipToSprite (objtype *push, objtype *solid, id0_boolean_t squish);
 void	ClipToSpriteSide (objtype *push, objtype *solid);
-int 	DoActor (objtype *ob,int tics);
+id0_int_t 	DoActor (objtype *ob,id0_int_t tics);
 void 	StateMachine (objtype *ob);
 void 	NewState (objtype *ob,statetype *state);
 void 	PlayLoop (void);
@@ -234,13 +234,13 @@ void	DrawReact			(objtype *ob);
 
 void	SpawnScore (void);
 void	FixScoreBox (void);
-void	SpawnWorldKeen (int tilex, int tiley);
-void	SpawnKeen (int tilex, int tiley, int dir);
+void	SpawnWorldKeen (id0_int_t tilex, id0_int_t tiley);
+void	SpawnKeen (id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
 
 void 	KillKeen (void);
 
-extern	int	singlegravity;
-extern	unsigned	bounceangle[8][8];
+extern	id0_int_t	singlegravity;
+extern	id0_unsigned_t	bounceangle[8][8];
 
 extern	statetype s_keendie1;
 
@@ -255,7 +255,7 @@ extern	statetype s_keendie1;
 void WalkReact (objtype *ob);
 
 void 	DoGravity (objtype *ob);
-void	AccelerateX (objtype *ob,int dir,int max);
+void	AccelerateX (objtype *ob,id0_int_t dir,id0_int_t max);
 void 	FrictionX (objtype *ob);
 
 void	ProjectileThink		(objtype *ob);
@@ -267,13 +267,13 @@ void	ChangeState (objtype *ob, statetype *state);
 
 void	ChangeToFlower (objtype *ob);
 
-void	SpawnBonus (int tilex, int tiley, int type);
-void	SpawnDoor (int tilex, int tiley);
-void 	SpawnBrocco (int tilex, int tiley);
-void 	SpawnTomat (int tilex, int tiley);
-void 	SpawnCarrot (int tilex, int tiley);
-void 	SpawnAspar (int tilex, int tiley);
-void 	SpawnGrape (int tilex, int tiley);
+void	SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t type);
+void	SpawnDoor (id0_int_t tilex, id0_int_t tiley);
+void 	SpawnBrocco (id0_int_t tilex, id0_int_t tiley);
+void 	SpawnTomat (id0_int_t tilex, id0_int_t tiley);
+void 	SpawnCarrot (id0_int_t tilex, id0_int_t tiley);
+void 	SpawnAspar (id0_int_t tilex, id0_int_t tiley);
+void 	SpawnGrape (id0_int_t tilex, id0_int_t tiley);
 
 extern	statetype s_doorraise;
 
@@ -293,15 +293,15 @@ extern	statetype s_grapefall;
 =============================================================================
 */
 
-void SpawnTater (int tilex, int tiley);
-void SpawnCart (int tilex, int tiley);
-void SpawnFrenchy (int tilex, int tiley);
-void SpawnMelon (int tilex, int tiley,int dir);
-void SpawnSquasher (int tilex, int tiley);
-void SpawnApel (int tilex, int tiley);
-void SpawnPeaPod (int tilex, int tiley);
-void SpawnPeaBrain (int tilex, int tiley);
-void SpawnBoobus (int tilex, int tiley);
+void SpawnTater (id0_int_t tilex, id0_int_t tiley);
+void SpawnCart (id0_int_t tilex, id0_int_t tiley);
+void SpawnFrenchy (id0_int_t tilex, id0_int_t tiley);
+void SpawnMelon (id0_int_t tilex, id0_int_t tiley,id0_int_t dir);
+void SpawnSquasher (id0_int_t tilex, id0_int_t tiley);
+void SpawnApel (id0_int_t tilex, id0_int_t tiley);
+void SpawnPeaPod (id0_int_t tilex, id0_int_t tiley);
+void SpawnPeaBrain (id0_int_t tilex, id0_int_t tiley);
+void SpawnBoobus (id0_int_t tilex, id0_int_t tiley);
 
 extern	statetype s_taterattack2;
 extern	statetype s_squasherjump2;

@@ -63,7 +63,7 @@
 
 void NewGame (void)
 {
-	word    i;
+	id0_word_t    i;
 
 	gamestate.worldx = 0;           // spawn keen at starting spot
 
@@ -86,7 +86,7 @@ void NewGame (void)
 =====================
 */
 
-int WaitOrKey (int vbls)
+id0_int_t WaitOrKey (id0_int_t vbls)
 {
 	while (vbls--)
 	{
@@ -138,7 +138,7 @@ GameOver (void)
 
 void StatusWindow (void)
 {
-	word    x;
+	id0_word_t    x;
 
 	// DEBUG - make this look better
 
@@ -195,13 +195,13 @@ void StatusWindow (void)
 }
 
 boolean
-SaveGame(int file)
+SaveGame(id0_int_t file)
 {
-	word    i,size,compressed,expanded;
+	id0_word_t    i,size,compressed,expanded;
 	objtype *o;
 	memptr  bigbuffer;
 
-	if (!CA_FarWrite(file,(void far *)&gamestate,sizeof(gamestate)))
+	if (!CA_FarWrite(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
 
 	expanded = mapwidth * mapheight * 2;
@@ -210,14 +210,14 @@ SaveGame(int file)
 	for (i = 0;i < 3;i++)   // Write all three planes of the map
 	{
 //
-// leave a word at start of compressed data for compressed length
+// leave a id0_word_t at start of compressed data for compressed length
 //
-		compressed = CA_RLEWCompress ((unsigned huge *)mapsegs[i]
-			,expanded,((unsigned huge *)bigbuffer)+1,RLETAG);
+		compressed = CA_RLEWCompress ((id0_unsigned_t id0_huge *)mapsegs[i]
+			,expanded,((id0_unsigned_t id0_huge *)bigbuffer)+1,RLETAG);
 
-		*(unsigned huge *)bigbuffer = compressed;
+		*(id0_unsigned_t id0_huge *)bigbuffer = compressed;
 
-		if (!CA_FarWrite(file,(void far *)bigbuffer,compressed+2) )
+		if (!CA_FarWrite(file,(void id0_far *)bigbuffer,compressed+2) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -225,7 +225,7 @@ SaveGame(int file)
 	}
 
 	for (o = player;o;o = o->next)
-		if (!CA_FarWrite(file,(void far *)o,sizeof(objtype)))
+		if (!CA_FarWrite(file,(void id0_far *)o,sizeof(objtype)))
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -237,16 +237,16 @@ SaveGame(int file)
 
 
 boolean
-LoadGame(int file)
+LoadGame(id0_int_t file)
 {
-	word    i,j,size;
+	id0_word_t    i,j,size;
 	objtype *o;
-	int orgx,orgy;
+	id0_int_t orgx,orgy;
 	objtype         *prev,*next,*followed;
-	unsigned        compressed,expanded;
+	id0_unsigned_t        compressed,expanded;
 	memptr  bigbuffer;
 
-	if (!CA_FarRead(file,(void far *)&gamestate,sizeof(gamestate)))
+	if (!CA_FarRead(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
 
 // drop down a cache level and mark everything, so when the option screen
@@ -266,20 +266,20 @@ LoadGame(int file)
 
 	for (i = 0;i < 3;i++)   // Read all three planes of the map
 	{
-		if (!CA_FarRead(file,(void far *)&compressed,sizeof(compressed)) )
+		if (!CA_FarRead(file,(void id0_far *)&compressed,sizeof(compressed)) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
 		}
 
-		if (!CA_FarRead(file,(void far *)bigbuffer,compressed) )
+		if (!CA_FarRead(file,(void id0_far *)bigbuffer,compressed) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
 		}
 
-		CA_RLEWexpand ((unsigned huge *)bigbuffer,
-			(unsigned huge *)mapsegs[i],compressed,RLETAG);
+		CA_RLEWexpand ((id0_unsigned_t id0_huge *)bigbuffer,
+			(id0_unsigned_t id0_huge *)mapsegs[i],compressed,RLETAG);
 	}
 
 	MM_FreePtr (&bigbuffer);
@@ -290,7 +290,7 @@ LoadGame(int file)
 	new = player;
 	prev = new->prev;
 	next = new->next;
-	if (!CA_FarRead(file,(void far *)new,sizeof(objtype)))
+	if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
 		return(false);
 	new->prev = prev;
 	new->next = next;
@@ -301,7 +301,7 @@ LoadGame(int file)
 	{
 		prev = new->prev;
 		next = new->next;
-		if (!CA_FarRead(file,(void far *)new,sizeof(objtype)))
+		if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
 			return(false);
 		followed = new->next;
 		new->prev = prev;
@@ -315,7 +315,7 @@ LoadGame(int file)
 			break;
 	}
 
-	*((long *)&(scoreobj->temp1)) = -1;             // force score to be updated
+	*((id0_long_t *)&(scoreobj->temp1)) = -1;             // force score to be updated
 	scoreobj->temp3 = -1;                   // and flower power
 	scoreobj->temp4 = -1;                   // and lives
 
@@ -343,13 +343,13 @@ TEDDeath(void)
 #endif
 
 static boolean
-MoveTitleTo(int offset)
+MoveTitleTo(id0_int_t offset)
 {
-	boolean         done;
-	int                     dir,
+	id0_boolean_t         done;
+	id0_int_t                     dir,
 				chunk,
 				move;
-	longword        lasttime,delay;
+	id0_longword_t        lasttime,delay;
 
 	if (offset < originxglobal)
 		dir = -1;
@@ -386,7 +386,7 @@ MoveTitleTo(int offset)
 }
 
 static boolean
-Wait(longword time)
+Wait(id0_longword_t time)
 {
 	time += TimeCount;
 	while ((TimeCount < time) && (!IN_IsUserInput()))
@@ -398,7 +398,7 @@ Wait(longword time)
 }
 
 static boolean
-ShowText(int offset,WindowRec *wr,char *s)
+ShowText(id0_int_t offset,WindowRec *wr,id0_char_t *s)
 {
 	if (MoveTitleTo(offset))
 		return(true);
@@ -427,9 +427,9 @@ ShowText(int offset,WindowRec *wr,char *s)
 void
 DemoLoop (void)
 {
-	char            *s;
-	word            move;
-	longword        lasttime;
+	id0_char_t            *s;
+	id0_word_t            move;
+	id0_longword_t        lasttime;
 	WindowRec       mywin;
 
 #if FRILLS

@@ -54,7 +54,7 @@ updated
 // up two two tiles each way
 //
 // (PORTTILESWIDE+1)*PORTTILESHIGH must be even so the arrays can be cleared
-// by word width instructions
+// by id0_word_t width instructions
 
 #define	UPDATESCREENSIZE	(UPDATEWIDE*PORTTILESHIGH+2)
 #define	UPDATESPARESIZE		(UPDATEWIDE*2+4)
@@ -64,7 +64,7 @@ updated
 #define G_CGASX_SHIFT	6	// global >> ?? = screen x
 #define G_SY_SHIFT		4	// global >> ?? = screen y
 
-unsigned	SX_T_SHIFT;		// screen x >> ?? = tile EGA = 1, CGA = 2;
+id0_unsigned_t	SX_T_SHIFT;		// screen x >> ?? = tile EGA = 1, CGA = 2;
 #define	SY_T_SHIFT		4	// screen y >> ?? = tile
 
 
@@ -86,36 +86,36 @@ unsigned	SX_T_SHIFT;		// screen x >> ?? = tile EGA = 1, CGA = 2;
 
 typedef	struct spriteliststruct
 {
-	int			screenx,screeny;
-	int			width,height;
+	id0_int_t			screenx,screeny;
+	id0_int_t			width,height;
 
-	unsigned	grseg,sourceofs,planesize;
+	id0_unsigned_t	grseg,sourceofs,planesize;
 	drawtype	draw;
-	unsigned	tilex,tiley,tilewide,tilehigh;
-	int			priority,updatecount;
+	id0_unsigned_t	tilex,tiley,tilewide,tilehigh;
+	id0_int_t			priority,updatecount;
 	struct spriteliststruct **prevptr,*nextsprite;
 } spritelisttype;
 
 
 typedef struct
 {
-	int			screenx,screeny;
-	int			width,height;
+	id0_int_t			screenx,screeny;
+	id0_int_t			width,height;
 } eraseblocktype;
 
 
 typedef struct
 {
-	unsigned	current;		// foreground tiles have high bit set
-	int			count;
+	id0_unsigned_t	current;		// foreground tiles have high bit set
+	id0_int_t			count;
 } tiletype;
 
 
 typedef struct animtilestruct
 {
-	unsigned	x,y,tile;
+	id0_unsigned_t	x,y,tile;
 	tiletype	*chain;
-	unsigned	far *mapplane;
+	id0_unsigned_t	id0_far *mapplane;
 	struct animtilestruct **prevptr,*nexttile;
 } animtiletype;
 
@@ -127,14 +127,14 @@ typedef struct animtilestruct
 =============================================================================
 */
 
-unsigned	tics;
-long		lasttimecount;
+id0_unsigned_t	tics;
+id0_long_t		lasttimecount;
 
-boolean		compatability;			// crippled refresh for wierdo SVGAs
+id0_boolean_t		compatability;			// crippled refresh for wierdo SVGAs
 
-unsigned	mapwidth,mapheight,mapbyteswide,mapwordswide
+id0_unsigned_t	mapwidth,mapheight,mapbyteswide,mapwordswide
 			,mapbytesextra,mapwordsextra;
-unsigned	mapbwidthtable[MAXMAPHEIGHT];
+id0_unsigned_t	mapbwidthtable[MAXMAPHEIGHT];
 
 //
 // Global : Actor coordinates are in this, at 1/16 th of a pixel, to allow
@@ -147,14 +147,14 @@ unsigned	mapbwidthtable[MAXMAPHEIGHT];
 // so graphics don't need to be done in tile boundaries.
 //
 
-unsigned	originxglobal,originyglobal;
-unsigned	originxtile,originytile;
-unsigned	originxscreen,originyscreen;
-unsigned	originmap;
-unsigned	originxmin,originxmax,originymin,originymax;
-unsigned	originxtile,originytile;
+id0_unsigned_t	originxglobal,originyglobal;
+id0_unsigned_t	originxtile,originytile;
+id0_unsigned_t	originxscreen,originyscreen;
+id0_unsigned_t	originmap;
+id0_unsigned_t	originxmin,originxmax,originymin,originymax;
+id0_unsigned_t	originxtile,originytile;
 
-unsigned	masterofs;
+id0_unsigned_t	masterofs;
 
 //
 // Table of the offsets from bufferofs of each tile spot in the
@@ -163,13 +163,13 @@ unsigned	masterofs;
 // RF_Startup
 //
 
-unsigned	blockstarts[UPDATEWIDE*UPDATEHIGH];
-unsigned	updatemapofs[UPDATEWIDE*UPDATEHIGH];
+id0_unsigned_t	blockstarts[UPDATEWIDE*UPDATEHIGH];
+id0_unsigned_t	updatemapofs[UPDATEWIDE*UPDATEHIGH];
 
-unsigned	uwidthtable[PORTTILESHIGH];		// lookup instead of multiply
+id0_unsigned_t	uwidthtable[PORTTILESHIGH];		// lookup instead of multiply
 
-byte		update[2][UPDATESIZE];
-byte		*updateptr,*baseupdateptr,						// current start of update window
+id0_byte_t		update[2][UPDATESIZE];
+id0_byte_t		*updateptr,*baseupdateptr,						// current start of update window
 			*updatestart[2],
 			*baseupdatestart[2];
 
@@ -181,23 +181,23 @@ byte		*updateptr,*baseupdateptr,						// current start of update window
 =============================================================================
 */
 
-static		char	scratch[20],str[20];
+static		id0_char_t	scratch[20],str[20];
 
 tiletype	allanims[MAXANIMTYPES];
-unsigned	numanimchains;
+id0_unsigned_t	numanimchains;
 
 void 		(*refreshvector) (void);
 
-unsigned	screenstart[3] =
+id0_unsigned_t	screenstart[3] =
 	{0,SCREENSPACE,SCREENSPACE*2};
 
-unsigned	xpanmask;			// prevent panning to odd pixels
+id0_unsigned_t	xpanmask;			// prevent panning to odd pixels
 
-unsigned	screenpage;			// screen currently being displayed
-unsigned	otherpage;
+id0_unsigned_t	screenpage;			// screen currently being displayed
+id0_unsigned_t	otherpage;
 
 #if GRMODE == EGAGR
-unsigned	tilecache[NUMTILE16];
+id0_unsigned_t	tilecache[NUMTILE16];
 #endif
 
 spritelisttype	spritearray[MAXSPRITES],*prioritystart[PRIORITIES],
@@ -205,7 +205,7 @@ spritelisttype	spritearray[MAXSPRITES],*prioritystart[PRIORITIES],
 
 animtiletype	animarray[MAXANIMTILES],*animhead,*animfreeptr;
 
-int				animfreespot;
+id0_int_t				animfreespot;
 
 eraseblocktype	eraselist[2][MAXSPRITES],*eraselistptr[2];
 
@@ -217,17 +217,17 @@ eraseblocktype	eraselist[2][MAXSPRITES],*eraselistptr[2];
 =============================================================================
 */
 
-void RFL_NewTile (unsigned updateoffset);
+void RFL_NewTile (id0_unsigned_t updateoffset);
 void RFL_MaskForegroundTiles (void);
 void RFL_UpdateTiles (void);
 
-void RFL_CalcOriginStuff (long x, long y);
+void RFL_CalcOriginStuff (id0_long_t x, id0_long_t y);
 void RFL_InitSpriteList (void);
 void RFL_InitAnimList (void);
-void RFL_CheckForAnimTile (unsigned x, unsigned y);
+void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y);
 void RFL_AnimateTiles (void);
-void RFL_RemoveAnimsOnX (unsigned x);
-void RFL_RemoveAnimsOnY (unsigned y);
+void RFL_RemoveAnimsOnX (id0_unsigned_t x);
+void RFL_RemoveAnimsOnY (id0_unsigned_t y);
 void RFL_EraseBlocks (void);
 void RFL_UpdateSprites (void);
 
@@ -249,12 +249,12 @@ void RFL_UpdateSprites (void);
 =====================
 */
 
-static	char *ParmStrings[] = {"comp",""};
+static	id0_char_t *ParmStrings[] = {"comp",""};
 
 void RF_Startup (void)
 {
-	int i,x,y;
-	unsigned	*blockstart;
+	id0_int_t i,x,y;
+	id0_unsigned_t	*blockstart;
 
 	if (grmode == EGAGR)
 		for (i = 1;i < _argc;i++)
@@ -343,8 +343,8 @@ void RF_Shutdown (void)
 
 void RF_NewMap (void)
 {
-	int i,x,y;
-	unsigned spot,*table;
+	id0_int_t i,x,y;
+	id0_unsigned_t spot,*table;
 
 	mapwidth = mapheaderseg[mapon]->width;
 	mapbyteswide = 2*mapwidth;
@@ -413,10 +413,10 @@ void RF_NewMap (void)
 
 void RF_MarkTileGraphics (void)
 {
-	unsigned	size;
-	int			tile,next,anims;
-	unsigned	far	*start,far *end,far *info;
-	unsigned	i,tilehigh;
+	id0_unsigned_t	size;
+	id0_int_t			tile,next,anims;
+	id0_unsigned_t	id0_far	*start,id0_far *end,id0_far *info;
+	id0_unsigned_t	i,tilehigh;
 
 	memset (allanims,0,sizeof(allanims));
 	numanimchains = 0;
@@ -540,7 +540,7 @@ nextfront:
 
 void RFL_InitAnimList (void)
 {
-	int	i;
+	id0_int_t	i;
 
 	animfreeptr = &animarray[0];
 
@@ -561,10 +561,10 @@ void RFL_InitAnimList (void)
 ====================
 */
 
-void RFL_CheckForAnimTile (unsigned x, unsigned y)
+void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y)
 {
-	unsigned 	tile,offset,speed,lasttime,thistime,timemissed;
-	unsigned	far *map;
+	id0_unsigned_t 	tile,offset,speed,lasttime,thistime,timemissed;
+	id0_unsigned_t	id0_far *map;
 	animtiletype	*anim,*next;
 
 // the info plane of each animating tile has a near pointer into allanims[]
@@ -633,7 +633,7 @@ void RFL_CheckForAnimTile (unsigned x, unsigned y)
 ====================
 */
 
-void RFL_RemoveAnimsOnX (unsigned x)
+void RFL_RemoveAnimsOnX (id0_unsigned_t x)
 {
 	animtiletype *current,*next;
 
@@ -664,7 +664,7 @@ void RFL_RemoveAnimsOnX (unsigned x)
 ====================
 */
 
-void RFL_RemoveAnimsOnY (unsigned y)
+void RFL_RemoveAnimsOnY (id0_unsigned_t y)
 {
 	animtiletype *current,*next;
 
@@ -698,7 +698,7 @@ void RFL_RemoveAnimsOnY (unsigned y)
 void RFL_AnimateTiles (void)
 {
 	animtiletype *current;
-	unsigned	updateofs,tile,x,y;
+	id0_unsigned_t	updateofs,tile,x,y;
 	tiletype	*anim;
 
 //
@@ -782,7 +782,7 @@ void RFL_AnimateTiles (void)
 
 void RFL_InitSpriteList (void)
 {
-	int	i;
+	id0_int_t	i;
 
 	spritefreeptr = &spritearray[0];
 	for (i=0;i<MAXSPRITES-1;i++)
@@ -808,7 +808,7 @@ void RFL_InitSpriteList (void)
 =================
 */
 
-void RFL_CalcOriginStuff (long x, long y)
+void RFL_CalcOriginStuff (id0_long_t x, id0_long_t y)
 {
 	if (x<originxmin)
 	  x=originxmin;
@@ -871,10 +871,10 @@ void RF_SetRefreshHook (void (*func) (void) )
 =================
 */
 
-void	RFL_NewRow (int dir)
+void	RFL_NewRow (id0_int_t dir)
 {
-	unsigned count,updatespot,updatestep;
-	int		x,y,xstep,ystep;
+	id0_unsigned_t count,updatespot,updatestep;
+	id0_int_t		x,y,xstep,ystep;
 
 	switch (dir)
 	{
@@ -969,11 +969,11 @@ void RF_ForceRefresh (void)
 =====================
 */
 
-void RF_NewPosition (unsigned x, unsigned y)
+void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
 {
-	int mx,my;
-	byte	*page0ptr,*page1ptr;
-	unsigned 	updatenum;
+	id0_int_t mx,my;
+	id0_byte_t	*page0ptr,*page1ptr;
+	id0_unsigned_t 	updatenum;
 
 //
 // calculate new origin related globals
@@ -1011,8 +1011,8 @@ void RF_NewPosition (unsigned x, unsigned y)
 		page0ptr+=(PORTTILESWIDE+1);
 		page1ptr+=(PORTTILESWIDE+1);
 	}
-	*(word *)(page0ptr-PORTTILESWIDE)
-		= *(word *)(page1ptr-PORTTILESWIDE) = UPDATETERMINATE;
+	*(id0_word_t *)(page0ptr-PORTTILESWIDE)
+		= *(id0_word_t *)(page1ptr-PORTTILESWIDE) = UPDATETERMINATE;
 }
 
 //===========================================================================
@@ -1027,7 +1027,7 @@ void RF_NewPosition (unsigned x, unsigned y)
 =================
 */
 
-void	RFL_OldRow (unsigned updatespot,unsigned count,unsigned step)
+void	RFL_OldRow (id0_unsigned_t updatespot,id0_unsigned_t count,id0_unsigned_t step)
 {
 
 asm	mov	si,[updatespot]			// pointer inside each map plane
@@ -1066,15 +1066,15 @@ asm	mov	ds,ax
 =====================
 */
 
-void RF_Scroll (int x, int y)
+void RF_Scroll (id0_int_t x, id0_int_t y)
 {
-	long		neworgx,neworgy;
-	int			i,deltax,deltay,absdx,absdy;
-	int			oldxt,oldyt,move,yy;
-	unsigned	updatespot;
-	byte		*update0,*update1;
-	unsigned	oldpanx,oldpanadjust,oldoriginmap,oldscreen,newscreen,screencopy;
-	int			screenmove;
+	id0_long_t		neworgx,neworgy;
+	id0_int_t			i,deltax,deltay,absdx,absdy;
+	id0_int_t			oldxt,oldyt,move,yy;
+	id0_unsigned_t	updatespot;
+	id0_byte_t		*update0,*update1;
+	id0_unsigned_t	oldpanx,oldpanadjust,oldoriginmap,oldscreen,newscreen,screencopy;
+	id0_int_t			screenmove;
 
 	oldxt = originxtile;
 	oldyt = originytile;
@@ -1206,7 +1206,7 @@ void RF_Scroll (int x, int y)
 	update0 = updatestart[0]+UPDATEWIDE*PORTTILESHIGH-1;
 	update1 = updatestart[1]+UPDATEWIDE*PORTTILESHIGH-1;
 	*update0++ = *update1++ = 0;
-	*(unsigned *)update0 = *(unsigned *)update1 = UPDATETERMINATE;
+	*(id0_unsigned_t *)update0 = *(id0_unsigned_t *)update1 = UPDATETERMINATE;
 }
 
 //===========================================================================
@@ -1219,13 +1219,13 @@ void RF_Scroll (int x, int y)
 =====================
 */
 
-void RF_PlaceSprite (void **user,unsigned globalx,unsigned globaly,
-	unsigned spritenumber, drawtype draw, int priority)
+void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority)
 {
 	spritelisttype	register *sprite,*next;
-	spritetabletype far *spr;
+	spritetabletype id0_far *spr;
 	spritetype _seg	*block;
-	unsigned	shift,pixx;
+	id0_unsigned_t	shift,pixx;
 
 	if (!spritenumber)
 	{
@@ -1385,11 +1385,11 @@ void RF_RemoveSprite (void **user)
 void RFL_EraseBlocks (void)
 {
 	eraseblocktype	*block,*done;
-	int			screenxh,screenyh;
-	unsigned	pos,xtl,ytl,xth,yth,x,y;
-	byte		*updatespot;
-	unsigned	updatedelta;
-	unsigned	erasecount;
+	id0_int_t			screenxh,screenyh;
+	id0_unsigned_t	pos,xtl,ytl,xth,yth,x,y;
+	id0_byte_t		*updatespot;
+	id0_unsigned_t	updatedelta;
+	id0_unsigned_t	erasecount;
 
 #ifdef PROFILE
 	erasecount = 0;
@@ -1497,13 +1497,13 @@ next:
 void RFL_UpdateSprites (void)
 {
 	spritelisttype	*sprite;
-	int	portx,porty,x,y,xtl,xth,ytl,yth;
-	int	priority;
-	unsigned dest;
-	byte		*updatespot,*baseupdatespot;
-	unsigned	updatedelta;
-	unsigned	updatecount;
-	unsigned	height,sourceofs;
+	id0_int_t	portx,porty,x,y,xtl,xth,ytl,yth;
+	id0_int_t	priority;
+	id0_unsigned_t dest;
+	id0_byte_t		*updatespot,*baseupdatespot;
+	id0_unsigned_t	updatedelta;
+	id0_unsigned_t	updatecount;
+	id0_unsigned_t	height,sourceofs;
 
 #ifdef PROFILE
 	updatecount = 0;
@@ -1636,8 +1636,8 @@ redraw:
 
 void RF_Refresh (void)
 {
-	byte	*newupdate;
-	long	newtime;
+	id0_byte_t	*newupdate;
+	id0_long_t	newtime;
 
 	updateptr = updatestart[otherpage];
 
@@ -1739,11 +1739,11 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 =====================
 */
 
-void RF_NewPosition (unsigned x, unsigned y)
+void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
 {
-	int mx,my;
-	byte	*spotptr;
-	unsigned 	updatenum;
+	id0_int_t mx,my;
+	id0_byte_t	*spotptr;
+	id0_unsigned_t 	updatenum;
 
 //
 // calculate new origin related globals
@@ -1776,7 +1776,7 @@ void RF_NewPosition (unsigned x, unsigned y)
 		*spotptr = 0; // set a 0 at end of a line of tiles
 		spotptr +=(PORTTILESWIDE+1);
 	}
-	*(word *)(spotptr-PORTTILESWIDE) = UPDATETERMINATE;
+	*(id0_word_t *)(spotptr-PORTTILESWIDE) = UPDATETERMINATE;
 }
 
 
@@ -1793,15 +1793,15 @@ void RF_NewPosition (unsigned x, unsigned y)
 =====================
 */
 
-void RF_Scroll (int x, int y)
+void RF_Scroll (id0_int_t x, id0_int_t y)
 {
-	long		neworgx,neworgy;
-	int			i,deltax,deltay,absdx,absdy;
-	int			oldxt,oldyt,move,yy;
-	unsigned	updatespot;
-	byte		*spotptr;
-	unsigned	oldoriginmap,oldscreen,newscreen,screencopy;
-	int			screenmove;
+	id0_long_t		neworgx,neworgy;
+	id0_int_t			i,deltax,deltay,absdx,absdy;
+	id0_int_t			oldxt,oldyt,move,yy;
+	id0_unsigned_t	updatespot;
+	id0_byte_t		*spotptr;
+	id0_unsigned_t	oldoriginmap,oldscreen,newscreen,screencopy;
+	id0_int_t			screenmove;
 
 	oldxt = originxtile;
 	oldyt = originytile;
@@ -1897,7 +1897,7 @@ void RF_Scroll (int x, int y)
 	//
 	spotptr = updateptr+UPDATEWIDE*PORTTILESHIGH-1;
 	*spotptr++ = 0;
-	*(unsigned *)spotptr = UPDATETERMINATE;
+	*(id0_unsigned_t *)spotptr = UPDATETERMINATE;
 }
 
 /*
@@ -1908,13 +1908,13 @@ void RF_Scroll (int x, int y)
 =====================
 */
 
-void RF_PlaceSprite (void **user,unsigned globalx,unsigned globaly,
-	unsigned spritenumber, drawtype draw, int priority)
+void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority)
 {
 	spritelisttype	register *sprite,*next;
-	spritetabletype far *spr;
+	spritetabletype id0_far *spr;
 	spritetype _seg	*block;
-	unsigned	shift,pixx;
+	id0_unsigned_t	shift,pixx;
 
 	if (!spritenumber)
 	{
@@ -2062,10 +2062,10 @@ void RF_RemoveSprite (void **user)
 void RFL_EraseBlocks (void)
 {
 	eraseblocktype	*block,*done;
-	int			screenxh,screenyh;
-	unsigned	pos,xtl,ytl,xth,yth,x,y;
-	byte		*updatespot;
-	unsigned	updatedelta;
+	id0_int_t			screenxh,screenyh;
+	id0_unsigned_t	pos,xtl,ytl,xth,yth,x,y;
+	id0_byte_t		*updatespot;
+	id0_unsigned_t	updatedelta;
 
 	block = &eraselist[0][0];
 
@@ -2119,7 +2119,7 @@ void RFL_EraseBlocks (void)
 	//
 		pos = ylookup[block->screeny]+block->screenx;
 		block->width = (block->width + (pos&1) + 1)& ~1;
-		pos &= ~1;				// make sure a word copy gets used
+		pos &= ~1;				// make sure a id0_word_t copy gets used
 		VW_ScreenToScreen (masterofs+pos,bufferofs+pos,
 			block->width,block->height);
 
@@ -2161,14 +2161,14 @@ next:
 void RFL_UpdateSprites (void)
 {
 	spritelisttype	*sprite;
-	int	portx,porty,x,y,xtl,xth,ytl,yth;
-	int	priority;
-	unsigned dest;
-	byte		*updatespot,*baseupdatespot;
-	unsigned	updatedelta;
+	id0_int_t	portx,porty,x,y,xtl,xth,ytl,yth;
+	id0_int_t	priority;
+	id0_unsigned_t dest;
+	id0_byte_t		*updatespot,*baseupdatespot;
+	id0_unsigned_t	updatedelta;
 
-	unsigned	updatecount;
-	unsigned	height,sourceofs;
+	id0_unsigned_t	updatecount;
+	id0_unsigned_t	height,sourceofs;
 
 #ifdef PROFILE
 	updatecount = 0;
@@ -2295,7 +2295,7 @@ redraw:
 
 void RF_Refresh (void)
 {
-	long newtime;
+	id0_long_t newtime;
 
 	RFL_AnimateTiles ();
 

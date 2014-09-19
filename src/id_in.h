@@ -39,7 +39,7 @@
 #define	MaxJoys		2
 #define	NumCodes	128
 
-typedef	byte		ScanCode;
+typedef	id0_byte_t		ScanCode;
 #define	sc_None			0
 #define	sc_Bad			0xff
 #define	sc_Return		0x1c
@@ -133,8 +133,8 @@ typedef	enum		{
 						dir_None
 					} Direction;
 typedef	struct		{
-						boolean		button0,button1;
-						int			x,y;
+						id0_boolean_t		button0,button1;
+						id0_int_t			x,y;
 						Motion		xaxis,yaxis;
 						Direction	dir;
 					} CursorInfo;
@@ -146,7 +146,7 @@ typedef	struct		{
 									downleft,	down,	downright;
 					} KeyboardDef;
 typedef	struct		{
-						word		joyMinX,joyMinY,
+						id0_word_t		joyMinX,joyMinY,
 									threshMinX,threshMinY,
 									threshMaxX,threshMaxY,
 									joyMaxX,joyMaxY,
@@ -154,12 +154,12 @@ typedef	struct		{
 									joyMultXH,joyMultYH;
 					} JoystickDef;
 // Global variables
-extern	boolean		Keyboard[],
+extern	id0_boolean_t		Keyboard[],
 					MousePresent,
 					JoysPresent[];
 extern	Demo		DemoMode;
-extern	boolean		Paused;
-extern	char		LastASCII;
+extern	id0_boolean_t		Paused;
+extern	id0_char_t		LastASCII;
 extern	ScanCode	LastScan;
 extern	KeyboardDef	KbdDefs[];
 extern	JoystickDef	JoyDefs[];
@@ -172,24 +172,24 @@ extern	ControlType	Controls[MaxPlayers];
 
 // DEBUG - put names in prototypes
 extern	void		IN_Startup(void),IN_Shutdown(void),
-					IN_Default(boolean gotit,ControlType in),
+					IN_Default(id0_boolean_t gotit,ControlType in),
 					IN_SetKeyHook(void (*)()),
 					IN_ClearKeysDown(void),
 					IN_ReadCursor(CursorInfo *),
 					IN_ReadControl(int,ControlInfo *),
 					IN_SetControlType(int,ControlType),
-					IN_GetJoyAbs(word joy,word *xp,word *yp),
-					IN_SetupJoy(word joy,word minx,word maxx,
-								word miny,word maxy),
-					IN_StartDemoPlayback(byte _seg *buffer,word bufsize),
+					IN_GetJoyAbs(id0_word_t joy,id0_word_t *xp,id0_word_t *yp),
+					IN_SetupJoy(id0_word_t joy,id0_word_t minx,id0_word_t maxx,
+								id0_word_t miny,id0_word_t maxy),
+					IN_StartDemoPlayback(id0_byte_t _seg *buffer,id0_word_t bufsize),
 					IN_StopDemo(void),IN_FreeDemoBuffer(void),
 					IN_Ack(void),IN_AckBack(void);
-extern	boolean		IN_UserInput(longword delay,boolean clear),
+extern	id0_boolean_t		IN_UserInput(id0_longword_t delay,id0_boolean_t clear),
 					IN_IsUserInput(void),
-					IN_StartDemoRecord(word bufsize);
-extern	byte		*IN_GetScanName(ScanCode);
-extern	char		IN_WaitForASCII(void);
+					IN_StartDemoRecord(id0_word_t bufsize);
+extern	id0_byte_t		*IN_GetScanName(ScanCode);
+extern	id0_char_t		IN_WaitForASCII(void);
 extern	ScanCode	IN_WaitForKey(void);
-extern	word		IN_GetJoyButtonsDB(word joy);
+extern	id0_word_t		IN_GetJoyButtonsDB(id0_word_t joy);
 
 #endif

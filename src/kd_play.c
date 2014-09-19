@@ -64,16 +64,16 @@
 exittype	playstate;
 gametype	gamestate;
 
-boolean		button0held,button1held;
+id0_boolean_t		button0held,button1held;
 objtype		*new,*check,*player,*scoreobj;
 
-unsigned	originxtilemax,originytilemax;
+id0_unsigned_t	originxtilemax,originytilemax;
 
 ControlInfo	c;
 
 objtype dummyobj;
 
-char		*levelnames[21] =
+id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
 "Horseradish Hill",
@@ -106,28 +106,28 @@ char		*levelnames[21] =
 */
 
 // for asm scaning of map planes
-unsigned	mapx,mapy,mapxcount,mapycount,maptile,mapspot;
+id0_unsigned_t	mapx,mapy,mapxcount,mapycount,maptile,mapspot;
 
-int			plummet;
+id0_int_t			plummet;
 
-int			objectcount;
+id0_int_t			objectcount;
 
 objtype		objarray[MAXACTORS],*lastobj,*objfreelist;
 
-int			oldtileleft,oldtiletop,oldtileright,oldtilebottom,oldtilemidx;
-int			oldleft,oldtop,oldright,oldbottom,oldmidx;
-int			leftmoved,topmoved,rightmoved,bottommoved,midxmoved;
+id0_int_t			oldtileleft,oldtiletop,oldtileright,oldtilebottom,oldtilemidx;
+id0_int_t			oldleft,oldtop,oldright,oldbottom,oldmidx;
+id0_int_t			leftmoved,topmoved,rightmoved,bottommoved,midxmoved;
 
-int			topmove,bottommove,midxmove;
+id0_int_t			topmove,bottommove,midxmove;
 
-int			inactivateleft,inactivateright,inactivatetop,inactivatebottom;
+id0_int_t			inactivateleft,inactivateright,inactivatetop,inactivatebottom;
 
-int			fadecount;
+id0_int_t			fadecount;
 
-boolean		bombspresent;
+id0_boolean_t		bombspresent;
 
-boolean		lumpneeded[NUMLUMPS];
-int			lumpstart[NUMLUMPS] =
+id0_boolean_t		lumpneeded[NUMLUMPS];
+id0_int_t			lumpstart[NUMLUMPS] =
 {
 CONTROLS_LUMP_START,
 KEEN_LUMP_START,
@@ -147,7 +147,7 @@ PEAS_LUMP_START,
 BOOBUS_LUMP_START,
 };
 
-int			lumpend[NUMLUMPS] =
+id0_int_t			lumpend[NUMLUMPS] =
 {
 CONTROLS_LUMP_END,
 KEEN_LUMP_END,
@@ -171,24 +171,24 @@ BOOBUS_LUMP_END,
 void	CheckKeys (void);
 void	CalcInactivate (void);
 void 	InitObjArray (void);
-void 	GetNewObj (boolean usedummy);
+void 	GetNewObj (id0_boolean_t usedummy);
 void	RemoveObj (objtype *gone);
 void 	ScanInfoPlane (void);
 void 	PatchWorldMap (void);
 void 	MarkTileGraphics (void);
 void 	FadeAndUnhook (void);
-void 	SetupGameLevel (boolean loadnow);
+void 	SetupGameLevel (id0_boolean_t loadnow);
 void 	ScrollScreen (void);
-void 	MoveObjVert (objtype *ob, int ymove);
-void 	MoveObjHoriz (objtype *ob, int xmove);
-void 	GivePoints (unsigned points);
+void 	MoveObjVert (objtype *ob, id0_int_t ymove);
+void 	MoveObjHoriz (objtype *ob, id0_int_t xmove);
+void 	GivePoints (id0_unsigned_t points);
 void 	ClipToEnds (objtype *ob);
 void 	ClipToEastWalls (objtype *ob);
 void 	ClipToWestWalls (objtype *ob);
 void 	ClipToWalls (objtype *ob);
 void 	ClipToSpriteSide (objtype *push, objtype *solid);
-void 	ClipToSprite (objtype *push, objtype *solid, boolean squish);
-int 	DoActor (objtype *ob,int tics);
+void 	ClipToSprite (objtype *push, objtype *solid, id0_boolean_t squish);
+id0_int_t 	DoActor (objtype *ob,id0_int_t tics);
 void 	StateMachine (objtype *ob);
 void 	NewState (objtype *ob,statetype *state);
 void 	PlayLoop (void);
@@ -329,7 +329,7 @@ next element.
 
 void InitObjArray (void)
 {
-	int	i;
+	id0_int_t	i;
 
 	for (i=0;i<MAXACTORS;i++)
 	{
@@ -369,7 +369,7 @@ void InitObjArray (void)
 =========================
 */
 
-void GetNewObj (boolean usedummy)
+void GetNewObj (id0_boolean_t usedummy)
 {
 	if (!objfreelist)
 	{
@@ -565,9 +565,9 @@ void near HandleInfo (void)
 
 void ScanInfoPlane (void)
 {
-	unsigned	x,y,i,j;
-	int			tile;
-	unsigned	far	*start;
+	id0_unsigned_t	x,y,i,j;
+	id0_int_t			tile;
+	id0_unsigned_t	id0_far	*start;
 
 	InitObjArray();			// start spawning things with a clean slate
 
@@ -635,7 +635,7 @@ nothing:
 
 void PatchWorldMap (void)
 {
-	unsigned	size,spot,info,foreground;
+	id0_unsigned_t	size,spot,info,foreground;
 
 	size = mapwidth*mapheight;
 	spot = 0;
@@ -698,9 +698,9 @@ void FadeAndUnhook (void)
 ==========================
 */
 
-void 	SetupGameLevel (boolean loadnow)
+void 	SetupGameLevel (id0_boolean_t loadnow)
 {
-	long	orgx,orgy;
+	id0_long_t	orgx,orgy;
 
 	bombspresent = false;
 //
@@ -790,7 +790,7 @@ void 	SetupGameLevel (boolean loadnow)
 
 void ScrollScreen (void)
 {
-	int	xscroll,yscroll;
+	id0_int_t	xscroll,yscroll;
 
 //
 // walked off edge of map?
@@ -846,7 +846,7 @@ void ScrollScreen (void)
 ====================
 */
 
-void GivePoints (unsigned points)
+void GivePoints (id0_unsigned_t points)
 {
 	gamestate.score += points;
 	if (gamestate.score >= gamestate.nextextra)
@@ -868,7 +868,7 @@ void GivePoints (unsigned points)
 ====================
 */
 
-void MoveObjVert (objtype *ob, int ymove)
+void MoveObjVert (objtype *ob, id0_int_t ymove)
 {
 	ob->y += ymove;
 	ob->top += ymove;
@@ -886,7 +886,7 @@ void MoveObjVert (objtype *ob, int ymove)
 ====================
 */
 
-void MoveObjHoriz (objtype *ob, int xmove)
+void MoveObjHoriz (objtype *ob, id0_int_t xmove)
 {
 	ob->x += xmove;
 	ob->left += xmove;
@@ -906,7 +906,7 @@ void MoveObjHoriz (objtype *ob, int xmove)
 
 // walltype / x coordinate (0-15)
 
-int	wallclip[8][16] = {			// the height of a given point in a tile
+id0_int_t	wallclip[8][16] = {			// the height of a given point in a tile
 { 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256},
 {   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0},
 {   0,0x08,0x10,0x18,0x20,0x28,0x30,0x38,0x40,0x48,0x50,0x58,0x60,0x68,0x70,0x78},
@@ -930,14 +930,14 @@ int	wallclip[8][16] = {			// the height of a given point in a tile
 
 void ClipToEnds (objtype *ob)
 {
-	unsigned	far *map,tile,facetile,info,wall;
-	int	leftpix,rightpix,midtiles,toppix,bottompix;
-	int	x,y,clip,move,totalmove,maxmove,midxpix;
+	id0_unsigned_t	id0_far *map,tile,facetile,info,wall;
+	id0_int_t	leftpix,rightpix,midtiles,toppix,bottompix;
+	id0_int_t	x,y,clip,move,totalmove,maxmove,midxpix;
 
 	midxpix = (ob->midx&0xf0) >> 4;
 
 	maxmove = -abs(midxmoved) - bottommoved - 16;
-	map = (unsigned far *)mapsegs[1] +
+	map = (id0_unsigned_t id0_far *)mapsegs[1] +
 		mapbwidthtable[oldtilebottom-1]/2 + ob->tilemidx;
 	for (y=oldtilebottom-1 ; y<=ob->tilebottom ; y++,map+=mapwidth)
 	{
@@ -955,7 +955,7 @@ void ClipToEnds (objtype *ob)
 	}
 
 	maxmove = abs(midxmoved) - topmoved + 16;
-	map = (unsigned far *)mapsegs[1] +
+	map = (id0_unsigned_t id0_far *)mapsegs[1] +
 		mapbwidthtable[oldtiletop+1]/2 + ob->tilemidx;
 	for (y=oldtiletop+1 ; y>=ob->tiletop ; y--,map-=mapwidth)
 	{
@@ -987,8 +987,8 @@ void ClipToEnds (objtype *ob)
 
 void ClipToEastWalls (objtype *ob)
 {
-	int			y,move,top,bottom;
-	unsigned	far *map,tile,info,wall;
+	id0_int_t			y,move,top,bottom;
+	id0_unsigned_t	id0_far *map,tile,info,wall;
 
 	// clip to east walls if moving west
 
@@ -1001,7 +1001,7 @@ void ClipToEastWalls (objtype *ob)
 
 	for (y=top;y<=bottom;y++)
 	{
-		map = (unsigned far *)mapsegs[1] +
+		map = (id0_unsigned_t id0_far *)mapsegs[1] +
 			mapbwidthtable[y]/2 + ob->tileleft;
 
 		if (ob->hiteast = tinf[EASTWALL+*map])
@@ -1016,8 +1016,8 @@ void ClipToEastWalls (objtype *ob)
 
 void ClipToWestWalls (objtype *ob)
 {
-	int			y,move,top,bottom;
-	unsigned	far *map,tile,info,wall;
+	id0_int_t			y,move,top,bottom;
+	id0_unsigned_t	id0_far *map,tile,info,wall;
 
 	// check west walls if moving east
 
@@ -1030,7 +1030,7 @@ void ClipToWestWalls (objtype *ob)
 
 	for (y=top;y<=bottom;y++)
 	{
-		map = (unsigned far *)mapsegs[1] +
+		map = (id0_unsigned_t id0_far *)mapsegs[1] +
 			mapbwidthtable[y]/2 + ob->tileright;
 
 		if (ob->hitwest = tinf[WESTWALL+*map])
@@ -1060,9 +1060,9 @@ void ClipToWestWalls (objtype *ob)
 
 void ClipToWalls (objtype *ob)
 {
-	unsigned	x,y,tile;
-	spritetabletype	far *shape;
-	boolean	endfirst;
+	id0_unsigned_t	x,y,tile;
+	spritetabletype	id0_far *shape;
+	id0_boolean_t	endfirst;
 
 //
 // make sure it stays in contact with a 45 degree slope
@@ -1160,7 +1160,7 @@ void ClipToWalls (objtype *ob)
 
 void ClipToSpriteSide (objtype *push, objtype *solid)
 {
-	int xmove,leftinto,rightinto;
+	id0_int_t xmove,leftinto,rightinto;
 
 	//
 	// amount the push shape can be pushed
@@ -1208,10 +1208,10 @@ void ClipToSpriteSide (objtype *push, objtype *solid)
 ==================
 */
 
-void ClipToSprite (objtype *push, objtype *solid, boolean squish)
+void ClipToSprite (objtype *push, objtype *solid, id0_boolean_t squish)
 {
-	boolean temp;
-	int walltemp,xmove,leftinto,rightinto,topinto,bottominto;
+	id0_boolean_t temp;
+	id0_int_t walltemp,xmove,leftinto,rightinto,topinto,bottominto;
 
 	xmove = solid->xmove - push->xmove;
 
@@ -1290,9 +1290,9 @@ void ClipToSprite (objtype *push, objtype *solid, boolean squish)
 ==================
 */
 
-int DoActor (objtype *ob,int tics)
+id0_int_t DoActor (objtype *ob,id0_int_t tics)
 {
-	int	newtics,movetics,excesstics;
+	id0_int_t	newtics,movetics,excesstics;
 	statetype *state;
 
 	state = ob->state;
@@ -1394,7 +1394,7 @@ int DoActor (objtype *ob,int tics)
 
 void StateMachine (objtype *ob)
 {
-	int excesstics,oldshapenum;
+	id0_int_t excesstics,oldshapenum;
 	statetype *state;
 
 	ob->xmove = ob->ymove = 0;
@@ -1469,7 +1469,7 @@ void StateMachine (objtype *ob)
 
 void NewState (objtype *ob,statetype *state)
 {
-	boolean temp;
+	id0_boolean_t temp;
 
 	ob->state = state;
 
@@ -1507,7 +1507,7 @@ void NewState (objtype *ob,statetype *state)
 void PlayLoop (void)
 {
 	objtype	*obj, *check;
-	long	newtime;
+	id0_long_t	newtime;
 
 	button0held = button1held = false;
 
@@ -1666,7 +1666,7 @@ struct date d;
 "walked up to the Dream Machine.\n"
 "He analyzed all the complex\n"
 "controls and readouts on it, then\n"
-"pulled down a huge red lever\n"
+"pulled down a id0_huge red lever\n"
 "marked \"On/Off Switch.\"  The\n"
 "machine clanked and rattled,\n"
 "then went silent. He had freed\n"
@@ -1739,7 +1739,7 @@ struct date d;
 
 void HandleDeath (void)
 {
-	unsigned	top,bottom,selection,y,color;
+	id0_unsigned_t	top,bottom,selection,y,color;
 
 	gamestate.keys = 0;
 	gamestate.boobusbombs -= gamestate.bombsthislevel;
@@ -1831,8 +1831,8 @@ void HandleDeath (void)
 
 void GameLoop (void)
 {
-	unsigned	cities,i;
-	long	orgx,orgy;
+	id0_unsigned_t	cities,i;
+	id0_long_t	orgx,orgy;
 
 	gamestate.difficulty = restartgame;
 	restartgame = gd_Continue;
