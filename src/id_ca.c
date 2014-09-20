@@ -87,14 +87,14 @@ int			profilehandle;
 =============================================================================
 */
 
-extern	id0_long_t	id0_far	CGAhead;
-extern	id0_long_t	id0_far	EGAhead;
-extern	id0_byte_t	CGAdict;
-extern	id0_byte_t	EGAdict;
-extern	id0_byte_t	id0_far	maphead;
-extern	id0_byte_t	mapdict;
-extern	id0_byte_t	id0_far	audiohead;
-extern	id0_byte_t	audiodict;
+extern	id0_long_t	*CGAhead;
+extern	id0_long_t	*EGAhead;
+extern	id0_byte_t	*CGAdict;
+extern	id0_byte_t	*EGAdict;
+extern	id0_byte_t	*maphead;
+extern	id0_byte_t	*mapdict;
+extern	id0_byte_t	*audiohead;
+extern	id0_byte_t	*audiodict;
 
 
 id0_long_t		id0_seg *grstarts;	// array of offsets in egagraph, -1 for sparse
@@ -471,12 +471,12 @@ void CAL_SetupGrFile (void)
 #ifdef GRHEADERLINKED
 
 #if GRMODE == EGAGR
-	grhuffman = (huffnode *)&EGAdict;
-	grstarts = (id0_long_t id0_seg *)FP_SEG(&EGAhead);
+	grhuffman = (huffnode *)EGAdict;
+	grstarts = EGAhead;
 #endif
 #if GRMODE == CGAGR
-	grhuffman = (huffnode *)&CGAdict;
-	grstarts = (id0_long_t id0_seg *)FP_SEG(&CGAhead);
+	grhuffman = (huffnode *)CGAdict;
+	grstarts = CGAhead;
 #endif
 
 	CAL_OptimizeNodes (grhuffman);
@@ -584,9 +584,9 @@ void CAL_SetupMapFile (void)
 	close(handle);
 #else
 
-	maphuffman = (huffnode *)&mapdict;
+	maphuffman = (huffnode *)mapdict;
 	CAL_OptimizeNodes (maphuffman);
-	tinf = (id0_byte_t id0_seg *)FP_SEG(&maphead);
+	tinf = maphead;
 
 #endif
 
@@ -633,9 +633,9 @@ void CAL_SetupAudioFile (void)
 	CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
 	close(handle);
 #else
-	audiohuffman = (huffnode *)&audiodict;
+	audiohuffman = (huffnode *)audiodict;
 	CAL_OptimizeNodes (audiohuffman);
-	audiostarts = (id0_long_t id0_seg *)FP_SEG(&audiohead);
+	audiostarts = audiohead;
 #endif
 
 //

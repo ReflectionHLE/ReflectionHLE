@@ -410,7 +410,7 @@ void Quit (id0_char_t *error)
 ==========================
 */
 
-#include "piracy.h"
+extern id0_byte_t *PIRACY;
 
 void InitGame (void)
 {

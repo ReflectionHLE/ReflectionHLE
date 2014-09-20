@@ -2584,25 +2584,25 @@ USL_CtlHButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 
 #ifdef	HELPTEXTLINKED	// Ugly hack because of lack of disk space...
 	{
-extern	id0_char_t	id0_far gametext,id0_far context,id0_far story;
-		id0_char_t	id0_far *buf;
+		extern id0_char_t *gametext, *context, *story;
+		id0_char_t *buf;
 		memptr	dupe;
 
 		switch (n)
 		{
 		case 0:
-			buf = &gametext;
+			buf = gametext;
 			break;
 		case 1:
-			buf = &context;
+			buf = context;
 			break;
 		case 2:
-			buf = &story;
+			buf = story;
 			break;
 		}
 
 		MM_GetPtr(&dupe,5000);
-		_fmemcpy((id0_char_t id0_far *)dupe,buf,5000);
+		memcpy(dupe, buf, 5000);
 
 		USL_DoHelp(dupe,5000);
 
