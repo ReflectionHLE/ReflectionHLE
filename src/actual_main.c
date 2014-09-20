@@ -23,7 +23,9 @@ void id0_main(void);
 int main(int argc, char **argv)
 {
 	id0_argc = argc;
-	id0_argv = argv;
+	// HACK: In Keen Dreams CGA v1.05, even if argc == 1, argv[1] is accessed...
+	char *our_workaround_argv[] = { argv[0], "" };
+	id0_argv = (argc <= 1) ? our_workaround_argv : argv; // HACK
 	BE_SDL_InitAll();
 	id0_main();
 	BE_SDL_ShutdownAll();

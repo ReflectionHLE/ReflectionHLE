@@ -1853,3 +1853,8 @@ SD_MusicPlaying(void)
 	return(result);
 #endif
 }
+
+// Replacements for direct accesses to TimeCount variable
+// (should be instantiated here even though it's inline, as of C99)
+id0_longword_t SD_GetTimeCount(void);
+void SD_SetTimeCount(id0_longword_t newcount);

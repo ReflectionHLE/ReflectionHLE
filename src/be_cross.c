@@ -68,3 +68,18 @@ int BE_Cross_strcasecmp(const char *s1, const char *s2)
 	/* Assumption: An int can store any unsigned char value.      */
 	return ((int)uc1 - (int)uc2);
 }
+
+void BE_Cross_textcolor(int color)
+{
+	BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_textcolor not implemented\n");
+}
+
+void BE_Cross_textbackground(int color)
+{
+	BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_textbackground not implemented\n");
+}
+
+void BE_Cross_clrscr(void)
+{
+	BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_clrscr not implemented\n");
+}

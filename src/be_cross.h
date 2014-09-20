@@ -18,19 +18,8 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 int BE_Cross_toupper(int c);
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 
-inline void BE_Cross_textcolor(int color)
-{
-	BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_textcolor not implemented\n");
-}
-
-inline void BE_Cross_textbackground(int color)
-{
-	BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_textbackground not implemented\n");
-}
-
-inline void BE_Cross_clrscr(void)
-{
-	BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_clrscr not implemented\n");
-}
+void BE_Cross_textcolor(int color);
+void BE_Cross_textbackground(int color);
+void BE_Cross_clrscr(void);
 
 #endif // BE_CROSS_H
