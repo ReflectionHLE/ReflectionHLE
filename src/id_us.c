@@ -184,7 +184,8 @@ static	id0_boolean_t		oldleavedriveon;
 	VW_UpdateScreen();
 	IN_ClearKeysDown();
 
-asm	sti	// Let the keyboard interrupts come through
+//asm	sti	// Let the keyboard interrupts come through
+	BE_SDL_PollEvents();
 
 	while (true)
 	{
@@ -1088,15 +1089,16 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 		if (cursorvis)
 			USL_XORICursor(x,y,s,cursor);
 
-	asm	pushf
-	asm	cli
+//	asm	pushf
+//	asm	cli
+		BE_SDL_PollEvents();
 
 		sc = LastScan;
 		LastScan = sc_None;
 		c = LastASCII;
 		LastASCII = key_None;
 
-	asm	popf
+//	asm	popf
 
 		switch (sc)
 		{
@@ -2123,11 +2125,12 @@ USL_CtlCKbdButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 			break;
 		}
 
-		asm	pushf
-		asm	cli
+//		asm	pushf
+//		asm	cli
+		BE_SDL_PollEvents();
 		if (LastScan == sc_LShift)
 			LastScan = sc_None;
-		asm	popf
+//		asm	popf
 	} while (!(scan = LastScan));
 	IN_ClearKey(scan);
 	if (scan != sc_Escape)
