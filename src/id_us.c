@@ -1080,7 +1080,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 	cursormoved = redraw = true;
 
 	cursorvis = done = false;
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 	LastASCII = key_None;
 	LastScan = sc_None;
 
@@ -1207,13 +1207,13 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 		if (cursormoved)
 		{
 			cursorvis = false;
-			lasttime = TimeCount - TickBase;
+			lasttime = SD_GetTimeCount() - TickBase;
 
 			cursormoved = false;
 		}
-		if (TimeCount - lasttime > TickBase / 2)
+		if (SD_GetTimeCount() - lasttime > TickBase / 2)
 		{
-			lasttime = TimeCount;
+			lasttime = SD_GetTimeCount();
 
 			cursorvis ^= true;
 		}
@@ -2106,16 +2106,16 @@ USL_CtlCKbdButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	VW_UpdateScreen();
 
 	LastScan = sc_None;
-	time = TimeCount;
+	time = SD_GetTimeCount();
 	state = true;
 	do
 	{
-		if (TimeCount - time > 35)	// Half-second delays
+		if (SD_GetTimeCount() - time > 35)	// Half-second delays
 		{
 			state ^= true;
 			VWB_DrawPic(ip->r.ul.x,ip->r.ul.y,state? ip->picdown : ip->picup);
 			VW_UpdateScreen();
-			time = TimeCount;
+			time = SD_GetTimeCount();
 		}
 		if (US_UpdateCursor())
 		{
@@ -2387,9 +2387,9 @@ USL_DoHelp(memptr text,id0_long_t len)
 	{
 		if (moved)
 		{
-			while (TimeCount - lasttime < 5)
+			while (SD_GetTimeCount() - lasttime < 5)
 				;
-			lasttime = TimeCount;
+			lasttime = SD_GetTimeCount();
 
 			if (scroll == -1)
 			{
@@ -3419,7 +3419,7 @@ US_ControlPanel(void)
 		if (FlushHelp)
 		{
 			lasti = -2;
-			lasttime = TimeCount;
+			lasttime = SD_GetTimeCount();
 			FlushHelp = false;
 		}
 		if (inrect)
@@ -3503,21 +3503,21 @@ US_ControlPanel(void)
 
 				if ((ip->type == uii_Button) && !(ip->sel & ui_Disabled))
 				{
-					lasttime = TimeCount;
+					lasttime = SD_GetTimeCount();
 
 					ip->sel |= ui_Selected;
 					USL_DrawItem(hiti,hitn);
 					VW_UpdateScreen();
 
-					while (TimeCount - lasttime < TickBase / 4)
+					while (SD_GetTimeCount() - lasttime < TickBase / 4)
 						;
-					lasttime = TimeCount;
+					lasttime = SD_GetTimeCount();
 
 					ip->sel &= ~ui_Selected;
 					USL_DrawItem(hiti,hitn);
 					VW_UpdateScreen();
 
-					while (TimeCount - lasttime < TickBase / 4)
+					while (SD_GetTimeCount() - lasttime < TickBase / 4)
 						;
 				}
 
@@ -3542,11 +3542,11 @@ US_ControlPanel(void)
 		{
 			lastx = CursorX;
 			lasty = CursorY;
-			lasttime = TimeCount;
+			lasttime = SD_GetTimeCount();
 		}
-		if (TimeCount - lasttime > TickBase * 10)
+		if (SD_GetTimeCount() - lasttime > TickBase * 10)
 		{
-			if (((TimeCount - lasttime) / TickBase) & 2)
+			if (((SD_GetTimeCount() - lasttime) / TickBase) & 2)
 				fontcolor = F_SECONDCOLOR;
 			USL_ShowHelp("Press F1 for Help");
 			fontcolor = F_BLACK;

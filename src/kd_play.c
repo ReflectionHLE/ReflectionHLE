@@ -217,7 +217,7 @@ void CheckKeys (void)
 		StatusWindow ();
 		IN_ClearKeysDown();
 		RF_ForceRefresh();
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 	}
 
 //
@@ -250,7 +250,7 @@ void CheckKeys (void)
 		else if (!loadedgame)
 			RF_ForceRefresh();		// don't refresh if loading a new game
 
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 	}
 
 //
@@ -259,7 +259,7 @@ void CheckKeys (void)
 	if (Keyboard[sc_F10] && DebugKeys() )
 	{
 		RF_ForceRefresh();
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 	}
 
 }
@@ -657,7 +657,7 @@ void FadeAndUnhook (void)
 	{
 		VW_FadeIn ();
 		RF_SetRefreshHook (NULL);
-		lasttimecount = TimeCount;	// don't adaptively time the fade
+		lasttimecount = SD_GetTimeCount();	// don't adaptively time the fade
 	}
 }
 
@@ -1606,7 +1606,7 @@ void PlayLoop (void)
 		if (singlestep)
 		{
 			VW_WaitVBL(14);
-			lasttimecount = TimeCount;
+			lasttimecount = SD_GetTimeCount();
 		}
 
 		CheckKeys();
@@ -1744,7 +1744,7 @@ void HandleDeath (void)
 			y = top;
 
 // draw select bar
-		if ( (TimeCount / 16)&1 )
+		if ( (SD_GetTimeCount() / 16)&1 )
 			color = SECONDCOLOR;
 		else
 			color = FIRSTCOLOR;

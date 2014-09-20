@@ -389,7 +389,7 @@ void RF_NewMap (void)
 	RFL_InitAnimList ();
 
 
-	lasttimecount = TimeCount;		// setup for adaptive timing
+	lasttimecount = SD_GetTimeCount();		// setup for adaptive timing
 	tics = 1;
 }
 
@@ -1686,11 +1686,11 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 //
 // calculate tics since last refresh for adaptive timing
 //
-	if (lasttimecount > TimeCount)
-		lasttimecount = TimeCount;		// if the game was paused a LONG time
+	if (lasttimecount > SD_GetTimeCount())
+		lasttimecount = SD_GetTimeCount();		// if the game was paused a LONG time
 	do
 	{
-		newtime = TimeCount;
+		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
 	} while (tics<MINTICS);
 	lasttimecount = newtime;
@@ -1705,7 +1705,7 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 
 	if (tics>MAXTICS)
 	{
-		TimeCount -= (tics-MAXTICS);
+		SD_SetTimeCount(SD_GetTimeCount() - (tics-MAXTICS));
 		tics = MAXTICS;
 	}
 }
@@ -2319,11 +2319,11 @@ void RF_Refresh (void)
 //
 // calculate tics since last refresh for adaptive timing
 //
-	if (lasttimecount > TimeCount)
-		lasttimecount = TimeCount;		// if the game was paused a LONG time
+	if (lasttimecount > SD_GetTimeCount())
+		lasttimecount = SD_GetTimeCount();		// if the game was paused a LONG time
 	do
 	{
-		newtime = TimeCount;
+		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
 	} while (tics<MINTICS);
 	lasttimecount = newtime;
@@ -2331,7 +2331,7 @@ void RF_Refresh (void)
 #ifdef PROFILE
 	itoa (tics,str,10);
 	strcat (str,"\t");
-	ltoa (TimeCount,str2,10);
+	ltoa (SD_GetTimeCount(),str2,10);
 	strcat (str,str2);
 	strcat (str,"\t");
 	ltoa (LocalTime,str2,10);

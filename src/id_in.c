@@ -331,7 +331,7 @@ static	id0_longword_t	lasttime;
 
 	if (adaptive)
 	{
-		time = (TimeCount - lasttime) / 2;
+		time = (SD_GetTimeCount() - lasttime) / 2;
 		if (time)
 		{
 			if (time > 8)
@@ -340,7 +340,7 @@ static	id0_longword_t	lasttime;
 			*dy *= time;
 		}
 	}
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -371,8 +371,8 @@ IN_GetJoyButtonsDB(id0_word_t joy)
 	do
 	{
 		result1 = INL_GetJoyButtons(joy);
-		lasttime = TimeCount;
-		while (TimeCount == lasttime)
+		lasttime = SD_GetTimeCount();
+		while (SD_GetTimeCount() == lasttime)
 			;
 		result2 = INL_GetJoyButtons(joy);
 	} while (result1 != result2);
@@ -1035,7 +1035,7 @@ IN_UserInput(id0_longword_t delay,id0_boolean_t clear)
 {
 	id0_longword_t	lasttime;
 
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 	do
 	{
 		if (IN_IsUserInput())
@@ -1044,6 +1044,6 @@ IN_UserInput(id0_longword_t delay,id0_boolean_t clear)
 				IN_AckBack();
 			return(true);
 		}
-	} while (TimeCount - lasttime < delay);
+	} while (SD_GetTimeCount() - lasttime < delay);
 	return(false);
 }

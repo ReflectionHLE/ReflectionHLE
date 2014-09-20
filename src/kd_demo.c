@@ -362,7 +362,7 @@ MoveTitleTo(id0_int_t offset)
 	delay = 1;
 	while (!done)
 	{
-		lasttime = TimeCount;
+		lasttime = SD_GetTimeCount();
 		move = delay * chunk;
 		if (chunk < 0)
 			done = originxglobal + move <= offset;
@@ -375,7 +375,7 @@ MoveTitleTo(id0_int_t offset)
 		}
 		if (IN_IsUserInput())
 			return(true);
-		delay = TimeCount - lasttime;
+		delay = SD_GetTimeCount() - lasttime;
 	}
 	if (originxglobal != offset)
 	{
@@ -388,10 +388,10 @@ MoveTitleTo(id0_int_t offset)
 static id0_boolean_t
 Wait(id0_longword_t time)
 {
-	time += TimeCount;
-	while ((TimeCount < time) && (!IN_IsUserInput()))
+	time += SD_GetTimeCount();
+	while ((SD_GetTimeCount() < time) && (!IN_IsUserInput()))
 	{
-		if (!(TimeCount % MINTICS))
+		if (!(SD_GetTimeCount() % MINTICS))
 			RF_Refresh();
 	}
 	return(IN_IsUserInput());
