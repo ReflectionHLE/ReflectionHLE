@@ -122,10 +122,10 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 
 #define UNWOUNDMASKS 18
 
-VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize)
 {
-	id0_byte_t *srcPtr = &segm[ofs];
+	id0_byte_t *srcPtr = (id0_byte_t *)segm + ofs;
 	id0_byte_t *destPtr = &screenseg[dest];
 	linedelta = linewidth-wide; // delta to start of next line
 	// Emulate unwind routines behaviors
@@ -225,7 +225,7 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 //
 //==============
 
-VW_SetScreen (id0_unsigned_t crtc, id0_unsigned_t pelpan)
+void VW_SetScreen (id0_unsigned_t crtc, id0_unsigned_t pelpan)
 {
 	BE_SDL_SetScreenStartAddress(crtc);
 }

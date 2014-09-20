@@ -406,7 +406,7 @@ INL_ShutKbd(void)
 {
 	//poke(0x40,0x17,peek(0x40,0x17) & 0xfaf0);	// Clear ctrl/alt/shift flags
 
-	BE_SDL_StopKeyboardService(&INL_KeyService);
+	BE_SDL_StopKeyboardService();
 	//setvect(KeyInt,OldKeyVect);
 }
 

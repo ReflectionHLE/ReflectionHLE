@@ -524,7 +524,7 @@ void SpawnMelon (id0_int_t tilex, id0_int_t tiley,id0_int_t dir)
 		NewState (new,&s_melondown);
 
 	new->ticcount = US_RndT()>>1;
-	new->temp1 = dir;
+	new->temp1.val = dir;
 }
 
 
@@ -540,7 +540,7 @@ void MelonSpitThink (objtype *ob)
 {
 	GetNewObj (false);
 	new->obclass = shotobj;
-	switch (ob->temp1)
+	switch (ob->temp1.val)
 	{
 	case 0:
 		new->x = ob->x+24*16;
@@ -940,7 +940,7 @@ void ApelThink (objtype *ob)
 		{
 			ob->xmove = (ob->tilemidx<<G_T_SHIFT) - ob->x;
 			ob->ymove = 0;
-			ob->temp4 = ob->tilemidx;	// for future reference
+			ob->temp4.val = ob->tilemidx;	// for future reference
 			ob->needtoclip = false;		// can climb through pole holes
 			if (ob->y < player->y)
 				ob->state = &s_apelslide1;
@@ -974,7 +974,7 @@ void ApelClimbThink (objtype *ob)
 	id0_unsigned_t id0_far *map;
 
 	map = (id0_unsigned_t id0_seg *)mapsegs[1]+
-		mapbwidthtable[ob->tiletop]/2 + ob->temp4;
+		mapbwidthtable[ob->tiletop]/2 + ob->temp4.val;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
 	{
@@ -997,7 +997,7 @@ void ApelSlideThink (objtype *ob)
 	id0_unsigned_t id0_far *map;
 
 	map = (id0_unsigned_t id0_seg *)mapsegs[1]+
-		mapbwidthtable[ob->tilebottom]/2 + ob->temp4;
+		mapbwidthtable[ob->tilebottom]/2 + ob->temp4.val;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
 	{
@@ -1239,9 +1239,9 @@ void PeaPodThink (objtype *ob)
 	if (player->x > ob->x && ob->xdir == -1)
 		return;
 
-	if (US_RndT()<8 && ob->temp1 < MAXPEASPIT)
+	if (US_RndT()<8 && ob->temp1.val < MAXPEASPIT)
 	{
-		ob->temp1 ++;
+		ob->temp1.val ++;
 		ob->state = &s_peapodspit1;
 		ob->xmove = 0;
 	}
@@ -1303,9 +1303,9 @@ statetype s_boobusjump	= {BOOBUSJUMPSPR,BOOBUSJUMPSPR,think,false,
 
 statetype s_boobusdie	= {BOOBUSJUMPSPR,BOOBUSJUMPSPR,step,false,
 	false,4, 0,0, FragThink, NULL, DrawReact, &s_boobusdie};
-statetype s_boobusdie2	= {NULL,NULL,step,false,
+statetype s_boobusdie2	= {0/*NULL*/,0/*NULL*/,step,false,
 	false,4, 0,0, FragThink, NULL, NULL, &s_boobusdie2};
-statetype s_boobusdie3	= {NULL,NULL,step,false,
+statetype s_boobusdie3	= {0/*NULL*/,0/*NULL*/,step,false,
 	false,250, 0,0, FinishThink, NULL, NULL, NULL};
 
 statetype s_deathboom1	= {BOOBUSBOOM1SPR,BOOBUSBOOM1SPR,step,false,
@@ -1341,7 +1341,7 @@ void SpawnBoobus (id0_int_t tilex, id0_int_t tiley)
 	new->y = (tiley<<G_T_SHIFT)-11*BLOCKSIZE;
 	new->xdir = -1;
 	NewState (new,&s_boobuswalk1);
-	new->temp4 = 12;			// hit points
+	new->temp4.val = 12;			// hit points
 }
 
 
@@ -1355,9 +1355,9 @@ void SpawnBoobus (id0_int_t tilex, id0_int_t tiley)
 
 void FragThink (objtype *ob)
 {
-	if (++ob->temp1 == PREFRAGTHINK)
+	if (++ob->temp1.val == PREFRAGTHINK)
 		ob->state = &s_boobusdie2;
-	if (++ob->temp1 == POSTFRAGTHINK)
+	if (++ob->temp1.val == POSTFRAGTHINK)
 	{
 		RF_RemoveSprite (&ob->sprite);
 		ob->state = &s_boobusdie3;

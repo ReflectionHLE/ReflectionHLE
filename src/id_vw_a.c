@@ -23,8 +23,9 @@
 
 // setting to 0 causes setscreen and waitvbl
 // to skip waiting for VBL (for timing things)
-#define WAITFORVBL 1
 
+// NOTE: Moved to id_vw.h
+// #define WAITFORVBL 1
 
 //============================================================================
 
@@ -205,7 +206,7 @@ id0_unsigned_t shiftdata7[] = {
 	63489,64001,64513,65025
 };
 
-id0_unsigned_t **shifttabletable = {
+id0_unsigned_t **shifttabletable = (id0_unsigned_t *[8]){
 	shiftdata0,shiftdata1,shiftdata2,shiftdata3,
 	shiftdata4,shiftdata5,shiftdata6,shiftdata7
 };
@@ -239,12 +240,32 @@ id0_unsigned_t linedelta;
 //
 //========
 
+// NOTE: Moved to id_vw.h (inline implementation calling backend function)
+
+#if 0
 void VW_WaitVBL(id0_int_t number)
 {
-#if WAITFORVBL
-	// TODO: (CHOCO KEEN): IMPLEMENT!
-#endif
+if WAITFORVBL				; skip wait if profiling
+
+	mov	dx,STATUS_REGISTER_1
+
+	mov	cx,[number]
+
+waitvbl1:
+	in	al,dx
+	test	al,00001000b	;look for vbl
+	jnz	waitvbl1
+
+waitvbl2:
+	in	al,dx
+	test	al,00001000b	;look for vbl
+	jz	waitvbl2
+
+	loop	waitvbl1
+
+endif
 }
+#endif
 
 //===========================================================================
 

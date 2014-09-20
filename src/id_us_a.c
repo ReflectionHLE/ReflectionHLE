@@ -16,6 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <time.h>
 #include "id_heads.h"
 
 //	Assembly portion of the User Mgr. This is just John Carmack's table

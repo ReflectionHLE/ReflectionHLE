@@ -76,29 +76,52 @@ void BE_SDL_SetScreenStartAddress(id0_unsigned_t crtc)
 	g_sdlScreenStartAddress = crtc;
 }
 
-uint8_t *BE_SDL_GetTextModeMemoryPtr(void)
+id0_byte_t *BE_SDL_GetTextModeMemoryPtr(void)
 {
 	return g_sdlTextModeMemory;
 }
 
-uint8_t *BE_SDL_GetCGAMemoryPtr(void)
+id0_byte_t *BE_SDL_GetCGAMemoryPtr(void)
 {
 	return g_sdlCGAGfxMemory;
 }
 
-uint8_t *BE_SDL_GetEGAMemoryPtr(void)
+id0_byte_t *BE_SDL_GetEGAMemoryPtr(void)
 {
 	// TODO: IMPLEMENT!
 	return 0;
 }
 
-void BE_SDL_SetBorderColor(uint8_t color)
+void BE_SDL_SetBorderColor(id0_byte_t color)
 {
 	g_sdlBorderColor = color;
 }
+
 void BE_SDL_SetScreenMode(int mode)
 {
 	g_sdlScreenMode = mode;
+}
+
+static void BE_SDL_UpdateHostDisplay(void);
+
+void BE_SDL_WaitVBL(id0_int_t number)
+{
+	// TODO (CHOCO KEEN) Make a difference based on HW?
+	// Also make it actually more faithful, as well as efficient
+	Uint32 startTicks = SDL_GetTicks();
+	while (SDL_GetTicks() - startTicks < (int)number*1000000/70086)
+	{
+		BE_SDL_UpdateHostDisplay();
+		BE_SDL_PollEvents();
+	}
+}
+
+// Call during a busy loop of some unknown duration (e.g., waiting for key press/release)
+void BE_SDL_ShortSleep(void)
+{
+	// TODO: Make this more efficient
+	BE_SDL_UpdateHostDisplay();
+	BE_SDL_PollEvents();
 }
 
 // Colors in BGRA format/order (on certain platforms)
@@ -110,7 +133,7 @@ static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
 	0xffffffff/*white*/
 };
 
-void BE_SDL_UpdateHostDisplay(void)
+static void BE_SDL_UpdateHostDisplay(void)
 {
 	void *pixels;
 	int pitch;

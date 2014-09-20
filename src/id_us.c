@@ -107,7 +107,7 @@ static	id0_int_t			CursorX,CursorY;
 static	void		(*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
 					(*USL_DrawString)(id0_char_t id0_far *) = VWB_DrawPropString;
 
-static	id0_boolean_t		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
+static	id0_boolean_t		(*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
 static	void		(*USL_ResetGame)(void);
 static	SaveGame	Games[MaxSaveGames];
 static	HighScore	Scores[MaxScores] =
@@ -257,7 +257,7 @@ static	id0_char_t	filename[32];
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetLoadSaveHooks(id0_boolean_t (*load)(int),id0_boolean_t (*save)(int),void (*reset)(void))
+US_SetLoadSaveHooks(id0_boolean_t (*load)(id0_int_t),id0_boolean_t (*save)(id0_int_t),void (*reset)(void))
 {
 	USL_LoadGame = load;
 	USL_SaveGame = save;
@@ -553,7 +553,8 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 {
 	id0_byte_t	id0_far *screen;
 
-	screen = MK_FP(0xb800,((x - 1) * 2) + (y * 80 * 2));
+	screen = BE_SDL_GetTextModeMemoryPtr() + ((x - 1) * 2) + (y * 80 * 2);
+	//screen = MK_FP(0xb800,((x - 1) * 2) + (y * 80 * 2));
 	*screen++ = show? 251 : ' ';	// Checkmark id0_char_t or space
 	*screen = 0x48;
 	if (show && hilight)
@@ -2761,7 +2762,7 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		{
 			USL_DLSRect(ip);
 			fontcolor = game->present? F_BLACK : F_FIRSTCOLOR;
-			USL_DrawString(game->present? game->name : "Empty");
+			USL_DrawString(game->present? (char *)(game->name) : "Empty");
 			fontcolor = F_BLACK;
 		}
 		break;

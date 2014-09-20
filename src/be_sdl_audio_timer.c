@@ -325,6 +325,7 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 }
 
 // Here, the actual rate is about 1193182Hz/speed
+// NOTE: isALMusicOn is irrelevant for Keen Dreams (even with its music code)
 void BE_SDL_SetTimer(id0_word_t speed, bool isALMusicOn)
 {
 	g_sdlSamplePerPart = (int32_t)speed * g_sdlAudioSpec.freq / PC_PIT_RATE;

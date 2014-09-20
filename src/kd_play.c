@@ -580,7 +580,8 @@ void ScanInfoPlane (void)
 	{
 		for (x=0;x<mapwidth;x++)
 		{
-			tile = *start++;
+			tile = allanims[*start++].current;
+			//tile = *start++;
 			if (!tile)
 			{
 				maptile = tile;
@@ -617,11 +618,13 @@ void PatchWorldMap (void)
 	spot = 0;
 	do
 	{
-		info = *(mapsegs[2] + spot);
+		info = allanims[*(mapsegs[2] + spot)].current;
+		//info = *(mapsegs[2] + spot);
 		// finished a city here?
 		if (info>=3 && info<=18 && gamestate.leveldone[info-2])
 		{
-			*(mapsegs[2] + spot) = 0;
+			allanims[*(mapsegs[2] + spot)].current = 0;
+			//*(mapsegs[2] + spot) = 0;
 			foreground = *(mapsegs[1] + spot);
 			if (foreground == 130)
 				*(mapsegs[1]+spot) = 0;	// not blocking now

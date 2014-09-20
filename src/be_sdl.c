@@ -4,7 +4,12 @@
 
 static void (*g_sdlKeyboardInterruptFuncPtr)(id0_byte_t) = 0;
 
-void BE_SDL_InitAll()
+void BE_SDL_InitGfx(void);
+void BE_SDL_InitAudio(void);
+void BE_SDL_ShutdownAudio(void);
+void BE_SDL_ShutdownGfx(void);
+
+void BE_SDL_InitAll(void)
 {
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER) < 0)
 	{
@@ -15,7 +20,7 @@ void BE_SDL_InitAll()
 	BE_SDL_InitAudio();
 }
 
-void BE_SDL_ShutdownAll()
+void BE_SDL_ShutdownAll(void)
 {
 	BE_SDL_ShutdownAudio();
 	BE_SDL_ShutdownGfx();
@@ -378,9 +383,9 @@ const emulatedDOSKeyEvent sdlKeyMappings[SDL_NUM_SCANCODES] = {
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
 
-    {false,  EMULATEDKEYSCANCODE_LCTRL, 0}, // SDL_SCANCODE_LCTRL
-    {false,  EMULATEDKEYSCANCODE_LSHIFT, 0}, // SDL_SCANCODE_LSHIFT
-    {false,  EMULATEDKEYSCANCODE_LALT, 0}, // SDL_SCANCODE_LALT
+    {false,  EMULATEDKEYSCANCODE_LCTRL}, // SDL_SCANCODE_LCTRL
+    {false,  EMULATEDKEYSCANCODE_LSHIFT}, // SDL_SCANCODE_LSHIFT
+    {false,  EMULATEDKEYSCANCODE_LALT}, // SDL_SCANCODE_LALT
 
     emptyDOSKeyEvent, // SDL_SCANCODE_LGUI
 

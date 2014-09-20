@@ -98,6 +98,17 @@ typedef	struct
 	id0_int_t		difficulty;
 } __attribute__((__packed__)) gametype;
 
+// TODO? (CHOCO KEEN): Using unions for temporaries now
+// (because we may wish to store pointers and these aren't 16-bit...)
+//
+// But this totally corrupts saved games ; And these depend on EXE layout...
+
+typedef union
+{
+	id0_int_t val;
+	void *ptr;
+} objtempfield;
+
 
 typedef struct	objstruct
 {
@@ -123,7 +134,8 @@ typedef struct	objstruct
 
 	id0_int_t			hitnorth,hiteast,hitsouth,hitwest;	// wall numbers contacted
 
-	id0_int_t			temp1,temp2,temp3,temp4;
+	// TODO (CHOCO KEEN): Use 16-bit integers again with some mechanism
+	objtempfield			temp1,temp2,temp3,temp4;
 
 	void		*sprite;
 

@@ -31,6 +31,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+// for lseek and more
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "be_cross.h"
 
@@ -112,6 +115,8 @@ typedef	struct
 // Initialized after calling what was game's main fnuction
 extern int id0_argc;
 extern char **id0_argv;
+
+#include "be_sdl.h"
 
 #include "id_mm.h"
 #include "id_ca.h"

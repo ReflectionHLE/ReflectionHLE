@@ -635,7 +635,7 @@ void CAL_SetupAudioFile (void)
 #else
 	audiohuffman = (huffnode *)audiodict;
 	CAL_OptimizeNodes (audiohuffman);
-	audiostarts = audiohead;
+	audiostarts = (id0_long_t *)audiohead;
 #endif
 
 //

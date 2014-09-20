@@ -103,13 +103,14 @@ typedef struct
 	id0_int_t			width,height;
 } eraseblocktype;
 
-
+// UPDATE (CHOCO KEEN): Moved to id_rf.h
+#if 0
 typedef struct
 {
 	id0_unsigned_t	current;		// foreground tiles have high bit set
 	id0_int_t			count;
 } tiletype;
-
+#endif
 
 typedef struct animtilestruct
 {
@@ -173,6 +174,10 @@ id0_byte_t		*updateptr,*baseupdateptr,						// current start of update window
 			*updatestart[2],
 			*baseupdatestart[2];
 
+// UPDATE (CHOCO KEEN):  NOW GLOBAL (because we can't just store 16-bit pointers in the info plane)
+tiletype	allanims[MAXANIMTYPES];
+
+
 /*
 =============================================================================
 
@@ -183,7 +188,8 @@ id0_byte_t		*updateptr,*baseupdateptr,						// current start of update window
 
 static		id0_char_t	scratch[20],str[20];
 
-tiletype	allanims[MAXANIMTYPES];
+// UPDATE (CHOCO KEEN):  NOW GLOBAL (because we can't just store 16-bit pointers in the info plane)
+//tiletype	allanims[MAXANIMTYPES];
 id0_unsigned_t	numanimchains;
 
 void 		(*refreshvector) (void);
@@ -411,6 +417,8 @@ void RF_NewMap (void)
 ==========================
 */
 
+// UPDATE (CHOCO KEEN): info plane has an index rather than a pointer now
+
 void RF_MarkTileGraphics (void)
 {
 	id0_unsigned_t	size;
@@ -442,7 +450,8 @@ void RF_MarkTileGraphics (void)
 				for (i=0;i<numanimchains;i++)
 					if (allanims[i].current == tile)
 					{
-						*info = (unsigned)&allanims[i];
+						*info = i;
+						//*info = (id0_unsigned_t)&allanims[i];
 						goto nextback;
 					}
 
@@ -453,7 +462,8 @@ void RF_MarkTileGraphics (void)
 				allanims[i].current = tile;
 				allanims[i].count = tinf[SPEED+tile];
 
-				*info = (unsigned)&allanims[i];
+				*info = i;
+				//*info = (id0_unsigned_t)&allanims[i];
 				numanimchains++;
 
 				anims = 0;
@@ -492,7 +502,8 @@ nextback:
 				for (i=0;i<numanimchains;i++)
 					if (allanims[i].current == tilehigh)
 					{
-						*info = (unsigned)&allanims[i];
+						*info = i;
+						//*info = (id0_unsigned_t)&allanims[i];
 						goto nextfront;
 					}
 
@@ -503,7 +514,8 @@ nextback:
 				allanims[i].current = tilehigh;
 				allanims[i].count = tinf[MSPEED+tile];
 
-				*info = (unsigned)&allanims[i];
+				*info = i;
+				//*info = (id0_unsigned_t)&allanims[i];
 				numanimchains++;
 
 				anims = 0;
@@ -570,6 +582,8 @@ void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y)
 // the info plane of each animating tile has a near pointer into allanims[]
 // which gives the current state of all concurrently animating tiles
 
+// UPDATE (CHOCO KEEN): info plane has an index rather than a pointer now
+
 	offset = mapbwidthtable[y]/2+x;
 
 //
@@ -594,7 +608,8 @@ void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y)
 		anim->y = y;
 		anim->tile = tile;
 		anim->mapplane = map;
-		anim->chain = (tiletype *)*(mapsegs[2]+offset);
+		anim->chain = &allanims[*(mapsegs[2]+offset)];
+		//anim->chain = (tiletype *)*(mapsegs[2]+offset);
 	}
 
 //
@@ -619,7 +634,8 @@ void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y)
 		anim->y = y;
 		anim->tile = tile;
 		anim->mapplane = map;
-		anim->chain = (tiletype *)*(mapsegs[2]+offset);
+		anim->chain = &allanims[*(mapsegs[2]+offset)];
+		//anim->chain = (tiletype *)*(mapsegs[2]+offset);
 	}
 
 }

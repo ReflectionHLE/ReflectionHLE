@@ -18,9 +18,6 @@
 
 #include "id_heads.h"
 
-void BE_SDL_InitAll(void);
-void BE_SDL_ShutdownAll(void);
-
 void id0_main(void);
 
 int main(int argc, char **argv)

@@ -32,6 +32,7 @@
 
 #define __ID_VW__
 
+
 //===========================================================================
 
 #define	G_P_SHIFT		4	// global >> ?? = pixels
@@ -140,6 +141,11 @@
 
 //===========================================================================
 
+// setting to 0 causes setscreen and waitvbl
+// to skip waiting for VBL (for timing things)
+
+#define WAITFORVBL 1
+
 typedef enum {NOcard,MDAcard,CGAcard,EGAcard,MCGAcard,VGAcard,
 		  HGCcard=0x80,HGCPcard,HICcard} cardtype;
 
@@ -236,7 +242,13 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
 
 void	VW_SetScreenMode (id0_int_t grmode);
 void	VW_ClearVideo (id0_int_t color);
-void	VW_WaitVBL (id0_int_t number);
+
+inline void VW_WaitVBL (id0_int_t number)
+{
+#if WAITFORVBL
+	BE_SDL_WaitVBL(number);
+#endif
+}
 
 void	VW_ColorBorder (id0_int_t color);
 void	VW_SetDefaultColors(void);

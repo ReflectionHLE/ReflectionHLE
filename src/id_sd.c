@@ -1692,7 +1692,7 @@ SD_PlaySound(id0_word_t sound)
 		return;
 
 	//s = MK_FP(SoundTable[sound],0);
-	s = (SoundCommon id0_far *)(SoundTable[sound]);
+	s = (SoundCommon *)(id0_byte_t *)(&SoundTable[sound]);
 	if (!s)
 		Quit("SD_PlaySound() - Attempted to play an uncached sound");
 	if (s->priority < SoundPriority)
