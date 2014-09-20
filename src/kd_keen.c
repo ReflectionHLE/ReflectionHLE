@@ -277,7 +277,8 @@ void ScoreThink (objtype *ob)
 		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
 			+ planesize + width*4 + 1*CHARWIDTH;
 
-		ltoa (gamestate.score,str,10);
+		BE_Cross_ltoa_dec(gamestate.score, str);
+		//ltoa (gamestate.score,str,10);
 
 		// erase leading spaces
 		length = strlen(str);
@@ -315,7 +316,8 @@ void ScoreThink (objtype *ob)
 		if (number > 99)
 			strcpy (str,"99");
 		else
-			ltoa (number,str,10);
+			BE_Cross_ltoa_dec(number, str);
+			//ltoa (number,str,10);
 
 		// erase leading spaces
 		length = strlen(str);
@@ -1382,9 +1384,9 @@ id0_boolean_t	CheckGrabPole (objtype *ob)
 //
 // kludgy bit to not let you grab a pole the instant you jump off it
 //
-	if (TimeCount < leavepoletime)
+	if (SD_GetTimeCount() < leavepoletime)
 		leavepoletime = 0;
-	else if (TimeCount - leavepoletime < MINPOLEJUMPTICS)
+	else if (SD_GetTimeCount() - leavepoletime < MINPOLEJUMPTICS)
 		return false;
 
 	if (c.yaxis == -1)
@@ -1871,7 +1873,7 @@ void	PoleActions (objtype *ob)
 		ob->state = &s_keenjump1;
 		ob->ydir = 1;
 		button0held = true;
-		leavepoletime = TimeCount;
+		leavepoletime = SD_GetTimeCount();
 		return;
 	}
 

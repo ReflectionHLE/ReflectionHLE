@@ -236,7 +236,7 @@ id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
 		return false;
 
-	size = filelength (handle);
+	size = BE_Cross_FileLengthFromHandle (handle);
 	MM_GetPtr (ptr,size);
 	if (!CA_FarRead (handle,*ptr,size))
 	{
@@ -577,7 +577,7 @@ void CAL_SetupMapFile (void)
 	if ((handle = open("MAPHEAD."EXTENSION,
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
-	length = filelength(handle);
+	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&tinf,length);
 	//MM_GetPtr (&(memptr)tinf,length);
 	CA_FarRead(handle, tinf, length);
@@ -627,7 +627,7 @@ void CAL_SetupAudioFile (void)
 	if ((handle = open("AUDIOHED."EXTENSION,
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
-	length = filelength(handle);
+	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&audiostarts,length);
 	//MM_GetPtr (&(memptr)audiostarts,length);
 	CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);

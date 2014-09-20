@@ -16,6 +16,7 @@ RSRCSRC=$(SRC)/static
 RSRCOBJ=$(OBJ)/static
 
 OBJECTS=$(OBJ)/actual_main.o \
+        $(OBJ)/be_cross.o \
         $(OBJ)/be_sdl.o \
         $(OBJ)/be_sdl_audio_timer.o \
         $(OBJ)/be_sdl_graphics.o \
@@ -31,16 +32,16 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/id_vw_a.o \
         $(OBJ)/id_vw_ac.o \
         $(OBJ)/id_vw.o \
-        $(OBJ)/kd_act1.c \
-        $(OBJ)/kd_act2.c \
-        $(OBJ)/kd_demo.c \
-        $(OBJ)/kd_keen.c \
-        $(OBJ)/kd_main.c \
-        $(OBJ)/kd_play.c
+        $(OBJ)/kd_act1.o \
+        $(OBJ)/kd_act2.o \
+        $(OBJ)/kd_demo.o \
+        $(OBJ)/kd_keen.o \
+        $(OBJ)/kd_main.o \
+        $(OBJ)/kd_play.o
 
 #CURRENTLY OMITTED: egadict, egahead, piracy
 RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
-             $(RSRCOBJ)/audiohdd.o \
+             $(RSRCOBJ)/audiohhd.o \
              $(RSRCOBJ)/cgadict.o \
              $(RSRCOBJ)/cgahead.o \
              $(RSRCOBJ)/context.o \

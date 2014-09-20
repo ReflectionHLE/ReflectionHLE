@@ -38,6 +38,7 @@
 id0_byte_t plotpixels[] = {0xC0, 0x30, 0x0C, 0x03};
 id0_byte_t colorbyte[]  = {0x00, 0x55, 0xAA, 0xFF};
 id0_word_t colorword[] = {0x0000, 0x5555, 0xAAAA, 0xFFFF};
+extern id0_unsigned_t linedelta;
 
 //============================================================================
 //

@@ -39,7 +39,7 @@ void BE_SDL_InitAudio(void)
 {
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
 	}
 	else
 	{
@@ -59,7 +59,7 @@ void BE_SDL_InitAudio(void)
 		g_sdlAudioSpec.userdata = NULL;
 		if (SDL_OpenAudio(&g_sdlAudioSpec, NULL))
 		{
-			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
+			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
 			SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		}
 		else
@@ -67,7 +67,7 @@ void BE_SDL_InitAudio(void)
 			g_sdlCallbackMutex = SDL_CreateMutex();
 			if (!g_sdlCallbackMutex)
 			{
-				CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Cannot create recursive mutex for SDL audio callback,\n%s\nClosing SDL audio subsystem\n", SDL_GetError());
+				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Cannot create recursive mutex for SDL audio callback,\n%s\nClosing SDL audio subsystem\n", SDL_GetError());
 				SDL_CloseAudio();
 				SDL_QuitSubSystem(SDL_INIT_AUDIO);
 				g_sdlAudioSubsystemUp = false;
@@ -80,12 +80,12 @@ void BE_SDL_InitAudio(void)
 		
 		if (YM3812Init(1, 3579545, g_sdlAudioSpec.freq))
 		{
-			CK_Cross_LogMessage(CK_LOG_MSG_WARNING, "Preparation of emulated OPL chip has failed\n");
+			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Preparation of emulated OPL chip has failed\n");
 		}
 	}
 }
 
-void BL_SDL_ShutdownAudio(void)
+void BE_SDL_ShutdownAudio(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{

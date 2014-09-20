@@ -185,4 +185,4 @@ scr_rowcol(22,70)      scr_aputs("           ",0xC4);
 scr_rowcol(23,1)      scr_aputs("                                                                                ",0xC4);
 scr_rowcol(24,1)      scr_aputs("‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹",0xC);
 scr_rowcol(25,1)      scr_aputs("                                                                                ",0x7);
-
+

@@ -205,7 +205,7 @@ id0_unsigned_t shiftdata7[] = {
 	63489,64001,64513,65025
 };
 
-id0_unsigned_t *shifttabletable[8] = {
+id0_unsigned_t **shifttabletable = {
 	shiftdata0,shiftdata1,shiftdata2,shiftdata3,
 	shiftdata4,shiftdata5,shiftdata6,shiftdata7
 };

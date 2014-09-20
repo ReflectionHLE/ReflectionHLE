@@ -32,6 +32,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "be_cross.h"
+
 #define __ID_GLOB__
 
 #define	EXTENSION	"KDR"

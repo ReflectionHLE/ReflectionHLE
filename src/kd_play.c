@@ -106,7 +106,7 @@ id0_char_t		*levelnames[21] =
 */
 
 // for asm scaning of map planes (UPDATE (CHOCO KEEN): Code ported to C)
-id0_unsigned_t	mapx,mapy,/*mapxcount,mapycount,*/maptile,/*mapspot*/;
+id0_unsigned_t	mapx,mapy/*,mapxcount,mapycount*/,maptile/*,mapspot*/;
 
 id0_int_t			plummet;
 
@@ -442,7 +442,7 @@ void RemoveObj (objtype *gone)
 //===========================================================================
 
 
-void near HandleInfo (void)
+void /*near*/ HandleInfo (void)
 {
 	switch (maptile)
 	{
@@ -1628,7 +1628,7 @@ void PlayLoop (void)
 
 void GameFinale (void)
 {
-struct date d;
+//struct date d;
 
 	VW_FixRefreshBuffer ();
 

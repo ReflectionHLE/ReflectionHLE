@@ -187,7 +187,8 @@ extern	id0_unsigned_t	panx,pany;		// panning adjustments inside port in pixels
 extern	id0_unsigned_t	pansx,pansy;
 extern	id0_unsigned_t	panadjust;		// panx/pany adjusted by screen resolution
 
-extern	id0_unsigned_t	screenseg;		// normally 0xa000 or buffer segment
+extern  id0_byte_t     *screenseg;
+//extern	id0_unsigned_t	screenseg;		// normally 0xa000 or buffer segment
 
 extern	id0_unsigned_t	linewidth;
 extern	id0_unsigned_t	ylookup[VIRTUALHEIGHT];
@@ -220,9 +221,15 @@ cardtype	VW_VideoID (void);
 // EGA hardware routines
 //
 
+#if 0
 #define EGAWRITEMODE(x) asm{cli;mov dx,GC_INDEX;mov ax,GC_MODE+256*x;out dx,ax;sti;}
 #define EGABITMASK(x) asm{mov dx,GC_INDEX;mov ax,GC_BITMASK+256*x;out dx,ax;sti;}
 #define EGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov ax,SC_MAPMASK+x*256;out dx,ax;sti;}
+#endif
+// TODO (CHOCO KEEN) IMPLEMENT?
+#define EGAWRITEMODE(x) exit(x)
+#define EGABITMASK(x) exit(x)
+#define EGAMAPMASK(x) exit(x)
 
 void 	VW_SetLineWidth(id0_int_t width);
 void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);

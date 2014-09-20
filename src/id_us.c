@@ -128,6 +128,8 @@ static	HighScore	Scores[MaxScores] =
 
 //	Public routines
 
+#if 0 // USL_HardError IS UNUSED NOW (TODO CHOCO KEEN: Restore?)
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	USL_HardError() - Handles the Abort/Retry/Fail sort of errors passed
@@ -224,6 +226,8 @@ oh_kill_me:
 #pragma	warn	+par
 #pragma	warn	+rch
 
+#endif // USL_HardError IS UNUSED NOW
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	USL_GiveSaveName() - Returns a pointer to a static buffer that contains
@@ -314,7 +318,7 @@ USL_WriteConfig(void)
 	id0_int_t	file;
 
 	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
-				S_IREAD | S_IWRITE | S_IFREG);
+				/*S_IREAD | S_IWRITE*/ S_IRGRP | S_IWGRP /*| S_IFREG*/);
 	if (file != -1)
 	{
 		write(file,Scores,sizeof(HighScore) * MaxScores);
@@ -382,7 +386,7 @@ US_Startup(void)
 	if (US_Started)
 		return;
 
-	harderr(USL_HardError);	// Install the fatal error handler
+	// harderr(USL_HardError);	// Install the fatal error handler
 
 	US_InitRndT(true);		// Initialize the random number generator
 
@@ -465,7 +469,8 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,id0_char_t *s,id0_byte_t attr)
 {
 	id0_byte_t	id0_far *screen;
 
-	screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
+	screen = BE_SDL_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2);
+	//screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
 	while (*s)
 	{
 		*screen++ = *s++;
@@ -482,6 +487,8 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,id0_char_t *s,id0_byte_t attr)
 static void
 USL_ClearTextScreen(void)
 {
+	// TODO (CHOCO KEEN): IMPLEMENT!
+#if 0
 	// Set to 80x25 color text mode
 	_AL = 3;				// Mode 3
 	_AH = 0x00;
@@ -494,6 +501,7 @@ USL_ClearTextScreen(void)
 	_DH = 24;				// Bottom row
 	_AH = 0x02;
 	geninterrupt(0x10);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -513,7 +521,7 @@ US_TextScreen(void)
 
 #define	scr_rowcol(y,x)	{sx = (x) - 1;sy = (y) - 1;}
 #define	scr_aputs(s,a)	USL_ScreenDraw(sx,sy,(s),(a))
-#include "ID_US_S.c"
+#include "id_us_s.c"
 #undef	scr_rowcol
 #undef	scr_aputs
 
@@ -567,7 +575,8 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 	id0_char_t	buf[16];
 	id0_word_t	i;
 
-	for (i = strlen(ltoa(mem,buf,10));i < 5;i++)
+	//for (i = strlen(ltoa(mem,buf,10));i < 5;i++)
+	for (i = strlen(BE_Cross_ltoa_dec(mem,buf));i < 5;i++)
 		USL_ScreenDraw(x++,y," ",0x48);
 	USL_ScreenDraw(x,y,buf,0x48);
 }
@@ -717,7 +726,8 @@ US_PrintUnsigned(id0_longword_t n)
 {
 	id0_char_t	buffer[32];
 
-	US_Print(ultoa(n,buffer,10));
+	US_Print(BE_Cross_ultoa_dec(n,buffer));
+	//US_Print(ultoa(n,buffer,10));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -730,7 +740,8 @@ US_PrintSigned(id0_long_t n)
 {
 	id0_char_t	buffer[32];
 
-	US_Print(ltoa(n,buffer,10));
+	US_Print(BE_Cross_ltoa_dec(n,buffer));
+	//US_Print(ltoa(n,buffer,10));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1255,19 +1266,19 @@ typedef	enum
 #define	ui_Disabled	2
 
 					// Prototype the custom routines
-static	id0_boolean_t		USL_CtlButtonCustom(UserCall,word,word),
-					USL_CtlPButtonCustom(UserCall,word,word),
-					USL_CtlPSButtonCustom(UserCall,word,word),
-					USL_CtlPRButtonCustom(UserCall,word,word),
-					USL_CtlHButtonCustom(UserCall,word,word),
-					USL_CtlDButtonCustom(UserCall,word,word),
-					USL_CtlDEButtonCustom(UserCall,word,word),
-					USL_CtlDLButtonCustom(UserCall,word,word),
-					USL_CtlDSButtonCustom(UserCall,word,word),
-					USL_CtlSButtonCustom(UserCall,word,word),
-					USL_CtlCButtonCustom(UserCall,word,word),
-					USL_CtlCKbdButtonCustom(UserCall,word,word),
-					USL_CtlCJoyButtonCustom(UserCall,word,word);
+static	id0_boolean_t		USL_CtlButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlPButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlPSButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlPRButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlHButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlDButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlDEButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlDLButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlDSButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlSButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlCButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlCKbdButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlCJoyButtonCustom(UserCall,id0_word_t,id0_word_t);
 
 					// The structure of a user interaction item
 typedef	struct	{
@@ -1277,7 +1288,7 @@ typedef	struct	{
 					id0_char_t		*help;			// Floating help string
 					ScanCode	key;			// Key equiv
 					id0_word_t		sel;			// Interaction flags (ui_XXX)
-					id0_boolean_t		(*custom)(UserCall,word,word);	// Custom routine
+					id0_boolean_t		(*custom)(UserCall,id0_word_t,id0_word_t);	// Custom routine
 					id0_char_t		*text;			// Text for some items
 				} UserItem;
 typedef	struct	{
@@ -1507,10 +1518,11 @@ USL_HandleError(id0_int_t num)
 		strcat(buf,"Unknown");
 	else if (num == ENOMEM)
 		strcat(buf,"Disk is Full");
-	else if (num == EINVFMT)
-		strcat(buf,"File is Incomplete");
+	//else if (num == EINVFMT)
+	//	strcat(buf,"File is Incomplete");
 	else
-		strcat(buf,sys_errlist[num]);
+		snprintf(buf, sizeof(buf), "Unrecognized error %d", (int)num);
+		//strcat(buf,sys_errlist[num]);
 
 	VW_HideCursor();
 
@@ -1573,10 +1585,10 @@ USL_DrawItem(id0_word_t hiti,id0_word_t hitn)
 				}
 			}
 			else
-				text = nil;
+				text = id0_nil_t;
 			break;
 		default:
-			text = nil;
+			text = id0_nil_t;
 			break;
 		}
 
@@ -1741,7 +1753,7 @@ USL_TrackItem(id0_word_t hiti,id0_word_t hitn)
 		othersel = op->sel;
 	}
 	else
-		op = nil;
+		op = id0_nil_t;
 
 	if (ip->sel & ui_Disabled)
 	{
@@ -1866,7 +1878,7 @@ USL_FindRect(Rect r,Motion xd,Motion yd)
 		}
 	}
 	for (i = 0;i < 9;i++)
-		goods[i] = nil;
+		goods[i] = id0_nil_t;
 
 	// Find out which octants all of the rects (except r) are in
 	for (items = TheItems;*items;items++)
@@ -2057,7 +2069,7 @@ USL_CtlButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	VWB_DrawTile8M(38 * 8,21 * 8,11);
 
 	for (j = 1;j < 4;j++)
-		TheItems[j] = nil;
+		TheItems[j] = id0_nil_t;
 
 	// Set to new button
 	CtlPanelButton = n;
@@ -2275,7 +2287,7 @@ USL_FormatHelp(id0_char_t id0_far *text,id0_long_t len)
 	WindowX += 4;
 	WindowW -= 4;
 
-	MM_GetPtr(&LineOffsets,MaxHelpLines * sizeof(word));
+	MM_GetPtr(&LineOffsets,MaxHelpLines * sizeof(id0_word_t));
 	off = (id0_word_t id0_far *)LineOffsets;
 	for (line = 0,le = l = s = text;(s - text < len) && (*s != '~');s++)
 	{
@@ -2833,7 +2845,7 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	fontcolor = F_BLACK;
 
 	r = USL_DLSRect(ip - 1);
-	ok = US_LineInput(px,py,game->name,game->present? game->name : nil,true,
+	ok = US_LineInput(px,py,game->name,game->present? game->name : id0_nil_t,true,
 						MaxGameName,r.lr.x - r.ul.x - 8);
 	if (!strlen(game->name))
 		strcpy(game->name,"Untitled");
@@ -2849,7 +2861,7 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		filename = USL_GiveSaveName(n / 2);
 		err = 0;
 		file = open(filename,O_CREAT | O_BINARY | O_WRONLY,
-					S_IREAD | S_IWRITE | S_IFREG);
+					/*S_IREAD | S_IWRITE*/ S_IRGRP | S_IWGRP /*| S_IFREG*/);
 		if (file != -1)
 		{
 			if (write(file,game,sizeof(*game)) == sizeof(*game))
@@ -2924,7 +2936,7 @@ USL_CtlSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		}
 	}
 	else
-		TheItems[i + 1] = nil;
+		TheItems[i + 1] = id0_nil_t;
 
 	return(false);
 }
@@ -3447,7 +3459,7 @@ US_ControlPanel(void)
 				lastn = n;
 			}
 		}
-		else if (lasti != (word)-1)
+		else if (lasti != (id0_word_t)-1)
 		{
 			USL_ShowHelp("Select a Button");
 			lasti = -1;
@@ -3570,7 +3582,7 @@ US_ControlPanel(void)
 			US_PrintCentered("Now Exiting to DOS...");
 			fontcolor = F_BLACK;
 			VW_UpdateScreen();
-			Quit(nil);
+			Quit(id0_nil_t);
 		}
 	}
 
@@ -3627,7 +3639,8 @@ US_DisplayHighScores(id0_int_t which)
 			y = PrintY;
 
 		PrintX = x + (7 * 8);
-		ultoa(s->score,buffer,10);
+		BE_Cross_ultoa_dec(s->score,buffer);
+		//ultoa(s->score,buffer,10);
 		for (str = buffer;*str;str++)
 			*str = *str + (129 - '0');	// Used fixed-width numbers (129...)
 		USL_MeasureString(buffer,&w,&h);
@@ -3650,7 +3663,7 @@ US_DisplayHighScores(id0_int_t which)
 		PrintX = WindowX;
 		US_Print(" ");
 		strcpy(Scores[which].name,"");
-		US_LineInput(PrintX,PrintY,Scores[which].name,nil,true,MaxHighName,
+		US_LineInput(PrintX,PrintY,Scores[which].name,id0_nil_t,true,MaxHighName,
 						(WindowW / 2) - 8);
 	}
 	fontcolor = F_BLACK;

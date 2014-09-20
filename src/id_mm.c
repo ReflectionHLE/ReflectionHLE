@@ -273,7 +273,7 @@ void MML_ShutdownXMS (void)
 void MM_Startup (void)
 {
 	id0_int_t i;
-	id0_unsigned_t 	id0_long_t length;
+	id0_unsigned_long_t length;
 	void id0_far 	*start;
 	id0_unsigned_t 	segstart,seglength,endfree;
 
@@ -698,12 +698,14 @@ void MM_SortMem (void)
 					dest = start;
 					while (length > 0xf00)
 					{
-						movedata(source,0,dest,0,0xf00*16);
+						memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), 0xf00*16);
+						//movedata(source,0,dest,0,0xf00*16);
 						length -= 0xf00;
 						source += 0xf00;
 						dest += 0xf00;
 					}
-					movedata(source,0,dest,0,length*16);
+					memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), length*16);
+					//movedata(source,0,dest,0,length*16);
 
 					scan->start = start;
 					//*(id0_unsigned_t *)scan->useptr = start;

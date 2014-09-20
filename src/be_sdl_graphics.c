@@ -25,20 +25,20 @@ void BE_SDL_InitGfx(void)
 	g_sdlWindow = SDL_CreateWindow("Chocolate Cat3D", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (!g_sdlWindow)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
 		exit(0);
 	}
 	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, 0);
 	if (!g_sdlRenderer)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
 		//Destroy window?
 		exit(0);
 	}
 	g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, TEX_WIDTH, TEX_HEIGHT);
 	if (!g_sdlTexture)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "Failed to create SDL2 texture,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 texture,\n%s\n", SDL_GetError());
 		//Destroy window and renderer?
 		exit(0);
 	}

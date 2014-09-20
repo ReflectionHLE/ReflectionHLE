@@ -60,7 +60,8 @@ id0_unsigned_t	pansx,pansy;	// panning adjustments inside port in screen
 							// block limited pixel values (ie 0/8 for ega x)
 id0_unsigned_t	panadjust;		// panx/pany adjusted by screen resolution
 
-id0_unsigned_t	screenseg;		// normally 0xa000 / 0xb800
+id0_byte_t *screenseg;
+//id0_unsigned_t	screenseg;		// normally 0xa000 / 0xb800
 id0_unsigned_t	linewidth;
 id0_unsigned_t	ylookup[VIRTUALHEIGHT];
 
@@ -139,7 +140,8 @@ Quit ("Improper video card!  If you really have an EGA/VGA card that I am not \n
 	if (videocard < CGAcard || videocard > VGAcard)
 Quit ("Improper video card!  If you really have a CGA card that I am not \n"
 	  "detecting, use the -HIDDENCARD command line parameter!");
-	MM_GetPtr (&(memptr)screenseg,0x10000l);	// grab 64k for floating screen
+	MM_GetPtr ((memptr *)&screenseg,0x10000l);	// grab 64k for floating screen
+	//MM_GetPtr (&(memptr)screenseg,0x10000l);	// grab 64k for floating screen
 #endif
 
 	cursorvisible = 0;
@@ -178,15 +180,15 @@ void VW_SetScreenMode (id0_int_t grmode)
 {
 	switch (grmode)
 	{
-	  case TEXTGR:  _AX = 3;
+	  case TEXTGR:
 		BE_SDL_SetScreenMode(3);
 		screenseg=BE_SDL_GetTextModeMemoryPtr();
 		break;
-	  case CGAGR: _AX = 4;
+	  case CGAGR:
 		BE_SDL_SetScreenMode(4);
 		// screenseg is actually a main mem buffer
 		break;
-	  case EGAGR: _AX = 0xd;
+	  case EGAGR:
 		BE_SDL_SetScreenMode(0xd);
 		screenseg=BE_SDL_GetEGAMemoryPtr();
 		break;
@@ -594,7 +596,7 @@ done:
 id0_unsigned_char_t pixmask[4] = {0xc0,0x30,0x0c,0x03};
 id0_unsigned_char_t leftmask[4] = {0xff,0x3f,0x0f,0x03};
 id0_unsigned_char_t rightmask[4] = {0xc0,0xf0,0xfc,0xff};
-id0_unsigned_char_t colorbyte[4] = {0,0x55,0xaa,0xff};
+extern id0_unsigned_char_t colorbyte[4];
 
 //
 // could be optimized for rep stosw
@@ -834,8 +836,6 @@ void VW_CGAFullUpdate (void)
 	id0_unsigned_t	x,y,middlerows,middlecollumns;
 
 	displayofs = bufferofs+panadjust;
-
-	BE_SDL_UpdateCGAGraphics(&screenseg[displayofs]);
 
 	uint8_t *srcPtr = &screenseg[displayofs];
 	uint8_t *destPtr = BE_SDL_GetCGAMemoryPtr();

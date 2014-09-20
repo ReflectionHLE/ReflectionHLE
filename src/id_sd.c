@@ -105,11 +105,11 @@ static	id0_char_t			*ParmStrings[] =
 							"ss1",
 							"ss2",
 							"ss3",
-							nil
+							id0_nil_t
 						};
 static	void			(*SoundUserHook)(void);
 static	id0_word_t			SoundNumber,SoundPriority;
-static	void interrupt	(*t0OldService)(void);
+//static	void interrupt	(*t0OldService)(void);
 static	id0_word_t			t0CountTable[] = {2,2,2,2,10,10};
 //static	id0_long_t			LocalTime;
 
@@ -128,7 +128,7 @@ static	id0_int_t				sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
 						sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf};
 static	id0_longword_t		sbNextSegLen;
 static	SampledSound	id0_huge *sbSamples;
-static	void interrupt	(*sbOldIntHand)(void);
+//static	void interrupt	(*sbOldIntHand)(void);
 
 //	SoundSource variables
 static	id0_boolean_t			ssNoCheck,
@@ -503,7 +503,7 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 //	SDL_SBService() - Services the SoundBlaster DMA interrupt
 //
 ///////////////////////////////////////////////////////////////////////////
-static void interrupt
+static void /*interrupt*/
 SDL_SBService(void)
 {
 	// CHOCO KEEN - DISABLED
@@ -1259,7 +1259,7 @@ SDL_DetectAdLib(void)
 //		dispatches to whatever other routines are appropriate
 //
 ///////////////////////////////////////////////////////////////////////////
-static void interrupt
+static void /*interrupt*/
 SDL_t0Service(void)
 {
 	//id0_byte_t		sdcount;
@@ -1534,7 +1534,7 @@ SD_Startup(void)
 
 	SoundUserHook = 0;
 
-	t0OldService = getvect(8);	// Get old timer 0 ISR
+	//t0OldService = getvect(8);	// Get old timer 0 ISR
 
 	//*** (CHOCO KEEN) We use an alternative delay mechanism for OPL emulation ***/
 	//SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
@@ -1645,7 +1645,7 @@ SD_Shutdown(void)
 	if (!SD_Started)
 		return;
 
-	BE_SDL_StopAudioSDService(void);
+	BE_SDL_StopAudioSDService();
 
 	SDL_ShutDevice();
 
@@ -1691,7 +1691,8 @@ SD_PlaySound(id0_word_t sound)
 	if (SoundMode == sdm_Off)
 		return;
 
-	s = MK_FP(SoundTable[sound],0);
+	//s = MK_FP(SoundTable[sound],0);
+	s = (SoundCommon id0_far *)(SoundTable[sound]);
 	if (!s)
 		Quit("SD_PlaySound() - Attempted to play an uncached sound");
 	if (s->priority < SoundPriority)

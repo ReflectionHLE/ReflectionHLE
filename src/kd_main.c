@@ -376,7 +376,7 @@ void Quit (id0_char_t *error)
   ShutdownId ();
   if (error && *error)
   {
-	clrscr();
+	BE_Cross_clrscr();
 	puts(error);
 	puts("\n");
 //      puts("For techinical assistance with running this software, type HELP at");
@@ -431,8 +431,8 @@ void InitGame (void)
 	{
 #pragma warn    -pro
 #pragma warn    -nod
-		textcolor(7);
-		textbackground(0);
+		BE_Cross_textcolor(7);
+		BE_Cross_textbackground(0);
 		clrscr();                       // we can't include CONIO because of a name conflict
 #pragma warn    +nod
 #pragma warn    +pro
@@ -504,7 +504,10 @@ void InitGame (void)
 ==========================
 */
 
-static  id0_char_t                    *EntryParmStrings[] = {"detour",nil};
+static  id0_char_t                    *EntryParmStrings[] = {"detour",id0_nil_t};
+
+int id0_argc;
+char **id0_argv;
 
 // The original start point of the game
 void id0_main (void)
@@ -512,10 +515,10 @@ void id0_main (void)
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
 
-	textcolor(7);
-	textbackground(0);
+	BE_Cross_textcolor(7);
+	BE_Cross_textbackground(0);
 
-	if (stricmp(id0_argv[1], "/VER") == 0)
+	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
 		printf("KEEN DREAMS\n");
 		printf("CGA Version\n");
@@ -524,7 +527,7 @@ void id0_main (void)
 		exit(0);
 	}
 
-	if (stricmp(id0_argv[1], "/?") == 0)
+	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
 	{
 		printf("\nKeen Dreams CGA version 1.05\n");
 		printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
@@ -554,7 +557,7 @@ void id0_main (void)
 #ifndef CATALOG
 	if (!LaunchedFromShell)
 	{
-		clrscr();
+		BE_Cross_clrscr();
 		puts("You must type START at the DOS prompt to run KEEN DREAMS.");
 		exit(0);
 	}

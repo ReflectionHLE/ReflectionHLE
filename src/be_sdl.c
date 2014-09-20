@@ -8,7 +8,7 @@ void BE_SDL_InitAll()
 {
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER) < 0)
 	{
-		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "SDL backend initialization failed,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL backend initialization failed,\n%s\n", SDL_GetError());
 		exit(0);
 	}
 	BE_SDL_InitGfx();
