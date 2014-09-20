@@ -150,7 +150,7 @@ typedef struct
 	orgx,orgy,
 	xl,yl,xh,yh,
 	shifts;
-} spritetabletype;
+} __attribute__((__packed__)) spritetabletype;
 
 typedef	struct
 {
@@ -158,12 +158,12 @@ typedef	struct
 	id0_unsigned_t	planesize[MAXSHIFTS];
 	id0_unsigned_t	width[MAXSHIFTS];
 	id0_byte_t		data[];
-} spritetype;		// the memptr for each sprite points to this
+} __attribute__((__packed__)) spritetype;		// the memptr for each sprite points to this
 
 typedef struct
 {
 	id0_int_t width,height;
-} pictabletype;
+} __attribute__((__packed__)) pictabletype;
 
 
 typedef struct
@@ -171,7 +171,7 @@ typedef struct
 	id0_int_t height;
 	id0_int_t location[256];
 	id0_char_t width[256];
-} fontstruct;
+} __attribute__((__packed__)) fontstruct;
 
 
 typedef enum {CGAgr,EGAgr,VGAgr} grtype;

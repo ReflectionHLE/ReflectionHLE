@@ -64,7 +64,7 @@ typedef	struct
 	id0_unsigned_t	planelength[3];
 	id0_unsigned_t	width,height;
 	id0_char_t		name[16];
-} maptype;
+} __attribute__((__packed__)) maptype;
 
 //===========================================================================
 

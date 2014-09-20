@@ -82,7 +82,7 @@ typedef struct
   void (*contact) ();
   void (*react) ();
   void *nextstate;
-} statetype;
+} __attribute__((__packed__)) statetype;
 
 
 typedef	struct
@@ -96,7 +96,7 @@ typedef	struct
 	id0_int_t		mapon;
 	id0_int_t		lives;
 	id0_int_t		difficulty;
-} gametype;
+} __attribute__((__packed__)) gametype;
 
 
 typedef struct	objstruct
@@ -128,7 +128,7 @@ typedef struct	objstruct
 	void		*sprite;
 
 	struct	objstruct	*next,*prev;
-} objtype;
+} __attribute__((__packed__)) objtype;
 
 
 /*

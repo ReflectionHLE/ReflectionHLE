@@ -144,7 +144,7 @@ typedef	struct		{
 									upleft,		up,		upright,
 									left,				right,
 									downleft,	down,	downright;
-					} KeyboardDef;
+					} __attribute__((__packed__)) KeyboardDef;
 typedef	struct		{
 						id0_word_t		joyMinX,joyMinY,
 									threshMinX,threshMinY,
@@ -152,7 +152,7 @@ typedef	struct		{
 									joyMaxX,joyMaxY,
 									joyMultXL,joyMultYL,
 									joyMultXH,joyMultYH;
-					} JoystickDef;
+					} __attribute__((__packed__)) JoystickDef;
 // Global variables
 extern	id0_boolean_t		Keyboard[],
 					MousePresent,

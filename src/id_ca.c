@@ -44,7 +44,7 @@ loaded into the data segment
 typedef struct
 {
   id0_unsigned_t bit0,bit1;	// 0-255 is a character, > is a pointer to a node
-} huffnode;
+} __attribute__((__packed__)) huffnode;
 
 
 typedef struct
@@ -53,7 +53,7 @@ typedef struct
 	id0_long_t		headeroffsets[100];
 	id0_byte_t		headersize[100];		// headers are very small
 	id0_byte_t		tileinfo[];
-} mapfiletype;
+} __attribute__((__packed__)) mapfiletype;
 
 
 /*

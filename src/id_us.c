@@ -66,7 +66,7 @@ typedef	struct
 			id0_char_t	name[MaxHighName + 1];
 			id0_long_t	score;
 			id0_word_t	completed;
-		} HighScore;
+		} __attribute((__packed__)) HighScore;
 
 #define	MaxGameName		32
 #define	MaxSaveGames	7
@@ -75,7 +75,7 @@ typedef	struct
 			id0_char_t	signature[4];
 			id0_boolean_t	present;
 			id0_char_t	name[MaxGameName + 1];
-		} SaveGame;
+		} __attribute((__packed__)) SaveGame;
 
 //	Hack import for TED launch support
 extern	id0_boolean_t		tedlevel;

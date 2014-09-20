@@ -49,7 +49,7 @@ typedef	struct
 		{
 			id0_longword_t	length;
 			id0_word_t		priority;
-		} SoundCommon;
+		} __attribute((__packed__)) SoundCommon;
 
 //	PC Sound stuff
 #define	pcTimer		0x42
@@ -62,7 +62,7 @@ typedef	struct
 		{
 			SoundCommon	common;
 			id0_byte_t		data[1];
-		} PCSound;
+		} __attribute((__packed__)) PCSound;
 
 // 	Registers for the Sound Blaster card - needs to be offset by n0
 #define	sbReset		0x206
@@ -79,7 +79,7 @@ typedef	struct
 			id0_byte_t		bits,
 						reference,
 						data[1];
-		} SampledSound;
+		} __attribute((__packed__)) SampledSound;
 
 // 	Registers for the AdLib card
 // Operator stuff
@@ -104,7 +104,7 @@ typedef	struct
 					mWave,cWave,
 					nConn,
 					unused[5];
-		} Instrument;
+		} __attribute((__packed__)) Instrument;
 
 typedef	struct
 		{
@@ -112,7 +112,7 @@ typedef	struct
 			Instrument	inst;
 			id0_byte_t		block,
 						data[1];
-		} AdLibSound;
+		} __attribute((__packed__)) AdLibSound;
 
 //
 //	Sequencing stuff
@@ -135,7 +135,7 @@ typedef	struct
 			id0_word_t	flags,
 					count,
 					offsets[1];
-		} MusicGroup;
+		} __attribute((__packed__)) MusicGroup;
 
 typedef	struct
 		{
@@ -146,7 +146,7 @@ typedef	struct
 			Instrument	inst;
 			id0_word_t		*seq;
 			id0_longword_t	nextevent;
-		} ActiveTrack;
+		} __attribute((__packed__)) ActiveTrack;
 
 #define	sqmode_Normal		0
 #define	sqmode_FadeIn		1

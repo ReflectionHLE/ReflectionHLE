@@ -361,7 +361,6 @@ void ShiftPropChar(id0_word_t charnum)
  */
 
 	// Font to use
-	// TODO (CHOCO KEEN): Using tight packing for struct
 	fontstruct *currfont = (fontstruct *)(grsegs[STARTFONT]);
 	// Width in pixels
 	id0_word_t adjustedwidth = (currfont->width[charnum]) & 0xFF;
@@ -485,7 +484,6 @@ void VW_DrawPropString (id0_char_t id0_far *string)
 
 	// draw it
 	bufferwidth = (bufferbit & 7) ? (bufferbyte+1) : bufferbyte;
-	// TODO (CHOCO KEEN): Using tight packing for struct
 	fontstruct *currfont = (fontstruct *)(grsegs[STARTFONT]);
 	bufferheight = currfont->height;
 	VWL_XORBuffer(databuffer);
