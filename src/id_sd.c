@@ -45,7 +45,7 @@
 
 #pragma hdrstop		// Wierdo thing with MUSE
 
-#include <dos.h>
+//#include <dos.h>
 
 #ifdef	_MUSE_      // Will be defined in ID_Types.h
 #include "ID_SD.h"
@@ -92,8 +92,9 @@ static	id0_word_t			sqMode,sqFadeStep;
 
 //	Internal variables
 static	id0_boolean_t			SD_Started;
-static	id0_boolean_t			TimerDone;
-static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
+/*** (CHOCO KEEN) We use an alternative delay mechanism for OPL emulation ***/
+//static	id0_boolean_t			TimerDone;
+//static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
 static	id0_char_t			*ParmStrings[] =
 						{
 							"noal",
@@ -110,7 +111,7 @@ static	void			(*SoundUserHook)(void);
 static	id0_word_t			SoundNumber,SoundPriority;
 static	void interrupt	(*t0OldService)(void);
 static	id0_word_t			t0CountTable[] = {2,2,2,2,10,10};
-static	id0_long_t			LocalTime;
+//static	id0_long_t			LocalTime;
 
 //	PC Sound variables
 static	id0_byte_t			pcLastSample,id0_far *pcSound;
@@ -181,6 +182,10 @@ SDL_SetIntsPerSec(id0_word_t ints)
 	SDL_SetTimer0(1192755 / ints);
 }
 
+
+/*** (CHOCO KEEN) We use an alternative delay mechanism for OPL emulation ***/
+
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_TimingService() - Used by SDL_InitDelay() to determine a timing
@@ -255,7 +260,9 @@ asm	test	[TimerDone],0	// Useless code - just for timing equivilency
 asm	jnz		done
 asm	loop	loop
 done:;
+
 }
+#endif
 
 //
 //	PC Sound code
@@ -273,14 +280,16 @@ static void
 #endif
 SDL_PCPlaySound(PCSound id0_far *sound)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	pcLastSample = -1;
 	pcLengthLeft = sound->common.length;
 	pcSound = sound->data;
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -295,16 +304,20 @@ static void
 #endif
 SDL_PCStopSound(void)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
-	(long)pcSound = 0;
-
+	pcSound = 0;
+	BE_SDL_PCSpeakerOff();
+#if 0
 asm	in	al,0x61		  	// Turn the speaker off
 asm	and	al,0xfd			// ~2
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -323,13 +336,16 @@ SDL_PCService(void)
 		s = *pcSound++;
 		if (s != pcLastSample)
 		{
-		asm	pushf
-		asm	cli
+			BE_SDL_LockAudioRecursively();
+//		asm	pushf
+//		asm	cli
 
 			pcLastSample = s;
 			if (s)					// We have a frequency!
 			{
 				t = pcSoundLookup[s];
+				BE_SDL_PCSpeakerOn(t);
+#if 0
 			asm	mov	bx,[t]
 
 			asm	mov	al,0xb6			// Write to channel 2 (speaker) timer
@@ -342,15 +358,20 @@ SDL_PCService(void)
 			asm	in	al,0x61			// Turn the speaker & gate on
 			asm	or	al,3
 			asm	out	0x61,al
+#endif
 			}
 			else					// Time for some silence
 			{
+				BE_SDL_PCSpeakerOff();
+#if 0
 			asm	in	al,0x61		  	// Turn the speaker & gate off
 			asm	and	al,0xfc			// ~3
 			asm	out	0x61,al
+#endif
 			}
 
-		asm	popf
+			BE_SDL_UnlockAudioRecursively();
+//		asm	popf
 		}
 
 		if (!(--pcLengthLeft))
@@ -369,14 +390,19 @@ SDL_PCService(void)
 static void
 SDL_ShutPC(void)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
+	BE_SDL_PCSpeakerOff();
+#if 0
 asm	in	al,0x61		  	// Turn the speaker & gate off
 asm	and	al,0xfc			// ~3
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 //
@@ -396,6 +422,8 @@ static void
 #endif
 SDL_SBStopSample(void)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	id0_byte_t	is;
 
 	if (sbSamplePlaying)
@@ -412,6 +440,7 @@ SDL_SBStopSample(void)
 			is &= ~(1 << sbInterrupt);
 		outportb(0x21,is);
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -424,6 +453,8 @@ SDL_SBStopSample(void)
 static id0_longword_t
 SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	id0_unsigned_t		datapage;
 	id0_longword_t		dataofs,uselen;
 
@@ -461,6 +492,7 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 	sbOut(sbWriteData,(byte)(uselen >> 8));
 
 	return(uselen + 1);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -471,6 +503,8 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 static void interrupt
 SDL_SBService(void)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	id0_longword_t	used;
 
 	sbIn(sbDataAvail);	// Ack interrupt to SB
@@ -493,6 +527,7 @@ SDL_SBService(void)
 	}
 
 	outportb(0x20,0x20);	// Ack interrupt
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -508,6 +543,8 @@ static void
 #endif
 SDL_SBPlaySample(SampledSound id0_far *sample)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	id0_byte_t			id0_huge *data,
 					timevalue;
 	id0_longword_t		used;
@@ -542,6 +579,7 @@ SDL_SBPlaySample(SampledSound id0_far *sample)
 	sbOut(sbWriteCmd,0xd4);						// Make sure DSP DMA is enabled
 
 	sbSamplePlaying = true;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -553,6 +591,9 @@ SDL_SBPlaySample(SampledSound id0_far *sample)
 static id0_boolean_t
 SDL_CheckSB(id0_int_t port)
 {
+	// CHOCO KEEN - DISABLED
+	return(false);
+#if 0
 	id0_int_t	i;
 
 	sbLocation = port << 4;		// Initialize stuff for later use
@@ -576,6 +617,7 @@ SDL_CheckSB(id0_int_t port)
 	}
 	sbLocation = -1;						// Retry count exceeded - fail
 	return(false);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -589,6 +631,9 @@ SDL_CheckSB(id0_int_t port)
 static id0_boolean_t
 SDL_DetectSoundBlaster(id0_int_t port)
 {
+	// CHOCO KEEN - DISABLED
+	return(false);
+#if 0
 	id0_int_t	i;
 
 	if (port == 0)					// If user specifies default, use 2
@@ -605,6 +650,7 @@ SDL_DetectSoundBlaster(id0_int_t port)
 	}
 	else
 		return(SDL_CheckSB(port));	// User specified address or default
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -615,11 +661,14 @@ SDL_DetectSoundBlaster(id0_int_t port)
 static void
 SDL_StartSB(void)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	sbOldIntHand = getvect(sbIntVec);	// Get old interrupt handler
 	setvect(sbIntVec,SDL_SBService);	// Set mine
 
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0xd1);				// Turn on DSP speaker
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -630,9 +679,12 @@ SDL_StartSB(void)
 static void
 SDL_ShutSB(void)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	SDL_SBStopSample();
 
 	setvect(sbIntVec,sbOldIntHand);		// Set vector back
+#endif
 }
 
 //	Sound Source Code
@@ -649,7 +701,10 @@ static void
 #endif
 SDL_SSStopSample(void)
 {
-	(long)ssSample = 0;
+	// CHOCO KEEN - DISABLED
+#if 0
+	ssSample = 0;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -660,6 +715,8 @@ SDL_SSStopSample(void)
 static void
 SDL_SSService(void)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	id0_boolean_t	gotit;
 	id0_byte_t	v;
 
@@ -695,7 +752,7 @@ SDL_SSService(void)
 					ssHoldOver = v;
 				if (!(--ssLengthLeft))
 				{
-					(long)ssSample = 0;
+					ssSample = 0;
 					SDL_SoundFinished();
 				}
 			}
@@ -723,6 +780,7 @@ SDL_SSService(void)
 	}
 done:
 	;	// Garbage for compiler
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -737,6 +795,8 @@ static void
 #endif
 SDL_SSPlaySample(SampledSound id0_far *sample)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 asm	pushf
 asm	cli
 
@@ -748,6 +808,7 @@ asm	cli
 		ssIsCompressed = ssCompFirst = true;
 
 asm	popf
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -758,6 +819,8 @@ asm	popf
 static void
 SDL_StartSS(void)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	if (ssPort == 3)
 		ssControl = 0x27a;	// If using LPT3
 	else if (ssPort == 2)
@@ -774,6 +837,7 @@ SDL_StartSS(void)
 		ssOff = 0x0c;				// For normal machines
 
 	outportb(ssControl,ssOn);		// Enable SS
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -784,7 +848,10 @@ SDL_StartSS(void)
 static void
 SDL_ShutSS(void)
 {
+	// CHOCO KEEN - DISABLED
+#if 0
 	outportb(ssControl,ssOff);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -796,6 +863,9 @@ SDL_ShutSS(void)
 static id0_boolean_t
 SDL_CheckSS(void)
 {
+	// CHOCO KEEN - DISABLED
+	return(false);
+#if 0
 	id0_boolean_t		present = false;
 	id0_longword_t	lasttime;
 
@@ -842,15 +912,20 @@ asm	jz		checkdone		// Nope, still not - Sound Source not here
 checkdone:
 	SDL_ShutSS();
 	return(present);
+#endif
 }
 
 static id0_boolean_t
 SDL_DetectSoundSource(void)
 {
+	// CHOCO KEEN - DISABLED
+	return(false);
+#if 0
 	for (ssPort = 1;ssPort <= 3;ssPort++)
 		if (SDL_CheckSS())
 			return(true);
 	return(false);
+#endif
 }
 
 // 	AdLib Code
@@ -880,6 +955,9 @@ alOut(id0_byte_t n,id0_byte_t b)
 	SDL_Delay(TimerDelay25);
 }
 
+/*** CHOCO KEEN - UNUSED/DISABLED ***/
+
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SetInstrument() - Puts an instrument into a generator
@@ -908,6 +986,7 @@ SDL_SetInstrument(id0_int_t which,Instrument *inst)
 	alOut(c + alSus,inst->cSus);
 	alOut(c + alWave,inst->cWave);
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -922,13 +1001,15 @@ static void
 #endif
 SDL_ALStopSound(void)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
-	(long)alSound = 0;
+	alSound = 0;
 	alOut(alFreqH + 0,0);
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -946,8 +1027,9 @@ SDL_ALPlaySound(AdLibSound id0_far *sound)
 	id0_byte_t		c,m;
 	Instrument	id0_far *inst;
 
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	SDL_ALStopSound();
 
@@ -972,7 +1054,8 @@ asm	cli
 	alOut(c + alSus,inst->cSus);
 	alOut(c + alWave,inst->cWave);
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -998,7 +1081,7 @@ SDL_ALSoundService(void)
 
 		if (!(--alLengthLeft))
 		{
-			(long)alSound = 0;
+			alSound = 0;
 			alOut(alFreqH + 0,0);
 			SDL_SoundFinished();
 		}
@@ -1026,6 +1109,8 @@ SDL_SelectMeasure(ActiveTrack *track)
 static void
 SDL_ALService(void)
 {
+	// CHOCO KEEN - DISABLED (but "should" still be called from SDL_t0Service)
+#if 0
 	id0_boolean_t		update;
 	id0_word_t		*seq;
 	id0_longword_t	next;
@@ -1100,6 +1185,7 @@ SDL_ALService(void)
 			}
 		}
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1167,10 +1253,10 @@ SDL_DetectAdLib(void)
 static void interrupt
 SDL_t0Service(void)
 {
-	id0_byte_t		sdcount;
+	//id0_byte_t		sdcount;
 static	id0_word_t	count = 1,
-				alcount = 1,
-				drivecount = 1;
+				alcount = 1;
+				//drivecount = 1;
 
 	switch (SoundMode)
 	{
@@ -1194,11 +1280,11 @@ static	id0_word_t	count = 1,
 	if (!(--count))
 	{
 		count = t0CountTable[SoundMode];
-		LocalTime++;
-		TimeCount++;
+		//LocalTime++;
+		//TimeCount++;
 		if (SoundUserHook)
 			SoundUserHook();
-
+#if 0
 		// If one of the drives is on, and we're not told to leave it on...
 		if ((peekb(0x40,0x3f) & 3) && !LeaveDriveOn)
 		{
@@ -1220,9 +1306,10 @@ static	id0_word_t	count = 1,
 					pokeb(0x40,0x40,--sdcount);
 			}
 		}
+#endif
 	}
 
-	outportb(0x20,0x20);	// Ack the interrupt
+	//outportb(0x20,0x20);	// Ack the interrupt
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1440,10 +1527,12 @@ SD_Startup(void)
 
 	t0OldService = getvect(8);	// Get old timer 0 ISR
 
-	SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
+	//*** (CHOCO KEEN) We use an alternative delay mechanism for OPL emulation ***/
+	//SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
 
-	setvect(8,SDL_t0Service);	// Set to my timer 0 ISR
-	LocalTime = TimeCount = 0;
+	BE_SDL_StartAudioSDService(&SDL_t0Service);
+	//setvect(8,SDL_t0Service);	// Set to my timer 0 ISR
+	/*LocalTime = TimeCount = 0;*/
 
 	SD_SetSoundMode(sdm_Off);
 	SD_SetMusicMode(smm_Off);
@@ -1547,16 +1636,22 @@ SD_Shutdown(void)
 	if (!SD_Started)
 		return;
 
+	BE_SDL_StopAudioSDService(void);
+
 	SDL_ShutDevice();
 
-	asm	pushf
-	asm	cli
+	BE_SDL_LockAudioRecursively();
+//	asm	pushf
+//	asm	cli
 
 	SDL_SetTimer0(0);
 
-	setvect(8,t0OldService);
+// Do NOT call this here - A deadlock is a possibility (via recursive lock)
+//	BE_SDL_StopAudioSDService(void);
+//	setvect(8,t0OldService);
 
-	asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//	asm	popf
 	// DEBUG - set the system clock
 
 	SD_Started = false;
@@ -1710,12 +1805,15 @@ SD_StartMusic(id0_ptr_t music)	// DEBUG - this shouldn't be a Ptr...
 void
 SD_FadeOutMusic(void)
 {
+	// CHOCO KEEN - Original code does nothing..
+#if 0
 	switch (MusicMode)
 	{
 	case smm_AdLib:
 		// DEBUG - not written
 		break;
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1727,6 +1825,9 @@ SD_FadeOutMusic(void)
 id0_boolean_t
 SD_MusicPlaying(void)
 {
+	// CHOCO KEEN - Original code always returns false...
+	return false;
+#if 0
 	id0_boolean_t	result;
 
 	switch (MusicMode)
@@ -1740,4 +1841,5 @@ SD_MusicPlaying(void)
 	}
 
 	return(result);
+#endif
 }

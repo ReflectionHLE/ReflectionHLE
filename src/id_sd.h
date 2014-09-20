@@ -193,4 +193,17 @@ extern	void	SDL_PCPlaySound(PCSound id0_far *sound),
 				SDL_SSStopSample(void);
 #endif
 
+// Replacements for direct accesses to TimeCount variable
+inline id0_longword_t SD_GetTimeCount(void)
+{
+	id0_longword_t BE_SDL_GetTimeCount(void);
+	return BE_SDL_GetTimeCount();
+}
+
+inline void SD_SetTimeCount(id0_longword_t newcount)
+{
+	void BE_SDL_SetTimeCount(id0_longword_t newcount);
+	BE_SDL_SetTimeCount(newcount);
+}
+
 #endif
