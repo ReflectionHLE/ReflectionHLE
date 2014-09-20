@@ -35,7 +35,7 @@
 //	DEBUG - there are more globals
 //
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #pragma	hdrstop
 
 #define	KeyInt	9	// The keyboard ISR number
@@ -142,9 +142,9 @@ static	id0_byte_t id0_seg	*DemoBuffer;
 static	id0_word_t		DemoOffset,DemoSize;
 
 static	void			(*INL_KeyHook)(void);
-static	void interrupt	(*OldKeyVect)(void);
+//static	void interrupt	(*OldKeyVect)(void);
 
-static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",nil};
+static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
 
 //	Internal routines
 
@@ -539,9 +539,9 @@ IN_Startup(void)
 
 	checkjoys = true;
 	checkmouse = true;
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],ParmStrings))
+		switch (US_CheckParm(id0_argv[i],ParmStrings))
 		{
 		case 0:
 			checkjoys = false;

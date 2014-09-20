@@ -21,7 +21,7 @@
 #define __ID_RF__
 
 #ifndef __ID_MM__
-#include "ID_MM.H"
+#include "id_mm.h"
 #endif
 
 /*

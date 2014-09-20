@@ -24,7 +24,7 @@
 //
 
 #ifndef	__TYPES__
-#include "ID_Types.h"
+#include "id_types.h"
 #endif
 
 #ifndef	__ID_US__

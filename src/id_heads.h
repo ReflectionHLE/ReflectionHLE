@@ -30,14 +30,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <SYS\STAT.H>
+#include <sys/stat.h>
 
 #define __ID_GLOB__
 
 #define	EXTENSION	"KDR"
 
-#include "GRAPHKDR.H"
-#include "AUDIOKDR.H"
+#include "graphkdr.h"
+#include "audiokdr.h"
 
 #define	TEXTGR	0
 #define	CGAGR	1
@@ -102,13 +102,22 @@ typedef	struct
 
 #endif
 
-#include "ID_MM.H"
-#include "ID_CA.H"
-#include "ID_VW.H"
-#include "ID_RF.H"
-#include "ID_IN.H"
-#include "ID_SD.H"
-#include "ID_US.H"
+// FIXME (CHOCO KEEN) a real hack for now
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
+// Initialized after calling what was game's main fnuction
+extern int id0_argc;
+extern char **id0_argv;
+
+#include "id_mm.h"
+#include "id_ca.h"
+#include "id_vw.h"
+#include "id_rf.h"
+#include "id_in.h"
+#include "id_sd.h"
+#include "id_us.h"
 
 
 

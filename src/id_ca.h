@@ -19,15 +19,15 @@
 // ID_CA.H
 
 #ifndef __TYPES__
-#include "ID_TYPES.H"
+#include "id_types.h"
 #endif
 
 #ifndef __ID_MM__
-#include "ID_MM.H"
+#include "id_mm.h"
 #endif
 
 #ifndef __ID_GLOB__
-#include "ID_GLOB.H"
+#include "id_glob.h"
 #endif
 
 #define __ID_CA__

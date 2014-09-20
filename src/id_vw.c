@@ -18,7 +18,7 @@
 
 // ID_VW.C
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 
 /*
 =============================================================================
@@ -116,8 +116,8 @@ void	VW_Startup (void)
 
 	videocard = 0;
 
-	for (i = 1;i < _argc;i++)
-		if (US_CheckParm(_argv[i],ParmStrings) == 0)
+	for (i = 1;i < id0_argc;i++)
+		if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
 		{
 			videocard = EGAcard;
 			break;

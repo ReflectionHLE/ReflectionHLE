@@ -17,7 +17,7 @@
  */
 
 // KD_ACT1.C
-#include "KD_DEF.H"
+#include "kd_def.h"
 #pragma hdrstop
 
 

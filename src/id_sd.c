@@ -48,9 +48,9 @@
 //#include <dos.h>
 
 #ifdef	_MUSE_      // Will be defined in ID_Types.h
-#include "ID_SD.h"
+#include "id_sd.h"
 #else
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #endif
 #pragma	hdrstop
 #pragma	warn	-pia
@@ -1497,9 +1497,9 @@ SD_Startup(void)
 	sbNoCheck = false;
 	LeaveDriveOn = false;
 #ifndef	_MUSE_
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],ParmStrings))
+		switch (US_CheckParm(id0_argv[i],ParmStrings))
 		{
 		case 0:						// No AdLib detection
 			alNoCheck = true;

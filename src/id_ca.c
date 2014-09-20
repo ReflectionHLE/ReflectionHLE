@@ -30,7 +30,7 @@ loaded into the data segment
 =============================================================================
 */
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #pragma hdrstop
 
 /*
@@ -1248,8 +1248,12 @@ void CA_CacheMap (id0_int_t mapnum)
 		lseek(maphandle,pos,SEEK_SET);
 
 #ifdef MAPHEADERLINKED
+		// Preprocessor can't check if BUFFERSIZE < sizeof(maptype), so apply this trick found online...
+		((void)sizeof(char[1 - 2*!!(BUFFERSIZE < sizeof(maptype))]));
+#if 0
 #if BUFFERSIZE < sizeof(maptype)
 The general buffer size is too small!
+#endif
 #endif
 		//
 		// load in, then unhuffman to the destination

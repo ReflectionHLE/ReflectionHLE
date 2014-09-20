@@ -45,7 +45,7 @@
 
 // DEBUG - handle LPT3 for Sound Source
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 
 #define CTL_M_ADLIBUPPIC	CTL_S_ADLIBUPPIC
 #define CTL_M_ADLIBDNPIC	CTL_S_ADLIBDNPIC
@@ -518,11 +518,11 @@ US_TextScreen(void)
 #undef	scr_aputs
 
 	// Check for TED launching here
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		if (US_CheckParm(_argv[i],ParmStrings) == 0)
+		if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
 		{
-			tedlevelnum = atoi(_argv[i + 1]);
+			tedlevelnum = atoi(id0_argv[i + 1]);
 			if (tedlevelnum >= 0)
 			{
 				tedlevel = true;

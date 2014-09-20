@@ -18,8 +18,8 @@
 
 // KD_DEF.H
 
-#include "ID_HEADS.H"
-#include <BIOS.H>
+#include "id_heads.h"
+//#include <BIOS.H>
 
 #define FRILLS	0			// Cut out frills for 360K - MIKE MAYNARD
 

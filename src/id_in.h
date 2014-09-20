@@ -24,7 +24,7 @@
 //
 
 #ifndef	__TYPES__
-#include "ID_Types.h"
+#include "id_types.h"
 #endif
 
 #ifndef	__ID_IN__
@@ -176,8 +176,8 @@ extern	void		IN_Startup(void),IN_Shutdown(void),
 					IN_SetKeyHook(void (*)()),
 					IN_ClearKeysDown(void),
 					IN_ReadCursor(CursorInfo *),
-					IN_ReadControl(int,ControlInfo *),
-					IN_SetControlType(int,ControlType),
+					IN_ReadControl(id0_int_t,ControlInfo *),
+					IN_SetControlType(id0_int_t,ControlType),
 					IN_GetJoyAbs(id0_word_t joy,id0_word_t *xp,id0_word_t *yp),
 					IN_SetupJoy(id0_word_t joy,id0_word_t minx,id0_word_t maxx,
 								id0_word_t miny,id0_word_t maxy),

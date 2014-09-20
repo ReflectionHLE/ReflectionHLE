@@ -32,7 +32,7 @@ updated
 =============================================================================
 */
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #pragma hdrstop
 
 /*
@@ -257,8 +257,8 @@ void RF_Startup (void)
 	id0_unsigned_t	*blockstart;
 
 	if (grmode == EGAGR)
-		for (i = 1;i < _argc;i++)
-			if (US_CheckParm(_argv[i],ParmStrings) == 0)
+		for (i = 1;i < id0_argc;i++)
+			if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
 			{
 				compatability = true;
 				break;

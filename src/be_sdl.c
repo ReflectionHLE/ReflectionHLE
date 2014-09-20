@@ -11,12 +11,14 @@ void BE_SDL_InitAll()
 		CK_Cross_LogMessage(CK_LOG_MSG_ERROR, "SDL backend initialization failed,\n%s\n", SDL_GetError());
 		exit(0);
 	}
+	BE_SDL_InitGfx();
 	BE_SDL_InitAudio();
 }
 
 void BE_SDL_ShutdownAll()
 {
 	BE_SDL_ShutdownAudio();
+	BE_SDL_ShutdownGfx();
 	SDL_Quit();
 }
 

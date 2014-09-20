@@ -23,7 +23,7 @@
 #define __ID_MM__
 
 #ifndef __TYPES__
-#include "ID_TYPES.H"
+#include "id_types.h"
 #endif
 
 void Quit (id0_char_t *error);

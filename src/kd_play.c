@@ -18,7 +18,7 @@
 
 // KD_PLAY.C
 
-#include "KD_DEF.H"
+#include "kd_def.h"
 #pragma	hdrstop
 
 /*

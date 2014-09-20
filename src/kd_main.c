@@ -27,10 +27,10 @@
 =============================================================================
 */
 
-#include "mem.h"
-#include "string.h"
+//#include "mem.h"
+#include <string.h>
 
-#include "KD_DEF.H"
+#include "kd_def.h"
 #pragma hdrstop
 
 #define CATALOG
@@ -384,6 +384,7 @@ void Quit (id0_char_t *error)
 	exit(1);
   }
 #ifndef CATALOG
+	// TODO (CHOCO KEEN) Do we want to support this in any way at all?
 	_argc = 2;
 	_argv[1] = "LAST.SHL";
 	_argv[2] = "ENDSCN.SCN";
@@ -505,7 +506,8 @@ void InitGame (void)
 
 static  id0_char_t                    *EntryParmStrings[] = {"detour",nil};
 
-void main (void)
+// The original start point of the game
+void id0_main (void)
 {
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
@@ -513,7 +515,7 @@ void main (void)
 	textcolor(7);
 	textbackground(0);
 
-	if (stricmp(_argv[1], "/VER") == 0)
+	if (stricmp(id0_argv[1], "/VER") == 0)
 	{
 		printf("KEEN DREAMS\n");
 		printf("CGA Version\n");
@@ -522,7 +524,7 @@ void main (void)
 		exit(0);
 	}
 
-	if (stricmp(_argv[1], "/?") == 0)
+	if (stricmp(id0_argv[1], "/?") == 0)
 	{
 		printf("\nKeen Dreams CGA version 1.05\n");
 		printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
@@ -540,9 +542,9 @@ void main (void)
 		exit(0);
 	}
 
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],EntryParmStrings))
+		switch (US_CheckParm(id0_argv[i],EntryParmStrings))
 		{
 		case 0:
 			LaunchedFromShell = true;
