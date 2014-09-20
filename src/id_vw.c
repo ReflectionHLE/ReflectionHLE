@@ -111,7 +111,8 @@ void	VW_Startup (void)
 {
 	id0_int_t i;
 
-	asm	cld;
+	// Originally used for certain ASM code loops (clears direction flag)
+	//asm	cld;
 
 	videocard = 0;
 
@@ -178,16 +179,17 @@ void VW_SetScreenMode (id0_int_t grmode)
 	switch (grmode)
 	{
 	  case TEXTGR:  _AX = 3;
-		  geninterrupt (0x10);
-		  screenseg=0xb000;
-		  break;
+		BE_SDL_SetScreenMode(3);
+		screenseg=BE_SDL_GetTextModeMemoryPtr();
+		break;
 	  case CGAGR: _AX = 4;
-		  geninterrupt (0x10);		// screenseg is actually a main mem buffer
-		  break;
+		BE_SDL_SetScreenMode(4);
+		// screenseg is actually a main mem buffer
+		break;
 	  case EGAGR: _AX = 0xd;
-		  geninterrupt (0x10);
-		  screenseg=0xa000;
-		  break;
+		BE_SDL_SetScreenMode(0xd);
+		screenseg=BE_SDL_GetEGAMemoryPtr();
+		break;
 #ifdef VGAGAME
 	  case VGAGR:{
 		  id0_char_t extern VGAPAL;	// deluxepaint vga pallet .OBJ file
@@ -379,12 +381,9 @@ void	VW_ClearVideo (id0_int_t color)
 	EGAMAPMASK(15);
 #endif
 
-asm	mov	es,[screenseg]
-asm	xor	di,di
-asm	mov	cx,0xffff
-asm	mov	al,[BYTE PTR color]
-asm	rep	stosb
-asm	stosb
+	// TODO (CHOCO KEEN): POSSIBLY ADD DIFFERENT IMPLEMENTATION FOR EGA?
+	memset(screenseg, color, 0xffff);
+
 
 #if GRMODE == EGAGR
 	EGAWRITEMODE(0);
@@ -618,62 +617,39 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 
 	mid = xhb-xlb-1;
 	dest = bufferofs+ylookup[y]+xlb;
-asm	mov	es,[screenseg]
 
 	if (xlb==xhb)
 	{
-	//
-	// entire line is in one id0_byte_t
-	//
+		//
+		// entire line is in one byte
+		//
 		maskleft&=maskright;
-
-		asm	mov	ah,[maskleft]
-		asm	mov	bl,[BYTE PTR color]
-		asm	and	bl,[maskleft]
-		asm	not	ah
-
-		asm	mov	di,[dest]
-
-		asm	mov	al,[es:di]
-		asm	and	al,ah			// mask out pixels
-		asm	or	al,bl			// or in color
-		asm	mov	[es:di],al
+		// mask out pixels; 'or' in color
+		screenseg[dest] = (screenseg[dest] & ~maskleft) | ((id0_byte_t)color & maskleft);
 		return;
 	}
 
-asm	mov	di,[dest]
-asm	mov	bh,[BYTE PTR color]
+	//
+	// draw left side
+	//
 
-//
-// draw left side
-//
-asm	mov	ah,[maskleft]
-asm	mov	bl,bh
-asm	and	bl,[maskleft]
-asm	not	ah
-asm	mov	al,[es:di]
-asm	and	al,ah			// mask out pixels
-asm	or	al,bl			// or in color
-asm	stosb
+	// mask out pixels; 'or' in color
+	screenseg[dest] = (screenseg[dest] & ~maskleft) | ((id0_byte_t)color & maskleft);
+	++dest;
 
-//
-// draw middle
-//
-asm	mov	al,bh
-asm	mov	cx,[mid]
-asm	rep	stosb
+	//
+	// draw middle
+	//
 
-//
-// draw right side
-//
-asm	mov	ah,[maskright]
-asm	mov	bl,bh
-asm	and	bl,[maskright]
-asm	not	ah
-asm	mov	al,[es:di]
-asm	and	al,ah			// mask out pixels
-asm	or	al,bl			// or in color
-asm	stosb
+	memset(&screenseg[dest], color, mid);
+	dest += mid;
+
+	//
+	// draw right side
+	//
+
+	// mask out pixels; 'or' in color
+	screenseg[dest] = (screenseg[dest] & ~maskright) | ((id0_byte_t)color & maskright);
 }
 #endif
 
@@ -862,6 +838,37 @@ void VW_CGAFullUpdate (void)
 
 	displayofs = bufferofs+panadjust;
 
+	BE_SDL_UpdateCGAGraphics(&screenseg[displayofs]);
+
+	uint8_t *srcPtr = &screenseg[displayofs];
+	uint8_t *destPtr = BE_SDL_GetCGAMemoryPtr();
+
+	id0_unsigned_t linePairsToCopy = 100; // pairs of scan lines to copy
+
+	do
+	{
+		memcpy(destPtr, srcPtr, 80);
+		srcPtr += linewidth;
+		destPtr += 0x2000; // go to the interlaced bank
+
+		memcpy(destPtr, srcPtr, 80);
+		srcPtr += linewidth;
+		destPtr -= (0x2000 - 80); // go to the non interlaced bank
+	} while (--linePairsToCopy);
+
+	// clear out the update matrix
+	memset(baseupdateptr, 0, UPDATEWIDE*UPDATEHIGH);
+
+	updateptr = baseupdateptr;
+	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
+
+#if 0
+	id0_byte_t	*update;
+	id0_boolean_t	halftile;
+	id0_unsigned_t	x,y,middlerows,middlecollumns;
+
+	displayofs = bufferofs+panadjust;
+
 asm	mov	ax,0xb800
 asm	mov	es,ax
 
@@ -929,6 +936,7 @@ asm	rep	stosw
 
 	updateptr = baseupdateptr;
 	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
+#endif
 }
 
 

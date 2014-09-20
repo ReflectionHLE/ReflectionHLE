@@ -938,6 +938,10 @@ SDL_DetectSoundSource(void)
 void
 alOut(id0_byte_t n,id0_byte_t b)
 {
+	BE_SDL_ALOut(n, b);
+	// TODO (CHOCO DREAMS, NOT CAT3D OR POSSIBLY KEEN 4-6)
+	// - Ensures delays are correct in BE_SDL_ALOut
+#if 0
 	asm	pushf
 	asm	cli
 
@@ -953,6 +957,7 @@ alOut(id0_byte_t n,id0_byte_t b)
 	asm	popf
 
 	SDL_Delay(TimerDelay25);
+#endif
 }
 
 /*** CHOCO KEEN - UNUSED/DISABLED ***/
@@ -1224,24 +1229,25 @@ SDL_StartAL(void)
 static id0_boolean_t
 SDL_DetectAdLib(void)
 {
-	id0_byte_t	status1,status2;
+	//id0_byte_t	status1,status2;
 	id0_int_t		i;
 
 	alOut(4,0x60);	// Reset T1 & T2
 	alOut(4,0x80);	// Reset IRQ
-	status1 = readstat();
+	//status1 = readstat();
 	alOut(2,0xff);	// Set timer 1
 	alOut(4,0x21);	// Start timer 1
-	SDL_Delay(TimerDelay100);
+	// TODO (CHOCO KEEN): Anyway to handle this delay (if at all)?
+	//SDL_Delay(TimerDelay100);
 
-	status2 = readstat();
+	//status2 = readstat();
 	alOut(4,0x60);
 	alOut(4,0x80);
 
-	if (((status1 & 0xe0) == 0x00) && ((status2 & 0xe0) == 0xc0))
+	//if (((status1 & 0xe0) == 0x00) && ((status2 & 0xe0) == 0xc0))
 		return(true);
-	else
-		return(false);
+//	else
+//		return(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////
