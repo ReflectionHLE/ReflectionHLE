@@ -161,12 +161,15 @@ static	id0_word_t			alFXReg;
 static void
 SDL_SetTimer0(id0_word_t speed)
 {
+	BE_SDL_SetTimer(speed, false);
+#if 0
 #ifndef TPROF	// If using Borland's profiling, don't screw with the timer
 	outportb(0x43,0x36);				// Change timer 0
 	outportb(0x40,speed);
 	outportb(0x40,speed >> 8);
 #else
 	speed++;	// Shut the compiler up
+#endif
 #endif
 }
 

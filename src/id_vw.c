@@ -228,10 +228,7 @@ id0_char_t colors[7][17]=
 
 void VW_ColorBorder (id0_int_t color)
 {
-	_AH=0x10;
-	_AL=1;
-	_BH=color;
-	geninterrupt (0x10);
+	BE_SDL_SetBorderColor(color);
 	bordercolor = color;
 }
 
