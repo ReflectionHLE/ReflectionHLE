@@ -42,6 +42,13 @@ id0_byte_t planenum;
 
 id0_unsigned_t screenstartcs; // in code segment for accesability
 
+// (CHOCO KEEN) VANILLA KEEN BUG WORKAROUND: Some background tile may be marked "empty" yet found in map (Copied off DOSBox 0000:0000..)
+static const id0_byte_t seg0TileBuff[64] = {
+	0x62, 0x01, 0xA2, 0x01, 0x08, 0x00, 0x70, 0x00, 0x08, 0x00, 0x70, 0x00, 0x08, 0x00, 0x70, 0x00,
+	0x08, 0x00, 0x70, 0x00, 0x60, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0,
+	0xD5, 0x0D, 0xE8, 0x0F, 0x04, 0x00, 0x11, 0x0F, 0x55, 0xFF, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0,
+	0x60, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0, 0x80, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0,
+};
 
 
 
@@ -62,7 +69,7 @@ id0_unsigned_t screenstartcs; // in code segment for accesability
 // spot to 1 in both update pages, forcing the tile to be copied to the
 // view pages the next two refreshes
 //
-// Called to draw newlly scrolled on strips and animating tiles
+// Called to draw newly scrolled on strips and animating tiles
 //
 //=================
 
@@ -86,13 +93,13 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 		// Draw single background tile from main memory
 		//
 		//=============
-		id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
-		
-		for (int loopVar = 15; loopVar; --loopVar, backSrcPtr += TILEWIDTH, destPtr += SCREENWIDTH)
+		const id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+		backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
+		for (int loopVar = 15; loopVar; --loopVar, backSrcPtr += TILEWIDTH, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH))
 		{
-			memcpy(destPtr, backSrcPtr, TILEWIDTH);
+			BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH);
 		}
-		memcpy(destPtr, backSrcPtr, TILEWIDTH);
+		BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH);
 		return;
 	}
 	//=========
@@ -100,16 +107,33 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	// Draw a masked tile combo
 	//
 	//=========
-	id0_byte_t *foreSrcPtr = grsegs[STARTTILE16M+foretilenum];
-	id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+	const id0_byte_t *foreSrcPtr = grsegs[STARTTILE16M+foretilenum];
+	const id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+	backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
 
-	for (int loopVar = 16; loopVar; --loopVar, backSrcPtr += TILEWIDTH, foreSrcPtr += TILEWIDTH, destPtr += SCREENWIDTH)
+	for (int loopVar = 16; loopVar; --loopVar, backSrcPtr += TILEWIDTH-3, foreSrcPtr += TILEWIDTH-3, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH-3))
 	{
 		// backSrcPtr - background tile
 		// foreSrcPtr - mask
 		// &foreSrcPtr[64] - masked data
+		*destPtr = ((*backSrcPtr++) & (*foreSrcPtr))
+		                       | (foreSrcPtr)[64];
+		BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+		++foreSrcPtr;
+		*destPtr = ((*backSrcPtr++) & (*foreSrcPtr))
+		                       | (foreSrcPtr)[64];
+		BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+		++foreSrcPtr;
+		*destPtr = ((*backSrcPtr++) & (*foreSrcPtr))
+		                       | (foreSrcPtr)[64];
+		BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+		++foreSrcPtr;
+		*destPtr = ((*backSrcPtr  ) & (*foreSrcPtr))
+		                       | (foreSrcPtr)[64];
+#if 0
 		*(id0_longword_t *)destPtr = ((*(id0_longword_t *)backSrcPtr) & (*(id0_longword_t *)foreSrcPtr))
 		                       | ((id0_longword_t *)foreSrcPtr)[16];
+#endif
 	}
 }
 #endif
@@ -357,11 +381,19 @@ void RFL_UpdateTiles (void)
 
 	do
 	{
-		/*
+		/*	
 		 * scan for a 1 in the update list, meaning a tile needs
 		 * to be copied from the master screen to the current screen
 		 */
-		for (; iterationsToDo && (*scanPtr != 1); --iterationsToDo, ++scanPtr);
+		while (iterationsToDo)
+		{
+			--iterationsToDo;
+			if (*(scanPtr++) == 1)
+			{
+				break;
+			}
+		}
+
 		if (scanPtr == scanEndPtr)
 		{
 			return; // Nothing left
@@ -375,21 +407,17 @@ void RFL_UpdateTiles (void)
 			//============
 			++scanPtr; // we know the next tile is nothing
 			id0_word_t tileLoc = blockstarts[scanPtr-updateptr-2]; // start of tile location on screen
-			id0_byte_t *destPtr = &screenseg[tileLoc+bufferofs]; // dest in current screen
-			id0_byte_t *srcPtr = &screenseg[tileLoc+masterofs]; // source in master screen
-			// Originally there were separate codepaths for EGA
-			// and CGA only; But we can use TILEWIDTH now
-			// (4 for CGA, 2 for EGA)
+			id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
+			id0_byte_t *srcPtr = &screenseg[(id0_unsigned_t)(tileLoc+masterofs)]; // source in master screen
+			// TODO (CHOCO KEEN) Actually implement for EGA
 #if (GRMODE == CGAGR) || (GRMODE == EGACR)
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				memcpy(destPtr, srcPtr, TILEWIDTH);
-				srcPtr += SCREENWIDTH;
-				destPtr += SCREENWIDTH;
+				BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH);
+				BE_Cross_Wrapped_Add(screenseg, &srcPtr, SCREENWIDTH);
+				BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH);
 			}
-			memcpy(destPtr, srcPtr, TILEWIDTH);
-			srcPtr += TILEWIDTH;
-			destPtr += TILEWIDTH;
+			BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH);
 			continue;
 
 #endif
@@ -402,34 +430,48 @@ void RFL_UpdateTiles (void)
 		id0_byte_t *rowScanStartPtr = scanPtr; // hold starting position + 1
 		++scanPtr; // we know the next tile also gets updated
 		// see how many more in a row
-		for (; iterationsToDo && (*scanPtr == 1); --iterationsToDo, ++scanPtr);
-		id0_word_t bytesPerRow = (scanPtr - rowScanStartPtr) << 1;
-
+		while (iterationsToDo)
+		{
+			--iterationsToDo;
+			if (*(scanPtr++) != 1)
+			{
+				break;
+			}
+		}
+		id0_word_t bytesPerRow = 2*(scanPtr - rowScanStartPtr);
 		id0_word_t tileLoc = blockstarts[rowScanStartPtr-updateptr-1]; // start of tile location
-		id0_byte_t *destPtr = &screenseg[tileLoc+bufferofs]; // dest in current screen
-		id0_byte_t *srcPtr = &screenseg[tileLoc+masterofs]; // source in master screen
+		id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
+		id0_byte_t *srcPtr = &screenseg[(id0_unsigned_t)(tileLoc+masterofs)]; // source in master screen
 #if (GRMODE == CGAGR)
 		id0_word_t bytesToSkip = SCREENWIDTH-2*bytesPerRow; // words wide in CGA tiles
 #else
-		id0_word_t bytesToSkip = SCREEENWIDTH-bytesPerRow;
+		id0_word_t bytesToSkip = SCREENWIDTH-bytesPerRow;
 #endif
 		for (int loopVar = 15; loopVar; --loopVar)
 		{
 			iterationsToDo = bytesPerRow;
 #if (GRMODE == CGAGR) || (GRMODE == EGACR)
-			memcpy(destPtr, srcPtr, iterationsToDo*(TILEWIDTH/2));
-			srcPtr += iterationsToDo*(TILEWIDTH/2);
-			destPtr += iterationsToDo*(TILEWIDTH/2);
-			iterationsToDo = 0;
+			// TODO (CHOCO KEEN) IMPLEMENT FOR EGA
+			for (; iterationsToDo; --iterationsToDo)
+			{
+				// Was originally a single instrument, so not calling BE_Cross_LinearToWrapped_MemCopy
+				memcpy(destPtr, srcPtr, TILEWIDTH/2);
+				BE_Cross_Wrapped_Add(screenseg, &srcPtr, TILEWIDTH/2);
+				BE_Cross_Wrapped_Add(screenseg, &destPtr, TILEWIDTH/2);
+			}
+			BE_Cross_Wrapped_Add(screenseg, &srcPtr, bytesToSkip);
+			BE_Cross_Wrapped_Add(screenseg, &destPtr, bytesToSkip);
 #endif
-			srcPtr += bytesToSkip;
-			destPtr += bytesToSkip;
 		}
 		iterationsToDo = bytesPerRow;
 #if (GRMODE == CGAGR) || (GRMODE == EGACR)
-		memcpy(destPtr, srcPtr, iterationsToDo*(TILEWIDTH/2));
-		srcPtr += iterationsToDo*(TILEWIDTH/2);
-		destPtr += iterationsToDo*(TILEWIDTH/2);
+		for (; iterationsToDo; --iterationsToDo)
+		{
+			// Was originally a single instrument, so not calling BE_Cross_LinearToWrapped_MemCopy
+			memcpy(destPtr, srcPtr, TILEWIDTH/2);
+			BE_Cross_Wrapped_Add(screenseg, &srcPtr, TILEWIDTH/2);
+			BE_Cross_Wrapped_Add(screenseg, &destPtr, TILEWIDTH/2);
+		}
 		iterationsToDo = 0;
 #endif
 		// was 0, now 0xFFFF for above loop
@@ -460,7 +502,14 @@ void RFL_MaskForegroundTiles (void)
 		/*
 		 * scan for a 3 in the updates list
 		 */
-		for (; iterationsToDo && (*scanPtr != 3); --iterationsToDo, ++scanPtr);
+		while (iterationsToDo)
+		{
+			--iterationsToDo;
+			if (*(scanPtr++) == 3)
+			{
+				break;
+			}
+		};
 		if (scanPtr == scanEndPtr)
 		{
 			return; // Nothing left
@@ -473,12 +522,16 @@ void RFL_MaskForegroundTiles (void)
 		//============
 
 		id0_word_t offsettedoriginmap = updatemapofs[scanPtr-updateptr-1] + originmap;
-		id0_word_t foreTileNum = mapsegs[1][offsettedoriginmap/2];
-		if (!foreTileNum) // 0 = no foreground tile
+		id0_word_t foretilenum = mapsegs[1][offsettedoriginmap/2];
+		// TODO CHOCO KEEN DEBUG (bounds check)
+		if (foretilenum >= NUMTILE16M)
+			foretilenum = 0;
+		//
+		if (!foretilenum) // 0 = no foreground tile
 		{
 			continue;
 		}
-		if (!(tinf[foreTileNum+INTILE] & 0x80)) // high bit = masked tile
+		if (!(tinf[foretilenum+INTILE] & 0x80)) // high bit = masked tile
 		{
 			continue;
 		}
@@ -491,16 +544,37 @@ void RFL_MaskForegroundTiles (void)
 		//=================
 
 		id0_word_t tileLoc = blockstarts[scanPtr-updateptr-1];
-		id0_byte_t *destPtr = &screenseg[tileLoc + bufferofs];
-		id0_byte_t *srcPtr = grsegs[STARTTILE16M+foreTileNum];
+		id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc + bufferofs)];
+		id0_byte_t *srcPtr = grsegs[STARTTILE16M+foretilenum];
 
-		for (int loopVar = 16, lineoffset = 0; loopVar; --loopVar, srcPtr += 4, destPtr += SCREENWIDTH)
+		for (int loopVar = 16; loopVar; --loopVar)
 		{
+			// destPtr - background tile
+			// srcPtr - mask
+			// &srcPtr[64] - masked data
+			*destPtr = ((*destPtr) & (*srcPtr))
+				               | srcPtr[64];
+			BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+			++srcPtr;
+			*destPtr = ((*destPtr) & (*srcPtr))
+				               | srcPtr[64];
+			BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+			++srcPtr;
+			*destPtr = ((*destPtr) & (*srcPtr))
+				               | srcPtr[64];
+			BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+			++srcPtr;
+			*destPtr   = ((*destPtr) & (*srcPtr))
+				               | srcPtr[64];
+
+			++srcPtr;
+			BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH-3);
+#if 0
 			*((id0_longword_t *)destPtr) =
 				((*((id0_longword_t *)destPtr)) // background
 				 & (*(id0_longword_t *)srcPtr) // mask
 				) | (*(id0_longword_t *)(srcPtr+64)); // masked data
-			srcPtr += 4;
+#endif
 		}
 #endif
 

@@ -5,6 +5,8 @@ void BE_SDL_InitAll(void);
 void BE_SDL_ShutdownAll(void);
 void BE_SDL_StartKeyboardService(void (*funcPtr)(id0_byte_t));
 void BE_SDL_StopKeyboardService(void);
+void BE_SDL_GetMouseDelta(id0_int_t *x, id0_int_t *y);
+id0_word_t BE_SDL_GetMouseButtons(void);
 void BE_SDL_PollEvents(void);
 
 /*** Audio/timer (vanilla Keen kind-of has these mixed) ***/

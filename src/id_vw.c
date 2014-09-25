@@ -530,7 +530,7 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
   if (xlb==xhb)
   {
   //
-  // entire line is in one id0_byte_t
+  // entire line is in one byte
   //
 
 	maskleft&=maskright;
@@ -640,8 +640,9 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 	// draw middle
 	//
 
-	memset(&screenseg[dest], color, mid);
-	dest += mid;
+	BE_Cross_Wrapped_MemSet(screenseg, &screenseg[dest], (id0_byte_t)color, mid);
+	//memset(&screenseg[dest], color, mid);
+	dest += mid; // dest is a 16-bit unsigned so it wraps "automagically" (and can "safely" be used as an offset)
 
 	//
 	// draw right side
@@ -700,7 +701,7 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 	if (xlb==xhb)
 	{
 	//
-	// entire line is in one id0_byte_t
+	// entire line is in one byte
 	//
 
 		maskleft&=maskright;
@@ -844,12 +845,16 @@ void VW_CGAFullUpdate (void)
 
 	do
 	{
-		memcpy(destPtr, srcPtr, 80);
-		srcPtr += linewidth;
+		BE_Cross_WrappedToLinear_MemCopy(destPtr, screenseg, srcPtr, 80);
+		//memcpy(destPtr, srcPtr, 80);
+		BE_Cross_Wrapped_Add(screenseg, &srcPtr, linewidth);
+		//srcPtr += linewidth;
 		destPtr += 0x2000; // go to the interlaced bank
 
-		memcpy(destPtr, srcPtr, 80);
-		srcPtr += linewidth;
+		BE_Cross_WrappedToLinear_MemCopy(destPtr, screenseg, srcPtr, 80);
+		//memcpy(destPtr, srcPtr, 80);
+		BE_Cross_Wrapped_Add(screenseg, &srcPtr, linewidth);
+		//srcPtr += linewidth;
 		destPtr -= (0x2000 - 80); // go to the non interlaced bank
 	} while (--linePairsToCopy);
 
@@ -1223,6 +1228,9 @@ asm	sti
 
 	if (cursorvisible>0)
 		VWL_EraseCursor();
+	// TODO (CHOCO KEEN) DEBUG?
+	void BE_SDL_UpdateHostDisplay(void);
+	BE_SDL_UpdateHostDisplay();
 }
 
 

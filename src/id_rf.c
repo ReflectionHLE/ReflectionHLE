@@ -54,7 +54,7 @@ updated
 // up two two tiles each way
 //
 // (PORTTILESWIDE+1)*PORTTILESHIGH must be even so the arrays can be cleared
-// by id0_word_t width instructions
+// by word width instructions
 
 #define	UPDATESCREENSIZE	(UPDATEWIDE*PORTTILESHIGH+2)
 #define	UPDATESPARESIZE		(UPDATEWIDE*2+4)
@@ -76,6 +76,12 @@ id0_unsigned_t	SX_T_SHIFT;		// screen x >> ?? = tile EGA = 1, CGA = 2;
 #define	UPDATESPARESIZE		(UPDATEWIDE*2+4)
 #define UPDATESIZE			(UPDATESCREENSIZE+2*UPDATESPARESIZE)
 
+// (CHOCO KEEN) BACKWARDS COMPATIBILITY (for Keen Dreams CGA v1.05 only):
+// When animated tile step is stored in a map's info plane, use same 16-bit
+// value as in DOS (originally a pointer to a cell of allanims)
+#define COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i) (4*(i)+0xC450)
+#define COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(dosptr) (((dosptr)-0xC450)/4)
+
 /*
 =============================================================================
 
@@ -94,23 +100,20 @@ typedef	struct spriteliststruct
 	id0_unsigned_t	tilex,tiley,tilewide,tilehigh;
 	id0_int_t			priority,updatecount;
 	struct spriteliststruct **prevptr,*nextsprite;
-} spritelisttype;
+} __attribute__((__packed__)) spritelisttype;
 
 
 typedef struct
 {
 	id0_int_t			screenx,screeny;
 	id0_int_t			width,height;
-} eraseblocktype;
+} __attribute__((__packed__)) eraseblocktype;
 
-// UPDATE (CHOCO KEEN): Moved to id_rf.h
-#if 0
 typedef struct
 {
 	id0_unsigned_t	current;		// foreground tiles have high bit set
 	id0_int_t			count;
-} tiletype;
-#endif
+} __attribute__((__packed__)) tiletype;
 
 typedef struct animtilestruct
 {
@@ -118,7 +121,7 @@ typedef struct animtilestruct
 	tiletype	*chain;
 	id0_unsigned_t	id0_far *mapplane;
 	struct animtilestruct **prevptr,*nexttile;
-} animtiletype;
+} __attribute__((__packed__)) animtiletype;
 
 /*
 =============================================================================
@@ -174,9 +177,6 @@ id0_byte_t		*updateptr,*baseupdateptr,						// current start of update window
 			*updatestart[2],
 			*baseupdatestart[2];
 
-// UPDATE (CHOCO KEEN):  NOW GLOBAL (because we can't just store 16-bit pointers in the info plane)
-tiletype	allanims[MAXANIMTYPES];
-
 
 /*
 =============================================================================
@@ -188,8 +188,7 @@ tiletype	allanims[MAXANIMTYPES];
 
 static		id0_char_t	scratch[20],str[20];
 
-// UPDATE (CHOCO KEEN):  NOW GLOBAL (because we can't just store 16-bit pointers in the info plane)
-//tiletype	allanims[MAXANIMTYPES];
+tiletype	allanims[MAXANIMTYPES];
 id0_unsigned_t	numanimchains;
 
 void 		(*refreshvector) (void);
@@ -417,8 +416,6 @@ void RF_NewMap (void)
 ==========================
 */
 
-// UPDATE (CHOCO KEEN): info plane has an index rather than a pointer now
-
 void RF_MarkTileGraphics (void)
 {
 	id0_unsigned_t	size;
@@ -450,7 +447,7 @@ void RF_MarkTileGraphics (void)
 				for (i=0;i<numanimchains;i++)
 					if (allanims[i].current == tile)
 					{
-						*info = i;
+						*info = COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i);
 						//*info = (id0_unsigned_t)&allanims[i];
 						goto nextback;
 					}
@@ -462,16 +459,16 @@ void RF_MarkTileGraphics (void)
 				allanims[i].current = tile;
 				allanims[i].count = tinf[SPEED+tile];
 
-				*info = i;
+				*info = COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i);
 				//*info = (id0_unsigned_t)&allanims[i];
 				numanimchains++;
 
 				anims = 0;
-				next = tile+(signed char)(tinf[ANIM+tile]);
+				next = tile+(id0_signed_char_t)(tinf[ANIM+tile]);
 				while (next != tile)
 				{
 					CA_MarkGrChunk(STARTTILE16+next);
-					next += (signed char)(tinf[ANIM+next]);
+					next += (id0_signed_char_t)(tinf[ANIM+next]);
 					if (++anims > 20)
 						Quit ("MarkTileGraphics: Unending animation!");
 				}
@@ -502,7 +499,7 @@ nextback:
 				for (i=0;i<numanimchains;i++)
 					if (allanims[i].current == tilehigh)
 					{
-						*info = i;
+						*info = COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i);
 						//*info = (id0_unsigned_t)&allanims[i];
 						goto nextfront;
 					}
@@ -514,16 +511,16 @@ nextback:
 				allanims[i].current = tilehigh;
 				allanims[i].count = tinf[MSPEED+tile];
 
-				*info = i;
+				*info = COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i);
 				//*info = (id0_unsigned_t)&allanims[i];
 				numanimchains++;
 
 				anims = 0;
-				next = tile+(signed char)(tinf[MANIM+tile]);
+				next = tile+(id0_signed_char_t)(tinf[MANIM+tile]);
 				while (next != tile)
 				{
 					CA_MarkGrChunk(STARTTILE16M+next);
-					next += (signed char)(tinf[MANIM+next]);
+					next += (id0_signed_char_t)(tinf[MANIM+next]);
 					if (++anims > 20)
 						Quit ("MarkTileGraphics: Unending animation!");
 				}
@@ -608,7 +605,7 @@ void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y)
 		anim->y = y;
 		anim->tile = tile;
 		anim->mapplane = map;
-		anim->chain = &allanims[*(mapsegs[2]+offset)];
+		anim->chain = &allanims[COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(*(mapsegs[2]+offset))];
 		//anim->chain = (tiletype *)*(mapsegs[2]+offset);
 	}
 
@@ -634,7 +631,7 @@ void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y)
 		anim->y = y;
 		anim->tile = tile;
 		anim->mapplane = map;
-		anim->chain = &allanims[*(mapsegs[2]+offset)];
+		anim->chain = &allanims[COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(*(mapsegs[2]+offset))];
 		//anim->chain = (tiletype *)*(mapsegs[2]+offset);
 	}
 
@@ -729,14 +726,14 @@ void RFL_AnimateTiles (void)
 			if (anim->current & 0x8000)
 			{
 				tile = anim->current & 0x7fff;
-				tile += (signed char)tinf[MANIM+tile];
+				tile += (id0_signed_char_t)tinf[MANIM+tile];
 				anim->count += tinf[MSPEED+tile];
 				tile |= 0x8000;
 			}
 			else
 			{
 				tile = anim->current;
-				tile += (signed char)tinf[ANIM+tile];
+				tile += (id0_signed_char_t)tinf[ANIM+tile];
 				anim->count += tinf[SPEED+tile];
 			}
 			anim->current = tile;
@@ -1090,7 +1087,7 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 	oldpanadjust = panadjust;
 	oldpanx = panx;
 
-	RFL_CalcOriginStuff ((long)originxglobal + x,(long)originyglobal + y);
+	RFL_CalcOriginStuff ((id0_long_t)originxglobal + x,(id0_long_t)originyglobal + y);
 
 	deltax = originxtile - oldxt;
 	absdx = abs(deltax);
@@ -1708,6 +1705,7 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 	{
 		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
+		BE_SDL_ShortSleep();
 	} while (tics<MINTICS);
 	lasttimecount = newtime;
 
@@ -1814,7 +1812,7 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 	oldxt = originxtile;
 	oldyt = originytile;
 
-	RFL_CalcOriginStuff ((long)originxglobal + x,(long)originyglobal + y);
+	RFL_CalcOriginStuff ((id0_long_t)originxglobal + x,(id0_long_t)originyglobal + y);
 
 	deltax = originxtile - oldxt;
 	absdx = abs(deltax);
@@ -2127,7 +2125,7 @@ void RFL_EraseBlocks (void)
 	//
 		pos = ylookup[block->screeny]+block->screenx;
 		block->width = (block->width + (pos&1) + 1)& ~1;
-		pos &= ~1;				// make sure a id0_word_t copy gets used
+		pos &= ~1;				// make sure a word copy gets used
 		VW_ScreenToScreen (masterofs+pos,bufferofs+pos,
 			block->width,block->height);
 
@@ -2341,6 +2339,7 @@ void RF_Refresh (void)
 	{
 		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
+		BE_SDL_ShortSleep();
 	} while (tics<MINTICS);
 	lasttimecount = newtime;
 

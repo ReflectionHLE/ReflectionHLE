@@ -1,6 +1,5 @@
 #include "SDL.h"
 #include "id_heads.h"
-#include "be_cross.h"
 
 static SDL_Window *g_sdlWindow;
 static SDL_Renderer *g_sdlRenderer;
@@ -22,7 +21,7 @@ static uint8_t g_sdlBorderColor = 0;
 
 void BE_SDL_InitGfx(void)
 {
-	g_sdlWindow = SDL_CreateWindow("Chocolate Cat3D", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	g_sdlWindow = SDL_CreateWindow("Chocolate Keen Dreams", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
 	if (!g_sdlWindow)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
@@ -102,7 +101,7 @@ void BE_SDL_SetScreenMode(int mode)
 	g_sdlScreenMode = mode;
 }
 
-static void BE_SDL_UpdateHostDisplay(void);
+/*static*/ void BE_SDL_UpdateHostDisplay(void);
 
 void BE_SDL_WaitVBL(id0_int_t number)
 {
@@ -111,6 +110,7 @@ void BE_SDL_WaitVBL(id0_int_t number)
 	Uint32 startTicks = SDL_GetTicks();
 	while (SDL_GetTicks() - startTicks < (int)number*1000000/70086)
 	{
+		SDL_Delay(1);
 		BE_SDL_UpdateHostDisplay();
 		BE_SDL_PollEvents();
 	}
@@ -119,6 +119,7 @@ void BE_SDL_WaitVBL(id0_int_t number)
 // Call during a busy loop of some unknown duration (e.g., waiting for key press/release)
 void BE_SDL_ShortSleep(void)
 {
+	SDL_Delay(1);
 	// TODO: Make this more efficient
 	BE_SDL_UpdateHostDisplay();
 	BE_SDL_PollEvents();
@@ -133,7 +134,7 @@ static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
 	0xffffffff/*white*/
 };
 
-static void BE_SDL_UpdateHostDisplay(void)
+/*static*/ void BE_SDL_UpdateHostDisplay(void)
 {
 	void *pixels;
 	int pitch;

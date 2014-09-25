@@ -282,11 +282,25 @@ USL_ReadConfig(void)
 
 	if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 	{
+		// CHOCO KEEN Cross Platform file I/O
+		for (int i = 0; i < MaxScores; ++i)
+		{
+			BE_Cross_readInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
+			BE_Cross_readInt32LE(file, &Scores[i].score);
+			BE_Cross_readInt16LE(file, &Scores[i].completed);
+		}
+		BE_Cross_read_SDMode_From16LE(file, &sd);
+		BE_Cross_read_SMMode_From16LE(file, &sm);
+		BE_Cross_read_ControlType_From16LE(file, &ctl);
+		// KeyboardDef is a ScanCode array, and ScanCode is simply typeded to be a byte
+		BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+#if 0
 		read(file,Scores,sizeof(HighScore) * MaxScores);
 		read(file,&sd,sizeof(sd));
 		read(file,&sm,sizeof(sm));
 		read(file,&ctl,sizeof(ctl));
 		read(file,&(KbdDefs[0]),sizeof(KbdDefs[0]));
+#endif
 		close(file);
 
 		HighScoresDirty = false;
@@ -318,14 +332,27 @@ USL_WriteConfig(void)
 	id0_int_t	file;
 
 	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
-				/*S_IREAD | S_IWRITE*/ S_IRGRP | S_IWGRP /*| S_IFREG*/);
+				/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 	if (file != -1)
 	{
+		// CHOCO KEEN Cross Platform file I/O
+		for (int i = 0; i < MaxScores; ++i)
+		{
+			BE_Cross_writeInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
+			BE_Cross_writeInt32LE(file, &Scores[i].score);
+			BE_Cross_writeInt16LE(file, &Scores[i].completed);
+		}
+		BE_Cross_write_SDMode_To16LE(file, &SoundMode);
+		BE_Cross_write_SMMode_To16LE(file, &MusicMode);
+		BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
+		BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+#if 0
 		write(file,Scores,sizeof(HighScore) * MaxScores);
 		write(file,&SoundMode,sizeof(SoundMode));
 		write(file,&MusicMode,sizeof(MusicMode));
 		write(file,&(Controls[0]),sizeof(Controls[0]));
 		write(file,&(KbdDefs[0]),sizeof(KbdDefs[0]));
+#endif
 		close(file);
 	}
 }
@@ -555,7 +582,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 
 	screen = BE_SDL_GetTextModeMemoryPtr() + ((x - 1) * 2) + (y * 80 * 2);
 	//screen = MK_FP(0xb800,((x - 1) * 2) + (y * 80 * 2));
-	*screen++ = show? 251 : ' ';	// Checkmark id0_char_t or space
+	*screen++ = show? 251 : ' ';	// Checkmark char or space
 	*screen = 0x48;
 	if (show && hilight)
 	{
@@ -566,7 +593,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	USL_ShowMem() - Right justifies a id0_longword_t in one of the memory fields on
+//	USL_ShowMem() - Right justifies a longword in one of the memory fields on
 //		the text screen
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -665,6 +692,18 @@ US_FinishTextScreen(void)
 
 //	Window/Printing routines
 
+// CHOCO KEEN: Some functions were made to modify C string literals, but this
+// results in undefined behaviors according to the standard.
+// Instead we make a copy to a static buffer for now
+// TODO: Constify?
+static id0_char_t usTempStrCopyBuff[256];
+static id0_char_t *USL_CopyStrToTempBuff(const id0_char_t *str)
+{
+	strncpy(usTempStrCopyBuff, str, sizeof(usTempStrCopyBuff));
+	return usTempStrCopyBuff;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	US_SetPrintRoutines() - Sets the routines used to measure and print
@@ -690,6 +729,8 @@ US_Print(id0_char_t *s)
 {
 	id0_char_t	c,*se;
 	id0_word_t	w,h;
+
+	s = USL_CopyStrToTempBuff(s); // CHOCO KEEN
 
 	while (*s)
 	{
@@ -719,7 +760,7 @@ US_Print(id0_char_t *s)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	US_PrintUnsigned() - Prints an id0_unsigned_t id0_long_t
+//	US_PrintUnsigned() - Prints an unsigned long
 //
 ///////////////////////////////////////////////////////////////////////////
 void
@@ -733,7 +774,7 @@ US_PrintUnsigned(id0_longword_t n)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//	US_PrintSigned() - Prints a id0_signed_long_t
+//	US_PrintSigned() - Prints a signed long
 //
 ///////////////////////////////////////////////////////////////////////////
 void
@@ -815,6 +856,8 @@ US_CPrint(id0_char_t *s)
 {
 	id0_char_t	c,*se;
 	id0_word_t	w,h;
+
+	s = USL_CopyStrToTempBuff(s); // CHOCO KEEN
 
 	while (*s)
 	{
@@ -1103,7 +1146,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 
 //	asm	pushf
 //	asm	cli
-		BE_SDL_PollEvents();
+		BE_SDL_ShortSleep();
 
 		sc = LastScan;
 		LastScan = sc_None;
@@ -1763,7 +1806,10 @@ USL_TrackItem(id0_word_t hiti,id0_word_t hitn)
 		fontcolor = F_BLACK;
 
 		while (US_UpdateCursor())
+		{
 			VW_UpdateScreen();
+			BE_SDL_ShortSleep();
+		}
 
 		FlushHelp = true;
 		return(false);
@@ -1804,6 +1850,7 @@ USL_TrackItem(id0_word_t hiti,id0_word_t hitn)
 			last = inside;
 		}
 		VW_UpdateScreen();
+		BE_SDL_ShortSleep();
 	} while (US_UpdateCursor());
 
 	if (op)
@@ -1837,9 +1884,9 @@ USL_GlideCursor(id0_long_t newx,id0_long_t newy)
 	else
 		steps = 8;
 
-	x = (long)CursorX << 16;
+	x = (id0_long_t)CursorX << 16;
 	dx = ((newx << 16) - x) / steps;
-	y = (long)CursorY << 16;
+	y = (id0_long_t)CursorY << 16;
 	dy = ((newy << 16) - y) / steps;
 
 	while ((CursorX != newx) || (CursorY != newy))
@@ -2133,14 +2180,16 @@ USL_CtlCKbdButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		if (US_UpdateCursor())
 		{
 			while (US_UpdateCursor())
-				;
+			{
+				BE_SDL_ShortSleep();
+			}
 			scan = sc_Escape;
 			break;
 		}
 
 //		asm	pushf
 //		asm	cli
-		BE_SDL_PollEvents();
+		BE_SDL_ShortSleep();
 		if (LastScan == sc_LShift)
 			LastScan = sc_None;
 //		asm	popf
@@ -2209,16 +2258,25 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	{
 		USL_ShowHelp("Move Joystick to the Upper-Left");
 		VW_UpdateScreen();
-		while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joy));
+		while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joy))
+		{
+			BE_SDL_ShortSleep();
+		}
 
 		if (LastScan != sc_Escape)
 		{
 			IN_GetJoyAbs(joy,&minx,&miny);
-			while (IN_GetJoyButtonsDB(joy));
+			while (IN_GetJoyButtonsDB(joy))
+			{
+				BE_SDL_ShortSleep();
+			}
 
 			USL_ShowHelp("Move Joystick to the Lower-Right");
 			VW_UpdateScreen();
-			while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joy));
+			while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joy))
+			{
+				BE_SDL_ShortSleep();
+			}
 
 			if (LastScan != sc_Escape)
 			{
@@ -2230,7 +2288,10 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 					IN_SetupJoy(joy,minx,maxx,miny,maxy);
 				}
 				else
-					while (IN_GetJoyButtonsDB(joy));
+					while (IN_GetJoyButtonsDB(joy))
+					{
+						BE_SDL_ShortSleep();
+					}
 			}
 			else
 				Done = true;
@@ -2240,7 +2301,10 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	}
 
 	if (LastScan != sc_Escape)
-		while (IN_GetJoyButtonsDB(joy));
+		while (IN_GetJoyButtonsDB(joy))
+			{
+				BE_SDL_ShortSleep();
+			}
 
 	if (LastScan)
 		IN_ClearKeysDown();
@@ -2317,7 +2381,7 @@ USL_FormatHelp(id0_char_t id0_far *text,id0_long_t len)
 			USL_MeasureString(l,&w,&h);
 			if (w >= WindowW)	// If string width exceeds window,
 			{
-				*s = c;			// Replace null id0_char_t with proper id0_char_t
+				*s = c;			// Replace null char with proper char
 				*le = '\0';		// Go back to last line end
 				*off++ = l - text;	// Save offset of start of line
 				line++;			// Bump line number
@@ -2325,8 +2389,8 @@ USL_FormatHelp(id0_char_t id0_far *text,id0_long_t len)
 			}
 			else
 			{
-				*s = c;			// Width still ok - put id0_char_t back
-				le = s;			// And save ptr to last ok end of id0_word_t
+				*s = c;			// Width still ok - put char back
+				le = s;			// And save ptr to last ok end of word
 			}
 		}
 	}
@@ -2401,7 +2465,9 @@ USL_DoHelp(memptr text,id0_long_t len)
 		if (moved)
 		{
 			while (SD_GetTimeCount() - lasttime < 5)
-				;
+			{
+				BE_SDL_ShortSleep(); // TODO: Better way to do this
+			}
 			lasttime = SD_GetTimeCount();
 
 			if (scroll == -1)
@@ -2488,7 +2554,9 @@ USL_DoHelp(memptr text,id0_long_t len)
 
 		if (waitkey)
 			while (IN_KeyDown(waitkey))
-				;
+			{
+				BE_SDL_ShortSleep();
+			}
 		waitkey = sc_None;
 
 		IN_ReadCursor(&info);
@@ -2555,11 +2623,13 @@ USL_DoHelp(memptr text,id0_long_t len)
 				break;
 			}
 		}
+		BE_SDL_ShortSleep();
 	}
 	IN_ClearKeysDown();
 	do
 	{
 		IN_ReadCursor(&info);
+		BE_SDL_ShortSleep();
 	} while (info.button0 || info.button1);
 
 	VW_ShowCursor();
@@ -2862,7 +2932,7 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		filename = USL_GiveSaveName(n / 2);
 		err = 0;
 		file = open(filename,O_CREAT | O_BINARY | O_WRONLY,
-					/*S_IREAD | S_IWRITE*/ S_IRGRP | S_IWGRP /*| S_IFREG*/);
+					/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 		if (file != -1)
 		{
 			if (write(file,game,sizeof(*game)) == sizeof(*game))
@@ -3425,6 +3495,7 @@ US_ControlPanel(void)
 	)
 	{
 		VW_UpdateScreen();
+		BE_SDL_ShortSleep(); // TODO (CHOCO KEEN): Correct place?
 
 		buttondown = US_UpdateCursor();
 		inrect = USL_IsInRect(CursorX,CursorY,&i,&n);
@@ -3523,7 +3594,7 @@ US_ControlPanel(void)
 					VW_UpdateScreen();
 
 					while (SD_GetTimeCount() - lasttime < TickBase / 4)
-						;
+						BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) Can be better
 					lasttime = SD_GetTimeCount();
 
 					ip->sel &= ~ui_Selected;
@@ -3531,7 +3602,7 @@ US_ControlPanel(void)
 					VW_UpdateScreen();
 
 					while (SD_GetTimeCount() - lasttime < TickBase / 4)
-						;
+						BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) Can be better 
 				}
 
 				USL_DoHit(hiti,hitn);

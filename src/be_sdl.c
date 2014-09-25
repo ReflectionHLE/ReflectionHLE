@@ -1,6 +1,5 @@
 #include "SDL.h"
 #include "id_heads.h"
-#include "be_cross.h"
 
 static void (*g_sdlKeyboardInterruptFuncPtr)(id0_byte_t) = 0;
 
@@ -18,10 +17,13 @@ void BE_SDL_InitAll(void)
 	}
 	BE_SDL_InitGfx();
 	BE_SDL_InitAudio();
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+	SDL_GetRelativeMouseState(NULL, NULL);
 }
 
 void BE_SDL_ShutdownAll(void)
 {
+	SDL_SetRelativeMouseMode(SDL_FALSE);
 	BE_SDL_ShutdownAudio();
 	BE_SDL_ShutdownGfx();
 	SDL_Quit();
@@ -407,6 +409,20 @@ void BE_SDL_StartKeyboardService(void (*funcPtr)(id0_byte_t))
 void BE_SDL_StopKeyboardService(void)
 {
 	g_sdlKeyboardInterruptFuncPtr = 0;
+}
+
+void BE_SDL_GetMouseDelta(id0_int_t *x, id0_int_t *y)
+{
+	int ourx, oury;
+	SDL_GetRelativeMouseState(&ourx, &oury);
+	*x = ourx;
+	*y = oury;
+}
+
+id0_word_t BE_SDL_GetMouseButtons(void)
+{
+	static id0_word_t results[] = {0, 1, 4, 5, 2, 3, 6, 7};
+	return results[SDL_GetMouseState(NULL, NULL) & 7];
 }
 
 static void BEL_SDL_HandleEmuKeyboardEvent(bool isPressed, emulatedDOSKeyEvent keyEvent)

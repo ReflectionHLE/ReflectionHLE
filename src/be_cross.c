@@ -1,8 +1,9 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "be_cross.h"
+#include "id_heads.h"
 
 int32_t BE_Cross_FileLengthFromHandle(int handle)
 {
@@ -82,4 +83,180 @@ void BE_Cross_textbackground(int color)
 void BE_Cross_clrscr(void)
 {
 	BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_clrscr not implemented\n");
+}
+
+size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t count)
+{
+	return read(handle, ptr, count);
+}
+
+size_t BE_Cross_readInt16LE(int handle, void *ptr)
+{
+	size_t bytesread = read(handle, ptr, 2);
+#ifdef BE_CROSS_IS_BIGENDIAN
+	for (size_t loopVar = 0; loopVar < count/2; loopVar++, ((uint16_t *) ptr)++)
+		*(uint16_t *) ptr = BE_Cross_Swap16(*(uint16_t *) ptr);
+#endif
+	return bytesread;
+}
+
+size_t BE_Cross_readInt32LE(int handle, void *ptr)
+{
+	size_t bytesread = read(handle, ptr, 4);
+#ifdef BE_CROSS_IS_BIGENDIAN
+	for (size_t loopVar = 0; loopVar < count/4; loopVar++, ((uint32_t *) ptr)++)
+		*(uint32_t *) ptr = BE_Cross_Swap16(*(uint32_t *) ptr);
+#endif
+	return bytesread;
+}
+
+size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t count)
+{
+	return write(handle, ptr, count);
+}
+
+size_t BE_Cross_writeInt16LE(int handle, const void *ptr)
+{
+#ifndef CK_CROSS_IS_BIGENDIAN
+	return write(handle, ptr, 2);
+#else
+	uint16_t val = BE_Cross_Swap16(*(uint16_t *) ptr);;
+	return write(handle, &val, 2);
+#endif
+}
+
+size_t BE_Cross_writeInt32LE(int handle, const void *ptr)
+{
+#ifndef CK_CROSS_IS_BIGENDIAN
+	return write(handle, ptr, 4);
+#else
+	uint32_t val = BE_Cross_Swap32(*(uint32_t *) ptr);;
+	return write(handle, &val, 4);
+#endif
+}
+
+// Template implementation of enum reads/writes
+#define BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ourSampleEnum) \
+size_t BE_Cross_read_ ## ourSampleEnum ## _From16LE (int handle, ourSampleEnum *ptr) \
+{ \
+	uint16_t val; \
+	size_t bytesread = read(handle, &val, 2); \
+	if (bytesread == 2) \
+	{ \
+		*ptr = (ourSampleEnum)BE_Cross_Swap16LE(val); \
+	} \
+	return bytesread; \
+} \
+\
+size_t BE_Cross_write_ ## ourSampleEnum ## _To16LE (int handle, const ourSampleEnum *ptr) \
+{ \
+	uint16_t val = BE_Cross_Swap16LE((uint16_t)(*ptr)); \
+	return write(handle, &val, 2); \
+}
+
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
+
+void BE_Cross_Wrapped_Add(uint8_t *segPtr, uint8_t **offInSegPtrPtr, uint16_t count)
+{
+	*offInSegPtrPtr += count;
+	if (*offInSegPtrPtr - segPtr >= 0x10000)
+	{
+		*offInSegPtrPtr -= 0x10000;
+	}
+}
+
+void BE_Cross_Wrapped_Inc(uint8_t *segPtr, uint8_t **offInSegPtrPtr)
+{
+	++(*offInSegPtrPtr);
+	if (*offInSegPtrPtr - segPtr >= 0x10000)
+	{
+		*offInSegPtrPtr -= 0x10000;
+	}
+}
+
+void BE_Cross_LinearToWrapped_MemCopy(uint8_t *segDstPtr, uint8_t *offDstPtr, const uint8_t *linearSrc, uint16_t num)
+{
+	uint16_t bytesToEnd = (segDstPtr+0x10000)-offDstPtr;
+	if (num <= bytesToEnd)
+	{
+		memcpy(offDstPtr, linearSrc, num);
+	}
+	else
+	{
+		memcpy(offDstPtr, linearSrc, bytesToEnd);
+		memcpy(segDstPtr, linearSrc+bytesToEnd, num-bytesToEnd);
+	}
+}
+
+void BE_Cross_WrappedToLinear_MemCopy(uint8_t *linearDst, const uint8_t *segSrcPtr, const uint8_t *offSrcPtr, uint16_t num)
+{
+	uint16_t bytesToEnd = (segSrcPtr+0x10000)-offSrcPtr;
+	if (num <= bytesToEnd)
+	{
+		memcpy(linearDst, offSrcPtr, num);
+	}
+	else
+	{
+		memcpy(linearDst, offSrcPtr, bytesToEnd);
+		memcpy(linearDst+bytesToEnd, segSrcPtr, num-bytesToEnd);
+	}
+}
+
+void BE_Cross_WrappedToWrapped_MemCopy(uint8_t *segCommonPtr, uint8_t *offDstPtr, const uint8_t *offSrcPtr, uint16_t num)
+{
+	uint16_t srcBytesToEnd = (segCommonPtr+0x10000)-offSrcPtr;
+	uint16_t dstBytesToEnd = (segCommonPtr+0x10000)-offDstPtr;
+	if (num <= srcBytesToEnd)
+	{
+		// Source is linear: Same as BE_Cross_LinearToWrapped_MemCopy here
+		if (num <= dstBytesToEnd)
+		{
+			memcpy(offDstPtr, offSrcPtr, num);
+		}
+		else
+		{
+			memcpy(offDstPtr, offSrcPtr, dstBytesToEnd);
+			memcpy(segCommonPtr, offSrcPtr+dstBytesToEnd, num-dstBytesToEnd);
+		}
+		return;
+	}
+	// Otherwise, check if at least the destination is linear
+	if (num <= dstBytesToEnd)
+	{
+		// Destination is linear: Same as BE_Cross_WrappedToLinear_MemCopy, non-linear source
+		memcpy(offDstPtr, offSrcPtr, srcBytesToEnd);
+		memcpy(offDstPtr+srcBytesToEnd, segCommonPtr, num-srcBytesToEnd);
+
+		return;
+	}
+	// BOTH buffers have wrapping. We don't check separately if
+	// srcBytesToEnd==dstBytesToEnd (in such a case offDstPtr==offSrcPtr...)
+	if (srcBytesToEnd <= dstBytesToEnd)
+	{
+		memcpy(offDstPtr, offSrcPtr, srcBytesToEnd);
+		memcpy(offDstPtr+srcBytesToEnd, segCommonPtr, dstBytesToEnd-srcBytesToEnd);
+		memcpy(segCommonPtr, segCommonPtr+(dstBytesToEnd-srcBytesToEnd), num-dstBytesToEnd);
+	}
+	else // srcBytesToEnd > dstBytesToEnd
+	{
+		memcpy(offDstPtr, offSrcPtr, dstBytesToEnd);
+		memcpy(segCommonPtr, offSrcPtr+dstBytesToEnd, srcBytesToEnd-dstBytesToEnd);
+		memcpy(segCommonPtr+(srcBytesToEnd-dstBytesToEnd), segCommonPtr, num-srcBytesToEnd);
+	}
+}
+
+void BE_Cross_Wrapped_MemSet(uint8_t *segPtr, uint8_t *offInSegPtr, int value, uint16_t num)
+{
+	uint16_t bytesToEnd = (segPtr+0x10000)-offInSegPtr;
+	if (num <= bytesToEnd)
+	{
+		memset(offInSegPtr, value, num);
+	}
+	else
+	{
+		memset(offInSegPtr, value, bytesToEnd);
+		memset(segPtr, value, num-bytesToEnd);
+	}
 }

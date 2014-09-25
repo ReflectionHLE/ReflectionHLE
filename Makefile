@@ -54,12 +54,12 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
 INTCXXFLAGS=
 
 ifeq ($(DEBUG),1)
-	INTCXXFLAGS+= -g -DCHOCOLATE_KEEN_CONFIG_DEBUG
+	INTCXXFLAGS+= -ggdb -ftrapv -DCHOCOLATE_KEEN_CONFIG_DEBUG
 else
 	INTCXXFLAGS+= -O2
 endif
 
-INTCXXFLAGS+= -I$(SRC) `$(SDLCONFIG) --cflags`
+INTCXXFLAGS+= -I$(SRC) `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable
 #We need -lm for dbopl
 INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
 

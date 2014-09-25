@@ -69,7 +69,7 @@ id0_int_t             DebugKeys (void);
 void    ShutdownId (void);
 void    Quit (id0_char_t *error);
 void    InitGame (void);
-void    main (void);
+//void    main (void);
 
 //===========================================================================
 
@@ -422,7 +422,7 @@ void InitGame (void)
 #if 0
 	// Handle piracy screen...
 	//
-	movedata(FP_SEG(PIRACY),(unsigned)PIRACY,0xb800,displayofs,4000);
+	movedata(FP_SEG(PIRACY),(id0_unsigned_t)PIRACY,0xb800,displayofs,4000);
 	while ((bioskey(0)>>8) != sc_Return);
 #endif
 

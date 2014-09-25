@@ -1,7 +1,6 @@
 #include "SDL.h"
 #include "opl/dbopl.h"
 #include "id_heads.h"
-#include "be_cross.h"
 
 #define PC_PIT_RATE 1193182
 
@@ -333,7 +332,7 @@ void BE_SDL_SetTimer(id0_word_t speed, bool isALMusicOn)
 	// is responsible for incrementing TimeCount at a given rate
 	// (~70Hz), although the rate in which the service itself is
 	// 560Hz with music on and 140Hz otherwise.
-	g_sdlScaledTimerDivisor = isALMusicOn ? (speed*4) : speed;
+	g_sdlScaledTimerDivisor = isALMusicOn ? (speed*8) : (speed*2);
 }
 
 id0_longword_t BE_SDL_GetTimeCount(void)

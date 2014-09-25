@@ -274,7 +274,7 @@ void ScoreThink (objtype *ob)
 // score changed
 //
 	if ((gamestate.score>>16) != ob->temp1.val
-		|| (unsigned)gamestate.score != ob->temp2.val )
+		|| (id0_unsigned_t)gamestate.score != ob->temp2.val )
 	{
 		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
@@ -931,8 +931,7 @@ void	CheckEnterLevel (objtype *ob)
 	for (y=ob->tiletop;y<=ob->tilebottom;y++)
 		for (x=ob->tileleft;x<=ob->tileright;x++)
 		{
-			tile = allanims[*((id0_unsigned_t id0_seg *)mapsegs[2]+mapbwidthtable[y]/2+x)].current;
-			//tile = *((id0_unsigned_t id0_seg *)mapsegs[2]+mapbwidthtable[y]/2+x);
+			tile = *((id0_unsigned_t id0_seg *)mapsegs[2]+mapbwidthtable[y]/2+x);
 			if (tile >= 3 && tile <=18)
 			{
 			//
@@ -2482,13 +2481,8 @@ void	KeenSlideReact (objtype *ob)
 	if (ob->hitnorth)			// friction slow down
 	{
 		map = mapsegs[2] + (mapbwidthtable[ob->tiletop]/2 + ob->tileleft);
-		if (!tinf[SOUTHWALL+allanims[*map].current] && !tinf[SOUTHWALL+allanims[*(map+1)].current])
-			FrictionX(ob);
-#if 0
-		map = mapsegs[2] + (mapbwidthtable[ob->tiletop]/2 + ob->tileleft);
 		if (!tinf[SOUTHWALL+*map] && !tinf[SOUTHWALL+*(map+1)])
 			FrictionX(ob);
-#endif
 	}
 
 

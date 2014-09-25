@@ -87,7 +87,9 @@ extern	int			profilehandle;
 
 // just for the score box reshifting
 
-void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_t dest,
+//void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_t dest,
+//	id0_unsigned_t width, id0_unsigned_t height, id0_unsigned_t pixshift);
+void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 	id0_unsigned_t width, id0_unsigned_t height, id0_unsigned_t pixshift);
 
 //===========================================================================

@@ -155,7 +155,7 @@ ENDM
 	shl	si,1
 	mov	ds,[grsegs+STARTTILE16*2+si]
 
-	xor	si,si					;first id0_word_t of tile data
+	xor	si,si					;first word of tile data
 
 REPT	16
 	mov	ax,[si]					;background tile
@@ -346,7 +346,7 @@ ENDM
 	shl	si,1
 	mov	ds,[grsegs+STARTTILE16*2+si]
 
-	xor	si,si					;first id0_word_t of tile data
+	xor	si,si					;first word of tile data
 
 	mov	ax,SC_MAPMASK+0001b*256	;map mask for plane 0
 

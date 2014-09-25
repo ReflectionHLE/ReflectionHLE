@@ -246,7 +246,7 @@ ENDIF
 
 ;========
 ;
-; VW_WaitVBL (id0_int_t number)
+; VW_WaitVBL (int number)
 ;
 ;========
 
@@ -288,7 +288,7 @@ ENDP
 ;
 ; Function:	Detects the presence of various video subsystems
 ;
-; id0_int_t VideoID;
+; int VideoID;
 ;
 ; Subsystem ID values:
 ; 	 0  = (none)
@@ -319,8 +319,8 @@ Display1Type	DB	?	; display attached to second subsystem
 VIDstruct	ENDS
 
 
-Device0	EQU	id0_word_t ptr Video0Type[di]
-Device1	EQU	id0_word_t ptr Video1Type[di]
+Device0	EQU	word ptr Video0Type[di]
+Device1	EQU	word ptr Video1Type[di]
 
 
 MDA	EQU	1	; subsystem types
@@ -409,9 +409,9 @@ VW_VideoID	PROC
 ; tabulated in TestSequence; each subroutine sets flags in TestSequence
 ; to indicate whether subsequent subroutines need to be called
 
-	mov	id0_byte_t ptr CGAflag,TRUE
-	mov	id0_byte_t ptr EGAflag,TRUE
-	mov	id0_byte_t ptr Monoflag,TRUE
+	mov	byte ptr CGAflag,TRUE
+	mov	byte ptr EGAflag,TRUE
+	mov	byte ptr Monoflag,TRUE
 
 	mov	cx,NumberOfTests
 	mov	si,offset TestSequence
@@ -456,7 +456,7 @@ VW_VideoID	ENDP
 FindPS2	PROC	near
 
 	mov	ax,1A00h
-	id0_int_t	10h	; call video BIOS for info
+	int	10h	; call video BIOS for info
 
 	cmp	al,1Ah
 	jne	@@L13	; exit if function not supported (i.e.,
@@ -486,20 +486,20 @@ FindPS2	PROC	near
 
 ; reset flags for subsystems that have been ruled out
 
-	mov	id0_byte_t ptr CGAflag,FALSE
-	mov	id0_byte_t ptr EGAflag,FALSE
-	mov	id0_byte_t ptr Monoflag,FALSE
+	mov	byte ptr CGAflag,FALSE
+	mov	byte ptr EGAflag,FALSE
+	mov	byte ptr Monoflag,FALSE
 
 	lea	bx,Video0Type[di]  ; if the BIOS reported an MDA ...
-	cmp	id0_byte_t ptr [bx],MDA
+	cmp	byte ptr [bx],MDA
 	je	@@L12
 
 	lea	bx,Video1Type[di]
-	cmp	id0_byte_t ptr [bx],MDA
+	cmp	byte ptr [bx],MDA
 	jne	@@L13
 
-@@L12:	mov	id0_word_t ptr [bx],0    ; ... Hercules can't be ruled out
-	mov	id0_byte_t ptr Monoflag,TRUE
+@@L12:	mov	word ptr [bx],0    ; ... Hercules can't be ruled out
+	mov	byte ptr Monoflag,TRUE
 
 @@L13:	ret
 
@@ -519,7 +519,7 @@ FindEGA	PROC	near	; Caller:	AH = flags
 
 	mov	bl,10h	; BL := 10h (return EGA info)
 	mov	ah,12h	; AH := INT 10H function number
-	id0_int_t	10h	; call EGA BIOS for info
+	int	10h	; call EGA BIOS for info
 			; if EGA BIOS is present,
 			;  BL <> 10H
 			;  CL = switch setting
@@ -538,7 +538,7 @@ FindEGA	PROC	near	; Caller:	AH = flags
 	je	@@L21	; jump if EGA has a monochrome display
 
 	mov	CGAflag,FALSE	; no CGA if EGA has color display
-	jmp	id0_short_t @@L22
+	jmp	short @@L22
 
 @@L21:	mov	Monoflag,FALSE	; EGA has a mono display, so MDA and
 			;  Hercules are ruled out
@@ -602,7 +602,7 @@ FindMono	PROC	near	; Returns:	VIDstruct updated
 	mov	al,MDA	; if bit 7 didn't change, it's an MDA
 	mov	ah,MDADisplay
 	call	FoundDevice
-	jmp	id0_short_t @@L44
+	jmp	short @@L44
 
 @@L42:	in	al,dx
 	mov	dl,al	; DL := value from status port
@@ -673,7 +673,7 @@ Find6845	ENDP
 
 FindActive	PROC	near
 
-	cmp	id0_word_t ptr Device1,0
+	cmp	word ptr Device1,0
 	je	@@L63	; exit if only one subsystem
 
 	cmp	Video0Type[di],4	; exit if MCGA or VGA present
@@ -682,7 +682,7 @@ FindActive	PROC	near
 	jge	@@L63
 
 	mov	ah,0Fh
-	id0_int_t	10h	; AL := current BIOS video mode
+	int	10h	; AL := current BIOS video mode
 
 	and	al,7
 	cmp	al,7	; jump if monochrome
@@ -690,7 +690,7 @@ FindActive	PROC	near
 
 	cmp	Display0Type[di],MDADisplay
 	jne	@@L63	; exit if Display0 is color
-	jmp	id0_short_t @@L62
+	jmp	short @@L62
 
 @@L61:	cmp	Display0Type[di],MDADisplay
 	je	@@L63	; exit if Display0 is monochrome
@@ -714,7 +714,7 @@ FoundDevice	PROC	near	; Caller:    AH = display #
 			;	     AL = subsystem #
 			; Destroys:  BX
 	lea	bx,Video0Type[di]
-	cmp	id0_byte_t ptr [bx],0
+	cmp	byte ptr [bx],0
 	je	@@L71	; jump if 1st subsystem
 
 	lea	bx,Video1Type[di]	; must be 2nd subsystem

@@ -117,7 +117,7 @@ static	id0_byte_t        ASCIINames[] =		// Unshifted ASCII for scan codes
 	"?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?",
 	"?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?"
 					},	// DEBUG - consolidate these
-					ExtScanCodes[] =	// Scan codes with >1 id0_char_t names
+					ExtScanCodes[] =	// Scan codes with >1 char names
 					{
 	1,0xe,0xf,0x1d,0x2a,0x39,0x3a,0x3b,0x3c,0x3d,0x3e,
 	0x3f,0x40,0x41,0x42,0x43,0x44,0x57,0x59,0x46,0x1c,0x36,
@@ -234,9 +234,7 @@ INL_KeyService(id0_byte_t k)
 static void
 INL_GetMouseDelta(id0_int_t *x,id0_int_t *y)
 {
-	// TODO: (CHOCO KEEN): IMPLEMENT!
-	*x = 0;
-	*y = 0;
+	BE_SDL_GetMouseDelta(x, y);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -248,9 +246,7 @@ INL_GetMouseDelta(id0_int_t *x,id0_int_t *y)
 static id0_word_t
 INL_GetMouseButtons(void)
 {
-	// TODO: (CHOCO KEEN): IMPLEMENT!
-	id0_word_t buttons = 0;
-	return(buttons);
+	return BE_SDL_GetMouseButtons();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -373,8 +369,11 @@ IN_GetJoyButtonsDB(id0_word_t joy)
 		result1 = INL_GetJoyButtons(joy);
 		lasttime = SD_GetTimeCount();
 		while (SD_GetTimeCount() == lasttime)
-			;
+		{
+			BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) can be better
+		}
 		result2 = INL_GetJoyButtons(joy);
+		BE_SDL_ShortSleep();
 	} while (result1 != result2);
 	return(result1);
 }
@@ -785,7 +784,7 @@ register	KeyboardDef	*def;
 
 	if (DemoMode == demo_Record)
 	{
-		// Pack the control info into a id0_byte_t
+		// Pack the control info into a byte
 		dbyte = (buttons << 4) | ((dx + 1) << 2) | (dy + 1);
 
 		if
@@ -910,7 +909,9 @@ IN_WaitForKey(void)
 	ScanCode	result;
 
 	while (!(result = LastScan))
-		;
+	{
+		BE_SDL_ShortSleep();
+	}
 	LastScan = 0;
 	return(result);
 }
@@ -927,7 +928,9 @@ IN_WaitForASCII(void)
 	id0_char_t		result;
 
 	while (!(result = LastASCII))
-		;
+	{
+		BE_SDL_ShortSleep();
+	}
 	LastASCII = '\0';
 	return(result);
 }
@@ -949,7 +952,9 @@ IN_AckBack(void)
 			if (INL_GetMouseButtons())
 			{
 				while (INL_GetMouseButtons())
-					;
+				{
+					BE_SDL_ShortSleep();
+				}
 				return;
 			}
 		}
@@ -961,11 +966,14 @@ IN_AckBack(void)
 				if (IN_GetJoyButtonsDB(i))
 				{
 					while (IN_GetJoyButtonsDB(i))
-						;
+					{
+						BE_SDL_ShortSleep();
+					}
 					return;
 				}
 			}
 		}
+		BE_SDL_ShortSleep();
 	}
 
 	IN_ClearKey(LastScan);
@@ -987,12 +995,15 @@ IN_Ack(void)
 
 	if (MousePresent)
 		while (INL_GetMouseButtons())
-					;
+		{
+			BE_SDL_ShortSleep();
+		}
 	for (i = 0;i < MaxJoys;i++)
 		if (JoysPresent[i])
 			while (IN_GetJoyButtonsDB(i))
-				;
-
+			{
+				BE_SDL_ShortSleep();
+			}
 	IN_AckBack();
 }
 
@@ -1038,6 +1049,7 @@ IN_UserInput(id0_longword_t delay,id0_boolean_t clear)
 	lasttime = SD_GetTimeCount();
 	do
 	{
+		BE_SDL_ShortSleep();
 		if (IN_IsUserInput())
 		{
 			if (clear)

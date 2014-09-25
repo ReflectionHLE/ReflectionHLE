@@ -48,7 +48,7 @@ extern id0_unsigned_t linedelta;
 
 void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 {
-	id0_byte_t *destPtr = &screenseg[bufferofs+ylookup[y]+(x>>2)]; // byte on screen
+	id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(bufferofs+ylookup[y]+(x>>2))]; // byte on screen
 	id0_byte_t maskOn = (colorbyte[color] & plotpixels[x&3]);
 	id0_byte_t maskOff = ~plotpixels[x&3]; // mask off other pixels
 	*destPtr = (((*destPtr) & maskOff) | maskOn);
@@ -62,12 +62,12 @@ void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 
 void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigned_t color)
 {
-	id0_byte_t *destPtr = &screenseg[bufferofs+ylookup[yl]+(x>>2)]; // byte on screen
+	id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(bufferofs+ylookup[yl]+(x>>2))]; // byte on screen
 	id0_byte_t maskOn = (colorbyte[color] & plotpixels[x&3]);
 	id0_byte_t maskOff = ~plotpixels[x&3]; // mask off other pixels
-	for (id0_word_t loopVar = yh-yl+1; loopVar; --loopVar, destPtr += linewidth)
+	for (id0_word_t loopVar = yh-yl+1; loopVar; --loopVar, BE_Cross_Wrapped_Add(screenseg, &destPtr, linewidth))
 	{
-		*destPtr = (((*destPtr) & plotpixels[x&3]) | maskOn);
+		*destPtr = (((*destPtr) & maskOff) | maskOn);
 	}
 }
 
@@ -87,15 +87,17 @@ void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigne
 
 void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t tile)
 {
-	id0_byte_t *destPtr = &screenseg[bufferofs+xcoord+ylookup[ycoord]];
+	id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(bufferofs+xcoord+ylookup[ycoord])];
 	id0_byte_t *tilePtr = grsegs[STARTTILE8]+(tile<<4);
 	for (int loopVar = 0; loopVar < 7; ++loopVar) {
-		*(destPtr++) = *(tilePtr++);
-		*(destPtr++) = *(tilePtr++);
-		destPtr += (linewidth-2);
+		*destPtr = *(tilePtr++);
+		BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+		*destPtr = *(tilePtr++);
+		BE_Cross_Wrapped_Add(screenseg, &destPtr, linewidth-1);
 	}
-	*(destPtr++) = *(tilePtr++);
-	*(destPtr++) = *(tilePtr++);
+	*destPtr = *(tilePtr++);
+	BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+	*destPtr = *tilePtr;
 }
 
 //============================================================================
@@ -133,9 +135,9 @@ void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 	{
 		wide &= ~1; // wide should be even, but in case it isn't...
 	}
-	for (id0_word_t lineCounter = height, colCounter; lineCounter; --lineCounter, destPtr += linedelta)
+	for (id0_word_t lineCounter = height, colCounter; lineCounter; --lineCounter, BE_Cross_Wrapped_Add(screenseg, &destPtr, linedelta))
 	{
-		for (colCounter = wide; colCounter; --colCounter, ++srcPtr, ++destPtr)
+		for (colCounter = wide; colCounter; --colCounter, ++srcPtr, BE_Cross_Wrapped_Inc(screenseg, &destPtr))
 		{
 			*destPtr = ((*destPtr) & (*srcPtr)) | srcPtr[planesize];
 		}
@@ -158,8 +160,9 @@ void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 {
 	id0_byte_t *srcPtr = &screenseg[source];
 	id0_byte_t *destPtr = &screenseg[dest];
-	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, srcPtr += linewidth, destPtr += linewidth) {
-		memcpy(destPtr, srcPtr, wide);
+	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, BE_Cross_Wrapped_Add(screenseg, &srcPtr, linewidth), BE_Cross_Wrapped_Add(screenseg, &destPtr, linewidth))
+	{
+		BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, wide);
 	}
 }
 
@@ -183,8 +186,8 @@ void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 	id0_byte_t *srcPtr = source;
 	id0_byte_t *destPtr = &screenseg[dest];
 	// NOTE: Using just one loop instead of four drawing routines now
-	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, srcPtr += wide, destPtr += linewidth) {
-		memcpy(destPtr, srcPtr, wide);
+	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, srcPtr += wide, BE_Cross_Wrapped_Add(screenseg, &destPtr, linewidth)) {
+		BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, srcPtr, wide);
 	}
 }
 
@@ -205,8 +208,8 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 {
 	id0_byte_t *srcPtr = &screenseg[source];
 	id0_byte_t *destPtr = dest;
-	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, srcPtr += linewidth, destPtr += wide) {
-		memcpy(destPtr, srcPtr, wide);
+	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, BE_Cross_Wrapped_Add(screenseg, &srcPtr, linewidth), destPtr += wide) {
+		BE_Cross_WrappedToLinear_MemCopy(destPtr, screenseg, srcPtr, wide);
 	}
 }
 
@@ -325,9 +328,9 @@ void VWL_XORBuffer(id0_byte_t *buffer)
 	bufferextra = BUFFWIDTH-modbuffwidth;
 	// We next divide this by 2 (words to copy)
 	modbuffwidth >>= 1;
-	for (id0_word_t lineCounter = bufferheight, colPairCounter; lineCounter; --lineCounter, srcPtr += bufferextra, destPtr += screenextra)
+	for (id0_word_t lineCounter = bufferheight, colPairCounter; lineCounter; --lineCounter, srcPtr += bufferextra, BE_Cross_Wrapped_Add(screenseg, &destPtr, screenextra))
 	{
-		for (colPairCounter = modbuffwidth; colPairCounter; --colPairCounter, srcPtr += 2, destPtr += 2)
+		for (colPairCounter = modbuffwidth; colPairCounter; --colPairCounter, srcPtr += 2, BE_Cross_Wrapped_Add(screenseg, &destPtr, 2))
 		{
 			*(id0_word_t *)destPtr ^= ((*(id0_word_t *)srcPtr) & fontcolormask);
 		}
@@ -376,10 +379,10 @@ void ShiftPropChar(id0_word_t charnum)
 	id0_unsigned_t currshift;
 
 	id0_byte_t *destPtr = &databuffer[bufferbyte];
-	id0_word_t oldbufferbit = bufferbit;
 	// add twice because pixel == two bits
-	bufferbit = (oldbufferbit+2*adjustedwidth) & 7; // new bit position
-	bufferbyte = (oldbufferbit >> 3); // new byte position
+	id0_word_t posToSplit = bufferbit+2*adjustedwidth;
+	bufferbit = (posToSplit & 7); // new bit position
+	bufferbyte += (posToSplit >> 3); // new byte position
 
 	switch ((adjustedwidth+3)>>2)
 	{
@@ -459,7 +462,7 @@ void VW_DrawPropString (id0_char_t id0_far *string)
 	/*
 	 * shift the characters into the buffer
 	 */
-	bufferbit = (((unsigned)px&3) << 1); // one pixel == two bits
+	bufferbit = (((id0_unsigned_t)px&3) << 1); // one pixel == two bits
 	bufferbyte = 0;
 	id0_char_t *stringPtr = string;
 	do

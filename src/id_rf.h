@@ -110,16 +110,6 @@ extern id0_unsigned_t	uwidthtable[UPDATEHIGH];		// lookup instead of multiple
 
 #define	UPDATETERMINATE	0x0301
 
-// UPDATE (CHOCO KEEN): Moved from id_rf.c
-typedef struct
-{
-	id0_unsigned_t	current;		// foreground tiles have high bit set
-	id0_int_t			count;
-} tiletype;
-
-// UPDATE (CHOCO KEEN):  NOW GLOBAL (because we can't just store 16-bit pointers in the info plane)
-tiletype	allanims[MAXANIMTYPES];
-
 
 /*
 =============================================================================

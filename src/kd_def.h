@@ -162,7 +162,7 @@ void	StartupId (void);
 void	ShutdownId (void);
 void	Quit (id0_char_t *error);
 void	InitGame (void);
-void	main (void);
+//void	main (void);
 
 
 /*

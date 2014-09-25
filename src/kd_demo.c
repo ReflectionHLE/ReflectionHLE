@@ -210,7 +210,7 @@ SaveGame(id0_int_t file)
 	for (i = 0;i < 3;i++)   // Write all three planes of the map
 	{
 //
-// leave a id0_word_t at start of compressed data for compressed length
+// leave a word at start of compressed data for compressed length
 //
 		compressed = CA_RLEWCompress ((id0_unsigned_t id0_huge *)mapsegs[i]
 			,expanded,((id0_unsigned_t id0_huge *)bigbuffer)+1,RLETAG);

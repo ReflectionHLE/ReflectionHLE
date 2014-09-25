@@ -86,7 +86,8 @@ static	id0_word_t			sqMode,sqFadeStep;
 	SMMode		MusicMode;
 	// NEVER accessed directly now - done from backend via functions
 	//id0_longword_t	TimeCount;
-	id0_word_t		*SoundTable;	// Really * id0_seg *SoundTable, but that don't work
+	SoundCommon		**SoundTable;
+	//id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
 	id0_boolean_t		ssIsTandy;
 	id0_word_t		ssPort = 2;
 
@@ -354,9 +355,9 @@ SDL_PCService(void)
 			asm	mov	al,0xb6			// Write to channel 2 (speaker) timer
 			asm	out	43h,al
 			asm	mov	al,bl
-			asm	out	42h,al			// Low id0_byte_t
+			asm	out	42h,al			// Low byte
 			asm	mov	al,bh
-			asm	out	42h,al			// High id0_byte_t
+			asm	out	42h,al			// High byte
 
 			asm	in	al,0x61			// Turn the speaker & gate on
 			asm	or	al,3
@@ -477,7 +478,7 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 
 	// Program the DMA controller
 	outportb(0x0a,5);							// Mask off channel 1 DMA
-	outportb(0x0c,0);							// Clear id0_byte_t ptr F/F to lower id0_byte_t
+	outportb(0x0c,0);							// Clear byte ptr F/F to lower byte
 	outportb(0x0b,0x49);						// Set transfer mode for D/A conv
 	outportb(0x02,(byte)dataofs);				// Give LSB of address
 	outportb(0x02,(byte)(dataofs >> 8));		// Give MSB of address
@@ -775,7 +776,7 @@ SDL_SSService(void)
 		asm	mov		al,[ssOn]
 		asm	out		dx,al
 
-		asm	push	ax				// Delay a id0_short_t while
+		asm	push	ax				// Delay a short while
 		asm	pop		ax
 		asm	push	ax
 		asm	pop		ax
@@ -898,7 +899,7 @@ asm	pop		ax
 asm	mov		al,[ssOn]
 asm	out		dx,al
 
-asm	push	ax				// Delay a id0_short_t while before we do this again
+asm	push	ax				// Delay a short while before we do this again
 asm	pop		ax
 asm	push	ax
 asm	pop		ax
@@ -1047,7 +1048,9 @@ SDL_ALPlaySound(AdLibSound id0_far *sound)
 	inst = &sound->inst;
 
 	if (!(inst->mSus | inst->cSus))
+	{
 		Quit("SDL_ALPlaySound() - Seriously suspicious instrument");
+	}
 
 	m = modifiers[0];
 	c = carriers[0];
@@ -1428,7 +1431,8 @@ SD_SetSoundMode(SDMode mode)
 		SDL_ShutDevice();
 		SoundMode = mode;
 #ifndef	_MUSE_
-		SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
+		SoundTable = (SoundCommon **)&audiosegs[tableoffset];
+		//SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
 #endif
 		SDL_StartDevice();
 	}
@@ -1451,7 +1455,9 @@ SD_SetMusicMode(SMMode mode)
 
 	SD_FadeOutMusic();
 	while (SD_MusicPlaying())
-		;
+	{
+		BE_SDL_ShortSleep();
+	}
 
 	switch (mode)
 	{
@@ -1692,7 +1698,7 @@ SD_PlaySound(id0_word_t sound)
 		return;
 
 	//s = MK_FP(SoundTable[sound],0);
-	s = (SoundCommon *)(id0_byte_t *)(&SoundTable[sound]);
+	s = SoundTable[sound];
 	if (!s)
 		Quit("SD_PlaySound() - Attempted to play an uncached sound");
 	if (s->priority < SoundPriority)
@@ -1786,7 +1792,9 @@ void
 SD_WaitSoundDone(void)
 {
 	while (SD_SoundPlaying())
-		;
+	{
+		BE_SDL_ShortSleep();
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1855,6 +1863,6 @@ SD_MusicPlaying(void)
 }
 
 // Replacements for direct accesses to TimeCount variable
-// (should be instantiated here even though it's inline, as of C99)
+// (should be instantiated here even if inline, as of C99)
 id0_longword_t SD_GetTimeCount(void);
 void SD_SetTimeCount(id0_longword_t newcount);

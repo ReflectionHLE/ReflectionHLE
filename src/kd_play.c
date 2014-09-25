@@ -576,18 +576,16 @@ void ScanInfoPlane (void)
 	// Ported from ASM
 
 	start = mapsegs[2];
-	for (y=0;y<mapheight;y++)
+	for (mapy/*y*/=0;mapy/*y*/<mapheight;mapy/*y*/++)
 	{
-		for (x=0;x<mapwidth;x++)
+		for (mapx/*x*/=0;mapx/*x*/<mapwidth;mapx/*x*/++)
 		{
-			tile = allanims[*start++].current;
-			//tile = *start++;
-			if (!tile)
+			tile = *(start++);
+			if (tile)
 			{
 				maptile = tile;
 				HandleInfo();
 			}
-				continue;
 		}
 	}
 
@@ -618,13 +616,11 @@ void PatchWorldMap (void)
 	spot = 0;
 	do
 	{
-		info = allanims[*(mapsegs[2] + spot)].current;
-		//info = *(mapsegs[2] + spot);
+		info = *(mapsegs[2] + spot);
 		// finished a city here?
 		if (info>=3 && info<=18 && gamestate.leveldone[info-2])
 		{
-			allanims[*(mapsegs[2] + spot)].current = 0;
-			//*(mapsegs[2] + spot) = 0;
+			*(mapsegs[2] + spot) = 0;
 			foreground = *(mapsegs[1] + spot);
 			if (foreground == 130)
 				*(mapsegs[1]+spot) = 0;	// not blocking now
@@ -740,8 +736,8 @@ void 	SetupGameLevel (id0_boolean_t loadnow)
 //
 // start the initial view position to center the player
 //
-		orgx = (long)player->x - (150<<G_P_SHIFT);
-		orgy = (long)player->y-(84<<G_P_SHIFT);
+		orgx = (id0_long_t)player->x - (150<<G_P_SHIFT);
+		orgy = (id0_long_t)player->y-(84<<G_P_SHIFT);
 		if (orgx<0)
 			orgx=0;
 		if (orgy<0)
@@ -1422,7 +1418,7 @@ void StateMachine (objtype *ob)
 		else
 			ob->shapenum = state->leftshapenum;
 	}
-	if (ob->shapenum == (unsigned)-1)
+	if (ob->shapenum == (id0_unsigned_t)-1)
 		ob->shapenum = 0;		// make it invisable this time
 
 	if (ob->xmove || ob->ymove || ob->shapenum != oldshapenum)
@@ -1645,7 +1641,7 @@ void GameFinale (void)
 "walked up to the Dream Machine.\n"
 "He analyzed all the complex\n"
 "controls and readouts on it, then\n"
-"pulled down a id0_huge red lever\n"
+"pulled down a huge red lever\n"
 "marked \"On/Off Switch.\"  The\n"
 "machine clanked and rattled,\n"
 "then went silent. He had freed\n"
@@ -1792,6 +1788,7 @@ void HandleDeath (void)
 			selection = 0;
 		else if (c.yaxis == 1 || LastScan == sc_DownArrow)
 			selection = 1;
+		BE_SDL_ShortSleep();
 	} while (1);
 
 }
@@ -1825,8 +1822,8 @@ startlevel:
 			//
 			// start the initial view position to center the player
 			//
-			orgx = (long)player->x - (150<<G_P_SHIFT);
-			orgy = (long)player->y-(84<<G_P_SHIFT);
+			orgx = (id0_long_t)player->x - (150<<G_P_SHIFT);
+			orgy = (id0_long_t)player->y-(84<<G_P_SHIFT);
 			if (orgx<0)
 				orgx=0;
 			if (orgy<0)

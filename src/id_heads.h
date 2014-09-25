@@ -35,8 +35,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "be_cross.h"
-
 #define __ID_GLOB__
 
 #define	EXTENSION	"KDR"
@@ -112,7 +110,7 @@ typedef	struct
 #define O_BINARY 0
 #endif
 
-// Initialized after calling what was game's main fnuction
+// Initialized before calling vanilla Keen Dreams' (now renamed) main function
 extern int id0_argc;
 extern char **id0_argv;
 
@@ -126,5 +124,6 @@ extern char **id0_argv;
 #include "id_sd.h"
 #include "id_us.h"
 
+#include "be_cross.h"
 
 

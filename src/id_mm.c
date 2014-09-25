@@ -28,7 +28,7 @@ Primary coder: John Carmack
 
 RELIES ON
 ---------
-Quit (id0_char_t *error) function
+Quit (char *error) function
 
 
 WORK TO DO
@@ -123,7 +123,7 @@ static id0_byte_t mmEmulatedMemSpace[512*1024];
 #define EMULATED_NEAR_PARAGRAPHS (EMULATED_FAR_SEG-EMULATED_NEAR_SEG)
 #define EMULATED_FAR_PARAGRAPHS (EMULATED_EMS_SEG-EMULATED_FAR_SEG)
 #define EMULATED_EMS_PARAGRAPHS (EMULATED_XMS_SEG-EMULATED_EMS_SEG)
-#define EMULATED_XMS_PARAGRAPHS (sizeof(mmEmulatedMemSpace)/16-EMULATED_NEAR_PARAGRAPHS-EMULATED_FAR_PARAGRAPHS-EMULATED_EMS_PARAGRAPHS)
+#define EMULATED_XMS_PARAGRAPHS (sizeof(mmEmulatedMemSpace)/16-EMULATED_XMS_SEG)
 // Used to obtain a pointer to some location in mmEmulatedMemSpace
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
@@ -159,13 +159,13 @@ id0_boolean_t MML_CheckForEMS (void)
 
 asm	mov	dx,OFFSET emmname
 asm	mov	ax,0x3d00
-asm	id0_int_t	0x21		// try to open EMMXXXX0 device
+asm	int	0x21		// try to open EMMXXXX0 device
 asm	jc	error
 
 asm	mov	bx,ax
 asm	mov	ax,0x4400
 
-asm	id0_int_t	0x21		// get device info
+asm	int	0x21		// get device info
 asm	jc	error
 
 asm	and	dx,0x80
@@ -173,13 +173,13 @@ asm	jz	error
 
 asm	mov	ax,0x4407
 
-asm	id0_int_t	0x21		// get status
+asm	int	0x21		// get status
 asm	jc	error
 asm	or	al,al
 asm	jz	error
 
 asm	mov	ah,0x3e
-asm	id0_int_t	0x21		// close handle
+asm	int	0x21		// close handle
 asm	jc	error
 
 //
@@ -341,7 +341,7 @@ void MM_Startup (void)
 #endif
 
 	// locked block of unusable near heap memory (usually just the stack)
-	// from end of near heap to start of id0_far heap
+	// from end of near heap to start of far heap
 	GETNEWBLOCK;
 	mmnew->start = endfree;
 	mmnew->length = segstart-endfree;
@@ -393,7 +393,7 @@ void MM_Startup (void)
 // cap off the list
 //
 	// locked block of high memory (video, rom, etc)
-	// from end of id0_far heap or EMS/XMS to 0xffff
+	// from end of far heap or EMS/XMS to 0xffff
 	GETNEWBLOCK;
 	mmnew->start = endfree;
 	mmnew->length = 0xffff-endfree;
@@ -764,7 +764,7 @@ void MM_ShowMemory (void)
 		if (scan->start<=end)
 			Quit ("MM_ShowMemory: Memory block order currupted!");
 		end = scan->start+scan->length-1;
-		VW_Hlin(scan->start,(unsigned)end,0,color);
+		VW_Hlin(scan->start,(id0_unsigned_t)end,0,color);
 		VW_Plot(scan->start,0,15);
 		if (scan->next->start > end+1)
 			VW_Hlin(end+1,scan->next->start,0,0);	// black = free

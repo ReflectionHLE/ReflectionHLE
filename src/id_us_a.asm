@@ -69,7 +69,7 @@ baseRndArray	dw	1,1,2,3,5,8,13,21,54,75,129,204
 
 ;=================================================
 ;
-; void US_InitRndT (id0_boolean_t randomize)
+; void US_InitRndT (boolean randomize)
 ; Init table based RND generator
 ; if randomize is false, the counter is set to 0
 ;
@@ -88,7 +88,7 @@ PROC	US_InitRndT randomize:word
 
 @@timeit:
 	mov	ah,2ch
-	id0_int_t	21h			;GetSystemTime
+	int	21h			;GetSystemTime
 	and	dx,0ffh
 
 @@setit:
@@ -100,7 +100,7 @@ ENDP
 
 ;=================================================
 ;
-; id0_int_t US_RndT (void)
+; int US_RndT (void)
 ; Return a random # between 0-255
 ; Exit : AX = value
 ;

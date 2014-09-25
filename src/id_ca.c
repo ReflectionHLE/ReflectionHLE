@@ -159,7 +159,7 @@ void CAL_GetGrChunkLength (id0_int_t chunk)
 =
 = CA_FarRead
 =
-= Read from a file to a id0_far pointer
+= Read from a file to a far pointer
 =
 ==========================
 */
@@ -192,7 +192,7 @@ id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t lengt
 =
 = CA_SegWrite
 =
-= Write from a file to a id0_far pointer
+= Write from a file to a far pointer
 =
 ==========================
 */
@@ -233,7 +233,7 @@ id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 	int handle;
 	id0_long_t size;
 
-	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		return false;
 
 	size = BE_Cross_FileLengthFromHandle (handle);
@@ -280,9 +280,9 @@ void CAL_OptimizeNodes (huffnode *table)
   for (i=0;i<255;i++)
   {
 	if (node->bit0 >= 256)
-	  node->bit0 = (unsigned)(table+(node->bit0-256));
+	  node->bit0 = (id0_unsigned_t)(table+(node->bit0-256));
 	if (node->bit1 >= 256)
-	  node->bit1 = (unsigned)(table+(node->bit1-256));
+	  node->bit1 = (id0_unsigned_t)(table+(node->bit1-256));
 	node++;
   }
 #endif
@@ -313,7 +313,7 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
 
 	// Ported from ASM
 	id0_byte_t id0_huge *srcptr = source, *dstptr = dest, *dstendptr = dest+length;
-	id0_byte_t byteval = *(srcptr++); // load first id0_byte_t
+	id0_byte_t byteval = *(srcptr++); // load first byte
 	id0_byte_t bitmask = 1;
 	do
 	{
@@ -321,7 +321,7 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
 		code = (byteval & bitmask) ? nodeon->bit1 : nodeon->bit0;
 		if (bitmask & 0x80)
 		{
-			byteval = *(srcptr++); // load next id0_byte_t
+			byteval = *(srcptr++); // load next byte
 			bitmask = 1; // back to first bit
 		}
 		else
@@ -391,7 +391,7 @@ id0_long_t CA_RLEWCompress (id0_unsigned_t id0_huge *source, id0_long_t length, 
     else
     {
     //
-    // send id0_word_t without compressing
+    // send word without compressing
     //
       for (i=1;i<=count;i++)
 	*dest++ = value;
@@ -488,7 +488,7 @@ void CAL_SetupGrFile (void)
 //
 
 	if ((handle = open(GREXT"DICT."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
 
 	read(handle, &grhuffman, sizeof(grhuffman));
@@ -501,7 +501,7 @@ void CAL_SetupGrFile (void)
 	//MM_GetPtr (&(memptr)grstarts,(NUMCHUNKS+1)*4);
 
 	if ((handle = open(GREXT"HEAD."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
 
 	CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*4);
@@ -575,7 +575,7 @@ void CAL_SetupMapFile (void)
 //
 #ifndef MAPHEADERLINKED
 	if ((handle = open("MAPHEAD."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&tinf,length);
@@ -595,11 +595,11 @@ void CAL_SetupMapFile (void)
 //
 #ifdef MAPHEADERLINKED
 	if ((maphandle = open("GAMEMAPS."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open GAMEMAPS."EXTENSION"!");
 #else
 	if ((maphandle = open("MAPTEMP."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPTEMP."EXTENSION"!");
 #endif
 }
@@ -625,7 +625,7 @@ void CAL_SetupAudioFile (void)
 //
 #ifndef AUDIOHEADERLINKED
 	if ((handle = open("AUDIOHED."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&audiostarts,length);
@@ -643,11 +643,11 @@ void CAL_SetupAudioFile (void)
 //
 #ifndef AUDIOHEADERLINKED
 	if ((audiohandle = open("AUDIOT."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOT."EXTENSION"!");
 #else
 	if ((audiohandle = open("AUDIO."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRGRP)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIO."EXTENSION"!");
 #endif
 }
@@ -837,14 +837,16 @@ cachein:
 =
 = CAL_ShiftSprite
 =
-= Make a shifted (one id0_byte_t wider) copy of a sprite into another area
+= Make a shifted (one byte wider) copy of a sprite into another area
 =
 ======================
 */
 
 id0_unsigned_t	static	sheight,swidth;
 
-void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_t dest,
+//void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_t dest,
+	//id0_unsigned_t width, id0_unsigned_t height, id0_unsigned_t pixshift)
+void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 	id0_unsigned_t width, id0_unsigned_t height, id0_unsigned_t pixshift)
 {
 	// Ported from ASM, now without segment/offset separation
@@ -860,14 +862,14 @@ void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_
 	for (id0_unsigned_t i = height; i; --i)
 	{
 		/** mask row **/
-		*destptr = 255; // 0xff first id0_byte_t
+		*destptr = 255; // 0xff first byte
 		for (id0_unsigned_t j = width; j; --j)
 		{
 			/** mask byte **/
 			val = currshifttable[(*(srcptr++)) ^ 0xFF]; // take shift into two bytes
 			val ^= 0xFFFF;
-			*(destptr++) &= (val & 0xFF); // and with first id0_byte_t
-			*destptr = (val >> 8); // replace next id0_byte_t
+			*(destptr++) &= (val & 0xFF); // and with first byte
+			*destptr = (val >> 8); // replace next byte
 		}
 		++destptr; // the last shifted byte has 1s in it
 	}
@@ -878,11 +880,11 @@ void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_
 
 	for (id0_unsigned_t i = height*4; i; --i) // four planes of data
 	{
-		*destptr = 0; // 0 first id0_byte_t
+		*destptr = 0; // 0 first byte
 		for (id0_unsigned_t j = width; j; --j)
 		{
 			val = currshifttable[*(srcptr++)]; // take shift into two bytes
-			*(destptr++) |= (val & 0xFF); // or with first id0_byte_t
+			*(destptr++) |= (val & 0xFF); // or with first byte
 			*destptr = (val >> 8); // replace next byte;
 		}
 		++destptr; // the last shifted byte has 0s in it
@@ -919,7 +921,7 @@ void CAL_CacheSprite (id0_int_t chunk, id0_char_t id0_far *compressed)
 	smallplane = spr->width*spr->height;
 	MM_GetPtr (&grsegs[chunk],smallplane*2+MAXSHIFTS*6);
 	dest = (spritetype id0_seg *)grsegs[chunk];
-	dest->sourceoffset[0] = MAXSHIFTS*6;	// start data after 3 id0_unsigned_t tables
+	dest->sourceoffset[0] = MAXSHIFTS*6;	// start data after 3 unsigned tables
 	dest->planesize[0] = smallplane;
 	dest->width[0] = spr->width;
 
@@ -940,7 +942,7 @@ void CAL_CacheSprite (id0_int_t chunk, id0_char_t id0_far *compressed)
 	smallplane = spr->width*spr->height;
 	bigplane = (spr->width+1)*spr->height;
 
-	shiftstarts[0] = MAXSHIFTS*6;	// start data after 3 id0_unsigned_t tables
+	shiftstarts[0] = MAXSHIFTS*6;	// start data after 3 unsigned tables
 	shiftstarts[1] = shiftstarts[0] + smallplane*5;	// 5 planes in a sprite
 	shiftstarts[2] = shiftstarts[1] + bigplane*5;
 	shiftstarts[3] = shiftstarts[2] + bigplane*5;
@@ -982,8 +984,10 @@ void CAL_CacheSprite (id0_int_t chunk, id0_char_t id0_far *compressed)
 			dest->planesize[i] = bigplane;
 			dest->width[i] = spr->width+1;
 		}
-		CAL_ShiftSprite ((unsigned)grsegs[chunk],dest->sourceoffset[0],
-			dest->sourceoffset[2],spr->width,spr->height,4);
+		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[2],spr->width,spr->height,4);
+		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+		//	dest->sourceoffset[2],spr->width,spr->height,4);
 		break;
 
 	case	4:
@@ -994,20 +998,26 @@ void CAL_CacheSprite (id0_int_t chunk, id0_char_t id0_far *compressed)
 		dest->sourceoffset[1] = shiftstarts[1];
 		dest->planesize[1] = bigplane;
 		dest->width[1] = spr->width+1;
-		CAL_ShiftSprite ((unsigned)grsegs[chunk],dest->sourceoffset[0],
-			dest->sourceoffset[1],spr->width,spr->height,2);
+		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[1],spr->width,spr->height,2);
+		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+		//	dest->sourceoffset[1],spr->width,spr->height,2);
 
 		dest->sourceoffset[2] = shiftstarts[2];
 		dest->planesize[2] = bigplane;
 		dest->width[2] = spr->width+1;
-		CAL_ShiftSprite ((unsigned)grsegs[chunk],dest->sourceoffset[0],
-			dest->sourceoffset[2],spr->width,spr->height,4);
+		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[2],spr->width,spr->height,4);
+		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+		//	dest->sourceoffset[2],spr->width,spr->height,4);
 
 		dest->sourceoffset[3] = shiftstarts[3];
 		dest->planesize[3] = bigplane;
 		dest->width[3] = spr->width+1;
-		CAL_ShiftSprite ((unsigned)grsegs[chunk],dest->sourceoffset[0],
-			dest->sourceoffset[3],spr->width,spr->height,6);
+		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[3],spr->width,spr->height,6);
+		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+		//	dest->sourceoffset[3],spr->width,spr->height,6);
 
 		break;
 
@@ -1070,7 +1080,7 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 	else
 	{
 	//
-	// everything else has an explicit size id0_longword_t
+	// everything else has an explicit size longword
 	//
 		expanded = *(id0_long_t id0_far *)source;
 		source += 4;			// skip over length
@@ -1298,7 +1308,7 @@ The general buffer size is too small!
 #ifdef MAPHEADERLINKED
 		//
 		// unhuffman, then unRLEW
-		// The huffman'd chunk has a two id0_byte_t expanded length first
+		// The huffman'd chunk has a two byte expanded length first
 		// The resulting RLEW chunk also does, even though it's not really
 		// needed
 		//
@@ -1509,7 +1519,7 @@ void CA_CacheMarks (id0_char_t *title)
 
 		thx += 4;		// first line location
 		thy += 5;
-		barx = (long)thx<<16;
+		barx = (id0_long_t)thx<<16;
 		lastx = thx;
 		VW_UpdateScreen();
 	}

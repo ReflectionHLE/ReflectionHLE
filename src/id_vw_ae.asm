@@ -24,9 +24,9 @@
 ;============================================================================
 ;
 ; All EGA drawing routines that write out words need to have alternate forms
-; for starting on even and odd addresses, because writing a id0_word_t at segment
+; for starting on even and odd addresses, because writing a word at segment
 ; offset 0xffff causes an exception!  To work around this, write a single
-; id0_byte_t out to make the address even, so it wraps cleanly at the end.
+; byte out to make the address even, so it wraps cleanly at the end.
 ;
 ; All of these routines assume read/write mode 0, and will allways return
 ; in that state.
@@ -38,7 +38,7 @@
 
 ;============================================================================
 ;
-; VW_Plot (id0_int_t x,y,color)
+; VW_Plot (int x,y,color)
 ;
 ;============================================================================
 
@@ -71,7 +71,7 @@ USES	SI,DI
 	shr	ax,1
 	shr	ax,1
 	shr	ax,1
-	add	di,ax				; di = id0_byte_t on screen
+	add	di,ax				; di = byte on screen
 
 	and	bx,7
 	mov	ah,[plotpixels+bx]
@@ -94,7 +94,7 @@ ENDP
 
 ;============================================================================
 ;
-; VW_Vlin (id0_int_t yl,yh,x,color)
+; VW_Vlin (int yl,yh,x,color)
 ;
 ;============================================================================
 
@@ -121,7 +121,7 @@ USES	SI,DI
 	shr	ax,1
 	shr	ax,1
 	shr	ax,1
-	add	di,ax				; di = id0_byte_t on screen
+	add	di,ax				; di = byte on screen
 
 	and	bx,7
 	mov	ah,[plotpixels+bx]
@@ -277,7 +277,7 @@ USES	SI,DI
 	mov	cx,[dest]
 	shr	cx,1
 	rcl	di,1					;shift a 1 in if destination is odd
-	shl	di,1					;to index into a id0_word_t width table
+	shl	di,1					;to index into a word width table
 	mov	ax,[maskroutines+di]	;call the right routine
 	mov	[routinetouse],ax
 
@@ -611,7 +611,7 @@ USES	SI,DI
 	mov	ax,[dest]
 	shr	ax,1
 	rcl	di,1					;shift a 1 in if destination is odd
-	shl	di,1					;to index into a id0_word_t width table
+	shl	di,1					;to index into a word width table
 	mov	ax,SC_MAPMASK+0001b*256	;map mask for plane 0
 	jmp	[ss:memtoscreentable+di]	;call the right routine
 
@@ -662,7 +662,7 @@ oddtoeven:
 @@lineloopOE:
 	mov	cx,[wide]
 	rep	movsw
-	movsb						;copy the last id0_byte_t
+	movsb						;copy the last byte
 
 	add	di,bx
 
@@ -685,7 +685,7 @@ oddtoeven:
 ;==============
 
 eventoodd:
-	dec	[wide]					;one id0_word_t has to be handled seperately
+	dec	[wide]					;one word has to be handled seperately
 EOplaneloop:
 	mov	dx,SC_INDEX
 	WORDOUT
@@ -754,7 +754,7 @@ ENDP
 ;
 ; Copies a block of video memory to main memory, in order from planes 0-3.
 ; This could be optimized along the lines of VW_MemToScreen to take advantage
-; of id0_word_t copies, but this is an infrequently called routine.
+; of word copies, but this is an infrequently called routine.
 ;
 ;===========================================================================
 
@@ -991,7 +991,7 @@ endif
 ;
 ; set CRTC start
 ;
-; for some reason, my XT's EGA card doesn't like id0_word_t outs to the CRTC
+; for some reason, my XT's EGA card doesn't like word outs to the CRTC
 ; index...
 ;
 	mov	cx,[crtc]
@@ -1091,7 +1091,7 @@ CODESEG
 
 ;======================
 ;
-; Macros to table shift a id0_byte_t of font
+; Macros to table shift a byte of font
 ;
 ;======================
 
@@ -1101,10 +1101,10 @@ MACRO	SHIFTNOXOR
 	shl	ax,1
 	mov	si,ax
 	mov	ax,[bp+si]		; table shift into two bytes
-	or	[di],al			; or with first id0_byte_t
+	or	[di],al			; or with first byte
 	inc	di
-	mov	[di],ah			; replace next id0_byte_t
-	inc	bx				; next source id0_byte_t
+	mov	[di],ah			; replace next byte
+	inc	bx				; next source byte
 ENDM
 
 MACRO	SHIFTWITHXOR
@@ -1114,10 +1114,10 @@ MACRO	SHIFTWITHXOR
 	mov	si,ax
 	mov	ax,[bp+si]		; table shift into two bytes
 	not	ax
-	and	[di],al			; and with first id0_byte_t
+	and	[di],al			; and with first byte
 	inc	di
-	mov	[di],ah			; replace next id0_byte_t
-	inc	bx				; next source id0_byte_t
+	mov	[di],ah			; replace next byte
+	inc	bx				; next source byte
 ENDM
 
 
@@ -1152,7 +1152,7 @@ PROC	BufferToScreen	NEAR
 @@lineloop:
 	mov	cx,[bufferwidth]		;bytes to copy
 @@byteloop:
-	lodsb						;get a id0_byte_t from the buffer
+	lodsb						;get a byte from the buffer
 	xchg	[es:di],al			;load latches and store back to screen
 	inc	di
 
@@ -1226,7 +1226,7 @@ PROC	ShiftPropChar	NEAR
 	shr	ax,1
 	shr	ax,1
 	shr	ax,1
-	add	[bufferbyte],ax			;new id0_byte_t position
+	add	[bufferbyte],ax			;new byte position
 
 	add	si,7
 	shr	si,1
@@ -1239,7 +1239,7 @@ PROC	ShiftPropChar	NEAR
 	jmp	[ss:shiftdrawtable+si]	;procedure to draw this width
 
 ;
-; one id0_byte_t character
+; one byte character
 ;
 shift1wide:
 	dec	dx
@@ -1253,7 +1253,7 @@ EVEN
 	ret
 
 ;
-; two id0_byte_t character
+; two byte character
 ;
 shift2wide:
 	dec	dx
@@ -1269,7 +1269,7 @@ EVEN
 	ret
 
 ;
-; three id0_byte_t character
+; three byte character
 ;
 shift3wide:
 	sub	dx,3
@@ -1388,7 +1388,7 @@ ENDM
 	mov	ax,[bufferbyte]
 	test	[bufferbit],7
 	jz	@@go
-	inc	ax				;so the partial id0_byte_t also gets drawn
+	inc	ax				;so the partial byte also gets drawn
 @@go:
 	mov	[bufferwidth],ax
 	mov	es,[grsegs+STARTFONT*2]
@@ -1471,7 +1471,7 @@ PROC	ShiftMPropChar	NEAR
 	shr	ax,1
 	shr	ax,1
 	shr	ax,1
-	add	[bufferbyte],ax			;new id0_byte_t position
+	add	[bufferbyte],ax			;new byte position
 
 	add	si,7
 	shr	si,1
@@ -1484,7 +1484,7 @@ PROC	ShiftMPropChar	NEAR
 	jmp	[ss:mshiftdrawtable+si]	;procedure to draw this width
 
 ;
-; one id0_byte_t character
+; one byte character
 ;
 mshift1wide:
 	dec	dx
@@ -1507,7 +1507,7 @@ EVEN
 	ret
 
 ;
-; two id0_byte_t character
+; two byte character
 ;
 mshift2wide:
 	dec	dx
@@ -1532,7 +1532,7 @@ EVEN
 	ret
 
 ;
-; three id0_byte_t character
+; three byte character
 ;
 mshift3wide:
 	sub	dx,3
@@ -1579,7 +1579,7 @@ PUBLIC	VW_DrawMPropString
 USES	SI,DI
 
 ;
-; clear out the first id0_byte_t of the buffer, the rest will automatically be
+; clear out the first byte of the buffer, the rest will automatically be
 ; cleared as characters are drawn into it
 ;
 	mov	es,[grsegs+STARTFONTM*2]
@@ -1660,7 +1660,7 @@ USES	SI,DI
 	mov	ax,[bufferbyte]
 	test	[bufferbit],7
 	jz	@@go
-	inc	ax				;so the partial id0_byte_t also gets drawn
+	inc	ax				;so the partial byte also gets drawn
 @@go:
 	mov	[bufferwidth],ax
 	mov	es,[grsegs+STARTFONTM*2]
