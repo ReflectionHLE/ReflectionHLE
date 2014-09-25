@@ -54,7 +54,7 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
 INTCXXFLAGS=
 
 ifeq ($(DEBUG),1)
-	INTCXXFLAGS+= -ggdb -ftrapv -DCHOCOLATE_KEEN_CONFIG_DEBUG
+	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DCHOCOLATE_KEEN_CONFIG_DEBUG
 else
 	INTCXXFLAGS+= -O2
 endif
@@ -69,6 +69,7 @@ endif
 
 ifeq ($(PLATFORM), WINDOWS)
 	EXE_EXT=.exe
+	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
 endif
 
 EXE_PATH=chocolate-keen-dreams-cga$(EXE_EXT)

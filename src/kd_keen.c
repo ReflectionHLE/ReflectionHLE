@@ -128,9 +128,9 @@ void	SpawnScore (void)
 	scoreobj->obclass = inertobj;
 	scoreobj->active = allways;
 	scoreobj->needtoclip = false;
-	scoreobj->temp1.val = scoreobj->temp2.val = -1;             // force score to be updated
-	scoreobj->temp3.val = -1;                   // and flower power
-	scoreobj->temp4.val = -1;                   // and lives
+	scoreobj->temp1 = scoreobj->temp2 = -1;             // force score to be updated
+	scoreobj->temp3 = -1;                   // and flower power
+	scoreobj->temp4 = -1;                   // and lives
 #if 0
 	*((id0_long_t *)&(scoreobj->temp1)) = -1;		// force score to be updated
 	scoreobj->temp3 = -1;			// and flower power
@@ -273,8 +273,8 @@ void ScoreThink (objtype *ob)
 //
 // score changed
 //
-	if ((gamestate.score>>16) != ob->temp1.val
-		|| (id0_unsigned_t)gamestate.score != ob->temp2.val )
+	if ((gamestate.score>>16) != ob->temp1
+		|| (id0_unsigned_t)gamestate.score != ob->temp2 )
 	{
 		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
@@ -299,8 +299,8 @@ void ScoreThink (objtype *ob)
 		ShiftScore ();
 #endif
 		ob->needtoreact = true;
-		ob->temp1.val = gamestate.score>>16;
-		ob->temp2.val = gamestate.score;
+		ob->temp1 = gamestate.score>>16;
+		ob->temp2 = gamestate.score;
 	}
 
 //
@@ -310,7 +310,7 @@ void ScoreThink (objtype *ob)
 		number = gamestate.boobusbombs;
 	else
 		number = gamestate.flowerpowers;
-	if (number != ob->temp3.val)
+	if (number != ob->temp3)
 	{
 		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
@@ -338,13 +338,13 @@ void ScoreThink (objtype *ob)
 		ShiftScore ();
 #endif
 		ob->needtoreact = true;
-		ob->temp3.val = gamestate.flowerpowers;
+		ob->temp3 = gamestate.flowerpowers;
 	}
 
 //
 // lives changed
 //
-	if (gamestate.lives != ob->temp4.val)
+	if (gamestate.lives != ob->temp4)
 	{
 		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
@@ -361,7 +361,7 @@ void ScoreThink (objtype *ob)
 		ShiftScore ();
 #endif
 		ob->needtoreact = true;
-		ob->temp4.val = gamestate.lives;
+		ob->temp4 = gamestate.lives;
 	}
 
 	if (originxglobal != ob->x || originyglobal != ob->y)
@@ -499,7 +499,7 @@ void ThrowPower (id0_unsigned_t x, id0_unsigned_t y, id0_int_t dir)
 
 	GetNewObj (true);
 	new->obclass = powerobj;
-	new->temp2.val = dir;
+	new->temp2 = dir;
 	new->x = x;
 	new->y = y;
 	new->tileleft = new->tileright = x>>G_T_SHIFT;
@@ -530,12 +530,12 @@ void ThrowPower (id0_unsigned_t x, id0_unsigned_t y, id0_int_t dir)
 
 	if (mapon != 15)
 	{
-		new->temp1.val = 8;  				// flower power bonus
+		new->temp1 = 8;  				// flower power bonus
 		startstate = &s_flowerpower1;
 	}
 	else
 	{
-		new->temp1.val = 10;  				// boobus bomb bonus
+		new->temp1 = 10;  				// boobus bomb bonus
 		startstate = &s_boobusbomb1;
 	}
 	new->active = removable;
@@ -562,11 +562,11 @@ void ThrowPower (id0_unsigned_t x, id0_unsigned_t y, id0_int_t dir)
 
 void	PowerCount (objtype *ob)
 {
-	ob->temp2.val+=tics;
+	ob->temp2+=tics;
 
 	ob->shapenum = 0;
 
-	if (ob->temp2.val > POWERCOUNT)
+	if (ob->temp2 > POWERCOUNT)
 		RemoveObj(ob);
 }
 
@@ -632,14 +632,14 @@ void	PowerContact (objtype *ob, objtype *hit)
 		RemoveObj (ob);
 		break;
 	case	boobusobj:
-		if (!--hit->temp4.val)
+		if (!--hit->temp4)
 		{
 		// killed boobus
 			GivePoints (50000);
 			GivePoints (50000);
 			hit->obclass = inertobj;
 			ChangeState (hit,&s_boobusdie);
-			hit->temp1.val = 0;		// death count
+			hit->temp1 = 0;		// death count
 		}
 		SD_PlaySound (BOMBBOOMSND);
 		ChangeState (ob,&s_bombexplode);
@@ -672,7 +672,7 @@ void	PowerReact (objtype *ob)
 	{
 		if ( ob->hitsouth == 17)	// go through pole holes
 		{
-			if (ob->temp2.val != dir_North)
+			if (ob->temp2 != dir_North)
 				ob->obclass = bonusobj;
 			ob->top-=32;
 			ob->y-=32;
@@ -689,7 +689,7 @@ void	PowerReact (objtype *ob)
 	wall = ob->hitnorth;
 	if ( wall == 17)	// go through pole holes
 	{
-		if (ob->temp2.val != dir_South)
+		if (ob->temp2 != dir_South)
 			ob->obclass = bonusobj;
 		ob->bottom+=32;
 		ob->y+=32;
@@ -804,8 +804,8 @@ void	PowerReact (objtype *ob)
 			if (mapon == 15)
 			{
 				ob->ydir = -1;			// bonus stuff flies up when touched
-				ob->temp2.val = ob->shapenum = BOOBUSBOMB1SPR;
-				ob->temp3.val = ob->temp2.val + 2;
+				ob->temp2 = ob->shapenum = BOOBUSBOMB1SPR;
+				ob->temp3 = ob->temp2 + 2;
 				ob->needtoclip = 0;
 				ChangeState (ob,&s_bonus);
 			}
@@ -813,7 +813,7 @@ void	PowerReact (objtype *ob)
 			{
 				ChangeState (ob,&s_powerblink1);
 				ob->needtoclip = 0;
-				ob->temp2.val = 0;		// blink time
+				ob->temp2 = 0;		// blink time
 			}
 		}
 	}
@@ -909,8 +909,8 @@ void	SpawnWorldKeen (id0_int_t tilex, id0_int_t tiley)
 	player->needtoclip = true;
 	player->xdir = 0;
 	player->ydir = 0;
-	player->temp1.val = dir_West;
-	player->temp2.val = 3;
+	player->temp1 = dir_West;
+	player->temp2 = 3;
 	player->shapenum = 3+WORLDKEENL1SPR-1;				// feet together
 	NewState (player,&s_worldkeen);
 }
@@ -976,7 +976,7 @@ void	KeenWorldThink (objtype *ob)
 	if (c.dir!=dir_None)
 	{
 		ob->state = &s_worldwalk;
-		ob->temp2.val = 0;
+		ob->temp2 = 0;
 		KeenWorldWalk (ob);
 	}
 
@@ -1004,8 +1004,8 @@ void	KeenWorldWalk (objtype *ob)
 	ob->xdir = c.xaxis;
 	ob->ydir = c.yaxis;
 
-	if (++ob->temp2.val==4)
-		ob->temp2.val = 0;
+	if (++ob->temp2==4)
+		ob->temp2 = 0;
 
 	if (c.button0 || c.button1)
 		CheckEnterLevel(ob);
@@ -1013,12 +1013,12 @@ void	KeenWorldWalk (objtype *ob)
 	if (c.dir == dir_None)
 	{
 		ob->state = &s_worldkeen;
-		ob->shapenum = worldshapes[ob->temp1.val]+3;
+		ob->shapenum = worldshapes[ob->temp1]+3;
 		return;
 	}
 
-	ob->temp1.val = c.dir;
-	ob->shapenum = worldshapes[ob->temp1.val]+worldanims[ob->temp2.val];
+	ob->temp1 = c.dir;
+	ob->shapenum = worldshapes[ob->temp1]+worldanims[ob->temp2];
 }
 
 
@@ -1409,7 +1409,7 @@ id0_boolean_t	CheckGrabPole (objtype *ob)
 	{
 		ob->xmove = ((x<<G_T_SHIFT)-8*PIXGLOBAL) - ob->x;
 		ob->ymove = c.yaxis*32;
-		ob->temp4.val = x;				// for future reference
+		ob->temp4 = x;				// for future reference
 		ob->needtoclip = false;		// can climb through pole holes
 		ob->state = &s_keenpole;
 		return true;
@@ -1498,61 +1498,61 @@ void KeenPauseThink (objtype *ob)
 {
 	if (c.dir != dir_None || c.button0 || c.button1)
 	{
-		ob->temp1.val = ob->temp2.val = 0;			// not paused any more
+		ob->temp1 = ob->temp2 = 0;			// not paused any more
 		ob->state = &s_keenstand;
 		KeenStandThink(ob);
 		return;
 	}
 
 	if ((ob->hitnorth & ~7) != 24)	// if it is 0 now, keen is standing on a sprite
-		ob->temp1.val += tics;
+		ob->temp1 += tics;
 
-	switch (ob->temp2.val)
+	switch (ob->temp2)
 	{
 	case 0:
-		if (ob->temp1.val > 200)
+		if (ob->temp1 > 200)
 		{
-			ob->temp2.val++;
+			ob->temp2++;
 			ob->state = &s_keenpauselook;
-			ob->temp1.val = 0;
+			ob->temp1 = 0;
 		}
 		break;
 	case 1:
-		if (ob->temp1.val > 300)
+		if (ob->temp1 > 300)
 		{
-			ob->temp2.val++;
+			ob->temp2++;
 			ob->state = &s_keenwait1;
-			ob->temp1.val = 0;
+			ob->temp1 = 0;
 		}
 		break;
 	case 2:
-		if (ob->temp1.val > 700)
+		if (ob->temp1 > 700)
 		{
-			ob->temp2.val++;
+			ob->temp2++;
 			ob->state = &s_keenyawn1;
-			ob->temp1.val = 0;
+			ob->temp1 = 0;
 		}
 		break;
 	case 3:
-		if (ob->temp1.val > 400)
+		if (ob->temp1 > 400)
 		{
-			ob->temp2.val++;
+			ob->temp2++;
 			ob->state = &s_keenpauselook;
-			ob->temp1.val = 0;
+			ob->temp1 = 0;
 		}
 		break;
 	case 4:
-		if (ob->temp1.val > 700)
+		if (ob->temp1 > 700)
 		{
-			ob->temp2.val++;
+			ob->temp2++;
 			ob->state = &s_keenyawn1;
-			ob->temp1.val = 0;
+			ob->temp1 = 0;
 		}
 		break;
 	case 5:
-		if (ob->temp1.val > 400)
+		if (ob->temp1 > 400)
 		{
-			ob->temp2.val++;
+			ob->temp2++;
 			ob->state = &s_keengosleep1;
 		}
 		break;
@@ -1584,7 +1584,8 @@ void KeenGoSleepThink (objtype *ob)
 	new->ydir = -1;
 	NewState (new,&s_keenzee1);
 
-	ob->temp1.ptr = new;				// so they can be removed later
+	ob->temp1 = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new); // so they can be removed later
+	//ob->temp1 = new;				// so they can be removed later
 }
 
 
@@ -1602,9 +1603,12 @@ void KeenSleepThink (objtype *ob)
 {
 	if (c.dir != dir_None || c.button0 || c.button1)
 	{
-		if (ob->temp1.ptr != &dummyobj)
-			RemoveObj ((objtype *)ob->temp1.ptr);	// remove the zees
-		ob->temp1.val = ob->temp2.val = 0;			// not paused any more
+		objtype *tempptr = COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(ob->temp1);
+		if (tempptr != &dummyobj)
+			RemoveObj (tempptr);	// remove the zees
+		//if (ob->temp1 != &dummyobj)
+		//	RemoveObj ((objtype *)ob->temp1);	// remove the zees
+		ob->temp1 = ob->temp2 = 0;			// not paused any more
 		ob->state = &s_keengetup;
 	}
 }
@@ -1679,7 +1683,7 @@ void KeenDuckThink (objtype *ob)
 		ob->y += move;
 		ob->xmove = ob->ymove = 0;
 		ob->state = &s_keenjumpup3;
-		ob->temp2.val = 1;		// allready in last stage
+		ob->temp2 = 1;		// allready in last stage
 		ob->xspeed = ob->yspeed = 0;
 		SD_PlaySound (PLUMMETSND);
 	}
@@ -1795,7 +1799,7 @@ void	KeenAirThink		(objtype *ob)
 
 		if (!jumptime)
 		{
-			ob->temp2.val = 0;
+			ob->temp2 = 0;
 			ob->state = ob->state->nextstate;	// switch to second jump stage
 		}
 	}
@@ -1803,10 +1807,10 @@ void	KeenAirThink		(objtype *ob)
 	{
 		DoGravity(ob);
 
-		if (ob->yspeed>0 && !ob->temp2.val)
+		if (ob->yspeed>0 && !ob->temp2)
 		{
 			ob->state = ob->state->nextstate;	// switch to third jump stage
-			ob->temp2.val = 1;
+			ob->temp2 = 1;
 		}
 	}
 
@@ -1956,7 +1960,7 @@ void	KeenClimbThink		(objtype *ob)
 {
 	id0_unsigned_t id0_far *map;
 
-	map = (id0_unsigned_t id0_seg *)mapsegs[1]+mapbwidthtable[ob->tiletop]/2+ob->temp4.val;
+	map = (id0_unsigned_t id0_seg *)mapsegs[1]+mapbwidthtable[ob->tiletop]/2+ob->temp4;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
 	{
@@ -1995,14 +1999,14 @@ void	KeenDropThink		(objtype *ob)
 {
 	id0_unsigned_t id0_far *map;
 
-	map = (id0_unsigned_t id0_seg *)mapsegs[1]+mapbwidthtable[ob->tilebottom]/2+ob->temp4.val;
+	map = (id0_unsigned_t id0_seg *)mapsegs[1]+mapbwidthtable[ob->tilebottom]/2+ob->temp4;
 
 	if ((tinf[INTILE+*map]&0x7f) != 1)
 	{
 		SD_PlaySound (PLUMMETSND);
 		ob->state = &s_keenjump3;		// ran out of pole
 		jumptime = 0;
-		ob->temp2.val = 1;
+		ob->temp2 = 1;
 		ob->xspeed = polexspeed[c.xaxis+1];
 		ob->yspeed = 0;
 		ob->needtoclip = true;
@@ -2164,7 +2168,7 @@ void	KeenContact (objtype *ob, objtype *hit)
 	{
 	case	bonusobj:
 		hit->obclass = inertobj;
-		switch (hit->temp1.val)
+		switch (hit->temp1)
 		{
 		case 0:
 		case 1:
@@ -2173,8 +2177,8 @@ void	KeenContact (objtype *ob, objtype *hit)
 		case 4:
 		case 5:
 			SD_PlaySound (GETPOINTSSND);
-			hit->shapenum = BONUS100SPR+hit->temp1.val;
-			GivePoints (bonuspoints[hit->temp1.val]);
+			hit->shapenum = BONUS100SPR+hit->temp1;
+			GivePoints (bonuspoints[hit->temp1]);
 			ChangeState (hit,&s_bonusrise);
 			break;
 		case 6:
@@ -2247,7 +2251,7 @@ void	KeenContact (objtype *ob, objtype *hit)
 			ob->needtoclip = true;
 			ob->xspeed = ob->yspeed = 0;
 			ChangeState(ob,&s_keenjump3);
-			ob->temp2.val = 1;
+			ob->temp2 = 1;
 			jumptime = 0;
 		}
 		break;
@@ -2270,7 +2274,7 @@ void	KeenContact (objtype *ob, objtype *hit)
 				ob->needtoclip = true;
 				ob->xspeed = ob->yspeed = 0;
 				ChangeState(ob,&s_keenjump3);
-				ob->temp2.val = 1;
+				ob->temp2 = 1;
 				jumptime = 0;
 			}
 		}
@@ -2338,7 +2342,7 @@ void	KeenStandReact (objtype *ob)
 		SD_PlaySound (PLUMMETSND);
 		ob->xspeed = ob->xdir*WALKAIRSPEED;
 		ChangeState (ob,&s_keenjump3);
-		ob->temp2.val = 1;
+		ob->temp2 = 1;
 		jumptime = 0;
 	}
 	else if ( (ob->hitnorth & ~7) == 8)	// deadly floor!
@@ -2367,7 +2371,7 @@ void	KeenWalkReact (objtype *ob)
 		ob->xspeed = ob->xdir*WALKAIRSPEED;
 		ob->yspeed = 0;
 		ChangeState (ob,&s_keenjump3);
-		ob->temp2.val = 1;
+		ob->temp2 = 1;
 		jumptime = 0;
 	}
 	else if ( (ob->hitnorth & ~7) == 8)	// deadly floor!
@@ -2457,7 +2461,7 @@ checknorth:
 	{
 		if (!(ob->hitnorth == 25 && jumptime))	// KLUDGE to allow jumping off
 		{										// sprites
-			ob->temp1.val = ob->temp2.val = 0;
+			ob->temp1 = ob->temp2 = 0;
 			ChangeState (ob,&s_keenstand);
 			SD_PlaySound (LANDSND);
 		}

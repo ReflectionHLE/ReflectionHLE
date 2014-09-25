@@ -195,7 +195,7 @@ void StatusWindow (void)
 }
 
 id0_boolean_t
-SaveGame(id0_int_t file)
+SaveGame(int file)
 {
 	id0_word_t    i,size,compressed,expanded;
 	objtype *o;
@@ -237,7 +237,7 @@ SaveGame(id0_int_t file)
 
 
 id0_boolean_t
-LoadGame(id0_int_t file)
+LoadGame(int file)
 {
 	id0_word_t    i,j,size;
 	objtype *o;
@@ -315,9 +315,9 @@ LoadGame(id0_int_t file)
 			break;
 	}
 
-	scoreobj->temp1.val = scoreobj->temp2.val = -1;             // force score to be updated
-	scoreobj->temp3.val = -1;                   // and flower power
-	scoreobj->temp4.val = -1;                   // and lives
+	scoreobj->temp1 = scoreobj->temp2 = -1;             // force score to be updated
+	scoreobj->temp3 = -1;                   // and flower power
+	scoreobj->temp4 = -1;                   // and lives
 #if 0
 	*((id0_long_t *)&(scoreobj->temp1)) = -1;             // force score to be updated
 	scoreobj->temp3 = -1;                   // and flower power

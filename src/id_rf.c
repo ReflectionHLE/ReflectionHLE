@@ -579,8 +579,6 @@ void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y)
 // the info plane of each animating tile has a near pointer into allanims[]
 // which gives the current state of all concurrently animating tiles
 
-// UPDATE (CHOCO KEEN): info plane has an index rather than a pointer now
-
 	offset = mapbwidthtable[y]/2+x;
 
 //

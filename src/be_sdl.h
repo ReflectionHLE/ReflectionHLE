@@ -1,3 +1,22 @@
+/* Copyright (C) 2014 NY00123
+ *
+ * This file is part of Chocolate Keen Dreams.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 // Direct accesses to any of these functions should be minimized
 
 /*** General ***/
@@ -7,6 +26,9 @@ void BE_SDL_StartKeyboardService(void (*funcPtr)(id0_byte_t));
 void BE_SDL_StopKeyboardService(void);
 void BE_SDL_GetMouseDelta(id0_int_t *x, id0_int_t *y);
 id0_word_t BE_SDL_GetMouseButtons(void);
+void BE_SDL_GetJoyAbs(id0_word_t joy, id0_word_t *xp, id0_word_t *yp);
+id0_word_t BE_SDL_GetJoyButtons(id0_word_t joy);
+
 void BE_SDL_PollEvents(void);
 
 /*** Audio/timer (vanilla Keen kind-of has these mixed) ***/

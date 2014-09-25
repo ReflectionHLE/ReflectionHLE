@@ -98,17 +98,6 @@ typedef	struct
 	id0_int_t		difficulty;
 } __attribute__((__packed__)) gametype;
 
-// TODO? (CHOCO KEEN): Using unions for temporaries now
-// (because we may wish to store pointers and these aren't 16-bit...)
-//
-// But this totally corrupts saved games ; And these depend on EXE layout...
-
-typedef union
-{
-	id0_int_t val;
-	void *ptr;
-} objtempfield;
-
 
 typedef struct	objstruct
 {
@@ -134,13 +123,25 @@ typedef struct	objstruct
 
 	id0_int_t			hitnorth,hiteast,hitsouth,hitwest;	// wall numbers contacted
 
-	// TODO (CHOCO KEEN): Use 16-bit integers again with some mechanism
-	objtempfield			temp1,temp2,temp3,temp4;
+	// FIXME (CHOCO KEEN) Make temp2 an id0_int_t (16-bit signed int) again, while still retaining full compatibility, including saved games
+	id0_int_t temp1;
+	intptr_t temp2;
+	id0_int_t temp3, temp4;
+	//id0_int_t			temp1,temp2,temp3,temp4;
 
 	void		*sprite;
 
 	struct	objstruct	*next,*prev;
 } __attribute__((__packed__)) objtype;
+
+
+// (CHOCO KEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
+// objstruct may store a 16-bit pointer with another object.
+// For Keen Dreams CGA v1.05 it should be replicated with the following macros.
+#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+0x7470))
+#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) (objarray+(id0_word_t)((id0_word_t)(dosptr)-(id0_word_t)0x7470)/sizeof(objtype))
+
+extern objtype objarray[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY
 
 
 /*
@@ -180,8 +181,8 @@ void	StatusWindow (void);
 void	NewGame (void);
 void	TEDDeath (void);
 
-id0_boolean_t	LoadGame (id0_int_t file);
-id0_boolean_t	SaveGame (id0_int_t file);
+id0_boolean_t	LoadGame (int file);
+id0_boolean_t	SaveGame (int file);
 void	ResetGame (void);
 
 /*

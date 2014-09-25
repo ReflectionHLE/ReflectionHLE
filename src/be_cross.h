@@ -1,3 +1,22 @@
+/* Copyright (C) 2014 NY00123
+ *
+ * This file is part of Chocolate Keen Dreams.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #ifndef BE_CROSS_H
 #define BE_CROSS_H
 
@@ -35,6 +54,8 @@ size_t BE_Cross_readInt32LE(int handle, void *ptr);
 size_t BE_Cross_read_SDMode_From16LE(int handle, SDMode *ptr);
 size_t BE_Cross_read_SMMode_From16LE(int handle, SMMode *ptr);
 size_t BE_Cross_read_ControlType_From16LE(int handle, ControlType *ptr);
+// boolean implementation may be separated from enums, otherwise it's the same
+size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr);
 
 // Same but for writing
 size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t count);
@@ -43,8 +64,9 @@ size_t BE_Cross_writeInt32LE(int handle, const void *ptr);
 
 size_t BE_Cross_write_SDMode_To16LE(int handle, const SDMode *ptr);
 size_t BE_Cross_write_SMMode_To16LE(int handle, const SMMode *ptr);
-size_t BE_Cross_write_ControlType_TO16LE(int handle, const ControlType *ptr);
+size_t BE_Cross_write_ControlType_To16LE(int handle, const ControlType *ptr);
 
+size_t BE_Cross_write_boolean_To16LE(int handle, const bool *ptr);
 
 // Assuming segPtr is replacement for a 16-bit segment pointer, and offInSegPtr
 // is a replacement for an offset in this segment (pointing to a place in the

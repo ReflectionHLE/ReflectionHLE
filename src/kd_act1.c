@@ -421,7 +421,6 @@ statetype s_pooffrom7  	 = {POOF4SPR,POOF4SPR,step,false,
 
 #pragma warn +sus
 
-
 /*
 ======================
 =
@@ -434,9 +433,9 @@ void ChangeToFlower (objtype *ob)
 {
 	SD_PlaySound (FLOWERPOWERSND);
 	ob->y = ob->bottom-TILEGLOBAL*2;
-	ob->temp1.val = (id0_int_t)ob->obclass;
-	ob->temp2.ptr = ob->state;
-	ob->temp3.val = 0;
+	ob->temp1 = (id0_int_t)ob->obclass;
+	ob->temp2 = ob->state;
+	ob->temp3 = 0;
 	ob->needtoclip = true;
 	ob->obclass = inertobj;
 	ob->xspeed = 0;
@@ -461,15 +460,16 @@ void ChangeToFlower (objtype *ob)
 void FlowerThink (objtype *ob)
 {
 	ProjectileThink (ob);
-	if ( (ob->temp3.val+=tics) >= flowertime[gamestate.difficulty])
+	if ( (ob->temp3+=tics) >= flowertime[gamestate.difficulty])
 	{
 		GetNewObj (true);
 		new->active = allways;
-		new->temp1.ptr = ob;
+		new->temp1 = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
+		//new->temp1 = ob;
 		new->x = ob->x;
 		new->y = ob->y;
 		NewState (new,&s_pooffrom1);
-		ob->temp3.val = 0;
+		ob->temp3 = 0;
 	}
 }
 
@@ -489,13 +489,14 @@ void ChangeFromFlower (objtype *ob)
 	id0_unsigned_t	oldbottom;
 
 	SD_PlaySound (UNFLOWERPOWERSND);
-	flower = (objtype *)ob->temp1.ptr;
+	flower = COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(ob->temp1);
+	//flower = (objtype *)ob->temp1;
 
 	oldbottom = flower->bottom;
-	ChangeState (flower,(statetype *)flower->temp2.ptr);
+	ChangeState (flower,(statetype *)flower->temp2);
 	flower->y += oldbottom - flower->bottom;
 
-	flower->obclass = flower->temp1.val;
+	flower->obclass = flower->temp1;
 	flower->active = yes;			// allow it to unspawn now if off screen
 }
 
@@ -552,12 +553,12 @@ void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t type)
 
 	new->ydir = -1;			// bonus stuff flies up when touched
 
-	new->temp1.val = type;
-	new->temp2.val = new->shapenum = bonusshape[type];
+	new->temp1 = type;
+	new->temp2 = new->shapenum = bonusshape[type];
 	if (type != 7)
-		new->temp3.val = new->temp2.val + 2;
+		new->temp3 = new->temp2 + 2;
 	else
-		new->temp3.val = new->temp2.val + 4;	// super bonus is 4 stage animation
+		new->temp3 = new->temp2 + 4;	// super bonus is 4 stage animation
 
 	NewState (new,&s_bonus);
 }
@@ -572,8 +573,8 @@ void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t type)
 
 void BonusThink (objtype *ob)
 {
-	if (++ob->shapenum == ob->temp3.val)
-		ob->shapenum = ob->temp2.val;
+	if (++ob->shapenum == ob->temp3)
+		ob->shapenum = ob->temp2;
 }
 
 
@@ -782,17 +783,17 @@ void TomatBounceThink (objtype *ob)
 	else
 		ob->xdir = -1;
 
-	if (ob->temp1.val)
+	if (ob->temp1)
 	{
-		if (ob->temp1.val<tics)
+		if (ob->temp1<tics)
 		{
-			ob->ymove = ob->yspeed*ob->temp1.val;
-			ob->temp1.val = 0;
+			ob->ymove = ob->yspeed*ob->temp1;
+			ob->temp1 = 0;
 		}
 		else
 		{
 			ob->ymove = ob->yspeed*tics;
-			ob->temp1.val-=tics;
+			ob->temp1-=tics;
 		}
 	}
 	else
@@ -835,7 +836,7 @@ void TomatReact (objtype *ob)
 		&& ob->tilebottom <= originytilemax)
 			SD_PlaySound (BOUNCESND);
 		ob->yspeed = -SPDTOMATBOUNCE-(US_RndT()>>4);
-		ob->temp1.val = TICTOMATJUMP;
+		ob->temp1 = TICTOMATJUMP;
 	}
 
 	PLACESPRITE;

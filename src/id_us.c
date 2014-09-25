@@ -383,7 +383,11 @@ USL_CheckSavedGames(void)
 		{
 			if
 			(
-				(read(file,game,sizeof(*game)) == sizeof(*game))
+				// CHOCO KEEN Cross Platform file I/O
+				(BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
+			&&	(BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
+			&&	(BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->name)) == sizeof(game->name))
+				//(read(file,game,sizeof(*game)) == sizeof(*game))
 			&&	(!strcmp(game->signature,EXTENSION))
 			)
 				ok = true;
@@ -2855,7 +2859,11 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		err = 0;
 		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
-			if (read(file,game,sizeof(*game)) == sizeof(*game))
+			// CHOCO KEEN Cross Platform file I/O
+			if ((BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
+			    && (BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
+			    && (BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->name)) == sizeof(game->name)))
+			//if (read(file,game,sizeof(*game)) == sizeof(*game))
 			{
 				if (USL_LoadGame)
 					if (!USL_LoadGame(file))
@@ -2935,7 +2943,11 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 					/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 		if (file != -1)
 		{
-			if (write(file,game,sizeof(*game)) == sizeof(*game))
+			// CHOCO KEEN Cross Platform file I/O
+			if ((BE_Cross_writeInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
+			    && (BE_Cross_write_boolean_To16LE(file, &(game->present)) == 2)
+			    && (BE_Cross_writeInt8LEBuffer(file, game->signature, sizeof(game->name)) == sizeof(game->name)))
+			//if (write(file,game,sizeof(*game)) == sizeof(*game))
 			{
 				if (USL_SaveGame)
 					ok = USL_SaveGame(file);
@@ -3138,7 +3150,7 @@ USL_CtlPRButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 static id0_boolean_t
 USL_CtlDEButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	id0_boolean_t		result;
+	id0_boolean_t		result = false; /* CHOCO KEEN: Originally, was not initialized at all */
 	UserItem	*ip;
 
 	i++,n++;	// Shut the compiler up

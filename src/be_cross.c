@@ -1,3 +1,22 @@
+/* Copyright (C) 2014 NY00123
+ *
+ * This file is part of Chocolate Keen Dreams.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -157,6 +176,23 @@ size_t BE_Cross_write_ ## ourSampleEnum ## _To16LE (int handle, const ourSampleE
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
+
+size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr)
+{
+	uint16_t val;
+	size_t bytesread = read(handle, &val, 2);
+	if (bytesread == 2)
+	{
+		*ptr = val; // No need to swap byte-order here
+	}
+	return bytesread;
+}
+
+size_t BE_Cross_write_boolean_To16LE(int handle, const bool *ptr)
+{
+	uint16_t val = BE_Cross_Swap16LE((uint16_t)(*ptr));
+	return write(handle, &val, 2);
+}
 
 void BE_Cross_Wrapped_Add(uint8_t *segPtr, uint8_t **offInSegPtrPtr, uint16_t count)
 {

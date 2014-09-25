@@ -1,7 +1,31 @@
+/* Copyright (C) 2014 NY00123
+ *
+ * This file is part of Chocolate Keen Dreams.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #include "SDL.h"
 #include "id_heads.h"
 
+#define BE_SDL_MAXJOYSTICKS 8
+#define BE_SDL_EMU_JOYSTICK_RANGEMAX 5000 // id_in.c MaxJoyValue
+
 static void (*g_sdlKeyboardInterruptFuncPtr)(id0_byte_t) = 0;
+
+static SDL_Joystick *g_sdlJoysticks[BE_SDL_MAXJOYSTICKS];
 
 void BE_SDL_InitGfx(void);
 void BE_SDL_InitAudio(void);
@@ -15,10 +39,15 @@ void BE_SDL_InitAll(void)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL backend initialization failed,\n%s\n", SDL_GetError());
 		exit(0);
 	}
+	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL joystick subsystem initialization failed, disabled,\n%s\n", SDL_GetError());
+	}
 	BE_SDL_InitGfx();
 	BE_SDL_InitAudio();
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	SDL_GetRelativeMouseState(NULL, NULL);
+	BE_SDL_PollEvents(); // e.g., to "reset" some states, and detect joysticks
 }
 
 void BE_SDL_ShutdownAll(void)
@@ -425,6 +454,75 @@ id0_word_t BE_SDL_GetMouseButtons(void)
 	return results[SDL_GetMouseState(NULL, NULL) & 7];
 }
 
+void BE_SDL_GetJoyAbs(id0_word_t joy, id0_word_t *xp, id0_word_t *yp)
+{
+	int emuAxisStart = (joy != 0) ? 2 : 0;
+	int minX = BE_SDL_EMU_JOYSTICK_RANGEMAX, minY = BE_SDL_EMU_JOYSTICK_RANGEMAX, maxX = 0, maxY = 0;
+	for (int i = 0; i < BE_SDL_MAXJOYSTICKS; ++i, emuAxisStart ^= 2)
+	{
+		if (!(g_sdlJoysticks[i]))
+		{
+			continue;
+		}
+		int nAxes = SDL_JoystickNumAxes(g_sdlJoysticks[i]);
+		for (int axis = 0, emuAxis = emuAxisStart; axis < nAxes; ++axis)
+		{
+			// Ignore emulated axes 2&3 (check just 0&1)
+			if (emuAxis < 2)
+			{
+				int axisNormalizedVal = ((int)SDL_JoystickGetAxis(g_sdlJoysticks[i], axis)+32768)*BE_SDL_EMU_JOYSTICK_RANGEMAX/65535;
+				if (emuAxis == 0)
+				{
+					minX = (minX < axisNormalizedVal) ? minX : axisNormalizedVal;
+					maxX = (maxX > axisNormalizedVal) ? maxX : axisNormalizedVal;
+				}
+				else
+				{
+					minY = (minY < axisNormalizedVal) ? minY : axisNormalizedVal;
+					maxY = (maxY > axisNormalizedVal) ? maxY : axisNormalizedVal;
+				}
+			}
+			if (++emuAxis == 4)
+			{
+				emuAxis = 0;
+			}
+		}
+	}
+	// Pick horizontal axis furthest from the center, and similarly vertical
+	// NOTE: If we do not have any joystick connected, center is NOT returned.
+	// Reason is the way joystick detection is done under DOS.
+	*xp = minX < (BE_SDL_EMU_JOYSTICK_RANGEMAX-maxX) ? minX : maxX;
+	*yp = minY < (BE_SDL_EMU_JOYSTICK_RANGEMAX-maxY) ? minY : maxY;
+}
+
+id0_word_t BE_SDL_GetJoyButtons(id0_word_t joy)
+{
+	int emuButMaskStart = (joy != 0) ? 4 : 1;
+	int result = 0;
+	for (int i = 0; i < BE_SDL_MAXJOYSTICKS; ++i, emuButMaskStart ^= 5)
+	{
+		if (!(g_sdlJoysticks[i]))
+		{
+			continue;
+		}
+		int nButtons = SDL_JoystickNumButtons(g_sdlJoysticks[i]);
+		for (int but = 0, emuButMask = emuButMaskStart; but < nButtons; ++but)
+		{
+			// Ignore emulated buttons 2&3 (check just 0&1)
+			if ((emuButMask < 4) && SDL_JoystickGetButton(g_sdlJoysticks[i], but))
+			{
+				result |= emuButMask;
+			}
+			emuButMask <<= 1;
+			if (emuButMask == 16)
+			{
+				emuButMask = 1;
+			}
+		}
+	}
+	return result;
+}
+
 static void BEL_SDL_HandleEmuKeyboardEvent(bool isPressed, emulatedDOSKeyEvent keyEvent)
 {
 	if (keyEvent.dosScanCode == EMULATEDKEYSCANCODE_PAUSE)
@@ -461,6 +559,24 @@ void BE_SDL_PollEvents(void)
 		case SDL_KEYUP:
 			BEL_SDL_HandleEmuKeyboardEvent(event.type == SDL_KEYDOWN, sdlKeyMappings[event.key.keysym.scancode]);
 			break;
+		case SDL_JOYDEVICEADDED:
+			if (event.jdevice.which < BE_SDL_MAXJOYSTICKS)
+			{
+				g_sdlJoysticks[event.jdevice.which] = SDL_JoystickOpen(event.jdevice.which);
+			}
+			break;
+		case SDL_JOYDEVICEREMOVED:
+		{
+			for (int i = 0; i < BE_SDL_MAXJOYSTICKS; ++i)
+			{
+				if (g_sdlJoysticks[i] && SDL_JoystickInstanceID(g_sdlJoysticks[i]) == event.jdevice.which)
+				{
+					SDL_JoystickClose(g_sdlJoysticks[i]);
+					g_sdlJoysticks[i] = NULL;
+				}
+			}
+			break;
+		}
 		case SDL_QUIT:
 			SDL_Quit();
 			exit(0);

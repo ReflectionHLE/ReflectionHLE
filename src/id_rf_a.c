@@ -523,10 +523,6 @@ void RFL_MaskForegroundTiles (void)
 
 		id0_word_t offsettedoriginmap = updatemapofs[scanPtr-updateptr-1] + originmap;
 		id0_word_t foretilenum = mapsegs[1][offsettedoriginmap/2];
-		// TODO CHOCO KEEN DEBUG (bounds check)
-		if (foretilenum >= NUMTILE16M)
-			foretilenum = 0;
-		//
 		if (!foretilenum) // 0 = no foreground tile
 		{
 			continue;

@@ -176,7 +176,7 @@ id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t lengt
 		return false;
 	}
 
-	if (bytesread < length)
+	if (bytesread != length)
 	{
 		/* FIXME (CHOCO KEEN) - Is that the right way? */
 		errno = 11;
@@ -209,7 +209,7 @@ id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t le
 		return false;
 	}
 
-	if (bytesread < length)
+	if (bytesread != length)
 	{
 		errno = ENOMEM; // user manager knows this is bad write
 		return false;

@@ -257,9 +257,7 @@ INL_GetMouseButtons(void)
 void
 IN_GetJoyAbs(id0_word_t joy,id0_word_t *xp,id0_word_t *yp)
 {
-	// TODO: (CHOCO KEEN): IMPLEMENT!
-	*xp = 0;
-	*yp = 0;
+	BE_SDL_GetJoyAbs(joy, xp, yp);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -348,8 +346,7 @@ static	id0_longword_t	lasttime;
 static id0_word_t
 INL_GetJoyButtons(id0_word_t joy)
 {
-	// TODO: (CHOCO KEEN): IMPLEMENT!
-	return 0;
+	return BE_SDL_GetJoyButtons(joy);
 }
 
 ///////////////////////////////////////////////////////////////////////////
