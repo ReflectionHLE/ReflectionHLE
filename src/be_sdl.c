@@ -58,6 +58,40 @@ void BE_SDL_ShutdownAll(void)
 	SDL_Quit();
 }
 
+void BE_SDL_HandleExit(int status)
+{
+	SDL_Event event;
+	// TODO Check joystick events
+	while (true)
+	{
+		while (SDL_PollEvent(&event))
+		{
+			switch (event.type)
+			{
+			case SDL_WINDOWEVENT:
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					void BE_SDL_SetAspectCorrectionRect(void);
+					BE_SDL_SetAspectCorrectionRect();
+				}
+				break;
+			case SDL_KEYDOWN:
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_QUIT:
+				SDL_Quit();
+				BE_SDL_ShutdownAll();
+				exit(0);
+				break;
+			default: ;
+			}
+		}
+		SDL_Delay(1);
+		// TODO: Make this more efficient
+		void BE_SDL_UpdateHostDisplay(void);
+		BE_SDL_UpdateHostDisplay();
+	}
+}
+
 typedef enum EmulatedKeyScancode_T {
      EMULATEDKEYSCANCODE_ESC = 1,
      EMULATEDKEYSCANCODE_1,
@@ -559,6 +593,10 @@ void BE_SDL_PollEvents(void)
 		case SDL_KEYUP:
 			BEL_SDL_HandleEmuKeyboardEvent(event.type == SDL_KEYDOWN, sdlKeyMappings[event.key.keysym.scancode]);
 			break;
+		case SDL_MOUSEBUTTONDOWN:
+			// Note: Mouse state is read without events
+			SDL_SetRelativeMouseMode(SDL_TRUE); // TODO: Any better way?
+			break;
 		case SDL_JOYDEVICEADDED:
 			if (event.jdevice.which < BE_SDL_MAXJOYSTICKS)
 			{
@@ -577,9 +615,32 @@ void BE_SDL_PollEvents(void)
 			}
 			break;
 		}
+		case SDL_WINDOWEVENT:
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				void BE_SDL_SetAspectCorrectionRect(void);
+				BE_SDL_SetAspectCorrectionRect();
+				BE_SDL_MarkGfxForPendingUpdate();
+				BE_SDL_MarkGfxForUpdate();
+			}
+			else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+			{
+				SDL_SetRelativeMouseMode(SDL_FALSE); // TODO: Any better way?
+			}
+			else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+			{
+				extern SDL_Window *g_sdlWindow;
+				if (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)
+				{
+					SDL_SetRelativeMouseMode(SDL_TRUE); // TODO: Any better way?
+				}
+			}
+			break;
 		case SDL_QUIT:
 			SDL_Quit();
+			BE_SDL_ShutdownAll();
 			exit(0);
+			break;
 		default: ;
 		}
 	}

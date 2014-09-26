@@ -376,12 +376,12 @@ void Quit (id0_char_t *error)
   ShutdownId ();
   if (error && *error)
   {
-	BE_Cross_clrscr();
-	puts(error);
-	puts("\n");
-//      puts("For techinical assistance with running this software, type HELP at");
-//      puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
-	exit(1);
+	BE_SDL_clrscr();
+	BE_Cross_puts(error);
+	BE_Cross_puts("\n");
+//      BE_Cross_puts("For techinical assistance with running this software, type HELP at");
+//      BE_Cross_puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
+	BE_SDL_HandleExit(1);
   }
 #ifndef CATALOG
 	// TODO (CHOCO KEEN) Do we want to support this in any way at all?
@@ -394,7 +394,7 @@ void Quit (id0_char_t *error)
 #endif
 #ifdef CATALOG
   VW_SetScreenMode(TEXTGR);
-  exit(0);
+  BE_SDL_HandleExit(0);
 #endif
 
 }
@@ -431,9 +431,9 @@ void InitGame (void)
 	{
 #pragma warn    -pro
 #pragma warn    -nod
-		BE_Cross_textcolor(7);
-		BE_Cross_textbackground(0);
-		clrscr();                       // we can't include CONIO because of a name conflict
+		BE_SDL_textcolor(7);
+		BE_SDL_textbackground(0);
+		BE_SDL_clrscr();                       // we can't include CONIO because of a name conflict
 #pragma warn    +nod
 #pragma warn    +pro
 		puts ("There is not enough memory available to play the game reliably.  You can");
@@ -515,34 +515,34 @@ void id0_main (void)
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
 
-	BE_Cross_textcolor(7);
-	BE_Cross_textbackground(0);
+	BE_SDL_textcolor(7);
+	BE_SDL_textbackground(0);
 
 	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
-		printf("KEEN DREAMS\n");
-		printf("CGA Version\n");
-		printf("Copyright 1991-93 Softdisk Publishing\n");
-		printf("Version 1.05 (rev 1)\n");
-		exit(0);
+		BE_Cross_Simplified_printf("KEEN DREAMS\n");
+		BE_Cross_Simplified_printf("CGA Version\n");
+		BE_Cross_Simplified_printf("Copyright 1991-93 Softdisk Publishing\n");
+		BE_Cross_Simplified_printf("Version 1.05 (rev 1)\n");
+		BE_SDL_HandleExit(0);
 	}
 
 	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
 	{
-		printf("\nKeen Dreams CGA version 1.05\n");
-		printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
-		printf("Commander Keen is a trademark of Id Software.\n");
-		printf("Type KDREAMS from the DOS prompt to run.\n\n");
-		printf("KDREAMS /COMP for SVGA compatibility mode\n");
-		printf("KDREAMS /NODR stops program hang with the drive still on\n");
-		printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
-		printf("KDREAMS /NOSB disables Sound Blaster detection\n");
-		printf("KDREAMS /NOJOYS ignores joystick\n");
-		printf("KDREAMS /NOMOUSE ignores mouse\n");
-		printf("KDREAMS /HIDDENCARD overrides video card detection\n");
-		printf("KDREAMS /VER  for version and compatibility information\n");
-		printf("KDREAMS /? for this help information\n");
-		exit(0);
+		BE_Cross_Simplified_printf("\nKeen Dreams CGA version 1.05\n");
+		BE_Cross_Simplified_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+		BE_Cross_Simplified_printf("Commander Keen is a trademark of Id Software.\n");
+		BE_Cross_Simplified_printf("Type KDREAMS from the DOS prompt to run.\n\n");
+		BE_Cross_Simplified_printf("KDREAMS /COMP for SVGA compatibility mode\n");
+		BE_Cross_Simplified_printf("KDREAMS /NODR stops program hang with the drive still on\n");
+		BE_Cross_Simplified_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
+		BE_Cross_Simplified_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
+		BE_Cross_Simplified_printf("KDREAMS /NOJOYS ignores joystick\n");
+		BE_Cross_Simplified_printf("KDREAMS /NOMOUSE ignores mouse\n");
+		BE_Cross_Simplified_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
+		BE_Cross_Simplified_printf("KDREAMS /VER  for version and compatibility information\n");
+		BE_Cross_Simplified_printf("KDREAMS /? for this help information\n");
+		BE_SDL_HandleExit(0);
 	}
 
 	for (i = 1;i < id0_argc;i++)
@@ -557,9 +557,9 @@ void id0_main (void)
 #ifndef CATALOG
 	if (!LaunchedFromShell)
 	{
-		BE_Cross_clrscr();
-		puts("You must type START at the DOS prompt to run KEEN DREAMS.");
-		exit(0);
+		BE_SDL_clrscr();
+		BE_Cross_puts("You must type START at the DOS prompt to run KEEN DREAMS.");
+		BE_SDL_HandleExit(0);
 	}
 #endif
 

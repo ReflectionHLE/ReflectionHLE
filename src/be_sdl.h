@@ -17,11 +17,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifndef	__BE_SDL__
+#define __BE_SDL__
+
 // Direct accesses to any of these functions should be minimized
 
 /*** General ***/
 void BE_SDL_InitAll(void);
 void BE_SDL_ShutdownAll(void);
+void BE_SDL_HandleExit(int status); // Replacement for exit function (useful for displaying text screen)
 void BE_SDL_StartKeyboardService(void (*funcPtr)(id0_byte_t));
 void BE_SDL_StopKeyboardService(void);
 void BE_SDL_GetMouseDelta(id0_int_t *x, id0_int_t *y);
@@ -58,3 +62,17 @@ void BE_SDL_SetBorderColor(id0_byte_t color);
 void BE_SDL_SetScreenMode(int mode);
 void BE_SDL_WaitVBL(id0_int_t number);
 void BE_SDL_ShortSleep(void);
+
+void BE_SDL_textcolor(int color);
+void BE_SDL_textbackground(int color);
+void BE_SDL_clrscr(void);
+void BE_SDL_MoveTextCursorTo(int x, int y);
+// Replacement for puts function that prints to emulated text mode memory
+void BE_SDL_puts(const char *str);
+// Limited replacement for printf, does NOT handle formatting (apart from '\n')
+void BE_SDL_simplified_printf(const char *str);
+
+void BE_SDL_MarkGfxForUpdate(void);
+void BE_SDL_MarkGfxForPendingUpdate(void); // Marks only if BE_SDL_MarkGfxForUpdate has been called, or after setting emulated video mode
+
+#endif

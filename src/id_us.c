@@ -107,7 +107,7 @@ static	id0_int_t			CursorX,CursorY;
 static	void		(*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
 					(*USL_DrawString)(id0_char_t id0_far *) = VWB_DrawPropString;
 
-static	id0_boolean_t		(*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
+static	id0_boolean_t		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
 static	void		(*USL_ResetGame)(void);
 static	SaveGame	Games[MaxSaveGames];
 static	HighScore	Scores[MaxScores] =
@@ -257,7 +257,7 @@ static	id0_char_t	filename[32];
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetLoadSaveHooks(id0_boolean_t (*load)(id0_int_t),id0_boolean_t (*save)(id0_int_t),void (*reset)(void))
+US_SetLoadSaveHooks(id0_boolean_t (*load)(int),id0_boolean_t (*save)(int),void (*reset)(void))
 {
 	USL_LoadGame = load;
 	USL_SaveGame = save;
@@ -518,9 +518,11 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,id0_char_t *s,id0_byte_t attr)
 static void
 USL_ClearTextScreen(void)
 {
-	// TODO (CHOCO KEEN): IMPLEMENT!
-#if 0
 	// Set to 80x25 color text mode
+	BE_SDL_SetScreenMode(3); // Mode 3
+	// Move the cursor to the bottom of the screen
+	BE_SDL_MoveTextCursorTo(0/*Lefthand side of the screen*/, 24/*Bottom row*/);
+#if 0
 	_AL = 3;				// Mode 3
 	_AH = 0x00;
 	geninterrupt(0x10);
@@ -662,7 +664,8 @@ US_UpdateTextScreen(void)
 	USL_Show(53,17,23,mminfo.XMSmem? true : false,true);
 	totalmem = mminfo.mainmem + mminfo.EMSmem + mminfo.XMSmem;
 	USL_ShowMem(63,18,totalmem / 1024);
-	screen = MK_FP(0xb800,1 + (((63 - 1) * 2) + (18 * 80 * 2)));
+	screen = BE_SDL_GetTextModeMemoryPtr() + 1 + (((63 - 1) * 2) + (18 * 80 * 2));
+	//screen = MK_FP(0xb800,1 + (((63 - 1) * 2) + (18 * 80 * 2)));
 	for (i = 0;i < 13;i++,screen += 2)
 		*screen = 0x4f;
 
@@ -3462,6 +3465,12 @@ US_ControlPanel(void)
 	if (c == sc_Escape)	// Map escape from game to Exit to DOS
 		c = sc_Q;
 
+	/* CHOCO KEEN - Originally may have been accessed uninitialized - undefined behaviors... */
+	lasttime = 0;
+	lastn = 0;
+	lasti = 0;
+	/* End  of "uninitialized vars" list */
+
 	CA_UpLevel();
 	for (i = CONTROLS_LUMP_START;i <= CONTROLS_LUMP_END;i++)
 		CA_MarkGrChunk(i);
@@ -3691,6 +3700,8 @@ US_DisplayHighScores(id0_int_t which)
 				w,h,
 				x,y;
 	HighScore	*s;
+
+	y = 0; // CHOCO KEEN: Originally, was not initialized at all
 
 	US_CenterWindow(30,MaxScores + (MaxScores / 2));
 

@@ -458,6 +458,7 @@ static id0_longword_t
 SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 {
 	// CHOCO KEEN - DISABLED
+	return 0;
 #if 0
 	id0_unsigned_t		datapage;
 	id0_longword_t		dataofs,uselen;
@@ -1394,6 +1395,8 @@ SD_SetSoundMode(SDMode mode)
 	case sdm_Off:
 		NeedsDigitized = false;
 		result = true;
+		// (CHOCO KEEN) Originally tableoffset wasn't set here at all - undefined behaviors (even if offset is irrelevant)...
+		tableoffset = 0;
 		break;
 	case sdm_PC:
 		tableoffset = STARTPCSOUNDS;
@@ -1407,6 +1410,11 @@ SD_SetSoundMode(SDMode mode)
 			NeedsDigitized = false;
 			result = true;
 		}
+		// (CHOCO KEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
+		else
+		{
+			result = false;
+		}
 		break;
 	case sdm_SoundBlaster:
 		if (SoundBlasterPresent)
@@ -1414,6 +1422,11 @@ SD_SetSoundMode(SDMode mode)
 			tableoffset = STARTDIGISOUNDS;
 			NeedsDigitized = true;
 			result = true;
+		}
+		// (CHOCO KEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
+		else
+		{
+			result = false;
 		}
 		break;
 	case sdm_SoundSource:
@@ -1470,6 +1483,11 @@ SD_SetMusicMode(SMMode mode)
 		{
 			NeedsMusic = true;
 			result = true;
+		}
+		// (CHOCO KEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
+		else
+		{
+			result = false;
 		}
 		break;
 	default:

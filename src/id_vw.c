@@ -142,6 +142,7 @@ Quit ("Improper video card!  If you really have a CGA card that I am not \n"
 	  "detecting, use the -HIDDENCARD command line parameter!");
 	MM_GetPtr ((memptr *)&screenseg,0x10000l);	// grab 64k for floating screen
 	//MM_GetPtr (&(memptr)screenseg,0x10000l);	// grab 64k for floating screen
+	BE_SDL_MarkGfxForPendingUpdate();
 #endif
 
 	cursorvisible = 0;
@@ -387,6 +388,7 @@ void	VW_ClearVideo (id0_int_t color)
 #if GRMODE == EGAGR
 	EGAWRITEMODE(0);
 #endif
+	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 //===========================================================================
@@ -625,6 +627,8 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 		maskleft&=maskright;
 		// mask out pixels; 'or' in color
 		screenseg[dest] = (screenseg[dest] & ~maskleft) | ((id0_byte_t)color & maskleft);
+
+		BE_SDL_MarkGfxForPendingUpdate();
 		return;
 	}
 
@@ -650,6 +654,8 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 
 	// mask out pixels; 'or' in color
 	screenseg[dest] = (screenseg[dest] & ~maskright) | ((id0_byte_t)color & maskright);
+
+	BE_SDL_MarkGfxForPendingUpdate();
 }
 #endif
 
@@ -863,6 +869,9 @@ void VW_CGAFullUpdate (void)
 
 	updateptr = baseupdateptr;
 	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
+
+	// Rather than BE_SDL_MarkGfxForPendingUpdate()...
+	BE_SDL_MarkGfxForUpdate();
 
 #if 0
 	id0_byte_t	*update;
@@ -1228,9 +1237,6 @@ asm	sti
 
 	if (cursorvisible>0)
 		VWL_EraseCursor();
-	// TODO (CHOCO KEEN) DEBUG?
-	void BE_SDL_UpdateHostDisplay(void);
-	BE_SDL_UpdateHostDisplay();
 }
 
 

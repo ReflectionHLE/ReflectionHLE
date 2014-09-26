@@ -693,6 +693,7 @@ IN_ReadControl(id0_int_t player,ControlInfo *info)
 			ControlType	type;
 register	KeyboardDef	*def;
 
+	realdelta = false; // CHOCO KEEN - Originally it can be used uninitialized (even though there's no demo playback in vanilla Keen Dreams...)
 	dx = dy = 0;
 	mx = my = motion_None;
 	buttons = 0;

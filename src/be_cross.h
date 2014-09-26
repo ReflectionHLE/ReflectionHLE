@@ -17,8 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef BE_CROSS_H
-#define BE_CROSS_H
+#ifndef __BE_CROSS_H__
+#define __BE_CROSS_H__
 
 #include <inttypes.h>
 #include "id_in.h" // ControlType
@@ -42,9 +42,18 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 int BE_Cross_toupper(int c);
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 
-void BE_Cross_textcolor(int color);
-void BE_Cross_textbackground(int color);
-void BE_Cross_clrscr(void);
+// puts replacement that writes to emulated text mode memory
+inline void BE_Cross_puts(const char *str)
+{
+	void BE_SDL_puts(const char *str);
+	BE_SDL_puts(str);
+}
+// Limited printf replacement (doesn't accept % format specifiers, but \n is OK)
+inline void BE_Cross_Simplified_printf(const char *str)
+{
+	void BE_SDL_Simplified_printf(const char *str);
+	BE_SDL_Simplified_printf(str);
+}
 
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
 size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t count);

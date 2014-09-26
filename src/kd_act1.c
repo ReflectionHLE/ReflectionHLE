@@ -434,7 +434,8 @@ void ChangeToFlower (objtype *ob)
 	SD_PlaySound (FLOWERPOWERSND);
 	ob->y = ob->bottom-TILEGLOBAL*2;
 	ob->temp1 = (id0_int_t)ob->obclass;
-	ob->temp2 = ob->state;
+	ob->temp2 = (intptr_t)ob->state;
+	//ob->temp2 = ob->state;
 	ob->temp3 = 0;
 	ob->needtoclip = true;
 	ob->obclass = inertobj;

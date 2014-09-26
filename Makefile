@@ -20,6 +20,7 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/be_sdl.o \
         $(OBJ)/be_sdl_audio_timer.o \
         $(OBJ)/be_sdl_graphics.o \
+        $(OBJ)/be_textmode_fonts.o \
         $(OBJ)/dbopl.o \
         $(OBJ)/id_ca.o \
         $(OBJ)/id_in.o \
