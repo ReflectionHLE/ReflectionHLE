@@ -1272,7 +1272,10 @@ id0_int_t DoActor (objtype *ob,id0_int_t tics)
 
 	state = ob->state;
 
-	if (state->progress == think)
+	// CHOCO KEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
+	// Based on CGA v1.05 but it may be the same in other versions
+	if (state && state->progress == think)
+	//if (state->progress == think)
 	{
 		if (state->think)
 		{
@@ -1288,9 +1291,18 @@ id0_int_t DoActor (objtype *ob,id0_int_t tics)
 
 	newtics = ob->ticcount+tics;
 
-	if (newtics < state->tictime || state->tictime == 0)
+	// CHOCO KEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
+	// FIXME: Hopefully this always works - Magic number is CGA v1.05 specific,
+	// but it may actually work with other original versions
+	if ((!state && newtics < 0x2064) || (state && (newtics < state->tictime || state->tictime == 0)))
+	//if (newtics < state->tictime || state->tictime == 0)
 	{
 		ob->ticcount = newtics;
+		// CHOCO KEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
+		if (!state)
+		{
+			return 0; // Both cases appear to be skipped as of CGA v1.05
+		}
 		if (state->progress == slide || state->progress == slidethink)
 		{
 			if (ob->xdir)
@@ -1389,7 +1401,9 @@ void StateMachine (objtype *ob)
 	//
 	// passed through to next state
 	//
-		if (!state->skippable && excesstics >= state->tictime)
+		// CHOCO KEEN: Workaround for vanilla Keen Dreams CGA v1.05 bug (state may be 0)
+		if (state && !state->skippable && excesstics >= state->tictime)
+		//if (!state->skippable && excesstics >= state->tictime)
 			excesstics = DoActor(ob,state->tictime-1);
 		else
 			excesstics = DoActor(ob,excesstics);

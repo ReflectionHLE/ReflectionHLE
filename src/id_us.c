@@ -381,12 +381,15 @@ USL_CheckSavedGames(void)
 		ok = false;
 		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
+			// CHOCO KEEN Cross Platform file I/O
+			id0_byte_t padding; // Apparently one byte of struct padding
 			if
 			(
-				// CHOCO KEEN Cross Platform file I/O
 				(BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
 			&&	(BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
-			&&	(BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->name)) == sizeof(game->name))
+			&&	(BE_Cross_readInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
+			&&	(BE_Cross_readInt8LE(file, &padding) == 1)
+
 				//(read(file,game,sizeof(*game)) == sizeof(*game))
 			&&	(!strcmp(game->signature,EXTENSION))
 			)
@@ -2863,9 +2866,12 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// CHOCO KEEN Cross Platform file I/O
+			id0_byte_t padding; // Apparently one byte of struct padding
 			if ((BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
 			    && (BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
-			    && (BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->name)) == sizeof(game->name)))
+			    && (BE_Cross_readInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
+			    && (BE_Cross_readInt8LE(file, &padding) == 1)
+			)
 			//if (read(file,game,sizeof(*game)) == sizeof(*game))
 			{
 				if (USL_LoadGame)
@@ -2947,9 +2953,12 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		if (file != -1)
 		{
 			// CHOCO KEEN Cross Platform file I/O
+			id0_byte_t padding = 0; // Apparently one byte of struct padding
 			if ((BE_Cross_writeInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
 			    && (BE_Cross_write_boolean_To16LE(file, &(game->present)) == 2)
-			    && (BE_Cross_writeInt8LEBuffer(file, game->signature, sizeof(game->name)) == sizeof(game->name)))
+			    && (BE_Cross_writeInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
+			    && (BE_Cross_writeInt8LE(file, &padding) == 1)
+			)
 			//if (write(file,game,sizeof(*game)) == sizeof(*game))
 			{
 				if (USL_SaveGame)

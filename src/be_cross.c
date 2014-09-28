@@ -22,7 +22,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "id_heads.h"
+#include "kd_def.h"
 
 int32_t BE_Cross_FileLengthFromHandle(int handle)
 {
@@ -93,17 +93,24 @@ int BE_Cross_strcasecmp(const char *s1, const char *s2)
 void BE_Cross_puts(const char *str);
 void BE_Cross_Simplified_printf(const char *str);
 
-size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t count)
+size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte)
 {
-	return read(handle, ptr, count);
+	return read(handle, ptr, nbyte);
+}
+
+size_t BE_Cross_readInt8LE(int handle, void *ptr)
+{
+	return read(handle, ptr, 1);
 }
 
 size_t BE_Cross_readInt16LE(int handle, void *ptr)
 {
 	size_t bytesread = read(handle, ptr, 2);
 #ifdef BE_CROSS_IS_BIGENDIAN
-	for (size_t loopVar = 0; loopVar < count/2; loopVar++, ((uint16_t *) ptr)++)
-		*(uint16_t *) ptr = BE_Cross_Swap16(*(uint16_t *) ptr);
+	if (bytesread == 2)
+	{
+		*(uint16_t *)ptr = BE_Cross_Swap16(*(uint16_t *) ptr);
+	}
 #endif
 	return bytesread;
 }
@@ -112,15 +119,22 @@ size_t BE_Cross_readInt32LE(int handle, void *ptr)
 {
 	size_t bytesread = read(handle, ptr, 4);
 #ifdef BE_CROSS_IS_BIGENDIAN
-	for (size_t loopVar = 0; loopVar < count/4; loopVar++, ((uint32_t *) ptr)++)
-		*(uint32_t *) ptr = BE_Cross_Swap16(*(uint32_t *) ptr);
+	if (bytesread == 4)
+	{
+		*(uint32_t *)ptr = BE_Cross_Swap16(*(uint32_t *) ptr);
+	}
 #endif
 	return bytesread;
 }
 
-size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t count)
+size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte)
 {
-	return write(handle, ptr, count);
+	return write(handle, ptr, nbyte);
+}
+
+size_t BE_Cross_writeInt8LE(int handle, const void *ptr)
+{
+	return write(handle, ptr, 1);
 }
 
 size_t BE_Cross_writeInt16LE(int handle, const void *ptr)
@@ -128,7 +142,7 @@ size_t BE_Cross_writeInt16LE(int handle, const void *ptr)
 #ifndef CK_CROSS_IS_BIGENDIAN
 	return write(handle, ptr, 2);
 #else
-	uint16_t val = BE_Cross_Swap16(*(uint16_t *) ptr);;
+	uint16_t val = BE_Cross_Swap16(*(uint16_t *) ptr);
 	return write(handle, &val, 2);
 #endif
 }
@@ -138,7 +152,7 @@ size_t BE_Cross_writeInt32LE(int handle, const void *ptr)
 #ifndef CK_CROSS_IS_BIGENDIAN
 	return write(handle, ptr, 4);
 #else
-	uint32_t val = BE_Cross_Swap32(*(uint32_t *) ptr);;
+	uint32_t val = BE_Cross_Swap32(*(uint32_t *) ptr);
 	return write(handle, &val, 4);
 #endif
 }
@@ -165,6 +179,7 @@ size_t BE_Cross_write_ ## ourSampleEnum ## _To16LE (int handle, const ourSampleE
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
 
 size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr)
 {
@@ -177,10 +192,45 @@ size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr)
 	return bytesread;
 }
 
+size_t BE_Cross_read_booleans_From16LEBuffer(int handle, bool *ptr, size_t nbyte)
+{
+	uint16_t val;
+	size_t totalbytesread = 0, currbytesread;
+	for (size_t curbyte = 0; curbyte < nbyte; curbyte += 2, ++ptr)
+	{
+		currbytesread = read(handle, &val, 2);
+		totalbytesread += currbytesread;
+		if (currbytesread < 2)
+		{
+			return totalbytesread;
+		}
+		*ptr = val; // No need to swap byte-order here
+	}
+	return totalbytesread;
+}
+
+
 size_t BE_Cross_write_boolean_To16LE(int handle, const bool *ptr)
 {
-	uint16_t val = BE_Cross_Swap16LE((uint16_t)(*ptr));
+	uint16_t val = BE_Cross_Swap16LE((uint16_t)(*ptr)); // Better to swap just in case...
 	return write(handle, &val, 2);
+}
+
+size_t BE_Cross_write_booleans_To16LEBuffer(int handle, const bool *ptr, size_t nbyte)
+{
+	uint16_t val;
+	size_t totalbyteswritten = 0, currbyteswritten;
+	for (size_t curbyte = 0; curbyte < nbyte; curbyte += 2, ++ptr)
+	{
+		val = BE_Cross_Swap16LE((uint16_t)(*ptr)); // Better to swap just in case...
+		currbyteswritten = write(handle, &val, 2);
+		totalbyteswritten += currbyteswritten;
+		if (currbyteswritten < 2)
+		{
+			return totalbyteswritten;
+		}
+	}
+	return totalbyteswritten;
 }
 
 void BE_Cross_Wrapped_Add(uint8_t *segPtr, uint8_t **offInSegPtrPtr, uint16_t count)

@@ -17,6 +17,7 @@ RSRCOBJ=$(OBJ)/static
 
 OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/be_cross.o \
+        $(OBJ)/be_cross_compat.o \
         $(OBJ)/be_sdl.o \
         $(OBJ)/be_sdl_audio_timer.o \
         $(OBJ)/be_sdl_graphics.o \

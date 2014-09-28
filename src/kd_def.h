@@ -82,7 +82,14 @@ typedef struct
   void (*contact) ();
   void (*react) ();
   void *nextstate;
-} __attribute__((__packed__)) statetype;
+  // (CHOCO KEEN) Backwards compatibility:
+  // MUST follow all the rest of the members above. Given a statetype instance,
+  // stores what would be the 16-bit offset pointer in the dseg while using the
+  // original 16-bit DOS executable (corresponding version).
+  // This member must be the last so it doesn't have to be filled during
+  // compile-time (requires changes to struct initializations in a few places)
+  id0_int_t compatdosoffset;
+} statetype;
 
 
 typedef	struct
@@ -96,7 +103,7 @@ typedef	struct
 	id0_int_t		mapon;
 	id0_int_t		lives;
 	id0_int_t		difficulty;
-} __attribute__((__packed__)) gametype;
+} gametype;
 
 
 typedef struct	objstruct
@@ -123,16 +130,17 @@ typedef struct	objstruct
 
 	id0_int_t			hitnorth,hiteast,hitsouth,hitwest;	// wall numbers contacted
 
-	// FIXME (CHOCO KEEN) Make temp2 an id0_int_t (16-bit signed int) again, while still retaining full compatibility, including saved games
-	id0_int_t temp1;
-	intptr_t temp2;
-	id0_int_t temp3, temp4;
-	//id0_int_t			temp1,temp2,temp3,temp4;
+	// (CHOCO KEEN) BACKWARDS COMPATIBILITY: Usually temp2 may be just an integer,
+	// but it can store a 16-bit offset pointer to a state (when creature changes into flower).
+	// So the original 16-bit pointer is stored in temp2 for saved game compatibility,
+	// while the real pointer is stored in temp2stateptr (can technically be a void* if there's a need).
+	id0_int_t			temp1,temp2,temp3,temp4;
+	statetype *temp2stateptr;
 
 	void		*sprite;
 
 	struct	objstruct	*next,*prev;
-} __attribute__((__packed__)) objtype;
+} objtype;
 
 
 // (CHOCO KEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of

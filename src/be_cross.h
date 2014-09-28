@@ -21,8 +21,6 @@
 #define __BE_CROSS_H__
 
 #include <inttypes.h>
-#include "id_in.h" // ControlType
-#include "id_sd.h" // SDMode, SMMode
 
 typedef enum BE_Log_Message_Class_T
 {
@@ -56,26 +54,32 @@ inline void BE_Cross_Simplified_printf(const char *str)
 }
 
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
-size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t count);
+size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte);
+size_t BE_Cross_readInt8LE(int handle, void *ptr);
 size_t BE_Cross_readInt16LE(int handle, void *ptr);
 size_t BE_Cross_readInt32LE(int handle, void *ptr);
-// Functions for read/writing an enum as a 16-bit value
-size_t BE_Cross_read_SDMode_From16LE(int handle, SDMode *ptr);
-size_t BE_Cross_read_SMMode_From16LE(int handle, SMMode *ptr);
-size_t BE_Cross_read_ControlType_From16LE(int handle, ControlType *ptr);
+// A template for enum reading (from 16-bit little-endian int).
+// A declaration and implementation must exist for each used type separately.
+#if 0
+size_t BE_Cross_read_EnumType_From16LE(int handle, EnumType *ptr);
+#endif
 // boolean implementation may be separated from enums, otherwise it's the same
 size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr);
+// booleans buffer
+size_t BE_Cross_read_booleans_From16LEBuffer(int handle, bool *ptr, size_t nbyte);
 
 // Same but for writing
-size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t count);
+size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte);
+size_t BE_Cross_writeInt8LE(int handle, const void *ptr);
 size_t BE_Cross_writeInt16LE(int handle, const void *ptr);
 size_t BE_Cross_writeInt32LE(int handle, const void *ptr);
 
-size_t BE_Cross_write_SDMode_To16LE(int handle, const SDMode *ptr);
-size_t BE_Cross_write_SMMode_To16LE(int handle, const SMMode *ptr);
-size_t BE_Cross_write_ControlType_To16LE(int handle, const ControlType *ptr);
+#if 0
+size_t BE_Cross_write_EnumType_To16LE(int handle, const EnumType *ptr);
+#endif
 
 size_t BE_Cross_write_boolean_To16LE(int handle, const bool *ptr);
+size_t BE_Cross_write_booleans_To16LEBuffer(int handle, const bool *ptr, size_t nbyte);
 
 // Assuming segPtr is replacement for a 16-bit segment pointer, and offInSegPtr
 // is a replacement for an offset in this segment (pointing to a place in the
@@ -93,5 +97,10 @@ void BE_Cross_WrappedToLinear_MemCopy(uint8_t *linearDst, const uint8_t *segSrcP
 void BE_Cross_WrappedToWrapped_MemCopy(uint8_t *segCommonPtr, uint8_t *offDstPtr, const uint8_t *offSrcPtr, uint16_t num);
 // Wrapped memset
 void BE_Cross_Wrapped_MemSet(uint8_t *segPtr, uint8_t *offInSegPtr, int value, uint16_t num);
+
+// Used for saved game compatibility (temp2 field which may have a 16-bit offset pointer to an object state)
+void BE_Cross_Compat_FillObjStatesWithDOSOffsets(void);
+// Return a void* rather than statetype* only because of current header inclusion mess...
+void* BE_Cross_Compat_GetObjStatePtrFromDOSOffset(uint16_t offset);
 
 #endif // BE_CROSS_H

@@ -434,7 +434,9 @@ void ChangeToFlower (objtype *ob)
 	SD_PlaySound (FLOWERPOWERSND);
 	ob->y = ob->bottom-TILEGLOBAL*2;
 	ob->temp1 = (id0_int_t)ob->obclass;
-	ob->temp2 = (intptr_t)ob->state;
+	// (CHOCO KEEN) BACKWARDS COMPATIBILITY
+	ob->temp2 = ob->state->compatdosoffset;
+	ob->temp2stateptr = ob->state;
 	//ob->temp2 = ob->state;
 	ob->temp3 = 0;
 	ob->needtoclip = true;
@@ -494,7 +496,8 @@ void ChangeFromFlower (objtype *ob)
 	//flower = (objtype *)ob->temp1;
 
 	oldbottom = flower->bottom;
-	ChangeState (flower,(statetype *)flower->temp2);
+	ChangeState (flower,flower->temp2stateptr);
+	//ChangeState (flower,(statetype *)flower->temp2);
 	flower->y += oldbottom - flower->bottom;
 
 	flower->obclass = flower->temp1;

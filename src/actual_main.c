@@ -27,6 +27,7 @@ int main(int argc, char **argv)
 	char *our_workaround_argv[] = { argv[0], "" };
 	id0_argv = (argc <= 1) ? our_workaround_argv : argv; // HACK
 	BE_SDL_InitAll();
+	BE_Cross_Compat_FillObjStatesWithDOSOffsets(); // Saved games compatibility
 	id0_main();
 	BE_SDL_ShutdownAll();
 	return 0;
