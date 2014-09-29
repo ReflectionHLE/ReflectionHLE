@@ -20,6 +20,21 @@
 #ifndef	__BE_SDL__
 #define __BE_SDL__
 
+// WARNING: This struct is used by BE_SDL ONLY
+
+typedef struct
+{
+	bool isFullscreen;
+	int fullWidth, fullHeight;
+	int winWidth, winHeight;
+	int displayNum;
+	int sdlRendererDriver;
+	enum { SCALE_ASPECT, SCALE_FILL } scaleType;
+	bool autolockCursor;
+} ChocolateKeenConfig;
+
+extern ChocolateKeenConfig g_chocolateKeenCfg;
+
 // Direct accesses to any of these functions should be minimized
 
 /*** General ***/

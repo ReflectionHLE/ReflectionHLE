@@ -27,10 +27,13 @@ static void (*g_sdlKeyboardInterruptFuncPtr)(id0_byte_t) = 0;
 
 static SDL_Joystick *g_sdlJoysticks[BE_SDL_MAXJOYSTICKS];
 
+extern SDL_Window *g_sdlWindow;
+
 void BE_SDL_InitGfx(void);
 void BE_SDL_InitAudio(void);
 void BE_SDL_ShutdownAudio(void);
 void BE_SDL_ShutdownGfx(void);
+static void BEL_SDL_ParseConfig(void);
 
 void BE_SDL_InitAll(void)
 {
@@ -43,16 +46,31 @@ void BE_SDL_InitAll(void)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL joystick subsystem initialization failed, disabled,\n%s\n", SDL_GetError());
 	}
+	BEL_SDL_ParseConfig();
 	BE_SDL_InitGfx();
 	BE_SDL_InitAudio();
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-	SDL_GetRelativeMouseState(NULL, NULL);
+	if (g_chocolateKeenCfg.autolockCursor || (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
+	{
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+	else
+	{
+		SDL_ShowCursor(false);
+	}
+	SDL_GetRelativeMouseState(NULL, NULL); // Reset
 	BE_SDL_PollEvents(); // e.g., to "reset" some states, and detect joysticks
 }
 
 void BE_SDL_ShutdownAll(void)
 {
-	SDL_SetRelativeMouseMode(SDL_FALSE);
+	if (g_chocolateKeenCfg.autolockCursor || (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
+	{
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+	}
+	else
+	{
+		SDL_ShowCursor(true);
+	}
 	BE_SDL_ShutdownAudio();
 	BE_SDL_ShutdownGfx();
 	SDL_Quit();
@@ -91,6 +109,147 @@ void BE_SDL_HandleExit(int status)
 		BE_SDL_UpdateHostDisplay();
 	}
 }
+
+
+
+ChocolateKeenConfig g_chocolateKeenCfg;
+
+#define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "chocolate-keen-dreams.cfg"
+
+static void BEL_SDL_ParseSetting_FullScreen(const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_chocolateKeenCfg.isFullscreen = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_chocolateKeenCfg.isFullscreen = false;
+	}
+}
+
+static void BEL_SDL_ParseSetting_FullRes(const char *buffer)
+{
+	sscanf(buffer, "%dx%d", &g_chocolateKeenCfg.fullWidth, &g_chocolateKeenCfg.fullHeight);
+}
+
+static void BEL_SDL_ParseSetting_WindowRes(const char *buffer)
+{
+	sscanf(buffer, "%dx%d", &g_chocolateKeenCfg.winWidth, &g_chocolateKeenCfg.winHeight);
+}
+
+static void BEL_SDL_ParseSetting_DisplayNum(const char *buffer)
+{
+	sscanf(buffer, "%d", &g_chocolateKeenCfg.displayNum);
+}
+
+static void BEL_SDL_ParseSetting_SDLRendererDriver(const char *buffer)
+{
+	SDL_RendererInfo info;
+	for (int i = 0; i < SDL_GetNumRenderDrivers(); ++i)
+	{
+		SDL_GetRenderDriverInfo(i, &info);
+		if (!strcmp(info.name, buffer))
+		{
+			g_chocolateKeenCfg.sdlRendererDriver = i;
+			break;
+		}
+	}
+}
+
+static void BEL_SDL_ParseSetting_ScaleType(const char *buffer)
+{
+	if (!strcmp(buffer, "aspect"))
+	{
+		g_chocolateKeenCfg.scaleType = SCALE_ASPECT;
+	}
+	else if (!strcmp(buffer, "fill"))
+	{
+		g_chocolateKeenCfg.scaleType = SCALE_FILL;
+	}
+}
+
+static void BEL_SDL_ParseSetting_AutolockCursor(const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_chocolateKeenCfg.autolockCursor = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_chocolateKeenCfg.autolockCursor = false;
+	}
+}
+
+typedef struct {
+	const char *cfgPrefix; // Includes '=' sign
+	void (*handlerPtr)(const char *);
+} ChocoKeenCfgEntry;
+
+static ChocoKeenCfgEntry g_sdlCfgEntries[] = {
+	{"fullscreen=", &BEL_SDL_ParseSetting_FullScreen},
+	{"fullres=", &BEL_SDL_ParseSetting_FullRes},
+	{"windowres=", &BEL_SDL_ParseSetting_WindowRes},
+	{"displaynum=", &BEL_SDL_ParseSetting_DisplayNum},
+	{"sdlrenderer=", &BEL_SDL_ParseSetting_SDLRendererDriver},
+	{"scaletype=", &BEL_SDL_ParseSetting_ScaleType},
+	{"autolock=", &BEL_SDL_ParseSetting_AutolockCursor},
+};
+
+static void BEL_SDL_ParseConfig(void)
+{
+	// Defaults
+	g_chocolateKeenCfg.isFullscreen = false;
+	g_chocolateKeenCfg.fullWidth = 0;
+	g_chocolateKeenCfg.fullHeight = 0;
+	g_chocolateKeenCfg.winWidth = 0;
+	g_chocolateKeenCfg.winHeight = 0;
+	g_chocolateKeenCfg.displayNum = 0;
+	g_chocolateKeenCfg.sdlRendererDriver = -1;
+	g_chocolateKeenCfg.scaleType = SCALE_ASPECT;
+	g_chocolateKeenCfg.autolockCursor = false;
+	// Try to load config
+	FILE *fp = fopen(CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH, "r");
+	if (!fp)
+	{
+		// Try to save defaults just in case
+		fp = fopen(CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH, "w");
+		if (!fp)
+		{
+			return;
+		}
+		fprintf(fp, "fullscreen=%s\n", g_chocolateKeenCfg.isFullscreen ? "true" : "false");
+		fprintf(fp, "fullres=%dx%d\n", g_chocolateKeenCfg.fullWidth, g_chocolateKeenCfg.fullHeight);
+		fprintf(fp, "windowres=%dx%d\n", g_chocolateKeenCfg.winWidth, g_chocolateKeenCfg.winHeight);
+		fprintf(fp, "displaynum=%d\n", g_chocolateKeenCfg.displayNum);
+		fprintf(fp, "sdlrenderer=%s\n", "auto");
+		fprintf(fp, "scaletype=%s\n", (g_chocolateKeenCfg.scaleType == SCALE_ASPECT) ? "aspect" : "fill");
+	}
+	char buffer[80];
+	while (fgets(buffer, sizeof(buffer), fp))
+	{
+		size_t len = strlen(buffer);
+		if (!len)
+		{
+			continue;
+		}
+		if (buffer[len-1] == '\n')
+		{
+			buffer[len-1] = '\0';
+		}
+		for (int i = 0; i < sizeof(g_sdlCfgEntries)/sizeof(*g_sdlCfgEntries); ++i)
+		{
+			if (!strncmp(g_sdlCfgEntries[i].cfgPrefix, buffer, strlen(g_sdlCfgEntries[i].cfgPrefix)))
+			{
+				g_sdlCfgEntries[i].handlerPtr(buffer+strlen(g_sdlCfgEntries[i].cfgPrefix));
+				break;
+			}
+		}
+	}
+}
+
+
+
 
 typedef enum EmulatedKeyScancode_T {
      EMULATEDKEYSCANCODE_ESC = 1,
@@ -559,6 +718,10 @@ id0_word_t BE_SDL_GetJoyButtons(id0_word_t joy)
 
 static void BEL_SDL_HandleEmuKeyboardEvent(bool isPressed, emulatedDOSKeyEvent keyEvent)
 {
+	if (!g_sdlKeyboardInterruptFuncPtr) // e.g., on init
+	{
+		return;
+	}
 	if (keyEvent.dosScanCode == EMULATEDKEYSCANCODE_PAUSE)
 	{
 		if (isPressed)
@@ -593,10 +756,9 @@ void BE_SDL_PollEvents(void)
 		case SDL_KEYUP:
 			BEL_SDL_HandleEmuKeyboardEvent(event.type == SDL_KEYDOWN, sdlKeyMappings[event.key.keysym.scancode]);
 			break;
-		case SDL_MOUSEBUTTONDOWN:
-			// Note: Mouse state is read without events
-			SDL_SetRelativeMouseMode(SDL_TRUE); // TODO: Any better way?
-			break;
+		//case SDL_MOUSEBUTTONUP:
+		//	BEL_SDL_toggleCursorConditionally(true);
+		//	break;
 		case SDL_JOYDEVICEADDED:
 			if (event.jdevice.which < BE_SDL_MAXJOYSTICKS)
 			{
@@ -616,25 +778,19 @@ void BE_SDL_PollEvents(void)
 			break;
 		}
 		case SDL_WINDOWEVENT:
-			if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+			switch (event.window.event)
+			case  SDL_WINDOWEVENT_RESIZED:
 			{
 				void BE_SDL_SetAspectCorrectionRect(void);
 				BE_SDL_SetAspectCorrectionRect();
 				BE_SDL_MarkGfxForPendingUpdate();
 				BE_SDL_MarkGfxForUpdate();
+				break;
 			}
-			else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
-			{
-				SDL_SetRelativeMouseMode(SDL_FALSE); // TODO: Any better way?
-			}
-			else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
-			{
-				extern SDL_Window *g_sdlWindow;
-				if (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)
-				{
-					SDL_SetRelativeMouseMode(SDL_TRUE); // TODO: Any better way?
-				}
-			}
+			case SDL_WINDOWEVENT_EXPOSED:
+				BE_SDL_MarkGfxForPendingUpdate();
+				BE_SDL_MarkGfxForUpdate();
+				break;
 			break;
 		case SDL_QUIT:
 			SDL_Quit();

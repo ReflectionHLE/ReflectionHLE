@@ -77,45 +77,64 @@ void BE_SDL_SetAspectCorrectionRect(void);
 
 void BE_SDL_InitGfx(void)
 {
-	char *envVar = getenv("CHOCOLATE_KEEN_FULLSCREEN");
-	bool isFullScreen = (envVar && (*envVar == '1'));
-	envVar = getenv("CHOCOLATE_KEEN_DISPLAYNUM");
-	int displayNum = (envVar && (*envVar)) ? atoi(envVar) : 0;
-	envVar = getenv("CHOCOLATE_KEEN_SOFTWARE_RENDERING");
-	bool doSoftwareRendering = (envVar && (*envVar == '1'));
 	const char *windowTitle = "Chocolate Keen Dreams";
-	if (isFullScreen)
+	if (g_chocolateKeenCfg.isFullscreen)
 	{
-		g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	}
-	else
-	{
-		if (doSoftwareRendering)
+		if (g_chocolateKeenCfg.fullWidth && g_chocolateKeenCfg.fullHeight)
 		{
-			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNum), 640, 480, SDL_WINDOW_RESIZABLE);
+			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), g_chocolateKeenCfg.fullWidth, g_chocolateKeenCfg.fullHeight, SDL_WINDOW_FULLSCREEN);
 		}
 		else
 		{
-			SDL_DisplayMode mode;
-			SDL_GetDesktopDisplayMode(displayNum, &mode);
-			if (3*mode.w < 4*mode.h) // Thinner than 4:3
-			{
-				mode.h = mode.w*3/4;
-			}
-			else  // As wide as 4:3 at the least
-			{
-				mode.w = mode.h*4/3;
-			}
-			// Just for the sake of it, using the golden ratio...
-			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNum), mode.w*500/809, mode.h*500/809, SDL_WINDOW_RESIZABLE);
+			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		}
+	}
+	else
+	{
+		int actualWinWidth = g_chocolateKeenCfg.winWidth, actualWinHeight = g_chocolateKeenCfg.winHeight;
+		if (!actualWinWidth || !actualWinHeight)
+		{
+			bool doSoftwareRendering;
+			if (g_chocolateKeenCfg.sdlRendererDriver >= 0)
+			{
+				SDL_RendererInfo info;
+				SDL_GetRenderDriverInfo(g_chocolateKeenCfg.sdlRendererDriver, &info);
+				doSoftwareRendering = (info.flags & SDL_RENDERER_SOFTWARE);
+			}
+			else
+			{
+				doSoftwareRendering = false;
+			}
+			if (doSoftwareRendering)
+			{
+				actualWinWidth = 640;
+				actualWinHeight = 480;
+			}
+			else
+			{
+				SDL_DisplayMode mode;
+				SDL_GetDesktopDisplayMode(g_chocolateKeenCfg.displayNum, &mode);
+				if (3*mode.w < 4*mode.h) // Thinner than 4:3
+				{
+					mode.h = mode.w*3/4;
+				}
+				else  // As wide as 4:3 at the least
+				{
+					mode.w = mode.h*4/3;
+				}
+				// Just for the sake of it, using the golden ratio...
+				actualWinWidth = mode.w*500/809;
+				actualWinHeight = mode.h*500/809;
+			}
+		}
+		g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), actualWinWidth, actualWinHeight, SDL_WINDOW_RESIZABLE);
 	}
 	if (!g_sdlWindow)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
 		exit(0);
 	}
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, doSoftwareRendering ? SDL_RENDERER_ACCELERATED : SDL_RENDERER_SOFTWARE);
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_chocolateKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED);
 	if (!g_sdlRenderer)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
@@ -156,20 +175,30 @@ void BE_SDL_SetAspectCorrectionRect(void)
 {
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
-	// Aspect correct
-	if (3*winWidth < 4*winHeight) // Thinner than 4:3
+	if (g_chocolateKeenCfg.scaleType == SCALE_FILL)
 	{
 		g_sdlAspectCorrectionRect.w = winWidth;
-		g_sdlAspectCorrectionRect.h = winWidth*3/4;
-		g_sdlAspectCorrectionRect.x = 0;
-		g_sdlAspectCorrectionRect.y = (winHeight-g_sdlAspectCorrectionRect.h)/2;
-	}
-	else // As wide as 4:3 at the least
-	{
-		g_sdlAspectCorrectionRect.w = winHeight*4/3;
 		g_sdlAspectCorrectionRect.h = winHeight;
-		g_sdlAspectCorrectionRect.x = (winWidth-g_sdlAspectCorrectionRect.w)/2;
+		g_sdlAspectCorrectionRect.x = 0;
 		g_sdlAspectCorrectionRect.y = 0;
+	}
+	else
+	{
+		// Aspect correct
+		if (3*winWidth < 4*winHeight) // Thinner than 4:3
+		{
+			g_sdlAspectCorrectionRect.w = winWidth;
+			g_sdlAspectCorrectionRect.h = winWidth*3/4;
+			g_sdlAspectCorrectionRect.x = 0;
+			g_sdlAspectCorrectionRect.y = (winHeight-g_sdlAspectCorrectionRect.h)/2;
+		}
+		else // As wide as 4:3 at the least
+		{
+			g_sdlAspectCorrectionRect.w = winHeight*4/3;
+			g_sdlAspectCorrectionRect.h = winHeight;
+			g_sdlAspectCorrectionRect.x = (winWidth-g_sdlAspectCorrectionRect.w)/2;
+			g_sdlAspectCorrectionRect.y = 0;
+		}
 	}
 }
 

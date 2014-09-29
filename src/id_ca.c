@@ -1551,6 +1551,8 @@ void CA_CacheMarks (id0_char_t *title)
 #endif
 					lastx = xh;
 					VW_UpdateScreen();
+					// (CHOCO KEEN) HACK): Ensure this is at least seen
+					BE_SDL_ShortSleep();
 				}
 
 			}
@@ -1633,6 +1635,8 @@ void CA_CacheMarks (id0_char_t *title)
 				VWB_Vlin (thy,thy+13,x,SECONDCOLOR);
 #endif
 			VW_UpdateScreen();
+			// (CHOCO KEEN) And again...
+			BE_SDL_ShortSleep();
 		}
 }
 
