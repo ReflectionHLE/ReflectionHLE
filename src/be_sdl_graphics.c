@@ -22,7 +22,7 @@
 
 /*static*/ SDL_Window *g_sdlWindow;
 static SDL_Renderer *g_sdlRenderer;
-static SDL_Texture *g_sdlTexture;
+static SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 static SDL_Rect g_sdlAspectCorrectionRect;
 
 static bool g_sdlDoRefreshGfxOutput;
@@ -134,7 +134,8 @@ void BE_SDL_InitGfx(void)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
 		exit(0);
 	}
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_chocolateKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED);
+	// TODO (CHOCO KEEN): VSYNC_AUTO should enable VSync with EGA graphics
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_chocolateKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_chocolateKeenCfg.vSync == VSYNC_ON) ? SDL_RENDERER_PRESENTVSYNC : 0));
 	if (!g_sdlRenderer)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
@@ -150,6 +151,8 @@ void BE_SDL_ShutdownGfx(void)
 {
 	SDL_DestroyTexture(g_sdlTexture);
 	g_sdlTexture = NULL;
+	SDL_DestroyTexture(g_sdlTargetTexture);
+	g_sdlTargetTexture = NULL;
 	SDL_DestroyRenderer(g_sdlRenderer);
 	g_sdlRenderer = NULL;
 	SDL_DestroyWindow(g_sdlWindow);
@@ -162,12 +165,36 @@ static void BEL_SDL_RecreateTexture(void)
 	{
 		SDL_DestroyTexture(g_sdlTexture);
 	}
-	g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight);
-	if (!g_sdlTexture)
+	if (g_sdlTargetTexture)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
-		//Destroy window and renderer?
-		exit(0);
+		SDL_DestroyTexture(g_sdlTargetTexture);
+	}
+	// Try using render target
+	if ((g_chocolateKeenCfg.scaleFactor > 1) && g_chocolateKeenCfg.isBilinear)
+	{
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+		g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight);
+		if (!g_sdlTexture)
+		{
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
+			//Destroy window and renderer?
+			exit(0);
+		}
+		// Try, if we fail then simply don't use this
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+		g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, g_sdlTexWidth*g_chocolateKeenCfg.scaleFactor, g_sdlTexHeight*g_chocolateKeenCfg.scaleFactor);
+	}
+	else
+	{
+		// Use just a single texture
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, g_chocolateKeenCfg.isBilinear ? "linear" : "nearest");
+		g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight);
+		if (!g_sdlTexture)
+		{
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
+			//Destroy window and renderer?
+			exit(0);
+		}
 	}
 }
 
@@ -526,6 +553,16 @@ void BE_SDL_UpdateHostDisplay(void)
 	g_sdlDoRefreshGfxOutput = false;
 	SDL_UnlockTexture(g_sdlTexture);
 	SDL_RenderClear(g_sdlRenderer);
-	SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionRect);
+	if (g_sdlTargetTexture)
+	{
+		SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);
+		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
+		SDL_SetRenderTarget(g_sdlRenderer, NULL);
+		SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionRect);
+	}
+	else
+	{
+		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionRect);
+	}
         SDL_RenderPresent(g_sdlRenderer);
 }

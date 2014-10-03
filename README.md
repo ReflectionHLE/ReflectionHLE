@@ -112,12 +112,27 @@ but it's totally untested as of now.
 for the other choice.
 Note: Technically at least one more value should be acceptable,
 but the values given above probably suffice for now.
+- "vsync" lets you toggle Sync to VBlank. Valid values are "auto", "off", "on".
+Currently the default of "auto" implies "off", since this is probably the case
+with the original Keen Dreams CGA and real CGA/EGA/VGA hardware.
+- "bilinear" toggles bilinear filtering. Valid values are "true" and "false".
+If set to "true", consider taking a look at the "scalefactor" setting.
 - "scaletype" can be used to toggle aspect ratio correction. Good e.g.,
 in case screen burn-in is a concern. Valid values are "aspect" and "fill".
+- "scalefactor" can be used for two-step scaling. When different from 1, and
+with "bilinear=true", on compatible hardware the game's graphical contents to
+be displayed should first be zoomed in each dimension by the given scale
+factor, and then the zoomed pic should be scaled to the window with bilinear
+filtering applied. This is done so scaling artifacts coming from non-bilinear
+interpolation are less noticeable, while the output is not too blurry.
 - "autolock" tells if the window should have full control of the mouse
 (setting has no effect for fullscreen windows). Even if disabled, the cursor
 should be hidden while in the middle of the window. Valid values are "true"
 and "false".
+- "sndsamplerate" lets you specify a sound sample rate (in Hz).Currently the
+default is 49716, which is close to the rate of OPL chips generating AdLib
+sounds. It's also more efficient, as no interpolation is required, since the
+rate of 49716Hz is used for AdLib emulation internally.
 
 --------------------
 There is some bug...
@@ -145,6 +160,20 @@ then you may wish to set PLATFORM=WINDOWS and BINPREFIX accordingly.
 ---------
 Changelog
 ---------
+
+Oct 3, 2014 (v0.8.2):
+- Bilinear filtering can now be toggled on if hardware acceleration is in use.
+- In case off-screen rendering is supported, it can be used for two-step
+scaling of the graphical output: First nearest-neighbor interpolation with
+the added "scalefactor" setting, and then bilinear.
+- Sync to VBlank can be manually toggled now (if supported on the used setup).
+By default "vsync=auto" is used, currently implying "off" (with CGA graphics).
+- Live sound interpolation has been implemented, and it's possible to specify
+a different sound sample rate, while the rate used for OPL emulation is still
+49716Hz. Currently 49716 is the default value
+- Fixed a bug: One cfg setting or more not written to file when it's expected.
+- As of this version, the cfg file is (re)written on launch. This is done so
+new settings can appear in the file if it's not up-to-date.
 
 Sep 29 2014 (v0.8.1):
 - Compatibility with saved games from vanilla Keen Dreams CGA v1.05 is in. As expected, it can still be buggy (in fact, vanilla Keen also has its limits/bugs with this).

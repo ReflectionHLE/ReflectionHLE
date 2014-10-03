@@ -29,8 +29,12 @@ typedef struct
 	int winWidth, winHeight;
 	int displayNum;
 	int sdlRendererDriver;
+	enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } vSync;
+	bool isBilinear;
 	enum { SCALE_ASPECT, SCALE_FILL } scaleType;
+	int scaleFactor;
 	bool autolockCursor;
+	int sndSampleRate;
 } ChocolateKeenConfig;
 
 extern ChocolateKeenConfig g_chocolateKeenCfg;

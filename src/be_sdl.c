@@ -157,6 +157,34 @@ static void BEL_SDL_ParseSetting_SDLRendererDriver(const char *buffer)
 	}
 }
 
+static void BEL_SDL_ParseSetting_VSync(const char *buffer)
+{
+	if (!strcmp(buffer, "on"))
+	{
+		g_chocolateKeenCfg.vSync = VSYNC_ON;
+	}
+	else if (!strcmp(buffer, "off"))
+	{
+		g_chocolateKeenCfg.vSync = VSYNC_OFF;
+	}
+	else if (!strcmp(buffer, "auto"))
+	{
+		g_chocolateKeenCfg.vSync = VSYNC_AUTO;
+	}
+}
+
+static void BEL_SDL_ParseSetting_Bilinear(const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_chocolateKeenCfg.isBilinear = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_chocolateKeenCfg.isBilinear = false;
+	}
+}
+
 static void BEL_SDL_ParseSetting_ScaleType(const char *buffer)
 {
 	if (!strcmp(buffer, "aspect"))
@@ -167,6 +195,11 @@ static void BEL_SDL_ParseSetting_ScaleType(const char *buffer)
 	{
 		g_chocolateKeenCfg.scaleType = SCALE_FILL;
 	}
+}
+
+static void BEL_SDL_ParseSetting_ScaleFactor(const char *buffer)
+{
+	g_chocolateKeenCfg.scaleFactor = atoi(buffer);
 }
 
 static void BEL_SDL_ParseSetting_AutolockCursor(const char *buffer)
@@ -181,6 +214,11 @@ static void BEL_SDL_ParseSetting_AutolockCursor(const char *buffer)
 	}
 }
 
+static void BEL_SDL_ParseSettings_SndSampleRate(const char *buffer)
+{
+	g_chocolateKeenCfg.sndSampleRate = atoi(buffer);
+}
+
 typedef struct {
 	const char *cfgPrefix; // Includes '=' sign
 	void (*handlerPtr)(const char *);
@@ -192,8 +230,12 @@ static ChocoKeenCfgEntry g_sdlCfgEntries[] = {
 	{"windowres=", &BEL_SDL_ParseSetting_WindowRes},
 	{"displaynum=", &BEL_SDL_ParseSetting_DisplayNum},
 	{"sdlrenderer=", &BEL_SDL_ParseSetting_SDLRendererDriver},
+	{"vsync=", &BEL_SDL_ParseSetting_VSync},
+	{"bilinear=", &BEL_SDL_ParseSetting_Bilinear},
 	{"scaletype=", &BEL_SDL_ParseSetting_ScaleType},
+	{"scalefactor=", &BEL_SDL_ParseSetting_ScaleFactor},
 	{"autolock=", &BEL_SDL_ParseSetting_AutolockCursor},
+	{"sndsamplerate=", &BEL_SDL_ParseSettings_SndSampleRate},
 };
 
 static void BEL_SDL_ParseConfig(void)
@@ -206,46 +248,57 @@ static void BEL_SDL_ParseConfig(void)
 	g_chocolateKeenCfg.winHeight = 0;
 	g_chocolateKeenCfg.displayNum = 0;
 	g_chocolateKeenCfg.sdlRendererDriver = -1;
+	g_chocolateKeenCfg.vSync = VSYNC_AUTO;
+	g_chocolateKeenCfg.isBilinear = true;
 	g_chocolateKeenCfg.scaleType = SCALE_ASPECT;
+	g_chocolateKeenCfg.scaleFactor = 2;
 	g_chocolateKeenCfg.autolockCursor = false;
+	g_chocolateKeenCfg.sndSampleRate = 49716; // TODO should be a shared define
 	// Try to load config
 	FILE *fp = fopen(CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH, "r");
-	if (!fp)
+	if (fp)
 	{
-		// Try to save defaults just in case
-		fp = fopen(CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH, "w");
-		if (!fp)
+		char buffer[80];
+		while (fgets(buffer, sizeof(buffer), fp))
 		{
-			return;
-		}
-		fprintf(fp, "fullscreen=%s\n", g_chocolateKeenCfg.isFullscreen ? "true" : "false");
-		fprintf(fp, "fullres=%dx%d\n", g_chocolateKeenCfg.fullWidth, g_chocolateKeenCfg.fullHeight);
-		fprintf(fp, "windowres=%dx%d\n", g_chocolateKeenCfg.winWidth, g_chocolateKeenCfg.winHeight);
-		fprintf(fp, "displaynum=%d\n", g_chocolateKeenCfg.displayNum);
-		fprintf(fp, "sdlrenderer=%s\n", "auto");
-		fprintf(fp, "scaletype=%s\n", (g_chocolateKeenCfg.scaleType == SCALE_ASPECT) ? "aspect" : "fill");
-	}
-	char buffer[80];
-	while (fgets(buffer, sizeof(buffer), fp))
-	{
-		size_t len = strlen(buffer);
-		if (!len)
-		{
-			continue;
-		}
-		if (buffer[len-1] == '\n')
-		{
-			buffer[len-1] = '\0';
-		}
-		for (int i = 0; i < sizeof(g_sdlCfgEntries)/sizeof(*g_sdlCfgEntries); ++i)
-		{
-			if (!strncmp(g_sdlCfgEntries[i].cfgPrefix, buffer, strlen(g_sdlCfgEntries[i].cfgPrefix)))
+			size_t len = strlen(buffer);
+			if (!len)
 			{
-				g_sdlCfgEntries[i].handlerPtr(buffer+strlen(g_sdlCfgEntries[i].cfgPrefix));
-				break;
+				continue;
+			}
+			if (buffer[len-1] == '\n')
+			{
+				buffer[len-1] = '\0';
+			}
+			for (int i = 0; i < sizeof(g_sdlCfgEntries)/sizeof(*g_sdlCfgEntries); ++i)
+			{
+				if (!strncmp(g_sdlCfgEntries[i].cfgPrefix, buffer, strlen(g_sdlCfgEntries[i].cfgPrefix)))
+				{
+					g_sdlCfgEntries[i].handlerPtr(buffer+strlen(g_sdlCfgEntries[i].cfgPrefix));
+					break;
+				}
 			}
 		}
+		fclose(fp);
 	}
+	// Try to save current settings just in case (first time file is created or new fields added)
+	fp = fopen(CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH, "w");
+	if (!fp)
+	{
+		return;
+	}
+	fprintf(fp, "fullscreen=%s\n", g_chocolateKeenCfg.isFullscreen ? "true" : "false");
+	fprintf(fp, "fullres=%dx%d\n", g_chocolateKeenCfg.fullWidth, g_chocolateKeenCfg.fullHeight);
+	fprintf(fp, "windowres=%dx%d\n", g_chocolateKeenCfg.winWidth, g_chocolateKeenCfg.winHeight);
+	fprintf(fp, "displaynum=%d\n", g_chocolateKeenCfg.displayNum);
+	fprintf(fp, "sdlrenderer=%s\n", "auto");
+	fprintf(fp, "vsync=%s\n", g_chocolateKeenCfg.vSync == VSYNC_AUTO ? "auto" : (g_chocolateKeenCfg.vSync == VSYNC_ON ? "on" : "off"));
+	fprintf(fp, "bilinear=%s\n", g_chocolateKeenCfg.isBilinear ? "true" : "false");
+	fprintf(fp, "scaletype=%s\n", (g_chocolateKeenCfg.scaleType == SCALE_ASPECT) ? "aspect" : "fill");
+	fprintf(fp, "scalefactor=%d\n", g_chocolateKeenCfg.scaleFactor);
+	fprintf(fp, "autolock=%s\n", g_chocolateKeenCfg.autolockCursor ? "true" : "false");
+	fprintf(fp, "sndsamplerate=%d\n", g_chocolateKeenCfg.sndSampleRate);
+	fclose(fp);
 }
 
 
