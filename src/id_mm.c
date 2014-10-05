@@ -111,13 +111,16 @@ mmblocktype	id0_far mmblocks[MAXBLOCKS]
 
 // A static memory buffer used for our allocations, made out of 16-bytes
 // long paragraphs (each of them beginning with some emulated "segment")
+//
+// NOTE: Main mem (near+far) should consist of 335*1024 bytes
+// (Keen Dreams Shareware v1.13 with EGA garphics)
 static id0_byte_t mmEmulatedMemSpace[512*1024];
 // The very first "segment" in the emulated space
 #define EMULATED_FIRST_SEG 0
 // Different portions of the space being emulated - start points
 #define EMULATED_NEAR_SEG EMULATED_FIRST_SEG
 #define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+4096)
-#define EMULATED_EMS_SEG (EMULATED_FAR_SEG+20544)
+#define EMULATED_EMS_SEG (EMULATED_FAR_SEG+23544)
 #define EMULATED_XMS_SEG (EMULATED_EMS_SEG+4096)
 // Lengths in paragraphs of the different sections
 #define EMULATED_NEAR_PARAGRAPHS (EMULATED_FAR_SEG-EMULATED_NEAR_SEG)

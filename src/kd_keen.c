@@ -192,14 +192,14 @@ void MemDrawChar (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t widt
 	{
 		destPtr = dest;
 
-		*destPtr = *srcPtr;
-		*(destPtr += width) = *(++srcPtr);
-		*(destPtr += width) = *(++srcPtr);
-		*(destPtr += width) = *(++srcPtr);
-		*(destPtr += width) = *(++srcPtr);
-		*(destPtr += width) = *(++srcPtr);
-		*(destPtr += width) = *(++srcPtr);
-		*(destPtr += width) = *(++srcPtr);
+		*destPtr = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
 
 		dest += planesize;
 	}
@@ -244,6 +244,15 @@ void ShiftScore (void)
 	spr = &spritetable[SCOREBOXSPR-STARTSPRITES];
 	dest = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 
+	CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
+		(id0_byte_t *)dest+dest->sourceoffset[1],spr->width,spr->height,2);
+
+	CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
+		(id0_byte_t *)dest+dest->sourceoffset[2],spr->width,spr->height,4);
+
+	CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
+		(id0_byte_t *)dest+dest->sourceoffset[3],spr->width,spr->height,6);
+#if 0
 	CAL_ShiftSprite (FP_SEG(dest),dest->sourceoffset[0],
 		dest->sourceoffset[1],spr->width,spr->height,2);
 
@@ -252,6 +261,7 @@ void ShiftScore (void)
 
 	CAL_ShiftSprite (FP_SEG(dest),dest->sourceoffset[0],
 		dest->sourceoffset[3],spr->width,spr->height,6);
+#endif
 }
 #endif
 

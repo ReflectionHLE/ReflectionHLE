@@ -64,12 +64,15 @@ void BE_SDL_MarkGfxForPendingUpdate(void)
 
 extern uint8_t g_vga_8x16TextFont[256*VGA_TXT_CHAR_PIX_WIDTH*VGA_TXT_CHAR_PIX_HEIGHT];
 
+static uint8_t g_sdlEGAGfxMemory[4][0x10000], g_sdlEGAGfxMemoryCache[4][0x10000];
 static uint8_t g_sdlCGAGfxMemory[8192*2], g_sdlCGAGfxMemoryCache[8192*2];
 static uint8_t g_sdlTextModeMemory[TXT_COLS_NUM*TXT_ROWS_NUM*2], g_sdlTextModeMemoryCache[TXT_COLS_NUM*TXT_ROWS_NUM*2];
 static uint16_t g_sdlScreenStartAddress = 0;
 static int g_sdlScreenMode = 3;
 static int g_sdlTexWidth, g_sdlTexHeight;
 static uint8_t g_sdlBorderColor = 0;
+static uint8_t g_sdlPelPanning = 0;
+static uint8_t g_sdlLineWidth = 40;
 static int g_sdlTxtCursorPosX, g_sdlTxtCursorPosY;
 static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 
@@ -134,8 +137,13 @@ void BE_SDL_InitGfx(void)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
 		exit(0);
 	}
-	// TODO (CHOCO KEEN): VSYNC_AUTO should enable VSync with EGA graphics
+#if GRMODE == EGAGR
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_chocolateKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_chocolateKeenCfg.vSync == VSYNC_OFF) ? 0 : SDL_RENDERER_PRESENTVSYNC));
+#elif GRMODE == CGAGR
 	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_chocolateKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_chocolateKeenCfg.vSync == VSYNC_ON) ? SDL_RENDERER_PRESENTVSYNC : 0));
+#else
+#error "Supported GRMODE not defined!"
+#endif
 	if (!g_sdlRenderer)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
@@ -232,6 +240,8 @@ void BE_SDL_SetAspectCorrectionRect(void)
 void BE_SDL_SetScreenStartAddress(id0_unsigned_t crtc)
 {
 	g_sdlScreenStartAddress = crtc;
+	BE_SDL_MarkGfxForPendingUpdate();
+	BE_SDL_MarkGfxForUpdate();
 }
 
 id0_byte_t *BE_SDL_GetTextModeMemoryPtr(void)
@@ -246,14 +256,227 @@ id0_byte_t *BE_SDL_GetCGAMemoryPtr(void)
 
 id0_byte_t *BE_SDL_GetEGAMemoryPtr(void)
 {
-	// TODO: IMPLEMENT!
-	return 0;
+	// TODO: Never actually used...
+	return &g_sdlEGAGfxMemory[0];
 }
+
+
+
+// Colors in BGRA format/order (on certain platforms)
+
+static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
+	0xff000000/*black*/,
+	0xff00ffff/*light cyan*/,
+	0xffff00ff/*light magenta*/,
+	0xffffffff/*white*/
+};
+
+// Same but for the EGA/VGA (and colored text modes on CGA/EGA/VGA)
+
+static const uint32_t g_sdlEGABGRAScreenColors[] = {
+	0xff000000/*black*/, 0xff0000aa/*blue*/, 0xff00aa00/*green*/, 0xff00aaaa/*cyan*/,
+	0xffaa0000/*red*/, 0xffaa00aa/*magenta*/, 0xffaa5500/*brown*/, 0xffaaaaaa/*light gray*/,
+	0xff555555/*gray*/, 0xff5555ff/*light blue*/, 0xff55ff55/*light green*/, 0xff55ffff/*light cyan*/,
+	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
+};
+
+static uint32_t g_sdlEGACurrBGRAPalette[16];
+
 
 void BE_SDL_SetBorderColor(id0_byte_t color)
 {
 	g_sdlBorderColor = color;
+	BE_SDL_MarkGfxForPendingUpdate();
+	BE_SDL_MarkGfxForUpdate();
 }
+
+void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette)
+{
+	for (int entry = 0; entry < 16; ++entry)
+	{
+		g_sdlEGACurrBGRAPalette[entry] =  g_sdlEGABGRAScreenColors[(palette[entry] & 7) | ((palette[entry] & 16) >> 1)];
+	}
+	g_sdlBorderColor = (palette[16] & 7) | ((palette[16] & 16) >> 1);
+	BE_SDL_MarkGfxForPendingUpdate();
+	BE_SDL_MarkGfxForUpdate();
+}
+
+void BE_SDL_SetPelPanning(id0_byte_t panning)
+{
+	g_sdlPelPanning = panning;
+	BE_SDL_MarkGfxForPendingUpdate();
+	BE_SDL_MarkGfxForUpdate();
+}
+
+void BE_SDL_EGASetLineWidth(id0_byte_t widthInBytes)
+{
+	g_sdlLineWidth = widthInBytes;
+	BE_SDL_MarkGfxForPendingUpdate();
+	BE_SDL_MarkGfxForUpdate();
+}
+
+void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
+{
+	if (mask & 1)
+		g_sdlEGAGfxMemory[0][destOff] = srcVal;
+	if (mask & 2)
+		g_sdlEGAGfxMemory[1][destOff] = srcVal;
+	if (mask & 4)
+		g_sdlEGAGfxMemory[2][destOff] = srcVal;
+	if (mask & 8)
+		g_sdlEGAGfxMemory[3][destOff] = srcVal;
+}
+
+// Based on BE_Cross_LinearToWrapped_MemCopy
+static void BEL_SDL_LinearToEGAPlane_MemCopy(uint8_t *planeDstPtr, uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num)
+{
+	uint16_t bytesToEnd = 0x10000-planeDstOff;
+	if (num <= bytesToEnd)
+	{
+		memcpy(planeDstPtr+planeDstOff, linearSrc, num);
+	}
+	else
+	{
+		memcpy(planeDstPtr+planeDstOff, linearSrc, bytesToEnd);
+		memcpy(planeDstPtr, linearSrc+bytesToEnd, num-bytesToEnd);
+	}
+}
+
+// Based on BE_Cross_WrappedToLinear_MemCopy
+static void BEL_SDL_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, const uint8_t *planeSrcPtr, uint16_t planeSrcOff, uint16_t num)
+{
+	uint16_t bytesToEnd = 0x10000-planeSrcOff;
+	if (num <= bytesToEnd)
+	{
+		memcpy(linearDst, planeSrcPtr+planeSrcOff, num);
+	}
+	else
+	{
+		memcpy(linearDst, planeSrcPtr+planeSrcOff, bytesToEnd);
+		memcpy(linearDst+bytesToEnd, planeSrcPtr, num-bytesToEnd);
+	}
+}
+
+// Based on BE_Cross_WrappedToWrapped_MemCopy
+static void BEL_SDL_EGAPlaneToEGAPlane_MemCopy(uint8_t *planeCommonPtr, uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num)
+{
+	uint16_t srcBytesToEnd = 0x10000-planeSrcOff;
+	uint16_t dstBytesToEnd = 0x10000-planeDstOff;
+	if (num <= srcBytesToEnd)
+	{
+		// Source is linear: Same as BE_Cross_LinearToWrapped_MemCopy here
+		if (num <= dstBytesToEnd)
+		{
+			memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, num);
+		}
+		else
+		{
+			memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, dstBytesToEnd);
+			memcpy(planeCommonPtr, planeCommonPtr+planeSrcOff+dstBytesToEnd, num-dstBytesToEnd);
+		}
+		return;
+	}
+	// Otherwise, check if at least the destination is linear
+	if (num <= dstBytesToEnd)
+	{
+		// Destination is linear: Same as BE_Cross_WrappedToLinear_MemCopy, non-linear source
+		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, srcBytesToEnd);
+		memcpy(planeCommonPtr+planeDstOff+srcBytesToEnd, planeCommonPtr, num-srcBytesToEnd);
+
+		return;
+	}
+	// BOTH buffers have wrapping. We don't check separately if
+	// srcBytesToEnd==dstBytesToEnd (in such a case planeDstOff==planeSrcOff...)
+	if (srcBytesToEnd <= dstBytesToEnd)
+	{
+		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, srcBytesToEnd);
+		memcpy(planeCommonPtr+planeDstOff+srcBytesToEnd, planeCommonPtr, dstBytesToEnd-srcBytesToEnd);
+		memcpy(planeCommonPtr, planeCommonPtr+(dstBytesToEnd-srcBytesToEnd), num-dstBytesToEnd);
+	}
+	else // srcBytesToEnd > dstBytesToEnd
+	{
+		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, dstBytesToEnd);
+		memcpy(planeCommonPtr, planeCommonPtr+planeSrcOff+dstBytesToEnd, srcBytesToEnd-dstBytesToEnd);
+		memcpy(planeCommonPtr+(srcBytesToEnd-dstBytesToEnd), planeCommonPtr, num-srcBytesToEnd);
+	}
+}
+
+void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t mask)
+{
+	if (mask & 1)
+		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlEGAGfxMemory[0], destOff, srcPtr, num);
+	if (mask & 2)
+		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlEGAGfxMemory[1], destOff, srcPtr, num);
+	if (mask & 4)
+		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlEGAGfxMemory[2], destOff, srcPtr, num);
+	if (mask & 8)
+		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlEGAGfxMemory[3], destOff, srcPtr, num);
+}
+
+void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
+{
+	g_sdlEGAGfxMemory[0][destOff] = g_sdlEGAGfxMemory[0][srcOff];
+	g_sdlEGAGfxMemory[1][destOff] = g_sdlEGAGfxMemory[1][srcOff];
+	g_sdlEGAGfxMemory[2][destOff] = g_sdlEGAGfxMemory[2][srcOff];
+	g_sdlEGAGfxMemory[3][destOff] = g_sdlEGAGfxMemory[3][srcOff];
+}
+
+void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num)
+{
+	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlEGAGfxMemory[0], destOff, srcOff, num);
+	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlEGAGfxMemory[1], destOff, srcOff, num);
+	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlEGAGfxMemory[2], destOff, srcOff, num);
+	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlEGAGfxMemory[3], destOff, srcOff, num);
+}
+
+uint8_t BE_SDL_EGAFetchGFXByte(uint16_t destOff, uint16_t planenum)
+{
+	return g_sdlEGAGfxMemory[planenum][destOff];
+}
+
+void BE_SDL_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planenum)
+{
+	BEL_SDL_EGAPlaneToLinear_MemCopy(destPtr, g_sdlEGAGfxMemory[planenum], srcOff, num);
+}
+
+void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint16_t mask)
+{
+	for (int currBitNum = 0, currBitMask = 1; currBitNum < 8; ++currBitNum, currBitMask <<= 1)
+	{
+		if (mask & currBitMask)
+		{
+			g_sdlEGAGfxMemory[0][destOff] &= ~currBitMask;
+			g_sdlEGAGfxMemory[0][destOff] |= ((color & 1) << currBitNum);
+			g_sdlEGAGfxMemory[1][destOff] &= ~currBitMask;
+			g_sdlEGAGfxMemory[1][destOff] |= (((color & 2) >> 1) << currBitNum);
+			g_sdlEGAGfxMemory[2][destOff] &= ~currBitMask;
+			g_sdlEGAGfxMemory[2][destOff] |= (((color & 4) >> 2) << currBitNum);
+			g_sdlEGAGfxMemory[3][destOff] &= ~currBitMask;
+			g_sdlEGAGfxMemory[3][destOff] |= (((color & 8) >> 3) << currBitNum);
+		}
+	}
+}
+
+void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint16_t mask)
+{
+	for (uint16_t loopVar = 0; loopVar < count; ++loopVar, ++destOff)
+	{
+		BE_SDL_EGAUpdateGFXPixel4bpp(destOff, color, mask);
+	}
+}
+
+void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
+{
+	if (mask & 1)
+		g_sdlEGAGfxMemory[0][destOff] ^= srcVal;
+	if (mask & 2)
+		g_sdlEGAGfxMemory[1][destOff] ^= srcVal;
+	if (mask & 4)
+		g_sdlEGAGfxMemory[2][destOff] ^= srcVal;
+	if (mask & 8)
+		g_sdlEGAGfxMemory[3][destOff] ^= srcVal;
+}
+
 
 void BE_SDL_SetScreenMode(int mode)
 {
@@ -275,6 +498,16 @@ void BE_SDL_SetScreenMode(int mode)
 		g_sdlTexHeight = GFX_TEX_HEIGHT;
 		memset(g_sdlCGAGfxMemory,  0, sizeof(g_sdlCGAGfxMemory));
 		g_sdlCGAGfxMemoryCache[0] = g_sdlCGAGfxMemory[0]^0xFF; // Force refresh
+		break;
+	case 0xD:
+		g_sdlTexWidth = GFX_TEX_WIDTH;
+		g_sdlTexHeight = GFX_TEX_HEIGHT;
+		memcpy(g_sdlEGACurrBGRAPalette, g_sdlEGABGRAScreenColors, sizeof(g_sdlEGABGRAScreenColors));
+		g_sdlBorderColor = 0;
+		g_sdlPelPanning = 0;
+		g_sdlLineWidth = 40;
+		memset(g_sdlEGAGfxMemory,  0, sizeof(g_sdlEGAGfxMemory));
+		g_sdlEGAGfxMemoryCache[0][0] = g_sdlEGAGfxMemory[0][0]^0xFF; // Force refresh
 		break;
 	}
 	BEL_SDL_RecreateTexture();
@@ -384,29 +617,12 @@ void BE_SDL_ShortSleep(void)
 	BE_SDL_PollEvents();
 }
 
-// Colors in BGRA format/order (on certain platforms)
-
-static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
-	0xff000000/*black*/,
-	0xff00ffff/*light cyan*/,
-	0xffff00ff/*light magenta*/,
-	0xffffffff/*white*/
-};
-
-// Same but for the EGA/VGA (and colored text modes on CGA/EGA/VGA)
-
-static const uint32_t g_sdlEGABGRAScreenColors[] = {
-	0xff000000/*black*/, 0xff0000aa/*blue*/, 0xff00aa00/*green*/, 0xff00aaaa/*cyan*/,
-	0xffaa0000/*red*/, 0xffaa00aa/*magenta*/, 0xffaa5500/*brown*/, 0xffaaaaaa/*light gray*/,
-	0xff555555/*gray*/, 0xff5555ff/*light blue*/, 0xff55ff55/*light green*/, 0xff55ffff/*light cyan*/,
-	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
-};
 
 
 
 void BE_SDL_UpdateHostDisplay(void)
 {
-	if (g_sdlScreenMode == 3) // Textual
+	if (g_sdlScreenMode == 3) // Text mode
 	{
 		static bool wereBlinkingCharsShown;
 		static bool wasBlinkingCursorShown;
@@ -495,7 +711,7 @@ void BE_SDL_UpdateHostDisplay(void)
 			}
 		}
 	}
-	else // CGA graphics mode 4
+	else if (g_sdlScreenMode == 4) // CGA graphics
 	{
 		if (!g_sdlDoRefreshGfxOutput)
 		{
@@ -525,7 +741,7 @@ void BE_SDL_UpdateHostDisplay(void)
 		for (int i = 0; i < 2; ++i)
 		{
 			currPixPtr = (uint32_t *)pixels + i*GFX_TEX_WIDTH;
-			srcCGAPtr = &g_sdlCGAGfxMemory[g_sdlScreenStartAddress+i*0x2000];
+			srcCGAPtr = &g_sdlCGAGfxMemory[g_sdlScreenStartAddress+i*8192];
 			currBitLoc = 6; // Location of bits to check (two bits)
 			for (int line = 0; line < (GFX_TEX_HEIGHT/2); ++line)
 			{
@@ -548,6 +764,82 @@ void BE_SDL_UpdateHostDisplay(void)
 				}
 				currPixPtr += GFX_TEX_WIDTH; // Skip "odd" row
 			}
+		}
+	}
+	else // EGA graphics mode 0xD
+	{
+		if (!g_sdlDoRefreshGfxOutput)
+		{
+			return;
+		}
+		// TODO: Doesn't work that well with palette cycling...
+#if 0
+		// Maybe we still don't have to update screen (e.g., Keen Dreams control panel)
+		bool doUpdate = false;
+		for (int planeNum = 0; planeNum < 4; ++planeNum)
+		{
+			for (int i = 0; i < sizeof(g_sdlEGAGfxMemory[planeNum]); ++i)
+			{
+				if (g_sdlEGAGfxMemory[planeNum][i] != g_sdlEGAGfxMemoryCache[planeNum][i])
+				{
+					g_sdlEGAGfxMemoryCache[planeNum][i] = g_sdlEGAGfxMemory[planeNum][i];
+					doUpdate = true;
+				}
+			}
+		}
+		if (!doUpdate)
+		{
+			return;
+		}
+#endif
+		void *pixels;
+		int pitch;
+		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
+		// TODO DEBUG
+		//g_sdlPelPanning = 0;
+		//g_sdlLineWidth = 64;
+		//
+		uint16_t currLineFirstByte = (g_sdlScreenStartAddress + g_sdlPelPanning/8) % 0x10000;
+		uint8_t panningWithinInByte = g_sdlPelPanning%8;
+		for (int line = 0, col; line < GFX_TEX_HEIGHT; ++line)
+		{
+			uint8_t currBitNum = 7-panningWithinInByte, currBitMask = 1<<currBitNum;
+			uint16_t currByte = currLineFirstByte;
+			uint32_t *currPixPtr = (uint32_t *)pixels + line*GFX_TEX_WIDTH;
+			for (col = 0; col < GFX_TEX_WIDTH; ++col, ++currPixPtr)
+			{
+				*currPixPtr = g_sdlEGACurrBGRAPalette[
+					((g_sdlEGAGfxMemory[0][currByte]&currBitMask)>>currBitNum) |
+					(((g_sdlEGAGfxMemory[1][currByte]&currBitMask)>>currBitNum)<<1) |
+					(((g_sdlEGAGfxMemory[2][currByte]&currBitMask)>>currBitNum)<<2) |
+					(((g_sdlEGAGfxMemory[3][currByte]&currBitMask)>>currBitNum)<<3)
+				];
+				if (currBitNum == 0)
+				{
+					++currByte;
+					currByte %= 0x10000;
+					currBitNum = 7;
+					currBitMask = 0x80;
+				}
+				else
+				{
+					--currBitNum;
+					currBitMask >>= 1;
+				}
+				if (col == 8*g_sdlLineWidth)
+				{
+					++col;
+					++currPixPtr;
+					break;
+				}
+			}
+			// Just if this makes sense... (FIXME: Check!)
+			for (; col < GFX_TEX_WIDTH; ++col, ++currPixPtr)
+			{
+				*currPixPtr = g_sdlEGACurrBGRAPalette[0];
+			}
+			currLineFirstByte += g_sdlLineWidth;
+			currLineFirstByte %= 0x10000;
 		}
 	}
 	g_sdlDoRefreshGfxOutput = false;

@@ -1040,17 +1040,19 @@ void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
 
 void	RFL_OldRow (id0_unsigned_t updatespot,id0_unsigned_t count,id0_unsigned_t step)
 {
+	// Ported from ASM
+
 	// updatespot and step are measured in BYTES, should both be even
 	id0_byte_t *backPtr = (id0_byte_t *)mapsegs[0]+updatespot;  // pointer inside background plane
 	id0_byte_t *forePtr = (id0_byte_t *)mapsegs[1]+updatespot; // pointer inside foreground plane
 	// clearing 'count' tiles
-	for (id0_unsigned_t loopVar = count; loopVar; --loopVar, foreBytePtr += step, backBytePtr += step)
+	for (id0_unsigned_t loopVar = count; loopVar; --loopVar, forePtr += step, backPtr += step)
 	{
 		// if a foreground tile, block wasn't cached so we don't clear
-		if (!(*(id0_unsigned_t *)foreBytePtr))
+		if (!(*(id0_unsigned_t *)forePtr))
 		{
 			// tile is no longer in master screen cache
-			tilecache[*(id0_unsigned_t *)backBytePtr] = 0;
+			tilecache[*(id0_unsigned_t *)backPtr] = 0;
 		}
 	}
 }
@@ -1681,6 +1683,7 @@ void RF_Refresh (void)
 // with an UPDATETERMINATE at the end
 //
 	updatestart[otherpage] = newupdate = baseupdatestart[otherpage];
+#if 0
 asm	mov	ax,ds
 asm	mov	es,ax
 asm	xor	ax,ax
@@ -1688,6 +1691,11 @@ asm	mov	cx,(UPDATESCREENSIZE-2)/2
 asm	mov	di,[newupdate]
 asm	rep	stosw
 asm	mov	[WORD PTR es:di],UPDATETERMINATE
+#endif
+	// Ported from ASM
+	memset(newupdate, 0, 2*((UPDATESCREENSIZE-2)/2));
+	*(id0_unsigned_t *)(newupdate + 2*((UPDATESCREENSIZE-2)/2)) = UPDATETERMINATE;
+	//
 
 	screenpage ^= 1;
 	otherpage ^= 1;

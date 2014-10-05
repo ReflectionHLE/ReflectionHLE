@@ -41,7 +41,7 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/kd_main.o \
         $(OBJ)/kd_play.o
 
-#CURRENTLY OMITTED: egadict, egahead, piracy
+#NOTE: Unnecessary resources may be omitted
 RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/audiohhd.o \
              $(RSRCOBJ)/cgadict.o \

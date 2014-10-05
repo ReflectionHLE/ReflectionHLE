@@ -90,7 +90,6 @@ Making this run
 This requires Keen Dreams CGA v1.05. On Windows, you should simply drop
 the files SDL2.dll and chocolate-keen-dreams-cga.exe together with the files
 coming with the original game, and then launch chocolate-keen-dreams-cga.exe.
-Furthermore, you may optionally copy any of the bundled .bat files.
 
 ------------------------------------------------
 How to do *this and that* or: Configuration file
@@ -189,4 +188,4 @@ sound effects and CGA graphics on Linux and Windows desktops. Game saving and
 more is totally untested and may be incompatible with original data generated
 by the corresponding DOS executable (saved games are known to be incompatible).
 
-* NY00123
+NY00123

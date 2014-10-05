@@ -22,10 +22,6 @@
 
 #include "id_heads.h"
 
-// TODO (CHOCO KEEN): IMPLEMENT EGA SUPPORT!
-// (EGA read/write modes can have unexpected effects - anything that
-// involves the address A000:0000 or so is probably under effect.)
-
 //============================================================================
 
 #define TILESWIDE 21
@@ -37,8 +33,8 @@ extern id0_unsigned_t screenstart[3]; // starts of three screens (0/1/master) in
 extern id0_unsigned_t originmap;
 extern id0_byte_t id0_seg *tinf;
 
-id0_byte_t planemask;
-id0_byte_t planenum;
+extern id0_byte_t planemask;
+extern id0_byte_t planenum;
 
 id0_unsigned_t screenstartcs; // in code segment for accesability
 
@@ -75,6 +71,9 @@ static const id0_byte_t seg0TileBuff[64] = {
 
 void RFL_NewTile (id0_unsigned_t updateoffset)
 {
+	/*
+	 * mark both update lists at this spot
+	 */
 	updateptr[updateoffset] = 1;
 	// offset in map from origin
 	id0_unsigned_t currmapoffset = updatemapofs[updateoffset]+originmap;
@@ -145,203 +144,133 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 
 
 #if GRMODE == EGAGR
-;===========================================================================
-;
-; EGA refresh routines
-;
-;===========================================================================
+//===========================================================================
+//
+// EGA refresh routines
+//
+//===========================================================================
 
 #define CACHETILES 1 // enable master screen tile caching
 extern id0_unsigned_t tilecache[NUMTILE16];
 
-TILEWIDTH	=	2
+#define TILEWIDTH 2
 
-;=================
-;
-; RFL_NewTile
-;
-; Draws a composit two plane tile to the master screen and sets the update
-; spot to 1 in both update pages, forcing the tile to be copied to the
-; view pages the next two refreshes
-;
-; Called to draw newlly scrolled on strips and animating tiles
-;
-; Assumes write mode 0
-;
-;=================
+//=================
+//
+// RFL_NewTile
+//
+// Draws a composit two plane tile to the master screen and sets the update
+// spot to 1 in both update pages, forcing the tile to be copied to the
+// view pages the next two refreshes
+//
+// Called to draw newlly scrolled on strips and animating tiles
+//
+// Assumes write mode 0
+//
+//=================
 
-PROC	RFL_NewTile	updateoffset:WORD
-PUBLIC	RFL_NewTile
-USES	SI,DI
+extern id0_byte_t *updatestart[2];
 
-;
-; mark both update lists at this spot
-;
-	mov	di,[updateoffset]
+void RFL_NewTile (id0_unsigned_t updateoffset)
+{
+	/*
+	 * mark both update lists at this spot
+	 */
+	updatestart[0][updateoffset] = 1; // page 0 pointer
+	updatestart[1][updateoffset] = 1; // page 1 pointer
+	// offset in map from origin
+	id0_unsigned_t currmapoffset = updatemapofs[updateoffset]+originmap;
+	// screen location for tile
+	id0_unsigned_t currtileoffset = blockstarts[updateoffset]+masterofs;
+	// set screenstartcs to the location in screenseg to draw the tile
+	screenstartcs = currtileoffset;
+	// If either of the tile numbers is 0xFFFF, the tile does not need to
+	// be masked together; as one of the planes totally eclipses the other
+	id0_unsigned_t foretilenum = mapsegs[1][currmapoffset/2];
+	id0_unsigned_t backtilenum = mapsegs[0][currmapoffset/2];
+	if (!foretilenum)
+	{
+		//=========
+		//
+		// No foreground tile, so draw a single background tile.
+		// Use the master screen cache if possible
+		//
+		//=========
+#if CACHETILES
+		if (tilecache[backtilenum])
+		{
+			//=============
+			//
+			// Draw single tile from cache
+			//
+			//=============
+			id0_unsigned_t egaSrcOff = tilecache[backtilenum];
+			id0_unsigned_t egaDestOff = screenstartcs;
+			for (int loopVar = 15; loopVar; --loopVar)
+			{
+				BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				egaSrcOff += SCREENWIDTH-2;
+				egaDestOff += SCREENWIDTH-2;
+			}
+			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
 
-	mov	bx,[updatestart]		;page 0 pointer
-	mov	[BYTE bx+di],1
-	mov	bx,[updatestart+2]		;page 1 pointer
-	mov	[BYTE bx+di],1
+			BE_SDL_MarkGfxForPendingUpdate();
+			return;
+		}
+#endif
+		//=============
+		//
+		// Draw single tile from main memory
+		//
+		//=============
+		tilecache[backtilenum] = screenstartcs; // next time it can be drawn from here with latch
+		const id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+		backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
+		for (int planeCounter = 4, mapMask = 1; planeCounter; --planeCounter, mapMask <<= 1) // draw four planes
+		{
+			id0_unsigned_t egaDestOff = screenstartcs; // start at same place in all planes
+			for (int loopVar = 15; loopVar; --loopVar)
+			{
+				BE_SDL_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, 2, mapMask);
+				backSrcPtr += 2;
+				egaDestOff += SCREENWIDTH;
+			}
+			BE_SDL_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, 2, mapMask);
+			backSrcPtr += 2;
+		}
 
-;
-; set screenstartcs to the location in screenseg to draw the tile
-;
-	shl	di,1
-	mov	si,[updatemapofs+di]	;offset in map from origin
-	add	si,[originmap]
-	mov	di,[blockstarts+di]		;screen location for tile
-	add	di,[masterofs]
-	mov	[cs:screenstartcs],di
+		BE_SDL_MarkGfxForPendingUpdate();
+		return;
+	}
 
-;
-; set BX to the foreground tile number and SI to the background number
-; If either BX or SI = 0xFFFF, the tile does not need to be masked together
-; as one of the planes totally eclipses the other
-;
-	mov	es,[mapsegs+2]			;foreground plane
-	mov	bx,[es:si]
-	mov	es,[mapsegs]			;background plane
-	mov	si,[es:si]
-
-	mov	es,[screenseg]
-	mov	dx,SC_INDEX				;for stepping through map mask planes
-
-	or	bx,bx
-	jz	@@singletile
-	jmp	@@maskeddraw			;draw both together
-
-;=========
-;
-; No foreground tile, so draw a single background tile.
-; Use the master screen cache if possible
-;
-;=========
-@@singletile:
-
-	mov	bx,SCREENWIDTH-2		;add to get to start of next line
-	shl	si,1
-
-IFE CACHETILES
-	jmp	@@singlemain
-ENDIF
-
-	mov	ax,[tilecache+si]
-	or	ax,ax
-	jz	@@singlemain
-;=============
-;
-; Draw single tile from cache
-;
-;=============
-
-	mov	si,ax
-
-	mov	ax,SC_MAPMASK + 15*256	;all planes
-	WORDOUT
-
-	mov	dx,GC_INDEX
-	mov	ax,GC_MODE + 1*256		;write mode 1
-	WORDOUT
-
-	mov	di,[cs:screenstartcs]
-	mov	ds,[screenseg]
-
-REPT	15
-	movsb
-	movsb
-	add	si,bx
-	add	di,bx
-ENDM
-	movsb
-	movsb
-
-	xor	ah,ah					;write mode 0
-	WORDOUT
-
-	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
-	ret
-
-;=============
-;
-; Draw single tile from main memory
-;
-;=============
-
-@@singlemain:
-	mov	ax,[cs:screenstartcs]
-	mov	[tilecache+si],ax		;next time it can be drawn from here with latch
-	mov	ds,[grsegs+STARTTILE16*2+si]
-
-	xor	si,si					;block is segment aligned
-
-	mov	ax,SC_MAPMASK+0001b*256	;map mask for plane 0
-
-	mov	cx,4					;draw four planes
-@@planeloop:
-	mov	dx,SC_INDEX
-	WORDOUT
-
-	mov	di,[cs:screenstartcs]	;start at same place in all planes
-
-REPT	15
-	movsw
-	add	di,bx
-ENDM
-	movsw
-
-	shl	ah,1					;shift plane mask over for next plane
-	loop	@@planeloop
-
-	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
-	ret
-
-
-;=========
-;
-; Draw a masked tile combo
-; Interupts are disabled and the stack segment is reassigned
-;
-;=========
-@@maskeddraw:
-	cli							; don't allow ints when SS is set
-	shl	bx,1
-	mov	ss,[grsegs+STARTTILE16M*2+bx]
-	shl	si,1
-	mov	ds,[grsegs+STARTTILE16*2+si]
-
-	xor	si,si					;first word of tile data
-
-	mov	ax,SC_MAPMASK+0001b*256	;map mask for plane 0
-
-	mov	di,[cs:screenstartcs]
-@@planeloopm:
-	WORDOUT
-tileofs		=	0
-lineoffset	=	0
-REPT	16
-	mov	bx,[si+tileofs]			;background tile
-	and	bx,[ss:tileofs]			;mask
-	or	bx,[ss:si+tileofs+32]	;masked data
-	mov	[es:di+lineoffset],bx
-tileofs		=	tileofs + 2
-lineoffset	=	lineoffset + SCREENWIDTH
-ENDM
-	add	si,32
-	shl	ah,1					;shift plane mask over for next plane
-	cmp	ah,10000b
-	je	@@done					;drawn all four planes
-	jmp	@@planeloopm
-
-@@done:
-	mov	ax,@DATA
-	mov	ss,ax
-	sti
-	mov	ds,ax
-	ret
-ENDP
+	//=========
+	//
+	// Draw a masked tile combo
+	// Interupts are disabled and the stack segment is reassigned
+	//
+	//=========
+	const id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+	backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
+	id0_unsigned_t egaDestOff = screenstartcs;
+	for (int planeCounter = 4, mapMask = 1, dataLoc = 32; planeCounter; --planeCounter, mapMask <<= 1, dataLoc += 32)
+	{
+		const id0_byte_t *foreSrcPtr = grsegs[STARTTILE16M+foretilenum];
+		for (id0_unsigned_t loopVar = 0, lineoffset = 0; loopVar < 16; ++loopVar, lineoffset += SCREENWIDTH)
+		{
+			// backSrcPtr - background tile
+			// foreSrcPtr - mask
+			// &foreSrcPtr[dataLoc] - masked data
+			BE_SDL_EGAUpdateGFXByte(egaDestOff+lineoffset, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], mapMask);
+			++backSrcPtr;
+			++foreSrcPtr;
+			BE_SDL_EGAUpdateGFXByte(egaDestOff+lineoffset+1, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], mapMask);
+			++backSrcPtr;
+			++foreSrcPtr;
+		}
+	}
+}
 
 #endif
 
@@ -378,7 +307,6 @@ ENDP
 
 void RFL_UpdateTiles (void)
 {
-	// TODO (CHOCO KEEN): IMPLEMENT FOR EGA! (write mode 1)
 	id0_byte_t *scanPtr = updateptr;
 	id0_byte_t *scanEndPtr = updateptr + (TILESWIDE+1)*TILESHIGH+1;
 	id0_word_t iterationsToDo = 0xFFFF; // definitely scan the entire thing
@@ -412,10 +340,9 @@ void RFL_UpdateTiles (void)
 			//============
 			++scanPtr; // we know the next tile is nothing
 			id0_word_t tileLoc = blockstarts[scanPtr-updateptr-2]; // start of tile location on screen
+#if (GRMODE == CGAGR)
 			id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
 			id0_byte_t *srcPtr = &screenseg[(id0_unsigned_t)(tileLoc+masterofs)]; // source in master screen
-			// TODO (CHOCO KEEN) Actually implement for EGA
-#if (GRMODE == CGAGR) || (GRMODE == EGACR)
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
 				BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH);
@@ -423,8 +350,19 @@ void RFL_UpdateTiles (void)
 				BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH);
 			}
 			BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH);
-			continue;
 #endif
+#if (GRMODE == EGAGR)
+			id0_word_t egaDestOff = tileLoc+bufferofs; // dest in current screen
+			id0_word_t egaSrcOff = tileLoc+masterofs; // source in master screen
+			for (int loopVar = 15; loopVar; --loopVar)
+			{
+				BE_SDL_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH);
+				egaSrcOff += SCREENWIDTH;
+				egaDestOff += SCREENWIDTH;
+			}
+			BE_SDL_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH);
+#endif
+			continue;
 		}
 		//============
 		//
@@ -444,18 +382,21 @@ void RFL_UpdateTiles (void)
 		}
 		id0_word_t bytesPerRow = 2*(scanPtr - rowScanStartPtr);
 		id0_word_t tileLoc = blockstarts[rowScanStartPtr-updateptr-1]; // start of tile location
+#if (GRMODE == CGAGR)
 		id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
 		id0_byte_t *srcPtr = &screenseg[(id0_unsigned_t)(tileLoc+masterofs)]; // source in master screen
-#if (GRMODE == CGAGR)
 		id0_word_t bytesToSkip = SCREENWIDTH-2*bytesPerRow; // words wide in CGA tiles
 #else
+#if (GRMODE == EGAGR)
+		id0_word_t egaDestOff = tileLoc+bufferofs; // dest in current screen
+		id0_word_t egaSrcOff = tileLoc+masterofs; // source in master screen
+#endif
 		id0_word_t bytesToSkip = SCREENWIDTH-bytesPerRow;
 #endif
 		for (int loopVar = 15; loopVar; --loopVar)
 		{
 			iterationsToDo = bytesPerRow;
-#if (GRMODE == CGAGR) || (GRMODE == EGACR)
-			// TODO (CHOCO KEEN) IMPLEMENT FOR EGA
+#if (GRMODE == CGAGR)
 			for (; iterationsToDo; --iterationsToDo)
 			{
 				// Was originally a single instrument, so not calling BE_Cross_LinearToWrapped_MemCopy
@@ -466,9 +407,15 @@ void RFL_UpdateTiles (void)
 			BE_Cross_Wrapped_Add(screenseg, &srcPtr, bytesToSkip);
 			BE_Cross_Wrapped_Add(screenseg, &destPtr, bytesToSkip);
 #endif
+#if (GRMODE == EGAGR)
+			BE_SDL_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
+			iterationsToDo = 0;
+			egaSrcOff += bytesToSkip+bytesPerRow;
+			egaDestOff += bytesToSkip+bytesPerRow;
+#endif
 		}
 		iterationsToDo = bytesPerRow;
-#if (GRMODE == CGAGR) || (GRMODE == EGACR)
+#if (GRMODE == CGAGR)
 		for (; iterationsToDo; --iterationsToDo)
 		{
 			// Was originally a single instrument, so not calling BE_Cross_LinearToWrapped_MemCopy
@@ -476,6 +423,9 @@ void RFL_UpdateTiles (void)
 			BE_Cross_Wrapped_Add(screenseg, &srcPtr, TILEWIDTH/2);
 			BE_Cross_Wrapped_Add(screenseg, &destPtr, TILEWIDTH/2);
 		}
+#endif
+#if (GRMODE == EGAGR)
+		BE_SDL_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
 		iterationsToDo = 0;
 #endif
 		// was 0, now 0xFFFF for above loop
@@ -580,55 +530,40 @@ void RFL_MaskForegroundTiles (void)
 #endif
 
 #if (GRMODE == EGAGR)
-		;=================
-		;
-		; mask the tile
-		;
-		;=================
+		//=================
+		//
+		// mask the tile
+		//
+		//=================
 
-		mov	[BYTE planemask],1
-		mov	[BYTE planenum],0
+		planemask = 1;
+		planenum = 0;
 
-		mov	di,[blockstarts-2+di]
-		add	di,[bufferofs]
-		mov	[cs:screenstartcs],di
-		mov	es,[screenseg]
-		shl	si,1
-		mov	ds,[grsegs+STARTTILE16M*2+si]
+		id0_word_t tileLoc = blockstarts[scanPtr-updateptr-1];
+		screenstartcs = (id0_unsigned_t)(tileLoc + bufferofs);
 
-		mov	bx,32					;data starts 32 bytes after mask
+		id0_unsigned_t dataLoc = 32; // data starts 32 bytes after mask
 
-	@@planeloopm:
-		mov	dx,SC_INDEX
-		mov	al,SC_MAPMASK
-		mov	ah,[ss:planemask]
-		WORDOUT
-		mov	dx,GC_INDEX
-		mov	al,GC_READMAP
-		mov	ah,[ss:planenum]
-		WORDOUT
+		do // plane loop
+		{
+			id0_byte_t *srcPtr = grsegs[STARTTILE16M+foretilenum];
+			id0_unsigned_t egaDestOff = screenstartcs;
+			for (int loopVar = 0; loopVar < 16; ++loopVar, egaDestOff += SCREENWIDTH-1)
+			{
+				BE_SDL_EGAUpdateGFXByte(egaDestOff, (BE_SDL_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+				++srcPtr;
+				++egaDestOff;
+				BE_SDL_EGAUpdateGFXByte(egaDestOff, (BE_SDL_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+				++srcPtr;
+				//++egaDestOff;
+			}
+			dataLoc += 32; // the mask is now further away
 
-		xor	si,si
-		mov	di,[cs:screenstartcs]
-	lineoffset	=	0
-	REPT	16
-		mov	cx,[es:di+lineoffset]	;background
-		and	cx,[si]					;mask
-		or	cx,[si+bx]				;masked data
-		inc	si
-		inc	si
-		mov	[es:di+lineoffset],cx
-	lineoffset	=	lineoffset + SCREENWIDTH
-	ENDM
-		add	bx,32					;the mask is now further away
-		inc	[ss:planenum]
-		shl	[ss:planemask],1		;shift plane mask over for next plane
-		cmp	[ss:planemask],10000b	;done all four planes?
-		je	@@drawn					;drawn all four planes
-		jmp	@@planeloopm
-
-	@@drawn:
+			++planenum;
+			planemask <<= 1; // shift plane mask over for next plane
+		} while (planemask != 0x10);
 #endif
+
 		iterationsToDo = 0xFFFF; // definitely scan the entire thing
 	} while (true);
 }

@@ -142,8 +142,8 @@ Quit ("Improper video card!  If you really have a CGA card that I am not \n"
 	  "detecting, use the -HIDDENCARD command line parameter!");
 	MM_GetPtr ((memptr *)&screenseg,0x10000l);	// grab 64k for floating screen
 	//MM_GetPtr (&(memptr)screenseg,0x10000l);	// grab 64k for floating screen
-	BE_SDL_MarkGfxForPendingUpdate();
 #endif
+	BE_SDL_MarkGfxForPendingUpdate();
 
 	cursorvisible = 0;
 }
@@ -239,10 +239,7 @@ void VW_SetDefaultColors(void)
 {
 #if GRMODE == EGAGR
 	colors[3][16] = bordercolor;
-	_ES=FP_SEG(&colors[3]);
-	_DX=FP_OFF(&colors[3]);
-	_AX=0x1002;
-	geninterrupt(0x10);
+	BE_SDL_EGASetPaletteAndBorder(&colors[3]);
 	screenfaded = false;
 #endif
 }
@@ -256,10 +253,7 @@ void VW_FadeOut(void)
 	for (i=3;i>=0;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  _ES=FP_SEG(&colors[i]);
-	  _DX=FP_OFF(&colors[i]);
-	  _AX=0x1002;
-	  geninterrupt(0x10);
+	  BE_SDL_EGASetPaletteAndBorder(&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -275,10 +269,7 @@ void VW_FadeIn(void)
 	for (i=0;i<4;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  _ES=FP_SEG(&colors[i]);
-	  _DX=FP_OFF(&colors[i]);
-	  _AX=0x1002;
-	  geninterrupt(0x10);
+	  BE_SDL_EGASetPaletteAndBorder(&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
@@ -293,10 +284,7 @@ void VW_FadeUp(void)
 	for (i=3;i<6;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  _ES=FP_SEG(&colors[i]);
-	  _DX=FP_OFF(&colors[i]);
-	  _AX=0x1002;
-	  geninterrupt(0x10);
+	  BE_SDL_EGASetPaletteAndBorder(&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -311,10 +299,7 @@ void VW_FadeDown(void)
 	for (i=5;i>2;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  _ES=FP_SEG(&colors[i]);
-	  _DX=FP_OFF(&colors[i]);
-	  _AX=0x1002;
-	  geninterrupt(0x10);
+	  BE_SDL_EGASetPaletteAndBorder(&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
@@ -343,11 +328,7 @@ void VW_SetLineWidth (id0_int_t width)
 //
 // set wide virtual screen
 //
-asm	mov	dx,CRTC_INDEX
-asm	mov	al,CRTC_OFFSET
-asm mov	ah,[BYTE PTR width]
-asm	shr	ah,1
-asm	out	dx,ax
+	BE_SDL_EGASetLineWidth(width); // Ported from ASM
 #endif
 
 //
@@ -381,8 +362,12 @@ void	VW_ClearVideo (id0_int_t color)
 	EGAMAPMASK(15);
 #endif
 
-	// TODO (CHOCO KEEN): POSSIBLY ADD DIFFERENT IMPLEMENTATION FOR EGA?
+#if GRMODE == EGAGR
+	BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(0, color, 0xffff, 0xff);
+#endif
+#if GRMODE == CGAGR
 	memset(screenseg, color, 0xffff);
+#endif
 
 
 #if GRMODE == EGAGR
@@ -531,64 +516,35 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 
   if (xlb==xhb)
   {
-  //
-  // entire line is in one byte
-  //
+  	//
+  	// entire line is in one byte
+  	//
 
 	maskleft&=maskright;
 
-	asm	mov	es,[screenseg]
-	asm	mov	di,[dest]
+	BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
 
-	asm	mov	dx,GC_INDEX
-	asm	mov	al,GC_BITMASK
-	asm	mov	ah,[BYTE PTR maskleft]
-	asm	out	dx,ax		// mask off pixels
-
-	asm	mov	al,[BYTE PTR color]
-	asm	xchg	al,[es:di]	// load latches and write pixels
-
-	goto	done;
+	BE_SDL_MarkGfxForPendingUpdate();
+	return;
   }
 
-asm	mov	es,[screenseg]
-asm	mov	di,[dest]
-asm	mov	dx,GC_INDEX
-asm	mov	bh,[BYTE PTR color]
+	//
+	// draw left side
+	//
+	BE_SDL_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
 
-//
-// draw left side
-//
-asm	mov	al,GC_BITMASK
-asm	mov	ah,[BYTE PTR maskleft]
-asm	out	dx,ax		// mask off pixels
+	//
+	// draw middle
+	//
+	BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+	dest += mid;
 
-asm	mov	al,bh
-asm	mov	bl,[es:di]	// load latches
-asm	stosb
+	//
+	// draw right side
+	//
+	BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskright);
 
-//
-// draw middle
-//
-asm	mov	ax,GC_BITMASK + 255*256
-asm	out	dx,ax		// no masking
-
-asm	mov	al,bh
-asm	mov	cx,[mid]
-asm	rep	stosb
-
-//
-// draw right side
-//
-asm	mov	al,GC_BITMASK
-asm	mov	ah,[BYTE PTR maskright]
-asm	out	dx,ax		// mask off pixels
-
-asm	xchg	bh,[es:di]	// load latches and write pixels
-
-done:
-	EGABITMASK(255);
-	EGAWRITEMODE(0);
+	BE_SDL_MarkGfxForPendingUpdate();
 }
 #endif
 
@@ -706,79 +662,46 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 
 	if (xlb==xhb)
 	{
-	//
-	// entire line is in one byte
-	//
+		//
+		// entire line is in one byte
+		//
 
 		maskleft&=maskright;
 
-	asm	mov	es,[screenseg]
-	asm	mov	di,[dest]
+		do
+		{
+			BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+			dest += linewidth; // down to next line
+			--height;
+		} while (height);
 
-	asm	mov	dx,GC_INDEX
-	asm	mov	al,GC_BITMASK
-	asm	mov	ah,[BYTE PTR maskleft]
-	asm	out	dx,ax		// mask off pixels
-
-	asm	mov	ah,[BYTE PTR color]
-	asm	mov	dx,[linewidth]
-yloop1:
-	asm	mov	al,ah
-	asm	xchg	al,[es:di]	// load latches and write pixels
-	asm	add	di,dx			// down to next line
-	asm	dec	[height]
-	asm	jnz	yloop1
-
-		goto	done;
+		BE_SDL_MarkGfxForPendingUpdate();
+		return;
 	}
 
-asm	mov	es,[screenseg]
-asm	mov	di,[dest]
-asm	mov	bh,[BYTE PTR color]
-asm	mov	dx,GC_INDEX
-asm	mov	si,[linewidth]
-asm	sub	si,[mid]			// add to di at end of line to get to next scan
-asm	dec	si
+	id0_unsigned_t bytesToAdd = linewidth-mid-1;
+	do
+	{
+		//
+		// draw left side
+		//
+		BE_SDL_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
 
-//
-// draw left side
-//
-yloop2:
-asm	mov	al,GC_BITMASK
-asm	mov	ah,[BYTE PTR maskleft]
-asm	out	dx,ax		// mask off pixels
+		//
+		// draw middle
+		//
+		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+		dest += mid;
 
-asm	mov	al,bh
-asm	mov	bl,[es:di]	// load latches
-asm	stosb
+		//
+		// draw right side
+		//
+		BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskright);
 
-//
-// draw middle
-//
-asm	mov	ax,GC_BITMASK + 255*256
-asm	out	dx,ax		// no masking
-
-asm	mov	al,bh
-asm	mov	cx,[mid]
-asm	rep	stosb
-
-//
-// draw right side
-//
-asm	mov	al,GC_BITMASK
-asm	mov	ah,[BYTE PTR maskright]
-asm	out	dx,ax		// mask off pixels
-
-asm	mov	al,bh
-asm	xchg	al,[es:di]	// load latches and write pixels
-
-asm	add	di,si		// move to start of next line
-asm	dec	[height]
-asm	jnz	yloop2
-
-done:
-	EGABITMASK(255);
-	EGAWRITEMODE(0);
+		dest += bytesToAdd; // move to start of next line
+		--height;
+	} while (height);
+	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 #endif
@@ -1213,23 +1136,7 @@ void VW_UpdateScreen (void)
 #if GRMODE == EGAGR
 	VWL_UpdateScreenBlocks();
 
-asm	cli
-asm	mov	cx,[displayofs]
-asm	add	cx,[panadjust]
-asm	mov	dx,CRTC_INDEX
-asm	mov	al,0ch		// start address high register
-asm	out	dx,al
-asm	inc	dx
-asm	mov	al,ch
-asm	out	dx,al
-asm	dec	dx
-asm	mov	al,0dh		// start address low register
-asm	out	dx,al
-asm	mov	al,cl
-asm	inc	dx
-asm	out	dx,al
-asm	sti
-
+	BE_SDL_SetScreenStartAddress(displayofs+panadjust); // Ported from ASM
 #endif
 #if GRMODE == CGAGR
 	VW_CGAFullUpdate();

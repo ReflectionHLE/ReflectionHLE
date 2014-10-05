@@ -253,7 +253,7 @@ void VW_SetScreen (id0_unsigned_t crtc, id0_unsigned_t pelpan)
 //
 //===========================================================================
 
-int16_t px, py; // proportional character drawing coordinates
+/* SIGNED */ id0_int_t px, py; // proportional character drawing coordinates
 id0_byte_t fontcolor = 15; // 0-15 mapmask value
 
 /*
@@ -265,7 +265,7 @@ id0_byte_t fontcolor = 15; // 0-15 mapmask value
 
 
 //id0_word_t propchar; // the character number to shift // UNUSED VARIABLE
-char *stringptr;
+id0_char_t *stringptr;
 
 id0_word_t fontcolormask; // font color expands into this
 
@@ -509,7 +509,7 @@ void VW_DrawPropString (id0_char_t id0_far *string)
 #endif // if NUMFONT
 
 /* Seemingly unused functions; VW_DrawMPropString Can't be used as-is
- * as-is anyway (due to lack of a CGA implementation of BufferToScreen)
+ * anyway (due to lack of a CGA implementation of BufferToScreen)
  */
 
 #if 0
@@ -774,8 +774,8 @@ USES	SI,DI
 	ret
 
 ENDP
-#endif // VW_DrawMPropString
-
 #endif // if NUMFONTM
+
+#endif // VW_DrawMPropString
 
 #endif // if fonts

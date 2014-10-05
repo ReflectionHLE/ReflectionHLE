@@ -1,0 +1,44 @@
+SC_INDEX
+
+Used with SC_MAPMASK only
+
+GC_INDEX
+
+Used with GC_MODE (read/write mode), GC_READMAP, GC_BITMASK, GC_DATAROTATE
+
+NOTE: Apparently GC_DATAROTATE is *never* used for the rotation - only the choice of logical function.
+Bits 3-4: 00 - Replace, 01 (Bit 4 is 1, Bit 3 is 0) - AND, 10 - OR, 11 - XOR
+Some documentation in the source code gives hints about these, too.
+
+* When does any of these modified:
+
+- GC_MODE: Either directly (in id_rf_a.asm, id_vw_ae.asm) or via EGAWRITEMODE
+All write modes in use: 0, 1, 2 (read mode appears to be 0, always; Making sense since GC_COLORDONTCARE is only defined...)
+- GC_READMAP: Directly (in id_rf_a.asm, id_vw_ae.asm). Simply used for selection of latch to read from (in read mode 0), value always seems to be set to one of 0-3. (Note: VW_ScreenToMem sets ax to GC_READMAP and then increases it by 256 (i.e., increments ah) 4 times)
+- GC_BITMASK: Either directly or via EGABITMASK (always EGABITMASK(255) as of Keen Dreams Shareware v1.13).
+- GC_DATAROTATE: Always directly, seems to be used for choice of logical function only (and no data rotation).
+
+Other GC registers apparently never touched:
+GC_SETRESET, (Default of 0?)
+GC_ENABLESETRESET, (Def 0?)
+GC_COLORCOMPARE, (Def 0?)
+GC_MISCELLANEOUS, (depends on video mode...)
+GC_COLORDONTCARE (0fh in 16-color mode?)
+
+*** So... in write mode 0:
+
+Since enable set/reset is 0, the rotated (actually not rotated) byte from the CPU is combined with each latch value, with the logical function given by GC_DATAROTATE.
+
+So that's it - in our cases, within write mode 0, we combine a CPU byte with each of the latches using that logical function, pick for each plane calculated data vs original latch data using GC_BITMASK, and finally conditionally update video RAM based on SC_MAPMASK.
+
+*** Write mode 1: Latches are copied directly to the bit planes (CPU regs aren't used! Latches should be initialized by a CPU read)
+
+*** Write mode 2: Same as write mode 0, but bits 0-3 of CPU byte are repeated 8 times across all latches/planes. For each plane, the logical operation given by GC_DATAROTATE is applied to the (repeated) data and the latch contents, and finally GC_BITMASK and SC_MAPMASK come into effect as in write mode 0.
+
+FINAL(?) NOTE: Usually the value of the GC_DATAROTATE register is set to 0, implying the operation is simply "copy" or "replace".
+It is temporarily modified to a different mode in: VW_DrawPropString,  VW_DrawMPropString (although the latter may be unused in Keen Dreams).
+http://www.osdever.net/FreeVGA/vga/seqreg.htm
+http://www.osdever.net/FreeVGA/vga/graphreg.htm
+http://www.osdever.net/FreeVGA/vga/vgamem.htm
+
+http://cs.nyu.edu/~yap/classes/machineOrg/info/video.htm

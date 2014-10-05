@@ -436,14 +436,18 @@ void InitGame (void)
 		BE_SDL_clrscr();                       // we can't include CONIO because of a name conflict
 #pragma warn    +nod
 #pragma warn    +pro
-		puts ("There is not enough memory available to play the game reliably.  You can");
-		puts ("play anyway, but an out of memory condition will eventually pop up.  The");
-		puts ("correct solution is to unload some TSRs or rename your CONFIG.SYS and");
-		puts ("AUTOEXEC.BAT to free up more memory.\n");
-		puts ("Do you want to (Q)uit, or (C)ontinue?");
+		BE_Cross_puts ("There is not enough memory available to play the game reliably.  You can");
+		BE_Cross_puts ("play anyway, but an out of memory condition will eventually pop up.  The");
+		BE_Cross_puts ("correct solution is to unload some TSRs or rename your CONFIG.SYS and");
+		BE_Cross_puts ("AUTOEXEC.BAT to free up more memory.\n");
+		BE_Cross_puts ("Do you want to (Q)uit, or (C)ontinue?");
+#if 0
 		i = bioskey (0);
 		if ( (i>>8) != sc_C)
 			Quit ("");
+#endif
+		// CHOCO KEEN let's just quit...
+		Quit("");
 	}
 #endif
 
