@@ -76,7 +76,7 @@
 #include <stdbool.h>
 
 typedef	bool id0_boolean_t;
-typedef int8_t id0_char_t;
+typedef uint8_t id0_char_t; // Should be UNSIGNED for VWL_MeasureString (high scores table)
 typedef int8_t id0_signed_char_t;
 typedef uint8_t id0_unsigned_char_t;
 typedef int16_t id0_short_t; // "short" was used just once in kd_main.c, but...

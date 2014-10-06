@@ -2842,7 +2842,7 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		{
 			USL_DLSRect(ip);
 			fontcolor = game->present? F_BLACK : F_FIRSTCOLOR;
-			USL_DrawString(game->present? (char *)(game->name) : "Empty");
+			USL_DrawString(game->present? (id0_char_t *)(game->name) : "Empty");
 			fontcolor = F_BLACK;
 		}
 		break;
