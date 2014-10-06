@@ -190,7 +190,8 @@ void VW_SetScreenMode (id0_int_t grmode)
 		break;
 	  case EGAGR:
 		BE_SDL_SetScreenMode(0xd);
-		screenseg=BE_SDL_GetEGAMemoryPtr();
+		// CHOCO KEEN no need to obtain screenseg
+		// - different EGA planes are accessed with new functions
 		break;
 #ifdef VGAGAME
 	  case VGAGR:{

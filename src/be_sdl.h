@@ -76,7 +76,6 @@ void BE_SDL_ShutdownGfx(void);
 void BE_SDL_SetScreenStartAddress(id0_unsigned_t crtc);
 id0_byte_t *BE_SDL_GetTextModeMemoryPtr(void);
 id0_byte_t *BE_SDL_GetCGAMemoryPtr(void);
-id0_byte_t *BE_SDL_GetEGAMemoryPtr(void);
 void BE_SDL_SetBorderColor(id0_byte_t color);
 void BE_SDL_SetScreenMode(int mode);
 void BE_SDL_WaitVBL(id0_int_t number);

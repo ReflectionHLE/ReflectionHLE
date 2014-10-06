@@ -565,6 +565,8 @@ Wait(id0_longword_t time)
 	{
 		if (!(SD_GetTimeCount() % MINTICS))
 			RF_Refresh();
+		else
+			BE_SDL_ShortSleep();
 	}
 	return(IN_IsUserInput());
 }
