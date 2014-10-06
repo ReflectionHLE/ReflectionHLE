@@ -51,7 +51,6 @@ extern id0_unsigned_t linedelta;
 void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 {
 	BE_SDL_EGAUpdateGFXPixel4bpp(bufferofs+ylookup[y]+(x>>3), color, plotpixels[x&7]);
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 #if 0
@@ -120,7 +119,6 @@ void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigne
 	{
 		BE_SDL_EGAUpdateGFXPixel4bpp(egaDestOff, color, mask);
 	}
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 #if 0
@@ -209,7 +207,6 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 		BE_SDL_EGAUpdateGFXByte(egaDestOff, *tilePtr, mapMask);
 		++tilePtr;
 	}
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 #if 0
@@ -316,7 +313,6 @@ void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 		++planenum;
 		planemask <<= 1; // shift plane mask over for next plane
 	} while (planemask != 0x10); // done all four planes?
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 #if 0
@@ -621,7 +617,6 @@ void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 		BE_SDL_EGAUpdateGFXBufferScrToScr(dest, source, wide);
 	}
 
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 #if 0
 PROC	VW_ScreenToScreen	source:WORD, dest:WORD, wide:WORD, height:WORD
@@ -708,7 +703,6 @@ void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 		mapMask <<= 1;
 	} while (mapMask != 0x10);
 
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 #if 0
@@ -906,8 +900,6 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 		} while (lineCounter);
 		++planeCounter;
 	} while (planeCounter != 4);
-
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 
@@ -989,7 +981,6 @@ void VWL_UpdateScreenBlocks (void)
 		if (scanPtr >= scanEndPtr) // all tiles have been scanned
 		{
 			memset(updateptr, 0, 2*(UPDATEWIDE*UPDATEHIGH/2)); // clear out the update matrix
-			BE_SDL_MarkGfxForPendingUpdate();
 			return;
 		}
 		if (*scanPtr != 1)
@@ -1216,19 +1207,48 @@ ENDP
 void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 {
 #if WAITFORVBL
-	//
-	// wait util the CRTC just starts scaning a diplayed line to set the CRTC start
-	//
-	//VW_WaitVBL(1); // Sort of similar behavior...
+#if 0
+	mov	dx,STATUS_REGISTER_1
+
+;
+; wait util the CRTC just starts scaning a diplayed line to set the CRTC start
+;
+	cli
+
+@@waitnodisplay:
+	in	al,dx
+	test	al,01b
+	jz	@@waitnodisplay
+
+@@waitdisplay:
+	in	al,dx
+	test	al,01b
+	jnz	@@waitdisplay
+#endif
 #endif
 	BE_SDL_SetScreenStartAddress(CRTC);
 #if WAITFORVBL
-	//
-	// wait for a vertical retrace to set pel panning
-	//
-	//VW_WaitVBL(1); // Sort of similiar behavior...
+#if 0
+;
+; wait for a vertical retrace to set pel panning
+;
+	mov	dx,STATUS_REGISTER_1
+@@waitvbl:
+	sti     		;service interrupts
+	jmp	$+2
+	cli
+	in	al,dx
+	test	al,00001000b	;look for vertical retrace
+	jz	@@waitvbl
+
+#endif
 #endif
 	BE_SDL_SetPelPanning(pelpan);
+#if WAITFORVBL
+	// (CHOCO KEEN) Doing this before BE_SDL_SetPelPanning leads to
+	// very scrolling glitches, so call here instead
+	VW_WaitVBL(1);
+#endif
 }
 
 #if NUMFONT+NUMFONTM

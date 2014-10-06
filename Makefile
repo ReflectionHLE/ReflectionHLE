@@ -14,6 +14,7 @@ SRC=src
 OBJ=obj
 RSRCSRC=$(SRC)/static
 RSRCOBJ=$(OBJ)/static
+EGABUILD=0
 
 OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/be_cross.o \
@@ -32,7 +33,6 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/id_us_a.o \
         $(OBJ)/id_us.o \
         $(OBJ)/id_vw_a.o \
-        $(OBJ)/id_vw_ac.o \
         $(OBJ)/id_vw.o \
         $(OBJ)/kd_act1.o \
         $(OBJ)/kd_act2.o \
@@ -41,19 +41,35 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/kd_main.o \
         $(OBJ)/kd_play.o
 
+ifeq ($(EGABUILD), 1)
+OBJECTS+= $(OBJ)/id_vw_ae.o
+else
+OBJECTS+= $(OBJ)/id_vw_ac.o
+endif
+
 #NOTE: Unnecessary resources may be omitted
 RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/audiohhd.o \
-             $(RSRCOBJ)/cgadict.o \
-             $(RSRCOBJ)/cgahead.o \
              $(RSRCOBJ)/context.o \
              $(RSRCOBJ)/gametext.o \
              $(RSRCOBJ)/mapdict.o \
              $(RSRCOBJ)/maphead.o \
              $(RSRCOBJ)/story.o
 
+ifeq ($(EGABUILD), 1)
+RSRC_OBJECTS+= $(RSRCOBJ)/egadict.o $(RSRCOBJ)/egahead.o
+else
+RSRC_OBJECTS+= $(RSRCOBJ)/cgadict.o $(RSRCOBJ)/cgahead.o
+endif
 
 INTCXXFLAGS=
+
+ifeq ($(EGABUILD), 1)
+INTCXXFLAGS+= -DGRMODE=EGAGR
+else
+INTCXXFLAGS+= -DGRMODE=CGAGR
+endif
+
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DCHOCOLATE_KEEN_CONFIG_DEBUG

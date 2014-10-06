@@ -143,7 +143,6 @@ Quit ("Improper video card!  If you really have a CGA card that I am not \n"
 	MM_GetPtr ((memptr *)&screenseg,0x10000l);	// grab 64k for floating screen
 	//MM_GetPtr (&(memptr)screenseg,0x10000l);	// grab 64k for floating screen
 #endif
-	BE_SDL_MarkGfxForPendingUpdate();
 
 	cursorvisible = 0;
 }
@@ -367,13 +366,13 @@ void	VW_ClearVideo (id0_int_t color)
 #endif
 #if GRMODE == CGAGR
 	memset(screenseg, color, 0xffff);
+	BE_SDL_MarkGfxForPendingUpdate();
 #endif
 
 
 #if GRMODE == EGAGR
 	EGAWRITEMODE(0);
 #endif
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 //===========================================================================
@@ -523,8 +522,6 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 	maskleft&=maskright;
 
 	BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
-
-	BE_SDL_MarkGfxForPendingUpdate();
 	return;
   }
 
@@ -543,8 +540,6 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 	// draw right side
 	//
 	BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskright);
-
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 #endif
 
@@ -675,7 +670,6 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 			--height;
 		} while (height);
 
-		BE_SDL_MarkGfxForPendingUpdate();
 		return;
 	}
 
@@ -701,7 +695,6 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 		dest += bytesToAdd; // move to start of next line
 		--height;
 	} while (height);
-	BE_SDL_MarkGfxForPendingUpdate();
 }
 
 #endif

@@ -240,8 +240,7 @@ void BE_SDL_SetAspectCorrectionRect(void)
 void BE_SDL_SetScreenStartAddress(id0_unsigned_t crtc)
 {
 	g_sdlScreenStartAddress = crtc;
-	BE_SDL_MarkGfxForPendingUpdate();
-	BE_SDL_MarkGfxForUpdate();
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 id0_byte_t *BE_SDL_GetTextModeMemoryPtr(void)
@@ -286,8 +285,7 @@ static uint32_t g_sdlEGACurrBGRAPalette[16];
 void BE_SDL_SetBorderColor(id0_byte_t color)
 {
 	g_sdlBorderColor = color;
-	BE_SDL_MarkGfxForPendingUpdate();
-	BE_SDL_MarkGfxForUpdate();
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette)
@@ -297,22 +295,19 @@ void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette)
 		g_sdlEGACurrBGRAPalette[entry] =  g_sdlEGABGRAScreenColors[(palette[entry] & 7) | ((palette[entry] & 16) >> 1)];
 	}
 	g_sdlBorderColor = (palette[16] & 7) | ((palette[16] & 16) >> 1);
-	BE_SDL_MarkGfxForPendingUpdate();
-	BE_SDL_MarkGfxForUpdate();
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_SetPelPanning(id0_byte_t panning)
 {
 	g_sdlPelPanning = panning;
-	BE_SDL_MarkGfxForPendingUpdate();
-	BE_SDL_MarkGfxForUpdate();
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_EGASetLineWidth(id0_byte_t widthInBytes)
 {
 	g_sdlLineWidth = widthInBytes;
-	BE_SDL_MarkGfxForPendingUpdate();
-	BE_SDL_MarkGfxForUpdate();
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
@@ -325,6 +320,7 @@ void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
 		g_sdlEGAGfxMemory[2][destOff] = srcVal;
 	if (mask & 8)
 		g_sdlEGAGfxMemory[3][destOff] = srcVal;
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Based on BE_Cross_LinearToWrapped_MemCopy
@@ -340,6 +336,7 @@ static void BEL_SDL_LinearToEGAPlane_MemCopy(uint8_t *planeDstPtr, uint16_t plan
 		memcpy(planeDstPtr+planeDstOff, linearSrc, bytesToEnd);
 		memcpy(planeDstPtr, linearSrc+bytesToEnd, num-bytesToEnd);
 	}
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Based on BE_Cross_WrappedToLinear_MemCopy
@@ -355,6 +352,8 @@ static void BEL_SDL_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, const uint8_t *
 		memcpy(linearDst, planeSrcPtr+planeSrcOff, bytesToEnd);
 		memcpy(linearDst+bytesToEnd, planeSrcPtr, num-bytesToEnd);
 	}
+	//No need to since we just read screen data
+	//g_sdlDoRefreshGfxOutput = true;
 }
 
 // Based on BE_Cross_WrappedToWrapped_MemCopy
@@ -374,20 +373,17 @@ static void BEL_SDL_EGAPlaneToEGAPlane_MemCopy(uint8_t *planeCommonPtr, uint16_t
 			memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, dstBytesToEnd);
 			memcpy(planeCommonPtr, planeCommonPtr+planeSrcOff+dstBytesToEnd, num-dstBytesToEnd);
 		}
-		return;
 	}
 	// Otherwise, check if at least the destination is linear
-	if (num <= dstBytesToEnd)
+	else if (num <= dstBytesToEnd)
 	{
 		// Destination is linear: Same as BE_Cross_WrappedToLinear_MemCopy, non-linear source
 		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, srcBytesToEnd);
 		memcpy(planeCommonPtr+planeDstOff+srcBytesToEnd, planeCommonPtr, num-srcBytesToEnd);
-
-		return;
 	}
 	// BOTH buffers have wrapping. We don't check separately if
 	// srcBytesToEnd==dstBytesToEnd (in such a case planeDstOff==planeSrcOff...)
-	if (srcBytesToEnd <= dstBytesToEnd)
+	else if (srcBytesToEnd <= dstBytesToEnd)
 	{
 		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, srcBytesToEnd);
 		memcpy(planeCommonPtr+planeDstOff+srcBytesToEnd, planeCommonPtr, dstBytesToEnd-srcBytesToEnd);
@@ -399,6 +395,7 @@ static void BEL_SDL_EGAPlaneToEGAPlane_MemCopy(uint8_t *planeCommonPtr, uint16_t
 		memcpy(planeCommonPtr, planeCommonPtr+planeSrcOff+dstBytesToEnd, srcBytesToEnd-dstBytesToEnd);
 		memcpy(planeCommonPtr+(srcBytesToEnd-dstBytesToEnd), planeCommonPtr, num-srcBytesToEnd);
 	}
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t mask)
@@ -411,6 +408,7 @@ void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t
 		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlEGAGfxMemory[2], destOff, srcPtr, num);
 	if (mask & 8)
 		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlEGAGfxMemory[3], destOff, srcPtr, num);
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
@@ -419,6 +417,7 @@ void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
 	g_sdlEGAGfxMemory[1][destOff] = g_sdlEGAGfxMemory[1][srcOff];
 	g_sdlEGAGfxMemory[2][destOff] = g_sdlEGAGfxMemory[2][srcOff];
 	g_sdlEGAGfxMemory[3][destOff] = g_sdlEGAGfxMemory[3][srcOff];
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num)
@@ -427,6 +426,7 @@ void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16
 	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlEGAGfxMemory[1], destOff, srcOff, num);
 	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlEGAGfxMemory[2], destOff, srcOff, num);
 	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlEGAGfxMemory[3], destOff, srcOff, num);
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 uint8_t BE_SDL_EGAFetchGFXByte(uint16_t destOff, uint16_t planenum)
@@ -455,6 +455,7 @@ void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint16_t mask
 			g_sdlEGAGfxMemory[3][destOff] |= (((color & 8) >> 3) << currBitNum);
 		}
 	}
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint16_t mask)
@@ -475,6 +476,7 @@ void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
 		g_sdlEGAGfxMemory[2][destOff] ^= srcVal;
 	if (mask & 8)
 		g_sdlEGAGfxMemory[3][destOff] ^= srcVal;
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 

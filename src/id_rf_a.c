@@ -216,7 +216,6 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
 			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
 
-			BE_SDL_MarkGfxForPendingUpdate();
 			return;
 		}
 #endif
@@ -241,7 +240,6 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 			backSrcPtr += 2;
 		}
 
-		BE_SDL_MarkGfxForPendingUpdate();
 		return;
 	}
 

@@ -47,7 +47,12 @@
 #define	EGAGR	2
 #define	VGAGR	3
 
-#define GRMODE	CGAGR
+// TODO (CHOCO KEEN) Now the Makefile is used to determine this,
+// although it's all based on CGA v1.05
+//#define GRMODE	CGAGR
+#ifndef GRMODE
+#error "GRMODE is undefined, this shouldn't happen!"
+#endif
 
 #if GRMODE == EGAGR
 #define GREXT	"EGA"
