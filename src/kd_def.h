@@ -20,8 +20,16 @@
 
 #include "id_heads.h"
 //#include <BIOS.H>
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#include "soft.h"
+#include "sl_file.h"
+#endif
 
 #define FRILLS	0			// Cut out frills for 360K - MIKE MAYNARD
+
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#define CREDITS 0
+#endif
 
 
 /*
@@ -141,6 +149,37 @@ typedef struct	objstruct
 
 	struct	objstruct	*next,*prev;
 } objtype;
+
+
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+struct BitMapHeader {
+	id0_unsigned_int_t	w,h,x,y;
+	id0_unsigned_char_t	d,trans,comp,pad;
+} __attribute__((__packed__));
+
+// (CHOCO KEEN) Seems unused
+struct BitMap {
+	id0_unsigned_int_t Width;
+	id0_unsigned_int_t Height;
+	id0_unsigned_int_t Depth;
+	id0_unsigned_int_t BytesPerRow;
+	id0_char_t id0_far *Planes[8];
+};
+
+struct Shape {
+	memptr Data;
+	id0_long_t size;
+	id0_unsigned_int_t BPR;
+	struct BitMapHeader bmHdr;
+};
+
+typedef struct {
+	int handle;			// handle of file
+	memptr buffer;		// pointer to buffer
+	id0_word_t offset;		// offset into buffer
+	id0_word_t status;		// read/write status
+} BufferedIO;
+#endif
 
 
 // (CHOCO KEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
@@ -333,3 +372,27 @@ extern	statetype s_deathwait2;
 extern	statetype s_deathwait3;
 extern	statetype s_deathboom1;
 extern	statetype s_deathboom2;
+
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+
+/////////////////////////////////////////////////////////////////////////////
+//
+//						GELIB.C DEFINITIONS
+//
+/////////////////////////////////////////////////////////////////////////////
+
+struct Shape;
+
+void FreeShape(struct Shape *shape);
+id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t starty);
+
+id0_long_t Verify(id0_char_t *filename);
+memptr InitBufferedIO(int handle, BufferedIO *bio);
+void FreeBufferedIO(BufferedIO *bio);
+id0_byte_t bio_readch(BufferedIO *bio);
+void bio_fillbuffer(BufferedIO *bio);
+void SwapLong(id0_long_t id0_far *Var);
+void SwapWord(id0_unsigned_int_t id0_far *Var);
+void MoveGfxDst(id0_short_t x, id0_short_t y);
+
+#endif

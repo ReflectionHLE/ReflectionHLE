@@ -77,6 +77,7 @@ static uint8_t g_sdlBorderColor = 0;
 static uint8_t g_sdlPelPanning = 0;
 static uint8_t g_sdlLineWidth = 40;
 static int g_sdlTxtCursorPosX, g_sdlTxtCursorPosY;
+static bool g_sdlTxtCursorEnabled = true;
 static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 
 void BE_SDL_SetAspectCorrectionRect(void);
@@ -538,6 +539,11 @@ void BE_SDL_MoveTextCursorTo(int x, int y)
 	g_sdlTxtCursorPosY = y;
 }
 
+void BE_SDL_ToggleTextCursor(bool isEnabled)
+{
+	g_sdlTxtCursorEnabled = isEnabled;
+}
+
 void BE_SDL_Simplified_printf(const char *str)
 {
 	// TODO (CHOCO KEEN): Tabs?
@@ -617,6 +623,16 @@ void BE_SDL_ShortSleep(void)
 }
 
 
+void BE_SDL_Delay(id0_unsigned_t msec) // Replacement for delay from dos.h
+{
+	uint32_t endTime = SDL_GetTicks() + msec;
+	while ((int32_t)(SDL_GetTicks() - endTime) < 0)
+	{
+		BE_SDL_ShortSleep();
+	}
+}
+
+
 
 
 void BE_SDL_UpdateHostDisplay(void)
@@ -637,7 +653,7 @@ void BE_SDL_UpdateHostDisplay(void)
 		}
 		// But there are still blinking characters and cursor
 		bool areBlinkingCharsShown = (((uint64_t)(70086*SDL_GetTicks()/1000)/(1000*VGA_TXT_BLINK_VERT_FRAME_RATE)) % 2);
-		bool isBlinkingCursorShown = (((uint64_t)(70086*SDL_GetTicks()/1000)/(1000*VGA_TXT_CURSOR_BLINK_VERT_FRAME_RATE)) % 2);
+		bool isBlinkingCursorShown = g_sdlTxtCursorEnabled && (((uint64_t)(70086*SDL_GetTicks()/1000)/(1000*VGA_TXT_CURSOR_BLINK_VERT_FRAME_RATE)) % 2);
 		// We check g_sdlDoRefreshGfxOutput since this is currently set to "true" only after setting video mode (for text mode)
 		if (!g_sdlDoRefreshGfxOutput && !doUpdate && (wereBlinkingCharsShown == areBlinkingCharsShown) && (wasBlinkingCursorShown == isBlinkingCursorShown))
 		{

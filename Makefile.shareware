@@ -1,0 +1,5 @@
+SHARBUILD=1
+VERDIRNAME=kdshar113
+EXENAME=chocolate-kdreams-shar
+
+include Makefile.common

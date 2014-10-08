@@ -33,7 +33,9 @@
 #include "kd_def.h"
 #pragma hdrstop
 
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 #define CATALOG
+#endif
 
 /*
 =============================================================================
@@ -379,22 +381,42 @@ void Quit (id0_char_t *error)
 	BE_SDL_clrscr();
 	BE_Cross_puts(error);
 	BE_Cross_puts("\n");
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 //      BE_Cross_puts("For techinical assistance with running this software, type HELP at");
 //      BE_Cross_puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+	BE_Cross_puts("For techinical assistance with running this software, type HELP at");
+	BE_Cross_puts("    the DOS prompt or call Gamer's Edge at 1-318-221-8311");
+#endif
 	BE_SDL_HandleExit(1);
   }
+
+// TODO (CHOCO KEEN) Maybe we can define CATALOG based on version?
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+
 #ifndef CATALOG
-	// TODO (CHOCO KEEN) Do we want to support this in any way at all?
-	_argc = 2;
-	_argv[1] = "LAST.SHL";
-	_argv[2] = "ENDSCN.SCN";
-	_argv[3] = NULL;
-	if (execv("LOADSCN.EXE", _argv) == -1)
-		Quit("Couldn't find executable LOADSCN.EXE.\n");
+	id0_argc = 2;
+	id0_argv[1] = "LAST.SHL";
+	id0_argv[2] = "ENDSCN.SCN";
+	id0_argv[3] = NULL;
+
+	//if (execv("LOADSCN.EXE", _argv) == -1)
+	//	Quit("Couldn't find executable LOADSCN.EXE.\n");
+	loadscn2_main(id0_argc+1, id0_argv);
 #endif
 #ifdef CATALOG
   VW_SetScreenMode(TEXTGR);
   BE_SDL_HandleExit(0);
+#endif
+
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+	id0_argc = 2;
+	id0_argv[1] = "LAST.SHL";
+	id0_argv[2] = "ENDSCN.SCN";
+	id0_argv[3] = NULL;
+	//if (execv("LOADSCN.EXE", _argv) == -1)
+	//	Quit("Couldn't find executable LOADSCN.EXE.\n");
+	loadscn2_main(id0_argc+1, id0_argv);
 #endif
 
 }
@@ -431,8 +453,12 @@ void InitGame (void)
 	{
 #pragma warn    -pro
 #pragma warn    -nod
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 		BE_SDL_textcolor(7);
+#endif
 		BE_SDL_textbackground(0);
+#pragma warn    +nod
+#pragma warn    +pro
 		BE_SDL_clrscr();                       // we can't include CONIO because of a name conflict
 #pragma warn    +nod
 #pragma warn    +pro
@@ -459,7 +485,9 @@ void InitGame (void)
 	SD_Startup ();
 	US_Startup ();
 
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 	US_UpdateTextScreen();
+#endif
 
 	CA_Startup ();
 	US_Setup ();
@@ -477,7 +505,11 @@ void InitGame (void)
 	for (i=KEEN_LUMP_START;i<=KEEN_LUMP_END;i++)
 		CA_MarkGrChunk(i);
 
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 	CA_CacheMarks (NULL);
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+	CA_CacheMarks (NULL, 0);
+#endif
 
 	MM_SetLock (&grsegs[STARTFONT],true);
 	MM_SetLock (&grsegs[STARTFONTM],true);
@@ -519,6 +551,7 @@ void id0_main (void)
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
 
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 	BE_SDL_textcolor(7);
 	BE_SDL_textbackground(0);
 
@@ -548,6 +581,7 @@ void id0_main (void)
 		BE_Cross_Simplified_printf("KDREAMS /? for this help information\n");
 		BE_SDL_HandleExit(0);
 	}
+#endif // VERSION
 
 	for (i = 1;i < id0_argc;i++)
 	{
@@ -558,7 +592,7 @@ void id0_main (void)
 			break;
 		}
 	}
-#ifndef CATALOG
+#if (!defined CATALOG) || (!defined CHOCO_KEEN_VER_KDREAMS_CGA_105)
 	if (!LaunchedFromShell)
 	{
 		BE_SDL_clrscr();

@@ -80,11 +80,13 @@ void BE_SDL_SetBorderColor(id0_byte_t color);
 void BE_SDL_SetScreenMode(int mode);
 void BE_SDL_WaitVBL(id0_int_t number);
 void BE_SDL_ShortSleep(void);
+void BE_SDL_Delay(id0_unsigned_t msec); // Replacement for delay from dos.h
 
 void BE_SDL_textcolor(int color);
 void BE_SDL_textbackground(int color);
 void BE_SDL_clrscr(void);
 void BE_SDL_MoveTextCursorTo(int x, int y);
+void BE_SDL_ToggleTextCursor(bool isEnabled);
 // Replacement for puts function that prints to emulated text mode memory
 void BE_SDL_puts(const char *str);
 // Limited replacement for printf, does NOT handle formatting (apart from '\n')

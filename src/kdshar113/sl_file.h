@@ -20,7 +20,6 @@
 #define _SL_FILE_H
 
 
-
 //==========================================================================
 //
 //										DEFINES
@@ -45,17 +44,6 @@
 //
 //==========================================================================
 
-
-
-//--------------------------------------------------------------------------
-// 				Compression types used with SOFTLIB
-//--------------------------------------------------------------------------
-
-typedef enum ct_TYPES
-{
-		ct_NONE = 0,						// No compression - Just data..(Duh...)
-		ct_LZW,								// LZW data compression
-} ct_TYPES;
 
 
 
@@ -87,6 +75,9 @@ typedef struct SoftLibHdr
 
 //--------------------------------------------------------------------------
 //   							SOFTLIB Directory Entry Hdr
+//
+// This can change according to Version of SoftLib (Make sure we are
+// always downward compatable!
 //--------------------------------------------------------------------------
 
 #define SL_FILENAMESIZE		16
@@ -97,7 +88,7 @@ typedef struct FileEntryHdr
 	id0_unsigned_long_t Offset;
 	id0_unsigned_long_t ChunkLen;
 	id0_unsigned_long_t OrginalLength;
-	id0_short_t Compression;								// ct_TYPES
+	id0_short_t Compression;							// ct_TYPES
 } __attribute__((__packed__)) FileEntryHdr;
 
 

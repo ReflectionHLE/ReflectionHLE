@@ -533,7 +533,11 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 		}
 	}
 
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 	Quit ("MM_GetPtr: Out of memory!");
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+	Quit ("Out of memory!  Please make sure you have enough free memory.");
+#endif
 }
 
 //==========================================================================

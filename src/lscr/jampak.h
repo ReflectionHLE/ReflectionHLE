@@ -108,10 +108,10 @@ struct CMP2Header
 id0_unsigned_long_t lzwCompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
 void lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
 
-id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
-id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType);
+id0_int_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
+id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType);
 
-memptr InitBufferedIO(id0_int_t handle, BufferedIO *bio);
+memptr InitBufferedIO(int handle, BufferedIO *bio);
 void FreeBufferedIO(BufferedIO *bio);
 id0_byte_t bio_readch(BufferedIO *bio);
 

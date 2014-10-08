@@ -39,7 +39,8 @@ extern id0_byte_t planenum;
 id0_unsigned_t screenstartcs; // in code segment for accesability
 
 // (CHOCO KEEN) VANILLA KEEN BUG WORKAROUND: Some background tile may be marked "empty" yet found in map (Copied off DOSBox 0000:0000..)
-static const id0_byte_t seg0TileBuff[64] = {
+// TODO: Increased from 64 to 160 for EGA foreground tile, should complete!
+static const id0_byte_t seg0TileBuff[160] = {
 	0x62, 0x01, 0xA2, 0x01, 0x08, 0x00, 0x70, 0x00, 0x08, 0x00, 0x70, 0x00, 0x08, 0x00, 0x70, 0x00,
 	0x08, 0x00, 0x70, 0x00, 0x60, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0,
 	0xD5, 0x0D, 0xE8, 0x0F, 0x04, 0x00, 0x11, 0x0F, 0x55, 0xFF, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0,
@@ -255,6 +256,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	for (int planeCounter = 4, mapMask = 1, dataLoc = 32; planeCounter; --planeCounter, mapMask <<= 1, dataLoc += 32)
 	{
 		const id0_byte_t *foreSrcPtr = grsegs[STARTTILE16M+foretilenum];
+		foreSrcPtr = foreSrcPtr ? foreSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
 		for (id0_unsigned_t loopVar = 0, lineoffset = 0; loopVar < 16; ++loopVar, lineoffset += SCREENWIDTH)
 		{
 			// backSrcPtr - background tile

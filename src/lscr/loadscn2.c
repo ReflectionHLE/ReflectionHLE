@@ -17,16 +17,18 @@
  */
 
 #include <stdio.h>
-#include <dos.h>
-#include <mem.h>
-#include <alloc.h>
+//#include <dos.h>
+//#include <mem.h>
+//#include <alloc.h>
 #include <fcntl.h>
-#include <conio.h>
+//#include <conio.h>
 #include <string.h>
-#include <io.h>
-#include <sys\stat.h>
+//#include <io.h>
+#include <sys/stat.h>
 #include <stdlib.h>
-#include <process.h>
+//#include <process.h>
+
+#include "id_heads.h" // For types like id0_int_t
 
 #include "jampak.h"
 #include "sl_file.h"
@@ -34,6 +36,11 @@
 
 #define VERSION_NUM	"1.10"
 #define MESSAGE		"THIS VERSION IS MADE FOR USE IN G.E. TEXT SHELL"
+
+/******************************************************************
+UPDATE (CHOCO KEEN): Some functions are marked "static" here
+since they conflicts with functions from jam_io.c and possibly more
+******************************************************************/
 
 
 
@@ -47,17 +54,17 @@
 //UPDATE (CHOCO KEEN) We define these types externally now
 //typedef enum {false=0,true} boolean;
 
-id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
-id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType);
-void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
-id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t id0_far **MemPtr);
+static id0_int_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
+static id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType);
+static void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
+static id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t id0_far **MemPtr);
 
-id0_long_t FileSize(id0_char_t *filename);
+static id0_long_t FileSize(id0_char_t *filename);
 
-id0_boolean_t FarRead (id0_int_t handle, id0_char_t id0_far *dest, id0_long_t length);
+static id0_boolean_t FarRead (int handle, id0_char_t id0_far *dest, id0_long_t length);
 
-int main(int argc, char **argv);
-void TrashProg(id0_char_t *OutMsg);
+int loadscn2_main(int argc, char **argv); // Renamed from main
+static void TrashProg(id0_char_t *OutMsg);
 
 
 
@@ -93,14 +100,14 @@ id0_unsigned_char_t id0_far LZW_ring_buffer[LZW_N + LZW_F - 1];
 // NOTE : For PtrTypes DEST_MEM a ZERO (0) is always returned.
 //
 //---------------------------------------------------------------------------
-id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType)
+static id0_int_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType)
 {
 	id0_int_t returnval = 0;
 
 	switch (PtrType & DEST_TYPES)
 	{
 		case DEST_FILE:
-			write(*(id0_int_t id0_far *)outfile,(id0_char_t *)&data,1);
+			write(*(int id0_far *)outfile,(id0_char_t *)&data,1);
 		break;
 
 		case DEST_FFILE:
@@ -108,8 +115,14 @@ id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t 
 		break;
 
 		case DEST_MEM:
+#if 0
 //			*(*(id0_char_t id0_far **)outfile++) = data;						// Do NOT delete
 			*((id0_char_t id0_far *)*(id0_char_t id0_far **)outfile)++ = data;
+#endif
+		{
+			id0_char_t **ptrptr = outfile;
+			*((*ptrptr)++) = data;
+		}
 		break;
 
 		default:
@@ -132,14 +145,14 @@ id0_int_t WritePtr(id0_long_t outfile, id0_unsigned_char_t data, id0_unsigned_t 
 //
 //
 //---------------------------------------------------------------------------
-id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType)
+static id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType)
 {
 	id0_int_t returnval = 0;
 
 	switch (PtrType & SRC_TYPES)
 	{
 		case SRC_FILE:
-			read(*(id0_int_t id0_far *)infile,(id0_char_t *)&returnval,1);
+			read(*(int id0_far *)infile,(id0_char_t *)&returnval,1);
 		break;
 
 		case SRC_FFILE:
@@ -148,8 +161,16 @@ id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType)
 
 
 		case SRC_MEM:
+#if 0
 			returnval = (id0_char_t)*(*(id0_char_t id0_far **)infile++);
 //			returnval = *((id0_char_t id0_far *)*(id0_char_t id0_far **)infile)++;	// DO NOT DELETE!
+#endif
+		{
+		{
+			id0_char_t **ptrptr = (id0_char_t **)infile;
+			returnval = (id0_char_t)*((*ptrptr)++);
+		}		
+		}
 		break;
 
 		default:
@@ -181,7 +202,7 @@ id0_int_t ReadPtr(id0_long_t infile, id0_unsigned_t PtrType)
 //
 // NOTES    : Does not write ANY header information!
 //
-void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes)
+static void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes)
 {
 	id0_int_t  i, j, k, r, c;
 	id0_unsigned_int_t flags;
@@ -196,7 +217,7 @@ void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsi
 	 {
 			if (((flags >>= 1) & 256) == 0)
 			{
-				c = ReadPtr((id0_long_t)&infile,PtrTypes);
+				c = ReadPtr(/*(id0_long_t)*/&infile,PtrTypes);
 				if (!DataLength--)
 					return;
 
@@ -205,22 +226,22 @@ void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsi
 
 			if (flags & 1)
 			{
-				c = ReadPtr((id0_long_t)&infile,PtrTypes);		// Could test for EOF iff FFILE type
+				c = ReadPtr(/*(id0_long_t)*/&infile,PtrTypes);		// Could test for EOF iff FFILE type
 				if (!DataLength--)
 					return;
 
-				WritePtr((id0_long_t)&outfile,c,PtrTypes);
+				WritePtr(/*(id0_long_t)*/&outfile,c,PtrTypes);
 
 				LZW_ring_buffer[r++] = c;
 				r &= (LZW_N - 1);
 			}
 			else
 			{
-				i = ReadPtr((id0_long_t)&infile,PtrTypes);
+				i = ReadPtr(/*(id0_long_t)*/&infile,PtrTypes);
 				if (!DataLength--)
 					return;
 
-				j = ReadPtr((id0_long_t)&infile,PtrTypes);
+				j = ReadPtr(/*(id0_long_t)*/&infile,PtrTypes);
 				if (!DataLength--)
 					return;
 
@@ -231,7 +252,7 @@ void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsi
 				{
 					 c = LZW_ring_buffer[(i + k) & (LZW_N - 1)];
 
-					 WritePtr((id0_long_t)&outfile,c,PtrTypes);
+					 WritePtr(/*(id0_long_t)*/&outfile,c,PtrTypes);
 
 					 LZW_ring_buffer[r++] = c;
 					 r &= (LZW_N - 1);
@@ -263,9 +284,9 @@ void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsi
 //			false  - Error!
 //
 //----------------------------------------------------------------------------
-id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t id0_far **MemPtr)
+static id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t id0_far **MemPtr)
 {
-	id0_int_t handle;
+	int handle;
 	id0_unsigned_long_t header;
 	struct ChunkHeader Header;
 	id0_unsigned_long_t ChunkLen;
@@ -283,7 +304,7 @@ id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t 
 	// OPEN SOFTLIB FILE
 	//
 
-	if ((handle = open(LibName,O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if ((handle = open(LibName,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		TrashProg("LOADSCN ERROR : Error openning file.");
 
 
@@ -327,7 +348,7 @@ id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t 
 			TrashProg("LOADSCN ERROR : Error reading second header.");
 		}
 
-		if (!stricmp(FileEntryHeader.FileName,FileName))
+		if (!BE_Cross_strcasecmp(FileEntryHeader.FileName,FileName))
 		{
 			FileEntry = FileEntryHeader;
 			FileFound = true;
@@ -363,8 +384,8 @@ id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t 
 
 		if (*MemPtr == NULL)
 		{
-			delay(2000);
-			if ((*MemPtr = farmalloc(FileEntry.OrginalLength)) == NULL)
+			BE_SDL_Delay(2000);
+			if ((*MemPtr = /*far*/malloc(FileEntry.OrginalLength)) == NULL)
 				TrashProg("Can't get memory");
 		}
 
@@ -415,14 +436,14 @@ id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t 
 //---------------------------------------------------------------------------
 //  FileSize() - Returns the size of a file on disk. (-1 = error)
 //---------------------------------------------------------------------------
-id0_long_t FileSize(id0_char_t *filename)
+static id0_long_t FileSize(id0_char_t *filename)
 {
 	  id0_long_t filesize;
-	  id0_int_t handle;
+	  int handle;
 
 	  if ((handle = open(filename,O_RDONLY)) != -1)
 	  {
-			filesize = filelength(handle) ;
+			filesize = BE_Cross_FileLengthFromHandle(handle) ;
 			close(handle);
 	  }
 	  else
@@ -436,44 +457,41 @@ id0_long_t FileSize(id0_char_t *filename)
 //--------------------------------------------------------------------------
 // FarRead()
 //-------------------------------------------------------------------------
-id0_boolean_t FarRead (id0_int_t handle, id0_char_t id0_far *dest, id0_long_t length)
+static id0_boolean_t FarRead (int handle, id0_char_t id0_far *dest, id0_long_t length)
 {
 	if (length>0xffffl)
-		TrashProg("FarRead doesn't support 64K reads yet!");
+		TrashProg("CA_FarRead doesn't support 64K reads yet!");
+	// Ported from ASM (based on CA_FarRead)
+	int bytesread = read(handle, dest, length);
+	if (bytesread < 0)
+	{
+		// Keep errno as set by read
+		return false;
+	}
 
-asm		push	ds
-asm		mov	bx,[handle]
-asm		mov	cx,[WORD PTR length]
-asm		mov	dx,[WORD PTR dest]
-asm		mov	ds,[WORD PTR dest+2]
-asm		mov	ah,0x3f				// READ w/handle
-asm		int	21h
-asm		pop	ds
-asm		jnc	good
-//	errno = _AX;
-	return	false;
-good:
-asm		cmp	ax,[WORD PTR length]
-asm		je	done
-//	errno = EINVFMT;			// user manager knows this is bad read
-	return	false;
-done:
-	return	true;
+	if (bytesread != length)
+	{
+		/* FIXME (CHOCO KEEN) - Is that the right way? */
+		errno = 11;
+		//errno = EINVFMT; // user manager knows this is bad read
+		return false;
+	}
+	return true;
 }
 
 
 
 
 //--------------------------------------------------------------------------
-//  MAIN
+//  MAIN (renamed from main)
 //--------------------------------------------------------------------------
-int main(int argc, char **argv)
+int loadscn2_main(int argc, char **argv)
 {
 	id0_unsigned_char_t id0_huge *bufferptr = NULL;
 
-	if (stricmp(argv[1], "/VER") == 0)
+	if (BE_Cross_strcasecmp(argv[1], "/VER") == 0)
 	{
-		clrscr();
+		BE_SDL_clrscr();
 		printf("\nG.E. Load Text Screen.\n");
 		printf("Copyright 1992 Softdisk Publishing\n");
 		printf("Version Number %s\n", VERSION_NUM);
@@ -492,18 +510,19 @@ int main(int argc, char **argv)
 		return(1);
 		}
 
-	_setcursortype(_NOCURSOR);
+	BE_SDL_ToggleTextCursor(false);
 
 	if (!LoadLIBFile(argv[1],argv[2], &bufferptr))
 		TrashProg("Error loading TEXT_SCEENS");
 
-	_fmemcpy(MK_FP(0xB800,0), bufferptr+7, 4000);
+	memcpy(BE_SDL_GetTextModeMemoryPtr(), bufferptr+7, 4000);
+	//_fmemcpy(MK_FP(0xB800,0), bufferptr+7, 4000);
 
-	_setcursortype(_NORMALCURSOR);
+	BE_SDL_ToggleTextCursor(true);
 
-	gotoxy(1, 24);
+	BE_SDL_MoveTextCursorTo(0, 23); // gotoxy(1, 24)
 
-	exit(0);
+	BE_SDL_HandleExit(0);
 
 }  // main end
 
@@ -511,18 +530,19 @@ int main(int argc, char **argv)
 //---------------------------------------------------------------------------
 //  TrashProg() --
 //---------------------------------------------------------------------------
-void TrashProg(id0_char_t *OutMsg)
+static void TrashProg(id0_char_t *OutMsg)
 {
 	id0_int_t error = 0;
 
-	_setcursortype(_NORMALCURSOR);
+	BE_SDL_ToggleTextCursor(true);
 
 	if (OutMsg)
 	{
-		printf("%s\n",OutMsg);
+		BE_Cross_puts(OutMsg);
+		//printf("%s\n",OutMsg);
 		error = 1;
 	}
 
-	exit(error);
+	BE_SDL_HandleExit(error);
 }
 

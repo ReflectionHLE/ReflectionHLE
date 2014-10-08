@@ -1,0 +1,24 @@
+Seriously consider refactoring code (for the sake of simpler maintenance):
+- Shouldn't duplicate what's almost identical.
+- Obviously there's no need to repeat totally identical files (also up to e.g., a comment).
+- But object files should still be created separately (due to ifdefs).
+
+Modified files between CGA v1.05 and Shareware v1.13:
+
+- gelib.c, gelib.h (new files)
+- graphkdr.equ, graphkdr.h (just the IGRAB-ing date; Shar v1.13 seems a bit older)
+- id_asm.equ (EGAGR vs CGAGR)
+- id_ca.c (filenames and NOLAN comment(s), extra arg for CA_CacheMarks)
+- id_ca.h (extra args for CA_CacheMarks)
+- id_heads.h (EGAGR vs CGAGR)
+- id_mm.c (different "Out of memory" message)
+- id_us.c (misc. differences)
+- id_us_s.c (should probably be replaced)
+- jam_io.c, jam_io.h (new files)
+- kd_def.h (misc. diffs, seem related to new title screen and (disabled) credits)
+- kd_demo.c (tabs vs spaces, DemoLoop has most modifications due to title screen)
+- kd_main.c (should probably be replaced, even if seemingly minor changes)
+- kd_play.c (level names, RF_ForceRefresh, CA_CacheMarks ...one more empty line)
+- lzhuf.c, lzhuff.h, lzw.h, sl_file.h, soft.c, soft.h (new files)
+
+Finally use different static data.

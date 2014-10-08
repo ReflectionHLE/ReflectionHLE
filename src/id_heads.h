@@ -47,11 +47,12 @@
 #define	EGAGR	2
 #define	VGAGR	3
 
-// TODO (CHOCO KEEN) Now the Makefile is used to determine this,
-// although it's all based on CGA v1.05
-//#define GRMODE	CGAGR
-#ifndef GRMODE
-#error "GRMODE is undefined, this shouldn't happen!"
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#define GRMODE	CGAGR
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#define GRMODE	EGAGR	
+#else
+#error "Compatible version of Keen to support isn't defined, this shouldn't happen!"
 #endif
 
 #if GRMODE == EGAGR
@@ -82,6 +83,7 @@ typedef uint8_t id0_unsigned_char_t;
 typedef int16_t id0_short_t; // "short" was used just once in kd_main.c, but...
 typedef int16_t id0_int_t;
 typedef uint16_t id0_unsigned_t;
+typedef uint16_t id0_unsigned_int_t; // Found in shareware release v1.13
 typedef int32_t id0_long_t;
 typedef uint32_t id0_unsigned_long_t;
 

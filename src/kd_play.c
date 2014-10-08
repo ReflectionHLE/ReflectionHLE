@@ -73,6 +73,7 @@ ControlInfo	c;
 
 objtype dummyobj;
 
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
@@ -95,6 +96,30 @@ id0_char_t		*levelnames[21] =
 "",
 "Title Page"
 };
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+id0_char_t		*levelnames[21] =
+{
+"The Land of Tuberia",
+"Horseradish Hill",
+"The Melon Mines",
+"Bridge Bottoms",
+"Rhubarb Rapids",
+"Parsnip Pass",
+"Level 6",
+"Spud City",
+"Level 8",
+"Apple Acres",
+"Grape Grove",
+"Level 11",
+"Brussels Sprout Bay",
+"Level 13",
+"Squash Swamp",
+"Boobus' Chamber",
+"Castle Tuberia",
+"",
+"Title Page"
+};
+#endif
 
 
 /*
@@ -654,6 +679,9 @@ void FadeAndUnhook (void)
 {
 	if (++fadecount==2)
 	{
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+		RF_ForceRefresh();
+#endif
 		VW_FadeIn ();
 		RF_SetRefreshHook (NULL);
 		lasttimecount = SD_GetTimeCount();	// don't adaptively time the fade
@@ -713,7 +741,11 @@ void 	SetupGameLevel (id0_boolean_t loadnow)
 			US_PrintCentered ("Boobus Bombs Near!");
 			VW_UpdateScreen ();
 		}
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 		CA_CacheMarks (levelnames[mapon]);
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+		CA_CacheMarks (levelnames[mapon], 0);
+#endif
 	}
 
 #if 0

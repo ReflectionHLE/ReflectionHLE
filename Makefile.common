@@ -1,0 +1,142 @@
+DEBUG=0
+BUILDASCPP=0
+BINPREFIX=
+
+ifeq ($(BUILDASCPP), 1)
+	CXX=$(BINPREFIX)g++
+else
+	CXX=$(BINPREFIX)gcc
+endif
+
+STRIPBIN=$(BINPREFIX)strip
+SDLCONFIG=sdl2-config
+SRC=src
+OBJ=obj/$(VERDIRNAME)
+SHAREDOBJ=obj
+
+VERSRC=$(SRC)/$(VERDIRNAME)
+
+RSRCSRC=$(VERSRC)/static
+RSRCOBJ=$(OBJ)/static
+
+OBJECTS=$(OBJ)/actual_main.o \
+        $(OBJ)/be_cross.o \
+        $(OBJ)/be_cross_compat.o \
+        $(OBJ)/be_sdl.o \
+        $(OBJ)/be_sdl_audio_timer.o \
+        $(OBJ)/be_sdl_graphics.o \
+        $(OBJ)/be_textmode_fonts.o \
+        $(OBJ)/id_ca.o \
+        $(OBJ)/id_in.o \
+        $(OBJ)/id_mm.o \
+        $(OBJ)/id_rf_a.o \
+        $(OBJ)/id_rf.o \
+        $(OBJ)/id_sd.o \
+        $(OBJ)/id_us_a.o \
+        $(OBJ)/id_us.o \
+        $(OBJ)/id_vw_a.o \
+        $(OBJ)/id_vw.o \
+        $(OBJ)/kd_act1.o \
+        $(OBJ)/kd_act2.o \
+        $(OBJ)/kd_demo.o \
+        $(OBJ)/kd_keen.o \
+        $(OBJ)/kd_main.o \
+        $(OBJ)/kd_play.o
+
+OBJECTS+= $(SHAREDOBJ)/dbopl.o
+
+ifeq ($(SHARBUILD), 1)
+OBJECTS+= $(OBJ)/id_vw_ae.o \
+          $(OBJ)/gelib.o \
+          $(OBJ)/jam_io.o \
+          $(OBJ)/loadscn2.o \
+          $(OBJ)/lzhuf.o \
+          $(OBJ)/soft.o
+else
+OBJECTS+= $(OBJ)/id_vw_ac.o
+endif
+
+#NOTE: Unnecessary resources may be omitted
+RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
+             $(RSRCOBJ)/audiohhd.o \
+             $(RSRCOBJ)/context.o \
+             $(RSRCOBJ)/gametext.o \
+             $(RSRCOBJ)/mapdict.o \
+             $(RSRCOBJ)/maphead.o \
+             $(RSRCOBJ)/story.o
+
+ifeq ($(SHARBUILD), 1)
+RSRC_OBJECTS+= $(RSRCOBJ)/egadict.o $(RSRCOBJ)/egahead.o
+else
+RSRC_OBJECTS+= $(RSRCOBJ)/cgadict.o $(RSRCOBJ)/cgahead.o
+endif
+
+INTCXXFLAGS=-I$(SRC)
+
+ifeq ($(SHARBUILD), 1)
+INTCXXFLAGS+= -DCHOCO_KEEN_VER_KDREAMS_SHAR_113=1 -I$(SRC)/kdshar113
+else
+INTCXXFLAGS+= -DCHOCO_KEEN_VER_KDREAMS_CGA_105=1 -I$(SRC)/kdcga105
+endif
+
+
+ifeq ($(DEBUG),1)
+	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DCHOCOLATE_KEEN_CONFIG_DEBUG
+else
+	INTCXXFLAGS+= -O2
+endif
+
+INTCXXFLAGS+= `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable
+#We need -lm for dbopl
+INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
+
+ifeq ($(BUILDASCPP), 0)
+	INTCXXFLAGS+= -std=c99
+endif
+
+ifeq ($(PLATFORM), WINDOWS)
+	EXE_EXT=.exe
+	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
+endif
+
+EXE_PATH=$(EXENAME)$(EXE_EXT)
+
+.PHONY: all game clean veryclean
+
+all: game
+
+game: $(EXE_PATH)
+
+$(EXE_PATH): $(OBJECTS) $(RSRC_OBJECTS)
+	$(CXX) $(OBJECTS) $(RSRC_OBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
+ifeq ($(DEBUG),0)
+	$(STRIPBIN) $(EXE_PATH)
+endif
+
+$(EXE_PATH): $(OBJECTS) $(RSRC_OBJECTS)
+
+$(SHAREDOBJ)/dbopl.o: $(SRC)/opl/dbopl.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+ifeq ($(SHARBUILD), 1)
+$(OBJ)/gelib.o: $(VERSRC)/gelib.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(OBJ)/jam_io.o: $(VERSRC)/jam_io.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(OBJ)/lzhuf.o: $(VERSRC)/lzhuf.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(OBJ)/soft.o: $(VERSRC)/soft.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(OBJ)/loadscn2.o: $(SRC)/lscr/loadscn2.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+endif
+$(OBJ)/%.o: $(SRC)/%.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(RSRCOBJ)/%.o: $(RSRCSRC)/%.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+veryclean:
+	-rm -f $(OBJ)/* $(RSRCOBJ)/* $(EXE_PATH)
+clean:
+	-rm -f $(EXE_PATH) $(OBJECTS) $(RSRC_OBJECTS)
+

@@ -1,0 +1,5 @@
+SHARBUILD=0
+VERDIRNAME=kdcga105
+EXENAME=chocolate-kdreams-cga
+
+include Makefile.common

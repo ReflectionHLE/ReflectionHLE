@@ -121,5 +121,9 @@ void CA_ClearAllMarks (void);
 void CA_CacheGrChunk (id0_int_t chunk);
 void CA_CacheMap (id0_int_t mapnum);
 
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
 void CA_CacheMarks (id0_char_t *title);
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+void CA_CacheMarks (id0_char_t *title, id0_boolean_t cachedownlevel);
+#endif
 
