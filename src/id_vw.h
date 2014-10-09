@@ -302,11 +302,11 @@ void VW_DrawMPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum);
 //
 // pixel addressable routines
 //
-void	VW_MeasurePropString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height);
-void	VW_MeasureMPropString  (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height);
+void	VW_MeasurePropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height);
+void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height);
 
-void VW_DrawPropString (id0_char_t id0_far *string);
-void VW_DrawMPropString (id0_char_t id0_far *string);
+void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+void VW_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
 void VW_DrawSprite(id0_int_t x, id0_int_t y, id0_unsigned_t sprite);
 void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color);
 void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color);
@@ -349,8 +349,8 @@ void VWB_DrawPic (id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_DrawMPic(id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_int_t color);
 
-void VWB_DrawPropString	 (id0_char_t id0_far *string);
-void VWB_DrawMPropString (id0_char_t id0_far *string);
+void VWB_DrawPropString	 (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+void VWB_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
 void VWB_DrawSprite (id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Plot (id0_int_t x, id0_int_t y, id0_int_t color);
 void VWB_Hlin (id0_int_t x1, id0_int_t x2, id0_int_t y, id0_int_t color);

@@ -464,8 +464,15 @@ void ShiftPropChar(id0_word_t charnum)
 //
 //==================
 
-void VW_DrawPropString (id0_char_t id0_far *string)
+void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - All input strings are now const.
+	// - An additional "optsend" argument marking one char past end
+	// of string. Set to NULL for original behaviors.
+	// - Related to modifcation to US_Print and US_CPrint, properly taking
+	// care of C string literals as inputs.
+
 	/*
 	 * proportional spacing, which clears the buffer ahead of it, so only
 	 * clear the first column
@@ -478,16 +485,30 @@ void VW_DrawPropString (id0_char_t id0_far *string)
 	 */
 	bufferbit = (((id0_unsigned_t)px&3) << 1); // one pixel == two bits
 	bufferbyte = 0;
-	id0_char_t *stringPtr = string;
-	do
+	if (optsend)
 	{
-		id0_byte_t currChAsUnsigned = *(stringPtr++);
-		if (!currChAsUnsigned)
+		do
 		{
-			break;
-		}
-		ShiftPropChar(currChAsUnsigned);
-	} while (true);
+			id0_byte_t currChAsUnsigned = *(string++);
+			if (!currChAsUnsigned)
+			{
+				break;
+			}
+			ShiftPropChar(currChAsUnsigned);
+		} while (string != optsend);
+	}
+	else
+	{
+		do
+		{
+			id0_byte_t currChAsUnsigned = *(string++);
+			if (!currChAsUnsigned)
+			{
+				break;
+			}
+			ShiftPropChar(currChAsUnsigned);
+		} while (true);
+	}
 
 	/*
 	 * calculate position to draw buffer on screen

@@ -104,8 +104,8 @@ static	id0_boolean_t		Button0,Button1,
 					CursorBad;
 static	id0_int_t			CursorX,CursorY;
 
-static	void		(*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
-					(*USL_DrawString)(id0_char_t id0_far *) = VWB_DrawPropString;
+static	void		(*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
+					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *) = VWB_DrawPropString;
 
 static	id0_boolean_t		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
 static	void		(*USL_ResetGame)(void);
@@ -507,7 +507,7 @@ US_CheckParm(id0_char_t *parm,id0_char_t **strings)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_ScreenDraw(id0_word_t x,id0_word_t y,id0_char_t *s,id0_byte_t attr)
+USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 {
 	id0_byte_t	id0_far *screen;
 
@@ -713,18 +713,6 @@ US_FinishTextScreen(void)
 
 //	Window/Printing routines
 
-// CHOCO KEEN: Some functions were made to modify C string literals, but this
-// results in undefined behaviors according to the standard.
-// Instead we make a copy to a static buffer for now
-// TODO: Constify?
-static id0_char_t usTempStrCopyBuff[256];
-static id0_char_t *USL_CopyStrToTempBuff(const id0_char_t *str)
-{
-	strncpy(usTempStrCopyBuff, str, sizeof(usTempStrCopyBuff));
-	return usTempStrCopyBuff;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////
 //
 //	US_SetPrintRoutines() - Sets the routines used to measure and print
@@ -733,7 +721,7 @@ static id0_char_t *USL_CopyStrToTempBuff(const id0_char_t *str)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),void (*print)(id0_char_t id0_far *))
+US_SetPrintRoutines(void (*measure)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),void (*print)(const id0_char_t id0_far *,const id0_char_t id0_far *))
 {
 	USL_MeasureString = measure;
 	USL_DrawString = print;
@@ -746,29 +734,36 @@ US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_Print(id0_char_t *s)
+US_Print(const id0_char_t *s)
 {
-	id0_char_t	c,*se;
+	id0_char_t c;
+	const id0_char_t *se;
+	//id0_char_t	c,*se;
 	id0_word_t	w,h;
 
-	s = USL_CopyStrToTempBuff(s); // CHOCO KEEN
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - Input is now const and US_Print does not temporarily modify it.
+	// - Reason is the input is often a C string literal. Modification of
+	// any such string leads to undefined behaviors (or at least a crash).
 
 	while (*s)
 	{
 		se = s;
 		while ((c = *se) && (c != '\n'))
 			se++;
-		*se = '\0';
+		//*se = '\0'; Constified
 
-		USL_MeasureString(s,&w,&h);
+		USL_MeasureString(s,se,&w,&h); // Instead of "*se = '\0';"
+		//USL_MeasureString(s,&w,&h);
 		px = PrintX;
 		py = PrintY;
-		USL_DrawString(s);
+		USL_DrawString(s,se); // Instead of "*se = '\0';"
+		//USL_DrawString(s);
 
 		s = se;
 		if (c)
 		{
-			*se = c;
+			//*se = c; // Constified
 			s++;
 
 			PrintX = WindowX;
@@ -813,18 +808,18 @@ US_PrintSigned(id0_long_t n)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_PrintInCenter(id0_char_t *s,Rect r)
+USL_PrintInCenter(const id0_char_t *s,Rect r)
 {
 	id0_word_t	w,h,
 			rw,rh;
 
-	USL_MeasureString(s,&w,&h);
+	USL_MeasureString(s,NULL,&w,&h);
 	rw = r.lr.x - r.ul.x;
 	rh = r.lr.y - r.ul.y;
 
 	px = r.ul.x + ((rw - w) / 2);
 	py = r.ul.y + ((rh - h) / 2);
-	USL_DrawString(s);
+	USL_DrawString(s,NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -833,7 +828,7 @@ USL_PrintInCenter(id0_char_t *s,Rect r)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintCentered(id0_char_t *s)
+US_PrintCentered(const id0_char_t *s)
 {
 	Rect	r;
 
@@ -852,17 +847,28 @@ US_PrintCentered(id0_char_t *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrintLine(id0_char_t *s)
+US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 {
 	id0_word_t	w,h;
 
-	USL_MeasureString(s,&w,&h);
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - All input strings are now const.
+	// - An additional "optse" argument marking one char past end
+	// of string. Set to NULL for original behaviors.
+	// - Related to modifcation to US_CPrint, properly taking care of
+	// C string literals as inputs.
+	// - The functions pointed by USL_MeasureString and USL_DrawString are
+	// similarly modified.
+
+	USL_MeasureString(s,optse,&w,&h);
+	//USL_MeasureString(s,&w,&h);
 
 	if (w > WindowW)
 		Quit("US_CPrintLine() - String exceeds width");
 	px = WindowX + ((WindowW - w) / 2);
 	py = PrintY;
-	USL_DrawString(s);
+	USL_DrawString(s,optse);
+	//USL_DrawString(s);
 	PrintY += h;
 }
 
@@ -873,26 +879,31 @@ US_CPrintLine(id0_char_t *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrint(id0_char_t *s)
+US_CPrint(const id0_char_t *s)
 {
-	id0_char_t	c,*se;
+	id0_char_t	c;
+	const id0_char_t	*se;
+	//id0_char_t	c,*se;
 	id0_word_t	w,h;
 
-	s = USL_CopyStrToTempBuff(s); // CHOCO KEEN
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - Input is now const and US_Print does not temporarily modify it.
+	// - Reason is the input is often a C string literal. Modification of
+	// any such string leads to undefined behaviors (or at least a crash).
 
 	while (*s)
 	{
 		se = s;
 		while ((c = *se) && (c != '\n'))
 			se++;
-		*se = '\0';
+		//*se = '\0'; // Constified
 
-		US_CPrintLine(s);
+		US_CPrintLine(s,se); // Instead of "*se = '\0';"
 
 		s = se;
 		if (c)
 		{
-			*se = c;
+			//*se = c; // Constified
 			s++;
 		}
 	}
@@ -1105,18 +1116,18 @@ US_UpdateCursor(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_XORICursor(id0_int_t x,id0_int_t y,id0_char_t *s,id0_word_t cursor)
+USL_XORICursor(id0_int_t x,id0_int_t y,const id0_char_t *s,id0_word_t cursor)
 {
 	id0_char_t	buf[MaxString];
 	id0_word_t	w,h;
 
 	strcpy(buf,s);
 	buf[cursor] = '\0';
-	USL_MeasureString(buf,&w,&h);
+	USL_MeasureString(buf,NULL,&w,&h);
 
 	px = x + w - 1;
 	py = y;
-	USL_DrawString("\x80");
+	USL_DrawString("\x80",NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1130,7 +1141,7 @@ USL_XORICursor(id0_int_t x,id0_int_t y,id0_char_t *s,id0_word_t cursor)
 //
 ///////////////////////////////////////////////////////////////////////////
 id0_boolean_t
-US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean_t escok,
+US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_boolean_t escok,
 				id0_int_t maxchars,id0_int_t maxwidth)
 {
 	id0_boolean_t		redraw,
@@ -1249,7 +1260,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 		if (c)
 		{
 			len = strlen(s);
-			USL_MeasureString(s,&w,&h);
+			USL_MeasureString(s,NULL,&w,&h);
 
 			if
 			(
@@ -1270,12 +1281,12 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 		{
 			px = x;
 			py = y;
-			USL_DrawString(olds);
+			USL_DrawString(olds,NULL);
 			strcpy(olds,s);
 
 			px = x;
 			py = y;
-			USL_DrawString(s);
+			USL_DrawString(s,NULL);
 
 			redraw = false;
 		}
@@ -1305,7 +1316,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 	{
 		px = x;
 		py = y;
-		USL_DrawString(olds);
+		USL_DrawString(olds,NULL);
 	}
 	VW_ShowCursor();
 	VW_UpdateScreen();
@@ -1665,9 +1676,9 @@ USL_DrawItem(id0_word_t hiti,id0_word_t hitn)
 				USL_PrintInCenter(text,r);
 			else
 			{
-				USL_MeasureString(text,&w,&h);
+				USL_MeasureString(text,NULL,&w,&h);
 				VWB_Bar(px,py,w + 7,h,WHITE);
-				USL_DrawString(text);
+				USL_DrawString(text,NULL);
 			}
 		}
 		if (ip->sel & ui_Disabled)
@@ -2399,7 +2410,7 @@ USL_FormatHelp(id0_char_t id0_far *text,id0_long_t len)
 		else if (c == ' ')
 		{
 			*s = '\0';
-			USL_MeasureString(l,&w,&h);
+			USL_MeasureString(l,NULL,&w,&h);
 			if (w >= WindowW)	// If string width exceeds window,
 			{
 				*s = c;			// Replace null char with proper char
@@ -2433,7 +2444,7 @@ USL_DrawHelp(id0_char_t id0_far *text,id0_word_t start,id0_word_t end,id0_word_t
 	px = WindowX + 4;
 	py = WindowY + (line * h);
 	for (lp += start;start < end;start++,px = WindowX + 4,py += h)
-		USL_DrawString(text + *lp++);
+		USL_DrawString(text + *lp++,NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2470,7 +2481,7 @@ USL_DoHelp(memptr text,id0_long_t len)
 	VW_UpdateScreen();
 
 	lines = USL_FormatHelp((id0_char_t id0_far *)text,len);
-	USL_MeasureString("",&w,&h);
+	USL_MeasureString("",NULL,&w,&h);
 	page = WindowH / h;
 	cur = 0;
 	lp = LineOffsets;
@@ -2861,7 +2872,7 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		{
 			USL_DLSRect(ip);
 			fontcolor = game->present? F_BLACK : F_FIRSTCOLOR;
-			USL_DrawString(game->present? (id0_char_t *)(game->name) : "Empty");
+			USL_DrawString(game->present? (id0_char_t *)(game->name) : "Empty",NULL);
 			fontcolor = F_BLACK;
 		}
 		break;
@@ -3774,7 +3785,7 @@ US_DisplayHighScores(id0_int_t which)
 		//ultoa(s->score,buffer,10);
 		for (str = buffer;*str;str++)
 			*str = *str + (129 - '0');	// Used fixed-width numbers (129...)
-		USL_MeasureString(buffer,&w,&h);
+		USL_MeasureString(buffer,NULL,&w,&h);
 		PrintX -= w;
 		US_Print(buffer);
 

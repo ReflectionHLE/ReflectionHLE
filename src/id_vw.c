@@ -79,7 +79,7 @@ spritetabletype id0_seg *spritetable;
 =============================================================================
 */
 
-void	VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height,
+void	VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height,
 		fontstruct id0_seg *font);
 void 	VWL_DrawCursor (void);
 void 	VWL_EraseCursor (void);
@@ -712,21 +712,39 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 
 #if NUMFONT+NUMFONTM>0
 void
-VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height, fontstruct id0_seg *font)
+VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height, fontstruct id0_seg *font)
 {
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - All input strings are now const.
+	// - An additional "optsend" argument marking one char past end
+	// of string. Set to NULL for original behaviors.
+	// - Related to modifcation to US_Print and US_CPrint, properly taking
+	// care of C string literals as inputs.
 	*height = font->height;
+#if 0
 	for (*width = 0;*string;string++)
 		*width += font->width[*string];		// proportional width
+#endif
+	if (optsend)
+	{
+		for (*width = 0;string!=optsend;string++)
+			*width += font->width[*string];		// proportional width
+	}
+	else
+	{
+		for (*width = 0;*string;string++)
+			*width += font->width[*string];		// proportional width
+	}
 }
 
-void	VW_MeasurePropString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height)
+void	VW_MeasurePropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height)
 {
-	VWL_MeasureString(string,width,height,(fontstruct id0_seg *)grsegs[STARTFONT]);
+	VWL_MeasureString(string,optsend,width,height,(fontstruct id0_seg *)grsegs[STARTFONT]);
 }
 
-void	VW_MeasureMPropString  (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height)
+void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height)
 {
-	VWL_MeasureString(string,width,height,(fontstruct id0_seg *)grsegs[STARTFONTM]);
+	VWL_MeasureString(string,optsend,width,height,(fontstruct id0_seg *)grsegs[STARTFONTM]);
 }
 
 
@@ -1235,12 +1253,12 @@ void VWB_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_i
 
 
 #if NUMFONT
-void VWB_DrawPropString	 (id0_char_t id0_far *string)
+void VWB_DrawPropString	 (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
 	id0_int_t x,y;
 	x = px+pansx;
 	y = py+pansy;
-	VW_DrawPropString (string);
+	VW_DrawPropString (string,optsend);
 //	VW_MarkUpdateBlock(0,0,320,200);
 	VW_MarkUpdateBlock(x,y,x+bufferwidth*8-1,y+bufferheight-1);
 }
@@ -1248,12 +1266,12 @@ void VWB_DrawPropString	 (id0_char_t id0_far *string)
 
 
 #if NUMFONTM
-void VWB_DrawMPropString (id0_char_t id0_far *string)
+void VWB_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
 	id0_int_t x,y;
 	x = px+pansx;
 	y = py+pansy;
-	VW_DrawMPropString (string);
+	VW_DrawMPropString (string,optsend);
 	VW_MarkUpdateBlock(x,y,x+bufferwidth*8-1,y+bufferheight-1);
 }
 #endif
