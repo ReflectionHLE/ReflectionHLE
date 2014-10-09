@@ -593,7 +593,11 @@ void id0_main (void)
 		}
 	}
 #if (!defined CATALOG) || (!defined CHOCO_KEEN_VER_KDREAMS_CGA_105)
-	if (!LaunchedFromShell)
+	// CHOCO KEEN difference from vanilla Keen Dreams (Shareware v1.13):
+	// Role of /DETOUR has been flipped. No need to pass it (or use START),
+	// but if /DETOUR is added then you get this message.
+	if (LaunchedFromShell)
+	//if (!LaunchedFromShell)
 	{
 		BE_SDL_clrscr();
 		BE_Cross_puts("You must type START at the DOS prompt to run KEEN DREAMS.");

@@ -118,6 +118,9 @@ $(EXE_PATH): $(OBJECTS) $(RSRC_OBJECTS)
 $(SHAREDOBJ)/dbopl.o: $(SRC)/opl/dbopl.c
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
+$(OBJ)/be_cross_compat.o: $(VERSRC)/be_cross_compat.c
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
 ifeq ($(SHARBUILD), 1)
 $(OBJ)/gelib.o: $(VERSRC)/gelib.c
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@

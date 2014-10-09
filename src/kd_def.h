@@ -185,8 +185,14 @@ typedef struct {
 // (CHOCO KEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
 // objstruct may store a 16-bit pointer with another object.
 // For Keen Dreams CGA v1.05 it should be replicated with the following macros.
-#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+0x7470))
-#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) (objarray+(id0_word_t)((id0_word_t)(dosptr)-(id0_word_t)0x7470)/sizeof(objtype))
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#define COMPAT_OBJ_CONVERSION_OFFSET 0x7470
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#define COMPAT_OBJ_CONVERSION_OFFSET 0x712A
+#endif
+
+#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+COMPAT_OBJ_CONVERSION_OFFSET))
+#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) (objarray+(id0_word_t)((id0_word_t)(dosptr)-(id0_word_t)COMPAT_OBJ_CONVERSION_OFFSET)/sizeof(objtype))
 
 extern objtype objarray[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY
 

@@ -76,11 +76,17 @@ id0_unsigned_t	SX_T_SHIFT;		// screen x >> ?? = tile EGA = 1, CGA = 2;
 #define	UPDATESPARESIZE		(UPDATEWIDE*2+4)
 #define UPDATESIZE			(UPDATESCREENSIZE+2*UPDATESPARESIZE)
 
-// (CHOCO KEEN) BACKWARDS COMPATIBILITY (for Keen Dreams CGA v1.05 only):
+// (CHOCO KEEN) BACKWARDS COMPATIBILITY (DOS EXE build specific):
 // When animated tile step is stored in a map's info plane, use same 16-bit
 // value as in DOS (originally a pointer to a cell of allanims)
-#define COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i) (4*(i)+0xC450)
-#define COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(dosptr) (((dosptr)-0xC450)/4)
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#define COMPAT_ALLANIMS_TABLE_OFFSET 0xC450
+#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#define COMPAT_ALLANIMS_TABLE_OFFSET 0xC11E
+#endif
+
+#define COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i) (4*(i)+COMPAT_ALLANIMS_TABLE_OFFSET)
+#define COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(dosptr) (((dosptr)-COMPAT_ALLANIMS_TABLE_OFFSET)/4)
 
 /*
 =============================================================================
