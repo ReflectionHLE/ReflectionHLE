@@ -508,31 +508,31 @@ void ThrowPower (id0_unsigned_t x, id0_unsigned_t y, id0_int_t dir)
 
 
 	GetNewObj (true);
-	new->obclass = powerobj;
-	new->temp2 = dir;
-	new->x = x;
-	new->y = y;
-	new->tileleft = new->tileright = x>>G_T_SHIFT;
-	new->tiletop = new->tilebottom = y>>G_T_SHIFT;
-	new->ydir = -1;
+	newobj->obclass = powerobj;
+	newobj->temp2 = dir;
+	newobj->x = x;
+	newobj->y = y;
+	newobj->tileleft = newobj->tileright = x>>G_T_SHIFT;
+	newobj->tiletop = newobj->tilebottom = y>>G_T_SHIFT;
+	newobj->ydir = -1;
 
 	switch (dir)
 	{
 	case dir_North:
-		new->xspeed = 0;
-		new->yspeed = SPDPOWERUP;
+		newobj->xspeed = 0;
+		newobj->yspeed = SPDPOWERUP;
 		break;
 	case dir_East:
-		new->xspeed = SPDPOWER;
-		new->yspeed = SPDPOWERY;
+		newobj->xspeed = SPDPOWER;
+		newobj->yspeed = SPDPOWERY;
 		break;
 	case dir_South:
-		new->xspeed = 0;
-		new->yspeed = SPDPOWER;
+		newobj->xspeed = 0;
+		newobj->yspeed = SPDPOWER;
 		break;
 	case dir_West:
-		new->xspeed = -SPDPOWER;
-		new->yspeed = SPDPOWERY;
+		newobj->xspeed = -SPDPOWER;
+		newobj->yspeed = SPDPOWERY;
 		break;
 	default:
 		Quit ("ThrowPower: Bad dir!");
@@ -540,25 +540,25 @@ void ThrowPower (id0_unsigned_t x, id0_unsigned_t y, id0_int_t dir)
 
 	if (mapon != 15)
 	{
-		new->temp1 = 8;  				// flower power bonus
+		newobj->temp1 = 8;  				// flower power bonus
 		startstate = &s_flowerpower1;
 	}
 	else
 	{
-		new->temp1 = 10;  				// boobus bomb bonus
+		newobj->temp1 = 10;  				// boobus bomb bonus
 		startstate = &s_boobusbomb1;
 	}
-	new->active = removable;
+	newobj->active = removable;
 
 #if 0
-	new->x -= 5*new->xspeed;		// make sure they hit nearby walls
-	new->y -= 5*new->yspeed;
+	newobj->x -= 5*newobj->xspeed;		// make sure they hit nearby walls
+	newobj->y -= 5*newobj->yspeed;
 #endif
-	NewState (new,startstate);
+	NewState (newobj,startstate);
 #if 0
-	new->xmove = 5*new->xspeed;
-	new->ymove = 5*new->yspeed;
-	ClipToWalls (new);
+	newobj->xmove = 5*newobj->xspeed;
+	newobj->ymove = 5*newobj->yspeed;
+	ClipToWalls (newobj);
 #endif
 }
 
@@ -1587,15 +1587,15 @@ void KeenGoSleepThink (objtype *ob)
 //
 	GetNewObj (true);
 
-	new->obclass = inertobj;
-	new->x = player->x;
-	new->y = player->y-4*PIXGLOBAL;
-	new->xdir = 1;
-	new->ydir = -1;
-	NewState (new,&s_keenzee1);
+	newobj->obclass = inertobj;
+	newobj->x = player->x;
+	newobj->y = player->y-4*PIXGLOBAL;
+	newobj->xdir = 1;
+	newobj->ydir = -1;
+	NewState (newobj,&s_keenzee1);
 
-	ob->temp1 = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new); // so they can be removed later
-	//ob->temp1 = new;				// so they can be removed later
+	ob->temp1 = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(newobj); // so they can be removed later
+	//ob->temp1 = newobj;				// so they can be removed later
 }
 
 
@@ -2103,8 +2103,8 @@ void	KeenThrow	(objtype *ob)
 			ThrowPower (ob->x-16*PIXGLOBAL,ob->y+8*PIXGLOBAL,dir_West);
 #endif
 
-		new->xspeed += ob->xspeed/2;
-		new->yspeed += ob->yspeed/2;
+		newobj->xspeed += ob->xspeed/2;
+		newobj->yspeed += ob->yspeed/2;
 		return;
 	}
 
@@ -2114,8 +2114,8 @@ void	KeenThrow	(objtype *ob)
 			ThrowPower (ob->x+16*PIXGLOBAL,ob->y,dir_North);
 		else
 			ThrowPower (ob->x+4*PIXGLOBAL,ob->y,dir_North);
-		new->xspeed += ob->xspeed/2;
-		new->yspeed += ob->yspeed/2;
+		newobj->xspeed += ob->xspeed/2;
+		newobj->yspeed += ob->yspeed/2;
 		return;
 	}
 
@@ -2125,8 +2125,8 @@ void	KeenThrow	(objtype *ob)
 			ThrowPower (ob->x+3*PIXGLOBAL,ob->y+16*PIXGLOBAL,dir_South);
 		else
 			ThrowPower (ob->x+12*PIXGLOBAL,ob->y+16*PIXGLOBAL,dir_South);
-		new->xspeed += ob->xspeed/2;
-		new->yspeed += ob->yspeed/2;
+		newobj->xspeed += ob->xspeed/2;
+		newobj->yspeed += ob->yspeed/2;
 		return;
 	}
 

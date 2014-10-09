@@ -91,13 +91,13 @@ void SpawnTater (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = taterobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE + 15;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState (new,&s_taterwalk1);
-	new->hitnorth = 1;
+	newobj->obclass = taterobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE + 15;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState (newobj,&s_taterwalk1);
+	newobj->hitnorth = 1;
 }
 
 /*
@@ -199,13 +199,13 @@ void SpawnCart (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = cartobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-3*PIXGLOBAL;
-	new->xdir = 1;
-	new->ydir = 1;
-	new->active = allways;
-	NewState (new,&s_cartroll1);
+	newobj->obclass = cartobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-3*PIXGLOBAL;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->active = allways;
+	NewState (newobj,&s_cartroll1);
 }
 
 
@@ -325,12 +325,12 @@ void SpawnFrenchy (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = frenchyobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState (new,&s_frenchywalk1);
+	newobj->obclass = frenchyobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState (newobj,&s_frenchywalk1);
 }
 
 
@@ -359,23 +359,23 @@ void FrenchyRunThink (objtype *ob)
 void FrenchyThrow (objtype *ob)
 {
 	GetNewObj (true);
-	new->obclass = shotobj;
+	newobj->obclass = shotobj;
 	if (ob->xdir == 1)
 	{
-		new->x = ob->x+24*16;
-		new->y = ob->y+8*16;
+		newobj->x = ob->x+24*16;
+		newobj->y = ob->y+8*16;
 	}
 	else
 	{
-		new->x = ob->x;
-		new->y = ob->y+8*16;
+		newobj->x = ob->x;
+		newobj->y = ob->y+8*16;
 	}
-	new->xdir = ob->xdir;
-	new->ydir = 1;
-	new->xspeed = ob->xdir * FRYXSPEED-(US_RndT()>>4);
-	new->yspeed = FRYYSPEED;
-	new->active = removable;
-	NewState (new,&s_fry1);
+	newobj->xdir = ob->xdir;
+	newobj->ydir = 1;
+	newobj->xspeed = ob->xdir * FRYXSPEED-(US_RndT()>>4);
+	newobj->yspeed = FRYYSPEED;
+	newobj->active = removable;
+	NewState (newobj,&s_fry1);
 
 	ob->nothink = 2;
 }
@@ -511,20 +511,20 @@ void SpawnMelon (id0_int_t tilex, id0_int_t tiley,id0_int_t dir)
 {
 	GetNewObj (false);
 
-	new->obclass = melonobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = tiley<<G_T_SHIFT;
+	newobj->obclass = melonobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = tiley<<G_T_SHIFT;
 	if (dir)
-		new->xdir = 1;
+		newobj->xdir = 1;
 	else
-		new->xdir = -1;
+		newobj->xdir = -1;
 	if (dir <2)
-		NewState (new,&s_melonside);
+		NewState (newobj,&s_melonside);
 	else
-		NewState (new,&s_melondown);
+		NewState (newobj,&s_melondown);
 
-	new->ticcount = US_RndT()>>1;
-	new->temp1 = dir;
+	newobj->ticcount = US_RndT()>>1;
+	newobj->temp1 = dir;
 }
 
 
@@ -539,37 +539,37 @@ void SpawnMelon (id0_int_t tilex, id0_int_t tiley,id0_int_t dir)
 void MelonSpitThink (objtype *ob)
 {
 	GetNewObj (false);
-	new->obclass = shotobj;
+	newobj->obclass = shotobj;
 	switch (ob->temp1)
 	{
 	case 0:
-		new->x = ob->x+24*16;
-		new->y = ob->y+8*16;
-		new->xdir = ob->xdir;
-		new->ydir = 1;
-		new->xspeed = -SPITXSPEED-(US_RndT()>>4);
-		new->yspeed = SPITYSPEED;
-		NewState (new,&s_melonseed1);
+		newobj->x = ob->x+24*16;
+		newobj->y = ob->y+8*16;
+		newobj->xdir = ob->xdir;
+		newobj->ydir = 1;
+		newobj->xspeed = -SPITXSPEED-(US_RndT()>>4);
+		newobj->yspeed = SPITYSPEED;
+		NewState (newobj,&s_melonseed1);
 		break;
 	case 1:
-		new->x = ob->x;
-		new->y = ob->y+8*16;
-		new->xdir = ob->xdir;
-		new->ydir = 1;
-		new->xspeed = SPITXSPEED+(US_RndT()>>4);
-		new->yspeed = SPITYSPEED;
-		NewState (new,&s_melonseed1);
+		newobj->x = ob->x;
+		newobj->y = ob->y+8*16;
+		newobj->xdir = ob->xdir;
+		newobj->ydir = 1;
+		newobj->xspeed = SPITXSPEED+(US_RndT()>>4);
+		newobj->yspeed = SPITYSPEED;
+		NewState (newobj,&s_melonseed1);
 		break;
 	case 2:
-		new->x = ob->x+8*16;
-		new->y = ob->y+24*16;
-		new->ydir = 1;
-		new->yspeed = -SPITYSPEED;
-		NewState (new,&s_melonseedd1);
+		newobj->x = ob->x+8*16;
+		newobj->y = ob->y+24*16;
+		newobj->ydir = 1;
+		newobj->yspeed = -SPITYSPEED;
+		NewState (newobj,&s_melonseedd1);
 		break;
 	}
 
-	new->active = removable;
+	newobj->active = removable;
 }
 
 /*
@@ -751,12 +751,12 @@ void SpawnSquasher (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = squashobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState (new,&s_squasherwalk1);
+	newobj->obclass = squashobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState (newobj,&s_squasherwalk1);
 }
 
 /*
@@ -901,12 +901,12 @@ void SpawnApel (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = apelobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState (new,&s_apelwalk1);
+	newobj->obclass = apelobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState (newobj,&s_apelwalk1);
 }
 
 
@@ -1085,10 +1085,10 @@ void SpawnPeaBrain (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = peabrainobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = tiley<<G_T_SHIFT;
-	NewState (new,&s_peabrainwalk1);
+	newobj->obclass = peabrainobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = tiley<<G_T_SHIFT;
+	NewState (newobj,&s_peabrainwalk1);
 }
 
 /*
@@ -1179,12 +1179,12 @@ void SpawnPeaPod (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = peapodobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState (new,&s_peapodwalk1);
+	newobj->obclass = peapodobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState (newobj,&s_peapodwalk1);
 }
 
 /*
@@ -1198,22 +1198,22 @@ void SpawnPeaPod (id0_int_t tilex, id0_int_t tiley)
 void SpitPeaBrain (objtype *ob)
 {
 	GetNewObj (true);
-	new->obclass = peabrainobj;
+	newobj->obclass = peabrainobj;
 	if (ob->xdir == 1)
 	{
-		new->x = ob->x+8*16;
-		new->y = ob->y+8*16;
+		newobj->x = ob->x+8*16;
+		newobj->y = ob->y+8*16;
 	}
 	else
 	{
-		new->x = ob->x;
-		new->y = ob->y+8*16;
+		newobj->x = ob->x;
+		newobj->y = ob->y+8*16;
 	}
-	new->xdir = ob->xdir;
-	new->ydir = 1;
-	new->xspeed = ob->xdir * PEAXSPEED-(US_RndT()>>4);
-	new->yspeed = PEAYSPEED;
-	NewState (new,&s_peabrainfly);
+	newobj->xdir = ob->xdir;
+	newobj->ydir = 1;
+	newobj->xspeed = ob->xdir * PEAXSPEED-(US_RndT()>>4);
+	newobj->yspeed = PEAYSPEED;
+	NewState (newobj,&s_peabrainfly);
 }
 
 
@@ -1336,12 +1336,12 @@ void SpawnBoobus (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = boobusobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-11*BLOCKSIZE;
-	new->xdir = -1;
-	NewState (new,&s_boobuswalk1);
-	new->temp4 = 12;			// hit points
+	newobj->obclass = boobusobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-11*BLOCKSIZE;
+	newobj->xdir = -1;
+	NewState (newobj,&s_boobuswalk1);
+	newobj->temp4 = 12;			// hit points
 }
 
 
@@ -1365,12 +1365,12 @@ void FragThink (objtype *ob)
 
 	SD_PlaySound (BOMBBOOMSND);
 	GetNewObj (true);
-	new->x = ob->x-BLOCKSIZE + 5*US_RndT();
-	new->y = ob->y-BLOCKSIZE + 5*US_RndT();
-	new->xspeed = 0; //US_RndT()/4-32;
-	new->yspeed = 0; //US_RndT()/4-32;
+	newobj->x = ob->x-BLOCKSIZE + 5*US_RndT();
+	newobj->y = ob->y-BLOCKSIZE + 5*US_RndT();
+	newobj->xspeed = 0; //US_RndT()/4-32;
+	newobj->yspeed = 0; //US_RndT()/4-32;
 	US_RndT();					// keep rnd from even wrapping
-	ChangeState (new,&s_deathboom1);
+	ChangeState (newobj,&s_deathboom1);
 }
 
 

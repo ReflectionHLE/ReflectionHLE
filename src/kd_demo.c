@@ -453,31 +453,31 @@ LoadGame(int file)
 	// Read the object list back in - assumes at least one object in list
 
 	InitObjArray ();
-	new = player;
-	prev = new->prev;
-	next = new->next;
+	newobj = player;
+	prev = newobj->prev;
+	next = newobj->next;
 	// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
-	if (!LoadObject(file, new))
-	//if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
+	if (!LoadObject(file, newobj))
+	//if (!CA_FarRead(file,(void id0_far *)newobj,sizeof(objtype)))
 		return(false);
-	new->prev = prev;
-	new->next = next;
-	new->needtoreact = true;
-	new->sprite = NULL;
-	new = scoreobj;
+	newobj->prev = prev;
+	newobj->next = next;
+	newobj->needtoreact = true;
+	newobj->sprite = NULL;
+	newobj = scoreobj;
 	while (true)
 	{
-		prev = new->prev;
-		next = new->next;
+		prev = newobj->prev;
+		next = newobj->next;
 		// And again
-		if (!LoadObject(file, new))
-		//if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
+		if (!LoadObject(file, newobj))
+		//if (!CA_FarRead(file,(void id0_far *)newobj,sizeof(objtype)))
 			return(false);
-		followed = new->next;
-		new->prev = prev;
-		new->next = next;
-		new->needtoreact = true;
-		new->sprite = NULL;
+		followed = newobj->next;
+		newobj->prev = prev;
+		newobj->next = next;
+		newobj->needtoreact = true;
+		newobj->sprite = NULL;
 
 		if (followed)
 			GetNewObj (false);

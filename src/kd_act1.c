@@ -319,13 +319,13 @@ void	SpawnDoor (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = doorobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
-	new->xdir = 1;
-	new->ydir = -1;
-	new->needtoclip = false;
-	NewState (new,&s_door);
+	newobj->obclass = doorobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
+	newobj->xdir = 1;
+	newobj->ydir = -1;
+	newobj->needtoclip = false;
+	NewState (newobj,&s_door);
 }
 
 /*
@@ -445,10 +445,10 @@ void ChangeToFlower (objtype *ob)
 	ChangeState (ob,&s_flower1);
 	ob->active = allways;			// flower never deactivated
 	GetNewObj (true);
-	new->x = ob->x;
-	new->y = ob->y;
-	NewState (new,&s_poofto1);
-	new->active = removable;
+	newobj->x = ob->x;
+	newobj->y = ob->y;
+	NewState (newobj,&s_poofto1);
+	newobj->active = removable;
 }
 
 
@@ -466,12 +466,12 @@ void FlowerThink (objtype *ob)
 	if ( (ob->temp3+=tics) >= flowertime[gamestate.difficulty])
 	{
 		GetNewObj (true);
-		new->active = allways;
-		new->temp1 = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
-		//new->temp1 = ob;
-		new->x = ob->x;
-		new->y = ob->y;
-		NewState (new,&s_pooffrom1);
+		newobj->active = allways;
+		newobj->temp1 = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
+		//newobj->temp1 = ob;
+		newobj->x = ob->x;
+		newobj->y = ob->y;
+		NewState (newobj,&s_pooffrom1);
 		ob->temp3 = 0;
 	}
 }
@@ -547,24 +547,24 @@ void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t type)
 {
 	GetNewObj (false);
 
-	new->needtoclip = false;
-	new->obclass = bonusobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = tiley<<G_T_SHIFT;
+	newobj->needtoclip = false;
+	newobj->obclass = bonusobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = tiley<<G_T_SHIFT;
 
 	if (type == 9)
-		new->y -= 8*PIXGLOBAL;	// flower power up one block
+		newobj->y -= 8*PIXGLOBAL;	// flower power up one block
 
-	new->ydir = -1;			// bonus stuff flies up when touched
+	newobj->ydir = -1;			// bonus stuff flies up when touched
 
-	new->temp1 = type;
-	new->temp2 = new->shapenum = bonusshape[type];
+	newobj->temp1 = type;
+	newobj->temp2 = newobj->shapenum = bonusshape[type];
 	if (type != 7)
-		new->temp3 = new->temp2 + 2;
+		newobj->temp3 = newobj->temp2 + 2;
 	else
-		new->temp3 = new->temp2 + 4;	// super bonus is 4 stage animation
+		newobj->temp3 = newobj->temp2 + 4;	// super bonus is 4 stage animation
 
-	NewState (new,&s_bonus);
+	NewState (newobj,&s_bonus);
 }
 
 /*
@@ -653,11 +653,11 @@ void SpawnBrocco (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = broccoobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
-	new->xdir = 1;
-	NewState (new,&s_broccowalk1);
+	newobj->obclass = broccoobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
+	newobj->xdir = 1;
+	NewState (newobj,&s_broccowalk1);
 }
 
 /*
@@ -764,11 +764,11 @@ void SpawnTomat (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = tomatobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-1*BLOCKSIZE;
-	new->xdir = 1;
-	NewState (new,&s_tomatbounce);
+	newobj->obclass = tomatobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-1*BLOCKSIZE;
+	newobj->xdir = 1;
+	NewState (newobj,&s_tomatbounce);
 }
 
 /*
@@ -897,13 +897,13 @@ void SpawnCarrot (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = carrotobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState (new,&s_carrotwalk1);
-	new->hitnorth = 1;
+	newobj->obclass = carrotobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = (tiley<<G_T_SHIFT)-2*BLOCKSIZE;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState (newobj,&s_carrotwalk1);
+	newobj->hitnorth = 1;
 }
 
 
@@ -1002,11 +1002,11 @@ void SpawnAspar (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = asparobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = tiley<<G_T_SHIFT;
-	new->xdir = 1;
-	NewState (new,&s_asparwalk1);
+	newobj->obclass = asparobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = tiley<<G_T_SHIFT;
+	newobj->xdir = 1;
+	NewState (newobj,&s_asparwalk1);
 }
 
 
@@ -1054,12 +1054,12 @@ void SpawnGrape (id0_int_t tilex, id0_int_t tiley)
 {
 	GetNewObj (false);
 
-	new->obclass = grapeobj;
-	new->x = tilex<<G_T_SHIFT;
-	new->y = tiley<<G_T_SHIFT;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState (new,&s_grapewait);
+	newobj->obclass = grapeobj;
+	newobj->x = tilex<<G_T_SHIFT;
+	newobj->y = tiley<<G_T_SHIFT;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState (newobj,&s_grapewait);
 }
 
 

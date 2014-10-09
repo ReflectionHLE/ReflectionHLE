@@ -65,7 +65,8 @@ exittype	playstate;
 gametype	gamestate;
 
 id0_boolean_t		button0held,button1held;
-objtype		*new,*check,*player,*scoreobj;
+// (CHOCO KEEN) new has been renamed newobj since new is a reserved C++ keyword
+objtype		*newobj,*check,*player,*scoreobj;
 
 id0_unsigned_t	originxtilemax,originytilemax;
 
@@ -373,9 +374,9 @@ void InitObjArray (void)
 // give the player and score the first free spots
 //
 	GetNewObj (false);
-	player = new;
+	player = newobj;
 	GetNewObj (false);
-	scoreobj = new;
+	scoreobj = newobj;
 }
 
 //===========================================================================
@@ -400,23 +401,23 @@ void GetNewObj (id0_boolean_t usedummy)
 	{
 		if (usedummy)
 		{
-			new = &dummyobj;
+			newobj = &dummyobj;
 			return;
 		}
 		Quit ("GetNewObj: No free spots in objarray!");
 	}
 
-	new = objfreelist;
-	objfreelist = new->prev;
-	memset (new,0,sizeof(*new));
+	newobj = objfreelist;
+	objfreelist = newobj->prev;
+	memset (newobj,0,sizeof(*newobj));
 
 	if (lastobj)
-		lastobj->next = new;
-	new->prev = lastobj;	// new->next is allready NULL from memset
+		lastobj->next = newobj;
+	newobj->prev = lastobj;	// newobj->next is already NULL from memset
 
-	new->active = yes;
-	new->needtoclip = true;
-	lastobj = new;
+	newobj->active = yes;
+	newobj->needtoclip = true;
+	lastobj = newobj;
 
 	objectcount++;
 }
@@ -496,40 +497,40 @@ void /*near*/ HandleInfo (void)
 	case 30:
 	case 32:
 		SpawnBonus(mapx,mapy,maptile-21);
-		new->active = false;
+		newobj->active = false;
 		break;
 	case 33:
 		SpawnDoor(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		break;
 	case 41:
 		SpawnBrocco(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[BROCCOLUMP] = true;
 		break;
 	case 42:
 		SpawnTomat(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[TOMATLUMP] = true;
 		break;
 	case 43:
 		SpawnCarrot(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[CARROTLUMP] = true;
 		break;
 	case 45:
 		SpawnAspar(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[ASPARLUMP] = true;
 		break;
 	case 46:
 		SpawnGrape(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[GRAPELUMP] = true;
 		break;
 	case 47:
 		SpawnTater(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[TATERLUMP] = true;
 		break;
 	case 48:
@@ -538,34 +539,34 @@ void /*near*/ HandleInfo (void)
 		break;
 	case 49:
 		SpawnFrenchy(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[FRENCHYLUMP] = true;
 		break;
 	case 50:
 	case 51:
 	case 52:
 		SpawnMelon(mapx,mapy,maptile-50);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[MELONLUMP] = true;
 		break;
 	case 57:
 		SpawnSquasher(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[SQUASHLUMP] = true;
 		break;
 	case 58:
 		SpawnApel(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[APELLUMP] = true;
 		break;
 	case 59:
 		SpawnPeaPod(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[PEALUMP] = true;
 		break;
 	case 60:
 		SpawnPeaBrain(mapx,mapy);
-		new->active = false;
+		newobj->active = false;
 		lumpneeded[PEALUMP] = true;
 		break;
 	case 61:
@@ -574,8 +575,8 @@ void /*near*/ HandleInfo (void)
 		break;
 	}
 
-	if (new->active != allways)
-		new->active = false;
+	if (newobj->active != allways)
+		newobj->active = false;
 }
 
 /*

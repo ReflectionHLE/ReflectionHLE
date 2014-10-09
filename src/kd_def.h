@@ -250,7 +250,8 @@ extern	gametype	gamestate;
 extern	exittype	playstate;
 extern	id0_boolean_t		button0held,button1held;
 extern	id0_unsigned_t	originxtilemax,originytilemax;
-extern	objtype		*new,*check,*player,*scoreobj;
+// (CHOCO KEEN) new has been renamed newobj since new is a reserved C++ keyword
+extern	objtype		*newobj,*check,*player,*scoreobj;
 
 extern	ControlInfo	c;
 
