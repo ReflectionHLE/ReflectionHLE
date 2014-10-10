@@ -947,7 +947,8 @@ void ClipToEnds (objtype *ob)
 	maxmove = -abs(midxmoved) - bottommoved - 16;
 	map = (id0_unsigned_t id0_far *)mapsegs[1] +
 		mapbwidthtable[oldtilebottom-1]/2 + ob->tilemidx;
-	for (y=oldtilebottom-1 ; y<=ob->tilebottom ; y++,map+=mapwidth)
+	// (CHOCO KEEN) Comparison is unsigned in vanilla Keen (has an effect on the explosion of King Boobus Tuber)
+	for (y=oldtilebottom-1 ; (id0_unsigned_t)y<=ob->tilebottom ; y++,map+=mapwidth)
 	{
 		if (wall = tinf[NORTHWALL+*map])
 		{
@@ -965,7 +966,8 @@ void ClipToEnds (objtype *ob)
 	maxmove = abs(midxmoved) - topmoved + 16;
 	map = (id0_unsigned_t id0_far *)mapsegs[1] +
 		mapbwidthtable[oldtiletop+1]/2 + ob->tilemidx;
-	for (y=oldtiletop+1 ; y>=ob->tiletop ; y--,map-=mapwidth)
+	// (CHOCO KEEN) Again comparison should be unsigned
+	for (y=oldtiletop+1 ; (id0_unsigned_t)y>=ob->tiletop ; y--,map-=mapwidth)
 	{
 		if (wall = tinf[SOUTHWALL+*map])
 		{
