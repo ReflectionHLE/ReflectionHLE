@@ -293,8 +293,11 @@ USL_ReadConfig(void)
 			BE_Cross_readInt32LE(file, &Scores[i].score);
 			BE_Cross_readInt16LE(file, &Scores[i].completed);
 		}
+		size_t BE_Cross_read_SDMode_From16LE(int handle, SDMode *ptr);
 		BE_Cross_read_SDMode_From16LE(file, &sd);
+		size_t BE_Cross_read_SMMode_From16LE(int handle, SMMode *ptr);
 		BE_Cross_read_SMMode_From16LE(file, &sm);
+		size_t BE_Cross_read_ControlType_From16LE(int handle, ControlType *ptr);
 		BE_Cross_read_ControlType_From16LE(file, &ctl);
 		// KeyboardDef is a ScanCode array, and ScanCode is simply typeded to be a byte
 		BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
@@ -350,8 +353,11 @@ USL_WriteConfig(void)
 			BE_Cross_writeInt32LE(file, &Scores[i].score);
 			BE_Cross_writeInt16LE(file, &Scores[i].completed);
 		}
+		size_t BE_Cross_write_SDMode_To16LE(int handle, const SDMode *ptr);
 		BE_Cross_write_SDMode_To16LE(file, &SoundMode);
+		size_t BE_Cross_write_SMMode_To16LE(int handle, const SMMode *ptr);
 		BE_Cross_write_SMMode_To16LE(file, &MusicMode);
+		size_t BE_Cross_write_ControlType_To16LE(int handle, const ControlType *ptr);
 		BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
 		BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
 #if 0
@@ -2872,7 +2878,7 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		{
 			USL_DLSRect(ip);
 			fontcolor = game->present? F_BLACK : F_FIRSTCOLOR;
-			USL_DrawString(game->present? (id0_char_t *)(game->name) : "Empty",NULL);
+			USL_DrawString(game->present? (id0_char_t *)(game->name) : (id0_char_t *)"Empty",NULL);
 			fontcolor = F_BLACK;
 		}
 		break;

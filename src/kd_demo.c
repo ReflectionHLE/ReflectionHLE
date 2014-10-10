@@ -208,6 +208,7 @@ static id0_boolean_t SaveObject(int file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
+	size_t BE_Cross_write_classtype_To16LE(int handle, const classtype *ptr);
 	return ((BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
 	        && (BE_Cross_writeInt16LE(file, &activeint) == 2)
 	        && (BE_Cross_write_boolean_To16LE(file, &o->needtoreact) == 2)
@@ -263,6 +264,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
+	size_t BE_Cross_read_classtype_From16LE(int handle, classtype *ptr);
 	if ((BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
 	    || (BE_Cross_readInt16LE(file, &activeint) != 2)
 	    || (BE_Cross_read_boolean_From16LE(file, &o->needtoreact) != 2)

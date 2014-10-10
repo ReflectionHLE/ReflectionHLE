@@ -447,6 +447,8 @@ SDL_SBStopSample(void)
 #endif
 }
 
+// (CHOCO KEEN) UNUSED FUNCTION
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SBPlaySeg() - Plays a chunk of sampled sound on the SoundBlaster
@@ -457,9 +459,6 @@ SDL_SBStopSample(void)
 static id0_longword_t
 SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 {
-	// CHOCO KEEN - DISABLED
-	return 0;
-#if 0
 	id0_unsigned_t		datapage;
 	id0_longword_t		dataofs,uselen;
 
@@ -497,9 +496,11 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 	sbOut(sbWriteData,(byte)(uselen >> 8));
 
 	return(uselen + 1);
-#endif
 }
+#endif
 
+// (CHOCO KEEN) UNUSED FUNCTION
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SBService() - Services the SoundBlaster DMA interrupt
@@ -508,8 +509,6 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 static void /*interrupt*/
 SDL_SBService(void)
 {
-	// CHOCO KEEN - DISABLED
-#if 0
 	id0_longword_t	used;
 
 	sbIn(sbDataAvail);	// Ack interrupt to SB
@@ -532,8 +531,8 @@ SDL_SBService(void)
 	}
 
 	outportb(0x20,0x20);	// Ack interrupt
-#endif
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -587,6 +586,8 @@ SDL_SBPlaySample(SampledSound id0_far *sample)
 #endif
 }
 
+// (CHOCO KEEN) UNUSED FUNCTION
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_CheckSB() - Checks to see if a SoundBlaster resides at a
@@ -596,9 +597,6 @@ SDL_SBPlaySample(SampledSound id0_far *sample)
 static id0_boolean_t
 SDL_CheckSB(id0_int_t port)
 {
-	// CHOCO KEEN - DISABLED
-	return(false);
-#if 0
 	id0_int_t	i;
 
 	sbLocation = port << 4;		// Initialize stuff for later use
@@ -622,8 +620,8 @@ SDL_CheckSB(id0_int_t port)
 	}
 	sbLocation = -1;						// Retry count exceeded - fail
 	return(false);
-#endif
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -859,6 +857,8 @@ SDL_ShutSS(void)
 #endif
 }
 
+// (CHOCO KEEN) UNUSED FUNCTION
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_CheckSS() - Checks to see if a Sound Source is present at the
@@ -868,9 +868,6 @@ SDL_ShutSS(void)
 static id0_boolean_t
 SDL_CheckSS(void)
 {
-	// CHOCO KEEN - DISABLED
-	return(false);
-#if 0
 	id0_boolean_t		present = false;
 	id0_longword_t	lasttime;
 
@@ -917,8 +914,8 @@ asm	jz		checkdone		// Nope, still not - Sound Source not here
 checkdone:
 	SDL_ShutSS();
 	return(present);
-#endif
 }
+#endif
 
 static id0_boolean_t
 SDL_DetectSoundSource(void)
@@ -1100,6 +1097,8 @@ SDL_ALSoundService(void)
 	}
 }
 
+// (CHOCO KEEN) UNUSED FUNCTION
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SelectMeasure() - sets up sequencing variables for a given track
@@ -1111,6 +1110,7 @@ SDL_SelectMeasure(ActiveTrack *track)
 	track->seq = track->moods[track->mood];
 	track->nextevent = 0;
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //

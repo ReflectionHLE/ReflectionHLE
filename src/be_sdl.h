@@ -76,6 +76,20 @@ void BE_SDL_ShutdownGfx(void);
 void BE_SDL_SetScreenStartAddress(id0_unsigned_t crtc);
 id0_byte_t *BE_SDL_GetTextModeMemoryPtr(void);
 id0_byte_t *BE_SDL_GetCGAMemoryPtr(void);
+// EGA graphics manipulations
+void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette);
+void BE_SDL_EGASetLineWidth(id0_byte_t widthInBytes);
+void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask);
+void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t mask);
+void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff);
+void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num);
+uint8_t BE_SDL_EGAFetchGFXByte(uint16_t destOff, uint16_t planenum);
+void BE_SDL_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planenum);
+void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint16_t mask);
+void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint16_t mask);
+void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask);
+
+//
 void BE_SDL_SetBorderColor(id0_byte_t color);
 void BE_SDL_SetScreenMode(int mode);
 void BE_SDL_WaitVBL(id0_int_t number);

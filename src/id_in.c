@@ -506,6 +506,8 @@ INL_StartJoy(id0_word_t joy)
 	}
 }
 
+// (CHOCO KEEN) UNUSED FUNCTION
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	INL_ShutJoy() - Cleans up the joystick stuff
@@ -516,6 +518,7 @@ INL_ShutJoy(id0_word_t joy)
 {
 	JoysPresent[joy] = false;
 }
+#endif
 
 //	Public routines
 

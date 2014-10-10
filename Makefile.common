@@ -86,7 +86,7 @@ else
 	INTCXXFLAGS+= -O2
 endif
 
-INTCXXFLAGS+= `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable
+INTCXXFLAGS+= `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable -Wno-missing-braces -Wno-switch
 #We need -lm for dbopl
 INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
 
