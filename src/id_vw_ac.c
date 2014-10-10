@@ -487,7 +487,7 @@ void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_f
 	bufferbyte = 0;
 	if (optsend)
 	{
-		do
+		while (string != optsend) // Check if e.g., *string=='\n'
 		{
 			id0_byte_t currChAsUnsigned = *(string++);
 			if (!currChAsUnsigned)
@@ -495,11 +495,11 @@ void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_f
 				break;
 			}
 			ShiftPropChar(currChAsUnsigned);
-		} while (string != optsend);
+		};
 	}
 	else
 	{
-		do
+		do // We're going to check *string is non-NULL anyway
 		{
 			id0_byte_t currChAsUnsigned = *(string++);
 			if (!currChAsUnsigned)
