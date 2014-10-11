@@ -80,7 +80,7 @@ typedef	bool id0_boolean_t;
 typedef uint8_t id0_char_t; // Should be UNSIGNED for VWL_MeasureString (high scores table)
 typedef int8_t id0_signed_char_t;
 typedef uint8_t id0_unsigned_char_t;
-typedef int16_t id0_short_t; // "short" was used just once in kd_main.c, but...
+typedef int16_t id0_short_t; // Possibly used in kd_main.c and external decompression routines for Keen Dreams
 typedef int16_t id0_int_t;
 typedef uint16_t id0_unsigned_t;
 typedef uint16_t id0_unsigned_int_t; // Found in shareware release v1.13
@@ -90,8 +90,8 @@ typedef uint32_t id0_unsigned_long_t;
 typedef uint8_t id0_byte_t;
 typedef uint16_t id0_word_t;
 typedef uint32_t id0_longword_t;
-// TODO (CHOCO KEEN) Used just in SD_StartMusic, but there's no music
-// in the original game and it was commented that Ptr shouldn't be used...
+// TODO (CHOCO KEEN) Used just in SD_StartMusic, but there's no music in the
+// original game (Keen Dreams) and it was commented that Ptr shouldn't be used...
 typedef uint8_t * id0_ptr_t;
 
 typedef	struct

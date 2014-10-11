@@ -113,7 +113,7 @@ mmblocktype	id0_far mmblocks[MAXBLOCKS]
 // long paragraphs (each of them beginning with some emulated "segment")
 //
 // NOTE: Main mem (near+far) should consist of 335*1024 bytes
-// (Keen Dreams Shareware v1.13 with EGA garphics)
+// (for Keen Dreams with EGA graphics)
 static id0_byte_t mmEmulatedMemSpace[512*1024];
 // The very first "segment" in the emulated space
 #define EMULATED_FIRST_SEG 0

@@ -675,7 +675,7 @@ void id0_main (void)
 
 
 #if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_ALL) || ((defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
-	// CHOCO KEEN difference from vanilla Keen Dreams (Shareware v1.13):
+	// CHOCO KEEN difference from vanilla Keen Dreams (Shareware releases):
 	// Role of /DETOUR has been flipped. No need to pass it (or use START),
 	// but if /DETOUR is added then you get this message.
 	if (LaunchedFromShell)

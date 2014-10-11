@@ -6,20 +6,21 @@ This is a port of Keen Dreams, which aims to reproduce behaviors of original
 executables for DOS, including bugs, at least if it's not too difficult
 (e.g., anything that highly depends on the memory layout).
 
-Note that there may still be some differences from vanilla Keen. As of this
-version, you don't need to execute a separate "START" file in order to play
-the shareware release (v1.13). But you can emulate the behaviors of skipping
-this in the original release, i.e., get a message telling you should
-type START, by adding the /detour command line argument, e.g.,
-typing "chocolate-kdreams-shar.exe /detour" in a command prompt on Windows.
+Note that there may still be some differences from vanilla Keen. As of
+this version, you don't need to execute a separate "START" file in order
+to play from a shareware release. But you can emulate the behaviors of
+skipping this in the original release, i.e., get a message telling you
+should type START, by adding the /detour command line argument, e.g.,
+typing "chocolate-kdreams-shar113.exe /detour" in a command prompt on Windows.
 This is, by the way, the exact opposite of the behaviors of the original.
 
-This port consists of two executables, each of them being compatible with
-a different version of Keen Dreams. The original releases supported
-by the port are CGA v1.05 and Shareware (EGA) v1.13.
+This port consists of four executables, each of them being compatible with
+a different version of Keen Dreams. The original releases supported by the
+port, using source codes for them, are Shareware (EGA) v1.13, CGA v1.05,
+Registered (EGA) v1.93 and Shareware (EGA) v1.20.
 
 Note that this port does not come with a copy of the game, which is required.
-As of today (October 9 2014) you can download the Shareware release, v1.13,
+As of today (October 11 2014) you can download the Shareware release, v1.13,
 from one of a few places online, at the least. A couple of links for reference:
 
 http://cd.textfiles.com/megagames2/GAMES/APOGEE/KEENDR13.ZIP
@@ -110,16 +111,24 @@ but there can still be some new non-vanilla bugs.
 Making this run
 ---------------
 
-This requires either Keen Dreams CGA v1.05, or Shareware v1.13. On Windows,
-for the Shareware release you should simply drop the files SDL2.dll and
-chocolate-kdreams-shar.exe along with the files coming with this Shareware
-release (v1.13), and then launch chocolate-kdreams-shar.exe.
+This requires one of the following releases: Keen Dreams Shareware v1.13,
+CGA v1.05, Registered v1.93, Shareware v1.20.
+
+For the Shareware release, v1.13, you should simply drop the files SDL2.dll and
+chocolate-kdreams-shar113.exe along with the files coming with this Shareware
+release (v1.13), and then launch chocolate-kdreams-shar113.exe.
 
 You should be able to find a copy of the Shareware release online.
-Check download links at the top of this file for reference.
+Check download links at the top of this README file for reference.
 
-Similarly, chocolate-kdreams-cga.exe should be used if playability of
+Similarly, chocolate-kdreams-cga105.exe should be used if playability of
 the CGA release (v1.05) is desired.
+
+Other versions should be supported in a similar manner. Note that v1.20
+hasn't been widely available so far, although it is briefly mentioned in
+the Apogee FAQ. Furthermore, based on the source codes release the differences
+between v1.13, v1.93 and v1.20 are quite small, and the two releases of v1.20
+and v1.93 share the same static game data (e.g., common EGA and map headers).
 
 ------------------------------------------------
 How to do *this and that* or: Configuration file
@@ -180,16 +189,31 @@ Building Chocolate Keen Dreams from the sources
 - Development files for SDL 2.0 are required, as well as GNU make and the
 GNU Compiler Collection's C compiler (i.e. gcc). In practice, at the moment
 only "make" and "gcc" are probably required. If nothing goes wrong, a
-single "make" command should build two executables: CGA and Shareware.
+single "make" command should build four executables, one for each original
+supported version of Keen Dreams for DOS.
 "make clean" removes any generated object or executable file, assuming
 the *exact* same arguments have been passed to "make" as before,
-with the exception of "clean".
+with the exception of the "clean" argument.
+- It is possible to build just one executable by going through a
+specific Makefile, e.g., "make -f Makefile.cga".
 - MinGW can be used as well (tested on Linux). If you try to cross-compile
 then you may wish to set PLATFORM=WINDOWS and BINPREFIX accordingly.
 
 ---------
 Changelog
 ---------
+
+Oct 11, 2014 (v0.8.10):
+- Fixed finale text printing (more generally, modified some functions
+to better handle original code leading to undefined behaviors per the
+C standard, or at least to crashes).
+- Fixed King Boobus Tuber explosion.
+- Added compatibility with the registered release, v1.93, and the Shareware
+release, v1.20. Taking a look at the source codes release, they are both
+almost identical to v1.13.
+- Overscan borders are drawn now, even if permanently colored black (MM_SortMem
+flashes the borders, but chances are the function is never called in practice).
+- More miscellaneous fixes.
 
 Oct 9, 2014 (v0.8.8):
 - EGA graphics emulation has been added, and Chocolate Keen Dreams should be
