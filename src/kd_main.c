@@ -33,7 +33,7 @@
 #include "kd_def.h"
 #pragma hdrstop
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 #define CATALOG
 #endif
 
@@ -381,20 +381,19 @@ void Quit (id0_char_t *error)
 	BE_SDL_clrscr();
 	BE_Cross_puts(error);
 	BE_Cross_puts("\n");
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 //      BE_Cross_puts("For techinical assistance with running this software, type HELP at");
 //      BE_Cross_puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
 #elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
 	BE_Cross_puts("For techinical assistance with running this software, type HELP at");
 	BE_Cross_puts("    the DOS prompt or call Gamer's Edge at 1-318-221-8311");
 #endif
+	// No additional lines for later versions (registered v1.93, shareware v1.20)
 	BE_SDL_HandleExit(1);
   }
 
 // TODO (CHOCO KEEN) Maybe we can define CATALOG based on version?
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
-
-#ifndef CATALOG
+#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_113) || ((defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
 	id0_argc = 2;
 	id0_argv[1] = "LAST.SHL";
 	id0_argv[2] = "ENDSCN.SCN";
@@ -404,19 +403,15 @@ void Quit (id0_char_t *error)
 	//	Quit("Couldn't find executable LOADSCN.EXE.\n");
 	loadscn2_main(id0_argc+1, id0_argv);
 #endif
-#ifdef CATALOG
-  VW_SetScreenMode(TEXTGR);
-  BE_SDL_HandleExit(0);
+
+#if (defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) && (defined CATALOG)
+	VW_SetScreenMode(TEXTGR);
+	BE_SDL_HandleExit(0);
 #endif
 
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
-	id0_argc = 2;
-	id0_argv[1] = "LAST.SHL";
-	id0_argv[2] = "ENDSCN.SCN";
-	id0_argv[3] = NULL;
-	//if (execv("LOADSCN.EXE", _argv) == -1)
-	//	Quit("Couldn't find executable LOADSCN.EXE.\n");
-	loadscn2_main(id0_argc+1, id0_argv);
+// For all other versions (registered v1.93, shareware v1.20), just exit
+#if (!defined CHOCO_KEEN_VER_KDREAMS_SHAR_113) && (!defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL)
+	BE_SDL_HandleExit(0);
 #endif
 
 }
@@ -453,10 +448,12 @@ void InitGame (void)
 	{
 #pragma warn    -pro
 #pragma warn    -nod
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 		BE_SDL_textcolor(7);
 #endif
+#if (defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) || (defined CHOCO_KEEN_VER_KDREAMS_SHAR_113)
 		BE_SDL_textbackground(0);
+#endif
 #pragma warn    +nod
 #pragma warn    +pro
 		BE_SDL_clrscr();                       // we can't include CONIO because of a name conflict
@@ -485,7 +482,7 @@ void InitGame (void)
 	SD_Startup ();
 	US_Startup ();
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	US_UpdateTextScreen();
 #endif
 
@@ -505,9 +502,9 @@ void InitGame (void)
 	for (i=KEEN_LUMP_START;i<=KEEN_LUMP_END;i++)
 		CA_MarkGrChunk(i);
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	CA_CacheMarks (NULL);
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	CA_CacheMarks (NULL, 0);
 #endif
 
@@ -548,10 +545,14 @@ char **id0_argv;
 // The original start point of the game
 void id0_main (void)
 {
+#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_ALL) || (defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL)
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
+#endif
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+
+
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	BE_SDL_textcolor(7);
 	BE_SDL_textbackground(0);
 
@@ -583,6 +584,9 @@ void id0_main (void)
 	}
 #endif // VERSION
 
+
+
+#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_113) || (defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL)
 	for (i = 1;i < id0_argc;i++)
 	{
 		switch (US_CheckParm(id0_argv[i],EntryParmStrings))
@@ -592,7 +596,85 @@ void id0_main (void)
 			break;
 		}
 	}
-#if (!defined CATALOG) || (!defined CHOCO_KEEN_VER_KDREAMS_CGA_105)
+#endif
+
+
+
+#if (defined CHOCO_KEEN_VER_KDREAMS_REG_193)
+	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
+	{
+		BE_Cross_Simplified_printf("\nKeen Dreams version 1.93 (Rev 1)\n");
+		BE_Cross_Simplified_printf("developed for use with 100%% IBM compatibles\n");
+		BE_Cross_Simplified_printf("that have 640K memory, DOS version 3.3 or later,\n");
+		BE_Cross_Simplified_printf("and an EGA or VGA display adapter.\n");
+		BE_Cross_Simplified_printf("Copyright 1991-1993 Softdisk Publishing.\n");
+		BE_Cross_Simplified_printf("Commander Keen is a trademark of Id Software.\n");
+		BE_SDL_HandleExit(0);
+	}
+
+	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
+	{
+		BE_Cross_Simplified_printf("\nKeen Dreams version 1.93\n");
+		BE_Cross_Simplified_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+		BE_Cross_Simplified_printf("Type KDREAMS from the DOS prompt to run.\n\n");
+		BE_Cross_Simplified_printf("KDREAMS /COMP for SVGA compatibility mode\n");
+		BE_Cross_Simplified_printf("KDREAMS /NODR stops program hang with the drive still on\n");
+		BE_Cross_Simplified_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
+		BE_Cross_Simplified_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
+		BE_Cross_Simplified_printf("KDREAMS /NOJOYS ignores joystick\n");
+		BE_Cross_Simplified_printf("KDREAMS /NOMOUSE ignores mouse\n");
+		BE_Cross_Simplified_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
+		BE_Cross_Simplified_printf("KDREAMS /VER  for version and compatibility information\n");
+		BE_Cross_Simplified_printf("KDREAMS /? for this help information\n");
+		BE_SDL_HandleExit(0);
+	}
+#endif // VERSION
+
+
+
+#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_120)
+	for (i = 1;i < id0_argc;i++)
+	{
+		switch (US_CheckParm(id0_argv[i],EntryParmStrings))
+		{
+		case 0:
+			LaunchedFromShell = true;
+			break;
+		}
+		if (BE_Cross_strcasecmp(id0_argv[i], "/VER") == 0)
+		{
+			BE_Cross_Simplified_printf("\nKeen Dreams Shareware Version 1.20  (Rev 1)\n");
+			BE_Cross_Simplified_printf("developed for use with 100%% IBM compatibles\n");
+			BE_Cross_Simplified_printf("that have 640K memory, DOS version 3.3 or later,\n");
+			BE_Cross_Simplified_printf("and an EGA or VGA display adapter.\n");
+			BE_Cross_Simplified_printf("Copyright 1991-1993 Softdisk Publishing.\n");
+			BE_Cross_Simplified_printf("Commander Keen is a trademark of Id Software.\n");
+			BE_SDL_HandleExit(0);
+		}
+
+		if (BE_Cross_strcasecmp(id0_argv[i], "/?") == 0)
+		{
+			BE_Cross_Simplified_printf("\nKeen Dreams Shareware Version 1.20\n");
+			BE_Cross_Simplified_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+			BE_Cross_Simplified_printf("Commander Keen is a trademark of Id Software.\n");
+			BE_Cross_Simplified_printf("Type KDREAMS from the DOS prompt to run.\n\n");
+			BE_Cross_Simplified_printf("KDREAMS /COMP for SVGA compatibility mode\n");
+			BE_Cross_Simplified_printf("KDREAMS /NODR stops program hang with the drive still on\n");
+			BE_Cross_Simplified_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
+			BE_Cross_Simplified_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
+			BE_Cross_Simplified_printf("KDREAMS /NOJOYS ignores joystick\n");
+			BE_Cross_Simplified_printf("KDREAMS /NOMOUSE ignores mouse\n");
+			BE_Cross_Simplified_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
+			BE_Cross_Simplified_printf("KDREAMS /VER  for version and compatibility information\n");
+			BE_Cross_Simplified_printf("KDREAMS /? for this help information\n");
+			BE_SDL_HandleExit(0);
+		}
+	}
+#endif // VERSION
+
+
+
+#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_ALL) || ((defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
 	// CHOCO KEEN difference from vanilla Keen Dreams (Shareware v1.13):
 	// Role of /DETOUR has been flipped. No need to pass it (or use START),
 	// but if /DETOUR is added then you get this message.
@@ -604,6 +686,15 @@ void id0_main (void)
 		BE_SDL_HandleExit(0);
 	}
 #endif
+
+
+
+#if (defined CHOCO_KEEN_VER_KDREAMS_REG_193) || (defined CHOCO_KEEN_VER_KDREAMS_SHAR_120)
+	BE_SDL_textcolor(7);
+	BE_SDL_textbackground(0);
+#endif
+
+
 
 	InitGame();
 

@@ -47,9 +47,9 @@
 #define	EGAGR	2
 #define	VGAGR	3
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 #define GRMODE	CGAGR
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 #define GRMODE	EGAGR	
 #else
 #error "Compatible version of Keen to support isn't defined, this shouldn't happen!"

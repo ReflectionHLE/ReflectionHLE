@@ -20,14 +20,14 @@
 
 #include "id_heads.h"
 //#include <BIOS.H>
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 #include "soft.h"
 #include "sl_file.h"
 #endif
 
 #define FRILLS	0			// Cut out frills for 360K - MIKE MAYNARD
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 #define CREDITS 0
 #endif
 
@@ -151,7 +151,7 @@ typedef struct	objstruct
 } objtype;
 
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 struct BitMapHeader {
 	id0_unsigned_int_t	w,h,x,y;
 	id0_unsigned_char_t	d,trans,comp,pad;
@@ -185,9 +185,9 @@ typedef struct {
 // (CHOCO KEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
 // objstruct may store a 16-bit pointer with another object.
 // For Keen Dreams CGA v1.05 it should be replicated with the following macros.
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 #define COMPAT_OBJ_CONVERSION_OFFSET 0x7470
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 #define COMPAT_OBJ_CONVERSION_OFFSET 0x712A
 #endif
 
@@ -380,7 +380,7 @@ extern	statetype s_deathwait3;
 extern	statetype s_deathboom1;
 extern	statetype s_deathboom2;
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 
 /////////////////////////////////////////////////////////////////////////////
 //

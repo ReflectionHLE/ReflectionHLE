@@ -18,7 +18,7 @@
 
 // KD_DEMO.C
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 //#include <dir.h>
 #endif
 #include "kd_def.h"
@@ -603,7 +603,7 @@ ShowText(id0_int_t offset,WindowRec *wr,id0_char_t *s)
 =====================
 */
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 void
 DemoLoop (void)
 {
@@ -721,7 +721,7 @@ DemoLoop (void)
 		GameLoop();
 	}
 }
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 void
 DemoLoop (void)
 {

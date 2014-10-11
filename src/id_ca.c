@@ -487,11 +487,11 @@ void CAL_SetupGrFile (void)
 // load ???dict.ext (huffman dictionary for graphics files)
 //
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	if ((handle = open(GREXT"DICT."EXTENSION,
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	if ((handle = open("KDREAMS.EGA",
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open KDREAMS.EGA!");
@@ -520,11 +520,11 @@ void CAL_SetupGrFile (void)
 //
 // Open the graphics file, leaving it open until the game is finished
 //
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
 	if (grhandle == -1)
 		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	grhandle = open("KDREAMS.EGA", O_RDONLY | O_BINARY);
  	if (grhandle == -1)
 		Quit ("Cannot open KDREAMS.EGA!");
@@ -586,11 +586,11 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef MAPHEADERLINKED
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	if ((handle = open("MAPHEAD."EXTENSION,
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	if ((handle = open("KDREAMS.MAP",
  		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open KDREAMS.MAP!");
@@ -612,11 +612,11 @@ void CAL_SetupMapFile (void)
 // open the data file
 //
 #ifdef MAPHEADERLINKED
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	if ((maphandle = open("GAMEMAPS."EXTENSION,
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open GAMEMAPS."EXTENSION"!");
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	if ((maphandle = open("KDREAMS.MAP",
  		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open KDREAMS.MAP!");
@@ -670,11 +670,11 @@ void CAL_SetupAudioFile (void)
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOT."EXTENSION"!");
 #else
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	if ((audiohandle = open("AUDIO."EXTENSION,
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIO."EXTENSION"!");
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	if ((audiohandle = open("KDREAMS.AUD",
  		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open KDREAMS.AUD!");
@@ -1410,9 +1410,9 @@ void CA_DownLevel (void)
 		Quit ("CA_DownLevel: Down past level 0!");
 	ca_levelbit>>=1;
 	ca_levelnum--;
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	CA_CacheMarks(titleptr[ca_levelnum]);
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	CA_CacheMarks(titleptr[ca_levelnum], 1);
 #endif
 }
@@ -1473,9 +1473,9 @@ void CA_ClearAllMarks (void)
 #define BARSTEP	8
 #define MAXEMPTYREAD	1024
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 void CA_CacheMarks (id0_char_t *title)
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 void CA_CacheMarks (id0_char_t *title, id0_boolean_t cachedownlevel)
 #endif
 {
@@ -1493,7 +1493,7 @@ void CA_CacheMarks (id0_char_t *title, id0_boolean_t cachedownlevel)
 	titleptr[ca_levelnum] = title;
 
 	dialog = (title!=NULL);
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 
 	if (cachedownlevel)
 		dialog = false;

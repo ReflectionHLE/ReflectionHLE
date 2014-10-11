@@ -74,7 +74,7 @@ ControlInfo	c;
 
 objtype dummyobj;
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
@@ -97,7 +97,7 @@ id0_char_t		*levelnames[21] =
 "",
 "Title Page"
 };
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
@@ -680,7 +680,7 @@ void FadeAndUnhook (void)
 {
 	if (++fadecount==2)
 	{
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 		RF_ForceRefresh();
 #endif
 		VW_FadeIn ();
@@ -742,9 +742,9 @@ void 	SetupGameLevel (id0_boolean_t loadnow)
 			US_PrintCentered ("Boobus Bombs Near!");
 			VW_UpdateScreen ();
 		}
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 		CA_CacheMarks (levelnames[mapon]);
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 		CA_CacheMarks (levelnames[mapon], 0);
 #endif
 	}

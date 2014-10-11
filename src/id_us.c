@@ -280,9 +280,9 @@ USL_ReadConfig(void)
 	SMMode		sm;
 	ControlType	ctl;
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	if ((file = open("KDREAMS.CFG",O_BINARY | O_RDONLY)) != -1)
 #endif
 	{
@@ -338,9 +338,9 @@ USL_WriteConfig(void)
 {
 	int	file;
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	file = open("KDREAMS.CFG", O_CREAT | O_BINARY | O_WRONLY,
 #endif
 				/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
@@ -632,7 +632,7 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 	USL_ScreenDraw(x,y,buf,0x48);
 }
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105 // Commented out in Shareware v1.13
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL // Commented out in Shareware v1.13
 ///////////////////////////////////////////////////////////////////////////
 //
 //	US_UpdateTextScreen() - Called after the ID libraries are started up.
@@ -647,7 +647,7 @@ US_UpdateTextScreen(void)
 	id0_word_t		i;
 	id0_longword_t	totalmem;
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_105 // ...It is commented out in CGA v1.05
+#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL // ...It is commented out in CGA v1.05
 	// Show video card info
 	b = (grmode == CGAGR);
 	USL_Show(21,7,4,(videocard >= CGAcard) && (videocard <= VGAcard),b);
@@ -2723,12 +2723,12 @@ USL_CtlHButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		}
 
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 		MM_GetPtr(&dupe,5000);
 		memcpy(dupe, buf, 5000);
 
 		USL_DoHelp(dupe,5000);
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 		MM_GetPtr(&dupe,5600);
 		memcpy(dupe,buf,5600);
  
@@ -3471,7 +3471,7 @@ USL_TearDownCtlPanel(void)
 
 		if (!QuitToDos)
 		{
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 			US_CenterWindow(20,8);
 			US_CPrint("Loading");
 #endif
@@ -3480,7 +3480,7 @@ USL_TearDownCtlPanel(void)
 			US_CPrint("Sounds");
 			fontcolor = F_BLACK;
 #endif
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 			VW_UpdateScreen();
 #endif
 
@@ -3525,9 +3525,9 @@ US_ControlPanel(void)
 		CA_MarkGrChunk(i);
 	CA_MarkGrChunk(CTL_LITTLEMASKPICM);
 	CA_MarkGrChunk(CTL_LSMASKPICM);
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_105
+#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
 	CA_CacheMarks("Options Screen");
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	CA_CacheMarks("Options Screen", 0);
 #endif
 

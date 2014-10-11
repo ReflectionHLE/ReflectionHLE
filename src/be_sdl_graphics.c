@@ -544,7 +544,7 @@ void BE_SDL_ToggleTextCursor(bool isEnabled)
 	g_sdlTxtCursorEnabled = isEnabled;
 }
 
-void BE_SDL_Simplified_printf(const char *str)
+static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall)
 {
 	// TODO (CHOCO KEEN): Tabs?
 	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
@@ -558,6 +558,10 @@ void BE_SDL_Simplified_printf(const char *str)
 		}
 		else
 		{
+			if ((*str == '%') && isprintfcall)
+			{
+				++str; // This is still a SIMPLIFIED printf...
+			}
 			*(currMemByte++) = *str;
 			*(currMemByte++) = g_sdlTxtColor | (g_sdlTxtBackground << 4);
 			if (g_sdlTxtCursorPosX == TXT_COLS_NUM - 1)
@@ -588,10 +592,15 @@ void BE_SDL_Simplified_printf(const char *str)
 	}
 }
 
+void BE_SDL_Simplified_printf(const char *str)
+{
+	BEL_SDL_Simplified_putsorprintf(str, true);
+}
+
 void BE_SDL_puts(const char *str)
 {
-	BE_SDL_Simplified_printf(str);
-	BE_SDL_Simplified_printf("\n");
+	BEL_SDL_Simplified_putsorprintf(str, false);
+	BEL_SDL_Simplified_putsorprintf("\n", false);
 }
 
 void BE_SDL_UpdateHostDisplay(void);
