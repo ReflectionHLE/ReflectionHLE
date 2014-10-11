@@ -240,10 +240,13 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 //
 //==============
 
+// (CHOCO KEEN) Unused function
+#if 0
 void VW_SetScreen (id0_unsigned_t crtc, id0_unsigned_t pelpan)
 {
 	BE_SDL_SetScreenStartAddress(crtc);
 }
+#endif
 
 #if NUMFONT+NUMFONTM
 

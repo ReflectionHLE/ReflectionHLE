@@ -23,7 +23,7 @@
 /*static*/ SDL_Window *g_sdlWindow;
 static SDL_Renderer *g_sdlRenderer;
 static SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
-static SDL_Rect g_sdlAspectCorrectionRect;
+static SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
 static bool g_sdlDoRefreshGfxOutput;
 static bool g_sdlDoPendingRefreshGfxOutput;
@@ -49,8 +49,18 @@ void BE_SDL_MarkGfxForPendingUpdate(void)
 #define GFX_TEX_HEIGHT 200
 #define VGA_TXT_TEX_WIDTH 720
 #define VGA_TXT_TEX_HEIGHT 400
-#define EGACGA_TXT_TEX_WIDTH 640
-#define EGACGA_TXT_TEX_HEIGHT 200
+//#define EGACGA_TXT_TEX_WIDTH 640
+//#define EGACGA_TXT_TEX_HEIGHT 200
+
+// Overscan border dimensions (for each side of the screen)
+#define ENGINE_VGA_GFX_OVERSCAN_LEFT_AFTER_DOUBLING 16 // Doubling from 8 for us
+#define ENGINE_VGA_GFX_OVERSCAN_RIGHT_AFTER_DOUBLING 16 // Doubling from 8 for us
+#define ENGINE_VGA_GFX_OVERSCAN_TOP_AFTER_DOUBLING 7    // 200-line doubling
+#define ENGINE_VGA_GFX_OVERSCAN_BOTTOM_AFTER_DOUBLING 7 // 200-line doubling
+#define ENGINE_VGA_TXT_OVERSCAN_LEFT 9
+#define ENGINE_VGA_TXT_OVERSCAN_RIGHT 9
+#define ENGINE_VGA_TXT_OVERSCAN_TOP 7
+#define ENGINE_VGA_TXT_OVERSCAN_BOTTOM 7
 
 #define TXT_COLS_NUM 80
 #define TXT_ROWS_NUM 25
@@ -70,17 +80,16 @@ static union {
 	uint8_t text[TXT_COLS_NUM*TXT_ROWS_NUM*2];
 } g_sdlVidMem, g_sdlVidMemCache;
 
-static uint16_t g_sdlScreenStartAddress = 0;
+static uint16_t g_sdlScreenStartAddress = 0, g_sdlScreenStartAddressCache;
 static int g_sdlScreenMode = 3;
 static int g_sdlTexWidth, g_sdlTexHeight;
-static uint8_t g_sdlBorderColor = 0;
-static uint8_t g_sdlPelPanning = 0;
-static uint8_t g_sdlLineWidth = 40;
+static uint8_t g_sdlPelPanning = 0, g_sdlPelPanningCache;
+static uint8_t g_sdlLineWidth = 40, g_sdlLineWidthCache;
 static int g_sdlTxtCursorPosX, g_sdlTxtCursorPosY;
 static bool g_sdlTxtCursorEnabled = true;
 static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 
-void BE_SDL_SetAspectCorrectionRect(void);
+void BE_SDL_SetGfxOutputRects(void);
 
 void BE_SDL_InitGfx(void)
 {
@@ -121,13 +130,16 @@ void BE_SDL_InitGfx(void)
 			{
 				SDL_DisplayMode mode;
 				SDL_GetDesktopDisplayMode(g_chocolateKeenCfg.displayNum, &mode);
-				if (3*mode.w < 4*mode.h) // Thinner than 4:3
+				// In the 200-lines modes on the VGA, where line doubling is in effect,
+				// and after adding the overscan borders, the aspect ratio for the whole output
+				// (after aspect correction i.e., multiplying height by 1.2) is 280:207.
+				if (207*mode.w < 280*mode.h) // Thinner than 280:207
 				{
-					mode.h = mode.w*3/4;
+					mode.h = mode.w*207/280;
 				}
-				else  // As wide as 4:3 at the least
+				else  // As wide as 280:207 at the least
 				{
-					mode.w = mode.h*4/3;
+					mode.w = mode.h*280/207;
 				}
 				// Just for the sake of it, using the golden ratio...
 				actualWinWidth = mode.w*500/809;
@@ -154,9 +166,7 @@ void BE_SDL_InitGfx(void)
 		//Destroy window?
 		exit(0);
 	}
-	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	BE_SDL_SetScreenMode(3); // Includes SDL_Texture handling
-	BE_SDL_SetAspectCorrectionRect();
+	BE_SDL_SetScreenMode(3); // Includes SDL_Texture handling and output rects preparation
 }
 
 void BE_SDL_ShutdownGfx(void)
@@ -210,35 +220,67 @@ static void BEL_SDL_RecreateTexture(void)
 	}
 }
 
-void BE_SDL_SetAspectCorrectionRect(void)
+void BE_SDL_SetGfxOutputRects(void)
 {
+	int srcWidth = g_sdlTexWidth;
+	int srcHeight = g_sdlTexHeight;
+	if (g_sdlScreenMode != 3)
+	{
+		// On the VGA, line doubling is in effect for graphical 200 lines modes
+		srcWidth *= 2;
+		srcHeight *= 2;
+	}
+	int srcBorderLeft, srcBorderRight, srcBorderTop, srcBorderBottom;
+	if (g_sdlScreenMode == 3)
+	{
+		srcBorderLeft = ENGINE_VGA_TXT_OVERSCAN_LEFT;
+		srcBorderRight = ENGINE_VGA_TXT_OVERSCAN_RIGHT;
+		srcBorderTop = ENGINE_VGA_TXT_OVERSCAN_TOP;
+		srcBorderBottom = ENGINE_VGA_TXT_OVERSCAN_BOTTOM;
+	}
+	else
+	{
+		srcBorderLeft = ENGINE_VGA_GFX_OVERSCAN_LEFT_AFTER_DOUBLING;
+		srcBorderRight = ENGINE_VGA_GFX_OVERSCAN_RIGHT_AFTER_DOUBLING;
+		srcBorderTop = ENGINE_VGA_GFX_OVERSCAN_TOP_AFTER_DOUBLING;
+		srcBorderBottom = ENGINE_VGA_GFX_OVERSCAN_BOTTOM_AFTER_DOUBLING;
+	}
+	int srcBorderedWidth = srcBorderLeft+srcWidth+srcBorderRight;
+	int srcBorderedHeight = srcBorderTop+srcHeight+srcBorderBottom;
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
 	if (g_chocolateKeenCfg.scaleType == SCALE_FILL)
 	{
-		g_sdlAspectCorrectionRect.w = winWidth;
-		g_sdlAspectCorrectionRect.h = winHeight;
-		g_sdlAspectCorrectionRect.x = 0;
-		g_sdlAspectCorrectionRect.y = 0;
+		g_sdlAspectCorrectionBorderedRect.w = winWidth;
+		g_sdlAspectCorrectionBorderedRect.h = winHeight;
+		g_sdlAspectCorrectionBorderedRect.x = 0;
+		g_sdlAspectCorrectionBorderedRect.y = 0;
 	}
 	else
 	{
-		// Aspect correct
-		if (3*winWidth < 4*winHeight) // Thinner than 4:3
+		// Aspect correct - Includes overscan borders, should multiply
+		// the height by 1.2 first (or the width by 5 and height 6)
+		int scaledSrcBorderedWidth = 5*srcBorderedWidth, scaledSrcBorderedHeight = 6*srcBorderedHeight;
+		if (scaledSrcBorderedHeight*winWidth < scaledSrcBorderedWidth*winHeight) // Thinner than scaledSrcBorderedWidth:scaledSrcBorderedHeight
 		{
-			g_sdlAspectCorrectionRect.w = winWidth;
-			g_sdlAspectCorrectionRect.h = winWidth*3/4;
-			g_sdlAspectCorrectionRect.x = 0;
-			g_sdlAspectCorrectionRect.y = (winHeight-g_sdlAspectCorrectionRect.h)/2;
+			g_sdlAspectCorrectionBorderedRect.w = winWidth;
+			g_sdlAspectCorrectionBorderedRect.h = winWidth*scaledSrcBorderedHeight/scaledSrcBorderedWidth;
+			g_sdlAspectCorrectionBorderedRect.x = 0;
+			g_sdlAspectCorrectionBorderedRect.y = (winHeight-g_sdlAspectCorrectionBorderedRect.h)/2;
 		}
-		else // As wide as 4:3 at the least
+		else // As wide as scaledSrcBorderedWidth:scaledSrcBorderedHeight at the least
 		{
-			g_sdlAspectCorrectionRect.w = winHeight*4/3;
-			g_sdlAspectCorrectionRect.h = winHeight;
-			g_sdlAspectCorrectionRect.x = (winWidth-g_sdlAspectCorrectionRect.w)/2;
-			g_sdlAspectCorrectionRect.y = 0;
+			g_sdlAspectCorrectionBorderedRect.w = winHeight*scaledSrcBorderedWidth/scaledSrcBorderedHeight;
+			g_sdlAspectCorrectionBorderedRect.h = winHeight;
+			g_sdlAspectCorrectionBorderedRect.x = (winWidth-g_sdlAspectCorrectionBorderedRect.w)/2;
+			g_sdlAspectCorrectionBorderedRect.y = 0;
 		}
 	}
+	// Finish with internal (non-bordered) rect
+	g_sdlAspectCorrectionRect.x = g_sdlAspectCorrectionBorderedRect.x + g_sdlAspectCorrectionBorderedRect.w*srcBorderLeft/srcBorderedWidth;
+	g_sdlAspectCorrectionRect.y = g_sdlAspectCorrectionBorderedRect.y + g_sdlAspectCorrectionBorderedRect.h*srcBorderTop/srcBorderedHeight;
+	g_sdlAspectCorrectionRect.w = g_sdlAspectCorrectionBorderedRect.w*srcWidth/srcBorderedWidth;
+	g_sdlAspectCorrectionRect.h = g_sdlAspectCorrectionBorderedRect.h*srcHeight/srcBorderedHeight;
 }
 
 void BE_SDL_SetScreenStartAddress(id0_unsigned_t crtc)
@@ -277,12 +319,25 @@ static const uint32_t g_sdlEGABGRAScreenColors[] = {
 	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
 };
 
-static uint32_t g_sdlEGACurrBGRAPalette[16];
+static uint32_t g_sdlEGACurrBGRAPaletteAndBorder[17], g_sdlEGACurrBGRAPaletteAndBorderCache[17];
+
+/* Gets a value represeting 6 EGA signals determining a color number and
+ * returns it in a "Blue Green Red Intensity" 4-bit format.
+ * Usually, the 6 signals represented by the given input mean:
+ * "Blue Green Red Secondary-Blue Secondary-Green Secondary-Red". However, for
+ * the historical reason of compatibility with CGA monitors, on the 200-lines
+ * modes used by Keen the Secondary-Green signal is treated as an Intensity
+ * one and the two other intensity signals are ignored.
+ */
+static int BEL_SDL_ConvertEGASignalToEGAEntry(int color)
+{
+	return (color & 7) | ((color & 16) >> 1);
+}
 
 
 void BE_SDL_SetBorderColor(id0_byte_t color)
 {
-	g_sdlBorderColor = color;
+	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_SDL_ConvertEGASignalToEGAEntry(color)];
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -290,9 +345,9 @@ void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette)
 {
 	for (int entry = 0; entry < 16; ++entry)
 	{
-		g_sdlEGACurrBGRAPalette[entry] =  g_sdlEGABGRAScreenColors[(palette[entry] & 7) | ((palette[entry] & 16) >> 1)];
+		g_sdlEGACurrBGRAPaletteAndBorder[entry] =  g_sdlEGABGRAScreenColors[BEL_SDL_ConvertEGASignalToEGAEntry(palette[entry])];
 	}
-	g_sdlBorderColor = (palette[16] & 7) | ((palette[16] & 16) >> 1);
+	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_SDL_ConvertEGASignalToEGAEntry(palette[16])];
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -491,25 +546,28 @@ void BE_SDL_SetScreenMode(int mode)
 		g_sdlTxtBackground = 0;
 		g_sdlTxtCursorPosX = g_sdlTxtCursorPosY = 0;
 		BE_SDL_clrscr();
+		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		g_sdlVidMemCache.text[0] = g_sdlVidMem.text[0]^0xFF; // Force refresh
 		break;
 	case 4:
 		g_sdlTexWidth = GFX_TEX_WIDTH;
 		g_sdlTexHeight = GFX_TEX_HEIGHT;
 		memset(g_sdlVidMem.cgaGfx,  0, sizeof(g_sdlVidMem.cgaGfx));
+		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		g_sdlVidMemCache.cgaGfx[0] = g_sdlVidMem.cgaGfx[0]^0xFF; // Force refresh
 		break;
 	case 0xD:
 		g_sdlTexWidth = GFX_TEX_WIDTH;
 		g_sdlTexHeight = GFX_TEX_HEIGHT;
-		memcpy(g_sdlEGACurrBGRAPalette, g_sdlEGABGRAScreenColors, sizeof(g_sdlEGABGRAScreenColors));
-		g_sdlBorderColor = 0;
+		memcpy(g_sdlEGACurrBGRAPaletteAndBorder, g_sdlEGABGRAScreenColors, sizeof(g_sdlEGABGRAScreenColors));
+		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		g_sdlPelPanning = 0;
 		g_sdlLineWidth = 40;
 		memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
 		g_sdlVidMemCache.egaGfx[0][0] = g_sdlVidMem.egaGfx[0][0]^0xFF; // Force refresh
 		break;
 	}
+	BE_SDL_SetGfxOutputRects();
 	BEL_SDL_RecreateTexture();
 }
 
@@ -743,14 +801,36 @@ void BE_SDL_UpdateHostDisplay(void)
 		}
 		// Maybe we still don't have to update screen (e.g., Keen Dreams control panel)
 		bool doUpdate = false;
-		for (int i = 0; i < sizeof(g_sdlVidMem.cgaGfx); ++i)
+		// This is never modified in the CGA code of Keen Dreams, even though there is a CGA implementation of VW_SetScreen modifying this
+#if 0
+		if (g_sdlScreenStartAddress != g_sdlScreenStartAddressCache)
 		{
-			if (g_sdlVidMem.cgaGfx[i] != g_sdlVidMemCache.cgaGfx[i])
+			g_sdlScreenStartAddressCache = g_sdlScreenStartAddress;
+			doUpdate = true;
+		}
+#endif
+		if (g_sdlEGACurrBGRAPaletteAndBorder[16] != g_sdlEGACurrBGRAPaletteAndBorderCache[16])
+		{
+			g_sdlEGACurrBGRAPaletteAndBorderCache[16] = g_sdlEGACurrBGRAPaletteAndBorder[16];
+			doUpdate = true;
+		}
+
+		if (doUpdate) // We already know we should refresh, so just copy
+		{
+			memcpy(g_sdlVidMemCache.cgaGfx, g_sdlVidMem.cgaGfx, sizeof(g_sdlVidMem.cgaGfx));
+		}
+		else // Otherwise we should still check
+		{
+			for (int i = 0; i < sizeof(g_sdlVidMem.cgaGfx); ++i)
 			{
-				g_sdlVidMemCache.cgaGfx[i] = g_sdlVidMem.cgaGfx[i];
-				doUpdate = true;
+				if (g_sdlVidMem.cgaGfx[i] != g_sdlVidMemCache.cgaGfx[i])
+				{
+					g_sdlVidMemCache.cgaGfx[i] = g_sdlVidMem.cgaGfx[i];
+					doUpdate = true;
+				}
 			}
 		}
+
 		if (!doUpdate)
 		{
 			return;
@@ -765,7 +845,9 @@ void BE_SDL_UpdateHostDisplay(void)
 		for (int i = 0; i < 2; ++i)
 		{
 			currPixPtr = (uint32_t *)pixels + i*GFX_TEX_WIDTH;
-			srcCGAPtr = &g_sdlVidMem.cgaGfx[g_sdlScreenStartAddress+i*0x2000];
+			// g_sdlScreenStartAddress is never modified in the CGA code of Keen Dreams, even though there is a CGA implementation of VW_SetScreen modifying this
+			srcCGAPtr = &g_sdlVidMem.cgaGfx[i*0x2000];
+			//srcCGAPtr = &g_sdlVidMem.cgaGfx[g_sdlScreenStartAddress+i*0x2000];
 			currBitLoc = 6; // Location of bits to check (two bits)
 			for (int line = 0; line < (GFX_TEX_HEIGHT/2); ++line)
 			{
@@ -796,21 +878,63 @@ void BE_SDL_UpdateHostDisplay(void)
 		{
 			return;
 		}
-		// TODO: Doesn't work that well with palette cycling...
+		// Caching of graphics seems to be a bit expensive here
+		// (more than the CGA case), so not doing that for now
 #if 0
 		// Maybe we still don't have to update screen (e.g., Keen Dreams control panel)
 		bool doUpdate = false;
-		for (int planeNum = 0; planeNum < 4; ++planeNum)
+		if (g_sdlScreenStartAddress != g_sdlScreenStartAddressCache)
 		{
-			for (int i = 0; i < sizeof(g_sdlVidMem.egaGfx[planeNum]); ++i)
+			g_sdlScreenStartAddressCache = g_sdlScreenStartAddress;
+			doUpdate = true;
+		}
+		if (g_sdlPelPanning != g_sdlPelPanningCache)
+		{
+			g_sdlPelPanningCache = g_sdlPelPanning;
+			doUpdate = true;
+		}
+		if (g_sdlLineWidth != g_sdlLineWidthCache)
+		{
+			g_sdlLineWidthCache = g_sdlLineWidth;
+			doUpdate = true;
+		}
+
+		if (doUpdate) // We already know we should refresh, so just copy
+		{
+			memcpy(g_sdlEGACurrBGRAPaletteAndBorderCache, g_sdlEGACurrBGRAPaletteAndBorder, sizeof(g_sdlEGACurrBGRAPaletteAndBorder));
+		}
+		else // Otherwise we should still check
+		{
+			for (int paletteAndBorderEntry = 0; paletteAndBorderEntry < 17; ++paletteAndBorderEntry)
 			{
-				if (g_sdlVidMem.egaGfx[planeNum][i] != g_sdlVidMemCache.egaGfx[planeNum][i])
+				if (g_sdlEGACurrBGRAPaletteAndBorder[paletteAndBorderEntry] != g_sdlEGACurrBGRAPaletteAndBorderCache[paletteAndBorderEntry])
 				{
-					g_sdlVidMemCache.egaGfx[planeNum][i] = g_sdlVidMem.egaGfx[planeNum][i];
+					g_sdlEGACurrBGRAPaletteAndBorderCache[paletteAndBorderEntry] = g_sdlEGACurrBGRAPaletteAndBorder[paletteAndBorderEntry];
 					doUpdate = true;
 				}
 			}
 		}
+
+		if (doUpdate) // We already know we should refresh, so just copy
+		{
+			memcpy(g_sdlVidMemCache.egaGfx, g_sdlVidMem.egaGfx, sizeof(g_sdlVidMem.egaGfx));
+		}
+		else // Otherwise we should still check
+		{
+
+			for (int planeNum = 0; planeNum < 4; ++planeNum)
+			{
+				for (int i = 0; i < sizeof(g_sdlVidMem.egaGfx[planeNum]); ++i)
+				{
+					if (g_sdlVidMem.egaGfx[planeNum][i] != g_sdlVidMemCache.egaGfx[planeNum][i])
+					{
+						g_sdlVidMemCache.egaGfx[planeNum][i] = g_sdlVidMem.egaGfx[planeNum][i];
+						doUpdate = true;
+					}
+				}
+			}
+		}
+
 		if (!doUpdate)
 		{
 			return;
@@ -819,10 +943,6 @@ void BE_SDL_UpdateHostDisplay(void)
 		void *pixels;
 		int pitch;
 		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-		// TODO DEBUG
-		//g_sdlPelPanning = 0;
-		//g_sdlLineWidth = 64;
-		//
 		uint16_t currLineFirstByte = (g_sdlScreenStartAddress + g_sdlPelPanning/8) % 0x10000;
 		uint8_t panningWithinInByte = g_sdlPelPanning%8;
 		for (int line = 0, col; line < GFX_TEX_HEIGHT; ++line)
@@ -832,7 +952,7 @@ void BE_SDL_UpdateHostDisplay(void)
 			uint32_t *currPixPtr = (uint32_t *)pixels + line*GFX_TEX_WIDTH;
 			for (col = 0; col < GFX_TEX_WIDTH; ++col, ++currPixPtr)
 			{
-				*currPixPtr = g_sdlEGACurrBGRAPalette[
+				*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[
 					((g_sdlVidMem.egaGfx[0][currByte]&currBitMask)>>currBitNum) |
 					(((g_sdlVidMem.egaGfx[1][currByte]&currBitMask)>>currBitNum)<<1) |
 					(((g_sdlVidMem.egaGfx[2][currByte]&currBitMask)>>currBitNum)<<2) |
@@ -860,7 +980,7 @@ void BE_SDL_UpdateHostDisplay(void)
 			// Just if this makes sense... (FIXME: Check!)
 			for (; col < GFX_TEX_WIDTH; ++col, ++currPixPtr)
 			{
-				*currPixPtr = g_sdlEGACurrBGRAPalette[0];
+				*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[0];
 			}
 			currLineFirstByte += g_sdlLineWidth;
 			currLineFirstByte %= 0x10000;
@@ -868,7 +988,10 @@ void BE_SDL_UpdateHostDisplay(void)
 	}
 	g_sdlDoRefreshGfxOutput = false;
 	SDL_UnlockTexture(g_sdlTexture);
+	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(g_sdlRenderer);
+	SDL_SetRenderDrawColor(g_sdlRenderer, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>16)&0xFF, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>8)&0xFF, g_sdlEGACurrBGRAPaletteAndBorder[16]&0xFF, SDL_ALPHA_OPAQUE);
+	SDL_RenderFillRect(g_sdlRenderer, &g_sdlAspectCorrectionBorderedRect);
 	if (g_sdlTargetTexture)
 	{
 		SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);

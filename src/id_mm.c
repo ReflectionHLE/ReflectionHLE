@@ -665,6 +665,8 @@ void MM_SortMem (void)
 	id0_unsigned_t	start,length,source,dest;
 
 	VW_ColorBorder (15);
+	// (CHOCO KEEN) HACK: Actually show border color
+	BE_SDL_ShortSleep();
 
 	if (beforesort)
 		beforesort();
@@ -745,6 +747,10 @@ void MM_SortMem (void)
 =====================
 */
 
+// (CHOCO KEEN) Called only if GRMODE==EGAGR - assuming FRILLS is nonzero
+// (VW_SetScreen has been disabled for CGA)
+
+#if GRMODE == EGAGR
 void MM_ShowMemory (void)
 {
 	mmblocktype id0_far *scan;
@@ -782,6 +788,7 @@ void MM_ShowMemory (void)
 	VW_SetLineWidth(64);
 	bufferofs = temp;
 }
+#endif
 
 //==========================================================================
 

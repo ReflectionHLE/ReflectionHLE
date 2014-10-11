@@ -4,6 +4,7 @@
 CGA 80-column font (80x25 chars for a 640x200 mode, 8x8 pixels for each)
 Currently not used
 ***********************************************************************/
+#if 0
 const uint8_t g_cga_8x8TextFont[256*8*8] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
@@ -2309,11 +2310,13 @@ const uint8_t g_cga_8x8TextFont[256*8*8] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 };
+#endif
 
 /************************************************************************
 EGA 80-column font (80x25 chars for a 640x350 mode, 8x14 pixels for each)
 Currently not used
 ************************************************************************/
+#if 0
 const uint8_t g_ega_8x14TextFont[256*8*14] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
@@ -6155,6 +6158,7 @@ const uint8_t g_ega_8x14TextFont[256*8*14] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 };
+#endif
 
 /******************************************************************************
 VGA 80-column font (80x25 chars, 8x16 pixels for each; Later converted to 9x16)

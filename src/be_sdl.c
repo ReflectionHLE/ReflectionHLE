@@ -89,8 +89,8 @@ void BE_SDL_HandleExit(int status)
 			case SDL_WINDOWEVENT:
 				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 				{
-					void BE_SDL_SetAspectCorrectionRect(void);
-					BE_SDL_SetAspectCorrectionRect();
+					void BE_SDL_SetGfxOutputRects(void);
+					BE_SDL_SetGfxOutputRects();
 				}
 				break;
 			case SDL_KEYDOWN:
@@ -834,8 +834,8 @@ void BE_SDL_PollEvents(void)
 			switch (event.window.event)
 			case  SDL_WINDOWEVENT_RESIZED:
 			{
-				void BE_SDL_SetAspectCorrectionRect(void);
-				BE_SDL_SetAspectCorrectionRect();
+				void BE_SDL_SetGfxOutputRects(void);
+				BE_SDL_SetGfxOutputRects();
 				BE_SDL_MarkGfxForPendingUpdate();
 				BE_SDL_MarkGfxForUpdate();
 				break;
