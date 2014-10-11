@@ -192,7 +192,7 @@ typedef struct {
 #elif defined CHOCO_KEEN_VER_KDREAMS_REG_193
 #define COMPAT_OBJ_CONVERSION_OFFSET 0x707A
 #elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_120
-#define COMPAT_OBJ_CONVERSION_OFFSET 0x0000 // TODO Add this!
+#define COMPAT_OBJ_CONVERSION_OFFSET 0x734C
 #endif
 
 #define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+COMPAT_OBJ_CONVERSION_OFFSET))
