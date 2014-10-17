@@ -59,9 +59,12 @@ void BE_SDL_StartAudioSDService(void (*funcPtr)(void));
 void BE_SDL_StopAudioSDService(void);
 void BE_SDL_LockAudioRecursively(void);
 void BE_SDL_UnlockAudioRecursively(void);
-// Frequency is about 1193182Hz/spkVal
+// Should be used in ID_SD.C only - Frequency is about 1193182Hz/spkVal
 void BE_SDL_PCSpeakerOn(id0_word_t spkVal);
 void BE_SDL_PCSpeakerOff(void);
+// Safe alternatives for Borland's sound and nosoudn functions from Catacomb Abyss' gelib.c
+void BE_SDL_BSound(id0_word_t frequency);
+void BE_SDL_BNoSound(void);
 // Drop-in replacement for id_sd.c:alOut
 void BE_SDL_ALOut(id0_byte_t reg,id0_byte_t val);
 // Here, the actual rate is about 1193182Hz/speed
@@ -79,9 +82,12 @@ id0_byte_t *BE_SDL_GetCGAMemoryPtr(void);
 // EGA graphics manipulations
 void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette);
 void BE_SDL_EGASetLineWidth(id0_byte_t widthInBytes);
+void BE_SDL_EGASetSplitScreen(id0_int_t linenum);
 void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask);
 void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t mask);
 void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff);
+// Same as BE_SDL_EGAUpdateGFXByteScrToScr but picking specific bits out of each byte
+void BE_SDL_EGAUpdateGFXBitsScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t bitsMask);
 void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num);
 uint8_t BE_SDL_EGAFetchGFXByte(uint16_t destOff, uint16_t planenum);
 void BE_SDL_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planenum);

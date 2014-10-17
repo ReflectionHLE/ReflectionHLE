@@ -32,7 +32,8 @@ typedef enum BE_Log_Message_Class_T
 
 int32_t BE_Cross_FileLengthFromHandle(int handle);
 char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);
-char *BE_Cross_ltoa_dec(uint32_t n, char *buffer);
+char *BE_Cross_ltoa_dec(int32_t n, char *buffer);
+char *BE_Cross_itoa_dec(int16_t n, char *buffer);
 // Used for debugging
 void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ...);
 // More (possibly semi) standard C functions emulated,

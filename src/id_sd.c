@@ -47,12 +47,12 @@
 
 #pragma hdrstop		// Wierdo thing with MUSE
 
-#include <dos.h>
+//#include <dos.h>
 
 #ifdef	_MUSE_      // Will be defined in ID_Types.h
-#include "ID_SD.h"
+#include "id_sd.h"
 #else
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #endif
 #pragma	hdrstop
 #pragma	warn	-pia
@@ -69,17 +69,21 @@
 				NeedsDigitized,NeedsMusic;
 	SDMode		SoundMode;
 	SMMode		MusicMode;
-	id0_longword_t	TimeCount;
+	// NEVER accessed directly now - done from backend via functions
+	//id0_longword_t	TimeCount;
 	id0_word_t		HackCount;
-	id0_word_t		*SoundTable;	// Really * id0_seg *SoundTable, but that don't work
+	SoundCommon		**SoundTable;
+	//id0_word_t		*SoundTable;	// Really * id0_seg *SoundTable, but that don't work
 	id0_boolean_t		ssIsTandy;
 	id0_word_t		ssPort = 2;
 
 //	Internal variables
 static	id0_boolean_t			SD_Started;
-static	id0_boolean_t			TimerDone;
-static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
-static	id0_longword_t		TimerDivisor,TimerCount;
+/*** (CHOCO CAT) Unused (used in vanilla Keen Dreams with low-level funcs) ***/
+//static	id0_boolean_t			TimerDone;
+//static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
+/*** (CHOCO CAT) Also unused now (and more is unused) ***/
+//static	id0_longword_t		TimerDivisor,TimerCount;
 static	id0_char_t			*ParmStrings[] =
 						{
 							"noal",
@@ -87,9 +91,9 @@ static	id0_char_t			*ParmStrings[] =
 						};
 static	void			(*SoundUserHook)(void);
 static	id0_word_t			SoundNumber,SoundPriority;
-static	void interrupt	(*t0OldService)(void);
+//static	void interrupt	(*t0OldService)(void);
 //static	id0_word_t			t0CountTable[] = {8,8,8,8,40,40};
-static	id0_long_t			LocalTime;
+//static	id0_long_t			LocalTime;
 
 //	PC Sound variables
 static	id0_byte_t			pcLastSample,id0_far *pcSound;
@@ -131,6 +135,8 @@ static	id0_long_t			sqHackTime;
 static void
 SDL_SetTimer0(id0_word_t speed)
 {
+	BE_SDL_SetTimer(speed, false);
+#if 0
 #ifndef TPROF	// If using Borland's profiling, don't screw with the timer
 	outportb(0x43,0x36);				// Change timer 0
 	outportb(0x40,speed);
@@ -138,6 +144,7 @@ SDL_SetTimer0(id0_word_t speed)
 	TimerDivisor = speed;
 #else
 	TimerDivisor = 0x10000;
+#endif
 #endif
 }
 
@@ -152,6 +159,9 @@ SDL_SetIntsPerSec(id0_word_t ints)
 {
 	SDL_SetTimer0(1192030 / ints);
 }
+
+/*** CHOCO CAT - UNUSED FUNCTIONS ***/
+#if 0
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -229,6 +239,8 @@ asm	loop	loop
 done:;
 }
 
+#endif /* END OF UNUSED FUNCTIONS (CHOCO CAT) */
+
 //
 //	PC Sound code
 //
@@ -245,14 +257,16 @@ static void
 #endif
 SDL_PCPlaySound(PCSound id0_far *sound)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	pcLastSample = -1;
 	pcLengthLeft = sound->common.length;
 	pcSound = sound->data;
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -267,16 +281,20 @@ static void
 #endif
 SDL_PCStopSound(void)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
-	(id0_long_t)pcSound = 0;
-
+	pcSound = 0;
+	BE_SDL_PCSpeakerOff();
+#if 0
 asm	in	al,0x61		  	// Turn the speaker off
 asm	and	al,0xfd			// ~2
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -295,13 +313,16 @@ SDL_PCService(void)
 		s = *pcSound++;
 		if (s != pcLastSample)
 		{
-		asm	pushf
-		asm	cli
+			BE_SDL_LockAudioRecursively();
+		//asm	pushf
+		//asm	cli
 
 			pcLastSample = s;
 			if (s)					// We have a frequency!
 			{
 				t = pcSoundLookup[s];
+				BE_SDL_PCSpeakerOn(t);
+#if 0
 			asm	mov	bx,[t]
 
 			asm	mov	al,0xb6			// Write to channel 2 (speaker) timer
@@ -314,15 +335,20 @@ SDL_PCService(void)
 			asm	in	al,0x61			// Turn the speaker & gate on
 			asm	or	al,3
 			asm	out	0x61,al
+#endif
 			}
 			else					// Time for some silence
 			{
+				BE_SDL_PCSpeakerOff();
+#if 0
 			asm	in	al,0x61		  	// Turn the speaker & gate off
 			asm	and	al,0xfc			// ~3
 			asm	out	0x61,al
+#endif
 			}
 
-		asm	popf
+			BE_SDL_UnlockAudioRecursively();
+		//asm	popf
 		}
 
 		if (!(--pcLengthLeft))
@@ -341,16 +367,21 @@ SDL_PCService(void)
 static void
 SDL_ShutPC(void)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	pcSound = 0;
 
+	BE_SDL_PCSpeakerOff();
+#if 0
 asm	in	al,0x61		  	// Turn the speaker & gate off
 asm	and	al,0xfc			// ~3
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 // 	AdLib Code
@@ -363,6 +394,8 @@ asm	popf
 void
 alOut(id0_byte_t n,id0_byte_t b)
 {
+	BE_SDL_ALOut(n, b);
+#if 0
 asm	pushf
 asm	cli
 
@@ -429,6 +462,7 @@ asm	in	al, dx
 asm	in	al, dx
 asm	in	al, dx
 #endif
+#endif
 }
 
 #if 0
@@ -489,13 +523,15 @@ static void
 #endif
 SDL_ALStopSound(void)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
-	(id0_long_t)alSound = 0;
+	alSound = 0;
 	alOut(alFreqH + 0,0);
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 static void
@@ -535,8 +571,9 @@ SDL_ALPlaySound(AdLibSound id0_far *sound)
 
 	SDL_ALStopSound();
 
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	alLengthLeft = sound->common.length;
 	alSound = sound->data;
@@ -545,13 +582,15 @@ asm	cli
 
 	if (!(inst->mSus | inst->cSus))
 	{
-	asm	popf
+		BE_SDL_UnlockAudioRecursively();
+	//asm	popf
 		Quit("SDL_ALPlaySound() - Bad instrument");
 	}
 
 	SDL_AlSetFXInst(inst);
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -577,7 +616,7 @@ SDL_ALSoundService(void)
 
 		if (!(--alLengthLeft))
 		{
-			(id0_long_t)alSound = 0;
+			alSound = 0;
 			alOut(alFreqH + 0,0);
 			SDL_SoundFinished();
 		}
@@ -611,9 +650,14 @@ SDL_ALService(void)
 	{
 		w = *sqHackPtr++;
 		sqHackTime = alTimeCount + *sqHackPtr++;
+		// TODO/FIXME: Endianness??
+		a = *((id0_byte_t *)&w);
+		v = *((id0_byte_t *)&w + 1);
+#if 0
 	asm	mov	dx,[w]
 	asm	mov	[a],dl
 	asm	mov	[v],dh
+#endif
 		alOut(a,v);
 		sqHackLen -= 4;
 	}
@@ -634,15 +678,17 @@ SDL_ALService(void)
 static void
 SDL_ShutAL(void)
 {
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	alOut(alEffects,0);
 	alOut(alFreqH + 0,0);
 	SDL_AlSetFXInst(&alZeroInst);
 	alSound = 0;
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -655,14 +701,16 @@ SDL_CleanAL(void)
 {
 	id0_int_t	i;
 
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	alOut(alEffects,0);
 	for (i = 1;i < 0xf5;i++)
 		alOut(i,0);
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -687,21 +735,26 @@ SDL_StartAL(void)
 static id0_boolean_t
 SDL_DetectAdLib(void)
 {
-	id0_byte_t	status1,status2;
+	//id0_byte_t	status1,status2;
 	id0_int_t		i;
 
 	alOut(4,0x60);	// Reset T1 & T2
 	alOut(4,0x80);	// Reset IRQ
-	status1 = readstat();
+	//status1 = readstat();
 	alOut(2,0xff);	// Set timer 1
 	alOut(4,0x21);	// Start timer 1
-	SDL_Delay(TimerDelay100);
 
-	status2 = readstat();
+	// We ALWAYS return true here, but maybe it's good
+	// to send some commands to the emulated OPL chip
+
+	// TODO (Chocolate Cat3D): Anyway to handle this delay (if at all)?
+	//SDL_Delay(TimerDelay100);
+
+	//status2 = readstat();
 	alOut(4,0x60);
 	alOut(4,0x80);
 
-	if (((status1 & 0xe0) == 0x00) && ((status2 & 0xe0) == 0xc0))
+	//if (((status1 & 0xe0) == 0x00) && ((status2 & 0xe0) == 0xc0))
 	{
 		for (i = 1;i <= 0xf5;i++)	// Zero all the registers
 			alOut(i,0);
@@ -711,8 +764,8 @@ SDL_DetectAdLib(void)
 
 		return(true);
 	}
-	else
-		return(false);
+//	else
+//		return(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -744,8 +797,8 @@ asm	out	dx,al
 		SDL_ALService();
 		if (!(++count & 7))
 		{
-			LocalTime++;
-			TimeCount++;
+			//LocalTime++;
+			//TimeCount++;
 			if (SoundUserHook)
 				SoundUserHook();
 		}
@@ -767,8 +820,8 @@ asm	out	dx,al
 	{
 		if (!(++count & 1))
 		{
-			LocalTime++;
-			TimeCount++;
+			//LocalTime++;
+			//TimeCount++;
 			if (SoundUserHook)
 				SoundUserHook();
 		}
@@ -783,15 +836,17 @@ asm	out	dx,al
 		}
 	}
 
+#if 0
 asm	mov	ax,[WORD PTR TimerCount]
 asm	add	ax,[WORD PTR TimerDivisor]
 asm	mov	[WORD PTR TimerCount],ax
 asm	jnc	myack
-	t0OldService();			// If we overflow a word, time to call old id0_int_t handler
+	t0OldService();			// If we overflow a word, time to call old int handler
 asm	jmp	olddone
 myack:;
 	outportb(0x20,0x20);	// Ack the interrupt
 olddone:;
+#endif
 
 #if 0	// for debugging
 asm	mov	dx,STATUS_REGISTER_1
@@ -997,12 +1052,14 @@ SD_Startup(void)
 
 	SoundUserHook = 0;
 
-	t0OldService = getvect(8);	// Get old timer 0 ISR
+	//t0OldService = getvect(8);	// Get old timer 0 ISR
 
-	SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
+	/*** (CHOCO CAT) UNUSED ***/
+	//SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
 
-	setvect(8,SDL_t0Service);	// Set to my timer 0 ISR
-	LocalTime = TimeCount = alTimeCount = 0;
+	BE_SDL_StartAudioSDService(&SDL_t0Service);
+	//setvect(8,SDL_t0Service);	// Set to my timer 0 ISR
+	/*LocalTime = TimeCount =*/ alTimeCount = 0;
 
 	SD_SetSoundMode(sdm_Off);
 #if USE_MUSIC
@@ -1083,20 +1140,26 @@ SD_Shutdown(void)
 	if (!SD_Started)
 		return;
 
+	BE_SDL_StopAudioSDService();
+
 #if USE_MUSIC
 	SD_MusicOff();
 #endif
 	SDL_ShutDevice();
 	SDL_CleanDevice();
 
-	asm	pushf
-	asm	cli
+	BE_SDL_LockAudioRecursively();
+	//asm	pushf
+	//asm	cli
 
 	SDL_SetTimer0(0);
 
-	setvect(8,t0OldService);
+// Do NOT call this here - A deadlock is a possibility (via recursive lock)
+//	BE_SDL_StopAudioSDService(void);
+//	setvect(8,t0OldService);
 
-	asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//	asm	popf
 
 	SD_Started = false;
 }
@@ -1126,7 +1189,8 @@ SD_PlaySound(soundnames sound)
 	if ((SoundMode == sdm_Off) || (sound == -1))
 		return;
 
-	s = MK_FP(SoundTable[sound],0);
+	//s = MK_FP(SoundTable[sound],0);
+	s = (SoundCommon id0_far *)(SoundTable[sound]);
 	if (!s)
 		Quit("SD_PlaySound() - Uncached sound");
 	if (!s->length)
@@ -1205,7 +1269,9 @@ void
 SD_WaitSoundDone(void)
 {
 	while (SD_SoundPlaying())
-		;
+	{
+		BE_SDL_ShortSleep();
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1256,8 +1322,9 @@ SD_StartMusic(MusicGroup id0_far *music)
 {
 #if USE_MUSIC
 	SD_MusicOff();
-asm	pushf
-asm	cli
+	BE_SDL_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	if (MusicMode == smm_AdLib)
 	{
@@ -1268,7 +1335,8 @@ asm	cli
 		SD_MusicOn();
 	}
 
-asm	popf
+	BE_SDL_UnlockAudioRecursively();
+//asm	popf
 #endif
 }
 
@@ -1282,6 +1350,8 @@ void
 SD_FadeOutMusic(void)
 {
 #if USE_MUSIC
+	// CHOCO CAT - Original code does nothing (also in Keen Dreams and Catacomb 3D)...
+#if 0
 	switch (MusicMode)
 	{
 	case smm_AdLib:
@@ -1289,6 +1359,7 @@ SD_FadeOutMusic(void)
 		SD_MusicOff();
 		break;
 	}
+#endif
 #endif
 }
 
@@ -1302,6 +1373,9 @@ id0_boolean_t
 SD_MusicPlaying(void)
 {
 #if USE_MUSIC
+	// CHOCO KEEN - Original code always returns false...
+	return false;
+#if 0
 	id0_boolean_t	result;
 
 	switch (MusicMode)
@@ -1316,4 +1390,10 @@ SD_MusicPlaying(void)
 
 	return(result);
 #endif
+#endif
 }
+
+// Replacements for direct accesses to TimeCount variable
+// (should be instantiated here even if inline, as of C99)
+id0_longword_t SD_GetTimeCount(void);
+void SD_SetTimeCount(id0_longword_t newcount);

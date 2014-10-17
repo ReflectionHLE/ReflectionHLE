@@ -1503,7 +1503,7 @@ void CastNuke (void)
 	}
 
 	TakeNuke ();
-	lastnuke = TimeCount;
+	lastnuke = SD_GetTimeCount();
 
 	for (angle = 0; angle < ANGLES; angle+= ANGLES/16)
 	{
@@ -2724,7 +2724,7 @@ void	T_Player (objtype *ob)
 			if (handheight>MAXHANDHEIGHT)
 				handheight = MAXHANDHEIGHT;
 
-			if ((id0_unsigned_t)TimeCount/FIRETIME != lastfiretime)
+			if ((id0_unsigned_t)SD_GetTimeCount()/FIRETIME != lastfiretime)
 				BuildShotPower ();
 			lasthand = lasttimecount;
 		}
@@ -2739,7 +2739,7 @@ void	T_Player (objtype *ob)
 
 			if (gamestate.shotpower)
 			{
-				lastfiretime = (id0_unsigned_t)TimeCount/FIRETIME;
+				lastfiretime = (id0_unsigned_t)SD_GetTimeCount()/FIRETIME;
 				Shoot ();
 			}
 		}
@@ -2756,7 +2756,7 @@ void	T_Player (objtype *ob)
 	if (Keyboard[sc_Z] && !boltsleft)
 		CastBolt ();
 
-	if ( (Keyboard[sc_Enter] || Keyboard[sc_X]) && ((TimeCount-lastnuke > NUKETIME) || (autofire)))
+	if ( (Keyboard[sc_Enter] || Keyboard[sc_X]) && ((SD_GetTimeCount()-lastnuke > NUKETIME) || (autofire)))
 		CastNuke ();
 
 	scroll = LastScan-2;

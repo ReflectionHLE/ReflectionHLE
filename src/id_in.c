@@ -142,7 +142,7 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
 					};
 
 static	void			(*INL_KeyHook)(void);
-static	void interrupt	(*OldKeyVect)(void);
+//static	void interrupt	(*OldKeyVect)(void);
 
 static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",nil};
 
@@ -153,18 +153,22 @@ static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",nil};
 //	INL_KeyService() - Handles a keyboard interrupt (key up/down)
 //
 ///////////////////////////////////////////////////////////////////////////
-static void interrupt
-INL_KeyService(void)
+static void
+INL_KeyService(id0_byte_t k)
 {
-static	id0_boolean_t	special;
-		id0_byte_t	k,c,
-				temp;
+	// NOTE: The original signature of the function is static void(void),
+	// but we get the scancode as an argument rather than via inportb now
+	// (and there's no need to clear the key)
 
+	static id0_boolean_t special;
+	id0_byte_t c;
+#if 0
 	k = inportb(0x60);	// Get the scan code
 
 	// Tell the XT keyboard controller to clear the key
 	outportb(0x61,(temp = inportb(0x61)) | 0x80);
 	outportb(0x61,temp);
+#endif
 
 	if (k == 0xe0)		// Special key prefix
 		special = true;
@@ -218,7 +222,7 @@ static	id0_boolean_t	special;
 
 	if (INL_KeyHook && !special)
 		INL_KeyHook();
-	outportb(0x20,0x20);
+	//outportb(0x20,0x20);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -230,9 +234,7 @@ static	id0_boolean_t	special;
 static void
 INL_GetMouseDelta(id0_int_t *x,id0_int_t *y)
 {
-	Mouse(MDelta);
-	*x = _CX;
-	*y = _DX;
+	BE_SDL_GetMouseDelta(x, y);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -244,11 +246,7 @@ INL_GetMouseDelta(id0_int_t *x,id0_int_t *y)
 static id0_word_t
 INL_GetMouseButtons(void)
 {
-	id0_word_t	buttons;
-
-	Mouse(MButtons);
-	buttons = _BX;
-	return(buttons);
+	return BE_SDL_GetMouseButtons();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -259,73 +257,7 @@ INL_GetMouseButtons(void)
 void
 IN_GetJoyAbs(id0_word_t joy,id0_word_t *xp,id0_word_t *yp)
 {
-	id0_byte_t	xb,yb,
-			xs,ys;
-	id0_word_t	x,y;
-
-	x = y = 0;
-	xs = joy? 2 : 0;		// Find shift value for x axis
-	xb = 1 << xs;			// Use shift value to get x bit mask
-	ys = joy? 3 : 1;		// Do the same for y axis
-	yb = 1 << ys;
-
-// Read the absolute joystick values
-asm		pushf				// Save some registers
-asm		push	si
-asm		push	di
-asm		cli					// Make sure an interrupt doesn't screw the timings
-
-
-asm		mov		dx,0x201
-asm		in		al,dx
-asm		out		dx,al		// Clear the resistors
-
-asm		mov		ah,[xb]		// Get masks into registers
-asm		mov		ch,[yb]
-
-asm		xor		si,si		// Clear count registers
-asm		xor		di,di
-asm		xor		bh,bh		// Clear high id0_byte_t of bx for later
-
-asm		push	bp			// Don't mess up stack frame
-asm		mov		bp,MaxJoyValue
-
-loop:
-asm		in		al,dx		// Get bits indicating whether all are finished
-
-asm		dec		bp			// Check bounding register
-asm		jz		done		// We have a silly value - abort
-
-asm		mov		bl,al		// Duplicate the bits
-asm		and		bl,ah		// Mask off useless bits (in [xb])
-asm		add		si,bx		// Possibly increment count register
-asm		mov		cl,bl		// Save for testing later
-
-asm		mov		bl,al
-asm		and		bl,ch		// [yb]
-asm		add		di,bx
-
-asm		add		cl,bl
-asm		jnz		loop 		// If both bits were 0, drop out
-
-done:
-asm     pop		bp
-
-asm		mov		cl,[xs]		// Get the number of bits to shift
-asm		shr		si,cl		//  and shift the count that many times
-
-asm		mov		cl,[ys]
-asm		shr		di,cl
-
-asm		mov		[x],si		// Store the values into the variables
-asm		mov		[y],di
-
-asm		pop		di
-asm		pop		si
-asm		popf				// Restore the registers
-
-	*xp = x;
-	*yp = y;
+	BE_SDL_GetJoyAbs(joy, xp, yp);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -414,13 +346,7 @@ static	id0_longword_t	lasttime;
 static id0_word_t
 INL_GetJoyButtons(id0_word_t joy)
 {
-register	id0_word_t	result;
-
-	result = inportb(0x201);	// Get all the joystick buttons
-	result >>= joy? 6 : 4;	// Shift into bits 0-1
-	result &= 3;				// Mask off the useless bits
-	result ^= 3;
-	return(result);
+	return BE_SDL_GetJoyButtons(joy);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -440,8 +366,11 @@ IN_GetJoyButtonsDB(id0_word_t joy)
 		result1 = INL_GetJoyButtons(joy);
 		lasttime = TimeCount;
 		while (TimeCount == lasttime)
-			;
+		{
+			BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) can be better
+		}
 		result2 = INL_GetJoyButtons(joy);
+		BE_SDL_ShortSleep();
 	} while (result1 != result2);
 	return(result1);
 }
@@ -458,8 +387,9 @@ INL_StartKbd(void)
 
 	IN_ClearKeysDown();
 
-	OldKeyVect = getvect(KeyInt);
-	setvect(KeyInt,INL_KeyService);
+	//OldKeyVect = getvect(KeyInt);
+	BE_SDL_StartKeyboardService(&INL_KeyService);
+	//setvect(KeyInt,INL_KeyService);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -470,9 +400,10 @@ INL_StartKbd(void)
 static void
 INL_ShutKbd(void)
 {
-	poke(0x40,0x17,peek(0x40,0x17) & 0xfaf0);	// Clear ctrl/alt/shift flags
+	//poke(0x40,0x17,peek(0x40,0x17) & 0xfaf0);	// Clear ctrl/alt/shift flags
 
-	setvect(KeyInt,OldKeyVect);
+	BE_SDL_StopKeyboardService();
+	//setvect(KeyInt,OldKeyVect);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1144,7 +1075,9 @@ IN_WaitForKey(void)
 	ScanCode	result;
 
 	while (!(result = LastScan))
-		;
+	{
+		BE_SDL_ShortSleep();
+	}
 	LastScan = 0;
 	return(result);
 }
@@ -1161,7 +1094,9 @@ IN_WaitForASCII(void)
 	id0_char_t		result;
 
 	while (!(result = LastASCII))
-		;
+	{
+		BE_SDL_ShortSleep();
+	}
 	LastASCII = '\0';
 	return(result);
 }
@@ -1183,7 +1118,9 @@ IN_AckBack(void)
 			if (INL_GetMouseButtons())
 			{
 				while (INL_GetMouseButtons())
-					;
+				{
+					BE_SDL_ShortSleep();
+				}
 				return;
 			}
 		}
@@ -1195,11 +1132,14 @@ IN_AckBack(void)
 				if (IN_GetJoyButtonsDB(i))
 				{
 					while (IN_GetJoyButtonsDB(i))
-						;
+					{
+						BE_SDL_ShortSleep();
+					}
 					return;
 				}
 			}
 		}
+		BE_SDL_ShortSleep();
 	}
 
 	IN_ClearKey(LastScan);
@@ -1221,11 +1161,15 @@ IN_Ack(void)
 
 	if (MousePresent)
 		while (INL_GetMouseButtons())
-					;
+		{
+			BE_SDL_ShortSleep();
+		}
 	for (i = 0;i < MaxJoys;i++)
 		if (JoysPresent[i])
 			while (IN_GetJoyButtonsDB(i))
-				;
+			{
+				BE_SDL_ShortSleep();
+			}
 
 	IN_AckBack();
 }
@@ -1272,6 +1216,7 @@ IN_UserInput(id0_longword_t delay,id0_boolean_t clear)
 	lasttime = TimeCount;
 	do
 	{
+		BE_SDL_ShortSleep();
 		if (IN_IsUserInput())
 		{
 			if (clear)

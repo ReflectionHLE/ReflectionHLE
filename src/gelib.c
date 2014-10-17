@@ -16,17 +16,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <dos.h>
-#include <conio.h>
+//#include <dos.h>
+//#include <conio.h>
 #include <stdio.h>
 #include <dir.h>
-#include "mem.h"
-#include "string.h"
-#include "time.h"
-#include "stdarg.h"
-#include "io.h"
+//#include "mem.h"
+#include <string.h>
+#include <time.h>
+#include <stdarg.h>
+//#include "io.h"
+#include <dirent.h>
 
-#include "DEF.H"
+#include "def.h"
 #include "gelib.h"
 
 #define MAX_GAMELIST_NAMES 20
@@ -67,19 +68,28 @@ void CalibrateJoystick(id0_short_t joynum)
 	US_CPrintLine("and press one of the buttons.");
 	VW_UpdateScreen();
 
-	while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joynum));
+	while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joynum))
+	{
+		BE_SDL_ShortSleep();
+	}
 	if (LastScan == sc_Escape)
 		return;
 
 	IN_GetJoyAbs(joynum,&minx,&miny);
-	while (IN_GetJoyButtonsDB(joynum));
+	while (IN_GetJoyButtonsDB(joynum))
+	{
+		BE_SDL_ShortSleep();
+	}
 
 	US_Print("\n");
 	US_CPrintLine("Move joystick to the lower-right");
 	US_CPrintLine("and press one of the buttons.");
 	VW_UpdateScreen();
 
-	while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joynum));
+	while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joynum))
+	{
+		BE_SDL_ShortSleep();
+	}
 	if (LastScan == sc_Escape)
 		return;
 
@@ -89,7 +99,10 @@ void CalibrateJoystick(id0_short_t joynum)
 
 	IN_SetupJoy(joynum,minx,maxx,miny,maxy);
 
-	while (IN_GetJoyButtonsDB(joynum));
+	while (IN_GetJoyButtonsDB(joynum))
+	{
+		BE_SDL_ShortSleep();
+	}
 	if (LastScan)
 		IN_ClearKeysDown();
 
@@ -179,13 +192,21 @@ void DoPiracy()
 	MoveScreen(0,0);
 	VW_FadeIn();
 	WaitKeyVBL(57,200);
-	while (Keyboard[57]);
+	while (Keyboard[57])
+	{
+		BE_SDL_ShortSleep();
+	}
+
 
 	SD_PlaySound(GOOD_PICKSND);
 
 	MoveScreen(0,200);
 	WaitKeyVBL(57,300);
-	while (Keyboard[57]);
+	while (Keyboard[57])
+	{
+		BE_SDL_ShortSleep();
+	}
+
 	VW_FadeOut();
 
 	FreeShape(&Pirate1Shp);
@@ -341,6 +362,7 @@ void DisplayText(textinfo *textinfo)
 	PageNum = 1;
 	while (InHelp)
 	{
+		BE_SDL_ShortSleep();
 		// Display new page of text.
 		//
 		if (PageNum != LastNum)
@@ -371,14 +393,20 @@ void DisplayText(textinfo *textinfo)
 			{
 				PageNum--;
 				while ((control.dir == dir_North) || (control.dir == dir_West))
+				{
+					BE_SDL_ShortSleep();
 					IN_ReadControl(0,&control);
+				}
 			}
 			else
 				if (((control.dir == dir_South) || (control.dir == dir_East)) && (PageNum < textinfo->totalpages))
 				{
 					PageNum++;
 					while ((control.dir == dir_South) || (control.dir == dir_East))
+					{
+						BE_SDL_ShortSleep();
 						IN_ReadControl(0,&control);
+					}
 				}
 		}
 	}
@@ -386,7 +414,10 @@ void DisplayText(textinfo *textinfo)
 	// Wait for 'exit key' to be released.
 	//
 	while (control.button1 || Keyboard[1])
+	{
+		BE_SDL_ShortSleep();
 		IN_ReadControl(0,&control);
+	}
 
 // Can you believe it takes all this just to change to 320 mode!!???!
 //
@@ -406,10 +437,7 @@ void BlackPalette()
 {
 	extern id0_char_t colors[7][17];
 
-	_ES=FP_SEG(&colors[0]);
-	_DX=FP_OFF(&colors[0]);
-	_AX=0x1002;
-	geninterrupt(0x10);
+	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[0]);
 	screenfaded = true;
 }
 
@@ -420,10 +448,7 @@ void ColoredPalette()
 {
 	extern id0_char_t colors[7][17];
 
-	_ES=FP_SEG(&colors[3]);
-	_DX=FP_OFF(&colors[3]);
-	_AX=0x1002;
-	geninterrupt(0x10);
+	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[3]);
 	screenfaded = false;
 }
 
@@ -433,7 +458,7 @@ void ColoredPalette()
 //
 id0_long_t Verify(id0_char_t *filename)
 {
-	id0_int_t handle;
+	int handle;
 	id0_long_t size;
 
 	if ((handle=open(filename,O_BINARY))==-1)
@@ -454,11 +479,11 @@ id0_long_t Verify(id0_char_t *filename)
 void GE_SaveGame()
 {
 	id0_boolean_t GettingFilename=true;
-	id0_char_t drive;
+	//id0_char_t drive; // CHOCO CAT - Removed
 //	id0_char_t Filename[FILENAME_LEN+1],drive; //, ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DATA)];
-	id0_int_t handle;
-	struct dfree dfree;
-	id0_long_t davail;
+	int handle;
+	//struct dfree dfree; // CHOCO CAT - Removed
+	//id0_long_t davail; // CHOCO CAT - Removed
 
 	VW_FixRefreshBuffer();
 	ReadGameList();
@@ -475,7 +500,8 @@ void GE_SaveGame()
 			goto EXIT_FUNC;
 		if (!strlen(Filename))
 			goto EXIT_FUNC;
-
+		// CHOCO CAT - Remove disk space check
+#if 0
 		drive = getdisk();
 		getdfree(drive+1,&dfree);
 		davail = (id0_long_t)dfree.df_avail*(id0_long_t)dfree.df_bsec*(id0_long_t)dfree.df_sclus;
@@ -489,13 +515,15 @@ void GE_SaveGame()
 			US_CPrintLine("Disk Full: Can't save game.");
 			US_CPrintLine("Try inserting another disk.");
 			status[8] = drive+'A';
-			itoa(davail,&status[18],10);
+			BE_Cross_itoa_dec(davail,&status[18]);
+			//itoa(davail,&status[18],10);
 			US_CPrint(status);
 			VW_UpdateScreen();
 
 			IN_Ack();
 		}
 		else
+#endif
 		{
 			strcat(Filename,".SAV");
 			GettingFilename = false;
@@ -507,7 +535,10 @@ void GE_SaveGame()
 				US_CPrintLine("(Y)es or (N)o?");
 				VW_UpdateScreen();
 
-				while((!Keyboard[21]) && (!Keyboard[49]) && !Keyboard[27]);
+				while((!Keyboard[21]) && (!Keyboard[49]) && !Keyboard[27])
+				{
+					BE_SDL_ShortSleep();
+				}
 
 				if (Keyboard[27])
 					goto EXIT_FUNC;
@@ -552,11 +583,21 @@ EXIT_FUNC:;
 		US_CPrintLine("Bytes free on disk...");
 		US_CPrintLine("Press SPACE to continue.");
 		VW_UpdateScreen();
-		while (!Keyboard[57]);
-		while (Keyboard[57]);
+		while (!Keyboard[57])
+		{
+			BE_SDL_ShortSleep();
+		}
+		while (Keyboard[57])
+		{
+			BE_SDL_ShortSleep();
+		}
 	}
 
-	while (Keyboard[1]);
+	while (Keyboard[1])
+	{
+		BE_SDL_ShortSleep();
+	}
+
 
 	if (!screenfaded)
 		VW_FadeOut();
@@ -574,7 +615,7 @@ EXIT_FUNC:;
 id0_boolean_t GE_LoadGame()
 {
 	id0_boolean_t GettingFilename=true,rt_code=false;
-	id0_int_t handle;
+	int handle;
 
 	IN_ClearKeysDown();
 	memset(ID,0,sizeof(ID));
@@ -602,8 +643,14 @@ id0_boolean_t GE_LoadGame()
 			US_CPrintLine("Press SPACE to try again.");
 			VW_UpdateScreen();
 
-			while (!Keyboard[57]);
-			while (Keyboard[57]);
+			while (!Keyboard[57])
+			{
+				BE_SDL_ShortSleep();
+			}
+			while (Keyboard[57])
+			{
+				BE_SDL_ShortSleep();
+			}
 			GettingFilename = true;
 		}
 	}
@@ -622,8 +669,14 @@ id0_boolean_t GE_LoadGame()
 		US_CPrintLine(".SAV file.");
 		US_CPrintLine("Press SPACE to continue.");
 		VW_UpdateScreen();
-		while (!Keyboard[57]);
-		while (Keyboard[57]);
+		while (!Keyboard[57])
+		{
+			BE_SDL_ShortSleep();
+		}
+		while (Keyboard[57])
+		{
+			BE_SDL_ShortSleep();
+		}
 
 		if (!screenfaded)
 			VW_FadeOut();
@@ -643,8 +696,14 @@ EXIT_FUNC:;
 		US_CenterWindow(22,3);
 		US_CPrintLine("DISK ERROR ** LOAD **");
 		US_CPrintLine("Press SPACE to continue.");
-		while (!Keyboard[57]);
-		while (Keyboard[57]);
+		while (!Keyboard[57])
+		{
+			BE_SDL_ShortSleep();
+		}
+		while (Keyboard[57])
+		{
+			BE_SDL_ShortSleep();
+		}
 	}
 	else
 		close(handle);
@@ -746,6 +805,7 @@ asm	sti	// Let the keyboard interrupts come through
 			return(RETRY);
 			break;
 		}
+		BE_SDL_ShortSleep();
 	}
 
 oh_kill_me:
@@ -971,7 +1031,7 @@ BufferedIO lzwBIO;
 //--------------------------------------------------------------------------
 id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 {
-	id0_int_t handle;
+	int handle;
 
 	memptr SrcPtr;
 	id0_longword_t i, j, k, r, c;
@@ -1010,13 +1070,15 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 		{
 			if (!InitBufferedIO(handle,&lzwBIO))
 				TrashProg("No memory for buffered I/O.");
-			lzwDecompressFromFile(&lzwBIO,MK_FP(*DstPtr,0),SrcLen+8);
+			//lzwDecompressFromFile(&lzwBIO,MK_FP(*DstPtr,0),SrcLen+8);
+			lzwDecompressFromFile(&lzwBIO,*DstPtr,SrcLen+8);
 			FreeBufferedIO(&lzwBIO);
 		}
 		else
 		{
 			CA_LoadFile(SourceFile,&SrcPtr);
-			lzwDecompressFromRAM(MK_FP(SrcPtr,8),MK_FP(*DstPtr,0),SrcLen+8);
+			//lzwDecompressFromRAM(MK_FP(SrcPtr,8),MK_FP(*DstPtr,0),SrcLen+8);
+			lzwDecompressFromRAM(SrcPtr+8,*DstPtr,SrcLen+8);
 			MM_FreePtr(&SrcPtr);
 		}
 	}
@@ -1170,7 +1232,7 @@ void lzwDecompressFromFile(BufferedIO *SrcPtr, id0_byte_t id0_far *DstPtr, id0_l
 //--------------------------------------------------------------------------
 // InitBufferedIO()
 //--------------------------------------------------------------------------
-memptr InitBufferedIO(id0_int_t handle, BufferedIO *bio)
+memptr InitBufferedIO(int handle, BufferedIO *bio)
 {
 	bio->handle = handle;
 	bio->offset = BIO_BUFFER_LEN;
@@ -1202,7 +1264,8 @@ id0_byte_t bio_readch(BufferedIO *bio)
 		bio_fillbuffer(bio);
 	}
 
-	buffer = MK_FP(bio->buffer,bio->offset++);
+	buffer = (bio->buffer) + (bio->offset++);
+	//buffer = MK_FP(bio->buffer,bio->offset++);
 
 	return(*buffer);
 }
@@ -1236,7 +1299,8 @@ void bio_fillbuffer(BufferedIO *bio)
 			bytes_requested = bio_length;
 
 		read(bio->handle,near_buffer,bytes_requested);
-		_fmemcpy(MK_FP(bio->buffer,bytes_read),near_buffer,bytes_requested);
+		memcpy(bio->buffer + bytes_read,near_buffer,bytes_requested);
+		//_fmemcpy(MK_FP(bio->buffer,bytes_read),near_buffer,bytes_requested);
 
 		bio_length -= bytes_requested;
 		bytes_read += bytes_requested;
@@ -1249,12 +1313,10 @@ void bio_fillbuffer(BufferedIO *bio)
 //
 void SwapLong(id0_long_t id0_far *Var)
 {
-	asm		les	bx,Var
-	asm		mov	ax,[es:bx]
-	asm		xchg	ah,al
-	asm		xchg	ax,[es:bx+2]
-	asm		xchg	ah,al
-	asm 		mov	[es:bx],ax
+	*Var = ((id0_longword_t)(*Var) >> 24) |
+	       (((id0_longword_t)(*Var) >> 8) & 0xFF00) |
+	       (((id0_longword_t)(*Var) << 8) & 0xFF0000) |
+	       ((id0_longword_t)(*Var) << 24);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1263,10 +1325,7 @@ void SwapLong(id0_long_t id0_far *Var)
 //
 void SwapWord(id0_unsigned_int_t id0_far *Var)
 {
-	asm		les	bx,Var
-	asm		mov	ax,[es:bx]
-	asm		xchg	ah,al
-	asm		mov	[es:bx],ax
+	*Var = ((*Var) >> 8) | ((*Var) << 8);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1301,7 +1360,8 @@ id0_int_t LoadShape(id0_char_t *Filename,struct Shape *SHP)
 
 	// Evaluate the file
 	//
-	ptr = MK_FP(IFFfile,0);
+	ptr = (id0_char_t *)IFFfile;
+	//ptr = MK_FP(IFFfile,0);
 	if (!CHUNK("FORM"))
 		goto EXIT_FUNC;
 	ptr += 4;
@@ -1349,7 +1409,8 @@ id0_int_t LoadShape(id0_char_t *Filename,struct Shape *SHP)
 			MM_GetPtr(&SHP->Data,size);
 			if (!SHP->Data)
 				goto EXIT_FUNC;
-			movedata(FP_SEG(ptr),FP_OFF(ptr),FP_SEG(SHP->Data),0,size);
+			//movedata(FP_SEG(ptr),FP_OFF(ptr),FP_SEG(SHP->Data),0,size);
+			memcpy(SHP->Data,ptr,size);
 			ptr += ChunkLen;
 
 			break;
@@ -1390,7 +1451,8 @@ void FreeShape(struct Shape *shape)
 id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t starty)
 {
 	id0_int_t currenty;
-	id0_signed_char_t n, Rep, id0_far *Src, id0_far *Dst[8], loop, Plane;
+	id0_signed_char_t n, Rep, id0_far *Src/*, id0_far *Dst[8]*/, loop, Plane;
+	id0_unsigned_int_t DstOff[8];
 	id0_unsigned_int_t BPR, Height;
 	id0_boolean_t NotWordAligned;
 
@@ -1402,16 +1464,21 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 	Height = SHP->bmHdr.h;
 	while (Height--)
 	{
+#if 0
 		Dst[0] = (MK_FP(0xA000,displayofs));
 		Dst[0] += ylookup[currenty];
 		Dst[0] += startx;
 		for (loop=1; loop<SHP->bmHdr.d; loop++)
 			Dst[loop] = Dst[0];
+#endif
+		DstOff[0] = displayofs + ylookup[currenty] + startx;
+		for (loop=1; loop<SHP->bmHdr.d; loop++)
+			DstOff[loop] = DstOff[0];
 
 
 		for (Plane=0; Plane<SHP->bmHdr.d; Plane++)
 		{
-			outport(0x3c4,((1<<Plane)<<8)|2);
+			//outport(0x3c4,((1<<Plane)<<8)|2);
 
 			BPR = ((SHP->BPR+1) >> 1) << 1;               // IGNORE WORD ALIGN
 			while (BPR)
@@ -1432,7 +1499,8 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 							n--;
 
 						while (n--)
-							*Dst[Plane]++ = Rep;
+							BE_SDL_EGAUpdateGFXByte(DstOff[Plane]++, Rep, 1<<Plane);
+							//*Dst[Plane]++ = Rep;
 					}
 					else
 						BPR--;
@@ -1445,7 +1513,8 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 						n--;
 
 					while (n--)
-						*Dst[Plane]++ = *Src++;
+						BE_SDL_EGAUpdateGFXByte(DstOff[Plane]++, *Src++, 1<<Plane);
+						//*Dst[Plane]++ = *Src++;
 
 					if ((!BPR) && (NotWordAligned))     // IGNORE WORD ALIGN
 						Src++;
@@ -1483,6 +1552,7 @@ id0_char_t GetKeyChoice(id0_char_t *choices,id0_boolean_t clear)
 				break;
 			}
 		}
+		BE_SDL_ShortSleep();
 	}
 
 	IN_ClearKeysDown();
@@ -1823,6 +1893,7 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 //
 void ReadGameList()
 {
+	// TODO (CHOCO CAT) Use "cross platform" file searching functions/wrappers instead?
 	struct ffblk ffblk;
 	id0_short_t done,len;
 
@@ -1878,7 +1949,8 @@ void InitTextFile(textinfo *textinfo)
 {
 	#define END_PAGE  '@'
 
-	id0_char_t id0_far *text = MK_FP(textinfo->textptr,0);
+	id0_char_t id0_far *text = textinfo->textptr;
+	//id0_char_t id0_far *text = MK_FP(textinfo->textptr,0);
 
 	textinfo->totalpages = 0;
 	while (*text != END_PAGE)
@@ -2081,7 +2153,8 @@ void FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t        drawofs,pagedelta;
 	id0_unsigned_t        id0_char_t maskb[8] = {1,2,4,8,16,32,64,128};
 	id0_unsigned_t        x,y,p,frame;
-	id0_long_t            rndval;
+	id0_longword_t        rndval; // CHOCO CAT Now unsigned (so right shifts are well-defined)
+	//id0_long_t            rndval;
 	ScanCode			 lastLastScan=LastScan=0;
 
 	width--;
@@ -2097,7 +2170,9 @@ asm     mov     dx,SC_INDEX
 asm     mov     al,SC_MAPMASK
 asm     out     dx,al
 
-	TimeCount=frame=0;
+	frame=0;
+	SD_SetTimeCount(0);
+	//TimeCount=frame=0;
 	do      // while (1)
 	{
 		if ((abortable) || (Flags & FL_QUICK))
@@ -2116,6 +2191,9 @@ asm     out     dx,al
 			//
 			// seperate random value into x/y pair
 			//
+			y = (rndval-1)&0xFF; // low 8 bits - 1 = y xoordinate
+			x = (rndval&0x1FF00)>>8); // next 9 bits = x xoordinate
+#if 0
 			asm     mov     ax,[WORD PTR rndval]
 			asm     mov     dx,[WORD PTR rndval+2]
 			asm     mov     bx,ax
@@ -2133,9 +2211,19 @@ asm     out     dx,al
 			asm     shr     bx,1
 			asm     shr     bx,1
 			asm     mov     [x],bx                                  // next 9 bits = x xoordinate
+#endif
 			//
 			// advance to next random element
 			//
+			if (rndval & 1)
+			{
+				rndval = (rndval >> 1) ^ 0x00012000;
+			}
+			else
+			{
+				rndval >>= 1;
+			}
+#if 0
 			asm     shr     dx,1
 			asm     rcr     ax,1
 			asm     jnc     noxor
@@ -2144,11 +2232,21 @@ asm     out     dx,al
 noxor:
 			asm     mov     [WORD PTR rndval],ax
 			asm     mov     [WORD PTR rndval+2],dx
+#endif
 
 			if (x>width || y>height)
 				continue;
 			drawofs = source+ylookup[y];
 
+			// PORTING FROM ASM:
+			// - maskb[x&7] picks pixel(s) to update out of 8 in byte
+			// - Source offset is drawofs+(x>>3), dest is source_offset+pagedelta
+			// - The byte is updated for each plane separately
+			//
+			// In ported code we update all planes at once
+
+			BE_SDL_EGAUpdateGFXBitsScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
+#if 0
 			asm     mov     cx,[x]
 			asm     mov     si,cx
 			asm     and     si,7
@@ -2208,13 +2306,15 @@ noxor:
 
 			asm     mov     bl,[es:si]
 			asm     xchg [es:di],bl
+#endif
 
 			if (rndval == 1)                // entire sequence has been completed
 				goto exitfunc;
 		}
 		frame++;
-//		while (TimeCount<frame)         // don't go too fast
+//		while (SD_GetTimeCount()<frame)         // don't go too fast
 //		;
+		BE_SDL_ShortSleep();
 	} while (1);
 
 exitfunc:;
@@ -2389,6 +2489,7 @@ void DoFullScreenAnim(id0_char_t *filename, void (*SpawnAll)(), id0_short_t (*Ch
 		RF_Refresh();
 
 		ExitAnim = (id0_boolean_t)CheckKey();
+		BE_SDL_ShortSleep();
 	}
 
 //	RemoveBOBList(player);
@@ -2417,7 +2518,9 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 
 	if (!disktext)
 		disktext = GAMENAME;
-	drive[0] = getdisk() + 'A';
+	// CHOCO CAT - Let's just call the drive 'A' (floppy disk)
+	drive[0] = 'A';
+	//drive[0] = getdisk() + 'A';
 	drive[1] = 0;
 	while (rt_code == 2)
 	{
@@ -2428,9 +2531,19 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 			if (ge_textmode)
 			{
 				clrscr();
-				gotoxy(1,1);
-				printf("\nInsert %s disk %d into drive %s.\n",disktext,disknum,drive);
-				printf("Press SPACE to continue, ESC to abort.\n");
+				BE_SDL_MoveTextCursorTo(0, 0); // gotoxy(0,0);
+				// (CHOCO CAT) Because our printf is simplified... (also re-using command buffer as in gfx case)
+				strcpy(command,"\nInsert ");
+				strcat(command,disktext);
+				strcat(command," disk ");
+				BE_Cross_itoa_dec(disknum,command+strlen(command));
+				strcat(command," into drive ");
+				strcat(command,drive);
+				strcat(command,".");
+				BE_Cross_Simplified_printf("%s\n", command);
+				BE_Cross_Simplified_printf("Press SPACE to continue, ESC to abort.\n");
+				//printf("\nInsert %s disk %d into drive %s.\n",disktext,disknum,drive);
+				//printf("Press SPACE to continue, ESC to abort.\n");
 			}
 			else
 			{
@@ -2451,7 +2564,8 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 				if (disknum != -1)
 				{
 					strcat(command," ");
-					itoa(disknum,command+strlen(command),10);
+					BE_Cross_itoa_dec(disknum,command+strlen(command));
+					//itoa(disknum,command+strlen(command),10);
 				}
 				strcat(command," into drive ");
 				strcat(command,drive);
@@ -2460,9 +2574,11 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 				US_CPrint("Press SPACE to continue, ESC to abort.");
 			}
 
-			sound(300);
+			BE_SDL_BSound(300);
+			//sound(300);
 			VW_WaitVBL(20);
-			nosound();
+			BE_SDL_BNoSound();
+			//nosound();
 
 			if (!ge_textmode)
 			{

@@ -44,7 +44,7 @@
 //                      window
 //
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 
 #pragma hdrstop
 
@@ -80,8 +80,8 @@ static  id0_boolean_t         US_Started;
 					CursorBad;
 		id0_int_t                     CursorX,CursorY;
 
-		void            (*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
-					(*USL_DrawString)(id0_char_t id0_far *) = VWB_DrawPropString;
+		void            (*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
+					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *) = VWB_DrawPropString;
 
 		id0_boolean_t         (*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
 		void            (*USL_ResetGame)(void);
@@ -100,6 +100,8 @@ static  id0_boolean_t         US_Started;
 //      Internal routines
 
 //      Public routines
+
+#if 0 // USL_HardError IS UNUSED NOW (TODO CHOCO KEEN: Restore?)
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -191,6 +193,8 @@ oh_kill_me:
 #pragma warn    +par
 #pragma warn    +rch
 
+#endif // USL_HardError IS UNUSED NOW
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //      USL_GiveSaveName() - Returns a pointer to a static buffer that contains
@@ -233,13 +237,42 @@ USL_ReadConfig(void)
 	id0_boolean_t         gotit;
 	id0_char_t            sig[sizeof(EXT)];
 	id0_word_t            version;
-	id0_int_t                     file;
+	int                     file;
 	SDMode          sd;
 	SMMode          sm;
 	ControlType     ctl;
 
 	if ((file = open("CONFIG."EXT,O_BINARY | O_RDONLY)) != -1)
 	{
+		// CHOCO KEEN Cross Platform file I/O
+		BE_Cross_readInt8LEBuffer(file, sig, sizeof(sig));
+		BE_Cross_readInt16LE(file, &version);
+		if (strcmp(sig,EXT) || (version != ConfigVersion))
+		{
+			close(file);
+			goto rcfailed;
+		}
+		for (int i = 0; i < MaxScores; ++i)
+		{
+			BE_Cross_readInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
+			BE_Cross_readInt32LE(file, &Scores[i].score);
+			BE_Cross_readInt16LE(file, &Scores[i].completed);
+		}
+		size_t BE_Cross_read_SDMode_From16LE(int handle, SDMode *ptr);
+		BE_Cross_read_SDMode_From16LE(file, &sd);
+		size_t BE_Cross_read_SMMode_From16LE(int handle, SMMode *ptr);
+		BE_Cross_read_SMMode_From16LE(file, &sm);
+		size_t BE_Cross_read_ControlType_From16LE(int handle, ControlType *ptr);
+		BE_Cross_read_ControlType_From16LE(file, &ctl);
+		// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
+		BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+		BE_Cross_read_boolean_From16LE(file, &showscorebox);
+		BE_Cross_read_boolean_From16LE(file, &compatability);
+#ifdef KEEN
+		BE_Cross_read_boolean_From16LE(file, &oldshooting);
+		BE_Cross_readInt8LE(file, &firescan);
+#endif
+#if 0
 		read(file,sig,sizeof(EXT));
 		read(file,&version,sizeof(version));
 		if (strcmp(sig,EXT) || (version != ConfigVersion))
@@ -257,6 +290,7 @@ USL_ReadConfig(void)
 #ifdef KEEN
 		read(file,&oldshooting,sizeof(oldshooting));
 		read(file,&firescan,sizeof(firescan));
+#endif
 #endif
 		close(file);
 
@@ -292,13 +326,42 @@ static void
 USL_WriteConfig(void)
 {
 	id0_word_t    version;
-	id0_int_t             file;
+	int             file;
 
 	version = ConfigVersion;
 	file = open("CONFIG."EXT,O_CREAT | O_BINARY | O_WRONLY,
 				S_IREAD | S_IWRITE | S_IFREG);
 	if (file != -1)
 	{
+		BE_Cross_writeInt8LEBuffer(file, EXT, sizeof(EXT));
+		BE_Cross_writeInt16LE(file, &version);
+		// CHOCO KEEN Cross Platform file I/O
+		for (int i = 0; i < MaxScores; ++i)
+		{
+			BE_Cross_writeInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
+			BE_Cross_writeInt32LE(file, &Scores[i].score);
+			BE_Cross_writeInt16LE(file, &Scores[i].completed);
+		}
+		size_t BE_Cross_write_SDMode_To16LE(int handle, const SDMode *ptr);
+		BE_Cross_write_SDMode_To16LE(file, &SoundMode);
+		size_t BE_Cross_write_SMMode_To16LE(int handle, const SMMode *ptr);
+		BE_Cross_write_SMMode_To16LE(file, &MusicMode);
+		if      // Hack
+		(
+			(Controls[0] == ctrl_Joystick1)
+		||      (Controls[0] == ctrl_Joystick2)
+		)
+			Controls[0] = ctrl_Keyboard;
+		size_t BE_Cross_write_ControlType_To16LE(int handle, const ControlType *ptr);
+		BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
+		BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+		BE_Cross_write_boolean_To16LE(file, &showscorebox);
+		BE_Cross_write_boolean_To16LE(file, &compatability);
+#ifdef KEEN
+		BE_Cross_write_boolean_To16LE(file, &oldshooting);
+		BE_Cross_writeInt8LE(file, &firescan);
+#endif
+#if 0
 		write(file,EXT,sizeof(EXT));
 		write(file,&version,sizeof(version));
 		write(file,Scores,sizeof(HighScore) * MaxScores);
@@ -318,6 +381,7 @@ USL_WriteConfig(void)
 		write(file,&oldshooting,sizeof(oldshooting));
 		write(file,&firescan,sizeof(firescan));
 #endif
+#endif
 		close(file);
 	}
 }
@@ -334,7 +398,7 @@ USL_CheckSavedGames(void)
 	id0_boolean_t         ok;
 	id0_char_t            *filename;
 	id0_word_t            i;
-	id0_int_t                     file;
+	int                     file;
 	SaveGame        *game;
 
 	USL_SaveGame = 0;
@@ -346,11 +410,21 @@ USL_CheckSavedGames(void)
 		ok = false;
 		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
+			// CHOCO KEEN Cross Platform file I/O
+			id0_byte_t padding; // Apparently one byte of struct padding
 			if
 			(
-				(read(file,game,sizeof(*game)) == sizeof(*game))
+				(BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
+			&&	(BE_Cross_readInt16LE(file, &oldtestptr) == 1)
+			&&	(BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
+			&&	(BE_Cross_readInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
+			&&	(BE_Cross_readInt8LE(file, &padding) == 1)
+
+				//(read(file,game,sizeof(*game)) == sizeof(*game))
 			&&      (!strcmp(game->signature,EXT))
-			&&      (game->oldtest == &PrintX)
+				//TODO (CHOCO CAT): Looks useless in the Catacomb Adventure Series, so let's compare to 0 for now (expected to be required for Catacomb 3D and Commander Keen 4-6)
+			&&	(game->oldtest == 0)
+			//&&      (game->oldtest == &PrintX)
 			)
 				ok = true;
 
@@ -475,11 +549,12 @@ US_CheckParm(id0_char_t *parm,id0_char_t **strings)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_ScreenDraw(id0_word_t x,id0_word_t y,id0_char_t *s,id0_byte_t attr)
+USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 {
 	id0_byte_t    id0_far *screen,id0_far *oscreen;
 
-	screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
+	screen = BE_SDL_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2);
+	//screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
 	oscreen = (&introscn + 7) + ((x - 1) * 2) + (y * 80 * 2) + 1;
 	while (*s)
 	{
@@ -505,6 +580,11 @@ static void
 USL_ClearTextScreen(void)
 {
 	// Set to 80x25 color text mode
+	BE_SDL_SetScreenMode(3); // Mode 3
+	// Move the cursor to the bottom of the screen
+	BE_SDL_MoveTextCursorTo(0/*Lefthand side of the screen*/, 24/*Bottom row*/);
+#if 0
+	// Set to 80x25 color text mode
 	_AL = 3;                                // Mode 3
 	_AH = 0x00;
 	geninterrupt(0x10);
@@ -516,6 +596,7 @@ USL_ClearTextScreen(void)
 	_DH = 24;                               // Bottom row
 	_AH = 0x02;
 	geninterrupt(0x10);
+#endif
 }
 
 #if 0
@@ -594,7 +675,8 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 	id0_char_t    buf[16];
 	id0_word_t    i;
 
-	for (i = strlen(ltoa(mem,buf,10));i < 5;i++)
+	//for (i = strlen(ltoa(mem,buf,10));i < 5;i++)
+	for (i = strlen(BE_Cross_ltoa_dec(mem,buf));i < 5;i++)
 		USL_ScreenDraw(x++,y," ",0xff);
 	USL_ScreenDraw(x,y,buf,0xff);
 }
@@ -715,7 +797,7 @@ static  id0_byte_t    colors[] = {4,6,13,15,15,15,15,15,15};
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),void (*print)(id0_char_t id0_far *))
+US_SetPrintRoutines(void (*measure)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),void (*print)(const id0_char_t id0_far *,const id0_char_t id0_far *))
 {
 	USL_MeasureString = measure;
 	USL_DrawString = print;
@@ -728,27 +810,36 @@ US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_Print(id0_char_t *s)
+US_Print(const id0_char_t *s)
 {
-	id0_char_t    c,*se;
+	id0_char_t c;
+	const id0_char_t *se;
+	//id0_char_t	c,*se;
 	id0_word_t    w,h;
+
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - Input is now const and US_Print does not temporarily modify it.
+	// - Reason is the input is often a C string literal. Modification of
+	// any such string leads to undefined behaviors (or at least a crash).
 
 	while (*s)
 	{
 		se = s;
 		while ((c = *se) && (c != '\n'))
 			se++;
-		*se = '\0';
+		//*se = '\0'; Constified
 
-		USL_MeasureString(s,&w,&h);
+		USL_MeasureString(s,se,&w,&h); // Instead of "*se = '\0';"
+		//USL_MeasureString(s,&w,&h);
 		px = PrintX;
 		py = PrintY;
-		USL_DrawString(s);
+		USL_DrawString(s,se); // Instead of "*se = '\0';"
+		//USL_DrawString(s);
 
 		s = se;
 		if (c)
 		{
-			*se = c;
+			//*se = c; // Constified
 			s++;
 
 			PrintX = WindowX;
@@ -794,7 +885,8 @@ US_PrintUnsigned(id0_longword_t n)
 {
 	id0_char_t    buffer[32];
 
-	US_Print(ultoa(n,buffer,10));
+	US_Print(BE_Cross_ultoa_dec(n,buffer));
+	//US_Print(ultoa(n,buffer,10));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -807,7 +899,8 @@ US_PrintSigned(id0_long_t n)
 {
 	id0_char_t    buffer[32];
 
-	US_Print(ltoa(n,buffer,10));
+	US_Print(BE_Cross_ltoa_dec(n,buffer));
+	//US_Print(ltoa(n,buffer,10));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -816,18 +909,18 @@ US_PrintSigned(id0_long_t n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-USL_PrintInCenter(id0_char_t *s,Rect r)
+USL_PrintInCenter(const id0_char_t *s,Rect r)
 {
 	id0_word_t    w,h,
 			rw,rh;
 
-	USL_MeasureString(s,&w,&h);
+	USL_MeasureString(s,NULL,&w,&h);
 	rw = r.lr.x - r.ul.x;
 	rh = r.lr.y - r.ul.y;
 
 	px = r.ul.x + ((rw - w) / 2);
 	py = r.ul.y + ((rh - h) / 2);
-	USL_DrawString(s);
+	USL_DrawString(s,NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -836,7 +929,7 @@ USL_PrintInCenter(id0_char_t *s,Rect r)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintCentered(id0_char_t *s)
+US_PrintCentered(const id0_char_t *s)
 {
 	Rect    r;
 
@@ -855,17 +948,28 @@ US_PrintCentered(id0_char_t *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrintLine(id0_char_t *s)
+US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 {
 	id0_word_t    w,h;
 
-	USL_MeasureString(s,&w,&h);
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - All input strings are now const.
+	// - An additional "optse" argument marking one char past end
+	// of string. Set to NULL for original behaviors.
+	// - Related to modifcation to US_CPrint, properly taking care of
+	// C string literals as inputs.
+	// - The functions pointed by USL_MeasureString and USL_DrawString are
+	// similarly modified.
+
+	USL_MeasureString(s,optse,&w,&h);
+	//USL_MeasureString(s,&w,&h);
 
 	if (w > WindowW)
 		Quit("US_CPrintLine() - String exceeds width\n-->%s",s);
 	px = WindowX + ((WindowW - w) / 2);
 	py = PrintY;
-	USL_DrawString(s);
+	USL_DrawString(s,optse);
+	//USL_DrawString(s);
 	PrintY += h;
 }
 
@@ -876,23 +980,30 @@ US_CPrintLine(id0_char_t *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrint(id0_char_t *s)
+US_CPrint(const id0_char_t *s)
 {
-	id0_char_t    c,*se;
+	id0_char_t	c;
+	const id0_char_t	*se;
+	//id0_char_t	c,*se;
+
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - Input is now const and US_Print does not temporarily modify it.
+	// - Reason is the input is often a C string literal. Modification of
+	// any such string leads to undefined behaviors (or at least a crash).
 
 	while (*s)
 	{
 		se = s;
 		while ((c = *se) && (c != '\n'))
 			se++;
-		*se = '\0';
+		//*se = '\0'; // Constified
 
-		US_CPrintLine(s);
+		US_CPrintLine(s,se); // Instead of "*se = '\0';"
 
 		s = se;
 		if (c)
 		{
-			*se = c;
+			//*se = c; // Constified
 			s++;
 		}
 	}
@@ -1107,7 +1218,7 @@ US_UpdateCursor(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_XORICursor(id0_int_t x,id0_int_t y,id0_char_t *s,id0_word_t cursor)
+USL_XORICursor(id0_int_t x,id0_int_t y,const id0_char_t *s,id0_word_t cursor)
 {
 	id0_char_t    buf[MaxString];
 	id0_word_t    w,h;
@@ -1132,7 +1243,7 @@ USL_XORICursor(id0_int_t x,id0_int_t y,id0_char_t *s,id0_word_t cursor)
 //
 ///////////////////////////////////////////////////////////////////////////
 id0_boolean_t
-US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean_t escok,
+US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_boolean_t escok,
 				id0_int_t maxchars,id0_int_t maxwidth)
 {
 	id0_boolean_t         redraw,
@@ -1158,7 +1269,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 	cursormoved = redraw = true;
 
 	cursorvis = done = false;
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 	LastASCII = key_None;
 	LastScan = sc_None;
 
@@ -1284,13 +1395,13 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 		if (cursormoved)
 		{
 			cursorvis = false;
-			lasttime = TimeCount - TickBase;
+			lasttime = SD_GetTimeCount() - TickBase;
 
 			cursormoved = false;
 		}
-		if (TimeCount - lasttime > TickBase / 2)
+		if (SD_GetTimeCount() - lasttime > TickBase / 2)
 		{
-			lasttime = TimeCount;
+			lasttime = SD_GetTimeCount();
 
 			cursorvis ^= true;
 		}

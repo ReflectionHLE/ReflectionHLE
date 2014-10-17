@@ -32,6 +32,7 @@
 
 #define __ID_VW__
 
+
 //===========================================================================
 
 #define	G_P_SHIFT		4	// global >> ?? = pixels
@@ -43,7 +44,6 @@
 #define GRPLANES		4
 #define BYTEPIXELS		8
 #endif
-
 #if GRMODE == CGAGR
 #define	SCREENWIDTH		128
 #define CHARWIDTH		2
@@ -158,6 +158,11 @@
 
 //===========================================================================
 
+// setting to 0 causes setscreen and waitvbl
+// to skip waiting for VBL (for timing things)
+
+#define WAITFORVBL 1
+
 typedef enum {NOcard,MDAcard,CGAcard,EGAcard,MCGAcard,VGAcard,
 		  HGCcard=0x80,HGCPcard,HICcard} cardtype;
 
@@ -168,7 +173,7 @@ typedef struct
 	orgx,orgy,
 	xl,yl,xh,yh,
 	shifts;
-} spritetabletype;
+} __attribute__((__packed__)) spritetabletype;
 
 typedef	struct
 {
@@ -176,12 +181,12 @@ typedef	struct
 	id0_unsigned_t	planesize[MAXSHIFTS];
 	id0_unsigned_t	width[MAXSHIFTS];
 	id0_byte_t		data[];
-} spritetype;		// the memptr for each sprite points to this
+} __attribute__((__packed__)) spritetype;		// the memptr for each sprite points to this
 
 typedef struct
 {
 	id0_int_t width,height;
-} pictabletype;
+} __attribute__((__packed__)) pictabletype;
 
 
 typedef struct
@@ -189,7 +194,7 @@ typedef struct
 	id0_int_t height;
 	id0_int_t location[256];
 	id0_char_t width[256];
-} fontstruct;
+} __attribute__((__packed__)) fontstruct;
 
 
 typedef enum {CGAgr,EGAgr,VGAgr} grtype;
@@ -205,13 +210,14 @@ extern	id0_unsigned_t	panx,pany;		// panning adjustments inside port in pixels
 extern	id0_unsigned_t	pansx,pansy;
 extern	id0_unsigned_t	panadjust;		// panx/pany adjusted by screen resolution
 
-extern	id0_unsigned_t	screenseg;		// normally 0xa000 or buffer segment
+extern  id0_byte_t     *screenseg;
+//extern	id0_unsigned_t	screenseg;		// normally 0xa000 or buffer segment
 
 extern	id0_unsigned_t	linewidth;
 extern	id0_unsigned_t	ylookup[VIRTUALHEIGHT];
 
 extern	id0_boolean_t		screenfaded;
-extern	id0_char_t 		colors[7][17];	// pallets for fades
+extern	id0_char_t 		colors[7][17];	// palettes for fades
 
 extern	pictabletype	id0_seg *pictable;
 extern	pictabletype	id0_seg *picmtable;
@@ -244,10 +250,17 @@ cardtype	VW_VideoID (void);
 // EGA hardware routines
 //
 
+#if 0
 #define EGAWRITEMODE(x) asm{cli;mov dx,GC_INDEX;mov ax,GC_MODE+256*x;out dx,ax;sti;}
 #define EGABITMASK(x) asm{cli;mov dx,GC_INDEX;mov ax,GC_BITMASK+256*x;out dx,ax;sti;}
 #define EGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov ax,SC_MAPMASK+x*256;out dx,ax;sti;}
 #define EGAREADMAP(x) asm{cli;mov dx,GC_INDEX;mov ax,GC_READMAP+x*256;out dx,ax;sti;}
+#endif
+// (CHOCO KEEN) Doing nothing
+#define EGAWRITEMODE(x) {}
+#define EGABITMASK(x) {}
+#define EGAMAPMASK(x) {}
+#define EGAREADMAP(X) {}
 
 void 	VW_SetLineWidth(id0_int_t width);
 void 	VW_SetSplitScreen(id0_int_t width);
@@ -255,7 +268,13 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
 
 void	VW_SetScreenMode (id0_int_t grmode);
 void	VW_ClearVideo (id0_int_t color);
-void	VW_WaitVBL (id0_int_t number);
+
+inline void VW_WaitVBL (id0_int_t number)
+{
+#if WAITFORVBL
+	BE_SDL_WaitVBL(number);
+#endif
+}
 
 void	VW_ColorBorder (id0_int_t color);
 void 	VW_SetPalette(id0_byte_t *palette);
@@ -313,11 +332,11 @@ void VW_ClipDrawMPic(id0_unsigned_t x, id0_int_t y, id0_unsigned_t chunknum);
 //
 // pixel addressable routines
 //
-void	VW_MeasurePropString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height);
-void	VW_MeasureMPropString  (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height);
+void	VW_MeasurePropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height);
+void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height);
 
-void VW_DrawPropString (id0_char_t id0_far *string);
-void VW_DrawMPropString (id0_char_t id0_far *string);
+void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+void VW_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
 void VW_DrawSprite(id0_int_t x, id0_int_t y, id0_unsigned_t sprite);
 void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color);
 void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color);
@@ -361,8 +380,8 @@ void VWB_DrawPic (id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_DrawMPic(id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_int_t color);
 
-void VWB_DrawPropString	 (id0_char_t id0_far *string);
-void VWB_DrawMPropString (id0_char_t id0_far *string);
+void VWB_DrawPropString	 (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+void VWB_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
 void VWB_DrawSprite (id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Plot (id0_int_t x, id0_int_t y, id0_int_t color);
 void VWB_Hlin (id0_int_t x1, id0_int_t x2, id0_int_t y, id0_int_t color);

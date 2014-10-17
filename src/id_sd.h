@@ -24,7 +24,7 @@
 //
 
 #ifndef	__TYPES__
-#include "ID_Types.h"
+#include "id_types.h"
 #endif
 
 #ifndef	__ID_SD__
@@ -48,7 +48,7 @@ typedef	struct
 		{
 			id0_longword_t	length;
 			id0_word_t		priority;
-		} SoundCommon;
+		} __attribute((__packed__)) SoundCommon;
 
 //	PC Sound stuff
 #define	pcTimer		0x42
@@ -61,7 +61,7 @@ typedef	struct
 		{
 			SoundCommon	common;
 			id0_byte_t		data[1];
-		} PCSound;
+		} __attribute((__packed__)) PCSound;
 
 // 	Registers for the Sound Blaster card - needs to be offset by n0
 #define	sbReset		0x206
@@ -78,7 +78,7 @@ typedef	struct
 			id0_byte_t		bits,
 						reference,
 						data[1];
-		} SampledSound;
+		} __attribute((__packed__)) SampledSound;
 
 // 	Registers for the AdLib card
 // Operator stuff
@@ -107,7 +107,7 @@ typedef	struct
 					voice,
 					mode,
 					unused[3];
-		} Instrument;
+		} __attribute((__packed__)) Instrument;
 
 typedef	struct
 		{
@@ -115,7 +115,7 @@ typedef	struct
 			Instrument	inst;
 			id0_byte_t		block,
 						data[1];
-		} AdLibSound;
+		} __attribute((__packed__)) AdLibSound;
 
 //
 //	Sequencing stuff
@@ -142,14 +142,14 @@ typedef	struct
 		{
 			id0_word_t	length,
 					values[1];
-		} MusicGroup;
+		} __attribute((__packed__)) MusicGroup;
 #else
 typedef	struct
 		{
 			id0_word_t	flags,
 					count,
 					offsets[1];
-		} MusicGroup;
+		} __attribute((__packed__)) MusicGroup;
 #endif
 
 typedef	struct
@@ -162,7 +162,7 @@ typedef	struct
 			id0_boolean_t		percussive;
 			id0_word_t		id0_far *seq;
 			id0_longword_t	nextevent;
-		} ActiveTrack;
+		} __attribute((__packed__)) ActiveTrack;
 
 #define	sqmode_Normal		0
 #define	sqmode_FadeIn		1
@@ -176,7 +176,8 @@ extern	id0_boolean_t		AdLibPresent,
 					NeedsMusic;	// For Caching Mgr
 extern	SDMode		SoundMode;
 extern	SMMode		MusicMode;
-extern	id0_longword_t	TimeCount;					// Global time in ticks
+//NOT DECLARED HERE - USE SD_GetTimeCount AND/OR SD_SetTimeCount
+//extern	id0_longword_t	TimeCount;					// Global time in ticks
 extern 	SDMode		oldsoundmode;
 
 // Function prototypes
@@ -202,5 +203,16 @@ extern	void	SDL_PCPlaySound(PCSound id0_far *sound),
 				SDL_ALPlaySound(AdLibSound id0_far *sound),
 				SDL_ALStopSound(void);
 #endif
+
+// Replacements for direct accesses to TimeCount variable
+inline id0_longword_t SD_GetTimeCount(void)
+{
+	return BE_SDL_GetTimeCount();
+}
+
+inline void SD_SetTimeCount(id0_longword_t newcount)
+{
+	BE_SDL_SetTimeCount(newcount);
+}
 
 #endif

@@ -28,7 +28,7 @@ Primary coder: John Carmack
 
 RELIES ON
 ---------
-Quit (id0_char_t *error) function
+Quit (char *error) function
 
 
 WORK TO DO
@@ -42,7 +42,7 @@ EMS / XMS unmanaged routines
 =============================================================================
 */
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #pragma hdrstop
 
 #pragma warn -pro
@@ -114,19 +114,40 @@ void		(* aftersort) (void);
 
 id0_boolean_t		mmstarted;
 
-void id0_far	*farheap;
-void		*nearheap;
+//void id0_far	*farheap;
+//void		*nearheap;
 
 mmblocktype	id0_far mmblocks[MAXBLOCKS]
 			,id0_far *mmhead,id0_far *mmfree,id0_far *mmrover,id0_far *mmnew;
 
 id0_boolean_t		bombonerror;
 
-id0_unsigned_t	totalEMSpages,freeEMSpages,EMSpageframe,EMSpagesmapped,EMShandle;
+//id0_unsigned_t	totalEMSpages,freeEMSpages,EMSpageframe,EMSpagesmapped,EMShandle;
 
-void		(* XMSaddr) (void);		// id0_far pointer to XMS driver
+//void		(* XMSaddr) (void);		// far pointer to XMS driver
 
-id0_unsigned_t	numUMBs,UMBbase[MAXUMBS];
+//id0_unsigned_t	numUMBs,UMBbase[MAXUMBS];
+
+// A static memory buffer used for our allocations, made out of 16-bytes
+// long paragraphs (each of them beginning with some emulated "segment")
+//
+// NOTE: Main mem (near+far) should consist of 335*1024 bytes
+// (for Keen Dreams with EGA graphics)
+static id0_byte_t mmEmulatedMemSpace[512*1024];
+// The very first "segment" in the emulated space
+#define EMULATED_FIRST_SEG 0
+// Different portions of the space being emulated - start points
+#define EMULATED_NEAR_SEG EMULATED_FIRST_SEG
+#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+4096)
+#define EMULATED_EMS_SEG (EMULATED_FAR_SEG+23544)
+#define EMULATED_XMS_SEG (EMULATED_EMS_SEG+4096)
+// Lengths in paragraphs of the different sections
+#define EMULATED_NEAR_PARAGRAPHS (EMULATED_FAR_SEG-EMULATED_NEAR_SEG)
+#define EMULATED_FAR_PARAGRAPHS (EMULATED_EMS_SEG-EMULATED_FAR_SEG)
+#define EMULATED_EMS_PARAGRAPHS (EMULATED_XMS_SEG-EMULATED_EMS_SEG)
+#define EMULATED_XMS_PARAGRAPHS (sizeof(mmEmulatedMemSpace)/16-EMULATED_XMS_SEG)
+// Used to obtain a pointer to some location in mmEmulatedMemSpace
+#define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
 //==========================================================================
 
@@ -134,16 +155,17 @@ id0_unsigned_t	numUMBs,UMBbase[MAXUMBS];
 // local prototypes
 //
 
-id0_boolean_t		MML_CheckForEMS (void);
-void 		MML_ShutdownEMS (void);
-void 		MM_MapEMS (void);
-id0_boolean_t 	MML_CheckForXMS (void);
-void 		MML_ShutdownXMS (void);
+//id0_boolean_t		MML_CheckForEMS (void);
+//void 		MML_ShutdownEMS (void);
+//void 		MM_MapEMS (void);
+//id0_boolean_t 	MML_CheckForXMS (void);
+//void 		MML_ShutdownXMS (void);
 void		MML_UseSpace (id0_unsigned_t segstart, id0_unsigned_t seglength);
 void 		MML_ClearBlock (void);
 
 //==========================================================================
 
+#if 0
 /*
 ======================
 =
@@ -160,13 +182,13 @@ id0_boolean_t MML_CheckForEMS (void)
 {
 asm	mov	dx,OFFSET emmname[0]
 asm	mov	ax,0x3d00
-asm	id0_int_t	0x21		// try to open EMMXXXX0 device
+asm	int	0x21		// try to open EMMXXXX0 device
 asm	jc	error
 
 asm	mov	bx,ax
 asm	mov	ax,0x4400
 
-asm	id0_int_t	0x21		// get device info
+asm	int	0x21		// get device info
 asm	jc	error
 
 asm	and	dx,0x80
@@ -174,13 +196,13 @@ asm	jz	error
 
 asm	mov	ax,0x4407
 
-asm	id0_int_t	0x21		// get status
+asm	int	0x21		// get status
 asm	jc	error
 asm	or	al,al
 asm	jz	error
 
 asm	mov	ah,0x3e
-asm	id0_int_t	0x21		// close handle
+asm	int	0x21		// close handle
 asm	jc	error
 
 //
@@ -213,25 +235,25 @@ void MML_SetupEMS (void)
 
 asm {
 	mov	ah,EMS_STATUS
-	id0_int_t	EMS_INT						// make sure EMS hardware is present
+	int	EMS_INT						// make sure EMS hardware is present
 	or	ah,ah
 	jnz	error
 
 	mov	ah,EMS_VERSION
-	id0_int_t	EMS_INT
+	int	EMS_INT
 	or	ah,ah
 	jnz	error
 	cmp	al,0x32						// only work on ems 3.2 or greater
 	jb	error
 
 	mov	ah,EMS_GETFRAME
-	id0_int_t	EMS_INT						// find the page frame address
+	int	EMS_INT						// find the page frame address
 	or	ah,ah
 	jnz	error
 	mov	[EMSpageframe],bx
 
 	mov	ah,EMS_GETPAGES
-	id0_int_t	EMS_INT						// find out how much EMS is there
+	int	EMS_INT						// find out how much EMS is there
 	or	ah,ah
 	jnz	error
 	mov	[totalEMSpages],dx
@@ -248,7 +270,7 @@ getpages:
 asm {
 	mov	[EMSpagesmapped],bx
 	mov	ah,EMS_ALLOCPAGES			// allocate up to 64k of EMS
-	id0_int_t	EMS_INT
+	int	EMS_INT
 	or	ah,ah
 	jnz	error
 	mov	[EMShandle],dx
@@ -283,7 +305,7 @@ void MML_ShutdownEMS (void)
 asm	{
 	mov	ah,EMS_FREEPAGES
 	mov	dx,[EMShandle]
-	id0_int_t	EMS_INT
+	int	EMS_INT
 	or	ah,ah
 	jz	ok
 	}
@@ -310,7 +332,7 @@ void MM_MapEMS (void)
 {
 	id0_char_t	str[80],str2[10];
 	id0_unsigned_t	error;
-	id0_int_t	i;
+	int	i;
 
 	for (i=0;i<EMSpagesmapped;i++)
 	{
@@ -319,7 +341,7 @@ void MM_MapEMS (void)
 		mov	bx,[i]			// logical page
 		mov	al,bl			// physical page
 		mov	dx,[EMShandle]	// handle
-		id0_int_t	EMS_INT
+		int	EMS_INT
 		or	ah,ah
 		jnz	error
 		}
@@ -353,7 +375,7 @@ id0_boolean_t MML_CheckForXMS (void)
 
 asm {
 	mov	ax,0x4300
-	id0_int_t	0x2f				// query status of installed diver
+	int	0x2f				// query status of installed diver
 	cmp	al,0x80
 	je	good
 	}
@@ -379,7 +401,7 @@ void MML_SetupXMS (void)
 
 asm	{
 	mov	ax,0x4310
-	id0_int_t	0x2f
+	int	0x2f
 	mov	[WORD PTR XMSaddr],bx
 	mov	[WORD PTR XMSaddr+2],es		// function pointer to XMS driver
 	}
@@ -427,7 +449,7 @@ done:;
 
 void MML_ShutdownXMS (void)
 {
-	id0_int_t	i;
+	int	i;
 	id0_unsigned_t	base;
 
 	for (i=0;i<numUMBs;i++)
@@ -439,6 +461,7 @@ asm	mov	dx,[base]
 asm	call	[DWORD PTR XMSaddr]
 	}
 }
+#endif
 
 //==========================================================================
 
@@ -448,7 +471,7 @@ asm	call	[DWORD PTR XMSaddr]
 = MML_UseSpace
 =
 = Marks a range of paragraphs as usable by the memory manager
-= This is used to mark space for the near heap, id0_far heap, ems page frame,
+= This is used to mark space for the near heap, far heap, ems page frame,
 = and upper memory blocks
 =
 ======================
@@ -574,7 +597,7 @@ void MM_Startup (void)
 // locked block of all memory until we punch out free space
 //
 	GETNEWBLOCK;
-	mmhead = mmnew;				// this will allways be the first node
+	mmhead = mmnew;				// this will always be the first node
 	mmnew->start = 0;
 	mmnew->length = 0xffff;
 	mmnew->attributes = LOCKBIT;
@@ -585,6 +608,12 @@ void MM_Startup (void)
 //
 // get all available near conventional memory segments
 //
+	seglength = EMULATED_NEAR_PARAGRAPHS;
+	segstart = EMULATED_NEAR_SEG;
+	length = seglength*16;
+	MML_UseSpace (segstart,seglength);
+	mminfo.nearheap = length;
+#if 0
 	length=coreleft();
 	start = (void id0_far *)(nearheap = malloc(length));
 
@@ -594,10 +623,18 @@ void MM_Startup (void)
 	segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;
 	MML_UseSpace (segstart,seglength);
 	mminfo.nearheap = length;
+#endif
 
 //
-// get all available id0_far conventional memory segments
+// get all available far conventional memory segments
 //
+	seglength = EMULATED_FAR_PARAGRAPHS;
+	segstart = EMULATED_FAR_SEG;
+	length = seglength*16;
+	MML_UseSpace (segstart,seglength);
+	mminfo.farheap = length;
+	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
+#if 0
 	length=farcoreleft();
 	start = farheap = farmalloc(length);
 	length -= 16-(FP_OFF(start)&15);
@@ -607,6 +644,7 @@ void MM_Startup (void)
 	MML_UseSpace (segstart,seglength);
 	mminfo.farheap = length;
 	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
+#endif
 
 
 //
@@ -619,6 +657,12 @@ void MM_Startup (void)
 			goto emsskip;				// param NOEMS
 	}
 
+	seglength = EMULATED_EMS_PARAGRAPHS;
+	segstart = EMULATED_EMS_SEG;
+	length = seglength*16;
+	MML_UseSpace (segstart,seglength);
+	mminfo.EMSmem = length;
+#if 0
 	if (MML_CheckForEMS())
 	{
 		MML_SetupEMS();					// allocate space
@@ -626,6 +670,7 @@ void MM_Startup (void)
 		MM_MapEMS();					// map in used pages
 		mminfo.EMSmem = EMSpagesmapped*0x4000l;
 	}
+#endif
 
 //
 // detect XMS and get upper memory blocks
@@ -638,8 +683,15 @@ emsskip:
 			goto xmsskip;				// param NOXMS
 	}
 
+	seglength = EMULATED_XMS_PARAGRAPHS;
+	segstart = EMULATED_XMS_SEG;
+	length = seglength*16;
+	MML_UseSpace (segstart,seglength);
+	mminfo.XMSmem = length;
+#if 0
 	if (MML_CheckForXMS())
 		MML_SetupXMS();					// allocate as many UMBs as possible
+#endif
 
 //
 // allocate the misc buffer
@@ -664,6 +716,7 @@ xmsskip:
 
 void MM_Shutdown (void)
 {
+#if 0
   if (!mmstarted)
 	return;
 
@@ -671,6 +724,7 @@ void MM_Shutdown (void)
   free (nearheap);
   MML_ShutdownEMS ();
   MML_ShutdownXMS ();
+#endif
 }
 
 //==========================================================================
@@ -741,7 +795,8 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 			//
 				purge = lastscan->next;
 				lastscan->next = mmnew;
-				mmnew->start = *(id0_unsigned_t *)baseptr = startseg;
+				mmnew->start /*= *(id0_unsigned_t *)baseptr*/ = startseg;
+				*baseptr = EMULATED_SEG_TO_PTR(startseg);
 				mmnew->next = scan;
 				while ( purge != scan)
 				{	// free the purgable block
@@ -963,12 +1018,14 @@ void MM_SortMem (void)
 					dest = start;
 					while (length > 0xf00)
 					{
-						movedata(source,0,dest,0,0xf00*16);
+						memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), 0xf00*16);
+						//movedata(source,0,dest,0,0xf00*16);
 						length -= 0xf00;
 						source += 0xf00;
 						dest += 0xf00;
 					}
-					movedata(source,0,dest,0,length*16);
+					memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), length*16);
+					//movedata(source,0,dest,0,length*16);
 
 					scan->start = start;
 					*(id0_unsigned_t *)scan->useptr = start;

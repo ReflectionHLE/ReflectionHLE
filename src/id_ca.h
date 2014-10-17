@@ -19,15 +19,15 @@
 // ID_CA.H
 
 #ifndef __TYPES__
-#include "ID_TYPES.H"
+#include "id_types.h"
 #endif
 
 #ifndef __ID_MM__
-#include "ID_MM.H"
+#include "id_mm.h"
 #endif
 
 #ifndef __ID_GLOB__
-#include "ID_GLOB.H"
+#include "id_glob.h"
 #endif
 
 #define __ID_CA__
@@ -53,7 +53,7 @@ typedef	struct
 	id0_unsigned_t	planelength[3];
 	id0_unsigned_t	width,height;
 	id0_char_t		name[16];
-} maptype;
+} __attribute__((__packed__)) maptype;
 
 //===========================================================================
 
@@ -70,7 +70,7 @@ extern	id0_byte_t		ca_levelbit,ca_levelnum;
 
 extern	id0_char_t		*titleptr[8];
 
-extern	id0_int_t			profilehandle,debughandle;
+extern	int			profilehandle,debughandle;
 
 //
 // hooks for custom cache dialogs
@@ -83,15 +83,17 @@ extern	void	(*finishcachebox)	(void);
 
 // just for the score box reshifting
 
-void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_t dest,
+//void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_t dest,
+//	id0_unsigned_t width, id0_unsigned_t height, id0_unsigned_t pixshift);
+void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 	id0_unsigned_t width, id0_unsigned_t height, id0_unsigned_t pixshift);
 
 //===========================================================================
 
 void CA_OpenDebug (void);
 void CA_CloseDebug (void);
-id0_boolean_t CA_FarRead (id0_int_t handle, id0_byte_t id0_far *dest, id0_long_t length);
-id0_boolean_t CA_FarWrite (id0_int_t handle, id0_byte_t id0_far *source, id0_long_t length);
+id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length);
+id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t length);
 id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr);
 id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr);
 

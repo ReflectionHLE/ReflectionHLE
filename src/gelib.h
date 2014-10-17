@@ -49,10 +49,11 @@ extern id0_boolean_t ge_textmode;
 extern id0_short_t PPT_LeftEdge,PPT_RightEdge;
 //extern id0_boolean_t ConserveMemory;
 
+// (CHOCO CAT) Seems unused
 typedef struct Sample {
 		id0_char_t *filename;
 		memptr *data;
-} Sample;
+} __attribute__((__packed__)) Sample;
 
 typedef enum {ged_none, ged_SoundSource,ged_SoundBlaster} AudioDeviceType;
 
@@ -63,7 +64,7 @@ typedef struct {
 } textinfo;
 
 typedef struct {
-	id0_int_t handle;                     // handle of file
+	int handle;                     // handle of file
 	memptr buffer;          // pointer to buffer
 	id0_word_t offset;            // offset into buffer
 	id0_word_t status;            // read/write status
@@ -77,8 +78,9 @@ typedef enum ANIMINFO {at_NONE,at_INIT,at_WAIT,at_ONCE,at_CYCLE,
 struct BitMapHeader {
 	id0_unsigned_int_t    w,h,x,y;
 	id0_unsigned_char_t   d,trans,comp,pad;
-};
+} __attribute__((__packed__));
 
+// (CHOCO CAT) Seems unused
 struct BitMap {
 	id0_unsigned_int_t Width;
 	id0_unsigned_int_t Height;
@@ -127,9 +129,9 @@ void RefreshBOBList(objtype *obj);
 id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr);
 void lzwDecompressFromRAM(id0_byte_t id0_far *SrcPtr, id0_byte_t id0_far *DstPtr, id0_longword_t SrcLen);
 void lzwDecompressFromFile(BufferedIO *SrcPtr, id0_byte_t id0_far *DstPtr, id0_longword_t SrcLen);
-id0_byte_t readch(id0_int_t handle);
+id0_byte_t readch(int handle);
 
-memptr InitBufferedIO(id0_int_t handle, BufferedIO *bio);
+memptr InitBufferedIO(int handle, BufferedIO *bio);
 void FreeBufferedIO(BufferedIO *bio);
 id0_byte_t bio_readch(BufferedIO *bio);
 void bio_fillbuffer(BufferedIO *bio);

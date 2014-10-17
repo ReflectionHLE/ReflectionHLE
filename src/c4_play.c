@@ -441,7 +441,7 @@ deadloop:;
 	{
 		DebugKeys();
 		if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 	}
 }
 
@@ -742,7 +742,9 @@ void PlayLoop (void)
 	void (*think)();
 
 	ingame = true;
-	playstate = TimeCount = 0;
+	SD_SetTimeCount(0);
+	playstate = 0;
+	//playstate = TimeCount = 0;
 	gamestate.shotpower = handheight = 0;
 	pointcount = pointsleft = 0;
 
@@ -778,7 +780,8 @@ void PlayLoop (void)
 #ifndef PROFILE
 	fizzlein = true;				// fizzle fade in the first refresh
 #endif
-	TimeCount = lasttimecount = lastnuke = 0;
+	/*TimeCount = */lasttimecount = lastnuke = 0;
+	SD_SetTimeCount(0);
 
 	PollControls ();				// center mouse
 //	StartMusic ();
@@ -788,8 +791,12 @@ void PlayLoop (void)
 		PollControls();
 #else
 		control.xaxis = 1;
-		if (++TimeCount == 300)
+		id0_longword_t currTimeCount = SD_GetTimeCount();
+		SD_SetTimeCount(++currTimeCount);
+		if (currTimeCount == 300)
 			return;
+		//if (++TimeCount == 300)
+		//	return;
 #endif
 
 		objnum=0;

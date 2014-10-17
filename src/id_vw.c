@@ -18,7 +18,7 @@
 
 // ID_VW.C
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 
 /*
 =============================================================================
@@ -50,7 +50,8 @@ id0_unsigned_t	pansx,pansy;	// panning adjustments inside port in screen
 							// block limited pixel values (ie 0/8 for ega x)
 id0_unsigned_t	panadjust;		// panx/pany adjusted by screen resolution
 
-id0_unsigned_t	screenseg;		// normally 0xa000 / 0xb800
+id0_byte_t *screenseg;
+//id0_unsigned_t	screenseg;		// normally 0xa000 / 0xb800
 id0_unsigned_t	linewidth;
 id0_unsigned_t	ylookup[VIRTUALHEIGHT];
 
@@ -72,7 +73,7 @@ id0_int_t			bordercolor;
 =============================================================================
 */
 
-void	VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height,
+void	VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height,
 		fontstruct id0_seg *font);
 void 	VWL_DrawCursor (void);
 void 	VWL_EraseCursor (void);
@@ -103,12 +104,13 @@ void	VW_Startup (void)
 {
 	id0_int_t i;
 
-	asm	cld;
+	// Originally used for certain ASM code loops (clears direction flag)
+	//asm	cld;
 
 	videocard = 0;
 
-	for (i = 1;i < _argc;i++)
-		if (US_CheckParm(_argv[i],ParmStrings) == 0)
+	for (i = 1;i < id0_argc;i++)
+		if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
 		{
 			videocard = EGAcard;
 			break;
@@ -130,7 +132,8 @@ Quit ("Improper video card!  If you really have an EGA/VGA card that I am not \n
 	if (videocard < CGAcard || videocard > VGAcard)
 Quit ("Improper video card!  If you really have a CGA card that I am not \n"
 	  "detecting, use the -HIDDENCARD command line parameter!");
-	MM_GetPtr (&(memptr)screenseg,0x10000l);	// grab 64k for floating screen
+	MM_GetPtr ((memptr *)&screenseg,0x10000l);	// grab 64k for floating screen
+	//MM_GetPtr (&(memptr)screenseg,0x10000l);	// grab 64k for floating screen
 #endif
 
 	cursorvisible = 0;
@@ -169,36 +172,47 @@ void VW_SetScreenMode (id0_int_t grmode)
 {
 	switch (grmode)
 	{
-	  case TEXTGR:  _AX = 3;
-		  geninterrupt (0x10);
-		  screenseg=0xb000;
-		  break;
-	  case CGAGR: _AX = 4;
-		  geninterrupt (0x10);		// screenseg is actually a main mem buffer
-		  break;
-
-		case EGA320GR:						// MDM start (GAMERS EDGE)
-		  MaxX=320;
-		  MaxY=200;
-		  _AX = 0xd|128;
-		  geninterrupt (0x10);
-		  screenseg=0xa000;
+	  case TEXTGR:
+		BE_SDL_SetScreenMode(3);
+		screenseg=BE_SDL_GetTextModeMemoryPtr();
 		break;
-
-		case EGA640GR:
-		  MaxX=640;
-		  MaxY=200;
-		  _AX = 0xe|128;
-		  geninterrupt (0x10);
-		  screenseg=0xa000;
-		break;						 		// MDM end (GAMERS EDGE)
-
-	  case EGAGR: _AX = 0xd;
-		  MaxX=320;
-		  MaxY=200;
-		  geninterrupt (0x10);
-		  screenseg=0xa000;
-		  break;
+	  case CGAGR:
+		BE_SDL_SetScreenMode(4);
+		// screenseg is actually a main mem buffer
+		break;
+	  case EGA320GR:						// MDM start (GAMERS EDGE)
+		// TODO (CHOCO CAT) IMPLEMENT
+		printf("VW_SetScreenMode NOT IMPLEMENTED FOR grmode==EGA320GR, ABORTING\n");
+		exit(0);
+		MaxX=320;
+		MaxY=200;
+		BE_SDL_SetScreenMode(0xd|128);
+#if 0
+		_AX = 0xd|128;
+		geninterrupt (0x10);
+		screenseg=0xa000;
+		break;
+#endif
+	  case EGA640GR:
+		// TODO (CHOCO CAT) IMPLEMENT
+		printf("VW_SetScreenMode NOT IMPLEMENTED FOR grmode==EGA640GR, ABORTING\n");
+		exit(0);
+		MaxX=640;
+		MaxY=200;
+		BE_SDL_SetScreenMode(0xe|128);				// MDM end
+#if 0
+		_AX = 0xe|128;
+		geninterrupt (0x10);
+		screenseg=0xa000;
+		break;						 		// MDM end
+#endif	  
+	  case EGAGR:
+		MaxX=320;
+		MaxY=200;
+		BE_SDL_SetScreenMode(0xd);
+		// CHOCO KEEN no need to obtain screenseg
+		// - different EGA planes are accessed with new functions
+		break;
 #ifdef VGAGAME
 	  case VGAGR:{
 		  id0_char_t extern VGAPAL;	// deluxepaint vga pallet .OBJ file
@@ -237,10 +251,7 @@ id0_char_t colors[7][17]=
 
 void VW_ColorBorder (id0_int_t color)
 {
-	_AH=0x10;
-	_AL=1;
-	_BH=color;
-	geninterrupt (0x10);
+	BE_SDL_SetBorderColor(color);
 	bordercolor = color;
 }
 
@@ -265,10 +276,7 @@ void VW_SetDefaultColors(void)
 {
 #if GRMODE == EGAGR
 	colors[3][16] = bordercolor;
-	_ES=FP_SEG(&colors[3]);
-	_DX=FP_OFF(&colors[3]);
-	_AX=0x1002;
-	geninterrupt(0x10);
+	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[3]);
 	screenfaded = false;
 #endif
 }
@@ -282,10 +290,7 @@ void VW_FadeOut(void)
 	for (i=3;i>=0;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  _ES=FP_SEG(&colors[i]);
-	  _DX=FP_OFF(&colors[i]);
-	  _AX=0x1002;
-	  geninterrupt(0x10);
+	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -301,10 +306,7 @@ void VW_FadeIn(void)
 	for (i=0;i<4;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  _ES=FP_SEG(&colors[i]);
-	  _DX=FP_OFF(&colors[i]);
-	  _AX=0x1002;
-	  geninterrupt(0x10);
+	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
@@ -319,10 +321,7 @@ void VW_FadeUp(void)
 	for (i=3;i<6;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  _ES=FP_SEG(&colors[i]);
-	  _DX=FP_OFF(&colors[i]);
-	  _AX=0x1002;
-	  geninterrupt(0x10);
+	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -337,17 +336,16 @@ void VW_FadeDown(void)
 	for (i=5;i>2;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  _ES=FP_SEG(&colors[i]);
-	  _DX=FP_OFF(&colors[i]);
-	  _AX=0x1002;
-	  geninterrupt(0x10);
+	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
 #endif
 }
 
+// CHOCO CAT - UNUSED
 
+#if 0
 /*
 ========================
 =
@@ -377,6 +375,7 @@ void VW_SetAtrReg (id0_int_t reg, id0_int_t value)
   asm	out	dx,al
   asm	sti
 }
+#endif
 
 
 
@@ -400,11 +399,7 @@ void VW_SetLineWidth (id0_int_t width)
 //
 // set wide virtual screen
 //
-asm	mov	dx,CRTC_INDEX
-asm	mov	al,CRTC_OFFSET
-asm mov	ah,[BYTE PTR width]
-asm	shr	ah,1
-asm	out	dx,ax
+	BE_SDL_EGASetLineWidth(width); // Ported from ASM
 #endif
 
 //
@@ -437,6 +432,8 @@ void VW_SetSplitScreen (id0_int_t linenum)
 	VW_WaitVBL (1);
 	if (videocard==VGAcard)
 		linenum=linenum*2-1;
+	BE_SDL_SetSplitScreen(linenum);
+#if 0 
 	outportb (CRTC_INDEX,CRTC_LINECOMPARE);
 	outportb (CRTC_INDEX+1,linenum % 256);
 	outportb (CRTC_INDEX,CRTC_OVERFLOW);
@@ -446,6 +443,7 @@ void VW_SetSplitScreen (id0_int_t linenum)
 		outportb (CRTC_INDEX,CRTC_MAXSCANLINE);
 		outportb (CRTC_INDEX+1,inportb(CRTC_INDEX+1) & (255-64));
 	}
+#endif
 }
 
 //===========================================================================
@@ -465,12 +463,14 @@ void	VW_ClearVideo (id0_int_t color)
 	EGAMAPMASK(15);
 #endif
 
-asm	mov	es,[screenseg]
-asm	xor	di,di
-asm	mov	cx,0xffff
-asm	mov	al,[BYTE PTR color]
-asm	rep	stosb
-asm	stosb
+#if GRMODE == EGAGR
+	BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(0, color, 0xffff, 0xff);
+#endif
+#if GRMODE == CGAGR
+	memset(screenseg, color, 0xffff);
+	BE_SDL_MarkGfxForPendingUpdate();
+#endif
+
 
 #if GRMODE == EGAGR
 	EGAWRITEMODE(0);
@@ -649,64 +649,31 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 
   if (xlb==xhb)
   {
-  //
-  // entire line is in one id0_byte_t
-  //
+  	//
+  	// entire line is in one byte
+  	//
 
 	maskleft&=maskright;
 
-	asm	mov	es,[screenseg]
-	asm	mov	di,[dest]
-
-	asm	mov	dx,GC_INDEX
-	asm	mov	al,GC_BITMASK
-	asm	mov	ah,[BYTE PTR maskleft]
-	asm	out	dx,ax		// mask off pixels
-
-	asm	mov	al,[BYTE PTR color]
-	asm	xchg	al,[es:di]	// load latches and write pixels
-
-	goto	done;
+	BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+	return;
   }
 
-asm	mov	es,[screenseg]
-asm	mov	di,[dest]
-asm	mov	dx,GC_INDEX
-asm	mov	bh,[BYTE PTR color]
+	//
+	// draw left side
+	//
+	BE_SDL_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
 
-//
-// draw left side
-//
-asm	mov	al,GC_BITMASK
-asm	mov	ah,[BYTE PTR maskleft]
-asm	out	dx,ax		// mask off pixels
+	//
+	// draw middle
+	//
+	BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+	dest += mid;
 
-asm	mov	al,bh
-asm	mov	bl,[es:di]	// load latches
-asm	stosb
-
-//
-// draw middle
-//
-asm	mov	ax,GC_BITMASK + 255*256
-asm	out	dx,ax		// no masking
-
-asm	mov	al,bh
-asm	mov	cx,[mid]
-asm	rep	stosb
-
-//
-// draw right side
-//
-asm	mov	al,GC_BITMASK
-asm	mov	ah,[BYTE PTR maskright]
-asm	out	dx,ax		// mask off pixels
-
-asm	xchg	bh,[es:di]	// load latches and write pixels
-
-done:
-	EGABITMASK(255);
-	EGAWRITEMODE(0);
+	//
+	// draw right side
+	//
+	BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskright);
 }
 #endif
 
@@ -716,7 +683,7 @@ done:
 id0_unsigned_char_t pixmask[4] = {0xc0,0x30,0x0c,0x03};
 id0_unsigned_char_t leftmask[4] = {0xff,0x3f,0x0f,0x03};
 id0_unsigned_char_t rightmask[4] = {0xc0,0xf0,0xfc,0xff};
-id0_unsigned_char_t colorbyte[4] = {0,0x55,0xaa,0xff};
+extern id0_unsigned_char_t colorbyte[4];
 
 //
 // could be optimized for rep stosw
@@ -736,62 +703,44 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 
 	mid = xhb-xlb-1;
 	dest = bufferofs+ylookup[y]+xlb;
-asm	mov	es,[screenseg]
 
 	if (xlb==xhb)
 	{
-	//
-	// entire line is in one id0_byte_t
-	//
+		//
+		// entire line is in one byte
+		//
 		maskleft&=maskright;
+		// mask out pixels; 'or' in color
+		screenseg[dest] = (screenseg[dest] & ~maskleft) | ((id0_byte_t)color & maskleft);
 
-		asm	mov	ah,[maskleft]
-		asm	mov	bl,[BYTE PTR color]
-		asm	and	bl,[maskleft]
-		asm	not	ah
-
-		asm	mov	di,[dest]
-
-		asm	mov	al,[es:di]
-		asm	and	al,ah			// mask out pixels
-		asm	or	al,bl			// or in color
-		asm	mov	[es:di],al
+		BE_SDL_MarkGfxForPendingUpdate();
 		return;
 	}
 
-asm	mov	di,[dest]
-asm	mov	bh,[BYTE PTR color]
+	//
+	// draw left side
+	//
 
-//
-// draw left side
-//
-asm	mov	ah,[maskleft]
-asm	mov	bl,bh
-asm	and	bl,[maskleft]
-asm	not	ah
-asm	mov	al,[es:di]
-asm	and	al,ah			// mask out pixels
-asm	or	al,bl			// or in color
-asm	stosb
+	// mask out pixels; 'or' in color
+	screenseg[dest] = (screenseg[dest] & ~maskleft) | ((id0_byte_t)color & maskleft);
+	++dest;
 
-//
-// draw middle
-//
-asm	mov	al,bh
-asm	mov	cx,[mid]
-asm	rep	stosb
+	//
+	// draw middle
+	//
 
-//
-// draw right side
-//
-asm	mov	ah,[maskright]
-asm	mov	bl,bh
-asm	and	bl,[maskright]
-asm	not	ah
-asm	mov	al,[es:di]
-asm	and	al,ah			// mask out pixels
-asm	or	al,bl			// or in color
-asm	stosb
+	BE_Cross_Wrapped_MemSet(screenseg, &screenseg[dest], (id0_byte_t)color, mid);
+	//memset(&screenseg[dest], color, mid);
+	dest += mid; // dest is a 16-bit unsigned so it wraps "automagically" (and can "safely" be used as an offset)
+
+	//
+	// draw right side
+	//
+
+	// mask out pixels; 'or' in color
+	screenseg[dest] = (screenseg[dest] & ~maskright) | ((id0_byte_t)color & maskright);
+
+	BE_SDL_MarkGfxForPendingUpdate();
 }
 #endif
 
@@ -842,79 +791,44 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 
 	if (xlb==xhb)
 	{
-	//
-	// entire line is in one id0_byte_t
-	//
+		//
+		// entire line is in one byte
+		//
 
 		maskleft&=maskright;
 
-	asm	mov	es,[screenseg]
-	asm	mov	di,[dest]
+		do
+		{
+			BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+			dest += linewidth; // down to next line
+			--height;
+		} while (height);
 
-	asm	mov	dx,GC_INDEX
-	asm	mov	al,GC_BITMASK
-	asm	mov	ah,[BYTE PTR maskleft]
-	asm	out	dx,ax		// mask off pixels
-
-	asm	mov	ah,[BYTE PTR color]
-	asm	mov	dx,[linewidth]
-yloop1:
-	asm	mov	al,ah
-	asm	xchg	al,[es:di]	// load latches and write pixels
-	asm	add	di,dx			// down to next line
-	asm	dec	[height]
-	asm	jnz	yloop1
-
-		goto	done;
+		return;
 	}
 
-asm	mov	es,[screenseg]
-asm	mov	di,[dest]
-asm	mov	bh,[BYTE PTR color]
-asm	mov	dx,GC_INDEX
-asm	mov	si,[linewidth]
-asm	sub	si,[mid]			// add to di at end of line to get to next scan
-asm	dec	si
+	id0_unsigned_t bytesToAdd = linewidth-mid-1;
+	do
+	{
+		//
+		// draw left side
+		//
+		BE_SDL_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
 
-//
-// draw left side
-//
-yloop2:
-asm	mov	al,GC_BITMASK
-asm	mov	ah,[BYTE PTR maskleft]
-asm	out	dx,ax		// mask off pixels
+		//
+		// draw middle
+		//
+		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+		dest += mid;
 
-asm	mov	al,bh
-asm	mov	bl,[es:di]	// load latches
-asm	stosb
+		//
+		// draw right side
+		//
+		BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskright);
 
-//
-// draw middle
-//
-asm	mov	ax,GC_BITMASK + 255*256
-asm	out	dx,ax		// no masking
-
-asm	mov	al,bh
-asm	mov	cx,[mid]
-asm	rep	stosb
-
-//
-// draw right side
-//
-asm	mov	al,GC_BITMASK
-asm	mov	ah,[BYTE PTR maskright]
-asm	out	dx,ax		// mask off pixels
-
-asm	mov	al,bh
-asm	xchg	al,[es:di]	// load latches and write pixels
-
-asm	add	di,si		// move to start of next line
-asm	dec	[height]
-asm	jnz	yloop2
-
-done:
-	EGABITMASK(255);
-	EGAWRITEMODE(0);
+		dest += bytesToAdd; // move to start of next line
+		--height;
+	} while (height);
 }
 
 #endif
@@ -931,21 +845,39 @@ done:
 
 #if NUMFONT+NUMFONTM>0
 void
-VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height, fontstruct id0_seg *font)
+VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height, fontstruct id0_seg *font)
 {
+	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// - All input strings are now const.
+	// - An additional "optsend" argument marking one char past end
+	// of string. Set to NULL for original behaviors.
+	// - Related to modifcation to US_Print and US_CPrint, properly taking
+	// care of C string literals as inputs.
 	*height = font->height-1;			// MDM (GAMERS EDGE) - squeeze font vertically...
+#if 0
 	for (*width = 0;*string;string++)
-		*width += font->width[*((id0_byte_t id0_far *)string)];	// proportional width
+		*width += font->width[*((id0_byte_t far *)string)];		// proportional width
+#endif
+	if (optsend)
+	{
+		for (*width = 0;string!=optsend;string++)
+			*width += font->width[*((id0_byte_t far *)string)];		// proportional width
+	}
+	else
+	{
+		for (*width = 0;*string;string++)
+			*width += font->width[*((id0_byte_t far *)string)];		// proportional width
+	}
 }
 
-void	VW_MeasurePropString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height)
+void	VW_MeasurePropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height)
 {
-	VWL_MeasureString(string,width,height,(fontstruct id0_seg *)grsegs[STARTFONT+fontnumber]);
+	VWL_MeasureString(string,optsend,width,height,(fontstruct id0_seg *)grsegs[STARTFONT+fontnumber]);
 }
 
-void	VW_MeasureMPropString  (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height)
+void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height)
 {
-	VWL_MeasureString(string,width,height,(fontstruct id0_seg *)grsegs[STARTFONTM+fontnumber]);
+	VWL_MeasureString(string,optsend,width,height,(fontstruct id0_seg *)grsegs[STARTFONTM+fontnumber]);
 }
 
 
@@ -974,6 +906,42 @@ void	VW_MeasureMPropString  (id0_char_t id0_far *string, id0_word_t *width, id0_
 
 void VW_CGAFullUpdate (void)
 {
+	id0_byte_t	*update;
+	id0_boolean_t	halftile;
+	id0_unsigned_t	x,y,middlerows,middlecollumns;
+
+	displayofs = bufferofs+panadjust;
+
+	uint8_t *srcPtr = &screenseg[displayofs];
+	uint8_t *destPtr = BE_SDL_GetCGAMemoryPtr();
+
+	id0_unsigned_t linePairsToCopy = 100; // pairs of scan lines to copy
+
+	do
+	{
+		BE_Cross_WrappedToLinear_MemCopy(destPtr, screenseg, srcPtr, 80);
+		//memcpy(destPtr, srcPtr, 80);
+		BE_Cross_Wrapped_Add(screenseg, &srcPtr, linewidth);
+		//srcPtr += linewidth;
+		destPtr += 0x2000; // go to the interlaced bank
+
+		BE_Cross_WrappedToLinear_MemCopy(destPtr, screenseg, srcPtr, 80);
+		//memcpy(destPtr, srcPtr, 80);
+		BE_Cross_Wrapped_Add(screenseg, &srcPtr, linewidth);
+		//srcPtr += linewidth;
+		destPtr -= (0x2000 - 80); // go to the non interlaced bank
+	} while (--linePairsToCopy);
+
+	// clear out the update matrix
+	memset(baseupdateptr, 0, UPDATEWIDE*UPDATEHIGH);
+
+	updateptr = baseupdateptr;
+	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
+
+	// Rather than BE_SDL_MarkGfxForPendingUpdate()...
+	BE_SDL_MarkGfxForUpdate();
+
+#if 0
 	id0_byte_t	*update;
 	id0_boolean_t	halftile;
 	id0_unsigned_t	x,y,middlerows,middlecollumns;
@@ -1047,6 +1015,7 @@ asm	rep	stosw
 
 	updateptr = baseupdateptr;
 	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
+#endif
 }
 
 
@@ -1339,31 +1308,11 @@ void VW_UpdateScreen (void)
 #if GRMODE == EGAGR
 	VWL_UpdateScreenBlocks();
 
-asm	mov	ax,ds
-asm	mov	es,ax
-asm	mov	di,[updateptr]		// cat3d patch
-asm	xor	ax,ax				// clear out the update matrix
-asm	mov	cx,UPDATEWIDE*UPDATEHIGH/2
-asm	rep	stosw
+	// cat3d patch
+	memset(updateptr, 0, 2*(UPDATEWIDE*UPDATEHIGH/2)); // clear out the update matrix
 	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
 
-asm	cli
-asm	mov	cx,[displayofs]
-asm	add	cx,[panadjust]
-asm	mov	dx,CRTC_INDEX
-asm	mov	al,0ch		// start address high register
-asm	out	dx,al
-asm	inc	dx
-asm	mov	al,ch
-asm	out	dx,al
-asm	dec	dx
-asm	mov	al,0dh		// start address low register
-asm	out	dx,al
-asm	mov	al,cl
-asm	inc	dx
-asm	out	dx,al
-asm	sti
-
+	BE_SDL_SetScreenStartAddress(displayofs+panadjust); // Ported from ASM
 #endif
 #if GRMODE == CGAGR
 	VW_CGAFullUpdate();
@@ -1391,7 +1340,7 @@ void VWB_DrawTile8M (id0_int_t x, id0_int_t y, id0_int_t tile)
 	y+=pansy;
 	xb = x/SCREENXDIV; 			// use intermediate because VW_DT8M is macro
 //	if (VW_MarkUpdateBlock (x&SCREENXMASK,y,(x&SCREENXMASK)+7,y+7))	// MDM (GAMER EDGE)
-		VW_DrawTile8M (xb,y,tile);													// statement prevents drawing chars past 42
+		VW_DrawTile8M(xb,y,tile);	// statement prevents drawing chars past 42
 }
 
 void VWB_DrawTile16 (id0_int_t x, id0_int_t y, id0_int_t tile)
@@ -1468,24 +1417,24 @@ void VWB_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_i
 
 
 #if NUMFONT
-void VWB_DrawPropString	 (id0_char_t id0_far *string)
+void VWB_DrawPropString	 (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
 	id0_int_t x,y;
 	x = px+pansx;
 	y = py+pansy;
-	VW_DrawPropString (string);
+	VW_DrawPropString (string,optsend);
 	VW_MarkUpdateBlock(x,y,x+bufferwidth*8-1,y+bufferheight-1);
 }
 #endif
 
 
 #if NUMFONTM
-void VWB_DrawMPropString (id0_char_t id0_far *string)
+void VWB_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
 	id0_int_t x,y;
 	x = px+pansx;
 	y = py+pansy;
-	VW_DrawMPropString (string);
+	VW_DrawMPropString (string,optsend);
 	VW_MarkUpdateBlock(x,y,x+bufferwidth*8-1,y+bufferheight-1);
 }
 #endif
