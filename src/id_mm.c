@@ -376,10 +376,7 @@ void MM_Startup (void)
 //
 // detect XMS and get upper memory blocks
 //
-	seglength = EMULATED_XMS_PARAGRAPHS;
-	segstart = EMULATED_XMS_SEG;
-	length = seglength*16;
-	mminfo.EMSmem = length;
+	mminfo.XMSmem = 0;
 #if 0
 	if (MML_CheckForXMS())
 	{

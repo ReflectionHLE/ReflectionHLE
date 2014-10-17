@@ -299,7 +299,7 @@ USL_ReadConfig(void)
 		BE_Cross_read_SMMode_From16LE(file, &sm);
 		size_t BE_Cross_read_ControlType_From16LE(int handle, ControlType *ptr);
 		BE_Cross_read_ControlType_From16LE(file, &ctl);
-		// KeyboardDef is a ScanCode array, and ScanCode is simply typeded to be a byte
+		// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
 		BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
 #if 0
 		read(file,Scores,sizeof(HighScore) * MaxScores);
