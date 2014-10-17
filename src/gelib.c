@@ -2165,10 +2165,12 @@ void FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 	rndval = 1;
 	y = 0;
 
+#if 0
 asm     mov     es,[screenseg]
 asm     mov     dx,SC_INDEX
 asm     mov     al,SC_MAPMASK
 asm     out     dx,al
+#endif
 
 	frame=0;
 	SD_SetTimeCount(0);
