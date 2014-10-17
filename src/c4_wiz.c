@@ -1905,7 +1905,8 @@ id0_boolean_t HitSpecialTile (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t
 					break;
 
 					case REMOVE_DOOR_CODE:		// REMOVE DOOR
-						(id0_unsigned_t)actorat[x][y] = tilemap[x][y] =	*(mapsegs[0]+farmapylookup[y]+x) = 0;
+						/*(id0_unsigned_t)actorat[x][y] = */tilemap[x][y] =	*(mapsegs[0]+farmapylookup[y]+x) = 0;
+						actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(0);
 						*(mapsegs[2]+farmapylookup[y+1]+x) = 0;	// key no longer needed
 						if (keyspot>=0)
 							TakeKey(keyspot);
@@ -2028,7 +2029,8 @@ id0_boolean_t TouchActor (objtype *ob, objtype *check)
 				break;
 			}
 
-			(id0_unsigned_t)actorat[check->tilex][check->tiley] = 0;
+			//(id0_unsigned_t)actorat[check->tilex][check->tiley] = 0;
+			actorat[check->tilex][check->tiley] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(0);
 			RemoveObj (check);
 
 			return false;
@@ -2036,7 +2038,8 @@ id0_boolean_t TouchActor (objtype *ob, objtype *check)
 
 		case freezeobj:
 			StopTime();
-			(id0_unsigned_t)actorat[check->tilex][check->tiley] = 0;
+			//(id0_unsigned_t)actorat[check->tilex][check->tiley] = 0;
+			actorat[check->tilex][check->tiley] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(0);
 			RemoveObj(check);
 			return(false);
 		break;

@@ -330,7 +330,7 @@ USL_WriteConfig(void)
 
 	version = ConfigVersion;
 	file = open("CONFIG."EXT,O_CREAT | O_BINARY | O_WRONLY,
-				S_IREAD | S_IWRITE | S_IFREG);
+				/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 	if (file != -1)
 	{
 		BE_Cross_writeInt8LEBuffer(file, EXT, sizeof(EXT));
@@ -415,7 +415,7 @@ USL_CheckSavedGames(void)
 			if
 			(
 				(BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
-			&&	(BE_Cross_readInt16LE(file, &oldtestptr) == 1)
+			&&	(BE_Cross_readInt16LE(file, &game->oldtestptr) == 1)
 			&&	(BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
 			&&	(BE_Cross_readInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
 			&&	(BE_Cross_readInt8LE(file, &padding) == 1)
@@ -423,7 +423,7 @@ USL_CheckSavedGames(void)
 				//(read(file,game,sizeof(*game)) == sizeof(*game))
 			&&      (!strcmp(game->signature,EXT))
 				//TODO (CHOCO CAT): Looks useless in the Catacomb Adventure Series, so let's compare to 0 for now (expected to be required for Catacomb 3D and Commander Keen 4-6)
-			&&	(game->oldtest == 0)
+			&&	(game->oldtestptr == 0)
 			//&&      (game->oldtest == &PrintX)
 			)
 				ok = true;
@@ -455,15 +455,16 @@ US_Startup(void)
 	if (US_Started)
 		return;
 
-	harderr(USL_HardError); // Install the fatal error handler
+	// (CHOCO KEEN) UNUSED (TODO restore?)
+	// harderr(USL_HardError); // Install the fatal error handler
 
 	US_InitRndT(true);              // Initialize the random number generator
 
 	USL_ReadConfig();               // Read config file
 
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],ParmStrings2))
+		switch (US_CheckParm(id0_argv[i],ParmStrings2))
 		{
 		case 0:
 			if (grmode == EGAGR)
@@ -1225,11 +1226,11 @@ USL_XORICursor(id0_int_t x,id0_int_t y,const id0_char_t *s,id0_word_t cursor)
 
 	strcpy(buf,s);
 	buf[cursor] = '\0';
-	USL_MeasureString(buf,&w,&h);
+	USL_MeasureString(buf,NULL,&w,&h);
 
 	px = x + w - 1;
 	py = y;
-	USL_DrawString("\x80");
+	USL_DrawString("\x80",NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1278,15 +1279,15 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 		if (cursorvis)
 			USL_XORICursor(x,y,s,cursor);
 
-	asm     pushf
-	asm     cli
+	//asm     pushf
+	//asm     cli
 
 		sc = LastScan;
 		LastScan = sc_None;
 		c = LastASCII;
 		LastASCII = key_None;
 
-	asm     popf
+	//asm     popf
 
 		switch (sc)
 		{
@@ -1361,7 +1362,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 		if (c)
 		{
 			len = strlen(s);
-			USL_MeasureString(s,&w,&h);
+			USL_MeasureString(s,NULL,&w,&h);
 
 			if
 			(
@@ -1382,12 +1383,12 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 		{
 			px = x;
 			py = y;
-			USL_DrawString(olds);
+			USL_DrawString(olds,NULL);
 			strcpy(olds,s);
 
 			px = x;
 			py = y;
-			USL_DrawString(s);
+			USL_DrawString(s,NULL);
 
 			redraw = false;
 		}
@@ -1417,7 +1418,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 	{
 		px = x;
 		py = y;
-		USL_DrawString(olds);
+		USL_DrawString(olds,NULL);
 	}
 	VW_ShowCursor();
 	VW_UpdateScreen();

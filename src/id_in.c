@@ -35,7 +35,7 @@
 //	DEBUG - there are more globals
 //
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #pragma	hdrstop
 
 #define	KeyInt	9	// The keyboard ISR number
@@ -144,7 +144,7 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
 static	void			(*INL_KeyHook)(void);
 //static	void interrupt	(*OldKeyVect)(void);
 
-static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",nil};
+static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
 
 //	Internal routines
 
@@ -325,7 +325,7 @@ static	id0_longword_t	lasttime;
 
 	if (adaptive)
 	{
-		time = (TimeCount - lasttime) / 2;
+		time = (SD_GetTimeCount() - lasttime) / 2;
 		if (time)
 		{
 			if (time > 8)
@@ -334,7 +334,7 @@ static	id0_longword_t	lasttime;
 			*dy *= time;
 		}
 	}
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -364,8 +364,8 @@ IN_GetJoyButtonsDB(id0_word_t joy)
 	do
 	{
 		result1 = INL_GetJoyButtons(joy);
-		lasttime = TimeCount;
-		while (TimeCount == lasttime)
+		lasttime = SD_GetTimeCount();
+		while (SD_GetTimeCount() == lasttime)
 		{
 			BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) can be better
 		}
@@ -414,6 +414,9 @@ INL_ShutKbd(void)
 static id0_boolean_t
 INL_StartMouse(void)
 {
+	// TODO (CHOCO KEEN): Consider optionally returning false?
+	return(true);
+#if 0
 	if (getvect(MouseInt))
 	{
 		Mouse(MReset);
@@ -421,6 +424,7 @@ INL_StartMouse(void)
 			return(true);
 	}
 	return(false);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -534,9 +538,9 @@ IN_Startup(void)
 
 	checkjoys = true;
 	checkmouse = true;
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],ParmStrings))
+		switch (US_CheckParm(id0_argv[i],ParmStrings))
 		{
 		case 0:
 			checkjoys = false;
@@ -1213,7 +1217,7 @@ IN_UserInput(id0_longword_t delay,id0_boolean_t clear)
 {
 	id0_longword_t	lasttime;
 
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 	do
 	{
 		BE_SDL_ShortSleep();
@@ -1223,6 +1227,6 @@ IN_UserInput(id0_longword_t delay,id0_boolean_t clear)
 				IN_AckBack();
 			return(true);
 		}
-	} while (TimeCount - lasttime < delay);
+	} while (SD_GetTimeCount() - lasttime < delay);
 	return(false);
 }

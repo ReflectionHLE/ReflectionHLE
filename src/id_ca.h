@@ -90,8 +90,11 @@ void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 
 //===========================================================================
 
+// (CHOCO CAT) UNUSED FUNCTIONS
+#if 0
 void CA_OpenDebug (void);
 void CA_CloseDebug (void);
+#endif
 id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length);
 id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t length);
 id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr);

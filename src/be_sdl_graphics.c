@@ -481,8 +481,6 @@ void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
 
 // Same as BE_SDL_EGAUpdateGFXByteScrToScr but picking specific bits out of each byte
 void BE_SDL_EGAUpdateGFXBitsScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t bitsMask)
-
-void BE_SDL_EGAUpdateGFXBitsScrToScr(uint16_t destOff, uint16_t srcOff)
 {
 	g_sdlVidMem.egaGfx[0][destOff] &= ~bitsMask | (g_sdlVidMem.egaGfx[0][srcOff] & bitsMask); 
 	g_sdlVidMem.egaGfx[1][destOff] &= ~bitsMask | (g_sdlVidMem.egaGfx[1][srcOff] & bitsMask); 

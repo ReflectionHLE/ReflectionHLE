@@ -26,7 +26,7 @@
 #include "def.h"
 #include "gelib.h"
 #pragma hdrstop
-#include <dir.h>
+//#include <dir.h>
 
 /*
 =============================================================================
@@ -102,8 +102,8 @@ extern id0_int_t id0_far	CheckIs386(void);
 
 	oldintaddr = getvect(MyInterrupt);
 
-	for (i = 1;i < _argc;i++)
-		if (US_CheckParm(_argv[i],JHParmStrings) == 0)
+	for (i = 1;i < id0_argc;i++)
+		if (US_CheckParm(id0_argv[i],JHParmStrings) == 0)
 			return;
 
 	if (CheckIs386())
@@ -283,7 +283,8 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 			{
 				tilemap[x][y] = tile;
 				if (tile>0)
-					(id0_unsigned_t)actorat[x][y] = tile;
+					actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tile);
+					//(id0_unsigned_t)actorat[x][y] = tile;
 			}
 		}
 
@@ -470,7 +471,7 @@ void InitGame (void)
 
 //===========================================================================
 
-void clrscr (void);		// can't include CONIO.H because of name conflicts...
+//void clrscr (void);		// can't include CONIO.H because of name conflicts...
 
 /*
 ==========================
@@ -525,20 +526,20 @@ void Quit (id0_char_t *error, ...)
 #ifndef CATALOG
 	if (!error)
 	{
-		_argc = 2;
-		_argv[1] = "LAST.SHL";
-		_argv[2] = "ENDSCN.SCN";
-		_argv[3] = NULL;
-		if (execv("LOADSCN.EXE", _argv) == -1)
+		id0_argc = 2;
+		id0_argv[1] = "LAST.SHL";
+		id0_argv[2] = "ENDSCN.SCN";
+		id0_argv[3] = NULL;
+		if (execv("LOADSCN.EXE", id0_argv) == -1)
 		{
-			clrscr();
-			puts("Couldn't find executable LOADSCN.EXE.\n");
-			exit(1);
+			BE_SDL_clrscr();
+			BE_Cross_puts("Couldn't find executable LOADSCN.EXE.\n");
+			BE_SDL_HandleExit(1);
 		}
 	}
 #endif
 
-	exit(exit_code);
+	BE_SDL_HandleExit(exit_code);
 }
 
 //===========================================================================
@@ -579,14 +580,14 @@ void	DemoLoop (void)
 
 //	set EASYMODE
 //
-	if (stricmp(_argv[2], "1") == 0)
+	if (stricmp(id0_argv[2], "1") == 0)
 		EASYMODEON = true;
 	else
 		EASYMODEON = false;
 
 // restore game
 //
-	if (stricmp(_argv[3], "1") == 0)
+	if (stricmp(id0_argv[3], "1") == 0)
 	{
 		VW_FadeOut();
 		bufferofs = displayofs = 0;
@@ -694,7 +695,7 @@ void SetupScalePic (id0_unsigned_t picnum)
 
 	if (shapedirectory[scnum])
 	{
-		MM_SetPurge (&(memptr)shapedirectory[scnum],0);
+		MM_SetPurge ((memptr *)&shapedirectory[scnum],0);
 		return;					// allready in memory
 	}
 
@@ -820,32 +821,43 @@ void	CheckMemory(void)
 ==========================
 */
 
-id0_char_t			*MainParmStrings[] = {"q","l","ver","nomemcheck",nil};
+id0_char_t			*MainParmStrings[] = {"q","l","ver","nomemcheck",id0_nil_t};
 id0_boolean_t		LaunchedFromShell = false;
 
-void main (void)
+int id0_argc;
+char **id0_argv;
+
+void id0_main (void)
 {
 	id0_short_t i;
 
 	starting_level = 0;
 
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],MainParmStrings))
+		switch (US_CheckParm(id0_argv[i],MainParmStrings))
 		{
 			case 0:
 				Flags |= FL_QUICK;
 			break;
 
 			case 1:
-				starting_level = atoi(_argv[i]+1);
+				starting_level = atoi(id0_argv[i]+1);
 				if ((starting_level < 0) || (starting_level > LASTMAP-1))
 					starting_level = 0;
 			break;
 
 			case 2:
-				printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
-				exit(0);
+				// TODO (CHOCO CAT) Should we fix this?
+				// It is a simplified printf after all...
+				BE_Cross_Simplified_printf(GAMENAME);
+				BE_Cross_Simplified_printf("  ");
+				BE_Cross_Simplified_printf(VERSION);
+				BE_Cross_Simplified_printf("  rev ");
+				BE_Cross_Simplified_printf(REVISION);
+				BE_Cross_Simplified_printf("\n");
+				//BE_Cross_Simplified_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
+				BE_SDL_HandleExit(0);
 			break;
 
 			case 3:
@@ -854,17 +866,18 @@ void main (void)
 		}
 	}
 
-	if (!stricmp(_argv[1], "^(a@&r`"))
+	if (!stricmp(id0_argv[1], "^(a@&r`"))
 			LaunchedFromShell = true;
 
 	if (!LaunchedFromShell)
 	{
-		clrscr();
-		puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
-		exit(0);
+		BE_SDL_clrscr();
+		BE_Cross_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
+		BE_SDL_HandleExit(0);
 	}
 
-	randomize();
+	//randomize();
+	srand(time(NULL));
 
 	InitGame ();
 	LoadLatchMem ();

@@ -169,6 +169,9 @@ id0_long_t GRFILEPOS(id0_int_t c)
 =============================================================================
 */
 
+
+// (CHOCO CAT) UNUSED FUNCTIONS
+#if 0
 /*
 ============================
 =
@@ -189,6 +192,7 @@ void CA_CloseDebug (void)
 {
 	close (debughandle);
 }
+#endif
 
 
 
@@ -290,7 +294,7 @@ id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
 	int handle;
 	id0_long_t size;
 
-	if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		return false;
 
 	size = filelength (handle);
@@ -320,7 +324,7 @@ id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 	int handle;
 	id0_long_t size;
 
-	if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		return false;
 
 	size = filelength (handle);
@@ -450,11 +454,13 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
 void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest, id0_unsigned_t length)
 {
 	id0_unsigned_t	ch,chhigh,count,offset;
-	id0_unsigned_t	id0_far *copyptr, id0_far *inptr, id0_far *outptr;
+	id0_unsigned_t	id0_far *copyptr, /*id0_far *inptr, */id0_far *outptr;
+	id0_unsigned_char_t *inptr;
 
 	length/=2;
 
-	inptr = source;
+	inptr = (id0_unsigned_char_t *)source;
+	//inptr = source;
 	outptr = dest;
 
 	while (length)
@@ -465,14 +471,16 @@ void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *
 		{
 			count = ch&0xff;
 			if (!count)
-			{				// have to insert a id0_word_t containing the tag id0_byte_t
-				ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
+			{				// have to insert a word containing the tag byte
+				ch |= *inptr++;
+				//ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
 				*outptr++ = ch;
 				length--;
 			}
 			else
 			{
-				offset = *((id0_unsigned_char_t id0_far *)inptr)++;
+				offset = *inptr++;
+				//offset = *((id0_unsigned_char_t id0_far *)inptr)++;
 				copyptr = outptr - offset;
 				length -= count;
 				while (count--)
@@ -483,14 +491,17 @@ void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *
 		{
 			count = ch&0xff;
 			if (!count)
-			{				// have to insert a id0_word_t containing the tag id0_byte_t
-				ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
+			{				// have to insert a word containing the tag byte
+				ch |= *inptr++;
+				//ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
 				*outptr++ = ch;
 				length --;
 			}
 			else
 			{
-				offset = *inptr++;
+				offset = *((id0_unsigned_t *)inptr);
+				inptr += 2;
+				//offset = *inptr++;
 				copyptr = dest + offset;
 				length -= count;
 				while (count--)
@@ -646,7 +657,7 @@ void CAL_SetupGrFile (void)
 //
 
 	if ((handle = open(GREXT"DICT."EXT,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXT"!");
 
 	read(handle, &grhuffman, sizeof(grhuffman));
@@ -658,7 +669,7 @@ void CAL_SetupGrFile (void)
 	MM_GetPtr (&(memptr)grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
 
 	if ((handle = open(GREXT"HEAD."EXT,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"HEAD."EXT"!");
 
 	CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
@@ -680,7 +691,7 @@ void CAL_SetupGrFile (void)
 // load the pic and sprite headers into the arrays in the data segment
 //
 #if NUMPICS>0
-	MM_GetPtr(&(memptr)pictable,NUMPICS*sizeof(pictabletype));
+	MM_GetPtr((memptr *)&pictable,NUMPICS*sizeof(pictabletype));
 	CAL_GetGrChunkLength(STRUCTPIC);		// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
 	CA_FarRead (grhandle,compseg,chunkcomplen);
@@ -689,7 +700,7 @@ void CAL_SetupGrFile (void)
 #endif
 
 #if NUMPICM>0
-	MM_GetPtr(&(memptr)picmtable,NUMPICM*sizeof(pictabletype));
+	MM_GetPtr((memptr *)&picmtable,NUMPICM*sizeof(pictabletype));
 	CAL_GetGrChunkLength(STRUCTPICM);		// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
 	CA_FarRead (grhandle,compseg,chunkcomplen);
@@ -698,7 +709,7 @@ void CAL_SetupGrFile (void)
 #endif
 
 #if NUMSPRITES>0
-	MM_GetPtr(&(memptr)spritetable,NUMSPRITES*sizeof(spritetabletype));
+	MM_GetPtr((memptr *)&spritetable,NUMSPRITES*sizeof(spritetabletype));
 	CAL_GetGrChunkLength(STRUCTSPRITE);	// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
 	CA_FarRead (grhandle,compseg,chunkcomplen);
@@ -729,7 +740,7 @@ void CAL_SetupMapFile (void)
 //
 #ifndef MAPHEADERLINKED
 	if ((handle = open("MAPHEAD."EXT,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPHEAD."EXT"!");
 	length = filelength(handle);
 	MM_GetPtr (&(memptr)tinf,length);
@@ -746,11 +757,11 @@ void CAL_SetupMapFile (void)
 //
 #ifdef MAPHEADERLINKED
 	if ((maphandle = open("GAMEMAPS."EXT,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open GAMEMAPS."EXT"!");
 #else
 	if ((maphandle = open("MAPTEMP."EXT,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPTEMP."EXT"!");
 #endif
 }
@@ -776,7 +787,7 @@ void CAL_SetupAudioFile (void)
 //
 #ifndef AUDIOHEADERLINKED
 	if ((handle = open("AUDIOHED."EXT,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOHED."EXT"!");
 	length = filelength(handle);
 	MM_GetPtr (&(memptr)audiostarts,length);
@@ -793,11 +804,11 @@ void CAL_SetupAudioFile (void)
 //
 #ifndef AUDIOHEADERLINKED
 	if ((audiohandle = open("AUDIOT."EXT,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOT."EXT"!");
 #else
 	if ((audiohandle = open("AUDIO."EXT,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIO."EXT"!");
 #endif
 }
@@ -909,7 +920,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 	if (audiosegs[chunk])
 	{
-		MM_SetPurge (&(memptr)audiosegs[chunk],0);
+		MM_SetPurge ((memptr *)&audiosegs[chunk],0);
 		return;							// allready in memory
 	}
 
@@ -956,7 +967,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 	expanded = *(id0_long_t id0_far *)source;
 	source += 4;			// skip over length
-	MM_GetPtr (&(memptr)audiosegs[chunk],expanded);
+	MM_GetPtr ((memptr *)&audiosegs[chunk],expanded);
 	if (mmerror)
 		goto done;
 	CAL_HuffExpand (source,audiosegs[chunk],expanded,audiohuffman);
@@ -997,7 +1008,7 @@ void CA_LoadAllSounds (void)
 
 	for (i=0;i<NUMSOUNDS;i++,start++)
 		if (audiosegs[start])
-			MM_SetPurge (&(memptr)audiosegs[start],3);		// make purgable
+			MM_SetPurge ((memptr *)&audiosegs[start],3);		// make purgable
 
 cachein:
 
@@ -1179,8 +1190,10 @@ void CAL_CacheSprite (id0_int_t chunk, id0_byte_t id0_far *compressed)
 			dest->planesize[i] = bigplane;
 			dest->width[i] = spr->width+1;
 		}
-		CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
-			dest->sourceoffset[2],spr->width,spr->height,4);
+		CAL_ShiftSprite (grsegs[chunk]+dest->sourceoffset[0],
+			grsegs[chunk]+dest->sourceoffset[2],spr->width,spr->height,4);
+		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+		//	dest->sourceoffset[2],spr->width,spr->height,4);
 		break;
 
 	case	4:
@@ -1191,20 +1204,26 @@ void CAL_CacheSprite (id0_int_t chunk, id0_byte_t id0_far *compressed)
 		dest->sourceoffset[1] = shiftstarts[1];
 		dest->planesize[1] = bigplane;
 		dest->width[1] = spr->width+1;
-		CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
-			dest->sourceoffset[1],spr->width,spr->height,2);
+		CAL_ShiftSprite (grsegs[chunk]+dest->sourceoffset[0],
+			grsegs[chunk]+dest->sourceoffset[1],spr->width,spr->height,2);
+		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+		//	dest->sourceoffset[1],spr->width,spr->height,2);
 
 		dest->sourceoffset[2] = shiftstarts[2];
 		dest->planesize[2] = bigplane;
 		dest->width[2] = spr->width+1;
-		CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
-			dest->sourceoffset[2],spr->width,spr->height,4);
+		CAL_ShiftSprite (grsegs[chunk]+dest->sourceoffset[0],
+			grsegs[chunk]+dest->sourceoffset[2],spr->width,spr->height,4);
+		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+		//	dest->sourceoffset[2],spr->width,spr->height,4);
 
 		dest->sourceoffset[3] = shiftstarts[3];
 		dest->planesize[3] = bigplane;
 		dest->width[3] = spr->width+1;
-		CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
-			dest->sourceoffset[3],spr->width,spr->height,6);
+		CAL_ShiftSprite (grsegs[chunk]+dest->sourceoffset[0],
+			grsegs[chunk]+dest->sourceoffset[3],spr->width,spr->height,6);
+		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+		//	dest->sourceoffset[3],spr->width,spr->height,6);
 
 		break;
 
@@ -1444,10 +1463,10 @@ void CA_CacheMap (id0_int_t mapnum)
 // free up memory from last map
 //
 	if (mapon>-1 && mapheaderseg[mapon])
-		MM_SetPurge (&(memptr)mapheaderseg[mapon],3);
+		MM_SetPurge ((memptr *)&mapheaderseg[mapon],3);
 	for (plane=0;plane<MAPPLANES;plane++)
 		if (mapsegs[plane])
-			MM_FreePtr (&(memptr)mapsegs[plane]);
+			MM_FreePtr ((memptr *)&mapsegs[plane]);
 
 	mapon = mapnum;
 
@@ -1462,12 +1481,12 @@ void CA_CacheMap (id0_int_t mapnum)
 		if (pos<0)						// $FFFFFFFF start is a sparse map
 		  Quit ("CA_CacheMap: Tried to load a non existent map!");
 
-		MM_GetPtr(&(memptr)mapheaderseg[mapnum],sizeof(maptype));
+		MM_GetPtr((memptr *)&mapheaderseg[mapnum],sizeof(maptype));
 		lseek(maphandle,pos,SEEK_SET);
 		CA_FarRead (maphandle,(memptr)mapheaderseg[mapnum],sizeof(maptype));
 	}
 	else
-		MM_SetPurge (&(memptr)mapheaderseg[mapnum],0);
+		MM_SetPurge ((memptr *)&mapheaderseg[mapnum],0);
 
 //
 // load the planes in
@@ -1485,7 +1504,7 @@ void CA_CacheMap (id0_int_t mapnum)
 		if (!compressed)
 			continue;		// the plane is not used in this game
 
-		dest = &(memptr)mapsegs[plane];
+		dest = (memptr *)&mapsegs[plane];
 		MM_GetPtr(dest,size);
 
 		lseek(maphandle,pos,SEEK_SET);
@@ -1628,7 +1647,7 @@ void CA_FreeGraphics (void)
 
 	for (i=0;i<NUMCHUNKS;i++)
 		if (grsegs[i])
-			MM_SetPurge (&(memptr)grsegs[i],3);
+			MM_SetPurge ((memptr *)&grsegs[i],3);
 }
 
 
@@ -1658,18 +1677,18 @@ void CA_SetAllPurge (void)
 //
 	for (i=0;i<NUMMAPS;i++)
 		if (mapheaderseg[i])
-			MM_SetPurge (&(memptr)mapheaderseg[i],3);
+			MM_SetPurge ((memptr *)&mapheaderseg[i],3);
 
 	for (i=0;i<3;i++)
 		if (mapsegs[i])
-			MM_FreePtr (&(memptr)mapsegs[i]);
+			MM_FreePtr ((memptr *)&mapsegs[i]);
 
 //
 // free sounds
 //
 	for (i=0;i<NUMSNDCHUNKS;i++)
 		if (audiosegs[i])
-			MM_SetPurge (&(memptr)audiosegs[i],3);
+			MM_SetPurge ((memptr *)&audiosegs[i],3);
 
 //
 // free graphics
@@ -1687,7 +1706,7 @@ void CA_SetGrPurge (void)
 //
 	for (i=0;i<NUMCHUNKS;i++)
 		if (grsegs[i])
-			MM_SetPurge (&(memptr)grsegs[i],3);
+			MM_SetPurge ((memptr *)&grsegs[i],3);
 }
 
 

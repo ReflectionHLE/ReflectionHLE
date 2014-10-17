@@ -574,7 +574,7 @@ static	id0_char_t *ParmStrings[] = {"noems","noxms",""};
 void MM_Startup (void)
 {
 	id0_int_t i;
-	id0_unsigned_t 	id0_long_t length;
+	id0_unsigned_long_t length;
 	void id0_far 	*start;
 	id0_unsigned_t 	segstart,seglength,endfree;
 
@@ -651,9 +651,9 @@ void MM_Startup (void)
 // detect EMS and allocate up to 64K at page frame
 //
 	mminfo.EMSmem = 0;
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		if ( US_CheckParm(_argv[i],ParmStrings) == 0)
+		if ( US_CheckParm(id0_argv[i],ParmStrings) == 0)
 			goto emsskip;				// param NOEMS
 	}
 
@@ -677,9 +677,9 @@ void MM_Startup (void)
 //
 emsskip:
 	mminfo.XMSmem = 0;
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		if ( US_CheckParm(_argv[i],ParmStrings) == 0)
+		if ( US_CheckParm(id0_argv[i],ParmStrings) == 0)
 			goto xmsskip;				// param NOXMS
 	}
 
@@ -969,7 +969,7 @@ void MM_SortMem (void)
 			playing += STARTADLIBSOUNDS;
 			break;
 		}
-		MM_SetLock(&(memptr)audiosegs[playing],true);
+		MM_SetLock((memptr *)&audiosegs[playing],true);
 	}
 
 
@@ -1046,7 +1046,7 @@ void MM_SortMem (void)
 //	VW_ColorBorder (oldborder);
 
 	if (playing)
-		MM_SetLock(&(memptr)audiosegs[playing],false);
+		MM_SetLock((memptr *)&audiosegs[playing],false);
 }
 
 

@@ -22,7 +22,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "kd_def.h"
+#include "def.h"
 
 int32_t BE_Cross_FileLengthFromHandle(int handle)
 {

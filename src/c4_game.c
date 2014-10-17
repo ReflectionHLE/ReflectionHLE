@@ -685,7 +685,8 @@ void SetupGameLevel ()
 				tileneeded[tile] = true;
 				tilemap[x][y] = tile;
 				if (tile>0)
-					(id0_unsigned_t)actorat[x][y] = tile;
+					actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tile);
+					//(id0_unsigned_t)actorat[x][y] = tile;
 			}
 			spotptr++;
 		}
@@ -1074,11 +1075,11 @@ void FreeUpMemory (void)
 
 	for (i=0;i<NUMSCALEPICS;i++)
 		if (shapedirectory[i])
-			MM_SetPurge (&(memptr)shapedirectory[i],3);
+			MM_SetPurge ((memptr *)&shapedirectory[i],3);
 
 	for (i=0;i<NUMSCALEWALLS;i++)
 		if (walldirectory[i])
-			MM_SetPurge (&(memptr)walldirectory[i],3);
+			MM_SetPurge ((memptr *)&walldirectory[i],3);
 }
 
 //==========================================================================

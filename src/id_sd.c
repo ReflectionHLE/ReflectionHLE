@@ -87,7 +87,7 @@ static	id0_boolean_t			SD_Started;
 static	id0_char_t			*ParmStrings[] =
 						{
 							"noal",
-							nil
+							id0_nil_t
 						};
 static	void			(*SoundUserHook)(void);
 static	id0_word_t			SoundNumber,SoundPriority;
@@ -774,7 +774,7 @@ SDL_DetectAdLib(void)
 //		dispatches to whatever other routines are appropriate
 //
 ///////////////////////////////////////////////////////////////////////////
-static void interrupt
+static void
 SDL_t0Service(void)
 {
 static	id0_word_t	count = 1;
@@ -1039,9 +1039,9 @@ SD_Startup(void)
 	ssIsTandy = false;
 	alNoCheck = false;
 #ifndef	_MUSE_
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],ParmStrings))
+		switch (US_CheckParm(id0_argv[i],ParmStrings))
 		{
 		case 0:						// No AdLib detection
 			alNoCheck = true;

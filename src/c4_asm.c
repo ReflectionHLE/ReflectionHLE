@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "id_heads.h"
+#include "def.h"
 
 #define VIEWWIDTH (40*8)
 
@@ -182,8 +182,6 @@ EXTRN	bufferofs:WORD				; offset of the current work screen
 EXTRN ylookup:WORD
 EXTRN screenpage:WORD
 #endif
-
-CODESEG
 
 //============================================================================
 //

@@ -1288,6 +1288,16 @@ void BuildTables (void)
 		pixelangle[VIEWWIDTH/2+i] = -intang;
 	}
 
+
+	// FIXME (CHOCO CAT) Should replace this with pre-constructed table
+#ifdef MININT
+#undef MININT
+#endif
+#ifdef MAXINT
+#undef MAXINT
+#endif
+
+#define MAXINT 32767
 //
 // calculate fine tangents
 // 1 sign bit, 5 units (clipped to), 10 fracs
@@ -1849,7 +1859,12 @@ asm	rep stosw
 		fizzlein = false;
 		FizzleFade(bufferofs,displayofs,VIEWWIDTH,VIEWHEIGHT,true);
 		lasttimecount = SD_GetTimeCount();
-		if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
+		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		if (MousePresent)
+		{
+			BE_SDL_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
+		}
+		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 
 	BE_SDL_SetScreenStartAddress(bufferofs);

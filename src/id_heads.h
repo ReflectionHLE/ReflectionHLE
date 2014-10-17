@@ -19,18 +19,21 @@
 // ID_GLOB.H
 
 
-#include <ALLOC.H>
-#include <CTYPE.H>
-#include <DOS.H>
-#include <ERRNO.H>
-#include <FCNTL.H>
-#include <IO.H>
-#include <MEM.H>
-#include <PROCESS.H>
-#include <STDIO.H>
-#include <STDLIB.H>
-#include <STRING.H>
-#include <SYS\STAT.H>
+//#include <ALLOC.H>
+#include <ctype.h>
+//#include <DOS.H>
+#include <errno.h>
+#include <fcntl.h>
+//#include <IO.H>
+//#include <MEM.H>
+//#include <PROCESS.H>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+// for lseek and more
+#include <sys/types.h>
+#include <unistd.h>
 
 #define __ID_GLOB__
 
@@ -38,11 +41,12 @@
 
 #define	EXT	"ABS"
 
-extern	id0_char_t id0_far introscn;
+// CHOCO CAT moved to bottom (where id0_char_t and more are defined)
+//extern	id0_char_t id0_far introscn;
 
-#include "GFXE_ABS.H"
-#include "AUDIOABS.H"
-#include "MAPSABS.H"
+#include "gfxe_abs.h"
+#include "audioabs.h"
+#include "mapsabs.h"
 
 //--------------------------------------------------------------------------
 
@@ -91,11 +95,25 @@ extern	id0_char_t id0_far introscn;
 #ifndef	__TYPES__
 #define	__TYPES__
 
-typedef	enum	{false,true}	boolean;
-typedef	id0_unsigned_t	id0_char_t		byte;
-typedef	id0_unsigned_t	id0_int_t			word;
-typedef	id0_unsigned_t	id0_long_t		longword;
-typedef	id0_byte_t *					Ptr;
+#include <stdint.h>
+#include <stdbool.h>
+
+typedef	bool id0_boolean_t;
+typedef uint8_t id0_char_t; // Should be UNSIGNED for VWL_MeasureString (high scores table)
+typedef int8_t id0_signed_char_t;
+typedef uint8_t id0_unsigned_char_t;
+typedef int16_t id0_short_t; // Possibly used in kd_main.c and external decompression routines for Keen Dreams
+typedef int16_t id0_int_t;
+typedef uint16_t id0_unsigned_t;
+typedef uint16_t id0_unsigned_int_t; // Found in shareware release v1.13
+typedef int32_t id0_long_t;
+typedef int32_t id0_signed_long_t;
+typedef uint32_t id0_unsigned_long_t;
+
+typedef uint8_t id0_byte_t;
+typedef uint16_t id0_word_t;
+typedef uint32_t id0_longword_t;
+//typedef uint8_t * id0_ptr_t; // Ptr; Looks unused in Catacomb Abyss (and only kind-of used in Keen Dreams)
 
 typedef	struct
 		{
@@ -106,16 +124,36 @@ typedef	struct
 			Point	ul,lr;
 		} Rect;
 
-#define	nil	((void *)0)
+#define	id0_nil_t	((void *)0)
+
+// TODO (CHOCO KEEN): These should really be removed, but just for now and to document...
+#define id0_far
+#define id0_huge
+#define id0_seg
 
 #endif
 
-#include "ID_MM.H"
-#include "ID_CA.H"
-#include "ID_VW.H"
-#include "ID_IN.H"
-#include "ID_SD.H"
-#include "ID_US.H"
+// FIXME (CHOCO KEEN) a real hack for now
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
+// Initialized before calling vanilla app's (now renamed) main function
+extern int id0_argc;
+extern char **id0_argv;
+
+extern	id0_char_t id0_far introscn;
+
+#include "be_sdl.h"
+
+#include "id_mm.h"
+#include "id_ca.h"
+#include "id_vw.h"
+#include "id_in.h"
+#include "id_sd.h"
+#include "id_us.h"
+
+#include "be_cross.h"
 
 
 void	Quit (id0_char_t *error, ...);		// defined in user program

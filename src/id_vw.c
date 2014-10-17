@@ -861,12 +861,12 @@ VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *o
 	if (optsend)
 	{
 		for (*width = 0;string!=optsend;string++)
-			*width += font->width[*((id0_byte_t far *)string)];		// proportional width
+			*width += font->width[*((id0_byte_t id0_far *)string)];		// proportional width
 	}
 	else
 	{
 		for (*width = 0;*string;string++)
-			*width += font->width[*((id0_byte_t far *)string)];		// proportional width
+			*width += font->width[*((id0_byte_t id0_far *)string)];		// proportional width
 	}
 }
 

@@ -192,7 +192,9 @@ void CheckKeys (void)
 		IN_Ack();
 //		SD_MusicOn();
 		Paused = false;
-		if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
+		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 	else
 	if (Keyboard[sc_Enter])			// P = pause with no screen disruptioon
@@ -201,7 +203,9 @@ void CheckKeys (void)
 		DisplaySMsg("PAUSED",NULL);
 		IN_Ack();
 //		SD_MusicOn();
-		if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
+		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 	else
 	if (Keyboard[sc_S])
@@ -216,7 +220,9 @@ void CheckKeys (void)
 //		SD_MusicOff();
 		IN_Ack();
 //		SD_MusicOn();
-		if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
+		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 #endif
 
@@ -440,7 +446,9 @@ deadloop:;
 	if (Keyboard[sc_F10])
 	{
 		DebugKeys();
-		if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
+		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 		lasttimecount = SD_GetTimeCount();
 	}
 }
@@ -631,11 +639,16 @@ void PollControls (void)
 
 	if (MousePresent)
 	{
+		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		buttons = BE_SDL_GetMouseButtons();
+		BE_SDL_GetMouseDelta(&mousexmove, &mouseymove);
+#if 0
 		Mouse(MButtons);
 		buttons = _BX;
 		Mouse(MDelta);
 		mousexmove = _CX;
 		mouseymove = _DX;
+#endif
 
 		if (buttons&1)
 			control.button0 = 1;
@@ -883,6 +896,8 @@ nextactor:;
 				{
 					norm_dx = (dx = px-ox)>>TILESHIFT;
 					norm_dy = (dy = oy-py)>>TILESHIFT;
+
+					id0_int_t IntSqrt(id0_long_t va);
 
 					o_radius = IntSqrt((norm_dx * norm_dx) + (norm_dy * norm_dy));
 

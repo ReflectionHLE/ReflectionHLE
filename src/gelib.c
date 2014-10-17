@@ -19,13 +19,20 @@
 //#include <dos.h>
 //#include <conio.h>
 #include <stdio.h>
-#include <dir.h>
+//#include <dir.h>
 //#include "mem.h"
 #include <string.h>
 #include <time.h>
 #include <stdarg.h>
 //#include "io.h"
-#include <dirent.h>
+
+// Hack for scandir, alphasort (combined with code which should be C99 for most)
+// TODO (CHOCO KEEN) Have a better alternative (wrapper)?
+#include <sys/dir.h>
+int scandir(const char *dir, struct dirent ***namelist,
+       int (*sel)(const struct dirent *),
+       int (*compar)(const struct dirent **, const struct dirent **));
+extern int alphasort(const void*,const void*);
 
 #include "def.h"
 #include "gelib.h"
@@ -64,8 +71,8 @@ void CalibrateJoystick(id0_short_t joynum)
 	CenterWindow(30,8);
 
 	US_Print("\n");
-	US_CPrintLine("Move joystick to the upper-left");
-	US_CPrintLine("and press one of the buttons.");
+	US_CPrintLine("Move joystick to the upper-left", NULL);
+	US_CPrintLine("and press one of the buttons.", NULL);
 	VW_UpdateScreen();
 
 	while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joynum))
@@ -82,8 +89,8 @@ void CalibrateJoystick(id0_short_t joynum)
 	}
 
 	US_Print("\n");
-	US_CPrintLine("Move joystick to the lower-right");
-	US_CPrintLine("and press one of the buttons.");
+	US_CPrintLine("Move joystick to the lower-right", NULL);
+	US_CPrintLine("and press one of the buttons.", NULL);
 	VW_UpdateScreen();
 
 	while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joynum))
@@ -311,7 +318,7 @@ void PrintPropText(id0_char_t id0_far *text)
 		_fmemcpy(pb,text,length+1);
 		if (centerit)
 		{
-			US_CPrintLine(pb);
+			US_CPrintLine(pb, NULL);
 		}
 		else
 		{
@@ -512,8 +519,8 @@ void GE_SaveGame()
 
 			US_CenterWindow(30,6);
 			US_Print("\n");
-			US_CPrintLine("Disk Full: Can't save game.");
-			US_CPrintLine("Try inserting another disk.");
+			US_CPrintLine("Disk Full: Can't save game.", NULL);
+			US_CPrintLine("Try inserting another disk.", NULL);
 			status[8] = drive+'A';
 			BE_Cross_itoa_dec(davail,&status[18]);
 			//itoa(davail,&status[18],10);
@@ -530,9 +537,9 @@ void GE_SaveGame()
 			if (Verify(Filename))								// FILE EXISTS
 			{
 				US_CenterWindow(22,4);
-				US_CPrintLine("That file already exists...");
-				US_CPrintLine("Overwrite it ????");
-				US_CPrintLine("(Y)es or (N)o?");
+				US_CPrintLine("That file already exists...", NULL);
+				US_CPrintLine("Overwrite it ????", NULL);
+				US_CPrintLine("(Y)es or (N)o?", NULL);
 				VW_UpdateScreen();
 
 				while((!Keyboard[21]) && (!Keyboard[49]) && !Keyboard[27])
@@ -551,7 +558,7 @@ void GE_SaveGame()
 		}
 	}
 
-	handle = open(Filename,O_RDWR|O_CREAT|O_BINARY,S_IREAD|S_IWRITE);
+	handle = open(Filename,O_RDWR|O_CREAT|O_BINARY,/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR);
 	if (handle==-1)
 		goto EXIT_FUNC;
 
@@ -577,11 +584,11 @@ EXIT_FUNC:;
 	{
 		remove(Filename);
 		US_CenterWindow(22,6);
-		US_CPrintLine("DISK ERROR");
-		US_CPrintLine("Check: Write protect...");
-		US_CPrintLine("File name...");
-		US_CPrintLine("Bytes free on disk...");
-		US_CPrintLine("Press SPACE to continue.");
+		US_CPrintLine("DISK ERROR", NULL);
+		US_CPrintLine("Check: Write protect...", NULL);
+		US_CPrintLine("File name...", NULL);
+		US_CPrintLine("Bytes free on disk...", NULL);
+		US_CPrintLine("Press SPACE to continue.", NULL);
 		VW_UpdateScreen();
 		while (!Keyboard[57])
 		{
@@ -639,8 +646,8 @@ id0_boolean_t GE_LoadGame()
 		if (!Verify(Filename))								// FILE DOESN'T EXIST
 		{
 			US_CenterWindow(22,3);
-			US_CPrintLine(" That file doesn't exist....");
-			US_CPrintLine("Press SPACE to try again.");
+			US_CPrintLine(" That file doesn't exist....", NULL);
+			US_CPrintLine("Press SPACE to try again.", NULL);
 			VW_UpdateScreen();
 
 			while (!Keyboard[57])
@@ -665,9 +672,9 @@ id0_boolean_t GE_LoadGame()
 	if ((strcmp(ID,GAMENAME)) || (strcmp(VER,SAVEVER_DATA)))
 	{
 		US_CenterWindow(32,4);
-		US_CPrintLine("That isn't a "GAMENAME);
-		US_CPrintLine(".SAV file.");
-		US_CPrintLine("Press SPACE to continue.");
+		US_CPrintLine("That isn't a "GAMENAME, NULL);
+		US_CPrintLine(".SAV file.", NULL);
+		US_CPrintLine("Press SPACE to continue.", NULL);
 		VW_UpdateScreen();
 		while (!Keyboard[57])
 		{
@@ -694,8 +701,8 @@ EXIT_FUNC:;
 	if (handle==-1)
 	{
 		US_CenterWindow(22,3);
-		US_CPrintLine("DISK ERROR ** LOAD **");
-		US_CPrintLine("Press SPACE to continue.");
+		US_CPrintLine("DISK ERROR ** LOAD **", NULL);
+		US_CPrintLine("Press SPACE to continue.", NULL);
 		while (!Keyboard[57])
 		{
 			BE_SDL_ShortSleep();
@@ -1855,7 +1862,7 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 	// Open window and print header...
 	//
 	US_DrawWindow(winx,winy,list_width*(8+SPACES*2),list_height+3);
-	US_CPrintLine("LIST OF SAVED GAMES");
+	US_CPrintLine("LIST OF SAVED GAMES", NULL);
 	US_Print("\n");
 
 	col = orgcol = PrintX;
@@ -1894,6 +1901,29 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 void ReadGameList()
 {
 	// TODO (CHOCO CAT) Use "cross platform" file searching functions/wrappers instead?
+	struct dirent **namelist;
+	int n = scandir("*.SAV", &namelist, 0, alphasort);
+	NumGames = -1;
+	if (n < 0)
+	{
+		perror("scandir");
+	}
+	else
+	{
+		while (n--)
+		{
+			if (NumGames == MAX_GAMELIST_NAMES)
+				memmove/*memcpy*/(GameListNames,GameListNames[1],MAX_GAMELIST_NAMES*sizeof(GameListNames[0]));
+			else
+				NumGames++;
+			strncpy(GameListNames[NumGames], namelist[n]->d_name, sizeof(GameListNames[NumGames]));
+			GameListNames[NumGames][sizeof(GameListNames[NumGames])-1] = '\0';
+		}
+	}
+
+
+	NumGames++;
+#if 0
 	struct ffblk ffblk;
 	id0_short_t done,len;
 
@@ -1913,6 +1943,7 @@ void ReadGameList()
 	}
 
 	NumGames++;
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -2151,7 +2182,7 @@ void FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t width,id0_unsigned_t height, id0_boolean_t abortable)
 {
 	id0_unsigned_t        drawofs,pagedelta;
-	id0_unsigned_t        id0_char_t maskb[8] = {1,2,4,8,16,32,64,128};
+	id0_unsigned_char_t   maskb[8] = {1,2,4,8,16,32,64,128};
 	id0_unsigned_t        x,y,p,frame;
 	id0_longword_t        rndval; // CHOCO CAT Now unsigned (so right shifts are well-defined)
 	//id0_long_t            rndval;
@@ -2194,7 +2225,7 @@ asm     out     dx,al
 			// seperate random value into x/y pair
 			//
 			y = (rndval-1)&0xFF; // low 8 bits - 1 = y xoordinate
-			x = (rndval&0x1FF00)>>8); // next 9 bits = x xoordinate
+			x = (rndval&0x1FF00)>>8; // next 9 bits = x xoordinate
 #if 0
 			asm     mov     ax,[WORD PTR rndval]
 			asm     mov     dx,[WORD PTR rndval+2]
@@ -2232,7 +2263,7 @@ asm     out     dx,al
 			asm     xor     dx,0x0001
 			asm     xor     ax,0x2000
 noxor:
-			asm     mov     [WORD PTR rndval],ax
+			asm     mov     [WORD PTR frndval],ax
 			asm     mov     [WORD PTR rndval+2],dx
 #endif
 
@@ -2542,8 +2573,8 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 				strcat(command," into drive ");
 				strcat(command,drive);
 				strcat(command,".");
-				BE_Cross_Simplified_printf("%s\n", command);
-				BE_Cross_Simplified_printf("Press SPACE to continue, ESC to abort.\n");
+				BE_Cross_puts(command);
+				BE_Cross_puts("Press SPACE to continue, ESC to abort.\n");
 				//printf("\nInsert %s disk %d into drive %s.\n",disktext,disknum,drive);
 				//printf("Press SPACE to continue, ESC to abort.\n");
 			}

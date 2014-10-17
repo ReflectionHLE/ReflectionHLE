@@ -300,8 +300,9 @@ void ExplodeWall (id0_int_t tilex, id0_int_t tiley)
 		tilenum = WATEREXP;
 	else
 		tilenum = WALLEXP;
-	(id0_unsigned_t)actorat[new->tilex][new->tiley] = tilemap[new->tilex][new->tiley] =
+	/*(id0_unsigned_t)actorat[new->tilex][new->tiley] = */tilemap[new->tilex][new->tiley] =
 		*(mapsegs[0]+farmapylookup[new->tiley]+new->tilex) = tilenum;
+	actorat[new->tilex][new->tiley] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tilenum);
 	*(mapsegs[2]+farmapylookup[new->tiley]+new->tilex) &= 0xFF;
 }
 
@@ -328,7 +329,8 @@ void T_WallDie (objtype *ob)
 	x = ob->tilex;
 	y = ob->tiley;
 
-	(id0_unsigned_t)actorat[x][y] = tilemap[x][y] = *(mapsegs[0]+farmapylookup[y]+x) = tile;
+	/*(id0_unsigned_t)actorat[x][y] = */tilemap[x][y] = *(mapsegs[0]+farmapylookup[y]+x) = tile;
+	actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tile);
 
 	if (ob->temp1 == 1)
 	{
@@ -1088,10 +1090,11 @@ void T_WallSkeleton(objtype *ob)
 				wskel_mode++;
 		case ws_wall1:
 		case ws_wall3:
-			(id0_unsigned_t)actorat[x][y]
-				= tilemap[x][y]
+			/*(id0_unsigned_t)actorat[x][y]
+				=*/ tilemap[x][y]
 				= *(mapsegs[0]+farmapylookup[y]+x)
 				= wskel_base+(wskel_mode-ws_wall1);
+			actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tilemap[x][y]);
 
 			wskel_mode++;
 			wskel_delay = (120);
@@ -1103,10 +1106,12 @@ void T_WallSkeleton(objtype *ob)
 //			if (objectcount >= MAXACTORS-3)
 //				break;
 
-			(id0_unsigned_t)actorat[x][y]
-				= tilemap[x][y]
+			/*(id0_unsigned_t)actorat[x][y]
+				=*/ tilemap[x][y]
 				= *(mapsegs[0]+farmapylookup[y]+x)
 				= wskel_base;
+			actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tilemap[x][y]);
+
 			ob->tilex = ob->x >> TILESHIFT;
 			ob->tiley = ob->y >> TILESHIFT;
 
@@ -1996,6 +2001,8 @@ void T_BatPast (objtype *ob)
 //--------------------------------------------------------------------------
 id0_boolean_t ShootPlayer(objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state)
 {
+	id0_int_t AngleNearPlayer(objtype *ob);
+
 	id0_int_t angle = AngleNearPlayer(ob);
 
 	if (angle == -1)
