@@ -1019,6 +1019,8 @@ SD_SetMusicMode(SMMode mode)
 	SDL_SetTimerSpeed();
 
 	return(result);
+#else
+	return false; // CHOCO CAT - Compilation warning fix
 #endif
 }
 
@@ -1372,10 +1374,9 @@ SD_FadeOutMusic(void)
 id0_boolean_t
 SD_MusicPlaying(void)
 {
-#if USE_MUSIC
 	// CHOCO KEEN - Original code always returns false...
 	return false;
-#if 0
+#if USE_MUSIC
 	id0_boolean_t	result;
 
 	switch (MusicMode)
@@ -1389,7 +1390,6 @@ SD_MusicPlaying(void)
 	}
 
 	return(result);
-#endif
 #endif
 }
 

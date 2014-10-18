@@ -299,14 +299,18 @@ typedef	struct
 } gametype;
 
 
-// (CHOCO KEEN) BACKWARDS COMPATIBILITY: Used for storing 16-bit integers
-// in objtype pointers variables (elements of actorat)
-//
-// FIXME FIXME: Based on c4_wiz.c:ClipXMove and c4_wiz:TouchActor, a cell of
-// actorat may contain a valid pointer to an objtype, yet be compared to
-// LASTTILE. Unfortunately this can lead to major problems on certain platforms.
-#define COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(val) ((objtype *)val)
-//#define COMPAT_FETCH_16BIT_UNSIGNED_FROM_OBJ_PTR(ptr) ((id0_unsigned_t)ptr)
+// (CHOCO KEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
+// objstruct may store a 16-bit pointer with another object; Or at least this
+// is the case in Keen Dreams. Furthermore, in Catacomb Abyss, actorat may be
+// declared as a bidimensional array of objtype pointers, but it is also used
+// to store plain 16-bit integers.
+
+#define COMPAT_OBJ_CONVERSION_OFFSET 0xC303
+
+#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objlist)*sizeof(objtype)+COMPAT_OBJ_CONVERSION_OFFSET)):(id0_word_t)0)
+#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objlist+(id0_word_t)((id0_word_t)(dosptr)-(id0_word_t)COMPAT_OBJ_CONVERSION_OFFSET)/sizeof(objtype)):NULL)
+
+extern objtype objlist[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY
 
 
 /*
@@ -397,7 +401,11 @@ extern	id0_boolean_t		running,slowturn;
 extern	id0_int_t			bordertime;
 
 extern	id0_byte_t		tilemap[MAPSIZE][MAPSIZE];
-extern	objtype		*actorat[MAPSIZE][MAPSIZE];
+// (CHOCO KEEN) BACKWARDS COMPATIBILITY: Originally used to store objtype
+// pointers, as well as 16-bit unsigned integers. We now store just integers
+// and convert with a macro when required.
+extern id0_unsigned_t actorat[MAPSIZE][MAPSIZE];
+//extern	objtype		*actorat[MAPSIZE][MAPSIZE];
 extern	id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
 
 extern	objtype 	objlist[MAXACTORS],*new,*obj,*player;

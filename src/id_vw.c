@@ -432,7 +432,7 @@ void VW_SetSplitScreen (id0_int_t linenum)
 	VW_WaitVBL (1);
 	if (videocard==VGAcard)
 		linenum=linenum*2-1;
-	BE_SDL_SetSplitScreen(linenum);
+	BE_SDL_EGASetSplitScreen(linenum);
 #if 0 
 	outportb (CRTC_INDEX,CRTC_LINECOMPARE);
 	outportb (CRTC_INDEX+1,linenum % 256);

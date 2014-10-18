@@ -254,7 +254,15 @@ void ExecuteCompScale(const t_compscale *compscale, id0_unsigned_t egaDestOff, i
 			id0_unsigned_t heightofs;
 			memcpy(&heightofs, code += 3, sizeof(heightofs));
 			code += sizeof(heightofs);
-			BE_SDL_EGAAndGFXByte(egaDestOff+heightofs, srcVal, mask);
+			// Originally drawn with write mode 2 (pixel based)
+			// and read mode 1, but the "don't care" register bits
+			// were all set to 0, so each read of a byte from EGA
+			// memory ended with 0xFF.
+			//
+			// Then the original code applied an "and" operation to
+			// that input (of 0xff) with srcVal, using the given
+			// masks to select correct bits in each plane.
+			BE_SDL_EGAUpdateGFXPixel4bpp(egaDestOff+heightofs, srcVal, mask);
 		}
 	}
 }

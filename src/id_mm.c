@@ -87,7 +87,9 @@ typedef struct mmblockstruct
 
 #define GETNEWBLOCK {if(!mmfree)MML_ClearBlock();mmnew=mmfree;mmfree=mmfree->next;}
 
-#define FREEBLOCK(x) {*x->useptr=NULL;x->next=mmfree;mmfree=x;}
+// TODO (CHOCO CAT) Taking care of useptr==NULL in some way for now...
+#define FREEBLOCK(x) {if (x->useptr) *x->useptr=NULL;x->next=mmfree;mmfree=x;}
+//#define FREEBLOCK(x) {*x->useptr=NULL;x->next=mmfree;mmfree=x;}
 
 /*
 =============================================================================
@@ -137,10 +139,10 @@ static id0_byte_t mmEmulatedMemSpace[512*1024];
 // The very first "segment" in the emulated space
 #define EMULATED_FIRST_SEG 0
 // Different portions of the space being emulated - start points
-#define EMULATED_NEAR_SEG EMULATED_FIRST_SEG
+#define EMULATED_NEAR_SEG 4096
 #define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+4096)
 #define EMULATED_EMS_SEG (EMULATED_FAR_SEG+23544)
-#define EMULATED_XMS_SEG (EMULATED_EMS_SEG+4096)
+#define EMULATED_XMS_SEG (EMULATED_EMS_SEG+1032)
 // Lengths in paragraphs of the different sections
 #define EMULATED_NEAR_PARAGRAPHS (EMULATED_FAR_SEG-EMULATED_NEAR_SEG)
 #define EMULATED_FAR_PARAGRAPHS (EMULATED_EMS_SEG-EMULATED_FAR_SEG)

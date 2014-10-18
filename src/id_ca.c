@@ -297,7 +297,7 @@ id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
 	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		return false;
 
-	size = filelength (handle);
+	size = BE_Cross_FileLengthFromHandle (handle);
 	if (!CA_FarRead (handle,*ptr,size))
 	{
 		close (handle);
@@ -327,7 +327,7 @@ id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		return false;
 
-	size = filelength (handle);
+	size = BE_Cross_FileLengthFromHandle (handle);
 	MM_GetPtr (ptr,size);
 	if (!CA_FarRead (handle,*ptr,size))
 	{
@@ -465,7 +465,9 @@ void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *
 
 	while (length)
 	{
-		ch = *inptr++;
+		ch = *((id0_unsigned_t *)inptr);
+		inptr += 2;
+		//ch = *inptr++;
 		chhigh = ch>>8;
 		if (chhigh == NEARTAG)
 		{
@@ -640,12 +642,12 @@ void CAL_SetupGrFile (void)
 #ifdef GRHEADERLINKED
 
 #if GRMODE == EGAGR
-	grhuffman = (huffnode *)&EGAdict;
-	grstarts = (id0_long_t id0_seg *)FP_SEG(&EGAhead);
+	grhuffman = (huffnode *)EGAdict;
+	grstarts = EGAhead;
 #endif
 #if GRMODE == CGAGR
-	grhuffman = (huffnode *)&CGAdict;
-	grstarts = (id0_long_t id0_seg *)FP_SEG(&CGAhead);
+	grhuffman = (huffnode *)CGAdict;
+	grstarts = CGAhead;
 #endif
 
 	CAL_OptimizeNodes (grhuffman);
@@ -748,7 +750,7 @@ void CAL_SetupMapFile (void)
 	close(handle);
 #else
 
-	tinf = (id0_byte_t id0_seg *)FP_SEG(&maphead);
+	tinf = maphead;
 
 #endif
 
@@ -794,9 +796,9 @@ void CAL_SetupAudioFile (void)
 	CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
 	close(handle);
 #else
-	audiohuffman = (huffnode *)&audiodict;
+	audiohuffman = (huffnode *)audiodict;
 	CAL_OptimizeNodes (audiohuffman);
-	audiostarts = (id0_long_t id0_seg *)FP_SEG(&audiohead);
+	audiostarts = (id0_long_t *)audiohead;
 #endif
 
 //
@@ -1625,7 +1627,8 @@ void CA_ClearMarks (void)
 
 void CA_ClearAllMarks (void)
 {
-	_fmemset (grneeded,0,sizeof(grneeded));
+	memset (grneeded,0,sizeof(grneeded));
+	//_fmemset (grneeded,0,sizeof(grneeded));
 	ca_levelbit = 1;
 	ca_levelnum = 0;
 }

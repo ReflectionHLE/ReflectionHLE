@@ -84,6 +84,8 @@ void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette);
 void BE_SDL_EGASetLineWidth(id0_byte_t widthInBytes);
 void BE_SDL_EGASetSplitScreen(id0_int_t linenum);
 void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask);
+// Same as BE_SDL_EGAUpdateGFXByte but picking specific bits out of each byte, and WITHOUT planes mask
+void BE_SDL_EGAUpdateGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask);
 void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t mask);
 void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff);
 // Same as BE_SDL_EGAUpdateGFXByteScrToScr but picking specific bits out of each byte
@@ -94,6 +96,11 @@ void BE_SDL_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, u
 void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint16_t mask);
 void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint16_t mask);
 void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask);
+// Like BE_SDL_EGAXorGFXByte, but:
+// - OR instead of XOR.
+// - Only specific bits are updated in each plane's byte.
+void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask);
+
 
 //
 void BE_SDL_SetBorderColor(id0_byte_t color);

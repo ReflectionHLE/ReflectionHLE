@@ -34,6 +34,7 @@
 // for lseek and more
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
 
 #define __ID_GLOB__
 
@@ -42,6 +43,7 @@
 #define	EXT	"ABS"
 
 // CHOCO CAT moved to bottom (where id0_char_t and more are defined)
+// - also modified type for different platforms
 //extern	id0_char_t id0_far introscn;
 
 #include "gfxe_abs.h"
@@ -138,11 +140,17 @@ typedef	struct
 #define O_BINARY 0
 #endif
 
+// FIXME (CHOCO CAT) Used as an alternative Borland's random function, but it
+// may be better to do this a bit more deterministics (also Borland's randomize)
+
+// Based on Borland header...
+#define random(num) ((num) ? (rand()%(num)) : 0)
+
 // Initialized before calling vanilla app's (now renamed) main function
 extern int id0_argc;
 extern char **id0_argv;
 
-extern	id0_char_t id0_far introscn;
+extern	id0_char_t *introscn;
 
 #include "be_sdl.h"
 

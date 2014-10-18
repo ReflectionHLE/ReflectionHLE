@@ -29,10 +29,6 @@
 // Hack for scandir, alphasort (combined with code which should be C99 for most)
 // TODO (CHOCO KEEN) Have a better alternative (wrapper)?
 #include <sys/dir.h>
-int scandir(const char *dir, struct dirent ***namelist,
-       int (*sel)(const struct dirent *),
-       int (*compar)(const struct dirent **, const struct dirent **));
-extern int alphasort(const void*,const void*);
 
 #include "def.h"
 #include "gelib.h"
@@ -315,7 +311,8 @@ void PrintPropText(id0_char_t id0_far *text)
 		}
 		else
 			lastcharcr=false;
-		_fmemcpy(pb,text,length+1);
+		memcpy(pb,text,length+1);
+		//_fmemcpy(pb,text,length+1);
 		if (centerit)
 		{
 			US_CPrintLine(pb, NULL);
@@ -470,7 +467,7 @@ id0_long_t Verify(id0_char_t *filename)
 
 	if ((handle=open(filename,O_BINARY))==-1)
 		return (0);
-	size=filelength(handle);
+	size=BE_Cross_FileLengthFromHandle(handle);
 	close(handle);
 	return(size);
 }
@@ -1105,7 +1102,8 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 //
 //--------------------------------------------------------------------------
 
-#undef nextch()
+#undef nextch
+//#undef nextch()
 #define nextch(ptr)	*ptr++
 
 void lzwDecompressFromRAM(id0_byte_t id0_far *SrcPtr, id0_byte_t id0_far *DstPtr, id0_longword_t SrcLen)
@@ -1175,7 +1173,8 @@ void lzwDecompressFromRAM(id0_byte_t id0_far *SrcPtr, id0_byte_t id0_far *DstPtr
 //
 //--------------------------------------------------------------------------
 
-#undef nextch()
+#undef nextch
+//#undef nextch()
 #define nextch(handle)	bio_readch(&lzwBIO)
 
 void lzwDecompressFromFile(BufferedIO *SrcPtr, id0_byte_t id0_far *DstPtr, id0_longword_t SrcLen)
@@ -1465,7 +1464,8 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 
 	NotWordAligned = SHP->BPR & 1;
 	startx>>=3;
-	Src = MK_FP(SHP->Data,0);
+	Src = (id0_signed_char_t *)(SHP->Data);
+	//Src = MK_FP(SHP->Data,0);
 	currenty = starty;
 	Plane = 0;
 	Height = SHP->bmHdr.h;
@@ -2563,7 +2563,7 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 		{
 			if (ge_textmode)
 			{
-				clrscr();
+				BE_SDL_clrscr();
 				BE_SDL_MoveTextCursorTo(0, 0); // gotoxy(0,0);
 				// (CHOCO CAT) Because our printf is simplified... (also re-using command buffer as in gfx case)
 				strcpy(command,"\nInsert ");

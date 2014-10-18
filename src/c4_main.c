@@ -283,7 +283,7 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 			{
 				tilemap[x][y] = tile;
 				if (tile>0)
-					actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tile);
+					actorat[x][y] = tile;
 					//(id0_unsigned_t)actorat[x][y] = tile;
 			}
 		}
@@ -302,7 +302,8 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 		followed = new->next;
 		new->prev = prev;
 		new->next = next;
-		actorat[new->tilex][new->tiley] = new;	// drop a new marker
+		actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
+		//actorat[new->tilex][new->tiley] = new;	// drop a new marker
 
 		if (followed)
 			GetNewObj (false);
@@ -502,7 +503,9 @@ void Quit (id0_char_t *error, ...)
 
 	if (error && *error)
 	{
-		vprintf(error,ap);
+		// FIXME FIXME FIXME (CHOCO CAT)
+		BE_Cross_Simplified_printf(error);
+		//vprintf(error,ap);
 		exit_code = 1;
 	}
 
@@ -580,14 +583,14 @@ void	DemoLoop (void)
 
 //	set EASYMODE
 //
-	if (stricmp(id0_argv[2], "1") == 0)
+	if (BE_Cross_strcasecmp(id0_argv[2], "1") == 0)
 		EASYMODEON = true;
 	else
 		EASYMODEON = false;
 
 // restore game
 //
-	if (stricmp(id0_argv[3], "1") == 0)
+	if (BE_Cross_strcasecmp(id0_argv[3], "1") == 0)
 	{
 		VW_FadeOut();
 		bufferofs = displayofs = 0;
@@ -866,10 +869,13 @@ void id0_main (void)
 		}
 	}
 
-	if (!stricmp(id0_argv[1], "^(a@&r`"))
+	if (!BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
 			LaunchedFromShell = true;
 
-	if (!LaunchedFromShell)
+	// CHOCO CAT difference from vanilla Catacomb Abyss:
+	// Role of argument "^(a@&r`" has been flipped. No need to pass it
+	// (or use start), but if it is added then you get this message.
+	if (LaunchedFromShell)
 	{
 		BE_SDL_clrscr();
 		BE_Cross_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");

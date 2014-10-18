@@ -72,8 +72,12 @@ extern  ScanCode        firescan;
 //      Internal variables
 #define ConfigVersion   1
 
-static  id0_char_t            *ParmStrings[] = {"TEDLEVEL","NOWAIT"},
-					*ParmStrings2[] = {"COMP","NOCOMP"};
+// TODO (CHOCO CAT) We should ParmStrings, ParmStrings2 were not terminated...
+// any better way to emulate this? (Probably insignificant)
+static  id0_char_t            *ParmStrings[] = {"TEDLEVEL","NOWAIT",NULL},
+					*ParmStrings2[] = {"COMP","NOCOMP",NULL};
+//static  id0_char_t            *ParmStrings[] = {"TEDLEVEL","NOWAIT"},
+//					*ParmStrings2[] = {"COMP","NOCOMP"};
 static  id0_boolean_t         US_Started;
 
 		id0_boolean_t         Button0,Button1,
@@ -953,6 +957,13 @@ US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 {
 	id0_word_t    w,h;
 
+	// (CHOCO KEEN) WORKAROUND for s=NULL: Treat strings a empty
+	// (looks like the original behaviors for Catacomb Abyss,
+	// c4_play.c:PlayLoop, DisplaySMsg(NULL,NULL))
+	if (!s)
+	{
+		s = "";
+	}
 	// (CHOCO KEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
 	// - An additional "optse" argument marking one char past end

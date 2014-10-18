@@ -119,7 +119,11 @@ void PostFullDisplay(id0_boolean_t draw_view);
 //
 id0_byte_t		tilemap[MAPSIZE][MAPSIZE];
 id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
-objtype		*actorat[MAPSIZE][MAPSIZE];
+// (CHOCO KEEN) BACKWARDS COMPATIBILITY: Originally used to store objtype
+// pointers, as well as 16-bit unsigned integers. We now store just integers
+// and convert with a macro when required.
+id0_unsigned_t actorat[MAPSIZE][MAPSIZE];
+//objtype		*actorat[MAPSIZE][MAPSIZE];
 
 objtype dummyobj;
 
@@ -176,7 +180,8 @@ void CheckKeys (void)
 		VW_UpdateScreen();
 		IN_Ack();
 		autofire ^= 1;
-		return 1;
+		//return 1;
+		return; // CHOCO CAT - Fix compilation warning (return void)
 	}
 
 #if 0
@@ -277,6 +282,8 @@ void CheckKeys (void)
 					CA_LoadAllSounds();
 				ChoiceMade = true;
 			}
+
+			BE_SDL_ShortSleep();
 
 		} while (!ChoiceMade);
 		tics = realtics = 1;
@@ -633,6 +640,9 @@ void RemoveObj (objtype *gone)
 
 void PollControls (void)
 {
+	// FIXME FIXME FIXME (CHOCO CAT) HACK
+	BE_SDL_ShortSleep();
+
 	id0_unsigned_t buttons;
 
 	IN_ReadControl(0,&control);
@@ -1186,11 +1196,10 @@ id0_int_t IntSqrt(id0_long_t va)
 			return 0x7FFF;
 		}
 	}
-	id0_word_t res_div, res_mod;
+	id0_word_t res_div;
 	do
 	{
-		res_div = ((id0_longword_t)va)/result;
-		res_mod = ((id0_longword_t)va)%result;
+		res_div = ((id0_longword_t)va)/result; // is it close to result?
 
 		res_div -= result;
 		if ((res_div <= 1) || (res_div >= 0xFFFF))

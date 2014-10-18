@@ -82,7 +82,8 @@ void Internal_SpawnNewObj (id0_unsigned_t x, id0_unsigned_t y, statetype *state,
 	new->active = noalways;
 
 	if (new != &dummyobj)
-		actorat[new->tilex][new->tiley] = new;
+		actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
+		//actorat[new->tilex][new->tiley] = new;
 }
 
 void Internal_SpawnNewObjFrac (id0_long_t x, id0_long_t y, statetype *state, id0_unsigned_t size,id0_boolean_t UseDummy)
@@ -480,7 +481,8 @@ id0_boolean_t Chase (objtype *ob, id0_boolean_t diagonal)
 		ChaseThink (ob,diagonal);
 		if (!ob->distance)
 			break;			// no possible move
-		actorat[ob->tilex][ob->tiley] = ob;	// set down a new goal marker
+		actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);	// set down a new goal marker
+		//actorat[ob->tilex][ob->tiley] = ob;	// set down a new goal marker
 	}
 	CalcBounds (ob);
 	return false;

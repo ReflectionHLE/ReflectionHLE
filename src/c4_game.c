@@ -491,7 +491,8 @@ void ScanText (void)
 			text++;
 		}
 		text++;
-		textstarts[i] = FP_OFF(text);
+		textstarts[i] = text - (id0_char_t id0_seg *)grsegs[LEVEL1TEXT+mapon];
+		//textstarts[i] = FP_OFF(text);
 	}
 
 }
@@ -685,7 +686,7 @@ void SetupGameLevel ()
 				tileneeded[tile] = true;
 				tilemap[x][y] = tile;
 				if (tile>0)
-					actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tile);
+					actorat[x][y] = tile;
 					//(id0_unsigned_t)actorat[x][y] = tile;
 			}
 			spotptr++;
@@ -731,8 +732,6 @@ void LatchDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 	height = pictable[picnum-STARTPICS].height;
 	dest = bufferofs + ylookup[y]+x;
 	source = latchpics[picnum-FIRSTLATCHPIC];
-
-	void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num);
 
 	for (id0_unsigned_t lineCount = height; lineCount; --lineCount)
 	{

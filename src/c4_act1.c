@@ -302,7 +302,7 @@ void ExplodeWall (id0_int_t tilex, id0_int_t tiley)
 		tilenum = WALLEXP;
 	/*(id0_unsigned_t)actorat[new->tilex][new->tiley] = */tilemap[new->tilex][new->tiley] =
 		*(mapsegs[0]+farmapylookup[new->tiley]+new->tilex) = tilenum;
-	actorat[new->tilex][new->tiley] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tilenum);
+	actorat[new->tilex][new->tiley] = tilemap[new->tilex][new->tiley];
 	*(mapsegs[2]+farmapylookup[new->tiley]+new->tilex) &= 0xFF;
 }
 
@@ -330,7 +330,7 @@ void T_WallDie (objtype *ob)
 	y = ob->tiley;
 
 	/*(id0_unsigned_t)actorat[x][y] = */tilemap[x][y] = *(mapsegs[0]+farmapylookup[y]+x) = tile;
-	actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tile);
+	actorat[x][y] = tilemap[x][y];
 
 	if (ob->temp1 == 1)
 	{
@@ -1094,7 +1094,7 @@ void T_WallSkeleton(objtype *ob)
 				=*/ tilemap[x][y]
 				= *(mapsegs[0]+farmapylookup[y]+x)
 				= wskel_base+(wskel_mode-ws_wall1);
-			actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tilemap[x][y]);
+			actorat[x][y] = tilemap[x][y];
 
 			wskel_mode++;
 			wskel_delay = (120);
@@ -1110,7 +1110,7 @@ void T_WallSkeleton(objtype *ob)
 				=*/ tilemap[x][y]
 				= *(mapsegs[0]+farmapylookup[y]+x)
 				= wskel_base;
-			actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(tilemap[x][y]);
+			actorat[x][y] = tilemap[x][y];
 
 			ob->tilex = ob->x >> TILESHIFT;
 			ob->tiley = ob->y >> TILESHIFT;
@@ -1954,7 +1954,8 @@ void T_Bat (objtype *ob)
 		else
 			BatChaseThink (ob);		// head towards player
 
-		actorat[ob->tilex][ob->tiley] = ob;	// set down a new goal marker
+		actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
+		//actorat[ob->tilex][ob->tiley] = ob;	// set down a new goal marker
 	} while (0);	// just once
 	CalcBounds (ob);
 }
@@ -1990,7 +1991,8 @@ void T_BatPast (objtype *ob)
 
 		BatRunThink (ob);
 
-		actorat[ob->tilex][ob->tiley] = ob;	// set down a new goal marker
+		actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);	// set down a new goal marker
+		//actorat[ob->tilex][ob->tiley] = ob;	// set down a new goal marker
 	} while (0);	//(move)
 	CalcBounds (ob);
 }

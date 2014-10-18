@@ -619,7 +619,8 @@ void DrawNum(id0_short_t x,id0_short_t y,id0_short_t value,id0_short_t maxdigits
 {
 	id0_char_t str[10],len,i;
 
-	itoa(value,str,10);
+	BE_Cross_itoa_dec(value, str);
+	//itoa(value,str,10);
 	len=strlen(str);
 
 	for (i=len; i<maxdigits; i++)
@@ -744,7 +745,8 @@ void DrawText (id0_boolean_t draw_text_whether_it_needs_it_or_not)
 
 	text = (id0_char_t id0_seg *)grsegs[LEVEL1TEXT+mapon]+textstarts[number];
 
-	_fmemcpy (str,text,80);
+	memcpy(str, text, 80);
+	//_fmemcpy (str,text,80);
 	DisplayMsg(str,NULL);
 }
 
@@ -771,7 +773,7 @@ id0_char_t DisplayMsg(id0_char_t *text,id0_char_t *choices)
 	VW_Bar (WindowX,2,WindowW,8,STATUSCOLOR);
 	temp = fontcolor;
 	fontcolor = TEXTCOLOR^STATUSCOLOR;
-	US_CPrintLine (text);
+	US_CPrintLine (text, NULL);
 	fontcolor = temp;
 
 	if (choices)
@@ -803,7 +805,7 @@ id0_char_t DisplaySMsg(id0_char_t *text,id0_char_t *choices)
 	VW_Bar(WindowX,PrintY+1,WindowW,8,STATUSCOLOR);
 	temp = fontcolor;
 	fontcolor = TEXTCOLOR^STATUSCOLOR;
-	US_CPrintLine (text);
+	US_CPrintLine (text, NULL);
 	fontcolor = temp;
 
 	if (choices)
@@ -1132,7 +1134,8 @@ id0_boolean_t JimsShotClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
+			check = COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(actorat[x][y]);
+			//check = actorat[x][y];
 
 			if ((!check) || (check == player) || (!(check->flags & of_shootable)))
 				continue;
@@ -1906,7 +1909,7 @@ id0_boolean_t HitSpecialTile (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t
 
 					case REMOVE_DOOR_CODE:		// REMOVE DOOR
 						/*(id0_unsigned_t)actorat[x][y] = */tilemap[x][y] =	*(mapsegs[0]+farmapylookup[y]+x) = 0;
-						actorat[x][y] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(0);
+						actorat[x][y] = 0;
 						*(mapsegs[2]+farmapylookup[y+1]+x) = 0;	// key no longer needed
 						if (keyspot>=0)
 							TakeKey(keyspot);
@@ -2030,7 +2033,7 @@ id0_boolean_t TouchActor (objtype *ob, objtype *check)
 			}
 
 			//(id0_unsigned_t)actorat[check->tilex][check->tiley] = 0;
-			actorat[check->tilex][check->tiley] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(0);
+			actorat[check->tilex][check->tiley] = 0;
 			RemoveObj (check);
 
 			return false;
@@ -2039,7 +2042,7 @@ id0_boolean_t TouchActor (objtype *ob, objtype *check)
 		case freezeobj:
 			StopTime();
 			//(id0_unsigned_t)actorat[check->tilex][check->tiley] = 0;
-			actorat[check->tilex][check->tiley] = COMPAT_STORE_16BIT_UNSIGNED_IN_OBJ_PTR(0);
+			actorat[check->tilex][check->tiley] = 0;
 			RemoveObj(check);
 			return(false);
 		break;
@@ -2093,6 +2096,15 @@ id0_boolean_t LocationInActor (objtype *ob)
 	for (x=xmin;x<xmax;x++)
 		for (y=ymin;y<ymax;y++)
 		{
+			check = COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(actorat[x][y]);
+			if (actorat[x][y]>LASTTILE
+				&& (check->flags & of_shootable)
+				&& ob->xl-SIZE_TEST <= check->xh
+				&& ob->xh+SIZE_TEST >= check->xl
+				&& ob->yl-SIZE_TEST <= check->yh
+				&& ob->yh+SIZE_TEST >= check->yl)
+					return true;
+#if 0
 			check = actorat[x][y];
 			if (check>(objtype *)LASTTILE
 				&& (check->flags & of_shootable)
@@ -2101,6 +2113,7 @@ id0_boolean_t LocationInActor (objtype *ob)
 				&& ob->yl-SIZE_TEST <= check->yh
 				&& ob->yh+SIZE_TEST >= check->yl)
 					return true;
+#endif
 		}
 
 	return false;
@@ -2142,11 +2155,26 @@ void ClipXMove (objtype *ob, id0_long_t xmove)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
+			check = COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(actorat[x][y]);
+			//check = actorat[x][y];
 
 			if (!check)
 				continue;		// blank floor, walk ok
 
+			if (actorat[x][y] <= LASTTILE)
+			{
+				if (TILE_FLAGS(actorat[x][y]) & tf_SPECIAL)
+				{
+					HitSpecialTile(x,y,actorat[x][y]-SPECTILESTART);
+					goto blockmove;
+				}
+
+				if (TILE_FLAGS(actorat[x][y]) & tf_SOLID)
+				{
+					goto blockmove;			// solid wall
+				}
+			}
+#if 0
 			if ((id0_unsigned_t)check <= LASTTILE)
 			{
 				if (TILE_FLAGS((id0_unsigned_t)check) & tf_SPECIAL)
@@ -2160,8 +2188,14 @@ void ClipXMove (objtype *ob, id0_long_t xmove)
 					goto blockmove;			// solid wall
 				}
 			}
-
-			TouchActor(ob,check);		// pick up items
+#endif
+			// TODO (CHOCO CAT): We added "else" cause for the case
+			// that check is a valid pointer, but maybe emulate
+			// behaviors in the rest of the cases somehow?
+			else
+			{
+				TouchActor(ob,check);		// pick up items
+			}
 		}
 
 //
@@ -2260,10 +2294,25 @@ void ClipYMove (objtype *ob, id0_long_t ymove)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
+			check = COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(actorat[x][y]);
+			//check = actorat[x][y];
 			if (!check)
 				continue;		// blank floor, walk ok
 
+			if (actorat[x][y] <= LASTTILE)
+			{
+				if (TILE_FLAGS(actorat[x][y]) & tf_SPECIAL)		// <=LASTSPECIALTILE)
+				{
+					HitSpecialTile (x,y,actorat[x][y]-SPECTILESTART);
+					goto blockmove;
+				}
+
+				if (TILE_FLAGS(actorat[x][y]) & tf_SOLID)		// LASTWALLTILE)
+				{
+					goto blockmove;	// solid wall
+				}
+			}
+#if 0
 			if ((id0_unsigned_t)check <= LASTTILE)
 			{
 				if (TILE_FLAGS((id0_unsigned_t)check) & tf_SPECIAL)		// <=LASTSPECIALTILE)
@@ -2277,8 +2326,14 @@ void ClipYMove (objtype *ob, id0_long_t ymove)
 					goto blockmove;	// solid wall
 				}
 			}
-
-			TouchActor(ob,check);		// pick up items
+#endif
+			// TODO (CHOCO CAT): We added "else" cause for the case
+			// that check is a valid pointer, but maybe emulate
+			// behaviors in the rest of the cases somehow?
+			else
+			{
+				TouchActor(ob,check);		// pick up items
+			}
 		}
 
 //

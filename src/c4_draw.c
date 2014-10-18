@@ -395,7 +395,7 @@ void near ScaleOneWall (id0_int_t xl, id0_int_t xh)
 		height = wallheight[x];
 		pixwidth = wallwidth[x];
 		//(id0_unsigned_t)wallscalesource = wallofs[x];
-		wallscalesourceptr = wallseg[xl][wallofs[x]];
+		wallscalesourceptr = wallseg[xl]+wallofs[x];
 
 		//*(((id0_unsigned_t *)&scaletablecall)+1) = (id0_unsigned_t)scaledirectory[height];
 		(//id0_unsigned_t)scaletablecall = scaledirectory[height]->codeofs[0];
@@ -620,7 +620,8 @@ void DrawVWall (walltype *wallptr)
 	id0_int_t			x,i;
 	id0_unsigned_t	source;
 	id0_unsigned_t	width,sourceint;
-	id0_unsigned_t	wallpic,wallpicseg;
+	id0_unsigned_t	wallpic/*,wallpicseg*/;
+	memptr wallpicseg; // CHOCO CAT - Safer
 	id0_unsigned_t	skip;
 	id0_long_t		fracheight,fracstep,longheightchange;
 	id0_unsigned_t	height;
@@ -724,7 +725,8 @@ void DrawVWall (walltype *wallptr)
 
 	mapadd = 64*64-mapadd;				// make sure it stays positive
 
-	wallpicseg = (id0_unsigned_t)walldirectory[wallpic-FIRSTWALLPIC];
+	wallpicseg = walldirectory[wallpic-FIRSTWALLPIC];
+	//wallpicseg = (id0_unsigned_t)walldirectory[wallpic-FIRSTWALLPIC];
 	if (traceangle > FINEANGLES/2)
 		traceangle -= FINEANGLES;
 
@@ -986,22 +988,27 @@ fixed FixedByFrac (fixed a, fixed b)
 	id0_longword_t a_as_unsigned = a;
 	if (a < 0) // negative?
 	{
-		a_as_unsigned ^= -1;
-		++a_as_unsigned;
+		//2's complement...
+		a_as_unsigned = -a;
+		//a_as_unsigned ^= -1;
+		//++a_as_unsigned;
 		result_sign *= -1; // toggle sign of result
 	}
 	//
 	// Multiply a_as_unsigned by the low 8 bits of b
 	//
 	id0_word_t b_lo = b&0xFFFF;
-	id0_longword_t result = b_lo*(a_as_unsigned>>16) + b_lo*(a_as_unsigned&0xFFFF);
+	id0_longword_t result = b_lo*(a_as_unsigned>>16) + ((b_lo*(a_as_unsigned&0xFFFF))>>16);
+	//id0_longword_t result = b_lo*(a_as_unsigned>>16) + b_lo*(a_as_unsigned&0xFFFF);
 	//
 	// put result in 2's complement
 	//
 	if (result_sign < 0) // Is the result negative?
 	{
-		result ^= -1;
-		++result;
+		//2's complement...
+		result = -result;
+		//result ^= -1;
+		//++result;
 	}
 	return result;
 #if 0
@@ -1540,6 +1547,9 @@ objtype *depthsort[MAXACTORS];
 
 void DrawScaleds (void)
 {
+	// TODO (CHOCO CAT) COMMENTED OUT!!!
+	return;
+
 	id0_int_t 		i,j,least,numvisable,height;
 	objtype 	*obj,**vislist,*farthest;
 	memptr		shape;

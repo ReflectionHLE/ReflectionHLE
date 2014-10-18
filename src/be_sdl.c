@@ -690,8 +690,14 @@ void BE_SDL_GetMouseDelta(id0_int_t *x, id0_int_t *y)
 {
 	int ourx, oury;
 	SDL_GetRelativeMouseState(&ourx, &oury);
-	*x = ourx;
-	*y = oury;
+	if (x)
+	{
+		*x = ourx;
+	}
+	if (y)
+	{
+		*y = oury;
+	}
 }
 
 id0_word_t BE_SDL_GetMouseButtons(void)
