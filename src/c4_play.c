@@ -640,9 +640,6 @@ void RemoveObj (objtype *gone)
 
 void PollControls (void)
 {
-	// FIXME FIXME FIXME (CHOCO CAT) HACK
-	BE_SDL_ShortSleep();
-
 	id0_unsigned_t buttons;
 
 	IN_ReadControl(0,&control);

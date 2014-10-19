@@ -210,7 +210,10 @@ id0_int_t DebugKeys (void)
 	//
 			if (Keyboard[sc_Escape])
 			{
-				while (Keyboard[sc_Escape]);
+				while (Keyboard[sc_Escape])
+				{
+					BE_SDL_ShortSleep();
+				}
 				break;
 			}
 
@@ -287,6 +290,7 @@ id0_int_t DebugKeys (void)
 					VW_WaitVBL(6);
 			}
 
+			BE_SDL_ShortSleep();
 		}
 // Restore game
 //
@@ -794,6 +798,8 @@ void ViewMap (void)
 
 
 		OverheadRefresh ();
+
+		BE_SDL_ShortSleep();
 
 	} while (!Keyboard[sc_Escape]);
 

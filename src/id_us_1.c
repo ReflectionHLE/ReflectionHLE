@@ -180,6 +180,7 @@ asm     sti     // Let the keyboard interrupts come through
 			return(RETRY);
 			break;
 		}
+		BE_SDL_ShortSleep();
 	}
 
 oh_kill_me:
@@ -1292,6 +1293,8 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 
 	//asm     pushf
 	//asm     cli
+		// For buggy blinking cursor in Catacomb Abyss, should be called here and later
+		BE_SDL_ShortSleep();
 
 		sc = LastScan;
 		LastScan = sc_None;
@@ -1421,6 +1424,9 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 			USL_XORICursor(x,y,s,cursor);
 
 		VW_UpdateScreen();
+
+		// For buggy blinking cursor in Catacomb Abyss, should be called here and earlier
+		BE_SDL_ShortSleep();
 	}
 
 	if (cursorvis)

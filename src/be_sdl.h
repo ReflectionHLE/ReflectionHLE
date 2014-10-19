@@ -108,6 +108,17 @@ void BE_SDL_SetScreenMode(int mode);
 void BE_SDL_WaitVBL(id0_int_t number);
 void BE_SDL_ShortSleep(void);
 void BE_SDL_Delay(id0_unsigned_t msec); // Replacement for delay from dos.h
+// Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh):
+// While ID_RF's RF_Refresh (from Keen Dreams) indirectly leads to wait for
+// vsync on original hardware in VW_SetScreen, along with an addition wait
+// from RF_CalcTics, Catacombs' ThreeDRefresh and CalcTics don't do either.
+// This implies visual glitches are probably expected if the framerate goes
+// a bit above 70fps, and the game's PlayLoop may execute for many times on
+// sufficiently fast machines (at least 500 times a second). And so:
+//
+// Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh), to simulate
+// some wait relevant on older machines
+void BE_SDL_ThreeDRefreshSleep(void);
 
 void BE_SDL_textcolor(int color);
 void BE_SDL_textbackground(int color);

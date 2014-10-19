@@ -1644,7 +1644,10 @@ void ReadScroll (id0_int_t scroll)
 // MDM begin
 	lasttext = -1;
 	DisplayMsg("Press ENTER or ESC to exit.",NULL);
-	while ((!Keyboard[sc_Escape]) && (!Keyboard[sc_Enter]));
+	while ((!Keyboard[sc_Escape]) && (!Keyboard[sc_Enter]))
+	{
+		BE_SDL_ShortSleep();
+	}
 // MDM end
 	IN_ClearKeysDown ();
 

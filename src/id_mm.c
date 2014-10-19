@@ -1030,7 +1030,8 @@ void MM_SortMem (void)
 					//movedata(source,0,dest,0,length*16);
 
 					scan->start = start;
-					*(id0_unsigned_t *)scan->useptr = start;
+					//*(id0_unsigned_t *)scan->useptr = start;
+					*(scan->useptr) = EMULATED_SEG_TO_PTR(start);
 				}
 				start = scan->start + scan->length;
 			}

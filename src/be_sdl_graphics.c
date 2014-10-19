@@ -366,7 +366,9 @@ void BE_SDL_EGASetLineWidth(id0_byte_t widthInBytes)
 
 void BE_SDL_EGASetSplitScreen(id0_int_t linenum)
 {
-	g_sdlSplitScreenLine = linenum;
+	// TODO (CHOCO KEEN) No idea why, required for VGA (not EGA)
+	g_sdlSplitScreenLine = (linenum+1)/2;
+	//g_sdlSplitScreenLine = linenum;
 }
 
 void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
@@ -728,6 +730,14 @@ void BE_SDL_ShortSleep(void)
 	BE_SDL_PollEvents();
 }
 
+// Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh)
+BE_SDL_ThreeDRefreshSleep(void)
+{
+	SDL_Delay(15);
+	// TODO: Make this more efficient?
+	BE_SDL_UpdateHostDisplay();
+	BE_SDL_PollEvents();
+}
 
 void BE_SDL_Delay(id0_unsigned_t msec) // Replacement for delay from dos.h
 {
