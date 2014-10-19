@@ -592,7 +592,7 @@ void CAL_SetupMapFile (void)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
 #elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
 	if ((handle = open("KDREAMS.MAP",
- 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+ 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open KDREAMS.MAP!");
 #endif
 	length = BE_Cross_FileLengthFromHandle(handle);

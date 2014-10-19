@@ -434,6 +434,7 @@ US_Startup(void)
 	if (US_Started)
 		return;
 
+	// (CHOCO KEEN) UNUSED (TODO restore?)
 	// harderr(USL_HardError);	// Install the fatal error handler
 
 	US_InitRndT(true);		// Initialize the random number generator
