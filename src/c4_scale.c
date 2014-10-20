@@ -560,6 +560,7 @@ static void ExecuteCompShape(const id0_byte_t *codePtr, id0_byte_t *comptablebuf
 {
 	// WARNING: All offsets into segments here are treated as SIGNED
 	// - at least one case fixes fireball drawing glitch
+	// (applies e.g., to ds:[-7] but does NOT seem to apply to ds:[si])
 	const id0_byte_t *currCodePtr = codePtr;
 	while (*currCodePtr != 0xcb)
 	{

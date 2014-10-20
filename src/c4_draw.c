@@ -1561,12 +1561,18 @@ void DrawScaleds (void)
 
 	for (obj = player->next;obj;obj=obj->next)
 	{
+		// (CHOCO CAT) WORKAROUND FOR VANILLA BUG (TODO EMULATE BEHAVIORS?):
+		// obj->tiley may be very large (say 65534), seems to be reproduced
+		// as a right-shift of obj->y with signed value of -95792 by 16 bits.
+		//
+		// Workaround itself: Add a few conditions.
 		tilespot = &tilemap[0][0]+(obj->tilex<<6)+obj->tiley;
 		visspot = &spotvis[0][0]+(obj->tilex<<6)+obj->tiley;
 		//
 		// could be in any of the nine surrounding tiles
 		//
-		if (*visspot
+		if ((obj->tilex < MAPSIZE) && (obj->tiley < MAPSIZE) && /* WORKAROUND/FIX */
+		   (*visspot
 		|| ( *(visspot-1) && !*(tilespot-1) )
 		|| ( *(visspot+1) && !*(tilespot+1) )
 		|| ( *(visspot-65) && !*(tilespot-65) )
@@ -1574,7 +1580,7 @@ void DrawScaleds (void)
 		|| ( *(visspot-63) && !*(tilespot-63) )
 		|| ( *(visspot+65) && !*(tilespot+65) )
 		|| ( *(visspot+64) && !*(tilespot+64) )
-		|| ( *(visspot+63) && !*(tilespot+63) ) )
+		|| ( *(visspot+63) && !*(tilespot+63) ) ))
 		{
 			if ((obj->active == noalways) || (obj->active == always))
 				obj->active = always;

@@ -343,7 +343,7 @@ void DemoLoop (void);
 void SetupScalePic (id0_unsigned_t picnum);
 void SetupScaleWall (id0_unsigned_t picnum);
 void SetupScaling (void);
-void main (void);
+//void main (void);
 
 /*
 =============================================================================
