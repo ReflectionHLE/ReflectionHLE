@@ -538,7 +538,7 @@ void SpawnTroll (id0_int_t tilex, id0_int_t tiley)
 
 void T_Troll (objtype *ob)
 {
-	if (Chase(ob,true) || (random(1000)<RANDOM_ATTACK))
+	if (Chase(ob,true) || (BE_Cross_Brandom(1000)<RANDOM_ATTACK))
 	{
 		ob->state = &s_trollattack1;
 		ob->ticcount = ob->state->tictime;
@@ -608,7 +608,7 @@ void SpawnWetMan(id0_int_t tilex, id0_int_t tiley)
 	ob=new;
 
 	WT_STAGE = wt_BUBBLES;
-	WT_TIMEREMAIN = 60*4+random(60*3);
+	WT_TIMEREMAIN = 60*4+BE_Cross_Brandom(60*3);
 
 	new->obclass = wetobj;
 	new->speed = 1000;
@@ -637,7 +637,7 @@ void T_WetMan(objtype *ob)
 				//
 
 				WT_STAGE = wt_WALK;
-				WT_TIMEREMAIN = 60*5+random(60*5);
+				WT_TIMEREMAIN = 60*5+BE_Cross_Brandom(60*5);
 				ob->state = &s_wet_rise1;
 				ob->speed = 2200;
 				ob->ticcount = ob->state->tictime;
@@ -652,13 +652,13 @@ void T_WetMan(objtype *ob)
 					//
 
 					WT_STAGE = wt_WALK;
-					WT_TIMEREMAIN = 60+random(60*2);
+					WT_TIMEREMAIN = 60+BE_Cross_Brandom(60*2);
 					ob->state = &s_wet_rise1;
 					ob->speed = 2200;
 					ob->ticcount = ob->state->tictime;
 				}
 				else
-				if (random(1000)<5)
+				if (BE_Cross_Brandom(1000)<5)
 				{
 					// RANDOM PEEK UP OUT OF WATER
 					//
@@ -672,7 +672,7 @@ void T_WetMan(objtype *ob)
 
 		case wt_WALK:
 			ob->flags |= of_shootable;
-			if (Chase(ob,true) || (random(1000)<RANDOM_ATTACK))
+			if (Chase(ob,true) || (BE_Cross_Brandom(1000)<RANDOM_ATTACK))
 			{
 				ob->state = &s_wet_attack1;
 				ob->ticcount = ob->state->tictime;
@@ -687,7 +687,7 @@ void T_WetMan(objtype *ob)
 					//
 
 					WT_STAGE = wt_BUBBLES;
-					WT_TIMEREMAIN = 60*4+random(60*3);
+					WT_TIMEREMAIN = 60*4+BE_Cross_Brandom(60*3);
 					ob->state = &s_wet_sink1;
 					ob->speed = 1200;
 					ob->ticcount = ob->state->tictime;
@@ -776,7 +776,7 @@ void SpawnZombie (id0_int_t tilex, id0_int_t tiley)
 		zombie_delay = (tile>>8)*30;
 	else
 	{
-		current_zombie_delay = (2*60)+random(4*60);
+		current_zombie_delay = (2*60)+BE_Cross_Brandom(4*60);
 		zombie_delay = zombie_base_delay+current_zombie_delay;
 		zombie_base_delay += current_zombie_delay;
 		if (zombie_base_delay > 8*60)
@@ -824,7 +824,7 @@ void T_Zombie (objtype *ob)
 		break;
 
 		case zm_active:
-			if (Chase (ob,true) || (random(1000)<RANDOM_ATTACK))
+			if (Chase (ob,true) || (BE_Cross_Brandom(1000)<RANDOM_ATTACK))
 			{
 				ob->state = &s_zombie_attack;
 				ob->ticcount = ob->state->tictime;
@@ -902,7 +902,7 @@ void SpawnSpook(id0_int_t tilex, id0_int_t tiley)
 	if (tile)
 		spook_delay = (tile>>8)*30;
 	else
-		spook_delay = 2*60+random(5*60);
+		spook_delay = 2*60+BE_Cross_Brandom(5*60);
 
 	spook_mode = zm_wait_for_dark;
 
@@ -953,7 +953,7 @@ void T_Spook(objtype *ob)
 		break;
 
 		case zm_active:
-			if (Chase (ob,true) || (random(1000)<RANDOM_ATTACK))
+			if (Chase (ob,true) || (BE_Cross_Brandom(1000)<RANDOM_ATTACK))
 			{
 				ob->state = &s_spook_attack1;
 				ob->ticcount = ob->state->tictime;
@@ -1060,7 +1060,7 @@ foundtile:;
 		wskel_delay = (tile>>8)*30;
 	else
 	{
-		current_delay = (2*60)+random(4*60);
+		current_delay = (2*60)+BE_Cross_Brandom(4*60);
 		wskel_delay = zombie_base_delay+current_delay;
 		zombie_base_delay += current_delay;
 		if (zombie_base_delay > 8*60)
@@ -1186,7 +1186,7 @@ void SpawnSkeleton(id0_int_t tilex, id0_int_t tiley)
 
 void T_Skeleton(objtype *ob)
 {
-	if (Chase (ob,true) || (random(1000)<RANDOM_ATTACK))
+	if (Chase (ob,true) || (BE_Cross_Brandom(1000)<RANDOM_ATTACK))
 	{
 		ob->state = &s_skel_attack1;
 		ob->ticcount = ob->state->tictime;
@@ -1260,7 +1260,7 @@ void T_Eye(objtype *ob)
 	eye_delay -= realtics;
 	if (eye_delay < 0)
 	{
-		eye_mode = random(em_player4);
+		eye_mode = BE_Cross_Brandom(em_player4);
 		eye_delay = (10*60);
 	}
 
@@ -1291,7 +1291,7 @@ void T_Eye(objtype *ob)
 	player->tilex = temp_tilex;
 	player->tiley = temp_tiley;
 
-	if (!random(2))
+	if (!BE_Cross_Brandom(2))
 		ShootPlayer(ob,eshotobj,ESHOTSPEED,&s_eshot1);
 }
 
@@ -1370,7 +1370,7 @@ void SpawnOrc (id0_int_t tilex, id0_int_t tiley)
 
 void T_Orc (objtype *ob)
 {
-	if (Chase (ob,true) || (random(1000)<RANDOM_ATTACK))
+	if (Chase (ob,true) || (BE_Cross_Brandom(1000)<RANDOM_ATTACK))
 	{
 		ob->state = &s_orcattack1;
 		ob->ticcount = ob->state->tictime;
@@ -1455,7 +1455,7 @@ void SpawnDemon (id0_int_t tilex, id0_int_t tiley)
 
 void T_Demon (objtype *ob)
 {
-	if (Chase (ob,true) || (random(1000)<RANDOM_ATTACK))
+	if (Chase (ob,true) || (BE_Cross_Brandom(1000)<RANDOM_ATTACK))
 	{
 		ob->state = &s_demonattack1;
 		ob->ticcount = ob->state->tictime;
@@ -1543,7 +1543,7 @@ void T_Mage (objtype *ob)
 	eye_delay -= realtics;
 	if (eye_delay < 0)
 	{
-		eye_mode = random(em_player4);
+		eye_mode = BE_Cross_Brandom(em_player4);
 		eye_delay = (10*60);
 	}
 
@@ -1574,7 +1574,7 @@ void T_Mage (objtype *ob)
 	player->tilex = temp_tilex;
 	player->tiley = temp_tiley;
 
-	if (!random(10))
+	if (!BE_Cross_Brandom(10))
 		if (ShootPlayer(ob,mshotobj,MSHOTSPEED,&s_mshot1))
 		{
 			ob->state = &s_mageattack3;
@@ -1656,7 +1656,7 @@ void SpawnRedDemon (id0_int_t tilex, id0_int_t tiley)
 
 void T_RedDemon (objtype *ob)
 {
-	if (Chase (ob,true) || (random(1000)<RANDOM_ATTACK))
+	if (Chase (ob,true) || (BE_Cross_Brandom(1000)<RANDOM_ATTACK))
 	{
 		ob->state = &s_red_demonattack1;
 		ob->ticcount = ob->state->tictime;
@@ -1752,7 +1752,7 @@ void T_Grelminar (objtype *ob)
 {
 	Chase (ob,false);
 
-	if (!random(10))
+	if (!BE_Cross_Brandom(10))
 		if (ShootPlayer(ob,gshotobj,10000,&s_gshot1))
 		{
 			ob->state = &s_grelattack3;

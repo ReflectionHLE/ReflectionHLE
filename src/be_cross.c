@@ -341,3 +341,33 @@ void BE_Cross_Wrapped_MemSet(uint8_t *segPtr, uint8_t *offInSegPtr, int value, u
 		memset(segPtr, value, num-bytesToEnd);
 	}
 }
+
+// Alternatives for Borland's randomize and random macros used in Catacomb Abyss
+// A few pages about the algorithm:
+// http://en.wikipedia.org/wiki/Linear_congruential_generator
+// http://stackoverflow.com/questions/14672358/implemenation-for-borlandc-rand
+
+static uint32_t g_crossRandomSeed = 0x015A4E36;
+
+static int16_t BEL_Cross_rand(void)
+{
+	g_crossRandomSeed = 0x015A4E35*g_crossRandomSeed + 1;
+	return ((int16_t)(g_crossRandomSeed >> 16) & 0xFFFF);
+}
+
+static void BEL_Cross_srand(uint16_t seed)
+{
+	g_crossRandomSeed = seed;
+	BEL_Cross_rand();
+}
+
+int16_t BE_Cross_Brandom(int16_t num)
+{
+	// Cast to unsigned so integer overflow is well-defined
+	return (((uint32_t)BEL_Cross_rand()*(uint32_t)num)/0x8000);
+}
+
+void BE_Cross_Brandomize(void)
+{
+	BEL_Cross_srand(time(NULL));
+}

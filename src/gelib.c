@@ -2547,7 +2547,9 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 
 	id0_char_t command[100];
 	id0_char_t choices[]={sc_Escape,sc_Space,0},drive[2];
-	id0_boolean_t fadeitout=false,rt_code=2;
+	// (CHOCO CAT) rt_code should *not* be a boolean before returning
+	id0_boolean_t fadeitout=false/*,rt_code=2*/;
+	int rt_code = 2;
 
 	if (!disktext)
 		disktext = GAMENAME;

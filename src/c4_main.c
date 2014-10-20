@@ -882,8 +882,7 @@ void id0_main (void)
 		BE_SDL_HandleExit(0);
 	}
 
-	//randomize();
-	srand(time(NULL));
+	BE_Cross_Brandomize();
 
 	InitGame ();
 	LoadLatchMem ();

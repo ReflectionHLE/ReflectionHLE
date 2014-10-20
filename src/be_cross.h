@@ -104,4 +104,9 @@ void BE_Cross_Compat_FillObjStatesWithDOSOffsets(void);
 // Return a void* rather than statetype* only because of current header inclusion mess...
 void* BE_Cross_Compat_GetObjStatePtrFromDOSOffset(uint16_t offset);
 
+// Alternatives for Borland's randomize and random macros used in Catacomb Abyss
+void BE_Cross_Brandomize(void);
+int16_t BE_Cross_Brandom(int16_t num);
+
+
 #endif // BE_CROSS_H

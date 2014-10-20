@@ -140,12 +140,6 @@ typedef	struct
 #define O_BINARY 0
 #endif
 
-// FIXME (CHOCO CAT) Used as an alternative Borland's random function, but it
-// may be better to do this a bit more deterministics (also Borland's randomize)
-
-// Based on Borland header...
-#define random(num) ((num) ? (rand()%(num)) : 0)
-
 // Initialized before calling vanilla app's (now renamed) main function
 extern int id0_argc;
 extern char **id0_argv;

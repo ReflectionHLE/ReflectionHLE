@@ -644,19 +644,19 @@ void GiveChest(void)
 {
 	id0_char_t i;
 
-	for (i=0;i<random(4);i++)
+	for (i=0;i<BE_Cross_Brandom(4);i++)
 	{
 		GiveBolt();
 		SD_WaitSoundDone();
 	}
 
-	for (i=0;i<random(3);i++)
+	for (i=0;i<BE_Cross_Brandom(3);i++)
 	{
 		GiveNuke();
 		SD_WaitSoundDone();
 	}
 
-	for (i=0;i<random(2);i++)
+	for (i=0;i<BE_Cross_Brandom(2);i++)
 	{
 		GivePotion();
 		SD_WaitSoundDone();
@@ -3206,9 +3206,9 @@ void T_ExpThink(objtype *obj)
 //------------------------------------------------------------------------
 void SpawnBigExplosion(fixed x, fixed y, id0_short_t Delay, fixed Range)
 {
-	SpawnExplosion(x-random(Range),y+random(Range),random(Delay));
-	SpawnExplosion(x+random(Range),y-random(Range),random(Delay));
-	SpawnExplosion(x-random(Range),y-random(Range),random(Delay));
-	SpawnExplosion(x+random(Range),y+random(Range),random(Delay));
+	SpawnExplosion(x-BE_Cross_Brandom(Range),y+BE_Cross_Brandom(Range),BE_Cross_Brandom(Delay));
+	SpawnExplosion(x+BE_Cross_Brandom(Range),y-BE_Cross_Brandom(Range),BE_Cross_Brandom(Delay));
+	SpawnExplosion(x-BE_Cross_Brandom(Range),y-BE_Cross_Brandom(Range),BE_Cross_Brandom(Delay));
+	SpawnExplosion(x+BE_Cross_Brandom(Range),y+BE_Cross_Brandom(Range),BE_Cross_Brandom(Delay));
 }
 

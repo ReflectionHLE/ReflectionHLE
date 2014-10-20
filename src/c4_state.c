@@ -71,7 +71,7 @@ void Internal_SpawnNewObj (id0_unsigned_t x, id0_unsigned_t y, statetype *state,
 	GetNewObj(UseDummy);
 	new->size = size;
 	new->state = state;
-	new->ticcount = random (state->tictime)+1;
+	new->ticcount = BE_Cross_Brandom (state->tictime)+1;
 
 	new->tilex = x;
 	new->tiley = y;
@@ -91,7 +91,7 @@ void Internal_SpawnNewObjFrac (id0_long_t x, id0_long_t y, statetype *state, id0
 	GetNewObj(UseDummy);
 	new->size = size;
 	new->state = state;
-	new->ticcount = random (state->tictime)+1;
+	new->ticcount = BE_Cross_Brandom (state->tictime)+1;
 	new->active = noalways;
 
 	new->x = x;

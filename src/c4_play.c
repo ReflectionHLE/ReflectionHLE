@@ -1059,7 +1059,7 @@ nextactor:;
 			case 0:
 			case 1:
 			case 3:
-				if (!random(120-realtics))
+				if (!BE_Cross_Brandom(120-realtics))
 				{
 					BGFLAGS &= ~BGF_NOT_LIGHTNING;
 					InitBgChange(1,sky_lightning,-1,NULL,BGF_NOT_LIGHTNING);

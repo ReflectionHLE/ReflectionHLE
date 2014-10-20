@@ -62,7 +62,7 @@ void BE_SDL_UnlockAudioRecursively(void);
 // Should be used in ID_SD.C only - Frequency is about 1193182Hz/spkVal
 void BE_SDL_PCSpeakerOn(id0_word_t spkVal);
 void BE_SDL_PCSpeakerOff(void);
-// Safe alternatives for Borland's sound and nosoudn functions from Catacomb Abyss' gelib.c
+// Safe alternatives for Borland's sound and nosound functions from Catacomb Abyss' gelib.c
 void BE_SDL_BSound(id0_word_t frequency);
 void BE_SDL_BNoSound(void);
 // Drop-in replacement for id_sd.c:alOut
