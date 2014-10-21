@@ -180,39 +180,21 @@ void VW_SetScreenMode (id0_int_t grmode)
 		BE_SDL_SetScreenMode(4);
 		// screenseg is actually a main mem buffer
 		break;
-	  case EGA320GR:						// MDM start (GAMERS EDGE)
-		// TODO (CHOCO CAT) IMPLEMENT
-		printf("VW_SetScreenMode NOT IMPLEMENTED FOR grmode==EGA320GR, ABORTING\n");
-		exit(0);
-		MaxX=320;
-		MaxY=200;
-		BE_SDL_SetScreenMode(0xd|128);
-#if 0
-		_AX = 0xd|128;
-		geninterrupt (0x10);
-		screenseg=0xa000;
-		break;
-#endif
-	  case EGA640GR:
-		// TODO (CHOCO CAT) IMPLEMENT
-		printf("VW_SetScreenMode NOT IMPLEMENTED FOR grmode==EGA640GR, ABORTING\n");
-		exit(0);
-		MaxX=640;
-		MaxY=200;
-		BE_SDL_SetScreenMode(0xe|128);				// MDM end
-#if 0
-		_AX = 0xe|128;
-		geninterrupt (0x10);
-		screenseg=0xa000;
-		break;						 		// MDM end
-#endif	  
 	  case EGAGR:
+	  case EGA320GR:						// MDM start (GAMERS EDGE)
 		MaxX=320;
 		MaxY=200;
-		BE_SDL_SetScreenMode(0xd);
+		BE_SDL_SetScreenMode(0xd/*|128 for EGA320GR, MDM*/);
 		// CHOCO KEEN no need to obtain screenseg
 		// - different EGA planes are accessed with new functions
 		break;
+	  case EGA640GR:
+		MaxX=640;
+		MaxY=200;
+		BE_SDL_SetScreenMode(0xe/*|128*/);
+		// CHOCO KEEN no need to obtain screenseg
+		// - different EGA planes are accessed with new functions
+		break;						 		// MDM end
 #ifdef VGAGAME
 	  case VGAGR:{
 		  id0_char_t extern VGAPAL;	// deluxepaint vga pallet .OBJ file

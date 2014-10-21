@@ -216,7 +216,8 @@ void BE_SDL_SetGfxOutputRects(void)
 	if (g_sdlScreenMode != 3)
 	{
 		// On the VGA, line doubling is in effect for graphical 200 lines modes
-		srcWidth *= 2;
+		if (g_sdlScreenMode != 0xe) // Is source 320x200 (not 640x200)?
+			srcWidth *= 2;
 		srcHeight *= 2;
 	}
 	int srcBorderLeft, srcBorderRight, srcBorderTop, srcBorderBottom;
@@ -563,7 +564,6 @@ void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
 
 void BE_SDL_SetScreenMode(int mode)
 {
-	g_sdlScreenMode = mode;
 	g_sdlDoRefreshGfxOutput = true;
 	switch (mode)
 	{
@@ -592,10 +592,30 @@ void BE_SDL_SetScreenMode(int mode)
 		g_sdlPelPanning = 0;
 		g_sdlLineWidth = 40;
 		g_sdlSplitScreenLine = -1;
-		memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
+		// HACK: Looks like this shouldn't be done if changing gfx->gfx
+		if (g_sdlScreenMode != 0xE)
+		{
+			memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
+		}
+		g_sdlVidMemCache.egaGfx[0][0] = g_sdlVidMem.egaGfx[0][0]^0xFF; // Force refresh
+		break;
+	case 0xE:
+		g_sdlTexWidth = 2*GFX_TEX_WIDTH;
+		g_sdlTexHeight = GFX_TEX_HEIGHT;
+		memcpy(g_sdlEGACurrBGRAPaletteAndBorder, g_sdlEGABGRAScreenColors, sizeof(g_sdlEGABGRAScreenColors));
+		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
+		g_sdlPelPanning = 0;
+		g_sdlLineWidth = 80;
+		g_sdlSplitScreenLine = -1;
+		// HACK: Looks like this shouldn't be done if changing gfx->gfx
+		if (g_sdlScreenMode != 0xD)
+		{
+			memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
+		}
 		g_sdlVidMemCache.egaGfx[0][0] = g_sdlVidMem.egaGfx[0][0]^0xFF; // Force refresh
 		break;
 	}
+	g_sdlScreenMode = mode;
 	BE_SDL_SetGfxOutputRects();
 	BEL_SDL_RecreateTexture();
 }
@@ -990,8 +1010,8 @@ void BE_SDL_UpdateHostDisplay(void)
 		{
 			uint8_t currBitNum = 7-panningWithinInByte, currBitMask = 1<<currBitNum;
 			uint16_t currByte = currLineFirstByte;
-			uint32_t *currPixPtr = (uint32_t *)pixels + line*GFX_TEX_WIDTH;
-			for (col = 0; col < GFX_TEX_WIDTH; ++col, ++currPixPtr)
+			uint32_t *currPixPtr = (uint32_t *)pixels + line*g_sdlTexWidth;
+			for (col = 0; col < g_sdlTexWidth; ++col, ++currPixPtr)
 			{
 				*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[
 					((g_sdlVidMem.egaGfx[0][currByte]&currBitMask)>>currBitNum) |
@@ -1019,7 +1039,7 @@ void BE_SDL_UpdateHostDisplay(void)
 				}
 			}
 			// Just if this makes sense... (FIXME: Check!)
-			for (; col < GFX_TEX_WIDTH; ++col, ++currPixPtr)
+			for (; col < g_sdlTexWidth; ++col, ++currPixPtr)
 			{
 				*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[0];
 			}

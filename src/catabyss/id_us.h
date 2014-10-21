@@ -100,7 +100,7 @@ extern	id0_int_t			CursorX,CursorY;
 extern	void		(*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),
 					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *);
 
-extern	id0_boolean_t		(*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
+extern	id0_boolean_t		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
 extern	void		(*USL_ResetGame)(void);
 extern	SaveGame	Games[MaxSaveGames];
 extern	HighScore	Scores[];
@@ -111,8 +111,8 @@ extern	void	US_Startup(void),
 				US_Setup(void),
 				US_Shutdown(void),
 				US_InitRndT(id0_boolean_t randomize),
-				US_SetLoadSaveHooks(id0_boolean_t (*load)(id0_int_t),
-									id0_boolean_t (*save)(id0_int_t),
+				US_SetLoadSaveHooks(id0_boolean_t (*load)(int),
+									id0_boolean_t (*save)(int),
 									void (*reset)(void)),
 				US_TextScreen(void),
 				US_UpdateTextScreen(void),

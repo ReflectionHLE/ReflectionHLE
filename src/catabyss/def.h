@@ -332,8 +332,8 @@ extern   id0_unsigned_t Flags;
 
 
 void NewGame (void);
-id0_boolean_t	SaveTheGame(id0_int_t file);
-id0_boolean_t	LoadTheGame(id0_int_t file);
+id0_boolean_t	SaveTheGame(int file);
+id0_boolean_t	LoadTheGame(int file);
 void ResetGame(void);
 void ShutdownId (void);
 void InitGame (void);
