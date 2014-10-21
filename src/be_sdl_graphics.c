@@ -1,24 +1,6 @@
-/* Copyright (C) 2014 NY00123
- *
- * This file is part of Chocolate Keen Dreams.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 #include "SDL.h"
-#include "id_heads.h"
+#include "be_cross.h"
+#include "be_sdl.h"
 
 /*static*/ SDL_Window *g_sdlWindow;
 static SDL_Renderer *g_sdlRenderer;
@@ -85,6 +67,7 @@ static int g_sdlScreenMode = 3;
 static int g_sdlTexWidth, g_sdlTexHeight;
 static uint8_t g_sdlPelPanning = 0, g_sdlPelPanningCache;
 static uint8_t g_sdlLineWidth = 40, g_sdlLineWidthCache;
+static int16_t g_sdlSplitScreenLine = -1, g_sdlSplitScreenLineCache;
 static int g_sdlTxtCursorPosX, g_sdlTxtCursorPosY;
 static bool g_sdlTxtCursorEnabled = true;
 static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
@@ -93,7 +76,13 @@ void BE_SDL_SetGfxOutputRects(void);
 
 void BE_SDL_InitGfx(void)
 {
+#ifdef CHOCO_KEEN_VER_KDREAMS
 	const char *windowTitle = "Chocolate Keen Dreams";
+#elif defined CHOCO_KEEN_VER_CATABYSS
+	const char *windowTitle = "Chocolate Catacomb Abyss";
+#else
+#error "FATAL ERROR: No Chocolate port game macro is defined!"
+#endif
 	if (g_chocolateKeenCfg.isFullscreen)
 	{
 		if (g_chocolateKeenCfg.fullWidth && g_chocolateKeenCfg.fullHeight)
@@ -283,18 +272,18 @@ void BE_SDL_SetGfxOutputRects(void)
 	g_sdlAspectCorrectionRect.h = g_sdlAspectCorrectionBorderedRect.h*srcHeight/srcBorderedHeight;
 }
 
-void BE_SDL_SetScreenStartAddress(id0_unsigned_t crtc)
+void BE_SDL_SetScreenStartAddress(uint16_t crtc)
 {
 	g_sdlScreenStartAddress = crtc;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-id0_byte_t *BE_SDL_GetTextModeMemoryPtr(void)
+uint8_t *BE_SDL_GetTextModeMemoryPtr(void)
 {
 	return g_sdlVidMem.text;
 }
 
-id0_byte_t *BE_SDL_GetCGAMemoryPtr(void)
+uint8_t *BE_SDL_GetCGAMemoryPtr(void)
 {
 	return g_sdlVidMem.cgaGfx;
 }
@@ -335,13 +324,13 @@ static int BEL_SDL_ConvertEGASignalToEGAEntry(int color)
 }
 
 
-void BE_SDL_SetBorderColor(id0_byte_t color)
+void BE_SDL_SetBorderColor(uint8_t color)
 {
 	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_SDL_ConvertEGASignalToEGAEntry(color)];
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette)
+void BE_SDL_EGASetPaletteAndBorder(const uint8_t *palette)
 {
 	for (int entry = 0; entry < 16; ++entry)
 	{
@@ -351,16 +340,23 @@ void BE_SDL_EGASetPaletteAndBorder(const id0_char_t *palette)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_SetPelPanning(id0_byte_t panning)
+void BE_SDL_SetPelPanning(uint8_t panning)
 {
 	g_sdlPelPanning = panning;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGASetLineWidth(id0_byte_t widthInBytes)
+void BE_SDL_EGASetLineWidth(uint8_t widthInBytes)
 {
 	g_sdlLineWidth = widthInBytes;
 	g_sdlDoRefreshGfxOutput = true;
+}
+
+void BE_SDL_EGASetSplitScreen(int16_t linenum)
+{
+	// TODO (CHOCO KEEN) No idea why, required for VGA (not EGA)
+	g_sdlSplitScreenLine = (linenum+1)/2;
+	//g_sdlSplitScreenLine = linenum;
 }
 
 void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
@@ -373,6 +369,16 @@ void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
 		g_sdlVidMem.egaGfx[2][destOff] = srcVal;
 	if (mask & 8)
 		g_sdlVidMem.egaGfx[3][destOff] = srcVal;
+	g_sdlDoRefreshGfxOutput = true;
+}
+
+// Same as BE_SDL_EGAUpdateGFXByte but picking specific bits out of each byte, and WITHOUT planes mask
+void BE_SDL_EGAUpdateGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
+{
+	g_sdlVidMem.egaGfx[0][destOff] = (g_sdlVidMem.egaGfx[0][destOff] & ~bitsMask) | (srcVal & bitsMask); 
+	g_sdlVidMem.egaGfx[1][destOff] = (g_sdlVidMem.egaGfx[1][destOff] & ~bitsMask) | (srcVal & bitsMask); 
+	g_sdlVidMem.egaGfx[2][destOff] = (g_sdlVidMem.egaGfx[2][destOff] & ~bitsMask) | (srcVal & bitsMask); 
+	g_sdlVidMem.egaGfx[3][destOff] = (g_sdlVidMem.egaGfx[3][destOff] & ~bitsMask) | (srcVal & bitsMask); 
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -473,6 +479,16 @@ void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
+// Same as BE_SDL_EGAUpdateGFXByteScrToScr but picking specific bits out of each byte
+void BE_SDL_EGAUpdateGFXBitsScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t bitsMask)
+{
+	g_sdlVidMem.egaGfx[0][destOff] = (g_sdlVidMem.egaGfx[0][destOff] & ~bitsMask) | (g_sdlVidMem.egaGfx[0][srcOff] & bitsMask); 
+	g_sdlVidMem.egaGfx[1][destOff] = (g_sdlVidMem.egaGfx[1][destOff] & ~bitsMask) | (g_sdlVidMem.egaGfx[1][srcOff] & bitsMask); 
+	g_sdlVidMem.egaGfx[2][destOff] = (g_sdlVidMem.egaGfx[2][destOff] & ~bitsMask) | (g_sdlVidMem.egaGfx[2][srcOff] & bitsMask); 
+	g_sdlVidMem.egaGfx[3][destOff] = (g_sdlVidMem.egaGfx[3][destOff] & ~bitsMask) | (g_sdlVidMem.egaGfx[3][srcOff] & bitsMask); 
+	g_sdlDoRefreshGfxOutput = true;
+}
+
 void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num)
 {
 	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[0], destOff, srcOff, num);
@@ -532,6 +548,18 @@ void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
+// Like BE_SDL_EGAXorGFXByte, but:
+// - OR instead of XOR.
+// - Only specific bits are updated in each plane's byte.
+void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
+{
+	g_sdlVidMem.egaGfx[0][destOff] |= (srcVal & bitsMask); 
+	g_sdlVidMem.egaGfx[1][destOff] |= (srcVal & bitsMask); 
+	g_sdlVidMem.egaGfx[2][destOff] |= (srcVal & bitsMask); 
+	g_sdlVidMem.egaGfx[3][destOff] |= (srcVal & bitsMask); 
+	g_sdlDoRefreshGfxOutput = true;
+}
+
 
 void BE_SDL_SetScreenMode(int mode)
 {
@@ -563,6 +591,7 @@ void BE_SDL_SetScreenMode(int mode)
 		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		g_sdlPelPanning = 0;
 		g_sdlLineWidth = 40;
+		g_sdlSplitScreenLine = -1;
 		memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
 		g_sdlVidMemCache.egaGfx[0][0] = g_sdlVidMem.egaGfx[0][0]^0xFF; // Force refresh
 		break;
@@ -663,7 +692,7 @@ void BE_SDL_puts(const char *str)
 
 void BE_SDL_UpdateHostDisplay(void);
 
-void BE_SDL_WaitVBL(id0_int_t number)
+void BE_SDL_WaitVBL(int16_t number)
 {
 	// TODO (CHOCO KEEN) Make a difference based on HW?
 	Uint32 startTicks = SDL_GetTicks();
@@ -689,8 +718,16 @@ void BE_SDL_ShortSleep(void)
 	BE_SDL_PollEvents();
 }
 
+// Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh)
+BE_SDL_ThreeDRefreshSleep(void)
+{
+	SDL_Delay(15);
+	// TODO: Make this more efficient?
+	BE_SDL_UpdateHostDisplay();
+	BE_SDL_PollEvents();
+}
 
-void BE_SDL_Delay(id0_unsigned_t msec) // Replacement for delay from dos.h
+void BE_SDL_Delay(uint16_t msec) // Replacement for delay from dos.h
 {
 	uint32_t endTime = SDL_GetTicks() + msec;
 	while ((int32_t)(SDL_GetTicks() - endTime) < 0)
@@ -898,6 +935,10 @@ void BE_SDL_UpdateHostDisplay(void)
 			g_sdlLineWidthCache = g_sdlLineWidth;
 			doUpdate = true;
 		}
+		if (g_sdlSplitScreenLine != g_sdlSplitScreenLineCache)
+		{
+			g_sdlSplitScreenLineCache = g_sdlSplitScreenLine;
+		}
 
 		if (doUpdate) // We already know we should refresh, so just copy
 		{
@@ -982,8 +1023,15 @@ void BE_SDL_UpdateHostDisplay(void)
 			{
 				*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[0];
 			}
-			currLineFirstByte += g_sdlLineWidth;
-			currLineFirstByte %= 0x10000;
+			if (g_sdlSplitScreenLine == line)
+			{
+				currLineFirstByte = 0; // NEXT line begins split screen, NOT g_sdlSplitScreenLine
+			}
+			else
+			{
+				currLineFirstByte += g_sdlLineWidth;
+				currLineFirstByte %= 0x10000;
+			}
 		}
 	}
 	g_sdlDoRefreshGfxOutput = false;

@@ -1,29 +1,11 @@
-/* Copyright (C) 2014 NY00123
- *
- * This file is part of Chocolate Keen Dreams.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 #include "SDL.h"
-#include "id_heads.h"
+#include "be_cross.h"
+#include "be_sdl.h"
 
 #define BE_SDL_MAXJOYSTICKS 8
 #define BE_SDL_EMU_JOYSTICK_RANGEMAX 5000 // id_in.c MaxJoyValue
 
-static void (*g_sdlKeyboardInterruptFuncPtr)(id0_byte_t) = 0;
+static void (*g_sdlKeyboardInterruptFuncPtr)(uint8_t) = 0;
 
 static SDL_Joystick *g_sdlJoysticks[BE_SDL_MAXJOYSTICKS];
 
@@ -114,7 +96,13 @@ void BE_SDL_HandleExit(int status)
 
 ChocolateKeenConfig g_chocolateKeenCfg;
 
+#ifdef CHOCO_KEEN_VER_KDREAMS
 #define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "chocolate-keen-dreams.cfg"
+#elif defined CHOCO_KEEN_VER_CATABYSS
+#define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "chocolate-catacomb-abyss.cfg"
+#else
+#error "FATAL ERROR: No Chocolate port game macro is defined!"
+#endif
 
 static void BEL_SDL_ParseSetting_FullScreen(const char *buffer)
 {
@@ -676,7 +664,7 @@ const emulatedDOSKeyEvent sdlKeyMappings[SDL_NUM_SCANCODES] = {
 #error "SDL <2.0 support is unimplemented!"
 #endif
 
-void BE_SDL_StartKeyboardService(void (*funcPtr)(id0_byte_t))
+void BE_SDL_StartKeyboardService(void (*funcPtr)(uint8_t))
 {
 	g_sdlKeyboardInterruptFuncPtr = funcPtr;
 }
@@ -686,21 +674,27 @@ void BE_SDL_StopKeyboardService(void)
 	g_sdlKeyboardInterruptFuncPtr = 0;
 }
 
-void BE_SDL_GetMouseDelta(id0_int_t *x, id0_int_t *y)
+void BE_SDL_GetMouseDelta(int16_t *x, int16_t *y)
 {
 	int ourx, oury;
 	SDL_GetRelativeMouseState(&ourx, &oury);
-	*x = ourx;
-	*y = oury;
+	if (x)
+	{
+		*x = ourx;
+	}
+	if (y)
+	{
+		*y = oury;
+	}
 }
 
-id0_word_t BE_SDL_GetMouseButtons(void)
+uint16_t BE_SDL_GetMouseButtons(void)
 {
-	static id0_word_t results[] = {0, 1, 4, 5, 2, 3, 6, 7};
+	static uint16_t results[] = {0, 1, 4, 5, 2, 3, 6, 7};
 	return results[SDL_GetMouseState(NULL, NULL) & 7];
 }
 
-void BE_SDL_GetJoyAbs(id0_word_t joy, id0_word_t *xp, id0_word_t *yp)
+void BE_SDL_GetJoyAbs(uint16_t joy, uint16_t *xp, uint16_t *yp)
 {
 	int emuAxisStart = (joy != 0) ? 2 : 0;
 	int minX = BE_SDL_EMU_JOYSTICK_RANGEMAX, minY = BE_SDL_EMU_JOYSTICK_RANGEMAX, maxX = 0, maxY = 0;
@@ -741,7 +735,7 @@ void BE_SDL_GetJoyAbs(id0_word_t joy, id0_word_t *xp, id0_word_t *yp)
 	*yp = minY < (BE_SDL_EMU_JOYSTICK_RANGEMAX-maxY) ? minY : maxY;
 }
 
-id0_word_t BE_SDL_GetJoyButtons(id0_word_t joy)
+uint16_t BE_SDL_GetJoyButtons(uint16_t joy)
 {
 	int emuButMaskStart = (joy != 0) ? 4 : 1;
 	int result = 0;

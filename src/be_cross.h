@@ -1,25 +1,7 @@
-/* Copyright (C) 2014 NY00123
- *
- * This file is part of Chocolate Keen Dreams.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 #ifndef __BE_CROSS_H__
 #define __BE_CROSS_H__
 
+#include <stdbool.h>
 #include <inttypes.h>
 
 typedef enum BE_Log_Message_Class_T
@@ -32,7 +14,8 @@ typedef enum BE_Log_Message_Class_T
 
 int32_t BE_Cross_FileLengthFromHandle(int handle);
 char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);
-char *BE_Cross_ltoa_dec(uint32_t n, char *buffer);
+char *BE_Cross_ltoa_dec(int32_t n, char *buffer);
+char *BE_Cross_itoa_dec(int16_t n, char *buffer);
 // Used for debugging
 void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ...);
 // More (possibly semi) standard C functions emulated,
@@ -59,7 +42,8 @@ size_t BE_Cross_readInt8LE(int handle, void *ptr);
 size_t BE_Cross_readInt16LE(int handle, void *ptr);
 size_t BE_Cross_readInt32LE(int handle, void *ptr);
 // A template for enum reading (from 16-bit little-endian int).
-// A declaration and implementation must exist for each used type separately.
+// A declaration and implementation must exist for each used type separately
+// (implementation should be found in be_cross.c).
 #if 0
 size_t BE_Cross_read_EnumType_From16LE(int handle, EnumType *ptr);
 #endif
@@ -102,5 +86,10 @@ void BE_Cross_Wrapped_MemSet(uint8_t *segPtr, uint8_t *offInSegPtr, int value, u
 void BE_Cross_Compat_FillObjStatesWithDOSOffsets(void);
 // Return a void* rather than statetype* only because of current header inclusion mess...
 void* BE_Cross_Compat_GetObjStatePtrFromDOSOffset(uint16_t offset);
+
+// Alternatives for Borland's randomize and random macros used in Catacomb Abyss
+void BE_Cross_Brandomize(void);
+int16_t BE_Cross_Brandom(int16_t num);
+
 
 #endif // BE_CROSS_H

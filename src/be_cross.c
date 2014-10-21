@@ -1,28 +1,17 @@
-/* Copyright (C) 2014 NY00123
- *
- * This file is part of Chocolate Keen Dreams.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+// For template implementations of reads/writes of enums from/to 16 little-endian integers...
+#ifdef CHOCO_KEEN_VER_KDREAMS
 #include "kd_def.h"
+#elif defined CHOCO_KEEN_VER_CATABYSS
+#include "def.h"
+#else
+#error "FATAL ERROR: No Chocolate port game macro is defined!"
+#endif
 
 int32_t BE_Cross_FileLengthFromHandle(int handle)
 {
@@ -38,9 +27,15 @@ char *BE_Cross_ultoa_dec(uint32_t n, char *buffer)
 	return buffer;
 }
 
-char *BE_Cross_ltoa_dec(uint32_t n, char *buffer)
+char *BE_Cross_ltoa_dec(int32_t n, char *buffer)
 {
 	sprintf(buffer, "%"PRId32, n);
+	return buffer;
+}
+
+char *BE_Cross_itoa_dec(int16_t n, char *buffer)
+{
+	sprintf(buffer, "%"PRId16, n);
 	return buffer;
 }
 
@@ -334,4 +329,34 @@ void BE_Cross_Wrapped_MemSet(uint8_t *segPtr, uint8_t *offInSegPtr, int value, u
 		memset(offInSegPtr, value, bytesToEnd);
 		memset(segPtr, value, num-bytesToEnd);
 	}
+}
+
+// Alternatives for Borland's randomize and random macros used in Catacomb Abyss
+// A few pages about the algorithm:
+// http://en.wikipedia.org/wiki/Linear_congruential_generator
+// http://stackoverflow.com/questions/14672358/implemenation-for-borlandc-rand
+
+static uint32_t g_crossRandomSeed = 0x015A4E36;
+
+static int16_t BEL_Cross_rand(void)
+{
+	g_crossRandomSeed = 0x015A4E35*g_crossRandomSeed + 1;
+	return ((int16_t)(g_crossRandomSeed >> 16) & 0xFFFF);
+}
+
+static void BEL_Cross_srand(uint16_t seed)
+{
+	g_crossRandomSeed = seed;
+	BEL_Cross_rand();
+}
+
+int16_t BE_Cross_Brandom(int16_t num)
+{
+	// Cast to unsigned so integer overflow is well-defined
+	return (((uint32_t)BEL_Cross_rand()*(uint32_t)num)/0x8000);
+}
+
+void BE_Cross_Brandomize(void)
+{
+	BEL_Cross_srand(time(NULL));
 }

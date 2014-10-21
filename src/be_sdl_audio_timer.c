@@ -1,25 +1,7 @@
-/* Copyright (C) 2014 NY00123
- *
- * This file is part of Chocolate Keen Dreams.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 #include "SDL.h"
+#include "be_cross.h"
+#include "be_sdl.h"
 #include "opl/dbopl.h"
-#include "id_heads.h"
 
 #define PC_PIT_RATE 1193182
 
@@ -58,7 +40,7 @@ static int16_t g_sdlCurrentBeepSample;
 static uint32_t g_sdlBeepHalfCycleCounter, g_sdlBeepHalfCycleCounterUpperBound;
 
 // PIT timer divisor
-static id0_longword_t g_sdlScaledTimerDivisor;
+static uint32_t g_sdlScaledTimerDivisor;
 
 // A few variables used for timing measurements (PC_PIT_RATE units per second)
 static uint64_t g_sdlLastPITTickTime;
@@ -66,7 +48,7 @@ static uint64_t g_sdlLastPITTickTime;
 
 // A PRIVATE TimeCount variable we store
 // (SD_GetTimeCount/SD_SetTimeCount should be called instead)
-static id0_longword_t g_sdlTimeCount;
+static uint32_t g_sdlTimeCount;
 
 static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len);
 static inline bool YM3812Init(int numChips, int clock, int rate);
@@ -191,7 +173,7 @@ void BE_SDL_UnlockAudioRecursively(void)
 }
 
 // Frequency is about 1193182Hz/spkVal
-void BE_SDL_PCSpeakerOn(id0_word_t spkVal)
+void BE_SDL_PCSpeakerOn(uint16_t spkVal)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
@@ -208,6 +190,20 @@ void BE_SDL_PCSpeakerOff(void)
 	{
 		g_sdlPCSpeakerOn = false;
 	}
+}
+
+void BE_SDL_BSound(uint16_t frequency)
+{
+	SDL_LockMutex(g_sdlCallbackMutex); // RECURSIVE lock
+	BE_SDL_PCSpeakerOn(PC_PIT_RATE/(uint32_t)frequency);
+	SDL_UnlockMutex(g_sdlCallbackMutex); // RECURSIVE unlock
+}
+
+void BE_SDL_BNoSound(void)
+{
+	SDL_LockMutex(g_sdlCallbackMutex); // RECURSIVE lock
+	BE_SDL_PCSpeakerOff();
+	SDL_UnlockMutex(g_sdlCallbackMutex); // RECURSIVE unlock
 }
 
 /*******************************************************************************
@@ -273,7 +269,7 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 }
 
 // Drop-in replacement for id_sd.c:alOut
-void BE_SDL_ALOut(id0_byte_t reg,id0_byte_t val)
+void BE_SDL_ALOut(uint8_t reg,uint8_t val)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
@@ -568,7 +564,7 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 
 // Here, the actual rate is about 1193182Hz/speed
 // NOTE: isALMusicOn is irrelevant for Keen Dreams (even with its music code)
-void BE_SDL_SetTimer(id0_word_t speed, bool isALMusicOn)
+void BE_SDL_SetTimer(uint16_t speed, bool isALMusicOn)
 {
 	g_sdlSamplePerPart = (int32_t)speed * g_sdlAudioSpec.freq / PC_PIT_RATE;
 	// In the original code, the id_sd.c:SDL_t0Service callback
@@ -578,7 +574,7 @@ void BE_SDL_SetTimer(id0_word_t speed, bool isALMusicOn)
 	g_sdlScaledTimerDivisor = isALMusicOn ? (speed*8) : (speed*2);
 }
 
-id0_longword_t BE_SDL_GetTimeCount(void)
+uint32_t BE_SDL_GetTimeCount(void)
 {
 	// FIXME: What happens when SDL_GetTicks() reaches the upper bound?
 	// May be challenging to fix... A proper solution should
@@ -590,7 +586,7 @@ id0_longword_t BE_SDL_GetTimeCount(void)
 	return g_sdlTimeCount;
 }
 
-void BE_SDL_SetTimeCount(id0_longword_t newcount)
+void BE_SDL_SetTimeCount(uint32_t newcount)
 {
 	g_sdlTimeCount = newcount;
 }

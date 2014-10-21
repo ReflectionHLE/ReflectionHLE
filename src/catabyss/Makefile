@@ -10,9 +10,10 @@ endif
 
 STRIPBIN=$(BINPREFIX)strip
 SDLCONFIG=sdl2-config
-SRC=src
-COMMONOBJPREFIX=obj
-OBJ=$(COMMONOBJPREFIX)
+SRC=.
+BESRC=..
+OBJ=obj
+BEOBJ=$(OBJ)/BE
 
 VERSRC=$(SRC)/somever
 
@@ -21,12 +22,6 @@ RSRCSRC=$(SRC)/static_shareware
 RSRCOBJ=$(OBJ)/static
 
 OBJECTS=$(OBJ)/actual_main.o \
-        $(OBJ)/be_cross.o \
-        $(OBJ)/be_cross_compat.o \
-        $(OBJ)/be_sdl.o \
-        $(OBJ)/be_sdl_audio_timer.o \
-        $(OBJ)/be_sdl_graphics.o \
-        $(OBJ)/be_textmode_fonts.o \
         $(OBJ)/c4_act1.o \
         $(OBJ)/c4_asm.o \
         $(OBJ)/c4_debug.o \
@@ -38,7 +33,6 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/c4_state.o \
         $(OBJ)/c4_trace.o \
         $(OBJ)/c4_wiz.o \
-        $(OBJ)/dbopl.o \
         $(OBJ)/gelib.o \
         $(OBJ)/id_ca.o \
         $(OBJ)/id_in.o \
@@ -50,6 +44,14 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/id_vw_ae.o \
         $(OBJ)/id_vw.o
 
+BEOBJECTS=$(BEOBJ)/be_cross.o \
+          $(BEOBJ)/be_cross_compat.o \
+          $(BEOBJ)/be_sdl.o \
+          $(BEOBJ)/be_sdl_audio_timer.o \
+          $(BEOBJ)/be_sdl_graphics.o \
+          $(BEOBJ)/be_textmode_fonts.o \
+          $(BEOBJ)/dbopl.o
+
 #NOTE: Unnecessary resources may be omitted
 RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/audiohhd.o \
@@ -57,7 +59,7 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/egahead.o \
              $(RSRCOBJ)/mtemp.o
 
-INTCXXFLAGS=-I$(SRC) -I$(VERSRC)
+INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(BESRC) -DCHOCO_KEEN_VER_CATABYSS=1
 
 EXENAME=chocolate-catabyss
 
@@ -81,7 +83,7 @@ ifeq ($(PLATFORM), WINDOWS)
 	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
 endif
 
-EXE_PATH=$(EXENAME)$(EXE_EXT)
+EXE_PATH=../$(EXENAME)$(EXE_EXT)
 
 .PHONY: all game clean veryclean
 
@@ -89,28 +91,32 @@ all: game
 
 game: $(EXE_PATH)
 
-$(EXE_PATH): $(OBJECTS) $(RSRC_OBJECTS)
-	$(CXX) $(OBJECTS) $(RSRC_OBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
+$(EXE_PATH): $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
+	$(CXX) $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
 ifeq ($(DEBUG),0)
 	$(STRIPBIN) $(EXE_PATH)
 endif
 
-$(EXE_PATH): $(OBJECTS) $(RSRC_OBJECTS)
-
-$(OBJ)/dbopl.o: $(SRC)/opl/dbopl.c
+$(BEOBJ)/dbopl.o: $(BESRC)/opl/dbopl.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
-$(OBJ)/be_cross_compat.o: $(VERSRC)/be_cross_compat.c
+$(BEOBJ)/be_cross_compat.o: $(VERSRC)/be_cross_compat.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
-$(OBJ)/%.o: $(SRC)/%.c
+$(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(RSRCOBJ)/%.o: $(RSRCSRC)/%.c
+$(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(RSRCOBJ)/%.o: $(RSRCSRC)/%.c | $(RSRCOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
+$(RSRCOBJ): | $(OBJ)
+	-mkdir $(RSRCOBJ)
+$(BEOBJ): | $(OBJ)
+	-mkdir $(BEOBJ)
+$(OBJ):
+	-mkdir $(OBJ)
 
-veryclean:
-	-rm -f $(OBJ)/* $(RSRCOBJ)/* $(EXE_PATH)
 clean:
-	-rm -f $(EXE_PATH) $(OBJECTS) $(RSRC_OBJECTS)
+	-rm -f $(EXE_PATH) $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
 
