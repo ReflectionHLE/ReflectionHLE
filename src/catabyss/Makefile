@@ -13,7 +13,7 @@ SDLCONFIG=sdl2-config
 SRC=.
 BESRC=..
 OBJ=obj
-BEOBJ=$(OBJ)/BE
+BEOBJ=$(OBJ)/be
 
 VERSRC=$(SRC)/somever
 
