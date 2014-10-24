@@ -115,7 +115,7 @@ void PostFullDisplay(id0_boolean_t draw_view);
 
 
 //
-// near data map array (wall values only, get text number from id0_far data)
+// near data map array (wall values only, get text number from far data)
 //
 id0_byte_t		tilemap[MAPSIZE][MAPSIZE];
 id0_byte_t		spotvis[MAPSIZE][MAPSIZE];

@@ -657,7 +657,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 
 	screen = MK_FP(0xb800,((x - 1) * 2) + (y * 80 * 2));
 	oscreen = (&introscn + 7) + ((x - 1) * 2) + (y * 80 * 2) - 1;
-	*screen++ = show? 251 : ' ';    // Checkmark id0_char_t or space
+	*screen++ = show? 251 : ' ';    // Checkmark char or space
 //      *screen = 0x48;
 //      *screen = (*oscreen & 0xf0) | 8;
 	oscreen += 2;
@@ -670,7 +670,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//      USL_ShowMem() - Right justifies a id0_longword_t in one of the memory fields on
+//      USL_ShowMem() - Right justifies a longword in one of the memory fields on
 //              the text screen
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -882,7 +882,7 @@ void US_Printxy(id0_word_t x, id0_word_t y, id0_char_t *text)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//      US_PrintUnsigned() - Prints an id0_unsigned_long_t
+//      US_PrintUnsigned() - Prints an unsigned long
 //
 ///////////////////////////////////////////////////////////////////////////
 void
@@ -896,7 +896,7 @@ US_PrintUnsigned(id0_longword_t n)
 
 ///////////////////////////////////////////////////////////////////////////
 //
-//      US_PrintSigned() - Prints a id0_signed_long_t
+//      US_PrintSigned() - Prints a signed long
 //
 ///////////////////////////////////////////////////////////////////////////
 void

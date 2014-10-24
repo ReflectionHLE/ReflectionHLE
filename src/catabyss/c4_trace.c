@@ -356,7 +356,7 @@ id0_int_t BackTrace (id0_int_t finish)
     return 0;
 
 //
-// if the start wall is behind the focal point, the trace went too id0_far back
+// if the start wall is behind the focal point, the trace went too far back
 //
   if (ABS(tile.x-focal.x)<2 && ABS(tile.y-focal.y)<2)	// too close
   {
@@ -749,7 +749,7 @@ restart:
 
 //##################
 //
-// follow the wall as id0_long_t as possible
+// follow the wall as long as possible
 //
 //##################
 

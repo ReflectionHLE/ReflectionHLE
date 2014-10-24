@@ -21,8 +21,7 @@ VERSRC=$(SRC)/catabshar113
 RSRCSRC=$(SRC)/static_shareware
 RSRCOBJ=$(OBJ)/static
 
-OBJECTS=$(OBJ)/actual_main.o \
-        $(OBJ)/c4_act1.o \
+OBJECTS=$(OBJ)/c4_act1.o \
         $(OBJ)/c4_asm.o \
         $(OBJ)/c4_debug.o \
         $(OBJ)/c4_draw.o \
@@ -44,7 +43,8 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/id_vw_ae.o \
         $(OBJ)/id_vw.o
 
-BEOBJECTS=$(BEOBJ)/be_cross.o \
+BEOBJECTS=$(BEOBJ)/actual_main.o \
+          $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_compat.o \
           $(BEOBJ)/be_sdl.o \
           $(BEOBJ)/be_sdl_audio_timer.o \

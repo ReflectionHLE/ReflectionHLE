@@ -103,6 +103,10 @@ void BE_SDL_Delay(uint16_t msec); // Replacement for delay from dos.h
 // Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh), to simulate
 // some wait relevant on older machines
 void BE_SDL_ThreeDRefreshSleep(void);
+// A similar special function, but to be called in each FizzleFade (internal)
+// loop iteration. BE_SDL_FizzleFadeSleepInit should be called first.
+void BE_SDL_FizzleFadeSleep(void);
+void BE_SDL_FizzleFadeSleepInit(void);
 
 void BE_SDL_textcolor(int color);
 void BE_SDL_textbackground(int color);

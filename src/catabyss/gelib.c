@@ -278,7 +278,7 @@ void PrintPropText(id0_char_t id0_far *text)
 				(text[length] != RETURN_CHAR))
 						curx+=font->width[text[length++]];
 
-		/* Search backward from the point we just found for a SPACE (for id0_word_t
+		/* Search backward from the point we just found for a SPACE (for word
 		** wrapping).
 		*/
 		if ((text[length]) && (text[length] != RETURN_CHAR))
@@ -1111,7 +1111,7 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 //--------------------------------------------------------------------------
 // lzwDecompressFromRAM()
 //
-// SrcPtr - pointer to first id0_byte_t of compressed data.
+// SrcPtr - pointer to first byte of compressed data.
 // DstPtr - pointer to decompress memory area.
 // SrcLen - length of compressed data.
 //
@@ -1142,7 +1142,7 @@ void lzwDecompressFromRAM(id0_byte_t id0_far *SrcPtr, id0_byte_t id0_far *DstPtr
 					break;
 				c=nextch(SrcPtr);
 
-				flags = c | 0xff00;      /* uses higher id0_byte_t cleverly */
+				flags = c | 0xff00;      /* uses higher byte cleverly */
 			}                                  /* to count eight */
 
 			if (flags & 1)
@@ -1182,7 +1182,7 @@ void lzwDecompressFromRAM(id0_byte_t id0_far *SrcPtr, id0_byte_t id0_far *DstPtr
 //--------------------------------------------------------------------------
 // lzwDecompressFromHandle()
 //
-// SrcPtr - pointer to first id0_byte_t of compressed data.
+// SrcPtr - pointer to first byte of compressed data.
 // DstPtr - pointer to decompress memory area.
 // SrcLen - length of compressed data.
 //
@@ -1213,7 +1213,7 @@ void lzwDecompressFromFile(BufferedIO *SrcPtr, id0_byte_t id0_far *DstPtr, id0_l
 					break;
 				c=nextch(SrcPtr);
 
-				flags = c | 0xff00;      /* uses higher id0_byte_t cleverly */
+				flags = c | 0xff00;      /* uses higher byte cleverly */
 			}                                  /* to count eight */
 
 			if (flags & 1)
@@ -2248,6 +2248,8 @@ asm     out     dx,al
 	frame=0;
 	SD_SetTimeCount(0);
 	//TimeCount=frame=0;
+	// (CHOCO CAT) SPECIAL
+	BE_SDL_FizzleFadeSleepInit();
 	do      // while (1)
 	{
 		if ((abortable) || (Flags & FL_QUICK))
@@ -2382,6 +2384,8 @@ noxor:
 			asm     mov     bl,[es:si]
 			asm     xchg [es:di],bl
 #endif
+			// (CHOCO CAT) SPECIAL
+			BE_SDL_FizzleFadeSleep();
 
 			if (rndval == 1)                // entire sequence has been completed
 				goto exitfunc;
@@ -2389,7 +2393,6 @@ noxor:
 		frame++;
 //		while (SD_GetTimeCount()<frame)         // don't go too fast
 //		;
-		BE_SDL_ShortSleep();
 	} while (1);
 
 exitfunc:;

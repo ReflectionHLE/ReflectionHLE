@@ -174,7 +174,7 @@ except as expressly provided under this License.  Any attempt
 otherwise to copy, modify, sublicense or distribute the Program is
 void, and will automatically terminate your rights under this License.
 However, parties who have received copies, or rights, from you under
-this License will not have their licenses terminated so id0_long_t as such
+this License will not have their licenses terminated so long as such
 parties remain in full compliance.
 
   5. You are not required to accept this License, since you have not
@@ -309,7 +309,7 @@ the "copyright" line and a pointer to where the full notice is found.
 
 Also add information on how to contact you by electronic and paper mail.
 
-If the program is interactive, make it output a id0_short_t notice like this
+If the program is interactive, make it output a short notice like this
 when it starts in an interactive mode:
 
     Gnomovision version 69, Copyright (C) year name of author

@@ -563,7 +563,7 @@ id0_long_t CA_RLEWCompress (id0_unsigned_t id0_huge *source, id0_long_t length, 
     else
     {
     //
-    // send id0_word_t without compressing
+    // send word without compressing
     //
       for (i=1;i<=count;i++)
 	*dest++ = value;
@@ -1041,7 +1041,7 @@ cachein:
 =
 = CAL_ShiftSprite
 =
-= Make a shifted (one id0_byte_t wider) copy of a sprite into another area
+= Make a shifted (one byte wider) copy of a sprite into another area
 =
 ======================
 */
@@ -1286,7 +1286,7 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 	else
 	{
 	//
-	// everything else has an explicit size id0_longword_t
+	// everything else has an explicit size longword
 	//
 		expanded = *(id0_long_t id0_far *)source;
 		source += 4;			// skip over length
@@ -1523,7 +1523,7 @@ void CA_CacheMap (id0_int_t mapnum)
 #ifdef MAPHEADERLINKED
 		//
 		// unhuffman, then unRLEW
-		// The huffman'd chunk has a two id0_byte_t expanded length first
+		// The huffman'd chunk has a two byte expanded length first
 		// The resulting RLEW chunk also does, even though it's not really
 		// needed
 		//

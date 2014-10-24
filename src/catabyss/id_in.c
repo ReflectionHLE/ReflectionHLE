@@ -118,7 +118,7 @@ static	id0_byte_t        id0_far ASCIINames[] =		// Unshifted ASCII for scan cod
 					},	// DEBUG - consolidate these
 #endif
 
-					id0_far ExtScanCodes[] =	// Scan codes with >1 id0_char_t names
+					id0_far ExtScanCodes[] =	// Scan codes with >1 char names
 					{
 	1,0xe,0xf,0x1d,0x2a,0x39,0x3a,0x3b,0x3c,0x3d,0x3e,
 	0x3f,0x40,0x41,0x42,0x43,0x44,0x57,0x59,0x46,0x1c,0x36,
@@ -808,7 +808,7 @@ register	KeyboardDef	*def;
 #if 0
 	if (DemoMode == demo_Record)
 	{
-		// Pack the control info into a id0_byte_t
+		// Pack the control info into a byte
 		dbyte = (buttons << 4) | ((mx + 1) << 2) | (my + 1);
 
 		if
@@ -943,7 +943,7 @@ register	KeyboardDef	*def;
 #if 0
 	if (DemoMode == demo_Record)
 	{
-		// Pack the control info into a id0_byte_t
+		// Pack the control info into a byte
 		dbyte = (buttons << 4) | ((mx + 1) << 2) | (my + 1);
 
 		if

@@ -19,7 +19,7 @@ two transformations.  When a wall segment disapears it is a result of a
 back trace hitting a side that should by invisable.  The objects showing up
 through walls is a result of the z buffer being kept in pixels (a poor
 design decision).  Not mentioned by you:  The thick bar shown when you look 
-almost straight down a id0_long_t wall is a result of the tangent table maxing out
+almost straight down a long wall is a result of the tangent table maxing out
 in 16 bits, causing the texture mapping to think it can optimize the wall
 drawing.  The fish eye view when you turn right next to a wall is a result of 
 not having enough compiled scaler routines (memory constraints) to scale 

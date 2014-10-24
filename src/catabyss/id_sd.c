@@ -73,7 +73,7 @@
 	//id0_longword_t	TimeCount;
 	id0_word_t		HackCount;
 	SoundCommon		**SoundTable;
-	//id0_word_t		*SoundTable;	// Really * id0_seg *SoundTable, but that don't work
+	//id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
 	id0_boolean_t		ssIsTandy;
 	id0_word_t		ssPort = 2;
 
@@ -328,9 +328,9 @@ SDL_PCService(void)
 			asm	mov	al,0xb6			// Write to channel 2 (speaker) timer
 			asm	out	43h,al
 			asm	mov	al,bl
-			asm	out	42h,al			// Low id0_byte_t
+			asm	out	42h,al			// Low byte
 			asm	mov	al,bh
-			asm	out	42h,al			// High id0_byte_t
+			asm	out	42h,al			// High byte
 
 			asm	in	al,0x61			// Turn the speaker & gate on
 			asm	or	al,3

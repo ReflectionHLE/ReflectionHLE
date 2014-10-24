@@ -21,8 +21,7 @@ VERSRC=$(SRC)/$(VERDIRNAME)
 RSRCSRC=$(VERSRC)/static
 RSRCOBJ=$(OBJ)/static
 
-OBJECTS=$(OBJ)/actual_main.o \
-        $(OBJ)/id_ca.o \
+OBJECTS=$(OBJ)/id_ca.o \
         $(OBJ)/id_in.o \
         $(OBJ)/id_mm.o \
         $(OBJ)/id_rf_a.o \
@@ -39,7 +38,8 @@ OBJECTS=$(OBJ)/actual_main.o \
         $(OBJ)/kd_main.o \
         $(OBJ)/kd_play.o
 
-BEOBJECTS=$(BEOBJ)/be_cross.o \
+BEOBJECTS=$(BEOBJ)/actual_main.o \
+          $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_compat.o \
           $(BEOBJ)/be_sdl.o \
           $(BEOBJ)/be_sdl_audio_timer.o \

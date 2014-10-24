@@ -355,9 +355,18 @@ void BE_SDL_EGASetLineWidth(uint8_t widthInBytes)
 
 void BE_SDL_EGASetSplitScreen(int16_t linenum)
 {
-	// TODO (CHOCO KEEN) No idea why, required for VGA (not EGA)
-	g_sdlSplitScreenLine = (linenum+1)/2;
-	//g_sdlSplitScreenLine = linenum;
+	// VGA only for now (200-lines graphics modes)
+	if (g_sdlTexHeight == GFX_TEX_HEIGHT)
+	{
+		// Because 200-lines modes are really double-scanned to 400,
+		// a linenum of x was originally replaced with 2x-1 in id_vw.c.
+		// In practice it should've probably been 2x+1, and this is how
+		// we "correct" it here (one less black line in Catacomb Abyss
+		// before gameplay begins in a map, above the status bar).
+		g_sdlSplitScreenLine = linenum/2;
+	}
+	else
+		g_sdlSplitScreenLine = linenum;
 }
 
 void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
@@ -746,6 +755,31 @@ void BE_SDL_ThreeDRefreshSleep(void)
 	BE_SDL_UpdateHostDisplay();
 	BE_SDL_PollEvents();
 }
+
+static uint64_t g_sdlLastFizzleTimeInMicroSec;
+
+void BE_SDL_FizzleFadeSleepInit(void)
+{
+	g_sdlLastFizzleTimeInMicroSec = 1000*(uint64_t)SDL_GetTicks();
+}
+
+// Use this ONLY in Catacombs' FizzleFade (each internal loop iteration)
+void BE_SDL_FizzleFadeSleep(void)
+{
+	const int64_t fizzleIterationInMicroSSec = 40; // For a few pixels
+
+	if ((int32_t)(1000*(uint64_t)SDL_GetTicks() - g_sdlLastFizzleTimeInMicroSec) < fizzleIterationInMicroSSec)
+	{
+		BE_SDL_UpdateHostDisplay();
+		while ((int64_t)(1000*(uint64_t)SDL_GetTicks() - g_sdlLastFizzleTimeInMicroSec) < fizzleIterationInMicroSSec)
+		{
+			SDL_Delay(1);
+		}
+		BE_SDL_PollEvents();
+	}
+	g_sdlLastFizzleTimeInMicroSec += fizzleIterationInMicroSSec;
+}
+
 
 void BE_SDL_Delay(uint16_t msec) // Replacement for delay from dos.h
 {
