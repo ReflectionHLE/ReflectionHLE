@@ -101,7 +101,12 @@
 #include <stdbool.h>
 
 typedef	bool id0_boolean_t;
-typedef uint8_t id0_char_t; // Should be UNSIGNED for VWL_MeasureString (high scores table)
+
+// Should be UNSIGNED for VWL_MeasureString (high scores table) in Keen Dreams
+// but SIGNED in Catacomb Abyss for which casting is done in VWL_MeasureString
+// (and Keen Dreams' loadscn2)
+typedef int8_t id0_char_t;
+
 typedef int8_t id0_signed_char_t;
 typedef uint8_t id0_unsigned_char_t;
 typedef int16_t id0_short_t; // Possibly used in kd_main.c and external decompression routines for Keen Dreams

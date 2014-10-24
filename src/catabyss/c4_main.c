@@ -123,6 +123,140 @@ jabunhack(void)
 
 //===========================================================================
 
+
+// CHOCO KEEN - New cross-platform methods for reading/writing objects from/to saved games
+static id0_boolean_t SaveObject(int file, objtype *o)
+{
+	id0_int_t dummy = 0;
+	// for active enum (anonymous type)
+	id0_int_t activeint = (id0_int_t)(o->active);
+	// BACKWARD COMPATIBILITY
+	id0_int_t statedosoffset = o->state ? o->state->compatdosoffset : 0;
+	// Just tells if "o->next" is zero or not
+	id0_int_t isnext = o->next ? 1 : 0;
+	// Now writing
+	size_t BE_Cross_write_classtype_To16LE(int handle, const classtype *ptr);
+	size_t BE_Cross_write_dirtype_To16LE(int handle, const dirtype *ptr);
+	return ((BE_Cross_writeInt16LE(file, &activeint) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
+	        && (BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
+	        && (BE_Cross_writeInt16LE(file, &statedosoffset) == 2) // BACKWARD COMPATIBILITY
+	        && (BE_Cross_writeInt8LE(file, &o->flags) == 1)
+	        && (BE_Cross_writeInt8LE(file, &dummy) == 1) // Padding due to word alignment in original code
+	        && (BE_Cross_writeInt32LE(file, &o->distance) == 4)
+	        && (BE_Cross_write_dirtype_To16LE(file, &o->dir) == 2)
+	        && (BE_Cross_writeInt32LE(file, &o->x) == 4)
+	        && (BE_Cross_writeInt32LE(file, &o->y) == 4)
+	        && (BE_Cross_writeInt16LE(file, &o->tilex) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->tiley) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->viewx) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->viewheight) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->angle) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->hitpoints) == 2)
+	        && (BE_Cross_writeInt32LE(file, &o->speed) == 4)
+	        && (BE_Cross_writeInt16LE(file, &o->size) == 2)
+	        && (BE_Cross_writeInt32LE(file, &o->xl) == 4)
+	        && (BE_Cross_writeInt32LE(file, &o->xh) == 4)
+	        && (BE_Cross_writeInt32LE(file, &o->yl) == 4)
+	        && (BE_Cross_writeInt32LE(file, &o->yh) == 4)
+	        && (BE_Cross_writeInt16LE(file, &o->temp1) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->temp2) == 2)
+	        // No need to write sprite, prev pointers as-is,
+	        // these are ignored on loading. So write dummy value.
+	        // Furthermore, all we need to know about next on loading is
+	        // if it's zero or not.
+	        && (BE_Cross_writeInt16LE(file, &isnext) == 2) // next
+	        && (BE_Cross_writeInt8LEBuffer(file, &dummy, 2) == 2) // prev
+	);
+}
+
+static id0_boolean_t LoadObject(int file, objtype *o)
+{
+	id0_int_t dummy;
+	// for active enum (anonymous type)
+	id0_int_t activeint;
+	// BACKWARD COMPATIBILITY
+	id0_int_t statedosoffset;
+	// Just tells if "o->next" is zero or not
+	id0_int_t isnext;
+	// Now reading
+	size_t BE_Cross_read_classtype_From16LE(int handle, classtype *ptr);
+	size_t BE_Cross_read_dirtype_From16LE(int handle, dirtype *ptr);
+	if ((BE_Cross_readInt16LE(file, &activeint) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->ticcount) != 2)
+	    || (BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
+	    || (BE_Cross_readInt16LE(file, &statedosoffset) != 2) // BACKWARD COMPATIBILITY
+	    || (BE_Cross_readInt8LE(file, &o->flags) != 1)
+	    || (BE_Cross_readInt8LE(file, &dummy) != 1) // Padding due to word alignment in original code
+	    || (BE_Cross_readInt32LE(file, &o->distance) != 4)
+	    || (BE_Cross_read_dirtype_From16LE(file, &o->dir) != 2)
+	    || (BE_Cross_readInt32LE(file, &o->x) != 4)
+	    || (BE_Cross_readInt32LE(file, &o->y) != 4)
+	    || (BE_Cross_readInt16LE(file, &o->tilex) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->tiley) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->viewx) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->viewheight) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->angle) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->hitpoints) != 2)
+	    || (BE_Cross_readInt32LE(file, &o->speed) != 4)
+	    || (BE_Cross_readInt16LE(file, &o->size) != 2)
+	    || (BE_Cross_readInt32LE(file, &o->xl) != 4)
+	    || (BE_Cross_readInt32LE(file, &o->xh) != 4)
+	    || (BE_Cross_readInt32LE(file, &o->yl) != 4)
+	    || (BE_Cross_readInt32LE(file, &o->yh) != 4)
+	    || (BE_Cross_readInt16LE(file, &o->temp1) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->temp2) != 2)
+	    // No need to write sprite, read pointers as-is,
+	    // these are ignored on loading. So read dummy value.
+	    // Furthermore, all we need to know about next on loading is
+	    // if it's zero or not.
+	    || (BE_Cross_readInt16LE(file, &isnext) != 2) // next
+	    || (BE_Cross_readInt8LEBuffer(file, &dummy, 2) != 2)
+	)
+	{
+		return false;
+	}
+	o->active = activeint;
+	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSOffset(statedosoffset);
+	// HACK: All we need to know is if next was originally NULL or not
+	o->next = isnext ? o : NULL;
+	return true;
+}
+
+// Similar new methods for writing/reading game state
+static id0_boolean_t SaveGameState(int file, gametype *state)
+{
+	return ((BE_Cross_writeInt16LE(file, &state->difficulty) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->mapon) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->bolts) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->nukes) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->potions) == 2)
+	        && (BE_Cross_writeInt16LEBuffer(file, state->keys, sizeof(state->keys)) == sizeof(state->keys))
+	        && (BE_Cross_writeInt16LEBuffer(file, state->scrolls, sizeof(state->scrolls)) == sizeof(state->scrolls))
+	        && (BE_Cross_writeInt16LEBuffer(file, state->gems, sizeof(state->gems)) == sizeof(state->gems))
+	        && (BE_Cross_writeInt32LE(file, &state->score) == 4)
+	        && (BE_Cross_writeInt16LE(file, &state->body) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->shotpower) == 2)
+	);
+}
+
+static id0_boolean_t LoadGameState(int file, gametype *state)
+{
+	return ((BE_Cross_readInt16LE(file, &state->difficulty) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->mapon) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->bolts) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->nukes) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->potions) == 2)
+	        && (BE_Cross_readInt16LEBuffer(file, state->keys, sizeof(state->keys)) == sizeof(state->keys))
+	        && (BE_Cross_readInt16LEBuffer(file, state->scrolls, sizeof(state->scrolls)) == sizeof(state->scrolls))
+	        && (BE_Cross_readInt16LEBuffer(file, state->gems, sizeof(state->gems)) == sizeof(state->gems))
+	        && (BE_Cross_readInt32LE(file, &state->score) == 4)
+	        && (BE_Cross_readInt16LE(file, &state->body) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->shotpower) == 2)
+	);
+}
+
+
 /*
 =====================
 =
@@ -169,13 +303,17 @@ id0_boolean_t	SaveTheGame(int file)
 	objtype	*o;
 	memptr	bigbuffer;
 
-	if (!CA_FarWrite(file,(void id0_far *)&FreezeTime,sizeof(FreezeTime)))
+	if (BE_Cross_writeInt16LE(file, &FreezeTime) != 2)
+	//if (!CA_FarWrite(file,(void id0_far *)&FreezeTime,sizeof(FreezeTime)))
 		return(false);
 
-	if (!CA_FarWrite(file,(void id0_far *)&gamestate,sizeof(gamestate)))
+	// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+	if (!SaveGameState(file, &gamestate))
+	//if (!CA_FarWrite(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
 
-	if (!CA_FarWrite(file,(void id0_far *)&EASYMODEON,sizeof(EASYMODEON)))
+	if (BE_Cross_write_boolean_To16LE(file, &EASYMODEON) != 2)
+	//if (!CA_FarWrite(file,(void id0_far *)&EASYMODEON,sizeof(EASYMODEON)))
 		return(false);
 
 	expanded = mapwidth * mapheight * 2;
@@ -184,7 +322,7 @@ id0_boolean_t	SaveTheGame(int file)
 	for (i = 0;i < 3;i+=2)	// Write planes 0 and 2
 	{
 //
-// leave a id0_word_t at start of compressed data for compressed length
+// leave a word at start of compressed data for compressed length
 //
 		compressed = (id0_unsigned_t)CA_RLEWCompress ((id0_unsigned_t id0_huge *)mapsegs[i]
 			,expanded,((id0_unsigned_t id0_huge *)bigbuffer)+1,RLETAG);
@@ -199,7 +337,9 @@ id0_boolean_t	SaveTheGame(int file)
 	}
 
 	for (o = player;o;o = o->next)
-		if (!CA_FarWrite(file,(void id0_far *)o,sizeof(objtype)))
+		// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+		if (!SaveObject(file, o))
+		//if (!CA_FarWrite(file,(void id0_far *)o,sizeof(objtype)))
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -232,19 +372,28 @@ id0_boolean_t	LoadTheGame(int file)
 	FreeUpMemory();
 
 	playstate = ex_loadedgame;
-	if (!CA_FarRead(file,(void id0_far *)&FreezeTime,sizeof(FreezeTime)))
+	if (BE_Cross_readInt16LE(file, &FreezeTime) != 2)
+	//if (!CA_FarRead(file,(void id0_far *)&FreezeTime,sizeof(FreezeTime)))
 		return(false);
 
-	if (!CA_FarRead(file,(void id0_far *)&gamestate,sizeof(gamestate)))
+	// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+	if (!LoadGameState(file, &gamestate))
+	//if (!CA_FarRead(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
 
-	if (!CA_FarRead(file,(void id0_far *)&EASYMODEON,sizeof(EASYMODEON)))
+	if (BE_Cross_read_boolean_From16LE(file, &EASYMODEON) != 2)
+	//if (!CA_FarRead(file,(void id0_far *)&EASYMODEON,sizeof(EASYMODEON)))
 		return(false);
 
 	SetupGameLevel ();		// load in and cache the base old level
 
+	// (CHOCO CAT) DIFFERENCE FROM VANILLA CATACOMB ABYSS:
+	// Don't do this check, we've already opened the file anyway
+	// and this can lead to unexpected behaviors!
+#if 0
 	if (!FindFile(Filename,"SAVE GAME",-1))
 		Quit("Error: Can't find saved game file!");
+#endif
 
 	expanded = mapwidth * mapheight * 2;
 	MM_GetPtr (&bigbuffer,expanded);
@@ -297,12 +446,14 @@ id0_boolean_t	LoadTheGame(int file)
 	{
 		prev = new->prev;
 		next = new->next;
-		if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
+		// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+		if (!LoadObject(file, new))
+		//if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
 			return(false);
 		followed = new->next;
 		new->prev = prev;
 		new->next = next;
-		actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
+		actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);	// drop a new marker
 		//actorat[new->tilex][new->tiley] = new;	// drop a new marker
 
 		if (followed)

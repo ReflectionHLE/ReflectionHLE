@@ -53,7 +53,7 @@ typedef	struct
 		{
 			id0_char_t	signature[4];
 			//id0_word_t	*oldtest;
-			id0_word_t oldtestptr; // (CHOCO CAT) COMPATIBILITY
+			id0_word_t oldtestoffset; // (CHOCO CAT) COMPATIBILITY
 			id0_boolean_t	present;
 			id0_char_t	name[MaxGameName + 1];
 		} __attribute((__packed__)) SaveGame;
@@ -144,4 +144,13 @@ extern	id0_int_t		US_CheckParm(id0_char_t *parm,id0_char_t **strings),
 
 		void	USL_PrintInCenter(const id0_char_t *s,Rect r);
 		id0_char_t 	*USL_GiveSaveName(id0_word_t game);
+
+// (CHOCO KEEN) BACKWARDS COMPATIBILITY: Pointer to the PrintX var is written
+// to saved game file in id_us_1.c, and it's later checked while scanning a
+// directory for saved games (probably for picking the compatible ones).
+// But it's a 16-bit pointer, so we use the original offset as-is
+// (for saved game compatibility where needed).
+#define COMPAT_US_PRINTX_OFFSET 0xEB23
+
+
 #endif

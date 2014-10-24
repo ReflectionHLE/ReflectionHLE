@@ -420,15 +420,14 @@ USL_CheckSavedGames(void)
 			if
 			(
 				(BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
-			&&	(BE_Cross_readInt16LE(file, &game->oldtestptr) == 1)
+			&&	(BE_Cross_readInt16LE(file, &game->oldtestoffset) == 2)
 			&&	(BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
 			&&	(BE_Cross_readInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
 			&&	(BE_Cross_readInt8LE(file, &padding) == 1)
 
 				//(read(file,game,sizeof(*game)) == sizeof(*game))
 			&&      (!strcmp(game->signature,EXT))
-				//TODO (CHOCO CAT): Looks useless in the Catacomb Adventure Series, so let's compare to 0 for now (expected to be required for Catacomb 3D and Commander Keen 4-6)
-			&&	(game->oldtestptr == 0)
+			&&	(game->oldtestoffset == COMPAT_US_PRINTX_OFFSET)
 			//&&      (game->oldtest == &PrintX)
 			)
 				ok = true;

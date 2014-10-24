@@ -37,10 +37,11 @@ inline void BE_Cross_Simplified_printf(const char *str)
 }
 
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
-size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte);
 size_t BE_Cross_readInt8LE(int handle, void *ptr);
 size_t BE_Cross_readInt16LE(int handle, void *ptr);
 size_t BE_Cross_readInt32LE(int handle, void *ptr);
+size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte);
+size_t BE_Cross_readInt16LEBuffer(int handle, void *ptr, size_t nbyte);
 // A template for enum reading (from 16-bit little-endian int).
 // A declaration and implementation must exist for each used type separately
 // (implementation should be found in be_cross.c).

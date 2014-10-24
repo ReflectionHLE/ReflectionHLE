@@ -529,7 +529,14 @@ void GE_SaveGame()
 		else
 #endif
 		{
-			strcat(Filename,".SAV");
+			// CHOCO CAT - Convert to uppercase for case-sensitive filesystems
+			id0_char_t *chptr = Filename;
+			for (; *chptr; ++chptr)
+			{
+				*chptr = BE_Cross_toupper(*chptr);
+			}
+			memcpy(chptr, ".SAV", strlen(".SAV")); // Minor optimization...
+			//strcat(Filename,".SAV");
 			GettingFilename = false;
 			if (Verify(Filename))								// FILE EXISTS
 			{
@@ -559,7 +566,8 @@ void GE_SaveGame()
 	if (handle==-1)
 		goto EXIT_FUNC;
 
-	if ((!CA_FarWrite(handle,(void id0_far *)GAMENAME,sizeof(GAMENAME))) || (!CA_FarWrite(handle,(void id0_far *)SAVEVER_DATA,sizeof(SAVEVER_DATA))))
+	if ((BE_Cross_writeInt8LEBuffer(handle, GAMENAME, sizeof(GAMENAME)) != sizeof(GAMENAME)) ||  (BE_Cross_writeInt8LEBuffer(handle, SAVEVER_DATA, sizeof(SAVEVER_DATA)) != sizeof(SAVEVER_DATA)))
+	//if ((!CA_FarWrite(handle,(void id0_far *)GAMENAME,sizeof(GAMENAME))) || (!CA_FarWrite(handle,(void id0_far *)SAVEVER_DATA,sizeof(SAVEVER_DATA))))
 	{
 		if (!screenfaded)
 			VW_FadeOut();
@@ -637,7 +645,14 @@ id0_boolean_t GE_LoadGame()
 			VW_FadeIn();
 		if (!US_LineInput((linewidth<<2)-32,20,Filename,"",true,8,0))
 			goto EXIT_FUNC;
-		strcat(Filename,".SAV");
+		// CHOCO CAT - Convert to uppercase for case-sensitive filesystems
+		id0_char_t *chptr = Filename;
+		for (; *chptr; ++chptr)
+		{
+			*chptr = BE_Cross_toupper(*chptr);
+		}
+		memcpy(chptr, ".SAV", strlen(".SAV")); // Minor optimization...
+		//strcat(Filename,".SAV");
 		GettingFilename = false;
 
 		if (!Verify(Filename))								// FILE DOESN'T EXIST
@@ -1902,7 +1917,24 @@ void ReadGameList()
 {
 	// TODO (CHOCO CAT) Use "cross platform" file searching functions/wrappers instead?
 	struct dirent **namelist;
-	int n = scandir("*.SAV", &namelist, 0, alphasort);
+	// comparator and filter functions for scandir
+	int gamesavescanfilter(const struct dirent *dir)
+	{
+		size_t len = strlen(dir->d_name);
+		return (len >= 4) && (!memcmp(dir->d_name+len-4, ".SAV", 4));
+	}
+	int gamesavesort(const struct dirent **a, const struct dirent **b)
+	{
+		const char *aptr = (*a)->d_name, *bptr = (*b)->d_name;
+		while (*aptr && (*aptr == *bptr) && strcmp(aptr, ".SAV"))
+		{
+			++aptr;
+			++aptr;
+		}
+		return bptr-aptr;
+	}
+	//
+	int n = scandir(".", &namelist, &gamesavescanfilter, &gamesavesort);
 	NumGames = -1;
 	if (n < 0)
 	{
@@ -1916,8 +1948,18 @@ void ReadGameList()
 				memmove/*memcpy*/(GameListNames,GameListNames[1],MAX_GAMELIST_NAMES*sizeof(GameListNames[0]));
 			else
 				NumGames++;
-			strncpy(GameListNames[NumGames], namelist[n]->d_name, sizeof(GameListNames[NumGames]));
-			GameListNames[NumGames][sizeof(GameListNames[NumGames])-1] = '\0';
+			size_t lennoext = strlen(namelist[n]->d_name)-4;
+			if (lennoext < sizeof(GameListNames[NumGames]))
+			{
+				memcpy(GameListNames[NumGames], namelist[n]->d_name, lennoext);
+				GameListNames[NumGames][lennoext] = '\0';
+			}
+			else
+			{
+				memcpy(GameListNames[NumGames], namelist[n]->d_name, sizeof(GameListNames[NumGames])-1);
+				GameListNames[NumGames][sizeof(GameListNames[NumGames])-1] = '\0';
+			}
+			// CHOCO CAT - Do NOT convert to uppercase (case-sensitive filesystems)
 		}
 	}
 

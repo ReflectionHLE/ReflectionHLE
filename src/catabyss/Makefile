@@ -15,7 +15,7 @@ BESRC=..
 OBJ=obj
 BEOBJ=$(OBJ)/be
 
-VERSRC=$(SRC)/somever
+VERSRC=$(SRC)/catabshar113
 
 # HACK (Kind of)
 RSRCSRC=$(SRC)/static_shareware

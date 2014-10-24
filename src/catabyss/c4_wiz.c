@@ -559,7 +559,9 @@ void DrawHealth()
 	id0_char_t picnum;
 	id0_int_t percentage;
 
-	percentage = PERCENTAGE(100,MAXBODY,gamestate.body,9);
+	// (CHOCO CAT) Using PERCENTAGE_SIGNED16BITS for compatibility
+	percentage = PERCENTAGE_SIGNED16BITS(100,MAXBODY,gamestate.body,9);
+	//percentage = PERCENTAGE(100,MAXBODY,gamestate.body,9);
 
 	DrawNum(9,57,percentage,3);
 
@@ -602,7 +604,9 @@ void DrawHealth()
 void DrawFreezeTime()
 {
 	id0_long_t percentage;
-	percentage = PERCENTAGE(100,MAXFREEZETIME,(id0_long_t)FreezeTime,7);
+	// (CHOCO CAT) Using PERCENTAGE_SIGNED32BITS for compatibility
+	percentage = PERCENTAGE_SIGNED32BITS(100,MAXFREEZETIME,(id0_long_t)FreezeTime,7);
+	//percentage = PERCENTAGE(100,MAXFREEZETIME,(id0_long_t)FreezeTime,7);
 	DrawNum(23,70,percentage,3);
 }
 

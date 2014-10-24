@@ -40,7 +40,10 @@
 // ex: PERCENTAGE(320,16,8,8)    returns  160
 //
 //
-#define PERCENTAGE(MAX_BASE,MAX_PERC,PERC,SCALE) ((id0_unsigned_t)(MAX_BASE*((PERC<<SCALE)/MAX_PERC))>>SCALE)
+// (CHOCO CAT) Replace with distinct variations for compatibility (Used for drawing health and freeze time)
+#define PERCENTAGE_SIGNED16BITS(MAX_BASE,MAX_PERC,PERC,SCALE) ((id0_unsigned_t)(MAX_BASE*(((id0_int_t)(PERC<<SCALE))/MAX_PERC))>>SCALE)
+#define PERCENTAGE_SIGNED32BITS(MAX_BASE,MAX_PERC,PERC,SCALE) ((id0_unsigned_t)(MAX_BASE*(((id0_long_t)(PERC<<SCALE))/MAX_PERC))>>SCALE)
+//#define PERCENTAGE(MAX_BASE,MAX_PERC,PERC,SCALE) ((id0_unsigned_t)(MAX_BASE*((PERC<<SCALE)/MAX_PERC))>>SCALE)
 
 #define PI	3.141592657
 
@@ -230,6 +233,13 @@ typedef struct	statestruct
 	id0_int_t		tictime;
 	void	(*think) ();
 	struct	statestruct	*next;
+	// (CHOCO KEEN) Backwards compatibility:
+	// MUST follow all the rest of the members above. Given a statetype
+	// instance, stores what would be the 16-bit offset pointer in the dseg
+	// while using the original 16-bit DOS executable (corresponding version).
+	// This member must be the last so it doesn't have to be filled during
+	// compile-time (requires changes to struct initializations in a few places)
+	id0_int_t compatdosoffset;
 } statetype;
 
 #define of_shootable		0x01

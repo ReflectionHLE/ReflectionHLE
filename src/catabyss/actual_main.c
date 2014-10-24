@@ -28,8 +28,7 @@ int main(int argc, char **argv)
 		break;
 	}
 	BE_SDL_InitAll();
-	// TODO (CHOCO CAT) Complete this
-	//BE_Cross_Compat_FillObjStatesWithDOSOffsets(); // Saved games compatibility
+	BE_Cross_Compat_FillObjStatesWithDOSOffsets(); // Saved games compatibility
 	id0_main();
 	BE_SDL_ShutdownAll();
 	return 0;

@@ -88,11 +88,6 @@ int BE_Cross_strcasecmp(const char *s1, const char *s2)
 void BE_Cross_puts(const char *str);
 void BE_Cross_Simplified_printf(const char *str);
 
-size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte)
-{
-	return read(handle, ptr, nbyte);
-}
-
 size_t BE_Cross_readInt8LE(int handle, void *ptr)
 {
 	return read(handle, ptr, 1);
@@ -122,9 +117,23 @@ size_t BE_Cross_readInt32LE(int handle, void *ptr)
 	return bytesread;
 }
 
-size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte)
+size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte)
 {
-	return write(handle, ptr, nbyte);
+	return read(handle, ptr, nbyte);
+}
+
+size_t BE_Cross_readInt16LEBuffer(int handle, void *ptr, size_t nbyte)
+{
+#ifndef CK_CROSS_IS_BIGENDIAN
+	return read(handle, ptr, nbyte);
+#else
+	size_t result = read(handle, ptr, nbytes);
+	for (uint16_t *currptr = (uint16_t *)ptr, *endptr = currptr + result/2; currptr < endptr; ++currptr)
+	{
+		*currptr = BE_Cross_Swap16LE(*currptr);
+	}
+	return result;
+#endif
 }
 
 size_t BE_Cross_writeInt8LE(int handle, const void *ptr)
@@ -152,6 +161,31 @@ size_t BE_Cross_writeInt32LE(int handle, const void *ptr)
 #endif
 }
 
+size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte)
+{
+	return write(handle, ptr, nbyte);
+}
+
+size_t BE_Cross_writeInt16LEBuffer(int handle, const void *ptr, size_t nbyte)
+{
+#ifndef CK_CROSS_IS_BIGENDIAN
+	return write(handle, ptr, nbyte);
+#else
+	size_t result = 0;
+	for (uint16_t *currptr = (uint16_t *)ptr, *endptr = currptr + nbyte/2; currptr < endptr; ++currptr)
+	{
+		val = SDL_Swap16(*currptr);
+		size_t bytesread = write(handle, currptr, 2);
+		result += bytesread;
+		if (bytesread < 2)
+		{
+			break;
+		}
+	}
+	return result;
+#endif
+}
+
 // Template implementation of enum reads/writes
 #define BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ourSampleEnum) \
 size_t BE_Cross_read_ ## ourSampleEnum ## _From16LE (int handle, ourSampleEnum *ptr) \
@@ -175,6 +209,9 @@ BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
+#ifdef CHOCO_KEEN_VER_CATABYSS
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
+#endif
 
 size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr)
 {
@@ -341,7 +378,7 @@ static uint32_t g_crossRandomSeed = 0x015A4E36;
 static int16_t BEL_Cross_rand(void)
 {
 	g_crossRandomSeed = 0x015A4E35*g_crossRandomSeed + 1;
-	return ((int16_t)(g_crossRandomSeed >> 16) & 0xFFFF);
+	return ((int16_t)(g_crossRandomSeed >> 16) & 0x7FFF);
 }
 
 static void BEL_Cross_srand(uint16_t seed)
@@ -352,8 +389,9 @@ static void BEL_Cross_srand(uint16_t seed)
 
 int16_t BE_Cross_Brandom(int16_t num)
 {
-	// Cast to unsigned so integer overflow is well-defined
-	return (((uint32_t)BEL_Cross_rand()*(uint32_t)num)/0x8000);
+	// Cast to unsigned so integer overflow in multiplication is
+	// well-defined, but division should still be signed
+	return (((int32_t)((uint32_t)BEL_Cross_rand()*(uint32_t)num))/0x8000);
 }
 
 void BE_Cross_Brandomize(void)

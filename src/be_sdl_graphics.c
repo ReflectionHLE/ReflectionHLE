@@ -739,7 +739,7 @@ void BE_SDL_ShortSleep(void)
 }
 
 // Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh)
-BE_SDL_ThreeDRefreshSleep(void)
+void BE_SDL_ThreeDRefreshSleep(void)
 {
 	SDL_Delay(15);
 	// TODO: Make this more efficient?
