@@ -108,6 +108,16 @@ research works.
 reimplementations of Keen 1-3 and Keen 4-6. Originally started
 as a branch of CloneKeen known as CloneKeenPlus.
 
+* Richard Mandel for releasing original source codes for the complete
+Catacomb series and Hovertank 3D.
+
+* John Carmack, John Romero, Jason Blochowiak, Tom Hall and Adrian Carmack for
+their original works on Keen Dreams, as well as works on Catacomb 3-D finding
+their ways into the Catacomb Adventure Series (Catacomb Abyss included) later.
+* Mike Maynard, James Row, Nolan Martin, Steven Maines, Carol Ludden,
+Jerry Jones, James Weiler and Judi Mangham for their additional works
+on the Catacomb Adventure Series.
+
 * Apologizes to anybody not mentioned here who deserves a credit. Guess I can
 say to all of you, that you should be considered special here. :)
 
