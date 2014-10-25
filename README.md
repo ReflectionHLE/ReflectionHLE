@@ -15,6 +15,9 @@ for DOS, including bugs, at least if it's not too difficult
 (e.g., anything that highly depends on the memory layout).
 The Chocolate Doom source port can be considered an inspiration for them.
 
+The term "Ref" from the ports' names comes from the word "Reflection".
+These ports can be thought of reflections of the original counterparts.
+
 Note that there may still be some differences from the originals. As of
 this version, you don't need to execute a separate "START" file in order
 to play any release. But, if relevant, you can emulate the behaviors of
