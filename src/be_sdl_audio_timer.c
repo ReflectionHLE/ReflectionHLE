@@ -61,7 +61,7 @@ void BE_SDL_InitAudio(void)
 	}
 	else
 	{
-		g_sdlAudioSpec.freq = g_chocolateKeenCfg.sndSampleRate;
+		g_sdlAudioSpec.freq = g_refKeenCfg.sndSampleRate;
 		g_sdlAudioSpec.format = AUDIO_S16;
 		g_sdlAudioSpec.channels = 1;
 		// Under wine, small buffer sizes cause a lot of crackling, so

@@ -59,9 +59,9 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/egahead.o \
              $(RSRCOBJ)/mtemp.o
 
-INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(BESRC) -DCHOCO_KEEN_VER_CATABYSS=1
+INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(BESRC) -DCHOCO_KEEN_VER_CATABYSS=1 -DCHOCO_KEEN_VER_CATACOMB_ALL=1
 
-EXENAME=chocolate-catabyss
+EXENAME=refcatabyss
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DCHOCOLATE_KEEN_CONFIG_DEBUG

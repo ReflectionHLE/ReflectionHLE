@@ -19,9 +19,9 @@ typedef struct
 	int scaleFactor;
 	bool autolockCursor;
 	int sndSampleRate;
-} ChocolateKeenConfig;
+} RefKeenConfig;
 
-extern ChocolateKeenConfig g_chocolateKeenCfg;
+extern RefKeenConfig g_refKeenCfg;
 
 // Direct accesses to any of these functions should be minimized
 

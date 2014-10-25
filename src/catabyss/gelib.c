@@ -19,16 +19,14 @@
 //#include <dos.h>
 //#include <conio.h>
 #include <stdio.h>
+#include <dirent.h>
+#include <sys/types.h>
 //#include <dir.h>
 //#include "mem.h"
 #include <string.h>
 #include <time.h>
 #include <stdarg.h>
 //#include "io.h"
-
-// Hack for scandir, alphasort (combined with code which should be C99 for most)
-// TODO (CHOCO KEEN) Have a better alternative (wrapper)?
-#include <sys/dir.h>
 
 #include "def.h"
 #include "gelib.h"
@@ -485,7 +483,7 @@ void GE_SaveGame()
 	id0_boolean_t GettingFilename=true;
 	//id0_char_t drive; // CHOCO CAT - Removed
 //	id0_char_t Filename[FILENAME_LEN+1],drive; //, ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DATA)];
-	int handle;
+	int handle = 0; // CHOCO CAT - Initialized to 0 (taking care of possibly undefined behaviors)
 	//struct dfree dfree; // CHOCO CAT - Removed
 	//id0_long_t davail; // CHOCO CAT - Removed
 
@@ -580,10 +578,15 @@ void GE_SaveGame()
 
 
 
-EXIT_FUNC:;
+	// (CHOCO CAT) Move EXIT_FUNC label below call to "close"
+	// (otherwise there are chances we don't know what happens!)
+
+//EXIT_FUNC:;
 
 	if (handle!=-1)
 		close(handle);
+
+EXIT_FUNC:;
 
 	if (handle==-1)
 	{
@@ -627,7 +630,7 @@ EXIT_FUNC:;
 id0_boolean_t GE_LoadGame()
 {
 	id0_boolean_t GettingFilename=true,rt_code=false;
-	int handle;
+	int handle = 0; // CHOCO CAT - Initialized to 0 (taking care of possibly undefined behaviors)
 
 	IN_ClearKeysDown();
 	memset(ID,0,sizeof(ID));
@@ -708,7 +711,10 @@ id0_boolean_t GE_LoadGame()
 
 	rt_code = true;
 
+	// (CHOCO CAT) Don't call close if we got to here via EXIT_FUNC
 
+	if (handle!=-1)
+		close(handle);
 EXIT_FUNC:;
 	if (handle==-1)
 	{
@@ -724,8 +730,8 @@ EXIT_FUNC:;
 			BE_SDL_ShortSleep();
 		}
 	}
-	else
-		close(handle);
+//	else
+//		close(handle);
 
 	if (!screenfaded)
 		VW_FadeOut();
@@ -1916,6 +1922,46 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 void ReadGameList()
 {
 	// TODO (CHOCO CAT) Use "cross platform" file searching functions/wrappers instead?
+	DIR *dir;
+	struct dirent *direntry;
+	dir = opendir(".");
+	NumGames = -1;
+	if (!dir)
+	{
+		perror("opendir");
+	}
+	else
+	{
+		for (direntry = readdir(dir); direntry; direntry = readdir(dir))
+		{
+			size_t len = strlen(direntry->d_name);
+			if ((len < 4) || memcmp(direntry->d_name+len-4, ".SAV", 4))
+			{
+				continue;
+			}
+			if (NumGames == MAX_GAMELIST_NAMES)
+				memmove/*memcpy*/(GameListNames,GameListNames[1],MAX_GAMELIST_NAMES*sizeof(GameListNames[0]));
+			else
+				NumGames++;
+			len -= 4;
+			if (len < sizeof(GameListNames[NumGames]))
+			{
+				memcpy(GameListNames[NumGames], direntry->d_name, len);
+				GameListNames[NumGames][len] = '\0';
+			}
+			else
+			{
+				memcpy(GameListNames[NumGames], direntry->d_name, sizeof(GameListNames[NumGames])-1);
+				GameListNames[NumGames][sizeof(GameListNames[NumGames])-1] = '\0';
+			}
+			// CHOCO CAT - Do NOT convert to uppercase (case-sensitive filesystems)
+		}
+		closedir(dir);
+	}
+
+	NumGames++;
+#if 0
+	// TODO (CHOCO CAT) Use "cross platform" file searching functions/wrappers instead?
 	struct dirent **namelist;
 	// comparator and filter functions for scandir
 	int gamesavescanfilter(const struct dirent *dir)
@@ -1963,8 +2009,9 @@ void ReadGameList()
 		}
 	}
 
-
 	NumGames++;
+#endif
+
 #if 0
 	struct ffblk ffblk;
 	id0_short_t done,len;

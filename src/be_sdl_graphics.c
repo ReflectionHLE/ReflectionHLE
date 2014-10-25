@@ -77,33 +77,33 @@ void BE_SDL_SetGfxOutputRects(void);
 void BE_SDL_InitGfx(void)
 {
 #ifdef CHOCO_KEEN_VER_KDREAMS
-	const char *windowTitle = "Chocolate Keen Dreams";
+	const char *windowTitle = "Ref Keen Dreams";
 #elif defined CHOCO_KEEN_VER_CATABYSS
-	const char *windowTitle = "Chocolate Catacomb Abyss";
+	const char *windowTitle = "Ref Catacomb Abyss";
 #else
-#error "FATAL ERROR: No Chocolate port game macro is defined!"
+#error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
-	if (g_chocolateKeenCfg.isFullscreen)
+	if (g_refKeenCfg.isFullscreen)
 	{
-		if (g_chocolateKeenCfg.fullWidth && g_chocolateKeenCfg.fullHeight)
+		if (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight)
 		{
-			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), g_chocolateKeenCfg.fullWidth, g_chocolateKeenCfg.fullHeight, SDL_WINDOW_FULLSCREEN);
+			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, SDL_WINDOW_FULLSCREEN);
 		}
 		else
 		{
-			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		}
 	}
 	else
 	{
-		int actualWinWidth = g_chocolateKeenCfg.winWidth, actualWinHeight = g_chocolateKeenCfg.winHeight;
+		int actualWinWidth = g_refKeenCfg.winWidth, actualWinHeight = g_refKeenCfg.winHeight;
 		if (!actualWinWidth || !actualWinHeight)
 		{
 			bool doSoftwareRendering;
-			if (g_chocolateKeenCfg.sdlRendererDriver >= 0)
+			if (g_refKeenCfg.sdlRendererDriver >= 0)
 			{
 				SDL_RendererInfo info;
-				SDL_GetRenderDriverInfo(g_chocolateKeenCfg.sdlRendererDriver, &info);
+				SDL_GetRenderDriverInfo(g_refKeenCfg.sdlRendererDriver, &info);
 				doSoftwareRendering = (info.flags & SDL_RENDERER_SOFTWARE);
 			}
 			else
@@ -118,7 +118,7 @@ void BE_SDL_InitGfx(void)
 			else
 			{
 				SDL_DisplayMode mode;
-				SDL_GetDesktopDisplayMode(g_chocolateKeenCfg.displayNum, &mode);
+				SDL_GetDesktopDisplayMode(g_refKeenCfg.displayNum, &mode);
 				// In the 200-lines modes on the VGA, where line doubling is in effect,
 				// and after adding the overscan borders, the aspect ratio for the whole output
 				// (after aspect correction i.e., multiplying height by 1.2) is 280:207.
@@ -135,7 +135,7 @@ void BE_SDL_InitGfx(void)
 				actualWinHeight = mode.h*500/809;
 			}
 		}
-		g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_chocolateKeenCfg.displayNum), actualWinWidth, actualWinHeight, SDL_WINDOW_RESIZABLE);
+		g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), actualWinWidth, actualWinHeight, SDL_WINDOW_RESIZABLE);
 	}
 	if (!g_sdlWindow)
 	{
@@ -143,9 +143,9 @@ void BE_SDL_InitGfx(void)
 		exit(0);
 	}
 #if GRMODE == EGAGR
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_chocolateKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_chocolateKeenCfg.vSync == VSYNC_OFF) ? 0 : SDL_RENDERER_PRESENTVSYNC));
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_refKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync == VSYNC_OFF) ? 0 : SDL_RENDERER_PRESENTVSYNC));
 #elif GRMODE == CGAGR
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_chocolateKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_chocolateKeenCfg.vSync == VSYNC_ON) ? SDL_RENDERER_PRESENTVSYNC : 0));
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_refKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync == VSYNC_ON) ? SDL_RENDERER_PRESENTVSYNC : 0));
 #else
 #error "Supported GRMODE not defined!"
 #endif
@@ -181,7 +181,7 @@ static void BEL_SDL_RecreateTexture(void)
 		SDL_DestroyTexture(g_sdlTargetTexture);
 	}
 	// Try using render target
-	if ((g_chocolateKeenCfg.scaleFactor > 1) && g_chocolateKeenCfg.isBilinear)
+	if ((g_refKeenCfg.scaleFactor > 1) && g_refKeenCfg.isBilinear)
 	{
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 		g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight);
@@ -193,12 +193,12 @@ static void BEL_SDL_RecreateTexture(void)
 		}
 		// Try, if we fail then simply don't use this
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-		g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, g_sdlTexWidth*g_chocolateKeenCfg.scaleFactor, g_sdlTexHeight*g_chocolateKeenCfg.scaleFactor);
+		g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, g_sdlTexWidth*g_refKeenCfg.scaleFactor, g_sdlTexHeight*g_refKeenCfg.scaleFactor);
 	}
 	else
 	{
 		// Use just a single texture
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, g_chocolateKeenCfg.isBilinear ? "linear" : "nearest");
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, g_refKeenCfg.isBilinear ? "linear" : "nearest");
 		g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight);
 		if (!g_sdlTexture)
 		{
@@ -239,7 +239,7 @@ void BE_SDL_SetGfxOutputRects(void)
 	int srcBorderedHeight = srcBorderTop+srcHeight+srcBorderBottom;
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
-	if (g_chocolateKeenCfg.scaleType == SCALE_FILL)
+	if (g_refKeenCfg.scaleType == SCALE_FILL)
 	{
 		g_sdlAspectCorrectionBorderedRect.w = winWidth;
 		g_sdlAspectCorrectionBorderedRect.h = winHeight;
