@@ -114,22 +114,30 @@ mmblocktype	id0_far mmblocks[MAXBLOCKS]
 //
 // NOTE: Main mem (near+far) should consist of 335*1024 bytes
 // (for Keen Dreams with EGA graphics)
-static id0_byte_t mmEmulatedMemSpace[512*1024];
+//
+// Based on tests with Catacomb Abyss (even if not precise), targetting...
+// - 3408 bytes returned by coreleft (before removing SAVENEARHEAP and up to 15 more bytes).
+// - 448592 returned by farcoreleft.
+// - 0 EMS bytes.
+// - 65520 XMS bytes.
+
 // The very first "segment" in the emulated space
 #define EMULATED_FIRST_SEG 0
 // Different portions of the space being emulated - start points
-#define EMULATED_NEAR_SEG EMULATED_FIRST_SEG
-#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+4096)
-#define EMULATED_EMS_SEG (EMULATED_FAR_SEG+23544)
-#define EMULATED_XMS_SEG (EMULATED_EMS_SEG+4096)
+#define EMULATED_NEAR_SEG (EMULATED_FIRST_SEG+EMULATED_FIRST_PARAGRAPHS)
+#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS)
+#define EMULATED_EMS_SEG (EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS)
+#define EMULATED_XMS_SEG (EMULATED_EMS_SEG+EMULATED_EMS_PARAGRAPHS)
 // Lengths in paragraphs of the different sections
-#define EMULATED_NEAR_PARAGRAPHS (EMULATED_FAR_SEG-EMULATED_NEAR_SEG)
-#define EMULATED_FAR_PARAGRAPHS (EMULATED_EMS_SEG-EMULATED_FAR_SEG)
-#define EMULATED_EMS_PARAGRAPHS (EMULATED_XMS_SEG-EMULATED_EMS_SEG)
-#define EMULATED_XMS_PARAGRAPHS (sizeof(mmEmulatedMemSpace)/16-EMULATED_XMS_SEG)
+#define EMULATED_FIRST_PARAGRAPHS 4096
+#define EMULATED_NEAR_PARAGRAPHS 213
+#define EMULATED_FAR_PARAGRAPHS 28037
+#define EMULATED_EMS_PARAGRAPHS 0 // Yes!
+#define EMULATED_XMS_PARAGRAPHS 4095
 // Used to obtain a pointer to some location in mmEmulatedMemSpace
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
+static id0_byte_t mmEmulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS+EMULATED_EMS_PARAGRAPHS+EMULATED_XMS_PARAGRAPHS)];
 
 //==========================================================================
 
@@ -298,9 +306,9 @@ void MM_Startup (void)
 //
 // get all available near conventional memory segments
 //
-	seglength = EMULATED_NEAR_PARAGRAPHS;
+	length = EMULATED_NEAR_PARAGRAPHS*16 - SAVENEARHEAP;
+	seglength = length / 16;			// now in paragraphs
 	segstart = EMULATED_NEAR_SEG;
-	length = seglength*16;
 	mminfo.nearheap = length;
 #if 0
 	length=coreleft();
@@ -326,9 +334,9 @@ void MM_Startup (void)
 //
 // get all available far conventional memory segments
 //
-	seglength = EMULATED_FAR_PARAGRAPHS;
+	length = EMULATED_FAR_PARAGRAPHS*16 - SAVEFARHEAP;
+	seglength = length / 16;			// now in paragraphs
 	segstart = EMULATED_FAR_SEG;
-	length = seglength*16;
 	mminfo.farheap = length;
 	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
 #if 0
@@ -357,10 +365,7 @@ void MM_Startup (void)
 //
 // detect EMS and allocate 64K at page frame
 //
-	seglength = EMULATED_EMS_PARAGRAPHS;
-	segstart = EMULATED_EMS_SEG;
-	length = seglength*16;
-	mminfo.EMSmem = length;
+	mminfo.EMSmem = 0x10000; // Looks unused
 #if 0
 	if (MML_CheckForEMS())
 	{
@@ -376,7 +381,7 @@ void MM_Startup (void)
 //
 // detect XMS and get upper memory blocks
 //
-	mminfo.XMSmem = 0;
+	mminfo.XMSmem = 0; // Unused
 #if 0
 	if (MML_CheckForXMS())
 	{
