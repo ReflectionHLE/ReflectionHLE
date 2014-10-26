@@ -44,13 +44,13 @@ Note that this port does not come with a copy of any game, which is required.
 As of October 25, 2014, you can download Keen Dreams, Shareware release, v1.13,
 from one of a few places online, at the least. Links for reference:
 
-http://cd.textfiles.com/megagames2/GAMES/APOGEE/KEENDR13.ZIP
-http://dukeworld.duke4.net/classic%20dukeworld/share/keendm.zip
+http://cd.textfiles.com/megagames2/GAMES/APOGEE/KEENDR13.ZIP  
+(You want keendm.zip) http://dukeworld.duke4.net/classic%20dukeworld/share/
 
 Similarly Catacomb Abyss v1.13 can be downloaded. You can try any of
 these links:
 
-http://cd.textfiles.com/maxx/tothemaxpcg/ARCADE/CATABS13.ZIP
+http://cd.textfiles.com/maxx/tothemaxpcg/ARCADE/CATABS13.ZIP  
 (You want v1.13) http://www.classicdosgames.com/game/The_Catacomb_Abyss.html
 
 ------------
