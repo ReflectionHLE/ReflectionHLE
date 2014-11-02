@@ -249,8 +249,11 @@ void BE_SDL_SetGfxOutputRects(void)
 	else
 	{
 		// Aspect correct - Includes overscan borders, should multiply
-		// the height by 1.2 first (or the width by 5 and height 6)
-		int scaledSrcBorderedWidth = 5*srcBorderedWidth, scaledSrcBorderedHeight = 6*srcBorderedHeight;
+		// the height by 1.2 first (or the width by 5 and height 6),
+		// if in 320x200 gfx mode, cause 1.2 == (320*3)/(4*200).
+		// More generally, (srcwidth*3)/(4*srcheight).
+		// So multiply width by 4*srcheight and height by 3*srcwidth;
+		int scaledSrcBorderedWidth = (4*srcHeight)*srcBorderedWidth, scaledSrcBorderedHeight = (3*srcWidth)*srcBorderedHeight;
 		if (scaledSrcBorderedHeight*winWidth < scaledSrcBorderedWidth*winHeight) // Thinner than scaledSrcBorderedWidth:scaledSrcBorderedHeight
 		{
 			g_sdlAspectCorrectionBorderedRect.w = winWidth;
