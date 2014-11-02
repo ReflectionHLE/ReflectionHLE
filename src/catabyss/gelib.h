@@ -25,15 +25,19 @@
 #define SAVEVER_DATA "0.93"
 #define FILENAME_LEN 15
 
-// TODO (CHOCO CAT) Modified for saved game compatibility and a bit more
-// (SAVEVER_DATA is not modified)
-// - Can be restored if compatibility with such version is desired
+#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+
 #define  GAMENAME               "CATACOMB ABYSS  "
 #define VERSION         "V1.13   "
 #define  REVISION               "QA [0]"
-//#define  GAMENAME               "CATACOMB ABYSS 3-D"
-//#define VERSION         "V1.24   "
-//#define  REVISION               "1"
+
+#else
+
+#define  GAMENAME               "CATACOMB ABYSS 3-D"
+#define VERSION         "V1.24   "
+#define  REVISION               "1"
+
+#endif
 
 //#define BOBLIST 1                          //SP - Undefine if not using BOBList
 

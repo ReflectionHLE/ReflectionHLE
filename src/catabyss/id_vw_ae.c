@@ -196,7 +196,15 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 {
 	id0_unsigned_t egaDestOff;
 	screendest = bufferofs+xcoord+ylookup[ycoord];
+	// This one is really weird, but looks like STARTTILE8 is really 314,
+	// rather than 315, in the case of the original Catacomb Abyss
+	// Shareware v1.13 EXE (only in ID_VW_AE.ASM, not e.g., C code).
+	// In practice, though, it looks like STARTTILE8 is never used anyway...
+#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+	id0_byte_t *tilePtr = grsegs[STARTTILE8-1]+(tile<<5);
+#else
 	id0_byte_t *tilePtr = grsegs[STARTTILE8]+(tile<<5);
+#endif
 	for (int planeCounter = 4, mapMask = 1; planeCounter; --planeCounter, mapMask <<= 1)
 	{
 		egaDestOff = screendest;

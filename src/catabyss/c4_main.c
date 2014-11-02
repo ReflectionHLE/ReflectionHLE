@@ -17,7 +17,9 @@
  */
 
 // C3_MAIN.C
+#ifndef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
 #define CATALOG
+#endif
 
 
 #include <time.h>
@@ -636,7 +638,8 @@ void InitGame (void)
 void Quit (id0_char_t *error, ...)
 {
 	id0_short_t exit_code=0;
-	id0_unsigned_t	finscreen;
+	void *finscreen;
+	//id0_unsigned_t	finscreen;
 
 	va_list ap;
 
@@ -647,7 +650,8 @@ void Quit (id0_char_t *error, ...)
 		CA_SetAllPurge ();
 #ifndef CATALOG
 		CA_CacheGrChunk (PIRACY);
-		finscreen = (id0_unsigned_t)grsegs[PIRACY];
+		finscreen = grsegs[PIRACY];
+		//finscreen = (id0_unsigned_t)grsegs[PIRACY];
 #endif
 	}
 	ShutdownId ();
@@ -661,36 +665,50 @@ void Quit (id0_char_t *error, ...)
 	}
 
 #ifndef CATALOG
-	else
-	{
-		movedata (finscreen,0,0xb800,0,4000);
 
+#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL // ...
+	else if (!NoWait)
+#else
+	else
+#endif
+	{
+		memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen, 4000);
+		//movedata (finscreen,0,0xb800,0,4000);
+#ifndef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
 		if (kbhit())
 		{
 			while (kbhit())
 				bioskey(0);
 		}
-
-		bioskey (0);
+#endif
+		//bioskey (0); // REF CAT - Commented out
 	}
 #endif
 
 	va_end(ap);
 
 #ifndef CATALOG
+	// TODO (REF CAT) Needs different (re)implementation
+	// of loadscn2 for which we don't have the sources
+#if 0
 	if (!error)
 	{
+
 		id0_argc = 2;
 		id0_argv[1] = "LAST.SHL";
 		id0_argv[2] = "ENDSCN.SCN";
 		id0_argv[3] = NULL;
+#if 0
 		if (execv("LOADSCN.EXE", id0_argv) == -1)
 		{
 			BE_SDL_clrscr();
 			BE_Cross_puts("Couldn't find executable LOADSCN.EXE.\n");
 			BE_SDL_HandleExit(1);
 		}
+#endif
+		loadscn2_main(id0_argc+1, id0_argv);
 	}
+#endif
 #endif
 
 	BE_SDL_HandleExit(exit_code);
@@ -1004,6 +1022,15 @@ void id0_main (void)
 			case 2:
 				// TODO (CHOCO CAT) Should we fix this?
 				// It is a simplified printf after all...
+#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+				BE_Cross_Simplified_printf(GAMENAME);
+				BE_Cross_Simplified_printf("   ");
+				BE_Cross_Simplified_printf(VERSION);
+				BE_Cross_Simplified_printf("   ");
+				BE_Cross_Simplified_printf(REVISION);
+				BE_Cross_Simplified_printf("\n");
+				//BE_Cross_Simplified_printf("%s   %s   %s\n",GAMENAME,VERSION,REVISION);
+#else
 				BE_Cross_Simplified_printf(GAMENAME);
 				BE_Cross_Simplified_printf("  ");
 				BE_Cross_Simplified_printf(VERSION);
@@ -1011,6 +1038,7 @@ void id0_main (void)
 				BE_Cross_Simplified_printf(REVISION);
 				BE_Cross_Simplified_printf("\n");
 				//BE_Cross_Simplified_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
+#endif
 				BE_SDL_HandleExit(0);
 			break;
 
@@ -1029,7 +1057,11 @@ void id0_main (void)
 	if (LaunchedFromShell)
 	{
 		BE_SDL_clrscr();
+#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+		BE_Cross_puts("You must type START at the DOS prompt to run CATACOMB ABYSS.");
+#else
 		BE_Cross_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
+#endif
 		BE_SDL_HandleExit(0);
 	}
 
