@@ -73,9 +73,8 @@ INTCXXFLAGS+= `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragm
 #We need -lm for dbopl
 INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
 
-#FIXME Using gnu99 instead of c99 due to scandir and alphasort
 ifeq ($(BUILDASCPP), 0)
-	INTCXXFLAGS+= -std=gnu99
+	INTCXXFLAGS+= -std=c99
 endif
 
 ifeq ($(PLATFORM), WINDOWS)
