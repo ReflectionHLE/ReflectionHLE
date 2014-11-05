@@ -572,6 +572,7 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 		else
 			screen++;
 	}
+	BE_SDL_MarkGfxForUpdate();
 }
 #endif
 

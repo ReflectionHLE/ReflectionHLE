@@ -61,8 +61,16 @@ void BE_SDL_SetTimeCount(uint32_t newcount);
 void BE_SDL_InitGfx(void);
 void BE_SDL_ShutdownGfx(void);
 void BE_SDL_SetScreenStartAddress(uint16_t crtc);
+
+// ***WARNING*** SEE WARNING BELOW BEFORE USING!!!
+//
+// Basically a replacement for B800:0000, points to a 80x25*2 bytes long
+// buffer; Text mode only, NOT e.g., CGA graphics.
+//
+// ***WARNING***: After modifying this chunk, it is a MUST to call the function
+// BE_SDL_MarkGfxForUpdate (used as an optimization).
 uint8_t *BE_SDL_GetTextModeMemoryPtr(void);
-uint8_t *BE_SDL_GetCGAMemoryPtr(void);
+
 // EGA graphics manipulations
 void BE_SDL_EGASetPaletteAndBorder(const uint8_t *palette);
 void BE_SDL_EGASetLineWidth(uint8_t widthInBytes);
@@ -84,6 +92,8 @@ void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask);
 // - OR instead of XOR.
 // - Only specific bits are updated in each plane's byte.
 void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask);
+// CGA graphics manipulations
+void BE_SDL_CGAFullUpdateFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth);
 
 
 //
@@ -119,6 +129,5 @@ void BE_SDL_puts(const char *str);
 void BE_SDL_simplified_printf(const char *str);
 
 void BE_SDL_MarkGfxForUpdate(void);
-void BE_SDL_MarkGfxForPendingUpdate(void); // Marks only if BE_SDL_MarkGfxForUpdate has been called, or after setting emulated video mode
 
 #endif

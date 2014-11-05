@@ -367,7 +367,7 @@ void	VW_ClearVideo (id0_int_t color)
 #endif
 #if GRMODE == CGAGR
 	memset(screenseg, color, 0xffff);
-	BE_SDL_MarkGfxForPendingUpdate();
+	//BE_SDL_MarkGfxForPendingUpdate();
 #endif
 
 
@@ -580,7 +580,7 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 		// mask out pixels; 'or' in color
 		screenseg[dest] = (screenseg[dest] & ~maskleft) | ((id0_byte_t)color & maskleft);
 
-		BE_SDL_MarkGfxForPendingUpdate();
+		//BE_SDL_MarkGfxForPendingUpdate();
 		return;
 	}
 
@@ -607,7 +607,7 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 	// mask out pixels; 'or' in color
 	screenseg[dest] = (screenseg[dest] & ~maskright) | ((id0_byte_t)color & maskright);
 
-	BE_SDL_MarkGfxForPendingUpdate();
+	//BE_SDL_MarkGfxForPendingUpdate();
 }
 #endif
 
@@ -779,6 +779,9 @@ void VW_CGAFullUpdate (void)
 
 	displayofs = bufferofs+panadjust;
 
+
+	BE_SDL_CGAFullUpdateFromWrappedMem(screenseg, screenseg+displayofs, linewidth);
+#if 0
 	uint8_t *srcPtr = &screenseg[displayofs];
 	uint8_t *destPtr = BE_SDL_GetCGAMemoryPtr();
 
@@ -798,6 +801,7 @@ void VW_CGAFullUpdate (void)
 		//srcPtr += linewidth;
 		destPtr -= (0x2000 - 80); // go to the non interlaced bank
 	} while (--linePairsToCopy);
+#endif
 
 	// clear out the update matrix
 	memset(baseupdateptr, 0, UPDATEWIDE*UPDATEHIGH);
@@ -806,7 +810,7 @@ void VW_CGAFullUpdate (void)
 	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
 
 	// Rather than BE_SDL_MarkGfxForPendingUpdate()...
-	BE_SDL_MarkGfxForUpdate();
+	//BE_SDL_MarkGfxForUpdate();
 
 #if 0
 	id0_byte_t	*update;

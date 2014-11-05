@@ -8,21 +8,12 @@ static SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 static SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
 static bool g_sdlDoRefreshGfxOutput;
-static bool g_sdlDoPendingRefreshGfxOutput;
 
 void BE_SDL_MarkGfxForUpdate(void)
 {
-	if (g_sdlDoPendingRefreshGfxOutput)
-	{
-		g_sdlDoPendingRefreshGfxOutput = false;
-		g_sdlDoRefreshGfxOutput = true;
-	}
+	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_MarkGfxForPendingUpdate(void)
-{
-	g_sdlDoPendingRefreshGfxOutput = true;
-}
 #if !SDL_VERSION_ATLEAST(2,0,0)
 #error "SDL <2.0 support is unimplemented!"
 #endif
@@ -56,11 +47,18 @@ void BE_SDL_MarkGfxForPendingUpdate(void)
 
 extern uint8_t g_vga_8x16TextFont[256*VGA_TXT_CHAR_PIX_WIDTH*VGA_TXT_CHAR_PIX_HEIGHT];
 // We can use a union because the memory contents are refreshed on screen mode change
+// (well, not on change between modes 0xD and 0xE, both sharing planar A000:0000)
 static union {
-	uint8_t egaGfx[4][0x10000];
-	uint8_t cgaGfx[0x2000];
-	uint8_t text[TXT_COLS_NUM*TXT_ROWS_NUM*2];
-} g_sdlVidMem, g_sdlVidMemCache;
+	uint8_t egaGfx[4][0x10000]; // Contents of A000:0000 (4 planes)
+	uint8_t text[TXT_COLS_NUM*TXT_ROWS_NUM*2]; // Textual contents of B800:0000
+} g_sdlVidMem;
+
+// Used for simple caching of EGA graphics (due to page flipping and more)
+// and similarly CGA graphics (modified only at one place)
+static union {
+	uint8_t egaGfx[2*320*200]; // Support 640x200 mode for Catacomb Abyss
+	uint8_t cgaGfx[320*200];
+} g_sdlHostScrMem, g_sdlHostScrMemCache;
 
 static uint16_t g_sdlScreenStartAddress = 0, g_sdlScreenStartAddressCache;
 static int g_sdlScreenMode = 3;
@@ -287,10 +285,6 @@ uint8_t *BE_SDL_GetTextModeMemoryPtr(void)
 	return g_sdlVidMem.text;
 }
 
-uint8_t *BE_SDL_GetCGAMemoryPtr(void)
-{
-	return g_sdlVidMem.cgaGfx;
-}
 
 
 
@@ -574,6 +568,41 @@ void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
 }
 
 
+
+void BE_SDL_CGAFullUpdateFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth)
+{
+	const uint8_t *endSegPtr = segPtr + 0x10000;
+	uint8_t *cgaHostPtr = g_sdlHostScrMem.cgaGfx, *cgaHostCachePtr = g_sdlHostScrMemCache.cgaGfx;
+	// Remember this is a wrapped copy, offInSegPtr points inside a 65536-bytes long segment beginning at segPtr;
+	// But we still want to skip some bytes, assuming byteLineWidth sources bytes per line (picking 80 out of these)
+
+	int lineBytesLeft = byteLineWidth - GFX_TEX_WIDTH/4;
+	for (int line = 0, byteInLine; line < GFX_TEX_HEIGHT; ++line)
+	{
+		for (int byteInLine = 0; byteInLine < GFX_TEX_WIDTH/4; ++byteInLine, ++offInSegPtr, offInSegPtr = (offInSegPtr == endSegPtr) ? segPtr : offInSegPtr)
+		{
+			*cgaHostPtr = ((*offInSegPtr) & 0xC0) >> 6;
+			g_sdlDoRefreshGfxOutput |= (*cgaHostPtr != *cgaHostCachePtr);
+			*(cgaHostCachePtr++) = *(cgaHostPtr++);
+			*cgaHostPtr = ((*offInSegPtr) & 0x30) >> 4;
+			g_sdlDoRefreshGfxOutput |= (*cgaHostPtr != *cgaHostCachePtr);
+			*(cgaHostCachePtr++) = *(cgaHostPtr++);
+			*cgaHostPtr = ((*offInSegPtr) & 0x0C) >> 2;
+			g_sdlDoRefreshGfxOutput |= (*cgaHostPtr != *cgaHostCachePtr);
+			*(cgaHostCachePtr++) = *(cgaHostPtr++);
+			*cgaHostPtr = ((*offInSegPtr) & 0x03);
+			g_sdlDoRefreshGfxOutput |= (*cgaHostPtr != *cgaHostCachePtr);
+			*(cgaHostCachePtr++) = *(cgaHostPtr++);
+		}
+		offInSegPtr += lineBytesLeft;
+		if (offInSegPtr >= endSegPtr)
+		{
+			offInSegPtr = segPtr + (uint16_t)(offInSegPtr-segPtr);
+		}
+	}
+}
+
+
 void BE_SDL_SetScreenMode(int mode)
 {
 	g_sdlDoRefreshGfxOutput = true;
@@ -587,14 +616,13 @@ void BE_SDL_SetScreenMode(int mode)
 		g_sdlTxtCursorPosX = g_sdlTxtCursorPosY = 0;
 		BE_SDL_clrscr();
 		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
-		g_sdlVidMemCache.text[0] = g_sdlVidMem.text[0]^0xFF; // Force refresh
 		break;
 	case 4:
 		g_sdlTexWidth = GFX_TEX_WIDTH;
 		g_sdlTexHeight = GFX_TEX_HEIGHT;
-		memset(g_sdlVidMem.cgaGfx,  0, sizeof(g_sdlVidMem.cgaGfx));
+		memset(g_sdlHostScrMem.cgaGfx, 0, sizeof(g_sdlHostScrMem.cgaGfx));
 		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
-		g_sdlVidMemCache.cgaGfx[0] = g_sdlVidMem.cgaGfx[0]^0xFF; // Force refresh
+		g_sdlHostScrMemCache.cgaGfx[0] = g_sdlHostScrMem.cgaGfx[0]^0xFF; // Force refresh
 		break;
 	case 0xD:
 		g_sdlTexWidth = GFX_TEX_WIDTH;
@@ -607,9 +635,10 @@ void BE_SDL_SetScreenMode(int mode)
 		// HACK: Looks like this shouldn't be done if changing gfx->gfx
 		if (g_sdlScreenMode != 0xE)
 		{
-			memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
+			memset(g_sdlVidMem.egaGfx, 0, sizeof(g_sdlVidMem.egaGfx));
 		}
-		g_sdlVidMemCache.egaGfx[0][0] = g_sdlVidMem.egaGfx[0][0]^0xFF; // Force refresh
+		memset(g_sdlHostScrMem.egaGfx, 0, sizeof(g_sdlHostScrMem.egaGfx));
+		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF; // Force refresh
 		break;
 	case 0xE:
 		g_sdlTexWidth = 2*GFX_TEX_WIDTH;
@@ -624,7 +653,8 @@ void BE_SDL_SetScreenMode(int mode)
 		{
 			memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
 		}
-		g_sdlVidMemCache.egaGfx[0][0] = g_sdlVidMem.egaGfx[0][0]^0xFF; // Force refresh
+		memset(g_sdlHostScrMem.egaGfx,  0, sizeof(g_sdlHostScrMem.egaGfx));
+		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF; // Force refresh
 		break;
 	}
 	g_sdlScreenMode = mode;
@@ -650,12 +680,14 @@ void BE_SDL_clrscr(void)
 		*(currMemByte++) = ' ';
 		*(currMemByte++) = g_sdlTxtColor | (g_sdlTxtBackground << 4);
 	}
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_MoveTextCursorTo(int x, int y)
 {
 	g_sdlTxtCursorPosX = x;
 	g_sdlTxtCursorPosY = y;
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_ToggleTextCursor(bool isEnabled)
@@ -709,6 +741,7 @@ static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall)
 			currMemByte -= 2*TXT_COLS_NUM; // Go back to beginning of line
 		}
 	}
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_SDL_Simplified_printf(const char *str)
@@ -800,23 +833,13 @@ void BE_SDL_UpdateHostDisplay(void)
 {
 	if (g_sdlScreenMode == 3) // Text mode
 	{
+		// For graphics modes we don't have to refresh if g_sdlDoRefreshGfxOutput is set to false,
+		// but in textual mode we have blinking characters and cursor to take care of
 		static bool wereBlinkingCharsShown;
 		static bool wasBlinkingCursorShown;
-		// Maybe we don't have to update screen (e.g., Keen Dreams control panel)
-		bool doUpdate = false;
-		for (int i = 0; i < sizeof(g_sdlVidMem.text); ++i)
-		{
-			if (g_sdlVidMem.text[i] != g_sdlVidMemCache.text[i])
-			{
-				g_sdlVidMemCache.text[i] = g_sdlVidMem.text[i];
-				doUpdate = true;
-			}
-		}
-		// But there are still blinking characters and cursor
 		bool areBlinkingCharsShown = (((uint64_t)(70086*SDL_GetTicks()/1000)/(1000*VGA_TXT_BLINK_VERT_FRAME_RATE)) % 2);
 		bool isBlinkingCursorShown = g_sdlTxtCursorEnabled && (((uint64_t)(70086*SDL_GetTicks()/1000)/(1000*VGA_TXT_CURSOR_BLINK_VERT_FRAME_RATE)) % 2);
-		// We check g_sdlDoRefreshGfxOutput since this is currently set to "true" only after setting video mode (for text mode)
-		if (!g_sdlDoRefreshGfxOutput && !doUpdate && (wereBlinkingCharsShown == areBlinkingCharsShown) && (wasBlinkingCursorShown == isBlinkingCursorShown))
+		if (!g_sdlDoRefreshGfxOutput && (wereBlinkingCharsShown == areBlinkingCharsShown) && (wasBlinkingCursorShown == isBlinkingCursorShown))
 		{
 			return;
 		}
@@ -893,169 +916,41 @@ void BE_SDL_UpdateHostDisplay(void)
 		{
 			return;
 		}
-		// Maybe we still don't have to update screen (e.g., Keen Dreams control panel)
-		bool doUpdate = false;
-		// This is never modified in the CGA code of Keen Dreams, even though there is a CGA implementation of VW_SetScreen modifying this
-#if 0
-		if (g_sdlScreenStartAddress != g_sdlScreenStartAddressCache)
-		{
-			g_sdlScreenStartAddressCache = g_sdlScreenStartAddress;
-			doUpdate = true;
-		}
-#endif
-		if (g_sdlEGACurrBGRAPaletteAndBorder[16] != g_sdlEGACurrBGRAPaletteAndBorderCache[16])
-		{
-			g_sdlEGACurrBGRAPaletteAndBorderCache[16] = g_sdlEGACurrBGRAPaletteAndBorder[16];
-			doUpdate = true;
-		}
-
-		if (doUpdate) // We already know we should refresh, so just copy
-		{
-			memcpy(g_sdlVidMemCache.cgaGfx, g_sdlVidMem.cgaGfx, sizeof(g_sdlVidMem.cgaGfx));
-		}
-		else // Otherwise we should still check
-		{
-			for (int i = 0; i < sizeof(g_sdlVidMem.cgaGfx); ++i)
-			{
-				if (g_sdlVidMem.cgaGfx[i] != g_sdlVidMemCache.cgaGfx[i])
-				{
-					g_sdlVidMemCache.cgaGfx[i] = g_sdlVidMem.cgaGfx[i];
-					doUpdate = true;
-				}
-			}
-		}
-
-		if (!doUpdate)
-		{
-			return;
-		}
+		// That's easy now since there isn't a lot that can be done...
 		void *pixels;
 		int pitch;
 		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-		uint32_t *currPixPtr;
-		uint8_t *srcCGAPtr;
-		uint8_t currBitLoc; // Location of bits to check inside byte (two bits)
-		// First fill the "even" rows, then the "odd" ones
-		for (int i = 0; i < 2; ++i)
+		uint32_t *currPixPtr = (uint32_t *)pixels;
+		uint8_t *currPalPixPtr = g_sdlHostScrMem.cgaGfx;
+		for (int pixnum = 0; pixnum < GFX_TEX_WIDTH*GFX_TEX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
 		{
-			currPixPtr = (uint32_t *)pixels + i*GFX_TEX_WIDTH;
-			// g_sdlScreenStartAddress is never modified in the CGA code of Keen Dreams, even though there is a CGA implementation of VW_SetScreen modifying this
-			srcCGAPtr = &g_sdlVidMem.cgaGfx[i*0x2000];
-			//srcCGAPtr = &g_sdlVidMem.cgaGfx[g_sdlScreenStartAddress+i*0x2000];
-			currBitLoc = 6; // Location of bits to check (two bits)
-			for (int line = 0; line < (GFX_TEX_HEIGHT/2); ++line)
-			{
-				for (int col = 0; col < GFX_TEX_WIDTH; ++col, ++currPixPtr)
-				{
-					*currPixPtr = g_sdlCGAGfxBGRAScreenColors[((*srcCGAPtr) >> currBitLoc) & 3];
-					if (currBitLoc)
-					{
-						currBitLoc -= 2; // Check following bits in same CGA byte
-					}
-					else
-					{
-						currBitLoc = 6;
-						// Check next byte
-						if ((++srcCGAPtr) == (g_sdlVidMem.cgaGfx+sizeof(g_sdlVidMem.cgaGfx)))
-						{
-							srcCGAPtr = g_sdlVidMem.cgaGfx; // Wrap around
-						}
-					}
-				}
-				currPixPtr += GFX_TEX_WIDTH; // Skip "odd" row
-			}
+			*currPixPtr = g_sdlCGAGfxBGRAScreenColors[*currPalPixPtr];
 		}
 	}
-	else // EGA graphics mode 0xD
+	else // EGA graphics mode 0xD or 0xE
 	{
 		if (!g_sdlDoRefreshGfxOutput)
 		{
 			return;
 		}
-		// Caching of graphics seems to be a bit expensive here
-		// (more than the CGA case), so not doing that for now
-#if 0
-		// Maybe we still don't have to update screen (e.g., Keen Dreams control panel)
-		bool doUpdate = false;
-		if (g_sdlScreenStartAddress != g_sdlScreenStartAddressCache)
-		{
-			g_sdlScreenStartAddressCache = g_sdlScreenStartAddress;
-			doUpdate = true;
-		}
-		if (g_sdlPelPanning != g_sdlPelPanningCache)
-		{
-			g_sdlPelPanningCache = g_sdlPelPanning;
-			doUpdate = true;
-		}
-		if (g_sdlLineWidth != g_sdlLineWidthCache)
-		{
-			g_sdlLineWidthCache = g_sdlLineWidth;
-			doUpdate = true;
-		}
-		if (g_sdlSplitScreenLine != g_sdlSplitScreenLineCache)
-		{
-			g_sdlSplitScreenLineCache = g_sdlSplitScreenLine;
-		}
-
-		if (doUpdate) // We already know we should refresh, so just copy
-		{
-			memcpy(g_sdlEGACurrBGRAPaletteAndBorderCache, g_sdlEGACurrBGRAPaletteAndBorder, sizeof(g_sdlEGACurrBGRAPaletteAndBorder));
-		}
-		else // Otherwise we should still check
-		{
-			for (int paletteAndBorderEntry = 0; paletteAndBorderEntry < 17; ++paletteAndBorderEntry)
-			{
-				if (g_sdlEGACurrBGRAPaletteAndBorder[paletteAndBorderEntry] != g_sdlEGACurrBGRAPaletteAndBorderCache[paletteAndBorderEntry])
-				{
-					g_sdlEGACurrBGRAPaletteAndBorderCache[paletteAndBorderEntry] = g_sdlEGACurrBGRAPaletteAndBorder[paletteAndBorderEntry];
-					doUpdate = true;
-				}
-			}
-		}
-
-		if (doUpdate) // We already know we should refresh, so just copy
-		{
-			memcpy(g_sdlVidMemCache.egaGfx, g_sdlVidMem.egaGfx, sizeof(g_sdlVidMem.egaGfx));
-		}
-		else // Otherwise we should still check
-		{
-
-			for (int planeNum = 0; planeNum < 4; ++planeNum)
-			{
-				for (int i = 0; i < sizeof(g_sdlVidMem.egaGfx[planeNum]); ++i)
-				{
-					if (g_sdlVidMem.egaGfx[planeNum][i] != g_sdlVidMemCache.egaGfx[planeNum][i])
-					{
-						g_sdlVidMemCache.egaGfx[planeNum][i] = g_sdlVidMem.egaGfx[planeNum][i];
-						doUpdate = true;
-					}
-				}
-			}
-		}
-
-		if (!doUpdate)
-		{
-			return;
-		}
-#endif
-		void *pixels;
-		int pitch;
-		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
 		uint16_t currLineFirstByte = (g_sdlScreenStartAddress + g_sdlPelPanning/8) % 0x10000;
 		uint8_t panningWithinInByte = g_sdlPelPanning%8;
+		uint8_t *currPalPixPtr, *currPalPixCachePtr;
+		bool doUpdate = false;
 		for (int line = 0, col; line < GFX_TEX_HEIGHT; ++line)
 		{
 			uint8_t currBitNum = 7-panningWithinInByte, currBitMask = 1<<currBitNum;
 			uint16_t currByte = currLineFirstByte;
-			uint32_t *currPixPtr = (uint32_t *)pixels + line*g_sdlTexWidth;
-			for (col = 0; col < g_sdlTexWidth; ++col, ++currPixPtr)
+			currPalPixPtr = g_sdlHostScrMem.egaGfx + line*g_sdlTexWidth;
+			currPalPixCachePtr = g_sdlHostScrMemCache.egaGfx + line*g_sdlTexWidth;
+			for (col = 0; col < g_sdlTexWidth; ++col, ++currPalPixPtr)
 			{
-				*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[
-					((g_sdlVidMem.egaGfx[0][currByte]&currBitMask)>>currBitNum) |
-					(((g_sdlVidMem.egaGfx[1][currByte]&currBitMask)>>currBitNum)<<1) |
-					(((g_sdlVidMem.egaGfx[2][currByte]&currBitMask)>>currBitNum)<<2) |
-					(((g_sdlVidMem.egaGfx[3][currByte]&currBitMask)>>currBitNum)<<3)
-				];
+				*currPalPixPtr = ((g_sdlVidMem.egaGfx[0][currByte]&currBitMask)>>currBitNum) |
+				                 (((g_sdlVidMem.egaGfx[1][currByte]&currBitMask)>>currBitNum)<<1) |
+				                 (((g_sdlVidMem.egaGfx[2][currByte]&currBitMask)>>currBitNum)<<2) |
+				                 (((g_sdlVidMem.egaGfx[3][currByte]&currBitMask)>>currBitNum)<<3);
+				doUpdate |= (*currPalPixPtr != *currPalPixCachePtr);
+				*currPalPixCachePtr = *currPalPixPtr;
 				if (currBitNum == 0)
 				{
 					++currByte;
@@ -1071,14 +966,17 @@ void BE_SDL_UpdateHostDisplay(void)
 				if (col == 8*g_sdlLineWidth)
 				{
 					++col;
-					++currPixPtr;
+					++currPalPixPtr;
+					++currPalPixCachePtr;
 					break;
 				}
 			}
 			// Just if this makes sense... (FIXME: Check!)
-			for (; col < g_sdlTexWidth; ++col, ++currPixPtr)
+			for (; col < g_sdlTexWidth; ++col, ++currPalPixPtr, ++currPalPixCachePtr)
 			{
-				*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[0];
+				doUpdate |= (*currPalPixCachePtr);
+				*currPalPixPtr = 0;
+				*currPalPixCachePtr = 0;
 			}
 			if (g_sdlSplitScreenLine == line)
 			{
@@ -1089,6 +987,32 @@ void BE_SDL_UpdateHostDisplay(void)
 				currLineFirstByte += g_sdlLineWidth;
 				currLineFirstByte %= 0x10000;
 			}
+		}
+		if (!doUpdate)
+		{
+			int paletteAndBorderEntry;
+			for (paletteAndBorderEntry = 0; paletteAndBorderEntry < 17; ++paletteAndBorderEntry)
+			{
+				if (g_sdlEGACurrBGRAPaletteAndBorder[paletteAndBorderEntry] != g_sdlEGACurrBGRAPaletteAndBorderCache[paletteAndBorderEntry])
+				{
+					g_sdlEGACurrBGRAPaletteAndBorderCache[paletteAndBorderEntry] = g_sdlEGACurrBGRAPaletteAndBorder[paletteAndBorderEntry];
+					doUpdate = true;
+				}
+			}
+			if (!doUpdate)
+			{
+				g_sdlDoRefreshGfxOutput = false;
+				return;
+			}
+		}
+		void *pixels;
+		int pitch;
+		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
+		uint32_t *currPixPtr = (uint32_t *)pixels;
+		currPalPixPtr = g_sdlHostScrMem.egaGfx;
+		for (int pixnum = 0; pixnum < g_sdlTexWidth*GFX_TEX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
+		{
+			*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[*currPalPixPtr];
 		}
 	}
 	g_sdlDoRefreshGfxOutput = false;

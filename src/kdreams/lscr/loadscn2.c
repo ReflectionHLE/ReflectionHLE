@@ -516,6 +516,7 @@ int loadscn2_main(int argc, char **argv)
 		TrashProg("Error loading TEXT_SCEENS");
 
 	memcpy(BE_SDL_GetTextModeMemoryPtr(), bufferptr+7, 4000);
+	BE_SDL_MarkGfxForUpdate();
 	//_fmemcpy(MK_FP(0xB800,0), bufferptr+7, 4000);
 
 	BE_SDL_ToggleTextCursor(true);

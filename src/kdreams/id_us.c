@@ -525,6 +525,7 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 		*screen++ = *s++;
 		*screen++ = attr;
 	}
+	BE_SDL_MarkGfxForUpdate();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -613,6 +614,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 		for (w++;w--;screen += 2)
 			*screen = 0x4f;
 	}
+	BE_SDL_MarkGfxForUpdate();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -687,6 +689,7 @@ US_UpdateTextScreen(void)
 	//screen = MK_FP(0xb800,1 + (((63 - 1) * 2) + (18 * 80 * 2)));
 	for (i = 0;i < 13;i++,screen += 2)
 		*screen = 0x4f;
+	BE_SDL_MarkGfxForUpdate();
 
 	// Change Initializing... to Loading...
 	USL_ScreenDraw(27,22,"  Loading...   ",0x9c);

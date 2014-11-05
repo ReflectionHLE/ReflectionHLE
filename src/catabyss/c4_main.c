@@ -673,6 +673,7 @@ void Quit (id0_char_t *error, ...)
 #endif
 	{
 		memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen, 4000);
+		BE_SDL_MarkGfxForUpdate();
 		//movedata (finscreen,0,0xb800,0,4000);
 #ifndef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
 		if (kbhit())

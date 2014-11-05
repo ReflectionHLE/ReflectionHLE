@@ -831,12 +831,12 @@ void BE_SDL_PollEvents(void)
 			{
 				void BE_SDL_SetGfxOutputRects(void);
 				BE_SDL_SetGfxOutputRects();
-				BE_SDL_MarkGfxForPendingUpdate();
+				//BE_SDL_MarkGfxForPendingUpdate();
 				BE_SDL_MarkGfxForUpdate();
 				break;
 			}
 			case SDL_WINDOWEVENT_EXPOSED:
-				BE_SDL_MarkGfxForPendingUpdate();
+				//BE_SDL_MarkGfxForPendingUpdate();
 				BE_SDL_MarkGfxForUpdate();
 				break;
 			break;
