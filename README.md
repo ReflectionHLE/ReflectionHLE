@@ -108,6 +108,14 @@ research works.
 reimplementations of Keen 1-3 and Keen 4-6. Originally started
 as a branch of CloneKeen known as CloneKeenPlus.
 
+* Past and present members of the DOSBox team, or the following at the least:
+harekiet, qbix79, finsterr, fanskapet, canadacow, c2woody, h-a-l-9000.
+Not only the DOSBox project makes it possible to (quite faithfully) play a ton
+of DOS games on more recent platforms, but its DBOPL emulator is used for AdLib
+emulation; This also applies to modern source ports, not just DOSBox itself.
+Furthermore, while not necessarily intended for assistance with porting,
+the DOSBox debugger has surely (seriously) been very useful.
+
 * Richard Mandel for releasing original source codes for the complete
 Catacomb series and Hovertank 3D.
 
