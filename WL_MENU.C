@@ -1699,7 +1699,7 @@ int CalibrateJoystick(void)
 		if (Keyboard[sc_Escape])
 			return 0;
 		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
-		// This is also not executed in the Shareware 1.4 Apogee EXE
+		// This is also skipped in the Shareware 1.4 Apogee EXE
 		#if (!defined SPEAR) && (defined GOODTIMES)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("goobers"))
@@ -1934,8 +1934,9 @@ void MouseSensitivity(void)
 				break;
 		}
 
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION*** And again - kind of
-		#if (defined SPEAR) || (defined GOODTIMES)
+		// ***SHAREWARE/REGISTERED V1.4 APOGEE+SOD DEMO V1.0 RESTORATION***
+		// And again - kind of
+		#if ((defined SPEAR) && (!defined SPEARDEMO)) || (defined GOODTIMES)
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("goobers"))
 		#else
@@ -2784,8 +2785,8 @@ void CP_ChangeView(void)
 			break;
 		}
 
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION*** And again
-		#if (defined SPEAR) || (defined GOODTIMES)
+		// ***SHAREWARE/REGISTERED V1.4 APOGEE+SOD DEMO V1.0 RESTORATION*** And again
+		#if ((defined SPEAR) && (!defined SPEARDEMO)) || (defined GOODTIMES)
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("goobers"))
 		#else

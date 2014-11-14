@@ -290,7 +290,7 @@ void Victory (void)
 	IN_Ack();
 
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
-	// This is also not executed in the Shareware 1.4 Apogee EXE
+	// This is also skipped in the Shareware 1.4 Apogee EXE
 	#if (!defined SPEAR) && (defined GOODTIMES)
 	//#ifndef SPEAR
 	if (Keyboard[sc_P] && MS_CheckParm("goobers"))
@@ -970,7 +970,7 @@ void LevelCompleted (void)
 #endif
 
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
-	// This is also not executed in the Shareware 1.4 Apogee EXE
+	// This is also skipped in the Shareware 1.4 Apogee EXE
 	#if (!defined SPEAR) && (defined GOODTIMES)
 	//#ifndef SPEAR
 	if (Keyboard[sc_P] && MS_CheckParm("goobers"))

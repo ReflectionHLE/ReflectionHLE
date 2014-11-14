@@ -66,9 +66,9 @@
 
 #define	STR_LEFT	"Left"
 #define	STR_RIGHT	"Right"
-// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
+// ***SHAREWARE/REGISTERED V1.4 APOGEE + SOD DEMO V1.0 RESTORATION***
 // There was a typo fix
-#if (defined SPEAR) || (defined GOODTIMES)
+#ifdef GOODTIMES
 #define	STR_FRWD	"Frwd"
 #else
 #define	STR_FRWD	"Fwrd"

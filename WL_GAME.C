@@ -1287,15 +1287,26 @@ startplayloop:
 #ifdef SPEAR
 		if (spearflag)
 		{
+			// ***SOD DEMO V1.0 RESTORATION***
+			// Don't stop sound
+#ifndef SPEARDEMO
 			SD_StopSound();
+#endif
 			SD_PlaySound(GETSPEARSND);
 			if (DigiMode != sds_Off)
 			{
+				// ***SOD DEMO V1.0 RESTORATION***
+				// Do loop over DigiPlaying
+#ifdef SPEARDEMO
+				while(DigiPlaying!=false)
+					SD_Poll();
+#else
 				long lasttimecount = TimeCount;
 
 				while(TimeCount < lasttimecount+150)
 				//while(DigiPlaying!=false)
 					SD_Poll();
+#endif
 			}
 			else
 				SD_WaitSoundDone();

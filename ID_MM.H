@@ -9,12 +9,12 @@
 
 #define	BUFFERSIZE		0x1000		// miscelanious, allways available buffer
 
-	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
-	// Looks like less blocks were used for Shareware 1.4 Apogee at the least
-#if (defined SPEAR) || (defined GOODTIMES)
+// ***SHAREWARE/REGISTERED V1.4 APOGEE + SOD DEMO V1.0 RESTORATION***
+// Looks like less blocks were used for Shareware 1.4 Apogee and SOD demo 1.0
+#ifdef GOODTIMES
 #define MAXBLOCKS		700
 #else
-#define MAXBLOCKS		600 // OLD/NEW ADDITION (RESTORATION)
+#define MAXBLOCKS		600
 #endif
 
 

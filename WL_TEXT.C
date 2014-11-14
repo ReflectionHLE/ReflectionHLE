@@ -487,7 +487,9 @@ void PageLayout (boolean shownumber)
 		itoa (pagenum,str2,10);
 		strcat (str,str2);
 		strcat (str," de ");
-		#if 0
+		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
+		// Pick location based on version
+		#ifdef GOODTIMES
 		py = 183;
 		px = 208;
 		#endif
@@ -496,16 +498,12 @@ void PageLayout (boolean shownumber)
 		itoa (pagenum,str2,10);
 		strcat (str,str2);
 		strcat (str," of ");
-		#if 0
-		py = 183;
-		px = 213;
-		#endif
-		#endif
 		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
 		// Pick location based on version
 		#ifdef GOODTIMES
 		py = 183;
 		px = 213;
+		#endif
 		#endif
 		itoa (numpages,str2,10);
 		strcat (str,str2);
@@ -513,8 +511,13 @@ void PageLayout (boolean shownumber)
 		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
 		// Pick location based on version
 		#ifndef GOODTIMES
+		#ifdef SPANISH
+		py = 183;
+		px = 208;
+		#else
 		py = 183;
 		px = 213;
+		#endif
 		#endif
 
 		VWB_DrawPropString (str);
@@ -735,7 +738,7 @@ void ShowArticle (char far *article)
 		}
 
 		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
-		// This is also not executed in the Shareware 1.4 Apogee EXE
+		// This is also skipped in the Shareware 1.4 Apogee EXE
 		#if (!defined SPEAR) && (defined GOODTIMES)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("goobers"))

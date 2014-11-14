@@ -367,7 +367,10 @@ boolean SaveTheGame(int file,int x,int y)
 	checksum = DoChecksum((byte far *)&gamestate,sizeof(gamestate),checksum);
 
 	DiskFlopAnim(x,y);
-#ifdef SPEAR
+	// ***SOD DEMO V1.0 RESTORATION***
+	// LevelRatios should have 8 entries for this version (like WL1/WL6)
+#if (defined SPEAR) && (!defined SPEARDEMO)
+//#ifdef SPEAR
 	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
 #else
@@ -453,7 +456,10 @@ boolean LoadTheGame(int file,int x,int y)
 	checksum = DoChecksum((byte far *)&gamestate,sizeof(gamestate),checksum);
 
 	DiskFlopAnim(x,y);
-#ifdef SPEAR
+	// ***SOD DEMO V1.0 RESTORATION***
+	// LevelRatios should have 8 entries for this version (like WL1/WL6)
+#if (defined SPEAR) && (!defined SPEARDEMO)
+//#ifdef SPEAR
 	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
 #else
@@ -1380,10 +1386,11 @@ void Quit (char *error)
 	if (!error || !(*error))
 	{
 		clrscr();
-		// ***REGISTERED WOLF3D+SOD V1.4 ACTIVISION RESTORATION***
+		// ***REGISTERED WOLF3D+SOD V1.4 ACTIVISION+SOD DEMO V1.0 RESTORATION***
 		// This should be commented out in the 1.4 Activision releases
-		// of Wolf3D and SOD (no copy protection)
-		#if (!defined JAPAN) && (!defined GOODTIMES) && (!defined SPEAR)
+		// of Wolf3D and SOD (no copy protection), but compiled in the
+		// shareware 1.4 Apogee and SOD demo 1.0 releases.
+		#if (!defined JAPAN) && (!defined GOODTIMES)
 		//#ifndef JAPAN
 		movedata ((unsigned)screen,7,0xb800,0,4000);
 		gotoxy(1,24);
@@ -1526,16 +1533,11 @@ void    DemoLoop (void)
 			// ***REGISTERED SOD V1.4 ACTIVISION RESTORATION***
 			// A bit of additional restored code
 #if (defined SPEAR) && (defined GOODTIMES)
-			// FIXME FIXME FIXME - Remove these comments,
-			// and don't hack in the exact pointers
-			// displayofs - word_44358
-			// bufferofs - word_3F6E4
-			// ylookup - Looks like dseg:99B8, array of 200 words
-			VW_ScreenToScreen (bufferofs,bufferofs+ylookup[175]/**((word *)0x9B16)*/,30,17);
-			VW_ScreenToScreen (bufferofs+ylookup[168]/**((word *)0x9B08)*/+30,displayofs,50,30);
-			VW_ScreenToScreen (bufferofs+ylookup[42]/**((word *)0x9A0C)*/,bufferofs+ylookup[170]/**((word *)0x9B0C)*/+30,20,30);
-			VW_ScreenToScreen (bufferofs+ylookup[42]/**((word *)0x9A0C)*/,bufferofs+ylookup[165]/**((word *)0x9B02)*/+53,25,30);
-			VW_ScreenToScreen (displayofs,bufferofs+ylookup[168]/**((word *)0x9B08)*/+18,50,30);
+			VW_ScreenToScreen (bufferofs,bufferofs+ylookup[175],30,17);
+			VW_ScreenToScreen (bufferofs+ylookup[168]+30,displayofs,50,30);
+			VW_ScreenToScreen (bufferofs+ylookup[42],bufferofs+ylookup[170]+30,20,30);
+			VW_ScreenToScreen (bufferofs+ylookup[42],bufferofs+ylookup[165]+53,25,30);
+			VW_ScreenToScreen (displayofs,bufferofs+ylookup[168]+18,50,30);
 #endif
 			VW_UpdateScreen();
 			VW_FadeIn ();

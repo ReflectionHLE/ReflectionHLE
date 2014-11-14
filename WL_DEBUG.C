@@ -161,9 +161,9 @@ void PicturePause (void)
 //
 
 	ClearMemory ();
-	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
-	// Don't call this for Shareware 1.4 Apogee
-#if (defined SPEAR) || (defined GOODTIMES)
+	// ***SOD DEMO V1.0 RESTORATION***
+	// Don't call this for SOD demo 1.0
+#ifdef GOODTIMES
 	CA_SetAllPurge();
 #endif
 	MM_GetPtr (&buffer,64000);
