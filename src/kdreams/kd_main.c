@@ -603,7 +603,7 @@ void id0_main (void)
 #if (defined CHOCO_KEEN_VER_KDREAMS_REG_193)
 	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
-		BE_Cross_Simplified_printf("\nKeen Dreams version 1.93 (Rev 1)\n");
+		BE_Cross_Simplified_printf("\nKeen Dreams version 1.93  (Rev 1)\n");
 		BE_Cross_Simplified_printf("developed for use with 100%% IBM compatibles\n");
 		BE_Cross_Simplified_printf("that have 640K memory, DOS version 3.3 or later,\n");
 		BE_Cross_Simplified_printf("and an EGA or VGA display adapter.\n");
@@ -616,6 +616,7 @@ void id0_main (void)
 	{
 		BE_Cross_Simplified_printf("\nKeen Dreams version 1.93\n");
 		BE_Cross_Simplified_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+		BE_Cross_Simplified_printf("Commander Keen is a trademark of Id Software.\n");
 		BE_Cross_Simplified_printf("Type KDREAMS from the DOS prompt to run.\n\n");
 		BE_Cross_Simplified_printf("KDREAMS /COMP for SVGA compatibility mode\n");
 		BE_Cross_Simplified_printf("KDREAMS /NODR stops program hang with the drive still on\n");
