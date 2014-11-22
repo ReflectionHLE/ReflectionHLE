@@ -1,16 +1,16 @@
 *** WARNING: DO NOT TRY TOO HARD TO BUILD ANY OF THE ORIGINAL EXECUTABLES! ***
 
 Please remember that any little difference, not matter how small it is,
-can lead to a vastly different EXE layout. This includes differences in:
+can lead to a vastly different EXE layout. This includes differences in:  
 - The development tools (or parts of such); For instance, a compiler, a linker,
 an assembler, or even a support library or header. A version number is not
-a promise for having the exact tool used to reproduce some executable.
-- The order in which source code files are listed in a given project file.
-- Project settings.
-- Source file specific settings in such a project.
-- The order in which source code files are passed to a linker.
-- Any modification to a source code file (especially a header file).
-- More than any of the above.
+a promise for having the exact tool used to reproduce some executable.  
+- The order in which source code files are listed in a given project file.  
+- Project settings.  
+- Source file specific settings in such a project.  
+- The order in which source code files are passed to a linker.  
+- Any modification to a source code file (especially a header file).  
+- More than any of the above.  
 
 Following the warning, a description of the ways in which the executables were
 reproduced is given.
