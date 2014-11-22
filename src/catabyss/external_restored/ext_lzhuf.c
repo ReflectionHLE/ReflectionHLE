@@ -911,7 +911,7 @@ id0_long_t lzhDecompress(void id0_far *infile, void id0_far *outfile, id0_unsign
 	getlen = 0;
 
 	if (textsize == 0)
-		return;
+		return 0;
 
 	StartHuff();
 	for (i = 0; i < N - F; i++)
