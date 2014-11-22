@@ -149,7 +149,7 @@ typedef	struct
 extern int id0_argc;
 extern char **id0_argv;
 
-extern	id0_char_t *introscn;
+extern id0_char_t *introscn;
 
 #include "be_sdl.h"
 

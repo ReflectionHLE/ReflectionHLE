@@ -7,8 +7,8 @@ is that, in fact, a lot of common code can be found. The dimension counts
 may be different (Keen Dreams is a smooth-scrolling 2D platformer game, while
 Catacomb Abyss is 3D), but there's still common code for low-level EGA output
 and 2D picture and font drawing routines, as well as very similar user input
-and sound output routines. In fact, later revisions of these codes are also
-found in the Wolfenstein 3D codebase.
+and sound output routines. Files with such code are often marked "ID Engine".
+A later revision of the codebase is also found in Wolfenstein 3D.
 
 These source ports aim to reproduce behaviors of original executables
 for DOS, including bugs, at least if it's not too difficult
@@ -30,7 +30,19 @@ This is, by the way, the exact opposite of the behaviors of the original.
 
 The same applies to Catacomb Abyss, but may be a bit tricky. Basically the
 very first command line argument should be (yeah that's no mistake): ^(a@&r`
-Again, that's the opposite of the original behaviors.
+Depending on the environment, you may need to escape some characters and/or
+add e.g., quotation marks.
+Again, that's the opposite of the original behaviors. In addition, we're
+actually talking about the behaviors of the INTRO.EXE file (letting you
+choose the difficulty), rather than CATABYSS.EXE (the actual game). There
+are also a few differences in regards to memory management when it comes
+to the additional executables of LOADSCN.EXE (which includes the last textual
+screen shown on quit) and INTRO.EXE: They may share some memory in this port.
+
+Furthermore, about INTRO.EXE and LOADSCN.EXE, source codes for these EXEs had
+to be manually restored. As of the moment of this release the restored code
+can be found at: https://bitbucket.org/NY00123/gamesrc-ver-recreation/
+
 
 The Keen Dreams port consists of four executables, each of them being
 compatible with a different version of Keen Dreams. The original releases
@@ -197,17 +209,6 @@ This requires the following release: Catacomb Abyss Shareware v1.13 (QA [0]).
 
 On Windows desktops, you should simply drop the files SDL2.dll and
 refcatabyss.exe along with the files coming with the shareware release.
-
-Note that refcatabyss.exe is simply a replacement for the CATABYSS.EXE DOS
-executable, not any other file. By clicking on it, a new game in "Warrior"
-difficulty should be started.
-
-For a game in "Novice" difficulty you want to use refcatabyss-novice.bat
-instead. Alternatively you can type this, if using a command prompt:
-"refcatabyss.exe 1 1".
-
-On other platforms, a similar command (e.g., "./refcatabyss 1 1" on Linux)
-can be used to start a "Novice" game.
 
 ------------------------------------------------
 How to do *this and that* or: Configuration file

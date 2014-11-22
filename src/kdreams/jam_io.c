@@ -61,8 +61,8 @@ id0_char_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned_t Ptr
 		break;
 
 		case DEST_IMEM:
-			printf("WritePtr - unsupported ptr type\n");
-			exit(0);
+			BE_Cross_Simplified_printf("WritePtr - unsupported ptr type\n");
+			BE_SDL_HandleExit(0);
 		break;
 
 		case DEST_MEM:
@@ -108,8 +108,8 @@ id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType)
 		break;
 
 //		case SRC_IMEM:
-//			printf("WritePtr - unsupported ptr type\n");
-//			exit(0);
+//			BE_Cross_Simplified_printf("WritePtr - unsupported ptr type\n");
+//			BE_SDL_HandleExit(0);
 //		break;
 
 		case SRC_MEM:

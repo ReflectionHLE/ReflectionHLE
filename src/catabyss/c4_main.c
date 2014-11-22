@@ -676,22 +676,19 @@ void Quit (id0_char_t *error, ...)
 		BE_SDL_MarkGfxForUpdate();
 		//movedata (finscreen,0,0xb800,0,4000);
 #ifndef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
-		if (kbhit())
+		if (BE_SDL_KbHit())
 		{
-			while (kbhit())
-				bioskey(0);
+			while (BE_SDL_KbHit())
+				BE_SDL_BiosScanCode(0);
 		}
 #endif
-		//bioskey (0); // REF CAT - Commented out
+		BE_SDL_BiosScanCode(0);
 	}
 #endif
 
 	va_end(ap);
 
 #ifndef CATALOG
-	// TODO (REF CAT) Needs different (re)implementation
-	// of loadscn2 for which we don't have the sources
-#if 0
 	if (!error)
 	{
 
@@ -707,9 +704,8 @@ void Quit (id0_char_t *error, ...)
 			BE_SDL_HandleExit(1);
 		}
 #endif
-		loadscn2_main(id0_argc+1, id0_argv);
+		id0_loadscn_exe_main(id0_argc+1, id0_argv);
 	}
-#endif
 #endif
 
 	BE_SDL_HandleExit(exit_code);
@@ -1052,10 +1048,7 @@ void id0_main (void)
 	if (!BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
 			LaunchedFromShell = true;
 
-	// CHOCO CAT difference from vanilla Catacomb Abyss:
-	// Role of argument "^(a@&r`" has been flipped. No need to pass it
-	// (or use start), but if it is added then you get this message.
-	if (LaunchedFromShell)
+	if (!LaunchedFromShell)
 	{
 		BE_SDL_clrscr();
 #ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL

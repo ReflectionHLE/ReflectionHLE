@@ -12,6 +12,8 @@ static SDL_Joystick *g_sdlJoysticks[BE_SDL_MAXJOYSTICKS];
 
 extern SDL_Window *g_sdlWindow;
 
+uint8_t g_sdlLastKeyScanCode;
+
 void BE_SDL_InitGfx(void);
 void BE_SDL_InitAudio(void);
 void BE_SDL_ShutdownAudio(void);
@@ -764,15 +766,33 @@ uint16_t BE_SDL_GetJoyButtons(uint16_t joy)
 	return result;
 }
 
+int16_t BE_SDL_KbHit(void)
+{
+	return g_sdlLastKeyScanCode;
+}
+
+int16_t BE_SDL_BiosScanCode(int16_t command)
+{
+	if (command == 1)
+	{
+		return g_sdlLastKeyScanCode;
+	}
+
+	while (!g_sdlLastKeyScanCode)
+	{
+		BE_SDL_ShortSleep();
+	}
+	int16_t result = g_sdlLastKeyScanCode;
+	g_sdlLastKeyScanCode = 0;
+	return result;
+}
+
+
 static void BEL_SDL_HandleEmuKeyboardEvent(bool isPressed, emulatedDOSKeyEvent keyEvent)
 {
-	if (!g_sdlKeyboardInterruptFuncPtr) // e.g., on init
-	{
-		return;
-	}
 	if (keyEvent.dosScanCode == EMULATEDKEYSCANCODE_PAUSE)
 	{
-		if (isPressed)
+		if (isPressed && g_sdlKeyboardInterruptFuncPtr)
 		{
 			// SPECIAL: 6 scancodes sent on key press ONLY
 			g_sdlKeyboardInterruptFuncPtr(0xe1);
@@ -785,11 +805,18 @@ static void BEL_SDL_HandleEmuKeyboardEvent(bool isPressed, emulatedDOSKeyEvent k
 	}
 	else
 	{
-		if (keyEvent.isSpecial)
+		if (g_sdlKeyboardInterruptFuncPtr)
 		{
-			g_sdlKeyboardInterruptFuncPtr(0xe0);
+			if (keyEvent.isSpecial)
+			{
+				g_sdlKeyboardInterruptFuncPtr(0xe0);
+			}
+			g_sdlKeyboardInterruptFuncPtr(keyEvent.dosScanCode | (isPressed ? 0 : 0x80));
 		}
-		g_sdlKeyboardInterruptFuncPtr(keyEvent.dosScanCode | (isPressed ? 0 : 0x80));
+		else if (isPressed)
+		{
+			g_sdlLastKeyScanCode = keyEvent.dosScanCode;
+		}
 	}
 }
 

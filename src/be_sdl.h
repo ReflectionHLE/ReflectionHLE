@@ -36,6 +36,9 @@ uint16_t BE_SDL_GetMouseButtons(void);
 void BE_SDL_GetJoyAbs(uint16_t joy, uint16_t *xp, uint16_t *yp);
 uint16_t BE_SDL_GetJoyButtons(uint16_t joy);
 
+int16_t BE_SDL_KbHit(void);
+int16_t BE_SDL_BiosScanCode(int16_t command);
+
 void BE_SDL_PollEvents(void);
 
 /*** Audio/timer (vanilla Keen kind-of has these mixed) ***/

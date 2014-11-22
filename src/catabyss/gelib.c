@@ -1503,7 +1503,6 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 		for (loop=1; loop<SHP->bmHdr.d; loop++)
 			DstOff[loop] = DstOff[0];
 
-
 		for (Plane=0; Plane<SHP->bmHdr.d; Plane++)
 		{
 			//outport(0x3c4,((1<<Plane)<<8)|2);

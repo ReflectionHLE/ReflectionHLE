@@ -12,8 +12,10 @@ STRIPBIN=$(BINPREFIX)strip
 SDLCONFIG=sdl2-config
 SRC=.
 BESRC=..
+EXTSRC=external_restored
 OBJ=obj
 BEOBJ=$(OBJ)/be
+EXTOBJ=$(OBJ)/ext
 
 VERSRC=$(SRC)/catabshar113
 
@@ -41,7 +43,16 @@ OBJECTS=$(OBJ)/c4_act1.o \
         $(OBJ)/id_us_a.o \
         $(OBJ)/id_vw_a.o \
         $(OBJ)/id_vw_ae.o \
-        $(OBJ)/id_vw.o
+        $(OBJ)/id_vw.o \
+
+EXTOBJECTS=$(EXTOBJ)/ext_ca.o \
+           $(EXTOBJ)/ext_gelib.o \
+           $(EXTOBJ)/ext_jam_io.o \
+           $(EXTOBJ)/ext_lzhuf.o \
+           $(EXTOBJ)/ext_soft.o \
+           $(EXTOBJ)/ext_vw_a.o \
+           $(EXTOBJ)/intro.o \
+           $(EXTOBJ)/loadscn.o
 
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
@@ -59,7 +70,7 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/egahead.o \
              $(RSRCOBJ)/mtemp.o
 
-INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(BESRC) -DCHOCO_KEEN_VER_CATABYSS=1 -DCHOCO_KEEN_VER_CATABYSS_SHAR_113=1 -DCHOCO_KEEN_VER_CATABYSS_SHAR_ALL=1 -DCHOCO_KEEN_VER_CATACOMB_ALL=1
+INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(EXTSRC) -I$(BESRC) -DCHOCO_KEEN_VER_CATABYSS=1 -DCHOCO_KEEN_VER_CATABYSS_SHAR_113=1 -DCHOCO_KEEN_VER_CATABYSS_SHAR_ALL=1 -DCHOCO_KEEN_VER_CATACOMB_ALL=1
 
 EXENAME=refcatabyss
 
@@ -90,8 +101,8 @@ all: game
 
 game: $(EXE_PATH)
 
-$(EXE_PATH): $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
-	$(CXX) $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
+$(EXE_PATH): $(OBJECTS) $(EXTOBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
+	$(CXX) $(OBJECTS) $(EXTOBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
 ifeq ($(DEBUG),0)
 	$(STRIPBIN) $(EXE_PATH)
 endif
@@ -103,6 +114,8 @@ $(BEOBJ)/be_cross_compat.o: $(VERSRC)/be_cross_compat.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(EXTOBJ)/%.o: $(EXTSRC)/%.c $(EXTOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
@@ -117,5 +130,5 @@ $(OBJ):
 	-mkdir $(OBJ)
 
 clean:
-	-rm -f $(EXE_PATH) $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
+	-rm -f $(EXE_PATH) $(OBJECTS) $(EXTOBJECTS)  $(BEOBJECTS) $(RSRC_OBJECTS)
 

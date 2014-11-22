@@ -35,6 +35,12 @@ inline void BE_Cross_Simplified_printf(const char *str)
 	void BE_SDL_Simplified_printf(const char *str);
 	BE_SDL_Simplified_printf(str);
 }
+// Similar limited cprintf replacement
+inline void BE_Cross_Simplified_cprintf(const char *str)
+{
+	void BE_SDL_Simplified_cprintf(const char *str);
+	BE_SDL_Simplified_cprintf(str);
+}
 
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
 size_t BE_Cross_readInt8LE(int handle, void *ptr);
@@ -91,6 +97,12 @@ void* BE_Cross_Compat_GetObjStatePtrFromDOSOffset(uint16_t offset);
 // Alternatives for Borland's randomize and random macros used in Catacomb Abyss
 void BE_Cross_Brandomize(void);
 int16_t BE_Cross_Brandom(int16_t num);
+
+// Hack for Catacomb Abyss' INTRO and LOADSCN
+inline int32_t BE_Mem_FarCoreLeft(void)
+{
+	return 500000;
+}
 
 
 #endif // BE_CROSS_H

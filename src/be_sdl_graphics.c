@@ -695,17 +695,28 @@ void BE_SDL_ToggleTextCursor(bool isEnabled)
 	g_sdlTxtCursorEnabled = isEnabled;
 }
 
-static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall)
+static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall, bool iscolored, bool requirecrchar)
 {
 	// TODO (CHOCO KEEN): Tabs?
 	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
 	for (; *str; ++str)
 	{
-		if (*str == '\n')
+		if (*str == '\r')
 		{
-			g_sdlTxtCursorPosX = 0; // Carriage return
-			++g_sdlTxtCursorPosY; // Line feed
-			currMemByte = g_sdlVidMem.text + 2*TXT_COLS_NUM*g_sdlTxtCursorPosY;
+			if (requirecrchar)
+			{
+				g_sdlTxtCursorPosX = 0; // Carriage return
+				currMemByte = g_sdlVidMem.text + 2*TXT_COLS_NUM*g_sdlTxtCursorPosY;
+			}
+		}
+		else if (*str == '\n')
+		{
+			if (!requirecrchar)
+			{
+				g_sdlTxtCursorPosX = 0; // Carriage return
+			}
+			++g_sdlTxtCursorPosY;
+			currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
 		}
 		else
 		{
@@ -714,7 +725,8 @@ static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall)
 				++str; // This is still a SIMPLIFIED printf...
 			}
 			*(currMemByte++) = *str;
-			*(currMemByte++) = g_sdlTxtColor | (g_sdlTxtBackground << 4);
+			*currMemByte = iscolored ? (g_sdlTxtColor | (g_sdlTxtBackground << 4)) : *currMemByte;
+			++currMemByte;
 			if (g_sdlTxtCursorPosX == TXT_COLS_NUM - 1)
 			{
 				g_sdlTxtCursorPosX = 0; // Carriage return
@@ -730,13 +742,14 @@ static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall)
 		{
 			--g_sdlTxtCursorPosY;
 			// Scroll one line down
+			uint8_t lastAttr = g_sdlVidMem.text[sizeof(g_sdlVidMem.text)-1];
 			memmove(g_sdlVidMem.text, g_sdlVidMem.text+2*TXT_COLS_NUM, sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM);
 			currMemByte = g_sdlVidMem.text+sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM;
 			// New empty line
 			for (int i = 0; i < TXT_COLS_NUM; ++i)
 			{
 				*(currMemByte++) = ' ';
-				*(currMemByte++) = g_sdlTxtColor | (g_sdlTxtBackground << 4);
+				*(currMemByte++) = lastAttr;
 			}
 			currMemByte -= 2*TXT_COLS_NUM; // Go back to beginning of line
 		}
@@ -746,13 +759,18 @@ static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall)
 
 void BE_SDL_Simplified_printf(const char *str)
 {
-	BEL_SDL_Simplified_putsorprintf(str, true);
+	BEL_SDL_Simplified_putsorprintf(str, true, false, false);
+}
+
+void BE_SDL_Simplified_cprintf(const char *str)
+{
+	BEL_SDL_Simplified_putsorprintf(str, true, true, true);
 }
 
 void BE_SDL_puts(const char *str)
 {
-	BEL_SDL_Simplified_putsorprintf(str, false);
-	BEL_SDL_Simplified_putsorprintf("\n", false);
+	BEL_SDL_Simplified_putsorprintf(str, true, true, false);
+	BEL_SDL_Simplified_putsorprintf("\n", true, true, false);
 }
 
 void BE_SDL_UpdateHostDisplay(void);

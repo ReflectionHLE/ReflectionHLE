@@ -440,7 +440,8 @@ void InitGame (void)
 	// Handle piracy screen...
 	//
 	movedata(FP_SEG(PIRACY),(id0_unsigned_t)PIRACY,0xb800,displayofs,4000);
-	while ((bioskey(0)>>8) != sc_Return);
+	while (BE_SDL_BiosScanCode(0) != sc_Return);
+	//while ((bioskey(0)>>8) != sc_Return);
 #endif
 
 #if GRMODE == EGAGR
@@ -464,13 +465,11 @@ void InitGame (void)
 		BE_Cross_puts ("correct solution is to unload some TSRs or rename your CONFIG.SYS and");
 		BE_Cross_puts ("AUTOEXEC.BAT to free up more memory.\n");
 		BE_Cross_puts ("Do you want to (Q)uit, or (C)ontinue?");
-#if 0
-		i = bioskey (0);
-		if ( (i>>8) != sc_C)
+		//i = bioskey (0);
+		//if ( (i>>8) != sc_C)
+		i = BE_SDL_BiosScanCode (0);
+		if (i != sc_C)
 			Quit ("");
-#endif
-		// CHOCO KEEN let's just quit...
-		Quit("");
 	}
 #endif
 
