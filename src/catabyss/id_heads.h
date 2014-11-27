@@ -145,6 +145,13 @@ typedef	struct
 #define O_BINARY 0
 #endif
 
+// (REF CAT) VANILLA BUG REPRODUCTION: In the original code, a call to
+// VW_DrawPic on startup leaves the map mask value at 8 (intensity plane),
+// so numbers aren't drawn in the following call to RedrawStatusWindow.
+// We add a workaround here since we don't store EGA write/read mode
+// related values internally (we almost don't need these).
+extern bool id0_workaround_catabyss_exe_nodraw_digits_on_startup;
+
 // Initialized before calling vanilla app's (now renamed) main function
 extern int id0_argc;
 extern char **id0_argv;

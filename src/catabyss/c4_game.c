@@ -924,6 +924,12 @@ void DrawPlayScreen (void)
 	grneeded[STATUSPIC] &= ~ca_levelbit;
 	MM_SetPurge(&grsegs[STATUSPIC],3);
 
+	// (REF CAT) VANILLA BUG REPRODUCTION: In the original code the last
+	// call to VW_DrawPic leaves the map mask value at 8 (intensity plane),
+	// so numbers aren't drawn in the following call to RedrawStatusWindow.
+	// We add a workaround here since we don't store EGA write/read mode
+	// related values internally (we almost don't need these).
+	id0_workaround_catabyss_exe_nodraw_digits_on_startup = true;
 	RedrawStatusWindow ();
 	bufferofs = displayofs = screenloc[0];
 }
@@ -1240,6 +1246,10 @@ restart:
 		FreeUpMemory();
 		LoadLatchMem();
 		CacheScaleds ();
+
+		// (REF CAT) Simulate a wait while loading (includes vanilla bug: numbers not shown in the HUD on startup immediately)
+		VW_WaitVBL(32);
+		//
 
 		if (EASYMODEON)
 			DisplaySMsg("*** NOVICE ***", NULL);

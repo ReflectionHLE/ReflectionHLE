@@ -160,14 +160,34 @@ void DrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile)
 {
 	id0_word_t egaDestOff = x+ylookup[y];
 	id0_word_t egaSrcOff = latchpics[0]+8*tile;
-	BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
-	BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	// (REF CAT) VANILLA BUG REPRODUCTION: In the original code, a call to
+	// VW_DrawPic on startup leaves the map mask value at 8 (intensity plane),
+	// so numbers aren't drawn in the following call to RedrawStatusWindow.
+	// We add a workaround here since we don't store EGA write/read mode
+	// related values internally (we almost don't need these).
+	if (id0_workaround_catabyss_exe_nodraw_digits_on_startup)
+	{
+		// FIXME: Have a separate handler accepting plane?
+		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff, egaSrcOff, 8);
+		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+	}
+	else
+	{
+		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
+		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	}
 #if 0
 	id0_unsigned_t junk = latchpics[0];
 	EGAWRITEMODE(1);
@@ -547,6 +567,9 @@ void AddPoints (id0_int_t points)
 
 //===========================================================================
 
+// (CHOCO CAT) See description of vanilla bug reproduction below
+bool id0_workaround_catabyss_exe_nodraw_digits_on_startup;
+
 /*
 ===============
 =
@@ -581,6 +604,14 @@ void DrawHealth()
 		picnum = FACE5PIC;
 		CA_CacheGrChunk (picnum);
 	}
+
+	// (REF CAT) VANILLA BUG REPRODUCTION: In the original code, a call to
+	// VW_DrawPic on startup leaves the map mask value at 8 (intensity plane),
+	// so numbers aren't drawn in the following call to RedrawStatusWindow.
+	// This includes the health percentage above.
+	// We add a workaround here since we don't store EGA write/read mode
+	// related values internally (we almost don't need these).
+	id0_workaround_catabyss_exe_nodraw_digits_on_startup = false;
 
 	bufferofs = 0;
 	if (!percentage)

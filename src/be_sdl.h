@@ -78,21 +78,24 @@ uint8_t *BE_SDL_GetTextModeMemoryPtr(void);
 void BE_SDL_EGASetPaletteAndBorder(const uint8_t *palette);
 void BE_SDL_EGASetLineWidth(uint8_t widthInBytes);
 void BE_SDL_EGASetSplitScreen(int16_t linenum);
-void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask);
+void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask);
 // Same as BE_SDL_EGAUpdateGFXByte but picking specific bits out of each byte, and WITHOUT planes mask
 void BE_SDL_EGAUpdateGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask);
-void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t mask);
+void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeMask);
 void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff);
+// Same as BE_SDL_EGAUpdateGFXByteScrToScr but with plane mask (added for Catacomb Abyss vanilla bug reproduction/workaround)
+void BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t planeMask);
 // Same as BE_SDL_EGAUpdateGFXByteScrToScr but picking specific bits out of each byte
 void BE_SDL_EGAUpdateGFXBitsScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t bitsMask);
 void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num);
 uint8_t BE_SDL_EGAFetchGFXByte(uint16_t destOff, uint16_t planenum);
 void BE_SDL_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planenum);
-void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint16_t mask);
-void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint16_t mask);
-void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask);
+void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint8_t bitsMask);
+void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint8_t bitsMask);
+void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask);
 // Like BE_SDL_EGAXorGFXByte, but:
 // - OR instead of XOR.
+// - All planes are updated.
 // - Only specific bits are updated in each plane's byte.
 void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask);
 // CGA graphics manipulations

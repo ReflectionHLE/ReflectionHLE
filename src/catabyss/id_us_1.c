@@ -620,7 +620,9 @@ US_TextScreen(void)
 
 	USL_ClearTextScreen();
 
-	_fmemcpy(MK_FP(0xb800,0),7 + &introscn,80 * 25 * 2);
+	memcpy(BE_SDL_GetTextModeMemoryPtr(), 7 + &introscn, 80 * 25 * 2);
+	BE_SDL_MarkGfxForUpdate();
+	//_fmemcpy(MK_FP(0xb800,0),7 + &introscn,80 * 25 * 2);
 
 	// Check for TED launching here
 	for (i = 1;i < _argc;i++)

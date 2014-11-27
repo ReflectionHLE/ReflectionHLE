@@ -366,20 +366,20 @@ void BE_SDL_EGASetSplitScreen(int16_t linenum)
 		g_sdlSplitScreenLine = linenum;
 }
 
-void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
+void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
 {
-	if (mask & 1)
+	if (planeMask & 1)
 		g_sdlVidMem.egaGfx[0][destOff] = srcVal;
-	if (mask & 2)
+	if (planeMask & 2)
 		g_sdlVidMem.egaGfx[1][destOff] = srcVal;
-	if (mask & 4)
+	if (planeMask & 4)
 		g_sdlVidMem.egaGfx[2][destOff] = srcVal;
-	if (mask & 8)
+	if (planeMask & 8)
 		g_sdlVidMem.egaGfx[3][destOff] = srcVal;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-// Same as BE_SDL_EGAUpdateGFXByte but picking specific bits out of each byte, and WITHOUT planes mask
+// Same as BE_SDL_EGAUpdateGFXByte but picking specific bits out of each byte, and WITHOUT plane mask
 void BE_SDL_EGAUpdateGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
 {
 	g_sdlVidMem.egaGfx[0][destOff] = (g_sdlVidMem.egaGfx[0][destOff] & ~bitsMask) | (srcVal & bitsMask); 
@@ -464,15 +464,15 @@ static void BEL_SDL_EGAPlaneToEGAPlane_MemCopy(uint8_t *planeCommonPtr, uint16_t
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t mask)
+void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeMask)
 {
-	if (mask & 1)
+	if (planeMask & 1)
 		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[0], destOff, srcPtr, num);
-	if (mask & 2)
+	if (planeMask & 2)
 		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[1], destOff, srcPtr, num);
-	if (mask & 4)
+	if (planeMask & 4)
 		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[2], destOff, srcPtr, num);
-	if (mask & 8)
+	if (planeMask & 8)
 		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[3], destOff, srcPtr, num);
 	g_sdlDoRefreshGfxOutput = true;
 }
@@ -483,6 +483,20 @@ void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
 	g_sdlVidMem.egaGfx[1][destOff] = g_sdlVidMem.egaGfx[1][srcOff];
 	g_sdlVidMem.egaGfx[2][destOff] = g_sdlVidMem.egaGfx[2][srcOff];
 	g_sdlVidMem.egaGfx[3][destOff] = g_sdlVidMem.egaGfx[3][srcOff];
+	g_sdlDoRefreshGfxOutput = true;
+}
+
+// Same as BE_SDL_EGAUpdateGFXByteScrToScr but with plane mask (added for Catacomb Abyss vanilla bug reproduction/workaround)
+void BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t planeMask)
+{
+	if (planeMask & 1)
+		g_sdlVidMem.egaGfx[0][destOff] = g_sdlVidMem.egaGfx[0][srcOff];
+	if (planeMask & 2)
+		g_sdlVidMem.egaGfx[1][destOff] = g_sdlVidMem.egaGfx[1][srcOff];
+	if (planeMask & 4)
+		g_sdlVidMem.egaGfx[2][destOff] = g_sdlVidMem.egaGfx[2][srcOff];
+	if (planeMask & 8)
+		g_sdlVidMem.egaGfx[3][destOff] = g_sdlVidMem.egaGfx[3][srcOff];
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -515,11 +529,11 @@ void BE_SDL_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, u
 	BEL_SDL_EGAPlaneToLinear_MemCopy(destPtr, g_sdlVidMem.egaGfx[planenum], srcOff, num);
 }
 
-void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint16_t mask)
+void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint8_t bitsMask)
 {
 	for (int currBitNum = 0, currBitMask = 1; currBitNum < 8; ++currBitNum, currBitMask <<= 1)
 	{
-		if (mask & currBitMask)
+		if (bitsMask & currBitMask)
 		{
 			g_sdlVidMem.egaGfx[0][destOff] &= ~currBitMask;
 			g_sdlVidMem.egaGfx[0][destOff] |= ((color & 1) << currBitNum);
@@ -534,29 +548,30 @@ void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint16_t mask
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint16_t mask)
+void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint8_t bitsMask)
 {
 	for (uint16_t loopVar = 0; loopVar < count; ++loopVar, ++destOff)
 	{
-		BE_SDL_EGAUpdateGFXPixel4bpp(destOff, color, mask);
+		BE_SDL_EGAUpdateGFXPixel4bpp(destOff, color, bitsMask);
 	}
 }
 
-void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t mask)
+void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
 {
-	if (mask & 1)
+	if (planeMask & 1)
 		g_sdlVidMem.egaGfx[0][destOff] ^= srcVal;
-	if (mask & 2)
+	if (planeMask & 2)
 		g_sdlVidMem.egaGfx[1][destOff] ^= srcVal;
-	if (mask & 4)
+	if (planeMask & 4)
 		g_sdlVidMem.egaGfx[2][destOff] ^= srcVal;
-	if (mask & 8)
+	if (planeMask & 8)
 		g_sdlVidMem.egaGfx[3][destOff] ^= srcVal;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Like BE_SDL_EGAXorGFXByte, but:
 // - OR instead of XOR.
+// - All planes are updated.
 // - Only specific bits are updated in each plane's byte.
 void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
 {
