@@ -864,10 +864,8 @@ void	CheckMemory(void)
 ==========================
 */
 
-int id0_argc;
-char **id0_argv;
-
-void id0_main (void)
+// The original starting point of the game EXE
+void cat3d_exe_main (void)
 {
 	//id0_short_t i;
 

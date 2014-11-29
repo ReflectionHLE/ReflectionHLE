@@ -1,10 +1,17 @@
 #include "id_heads.h"
 
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-void id0_intro_exe_main(void);
-#else
-void id0_main(void);
+#ifdef REFKEEN_VER_CATADVENTURES
+#define second_main intro_exe_main
+#elif defined REFKEEN_VER_CAT3D
+#define second_main cat3d_exe_main
+#elif defined REFKEEN_VER_KDREAMS
+#define second_main kdreams_exe_main
 #endif
+
+int id0_argc;
+char **id0_argv;
+
+void second_main (void); // MACRO is here
 
 int main(int argc, char **argv)
 {
@@ -13,7 +20,7 @@ int main(int argc, char **argv)
 	// Furthermore, in Keen Dreams Shareware v1.13, argc, argv[1], argv[2] and argv[3] are all modified...
 	// And then in Catacomb Abyss, argv[3] is compared to "1". In its INTROSCN.EXE argv[4] is compared...
 
-	// FIXME FIXME FIXME Using correct argv[0] for "compatibility"
+	// FIXME FIXME FIXME Using correct argv[0] for "compatibility" (see catabyss, ext_gelib.c)
 	char *our_workaround_argv[] = { "INTRO.EXE", "", "", "", "", NULL };
 	if (argc < 6)
 	{
@@ -29,11 +36,7 @@ int main(int argc, char **argv)
 	}
 	BE_SDL_InitAll();
 	BE_Cross_Compat_FillObjStatesWithDOSOffsets(); // Saved games compatibility
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-	id0_intro_exe_main();
-#else
-	id0_main();
-#endif
+	second_main();
 	BE_SDL_ShutdownAll();
 	return 0;
 }

@@ -993,10 +993,8 @@ void	CheckMemory(void)
 id0_char_t			*MainParmStrings[] = {"q","l","ver","nomemcheck",id0_nil_t};
 id0_boolean_t		LaunchedFromShell = false;
 
-int id0_argc;
-char **id0_argv;
-
-void id0_main (void)
+// The original starting point of the game EXE
+void abysgame_exe_main (void)
 {
 	id0_short_t i;
 

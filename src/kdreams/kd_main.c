@@ -538,11 +538,8 @@ void InitGame (void)
 
 static  id0_char_t                    *EntryParmStrings[] = {"detour",id0_nil_t};
 
-int id0_argc;
-char **id0_argv;
-
-// The original start point of the game
-void id0_main (void)
+// The original starting point of the game EXE
+void kdreams_exe_main (void)
 {
 #if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || (defined REFKEEN_VER_KDREAMS_CGA_ALL)
 	id0_boolean_t LaunchedFromShell = false;

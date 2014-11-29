@@ -59,7 +59,9 @@ static void Beep(void)
 	}
 }
 
-void id0_intro_exe_main(void)
+void abysgame_exe_main(void);
+
+void intro_exe_main(void)
 {
 	id0_boolean_t leave_init_sequence = false, leave_pre_skill_selection = false, leave_skill_selection = false, select_saved_game = false;
 	id0_int_t general_loop_var, init_sequence_iters_upperbound;
@@ -67,6 +69,12 @@ void id0_intro_exe_main(void)
 	// (REFKEEN) DIFFERENCE FROM VANILLA CATACOMB ABYSS (SHAREWARE V1.13):
 	// Use this to skip the intro EXE and continue into the game
 	// immediately (with the code that makes it possible to play at all)
+	if (!BE_Cross_strcasecmp(id0_argv[1], "/SKIPINTRO"))
+	{
+		id0_argv[1] = "^(a@&r`";
+		abysgame_exe_main();
+		BE_SDL_HandleExit(0);
+	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/?"))
 	{
 		BE_SDL_clrscr();
@@ -409,7 +417,7 @@ void intro_TrashProg (id0_char_t *OutMsg, ...)
 		id0_argv[id0_argc++] = "/NODR";
 		id0_argv[id0_argc] = NULL;
 
-		id0_main();
+		abysgame_exe_main();
 #if 0
 		if (execv("CATABYSS.EXE", id0_argv) == -1)
 		{
