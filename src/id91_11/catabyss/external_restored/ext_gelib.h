@@ -29,7 +29,8 @@ struct BitMapHeader {
 	id0_unsigned_char_t	d,trans,comp,pad;
 } __attribute__((__packed__));
 
-// (CHOCO KEEN) Seems unused
+// (REFKEEN) Seems unused
+#if 0
 struct BitMap {
 	id0_unsigned_int_t Width;
 	id0_unsigned_int_t Height;
@@ -37,6 +38,7 @@ struct BitMap {
 	id0_unsigned_int_t BytesPerRow;
 	id0_char_t id0_far *Planes[8];
 };
+#endif
 
 struct Shape {
 	memptr Data;

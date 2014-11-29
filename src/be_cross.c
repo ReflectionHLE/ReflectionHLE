@@ -5,11 +5,11 @@
 #include <unistd.h>
 
 // For template implementations of reads/writes of enums from/to 16 little-endian integers...
-#ifdef CHOCO_KEEN_VER_KDREAMS
+#ifdef REFKEEN_VER_KDREAMS
 #include "kd_def.h"
-#elif defined CHOCO_KEEN_VER_CAT3D
+#elif defined REFKEEN_VER_CAT3D
 #include "c3_def.h"
-#elif defined CHOCO_KEEN_VER_CATABYSS
+#elif defined REFKEEN_VER_CATABYSS
 #include "def.h"
 #else
 #error "FATAL ERROR: No Reflection port game macro is defined!"
@@ -212,7 +212,7 @@ BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
-#if (defined CHOCO_KEEN_VER_CAT3D) || (defined CHOCO_KEEN_VER_CATACOMB_ADVENTURES)
+#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
 #endif
 

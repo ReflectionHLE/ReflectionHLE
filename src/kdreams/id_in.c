@@ -367,7 +367,7 @@ IN_GetJoyButtonsDB(id0_word_t joy)
 		lasttime = SD_GetTimeCount();
 		while (SD_GetTimeCount() == lasttime)
 		{
-			BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) can be better
+			BE_SDL_ShortSleep(); // TODO (REFKEEN) can be better
 		}
 		result2 = INL_GetJoyButtons(joy);
 		BE_SDL_ShortSleep();
@@ -414,7 +414,7 @@ INL_ShutKbd(void)
 static id0_boolean_t
 INL_StartMouse(void)
 {
-	// TODO (CHOCO KEEN): Consider optionally returning false?
+	// TODO (REFKEEN): Consider optionally returning false?
 	return(true);
 #if 0
 	if (getvect(MouseInt))
@@ -506,7 +506,7 @@ INL_StartJoy(id0_word_t joy)
 	}
 }
 
-// (CHOCO KEEN) UNUSED FUNCTION
+// (REFKEEN) UNUSED FUNCTION
 #if 0
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -696,7 +696,7 @@ IN_ReadControl(id0_int_t player,ControlInfo *info)
 			ControlType	type;
 register	KeyboardDef	*def;
 
-	realdelta = false; // CHOCO KEEN - Originally it can be used uninitialized (even though there's no demo playback in vanilla Keen Dreams...)
+	realdelta = false; // REFKEEN - Originally it can be used uninitialized (even though there's no demo playback in vanilla Keen Dreams...)
 	dx = dy = 0;
 	mx = my = motion_None;
 	buttons = 0;

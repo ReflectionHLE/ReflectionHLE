@@ -9,7 +9,7 @@ typedef enum BE_Log_Message_Class_T
 	BE_LOG_MSG_NORMAL, BE_LOG_MSG_WARNING, BE_LOG_MSG_ERROR
 } BE_Log_Message_Class_T;
 
-// TODO (CHOCO KEEN) BIG ENDIAN
+// TODO (REFKEEN) BIG ENDIAN
 #define BE_Cross_Swap16LE(x) (x)
 
 int32_t BE_Cross_FileLengthFromHandle(int handle);

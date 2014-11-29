@@ -46,7 +46,7 @@
 #define	MaxJoyValue		5000
 
 // 	Global variables
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 		id0_boolean_t JoystickCalibrated=false;		// MDM (GAMERS EDGE) - added
 		ControlType ControlTypeUsed;				// MDM (GAMERS EDGE) - added
 #endif
@@ -59,7 +59,7 @@
 		KeyboardDef	KbdDefs[MaxKbds] = {{0x1d,0x38,0x47,0x48,0x49,0x4b,0x4d,0x4f,0x50,0x51}};
 		JoystickDef	JoyDefs[MaxJoys];
 		ControlType	Controls[MaxPlayers];
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 		Demo		DemoMode = demo_Off;
 		id0_byte_t id0_seg	*DemoBuffer;
 		id0_word_t		DemoOffset,DemoSize;
@@ -105,7 +105,7 @@ static	id0_byte_t        id0_far ASCIINames[] =		// Unshifted ASCII for scan cod
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0   	// 7
 					},
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 					*ScanNames[] =		// Scan code names with single chars
 					{
 	"?","?","1","2","3","4","5","6","7","8","9","0","-","+","?","?",
@@ -126,8 +126,8 @@ static	id0_byte_t        id0_far ASCIINames[] =		// Unshifted ASCII for scan cod
 	0x37,0x38,0x47,0x49,0x4f,0x51,0x52,0x53,0x45,0x48,
 	0x50,0x4b,0x4d,0x00
 					}
-// CHOCO KEEN - A bit hackish but this is how it's done
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+// REFKEEN - A bit hackish but this is how it's done
+#ifdef REFKEEN_VER_CATADVENTURES
 					;
 #else
 					,
@@ -372,7 +372,7 @@ IN_GetJoyButtonsDB(id0_word_t joy)
 		lasttime = SD_GetTimeCount();
 		while (SD_GetTimeCount() == lasttime)
 		{
-			BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) can be better
+			BE_SDL_ShortSleep(); // TODO (REFKEEN) can be better
 		}
 		result2 = INL_GetJoyButtons(joy);
 		BE_SDL_ShortSleep();
@@ -419,7 +419,7 @@ INL_ShutKbd(void)
 static id0_boolean_t
 INL_StartMouse(void)
 {
-	// TODO (CHOCO KEEN): Consider optionally returning false?
+	// TODO (REFKEEN): Consider optionally returning false?
 	return(true);
 #if 0
 	if (getvect(MouseInt))
@@ -686,7 +686,7 @@ IN_ReadCursor(CursorInfo *info)
 	}
 }
 
-// REF KEEN - Unified code for Catacomb 3-D and Catacomb Abyss here.
+// REFKEEN - Unified code for Catacomb 3-D and Catacomb Abyss here.
 // It's a good practice to initialize realdelta in all cases though.
 // (If we don't and it's accessed we get undefined behaviors anyway...)
 
@@ -711,7 +711,7 @@ register	KeyboardDef	*def;
 	mx = my = motion_None;
 	buttons = 0;
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 	if (DemoMode == demo_Playback)
 	{
 		dbyte = DemoBuffer[DemoOffset + 1];
@@ -733,7 +733,7 @@ register	KeyboardDef	*def;
 	else
 #endif
 	{
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 															// MDM begin (GAMERS EDGE) - added this block
 		ControlTypeUsed = ctrl_None;
 
@@ -795,7 +795,7 @@ register	KeyboardDef	*def;
 				ControlTypeUsed = ctrl_Keyboard;
 		}													// MDM end (GAMERS EDGE)
 
-#else // Not CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#else // Not REFKEEN_VER_CATADVENTURES
 
 		switch (type = Controls[player])
 		{
@@ -840,7 +840,7 @@ register	KeyboardDef	*def;
 			realdelta = true;
 			break;
 		}
-#endif // Yes/No CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // Yes/No REFKEEN_VER_CATADVENTURES
 	}
 
 	if (realdelta)
@@ -862,7 +862,7 @@ register	KeyboardDef	*def;
 	info->button1 = buttons & (1 << 1);
 	info->dir = DirTable[((my + 1) * 3) + (mx + 1)];
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 	if (DemoMode == demo_Record)
 	{
 		// Pack the control info into a byte
@@ -902,7 +902,7 @@ IN_SetControlType(id0_int_t player,ControlType type)
 	Controls[player] = type;
 }
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 ///////////////////////////////////////////////////////////////////////////
 //
 //	IN_StartDemoRecord() - Starts the demo recording, using a buffer the
@@ -966,7 +966,7 @@ IN_FreeDemoBuffer(void)
 #endif
 
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 ///////////////////////////////////////////////////////////////////////////
 //
 //	IN_GetScanName() - Returns a string containing the name of the

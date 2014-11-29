@@ -33,7 +33,7 @@
 #include "kd_def.h"
 #pragma hdrstop
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 #define CATALOG
 #endif
 
@@ -381,10 +381,10 @@ void Quit (id0_char_t *error)
 	BE_SDL_clrscr();
 	BE_Cross_puts(error);
 	BE_Cross_puts("\n");
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 //      BE_Cross_puts("For techinical assistance with running this software, type HELP at");
 //      BE_Cross_puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#elif defined REFKEEN_VER_KDREAMS_SHAR_113
 	BE_Cross_puts("For techinical assistance with running this software, type HELP at");
 	BE_Cross_puts("    the DOS prompt or call Gamer's Edge at 1-318-221-8311");
 #endif
@@ -392,8 +392,8 @@ void Quit (id0_char_t *error)
 	BE_SDL_HandleExit(1);
   }
 
-// TODO (CHOCO KEEN) Maybe we can define CATALOG based on version?
-#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_113) || ((defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
+// TODO (REFKEEN) Maybe we can define CATALOG based on version?
+#if (defined REFKEEN_VER_KDREAMS_SHAR_113) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
 	id0_argc = 2;
 	id0_argv[1] = "LAST.SHL";
 	id0_argv[2] = "ENDSCN.SCN";
@@ -404,13 +404,13 @@ void Quit (id0_char_t *error)
 	loadscn2_main(id0_argc+1, id0_argv);
 #endif
 
-#if (defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) && (defined CATALOG)
+#if (defined REFKEEN_VER_KDREAMS_CGA_ALL) && (defined CATALOG)
 	VW_SetScreenMode(TEXTGR);
 	BE_SDL_HandleExit(0);
 #endif
 
 // For all other versions (registered v1.93, shareware v1.20), just exit
-#if (!defined CHOCO_KEEN_VER_KDREAMS_SHAR_113) && (!defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL)
+#if (!defined REFKEEN_VER_KDREAMS_SHAR_113) && (!defined REFKEEN_VER_KDREAMS_CGA_ALL)
 	BE_SDL_HandleExit(0);
 #endif
 
@@ -449,10 +449,10 @@ void InitGame (void)
 	{
 #pragma warn    -pro
 #pragma warn    -nod
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 		BE_SDL_textcolor(7);
 #endif
-#if (defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) || (defined CHOCO_KEEN_VER_KDREAMS_SHAR_113)
+#if (defined REFKEEN_VER_KDREAMS_CGA_ALL) || (defined REFKEEN_VER_KDREAMS_SHAR_113)
 		BE_SDL_textbackground(0);
 #endif
 #pragma warn    +nod
@@ -481,7 +481,7 @@ void InitGame (void)
 	SD_Startup ();
 	US_Startup ();
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 	US_UpdateTextScreen();
 #endif
 
@@ -501,9 +501,9 @@ void InitGame (void)
 	for (i=KEEN_LUMP_START;i<=KEEN_LUMP_END;i++)
 		CA_MarkGrChunk(i);
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 	CA_CacheMarks (NULL);
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 	CA_CacheMarks (NULL, 0);
 #endif
 
@@ -544,14 +544,14 @@ char **id0_argv;
 // The original start point of the game
 void id0_main (void)
 {
-#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_ALL) || (defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL)
+#if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || (defined REFKEEN_VER_KDREAMS_CGA_ALL)
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
 #endif
 
 
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 	BE_SDL_textcolor(7);
 	BE_SDL_textbackground(0);
 
@@ -585,7 +585,7 @@ void id0_main (void)
 
 
 
-#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_113) || (defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL)
+#if (defined REFKEEN_VER_KDREAMS_SHAR_113) || (defined REFKEEN_VER_KDREAMS_CGA_ALL)
 	for (i = 1;i < id0_argc;i++)
 	{
 		switch (US_CheckParm(id0_argv[i],EntryParmStrings))
@@ -599,7 +599,7 @@ void id0_main (void)
 
 
 
-#if (defined CHOCO_KEEN_VER_KDREAMS_REG_193)
+#if (defined REFKEEN_VER_KDREAMS_REG_193)
 	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
 		BE_Cross_Simplified_printf("\nKeen Dreams version 1.93  (Rev 1)\n");
@@ -632,7 +632,7 @@ void id0_main (void)
 
 
 
-#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_120)
+#if (defined REFKEEN_VER_KDREAMS_SHAR_120)
 	for (i = 1;i < id0_argc;i++)
 	{
 		switch (US_CheckParm(id0_argv[i],EntryParmStrings))
@@ -674,8 +674,8 @@ void id0_main (void)
 
 
 
-#if (defined CHOCO_KEEN_VER_KDREAMS_SHAR_ALL) || ((defined CHOCO_KEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
-	// CHOCO KEEN difference from vanilla Keen Dreams (Shareware releases):
+#if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
+	// REFKEEN difference from vanilla Keen Dreams (Shareware releases):
 	// Role of /DETOUR has been flipped. No need to pass it (or use START),
 	// but if /DETOUR is added then you get this message.
 	if (LaunchedFromShell)
@@ -689,7 +689,7 @@ void id0_main (void)
 
 
 
-#if (defined CHOCO_KEEN_VER_KDREAMS_REG_193) || (defined CHOCO_KEEN_VER_KDREAMS_SHAR_120)
+#if (defined REFKEEN_VER_KDREAMS_REG_193) || (defined REFKEEN_VER_KDREAMS_SHAR_120)
 	BE_SDL_textcolor(7);
 	BE_SDL_textbackground(0);
 #endif

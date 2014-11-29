@@ -38,7 +38,7 @@ extern id0_byte_t planenum;
 
 id0_unsigned_t screenstartcs; // in code segment for accesability
 
-// (CHOCO KEEN) VANILLA KEEN BUG WORKAROUND: Some background tile may be marked "empty" yet found in map (Copied off DOSBox 0000:0000..)
+// (REFKEEN) VANILLA KEEN BUG WORKAROUND: Some background tile may be marked "empty" yet found in map (Copied off DOSBox 0000:0000..)
 // TODO: Increased from 64 to 160 for EGA foreground tile, should complete!
 static const id0_byte_t seg0TileBuff[160] = {
 	0x62, 0x01, 0xA2, 0x01, 0x08, 0x00, 0x70, 0x00, 0x08, 0x00, 0x70, 0x00, 0x08, 0x00, 0x70, 0x00,

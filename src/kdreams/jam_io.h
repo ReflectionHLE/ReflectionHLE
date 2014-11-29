@@ -79,12 +79,14 @@ typedef enum ct_TYPES
 //  	FILE CHUNK HEADER FORMATS
 //
 
-// (CHOCO KEEN) Seems to be unused...
+// (REFKEEN) Seems to be unused...
+#if 0
 struct COMPStruct
 {
 	id0_unsigned_long_t DecompLen;
 
 };
+#endif
 
 
 struct CMP1Header

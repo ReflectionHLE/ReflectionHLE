@@ -69,7 +69,7 @@ exittype	playstate;
 
 //===========================================================================
 
-// REF KEEN - Commented out
+// REFKEEN - Commented out
 
 #if 0
 // JAB Hack begin
@@ -110,7 +110,7 @@ jabunhack(void)
 //===========================================================================
 
 
-// CHOCO KEEN - New cross-platform methods for reading/writing objects from/to saved games
+// REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
 static id0_boolean_t SaveObject(int file, objtype *o)
 {
 	id0_int_t dummy = 0;
@@ -276,7 +276,7 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 	objtype	*o;
 	memptr	bigbuffer;
 
-	// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+	// (REFKEEN) Writing fields one-by-one in a cross-platform manner
 	if (!SaveGameState(file, &gamestate))
 	//if (!CA_FarWrite(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
@@ -302,7 +302,7 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 	}
 
 	for (o = player;o;o = o->next)
-		// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+		// (REFKEEN) Writing fields one-by-one in a cross-platform manner
 		if (!SaveObject(file, o))
 		//if (!CA_FarWrite(file,(void id0_far *)o,sizeof(objtype)))
 		{
@@ -333,7 +333,7 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 	id0_unsigned_t	id0_far *map,tile;
 	memptr		bigbuffer;
 
-	// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+	// (REFKEEN) Reading fields one-by-one in a cross-platform manner
 	if (!LoadGameState(file, &gamestate))
 	//if (!CA_FarRead(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
@@ -391,7 +391,7 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 	{
 		prev = new->prev;
 		next = new->next;
-		// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+		// (REFKEEN) Reading fields one-by-one in a cross-platform manner
 		if (!LoadObject(file, new))
 		//if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
 			return(false);
@@ -475,7 +475,7 @@ void InitGame (void)
 	id0_int_t			i,x,y;
 	id0_unsigned_t	*blockstart;
 
-#ifdef CHOCO_KEEN_VER_CAT3D_100
+#ifdef REFKEEN_VER_CAT3D_100
 	US_TextScreen();
 #endif
 	MM_Startup ();
@@ -485,7 +485,7 @@ void InitGame (void)
 	SD_Startup ();
 #endif
 	US_Startup ();
-#ifdef CHOCO_KEEN_VER_CAT3D_100
+#ifdef REFKEEN_VER_CAT3D_100
 	US_UpdateTextScreen();
 #endif
 	CA_Startup ();
@@ -537,7 +537,7 @@ void InitGame (void)
 	SetupScaling ();
 
 #ifndef PROFILE
-#ifdef CHOCO_KEEN_VER_CAT3D_100
+#ifdef REFKEEN_VER_CAT3D_100
 	US_FinishTextScreen();
 #endif
 #endif
@@ -545,7 +545,7 @@ void InitGame (void)
 //
 // reclaim the memory from the linked in text screen
 //
-	// REF KEEN DIFFERENCE (FIXME: Should we "fix" this at all?)
+	// REFKEEN DIFFERENCE (FIXME: Should we "fix" this at all?)
 	// - Don't handle this, a bit more complicated with our setup and the
 	// difference is (probably) insignificant with well-defined behaviors
 	// anyway...
@@ -592,7 +592,7 @@ void Quit (id0_char_t *error)
 	void *finscreen;
 	//id0_unsigned_t	finscreen;
 
-#ifdef CHOCO_KEEN_VER_CAT3D_100
+#ifdef REFKEEN_VER_CAT3D_100
 	if (!error)
 	{
 		CA_SetAllPurge ();
@@ -609,7 +609,7 @@ void Quit (id0_char_t *error)
 	  BE_SDL_HandleExit(1);
 	}
 
-#ifdef CHOCO_KEEN_VER_CAT3D_100
+#ifdef REFKEEN_VER_CAT3D_100
 	if (!NoWait)
 	{
 		memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen, 4000);
@@ -635,7 +635,7 @@ void Quit (id0_char_t *error)
 void	TEDDeath(void)
 {
 	ShutdownId();
-	// REF KEEN - DISABLED
+	// REFKEEN - DISABLED
 	Quit("Sorry, but TED5.EXE cannot be launched from game in this source port.");
 	//execlp("TED5.EXE","TED5.EXE","/LAUNCH",NULL);
 }
@@ -871,7 +871,7 @@ void id0_main (void)
 {
 	//id0_short_t i;
 
-#ifdef CHOCO_KEEN_VER_CAT3D_122
+#ifdef REFKEEN_VER_CAT3D_122
 	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
 		BE_Cross_Simplified_printf("Catacomb 3-D version 1.22  (Rev 1)\n");
@@ -902,7 +902,7 @@ void id0_main (void)
 		BE_SDL_HandleExit(0);
 	}
 #endif
-	// jabhack(); // REF KEEN - Commented out
+	// jabhack(); // REFKEEN - Commented out
 
 	InitGame ();
 

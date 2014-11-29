@@ -36,7 +36,7 @@
 
 //#define	HELPTEXTLINKED
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 #define	MaxX	320
 #define	MaxY	200
 #endif
@@ -58,7 +58,7 @@ typedef	struct
 		{
 			id0_char_t	signature[4];
 			//id0_word_t	*oldtest;
-			id0_word_t oldtestoffset; // (CHOCO CAT) COMPATIBILITY
+			id0_word_t oldtestoffset; // (REFKEEN) COMPATIBILITY
 			id0_boolean_t	present;
 			id0_char_t	name[MaxGameName + 1];
 		} __attribute((__packed__)) SaveGame;
@@ -85,7 +85,7 @@ extern	id0_boolean_t		tedlevel;
 extern	id0_word_t		tedlevelnum;
 extern	void		TEDDeath(void);
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 extern id0_word_t MaxX,MaxY;		// MDM (GAMERS EDGE)
 #endif
 
@@ -152,18 +152,16 @@ extern	id0_int_t		US_CheckParm(id0_char_t *parm,id0_char_t **strings),
 		void	USL_PrintInCenter(const id0_char_t *s,Rect r);
 		id0_char_t 	*USL_GiveSaveName(id0_word_t game);
 
-// (REF KEEN) BACKWARDS COMPATIBILITY: Pointer to the PrintX var is written
+// (REFKEEN) BACKWARDS COMPATIBILITY: Pointer to the PrintX var is written
 // to saved game file in id_us_1.c, and it's later checked while scanning a
 // directory for saved games (probably for picking the compatible ones).
 // But it's a 16-bit pointer, so we use the original offset as-is
 // (for saved game compatibility where needed).
-//
-// FIXME: Correct based on versions
-#ifdef CHOCO_KEEN_VER_CAT3D_122
+#ifdef REFKEEN_VER_CAT3D_122
 #define COMPAT_US_PRINTX_OFFSET 0xA50C
-#elif defined CHOCO_KEEN_VER_CAT3D_100
+#elif defined REFKEEN_VER_CAT3D_100
 #define COMPAT_US_PRINTX_OFFSET 0xA24E
-#elif defined CHOCO_KEEN_VER_CATABYSS
+#elif defined REFKEEN_VER_CATABYSS
 #define COMPAT_US_PRINTX_OFFSET 0xEB23
 #endif
 

@@ -124,7 +124,7 @@ typedef	enum		{
 						demo_Off,demo_Record,demo_Playback,demo_PlayDone
 					} Demo;
 typedef	enum		{
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 						ctrl_None,				// MDM (GAMERS EDGE) - added
 #endif
 						ctrl_Keyboard,
@@ -177,7 +177,7 @@ extern	KeyboardDef	KbdDefs[];
 extern	JoystickDef	JoyDefs[];
 extern	ControlType	Controls[MaxPlayers];
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 extern	id0_boolean_t JoystickCalibrated;				// MDM (GAMERS EDGE) - added
 extern	ControlType ControlTypeUsed;				// MDM (GAMERS EDGE) - added
 #endif

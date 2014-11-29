@@ -43,10 +43,10 @@
 //			NeedsMusic - load music?
 //
 
-// REF KEEN - This macro is not even mentioned in the original Catacomb 3-D
+// REFKEEN - This macro is not even mentioned in the original Catacomb 3-D
 // sources, so we can simply define it to be 1 for these
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 #define USE_MUSIC	0
 #else
 #define USE_MUSIC	1
@@ -86,10 +86,10 @@
 
 //	Internal variables
 static	id0_boolean_t			SD_Started;
-/*** (CHOCO CAT) Unused (used in vanilla Keen Dreams with low-level funcs) ***/
+/*** (REFKEEN) Unused (used in vanilla Keen Dreams with low-level funcs) ***/
 //static	id0_boolean_t			TimerDone;
 //static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
-/*** (CHOCO CAT) Also unused now (and more is unused) ***/
+/*** (REFKEEN) Also unused now (and more is unused) ***/
 //static	id0_longword_t		TimerDivisor,TimerCount;
 static	id0_char_t			*ParmStrings[] =
 						{
@@ -167,7 +167,7 @@ SDL_SetIntsPerSec(id0_word_t ints)
 	SDL_SetTimer0(1192030 / ints);
 }
 
-/*** CHOCO CAT - UNUSED FUNCTIONS ***/
+/*** REFKEEN - UNUSED FUNCTIONS ***/
 #if 0
 
 ///////////////////////////////////////////////////////////////////////////
@@ -246,7 +246,7 @@ asm	loop	loop
 done:;
 }
 
-#endif /* END OF UNUSED FUNCTIONS (CHOCO CAT) */
+#endif /* END OF UNUSED FUNCTIONS (REFKEEN) */
 
 //
 //	PC Sound code
@@ -754,7 +754,7 @@ SDL_DetectAdLib(void)
 	// We ALWAYS return true here, but maybe it's good
 	// to send some commands to the emulated OPL chip
 
-	// TODO (Chocolate Cat3D): Anyway to handle this delay (if at all)?
+	// TODO (REFKEEN): Anyway to handle this delay (if at all)?
 	//SDL_Delay(TimerDelay100);
 
 	//status2 = readstat();
@@ -1027,7 +1027,7 @@ SD_SetMusicMode(SMMode mode)
 
 	return(result);
 #else
-	return false; // CHOCO CAT - Compilation warning fix
+	return false; // REFKEEN - Compilation warning fix
 #endif
 }
 
@@ -1063,7 +1063,7 @@ SD_Startup(void)
 
 	//t0OldService = getvect(8);	// Get old timer 0 ISR
 
-	/*** (CHOCO CAT) UNUSED ***/
+	/*** (REFKEEN) UNUSED ***/
 	//SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
 
 	BE_SDL_StartAudioSDService(&SDL_t0Service);
@@ -1359,7 +1359,7 @@ void
 SD_FadeOutMusic(void)
 {
 #if USE_MUSIC
-	// CHOCO CAT - Original code does nothing (also in Keen Dreams and Catacomb 3D)...
+	// REFKEEN - Original code does nothing (also in Keen Dreams and Catacomb 3D)...
 #if 0
 	switch (MusicMode)
 	{
@@ -1381,7 +1381,7 @@ SD_FadeOutMusic(void)
 id0_boolean_t
 SD_MusicPlaying(void)
 {
-	// CHOCO KEEN - Original code always returns false...
+	// REFKEEN - Original code always returns false...
 	return false;
 #if USE_MUSIC
 	id0_boolean_t	result;

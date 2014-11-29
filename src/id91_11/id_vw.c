@@ -181,21 +181,21 @@ void VW_SetScreenMode (id0_int_t grmode)
 		// screenseg is actually a main mem buffer
 		break;
 	  case EGAGR:
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 	  case EGA320GR:						// MDM start (GAMERS EDGE)
 		MaxX=320;
 		MaxY=200;
 #endif
 		BE_SDL_SetScreenMode(0xd/*|128 for EGA320GR, MDM*/);
-		// CHOCO KEEN no need to obtain screenseg
+		// REFKEEN no need to obtain screenseg
 		// - different EGA planes are accessed with new functions
 		break;
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 	  case EGA640GR:
 		MaxX=640;
 		MaxY=200;
 		BE_SDL_SetScreenMode(0xe/*|128*/);
-		// CHOCO KEEN no need to obtain screenseg
+		// REFKEEN no need to obtain screenseg
 		// - different EGA planes are accessed with new functions
 		break;						 		// MDM end
 #endif
@@ -330,7 +330,7 @@ void VW_FadeDown(void)
 #endif
 }
 
-// CHOCO CAT - UNUSED
+// REFKEEN - UNUSED
 
 #if 0
 /*
@@ -834,13 +834,13 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 void
 VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height, fontstruct id0_seg *font)
 {
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
 	// - An additional "optsend" argument marking one char past end
 	// of string. Set to NULL for original behaviors.
 	// - Related to modifcation to US_Print and US_CPrint, properly taking
 	// care of C string literals as inputs.
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 	*height = font->height-1;			// MDM (GAMERS EDGE) - squeeze font vertically...
 #else
 	*height = font->height;
@@ -1330,7 +1330,7 @@ void VWB_DrawTile8M (id0_int_t x, id0_int_t y, id0_int_t tile)
 	x+=pansx;
 	y+=pansy;
 	xb = x/SCREENXDIV; 			// use intermediate because VW_DT8M is macro
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 //	if (VW_MarkUpdateBlock (x&SCREENXMASK,y,(x&SCREENXMASK)+7,y+7))	// MDM (GAMER EDGE)
 		VW_DrawTile8M(xb,y,tile);	// statement prevents drawing chars past 42
 #else

@@ -342,7 +342,7 @@ void ScanText (void)
 static  id0_char_t    *levelnames[] =
 				{
 					"The Approach",
-#ifdef CHOCO_KEEN_VER_CAT3D_100
+#ifdef REFKEEN_VER_CAT3D_100
 					"Grelminar's Keep",
 #else
 					"Nemesis's Keep",
@@ -364,7 +364,7 @@ static  id0_char_t    *levelnames[] =
 					"Chaos Corridors",
 					"The Labyrinth",
 					"Halls of Blood",
-#ifdef CHOCO_KEEN_VER_CAT3D_100
+#ifdef REFKEEN_VER_CAT3D_100
 					"Grelminar's Lair"
 #else
 					"Nemesis's Lair"
@@ -751,7 +751,7 @@ void LoadLatchMem (void)
 //
 	latchpics[0] = freelatch;
 	src = (id0_byte_t id0_seg *)grsegs[STARTTILE8];
-	// (REF KEEN) Use destoff instead of dest
+	// (REFKEEN) Use destoff instead of dest
 	destoff = freelatch;
 	//dest = MK_FP(0xa000,freelatch);
 
@@ -815,7 +815,7 @@ void LoadLatchMem (void)
 //
 // pics
 //
-	// (REF KEEN) We already have destoff now
+	// (REFKEEN) We already have destoff now
 	//destoff = FP_OFF(dest);
 	for (i=FIRSTLATCHPIC+1;i<FIRSTSCALEPIC;i++)
 	{
@@ -866,7 +866,7 @@ asm     out     dx,al
 	frame=0;
 	SD_SetTimeCount(0);
 	//TimeCount=frame=0;
-	// (REF KEEN) SPECIAL
+	// (REFKEEN) SPECIAL
 	BE_SDL_FizzleFadeSleepInit();
 	do      // while (1)
 	{
@@ -1002,7 +1002,7 @@ noxor:
 			asm     mov     bl,[es:si]
 			asm     xchg [es:di],bl
 #endif
-			// (REF KEEN) SPECIAL
+			// (REFKEEN) SPECIAL
 			BE_SDL_FizzleFadeSleep();
 
 			if (rndval == 1)                // entire sequence has been completed

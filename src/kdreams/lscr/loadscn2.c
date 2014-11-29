@@ -37,10 +37,10 @@
 #define VERSION_NUM	"1.10"
 #define MESSAGE		"THIS VERSION IS MADE FOR USE IN G.E. TEXT SHELL"
 
-/******************************************************************
-UPDATE (CHOCO KEEN): Some functions are marked "static" here
-since they conflicts with functions from jam_io.c and possibly more
-******************************************************************/
+/*****************************************************************
+UPDATE (REFKEEN): Some functions are marked "static" here
+since they conflict with functions from jam_io.c and possibly more
+*****************************************************************/
 
 
 
@@ -51,7 +51,7 @@ since they conflicts with functions from jam_io.c and possibly more
 //===========================================================================
 
 
-//UPDATE (CHOCO KEEN) We define these types externally now
+//UPDATE (REFKEEN) We define these types externally now
 //typedef enum {false=0,true} boolean;
 
 static id0_int_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
@@ -471,7 +471,7 @@ static id0_boolean_t FarRead (int handle, id0_char_t id0_far *dest, id0_long_t l
 
 	if (bytesread != length)
 	{
-		/* FIXME (CHOCO KEEN) - Is that the right way? */
+		/* FIXME (REFKEEN) - Is that the right way? */
 		errno = 11;
 		//errno = EINVFMT; // user manager knows this is bad read
 		return false;

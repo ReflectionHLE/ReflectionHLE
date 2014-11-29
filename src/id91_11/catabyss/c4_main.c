@@ -17,7 +17,7 @@
  */
 
 // C3_MAIN.C
-#ifndef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+#ifndef REFKEEN_VER_CATABYSS_SHAR_ALL
 #define CATALOG
 #endif
 
@@ -126,7 +126,7 @@ jabunhack(void)
 //===========================================================================
 
 
-// CHOCO KEEN - New cross-platform methods for reading/writing objects from/to saved games
+// REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
 static id0_boolean_t SaveObject(int file, objtype *o)
 {
 	id0_int_t dummy = 0;
@@ -309,7 +309,7 @@ id0_boolean_t	SaveTheGame(int file)
 	//if (!CA_FarWrite(file,(void id0_far *)&FreezeTime,sizeof(FreezeTime)))
 		return(false);
 
-	// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+	// (REFKEEN) Writing fields one-by-one in a cross-platform manner
 	if (!SaveGameState(file, &gamestate))
 	//if (!CA_FarWrite(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
@@ -339,7 +339,7 @@ id0_boolean_t	SaveTheGame(int file)
 	}
 
 	for (o = player;o;o = o->next)
-		// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+		// (REFKEEN) Writing fields one-by-one in a cross-platform manner
 		if (!SaveObject(file, o))
 		//if (!CA_FarWrite(file,(void id0_far *)o,sizeof(objtype)))
 		{
@@ -378,7 +378,7 @@ id0_boolean_t	LoadTheGame(int file)
 	//if (!CA_FarRead(file,(void id0_far *)&FreezeTime,sizeof(FreezeTime)))
 		return(false);
 
-	// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+	// (REFKEEN) Reading fields one-by-one in a cross-platform manner
 	if (!LoadGameState(file, &gamestate))
 	//if (!CA_FarRead(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
@@ -389,7 +389,7 @@ id0_boolean_t	LoadTheGame(int file)
 
 	SetupGameLevel ();		// load in and cache the base old level
 
-	// (CHOCO CAT) DIFFERENCE FROM VANILLA CATACOMB ABYSS:
+	// (REFKEEN) DIFFERENCE FROM VANILLA CATACOMB ABYSS:
 	// Don't do this check, we've already opened the file anyway
 	// and this can lead to unexpected behaviors!
 #if 0
@@ -448,7 +448,7 @@ id0_boolean_t	LoadTheGame(int file)
 	{
 		prev = new->prev;
 		next = new->next;
-		// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+		// (REFKEEN) Reading fields one-by-one in a cross-platform manner
 		if (!LoadObject(file, new))
 		//if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
 			return(false);
@@ -658,7 +658,7 @@ void Quit (id0_char_t *error, ...)
 
 	if (error && *error)
 	{
-		// FIXME FIXME FIXME (CHOCO CAT)
+		// FIXME FIXME FIXME (REFKEEN)
 		BE_Cross_Simplified_printf(error);
 		//vprintf(error,ap);
 		exit_code = 1;
@@ -666,7 +666,7 @@ void Quit (id0_char_t *error, ...)
 
 #ifndef CATALOG
 
-#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL // ...
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL // ...
 	else if (!NoWait)
 #else
 	else
@@ -675,7 +675,7 @@ void Quit (id0_char_t *error, ...)
 		memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen, 4000);
 		BE_SDL_MarkGfxForUpdate();
 		//movedata (finscreen,0,0xb800,0,4000);
-#ifndef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+#ifndef REFKEEN_VER_CATABYSS_SHAR_ALL
 		if (BE_SDL_KbHit())
 		{
 			while (BE_SDL_KbHit())
@@ -1017,9 +1017,9 @@ void id0_main (void)
 			break;
 
 			case 2:
-				// TODO (CHOCO CAT) Should we fix this?
+				// TODO (REFKEEN) Should we fix this?
 				// It is a simplified printf after all...
-#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 				BE_Cross_Simplified_printf(GAMENAME);
 				BE_Cross_Simplified_printf("   ");
 				BE_Cross_Simplified_printf(VERSION);
@@ -1051,7 +1051,7 @@ void id0_main (void)
 	if (!LaunchedFromShell)
 	{
 		BE_SDL_clrscr();
-#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 		BE_Cross_puts("You must type START at the DOS prompt to run CATACOMB ABYSS.");
 #else
 		BE_Cross_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");

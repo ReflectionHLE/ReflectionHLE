@@ -119,7 +119,7 @@ void PostFullDisplay(id0_boolean_t draw_view);
 //
 id0_byte_t		tilemap[MAPSIZE][MAPSIZE];
 id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
-// (REF KEEN) BACKWARDS COMPATIBILITY: Originally used to store objtype
+// (REFKEEN) BACKWARDS COMPATIBILITY: Originally used to store objtype
 // pointers, as well as 16-bit unsigned integers. We now store just integers
 // and convert with a macro when required.
 id0_unsigned_t actorat[MAPSIZE][MAPSIZE];
@@ -181,7 +181,7 @@ void CheckKeys (void)
 		IN_Ack();
 		autofire ^= 1;
 		//return 1;
-		return; // CHOCO CAT - Fix compilation warning (return void)
+		return; // REFKEEN - Fix compilation warning (return void)
 	}
 
 #if 0
@@ -197,7 +197,7 @@ void CheckKeys (void)
 		IN_Ack();
 //		SD_MusicOn();
 		Paused = false;
-		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		// (REFKEEN) Minor difference from vanilla Catacomb
 		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
@@ -208,7 +208,7 @@ void CheckKeys (void)
 		DisplaySMsg("PAUSED",NULL);
 		IN_Ack();
 //		SD_MusicOn();
-		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		// (REFKEEN) Minor difference from vanilla Catacomb
 		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
@@ -225,7 +225,7 @@ void CheckKeys (void)
 //		SD_MusicOff();
 		IN_Ack();
 //		SD_MusicOn();
-		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		// (REFKEEN) Minor difference from vanilla Catacomb
 		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
@@ -453,7 +453,7 @@ deadloop:;
 	if (Keyboard[sc_F10])
 	{
 		DebugKeys();
-		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		// (REFKEEN) Minor difference from vanilla Catacomb
 		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 		lasttimecount = SD_GetTimeCount();
@@ -646,7 +646,7 @@ void PollControls (void)
 
 	if (MousePresent)
 	{
-		// (CHOCO CAT) Minor difference from vanilla Catacomb
+		// (REFKEEN) Minor difference from vanilla Catacomb
 		buttons = BE_SDL_GetMouseButtons();
 		BE_SDL_GetMouseDelta(&mousexmove, &mouseymove);
 #if 0
@@ -1176,7 +1176,7 @@ nextactor:;
 //--------------------------------------------------------------------------
 id0_int_t IntSqrt(id0_long_t va)
 {
-	// TODO (CHOCO CAT): Does all of that behave the same way as the original??
+	// TODO (REFKEEN): Does all of that behave the same way as the original??
 	if (!va)
 	{
 		return 0;
@@ -1185,10 +1185,10 @@ id0_int_t IntSqrt(id0_long_t va)
 	id0_word_t /* not id0_int_t on purpose */ result = (va_hi<<1) | (va_lo>>8) | (va_lo&0xFF);
 	--result;
 	result += va_hi; // initial guess
-	if (((id0_int_t)result) <= 0) // TODO (CHOCO CAT): Is that correct?
+	if (((id0_int_t)result) <= 0) // TODO (REFKEEN): Is that correct?
 	{
 		++result;
-		if (((id0_int_t)result) <= 0) // TODO (CHOCO CAT): Is that correct?
+		if (((id0_int_t)result) <= 0) // TODO (REFKEEN): Is that correct?
 		{
 			return 0x7FFF;
 		}

@@ -114,7 +114,7 @@ void SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 #endif
 	BE_SDL_SetPelPanning(pelpan);
 #if WAITFORVBL
-	// (CHOCO KEEN) Doing this before BE_SDL_SetPelPanning leads to
+	// (REFKEEN) Doing this before BE_SDL_SetPelPanning leads to
 	// very scrolling glitches, so call here instead
 	VW_WaitVBL(1);
 #endif

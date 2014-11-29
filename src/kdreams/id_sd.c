@@ -93,7 +93,7 @@ static	id0_word_t			sqMode,sqFadeStep;
 
 //	Internal variables
 static	id0_boolean_t			SD_Started;
-/*** (CHOCO KEEN) We use an alternative delay mechanism for OPL emulation ***/
+/*** (REFKEEN) We use an alternative delay mechanism for OPL emulation ***/
 //static	id0_boolean_t			TimerDone;
 //static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
 static	id0_char_t			*ParmStrings[] =
@@ -187,7 +187,7 @@ SDL_SetIntsPerSec(id0_word_t ints)
 }
 
 
-/*** (CHOCO KEEN) We use an alternative delay mechanism for OPL emulation ***/
+/*** (REFKEEN) We use an alternative delay mechanism for OPL emulation ***/
 
 #if 0
 ///////////////////////////////////////////////////////////////////////////
@@ -426,7 +426,7 @@ static void
 #endif
 SDL_SBStopSample(void)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 	id0_byte_t	is;
 
@@ -447,7 +447,7 @@ SDL_SBStopSample(void)
 #endif
 }
 
-// (CHOCO KEEN) UNUSED FUNCTION
+// (REFKEEN) UNUSED FUNCTION
 #if 0
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -499,7 +499,7 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 }
 #endif
 
-// (CHOCO KEEN) UNUSED FUNCTION
+// (REFKEEN) UNUSED FUNCTION
 #if 0
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -547,7 +547,7 @@ static void
 #endif
 SDL_SBPlaySample(SampledSound id0_far *sample)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 	id0_byte_t			id0_huge *data,
 					timevalue;
@@ -586,7 +586,7 @@ SDL_SBPlaySample(SampledSound id0_far *sample)
 #endif
 }
 
-// (CHOCO KEEN) UNUSED FUNCTION
+// (REFKEEN) UNUSED FUNCTION
 #if 0
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -634,7 +634,7 @@ SDL_CheckSB(id0_int_t port)
 static id0_boolean_t
 SDL_DetectSoundBlaster(id0_int_t port)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 	return(false);
 #if 0
 	id0_int_t	i;
@@ -664,7 +664,7 @@ SDL_DetectSoundBlaster(id0_int_t port)
 static void
 SDL_StartSB(void)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 	sbOldIntHand = getvect(sbIntVec);	// Get old interrupt handler
 	setvect(sbIntVec,SDL_SBService);	// Set mine
@@ -682,7 +682,7 @@ SDL_StartSB(void)
 static void
 SDL_ShutSB(void)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 	SDL_SBStopSample();
 
@@ -704,7 +704,7 @@ static void
 #endif
 SDL_SSStopSample(void)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 	ssSample = 0;
 #endif
@@ -718,7 +718,7 @@ SDL_SSStopSample(void)
 static void
 SDL_SSService(void)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 	id0_boolean_t	gotit;
 	id0_byte_t	v;
@@ -798,7 +798,7 @@ static void
 #endif
 SDL_SSPlaySample(SampledSound id0_far *sample)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 asm	pushf
 asm	cli
@@ -822,7 +822,7 @@ asm	popf
 static void
 SDL_StartSS(void)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 	if (ssPort == 3)
 		ssControl = 0x27a;	// If using LPT3
@@ -851,13 +851,13 @@ SDL_StartSS(void)
 static void
 SDL_ShutSS(void)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 #if 0
 	outportb(ssControl,ssOff);
 #endif
 }
 
-// (CHOCO KEEN) UNUSED FUNCTION
+// (REFKEEN) UNUSED FUNCTION
 #if 0
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -920,7 +920,7 @@ checkdone:
 static id0_boolean_t
 SDL_DetectSoundSource(void)
 {
-	// CHOCO KEEN - DISABLED
+	// REFKEEN - DISABLED
 	return(false);
 #if 0
 	for (ssPort = 1;ssPort <= 3;ssPort++)
@@ -941,8 +941,8 @@ void
 alOut(id0_byte_t n,id0_byte_t b)
 {
 	BE_SDL_ALOut(n, b);
-	// TODO (CHOCO DREAMS, NOT CAT3D OR POSSIBLY KEEN 4-6)
-	// - Ensures delays are correct in BE_SDL_ALOut
+	// (REFKEEN) Note: Vanilla Catacomb 3-D doesn't use "SDL_Delay"
+	// TODO - Add delay here in some way?
 #if 0
 	asm	pushf
 	asm	cli
@@ -962,7 +962,7 @@ alOut(id0_byte_t n,id0_byte_t b)
 #endif
 }
 
-/*** CHOCO KEEN - UNUSED/DISABLED ***/
+/*** REFKEEN - UNUSED/DISABLED ***/
 
 #if 0
 ///////////////////////////////////////////////////////////////////////////
@@ -1097,7 +1097,7 @@ SDL_ALSoundService(void)
 	}
 }
 
-// (CHOCO KEEN) UNUSED FUNCTION
+// (REFKEEN) UNUSED FUNCTION
 #if 0
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1121,7 +1121,7 @@ SDL_SelectMeasure(ActiveTrack *track)
 static void
 SDL_ALService(void)
 {
-	// CHOCO KEEN - DISABLED (but "should" still be called from SDL_t0Service)
+	// REFKEEN - DISABLED (but "should" still be called from SDL_t0Service)
 #if 0
 	id0_boolean_t		update;
 	id0_word_t		*seq;
@@ -1244,7 +1244,7 @@ SDL_DetectAdLib(void)
 	//status1 = readstat();
 	alOut(2,0xff);	// Set timer 1
 	alOut(4,0x21);	// Start timer 1
-	// TODO (CHOCO KEEN): Anyway to handle this delay (if at all)?
+	// TODO (REFKEEN): Anyway to handle this delay (if at all)?
 	//SDL_Delay(TimerDelay100);
 
 	//status2 = readstat();
@@ -1395,7 +1395,7 @@ SD_SetSoundMode(SDMode mode)
 	case sdm_Off:
 		NeedsDigitized = false;
 		result = true;
-		// (CHOCO KEEN) Originally tableoffset wasn't set here at all - undefined behaviors (even if offset is irrelevant)...
+		// (REFKEEN) Originally tableoffset wasn't set here at all - undefined behaviors (even if offset is irrelevant)...
 		tableoffset = 0;
 		break;
 	case sdm_PC:
@@ -1410,7 +1410,7 @@ SD_SetSoundMode(SDMode mode)
 			NeedsDigitized = false;
 			result = true;
 		}
-		// (CHOCO KEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
+		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
 		else
 		{
 			result = false;
@@ -1423,7 +1423,7 @@ SD_SetSoundMode(SDMode mode)
 			NeedsDigitized = true;
 			result = true;
 		}
-		// (CHOCO KEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
+		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
 		else
 		{
 			result = false;
@@ -1484,7 +1484,7 @@ SD_SetMusicMode(SMMode mode)
 			NeedsMusic = true;
 			result = true;
 		}
-		// (CHOCO KEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
+		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
 		else
 		{
 			result = false;
@@ -1560,7 +1560,7 @@ SD_Startup(void)
 
 	//t0OldService = getvect(8);	// Get old timer 0 ISR
 
-	//*** (CHOCO KEEN) We use an alternative delay mechanism for OPL emulation ***/
+	//*** (REFKEEN) We use an alternative delay mechanism for OPL emulation ***/
 	//SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
 
 	BE_SDL_StartAudioSDService(&SDL_t0Service);
@@ -1841,7 +1841,7 @@ SD_StartMusic(id0_ptr_t music)	// DEBUG - this shouldn't be a Ptr...
 void
 SD_FadeOutMusic(void)
 {
-	// CHOCO KEEN - Original code does nothing..
+	// REFKEEN - Original code does nothing..
 #if 0
 	switch (MusicMode)
 	{
@@ -1861,7 +1861,7 @@ SD_FadeOutMusic(void)
 id0_boolean_t
 SD_MusicPlaying(void)
 {
-	// CHOCO KEEN - Original code always returns false...
+	// REFKEEN - Original code always returns false...
 	return false;
 #if 0
 	id0_boolean_t	result;

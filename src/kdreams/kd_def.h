@@ -20,14 +20,14 @@
 
 #include "id_heads.h"
 //#include <BIOS.H>
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 #include "soft.h"
 #include "sl_file.h"
 #endif
 
 #define FRILLS	0			// Cut out frills for 360K - MIKE MAYNARD
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 #define CREDITS 0
 #endif
 
@@ -90,7 +90,7 @@ typedef struct
   void (*contact) ();
   void (*react) ();
   void *nextstate;
-  // (REF KEEN) Backwards compatibility:
+  // (REFKEEN) Backwards compatibility:
   // MUST follow all the rest of the members above. Given a statetype
   // instance, stores what would be the 16-bit offset pointer in the dseg
   // while using the original 16-bit DOS executable (corresponding version).
@@ -138,7 +138,7 @@ typedef struct	objstruct
 
 	id0_int_t			hitnorth,hiteast,hitsouth,hitwest;	// wall numbers contacted
 
-	// (CHOCO KEEN) BACKWARDS COMPATIBILITY: Usually temp2 may be just an integer,
+	// (REFKEEN) BACKWARDS COMPATIBILITY: Usually temp2 may be just an integer,
 	// but it can store a 16-bit offset pointer to a state (when creature changes into flower).
 	// So the original 16-bit pointer is stored in temp2 for saved game compatibility,
 	// while the real pointer is stored in temp2stateptr (can technically be a void* if there's a need).
@@ -151,13 +151,13 @@ typedef struct	objstruct
 } objtype;
 
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 struct BitMapHeader {
 	id0_unsigned_int_t	w,h,x,y;
 	id0_unsigned_char_t	d,trans,comp,pad;
 } __attribute__((__packed__));
 
-// (CHOCO KEEN) Seems unused
+// (REFKEEN) Seems unused
 struct BitMap {
 	id0_unsigned_int_t Width;
 	id0_unsigned_int_t Height;
@@ -182,16 +182,16 @@ typedef struct {
 #endif
 
 
-// (CHOCO KEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
+// (REFKEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
 // objstruct may store a 16-bit pointer with another object.
 // For Keen Dreams CGA v1.05 it should be replicated with the following macros.
-#ifdef CHOCO_KEEN_VER_KDREAMS_SHAR_113
+#ifdef REFKEEN_VER_KDREAMS_SHAR_113
 #define COMPAT_OBJ_CONVERSION_OFFSET 0x712A
-#elif defined CHOCO_KEEN_VER_KDREAMS_CGA_105
+#elif defined REFKEEN_VER_KDREAMS_CGA_105
 #define COMPAT_OBJ_CONVERSION_OFFSET 0x7470
-#elif defined CHOCO_KEEN_VER_KDREAMS_REG_193
+#elif defined REFKEEN_VER_KDREAMS_REG_193
 #define COMPAT_OBJ_CONVERSION_OFFSET 0x707A
-#elif defined CHOCO_KEEN_VER_KDREAMS_SHAR_120
+#elif defined REFKEEN_VER_KDREAMS_SHAR_120
 #define COMPAT_OBJ_CONVERSION_OFFSET 0x734C
 #endif
 
@@ -254,7 +254,7 @@ extern	gametype	gamestate;
 extern	exittype	playstate;
 extern	id0_boolean_t		button0held,button1held;
 extern	id0_unsigned_t	originxtilemax,originytilemax;
-// (CHOCO KEEN) new has been renamed newobj since new is a reserved C++ keyword
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
 extern	objtype		*newobj,*check,*player,*scoreobj;
 
 extern	ControlInfo	c;
@@ -384,7 +384,7 @@ extern	statetype s_deathwait3;
 extern	statetype s_deathboom1;
 extern	statetype s_deathboom2;
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 
 /////////////////////////////////////////////////////////////////////////////
 //

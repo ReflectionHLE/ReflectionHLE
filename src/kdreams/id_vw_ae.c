@@ -1245,7 +1245,7 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 #endif
 	BE_SDL_SetPelPanning(pelpan);
 #if WAITFORVBL
-	// (CHOCO KEEN) Doing this before BE_SDL_SetPelPanning leads to
+	// (REFKEEN) Doing this before BE_SDL_SetPelPanning leads to
 	// very scrolling glitches, so call here instead
 	VW_WaitVBL(1);
 #endif
@@ -1323,7 +1323,7 @@ id0_word_t screenextra;
 //
 //========================
 
-// NOTE (CHOCO KEEN): Renamed BufferToScreen -> VWL_XORBuffer because:
+// NOTE (REFKEEN): Renamed BufferToScreen -> VWL_XORBuffer because:
 // - It's used only with the xor operation, while original implementation
 // could have worked with other operations by modifying the EGA "Data Rotate"
 // register.
@@ -1447,7 +1447,7 @@ void ShiftPropChar(id0_word_t charnum)
 
 void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
 	// - An additional "optsend" argument marking one char past end
 	// of string. Set to NULL for original behaviors.

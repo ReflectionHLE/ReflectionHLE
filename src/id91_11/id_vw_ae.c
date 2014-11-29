@@ -200,7 +200,7 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 	// rather than 315, in the case of the original Catacomb Abyss
 	// Shareware v1.13 EXE (only in ID_VW_AE.ASM, not e.g., C code).
 	// In practice, though, it looks like STARTTILE8 is never used anyway...
-#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 	id0_byte_t *tilePtr = grsegs[STARTTILE8-1]+(tile<<5);
 #else
 	id0_byte_t *tilePtr = grsegs[STARTTILE8]+(tile<<5);
@@ -1258,7 +1258,7 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 #endif
 	BE_SDL_SetPelPanning(pelpan);
 #if WAITFORVBL
-	// (CHOCO KEEN) Doing this before BE_SDL_SetPelPanning leads to
+	// (REFKEEN) Doing this before BE_SDL_SetPelPanning leads to
 	// very scrolling glitches, so call here instead
 	VW_WaitVBL(1);
 #endif
@@ -1288,7 +1288,7 @@ id0_byte_t fontcolor = 15; // 0-15 mapmask value
 id0_char_t *stringptr;
 
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 #define BUFFWIDTH 80 // MDM (GAMERS EDGE) - increased from 50
 #define BUFFHEIGHT 20 // must be twice as high as font for masked fonts
 #else
@@ -1340,7 +1340,7 @@ id0_word_t screenspot;
 //
 //========================
 
-// NOTE (CHOCO KEEN): Renamed BufferToScreen -> VWL_XORBuffer because:
+// NOTE (REFKEEN): Renamed BufferToScreen -> VWL_XORBuffer because:
 // - It's used only with the xor operation, while original implementation
 // could have worked with other operations by modifying the EGA "Data Rotate"
 // register.
@@ -1483,7 +1483,7 @@ void ShiftPropChar(id0_word_t charnum)
 
 void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
 	// - An additional "optsend" argument marking one char past end
 	// of string. Set to NULL for original behaviors.

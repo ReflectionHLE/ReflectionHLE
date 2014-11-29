@@ -178,7 +178,7 @@ extern	SDMode		SoundMode;
 extern	SMMode		MusicMode;
 //NOT DECLARED HERE - USE SD_GetTimeCount AND/OR SD_SetTimeCount
 //extern	id0_longword_t	TimeCount;					// Global time in ticks
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 extern 	SDMode		oldsoundmode;
 #endif
 

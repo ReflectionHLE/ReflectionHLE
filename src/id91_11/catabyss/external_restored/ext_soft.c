@@ -322,7 +322,7 @@ void ext_FreeShape(struct Shape *shape)
 		free/*farfree*/(shape->Data);
 }
 
-// (REF CAT) Functionality equivalant to SwapLong, SwapWord from CATABYSS.EXE's gelib
+// (REFKEEN) Functionality equivalant to SwapLong, SwapWord from CATABYSS.EXE's gelib
 #if 0
 ///////////////////////////////////////////////////////////////////////////
 //

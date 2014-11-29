@@ -86,7 +86,7 @@ void DrawPlayScreen (void);
 //
 id0_byte_t		tilemap[MAPSIZE][MAPSIZE];
 id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
-// (REF KEEN) BACKWARDS COMPATIBILITY: Originally used to store objtype
+// (REFKEEN) BACKWARDS COMPATIBILITY: Originally used to store objtype
 // pointers, as well as 16-bit unsigned integers. We now store just integers
 // and convert with a macro when required.
 id0_unsigned_t actorat[MAPSIZE][MAPSIZE];

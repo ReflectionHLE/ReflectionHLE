@@ -99,12 +99,12 @@ void BE_SDL_HandleExit(int status)
 
 RefKeenConfig g_refKeenCfg;
 
-#ifdef CHOCO_KEEN_VER_KDREAMS
-#define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "refkdreams.cfg"
-#elif defined CHOCO_KEEN_VER_CAT3D
-#define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "refcat3d.cfg"
-#elif defined CHOCO_KEEN_VER_CATABYSS
-#define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "refcatabyss.cfg"
+#ifdef REFKEEN_VER_KDREAMS
+#define REFKEEN_DREAMS_CONFIG_FILEPATH "refkdreams.cfg"
+#elif defined REFKEEN_VER_CAT3D
+#define REFKEEN_DREAMS_CONFIG_FILEPATH "refcat3d.cfg"
+#elif defined REFKEEN_VER_CATABYSS
+#define REFKEEN_DREAMS_CONFIG_FILEPATH "refcatabyss.cfg"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
@@ -215,9 +215,9 @@ static void BEL_SDL_ParseSettings_SndSampleRate(const char *buffer)
 typedef struct {
 	const char *cfgPrefix; // Includes '=' sign
 	void (*handlerPtr)(const char *);
-} ChocoKeenCfgEntry;
+} BESDLCfgEntry;
 
-static ChocoKeenCfgEntry g_sdlCfgEntries[] = {
+static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"fullscreen=", &BEL_SDL_ParseSetting_FullScreen},
 	{"fullres=", &BEL_SDL_ParseSetting_FullRes},
 	{"windowres=", &BEL_SDL_ParseSetting_WindowRes},
@@ -248,7 +248,7 @@ static void BEL_SDL_ParseConfig(void)
 	g_refKeenCfg.autolockCursor = false;
 	g_refKeenCfg.sndSampleRate = 49716; // TODO should be a shared define
 	// Try to load config
-	FILE *fp = fopen(CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH, "r");
+	FILE *fp = fopen(REFKEEN_DREAMS_CONFIG_FILEPATH, "r");
 	if (fp)
 	{
 		char buffer[80];
@@ -275,7 +275,7 @@ static void BEL_SDL_ParseConfig(void)
 		fclose(fp);
 	}
 	// Try to save current settings just in case (first time file is created or new fields added)
-	fp = fopen(CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH, "w");
+	fp = fopen(REFKEEN_DREAMS_CONFIG_FILEPATH, "w");
 	if (!fp)
 	{
 		return;

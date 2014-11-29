@@ -535,9 +535,9 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 		}
 	}
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 	Quit ("MM_GetPtr: Out of memory!");
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 	Quit ("Out of memory!  Please make sure you have enough free memory.");
 #endif
 }
@@ -667,7 +667,7 @@ void MM_SortMem (void)
 	id0_unsigned_t	start,length,source,dest;
 
 	VW_ColorBorder (15);
-	// (CHOCO KEEN) HACK: Actually show border color
+	// (REFKEEN) HACK: Actually show border color
 	BE_SDL_ShortSleep();
 
 	if (beforesort)
@@ -749,7 +749,7 @@ void MM_SortMem (void)
 =====================
 */
 
-// (CHOCO KEEN) Called only if GRMODE==EGAGR - assuming FRILLS is nonzero
+// (REFKEEN) Called only if GRMODE==EGAGR - assuming FRILLS is nonzero
 // (VW_SetScreen has been disabled for CGA)
 
 #if GRMODE == EGAGR

@@ -1,6 +1,6 @@
 #include "id_heads.h"
 
-#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 void id0_intro_exe_main(void);
 #else
 void id0_main(void);
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 	}
 	BE_SDL_InitAll();
 	BE_Cross_Compat_FillObjStatesWithDOSOffsets(); // Saved games compatibility
-#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 	id0_intro_exe_main();
 #else
 	id0_main();

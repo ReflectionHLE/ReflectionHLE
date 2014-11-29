@@ -42,7 +42,7 @@
 id0_unsigned_t ylookup[VIRTUALHEIGHT];
 id0_unsigned_t displayofs;
 
-// (REF CAT) HACK (FIXME?) Conditionally pick the correct TrashProg function
+// (REFKEEN) HACK (FIXME?) Conditionally pick the correct TrashProg function
 
 void TrashProg (id0_char_t *OutMsg, ...)
 {
@@ -63,7 +63,7 @@ void TrashProg (id0_char_t *OutMsg, ...)
 	va_end(ap);
 }
 
-// (REF CAT) Functionality equivalant to UnpackEGAShapeToScreen from CATABYSS.EXE's gelib
+// (REFKEEN) Functionality equivalant to UnpackEGAShapeToScreen from CATABYSS.EXE's gelib
 
 #if 0
 ////////////////////////////////////////////////////////////////////////////
@@ -149,7 +149,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 }
 #endif
 
-// (REF CAT) Functionality equivalant to Verify from CATABYSS.EXE's gelib
+// (REFKEEN) Functionality equivalant to Verify from CATABYSS.EXE's gelib
 #if 0
 ////////////////////////////////////////////////////////////////////////////
 //

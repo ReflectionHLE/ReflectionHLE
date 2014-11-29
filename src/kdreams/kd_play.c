@@ -65,7 +65,7 @@ exittype	playstate;
 gametype	gamestate;
 
 id0_boolean_t		button0held,button1held;
-// (CHOCO KEEN) new has been renamed newobj since new is a reserved C++ keyword
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
 objtype		*newobj,*check,*player,*scoreobj;
 
 id0_unsigned_t	originxtilemax,originytilemax;
@@ -74,7 +74,7 @@ ControlInfo	c;
 
 objtype dummyobj;
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
@@ -97,7 +97,7 @@ id0_char_t		*levelnames[21] =
 "",
 "Title Page"
 };
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
@@ -131,7 +131,7 @@ id0_char_t		*levelnames[21] =
 =============================================================================
 */
 
-// for asm scaning of map planes (UPDATE (CHOCO KEEN): Code ported to C)
+// for asm scaning of map planes (UPDATE (REFKEEN): Code ported to C)
 id0_unsigned_t	mapx,mapy/*,mapxcount,mapycount*/,maptile/*,mapspot*/;
 
 id0_int_t			plummet;
@@ -680,7 +680,7 @@ void FadeAndUnhook (void)
 {
 	if (++fadecount==2)
 	{
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 		RF_ForceRefresh();
 #endif
 		VW_FadeIn ();
@@ -742,9 +742,9 @@ void 	SetupGameLevel (id0_boolean_t loadnow)
 			US_PrintCentered ("Boobus Bombs Near!");
 			VW_UpdateScreen ();
 		}
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 		CA_CacheMarks (levelnames[mapon]);
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 		CA_CacheMarks (levelnames[mapon], 0);
 #endif
 	}
@@ -947,7 +947,7 @@ void ClipToEnds (objtype *ob)
 	maxmove = -abs(midxmoved) - bottommoved - 16;
 	map = (id0_unsigned_t id0_far *)mapsegs[1] +
 		mapbwidthtable[oldtilebottom-1]/2 + ob->tilemidx;
-	// (CHOCO KEEN) Comparison is unsigned in vanilla Keen (has an effect on the explosion of King Boobus Tuber)
+	// (REFKEEN) Comparison is unsigned in vanilla Keen (has an effect on the explosion of King Boobus Tuber)
 	for (y=oldtilebottom-1 ; (id0_unsigned_t)y<=ob->tilebottom ; y++,map+=mapwidth)
 	{
 		if (wall = tinf[NORTHWALL+*map])
@@ -966,7 +966,7 @@ void ClipToEnds (objtype *ob)
 	maxmove = abs(midxmoved) - topmoved + 16;
 	map = (id0_unsigned_t id0_far *)mapsegs[1] +
 		mapbwidthtable[oldtiletop+1]/2 + ob->tilemidx;
-	// (CHOCO KEEN) Again comparison should be unsigned
+	// (REFKEEN) Again comparison should be unsigned
 	for (y=oldtiletop+1 ; (id0_unsigned_t)y>=ob->tiletop ; y--,map-=mapwidth)
 	{
 		if (wall = tinf[SOUTHWALL+*map])
@@ -1307,7 +1307,7 @@ id0_int_t DoActor (objtype *ob,id0_int_t tics)
 
 	state = ob->state;
 
-	// CHOCO KEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
+	// REFKEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
 	// Based on CGA v1.05 but it may be the same in other versions
 	if (state && state->progress == think)
 	//if (state->progress == think)
@@ -1326,14 +1326,14 @@ id0_int_t DoActor (objtype *ob,id0_int_t tics)
 
 	newtics = ob->ticcount+tics;
 
-	// CHOCO KEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
+	// REFKEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
 	// FIXME: Hopefully this always works - Magic number is CGA v1.05 specific,
 	// but it may actually work with other original versions
 	if ((!state && newtics < 0x2064) || (state && (newtics < state->tictime || state->tictime == 0)))
 	//if (newtics < state->tictime || state->tictime == 0)
 	{
 		ob->ticcount = newtics;
-		// CHOCO KEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
+		// REFKEEN: Workaround for vanilla Keen Dreams bug (state may be 0)
 		if (!state)
 		{
 			return 0; // Both cases appear to be skipped as of CGA v1.05
@@ -1436,7 +1436,7 @@ void StateMachine (objtype *ob)
 	//
 	// passed through to next state
 	//
-		// CHOCO KEEN: Workaround for vanilla Keen Dreams CGA v1.05 bug (state may be 0)
+		// REFKEEN: Workaround for vanilla Keen Dreams CGA v1.05 bug (state may be 0)
 		if (state && !state->skippable && excesstics >= state->tictime)
 		//if (!state->skippable && excesstics >= state->tictime)
 			excesstics = DoActor(ob,state->tictime-1);

@@ -65,7 +65,7 @@ void id0_loadscn_exe_main (void)
 		BE_Cross_Simplified_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
 		BE_Cross_Simplified_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
 		BE_Cross_Simplified_printf("\n");
-		// TODO (REF CAT) No need but...
+		// TODO (REFKEEN) No need but...
 		BE_Cross_Simplified_printf("LOADSCN    VERSION 1.10s   QA[0]\n");
 		//BE_Cross_Simplified_printf("%s %s\n", "LOADSCN  ", " VERSION 1.10s   QA[0]");
 		BE_Cross_Simplified_printf("\n");
@@ -85,7 +85,7 @@ void id0_loadscn_exe_main (void)
 		TrashProg("ERROR : Can't load image.");
 	ext_MoveGfxDst(0, 200);
 	UnpackEGAShapeToScreen(&armashape, 0, 0);
-	// (REF CAT) Add an artificial (screen not shown immediately on older machines)
+	// (REFKEEN) Add an artificial (screen not shown immediately on older machines)
 	BE_SDL_Delay(1000);
 	ScreenToScreen(8000, 0, 40, 200);
 	for (step = 0; step < 10; ++step)
@@ -123,7 +123,7 @@ void loadscn_TrashProg (id0_char_t *OutMsg, ...)
 		va_start(ap, OutMsg);
 
 		if (OutMsg && *OutMsg)
-		// TODO (REF CAT) PROPERLY IMPLEMENT!
+		// TODO (REFKEEN) PROPERLY IMPLEMENT!
 			BE_Cross_Simplified_printf(OutMsg);
 			//vprintf(OutMsg,ap);
 

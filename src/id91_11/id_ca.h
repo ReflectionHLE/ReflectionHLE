@@ -42,7 +42,7 @@
 #define GRHEADERLINKED
 #define AUDIOHEADERLINKED
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 #define NUMMAPS		19
 #else
 #define NUMMAPS		30
@@ -95,7 +95,7 @@ void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 
 //===========================================================================
 
-// (CHOCO CAT) UNUSED FUNCTIONS
+// (REFKEEN) UNUSED FUNCTIONS
 #if 0
 void CA_OpenDebug (void);
 void CA_CloseDebug (void);

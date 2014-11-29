@@ -90,7 +90,7 @@ void id0_intro_exe_main(void)
 		BE_Cross_Simplified_cprintf("\xB3 Copyright 1992 - Softdisk Publishing             \xB3\r\n");
 		BE_Cross_Simplified_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
 		BE_Cross_Simplified_printf("\n");
-		// TODO (REF CAT) No need but...
+		// TODO (REFKEEN) No need but...
 		BE_Cross_Simplified_printf("THE CATACOMB ABYSS INTRODUCTION PROGRAM  VERSION 1.01   QA[0]\n");
 		//BE_Cross_Simplified_printf("%s %s\n", "THE CATACOMB ABYSS INTRODUCTION PROGRAM", " VERSION 1.01   QA[0]");
 		BE_Cross_Simplified_printf("\n");
@@ -100,7 +100,7 @@ void id0_intro_exe_main(void)
 	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/S") || !BE_Cross_strcasecmp(id0_argv[2], "/S") || !BE_Cross_strcasecmp(id0_argv[3], "/S") || !BE_Cross_strcasecmp(id0_argv[4], "/S"))
 		havebeep = false;
-	// REF CAT difference from vanilla Catacomb Abyss (Shareware releases):
+	// REFKEEN difference from vanilla Catacomb Abyss (Shareware releases):
 	// Role of ^(a@&r1 for INTRO.EXE has been filled. No need to pass it
 	// (or use start), but if ^(a@&r1 is added then you get this message.
 	if (!BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
@@ -121,7 +121,7 @@ void id0_intro_exe_main(void)
 	UnpackEGAShapeToScreen(&app_start_shape, (320-app_start_shape.bmHdr.w)/2, (200-app_start_shape.bmHdr.h)/2);
 	ScreenToScreen(8000, 0, 40, 200);
 	ext_FreeShape(&app_start_shape);
-	// (REF CAT) Add an artificial delay so we can actually see loading message...
+	// (REFKEEN) Add an artificial delay so we can actually see loading message...
 	BE_SDL_Delay(1000);
 	WaitForKeyRelease();
 
@@ -253,7 +253,7 @@ void id0_intro_exe_main(void)
 				else if (last_key == 0x44/*0x4400*/) // F10 (Demo)
 				{
 					SetScreenMode(1);
-					// REF CAT: This is currently unsupported
+					// REFKEEN: This is currently unsupported
 					BE_Cross_Simplified_printf("ERROR : Can't find executable.\nOr rather, the \"Demo\" feature is unsupported in this source port.\n");
 					BE_SDL_BiosScanCode(0);
 					SetScreenMode(3);
@@ -424,7 +424,7 @@ void intro_TrashProg (id0_char_t *OutMsg, ...)
 		va_start(ap, OutMsg);
 
 		if (OutMsg && *OutMsg)
-		// TODO (REF CAT) PROPERLY IMPLEMENT!
+		// TODO (REFKEEN) PROPERLY IMPLEMENT!
 			BE_Cross_Simplified_printf(OutMsg);
 			//vprintf(OutMsg,ap);
 

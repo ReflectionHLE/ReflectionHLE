@@ -47,9 +47,9 @@
 #define	EGAGR	2
 #define	VGAGR	3
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 #define GRMODE	CGAGR
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 #define GRMODE	EGAGR	
 #else
 #error "Compatible version of Keen to support isn't defined, this shouldn't happen!"
@@ -95,7 +95,7 @@ typedef uint32_t id0_unsigned_long_t;
 typedef uint8_t id0_byte_t;
 typedef uint16_t id0_word_t;
 typedef uint32_t id0_longword_t;
-// TODO (CHOCO KEEN) Used just in SD_StartMusic, but there's no music in the
+// TODO (REFKEEN) Used just in SD_StartMusic, but there's no music in the
 // original game (Keen Dreams) and it was commented that Ptr shouldn't be used...
 typedef uint8_t * id0_ptr_t;
 
@@ -110,14 +110,14 @@ typedef	struct
 
 #define	id0_nil_t	((void *)0)
 
-// TODO (CHOCO KEEN): These should really be removed, but just for now and to document...
+// TODO (REFKEEN): These should really be removed, but just for now and to document...
 #define id0_far
 #define id0_huge
 #define id0_seg
 
 #endif
 
-// FIXME (CHOCO KEEN) a real hack for now
+// FIXME (REFKEEN) a real hack for now
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif

@@ -170,7 +170,7 @@ id0_long_t GRFILEPOS(id0_int_t c)
 */
 
 
-// (CHOCO CAT) UNUSED FUNCTIONS
+// (REFKEEN) UNUSED FUNCTIONS
 #if 0
 /*
 ============================
@@ -239,7 +239,7 @@ id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t lengt
 
 	if (bytesread != length)
 	{
-		/* FIXME (CHOCO KEEN) - Is that the right way? */
+		/* FIXME (REFKEEN) - Is that the right way? */
 		errno = 11;
 		//errno = EINVFMT; // user manager knows this is bad read
 		return false;
@@ -836,7 +836,7 @@ void CA_Startup (void)
 	profilehandle = open("PROFILE.TXT", O_CREAT | O_WRONLY | O_TEXT);
 #endif
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 
 // MDM begin - (GAMERS EDGE)
 //
@@ -856,13 +856,13 @@ void CA_Startup (void)
 //
 // MDM end
 
-#endif // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 #ifndef NOMAPS
 	CAL_SetupMapFile ();
 #endif
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 
 // MDM begin - (GAMERS EDGE)
 //
@@ -871,19 +871,19 @@ void CA_Startup (void)
 //
 // MDM end
 
-#endif // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 #ifndef NOGRAPHICS
 	CAL_SetupGrFile ();
 #endif
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 
 #ifndef NOAUDIO
 	CAL_SetupAudioFile ();
 #endif
 
-#endif // No CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // No REFKEEN_VER_CATADVENTURES
 
 	mapon = -1;
 	ca_levelbit = 1;
@@ -943,7 +943,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 		return;							// allready in memory
 	}
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 
 // MDM begin - (GAMERS EDGE)
 //
@@ -952,7 +952,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 //
 // MDM end
 
-#endif // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 //
 // load the chunk into a buffer, either the miscbuffer if it fits, or allocate
@@ -1408,7 +1408,7 @@ void CA_CacheGrChunk (id0_int_t chunk)
 		return;							// allready in memory
 	}
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 
 // MDM begin - (GAMERS EDGE)
 //
@@ -1417,7 +1417,7 @@ void CA_CacheGrChunk (id0_int_t chunk)
 //
 // MDM end
 
-#endif // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 //
 // load the chunk into a buffer, either the miscbuffer if it fits, or allocate
@@ -1478,7 +1478,7 @@ void CA_CacheMap (id0_int_t mapnum)
 	id0_long_t	expanded;
 #endif
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 
 // MDM begin - (GAMERS EDGE)
 //
@@ -1487,7 +1487,7 @@ void CA_CacheMap (id0_int_t mapnum)
 //
 // MDM end
 
-#endif // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 
 //
@@ -1899,7 +1899,7 @@ void CA_CacheMarks (id0_char_t *title)
 	if (!numcache)			// nothing to cache!
 		return;
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 
 // MDM begin - (GAMERS EDGE)
 //
@@ -1908,7 +1908,7 @@ void CA_CacheMarks (id0_char_t *title)
 //
 // MDM end
 
-#endif // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 	if (dialog)
 	{

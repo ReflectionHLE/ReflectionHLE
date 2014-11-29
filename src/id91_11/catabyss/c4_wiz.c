@@ -160,7 +160,7 @@ void DrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile)
 {
 	id0_word_t egaDestOff = x+ylookup[y];
 	id0_word_t egaSrcOff = latchpics[0]+8*tile;
-	// (REF KEEN) VANILLA BUG REPRODUCTION: In the original code, a call to
+	// (REFKEEN) VANILLA BUG REPRODUCTION: In the original code, a call to
 	// VW_DrawPic on startup leaves the map mask value at 8 (intensity plane),
 	// so numbers aren't drawn in the following call to RedrawStatusWindow.
 	// We add a workaround here since we don't store EGA write/read mode
@@ -568,7 +568,7 @@ void AddPoints (id0_int_t points)
 
 //===========================================================================
 
-// (CHOCO CAT) See description of vanilla bug reproduction below
+// (REFKEEN) See description of vanilla bug reproduction below
 bool id0_workaround_catabyss_exe_nodraw_digits_on_startup;
 
 /*
@@ -583,7 +583,7 @@ void DrawHealth()
 	id0_char_t picnum;
 	id0_int_t percentage;
 
-	// (CHOCO CAT) Using PERCENTAGE_SIGNED16BITS for compatibility
+	// (REFKEEN) Using PERCENTAGE_SIGNED16BITS for compatibility
 	percentage = PERCENTAGE_SIGNED16BITS(100,MAXBODY,gamestate.body,9);
 	//percentage = PERCENTAGE(100,MAXBODY,gamestate.body,9);
 
@@ -606,7 +606,7 @@ void DrawHealth()
 		CA_CacheGrChunk (picnum);
 	}
 
-	// (REF CAT) VANILLA BUG REPRODUCTION: In the original code, a call to
+	// (REFKEEN) VANILLA BUG REPRODUCTION: In the original code, a call to
 	// VW_DrawPic on startup leaves the map mask value at 8 (intensity plane),
 	// so numbers aren't drawn in the following call to RedrawStatusWindow.
 	// This includes the health percentage above.
@@ -636,7 +636,7 @@ void DrawHealth()
 void DrawFreezeTime()
 {
 	id0_long_t percentage;
-	// (CHOCO CAT) Using PERCENTAGE_SIGNED32BITS for compatibility
+	// (REFKEEN) Using PERCENTAGE_SIGNED32BITS for compatibility
 	percentage = PERCENTAGE_SIGNED32BITS(100,MAXFREEZETIME,(id0_long_t)FreezeTime,7);
 	//percentage = PERCENTAGE(100,MAXFREEZETIME,(id0_long_t)FreezeTime,7);
 	DrawNum(23,70,percentage,3);
@@ -871,7 +871,7 @@ void DrawRadar (void)
 	bufferofs = 0;
 	LatchDrawPic (radarx,radary,RADAR_TOPPIC);
 
-	// (CHOCO CAT) COMMENTING OUT ALL ASM HERE (similarly in other places)
+	// (REFKEEN) COMMENTING OUT ALL ASM HERE (similarly in other places)
 #if 0
 	asm	cli
 	asm	mov	dx,GC_INDEX
@@ -895,7 +895,7 @@ void DrawRadar (void)
 		objnum++;
 	}
 
-	// (CHOCO CAT) ALSO COMMENTING THIS OUT
+	// (REFKEEN) ALSO COMMENTING THIS OUT
 #if 0
 	asm	cli
 	asm	mov	dx,GC_INDEX
@@ -2228,7 +2228,7 @@ void ClipXMove (objtype *ob, id0_long_t xmove)
 				}
 			}
 #endif
-			// TODO (CHOCO CAT): We added "else" cause for the case
+			// TODO (REFKEEN): We added "else" cause for the case
 			// that check is a valid pointer, but maybe emulate
 			// behaviors in the rest of the cases somehow?
 			else
@@ -2366,7 +2366,7 @@ void ClipYMove (objtype *ob, id0_long_t ymove)
 				}
 			}
 #endif
-			// TODO (CHOCO CAT): We added "else" cause for the case
+			// TODO (REFKEEN): We added "else" cause for the case
 			// that check is a valid pointer, but maybe emulate
 			// behaviors in the rest of the cases somehow?
 			else

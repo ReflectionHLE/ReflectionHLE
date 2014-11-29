@@ -481,11 +481,11 @@ id0_long_t Verify(id0_char_t *filename)
 void GE_SaveGame()
 {
 	id0_boolean_t GettingFilename=true;
-	//id0_char_t drive; // CHOCO CAT - Removed
+	//id0_char_t drive; // REFKEEN - Removed
 //	id0_char_t Filename[FILENAME_LEN+1],drive; //, ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DATA)];
-	int handle = 0; // CHOCO CAT - Initialized to 0 (taking care of possibly undefined behaviors)
-	//struct dfree dfree; // CHOCO CAT - Removed
-	//id0_long_t davail; // CHOCO CAT - Removed
+	int handle = 0; // REFKEEN - Initialized to 0 (taking care of possibly undefined behaviors)
+	//struct dfree dfree; // REFKEEN - Removed
+	//id0_long_t davail; // REFKEEN - Removed
 
 	VW_FixRefreshBuffer();
 	ReadGameList();
@@ -502,7 +502,7 @@ void GE_SaveGame()
 			goto EXIT_FUNC;
 		if (!strlen(Filename))
 			goto EXIT_FUNC;
-		// CHOCO CAT - Remove disk space check
+		// REFKEEN - Remove disk space check
 #if 0
 		drive = getdisk();
 		getdfree(drive+1,&dfree);
@@ -527,7 +527,7 @@ void GE_SaveGame()
 		else
 #endif
 		{
-			// CHOCO CAT - Convert to uppercase for case-sensitive filesystems
+			// REFKEEN - Convert to uppercase for case-sensitive filesystems
 			id0_char_t *chptr = Filename;
 			for (; *chptr; ++chptr)
 			{
@@ -578,7 +578,7 @@ void GE_SaveGame()
 
 
 
-	// (CHOCO CAT) Move EXIT_FUNC label below call to "close"
+	// (REFKEEN) Move EXIT_FUNC label below call to "close"
 	// (otherwise there are chances we don't know what happens!)
 
 //EXIT_FUNC:;
@@ -630,7 +630,7 @@ EXIT_FUNC:;
 id0_boolean_t GE_LoadGame()
 {
 	id0_boolean_t GettingFilename=true,rt_code=false;
-	int handle = 0; // CHOCO CAT - Initialized to 0 (taking care of possibly undefined behaviors)
+	int handle = 0; // REFKEEN - Initialized to 0 (taking care of possibly undefined behaviors)
 
 	IN_ClearKeysDown();
 	memset(ID,0,sizeof(ID));
@@ -648,7 +648,7 @@ id0_boolean_t GE_LoadGame()
 			VW_FadeIn();
 		if (!US_LineInput((linewidth<<2)-32,20,Filename,"",true,8,0))
 			goto EXIT_FUNC;
-		// CHOCO CAT - Convert to uppercase for case-sensitive filesystems
+		// REFKEEN - Convert to uppercase for case-sensitive filesystems
 		id0_char_t *chptr = Filename;
 		for (; *chptr; ++chptr)
 		{
@@ -711,7 +711,7 @@ id0_boolean_t GE_LoadGame()
 
 	rt_code = true;
 
-	// (CHOCO CAT) Don't call close if we got to here via EXIT_FUNC
+	// (REFKEEN) Don't call close if we got to here via EXIT_FUNC
 
 	if (handle!=-1)
 		close(handle);
@@ -740,7 +740,7 @@ EXIT_FUNC:;
 }
 
 
-// (CHOCO CAT) UNUSED FUNCTION
+// (REFKEEN) UNUSED FUNCTION
 
 #if 0
 ///////////////////////////////////////////////////////////////////////////
@@ -1920,7 +1920,7 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 //
 void ReadGameList()
 {
-	// TODO (CHOCO CAT) Use "cross platform" file searching functions/wrappers instead?
+	// TODO (REFKEEN) Use "cross platform" file searching functions/wrappers instead?
 	DIR *dir;
 	struct dirent *direntry;
 	dir = opendir(".");
@@ -1953,14 +1953,14 @@ void ReadGameList()
 				memcpy(GameListNames[NumGames], direntry->d_name, sizeof(GameListNames[NumGames])-1);
 				GameListNames[NumGames][sizeof(GameListNames[NumGames])-1] = '\0';
 			}
-			// CHOCO CAT - Do NOT convert to uppercase (case-sensitive filesystems)
+			// REFKEEN - Do NOT convert to uppercase (case-sensitive filesystems)
 		}
 		closedir(dir);
 	}
 
 	NumGames++;
 #if 0
-	// TODO (CHOCO CAT) Use "cross platform" file searching functions/wrappers instead?
+	// TODO (REFKEEN) Use "cross platform" file searching functions/wrappers instead?
 	struct dirent **namelist;
 	// comparator and filter functions for scandir
 	int gamesavescanfilter(const struct dirent *dir)
@@ -2004,7 +2004,7 @@ void ReadGameList()
 				memcpy(GameListNames[NumGames], namelist[n]->d_name, sizeof(GameListNames[NumGames])-1);
 				GameListNames[NumGames][sizeof(GameListNames[NumGames])-1] = '\0';
 			}
-			// CHOCO CAT - Do NOT convert to uppercase (case-sensitive filesystems)
+			// REFKEEN - Do NOT convert to uppercase (case-sensitive filesystems)
 		}
 	}
 
@@ -2272,7 +2272,7 @@ void FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t        drawofs,pagedelta;
 	id0_unsigned_char_t   maskb[8] = {1,2,4,8,16,32,64,128};
 	id0_unsigned_t        x,y,p,frame;
-	id0_longword_t        rndval; // CHOCO CAT Now unsigned (so right shifts are well-defined)
+	id0_longword_t        rndval; // REFKEEN Now unsigned (so right shifts are well-defined)
 	//id0_long_t            rndval;
 	ScanCode			 lastLastScan=LastScan=0;
 
@@ -2294,7 +2294,7 @@ asm     out     dx,al
 	frame=0;
 	SD_SetTimeCount(0);
 	//TimeCount=frame=0;
-	// (REF KEEN) SPECIAL
+	// (REFKEEN) SPECIAL
 	BE_SDL_FizzleFadeSleepInit();
 	do      // while (1)
 	{
@@ -2430,7 +2430,7 @@ noxor:
 			asm     mov     bl,[es:si]
 			asm     xchg [es:di],bl
 #endif
-			// (REF KEEN) SPECIAL
+			// (REFKEEN) SPECIAL
 			BE_SDL_FizzleFadeSleep();
 
 			if (rndval == 1)                // entire sequence has been completed
@@ -2449,7 +2449,7 @@ exitfunc:;
 	return;
 }
 
-// (CHOCO CAT) UNUSED FUNCTION (Was probably written for monochrome displays)
+// (REFKEEN) UNUSED FUNCTION (Was probably written for monochrome displays)
 
 #if 0
 //-------------------------------------------------------------------------
@@ -2640,13 +2640,13 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 
 	id0_char_t command[100];
 	id0_char_t choices[]={sc_Escape,sc_Space,0},drive[2];
-	// (CHOCO CAT) rt_code should *not* be a boolean before returning
+	// (REFKEEN) rt_code should *not* be a boolean before returning
 	id0_boolean_t fadeitout=false/*,rt_code=2*/;
 	int rt_code = 2;
 
 	if (!disktext)
 		disktext = GAMENAME;
-	// CHOCO CAT - Let's just call the drive 'A' (floppy disk)
+	// REFKEEN - Let's just call the drive 'A' (floppy disk)
 	drive[0] = 'A';
 	//drive[0] = getdisk() + 'A';
 	drive[1] = 0;
@@ -2660,7 +2660,7 @@ id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disk
 			{
 				BE_SDL_clrscr();
 				BE_SDL_MoveTextCursorTo(0, 0); // gotoxy(1,1);
-				// (CHOCO CAT) Because our printf is simplified... (also re-using command buffer as in gfx case)
+				// (REFKEEN) Because our printf is simplified... (also re-using command buffer as in gfx case)
 				strcpy(command,"\nInsert ");
 				strcat(command,disktext);
 				strcat(command," disk ");

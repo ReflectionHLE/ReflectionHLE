@@ -924,7 +924,7 @@ void DrawPlayScreen (void)
 	grneeded[STATUSPIC] &= ~ca_levelbit;
 	MM_SetPurge(&grsegs[STATUSPIC],3);
 
-	// (REF CAT) VANILLA BUG REPRODUCTION: In the original code the last
+	// (REFKEEN) VANILLA BUG REPRODUCTION: In the original code the last
 	// call to VW_DrawPic leaves the map mask value at 8 (intensity plane),
 	// so numbers aren't drawn in the following call to RedrawStatusWindow.
 	// We add a workaround here since we don't store EGA write/read mode
@@ -962,7 +962,7 @@ void LoadLatchMem (void)
 //
 	latchpics[0] = freelatch;
 	src = (id0_byte_t id0_seg *)grsegs[STARTTILE8];
-	// (REF KEEN) Use destoff instead of dest
+	// (REFKEEN) Use destoff instead of dest
 	destoff = freelatch;
 	//dest = MK_FP(0xa000,freelatch);
 
@@ -1026,7 +1026,7 @@ void LoadLatchMem (void)
 //
 // pics
 //
-	// (REF KEEN) We already have destoff now
+	// (REFKEEN) We already have destoff now
 	//destoff = FP_OFF(dest);
 	for (i=FIRSTLATCHPIC+1;i<FIRSTSCALEPIC;i++)
 	{
@@ -1249,7 +1249,7 @@ restart:
 		LoadLatchMem();
 		CacheScaleds ();
 
-		// (REF CAT) Simulate a wait while loading (includes vanilla bug: numbers not shown in the HUD on startup immediately)
+		// (REFKEEN) Simulate a wait while loading (includes vanilla bug: numbers not shown in the HUD on startup immediately)
 		VW_WaitVBL(32);
 		//
 

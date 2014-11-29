@@ -18,7 +18,7 @@
 
 // KD_DEMO.C
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 //#include <dir.h>
 #endif
 #include "kd_def.h"
@@ -197,7 +197,7 @@ void StatusWindow (void)
 	IN_Ack();
 }
 
-// CHOCO KEEN - New cross-platform methods for reading/writing objects from/to saved games
+// REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
 static id0_boolean_t SaveObject(int file, objtype *o)
 {
 	id0_int_t dummy = 0;
@@ -363,7 +363,7 @@ SaveGame(int file)
 	objtype *o;
 	memptr  bigbuffer;
 
-	// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+	// (REFKEEN) Writing fields one-by-one in a cross-platform manner
 	if (!SaveGameState(file, &gamestate))
 	//if (!CA_FarWrite(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
@@ -389,7 +389,7 @@ SaveGame(int file)
 	}
 
 	for (o = player;o;o = o->next)
-		// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+		// (REFKEEN) Writing fields one-by-one in a cross-platform manner
 		if (!SaveObject(file, o))
 		//if (!CA_FarWrite(file,(void id0_far *)o,sizeof(objtype)))
 		{
@@ -412,7 +412,7 @@ LoadGame(int file)
 	id0_unsigned_t        compressed,expanded;
 	memptr  bigbuffer;
 
-	// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+	// (REFKEEN) Reading fields one-by-one in a cross-platform manner
 	if (!LoadGameState(file, &gamestate))
 	//if (!CA_FarRead(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
@@ -458,7 +458,7 @@ LoadGame(int file)
 	newobj = player;
 	prev = newobj->prev;
 	next = newobj->next;
-	// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+	// (REFKEEN) Reading fields one-by-one in a cross-platform manner
 	if (!LoadObject(file, newobj))
 	//if (!CA_FarRead(file,(void id0_far *)newobj,sizeof(objtype)))
 		return(false);
@@ -603,7 +603,7 @@ ShowText(id0_int_t offset,WindowRec *wr,id0_char_t *s)
 =====================
 */
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 void
 DemoLoop (void)
 {
@@ -721,7 +721,7 @@ DemoLoop (void)
 		GameLoop();
 	}
 }
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 void
 DemoLoop (void)
 {

@@ -74,11 +74,11 @@ void BE_SDL_SetGfxOutputRects(void);
 
 void BE_SDL_InitGfx(void)
 {
-#ifdef CHOCO_KEEN_VER_KDREAMS
+#ifdef REFKEEN_VER_KDREAMS
 	const char *windowTitle = "Ref Keen Dreams";
-#elif defined CHOCO_KEEN_VER_CAT3D
+#elif defined REFKEEN_VER_CAT3D
 	const char *windowTitle = "Ref Catacomb 3-D";
-#elif defined CHOCO_KEEN_VER_CATABYSS
+#elif defined REFKEEN_VER_CATABYSS
 	const char *windowTitle = "Ref Catacomb Abyss";
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
@@ -714,7 +714,7 @@ void BE_SDL_ToggleTextCursor(bool isEnabled)
 
 static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall, bool iscolored, bool requirecrchar)
 {
-	// TODO (CHOCO KEEN): Tabs?
+	// TODO (REFKEEN): Tabs?
 	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
 	for (; *str; ++str)
 	{
@@ -794,7 +794,7 @@ void BE_SDL_UpdateHostDisplay(void);
 
 void BE_SDL_WaitVBL(int16_t number)
 {
-	// TODO (CHOCO KEEN) Make a difference based on HW?
+	// TODO (REFKEEN) Make a difference based on HW?
 	Uint32 startTicks = SDL_GetTicks();
 	if (SDL_GetTicks() - startTicks < (int)number*1000000/70086)
 	{

@@ -67,14 +67,14 @@ extern  ScanCode        firescan;
 		id0_word_t            PrintX,PrintY;
 		id0_word_t            WindowX,WindowY,WindowW,WindowH;
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 		id0_word_t	MaxX=320,MaxY=200;	// MDM (GAMERS EDGE)
 #endif
 
 //      Internal variables
 #define ConfigVersion   1
 
-// TODO (CHOCO CAT) We should ParmStrings, ParmStrings2 were not terminated...
+// TODO (REFKEEN) We should ParmStrings, ParmStrings2 were not terminated...
 // any better way to emulate this? (Probably insignificant)
 static  id0_char_t            *ParmStrings[] = {"TEDLEVEL","NOWAIT",NULL},
 					*ParmStrings2[] = {"COMP","NOCOMP",NULL};
@@ -107,7 +107,7 @@ static  id0_boolean_t         US_Started;
 
 //      Public routines
 
-#if 0 // USL_HardError IS UNUSED NOW (TODO CHOCO KEEN: Restore?)
+#if 0 // USL_HardError IS UNUSED NOW (TODO REFKEEN: Restore?)
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -251,7 +251,7 @@ USL_ReadConfig(void)
 
 	if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 	{
-		// CHOCO KEEN Cross Platform file I/O
+		// REFKEEN Cross Platform file I/O
 		BE_Cross_readInt8LEBuffer(file, sig, sizeof(sig));
 		BE_Cross_readInt16LE(file, &version);
 		if (strcmp(sig,EXTENSION) || (version != ConfigVersion))
@@ -342,7 +342,7 @@ USL_WriteConfig(void)
 	{
 		BE_Cross_writeInt8LEBuffer(file, EXTENSION, sizeof(EXTENSION));
 		BE_Cross_writeInt16LE(file, &version);
-		// CHOCO KEEN Cross Platform file I/O
+		// REFKEEN Cross Platform file I/O
 		for (int i = 0; i < MaxScores; ++i)
 		{
 			BE_Cross_writeInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
@@ -417,7 +417,7 @@ USL_CheckSavedGames(void)
 		ok = false;
 		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
-			// CHOCO KEEN Cross Platform file I/O
+			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding; // Apparently one byte of struct padding
 			if
 			(
@@ -461,7 +461,7 @@ US_Startup(void)
 	if (US_Started)
 		return;
 
-	// (CHOCO KEEN) UNUSED (TODO restore?)
+	// (REFKEEN) UNUSED (TODO restore?)
 	// harderr(USL_HardError); // Install the fatal error handler
 
 	US_InitRndT(true);              // Initialize the random number generator
@@ -548,9 +548,9 @@ US_CheckParm(id0_char_t *parm,id0_char_t **strings)
 	return(-1);
 }
 
-// REF KEEN - Disable not just for The Catacomb 3-D Adventures, but also
+// REFKEEN - Disable not just for The Catacomb 3-D Adventures, but also
 // Catacomb 3-D: The Descent v1.22, since we don't link any introscn for this
-#if (!defined CHOCO_KEEN_VER_CATACOMB_ADVENTURES) && (!defined CHOCO_KEEN_VER_CAT3D_122)
+#if (!defined REFKEEN_VER_CATADVENTURES) && (!defined REFKEEN_VER_CAT3D_122)
 ///////////////////////////////////////////////////////////////////////////
 //
 //      USL_ScreenDraw() - Draws a chunk of the text screen (called only by
@@ -609,11 +609,11 @@ USL_ClearTextScreen(void)
 #endif
 }
 
-// REF KEEN - Disable not just for The Catacomb 3-D Adventures, but also
+// REFKEEN - Disable not just for The Catacomb 3-D Adventures, but also
 // Catacomb 3-D: The Descent v1.22, since we don't link any introscn for this
 // (although a few code lines in US_FinishTextScreen are still marked as not
 // compiled in this version for the sake of documentation)
-#if (!defined CHOCO_KEEN_VER_CATACOMB_ADVENTURES) && (!defined CHOCO_KEEN_VER_CAT3D_122)
+#if (!defined REFKEEN_VER_CATADVENTURES) && (!defined REFKEEN_VER_CAT3D_122)
 ///////////////////////////////////////////////////////////////////////////
 //
 //      US_TextScreen() - Puts up the startup text screen
@@ -779,7 +779,7 @@ static  id0_byte_t    colors[] = {4,6,13,15,15,15,15,15,15};
 
 	if (!(tedlevel || NoWait))
 	{
-#ifndef CHOCO_KEEN_VER_CAT3D_122
+#ifndef REFKEEN_VER_CAT3D_122
 		IN_ClearKeysDown();
 #endif
 		for (i = 0,up = true;!IN_UserInput(4,true);)
@@ -796,12 +796,12 @@ static  id0_byte_t    colors[] = {4,6,13,15,15,15,15,15,15};
 					i = 1,up = true;
 			}
 
-#ifndef CHOCO_KEEN_VER_CAT3D_122
+#ifndef REFKEEN_VER_CAT3D_122
 			USL_ScreenDraw(29,22," Ready - Press a Key     ",0x00 + c);
 #endif
 		}
 	}
-#ifndef CHOCO_KEEN_VER_CAT3D_122
+#ifndef REFKEEN_VER_CAT3D_122
 	else
 		USL_ScreenDraw(29,22," Ready - Press a Key     ",0x9a);
 	IN_ClearKeysDown();
@@ -809,7 +809,7 @@ static  id0_byte_t    colors[] = {4,6,13,15,15,15,15,15,15};
 
 	USL_ClearTextScreen();
 }
-#endif // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 //      Window/Printing routines
 
@@ -841,7 +841,7 @@ US_Print(const id0_char_t *s)
 	//id0_char_t	c,*se;
 	id0_word_t    w,h;
 
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - Input is now const and US_Print does not temporarily modify it.
 	// - Reason is the input is often a C string literal. Modification of
 	// any such string leads to undefined behaviors (or at least a crash).
@@ -874,7 +874,7 @@ US_Print(const id0_char_t *s)
 	}
 }
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 // MDM - (GAMERS EDGE)	begin
 
 ///////////////////////////////////////////////////////////////////////////
@@ -978,14 +978,14 @@ US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 {
 	id0_word_t    w,h;
 
-	// (CHOCO KEEN) WORKAROUND for s=NULL: Treat strings a empty
+	// (REFKEEN) WORKAROUND for s=NULL: Treat strings a empty
 	// (looks like the original behaviors for Catacomb Abyss,
 	// c4_play.c:PlayLoop, DisplaySMsg(NULL,NULL))
 	if (!s)
 	{
 		s = "";
 	}
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
 	// - An additional "optse" argument marking one char past end
 	// of string. Set to NULL for original behaviors.
@@ -998,7 +998,7 @@ US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 	//USL_MeasureString(s,&w,&h);
 
 	if (w > WindowW)
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 		Quit("US_CPrintLine() - String exceeds width\n-->%s",s);
 #else
 		Quit("US_CPrintLine() - String exceeds width");
@@ -1023,7 +1023,7 @@ US_CPrint(const id0_char_t *s)
 	const id0_char_t	*se;
 	//id0_char_t	c,*se;
 
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - Input is now const and US_Print does not temporarily modify it.
 	// - Reason is the input is often a C string literal. Modification of
 	// any such string leads to undefined behaviors (or at least a crash).
@@ -1055,7 +1055,7 @@ US_CPrint(const id0_char_t *s)
 void
 US_ClearWindow(void)
 {
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 	VWB_Bar(WindowX,WindowY,WindowW,WindowH,LT_GREY);
 #else
 	VWB_Bar(WindowX,WindowY,WindowW,WindowH,WHITE);

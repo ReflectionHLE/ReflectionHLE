@@ -190,7 +190,7 @@ void VW_SetScreenMode (id0_int_t grmode)
 		break;
 	  case EGAGR:
 		BE_SDL_SetScreenMode(0xd);
-		// CHOCO KEEN no need to obtain screenseg
+		// REFKEEN no need to obtain screenseg
 		// - different EGA planes are accessed with new functions
 		break;
 #ifdef VGAGAME
@@ -714,7 +714,7 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 void
 VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height, fontstruct id0_seg *font)
 {
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
 	// - An additional "optsend" argument marking one char past end
 	// of string. Set to NULL for original behaviors.

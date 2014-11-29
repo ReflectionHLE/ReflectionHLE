@@ -280,7 +280,7 @@ void ChaseThink (objtype *obj, id0_boolean_t diagonal)
 {
 	id0_int_t deltax,deltay,i;
 	dirtype d[3];
-	// (REF KEEN) Incrementing/Decrementing an enum is a bad idea (leading to undefined behaviors in C, including "Bad dir" bug reproduced),
+	// (REFKEEN) Incrementing/Decrementing an enum is a bad idea (leading to undefined behaviors in C, including "Bad dir" bug reproduced),
 	// and illegal in C++. Hence, tdir is redefined to be a (signed) int here. Casts are done (to be compatible with C++).
 	int tdir;
 	dirtype /*tdir, */olddir, turnaround;

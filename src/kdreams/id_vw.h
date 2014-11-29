@@ -232,7 +232,7 @@ cardtype	VW_VideoID (void);
 #define EGABITMASK(x) asm{mov dx,GC_INDEX;mov ax,GC_BITMASK+256*x;out dx,ax;sti;}
 #define EGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov ax,SC_MAPMASK+x*256;out dx,ax;sti;}
 #endif
-// (CHOCO KEEN) Doing nothing
+// (REFKEEN) Doing nothing
 #define EGAWRITEMODE(x) {}
 #define EGABITMASK(x) {}
 #define EGAMAPMASK(x) {}

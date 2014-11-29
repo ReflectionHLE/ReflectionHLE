@@ -42,7 +42,7 @@
 
 #define	EXTENSION	"C3D"
 
-// REF KEEN moved to bottom (where id0_char_t and more are defined)
+// REFKEEN moved to bottom (where id0_char_t and more are defined)
 // - also modified type for different platforms
 //extern	id0_char_t id0_far introscn;
 
@@ -114,14 +114,14 @@ typedef	struct
 
 #define	id0_nil_t	((void *)0)
 
-// TODO (REF KEEN): These should really be removed, but just for now and to document...
+// TODO (REFKEEN): These should really be removed, but just for now and to document...
 #define id0_far
 #define id0_huge
 #define id0_seg
 
 #endif
 
-// FIXME (REF KEEN) a real hack for now
+// FIXME (REFKEEN) a real hack for now
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif

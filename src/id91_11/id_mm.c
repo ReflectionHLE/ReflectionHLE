@@ -48,19 +48,19 @@ EMS / XMS unmanaged routines
 #pragma warn -pro
 #pragma warn -use
 
-// REF KEEN - Use macro in Catacomb 3-D as well, with the original message
+// REFKEEN - Use macro in Catacomb 3-D as well, with the original message
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 
 #define OUT_OF_MEM_MSG	"MM_GetPtr: Out of memory!"
 
-#else // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#else // REFKEEN_VER_CATADVENTURES
 
 #define OUT_OF_MEM_MSG "\n"                                                                          \
 							  "You need more free memory to run CATACOMB ABYSS.  Type START [ENTER]\n"  \
 							  "and read the \"INFORMATION YOU SHOULD KNOW BEFORE PLAYING\" section\n"       \
 							  "for more information about this.\n"
-#endif // CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 
 /*
@@ -92,7 +92,7 @@ typedef struct mmblockstruct
 
 #define GETNEWBLOCK {if(!mmfree)MML_ClearBlock();mmnew=mmfree;mmfree=mmfree->next;}
 
-// (REF KEEN) Taking care of useptr==NULL (the assignment of NULL to a
+// (REFKEEN) Taking care of useptr==NULL (the assignment of NULL to a
 // small var at dseg:0000 is "harmless" and shouldn't change the value)
 #define FREEBLOCK(x) {if (x->useptr) *x->useptr=NULL;x->next=mmfree;mmfree=x;}
 //#define FREEBLOCK(x) {*x->useptr=NULL;x->next=mmfree;mmfree=x;}
@@ -841,7 +841,7 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 	}
 
 	if (bombonerror)
-		Quit (OUT_OF_MEM_MSG); // REF KEEN - Always use macro, but with a game-specific message
+		Quit (OUT_OF_MEM_MSG); // REFKEEN - Always use macro, but with a game-specific message
 	else
 		mmerror = true;
 }
@@ -991,7 +991,7 @@ void MM_SortMem (void)
 
 
 	SD_StopSound();
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 	oldborder = bordercolor;
 	VW_ColorBorder (15);
 #endif
@@ -1062,7 +1062,7 @@ void MM_SortMem (void)
 	if (aftersort)
 		aftersort();
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 	VW_ColorBorder (oldborder);
 #endif
 	if (playing)
@@ -1072,7 +1072,7 @@ void MM_SortMem (void)
 
 //==========================================================================
 
-#ifndef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifndef REFKEEN_VER_CATADVENTURES
 /*
 =====================
 =

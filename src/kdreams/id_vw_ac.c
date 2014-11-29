@@ -240,7 +240,7 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 //
 //==============
 
-// (CHOCO KEEN) Unused function
+// (REFKEEN) Unused function
 #if 0
 void VW_SetScreen (id0_unsigned_t crtc, id0_unsigned_t pelpan)
 {
@@ -469,7 +469,7 @@ void ShiftPropChar(id0_word_t charnum)
 
 void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
 	// - An additional "optsend" argument marking one char past end
 	// of string. Set to NULL for original behaviors.

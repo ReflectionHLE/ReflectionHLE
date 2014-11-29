@@ -434,7 +434,7 @@ void ChangeToFlower (objtype *ob)
 	SD_PlaySound (FLOWERPOWERSND);
 	ob->y = ob->bottom-TILEGLOBAL*2;
 	ob->temp1 = (id0_int_t)ob->obclass;
-	// (CHOCO KEEN) BACKWARDS COMPATIBILITY
+	// (REFKEEN) BACKWARDS COMPATIBILITY
 	ob->temp2 = ob->state->compatdosoffset;
 	ob->temp2stateptr = ob->state;
 	//ob->temp2 = ob->state;

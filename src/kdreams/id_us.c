@@ -128,7 +128,7 @@ static	HighScore	Scores[MaxScores] =
 
 //	Public routines
 
-#if 0 // USL_HardError IS UNUSED NOW (TODO CHOCO KEEN: Restore?)
+#if 0 // USL_HardError IS UNUSED NOW (TODO REFKEEN: Restore?)
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -280,13 +280,13 @@ USL_ReadConfig(void)
 	SMMode		sm;
 	ControlType	ctl;
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 	if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 	if ((file = open("KDREAMS.CFG",O_BINARY | O_RDONLY)) != -1)
 #endif
 	{
-		// CHOCO KEEN Cross Platform file I/O
+		// REFKEEN Cross Platform file I/O
 		for (int i = 0; i < MaxScores; ++i)
 		{
 			BE_Cross_readInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
@@ -338,15 +338,15 @@ USL_WriteConfig(void)
 {
 	int	file;
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 	file = open("KDREAMS.CFG", O_CREAT | O_BINARY | O_WRONLY,
 #endif
 				/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 	if (file != -1)
 	{
-		// CHOCO KEEN Cross Platform file I/O
+		// REFKEEN Cross Platform file I/O
 		for (int i = 0; i < MaxScores; ++i)
 		{
 			BE_Cross_writeInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
@@ -395,7 +395,7 @@ USL_CheckSavedGames(void)
 		ok = false;
 		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
-			// CHOCO KEEN Cross Platform file I/O
+			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding; // Apparently one byte of struct padding
 			if
 			(
@@ -434,7 +434,7 @@ US_Startup(void)
 	if (US_Started)
 		return;
 
-	// (CHOCO KEEN) UNUSED (TODO restore?)
+	// (REFKEEN) UNUSED (TODO restore?)
 	// harderr(USL_HardError);	// Install the fatal error handler
 
 	US_InitRndT(true);		// Initialize the random number generator
@@ -635,7 +635,7 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 	USL_ScreenDraw(x,y,buf,0x48);
 }
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL // Commented out in Shareware v1.13
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL // Commented out in Shareware v1.13
 ///////////////////////////////////////////////////////////////////////////
 //
 //	US_UpdateTextScreen() - Called after the ID libraries are started up.
@@ -650,7 +650,7 @@ US_UpdateTextScreen(void)
 	id0_word_t		i;
 	id0_longword_t	totalmem;
 
-#ifndef CHOCO_KEEN_VER_KDREAMS_CGA_ALL // ...It is commented out in CGA v1.05
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL // ...It is commented out in CGA v1.05
 	// Show video card info
 	b = (grmode == CGAGR);
 	USL_Show(21,7,4,(videocard >= CGAcard) && (videocard <= VGAcard),b);
@@ -751,7 +751,7 @@ US_Print(const id0_char_t *s)
 	//id0_char_t	c,*se;
 	id0_word_t	w,h;
 
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - Input is now const and US_Print does not temporarily modify it.
 	// - Reason is the input is often a C string literal. Modification of
 	// any such string leads to undefined behaviors (or at least a crash).
@@ -861,7 +861,7 @@ US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 {
 	id0_word_t	w,h;
 
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
 	// - An additional "optse" argument marking one char past end
 	// of string. Set to NULL for original behaviors.
@@ -896,7 +896,7 @@ US_CPrint(const id0_char_t *s)
 	//id0_char_t	c,*se;
 	id0_word_t	w,h;
 
-	// (CHOCO KEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from vanilla Keen:
 	// - Input is now const and US_Print does not temporarily modify it.
 	// - Reason is the input is often a C string literal. Modification of
 	// any such string leads to undefined behaviors (or at least a crash).
@@ -2727,12 +2727,12 @@ USL_CtlHButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		}
 
 
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 		MM_GetPtr(&dupe,5000);
 		memcpy(dupe, buf, 5000);
 
 		USL_DoHelp(dupe,5000);
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 		MM_GetPtr(&dupe,5600);
 		memcpy(dupe,buf,5600);
  
@@ -2905,7 +2905,7 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		err = 0;
 		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
-			// CHOCO KEEN Cross Platform file I/O
+			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding; // Apparently one byte of struct padding
 			if ((BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
 			    && (BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
@@ -2992,7 +2992,7 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 					/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 		if (file != -1)
 		{
-			// CHOCO KEEN Cross Platform file I/O
+			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding = 0; // Apparently one byte of struct padding
 			if ((BE_Cross_writeInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
 			    && (BE_Cross_write_boolean_To16LE(file, &(game->present)) == 2)
@@ -3202,7 +3202,7 @@ USL_CtlPRButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 static id0_boolean_t
 USL_CtlDEButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	id0_boolean_t		result = false; /* CHOCO KEEN: Originally, was not initialized at all */
+	id0_boolean_t		result = false; /* REFKEEN: Originally, was not initialized at all */
 	UserItem	*ip;
 
 	i++,n++;	// Shut the compiler up
@@ -3475,7 +3475,7 @@ USL_TearDownCtlPanel(void)
 
 		if (!QuitToDos)
 		{
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 			US_CenterWindow(20,8);
 			US_CPrint("Loading");
 #endif
@@ -3484,7 +3484,7 @@ USL_TearDownCtlPanel(void)
 			US_CPrint("Sounds");
 			fontcolor = F_BLACK;
 #endif
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 			VW_UpdateScreen();
 #endif
 
@@ -3518,7 +3518,7 @@ US_ControlPanel(void)
 	if (c == sc_Escape)	// Map escape from game to Exit to DOS
 		c = sc_Q;
 
-	/* CHOCO KEEN - Originally may have been accessed uninitialized - undefined behaviors... */
+	/* REFKEEN - Originally may have been accessed uninitialized - undefined behaviors... */
 	lasttime = 0;
 	lastn = 0;
 	lasti = 0;
@@ -3529,9 +3529,9 @@ US_ControlPanel(void)
 		CA_MarkGrChunk(i);
 	CA_MarkGrChunk(CTL_LITTLEMASKPICM);
 	CA_MarkGrChunk(CTL_LSMASKPICM);
-#ifdef CHOCO_KEEN_VER_KDREAMS_CGA_ALL
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 	CA_CacheMarks("Options Screen");
-#elif defined CHOCO_KEEN_VER_KDREAMS_ANYEGA_ALL
+#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 	CA_CacheMarks("Options Screen", 0);
 #endif
 
@@ -3573,7 +3573,7 @@ US_ControlPanel(void)
 	)
 	{
 		VW_UpdateScreen();
-		BE_SDL_ShortSleep(); // TODO (CHOCO KEEN): Correct place?
+		BE_SDL_ShortSleep(); // TODO (REFKEEN): Correct place?
 
 		buttondown = US_UpdateCursor();
 		inrect = USL_IsInRect(CursorX,CursorY,&i,&n);
@@ -3672,7 +3672,7 @@ US_ControlPanel(void)
 					VW_UpdateScreen();
 
 					while (SD_GetTimeCount() - lasttime < TickBase / 4)
-						BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) Can be better
+						BE_SDL_ShortSleep(); // TODO (REFKEEN) Can be better
 					lasttime = SD_GetTimeCount();
 
 					ip->sel &= ~ui_Selected;
@@ -3680,7 +3680,7 @@ US_ControlPanel(void)
 					VW_UpdateScreen();
 
 					while (SD_GetTimeCount() - lasttime < TickBase / 4)
-						BE_SDL_ShortSleep(); // TODO (CHOCO KEEN) Can be better 
+						BE_SDL_ShortSleep(); // TODO (REFKEEN) Can be better 
 				}
 
 				USL_DoHit(hiti,hitn);
@@ -3758,7 +3758,7 @@ US_DisplayHighScores(id0_int_t which)
 				x,y;
 	HighScore	*s;
 
-	y = 0; // CHOCO KEEN: Originally, was not initialized at all
+	y = 0; // REFKEEN: Originally, was not initialized at all
 
 	US_CenterWindow(30,MaxScores + (MaxScores / 2));
 

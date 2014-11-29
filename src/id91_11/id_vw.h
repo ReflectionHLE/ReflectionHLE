@@ -78,7 +78,7 @@
 #define WHITE			15			// graphics mode independant colors
 #define BLACK			0
 
-#ifdef CHOCO_KEEN_VER_CATACOMB_ADVENTURES
+#ifdef REFKEEN_VER_CATADVENTURES
 #define LT_GREY		7
 #endif
 
@@ -260,7 +260,7 @@ cardtype	VW_VideoID (void);
 #define EGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov ax,SC_MAPMASK+x*256;out dx,ax;sti;}
 #define EGAREADMAP(x) asm{cli;mov dx,GC_INDEX;mov ax,GC_READMAP+x*256;out dx,ax;sti;}
 #endif
-// (CHOCO KEEN) Doing nothing
+// (REFKEEN) Doing nothing
 #define EGAWRITEMODE(x) {}
 #define EGABITMASK(x) {}
 #define EGAMAPMASK(x) {}

@@ -40,11 +40,11 @@
 
 //--------------------------------------------------------------------------
 
-// REF KEEN Use EXTENSION instead of EXT for simpler maintenance
+// REFKEEN Use EXTENSION instead of EXT for simpler maintenance
 #define EXTENSION "ABS"
 //#define	EXT	"ABS"
 
-// REF KEEN moved to bottom (where id0_char_t and more are defined)
+// REFKEEN moved to bottom (where id0_char_t and more are defined)
 // - also modified type for different platforms
 //extern	id0_char_t id0_far introscn;
 
@@ -135,19 +135,19 @@ typedef	struct
 
 #define	id0_nil_t	((void *)0)
 
-// TODO (REF KEEN): These should really be removed, but just for now and to document...
+// TODO (REFKEEN): These should really be removed, but just for now and to document...
 #define id0_far
 #define id0_huge
 #define id0_seg
 
 #endif
 
-// FIXME (REF KEEN) a real hack for now
+// FIXME (REFKEEN) a real hack for now
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
 
-// (REF KEEN) VANILLA BUG REPRODUCTION: In the original code, a call to
+// (REFKEEN) VANILLA BUG REPRODUCTION: In the original code, a call to
 // VW_DrawPic on startup leaves the map mask value at 8 (intensity plane),
 // so numbers aren't drawn in the following call to RedrawStatusWindow.
 // We add a workaround here since we don't store EGA write/read mode

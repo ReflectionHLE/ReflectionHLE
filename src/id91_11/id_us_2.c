@@ -621,11 +621,11 @@ USL_HandleError(id0_int_t num)
 		strcat(buf,"Unknown");
 	else if (num == ENOMEM)
 		strcat(buf,"Disk is Full");
-	// FIXME (REF KEEN): Is that OK?
+	// FIXME (REFKEEN): Is that OK?
 	else if (num == 11/*EINVFMT*/)
 		strcat(buf,"File is Incomplete");
 	else
-		// REF KEEN:
+		// REFKEEN:
 		// sys_errlist may be deprecated, but strerror is not reentrant
 		// and strerror_r is a bit nonnstandard, so just use this
 		strcat(buf,"Unknown (NOT IMPLEMENTED FOR SRCPORT)");
@@ -1013,7 +1013,7 @@ USL_DoLoadGame(UserItem id0_far *item)
 	filename = USL_GiveSaveName(n);
 	if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 	{
-			// CHOCO KEEN Cross Platform file I/O
+			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding; // Apparently one byte of struct padding
 			if ((BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
 			    && (BE_Cross_readInt16LE(file, &(game->oldtestoffset)) == 2)
@@ -1127,7 +1127,7 @@ USL_DoSaveGame(UserItem id0_far *item)
 					/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 		if (file != -1)
 		{
-			// CHOCO KEEN Cross Platform file I/O
+			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding = 0; // Apparently one byte of struct padding
 			if ((BE_Cross_writeInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
 			    && (BE_Cross_writeInt16LE(file, &(game->oldtestoffset)) == 2)

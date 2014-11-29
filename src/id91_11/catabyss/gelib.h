@@ -25,7 +25,7 @@
 #define SAVEVER_DATA "0.93"
 #define FILENAME_LEN 15
 
-#ifdef CHOCO_KEEN_VER_CATABYSS_SHAR_ALL
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 
 #define  GAMENAME               "CATACOMB ABYSS  "
 #define VERSION         "V1.13   "
@@ -59,11 +59,13 @@ extern id0_boolean_t ge_textmode;
 extern id0_short_t PPT_LeftEdge,PPT_RightEdge;
 //extern id0_boolean_t ConserveMemory;
 
-// (CHOCO CAT) Seems unused
+// (REFKEEN) Seems unused
+#if 0
 typedef struct Sample {
 		id0_char_t *filename;
 		memptr *data;
 } __attribute__((__packed__)) Sample;
+#endif
 
 typedef enum {ged_none, ged_SoundSource,ged_SoundBlaster} AudioDeviceType;
 
@@ -90,7 +92,8 @@ struct BitMapHeader {
 	id0_unsigned_char_t   d,trans,comp,pad;
 } __attribute__((__packed__));
 
-// (CHOCO CAT) Seems unused
+// (REFKEEN) Seems unused
+#if 0
 struct BitMap {
 	id0_unsigned_int_t Width;
 	id0_unsigned_int_t Height;
@@ -98,6 +101,7 @@ struct BitMap {
 	id0_unsigned_int_t BytesPerRow;
 	id0_char_t id0_far *Planes[8];
 };
+#endif
 
 struct Shape {
 	memptr Data;

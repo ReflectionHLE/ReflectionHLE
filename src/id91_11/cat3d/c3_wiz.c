@@ -1430,7 +1430,7 @@ newline:
 
 void OpenDoor (id0_unsigned_t bx, id0_unsigned_t by, id0_unsigned_t doorbase)
 {
-	// REF KEEN: All comparisons in the loop MUST be unsigned!
+	// REFKEEN: All comparisons in the loop MUST be unsigned!
 	// (Or else, expect buffer overflows.)
 	id0_int_t x,y;
 	id0_unsigned_t	id0_far *map;
