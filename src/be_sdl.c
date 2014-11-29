@@ -101,6 +101,8 @@ RefKeenConfig g_refKeenCfg;
 
 #ifdef CHOCO_KEEN_VER_KDREAMS
 #define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "refkdreams.cfg"
+#elif defined CHOCO_KEEN_VER_CAT3D
+#define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "refcat3d.cfg"
 #elif defined CHOCO_KEEN_VER_CATABYSS
 #define CHOCOLATE_KEEN_DREAMS_CONFIG_FILEPATH "refcatabyss.cfg"
 #else

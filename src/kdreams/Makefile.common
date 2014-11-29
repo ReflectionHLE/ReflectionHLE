@@ -119,7 +119,7 @@ ifeq ($(PLATFORM), WINDOWS)
 	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
 endif
 
-EXE_PATH=../$(EXENAME)$(EXE_EXT)
+EXE_PATH=$(BESRC)/$(EXENAME)$(EXE_EXT)
 
 .PHONY: all game clean veryclean
 

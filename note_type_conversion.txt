@@ -1,0 +1,67 @@
+What do we want to replace...
+
+*** Boolean:
+
+boolean -> id0_boolean_t
+
+*** Chars / 8-bit ints:
+
+unsigned char -> id0_unsigned_char_t
+signed char -> id0_signed_char_t
+
+THEN
+
+Same but with tabs
+
+THEN
+
+char -> id0_char_t
+
+THEN
+
+byte -> id0_byte_t (even though it's just an unsigned char in original code by definition...)
+
+*** 16-bit ints:
+
+NOT FOR NOW (see why soon)
+
+*** 32-bit ints:
+
+(unsigned/signed) long int -> Never mentioned in Catacomb 3-D, otherwise convert the "natural" way
+
+THEN
+
+unsigned long -> id0_unsigned_long_t
+signed long -> id0_signed_long_t
+
+THEN
+
+Same but with tabs
+
+THEN
+
+long -> id0_long_t
+
+THEN
+
+longword -> id0_longword_t (even though it's just unsigned long by definition...)
+
+*** 16-bit ints:
+
+short -> id0_short_t (mentioned just once in Catacomb 3-D, more in Abyss)
+unsigned int -> id0_unsigned_int_t (never really mentioned in Catacomb 3-D)
+signed int -> Never mentioned
+word -> id0_word_t (same as unsigned int in the original code)
+
+THEN
+
+int -> id0_int_t
+unsigned -> id0_unsigned_t
+
+*** floats and doubles??? (c3_draw.c)
+
+Let's keep these as-is for now.
+
+*** doubles??? (c3_draw.c)
+
+*** Replacements of MAXINT and MININT (c3_draw.c)

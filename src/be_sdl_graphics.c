@@ -76,6 +76,8 @@ void BE_SDL_InitGfx(void)
 {
 #ifdef CHOCO_KEEN_VER_KDREAMS
 	const char *windowTitle = "Ref Keen Dreams";
+#elif defined CHOCO_KEEN_VER_CAT3D
+	const char *windowTitle = "Ref Catacomb 3-D";
 #elif defined CHOCO_KEEN_VER_CATABYSS
 	const char *windowTitle = "Ref Catacomb Abyss";
 #else

@@ -7,10 +7,12 @@
 // For template implementations of reads/writes of enums from/to 16 little-endian integers...
 #ifdef CHOCO_KEEN_VER_KDREAMS
 #include "kd_def.h"
+#elif defined CHOCO_KEEN_VER_CAT3D
+#include "c3_def.h"
 #elif defined CHOCO_KEEN_VER_CATABYSS
 #include "def.h"
 #else
-#error "FATAL ERROR: No Chocolate port game macro is defined!"
+#error "FATAL ERROR: No Reflection port game macro is defined!"
 #endif
 
 int32_t BE_Cross_FileLengthFromHandle(int handle)
