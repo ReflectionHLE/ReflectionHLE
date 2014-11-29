@@ -208,7 +208,7 @@ typedef	enum	{ex_stillplaying,ex_died,ex_warped,ex_resetgame
 
 // FIXME: Fill this with a proper offset!!!
 #ifdef CHOCO_KEEN_VER_CAT3D_122
-#define COMPAT_OBJ_CONVERSION_OFFSET 0xD000
+#define COMPAT_OBJ_CONVERSION_OFFSET 0xADB3
 #elif defined CHOCO_KEEN_VER_CAT3D_100
 #define COMPAT_OBJ_CONVERSION_OFFSET 0xAAF5
 #endif

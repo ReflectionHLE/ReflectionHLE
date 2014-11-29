@@ -42,8 +42,8 @@ void BE_SDL_InitAll(void)
 	{
 		SDL_ShowCursor(false);
 	}
-	SDL_GetRelativeMouseState(NULL, NULL); // Reset
 	BE_SDL_PollEvents(); // e.g., to "reset" some states, and detect joysticks
+	SDL_GetRelativeMouseState(NULL, NULL); // Reset
 }
 
 void BE_SDL_ShutdownAll(void)

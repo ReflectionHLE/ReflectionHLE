@@ -160,7 +160,7 @@ extern	id0_int_t		US_CheckParm(id0_char_t *parm,id0_char_t **strings),
 //
 // FIXME: Correct based on versions
 #ifdef CHOCO_KEEN_VER_CAT3D_122
-#define COMPAT_US_PRINTX_OFFSET 0x3000
+#define COMPAT_US_PRINTX_OFFSET 0xA50C
 #elif defined CHOCO_KEEN_VER_CAT3D_100
 #define COMPAT_US_PRINTX_OFFSET 0xA24E
 #elif defined CHOCO_KEEN_VER_CATABYSS
