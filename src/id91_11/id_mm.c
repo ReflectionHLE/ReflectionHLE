@@ -92,7 +92,8 @@ typedef struct mmblockstruct
 
 #define GETNEWBLOCK {if(!mmfree)MML_ClearBlock();mmnew=mmfree;mmfree=mmfree->next;}
 
-// TODO (CHOCO CAT) Taking care of useptr==NULL in some way for now...
+// (REF KEEN) Taking care of useptr==NULL (the assignment of NULL to a
+// small var at dseg:0000 is "harmless" and shouldn't change the value)
 #define FREEBLOCK(x) {if (x->useptr) *x->useptr=NULL;x->next=mmfree;mmfree=x;}
 //#define FREEBLOCK(x) {*x->useptr=NULL;x->next=mmfree;mmfree=x;}
 

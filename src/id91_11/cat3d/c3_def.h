@@ -148,6 +148,13 @@ typedef struct	statestruct
 	id0_int_t		tictime;
 	void	(*think) ();
 	struct	statestruct	*next;
+	// (REF KEEN) Backwards compatibility:
+	// MUST follow all the rest of the members above. Given a statetype
+	// instance, stores what would be the 16-bit offset pointer in the dseg
+	// while using the original 16-bit DOS executable (corresponding version).
+	// This member must be the last so it doesn't have to be filled during
+	// compile-time (requires changes to struct initializations in a few places)
+	id0_int_t compatdosoffset;
 } statetype;
 
 
@@ -202,8 +209,8 @@ typedef	enum	{ex_stillplaying,ex_died,ex_warped,ex_resetgame
 // FIXME: Fill this with a proper offset!!!
 #ifdef CHOCO_KEEN_VER_CAT3D_122
 #define COMPAT_OBJ_CONVERSION_OFFSET 0xD000
-#else
-#define COMPAT_OBJ_CONVERSION_OFFSET 0xC000
+#elif defined CHOCO_KEEN_VER_CAT3D_100
+#define COMPAT_OBJ_CONVERSION_OFFSET 0xAAF5
 #endif
 
 #define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objlist)*sizeof(objtype)+COMPAT_OBJ_CONVERSION_OFFSET)):(id0_word_t)0)

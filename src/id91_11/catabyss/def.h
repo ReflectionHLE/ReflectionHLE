@@ -233,7 +233,7 @@ typedef struct	statestruct
 	id0_int_t		tictime;
 	void	(*think) ();
 	struct	statestruct	*next;
-	// (CHOCO KEEN) Backwards compatibility:
+	// (REF KEEN) Backwards compatibility:
 	// MUST follow all the rest of the members above. Given a statetype
 	// instance, stores what would be the 16-bit offset pointer in the dseg
 	// while using the original 16-bit DOS executable (corresponding version).

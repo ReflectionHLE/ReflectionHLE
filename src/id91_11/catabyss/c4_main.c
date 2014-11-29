@@ -163,8 +163,8 @@ static id0_boolean_t SaveObject(int file, objtype *o)
 	        && (BE_Cross_writeInt32LE(file, &o->yh) == 4)
 	        && (BE_Cross_writeInt16LE(file, &o->temp1) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->temp2) == 2)
-	        // No need to write sprite, prev pointers as-is,
-	        // these are ignored on loading. So write dummy value.
+	        // No need to write prev pointer as-is,
+	        // this is ignored on loading. So write dummy value.
 	        // Furthermore, all we need to know about next on loading is
 	        // if it's zero or not.
 	        && (BE_Cross_writeInt16LE(file, &isnext) == 2) // next
@@ -208,8 +208,8 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	    || (BE_Cross_readInt32LE(file, &o->yh) != 4)
 	    || (BE_Cross_readInt16LE(file, &o->temp1) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->temp2) != 2)
-	    // No need to write sprite, read pointers as-is,
-	    // these are ignored on loading. So read dummy value.
+	    // No need to read prev pointer as-is,
+	    // this is ignored on loading. So read dummy value.
 	    // Furthermore, all we need to know about next on loading is
 	    // if it's zero or not.
 	    || (BE_Cross_readInt16LE(file, &isnext) != 2) // next

@@ -1013,7 +1013,15 @@ USL_DoLoadGame(UserItem id0_far *item)
 	filename = USL_GiveSaveName(n);
 	if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 	{
-		if (read(file,game,sizeof(*game)) == sizeof(*game))
+			// CHOCO KEEN Cross Platform file I/O
+			id0_byte_t padding; // Apparently one byte of struct padding
+			if ((BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
+			    && (BE_Cross_readInt16LE(file, &(game->oldtestoffset)) == 2)
+			    && (BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
+			    && (BE_Cross_readInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
+			    && (BE_Cross_readInt8LE(file, &padding) == 1)
+			)
+		//if (read(file,game,sizeof(*game)) == sizeof(*game))
 		{
 			if (USL_LoadGame)
 				if (!USL_LoadGame(file))
@@ -1119,7 +1127,15 @@ USL_DoSaveGame(UserItem id0_far *item)
 					/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 		if (file != -1)
 		{
-			if (write(file,game,sizeof(*game)) == sizeof(*game))
+			// CHOCO KEEN Cross Platform file I/O
+			id0_byte_t padding = 0; // Apparently one byte of struct padding
+			if ((BE_Cross_writeInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
+			    && (BE_Cross_writeInt16LE(file, &(game->oldtestoffset)) == 2)
+			    && (BE_Cross_write_boolean_To16LE(file, &(game->present)) == 2)
+			    && (BE_Cross_writeInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
+			    && (BE_Cross_writeInt8LE(file, &padding) == 1)
+			)
+			//if (write(file,game,sizeof(*game)) == sizeof(*game))
 			{
 				if (USL_SaveGame)
 					ok = USL_SaveGame(file);

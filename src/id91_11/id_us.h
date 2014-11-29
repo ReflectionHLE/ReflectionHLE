@@ -162,7 +162,7 @@ extern	id0_int_t		US_CheckParm(id0_char_t *parm,id0_char_t **strings),
 #ifdef CHOCO_KEEN_VER_CAT3D_122
 #define COMPAT_US_PRINTX_OFFSET 0x3000
 #elif defined CHOCO_KEEN_VER_CAT3D_100
-#define COMPAT_US_PRINTX_OFFSET 0x2000
+#define COMPAT_US_PRINTX_OFFSET 0xA24E
 #elif defined CHOCO_KEEN_VER_CATABYSS
 #define COMPAT_US_PRINTX_OFFSET 0xEB23
 #endif

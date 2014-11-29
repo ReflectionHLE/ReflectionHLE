@@ -109,6 +109,138 @@ jabunhack(void)
 
 //===========================================================================
 
+
+// CHOCO KEEN - New cross-platform methods for reading/writing objects from/to saved games
+static id0_boolean_t SaveObject(int file, objtype *o)
+{
+	id0_int_t dummy = 0;
+	// for active enum (anonymous type)
+	id0_int_t activeint = (id0_int_t)(o->active);
+	// BACKWARD COMPATIBILITY
+	id0_int_t statedosoffset = o->state ? o->state->compatdosoffset : 0;
+	// Just tells if "o->next" is zero or not
+	id0_int_t isnext = o->next ? 1 : 0;
+	// Now writing
+	size_t BE_Cross_write_classtype_To16LE(int handle, const classtype *ptr);
+	size_t BE_Cross_write_dirtype_To16LE(int handle, const dirtype *ptr);
+	return ((BE_Cross_writeInt16LE(file, &activeint) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
+	        && (BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
+	        && (BE_Cross_writeInt16LE(file, &statedosoffset) == 2) // BACKWARD COMPATIBILITY
+	        && (BE_Cross_write_boolean_To16LE(file, &o->shootable) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &o->tileobject) == 2)
+	        && (BE_Cross_writeInt32LE(file, &o->distance) == 4)
+	        && (BE_Cross_write_dirtype_To16LE(file, &o->dir) == 2)
+	        && (BE_Cross_writeInt32LE(file, &o->x) == 4)
+	        && (BE_Cross_writeInt32LE(file, &o->y) == 4)
+	        && (BE_Cross_writeInt16LE(file, &o->tilex) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->tiley) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->viewx) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->viewheight) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->angle) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->hitpoints) == 2)
+	        && (BE_Cross_writeInt32LE(file, &o->speed) == 4)
+	        && (BE_Cross_writeInt16LE(file, &o->size) == 2)
+	        && (BE_Cross_writeInt32LE(file, &o->xl) == 4)
+	        && (BE_Cross_writeInt32LE(file, &o->xh) == 4)
+	        && (BE_Cross_writeInt32LE(file, &o->yl) == 4)
+	        && (BE_Cross_writeInt32LE(file, &o->yh) == 4)
+	        && (BE_Cross_writeInt16LE(file, &o->temp1) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->temp2) == 2)
+	        // No need to write prev pointer as-is,
+	        // this is ignored on loading. So write dummy value.
+	        // Furthermore, all we need to know about next on loading is
+	        // if it's zero or not.
+	        && (BE_Cross_writeInt16LE(file, &isnext) == 2) // next
+	        && (BE_Cross_writeInt8LEBuffer(file, &dummy, 2) == 2) // prev
+	);
+}
+
+static id0_boolean_t LoadObject(int file, objtype *o)
+{
+	id0_int_t dummy;
+	// for active enum (anonymous type)
+	id0_int_t activeint;
+	// BACKWARD COMPATIBILITY
+	id0_int_t statedosoffset;
+	// Just tells if "o->next" is zero or not
+	id0_int_t isnext;
+	// Now reading
+	size_t BE_Cross_read_classtype_From16LE(int handle, classtype *ptr);
+	size_t BE_Cross_read_dirtype_From16LE(int handle, dirtype *ptr);
+	if ((BE_Cross_readInt16LE(file, &activeint) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->ticcount) != 2)
+	    || (BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
+	    || (BE_Cross_readInt16LE(file, &statedosoffset) != 2) // BACKWARD COMPATIBILITY
+	    || (BE_Cross_read_boolean_From16LE(file, &o->shootable) != 2)
+	    || (BE_Cross_read_boolean_From16LE(file, &o->tileobject) != 2)
+	    || (BE_Cross_readInt32LE(file, &o->distance) != 4)
+	    || (BE_Cross_read_dirtype_From16LE(file, &o->dir) != 2)
+	    || (BE_Cross_readInt32LE(file, &o->x) != 4)
+	    || (BE_Cross_readInt32LE(file, &o->y) != 4)
+	    || (BE_Cross_readInt16LE(file, &o->tilex) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->tiley) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->viewx) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->viewheight) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->angle) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->hitpoints) != 2)
+	    || (BE_Cross_readInt32LE(file, &o->speed) != 4)
+	    || (BE_Cross_readInt16LE(file, &o->size) != 2)
+	    || (BE_Cross_readInt32LE(file, &o->xl) != 4)
+	    || (BE_Cross_readInt32LE(file, &o->xh) != 4)
+	    || (BE_Cross_readInt32LE(file, &o->yl) != 4)
+	    || (BE_Cross_readInt32LE(file, &o->yh) != 4)
+	    || (BE_Cross_readInt16LE(file, &o->temp1) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->temp2) != 2)
+	    // No need to read prev pointer as-is,
+	    // this is ignored on loading. So read dummy value.
+	    // Furthermore, all we need to know about next on loading is
+	    // if it's zero or not.
+	    || (BE_Cross_readInt16LE(file, &isnext) != 2) // next
+	    || (BE_Cross_readInt8LEBuffer(file, &dummy, 2) != 2)
+	)
+	{
+		return false;
+	}
+	o->active = activeint;
+	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSOffset(statedosoffset);
+	// HACK: All we need to know is if next was originally NULL or not
+	o->next = isnext ? o : NULL;
+	return true;
+}
+
+// Similar new methods for writing/reading game state
+static id0_boolean_t SaveGameState(int file, gametype *state)
+{
+	return ((BE_Cross_writeInt16LE(file, &state->difficulty) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->mapon) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->bolts) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->nukes) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->potions) == 2)
+	        && (BE_Cross_writeInt16LEBuffer(file, state->keys, sizeof(state->keys)) == sizeof(state->keys))
+	        && (BE_Cross_writeInt16LEBuffer(file, state->scrolls, sizeof(state->scrolls)) == sizeof(state->scrolls))
+	        && (BE_Cross_writeInt32LE(file, &state->score) == 4)
+	        && (BE_Cross_writeInt16LE(file, &state->body) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->shotpower) == 2)
+	);
+}
+
+static id0_boolean_t LoadGameState(int file, gametype *state)
+{
+	return ((BE_Cross_readInt16LE(file, &state->difficulty) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->mapon) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->bolts) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->nukes) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->potions) == 2)
+	        && (BE_Cross_readInt16LEBuffer(file, state->keys, sizeof(state->keys)) == sizeof(state->keys))
+	        && (BE_Cross_readInt16LEBuffer(file, state->scrolls, sizeof(state->scrolls)) == sizeof(state->scrolls))
+	        && (BE_Cross_readInt32LE(file, &state->score) == 4)
+	        && (BE_Cross_readInt16LE(file, &state->body) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->shotpower) == 2)
+	);
+}
+
+
 /*
 =====================
 =
@@ -144,7 +276,9 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 	objtype	*o;
 	memptr	bigbuffer;
 
-	if (!CA_FarWrite(file,(void id0_far *)&gamestate,sizeof(gamestate)))
+	// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+	if (!SaveGameState(file, &gamestate))
+	//if (!CA_FarWrite(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
 
 	expanded = mapwidth * mapheight * 2;
@@ -168,7 +302,9 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 	}
 
 	for (o = player;o;o = o->next)
-		if (!CA_FarWrite(file,(void id0_far *)o,sizeof(objtype)))
+		// (CHOCO KEEN) Writing fields one-by-one in a cross-platform manner
+		if (!SaveObject(file, o))
+		//if (!CA_FarWrite(file,(void id0_far *)o,sizeof(objtype)))
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -197,7 +333,9 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 	id0_unsigned_t	id0_far *map,tile;
 	memptr		bigbuffer;
 
-	if (!CA_FarRead(file,(void id0_far *)&gamestate,sizeof(gamestate)))
+	// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+	if (!LoadGameState(file, &gamestate))
+	//if (!CA_FarRead(file,(void id0_far *)&gamestate,sizeof(gamestate)))
 		return(false);
 
 	SetupGameLevel ();		// load in and cache the base old level
@@ -253,7 +391,9 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 	{
 		prev = new->prev;
 		next = new->next;
-		if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
+		// (CHOCO KEEN) Reading fields one-by-one in a cross-platform manner
+		if (!LoadObject(file, new))
+		//if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
 			return(false);
 		followed = new->next;
 		new->prev = prev;
