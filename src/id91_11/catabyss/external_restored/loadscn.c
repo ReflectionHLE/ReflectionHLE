@@ -86,7 +86,7 @@ void id0_loadscn_exe_main (void)
 	ext_MoveGfxDst(0, 200);
 	UnpackEGAShapeToScreen(&armashape, 0, 0);
 	// (REFKEEN) Add an artificial (screen not shown immediately on older machines)
-	BE_SDL_Delay(1000);
+	BE_SDL_Delay(250);
 	ScreenToScreen(8000, 0, 40, 200);
 	for (step = 0; step < 10; ++step)
 	{

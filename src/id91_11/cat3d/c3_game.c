@@ -1218,6 +1218,10 @@ restart:
 
 		CacheScaleds ();
 
+		// (REFKEEN) Simulate a short wait while loading
+		VW_WaitVBL(25);
+		//
+
 #ifdef PROFILE
 start = clock();
 while (start == clock());

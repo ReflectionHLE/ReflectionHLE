@@ -1249,8 +1249,8 @@ restart:
 		LoadLatchMem();
 		CacheScaleds ();
 
-		// (REFKEEN) Simulate a wait while loading (includes vanilla bug: numbers not shown in the HUD on startup immediately)
-		VW_WaitVBL(32);
+		// (REFKEEN) Simulate a short wait while loading (includes vanilla bug: numbers not shown in the HUD on startup immediately)
+		VW_WaitVBL(25);
 		//
 
 		if (EASYMODEON)

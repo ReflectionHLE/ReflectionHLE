@@ -64,6 +64,9 @@ void id0_intro_exe_main(void)
 	id0_boolean_t leave_init_sequence = false, leave_pre_skill_selection = false, leave_skill_selection = false, select_saved_game = false;
 	id0_int_t general_loop_var, init_sequence_iters_upperbound;
 	id0_int_t current_page = 0, last_key;
+	// (REFKEEN) DIFFERENCE FROM VANILLA CATACOMB ABYSS (SHAREWARE V1.13):
+	// Use this to skip the intro EXE and continue into the game
+	// immediately (with the code that makes it possible to play at all)
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/?"))
 	{
 		BE_SDL_clrscr();
@@ -122,7 +125,7 @@ void id0_intro_exe_main(void)
 	ScreenToScreen(8000, 0, 40, 200);
 	ext_FreeShape(&app_start_shape);
 	// (REFKEEN) Add an artificial delay so we can actually see loading message...
-	BE_SDL_Delay(1000);
+	BE_SDL_Delay(250);
 	WaitForKeyRelease();
 
 	if (ext_LoadShape("SHP01.ABS", &page_2_shape))
