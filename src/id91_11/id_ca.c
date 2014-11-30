@@ -1829,6 +1829,8 @@ void	CAL_DialogUpdate (void)
 #endif
 		lastx = xh;
 		VW_UpdateScreen();
+		// (REFKEEN) HACK: Ensure this is at least seen
+		BE_SDL_ShortSleep();
 	}
 }
 
@@ -1853,6 +1855,8 @@ void	CAL_DialogFinish (void)
 		VWB_Vlin (thy,thy+13,x,SECONDCOLOR);
 #endif
 	VW_UpdateScreen();
+	// (REFKEEN) HACK: Ensure this is at least seen
+	BE_SDL_ShortSleep();
 
 }
 
