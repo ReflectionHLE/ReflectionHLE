@@ -59,6 +59,12 @@ void BE_SDL_ALOut(uint8_t reg,uint8_t val);
 void BE_SDL_SetTimer(uint16_t speed, bool isALMusicOn);
 uint32_t BE_SDL_GetTimeCount(void);
 void BE_SDL_SetTimeCount(uint32_t newcount);
+// Use this as a replacement for busy loops waiting for some ticks to pass
+// e.g., "while (TimeCount-srctimecount<timetowait)
+void BE_SDL_TimeCountWaitFromSrc(uint32_t srctimecount, int16_t timetowait);
+// Same as above, but instead waits to reach dsttimecount
+// e.g., a replacement for "while (TimeCount<dsttimecount)"
+void BE_SDL_TimeCountWaitForDest(uint32_t dsttimecount);
 
 /*** Graphics ***/
 void BE_SDL_InitGfx(void);
@@ -108,22 +114,6 @@ void BE_SDL_SetScreenMode(int mode);
 void BE_SDL_WaitVBL(int16_t number);
 void BE_SDL_ShortSleep(void);
 void BE_SDL_Delay(uint16_t msec); // Replacement for delay from dos.h
-// Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh):
-// While ID_RF's RF_Refresh (from Keen Dreams) indirectly leads to wait for
-// vsync on original hardware in VW_SetScreen, along with an addition wait
-// from RF_CalcTics, Catacombs' ThreeDRefresh and CalcTics don't do either.
-// This implies visual glitches are probably expected if the framerate goes
-// a bit above 70fps, and the game's PlayLoop may execute for many times on
-// sufficiently fast machines (at least 500 times a second). And so:
-//
-// Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh), to simulate
-// some wait relevant on older machines
-void BE_SDL_ThreeDRefreshSleep(void);
-// A similar special function, but to be called in each FizzleFade (internal)
-// loop iteration. BE_SDL_FizzleFadeSleepInit should be called first.
-void BE_SDL_FizzleFadeSleep(void);
-void BE_SDL_FizzleFadeSleepInit(void);
-
 void BE_SDL_textcolor(int color);
 void BE_SDL_textbackground(int color);
 void BE_SDL_clrscr(void);

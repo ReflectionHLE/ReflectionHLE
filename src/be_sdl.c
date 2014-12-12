@@ -90,8 +90,8 @@ void BE_SDL_HandleExit(int status)
 		}
 		SDL_Delay(1);
 		// TODO: Make this more efficient
-		void BE_SDL_UpdateHostDisplay(void);
-		BE_SDL_UpdateHostDisplay();
+		void BEL_SDL_UpdateHostDisplay(void);
+		BEL_SDL_UpdateHostDisplay();
 	}
 }
 

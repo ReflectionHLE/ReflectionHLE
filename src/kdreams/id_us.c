@@ -2506,10 +2506,11 @@ USL_DoHelp(memptr text,id0_long_t len)
 	{
 		if (moved)
 		{
-			while (SD_GetTimeCount() - lasttime < 5)
-			{
-				BE_SDL_ShortSleep(); // TODO: Better way to do this
-			}
+			BE_SDL_TimeCountWaitFromSrc(lasttime, 5);
+#if 0
+			while (TimeCount - lasttime < 5)
+				;
+#endif
 			lasttime = SD_GetTimeCount();
 
 			if (scroll == -1)
@@ -3671,16 +3672,22 @@ US_ControlPanel(void)
 					USL_DrawItem(hiti,hitn);
 					VW_UpdateScreen();
 
-					while (SD_GetTimeCount() - lasttime < TickBase / 4)
-						BE_SDL_ShortSleep(); // TODO (REFKEEN) Can be better
+					BE_SDL_TimeCountWaitFromSrc(lasttime, TickBase / 4);
+#if 0
+					while (TimeCount - lasttime < TickBase / 4)
+						;
+#endif
 					lasttime = SD_GetTimeCount();
 
 					ip->sel &= ~ui_Selected;
 					USL_DrawItem(hiti,hitn);
 					VW_UpdateScreen();
 
-					while (SD_GetTimeCount() - lasttime < TickBase / 4)
-						BE_SDL_ShortSleep(); // TODO (REFKEEN) Can be better 
+					BE_SDL_TimeCountWaitFromSrc(lasttime, TickBase / 4);
+#if 0
+					while (TimeCount - lasttime < TickBase / 4)
+						;
+#endif
 				}
 
 				USL_DoHit(hiti,hitn);

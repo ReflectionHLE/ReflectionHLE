@@ -2294,8 +2294,6 @@ asm     out     dx,al
 	frame=0;
 	SD_SetTimeCount(0);
 	//TimeCount=frame=0;
-	// (REFKEEN) SPECIAL
-	BE_SDL_FizzleFadeSleepInit();
 	do      // while (1)
 	{
 		if ((abortable) || (Flags & FL_QUICK))
@@ -2430,17 +2428,18 @@ noxor:
 			asm     mov     bl,[es:si]
 			asm     xchg [es:di],bl
 #endif
-			// (REFKEEN) SPECIAL
-			BE_SDL_FizzleFadeSleep();
 
 			if (rndval == 1)                // entire sequence has been completed
 				goto exitfunc;
 		}
 		frame++;
-//		while (SD_GetTimeCount()<frame)         // don't go too fast
-//		{
-//			BE_SDL_ShortSleep();
-//		}
+		// REFKEEN - Code is commented out as in the original sources
+		// (of C4, not C3), but better have *some* delay at the least
+		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+#if 0
+		while (TimeCount<frame)         // don't go too fast
+		;
+#endif
 	} while (1);
 
 exitfunc:;

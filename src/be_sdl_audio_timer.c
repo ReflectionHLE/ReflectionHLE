@@ -42,8 +42,8 @@ static uint32_t g_sdlBeepHalfCycleCounter, g_sdlBeepHalfCycleCounterUpperBound;
 // PIT timer divisor
 static uint32_t g_sdlScaledTimerDivisor;
 
-// A few variables used for timing measurements (PC_PIT_RATE units per second)
-static uint64_t g_sdlLastPITTickTime;
+// A variable used for timing measurements
+static uint32_t g_sdlLastTicks;
 
 
 // A PRIVATE TimeCount variable we store
@@ -574,19 +574,131 @@ void BE_SDL_SetTimer(uint16_t speed, bool isALMusicOn)
 	g_sdlScaledTimerDivisor = isALMusicOn ? (speed*8) : (speed*2);
 }
 
+static uint32_t g_sdlTicksOffset = 0;
+void BEL_SDL_UpdateHostDisplay(void);
+void BEL_SDL_TicksDelayWithOffset(int sdltickstowait);
+void BEL_SDL_TimeCountWaitByPeriod(int16_t timetowait);
+
 uint32_t BE_SDL_GetTimeCount(void)
 {
 	// FIXME: What happens when SDL_GetTicks() reaches the upper bound?
 	// May be challenging to fix... A proper solution should
 	// only work with *differences between SDL_GetTicks values*.
-	uint64_t currPitTicks = (uint64_t)(SDL_GetTicks()) * PC_PIT_RATE / 1000;
-	uint32_t ticksToAdd = (currPitTicks - g_sdlLastPITTickTime) / g_sdlScaledTimerDivisor;
-	g_sdlLastPITTickTime += ticksToAdd * g_sdlScaledTimerDivisor;
+
+	// WARNING: This must have offset subtracted! (So the game "thinks" it gets the correct (but actually delayed) TimeCount value)
+	uint32_t currOffsettedSdlTicks = SDL_GetTicks() - g_sdlTicksOffset;
+	uint32_t ticksToAdd = (uint64_t)currOffsettedSdlTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor) - (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor);
 	g_sdlTimeCount += ticksToAdd;
+	g_sdlLastTicks = currOffsettedSdlTicks;
 	return g_sdlTimeCount;
 }
 
 void BE_SDL_SetTimeCount(uint32_t newcount)
 {
 	g_sdlTimeCount = newcount;
+}
+
+void BE_SDL_TimeCountWaitForDest(uint32_t dsttimecount)
+{
+	BEL_SDL_TimeCountWaitByPeriod((int32_t)dsttimecount-(int32_t)g_sdlTimeCount);
+}
+
+void BE_SDL_TimeCountWaitFromSrc(uint32_t srctimecount, int16_t timetowait)
+{
+	BEL_SDL_TimeCountWaitByPeriod((srctimecount+timetowait)-g_sdlTimeCount);
+}
+
+void BEL_SDL_TimeCountWaitByPeriod(int16_t timetowait)
+{
+	if (timetowait <= 0)
+	{
+		return;
+	}
+	// COMMENTED OUT - Do NOT refresh TimeCount and g_sdlLastTicks
+	//BE_SDL_GetTimeCount();
+
+	// We want to find the minimal currSdlTicks value (mod 2^32) such that...
+	// ticksToWait <= (uint64_t)currSdlTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor) - (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor)
+	// (WARNING: The divisions here are INTEGER divisions!)
+	// i.e.,
+	// ticksToWait + (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor) <= (uint64_t)currSdlTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor)
+	// That is, ignoring the types and up to the division by PC_PIT_RATE being an integer:
+	// currSdlTicks >= [ticksToWait + (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor)]*1000*g_sdlScaledTimerDivisor / PC_PIT_RATE
+	// So it may seem like we can replace ">=" with "=" and give it a go.
+	//
+	// PROBLEM: The last division IS (or at leat should be) integer. Suppose e.g., the condition is
+	// currSdlTicks >= (PC_PIT_RATE-100) / PC_PIT_RATE
+	// Then we get currSdlTicks = 0, which is not what we want (the minimal integer which is at at least this ratio as a noninteger is 1.)
+	//
+	// SOLUTION: Add PC_PIC_RATE-1 to the numerator.
+
+	uint32_t nextSdlTicks = ((timetowait + (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor))*1000*g_sdlScaledTimerDivisor + (PC_PIT_RATE-1)) / PC_PIT_RATE;
+	// NOTE: nextSdlTicks is already adjusted in terms of offset, so we can simply reset it here
+	g_sdlTicksOffset = 0;
+	BEL_SDL_TicksDelayWithOffset(nextSdlTicks-SDL_GetTicks());
+}
+
+
+void BE_SDL_WaitVBL(int16_t number)
+{
+	// (REFKEEN) Difference from vanilla: If the input value is not
+	// positive then the game practically hangs for quite long
+	// (ok, more than 7 minutes). It basically feels like a true hang,
+	// which isn't desired anyway. So we assume that number > 0.
+
+	// TODO (REFKEEN) Make a difference based on HW?
+
+	// Simulate waiting while in vertical retrace first, and then
+	// waiting while NOT in vertical retrace. In practice, we jump
+	// to the very beginning of the next "refresh cycle".
+	// This is repeated for a total of 'length' times.
+
+	uint32_t currSdlTicks = SDL_GetTicks();
+	uint32_t nextSdlTicks = (int)number*1000000/70086 + currSdlTicks - g_sdlTicksOffset;
+	// First iteration takes a bit less time again, so we want
+	// the value "mod" about 1000/70.086 (VGA adapter);
+	// For the sake of a bit better precision we further multiply by 1000
+	nextSdlTicks -= (((uint64_t)1000*(uint64_t)nextSdlTicks) % ((uint64_t)1000000000/70086))/1000;
+	g_sdlTicksOffset = 0; // Can reset this, taking g_sdlTicksOffset into account above
+	BEL_SDL_TicksDelayWithOffset(nextSdlTicks-currSdlTicks);
+}
+
+// Call during a busy loop of some unknown duration (e.g., waiting for key press/release)
+void BE_SDL_ShortSleep(void)
+{
+	SDL_Delay(1);
+	// TODO: Make this more efficient
+	BEL_SDL_UpdateHostDisplay();
+	BE_SDL_PollEvents();
+}
+
+
+void BE_SDL_Delay(uint16_t msec) // Replacement for delay from dos.h
+{
+	BEL_SDL_TicksDelayWithOffset(msec);
+}
+
+void BEL_SDL_TicksDelayWithOffset(int sdltickstowait)
+{
+	if (sdltickstowait <= (int32_t)g_sdlTicksOffset)
+	{
+		// Already waited for this time earlier, no need to do so now
+		if (sdltickstowait > 0)
+		{
+			g_sdlTicksOffset -= sdltickstowait;
+		}
+		BE_SDL_PollEvents(); // Still safer to do this
+		return;
+	}
+	uint32_t nextSdlTicks = SDL_GetTicks() + sdltickstowait - g_sdlTicksOffset;
+	BEL_SDL_UpdateHostDisplay();
+	BE_SDL_PollEvents();
+	uint32_t currSdlTicks = SDL_GetTicks();
+	while ((int32_t)(currSdlTicks - nextSdlTicks) < 0)
+	{
+		SDL_Delay(1);
+		BE_SDL_PollEvents();
+		currSdlTicks = SDL_GetTicks();
+	} 
+	g_sdlTicksOffset = (currSdlTicks - nextSdlTicks);
 }

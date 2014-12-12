@@ -1717,12 +1717,17 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 //
 	if (lasttimecount > SD_GetTimeCount())
 		lasttimecount = SD_GetTimeCount();		// if the game was paused a LONG time
+	// REFKEEN - Some replacement
+	BE_SDL_TimeCountWaitFromSrc(lasttimecount, MINTICS);
+	newtime = SD_GetTimeCount();
+	tics = newtime-lasttimecount;
+#if 0
 	do
 	{
 		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
-		BE_SDL_ShortSleep();
 	} while (tics<MINTICS);
+#endif
 	lasttimecount = newtime;
 
 #ifdef PROFILE
@@ -2351,12 +2356,18 @@ void RF_Refresh (void)
 //
 	if (lasttimecount > SD_GetTimeCount())
 		lasttimecount = SD_GetTimeCount();		// if the game was paused a LONG time
+	// REFKEEN - Some replacement
+	BE_SDL_TimeCountWaitFromSrc(lasttimecount, MINTICS);
+	newtime = SD_GetTimeCount();
+	tics = newtime-lasttimecount;
+#if 0
 	do
 	{
 		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
 		BE_SDL_ShortSleep();
 	} while (tics<MINTICS);
+#endif
 	lasttimecount = newtime;
 
 #ifdef PROFILE

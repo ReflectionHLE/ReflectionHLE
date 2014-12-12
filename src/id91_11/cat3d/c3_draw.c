@@ -1468,10 +1468,11 @@ void CalcTics (void)
 // take DEMOTICS or more tics, and modify Timecount to reflect time taken
 //
 		oldtimecount = lasttimecount;
-		while (SD_GetTimeCount()<oldtimecount+DEMOTICS*2)
-		{
-			BE_SDL_ShortSleep();
-		}
+		BE_SDL_TimeCountWaitForDest(oldtimecount+DEMOTICS*2);
+#if 0
+		while (TimeCount<oldtimecount+DEMOTICS*2)
+		;
+#endif
 		lasttimecount = oldtimecount + DEMOTICS;
 		SD_SetTimeCount(lasttimecount + DEMOTICS);
 		tics = DEMOTICS;
@@ -1481,6 +1482,11 @@ void CalcTics (void)
 //
 // non demo, so report actual time
 //
+		// (REFKEEN) SPECIAL - Without this the game
+		// can run very fast, even if it's not noticeable
+		// (a lot of PlayLoop iterations and consumed CPU power)
+		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		//
 		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
 		lasttimecount = newtime;
@@ -1498,9 +1504,6 @@ void CalcTics (void)
 			SD_SetTimeCount(SD_GetTimeCount() - (tics-MAXTICS));
 			tics = MAXTICS;
 		}
-
-		// (REFKEEN) SPECIAL
-		BE_SDL_ThreeDRefreshSleep();
 	}
 }
 

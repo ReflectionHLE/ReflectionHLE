@@ -790,81 +790,8 @@ void BE_SDL_puts(const char *str)
 	BEL_SDL_Simplified_putsorprintf("\n", true, true, false);
 }
 
-void BE_SDL_UpdateHostDisplay(void);
 
-void BE_SDL_WaitVBL(int16_t number)
-{
-	// TODO (REFKEEN) Make a difference based on HW?
-	Uint32 startTicks = SDL_GetTicks();
-	if (SDL_GetTicks() - startTicks < (int)number*1000000/70086)
-	{
-		SDL_Delay(1);
-		BE_SDL_UpdateHostDisplay();
-		BE_SDL_PollEvents();
-	}
-	while (SDL_GetTicks() - startTicks < (int)number*1000000/70086)
-	{
-		SDL_Delay(1);
-		BE_SDL_PollEvents();
-	}
-}
-
-// Call during a busy loop of some unknown duration (e.g., waiting for key press/release)
-void BE_SDL_ShortSleep(void)
-{
-	SDL_Delay(1);
-	// TODO: Make this more efficient
-	BE_SDL_UpdateHostDisplay();
-	BE_SDL_PollEvents();
-}
-
-// Use this ONLY in Catacombs' CalcTics (from ThreeDRefresh)
-void BE_SDL_ThreeDRefreshSleep(void)
-{
-	SDL_Delay(15);
-	// TODO: Make this more efficient?
-	BE_SDL_UpdateHostDisplay();
-	BE_SDL_PollEvents();
-}
-
-static uint64_t g_sdlLastFizzleTimeInMicroSec;
-
-void BE_SDL_FizzleFadeSleepInit(void)
-{
-	g_sdlLastFizzleTimeInMicroSec = 1000*(uint64_t)SDL_GetTicks();
-}
-
-// Use this ONLY in Catacombs' FizzleFade (each internal loop iteration)
-void BE_SDL_FizzleFadeSleep(void)
-{
-	const int64_t fizzleIterationInMicroSSec = 40; // For a few pixels
-
-	if ((int32_t)(1000*(uint64_t)SDL_GetTicks() - g_sdlLastFizzleTimeInMicroSec) < fizzleIterationInMicroSSec)
-	{
-		BE_SDL_UpdateHostDisplay();
-		while ((int64_t)(1000*(uint64_t)SDL_GetTicks() - g_sdlLastFizzleTimeInMicroSec) < fizzleIterationInMicroSSec)
-		{
-			SDL_Delay(1);
-		}
-		BE_SDL_PollEvents();
-	}
-	g_sdlLastFizzleTimeInMicroSec += fizzleIterationInMicroSSec;
-}
-
-
-void BE_SDL_Delay(uint16_t msec) // Replacement for delay from dos.h
-{
-	uint32_t endTime = SDL_GetTicks() + msec;
-	while ((int32_t)(SDL_GetTicks() - endTime) < 0)
-	{
-		BE_SDL_ShortSleep();
-	}
-}
-
-
-
-
-void BE_SDL_UpdateHostDisplay(void)
+void BEL_SDL_UpdateHostDisplay(void)
 {
 	if (g_sdlScreenMode == 3) // Text mode
 	{

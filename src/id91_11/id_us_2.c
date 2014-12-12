@@ -1363,12 +1363,12 @@ USL_PlayPong(void)
 			by = (BallMinY + ((BallMaxY - BallMinY) / 2)) << 2;
 		}
 		VW_UpdateScreen();
-		while (waittime == SD_GetTimeCount())
-		{
+		BE_SDL_TimeCountWaitFromSrc(waittime, 1);
+#if 0
+		while (waittime == TimeCount)
 			;       // DEBUG - do adaptiveness
 			BE_SDL_ShortSleep();
-		}
-		BE_SDL_ShortSleep();
+#endif
 	} while ((LastScan != sc_Escape) && !done);
 	IN_ClearKeysDown();
 }
