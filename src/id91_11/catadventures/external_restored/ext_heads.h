@@ -38,6 +38,14 @@
 #include <unistd.h>
 #include <time.h>
 
+#ifdef REFKEEN_VER_CATABYSS
+#define EXTENSION "ABS"
+#elif defined REFKEEN_VER_CATARM
+#define EXTENSION "ARM"
+#elif defined REFKEEN_VER_CATAPOC
+#define EXTENSION "APC"
+#endif
+
 #define GRMODE EGAGR
 
 //

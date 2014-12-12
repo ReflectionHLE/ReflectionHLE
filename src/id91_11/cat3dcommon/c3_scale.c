@@ -1,4 +1,4 @@
-/* Catacomb Abyss Source Code
+/* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,12 @@
 
 // C3_SCALE.C
 
+#ifdef REFKEEN_VER_CATADVENTURES
 #include "def.h"
+#else
+#include "c3_def.h"
+#endif
+
 #include <stddef.h> // For offsetof
 #pragma hdrstop
 
@@ -26,8 +31,13 @@
 const	id0_unsigned_t	screenbwide = 40;
 const	id0_byte_t		BACKGROUNDPIX	=   5;
 
+#ifdef REFKEEN_VER_CATADVENTURES
 id0_unsigned_t		shapesize[NUMSCALEPICS];
 t_compscale id0_seg *scaledirectory[NUMSCALEPICS];
+#else
+id0_unsigned_t		shapesize[MAXSCALE+1];
+t_compscale id0_seg *scaledirectory[MAXSCALE+1];
+#endif
 t_compshape id0_seg *shapedirectory[NUMSCALEPICS];
 memptr			walldirectory[NUMSCALEWALLS];
 
@@ -58,7 +68,11 @@ void DeplanePic (id0_int_t picnum)
 	width = pictable[picnum-STARTPICS].width;
 	height = pictable[picnum-STARTPICS].height;
 
+#ifdef REFKEEN_VER_CATADVENTURES
 	if (width>8 || height!=64)
+#else
+	if (width>64 || height!=64)
+#endif
 		Quit ("DePlanePic: Bad size shape");
 
 	memset (spotvis,BACKGROUNDPIX,sizeof(spotvis));
@@ -541,10 +555,12 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 //
 	totalsize = codeEgaOff-workEgaOff;
 	//totalsize = FP_OFF(code);
+#ifdef REFKEEN_VER_CATADVENTURES
 
 	if (totalsize >= (PAGELEN*2))
 		Quit("BuildCompShape(): Shape is too complex!");
 
+#endif
 	MM_GetPtr ((memptr *)finalspot,totalsize);
 	BE_SDL_EGAFetchGFXBuffer((id0_byte_t *)*finalspot, workEgaOff, totalsize, 0);
 	//_fmemcpy ((id0_byte_t id0_seg *)(*finalspot),(id0_byte_t id0_seg *)work,totalsize);
@@ -607,9 +623,12 @@ static void ExecuteCompShape(const id0_byte_t *codePtr, id0_byte_t *comptablebuf
 
 void ScaleShape (id0_int_t xcenter, t_compshape id0_seg *compshape, id0_unsigned_t scale)
 {
-	#define MAX_OBJ_SCALE (MAXSCALE)
-
-
+	// REFKEEN - In vanilla Catacomb Abyss MAX_OBJ_SCALE is defined
+	// to be (MAXSCALE) here, and is used as a bound for scale below
+	// instead of MAXSCALE. Since MAXSCALE is defined as (VIEWWIDTH/2)
+	// in Catacomb 3-D and all episodes of the Adventures series
+	// (so the parentheses are guarding from unexpected behaviors),
+	// there's no real need to use MAX_OBJ_SCALE here.
 	t_compscale id0_seg *comptable;
 	id0_unsigned_t	width,scalewidth;
 	id0_int_t			x,pixel,lastpixel,pixwidth,min;
@@ -624,8 +643,8 @@ void ScaleShape (id0_int_t xcenter, t_compshape id0_seg *compshape, id0_unsigned
 	if (!scale)
 		return;								// too far away
 
-	if (scale>MAX_OBJ_SCALE)
-		scale = MAX_OBJ_SCALE;
+	if (scale>MAXSCALE)
+		scale = MAXSCALE;
 
 	comptable = scaledirectory[scale];
 

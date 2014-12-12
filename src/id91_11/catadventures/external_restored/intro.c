@@ -17,7 +17,9 @@
  */
 
 /* Reconstructed from the INTRO.EXE file bundled with The Catacomb Abyss
- * Shareware v1.13, using available source files
+ * Shareware v1.13, using available source files; Then modified to optionally
+ * act like any of CATABYSS.EXE, CATARM.EXE or CATAPOC.EXE from the last
+ * retail release (Abyss v1.24, Armageddon v1.02, Apocalypse v1.01).
  */
 
 //#include <conio.h>
@@ -25,6 +27,72 @@
 
 #include "ext_heads.h"
 #include "ext_gelib.h"
+
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
+
+#define FRAMETOP_STR  "\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n"
+
+#define TITLE_STR     "\xB3 GAMER'S EDGE Catacomb Abyss Introduction Program \xB3\r\n"
+#define AUTHOR_STR    "\xB3 by Nolan Martin                                  \xB3\r\n"
+#define COPYRIGHT_STR "\xB3 Copyright 1992 - Softdisk Publishing             \xB3\r\n"
+
+#define FRAMEBOT_STR  "\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n"
+
+#define VERSION_TITLE_STR "THE CATACOMB ABYSS INTRODUCTION PROGRAM"
+#define VERSION_REV_STR " VERSION 1.01   QA[0]"
+
+#define GAMEEXE_MAIN_FUNCNAME abysgame_exe_main
+//#define GAMEEXE_FILENAME "CATABYSS.EXE"
+
+#elif defined REFKEEN_VER_CATABYSS
+
+#define FRAMETOP_STR  "\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n"
+
+#define TITLE_STR     "\xB3 Catacomb Abyss 3-D Introduction Program  \xB3\r\n"
+#define AUTHOR_STR    "\xB3 by Nolan Martin                          \xB3\r\n"
+#define COPYRIGHT_STR "\xB3 Copyright 1992-1993 Softdisk Publishing  \xB3\r\n"
+
+#define FRAMEBOT_STR  "\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n"
+
+#define VERSION_TITLE_STR "The Catacomb Abyss 3-D Introduction Program"
+#define VERSION_REV_STR " version 1.06  (Rev 1) "
+
+#define GAMEEXE_MAIN_FUNCNAME abysgame_exe_main
+//#define GAMEEXE_FILENAME "ABYSGAME.EXE"
+
+#elif defined REFKEEN_VER_CATARM
+
+#define FRAMETOP_STR  "\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n"
+
+#define TITLE_STR     "\xB3 Catacomb Armageddon 3-D Introduction Program \xB3\r\n"
+#define AUTHOR_STR    "\xB3 by Nolan Martin                              \xB3\r\n"
+#define COPYRIGHT_STR "\xB3 Copyright 1992-93 - Softdisk Publishing      \xB3\r\n"
+
+#define FRAMEBOT_STR  "\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n"
+
+#define VERSION_TITLE_STR "THE CATACOMB ARMAGEDDON 3-D INTRODUCTION PROGRAM"
+#define VERSION_REV_STR " VERSION 1.04   (REV 1)"
+
+#define GAMEEXE_MAIN_FUNCNAME armgame_exe_main
+//#define GAMEEXE_FILENAME "ARMGAME.EXE"
+
+#elif defined REFKEEN_VER_CATAPOC
+
+#define FRAMETOP_STR  "\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n"
+
+#define TITLE_STR     "\xB3 Catacomb Apocalypse 3-D Introduction Program \xB3\r\n"
+#define AUTHOR_STR    "\xB3 by Nolan Martin                              \xB3\r\n"
+#define COPYRIGHT_STR "\xB3 Copyright 1992-93 - Softdisk Publishing      \xB3\r\n"
+
+#define FRAMEBOT_STR  "\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n"
+
+#define VERSION_TITLE_STR "THE CATACOMB APOCALYPSE 3-D INTRODUCTION PROGRAM"
+#define VERSION_REV_STR " VERSION 1.05 rev 1"
+
+#define GAMEEXE_MAIN_FUNCNAME apocgame_exe_main
+//#define GAMEEXE_FILENAME "APOCGAME.EXE"
+
+#endif
 
 static void SetScreenMode (id0_int_t mode);
 static void SetLineWidth (id0_int_t width);
@@ -35,20 +103,21 @@ static void FreeAllShapes();
 static id0_int_t screenmode;
 static cardtype videocard;
 
+// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+#if 0
 static id0_boolean_t havebeep = false;
+#endif
 
 static struct Shape app_start_shape,
                     page_1_shape, page_2_shape, page_3_shape, page_4_shape, page_5_shape,  
+#ifndef REFKEEN_VER_CATABYSS
+                    page_6_shape, page_7_shape,
+#endif
                     before_skill_choice_shape, after_loadgame_choice_shape,
                     novice_choice_shape, warrior_choice_shape, before_gamelaunch_shape;
-#if 0
-// Looks like there were some unused shapes...
-static struct Shape unused_1_shape, unused_2_shape, unused_3_shape, unused_4_shape,
-                    unused_5_shape, unused_6_shape, unused_7_shape, unused_8_shape,
-                    unused_9_shape, unused_10_shape, unused_11_shape, unused_12_shape,
-                    unused_13_shape;
-#endif
 
+// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+#if 0
 static void Beep(void)
 {
 	if (havebeep)
@@ -58,21 +127,23 @@ static void Beep(void)
 		BE_SDL_BNoSound();
 	}
 }
+#endif
 
-void abysgame_exe_main(void);
+// HACK
+void GAMEEXE_MAIN_FUNCNAME (void);
 
 void intro_exe_main(void)
 {
 	id0_boolean_t leave_init_sequence = false, leave_pre_skill_selection = false, leave_skill_selection = false, select_saved_game = false;
 	id0_int_t general_loop_var, init_sequence_iters_upperbound;
 	id0_int_t current_page = 0, last_key;
-	// (REFKEEN) DIFFERENCE FROM VANILLA CATACOMB ABYSS (SHAREWARE V1.13):
+	// (REFKEEN) DIFFERENCE FROM VANILLA CATACOMB ADVENTURES:
 	// Use this to skip the intro EXE and continue into the game
 	// immediately (with the code that makes it possible to play at all)
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/SKIPINTRO"))
 	{
 		id0_argv[1] = "^(a@&r`";
-		abysgame_exe_main();
+		GAMEEXE_MAIN_FUNCNAME ();
 		BE_SDL_HandleExit(0);
 	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/?"))
@@ -80,11 +151,11 @@ void intro_exe_main(void)
 		BE_SDL_clrscr();
 		BE_SDL_textcolor(15);
 		BE_SDL_textbackground(1);
-		BE_Cross_Simplified_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 GAMER'S EDGE Catacomb Abyss Introduction Program \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 by Nolan Martin                                  \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 Copyright 1992 - Softdisk Publishing             \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
+		BE_Cross_Simplified_cprintf(FRAMETOP_STR);
+		BE_Cross_Simplified_cprintf(TITLE_STR);
+		BE_Cross_Simplified_cprintf(AUTHOR_STR);
+		BE_Cross_Simplified_cprintf(COPYRIGHT_STR);
+		BE_Cross_Simplified_cprintf(FRAMEBOT_STR);
 		BE_Cross_Simplified_printf("\n");
 		BE_Cross_Simplified_printf("/VER  - version number\n");
 		BE_Cross_Simplified_printf("/?    - this help\n");
@@ -95,29 +166,35 @@ void intro_exe_main(void)
 		BE_SDL_clrscr();
 		BE_SDL_textcolor(15);
 		BE_SDL_textbackground(1);
-		BE_Cross_Simplified_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 GAMER'S EDGE Catacomb Abyss Introduction Program \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 by Nolan Martin                                  \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 Copyright 1992 - Softdisk Publishing             \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
+		BE_Cross_Simplified_cprintf(FRAMETOP_STR);
+		BE_Cross_Simplified_cprintf(TITLE_STR);
+		BE_Cross_Simplified_cprintf(AUTHOR_STR);
+		BE_Cross_Simplified_cprintf(COPYRIGHT_STR);
+		BE_Cross_Simplified_cprintf(FRAMEBOT_STR);
 		BE_Cross_Simplified_printf("\n");
 		// TODO (REFKEEN) No need but...
-		BE_Cross_Simplified_printf("THE CATACOMB ABYSS INTRODUCTION PROGRAM  VERSION 1.01   QA[0]\n");
-		//BE_Cross_Simplified_printf("%s %s\n", "THE CATACOMB ABYSS INTRODUCTION PROGRAM", " VERSION 1.01   QA[0]");
+		BE_Cross_Simplified_printf(VERSION_TITLE_STR" "VERSION_REV_STR"\n");
+		//BE_Cross_Simplified_printf("%s %s\n", VERSION_TITLE_STR, VERSION_REV_STR);
 		BE_Cross_Simplified_printf("\n");
 		BE_Cross_Simplified_printf("This program requires an EGA monitor or better,\n");
 		BE_Cross_Simplified_printf("                640K, and MS-DOS 3.0 or better.\n");
 		BE_SDL_HandleExit(0);
 	}
+	// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+#if 0
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/S") || !BE_Cross_strcasecmp(id0_argv[2], "/S") || !BE_Cross_strcasecmp(id0_argv[3], "/S") || !BE_Cross_strcasecmp(id0_argv[4], "/S"))
 		havebeep = false;
-	// REFKEEN difference from vanilla Catacomb Abyss (Shareware releases):
-	// Role of ^(a@&r1 for INTRO.EXE has been filled. No need to pass it
-	// (or use start), but if ^(a@&r1 is added then you get this message.
+#endif
+	// REFKEEN difference from vanilla Catacomb Abyss (Shareware release):
+	// Role of ^(a@&r` for INTRO.EXE has been filled. No need to pass it
+	// (or use start), but if ^(a@&r` is added then you get this message.
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 	if (!BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
 	{
+		// Yeah, no mistake, it originally said Apocalypse, NOT Abyss.
 		TrashProg("You must type START [ENTER] to run CATACOMB APOCALYPSE!\n");
 	}
+#endif
 	videocard = VideoID();
 	if ((videocard != 3) && (videocard != 5))
 		TrashProg("You need an EGA or VGA monitor to run this program.\n", "Please read the \"INSTRUCTIONS SECTION\" of the START program.\n");
@@ -126,7 +203,11 @@ void intro_exe_main(void)
 	SetScreen(0,0);
 
 	// Prepare to enter the CATACOMB...
-	if (ext_LoadShape("SHP05.ABS", &app_start_shape))
+#ifdef REFKEEN_VER_CATABYSS
+	if (ext_LoadShape("SHP05."EXTENSION, &app_start_shape))
+#else
+	if (ext_LoadShape("SHP8."EXTENSION, &app_start_shape))
+#endif
 		TrashProg("ERROR : Can't load image.");
 	ext_MoveGfxDst(0, 200);
 	UnpackEGAShapeToScreen(&app_start_shape, (320-app_start_shape.bmHdr.w)/2, (200-app_start_shape.bmHdr.h)/2);
@@ -136,39 +217,81 @@ void intro_exe_main(void)
 	BE_SDL_Delay(250);
 	WaitForKeyRelease();
 
-	if (ext_LoadShape("SHP01.ABS", &page_2_shape))
+#ifdef REFKEEN_VER_CATABYSS
+	if (ext_LoadShape("SHP01."EXTENSION, &page_2_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP02.ABS", &page_3_shape))
+	if (ext_LoadShape("SHP02."EXTENSION, &page_3_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP03.ABS", &page_4_shape))
+	if (ext_LoadShape("SHP03."EXTENSION, &page_4_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP04.ABS", &app_start_shape))
+	if (ext_LoadShape("SHP04."EXTENSION, &app_start_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP06.ABS", &before_gamelaunch_shape))
+	if (ext_LoadShape("SHP06."EXTENSION, &before_gamelaunch_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP07.ABS", &before_skill_choice_shape))
+	if (ext_LoadShape("SHP07."EXTENSION, &before_skill_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP08.ABS", &novice_choice_shape))
+	if (ext_LoadShape("SHP08."EXTENSION, &novice_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP09.ABS", &warrior_choice_shape))
+	if (ext_LoadShape("SHP09."EXTENSION, &warrior_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP10.ABS", &after_loadgame_choice_shape))
+	if (ext_LoadShape("SHP10."EXTENSION, &after_loadgame_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP11.ABS", &page_5_shape))
+	if (ext_LoadShape("SHP11."EXTENSION, &page_5_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP12.ABS", &page_1_shape))
+	if (ext_LoadShape("SHP12."EXTENSION, &page_1_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
+#else
+	if (ext_LoadShape("SHP1."EXTENSION, &page_2_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP2."EXTENSION, &page_3_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP3."EXTENSION, &page_4_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP4."EXTENSION, &page_5_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP5."EXTENSION, &page_6_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP6."EXTENSION, &page_7_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP7."EXTENSION, &app_start_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP9."EXTENSION, &before_gamelaunch_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP10."EXTENSION, &before_skill_choice_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP11."EXTENSION, &novice_choice_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP12."EXTENSION, &warrior_choice_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP13."EXTENSION, &after_loadgame_choice_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+	if (ext_LoadShape("SHP14."EXTENSION, &page_1_shape))
+		TrashProg("ERROR : Can't load image.");
+	WaitForKeyRelease();
+#endif
 
 	current_page = 0;
 	if (id0_argc < 3)
@@ -186,46 +309,80 @@ void intro_exe_main(void)
 		{
 			switch (current_page)
 			{
-			case 0: // The mad gamers of Gamer's Edge present
+			case 0: // Present
 				ext_MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&page_1_shape, 0, 0);
 				ScreenToScreen(8000, 0, 40, 200);
 				++current_page;
-				Beep();
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
 				break;
 			case 1: // A SoftDisk Publishing production
 				ext_MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&page_2_shape, 0, 0);
 				ScreenToScreen(8000, 0, 40, 200);
 				++current_page;
-				Beep();
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
 				break;
-			case 2: // The Catacomb Abyss 3D
+			case 2: // Title screen
 				ext_MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&page_3_shape, 0, 0);
 				ScreenToScreen(8000, 0, 40, 200);
 				++current_page;
-				Beep();
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
 				break;
-			case 3: // Credits
+			case 3: // Credits #1
 				ext_MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&page_4_shape, 0, 0);
 				ScreenToScreen(8000, 0, 40, 200);
 				++current_page;
-				Beep();
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
 				break;
-			case 4: // The Catacomb Adventure Series
+			case 4: // Credits #2 / The Catacomb Adventure Series
 				ext_MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&page_5_shape, 0, 0);
 				ScreenToScreen(8000, 0, 40, 200);
+#ifdef REFKEEN_VER_CATABYSS
 				current_page = 0;
-				Beep();
+#else
+				++current_page;
+#endif
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
 				break;
+#ifndef REFKEEN_VER_CATABYSS
+			case 5: // Credits #3
+				ext_MoveGfxDst(0, 200);
+				UnpackEGAShapeToScreen(&page_6_shape, 0, 0);
+				ScreenToScreen(8000, 0, 40, 200);
+				++current_page;
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
+				break;
+			case 6: // Credits #4
+				ext_MoveGfxDst(0, 200);
+				UnpackEGAShapeToScreen(&page_7_shape, 0, 0);
+				ScreenToScreen(8000, 0, 40, 200);
+				current_page = 0;
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
+				break;
+#endif
 			}
+#ifdef REFKEEN_VER_CATABYSS
 			if (current_page == 2)
 				init_sequence_iters_upperbound = 150;
 			else
 				init_sequence_iters_upperbound = 100;
+#else
+			if (current_page == 2)
+				init_sequence_iters_upperbound = 240;
+			else
+				init_sequence_iters_upperbound = 120;
+#endif
 			for (general_loop_var = 0; general_loop_var <= init_sequence_iters_upperbound; ++general_loop_var)
 			{
 				BE_SDL_Delay(50);
@@ -234,6 +391,7 @@ void intro_exe_main(void)
 				{
 					FreeAllShapes();
 					SetScreenMode(1);
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 					id0_argc = 2;
 					id0_argv[1] = "LAST.SHL";
 					id0_argv[2] = "ENDSCN.SCN";
@@ -249,6 +407,9 @@ void intro_exe_main(void)
 						BE_SDL_HandleExit(1);
 					}
 #endif
+#else
+					BE_SDL_HandleExit(0);
+#endif
 				}
 				else if (last_key == 0x1C/*0x1C0D*/) // Enter
 				{
@@ -261,6 +422,7 @@ void intro_exe_main(void)
 					select_saved_game = true;
 					general_loop_var = 600;
 				}
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 				else if (last_key == 0x44/*0x4400*/) // F10 (Demo)
 				{
 					SetScreenMode(1);
@@ -277,6 +439,7 @@ void intro_exe_main(void)
 					}
 #endif
 				}
+#endif
 			}
 		}
 		for (leave_pre_skill_selection = false; !leave_pre_skill_selection; )
@@ -296,7 +459,8 @@ void intro_exe_main(void)
 				UnpackEGAShapeToScreen(&before_gamelaunch_shape, 0, 0);
 				UnpackEGAShapeToScreen(&after_loadgame_choice_shape, (320-after_loadgame_choice_shape.bmHdr.w)/2, 192);
 				ScreenToScreen(8000, 0, 40, 200);
-				Beep();
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
 				TrashProg(NULL);
 			}
 			else
@@ -313,7 +477,8 @@ void intro_exe_main(void)
 				ext_MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&before_skill_choice_shape, 0, 0);
 				ScreenToScreen(8000, 0, 40, 200);
-				Beep();
+				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+				//Beep();
 				for (leave_skill_selection = false; !leave_skill_selection; )
 				{
 					last_key = TryGetScanCode();
@@ -332,7 +497,8 @@ void intro_exe_main(void)
 						UnpackEGAShapeToScreen(&before_gamelaunch_shape, 0, 0);
 						UnpackEGAShapeToScreen(&warrior_choice_shape, (320-warrior_choice_shape.bmHdr.w)/2, 192);
 						ScreenToScreen(8000, 0, 40, 200);
-						Beep();
+						// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+						//Beep();
 						WaitForKeyRelease();
 						while (!(last_key = TryGetScanCode()))
 							BE_SDL_ShortSleep();
@@ -343,7 +509,8 @@ void intro_exe_main(void)
 							ext_MoveGfxDst(0, 200);
 							UnpackEGAShapeToScreen(&app_start_shape, 0, 0);
 							ScreenToScreen(8000, 0, 40, 200);
-							Beep();
+							// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+							//Beep();
 							BE_SDL_BiosScanCode(0);
 							TrashProg(NULL);
 						}
@@ -363,7 +530,8 @@ void intro_exe_main(void)
 						UnpackEGAShapeToScreen(&before_gamelaunch_shape, 0, 0);
 						UnpackEGAShapeToScreen(&novice_choice_shape, (320-novice_choice_shape.bmHdr.w)/2, 192);
 						ScreenToScreen(8000, 0, 40, 200);
-						Beep();
+						// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+						//Beep();
 						WaitForKeyRelease();
 						while (!(last_key = TryGetScanCode()))
 							BE_SDL_ShortSleep();
@@ -374,7 +542,8 @@ void intro_exe_main(void)
 							ext_MoveGfxDst(0, 200);
 							UnpackEGAShapeToScreen(&app_start_shape, 0, 0);
 							ScreenToScreen(8000, 0, 40, 200);
-							Beep();
+							// REFKEEN havebeep is always false (and code was removed for Apocalypse)
+							//Beep();
 							BE_SDL_BiosScanCode(0);
 							TrashProg(NULL);
 						}
@@ -383,7 +552,11 @@ void intro_exe_main(void)
 					{
 						leave_pre_skill_selection = true;
 						leave_skill_selection = true;
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 						current_page = 1;
+#else
+						current_page = 2;
+#endif
 					}
 					else
 					{
@@ -417,9 +590,9 @@ void intro_TrashProg (id0_char_t *OutMsg, ...)
 		id0_argv[id0_argc++] = "/NODR";
 		id0_argv[id0_argc] = NULL;
 
-		abysgame_exe_main();
+		GAMEEXE_MAIN_FUNCNAME ();
 #if 0
-		if (execv("CATABYSS.EXE", id0_argv) == -1)
+		if (execv(GAMEEXE_FILENAME, id0_argv) == -1)
 		{
 			SetScreenMode(1);
 			printf("ERROR : Can't find executable.\n");
@@ -526,9 +699,18 @@ static void WaitForKeyRelease (void)
 
 static void FreeAllShapes()
 {
+#ifdef REFKEEN_VER_CATABYSS
 	ext_FreeShape(&page_3_shape);
 	ext_FreeShape(&page_2_shape);
 	ext_FreeShape(&page_4_shape);
+#else
+	ext_FreeShape(&page_4_shape);
+	ext_FreeShape(&page_5_shape);
+	ext_FreeShape(&page_6_shape);
+	ext_FreeShape(&page_7_shape);
+	ext_FreeShape(&page_3_shape);
+	ext_FreeShape(&page_2_shape);
+#endif
 	ext_FreeShape(&app_start_shape);
 	ext_FreeShape(&before_skill_choice_shape);
 	ext_FreeShape(&before_gamelaunch_shape);

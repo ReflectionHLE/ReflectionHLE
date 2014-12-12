@@ -11,6 +11,7 @@ endif
 STRIPBIN=$(BINPREFIX)strip
 SDLCONFIG=sdl2-config
 SRC=.
+C3DCOMMONSRC=../cat3dcommon
 IDSRC=..
 BESRC=../..
 OBJPREFIX=obj
@@ -31,10 +32,12 @@ OBJECTS=$(OBJ)/c3_act1.o \
         $(OBJ)/c3_game.o \
         $(OBJ)/c3_main.o \
         $(OBJ)/c3_play.o \
-        $(OBJ)/c3_scale.o \
         $(OBJ)/c3_state.o \
         $(OBJ)/c3_trace.o \
         $(OBJ)/c3_wiz.o
+
+#Shared with Catacomb 3-D and the Adventures series
+OBJECTS+= $(OBJ)/c3_scale.o \
 
 IDOBJECTS=$(IDOBJ)/id_ca.o \
           $(IDOBJ)/id_in.o \
@@ -120,6 +123,10 @@ $(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(IDOBJ)/%.o: $(IDSRC)/%.c $(IDOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(OBJ)/c3_scale.o: $(C3DCOMMONSRC)/c3_scale.c | $(OBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(RSRCOBJ)/%.o: $(RSRCSRC)/%.c | $(RSRCOBJ)

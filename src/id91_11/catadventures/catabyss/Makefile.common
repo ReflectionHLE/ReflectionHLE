@@ -11,18 +11,20 @@ endif
 STRIPBIN=$(BINPREFIX)strip
 SDLCONFIG=sdl2-config
 SRC=.
-IDSRC=..
-BESRC=../..
-EXTSRC=external_restored
-OBJ=obj
+C3DCOMMONSRC=../../cat3dcommon
+IDSRC=../..
+BESRC=../../..
+EXTSRC=../external_restored
+OBJPREFIX=obj
+OBJ=$(OBJPREFIX)/$(VERDIRNAME)
 IDOBJ=$(OBJ)/id
 BEOBJ=$(OBJ)/be
 EXTOBJ=$(OBJ)/ext
 
-VERSRC=$(SRC)/catabshar113
+VERSRC=$(SRC)/$(VERDIRNAME)
 
 # HACK (Kind of)
-RSRCSRC=$(SRC)/static_shareware
+RSRCSRC=$(VERSRC)/static
 RSRCOBJ=$(OBJ)/static
 
 OBJECTS=$(OBJ)/c4_act1.o \
@@ -32,11 +34,13 @@ OBJECTS=$(OBJ)/c4_act1.o \
         $(OBJ)/c4_game.o \
         $(OBJ)/c4_main.o \
         $(OBJ)/c4_play.o \
-        $(OBJ)/c4_scale.o \
         $(OBJ)/c4_state.o \
         $(OBJ)/c4_trace.o \
         $(OBJ)/c4_wiz.o \
         $(OBJ)/gelib.o
+
+#Shared with Catacomb 3-D and the Adventures series
+OBJECTS+= $(OBJ)/c3_scale.o \
 
 IDOBJECTS=$(IDOBJ)/id_ca.o \
           $(IDOBJ)/id_in.o \
@@ -54,8 +58,11 @@ EXTOBJECTS=$(EXTOBJ)/ext_ca.o \
            $(EXTOBJ)/ext_lzhuf.o \
            $(EXTOBJ)/ext_soft.o \
            $(EXTOBJ)/ext_vw_a.o \
-           $(EXTOBJ)/intro.o \
-           $(EXTOBJ)/loadscn.o
+           $(EXTOBJ)/intro.o
+
+ifeq ($(VERDIRNAME), catabyss113)
+EXTOBJECTS+= $(EXTOBJ)/loadscn.o
+endif
 
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
@@ -73,9 +80,14 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/egahead.o \
              $(RSRCOBJ)/mtemp.o
 
-INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATABYSS=1 -DREFKEEN_VER_CATABYSS_SHAR_113=1 -DREFKEEN_VER_CATABYSS_SHAR_ALL=1 -DREFKEEN_VER_CATACOMB_ALL=1
+INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATABYSS=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
-EXENAME=refcatabyss
+ifeq ($(VERDIRNAME), catabyss113)
+INTCXXFLAGS+= -DREFKEEN_VER_CATABYSS_SHAR_ALL=1
+EXENAME=refcatabyss-113
+else ifeq ($(VERDIRNAME), catabyss124)
+EXENAME=refcatabyss-124
+endif
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG
@@ -122,6 +134,10 @@ $(EXTOBJ)/%.o: $(EXTSRC)/%.c $(EXTOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(IDOBJ)/%.o: $(IDSRC)/%.c $(IDOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(OBJ)/c3_scale.o: $(C3DCOMMONSRC)/c3_scale.c | $(OBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(RSRCOBJ)/%.o: $(RSRCSRC)/%.c | $(RSRCOBJ)
@@ -135,8 +151,10 @@ $(BEOBJ): | $(OBJ)
 	-mkdir $(BEOBJ)
 $(IDOBJ): | $(OBJ)
 	-mkdir $(IDOBJ)
-$(OBJ):
+$(OBJ): | $(OBJPREFIX)
 	-mkdir $(OBJ)
+$(OBJPREFIX):
+	-mkdir $(OBJPREFIX)
 
 clean:
 	-rm -f $(EXE_PATH) $(OBJECTS) $(IDOBJECTS) $(EXTOBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)

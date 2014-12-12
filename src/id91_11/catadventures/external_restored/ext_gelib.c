@@ -46,19 +46,20 @@ id0_unsigned_t displayofs;
 
 void TrashProg (id0_char_t *OutMsg, ...)
 {
-	void intro_TrashProg (id0_char_t *OutMsg, ...);
-	void loadscn_TrashProg (id0_char_t *OutMsg, ...);
-
 	va_list ap;
 	va_start(ap, OutMsg);
 
-	if (!strcmp(id0_argv[0], "INTRO.EXE"))
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
+	if (strcmp(id0_argv[0], "INTRO.EXE"))
 	{
-		intro_TrashProg(OutMsg, ap);
+		void loadscn_TrashProg (id0_char_t *OutMsg, ...);
+		loadscn_TrashProg(OutMsg, ap);
 	}
 	else
+#endif
 	{
-		loadscn_TrashProg(OutMsg, ap);
+		void intro_TrashProg (id0_char_t *OutMsg, ...);
+		intro_TrashProg(OutMsg, ap);
 	}
 	va_end(ap);
 }
