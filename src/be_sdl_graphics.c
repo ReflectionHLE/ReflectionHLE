@@ -142,12 +142,11 @@ void BE_SDL_InitGfx(void)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
 		exit(0);
 	}
-#if (GRMODE == EGAGR) && (!defined CAT3D)
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_refKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync == VSYNC_OFF) ? 0 : SDL_RENDERER_PRESENTVSYNC));
-#else
-	// There was no VSync in the case of CGA graphics, and it may be better
-	// for the Catacombs too for now (Skull 'n' Bones can be a bit slower with that)
+#ifdef REFKEEN_VER_ANY_CGA
+	// Vanilla Keen Dreams and Keen 4-6 have no VSync in the CGA builds
 	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_refKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync == VSYNC_ON) ? SDL_RENDERER_PRESENTVSYNC : 0));
+#else
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_refKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync == VSYNC_OFF) ? 0 : SDL_RENDERER_PRESENTVSYNC));
 #endif
 	if (!g_sdlRenderer)
 	{
