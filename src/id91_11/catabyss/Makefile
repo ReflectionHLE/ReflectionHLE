@@ -129,6 +129,8 @@ $(RSRCOBJ)/%.o: $(RSRCSRC)/%.c | $(RSRCOBJ)
 
 $(RSRCOBJ): | $(OBJ)
 	-mkdir $(RSRCOBJ)
+$(EXTOBJ): | $(OBJ)
+	-mkdir $(EXTOBJ)
 $(BEOBJ): | $(OBJ)
 	-mkdir $(BEOBJ)
 $(IDOBJ): | $(OBJ)
