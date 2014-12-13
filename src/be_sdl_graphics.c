@@ -80,6 +80,8 @@ void BE_SDL_InitGfx(void)
 	const char *windowTitle = "Ref Catacomb 3-D";
 #elif defined REFKEEN_VER_CATABYSS
 	const char *windowTitle = "Ref Catacomb Abyss";
+#elif defined REFKEEN_VER_CATARM
+	const char *windowTitle = "Ref Catacomb Armageddon";
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif

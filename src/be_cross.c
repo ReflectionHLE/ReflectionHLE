@@ -9,7 +9,7 @@
 #include "kd_def.h"
 #elif defined REFKEEN_VER_CAT3D
 #include "c3_def.h"
-#elif defined REFKEEN_VER_CATABYSS
+#elif defined REFKEEN_VER_CATADVENTURES
 #include "def.h"
 #else
 #error "FATAL ERROR: No Reflection port game macro is defined!"

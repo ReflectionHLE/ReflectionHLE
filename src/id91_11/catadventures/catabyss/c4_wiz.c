@@ -165,7 +165,7 @@ void DrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile)
 	// so numbers aren't drawn in the following call to RedrawStatusWindow.
 	// We add a workaround here since we don't store EGA write/read mode
 	// related values internally (we almost don't need these).
-	if (id0_workaround_catabyss_exe_nodraw_digits_on_startup)
+	if (id0_workaround_catadventures_nodraw_digits_on_startup)
 	{
 		// FIXME: Have a separate handler accepting plane?
 		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff, egaSrcOff, 8);
@@ -569,7 +569,7 @@ void AddPoints (id0_int_t points)
 //===========================================================================
 
 // (REFKEEN) See description of vanilla bug reproduction below
-bool id0_workaround_catabyss_exe_nodraw_digits_on_startup;
+bool id0_workaround_catadventures_nodraw_digits_on_startup;
 
 /*
 ===============
@@ -612,7 +612,7 @@ void DrawHealth()
 	// This includes the health percentage above.
 	// We add a workaround here since we don't store EGA write/read mode
 	// related values internally (we almost don't need these).
-	id0_workaround_catabyss_exe_nodraw_digits_on_startup = false;
+	id0_workaround_catadventures_nodraw_digits_on_startup = false;
 
 	bufferofs = 0;
 	if (!percentage)

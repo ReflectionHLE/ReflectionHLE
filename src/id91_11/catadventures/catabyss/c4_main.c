@@ -1018,20 +1018,10 @@ void abysgame_exe_main (void)
 				// TODO (REFKEEN) Should we fix this?
 				// It is a simplified printf after all...
 #ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-				BE_Cross_Simplified_printf(GAMENAME);
-				BE_Cross_Simplified_printf("   ");
-				BE_Cross_Simplified_printf(VERSION);
-				BE_Cross_Simplified_printf("   ");
-				BE_Cross_Simplified_printf(REVISION);
-				BE_Cross_Simplified_printf("\n");
+				BE_Cross_Simplified_printf(GAMENAME"   "VERSION"   "REVISION"\n");
 				//BE_Cross_Simplified_printf("%s   %s   %s\n",GAMENAME,VERSION,REVISION);
 #else
-				BE_Cross_Simplified_printf(GAMENAME);
-				BE_Cross_Simplified_printf("  ");
-				BE_Cross_Simplified_printf(VERSION);
-				BE_Cross_Simplified_printf("  rev ");
-				BE_Cross_Simplified_printf(REVISION);
-				BE_Cross_Simplified_printf("\n");
+				BE_Cross_Simplified_printf(GAMENAME"  "VERSION"  rev "REVISION"\n");
 				//BE_Cross_Simplified_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
 #endif
 				BE_SDL_HandleExit(0);

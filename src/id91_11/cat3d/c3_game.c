@@ -369,6 +369,12 @@ static  id0_char_t    *levelnames[] =
 #else
 					"Nemesis's Lair"
 #endif
+	// REFKEEN - Vanilla Cat3D behavior reproduction:
+	// If F10+E cheat is used in the very last map, this is called with
+	// the following map, for which no title is shown,
+	// So, rather than undefined behaviors (possibly a crash),
+	// print empty string.
+					, ""
 				};
 void DrawEnterScreen (void)
 {

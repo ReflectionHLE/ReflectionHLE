@@ -998,9 +998,9 @@ US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 	//USL_MeasureString(s,&w,&h);
 
 	if (w > WindowW)
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_VER_CATABYSS
 		Quit("US_CPrintLine() - String exceeds width\n-->%s",s);
-#else
+#else // Yes, this applies to Catacomb 3-D and non-Abyss adventures!
 		Quit("US_CPrintLine() - String exceeds width");
 #endif
 	px = WindowX + ((WindowW - w) / 2);

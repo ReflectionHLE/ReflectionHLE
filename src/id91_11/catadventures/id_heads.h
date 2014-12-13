@@ -41,16 +41,33 @@
 //--------------------------------------------------------------------------
 
 // REFKEEN Use EXTENSION instead of EXT for simpler maintenance
+// (and header is unified for all 3 episodes of the Catacomb Adventures series)
+#ifdef REFKEEN_VER_CATABYSS
 #define EXTENSION "ABS"
+#elif defined REFKEEN_VER_CATARM
+#define EXTENSION "ARM"
+#elif defined REFKEEN_VER_CATAPOC
+#define EXTENSION "APC"
+#endif
 //#define	EXT	"ABS"
 
 // REFKEEN moved to bottom (where id0_char_t and more are defined)
 // - also modified type for different platforms
 //extern	id0_char_t id0_far introscn;
 
+#ifdef REFKEEN_VER_CATABYSS
 #include "gfxe_abs.h"
 #include "audioabs.h"
 #include "mapsabs.h"
+#elif defined REFKEEN_VER_CATARM
+#include "gfxe_arm.h"
+#include "audioarm.h"
+#include "mapsarm.h"
+#elif defined REFKEEN_VER_CATAPOC
+#include "gfxe_apc.h"
+#include "audioapc.h"
+#include "mapsapc.h"
+#endif
 
 //--------------------------------------------------------------------------
 
@@ -64,7 +81,14 @@
 #define tf_SOLID							0x01
 #define tf_SPECIAL						0x02
 #define tf_EMBEDDED_KEY_COLOR			0x04
+//
+#ifndef REFKEEN_VER_CATABYSS
+#define tf_INVISIBLE_WALL			0x09
+#define tf_MARKED                	0x80
 
+#define ANIM_FLAGS(tile)	(tinf[ANIM+(tile)])
+#endif
+//
 #define TILE_FLAGS(tile)   (tinf[FLAGS+(tile)])
 
 #define GATE_KEY_COLOR(tile)		((id0_unsigned_char_t)(TILE_FLAGS(tile)>>4))
@@ -111,6 +135,8 @@ typedef int8_t id0_char_t;
 
 typedef int8_t id0_signed_char_t;
 typedef uint8_t id0_unsigned_char_t;
+// Surprise! c5_game.c has this (could simply used signed char but eh...)
+typedef id0_signed_char_t id0_char_signed_t;
 typedef int16_t id0_short_t; // Possibly used in kd_main.c and external decompression routines for Keen Dreams
 typedef int16_t id0_int_t;
 typedef uint16_t id0_unsigned_t;
@@ -152,7 +178,7 @@ typedef	struct
 // so numbers aren't drawn in the following call to RedrawStatusWindow.
 // We add a workaround here since we don't store EGA write/read mode
 // related values internally (we almost don't need these).
-extern bool id0_workaround_catabyss_exe_nodraw_digits_on_startup;
+extern bool id0_workaround_catadventures_nodraw_digits_on_startup;
 
 // Initialized before calling vanilla app's (now renamed) main function
 extern int id0_argc;

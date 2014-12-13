@@ -18,7 +18,11 @@
 
 // C3_TRACE.C
 
+#ifdef REFKEEN_VER_CATADVENTURES
+#include "def.h"
+#else
 #include "c3_def.h"
+#endif
 #pragma hdrstop
 
 /*
@@ -394,6 +398,8 @@ id0_int_t BackTrace (id0_int_t finish)
     //
     if (TransformX (((id0_long_t)tile.x<<16)+point1x[wall],
 		    ((id0_long_t)tile.y<<16)+point1y[wall]) < FOCALLENGTH)
+    // REFKEEN Commented out code in Catacomb Abyss ONLY
+//		    ((id0_long_t)tile.y<<16)+point1y[wall]) < ((id0_long_t)FOCALLENGTH+30000l))
     {
       tile.x = otx;
       tile.y = oty;
@@ -767,7 +773,9 @@ advance:
   //
   // somethiing got messed up!  Correct by thrusting ahead...
   //
+#ifdef REFKEEN_VER_CAT3D
 		VW_ColorBorder(6);
+#endif
 		bordertime = 60;
 		Thrust(player->angle,TILEGLOBAL/4);
 		player->angle+=5;

@@ -1206,10 +1206,9 @@ id0_int_t IntSqrt(id0_long_t va)
 		// We want to add the result of "sar ax, 1" where ax stores res_div
 		result += ((res_div & 0x8000) | (res_div >> 1));
 	} while (true);
-	
 #if 0
-asm     mov     AX, id0_word_t ptr va
-asm     mov     DX, id0_word_t ptr va+2
+asm     mov     AX, word ptr va
+asm     mov     DX, word ptr va+2
 asm     mov     bx,dx           // {bx = integer square root of dx:ax}
 asm     or      bx,ax           // {if dx:ax=0 then return}
 asm     jz      isq01

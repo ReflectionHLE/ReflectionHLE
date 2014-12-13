@@ -493,6 +493,36 @@ void VW_DrawPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum)
 }
 
 
+// REFKEEN - Unused function from Catacomb Armageddon/Apocalypse (for gelib.c:Presenter)
+#if 0
+// MDM (GAMERS EDGE) begin
+/*
+====================
+=
+= VW_DrawPic2x - Same as VW_DrawPic, but doubles pixels horizontally
+=                (Great for drawing 320 graphics on 640 screen!)
+=
+= X in bytes, y in pixels, chunknum is the #defined picnum
+=
+====================
+*/
+
+void VW_DrawPic2x(unsigned x, unsigned y, unsigned chunknum)
+{
+	int	picnum = chunknum - STARTPICS;
+	memptr source;
+	unsigned dest,width,height;
+
+	source = grsegs[chunknum];
+	dest = ylookup[y]+x+bufferofs;
+	width = pictable[picnum].width;
+	height = pictable[picnum].height;
+
+	VW_MemToScreen2x(source,dest,width,height);
+}
+// MDM (GAMERS EDGE) end
+#endif
+
 #endif
 
 #if NUMPICM>0
@@ -1237,6 +1267,8 @@ void VW_QuitDoubleBuffer (void)
 
 id0_int_t VW_MarkUpdateBlock (id0_int_t x1, id0_int_t y1, id0_int_t x2, id0_int_t y2)
 {
+// MDM (GAMERS EDGE) begin - NOT NEEDED FOR 3D ENGINE
+#if !(defined REFKEEN_VER_CATADVENTURES) || (defined REFKEEN_VER_CATABYSS)
 	id0_int_t	x,y,xt1,yt1,xt2,yt2,nextline;
 	id0_byte_t *mark;
 
@@ -1276,6 +1308,8 @@ id0_int_t VW_MarkUpdateBlock (id0_int_t x1, id0_int_t y1, id0_int_t x2, id0_int_
 
 		mark += nextline;
 	}
+#endif
+// MDM (GAMERS EDGE) end
 
 	return 1;
 }

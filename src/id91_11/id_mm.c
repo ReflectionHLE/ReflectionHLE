@@ -48,19 +48,32 @@ EMS / XMS unmanaged routines
 #pragma warn -pro
 #pragma warn -use
 
-// REFKEEN - Use macro in Catacomb 3-D as well, with the original message
+// REFKEEN - Use macro for all titles, with the original message
 
-#ifndef REFKEEN_VER_CATADVENTURES
-
-#define OUT_OF_MEM_MSG	"MM_GetPtr: Out of memory!"
-
-#else // REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_VER_CATABYSS
 
 #define OUT_OF_MEM_MSG "\n"                                                                          \
 							  "You need more free memory to run CATACOMB ABYSS.  Type START [ENTER]\n"  \
 							  "and read the \"INFORMATION YOU SHOULD KNOW BEFORE PLAYING\" section\n"       \
 							  "for more information about this.\n"
-#endif // REFKEEN_VER_CATADVENTURES
+
+#elif defined REFKEEN_VER_CATARM
+
+#define OUT_OF_MEM_MSG	"\n"                                                                          \
+								"You need more memory to run CATACOMB ARMAGEDDON.  Read the INSTRUCTION\n"   \
+								"section of the START program for tips on getting more memory.\n"
+
+#elif defined REFKEEN_VER_CATAPOC
+
+#define OUT_OF_MEM_MSG	"\n"                                                                          \
+								"You need more memory to run CATACOMB APOCALYPSE.  Read the INSTRUCTION\n"   \
+								"section of the START program for tips on getting more memory.\n"
+
+#else // Default for e.g., Catacomb 3-D
+
+#define OUT_OF_MEM_MSG	"MM_GetPtr: Out of memory!"
+
+#endif
 
 
 /*
@@ -841,7 +854,12 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 	}
 
 	if (bombonerror)
-		Quit (OUT_OF_MEM_MSG); // REFKEEN - Always use macro, but with a game-specific message
+		// REFKEEN - Always use macro, but with a game-specific message
+#if (defined REFKEEN_VER_CATADVENTURES) && !(defined REFKEEN_VER_CATABYSS)
+		Quit (OUT_OF_MEM_MSG,(size-mminfo.nearheap));
+#else
+		Quit (OUT_OF_MEM_MSG);
+#endif
 	else
 		mmerror = true;
 }

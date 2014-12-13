@@ -40,6 +40,7 @@
 // ex: PERCENTAGE(320,16,8,8)    returns  160
 //
 //
+
 // (REFKEEN) Replace with distinct variations for compatibility (Used for drawing health and freeze time)
 #define PERCENTAGE_SIGNED16BITS(MAX_BASE,MAX_PERC,PERC,SCALE) ((id0_unsigned_t)(MAX_BASE*(((id0_int_t)(PERC<<SCALE))/MAX_PERC))>>SCALE)
 #define PERCENTAGE_SIGNED32BITS(MAX_BASE,MAX_PERC,PERC,SCALE) ((id0_unsigned_t)(MAX_BASE*(((id0_long_t)(PERC<<SCALE))/MAX_PERC))>>SCALE)

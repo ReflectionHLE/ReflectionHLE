@@ -65,3 +65,9 @@ Let's keep these as-is for now.
 *** doubles??? (c3_draw.c)
 
 *** Replacements of MAXINT and MININT (c3_draw.c)
+
+BONUS (Can be manually swapped since the compiler will probably complain otherwise)
+
+_seg -> id0_seg
+far -> id0_far
+huge -> id0_huge

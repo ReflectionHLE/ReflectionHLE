@@ -163,6 +163,9 @@ extern	id0_int_t		US_CheckParm(id0_char_t *parm,id0_char_t **strings),
 #define COMPAT_US_PRINTX_OFFSET 0xA24E
 #elif defined REFKEEN_VER_CATABYSS
 #define COMPAT_US_PRINTX_OFFSET 0xEB23
+#elif defined REFKEEN_VER_CATARM
+// FIXME COMPLETE THIS!
+#define COMPAT_US_PRINTX_OFFSET 0x8000
 #endif
 
 #endif

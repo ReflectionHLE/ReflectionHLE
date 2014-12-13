@@ -1,4 +1,4 @@
-/* Catacomb 3-D Source Code
+/* Catacomb Abyss Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,9 +16,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifdef REFKEEN_VER_CATADVENTURES
+#include "def.h"
+#define VIEWWIDTH (40*8)
+#else
 #include "c3_def.h"
-
 #define VIEWWIDTH (33*8)
+#endif
 
 //=================== Tables filled in by DrawVWall ==========================
 
@@ -179,6 +183,8 @@ EXTRN	scaledirectory:WORD			; array of MAXSCALE segment pointers to
 									; compiled scalers
 EXTRN	screenseg:WORD				; basically just 0xa000
 EXTRN	bufferofs:WORD				; offset of the current work screen
+EXTRN ylookup:WORD
+EXTRN screenpage:WORD
 #endif
 
 //============================================================================
@@ -291,4 +297,55 @@ done:
 	ret
 
 ENDP
+#endif
+
+#ifdef REFKEEN_VER_CATADVENTURES
+//---------------------------------------------------------------------------
+//
+// RadarBlip()
+//
+// Displays a 'blip' (1 pixel wide X 2 pixel high) on the radar at
+// an (X,Y) relative to (RADAR_X,RADAR_Y) (defined below...)
+//
+//---------------------------------------------------------------------------
+
+void RadarBlip(id0_word_t x, id0_word_t y, id0_word_t color)
+{
+	id0_word_t egaOffset = ylookup[y] + x/8;
+	BE_SDL_EGAUpdateGFXPixel4bpp(egaOffset, color&0xFF, ((unsigned)0x80)>>(x&7));
+#if 0
+	mov	ax,[screenseg]
+
+	mov	es,ax
+	xor	di,di
+
+	lea	si,[ylookup]
+	add	si,[y]
+	add	si,[y]
+	add	di,[si]
+
+	mov	ax,[x]
+	shr	ax,1
+	shr	ax,1
+	shr	ax,1
+	add	di,ax
+
+	mov	ax,[x]
+	and	ax,7
+	mov	cl,al
+	mov	ah,080h
+	shr	ah,cl
+	cli
+	mov	al,GC_BITMASK
+	mov	dx,GC_INDEX
+	out	dx,ax
+	sti
+
+	mov	ax,[color]
+	mov	ah,[es:di]						; read into latches
+	mov	[es:di],al						; write latches / color bit
+
+	ret
+#endif
+}
 #endif

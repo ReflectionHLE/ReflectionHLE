@@ -297,6 +297,7 @@ void	VW_SetAtrReg (id0_int_t reg, id0_int_t value);
 void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize);
 void VW_MemToScreen(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+//void VW_MemToScreen2x(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height); // REFKEEN - Unused function from Catacomb Armageddon/Apocalypse (for VW_DrawPic2x)
 void VW_ScreenToMem(id0_unsigned_t source,memptr dest,id0_unsigned_t width,id0_unsigned_t height);
 void VW_ScreenToScreen(id0_unsigned_t source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
 
@@ -330,6 +331,7 @@ void VW_DrawTile8(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile);
 #endif
 
 void VW_DrawPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum);
+//void VW_DrawPic2x(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum); // REFKEEN - Unused function from Catacomb Armageddon/Apocalypse (for gelib.c:Presenter)
 void VW_DrawMPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum);
 void VW_ClipDrawMPic(id0_unsigned_t x, id0_int_t y, id0_unsigned_t chunknum);
 
@@ -390,5 +392,8 @@ void VWB_DrawSprite (id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Plot (id0_int_t x, id0_int_t y, id0_int_t color);
 void VWB_Hlin (id0_int_t x1, id0_int_t x2, id0_int_t y, id0_int_t color);
 void VWB_Vlin (id0_int_t y1, id0_int_t y2, id0_int_t x, id0_int_t color);
+
+//VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height, fontstruct id0_seg *font); // REFKEEN - Unused function declaration from Catacomb Armageddon/Apocalypse (for gelib.c:Presenter)
+
 
 //===========================================================================

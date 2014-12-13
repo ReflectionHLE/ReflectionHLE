@@ -1960,58 +1960,6 @@ void ReadGameList()
 
 	NumGames++;
 #if 0
-	// TODO (REFKEEN) Use "cross platform" file searching functions/wrappers instead?
-	struct dirent **namelist;
-	// comparator and filter functions for scandir
-	int gamesavescanfilter(const struct dirent *dir)
-	{
-		size_t len = strlen(dir->d_name);
-		return (len >= 4) && (!memcmp(dir->d_name+len-4, ".SAV", 4));
-	}
-	int gamesavesort(const struct dirent **a, const struct dirent **b)
-	{
-		const char *aptr = (*a)->d_name, *bptr = (*b)->d_name;
-		while (*aptr && (*aptr == *bptr) && strcmp(aptr, ".SAV"))
-		{
-			++aptr;
-			++aptr;
-		}
-		return bptr-aptr;
-	}
-	//
-	int n = scandir(".", &namelist, &gamesavescanfilter, &gamesavesort);
-	NumGames = -1;
-	if (n < 0)
-	{
-		perror("scandir");
-	}
-	else
-	{
-		while (n--)
-		{
-			if (NumGames == MAX_GAMELIST_NAMES)
-				memmove/*memcpy*/(GameListNames,GameListNames[1],MAX_GAMELIST_NAMES*sizeof(GameListNames[0]));
-			else
-				NumGames++;
-			size_t lennoext = strlen(namelist[n]->d_name)-4;
-			if (lennoext < sizeof(GameListNames[NumGames]))
-			{
-				memcpy(GameListNames[NumGames], namelist[n]->d_name, lennoext);
-				GameListNames[NumGames][lennoext] = '\0';
-			}
-			else
-			{
-				memcpy(GameListNames[NumGames], namelist[n]->d_name, sizeof(GameListNames[NumGames])-1);
-				GameListNames[NumGames][sizeof(GameListNames[NumGames])-1] = '\0';
-			}
-			// REFKEEN - Do NOT convert to uppercase (case-sensitive filesystems)
-		}
-	}
-
-	NumGames++;
-#endif
-
-#if 0
 	struct ffblk ffblk;
 	id0_short_t done,len;
 
@@ -2614,7 +2562,6 @@ void DoFullScreenAnim(id0_char_t *filename, void (*SpawnAll)(), id0_short_t (*Ch
 		RF_Refresh();
 
 		ExitAnim = (id0_boolean_t)CheckKey();
-		BE_SDL_ShortSleep();
 	}
 
 //	RemoveBOBList(player);

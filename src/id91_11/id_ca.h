@@ -42,10 +42,18 @@
 #define GRHEADERLINKED
 #define AUDIOHEADERLINKED
 
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_VER_CAT3D
+
+#define NUMMAPS		30
+
+#elif defined REFKEEN_VER_CATADVENTURES
+
+#if REFKEEN_VER_CATABYSS
 #define NUMMAPS		19
 #else
-#define NUMMAPS		30
+#define NUMMAPS		39
+#endif
+
 #endif
 
 #define MAPPLANES	3

@@ -1,3 +1,5 @@
+VERDIRNAME=catarm102
+
 DEBUG=0
 BUILDASCPP=0
 BINPREFIX=
@@ -28,14 +30,17 @@ VERSRC=$(SRC)/$(VERDIRNAME)
 RSRCSRC=$(VERSRC)/static
 RSRCOBJ=$(OBJ)/static
 
-OBJECTS=$(OBJ)/c4_act1.o \
-        $(OBJ)/c4_debug.o \
-        $(OBJ)/c4_draw.o \
-        $(OBJ)/c4_game.o \
-        $(OBJ)/c4_main.o \
-        $(OBJ)/c4_play.o \
-        $(OBJ)/c4_state.o \
-        $(OBJ)/c4_wiz.o \
+OBJECTS=$(OBJ)/c5_act1.o \
+        $(OBJ)/c5_act2.o \
+        $(OBJ)/c5_act3.o \
+        $(OBJ)/c5_act4.o \
+        $(OBJ)/c5_debug.o \
+        $(OBJ)/c5_draw.o \
+        $(OBJ)/c5_game.o \
+        $(OBJ)/c5_main.o \
+        $(OBJ)/c5_play.o \
+        $(OBJ)/c5_state.o \
+        $(OBJ)/c5_wiz.o \
         $(OBJ)/gelib.o
 
 #Shared with Catacomb 3-D and the Adventures series
@@ -61,10 +66,6 @@ EXTOBJECTS=$(EXTOBJ)/ext_ca.o \
            $(EXTOBJ)/ext_vw_a.o \
            $(EXTOBJ)/intro.o
 
-ifeq ($(VERDIRNAME), catabyss113)
-EXTOBJECTS+= $(EXTOBJ)/loadscn.o
-endif
-
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_compat.o \
@@ -81,14 +82,9 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/egahead.o \
              $(RSRCOBJ)/mtemp.o
 
-INTCXXFLAGS=-I$(SRC) -I$(CADVCOMMONSRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATABYSS=1 -DREFKEEN_VER_CATACOMB_ALL=1
+INTCXXFLAGS=-I$(SRC) -I$(CADVCOMMONSRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATARM=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
-ifeq ($(VERDIRNAME), catabyss113)
-INTCXXFLAGS+= -DREFKEEN_VER_CATABYSS_SHAR_ALL=1
-EXENAME=refcatabyss-113
-else ifeq ($(VERDIRNAME), catabyss124)
-EXENAME=refcatabyss-124
-endif
+EXENAME=refcatarm-102
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG

@@ -44,7 +44,9 @@
 //
 
 // REFKEEN - This macro is not even mentioned in the original Catacomb 3-D
-// sources, so we can simply define it to be 1 for these
+// sources, so we can simply define it to be 1 for these. Furthermore, a bit
+// more is actually disabled, not just empty function stubs
+// disabled (closer to Apocalypse, but more is disabled).
 
 #ifdef REFKEEN_VER_CATADVENTURES
 #define USE_MUSIC	0
@@ -987,6 +989,7 @@ SD_SetSoundMode(SDMode mode)
 	return(result);
 }
 
+#if USE_MUSIC
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SD_SetMusicMode() - sets the device to use for background music
@@ -995,7 +998,6 @@ SD_SetSoundMode(SDMode mode)
 id0_boolean_t
 SD_SetMusicMode(SMMode mode)
 {
-#if USE_MUSIC
 	id0_boolean_t	result;
 
 	SD_FadeOutMusic();
@@ -1026,10 +1028,8 @@ SD_SetMusicMode(SMMode mode)
 	SDL_SetTimerSpeed();
 
 	return(result);
-#else
-	return false; // REFKEEN - Compilation warning fix
-#endif
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1283,6 +1283,8 @@ SD_WaitSoundDone(void)
 	}
 }
 
+#if USE_MUSIC // A block of music-related functions
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SD_MusicOn() - turns on the sequencer
@@ -1291,9 +1293,7 @@ SD_WaitSoundDone(void)
 void
 SD_MusicOn(void)
 {
-#if USE_MUSIC
 	sqActive = true;
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1304,7 +1304,6 @@ SD_MusicOn(void)
 void
 SD_MusicOff(void)
 {
-#if USE_MUSIC
 	id0_word_t	i;
 
 
@@ -1318,7 +1317,6 @@ SD_MusicOff(void)
 		break;
 	}
 	sqActive = false;
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1329,7 +1327,6 @@ SD_MusicOff(void)
 void
 SD_StartMusic(MusicGroup id0_far *music)
 {
-#if USE_MUSIC
 	SD_MusicOff();
 	BE_SDL_LockAudioRecursively();
 //asm	pushf
@@ -1346,7 +1343,6 @@ SD_StartMusic(MusicGroup id0_far *music)
 
 	BE_SDL_UnlockAudioRecursively();
 //asm	popf
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1358,7 +1354,6 @@ SD_StartMusic(MusicGroup id0_far *music)
 void
 SD_FadeOutMusic(void)
 {
-#if USE_MUSIC
 	// REFKEEN - Original code does nothing (also in Keen Dreams and Catacomb 3D)...
 #if 0
 	switch (MusicMode)
@@ -1368,7 +1363,6 @@ SD_FadeOutMusic(void)
 		SD_MusicOff();
 		break;
 	}
-#endif
 #endif
 }
 
@@ -1383,7 +1377,6 @@ SD_MusicPlaying(void)
 {
 	// REFKEEN - Original code always returns false...
 	return false;
-#if USE_MUSIC
 	id0_boolean_t	result;
 
 	switch (MusicMode)
@@ -1397,8 +1390,9 @@ SD_MusicPlaying(void)
 	}
 
 	return(result);
-#endif
 }
+
+#endif // USE_MUSIC
 
 // Replacements for direct accesses to TimeCount variable
 // (should be instantiated here even if inline, as of C99)

@@ -851,7 +851,11 @@ void CA_Startup (void)
 
 // MDM begin - (GAMERS EDGE)
 //
+#ifdef REFKEEN_VER_CATABYSS
 	if (!FindFile("GAMEMAPS."EXTENSION,NULL,2))
+#else
+	if (!FindFile("GAMEMAPS."EXTENSION,NULL,1))
+#endif
 		Quit("CA_Startup(): Can't find level files.");
 //
 // MDM end
@@ -1482,7 +1486,11 @@ void CA_CacheMap (id0_int_t mapnum)
 
 // MDM begin - (GAMERS EDGE)
 //
+#ifdef REFKEEN_VER_CATABYSS
 	if (!FindFile("GAMEMAPS."EXTENSION,NULL,2))
+#else
+	if (!FindFile("GAMEMAPS."EXTENSION,NULL,1))
+#endif
 		Quit("CA_CacheMap(): Can't find level files.");
 //
 // MDM end

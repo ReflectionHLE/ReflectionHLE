@@ -105,6 +105,8 @@ RefKeenConfig g_refKeenCfg;
 #define REFKEEN_DREAMS_CONFIG_FILEPATH "refcat3d.cfg"
 #elif defined REFKEEN_VER_CATABYSS
 #define REFKEEN_DREAMS_CONFIG_FILEPATH "refcatabyss.cfg"
+#elif defined REFKEEN_VER_CATARM
+#define REFKEEN_DREAMS_CONFIG_FILEPATH "refcatarm.cfg"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif

@@ -879,6 +879,158 @@ oddtoodd:
 ENDP
 #endif
 
+// REFKEEN - Unused function (for VW_DrawPic2x) and
+// an unused macro from Catacomb Armageddon/Apocalypse
+#if 0
+; MDM (GAMERS EDGE) begin
+
+
+MACRO	XPAND_BYTE
+	test	al,128									; handle bit 7
+	jne   @@over7
+	or		[BYTE PTR es:di],11000000b
+@@over7:
+
+	test	al,64										; handle bit 6
+	jne   @@over6
+	or		[BYTE PTR es:di],00110000b
+@@over6:
+
+	test	al,32										; handle bit 5
+	jne   @@over5
+	or		[BYTE PTR es:di],00001100b
+@@over5:
+
+	test	al,16										; handle bit 4
+	jne   @@over4
+	or		[BYTE PTR es:di],00000011b
+@@over4:
+
+	inc	di					  						; inc destination
+
+	test	al,8										; handle bit 3
+	jne   @@over3
+	or		[BYTE PTR es:di],11000000b
+@@over3:
+
+	test	al,4										; handle bit 2
+	jne   @@over2
+	or		[BYTE PTR es:di],00110000b
+@@over2:
+
+	test	al,2										; handle bit 1
+	jne   @@over1
+	or		[BYTE PTR es:di],00001100b
+@@over1:
+
+	test	al,1										; handle bit 0
+	jne   @@over0
+	or		[BYTE PTR es:di],00000011b
+@@over0:
+
+	inc	si											; inc source
+	inc	di											; inc destination
+ENDM
+
+
+;============================================================================
+;
+; VW_MemToScreen2x
+;
+; Basic block drawing routine. Takes a block shape at segment pointer source
+; with four planes of width by height data, and draws it to dest in the
+; virtual screen, based on linewidth.  bufferofs is NOT accounted for.
+; There are four drawing routines to provide the best optimized code while
+; accounting for odd segment wrappings due to the floating screens.
+;
+;============================================================================
+
+DATASEG
+
+xpandhorz	db 00000000b,00000011b,00001100b,00001111b
+				db 00110000b,00110011b,00111100b,00111111b
+				db 11000000b,11000011b,11001100b,11001111b
+				db 11110000b,11110011b,11111100b,11111111b
+
+CODESEG
+
+
+PROC	VW_MemToScreen2x	source:WORD, dest:WORD, wide:WORD, height:WORD
+PUBLIC	VW_MemToScreen2x
+USES	SI,DI
+
+	mov	es,[screenseg]
+
+	mov	bx,[linewidth]
+	sub	bx,[wide]
+	sub	bx,[wide]
+
+	mov	ds,[source]
+
+
+	xor	si,si					;block is segment aligned
+
+	mov	ah,0001b				;map mask for plane 0
+
+@@depthloop:
+	mov	al,SC_MAPMASK			;restore map mask in al
+	mov	dx,SC_INDEX
+	WORDOUT
+
+	mov	di,[dest]				;start at same place in all planes
+	mov	dx,[height]				;scan lines to draw
+
+@@heightloop:
+	mov	cx,[wide]
+@@widthloop:
+
+; handle first nybble
+;
+	push	di
+	mov	di,[si]
+	shr	di,1
+	shr	di,1
+	shr	di,1
+	shr	di,1
+	and	di,15
+	mov	al,[ss:xpandhorz+di]
+	pop	di
+	mov	[es:di],al
+	inc	di
+
+; handle second nybble
+;
+	push	di
+	mov	di,[si]
+	and	di,15
+	mov	al,[ss:xpandhorz+di]
+	pop	di
+	mov	[es:di],al
+	inc	si
+	inc	di
+
+
+	dec	cx
+	jne	@@widthloop
+
+	add	di,bx
+
+	dec	dx
+	jnz	@@heightloop
+
+	shl	ah,1					;shift plane mask over for next plane
+	cmp	ah,10000b				;done all four planes?
+	jne	@@depthloop
+
+	mov	ax,ss
+	mov	ds,ax					;restore turbo's data segment
+
+	ret
+
+ENDP
+; MDM (GAMERS EDGE) end
+#endif
+
 //===========================================================================
 //
 // VW_ScreenToMem
@@ -1289,11 +1441,19 @@ id0_char_t *stringptr;
 
 
 #ifdef REFKEEN_VER_CATADVENTURES
+
+#ifdef REFKEEN_VER_CATABYSS
 #define BUFFWIDTH 80 // MDM (GAMERS EDGE) - increased from 50
-#define BUFFHEIGHT 20 // must be twice as high as font for masked fonts
 #else
+#define BUFFWIDTH 82 // MDM (GAMERS EDGE) - increased from 50
+#endif
+#define BUFFHEIGHT 20 // must be twice as high as font for masked fonts
+
+#else
+
 #define BUFFWIDTH 50
 #define BUFFHEIGHT 32 // must be twice as high as font for masked fonts
+
 #endif
 
 id0_byte_t databuffer[BUFFWIDTH*BUFFHEIGHT];
