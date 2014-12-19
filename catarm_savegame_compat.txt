@@ -1,5 +1,7 @@
 Nasty...
 
+* Note: These are near pointers.
+
 skycolor can be any of
 - &debug_sky
 - &scolor
@@ -8,8 +10,8 @@ skycolor can be any of
 - (See note about **** PlayLoop can increment the skycolor POINTER (until read value is 0xFFFF).
 - Could also decrement but that's commented out...
 - scolors, an input to InitBgChange. This is either sky_daytonight (commented out in Arm/Apoc) or sky_lightning.
-- C5_WIZ.C:ReadScroll, &blackcolor (seems commented out)
-- C5_WIZ.C:ReadScroll, skytemp (just old value of skycolor, and again commented out)
+- C5_WIZ.C:ReadScroll, &blackcolor (set just temporarily so not saved; commented out)
+- C5_WIZ.C:ReadScroll, skytemp (just old value of skycolor; and again commented out)
 
 Similarly groundcolor can be any of
 - &debug_gnd
@@ -19,8 +21,8 @@ Similarly groundcolor can be any of
 - **** PlayLoop can increment it like skycolor
 - Also decrement, but again that's commented out
 - gcolors, an input to InitBgChange. This is however NULL so InitBgChange never actually sets this.
-- C5_WIZ.C:ReadScroll, &blackcolor (commented out)
-- C5_WIZ.C:ReadScroll, gndtemp (original groundcolor pointer, commented out)
+- C5_WIZ.C:ReadScroll, &blackcolor (set just temporarily so not saved; commented out)
+- C5_WIZ.C:ReadScroll, gndtemp (original groundcolor pointer; commented out)
 
 A FEW MORE NOTES THAT CAN BE USEFUL:
 - Looks like InitBgChange is always called with gtimer==-1, so effectively

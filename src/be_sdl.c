@@ -5,6 +5,7 @@
 
 #define BE_SDL_MAXJOYSTICKS 8
 #define BE_SDL_EMU_JOYSTICK_RANGEMAX 5000 // id_in.c MaxJoyValue
+#define BE_SDL_DEFAULT_FARPTRSEGOFFSET 0x14
 
 static void (*g_sdlKeyboardInterruptFuncPtr)(uint8_t) = 0;
 
@@ -211,9 +212,18 @@ static void BEL_SDL_ParseSetting_AutolockCursor(const char *buffer)
 	}
 }
 
-static void BEL_SDL_ParseSettings_SndSampleRate(const char *buffer)
+static void BEL_SDL_ParseSetting_SndSampleRate(const char *buffer)
 {
 	g_refKeenCfg.sndSampleRate = atoi(buffer);
+}
+
+static void BEL_SDL_ParseSetting_FarPtrSegOffset(const char *buffer)
+{
+	unsigned int segOffset;
+	if (sscanf(buffer, "%X", &segOffset) == 1)
+	{
+		g_refKeenCfg.farPtrSegOffset = segOffset;
+	}
 }
 
 typedef struct {
@@ -232,7 +242,8 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"scaletype=", &BEL_SDL_ParseSetting_ScaleType},
 	{"scalefactor=", &BEL_SDL_ParseSetting_ScaleFactor},
 	{"autolock=", &BEL_SDL_ParseSetting_AutolockCursor},
-	{"sndsamplerate=", &BEL_SDL_ParseSettings_SndSampleRate},
+	{"sndsamplerate=", &BEL_SDL_ParseSetting_SndSampleRate},
+	{"farptrsegoffset=", &BEL_SDL_ParseSetting_FarPtrSegOffset},
 };
 
 static void BEL_SDL_ParseConfig(void)
@@ -251,6 +262,7 @@ static void BEL_SDL_ParseConfig(void)
 	g_refKeenCfg.scaleFactor = 2;
 	g_refKeenCfg.autolockCursor = false;
 	g_refKeenCfg.sndSampleRate = 49716; // TODO should be a shared define
+	g_refKeenCfg.farPtrSegOffset = BE_SDL_DEFAULT_FARPTRSEGOFFSET;
 	// Try to load config
 	FILE *fp = fopen(REFKEEN_DREAMS_CONFIG_FILEPATH, "r");
 	if (fp)
@@ -295,6 +307,11 @@ static void BEL_SDL_ParseConfig(void)
 	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
 	fprintf(fp, "autolock=%s\n", g_refKeenCfg.autolockCursor ? "true" : "false");
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
+	if (g_refKeenCfg.farPtrSegOffset != BE_SDL_DEFAULT_FARPTRSEGOFFSET)
+	{
+		// This should be a relatively hidden setting
+		fprintf(fp, "farptrsegoffset=%X\n", g_refKeenCfg.farPtrSegOffset);
+	}
 	fclose(fp);
 }
 
@@ -881,4 +898,10 @@ void BE_SDL_PollEvents(void)
 		default: ;
 		}
 	}
+}
+
+
+uint16_t BE_SDL_Compat_GetFarPtrRelocationSegOffset(void)
+{
+	return g_refKeenCfg.farPtrSegOffset;
 }

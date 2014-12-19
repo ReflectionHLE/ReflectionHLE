@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 		id0_argv = argv;
 	}
 	BE_SDL_InitAll();
-	BE_Cross_Compat_FillObjStatesWithDOSOffsets(); // Saved games compatibility
+	BE_Cross_Compat_FillObjStatesWithDOSPointers(); // Saved games compatibility
 	second_main();
 	BE_SDL_ShutdownAll();
 	return 0;

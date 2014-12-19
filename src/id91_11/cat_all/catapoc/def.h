@@ -271,11 +271,11 @@ typedef struct	statestruct
 	struct	statestruct	id0_far *next;
 	// (REFKEEN) Backwards compatibility:
 	// MUST follow all the rest of the members above. Given a statetype
-	// instance, stores what would be the 16-bit offset pointer in the dseg
-	// while using the original 16-bit DOS executable (corresponding version).
+	// instance, stores what would be the 32-bit far pointer while using
+	// the original 16-bit DOS executable (corresponding version).
 	// This member must be the last so it doesn't have to be filled during
 	// compile-time (requires changes to struct initializations in a few places)
-	id0_int_t compatdosoffset;
+	id0_longword_t compatdospointer;
 } statetypestruct;
 
 #define statetype statetypestruct id0_far

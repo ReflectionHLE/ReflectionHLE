@@ -204,7 +204,7 @@ static id0_boolean_t SaveObject(int file, objtype *o)
 	// for active enum (anonymous type)
 	id0_int_t activeint = (id0_int_t)(o->active);
 	// BACKWARD COMPATIBILITY
-	id0_int_t statedosoffset = o->state ? o->state->compatdosoffset : 0;
+	id0_word_t statedosoffset = o->state ? o->state->compatdospointer : 0;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
@@ -260,7 +260,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	// for active enum (anonymous type)
 	id0_int_t activeint;
 	// BACKWARD COMPATIBILITY
-	id0_int_t statedosoffset;
+	id0_word_t statedosoffset;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
@@ -312,9 +312,9 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 		return false;
 	}
 	o->active = activeint;
-	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSOffset(statedosoffset);
+	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// ANOTHER SPECIAL CASE (for almost all creatures as flowers)
-	o->temp2stateptr = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSOffset(o->temp2);
+	o->temp2stateptr = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(o->temp2);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
 	return true;

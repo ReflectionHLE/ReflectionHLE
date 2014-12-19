@@ -19,6 +19,7 @@ typedef struct
 	int scaleFactor;
 	bool autolockCursor;
 	int sndSampleRate;
+	unsigned int farPtrSegOffset;
 } RefKeenConfig;
 
 extern RefKeenConfig g_refKeenCfg;
@@ -40,6 +41,12 @@ int16_t BE_SDL_KbHit(void);
 int16_t BE_SDL_BiosScanCode(int16_t command);
 
 void BE_SDL_PollEvents(void);
+
+// Returns an offset that should be added to the 16-bit segments of 32-bit
+// far pointers present in The Catacomb Armageddon/Apocalypse saved games
+// (in the case of the original DOS exes, it depends on the locations of
+// modified copies of them in memory)
+uint16_t BE_SDL_Compat_GetFarPtrRelocationSegOffset(void);
 
 /*** Audio/timer (vanilla Keen kind-of has these mixed) ***/
 void BE_SDL_StartAudioSDService(void (*funcPtr)(void));

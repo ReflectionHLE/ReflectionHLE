@@ -96,7 +96,7 @@ typedef struct
   // while using the original 16-bit DOS executable (corresponding version).
   // This member must be the last so it doesn't have to be filled during
   // compile-time (requires changes to struct initializations in a few places)
-  id0_int_t compatdosoffset;
+  id0_word_t compatdospointer;
 } statetype;
 
 

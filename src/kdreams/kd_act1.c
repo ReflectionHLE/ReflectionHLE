@@ -435,7 +435,7 @@ void ChangeToFlower (objtype *ob)
 	ob->y = ob->bottom-TILEGLOBAL*2;
 	ob->temp1 = (id0_int_t)ob->obclass;
 	// (REFKEEN) BACKWARDS COMPATIBILITY
-	ob->temp2 = ob->state->compatdosoffset;
+	ob->temp2 = ob->state->compatdospointer;
 	ob->temp2stateptr = ob->state;
 	//ob->temp2 = ob->state;
 	ob->temp3 = 0;

@@ -133,7 +133,7 @@ static id0_boolean_t SaveObject(int file, objtype *o)
 	// for active enum (anonymous type)
 	id0_int_t activeint = (id0_int_t)(o->active);
 	// BACKWARD COMPATIBILITY
-	id0_int_t statedosoffset = o->state ? o->state->compatdosoffset : 0;
+	id0_word_t statedosoffset = o->state ? o->state->compatdospointer : 0;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
@@ -178,7 +178,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	// for active enum (anonymous type)
 	id0_int_t activeint;
 	// BACKWARD COMPATIBILITY
-	id0_int_t statedosoffset;
+	id0_word_t statedosoffset;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
@@ -213,13 +213,13 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	    // Furthermore, all we need to know about next on loading is
 	    // if it's zero or not.
 	    || (BE_Cross_readInt16LE(file, &isnext) != 2) // next
-	    || (BE_Cross_readInt8LEBuffer(file, &dummy, 2) != 2)
+	    || (BE_Cross_readInt8LEBuffer(file, &dummy, 2) != 2) // prev
 	)
 	{
 		return false;
 	}
 	o->active = activeint;
-	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSOffset(statedosoffset);
+	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
 	return true;
@@ -389,7 +389,7 @@ id0_boolean_t	LoadTheGame(int file)
 
 	SetupGameLevel ();		// load in and cache the base old level
 
-	// (REFKEEN) DIFFERENCE FROM VANILLA CATACOMB ABYSS:
+	// (REFKEEN) DIFFERENCE FROM VANILLA CATACOMB ADVENTURES:
 	// Don't do this check, we've already opened the file anyway
 	// and this can lead to unexpected behaviors!
 #if 0
