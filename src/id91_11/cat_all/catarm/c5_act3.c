@@ -1023,7 +1023,7 @@ void T_AwakeThink(objtype *obj)
 //--------------------------------------------------------------------------
 id0_boolean_t ShootPlayer(objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state)
 {
-	id0_int_t AngleNearPlayer(objtype *ob);
+	id0_int_t AngleNearPlayer(objtype *ob); // REFKEEN - Mute compilation error
 
 	id0_int_t angle = AngleNearPlayer(ob);
 
@@ -1131,7 +1131,7 @@ void T_ShootPlayer(objtype *ob)
 	// (TODO) REFKEEN - For now we also verify that check is a valid pointer
 	// (otherwise this can lead to a crash)
 	// HACK: Redefining LASTTILE from c5_wiz.c...
-#ifndef LASTTIME
+#ifndef LASTTILE
 #define LASTTILE  (LASTWALLPIC-FIRSTWALLPIC)
 #endif
 //	if (check && (check->obclass != ob->obclass))

@@ -32,9 +32,15 @@
 #define SAVEVER_DATA "0.01"
 #define FILENAME_LEN 15
 
+#ifdef REFKEEN_VER_CATARM
 #define  GAMENAME		"CATACOMB ARMAGEDDON 3-D"
 #define	VERSION		"V1.02"
 #define  REVISION		"  rev 1 "
+#elif defined REFKEEN_VER_CATAPOC
+#define  GAMENAME		"CATACOMB  APOCALYPSE 3-D"
+#define	VERSION		"1.01"
+#define  REVISION		"(rev 1)"
+#endif
 
 //#define BOBLIST 1                          //SP - Undefine if not using BOBList
 

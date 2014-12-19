@@ -40,9 +40,11 @@
 
 //--------------------------------------------------------------------------
 
-// REFKEEN Use EXTENSION instead of EXT for simpler maintenance
-// (and header is unified for all 3 episodes of the Catacomb Adventures series)
-#ifdef REFKEEN_VER_CATABYSS
+// REFKEEN Use EXTENSION instead of EXT also in the Catacomb Adventures Series,
+// for simpler maintenance (and header is unified for all four Catacomb games)
+#ifdef REFKEEN_VER_CAT3D
+#define EXTENSION "C3D"
+#elif defined REFKEEN_VER_CATABYSS
 #define EXTENSION "ABS"
 #elif defined REFKEEN_VER_CATARM
 #define EXTENSION "ARM"
@@ -55,7 +57,10 @@
 // - also modified type for different platforms
 //extern	id0_char_t id0_far introscn;
 
-#ifdef REFKEEN_VER_CATABYSS
+#ifdef REFKEEN_VER_CAT3D
+#include "gfxe_c3d.h"
+#include "audioc3d.h"
+#elif defined REFKEEN_VER_CATABYSS
 #include "gfxe_abs.h"
 #include "audioabs.h"
 #include "mapsabs.h"
@@ -70,6 +75,8 @@
 #endif
 
 //--------------------------------------------------------------------------
+
+#ifdef REFKEEN_VER_CATADVENTURES
 
 //
 // DEFINES THE TILE ATTRIBUTE CHECKING CONVENTION (macros).
@@ -93,15 +100,19 @@
 
 #define GATE_KEY_COLOR(tile)		((id0_unsigned_char_t)(TILE_FLAGS(tile)>>4))
 
-#define CAT3D
+#endif // REFKEEN_VER_CATADVENTURES
+
+#define CAT3D // REFKEEN: Yes, it's also defined for The Adventures (but unused)
 
 #define	TEXTGR	0
 #define	CGAGR	1
 #define	EGAGR	2
 #define	VGAGR	3
 
+#ifdef REFKEEN_VER_CATADVENTURES
 #define  EGA320GR	10					// MDM (GAMERS EDGE)
 #define  EGA640GR	11					// MDM (GAMERS EDGE)
+#endif
 
 #define GRMODE	EGAGR
 
@@ -198,7 +209,11 @@ extern id0_char_t *introscn;
 #include "be_cross.h"
 
 
+#ifdef REFKEEN_VER_CATADVENTURES
 void	Quit (id0_char_t *error, ...);		// defined in user program
+#else
+void	Quit (id0_char_t *error);
+#endif
 
 //
 // replacing refresh manager with custom routines
@@ -215,6 +230,8 @@ void	Quit (id0_char_t *error, ...);		// defined in user program
 
 #define	UPDATETERMINATE	0x0301
 
+// REFKEEN - realtics isn't declared in vanilla Catacomb 3-D,
+// but again it's just a declaration so we may keep it here
 extern	id0_unsigned_t	mapwidth,mapheight,tics,realtics;
 extern	id0_boolean_t		compatability;
 

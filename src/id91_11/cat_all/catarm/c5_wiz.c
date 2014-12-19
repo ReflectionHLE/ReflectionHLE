@@ -163,6 +163,9 @@ id0_boolean_t ShotClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove);
 ===============
 */
 
+// (REFKEEN) See description of vanilla bug reproduction below
+bool id0_workaround_catadventures_nodraw_digits_on_startup;
+
 void DrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile)
 {
 	id0_word_t egaDestOff = x+ylookup[y];
@@ -579,9 +582,6 @@ void AddPoints (id0_int_t points)
 
 //===========================================================================
 
-// (REFKEEN) See description of vanilla bug reproduction below
-bool id0_workaround_catadventures_nodraw_digits_on_startup;
-
 /*
 ===============
 =
@@ -616,14 +616,6 @@ void DrawHealth()
 		picnum = FACE5PIC;
 		CA_CacheGrChunk (picnum);
 	}
-
-	// (REFKEEN) VANILLA BUG REPRODUCTION: In the original code, a call to
-	// VW_DrawPic on startup leaves the map mask value at 8 (intensity plane),
-	// so numbers aren't drawn in the following call to RedrawStatusWindow.
-	// This includes the health percentage above.
-	// We add a workaround here since we don't store EGA write/read mode
-	// related values internally (we almost don't need these).
-	id0_workaround_catadventures_nodraw_digits_on_startup = false;
 
 	bufferofs = 0;
 	if (!percentage)

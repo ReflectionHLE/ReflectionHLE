@@ -1,3 +1,5 @@
+VERDIRNAME=catapoc101
+
 DEBUG=0
 BUILDASCPP=0
 BINPREFIX=
@@ -11,8 +13,8 @@ endif
 STRIPBIN=$(BINPREFIX)strip
 SDLCONFIG=sdl2-config
 SRC=.
-C3DCOMMONSRC=../../cat3dcommon
-CADVCOMMONSRC=..
+C3DCOMMONSRC=..
+CATLATECOMMONSRC=../cat_late
 IDSRC=../..
 BESRC=../../..
 EXTSRC=../external_restored
@@ -28,17 +30,22 @@ VERSRC=$(SRC)/$(VERDIRNAME)
 RSRCSRC=$(VERSRC)/static
 RSRCOBJ=$(OBJ)/static
 
-OBJECTS=$(OBJ)/c4_act1.o \
-        $(OBJ)/c4_debug.o \
-        $(OBJ)/c4_draw.o \
-        $(OBJ)/c4_game.o \
-        $(OBJ)/c4_main.o \
-        $(OBJ)/c4_play.o \
-        $(OBJ)/c4_state.o \
-        $(OBJ)/c4_wiz.o \
-        $(OBJ)/gelib.o
+OBJECTS=$(OBJ)/c6_act1.o \
+        $(OBJ)/c6_act2.o \
+        $(OBJ)/c6_act3.o \
+        $(OBJ)/c6_act4.o \
+        $(OBJ)/c6_game.o \
+        $(OBJ)/c6_main.o \
+        $(OBJ)/c6_play.o \
+        $(OBJ)/c6_state.o \
+        $(OBJ)/c6_wiz.o
 
-#Shared with Catacomb 3-D and the Adventures series
+#Shared with The Catacomb Armageddon and Apocalypse
+OBJECTS+= $(OBJ)/c5_debug.o \
+          $(OBJ)/c5_draw.o \
+          $(OBJ)/gelib.o
+
+#Shared with Catacomb 3-D and The Adventures Series
 OBJECTS+= $(OBJ)/c3_asm.o \
           $(OBJ)/c3_scale.o \
           $(OBJ)/c3_trace.o
@@ -61,10 +68,6 @@ EXTOBJECTS=$(EXTOBJ)/ext_ca.o \
            $(EXTOBJ)/ext_vw_a.o \
            $(EXTOBJ)/intro.o
 
-ifeq ($(VERDIRNAME), catabyss113)
-EXTOBJECTS+= $(EXTOBJ)/loadscn.o
-endif
-
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_compat.o \
@@ -81,22 +84,18 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/egahead.o \
              $(RSRCOBJ)/mtemp.o
 
-INTCXXFLAGS=-I$(SRC) -I$(CADVCOMMONSRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATABYSS=1 -DREFKEEN_VER_CATACOMB_ALL=1
+INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(CATLATECOMMONSRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATAPOC=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
-ifeq ($(VERDIRNAME), catabyss113)
-INTCXXFLAGS+= -DREFKEEN_VER_CATABYSS_SHAR_ALL=1
-EXENAME=refcatabyss-113
-else ifeq ($(VERDIRNAME), catabyss124)
-EXENAME=refcatabyss-124
-endif
+EXENAME=refcatapoc-101
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG
+	CXXOPT=
 else
-	INTCXXFLAGS+= -O2
+	CXXOPT=-O2
 endif
 
-INTCXXFLAGS+= `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable -Wno-missing-braces -Wno-switch
+INTCXXFLAGS+= $(CXXOPT) `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable -Wno-missing-braces -Wno-switch
 #We need -lm for dbopl
 INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
 
@@ -134,6 +133,13 @@ $(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
 $(EXTOBJ)/%.o: $(EXTSRC)/%.c $(EXTOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(IDOBJ)/%.o: $(IDSRC)/%.c $(IDOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(OBJ)/c5_debug.o: $(CATLATECOMMONSRC)/c5_debug.c | $(OBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(OBJ)/c5_draw.o: $(CATLATECOMMONSRC)/c5_draw.c | $(OBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(OBJ)/gelib.o: $(CATLATECOMMONSRC)/gelib.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(OBJ)/c3_asm.o: $(C3DCOMMONSRC)/c3_asm.c | $(OBJ)

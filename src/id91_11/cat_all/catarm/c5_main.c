@@ -187,7 +187,7 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 	for (i = 0;i < 3;i+=2)	// Write planes 0 and 2
 	{
 //
-// leave a id0_word_t at start of compressed data for compressed length
+// leave a word at start of compressed data for compressed length
 //
 		compressed = (id0_unsigned_t)CA_RLEWCompress ((id0_unsigned_t id0_huge *)mapsegs[i]
 			,expanded,((id0_unsigned_t id0_huge *)bigbuffer)+1,RLETAG);

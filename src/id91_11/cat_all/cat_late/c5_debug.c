@@ -54,7 +54,9 @@
 */
 
 id0_short_t colordelay=0;
+#ifdef REFKEEN_VER_CATARM
 id0_boolean_t autofire=false;
+#endif
 id0_int_t	maporgx;
 id0_int_t	maporgy;
 enum {mapview,tilemapview,actoratview,visview,mapseg2,lastview}	viewtype;
@@ -281,10 +283,14 @@ id0_int_t DebugKeys (void)
 		IN_Ack ();
 	}
 
+#endif
 
+#if (DEBUG_KEYS_AVAILABLE) || (defined REFKEEN_VER_CATAPOC)
 	if (Keyboard[sc_Q])			// Q = Insta-Quit!
 		Quit("Insta-Quit!");
+#endif
 
+#if (DEBUG_KEYS_AVAILABLE) && !(defined REFKEEN_VER_CATAPOC)
 	if (Keyboard[sc_Z])		// Z = freeze Time
 	{
 		if (FreezeTime)
@@ -527,7 +533,11 @@ id0_int_t DebugKeys (void)
 	{
 		CenterWindow(26,3);
 		PrintY+=6;
+#ifdef REFKEEN_VER_CATARM
 		US_Print("  Warp to which level(0-16):");
+#elif defined REFKEEN_VER_CATAPOC
+		US_Print("  Warp to which level(0-17):");
+#endif
 		VW_UpdateScreen();
 		esc = !US_LineInput (px,py,str,NULL,true,2,0);
 		if (!esc)

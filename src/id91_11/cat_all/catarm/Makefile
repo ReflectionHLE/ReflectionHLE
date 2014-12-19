@@ -13,8 +13,8 @@ endif
 STRIPBIN=$(BINPREFIX)strip
 SDLCONFIG=sdl2-config
 SRC=.
-C3DCOMMONSRC=../../cat3dcommon
-CADVCOMMONSRC=..
+C3DCOMMONSRC=..
+CATLATECOMMONSRC=../cat_late
 IDSRC=../..
 BESRC=../../..
 EXTSRC=../external_restored
@@ -34,16 +34,18 @@ OBJECTS=$(OBJ)/c5_act1.o \
         $(OBJ)/c5_act2.o \
         $(OBJ)/c5_act3.o \
         $(OBJ)/c5_act4.o \
-        $(OBJ)/c5_debug.o \
-        $(OBJ)/c5_draw.o \
         $(OBJ)/c5_game.o \
         $(OBJ)/c5_main.o \
         $(OBJ)/c5_play.o \
         $(OBJ)/c5_state.o \
-        $(OBJ)/c5_wiz.o \
-        $(OBJ)/gelib.o
+        $(OBJ)/c5_wiz.o
 
-#Shared with Catacomb 3-D and the Adventures series
+#Shared with The Catacomb Armageddon and Apocalypse
+OBJECTS+= $(OBJ)/c5_debug.o \
+          $(OBJ)/c5_draw.o \
+          $(OBJ)/gelib.o
+
+#Shared with Catacomb 3-D and The Adventures Series
 OBJECTS+= $(OBJ)/c3_asm.o \
           $(OBJ)/c3_scale.o \
           $(OBJ)/c3_trace.o
@@ -82,17 +84,18 @@ RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
              $(RSRCOBJ)/egahead.o \
              $(RSRCOBJ)/mtemp.o
 
-INTCXXFLAGS=-I$(SRC) -I$(CADVCOMMONSRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATARM=1 -DREFKEEN_VER_CATACOMB_ALL=1
+INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(CATLATECOMMONSRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATARM=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
 EXENAME=refcatarm-102
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG
+	CXXOPT=
 else
-	INTCXXFLAGS+= -O2
+	CXXOPT=-O2
 endif
 
-INTCXXFLAGS+= `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable -Wno-missing-braces -Wno-switch
+INTCXXFLAGS+= $(CXXOPT) `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable -Wno-missing-braces -Wno-switch
 #We need -lm for dbopl
 INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
 
@@ -130,6 +133,13 @@ $(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
 $(EXTOBJ)/%.o: $(EXTSRC)/%.c $(EXTOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(IDOBJ)/%.o: $(IDSRC)/%.c $(IDOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(OBJ)/c5_debug.o: $(CATLATECOMMONSRC)/c5_debug.c | $(OBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(OBJ)/c5_draw.o: $(CATLATECOMMONSRC)/c5_draw.c | $(OBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+$(OBJ)/gelib.o: $(CATLATECOMMONSRC)/gelib.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(OBJ)/c3_asm.o: $(C3DCOMMONSRC)/c3_asm.c | $(OBJ)

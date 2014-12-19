@@ -1177,6 +1177,7 @@ void DrawPlayScreen (void)
 	// related values internally (we almost don't need these).
 	id0_workaround_catadventures_nodraw_digits_on_startup = true;
 	RedrawStatusWindow ();
+	id0_workaround_catadventures_nodraw_digits_on_startup = false;
 	bufferofs = displayofs = screenloc[0];
 }
 

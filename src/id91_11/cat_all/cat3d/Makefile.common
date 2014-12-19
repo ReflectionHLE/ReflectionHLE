@@ -11,9 +11,9 @@ endif
 STRIPBIN=$(BINPREFIX)strip
 SDLCONFIG=sdl2-config
 SRC=.
-C3DCOMMONSRC=../cat3dcommon
-IDSRC=..
-BESRC=../..
+C3DCOMMONSRC=..
+IDSRC=../..
+BESRC=../../..
 OBJPREFIX=obj
 OBJ=$(OBJPREFIX)/$(VERDIRNAME)
 IDOBJ=$(OBJ)/id
@@ -34,7 +34,7 @@ OBJECTS=$(OBJ)/c3_act1.o \
         $(OBJ)/c3_state.o \
         $(OBJ)/c3_wiz.o
 
-#Shared with Catacomb 3-D and the Adventures series
+#Shared with Catacomb 3-D and The Adventures Series
 OBJECTS+= $(OBJ)/c3_asm.o \
           $(OBJ)/c3_scale.o \
           $(OBJ)/c3_trace.o
@@ -70,7 +70,7 @@ ifeq ($(VERDIRNAME), cat3d100)
 	RSRC_OBJECTS+= $(RSRCOBJ)/introscn.o
 endif
 
-INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(IDSRC) -I$(BESRC) -DREFKEEN_VER_CAT3D=1
+INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(VERSRC) -I$(IDSRC) -I$(BESRC) -DREFKEEN_VER_CAT3D=1
 
 ifeq ($(VERDIRNAME), cat3d100)
 INTCXXFLAGS+= -DREFKEEN_VER_CAT3D_100=1
@@ -82,11 +82,12 @@ endif
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG
+	CXXOPT=
 else
-	INTCXXFLAGS+= -O2
+	CXXOPT=-O2
 endif
 
-INTCXXFLAGS+= `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable -Wno-missing-braces -Wno-switch
+INTCXXFLAGS+= $(CXXOPT) `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable -Wno-missing-braces -Wno-switch
 #We need -lm for dbopl
 INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
 
