@@ -217,9 +217,13 @@ static void BEL_SDL_ParseSetting_SndSampleRate(const char *buffer)
 	g_refKeenCfg.sndSampleRate = atoi(buffer);
 }
 
+// HACK (cfg file may be rewritten and we don't want to remove any setting)
+static bool g_sdlIsFarPtrSegOffsetSettingRead = false;
+
 static void BEL_SDL_ParseSetting_FarPtrSegOffset(const char *buffer)
 {
 	unsigned int segOffset;
+	g_sdlIsFarPtrSegOffsetSettingRead = true;
 	if (sscanf(buffer, "%X", &segOffset) == 1)
 	{
 		g_refKeenCfg.farPtrSegOffset = segOffset;
@@ -307,7 +311,7 @@ static void BEL_SDL_ParseConfig(void)
 	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
 	fprintf(fp, "autolock=%s\n", g_refKeenCfg.autolockCursor ? "true" : "false");
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
-	if (g_refKeenCfg.farPtrSegOffset != BE_SDL_DEFAULT_FARPTRSEGOFFSET)
+	if (g_sdlIsFarPtrSegOffsetSettingRead)
 	{
 		// This should be a relatively hidden setting
 		fprintf(fp, "farptrsegoffset=%X\n", g_refKeenCfg.farPtrSegOffset);

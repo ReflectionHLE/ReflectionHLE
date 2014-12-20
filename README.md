@@ -1,19 +1,20 @@
-Ref Keen Dreams, Catacomb 3-D, Catacomb Abyss (formerly Chocolate Keen Dreams)
-==============================================================================
+Ref Keen Dreams, Catacomb 3-D + Adventures (formerly Chocolate Keen Dreams)
+===========================================================================
 
 These are ports of Keen Dreams, Catacomb 3-D (The Descent) and The Catacomb
-Abyss. Although it may initially not seem obvious, the reason these ports are
-available under a single project is that a lot of common code can be found.
-The dimension counts may be different (Keen Dreams is a smooth-scrolling 2D
-platformer game, while the Catacombs are 3D), but there's still common code
-for low-level EGA output and 2D picture and font drawing routines, as well
-as very similar user input and sound output routines. Files with such code
-are often marked "ID Engine". A later revision of the codebase is also
-found in Wolfenstein 3D.
+Adventure Series. Although it may initially seem non-obvious, the reason these
+ports are available under a single project is that a lot of common code can be
+found. It may be true that Keen Dreams is a smooth-scrolling 2D platformer
+game, while the Catacombs are 3D first person shooters, but there are still
+common low-level 2D picture and font drawing routines, as well as very similar
+user input and sound output routines. Files with such code are often marked
+"ID Engine". A later revision of the codebase is also found in Wolfenstein 3D.
 
 These source ports aim to reproduce behaviors of original executables
 for DOS, including bugs, at least if it's not too difficult
 (e.g., anything that highly depends on the memory layout).
+With the exception of The Catacomb Armageddon/Apocalypse, this also includes
+compatibility with saved games for original DOS executables (done per version).
 The Chocolate Doom source port can be considered an inspiration for that.
 
 The term "Ref" from the ports' names comes from the word "Reflection".
@@ -34,8 +35,9 @@ For Keen Dreams it can be done by adding the /detour command line argument,
 e.g., typing "refkdreams-shar113.exe /detour" in a command prompt on Windows.
 This is, by the way, the exact opposite of the behaviors of the original.
 
-The same applies to The Catacomb Abyss, but may be a bit tricky. Basically, the
-very first command line argument should be (yeah that's no mistake): ^(a@&r`
+The same applies to The Catacomb Abyss (refcatabyss-113 for Shareware release),
+but may be a bit tricky. Basically, the very first command line argument
+should be (yeah that's no mistake): ^(a@&r`
 Depending on the environment, you may need to escape some characters and/or
 add e.g., quotation marks.
 Again, that's the opposite of the original behaviors. In addition,
@@ -51,13 +53,21 @@ simply specify /skipintro as the very first command line argument.
 More arguments can be added, with behaviors similar to
 what you'll get with the original DOS EXE.
 
-Finally, about INTRO.EXE and LOADSCN.EXE, source codes for these EXEs had
-to be manually restored. See "Additional sources/data used for these ports"
-below for details about these codes and more.
+/skipintro can similarly be used with the supported non-shareware versions of
+the Adventure Series' episodes, identified by the following DOS executables:
+CATABYSS.EXE (intro) and ABYSGAME.EXE (game) for The Catacomb Abyss v1.13,
+CATARM.EXE and ARMGAME.EXE for The Catacomb Armageddon v1.02,
+and CATAPOC.EXE and APOCGAME.EXE for The Catacomb Apocalypse v1.01.
 
-For another possible difference, Skull 'n' Bones from Catacomb 3-D can be
-slower than vanilla if VSync is in effect. This is a known limitation related
-to timing, so for now this is disabled in the Catacombs.
+Finally, about INTRO.EXE (or registered CATABYSS.EXE/CATARM.EXE/CATAPOC.EXE)
+and LOADSCN.EXE, source codes for these EXEs had to be manually restored.
+See "Additional sources/data used for these ports" below for details about
+these codes and more.
+
+For another difference which applies to The Catacomb Armageddon/Apocalypse, if
+the cheat code letting one cycle through ceiling/sky colors is used while there
+is flashing (a lightning), this can lead to so-called "undefined behaviors". It
+may seem harmless, but a crash and/or other unexpected side-effects may occur.
 
 ----------------
 What is included
@@ -71,8 +81,10 @@ CGA v1.05, Registered (EGA) v1.93 and Shareware (EGA) v1.20.
 For Catacomb 3-D, versions 1.00 and 1.22 should be supported. The source code
 release has been modified for the addition of 1.00.
 
-For The Catacomb Abyss there's currently a single executable based on the
-source code release, modified to be compatible with Shareware v1.13 (QA [0]).
+For The Catacomb Abyss, versions 1.13 (QA [0], Shareware) and 1.24 (rev 1)
+are supported. The source code release has been modified for support of v1.13.
+Furthermore, The Catacomb Armageddon v1.02 (rev 1) and The Catacomb Apocalypse
+v1.01 (rev 1) are supported.
 
 Note that these ports do not come with a copy of any game, which is required.
 As of October 25, 2014, you can download Keen Dreams, Shareware release, v1.13,
@@ -91,10 +103,12 @@ http://cd.textfiles.com/maxx/tothemaxpcg/ARCADE/CATABS13.ZIP
 Original sources/data this is based on
 --------------------------------------
 
-- Original Keen Dreams source code releases for all supported versions,
+- Original Keen Dreams source code releases (all supported versions),
 including static data (e.g., game text and audio/graphics/maps header files).
-- Catacomb 3-D source code release for v1.22, including static data.
-- The Catacomb Abyss source code release for v1.24, including static data.
+- Catacomb 3-D v1.22 source code release, including static data.
+- The Catacomb Abyss v1.24 source code release, including static data.
+- The Catacomb Armageddon v1.02 source code release, including static data.
+- The Catacomb Apocalypse v1.01 source code release, including static data.
 - The DBOPL emulator from the DOSBox project.
 
 --------------------------------------------
@@ -102,20 +116,22 @@ Additional sources/data used for these ports
 --------------------------------------------
 
 - Minor source code modifications and static data additions, for reproduction
-of Catacomb 3-D v1.00.
-- Minor source code modifications and static data additions, for reproduction
-of The Catacomb Abyss Shareware v1.13.
-- Reconstructed source codes for the INTRO.EXE and LOADSCN.EXE programs
-distributed with The Catacomb Abyss v1.13.
-- As of November 30 2014, these can be found here:
+of Catacomb 3-D v1.00 and The Catacomb Abyss v1.13.
+- Reconstructed source codes for INTRO.EXE/CATABYSS.EXE/CATARM.EXE/CATAPOC.EXE
+(intro with title screen and credits) and LOADSCN.EXE (screens shown on quit),
+a couple of DOS programs distributed with the Catacomb Adventure Series
+(or at least specific versions of the episodes).
+
+As of December 20 2014, these can be found here:
 https://bitbucket.org/NY00123/gamesrc-ver-recreation/
 
 ------------
 Terms of use
 ------------
 
-Ref Keen Dreams, Ref Catacomb 3-D, Ref Catacomb Abyss and the DBOPL emulator
-are released under the GNU GPLv2+. See LICENSE for more details.
+Ref Keen Dreams, Ref Catacomb 3-D, Ref Catacomb Abyss, Ref Catacomb Armageddon,
+Ref Catacomb Apocalypse and the DBOPL emulator are released under
+the GNU GPLv2+. See LICENSE for more details.
 
 Note that this does not cover the static data included for usage with Ref Keen
 Dreams. However, as an exception to the terms above you may link and distribute
@@ -125,7 +141,7 @@ that data for the purposes of compatibility with the original game.
 Based on the README.md file of the original Keen Dreams source code release
 ---------------------------------------------------------------------------
 
-The original Keen Draems source code release was made possible by
+The original Keen Dreams source code release was made possible by
 a crowdfunding effort. It is brought to you by Javier M. Chavez
 and Chuck Naaden with additional support from:
 
@@ -168,7 +184,7 @@ Catacomb series and Hovertank 3D.
 
 * John Carmack, John Romero, Jason Blochowiak, Tom Hall, Adrian Carmack and
 Robert Prince for their original works for Keen Dreams and Catacomb 3-D, a lot
-of these used in the Catacomb Adventure Series (Catacomb Abyss included) later.
+of these used in the Catacomb Adventure Series later.
 * Mike Maynard, James Row, Nolan Martin, Steven Maines, Carol Ludden,
 Jerry Jones, James Weiler and Judi Mangham for their additional works
 for the Catacomb Adventure Series.
@@ -210,9 +226,18 @@ as well as 32-bit Windows executables, but these haven't yet been entirely
 tested. New non-vanilla bugs are possible!
 - There should be compatibility with the configuration files as generated by
 the original DOS executables, but this hasn't been entirely tested.
-- Saved game compatibility is implemented per game release separately
-(e.g., the CGA executable should be compatible with Keen Dreams CGA v1.05),
-but there can still be some new non-vanilla bugs.
+- With the exception of The Catacomb Armageddon/Apocalypse,
+saved game compatibility is implemented per game release separately (e.g., the
+refkdreams-cga105 executable should be compatible with Keen Dreams CGA v1.05),
+but there can still be some new non-vanilla bugs. Due to technical limitations,
+by default saved games for The Catacomb Armageddon/Apocalypse aren't compatible
+with the original DOS executables (Armageddon v1.02 / Apocalypse v1.01), unless
+you're lucky. In fact, even with any of the original DOS EXEs, there's no
+guarantee that a game being saved will work later while using the exact same
+EXE (some data in the saved game depends on the location of a modified copy
+of the DOS executable in the address space). If you still want some form of
+compatibility, though, there is a way to control this. See "Configuration file"
+below for the hidden farptrsegoffset setting.
 
 ----------------------
 Making Keen Dreams run
@@ -243,18 +268,26 @@ Making Catacomb 3-D (The Descent) run
 
 This requires either Catacomb 3-D v1.00 or Catacomb 3-D: The Descent v1.22.
 
-On Windows desktops, you should simply drop the files SDL2.dll and
+On Windows desktops, you should simply drop the file SDL2.dll, as well as
 refcat-100.exe or refcat-122.exe (depending on the version) along with
 the files coming with the corresponding release of the game for DOS.
 
------------------------------
-Making The Catacomb Abyss run
------------------------------
+--------------------------------------------------------
+Making any of the Catacomb Adventure Series episodes run
+--------------------------------------------------------
 
-This requires the following release: Catacomb Abyss Shareware v1.13 (QA [0]).
+In order to play The Catacomb Abyss, you need a release of The Catacomb Abyss
+for DOS, either Shareware v1.13 (QA [0]) or v1.24 (rev 1).
 
-On Windows desktops, you should simply drop the files SDL2.dll and
-refcatabyss.exe along with the files coming with the shareware release.
+On Windows desktops, you should simply drop the files SDL2.dll, and one of
+refcatabyss-113.exe and refcatabyss-124.exe (pick the correct version),
+along with the files coming with the desired release.
+
+For The Catacomb Armageddon, version 1.02 (rev 1) is supported, and on Windows,
+you want to use refcatarm-102.exe.
+
+Regarding The Catacomb Apocalypse, version 1.01 (rev 1) is supported, and the
+corresponding Windows EXE is refcatapoc-101.exe.
 
 ------------------------------------------------
 How to do *this and that* or: Configuration file
@@ -262,7 +295,8 @@ How to do *this and that* or: Configuration file
 
 On first launch of Ref Keen Dreams, a configuration file named refkdreams.cfg
 should be generated. For Ref Catacomb 3-D the filename is refcat3d.cfg, and
-for Ref Catacomb Abyss it is refcatabyss.cfg.
+for Ref Catacomb Abyss it is refcatabyss.cfg. Similarly it is refcatarm.cfg
+with Ref Catacomb Armageddon and refcatapoc.cfg using Ref Catacomb Apocalypse. 
 You can edit it to fit your needs. Currently available settings:
 - "fullscreen" toggle. Value should be either "true" or "false".
 - "fullres" for fullscreen window resolution. By default the value is "0x0",
@@ -278,9 +312,9 @@ for the other choice.
 Note: Technically at least one more value should be acceptable,
 but the values given above probably suffice for now.
 - "vsync" lets you toggle Sync to VBlank. Valid values are "auto", "off", "on".
-The default of "auto" implies "off" with CGA graphics and "on" with EGA within
-Keen Dreams, since these probably represent the behaviors of the original
-releases with a real CGA/EGA/VGA. For now it implies "off" in the Catacombs.
+The default of "auto" implies "off" with CGA graphics and "on" with EGA,
+since these probably represent the behaviors of the original releases
+with a real CGA/EGA/VGA.
 - "bilinear" toggles bilinear filtering. Valid values are "true" and "false".
 If set to "true", consider taking a look at the "scalefactor" setting.
 - "scaletype" can be used to toggle aspect ratio correction. Good e.g.,
@@ -300,6 +334,21 @@ the default is 49716, which is close to the rate of OPL chips generating AdLib
 sounds. It's also more efficient, as no interpolation is required,
 since the rate of 49716Hz is used for AdLib emulation internally.
 
+An additional setting which is hidden by default:
+- "farptrsegoffset" can be used for (some) level of saved game compatibility
+in The Catacomb Armageddon/Apocalypse (doesn't apply to Abyss). Using just any
+of the original DOS executables for one of these titles, it is possible that
+a game saved at some point will fail to properly load (or even close to that)
+later, due to the location of a modified copy of the DOS EXE in the address
+space. The value given to "farptrsegoffset" is a hexadecimal value that can be
+used to control this location (as if a DOS executable were used).
+If you have a saved game coming from a default setup of DOSBox 0.74, or some
+official SVN build of DOSBox from 2014, chances are farptrsegoffset=1A2 is the
+desired setting.
+
+MOST IMPORTANT: If a Catacomb Armageddon/Apocalypse game is saved using the
+source port, it will not properly load once farptrsegoffset is modified!
+
 --------------------
 There is some bug...
 --------------------
@@ -316,22 +365,46 @@ Building the ports from the source codes
 - Development files for SDL 2.0 are required, as well as GNU make and the
 GNU Compiler Collection's C compiler (i.e. gcc). In practice, at the moment
 only SDL 2.0 dev files, "make" and "gcc" are probably required. If nothing goes
-wrong, a single "make" command should build seven executables, one for each
-original supported version of Keen Dreams for DOS, two more for Catacomb 3-D
-and another one for The Catacomb Abyss. "make clean" removes any generated
-object or executable file, assuming the *exact* same arguments have been
-passed to "make" as before, with the exception of the "clean" argument.
-- It is possible to build just one executable of Keen Dreams by going through
-a specific Makefile in the "src/kdreams" subtree, e.g., "make -f Makefile.cga".
+wrong, a single "make" command should build various executables, each of them
+being a replacement for a different version of a game as released for DOS.
+"make clean" removes any generated object or executable file, assuming the
+*exact* same arguments have been passed to "make" as before, with the
+exception of the "clean" argument.
+- It is possible to build just the Keen Dreams executables by typing "make"
+while in the "src/kdreams" subtree. To build just one executable, you can
+use a specific Makefile in this subtree, e.g., "make -f Makefile.cga".
 - Similarly, to build just Catacomb 3-D, you can type "make" while in the
-"src/id91_11/cat3d" subtree (or pick a specific version as for Keen Dreams).
-For The Catacomb Abyss it is "src/id91_11/catabyss".
+"src/id91_11/cat_all/cat3d" subtree (or pick a specific version again).
+For The Catacomb Abyss it is "src/id91_11/cat_all/catabyss", and there are
+two more such subdirectories for The Catacomb Armageddon and Apocalypse.
 - MinGW can be used as well (tested on Linux). If you try to cross-compile
 then you may wish to set PLATFORM=WINDOWS and BINPREFIX accordingly.
 
 ---------
 Changelog
 ---------
+
+Dec 20, 2014 (v0.9.12):
+- Complete support for the Catacomb Adventure Series has been integrated.
+In addition to version 1.13 of The Catacomb Abyss (Shareware release),
+there is support for Abyss v1.24, Armageddon v1.02 and Apocalypse v1.01.
+- It shall be noted that while it's possible to save and load games for The
+Catacomb Armageddon/Apocalypse, most chances are they won't be compatible with
+any of the original DOS executables. A new, hidden farptrsegoffset setting can
+be added to the cfg file in order to make this somewhat more feasible, although
+there's no guarantee it'll always work with the same value, given the structure
+of the saved games (doesn't apply to Abyss).
+- For another note, if the cheat code letting one cycle through ceiling/sky
+colors is used while there is flashing (a lightning), this can lead to
+so-called "undefined behaviors". It may look like there's no harm,
+but a crash and/or other unexpected side-effects may occur.
+- It turns out VSync was still enabled in the preceding release (v0.9.6) by
+default for The Catacomb Abyss (and Catacomb 3-D), as well as Keen Dreams with
+CGA graphics. Now, though, some adjustments were made in regards to timing, so
+Skull 'n' Bones from Catacomb 3-D can be played back at a rate closer to the
+original while VSync is toggled on, and not just while it's off. Furthermore,
+VSync is again toggled on by default for all supported games, with the
+exception of the CGA release of Keen Dreams (where it's off by default).
 
 Nov 30, 2014 (v0.9.6):
 - Support for Catacomb 3-D (The Descent) is now in. This includes support for
