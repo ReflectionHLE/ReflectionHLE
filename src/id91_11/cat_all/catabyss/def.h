@@ -316,7 +316,11 @@ typedef	struct
 // declared as a bidimensional array of objtype pointers, but it is also used
 // to store plain 16-bit integers.
 
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 #define COMPAT_OBJ_CONVERSION_OFFSET 0xC303
+#else
+#define COMPAT_OBJ_CONVERSION_OFFSET 0xC2C1
+#endif
 
 #define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objlist)*sizeof(objtype)+COMPAT_OBJ_CONVERSION_OFFSET)):(id0_word_t)0)
 #define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objlist+(id0_word_t)((id0_word_t)(dosptr)-(id0_word_t)COMPAT_OBJ_CONVERSION_OFFSET)/sizeof(objtype)):NULL)
