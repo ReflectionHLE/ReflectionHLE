@@ -3469,9 +3469,30 @@ void T_ExpThink(objtype *obj)
 //------------------------------------------------------------------------
 void SpawnBigExplosion(fixed x, fixed y, id0_short_t Delay, fixed Range)
 {
-	SpawnExplosion(x-BE_Cross_Brandom(Range),y+BE_Cross_Brandom(Range),BE_Cross_Brandom(Delay));
-	SpawnExplosion(x+BE_Cross_Brandom(Range),y-BE_Cross_Brandom(Range),BE_Cross_Brandom(Delay));
-	SpawnExplosion(x-BE_Cross_Brandom(Range),y-BE_Cross_Brandom(Range),BE_Cross_Brandom(Delay));
-	SpawnExplosion(x+BE_Cross_Brandom(Range),y+BE_Cross_Brandom(Range),BE_Cross_Brandom(Delay));
+	// REFKEEN - Force a specific order of calls to random function
+	// (same as original EXEs for DOS), don't introduce undefined behaviors
+	id0_int_t rnd1, rnd2, rnd3;
+	rnd3 = BE_Cross_Brandom(Delay);
+	rnd2 = BE_Cross_Brandom(Range);
+	rnd1 = BE_Cross_Brandom(Range);
+	SpawnExplosion(x-rnd1,y+rnd2,rnd3);
+	rnd3 = BE_Cross_Brandom(Delay);
+	rnd2 = BE_Cross_Brandom(Range);
+	rnd1 = BE_Cross_Brandom(Range);
+	SpawnExplosion(x+rnd1,y-rnd2,rnd3);
+	rnd3 = BE_Cross_Brandom(Delay);
+	rnd2 = BE_Cross_Brandom(Range);
+	rnd1 = BE_Cross_Brandom(Range);
+	SpawnExplosion(x-rnd1,y-rnd2,rnd3);
+	rnd3 = BE_Cross_Brandom(Delay);
+	rnd2 = BE_Cross_Brandom(Range);
+	rnd1 = BE_Cross_Brandom(Range);
+	SpawnExplosion(x+rnd1,y+rnd2,rnd3);
+#if 0
+	SpawnExplosion(x-random(Range),y+random(Range),random(Delay));
+	SpawnExplosion(x+random(Range),y-random(Range),random(Delay));
+	SpawnExplosion(x-random(Range),y-random(Range),random(Delay));
+	SpawnExplosion(x+random(Range),y+random(Range),random(Delay));
+#endif
 }
 

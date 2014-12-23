@@ -709,7 +709,11 @@ void SpawnRay(id0_int_t tilex, id0_int_t tiley)
 	ob=new;
 
 	BR_STAGE = br_GND;
-	BR_TIMEREMAIN = BE_Cross_Brandom(60)+BE_Cross_Brandom(100);
+	// REFKEEN - Force a specific order of calls to random function
+	// (same as original EXEs for DOS), don't introduce undefined behaviors
+	BR_TIMEREMAIN = BE_Cross_Brandom(60);
+	BR_TIMEREMAIN += BE_Cross_Brandom(100);
+	//BR_TIMEREMAIN = random(60)+random(100);
 
 	new->obclass	= rayobj;
 	new->speed		= 1700;
@@ -765,7 +769,11 @@ void SpawnBlob(id0_int_t tilex, id0_int_t tiley)
 	ob=new;
 
 	BR_STAGE = br_GND;
-	BR_TIMEREMAIN = BE_Cross_Brandom(60)+BE_Cross_Brandom(100);
+	// REFKEEN - Force a specific order of calls to random function
+	// (same as original EXEs for DOS), don't introduce undefined behaviors
+	BR_TIMEREMAIN = BE_Cross_Brandom(60);
+	BR_TIMEREMAIN += BE_Cross_Brandom(100);
+	//BR_TIMEREMAIN = random(60)+random(100);
 
 	new->obclass	= blobobj;
 	new->speed		= 1200;

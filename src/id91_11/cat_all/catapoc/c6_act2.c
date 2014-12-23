@@ -507,7 +507,11 @@ void T_ShooterObj(objtype *ob)
 	if (shooter_delay < 0)
 	{
 		shooter_mode = BE_Cross_Brandom(sm_dummy);
-		shooter_delay = BE_Cross_Brandom(10*60)+BE_Cross_Brandom(50);
+		// REFKEEN - Force a specific order of calls to random function
+		// (same as original EXEs for DOS), don't introduce undefined behaviors
+		shooter_delay = BE_Cross_Brandom(10*60);
+		shooter_delay += BE_Cross_Brandom(50);
+		//shooter_delay = random(10*60)+random(50);
 	}
 
 	tempx = player->x;
@@ -832,7 +836,11 @@ void T_Head(objtype *ob)
 				ob->obclass	= headobj;
 				ob->active	= always;
 				head_mode	= h_active;
-				head_delay 	= BE_Cross_Brandom(100)+BE_Cross_Brandom(60);
+				// REFKEEN - Force a specific order of calls to random function
+				// (same as original EXEs for DOS), don't introduce undefined behaviors
+				head_delay = BE_Cross_Brandom(100);
+				head_delay += BE_Cross_Brandom(60);
+				//head_delay 	= random(100)+random(60);
 				ob->hitpoints = EasyHitPoints(16);
 			}
 			else
@@ -854,7 +862,11 @@ void T_Head(objtype *ob)
 			if (head_delay < 0)
 			{
 				head_mode = BE_Cross_Brandom(h_other4)+1;
-				head_delay = BE_Cross_Brandom(10*60)+BE_Cross_Brandom(50);
+				// REFKEEN - Force a specific order of calls to random function
+				// (same as original EXEs for DOS), don't introduce undefined behaviors
+				head_delay = BE_Cross_Brandom(10*60);
+				head_delay += BE_Cross_Brandom(50);
+				//head_delay = random(10*60)+random(50);
 			}
 		break;
 
@@ -885,7 +897,11 @@ void T_Head(objtype *ob)
 			if (head_delay <= 0)
 			{
 				head_mode = h_active;
-				head_delay = BE_Cross_Brandom(10*60)+BE_Cross_Brandom(50);
+				// REFKEEN - Force a specific order of calls to random function
+				// (same as original EXEs for DOS), don't introduce undefined behaviors
+				head_delay = BE_Cross_Brandom(10*60);
+				head_delay += BE_Cross_Brandom(50);
+				//head_delay = random(10*60)+random(50);
 			}
 		break;
 	}
