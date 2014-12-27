@@ -1131,6 +1131,15 @@ nextactor:;
 // refresh all
 //
 		ThreeDRefresh ();
+		// (REFKEEN) SPECIAL - Without this the game
+		// can run very fast, even if it's not noticeable
+		// (a lot of PlayLoop iterations and consumed CPU power)
+		//
+		// Note: Should NOT be called from ThreeDRefresh/CalcTics,
+		// because we don't always want that to be done
+		// (e.g., right after loading C4 saved game, FizzleFade effect)
+		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		//
 
 		if (Flags & FL_DEAD)
 		{

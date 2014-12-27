@@ -2100,11 +2100,6 @@ void CalcTics (void)
 //
 // non demo, so report actual time
 //
-		// (REFKEEN) SPECIAL - Without this the game
-		// can run very fast, even if it's not noticeable
-		// (a lot of PlayLoop iterations and consumed CPU power)
-		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
-		//
 		newtime = SD_GetTimeCount();
 		realtics = tics = newtime-lasttimecount;
 		lasttimecount = newtime;
