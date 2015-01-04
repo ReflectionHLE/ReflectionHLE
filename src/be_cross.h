@@ -11,6 +11,7 @@ typedef enum BE_Log_Message_Class_T
 
 // TODO (REFKEEN) BIG ENDIAN
 #define BE_Cross_Swap16LE(x) (x)
+#define BE_Cross_Swap32LE(x) (x)
 
 int32_t BE_Cross_FileLengthFromHandle(int handle);
 char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);

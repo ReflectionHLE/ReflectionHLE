@@ -65,8 +65,8 @@ void BE_SDL_ShutdownAll(void)
 void BE_SDL_HandleExit(int status)
 {
 	SDL_Event event;
-	// TODO Check joystick events
-	while (true)
+	bool keepRunning = true;
+	while (keepRunning)
 	{
 		while (SDL_PollEvent(&event))
 		{
@@ -82,11 +82,26 @@ void BE_SDL_HandleExit(int status)
 			case SDL_KEYDOWN:
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_QUIT:
-				SDL_Quit();
-				BE_SDL_ShutdownAll();
-				exit(0);
+				keepRunning = false;
 				break;
 			default: ;
+			}
+		}
+		// Events are not sent for SDL joysticks
+		for (int i = 0; i < BE_SDL_MAXJOYSTICKS; ++i)
+		{
+			if (!(g_sdlJoysticks[i]))
+			{
+				continue;
+			}
+			int nButtons = SDL_JoystickNumButtons(g_sdlJoysticks[i]);
+			for (int but = 0; but < nButtons; ++but)
+			{
+				if (SDL_JoystickGetButton(g_sdlJoysticks[i], but))
+				{
+					keepRunning = false;
+					break;
+				}
 			}
 		}
 		SDL_Delay(1);
@@ -94,6 +109,8 @@ void BE_SDL_HandleExit(int status)
 		void BEL_SDL_UpdateHostDisplay(void);
 		BEL_SDL_UpdateHostDisplay();
 	}
+	BE_SDL_ShutdownAll();
+	exit(0);
 }
 
 
@@ -304,7 +321,16 @@ static void BEL_SDL_ParseConfig(void)
 	fprintf(fp, "fullres=%dx%d\n", g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight);
 	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
-	fprintf(fp, "sdlrenderer=%s\n", "auto");
+	if (g_refKeenCfg.sdlRendererDriver < 0)
+	{
+		fprintf(fp, "sdlrenderer=auto\n");
+	}
+	else
+	{
+		SDL_RendererInfo info;
+		SDL_GetRenderDriverInfo(g_refKeenCfg.sdlRendererDriver, &info); // g_refKeenCfg.sdlRendererDriver should be a valid renderer driver index here
+		fprintf(fp, "sdlrenderer=%s\n", info.name);
+	}
 	fprintf(fp, "vsync=%s\n", g_refKeenCfg.vSync == VSYNC_AUTO ? "auto" : (g_refKeenCfg.vSync == VSYNC_ON ? "on" : "off"));
 	fprintf(fp, "bilinear=%s\n", g_refKeenCfg.isBilinear ? "true" : "false");
 	fprintf(fp, "scaletype=%s\n", (g_refKeenCfg.scaleType == SCALE_ASPECT) ? "aspect" : "fill");

@@ -67,7 +67,7 @@ void BE_SDL_SetTimer(uint16_t speed, bool isALMusicOn);
 uint32_t BE_SDL_GetTimeCount(void);
 void BE_SDL_SetTimeCount(uint32_t newcount);
 // Use this as a replacement for busy loops waiting for some ticks to pass
-// e.g., "while (TimeCount-srctimecount<timetowait)
+// e.g., "while (TimeCount-srctimecount<timetowait)"
 void BE_SDL_TimeCountWaitFromSrc(uint32_t srctimecount, int16_t timetowait);
 // Same as above, but instead waits to reach dsttimecount
 // e.g., a replacement for "while (TimeCount<dsttimecount)"

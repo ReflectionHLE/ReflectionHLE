@@ -371,7 +371,7 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 	{
 		if (!g_sdlSampleOffsetInSound)
 		{
-			// FUNCTION VARIABLE (TODO any need to use a var?)
+			// FUNCTION VARIABLE (TODO any need to use a var? YES if we want to kind-of separate what we have here from original code)
 			g_sdlCallbackSDFuncPtr();
 		}
 		// Now generate sound

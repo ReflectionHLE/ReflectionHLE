@@ -3433,8 +3433,10 @@ USL_SetUpCtlPanel(void)
 
 	// Set up SoundSource
 	USL_TurnOff(CtlSSSPanels);
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	CtlSSSPanels[0].sel = ssIsTandy? ui_Selected : ui_Normal;
 	CtlSSSPanels[1].sel = (ssPort == 2)? ui_Selected : ui_Normal;
+#endif
 
 	// Set up Music
 	USL_TurnOff(CtlMPanels);
@@ -3466,13 +3468,17 @@ USL_TearDownCtlPanel(void)
 	if (i != -1)
 		SD_SetSoundMode(i);
 
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	ssIsTandy = CtlSSSPanels[0].sel & ui_Selected;
 	ssPort = (CtlSSSPanels[1].sel & ui_Selected)? 2 : 1;
+#endif
 
 	i = USL_FindDown(CtlMPanels);
 	if (i != -1)
 	{
+#if REFKEEN_SD_ENABLE_MUSIC
 		SD_SetMusicMode(i);
+#endif
 
 		if (!QuitToDos)
 		{

@@ -68,28 +68,39 @@
 #define	writereg(n)	outportb(0x389,n)
 #define	readstat()	inportb(0x388)
 
-
 //
 //	Stuff I need
 //
 // This table maps channel numbers to carrier and modulator op cells
 static	id0_byte_t			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 						modifiers[9] = { 0, 1, 2, 8, 9,10,16,17,18};
+#if REFKEEN_SD_ENABLE_MUSIC
 static	ActiveTrack		*tracks[sqMaxTracks];
 static	id0_word_t			sqMode,sqFadeStep;
+#endif
 
 //	Global variables
-	id0_boolean_t		LeaveDriveOn,
-				SoundSourcePresent,SoundBlasterPresent,AdLibPresent,
-				NeedsDigitized,NeedsMusic;
+	id0_boolean_t		LeaveDriveOn
+				,SoundSourcePresent
+				,SoundBlasterPresent
+				,AdLibPresent
+#if REFKEEN_SD_ENABLE_DIGITIZED
+				,NeedsDigitized
+#endif
+#if REFKEEN_SD_ENABLE_MUSIC
+				,NeedsMusic
+#endif
+				;
 	SDMode		SoundMode;
 	SMMode		MusicMode;
 	// NEVER accessed directly now - done from backend via functions
 	//id0_longword_t	TimeCount;
 	SoundCommon		**SoundTable;
 	//id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	id0_boolean_t		ssIsTandy;
 	id0_word_t		ssPort = 2;
+#endif
 
 //	Internal variables
 static	id0_boolean_t			SD_Started;
@@ -120,8 +131,9 @@ static	id0_longword_t		pcLengthLeft;
 static	id0_word_t			pcSoundLookup[255];
 
 //	SoundBlaster variables
-static	id0_boolean_t			sbNoCheck,
-						sbSamplePlaying,
+static	id0_boolean_t			sbNoCheck;
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
+static	id0_boolean_t			sbSamplePlaying,
 						sbIsCompressed,sbCompFirst;
 static	id0_byte_t			sbOldIntMask = -1;
 static	id0_byte_t			id0_huge *sbNextSegPtr;
@@ -129,17 +141,20 @@ static	id0_int_t				sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
 						sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf};
 static	id0_longword_t		sbNextSegLen;
 static	SampledSound	id0_huge *sbSamples;
-//static	void interrupt	(*sbOldIntHand)(void);
+static	void interrupt	(*sbOldIntHand)(void);
+#endif
 
 //	SoundSource variables
-static	id0_boolean_t			ssNoCheck,
-						ssIsCompressed,ssCompFirst,
+static	id0_boolean_t			ssNoCheck;
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
+static id0_boolean_t					ssIsCompressed,ssCompFirst,
 						ssIsSlow;
 static	id0_word_t			ssControl,ssStatus,ssData,
 						ssHoldOver;
 static	id0_byte_t			ssOn,ssOff,
 						id0_far *ssSample;
 static	id0_longword_t		ssLengthLeft;
+#endif
 
 //	AdLib variables
 static	id0_boolean_t			alNoCheck;
@@ -149,7 +164,7 @@ static	id0_longword_t		alLengthLeft;
 
 //	Sequencer variables
 static	id0_boolean_t			sqActive;
-static	id0_word_t  			*sqTracks[sqMaxTracks];
+//static	id0_word_t  			*sqTracks[sqMaxTracks];
 static	id0_word_t			alFXReg;
 
 //	Internal routines
@@ -413,6 +428,7 @@ asm	out	0x61,al
 //	SoundBlaster code
 //
 
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SBStopSample() - Stops any active sampled sound and causes DMA
@@ -426,8 +442,6 @@ static void
 #endif
 SDL_SBStopSample(void)
 {
-	// REFKEEN - DISABLED
-#if 0
 	id0_byte_t	is;
 
 	if (sbSamplePlaying)
@@ -444,11 +458,8 @@ SDL_SBStopSample(void)
 			is &= ~(1 << sbInterrupt);
 		outportb(0x21,is);
 	}
-#endif
 }
 
-// (REFKEEN) UNUSED FUNCTION
-#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SBPlaySeg() - Plays a chunk of sampled sound on the SoundBlaster
@@ -497,10 +508,7 @@ SDL_SBPlaySeg(id0_byte_t id0_huge *data,id0_longword_t length)
 
 	return(uselen + 1);
 }
-#endif
 
-// (REFKEEN) UNUSED FUNCTION
-#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SBService() - Services the SoundBlaster DMA interrupt
@@ -532,7 +540,6 @@ SDL_SBService(void)
 
 	outportb(0x20,0x20);	// Ack interrupt
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -547,8 +554,6 @@ static void
 #endif
 SDL_SBPlaySample(SampledSound id0_far *sample)
 {
-	// REFKEEN - DISABLED
-#if 0
 	id0_byte_t			id0_huge *data,
 					timevalue;
 	id0_longword_t		used;
@@ -583,11 +588,8 @@ SDL_SBPlaySample(SampledSound id0_far *sample)
 	sbOut(sbWriteCmd,0xd4);						// Make sure DSP DMA is enabled
 
 	sbSamplePlaying = true;
-#endif
 }
 
-// (REFKEEN) UNUSED FUNCTION
-#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_CheckSB() - Checks to see if a SoundBlaster resides at a
@@ -621,7 +623,6 @@ SDL_CheckSB(id0_int_t port)
 	sbLocation = -1;						// Retry count exceeded - fail
 	return(false);
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -634,9 +635,6 @@ SDL_CheckSB(id0_int_t port)
 static id0_boolean_t
 SDL_DetectSoundBlaster(id0_int_t port)
 {
-	// REFKEEN - DISABLED
-	return(false);
-#if 0
 	id0_int_t	i;
 
 	if (port == 0)					// If user specifies default, use 2
@@ -653,7 +651,6 @@ SDL_DetectSoundBlaster(id0_int_t port)
 	}
 	else
 		return(SDL_CheckSB(port));	// User specified address or default
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -664,14 +661,11 @@ SDL_DetectSoundBlaster(id0_int_t port)
 static void
 SDL_StartSB(void)
 {
-	// REFKEEN - DISABLED
-#if 0
 	sbOldIntHand = getvect(sbIntVec);	// Get old interrupt handler
 	setvect(sbIntVec,SDL_SBService);	// Set mine
 
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0xd1);				// Turn on DSP speaker
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -682,16 +676,15 @@ SDL_StartSB(void)
 static void
 SDL_ShutSB(void)
 {
-	// REFKEEN - DISABLED
-#if 0
 	SDL_SBStopSample();
 
 	setvect(sbIntVec,sbOldIntHand);		// Set vector back
-#endif
 }
+#endif // REFKEEN_SD_ENABLE_SOUNDBLASTER
 
 //	Sound Source Code
 
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SSStopSample() - Stops a sample playing on the Sound Source
@@ -704,10 +697,7 @@ static void
 #endif
 SDL_SSStopSample(void)
 {
-	// REFKEEN - DISABLED
-#if 0
 	ssSample = 0;
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -718,8 +708,6 @@ SDL_SSStopSample(void)
 static void
 SDL_SSService(void)
 {
-	// REFKEEN - DISABLED
-#if 0
 	id0_boolean_t	gotit;
 	id0_byte_t	v;
 
@@ -783,7 +771,6 @@ SDL_SSService(void)
 	}
 done:
 	;	// Garbage for compiler
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -798,8 +785,6 @@ static void
 #endif
 SDL_SSPlaySample(SampledSound id0_far *sample)
 {
-	// REFKEEN - DISABLED
-#if 0
 asm	pushf
 asm	cli
 
@@ -811,7 +796,6 @@ asm	cli
 		ssIsCompressed = ssCompFirst = true;
 
 asm	popf
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -822,8 +806,6 @@ asm	popf
 static void
 SDL_StartSS(void)
 {
-	// REFKEEN - DISABLED
-#if 0
 	if (ssPort == 3)
 		ssControl = 0x27a;	// If using LPT3
 	else if (ssPort == 2)
@@ -840,7 +822,6 @@ SDL_StartSS(void)
 		ssOff = 0x0c;				// For normal machines
 
 	outportb(ssControl,ssOn);		// Enable SS
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -851,14 +832,9 @@ SDL_StartSS(void)
 static void
 SDL_ShutSS(void)
 {
-	// REFKEEN - DISABLED
-#if 0
 	outportb(ssControl,ssOff);
-#endif
 }
 
-// (REFKEEN) UNUSED FUNCTION
-#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_CheckSS() - Checks to see if a Sound Source is present at the
@@ -915,20 +891,16 @@ checkdone:
 	SDL_ShutSS();
 	return(present);
 }
-#endif
 
 static id0_boolean_t
 SDL_DetectSoundSource(void)
 {
-	// REFKEEN - DISABLED
-	return(false);
-#if 0
 	for (ssPort = 1;ssPort <= 3;ssPort++)
 		if (SDL_CheckSS())
 			return(true);
 	return(false);
-#endif
 }
+#endif // REFKEEN_SD_ENABLE_SOUNDSOURCE
 
 // 	AdLib Code
 
@@ -962,9 +934,7 @@ alOut(id0_byte_t n,id0_byte_t b)
 #endif
 }
 
-/*** REFKEEN - UNUSED/DISABLED ***/
-
-#if 0
+#if REFKEEN_SD_ENABLE_MUSIC
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SetInstrument() - Puts an instrument into a generator
@@ -1047,6 +1017,7 @@ SDL_ALPlaySound(AdLibSound id0_far *sound)
 
 	if (!(inst->mSus | inst->cSus))
 	{
+		BE_SDL_UnlockAudioRecursively(); // REFKEEN - Probably better to do this here, too
 		Quit("SDL_ALPlaySound() - Seriously suspicious instrument");
 	}
 
@@ -1097,8 +1068,7 @@ SDL_ALSoundService(void)
 	}
 }
 
-// (REFKEEN) UNUSED FUNCTION
-#if 0
+#if REFKEEN_SD_ENABLE_MUSIC
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SelectMeasure() - sets up sequencing variables for a given track
@@ -1110,7 +1080,6 @@ SDL_SelectMeasure(ActiveTrack *track)
 	track->seq = track->moods[track->mood];
 	track->nextevent = 0;
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1121,8 +1090,6 @@ SDL_SelectMeasure(ActiveTrack *track)
 static void
 SDL_ALService(void)
 {
-	// REFKEEN - DISABLED (but "should" still be called from SDL_t0Service)
-#if 0
 	id0_boolean_t		update;
 	id0_word_t		*seq;
 	id0_longword_t	next;
@@ -1197,8 +1164,8 @@ SDL_ALService(void)
 			}
 		}
 	}
-#endif
 }
+#endif // REFKEEN_SD_ENABLE_MUSIC
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1267,8 +1234,11 @@ static void /*interrupt*/
 SDL_t0Service(void)
 {
 	//id0_byte_t		sdcount;
-static	id0_word_t	count = 1,
-				alcount = 1;
+static	id0_word_t	count = 1
+#if REFKEEN_SD_ENABLE_MUSIC
+				,alcount = 1
+#endif
+				;
 				//drivecount = 1;
 
 	switch (SoundMode)
@@ -1279,16 +1249,20 @@ static	id0_word_t	count = 1,
 	case sdm_AdLib:
 		SDL_ALSoundService();
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sdm_SoundSource:
 		SDL_SSService();
 		break;
+#endif
 	}
 
+#if REFKEEN_SD_ENABLE_MUSIC
 	if ((MusicMode == smm_AdLib) && !(--alcount))
 	{
 		alcount = t0CountTable[SoundMode] / 2;
 		SDL_ALService();
 	}
+#endif
 
 	if (!(--count))
 	{
@@ -1341,12 +1315,16 @@ SDL_ShutDevice(void)
 	case sdm_AdLib:
 		SDL_ShutAL();
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sdm_SoundBlaster:
 		SDL_ShutSB();
 		break;
+#endif
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sdm_SoundSource:
 		SDL_ShutSS();
 		break;
+#endif
 	}
 	SoundMode = sdm_Off;
 }
@@ -1364,12 +1342,16 @@ SDL_StartDevice(void)
 	case sdm_AdLib:
 		SDL_StartAL();
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sdm_SoundBlaster:
 		SDL_StartSB();
 		break;
+#endif
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sdm_SoundSource:
 		SDL_StartSS();
 		break;
+#endif
 	}
 	SoundNumber = SoundPriority = 0;
 }
@@ -1393,21 +1375,27 @@ SD_SetSoundMode(SDMode mode)
 	switch (mode)
 	{
 	case sdm_Off:
+#if REFKEEN_SD_ENABLE_DIGITIZED
 		NeedsDigitized = false;
+#endif
 		result = true;
 		// (REFKEEN) Originally tableoffset wasn't set here at all - undefined behaviors (even if offset is irrelevant)...
 		tableoffset = 0;
 		break;
 	case sdm_PC:
 		tableoffset = STARTPCSOUNDS;
+#if REFKEEN_SD_ENABLE_DIGITIZED
 		NeedsDigitized = false;
+#endif
 		result = true;
 		break;
 	case sdm_AdLib:
 		if (AdLibPresent)
 		{
 			tableoffset = STARTADLIBSOUNDS;
+#if REFKEEN_SD_ENABLE_DIGITIZED
 			NeedsDigitized = false;
+#endif
 			result = true;
 		}
 		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
@@ -1416,6 +1404,7 @@ SD_SetSoundMode(SDMode mode)
 			result = false;
 		}
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER // Implies REFKEEN_SD_ENABLE_DIGITIZED
 	case sdm_SoundBlaster:
 		if (SoundBlasterPresent)
 		{
@@ -1429,11 +1418,14 @@ SD_SetSoundMode(SDMode mode)
 			result = false;
 		}
 		break;
+#endif
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE  // Implies REFKEEN_SD_ENABLE_DIGITIZED
 	case sdm_SoundSource:
 		tableoffset = STARTDIGISOUNDS;
 		NeedsDigitized = true;
 		result = true;
 		break;
+#endif
 	default:
 		result = false;
 		break;
@@ -1456,6 +1448,7 @@ SD_SetSoundMode(SDMode mode)
 	return(result);
 }
 
+#if REFKEEN_SD_ENABLE_MUSIC
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SD_SetMusicMode() - sets the device to use for background music
@@ -1500,6 +1493,7 @@ SD_SetMusicMode(SMMode mode)
 
 	return(result);
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1516,7 +1510,9 @@ SD_Startup(void)
 		return;
 
 	ssNoCheck = false;
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	ssIsTandy = false;
+#endif
 	alNoCheck = false;
 	sbNoCheck = false;
 	LeaveDriveOn = false;
@@ -1537,6 +1533,7 @@ SD_Startup(void)
 		case 3:
 			ssNoCheck = true;		// No Sound Source detection
 			break;
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 		case 4:						// Tandy Sound Source handling
 			ssIsTandy = true;
 			break;
@@ -1552,6 +1549,7 @@ SD_Startup(void)
 			ssPort = 3;
 			ssNoCheck = SoundSourcePresent = true;
 			break;
+#endif // REFKEEN_SD_ENABLE_SOUNDSOURCE
 		}
 	}
 #endif
@@ -1568,16 +1566,20 @@ SD_Startup(void)
 	/*LocalTime = TimeCount = 0;*/
 
 	SD_SetSoundMode(sdm_Off);
+#if REFKEEN_SD_ENABLE_MUSIC
 	SD_SetMusicMode(smm_Off);
+#endif
 
 	if (!ssNoCheck)
-		SoundSourcePresent = SDL_DetectSoundSource();
+		SoundSourcePresent == false; // REFKEEN - Let's just assign this...
+		//SoundSourcePresent = SDL_DetectSoundSource();
 
 	if (!alNoCheck)
 	{
 		AdLibPresent = SDL_DetectAdLib();
 		if (AdLibPresent && !sbNoCheck)
-			SoundBlasterPresent = SDL_DetectSoundBlaster(-1);
+			SoundBlasterPresent = true; // REFKEEN - Simply assign that...
+			//SoundBlasterPresent = SDL_DetectSoundBlaster(-1);
 	}
 
 	for (i = 0;i < 255;i++)
@@ -1606,12 +1608,16 @@ SD_Default(id0_boolean_t gotit,SDMode sd,SMMode sm)
 		case sdm_AdLib:
 			gotsd = AdLibPresent;
 			break;
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 		case sdm_SoundBlaster:
 			gotsd = SoundBlasterPresent;
 			break;
+#endif
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 		case sdm_SoundSource:
 			gotsd = SoundSourcePresent;
 			break;
+#endif
 		}
 	}
 	if (!gotsd)
@@ -1637,6 +1643,7 @@ SD_Default(id0_boolean_t gotit,SDMode sd,SMMode sm)
 		SD_SetSoundMode(sd);
 
 
+#if REFKEEN_SD_ENABLE_MUSIC
 	if (gotsm)	// Make sure requested music hardware is available
 	{
 		switch (sm)
@@ -1655,6 +1662,7 @@ SD_Default(id0_boolean_t gotit,SDMode sd,SMMode sm)
 	}
 	if (sm != MusicMode)
 		SD_SetMusicMode(sm);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1730,12 +1738,16 @@ SD_PlaySound(id0_word_t sound)
 	case sdm_AdLib:
 		SDL_ALPlaySound((void id0_far *)s);
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sdm_SoundBlaster:
 		SDL_SBPlaySample((void id0_far *)s);
 		break;
+#endif
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sdm_SoundSource:
 		SDL_SSPlaySample((void id0_far *)s);
 		break;
+#endif
 	}
 
 	SoundNumber = sound;
@@ -1760,12 +1772,16 @@ SD_SoundPlaying(void)
 	case sdm_AdLib:
 		result = alSound? true : false;
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sdm_SoundBlaster:
 		result = sbSamplePlaying;
 		break;
+#endif
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sdm_SoundSource:
 		result = ssSample? true : false;
 		break;
+#endif
 	}
 
 	if (result)
@@ -1790,12 +1806,16 @@ SD_StopSound(void)
 	case sdm_AdLib:
 		SDL_ALStopSound();
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sdm_SoundBlaster:
 		SDL_SBStopSample();
 		break;
+#endif
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sdm_SoundSource:
 		SDL_SSStopSample();
 		break;
+#endif
 	}
 
 	SDL_SoundFinished();
@@ -1815,6 +1835,7 @@ SD_WaitSoundDone(void)
 	}
 }
 
+#if REFKEEN_SD_ENABLE_MUSIC
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SD_StartMusic() - starts playing the music pointed to
@@ -1823,6 +1844,8 @@ SD_WaitSoundDone(void)
 void
 SD_StartMusic(id0_ptr_t music)	// DEBUG - this shouldn't be a Ptr...
 {
+	// REFKEEN - Original code does nothing...
+#if 0
 	switch (MusicMode)
 	{
 	case smm_AdLib:
@@ -1830,6 +1853,7 @@ SD_StartMusic(id0_ptr_t music)	// DEBUG - this shouldn't be a Ptr...
 		// DEBUG - not written
 		break;
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1879,6 +1903,7 @@ SD_MusicPlaying(void)
 	return(result);
 #endif
 }
+#endif // REFKEEN_SD_ENABLE_MUSIC
 
 // Replacements for direct accesses to TimeCount variable
 // (should be instantiated here even if inline, as of C99)

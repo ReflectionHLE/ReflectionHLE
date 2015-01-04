@@ -34,6 +34,12 @@
 #define	__DEBUG_SoundMgr__
 #endif
 
+// REFKEEN - Some macros used to disable unused code, may be re-enabled if required
+#define REFKEEN_SD_ENABLE_MUSIC 0
+#define REFKEEN_SD_ENABLE_SOUNDSOURCE 0
+#define REFKEEN_SD_ENABLE_SOUNDBLASTER 0
+#define REFKEEN_SD_ENABLE_DIGITIZED ((REFKEEN_SD_ENABLE_SOUNDSOURCE) || (REFKEEN_SD_ENABLE_SOUNDBLASTER))
+
 #define	TickBase	70		// 70Hz per tick - used as a base for timer 0
 
 typedef	enum	{
@@ -174,7 +180,8 @@ extern	void	SD_Startup(void),
 				SD_PlaySound(id0_word_t sound),
 				SD_StopSound(void),
 				SD_WaitSoundDone(void),
-				SD_StartMusic(id0_ptr_t music),	// DEBUG - this shouldn't be a Ptr
+				// REFKEEN - No need for this, and not using pointer type
+				//SD_StartMusic(id0_ptr_t music),	// DEBUG - this shouldn't be a Ptr
 				SD_FadeOutMusic(void),
 				SD_SetUserHook(void (*hook)(void));
 extern	id0_boolean_t	SD_MusicPlaying(void),
