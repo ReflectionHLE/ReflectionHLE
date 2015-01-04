@@ -129,7 +129,7 @@ size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte)
 
 size_t BE_Cross_readInt16LEBuffer(int handle, void *ptr, size_t nbyte)
 {
-#ifndef CK_CROSS_IS_BIGENDIAN
+#ifndef BE_CROSS_IS_BIGENDIAN
 	return read(handle, ptr, nbyte);
 #else
 	size_t result = read(handle, ptr, nbytes);
@@ -148,7 +148,7 @@ size_t BE_Cross_writeInt8LE(int handle, const void *ptr)
 
 size_t BE_Cross_writeInt16LE(int handle, const void *ptr)
 {
-#ifndef CK_CROSS_IS_BIGENDIAN
+#ifndef BE_CROSS_IS_BIGENDIAN
 	return write(handle, ptr, 2);
 #else
 	uint16_t val = BE_Cross_Swap16(*(uint16_t *) ptr);
@@ -158,7 +158,7 @@ size_t BE_Cross_writeInt16LE(int handle, const void *ptr)
 
 size_t BE_Cross_writeInt32LE(int handle, const void *ptr)
 {
-#ifndef CK_CROSS_IS_BIGENDIAN
+#ifndef BE_CROSS_IS_BIGENDIAN
 	return write(handle, ptr, 4);
 #else
 	uint32_t val = BE_Cross_Swap32(*(uint32_t *) ptr);
@@ -173,7 +173,7 @@ size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte)
 
 size_t BE_Cross_writeInt16LEBuffer(int handle, const void *ptr, size_t nbyte)
 {
-#ifndef CK_CROSS_IS_BIGENDIAN
+#ifndef BE_CROSS_IS_BIGENDIAN
 	return write(handle, ptr, nbyte);
 #else
 	size_t result = 0;
