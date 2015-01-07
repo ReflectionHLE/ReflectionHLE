@@ -18,7 +18,7 @@
 
 // KD_ACT1.C
 #include "kd_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 
 /*
@@ -379,7 +379,7 @@ extern	statetype s_pooffrom7;
 
 extern	statetype s_bonus1;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_flower1  	 = {FLOWER1SPR,FLOWER1SPR,stepthink,false,
 	false,20, 0,0, FlowerThink, NULL, DrawReact, &s_flower2};
@@ -419,7 +419,7 @@ statetype s_pooffrom7  	 = {POOF4SPR,POOF4SPR,step,false,
 	false,10, 0,0, NULL, NULL, DrawReact2, NULL};
 
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ======================
@@ -488,7 +488,7 @@ void FlowerThink (objtype *ob)
 void ChangeFromFlower (objtype *ob)
 {
 	objtype *flower;
-	statetype *state;
+	//statetype *state;
 	id0_unsigned_t	oldbottom;
 
 	SD_PlaySound (UNFLOWERPOWERSND);
@@ -500,7 +500,7 @@ void ChangeFromFlower (objtype *ob)
 	//ChangeState (flower,(statetype *)flower->temp2);
 	flower->y += oldbottom - flower->bottom;
 
-	flower->obclass = flower->temp1;
+	flower->obclass = (classtype)flower->temp1;
 	flower->active = yes;			// allow it to unspawn now if off screen
 }
 
@@ -521,7 +521,7 @@ void BonusThink (objtype *ob);
 
 extern	statetype s_bonus1;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_bonus  	 = {0/*NULL*/,0/*NULL*/,step,false,
 	false,20, 0,0, BonusThink, NULL, DrawReact2, &s_bonus};
@@ -529,7 +529,7 @@ statetype s_bonus  	 = {0/*NULL*/,0/*NULL*/,step,false,
 statetype s_bonusrise  	 = {0/*NULL*/,0/*NULL*/,slide,false,
 	false,40, 0,8, NULL, NULL, DrawReact3, NULL};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -609,7 +609,7 @@ extern	statetype s_broccosmash7;
 extern	statetype s_broccosmash8;
 extern	statetype s_broccosmash9;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_broccowalk1	 = {BROCCOLASHRUNL1SPR,BROCCOLASHRUNR1SPR,step,false,
 	true,7, 128,0, BroccoThink, NULL, WalkReact, &s_broccowalk2};
@@ -639,7 +639,7 @@ statetype s_broccosmash8 = {BROCCOLASHRUNL1SPR,BROCCOLASHRUNR1SPR,step,true,
 statetype s_broccosmash9 = {BROCCOLASHRUNL1SPR,BROCCOLASHRUNR1SPR,step,true,
 	false,6, 128,0, NULL, NULL, WalkReact, &s_broccowalk1};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -743,14 +743,14 @@ void TomatReact (objtype *ob);
 extern	statetype s_tomatbounce;
 extern	statetype s_tomatbounce2;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_tomatbounce	 = {TOMATOOTHL1SPR,TOMATOOTHR1SPR,stepthink,false,
 	false,20, 0,0, TomatBounceThink, NULL, TomatReact, &s_tomatbounce2};
 statetype s_tomatbounce2 = {TOMATOOTHL2SPR,TOMATOOTHR2SPR,stepthink,false,
 	false,20, 0,0, TomatBounceThink, NULL, TomatReact, &s_tomatbounce};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -869,7 +869,7 @@ extern	statetype s_carrotwalk4;
 
 extern	statetype s_carrotleap;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_carrotwalk1	 = {CARROTRUNL1SPR,CARROTRUNR1SPR,step,false,
 	true,5, 128,0, NULL, NULL, CarrotReact, &s_carrotwalk2};
@@ -883,7 +883,7 @@ statetype s_carrotwalk4	 = {CARROTRUNL4SPR,CARROTRUNR4SPR,step,false,
 statetype s_carrotleap	 = {CARROTLEAPL1SPR,CARROTLEAPR1SPR,think,false,
 	false,0, 0,0, ProjectileThink, NULL, CarrotAirReact, NULL};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -917,7 +917,7 @@ void SpawnCarrot (id0_int_t tilex, id0_int_t tiley)
 
 void CarrotReact (objtype *ob)
 {
-	id0_unsigned_t x, width, bot, id0_far *map;
+	//id0_unsigned_t x, width, bot, id0_far *map;
 
 	if (ob->xdir == 1 && ob->hitwest)
 	{
@@ -977,7 +977,7 @@ extern	statetype s_asparwalk2;
 extern	statetype s_asparwalk3;
 extern	statetype s_asparwalk4;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_asparwalk1	 = {ASPARAGUSRUNL1SPR,ASPARAGUSRUNR1SPR,step,true,
 	true,3, 100,0, NULL, NULL, WalkReact, &s_asparwalk2};
@@ -988,7 +988,7 @@ statetype s_asparwalk3	 = {ASPARAGUSRUNL3SPR,ASPARAGUSRUNR3SPR,step,true,
 statetype s_asparwalk4	 = {ASPARAGUSRUNL4SPR,ASPARAGUSRUNR4SPR,step,false,
 	true,3, 100,0, NULL, NULL, WalkReact, &s_asparwalk1};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -1027,7 +1027,7 @@ extern	statetype s_grapefall;
 extern	statetype s_grapesit;
 extern	statetype s_graperise;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_grapewait	= {GRAPEONVINESPR,GRAPEONVINESPR,think,false,
 	false,0, 0,0, GrapeThink, NULL, DrawReact, NULL};
@@ -1040,7 +1040,7 @@ statetype s_grapesit	= {GRAPEONVINESPR,GRAPEONVINESPR,step,false,
 statetype s_graperise	= {GRAPEONVINESPR,GRAPEONVINESPR,slide,false,
 	false,0, 0,-16, NULL, NULL, GrapeRiseReact, NULL};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================

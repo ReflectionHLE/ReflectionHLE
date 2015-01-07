@@ -196,7 +196,7 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 {
 	id0_unsigned_t egaDestOff;
 	screendest = bufferofs+xcoord+ylookup[ycoord];
-	id0_byte_t *tilePtr = grsegs[STARTTILE8]+(tile<<5);
+	id0_byte_t *tilePtr = (id0_byte_t *)grsegs[STARTTILE8]+(tile<<5);
 	for (int planeCounter = 4, mapMask = 1; planeCounter; --planeCounter, mapMask <<= 1)
 	{
 		egaDestOff = screendest;
@@ -260,7 +260,7 @@ ENDM
 	loop	@@planeloop
 
 	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
+	mov	ds,ax					//restore turbo's data segment (UPDATE: Edited to C99/C++ style comment so compiler doesn't emit a warning)
 
 	ret
 
@@ -661,7 +661,7 @@ USES	SI,DI
 	WORDOUT
 
 	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
+	mov	ds,ax					//restore turbo's data segment (UPDATE: Edited to C99/C++ style comment so compiler doesn't emit a warning)
 
 	ret
 
@@ -685,7 +685,7 @@ ENDP
 void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height)
 {
-	id0_byte_t *srcPtr = source; // block is segment aligned
+	id0_byte_t *srcPtr = (id0_byte_t *)source; // block is segment aligned
 	id0_unsigned_t mapMask = 1; // map mask for plane 0
 	do
 	{
@@ -764,7 +764,7 @@ eventoeven:
 	jne	eventoeven
 
 	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
+	mov	ds,ax					//restore turbo's data segment (UPDATE: Edited to C99/C++ style comment so compiler doesn't emit a warning)
 
 	ret
 
@@ -796,7 +796,7 @@ oddtoeven:
 	jne	oddtoeven
 
 	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
+	mov	ds,ax					//restore turbo's data segment (UPDATE: Edited to C99/C++ style comment so compiler doesn't emit a warning)
 
 	ret
 
@@ -831,7 +831,7 @@ EOplaneloop:
 	jne	EOplaneloop
 
 	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
+	mov	ds,ax					//restore turbo's data segment (UPDATE: Edited to C99/C++ style comment so compiler doesn't emit a warning)
 
 	ret
 
@@ -863,7 +863,7 @@ oddtoodd:
 	jne	oddtoodd
 
 	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
+	mov	ds,ax					//restore turbo's data segment (UPDATE: Edited to C99/C++ style comment so compiler doesn't emit a warning)
 
 	ret
 
@@ -884,7 +884,7 @@ ENDP
 void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 	id0_unsigned_t wide, id0_unsigned_t height)
 {
-	id0_byte_t *destPtr = dest;
+	id0_byte_t *destPtr = (id0_byte_t *)dest;
 
 	int planeCounter = 0;
 	do
@@ -940,7 +940,7 @@ USES	SI,DI
 	jne	@@planeloop
 
 	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
+	mov	ds,ax					//restore turbo's data segment (UPDATE: Edited to C99/C++ style comment so compiler doesn't emit a warning)
 
 	ret
 
@@ -1243,9 +1243,9 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 
 #endif
 #endif
-	BE_SDL_SetPelPanning(pelpan);
+	BE_SDL_EGASetPelPanning(pelpan);
 #if WAITFORVBL
-	// (REFKEEN) Doing this before BE_SDL_SetPelPanning leads to
+	// (REFKEEN) Doing this before BE_SDL_EGASetPelPanning leads to
 	// very scrolling glitches, so call here instead
 	VW_WaitVBL(1);
 #endif

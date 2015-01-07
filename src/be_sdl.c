@@ -300,7 +300,7 @@ static void BEL_SDL_ParseConfig(void)
 			{
 				buffer[len-1] = '\0';
 			}
-			for (int i = 0; i < sizeof(g_sdlCfgEntries)/sizeof(*g_sdlCfgEntries); ++i)
+			for (int i = 0; i < (int)(sizeof(g_sdlCfgEntries)/sizeof(*g_sdlCfgEntries)); ++i)
 			{
 				if (!strncmp(g_sdlCfgEntries[i].cfgPrefix, buffer, strlen(g_sdlCfgEntries[i].cfgPrefix)))
 				{

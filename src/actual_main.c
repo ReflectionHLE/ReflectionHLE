@@ -9,7 +9,7 @@
 #endif
 
 int id0_argc;
-char **id0_argv;
+const char **id0_argv;
 
 void second_main (void); // MACRO is here
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	// And then in Catacomb Abyss, argv[3] is compared to "1". In its INTROSCN.EXE argv[4] is compared...
 
 	// FIXME FIXME FIXME Using correct argv[0] for "compatibility" (see catabyss, ext_gelib.c)
-	char *our_workaround_argv[] = { "INTRO.EXE", "", "", "", "", NULL };
+	const char *our_workaround_argv[] = { "INTRO.EXE", "", "", "", "", NULL };
 	if (argc < 6)
 	{
 		for (int currarg = 1; currarg < argc; ++currarg)
@@ -32,7 +32,8 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		id0_argv = argv;
+		// REFKEEN - Hack, but we don't access argv directly anyway...
+		id0_argv = (const char **)argv;
 	}
 	BE_SDL_InitAll();
 	BE_Cross_Compat_FillObjStatesWithDOSPointers(); // Saved games compatibility

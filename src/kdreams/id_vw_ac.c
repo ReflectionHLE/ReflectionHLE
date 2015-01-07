@@ -92,7 +92,7 @@ void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigne
 void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t tile)
 {
 	id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(bufferofs+xcoord+ylookup[ycoord])];
-	id0_byte_t *tilePtr = grsegs[STARTTILE8]+(tile<<4);
+	const id0_byte_t *tilePtr = (const id0_byte_t *)grsegs[STARTTILE8]+(tile<<4);
 	for (int loopVar = 0; loopVar < 7; ++loopVar) {
 		*destPtr = *(tilePtr++);
 		BE_Cross_Wrapped_Inc(screenseg, &destPtr);
@@ -193,7 +193,7 @@ void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height)
 {
-	id0_byte_t *srcPtr = source;
+	const id0_byte_t *srcPtr = (const id0_byte_t *)source;
 	id0_byte_t *destPtr = &screenseg[dest];
 	// NOTE: Using just one loop instead of four drawing routines now
 	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, srcPtr += wide, BE_Cross_Wrapped_Add(screenseg, &destPtr, linewidth)) {
@@ -219,7 +219,7 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 	id0_unsigned_t wide, id0_unsigned_t height)
 {
 	id0_byte_t *srcPtr = &screenseg[source];
-	id0_byte_t *destPtr = dest;
+	id0_byte_t *destPtr = (id0_byte_t *)dest;
 	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, BE_Cross_Wrapped_Add(screenseg, &srcPtr, linewidth), destPtr += wide) {
 		BE_Cross_WrappedToLinear_MemCopy(destPtr, screenseg, srcPtr, wide);
 	}

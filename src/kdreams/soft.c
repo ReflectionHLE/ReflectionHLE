@@ -66,13 +66,13 @@ BufferedIO lzwBIO;
 // NOTICE : This version of BLOAD is compatable with JAMPak V3.0 and the
 //				new fileformat...
 //--------------------------------------------------------------------------
-id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
+id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 {
 	int handle;
 
 	memptr SrcPtr;
-	id0_unsigned_long_t i, j, k, r, c;
-	id0_word_t flags;
+	//id0_unsigned_long_t i, j, k, r, c;
+	//id0_word_t flags;
 	id0_byte_t Buffer[8];
 	id0_unsigned_long_t SrcLen,DstLen;
 	struct CMP1Header CompHeader;
@@ -94,7 +94,7 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 
 	read(handle,Buffer,4);
 
-	if (!strncmp(Buffer,COMP,4))
+	if (!strncmp((char *)Buffer,COMP,4))
 	{
 		//
 		// Compressed under OLD file format
@@ -110,7 +110,7 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 			return(0);
 	}
 	else
-	if (!strncmp(Buffer,CMP1,4))
+	if (!strncmp((char *)Buffer,CMP1,4))
 	{
 		//
 		// Compressed under new file format...
@@ -136,7 +136,8 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 	{
 		DstLen = CompHeader.OrginalLen;
 
-		if ((MM_TotalFree() < SrcLen) && (CompHeader.CompType))
+		// REFKEEN - Looks like this is an unsigned comparison in original EXE
+		if (((id0_unsigned_long_t)MM_TotalFree() < SrcLen) && (CompHeader.CompType))
 		{
 			if (!InitBufferedIO(handle,&lzwBIO))
 				Quit("No memory for buffered I/O.");
@@ -172,14 +173,14 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 				#if LZW_SUPPORT
 				case ct_LZW:
 					//lzwDecompress(MK_FP(SrcPtr,8),MK_FP(*DstPtr,0),CompHeader.OrginalLen,(SRC_MEM|DEST_MEM));
-					lzwDecompress(SrcPtr + 8,*DstPtr,CompHeader.OrginalLen,(SRC_MEM|DEST_MEM));
+					lzwDecompress((id0_byte_t *)SrcPtr + 8,*DstPtr,CompHeader.OrginalLen,(SRC_MEM|DEST_MEM));
 				break;
 				#endif
 
 				#if LZH_SUPPORT
 				case ct_LZH:
 					//lzhDecompress(MK_FP(SrcPtr,8),MK_FP(*DstPtr,0),CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_MEM|DEST_MEM));
-					lzhDecompress(SrcPtr + 8,*DstPtr,CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_MEM|DEST_MEM));
+					lzhDecompress((id0_byte_t *)SrcPtr + 8,*DstPtr,CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_MEM|DEST_MEM));
 				break;
 				#endif
 
@@ -204,7 +205,7 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 //
 // LoadLIBShape()
 //
-id0_int_t LoadLIBShape(id0_char_t *SLIB_Filename, id0_char_t *Filename,struct Shape *SHP)
+id0_int_t LoadLIBShape(const id0_char_t *SLIB_Filename, const id0_char_t *Filename,struct Shape *SHP)
 {
 	#define CHUNK(Name)	(*ptr == *Name) &&			\
 								(*(ptr+1) == *(Name+1)) &&	\
@@ -213,12 +214,12 @@ id0_int_t LoadLIBShape(id0_char_t *SLIB_Filename, id0_char_t *Filename,struct Sh
 
 
 	id0_int_t RT_CODE;
-	FILE *fp;
-	id0_char_t CHUNK[5];
+	//FILE *fp;
+	//id0_char_t CHUNK[5];
 	id0_char_t id0_far *ptr;
 	memptr IFFfile = NULL;
 	id0_unsigned_long_t FileLen, size, ChunkLen;
-	id0_int_t loop;
+	//id0_int_t loop;
 
 
 	RT_CODE = 1;
@@ -327,7 +328,7 @@ EXIT_FUNC:;
 //			(IF NULL)  - Error!
 //
 //----------------------------------------------------------------------------
-memptr LoadLIBFile(id0_char_t *LibName,id0_char_t *FileName,memptr *MemPtr)
+memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *MemPtr)
 {
 	int handle;
 	id0_unsigned_long_t header;
@@ -465,7 +466,7 @@ memptr LoadLIBFile(id0_char_t *LibName,id0_char_t *FileName,memptr *MemPtr)
 
 			case ct_NONE:
 				//if (!CA_FarRead(handle,MK_FP(*MemPtr,0),ChunkLen))
-				if (!CA_FarRead(handle,*MemPtr,ChunkLen))
+				if (!CA_FarRead(handle,(id0_byte_t *)(*MemPtr),ChunkLen))
 				{
 //					close(handle);
 					*MemPtr = NULL;

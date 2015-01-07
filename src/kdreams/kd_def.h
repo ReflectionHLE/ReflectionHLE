@@ -76,20 +76,34 @@ typedef	enum	{nothing,keenobj,powerobj,doorobj,
 	mushroomobj,squashobj,apelobj,peapodobj,peabrainobj,boobusobj,
 	shotobj,inertobj}	classtype;
 
-typedef struct
+// REFKEEN - enum type for progress should be outside struct if we want to
+// be able to build the same code as C++. It's also good for othe reasons.
+typedef enum {step,slide,think,stepthink,slidethink} progresstype;
+// Used for C++ patches for function pointers in statetype
+struct objstruct;
+
+// REFKEEN - Add name statestruct for better definition of nextstate
+typedef struct statestruct
 {
   id0_int_t 		leftshapenum,rightshapenum;
-  enum		{step,slide,think,stepthink,slidethink} progress;
+  progresstype progress;
+  //enum		{step,slide,think,stepthink,slidethink} progress;
   id0_boolean_t	skippable;
 
   id0_boolean_t	pushtofloor;
   id0_int_t tictime;
   id0_int_t xmove;
   id0_int_t ymove;
-  void (*think) ();
-  void (*contact) ();
-  void (*react) ();
-  void *nextstate;
+  // REFKEEN - C++ patches
+  void (*thinkptr) (struct objstruct *);
+  void (*contactptr) (struct objstruct *, struct objstruct *);
+  void (*reactptr) (struct objstruct *);
+  //void (*think) ();
+  //void (*contact) ();
+  //void (*react) ();
+  // REFKEEN - Change type of this for C++
+  struct statestruct *nextstate;
+  //void *nextstate;
   // (REFKEEN) Backwards compatibility:
   // MUST follow all the rest of the members above. Given a statetype
   // instance, stores what would be the 16-bit offset pointer in the dseg
@@ -113,11 +127,14 @@ typedef	struct
 	id0_int_t		difficulty;
 } gametype;
 
+// REFKEEN - Another relocated enum type for C++
+typedef enum {no,yes,allways,removable} activetype;
 
 typedef struct	objstruct
 {
 	classtype	obclass;
-	enum		{no,yes,allways,removable} active;
+	activetype active;
+	//enum		{no,yes,allways,removable} active;
 	id0_boolean_t		needtoreact,needtoclip;
 	id0_unsigned_t	nothink;
 	id0_unsigned_t	x,y;
@@ -218,7 +235,7 @@ void	TestSprites(void);
 id0_int_t		DebugKeys (void);
 void	StartupId (void);
 void	ShutdownId (void);
-void	Quit (id0_char_t *error);
+void	Quit (const id0_char_t *error);
 void	InitGame (void);
 //void	main (void);
 
@@ -261,7 +278,7 @@ extern	ControlInfo	c;
 
 extern	objtype dummyobj;
 
-extern	id0_char_t		*levelnames[21];
+extern	const id0_char_t		*levelnames[21];
 
 void	CheckKeys (void);
 void	CalcInactivate (void);
@@ -397,7 +414,7 @@ struct Shape;
 void FreeShape(struct Shape *shape);
 id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t starty);
 
-id0_long_t Verify(id0_char_t *filename);
+id0_long_t Verify(const id0_char_t *filename);
 memptr InitBufferedIO(int handle, BufferedIO *bio);
 void FreeBufferedIO(BufferedIO *bio);
 id0_byte_t bio_readch(BufferedIO *bio);

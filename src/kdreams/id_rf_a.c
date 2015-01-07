@@ -93,7 +93,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 		// Draw single background tile from main memory
 		//
 		//=============
-		const id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+		const id0_byte_t *backSrcPtr = (const id0_byte_t *)grsegs[STARTTILE16+backtilenum];
 		backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
 		for (int loopVar = 15; loopVar; --loopVar, backSrcPtr += TILEWIDTH, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH))
 		{
@@ -109,8 +109,8 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	// Draw a masked tile combo
 	//
 	//=========
-	const id0_byte_t *foreSrcPtr = grsegs[STARTTILE16M+foretilenum];
-	const id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+	const id0_byte_t *foreSrcPtr = (const id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
+	const id0_byte_t *backSrcPtr = (const id0_byte_t *)grsegs[STARTTILE16+backtilenum];
 	backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
 
 	for (int loopVar = 16; loopVar; --loopVar, backSrcPtr += TILEWIDTH-3, foreSrcPtr += TILEWIDTH-3, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH-3))
@@ -226,7 +226,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 		//
 		//=============
 		tilecache[backtilenum] = screenstartcs; // next time it can be drawn from here with latch
-		const id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+		const id0_byte_t *backSrcPtr = (id0_byte_t *)grsegs[STARTTILE16+backtilenum];
 		backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
 		for (int planeCounter = 4, mapMask = 1; planeCounter; --planeCounter, mapMask <<= 1) // draw four planes
 		{
@@ -250,12 +250,12 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	// Interupts are disabled and the stack segment is reassigned
 	//
 	//=========
-	const id0_byte_t *backSrcPtr = grsegs[STARTTILE16+backtilenum];
+	const id0_byte_t *backSrcPtr = (id0_byte_t *)grsegs[STARTTILE16+backtilenum];
 	backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
 	id0_unsigned_t egaDestOff = screenstartcs;
 	for (int planeCounter = 4, mapMask = 1, dataLoc = 32; planeCounter; --planeCounter, mapMask <<= 1, dataLoc += 32)
 	{
-		const id0_byte_t *foreSrcPtr = grsegs[STARTTILE16M+foretilenum];
+		const id0_byte_t *foreSrcPtr = (id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
 		foreSrcPtr = foreSrcPtr ? foreSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
 		for (id0_unsigned_t loopVar = 0, lineoffset = 0; loopVar < 16; ++loopVar, lineoffset += SCREENWIDTH)
 		{
@@ -496,7 +496,7 @@ void RFL_MaskForegroundTiles (void)
 
 		id0_word_t tileLoc = blockstarts[scanPtr-updateptr-1];
 		id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc + bufferofs)];
-		id0_byte_t *srcPtr = grsegs[STARTTILE16M+foretilenum];
+		const id0_byte_t *srcPtr = (const id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
 
 		for (int loopVar = 16; loopVar; --loopVar)
 		{
@@ -546,7 +546,7 @@ void RFL_MaskForegroundTiles (void)
 
 		do // plane loop
 		{
-			id0_byte_t *srcPtr = grsegs[STARTTILE16M+foretilenum];
+			const id0_byte_t *srcPtr = (id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
 			id0_unsigned_t egaDestOff = screenstartcs;
 			for (int loopVar = 0; loopVar < 16; ++loopVar, egaDestOff += SCREENWIDTH-1)
 			{

@@ -45,7 +45,7 @@ void BE_SDL_MarkGfxForUpdate(void)
 #define VGA_TXT_BLINK_VERT_FRAME_RATE 16
 
 
-extern uint8_t g_vga_8x16TextFont[256*VGA_TXT_CHAR_PIX_WIDTH*VGA_TXT_CHAR_PIX_HEIGHT];
+extern const uint8_t g_vga_8x16TextFont[256*8*16];
 // We can use a union because the memory contents are refreshed on screen mode change
 // (well, not on change between modes 0xD and 0xE, both sharing planar A000:0000)
 static union {
@@ -60,12 +60,12 @@ static union {
 	uint8_t cgaGfx[GFX_TEX_WIDTH*GFX_TEX_HEIGHT];
 } g_sdlHostScrMem, g_sdlHostScrMemCache;
 
-static uint16_t g_sdlScreenStartAddress = 0, g_sdlScreenStartAddressCache;
+static uint16_t g_sdlScreenStartAddress = 0;
 static int g_sdlScreenMode = 3;
 static int g_sdlTexWidth, g_sdlTexHeight;
-static uint8_t g_sdlPelPanning = 0, g_sdlPelPanningCache;
-static uint8_t g_sdlLineWidth = 40, g_sdlLineWidthCache;
-static int16_t g_sdlSplitScreenLine = -1, g_sdlSplitScreenLineCache;
+static uint8_t g_sdlPelPanning = 0;
+static uint8_t g_sdlLineWidth = 40;
+static int16_t g_sdlSplitScreenLine = -1;
 static int g_sdlTxtCursorPosX, g_sdlTxtCursorPosY;
 static bool g_sdlTxtCursorEnabled = true;
 static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
@@ -343,7 +343,7 @@ void BE_SDL_EGASetPaletteAndBorder(const uint8_t *palette)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_SetPelPanning(uint8_t panning)
+void BE_SDL_EGASetPelPanning(uint8_t panning)
 {
 	g_sdlPelPanning = panning;
 	g_sdlDoRefreshGfxOutput = true;
@@ -599,7 +599,7 @@ void BE_SDL_CGAFullUpdateFromWrappedMem(const uint8_t *segPtr, const uint8_t *of
 	int lineBytesLeft = byteLineWidth - GFX_TEX_WIDTH/4;
 	for (int line = 0, byteInLine; line < GFX_TEX_HEIGHT; ++line)
 	{
-		for (int byteInLine = 0; byteInLine < GFX_TEX_WIDTH/4; ++byteInLine, ++offInSegPtr, offInSegPtr = (offInSegPtr == endSegPtr) ? segPtr : offInSegPtr)
+		for (byteInLine = 0; byteInLine < GFX_TEX_WIDTH/4; ++byteInLine, ++offInSegPtr, offInSegPtr = (offInSegPtr == endSegPtr) ? segPtr : offInSegPtr)
 		{
 			*cgaHostPtr = ((*offInSegPtr) & 0xC0) >> 6;
 			g_sdlDoRefreshGfxOutput |= (*cgaHostPtr != *cgaHostCachePtr);

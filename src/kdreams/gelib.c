@@ -119,7 +119,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 //
 // Verify()
 //
-id0_long_t Verify(id0_char_t *filename)
+id0_long_t Verify(const id0_char_t *filename)
 {
 	int handle;
 	id0_long_t size;
@@ -166,7 +166,7 @@ id0_byte_t bio_readch(BufferedIO *bio)
 		bio_fillbuffer(bio);
 	}
 
-	buffer = (bio->buffer) + (bio->offset++);
+	buffer = (id0_byte_t *)(bio->buffer) + (bio->offset++);
 	//buffer = MK_FP(bio->buffer,bio->offset++);
 
 	return(*buffer);
@@ -201,7 +201,7 @@ void bio_fillbuffer(BufferedIO *bio)
 			bytes_requested = bio_length;
 
 		read(bio->handle,near_buffer,bytes_requested);
-		memcpy(bio->buffer + bytes_read,near_buffer,bytes_requested);
+		memcpy((id0_byte_t *)(bio->buffer) + bytes_read,near_buffer,bytes_requested);
 		//_fmemcpy(MK_FP(bio->buffer,bytes_read),near_buffer,bytes_requested);
 
 		bio_length -= bytes_requested;

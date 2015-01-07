@@ -19,7 +19,7 @@
 // KD_PLAY.C
 
 #include "kd_def.h"
-#pragma	hdrstop
+//#pragma	hdrstop
 
 /*
 =============================================================================
@@ -75,7 +75,7 @@ ControlInfo	c;
 objtype dummyobj;
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-id0_char_t		*levelnames[21] =
+const id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
 "Horseradish Hill",
@@ -98,7 +98,7 @@ id0_char_t		*levelnames[21] =
 "Title Page"
 };
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-id0_char_t		*levelnames[21] =
+const id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
 "Horseradish Hill",
@@ -497,40 +497,40 @@ void /*near*/ HandleInfo (void)
 	case 30:
 	case 32:
 		SpawnBonus(mapx,mapy,maptile-21);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		break;
 	case 33:
 		SpawnDoor(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		break;
 	case 41:
 		SpawnBrocco(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[BROCCOLUMP] = true;
 		break;
 	case 42:
 		SpawnTomat(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[TOMATLUMP] = true;
 		break;
 	case 43:
 		SpawnCarrot(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[CARROTLUMP] = true;
 		break;
 	case 45:
 		SpawnAspar(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[ASPARLUMP] = true;
 		break;
 	case 46:
 		SpawnGrape(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[GRAPELUMP] = true;
 		break;
 	case 47:
 		SpawnTater(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[TATERLUMP] = true;
 		break;
 	case 48:
@@ -539,34 +539,34 @@ void /*near*/ HandleInfo (void)
 		break;
 	case 49:
 		SpawnFrenchy(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[FRENCHYLUMP] = true;
 		break;
 	case 50:
 	case 51:
 	case 52:
 		SpawnMelon(mapx,mapy,maptile-50);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[MELONLUMP] = true;
 		break;
 	case 57:
 		SpawnSquasher(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[SQUASHLUMP] = true;
 		break;
 	case 58:
 		SpawnApel(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[APELLUMP] = true;
 		break;
 	case 59:
 		SpawnPeaPod(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[PEALUMP] = true;
 		break;
 	case 60:
 		SpawnPeaBrain(mapx,mapy);
-		newobj->active = false;
+		newobj->active = no/*false*/;
 		lumpneeded[PEALUMP] = true;
 		break;
 	case 61:
@@ -576,7 +576,7 @@ void /*near*/ HandleInfo (void)
 	}
 
 	if (newobj->active != allways)
-		newobj->active = false;
+		newobj->active = no/*false*/;
 }
 
 /*
@@ -591,7 +591,7 @@ void /*near*/ HandleInfo (void)
 
 void ScanInfoPlane (void)
 {
-	id0_unsigned_t	x,y,i,j;
+	id0_unsigned_t	/*x,y,*/i,j;
 	id0_int_t			tile;
 	id0_unsigned_t	id0_far	*start;
 
@@ -926,7 +926,7 @@ id0_int_t	wallclip[8][16] = {			// the height of a given point in a tile
 };
 
 // assignment within ifs are used heavily here, so turn off the warning
-#pragma warn -pia
+//#pragma warn -pia
 
 /*
 ===========================
@@ -938,9 +938,9 @@ id0_int_t	wallclip[8][16] = {			// the height of a given point in a tile
 
 void ClipToEnds (objtype *ob)
 {
-	id0_unsigned_t	id0_far *map,tile,facetile,info,wall;
-	id0_int_t	leftpix,rightpix,midtiles,toppix,bottompix;
-	id0_int_t	x,y,clip,move,totalmove,maxmove,midxpix;
+	id0_unsigned_t	id0_far *map/*,tile,facetile,info*/,wall;
+	//id0_int_t	leftpix,rightpix,midtiles,toppix,bottompix;
+	id0_int_t	/*x,*/y,clip,move,totalmove,maxmove,midxpix;
 
 	midxpix = (ob->midx&0xf0) >> 4;
 
@@ -998,7 +998,7 @@ void ClipToEnds (objtype *ob)
 void ClipToEastWalls (objtype *ob)
 {
 	id0_int_t			y,move,top,bottom;
-	id0_unsigned_t	id0_far *map,tile,info,wall;
+	id0_unsigned_t	id0_far *map/*,tile,info,wall*/;
 
 	// clip to east walls if moving west
 
@@ -1027,7 +1027,7 @@ void ClipToEastWalls (objtype *ob)
 void ClipToWestWalls (objtype *ob)
 {
 	id0_int_t			y,move,top,bottom;
-	id0_unsigned_t	id0_far *map,tile,info,wall;
+	id0_unsigned_t	id0_far *map/*,tile,info,wall*/;
 
 	// check west walls if moving east
 
@@ -1053,7 +1053,7 @@ void ClipToWestWalls (objtype *ob)
 }
 
 // turn 'possibly incorrect assignment' warnings back on
-#pragma warn +pia
+//#pragma warn +pia
 
 
 //==========================================================================
@@ -1070,9 +1070,9 @@ void ClipToWestWalls (objtype *ob)
 
 void ClipToWalls (objtype *ob)
 {
-	id0_unsigned_t	x,y,tile;
+	//id0_unsigned_t	x,y,tile;
 	spritetabletype	id0_far *shape;
-	id0_boolean_t	endfirst;
+	//id0_boolean_t	endfirst;
 
 //
 // make sure it stays in contact with a 45 degree slope
@@ -1312,14 +1312,14 @@ id0_int_t DoActor (objtype *ob,id0_int_t tics)
 	if (state && state->progress == think)
 	//if (state->progress == think)
 	{
-		if (state->think)
+		if (state->thinkptr)
 		{
 			if (ob->nothink)
 				ob->nothink--;
 			else
-#pragma warn -pro
-				state->think(ob);
-#pragma warn +pro
+//#pragma warn -pro
+				state->thinkptr(ob);
+//#pragma warn +pro
 		}
 		return 0;
 	}
@@ -1349,14 +1349,14 @@ id0_int_t DoActor (objtype *ob,id0_int_t tics)
 		}
 		if (state->progress == slidethink || state->progress == stepthink)
 		{
-			if (state->think)
+			if (state->thinkptr)
 			{
 				if (ob->nothink)
 					ob->nothink--;
 				else
-#pragma warn -pro
-					state->think(ob);
-#pragma warn +pro
+//#pragma warn -pro
+					state->thinkptr(ob);
+//#pragma warn +pro
 			}
 		}
 		return 0;
@@ -1383,14 +1383,14 @@ id0_int_t DoActor (objtype *ob,id0_int_t tics)
 				ob->ymove += ob->ydir == 1 ? state->ymove : -state->ymove;
 		}
 
-		if (state->think)
+		if (state->thinkptr)
 		{
 			if (ob->nothink)
 				ob->nothink--;
 			else
-#pragma warn -pro
-				state->think(ob);
-#pragma warn +pro
+//#pragma warn -pro
+				state->thinkptr(ob);
+//#pragma warn +pro
 		}
 
 		if (ob->state == state)
@@ -1531,12 +1531,12 @@ void NewState (objtype *ob,statetype *state)
 void PlayLoop (void)
 {
 	objtype	*obj, *check;
-	id0_long_t	newtime;
+	//id0_long_t	newtime;
 
 	button0held = button1held = false;
 
 	ingame = true;
-	playstate = 0;
+	playstate = notdone/*0*/;
 	plummet = 0;
 
 	FixScoreBox ();					// draw bomb/flower
@@ -1607,12 +1607,12 @@ void PlayLoop (void)
 					&& obj->top < check->bottom
 					&& obj->bottom > check->top)
 					{
-#pragma warn -pro
-						if (obj->state->contact)
-							obj->state->contact(obj,check);
-						if (check->state->contact)
-							check->state->contact(check,obj);
-#pragma warn +pro
+//#pragma warn -pro
+						if (obj->state->contactptr)
+							obj->state->contactptr(obj,check);
+						if (check->state->contactptr)
+							check->state->contactptr(check,obj);
+//#pragma warn +pro
 						if (!obj->obclass)
 							break;				// contact removed object
 					}
@@ -1631,12 +1631,12 @@ void PlayLoop (void)
 		obj = player;
 		do
 		{
-			if (obj->needtoreact && obj->state->react)
+			if (obj->needtoreact && obj->state->reactptr)
 			{
 				obj->needtoreact = false;
-#pragma warn -pro
-				obj->state->react(obj);
-#pragma warn +pro
+//#pragma warn -pro
+				obj->state->reactptr(obj);
+//#pragma warn +pro
 			}
 			obj = (objtype *)obj->next;
 		} while (obj);

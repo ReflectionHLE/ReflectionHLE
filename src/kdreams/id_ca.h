@@ -79,7 +79,7 @@ extern	void		id0_seg	*grsegs[NUMCHUNKS];
 extern	id0_byte_t		grneeded[NUMCHUNKS];
 extern	id0_byte_t		ca_levelbit,ca_levelnum;
 
-extern	id0_char_t		*titleptr[8];
+extern	const id0_char_t		*titleptr[8];
 
 extern	int			profilehandle;
 
@@ -96,7 +96,7 @@ void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 
 id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length);
 id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t length);
-id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr);
+id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr);
 
 id0_long_t CA_RLEWCompress (id0_unsigned_t id0_huge *source, id0_long_t length, id0_unsigned_t id0_huge *dest,
   id0_unsigned_t rlewtag);
@@ -122,8 +122,8 @@ void CA_CacheGrChunk (id0_int_t chunk);
 void CA_CacheMap (id0_int_t mapnum);
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-void CA_CacheMarks (id0_char_t *title);
+void CA_CacheMarks (const id0_char_t *title);
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-void CA_CacheMarks (id0_char_t *title, id0_boolean_t cachedownlevel);
+void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel);
 #endif
 

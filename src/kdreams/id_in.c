@@ -36,7 +36,7 @@
 //
 
 #include "id_heads.h"
-#pragma	hdrstop
+//#pragma	hdrstop
 
 #define	KeyInt	9	// The keyboard ISR number
 
@@ -69,7 +69,10 @@
 static	id0_boolean_t		IN_Started;
 static	id0_boolean_t		CapsLock;
 static	ScanCode	CurCode,LastCode;
-static	id0_byte_t        ASCIINames[] =		// Unshifted ASCII for scan codes
+// REFKEEN - Originally the type was simply "byte" (unsigned 8-bit int), but at
+// least for strings, if we want this to build as C++ (and reduce C warnings)
+// then we should use "const char". Convertions to byte or so are done later.
+static	const char        ASCIINames[] =		// Unshifted ASCII for scan codes
 					{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	0  ,27 ,'1','2','3','4','5','6','7','8','9','0','-','=',8  ,9  ,	// 0
@@ -144,7 +147,7 @@ static	id0_word_t		DemoOffset,DemoSize;
 static	void			(*INL_KeyHook)(void);
 //static	void interrupt	(*OldKeyVect)(void);
 
-static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
+static	const id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
 
 //	Internal routines
 
@@ -191,7 +194,8 @@ INL_KeyService(id0_byte_t k)
 			Keyboard[k] = true;
 
 			if (special)
-				c = SpecialNames[k];
+				// REFKEEN - ShiftNames[k] is a char
+				c = (id0_byte_t)SpecialNames[k];
 			else
 			{
 				if (k == sc_CapsLock)
@@ -202,13 +206,15 @@ INL_KeyService(id0_byte_t k)
 
 				if (Keyboard[sc_LShift] || Keyboard[sc_RShift])	// If shifted
 				{
-					c = ShiftNames[k];
+					// REFKEEN - ShiftNames[k] is a char
+					c = (id0_byte_t)ShiftNames[k];
 					if ((c >= 'A') && (c <= 'Z') && CapsLock)
 						c += 'a' - 'A';
 				}
 				else
 				{
-					c = ASCIINames[k];
+					// REFKEEN - ASCIINames[k] is a char
+					c = (id0_byte_t)ASCIINames[k];
 					if ((c >= 'a') && (c <= 'z') && CapsLock)
 						c -= 'a' - 'A';
 				}
@@ -886,11 +892,17 @@ IN_FreeDemoBuffer(void)
 //		specified scan code
 //
 ///////////////////////////////////////////////////////////////////////////
-id0_byte_t *
+
+// REFKEEN - const char is used instead of 8-bit unsigned int type for
+// ScanNames, ExtScanCodes and ExtScanNames now, so fixes are required
+const char *
+//id0_byte_t *
 IN_GetScanName(ScanCode scan)
 {
-	id0_byte_t		**p;
-	ScanCode	*s;
+	const char **p;
+	const char *s;
+//	id0_byte_t		**p;
+//	ScanCode	*s;
 
 	for (s = ExtScanCodes,p = ExtScanNames;*s;p++,s++)
 		if (*s == scan)

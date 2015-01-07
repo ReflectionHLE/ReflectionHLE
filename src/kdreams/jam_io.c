@@ -96,7 +96,8 @@ id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType)
 	switch (PtrType & SRC_TYPES)
 	{
 		case SRC_FILE:
-			read(*(int *)infile,(id0_char_t *)&returnval,1);
+			read((int)(intptr_t)(*infile),(id0_char_t *)&returnval,1);
+			//read(*(int *)infile,(id0_char_t *)&returnval,1);
 		break;
 
 		case SRC_FFILE:

@@ -1408,9 +1408,9 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 
 #endif
 #endif
-	BE_SDL_SetPelPanning(pelpan);
+	BE_SDL_EGASetPelPanning(pelpan);
 #if WAITFORVBL
-	// (REFKEEN) Doing this before BE_SDL_SetPelPanning leads to
+	// (REFKEEN) Doing this before BE_SDL_EGASetPelPanning leads to
 	// very scrolling glitches, so call here instead
 	VW_WaitVBL(1);
 #endif

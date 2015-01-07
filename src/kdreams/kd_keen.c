@@ -19,7 +19,7 @@
 // KD_KEEN.C
 
 #include "kd_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 
@@ -143,7 +143,7 @@ void	SpawnScore (void)
 void	FixScoreBox (void)
 {
 	id0_unsigned_t	width, planesize;
-	id0_unsigned_t smallplane,bigplane;
+	//id0_unsigned_t smallplane,bigplane;
 	spritetype	id0_seg	*block;
 	id0_byte_t	id0_far	*dest;
 
@@ -623,7 +623,7 @@ void	CalcSingleGravity (void)
 
 void	PowerContact (objtype *ob, objtype *hit)
 {
-	id0_unsigned_t	x,y,yspot,xspot;
+	//id0_unsigned_t	x,y,yspot,xspot;
 
 	switch (hit->obclass)
 	{
@@ -864,7 +864,7 @@ extern	statetype s_worldkeensleep2;
 
 extern	statetype s_worldwalk;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_worldkeen	= {0/*NULL*/,0/*NULL*/,stepthink,false,
 	false,360, 0,0, KeenWorldThink, NULL, DrawReact, &s_worldkeenwave1};
@@ -891,7 +891,7 @@ statetype s_worldkeensleep2	= {WORLDKEENSLEEP2SPR,WORLDKEENSLEEP2SPR,stepthink,f
 statetype s_worldwalk	= {0/*NULL*/,0/*NULL*/,slide,false,
 	false,4, 16,16, KeenWorldWalk, NULL, DrawReact, &s_worldwalk};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ======================
@@ -1180,7 +1180,7 @@ extern	statetype s_keenairthrowdown1;
 extern	statetype s_keenairthrowdown2;
 extern	statetype s_keenairthrowdown3;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 //-------------------
 
@@ -1357,7 +1357,7 @@ statetype s_keenairthrowdown3= {KEENJLTHROWD2SPR,KEENJRTHROWD2SPR,stepthink,fals
 
 //===========================================================================
 
-#pragma warn +sus
+//#pragma warn +sus
 
 
 /*
@@ -1399,9 +1399,10 @@ id0_boolean_t	CheckGrabPole (objtype *ob)
 //
 // kludgy bit to not let you grab a pole the instant you jump off it
 //
-	if (SD_GetTimeCount() < leavepoletime)
+	// REFKEEN - Looks like these are unsigned comparisons in original EXE
+	if (SD_GetTimeCount() < (id0_longword_t)leavepoletime)
 		leavepoletime = 0;
-	else if (SD_GetTimeCount() - leavepoletime < MINPOLEJUMPTICS)
+	else if (SD_GetTimeCount() - (id0_longword_t)leavepoletime < MINPOLEJUMPTICS)
 		return false;
 
 	if (c.yaxis == -1)
@@ -1726,7 +1727,8 @@ void KeenDropDownThink (objtype *ob)
 =======================
 */
 
-id0_unsigned_t slopespeed[8] = {0,0,4,4,8,-4,-4,-8};
+// REFKEEN - Properly cast to id0_unsigned_t so we don't get narrowing warnings/bugs
+id0_unsigned_t slopespeed[8] = {0,0,4,4,8,(id0_unsigned_t)-4,(id0_unsigned_t)-4,(id0_unsigned_t)-8};
 
 void KeenWalkThink (objtype *ob)
 {

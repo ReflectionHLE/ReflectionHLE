@@ -47,7 +47,7 @@ EMS / XMS unmanaged routines
 */
 
 #include "id_heads.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -285,7 +285,7 @@ void MM_Startup (void)
 {
 	id0_int_t i;
 	id0_unsigned_long_t length;
-	void id0_far 	*start;
+	//void id0_far 	*start;
 	id0_unsigned_t 	segstart,seglength,endfree;
 
 	if (mmstarted)

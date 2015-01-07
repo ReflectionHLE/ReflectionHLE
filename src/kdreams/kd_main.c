@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include "kd_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 #define CATALOG
@@ -69,7 +69,7 @@ void    DebugMemory (void);
 void    TestSprites(void);
 id0_int_t             DebugKeys (void);
 void    ShutdownId (void);
-void    Quit (id0_char_t *error);
+void    Quit (const id0_char_t *error);
 void    InitGame (void);
 //void    main (void);
 
@@ -373,7 +373,7 @@ void ShutdownId (void)
 ==========================
 */
 
-void Quit (id0_char_t *error)
+void Quit (const id0_char_t *error)
 {
   ShutdownId ();
   if (error && *error)
@@ -401,6 +401,7 @@ void Quit (id0_char_t *error)
 
 	//if (execv("LOADSCN.EXE", _argv) == -1)
 	//	Quit("Couldn't find executable LOADSCN.EXE.\n");
+	void loadscn2_main(int argc, const char **argv);
 	loadscn2_main(id0_argc+1, id0_argv);
 #endif
 
@@ -447,19 +448,19 @@ void InitGame (void)
 #if GRMODE == EGAGR
 	if (mminfo.mainmem < 335l*1024)
 	{
-#pragma warn    -pro
-#pragma warn    -nod
+//#pragma warn    -pro
+//#pragma warn    -nod
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 		BE_SDL_textcolor(7);
 #endif
 #if (defined REFKEEN_VER_KDREAMS_CGA_ALL) || (defined REFKEEN_VER_KDREAMS_SHAR_113)
 		BE_SDL_textbackground(0);
 #endif
-#pragma warn    +nod
-#pragma warn    +pro
+//#pragma warn    +nod
+//#pragma warn    +pro
 		BE_SDL_clrscr();                       // we can't include CONIO because of a name conflict
-#pragma warn    +nod
-#pragma warn    +pro
+//#pragma warn    +nod
+//#pragma warn    +pro
 		BE_Cross_puts ("There is not enough memory available to play the game reliably.  You can");
 		BE_Cross_puts ("play anyway, but an out of memory condition will eventually pop up.  The");
 		BE_Cross_puts ("correct solution is to unload some TSRs or rename your CONFIG.SYS and");
@@ -536,12 +537,14 @@ void InitGame (void)
 ==========================
 */
 
-static  id0_char_t                    *EntryParmStrings[] = {"detour",id0_nil_t};
+#if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
+static const id0_char_t *EntryParmStrings[] = {"detour",id0_nil_t};
+#endif
 
 // The original starting point of the game EXE
 void kdreams_exe_main (void)
 {
-#if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || (defined REFKEEN_VER_KDREAMS_CGA_ALL)
+#if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
 #endif
@@ -581,8 +584,9 @@ void kdreams_exe_main (void)
 #endif // VERSION
 
 
-
-#if (defined REFKEEN_VER_KDREAMS_SHAR_113) || (defined REFKEEN_VER_KDREAMS_CGA_ALL)
+	// REFKEEN - The code is also in CGA v1.05 but LaunchedFromShell is ignored (while CATALOG is defined)...
+#if (defined REFKEEN_VER_KDREAMS_SHAR_113) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
+//#if (defined REFKEEN_VER_KDREAMS_SHAR_113) || (defined REFKEEN_VER_KDREAMS_CGA_ALL)
 	for (i = 1;i < id0_argc;i++)
 	{
 		switch (US_CheckParm(id0_argv[i],EntryParmStrings))
@@ -629,7 +633,7 @@ void kdreams_exe_main (void)
 
 
 
-#if (defined REFKEEN_VER_KDREAMS_SHAR_120)
+#ifdef REFKEEN_VER_KDREAMS_SHAR_120
 	for (i = 1;i < id0_argc;i++)
 	{
 		switch (US_CheckParm(id0_argv[i],EntryParmStrings))

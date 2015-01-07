@@ -26,7 +26,7 @@
 #include "id_types.h"
 #endif
 
-void Quit (id0_char_t *error);
+void Quit (const id0_char_t *error);
 
 
 //==========================================================================

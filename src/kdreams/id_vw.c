@@ -51,7 +51,9 @@
 */
 
 cardtype	videocard;		// set by VW_Startup
-grtype		grmode;			// CGAgr, EGAgr, VGAgr
+// REFKEEN - Related code won't compile as C++ as-is with unused grtype
+int grmode; // TEXTGR, CGAGR, EGAGR, VGAGR
+//grtype		grmode;			// CGAgr, EGAgr, VGAgr
 
 id0_unsigned_t	bufferofs;		// hidden area to draw to before displaying
 id0_unsigned_t	displayofs;		// origin of the visable screen
@@ -106,7 +108,7 @@ extern	id0_unsigned_t	bufferwidth,bufferheight;	// used by font drawing stuff
 =======================
 */
 
-static	id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
+static const id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
 
 void	VW_Startup (void)
 {
@@ -115,7 +117,7 @@ void	VW_Startup (void)
 	// Originally used for certain ASM code loops (clears direction flag)
 	//asm	cld;
 
-	videocard = 0;
+	videocard = NOcard/*0*/;
 
 	for (i = 1;i < id0_argc;i++)
 		if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
@@ -239,7 +241,7 @@ void VW_SetDefaultColors(void)
 {
 #if GRMODE == EGAGR
 	colors[3][16] = bordercolor;
-	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[3]);
+	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
 	screenfaded = false;
 #endif
 }
@@ -253,7 +255,7 @@ void VW_FadeOut(void)
 	for (i=3;i>=0;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
+	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -269,7 +271,7 @@ void VW_FadeIn(void)
 	for (i=0;i<4;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
+	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
@@ -284,7 +286,7 @@ void VW_FadeUp(void)
 	for (i=3;i<6;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
+	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -299,7 +301,7 @@ void VW_FadeDown(void)
 	for (i=5;i>2;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
+	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
@@ -720,6 +722,10 @@ VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *o
 	// of string. Set to NULL for original behaviors.
 	// - Related to modifcation to US_Print and US_CPrint, properly taking
 	// care of C string literals as inputs.
+	//
+	// - Keen Dreams exclusive change: Sync with ID_VW.C from the Catacombs
+	// and cast each character from input string to an unsigned 8-bit int,
+	// because id0_char_t may be defined to be char, which can be signed.
 	*height = font->height;
 #if 0
 	for (*width = 0;*string;string++)
@@ -728,12 +734,12 @@ VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *o
 	if (optsend)
 	{
 		for (*width = 0;string!=optsend;string++)
-			*width += font->width[*string];		// proportional width
+			*width += font->width[*((id0_byte_t id0_far *)string)];		// proportional width
 	}
 	else
 	{
 		for (*width = 0;*string;string++)
-			*width += font->width[*string];		// proportional width
+			*width += font->width[*((id0_byte_t id0_far *)string)];		// proportional width
 	}
 }
 
@@ -773,9 +779,11 @@ void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t 
 
 void VW_CGAFullUpdate (void)
 {
+#if 0
 	id0_byte_t	*update;
 	id0_boolean_t	halftile;
 	id0_unsigned_t	x,y,middlerows,middlecollumns;
+#endif
 
 	displayofs = bufferofs+panadjust;
 

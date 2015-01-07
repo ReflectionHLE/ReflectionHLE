@@ -50,9 +50,9 @@
 #define CTL_M_ADLIBUPPIC	CTL_S_ADLIBUPPIC
 #define CTL_M_ADLIBDNPIC	CTL_S_ADLIBDNPIC
 
-#pragma	hdrstop
+//#pragma	hdrstop
 
-#pragma	warn	-pia
+//#pragma	warn	-pia
 
 #define	MaxX	320
 #define	MaxY	200
@@ -81,7 +81,7 @@ typedef	struct
 extern	id0_boolean_t		tedlevel;
 extern	id0_word_t		tedlevelnum;
 extern	void		TEDDeath(void);
-static	id0_char_t		*ParmStrings[] = {"TEDLEVEL",""};
+static	const id0_char_t		*ParmStrings[] = {"TEDLEVEL",""};
 
 
 //	Global variables
@@ -136,8 +136,8 @@ static	HighScore	Scores[MaxScores] =
 //			from DOS.
 //
 ///////////////////////////////////////////////////////////////////////////
-#pragma	warn	-par
-#pragma	warn	-rch
+//#pragma	warn	-par
+//#pragma	warn	-rch
 id0_int_t
 USL_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si)
 {
@@ -223,8 +223,8 @@ oh_kill_me:
 #undef	RETRY
 #undef	ABORT
 }
-#pragma	warn	+par
-#pragma	warn	+rch
+//#pragma	warn	+par
+//#pragma	warn	+rch
 
 #endif // USL_HardError IS UNUSED NOW
 
@@ -238,7 +238,8 @@ static id0_char_t *
 USL_GiveSaveName(id0_word_t game)
 {
 static	id0_char_t	filename[32];
-		id0_char_t	*s,*t;
+		id0_char_t	/**s,*/*t;
+		const id0_char_t *s;
 
 	for (s = "SAVEGM",t = filename;*s;)
 		*t++ = *s++;
@@ -480,10 +481,10 @@ US_Shutdown(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 id0_int_t
-US_CheckParm(id0_char_t *parm,id0_char_t **strings)
+US_CheckParm(const id0_char_t *parm,const id0_char_t **strings)
 {
-	id0_char_t	cp,cs,
-			*p,*s;
+	id0_char_t	cp,cs;
+	const id0_char_t *p,*s;
 	id0_int_t		i;
 
 	while (!isalpha(*parm))	// Skip non-alphas
@@ -594,6 +595,10 @@ US_TextScreen(void)
 	}
 }
 
+// REFKEEN - Looks like these are used in version 1.0 only
+
+#if 0
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	USL_Show() - Changes the appearance of one of the fields on the text
@@ -635,6 +640,8 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 	USL_ScreenDraw(x,y,buf,0x48);
 }
 
+#endif // VERSION
+
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL // Commented out in Shareware v1.13
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -645,12 +652,14 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 void
 US_UpdateTextScreen(void)
 {
+	// ...The code is commented out in CGA v1.05, except for variable
+	// definitions, but we don't need these either if commenting out
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 	id0_boolean_t		b;
 	id0_byte_t		id0_far *screen;
 	id0_word_t		i;
 	id0_longword_t	totalmem;
 
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL // ...It is commented out in CGA v1.05
 	// Show video card info
 	b = (grmode == CGAGR);
 	USL_Show(21,7,4,(videocard >= CGAcard) && (videocard <= VGAcard),b);
@@ -894,7 +903,7 @@ US_CPrint(const id0_char_t *s)
 	id0_char_t	c;
 	const id0_char_t	*se;
 	//id0_char_t	c,*se;
-	id0_word_t	w,h;
+	//id0_word_t	w,h;
 
 	// (REFKEEN) Modifications from vanilla Keen:
 	// - Input is now const and US_Print does not temporarily modify it.
@@ -1371,11 +1380,11 @@ typedef	struct	{
 					Rect		r;				// The enclosing rectangle
 					UIType		type;			// The type of item
 					id0_int_t			picup,picdown;	// What to draw when up/down
-					id0_char_t		*help;			// Floating help string
+					const id0_char_t		*help;			// Floating help string
 					ScanCode	key;			// Key equiv
 					id0_word_t		sel;			// Interaction flags (ui_XXX)
 					id0_boolean_t		(*custom)(UserCall,id0_word_t,id0_word_t);	// Custom routine
-					id0_char_t		*text;			// Text for some items
+					const id0_char_t		*text;			// Text for some items
 				} UserItem;
 typedef	struct	{
 					ScanCode	key;
@@ -1573,7 +1582,7 @@ USL_FindDown(UserItem *ip)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_ShowHelp(id0_char_t *s)
+USL_ShowHelp(const id0_char_t *s)
 {
 	WindowRec	wr;
 
@@ -1636,7 +1645,7 @@ static void
 USL_DrawItem(id0_word_t hiti,id0_word_t hitn)
 {
 	id0_boolean_t		handled,centered;
-	id0_char_t		*text;
+	const id0_char_t		*text;
 	id0_word_t		w,h;
 	id0_int_t			picup,picdown;
 	Rect		r;
@@ -1954,7 +1963,10 @@ static void
 USL_FindRect(Rect r,Motion xd,Motion yd)
 {
 	id0_word_t		i,i1,i2,i3;
-	Motion		m1,m2;
+	// (REFKEEN) Incrementing/Decrementing an enum is a bad idea (leading to undefined behaviors in C),
+	// and illegal in C++. Hence, m1 and m2 are redefined to be a (signed) int here. Casts are done (to be compatible with C++).
+	int m1, m2;
+	//Motion		m1,m2;
 	Point		diffs[9],diff,*dp;
 	Rect		*rp,*good,*goods[9];
 	UserItem	*ip,**items;
@@ -2494,7 +2506,7 @@ USL_DoHelp(memptr text,id0_long_t len)
 	USL_MeasureString("",NULL,&w,&h);
 	page = WindowH / h;
 	cur = 0;
-	lp = LineOffsets;
+	lp = (id0_word_t *)LineOffsets;
 
 	IN_ClearKeysDown();
 	moved = true;
@@ -2689,7 +2701,7 @@ USL_DoHelp(memptr text,id0_long_t len)
 static id0_boolean_t
 USL_CtlHButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
-	id0_word_t		j;
+	//id0_word_t		j;
 	UserItem	*ip;
 
 	if (call != uic_Hit)
@@ -2891,7 +2903,9 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		if (ip->sel & ui_Disabled)
 			return(false);
 
+#if 0
 		LeaveDriveOn++;
+#endif
 		filename = USL_GiveSaveName(n / 2);
 
 		US_SaveWindow(&wr);
@@ -2937,7 +2951,9 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		VW_ShowCursor();
 		US_RestoreWindow(&wr);
 
+#if 0
 		LeaveDriveOn--;
+#endif
 		break;
 	}
 	return(false);
@@ -2986,7 +3002,9 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		VW_HideCursor();
 		VW_UpdateScreen();
 
+#if 0
 		LeaveDriveOn++;
+#endif
 		filename = USL_GiveSaveName(n / 2);
 		err = 0;
 		file = open(filename,O_CREAT | O_BINARY | O_WRONLY,
@@ -3018,7 +3036,9 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 			remove(filename);
 			ok = false;
 		}
+#if 0
 		LeaveDriveOn--;
+#endif
 
 		VW_ShowCursor();
 		US_RestoreWindow(&wr);
@@ -3145,7 +3165,7 @@ static id0_boolean_t
 USL_CtlPSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_boolean_t		result;
-	UserItem	*ip;
+	//UserItem	*ip;
 
 	i++;	// Shut the compiler up
 
@@ -3204,7 +3224,7 @@ static id0_boolean_t
 USL_CtlDEButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 {
 	id0_boolean_t		result = false; /* REFKEEN: Originally, was not initialized at all */
-	UserItem	*ip;
+	//UserItem	*ip;
 
 	i++,n++;	// Shut the compiler up
 
@@ -3376,7 +3396,7 @@ USL_CheckScan(id0_word_t *ci,id0_word_t *cn)
 static void
 USL_SetUpCtlPanel(void)
 {
-	id0_word_t	i,j;
+	id0_word_t	i/*,j*/;
 
 	GameIsDirty = ingame;
 
@@ -3459,14 +3479,16 @@ USL_TearDownCtlPanel(void)
 	if (i != -1)
 	{
 		i = i? (i == 1? ctrl_Joystick1 : ctrl_Joystick2) : ctrl_Keyboard;
-		IN_SetControlType(0,i);
+		// REFKEEN - Casting to enum for C++ (hope it's ok!!)
+		IN_SetControlType(0,(ControlType)i);
 	}
 
 	CtlCPanels[1].key = CtlCPanels[2].key = sc_None;
 
 	i = USL_FindDown(CtlSPanels);
 	if (i != -1)
-		SD_SetSoundMode(i);
+		// REFKEEN - Casting to enum for C++ (hope it's ok!!)
+		SD_SetSoundMode((SDMode)i);
 
 #if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	ssIsTandy = CtlSSSPanels[0].sel & ui_Selected;
@@ -3517,7 +3539,7 @@ US_ControlPanel(void)
 				lasti,lastn,
 				lastx,lasty;
 	id0_longword_t	lasttime;
-	Point		p;
+	//Point		p;
 	Rect		userect;
 	UserItem	*ip;
 

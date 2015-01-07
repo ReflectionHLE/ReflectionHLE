@@ -23,7 +23,7 @@
 #endif
 #include "kd_def.h"
 
-#pragma hdrstop
+//#pragma hdrstop
 
 #define RLETAG  0xABCD
 
@@ -311,7 +311,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	{
 		return false;
 	}
-	o->active = activeint;
+	o->active = (activetype)activeint;
 	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// ANOTHER SPECIAL CASE (for almost all creatures as flowers)
 	o->temp2stateptr = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(o->temp2);
@@ -359,7 +359,7 @@ static id0_boolean_t LoadGameState(int file, gametype *state)
 id0_boolean_t
 SaveGame(int file)
 {
-	id0_word_t    i,size,compressed,expanded;
+	id0_word_t    i/*,size*/,compressed,expanded;
 	objtype *o;
 	memptr  bigbuffer;
 
@@ -381,7 +381,7 @@ SaveGame(int file)
 
 		*(id0_unsigned_t id0_huge *)bigbuffer = compressed;
 
-		if (!CA_FarWrite(file,(void id0_far *)bigbuffer,compressed+2) )
+		if (!CA_FarWrite(file,(id0_byte_t id0_far *)bigbuffer,compressed+2) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -405,9 +405,9 @@ SaveGame(int file)
 id0_boolean_t
 LoadGame(int file)
 {
-	id0_word_t    i,j,size;
-	objtype *o;
-	id0_int_t orgx,orgy;
+	id0_word_t    i/*,j,size*/;
+	//objtype *o;
+	//id0_int_t orgx,orgy;
 	objtype         *prev,*next,*followed;
 	id0_unsigned_t        compressed,expanded;
 	memptr  bigbuffer;
@@ -434,13 +434,13 @@ LoadGame(int file)
 
 	for (i = 0;i < 3;i++)   // Read all three planes of the map
 	{
-		if (!CA_FarRead(file,(void id0_far *)&compressed,sizeof(compressed)) )
+		if (!CA_FarRead(file,(id0_byte_t id0_far *)&compressed,sizeof(compressed)) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
 		}
 
-		if (!CA_FarRead(file,(void id0_far *)bigbuffer,compressed) )
+		if (!CA_FarRead(file,(id0_byte_t id0_far *)bigbuffer,compressed) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -519,6 +519,7 @@ TEDDeath(void)
 }
 #endif
 
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 static id0_boolean_t
 MoveTitleTo(id0_int_t offset)
 {
@@ -577,7 +578,7 @@ Wait(id0_longword_t time)
 }
 
 static id0_boolean_t
-ShowText(id0_int_t offset,WindowRec *wr,id0_char_t *s)
+ShowText(id0_int_t offset,WindowRec *wr,const id0_char_t *s)
 {
 	if (MoveTitleTo(offset))
 		return(true);
@@ -594,6 +595,7 @@ ShowText(id0_int_t offset,WindowRec *wr,id0_char_t *s)
 	VW_UpdateScreen();
 	return(false);
 }
+#endif // REFKEEN game versions
 
 /*
 =====================
@@ -607,9 +609,9 @@ ShowText(id0_int_t offset,WindowRec *wr,id0_char_t *s)
 void
 DemoLoop (void)
 {
-	id0_char_t            *s;
-	id0_word_t            move;
-	id0_longword_t        lasttime;
+	const id0_char_t            *s;
+	//id0_word_t            move;
+	//id0_longword_t        lasttime;
 	WindowRec       mywin;
 
 #if FRILLS
@@ -725,17 +727,17 @@ DemoLoop (void)
 void
 DemoLoop (void)
 {
-	id0_char_t		*s;
-	id0_word_t		move;
-	id0_longword_t	lasttime;
-	id0_char_t *FileName1;
+	//id0_char_t		*s;
+	//id0_word_t		move;
+	//id0_longword_t	lasttime;
+	const id0_char_t *FileName1;
 	struct Shape FileShape1;
 #if CREDITS
-	id0_char_t *FileName2;
+	const id0_char_t *FileName2;
 	struct Shape FileShape2;
 #endif
 	//struct ffblk ffblk;
-	WindowRec	mywin;
+	//WindowRec	mywin;
 	id0_int_t bufsave	= bufferofs;
 	id0_int_t dissave	= displayofs;
 

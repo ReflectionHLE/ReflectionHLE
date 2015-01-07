@@ -33,7 +33,7 @@ updated
 */
 
 #include "id_heads.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -166,7 +166,7 @@ id0_unsigned_t	originxtile,originytile;
 id0_unsigned_t	originxscreen,originyscreen;
 id0_unsigned_t	originmap;
 id0_unsigned_t	originxmin,originxmax,originymin,originymax;
-id0_unsigned_t	originxtile,originytile;
+//id0_unsigned_t	originxtile,originytile;
 
 id0_unsigned_t	masterofs;
 
@@ -196,7 +196,7 @@ id0_byte_t		*updateptr,*baseupdateptr,						// current start of update window
 =============================================================================
 */
 
-static		id0_char_t	scratch[20],str[20];
+//static		id0_char_t	scratch[20],str[20];
 
 tiletype	allanims[MAXANIMTYPES];
 id0_unsigned_t	numanimchains;
@@ -264,7 +264,7 @@ void RFL_UpdateSprites (void);
 =====================
 */
 
-static	id0_char_t *ParmStrings[] = {"comp",""};
+static const id0_char_t *ParmStrings[] = {"comp",""};
 
 void RF_Startup (void)
 {
@@ -582,7 +582,7 @@ void RFL_InitAnimList (void)
 
 void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y)
 {
-	id0_unsigned_t 	tile,offset,speed,lasttime,thistime,timemissed;
+	id0_unsigned_t 	tile,offset/*,speed,lasttime,thistime,timemissed*/;
 	id0_unsigned_t	id0_far *map;
 	animtiletype	*anim,*next;
 
@@ -1083,7 +1083,7 @@ void	RFL_OldRow (id0_unsigned_t updatespot,id0_unsigned_t count,id0_unsigned_t s
 
 void RF_Scroll (id0_int_t x, id0_int_t y)
 {
-	id0_long_t		neworgx,neworgy;
+	//id0_long_t		neworgx,neworgy;
 	id0_int_t			i,deltax,deltay,absdx,absdy;
 	id0_int_t			oldxt,oldyt,move,yy;
 	id0_unsigned_t	updatespot;
@@ -1404,10 +1404,10 @@ void RFL_EraseBlocks (void)
 	id0_unsigned_t	pos,xtl,ytl,xth,yth,x,y;
 	id0_byte_t		*updatespot;
 	id0_unsigned_t	updatedelta;
-	id0_unsigned_t	erasecount;
+	//id0_unsigned_t	erasecount;
 
 #ifdef PROFILE
-	erasecount = 0;
+	id0_unsigned_t erasecount = 0;
 #endif
 
 	block = otherpage ? &eraselist[1][0] : &eraselist[0][0];
@@ -1517,11 +1517,11 @@ void RFL_UpdateSprites (void)
 	id0_unsigned_t dest;
 	id0_byte_t		*updatespot,*baseupdatespot;
 	id0_unsigned_t	updatedelta;
-	id0_unsigned_t	updatecount;
+	//id0_unsigned_t	updatecount;
 	id0_unsigned_t	height,sourceofs;
 
 #ifdef PROFILE
-	updatecount = 0;
+	id0_unsigned_t updatecount = 0;
 #endif
 
 	for (priority=0;priority<PRIORITIES;priority++)
@@ -1715,7 +1715,8 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 //
 // calculate tics since last refresh for adaptive timing
 //
-	if (lasttimecount > SD_GetTimeCount())
+	// REFKEEN - Looks like this is an unsigned comparison in original EXE
+	if ((id0_longword_t)lasttimecount > SD_GetTimeCount())
 		lasttimecount = SD_GetTimeCount();		// if the game was paused a LONG time
 	// REFKEEN - Some replacement
 	BE_SDL_TimeCountWaitFromSrc(lasttimecount, MINTICS);
@@ -1822,12 +1823,12 @@ void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
 
 void RF_Scroll (id0_int_t x, id0_int_t y)
 {
-	id0_long_t		neworgx,neworgy;
-	id0_int_t			i,deltax,deltay,absdx,absdy;
+	//id0_long_t		neworgx,neworgy;
+	id0_int_t			/*i,*/deltax,deltay,absdx,absdy;
 	id0_int_t			oldxt,oldyt,move,yy;
-	id0_unsigned_t	updatespot;
+	//id0_unsigned_t	updatespot;
 	id0_byte_t		*spotptr;
-	id0_unsigned_t	oldoriginmap,oldscreen,newscreen,screencopy;
+	//id0_unsigned_t	oldoriginmap,oldscreen,newscreen,screencopy;
 	id0_int_t			screenmove;
 
 	oldxt = originxtile;
@@ -1941,7 +1942,7 @@ void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 	spritelisttype	register *sprite,*next;
 	spritetabletype id0_far *spr;
 	spritetype id0_seg	*block;
-	id0_unsigned_t	shift,pixx;
+	//id0_unsigned_t	shift,pixx;
 
 	if (!spritenumber)
 	{
@@ -2194,7 +2195,7 @@ void RFL_UpdateSprites (void)
 	id0_byte_t		*updatespot,*baseupdatespot;
 	id0_unsigned_t	updatedelta;
 
-	id0_unsigned_t	updatecount;
+	//id0_unsigned_t	updatecount;
 	id0_unsigned_t	height,sourceofs;
 
 #ifdef PROFILE
@@ -2354,7 +2355,8 @@ void RF_Refresh (void)
 //
 // calculate tics since last refresh for adaptive timing
 //
-	if (lasttimecount > SD_GetTimeCount())
+	// REFKEEN - Looks like this is an unsigned comparison in original EXE
+	if ((id0_longword_t)lasttimecount > SD_GetTimeCount())
 		lasttimecount = SD_GetTimeCount();		// if the game was paused a LONG time
 	// REFKEEN - Some replacement
 	BE_SDL_TimeCountWaitFromSrc(lasttimecount, MINTICS);

@@ -1,11 +1,18 @@
 #include <stdint.h>
 
+// In C++, const implies static, so we need to specify extern
+#ifdef __cplusplus
+#define BUFFLINKAGE extern
+#else
+#define BUFFLINKAGE
+#endif
+
 /***********************************************************************
 CGA 80-column font (80x25 chars for a 640x200 mode, 8x8 pixels for each)
 Currently not used
 ***********************************************************************/
 #if 0
-const uint8_t g_cga_8x8TextFont[256*8*8] = {
+BUFFLINKAGE const uint8_t g_cga_8x8TextFont[256*8*8] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
@@ -2317,7 +2324,7 @@ EGA 80-column font (80x25 chars for a 640x350 mode, 8x14 pixels for each)
 Currently not used
 ************************************************************************/
 #if 0
-const uint8_t g_ega_8x14TextFont[256*8*14] = {
+BUFFLINKAGE const uint8_t g_ega_8x14TextFont[256*8*14] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
@@ -6168,7 +6175,7 @@ http://support.microsoft.com/kb/59953
 It is also briefly mentioned here:
 http://vogons.zetafleet.com/viewtopic.php?p=156124
 ******************************************************************************/
-const uint8_t g_vga_8x16TextFont[256*8*16] = {
+BUFFLINKAGE const uint8_t g_vga_8x16TextFont[256*8*16] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,

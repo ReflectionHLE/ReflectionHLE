@@ -57,14 +57,14 @@ since they conflict with functions from jam_io.c and possibly more
 static id0_int_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
 static id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType);
 static void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t DataLength, id0_unsigned_t PtrTypes);
-static id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t id0_far **MemPtr);
+static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *FileName, id0_char_t id0_far **MemPtr);
 
-static id0_long_t FileSize(id0_char_t *filename);
+//static id0_long_t FileSize(const id0_char_t *filename);
 
 static id0_boolean_t FarRead (int handle, id0_char_t id0_far *dest, id0_long_t length);
 
-int loadscn2_main(int argc, char **argv); // Renamed from main
-static void TrashProg(id0_char_t *OutMsg);
+int loadscn2_main(int argc, const char **argv); // Renamed from main
+static void TrashProg(const id0_char_t *OutMsg);
 
 
 
@@ -120,7 +120,7 @@ static id0_int_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned
 			*((id0_char_t id0_far *)*(id0_char_t id0_far **)outfile)++ = data;
 #endif
 		{
-			id0_char_t **ptrptr = outfile;
+			id0_char_t **ptrptr = (id0_char_t **)outfile;
 			*((*ptrptr)++) = data;
 		}
 		break;
@@ -152,7 +152,8 @@ static id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType)
 	switch (PtrType & SRC_TYPES)
 	{
 		case SRC_FILE:
-			read(*(int id0_far *)infile,(id0_char_t *)&returnval,1);
+			read((int)(intptr_t)(*infile),(id0_char_t *)&returnval,1);
+			//read(*(int id0_far *)infile,(id0_char_t *)&returnval,1);
 		break;
 
 		case SRC_FFILE:
@@ -284,7 +285,7 @@ static void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, i
 //			false  - Error!
 //
 //----------------------------------------------------------------------------
-static id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_char_t id0_far **MemPtr)
+static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *FileName, id0_char_t id0_far **MemPtr)
 {
 	int handle;
 	id0_unsigned_long_t header;
@@ -385,7 +386,7 @@ static id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_
 		if (*MemPtr == NULL)
 		{
 			BE_SDL_Delay(2000);
-			if ((*MemPtr = /*far*/malloc(FileEntry.OrginalLength)) == NULL)
+			if ((*MemPtr = (id0_char_t *)/*far*/malloc(FileEntry.OrginalLength)) == NULL)
 				TrashProg("Can't get memory");
 		}
 
@@ -402,7 +403,8 @@ static id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_
 		switch (Header.Compression)
 		{
 			case ct_LZW:
-				lzwDecompress((void *)handle,*MemPtr,ChunkLen,(SRC_FILE|DEST_MEM));
+				// REFKEEN (FIXME) Hack that assumes sizeof(intptr_t)>=sizeof(int)
+				lzwDecompress((void *)(intptr_t)handle,*MemPtr,ChunkLen,(SRC_FILE|DEST_MEM));
 				break;
 
 			case ct_NONE:
@@ -432,11 +434,11 @@ static id0_boolean_t LoadLIBFile(id0_char_t *LibName, id0_char_t *FileName, id0_
 //
 //===========================================================================
 
-
+#if 0
 //---------------------------------------------------------------------------
 //  FileSize() - Returns the size of a file on disk. (-1 = error)
 //---------------------------------------------------------------------------
-static id0_long_t FileSize(id0_char_t *filename)
+static id0_long_t FileSize(const id0_char_t *filename)
 {
 	  id0_long_t filesize;
 	  int handle;
@@ -451,7 +453,7 @@ static id0_long_t FileSize(id0_char_t *filename)
 
 	return(filesize);
 }
-
+#endif
 
 
 //--------------------------------------------------------------------------
@@ -485,7 +487,7 @@ static id0_boolean_t FarRead (int handle, id0_char_t id0_far *dest, id0_long_t l
 //--------------------------------------------------------------------------
 //  MAIN (renamed from main)
 //--------------------------------------------------------------------------
-int loadscn2_main(int argc, char **argv)
+int loadscn2_main(int argc, const char **argv)
 {
 	id0_unsigned_char_t id0_huge *bufferptr = NULL;
 
@@ -512,7 +514,7 @@ int loadscn2_main(int argc, char **argv)
 
 	BE_SDL_ToggleTextCursor(false);
 
-	if (!LoadLIBFile(argv[1],argv[2], &bufferptr))
+	if (!LoadLIBFile(argv[1],argv[2], (id0_char_t **)&bufferptr))
 		TrashProg("Error loading TEXT_SCEENS");
 
 	memcpy(BE_SDL_GetTextModeMemoryPtr(), bufferptr+7, 4000);
@@ -525,13 +527,15 @@ int loadscn2_main(int argc, char **argv)
 
 	BE_SDL_HandleExit(0);
 
+	return 0; // REFKEEN: Could also declare this function as void instead..
+
 }  // main end
 
 
 //---------------------------------------------------------------------------
 //  TrashProg() --
 //---------------------------------------------------------------------------
-static void TrashProg(id0_char_t *OutMsg)
+static void TrashProg(const id0_char_t *OutMsg)
 {
 	id0_int_t error = 0;
 

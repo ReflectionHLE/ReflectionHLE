@@ -6,6 +6,9 @@
 
 // WARNING: This struct is used by BE_SDL ONLY
 
+typedef enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } VSyncSettingType;
+typedef enum { SCALE_ASPECT, SCALE_FILL } ScaleTypeSettingType;
+
 typedef struct
 {
 	bool isFullscreen;
@@ -13,9 +16,9 @@ typedef struct
 	int winWidth, winHeight;
 	int displayNum;
 	int sdlRendererDriver;
-	enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } vSync;
+	VSyncSettingType vSync;
 	bool isBilinear;
-	enum { SCALE_ASPECT, SCALE_FILL } scaleType;
+	ScaleTypeSettingType scaleType;
 	int scaleFactor;
 	bool autolockCursor;
 	int sndSampleRate;
@@ -91,6 +94,7 @@ uint8_t *BE_SDL_GetTextModeMemoryPtr(void);
 void BE_SDL_EGASetPaletteAndBorder(const uint8_t *palette);
 void BE_SDL_EGASetLineWidth(uint8_t widthInBytes);
 void BE_SDL_EGASetSplitScreen(int16_t linenum);
+void BE_SDL_EGASetPelPanning(uint8_t panning);
 void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask);
 // Same as BE_SDL_EGAUpdateGFXByte but picking specific bits out of each byte, and WITHOUT planes mask
 void BE_SDL_EGAUpdateGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask);

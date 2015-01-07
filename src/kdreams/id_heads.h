@@ -78,10 +78,16 @@
 
 typedef	bool id0_boolean_t;
 
+// WARNING:
+//
 // Should be UNSIGNED for VWL_MeasureString (high scores table) in Keen Dreams
 // but SIGNED in Catacomb Abyss for which casting is done in VWL_MeasureString
 // (and Keen Dreams' loadscn2)
-typedef uint8_t id0_char_t;
+//
+// BUT, to reduce the amount of compilation warnings in C and errors in C++,
+// we still use plain char here, and fix Keen Dreams' VWL_MeasureString instead
+typedef char id0_char_t;
+//typedef uint8_t id0_char_t;
 
 typedef int8_t id0_signed_char_t;
 typedef uint8_t id0_unsigned_char_t;
@@ -108,7 +114,11 @@ typedef	struct
 			Point	ul,lr;
 		} Rect;
 
+#ifdef __cplusplus
+#define	id0_nil_t	NULL
+#else
 #define	id0_nil_t	((void *)0)
+#endif
 
 // TODO (REFKEEN): These should really be removed, but just for now and to document...
 #define id0_far
@@ -124,7 +134,7 @@ typedef	struct
 
 // Initialized before calling vanilla Keen Dreams' (now renamed) main function
 extern int id0_argc;
-extern char **id0_argv;
+extern const char **id0_argv;
 
 #include "be_sdl.h"
 

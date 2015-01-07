@@ -18,7 +18,7 @@
 
 // KD_ACT1.C
 #include "kd_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 
 /*
@@ -59,7 +59,7 @@ extern	statetype s_taterattack1;
 extern	statetype s_taterattack2;
 extern	statetype s_taterattack3;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_taterwalk1	= {TATERTROOPWALKL1SPR,TATERTROOPWALKR1SPR,step,false,
 	true,10, 128,0, TaterThink, NULL, WalkReact, &s_taterwalk2};
@@ -77,7 +77,7 @@ statetype s_taterattack2= {TATERTROOPLUNGEL2SPR,TATERTROOPLUNGER2SPR,step,false,
 statetype s_taterattack3= {TATERTROOPLUNGEL1SPR,TATERTROOPLUNGER1SPR,step,false,
 	false,8, 0,0, NULL, NULL, DrawReact, &s_taterwalk1};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -178,14 +178,14 @@ extern	statetype s_cartroll2;
 
 void CartReact (objtype *ob);
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_cartroll1	= {CANTCARTL1SPR,CANTCARTL1SPR,slide,true,
 	false,5, 32,0, NULL, NULL, CartReact, &s_cartroll2};
 statetype s_cartroll2	= {CANTCARTL2SPR,CANTCARTL2SPR,slide,true,
 	false,5, 32,0, NULL, NULL, CartReact, &s_cartroll1};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -277,7 +277,7 @@ extern	statetype s_frenchythrow3;
 extern	statetype s_fry1;
 extern	statetype s_fry2;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_frenchywalk1	= {FRENCHYRUNL1SPR,FRENCHYRUNR1SPR,step,false,
 	true,10, 128,0, FrenchyThink, NULL, WalkReact, &s_frenchywalk2};
@@ -310,7 +310,7 @@ statetype s_fry2		= {FRENCHFRY2SPR,FRENCHFRY2SPR,stepthink,false,
 	false,4, 0,0, ProjectileThink, NULL, ProjectileReact, &s_fry1};
 
 
-#pragma warn +sus
+//#pragma warn +sus
 
 
 /*
@@ -471,7 +471,7 @@ extern	statetype s_melonseed2;
 extern	statetype s_melonseedd1;
 extern	statetype s_melonseedd2;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_melonside	= {MELONLIPSL1SPR,MELONLIPSR1SPR,step,false,
 	false,200, 0,0, NULL, NULL, DrawReact, &s_melonsidespit};
@@ -497,7 +497,7 @@ statetype s_melonseedd1	= {MELONSEEDD1SPR,MELONSEEDD1SPR,stepthink,false,
 statetype s_melonseedd2	= {MELONSEEDD2SPR,MELONSEEDD2SPR,stepthink,false,
 	false,4, 0,0, ProjectileThink, NULL, ProjectileReact, &s_melonseedd1};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -722,7 +722,7 @@ extern	statetype s_squasherjump2;
 
 extern	statetype s_squasherwait;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_squasherwalk1	= {SQUASHERWALKL1SPR,SQUASHERWALKR1SPR,step,false,
 	true,10, 128,0, SquasherThink, NULL, WalkReact, &s_squasherwalk2};
@@ -737,7 +737,7 @@ statetype s_squasherjump2	= {SQUASHERJUMPL2SPR,SQUASHERJUMPR2SPR,think,false,
 statetype s_squasherwait	= {SQUASHERJUMPL2SPR,SQUASHERJUMPR2SPR,step,false,
 	false,10, 0,0, ProjectileThink, NULL, DrawReact, &s_squasherwalk1};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -860,7 +860,7 @@ extern	statetype s_apelslide4;
 
 extern	statetype s_apelfall;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_apelwalk1	= {APELWALKL1SPR,APELWALKR1SPR,step,false,
 	true,10, 128,0, ApelThink, NULL, WalkReact, &s_apelwalk2};
@@ -886,7 +886,7 @@ statetype s_apelslide4	= {APELSLIDE4SPR,APELSLIDE4SPR,slide,false,
 statetype s_apelfall = {APELWALKL1SPR,APELWALKR1SPR,think,false,
 	false,0, 0,0, ProjectileThink, NULL, ApelFallReact, NULL};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 
 /*
@@ -920,7 +920,7 @@ void SpawnApel (id0_int_t tilex, id0_int_t tiley)
 
 void ApelThink (objtype *ob)
 {
-	id0_int_t	x,y;
+	id0_int_t	/*x,*/y;
 	id0_unsigned_t id0_far *map;
 
 	if (ob->top > player->bottom || ob->bottom < player->top)
@@ -1057,7 +1057,7 @@ extern	statetype s_peabrainwalk2;
 extern	statetype s_peabrainwalk3;
 extern	statetype s_peabrainwalk4;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_peabrainfly	= {PEABRAINWALKL1SPR,PEABRAINWALKR1SPR,think,false,
 	false,0, 0,0, ProjectileThink, NULL, PeaFlyReact, NULL};
@@ -1071,7 +1071,7 @@ statetype s_peabrainwalk3	= {PEABRAINWALKL3SPR,PEABRAINWALKR3SPR,step,false,
 statetype s_peabrainwalk4	= {PEABRAINWALKL4SPR,PEABRAINWALKR4SPR,step,false,
 	true,10, 128,0, PeaBrainThink, NULL, WalkReact, &s_peabrainwalk1};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -1149,7 +1149,7 @@ extern	statetype s_peapodwalk4;
 extern	statetype s_peapodspit1;
 extern	statetype s_peapodspit2;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_peapodwalk1	= {PEAPODRUNL1SPR,PEAPODRUNR1SPR,step,false,
 	true,10, 128,0, PeaPodThink, NULL, WalkReact, &s_peapodwalk2};
@@ -1165,7 +1165,7 @@ statetype s_peapodspit1	= {PEAPODSPITLSPR,PEAPODSPITRSPR,step,false,
 statetype s_peapodspit2	= {PEAPODSPITLSPR,PEAPODSPITRSPR,step,false,
 	true,30, 0,0, NULL, NULL, DrawReact, &s_peapodwalk1};
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================
@@ -1228,7 +1228,7 @@ void SpitPeaBrain (objtype *ob)
 
 void PeaPodThink (objtype *ob)
 {
-	id0_int_t delta;
+	//id0_int_t delta;
 
 	if ( abs(ob->y - player->y) > 3*TILEGLOBAL )
 		return;
@@ -1287,7 +1287,7 @@ extern	statetype s_deathboom4;
 extern	statetype s_deathboom5;
 extern	statetype s_deathboom6;
 
-#pragma warn -sus
+//#pragma warn -sus
 
 statetype s_boobuswalk1	= {BOOBUSWALKL1SPR,BOOBUSWALKR1SPR,step,false,
 	true,10, 128,0, BoobusThink, NULL, BoobusGroundReact, &s_boobuswalk2};
@@ -1322,7 +1322,7 @@ statetype s_deathboom6	= {POOF4SPR,POOF4SPR,step,false,
 	false,30, 0,0, ProjectileThink, NULL, DrawReact3, NULL};
 
 
-#pragma warn +sus
+//#pragma warn +sus
 
 /*
 ====================

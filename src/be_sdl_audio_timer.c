@@ -285,7 +285,7 @@ void BE_SDL_ALOut(uint8_t reg,uint8_t val)
 		YM3812Write(&oplChip, reg, val);
 		// Hack comes with a "magic number"
 		// that appears to make it work better
-		int length = OPL_SAMPLE_RATE / 10000;
+		unsigned int length = OPL_SAMPLE_RATE / 10000;
 		// Circular buffer, shouldn't be too long...
 		if (length > OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd)
 		{
@@ -375,7 +375,7 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 			g_sdlCallbackSDFuncPtr();
 		}
 		// Now generate sound
-		isPartCompleted = (len >= 2*(g_sdlSamplePerPart-g_sdlSampleOffsetInSound));
+		isPartCompleted = ((unsigned)len >= 2*(g_sdlSamplePerPart-g_sdlSampleOffsetInSound));
 		currNumOfSamples = isPartCompleted ? (g_sdlSamplePerPart-g_sdlSampleOffsetInSound) : (len/2);
 		/*** AdLib (including hack for alOut delays) ***/
 		// Relatively simple case

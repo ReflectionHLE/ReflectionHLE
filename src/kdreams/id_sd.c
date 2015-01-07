@@ -43,7 +43,7 @@
 //			NeedsMusic - load music?
 //
 
-#pragma hdrstop		// Wierdo thing with MUSE
+//#pragma hdrstop		// Wierdo thing with MUSE
 
 //#include <dos.h>
 
@@ -52,8 +52,8 @@
 #else
 #include "id_heads.h"
 #endif
-#pragma	hdrstop
-#pragma	warn	-pia
+//#pragma	hdrstop
+//#pragma	warn	-pia
 
 #define	SDL_SoundFinished()	{SoundNumber = SoundPriority = 0;}
 
@@ -80,10 +80,12 @@ static	id0_word_t			sqMode,sqFadeStep;
 #endif
 
 //	Global variables
-	id0_boolean_t		LeaveDriveOn
-				,SoundSourcePresent
+id0_boolean_t			SoundSourcePresent
 				,SoundBlasterPresent
 				,AdLibPresent
+#if 0
+				,LeaveDriveOn
+#endif
 #if REFKEEN_SD_ENABLE_DIGITIZED
 				,NeedsDigitized
 #endif
@@ -107,7 +109,7 @@ static	id0_boolean_t			SD_Started;
 /*** (REFKEEN) We use an alternative delay mechanism for OPL emulation ***/
 //static	id0_boolean_t			TimerDone;
 //static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
-static	id0_char_t			*ParmStrings[] =
+static const id0_char_t			*ParmStrings[] =
 						{
 							"noal",
 							"nosb",
@@ -163,7 +165,9 @@ static	id0_word_t			alBlock;
 static	id0_longword_t		alLengthLeft;
 
 //	Sequencer variables
+#if REFKEEN_SD_ENABLE_MUSIC
 static	id0_boolean_t			sqActive;
+#endif
 //static	id0_word_t  			*sqTracks[sqMaxTracks];
 static	id0_word_t			alFXReg;
 
@@ -1175,7 +1179,7 @@ SDL_ALService(void)
 static void
 SDL_ShutAL(void)
 {
-	id0_word_t	i;
+	//id0_word_t	i;
 
 	alOut(alEffects,0);
 	alOut(alFreqH + 0,0);
@@ -1204,7 +1208,7 @@ static id0_boolean_t
 SDL_DetectAdLib(void)
 {
 	//id0_byte_t	status1,status2;
-	id0_int_t		i;
+	//id0_int_t		i;
 
 	alOut(4,0x60);	// Reset T1 & T2
 	alOut(4,0x80);	// Reset IRQ
@@ -1367,7 +1371,7 @@ id0_boolean_t
 SD_SetSoundMode(SDMode mode)
 {
 	id0_boolean_t	result;
-	id0_word_t	rate,speed,
+	id0_word_t	rate/*,speed*/,
 			tableoffset;
 
 	SD_StopSound();
@@ -1515,7 +1519,9 @@ SD_Startup(void)
 #endif
 	alNoCheck = false;
 	sbNoCheck = false;
+#if 0
 	LeaveDriveOn = false;
+#endif
 #ifndef	_MUSE_
 	for (i = 1;i < id0_argc;i++)
 	{
@@ -1528,7 +1534,9 @@ SD_Startup(void)
 			sbNoCheck = true;
 			break;
 		case 2:
+#if 0
 			LeaveDriveOn = true;	// No drive turnoff
+#endif
 			break;
 		case 3:
 			ssNoCheck = true;		// No Sound Source detection
@@ -1571,7 +1579,7 @@ SD_Startup(void)
 #endif
 
 	if (!ssNoCheck)
-		SoundSourcePresent == false; // REFKEEN - Let's just assign this...
+		SoundSourcePresent = false; // REFKEEN - Let's just assign this...
 		//SoundSourcePresent = SDL_DetectSoundSource();
 
 	if (!alNoCheck)
@@ -1733,19 +1741,23 @@ SD_PlaySound(id0_word_t sound)
 	switch (SoundMode)
 	{
 	case sdm_PC:
-		SDL_PCPlaySound((void id0_far *)s);
+		SDL_PCPlaySound((PCSound id0_far *)s);
+		//SDL_PCPlaySound((void id0_far *)s);
 		break;
 	case sdm_AdLib:
-		SDL_ALPlaySound((void id0_far *)s);
+		SDL_ALPlaySound((AdLibSound id0_far *)s);
+		//SDL_ALPlaySound((void id0_far *)s);
 		break;
 #if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sdm_SoundBlaster:
-		SDL_SBPlaySample((void id0_far *)s);
+		SDL_SBPlaySample((SampledSound id0_far *)s);
+		//SDL_SBPlaySample((void id0_far *)s);
 		break;
 #endif
 #if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sdm_SoundSource:
-		SDL_SSPlaySample((void id0_far *)s);
+		SDL_SSPlaySample((SampledSound id0_far *)s);
+		//SDL_SSPlaySample((void id0_far *)s);
 		break;
 #endif
 	}

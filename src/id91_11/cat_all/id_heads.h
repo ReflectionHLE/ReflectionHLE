@@ -193,7 +193,7 @@ extern bool id0_workaround_catadventures_nodraw_digits_on_startup;
 
 // Initialized before calling vanilla app's (now renamed) main function
 extern int id0_argc;
-extern char **id0_argv;
+extern const char **id0_argv;
 
 extern id0_char_t *introscn;
 
