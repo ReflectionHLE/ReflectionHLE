@@ -41,7 +41,9 @@
 */
 
 cardtype	videocard;		// set by VW_Startup
-grtype		grmode;			// CGAgr, EGAgr, VGAgr
+// REFKEEN - Related code won't compile as C++ as-is with unused grtype
+int grmode; // TEXTGR, CGAGR, EGAGR, VGAGR
+//grtype		grmode;			// CGAgr, EGAgr, VGAgr
 
 id0_unsigned_t	bufferofs;		// hidden area to draw to before displaying
 id0_unsigned_t	displayofs;		// origin of the visable screen
@@ -81,7 +83,7 @@ void 	VWL_DBSetup (void);
 void	VWL_UpdateScreenBlocks (void);
 
 
-id0_int_t			bordercolor;
+//id0_int_t			bordercolor;
 id0_int_t			cursorvisible;
 id0_int_t			cursornumber,cursorwidth,cursorheight,cursorx,cursory;
 memptr		cursorsave;
@@ -98,7 +100,7 @@ id0_unsigned_t	cursorspot;
 =======================
 */
 
-static	id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
+static	const id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
 
 void	VW_Startup (void)
 {
@@ -107,7 +109,7 @@ void	VW_Startup (void)
 	// Originally used for certain ASM code loops (clears direction flag)
 	//asm	cld;
 
-	videocard = 0;
+	videocard = NOcard/*0*/;
 
 	for (i = 1;i < id0_argc;i++)
 		if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
@@ -263,7 +265,7 @@ void VW_SetDefaultColors(void)
 {
 #if GRMODE == EGAGR
 	colors[3][16] = bordercolor;
-	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[3]);
+	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
 	screenfaded = false;
 #endif
 }
@@ -277,7 +279,7 @@ void VW_FadeOut(void)
 	for (i=3;i>=0;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
+	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -293,7 +295,7 @@ void VW_FadeIn(void)
 	for (i=0;i<4;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
+	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
@@ -308,7 +310,7 @@ void VW_FadeUp(void)
 	for (i=3;i<6;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
+	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -323,7 +325,7 @@ void VW_FadeDown(void)
 	for (i=5;i>2;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[i]);
+	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;

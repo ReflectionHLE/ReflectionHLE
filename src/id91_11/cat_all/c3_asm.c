@@ -57,13 +57,22 @@ id0_word_t wallofs[VIEWWIDTH];
  *
  * This is how the array was filled in ASM (with REPT).
  *
+ * Instead, we manually fill such arrays of a sufficiently large common size,
+ * as they're accessed just here anyway. They may further be declared static.
+ *
  * Note: Should be possible in C++11 with a few tricks at the least.
  */
+
+// Catacomb 3-D defines VIEWWIDTH to be (33*8); Adventure Series - (40*8).
+#define REFKEEN_VIEWWIDTH_UPPERBOUND (40*8)
+#if (VIEWWIDTH > REFKEEN_VIEWWIDTH_UPPERBOUND)
+#error "VIEWWIDTH > REFKEEN_VIEWWIDTH_UPPERBOUND!"
+#endif
 
 /*
  * screenbyte is just position/8
  */
-id0_word_t screenbyte[VIEWWIDTH] = {
+static id0_word_t screenbyte[REFKEEN_VIEWWIDTH_UPPERBOUND] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,
 	 1,  1,  1,  1,  1,  1,  1,  1,
 	 2,  2,  2,  2,  2,  2,  2,  2,
@@ -109,7 +118,7 @@ id0_word_t screenbyte[VIEWWIDTH] = {
 /*
  * screenbit is (position&7)*16
  */
-id0_word_t screenbit[VIEWWIDTH] = {
+static id0_word_t screenbit[REFKEEN_VIEWWIDTH_UPPERBOUND] = {
 	 0, 16, 32, 48, 64, 80, 96, 112,
 	 0, 16, 32, 48, 64, 80, 96, 112,
 	 0, 16, 32, 48, 64, 80, 96, 112,

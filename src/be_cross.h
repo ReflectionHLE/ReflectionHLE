@@ -61,10 +61,11 @@ size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr);
 size_t BE_Cross_read_booleans_From16LEBuffer(int handle, bool *ptr, size_t nbyte);
 
 // Same but for writing
-size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte);
 size_t BE_Cross_writeInt8LE(int handle, const void *ptr);
 size_t BE_Cross_writeInt16LE(int handle, const void *ptr);
 size_t BE_Cross_writeInt32LE(int handle, const void *ptr);
+size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte);
+size_t BE_Cross_writeInt16LEBuffer(int handle, const void *ptr, size_t nbyte);
 
 #if 0
 size_t BE_Cross_write_EnumType_To16LE(int handle, const EnumType *ptr);

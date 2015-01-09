@@ -19,7 +19,7 @@
 // C3_MAIN.C
 
 #include "c3_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -202,7 +202,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	{
 		return false;
 	}
-	o->active = activeint;
+	o->active = (activetype)activeint;
 	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
@@ -294,7 +294,7 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 
 		*(id0_unsigned_t id0_huge *)bigbuffer = compressed;
 
-		if (!CA_FarWrite(file,(void id0_far *)bigbuffer,compressed+2) )
+		if (!CA_FarWrite(file,(id0_byte_t id0_far *)bigbuffer,compressed+2) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -328,7 +328,7 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 id0_boolean_t	LoadTheGame(id0_int_t file)
 {
 	id0_unsigned_t	i,x,y;
-	objtype		*obj,*prev,*next,*followed;
+	objtype		/**obj,*/*prev,*next,*followed;
 	id0_unsigned_t	compressed,expanded;
 	id0_unsigned_t	id0_far *map,tile;
 	memptr		bigbuffer;
@@ -345,13 +345,13 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 
 	for (i = 0;i < 3;i+=2)	// Read planes 0 and 2
 	{
-		if (!CA_FarRead(file,(void id0_far *)&compressed,sizeof(compressed)) )
+		if (!CA_FarRead(file,(id0_byte_t id0_far *)&compressed,sizeof(compressed)) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
 		}
 
-		if (!CA_FarRead(file,(void id0_far *)bigbuffer,compressed) )
+		if (!CA_FarRead(file,(id0_byte_t id0_far *)bigbuffer,compressed) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -386,20 +386,20 @@ id0_boolean_t	LoadTheGame(id0_int_t file)
 	// Read the object list back in - assumes at least one object in list
 
 	InitObjList ();
-	new = player;
+	newobj = player;
 	while (true)
 	{
-		prev = new->prev;
-		next = new->next;
+		prev = newobj->prev;
+		next = newobj->next;
 		// (REFKEEN) Reading fields one-by-one in a cross-platform manner
-		if (!LoadObject(file, new))
-		//if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
+		if (!LoadObject(file, newobj))
+		//if (!CA_FarRead(file,(void id0_far *)newobj,sizeof(objtype)))
 			return(false);
-		followed = new->next;
-		new->prev = prev;
-		new->next = next;
-		actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);	// drop a new marker
-		//actorat[new->tilex][new->tiley] = new;	// drop a new marker
+		followed = newobj->next;
+		newobj->prev = prev;
+		newobj->next = next;
+		actorat[newobj->tilex][newobj->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(newobj);	// drop a new marker
+		//actorat[newobj->tilex][newobj->tiley] = newobj;	// drop a new marker
 
 		if (followed)
 			GetNewObj (false);
@@ -587,10 +587,12 @@ void clrscr (void);		// can't include CONIO.H because of name conflicts...
 ==========================
 */
 
-void Quit (id0_char_t *error)
+void Quit (const id0_char_t *error)
 {
+#ifdef REFKEEN_VER_CAT3D_100
 	void *finscreen;
 	//id0_unsigned_t	finscreen;
+#endif
 
 #ifdef REFKEEN_VER_CAT3D_100
 	if (!error)
@@ -650,7 +652,7 @@ void	TEDDeath(void)
 =====================
 */
 
-static	id0_char_t *ParmStrings[] = {"easy","normal","hard",""};
+static const id0_char_t *ParmStrings[] = {"easy","normal","hard",""};
 
 void	DemoLoop (void)
 {
@@ -669,7 +671,8 @@ void	DemoLoop (void)
 			if ( (level = US_CheckParm(id0_argv[i],ParmStrings)) == -1)
 				continue;
 
-			restartgame = gd_Easy+level;
+			// REFKEEN - Cast for C++
+			restartgame = (GameDiff)(gd_Easy+level);
 			break;
 		}
 		GameLoop();
@@ -801,20 +804,23 @@ void SetupScaleWall (id0_unsigned_t picnum)
 
 void SetupScaling (void)
 {
-	id0_int_t		i,x,y;
-	id0_byte_t	id0_far *dest;
+	id0_int_t		i/*,x,y*/;
+	//id0_byte_t	id0_far *dest;
 
 //
 // build the compiled scalers
 //
 	for (i=1;i<=VIEWWIDTH/2;i++)
-		BuildCompScale (i*2,&scaledirectory[i]);
+		// REFKEEN - Possibly-working-but-bad cast for C++
+		BuildCompScale (i*2,(void **)&scaledirectory[i]);
 }
 
 //===========================================================================
 
 id0_int_t	showscorebox;
 
+// REFKEEN - Unused in Catacomb 3-D
+#if 0
 void RF_FixOfs (void)
 {
 }
@@ -822,7 +828,7 @@ void RF_FixOfs (void)
 void HelpScreens (void)
 {
 }
-
+#endif
 
 /*
 ==================
@@ -836,7 +842,7 @@ void HelpScreens (void)
 
 void	CheckMemory(void)
 {
-	void *finscreen;
+	id0_byte_t *finscreen;
 	//id0_unsigned_t	finscreen;
 
 	if (mminfo.nearheap+mminfo.farheap+mminfo.EMSmem+mminfo.XMSmem
@@ -844,7 +850,7 @@ void	CheckMemory(void)
 		return;
 
 	CA_CacheGrChunk (OUTOFMEM);
-	finscreen = grsegs[OUTOFMEM];
+	finscreen = (id0_byte_t *)grsegs[OUTOFMEM];
 	//finscreen = (id0_unsigned_t)grsegs[OUTOFMEM];
 	ShutdownId ();
 	memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen+7, 4000);

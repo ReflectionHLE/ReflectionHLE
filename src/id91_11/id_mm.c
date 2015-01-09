@@ -43,10 +43,10 @@ EMS / XMS unmanaged routines
 */
 
 #include "id_heads.h"
-#pragma hdrstop
+//#pragma hdrstop
 
-#pragma warn -pro
-#pragma warn -use
+//#pragma warn -pro
+//#pragma warn -use
 
 // REFKEEN - Use macro for all titles, with the original message
 
@@ -99,10 +99,10 @@ typedef struct mmblockstruct
 	struct mmblockstruct id0_far *next;
 } mmblocktype;
 
-
-//#define GETNEWBLOCK {if(!(mmnew=mmfree))Quit("MM_GETNEWBLOCK: No free blocks!")\
-//	;mmfree=mmfree->next;}
-
+/*
+#define GETNEWBLOCK {if(!(mmnew=mmfree))Quit("MM_GETNEWBLOCK: No free blocks!")\
+	;mmfree=mmfree->next;}
+*/
 #define GETNEWBLOCK {if(!mmfree)MML_ClearBlock();mmnew=mmfree;mmfree=mmfree->next;}
 
 // (REFKEEN) Taking care of useptr==NULL (the assignment of NULL to a
@@ -568,7 +568,7 @@ void MML_UseSpace (id0_unsigned_t segstart, id0_unsigned_t seglength)
 
 void MML_ClearBlock (void)
 {
-	mmblocktype id0_far *scan,id0_far *last;
+	mmblocktype id0_far *scan/*,id0_far *last*/;
 
 	scan = mmhead->next;
 
@@ -599,14 +599,14 @@ void MML_ClearBlock (void)
 ===================
 */
 
-static	id0_char_t *ParmStrings[] = {"noems","noxms",""};
+static const id0_char_t *ParmStrings[] = {"noems","noxms",""};
 
 void MM_Startup (void)
 {
 	id0_int_t i;
 	id0_unsigned_long_t length;
-	void id0_far 	*start;
-	id0_unsigned_t 	segstart,seglength,endfree;
+	//void id0_far 	*start;
+	id0_unsigned_t 	segstart,seglength/*,endfree*/;
 
 	if (mmstarted)
 		MM_Shutdown ();
@@ -1103,8 +1103,8 @@ void MM_ShowMemory (void)
 {
 	mmblocktype id0_far *scan;
 	id0_unsigned_t color,temp;
-	id0_long_t	end,owner;
-	id0_char_t    scratch[80],str[10];
+	id0_long_t	end/*,owner*/;
+	//id0_char_t    scratch[80],str[10];
 
 	VW_SetDefaultColors();
 	VW_SetLineWidth(40);

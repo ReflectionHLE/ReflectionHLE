@@ -31,11 +31,11 @@ loaded into the data segment
 */
 
 #include "id_heads.h"
-#pragma hdrstop
+//#pragma hdrstop
 #include "id_strs.h"
 
-#pragma warn -pro
-#pragma warn -use
+//#pragma warn -pro
+//#pragma warn -use
 
 #define THREEBYTEGRSTARTS
 
@@ -82,7 +82,7 @@ id0_byte_t		ca_levelbit,ca_levelnum;
 
 int			profilehandle,debughandle;
 
-void	(*drawcachebox)		(id0_char_t *title, id0_unsigned_t numcache);
+void	(*drawcachebox)		(const id0_char_t *title, id0_unsigned_t numcache);
 void	(*updatecachebox)	(void);
 void	(*finishcachebox)	(void);
 
@@ -130,7 +130,7 @@ SDMode		oldsoundmode;
 
 
 
-void	CAL_DialogDraw (id0_char_t *title,id0_unsigned_t numcache);
+void	CAL_DialogDraw (const id0_char_t *title,id0_unsigned_t numcache);
 void	CAL_DialogUpdate (void);
 void	CAL_DialogFinish (void);
 void	CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest,
@@ -298,7 +298,7 @@ id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
 		return false;
 
 	size = BE_Cross_FileLengthFromHandle (handle);
-	if (!CA_FarRead (handle,*ptr,size))
+	if (!CA_FarRead (handle,(id0_byte_t *)(*ptr),size))
 	{
 		close (handle);
 		return false;
@@ -329,7 +329,7 @@ id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 
 	size = BE_Cross_FileLengthFromHandle (handle);
 	MM_GetPtr (ptr,size);
-	if (!CA_FarRead (handle,*ptr,size))
+	if (!CA_FarRead (handle,(id0_byte_t *)(*ptr),size))
 	{
 		close (handle);
 		return false;
@@ -637,8 +637,14 @@ void CA_RLEWexpand (id0_unsigned_t id0_huge *source, id0_unsigned_t id0_huge *de
 
 void CAL_SetupGrFile (void)
 {
+	// REFKEEN - Shut up compiler warnings
+#ifndef GRHEADERLINKED
 	int handle;
+#endif
+#if (NUMPICS>0) || (NUMPICM>0) || (NUMSPRITES>0)
 	memptr compseg;
+#endif
+
 
 #ifdef GRHEADERLINKED
 
@@ -697,8 +703,8 @@ void CAL_SetupGrFile (void)
 	MM_GetPtr((memptr *)&pictable,NUMPICS*sizeof(pictabletype));
 	CAL_GetGrChunkLength(STRUCTPIC);		// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
-	CA_FarRead (grhandle,compseg,chunkcomplen);
-	CAL_HuffExpand (compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman);
+	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
+	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman);
 	MM_FreePtr(&compseg);
 #endif
 
@@ -706,8 +712,8 @@ void CAL_SetupGrFile (void)
 	MM_GetPtr((memptr *)&picmtable,NUMPICM*sizeof(pictabletype));
 	CAL_GetGrChunkLength(STRUCTPICM);		// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
-	CA_FarRead (grhandle,compseg,chunkcomplen);
-	CAL_HuffExpand (compseg, (id0_byte_t id0_huge *)picmtable,NUMPICS*sizeof(pictabletype),grhuffman);
+	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
+	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)picmtable,NUMPICS*sizeof(pictabletype),grhuffman);
 	MM_FreePtr(&compseg);
 #endif
 
@@ -715,8 +721,8 @@ void CAL_SetupGrFile (void)
 	MM_GetPtr((memptr *)&spritetable,NUMSPRITES*sizeof(spritetabletype));
 	CAL_GetGrChunkLength(STRUCTSPRITE);	// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
-	CA_FarRead (grhandle,compseg,chunkcomplen);
-	CAL_HuffExpand (compseg, (id0_byte_t id0_huge *)spritetable,NUMSPRITES*sizeof(spritetabletype),grhuffman);
+	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
+	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)spritetable,NUMSPRITES*sizeof(spritetabletype),grhuffman);
 	MM_FreePtr(&compseg);
 #endif
 
@@ -735,8 +741,11 @@ void CAL_SetupGrFile (void)
 
 void CAL_SetupMapFile (void)
 {
+	// REFKEEN - Shut up compiler warnings
+#ifndef MAPHEADERLINKED
 	int handle;
 	id0_long_t length;
+#endif
 
 //
 // load maphead.ext (offsets and tileinfo for map file)
@@ -782,8 +791,11 @@ void CAL_SetupMapFile (void)
 
 void CAL_SetupAudioFile (void)
 {
+	// REFKEEN - Shut up compiler warnings
+#ifndef MAPHEADERLINKED
 	int handle;
 	id0_long_t length;
+#endif
 
 //
 // load maphead.ext (offsets and tileinfo for map file)
@@ -979,8 +991,8 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 	if (compressed<=BUFFERSIZE)
 	{
-		CA_FarRead(audiohandle,bufferseg,compressed);
-		source = bufferseg;
+		CA_FarRead(audiohandle,(id0_byte_t *)bufferseg,compressed);
+		source =(id0_byte_t *) bufferseg;
 	}
 	else
 	{
@@ -988,8 +1000,8 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 		if (mmerror)
 			return;
 		MM_SetLock (&bigbufferseg,true);
-		CA_FarRead(audiohandle,bigbufferseg,compressed);
-		source = bigbufferseg;
+		CA_FarRead(audiohandle,(id0_byte_t *)bigbufferseg,compressed);
+		source = (id0_byte_t *)bigbufferseg;
 	}
 
 	expanded = *(id0_long_t id0_far *)source;
@@ -1071,7 +1083,7 @@ cachein:
 ======================
 */
 
-id0_unsigned_t	static	sheight,swidth;
+//id0_unsigned_t	static	sheight,swidth;
 
 //void CAL_ShiftSprite (id0_unsigned_t segment,id0_unsigned_t source,id0_unsigned_t dest,
 //	id0_unsigned_t width, id0_unsigned_t height, id0_unsigned_t pixshift)
@@ -1217,8 +1229,8 @@ void CAL_CacheSprite (id0_int_t chunk, id0_byte_t id0_far *compressed)
 			dest->planesize[i] = bigplane;
 			dest->width[i] = spr->width+1;
 		}
-		CAL_ShiftSprite (grsegs[chunk]+dest->sourceoffset[0],
-			grsegs[chunk]+dest->sourceoffset[2],spr->width,spr->height,4);
+		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[2],spr->width,spr->height,4);
 		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
 		//	dest->sourceoffset[2],spr->width,spr->height,4);
 		break;
@@ -1231,24 +1243,24 @@ void CAL_CacheSprite (id0_int_t chunk, id0_byte_t id0_far *compressed)
 		dest->sourceoffset[1] = shiftstarts[1];
 		dest->planesize[1] = bigplane;
 		dest->width[1] = spr->width+1;
-		CAL_ShiftSprite (grsegs[chunk]+dest->sourceoffset[0],
-			grsegs[chunk]+dest->sourceoffset[1],spr->width,spr->height,2);
+		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[1],spr->width,spr->height,2);
 		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
 		//	dest->sourceoffset[1],spr->width,spr->height,2);
 
 		dest->sourceoffset[2] = shiftstarts[2];
 		dest->planesize[2] = bigplane;
 		dest->width[2] = spr->width+1;
-		CAL_ShiftSprite (grsegs[chunk]+dest->sourceoffset[0],
-			grsegs[chunk]+dest->sourceoffset[2],spr->width,spr->height,4);
+		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[2],spr->width,spr->height,4);
 		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
 		//	dest->sourceoffset[2],spr->width,spr->height,4);
 
 		dest->sourceoffset[3] = shiftstarts[3];
 		dest->planesize[3] = bigplane;
 		dest->width[3] = spr->width+1;
-		CAL_ShiftSprite (grsegs[chunk]+dest->sourceoffset[0],
-			grsegs[chunk]+dest->sourceoffset[3],spr->width,spr->height,6);
+		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[3],spr->width,spr->height,6);
 		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
 		//	dest->sourceoffset[3],spr->width,spr->height,6);
 
@@ -1328,7 +1340,7 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 		MM_GetPtr (&grsegs[chunk],expanded);
 		if (mmerror)
 			return;
-		CAL_HuffExpand (source,grsegs[chunk],expanded,grhuffman);
+		CAL_HuffExpand (source,(id0_byte_t *)(grsegs[chunk]),expanded,grhuffman);
 	}
 }
 
@@ -1368,8 +1380,8 @@ void CAL_ReadGrChunk (id0_int_t chunk)
 
 	if (compressed<=BUFFERSIZE)
 	{
-		CA_FarRead(grhandle,bufferseg,compressed);
-		source = bufferseg;
+		CA_FarRead(grhandle,(id0_byte_t *)bufferseg,compressed);
+		source = (id0_byte_t *)bufferseg;
 	}
 	else
 	{
@@ -1377,8 +1389,8 @@ void CAL_ReadGrChunk (id0_int_t chunk)
 		if (mmerror)
 			return;
 		MM_SetLock (&bigbufferseg,true);
-		CA_FarRead(grhandle,bigbufferseg,compressed);
-		source = bigbufferseg;
+		CA_FarRead(grhandle,(id0_byte_t *)bigbufferseg,compressed);
+		source = (id0_byte_t *)bigbufferseg;
 	}
 
 	CAL_ExpandGrChunk (chunk,source);
@@ -1441,15 +1453,15 @@ void CA_CacheGrChunk (id0_int_t chunk)
 
 	if (compressed<=BUFFERSIZE)
 	{
-		CA_FarRead(grhandle,bufferseg,compressed);
-		source = bufferseg;
+		CA_FarRead(grhandle,(id0_byte_t *)bufferseg,compressed);
+		source = (id0_byte_t *)bufferseg;
 	}
 	else
 	{
 		MM_GetPtr(&bigbufferseg,compressed);
 		MM_SetLock (&bigbufferseg,true);
-		CA_FarRead(grhandle,bigbufferseg,compressed);
-		source = bigbufferseg;
+		CA_FarRead(grhandle,(id0_byte_t *)bigbufferseg,compressed);
+		source = (id0_byte_t *)bigbufferseg;
 	}
 
 	CAL_ExpandGrChunk (chunk,source);
@@ -1522,7 +1534,8 @@ void CA_CacheMap (id0_int_t mapnum)
 
 		MM_GetPtr((memptr *)&mapheaderseg[mapnum],sizeof(maptype));
 		lseek(maphandle,pos,SEEK_SET);
-		CA_FarRead (maphandle,(memptr)mapheaderseg[mapnum],sizeof(maptype));
+		CA_FarRead (maphandle,(id0_byte_t *)((memptr)mapheaderseg[mapnum]),sizeof(maptype));
+		//CA_FarRead (maphandle,(memptr)mapheaderseg[mapnum],sizeof(maptype));
 	}
 	else
 		MM_SetPurge ((memptr *)&mapheaderseg[mapnum],0);
@@ -1548,12 +1561,12 @@ void CA_CacheMap (id0_int_t mapnum)
 
 		lseek(maphandle,pos,SEEK_SET);
 		if (compressed<=BUFFERSIZE)
-			source = bufferseg;
+			source = (id0_unsigned_t *)bufferseg;
 		else
 		{
 			MM_GetPtr(&bigbufferseg,compressed);
 			MM_SetLock (&bigbufferseg,true);
-			source = bigbufferseg;
+			source = (id0_unsigned_t *)bigbufferseg;
 		}
 
 		CA_FarRead(maphandle,(id0_byte_t id0_far *)source,compressed);
@@ -1568,7 +1581,7 @@ void CA_CacheMap (id0_int_t mapnum)
 		source++;
 		MM_GetPtr (&buffer2seg,expanded);
 		CAL_CarmackExpand (source, (id0_unsigned_t id0_far *)buffer2seg,expanded);
-		CA_RLEWexpand (((id0_unsigned_t id0_far *)buffer2seg)+1,*dest,size,
+		CA_RLEWexpand (((id0_unsigned_t id0_far *)buffer2seg)+1,(id0_unsigned_t *)(*dest),size,
 		((mapfiletype id0_seg *)tinf)->RLEWtag);
 		MM_FreePtr (&buffer2seg);
 
@@ -1767,7 +1780,7 @@ void CA_SetGrPurge (void)
 id0_unsigned_t	thx,thy,lastx;
 id0_long_t		barx,barstep;
 
-void	CAL_DialogDraw (id0_char_t *title,id0_unsigned_t numcache)
+void	CAL_DialogDraw (const id0_char_t *title,id0_unsigned_t numcache)
 {
 	id0_unsigned_t	homex,homey,x;
 
@@ -1879,7 +1892,7 @@ void	CAL_DialogFinish (void)
 */
 #define MAXEMPTYREAD	1024
 
-void CA_CacheMarks (id0_char_t *title)
+void CA_CacheMarks (const id0_char_t *title)
 {
 	id0_boolean_t dialog;
 	id0_int_t 	i,next,numcache;
@@ -1989,10 +2002,10 @@ void CA_CacheMarks (id0_char_t *title)
 					}
 
 					lseek(grhandle,pos,SEEK_SET);
-					CA_FarRead(grhandle,bufferseg,endpos-pos);
+					CA_FarRead(grhandle,(id0_byte_t *)bufferseg,endpos-pos);
 					bufferstart = pos;
 					bufferend = endpos;
-					source = bufferseg;
+					source = (id0_byte_t *)bufferseg;
 				}
 			}
 			else
@@ -2003,8 +2016,8 @@ void CA_CacheMarks (id0_char_t *title)
 					return;
 				MM_SetLock (&bigbufferseg,true);
 				lseek(grhandle,pos,SEEK_SET);
-				CA_FarRead(grhandle,bigbufferseg,compressed);
-				source = bigbufferseg;
+				CA_FarRead(grhandle,(id0_byte_t *)bigbufferseg,compressed);
+				source = (id0_byte_t *)bigbufferseg;
 			}
 
 			CAL_ExpandGrChunk (i,source);

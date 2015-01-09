@@ -208,7 +208,10 @@ extern	void		IN_Startup(void),IN_Shutdown(void),
 extern	id0_boolean_t		IN_UserInput(id0_longword_t delay,id0_boolean_t clear),
 					IN_IsUserInput(void),
 					IN_StartDemoRecord(id0_word_t bufsize);
-extern	id0_byte_t		*IN_GetScanName(ScanCode);
+// REFKEEN - Needs to return pointer to const data, and for technical reasons
+// it's better it'll be const char (not necessarily 8-bit unsigned int)
+extern	const char *IN_GetScanName(ScanCode);
+//extern	id0_byte_t		*IN_GetScanName(ScanCode);
 extern	id0_char_t		IN_WaitForASCII(void);
 extern	ScanCode	IN_WaitForKey(void);
 extern	id0_word_t		IN_GetJoyButtonsDB(id0_word_t joy);

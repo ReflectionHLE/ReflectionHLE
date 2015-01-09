@@ -46,9 +46,9 @@
 
 #include "id_heads.h"
 
-#pragma hdrstop
+//#pragma hdrstop
 
-#pragma warn    -pia
+//#pragma warn    -pia
 
 
 //      Special imports
@@ -74,11 +74,15 @@ extern  ScanCode        firescan;
 //      Internal variables
 #define ConfigVersion   1
 
-// TODO (REFKEEN) We should ParmStrings, ParmStrings2 were not terminated...
-// any better way to emulate this? (Probably insignificant)
-static  id0_char_t            *ParmStrings[] = {"TEDLEVEL","NOWAIT",NULL},
-					*ParmStrings2[] = {"COMP","NOCOMP",NULL};
-//static  id0_char_t            *ParmStrings[] = {"TEDLEVEL","NOWAIT"},
+// TODO (REFKEEN)
+// 1. Originally ParmStrings, ParmStrings2 were not terminated...
+// Any better way to emulate this? (Probably insignificant)
+// 2. ParmStrings isn't always used, for now don't compile in such cases.
+#if (!defined REFKEEN_VER_CATADVENTURES) && (!defined REFKEEN_VER_CAT3D_122)
+static const id0_char_t *ParmStrings[] = {"TEDLEVEL","NOWAIT",NULL};
+#endif
+static const id0_char_t *ParmStrings2[] = {"COMP","NOCOMP",NULL};
+//static  const id0_char_t            *ParmStrings[] = {"TEDLEVEL","NOWAIT"},
 //					*ParmStrings2[] = {"COMP","NOCOMP"};
 static  id0_boolean_t         US_Started;
 
@@ -89,7 +93,7 @@ static  id0_boolean_t         US_Started;
 		void            (*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
 					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *) = VWB_DrawPropString;
 
-		id0_boolean_t         (*USL_SaveGame)(int),(*USL_LoadGame)(int);
+		id0_boolean_t         (*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
 		void            (*USL_ResetGame)(void);
 		SaveGame        Games[MaxSaveGames];
 		HighScore       Scores[MaxScores] =
@@ -115,8 +119,8 @@ static  id0_boolean_t         US_Started;
 //                      from DOS.
 //
 ///////////////////////////////////////////////////////////////////////////
-#pragma warn    -par
-#pragma warn    -rch
+//#pragma warn    -par
+//#pragma warn    -rch
 id0_int_t
 USL_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si)
 {
@@ -197,8 +201,8 @@ oh_kill_me:
 #undef  RETRY
 #undef  ABORT
 }
-#pragma warn    +par
-#pragma warn    +rch
+//#pragma warn    +par
+//#pragma warn    +rch
 
 #endif // USL_HardError IS UNUSED NOW
 
@@ -224,7 +228,7 @@ static  id0_char_t    name[] = "SAVEGAMx."EXTENSION;
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetLoadSaveHooks(id0_boolean_t (*load)(int),id0_boolean_t (*save)(int),void (*reset)(void))
+US_SetLoadSaveHooks(id0_boolean_t (*load)(id0_int_t),id0_boolean_t (*save)(id0_int_t),void (*reset)(void))
 {
 	USL_LoadGame = load;
 	USL_SaveGame = save;
@@ -521,10 +525,10 @@ US_Shutdown(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 id0_int_t
-US_CheckParm(id0_char_t *parm,id0_char_t **strings)
+US_CheckParm(const id0_char_t *parm,const id0_char_t **strings)
 {
-	id0_char_t    cp,cs,
-			*p,*s;
+	id0_char_t    cp,cs;
+	const id0_char_t *p,*s;
 	id0_int_t             i;
 
 	while (!isalpha(*parm)) // Skip non-alphas
@@ -551,6 +555,7 @@ US_CheckParm(id0_char_t *parm,id0_char_t **strings)
 // REFKEEN - Disable not just for The Catacomb 3-D Adventures, but also
 // Catacomb 3-D: The Descent v1.22, since we don't link any introscn for this
 #if (!defined REFKEEN_VER_CATADVENTURES) && (!defined REFKEEN_VER_CAT3D_122)
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //      USL_ScreenDraw() - Draws a chunk of the text screen (called only by
@@ -564,7 +569,7 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 
 	screen = BE_SDL_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2);
 	//screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
-	oscreen = (/*&*/introscn + 7) + ((x - 1) * 2) + (y * 80 * 2) + 1;
+	oscreen = (/*&*/(id0_byte_t *)introscn + 7) + ((x - 1) * 2) + (y * 80 * 2) + 1;
 	while (*s)
 	{
 		*screen++ = *s++;
@@ -578,7 +583,6 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 	}
 	BE_SDL_MarkGfxForUpdate();
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -609,11 +613,6 @@ USL_ClearTextScreen(void)
 #endif
 }
 
-// REFKEEN - Disable not just for The Catacomb 3-D Adventures, but also
-// Catacomb 3-D: The Descent v1.22, since we don't link any introscn for this
-// (although a few code lines in US_FinishTextScreen are still marked as not
-// compiled in this version for the sake of documentation)
-#if (!defined REFKEEN_VER_CATADVENTURES) && (!defined REFKEEN_VER_CAT3D_122)
 ///////////////////////////////////////////////////////////////////////////
 //
 //      US_TextScreen() - Puts up the startup text screen
@@ -668,7 +667,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 
 	screen = BE_SDL_GetTextModeMemoryPtr() + ((x - 1) * 2) + (y * 80 * 2);
 	//screen = MK_FP(0xb800,((x - 1) * 2) + (y * 80 * 2));
-	oscreen = (/*&*/introscn + 7) + ((x - 1) * 2) + (y * 80 * 2) - 1;
+	oscreen = (/*&*/(id0_byte_t *)introscn + 7) + ((x - 1) * 2) + (y * 80 * 2) - 1;
 	*screen++ = show? 251 : ' ';    // Checkmark char or space
 //      *screen = 0x48;
 //      *screen = (*oscreen & 0xf0) | 8;
@@ -740,7 +739,7 @@ US_UpdateTextScreen(void)
 		w = 14;
 		screen = BE_SDL_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2) - 1;
 		//screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2) - 1);
-		oscreen = (/*&*/introscn + 7) + (x * 2) + (y * 80 * 2) - 1;
+		oscreen = (/*&*/(id0_byte_t *)introscn + 7) + (x * 2) + (y * 80 * 2) - 1;
 		oscreen += 2;
 		for (w++;w--;screen += 2,oscreen += 2)
 			*screen = (*oscreen & 0xf0) | 0x0f;
@@ -809,7 +808,8 @@ static  id0_byte_t    colors[] = {4,6,13,15,15,15,15,15,15};
 
 	USL_ClearTextScreen();
 }
-#endif // REFKEEN_VER_CATADVENTURES
+
+#endif // No REFKEEN_VER_CAT3D_122 / REFKEEN_VER_CATADVENTURES
 
 //      Window/Printing routines
 

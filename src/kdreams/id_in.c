@@ -71,7 +71,7 @@ static	id0_boolean_t		CapsLock;
 static	ScanCode	CurCode,LastCode;
 // REFKEEN - Originally the type was simply "byte" (unsigned 8-bit int), but at
 // least for strings, if we want this to build as C++ (and reduce C warnings)
-// then we should use "const char". Convertions to byte or so are done later.
+// then we should use "const char". Conversions to e.g., ints are done later.
 static	const char        ASCIINames[] =		// Unshifted ASCII for scan codes
 					{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F

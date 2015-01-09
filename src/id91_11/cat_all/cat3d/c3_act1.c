@@ -19,7 +19,7 @@
 // C3_PLAY.C
 
 #include "c3_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -114,10 +114,10 @@ void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t number)
 		state = &s_goalbonus;
 
 	SpawnNewObj (tilex,tiley,state,TILEGLOBAL/2);
-	new->tileobject = true;
-	new->temp1 = number;
-	new->obclass = bonusobj;
-	new->shootable = false;
+	newobj->tileobject = true;
+	newobj->temp1 = number;
+	newobj->obclass = bonusobj;
+	newobj->shootable = false;
 }
 
 
@@ -157,11 +157,11 @@ statetype s_walldie6 = {0,-1,T_WallDie,NULL};
 void ExplodeWall (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj (tilex,tiley,&s_walldie1,0);
-	new->obclass = inertobj;
-	new->active = true;
-	/*(id0_unsigned_t)actorat[new->tilex][new->tiley] = */tilemap[new->tilex][new->tiley] =
-	*(mapsegs[0]+farmapylookup[new->tiley]+new->tilex) = WALLEXP;
-	actorat[new->tilex][new->tiley] = tilemap[new->tilex][new->tiley];
+	newobj->obclass = inertobj;
+	newobj->active = yes/*true*/;
+	/*(id0_unsigned_t)actorat[newobj->tilex][newobj->tiley] = */tilemap[newobj->tilex][newobj->tiley] =
+	*(mapsegs[0]+farmapylookup[newobj->tiley]+newobj->tilex) = WALLEXP;
+	actorat[newobj->tilex][newobj->tiley] = tilemap[newobj->tilex][newobj->tiley];
 }
 
 
@@ -251,8 +251,8 @@ void SpawnWarp (id0_int_t tilex, id0_int_t tiley, id0_int_t type)
 		SpawnNewObj (tilex,tiley,&s_fgate1,TILEGLOBAL/3);
 	else
 		SpawnNewObj (tilex,tiley,&s_gate1,TILEGLOBAL/3);
-	new->obclass = gateobj;
-	new->temp1 = type;
+	newobj->obclass = gateobj;
+	newobj->temp1 = type;
 }
 
 
@@ -373,10 +373,10 @@ statetype s_trolldie3 = {TROLLDIE3PIC,0,NULL,&s_trolldie3};
 void SpawnTroll (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_troll1,40*PIXRADIUS);
-	new->speed = 2500;
-	new->obclass = trollobj;
-	new->shootable = true;
-	new->hitpoints = 10;
+	newobj->speed = 2500;
+	newobj->obclass = trollobj;
+	newobj->shootable = true;
+	newobj->hitpoints = 10;
 }
 
 
@@ -458,10 +458,10 @@ statetype s_orcdie3 = {ORCDIE3PIC,0,NULL,&s_orcdie3};
 void SpawnOrc (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_orc1,PIXRADIUS*32);
-	new->obclass = orcobj;
-	new->speed = 1536;
-	new->shootable = true;
-	new->hitpoints = 3;
+	newobj->obclass = orcobj;
+	newobj->speed = 1536;
+	newobj->shootable = true;
+	newobj->hitpoints = 3;
 }
 
 
@@ -543,10 +543,10 @@ statetype s_demondie3 = {DEMONDIE3PIC,0,NULL,&s_demondie3};
 void SpawnDemon (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_demon1,TILEGLOBAL/2);
-	new->obclass = demonobj;
-	new->speed = 2048;
-	new->shootable = true;
-	new->hitpoints = 50;
+	newobj->obclass = demonobj;
+	newobj->speed = 2048;
+	newobj->shootable = true;
+	newobj->hitpoints = 50;
 }
 
 
@@ -602,7 +602,7 @@ statetype s_mshot2 = {PSHOT2PIC,8,&T_Mshot,&s_mshot1};
 void T_Mshot (objtype *ob)
 {
 	objtype	*check;
-	id0_long_t	xmove,ymove,speed;
+	id0_long_t	xmove,ymove/*,speed*/;
 
 	xmove = ymove = 0;
 
@@ -719,10 +719,10 @@ statetype s_magedie2 = {MAGEDIE2PIC,0,NULL,&s_magedie2};
 void SpawnMage (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_mage1,TILEGLOBAL/2);
-	new->obclass = mageobj;
-	new->speed = 2048;
-	new->shootable = true;
-	new->hitpoints = 5;
+	newobj->obclass = mageobj;
+	newobj->speed = 2048;
+	newobj->shootable = true;
+	newobj->hitpoints = 5;
 }
 
 
@@ -767,21 +767,21 @@ void T_Mage (objtype *ob)
 void T_MageShoot (objtype *ob)
 {
 	SpawnNewObjFrac (ob->x,ob->y,&s_mshot1,PIXRADIUS*14);
-	new->obclass = mshotobj;
-	new->speed = MSHOTSPEED;
+	newobj->obclass = mshotobj;
+	newobj->speed = MSHOTSPEED;
 	if (ob->temp1)
 	{
 		if (ob->tiley < player->tiley)
-			new->dir = south;
+			newobj->dir = south;
 		else
-			new->dir = north;
+			newobj->dir = north;
 	}
 	else
 	{
 		if (ob->tilex < player->tilex)
-			new->dir = east;
+			newobj->dir = east;
 		else
-			new->dir = west;
+			newobj->dir = west;
 	}
 }
 
@@ -847,10 +847,10 @@ statetype s_greldie6 = {GRELDIE6PIC,0,NULL,&s_greldie6};
 void SpawnNemesis (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_grel1,PIXRADIUS*56);
-	new->obclass = grelmobj;
-	new->speed = 2048;
-	new->shootable = true;
-	new->hitpoints = 100;
+	newobj->obclass = grelmobj;
+	newobj->speed = 2048;
+	newobj->shootable = true;
+	newobj->hitpoints = 100;
 }
 
 
@@ -892,21 +892,21 @@ void T_Nemesis (objtype *ob)
 void T_NemesisShoot (objtype *ob)
 {
 	SpawnNewObjFrac (ob->x,ob->y,&s_mshot1,PIXRADIUS*14);
-	new->obclass = mshotobj;
-	new->speed = MSHOTSPEED;
+	newobj->obclass = mshotobj;
+	newobj->speed = MSHOTSPEED;
 	if (ob->temp1)
 	{
 		if (ob->tiley < player->tiley)
-			new->dir = south;
+			newobj->dir = south;
 		else
-			new->dir = north;
+			newobj->dir = north;
 	}
 	else
 	{
 		if (ob->tilex < player->tilex)
-			new->dir = east;
+			newobj->dir = east;
 		else
-			new->dir = west;
+			newobj->dir = west;
 	}
 }
 
@@ -953,11 +953,11 @@ statetype s_batdie2 = {BATDIE2PIC,8,NULL,NULL};
 void SpawnBat (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_bat1,PIXRADIUS*24);
-	new->obclass =batobj;
-	new->shootable = true;
+	newobj->obclass =batobj;
+	newobj->shootable = true;
 
-	new->hitpoints = 1;
-	new->speed = 2000;
+	newobj->hitpoints = 1;
+	newobj->speed = 2000;
 }
 
 
@@ -1108,7 +1108,7 @@ void T_Bat (objtype *ob)
 void T_BatPast (objtype *ob)
 {
 	id0_long_t move;
-	id0_long_t deltax,deltay,size;
+	//id0_long_t deltax,deltay,size;
 
 	move = ob->speed*tics;
 
@@ -1168,11 +1168,11 @@ statetype s_bounce2 = {BIGPSHOT2PIC,8,T_Bounce,&s_bounce1};
 void SpawnBounce (id0_int_t tilex, id0_int_t tiley, id0_boolean_t towest)
 {
 	SpawnNewObj(tilex,tiley,&s_bounce1,24*PIXRADIUS);
-	new->obclass = bounceobj;
+	newobj->obclass = bounceobj;
 	if (towest)
-		new->dir = west;
+		newobj->dir = west;
 	else
-		new->dir = north;
+		newobj->dir = north;
 }
 
 
@@ -1256,7 +1256,8 @@ void T_Bounce (objtype *ob)
 
 		ob->distance = TILEGLOBAL;
 
-		actorat[ob->tilex][ob->tiley] = ob;	// set down a new goal marker
+		actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);	// set down a new goal marker
+		//actorat[ob->tilex][ob->tiley] = ob;	// set down a new goal marker
 	}
 	CalcBounds (ob);
 }

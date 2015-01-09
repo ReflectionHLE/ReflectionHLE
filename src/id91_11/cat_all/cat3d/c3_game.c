@@ -19,7 +19,7 @@
 // C3_GAME.C
 
 #include "c3_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 #ifdef PROFILE
 #include "time.h"
@@ -151,7 +151,7 @@ id0_boolean_t lumpneeded[NUMLUMPS];
 
 void ScanInfoPlane (void)
 {
-	id0_unsigned_t        x,y,i,j;
+	id0_unsigned_t        x,y/*,i,j*/;
 	id0_int_t                     tile;
 	id0_unsigned_t        id0_far     *start;
 
@@ -339,7 +339,7 @@ void ScanText (void)
 ==================
 */
 
-static  id0_char_t    *levelnames[] =
+static  const id0_char_t    *levelnames[] =
 				{
 					"The Approach",
 #ifdef REFKEEN_VER_CAT3D_100
@@ -469,7 +469,7 @@ void CacheScaleds (void)
 
 void SetupGameLevel (void)
 {
-	id0_int_t     x,y,i;
+	id0_int_t     x,y/*,i*/;
 	id0_unsigned_t        id0_far *map,tile,spot;
 
 	memset (tileneeded,0,sizeof(tileneeded));
@@ -646,7 +646,7 @@ void Victory (void)
 
 void Died (void)
 {
-	id0_unsigned_t page1,page2;
+	//id0_unsigned_t page1,page2;
 //
 // fizzle fade screen to grey
 //
@@ -692,7 +692,7 @@ void NormalScreen (void)
 
 void DrawPlayScreen (void)
 {
-	id0_int_t     i,j,p,m;
+	id0_int_t     i/*,j,p,m*/;
 
 	screenpage = 0;
 
@@ -1037,7 +1037,7 @@ noxor:
 
 void FizzleOut (id0_int_t showlevel)
 {
-	id0_unsigned_t page1,page2;
+	//id0_unsigned_t page1,page2;
 //
 // fizzle fade screen to grey
 //
@@ -1083,9 +1083,9 @@ void FreeUpMemory (void)
 void    DrawHighScores(void)
 {
 	id0_char_t            buffer[16],*str;
-	id0_word_t            i,j,
-				w,h,
-				x,y;
+	id0_word_t            i/*,j*/,
+				w,h/*,
+				x,y*/;
 	HighScore       *s;
 
 
@@ -1195,8 +1195,8 @@ void    CheckHighScore (id0_long_t score,id0_word_t other)
 
 void GameLoop (void)
 {
-	id0_int_t i,xl,yl,xh,yh;
-	id0_char_t num[20];
+	//id0_int_t i,xl,yl,xh,yh;
+	//id0_char_t num[20];
 #ifdef PROFILE
 	clock_t start,end;
 #endif
@@ -1213,7 +1213,8 @@ restart:
 
 	do
 	{
-		playstate = gd_Continue;
+		// REFKEEN - Looks like a hack (cast added for C++)
+		playstate = (exittype)gd_Continue;
 		if (!loadedgame)
 			SetupGameLevel ();
 		else

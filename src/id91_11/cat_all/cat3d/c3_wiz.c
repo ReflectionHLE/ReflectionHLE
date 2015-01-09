@@ -19,7 +19,7 @@
 // C3_WIZ.C
 
 #include "c3_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -123,13 +123,13 @@ void DrinkPotion (void);
 
 //----------
 
-void SpawnPlayer (id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
-void Thrust (id0_int_t angle, id0_unsigned_t speed);
-void T_Player (objtype *ob);
+//void SpawnPlayer (id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
+//void Thrust (id0_int_t angle, id0_unsigned_t speed);
+//void T_Player (objtype *ob);
 
 void AddPoints (id0_int_t points);
 
-void ClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove);
+//void ClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove);
 id0_boolean_t ShotClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove);
 
 //===========================================================================
@@ -485,7 +485,10 @@ void GiveChest (void)
 void GiveGoal (void)
 {
 	SD_PlaySound (GETPOINTSSND);
-	GivePoints (100000);
+	// REFKEEN - This was leading to an integer overflow, original input
+	// being 100000 or 186A0h, truncated to 86A0h
+	GivePoints(0x86A0);
+	//GivePoints (100000);
 	playstate = ex_victorious;
 }
 
@@ -502,8 +505,8 @@ void GiveGoal (void)
 
 void DrawLevelNumber (id0_int_t number)
 {
-	id0_char_t	str[10];
-	id0_int_t		len;
+	//id0_char_t	str[10];
+	//id0_int_t		len;
 	id0_unsigned_t	temp;
 
 	bufferofs = 0;
@@ -820,17 +823,17 @@ statetype s_bigpshot2 = {BIGPSHOT2PIC,8,&T_Pshot,&s_bigpshot1};
 void SpawnPShot (void)
 {
 	SpawnNewObjFrac (player->x,player->y,&s_pshot1,PIXRADIUS*14);
-	new->obclass = pshotobj;
-	new->speed = SHOTSPEED;
-	new->angle = player->angle;
+	newobj->obclass = pshotobj;
+	newobj->speed = SHOTSPEED;
+	newobj->angle = player->angle;
 }
 
 void SpawnBigPShot (void)
 {
 	SpawnNewObjFrac (player->x,player->y,&s_bigpshot1,24*PIXRADIUS);
-	new->obclass = bigpshotobj;
-	new->speed = SHOTSPEED;
-	new->angle = player->angle;
+	newobj->obclass = bigpshotobj;
+	newobj->speed = SHOTSPEED;
+	newobj->angle = player->angle;
 }
 
 
@@ -1182,9 +1185,9 @@ void CastNuke (void)
 	for (angle = 0; angle < ANGLES; angle+= ANGLES/16)
 	{
 		SpawnNewObjFrac (player->x,player->y,&s_bigpshot1,24*PIXRADIUS);
-		new->obclass = bigpshotobj;
-		new->speed = SHOTSPEED;
-		new->angle = angle;
+		newobj->obclass = bigpshotobj;
+		newobj->speed = SHOTSPEED;
+		newobj->angle = angle;
 	}
 }
 
@@ -1200,7 +1203,7 @@ void CastNuke (void)
 
 void DrinkPotion (void)
 {
-	id0_unsigned_t	source,dest,topline;
+	id0_unsigned_t	source,dest/*,topline*/;
 
 	if (!gamestate.potions)
 	{
@@ -1313,7 +1316,7 @@ void ReadScroll (id0_int_t scroll)
 		}
 
 	VW_WaitVBL(80);
-waitkey:
+//waitkey:
 	IN_ClearKeysDown ();
 	IN_Ack();
 
@@ -1331,7 +1334,7 @@ waitkey:
 
 void TakeDamage (id0_int_t points)
 {
-	id0_unsigned_t	source,dest,topline;
+	id0_unsigned_t	source,dest/*,topline*/;
 
 	if (!gamestate.body || bordertime || godmode)
 		return;
@@ -1660,9 +1663,9 @@ id0_boolean_t LocationInActor (objtype *ob)
 
 void ClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove)
 {
-	id0_int_t			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
-	id0_long_t		intersect,basex,basey,pointx,pointy;
-	id0_unsigned_t	inside,total,tile;
+	id0_int_t			xl,yl,xh,yh/*,tx,ty,nt1,nt2*/,x,y;
+	id0_long_t		/*intersect,*/basex,basey/*,pointx,pointy*/;
+	//id0_unsigned_t	inside,total,tile;
 	objtype		*check;
 	id0_boolean_t		moveok;
 
@@ -1795,10 +1798,10 @@ blockmove:
 
 id0_boolean_t ShotClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove)
 {
-	id0_int_t			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
-	id0_long_t		intersect,basex,basey,pointx,pointy;
-	id0_unsigned_t	inside,total,tile;
-	objtype		*check;
+	id0_int_t			xl,yl,xh,yh/*,tx,ty,nt1,nt2*/,x,y;
+	id0_long_t		/*intersect,*/basex,basey/*,pointx,pointy*/;
+	id0_unsigned_t	/*inside,total,*/tile;
+	//objtype		*check;
 	id0_boolean_t		moveok;
 
 //
@@ -1904,7 +1907,7 @@ statetype s_player = {0,0,&T_Player,&s_player};
 void SpawnPlayer (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 {
 	player->obclass = playerobj;
-	player->active = true;
+	player->active = yes/*true*/;
 	player->tilex = tilex;
 	player->tiley = tiley;
 	player->x = ((id0_long_t)tilex<<TILESHIFT)+TILEGLOBAL/2;
@@ -2098,9 +2101,9 @@ void ControlMovement (objtype *ob)
 
 void	T_Player (objtype *ob)
 {
-	id0_int_t	angle,speed,scroll;
-	id0_unsigned_t	text,tilex,tiley;
-	id0_long_t	lspeed;
+	id0_int_t	/*angle,speed,*/scroll;
+	//id0_unsigned_t	text,tilex,tiley;
+	//id0_long_t	lspeed;
 
 
 	ControlMovement (ob);

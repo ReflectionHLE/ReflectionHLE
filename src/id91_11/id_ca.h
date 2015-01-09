@@ -88,7 +88,7 @@ extern	int			profilehandle,debughandle;
 //
 // hooks for custom cache dialogs
 //
-extern	void	(*drawcachebox)		(id0_char_t *title, id0_unsigned_t numcache);
+extern	void	(*drawcachebox)		(const id0_char_t *title, id0_unsigned_t numcache);
 extern	void	(*updatecachebox)	(void);
 extern	void	(*finishcachebox)	(void);
 
@@ -138,5 +138,5 @@ void CA_ClearAllMarks (void);
 void CA_CacheGrChunk (id0_int_t chunk);
 void CA_CacheMap (id0_int_t mapnum);
 
-void CA_CacheMarks (id0_char_t *title);
+void CA_CacheMarks (const id0_char_t *title);
 

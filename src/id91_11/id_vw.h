@@ -201,12 +201,15 @@ typedef struct
 } __attribute__((__packed__)) fontstruct;
 
 
-typedef enum {CGAgr,EGAgr,VGAgr} grtype;
+// REFKEEN - Not originally used, and related code won't compile as C++ as-is
+//typedef enum {CGAgr,EGAgr,VGAgr} grtype;
 
 //===========================================================================
 
 extern	cardtype	videocard;		// set by VW_Startup
-extern	grtype		grmode;			// CGAgr, EGAgr, VGAgr
+// REFKEEN - Related code won't compile as C++ as-is with unused grtype
+extern int grmode; // TEXTGR, CGAGR, EGAGR, VGAGR
+//extern	grtype		grmode;			// CGAgr, EGAgr, VGAgr
 
 extern	id0_unsigned_t	bufferofs;		// hidden port to draw to before displaying
 extern	id0_unsigned_t	displayofs;		// origin of port on visable screen

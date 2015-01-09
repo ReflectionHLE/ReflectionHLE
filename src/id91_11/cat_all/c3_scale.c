@@ -25,7 +25,7 @@
 #endif
 
 #include <stddef.h> // For offsetof
-#pragma hdrstop
+//#pragma hdrstop
 
 //const	id0_unsigned_t	viewheight = 144;
 const	id0_unsigned_t	screenbwide = 40;
@@ -165,9 +165,9 @@ id0_unsigned_t BuildCompScale (id0_int_t height, memptr *finalspot)
 	t_compscale 	id0_seg *work;
 	id0_byte_t		id0_far *code;
 
-	id0_int_t			i;
+	//id0_int_t			i;
 	id0_long_t		fix,step;
-	id0_unsigned_t	src,totalscaled,totalsize;
+	id0_unsigned_t	src/*,totalscaled*/,totalsize;
 	id0_int_t			startpix,endpix,toppix;
 
 
@@ -406,7 +406,8 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 
 	BE_SDL_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, width), (id0_byte_t *)&width, sizeof(width), 1);
 	//work->width = width;
-	codeEgaOff = workEgaOff+offsetof(t_compshape, codeofs[width]);
+	codeEgaOff = workEgaOff+offsetof(t_compshape, codeofs)+width*sizeof(id0_unsigned_t);
+	//codeEgaOff = workEgaOff+offsetof(t_compshape, codeofs[width]);
 	//code = (id0_byte_t id0_far *)&work->codeofs[width];
 
 //
@@ -427,7 +428,8 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 	for (x=firstline;x<=lastline;x++)
 	{
 		id0_unsigned_t tempUnsignedWord = codeEgaOff-workEgaOff;
-		BE_SDL_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, codeofs[x-firstline]), (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
+		BE_SDL_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, codeofs)+(x-firstline)*sizeof(id0_unsigned_t), (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
+		//BE_SDL_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, codeofs[x-firstline]), (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
 		//work->codeofs[x-firstline] = FP_OFF(code);
 
 		y=0;
@@ -631,7 +633,7 @@ void ScaleShape (id0_int_t xcenter, t_compshape id0_seg *compshape, id0_unsigned
 	// there's no real need to use MAX_OBJ_SCALE here.
 	t_compscale id0_seg *comptable;
 	id0_unsigned_t	width,scalewidth;
-	id0_int_t			x,pixel,lastpixel,pixwidth,min;
+	id0_int_t			/*x,*/pixel,lastpixel,pixwidth,min;
 	id0_unsigned_t	id0_far *codehandle, id0_far *widthptr;
 	id0_unsigned_t	badcodeptr;
 	id0_int_t			rightclip;

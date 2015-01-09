@@ -36,7 +36,7 @@
 //
 
 #include "id_heads.h"
-#pragma	hdrstop
+//#pragma	hdrstop
 
 #define	KeyInt	9	// The keyboard ISR number
 
@@ -68,7 +68,10 @@
 static	id0_boolean_t		IN_Started;
 static	id0_boolean_t		CapsLock;
 static	ScanCode	CurCode,LastCode;
-static	id0_byte_t        id0_far ASCIINames[] =		// Unshifted ASCII for scan codes
+// REFKEEN - Originally the type was simply "byte" (unsigned 8-bit int), but at
+// least for strings, if we want this to build as C++ (and reduce C warnings)
+// then we should use "const char". Conversions to e.g., ints are done later.
+static	const char        id0_far ASCIINames[] =		// Unshifted ASCII for scan codes
 					{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	0  ,27 ,'1','2','3','4','5','6','7','8','9','0','-','=',8  ,9  ,	// 0
@@ -149,7 +152,7 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
 static	void			(*INL_KeyHook)(void);
 //static	void interrupt	(*OldKeyVect)(void);
 
-static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
+static	const id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
 
 //	Internal routines
 
@@ -716,8 +719,9 @@ register	KeyboardDef	*def;
 	if (DemoMode == demo_Playback)
 	{
 		dbyte = DemoBuffer[DemoOffset + 1];
-		my = (dbyte & 3) - 1;
-		mx = ((dbyte >> 2) & 3) - 1;
+		// REFKEEN - Let's hope these casts (for C++) are OK...
+		my = (Motion)((dbyte & 3) - 1);
+		mx = (Motion)(((dbyte >> 2) & 3) - 1);
 		buttons = (dbyte >> 4) & 3;
 
 		if (!(--DemoBuffer[DemoOffset]))
@@ -974,11 +978,17 @@ IN_FreeDemoBuffer(void)
 //		specified scan code
 //
 ///////////////////////////////////////////////////////////////////////////
-id0_byte_t *
+
+// REFKEEN - const char is used instead of 8-bit unsigned int type for
+// ScanNames, ExtScanCodes and ExtScanNames now, so fixes are required
+const char *
+//id0_byte_t *
 IN_GetScanName(ScanCode scan)
 {
-	id0_byte_t		**p;
-	ScanCode	id0_far *s;
+	const char **p;
+	const char id0_far *s;
+//	id0_byte_t		**p;
+//	ScanCode	id0_far *s;
 
 	for (s = ExtScanCodes,p = ExtScanNames;*s;p++,s++)
 		if (*s == scan)

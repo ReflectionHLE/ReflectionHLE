@@ -23,7 +23,7 @@
 #else
 #include "c3_def.h"
 #endif
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -336,9 +336,9 @@ id0_int_t FollowTrace (fixed tracex, fixed tracey, id0_long_t deltax, id0_long_t
 
 id0_int_t BackTrace (id0_int_t finish)
 {
-  fixed tracex,tracey;
+  //fixed tracex,tracey;
   id0_long_t deltax,deltay,absdx,absdy;
-  id0_int_t steps,otx,oty,testx,testheight,offset,wall;
+  id0_int_t steps,otx,oty/*,testx,testheight*/,offset,wall;
 
   deltax = viewx-edgex;
   deltay = viewy-edgey;
@@ -477,7 +477,7 @@ id0_int_t BackTrace (id0_int_t finish)
 void ForwardTrace (void)
 {
   id0_int_t offset;
-  fixed tracex,tracey;
+  //fixed tracex,tracey;
   id0_long_t deltax,deltay;
 
   deltax = edgex-viewx;
@@ -541,7 +541,7 @@ void ForwardTrace (void)
 
 id0_int_t FinishWall (void)
 {
-  id0_char_t num[20];
+  //id0_char_t num[20];
 
   oldwall = rightwall;
 
@@ -590,7 +590,7 @@ id0_int_t FinishWall (void)
 
 void InsideCorner (void)
 {
-  id0_int_t offset;
+  //id0_int_t offset;
 
   //
   // the wall turned -90 degrees, so draw what we have, move to the new tile,
@@ -657,7 +657,7 @@ void InsideCorner (void)
 
 void OutsideCorner (void)
 {
-  id0_int_t offset;
+  //id0_int_t offset;
 
   //
   // edge is the outside edge of a corner, so draw the current wall and
@@ -710,7 +710,7 @@ void OutsideCorner (void)
 
 void FollowWalls (void)
 {
-  id0_int_t height,newcolor,offset,wall;
+  id0_int_t /*height,*/newcolor,offset/*,wall*/;
 
 //####################
 //
@@ -718,7 +718,7 @@ void FollowWalls (void)
 //
 //####################
 
-restart:
+//restart:
 
   walllength = 1;
 
@@ -758,7 +758,7 @@ restart:
 //
 //##################
 
-advance:
+//advance:
 
   do	// while ( tile.x != right.x || tile.y != right.y)
   {

@@ -54,7 +54,7 @@
 #define USE_MUSIC	1
 #endif
 
-#pragma hdrstop		// Wierdo thing with MUSE
+//#pragma hdrstop		// Wierdo thing with MUSE
 
 //#include <dos.h>
 
@@ -63,8 +63,8 @@
 #else
 #include "id_heads.h"
 #endif
-#pragma	hdrstop
-#pragma	warn	-pia
+//#pragma	hdrstop
+//#pragma	warn	-pia
 
 #define	SDL_SoundFinished()	{SoundNumber = SoundPriority = 0;}
 
@@ -93,7 +93,7 @@ static	id0_boolean_t			SD_Started;
 //static	id0_word_t			TimerVal,TimerDelay10,TimerDelay25,TimerDelay100;
 /*** (REFKEEN) Also unused now (and more is unused) ***/
 //static	id0_longword_t		TimerDivisor,TimerCount;
-static	id0_char_t			*ParmStrings[] =
+static const id0_char_t			*ParmStrings[] =
 						{
 							"noal",
 							id0_nil_t
@@ -119,17 +119,23 @@ static	Instrument		alZeroInst;
 
 // This table maps channel numbers to carrier and modulator op cells
 static	id0_byte_t			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
-						modifiers[9] = { 0, 1, 2, 8, 9,10,16,17,18},
+						modifiers[9] = { 0, 1, 2, 8, 9,10,16,17,18}
 // This table maps percussive voice numbers to op cells
+#if 0
+						,
 						pcarriers[5] = {19,0xff,0xff,0xff,0xff},
-						pmodifiers[5] = {16,17,18,20,21};
+						pmodifiers[5] = {16,17,18,20,21}
+#endif
+						;
 
 //	Sequencer variables
 static	id0_boolean_t			sqActive;
 static	id0_word_t			alFXReg;
+#if 0
 static	ActiveTrack		*tracks[sqMaxTracks],
 						mytracks[sqMaxTracks];
 static	id0_word_t			sqMode,sqFadeStep;
+#endif
 static	id0_word_t			id0_far *sqHack,id0_far *sqHackPtr,sqHackLen,sqHackSeqLen;
 static	id0_long_t			sqHackTime;
 
@@ -140,7 +146,7 @@ static	id0_long_t			sqHackTime;
 //	SDL_SetTimer0() - Sets system timer 0 to the specified speed
 //
 ///////////////////////////////////////////////////////////////////////////
-#pragma	argsused
+//#pragma	argsused
 static void
 SDL_SetTimer0(id0_word_t speed)
 {
@@ -655,7 +661,8 @@ SDL_ALService(void)
 	if (!sqActive)
 		return;
 
-	while (sqHackLen && (sqHackTime <= alTimeCount))
+	// REFKEEN - Looks like this the comparison is unsigned in original EXE
+	while (sqHackLen && ((id0_longword_t)sqHackTime <= alTimeCount))
 	{
 		w = *sqHackPtr++;
 		sqHackTime = alTimeCount + *sqHackPtr++;
@@ -954,6 +961,8 @@ SD_SetSoundMode(SDMode mode)
 	case sdm_Off:
 		NeedsDigitized = false;
 		result = true;
+		// (REFKEEN) Originally tableoffset wasn't set here at all - undefined behaviors (even if offset is irrelevant)...
+		tableoffset = 0;
 		break;
 	case sdm_PC:
 		tableoffset = STARTPCSOUNDS;
@@ -967,6 +976,11 @@ SD_SetSoundMode(SDMode mode)
 			NeedsDigitized = false;
 			result = true;
 		}
+		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
+		else
+		{
+			result = false;
+		}
 		break;
 	default:
 		result = false;
@@ -979,7 +993,8 @@ SD_SetSoundMode(SDMode mode)
 		SDL_ShutDevice();
 		SoundMode = mode;
 #ifndef	_MUSE_
-		SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
+		SoundTable = (SoundCommon **)&audiosegs[tableoffset];
+		//SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
 #endif
 		SDL_StartDevice();
 	}
@@ -1002,7 +1017,9 @@ SD_SetMusicMode(SMMode mode)
 
 	SD_FadeOutMusic();
 	while (SD_MusicPlaying())
-		;
+	{
+		BE_SDL_ShortSleep();
+	}
 
 	switch (mode)
 	{
@@ -1015,6 +1032,11 @@ SD_SetMusicMode(SMMode mode)
 		{
 			NeedsMusic = true;
 			result = true;
+		}
+		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
+		else
+		{
+			result = false;
 		}
 		break;
 	default:
@@ -1210,10 +1232,12 @@ SD_PlaySound(soundnames sound)
 	switch (SoundMode)
 	{
 	case sdm_PC:
-		SDL_PCPlaySound((void id0_far *)s);
+		SDL_PCPlaySound((PCSound id0_far *)s);
+		//SDL_PCPlaySound((void id0_far *)s);
 		break;
 	case sdm_AdLib:
-		SDL_ALPlaySound((void id0_far *)s);
+		SDL_ALPlaySound((AdLibSound id0_far *)s);
+		//SDL_ALPlaySound((void id0_far *)s);
 		break;
 	}
 
@@ -1377,6 +1401,7 @@ SD_MusicPlaying(void)
 {
 	// REFKEEN - Original code always returns false...
 	return false;
+#if 0
 	id0_boolean_t	result;
 
 	switch (MusicMode)
@@ -1390,6 +1415,7 @@ SD_MusicPlaying(void)
 	}
 
 	return(result);
+#endif
 }
 
 #endif // USE_MUSIC

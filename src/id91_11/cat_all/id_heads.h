@@ -139,10 +139,16 @@
 
 typedef	bool id0_boolean_t;
 
+// WARNING:
+//
 // Should be UNSIGNED for VWL_MeasureString (high scores table) in Keen Dreams
 // but SIGNED in Catacomb Abyss for which casting is done in VWL_MeasureString
 // (and Keen Dreams' loadscn2)
-typedef int8_t id0_char_t;
+//
+// BUT, to reduce the amount of compilation warnings in C and errors in C++,
+// we still use plain char here, and fix Keen Dreams' VWL_MeasureString instead
+typedef char id0_char_t;
+//typedef int8_t id0_char_t;
 
 typedef int8_t id0_signed_char_t;
 typedef uint8_t id0_unsigned_char_t;
@@ -159,7 +165,9 @@ typedef uint32_t id0_unsigned_long_t;
 typedef uint8_t id0_byte_t;
 typedef uint16_t id0_word_t;
 typedef uint32_t id0_longword_t;
-//typedef uint8_t * id0_ptr_t; // Ptr; Looks unused in Catacomb Abyss (and only kind-of used in Keen Dreams)
+// REFKEEN - Used just in Keen Dreams' SD_StartMusic, but there's no music
+// in the original game and it was commented that Ptr shouldn't be used...
+//typedef uint8_t * id0_ptr_t;
 
 typedef	struct
 		{
@@ -170,7 +178,11 @@ typedef	struct
 			Point	ul,lr;
 		} Rect;
 
+#ifdef __cplusplus
+#define	id0_nil_t	NULL
+#else
 #define	id0_nil_t	((void *)0)
+#endif
 
 // TODO (REFKEEN): These should really be removed, but just for now and to document...
 #define id0_far
@@ -210,9 +222,9 @@ extern id0_char_t *introscn;
 
 
 #ifdef REFKEEN_VER_CATADVENTURES
-void	Quit (id0_char_t *error, ...);		// defined in user program
+void	Quit (const id0_char_t *error, ...);		// defined in user program
 #else
-void	Quit (id0_char_t *error);
+void	Quit (const id0_char_t *error);
 #endif
 
 //

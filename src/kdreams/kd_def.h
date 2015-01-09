@@ -76,8 +76,8 @@ typedef	enum	{nothing,keenobj,powerobj,doorobj,
 	mushroomobj,squashobj,apelobj,peapodobj,peabrainobj,boobusobj,
 	shotobj,inertobj}	classtype;
 
-// REFKEEN - enum type for progress should be outside struct if we want to
-// be able to build the same code as C++. It's also good for othe reasons.
+// REFKEEN - enum type for progress field should be outside struct if we want
+// to be able to build the same code as C++. It's also good for other reasons.
 typedef enum {step,slide,think,stepthink,slidethink} progresstype;
 // Used for C++ patches for function pointers in statetype
 struct objstruct;
@@ -94,7 +94,9 @@ typedef struct statestruct
   id0_int_t tictime;
   id0_int_t xmove;
   id0_int_t ymove;
-  // REFKEEN - C++ patches
+  // REFKEEN - C++ patches: Write the correct arguments lists, and
+  // rename function pointers: think->thinkptr comes from conflict
+  // with the 'think' enum value for progress in Keen Dreams
   void (*thinkptr) (struct objstruct *);
   void (*contactptr) (struct objstruct *, struct objstruct *);
   void (*reactptr) (struct objstruct *);
@@ -127,7 +129,8 @@ typedef	struct
 	id0_int_t		difficulty;
 } gametype;
 
-// REFKEEN - Another relocated enum type for C++
+// REFKEEN - enum type for active field should be outside struct if we want
+// to be able to build the same code as C++. It's also good for other reasons.
 typedef enum {no,yes,allways,removable} activetype;
 
 typedef struct	objstruct

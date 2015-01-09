@@ -26,9 +26,9 @@
 
 #include "id_heads.h"
 
-#pragma hdrstop
+//#pragma hdrstop
 
-#pragma warn    -pia
+//#pragma warn    -pia
 
 //      Special imports
 extern  id0_boolean_t         showscorebox;
@@ -36,7 +36,8 @@ extern  id0_boolean_t         showscorebox;
 extern  id0_boolean_t         oldshooting;
 extern  ScanCode        firescan;
 #else
-		ScanCode        firescan;
+// REFKEEN - Should be extern since it's already defined in ID_US_1.c
+extern	ScanCode        firescan;
 #endif
 
 //      Global variables
@@ -83,14 +84,16 @@ typedef enum
 			uii_Bad,
 			uii_Button,uii_RadioButton,uii_Folder
 		} UIType;
-typedef enum
+// REFKEEN - Having an enum type for a combination of flags like this
+// is invalid in C++, and may fail to work as expected in C, so don't typedef.
+/*typedef*/ enum
 		{
 			ui_Normal = 0,
 			ui_Pushed = 1,
 			ui_Selected = 2,
 			ui_Disabled = 4,
 			ui_Separated = 8
-		} UIFlags;
+		} /*UIFlags*/;
 #define UISelectFlags (ui_Pushed | ui_Selected | ui_Disabled)
 
 typedef enum
@@ -102,11 +105,15 @@ typedef enum
 typedef struct  UserItem
 		{
 				UIType                  type;
-				UIFlags                 flags;
+				// REFKEEN - As stated above this shouldn't have an enum type
+				int flags;
+				//UIFlags                 flags;
 				ScanCode                hotkey;
-				id0_char_t                    *text;
+				const id0_char_t                    *text;
 				UComm                   comm;
-				void                    id0_far *child;     // Should be (UserItemGroup *)
+				// REFKEEN - This *can* be (struct UserItemGroup *)
+				struct UserItemGroup id0_far *child;
+				//void                    id0_far *child;     // Should be (UserItemGroup *)
 
 				id0_word_t                    x,y;
 		} UserItem;
@@ -122,7 +129,7 @@ typedef struct  UserItemGroup
 		struct  UserItemGroup   id0_far *parent;
 		} UserItemGroup;
 
-static  id0_char_t            *BottomS1,*BottomS2,*BottomS3;
+static  const id0_char_t            *BottomS1,*BottomS2,*BottomS3;
 static  UComm           Communication;
 static  ScanCode        *KeyMaps[] =
 					{
@@ -209,10 +216,10 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 	UserItemGroup   id0_far savegamegroup = {4,3,CP_SAVEMENUPIC,sc_None,loadsavegamei,USL_SaveCustom};
 
 	// Options menu
-	UserItemGroup   id0_far scoregroup = {0,0,0,sc_None,0,USL_ScoreCustom};
-	UserItemGroup   id0_far compgroup = {0,0,0,sc_None,0,USL_CompCustom};
+	UserItemGroup   id0_far scoregroup = {0,0,(graphicnums)0,sc_None,0,USL_ScoreCustom};
+	UserItemGroup   id0_far compgroup = {0,0,(graphicnums)0,sc_None,0,USL_CompCustom};
 #ifdef KEEN
-	UserItemGroup   id0_far twogroup = {0,0,0,sc_None,0,USL_TwoCustom};
+	UserItemGroup   id0_far twogroup = {0,0,(graphicnums)0,sc_None,0,USL_TwoCustom};
 #endif
 	UserItem id0_far optionsi[] =
 	{
@@ -282,7 +289,7 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 	UserItemGroup   id0_far configgroup = {8,0,CP_CONFIGMENUPIC,sc_None,configi,USL_ConfigCustom};
 
 	// Main menu
-	UserItemGroup   id0_far ponggroup = {0,0,0,sc_None,0,USL_PongCustom};
+	UserItemGroup   id0_far ponggroup = {0,0,(graphicnums)0,sc_None,0,USL_PongCustom};
 	UserItem id0_far rooti[] =
 	{
 		{DefFolder(sc_N,"NEW GAME",&newgamegroup)},
@@ -463,7 +470,7 @@ USL_DialogSetup(id0_word_t w,id0_word_t h,id0_word_t *x,id0_word_t *y)
 }
 
 static void
-USL_ShowLoadSave(id0_char_t *s,id0_char_t *name)
+USL_ShowLoadSave(const id0_char_t *s,const id0_char_t *name)
 {
 	id0_word_t    x,y,
 			w,h,
@@ -490,7 +497,7 @@ USL_ShowLoadSave(id0_char_t *s,id0_char_t *name)
 }
 
 static id0_boolean_t
-USL_CtlDialog(id0_char_t *s1,id0_char_t *s2,id0_char_t *s3)
+USL_CtlDialog(const id0_char_t *s1,const id0_char_t *s2,const id0_char_t *s3)
 {
 	id0_word_t            w,h,sh,
 				w1,w2,w3,
@@ -560,7 +567,7 @@ static id0_boolean_t
 USL_ConfirmComm(UComm comm)
 {
 	id0_boolean_t confirm,dialog;
-	id0_char_t    *s1,*s2,*s3;
+	const id0_char_t    *s1,*s2,*s3;
 
 	if (!comm)
 		Quit("USL_ConfirmComm() - empty comm");
@@ -672,7 +679,7 @@ USL_SetOptionsText(void)
 #endif
 }
 
-#pragma argsused
+//#pragma argsused
 static id0_boolean_t
 USL_ScoreCustom(UserCall call,UserItem id0_far *item)
 {
@@ -686,7 +693,7 @@ USL_ScoreCustom(UserCall call,UserItem id0_far *item)
 	return(true);
 }
 
-#pragma argsused
+//#pragma argsused
 static id0_boolean_t
 USL_CompCustom(UserCall call,UserItem id0_far *item)
 {
@@ -701,7 +708,7 @@ USL_CompCustom(UserCall call,UserItem id0_far *item)
 }
 
 #ifdef  KEEN
-#pragma argsused
+//#pragma argsused
 static id0_boolean_t
 USL_TwoCustom(UserCall call,UserItem id0_far *item)
 {
@@ -719,8 +726,8 @@ USL_TwoCustom(UserCall call,UserItem id0_far *item)
 static id0_boolean_t
 USL_ConfigCustom(UserCall call,UserItem id0_far *item)
 {
-static  id0_char_t    *CtlNames[] = {"KEYBOARD","KEYBOARD","JOYSTICK #1","JOYSTICK #2","MOUSE"};
-		id0_char_t    *s;
+static  const id0_char_t    *CtlNames[] = {"KEYBOARD","KEYBOARD","JOYSTICK #1","JOYSTICK #2","MOUSE"};
+		const id0_char_t    *s;
 		id0_word_t    w,h,
 				tw;
 
@@ -804,7 +811,7 @@ USL_CKSetKey(UserItem id0_far *item,id0_word_t i)
 	IN_ClearKeysDown();
 }
 
-#pragma argsused
+//#pragma argsused
 static id0_boolean_t
 USL_KeySCustom(UserCall call,UserItem id0_far *item)
 {
@@ -813,7 +820,7 @@ USL_KeySCustom(UserCall call,UserItem id0_far *item)
 	return(false);
 }
 
-#pragma argsused
+//#pragma argsused
 static id0_boolean_t
 USL_KeyCustom(UserCall call,UserItem id0_far *item)
 {
@@ -853,7 +860,7 @@ USL_KeyCustom(UserCall call,UserItem id0_far *item)
 }
 
 static void
-USL_CJDraw(id0_char_t *s1,id0_char_t *s2)
+USL_CJDraw(const id0_char_t *s1,const id0_char_t *s2)
 {
 	id0_word_t    w,h;
 
@@ -942,7 +949,7 @@ USL_ConfigJoystick(id0_word_t joy)
 	return(true);
 }
 
-#pragma argsused
+//#pragma argsused
 static id0_boolean_t
 USL_Joy1Custom(UserCall call,UserItem id0_far *item)
 {
@@ -959,7 +966,7 @@ USL_Joy1Custom(UserCall call,UserItem id0_far *item)
 		return(false);
 }
 
-#pragma argsused
+//#pragma argsused
 static id0_boolean_t
 USL_Joy2Custom(UserCall call,UserItem id0_far *item)
 {
@@ -1373,7 +1380,7 @@ USL_PlayPong(void)
 	IN_ClearKeysDown();
 }
 
-#pragma argsused
+//#pragma argsused
 static id0_boolean_t
 USL_PongCustom(UserCall call,struct UserItem id0_far *item)
 {
@@ -1599,7 +1606,10 @@ USL_SetUpCtlPanel(void)
 	US_SetPrintRoutines(VW_MeasurePropString,VWB_DrawPropString);
 	fontcolor = F_BLACK;
 	VW_Bar (0,0,320,200,3); // CAT3D patch
+	// REFKEEN - Better comment this out in Catacomb 3-D (instead of having an empty stub)
+#ifndef CAT3D
 	RF_FixOfs();
+#endif
 	VW_InitDoubleBuffer();
 
 	Communication = uc_None;
@@ -1652,11 +1662,13 @@ USL_GetControlValues(void)
 	// DEBUG - write the rest of this
 	i = USL_FindPushedItem(&soundgroup);
 	if (i != SoundMode)
-		SD_SetSoundMode(i);
+		// REFKEEN - Casting to enum for C++ (hope it's ok!!)
+		SD_SetSoundMode((SDMode)i);
 
 	i = USL_FindPushedItem(&musicgroup);
 	if (i != MusicMode)
-		SD_SetMusicMode(i);
+		// REFKEEN - Casting to enum for C++ (hope it's ok!!)
+		SD_SetMusicMode((SMMode)i);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1779,7 +1791,10 @@ extern void HelpScreens(void);
 				break;
 #ifndef KEEN6
 			case sc_F1:
+	// REFKEEN - Better comment this out in Catacomb 3-D (instead of having an empty stub)
+#ifndef CAT3D
 				HelpScreens();
+#endif
 				USL_DrawCtlPanel();
 				resetitem = true;
 				break;

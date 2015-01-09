@@ -386,7 +386,7 @@ void InitObjArray (void)
 =
 = GetNewObj
 =
-= Sets the global variable new to point to a free spot in objarray.
+= Sets the global variable newobj to point to a free spot in objarray.
 = The free spot is inserted at the end of the liked list
 =
 = When the object list is full, the caller can either have it bomb out ot

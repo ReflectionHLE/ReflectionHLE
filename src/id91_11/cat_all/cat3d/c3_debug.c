@@ -19,7 +19,7 @@
 // C3_DEBUG.C
 
 #include "c3_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -52,7 +52,10 @@
 
 id0_int_t	maporgx;
 id0_int_t	maporgy;
-enum {mapview,tilemapview,actoratview,visview}	viewtype;
+// REFKEEN - Give this enum some type so we can build code as C++
+typedef enum {mapview,tilemapview,actoratview,visview} viewtypeenum;
+viewtypeenum viewtype;
+//enum {mapview,tilemapview,actoratview,visview}	viewtype;
 
 void ViewMap (void);
 
@@ -70,10 +73,10 @@ void ViewMap (void);
 
 void DebugMemory (void)
 {
-	id0_int_t	i;
-	id0_char_t    scratch[80],str[10];
-	id0_long_t	mem;
-	spritetype id0_seg	*block;
+	//id0_int_t	i;
+	//id0_char_t    scratch[80],str[10];
+	//id0_long_t	mem;
+	//spritetype id0_seg	*block;
 
 	VW_FixRefreshBuffer ();
 	US_CenterWindow (16,7);
@@ -605,9 +608,16 @@ void ViewMap (void)
 		if (c.button0 && !button0held)
 		{
 			button0held = true;
+			// REFKEEN - Make this C++ friendly
+			if (viewtype == visview)
+				viewtype = mapview;
+			else
+				viewtype = (viewtypeenum)(viewtype + 1);
+#if 0
 			viewtype++;
 			if (viewtype>visview)
 				viewtype = mapview;
+#endif
 		}
 		if (!c.button0)
 			button0held = false;

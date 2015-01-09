@@ -19,7 +19,7 @@
 // C3_DRAW.C
 
 #include "c3_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 //#define DRAWEACH				// draw walls one at a time for debugging
 
@@ -373,9 +373,9 @@ asm	xchg	bh,[es:di]	// load latches and write pixels
 
 
 //id0_long_t		wallscalesource;
-static uint8_t *wallscalesourceptr;
 
 #ifdef DRAWEACH
+static uint8_t *wallscalesourceptr;
 /*
 ====================
 =
@@ -506,9 +506,9 @@ id0_int_t	walldark2[NUMFLOORS] = {0,
 
 void DrawVWall (walltype *wallptr)
 {
-	id0_int_t			x,i;
+	id0_int_t			x/*,i*/;
 	id0_unsigned_t	source;
-	id0_unsigned_t	width,sourceint;
+	id0_unsigned_t	width/*,sourceint*/;
 	id0_unsigned_t	wallpic/*,wallpicseg*/;
 	memptr wallpicseg; // REFKEEN - Safer
 	id0_unsigned_t	skip;
@@ -700,7 +700,7 @@ storeheight:
 			if (lastpix != (id0_unsigned_t)-1)
 			{
 				wallofs[lastpix] = lastsource;
-				wallseg[lastpix] = wallpicseg;
+				wallseg[lastpix] = (id0_byte_t *)wallpicseg;
 				wallwidth[lastpix] = lastwidth;
 			}
 			lastpix = x;
@@ -711,7 +711,7 @@ storeheight:
 			lastwidth++;			// optimized draw, same map as last one
 	}
 	wallofs[lastpix] = lastsource;
-	wallseg[lastpix] = wallpicseg;
+	wallseg[lastpix] = (id0_byte_t *)wallpicseg;
 	wallwidth[lastpix] = lastwidth;
 }
 
@@ -859,7 +859,7 @@ void TraceRay (id0_unsigned_t angle)
 ========================
 */
 
-#pragma warn -rvl			// I stick the return value in with ASMs
+//#pragma warn -rvl			// I stick the return value in with ASMs
 
 fixed FixedByFrac (fixed a, fixed b)
 {
@@ -935,7 +935,7 @@ ansok:;
 #endif
 }
 
-#pragma warn +rvl
+//#pragma warn +rvl
 
 //==========================================================================
 
@@ -1056,8 +1056,8 @@ void TransformActor (objtype *ob)
 
 fixed TransformX (fixed gx, fixed gy)
 {
-  id0_int_t ratio;
-  fixed gxt,gyt,nx,ny;
+  //id0_int_t ratio;
+  fixed gxt,gyt/*,nx,ny*/;
 
 //
 // translate point to view centered coordinates
@@ -1219,14 +1219,14 @@ void ClearScreen (void)
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// Originally done with pairs of 0x0000 words
-		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 0, (VIEWWIDTH/16)*2+1, 0xFFFF);
+		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 0, (VIEWWIDTH/16)*2+1, 0xFF);
 		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 	// bottom loop
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// Originally done with pairs of 0x0808 words
-		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 8, (VIEWWIDTH/16)*2+1, 0xFFFF);
+		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 8, (VIEWWIDTH/16)*2+1, 0xFF);
 		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 #if 0
@@ -1287,7 +1287,7 @@ asm	out	dx,al
 
 void DrawWallList (void)
 {
-	id0_int_t i,leftx,newleft,rightclip;
+	id0_int_t /*i,*/leftx,newleft,rightclip;
 	walltype *wall, *check;
 
 	memset(wallwidth, 0, 2*(VIEWWIDTH/2));
@@ -1398,7 +1398,7 @@ void DrawScaleds (void)
 		|| ( *(visspot+64) && !*(tilespot+64) )
 		|| ( *(visspot+63) && !*(tilespot+63) ) ))
 		{
-			obj->active = true;
+			obj->active = yes/*true*/;
 			TransformActor (obj);
 			if (!obj->viewheight || obj->viewheight > VIEWWIDTH)
 				continue;			// too close or far away
@@ -1430,7 +1430,7 @@ void DrawScaleds (void)
 		// draw farthest
 		//
 		shape = shapedirectory[farthest->state->shapenum-FIRSTSCALEPIC];
-		ScaleShape(farthest->viewx,shape,farthest->viewheight);
+		ScaleShape(farthest->viewx,(t_compshape *)shape,farthest->viewheight);
 		farthest->viewheight = 32000;
 	}
 }
@@ -1459,7 +1459,8 @@ void CalcTics (void)
 //
 // calculate tics since last refresh for adaptive timing
 //
-	if (lasttimecount > SD_GetTimeCount())
+	// REFKEEN - Looks like this is an unsigned comparison in original EXE
+	if ((id0_longword_t)lasttimecount > SD_GetTimeCount())
 		SD_SetTimeCount(lasttimecount);		// if the game was paused a LONG time
 
 	if (DemoMode)					// demo recording and playback needs

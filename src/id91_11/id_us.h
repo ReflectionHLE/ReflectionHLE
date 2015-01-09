@@ -107,7 +107,7 @@ extern	id0_int_t			CursorX,CursorY;
 extern	void		(*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),
 					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *);
 
-extern	id0_boolean_t		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
+extern	id0_boolean_t		(*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
 extern	void		(*USL_ResetGame)(void);
 extern	SaveGame	Games[MaxSaveGames];
 extern	HighScore	Scores[];
@@ -118,8 +118,8 @@ extern	void	US_Startup(void),
 				US_Setup(void),
 				US_Shutdown(void),
 				US_InitRndT(id0_boolean_t randomize),
-				US_SetLoadSaveHooks(id0_boolean_t (*load)(int),
-									id0_boolean_t (*save)(int),
+				US_SetLoadSaveHooks(id0_boolean_t (*load)(id0_int_t),
+									id0_boolean_t (*save)(id0_int_t),
 									void (*reset)(void)),
 				US_TextScreen(void),
 				US_UpdateTextScreen(void),
@@ -146,7 +146,7 @@ extern	void	US_Startup(void),
 extern	id0_boolean_t	US_UpdateCursor(void),
 				US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_boolean_t escok,
 								id0_int_t maxchars,id0_int_t maxwidth);
-extern	id0_int_t		US_CheckParm(id0_char_t *parm,id0_char_t **strings),
+extern	id0_int_t		US_CheckParm(const id0_char_t *parm,const id0_char_t **strings),
 				US_RndT(void);
 
 		void	USL_PrintInCenter(const id0_char_t *s,Rect r);
