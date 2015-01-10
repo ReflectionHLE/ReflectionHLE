@@ -129,15 +129,19 @@ static	id0_byte_t			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 						;
 
 //	Sequencer variables
+#if USE_MUSIC
 static	id0_boolean_t			sqActive;
+#endif
 static	id0_word_t			alFXReg;
 #if 0
 static	ActiveTrack		*tracks[sqMaxTracks],
 						mytracks[sqMaxTracks];
 static	id0_word_t			sqMode,sqFadeStep;
 #endif
+#if USE_MUSIC
 static	id0_word_t			id0_far *sqHack,id0_far *sqHackPtr,sqHackLen,sqHackSeqLen;
 static	id0_long_t			sqHackTime;
+#endif
 
 //	Internal routines
 
@@ -652,6 +656,7 @@ SDL_SelectMeasure(ActiveTrack *track)
 }
 #endif
 
+#if USE_MUSIC
 static void
 SDL_ALService(void)
 {
@@ -685,6 +690,7 @@ SDL_ALService(void)
 		alTimeCount = sqHackTime = 0;
 	}
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //

@@ -262,12 +262,18 @@ typedef enum
 typedef enum {north,east,south,west,northeast,southeast,southwest,
 		  northwest,nodir} dirtype;		// a catacombs 2 carryover
 
+// REFKEEN - Used for C++ patches for function pointers in statetype
+struct objstruct;
 
 typedef struct	statestruct
 {
 	id0_int_t		shapenum;
 	id0_int_t		tictime;
-	void	(*think) ();
+	// REFKEEN - C++ patches: Write the correct arguments list, and
+	// rename function pointer: think ==> thinkptr comes from conflict
+	// with the 'think' enum value for progress in Keen Dreams
+	void (*thinkptr) (struct objstruct *);
+	//void	(*think) ();
 	struct	statestruct	id0_far *next;
 	// (REFKEEN) Backwards compatibility:
 	// MUST follow all the rest of the members above. Given a statetype
@@ -285,6 +291,10 @@ typedef struct	statestruct
 #define of_damagedone	0x02
 #define of_forcefield	0x40		// defines a solid object as a forcefield???????????
 
+// REFKEEN - enum type for active field should be outside struct if we want
+// to be able to build the same code as C++. It's also good for other reasons.
+typedef enum {no,noalways,yes,always} activetype;
+
 typedef struct objstruct
 {
 
@@ -299,7 +309,8 @@ typedef struct objstruct
 
 
   struct objstruct *prev;
-  enum {no,noalways,yes,always}	active;
+  activetype active;
+  //enum {no,noalways,yes,always}	active;
   classtype	obclass;
 
   id0_unsigned_char_t flags;
@@ -408,12 +419,12 @@ void SmallSound(objtype *ob);
 
 
 void NewGame (void);
-id0_boolean_t	SaveTheGame(id0_int_t file);
-id0_boolean_t	LoadTheGame(id0_int_t file);
+id0_boolean_t	SaveTheGame(int file);
+id0_boolean_t	LoadTheGame(int file);
 void ResetGame(void);
 void ShutdownId (void);
 void InitGame (void);
-void Quit (id0_char_t *error, ...);
+void Quit (const id0_char_t *error, ...);
 void TEDDeath(void);
 void DemoLoop (void);
 void SetupScalePic (id0_unsigned_t picnum);
@@ -487,7 +498,8 @@ extern id0_unsigned_t actorat[MAPSIZE][MAPSIZE];
 //extern	objtype		*actorat[MAPSIZE][MAPSIZE];
 extern	id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
 
-extern	objtype 	objlist[MAXACTORS],*new,*obj,*player;
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
+extern	objtype 	objlist[MAXACTORS],*newobj,*obj,*player;
 
 extern	id0_unsigned_t	farmapylookup[MAPSIZE];
 extern	id0_byte_t		*nearmapylookup[MAPSIZE];

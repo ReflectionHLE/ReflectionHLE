@@ -141,7 +141,7 @@ typedef enum
 typedef enum {north,east,south,west,northeast,southeast,southwest,
 		  northwest,nodir} dirtype;		// a catacombs 2 carryover
 
-// Used for a C++ patch for function pointer in statetype
+// REFKEEN - Used for C++ patches for function pointers in statetype
 struct objstruct;
 
 typedef struct	statestruct
@@ -149,7 +149,7 @@ typedef struct	statestruct
 	id0_int_t		shapenum;
 	id0_int_t		tictime;
 	// REFKEEN - C++ patches: Write the correct arguments list, and
-	// rename function pointer: think->thinkptr comes from conflict
+	// rename function pointer: think ==> thinkptr comes from conflict
 	// with the 'think' enum value for progress in Keen Dreams
 	void (*thinkptr) (struct objstruct *);
 	//void	(*think) ();
@@ -212,11 +212,10 @@ typedef	enum	{ex_stillplaying,ex_died,ex_warped,ex_resetgame
 
 // (REFKEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
 // objstruct may store a 16-bit pointer with another object; Or at least this
-// is the case in Keen Dreams. Furthermore, in Catacomb 3-D, actorat may be
+// is the case in Keen Dreams. Furthermore, in the Catacombs, actorat may be
 // declared as a bidimensional array of objtype pointers, but it is also used
 // to store plain 16-bit integers.
 
-// FIXME: Fill this with a proper offset!!!
 #ifdef REFKEEN_VER_CAT3D_122
 #define COMPAT_OBJ_CONVERSION_OFFSET 0xADB3
 #elif defined REFKEEN_VER_CAT3D_100
@@ -245,8 +244,8 @@ extern	exittype	playstate;
 
 
 void NewGame (void);
-id0_boolean_t	SaveTheGame(id0_int_t file);
-id0_boolean_t	LoadTheGame(id0_int_t file);
+id0_boolean_t	SaveTheGame(int file);
+id0_boolean_t	LoadTheGame(int file);
 void ResetGame(void);
 void ShutdownId (void);
 void InitGame (void);

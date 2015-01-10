@@ -270,7 +270,7 @@ void NewGame (void)
 ==================
 */
 
-id0_boolean_t	SaveTheGame(id0_int_t file)
+id0_boolean_t	SaveTheGame(int file)
 {
 	id0_word_t	i,compressed,expanded;
 	objtype	*o;
@@ -325,7 +325,7 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 ==================
 */
 
-id0_boolean_t	LoadTheGame(id0_int_t file)
+id0_boolean_t	LoadTheGame(int file)
 {
 	id0_unsigned_t	i,x,y;
 	objtype		/**obj,*/*prev,*next,*followed;

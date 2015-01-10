@@ -398,6 +398,7 @@ void intro_exe_main(void)
 					id0_argv[3] = NULL;
 
 					id0_argv[0] = "LOADSCN.EXE";
+					void id0_loadscn_exe_main(void);
 					id0_loadscn_exe_main();
 #if 0
 					if (execv("LOADSCN.EXE", id0_argv) == -1)
@@ -568,7 +569,7 @@ void intro_exe_main(void)
 	} while (1);
 }
 
-void intro_TrashProg (id0_char_t *OutMsg, ...)
+void intro_TrashProg (const id0_char_t *OutMsg, ...)
 {
 	va_list ap;
 

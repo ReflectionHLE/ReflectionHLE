@@ -119,12 +119,12 @@ void CalibrateJoystick(id0_short_t joynum);
 void MoveScreen(id0_short_t x, id0_short_t y);
 void MoveGfxDst(id0_short_t x, id0_short_t y);
 void DoPiracy(void);
-void PrintPropText(id0_char_t id0_far *text);
+void PrintPropText(const id0_char_t id0_far *text);
 void DisplayText(textinfo *textinfo);
-id0_long_t LoadTextFile(id0_char_t *filename,textinfo *textinfo);
+id0_long_t LoadTextFile(const id0_char_t *filename,textinfo *textinfo);
 void FreeTextFile(textinfo *textinfo);
 void InitTextFile(textinfo *textinfo);
-id0_long_t Verify(id0_char_t *filename);
+id0_long_t Verify(const id0_char_t *filename);
 void GE_SaveGame(void);
 id0_boolean_t GE_LoadGame(void);
 id0_int_t GE_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si);
@@ -140,7 +140,7 @@ void RefreshBOBList(objtype *obj);
 #endif
 
 
-id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr);
+id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr);
 void lzwDecompressFromRAM(id0_byte_t id0_far *SrcPtr, id0_byte_t id0_far *DstPtr, id0_longword_t SrcLen);
 void lzwDecompressFromFile(BufferedIO *SrcPtr, id0_byte_t id0_far *DstPtr, id0_longword_t SrcLen);
 id0_byte_t readch(int handle);
@@ -153,20 +153,23 @@ void bio_fillbuffer(BufferedIO *bio);
 
 void SwapLong(id0_long_t id0_far *Var);
 void SwapWord(id0_unsigned_int_t id0_far *Var);
-id0_int_t LoadShape(id0_char_t *Filename,struct Shape *SHP);
+id0_int_t LoadShape(const id0_char_t *Filename,struct Shape *SHP);
 void FreeShape(struct Shape *shape);
 id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t starty);
-id0_char_t GetKeyChoice(id0_char_t *choices,id0_boolean_t clear);
+id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear);
 id0_boolean_t AnimateObj(objtype *obj);
 void AdvanceAnimFWD(objtype *obj);
 void AdvanceAnimREV(objtype *obj);
 
+// (REFKEEN) Seem unused
+#if 0
 void LoadASArray(struct Sample *ASArray);
 void FreeASArray(struct Sample *ASArray);
 //void SelectDigiAudio(AudioDeviceType Device);
 void PlaySample(id0_unsigned_t SampleNum);
 void GE_FreeAllDigiSounds(void);
 void GE_LoadAllDigiSounds(void);
+#endif
 void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width, id0_short_t list_height);
 void ReadGameList(void);
 void CheckStack(void);
@@ -175,7 +178,7 @@ void cachein(id0_short_t s,id0_short_t e);
 void cacheout(id0_short_t s,id0_short_t e);
 void FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height, id0_boolean_t abortable);
 void mprintf(id0_char_t *msg, ...);
-id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disknum);
+id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum);
 void CacheAV(id0_char_t *title);
 void BlackPalette(void);
 void ColoredPalette(void);

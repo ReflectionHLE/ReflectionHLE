@@ -59,10 +59,16 @@
 
 typedef	bool id0_boolean_t;
 
+// WARNING:
+//
 // Should be UNSIGNED for VWL_MeasureString (high scores table) in Keen Dreams
 // but SIGNED in Catacomb Abyss for which casting is done in VWL_MeasureString
 // (and Keen Dreams' loadscn2)
-typedef int8_t id0_char_t;
+//
+// BUT, to reduce the amount of compilation warnings in C and errors in C++,
+// we still use plain char here, and fix Keen Dreams' VWL_MeasureString instead
+typedef char id0_char_t;
+//typedef int8_t id0_char_t;
 
 typedef int8_t id0_signed_char_t;
 typedef uint8_t id0_unsigned_char_t;
@@ -90,7 +96,7 @@ typedef uint32_t id0_longword_t;
 
 // Initialized before calling vanilla app's (now renamed) main function
 extern int id0_argc;
-extern char **id0_argv;
+extern const char **id0_argv;
 
 // WARNING: THIS IS *DIFFERENT* FROM THE ID_MM.H DEFINITION!!!
 // ... in 16-bit code (far vs segment pointer).
@@ -110,7 +116,14 @@ typedef enum {NOcard,MDAcard,CGAcard,EGAcard,MCGAcard,VGAcard,
 extern id0_unsigned_t displayofs; // origin of port on visable screen
 extern id0_unsigned_t ylookup[VIRTUALHEIGHT];
 
-void TrashProg (id0_char_t *OutMsg, ...);
+void TrashProg (const id0_char_t *OutMsg, ...);
+// CA
+id0_boolean_t LoadFile (const id0_char_t *filename, memptr *ptr);
+// VW
+cardtype VideoID (void);
+void SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
+void ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
+	id0_unsigned_t wide, id0_unsigned_t height);
 
 #include "be_sdl.h"
 #include "be_cross.h"

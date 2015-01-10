@@ -27,7 +27,7 @@
 
 #include "def.h"
 #include "gelib.h"
-#pragma hdrstop
+//#pragma hdrstop
 //#include <dir.h>
 
 /*
@@ -70,7 +70,7 @@ id0_char_t	SlowMode = 0;
 id0_int_t starting_level;
 id0_boolean_t EASYMODEON;
 
-id0_short_t NumGames=0;
+//id0_short_t NumGames=0; // REFKEEN - Already defined in gelib.c
 id0_unsigned_t Flags=0;
 
 void DisplayIntroText(void);
@@ -218,7 +218,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	{
 		return false;
 	}
-	o->active = activeint;
+	o->active = (activetype)activeint;
 	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
@@ -331,7 +331,7 @@ id0_boolean_t	SaveTheGame(int file)
 
 		*(id0_unsigned_t id0_huge *)bigbuffer = compressed;
 
-		if (!CA_FarWrite(file,(void id0_far *)bigbuffer,compressed+2) )
+		if (!CA_FarWrite(file,(id0_byte_t id0_far *)bigbuffer,compressed+2) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -365,7 +365,7 @@ id0_boolean_t	SaveTheGame(int file)
 id0_boolean_t	LoadTheGame(int file)
 {
 	id0_unsigned_t	i,x,y;
-	objtype		*obj,*prev,*next,*followed;
+	objtype		/**obj,*/*prev,*next,*followed;
 	id0_unsigned_t	compressed,expanded;
 	id0_unsigned_t	id0_far *map,tile;
 	memptr		bigbuffer;
@@ -402,13 +402,13 @@ id0_boolean_t	LoadTheGame(int file)
 
 	for (i = 0;i < 3;i+=2)	// Read planes 0 and 2
 	{
-		if (!CA_FarRead(file,(void id0_far *)&compressed,sizeof(compressed)) )
+		if (!CA_FarRead(file,(id0_byte_t id0_far *)&compressed,sizeof(compressed)) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
 		}
 
-		if (!CA_FarRead(file,(void id0_far *)bigbuffer,compressed) )
+		if (!CA_FarRead(file,(id0_byte_t id0_far *)bigbuffer,compressed) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -443,20 +443,20 @@ id0_boolean_t	LoadTheGame(int file)
 	// Read the object list back in - assumes at least one object in list
 
 	InitObjList ();
-	new = player;
+	newobj = player;
 	while (true)
 	{
-		prev = new->prev;
-		next = new->next;
+		prev = newobj->prev;
+		next = newobj->next;
 		// (REFKEEN) Reading fields one-by-one in a cross-platform manner
-		if (!LoadObject(file, new))
-		//if (!CA_FarRead(file,(void id0_far *)new,sizeof(objtype)))
+		if (!LoadObject(file, newobj))
+		//if (!CA_FarRead(file,(void id0_far *)newobj,sizeof(objtype)))
 			return(false);
-		followed = new->next;
-		new->prev = prev;
-		new->next = next;
-		actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);	// drop a new marker
-		//actorat[new->tilex][new->tiley] = new;	// drop a new marker
+		followed = newobj->next;
+		newobj->prev = prev;
+		newobj->next = next;
+		actorat[newobj->tilex][newobj->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(newobj);	// drop a new marker
+		//actorat[newobj->tilex][newobj->tiley] = newobj;	// drop a new marker
 
 		if (followed)
 			GetNewObj (false);
@@ -528,7 +528,7 @@ void ShutdownId (void)
 
 void InitGame (void)
 {
-	id0_unsigned_t	segstart,seglength;
+	//id0_unsigned_t	segstart,seglength;
 	id0_int_t			i,x,y;
 	id0_unsigned_t	*blockstart;
 
@@ -635,11 +635,13 @@ void InitGame (void)
 ==========================
 */
 
-void Quit (id0_char_t *error, ...)
+void Quit (const id0_char_t *error, ...)
 {
 	id0_short_t exit_code=0;
+#ifndef CATALOG
 	void *finscreen;
 	//id0_unsigned_t	finscreen;
+#endif
 
 	va_list ap;
 
@@ -704,7 +706,8 @@ void Quit (id0_char_t *error, ...)
 			BE_SDL_HandleExit(1);
 		}
 #endif
-		id0_loadscn_exe_main(id0_argc+1, id0_argv);
+		void id0_loadscn_exe_main(void);
+		id0_loadscn_exe_main();
 	}
 #endif
 
@@ -785,11 +788,11 @@ void	DemoLoop (void)
 //-------------------------------------------------------------------------
 void DisplayIntroText()
 {
-	id0_char_t *toptext = "You stand before the gate leading into the Towne "
+	const id0_char_t *toptext = "You stand before the gate leading into the Towne "
 						 "Cemetery. Night is falling as mournful wails mingle "
 						 "with the sound of your pounding heart.";
 
-	id0_char_t *bottomtext = "Equipped with your wits and the Secret Knowledge of "
+	const id0_char_t *bottomtext = "Equipped with your wits and the Secret Knowledge of "
 							 "Magick, you venture forth on your quest to upset "
 							 "the dark schemes of Nemesis, your arch rival.";
 
@@ -925,14 +928,15 @@ void SetupScaleWall (id0_unsigned_t picnum)
 
 void SetupScaling (void)
 {
-	id0_int_t		i,x,y;
-	id0_byte_t	id0_far *dest;
+	id0_int_t		i/*,x,y*/;
+	//id0_byte_t	id0_far *dest;
 
 //
 // build the compiled scalers
 //
 	for (i=1;i<=VIEWWIDTH/2;i++)
-		BuildCompScale (i*2,&scaledirectory[i]);
+		// REFKEEN - Possibly-working-but-bad cast for C++
+		BuildCompScale (i*2,(void **)&scaledirectory[i]);
 }
 
 //===========================================================================
@@ -990,7 +994,8 @@ void	CheckMemory(void)
 ==========================
 */
 
-id0_char_t			*MainParmStrings[] = {"q","l","ver","nomemcheck",id0_nil_t};
+// REFKEEN - Param strings buffer should be const and may further be static
+static const id0_char_t			*MainParmStrings[] = {"q","l","ver","nomemcheck",id0_nil_t};
 id0_boolean_t		LaunchedFromShell = false;
 
 // The original starting point of the game EXE

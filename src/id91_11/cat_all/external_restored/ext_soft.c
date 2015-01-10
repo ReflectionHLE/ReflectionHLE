@@ -70,13 +70,13 @@
 // NOTICE : This version of BLOAD is compatable with JAMPak V3.0 and the
 //				new fileformat...
 //--------------------------------------------------------------------------
-id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr)
+id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 {
 	int handle;
 
 	memptr SrcPtr = NULL;
-	id0_unsigned_long_t i, j, k, r, c;
-	id0_word_t flags;
+	//id0_unsigned_long_t i, j, k, r, c;
+	//id0_word_t flags;
 	id0_byte_t Buffer[8];
 	id0_unsigned_long_t SrcLen,DstLen;
 	struct CMP1Header CompHeader;
@@ -99,7 +99,7 @@ id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 
 	read(handle,Buffer,4);
 
-	if (!strncmp(Buffer,COMP,4))
+	if (!strncmp((char *)Buffer,COMP,4))
 	{
 		//
 		// Compressed under OLD file format
@@ -116,7 +116,7 @@ id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 		offset = 8;
 	}
 	else
-	if (!strncmp(Buffer,CMP1,4))
+	if (!strncmp((char *)Buffer,CMP1,4))
 	{
 		//
 		// Compressed under new file format...
@@ -143,7 +143,8 @@ id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 	{
 		DstLen = CompHeader.OrginalLen;
 
-		if ((BE_Mem_FarCoreLeft() < 2*SrcLen) && (CompHeader.CompType))
+		// REFKEEN - Looks like this is an unsigned comparison in original EXE
+		if (((id0_unsigned_long_t)BE_Mem_FarCoreLeft() < 2*SrcLen) && (CompHeader.CompType))
 		{
 			//if (!InitBufferedIO(handle,&lzwBIO))
 			//	TrashProg("No memory for buffered I/O.");
@@ -152,15 +153,15 @@ id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 			{
 				#if LZW_SUPPORT
 				case ct_LZW:
-					// Let's hope cast works...
-					lzwDecompress((void *)handle,*DstPtr,CompHeader.OrginalLen,(SRC_BFILE|DEST_MEM));
+					// REFKEEN (FIXME) Hack that assumes sizeof(intptr_t)>=sizeof(int)
+					lzwDecompress((void *)(intptr_t)(handle),*DstPtr,CompHeader.OrginalLen,(SRC_BFILE|DEST_MEM));
 				break;
 				#endif
 
 				#if LZH_SUPPORT
 				case ct_LZH:
-					// Let's hope cast works...
-					lzhDecompress((void *)handle,*DstPtr,CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_BFILE|DEST_MEM));
+					// REFKEEN (FIXME) Hack that assumes sizeof(intptr_t)>=sizeof(int)
+					lzhDecompress((void *)(intptr_t)(handle),*DstPtr,CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_BFILE|DEST_MEM));
 				break;
 				#endif
 
@@ -178,13 +179,13 @@ id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 			{
 				#if LZW_SUPPORT
 				case ct_LZW:
-					lzwDecompress(SrcPtr + offset,*DstPtr,CompHeader.OrginalLen,(SRC_MEM|DEST_MEM));
+					lzwDecompress((uint8_t *)SrcPtr + offset,*DstPtr,CompHeader.OrginalLen,(SRC_MEM|DEST_MEM));
 				break;
 				#endif
 
 				#if LZH_SUPPORT
 				case ct_LZH:
-					lzhDecompress(SrcPtr + offset,*DstPtr,CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_MEM|DEST_MEM));
+					lzhDecompress((uint8_t *)SrcPtr + offset,*DstPtr,CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_MEM|DEST_MEM));
 				break;
 				#endif
 
@@ -209,7 +210,7 @@ id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 //
 // LoadLIBShape()
 //
-id0_int_t ext_LoadShape(id0_char_t *Filename, struct Shape *SHP)
+id0_int_t ext_LoadShape(const id0_char_t *Filename, struct Shape *SHP)
 {
 	#define CHUNK(Name) ( \
 		(*ptr == *Name) &&			\
@@ -220,12 +221,12 @@ id0_int_t ext_LoadShape(id0_char_t *Filename, struct Shape *SHP)
 
 	id0_int_t RT_CODE;
 //	struct ffblk ffblk;
-	FILE *fp;
-	id0_char_t CHUNK[5];
+	//FILE *fp;
+	//id0_char_t CHUNK[5];
 	id0_char_t id0_far *ptr;
 	memptr IFFfile = NULL;
 	id0_unsigned_long_t FileLen, size, ChunkLen;
-	id0_int_t loop;
+	//id0_int_t loop;
 
 
 	RT_CODE = 1;
@@ -238,7 +239,7 @@ id0_int_t ext_LoadShape(id0_char_t *Filename, struct Shape *SHP)
 
 	// Evaluate the file
 	//
-	ptr = IFFfile;
+	ptr = (id0_char_t *)IFFfile;
 	if (!CHUNK("FORM"))
 		goto EXIT_FUNC;
 	ptr += 4;

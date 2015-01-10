@@ -42,7 +42,7 @@ id0_boolean_t InLoadSaveGame = false;
 //AudioDeviceType ge_DigiMode;
 id0_boolean_t ConserveMemory = false;
 id0_char_t GameListNames[MAX_GAMELIST_NAMES+1][FNAME_LEN],current_disk=1;
-id0_short_t NumGames;
+id0_short_t NumGames = 0; // REFKEEN - Set to 0 here rather than in c4_main.c
 id0_short_t PPT_LeftEdge=0,PPT_RightEdge=320;
 id0_boolean_t LeaveDriveOn=false,ge_textmode=true;
 id0_char_t Filename[FILENAME_LEN+1], ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DATA)];
@@ -247,16 +247,21 @@ void DoPiracy()
 // PPT_LeftEdge, PPT_RightEdge - These are globals used by PrintPropText().
 // They define the left and right edge of the text area in pixels.
 
-void PrintPropText(id0_char_t id0_far *text)
+/* REFKEEN: As with functions like US_Print, a few modifications are required
+ * here so text can point to a const char buffer. Useful e.g., in case the
+ * input is a C string literal.
+ */
+
+void PrintPropText(const id0_char_t id0_far *text)
 {
 	#define RETURN_CHAR '\n'
 
 	id0_char_t pb[200];
 
 	fontstruct id0_seg *font = (fontstruct id0_seg *)grsegs[STARTFONT];
-	id0_char_t savech;
-	id0_short_t	length,maxend,maxx,loop,curx;
-	id0_boolean_t centerit,lastcharcr;
+	//id0_char_t savech; // REFKEEN - No need for savech with constified text
+	id0_short_t	length,maxend,maxx/*,loop*/,curx;
+	id0_boolean_t centerit/*,lastcharcr*/; // REFKEEN - No need for lastcharcr  with constified text
 
 	while (*text)
 	{
@@ -300,6 +305,15 @@ void PrintPropText(id0_char_t id0_far *text)
 
 		// All of this is kludged to work with ID _Print routines...
 		//
+
+		// REFKEEN - Constified text
+		memcpy(pb,text,length);
+		pb[length] = 0;
+		if (pb[length-1] == RETURN_CHAR)
+		{
+			pb[length-1] = 0;
+		}
+#if 0
 		savech=text[length];
 		text[length]=0;
 		if (text[length-1] == RETURN_CHAR)
@@ -311,6 +325,7 @@ void PrintPropText(id0_char_t id0_far *text)
 			lastcharcr=false;
 		memcpy(pb,text,length+1);
 		//_fmemcpy(pb,text,length+1);
+#endif
 		if (centerit)
 		{
 			US_CPrintLine(pb, NULL);
@@ -321,9 +336,12 @@ void PrintPropText(id0_char_t id0_far *text)
 			US_Print(pb);
 			US_Print("\n");
 		}
+		// REFKEEN - Constified text
+#if 0
 		if (lastcharcr)
 			text[length-1]=RETURN_CHAR;
 		text[length]=savech;
+#endif
 		//
 		// end of ID _Print kludge...
 
@@ -339,9 +357,9 @@ void DisplayText(textinfo *textinfo)
 {
 	#define PAGE_WIDTH 	78
 
-	id0_int_t loop, PageNum, LastNum,num;
+	id0_int_t /*loop,*/ PageNum, LastNum/*,num*/;
 	id0_boolean_t InHelp = true,faded_in = false;
-	id0_unsigned_t holddisp,holdpan,holdbuffer,holdaddress;
+	//id0_unsigned_t holddisp,holdpan,holdbuffer,holdaddress;
 
 // Can you believe it takes all this just to change to 640 mode!!???!
 //
@@ -439,7 +457,7 @@ void BlackPalette()
 {
 	extern id0_char_t colors[7][17];
 
-	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[0]);
+	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[0]);
 	screenfaded = true;
 }
 
@@ -450,7 +468,7 @@ void ColoredPalette()
 {
 	extern id0_char_t colors[7][17];
 
-	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[3]);
+	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
 	screenfaded = false;
 }
 
@@ -458,7 +476,7 @@ void ColoredPalette()
 //
 // Verify()
 //
-id0_long_t Verify(id0_char_t *filename)
+id0_long_t Verify(const id0_char_t *filename)
 {
 	int handle;
 	id0_long_t size;
@@ -681,7 +699,7 @@ id0_boolean_t GE_LoadGame()
 	if (handle==-1)
 		goto EXIT_FUNC;
 
-	if ((!CA_FarRead(handle,(void id0_far *)&ID,sizeof(ID))) || (!CA_FarRead(handle,(void id0_far *)&VER,sizeof(VER))))
+	if ((!CA_FarRead(handle,(id0_byte_t id0_far *)&ID,sizeof(ID))) || (!CA_FarRead(handle,(id0_byte_t id0_far *)&VER,sizeof(VER))))
 		return(false);
 
 	if ((strcmp(ID,GAMENAME)) || (strcmp(VER,SAVEVER_DATA)))
@@ -749,8 +767,8 @@ EXIT_FUNC:;
 //			from DOS. Hard coded to ignore if during Load/Save Game.
 //
 ///////////////////////////////////////////////////////////////////////////
-#pragma	warn	-par
-#pragma	warn	-rch
+//#pragma	warn	-par
+//#pragma	warn	-rch
 id0_int_t GE_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si)
 {
 #define IGNORE  0
@@ -844,8 +862,8 @@ oh_kill_me:
 #undef	RETRY
 #undef	ABORT
 }
-#pragma	warn	+par
-#pragma	warn	+rch
+//#pragma	warn	+par
+//#pragma	warn	+rch
 
 #endif
 
@@ -874,7 +892,7 @@ id0_boolean_t UpdateBOBList(objtype *obj,struct Simple_Shape *Shape,shapeclass C
 {
 	struct BOB_Shape *CurBOBShape = NULL;
 
-#pragma warn -pia
+//#pragma warn -pia
 
 	if (CurBOBShape = obj->nextshape)
 	{
@@ -900,7 +918,7 @@ id0_boolean_t UpdateBOBList(objtype *obj,struct Simple_Shape *Shape,shapeclass C
 	}
 	return(false);
 
-#pragma warn +pia
+//#pragma warn +pia
 
 }
 
@@ -914,7 +932,7 @@ id0_boolean_t RemoveBOBShape(objtype *obj, shapeclass Class)
 {
 	struct BOB_Shape *CurBOBShape = NULL;
 
-#pragma warn -pia
+//#pragma warn -pia
 
 	if (CurBOBShape = obj->nextshape)
 	{
@@ -931,7 +949,7 @@ id0_boolean_t RemoveBOBShape(objtype *obj, shapeclass Class)
 	}
 	return(false);
 
-#pragma warn +pia
+//#pragma warn +pia
 
 }
 
@@ -945,7 +963,7 @@ void RemoveBOBList(objtype *obj)
 {
 	struct BOB_Shape *CurBOBShape;
 
-#pragma warn -pia
+//#pragma warn -pia
 
 	if (CurBOBShape = obj->nextshape)
 	{
@@ -963,7 +981,7 @@ void RemoveBOBList(objtype *obj)
 		}
 	}
 
-#pragma warn +pia
+//#pragma warn +pia
 
 }
 
@@ -1054,13 +1072,13 @@ BufferedIO lzwBIO;
 //--------------------------------------------------------------------------
 // BLoad()
 //--------------------------------------------------------------------------
-id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
+id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 {
 	int handle;
 
 	memptr SrcPtr;
-	id0_longword_t i, j, k, r, c;
-	id0_word_t flags;
+	//id0_longword_t i, j, k, r, c;
+	//id0_word_t flags;
 	id0_byte_t Buffer[8];
 	id0_longword_t DstLen, SrcLen;
 	id0_boolean_t comp;
@@ -1071,7 +1089,7 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 	// Look for 'COMP' header
 	//
 	read(handle,Buffer,4);
-	comp = !strncmp(Buffer,COMP,4);
+	comp = !strncmp((char *)Buffer,COMP,4);
 
 	// Get source and destination length.
 	//
@@ -1091,19 +1109,20 @@ id0_unsigned_long_t BLoad(id0_char_t *SourceFile, memptr *DstPtr)
 	if (comp)
 	{
 
-		if (MM_TotalFree() < SrcLen)
+		// REFKEEN - Looks like this is an unsigned comparison in original EXE
+		if ((id0_longword_t)MM_TotalFree() < SrcLen)
 		{
 			if (!InitBufferedIO(handle,&lzwBIO))
 				TrashProg("No memory for buffered I/O.");
 			//lzwDecompressFromFile(&lzwBIO,MK_FP(*DstPtr,0),SrcLen+8);
-			lzwDecompressFromFile(&lzwBIO,*DstPtr,SrcLen+8);
+			lzwDecompressFromFile(&lzwBIO,(id0_byte_t *)(*DstPtr),SrcLen+8);
 			FreeBufferedIO(&lzwBIO);
 		}
 		else
 		{
 			CA_LoadFile(SourceFile,&SrcPtr);
 			//lzwDecompressFromRAM(MK_FP(SrcPtr,8),MK_FP(*DstPtr,0),SrcLen+8);
-			lzwDecompressFromRAM(SrcPtr+8,*DstPtr,SrcLen+8);
+			lzwDecompressFromRAM((id0_byte_t *)SrcPtr+8,(id0_byte_t *)(*DstPtr),SrcLen+8);
 			MM_FreePtr(&SrcPtr);
 		}
 	}
@@ -1131,7 +1150,7 @@ void lzwDecompressFromRAM(id0_byte_t id0_far *SrcPtr, id0_byte_t id0_far *DstPtr
 {
 	id0_longword_t i, j, k, r, c;
 	id0_word_t flags;
-	id0_byte_t ch;
+	//id0_byte_t ch;
 
 
 	for (i = 0; i < N - F; i++)
@@ -1202,7 +1221,7 @@ void lzwDecompressFromFile(BufferedIO *SrcPtr, id0_byte_t id0_far *DstPtr, id0_l
 {
 	id0_longword_t i, j, k, r, c;
 	id0_word_t flags;
-	id0_byte_t ch;
+	//id0_byte_t ch;
 
 
 	for (i = 0; i < N - F; i++)
@@ -1291,7 +1310,7 @@ id0_byte_t bio_readch(BufferedIO *bio)
 		bio_fillbuffer(bio);
 	}
 
-	buffer = (bio->buffer) + (bio->offset++);
+	buffer = (id0_byte_t *)(bio->buffer) + (bio->offset++);
 	//buffer = MK_FP(bio->buffer,bio->offset++);
 
 	return(*buffer);
@@ -1326,7 +1345,7 @@ void bio_fillbuffer(BufferedIO *bio)
 			bytes_requested = bio_length;
 
 		read(bio->handle,near_buffer,bytes_requested);
-		memcpy(bio->buffer + bytes_read,near_buffer,bytes_requested);
+		memcpy((id0_byte_t *)(bio->buffer) + bytes_read,near_buffer,bytes_requested);
 		//_fmemcpy(MK_FP(bio->buffer,bytes_read),near_buffer,bytes_requested);
 
 		bio_length -= bytes_requested;
@@ -1359,7 +1378,7 @@ void SwapWord(id0_unsigned_int_t id0_far *Var)
 //
 // LoadShape()
 //
-id0_int_t LoadShape(id0_char_t *Filename,struct Shape *SHP)
+id0_int_t LoadShape(const id0_char_t *Filename,struct Shape *SHP)
 {
 	#define CHUNK(Name)	(*ptr == *Name) &&			\
 								(*(ptr+1) == *(Name+1)) &&	\
@@ -1369,12 +1388,12 @@ id0_int_t LoadShape(id0_char_t *Filename,struct Shape *SHP)
 
 	id0_int_t RT_CODE;
 //	struct ffblk ffblk;
-	FILE *fp;
-	id0_char_t CHUNK[5];
+	//FILE *fp;
+	//id0_char_t CHUNK[5];
 	id0_char_t id0_far *ptr;
 	memptr IFFfile = NULL;
 	id0_unsigned_long_t FileLen, size, ChunkLen;
-	id0_int_t loop;
+	//id0_int_t loop;
 
 
 	RT_CODE = 1;
@@ -1558,12 +1577,12 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 //
 // GetKeyChoice()
 //
-id0_char_t GetKeyChoice(id0_char_t *choices,id0_boolean_t clear)
+id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 {
 	extern void DoEvents(void);
 
 	id0_boolean_t waiting;
-	id0_char_t *s,*ss;
+	const id0_char_t *s/*,*ss*/;
 
 	IN_ClearKeysDown();
 
@@ -1895,6 +1914,8 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 	{
 		// Print filename and padding spaces.
 		//
+		void US_Printxy(id0_word_t x, id0_word_t y, id0_char_t *text);
+
 		US_Printxy(col+(SPACES*8),row,GameListNames[games_printed]);
 		col += 8*((SPACES*2)+8);
 
@@ -1986,9 +2007,9 @@ void ReadGameList()
 //
 // LoadTextFile()
 //
-id0_long_t LoadTextFile(id0_char_t *filename,textinfo *textinfo)
+id0_long_t LoadTextFile(const id0_char_t *filename,textinfo *textinfo)
 {
-#pragma warn -pia
+//#pragma warn -pia
 	id0_long_t size;
 
 	if (!(size=BLoad(filename,&textinfo->textptr)))
@@ -1996,7 +2017,7 @@ id0_long_t LoadTextFile(id0_char_t *filename,textinfo *textinfo)
 	InitTextFile(textinfo);
 
 	return(size);
-#pragma warn +pia
+//#pragma warn +pia
 }
 
 //-------------------------------------------------------------------------
@@ -2016,7 +2037,7 @@ void InitTextFile(textinfo *textinfo)
 {
 	#define END_PAGE  '@'
 
-	id0_char_t id0_far *text = textinfo->textptr;
+	id0_char_t id0_far *text = (id0_char_t *)(textinfo->textptr);
 	//id0_char_t id0_far *text = MK_FP(textinfo->textptr,0);
 
 	textinfo->totalpages = 0;
@@ -2580,7 +2601,7 @@ void DoFullScreenAnim(id0_char_t *filename, void (*SpawnAll)(), id0_short_t (*Ch
 //--------------------------------------------------------------------------
 // FindFile()
 //--------------------------------------------------------------------------
-id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disknum)
+id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum)
 {
 	extern id0_boolean_t splitscreen;
 

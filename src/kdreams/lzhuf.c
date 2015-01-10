@@ -1049,7 +1049,6 @@ id0_long_t lzhCompress(void id0_far *infile, void id0_far *outfile,id0_unsigned_
 			r = (r + 1) & (N - 1);
 			InsertNode(r);
 		}
-
 		// REFKEEN - Unused
 #if 0
 		if (LZH_CompressDisplayVector && ((textsize += i) > printcount))
@@ -1058,7 +1057,6 @@ id0_long_t lzhCompress(void id0_far *infile, void id0_far *outfile,id0_unsigned_
 			printcount += 1024;
 		}
 #endif
-
 
 		while (i++ < last_match_length)
 		{

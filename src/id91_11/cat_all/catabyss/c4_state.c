@@ -19,7 +19,7 @@
 // C3_STATE.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -69,38 +69,38 @@ void Internal_SpawnNewObj (id0_unsigned_t x, id0_unsigned_t y, statetype *state,
 	extern objtype dummyobj;
 
 	GetNewObj(UseDummy);
-	new->size = size;
-	new->state = state;
-	new->ticcount = BE_Cross_Brandom (state->tictime)+1;
+	newobj->size = size;
+	newobj->state = state;
+	newobj->ticcount = BE_Cross_Brandom (state->tictime)+1;
 
-	new->tilex = x;
-	new->tiley = y;
-	new->x = ((id0_long_t)x<<TILESHIFT)+TILEGLOBAL/2;
-	new->y = ((id0_long_t)y<<TILESHIFT)+TILEGLOBAL/2;
-	CalcBounds(new);
-	new->dir = nodir;
-	new->active = noalways;
+	newobj->tilex = x;
+	newobj->tiley = y;
+	newobj->x = ((id0_long_t)x<<TILESHIFT)+TILEGLOBAL/2;
+	newobj->y = ((id0_long_t)y<<TILESHIFT)+TILEGLOBAL/2;
+	CalcBounds(newobj);
+	newobj->dir = nodir;
+	newobj->active = noalways;
 
-	if (new != &dummyobj)
-		actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
-		//actorat[new->tilex][new->tiley] = new;
+	if (newobj != &dummyobj)
+		actorat[newobj->tilex][newobj->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(newobj);
+		//actorat[newobj->tilex][newobj->tiley] = newobj;
 }
 
 void Internal_SpawnNewObjFrac (id0_long_t x, id0_long_t y, statetype *state, id0_unsigned_t size,id0_boolean_t UseDummy)
 {
 	GetNewObj(UseDummy);
-	new->size = size;
-	new->state = state;
-	new->ticcount = BE_Cross_Brandom (state->tictime)+1;
-	new->active = noalways;
+	newobj->size = size;
+	newobj->state = state;
+	newobj->ticcount = BE_Cross_Brandom (state->tictime)+1;
+	newobj->active = noalways;
 
-	new->x = x;
-	new->y = y;
-	new->tilex = x>>TILESHIFT;
-	new->tiley = y>>TILESHIFT;
-	CalcBounds(new);
-	new->distance = 100;
-	new->dir = nodir;
+	newobj->x = x;
+	newobj->y = y;
+	newobj->tilex = x>>TILESHIFT;
+	newobj->tiley = y>>TILESHIFT;
+	CalcBounds(newobj);
+	newobj->distance = 100;
+	newobj->dir = nodir;
 }
 
 
@@ -278,7 +278,7 @@ id0_boolean_t Walk (objtype *ob)
 
 void ChaseThink (objtype *obj, id0_boolean_t diagonal)
 {
-	id0_int_t deltax,deltay,i;
+	id0_int_t deltax,deltay/*,i*/;
 	dirtype d[3];
 	// (REFKEEN) Incrementing/Decrementing an enum is a bad idea (leading to undefined behaviors in C, including "Bad dir" bug reproduced),
 	// and illegal in C++. Hence, tdir is redefined to be a (signed) int here. Casts are done (to be compatible with C++).

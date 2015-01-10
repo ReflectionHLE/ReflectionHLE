@@ -39,12 +39,13 @@
 #define MAX_GAMELIST_NAMES 20
 #define FNAME_LEN				9
 
-id0_unsigned_t ylookup[VIRTUALHEIGHT];
-id0_unsigned_t displayofs;
+// REFKEEN (DIFFERENCE FROM VANILLA CAT) - Share these wtih game EXE
+//id0_unsigned_t ylookup[VIRTUALHEIGHT];
+//id0_unsigned_t displayofs;
 
 // (REFKEEN) HACK (FIXME?) Conditionally pick the correct TrashProg function
 
-void TrashProg (id0_char_t *OutMsg, ...)
+void TrashProg (const id0_char_t *OutMsg, ...)
 {
 	va_list ap;
 	va_start(ap, OutMsg);
@@ -52,13 +53,13 @@ void TrashProg (id0_char_t *OutMsg, ...)
 #ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
 	if (strcmp(id0_argv[0], "INTRO.EXE"))
 	{
-		void loadscn_TrashProg (id0_char_t *OutMsg, ...);
+		void loadscn_TrashProg (const id0_char_t *OutMsg, ...);
 		loadscn_TrashProg(OutMsg, ap);
 	}
 	else
 #endif
 	{
-		void intro_TrashProg (id0_char_t *OutMsg, ...);
+		void intro_TrashProg (const id0_char_t *OutMsg, ...);
 		intro_TrashProg(OutMsg, ap);
 	}
 	va_end(ap);
@@ -156,7 +157,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 //
 // Verify()
 //
-id0_long_t Verify(id0_char_t *filename)
+id0_long_t Verify(const id0_char_t *filename)
 {
 	int handle;
 	id0_long_t size;
@@ -176,7 +177,7 @@ id0_long_t Verify(id0_char_t *filename)
 
 // Unused in loadscn, used in intro
 // NOTE: THIS VERSION OMITS THE ASCII CODE (but We don't need it)
-id0_int_t TryGetScanCode/*TryGetKey*/()
+id0_int_t TryGetScanCode/*TryGetKey*/(void)
 {
 	if (BE_SDL_BiosScanCode(1))
 		return BE_SDL_BiosScanCode(0);

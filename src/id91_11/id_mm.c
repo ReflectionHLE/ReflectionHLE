@@ -986,7 +986,10 @@ void MM_SetLock (memptr *baseptr, id0_boolean_t locked)
 void MM_SortMem (void)
 {
 	mmblocktype id0_far *scan,id0_far *last,id0_far *next;
-	id0_unsigned_t	start,length,source,dest,oldborder;
+	id0_unsigned_t	start,length,source,dest/*,oldborder*/;
+#ifndef REFKEEN_VER_CATADVENTURES
+	id0_unsigned_t oldborder;
+#endif
 	id0_int_t			playing;
 
 	//

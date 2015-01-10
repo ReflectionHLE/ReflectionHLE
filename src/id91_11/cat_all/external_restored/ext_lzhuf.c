@@ -112,7 +112,8 @@ static void StartHuff();
 static void reconst();
 static void update(id0_int_t c);
 
-
+// REFKEEN - Unnecessary to declare here, especially when unused
+#if 0
 static void DeleteNode(id0_int_t p);  /* Deleting node from the tree */
 static void InsertNode(id0_int_t r);  /* Inserting node to the tree */
 static void InitTree(void);  /* Initializing tree */
@@ -120,7 +121,7 @@ static void Putcode(void **outfile_ptr, id0_int_t l, id0_unsigned_t c,id0_unsign
 static void EncodeChar(void **outfile_ptr, id0_unsigned_t c, id0_unsigned_t PtrTypes);
 static void EncodePosition(void **outfile_ptr, id0_unsigned_t c, id0_unsigned_t PtrTypes);
 static void EncodeEnd(void **outfile_ptr,id0_unsigned_t PtrTypes);
-
+#endif
 
 static id0_int_t GetByte(void **infile_ptr, id0_unsigned_long_t *CompressLength, id0_unsigned_t PtrTypes);
 static id0_int_t GetBit(void **infile_ptr, id0_unsigned_long_t *CompressLength, id0_unsigned_t PtrTypes);	/* get one bit */
@@ -156,12 +157,15 @@ static id0_int_t DecodePosition(void **infile_ptr,id0_unsigned_long_t *CompressL
 //
 //
 
+// REFKEEN - Wrong amount of arguments (errors as C++), but unused anyway
+#if 0
 #if INCLUDE_LZH_COMP
 void (*LZH_CompressDisplayVector)() = NULL;
 #endif
 
 #if INCLUDE_LZH_DECOMP
 void (*LZH_DecompressDisplayVector)() = NULL;
+#endif
 #endif
 
 
@@ -175,7 +179,7 @@ void (*LZH_DecompressDisplayVector)() = NULL;
 	/* pointing children nodes (son[], son[] + 1)*/
 
 static id0_int_t id0_far son[T];
-static id0_unsigned_t code, len;
+//static id0_unsigned_t code, len;
 
 	//
 	// pointing parent nodes.
@@ -186,7 +190,7 @@ static id0_int_t id0_far prnt[T + N_CHAR];
 
 static id0_unsigned_t id0_far freq[T + 1];	/* cumulative freq table */
 
-static id0_unsigned_long_t textsize = 0, codesize = 0, printcount = 0,datasize;
+static id0_unsigned_long_t textsize = 0/*, codesize = 0, printcount = 0*/,datasize;
 static id0_unsigned_char_t id0_far text_buf[N + F - 1];
 
 
@@ -919,7 +923,8 @@ id0_long_t lzhDecompress(void id0_far *infile, void id0_far *outfile, id0_unsign
 
 	r = N - F;
 
-	for (count = 0; count < textsize; )
+	// REFKEEN - Looks like this is an unsigned comparison in original EXE
+	for (count = 0; (id0_unsigned_long_t)count < textsize; )
 	{
 		c = DecodeChar(/*(id0_long_t)*/&infile,&CompressLength,PtrTypes);
 
@@ -949,12 +954,14 @@ id0_long_t lzhDecompress(void id0_far *infile, void id0_far *outfile, id0_unsign
 				count++;								// inc count of bytes written
 			}
 		}
-
+		// REFKEEN - Unused
+#if 0
 		if (LZH_DecompressDisplayVector && (count > printcount))
 		{
 			LZH_DecompressDisplayVector(OrginalLength,OrginalLength-datasize);
 			printcount += 1024;
 		}
+#endif
 	}
 
 //	printf("%12ld\n", count);
@@ -1042,13 +1049,14 @@ id0_long_t lzhCompress(void id0_far *infile, void id0_far *outfile,id0_unsigned_
 			r = (r + 1) & (N - 1);
 			InsertNode(r);
 		}
-
+		// REFKEEN - Unused
+#if 0
 		if (LZH_CompressDisplayVector && ((textsize += i) > printcount))
 		{
 			LZH_CompressDisplayVector(DataLength,datasize);
 			printcount += 1024;
 		}
-
+#endif
 
 		while (i++ < last_match_length)
 		{

@@ -22,6 +22,6 @@
 
 struct Shape;
 
-id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr);
-memptr LoadLIBFile(id0_char_t *LibName,id0_char_t *FileName,memptr *MemPtr);
-id0_int_t LoadLIBShape(id0_char_t *SLIB_Filename, id0_char_t *Filename,struct Shape *SHP);
+id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr);
+memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *MemPtr);
+id0_int_t LoadLIBShape(const id0_char_t *SLIB_Filename, const id0_char_t *Filename,struct Shape *SHP);

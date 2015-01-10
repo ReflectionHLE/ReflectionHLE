@@ -104,14 +104,14 @@ void id0_loadscn_exe_main (void)
 	screenmode = 1;
 	SetScreenMode(screenmode);
 
-	memcpy(BE_SDL_GetTextModeMemoryPtr(), bufferptr+7, 4000);
+	memcpy(BE_SDL_GetTextModeMemoryPtr(), (id0_byte_t *)bufferptr+7, 4000);
 	BE_SDL_MarkGfxForUpdate();
 	//_fmemcpy(MK_FP(0xB800,0), (byte far *)bufferptr+7, 4000);
 	BE_SDL_MoveTextCursorTo(0, 23); // gotoxy(1, 24)
 	BE_SDL_HandleExit(0);
 }
 
-void loadscn_TrashProg (id0_char_t *OutMsg, ...)
+void loadscn_TrashProg (const id0_char_t *OutMsg, ...)
 {
 	va_list ap;
 

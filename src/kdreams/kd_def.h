@@ -79,7 +79,7 @@ typedef	enum	{nothing,keenobj,powerobj,doorobj,
 // REFKEEN - enum type for progress field should be outside struct if we want
 // to be able to build the same code as C++. It's also good for other reasons.
 typedef enum {step,slide,think,stepthink,slidethink} progresstype;
-// Used for C++ patches for function pointers in statetype
+// REFKEEN - Used for C++ patches for function pointers in statetype
 struct objstruct;
 
 // REFKEEN - Add name statestruct for better definition of nextstate
@@ -95,7 +95,7 @@ typedef struct statestruct
   id0_int_t xmove;
   id0_int_t ymove;
   // REFKEEN - C++ patches: Write the correct arguments lists, and
-  // rename function pointers: think->thinkptr comes from conflict
+  // rename function pointers: think ==> thinkptr comes from conflict
   // with the 'think' enum value for progress in Keen Dreams
   void (*thinkptr) (struct objstruct *);
   void (*contactptr) (struct objstruct *, struct objstruct *);

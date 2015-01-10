@@ -93,7 +93,7 @@ static  id0_boolean_t         US_Started;
 		void            (*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
 					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *) = VWB_DrawPropString;
 
-		id0_boolean_t         (*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
+		id0_boolean_t         (*USL_SaveGame)(int),(*USL_LoadGame)(int);
 		void            (*USL_ResetGame)(void);
 		SaveGame        Games[MaxSaveGames];
 		HighScore       Scores[MaxScores] =
@@ -228,7 +228,7 @@ static  id0_char_t    name[] = "SAVEGAMx."EXTENSION;
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetLoadSaveHooks(id0_boolean_t (*load)(id0_int_t),id0_boolean_t (*save)(id0_int_t),void (*reset)(void))
+US_SetLoadSaveHooks(id0_boolean_t (*load)(int),id0_boolean_t (*save)(int),void (*reset)(void))
 {
 	USL_LoadGame = load;
 	USL_SaveGame = save;

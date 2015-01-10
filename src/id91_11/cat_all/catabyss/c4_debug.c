@@ -20,7 +20,7 @@
 
 #include "def.h"
 #include "gelib.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -56,7 +56,13 @@
 id0_boolean_t autofire=false;
 id0_int_t	maporgx;
 id0_int_t	maporgy;
+// REFKEEN - Probably unused
+#if DEBUG_OVERHEAD
+// REFKEEN - Give this enum some type so we can build code as C++
+typedef enum {mapview,tilemapview,actoratview,visview,mapseg2,lastview} viewtypetype
+viewtypeenum viewtype;
 enum {mapview,tilemapview,actoratview,visview,mapseg2,lastview}	viewtype;
+#endif
 
 void ViewMap (void);
 
@@ -73,10 +79,10 @@ void ViewMap (void);
 
 void DebugMemory (void)
 {
-	id0_int_t	i;
-	id0_char_t    scratch[80],str[10];
-	id0_long_t	mem;
-	spritetype id0_seg	*block;
+	//id0_int_t	i;
+	//id0_char_t    scratch[80],str[10];
+	//id0_long_t	mem;
+	//spritetype id0_seg	*block;
 
 	VW_FixRefreshBuffer ();
 	CenterWindow (16,7);
@@ -789,9 +795,16 @@ void ViewMap (void)
 		if (control.button0 && !button0held)
 		{
 			button0held = true;
+			// REFKEEN - Make this C++ friendly
+			if (viewtype == lastview-1)
+				viewtype = mapview;
+			else
+				viewtype = (viewtypeenum)(viewtype + 1);
+#if 0
 			viewtype++;
 			if (viewtype==lastview)
 				viewtype = mapview;
+#endif
 		}
 		if (!control.button0)
 			button0held = false;

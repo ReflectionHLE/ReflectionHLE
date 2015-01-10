@@ -39,6 +39,11 @@ loaded into the data segment
 
 #define THREEBYTEGRSTARTS
 
+// REFKEEN - Using this from gelib for some reason
+#ifdef REFKEEN_VER_CATADVENTURES
+id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum);
+#endif
+
 /*
 =============================================================================
 
@@ -289,7 +294,7 @@ id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t le
 ==========================
 */
 
-id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
+id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr)
 {
 	int handle;
 	id0_long_t size;
@@ -319,7 +324,7 @@ id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
 ==========================
 */
 
-id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
+id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr)
 {
 	int handle;
 	id0_long_t size;

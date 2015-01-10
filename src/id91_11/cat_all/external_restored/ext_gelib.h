@@ -54,12 +54,14 @@ struct Shape {
 //
 
 void ext_MoveGfxDst(id0_short_t x, id0_short_t y);
-id0_long_t Verify(id0_char_t *filename);
+id0_long_t Verify(const id0_char_t *filename);
 
-id0_unsigned_long_t ext_BLoad(id0_char_t *SourceFile, memptr *DstPtr);
+id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr);
 
 void SwapLong(id0_long_t id0_far *Var);
 void SwapWord(id0_unsigned_int_t id0_far *Var);
-id0_int_t ext_LoadShape(id0_char_t *Filename,struct Shape *SHP);
+id0_int_t ext_LoadShape(const id0_char_t *Filename,struct Shape *SHP);
 void ext_FreeShape(struct Shape *shape);
 id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t starty);
+
+id0_int_t TryGetScanCode/*TryGetKey*/(void);

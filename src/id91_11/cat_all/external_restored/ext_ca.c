@@ -96,7 +96,7 @@ id0_boolean_t ReadFile (id0_char_t *filename, memptr ptr)
 ==========================
 */
 
-id0_boolean_t LoadFile (id0_char_t *filename, memptr *ptr)
+id0_boolean_t LoadFile (const id0_char_t *filename, memptr *ptr)
 {
 	int handle;
 	id0_long_t size;
@@ -110,7 +110,7 @@ id0_boolean_t LoadFile (id0_char_t *filename, memptr *ptr)
 		if (!(*ptr = malloc/*farmalloc*/(size)))
 			TrashProg("Can't get memory!");
 	}
-	if (!FarRead (handle,*ptr,size))
+	if (!FarRead (handle,(id0_byte_t *)*ptr,size))
 	{
 		close (handle);
 		return false;

@@ -704,7 +704,9 @@ void
 IN_ReadControl(id0_int_t player,ControlInfo *info)
 {
 			id0_boolean_t		realdelta=false;				// MDM (GAMERS EDGE)
+#ifndef REFKEEN_VER_CATADVENTURES
 			id0_byte_t		dbyte;
+#endif
 			id0_word_t		buttons;
 			id0_int_t			dx,dy;
 			Motion		mx,my;
