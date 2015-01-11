@@ -714,7 +714,7 @@ extern	id0_unsigned_t	wallwidth	[VIEWWIDTH];
 //extern	id0_unsigned_t	wallseg		[VIEWWIDTH];
 extern	id0_byte_t	*wallseg		[VIEWWIDTH];
 extern	id0_unsigned_t	wallofs		[VIEWWIDTH];
-// REFKEEN - These arrays may actually be larger than VIEWDITH cells long,
+// REFKEEN - These arrays may actually be larger than VIEWWIDTH cells long,
 // and they're used just in C3_ASM.C anyway
 //extern	id0_unsigned_t	screenbyte	[VIEWWIDTH];
 //extern	id0_unsigned_t	screenbit	[VIEWWIDTH];
@@ -772,9 +772,11 @@ void GiveBolt (void);
 void GiveNuke (void);
 void GivePotion (void);
 void GiveKey (id0_int_t keytype);
+// No need for GiveScroll
 id0_boolean_t ShotClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove);
 void SpawnPlayer (id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
 void RedrawStatusWindow (void);
+// No need for StopTime
 void DrawText (id0_boolean_t draw_text_whether_it_needs_it_or_not);
 void DrawHealth(void);
 
@@ -933,6 +935,7 @@ extern statetype s_tree_death1;
 extern statetype s_tree_ouch;
 
 extern statetype s_force_field_die;
+
 // NOTE: Some functions may technically come from files other than c5_act1.c
 id0_int_t AngleNearPlayer(objtype *ob);
 void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t number);

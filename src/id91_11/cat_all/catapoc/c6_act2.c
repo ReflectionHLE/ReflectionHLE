@@ -19,7 +19,7 @@
 // C3_PLAY.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 
 /*
@@ -30,7 +30,8 @@
 =============================================================================
 */
 
-id0_boolean_t ShootPlayer (objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state);
+// REFKEEN - Use classtype instead of short for obclass
+id0_boolean_t ShootPlayer (objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state);
 void T_ShootPlayer(objtype *ob);
 
 id0_short_t head_base_delay;
@@ -141,10 +142,10 @@ statetype s_skel_shot2 = {RAMBONESHOT2PIC, 10, &T_ShootPlayer, &s_skel_shot1};
 void SpawnRamBone(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex, tiley, &s_skel_1,PIXRADIUS*20);
-	new->obclass	= ramboneobj;
-	new->speed		= 2036;
-	new->flags		|= of_shootable;
-	new->hitpoints	= EasyHitPoints(12);
+	newobj->obclass	= ramboneobj;
+	newobj->speed		= 2036;
+	newobj->flags		|= of_shootable;
+	newobj->hitpoints	= EasyHitPoints(12);
 }
 
 
@@ -198,10 +199,10 @@ statetype s_fmshot2 = {FMAGESHOT2PIC, 8, &T_ShootPlayer, &s_fmshot1};
 void SpawnFutureMage (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex, tiley, &s_fmage1, PIXRADIUS*15);
-	new->obclass	= fmageobj;
-	new->speed		= 3072;
-	new->flags		|= of_shootable;
-	new->hitpoints	= EasyHitPoints(12);
+	newobj->obclass	= fmageobj;
+	newobj->speed		= 3072;
+	newobj->flags		|= of_shootable;
+	newobj->hitpoints	= EasyHitPoints(12);
 }
 
 
@@ -257,10 +258,10 @@ statetype s_robotank_shot2 = {PSHOT2PIC, 10, &T_ShootPlayer, &s_robotank_shot1};
 void SpawnRoboTank(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex, tiley, &s_robotank_walk1, PIXRADIUS*35);
-	new->obclass	= robotankobj;
-	new->speed		= 1700;
-	new->flags		|= of_shootable;
-	new->hitpoints	= EasyHitPoints(25);
+	newobj->obclass	= robotankobj;
+	newobj->speed		= 1700;
+	newobj->flags		|= of_shootable;
+	newobj->hitpoints	= EasyHitPoints(25);
 }
 
 
@@ -348,10 +349,10 @@ statetype s_stompy_shot5 = {STOMPYSHOT4PIC, 6, &T_ShootPlayer, &s_stompy_shot4};
 void SpawnStompy(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex, tiley, &s_stompy_walk1, PIXRADIUS*25);
-	new->obclass	= stompyobj;
-	new->speed		= 1800;
-	new->flags		|= of_shootable;
-	new->hitpoints	= EasyHitPoints(20);
+	newobj->obclass	= stompyobj;
+	newobj->speed		= 1800;
+	newobj->flags		|= of_shootable;
+	newobj->hitpoints	= EasyHitPoints(20);
 }
 
 
@@ -405,10 +406,10 @@ statetype s_bug_shot2 = {BUG_SHOT2PIC, 10, &T_ShootPlayer, &s_bug_shot1};
 void SpawnBug(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex, tiley, &s_bug_walk1, PIXRADIUS*20);
-	new->obclass	= bugobj;
-	new->speed		= 1500;
-	new->flags		|= of_shootable;
-	new->hitpoints	= EasyHitPoints(10);
+	newobj->obclass	= bugobj;
+	newobj->speed		= 1500;
+	newobj->flags		|= of_shootable;
+	newobj->hitpoints	= EasyHitPoints(10);
 }
 
 
@@ -467,11 +468,11 @@ void SpawnShooterEye(id0_int_t tilex, id0_int_t tiley)
 	objtype *ob;
 
 	SpawnNewObj(tilex,tiley,&s_eye_1,PIXRADIUS*10);
-	ob = new;
-	new->obclass = eyeobj;
-	new->speed = 3000;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(15);
+	ob = newobj;
+	newobj->obclass = eyeobj;
+	newobj->speed = 3000;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(15);
 	shooter_mode = sm_other1;
 }
 
@@ -633,16 +634,16 @@ statetype s_reye_die4 = {EYE_DEATH4PIC, 22, NULL, &s_reye_die4};
 void SpawnRunningEye(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_reye_1,PIXRADIUS*25);
-	new->obclass = reyeobj;
-	new->speed = 3500;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(15);
-	new->temp2 = (*(mapsegs[2]+farmapylookup[tiley+1]+tilex))>>8;
+	newobj->obclass = reyeobj;
+	newobj->speed = 3500;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(15);
+	newobj->temp2 = (*(mapsegs[2]+farmapylookup[tiley+1]+tilex))>>8;
 	*(mapsegs[2]+farmapylookup[tiley+1]+tilex) = 0;
 
-	new->temp1 = 2;
+	newobj->temp1 = 2;
 
-	if (!new->temp2)
+	if (!newobj->temp2)
 		Quit("Initialize the running eye!\n");
 }
 
@@ -656,7 +657,7 @@ void SpawnRunningEye(id0_int_t tilex, id0_int_t tiley)
 */
 void T_RunningEye(objtype *ob)
 {
-	id0_int_t x, y, dir_num, switch_num;
+	id0_int_t /*x, y, */dir_num, switch_num;
 	fixed tempx,tempy;
 	id0_unsigned_t temp_tilex,temp_tiley;
 
@@ -792,7 +793,7 @@ void SpawnEgyptianHead (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t tile;
 
 	SpawnNewObj(tilex, tiley, &s_head, PIXRADIUS*35);
-	ob = new;
+	ob = newobj;
 	head_mode = h_wait_to_rise;
 
 	tile = *(mapsegs[2]+farmapylookup[tiley+1]+tilex);
@@ -807,9 +808,9 @@ void SpawnEgyptianHead (id0_int_t tilex, id0_int_t tiley)
 			head_base_delay = 0;
 	}
 
-	new->obclass	= realsolidobj;
-	new->speed		= 3000;
-	new->flags	  |= of_shootable;
+	newobj->obclass	= realsolidobj;
+	newobj->speed		= 3000;
+	newobj->flags	  |= of_shootable;
 }
 
 
@@ -821,7 +822,13 @@ void T_Head(objtype *ob)
 {
 	fixed tempx,tempy;
 	id0_unsigned_t temp_tilex,temp_tiley;
-	id0_int_t angle;
+	// REFKEEN - The angle is never initialized in the original codebase.
+	// This would lead to undefined behaviors. For now a value of 0 is
+	// chosen for it. Since angle is never modified at all, we can omit it.
+	//
+	// TODO: Anything that can be done for reproduction of original
+	// behaviors, if differing from "angle is always zero"?
+	//id0_int_t angle;
 
 	switch (head_mode)
 	{
@@ -855,7 +862,8 @@ void T_Head(objtype *ob)
 		case h_active:
 			Chase (ob,true);
 
-			if (!BE_Cross_Brandom(2) && (angle != -1))
+			// REFKEEN - We assume angle==0 now
+			if (!BE_Cross_Brandom(2)/* && (angle != -1)*/)
 				ShootPlayer(ob, hshotobj, 10000, &s_head_shot1);
 
 			head_delay -= tics;

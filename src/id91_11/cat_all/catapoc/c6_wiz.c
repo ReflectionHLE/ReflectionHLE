@@ -20,7 +20,7 @@
 
 #include "def.h"
 #include "gelib.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -387,7 +387,7 @@ void TakePotion (void)
 
 void GiveKey (id0_int_t keytype)
 {
-	id0_int_t	i,j,x;
+	//id0_int_t	i,j,x;
 
 	if (gamestate.keys[keytype] == 99)
 		return;
@@ -407,8 +407,8 @@ void GiveKey (id0_int_t keytype)
 
 void TakeKey (id0_int_t keytype)
 {
-	id0_int_t	i,j,x;
-	id0_char_t *key_colors[] = {"a RED key",
+	//id0_int_t	i,j,x;
+	const id0_char_t *key_colors[] = {"a RED key",
 								 "a YELLOW key",
 								 "a GREEN key",
 								 "a BLUE key"};
@@ -776,7 +776,7 @@ void DrawText (id0_boolean_t draw_text_whether_it_needs_it_or_not)
 	id0_unsigned_t	number;
 	id0_char_t		str[80];
 	id0_char_t 		id0_far *text;
-	id0_unsigned_t	temp;
+	//id0_unsigned_t	temp;
 
 	//
 	// draw a new text description if needed
@@ -816,7 +816,7 @@ void DrawText (id0_boolean_t draw_text_whether_it_needs_it_or_not)
 ===============
 */
 
-id0_char_t DisplayMsg(id0_char_t *text,id0_char_t *choices)
+id0_char_t DisplayMsg(const id0_char_t *text,const id0_char_t *choices)
 {
 	id0_char_t ch=true;
 	id0_short_t temp;
@@ -848,7 +848,7 @@ id0_char_t DisplayMsg(id0_char_t *text,id0_char_t *choices)
 =
 ===============
 */
-id0_char_t DisplaySMsg(id0_char_t *text,id0_char_t *choices)
+id0_char_t DisplaySMsg(const id0_char_t *text,const id0_char_t *choices)
 {
 	id0_char_t ch=true;
 	id0_short_t temp;
@@ -885,7 +885,7 @@ id0_char_t DisplaySMsg(id0_char_t *text,id0_char_t *choices)
 
 void DrawRadar (void)
 {
-	id0_int_t		angle,number;
+	//id0_int_t		angle,number;
 	id0_short_t objnum;
 
 	bufferofs = 0;
@@ -1155,19 +1155,19 @@ statetype s_pshot_exp3 = {PSHOT_EXP3PIC,7,NULL,NULL};
 void SpawnPShot (void)
 {
 	DSpawnNewObjFrac (player->x,player->y,&s_pshot1,PIXRADIUS*2);
-	new->obclass = pshotobj;
-	new->speed = SHOTSPEED;
-	new->angle = player->angle;
-	new->active = always;
+	newobj->obclass = pshotobj;
+	newobj->speed = SHOTSPEED;
+	newobj->angle = player->angle;
+	newobj->active = always;
 }
 
 #if 0
 void SpawnBigPShot (void)
 {
 	SpawnNewObjFrac (player->x,player->y,&s_bigpshot1,24*PIXRADIUS);
-	new->obclass = bigpshotobj;
-	new->speed = SHOTSPEED;
-	new->angle = player->angle;
+	newobj->obclass = bigpshotobj;
+	newobj->speed = SHOTSPEED;
+	newobj->angle = player->angle;
 }
 #endif
 
@@ -1183,11 +1183,11 @@ void SpawnBigPShot (void)
 */
 id0_boolean_t JimsShotClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove)
 {
-	id0_int_t			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
-	id0_long_t		intersect,basex,basey,pointx,pointy;
-	id0_unsigned_t	inside,total,tile;
+	id0_int_t			xl,yl,xh,yh/*,tx,ty,nt1,nt2*/,x,y;
+	//id0_long_t		intersect,basex,basey,pointx,pointy;
+	//id0_unsigned_t	inside,total,tile;
 	objtype		*check;
-	id0_boolean_t		moveok;
+	//id0_boolean_t		moveok;
 
 //
 // move player and check to see if any corners are in solid tiles
@@ -1329,10 +1329,10 @@ void T_Pshot (objtype *ob)
 {
 	objtype	*check;
 	id0_long_t	xmove,ymove,speed;
-	id0_int_t			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
-	id0_long_t		intersect,basex,basey,pointx,pointy;
-	id0_unsigned_t	inside,total,tile;
-	id0_boolean_t		moveok;
+	//id0_int_t			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
+	//id0_long_t		intersect,basex,basey,pointx,pointy;
+	//id0_unsigned_t	inside,total,tile;
+	//id0_boolean_t		moveok;
 
 //
 // check current position for monsters having moved into it
@@ -1408,9 +1408,9 @@ void T_Pshot (objtype *ob)
 
 void BuildShotPower (void)
 {
-	id0_int_t		newlines,topline;
+	id0_int_t		newlines/*,topline*/;
 	id0_long_t	i;
-	id0_unsigned_t	source,dest;
+	//id0_unsigned_t	source,dest;
 
 	if (gamestate.shotpower == MAXSHOTPOWER)
 		return;
@@ -1441,7 +1441,7 @@ void BuildShotPower (void)
 
 void ClearShotPower (void)
 {
-	id0_unsigned_t	source,dest,topline;
+	//id0_unsigned_t	source,dest,topline;
 
 #if 0
 	topline = MAXSHOTPOWER - gamestate.shotpower;
@@ -1602,10 +1602,10 @@ void CastNuke (void)
 	for (angle = 0; angle < ANGLES; angle+= ANGLES/16)
 	{
 		DSpawnNewObjFrac (player->x,player->y,&s_pshot1,24*PIXRADIUS);
-		new->obclass = bigpshotobj;
-		new->speed = SHOTSPEED;
-		new->angle = angle;
-		new->active = always;
+		newobj->obclass = bigpshotobj;
+		newobj->speed = SHOTSPEED;
+		newobj->angle = angle;
+		newobj->active = always;
 	}
 }
 
@@ -1621,7 +1621,7 @@ void CastNuke (void)
 
 void DrinkPotion (void)
 {
-	id0_unsigned_t	source,dest,topline;
+	//id0_unsigned_t	source,dest,topline;
 
 	if (!gamestate.potions)
 	{
@@ -1840,7 +1840,7 @@ void StopTime()
 
 void TakeDamage (id0_int_t points)
 {
-	id0_unsigned_t	source,dest,topline;
+	//id0_unsigned_t	source,dest,topline;
 
 	if (!gamestate.body || (bordertime && bcolor==FLASHCOLOR) || godmode)
 		return;
@@ -1999,10 +1999,10 @@ void RemoveWalls (id0_unsigned_t bx, id0_unsigned_t by, id0_unsigned_t remove_co
 
 id0_boolean_t HitSpecialTile (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile)
 {
-	objtype *check;
+	//objtype *check;
 	id0_short_t keyspot;
-	id0_unsigned_t	temp,spot,curmap=gamestate.mapon,newlevel;
-	id0_char_t *key_colors[] = {"a RED key",
+	id0_unsigned_t	/*temp,*/spot/*,curmap=gamestate.mapon*/,newlevel;
+	const id0_char_t *key_colors[] = {"a RED key",
 					"a YELLOW key",
 					"a GREEN key",
 					"a BLUE key"};
@@ -2040,7 +2040,7 @@ id0_boolean_t HitSpecialTile (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t
 					VW_UpdateScreen();
 					IN_ClearKeysDown();
 					IN_Ack();
-					return;
+					return false; // REFKEEN - Return *some* value
 				}
 
 				// make sure player has key to get into door
@@ -2061,7 +2061,7 @@ id0_boolean_t HitSpecialTile (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t
 						VW_UpdateScreen();
 						IN_ClearKeysDown();
 						IN_Ack();
-						return;
+						return false; // REFKEEN - Return *some* value
 					}
 
 			//
@@ -2303,9 +2303,9 @@ id0_boolean_t LocationInActor (objtype *ob)
 */
 void ClipXMove (objtype *ob, id0_long_t xmove)
 {
-	id0_int_t			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
-	id0_long_t		intersect,basex,basey,pointx,pointy;
-	id0_unsigned_t	inside,total,tile;
+	id0_int_t			xl,yl,xh,yh/*,tx,ty,nt1,nt2*/,x,y;
+	id0_long_t		/*intersect,*/basex,basey/*,pointx,pointy*/;
+	//id0_unsigned_t	inside,total,tile;
 	objtype		*check;
 	id0_boolean_t		moveok;
 	id0_boolean_t		invisible_present = false;
@@ -2466,9 +2466,9 @@ blockmove:
 */
 void ClipYMove (objtype *ob, id0_long_t ymove)
 {
-	id0_int_t			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
-	id0_long_t		intersect,basex,basey,pointx,pointy;
-	id0_unsigned_t	inside,total,tile;
+	id0_int_t			xl,yl,xh,yh/*,tx,ty,nt1,nt2*/,x,y;
+	id0_long_t		/*intersect,*/basex,basey/*,pointx,pointy*/;
+	//id0_unsigned_t	inside,total,tile;
 	objtype		*check;
 	id0_boolean_t		moveok;
 	id0_boolean_t		invisible_present = false;
@@ -2629,10 +2629,10 @@ blockmove:
 
 id0_boolean_t ShotClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove)
 {
-	id0_int_t			xl,yl,xh,yh,tx,ty,nt1,nt2,x,y;
-	id0_long_t		intersect,basex,basey,pointx,pointy;
-	id0_unsigned_t	inside,total,spot,tile;
-	objtype		*check;
+	id0_int_t			xl,yl,xh,yh/*,tx,ty,nt1,nt2*/,x,y;
+	id0_long_t		/*intersect,*/basex,basey/*,pointx,pointy*/;
+	id0_unsigned_t	/*inside,total,*/spot,tile;
+	//objtype		*check;
 	id0_boolean_t		moveok;
 
 //
@@ -2944,9 +2944,9 @@ void	T_Player (objtype *ob)
 {
 //	extern id0_boolean_t autofire;
 
-	id0_int_t	angle,speed,scroll,loop;
-	id0_unsigned_t	text,tilex,tiley;
-	id0_long_t	lspeed;
+	//id0_int_t	angle,speed,scroll,loop;
+	//id0_unsigned_t	text,tilex,tiley;
+	//id0_long_t	lspeed;
 
 //	id0_boolean_t radar_moved=false;
 
@@ -3438,9 +3438,9 @@ statetype s_explode = {0,1,T_ExpThink,&s_explode};
 void SpawnExplosion(fixed x, fixed y, id0_short_t Delay)
 {
 	DSpawnNewObjFrac(x,y,&s_explode,PIXRADIUS*7);
-	new->obclass = expobj;
-	new->active = always;
-	new->temp1 = Delay;
+	newobj->obclass = expobj;
+	newobj->active = always;
+	newobj->temp1 = Delay;
 }
 
 

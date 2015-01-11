@@ -19,7 +19,7 @@
 // C4_PLAY.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 
 /*
@@ -99,8 +99,8 @@ void SpawnMiscObjects(id0_int_t tilex, id0_int_t tiley, id0_int_t num)
 	}
 
 	SpawnNewObj(tilex, tiley, objstate, PIXRADIUS*10);
-	new->obclass = realsolidobj;
-	new->flags |= of_shootable;
+	newobj->obclass = realsolidobj;
+	newobj->flags |= of_shootable;
 }
 
 
@@ -124,17 +124,17 @@ statetype s_force_field_die1 = {0,0,NULL,NULL};
 void SpawnForceField(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_force_field_1,PIXRADIUS*35);
-	new->obclass = solidobj;
-	new->hitpoints = EasyHitPoints(20);
-	new->temp1 = 0;
-	new->flags |= of_forcefield;		//sets bit 7 :: makes it nonsolid, but also detectable
+	newobj->obclass = solidobj;
+	newobj->hitpoints = EasyHitPoints(20);
+	newobj->temp1 = 0;
+	newobj->flags |= of_forcefield;		//sets bit 7 :: makes it nonsolid, but also detectable
 						//		without adding another object type!
-	new->flags |= of_shootable;
+	newobj->flags |= of_shootable;
 }
 
 void T_ForceField(objtype *ob)
 {
-	id0_long_t move,deltax,deltay,size;
+	id0_long_t /*move,*/deltax,deltay,size;
 
 	size = (id0_long_t)ob->size + player->size;
 
@@ -143,15 +143,15 @@ void T_ForceField(objtype *ob)
 
 	if (deltax <= size && deltax >= -size
 	&& deltay <= size && deltay >= -size)
-		if (!new->temp1)
+		if (!newobj->temp1)
 		{
 			TakeDamage (94);
-			new->temp1 = 1;
+			newobj->temp1 = 1;
 			return;
 		}
 		else
 			return;
-	new->temp1 = 0;
+	newobj->temp1 = 0;
 }
 
 void T_ForceFieldRemove(objtype *ob)
@@ -178,15 +178,15 @@ statetype s_invis_wall_control = {0, 10, T_InvisWall, &s_invis_wall_control};
 void SpawnInvisWallCntroller(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_invis_wall_control,PIXRADIUS*35);
-	new->obclass = solidobj;
-	new->flags &= ~of_shootable;
-	new->temp1 = tilemap[tilex][tiley];		// Number for the wall tile here
+	newobj->obclass = solidobj;
+	newobj->flags &= ~of_shootable;
+	newobj->temp1 = tilemap[tilex][tiley];		// Number for the wall tile here
 														// Used for replacing the wall tile
 }
 
 void T_InvisWall(objtype *ob)
 {
-	id0_long_t move,deltax,deltay,size;
+	id0_long_t /*move,*/deltax,deltay,size;
 
 	size = (id0_long_t)ob->size + player->size;
 

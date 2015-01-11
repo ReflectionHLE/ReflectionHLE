@@ -19,7 +19,7 @@
 // C3_PLAY.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -50,7 +50,8 @@
 =============================================================================
 */
 
-id0_boolean_t ShootPlayer (objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state);
+// REFKEEN - Use classtype instead of short for obclass
+id0_boolean_t ShootPlayer (objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state);
 void T_ShootPlayer(objtype *ob);
 
 id0_short_t zombie_base_delay;
@@ -154,8 +155,8 @@ void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t number)
 	}
 
 	SpawnNewObj (tilex,tiley,state,TILEGLOBAL/2);
-	new->temp1 = number;
-	new->obclass = bonusobj;
+	newobj->temp1 = number;
+	newobj->obclass = bonusobj;
 
 	switch (number)
 	{
@@ -164,11 +165,11 @@ void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t number)
 		case B_CHEST:
 		case B_BOLT:
 		case B_NUKE:
-			new->flags |= of_shootable;
+			newobj->flags |= of_shootable;
 		break;
 
 		default:
-			new->flags &= ~of_shootable;
+			newobj->flags &= ~of_shootable;
 		break;
 	}
 }
@@ -199,9 +200,9 @@ statetype s_ftimebonus2 = {TIMEOBJ2PIC,6,NULL,&s_ftimebonus};
 void SpawnFTime(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_ftimebonus,TILEGLOBAL/2);
-//	new->tileobject = true;
-	new->obclass = freezeobj;
-	new->flags |= of_shootable;
+//	newobj->tileobject = true;
+	newobj->obclass = freezeobj;
+	newobj->flags |= of_shootable;
 }
 
 /*
@@ -244,18 +245,18 @@ void ExplodeWall (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t tilenum;
 
 	DSpawnNewObj (tilex,tiley,&s_walldie1,0);
-	if (new == &dummyobj)
+	if (newobj == &dummyobj)
 		return;
-	new->obclass = inertobj;
-	new->active = always;
+	newobj->obclass = inertobj;
+	newobj->active = always;
 	if (gcolor == 0x0101)
 		tilenum = WATEREXP;
 	else
 		tilenum = WALLEXP;
-	/*(id0_unsigned_t)actorat[new->tilex][new->tiley] = */tilemap[new->tilex][new->tiley] =
-		*(mapsegs[0]+farmapylookup[new->tiley]+new->tilex) = tilenum;
-	actorat[new->tilex][new->tiley] = tilemap[new->tilex][new->tiley];
-	*(mapsegs[2]+farmapylookup[new->tiley]+new->tilex) &= 0xFF;
+	/*(id0_unsigned_t)actorat[newobj->tilex][newobj->tiley] = */tilemap[newobj->tilex][newobj->tiley] =
+		*(mapsegs[0]+farmapylookup[newobj->tiley]+newobj->tilex) = tilenum;
+	actorat[newobj->tilex][newobj->tiley] = tilemap[newobj->tilex][newobj->tiley];
+	*(mapsegs[2]+farmapylookup[newobj->tiley]+newobj->tilex) &= 0xFF;
 }
 
 
@@ -270,7 +271,7 @@ void ExplodeWall (id0_int_t tilex, id0_int_t tiley)
 void T_WallDie (objtype *ob)
 {
 	extern id0_unsigned_t gcolor;
-	id0_unsigned_t tile,other,spot,x,y;
+	id0_unsigned_t tile/*,other*/,spot,x,y;
 
 	if (++ob->temp1 == 3)
 		tile = 0;
@@ -331,19 +332,19 @@ statetype s_portal6 = {PORTAL6PIC, 6, &T_Gate, &s_portal1};
 void SpawnWarp (id0_int_t tilex, id0_int_t tiley)
 {
 	id0_unsigned_t spot;
-	objtype *ob;
+	//objtype *ob;
 
 	spot = (*(mapsegs[2]+farmapylookup[tiley]+tilex+1)) >> 8;
 
 	if (spot)
 	{
 		SpawnNewObj (tilex, tiley, &s_portal_wait, TILEGLOBAL/3);
-		new->temp1 = spot*70;
+		newobj->temp1 = spot*70;
 	}
 	else
 		SpawnNewObj (tilex, tiley, &s_portal1, TILEGLOBAL/3);
 
-	new->obclass = gateobj;
+	newobj->obclass = gateobj;
 }
 
 /*
@@ -383,8 +384,8 @@ void T_Gate_Wait (objtype *ob)
 
 void T_Gate (objtype *ob)
 {
-	objtype *check;
-	id0_unsigned_t	temp,spot;
+	//objtype *check;
+	id0_unsigned_t	/*temp,*/spot;
 
 	if (CheckHandAttack (ob) && !playstate)
 	{
@@ -453,15 +454,15 @@ void SpawnAquaMan(id0_int_t tilex, id0_int_t tiley)
 {
 	objtype *ob;
 	SpawnNewObj(tilex,tiley,&s_aqua_under1,PIXRADIUS*32);
-	ob = new;
+	ob = newobj;
 
 	AQ_STAGE = wt_UNDER;
 	AQ_TIMEREMAIN = 60*4+BE_Cross_Brandom(60*3);
 
-	new->obclass = aquamanobj;
-	new->speed = 1000;
-	new->flags &= ~of_shootable;
-	new->hitpoints = EasyHitPoints(15);
+	newobj->obclass = aquamanobj;
+	newobj->speed = 1000;
+	newobj->flags &= ~of_shootable;
+	newobj->hitpoints = EasyHitPoints(15);
 }
 
 void ExplosionSnd(objtype *ob)
@@ -610,10 +611,10 @@ statetype s_wizard_shot2 = {WIZARD_SHOT2PIC, 8, &T_ShootPlayer, &s_wizard_shot1}
 void SpawnWizard (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_wizard_walk1,TILEGLOBAL/2);
-	new->obclass	= wizardobj;
-	new->speed		= 1536;
-	new->flags |= of_shootable;
-	new->hitpoints	= EasyHitPoints(10);
+	newobj->obclass	= wizardobj;
+	newobj->speed		= 1536;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints	= EasyHitPoints(10);
 }
 
 
@@ -706,7 +707,7 @@ void SpawnRay(id0_int_t tilex, id0_int_t tiley)
 {
 	objtype *ob;
 	SpawnNewObj(tilex, tiley, &s_ray_under, PIXRADIUS*25);
-	ob=new;
+	ob=newobj;
 
 	BR_STAGE = br_GND;
 	// REFKEEN - Force a specific order of calls to random function
@@ -715,10 +716,10 @@ void SpawnRay(id0_int_t tilex, id0_int_t tiley)
 	BR_TIMEREMAIN += BE_Cross_Brandom(100);
 	//BR_TIMEREMAIN = random(60)+random(100);
 
-	new->obclass	= rayobj;
-	new->speed		= 1700;
-	new->flags	&= ~of_shootable;
-	new->hitpoints	= EasyHitPoints(15);
+	newobj->obclass	= rayobj;
+	newobj->speed		= 1700;
+	newobj->flags	&= ~of_shootable;
+	newobj->hitpoints	= EasyHitPoints(15);
 }
 
 
@@ -766,7 +767,7 @@ void SpawnBlob(id0_int_t tilex, id0_int_t tiley)
 {
 	objtype *ob;
 	SpawnNewObj(tilex, tiley, &s_blob_gnd1, PIXRADIUS*14);
-	ob=new;
+	ob=newobj;
 
 	BR_STAGE = br_GND;
 	// REFKEEN - Force a specific order of calls to random function
@@ -775,10 +776,10 @@ void SpawnBlob(id0_int_t tilex, id0_int_t tiley)
 	BR_TIMEREMAIN += BE_Cross_Brandom(100);
 	//BR_TIMEREMAIN = random(60)+random(100);
 
-	new->obclass	= blobobj;
-	new->speed		= 1200;
-	new->flags	&= ~of_shootable;
-	new->hitpoints	= EasyHitPoints(13);
+	newobj->obclass	= blobobj;
+	newobj->speed		= 1200;
+	newobj->flags	&= ~of_shootable;
+	newobj->hitpoints	= EasyHitPoints(13);
 }
 
 

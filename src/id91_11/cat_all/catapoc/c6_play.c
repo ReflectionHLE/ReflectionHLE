@@ -20,7 +20,7 @@
 
 #include "def.h"
 #include "gelib.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -173,7 +173,7 @@ void	CenterWindow(id0_word_t w,id0_word_t h)
 
 void CheckKeys (void)
 {
-	extern id0_boolean_t autofire;
+	//extern id0_boolean_t autofire;
 
 	if (screenfaded)			// don't do anything with a faded screen
 		return;
@@ -578,7 +578,7 @@ void GetNewObj (id0_boolean_t usedummy)
 		lastobj->next = newobj;
 	newobj->prev = lastobj;	// newobj->next is allready NULL from memset
 
-	newobj->active = false;
+	newobj->active = no/*false*/;
 	lastobj = newobj;
 
 	objectcount++;
@@ -599,7 +599,7 @@ void GetNewObj (id0_boolean_t usedummy)
 
 void RemoveObj (objtype *gone)
 {
-	objtype **spotat;
+	//objtype **spotat;
 
 	if (gone == player)
 		Quit ("RemoveObj: Tried to remove the player!");
@@ -786,17 +786,17 @@ void PlayLoop (void)
 
 //	id0_int_t originx=0;
 //	id0_int_t i=100;
-	id0_signed_long_t dx,dy,radius,psin,pcos,newx,newy;
-	id0_int_t		give;
+	id0_signed_long_t dx,dy/*,radius*/,psin,pcos,newx,newy;
+	//id0_int_t		give;
 	id0_short_t objnum;
 	id0_signed_long_t ox,oy,xl,xh,yl,yh,px,py,norm_dx,norm_dy;
 	id0_short_t o_radius;
 
-	void (*think)();
+	void (*think)(struct objstruct *); // REFKEEN: C++ patch
 
 	ingame = true;
 	SD_SetTimeCount(0);
-	playstate = 0;
+	playstate = (exittype)0;
 	//playstate = TimeCount = 0;
 	gamestate.shotpower = handheight = 0;
 	pointcount = pointsleft = 0;
@@ -872,7 +872,7 @@ void PlayLoop (void)
 					obj->ticcount-=realtics;
 					while ( obj->ticcount <= 0)
 					{
-						think = obj->state->think;
+						think = obj->state->thinkptr;
 						if (think)
 						{
 							statetype *oldstate=obj->state;
@@ -903,7 +903,7 @@ void PlayLoop (void)
 					}
 				}
 
-				think =	obj->state->think;
+				think =	obj->state->thinkptr;
 				if (think)
 				{
 					think (obj);

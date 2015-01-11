@@ -19,7 +19,7 @@
 // C3_PLAY.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -37,7 +37,8 @@
 =============================================================================
 */
 
-id0_boolean_t ShootPlayer (objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state);
+// REFKEEN - Use classtype instead of short for obclass
+id0_boolean_t ShootPlayer (objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state);
 void T_ShootPlayer(objtype *ob);
 
 /*
@@ -92,10 +93,10 @@ statetype s_demondie3 = {DEMONDIE3PIC,0,NULL,&s_demondie3};
 void SpawnDemon (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_demon1,PIXRADIUS*35);
-	new->obclass = demonobj;
-	new->speed = 2048;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(30);
+	newobj->obclass = demonobj;
+	newobj->speed = 2048;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(30);
 }
 
 
@@ -135,10 +136,10 @@ statetype s_trolldie3 = {TROLLDIE3PIC, 0, NULL, &s_trolldie3};
 void SpawnTroll (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_troll1,35*PIXRADIUS);
-	new->speed = 2500;
-	new->obclass = trollobj;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(15);
+	newobj->speed = 2500;
+	newobj->obclass = trollobj;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(15);
 }
 
 
@@ -178,10 +179,10 @@ statetype s_cyborg_demondie3 = {CYBORGDIE2PIC, 20, NULL, &s_cyborg_demondie3};
 void SpawnCyborgDemon (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex, tiley, &s_cyborg_demon1, PIXRADIUS*35);
-	new->obclass	= cyborgdemonobj;
-	new->speed = 2048;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(30);
+	newobj->obclass	= cyborgdemonobj;
+	newobj->speed = 2048;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(30);
 }
 
 
@@ -248,11 +249,11 @@ statetype s_invis_death3 = {INVIS_DEATH3PIC, 20, NULL, &s_invis_death3};
 void SpawnInvisDude(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex, tiley, &s_invis_walk, PIXRADIUS*20);
-	new->obclass	= invisdudeobj;
-	new->speed		= 2048;
-	new->flags		|= of_shootable;
-	new->hitpoints	= EasyHitPoints(20);
-	new->temp1		= 0;		// for random flashing of pictures
+	newobj->obclass	= invisdudeobj;
+	newobj->speed		= 2048;
+	newobj->flags		|= of_shootable;
+	newobj->hitpoints	= EasyHitPoints(20);
+	newobj->temp1		= 0;		// for random flashing of pictures
 }
 
 
@@ -326,13 +327,13 @@ statetype s_bounce2 = {PSHOT2PIC, 8, &T_Bounce, &s_bounce1};
 void SpawnBounce (id0_int_t tilex, id0_int_t tiley, id0_boolean_t towest)
 {
 	SpawnNewObj(tilex, tiley, &s_bounce1, 24*PIXRADIUS);
-	new->obclass = bounceobj;
-	new->hitpoints = EasyHitPoints(10);
-	new->flags |= of_shootable;
+	newobj->obclass = bounceobj;
+	newobj->hitpoints = EasyHitPoints(10);
+	newobj->flags |= of_shootable;
 	if (towest)
-		new->dir = west;
+		newobj->dir = west;
 	else
-		new->dir = north;
+		newobj->dir = north;
 }
 
 
@@ -469,9 +470,9 @@ void SpawnGrelminar (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t DropKey;
 
 	SpawnNewObj(tilex,tiley,&s_grel1,PIXRADIUS*25);
-	new->obclass = grelmobj;
-	new->speed = 2048;
-	new->flags |= of_shootable;
+	newobj->obclass = grelmobj;
+	newobj->speed = 2048;
+	newobj->flags |= of_shootable;
 
 	//
 	// if Grelminar is to drop a key the info-plane id0_byte_t to the right
@@ -479,9 +480,9 @@ void SpawnGrelminar (id0_int_t tilex, id0_int_t tiley)
 	//
 	DropKey = *(mapsegs[2]+farmapylookup[tiley]+tilex+1);
 	if (DropKey)
-		new->temp1 = DropKey>>8;
+		newobj->temp1 = DropKey>>8;
 	else
-		new->temp1 = 0;
+		newobj->temp1 = 0;
 
 	//
 	// The info-plane id0_byte_t below Grelminar will determine how powerful
@@ -493,13 +494,13 @@ void SpawnGrelminar (id0_int_t tilex, id0_int_t tiley)
 	Grel_Hard = *(mapsegs[2]+farmapylookup[tiley+1]+tilex);
 	if (Grel_Hard)
 	{
-		new->temp2 = Grel_Hard>>8;
-		new->hitpoints = EasyHitPoints((new->temp2 * 10));
+		newobj->temp2 = Grel_Hard>>8;
+		newobj->hitpoints = EasyHitPoints((newobj->temp2 * 10));
 	}
 	else
 	{
-		new->hitpoints = EasyHitPoints(100);
-		new->temp2 = 10;
+		newobj->hitpoints = EasyHitPoints(100);
+		newobj->temp2 = 10;
 	}
 }
 
@@ -551,19 +552,19 @@ void T_Grelm_DropKey(objtype *ob)
 //--------------------------------------------------------------------------
 // ShootPlayer()
 //--------------------------------------------------------------------------
-id0_boolean_t ShootPlayer(objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state)
-{
-	id0_int_t AngleNearPlayer(objtype *ob); // REFKEEN - Mute compilation error
 
+// REFKEEN - Use classtype instead of short for obclass
+id0_boolean_t ShootPlayer(objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state)
+{
 	id0_int_t angle = AngleNearPlayer(ob);
 
 	if (angle == -1)
 		return(false);
 
 	DSpawnNewObjFrac (ob->x,ob->y,state,PIXRADIUS*14);
-	new->obclass = obclass;
-	new->active = always;
-	new->angle = angle;
+	newobj->obclass = obclass;
+	newobj->active = always;
+	newobj->angle = angle;
 
 	//
 	//	If the shot is Grelminar's, then determine the power of the shot.
@@ -573,11 +574,11 @@ id0_boolean_t ShootPlayer(objtype *ob, id0_short_t obclass, id0_short_t speed, s
 	//
 	if (obclass == gshotobj)
 	{
-		new->speed = 10000;
-		new->temp1 = speed*3;
+		newobj->speed = 10000;
+		newobj->temp1 = speed*3;
 	}
 	else
-		new->speed = speed;
+		newobj->speed = speed;
 
 
 	return(true);

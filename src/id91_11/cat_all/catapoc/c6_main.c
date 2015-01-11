@@ -25,7 +25,7 @@
 
 #include "def.h"
 #include "gelib.h"
-#pragma hdrstop
+//#pragma hdrstop
 //#include <dir.h>
 
 /*
@@ -77,7 +77,7 @@ exittype	playstate;
 id0_char_t	SlowMode = 0;
 id0_int_t starting_level;
 
-id0_short_t NumGames=0;
+//id0_short_t NumGames=0; // REFKEEN - Already defined in gelib.c
 id0_unsigned_t Flags=0;
 
 id0_boolean_t LoadShapes = true;
@@ -364,7 +364,7 @@ void NewGame (void)
 ==================
 */
 
-id0_boolean_t	SaveTheGame(id0_int_t file)
+id0_boolean_t	SaveTheGame(int file)
 {
 	id0_word_t	i,compressed,expanded;
 	objtype	*o;
@@ -439,10 +439,10 @@ id0_boolean_t	SaveTheGame(id0_int_t file)
 ==================
 */
 
-id0_boolean_t	LoadTheGame(id0_int_t file)
+id0_boolean_t	LoadTheGame(int file)
 {
 	id0_unsigned_t	i,x,y;
-	objtype		*obj,*prev,*next,*followed;
+	objtype		/**obj,*/*prev,*next,*followed;
 	id0_unsigned_t	compressed,expanded;
 	id0_unsigned_t	id0_far *map,tile;
 	memptr		bigbuffer;
@@ -616,7 +616,7 @@ void ShutdownId (void)
 
 void InitGame (void)
 {
-	id0_unsigned_t	segstart,seglength;
+	//id0_unsigned_t	segstart,seglength;
 	id0_int_t			i,x,y;
 	id0_unsigned_t	*blockstart;
 
@@ -725,8 +725,10 @@ void clrscr (void);		// can't include CONIO.H because of name conflicts...
 void Quit (const id0_char_t *error, ...)
 {
 	id0_short_t exit_code=0;
+#ifndef CATALOG
 	void *finscreen;
 	//id0_unsigned_t	finscreen;
+#endif
 
 	va_list ap;
 
@@ -837,7 +839,7 @@ void DisplayDepartment(id0_char_t *text)
 =====================
 */
 
-static	id0_char_t *ParmStrings[] = {"easy","normal","hard",""};
+//static	const id0_char_t *ParmStrings[] = {"easy","normal","hard",""};
 
 void	DemoLoop (void)
 {
@@ -894,9 +896,9 @@ void	DemoLoop (void)
 //-------------------------------------------------------------------------
 void DisplayIntroText()
 {
+#ifdef TEXT_PRESENTER
 	PresenterInfo pi;
 
-#ifdef TEXT_PRESENTER
 	const id0_char_t *toptext = "You stand before the gate leading into the Towne "
 						 "of Morbidity.... "
 						 "^XX";
