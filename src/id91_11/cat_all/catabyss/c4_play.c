@@ -71,6 +71,7 @@ ControlInfo	control;
 id0_boolean_t		running=false; //,slowturn;
 
 id0_int_t			bordertime;
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
 objtype objlist[MAXACTORS],*newobj,*obj,*player,*lastobj,*objfreelist;
 
 id0_unsigned_t	farmapylookup[MAPSIZE];

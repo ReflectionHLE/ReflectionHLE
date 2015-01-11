@@ -725,6 +725,7 @@ void StopTime();
 void DrawText (id0_boolean_t draw_text_whether_it_needs_it_or_not);
 void DrawHealth(void);
 
+
 /*
 =============================================================================
 

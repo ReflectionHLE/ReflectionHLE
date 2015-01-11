@@ -74,7 +74,8 @@ ControlInfo	control;
 id0_boolean_t		running=false; //,slowturn;
 
 id0_int_t			bordertime;
-objtype objlist[MAXACTORS],*new,*obj,*player,*lastobj,*objfreelist;
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
+objtype objlist[MAXACTORS],*newobj,*obj,*player,*lastobj,*objfreelist;
 
 #if USE_INERT_LIST
 inertobjtype inertobjlist[MAXINERTOBJ],*inert;
@@ -134,7 +135,7 @@ id0_unsigned_t actorat[MAPSIZE][MAPSIZE];
 
 objtype dummyobj;
 
-id0_int_t bordertime;
+//id0_int_t bordertime;
 id0_int_t	objectcount;
 
 void StopMusic(void);
@@ -533,7 +534,7 @@ void InitObjList (void)
 // give the player and score the first free spots
 //
 	GetNewObj (false);
-	player = new;
+	player = newobj;
 
 #if USE_INERT_LIST
 	inert = inertobjlist;
@@ -548,7 +549,7 @@ void InitObjList (void)
 =
 = GetNewObj
 =
-= Sets the global variable new to point to a free spot in objlist.
+= Sets the global variable newobj to point to a free spot in objlist.
 = The free spot is inserted at the end of the liked list
 =
 = When the object list is full, the caller can either have it bomb out ot
@@ -563,22 +564,22 @@ void GetNewObj (id0_boolean_t usedummy)
 	{
 		if (usedummy)
 		{
-			new = &dummyobj;
+			newobj = &dummyobj;
 			return;
 		}
 		Quit ("GetNewObj: No free spots in objlist!");
 	}
 
-	new = objfreelist;
-	objfreelist = new->prev;
-	memset (new,0,sizeof(*new));
+	newobj = objfreelist;
+	objfreelist = newobj->prev;
+	memset (newobj,0,sizeof(*newobj));
 
 	if (lastobj)
-		lastobj->next = new;
-	new->prev = lastobj;	// new->next is allready NULL from memset
+		lastobj->next = newobj;
+	newobj->prev = lastobj;	// newobj->next is allready NULL from memset
 
-	new->active = false;
-	lastobj = new;
+	newobj->active = false;
+	lastobj = newobj;
 
 	objectcount++;
 }

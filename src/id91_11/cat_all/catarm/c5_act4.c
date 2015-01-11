@@ -19,7 +19,7 @@
 // C4_PLAY.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -121,8 +121,8 @@ void SpawnArch (id0_int_t tilex, id0_int_t tiley, id0_int_t num)
 		break;
 	}
 	ASpawnNewObj(tilex,tiley,objstate,PIXRADIUS*35);
-	new->obclass = solidobj;
-	new->flags &= ~of_shootable;
+	newobj->obclass = solidobj;
+	newobj->flags &= ~of_shootable;
 }
 
 
@@ -181,11 +181,11 @@ void SpawnMiscObjects(id0_int_t tilex, id0_int_t tiley, id0_int_t num)
 	}
 
 	SpawnNewObj(tilex,tiley,objstate,PIXRADIUS*35);
-	new->obclass = realsolidobj;
+	newobj->obclass = realsolidobj;
 	if (num == 2)
-		new->flags &= ~of_shootable;
+		newobj->flags &= ~of_shootable;
 	else
-		new->flags |= of_shootable;
+		newobj->flags |= of_shootable;
 }
 
 
@@ -202,8 +202,8 @@ statetype s_column = {COLUMNPIC, 20, NULL, &s_column};
 void SpawnColumn(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_column,PIXRADIUS*35);
-	new->obclass = realsolidobj;
-	new->flags |= of_shootable;
+	newobj->obclass = realsolidobj;
+	newobj->flags |= of_shootable;
 }
 
 
@@ -224,8 +224,8 @@ statetype s_sulphur_gas_3 = {SULPHUR_GAS_3PIC, 20, NULL, &s_sulphur_gas_1};
 void SpawnSulphurGas(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_sulphur_gas_1,PIXRADIUS*35);
-	new->obclass = realsolidobj;
-	new->flags &= ~of_shootable;
+	newobj->obclass = realsolidobj;
+	newobj->flags &= ~of_shootable;
 }
 
 
@@ -244,8 +244,8 @@ statetype s_fire_pot_2 = {FIRE_POT_2PIC, 20, NULL, &s_fire_pot_1};
 void SpawnFirePot(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_fire_pot_1,PIXRADIUS*35);
-	new->obclass = realsolidobj;
-	new->flags |= of_shootable;
+	newobj->obclass = realsolidobj;
+	newobj->flags |= of_shootable;
 
 }
 
@@ -261,8 +261,8 @@ statetype s_fountain = {WFOUNTAINPIC, 20, NULL, &s_fountain};
 void SpawnFountain(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_fountain,PIXRADIUS*35);
-	new->obclass = realsolidobj;
-	new->flags |= of_shootable;
+	newobj->obclass = realsolidobj;
+	newobj->flags |= of_shootable;
 }
 
 #endif
@@ -293,16 +293,16 @@ statetype s_force_field_die1 = {0,0,NULL,NULL};
 void SpawnForceField(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_force_field_1,PIXRADIUS*35);
-	new->obclass = solidobj;
-	new->hitpoints = EasyHitPoints(20);
-	new->flags |= of_forcefield;		//sets bit 7 :: makes it nonsolid, but also detectable
+	newobj->obclass = solidobj;
+	newobj->hitpoints = EasyHitPoints(20);
+	newobj->flags |= of_forcefield;		//sets bit 7 :: makes it nonsolid, but also detectable
 												//		without adding another object type!
-	new->flags |= of_shootable;
+	newobj->flags |= of_shootable;
 }
 
 void T_ForceField(objtype *ob)
 {
-	id0_long_t move,deltax,deltay,size;
+	id0_long_t /*move,*/deltax,deltay,size;
 
 	size = (id0_long_t)ob->size + player->size;
 
@@ -336,15 +336,15 @@ void SpawnSkeletonHanging(id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t tile;
 
 	SpawnNewObj(tilex,tiley,&s_skeleton_hanging,PIXRADIUS*35);
-	new->obclass = solidobj;
+	newobj->obclass = solidobj;
 
 	tile = *(mapsegs[2]+farmapylookup[tiley+1]+tilex);
 	if (tile)
-		new->temp1 = (tile>>8)*30;
+		newobj->temp1 = (tile>>8)*30;
 	else
-		new->temp1 = (3*60)+BE_Cross_Brandom(4*60);
+		newobj->temp1 = (3*60)+BE_Cross_Brandom(4*60);
 
-	new->flags |= of_shootable;
+	newobj->flags |= of_shootable;
 }
 
 void T_SkelHangThink(objtype *ob)

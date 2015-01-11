@@ -61,7 +61,7 @@ id0_int_t	maporgy;
 // REFKEEN - Give this enum some type so we can build code as C++
 typedef enum {mapview,tilemapview,actoratview,visview,mapseg2,lastview} viewtypetype
 viewtypeenum viewtype;
-enum {mapview,tilemapview,actoratview,visview,mapseg2,lastview}	viewtype;
+//enum {mapview,tilemapview,actoratview,visview,mapseg2,lastview}	viewtype;
 #endif
 
 void ViewMap (void);

@@ -95,7 +95,7 @@ else
 	CXXOPT=-O2
 endif
 
-INTCXXFLAGS+= $(CXXOPT) `$(SDLCONFIG) --cflags` -Wall -Wno-pointer-sign -Wno-unknown-pragmas -Wno-unused-variable -Wno-missing-braces -Wno-switch
+INTCXXFLAGS+= $(CXXOPT) `$(SDLCONFIG) --cflags` -Wall -Wno-missing-braces -Wno-switch -Wno-parentheses -Wno-unused-result -Wno-maybe-uninitialized -Wno-char-subscripts
 #We need -lm for dbopl
 INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
 

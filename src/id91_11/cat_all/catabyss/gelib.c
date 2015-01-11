@@ -42,7 +42,7 @@ id0_boolean_t InLoadSaveGame = false;
 //AudioDeviceType ge_DigiMode;
 id0_boolean_t ConserveMemory = false;
 id0_char_t GameListNames[MAX_GAMELIST_NAMES+1][FNAME_LEN],current_disk=1;
-id0_short_t NumGames = 0; // REFKEEN - Set to 0 here rather than in c4_main.c
+id0_short_t NumGames = 0; // REFKEEN - Set to 0 here rather than in c*_main.c
 id0_short_t PPT_LeftEdge=0,PPT_RightEdge=320;
 id0_boolean_t LeaveDriveOn=false,ge_textmode=true;
 id0_char_t Filename[FILENAME_LEN+1], ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DATA)];
@@ -2240,7 +2240,7 @@ void FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 {
 	id0_unsigned_t        drawofs,pagedelta;
 	id0_unsigned_char_t   maskb[8] = {1,2,4,8,16,32,64,128};
-	id0_unsigned_t        x,y,p,frame;
+	id0_unsigned_t        x,y,p/*,frame*/;
 	id0_longword_t        rndval; // REFKEEN Now unsigned (so right shifts are well-defined)
 	//id0_long_t            rndval;
 	ScanCode			 lastLastScan=LastScan=0;
@@ -2260,7 +2260,7 @@ asm     mov     al,SC_MAPMASK
 asm     out     dx,al
 #endif
 
-	frame=0;
+	//frame=0;
 	SD_SetTimeCount(0);
 	//TimeCount=frame=0;
 	do      // while (1)
@@ -2401,11 +2401,12 @@ noxor:
 			if (rndval == 1)                // entire sequence has been completed
 				goto exitfunc;
 		}
-		frame++;
 		// REFKEEN - Code is commented out as in the original sources
 		// (of C4, not C3), but better have *some* delay at the least
 		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		// REFKEEN - No need to increment frame, comment it out as well
 #if 0
+		frame++;
 		while (TimeCount<frame)         // don't go too fast
 		;
 #endif

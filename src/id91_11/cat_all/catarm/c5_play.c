@@ -20,7 +20,7 @@
 
 #include "def.h"
 #include "gelib.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -74,7 +74,8 @@ ControlInfo	control;
 id0_boolean_t		running=false; //,slowturn;
 
 id0_int_t			bordertime;
-objtype objlist[MAXACTORS],*new,*obj,*player,*lastobj,*objfreelist;
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
+objtype objlist[MAXACTORS],*newobj,*obj,*player,*lastobj,*objfreelist;
 
 #if USE_INERT_LIST
 inertobjtype inertobjlist[MAXINERTOBJ],*inert;
@@ -134,7 +135,7 @@ id0_unsigned_t actorat[MAPSIZE][MAPSIZE];
 
 objtype dummyobj;
 
-id0_int_t bordertime;
+//id0_int_t bordertime;
 id0_int_t	objectcount;
 
 void StopMusic(void);
@@ -172,7 +173,7 @@ void	CenterWindow(id0_word_t w,id0_word_t h)
 
 void CheckKeys (void)
 {
-	extern id0_boolean_t autofire;
+	//extern id0_boolean_t autofire;
 
 	if (screenfaded)			// don't do anything with a faded screen
 		return;
@@ -532,7 +533,7 @@ void InitObjList (void)
 // give the player and score the first free spots
 //
 	GetNewObj (false);
-	player = new;
+	player = newobj;
 
 #if USE_INERT_LIST
 	inert = inertobjlist;
@@ -547,7 +548,7 @@ void InitObjList (void)
 =
 = GetNewObj
 =
-= Sets the global variable new to point to a free spot in objlist.
+= Sets the global variable newobj to point to a free spot in objlist.
 = The free spot is inserted at the end of the liked list
 =
 = When the object list is full, the caller can either have it bomb out ot
@@ -562,22 +563,22 @@ void GetNewObj (id0_boolean_t usedummy)
 	{
 		if (usedummy)
 		{
-			new = &dummyobj;
+			newobj = &dummyobj;
 			return;
 		}
 		Quit ("GetNewObj: No free spots in objlist!");
 	}
 
-	new = objfreelist;
-	objfreelist = new->prev;
-	memset (new,0,sizeof(*new));
+	newobj = objfreelist;
+	objfreelist = newobj->prev;
+	memset (newobj,0,sizeof(*newobj));
 
 	if (lastobj)
-		lastobj->next = new;
-	new->prev = lastobj;	// new->next is allready NULL from memset
+		lastobj->next = newobj;
+	newobj->prev = lastobj;	// newobj->next is allready NULL from memset
 
-	new->active = false;
-	lastobj = new;
+	newobj->active = no/*false*/;
+	lastobj = newobj;
 
 	objectcount++;
 }
@@ -597,7 +598,7 @@ void GetNewObj (id0_boolean_t usedummy)
 
 void RemoveObj (objtype *gone)
 {
-	objtype **spotat;
+	//objtype **spotat;
 
 	if (gone == player)
 		Quit ("RemoveObj: Tried to remove the player!");
@@ -784,17 +785,17 @@ void PlayLoop (void)
 
 //	id0_int_t originx=0;
 //	id0_int_t i=100;
-	id0_signed_long_t dx,dy,radius,psin,pcos,newx,newy;
-	id0_int_t		give;
+	id0_signed_long_t dx,dy/*,radius*/,psin,pcos,newx,newy;
+	//id0_int_t		give;
 	id0_short_t objnum;
 	id0_signed_long_t ox,oy,xl,xh,yl,yh,px,py,norm_dx,norm_dy;
 	id0_short_t o_radius;
 
-	void (*think)();
+	void (*think)(struct objstruct *); // REFKEEN: C++ patch
 
 	ingame = true;
 	SD_SetTimeCount(0);
-	playstate = 0;
+	playstate = (exittype)0;
 	//playstate = TimeCount = 0;
 	gamestate.shotpower = handheight = 0;
 	pointcount = pointsleft = 0;
@@ -870,7 +871,7 @@ void PlayLoop (void)
 					obj->ticcount-=realtics;
 					while ( obj->ticcount <= 0)
 					{
-						think = obj->state->think;
+						think = obj->state->thinkptr;
 						if (think)
 						{
 							statetype *oldstate=obj->state;
@@ -901,7 +902,7 @@ void PlayLoop (void)
 					}
 				}
 
-				think =	obj->state->think;
+				think =	obj->state->thinkptr;
 				if (think)
 				{
 					think (obj);

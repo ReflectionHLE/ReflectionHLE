@@ -19,7 +19,7 @@
 // C3_PLAY.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -50,7 +50,8 @@
 =============================================================================
 */
 
-id0_boolean_t ShootPlayer (objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state);
+// REFKEEN - Use classtype instead of short for obclass
+id0_boolean_t ShootPlayer (objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state);
 void T_ShootPlayer(objtype *ob);
 
 /*
@@ -120,11 +121,11 @@ statetype s_red_demondie4 = {RED_DEMONDIE3PIC,10,NULL,&s_red_demondie4};
 void SpawnRedDemon (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_red_demon1,PIXRADIUS*35);
-	new->obclass = reddemonobj;
-	new->speed = 2048;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(50);
-	new->temp1 = 25;
+	newobj->obclass = reddemonobj;
+	newobj->speed = 2048;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(50);
+	newobj->temp1 = 25;
 }
 
 
@@ -236,9 +237,9 @@ void SpawnGrelminar (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t DropKey;
 
 	SpawnNewObj(tilex,tiley,&s_grel1,PIXRADIUS*35);
-	new->obclass = grelmobj;
-	new->speed = 2048;
-	new->flags |= of_shootable;
+	newobj->obclass = grelmobj;
+	newobj->speed = 2048;
+	newobj->flags |= of_shootable;
 
 	//
 	// if Grelminar is to drop a key the info-plane id0_byte_t to the right
@@ -246,9 +247,9 @@ void SpawnGrelminar (id0_int_t tilex, id0_int_t tiley)
 	//
 	DropKey = *(mapsegs[2]+farmapylookup[tiley]+tilex+1);
 	if (DropKey)
-		new->temp1 = DropKey>>8;
+		newobj->temp1 = DropKey>>8;
 	else
-		new->temp1 = 0;
+		newobj->temp1 = 0;
 
 	//
 	// The info-plane id0_byte_t below Grelminar will determine how powerful
@@ -260,11 +261,11 @@ void SpawnGrelminar (id0_int_t tilex, id0_int_t tiley)
 	Grel_Hard = *(mapsegs[2]+farmapylookup[tiley+1]+tilex);
 	if (Grel_Hard)
 	{
-		new->temp2 = Grel_Hard>>8;
-		new->hitpoints = EasyHitPoints((new->temp2 * 10));
+		newobj->temp2 = Grel_Hard>>8;
+		newobj->hitpoints = EasyHitPoints((newobj->temp2 * 10));
 	}
 	else
-		new->hitpoints = EasyHitPoints(100);
+		newobj->hitpoints = EasyHitPoints(100);
 }
 
 
@@ -352,11 +353,11 @@ statetype s_batdie2 = {BATDIE2PIC,18,NULL,NULL};
 void SpawnBat (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_bat1,PIXRADIUS*35);
-	new->obclass = batobj;
-	new->flags |= of_shootable;
+	newobj->obclass = batobj;
+	newobj->flags |= of_shootable;
 
-	new->hitpoints = 1;
-	new->speed = 2000;
+	newobj->hitpoints = 1;
+	newobj->speed = 2000;
 }
 
 
@@ -507,7 +508,7 @@ void T_Bat (objtype *ob)
 void T_BatPast (objtype *ob)
 {
 	id0_long_t move;
-	id0_long_t deltax,deltay,size;
+	//id0_long_t deltax,deltay,size;
 
 	move = ob->speed*tics;
 
@@ -604,7 +605,7 @@ void SpawnGodess (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t tile;
 
 	SpawnNewObj(tilex,tiley,&s_godess_statue1,PIXRADIUS*35);
-	ob = new;
+	ob = newobj;
 	zombie_mode = zm_wait_for_dark;
 
 	tile = *(mapsegs[2]+farmapylookup[tiley+1]+tilex);
@@ -619,11 +620,11 @@ void SpawnGodess (id0_int_t tilex, id0_int_t tiley)
 			zombie_base_delay = 0;
 	}
 
-	new->obclass = realsolidobj;//godessobj;
-	new->speed = 3000;
-	new->flags |= of_shootable;
-	new->flags &= ~of_tree;
-//	new->hitpoints = EasyHitPoints(10);
+	newobj->obclass = realsolidobj;//godessobj;
+	newobj->speed = 3000;
+	newobj->flags |= of_shootable;
+	newobj->flags &= ~of_tree;
+//	newobj->hitpoints = EasyHitPoints(10);
 }
 
 
@@ -672,7 +673,7 @@ void SpawnAnt(id0_int_t tilex, id0_int_t tiley)
 	objtype *ob;
 	id0_unsigned_t tile;
 	SpawnNewObj(tilex,tiley,&s_ant_wait,PIXRADIUS*35);
-	ob = new;
+	ob = newobj;
 
 	tile = *(mapsegs[2]+farmapylookup[tiley+1]+tilex);
 	if (tile)
@@ -682,10 +683,10 @@ void SpawnAnt(id0_int_t tilex, id0_int_t tiley)
 
 	ant_mode = zm_wait_for_dark;
 
-	new->obclass = antobj;
-	new->speed = 1900;
-	new->flags &= ~of_shootable;
-	new->hitpoints = EasyHitPoints(15);
+	newobj->obclass = antobj;
+	newobj->speed = 1900;
+	newobj->flags &= ~of_shootable;
+	newobj->hitpoints = EasyHitPoints(15);
 }
 
 
@@ -751,7 +752,7 @@ void SpawnZombie (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t tile;
 
 	SpawnNewObj(tilex,tiley,&s_zombie_inground,35*PIXRADIUS);
-	ob = new;
+	ob = newobj;
 	zombie_mode = zm_wait_for_dark;
 
 	tile = *(mapsegs[2]+farmapylookup[tiley+1]+tilex);
@@ -766,11 +767,11 @@ void SpawnZombie (id0_int_t tilex, id0_int_t tiley)
 			zombie_base_delay = 0;
 	}
 
-	new->speed = 2500;
-	new->obclass = zombieobj;
-	new->hitpoints = EasyHitPoints(8);
-	new->active = yes;
-	new->flags &= ~of_shootable;
+	newobj->speed = 2500;
+	newobj->obclass = zombieobj;
+	newobj->hitpoints = EasyHitPoints(8);
+	newobj->active = yes;
+	newobj->flags &= ~of_shootable;
 }
 
 
@@ -839,7 +840,7 @@ void SpawnTree(id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t tile;
 
 	SpawnNewObj(tilex,tiley,&s_tree_idle,35*PIXRADIUS);
-	ob = new;
+	ob = newobj;
 	zombie_mode = zm_wait_for_dark;
 
 	tile = *(mapsegs[2]+farmapylookup[tiley+1]+tilex);
@@ -854,12 +855,12 @@ void SpawnTree(id0_int_t tilex, id0_int_t tiley)
 			zombie_base_delay = 0;
 	}
 
-	new->speed = 2500;
-	new->obclass = realsolidobj;
-//	new->hitpoints = EasyHitPoints(12);
-	new->active = yes;
-	new->flags |= of_shootable;
-	new->flags |= of_tree;
+	newobj->speed = 2500;
+	newobj->obclass = realsolidobj;
+//	newobj->hitpoints = EasyHitPoints(12);
+	newobj->active = yes;
+	newobj->flags |= of_shootable;
+	newobj->flags |= of_tree;
 }
 
 //--------------------------------------------------------------------------
@@ -1021,7 +1022,9 @@ void T_AwakeThink(objtype *obj)
 //--------------------------------------------------------------------------
 // ShootPlayer()
 //--------------------------------------------------------------------------
-id0_boolean_t ShootPlayer(objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state)
+
+// REFKEEN - Use classtype instead of short for obclass
+id0_boolean_t ShootPlayer(objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state)
 {
 	id0_int_t AngleNearPlayer(objtype *ob); // REFKEEN - Mute compilation error
 
@@ -1031,9 +1034,9 @@ id0_boolean_t ShootPlayer(objtype *ob, id0_short_t obclass, id0_short_t speed, s
 		return(false);
 
 	DSpawnNewObjFrac (ob->x,ob->y,state,PIXRADIUS*35);
-	new->obclass = obclass;
-	new->active = always;
-	new->angle = angle;
+	newobj->obclass = obclass;
+	newobj->active = always;
+	newobj->angle = angle;
 
 	//
 	//	If the shot is Grelminar's, then determine the power of the shot.
@@ -1043,11 +1046,11 @@ id0_boolean_t ShootPlayer(objtype *ob, id0_short_t obclass, id0_short_t speed, s
 	//
 	if (obclass == gshotobj)
 	{
-		new->speed = 10000;
-		new->temp1 = speed*3;
+		newobj->speed = 10000;
+		newobj->temp1 = speed*3;
 	}
 	else
-		new->speed = speed;
+		newobj->speed = speed;
 
 
 	return(true);

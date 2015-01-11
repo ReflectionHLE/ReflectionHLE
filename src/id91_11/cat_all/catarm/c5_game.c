@@ -22,7 +22,7 @@
 
 #include "def.h"
 #include "gelib.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 #ifdef PROFILE
 #include "time.h"
@@ -284,7 +284,7 @@ void CashPoints(void);
 void ScanInfoPlane (void)
 {
 	id0_unsigned_char_t hibyte;
-	id0_unsigned_t        x,y,i,j;
+	id0_unsigned_t        x,y/*,i,j*/;
 	id0_unsigned_int_t tile;
 	id0_unsigned_t        id0_far     *start;
 
@@ -784,7 +784,7 @@ void CacheScaleds (void)
 
 void SetupGameLevel ()
 {
-	id0_int_t     x,y,i,loop;
+	id0_int_t     x,y/*,i,loop*/;
 	id0_unsigned_t        id0_far *map,tile,id0_far *spotptr,spot;
 	id0_unsigned_t                search_tile;
 	id0_boolean_t		exploding_walls_present = false;
@@ -908,7 +908,7 @@ void SetupGameLevel ()
 
 	if (exploding_walls_present)
 	{
-				extern id0_unsigned_t gnd_colors[];
+				//extern id0_unsigned_t gnd_colors[];
 
 				if (gcolor == 0x0101)
 					tileneeded[WATEREXP] = tileneeded[WATEREXP+1] = tileneeded[WATEREXP+2] = true;
@@ -1049,7 +1049,7 @@ asm     mov     ds,ax                                   // restore turbo's data 
 
 void Victory (id0_boolean_t playsounds)
 {
-	struct Shape shape;
+	//struct Shape shape;
 
 	if (playsounds)
 	{
@@ -1146,7 +1146,7 @@ void NormalScreen (void)
 
 void DrawPlayScreen (void)
 {
-	id0_int_t     i,j,p,m;
+	id0_int_t     i/*,j,p,m*/;
 
 	screenpage = 0;
 
@@ -1418,7 +1418,7 @@ void LoadLatchMem (void)
 
 void FizzleOut (id0_int_t showlevel)
 {
-	id0_unsigned_t page1,page2;
+	//id0_unsigned_t page1,page2;
 //
 // fizzle fade screen to grey
 //
@@ -1579,8 +1579,8 @@ void    CheckHighScore (id0_long_t score,id0_word_t other)
 void GameLoop (void)
 {
 	id0_boolean_t wait = false;
-	id0_int_t i,xl,yl,xh,yh;
-	id0_char_t num[20];
+	//id0_int_t i,xl,yl,xh,yh;
+	//id0_char_t num[20];
 #ifdef PROFILE
 	clock_t start,end;
 #endif
@@ -1601,7 +1601,8 @@ restart:
 
 	do
 	{
-		playstate = gd_Continue;
+		// REFKEEN - Looks like a hack (cast added for C++)
+		playstate = (exittype)gd_Continue;
 		if (!loadedgame)
 			SetupGameLevel ();
 		else
@@ -1661,7 +1662,7 @@ itoa(end-start,str,10);
 		case ex_victorious:
 			screenpage = 0;
 			bufferofs = 0;
-			status_flag = 0;
+			status_flag = S_NONE/*0*/;
 			return;
 		}
 

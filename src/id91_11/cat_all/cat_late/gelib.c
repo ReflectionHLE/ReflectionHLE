@@ -45,7 +45,7 @@ id0_boolean_t InLoadSaveGame = false;
 //AudioDeviceType ge_DigiMode;
 id0_boolean_t ConserveMemory = false;
 id0_char_t GameListNames[MAX_GAMELIST_NAMES+1][FNAME_LEN],current_disk=1;
-id0_short_t NumGames;
+id0_short_t NumGames = 0; // REFKEEN - Set to 0 here rather than in c*_main.c
 id0_short_t PPT_LeftEdge=0,PPT_RightEdge=320;
 id0_boolean_t LeaveDriveOn=false,ge_textmode=true;
 id0_char_t Filename[FILENAME_LEN+1], ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DATA)];
@@ -240,7 +240,7 @@ void BlackPalette()
 {
 	extern id0_char_t colors[7][17];
 
-	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[0]);
+	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[0]);
 	screenfaded = true;
 }
 
@@ -251,7 +251,7 @@ void ColoredPalette()
 {
 	extern id0_char_t colors[7][17];
 
-	BE_SDL_EGASetPaletteAndBorder((id0_char_t *)&colors[3]);
+	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
 	screenfaded = false;
 }
 
@@ -259,7 +259,7 @@ void ColoredPalette()
 //
 // Verify()
 //
-id0_long_t Verify(id0_char_t *filename)
+id0_long_t Verify(const id0_char_t *filename)
 {
 	int handle;
 	id0_long_t size;
@@ -472,7 +472,7 @@ id0_boolean_t GE_LoadGame()
 	if (handle==-1)
 		goto EXIT_FUNC;
 
-	if ((!CA_FarRead(handle,(void id0_far *)&ID,sizeof(ID))) || (!CA_FarRead(handle,(void id0_far *)&VER,sizeof(VER))))
+	if ((!CA_FarRead(handle,(id0_byte_t id0_far *)&ID,sizeof(ID))) || (!CA_FarRead(handle,(id0_byte_t id0_far *)&VER,sizeof(VER))))
 		return(false);
 
 	if ((strcmp(ID,GAMENAME)) || (strcmp(VER,SAVEVER_DATA)))
@@ -842,7 +842,7 @@ id0_byte_t bio_readch(BufferedIO *bio)
 		bio_fillbuffer(bio);
 	}
 
-	buffer = (bio->buffer) + (bio->offset++);
+	buffer = (id0_byte_t *)(bio->buffer) + (bio->offset++);
 	//buffer = MK_FP(bio->buffer,bio->offset++);
 
 	return(*buffer);
@@ -877,7 +877,7 @@ void bio_fillbuffer(BufferedIO *bio)
 			bytes_requested = bio_length;
 
 		read(bio->handle,near_buffer,bytes_requested);
-		memcpy(bio->buffer + bytes_read,near_buffer,bytes_requested);
+		memcpy((id0_byte_t *)(bio->buffer) + bytes_read,near_buffer,bytes_requested);
 		//_fmemcpy(MK_FP(bio->buffer,bytes_read),near_buffer,bytes_requested);
 
 		bio_length -= bytes_requested;
@@ -1113,12 +1113,12 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 //
 // GetKeyChoice()
 //
-id0_char_t GetKeyChoice(id0_char_t *choices,id0_boolean_t clear)
+id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 {
 	extern void DoEvents(void);
 
 	id0_boolean_t waiting;
-	id0_char_t *s,*ss;
+	const id0_char_t *s/*,*ss*/;
 
 	IN_ClearKeysDown();
 
@@ -1450,6 +1450,8 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 	{
 		// Print filename and padding spaces.
 		//
+		void US_Printxy(id0_word_t x, id0_word_t y, id0_char_t *text);
+
 		US_Printxy(col+(SPACES*8),row,GameListNames[games_printed]);
 		col += 8*((SPACES*2)+8);
 
@@ -1714,7 +1716,7 @@ void FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 {
 	id0_unsigned_t        drawofs,pagedelta;
 	id0_unsigned_char_t maskb[8] = {1,2,4,8,16,32,64,128};
-	id0_unsigned_t        x,y,p,frame;
+	id0_unsigned_t        x,y,p/*,frame*/;
 	id0_longword_t        rndval; // REFKEEN Now unsigned (so right shifts are well-defined)
 	//id0_long_t            rndval;
 	ScanCode			 lastLastScan=LastScan=0;
@@ -1734,7 +1736,7 @@ asm     mov     al,SC_MAPMASK
 asm     out     dx,al
 #endif
 
-	frame=0;
+	//frame=0;
 	SD_SetTimeCount(0);
 	//TimeCount=frame=0;
 	do      // while (1)
@@ -2071,7 +2073,7 @@ void DoFullScreenAnim(id0_char_t *filename, void (*SpawnAll)(), id0_short_t (*Ch
 //--------------------------------------------------------------------------
 // FindFile()
 //--------------------------------------------------------------------------
-id0_boolean_t FindFile(id0_char_t *filename,id0_char_t *disktext,id0_char_t disknum)
+id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum)
 {
 	extern id0_boolean_t splitscreen;
 
@@ -2987,7 +2989,7 @@ void InitPresenterScript(PresenterInfo *pi)
 //-------------------------------------------------------------------------
 void AnimateWallList(void)
 {
-	walltype *wall, *check;
+	walltype *wall/*, *check*/;
 	id0_unsigned_t i;
 	id0_int_t tile,org_tile;
 

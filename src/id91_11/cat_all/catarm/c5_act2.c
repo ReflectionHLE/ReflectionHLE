@@ -19,7 +19,7 @@
 // C3_PLAY.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -51,7 +51,8 @@ void SpawnSkeleton(id0_int_t tilex, id0_int_t tiley);
 =============================================================================
 */
 
-id0_boolean_t ShootPlayer (objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state);
+// REFKEEN - Use classtype instead of short for obclass
+id0_boolean_t ShootPlayer (objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state);
 void T_ShootPlayer(objtype *ob);
 
 /*
@@ -140,18 +141,18 @@ foundtile:;
 	wally += yofs[loop];
 
 	SpawnNewObj(tilex,tiley,&s_wallskel,PIXRADIUS*35);
-	ob = new;
-	new->obclass = wallskelobj;
-	new->speed = 1900;
-	new->flags &= ~of_shootable;
-	new->hitpoints = 12;
+	ob = newobj;
+	newobj->obclass = wallskelobj;
+	newobj->speed = 1900;
+	newobj->flags &= ~of_shootable;
+	newobj->hitpoints = 12;
 
-//	new->tilex = wallx;
-//	new->tiley = wally;
+//	newobj->tilex = wallx;
+//	newobj->tiley = wally;
 	wskel_wallx = wallx;
 	wskel_wally = wally;
 	wskel_base = wallbase;
-	new->active = no;
+	newobj->active = no;
 
 	wskel_mode = wallmode;
 
@@ -262,10 +263,10 @@ statetype s_skel_die3 = {SKELETON_DEATH_2PIC,18,NULL,&s_skel_die3};
 void SpawnSkeleton(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_skel_1,PIXRADIUS*35);
-	new->obclass = skeletonobj;
-	new->speed = 2036;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(12);
+	newobj->obclass = skeletonobj;
+	newobj->speed = 2036;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(12);
 }
 
 
@@ -335,11 +336,11 @@ void SpawnEye(id0_int_t tilex, id0_int_t tiley)
 	objtype *ob;
 
 	SpawnNewObj(tilex,tiley,&s_eye_1,PIXRADIUS*35);
-	ob = new;
-	new->obclass = eyeobj;
-	new->speed = 1200;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(15);
+	ob = newobj;
+	newobj->obclass = eyeobj;
+	newobj->speed = 1200;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(15);
 	eye_mode = em_other1;
 }
 
@@ -405,10 +406,10 @@ statetype s_succubus_shot1 = {SUCCUBUS_SHOT1PIC,12,&T_ShootPlayer,&s_succubus_sh
 void SpawnSuccubus (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_succubus_walk1,PIXRADIUS*30);
-	new->obclass = succubusobj;
-	new->speed = 2500;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(12);
+	newobj->obclass = succubusobj;
+	newobj->speed = 2500;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(12);
 }
 
 /*
@@ -482,10 +483,10 @@ statetype s_mshot2 = {PSHOT2PIC,8,&T_ShootPlayer,&s_mshot1};
 void SpawnMage (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_mage1,PIXRADIUS*35);
-	new->obclass = mageobj;
-	new->speed = 3072;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(12);
+	newobj->obclass = mageobj;
+	newobj->speed = 3072;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(12);
 }
 
 
@@ -645,12 +646,12 @@ statetype s_bunny_death3 = {BUNNY_DEATH2PIC, 20, NULL, &s_bunny_death3};
 void SpawnBunny (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_bunny_left1,PIXRADIUS*35);
-	new->obclass =	hbunnyobj;
-	new->speed = 1947;
-	new->temp1 = (BE_Cross_Brandom(3))+2;
-	new->temp2 = BE_Cross_Brandom(30);
-	new->flags &= ~of_shootable;
-	new->flags |= LEFTSIDE;				//left side showing}
+	newobj->obclass =	hbunnyobj;
+	newobj->speed = 1947;
+	newobj->temp1 = (BE_Cross_Brandom(3))+2;
+	newobj->temp2 = BE_Cross_Brandom(30);
+	newobj->flags &= ~of_shootable;
+	newobj->flags |= LEFTSIDE;				//left side showing}
 }
 
 /*
@@ -664,7 +665,16 @@ void SpawnBunny (id0_int_t tilex, id0_int_t tiley)
 
 void T_HarmlessBunnyWalk(objtype *ob)
 {
-	id0_int_t valid_dir[8][2] = {{6,5}, {7,6}, {4,7}, {5,4}, {3,2}, {0,3}, {1,0}, {2,1}};
+	// REFKEEN:
+	// 1. Convert to dirtype for C++ (FIXME: Use dir enum names)
+	// 2. There can be a buffer overflow with valid_dir[player_dir][2] when
+	// when player_dir == (dirtype)7, but luckily it looks like it's just
+	// the boolean variable InLoadSaveGame from gelib.c (as of v1.02),
+	// always set to false.
+	dirtype valid_dir[9/*8*/][2] = {{(dirtype)6,(dirtype)5}, {(dirtype)7,(dirtype)6}, {(dirtype)4,(dirtype)7}, {(dirtype)5,(dirtype)4}, {(dirtype)3,(dirtype)2}, {(dirtype)0,(dirtype)3}, {(dirtype)1,(dirtype)0}, {(dirtype)2,(dirtype)1},
+		{(dirtype)0, (dirtype)0} // Buffer overflow workaround
+	};
+	//id0_int_t valid_dir[8][2] = {{6,5}, {7,6}, {4,7}, {5,4}, {3,2}, {0,3}, {1,0}, {2,1}};
 	id0_long_t move;
 	dirtype player_dir;
 	fixed old_x, old_y;
@@ -758,7 +768,11 @@ void T_HarmlessBunnyWalk(objtype *ob)
 			ob->state = &s_bunny_left1;
 			ob->ticcount = ob->state->tictime;
 			ob->flags |= LEFTSIDE;
-			ob->dir = valid_dir[player_dir][2];
+			// REFKEEN - Following the buffer overflow fix above
+			// the original source line may be OK, but better
+			// change it anyway (should have same behaviors)
+			ob->dir = valid_dir[player_dir+1][0];
+			//ob->dir = valid_dir[player_dir][2];
 			return;
 		}
 	}

@@ -19,7 +19,7 @@
 // C3_PLAY.C
 
 #include "def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -50,7 +50,8 @@
 =============================================================================
 */
 
-id0_boolean_t ShootPlayer (objtype *ob, id0_short_t obclass, id0_short_t speed, statetype *state);
+// REFKEEN - Use classtype instead of short for obclass
+id0_boolean_t ShootPlayer (objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state);
 void T_ShootPlayer(objtype *ob);
 
 id0_short_t zombie_base_delay;
@@ -183,9 +184,9 @@ void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t number)
 	}
 
 	SpawnNewObj (tilex,tiley,state,TILEGLOBAL/2);
-//	new->tileobject = true;
-	new->temp1 = number;
-	new->obclass = bonusobj;
+//	newobj->tileobject = true;
+	newobj->temp1 = number;
+	newobj->obclass = bonusobj;
 
 	switch (number)
 	{
@@ -193,11 +194,11 @@ void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t number)
 		case B_CHEST:
 		case B_BOLT:
 		case B_NUKE:
-			new->flags |= of_shootable;
+			newobj->flags |= of_shootable;
 		break;
 
 		default:
-			new->flags &= ~of_shootable;
+			newobj->flags &= ~of_shootable;
 		break;
 	}
 }
@@ -220,9 +221,9 @@ void SpawnTombstone (id0_int_t tilex, id0_int_t tiley, id0_int_t shape)
 	statetype *state=&s_tombs[shape];
 
 	SpawnNewObj (tilex,tiley,state,TILEGLOBAL/2);
-//	new->tileobject = true;
-	new->obclass = realsolidobj;
-	new->flags |= of_shootable;
+//	newobj->tileobject = true;
+	newobj->obclass = realsolidobj;
+	newobj->flags |= of_shootable;
 }
 
 
@@ -250,9 +251,9 @@ statetype s_ftimebonus2 = {TIMEOBJ2PIC,6,NULL,&s_ftimebonus};
 void SpawnFTime(id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_ftimebonus,TILEGLOBAL/2);
-//	new->tileobject = true;
-	new->obclass = freezeobj;
-	new->flags |= of_shootable;
+//	newobj->tileobject = true;
+	newobj->obclass = freezeobj;
+	newobj->flags |= of_shootable;
 }
 
 /*
@@ -295,18 +296,18 @@ void ExplodeWall (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t tilenum;
 
 	DSpawnNewObj (tilex,tiley,&s_walldie1,0);
-	if (new == &dummyobj)
+	if (newobj == &dummyobj)
 		return;
-	new->obclass = inertobj;
-	new->active = always;
+	newobj->obclass = inertobj;
+	newobj->active = always;
 	if (gcolor == 0x0101)
 		tilenum = WATEREXP;
 	else
 		tilenum = WALLEXP;
-	/*(id0_unsigned_t)actorat[new->tilex][new->tiley] = */tilemap[new->tilex][new->tiley] =
-		*(mapsegs[0]+farmapylookup[new->tiley]+new->tilex) = tilenum;
-	actorat[new->tilex][new->tiley] = tilemap[new->tilex][new->tiley];
-	*(mapsegs[2]+farmapylookup[new->tiley]+new->tilex) &= 0xFF;
+	/*(id0_unsigned_t)actorat[newobj->tilex][newobj->tiley] = */tilemap[newobj->tilex][newobj->tiley] =
+		*(mapsegs[0]+farmapylookup[newobj->tiley]+newobj->tilex) = tilenum;
+	actorat[newobj->tilex][newobj->tiley] = tilemap[newobj->tilex][newobj->tiley];
+	*(mapsegs[2]+farmapylookup[newobj->tiley]+newobj->tilex) &= 0xFF;
 }
 
 
@@ -321,7 +322,7 @@ void ExplodeWall (id0_int_t tilex, id0_int_t tiley)
 void T_WallDie (objtype *ob)
 {
 	extern id0_unsigned_t gcolor;
-	id0_unsigned_t tile,other,spot,x,y;
+	id0_unsigned_t tile/*,other*/,spot,x,y;
 
 	if (++ob->temp1 == 3)
 		tile = 0;
@@ -391,8 +392,8 @@ void SpawnWarp (id0_int_t tilex, id0_int_t tiley, id0_int_t type)
 		SpawnNewObj (tilex,tiley,&s_obj_gate1,TILEGLOBAL/3);
 	else
 		SpawnNewObj (tilex,tiley,&s_anthill,TILEGLOBAL/3);
-	new->obclass = gateobj;
-	new->temp1 = type;
+	newobj->obclass = gateobj;
+	newobj->temp1 = type;
 }
 
 
@@ -410,7 +411,7 @@ void SpawnWarp (id0_int_t tilex, id0_int_t tiley, id0_int_t type)
 void T_Gate (objtype *ob)
 {
 	objtype *check;
-	id0_unsigned_t	temp,spot;
+	id0_unsigned_t	/*temp,*/spot;
 
 	if (CheckHandAttack (ob) && !playstate)
 	{
@@ -536,11 +537,11 @@ statetype s_fatdemon_feet = {FATDEMON_FEETPIC,30,NULL,&s_fatdemon_feet};
 void SpawnFatDemon (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj(tilex,tiley,&s_fatdemon_walk1,35*PIXRADIUS);
-	new->speed = 2500;
-	new->obclass = fatdemonobj;
-	new->flags |= of_shootable;
-	new->hitpoints = EasyHitPoints(10);
-	new->temp1 = 25;	//used to "shake" the fat dude??????
+	newobj->speed = 2500;
+	newobj->obclass = fatdemonobj;
+	newobj->flags |= of_shootable;
+	newobj->hitpoints = EasyHitPoints(10);
+	newobj->temp1 = 25;	//used to "shake" the fat dude??????
 }
 
 
@@ -669,15 +670,15 @@ void SpawnDragon(id0_int_t tilex, id0_int_t tiley)
 {
 	objtype *ob;
 	SpawnNewObj(tilex,tiley,&s_wet_bubbles1,PIXRADIUS*35);
-	ob=new;
+	ob=newobj;
 
 	WD_STAGE = wt_BUBBLES;
 	WD_TIMEREMAIN = 80;
 
-	new->obclass = wetobj;
-	new->speed = 1000;
-	new->flags &= ~of_shootable;
-	new->hitpoints = EasyHitPoints(20);
+	newobj->obclass = wetobj;
+	newobj->speed = 1000;
+	newobj->flags &= ~of_shootable;
+	newobj->hitpoints = EasyHitPoints(20);
 }
 
 
