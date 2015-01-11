@@ -1198,15 +1198,6 @@ nextactor:;
 // refresh all
 //
 		ThreeDRefresh ();
-		// (REFKEEN) SPECIAL - Without this the game
-		// can run very fast, even if it's not noticeable
-		// (a lot of PlayLoop iterations and consumed CPU power)
-		//
-		// Note: Should NOT be called from ThreeDRefresh/CalcTics,
-		// because we don't always want that to be done
-		// (e.g., right after loading C4 saved game, FizzleFade effect)
-		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
-		//
 
 		if (Flags & FL_DEAD)
 		{
@@ -1233,6 +1224,22 @@ nextactor:;
 		}
 
 		CheckKeys();
+		// (REFKEEN) SPECIAL - Without this the game
+		// can run very fast, even if it's not noticeable
+		// (a lot of PlayLoop iterations and consumed CPU power)
+		//
+		// Notes:
+		// 1. Should NOT be called from ThreeDRefresh/CalcTics,
+		// because we don't always want that to be done
+		// (e.g., FizzleFade effect right after loading C4 saved game).
+		// 2. SHOULD be called AFTER CheckKeys. That function resets
+		// lasttimecount (just like CalcTics) if the debug key modifier
+		// (F10 in Cat. 3-D/Abyss, Backspace in Armageddon/Apocalypse)
+		// is held. As a consequence, if the wait is done before the
+		// call to CheckKeys then the game may seem to get stuck while
+		// the debug key modifier is held.
+		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		//
 
 	}while (!playstate);
 //	StopMusic ();
