@@ -140,8 +140,8 @@ effort leading to the release of original Keen Dreams source codes
 http://steamcommunity.com/sharedfiles/filedetails/?id=315040793
 
 Furthermore, from the campaign's pages, you may also be able to find links to
-copies of the game already offered for purchase (possibly considered a beta)
-from indiegamestand.com and itch.io, if not more than these.
+copies of the game already offered for purchase. Note that they may be updated
+as the time passes, and these may further be considered betas at the moment.
 
 -------------------------------------------------------------------------
 Where can I get compatible Catacomb game data (updated as of Dec 22 2014)
@@ -155,7 +155,7 @@ http://cd.textfiles.com/maxx/tothemaxpcg/ARCADE/CATABS13.ZIP
 
 Copies of all games from the Catacomb series, including Catacomb 3-D and
 The Catacomb Adventure Series, are currently available from gog.com under
-the "Catacombs Pack".
+the "Catacombs Pack": http://www.gog.com/game/catacombs_pack
 
 ----------------------
 Making Keen Dreams run
