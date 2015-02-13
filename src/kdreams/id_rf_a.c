@@ -38,16 +38,6 @@ extern id0_byte_t planenum;
 
 id0_unsigned_t screenstartcs; // in code segment for accesability
 
-// (REFKEEN) VANILLA KEEN BUG WORKAROUND: Some background tile may be marked "empty" yet found in map (Copied off DOSBox 0000:0000..)
-// TODO: Increased from 64 to 160 for EGA foreground tile, should complete!
-static const id0_byte_t seg0TileBuff[160] = {
-	0x62, 0x01, 0xA2, 0x01, 0x08, 0x00, 0x70, 0x00, 0x08, 0x00, 0x70, 0x00, 0x08, 0x00, 0x70, 0x00,
-	0x08, 0x00, 0x70, 0x00, 0x60, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0,
-	0xD5, 0x0D, 0xE8, 0x0F, 0x04, 0x00, 0x11, 0x0F, 0x55, 0xFF, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0,
-	0x60, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0, 0x80, 0x10, 0x00, 0xF0, 0x60, 0x10, 0x00, 0xF0,
-};
-
-
 
 #if GRMODE == CGAGR
 //============================================================================
@@ -94,7 +84,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 		//
 		//=============
 		const id0_byte_t *backSrcPtr = (const id0_byte_t *)grsegs[STARTTILE16+backtilenum];
-		backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
+		backSrcPtr = backSrcPtr ? backSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
 		for (int loopVar = 15; loopVar; --loopVar, backSrcPtr += TILEWIDTH, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH))
 		{
 			BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH);
@@ -111,7 +101,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	//=========
 	const id0_byte_t *foreSrcPtr = (const id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
 	const id0_byte_t *backSrcPtr = (const id0_byte_t *)grsegs[STARTTILE16+backtilenum];
-	backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
+	backSrcPtr = backSrcPtr ? backSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
 
 	for (int loopVar = 16; loopVar; --loopVar, backSrcPtr += TILEWIDTH-3, foreSrcPtr += TILEWIDTH-3, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH-3))
 	{
@@ -227,7 +217,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 		//=============
 		tilecache[backtilenum] = screenstartcs; // next time it can be drawn from here with latch
 		const id0_byte_t *backSrcPtr = (id0_byte_t *)grsegs[STARTTILE16+backtilenum];
-		backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
+		backSrcPtr = backSrcPtr ? backSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
 		for (int planeCounter = 4, mapMask = 1; planeCounter; --planeCounter, mapMask <<= 1) // draw four planes
 		{
 			id0_unsigned_t egaDestOff = screenstartcs; // start at same place in all planes
@@ -251,12 +241,12 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	//
 	//=========
 	const id0_byte_t *backSrcPtr = (id0_byte_t *)grsegs[STARTTILE16+backtilenum];
-	backSrcPtr = backSrcPtr ? backSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
+	backSrcPtr = backSrcPtr ? backSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
 	id0_unsigned_t egaDestOff = screenstartcs;
 	for (int planeCounter = 4, mapMask = 1, dataLoc = 32; planeCounter; --planeCounter, mapMask <<= 1, dataLoc += 32)
 	{
 		const id0_byte_t *foreSrcPtr = (id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
-		foreSrcPtr = foreSrcPtr ? foreSrcPtr : seg0TileBuff; // VANILLA KEEN BUG WORKAROUND
+		foreSrcPtr = foreSrcPtr ? foreSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
 		for (id0_unsigned_t loopVar = 0, lineoffset = 0; loopVar < 16; ++loopVar, lineoffset += SCREENWIDTH)
 		{
 			// backSrcPtr - background tile

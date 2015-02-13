@@ -818,7 +818,13 @@ void FollowWalls (void)
 	tile.x += followx[wallon];
 	tile.y += followy[wallon];
 
-	if (tilemap [tile.x+sharex[wallon]] [tile.y+sharey[wallon]])
+	// (REFKEEN) WORKAROUND FOR VANILLA BUG (TODO EMULATE BEHAVIORS?):
+	// tile.x+sharex[wallon] (or y) may be negative, leading to a graphical
+	// glitch (a wall should be drawn but isn't really) or even a crash.
+	// Example: First Cat3D map, player at position given by
+	// x==354607, y==497530 and with viewing angle given by angle==196.
+	if ((tile.x+sharex[wallon] >= 0) && (tile.y+sharey[wallon] >= 0) && tilemap [tile.x+sharex[wallon]] [tile.y+sharey[wallon]])
+	//if (tilemap [tile.x+sharex[wallon]] [tile.y+sharey[wallon]])
 	{
 	  InsideCorner ();		// turn at a corner
 	  continue;

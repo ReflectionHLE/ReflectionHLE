@@ -71,6 +71,7 @@ EXTOBJECTS=$(EXTOBJ)/ext_ca.o \
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_compat.o \
+          $(BEOBJ)/be_cross_doszeroseg.o \
           $(BEOBJ)/be_sdl.o \
           $(BEOBJ)/be_sdl_audio_timer.o \
           $(BEOBJ)/be_sdl_graphics.o \
