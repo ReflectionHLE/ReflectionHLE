@@ -364,7 +364,7 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 	id0_unsigned_t	buff;
 
 
-//	MM_GetPtr (&(memptr)work,20000);
+//	MM_GetPtr ((memptr *)&work,20000);
 	EGAWRITEMODE(0);
 	EGAREADMAP(0);		// use ega screen memory for temp buffer
 	EGAMAPMASK(1);
@@ -566,7 +566,7 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 	MM_GetPtr ((memptr *)finalspot,totalsize);
 	BE_SDL_EGAFetchGFXBuffer((id0_byte_t *)*finalspot, workEgaOff, totalsize, 0);
 	//_fmemcpy ((id0_byte_t id0_seg *)(*finalspot),(id0_byte_t id0_seg *)work,totalsize);
-//	MM_FreePtr (&(memptr)work);
+//	MM_FreePtr ((memptr *)&work);
 
 	return totalsize;
 }

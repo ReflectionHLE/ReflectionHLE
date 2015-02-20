@@ -138,7 +138,8 @@ SDMode		oldsoundmode;
 void	CAL_DialogDraw (const id0_char_t *title,id0_unsigned_t numcache);
 void	CAL_DialogUpdate (void);
 void	CAL_DialogFinish (void);
-void	CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest,
+/*** WARNING (REFKEEN): Input is assumed to Little-Endian, while the output is Native-Endian. Hence, function is renamed ***/
+void	CAL_CarmackExpand_FromLE_ToNE (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest,
 		id0_unsigned_t length);
 
 
@@ -152,9 +153,19 @@ id0_long_t GRFILEPOS(id0_int_t c)
 
 	offset = c*3;
 
+	// REFKEEN - Just to make things safe, ensure no buffer overflow is
+	// done here by accessing just 3 bytes (and be ready for Big Endian)
+	value = 0;
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	memcpy(((id0_byte_t *)&value) + 1, ((id0_byte_t id0_far *)grstarts)+offset, 3);
+#else
+	memcpy(&value, ((id0_byte_t id0_far *)grstarts)+offset, 3);
+#endif
+#if 0
 	value = *(id0_long_t id0_far *)(((id0_byte_t id0_far *)grstarts)+offset);
 
 	value &= 0x00ffffffl;
+#endif
 
 	if (value == 0xffffffl)
 		value = -1;
@@ -215,7 +226,8 @@ void CA_CloseDebug (void)
 void CAL_GetGrChunkLength (id0_int_t chunk)
 {
 	lseek(grhandle,GRFILEPOS(chunk),SEEK_SET);
-	read(grhandle,&chunkexplen,sizeof(chunkexplen));
+	BE_Cross_readInt32LE(grhandle, &chunkexplen);
+	//read(grhandle,&chunkexplen,sizeof(chunkexplen));
 	chunkcomplen = GRFILEPOS(chunk+1)-GRFILEPOS(chunk)-4;
 }
 
@@ -456,7 +468,8 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
 #define NEARTAG	0xa7
 #define FARTAG	0xa8
 
-void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest, id0_unsigned_t length)
+/*** WARNING (REFKEEN): Input is assumed to Little-Endian, while the output is Native-Endian. Hence, function is renamed. ***/
+void CAL_CarmackExpand_FromLE_ToNE (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest, id0_unsigned_t length)
 {
 	id0_unsigned_t	ch,chhigh,count,offset;
 	id0_unsigned_t	id0_far *copyptr, /*id0_far *inptr, */id0_far *outptr;
@@ -470,7 +483,7 @@ void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *
 
 	while (length)
 	{
-		ch = *((id0_unsigned_t *)inptr);
+		ch = BE_Cross_Swap16LE(*((id0_unsigned_t *)inptr)); // REFKEEN: Little-Endian input
 		inptr += 2;
 		//ch = *inptr++;
 		chhigh = ch>>8;
@@ -506,7 +519,7 @@ void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *
 			}
 			else
 			{
-				offset = *((id0_unsigned_t *)inptr);
+				offset = BE_Cross_Swap16LE(*((id0_unsigned_t *)inptr)); // REFKEEN: Little-Endian input
 				inptr += 2;
 				//offset = *inptr++;
 				copyptr = dest + offset;
@@ -676,6 +689,14 @@ void CAL_SetupGrFile (void)
 
 	read(handle, &grhuffman, sizeof(grhuffman));
 	close(handle);
+	// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	for (int i = 0; i < sizeof(grhuffman)/sizeof(*grhuffman); ++i)
+	{
+		grhuffman[i].bit0 = BE_Cross_Swap16LE(grhuffman[i].bit0);
+		grhuffman[i].bit1 = BE_Cross_Swap16LE(grhuffman[i].bit1);
+	}
+#endif
 	CAL_OptimizeNodes (grhuffman);
 //
 // load the data offsets from ???head.ext
@@ -686,7 +707,13 @@ void CAL_SetupGrFile (void)
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
 
-	CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+	// REFKEEN - Hack for Big Endian (even though it may be useless)
+#ifdef THREEBYTEGRSTARTS
+	BE_Cross_readInt24LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+#else
+	BE_Cross_readInt32LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+#endif
+	//CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 
 	close(handle);
 
@@ -711,6 +738,14 @@ void CAL_SetupGrFile (void)
 	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
 	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman);
 	MM_FreePtr(&compseg);
+	// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	for (int i = 0; i < NUMPICS; ++i)
+	{
+		pictable[i].width = BE_Cross_Swap16LE(pictable[i].width);
+		pictable[i].height = BE_Cross_Swap16LE(pictable[i].height);
+	}
+#endif
 #endif
 
 #if NUMPICM>0
@@ -720,6 +755,14 @@ void CAL_SetupGrFile (void)
 	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
 	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)picmtable,NUMPICS*sizeof(pictabletype),grhuffman);
 	MM_FreePtr(&compseg);
+	// REFKEEN - Big Endian support (including above vanilla bug with NUMPICS?)
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	for (int i = 0; i < NUMPICS; ++i)
+	{
+		picmtable[i].width = BE_Cross_Swap16LE(picmtable[i].width);
+		picmtable[i].height = BE_Cross_Swap16LE(picmtable[i].height);
+	}
+#endif
 #endif
 
 #if NUMSPRITES>0
@@ -729,6 +772,21 @@ void CAL_SetupGrFile (void)
 	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
 	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)spritetable,NUMSPRITES*sizeof(spritetabletype),grhuffman);
 	MM_FreePtr(&compseg);
+	// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	for (int i = 0; i < NUMSPRITES; ++i)
+	{
+		spritetable[i].width = BE_Cross_Swap16LE(spritetable[i].width);
+		spritetable[i].height = BE_Cross_Swap16LE(spritetable[i].height);
+		spritetable[i].orgx = BE_Cross_Swap16LE(spritetable[i].orgx);
+		spritetable[i].orgy = BE_Cross_Swap16LE(spritetable[i].orgy);
+		spritetable[i].xl = BE_Cross_Swap16LE(spritetable[i].xl);
+		spritetable[i].yl = BE_Cross_Swap16LE(spritetable[i].yl);
+		spritetable[i].xh = BE_Cross_Swap16LE(spritetable[i].xh);
+		spritetable[i].yh = BE_Cross_Swap16LE(spritetable[i].yh);
+		spritetable[i].shifts = BE_Cross_Swap16LE(spritetable[i].shifts);
+	}
+#endif
 #endif
 
 }
@@ -759,10 +817,20 @@ void CAL_SetupMapFile (void)
 	if ((handle = open("MAPHEAD."EXTENSION,
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
-	length = filelength(handle);
+	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr (&(memptr)tinf,length);
 	CA_FarRead(handle, tinf, length);
 	close(handle);
+	// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	mapfiletype id0_seg *tinfasmapfile = (mapfiletype id0_seg *)tinf;
+	tinfasmapfile->RLEWtag = BE_Cross_Swap16LE(tinfasmapfile->RLEWtag);
+	for (int i = 0; i < sizeof(tinfasmapfile->headeroffsets)/sizeof(*(tinfasmapfile->headeroffsets)); ++i)
+	{
+		tinfasmapfile->headeroffsets[i] = BE_Cross_Swap32LE(tinfasmapfile->headeroffsets[i]);
+	}
+#endif
+
 #else
 
 	tinf = maphead;
@@ -809,9 +877,10 @@ void CAL_SetupAudioFile (void)
 	if ((handle = open("AUDIOHED."EXTENSION,
 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
-	length = filelength(handle);
+	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr (&(memptr)audiostarts,length);
-	CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
+	BE_Cross_readInt32LE(handle, audiostarts, length);
+	//CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
 	close(handle);
 #else
 	audiohuffman = (huffnode *)audiodict;
@@ -1009,7 +1078,9 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 		source = (id0_byte_t *)bigbufferseg;
 	}
 
-	expanded = *(id0_long_t id0_far *)source;
+	// REFKEEN - Big Endian support
+	expanded = BE_Cross_Swap32LE(*(id0_long_t id0_far *)source);
+	//expanded = *(id0_long_t id0_far *)source;
 	source += 4;			// skip over length
 	MM_GetPtr ((memptr *)&audiosegs[chunk],expanded);
 	if (mmerror)
@@ -1019,6 +1090,41 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 done:
 	if (compressed>BUFFERSIZE)
 		MM_FreePtr(&bigbufferseg);
+#endif
+	// REFKEEN - Big Endian support, possibly the most complicated case,
+	// since we need to know the exact type of each chunk.
+	//
+	// FIXME (consider): With matching proper data and definitions, this
+	// should be OK, but otherwise one could consider delaying the swaps
+	// to runtime (although it's a stretch).
+
+	// Sanity check before doing the swaps on BE
+	// (ignoring STARTDIGISOUNDS as ID_SD doesn't even have code for that)
+#if !((STARTPCSOUNDS <= STARTADLIBSOUNDS) && (STARTADLIBSOUNDS <= STARTMUSIC))
+#error "ID_CA.C sanity check for Big-Endian byte swaps (audio chunks) has failed!"
+#endif
+
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	if (chunk < STARTMUSIC) // Sound effects
+	{
+		SoundCommon *sndCommonPtr = (SoundCommon *)audiosegs[chunk];
+		sndCommonPtr->length = BE_Cross_Swap32LE(sndCommonPtr->length);
+		sndCommonPtr->priority = BE_Cross_Swap16LE(sndCommonPtr->priority);
+		if ((chunk >= STARTDIGISOUNDS) /*&& (chunk < STARTMUSIC)*/) // Digitized sounds
+		{
+			SampledSound *sampledSndPtr = (SampledSound *)audiosegs[chunk];
+			sampledSndPtr->hertz = BE_Cross_Swap16LE(sampledSndPtr->hertz);
+		}
+	}
+	else // Music chunk
+	{
+		MusicGroup *musicPtr = (MusicGroup *)audiosegs[chunk];
+		musicPtr->length = BE_Cross_Swap16LE(musicPtr->length);
+		for (id0_word_t *musicValPtr = musicPtr->values, *musicValEndPtr = musicValPtr + (musicPtr->length)/2; musicValPtr < musicValEndPtr; ++musicValPtr)
+		{
+			*musicValPtr = BE_Cross_Swap16LE(*musicValPtr);
+		}
+	}
 #endif
 }
 
@@ -1330,7 +1436,9 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 	//
 	// everything else has an explicit size longword
 	//
-		expanded = *(id0_long_t id0_far *)source;
+		// REFKEEN - Big Endian support
+		expanded = BE_Cross_Swap32LE(*(id0_long_t id0_far *)source);
+		//expanded = *(id0_long_t id0_far *)source;
 		source += 4;			// skip over length
 	}
 
@@ -1346,6 +1454,18 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 		if (mmerror)
 			return;
 		CAL_HuffExpand (source,(id0_byte_t *)(grsegs[chunk]),expanded,grhuffman);
+		// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+		if (((chunk >= STARTFONT) && (chunk < STARTFONT+NUMFONT)) || ((chunk >= STARTFONTM) && (chunk < STARTFONTM+NUMFONTM)))
+		{
+			fontstruct *font = (fontstruct *)(grsegs[chunk]);
+			font->height = BE_Cross_Swap16LE(font->height);
+			for (int i = 0; i < (int)(sizeof(font->location)/sizeof(*(font->location))); ++i)
+			{
+				font->location[i] = BE_Cross_Swap16LE(font->location[i]);
+			}
+		}
+#endif
 	}
 }
 
@@ -1541,6 +1661,18 @@ void CA_CacheMap (id0_int_t mapnum)
 		lseek(maphandle,pos,SEEK_SET);
 		CA_FarRead (maphandle,(id0_byte_t *)((memptr)mapheaderseg[mapnum]),sizeof(maptype));
 		//CA_FarRead (maphandle,(memptr)mapheaderseg[mapnum],sizeof(maptype));
+
+		// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+		mapheaderseg[mapnum]->planestart[0] = BE_Cross_Swap32LE(mapheaderseg[mapnum]->planestart[0]);
+		mapheaderseg[mapnum]->planestart[1] = BE_Cross_Swap32LE(mapheaderseg[mapnum]->planestart[1]);
+		mapheaderseg[mapnum]->planestart[2] = BE_Cross_Swap32LE(mapheaderseg[mapnum]->planestart[2]);
+		mapheaderseg[mapnum]->planelength[0] = BE_Cross_Swap16LE(mapheaderseg[mapnum]->planelength[0]);
+		mapheaderseg[mapnum]->planelength[1] = BE_Cross_Swap16LE(mapheaderseg[mapnum]->planelength[1]);
+		mapheaderseg[mapnum]->planelength[2] = BE_Cross_Swap16LE(mapheaderseg[mapnum]->planelength[2]);
+		mapheaderseg[mapnum]->width = BE_Cross_Swap16LE(mapheaderseg[mapnum]->width);
+		mapheaderseg[mapnum]->height = BE_Cross_Swap16LE(mapheaderseg[mapnum]->height);
+#endif
 	}
 	else
 		MM_SetPurge ((memptr *)&mapheaderseg[mapnum],0);
@@ -1582,10 +1714,11 @@ void CA_CacheMap (id0_int_t mapnum)
 		// The resulting RLEW chunk also does, even though it's not really
 		// needed
 		//
-		expanded = *source;
+		expanded = BE_Cross_Swap16LE(*source); // REFKEEN - Big Endian support
+		//expanded = *source;
 		source++;
 		MM_GetPtr (&buffer2seg,expanded);
-		CAL_CarmackExpand (source, (id0_unsigned_t id0_far *)buffer2seg,expanded);
+		CAL_CarmackExpand_FromLE_ToNE (source, (id0_unsigned_t id0_far *)buffer2seg,expanded);
 		CA_RLEWexpand (((id0_unsigned_t id0_far *)buffer2seg)+1,(id0_unsigned_t *)(*dest),size,
 		((mapfiletype id0_seg *)tinf)->RLEWtag);
 		MM_FreePtr (&buffer2seg);

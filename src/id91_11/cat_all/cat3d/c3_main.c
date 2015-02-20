@@ -294,7 +294,8 @@ id0_boolean_t	SaveTheGame(int file)
 
 		*(id0_unsigned_t id0_huge *)bigbuffer = compressed;
 
-		if (!CA_FarWrite(file,(id0_byte_t id0_far *)bigbuffer,compressed+2) )
+		if (BE_Cross_writeInt16LEBuffer(file, bigbuffer, compressed+2) != (id0_word_t)(compressed+2))
+		//if (!CA_FarWrite(file,(id0_byte_t id0_far *)bigbuffer,compressed+2) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
@@ -345,13 +346,15 @@ id0_boolean_t	LoadTheGame(int file)
 
 	for (i = 0;i < 3;i+=2)	// Read planes 0 and 2
 	{
-		if (!CA_FarRead(file,(id0_byte_t id0_far *)&compressed,sizeof(compressed)) )
+		if (BE_Cross_readInt16LE(file, &compressed) != 2)
+		//if (!CA_FarRead(file,(id0_byte_t id0_far *)&compressed,sizeof(compressed)) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);
 		}
 
-		if (!CA_FarRead(file,(id0_byte_t id0_far *)bigbuffer,compressed) )
+		if (BE_Cross_readInt16LEBuffer(file, bigbuffer, compressed) != compressed)
+		//if (!CA_FarRead(file,(id0_byte_t id0_far *)bigbuffer,compressed) )
 		{
 			MM_FreePtr (&bigbuffer);
 			return(false);

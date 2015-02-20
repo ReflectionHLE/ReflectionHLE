@@ -27,7 +27,12 @@
 //==========================================================================
 
 #ifndef MakeID
+// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+#define MakeID(a,b,c,d)			((id0_long_t)(((id0_long_t)(a)<<24L)|((id0_long_t)(b)<<16L)|((id0_long_t)(c)<<8L)|(id0_long_t)(d)))
+#else
 #define MakeID(a,b,c,d)			((id0_long_t)(((id0_long_t)(d)<<24L)|((id0_long_t)(c)<<16L)|((id0_long_t)(b)<<8L)|(id0_long_t)(a)))
+#endif
 #endif
 
 

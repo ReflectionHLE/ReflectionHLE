@@ -1677,7 +1677,7 @@ itoa(end-start,str,10);
 //
 	for (i=0;i<NUMSCALEWALLS;i++)
 		if (walldirectory[i])
-			MM_SetPurge (&(memptr)walldirectory[i],3);
+			MM_SetPurge ((memptr *)&walldirectory[i],3);
 
 
 //

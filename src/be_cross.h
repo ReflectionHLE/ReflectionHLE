@@ -4,14 +4,40 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
+// WARNING: It's actually safer to include this earlier (e.g., for endianness
+// related macros), but this header may be the one included first
+#include "refkeen_config.h"
+
 typedef enum BE_Log_Message_Class_T
 {
 	BE_LOG_MSG_NORMAL, BE_LOG_MSG_WARNING, BE_LOG_MSG_ERROR
 } BE_Log_Message_Class_T;
 
-// TODO (REFKEEN) BIG ENDIAN
+#define BE_Cross_Swap16(x) ((uint16_t)(((uint16_t)(x)<<8)|((uint16_t)(x)>>8)))
+#define BE_Cross_Swap32(x) ((uint32_t)(((uint32_t)(x)<<24)|(((uint32_t)(x)<<8)&0x00FF0000)|(((uint32_t)(x)>>8)&0x0000FF00)|((uint32_t)(x)>>24)))
+
+#ifdef REFKEEN_ARCH_LITTLE_ENDIAN
 #define BE_Cross_Swap16LE(x) (x)
+#define BE_Cross_Swap16BE(x) BE_Cross_Swap16(x)
 #define BE_Cross_Swap32LE(x) (x)
+#define BE_Cross_Swap32BE(x) BE_Cross_Swap32(x)
+#else
+#define BE_Cross_Swap16LE(x) BE_Cross_Swap16(x)
+#define BE_Cross_Swap16BE(x) (x)
+#define BE_Cross_Swap32LE(x) BE_Cross_Swap32(x)
+#define BE_Cross_Swap32BE(x) (x)
+#endif
+
+// Used for some resource definitions internally
+#ifdef REFKEEN_ARCH_LITTLE_ENDIAN
+#define BE_Cross_SwapGroup16LE(a, b)       a, b,
+#define BE_Cross_SwapGroup24LE(a, b, c)    a, b, c,
+#define BE_Cross_SwapGroup32LE(a, b, c, d) a, b, c, d,
+#else
+#define BE_Cross_SwapGroup16LE(a, b)       b, a,
+#define BE_Cross_SwapGroup24LE(a, b, c)    c, b, a,
+#define BE_Cross_SwapGroup32LE(a, b, c, d) d, c, b, a,
+#endif
 
 int32_t BE_Cross_FileLengthFromHandle(int handle);
 char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);
@@ -49,6 +75,9 @@ size_t BE_Cross_readInt16LE(int handle, void *ptr);
 size_t BE_Cross_readInt32LE(int handle, void *ptr);
 size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte);
 size_t BE_Cross_readInt16LEBuffer(int handle, void *ptr, size_t nbyte);
+size_t BE_Cross_readInt32LEBuffer(int handle, void *ptr, size_t nbyte);
+// This exists for the EGAHEADs from the Catacombs
+size_t BE_Cross_readInt24LEBuffer(int handle, void *ptr, size_t nbyte);
 // A template for enum reading (from 16-bit little-endian int).
 // A declaration and implementation must exist for each used type separately
 // (implementation should be found in be_cross.c).

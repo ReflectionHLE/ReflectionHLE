@@ -1096,7 +1096,8 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	if (comp)
 	{
 		SrcLen = Verify(SourceFile);
-		read(handle,(void *)&DstLen,4);
+		BE_Cross_readInt32LE(handle, &DstLen);
+		//read(handle,(void *)&DstLen,4);
 		MM_GetPtr(DstPtr,DstLen);
 		if (!*DstPtr)
 			return(0);
@@ -1120,14 +1121,24 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		}
 		else
 		{
+			// REFKEEN - Better close the current file handle before re-opening here
+			close(handle);
+			//
 			CA_LoadFile(SourceFile,&SrcPtr);
 			//lzwDecompressFromRAM(MK_FP(SrcPtr,8),MK_FP(*DstPtr,0),SrcLen+8);
 			lzwDecompressFromRAM((id0_byte_t *)SrcPtr+8,(id0_byte_t *)(*DstPtr),SrcLen+8);
 			MM_FreePtr(&SrcPtr);
+			// REFKEEN - File handle already closed
+			return(DstLen);
 		}
 	}
 	else
+	{
+		// REFKEEN - Again we close the current file handle first, then load and finally return DstLen without re-closing file handle
+		close(handle);
 		CA_LoadFile(SourceFile,DstPtr);
+		return(DstLen);
+	}
 
 	close(handle);
 	return(DstLen);
@@ -1353,6 +1364,8 @@ void bio_fillbuffer(BufferedIO *bio)
 	}
 }
 
+// REFKEEN - UNUSED (cross-platform replacements may be used, depending on arch)
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 // SwapLong()
@@ -1373,6 +1386,10 @@ void SwapWord(id0_unsigned_int_t id0_far *Var)
 {
 	*Var = ((*Var) >> 8) | ((*Var) << 8);
 }
+#endif
+
+
+#if 0 // REFKEEN - UNUSED
 
 ////////////////////////////////////////////////////////////////////////////
 //
@@ -1479,6 +1496,7 @@ EXIT_FUNC:;
 	return (RT_CODE);
 }
 
+#endif
 
 ////////////////////////////////////////////////////////////////////////////
 //
@@ -1823,7 +1841,7 @@ void GE_PurgeAllSounds()
 	start = STARTPCSOUNDS;
 	for (i=0;i<NUMSOUNDS;i++,start++)
 		if (audiosegs[start])
-			MM_SetPurge (&(memptr)audiosegs[start],3);		// make purgable
+			MM_SetPurge ((memptr *)&audiosegs[start],3);		// make purgable
 
 
 	if (AdLibPresent)
@@ -1831,7 +1849,7 @@ void GE_PurgeAllSounds()
 		start = STARTADLIBSOUNDS;
 		for (i=0;i<NUMSOUNDS;i++,start++)
 			if (audiosegs[start])
-				MM_SetPurge (&(memptr)audiosegs[start],3);		// make purgable
+				MM_SetPurge ((memptr *)&audiosegs[start],3);		// make purgable
 	}
 
 	if (SoundBlasterPresent)

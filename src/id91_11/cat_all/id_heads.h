@@ -36,6 +36,8 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
+
 #define __ID_GLOB__
 
 //--------------------------------------------------------------------------

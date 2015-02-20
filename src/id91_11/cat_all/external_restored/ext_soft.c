@@ -108,7 +108,8 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		Compressed = true;
 		SrcLen = Verify(SourceFile);
 
-		read(handle,(void *)&CompHeader.OrginalLen,4);
+		BE_Cross_readInt32LE(handle, &CompHeader.OrginalLen);
+		//read(handle,(void *)&CompHeader.OrginalLen,4);
 		CompHeader.CompType = ct_LZW;
 		*DstPtr = malloc/*farmalloc*/(CompHeader.OrginalLen);
 		if (!*DstPtr)
@@ -126,6 +127,12 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		SrcLen = Verify(SourceFile);
 
 		read(handle,(void *)&CompHeader,sizeof(struct CMP1Header));
+		// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+		CompHeader.CompType = BE_Cross_Swap16LE(CompHeader.CompType);
+		CompHeader.OrginalLen = BE_Cross_Swap32LE(CompHeader.OrginalLen);
+		CompHeader.CompressLen = BE_Cross_Swap32LE(CompHeader.CompressLen);
+#endif
 		offset = 14;
 		*DstPtr = malloc/*farmalloc*/(CompHeader.OrginalLen);
 		if (!*DstPtr)
@@ -174,6 +181,9 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		}
 		else
 		{
+			// REFKEEN - Better close the current file handle before re-opening here
+			close(handle);
+			//
 			LoadFile(SourceFile,&SrcPtr);
 			switch (CompHeader.CompType)
 			{
@@ -194,10 +204,17 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 				break;
 			}
 			free/*farfree*/(SrcPtr);
+			// REFKEEN - File handle already closed
+			return(DstLen);
 		}
 	}
 	else
+	{
+		// REFKEEN - Again we close the current file handle first, then load and finally return DstLen without re-closing file handle
+		close(handle);
 		LoadFile(SourceFile,DstPtr);
+		return(DstLen);
+	}
 
 	close(handle);
 	return(DstLen);
@@ -244,8 +261,9 @@ id0_int_t ext_LoadShape(const id0_char_t *Filename, struct Shape *SHP)
 		goto EXIT_FUNC;
 	ptr += 4;
 
-	FileLen = *(id0_long_t id0_far *)ptr;
-	SwapLong((id0_long_t id0_far *)&FileLen);
+	FileLen = BE_Cross_Swap32BE(*(id0_long_t id0_far *)ptr);
+	//FileLen = *(id0_long_t id0_far *)ptr;
+	//SwapLong((id0_long_t id0_far *)&FileLen);
 	ptr += 4;
 
 	if (!CHUNK("ILBM"))
@@ -255,34 +273,44 @@ id0_int_t ext_LoadShape(const id0_char_t *Filename, struct Shape *SHP)
 	FileLen += 4;
 	while (FileLen)
 	{
-		ChunkLen = *(id0_long_t id0_far *)(ptr+4);
-		SwapLong((id0_long_t id0_far *)&ChunkLen);
+		ChunkLen = BE_Cross_Swap32BE(*(id0_long_t id0_far *)(ptr+4));
+		//ChunkLen = *(id0_long_t id0_far *)(ptr+4);
+		//SwapLong((id0_long_t id0_far *)&ChunkLen);
 		ChunkLen = (ChunkLen+1) & 0xFFFFFFFE;
 
 		if (CHUNK("BMHD"))
 		{
 			ptr += 8;
+			SHP->bmHdr.w = BE_Cross_Swap16BE(((struct BitMapHeader id0_far *)ptr)->w);
+			SHP->bmHdr.h = BE_Cross_Swap16BE(((struct BitMapHeader id0_far *)ptr)->h);
+			SHP->bmHdr.x = BE_Cross_Swap16BE(((struct BitMapHeader id0_far *)ptr)->x);
+			SHP->bmHdr.y = BE_Cross_Swap16BE(((struct BitMapHeader id0_far *)ptr)->y);
+#if 0
 			SHP->bmHdr.w = ((struct BitMapHeader id0_far *)ptr)->w;
 			SHP->bmHdr.h = ((struct BitMapHeader id0_far *)ptr)->h;
 			SHP->bmHdr.x = ((struct BitMapHeader id0_far *)ptr)->x;
 			SHP->bmHdr.y = ((struct BitMapHeader id0_far *)ptr)->y;
+#endif
 			SHP->bmHdr.d = ((struct BitMapHeader id0_far *)ptr)->d;
 			SHP->bmHdr.trans = ((struct BitMapHeader id0_far *)ptr)->trans;
 			SHP->bmHdr.comp = ((struct BitMapHeader id0_far *)ptr)->comp;
 			SHP->bmHdr.pad = ((struct BitMapHeader id0_far *)ptr)->pad;
+#if 0
 			SwapWord(&SHP->bmHdr.w);
 			SwapWord(&SHP->bmHdr.h);
 			SwapWord(&SHP->bmHdr.x);
 			SwapWord(&SHP->bmHdr.y);
+#endif
 			ptr += ChunkLen;
 		}
 		else
 		if (CHUNK("BODY"))
 		{
 			ptr += 4;
-			size = *((id0_long_t id0_far *)ptr);
+			size = BE_Cross_Swap32BE(*((id0_long_t id0_far *)ptr));
+			//size = *((id0_long_t id0_far *)ptr);
 			ptr += 4;
-			SwapLong((id0_long_t id0_far *)&size);
+			//SwapLong((id0_long_t id0_far *)&size);
 			SHP->BPR = (SHP->bmHdr.w+7) >> 3;
 			SHP->Data = malloc/*farmalloc*/(size);
 			if (!SHP->Data)

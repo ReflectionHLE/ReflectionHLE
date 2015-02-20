@@ -209,6 +209,8 @@ void bio_fillbuffer(BufferedIO *bio)
 	}
 }
 
+// REFKEEN - UNUSED (cross-platform replacements may be used, depending on arch)
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 // SwapLong()
@@ -229,6 +231,7 @@ void SwapWord(id0_unsigned_int_t id0_far *Var)
 {
 	*Var = ((*Var) >> 8) | ((*Var) << 8);
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////
 //

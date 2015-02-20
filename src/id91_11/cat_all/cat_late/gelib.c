@@ -885,6 +885,8 @@ void bio_fillbuffer(BufferedIO *bio)
 	}
 }
 
+// REFKEEN - UNUSED (cross-platform replacements may be used, depending on arch)
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 // SwapLong()
@@ -905,6 +907,7 @@ void SwapWord(id0_unsigned_int_t id0_far *Var)
 {
 	*Var = ((*Var) >> 8) | ((*Var) << 8);
 }
+#endif
 
 
 #if 0
@@ -1359,7 +1362,7 @@ void GE_PurgeAllSounds()
 	start = STARTPCSOUNDS;
 	for (i=0;i<NUMSOUNDS;i++,start++)
 		if (audiosegs[start])
-			MM_SetPurge (&(memptr)audiosegs[start],3);		// make purgable
+			MM_SetPurge ((memptr *)&audiosegs[start],3);		// make purgable
 
 
 	if (AdLibPresent)
@@ -1367,7 +1370,7 @@ void GE_PurgeAllSounds()
 		start = STARTADLIBSOUNDS;
 		for (i=0;i<NUMSOUNDS;i++,start++)
 			if (audiosegs[start])
-				MM_SetPurge (&(memptr)audiosegs[start],3);		// make purgable
+				MM_SetPurge ((memptr *)&audiosegs[start],3);		// make purgable
 	}
 
 	if (SoundBlasterPresent)

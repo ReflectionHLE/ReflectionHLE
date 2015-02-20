@@ -135,7 +135,6 @@ Quit ("Improper video card!  If you really have an EGA/VGA card that I am not \n
 Quit ("Improper video card!  If you really have a CGA card that I am not \n"
 	  "detecting, use the -HIDDENCARD command line parameter!");
 	MM_GetPtr ((memptr *)&screenseg,0x10000l);	// grab 64k for floating screen
-	//MM_GetPtr (&(memptr)screenseg,0x10000l);	// grab 64k for floating screen
 #endif
 
 	cursorvisible = 0;

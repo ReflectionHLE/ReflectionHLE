@@ -102,10 +102,10 @@ size_t BE_Cross_readInt8LE(int handle, void *ptr)
 size_t BE_Cross_readInt16LE(int handle, void *ptr)
 {
 	size_t bytesread = read(handle, ptr, 2);
-#ifdef BE_CROSS_IS_BIGENDIAN
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
 	if (bytesread == 2)
 	{
-		*(uint16_t *)ptr = BE_Cross_Swap16(*(uint16_t *) ptr);
+		*(uint16_t *)ptr = BE_Cross_Swap16LE(*(uint16_t *) ptr);
 	}
 #endif
 	return bytesread;
@@ -114,10 +114,10 @@ size_t BE_Cross_readInt16LE(int handle, void *ptr)
 size_t BE_Cross_readInt32LE(int handle, void *ptr)
 {
 	size_t bytesread = read(handle, ptr, 4);
-#ifdef BE_CROSS_IS_BIGENDIAN
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
 	if (bytesread == 4)
 	{
-		*(uint32_t *)ptr = BE_Cross_Swap16(*(uint32_t *) ptr);
+		*(uint32_t *)ptr = BE_Cross_Swap16LE(*(uint32_t *) ptr);
 	}
 #endif
 	return bytesread;
@@ -130,13 +130,46 @@ size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte)
 
 size_t BE_Cross_readInt16LEBuffer(int handle, void *ptr, size_t nbyte)
 {
-#ifndef BE_CROSS_IS_BIGENDIAN
+#ifndef REFKEEN_ARCH_BIG_ENDIAN
 	return read(handle, ptr, nbyte);
 #else
-	size_t result = read(handle, ptr, nbytes);
+	size_t result = read(handle, ptr, nbyte);
 	for (uint16_t *currptr = (uint16_t *)ptr, *endptr = currptr + result/2; currptr < endptr; ++currptr)
 	{
 		*currptr = BE_Cross_Swap16LE(*currptr);
+	}
+	return result;
+#endif
+}
+
+size_t BE_Cross_readInt32LEBuffer(int handle, void *ptr, size_t nbyte)
+{
+#ifndef REFKEEN_ARCH_BIG_ENDIAN
+	return read(handle, ptr, nbyte);
+#else
+	size_t result = read(handle, ptr, nbyte);
+	for (uint32_t *currptr = (uint32_t *)ptr, *endptr = currptr + result/4; currptr < endptr; ++currptr)
+	{
+		*currptr = BE_Cross_Swap32LE(*currptr);
+	}
+	return result;
+#endif
+}
+
+// This exists for the EGAHEADs from the Catacombs
+size_t BE_Cross_readInt24LEBuffer(int handle, void *ptr, size_t nbyte)
+{
+#ifndef REFKEEN_ARCH_BIG_ENDIAN
+	return read(handle, ptr, nbyte);
+#else
+	size_t result = read(handle, ptr, nbyte);
+	uint8_t tempbyte;
+	// Let's ensure there's no buffer overflow in case nbyte is not divisble by 3
+	for (uint8_t *currbyteptr = (uint8_t *)ptr, *endbyteptr = currbyteptr + (nbyte/3)*3; currbyteptr < endbyteptr; currbyteptr += 3)
+	{
+		tempbyte = *currbyteptr;
+		*currbyteptr = *(currbyteptr+2);
+		*(currbyteptr+2) = tempbyte;
 	}
 	return result;
 #endif
@@ -149,20 +182,20 @@ size_t BE_Cross_writeInt8LE(int handle, const void *ptr)
 
 size_t BE_Cross_writeInt16LE(int handle, const void *ptr)
 {
-#ifndef BE_CROSS_IS_BIGENDIAN
+#ifndef REFKEEN_ARCH_BIG_ENDIAN
 	return write(handle, ptr, 2);
 #else
-	uint16_t val = BE_Cross_Swap16(*(uint16_t *) ptr);
+	uint16_t val = BE_Cross_Swap16LE(*(uint16_t *) ptr);
 	return write(handle, &val, 2);
 #endif
 }
 
 size_t BE_Cross_writeInt32LE(int handle, const void *ptr)
 {
-#ifndef BE_CROSS_IS_BIGENDIAN
+#ifndef REFKEEN_ARCH_BIG_ENDIAN
 	return write(handle, ptr, 4);
 #else
-	uint32_t val = BE_Cross_Swap32(*(uint32_t *) ptr);
+	uint32_t val = BE_Cross_Swap32LE(*(uint32_t *) ptr);
 	return write(handle, &val, 4);
 #endif
 }
@@ -174,14 +207,14 @@ size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte)
 
 size_t BE_Cross_writeInt16LEBuffer(int handle, const void *ptr, size_t nbyte)
 {
-#ifndef BE_CROSS_IS_BIGENDIAN
+#ifndef REFKEEN_ARCH_BIG_ENDIAN
 	return write(handle, ptr, nbyte);
 #else
 	size_t result = 0;
 	for (uint16_t *currptr = (uint16_t *)ptr, *endptr = currptr + nbyte/2; currptr < endptr; ++currptr)
 	{
-		val = SDL_Swap16(*currptr);
-		size_t bytesread = write(handle, currptr, 2);
+		uint16_t val = BE_Cross_Swap16LE(*currptr);
+		size_t bytesread = write(handle, &val, 2);
 		result += bytesread;
 		if (bytesread < 2)
 		{

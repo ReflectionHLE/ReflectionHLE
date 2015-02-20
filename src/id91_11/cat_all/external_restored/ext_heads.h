@@ -38,6 +38,8 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
+
 #ifdef REFKEEN_VER_CATABYSS
 #define EXTENSION "ABS"
 #elif defined REFKEEN_VER_CATARM

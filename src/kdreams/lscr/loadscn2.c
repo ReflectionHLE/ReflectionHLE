@@ -28,7 +28,7 @@
 #include <stdlib.h>
 //#include <process.h>
 
-#include "id_heads.h" // For types like id0_int_t
+#include "id_heads.h" // For types like id0_int_t, and refkeen_config.h
 
 #include "jampak.h"
 #include "sl_file.h"
@@ -332,6 +332,11 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 
 	if (read(handle, &LibraryHeader,sizeof(struct SoftLibHdr)) == -1)
 		TrashProg("read error in LoadSLIBFile()");
+	// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	LibraryHeader.Version = BE_Cross_Swap16LE(LibraryHeader.Version);
+	LibraryHeader.FileCount = BE_Cross_Swap16LE(LibraryHeader.FileCount);
+#endif
 
 	if (LibraryHeader.Version > SOFTLIB_VER)
 		TrashProg("Unsupported file version ");
@@ -348,6 +353,13 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 			close(handle);
 			TrashProg("LOADSCN ERROR : Error reading second header.");
 		}
+		// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+		FileEntryHeader.Offset = BE_Cross_Swap32LE(FileEntryHeader.Offset);
+		FileEntryHeader.ChunkLen = BE_Cross_Swap32LE(FileEntryHeader.ChunkLen);
+		FileEntryHeader.OrginalLength = BE_Cross_Swap32LE(FileEntryHeader.OrginalLength);
+		FileEntryHeader.Compression = BE_Cross_Swap16LE(FileEntryHeader.Compression);
+#endif
 
 		if (!BE_Cross_strcasecmp(FileEntryHeader.FileName,FileName))
 		{
@@ -375,6 +387,12 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 
 		if (read(handle,(id0_char_t *)&Header,sizeof(struct ChunkHeader)) == -1)
 			TrashProg("LIB File - Unable to read Header!");
+		// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+		// No need to swap Header.HeaderID, id_chunk (ID_CHUNK) should be adjusted
+		Header.OrginalLength = BE_Cross_Swap32LE(Header.OrginalLength);
+		Header.Compression = BE_Cross_Swap16LE(Header.Compression);
+#endif
 
 		if (Header.HeaderID != id_chunk)
 			TrashProg("LIB File - BAD HeaderID!");
