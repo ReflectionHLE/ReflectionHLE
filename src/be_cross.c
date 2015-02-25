@@ -117,7 +117,7 @@ size_t BE_Cross_readInt32LE(int handle, void *ptr)
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 	if (bytesread == 4)
 	{
-		*(uint32_t *)ptr = BE_Cross_Swap16LE(*(uint32_t *) ptr);
+		*(uint32_t *)ptr = BE_Cross_Swap32LE(*(uint32_t *) ptr);
 	}
 #endif
 	return bytesread;
