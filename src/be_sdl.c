@@ -235,6 +235,18 @@ static void BEL_SDL_ParseSetting_SndSampleRate(const char *buffer)
 	g_refKeenCfg.sndSampleRate = atoi(buffer);
 }
 
+static void BEL_SDL_ParseSetting_DisableSoundSubSystem(const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_refKeenCfg.disableSoundSubSystem = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_refKeenCfg.disableSoundSubSystem = false;
+	}
+}
+
 // HACK (cfg file may be rewritten and we don't want to remove any setting)
 static bool g_sdlIsFarPtrSegOffsetSettingRead = false;
 
@@ -265,6 +277,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"scalefactor=", &BEL_SDL_ParseSetting_ScaleFactor},
 	{"autolock=", &BEL_SDL_ParseSetting_AutolockCursor},
 	{"sndsamplerate=", &BEL_SDL_ParseSetting_SndSampleRate},
+	{"disablesndsubsystem=", &BEL_SDL_ParseSetting_DisableSoundSubSystem},
 	{"farptrsegoffset=", &BEL_SDL_ParseSetting_FarPtrSegOffset},
 };
 
@@ -284,6 +297,7 @@ static void BEL_SDL_ParseConfig(void)
 	g_refKeenCfg.scaleFactor = 2;
 	g_refKeenCfg.autolockCursor = false;
 	g_refKeenCfg.sndSampleRate = 49716; // TODO should be a shared define
+	g_refKeenCfg.disableSoundSubSystem = false;
 	g_refKeenCfg.farPtrSegOffset = BE_SDL_DEFAULT_FARPTRSEGOFFSET;
 	// Try to load config
 	FILE *fp = fopen(REFKEEN_DREAMS_CONFIG_FILEPATH, "r");
@@ -338,6 +352,7 @@ static void BEL_SDL_ParseConfig(void)
 	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
 	fprintf(fp, "autolock=%s\n", g_refKeenCfg.autolockCursor ? "true" : "false");
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
+	fprintf(fp, "disablesndsubsystem=%s\n", g_refKeenCfg.disableSoundSubSystem ? "true" : "false");
 	if (g_sdlIsFarPtrSegOffsetSettingRead)
 	{
 		// This should be a relatively hidden setting
@@ -928,6 +943,14 @@ void BE_SDL_PollEvents(void)
 			break;
 		default: ;
 		}
+	}
+	// HACK - If audio subsystem is disabled we still want to at least
+	// make the sound callback run (so e.g., no loop gets stuck waiting
+	// for sound playback to complete)
+	extern bool g_sdlAudioSubsystemUp;
+	if (! g_sdlAudioSubsystemUp)
+	{
+		BE_SDL_PrepareForManualAudioSDServiceCall();
 	}
 }
 

@@ -254,6 +254,10 @@ and "false".
 the default is 49716, which is close to the rate of OPL chips generating AdLib
 sounds. It's also more efficient, as no interpolation is required,
 since the rate of 49716Hz is used for AdLib emulation internally.
+- "disablesndsystem" can be used to disable the sound subsystem, or
+at least most of it. Technically a silent PC Speaker is still emulated,
+but AdLib is reported to be unavailable for the game. Furthermore,
+the OPL emulator is not running in the background in such a case.
 
 An additional setting which is hidden by default:
 - "farptrsegoffset" can be used for (some) level of saved game compatibility
@@ -274,8 +278,8 @@ source port, it will not properly load once farptrsegoffset is modified!
 There is some bug...
 --------------------
 
-This is still new, and bugs tend to happen in the porting process.
-But, if it's rather a bug found in an original game released which is
+Naturally, bugs tend to happen in the porting process, and also later.
+But, if it's rather a bug found in an original game release which is
 reproduced, most chances are it won't be fixed, since these ports aim
 to preserve behaviors of original releases, including bugs.
 

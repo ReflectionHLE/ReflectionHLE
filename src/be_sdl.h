@@ -22,6 +22,7 @@ typedef struct
 	int scaleFactor;
 	bool autolockCursor;
 	int sndSampleRate;
+	bool disableSoundSubSystem;
 	unsigned int farPtrSegOffset;
 } RefKeenConfig;
 
@@ -56,6 +57,8 @@ void BE_SDL_StartAudioSDService(void (*funcPtr)(void));
 void BE_SDL_StopAudioSDService(void);
 void BE_SDL_LockAudioRecursively(void);
 void BE_SDL_UnlockAudioRecursively(void);
+void BE_SDL_PrepareForManualAudioSDServiceCall(void);
+bool BE_SDL_IsEmulatedOPLChipReady(void);
 // Should be used in ID_SD.C only - Frequency is about 1193182Hz/spkVal
 void BE_SDL_PCSpeakerOn(uint16_t spkVal);
 void BE_SDL_PCSpeakerOff(void);

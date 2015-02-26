@@ -8,7 +8,10 @@
 
 static SDL_mutex* g_sdlCallbackMutex = NULL;
 static SDL_AudioSpec g_sdlAudioSpec;
-static bool g_sdlAudioSubsystemUp = false;
+
+bool g_sdlAudioSubsystemUp;
+
+static bool g_sdlEmulatedOPLChipReady;
 static uint32_t g_sdlSampleOffsetInSound, g_sdlSamplePerPart;
 static void (*g_sdlCallbackSDFuncPtr)(void) = 0;
 
@@ -17,6 +20,8 @@ static void (*g_sdlCallbackSDFuncPtr)(void) = 0;
 
 #define OPL_NUM_OF_SAMPLES 512
 #define OPL_SAMPLE_RATE 49716
+// Use this if the audio subsystem is disabled for most (we want a BYTES rate of 1000Hz, same units as used in values returned by SDL_GetTicks())
+#define NUM_OF_SAMPLES_WITH_DISABLED_SUBSYSTEM 500
 
 static int16_t g_sdlALOutSamples[OPL_NUM_OF_SAMPLES];
 static uint32_t g_sdlALOutSamplesStart = 0, g_sdlALOutSamplesEnd = 0;
@@ -56,53 +61,58 @@ static inline bool YM3812Init(int numChips, int clock, int rate);
 
 void BE_SDL_InitAudio(void)
 {
-	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
+	g_sdlAudioSubsystemUp = false;
+	g_sdlEmulatedOPLChipReady = false;
+	if (!g_refKeenCfg.disableSoundSubSystem)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
-	}
-	else
-	{
-		g_sdlAudioSpec.freq = g_refKeenCfg.sndSampleRate;
-		g_sdlAudioSpec.format = AUDIO_S16;
-		g_sdlAudioSpec.channels = 1;
-		// Under wine, small buffer sizes cause a lot of crackling, so
-		// we doublt the buffer size. This will result in a tiny amount
-		// (~10ms) of extra lag on windows, but it's a price I'm
-		// prepared to pay to not have my ears explode.
-#ifdef _WIN32
-		g_sdlAudioSpec.samples = 1024;
-#else
-		g_sdlAudioSpec.samples = 512;
-#endif
-		g_sdlAudioSpec.callback = BEL_SDL_CallBack;
-		g_sdlAudioSpec.userdata = NULL;
-		if (SDL_OpenAudio(&g_sdlAudioSpec, NULL))
+		if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 		{
-			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
-			SDL_QuitSubSystem(SDL_INIT_AUDIO);
+			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
 		}
 		else
 		{
-			g_sdlCallbackMutex = SDL_CreateMutex();
-			if (!g_sdlCallbackMutex)
+			g_sdlAudioSpec.freq = g_refKeenCfg.sndSampleRate;
+			g_sdlAudioSpec.format = AUDIO_S16;
+			g_sdlAudioSpec.channels = 1;
+			g_sdlAudioSpec.samples = 512;
+			g_sdlAudioSpec.callback = BEL_SDL_CallBack;
+			g_sdlAudioSpec.userdata = NULL;
+			if (SDL_OpenAudio(&g_sdlAudioSpec, NULL))
 			{
-				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Cannot create recursive mutex for SDL audio callback,\n%s\nClosing SDL audio subsystem\n", SDL_GetError());
-				SDL_CloseAudio();
+				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
 				SDL_QuitSubSystem(SDL_INIT_AUDIO);
-				g_sdlAudioSubsystemUp = false;
 			}
 			else
 			{
-				g_sdlAudioSubsystemUp = true;
+				g_sdlCallbackMutex = SDL_CreateMutex();
+				if (!g_sdlCallbackMutex)
+				{
+					BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Cannot create recursive mutex for SDL audio callback,\n%s\nClosing SDL audio subsystem\n", SDL_GetError());
+					SDL_CloseAudio();
+					SDL_QuitSubSystem(SDL_INIT_AUDIO);
+				}
+				else
+				{
+					g_sdlAudioSubsystemUp = true;
+				}
 			}
 		}
-		
+	}
+	// If the audio subsystem is off, let us simulate a byte rate
+	// of 1000Hz (same as SDL_GetTicks() time units)
+	if (!g_sdlAudioSubsystemUp)
+	{
+		g_sdlAudioSpec.freq = NUM_OF_SAMPLES_WITH_DISABLED_SUBSYSTEM;
+	}
+	else
+	{
 		if (YM3812Init(1, 3579545, OPL_SAMPLE_RATE))
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Preparation of emulated OPL chip has failed\n");
 		}
 		else
 		{
+			g_sdlEmulatedOPLChipReady = true;
 			if (g_sdlAudioSpec.freq != OPL_SAMPLE_RATE)
 			{
 				// The some of all entries should be g_sdlAudioSpec.freq,
@@ -137,13 +147,14 @@ void BE_SDL_ShutdownAudio(void)
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		g_sdlAudioSubsystemUp = false;
 	}
+	g_sdlCallbackSDFuncPtr = 0; // Just in case this may be called after the audio subsystem was never really started (manual calls to callback)
 }
 
 void BE_SDL_StartAudioSDService(void (*funcPtr)(void))
 {
+	g_sdlCallbackSDFuncPtr = funcPtr;
 	if (g_sdlAudioSubsystemUp)
 	{
-		g_sdlCallbackSDFuncPtr = funcPtr;
 		SDL_PauseAudio(0);
 	}
 }
@@ -153,8 +164,8 @@ void BE_SDL_StopAudioSDService(void)
 	if (g_sdlAudioSubsystemUp)
 	{
 		SDL_PauseAudio(1);
-		g_sdlCallbackSDFuncPtr = 0;
 	}
+	g_sdlCallbackSDFuncPtr = 0;
 }
 
 void BE_SDL_LockAudioRecursively(void)
@@ -173,38 +184,59 @@ void BE_SDL_UnlockAudioRecursively(void)
 	}
 }
 
+// Use this ONLY if audio subsystem isn't properly started up
+void BE_SDL_PrepareForManualAudioSDServiceCall(void)
+{
+	// HACK: Rather than using SDL_PauseAudio for deciding if
+	// we call, just check if g_sdlCallbackSDFuncPtr is non-NULL
+	// (not necessarily the same behaviors, but "good enough")
+	if (g_sdlCallbackSDFuncPtr)
+	{
+		static uint32_t s_lastTicks;
+
+		uint32_t currTicks = SDL_GetTicks();
+		if (currTicks != s_lastTicks)
+		{
+			uint8_t buff[2*NUM_OF_SAMPLES_WITH_DISABLED_SUBSYSTEM];
+			uint32_t bytesPassed = currTicks-s_lastTicks; // Using a sample rate of 500Hz here, or equivalenty the byte rate of 1000Hz
+			bytesPassed &= ~1; // Ensure value is even (16 bits per sample)
+			BEL_SDL_CallBack(NULL, buff, (bytesPassed <= sizeof(buff)) ? bytesPassed : sizeof(buff));
+			s_lastTicks = currTicks;
+		}
+	}
+}
+
+bool BE_SDL_IsEmulatedOPLChipReady(void)
+{
+	return g_sdlEmulatedOPLChipReady;
+}
+
 // Frequency is about 1193182Hz/spkVal
 void BE_SDL_PCSpeakerOn(uint16_t spkVal)
 {
-	if (g_sdlAudioSubsystemUp)
-	{
-		g_sdlPCSpeakerOn = true;
-		g_sdlCurrentBeepSample = 0;
-		g_sdlBeepHalfCycleCounter = 0;
-		g_sdlBeepHalfCycleCounterUpperBound = g_sdlAudioSpec.freq * spkVal;
-	}
+	g_sdlPCSpeakerOn = true;
+	g_sdlCurrentBeepSample = 0;
+	g_sdlBeepHalfCycleCounter = 0;
+	g_sdlBeepHalfCycleCounterUpperBound = g_sdlAudioSpec.freq * spkVal;
 }
 
 void BE_SDL_PCSpeakerOff(void)
 {
-	if (g_sdlAudioSubsystemUp)
-	{
-		g_sdlPCSpeakerOn = false;
-	}
+	g_sdlPCSpeakerOn = false;
 }
 
 void BE_SDL_BSound(uint16_t frequency)
 {
-	SDL_LockMutex(g_sdlCallbackMutex); // RECURSIVE lock
+	BE_SDL_LockAudioRecursively();
 	BE_SDL_PCSpeakerOn(PC_PIT_RATE/(uint32_t)frequency);
-	SDL_UnlockMutex(g_sdlCallbackMutex); // RECURSIVE unlock
+	BE_SDL_UnlockAudioRecursively();
 }
 
 void BE_SDL_BNoSound(void)
 {
-	SDL_LockMutex(g_sdlCallbackMutex); // RECURSIVE lock
+	BE_SDL_LockAudioRecursively();
 	BE_SDL_PCSpeakerOff();
-	SDL_UnlockMutex(g_sdlCallbackMutex); // RECURSIVE unlock
+	BE_SDL_UnlockAudioRecursively();
 }
 
 /*******************************************************************************
@@ -272,36 +304,33 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 // Drop-in replacement for id_sd.c:alOut
 void BE_SDL_ALOut(uint8_t reg,uint8_t val)
 {
-	if (g_sdlAudioSubsystemUp)
+	BE_SDL_LockAudioRecursively(); // RECURSIVE lock
+
+	// FIXME: The original code for alOut adds 6 reads of the
+	// register port after writing to it (3.3 microseconds), and
+	// then 35 more reads of register port after writing to the
+	// data port (23 microseconds).
+	//
+	// It is apparently important for a portion of the fuse
+	// breakage sound at the least. For now a hack is implied.
+	YM3812Write(&oplChip, reg, val);
+	// Hack comes with a "magic number"
+	// that appears to make it work better
+	unsigned int length = OPL_SAMPLE_RATE / 10000;
+	// Circular buffer, shouldn't be too long...
+	if (length > OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd)
 	{
-		SDL_LockMutex(g_sdlCallbackMutex); // RECURSIVE lock
-
-		// FIXME: The original code for alOut adds 6 reads of the
-		// register port after writing to it (3.3 microseconds), and
-		// then 35 more reads of register port after writing to the
-		// data port (23 microseconds).
-		//
-		// It is apparently important for a portion of the fuse
-		// breakage sound at the least. For now a hack is implied.
-		YM3812Write(&oplChip, reg, val);
-		// Hack comes with a "magic number"
-		// that appears to make it work better
-		unsigned int length = OPL_SAMPLE_RATE / 10000;
-		// Circular buffer, shouldn't be too long...
-		if (length > OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd)
-		{
-			YM3812UpdateOne(&oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd);
-			length -= (OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd);
-			g_sdlALOutSamplesEnd = 0;
-		}
-		if (length)
-		{
-			YM3812UpdateOne(&oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], length);
-			g_sdlALOutSamplesEnd += length;
-		}
-
-		SDL_UnlockMutex(g_sdlCallbackMutex); // RECURSIVE unlock
+		YM3812UpdateOne(&oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd);
+		length -= (OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd);
+		g_sdlALOutSamplesEnd = 0;
 	}
+	if (length)
+	{
+		YM3812UpdateOne(&oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], length);
+		g_sdlALOutSamplesEnd += length;
+	}
+
+	BE_SDL_UnlockAudioRecursively(); // RECURSIVE unlock
 }
 
 /************************************************************************
@@ -364,9 +393,9 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 #if SDL_VERSION_ATLEAST(1,3,0)
 	memset(stream, 0, len);
 #endif
-	//////////////////////////////////
-	SDL_LockMutex(g_sdlCallbackMutex); // RECURSIVE lock
-	//////////////////////////////////
+	//////////////////////////////
+	BE_SDL_LockAudioRecursively(); // RECURSIVE lock
+	//////////////////////////////
 	
 	while (len)
 	{
@@ -379,149 +408,90 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 		isPartCompleted = ((unsigned)len >= 2*(g_sdlSamplePerPart-g_sdlSampleOffsetInSound));
 		currNumOfSamples = isPartCompleted ? (g_sdlSamplePerPart-g_sdlSampleOffsetInSound) : (len/2);
 		/*** AdLib (including hack for alOut delays) ***/
-		// Relatively simple case
-		if (g_sdlAudioSpec.freq == OPL_SAMPLE_RATE)
+		if (g_sdlEmulatedOPLChipReady)
 		{
-			uint32_t noOfALSamplesAvailable = (g_sdlALOutSamplesEnd-g_sdlALOutSamplesStart) % OPL_NUM_OF_SAMPLES; // Circular buffer
-			if (noOfALSamplesAvailable <= currNumOfSamples)
+			// Relatively simple case
+			if (g_sdlAudioSpec.freq == OPL_SAMPLE_RATE)
 			{
-				// Copy sound generated by alOut
-				if (noOfALSamplesAvailable > 0)
+				uint32_t noOfALSamplesAvailable = (g_sdlALOutSamplesEnd-g_sdlALOutSamplesStart) % OPL_NUM_OF_SAMPLES; // Circular buffer
+				if (noOfALSamplesAvailable <= currNumOfSamples)
 				{
-					if (g_sdlALOutSamplesStart < g_sdlALOutSamplesEnd)
+					// Copy sound generated by alOut
+					if (noOfALSamplesAvailable > 0)
 					{
-						memcpy(currSamplePtr, &g_sdlALOutSamples[g_sdlALOutSamplesStart], 2*noOfALSamplesAvailable);
+						if (g_sdlALOutSamplesStart < g_sdlALOutSamplesEnd)
+						{
+							memcpy(currSamplePtr, &g_sdlALOutSamples[g_sdlALOutSamplesStart], 2*noOfALSamplesAvailable);
+						}
+						else // Circular buffer wrapping
+						{
+							memcpy(currSamplePtr, &g_sdlALOutSamples[g_sdlALOutSamplesStart], 2*(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart));
+							memcpy(currSamplePtr+(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart), g_sdlALOutSamples, 2*g_sdlALOutSamplesEnd);
+						}
+					}
+					// Generate what's left
+					if (currNumOfSamples-noOfALSamplesAvailable > 0)
+					{
+						YM3812UpdateOne(&oplChip, currSamplePtr+noOfALSamplesAvailable, currNumOfSamples-noOfALSamplesAvailable);
+					}
+					// Finally update these
+					g_sdlALOutSamplesStart = g_sdlALOutSamplesEnd = 0;
+				}
+				else
+				{
+					// Already generated enough by alOut, to be copied
+					if (g_sdlALOutSamplesStart+currNumOfSamples <= OPL_NUM_OF_SAMPLES)
+					{
+						memcpy(currSamplePtr, &g_sdlALOutSamples[g_sdlALOutSamplesStart], 2*currNumOfSamples);
 					}
 					else // Circular buffer wrapping
 					{
 						memcpy(currSamplePtr, &g_sdlALOutSamples[g_sdlALOutSamplesStart], 2*(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart));
-						memcpy(currSamplePtr+(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart), g_sdlALOutSamples, 2*g_sdlALOutSamplesEnd);
+						memcpy(currSamplePtr+(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart), g_sdlALOutSamples, 2*currNumOfSamples-2*(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart));
 					}
-				}
-				// Generate what's left
-				if (currNumOfSamples-noOfALSamplesAvailable > 0)
-				{
-					YM3812UpdateOne(&oplChip, currSamplePtr+noOfALSamplesAvailable, currNumOfSamples-noOfALSamplesAvailable);
-				}
-				// Finally update these
-				g_sdlALOutSamplesStart = g_sdlALOutSamplesEnd = 0;
-			}
-			else
-			{
-				// Already generated enough by alOut, to be copied
-				if (g_sdlALOutSamplesStart+currNumOfSamples <= OPL_NUM_OF_SAMPLES)
-				{
-					memcpy(currSamplePtr, &g_sdlALOutSamples[g_sdlALOutSamplesStart], 2*currNumOfSamples);
-				}
-				else // Circular buffer wrapping
-				{
-					memcpy(currSamplePtr, &g_sdlALOutSamples[g_sdlALOutSamplesStart], 2*(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart));
-					memcpy(currSamplePtr+(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart), g_sdlALOutSamples, 2*currNumOfSamples-2*(OPL_NUM_OF_SAMPLES-g_sdlALOutSamplesStart));
-				}
-				g_sdlALOutSamplesStart += currNumOfSamples;
-				g_sdlALOutSamplesStart %= OPL_NUM_OF_SAMPLES;
-			}
-		}
-		else // g_sdlAudioSpec.freq != OPL_SAMPLE_RATE so we should interpolate
-		{
-			int16_t *currCopiedALSamplePtr = currSamplePtr;
-			int16_t *copiedALSamplesEnd = currSamplePtr+currNumOfSamples;
-#ifdef BE_SDL_ENABLE_LOW_PASS_FILTERING
-			// If we need to apply a low-pass filter, first calculate how much AL samples should we process
-			if (g_sdlAudioSpec.freq < OPL_SAMPLE_RATE)
-			{
-				int16_t *copiedALStart = currCopiedALSamplePtr;
-				int alInputLen = 0;
-				// Should still be good to use similar interpolation for silence;
-				// But first we want to copy these table counters
-				int alSampleRateConvCounterLocal = g_sdlALSampleRateConvCounter;
-				int alSampleRateConvCurrIndexLocal = g_sdlALSampleRateConvCurrIndex;
-				while (copiedALStart < copiedALSamplesEnd)
-				{
-					if (!alSampleRateConvCounterLocal)
-					{
-						++alInputLen;
-					}
-					// Take AL sample and store in output buffer
-					if (alSampleRateConvCounterLocal < g_sdlALSampleRateConvTable[alSampleRateConvCurrIndexLocal])
-					{
-						++alSampleRateConvCounterLocal;
-						++copiedALStart;
-					}
-					// Time to go to next AL silence sample
-					if (alSampleRateConvCounterLocal >= g_sdlALSampleRateConvTable[alSampleRateConvCurrIndexLocal])
-					{
-						alSampleRateConvCounterLocal = 0;
-						++alSampleRateConvCurrIndexLocal;
-						alSampleRateConvCurrIndexLocal %= OPL_SAMPLE_RATE;
-					}
-				}
-				BEL_SDL_ALDoLowPassFilter(g_sdlALOutSamplesStart, alInputLen);
-			}
-#endif
-			// Go over AL samples generated so far and interpolate
-			while ((g_sdlALOutSamplesStart != g_sdlALOutSamplesEnd) && (currCopiedALSamplePtr < copiedALSamplesEnd))
-			{
-				// Take AL sample and store in output buffer
-				if (g_sdlALSampleRateConvCounter < g_sdlALSampleRateConvTable[g_sdlALSampleRateConvCurrIndex])
-				{
-					++g_sdlALSampleRateConvCounter;
-					*(currCopiedALSamplePtr++) = g_sdlALOutSamples[g_sdlALOutSamplesStart];
-				}
-				// Time to go to next AL sample
-				if (g_sdlALSampleRateConvCounter >= g_sdlALSampleRateConvTable[g_sdlALSampleRateConvCurrIndex])
-				{
-					g_sdlALSampleRateConvCounter = 0;
-					++g_sdlALSampleRateConvCurrIndex;
-					g_sdlALSampleRateConvCurrIndex %= OPL_SAMPLE_RATE;
-					++g_sdlALOutSamplesStart;
+					g_sdlALOutSamplesStart += currNumOfSamples;
 					g_sdlALOutSamplesStart %= OPL_NUM_OF_SAMPLES;
 				}
 			}
-			// Need to generate extra AdLib silence?
-			if (currCopiedALSamplePtr < copiedALSamplesEnd)
+			else // g_sdlAudioSpec.freq != OPL_SAMPLE_RATE so we should interpolate
 			{
-				int16_t *copiedALStart = currCopiedALSamplePtr;
-				int alInputLen = 0;
-				// Should still be good to use similar interpolation for silence;
-				// But first we want to copy these table counters
-				int alSampleRateConvCounterLocal = g_sdlALSampleRateConvCounter;
-				int alSampleRateConvCurrIndexLocal = g_sdlALSampleRateConvCurrIndex;
-				while (copiedALStart < copiedALSamplesEnd)
-				{
-					if (!alSampleRateConvCounterLocal)
-					{
-						++alInputLen;
-					}
-					// Take AL sample and store in output buffer
-					if (alSampleRateConvCounterLocal < g_sdlALSampleRateConvTable[alSampleRateConvCurrIndexLocal])
-					{
-						++alSampleRateConvCounterLocal;
-						++copiedALStart;
-					}
-					// Time to go to next AL silence sample
-					if (alSampleRateConvCounterLocal >= g_sdlALSampleRateConvTable[alSampleRateConvCurrIndexLocal])
-					{
-						alSampleRateConvCounterLocal = 0;
-						++alSampleRateConvCurrIndexLocal;
-						alSampleRateConvCurrIndexLocal %= OPL_SAMPLE_RATE;
-					}
-				}
-				// Finally we know how many (new) samples should be generated
-				// But just to prevent buffer overflow (shouldn't happen in a "proper" situation)...
-				g_sdlALOutSamplesStart = 0;
-				// Just in case (SHOULDN'T HAPPEN)
-				alInputLen = (alInputLen > OPL_NUM_OF_SAMPLES) ? OPL_NUM_OF_SAMPLES : alInputLen;
-				//
-				YM3812UpdateOne(&oplChip, g_sdlALOutSamples, alInputLen);
+				int16_t *currCopiedALSamplePtr = currSamplePtr;
+				int16_t *copiedALSamplesEnd = currSamplePtr+currNumOfSamples;
 #ifdef BE_SDL_ENABLE_LOW_PASS_FILTERING
+				// If we need to apply a low-pass filter, first calculate how much AL samples should we process
 				if (g_sdlAudioSpec.freq < OPL_SAMPLE_RATE)
 				{
-					BEL_SDL_ALDoLowPassFilter(0, alInputLen);
+					int16_t *copiedALStart = currCopiedALSamplePtr;
+					int alInputLen = 0;
+					// Should still be good to use similar interpolation for silence;
+					// But first we want to copy these table counters
+					int alSampleRateConvCounterLocal = g_sdlALSampleRateConvCounter;
+					int alSampleRateConvCurrIndexLocal = g_sdlALSampleRateConvCurrIndex;
+					while (copiedALStart < copiedALSamplesEnd)
+					{
+						if (!alSampleRateConvCounterLocal)
+						{
+							++alInputLen;
+						}
+						// Take AL sample and store in output buffer
+						if (alSampleRateConvCounterLocal < g_sdlALSampleRateConvTable[alSampleRateConvCurrIndexLocal])
+						{
+							++alSampleRateConvCounterLocal;
+							++copiedALStart;
+						}
+						// Time to go to next AL silence sample
+						if (alSampleRateConvCounterLocal >= g_sdlALSampleRateConvTable[alSampleRateConvCurrIndexLocal])
+						{
+							alSampleRateConvCounterLocal = 0;
+							++alSampleRateConvCurrIndexLocal;
+							alSampleRateConvCurrIndexLocal %= OPL_SAMPLE_RATE;
+						}
+					}
+					BEL_SDL_ALDoLowPassFilter(g_sdlALOutSamplesStart, alInputLen);
 				}
 #endif
-				// Repeat the above loop, but with the global counter variables and, storing silence
-				while (currCopiedALSamplePtr < copiedALSamplesEnd)
+				// Go over AL samples generated so far and interpolate
+				while ((g_sdlALOutSamplesStart != g_sdlALOutSamplesEnd) && (currCopiedALSamplePtr < copiedALSamplesEnd))
 				{
 					// Take AL sample and store in output buffer
 					if (g_sdlALSampleRateConvCounter < g_sdlALSampleRateConvTable[g_sdlALSampleRateConvCurrIndex])
@@ -529,19 +499,81 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 						++g_sdlALSampleRateConvCounter;
 						*(currCopiedALSamplePtr++) = g_sdlALOutSamples[g_sdlALOutSamplesStart];
 					}
+					// Time to go to next AL sample
 					if (g_sdlALSampleRateConvCounter >= g_sdlALSampleRateConvTable[g_sdlALSampleRateConvCurrIndex])
-					// Time to go to next AL silence sample
 					{
 						g_sdlALSampleRateConvCounter = 0;
 						++g_sdlALSampleRateConvCurrIndex;
 						g_sdlALSampleRateConvCurrIndex %= OPL_SAMPLE_RATE;
 						++g_sdlALOutSamplesStart;
-						//No need to do this here now
-						//g_sdlALOutSamplesStart %= OPL_NUM_OF_SAMPLES;
+						g_sdlALOutSamplesStart %= OPL_NUM_OF_SAMPLES;
 					}
 				}
-				// DON'T FORGET THESE!
-				g_sdlALOutSamplesStart = g_sdlALOutSamplesEnd = 0;
+				// Need to generate extra AdLib silence?
+				if (currCopiedALSamplePtr < copiedALSamplesEnd)
+				{
+					int16_t *copiedALStart = currCopiedALSamplePtr;
+					int alInputLen = 0;
+					// Should still be good to use similar interpolation for silence;
+					// But first we want to copy these table counters
+					int alSampleRateConvCounterLocal = g_sdlALSampleRateConvCounter;
+					int alSampleRateConvCurrIndexLocal = g_sdlALSampleRateConvCurrIndex;
+					while (copiedALStart < copiedALSamplesEnd)
+					{
+						if (!alSampleRateConvCounterLocal)
+						{
+							++alInputLen;
+						}
+						// Take AL sample and store in output buffer
+						if (alSampleRateConvCounterLocal < g_sdlALSampleRateConvTable[alSampleRateConvCurrIndexLocal])
+						{
+							++alSampleRateConvCounterLocal;
+							++copiedALStart;
+						}
+						// Time to go to next AL silence sample
+						if (alSampleRateConvCounterLocal >= g_sdlALSampleRateConvTable[alSampleRateConvCurrIndexLocal])
+						{
+							alSampleRateConvCounterLocal = 0;
+							++alSampleRateConvCurrIndexLocal;
+							alSampleRateConvCurrIndexLocal %= OPL_SAMPLE_RATE;
+						}
+					}
+					// Finally we know how many (new) samples should be generated
+					// But just to prevent buffer overflow (shouldn't happen in a "proper" situation)...
+					g_sdlALOutSamplesStart = 0;
+					// Just in case (SHOULDN'T HAPPEN)
+					alInputLen = (alInputLen > OPL_NUM_OF_SAMPLES) ? OPL_NUM_OF_SAMPLES : alInputLen;
+					//
+					YM3812UpdateOne(&oplChip, g_sdlALOutSamples, alInputLen);
+#ifdef BE_SDL_ENABLE_LOW_PASS_FILTERING
+					if (g_sdlAudioSpec.freq < OPL_SAMPLE_RATE)
+					{
+						BEL_SDL_ALDoLowPassFilter(0, alInputLen);
+					}
+#endif
+					// Repeat the above loop, but with the global counter variables and, storing silence
+					while (currCopiedALSamplePtr < copiedALSamplesEnd)
+					{
+						// Take AL sample and store in output buffer
+						if (g_sdlALSampleRateConvCounter < g_sdlALSampleRateConvTable[g_sdlALSampleRateConvCurrIndex])
+						{
+							++g_sdlALSampleRateConvCounter;
+							*(currCopiedALSamplePtr++) = g_sdlALOutSamples[g_sdlALOutSamplesStart];
+						}
+						if (g_sdlALSampleRateConvCounter >= g_sdlALSampleRateConvTable[g_sdlALSampleRateConvCurrIndex])
+						// Time to go to next AL silence sample
+						{
+							g_sdlALSampleRateConvCounter = 0;
+							++g_sdlALSampleRateConvCurrIndex;
+							g_sdlALSampleRateConvCurrIndex %= OPL_SAMPLE_RATE;
+							++g_sdlALOutSamplesStart;
+							//No need to do this here now
+							//g_sdlALOutSamplesStart %= OPL_NUM_OF_SAMPLES;
+						}
+					}
+					// DON'T FORGET THESE!
+					g_sdlALOutSamplesStart = g_sdlALOutSamplesEnd = 0;
+				}
 			}
 		}
 		// PC Speaker
@@ -558,9 +590,9 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 		}
 	}
 
-	////////////////////////////////////
-	SDL_UnlockMutex(g_sdlCallbackMutex); // RECURSIVE unlock
-	////////////////////////////////////
+	////////////////////////////////
+	BE_SDL_UnlockAudioRecursively(); // RECURSIVE unlock
+	////////////////////////////////
 }
 
 // Here, the actual rate is about 1193182Hz/speed

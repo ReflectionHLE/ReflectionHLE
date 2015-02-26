@@ -757,6 +757,12 @@ SDL_StartAL(void)
 static id0_boolean_t
 SDL_DetectAdLib(void)
 {
+	// REFKEEN - If there's no emulated OPL chip, just return false
+	if (!BE_SDL_IsEmulatedOPLChipReady())
+	{
+		return false;
+	}
+
 	//id0_byte_t	status1,status2;
 	id0_int_t		i;
 
