@@ -17,14 +17,20 @@ reproduced is given.
 
 With the right tools, this patched codebase can be used to reproduce any
 of the executables coming from the following original releases, at least
-up to a call to UNLZEXE 0.7:
-- Wolfenstein 3D Shareware 1.4 Apogee (with cheats).
-- Wolfenstein 3D Registered 1.4 Activision.
-- Spear of Destiny demo 1.0 FormGen.
-- Spear of Destiny 1.4 Activision (no copy protection).
+up to a call to UNLZEXE 0.7:  
+- Wolfenstein 3D Shareware v1.4, Apogee release (with cheats).  
+- Wolfenstein 3D Registered v1.4, Apogee release (with cheats).  
+- Wolfenstein 3D Registered v1.4, ID Software release.  
+- Wolfenstein 3D Registered v1.4, early GT Interactive release (same EXE as
+in the ID Software release, except for a different logo in the signon screen).  
+- Wolfenstein 3D Registered v1.4, late GT Interactive release
+(no three-letter code is shown after completing an episode).  
+- Wolfenstein 3D Registered v1.4, Activision release.  
+- Spear of Destiny demo v1.0, FormGen release.  
+- Spear of Destiny v1.4, Activision release (no copy protection).  
 
 The originally released WOLF3D.PRJ file was used as a base for a total of
-four projects files included in this source tree. Each of them can be
+eight project files included in this source tree. Each of them can be
 used for building a specific game version out of the ones above.
 
 Borland C++ 3.1 should be used in all cases, except for the SOD demo project,
@@ -32,13 +38,13 @@ for which Borland C++ 3.0 should be used.
 
 How were the project files (and a bit more) modified from the original:
 - The two projects for the Activision builds target the 386 architecture,
-while the ones for the Apogee and SOD demo builds target 286.
+while the ones for the Apogee, GT and SOD demo builds target 286.
 - The locations of SIGNUP.OBJ and GAMEPAL.OBJ are updated. Different files may
 be used for different game versions. In fact, while the palette is the same for
-the SOD demo and Activision SOD builds, different OBJ are used nevertheless.
-That is because the palette is a whole segment in the demo EXE, but just
-a part of the dseg in the Activision SOD EXE.
-- Paths to "OBJ" directory are replaced, so each project generates objects in
+the SOD demo and Activision SOD builds, different OBJs are used nevertheless.
+This is because the palette is a whole segment in the demo EXE, but just
+a part of the data segment in the Activision SOD EXE.
+- Paths to "OBJ" directories are replaced, so each project generates objects in
 its own subdirectory within "OBJ".
 - Paths to development environment (INCLUDE and LIB directories) are modified.
 As expected there are chances you will want to edit these, depending on your
@@ -46,7 +52,7 @@ setup of development tools.
 - VERSION.H is edited. Each project defines a version-identifier macro,
 which is used to let the preprocessor define a few macros used in the
 original codebase (like UPLOAD for the Apogee shareware release).
-- WOLFHACK.C and WHACK_A.ASM are removed from the Apogee and SOD demo projects.
+- WOLFHACK.C and WHACK_A.ASM are removed from all non-Activision projects.
 In addition, WL_TEXT.C is removed from the SOD demo project.
 - The list of objects in the SOD demo project (for linking purposes)
 is reordered: ID_IN precedes SIGNON.
@@ -57,7 +63,7 @@ the remaining selected choices are: "Register Variable" - "Automatic",
 "Common Subexpressions" - "No Optimization" and "Optimize For" - "Speed".
 - There may be at least one other difference at the least. Obviously, source
 code files other than VERSION.H are edited as required. This include the
-addition of the new file GFXV_APO.H file for the Shareware Apogee build,
+addition of the new header file GFXV_APO.H for the Apogee builds,
 with resource definitions taken off the Wolf4SDL source port.
 
 With the exception of the SOD demo, Borland C++ 3.1 for DOS should be used for
@@ -72,20 +78,21 @@ the Message window to see what is its "cause" in the sources and jump to that
 location in the code, and then retry to compile from there.
 Repeat until an EXE is built.
 
-If there are problems you should probably remove the corresponding SYM file
-(e.g., WL6ACT14.SYM) and retry from scratch.
+More generally, if there are problems then you should probably remove the
+corresponding SYM file (e.g., WL6ACT14.SYM) and retry from scratch.
 
-With the Shareware Apogee EXE, things should be straightforward. Simply pack
+With each of the Apogee EXEs, things should be straightforward. Simply pack
 the generated EXE with LZEXE 0.91. If anything has been done as expected then
-you should get precisely the original Shareware Apogee 1.4 EXE, byte-by-byte.
+you should get precisely an original Shareware or Registered Apogee 1.4 EXE,
+byte-by-byte.
 
-An additional preprocessing is required for the rest of the EXEs, though.
+Some other bit of preprocessing is required for the rest of the EXEs, though.
 Basically, the BSS section should be stripped out of the EXE. You can use
 the tool STRIPBSS (supplied in the repository from which this modified Wolf3D
 source tree originally comes). For a specific EXE that is going to be modified,
 look in the MAP file generated with it for the location of the BSS section in
 the EXE image. You can use the "GREP" tool supplied as a part of the collection
-of development tools from BC++ convenience. An example usage:
+of development tools from BC++ for convenience. An example usage:
 
 GREP " _BSS " WL6ACT14.MAP
 
@@ -96,15 +103,28 @@ command involving STRIPBSS is:
 
 STRIPBSS WL6ACT14.EXE 3E03E
 
-This can similarly be applied to the other EXEs. Following that, you can use
-LZEXE91 as usual. This does not mean you already get the original EXE, though.
+This can similarly be applied to the other EXEs.
 
-In the case of the SOD demo EXE, you should be done and get exactly the
-original. For The Activision EXEs, though, a bit more work is required. Looks
-like the LZEXE signature at the end of the file (a bunch of bytes, not the
-string "LZ91" at the beginning) are a bit different (seem shifted for most)
-from the output of LZEXE91. So, you should unpack the original Activision EXE,
-or possibly a backup copy of it, using UNLZEXE 0.7 (0.8 is expected to fail).
-For the sake of comparison, the new EXE you have just packed should be
-unpacked in a similar fashion. Hopefully, the two compared (unpacked) EXEs
-should be identical.
+In the cases of the early GT (WL6GT114.EXE) and ID EXEs, after using STRIPBSS
+you should get exactly the original EXE.
+
+For each of the remaining EXEs, you can use LZEXE91. This does not mean
+you already get the original EXE, though.
+
+In the cases of the SOD demo and the late GT EXEs, you should be done and
+get exactly the originals. For The Activision EXEs, though, a bit more work
+is required. Looks like the LZEXE signature at the end of the file
+(a bunch of bytes, not the string "LZ91" at the beginning) is a bit different
+(seem shifted for most) from the output of LZEXE91. So, you should unpack
+the original Activision EXE (but better make a backup first), using
+UNLZEXE 0.7 (0.8 is expected to fail). For the sake of comparison,
+the new EXE you have just packed using LZEXE91 should be unpacked in a
+similar fashion. Hopefully, two compared (unpacked) EXEs should be identical.
+
+One final note: The source code as originally released by ID Software seems
+to be in some intermediate state in-between the later GT Interactive release
+and the Activision release. As in the former, the GT logo is shown in the
+signon screen and some text is shown on quit (after changing to text mode).
+On the other hand, the project file is closer to the one used here for
+the Activision release, having the source files WOLFHACK.C and WHACK_A.ASM
+added to the project, as well as targeting 80386 rather than 80286.

@@ -480,16 +480,16 @@ void PageLayout (boolean shownumber)
 
 	if (shownumber)
 	{
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
+		// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
 		// Micro difference - where/when to set px and py...
 		#ifdef SPANISH
 		strcpy (str,"Hoja ");
 		itoa (pagenum,str2,10);
 		strcat (str,str2);
 		strcat (str," de ");
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
+		// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
 		// Pick location based on version
-		#ifdef GOODTIMES
+		#if (defined GAMEVER_RESTORATION_WL6_GT214) || (defined GAMEVER_RESTORATION_WL6_ACT14) || (defined GAMEVER_RESTORATION_SOD_ACT14)
 		py = 183;
 		px = 208;
 		#endif
@@ -498,9 +498,9 @@ void PageLayout (boolean shownumber)
 		itoa (pagenum,str2,10);
 		strcat (str,str2);
 		strcat (str," of ");
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
+		// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
 		// Pick location based on version
-		#ifdef GOODTIMES
+		#if (defined GAMEVER_RESTORATION_WL6_GT214) || (defined GAMEVER_RESTORATION_WL6_ACT14) || (defined GAMEVER_RESTORATION_SOD_ACT14)
 		py = 183;
 		px = 213;
 		#endif
@@ -508,9 +508,9 @@ void PageLayout (boolean shownumber)
 		itoa (numpages,str2,10);
 		strcat (str,str2);
 		fontcolor = 0x4f; 			   //12^BACKCOLOR;
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
+		// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
 		// Pick location based on version
-		#ifndef GOODTIMES
+		#if (!defined GAMEVER_RESTORATION_WL6_GT214) && (!defined GAMEVER_RESTORATION_WL6_ACT14) && (!defined GAMEVER_RESTORATION_SOD_ACT14)
 		#ifdef SPANISH
 		py = 183;
 		px = 208;

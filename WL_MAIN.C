@@ -1389,8 +1389,10 @@ void Quit (char *error)
 		// ***REGISTERED WOLF3D+SOD V1.4 ACTIVISION+SOD DEMO V1.0 RESTORATION***
 		// This should be commented out in the 1.4 Activision releases
 		// of Wolf3D and SOD (no copy protection), but compiled in the
-		// shareware 1.4 Apogee and SOD demo 1.0 releases.
-		#if (!defined JAPAN) && (!defined GOODTIMES)
+		// shareware/registered 1.4 Apogee and SOD demo 1.0 releases,
+		// as well as the other "GOODTIMES" releases
+		// (the Activision version of Wolf3D is otherwise another modified GOODTIMES release).
+		#if (!defined JAPAN) && (!defined GAMEVER_RESTORATION_WL6_ACT14) && (!defined GAMEVER_RESTORATION_SOD_ACT14)
 		//#ifndef JAPAN
 		movedata ((unsigned)screen,7,0xb800,0,4000);
 		gotoxy(1,24);

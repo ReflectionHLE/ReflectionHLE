@@ -1075,9 +1075,9 @@ void	DrawHighScores(void)
 	MM_SortMem ();
 
 #ifndef SPEAR
-	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
-	// Uncomment line for Shareware 1.4 Apogee
-#ifndef GOODTIMES
+	// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
+	// Uncomment line for Shareware/Registered 1.4 Apogee and early GT/ID
+#if (!defined GAMEVER_RESTORATION_WL6_GT214) && (!defined GAMEVER_RESTORATION_WL6_ACT14)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	CA_CacheGrChunk (HIGHSCORESPIC);
@@ -1095,8 +1095,11 @@ void	DrawHighScores(void)
 	VWB_DrawPic(4*8,68,C_NAMEPIC);
 	VWB_DrawPic(20*8,68,C_LEVELPIC);
 	VWB_DrawPic(28*8,68,C_SCOREPIC);
-#ifndef UPLOAD
-//	VWB_DrawPic(35*8,68,C_CODEPIC);
+	// ***REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
+	// Uncomment line for Registered 1.4 Apogee and early Goodtimes/Id
+#if (!defined GAMEVER_RESTORATION_WL6_GT214) && (!defined GAMEVER_RESTORATION_WL6_ACT14) && (!defined UPLOAD)
+//#ifndef UPLOAD
+	VWB_DrawPic(35*8,68,C_CODEPIC);
 #endif
 	fontnumber=0;
 
@@ -1180,7 +1183,10 @@ void	DrawHighScores(void)
 #endif
 		US_Print(buffer);
 
-		#if 0
+		// ***REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
+		// Do compile verification block for Registered 1.4 Apogee and early Goodtimes/Id
+		#if (!defined GAMEVER_RESTORATION_WL6_GT214) && (!defined GAMEVER_RESTORATION_WL6_ACT14)
+		//#if 0
 #ifndef UPLOAD
 #ifndef SPEAR
 		//
