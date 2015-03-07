@@ -604,7 +604,21 @@ USL_ConfirmComm(UComm comm)
 		break;
 	}
 
-	confirm = dialog? USL_CtlDialog(s1,s2,s3) : true;
+	// REFKEEN - Alternative controllers support
+	// (WARNING: Technically this belongs to USL_CtlDialog, but this is the only place where its returned value is actually checked)
+	if (dialog)
+	{
+		BE_SDL_AltControlScheme_Push();
+		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){sc_Y, sc_N, 0});
+		confirm = USL_CtlDialog(s1,s2,s3);
+		BE_SDL_AltControlScheme_Pop();
+	}
+	else
+	{
+		confirm = true;
+	}
+
+	//confirm = dialog? USL_CtlDialog(s1,s2,s3) : true;
 	if (confirm)
 	{
 		Communication = comm;
@@ -1563,6 +1577,10 @@ USL_SetControlValues(void)
 		musici[1].flags |= ui_Disabled; // AdLib music
 	}
 
+	// REFKEEN - Alternative controllers support - Disable keyboard options (joysticks should already be disabled since there are "none" detected)
+	if (BE_SDL_AltControlScheme_IsEnabled())
+		configi[2].flags |= ui_Disabled;
+	//
 	if (!JoysPresent[0])
 		configi[3].flags |= ui_Disabled;
 	if (!JoysPresent[1])
@@ -1719,6 +1737,10 @@ USL_TearDownCtlPanel(void)
 void
 US_ControlPanel(void)
 {
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareMenuControls();
+
 extern void HelpScreens(void);
 
 	id0_boolean_t         resetitem,on;
@@ -1736,6 +1758,7 @@ extern void HelpScreens(void);
 		CtlPanelDone = true;
 		loadedgame = true;
 		USL_TearDownCtlPanel();
+		BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 		return;
 	}
 #endif
@@ -1870,4 +1893,6 @@ extern void HelpScreens(void);
 	}
 
 	USL_TearDownCtlPanel();
+
+	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }

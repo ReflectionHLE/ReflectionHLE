@@ -71,6 +71,44 @@ static int g_sdlTxtCursorPosX, g_sdlTxtCursorPosY;
 static bool g_sdlTxtCursorEnabled = true;
 static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 
+/*** Game controller UI resource definitions ***/
+
+#include "../rsrc/pad_font_mono.xpm"
+#include "../rsrc/pad_thumb_buttons.xpm"
+
+#define ALTCONTROLLER_PAD_PIX_WIDTH 48
+#define ALTCONTROLLER_PAD_PIX_HEIGHT 48
+#define ALTCONTROLLER_CHAR_PIX_WIDTH 6
+#define ALTCONTROLLER_CHAR_PIX_HEIGHT 8
+#define ALTCONTROLLER_CHAR_TOTAL_PIX_WIDTH 570
+
+#define ALTCONTROLLER_EDGE_PIX_DIST 2
+#define ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO 5
+
+// Measured in keys
+#define ALTCONTROLLER_KEYBOARD_WIDTH 18
+#define ALTCONTROLLER_KEYBOARD_HEIGHT 3
+
+#define ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH 22
+#define ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT 12
+
+#define ALTCONTROLLER_KEYBOARD_PIX_WIDTH (ALTCONTROLLER_KEYBOARD_WIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
+#define ALTCONTROLLER_KEYBOARD_PIX_HEIGHT (ALTCONTROLLER_KEYBOARD_HEIGHT*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT)
+
+#define ALTCONTROLLER_KEYBOARD_SCREEN_MINDIM_RATIO 2
+
+// These are given as (x, y) offset pairs within the non-scaled,
+// face buttons image, assuming longest texts possible (3 chars long)
+static const int g_sdlControllerFaceButtonsTextLocs[] = {15, 34, 28, 21, 2, 21, 15, 8};
+
+static SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerTextInputRect;
+static SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlTextInputTexture;
+static bool g_sdlFaceButtonsAreShown, g_sdlTextInputUIIsShown;
+
+static int g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY;
+static bool g_sdlTextInputIsKeyPressed, g_sdlTextInputIsShifted;
+
+
 void BE_SDL_SetGfxOutputRects(void);
 
 void BE_SDL_InitGfx(void)
@@ -164,6 +202,10 @@ void BE_SDL_InitGfx(void)
 
 void BE_SDL_ShutdownGfx(void)
 {
+	SDL_DestroyTexture(g_sdlFaceButtonsTexture);
+	g_sdlFaceButtonsTexture = NULL;
+	SDL_DestroyTexture(g_sdlTextInputTexture);
+	g_sdlTextInputTexture = NULL;
 	SDL_DestroyTexture(g_sdlTexture);
 	g_sdlTexture = NULL;
 	SDL_DestroyTexture(g_sdlTargetTexture);
@@ -211,6 +253,374 @@ static void BEL_SDL_RecreateTexture(void)
 			exit(0);
 		}
 	}
+}
+
+// Scancode names for controller face buttons UI and similar
+// (but not a whole on-screen keyboard), based on DOS scancodes
+// (doesn't include "special" keys for which 0xE0 is sent), and others
+static const char *g_sdlDOSScanCodeStrs[] = {
+	NULL, "Esc",
+	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "\x11",
+	"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "Ent",
+	"Ctl", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`",
+	"\x1E", "\\", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "/", NULL,
+	NULL, "Alt", "[_]", "Cap",
+	"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "Num", "Scl",
+	"Hom", "\x18", "PgU", NULL, "\x1B", NULL, "\x1A", NULL, "End", "\x19", "PgD",
+	"Ins", "Del",
+};
+
+// Same, but for onscreen keyboard in non-shifted state
+static const char *g_sdlDOSScanCodeKeyboardNonShiftedStrs[] = {
+	NULL, "Esc",
+	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "\x11",
+	NULL, "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "Ent",
+	NULL, "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "`",
+	"\x1E", "\\", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", NULL,
+	NULL, NULL, "[_]", NULL,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+	NULL, "\x18", NULL, NULL, "\x1B", NULL, "\x1A", "+", NULL, "\x19", NULL,
+	NULL, "Del",
+};
+
+// Same but shifted
+static const char *g_sdlDOSScanCodeKeyboardShiftedStrs[] = {
+	NULL, "Esc",
+	"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "\x11",
+	NULL, "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}", "Ent",
+	NULL, "A", "S", "D", "F", "G", "H", "J", "K", "L", ":", "\"", "~",
+	"\x1E", "|", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", NULL,
+	NULL, NULL, "[_]", NULL,
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+	NULL, "\x18", NULL, NULL, "\x1B", NULL, "\x1A", "+", NULL, "\x19", NULL,
+	NULL, "Del",
+};
+
+// One of the shifted and non-shifted variants
+static const char **g_sdlDOSScanCodeKeyboardStrs_Ptr;
+
+// On-screen keyboard layout definition (probably better we don't use "special" keys e.g., with scancode 0xE0 sent, even though there shouldn't be a difference)
+
+static const EmulatedKeyScancode_T g_sdlDOSScanCodeKeyboardLayout[ALTCONTROLLER_KEYBOARD_HEIGHT][ALTCONTROLLER_KEYBOARD_WIDTH] = {
+	{EMULATEDKEYSCANCODE_ESC, EMULATEDKEYSCANCODE_Q, EMULATEDKEYSCANCODE_W, EMULATEDKEYSCANCODE_E, EMULATEDKEYSCANCODE_R, EMULATEDKEYSCANCODE_T, EMULATEDKEYSCANCODE_Y, EMULATEDKEYSCANCODE_U, EMULATEDKEYSCANCODE_I, EMULATEDKEYSCANCODE_O, EMULATEDKEYSCANCODE_P, EMULATEDKEYSCANCODE_LBRACKET, EMULATEDKEYSCANCODE_RBRACKET, EMULATEDKEYSCANCODE_7, EMULATEDKEYSCANCODE_8, EMULATEDKEYSCANCODE_9, EMULATEDKEYSCANCODE_0, EMULATEDKEYSCANCODE_KP_PLUS/*PLUS*/},
+
+	{EMULATEDKEYSCANCODE_SPACE, EMULATEDKEYSCANCODE_A, EMULATEDKEYSCANCODE_S, EMULATEDKEYSCANCODE_D, EMULATEDKEYSCANCODE_F, EMULATEDKEYSCANCODE_G, EMULATEDKEYSCANCODE_H, EMULATEDKEYSCANCODE_J, EMULATEDKEYSCANCODE_K, EMULATEDKEYSCANCODE_L, EMULATEDKEYSCANCODE_SEMICOLON, EMULATEDKEYSCANCODE_QUOTE, EMULATEDKEYSCANCODE_BACKSLASH, EMULATEDKEYSCANCODE_4, EMULATEDKEYSCANCODE_5, EMULATEDKEYSCANCODE_6, EMULATEDKEYSCANCODE_KP_4/*LEFT*/, EMULATEDKEYSCANCODE_KP_6/*RIGHT*/},
+
+	{EMULATEDKEYSCANCODE_LSHIFT, EMULATEDKEYSCANCODE_Z, EMULATEDKEYSCANCODE_X, EMULATEDKEYSCANCODE_C, EMULATEDKEYSCANCODE_V, EMULATEDKEYSCANCODE_B, EMULATEDKEYSCANCODE_N, EMULATEDKEYSCANCODE_M, EMULATEDKEYSCANCODE_COMMA, EMULATEDKEYSCANCODE_PERIOD, EMULATEDKEYSCANCODE_SLASH, EMULATEDKEYSCANCODE_GRAVE, EMULATEDKEYSCANCODE_ENTER, EMULATEDKEYSCANCODE_1, EMULATEDKEYSCANCODE_2, EMULATEDKEYSCANCODE_3, EMULATEDKEYSCANCODE_KP_PERIOD/*DEL*/, EMULATEDKEYSCANCODE_BSPACE},
+};
+
+
+// Colors in BGRA format/order (on certain platforms)
+
+static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
+	0xff000000/*black*/,
+	0xff00ffff/*light cyan*/,
+	0xffff00ff/*light magenta*/,
+	0xffffffff/*white*/
+};
+
+// Same but for the EGA/VGA (and colored text modes on CGA/EGA/VGA)
+
+static const uint32_t g_sdlEGABGRAScreenColors[] = {
+	0xff000000/*black*/, 0xff0000aa/*blue*/, 0xff00aa00/*green*/, 0xff00aaaa/*cyan*/,
+	0xffaa0000/*red*/, 0xffaa00aa/*magenta*/, 0xffaa5500/*brown*/, 0xffaaaaaa/*light gray*/,
+	0xff555555/*gray*/, 0xff5555ff/*light blue*/, 0xff55ff55/*light green*/, 0xff55ffff/*light cyan*/,
+	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
+};
+
+
+static void BEL_SDL_CreateFaceButtonsTextureIfNeeded(void)
+{
+	if (g_sdlFaceButtonsTexture)
+	{
+		return;
+	}
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	g_sdlFaceButtonsTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_PAD_PIX_WIDTH, ALTCONTROLLER_PAD_PIX_HEIGHT);
+	if (!g_sdlFaceButtonsTexture)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 face buttons texture,\n%s\n", SDL_GetError());
+		//Destroy window and renderer?
+		exit(0);
+	}
+	SDL_SetTextureBlendMode(g_sdlFaceButtonsTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+}
+
+static void BEL_SDL_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char *text)
+{
+	for (int currRow = 0, fontXpmIndex = 3; currRow < ALTCONTROLLER_CHAR_PIX_HEIGHT; ++currRow, picPtr += picWidth, ++fontXpmIndex)
+	{
+		const char *fontRowPtr = pad_font_mono_xpm[fontXpmIndex];
+		uint32_t *currPtr = picPtr;
+		for (const char *chPtr = text; *chPtr; ++chPtr)
+		{
+			const char *fontPixPtr = fontRowPtr + ALTCONTROLLER_CHAR_PIX_WIDTH * (*chPtr);
+			for (int currCharCol = 0; currCharCol < ALTCONTROLLER_CHAR_PIX_WIDTH; ++currCharCol, ++currPtr, ++fontPixPtr)
+			{
+				if (*fontPixPtr == '+')
+				{
+					*currPtr = g_sdlCGAGfxBGRAScreenColors[0];
+				}
+			}
+		}
+	}
+}
+
+/*static*/ void BEL_SDL_PrepareToShowFaceButtons(const char *scanCodes)
+{
+	BEL_SDL_CreateFaceButtonsTextureIfNeeded();
+	
+	uint32_t pixels[ALTCONTROLLER_PAD_PIX_WIDTH*ALTCONTROLLER_PAD_PIX_HEIGHT];
+	uint32_t *currPtr = pixels;
+	for (int currRow = 0, xpmIndex = 5; currRow < ALTCONTROLLER_PAD_PIX_HEIGHT; ++currRow, ++xpmIndex)
+	{
+		const char *xpmRowPtr = pad_thumb_buttons_xpm[xpmIndex];
+		for (int currCol = 0; currCol < ALTCONTROLLER_PAD_PIX_WIDTH; ++currCol, ++currPtr, ++xpmRowPtr)
+		{
+			switch (*xpmRowPtr)
+			{
+			case ' ':
+				*currPtr = 0x00000000; // HACK (BGRA, working with any order) because we don't have it defined elsewhere
+				break;
+			case '.':
+				*currPtr = g_sdlEGABGRAScreenColors[8]; // Gray
+				break;
+			case '+':
+				*currPtr = g_sdlEGABGRAScreenColors[7]; // Light gray
+				break;
+			case '@':
+				*currPtr = g_sdlEGABGRAScreenColors[15]; // White
+				break;
+			}
+		}
+	}
+	// FIXME Rather than drawing each scancode as the ASCII code, we want something else...
+	for (int counter = 0; (*scanCodes) && (counter < 4); ++scanCodes, ++counter)
+	{
+		const char *str = g_sdlDOSScanCodeStrs[(unsigned char )(*scanCodes)];
+		BEL_SDL_RedrawTextToBuffer(pixels + g_sdlControllerFaceButtonsTextLocs[2*counter] + g_sdlControllerFaceButtonsTextLocs[2*counter+1]*ALTCONTROLLER_PAD_PIX_WIDTH + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), ALTCONTROLLER_PAD_PIX_WIDTH, str);
+	}
+	// Add some alpha channel
+	currPtr = pixels;
+	for (int pixCounter = 0; pixCounter < ALTCONTROLLER_PAD_PIX_WIDTH*ALTCONTROLLER_PAD_PIX_HEIGHT; ++pixCounter, ++currPtr)
+	{
+		*currPtr &= 0xBFFFFFFF; // BGRA
+	}
+	SDL_UpdateTexture(g_sdlFaceButtonsTexture, NULL, pixels, 4*ALTCONTROLLER_PAD_PIX_WIDTH);
+	g_sdlFaceButtonsAreShown = true;
+}
+
+static void BEL_SDL_CreateTextInputTextureIfNeeded(void)
+{
+	if (g_sdlTextInputTexture)
+	{
+		return;
+	}
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	g_sdlTextInputTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_KEYBOARD_PIX_WIDTH, ALTCONTROLLER_KEYBOARD_PIX_HEIGHT);
+	if (!g_sdlTextInputTexture)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 text input texture,\n%s\n", SDL_GetError());
+		//Destroy window and renderer?
+		exit(0);
+	}
+	SDL_SetTextureBlendMode(g_sdlTextInputTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+}
+
+static void BEL_SDL_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isSelected)
+{
+#if 0
+	// This can happen for space that should be skipped
+	if (!text)
+		text = "";
+#endif
+
+	/*** Draw frame ***/
+	uint32_t frameColor = isSelected ? g_sdlEGABGRAScreenColors[15] /*White*/ : g_sdlEGABGRAScreenColors[8] /*Gray*/;
+	uint32_t *currPtr = picPtr;
+	// Frame top
+	for (int currCol = 0; currCol < ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH; ++currCol, ++currPtr)
+	{
+		*currPtr = frameColor;
+	}
+	// Frame left + key + Frame right
+	currPtr += picWidth-ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH;
+	for (int currRow = 1; currRow < ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT-1; ++currRow)
+	{
+		// Frame left pixel
+		*(currPtr++) = frameColor;
+		// Line between frame sides
+		for (int currCol = 1; currCol < ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH-1; ++currCol, ++currPtr)
+		{
+			*currPtr = g_sdlEGABGRAScreenColors[7]/*Light gray*/;
+		}
+		// Frame right pixel
+		*currPtr = frameColor;
+
+		currPtr += picWidth-ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH+1;
+	}
+	// Frame bottom
+	for (int currCol = 0; currCol < ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH; ++currCol, ++currPtr)
+	{
+		*currPtr = frameColor;
+	}
+	/*** Draw text ***/
+	BEL_SDL_RedrawTextToBuffer(picPtr + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH-ALTCONTROLLER_CHAR_PIX_WIDTH*strlen(text))/2 + picWidth*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT-ALTCONTROLLER_CHAR_PIX_HEIGHT)/2, picWidth, text);
+	// Add some alpha channel (shouldn't be a lot)
+	currPtr = picPtr;
+	for (int currRow = 0; currRow < ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT; ++currRow, currPtr += picWidth-ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
+	{
+		for (int currCol = 0; currCol < ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH; ++currCol, ++currPtr)
+		{
+		*currPtr &= 0xDFFFFFFF; // BGRA
+		}
+	}
+}
+
+static void BEL_SDL_RedrawWholeTextInputUI(void)
+{
+	uint32_t pixels[ALTCONTROLLER_KEYBOARD_PIX_WIDTH*ALTCONTROLLER_KEYBOARD_PIX_HEIGHT];
+	uint32_t *currPtr = pixels;
+
+	for (int currKeyRow = 0; currKeyRow < ALTCONTROLLER_KEYBOARD_HEIGHT; ++currKeyRow, currPtr += ALTCONTROLLER_KEYBOARD_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT-1))
+	{
+		for (int currKeyCol = 0; currKeyCol < ALTCONTROLLER_KEYBOARD_WIDTH; ++currKeyCol, currPtr += ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
+		{
+			BEL_SDL_RedrawKeyToBuffer(currPtr, ALTCONTROLLER_KEYBOARD_PIX_WIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[currKeyRow][currKeyCol]], false);
+		}
+	}
+	// Simpler to do so outside the loop
+	BEL_SDL_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlTextInputSelectedKeyX) + ALTCONTROLLER_KEYBOARD_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlTextInputSelectedKeyY), ALTCONTROLLER_KEYBOARD_PIX_WIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX]], true);
+
+	SDL_UpdateTexture(g_sdlTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_KEYBOARD_PIX_WIDTH);
+}
+
+/*static*/ void BEL_SDL_PrepareToShowTextInputUI(void)
+{
+	BEL_SDL_CreateTextInputTextureIfNeeded();
+
+	g_sdlTextInputSelectedKeyX = 0;
+	g_sdlTextInputSelectedKeyY = 0;
+	g_sdlTextInputIsKeyPressed = false;
+	g_sdlTextInputIsShifted = false;
+	g_sdlDOSScanCodeKeyboardStrs_Ptr = g_sdlDOSScanCodeKeyboardNonShiftedStrs;
+
+	BEL_SDL_RedrawWholeTextInputUI();
+	g_sdlTextInputUIIsShown = true;
+}
+
+static void BEL_SDL_ToggleTextInputUIKey(int x, int y, bool toggle)
+{
+	uint32_t pixels[ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT];
+
+	BEL_SDL_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[y][x]], toggle);
+
+	SDL_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
+
+	SDL_UpdateTexture(g_sdlTextInputTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
+}
+
+int BEL_SDL_MoveUpInTextInputUI(void)
+{
+	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
+	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	g_sdlTextInputIsKeyPressed = false;
+
+	--g_sdlTextInputSelectedKeyY;
+	if (g_sdlTextInputSelectedKeyY < 0)
+	{
+		g_sdlTextInputSelectedKeyY = ALTCONTROLLER_KEYBOARD_HEIGHT-1;
+	}
+	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	return origScanCode;
+}
+
+int BEL_SDL_MoveDownInTextInputUI(void)
+{
+	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
+	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	g_sdlTextInputIsKeyPressed = false;
+
+	++g_sdlTextInputSelectedKeyY;
+	if (g_sdlTextInputSelectedKeyY >= ALTCONTROLLER_KEYBOARD_HEIGHT)
+	{
+		g_sdlTextInputSelectedKeyY = 0;
+	}
+	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	return origScanCode;
+}
+
+int BEL_SDL_MoveLeftInTextInputUI(void)
+{
+	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
+	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	g_sdlTextInputIsKeyPressed = false;
+
+	--g_sdlTextInputSelectedKeyX;
+	if (g_sdlTextInputSelectedKeyX < 0)
+	{
+		g_sdlTextInputSelectedKeyX = ALTCONTROLLER_KEYBOARD_WIDTH-1;
+	}
+	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	return origScanCode;
+}
+
+int BEL_SDL_MoveRightInTextInputUI(void)
+{
+	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
+	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	g_sdlTextInputIsKeyPressed = false;
+
+	++g_sdlTextInputSelectedKeyX;
+	if (g_sdlTextInputSelectedKeyX >= ALTCONTROLLER_KEYBOARD_WIDTH)
+	{
+		g_sdlTextInputSelectedKeyX = 0;
+	}
+	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	return origScanCode;
+}
+
+int BEL_SDL_ToggleShiftStateInTextInputUI(bool *pToggle)
+{
+	if (!(*pToggle))
+		return 0;
+	g_sdlTextInputIsShifted = !g_sdlTextInputIsShifted;
+	*pToggle = g_sdlTextInputIsShifted;
+	g_sdlDOSScanCodeKeyboardStrs_Ptr = g_sdlTextInputIsShifted ? g_sdlDOSScanCodeKeyboardShiftedStrs : g_sdlDOSScanCodeKeyboardNonShiftedStrs;
+
+	BEL_SDL_RedrawWholeTextInputUI();
+
+	return EMULATEDKEYSCANCODE_LSHIFT;
+}
+
+int BEL_SDL_ToggleKeyPressInTextInputUI(bool *pToggle)
+{
+	if (g_sdlTextInputIsKeyPressed == *pToggle)
+		return 0;
+	g_sdlTextInputIsKeyPressed = *pToggle;
+	// Shift key is a special case
+	if ((g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] == EMULATEDKEYSCANCODE_LSHIFT))
+		return BEL_SDL_ToggleShiftStateInTextInputUI(pToggle);
+
+	return (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX];
+}
+
+// Note: IGNORES shift status
+int BEL_SDL_GetPressedKeyScanCodeFromTextInputUI(void)
+{
+	return g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
+}
+
+// May be additionally required
+bool BEL_SDL_IsTextInputUIShifted(void)
+{
+	return g_sdlTextInputIsShifted;
+}
+
+/*static*/ void BEL_SDL_HideAltInputUI(void)
+{
+	g_sdlFaceButtonsAreShown = false;
+	g_sdlTextInputUIIsShown = false;
 }
 
 void BE_SDL_SetGfxOutputRects(void)
@@ -278,6 +688,21 @@ void BE_SDL_SetGfxOutputRects(void)
 	g_sdlAspectCorrectionRect.y = g_sdlAspectCorrectionBorderedRect.y + g_sdlAspectCorrectionBorderedRect.h*srcBorderTop/srcBorderedHeight;
 	g_sdlAspectCorrectionRect.w = g_sdlAspectCorrectionBorderedRect.w*srcWidth/srcBorderedWidth;
 	g_sdlAspectCorrectionRect.h = g_sdlAspectCorrectionBorderedRect.h*srcHeight/srcBorderedHeight;
+	// As a little addition have this too - but:
+	// 1. Use same dimensions independently of scaling.
+	// 2. The dimensions of the controller UI are picked relatively to the host window's internal contents (without borders), not directly related to the client window size.
+	// 3. Also taking the whole window into account (this doesn't depend on "screen mode", borders and more).
+	int offset;
+	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
+	g_sdlControllerFaceButtonsRect.w = g_sdlControllerFaceButtonsRect.h = minWinDim/ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO;
+	offset = minWinDim/(16*ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO);
+	g_sdlControllerFaceButtonsRect.x = winWidth-g_sdlControllerFaceButtonsRect.w-offset;
+	g_sdlControllerFaceButtonsRect.y = winHeight-g_sdlControllerFaceButtonsRect.h-offset;
+	// Also this (somewhat different because the keyboard is rectangular, but not square-shaped)
+	g_sdlControllerTextInputRect.w = minWinDim;
+	g_sdlControllerTextInputRect.h = g_sdlControllerTextInputRect.w * ALTCONTROLLER_KEYBOARD_HEIGHT / ALTCONTROLLER_KEYBOARD_WIDTH;
+	g_sdlControllerTextInputRect.x = (winWidth-g_sdlControllerTextInputRect.w)/2;
+	g_sdlControllerTextInputRect.y = winHeight-g_sdlControllerTextInputRect.h;
 }
 
 void BE_SDL_SetScreenStartAddress(uint16_t crtc)
@@ -293,24 +718,6 @@ uint8_t *BE_SDL_GetTextModeMemoryPtr(void)
 
 
 
-
-// Colors in BGRA format/order (on certain platforms)
-
-static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
-	0xff000000/*black*/,
-	0xff00ffff/*light cyan*/,
-	0xffff00ff/*light magenta*/,
-	0xffffffff/*white*/
-};
-
-// Same but for the EGA/VGA (and colored text modes on CGA/EGA/VGA)
-
-static const uint32_t g_sdlEGABGRAScreenColors[] = {
-	0xff000000/*black*/, 0xff0000aa/*blue*/, 0xff00aa00/*green*/, 0xff00aaaa/*cyan*/,
-	0xffaa0000/*red*/, 0xffaa00aa/*magenta*/, 0xffaa5500/*brown*/, 0xffaaaaaa/*light gray*/,
-	0xff555555/*gray*/, 0xff5555ff/*light blue*/, 0xff55ff55/*light green*/, 0xff55ffff/*light cyan*/,
-	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
-};
 
 static uint32_t g_sdlEGACurrBGRAPaletteAndBorder[17], g_sdlEGACurrBGRAPaletteAndBorderCache[17];
 
@@ -981,6 +1388,7 @@ void BEL_SDL_UpdateHostDisplay(void)
 			*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[*currPalPixPtr];
 		}
 	}
+
 	g_sdlDoRefreshGfxOutput = false;
 	SDL_UnlockTexture(g_sdlTexture);
 	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -998,5 +1406,15 @@ void BEL_SDL_UpdateHostDisplay(void)
 	{
 		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionRect);
 	}
+
+	if (g_sdlFaceButtonsAreShown)
+	{
+		SDL_RenderCopy(g_sdlRenderer, g_sdlFaceButtonsTexture, NULL, &g_sdlControllerFaceButtonsRect);
+	}
+	if (g_sdlTextInputUIIsShown)
+	{
+		SDL_RenderCopy(g_sdlRenderer, g_sdlTextInputTexture, NULL, &g_sdlControllerTextInputRect);
+	}
+
         SDL_RenderPresent(g_sdlRenderer);
 }

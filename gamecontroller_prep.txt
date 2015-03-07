@@ -1,0 +1,53 @@
+********* DISABLE ANALOG-STICK-AS-MOUSE IN THE CATACOMBS FOR NOW *********
+Or at least as a default.
+
+Reason: Looks like mouse motion leads to the state of ignoring keyboard input in The Catacomb Abyss, within IN_ReadControl.
+
+It is technically possible to use mouse buttons as an alternative, but it doesn't work that well...if a keyboard's arrow is used (basically the same problem again).
+
+
+
+
+
+
+Having the Xbox 360 Controller layout in mind (also used by the SDL_GameController API):
+
+Button A - In-game replacement for Ctrl key: First game action. Confirmation in e.g., menu.
+Button B - In-game replacement for Alt key: Second game action. Go to previous menu or exit it.
+Button X - In-game replacement for Space key: Shows stats in Keen Dreams, leads to potion drinking in the Catacombs.
+Button Y - In-game replacement for Enter key: Leads to nuke casting in the Catacombs.
+Button Left Shoulder - In-game replacement dependent on episode: Leads to bolt casting in any of the Catacombs (B in Cat3D, Z in the Adventures).
+Button Right Shoulder - In-game replacement dependent on episode: Sets "running" boolean to true in any of the Catacombs (RShift in Cat3D, Tab in the Adventures), but what exactly happens depends on the game.
+Button Start (Not configurable) - In-game replacement for Pause key
+Button Back (Not configurable) - Leave (Esc key replacement).
+Button Left Stick click - Debug keys? (F10 in Keen Dreams, Catacomb 3D and The Catacomb Abyss; Backspace in The Catacomb Armageddon/Apocalypse).
+Button Right Stick click - Let's not use this for now.
+Button Guide - Let's not use this for now.
+
+Left Trigger - Choose one of a few function keys to emulate (F1 for help in some games, F2 for sound in the Catacomb Adventures Series, F3 for saving game, F4 for loading game)
+Right Trigger - Either not use this, or show a keyboard (useful for debug keys).
+
+D-pad motion - Keyboard keys replacement (use for control panel and in-game navigation).
+
+Left stick motion - Mouse motion replacement (use in the Keen Dreams control panel and for navigation in the Catacombs)
+Right stick motion - No use for now
+
+--- Other than gameplay itself ---
+
+An onscreen keyboard should be shown whenever there is the need, e.g., US_LineInput is called.
+- Can also be shown if debug keys are desired, say after clicking on the right stick.
+- Should make it possible to let keys be sticky (e.g., sim-press F10 and then J).
+- Either way, there should be some way to hide the keyboard. If this actually leads to something (e.g., returning from US_LineInput), this depends on the situation. Can optionally pass a keyboard scancode to emulate a press of a key in such a case.
+It may further be desired to show a small set of keys in other circumstances. A few examples:
+- Need to select one of a few keys in the intro of any of the Catacomb Adventures Series episodes.
+- Catacomb Adventures Series sound setting choice.
+
+--- Keen Dreams help text (and other texts) scrolling ---
+
+Use the shoulders as alternatives to Page Up+Down (*not* configurable for now).
+Triggers can similarly be used if one desires to.
+
+--- Catacomb 3-D control panel ---
+
+Don't forget to make it possible to quit! ('Y' vs 'Escape')
+Same when asked if to, say, restart game.

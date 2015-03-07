@@ -463,6 +463,10 @@ void StartMusic(void)
 
 void PlayLoop (void)
 {
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareInGameControls();
+
 	id0_int_t		give;
 
 	void (*think)(struct objstruct *); // REFKEEN: C++ patch
@@ -494,7 +498,10 @@ void PlayLoop (void)
 //			return;
 		SD_SetTimeCount(SD_GetTimeCount()+1);
 		if (SD_GetTimeCount() == 300)
+		{
+			BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 			return;
+		}
 #endif
 
 		for (obj = player;obj;obj = obj->next)
@@ -612,5 +619,7 @@ nextactor:;
 		AddPoints (pointsleft);
 	else
 		abortgame = false;
+
+	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 

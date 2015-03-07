@@ -1530,6 +1530,10 @@ void NewState (objtype *ob,statetype *state)
 
 void PlayLoop (void)
 {
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareInGameControls();
+
 	objtype	*obj, *check;
 	//id0_long_t	newtime;
 
@@ -1661,6 +1665,8 @@ void PlayLoop (void)
 	} while (!loadedgame && !playstate);
 
 	ingame = false;
+
+	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 

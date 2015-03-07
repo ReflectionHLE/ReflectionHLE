@@ -23,6 +23,7 @@ typedef struct
 	bool autolockCursor;
 	int sndSampleRate;
 	bool disableSoundSubSystem;
+	bool useAltControlScheme;
 	unsigned int farPtrSegOffset;
 } RefKeenConfig;
 
@@ -43,6 +44,22 @@ uint16_t BE_SDL_GetJoyButtons(uint16_t joy);
 
 int16_t BE_SDL_KbHit(void);
 int16_t BE_SDL_BiosScanCode(int16_t command);
+
+bool BE_SDL_AltControlScheme_IsEnabled(void);
+// Various controller schemes are saved in a stack, so it's straight-forward
+// to revert to an arbitrary preceding scheme when desired.
+//
+// Note: Do push a new scheme before the first time picking a new scheme
+// (an internal default as filled for the very first one before the push).
+void BE_SDL_AltControlScheme_Push(void);
+void BE_SDL_AltControlScheme_Pop(void);
+// Replace current controller scheme using any of these
+void BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes(const char *scanCodes);
+void BE_SDL_AltControlScheme_PreparePageScrollingControls(int prevPageScan, int nextPageScan);
+void BE_SDL_AltControlScheme_PrepareMenuControls(void);
+void BE_SDL_AltControlScheme_PrepareInGameControls(void);
+void BE_SDL_AltControlScheme_PrepareTextInput(void);
+
 
 void BE_SDL_PollEvents(void);
 
@@ -136,8 +153,120 @@ void BE_SDL_ToggleTextCursor(bool isEnabled);
 // Replacement for puts function that prints to emulated text mode memory
 void BE_SDL_puts(const char *str);
 // Limited replacement for printf, does NOT handle formatting (apart from '\n')
-void BE_SDL_simplified_printf(const char *str);
+void BE_SDL_Simplified_printf(const char *str);
 
 void BE_SDL_MarkGfxForUpdate(void);
+
+// Internally used by BE_SDL
+
+typedef enum EmulatedKeyScancode_T {
+     EMULATEDKEYSCANCODE_ESC = 1,
+     EMULATEDKEYSCANCODE_1,
+     EMULATEDKEYSCANCODE_2,
+     EMULATEDKEYSCANCODE_3,
+     EMULATEDKEYSCANCODE_4,
+     EMULATEDKEYSCANCODE_5,
+     EMULATEDKEYSCANCODE_6,
+     EMULATEDKEYSCANCODE_7,
+     EMULATEDKEYSCANCODE_8,
+     EMULATEDKEYSCANCODE_9,
+     EMULATEDKEYSCANCODE_0, // 0Bh
+     EMULATEDKEYSCANCODE_MINUS,
+     EMULATEDKEYSCANCODE_EQUALS,
+     EMULATEDKEYSCANCODE_BSPACE,
+     EMULATEDKEYSCANCODE_TAB,
+     EMULATEDKEYSCANCODE_Q, // 10h
+     EMULATEDKEYSCANCODE_W,
+     EMULATEDKEYSCANCODE_E,
+     EMULATEDKEYSCANCODE_R,
+     EMULATEDKEYSCANCODE_T,
+     EMULATEDKEYSCANCODE_Y,
+     EMULATEDKEYSCANCODE_U,
+     EMULATEDKEYSCANCODE_I,
+     EMULATEDKEYSCANCODE_O,
+     EMULATEDKEYSCANCODE_P,
+     EMULATEDKEYSCANCODE_LBRACKET,
+     EMULATEDKEYSCANCODE_RBRACKET,
+     EMULATEDKEYSCANCODE_ENTER,
+     EMULATEDKEYSCANCODE_LCTRL,
+     EMULATEDKEYSCANCODE_A, // 1Eh
+     EMULATEDKEYSCANCODE_S,
+     EMULATEDKEYSCANCODE_D,
+     EMULATEDKEYSCANCODE_F,
+     EMULATEDKEYSCANCODE_G,
+     EMULATEDKEYSCANCODE_H,
+     EMULATEDKEYSCANCODE_J,
+     EMULATEDKEYSCANCODE_K,
+     EMULATEDKEYSCANCODE_L,
+     EMULATEDKEYSCANCODE_SEMICOLON,
+     EMULATEDKEYSCANCODE_QUOTE,
+     EMULATEDKEYSCANCODE_GRAVE,
+     EMULATEDKEYSCANCODE_LSHIFT,
+     EMULATEDKEYSCANCODE_BACKSLASH,
+     EMULATEDKEYSCANCODE_Z, // 2Ch
+     EMULATEDKEYSCANCODE_X,
+     EMULATEDKEYSCANCODE_C,
+     EMULATEDKEYSCANCODE_V,
+     EMULATEDKEYSCANCODE_B,
+     EMULATEDKEYSCANCODE_N,
+     EMULATEDKEYSCANCODE_M,
+     EMULATEDKEYSCANCODE_COMMA,
+     EMULATEDKEYSCANCODE_PERIOD,
+     EMULATEDKEYSCANCODE_SLASH,
+     EMULATEDKEYSCANCODE_RSHIFT,
+     EMULATEDKEYSCANCODE_PRINTSCREEN, // 37h but kind of special
+     EMULATEDKEYSCANCODE_LALT,
+     EMULATEDKEYSCANCODE_SPACE,
+     EMULATEDKEYSCANCODE_CAPSLOCK,
+     EMULATEDKEYSCANCODE_F1, // 3Bh
+     EMULATEDKEYSCANCODE_F2,
+     EMULATEDKEYSCANCODE_F3,
+     EMULATEDKEYSCANCODE_F4,
+     EMULATEDKEYSCANCODE_F5,
+     EMULATEDKEYSCANCODE_F6,
+     EMULATEDKEYSCANCODE_F7,
+     EMULATEDKEYSCANCODE_F8,
+     EMULATEDKEYSCANCODE_F9,
+     EMULATEDKEYSCANCODE_F10,
+     EMULATEDKEYSCANCODE_NUMLOCK, // 45h
+     EMULATEDKEYSCANCODE_SCROLLLOCK,
+     EMULATEDKEYSCANCODE_KP_7,
+     EMULATEDKEYSCANCODE_KP_8,
+     EMULATEDKEYSCANCODE_KP_9,
+     EMULATEDKEYSCANCODE_KP_MINUS,
+     EMULATEDKEYSCANCODE_KP_4,
+     EMULATEDKEYSCANCODE_KP_5,
+     EMULATEDKEYSCANCODE_KP_6,
+     EMULATEDKEYSCANCODE_KP_PLUS,
+     EMULATEDKEYSCANCODE_KP_1,
+     EMULATEDKEYSCANCODE_KP_2,
+     EMULATEDKEYSCANCODE_KP_3,
+     EMULATEDKEYSCANCODE_KP_0,
+     EMULATEDKEYSCANCODE_KP_PERIOD, // 53h
+     // A couple of "special" keys (scancode E0h sent first)
+     EMULATEDKEYSCANCODE_KP_DIVIDE = 0x35,
+     EMULATEDKEYSCANCODE_KP_ENTER = 0x1C,
+     // Back to a few "non-special" keys
+     EMULATEDKEYSCANCODE_F11 = 0x57,
+     EMULATEDKEYSCANCODE_F12 = 0x58,
+     // And again special keys
+     EMULATEDKEYSCANCODE_INSERT = 0x52,
+     EMULATEDKEYSCANCODE_DELETE = 0x53,
+     EMULATEDKEYSCANCODE_HOME = 0x47,
+     EMULATEDKEYSCANCODE_END = 0x4F,
+     EMULATEDKEYSCANCODE_PAGEUP = 0x49,
+     EMULATEDKEYSCANCODE_PAGEDOWN = 0x51,
+     EMULATEDKEYSCANCODE_LEFT = 0x4B,
+     EMULATEDKEYSCANCODE_RIGHT = 0x4D,
+     EMULATEDKEYSCANCODE_UP = 0x48,
+     EMULATEDKEYSCANCODE_DOWN = 0x50,
+     EMULATEDKEYSCANCODE_RALT = 0x38,
+     EMULATEDKEYSCANCODE_RCTRL = 0x1D,
+     // Two extra kes
+     EMULATEDKEYSCANCODE_LESSTHAN = 0x56,
+     EMULATEDKEYSCANCODE_KP_MULTIPLY = 0x37,
+     // This one is different from all the rest (6 scancodes sent on press ONLY)
+     EMULATEDKEYSCANCODE_PAUSE = 0xE1,
+} EmulatedKeyScancode_T;
 
 #endif

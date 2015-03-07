@@ -1,0 +1,4 @@
+Note: A binding may be found at ~/.local/share/Steam/config/config.vdf,
+but make sure there's no confusion between shoulder buttons and triggers...
+
+SDL_GAMECONTROLLERCONFIG="03000000100800000100000010010000,Some adapter for two PSX/PS2 controllers,platform:Linux,x:b3,a:b2,b:b1,y:b0,back:b8,guide:??,start:b9,dpleft:h0.8,dpdown:h0.4,dpright:h0.2,dpup:h0.1,leftshoulder:b6,lefttrigger:b4,rightshoulder:b7,righttrigger:b5,leftstick:b10,rightstick:b11,leftx:a0,lefty:a1,rightx:a3,righty:a2,"

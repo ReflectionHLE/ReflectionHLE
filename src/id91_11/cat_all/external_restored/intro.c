@@ -303,8 +303,22 @@ void intro_exe_main(void)
 		id0_argc = 4;
 		id0_argv[id0_argc] = NULL;
 	}
+
+	BE_SDL_AltControlScheme_Push(); // REFKEEN - Alternative controllers support
+
 	do
 	{
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes(
+		(const char [])
+		{0x1C/*Enter*/, 0x1/*Escape*/, 0x3E/*F4*/
+#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
+			, 0x44/*F10*/
+#endif
+			, 0
+		}
+		);
+
 		for (leave_init_sequence = false; !leave_init_sequence;)
 		{
 			switch (current_page)
@@ -389,6 +403,9 @@ void intro_exe_main(void)
 				last_key = TryGetScanCode();
 				if (last_key == 0x1/*0x11B*/) // ESC
 				{
+					// REFKEEN - Alternative controllers support
+					BE_SDL_AltControlScheme_Pop();
+
 					FreeAllShapes();
 					SetScreenMode(1);
 #ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
@@ -447,6 +464,9 @@ void intro_exe_main(void)
 		{
 			if (select_saved_game) // Launch CATABYSS.EXE and select saved game
 			{
+				// REFKEEN - Alternative controllers support
+				BE_SDL_AltControlScheme_Pop();
+
 				if (!id0_argv[3])
 				{
 					id0_argv[id0_argc++] = "1";
@@ -480,11 +500,18 @@ void intro_exe_main(void)
 				ScreenToScreen(8000, 0, 40, 200);
 				// REFKEEN havebeep is always false (and code was removed for Apocalypse)
 				//Beep();
+
+				// REFKEEN - Alternative controllers support
+				BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){0x31/*N*/, 0x11/*W*/, 0});
+
 				for (leave_skill_selection = false; !leave_skill_selection; )
 				{
 					last_key = TryGetScanCode();
 					if ((last_key == 0x11/*0x1157*/)/* || (last_key == 0x1177)*/) // W or w (Warrior)
 					{
+						// REFKEEN - Alternative controllers support
+						BE_SDL_AltControlScheme_Pop();
+
 						if (!id0_argv[2])
 						{
 							id0_argv[id0_argc++] = "0";
@@ -504,7 +531,12 @@ void intro_exe_main(void)
 						while (!(last_key = TryGetScanCode()))
 							BE_SDL_ShortSleep();
 						if (last_key == 0x1/*0x11B*/) // ESC
+						{
+							// REFKEEN - Alternative controllers support
+							BE_SDL_AltControlScheme_Push();
+
 							leave_skill_selection = true;
+						}
 						else
 						{
 							ext_MoveGfxDst(0, 200);
@@ -518,6 +550,9 @@ void intro_exe_main(void)
 					}
 					else if ((last_key == 0x31/*0x314E*/)/* || (last_key == 0x316E)*/) // N or n (Novice)
 					{
+						// REFKEEN - Alternative controllers support
+						BE_SDL_AltControlScheme_Pop();
+
 						if (!id0_argv[2])
 						{
 							id0_argv[id0_argc++] = "1";
@@ -537,7 +572,12 @@ void intro_exe_main(void)
 						while (!(last_key = TryGetScanCode()))
 							BE_SDL_ShortSleep();
 						if (last_key == 0x1/*0x11B*/)
+						{
+							// REFKEEN - Alternative controllers support
+							BE_SDL_AltControlScheme_Push();
+
 							leave_skill_selection = true;
+						}
 						else
 						{
 							ext_MoveGfxDst(0, 200);

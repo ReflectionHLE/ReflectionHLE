@@ -1190,6 +1190,10 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 	LastASCII = key_None;
 	LastScan = sc_None;
 
+	// REFKEEN - Alternative controllers support
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareTextInput();
+
 	while (!done)
 	{
 		if (cursorvis)
@@ -1328,6 +1332,9 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 
 		VW_UpdateScreen();
 	}
+
+	// REFKEEN - Alternative controllers support
+	BE_SDL_AltControlScheme_Pop();
 
 	if (cursorvis)
 		USL_XORICursor(x,y,s,cursor);
@@ -2477,6 +2484,10 @@ USL_DrawHelp(id0_char_t id0_far *text,id0_word_t start,id0_word_t end,id0_word_t
 static void
 USL_DoHelp(memptr text,id0_long_t len)
 {
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PreparePageScrollingControls(sc_PgUp, sc_PgDn);
+
 	id0_boolean_t		done,
 				moved;
 	id0_int_t			scroll;
@@ -2691,6 +2702,8 @@ USL_DoHelp(memptr text,id0_long_t len)
 	US_ClearWindow();
 	VW_UpdateScreen();
 	US_RestoreWindow(&wr);
+
+	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3265,6 +3278,10 @@ USL_CtlCButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	USL_ClearBottom();
 	if (n == 0)	// Keyboard
 	{
+		// REFKEEN - Alternative controllers support - Block this in such a case
+		if (BE_SDL_AltControlScheme_IsEnabled())
+			return(false);
+		//
 		TheItems[i + 1] = ip = CtlCKbdPanels;
 		p = CtlCKbdPanels[2].r.lr;
 		VWB_DrawPic(p.x,p.y,CTL_DIRSPIC);
@@ -3530,6 +3547,10 @@ USL_TearDownCtlPanel(void)
 void
 US_ControlPanel(void)
 {
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareMenuControls();
+
 	id0_char_t		gamename[MaxGameName + 10 + 1];
 	ScanCode	c;
 	id0_boolean_t		done,
@@ -3772,6 +3793,8 @@ US_ControlPanel(void)
 	}
 
 	CA_DownLevel();
+
+	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 //	High score routines

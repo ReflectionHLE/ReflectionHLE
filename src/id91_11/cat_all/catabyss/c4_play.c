@@ -254,6 +254,10 @@ void CheckKeys (void)
 		US_Print( "\n       ESC)    EXIT    ");
 		VW_UpdateScreen();
 
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_Push();
+		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes(AdLibPresent ? (const char []){2, 3, 4, sc_Escape, 0} : (const char []){2, 3, sc_Escape, 0});
+
 		// Switch audio device ON/OFF & load sounds if there
 		// was a change in the device.
 
@@ -287,13 +291,18 @@ void CheckKeys (void)
 			BE_SDL_ShortSleep();
 
 		} while (!ChoiceMade);
+
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_Pop();
+
 		tics = realtics = 1;
 		IN_ClearKeysDown();
 	}
 
 // F5 - CALIBRATE JOYSTICK
 //
-	if (Keyboard[sc_F5])
+	// REFKEEN - Alternative controllers support - Block this in such a case
+	if (!BE_SDL_AltControlScheme_IsEnabled() && Keyboard[sc_F5])
 	{
 		CalibrateJoystick(0);
 		tics = realtics = 1;
@@ -742,6 +751,10 @@ void StartMusic(void)
 
 void PlayLoop (void)
 {
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareInGameControls();
+
 	id0_char_t shot_color[3] = {4,9,14};
 
 	id0_int_t allgems[5]={GEM_DELAY_TIME,		// used for Q & D comparison
@@ -813,11 +826,14 @@ void PlayLoop (void)
 #else
 		control.xaxis = 1;
 		id0_longword_t currTimeCount = SD_GetTimeCount();
-		SD_SetTimeCount(++currTimeCount);
-		if (currTimeCount == 300)
-			return;
 		//if (++TimeCount == 300)
 		//	return;
+		SD_SetTimeCount(SD_GetTimeCount()+1);
+		if (SD_GetTimeCount() == 300)
+		{
+			BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+			return;
+		}
 #endif
 
 		objnum=0;
@@ -1186,6 +1202,8 @@ nextactor:;
 
 	if (abortgame)
 		abortgame = false;
+
+	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 //--------------------------------------------------------------------------
@@ -1337,7 +1355,8 @@ void DisplayStatus (status_flags *stat_flag)
 	if (control.y > 0)
 		temp_status = S_RETREAT;
 
-	if (Keyboard[sc_F5])
+	// REFKEEN - Alternative controllers support - Joystick configuration is impossible if such support is enabled
+	if (!BE_SDL_AltControlScheme_IsEnabled() && Keyboard[sc_F5])
 		temp_status = S_JOYSTICK;
 
 	if (Keyboard[sc_F4])

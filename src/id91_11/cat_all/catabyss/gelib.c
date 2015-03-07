@@ -1602,6 +1602,10 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 	id0_boolean_t waiting;
 	const id0_char_t *s/*,*ss*/;
 
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes(choices);
+
 	IN_ClearKeysDown();
 
 	waiting = true;
@@ -1618,6 +1622,8 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 		}
 		BE_SDL_ShortSleep();
 	}
+
+	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 
 	IN_ClearKeysDown();
 

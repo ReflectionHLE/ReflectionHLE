@@ -1314,6 +1314,10 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 	LastASCII = key_None;
 	LastScan = sc_None;
 
+	// REFKEEN - Alternative controllers support
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareTextInput();
+
 	while (!done)
 	{
 		if (cursorvis)
@@ -1456,6 +1460,9 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 		// For buggy blinking cursor in Catacomb Abyss, should be called here and earlier
 		BE_SDL_ShortSleep();
 	}
+
+	// REFKEEN - Alternative controllers support
+	BE_SDL_AltControlScheme_Pop();
 
 	if (cursorvis)
 		USL_XORICursor(x,y,s,cursor);
