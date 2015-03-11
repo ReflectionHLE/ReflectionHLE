@@ -87,11 +87,19 @@ int BE_Cross_strcasecmp(const char *s1, const char *s2)
 	return ((int)uc1 - (int)uc2);
 }
 
+// Technically a little hack...
+#if (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
+uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void)
+{
+	uint16_t BE_SDL_Compat_GetFarPtrRelocationSegOffset(void);
+	return BE_SDL_Compat_GetFarPtrRelocationSegOffset();
+}
+#endif
+
 // C99
 void BE_Cross_puts(const char *str);
 void BE_Cross_Simplified_printf(const char *str);
 void BE_Cross_Simplified_cprintf(const char *str);
-uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void);
 inline int32_t BE_Mem_FarCoreLeft(void);
 
 size_t BE_Cross_readInt8LE(int handle, void *ptr)

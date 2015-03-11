@@ -1047,6 +1047,10 @@ IN_WaitForASCII(void)
 void
 IN_AckBack(void)
 {
+	// REFKEEN - Alternative controllers support
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareInputWaitControls();
+
 	id0_word_t	i;
 
 	while (!LastScan)
@@ -1079,6 +1083,9 @@ IN_AckBack(void)
 		}
 		BE_SDL_ShortSleep();
 	}
+
+	// REFKEEN - Alternative controllers support
+	BE_SDL_AltControlScheme_Pop();
 
 	IN_ClearKey(LastScan);
 	LastScan = sc_None;

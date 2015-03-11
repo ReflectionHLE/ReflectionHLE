@@ -23,8 +23,14 @@ typedef struct
 	bool autolockCursor;
 	int sndSampleRate;
 	bool disableSoundSubSystem;
-	bool useAltControlScheme;
-	unsigned int farPtrSegOffset;
+	struct
+	{
+		bool isEnabled;
+		int actionMappings[8]; // Buttons/triggers
+		int movementMapping; // D-pad, left stick or right stick (or none)
+		int menuMouseMapping; // One of the two sticks (or none)
+	} altControlScheme;
+	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
 } RefKeenConfig;
 
 extern RefKeenConfig g_refKeenCfg;
@@ -45,7 +51,6 @@ uint16_t BE_SDL_GetJoyButtons(uint16_t joy);
 int16_t BE_SDL_KbHit(void);
 int16_t BE_SDL_BiosScanCode(int16_t command);
 
-bool BE_SDL_AltControlScheme_IsEnabled(void);
 // Various controller schemes are saved in a stack, so it's straight-forward
 // to revert to an arbitrary preceding scheme when desired.
 //
@@ -57,7 +62,8 @@ void BE_SDL_AltControlScheme_Pop(void);
 void BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes(const char *scanCodes);
 void BE_SDL_AltControlScheme_PreparePageScrollingControls(int prevPageScan, int nextPageScan);
 void BE_SDL_AltControlScheme_PrepareMenuControls(void);
-void BE_SDL_AltControlScheme_PrepareInGameControls(void);
+void BE_SDL_AltControlScheme_PrepareInGameControls(int primaryScanCode, int secondaryScanCode, int upScanCode, int downScanCode, int leftScanCode, int rightScanCode);
+void BE_SDL_AltControlScheme_PrepareInputWaitControls(void); // When there's a simple wait for user input, not anything specific...
 void BE_SDL_AltControlScheme_PrepareTextInput(void);
 
 

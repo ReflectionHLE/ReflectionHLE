@@ -110,12 +110,18 @@ void CalibrateJoystick(id0_short_t joynum)
 	JoystickCalibrated = true;
 }
 
+// (REFKEEN) UNUSED FUNCTION
+#if 0
 ////////////////////////////////////////////////////////////////////////////
 //
 // WaitKeyVBL()
 //
 void WaitKeyVBL(id0_short_t key, id0_short_t vbls)
 {
+	// REFKEEN - Alternative controllers support
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){key, 0});
+
 	while (vbls--)
 	{
 		VW_WaitVBL(1);
@@ -123,7 +129,10 @@ void WaitKeyVBL(id0_short_t key, id0_short_t vbls)
 		if ((control.button0|control.button1)||(Keyboard[key]))
 			break;
 	}
+	// REFKEEN - Alternative controllers support
+	BE_SDL_AltControlScheme_Pop();
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////
 //
@@ -355,6 +364,10 @@ void PrintPropText(const id0_char_t id0_far *text)
 //
 void DisplayText(textinfo *textinfo)
 {
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Push();
+	BE_SDL_AltControlScheme_PreparePageScrollingControls(sc_PgUp, sc_PgDn);
+
 	#define PAGE_WIDTH 	78
 
 	id0_int_t /*loop,*/ PageNum, LastNum/*,num*/;
@@ -448,6 +461,9 @@ void DisplayText(textinfo *textinfo)
 	VW_SetScreenMode(EGA320GR);
 	BlackPalette();
 	VW_ScreenToScreen(FREESTART-STATUSLEN,0,40,80);
+
+	// REFKEEN - Alternative controllers support	
+	BE_SDL_AltControlScheme_Pop();
 }
 
 //--------------------------------------------------------------------------
@@ -562,10 +578,16 @@ void GE_SaveGame()
 				US_CPrintLine("(Y)es or (N)o?", NULL);
 				VW_UpdateScreen();
 
+				// REFKEEN - Alternative controllers support
+				BE_SDL_AltControlScheme_Push();
+				BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){21, 49, 27, 0});
 				while((!Keyboard[21]) && (!Keyboard[49]) && !Keyboard[27])
 				{
 					BE_SDL_ShortSleep();
 				}
+
+				// REFKEEN - Alternative controllers support
+				BE_SDL_AltControlScheme_Pop();
 
 				if (Keyboard[27])
 					goto EXIT_FUNC;
@@ -616,6 +638,9 @@ EXIT_FUNC:;
 		US_CPrintLine("Bytes free on disk...", NULL);
 		US_CPrintLine("Press SPACE to continue.", NULL);
 		VW_UpdateScreen();
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_Push();
+		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
 		while (!Keyboard[57])
 		{
 			BE_SDL_ShortSleep();
@@ -624,6 +649,8 @@ EXIT_FUNC:;
 		{
 			BE_SDL_ShortSleep();
 		}
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_Pop();
 	}
 
 	while (Keyboard[1])
@@ -682,6 +709,9 @@ id0_boolean_t GE_LoadGame()
 			US_CPrintLine(" That file doesn't exist....", NULL);
 			US_CPrintLine("Press SPACE to try again.", NULL);
 			VW_UpdateScreen();
+			// REFKEEN - Alternative controllers support
+			BE_SDL_AltControlScheme_Push();
+			BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
 
 			while (!Keyboard[57])
 			{
@@ -691,6 +721,9 @@ id0_boolean_t GE_LoadGame()
 			{
 				BE_SDL_ShortSleep();
 			}
+			// REFKEEN - Alternative controllers support
+			BE_SDL_AltControlScheme_Pop();
+
 			GettingFilename = true;
 		}
 	}
@@ -709,6 +742,9 @@ id0_boolean_t GE_LoadGame()
 		US_CPrintLine(".SAV file.", NULL);
 		US_CPrintLine("Press SPACE to continue.", NULL);
 		VW_UpdateScreen();
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_Push();
+		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
 		while (!Keyboard[57])
 		{
 			BE_SDL_ShortSleep();
@@ -717,6 +753,8 @@ id0_boolean_t GE_LoadGame()
 		{
 			BE_SDL_ShortSleep();
 		}
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_Pop();
 
 		if (!screenfaded)
 			VW_FadeOut();
@@ -739,6 +777,9 @@ EXIT_FUNC:;
 		US_CenterWindow(22,3);
 		US_CPrintLine("DISK ERROR ** LOAD **", NULL);
 		US_CPrintLine("Press SPACE to continue.", NULL);
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_Push();
+		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
 		while (!Keyboard[57])
 		{
 			BE_SDL_ShortSleep();
@@ -747,6 +788,8 @@ EXIT_FUNC:;
 		{
 			BE_SDL_ShortSleep();
 		}
+		// REFKEEN - Alternative controllers support
+		BE_SDL_AltControlScheme_Pop();
 	}
 //	else
 //		close(handle);

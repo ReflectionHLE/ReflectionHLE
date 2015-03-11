@@ -132,11 +132,7 @@ void* BE_Cross_Compat_GetObjStatePtrFromDOSPointer(uint_fast32_t dosptr);
 // far pointers present in The Catacomb Armageddon/Apocalypse saved games
 // (in the case of the original DOS exes, it depends on the locations of
 // modified copies of them in memory)
-inline uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void)
-{
-	uint16_t BE_SDL_Compat_GetFarPtrRelocationSegOffset(void);
-	return BE_SDL_Compat_GetFarPtrRelocationSegOffset();
-}
+uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void);
 
 // Alternatives for Borland's randomize and random macros used in Catacomb Abyss
 void BE_Cross_Brandomize(void);

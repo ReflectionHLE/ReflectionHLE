@@ -9,6 +9,7 @@ static SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 static SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
 static bool g_sdlDoRefreshGfxOutput;
+bool g_sdlForceGfxControlUiRefresh;
 
 void BE_SDL_MarkGfxForUpdate(void)
 {
@@ -75,6 +76,7 @@ static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 
 #include "../rsrc/pad_font_mono.xpm"
 #include "../rsrc/pad_thumb_buttons.xpm"
+#include "../rsrc/pad_dpad.xpm"
 
 #define ALTCONTROLLER_PAD_PIX_WIDTH 48
 #define ALTCONTROLLER_PAD_PIX_HEIGHT 48
@@ -101,9 +103,11 @@ static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 // face buttons image, assuming longest texts possible (3 chars long)
 static const int g_sdlControllerFaceButtonsTextLocs[] = {15, 34, 28, 21, 2, 21, 15, 8};
 
-static SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerTextInputRect;
-static SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlTextInputTexture;
-static bool g_sdlFaceButtonsAreShown, g_sdlTextInputUIIsShown;
+static SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect;
+static SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture;
+static bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown;
+// With alternative game controllers scheme, all UI is hidden if no controller is connected
+bool g_sdlShowControllerUI;
 
 static int g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY;
 static bool g_sdlTextInputIsKeyPressed, g_sdlTextInputIsShifted;
@@ -204,6 +208,8 @@ void BE_SDL_ShutdownGfx(void)
 {
 	SDL_DestroyTexture(g_sdlFaceButtonsTexture);
 	g_sdlFaceButtonsTexture = NULL;
+	SDL_DestroyTexture(g_sdlDpadTexture);
+	g_sdlDpadTexture = NULL;
 	SDL_DestroyTexture(g_sdlTextInputTexture);
 	g_sdlTextInputTexture = NULL;
 	SDL_DestroyTexture(g_sdlTexture);
@@ -302,9 +308,9 @@ static const char **g_sdlDOSScanCodeKeyboardStrs_Ptr;
 // On-screen keyboard layout definition (probably better we don't use "special" keys e.g., with scancode 0xE0 sent, even though there shouldn't be a difference)
 
 static const EmulatedKeyScancode_T g_sdlDOSScanCodeKeyboardLayout[ALTCONTROLLER_KEYBOARD_HEIGHT][ALTCONTROLLER_KEYBOARD_WIDTH] = {
-	{EMULATEDKEYSCANCODE_ESC, EMULATEDKEYSCANCODE_Q, EMULATEDKEYSCANCODE_W, EMULATEDKEYSCANCODE_E, EMULATEDKEYSCANCODE_R, EMULATEDKEYSCANCODE_T, EMULATEDKEYSCANCODE_Y, EMULATEDKEYSCANCODE_U, EMULATEDKEYSCANCODE_I, EMULATEDKEYSCANCODE_O, EMULATEDKEYSCANCODE_P, EMULATEDKEYSCANCODE_LBRACKET, EMULATEDKEYSCANCODE_RBRACKET, EMULATEDKEYSCANCODE_7, EMULATEDKEYSCANCODE_8, EMULATEDKEYSCANCODE_9, EMULATEDKEYSCANCODE_0, EMULATEDKEYSCANCODE_KP_PLUS/*PLUS*/},
+	{EMULATEDKEYSCANCODE_KP_4/*LEFT*/, EMULATEDKEYSCANCODE_Q, EMULATEDKEYSCANCODE_W, EMULATEDKEYSCANCODE_E, EMULATEDKEYSCANCODE_R, EMULATEDKEYSCANCODE_T, EMULATEDKEYSCANCODE_Y, EMULATEDKEYSCANCODE_U, EMULATEDKEYSCANCODE_I, EMULATEDKEYSCANCODE_O, EMULATEDKEYSCANCODE_P, EMULATEDKEYSCANCODE_LBRACKET, EMULATEDKEYSCANCODE_RBRACKET, EMULATEDKEYSCANCODE_7, EMULATEDKEYSCANCODE_8, EMULATEDKEYSCANCODE_9, EMULATEDKEYSCANCODE_0, EMULATEDKEYSCANCODE_MINUS},
 
-	{EMULATEDKEYSCANCODE_SPACE, EMULATEDKEYSCANCODE_A, EMULATEDKEYSCANCODE_S, EMULATEDKEYSCANCODE_D, EMULATEDKEYSCANCODE_F, EMULATEDKEYSCANCODE_G, EMULATEDKEYSCANCODE_H, EMULATEDKEYSCANCODE_J, EMULATEDKEYSCANCODE_K, EMULATEDKEYSCANCODE_L, EMULATEDKEYSCANCODE_SEMICOLON, EMULATEDKEYSCANCODE_QUOTE, EMULATEDKEYSCANCODE_BACKSLASH, EMULATEDKEYSCANCODE_4, EMULATEDKEYSCANCODE_5, EMULATEDKEYSCANCODE_6, EMULATEDKEYSCANCODE_KP_4/*LEFT*/, EMULATEDKEYSCANCODE_KP_6/*RIGHT*/},
+	{EMULATEDKEYSCANCODE_KP_6/*RIGHT*/, EMULATEDKEYSCANCODE_A, EMULATEDKEYSCANCODE_S, EMULATEDKEYSCANCODE_D, EMULATEDKEYSCANCODE_F, EMULATEDKEYSCANCODE_G, EMULATEDKEYSCANCODE_H, EMULATEDKEYSCANCODE_J, EMULATEDKEYSCANCODE_K, EMULATEDKEYSCANCODE_L, EMULATEDKEYSCANCODE_SEMICOLON, EMULATEDKEYSCANCODE_QUOTE, EMULATEDKEYSCANCODE_BACKSLASH, EMULATEDKEYSCANCODE_4, EMULATEDKEYSCANCODE_5, EMULATEDKEYSCANCODE_6, EMULATEDKEYSCANCODE_SPACE, EMULATEDKEYSCANCODE_EQUALS},
 
 	{EMULATEDKEYSCANCODE_LSHIFT, EMULATEDKEYSCANCODE_Z, EMULATEDKEYSCANCODE_X, EMULATEDKEYSCANCODE_C, EMULATEDKEYSCANCODE_V, EMULATEDKEYSCANCODE_B, EMULATEDKEYSCANCODE_N, EMULATEDKEYSCANCODE_M, EMULATEDKEYSCANCODE_COMMA, EMULATEDKEYSCANCODE_PERIOD, EMULATEDKEYSCANCODE_SLASH, EMULATEDKEYSCANCODE_GRAVE, EMULATEDKEYSCANCODE_ENTER, EMULATEDKEYSCANCODE_1, EMULATEDKEYSCANCODE_2, EMULATEDKEYSCANCODE_3, EMULATEDKEYSCANCODE_KP_PERIOD/*DEL*/, EMULATEDKEYSCANCODE_BSPACE},
 };
@@ -328,22 +334,21 @@ static const uint32_t g_sdlEGABGRAScreenColors[] = {
 	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
 };
 
-
-static void BEL_SDL_CreateFaceButtonsTextureIfNeeded(void)
+static void BEL_SDL_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr)
 {
-	if (g_sdlFaceButtonsTexture)
+	if (*padTexturePtrPtr)
 	{
 		return;
 	}
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	g_sdlFaceButtonsTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_PAD_PIX_WIDTH, ALTCONTROLLER_PAD_PIX_HEIGHT);
-	if (!g_sdlFaceButtonsTexture)
+	*padTexturePtrPtr = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_PAD_PIX_WIDTH, ALTCONTROLLER_PAD_PIX_HEIGHT);
+	if (!(*padTexturePtrPtr))
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 face buttons texture,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 pad texture,\n%s\n", SDL_GetError());
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode(g_sdlFaceButtonsTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	SDL_SetTextureBlendMode(*padTexturePtrPtr, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
 }
 
 static void BEL_SDL_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char *text)
@@ -366,15 +371,15 @@ static void BEL_SDL_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const cha
 	}
 }
 
-/*static*/ void BEL_SDL_PrepareToShowFaceButtons(const char *scanCodes)
+static const char * BEL_SDL_PrepareToShowOnePad(const char *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr)
 {
-	BEL_SDL_CreateFaceButtonsTextureIfNeeded();
-	
+	BEL_SDL_CreatePadTextureIfNeeded(padTexturePtrPtr);
+
 	uint32_t pixels[ALTCONTROLLER_PAD_PIX_WIDTH*ALTCONTROLLER_PAD_PIX_HEIGHT];
 	uint32_t *currPtr = pixels;
 	for (int currRow = 0, xpmIndex = 5; currRow < ALTCONTROLLER_PAD_PIX_HEIGHT; ++currRow, ++xpmIndex)
 	{
-		const char *xpmRowPtr = pad_thumb_buttons_xpm[xpmIndex];
+		const char *xpmRowPtr = padXpm[xpmIndex];
 		for (int currCol = 0; currCol < ALTCONTROLLER_PAD_PIX_WIDTH; ++currCol, ++currPtr, ++xpmRowPtr)
 		{
 			switch (*xpmRowPtr)
@@ -397,7 +402,7 @@ static void BEL_SDL_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const cha
 	// FIXME Rather than drawing each scancode as the ASCII code, we want something else...
 	for (int counter = 0; (*scanCodes) && (counter < 4); ++scanCodes, ++counter)
 	{
-		const char *str = g_sdlDOSScanCodeStrs[(unsigned char )(*scanCodes)];
+		const char *str = g_sdlDOSScanCodeStrs[(unsigned char)(*scanCodes)];
 		BEL_SDL_RedrawTextToBuffer(pixels + g_sdlControllerFaceButtonsTextLocs[2*counter] + g_sdlControllerFaceButtonsTextLocs[2*counter+1]*ALTCONTROLLER_PAD_PIX_WIDTH + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), ALTCONTROLLER_PAD_PIX_WIDTH, str);
 	}
 	// Add some alpha channel
@@ -406,8 +411,19 @@ static void BEL_SDL_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const cha
 	{
 		*currPtr &= 0xBFFFFFFF; // BGRA
 	}
-	SDL_UpdateTexture(g_sdlFaceButtonsTexture, NULL, pixels, 4*ALTCONTROLLER_PAD_PIX_WIDTH);
-	g_sdlFaceButtonsAreShown = true;
+	SDL_UpdateTexture(*padTexturePtrPtr, NULL, pixels, 4*ALTCONTROLLER_PAD_PIX_WIDTH);
+	*areButtonsShownPtr = true;
+
+	g_sdlForceGfxControlUiRefresh = true;
+
+	return scanCodes; // Check if there's something left
+}
+
+/*static*/ void BEL_SDL_PrepareToShowFaceButtonsAndDpad(const char *scanCodes)
+{
+	scanCodes =  BEL_SDL_PrepareToShowOnePad(scanCodes, pad_thumb_buttons_xpm, &g_sdlFaceButtonsTexture, &g_sdlFaceButtonsAreShown);
+	if (*scanCodes)
+		BEL_SDL_PrepareToShowOnePad(scanCodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown);
 }
 
 static void BEL_SDL_CreateTextInputTextureIfNeeded(void)
@@ -507,6 +523,8 @@ static void BEL_SDL_RedrawWholeTextInputUI(void)
 
 	BEL_SDL_RedrawWholeTextInputUI();
 	g_sdlTextInputUIIsShown = true;
+
+	g_sdlForceGfxControlUiRefresh = true;
 }
 
 static void BEL_SDL_ToggleTextInputUIKey(int x, int y, bool toggle)
@@ -620,7 +638,10 @@ bool BEL_SDL_IsTextInputUIShifted(void)
 /*static*/ void BEL_SDL_HideAltInputUI(void)
 {
 	g_sdlFaceButtonsAreShown = false;
+	g_sdlDpadIsShown = false;
 	g_sdlTextInputUIIsShown = false;
+
+	g_sdlForceGfxControlUiRefresh = true;
 }
 
 void BE_SDL_SetGfxOutputRects(void)
@@ -698,7 +719,11 @@ void BE_SDL_SetGfxOutputRects(void)
 	offset = minWinDim/(16*ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO);
 	g_sdlControllerFaceButtonsRect.x = winWidth-g_sdlControllerFaceButtonsRect.w-offset;
 	g_sdlControllerFaceButtonsRect.y = winHeight-g_sdlControllerFaceButtonsRect.h-offset;
-	// Also this (somewhat different because the keyboard is rectangular, but not square-shaped)
+	// Repeat for D-pad (same dimensions as the face buttons, other side)
+	g_sdlControllerDpadRect.w = g_sdlControllerDpadRect.h = g_sdlControllerFaceButtonsRect.w;
+	g_sdlControllerDpadRect.x = offset;
+	g_sdlControllerDpadRect.y = g_sdlControllerFaceButtonsRect.y;
+	// Also this - on-screen keyboard (somewhat different because the keyboard is rectangular, but not square-shaped)
 	g_sdlControllerTextInputRect.w = minWinDim;
 	g_sdlControllerTextInputRect.h = g_sdlControllerTextInputRect.w * ALTCONTROLLER_KEYBOARD_HEIGHT / ALTCONTROLLER_KEYBOARD_WIDTH;
 	g_sdlControllerTextInputRect.x = (winWidth-g_sdlControllerTextInputRect.w)/2;
@@ -1201,6 +1226,29 @@ void BE_SDL_puts(const char *str)
 	BEL_SDL_Simplified_putsorprintf("\n", true, true, false);
 }
 
+static void BEL_SDL_FinishHostDisplayUpdate(void)
+{
+	g_sdlForceGfxControlUiRefresh = false;
+
+	if (g_sdlShowControllerUI)
+	{
+		if (g_sdlFaceButtonsAreShown)
+		{
+			SDL_RenderCopy(g_sdlRenderer, g_sdlFaceButtonsTexture, NULL, &g_sdlControllerFaceButtonsRect);
+		}
+		if (g_sdlDpadIsShown)
+		{
+			SDL_RenderCopy(g_sdlRenderer, g_sdlDpadTexture, NULL, &g_sdlControllerDpadRect);
+		}
+		if (g_sdlTextInputUIIsShown)
+		{
+			SDL_RenderCopy(g_sdlRenderer, g_sdlTextInputTexture, NULL, &g_sdlControllerTextInputRect);
+		}
+	}
+
+        SDL_RenderPresent(g_sdlRenderer);
+}
+
 
 void BEL_SDL_UpdateHostDisplay(void)
 {
@@ -1214,6 +1262,8 @@ void BEL_SDL_UpdateHostDisplay(void)
 		bool isBlinkingCursorShown = g_sdlTxtCursorEnabled && (((uint64_t)(70086*SDL_GetTicks()/1000)/(1000*VGA_TXT_CURSOR_BLINK_VERT_FRAME_RATE)) % 2);
 		if (!g_sdlDoRefreshGfxOutput && (wereBlinkingCharsShown == areBlinkingCharsShown) && (wasBlinkingCursorShown == isBlinkingCursorShown))
 		{
+			if (g_sdlForceGfxControlUiRefresh)
+				BEL_SDL_FinishHostDisplayUpdate();
 			return;
 		}
 		/****** Do update ******/
@@ -1287,6 +1337,8 @@ void BEL_SDL_UpdateHostDisplay(void)
 	{
 		if (!g_sdlDoRefreshGfxOutput)
 		{
+			if (g_sdlForceGfxControlUiRefresh)
+				BEL_SDL_FinishHostDisplayUpdate();
 			return;
 		}
 		// That's easy now since there isn't a lot that can be done...
@@ -1304,6 +1356,8 @@ void BEL_SDL_UpdateHostDisplay(void)
 	{
 		if (!g_sdlDoRefreshGfxOutput)
 		{
+			if (g_sdlForceGfxControlUiRefresh)
+				BEL_SDL_FinishHostDisplayUpdate();
 			return;
 		}
 		uint16_t currLineFirstByte = (g_sdlScreenStartAddress + g_sdlPelPanning/8) % 0x10000;
@@ -1375,6 +1429,8 @@ void BEL_SDL_UpdateHostDisplay(void)
 			if (!doUpdate)
 			{
 				g_sdlDoRefreshGfxOutput = false;
+				if (g_sdlForceGfxControlUiRefresh)
+					BEL_SDL_FinishHostDisplayUpdate();
 				return;
 			}
 		}
@@ -1407,14 +1463,5 @@ void BEL_SDL_UpdateHostDisplay(void)
 		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionRect);
 	}
 
-	if (g_sdlFaceButtonsAreShown)
-	{
-		SDL_RenderCopy(g_sdlRenderer, g_sdlFaceButtonsTexture, NULL, &g_sdlControllerFaceButtonsRect);
-	}
-	if (g_sdlTextInputUIIsShown)
-	{
-		SDL_RenderCopy(g_sdlRenderer, g_sdlTextInputTexture, NULL, &g_sdlControllerTextInputRect);
-	}
-
-        SDL_RenderPresent(g_sdlRenderer);
+	BEL_SDL_FinishHostDisplayUpdate();
 }

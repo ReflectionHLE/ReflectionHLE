@@ -270,6 +270,9 @@ void CheckKeys (void)
 		US_CPrint ("Loading");
 		VW_UpdateScreen ();
 		US_ControlPanel();
+		// REFKEEN - Alternative controllers support (maybe user has changed some keys which may currently have an effect)
+		BE_SDL_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+		//
 		IN_ClearKeysDown();
 		if (restartgame)
 			playstate = resetgame;
@@ -1532,7 +1535,7 @@ void PlayLoop (void)
 {
 	// REFKEEN - Alternative controllers support	
 	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareInGameControls();
+	BE_SDL_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
 
 	objtype	*obj, *check;
 	//id0_long_t	newtime;

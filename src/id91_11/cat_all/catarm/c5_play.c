@@ -294,8 +294,7 @@ void CheckKeys (void)
 
 // F5 - CALIBRATE JOYSTICK
 //
-	// REFKEEN - Alternative controllers support - Block this in such a case
-	if (!BE_SDL_AltControlScheme_IsEnabled() && Keyboard[sc_F5])
+	if (Keyboard[sc_F5])
 	{
 		CalibrateJoystick(0);
 		tics = realtics = 1;
@@ -785,7 +784,7 @@ void PlayLoop (void)
 {
 	// REFKEEN - Alternative controllers support	
 	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareInGameControls();
+	BE_SDL_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
 
 	id0_char_t shot_color[3] = {4,9,14};
 
@@ -1421,8 +1420,7 @@ void DisplayStatus (status_flags *stat_flag)
 	if (control.y > 0)
 		temp_status = S_RETREAT;
 
-	// REFKEEN - Alternative controllers support - Joystick configuration is impossible if such support is enabled
-	if (!BE_SDL_AltControlScheme_IsEnabled() && Keyboard[sc_F5])
+	if (Keyboard[sc_F5])
 		temp_status = S_JOYSTICK;
 
 	if (Keyboard[sc_F4])

@@ -3278,10 +3278,6 @@ USL_CtlCButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	USL_ClearBottom();
 	if (n == 0)	// Keyboard
 	{
-		// REFKEEN - Alternative controllers support - Block this in such a case
-		if (BE_SDL_AltControlScheme_IsEnabled())
-			return(false);
-		//
 		TheItems[i + 1] = ip = CtlCKbdPanels;
 		p = CtlCKbdPanels[2].r.lr;
 		VWB_DrawPic(p.x,p.y,CTL_DIRSPIC);

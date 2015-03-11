@@ -1577,10 +1577,6 @@ USL_SetControlValues(void)
 		musici[1].flags |= ui_Disabled; // AdLib music
 	}
 
-	// REFKEEN - Alternative controllers support - Disable keyboard options (joysticks should already be disabled since there are "none" detected)
-	if (BE_SDL_AltControlScheme_IsEnabled())
-		configi[2].flags |= ui_Disabled;
-	//
 	if (!JoysPresent[0])
 		configi[3].flags |= ui_Disabled;
 	if (!JoysPresent[1])
