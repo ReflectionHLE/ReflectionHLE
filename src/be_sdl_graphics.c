@@ -1,3 +1,4 @@
+#include <string.h>
 #include "SDL.h"
 
 #include "be_cross.h"
@@ -118,15 +119,9 @@ void BE_SDL_SetGfxOutputRects(void);
 void BE_SDL_InitGfx(void)
 {
 #ifdef REFKEEN_VER_KDREAMS
-	const char *windowTitle = "Ref Keen Dreams";
-#elif defined REFKEEN_VER_CAT3D
-	const char *windowTitle = "Ref Catacomb 3-D";
-#elif defined REFKEEN_VER_CATABYSS
-	const char *windowTitle = "Ref Catacomb Abyss";
-#elif defined REFKEEN_VER_CATARM
-	const char *windowTitle = "Ref Catacomb Armageddon";
-#elif defined REFKEEN_VER_CATAPOC
-	const char *windowTitle = "Ref Catacomb Apocalypse";
+	const char *windowTitle = "Reflection Keen";
+#elif (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
+	const char *windowTitle = "Reflection Catacomb 3-D";
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif

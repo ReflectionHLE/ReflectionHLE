@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "SDL.h"
 
 #include "be_cross.h"

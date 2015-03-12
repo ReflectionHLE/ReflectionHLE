@@ -1,14 +1,20 @@
-Ref Keen Dreams, Catacomb 3-D + Adventures (formerly Chocolate Keen Dreams)
-===========================================================================
+Reflection Keen
+===============
 
-These are ports of Keen Dreams, Catacomb 3-D (The Descent) and The Catacomb
-Adventure Series. Although it may initially seem non-obvious, the reason these
-ports are available under a single project is that a lot of common code can be
-found. It may be true that Keen Dreams is a smooth-scrolling 2D platformer
-game, while the Catacombs are 3D first person shooters, but there are still
-common low-level 2D picture and font drawing routines, as well as very similar
-user input and sound output routines. Files with such code are often marked
-"ID Engine". A later revision of the codebase is also found in Wolfenstein 3D.
+This is a codebase consisting of source ports of Keen Dreams, Catacomb 3-D
+(The Descent) and The Catacomb Adventure Series. The Catacombs ports may also
+be mentioned under the name of "Reflection Catacomb 3-D" or "Reflection Cat3D".
+Although it may initially seem non-obvious, the reason these ports are
+available under a single project is that a lot of common code can be found.
+It may be true that Keen Dreams is a smooth-scrolling 2D platformer game,
+while the Catacombs are 3D first person shooters, but there are still common
+low-level 2D picture and font drawing routines, as well as very similar user
+input and sound routines. Files with such code are often marked "ID Engine".
+A later revision of the original codebase is also found in Wolfenstein 3D.
+
+Nevertheless, there is still a lot in the 3D Catacomb titles which is not found
+in any of the Keens. Hence, a title like "Reflection Catacomb 3-D" may also be
+used again.
 
 These source ports aim to reproduce behaviors of original executables
 for DOS, including bugs, at least if it's not too difficult
@@ -17,10 +23,12 @@ With the exception of The Catacomb Armageddon/Apocalypse, this also includes
 compatibility with saved games for original DOS executables (done per version).
 The Chocolate Doom source port can be considered an inspiration for that.
 
-The term "Ref" from the ports' names comes from the word "Reflection".
-These ports can be thought of reflections of the original counterparts.
-
-Note that there may still be some differences from the originals.
+In fact, originally this codebase started as "Chocolate Keen Dreams". With
+the addition of support for The Catacomb Abyss, and to be a bit more original,
+the titles of "Ref Keen Dreams" and "Ref Catacomb Abyss" were coined. Similar
+titles were later used for the other Catacombs, with no specific name for the
+whole codebase before "Reflection Keen". There are chances some of these names
+are still found, here and there.
 
 -----------------------------------------
 Differences from the original executables
@@ -96,8 +104,10 @@ Current status
 - The mouse can be used for control panel navigation in Keen Dreams, while the
 keyboard is usable basically everywhere in all supported games. The mouse can
 also be used for (partial) in-game controls in the supported Catacomb titles.
-- Basic joystick support is in, although it's kind-of similar to the DOS days
-so it doesn't remind of more recent titles.
+- Basic joystick support is in, being kind-of similar to the DOS days so it
+doesn't remind of more recent titles. However, while currently experimental
+and disabled by default, you can also check "Alternative Controller Schemes"
+below.
 - AdLib and PC Speaker sound emulations are built-in, including music playback
 for Catacomb 3-D. AdLib emulation is possible thanks to the DBOPL emulator
 from DOSBox.
@@ -258,6 +268,8 @@ since the rate of 49716Hz is used for AdLib emulation internally.
 at least most of it. Technically a silent PC Speaker is still emulated,
 but AdLib is reported to be unavailable for the game. Furthermore,
 the OPL emulator is not running in the background in such a case.
+- There are some additional settings related to alternative controller schemes
+support. See "Alternative Controller Schemes" below for more details.
 
 An additional setting which is hidden by default:
 - "farptrsegoffset" can be used for (some) level of saved game compatibility
@@ -297,6 +309,148 @@ to be shared with these was originally ported from the Catacomb 3-D source code
 CGA routines were preferred, given possible complications with the EGA
 bit planes and multiple read/write modes. While Catacomb 3-D is EGA-only,
 this assisted with the porting of Keen Dreams CGA later.
+
+--------------------------------------------------------
+Alternative Controller Schemes - Why are these available
+--------------------------------------------------------
+
+Following here is an explanation why do these schemes exist (either as an
+experimental feature or not), and why should these be considered "alternative":
+- Back in the beginning of the 90s, the various Keen and Catacomb titles were
+originally released with support for 2-button joysticks. This is related to
+limitations of the game port connector found in various IBM PCs and compatible
+setups. A little bit later releases of Keen 4-6 were also made available,
+with support for the Gravis PC GamePad, including all of its 4 buttons.
+- In all releases, though, it was assumed a keyboard is present for various
+purposes (like text input). While a joystick could be used as an alternative
+for gameplay, the keyboard was practically a mandatory input device.
+- More advanced game controllers were later released. Initially with game port
+connectors, they were later substituted with USB controllers. Game controllers
+also became closer in layouts and features to the gamepads commonly used
+with various gaming consoles.
+- However, one thing didn't change. There wasn't a standard layout for game
+controllers that programmers could depend on with the PCs, the way it's been
+done with keyboards and mice for many years. For instance, two gamepads may
+look similar, with each of them having a d-pad, but one may report the
+d-pad to be be a pair of analog axes (same as analog stick), while
+the other gamepad reports it as four digital buttons.
+- Hence, while keyboards and mice have generally been usable "out of the box"
+with PCs for many years, and the same applies to game controllers for consoles,
+this cannot be said about game controllers for PCs, at least for some time.
+- At some later point, Microsoft introduced XInput, making it possible to
+easily use Xbox 360 controllers with PC games, as well as other XInput-capable
+controllers. As a side-effect, they defined a standard game controller layout
+for PCs.
+- The same cannot be said about other, non-XInput capable controllers, though.
+The lack of a standard layout still applies to them. Hence, a mapping table
+is required if one wants to map each such controller's layout to some
+common layout, so it can be used "out of the box".
+- The SDL_GameController API from SDL2 was created to do exactly that, with
+support for multiple platforms. This is basically a wrapper over the earlier
+SDL_Joystick API, with the wrapper itself doing the mapping above.
+- The alternative controller schemes take advantage of this API for a more
+straightforward controller support. In addition, while the keyboard was
+mandatory back in the days, various functionalities that originally required
+a keyboard are now accessible from game controllers using these schemes.
+
+--------------------------------------------
+Alternative Controller Schemes - Limitations
+--------------------------------------------
+
+It is good to remind that this is still an experimental feature. It is
+currently assumed the controller has the following features:
+- A d-pad (if there's no d-pad, maybe you can fake one using an analog stick).
+- Four face buttons (A, B, X, Y on the Xbox 360 controller).
+- Two shoulder/bumper buttons.
+- Two trigger buttons (they don't have to be analog).
+- Reserved Back button (Esc key replacement) and Start button (Pause key).
+
+Furthermore, you cannot take advantage of analog stick clicks or guide button
+clicks as technically possible with the Xbox 360 controller.
+
+The game itself should detect a total of 0 joysticks while the alternative
+controller schemes are in use. With some exceptions, controller events
+(like button presses/releases) are translated to keyboard events that
+are parsed in the same ways as in the original DOS releases.
+
+Note that while it is still possible to configure the keyboard in-game, as in
+the original DOS releases, this can lead to side effects. For instance, if you
+configure 'Space' to be the key for shooting a fireball in the game Catacomb
+3-D, it will be used not just for shooting, but also for drinking potions.
+This is the case in the original DOS releases, as well as the source port.
+While the controller is used, this can further lead to a similar effect
+when any of the controller's features (e.g., a button) is configured
+either for shooting or potion drinking.
+
+As a little note to finish with, a keyboard is still required in order to
+activate debug keys' functionalities (aka cheat codes). There are chances
+it's also required in a few other cases which weren't tested.
+
+-----------------------------------------------------------
+Alternative Controller Schemes - Supported game controllers
+-----------------------------------------------------------
+
+Given the need to map layouts as described above, not all game controllers are
+supported with these schemes out-of-the-box, even if any of them can be used
+as a joystick while alternative controller schemes are disabled. It is
+expected that all XInput-capable controllers are supported on Windows,
+along with a few more.
+
+SDL2 should have a small built-in mapping table for other controllers and
+non-Windows platforms. In addition, a file named gamecontroller_db.txt is
+bundled and can be used to load additional mappings. If a controller of
+yours isn't supported, you may be able to add the mapping.
+
+There are a few ways to do this:
+- Use the SDL2 Gamepad Tool available from General Arcade as of Mar 12 2015:
+http://generalarcade.com/gamepadtool/
+After using it, simply copy the contents of the newly generated
+gamecontroller_db.txt file to the one bundled with any of the
+Reflection Keen source ports (or use it as-is if one doesn't exist).
+- Alternatively start Steam (http://store.steampowered.com/) in Big Picture
+mode, then choose Settings -> Controllers and configure the mapping. Once
+that's done, it's expected that you can optionally upload the mapping so other
+users of the same controller can take advantage of it. Either way, though,
+the directory where Steam is installed should have a config/config.vdf file,
+with a new "SDL_GamepadBind" entry. The value of this entry (following the
+mention of the string "SDL_GamepadBind") should be copied to the end of the
+file gamecontroller_db.txt bundled with one of the Reflection Keen ports.
+- Use test/controllermap.c (and controllermap.bmp) from the SDL2
+sources, on which the SDL2 Gamepad Tool above may possibly be
+based (source code only, no EXE): https://hg.libsdl.org/SDL/
+This should write output to a command prompt or similar, including a mapping
+that can be added to gamecontroller_db.txt,
+
+-------------------------------------------
+Alternative Controller Schemes - How to use
+-------------------------------------------
+
+The "altcontrolscheme" setting in the cfg file (e.g., refkdreams.cfg) should be
+enabled, i.e. ensure that "altcontrolscheme=true" is written. You may be able
+to quickly check the controller is working right now. If it isn't, maybe you
+need to configure a new mapping. Check "Supported game controllers" above.
+
+Once you have a game controller working, a few more settings can be modified.
+
+First, the "altcontrolscheme_movement" setting, which accepts any of the
+following values: dpad, lstick, rstick.
+
+Then there's "altcontrolscheme_menumouse", which is mostly relevant for
+Keen Dreams but also works in Catacomb 3-D. It can accept any of these
+values: none, lstick, rstick.
+
+Finally there are various in-game actions, some of
+which depending on the specific games. All of these accept the
+following values: a, b, x, y, lshoulder, rshoulder, ltrigger, rtrigger.
+
+The exact (additional) settings are:
+- "altcontrolscheme_jump", "altcontrolscheme_throw", "altcontrolscheme_stats"
+(Keen Dreams only).
+- "altcontrolscheme_fire", "altcontrolscheme_strafe", "altcontrolscheme_drink",
+"altcontrolscheme_bolt", "altcontrolscheme_nuke", "altcontrolscheme_fastturn"
+(all 3D Catacombs).
+- "altcontrolscheme_scrolls" (Catacomb 3-D, The Catacomb Abyss).
+- "altcontrolscheme_funckeys" (Keen Dreams, The Catacomb Adventure Series).
 
 ----------------------------------------
 Building the ports from the source codes
@@ -350,9 +504,8 @@ https://bitbucket.org/NY00123/gamesrc-ver-recreation/
 Terms of use
 ------------
 
-Ref Keen Dreams, Ref Catacomb 3-D, Ref Catacomb Abyss, Ref Catacomb Armageddon,
-Ref Catacomb Apocalypse and the DBOPL emulator are released under
-the GNU GPLv2+. See LICENSE for more details.
+Reflection Keen and the DBOPL emulator are released under the GNU GPLv2+.
+See LICENSE for more details.
 
 Note that this does not cover the static data included for usage with Ref Keen
 Dreams. However, as an exception to the terms above you may link and distribute
@@ -416,6 +569,39 @@ say to all of you, that you should be considered special here. :)
 ---------
 Changelog
 ---------
+
+Mar 13, 2015 (v0.10.0):
+- After some time of not having one title covering the whole codebase,
+"Reflection Keen" is finally in use.
+- Experimental support for alternative controller schemes is implemented. This
+should theoretically make it more comfortable to use game controllers with the
+Xbox 360 Controller layout. Taking advantage of the SDL_GameController API,
+a mapping table is used so this is theoretically not limited just to XInput
+controllers. This is currently disabled by default, though, and at
+least one edit to the generated cfg file is expected. Furthermore,
+as a side-effect SDL 2.0.2+ is known to be required now.
+- Alright, it's probably better to consider this unofficial, but there is now
+partially-tested support for big-endian architectures (or bi-endian archs in
+big-endian modes). It's a bit difficult to test this with the lack of
+appropriate hardware, though (in particular audio support is totally untested).
+In addition, commonly used architectures of these days (x86, x86-64, ARM)
+generally operate in little-endian modes. So, again, better assume that
+big-endian modes aren't officially supported.
+- It should be possible to disable the sound subsystem by enabling
+the "disablesndsubsystem" setting in the generated cfg file. The code
+changes also include a fix for an infinite loop in SD_WaitSoundDone
+in case the sound subsystem is disabled. Furthermore, in such a case
+a silent PC Speaker is emulated, but the OPL emulator isn't running.
+- Code can optionally be built as C++ now, using g++ version 4:4.8.2-1ubuntu6
+(should be based on v4.8.2). It is still built as C by default, but the ability
+to build the code as C++ assisted with catching at least a few bugs.
+- Added a fix (or possibly more than one) for Catacomb 3-D crashes. Note
+that the way this was done, a vanilla Catacomb 3-D rendering glitch is *not*
+reproduced now. It may be possible with more efforts, although this obviously
+depends on the original EXE's layout.
+- As in the original DOS executables, there shouldn't be a noticeable fizzle
+fade after loading a saved game in any of the Catacomb Adventure Series titles
+(except for maybe the first time after starting the application).
 
 Dec 20, 2014 (v0.9.12):
 - Complete support for the Catacomb Adventure Series has been integrated.
