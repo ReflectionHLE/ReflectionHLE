@@ -397,7 +397,7 @@ expected that all XInput-capable controllers are supported on Windows,
 along with a few more.
 
 SDL2 should have a small built-in mapping table for other controllers and
-non-Windows platforms. In addition, a file named gamecontroller_db.txt is
+non-Windows platforms. In addition, a file named gamecontrollerdb.txt is
 bundled and can be used to load additional mappings. If a controller of
 yours isn't supported, you may be able to add the mapping.
 
@@ -405,7 +405,7 @@ There are a few ways to do this:
 - Use the SDL2 Gamepad Tool available from General Arcade as of Mar 12 2015:
 http://generalarcade.com/gamepadtool/
 After using it, simply copy the contents of the newly generated
-gamecontroller_db.txt file to the one bundled with any of the
+gamecontrollerdb.txt file to the one bundled with any of the
 Reflection Keen source ports (or use it as-is if one doesn't exist).
 - Alternatively start Steam (http://store.steampowered.com/) in Big Picture
 mode, then choose Settings -> Controllers and configure the mapping. Once
@@ -414,12 +414,12 @@ users of the same controller can take advantage of it. Either way, though,
 the directory where Steam is installed should have a config/config.vdf file,
 with a new "SDL_GamepadBind" entry. The value of this entry (following the
 mention of the string "SDL_GamepadBind") should be copied to the end of the
-file gamecontroller_db.txt bundled with one of the Reflection Keen ports.
+file gamecontrollerdb.txt bundled with one of the Reflection Keen ports.
 - Use test/controllermap.c (and controllermap.bmp) from the SDL2
 sources, on which the SDL2 Gamepad Tool above may possibly be
 based (source code only, no EXE): https://hg.libsdl.org/SDL/
 This should write output to a command prompt or similar, including a mapping
-that can be added to gamecontroller_db.txt,
+that can be added to gamecontrollerdb.txt,
 
 -------------------------------------------
 Alternative Controller Schemes - How to use
