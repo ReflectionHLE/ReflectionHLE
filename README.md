@@ -196,7 +196,7 @@ Making Catacomb 3-D (The Descent) run
 This requires either Catacomb 3-D v1.00 or Catacomb 3-D: The Descent v1.22.
 
 On Windows desktops, you should simply drop the file SDL2.dll, as well as
-refcat-100.exe or refcat-122.exe (depending on the version) along with
+refcat3d-100.exe or refcat3d-122.exe (depending on the version) along with
 the files coming with the corresponding release of the game for DOS.
 
 Check above for "game data" in order to find a way to obtain compatible data.
@@ -252,9 +252,9 @@ If set to "true", consider taking a look at the "scalefactor" setting.
 in case screen burn-in is a concern. Valid values are "aspect" and "fill".
 - "scalefactor" can be used for two-step scaling. When different from 1, and
 with "bilinear=true", on compatible hardware the game's graphical contents to
-be displayed should first be zoomed in each dimension by the given scale
-factor, and then the zoomed pic should be scaled to the window with bilinear
-filtering applied. This is done so scaling artifacts coming from non-bilinear
+be displayed are first zoomed in each dimension by the given scale factor,
+and then the zoomed image is scaled to the window with bilinear filtering
+applied. This is done so scaling artifacts coming from non-bilinear
 interpolation are less noticeable, while the output is not too blurry.
 - "autolock" tells if the window should have full control of the mouse
 (setting has no effect for fullscreen windows). Even if disabled, the cursor
@@ -456,7 +456,7 @@ The exact (additional) settings are:
 Building the ports from the source codes
 ----------------------------------------
 
-- Development files for SDL 2.0 are required, as well as GNU make and the
+- Development files for SDL 2.0.2+ are required, as well as GNU make and the
 GNU Compiler Collection's C compiler (i.e. gcc). In practice, at the moment
 only SDL 2.0 dev files, "make" and "gcc" are probably required. If nothing goes
 wrong, a single "make" command should build various executables, each of them
