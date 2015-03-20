@@ -523,14 +523,23 @@ IN_SetupJoy(word joy,word minx,word maxx,word miny,word maxy)
 	def->joyMinX = minx;
 	def->joyMaxX = maxx;
 	r = maxx - minx;
+	// ***PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	d = r / 5;
+#else
 	d = r / 3;
+#endif
 	def->threshMinX = ((r / 2) - d) + minx;
 	def->threshMaxX = ((r / 2) + d) + minx;
 
 	def->joyMinY = miny;
 	def->joyMaxY = maxy;
 	r = maxy - miny;
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	d = r / 5;
+#else
 	d = r / 3;
+#endif
 	def->threshMinY = ((r / 2) - d) + miny;
 	def->threshMaxY = ((r / 2) + d) + miny;
 

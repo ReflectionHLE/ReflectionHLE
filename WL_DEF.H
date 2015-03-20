@@ -343,6 +343,11 @@ enum	{
 		SPR_HITLER_DIE1,SPR_HITLER_DIE2,SPR_HITLER_DIE3,SPR_HITLER_DIE4,
 		SPR_HITLER_DIE5,SPR_HITLER_DIE6,SPR_HITLER_DIE7,
 
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION - Looks required for correct numbers, guessing this as the name ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+		SPR_HITLER_DIE8,
+#endif
+
 //
 // giftmacher
 //
@@ -358,7 +363,10 @@ enum	{
 		SPR_ROCKET_5,SPR_ROCKET_6,SPR_ROCKET_7,SPR_ROCKET_8,
 
 		SPR_SMOKE_1,SPR_SMOKE_2,SPR_SMOKE_3,SPR_SMOKE_4,
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 		SPR_BOOM_1,SPR_BOOM_2,SPR_BOOM_3,
+#endif
 
 //
 // Angel of Death's DeathSparks(tm)
@@ -523,8 +531,11 @@ typedef enum {
 	gretelobj,
 	giftobj,
 	fatobj,
-	rocketobj,
+	rocketobj
 
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	,
 	spectreobj,
 	angelobj,
 	transobj,
@@ -533,6 +544,7 @@ typedef enum {
 	deathobj,
 	hrocketobj,
 	sparkobj
+#endif
 } classtype;
 
 typedef enum {
@@ -554,9 +566,13 @@ typedef enum {
 	bo_machinegun,
 	bo_chaingun,
 	bo_food,
-	bo_fullheal,
+	bo_fullheal
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	,
 	bo_25clip,
 	bo_spear
+#endif
 } stat_t;
 
 typedef enum {
@@ -572,7 +588,12 @@ typedef enum {
 } dirtype;
 
 
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#define NUMENEMIES		16
+#else
 #define NUMENEMIES		22
+#endif
 typedef enum {
 	en_guard,
 	en_officer,
@@ -589,13 +610,17 @@ typedef enum {
 	en_inky,
 	en_gretel,
 	en_gift,
-	en_fat,
+	en_fat
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	,
 	en_spectre,
 	en_angel,
 	en_trans,
 	en_uber,
 	en_will,
 	en_death
+#endif
 } enemy_t;
 
 
@@ -743,8 +768,12 @@ typedef	enum	{
 	ex_loadedgame,
 	ex_victorious,
 	ex_abort,
-	ex_demodone,
+	ex_demodone
+	// *** EARLY APOGEE RELEASES RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
+	,
 	ex_secretlevel
+#endif
 } exit_t;
 
 
@@ -759,7 +788,12 @@ typedef	enum	{
 extern	boolean		MS_CheckParm (char far *string);
 
 extern	char		str[80],str2[20];
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+extern	unsigned			tedlevelnum;
+#else
 extern	int			tedlevelnum;
+#endif
 extern	boolean		tedlevel;
 extern	boolean		nospr;
 extern	boolean		IsA386;
@@ -776,7 +810,12 @@ extern	int			shootdelta;
 
 extern	int			dirangle[9];
 
-extern	boolean         startgame,loadedgame,virtualreality;
+// *** PRE-V1.4 APOGEE RESTORATION ***
+extern	boolean         startgame,loadedgame
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	,virtualreality
+#endif
+	;
 extern	int		mouseadjustment;
 //
 // math tables
@@ -826,9 +865,12 @@ extern	int			doornum;
 
 extern	char		demoname[13];
 
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	long		spearx,speary;
 extern	unsigned	spearangle;
 extern	boolean		spearflag;
+#endif
 
 
 void 	DrawPlayBorder (void);
@@ -867,6 +909,10 @@ extern	long		funnyticount;		// FOR FUNNY BJ FACE
 
 extern	exit_t		playstate;
 
+// *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused variable here
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+extern	boolean unusedplayvar;
+#endif
 extern	boolean		madenoise;
 
 extern	objtype 	objlist[MAXACTORS],*new,*obj,*player,*lastobj,
@@ -1090,7 +1136,10 @@ extern	byte		mapmasks3[4][8];
 
 extern	int			maxscale,maxscaleshl2;
 
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	boolean	insetupscaling;
+#endif
 
 void SetupScaling (int maxscaleheight);
 void ScaleShape (int xcenter, int shapenum, unsigned height);
@@ -1117,7 +1166,10 @@ extern	int			facecount;
 void	SpawnPlayer (int tilex, int tiley, int dir);
 void 	DrawFace (void);
 void	DrawHealth (void);
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 void	TakeDamage (int points,objtype *attacker);
+#endif
 void	HealSelf (int points);
 void	DrawLevel (void);
 void	DrawLives (void);
@@ -1157,6 +1209,8 @@ extern unsigned	pwallx,pwally;
 extern int			pwalldir;
 
 
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 void InitDoorList (void);
 void InitStaticList (void);
 void SpawnStatic (int tilex, int tiley, int type);
@@ -1168,6 +1222,7 @@ void PlaceItemType (int itemtype, int tilex, int tiley);
 void PushWall (int checkx, int checky, int dir);
 void OperateDoor (int door);
 void InitAreas (void);
+#endif
 
 /*
 =============================================================================
@@ -1224,14 +1279,23 @@ extern	statetype s_deathchase1;
 extern	statetype s_blinkychase1;
 extern	statetype s_hitlerchase1;
 
+// *** PRE-V1.4 APOGEE RESTORATION *** - Disabling pain1 states
 extern	statetype s_grdpain;
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	statetype s_grdpain1;
+#endif
 extern	statetype s_ofcpain;
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	statetype s_ofcpain1;
+#endif
 extern	statetype s_sspain;
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	statetype s_sspain1;
+#endif
 extern	statetype s_mutpain;
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	statetype s_mutpain1;
+#endif
 
 extern	statetype s_deathcam;
 
@@ -1246,6 +1310,8 @@ void KillActor (objtype *ob);
 
 void	US_ControlPanel(byte);
 
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 void SpawnDeadGuard (int tilex, int tiley);
 void SpawnBoss (int tilex, int tiley);
 void SpawnGretel (int tilex, int tiley);
@@ -1261,6 +1327,7 @@ void SpawnGift (int tilex, int tiley);
 void SpawnFat (int tilex, int tiley);
 void SpawnFakeHitler (int tilex, int tiley);
 void SpawnHitler (int tilex, int tiley);
+#endif
 
 /*
 =============================================================================

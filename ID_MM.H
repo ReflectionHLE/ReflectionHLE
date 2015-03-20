@@ -9,12 +9,15 @@
 
 #define	BUFFERSIZE		0x1000		// miscelanious, allways available buffer
 
-// ***SHAREWARE/REGISTERED V1.4 APOGEE + SOD DEMO V1.0 RESTORATION***
-// Looks like less blocks were used for Shareware 1.4 Apogee and SOD demo 1.0
+// ***SHAREWARE/REGISTERED APOGEE + SOD DEMO V1.0 RESTORATION***
+// Looks like less blocks were used for Shareware 1.2/1.4 Apogee and
+// SOD demo 1.0, and even less in Shareware 1.1 Apogee
 #ifdef GOODTIMES
 #define MAXBLOCKS		700
-#else
+#elif (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 #define MAXBLOCKS		600
+#else
+#define MAXBLOCKS		500
 #endif
 
 

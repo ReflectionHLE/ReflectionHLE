@@ -56,7 +56,12 @@ static	boolean		US_Started;
 		SaveGame	Games[MaxSaveGames];
 		HighScore	Scores[MaxScores] =
 					{
+						// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+						{"Id Software - '92",10000,1},
+#else
 						{"id software-'92",10000,1},
+#endif
 						{"Adrian Carmack",10000,1},
 						{"John Carmack",10000,1},
 						{"Kevin Cloud",10000,1},
@@ -198,7 +203,10 @@ US_Startup(void)
 		{
 		 case 0:
 		   tedlevelnum = atoi(_argv[i + 1]);
+		   // *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 		   if (tedlevelnum >= 0)
+#endif
 		     tedlevel = true;
 		   break;
 

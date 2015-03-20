@@ -22,6 +22,10 @@
 =============================================================================
 */
 
+// *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused variable here
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+boolean		unusedplayvar;
+#endif
 boolean		madenoise;					// true when shooting or screaming
 
 exit_t		playstate;
@@ -457,6 +461,8 @@ void PollControls (void)
 	int		max,min,i;
 	byte	buttonbits;
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 //
 // get timing info for last frame
 //
@@ -481,6 +487,7 @@ void PollControls (void)
 	}
 	else
 		CalcTics ();
+#endif // GAMEVER_RESTORATION_ANY_APO_PRE14
 
 	controlx = 0;
 	controly = 0;
@@ -501,6 +508,14 @@ void PollControls (void)
 
 		controlx = *demoptr++;
 		controly = *demoptr++;
+		// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		tics = *demoptr++;
+
+		while (tics > TimeCount - lasttimecount);
+
+		lasttimecount = TimeCount;
+#endif
 
 		if (demoptr == lastdemoptr)
 			playstate = ex_completed;		// demo is done
@@ -511,6 +526,10 @@ void PollControls (void)
 		return;
 	}
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	CalcTics();
+#endif
 
 //
 // get button states
@@ -569,6 +588,10 @@ void PollControls (void)
 		*demoptr++ = buttonbits;
 		*demoptr++ = controlx;
 		*demoptr++ = controly;
+		// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		*demoptr++ = tics;
+#endif
 
 		if (demoptr >= lastdemoptr)
 			Quit ("Demo buffer overflowed!");
@@ -697,8 +720,14 @@ void CheckKeys (void)
 	//
 #ifndef SPEAR
 	if (Keyboard[sc_BackSpace] &&
+		// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		Keyboard[sc_Alt] &&
+		Keyboard[sc_LShift] &&
+#else
 		Keyboard[sc_LShift] &&
 		Keyboard[sc_Alt] &&
+#endif
 		MS_CheckParm("goobers"))
 #else
 	if (Keyboard[sc_BackSpace] &&
@@ -1284,6 +1313,12 @@ void DoActor (objtype *ob)
 			}
 		}
 
+		// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		if (!(ob->flags&FL_NEVERMARK))
+			if ( !((ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley]))
+				actorat[ob->tilex][ob->tiley] = ob;
+#else
 		if (ob->flags&FL_NEVERMARK)
 			return;
 
@@ -1291,6 +1326,7 @@ void DoActor (objtype *ob)
 			return;
 
 		actorat[ob->tilex][ob->tiley] = ob;
+#endif
 		return;
 	}
 
@@ -1343,6 +1379,13 @@ think:
 		}
 	}
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	if (!(ob->flags&FL_NEVERMARK))
+		if ( !((ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley]))
+			actorat[ob->tilex][ob->tiley] = ob;
+	return;
+#else
 	if (ob->flags&FL_NEVERMARK)
 		return;
 
@@ -1350,6 +1393,7 @@ think:
 		return;
 
 	actorat[ob->tilex][ob->tiley] = ob;
+#endif
 }
 
 //==========================================================================
@@ -1362,31 +1406,50 @@ think:
 =
 ===================
 */
+
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 long funnyticount;
+#endif
 
 
 void PlayLoop (void)
 {
 	int		give;
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	int	helmetangle;
+#endif
 
 	playstate = TimeCount = lasttimecount = 0;
 	frameon = 0;
 	running = false;
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	pwallstate = anglefrac = 0;
+	facecount = 0;
+#else
 	anglefrac = 0;
 	facecount = 0;
 	funnyticount = 0;
+#endif
 	memset (buttonstate,0,sizeof(buttonstate));
 	ClearPaletteShifts ();
 
 	if (MousePresent)
 		Mouse(MDelta);	// Clear accumulated mouse movement
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	tics = 1;
+#endif
 	if (demoplayback)
 		IN_StartAck ();
 
 	do
 	{
+		// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 		if (virtualreality)
 		{
 			helmetangle = peek (0x40,0xf0);
@@ -1394,6 +1457,7 @@ void PlayLoop (void)
 			if (player->angle >= ANGLES)
 				player->angle -= ANGLES;
 		}
+#endif
 
 
 		PollControls();
@@ -1436,6 +1500,15 @@ void PlayLoop (void)
 
 		CheckKeys();
 
+		// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		if (demoplayback)
+		{
+			if (demoptr == lastdemoptr)
+				playstate = ex_demodone;
+		}
+#endif
+
 //
 // debug aids
 //
@@ -1457,12 +1530,15 @@ void PlayLoop (void)
 		}
 
 
+		// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 		if (virtualreality)
 		{
 			player->angle -= helmetangle;
 			if (player->angle < 0)
 				player->angle += ANGLES;
 		}
+#endif
 
 	}while (!playstate && !startgame);
 

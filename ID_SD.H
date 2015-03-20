@@ -8,7 +8,10 @@
 #ifndef	__ID_SD__
 #define	__ID_SD__
 
+// *** PRE-V1.4 APOGEE RESTORATION *** (Force passing of args as 16-bit ints)
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 void	alOut(byte n,byte b);
+#endif
 
 #ifdef	__DEBUG__
 #define	__DEBUG_SoundMgr__

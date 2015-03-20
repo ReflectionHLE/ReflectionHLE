@@ -93,6 +93,8 @@ bufferwidth = ((dest+1)-origdest)*4;
 }
 
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 void VW_DrawColorPropString (char far *string)
 {
 	fontstruct	far	*font;
@@ -154,6 +156,7 @@ asm	mov	ds,ax
 bufferheight = height;
 bufferwidth = ((dest+1)-origdest)*4;
 }
+#endif // GAMEVER_RESTORATION_ANY_APO_PRE14
 
 
 //==========================================================================
@@ -396,7 +399,12 @@ void LatchDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 void LoadLatchMem (void)
 {
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	int	i,j,p,m,width,height;
+#else
 	int	i,j,p,m,width,height,start,end;
+#endif
 	byte	far *src;
 	unsigned	destoff;
 
@@ -437,12 +445,22 @@ void LoadLatchMem (void)
 //
 // pics
 //
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	for (i=LATCHPICS_LUMP_START;i<=LATCHPICS_LUMP_END;i++)
+#else
 	start = LATCHPICS_LUMP_START;
 	end = LATCHPICS_LUMP_END;
 
 	for (i=start;i<=end;i++)
+#endif
 	{
+		// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		latchpics[2+i-LATCHPICS_LUMP_START] = destoff;
+#else
 		latchpics[2+i-start] = destoff;
+#endif
 		CA_CacheGrChunk (i);
 		width = pictable[i-STARTPICS].width;
 		height = pictable[i-STARTPICS].height;

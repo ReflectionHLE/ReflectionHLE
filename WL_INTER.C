@@ -225,12 +225,20 @@ void Victory (void)
 	sr /= 14;
 	tr /= 14;
 #endif
+	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+	if (sec > 415800)
+		sec = 415800;
+#endif
 
 	min = sec/60;
 	sec %= 60;
 
+	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 	if (min > 99)
 		min = sec = 99;
+#endif
 
 	i = TIMEX*8+1;
 	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+(min/10));
@@ -328,7 +336,12 @@ void Victory (void)
 void PG13 (void)
 {
 	VW_FadeOut();
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	VWB_Bar(0,0,319,200,0x82);			// background
+#else
 	VWB_Bar(0,0,320,200,0x82);			// background
+#endif
 
 	CA_CacheGrChunk (PG13PIC);
 	VWB_DrawPic (216,110,PG13PIC);
@@ -337,7 +350,12 @@ void PG13 (void)
 	UNCACHEGRCHUNK (PG13PIC);
 
 	VW_FadeIn();
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	IN_Ack();
+#else
 	IN_UserInput(TickBase*7);
+#endif
 
 	VW_FadeOut ();
 }
@@ -503,6 +521,50 @@ void LevelCompleted (void)
 	 {0,	"??:??"},
 	 {0,	"??:??"},
 
+	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+	 //
+	 // Episode Four Par Times
+	 //
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {0,	"??:??"},
+	 {0,	"??:??"},
+
+	 //
+	 // Episode Five Par Times
+	 //
+	 {2.5,	"02:30"},
+	 {1.5,	"01:30"},
+	 {2.5,	"02:30"},
+	 {2.5,	"02:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {0,	"??:??"},
+	 {0,	"??:??"},
+
+	 //
+	 // Episode Six Par Times
+	 //
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {1.5,	"01:30"},
+	 {0,	"??:??"},
+	 {0,	"??:??"}
+#else
 	 //
 	 // Episode Four Par Times
 	 //
@@ -544,6 +606,7 @@ void LevelCompleted (void)
 	 {8.5,	"08:30"},
 	 {0,	"??:??"},
 	 {0,	"??:??"}
+#endif // RESTORATION
 #else
 	 //
 	 // SPEAR OF DESTINY TIMES
@@ -912,7 +975,12 @@ void LevelCompleted (void)
 	  }
 #endif
 #else
+	  // *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	  Write(14,4,"secret level\n completed!");
+#else
 	  Write(14,4,"secret floor\n completed!");
+#endif
 #endif
 
 	  Write(10,16,"15000 bonus!");
@@ -1072,16 +1140,25 @@ void	DrawHighScores(void)
 	HighScore	*s;
 
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	MM_SortMem ();
+#endif
 
 #ifndef SPEAR
-	// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
-	// Uncomment line for Shareware/Registered 1.4 Apogee and early GT/ID
-#if (!defined GAMEVER_RESTORATION_WL6_GT214) && (!defined GAMEVER_RESTORATION_WL6_ACT14)
+	// ***SHAREWARE/REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION***
+	// Uncomment line for Shareware/Registered 1.4 Apogee and early GT/ID,
+	// and relocate it for pre-1.4 Apogee
+#if (!defined GAMEVER_RESTORATION_WL6_GT214) && (!defined GAMEVER_RESTORATION_WL6_ACT14) && (!defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	CA_CacheGrChunk (HIGHSCORESPIC);
 	CA_CacheGrChunk (STARTFONT);
+	// ***SHAREWARE/REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION***
+	// Relocated line for pre-1.4 Apogee
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	CA_CacheGrChunk (C_CODEPIC);
+#endif
 	CA_CacheGrChunk (C_LEVELPIC);
 	CA_CacheGrChunk (C_SCOREPIC);
 	CA_CacheGrChunk (C_NAMEPIC);
@@ -1090,7 +1167,11 @@ void	DrawHighScores(void)
 	DrawStripes(10);
 
 	VWB_DrawPic(48,0,HIGHSCORESPIC);
+	// *** PRE-V1.4 APOGEE RESTORATION***
+	// Relocate line for pre-1.4 Apogee
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	UNCACHEGRCHUNK (HIGHSCORESPIC);
+#endif
 
 	VWB_DrawPic(4*8,68,C_NAMEPIC);
 	VWB_DrawPic(20*8,68,C_LEVELPIC);
@@ -1218,6 +1299,11 @@ void	DrawHighScores(void)
 		#endif
 	}
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+	// Relocated line for pre-1.4 Apogee
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	UNCACHEGRCHUNK (HIGHSCORESPIC);
+#endif
 	VW_UpdateScreen ();
 
 #ifdef SPEAR
@@ -1284,8 +1370,11 @@ void	CheckHighScore (long score,word other)
 		PrintY = 76 + (16 * n);
 #ifndef SPEAR
 		PrintX = 4*8;
+		// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 		backcolor = BORDCOLOR;
 		fontcolor = 15;
+#endif
 		US_LineInput(PrintX,PrintY,Scores[n].name,nil,true,MaxHighName,100);
 #else
 		PrintX = 16;

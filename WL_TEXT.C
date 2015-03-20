@@ -756,10 +756,16 @@ void ShowArticle (char far *article)
 
 #ifndef JAPAN
 #ifdef ARTSEXTERN
+// *** PRE-V1.4 APOGEE RESTORATION *** - Change the the order of appearances endextern and helpextern in the v1.2 EXE's layout (and SPEAR wasn't ready for that)
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+int		helpextern = T_HELPART;
+int 	endextern = T_ENDART1;
+#else
 int 	endextern = T_ENDART1;
 #ifndef SPEAR
 int		helpextern = T_HELPART;
 #endif
+#endif // GAMEVER_RESTORATION_ANY_APO_PRE14
 #endif
 char helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";
@@ -814,7 +820,12 @@ void HelpScreens (void)
 
 
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	MenuFadeOut();
+#else
 	VW_FadeOut();
+#endif
 
 	FreeMusic ();
 	CA_DownLevel ();
@@ -875,7 +886,12 @@ void EndText (void)
 #endif
 
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	MenuFadeOut();
+#else
 	VW_FadeOut();
+#endif
 	SETFONTCOLOR(0,15);
 	IN_ClearKeysDown();
 	if (MousePresent)

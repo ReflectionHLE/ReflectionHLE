@@ -172,12 +172,20 @@ void PicturePause (void)
 	   src = MK_FP(0xa000,displayofs);
 	   dest = (byte far *)buffer+p;
 	   VGAREADMAP(p);
+	   // *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	   for (x=0;x<12800;x++,dest+=4)
+#else
 	   for (x=0;x<16000;x++,dest+=4)
+#endif
 		   *dest = *src++;
 	}
 
 
-#if 0
+	// *** PRE-V1.4 APOGEE RESTORATION***
+	// Re-enable code for v1.2 (Apogee release)
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+//#if 0
 	for (p=0;p<4;p++)
 	{
 		src = MK_FP(0xa000,0);
@@ -227,6 +235,11 @@ static	char	buf[10];
 	boolean			done;
 	ScanCode		scan;
 	int				i,j,k,x;
+	// *** PRE-V1.4 APOGEE RESTORATION***
+	// Define sound variable in v1.2 (Apogee release)
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	int sound;
+#endif
 	longword		l;
 	memptr			addr;
 	PageListStruct	far *page;
@@ -236,7 +249,13 @@ static	char	buf[10];
 	for (i = 0,done = false;!done;)
 	{
 		US_ClearWindow();
+		// *** PRE-V1.4 APOGEE RESTORATION***
+		// Do set sound in v1.2 (Apogee release)
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		sound = -1;
+#else
 //		sound = -1;
+#endif
 
 		page = &PMPages[i];
 		US_Print(" Page #");
@@ -331,7 +350,13 @@ static	char	buf[10];
 				}
 				if (j < NumDigi)
 				{
+					// *** PRE-V1.4 APOGEE RESTORATION***
+					// Do set sound in v1.2 (Apogee release)
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+					sound = j;
+#else
 //					sound = j;
+#endif
 					US_Print("\n Sound #");
 					US_PrintUnsigned(j);
 					US_Print("\n Segment #");
@@ -448,7 +473,13 @@ int DebugKeys (void)
 		if (tedlevel)
 			Quit (NULL);
 		playstate = ex_completed;
+		// *** PRE-V1.4 APOGEE RESTORATION***
+		// Do increment map in v1.2 (Apogee release)
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		gamestate.mapon++;
+#else
 //		gamestate.mapon++;
+#endif
 	}
 
 	if (Keyboard[sc_F])		// F = facing spot
@@ -487,7 +518,12 @@ int DebugKeys (void)
 		CenterWindow (12,3);
 		US_PrintCentered ("Free items!");
 		VW_UpdateScreen();
+			// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		GivePoints (1000);
+#else
 		GivePoints (100000);
+#endif
 		HealSelf (99);
 		if (gamestate.bestweapon<wp_chaingun)
 			GiveWeapon (gamestate.bestweapon+1);
@@ -503,7 +539,9 @@ int DebugKeys (void)
 		DebugMemory();
 		return 1;
 	}
-#ifdef SPEAR
+	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION 
+#if (defined SPEAR) || (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+//#ifdef SPEAR
 	else if (Keyboard[sc_N])			// N = no clip
 	{
 		noclip^=1;
@@ -577,10 +615,15 @@ int DebugKeys (void)
 		if (!esc)
 		{
 			level = atoi (str);
+			// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+			if (level>0 && level<21)
+#else
 #ifndef SPEAR
 			if (level>0 && level<11)
 #else
 			if (level>0 && level<22)
+#endif
 #endif
 			{
 				gamestate.mapon = level-1;
@@ -603,7 +646,10 @@ int DebugKeys (void)
 }
 
 
-#if 0
+// *** PRE-V1.4 APOGEE RESTORATION***
+// Do compile this in pre-v1.4, even if it's never called
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+//#if 0
 /*
 ===================
 =

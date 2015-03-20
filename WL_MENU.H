@@ -212,7 +212,12 @@ enum
 	viewscores,
 	backtodemo,
 	quit
-} menuitems;
+}
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+menuitems
+#endif
+;
 
 //
 // WL_INTER

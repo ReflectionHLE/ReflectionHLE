@@ -29,9 +29,12 @@ boolean		ingame,fizzlein;
 unsigned	latchpics[NUMLATCHPICS];
 gametype	gamestate;
 
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 long		spearx,speary;
 unsigned	spearangle;
 boolean		spearflag;
+#endif
 
 //
 // ELEVATOR BACK MAPS - REMEMBER (-1)!!
@@ -294,10 +297,13 @@ void ScanInfoPlane (void)
 			case 68:
 			case 69:
 			case 70:
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 			case 71:
 			case 72:
 			case 73:						// TRUCK AND SPEAR!
 			case 74:
+#endif
 
 				SpawnStatic(x,y,tile-23);
 				break;
@@ -587,7 +593,12 @@ void ScanInfoPlane (void)
 			case 221:
 			case 222:
 			case 223:
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+				SpawnStand(en_mutant,x,y,tile-220);
+#else
 				SpawnPatrol(en_mutant,x,y,tile-220);
+#endif
 				break;
 
 //
@@ -1055,7 +1066,10 @@ void PlayDemo (int demonumber)
 
 	CA_CacheGrChunk(dems[demonumber]);
 	demoptr = grsegs[dems[demonumber]];
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	MM_SetLock (&grsegs[dems[demonumber]],true);
+#endif
 #else
 	demoname[4] = '0'+demonumber;
 	CA_LoadFile (demoname,&demobuffer);
@@ -1338,7 +1352,10 @@ startplayloop:
 		switch (playstate)
 		{
 		case ex_completed:
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 		case ex_secretlevel:
+#endif
 			gamestate.keys = 0;
 			DrawKeys ();
 			VW_FadeOut ();
@@ -1402,7 +1419,13 @@ startplayloop:
 			//
 			// GOING TO SECRET LEVEL
 			//
+
+			// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+			if ((gamestate.mapon == 0) && (player->tilex == 10))
+#else
 			if (playstate == ex_secretlevel)
+#endif
 				gamestate.mapon = 9;
 #else
 
@@ -1471,7 +1494,10 @@ startplayloop:
 
 			Victory ();
 
+			// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 			ClearMemory ();
+#endif
 
 			CheckHighScore (gamestate.score,gamestate.mapon+1);
 

@@ -18,7 +18,10 @@ long			fullscalefarcall[MAXSCALEHEIGHT+1];
 
 int			maxscale,maxscaleshl2;
 
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 boolean	insetupscaling;
+#endif
 
 /*
 =============================================================================
@@ -62,7 +65,10 @@ void SetupScaling (int maxscaleheight)
 	int		i,x,y;
 	byte	far *dest;
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	insetupscaling = true;
+#endif
 
 	maxscaleheight/=2;			// one scaler every two pixels
 
@@ -125,7 +131,10 @@ void SetupScaling (int maxscaleheight)
 	for (i=maxscaleheight;i<MAXSCALEHEIGHT;i++)
 		fullscalefarcall[i] = (long)BadScale;
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	insetupscaling = false;
+#endif
 }
 
 //===========================================================================
@@ -242,7 +251,14 @@ extern	int			slinex,slinewidth;
 extern	unsigned	far *linecmds;
 extern	long		linescale;
 extern	unsigned	maskword;
+// *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused
+// variables here (or maybe an array). Also brute forcing order of appearances
+// of mask1,mask2,mask3 in the EXE layout.
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+extern	byte	mask1,mask2,mask3;
 
+unsigned unusedscalevar1, unusedscalevar2, unusedscalevar3, unusedscalevar4, unusedscalevar5, unusedscalevar6;
+#endif
 byte	mask1,mask2,mask3;
 
 

@@ -57,7 +57,12 @@ typedef	enum
 
 //	Hack import for TED launch support
 extern	boolean		tedlevel;
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+extern	word			tedlevelnum;
+#else
 extern	int			tedlevelnum;
+#endif
 extern	void		TEDDeath(void);
 
 extern	boolean		ingame,		// Set by game code if a game is in progress

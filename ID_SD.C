@@ -180,8 +180,11 @@ static void
 SDL_SetTimer0(word speed)
 {
 #ifndef TPROF	// If using Borland's profiling, don't screw with the timer
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 asm	pushf
 asm	cli
+#endif
 
 	outportb(0x43,0x36);				// Change timer 0
 	outportb(0x40,speed);
@@ -192,7 +195,10 @@ asm	cli
 	else
 		TimerDivisor = speed;
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 asm	popf
+#endif
 #else
 	TimerDivisor = 0x10000;
 #endif
@@ -264,12 +270,20 @@ SDL_SBStopSample(void)
 {
 	byte	is;
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 asm	pushf
 asm	cli
+#endif
 
 	if (sbSamplePlaying)
 	{
 		sbSamplePlaying = false;
+		// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		asm	pushf
+		asm	cli
+#endif
 
 		sbWriteDelay();
 		sbOut(sbWriteCmd,0xd0);	// Turn off DSP DMA
@@ -280,9 +294,16 @@ asm	cli
 		else
 			is &= ~(1 << sbInterrupt);
 		outportb(0x21,is);
+		// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		asm	popf
+#endif
 	}
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 asm	popf
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -326,6 +347,13 @@ asm	cli
 	outportb(0x0a,sbDMA);						// Re-enable DMA on channel sbDMA
 
 	// Start playing the thing
+
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+asm	popf
+asm	pushf
+asm	cli
+#endif
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0x14);
 	sbWriteDelay();
@@ -386,8 +414,11 @@ SDL_SBPlaySample(byte huge *data,longword len)
 
 	SDL_SBStopSample();
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 asm	pushf
 asm	cli
+#endif
 
 	used = SDL_SBPlaySeg(data,len);
 	if (len <= used)
@@ -399,15 +430,29 @@ asm	cli
 	}
 
 	// Save old interrupt status and unmask ours
+
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+asm	pushf
+asm	cli
+#endif
 	sbOldIntMask = inportb(0x21);
 	outportb(0x21,sbOldIntMask & ~(1 << sbInterrupt));
 
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0xd4);						// Make sure DSP DMA is enabled
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+asm	popf
+#endif
+
 	sbSamplePlaying = true;
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 asm	popf
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -429,13 +474,19 @@ SDL_PositionSBP(int leftpos,int rightpos)
 	rightpos = 15 - rightpos;
 	v = ((leftpos & 0x0f) << 4) | (rightpos & 0x0f);
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 asm	pushf
 asm	cli
+#endif
 
 	sbOut(sbpMixerAddr,sbpmVoiceVol);
 	sbOut(sbpMixerData,v);
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 asm	popf
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////

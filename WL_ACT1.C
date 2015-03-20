@@ -165,13 +165,19 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_key3:
 	case	bo_key4:
 	case	bo_clip:
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	case	bo_25clip:
+#endif
 	case	bo_machinegun:
 	case	bo_chaingun:
 	case	bo_food:
 	case	bo_alpo:
 	case	bo_gibs:
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	case	bo_spear:
+#endif
 		laststatobj->flags = FL_BONUS;
 		laststatobj->itemnumber = statinfo[type].type;
 		break;

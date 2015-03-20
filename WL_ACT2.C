@@ -60,13 +60,17 @@ int	starthitpoints[4][NUMENEMIES] =
 
 	  850,	// Gretel
 	  850,	// Gift
-	  850,	// Fat
+	  850	// Fat
+	  // *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	  ,
 	  5,	// en_spectre,
 	  1450,	// en_angel,
 	  850,	// en_trans,
 	  1050,	// en_uber,
 	  950,	// en_will,
 	  1250	// en_death
+#endif
 	  },
 	 //
 	 // DON'T HURT ME MODE
@@ -87,13 +91,17 @@ int	starthitpoints[4][NUMENEMIES] =
 
 	  950,	// Gretel
 	  950,	// Gift
-	  950,	// Fat
+	  950 	// Fat
+	  // *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	  ,
 	  10,	// en_spectre,
 	  1550,	// en_angel,
 	  950,	// en_trans,
 	  1150,	// en_uber,
 	  1050,	// en_will,
 	  1350	// en_death
+#endif
 	  },
 	 //
 	 // BRING 'EM ON MODE
@@ -116,13 +124,17 @@ int	starthitpoints[4][NUMENEMIES] =
 
 	  1050,	// Gretel
 	  1050,	// Gift
-	  1050,	// Fat
+	  1050 	// Fat
+	  // *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	  ,
 	  15,	// en_spectre,
 	  1650,	// en_angel,
 	  1050,	// en_trans,
 	  1250,	// en_uber,
 	  1150,	// en_will,
 	  1450	// en_death
+#endif
 	  },
 	 //
 	 // DEATH INCARNATE MODE
@@ -145,13 +157,17 @@ int	starthitpoints[4][NUMENEMIES] =
 
 	  1200,	// Gretel
 	  1200,	// Gift
-	  1200,	// Fat
+	  1200	// Fat
+	  // *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	  ,
 	  25,	// en_spectre,
 	  2000,	// en_angel,
 	  1200,	// en_trans,
 	  1400,	// en_uber,
 	  1300,	// en_will,
 	  1600	// en_death
+#endif
 	  }}
 	  ;
 
@@ -168,48 +184,9 @@ void	T_Stand (objtype *ob);
 
 void A_DeathScream (objtype *ob);
 
-extern	statetype s_rocket;
-extern	statetype s_smoke1;
-extern	statetype s_smoke2;
-extern	statetype s_smoke3;
-extern	statetype s_smoke4;
-extern	statetype s_boom2;
-extern	statetype s_boom3;
-
-void A_Smoke (objtype *ob);
-
-statetype s_rocket	 	= {true,SPR_ROCKET_1,3,T_Projectile,A_Smoke,&s_rocket};
-statetype s_smoke1	 	= {false,SPR_SMOKE_1,3,NULL,NULL,&s_smoke2};
-statetype s_smoke2	 	= {false,SPR_SMOKE_2,3,NULL,NULL,&s_smoke3};
-statetype s_smoke3	 	= {false,SPR_SMOKE_3,3,NULL,NULL,&s_smoke4};
-statetype s_smoke4	 	= {false,SPR_SMOKE_4,3,NULL,NULL,NULL};
-
-statetype s_boom1	 	= {false,SPR_BOOM_1,6,NULL,NULL,&s_boom2};
-statetype s_boom2	 	= {false,SPR_BOOM_2,6,NULL,NULL,&s_boom3};
-statetype s_boom3	 	= {false,SPR_BOOM_3,6,NULL,NULL,NULL};
-
-#ifdef SPEAR
-
-extern	statetype s_hrocket;
-extern	statetype s_hsmoke1;
-extern	statetype s_hsmoke2;
-extern	statetype s_hsmoke3;
-extern	statetype s_hsmoke4;
-extern	statetype s_hboom2;
-extern	statetype s_hboom3;
-
-void A_Smoke (objtype *ob);
-
-statetype s_hrocket	 	= {true,SPR_HROCKET_1,3,T_Projectile,A_Smoke,&s_hrocket};
-statetype s_hsmoke1	 	= {false,SPR_HSMOKE_1,3,NULL,NULL,&s_hsmoke2};
-statetype s_hsmoke2	 	= {false,SPR_HSMOKE_2,3,NULL,NULL,&s_hsmoke3};
-statetype s_hsmoke3	 	= {false,SPR_HSMOKE_3,3,NULL,NULL,&s_hsmoke4};
-statetype s_hsmoke4	 	= {false,SPR_HSMOKE_4,3,NULL,NULL,NULL};
-
-statetype s_hboom1	 	= {false,SPR_HBOOM_1,6,NULL,NULL,&s_hboom2};
-statetype s_hboom2	 	= {false,SPR_HBOOM_2,6,NULL,NULL,&s_hboom3};
-statetype s_hboom3	 	= {false,SPR_HBOOM_3,6,NULL,NULL,NULL};
-
+// *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#include "WL_SROCK.C"
 #endif
 
 void	T_Schabb (objtype *ob);
@@ -222,152 +199,12 @@ void A_Slurpie (objtype *ob);
 void A_HitlerMorph (objtype *ob);
 void A_MechaSound (objtype *ob);
 
-/*
-=================
-=
-= A_Smoke
-=
-=================
-*/
 
-void A_Smoke (objtype *ob)
-{
-	GetNewActor ();
-#ifdef SPEAR
-	if (ob->obclass == hrocketobj)
-		new->state = &s_hsmoke1;
-	else
+// *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to separate files for v1.2
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#include "WL_FSMOK.C"
+#include "WL_FPROJ.C"
 #endif
-		new->state = &s_smoke1;
-	new->ticcount = 6;
-
-	new->tilex = ob->tilex;
-	new->tiley = ob->tiley;
-	new->x = ob->x;
-	new->y = ob->y;
-	new->obclass = inertobj;
-	new->active = true;
-
-	new->flags = FL_NEVERMARK;
-}
-
-
-/*
-===================
-=
-= ProjectileTryMove
-=
-= returns true if move ok
-===================
-*/
-
-#define PROJSIZE	0x2000
-
-boolean ProjectileTryMove (objtype *ob)
-{
-	int			xl,yl,xh,yh,x,y;
-	objtype		*check;
-	long		deltax,deltay;
-
-	xl = (ob->x-PROJSIZE) >>TILESHIFT;
-	yl = (ob->y-PROJSIZE) >>TILESHIFT;
-
-	xh = (ob->x+PROJSIZE) >>TILESHIFT;
-	yh = (ob->y+PROJSIZE) >>TILESHIFT;
-
-//
-// check for solid walls
-//
-	for (y=yl;y<=yh;y++)
-		for (x=xl;x<=xh;x++)
-		{
-			check = actorat[x][y];
-			if (check && check<objlist)
-				return false;
-		}
-
-	return true;
-}
-
-
-
-/*
-=================
-=
-= T_Projectile
-=
-=================
-*/
-
-void T_Projectile (objtype *ob)
-{
-	long	deltax,deltay;
-	int		damage;
-	long	speed;
-
-	speed = (long)ob->speed*tics;
-
-	deltax = FixedByFrac(speed,costable[ob->angle]);
-	deltay = -FixedByFrac(speed,sintable[ob->angle]);
-
-	if (deltax>0x10000l)
-		deltax = 0x10000l;
-	if (deltay>0x10000l)
-		deltay = 0x10000l;
-
-	ob->x += deltax;
-	ob->y += deltay;
-
-	deltax = LABS(ob->x - player->x);
-	deltay = LABS(ob->y - player->y);
-
-	if (!ProjectileTryMove (ob))
-	{
-		if (ob->obclass == rocketobj)
-		{
-			PlaySoundLocActor(MISSILEHITSND,ob);
-			ob->state = &s_boom1;
-		}
-#ifdef SPEAR
-		else if (ob->obclass == hrocketobj)
-		{
-			PlaySoundLocActor(MISSILEHITSND,ob);
-			ob->state = &s_hboom1;
-		}
-#endif
-		else
-			ob->state = NULL;		// mark for removal
-
-		return;
-	}
-
-	if (deltax < PROJECTILESIZE && deltay < PROJECTILESIZE)
-	{	// hit the player
-		switch (ob->obclass)
-		{
-		case needleobj:
-			damage = (US_RndT() >>3) + 20;
-			break;
-		case rocketobj:
-		case hrocketobj:
-		case sparkobj:
-			damage = (US_RndT() >>3) + 30;
-			break;
-		case fireobj:
-			damage = (US_RndT() >>3);
-			break;
-		}
-
-		TakeDamage (damage,ob);
-		ob->state = NULL;		// mark for removal
-		return;
-	}
-
-	ob->tilex = ob->x >> TILESHIFT;
-	ob->tiley = ob->y >> TILESHIFT;
-
-}
-
 
 
 
@@ -393,7 +230,10 @@ extern	statetype s_grdpath3s;
 extern	statetype s_grdpath4;
 
 extern	statetype s_grdpain;
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	statetype s_grdpain1;
+#endif
 
 extern	statetype s_grdgiveup;
 
@@ -425,7 +265,10 @@ statetype s_grdpath3s 	= {true,SPR_GRD_W3_1,5,NULL,NULL,&s_grdpath4};
 statetype s_grdpath4 	= {true,SPR_GRD_W4_1,15,T_Path,NULL,&s_grdpath1};
 
 statetype s_grdpain 	= {2,SPR_GRD_PAIN_1,10,NULL,NULL,&s_grdchase1};
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 statetype s_grdpain1 	= {2,SPR_GRD_PAIN_2,10,NULL,NULL,&s_grdchase1};
+#endif
 
 statetype s_grdshoot1 	= {false,SPR_GRD_SHOOT1,20,NULL,NULL,&s_grdshoot2};
 statetype s_grdshoot2 	= {false,SPR_GRD_SHOOT2,20,NULL,T_Shoot,&s_grdshoot3};
@@ -540,7 +383,10 @@ extern	statetype s_ofcpath3s;
 extern	statetype s_ofcpath4;
 
 extern	statetype s_ofcpain;
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	statetype s_ofcpain1;
+#endif
 
 extern	statetype s_ofcgiveup;
 
@@ -572,7 +418,10 @@ statetype s_ofcpath3s 	= {true,SPR_OFC_W3_1,5,NULL,NULL,&s_ofcpath4};
 statetype s_ofcpath4 	= {true,SPR_OFC_W4_1,15,T_Path,NULL,&s_ofcpath1};
 
 statetype s_ofcpain 	= {2,SPR_OFC_PAIN_1,10,NULL,NULL,&s_ofcchase1};
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 statetype s_ofcpain1 	= {2,SPR_OFC_PAIN_2,10,NULL,NULL,&s_ofcchase1};
+#endif
 
 statetype s_ofcshoot1 	= {false,SPR_OFC_SHOOT1,6,NULL,NULL,&s_ofcshoot2};
 statetype s_ofcshoot2 	= {false,SPR_OFC_SHOOT2,20,NULL,T_Shoot,&s_ofcshoot3};
@@ -606,7 +455,10 @@ extern	statetype s_mutpath3s;
 extern	statetype s_mutpath4;
 
 extern	statetype s_mutpain;
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	statetype s_mutpain1;
+#endif
 
 extern	statetype s_mutgiveup;
 
@@ -638,7 +490,10 @@ statetype s_mutpath3s 	= {true,SPR_MUT_W3_1,5,NULL,NULL,&s_mutpath4};
 statetype s_mutpath4 	= {true,SPR_MUT_W4_1,15,T_Path,NULL,&s_mutpath1};
 
 statetype s_mutpain 	= {2,SPR_MUT_PAIN_1,10,NULL,NULL,&s_mutchase1};
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 statetype s_mutpain1 	= {2,SPR_MUT_PAIN_2,10,NULL,NULL,&s_mutchase1};
+#endif
 
 statetype s_mutshoot1 	= {false,SPR_MUT_SHOOT1,6,NULL,T_Shoot,&s_mutshoot2};
 statetype s_mutshoot2 	= {false,SPR_MUT_SHOOT2,20,NULL,NULL,&s_mutshoot3};
@@ -673,7 +528,10 @@ extern	statetype s_sspath3s;
 extern	statetype s_sspath4;
 
 extern	statetype s_sspain;
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	statetype s_sspain1;
+#endif
 
 extern	statetype s_ssshoot1;
 extern	statetype s_ssshoot2;
@@ -707,7 +565,10 @@ statetype s_sspath3s 	= {true,SPR_SS_W3_1,5,NULL,NULL,&s_sspath4};
 statetype s_sspath4 	= {true,SPR_SS_W4_1,15,T_Path,NULL,&s_sspath1};
 
 statetype s_sspain 		= {2,SPR_SS_PAIN_1,10,NULL,NULL,&s_sschase1};
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 statetype s_sspain1 	= {2,SPR_SS_PAIN_2,10,NULL,NULL,&s_sschase1};
+#endif
 
 statetype s_ssshoot1 	= {false,SPR_SS_SHOOT1,20,NULL,NULL,&s_ssshoot2};
 statetype s_ssshoot2 	= {false,SPR_SS_SHOOT2,20,NULL,T_Shoot,&s_ssshoot3};
@@ -933,7 +794,12 @@ void SpawnDeadGuard (int tilex, int tiley)
 ===============
 */
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+void SpawnBoss (int tilex, int tiley, int dir)
+#else
 void SpawnBoss (int tilex, int tiley)
+#endif
 {
 	unsigned	far *map,tile;
 
@@ -942,7 +808,12 @@ void SpawnBoss (int tilex, int tiley)
 
 	new->obclass = bossobj;
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_boss];
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	new->dir = dir*2;
+#else
 	new->dir = south;
+#endif
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
@@ -956,7 +827,12 @@ void SpawnBoss (int tilex, int tiley)
 ===============
 */
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+void SpawnGretel (int tilex, int tiley, int dir)
+#else
 void SpawnGretel (int tilex, int tiley)
+#endif
 {
 	unsigned	far *map,tile;
 
@@ -965,7 +841,12 @@ void SpawnGretel (int tilex, int tiley)
 
 	new->obclass = gretelobj;
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gretel];
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	new->dir = dir*2;
+#else
 	new->dir = north;
+#endif
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
@@ -2114,9 +1995,12 @@ extern	statetype s_needle4;
 
 extern	statetype s_giftdeathcam;
 
+// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 extern	statetype s_boom1;
 extern	statetype s_boom2;
 extern	statetype s_boom3;
+#endif
 
 
 statetype s_giftstand	= {false,SPR_GIFT_W1,0,T_Stand,NULL,&s_giftstand};
@@ -2139,6 +2023,12 @@ statetype s_giftdie6	= {false,SPR_GIFT_DEAD,20,NULL,A_StartDeathCam,&s_giftdie6}
 
 statetype s_giftshoot1 	= {false,SPR_GIFT_SHOOT1,30,NULL,NULL,&s_giftshoot2};
 statetype s_giftshoot2 	= {false,SPR_GIFT_SHOOT2,10,NULL,T_GiftThrow,&s_giftchase1};
+
+
+// *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#include "WL_SROCK.C"
+#endif
 
 
 //
@@ -2209,7 +2099,12 @@ statetype s_fatshoot6 	= {false,SPR_FAT_SHOOT4,10,NULL,T_Shoot,&s_fatchase1};
 ===============
 */
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+void SpawnSchabbs (int tilex, int tiley, int dir)
+#else
 void SpawnSchabbs (int tilex, int tiley)
+#endif
 {
 	unsigned	far *map,tile;
 
@@ -2223,7 +2118,12 @@ void SpawnSchabbs (int tilex, int tiley)
 
 	new->obclass = schabbobj;
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_schabbs];
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	new->dir = dir*2;
+#else
 	new->dir = south;
+#endif
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
@@ -2238,7 +2138,12 @@ void SpawnSchabbs (int tilex, int tiley)
 ===============
 */
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+void SpawnGift (int tilex, int tiley, int dir)
+#else
 void SpawnGift (int tilex, int tiley)
+#endif
 {
 	unsigned	far *map,tile;
 
@@ -2252,7 +2157,12 @@ void SpawnGift (int tilex, int tiley)
 
 	new->obclass = giftobj;
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gift];
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	new->dir = dir*2;
+#else
 	new->dir = north;
+#endif
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
@@ -2267,7 +2177,12 @@ void SpawnGift (int tilex, int tiley)
 ===============
 */
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+void SpawnFat (int tilex, int tiley, int dir)
+#else
 void SpawnFat (int tilex, int tiley)
+#endif
 {
 	unsigned	far *map,tile;
 
@@ -2281,11 +2196,22 @@ void SpawnFat (int tilex, int tiley)
 
 	new->obclass = fatobj;
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_fat];
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	new->dir = dir*2;
+#else
 	new->dir = south;
+#endif
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
+
+// *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#include "WL_FPROJ.C"
+#endif
+
 
 
 /*
@@ -2327,6 +2253,12 @@ void T_SchabbThrow (objtype *ob)
 
 	PlaySoundLocActor (SCHABBSTHROWSND,new);
 }
+
+// *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#include "WL_FSMOK.C"
+#endif
+
 
 /*
 =================
@@ -2823,7 +2755,12 @@ statetype s_hitlershoot6 	= {false,SPR_HITLER_SHOOT2,10,NULL,T_Shoot,&s_hitlerch
 ===============
 */
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+void SpawnFakeHitler (int tilex, int tiley, int dir)
+#else
 void SpawnFakeHitler (int tilex, int tiley)
+#endif
 {
 	unsigned	far *map,tile;
 
@@ -2838,7 +2775,12 @@ void SpawnFakeHitler (int tilex, int tiley)
 
 	new->obclass = fakeobj;
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_fake];
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	new->dir = dir*2;
+#else
 	new->dir = north;
+#endif
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
@@ -2853,7 +2795,12 @@ void SpawnFakeHitler (int tilex, int tiley)
 ===============
 */
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+void SpawnHitler (int tilex, int tiley, int dir)
+#else
 void SpawnHitler (int tilex, int tiley)
+#endif
 {
 	unsigned	far *map,tile;
 
@@ -2868,7 +2815,12 @@ void SpawnHitler (int tilex, int tiley)
 
 	new->obclass = mechahitlerobj;
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_hitler];
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	new->dir = dir*2;
+#else
 	new->dir = south;
+#endif
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
@@ -3072,8 +3024,11 @@ void T_Chase (objtype *ob)
 	int	dx,dy,dist,chance;
 	boolean	dodge;
 
+	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 	if (gamestate.victoryflag)
 		return;
+#endif
 
 	dodge = false;
 	if (CheckLine(ob))	// got a shot at player?
@@ -3549,7 +3504,12 @@ void T_Bite (objtype *ob)
 		{
 		   if (US_RndT()<180)
 		   {
+			  // *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+			   TakeDamage (US_RndT()>>4);
+#else
 			   TakeDamage (US_RndT()>>4,ob);
+#endif
 			   return;
 		   }
 		}

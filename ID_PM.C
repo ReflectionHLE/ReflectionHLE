@@ -212,9 +212,9 @@ asm	mov	[WORD PTR XMSDriver+2],es		// function pointer to XMS driver
 
 	XMS_CALL(XMS_QUERYFREE);			// Find out how much XMS is available
 	XMSAvail = _AX;
-	// ***SOD DEMO V1.0 RESTORATION***
+	// ***PRE-V1.4 APOGEE / SOD DEMO V1.0 RESTORATION***
 	// What preceded bugfix?
-#ifdef SPEARDEMO
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined SPEARDEMO)
 	if (_BL)
 #else
 	if (!_AX)				// AJR: bugfix 10/8/92
@@ -229,9 +229,9 @@ asm	mov	[WORD PTR XMSDriver+2],es		// function pointer to XMS driver
 	XMS_CALL(XMS_ALLOC);				// And do the allocation
 	XMSHandle = _DX;
 
-	// ***SOD DEMO V1.0 RESTORATION***
+	// ***PRE-V1.4 APOGEE / SOD DEMO V1.0 RESTORATION***
 	// What preceded bugfix?
-#ifdef SPEARDEMO
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined SPEARDEMO)
 	if (_BL)
 #else
 	if (!_AX)				// AJR: bugfix 10/8/92

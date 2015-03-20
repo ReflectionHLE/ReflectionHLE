@@ -75,7 +75,12 @@
 #endif
 
 #define	STR_BKWD	"Bkwrd"
+// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#define	STR_THINK	"Computing"
+#else
 #define	STR_THINK	"Thinking"
+#endif
 
 #define STR_SIZE1	"Use arrows to size"
 #define STR_SIZE2	"ENTER to accept"

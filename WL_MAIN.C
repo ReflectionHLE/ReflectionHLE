@@ -41,7 +41,12 @@
 */
 
 char            str[80],str2[20];
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+unsigned				tedlevelnum;
+#else
 int				tedlevelnum;
+#endif
 boolean         tedlevel;
 boolean         nospr;
 boolean         IsA386;
@@ -64,7 +69,12 @@ int                     minheightdiv;
 
 void            Quit (char *error);
 
-boolean         startgame,loadedgame,virtualreality;
+		// *** PRE-V1.4 APOGEE RESTORATION***
+boolean         startgame,loadedgame
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+		,virtualreality
+#endif
+		;
 int             mouseadjustment;
 
 char	configname[13]="CONFIG.";
@@ -122,7 +132,12 @@ void ReadConfig(void)
 
 		close(file);
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		if (sd == sdm_AdLib && (!AdLibPresent || !SoundBlasterPresent))
+#else
 		if (sd == sdm_AdLib && !AdLibPresent && !SoundBlasterPresent)
+#endif
 		{
 			sd = sdm_PC;
 			sd = smm_Off;
@@ -493,8 +508,13 @@ boolean LoadTheGame(int file,int x,int y)
 		if (nullobj.active == ac_badobject)
 			break;
 		GetNewActor ();
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+		memcpy (new,&nullobj,sizeof(nullobj));
+#else
 	 // don't copy over the links
 		memcpy (new,&nullobj,sizeof(nullobj)-4);
+#endif
 	}
 
 
@@ -738,7 +758,10 @@ void SignonScreen (void)                        // VGA version
 	VL_TestPaletteSet ();
 	VL_SetPalette (&gamepal);
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (!virtualreality)
+#endif
 	{
 		VW_SetScreen(0x8000,0);
 		VL_MungePic (&introscn,320,200);
@@ -772,10 +795,20 @@ void FinishSignon (void)
 {
 
 #ifndef SPEAR
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	VW_Bar (0,185,300,15,peekb(0xa000,0));
+#else
 	VW_Bar (0,189,300,11,peekb(0xa000,0));
+#endif
 	WindowX = 0;
 	WindowW = 320;
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	PrintY = 188;
+#else
 	PrintY = 190;
+#endif
 
 	#ifndef JAPAN
 	SETFONTCOLOR(14,4);
@@ -792,9 +825,16 @@ void FinishSignon (void)
 		IN_Ack ();
 
 	#ifndef JAPAN
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	VW_Bar (0,185,320,15,peekb(0xa000,0));
+
+	PrintY = 188;
+#else
 	VW_Bar (0,189,300,11,peekb(0xa000,0));
 
 	PrintY = 190;
+#endif
 	SETFONTCOLOR(10,4);
 
 	#ifdef SPANISH
@@ -1129,10 +1169,13 @@ void DoJukebox(void)
 
 	MenuFadeOut();
 	IN_ClearKeysDown();
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 #ifdef SPEAR
 	UnCacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
 #else
 	UnCacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
+#endif
 #endif
 }
 #endif
@@ -1153,10 +1196,13 @@ void InitGame (void)
 	int                     i,x,y;
 	unsigned        *blockstart;
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (MS_CheckParm ("virtual"))
 		virtualreality = true;
 	else
 		virtualreality = false;
+#endif
 
 	MM_Startup ();                  // so the signon screen can be freed
 
@@ -1225,7 +1271,10 @@ void InitGame (void)
 //
 // draw intro screen stuff
 //
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (!virtualreality)
+#endif
 		IntroScreen ();
 
 //
@@ -1258,17 +1307,23 @@ close(profilehandle);
 // initialize variables
 //
 	InitRedShifts ();
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (!virtualreality)
+#endif
 		FinishSignon();
 
 	displayofs = PAGE1START;
 	bufferofs = PAGE2START;
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (virtualreality)
 	{
 		NoWait = true;
 		geninterrupt(0x60);
 	}
+#endif
 }
 
 //===========================================================================
@@ -1333,7 +1388,17 @@ void NewViewSize (int width)
 	CA_UpLevel ();
 	MM_SortMem ();
 	viewsize = width;
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+resize:
+	if (!SetViewSize (width*16,width*16*HEIGHTRATIO))
+	{
+		--width;
+		goto resize;
+	}
+#else
 	SetViewSize (width*16,width*16*HEIGHTRATIO);
+#endif
 	CA_DownLevel ();
 }
 
@@ -1354,8 +1419,11 @@ void Quit (char *error)
 	unsigned        finscreen;
 	memptr	screen;
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (virtualreality)
 		geninterrupt(0x61);
+#endif
 
 	ClearMemory ();
 	if (!*error)
@@ -1364,14 +1432,20 @@ void Quit (char *error)
 	 CA_CacheGrChunk (ORDERSCREEN);
 	 screen = grsegs[ORDERSCREEN];
 	 #endif
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	 WriteConfig ();
+#endif
 	}
 	else
 	{
 	 CA_CacheGrChunk (ERRORSCREEN);
 	 screen = grsegs[ERRORSCREEN];
 	}
-
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	WriteConfig ();
+#endif
 	ShutdownId ();
 
 	if (error && *error)
@@ -1382,7 +1456,10 @@ void Quit (char *error)
 	  gotoxy (1,8);
 	  exit(1);
 	}
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	else
+#endif
 	if (!error || !(*error))
 	{
 		clrscr();
@@ -1487,7 +1564,10 @@ void    DemoLoop (void)
 		#endif
 	#endif
 
+// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	StartCPMusic(INTROSONG);
+#endif
 
 #ifndef JAPAN
 	if (!NoWait)
@@ -1522,18 +1602,46 @@ void    DemoLoop (void)
 			UNCACHEGRCHUNK (TITLEPALETTE);
 #else
 			CA_CacheScreen (TITLEPIC);
+			// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+			if (screenfaded)
+			{
+				VW_UpdateScreen ();
+				VW_FadeIn();
+			}
+			else
+			{
+				if (FizzleFade(bufferofs,displayofs,320,200,20,true))
+					break;
+			}
+#else
 			VW_UpdateScreen ();
 			VW_FadeIn();
 #endif
+#endif
+			// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+			if (IN_UserInput(TickBase*3))
+				break;
+#else
 			if (IN_UserInput(TickBase*15))
 				break;
 			VW_FadeOut();
+#endif
 //
 // credits page
 //
 			CA_CacheScreen (CREDITSPIC);
-			// ***REGISTERED SOD V1.4 ACTIVISION RESTORATION***
+			// *** PRE-V1.4 APOGEE RESTORATION ***
 			// A bit of additional restored code
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+			if (FizzleFade(bufferofs,displayofs,320,200,20,true))
+				break;
+			if (IN_UserInput(TickBase*10))
+				break;
+#endif
+			// ***REGISTERED SOD V1.4 ACTIVISION RESTORATION***
+			// Different restored code
 #if (defined SPEAR) && (defined GOODTIMES)
 			VW_ScreenToScreen (bufferofs,bufferofs+ylookup[175],30,17);
 			VW_ScreenToScreen (bufferofs+ylookup[168]+30,displayofs,50,30);
@@ -1541,6 +1649,8 @@ void    DemoLoop (void)
 			VW_ScreenToScreen (bufferofs+ylookup[42],bufferofs+ylookup[165]+53,25,30);
 			VW_ScreenToScreen (displayofs,bufferofs+ylookup[168]+18,50,30);
 #endif
+			// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 			VW_UpdateScreen();
 			VW_FadeIn ();
 			if (IN_UserInput(TickBase*10))
@@ -1555,6 +1665,7 @@ void    DemoLoop (void)
 
 			if (IN_UserInput(TickBase*10))
 				break;
+#endif // GAMEVER_RESTORATION_ANY_APO_PRE14
 #endif
 //
 // demo
@@ -1568,7 +1679,19 @@ void    DemoLoop (void)
 
 			if (playstate == ex_abort)
 				break;
+			// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+			StartCPMusic(ROSTER_MUS);
+
+			DrawHighScores();
+			VW_UpdateScreen();
+			VW_FadeIn();
+
+			if (IN_UserInput(TickBase*9))
+				break;
+#endif
 			StartCPMusic(INTROSONG);
+
 		}
 
 		VW_FadeOut ();
@@ -1585,8 +1708,11 @@ void    DemoLoop (void)
 		if (startgame || loadedgame)
 		{
 			GameLoop ();
+			// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 			VW_FadeOut();
 			StartCPMusic(INTROSONG);
+#endif
 		}
 	}
 }

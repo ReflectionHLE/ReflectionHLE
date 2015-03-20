@@ -950,9 +950,16 @@ unsigned vgaCeiling[]=
  0x4e4e,0x4e4e,0x4e4e,0x1d1d,0x8d8d,0x4e4e,0x1d1d,0x2d2d,0x1d1d,0x8d8d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x2d2d,0xdddd,0x1d1d,0x1d1d,0x9898,
 
+// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+ 0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
+ 0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xd7d7,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
+ 0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
+#else
  0x1d1d,0x9d9d,0x2d2d,0xdddd,0xdddd,0x9d9d,0x2d2d,0x4d4d,0x1d1d,0xdddd,
  0x7d7d,0x1d1d,0x2d2d,0x2d2d,0xdddd,0xd7d7,0x1d1d,0x1d1d,0x1d1d,0x2d2d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xdddd,0xdddd,0x7d7d,0xdddd,0xdddd,0xdddd
+#endif
 #else
  0x6f6f,0x4f4f,0x1d1d,0xdede,0xdfdf,0x2e2e,0x7f7f,0x9e9e,0xaeae,0x7f7f,
  0x1d1d,0xdede,0xdfdf,0xdede,0xdfdf,0xdede,0xe1e1,0xdcdc,0x2e2e,0x1d1d,0xdcdc
@@ -1030,7 +1037,12 @@ int	CalcRotate (objtype *ob)
 
 	viewangle = player->angle + (centerx - ob->viewx)/8;
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	if (ob->obclass == rocketobj)
+#else
 	if (ob->obclass == rocketobj || ob->obclass == hrocketobj)
+#endif
 		angle =  (viewangle-180)- ob->angle;
 	else
 		angle =  (viewangle-180)- dirangle[ob->dir];
@@ -1067,7 +1079,10 @@ typedef struct
 		shapenum;
 } visobj_t;
 
+// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION - Move into function body
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 visobj_t	vislist[MAXVISABLE],*visptr,*visstep,*farthest;
+#endif
 
 void DrawScaleds (void)
 {
@@ -1079,6 +1094,14 @@ void DrawScaleds (void)
 
 	statobj_t	*statptr;
 	objtype		*obj;
+
+// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION 
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+	visobj_t	vislist[MAXVISABLE],*visptr,*visstep,*farthest;
+
+	if (nospr)
+		return;
+#endif
 
 	visptr = &vislist[0];
 
@@ -1103,7 +1126,12 @@ void DrawScaleds (void)
 		if (!visptr->viewheight)
 			continue;						// to close to the object
 
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION 
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+		if (visptr < &vislist[MAXVISABLE])
+#else
 		if (visptr < &vislist[MAXVISABLE-1])	// don't let it overflow
+#endif
 			visptr++;
 	}
 
@@ -1145,7 +1173,12 @@ void DrawScaleds (void)
 			if (obj->state->rotate)
 				visptr->shapenum += CalcRotate (obj);
 
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION 
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+			if (visptr < &vislist[MAXVISABLE])
+#else
 			if (visptr < &vislist[MAXVISABLE-1])	// don't let it overflow
+#endif
 				visptr++;
 			obj->flags |= FL_VISABLE;
 		}
@@ -1242,6 +1275,20 @@ void CalcTics (void)
 //
 	if (lasttimecount > TimeCount)
 		TimeCount = lasttimecount;		// if the game was paused a LONG time
+
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	if (DemoMode != demo_Off)
+	{
+		oldtimecount = lasttimecount;
+		while (oldtimecount + 2*DEMOTICS > TimeCount) ;
+
+		lasttimecount = oldtimecount + DEMOTICS;
+		TimeCount = lasttimecount + DEMOTICS;
+		tics = DEMOTICS;
+		return;
+	}
+#endif
 
 	do
 	{
@@ -1373,7 +1420,12 @@ asm	rep stosw
 		FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,20,false);
 		fizzlein = false;
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		lasttimecount = TimeCount;
+#else
 		lasttimecount = TimeCount = 0;		// don't make a big tic count
+#endif
 
 	}
 

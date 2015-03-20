@@ -350,7 +350,12 @@ void	LatchNumber (int x, int y, int width, long number)
 		width--;
 	}
 
+	// *** PRE-V1.4 APOGEE RESTORATION***
+#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	c = 0;
+#else
 	c= length <= width ? 0 : length-width;
+#endif
 
 	while (c<length)
 	{
@@ -775,12 +780,15 @@ void GetBonus (statobj_t *check)
 		HealSelf (1);
 		break;
 
+	// *** PRE-V1.4 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	case	bo_spear:
 		spearflag = true;
 		spearx = player->x;
 		speary = player->y;
 		spearangle = player->angle;
 		playstate = ex_completed;
+#endif
 	}
 
 	StartBonusFlash ();
@@ -1062,9 +1070,12 @@ void Cmd_Use (void)
 		buttonheld[bt_use] = true;
 
 		tilemap[checkx][checky]++;		// flip switch
+		// *** EARLY APOGEE RELEASES RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 		if (*(mapsegs[0]+farmapylookup[player->tiley]+player->tilex) == ALTELEVATORTILE)
 			playstate = ex_secretlevel;
 		else
+#endif
 			playstate = ex_completed;
 		SD_PlaySound (LEVELDONESND);
 		SD_WaitSoundDone();
