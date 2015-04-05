@@ -1732,7 +1732,6 @@ void BE_SDL_PollEvents(void)
 				break;
 			break;
 		case SDL_QUIT:
-			SDL_Quit();
 			BE_SDL_ShutdownAll();
 			exit(0);
 			break;
