@@ -3,6 +3,9 @@
 	IDEAL
 	MODEL	MEDIUM,C
 
+	; *** PRE-V1.4 APOGEE RESTORATION ***
+	INCLUDE 'VERSION.EQU'
+
 	INCLUDE	'ID_VL.EQU'
 
 SCREENSEG	=	0a000h
@@ -18,6 +21,110 @@ starttime	dw	?
 
 ;===========================================================================
 
+; *** PRE-V1.4 APOGEE RESTORATION ***
+; Older implementation of VL_WaitVBL
+
+IFDEF GAMEVER_RESTORATION_ANY_APO_PRE14
+
+;==============
+;
+; VL_WaitVBL
+;
+; Wait for the vertical retrace (returns before the actual vertical sync)
+;
+;==============
+
+PROC	VL_WaitVBL  num:WORD
+PUBLIC	VL_WaitVBL
+@@wait:
+
+	mov	cx,[timecount]		; if timecount goes up by two, the retrace
+	add	cx,2				; period was missed (an interrupt covered it)
+
+	mov	dx,STATUS_REGISTER_1
+
+;
+; wait for a display signal to make sure the raster isn't in the middle
+; of a sync
+;
+@@waitdisplay:
+	in	al,dx
+	test	al,1	;1 = display is disabled (HBL / VBL)
+	jnz	@@waitdisplay
+
+
+@@loop:
+	sti
+	jmp	$+2
+	cli
+
+	cmp	[timecount],cx		; will only happen if an interrupt is
+	jae	@@donesync			; straddling the entire retrace period
+
+;
+; when several succesive display not enableds occur,
+; the bottom of the screen has been hit
+;
+
+	in	al,dx
+	test	al,8
+	jnz	@@waitdisplay
+	test	al,1
+	jz	@@loop
+
+	in	al,dx
+	test	al,8
+	jnz	@@waitdisplay
+	test	al,1
+	jz	@@loop
+
+	in	al,dx
+	test	al,8
+	jnz	@@waitdisplay
+	test	al,1
+	jz	@@loop
+
+	in	al,dx
+	test	al,8
+	jnz	@@waitdisplay
+	test	al,1
+	jz	@@loop
+
+	in	al,dx
+	test	al,8
+	jnz	@@waitdisplay
+	test	al,1
+	jz	@@loop
+
+	in	al,dx
+	test	al,8
+	jnz	@@waitdisplay
+	test	al,1
+	jz	@@loop
+
+	in	al,dx
+	test	al,8
+	jnz	@@waitdisplay
+	test	al,1
+	jz	@@loop
+
+	in	al,dx
+	test	al,8
+	jnz	@@waitdisplay
+	test	al,1
+	jz	@@loop
+
+@@donesync:
+	dec	[num]
+	jnz	@@wait
+
+	sti
+
+	ret
+
+ENDP
+
+ELSE ;GAMEVER_RESTORATION_ANY_APO_PRE14
 
 ;==============
 ;
@@ -55,6 +162,7 @@ PUBLIC	VL_WaitVBL
 
 ENDP
 
+ENDIF ;GAMEVER_RESTORATION_ANY_APO_PRE14
 
 ;===========================================================================
 

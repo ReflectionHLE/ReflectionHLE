@@ -520,7 +520,7 @@ tryagain:
 	{
 
 extern char configname[];
-// *** PRE-V1.4 APOGEE RESTORATION***
+// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	boolean	insetupscaling;
 extern	int	viewsize;
@@ -814,6 +814,8 @@ void MM_ShowMemory (void)
 	bufferofs = temp;
 }
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION *** (but looks unused in ALL versions)
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 //==========================================================================
 
 /*
@@ -877,6 +879,7 @@ void MM_DumpData (void)
 	fclose (dumpfile);
 	Quit ("MMDUMP.TXT created.");
 }
+#endif // GAMEVER_RESTORATION_WL1_APO10
 
 //==========================================================================
 

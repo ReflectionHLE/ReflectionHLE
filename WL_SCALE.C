@@ -18,7 +18,7 @@ long			fullscalefarcall[MAXSCALEHEIGHT+1];
 
 int			maxscale,maxscaleshl2;
 
-// *** PRE-V1.4 APOGEE RESTORATION***
+// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 boolean	insetupscaling;
 #endif
@@ -65,7 +65,7 @@ void SetupScaling (int maxscaleheight)
 	int		i,x,y;
 	byte	far *dest;
 
-	// *** PRE-V1.4 APOGEE RESTORATION***
+	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	insetupscaling = true;
 #endif
@@ -131,7 +131,7 @@ void SetupScaling (int maxscaleheight)
 	for (i=maxscaleheight;i<MAXSCALEHEIGHT;i++)
 		fullscalefarcall[i] = (long)BadScale;
 
-	// *** PRE-V1.4 APOGEE RESTORATION***
+	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	insetupscaling = false;
 #endif
@@ -256,7 +256,6 @@ extern	unsigned	maskword;
 // of mask1,mask2,mask3 in the EXE layout.
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	byte	mask1,mask2,mask3;
-
 unsigned unusedscalevar1, unusedscalevar2, unusedscalevar3, unusedscalevar4, unusedscalevar5, unusedscalevar6;
 #endif
 byte	mask1,mask2,mask3;

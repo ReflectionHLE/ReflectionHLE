@@ -422,7 +422,8 @@ void PageLayout (boolean shownumber)
 // clear the screen
 //
 	VWB_Bar (0,0,320,200,BACKCOLOR);
-	/*** SOD 1.4 ACTIVISION RESTORATION - Shouldn't be here... ***/
+	// *** SOD V1.4 ACTIVISION RESTORATION ***
+	// Although none of WL_TEXT.C should even be used...
 #ifndef SPEAR
 	VWB_DrawPic (0,0,H_TOPWINDOWPIC);
 	VWB_DrawPic (0,8,H_LEFTWINDOWPIC);
@@ -480,16 +481,16 @@ void PageLayout (boolean shownumber)
 
 	if (shownumber)
 	{
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
+		// *** APOGEE + EARLY GOODTIMES + ID RELEASES RESTORATION ***
 		// Micro difference - where/when to set px and py...
 		#ifdef SPANISH
 		strcpy (str,"Hoja ");
 		itoa (pagenum,str2,10);
 		strcat (str,str2);
 		strcat (str," de ");
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
+		// *** APOGEE + EARLY GOODTIMES + ID RELEASES RESTORATION ***
 		// Pick location based on version
-		#if (defined GAMEVER_RESTORATION_WL6_GT214) || (defined GAMEVER_RESTORATION_WL6_ACT14) || (defined GAMEVER_RESTORATION_SOD_ACT14)
+		#ifdef GAMEVER_RESTORATION_ANY_POST_GT114
 		py = 183;
 		px = 208;
 		#endif
@@ -498,9 +499,9 @@ void PageLayout (boolean shownumber)
 		itoa (pagenum,str2,10);
 		strcat (str,str2);
 		strcat (str," of ");
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
+		// *** APOGEE + EARLY GOODTIMES + ID RELEASES RESTORATION ***
 		// Pick location based on version
-		#if (defined GAMEVER_RESTORATION_WL6_GT214) || (defined GAMEVER_RESTORATION_WL6_ACT14) || (defined GAMEVER_RESTORATION_SOD_ACT14)
+		#ifdef GAMEVER_RESTORATION_ANY_POST_GT114
 		py = 183;
 		px = 213;
 		#endif
@@ -508,9 +509,9 @@ void PageLayout (boolean shownumber)
 		itoa (numpages,str2,10);
 		strcat (str,str2);
 		fontcolor = 0x4f; 			   //12^BACKCOLOR;
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION***
+		// *** APOGEE + EARLY GOODTIMES + ID RELEASES RESTORATION ***
 		// Pick location based on version
-		#if (!defined GAMEVER_RESTORATION_WL6_GT214) && (!defined GAMEVER_RESTORATION_WL6_ACT14) && (!defined GAMEVER_RESTORATION_SOD_ACT14)
+		#ifndef GAMEVER_RESTORATION_ANY_POST_GT114
 		#ifdef SPANISH
 		py = 183;
 		px = 208;
@@ -581,7 +582,8 @@ void CacheLayoutGraphics (void)
 				numpages++;
 			if (ch == 'E')		// end of file, so load graphics and return
 			{
-				/*** SOD 1.4 ACTIVISION RESTORATION - Shouldn't be here... ***/
+				// *** SOD 1.4 ACTIVISION RESTORATION ***
+				// Although none of WL_TEXT.C should even be used...
 #ifndef SPEAR
 				CA_MarkGrChunk(H_TOPWINDOWPIC);
 				CA_MarkGrChunk(H_LEFTWINDOWPIC);
@@ -737,11 +739,11 @@ void ShowArticle (char far *article)
 			break;
 		}
 
-		// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION***
+		// *** APOGEE VERSIONS RESTORATION ***
 		// This is also skipped in the Shareware 1.4 Apogee EXE
 		#if (!defined SPEAR) && (defined GOODTIMES)
 		//#ifndef SPEAR
-		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("goobers"))
+		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
 		#endif
 
@@ -846,6 +848,10 @@ void EndText (void)
 
 	ClearMemory ();
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	ResetSplitScreen ();
+#endif
 	CA_UpLevel ();
 	MM_SortMem ();
 #ifdef JAPAN
@@ -866,7 +872,12 @@ void EndText (void)
 
 
 #ifdef ARTSEXTERN
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	artnum = endextern;
+#else
 	artnum = endextern+gamestate.episode;
+#endif
 	CA_CacheGrChunk (artnum);
 	text = (char _seg *)grsegs[artnum];
 	MM_SetLock (&grsegs[artnum], true);

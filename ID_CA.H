@@ -1,8 +1,14 @@
 // ID_CA.H
 //===========================================================================
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+#define NUMMAPS		30
+#define MAPPLANES	3
+#else
 #define NUMMAPS		60
 #define MAPPLANES	2
+#endif
 
 #define UNCACHEGRCHUNK(chunk)	{MM_FreePtr(&grsegs[chunk]);grneeded[chunk]&=~ca_levelbit;}
 

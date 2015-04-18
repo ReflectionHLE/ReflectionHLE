@@ -1448,6 +1448,11 @@ void CA_CacheMap (int mapnum)
 	{
 		pos = mapheaderseg[mapnum]->planestart[plane];
 		compressed = mapheaderseg[mapnum]->planelength[plane];
+		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+		if (!compressed)
+			continue;
+#endif
 
 		dest = &(memptr)mapsegs[plane];
 

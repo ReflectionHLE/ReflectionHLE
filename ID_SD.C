@@ -89,7 +89,10 @@ static	char			*ParmStrings[] =
 						{
 							"noal",
 							"nosb",
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 							"nopro",
+#endif
 							"noss",
 							"sst",
 							"ss1",
@@ -114,7 +117,13 @@ static	memptr			DigiNextAddr;
 static	word			DigiNextLen;
 
 //	SoundBlaster variables
+
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+static	boolean					sbNoCheck;
+#else
 static	boolean					sbNoCheck,sbNoProCheck;
+#endif
 static	volatile boolean		sbSamplePlaying;
 static	byte					sbOldIntMask = -1;
 static	volatile byte			huge *sbNextSegPtr;
@@ -279,8 +288,8 @@ asm	cli
 	if (sbSamplePlaying)
 	{
 		sbSamplePlaying = false;
-		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_WL1_APO10)
 		asm	pushf
 		asm	cli
 #endif
@@ -294,8 +303,8 @@ asm	cli
 		else
 			is &= ~(1 << sbInterrupt);
 		outportb(0x21,is);
-		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_WL1_APO10)
 		asm	popf
 #endif
 	}
@@ -334,8 +343,12 @@ SDL_SBPlaySeg(volatile byte huge *data,longword length)
 	uselen--;
 
 	// Program the DMA controller
+
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 asm	pushf
 asm	cli
+#endif
 	outportb(0x0a,sbDMA | 4);					// Mask off DMA on channel sbDMA
 	outportb(0x0c,0);							// Clear byte ptr flip-flop to lower byte
 	outportb(0x0b,0x49);						// Set transfer mode for D/A conv
@@ -348,8 +361,8 @@ asm	cli
 
 	// Start playing the thing
 
-	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_WL1_APO10)
 asm	popf
 asm	pushf
 asm	cli
@@ -360,7 +373,10 @@ asm	cli
 	sbOut(sbWriteData,(byte)uselen);
 	sbWriteDelay();
 	sbOut(sbWriteData,(byte)(uselen >> 8));
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 asm	popf
+#endif
 
 	return(uselen + 1);
 }
@@ -431,8 +447,8 @@ asm	cli
 
 	// Save old interrupt status and unmask ours
 
-	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_WL1_APO10)
 asm	pushf
 asm	cli
 #endif
@@ -442,8 +458,8 @@ asm	cli
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0xd4);						// Make sure DSP DMA is enabled
 
-	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_WL1_APO10)
 asm	popf
 #endif
 
@@ -467,8 +483,11 @@ SDL_PositionSBP(int leftpos,int rightpos)
 {
 	byte	v;
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	if (!SBProPresent)
 		return;
+#endif
 
 	leftpos = 15 - leftpos;
 	rightpos = 15 - rightpos;
@@ -605,7 +624,12 @@ SDL_StartSB(void)
 
 	sbIntVec = sbIntVectors[sbInterrupt];
 	if (sbIntVec < 0)
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+		Quit("SDL_StartSB: Illegal interrupt number for SoundBlaster");
+#else
 		Quit("SDL_StartSB: Illegal or unsupported interrupt number for SoundBlaster");
+#endif
 
 	sbOldIntHand = getvect(sbIntVec);	// Get old interrupt handler
 	setvect(sbIntVec,SDL_SBService);	// Set mine
@@ -620,9 +644,12 @@ SDL_StartSB(void)
 	sbWriteDelay();
 	sbOut(sbWriteData,timevalue);
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	SBProPresent = false;
 	if (sbNoProCheck)
 		return;
+#endif
 
 	// Check to see if this is a SB Pro
 	sbOut(sbpMixerAddr,sbpmFMVol);
@@ -1106,7 +1133,10 @@ asm	cli
 	DigiMissed = false;
 	DigiPlaying = false;
 	DigiNumber = DigiPriority = 0;
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	SoundPositioned = false;
+#endif
 	if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 		SDL_SoundFinished();
 
@@ -1159,6 +1189,8 @@ SD_Poll(void)
 void
 SD_SetPosition(int leftpos,int rightpos)
 {
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	if
 	(
 		(leftpos < 0)
@@ -1168,6 +1200,7 @@ SD_SetPosition(int leftpos,int rightpos)
 	||	((leftpos == 15) && (rightpos == 15))
 	)
 		Quit("SD_SetPosition: Illegal position");
+#endif
 
 	switch (DigiMode)
 	{
@@ -1227,12 +1260,19 @@ SDL_DigitizedDone(void)
 		{
 			DigiPlaying = false;
 			DigiLastSegment = false;
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+			DigiPriority = 0;
+#endif
 			if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 			{
 				SDL_SoundFinished();
 			}
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 			else
 				DigiNumber = DigiPriority = 0;
+#endif
 			SoundPositioned = false;
 		}
 		else
@@ -1929,7 +1969,10 @@ SD_Startup(void)
 	ssNoCheck = false;
 	alNoCheck = false;
 	sbNoCheck = false;
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	sbNoProCheck = false;
+#endif
 #ifndef	_MUSE_
 	for (i = 1;i < _argc;i++)
 	{
@@ -1941,24 +1984,31 @@ SD_Startup(void)
 		case 1:						// No SoundBlaster detection
 			sbNoCheck = true;
 			break;
+		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+		// Disable following check and define offset under a macro
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+#define GAMEVER_SD_OFFSET -1
+#else
 		case 2:						// No SoundBlaster Pro detection
 			sbNoProCheck = true;
 			break;
-		case 3:
+#define GAMEVER_SD_OFFSET 0
+#endif
+		case 3+GAMEVER_SD_OFFSET:
 			ssNoCheck = true;		// No Sound Source detection
 			break;
-		case 4:						// Tandy Sound Source handling
+		case 4+GAMEVER_SD_OFFSET:						// Tandy Sound Source handling
 			ssIsTandy = true;
 			break;
-		case 5:						// Sound Source present at LPT1
+		case 5+GAMEVER_SD_OFFSET:						// Sound Source present at LPT1
 			ssPort = 1;
 			ssNoCheck = SoundSourcePresent = true;
 			break;
-		case 6:                     // Sound Source present at LPT2
+		case 6+GAMEVER_SD_OFFSET:                     // Sound Source present at LPT2
 			ssPort = 2;
 			ssNoCheck = SoundSourcePresent = true;
 			break;
-		case 7:                     // Sound Source present at LPT3
+		case 7+GAMEVER_SD_OFFSET:                     // Sound Source present at LPT3
 			ssPort = 3;
 			ssNoCheck = SoundSourcePresent = true;
 			break;
@@ -2201,13 +2251,22 @@ SD_PlaySound(soundnames sound)
 
 			SDL_PCStopSound();
 
-			SD_PlayDigitized(DigiMap[sound],lp,rp);
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
 			SoundPositioned = ispos;
+#endif
+			SD_PlayDigitized(DigiMap[sound],lp,rp);
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
+			SoundPositioned = ispos;
+#endif
 			SoundNumber = sound;
 			SoundPriority = s->priority;
 		}
 		else
 		{
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 		asm	pushf
 		asm	cli
 			if (DigiPriority && !DigiNumber)
@@ -2216,12 +2275,20 @@ SD_PlaySound(soundnames sound)
 				Quit("SD_PlaySound: Priority without a sound");
 			}
 		asm	popf
+#endif
 
 			if (s->priority < DigiPriority)
 				return(false);
 
-			SD_PlayDigitized(DigiMap[sound],lp,rp);
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
 			SoundPositioned = ispos;
+#endif
+			SD_PlayDigitized(DigiMap[sound],lp,rp);
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
+			SoundPositioned = ispos;
+#endif
 			DigiNumber = sound;
 			DigiPriority = s->priority;
 		}

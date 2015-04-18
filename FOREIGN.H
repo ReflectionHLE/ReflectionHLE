@@ -66,7 +66,7 @@
 
 #define	STR_LEFT	"Left"
 #define	STR_RIGHT	"Right"
-// ***SHAREWARE/REGISTERED V1.4 APOGEE + SOD DEMO V1.0 RESTORATION***
+// *** APOGEE+FORMGEN VERSIONS RESTORATION ***
 // There was a typo fix
 #ifdef GOODTIMES
 #define	STR_FRWD	"Frwd"
@@ -75,7 +75,7 @@
 #endif
 
 #define	STR_BKWD	"Bkwrd"
-// *** PRE-V1.4 APOGEE RESTORATION***
+// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 #define	STR_THINK	"Computing"
 #else

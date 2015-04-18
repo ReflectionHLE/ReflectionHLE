@@ -110,7 +110,12 @@ or al,x;\
 out dx,al;\
 sti;}
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+#define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX+1;mov al,x;out dx,al;sti;}
+#else
 #define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov al,SC_MAPMASK;mov ah,x;out dx,ax;sti;}
+#endif
 #define VGAREADMAP(x) asm{cli;mov dx,GC_INDEX;mov al,GC_READMAP;mov ah,x;out dx,ax;sti;}
 
 

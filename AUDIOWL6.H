@@ -1,12 +1,20 @@
 /////////////////////////////////////////////////
 //
 // MUSE Header for .WL6
-// Created Tue Jul 14 15:04:53 1992
+// Based on header from Wolf4SDL
 //
 /////////////////////////////////////////////////
 
+// Do NOT use any enum value to define a macro like NUMSOUNDS in a
+// "version agnostic" manner, this can lead to a bit different
+// machine code generated from one line in MM_SortMem.
+#ifdef GAMEVER_RESTORATION_ANY_APO10
+#define NUMSOUNDS		73
+#define NUMSNDCHUNKS		246
+#else
 #define NUMSOUNDS		87
 #define NUMSNDCHUNKS		288
+#endif
 
 //
 // Sound names & indexes
@@ -85,6 +93,7 @@ typedef enum {
 		MECHSTEPSND,             // 70
 		GOOBSSND,                // 71
 		YEAHSND,                 // 72
+#ifndef GAMEVER_RESTORATION_ANY_APO10
 		DEATHSCREAM4SND,         // 73
 		DEATHSCREAM5SND,         // 74
 		DEATHSCREAM6SND,         // 75
@@ -99,16 +108,25 @@ typedef enum {
 		ROSESND,                 // 84
 		MISSILEFIRESND,          // 85
 		MISSILEHITSND,           // 86
+#endif
 		LASTSOUND
 	     } soundnames;
 
 //
 // Base offsets
 //
+// Again don't use the enum value of LASTSOUND, just use the numbers directly
+#ifdef GAMEVER_RESTORATION_ANY_APO10
+#define STARTPCSOUNDS		0
+#define STARTADLIBSOUNDS	73
+#define STARTDIGISOUNDS		146
+#define STARTMUSIC		219
+#else
 #define STARTPCSOUNDS		0
 #define STARTADLIBSOUNDS	87
 #define STARTDIGISOUNDS		174
 #define STARTMUSIC		261
+#endif
 
 //
 // Music names & indexes

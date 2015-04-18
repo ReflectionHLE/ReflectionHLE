@@ -29,12 +29,28 @@
 */
 
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+// Not sure how were these values picked, but here they are
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef DEBUGWALLS
+unsigned screenloc[3]= {0,0,0};
+#else
+unsigned screenloc[3]= {3328,16128,28928};
+#endif
+unsigned freelatch = 41728;
+#else
 #ifdef DEBUGWALLS
 unsigned screenloc[3]= {0,0,0};
 #else
 unsigned screenloc[3]= {PAGE1START,PAGE2START,PAGE3START};
 #endif
 unsigned freelatch = FREESTART;
+#endif
+
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+int 	screenpage;
+#endif
 
 long 	lasttimecount;
 long 	frameon;
@@ -877,7 +893,13 @@ void HitVertPWall (void)
 
 //==========================================================================
 
-#if 0
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+// Re-enable unused EGA code *and* restore egaFloor+egaCeiling
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+unsigned egaFloor[] = {0,0,0,0,0,0,0,0,0,5};
+unsigned egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0d0d};
+
+//#if 0
 /*
 =====================
 =
@@ -948,14 +970,19 @@ unsigned vgaCeiling[]=
 #ifndef SPEAR
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xbfbf,
  0x4e4e,0x4e4e,0x4e4e,0x1d1d,0x8d8d,0x4e4e,0x1d1d,0x2d2d,0x1d1d,0x8d8d,
- 0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x2d2d,0xdddd,0x1d1d,0x1d1d,0x9898,
-
-// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+ 0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x2d2d,0xdddd,0x1d1d,0x1d1d,//0x9898,
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+ 0x8d8d,
+#else
+ 0x9898,
+#endif
+// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION *** 
+#ifdef GAMEVER_RESTORATION_WL1_APO11
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xd7d7,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
-#else
+#elif (!defined GAMEVER_RESTORATION_WL1_APO10)
  0x1d1d,0x9d9d,0x2d2d,0xdddd,0xdddd,0x9d9d,0x2d2d,0x4d4d,0x1d1d,0xdddd,
  0x7d7d,0x1d1d,0x2d2d,0x2d2d,0xdddd,0xd7d7,0x1d1d,0x1d1d,0x1d1d,0x2d2d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xdddd,0xdddd,0x7d7d,0xdddd,0xdddd,0xdddd
@@ -1037,7 +1064,8 @@ int	CalcRotate (objtype *ob)
 
 	viewangle = player->angle + (centerx - ob->viewx)/8;
 
-	// *** PRE-V1.4 APOGEE RESTORATION***
+	// *** PRE-V1.4 APOGEE RESTORATION *** - Including special case for v1.0
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (ob->obclass == rocketobj)
 #else
@@ -1045,6 +1073,7 @@ int	CalcRotate (objtype *ob)
 #endif
 		angle =  (viewangle-180)- ob->angle;
 	else
+#endif
 		angle =  (viewangle-180)- dirangle[ob->dir];
 
 	angle+=ANGLES/16;
@@ -1079,7 +1108,7 @@ typedef struct
 		shapenum;
 } visobj_t;
 
-// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION - Move into function body
+// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION *** - Move back into function body
 #if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 visobj_t	vislist[MAXVISABLE],*visptr,*visstep,*farthest;
 #endif
@@ -1095,7 +1124,7 @@ void DrawScaleds (void)
 	statobj_t	*statptr;
 	objtype		*obj;
 
-// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION 
+// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION *** - Moved back into function body from outside
 #if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
 	visobj_t	vislist[MAXVISABLE],*visptr,*visstep,*farthest;
 
@@ -1126,7 +1155,7 @@ void DrawScaleds (void)
 		if (!visptr->viewheight)
 			continue;						// to close to the object
 
-		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION 
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
 		if (visptr < &vislist[MAXVISABLE])
 #else
@@ -1173,7 +1202,7 @@ void DrawScaleds (void)
 			if (obj->state->rotate)
 				visptr->shapenum += CalcRotate (obj);
 
-		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION 
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
 			if (visptr < &vislist[MAXVISABLE])
 #else
@@ -1238,8 +1267,11 @@ void DrawPlayerWeapon (void)
 #ifndef SPEAR
 	if (gamestate.victoryflag)
 	{
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 		if (player->state == &s_deathcam && (TimeCount&32) )
 			SimpleScaleShape(viewwidth/2,SPR_DEATHCAM,viewheight+1);
+#endif
 		return;
 	}
 #endif
@@ -1276,7 +1308,7 @@ void CalcTics (void)
 	if (lasttimecount > TimeCount)
 		TimeCount = lasttimecount;		// if the game was paused a LONG time
 
-	// *** PRE-V1.4 APOGEE RESTORATION***
+	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (DemoMode != demo_Off)
 	{
@@ -1327,6 +1359,12 @@ void CalcTics (void)
 
 void	FixOfs (void)
 {
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	if (++screenpage == 3)
+		screenpage = 0;
+	bufferofs = screenloc[screenpage];
+#endif
 	VW_ScreenToScreen (displayofs,bufferofs,viewwidth/8,viewheight);
 }
 
@@ -1370,6 +1408,34 @@ void WallRefresh (void)
 	ScalePost ();			// no more optimization on last post
 }
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION *** - An unused function from v1.0
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+//==========================================================================
+
+int someUnusedDrawArray[] = {
+	0x1b, 0x08, 0x1b, 0x1c, 0x00, 0x00, 0x00, 0x00,
+	0x1c, 0x08, 0x1c, 0x1b, 0x00, 0x00, 0x00, 0x00,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+void	SomeUnusedDrawFunc (void)
+{
+	int *arrPtr;
+	for (arrPtr=someUnusedDrawArray; arrPtr[0]; arrPtr+=8)
+	{
+		arrPtr[7] -= tics;
+		if (arrPtr[7] >= 0)
+			continue;
+		arrPtr[7] += arrPtr[1];
+		++(arrPtr[6]);
+		if (arrPtr[arrPtr[6]+2] == 0)
+			arrPtr[6] = 0;
+		horizwall[arrPtr[0]] = (arrPtr[arrPtr[6]+2]-1)<<1;
+		vertwall[arrPtr[0]] = (arrPtr[arrPtr[6]+2]<<1)-1;
+	}
+}
+
+#endif // GAMEVER_RESTORATION_WL1_APO10
 //==========================================================================
 
 /*
@@ -1397,7 +1463,14 @@ asm	xor	ax,ax
 asm	mov	cx,2048							// 64*64 / 2
 asm	rep stosw
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	if (++screenpage == 3)
+		screenpage = 0;
+	bufferofs = screenloc[screenpage]+screenofs;
+#else
 	bufferofs += screenofs;
+#endif
 
 //
 // follow the walls from there to the right, drawwing as we go
@@ -1420,7 +1493,7 @@ asm	rep stosw
 		FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,20,false);
 		fizzlein = false;
 
-	// *** PRE-V1.4 APOGEE RESTORATION***
+	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 		lasttimecount = TimeCount;
 #else
@@ -1429,8 +1502,13 @@ asm	rep stosw
 
 	}
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	displayofs = bufferofs-screenofs;
+#else
 	bufferofs -= screenofs;
 	displayofs = bufferofs;
+#endif
 
 	asm	cli
 	asm	mov	cx,[displayofs]
@@ -1440,11 +1518,22 @@ asm	rep stosw
 	asm	inc	dx
 	asm	mov	al,ch
 	asm	out	dx,al   	// set the high byte
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	asm	dec	dx
+	asm	mov	al,0dh
+	asm	out	dx,al
+	asm	inc	dx
+	asm	mov	al,cl
+	asm	out	dx,al
+	asm	sti
+#else
 	asm	sti
 
 	bufferofs += SCREENSIZE;
 	if (bufferofs > PAGE3START)
 		bufferofs = PAGE1START;
+#endif
 
 	frameon++;
 	PM_NextFrame();

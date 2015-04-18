@@ -25,7 +25,12 @@ typedef	struct
 		{
 			char	name[MaxHighName + 1];
 			long	score;
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+			word	completed;
+#else
 			word	completed,episode;
+#endif
 		} HighScore;
 
 #define	MaxGameName		32
@@ -57,7 +62,7 @@ typedef	enum
 
 //	Hack import for TED launch support
 extern	boolean		tedlevel;
-// *** PRE-V1.4 APOGEE RESTORATION***
+// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 extern	word			tedlevelnum;
 #else
@@ -107,10 +112,10 @@ extern	void	US_Startup(void),
 				US_ClearWindow(void),
 				US_SetPrintRoutines(void (*measure)(char far *,word *,word *),
 									void (*print)(char far *)),
-				US_PrintCentered(char far *s),
-				US_CPrint(char far *s),
-				US_CPrintLine(char far *s),
-				US_Print(char far *s),
+				US_PrintCentered(char GAMEVER_RESTORATION_CONDFARPTR *s),
+				US_CPrint(char GAMEVER_RESTORATION_CONDFARPTR *s),
+				US_CPrintLine(char GAMEVER_RESTORATION_CONDFARPTR *s),
+				US_Print(char GAMEVER_RESTORATION_CONDFARPTR *s),
 				US_PrintUnsigned(longword n),
 				US_PrintSigned(long n),
 				US_StartCursor(void),
@@ -123,6 +128,6 @@ extern	boolean	US_UpdateCursor(void),
 extern	int		US_CheckParm(char *parm,char **strings),
 				US_RndT(void);
 
-		void	USL_PrintInCenter(char far *s,Rect r);
+		void	USL_PrintInCenter(char GAMEVER_RESTORATION_CONDFARPTR *s,Rect r);
 		char 	*USL_GiveSaveName(word game);
 #endif

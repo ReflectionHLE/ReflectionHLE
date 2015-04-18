@@ -56,7 +56,7 @@ static	boolean		US_Started;
 		SaveGame	Games[MaxSaveGames];
 		HighScore	Scores[MaxScores] =
 					{
-						// *** PRE-V1.4 APOGEE RESTORATION***
+						// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 						{"Id Software - '92",10000,1},
 #else
@@ -293,9 +293,9 @@ US_SetPrintRoutines(void (*measure)(char far *,word *,word *),void (*print)(char
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_Print(char far *s)
+US_Print(char GAMEVER_RESTORATION_CONDFARPTR *s)
 {
-	char	c,far *se;
+	char	c,GAMEVER_RESTORATION_CONDFARPTR *se;
 	word	w,h;
 
 	while (*s)
@@ -356,7 +356,7 @@ US_PrintSigned(long n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-USL_PrintInCenter(char far *s,Rect r)
+USL_PrintInCenter(char GAMEVER_RESTORATION_CONDFARPTR *s,Rect r)
 {
 	word	w,h,
 			rw,rh;
@@ -376,7 +376,7 @@ USL_PrintInCenter(char far *s,Rect r)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintCentered(char far *s)
+US_PrintCentered(char GAMEVER_RESTORATION_CONDFARPTR *s)
 {
 	Rect	r;
 
@@ -395,7 +395,7 @@ US_PrintCentered(char far *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrintLine(char far *s)
+US_CPrintLine(char GAMEVER_RESTORATION_CONDFARPTR *s)
 {
 	word	w,h;
 
@@ -416,9 +416,9 @@ US_CPrintLine(char far *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrint(char far *s)
+US_CPrint(char GAMEVER_RESTORATION_CONDFARPTR *s)
 {
-	char	c,far *se;
+	char	c,GAMEVER_RESTORATION_CONDFARPTR *se;
 
 	while (*s)
 	{

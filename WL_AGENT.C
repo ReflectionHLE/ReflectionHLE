@@ -232,7 +232,15 @@ void ControlMovement (objtype *ob)
 =============================================================================
 */
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION *** - StatusDrawPic wasn't used,
+// instead there was just a call to LatchDrawPic everywhere, more-or-less,
+// along with a few bits of fiddling with bufferofs.
 
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+// HACK for restoration of v1.0
+#define StatusDrawPic LatchDrawPic
+
+#else
 /*
 ==================
 =
@@ -257,6 +265,7 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 	bufferofs = temp;
 }
+#endif // GAMEVER_RESTORATION_WL1_APO10
 
 
 /*
@@ -269,6 +278,13 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 void DrawFace (void)
 {
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	unsigned	temp;
+
+	temp = bufferofs;
+	bufferofs = 0;
+#endif
 	if (gamestate.health)
 	{
 		#ifdef SPEAR
@@ -287,6 +303,10 @@ void DrawFace (void)
 #endif
 	   StatusDrawPic (17,4,FACE8APIC);
 	}
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	bufferofs = temp;
+#endif
 }
 
 
@@ -336,11 +356,22 @@ void	UpdateFace (void)
 
 void	LatchNumber (int x, int y, int width, long number)
 {
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	unsigned	temp;
+
+#endif
 	unsigned	length,c;
 	char	str[20];
 
 	ltoa (number,str,10);
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	temp = bufferofs;
+	bufferofs = 0;
+
+#endif
 	length = strlen (str);
 
 	while (length<width)
@@ -350,7 +381,7 @@ void	LatchNumber (int x, int y, int width, long number)
 		width--;
 	}
 
-	// *** PRE-V1.4 APOGEE RESTORATION***
+	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	c = 0;
 #else
@@ -363,6 +394,10 @@ void	LatchNumber (int x, int y, int width, long number)
 		x++;
 		c++;
 	}
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	bufferofs = temp;
+#endif
 }
 
 
@@ -392,8 +427,11 @@ void	TakeDamage (int points,objtype *attacker)
 {
 	LastAttacker = attacker;
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	if (gamestate.victoryflag)
 		return;
+#endif
 	if (gamestate.difficulty==gd_baby)
 	  points>>=2;
 
@@ -548,7 +586,18 @@ void	GivePoints (long points)
 
 void DrawWeapon (void)
 {
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	unsigned	temp;
+
+	temp = bufferofs;
+	bufferofs = 0;
+#endif
 	StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	bufferofs = temp;
+#endif
 }
 
 
@@ -562,6 +611,13 @@ void DrawWeapon (void)
 
 void DrawKeys (void)
 {
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	unsigned	temp;
+
+	temp = bufferofs;
+	bufferofs = 0;
+#endif
 	if (gamestate.keys & 1)
 		StatusDrawPic (30,4,GOLDKEYPIC);
 	else
@@ -571,6 +627,10 @@ void DrawKeys (void)
 		StatusDrawPic (30,20,SILVERKEYPIC);
 	else
 		StatusDrawPic (30,20,NOKEYPIC);
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	bufferofs = temp;
+#endif
 }
 
 
@@ -671,6 +731,10 @@ void GiveKey (int key)
 */
 void GetBonus (statobj_t *check)
 {
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	unsigned	temp;
+#endif
 	switch (check->itemnumber)
 	{
 	case	bo_firstaid:
@@ -743,7 +807,18 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (GETGATLINGSND);
 		GiveWeapon (wp_chaingun);
 
+		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+		temp = bufferofs;
+		bufferofs = 0;
+
+#endif
 		StatusDrawPic (17,4,GOTGATLINGPIC);
+		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+		bufferofs = temp;
+
+#endif
 		facecount = 0;
 		gotgatgun = 1;
 		break;
@@ -1070,7 +1145,7 @@ void Cmd_Use (void)
 		buttonheld[bt_use] = true;
 
 		tilemap[checkx][checky]++;		// flip switch
-		// *** EARLY APOGEE RELEASES RESTORATION ***
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 		if (*(mapsegs[0]+farmapylookup[player->tiley]+player->tilex) == ALTELEVATORTILE)
 			playstate = ex_secretlevel;
@@ -1122,7 +1197,10 @@ void SpawnPlayer (int tilex, int tiley, int dir)
 	player->angle = (1-dir)*90;
 	if (player->angle<0)
 		player->angle += ANGLES;
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	player->flags = FL_NEVERMARK;
+#endif
 	Thrust (0,0);				// set some variables
 
 	InitAreas ();
@@ -1323,10 +1401,13 @@ void	T_Attack (objtype *ob)
 	if (gamestate.victoryflag)		// watching the BJ actor
 		return;
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in unsigned
 	pluy = player->y >> UNSIGNEDSHIFT;
 	player->tilex = player->x >> TILESHIFT;		// scale to tile values
 	player->tiley = player->y >> TILESHIFT;
+#endif
 
 //
 // change frame and fire

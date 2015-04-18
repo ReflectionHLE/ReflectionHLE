@@ -25,11 +25,15 @@
 =============================================================================
 */
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+int	splitscreen;
+#endif
 boolean		ingame,fizzlein;
 unsigned	latchpics[NUMLATCHPICS];
 gametype	gamestate;
 
-// *** PRE-V1.4 APOGEE RESTORATION***
+// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 long		spearx,speary;
 unsigned	spearangle;
@@ -39,7 +43,13 @@ boolean		spearflag;
 //
 // ELEVATOR BACK MAPS - REMEMBER (-1)!!
 //
+
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+int ElevatorBackTo[]={1,1,7,0,0,0};
+#else
 int ElevatorBackTo[]={1,1,7,3,5,3};
+#endif
 
 void ScanInfoPlane (void);
 void SetupGameLevel (void);
@@ -77,6 +87,43 @@ void GameLoop (void);
 	fixed	globalsoundx,globalsoundy;
 	int		leftchannel,rightchannel;
 #define ATABLEMAX 15
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+int righttable[ATABLEMAX][ATABLEMAX * 2] = {
+{14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 11,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  4,  6,  8, 10, 12, 15},
+{14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 12,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  5,  7,  9, 11, 13, 15},
+{14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 13, 12, 10,  6,  0,  0,  0,  0,  0,  0,  0,  0,  1,  3,  5,  7,  9, 11, 13, 15},
+{14, 14, 14, 14, 14, 14, 14, 14, 13, 13, 12, 11,  9,  5,  2,  0,  0,  0,  0,  0,  0,  0,  2,  4,  5,  7,  9, 11, 13, 15},
+{14, 14, 14, 14, 14, 14, 14, 13, 13, 12, 11, 10,  8,  6,  3,  0,  0,  0,  0,  0,  0,  1,  3,  5,  6,  8, 10, 12, 14, 15},
+{14, 14, 14, 14, 14, 14, 14, 13, 13, 12, 11, 10,  8,  6,  4,  2,  1,  0,  0,  1,  2,  3,  4,  6,  7,  9, 11, 12, 14, 15},
+{15, 14, 14, 14, 14, 14, 13, 13, 12, 12, 11, 10,  8,  7,  5,  4,  3,  2,  2,  2,  3,  4,  5,  7,  8, 10, 11, 13, 15, 15},
+{15, 14, 14, 14, 14, 14, 13, 13, 12, 12, 11, 10,  9,  7,  6,  5,  4,  4,  4,  4,  5,  6,  7,  8,  9, 11, 12, 14, 15, 15},
+{15, 15, 14, 14, 14, 14, 13, 13, 12, 12, 11, 10,  9,  8,  7,  6,  6,  6,  6,  6,  6,  7,  8,  9, 11, 12, 13, 15, 15, 15},
+{15, 15, 15, 14, 14, 14, 13, 13, 13, 12, 11, 11, 10,  9,  8,  8,  7,  7,  7,  7,  8,  9, 10, 11, 12, 13, 15, 15, 15, 15},
+{15, 15, 15, 14, 14, 14, 14, 13, 13, 12, 12, 11, 11, 10,  9,  9,  9,  9,  9,  9,  9, 10, 11, 12, 13, 14, 15, 15, 15, 15},
+{15, 15, 15, 15, 14, 14, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 10, 10, 10, 10, 11, 11, 12, 13, 14, 15, 15, 15, 15, 15},
+{15, 15, 15, 15, 15, 15, 14, 14, 14, 13, 13, 12, 12, 12, 11, 11, 11, 11, 11, 12, 12, 13, 14, 15, 15, 15, 15, 15, 15, 15},
+{15, 15, 15, 15, 15, 15, 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 12, 13, 13, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15},
+{15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 14, 14, 14, 14, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15}
+};
+int lefttable[ATABLEMAX][ATABLEMAX * 2] = {
+{15, 12, 10,  8,  6,  4,  2,  0,  0,  0,  0,  0,  0,  0,  0,  0, 11, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14},
+{15, 13, 11,  9,  7,  5,  2,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8, 12, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14},
+{15, 13, 11,  9,  7,  5,  3,  1,  0,  0,  0,  0,  0,  0,  0,  0,  6, 10, 12, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14},
+{15, 13, 11,  9,  7,  5,  4,  2,  0,  0,  0,  0,  0,  0,  0,  2,  5,  9, 11, 12, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14},
+{15, 14, 12, 10,  8,  6,  5,  3,  1,  0,  0,  0,  0,  0,  0,  3,  6,  8, 10, 11, 12, 13, 13, 14, 14, 14, 14, 14, 14, 14},
+{15, 14, 12, 11,  9,  7,  6,  4,  3,  2,  1,  0,  0,  1,  2,  4,  6,  8, 10, 11, 12, 13, 13, 14, 14, 14, 14, 14, 14, 14},
+{15, 15, 13, 11, 10,  8,  7,  5,  4,  3,  2,  2,  2,  3,  4,  5,  7,  8, 10, 11, 12, 12, 13, 13, 14, 14, 14, 14, 14, 15},
+{15, 15, 14, 12, 11,  9,  8,  7,  6,  5,  4,  4,  4,  4,  5,  6,  7,  9, 10, 11, 12, 12, 13, 13, 14, 14, 14, 14, 14, 15},
+{15, 15, 15, 13, 12, 11,  9,  8,  7,  6,  6,  6,  6,  6,  6,  7,  8,  9, 10, 11, 12, 12, 13, 13, 14, 14, 14, 14, 15, 15},
+{15, 15, 15, 15, 13, 12, 11, 10,  9,  8,  7,  7,  7,  7,  8,  8,  9, 10, 11, 11, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15},
+{15, 15, 15, 15, 14, 13, 12, 11, 10,  9,  9,  9,  9,  9,  9,  9, 10, 11, 11, 12, 12, 13, 13, 14, 14, 14, 14, 15, 15, 15},
+{15, 15, 15, 15, 15, 14, 13, 12, 11, 11, 10, 10, 10, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15},
+{15, 15, 15, 15, 15, 15, 15, 14, 13, 12, 12, 11, 11, 11, 11, 11, 12, 12, 12, 13, 13, 14, 14, 14, 15, 15, 15, 15, 15, 15},
+{15, 15, 15, 15, 15, 15, 15, 15, 14, 14, 13, 13, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15},
+{15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 14, 14, 14, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15}
+};
+#else
 byte righttable[ATABLEMAX][ATABLEMAX * 2] = {
 { 8, 8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 6, 0, 0, 0, 0, 0, 1, 3, 5, 8, 8, 8, 8, 8, 8, 8, 8},
 { 8, 8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 4, 0, 0, 0, 0, 0, 2, 4, 6, 8, 8, 8, 8, 8, 8, 8, 8},
@@ -111,6 +158,7 @@ byte lefttable[ATABLEMAX][ATABLEMAX * 2] = {
 { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
 { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 };
+#endif
 
 void
 SetSoundLoc(fixed gx,fixed gy)
@@ -148,7 +196,13 @@ SetSoundLoc(fixed gx,fixed gy)
 		x = ATABLEMAX - 1;
 	leftchannel  =  lefttable[x][y + ATABLEMAX];
 	rightchannel = righttable[x][y + ATABLEMAX];
-
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	if (leftchannel > 5)
+		leftchannel = 5;
+	if (rightchannel > 5)
+		rightchannel = 5;
+#endif
 #if 0
 	CenterWindow(8,1);
 	US_PrintSigned(leftchannel);
@@ -511,6 +565,8 @@ void ScanInfoPlane (void)
 			case 214:
 				SpawnBoss (x,y);
 				break;
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 			case 197:
 				SpawnGretel (x,y);
 				break;
@@ -520,6 +576,7 @@ void ScanInfoPlane (void)
 			case 179:
 				SpawnFat (x,y);
 				break;
+#endif
 			case 196:
 				SpawnSchabbs (x,y);
 				break;
@@ -774,6 +831,20 @@ void SetupGameLevel (void)
 
 //==========================================================================
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION *** - A function that is used in v1.0
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+void ResetSplitScreen (void)
+{
+	splitscreen = 0;
+	VW_SetSplitScreen(200);
+	bufferofs = displayofs = 0;
+	VW_Bar(0,0,320,200,0);
+	bufferofs = 19200;
+	VW_Bar(0,0,320,200,0);
+	VW_SetScreen(displayofs, 0);
+}
+#endif
+
 
 /*
 ===================
@@ -800,6 +871,8 @@ void DrawPlayBorderSides (void)
 }
 
 
+// *** SHAREWARE V1.0 APOGEE RESTORATION *** - NOT used in v1.0
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 /*
 ===================
 =
@@ -840,6 +913,8 @@ void DrawAllPlayBorder (void)
 	}
 	bufferofs = temp;
 }
+#endif // GAMEVER_RESTORATION_WL1_APO10
+
 
 /*
 ===================
@@ -879,24 +954,46 @@ void DrawPlayBorder (void)
 void DrawPlayScreen (void)
 {
 	int	i,j,p,m;
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	unsigned	temp;
+#endif
 
 	VW_FadeOut ();
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	screenpage = 0;
+	bufferofs = 0;
+#else
 	temp = bufferofs;
+#endif
 
 	CA_CacheGrChunk (STATUSBARPIC);
+
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	VWB_DrawPic (0,0,STATUSBARPIC);
+	VW_Hlin (0,319,STATUSLINES,127);
+	UNCACHEGRCHUNK (STATUSBARPIC);
+#endif
 
 	for (i=0;i<3;i++)
 	{
 		bufferofs = screenloc[i];
 		DrawPlayBorder ();
+		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 		VWB_DrawPic (0,200-STATUSLINES,STATUSBARPIC);
+#endif
 	}
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	bufferofs = temp;
 
 	UNCACHEGRCHUNK (STATUSBARPIC);
+#endif
 
 	DrawFace ();
 	DrawHealth ();
@@ -906,6 +1003,14 @@ void DrawPlayScreen (void)
 	DrawKeys ();
 	DrawWeapon ();
 	DrawScore ();
+
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	splitscreen = 1;
+	VW_SetSplitScreen(200-STATUSLINES);
+	bufferofs = displayofs = screenloc[0];
+	VW_SetScreen(displayofs, 0);	
+#endif
 }
 
 
@@ -993,8 +1098,11 @@ void RecordDemo (void)
 
 	CenterWindow(26,3);
 	PrintY+=6;
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	CA_CacheGrChunk(STARTFONT);
 	fontnumber=0;
+#endif
 	US_Print("  Demo which level(1-10):");
 	VW_UpdateScreen();
 	VW_FadeIn ();
@@ -1003,12 +1111,24 @@ void RecordDemo (void)
 		return;
 
 	level = atoi (str);
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	if ((level < 1) || (level > 20))
+		return;
+#else
 	level--;
+#endif
 
 	SETFONTCOLOR(0,15);
 	VW_FadeOut ();
 
-#ifndef SPEAR
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	NewGame (gd_easy,0);
+	gamestate.mapon = level-1;
+	gamestate.difficulty = gd_hard;
+#elif (!defined SPEAR)
+//#ifndef SPEAR
 	NewGame (gd_hard,level/10);
 	gamestate.mapon = level%10;
 #else
@@ -1016,7 +1136,12 @@ void RecordDemo (void)
 	gamestate.mapon = level;
 #endif
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	StartDemoRecord (level-1);
+#else
 	StartDemoRecord (level);
+#endif
 
 	DrawPlayScreen ();
 	VW_FadeIn ();
@@ -1036,6 +1161,10 @@ void RecordDemo (void)
 	StopMusic ();
 	VW_FadeOut ();
 	ClearMemory ();
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	ResetSplitScreen ();
+#endif
 
 	FinishDemoRecord ();
 }
@@ -1066,7 +1195,7 @@ void PlayDemo (int demonumber)
 
 	CA_CacheGrChunk(dems[demonumber]);
 	demoptr = grsegs[dems[demonumber]];
-	// *** PRE-V1.4 APOGEE RESTORATION***
+	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	MM_SetLock (&grsegs[dems[demonumber]],true);
 #endif
@@ -1111,6 +1240,10 @@ void PlayDemo (int demonumber)
 	StopMusic ();
 	VW_FadeOut ();
 	ClearMemory ();
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	ResetSplitScreen ();
+#endif
 }
 
 //==========================================================================
@@ -1208,15 +1341,33 @@ void Died (void)
 //
 	FinishPaletteShifts ();
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	if (++screenpage == 3)
+		screenpage = 0;
+	bufferofs = screenloc[screenpage]+screenofs;
+#else
 	bufferofs += screenofs;
+#endif
 	VW_Bar (0,0,viewwidth,viewheight,4);
 	IN_ClearKeysDown ();
 	FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,70,false);
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	bufferofs -= screenofs;
+#endif
 	IN_UserInput(100);
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+	displayofs = bufferofs-screenofs;
+	VW_SetCRTC(displayofs);
+#endif
 	SD_WaitSoundDone ();
 
+	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 	if (tedlevel == false)	// SO'S YA DON'T GET KILLED WHILE LAUNCHING!
+#endif
 	  gamestate.lives--;
 
 	if (gamestate.lives > -1)
@@ -1266,7 +1417,10 @@ restartgame:
 restart:
 	do
 	{
+		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 		if (!loadedgame)
+#endif
 		  gamestate.score = gamestate.oldscore;
 		DrawScore();
 
@@ -1301,17 +1455,17 @@ startplayloop:
 #ifdef SPEAR
 		if (spearflag)
 		{
-			// ***SOD DEMO V1.0 RESTORATION***
+			// *** PRE-V1.4 APOGEE+FORMGEN RESTORATION ***
 			// Don't stop sound
-#ifndef SPEARDEMO
+#ifndef GAMEVER_RESTORATION_ANY_ALL_PRE14
 			SD_StopSound();
 #endif
 			SD_PlaySound(GETSPEARSND);
 			if (DigiMode != sds_Off)
 			{
-				// ***SOD DEMO V1.0 RESTORATION***
+				// *** PRE-V1.4 APOGEE+FORMGEN RESTORATION ***
 				// Do loop over DigiPlaying
-#ifdef SPEARDEMO
+#ifdef GAMEVER_RESTORATION_ANY_ALL_PRE14
 				while(DigiPlaying!=false)
 					SD_Poll();
 #else
@@ -1352,7 +1506,7 @@ startplayloop:
 		switch (playstate)
 		{
 		case ex_completed:
-		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
 		case ex_secretlevel:
 #endif
@@ -1420,7 +1574,7 @@ startplayloop:
 			// GOING TO SECRET LEVEL
 			//
 
-			// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION
+			// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
 			if ((gamestate.mapon == 0) && (player->tilex == 10))
 #else
@@ -1471,12 +1625,21 @@ startplayloop:
 			VW_FadeOut ();
 
 			ClearMemory ();
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+			ResetSplitScreen ();
+#endif
 
 			CheckHighScore (gamestate.score,gamestate.mapon+1);
 
 			#pragma warn -sus
 			#ifndef JAPAN
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+			strcpy(MainMenu[viewscores].string,STR_VS);
+#else
 			_fstrcpy(MainMenu[viewscores].string,STR_VS);
+#endif
 			#endif
 			MainMenu[viewscores].routine = CP_ViewScores;
 			#pragma warn +sus
@@ -1494,7 +1657,11 @@ startplayloop:
 
 			Victory ();
 
-			// *** PRE-V1.4 APOGEE RESTORATION***
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+			ResetSplitScreen ();
+#endif
+			// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 			ClearMemory ();
 #endif
@@ -1503,7 +1670,12 @@ startplayloop:
 
 			#pragma warn -sus
 			#ifndef JAPAN
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifdef GAMEVER_RESTORATION_WL1_APO10
+			strcpy(MainMenu[viewscores].string,STR_VS);
+#else
 			_fstrcpy(MainMenu[viewscores].string,STR_VS);
+#endif
 			#endif
 			MainMenu[viewscores].routine = CP_ViewScores;
 			#pragma warn +sus
