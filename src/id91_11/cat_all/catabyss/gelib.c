@@ -2703,8 +2703,8 @@ id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0
 				strcat(command," into drive ");
 				strcat(command,drive);
 				strcat(command,".");
-				BE_Cross_puts(command);
-				BE_Cross_puts("Press SPACE to continue, ESC to abort.\n");
+				BE_SDL_puts(command);
+				BE_SDL_puts("Press SPACE to continue, ESC to abort.\n");
 				//printf("\nInsert %s disk %d into drive %s.\n",disktext,disknum,drive);
 				//printf("Press SPACE to continue, ESC to abort.\n");
 			}

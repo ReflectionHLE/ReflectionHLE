@@ -1143,82 +1143,149 @@ void BE_SDL_ToggleTextCursor(bool isEnabled)
 	g_sdlTxtCursorEnabled = isEnabled;
 }
 
-static void BEL_SDL_Simplified_putsorprintf(const char *str, bool isprintfcall, bool iscolored, bool requirecrchar)
+static uint8_t *BEL_SDL_printchar(uint8_t *currMemByte, char ch, bool iscolored, bool requirecrchar)
 {
-	// TODO (REFKEEN): Tabs?
-	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
-	for (; *str; ++str)
+	if (ch == '\t')
 	{
-		if (*str == '\r')
+		int nextCursorPosX = (g_sdlTxtCursorPosX & ~7) + 8;
+		for (; g_sdlTxtCursorPosX != nextCursorPosX; ++g_sdlTxtCursorPosX)
 		{
-			if (requirecrchar)
-			{
-				g_sdlTxtCursorPosX = 0; // Carriage return
-				currMemByte = g_sdlVidMem.text + 2*TXT_COLS_NUM*g_sdlTxtCursorPosY;
-			}
-		}
-		else if (*str == '\n')
-		{
-			if (!requirecrchar)
-			{
-				g_sdlTxtCursorPosX = 0; // Carriage return
-			}
-			++g_sdlTxtCursorPosY;
-			currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
-		}
-		else
-		{
-			if ((*str == '%') && isprintfcall)
-			{
-				++str; // This is still a SIMPLIFIED printf...
-			}
-			*(currMemByte++) = *str;
+			*(currMemByte++) = ' ';
 			*currMemByte = iscolored ? (g_sdlTxtColor | (g_sdlTxtBackground << 4)) : *currMemByte;
 			++currMemByte;
-			if (g_sdlTxtCursorPosX == TXT_COLS_NUM - 1)
-			{
-				g_sdlTxtCursorPosX = 0; // Carriage return
-				++g_sdlTxtCursorPosY; // Line feed
-				currMemByte = g_sdlVidMem.text + 2*TXT_COLS_NUM*g_sdlTxtCursorPosY;
-			}
-			else
-			{
-				++g_sdlTxtCursorPosX;
-			}
-		}
-		if (g_sdlTxtCursorPosY == TXT_ROWS_NUM)
-		{
-			--g_sdlTxtCursorPosY;
-			// Scroll one line down
-			uint8_t lastAttr = g_sdlVidMem.text[sizeof(g_sdlVidMem.text)-1];
-			memmove(g_sdlVidMem.text, g_sdlVidMem.text+2*TXT_COLS_NUM, sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM);
-			currMemByte = g_sdlVidMem.text+sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM;
-			// New empty line
-			for (int i = 0; i < TXT_COLS_NUM; ++i)
-			{
-				*(currMemByte++) = ' ';
-				*(currMemByte++) = lastAttr;
-			}
-			currMemByte -= 2*TXT_COLS_NUM; // Go back to beginning of line
 		}
 	}
-	g_sdlDoRefreshGfxOutput = true;
-}
+	else if (ch == '\r')
+	{
+		if (!requirecrchar)
+			return currMemByte; // Do nothing
 
-void BE_SDL_Simplified_printf(const char *str)
-{
-	BEL_SDL_Simplified_putsorprintf(str, true, false, false);
-}
+		g_sdlTxtCursorPosX = 0; // Carriage return
+		currMemByte = g_sdlVidMem.text + 2*TXT_COLS_NUM*g_sdlTxtCursorPosY;
+	}
+	else if (ch == '\n')
+	{
+		if (!requirecrchar)
+		{
+			g_sdlTxtCursorPosX = 0; // Carriage return
+		}
+		++g_sdlTxtCursorPosY;
+		currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
+	}
+	else
+	{
+		*(currMemByte++) = ch;
+		*currMemByte = iscolored ? (g_sdlTxtColor | (g_sdlTxtBackground << 4)) : *currMemByte;
+		++currMemByte;
+		++g_sdlTxtCursorPosX;
+	}
 
-void BE_SDL_Simplified_cprintf(const char *str)
-{
-	BEL_SDL_Simplified_putsorprintf(str, true, true, true);
+	// Go to next line
+	if (g_sdlTxtCursorPosX == TXT_COLS_NUM)
+	{
+		g_sdlTxtCursorPosX = 0; // Carriage return
+		++g_sdlTxtCursorPosY; // Line feed
+		currMemByte = g_sdlVidMem.text + 2*TXT_COLS_NUM*g_sdlTxtCursorPosY;
+	}
+	// Shift screen by one line
+	if (g_sdlTxtCursorPosY == TXT_ROWS_NUM)
+	{
+		--g_sdlTxtCursorPosY;
+		// Scroll one line down
+		uint8_t lastAttr = g_sdlVidMem.text[sizeof(g_sdlVidMem.text)-1];
+		memmove(g_sdlVidMem.text, g_sdlVidMem.text+2*TXT_COLS_NUM, sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM);
+		currMemByte = g_sdlVidMem.text+sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM;
+		// New empty line
+		for (int i = 0; i < TXT_COLS_NUM; ++i)
+		{
+			*(currMemByte++) = ' ';
+			*(currMemByte++) = lastAttr;
+		}
+		currMemByte -= 2*TXT_COLS_NUM; // Go back to beginning of line
+	}
+
+	return currMemByte;
 }
 
 void BE_SDL_puts(const char *str)
 {
-	BEL_SDL_Simplified_putsorprintf(str, true, true, false);
-	BEL_SDL_Simplified_putsorprintf("\n", true, true, false);
+	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
+	for (; *str; ++str)
+	{
+		currMemByte = BEL_SDL_printchar(currMemByte, *str, true, false);
+	}
+	BEL_SDL_printchar(currMemByte, '\n', true, false);
+
+	g_sdlDoRefreshGfxOutput = true;
+}
+
+static void BEL_SDL_vprintf_impl(const char *format, va_list args, bool iscolored, bool requirecrchar);
+
+void BE_SDL_printf(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	BEL_SDL_vprintf_impl(format, args, false, false);
+	va_end(args);
+}
+
+void BE_SDL_cprintf(const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	BEL_SDL_vprintf_impl(format, args, true, true);
+	va_end(args);
+}
+
+void BE_SDL_vprintf(const char *format, va_list args)
+{
+	BEL_SDL_vprintf_impl(format, args, false, false);
+}
+
+// There's no colored version of vprintf in the original codebase
+
+static void BEL_SDL_vprintf_impl(const char *format, va_list args, bool iscolored, bool requirecrchar)
+{
+	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
+	while (*format)
+	{
+		if (*format == '%')
+		{
+			switch (*(++format))
+			{
+			case '%':
+				currMemByte = BEL_SDL_printchar(currMemByte, '%', iscolored, requirecrchar);
+				break;
+			case 's':
+			{
+				for (const char *str = va_arg(args, char *); *str; ++str)
+				{
+					currMemByte = BEL_SDL_printchar(currMemByte, *str, iscolored, requirecrchar);
+				}
+				break;
+			}
+			default:
+			{
+				const char flagStr[2] = {*format, '\0'};
+				g_sdlTxtColor = 7;
+				g_sdlTxtBackground = 0;
+				g_sdlTxtCursorPosX = g_sdlTxtCursorPosY = 0;
+				BE_SDL_clrscr();
+				// Should be safe...
+				BE_SDL_puts("REFKEEN ERROR in BE_SDL_vprintf - Unsupported format specifier flag:");
+				BE_SDL_puts(flagStr);
+
+				BE_SDL_HandleExit(1);
+			}
+			}
+		}
+		else
+		{
+			currMemByte = BEL_SDL_printchar(currMemByte, *format, iscolored, requirecrchar);
+		}
+		++format;
+	}
+	g_sdlDoRefreshGfxOutput = true;
 }
 
 static void BEL_SDL_FinishHostDisplayUpdate(void)

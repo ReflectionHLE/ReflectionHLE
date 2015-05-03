@@ -663,9 +663,7 @@ void Quit (const id0_char_t *error, ...)
 
 	if (error && *error)
 	{
-		// FIXME FIXME FIXME (REFKEEN)
-		BE_Cross_Simplified_printf(error);
-		//vprintf(error,ap);
+		BE_SDL_vprintf(error,ap);
 		exit_code = 1;
 	}
 
@@ -705,7 +703,7 @@ void Quit (const id0_char_t *error, ...)
 		if (execv("LOADSCN.EXE", id0_argv) == -1)
 		{
 			BE_SDL_clrscr();
-			BE_Cross_puts("Couldn't find executable LOADSCN.EXE.\n");
+			BE_SDL_puts("Couldn't find executable LOADSCN.EXE.\n");
 			BE_SDL_HandleExit(1);
 		}
 #endif
@@ -1023,14 +1021,10 @@ void abysgame_exe_main (void)
 			break;
 
 			case 2:
-				// TODO (REFKEEN) Should we fix this?
-				// It is a simplified printf after all...
 #ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-				BE_Cross_Simplified_printf(GAMENAME"   "VERSION"   "REVISION"\n");
-				//BE_Cross_Simplified_printf("%s   %s   %s\n",GAMENAME,VERSION,REVISION);
+				BE_SDL_printf("%s   %s   %s\n",GAMENAME,VERSION,REVISION);
 #else
-				BE_Cross_Simplified_printf(GAMENAME"  "VERSION"  rev "REVISION"\n");
-				//BE_Cross_Simplified_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
+				BE_SDL_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
 #endif
 				BE_SDL_HandleExit(0);
 			break;
@@ -1048,9 +1042,9 @@ void abysgame_exe_main (void)
 	{
 		BE_SDL_clrscr();
 #ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-		BE_Cross_puts("You must type START at the DOS prompt to run CATACOMB ABYSS.");
+		BE_SDL_puts("You must type START at the DOS prompt to run CATACOMB ABYSS.");
 #else
-		BE_Cross_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
+		BE_SDL_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
 #endif
 		BE_SDL_HandleExit(0);
 	}

@@ -50,25 +50,6 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 int BE_Cross_toupper(int c);
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 
-// puts replacement that writes to emulated text mode memory
-inline void BE_Cross_puts(const char *str)
-{
-	void BE_SDL_puts(const char *str);
-	BE_SDL_puts(str);
-}
-// Limited printf replacement (doesn't accept % format specifiers, but \n is OK)
-inline void BE_Cross_Simplified_printf(const char *str)
-{
-	void BE_SDL_Simplified_printf(const char *str);
-	BE_SDL_Simplified_printf(str);
-}
-// Similar limited cprintf replacement
-inline void BE_Cross_Simplified_cprintf(const char *str)
-{
-	void BE_SDL_Simplified_cprintf(const char *str);
-	BE_SDL_Simplified_cprintf(str);
-}
-
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
 size_t BE_Cross_readInt8LE(int handle, void *ptr);
 size_t BE_Cross_readInt16LE(int handle, void *ptr);

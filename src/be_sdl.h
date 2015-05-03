@@ -156,10 +156,12 @@ void BE_SDL_textbackground(int color);
 void BE_SDL_clrscr(void);
 void BE_SDL_MoveTextCursorTo(int x, int y);
 void BE_SDL_ToggleTextCursor(bool isEnabled);
-// Replacement for puts function that prints to emulated text mode memory
+// Replacements for functions that print to (emulated) text mode memory
+// (Note: Probably just partially implemented)
 void BE_SDL_puts(const char *str);
-// Limited replacement for printf, does NOT handle formatting (apart from '\n')
-void BE_SDL_Simplified_printf(const char *str);
+void BE_SDL_printf(const char *str, ...);
+void BE_SDL_vprintf(const char *str, va_list args);
+void BE_SDL_cprintf(const char *str, ...); // Non-standard
 
 void BE_SDL_MarkGfxForUpdate(void);
 

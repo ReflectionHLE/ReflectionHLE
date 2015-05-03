@@ -97,10 +97,7 @@ uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void)
 #endif
 
 // C99
-void BE_Cross_puts(const char *str);
-void BE_Cross_Simplified_printf(const char *str);
-void BE_Cross_Simplified_cprintf(const char *str);
-inline int32_t BE_Mem_FarCoreLeft(void);
+int32_t BE_Mem_FarCoreLeft(void);
 
 size_t BE_Cross_readInt8LE(int handle, void *ptr)
 {
@@ -172,7 +169,7 @@ size_t BE_Cross_readInt24LEBuffer(int handle, void *ptr, size_t nbyte)
 #else
 	size_t result = read(handle, ptr, nbyte);
 	uint8_t tempbyte;
-	// Let's ensure there's no buffer overflow in case nbyte is not divisble by 3
+	// Let's ensure there's no buffer overflow in case nbyte is not divisible by 3
 	for (uint8_t *currbyteptr = (uint8_t *)ptr, *endbyteptr = currbyteptr + (nbyte/3)*3; currbyteptr < endbyteptr; currbyteptr += 3)
 	{
 		tempbyte = *currbyteptr;
@@ -445,6 +442,3 @@ void BE_Cross_Brandomize(void)
 {
 	BEL_Cross_srand(time(NULL));
 }
-
-// C99
-int32_t BE_Mem_FarCoreLeft(void);

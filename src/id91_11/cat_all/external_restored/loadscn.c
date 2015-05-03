@@ -44,14 +44,14 @@ void id0_loadscn_exe_main (void)
 		BE_SDL_clrscr();
 		BE_SDL_textcolor(15);
 		BE_SDL_textbackground(1);
-		BE_Cross_Simplified_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 LOADSCN                              \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 by Nolan Martin                      \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
-		BE_Cross_Simplified_printf("\n");
-		BE_Cross_Simplified_printf("/VER  - version number\n");
-		BE_Cross_Simplified_printf("/?    - this help\n");
+		BE_SDL_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
+		BE_SDL_cprintf("\xB3 LOADSCN                              \xB3\r\n");
+		BE_SDL_cprintf("\xB3 by Nolan Martin                      \xB3\r\n");
+		BE_SDL_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
+		BE_SDL_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
+		BE_SDL_printf("\n");
+		BE_SDL_printf("/VER  - version number\n");
+		BE_SDL_printf("/?    - this help\n");
 		BE_SDL_HandleExit(0);
 	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/VER"))
@@ -59,18 +59,16 @@ void id0_loadscn_exe_main (void)
 		BE_SDL_clrscr();
 		BE_SDL_textcolor(15);
 		BE_SDL_textbackground(1);
-		BE_Cross_Simplified_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 LOADSCN                              \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 by Nolan Martin                      \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
-		BE_Cross_Simplified_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
-		BE_Cross_Simplified_printf("\n");
-		// TODO (REFKEEN) No need but...
-		BE_Cross_Simplified_printf("LOADSCN    VERSION 1.10s   QA[0]\n");
-		//BE_Cross_Simplified_printf("%s %s\n", "LOADSCN  ", " VERSION 1.10s   QA[0]");
-		BE_Cross_Simplified_printf("\n");
-		BE_Cross_Simplified_printf("This program requires an EGA monitor or better,\n");
-		BE_Cross_Simplified_printf("                640K, and MS-DOS 3.0 or better.\n");
+		BE_SDL_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
+		BE_SDL_cprintf("\xB3 LOADSCN                              \xB3\r\n");
+		BE_SDL_cprintf("\xB3 by Nolan Martin                      \xB3\r\n");
+		BE_SDL_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
+		BE_SDL_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
+		BE_SDL_printf("\n");
+		BE_SDL_printf("%s %s\n", "LOADSCN  ", " VERSION 1.10s   QA[0]");
+		BE_SDL_printf("\n");
+		BE_SDL_printf("This program requires an EGA monitor or better,\n");
+		BE_SDL_printf("                640K, and MS-DOS 3.0 or better.\n");
 		BE_SDL_HandleExit(0);
 	}
 	if (BE_Cross_strcasecmp(id0_argv[1], "LAST.SHL"))
@@ -123,9 +121,7 @@ void loadscn_TrashProg (const id0_char_t *OutMsg, ...)
 		va_start(ap, OutMsg);
 
 		if (OutMsg && *OutMsg)
-		// TODO (REFKEEN) PROPERLY IMPLEMENT!
-			BE_Cross_Simplified_printf(OutMsg);
-			//vprintf(OutMsg,ap);
+			BE_SDL_vprintf(OutMsg,ap);
 
 		va_end(ap);
 	}

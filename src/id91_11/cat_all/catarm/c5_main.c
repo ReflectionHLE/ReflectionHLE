@@ -739,9 +739,7 @@ void Quit (const id0_char_t *error, ...)
 
 	if (error && *error)
 	{
-		// FIXME FIXME FIXME (REFKEEN)
-		BE_Cross_Simplified_printf(error);
-		//vprintf(error,ap);
+		BE_SDL_vprintf(error,ap);
 		exit_code = 1;
 	}
 #ifndef CATALOG
@@ -767,9 +765,9 @@ void Quit (const id0_char_t *error, ...)
 #if 0
 		if (execv("LOADSCN.EXE", id0_argv) == -1)
 		{
-			clrscr();
-			puts("Couldn't find executable LOADSCN.EXE.\n");
-			exit(1);
+			BE_SDL_clrscr();
+			BE_SDL_puts("Couldn't find executable LOADSCN.EXE.\n");
+			BE_SDL_HandleExit(1);
 		}
 #endif
 		id0_loadscn_exe_main(id0_argc+1, id0_argv);
@@ -1143,14 +1141,10 @@ void armgame_exe_main (void)
 			break;
 
 			case 2:
-				// TODO (REFKEEN) Should we fix this?
-				// It is a simplified printf after all...
-				BE_Cross_Simplified_printf(GAMENAME"\n");
-				//printf("%s\n", GAMENAME);
-				BE_Cross_Simplified_printf("Copyright 1992-93 Softdisk Publishing\n");
-				BE_Cross_Simplified_printf(VERSION" "REVISION"\n");
-				//printf("%s %s\n",VERSION,REVISION);
-				BE_Cross_Simplified_printf("\n");
+				BE_SDL_printf("%s\n", GAMENAME);
+				BE_SDL_printf("Copyright 1992-93 Softdisk Publishing\n");
+				BE_SDL_printf("%s %s\n",VERSION,REVISION);
+				BE_SDL_printf("\n");
 				BE_SDL_HandleExit(0);
 			break;
 

@@ -671,7 +671,7 @@ SDL_ALService(void)
 	{
 		w = *sqHackPtr++;
 		sqHackTime = alTimeCount + *sqHackPtr++;
-		// TODO/FIXME: Endianness??
+		// REFKEEN - This is the case on Little and Big Endian altogether
 		a = *((id0_byte_t *)&w);
 		v = *((id0_byte_t *)&w + 1);
 #if 0

@@ -1120,10 +1120,7 @@ done:
 	{
 		MusicGroup *musicPtr = (MusicGroup *)audiosegs[chunk];
 		musicPtr->length = BE_Cross_Swap16LE(musicPtr->length);
-		for (id0_word_t *musicValPtr = musicPtr->values, *musicValEndPtr = musicValPtr + (musicPtr->length)/2; musicValPtr < musicValEndPtr; ++musicValPtr)
-		{
-			*musicValPtr = BE_Cross_Swap16LE(*musicValPtr);
-		}
+		// Note: We do *not* swap the words pointed by musicPtr->values
 	}
 #endif
 }

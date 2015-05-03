@@ -561,7 +561,7 @@ static void TrashProg(const id0_char_t *OutMsg)
 
 	if (OutMsg)
 	{
-		BE_Cross_puts(OutMsg);
+		BE_SDL_puts(OutMsg);
 		//printf("%s\n",OutMsg);
 		error = 1;
 	}

@@ -151,14 +151,14 @@ void intro_exe_main(void)
 		BE_SDL_clrscr();
 		BE_SDL_textcolor(15);
 		BE_SDL_textbackground(1);
-		BE_Cross_Simplified_cprintf(FRAMETOP_STR);
-		BE_Cross_Simplified_cprintf(TITLE_STR);
-		BE_Cross_Simplified_cprintf(AUTHOR_STR);
-		BE_Cross_Simplified_cprintf(COPYRIGHT_STR);
-		BE_Cross_Simplified_cprintf(FRAMEBOT_STR);
-		BE_Cross_Simplified_printf("\n");
-		BE_Cross_Simplified_printf("/VER  - version number\n");
-		BE_Cross_Simplified_printf("/?    - this help\n");
+		BE_SDL_cprintf(FRAMETOP_STR);
+		BE_SDL_cprintf(TITLE_STR);
+		BE_SDL_cprintf(AUTHOR_STR);
+		BE_SDL_cprintf(COPYRIGHT_STR);
+		BE_SDL_cprintf(FRAMEBOT_STR);
+		BE_SDL_printf("\n");
+		BE_SDL_printf("/VER  - version number\n");
+		BE_SDL_printf("/?    - this help\n");
 		BE_SDL_HandleExit(0);
 	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/VER"))
@@ -166,18 +166,16 @@ void intro_exe_main(void)
 		BE_SDL_clrscr();
 		BE_SDL_textcolor(15);
 		BE_SDL_textbackground(1);
-		BE_Cross_Simplified_cprintf(FRAMETOP_STR);
-		BE_Cross_Simplified_cprintf(TITLE_STR);
-		BE_Cross_Simplified_cprintf(AUTHOR_STR);
-		BE_Cross_Simplified_cprintf(COPYRIGHT_STR);
-		BE_Cross_Simplified_cprintf(FRAMEBOT_STR);
-		BE_Cross_Simplified_printf("\n");
-		// TODO (REFKEEN) No need but...
-		BE_Cross_Simplified_printf(VERSION_TITLE_STR" "VERSION_REV_STR"\n");
-		//BE_Cross_Simplified_printf("%s %s\n", VERSION_TITLE_STR, VERSION_REV_STR);
-		BE_Cross_Simplified_printf("\n");
-		BE_Cross_Simplified_printf("This program requires an EGA monitor or better,\n");
-		BE_Cross_Simplified_printf("                640K, and MS-DOS 3.0 or better.\n");
+		BE_SDL_cprintf(FRAMETOP_STR);
+		BE_SDL_cprintf(TITLE_STR);
+		BE_SDL_cprintf(AUTHOR_STR);
+		BE_SDL_cprintf(COPYRIGHT_STR);
+		BE_SDL_cprintf(FRAMEBOT_STR);
+		BE_SDL_printf("\n");
+		BE_SDL_printf("%s %s\n", VERSION_TITLE_STR, VERSION_REV_STR);
+		BE_SDL_printf("\n");
+		BE_SDL_printf("This program requires an EGA monitor or better,\n");
+		BE_SDL_printf("                640K, and MS-DOS 3.0 or better.\n");
 		BE_SDL_HandleExit(0);
 	}
 	// REFKEEN havebeep is always false (and code was removed for Apocalypse)
@@ -421,7 +419,7 @@ void intro_exe_main(void)
 					if (execv("LOADSCN.EXE", id0_argv) == -1)
 					{
 						SetScreenMode(1);
-						BE_Cross_Simplified_puts("Couldn't find executable LOADSCN.EXE.\n");
+						BE_SDL_puts("Couldn't find executable LOADSCN.EXE.\n");
 						BE_SDL_HandleExit(1);
 					}
 #endif
@@ -445,14 +443,14 @@ void intro_exe_main(void)
 				{
 					SetScreenMode(1);
 					// REFKEEN: This is currently unsupported
-					BE_Cross_Simplified_printf("ERROR : Can't find executable.\nOr rather, the \"Demo\" feature is unsupported in this source port.\n");
+					BE_SDL_printf("ERROR : Can't find executable.\nOr rather, the \"Demo\" feature is unsupported in this source port.\n");
 					BE_SDL_BiosScanCode(0);
 					SetScreenMode(3);
 					general_loop_var = 600;
 #if 0
 					if (execv("DEMOCAT.EXE", id0_argv) == -1)
 					{
-						BE_Cross_Simplified_printf("ERROR : Can't find executable.\n");
+						BE_SDL_printf("ERROR : Can't find executable.\n");
 						BE_SDL_HandleExit(0);
 					}
 #endif
@@ -649,9 +647,7 @@ void intro_TrashProg (const id0_char_t *OutMsg, ...)
 		va_start(ap, OutMsg);
 
 		if (OutMsg && *OutMsg)
-		// TODO (REFKEEN) PROPERLY IMPLEMENT!
-			BE_Cross_Simplified_printf(OutMsg);
-			//vprintf(OutMsg,ap);
+			BE_SDL_vprintf(OutMsg,ap);
 
 		va_end(ap);
 	}

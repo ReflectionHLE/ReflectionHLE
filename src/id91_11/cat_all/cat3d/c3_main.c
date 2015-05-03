@@ -610,7 +610,7 @@ void Quit (const id0_char_t *error)
 	ShutdownId ();
 	if (error && *error)
 	{
-	  BE_Cross_puts(error);
+	  BE_SDL_puts(error);
 	  BE_SDL_HandleExit(1);
 	}
 
@@ -881,30 +881,30 @@ void cat3d_exe_main (void)
 #ifdef REFKEEN_VER_CAT3D_122
 	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
-		BE_Cross_Simplified_printf("Catacomb 3-D version 1.22  (Rev 1)\n");
-		BE_Cross_Simplified_printf("Copyright 1991-93 Softdisk Publishing\n");
-		BE_Cross_Simplified_printf("Developed for use with 100%% IBM compatibles\n");
-		BE_Cross_Simplified_printf("that have 640K memory and DOS version 3.3 or later\n");
-		BE_Cross_Simplified_printf("and EGA graphics or better.\n");
+		BE_SDL_printf("Catacomb 3-D version 1.22  (Rev 1)\n");
+		BE_SDL_printf("Copyright 1991-93 Softdisk Publishing\n");
+		BE_SDL_printf("Developed for use with 100%% IBM compatibles\n");
+		BE_SDL_printf("that have 640K memory and DOS version 3.3 or later\n");
+		BE_SDL_printf("and EGA graphics or better.\n");
 		BE_SDL_HandleExit(0);
 	}
 
 	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
 	{
-		BE_Cross_Simplified_printf("Catacomb 3-D version 1.22\n");
-		BE_Cross_Simplified_printf("Copyright 1991-93 Softdisk Publishing\n\n");
-		BE_Cross_Simplified_printf("Syntax:\n");
-		BE_Cross_Simplified_printf("CAT3D [/<switch>]\n\n");
-		BE_Cross_Simplified_printf("Switch       What it does\n");
-		BE_Cross_Simplified_printf("/?           This Information\n");
-		BE_Cross_Simplified_printf("/VER         Display Program Version Information\n");
-		BE_Cross_Simplified_printf("/COMP        Fix problems with SVGA screens\n");
-		BE_Cross_Simplified_printf("/NOAL        No AdLib or SoundBlaster detection\n");
-		BE_Cross_Simplified_printf("/NOJOYS      Tell program to ignore joystick\n");
-		BE_Cross_Simplified_printf("/NOMOUSE     Tell program to ignore mouse\n");
-		BE_Cross_Simplified_printf("/HIDDENCARD  Overrides video detection\n\n");
-		BE_Cross_Simplified_printf("Each switch must include a '/' and multiple switches\n");
-		BE_Cross_Simplified_printf("must be seperated by at least one space.\n\n");
+		BE_SDL_printf("Catacomb 3-D version 1.22\n");
+		BE_SDL_printf("Copyright 1991-93 Softdisk Publishing\n\n");
+		BE_SDL_printf("Syntax:\n");
+		BE_SDL_printf("CAT3D [/<switch>]\n\n");
+		BE_SDL_printf("Switch       What it does\n");
+		BE_SDL_printf("/?           This Information\n");
+		BE_SDL_printf("/VER         Display Program Version Information\n");
+		BE_SDL_printf("/COMP        Fix problems with SVGA screens\n");
+		BE_SDL_printf("/NOAL        No AdLib or SoundBlaster detection\n");
+		BE_SDL_printf("/NOJOYS      Tell program to ignore joystick\n");
+		BE_SDL_printf("/NOMOUSE     Tell program to ignore mouse\n");
+		BE_SDL_printf("/HIDDENCARD  Overrides video detection\n\n");
+		BE_SDL_printf("Each switch must include a '/' and multiple switches\n");
+		BE_SDL_printf("must be seperated by at least one space.\n\n");
 
 		BE_SDL_HandleExit(0);
 	}
