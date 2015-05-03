@@ -1266,16 +1266,10 @@ static void BEL_SDL_vprintf_impl(const char *format, va_list args, bool iscolore
 			}
 			default:
 			{
-				const char flagStr[2] = {*format, '\0'};
-				g_sdlTxtColor = 7;
-				g_sdlTxtBackground = 0;
-				g_sdlTxtCursorPosX = g_sdlTxtCursorPosY = 0;
-				BE_SDL_clrscr();
-				// Should be safe...
-				BE_SDL_puts("REFKEEN ERROR in BE_SDL_vprintf - Unsupported format specifier flag:");
-				BE_SDL_puts(flagStr);
-
-				BE_SDL_HandleExit(1);
+				// Do NOT constify this cause of hack...
+				char errorMsg[] = "REFKEEN ERROR in BE_SDL_vprintf - Unsupported format specifier flag: X";
+				errorMsg[strlen(errorMsg)-1] = *format; // Hack
+				BE_SDL_ExitWithErrorMsg(errorMsg);
 			}
 			}
 		}

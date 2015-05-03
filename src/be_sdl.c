@@ -340,7 +340,13 @@ void BE_SDL_HandleExit(int status)
 	exit(0);
 }
 
-
+void BE_SDL_ExitWithErrorMsg(const char *msg)
+{
+	BE_SDL_SetScreenMode(3);
+	BE_SDL_puts(msg);
+	BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "%s\n", msg);
+	BE_SDL_HandleExit(1);
+}
 
 // Enumerated by SDL_GameControllerButton, for most
 static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
@@ -511,9 +517,7 @@ static void BEL_SDL_ParseSetting_AlternativeControlSchemeKeyMap(const char *keyp
 	}
 	if (keyindex == CONTROLSCHEME_CONFIG_BUTMAP_AFTERLAST)
 	{
-		BE_SDL_SetScreenMode(3);
-		BE_SDL_printf("Error in BEL_SDL_ParseSetting_AlternativeControlSchemeKeyMap: Invalid config key, this shouldn't happen!\n");
-		BE_SDL_HandleExit(0);
+		BE_SDL_ExitWithErrorMsg("Error in BEL_SDL_ParseSetting_AlternativeControlSchemeKeyMap: Invalid config key, this shouldn't happen!\n");
 	}
 	for (valindex = 0; valindex < (int)(sizeof(g_sdlControlSchemeKeyMapCfgVals)/sizeof(*g_sdlControlSchemeKeyMapCfgVals)); ++valindex)
 	{
@@ -1344,9 +1348,7 @@ void BE_SDL_AltControlScheme_Push(void)
 	++g_sdlControllertoScanCodeMaps.currPtr;
 	if (g_sdlControllertoScanCodeMaps.currPtr == g_sdlControllertoScanCodeMaps.endPtr)
 	{
-		BE_SDL_SetScreenMode(3);
-		BE_SDL_printf("Error in BE_SDL_AltControlScheme_Push: Out of stack bounds!\n");
-		BE_SDL_HandleExit(0);
+		BE_SDL_ExitWithErrorMsg("Error in BE_SDL_AltControlScheme_Push: Out of stack bounds!\n");
 	}
 
 	g_sdlControllerActualCurrPtr = g_sdlControllertoScanCodeMaps.currPtr;
@@ -1382,9 +1384,7 @@ void BE_SDL_AltControlScheme_Pop(void)
 
 	if (g_sdlControllertoScanCodeMaps.currPtr == &g_sdlControllertoScanCodeMaps.stack[0])
 	{
-		BE_SDL_SetScreenMode(3);
-		BE_SDL_printf("Error in BE_SDL_AltControlScheme_Pop: Popped more than necessary!\n");
-		BE_SDL_HandleExit(0);
+		BE_SDL_ExitWithErrorMsg("Error in BE_SDL_AltControlScheme_Pop: Popped more than necessary!\n");
 	}
 	--g_sdlControllertoScanCodeMaps.currPtr;
 
@@ -1424,12 +1424,13 @@ void BEL_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes_Low(const char *sca
 		}
 		if (++counter == 9)
 		{
-			// Better be consistent
-			BE_SDL_SetScreenMode(3);
-			BE_SDL_puts("Error in BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes:");
-			BE_SDL_puts("Gotten too many scancodes as the input, input scancodes string:");
-			BE_SDL_puts(scanCodes); // Do NOT use printf cause if we support some formatting this is not safe!
-			BE_SDL_HandleExit(0);
+			char buffer[3*80];
+			strcpy(buffer, "Error in BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes:\n"
+			               "Gotten too many scancodes as the input, input scancodes string:\n"
+			);
+			strncat(buffer+strlen(buffer), scanCodes, 80);
+
+			BE_SDL_ExitWithErrorMsg(buffer);
 		}
 		*actualScanCodePtr++ = *chPtr;
 		controllerMapPtr->buttonsMap[sdlButtonNum].val = *chPtr;
