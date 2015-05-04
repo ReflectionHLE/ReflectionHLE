@@ -35,9 +35,9 @@ int main(int argc, char **argv)
 		// REFKEEN - Hack, but we don't access argv directly anyway...
 		id0_argv = (const char **)argv;
 	}
-	BE_SDL_InitAll();
+	BE_ST_InitAll();
 	BE_Cross_Compat_FillObjStatesWithDOSPointers(); // Saved games compatibility
 	second_main();
-	BE_SDL_ShutdownAll();
+	BE_ST_ShutdownAll();
 	return 0;
 }

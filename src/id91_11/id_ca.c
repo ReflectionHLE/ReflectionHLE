@@ -1986,7 +1986,7 @@ void	CAL_DialogUpdate (void)
 		lastx = xh;
 		VW_UpdateScreen();
 		// (REFKEEN) HACK: Ensure this is at least seen
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 }
 
@@ -2012,7 +2012,7 @@ void	CAL_DialogFinish (void)
 #endif
 	VW_UpdateScreen();
 	// (REFKEEN) HACK: Ensure this is at least seen
-	BE_SDL_ShortSleep();
+	BE_ST_ShortSleep();
 
 }
 

@@ -138,7 +138,7 @@ typedef	struct
 extern int id0_argc;
 extern const char **id0_argv;
 
-#include "be_sdl.h"
+#include "be_st.h"
 
 #include "id_mm.h"
 #include "id_ca.h"

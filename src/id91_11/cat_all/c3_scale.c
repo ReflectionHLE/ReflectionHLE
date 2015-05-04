@@ -275,7 +275,7 @@ void ExecuteCompScale(const id0_byte_t *codePtr, id0_unsigned_t egaDestOff, cons
 			// Then the original code applied an "and" operation to
 			// that input (of 0xff) with srcVal, using the given
 			// masks to select correct bits in each plane.
-			BE_SDL_EGAUpdateGFXPixel4bpp(egaDestOff+heightofs, srcVal, mask);
+			BE_ST_EGAUpdateGFXPixel4bpp(egaDestOff+heightofs, srcVal, mask);
 		}
 	}
 }
@@ -404,7 +404,7 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 
 	width = lastline-firstline+1;
 
-	BE_SDL_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, width), (id0_byte_t *)&width, sizeof(width), 1);
+	BE_ST_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, width), (id0_byte_t *)&width, sizeof(width), 1);
 	//work->width = width;
 	codeEgaOff = workEgaOff+offsetof(t_compshape, codeofs)+width*sizeof(id0_unsigned_t);
 	//codeEgaOff = workEgaOff+offsetof(t_compshape, codeofs[width]);
@@ -419,7 +419,7 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 	for (x=firstline;x<=lastline;x++)
 		for (y=0;y<64;y++)
 			if (spotvis[y][x] != BACKGROUNDPIX)
-				BE_SDL_EGAUpdateGFXByte(codeEgaOff++, spotvis[y][x], 1);
+				BE_ST_EGAUpdateGFXByte(codeEgaOff++, spotvis[y][x], 1);
 				//*code++ = spotvis[y][x];
 
 //
@@ -428,8 +428,8 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 	for (x=firstline;x<=lastline;x++)
 	{
 		id0_unsigned_t tempUnsignedWord = codeEgaOff-workEgaOff;
-		BE_SDL_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, codeofs)+(x-firstline)*sizeof(id0_unsigned_t), (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
-		//BE_SDL_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, codeofs[x-firstline]), (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
+		BE_ST_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, codeofs)+(x-firstline)*sizeof(id0_unsigned_t), (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
+		//BE_ST_EGAUpdateGFXBuffer(workEgaOff+offsetof(t_compshape, codeofs[x-firstline]), (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
 		//work->codeofs[x-firstline] = FP_OFF(code);
 
 		y=0;
@@ -460,49 +460,49 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 		//
 		// compile the scale call
 		//
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x8b, 1);		// mov bx,[lastpix*2]
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x1e, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x8b, 1);		// mov bx,[lastpix*2]
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x1e, 1);
 			tempUnsignedWord = lastpix*2;
-			BE_SDL_EGAUpdateGFXBuffer(codeEgaOff, (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
+			BE_ST_EGAUpdateGFXBuffer(codeEgaOff, (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
 			codeEgaOff += 2;
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x8b, 1);		// mov cx,[bx]
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x0f, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x8b, 1);		// mov cx,[bx]
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x0f, 1);
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0xc6, 1);		// move [BYTE bx],0xcb
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x07, 1);
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0xcb, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0xc6, 1);		// move [BYTE bx],0xcb
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x07, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0xcb, 1);
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0xa1, 1);		// mov ax,[firstpix*2]	/*************
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0xa1, 1);		// mov ax,[firstpix*2]	/*************
 			tempUnsignedWord = firstpix*2;
-			BE_SDL_EGAUpdateGFXBuffer(codeEgaOff, (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
+			BE_ST_EGAUpdateGFXBuffer(codeEgaOff, (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
 			codeEgaOff += 2;
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x36, 1);		// mov [ss:0],ax
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0xa3, 1);
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x00, 1);
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x00, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x36, 1);		// mov [ss:0],ax
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0xa3, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x00, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x00, 1);
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x8e, 1);		// mov ds,dx	(mov ds,cs)
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0xda, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x8e, 1);		// mov ds,dx	(mov ds,cs)
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0xda, 1);
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0xbe, 1);		// mov si,OFFSET pixelofs-firstpixel
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0xbe, 1);		// mov si,OFFSET pixelofs-firstpixel
 			tempUnsignedWord = pixelofs-firstpix;
-			BE_SDL_EGAUpdateGFXBuffer(codeEgaOff, (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
+			BE_ST_EGAUpdateGFXBuffer(codeEgaOff, (id0_byte_t *)&tempUnsignedWord, sizeof(tempUnsignedWord), 1);
 			codeEgaOff += 2;
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0xff, 1);		// call [DWORD bp]
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x5e, 1);
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x00, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0xff, 1);		// call [DWORD bp]
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x5e, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x00, 1);
 
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x8e, 1);		// mov ds,[bp+2]
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x5e, 1);
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x02, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x8e, 1);		// mov ds,[bp+2]
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x5e, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x02, 1);
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x89, 1);		// mov [bx],cx
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x89, 1);		// mov [bx],cx
 
-			BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0x0f, 1);
+			BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0x0f, 1);
 #if 0
 			*code++ = 0x8b;		// mov bx,[lastpix*2]
 			*code++ = 0x1e;
@@ -547,7 +547,7 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 	//
 	// retf
 	//
-		BE_SDL_EGAUpdateGFXByte(codeEgaOff++, 0xcb, 1);
+		BE_ST_EGAUpdateGFXByte(codeEgaOff++, 0xcb, 1);
 		//*code++ = 0xcb;
 	}
 
@@ -564,7 +564,7 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 
 #endif
 	MM_GetPtr ((memptr *)finalspot,totalsize);
-	BE_SDL_EGAFetchGFXBuffer((id0_byte_t *)*finalspot, workEgaOff, totalsize, 0);
+	BE_ST_EGAFetchGFXBuffer((id0_byte_t *)*finalspot, workEgaOff, totalsize, 0);
 	//_fmemcpy ((id0_byte_t id0_seg *)(*finalspot),(id0_byte_t id0_seg *)work,totalsize);
 //	MM_FreePtr ((memptr *)&work);
 

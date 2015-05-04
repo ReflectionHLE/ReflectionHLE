@@ -1,7 +1,7 @@
 #include "SDL.h"
 
 #include "be_cross.h"
-#include "be_sdl.h"
+#include "be_st.h"
 #include "opl/dbopl.h"
 
 #define PC_PIT_RATE 1193182
@@ -33,8 +33,8 @@ static int g_sdlALSampleRateConvTable[OPL_SAMPLE_RATE];
 static int g_sdlALSampleRateConvCurrIndex; // Index to g_sdlALSampleRateConvTable
 static int g_sdlALSampleRateConvCounter; // Counter for current cell of g_sdlALSampleRateConvTable
 
-//#define BE_SDL_ENABLE_LOW_PASS_FILTERING 1
-#ifdef BE_SDL_ENABLE_LOW_PASS_FILTERING
+//#define BE_ST_ENABLE_LOW_PASS_FILTERING 1
+#ifdef BE_ST_ENABLE_LOW_PASS_FILTERING
 // Used for low-pass filtering
 static float g_sdlALLastSampleForFiltering;
 static float g_sdlALFilteringAlpha;
@@ -56,10 +56,10 @@ static uint32_t g_sdlLastTicks;
 // (SD_GetTimeCount/SD_SetTimeCount should be called instead)
 static uint32_t g_sdlTimeCount;
 
-static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len);
+static void BEL_ST_CallBack(void *unused, Uint8 *stream, int len);
 static inline bool YM3812Init(int numChips, int clock, int rate);
 
-void BE_SDL_InitAudio(void)
+void BE_ST_InitAudio(void)
 {
 	g_sdlAudioSubsystemUp = false;
 	g_sdlEmulatedOPLChipReady = false;
@@ -75,7 +75,7 @@ void BE_SDL_InitAudio(void)
 			g_sdlAudioSpec.format = AUDIO_S16;
 			g_sdlAudioSpec.channels = 1;
 			g_sdlAudioSpec.samples = 512;
-			g_sdlAudioSpec.callback = BEL_SDL_CallBack;
+			g_sdlAudioSpec.callback = BEL_ST_CallBack;
 			g_sdlAudioSpec.userdata = NULL;
 			if (SDL_OpenAudio(&g_sdlAudioSpec, NULL))
 			{
@@ -122,7 +122,7 @@ void BE_SDL_InitAudio(void)
 					// Using uint64_t cause an overflow is possible
 					g_sdlALSampleRateConvTable[i] = ((uint64_t)(i+1)*(uint64_t)g_sdlAudioSpec.freq/OPL_SAMPLE_RATE)-(uint64_t)i*(uint64_t)g_sdlAudioSpec.freq/OPL_SAMPLE_RATE;
 				}
-#ifdef BE_SDL_ENABLE_LOW_PASS_FILTERING
+#ifdef BE_ST_ENABLE_LOW_PASS_FILTERING
 				// Low-pass filtering can help in such a case
 				if (g_sdlAudioSpec.freq < OPL_SAMPLE_RATE)
 				{
@@ -137,7 +137,7 @@ void BE_SDL_InitAudio(void)
 	}
 }
 
-void BE_SDL_ShutdownAudio(void)
+void BE_ST_ShutdownAudio(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
@@ -150,7 +150,7 @@ void BE_SDL_ShutdownAudio(void)
 	g_sdlCallbackSDFuncPtr = 0; // Just in case this may be called after the audio subsystem was never really started (manual calls to callback)
 }
 
-void BE_SDL_StartAudioSDService(void (*funcPtr)(void))
+void BE_ST_StartAudioSDService(void (*funcPtr)(void))
 {
 	g_sdlCallbackSDFuncPtr = funcPtr;
 	if (g_sdlAudioSubsystemUp)
@@ -159,7 +159,7 @@ void BE_SDL_StartAudioSDService(void (*funcPtr)(void))
 	}
 }
 
-void BE_SDL_StopAudioSDService(void)
+void BE_ST_StopAudioSDService(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
@@ -168,7 +168,7 @@ void BE_SDL_StopAudioSDService(void)
 	g_sdlCallbackSDFuncPtr = 0;
 }
 
-void BE_SDL_LockAudioRecursively(void)
+void BE_ST_LockAudioRecursively(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
@@ -176,7 +176,7 @@ void BE_SDL_LockAudioRecursively(void)
 	}
 }
 
-void BE_SDL_UnlockAudioRecursively(void)
+void BE_ST_UnlockAudioRecursively(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
@@ -185,7 +185,7 @@ void BE_SDL_UnlockAudioRecursively(void)
 }
 
 // Use this ONLY if audio subsystem isn't properly started up
-void BE_SDL_PrepareForManualAudioSDServiceCall(void)
+void BE_ST_PrepareForManualAudioSDServiceCall(void)
 {
 	// HACK: Rather than using SDL_PauseAudio for deciding if
 	// we call, just check if g_sdlCallbackSDFuncPtr is non-NULL
@@ -200,19 +200,19 @@ void BE_SDL_PrepareForManualAudioSDServiceCall(void)
 			uint8_t buff[2*NUM_OF_SAMPLES_WITH_DISABLED_SUBSYSTEM];
 			uint32_t bytesPassed = currTicks-s_lastTicks; // Using a sample rate of 500Hz here, or equivalenty the byte rate of 1000Hz
 			bytesPassed &= ~1; // Ensure value is even (16 bits per sample)
-			BEL_SDL_CallBack(NULL, buff, (bytesPassed <= sizeof(buff)) ? bytesPassed : sizeof(buff));
+			BEL_ST_CallBack(NULL, buff, (bytesPassed <= sizeof(buff)) ? bytesPassed : sizeof(buff));
 			s_lastTicks = currTicks;
 		}
 	}
 }
 
-bool BE_SDL_IsEmulatedOPLChipReady(void)
+bool BE_ST_IsEmulatedOPLChipReady(void)
 {
 	return g_sdlEmulatedOPLChipReady;
 }
 
 // Frequency is about 1193182Hz/spkVal
-void BE_SDL_PCSpeakerOn(uint16_t spkVal)
+void BE_ST_PCSpeakerOn(uint16_t spkVal)
 {
 	g_sdlPCSpeakerOn = true;
 	g_sdlCurrentBeepSample = 0;
@@ -220,23 +220,23 @@ void BE_SDL_PCSpeakerOn(uint16_t spkVal)
 	g_sdlBeepHalfCycleCounterUpperBound = g_sdlAudioSpec.freq * spkVal;
 }
 
-void BE_SDL_PCSpeakerOff(void)
+void BE_ST_PCSpeakerOff(void)
 {
 	g_sdlPCSpeakerOn = false;
 }
 
-void BE_SDL_BSound(uint16_t frequency)
+void BE_ST_BSound(uint16_t frequency)
 {
-	BE_SDL_LockAudioRecursively();
-	BE_SDL_PCSpeakerOn(PC_PIT_RATE/(uint32_t)frequency);
-	BE_SDL_UnlockAudioRecursively();
+	BE_ST_LockAudioRecursively();
+	BE_ST_PCSpeakerOn(PC_PIT_RATE/(uint32_t)frequency);
+	BE_ST_UnlockAudioRecursively();
 }
 
-void BE_SDL_BNoSound(void)
+void BE_ST_BNoSound(void)
 {
-	BE_SDL_LockAudioRecursively();
-	BE_SDL_PCSpeakerOff();
-	BE_SDL_UnlockAudioRecursively();
+	BE_ST_LockAudioRecursively();
+	BE_ST_PCSpeakerOff();
+	BE_ST_UnlockAudioRecursively();
 }
 
 /*******************************************************************************
@@ -302,9 +302,9 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 }
 
 // Drop-in replacement for id_sd.c:alOut
-void BE_SDL_ALOut(uint8_t reg,uint8_t val)
+void BE_ST_ALOut(uint8_t reg,uint8_t val)
 {
-	BE_SDL_LockAudioRecursively(); // RECURSIVE lock
+	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
 	// FIXME: The original code for alOut adds 6 reads of the
 	// register port after writing to it (3.3 microseconds), and
@@ -330,7 +330,7 @@ void BE_SDL_ALOut(uint8_t reg,uint8_t val)
 		g_sdlALOutSamplesEnd += length;
 	}
 
-	BE_SDL_UnlockAudioRecursively(); // RECURSIVE unlock
+	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
 }
 
 /************************************************************************
@@ -353,9 +353,9 @@ static inline void PCSpeakerUpdateOne(int16_t *stream, int length)
 	}
 }
 
-#ifdef BE_SDL_ENABLE_LOW_PASS_FILTERING
+#ifdef BE_ST_ENABLE_LOW_PASS_FILTERING
 // Within g_sdlALOutSamplesStart
-static void BEL_SDL_ALDoLowPassFilter(uint32_t start, int len)
+static void BEL_ST_ALDoLowPassFilter(uint32_t start, int len)
 {
 	uint32_t end = (start+len)%OPL_NUM_OF_SAMPLES;
 	if (start <= end)
@@ -385,7 +385,7 @@ static void BEL_SDL_ALDoLowPassFilter(uint32_t start, int len)
 #endif
 
 // BIG BIG FIXME: This is the VERY(?) wrong place to call the OPL emulator, etc!
-static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
+static void BEL_ST_CallBack(void *unused, Uint8 *stream, int len)
 {
 	int16_t *currSamplePtr = (int16_t *)stream;
 	uint32_t currNumOfSamples;
@@ -393,9 +393,9 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 #if SDL_VERSION_ATLEAST(1,3,0)
 	memset(stream, 0, len);
 #endif
-	//////////////////////////////
-	BE_SDL_LockAudioRecursively(); // RECURSIVE lock
-	//////////////////////////////
+	/////////////////////////////
+	BE_ST_LockAudioRecursively(); // RECURSIVE lock
+	/////////////////////////////
 	
 	while (len)
 	{
@@ -457,7 +457,7 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 			{
 				int16_t *currCopiedALSamplePtr = currSamplePtr;
 				int16_t *copiedALSamplesEnd = currSamplePtr+currNumOfSamples;
-#ifdef BE_SDL_ENABLE_LOW_PASS_FILTERING
+#ifdef BE_ST_ENABLE_LOW_PASS_FILTERING
 				// If we need to apply a low-pass filter, first calculate how much AL samples should we process
 				if (g_sdlAudioSpec.freq < OPL_SAMPLE_RATE)
 				{
@@ -487,7 +487,7 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 							alSampleRateConvCurrIndexLocal %= OPL_SAMPLE_RATE;
 						}
 					}
-					BEL_SDL_ALDoLowPassFilter(g_sdlALOutSamplesStart, alInputLen);
+					BEL_ST_ALDoLowPassFilter(g_sdlALOutSamplesStart, alInputLen);
 				}
 #endif
 				// Go over AL samples generated so far and interpolate
@@ -545,10 +545,10 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 					alInputLen = (alInputLen > OPL_NUM_OF_SAMPLES) ? OPL_NUM_OF_SAMPLES : alInputLen;
 					//
 					YM3812UpdateOne(&oplChip, g_sdlALOutSamples, alInputLen);
-#ifdef BE_SDL_ENABLE_LOW_PASS_FILTERING
+#ifdef BE_ST_ENABLE_LOW_PASS_FILTERING
 					if (g_sdlAudioSpec.freq < OPL_SAMPLE_RATE)
 					{
-						BEL_SDL_ALDoLowPassFilter(0, alInputLen);
+						BEL_ST_ALDoLowPassFilter(0, alInputLen);
 					}
 #endif
 					// Repeat the above loop, but with the global counter variables and, storing silence
@@ -590,14 +590,14 @@ static void BEL_SDL_CallBack(void *unused, Uint8 *stream, int len)
 		}
 	}
 
-	////////////////////////////////
-	BE_SDL_UnlockAudioRecursively(); // RECURSIVE unlock
-	////////////////////////////////
+	///////////////////////////////
+	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
+	///////////////////////////////
 }
 
 // Here, the actual rate is about 1193182Hz/speed
 // NOTE: isALMusicOn is irrelevant for Keen Dreams (even with its music code)
-void BE_SDL_SetTimer(uint16_t speed, bool isALMusicOn)
+void BE_ST_SetTimer(uint16_t speed, bool isALMusicOn)
 {
 	g_sdlSamplePerPart = (int32_t)speed * g_sdlAudioSpec.freq / PC_PIT_RATE;
 	// In the original code, the id_sd.c:SDL_t0Service callback
@@ -608,11 +608,11 @@ void BE_SDL_SetTimer(uint16_t speed, bool isALMusicOn)
 }
 
 static uint32_t g_sdlTicksOffset = 0;
-void BEL_SDL_UpdateHostDisplay(void);
-void BEL_SDL_TicksDelayWithOffset(int sdltickstowait);
-void BEL_SDL_TimeCountWaitByPeriod(int16_t timetowait);
+void BEL_ST_UpdateHostDisplay(void);
+void BEL_ST_TicksDelayWithOffset(int sdltickstowait);
+void BEL_ST_TimeCountWaitByPeriod(int16_t timetowait);
 
-uint32_t BE_SDL_GetTimeCount(void)
+uint32_t BE_ST_GetTimeCount(void)
 {
 	// FIXME: What happens when SDL_GetTicks() reaches the upper bound?
 	// May be challenging to fix... A proper solution should
@@ -626,29 +626,29 @@ uint32_t BE_SDL_GetTimeCount(void)
 	return g_sdlTimeCount;
 }
 
-void BE_SDL_SetTimeCount(uint32_t newcount)
+void BE_ST_SetTimeCount(uint32_t newcount)
 {
 	g_sdlTimeCount = newcount;
 }
 
-void BE_SDL_TimeCountWaitForDest(uint32_t dsttimecount)
+void BE_ST_TimeCountWaitForDest(uint32_t dsttimecount)
 {
-	BEL_SDL_TimeCountWaitByPeriod((int32_t)dsttimecount-(int32_t)g_sdlTimeCount);
+	BEL_ST_TimeCountWaitByPeriod((int32_t)dsttimecount-(int32_t)g_sdlTimeCount);
 }
 
-void BE_SDL_TimeCountWaitFromSrc(uint32_t srctimecount, int16_t timetowait)
+void BE_ST_TimeCountWaitFromSrc(uint32_t srctimecount, int16_t timetowait)
 {
-	BEL_SDL_TimeCountWaitByPeriod((srctimecount+timetowait)-g_sdlTimeCount);
+	BEL_ST_TimeCountWaitByPeriod((srctimecount+timetowait)-g_sdlTimeCount);
 }
 
-void BEL_SDL_TimeCountWaitByPeriod(int16_t timetowait)
+void BEL_ST_TimeCountWaitByPeriod(int16_t timetowait)
 {
 	if (timetowait <= 0)
 	{
 		return;
 	}
 	// COMMENTED OUT - Do NOT refresh TimeCount and g_sdlLastTicks
-	//BE_SDL_GetTimeCount();
+	//BE_ST_GetTimeCount();
 
 	// We want to find the minimal currSdlTicks value (mod 2^32) such that...
 	// ticksToWait <= (uint64_t)currSdlTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor) - (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor)
@@ -668,11 +668,11 @@ void BEL_SDL_TimeCountWaitByPeriod(int16_t timetowait)
 	uint32_t nextSdlTicks = ((timetowait + (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor))*1000*g_sdlScaledTimerDivisor + (PC_PIT_RATE-1)) / PC_PIT_RATE;
 	// NOTE: nextSdlTicks is already adjusted in terms of offset, so we can simply reset it here
 	g_sdlTicksOffset = 0;
-	BEL_SDL_TicksDelayWithOffset(nextSdlTicks-SDL_GetTicks());
+	BEL_ST_TicksDelayWithOffset(nextSdlTicks-SDL_GetTicks());
 }
 
 
-void BE_SDL_WaitVBL(int16_t number)
+void BE_ST_WaitVBL(int16_t number)
 {
 	// (REFKEEN) Difference from vanilla: If the input value is not
 	// positive then the game practically hangs for quite long
@@ -693,25 +693,25 @@ void BE_SDL_WaitVBL(int16_t number)
 	// For the sake of a bit better precision we further multiply by 1000
 	nextSdlTicks -= (((uint64_t)1000*(uint64_t)nextSdlTicks) % ((uint64_t)1000000000/70086))/1000;
 	g_sdlTicksOffset = 0; // Can reset this, taking g_sdlTicksOffset into account above
-	BEL_SDL_TicksDelayWithOffset(nextSdlTicks-currSdlTicks);
+	BEL_ST_TicksDelayWithOffset(nextSdlTicks-currSdlTicks);
 }
 
 // Call during a busy loop of some unknown duration (e.g., waiting for key press/release)
-void BE_SDL_ShortSleep(void)
+void BE_ST_ShortSleep(void)
 {
 	SDL_Delay(1);
 	// TODO: Make this more efficient
-	BEL_SDL_UpdateHostDisplay();
-	BE_SDL_PollEvents();
+	BEL_ST_UpdateHostDisplay();
+	BE_ST_PollEvents();
 }
 
 
-void BE_SDL_Delay(uint16_t msec) // Replacement for delay from dos.h
+void BE_ST_Delay(uint16_t msec) // Replacement for delay from dos.h
 {
-	BEL_SDL_TicksDelayWithOffset(msec);
+	BEL_ST_TicksDelayWithOffset(msec);
 }
 
-void BEL_SDL_TicksDelayWithOffset(int sdltickstowait)
+void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
 {
 	if (sdltickstowait <= (int32_t)g_sdlTicksOffset)
 	{
@@ -720,17 +720,17 @@ void BEL_SDL_TicksDelayWithOffset(int sdltickstowait)
 		{
 			g_sdlTicksOffset -= sdltickstowait;
 		}
-		BE_SDL_PollEvents(); // Still safer to do this
+		BE_ST_PollEvents(); // Still safer to do this
 		return;
 	}
 	uint32_t nextSdlTicks = SDL_GetTicks() + sdltickstowait - g_sdlTicksOffset;
-	BEL_SDL_UpdateHostDisplay();
-	BE_SDL_PollEvents();
+	BEL_ST_UpdateHostDisplay();
+	BE_ST_PollEvents();
 	uint32_t currSdlTicks = SDL_GetTicks();
 	while ((int32_t)(currSdlTicks - nextSdlTicks) < 0)
 	{
 		SDL_Delay(1);
-		BE_SDL_PollEvents();
+		BE_ST_PollEvents();
 		currSdlTicks = SDL_GetTicks();
 	} 
 	g_sdlTicksOffset = (currSdlTicks - nextSdlTicks);

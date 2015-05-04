@@ -739,17 +739,17 @@ void Quit (const id0_char_t *error, ...)
 
 	if (error && *error)
 	{
-		BE_SDL_vprintf(error,ap);
+		BE_ST_vprintf(error,ap);
 		exit_code = 1;
 	}
 #ifndef CATALOG
 	else
 	if (!NoWait)
 	{
-		memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen, 4000);
-		BE_SDL_MarkGfxForUpdate();
+		memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 4000);
+		BE_ST_MarkGfxForUpdate();
 		//movedata (finscreen,0,0xb800,0,4000);
-		BE_SDL_BiosScanCode(0);
+		BE_ST_BiosScanCode(0);
 	}
 #endif
 
@@ -765,16 +765,16 @@ void Quit (const id0_char_t *error, ...)
 #if 0
 		if (execv("LOADSCN.EXE", id0_argv) == -1)
 		{
-			BE_SDL_clrscr();
-			BE_SDL_puts("Couldn't find executable LOADSCN.EXE.\n");
-			BE_SDL_HandleExit(1);
+			BE_ST_clrscr();
+			BE_ST_puts("Couldn't find executable LOADSCN.EXE.\n");
+			BE_ST_HandleExit(1);
 		}
 #endif
 		id0_loadscn_exe_main(id0_argc+1, id0_argv);
 	}
 #endif
 
-	BE_SDL_HandleExit(exit_code);
+	BE_ST_HandleExit(exit_code);
 }
 
 //===========================================================================
@@ -1141,11 +1141,11 @@ void armgame_exe_main (void)
 			break;
 
 			case 2:
-				BE_SDL_printf("%s\n", GAMENAME);
-				BE_SDL_printf("Copyright 1992-93 Softdisk Publishing\n");
-				BE_SDL_printf("%s %s\n",VERSION,REVISION);
-				BE_SDL_printf("\n");
-				BE_SDL_HandleExit(0);
+				BE_ST_printf("%s\n", GAMENAME);
+				BE_ST_printf("Copyright 1992-93 Softdisk Publishing\n");
+				BE_ST_printf("%s %s\n",VERSION,REVISION);
+				BE_ST_printf("\n");
+				BE_ST_HandleExit(0);
 			break;
 
 			case 3:

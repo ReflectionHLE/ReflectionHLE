@@ -41,35 +41,35 @@ void id0_loadscn_exe_main (void)
 	id0_boolean_t pressedkey = false;
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/?"))
 	{
-		BE_SDL_clrscr();
-		BE_SDL_textcolor(15);
-		BE_SDL_textbackground(1);
-		BE_SDL_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
-		BE_SDL_cprintf("\xB3 LOADSCN                              \xB3\r\n");
-		BE_SDL_cprintf("\xB3 by Nolan Martin                      \xB3\r\n");
-		BE_SDL_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
-		BE_SDL_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
-		BE_SDL_printf("\n");
-		BE_SDL_printf("/VER  - version number\n");
-		BE_SDL_printf("/?    - this help\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_clrscr();
+		BE_ST_textcolor(15);
+		BE_ST_textbackground(1);
+		BE_ST_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
+		BE_ST_cprintf("\xB3 LOADSCN                              \xB3\r\n");
+		BE_ST_cprintf("\xB3 by Nolan Martin                      \xB3\r\n");
+		BE_ST_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
+		BE_ST_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
+		BE_ST_printf("\n");
+		BE_ST_printf("/VER  - version number\n");
+		BE_ST_printf("/?    - this help\n");
+		BE_ST_HandleExit(0);
 	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/VER"))
 	{
-		BE_SDL_clrscr();
-		BE_SDL_textcolor(15);
-		BE_SDL_textbackground(1);
-		BE_SDL_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
-		BE_SDL_cprintf("\xB3 LOADSCN                              \xB3\r\n");
-		BE_SDL_cprintf("\xB3 by Nolan Martin                      \xB3\r\n");
-		BE_SDL_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
-		BE_SDL_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
-		BE_SDL_printf("\n");
-		BE_SDL_printf("%s %s\n", "LOADSCN  ", " VERSION 1.10s   QA[0]");
-		BE_SDL_printf("\n");
-		BE_SDL_printf("This program requires an EGA monitor or better,\n");
-		BE_SDL_printf("                640K, and MS-DOS 3.0 or better.\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_clrscr();
+		BE_ST_textcolor(15);
+		BE_ST_textbackground(1);
+		BE_ST_cprintf("\xD5\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB8\r\n");
+		BE_ST_cprintf("\xB3 LOADSCN                              \xB3\r\n");
+		BE_ST_cprintf("\xB3 by Nolan Martin                      \xB3\r\n");
+		BE_ST_cprintf("\xB3 Copyright 1992 - Softdisk Publishing \xB3\r\n");
+		BE_ST_cprintf("\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n");
+		BE_ST_printf("\n");
+		BE_ST_printf("%s %s\n", "LOADSCN  ", " VERSION 1.10s   QA[0]");
+		BE_ST_printf("\n");
+		BE_ST_printf("This program requires an EGA monitor or better,\n");
+		BE_ST_printf("                640K, and MS-DOS 3.0 or better.\n");
+		BE_ST_HandleExit(0);
 	}
 	if (BE_Cross_strcasecmp(id0_argv[1], "LAST.SHL"))
 		TrashProg("You must type START [ENTER] to run this program.\n");
@@ -84,11 +84,11 @@ void id0_loadscn_exe_main (void)
 	ext_MoveGfxDst(0, 200);
 	UnpackEGAShapeToScreen(&armashape, 0, 0);
 	// (REFKEEN) Add an artificial (screen not shown immediately on older machines)
-	BE_SDL_Delay(250);
+	BE_ST_Delay(250);
 	ScreenToScreen(8000, 0, 40, 200);
 	for (step = 0; step < 10; ++step)
 	{
-		BE_SDL_Delay(500);
+		BE_ST_Delay(500);
 		if (IsKeyPressed())
 		{
 			pressedkey = true;
@@ -96,17 +96,17 @@ void id0_loadscn_exe_main (void)
 		}
 	}
 	if (!pressedkey)
-		BE_SDL_BiosScanCode(0);
+		BE_ST_BiosScanCode(0);
 	if (!ext_BLoad("LAST.ABS", &bufferptr))
 		TrashProg("Can't load Compressed Text - Possibly corrupt file!");
 	screenmode = 1;
 	SetScreenMode(screenmode);
 
-	memcpy(BE_SDL_GetTextModeMemoryPtr(), (id0_byte_t *)bufferptr+7, 4000);
-	BE_SDL_MarkGfxForUpdate();
+	memcpy(BE_ST_GetTextModeMemoryPtr(), (id0_byte_t *)bufferptr+7, 4000);
+	BE_ST_MarkGfxForUpdate();
 	//_fmemcpy(MK_FP(0xB800,0), (byte far *)bufferptr+7, 4000);
-	BE_SDL_MoveTextCursorTo(0, 23); // gotoxy(1, 24)
-	BE_SDL_HandleExit(0);
+	BE_ST_MoveTextCursorTo(0, 23); // gotoxy(1, 24)
+	BE_ST_HandleExit(0);
 }
 
 void loadscn_TrashProg (const id0_char_t *OutMsg, ...)
@@ -121,12 +121,12 @@ void loadscn_TrashProg (const id0_char_t *OutMsg, ...)
 		va_start(ap, OutMsg);
 
 		if (OutMsg && *OutMsg)
-			BE_SDL_vprintf(OutMsg,ap);
+			BE_ST_vprintf(OutMsg,ap);
 
 		va_end(ap);
 	}
 
-	BE_SDL_HandleExit(0);
+	BE_ST_HandleExit(0);
 }
 
 static void SetScreenMode (id0_int_t mode)
@@ -134,11 +134,11 @@ static void SetScreenMode (id0_int_t mode)
 	switch (mode)
 	{
 	case 1:
-		BE_SDL_SetScreenMode(3);
+		BE_ST_SetScreenMode(3);
 		SetLineWidth(80);
 		break;
 	case 3:
-		BE_SDL_SetScreenMode(0xd);
+		BE_ST_SetScreenMode(0xd);
 		SetLineWidth(40);
 		break;
 	}
@@ -164,7 +164,7 @@ static void SetLineWidth (id0_int_t width)
 //
 // set wide virtual screen
 //
-	BE_SDL_EGASetLineWidth(width); // Ported from ASM
+	BE_ST_EGASetLineWidth(width); // Ported from ASM
 #endif
 
 //
@@ -186,7 +186,7 @@ static void SetLineWidth (id0_int_t width)
 
 static id0_boolean_t IsKeyPressed (void)
 {
-	return BE_SDL_KbHit();
+	return BE_ST_KbHit();
 #if 0
 asm	mov ah, 1
 asm	int 0x16
@@ -204,7 +204,7 @@ static void WaitForKeyRelease (void)
 	if (IsKeyPressed())
 		while (IsKeyPressed())
 		{
-			BE_SDL_BiosScanCode(0);
+			BE_ST_BiosScanCode(0);
 			//getch();
 		}
 }

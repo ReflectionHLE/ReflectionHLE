@@ -663,7 +663,7 @@ void Quit (const id0_char_t *error, ...)
 
 	if (error && *error)
 	{
-		BE_SDL_vprintf(error,ap);
+		BE_ST_vprintf(error,ap);
 		exit_code = 1;
 	}
 
@@ -675,17 +675,17 @@ void Quit (const id0_char_t *error, ...)
 	else
 #endif
 	{
-		memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen, 4000);
-		BE_SDL_MarkGfxForUpdate();
+		memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 4000);
+		BE_ST_MarkGfxForUpdate();
 		//movedata (finscreen,0,0xb800,0,4000);
 #ifndef REFKEEN_VER_CATABYSS_SHAR_ALL
-		if (BE_SDL_KbHit())
+		if (BE_ST_KbHit())
 		{
-			while (BE_SDL_KbHit())
-				BE_SDL_BiosScanCode(0);
+			while (BE_ST_KbHit())
+				BE_ST_BiosScanCode(0);
 		}
 #endif
-		BE_SDL_BiosScanCode(0);
+		BE_ST_BiosScanCode(0);
 	}
 #endif
 
@@ -702,9 +702,9 @@ void Quit (const id0_char_t *error, ...)
 #if 0
 		if (execv("LOADSCN.EXE", id0_argv) == -1)
 		{
-			BE_SDL_clrscr();
-			BE_SDL_puts("Couldn't find executable LOADSCN.EXE.\n");
-			BE_SDL_HandleExit(1);
+			BE_ST_clrscr();
+			BE_ST_puts("Couldn't find executable LOADSCN.EXE.\n");
+			BE_ST_HandleExit(1);
 		}
 #endif
 		void id0_loadscn_exe_main(void);
@@ -712,7 +712,7 @@ void Quit (const id0_char_t *error, ...)
 	}
 #endif
 
-	BE_SDL_HandleExit(exit_code);
+	BE_ST_HandleExit(exit_code);
 }
 
 //===========================================================================
@@ -1022,11 +1022,11 @@ void abysgame_exe_main (void)
 
 			case 2:
 #ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-				BE_SDL_printf("%s   %s   %s\n",GAMENAME,VERSION,REVISION);
+				BE_ST_printf("%s   %s   %s\n",GAMENAME,VERSION,REVISION);
 #else
-				BE_SDL_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
+				BE_ST_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
 #endif
-				BE_SDL_HandleExit(0);
+				BE_ST_HandleExit(0);
 			break;
 
 			case 3:
@@ -1040,13 +1040,13 @@ void abysgame_exe_main (void)
 
 	if (!LaunchedFromShell)
 	{
-		BE_SDL_clrscr();
+		BE_ST_clrscr();
 #ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-		BE_SDL_puts("You must type START at the DOS prompt to run CATACOMB ABYSS.");
+		BE_ST_puts("You must type START at the DOS prompt to run CATACOMB ABYSS.");
 #else
-		BE_SDL_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
+		BE_ST_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
 #endif
-		BE_SDL_HandleExit(0);
+		BE_ST_HandleExit(0);
 	}
 
 	BE_Cross_Brandomize();

@@ -50,7 +50,7 @@ extern id0_unsigned_t linedelta;
 
 void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 {
-	BE_SDL_EGAUpdateGFXPixel4bpp(bufferofs+ylookup[y]+(x>>3), color, plotpixels[x&7]);
+	BE_ST_EGAUpdateGFXPixel4bpp(bufferofs+ylookup[y]+(x>>3), color, plotpixels[x&7]);
 }
 
 #if 0
@@ -117,7 +117,7 @@ void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigne
 	id0_byte_t mask = plotpixels[x&7];
 	for (id0_unsigned_t loopVar = yh-yl+1; loopVar; --loopVar, egaDestOff += linewidth)
 	{
-		BE_SDL_EGAUpdateGFXPixel4bpp(egaDestOff, color, mask);
+		BE_ST_EGAUpdateGFXPixel4bpp(egaDestOff, color, mask);
 	}
 }
 
@@ -210,9 +210,9 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 		egaDestOff = screendest;
 		for (int loopVar = 0; loopVar < 7; ++loopVar, egaDestOff += linewidth, ++tilePtr)
 		{
-			BE_SDL_EGAUpdateGFXByte(egaDestOff, *tilePtr, mapMask);
+			BE_ST_EGAUpdateGFXByte(egaDestOff, *tilePtr, mapMask);
 		}
-		BE_SDL_EGAUpdateGFXByte(egaDestOff, *tilePtr, mapMask);
+		BE_ST_EGAUpdateGFXByte(egaDestOff, *tilePtr, mapMask);
 		++tilePtr;
 	}
 }
@@ -308,7 +308,7 @@ void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 			id0_unsigned_t colsLeft = wide;
 			do
 			{
-				BE_SDL_EGAUpdateGFXByte(egaDestOff, (BE_SDL_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+				BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
 				++srcPtr;
 				++egaDestOff;
 				--colsLeft;
@@ -622,7 +622,7 @@ void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 {
 	for (id0_unsigned_t lineCounter = height; lineCounter; --lineCounter, source += linewidth, dest += linewidth)
 	{
-		BE_SDL_EGAUpdateGFXBufferScrToScr(dest, source, wide);
+		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, wide);
 	}
 
 }
@@ -703,7 +703,7 @@ void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 		// NOTE: Using just one loop instead of four drawing routines now
 		do
 		{
-			BE_SDL_EGAUpdateGFXBuffer(egaDestOff, srcPtr, wide, mapMask);
+			BE_ST_EGAUpdateGFXBuffer(egaDestOff, srcPtr, wide, mapMask);
 			srcPtr += wide;
 			egaDestOff += linewidth;
 			--lineCounter;
@@ -1053,7 +1053,7 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 		id0_unsigned_t lineCounter = height; // scan lines to draw
 		do
 		{
-			BE_SDL_EGAFetchGFXBuffer(destPtr, egaSrcOff, wide, planeCounter);
+			BE_ST_EGAFetchGFXBuffer(destPtr, egaSrcOff, wide, planeCounter);
 			egaSrcOff += linewidth;
 			destPtr += wide;
 			--lineCounter;
@@ -1157,13 +1157,13 @@ void VWL_UpdateScreenBlocks (void)
 			id0_word_t egaDestOff = tileLoc+displayofs;
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-				BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
 				egaSrcOff += linewidth-2;
 				egaDestOff += linewidth-2;
 			}
-			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
+			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
 			continue;
 		}
 		//============
@@ -1192,7 +1192,7 @@ void VWL_UpdateScreenBlocks (void)
 			iterationsToDo = bytesPerRow;
 			for (; iterationsToDo; --iterationsToDo)
 			{
-				BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
 			}
 			egaSrcOff += bytesToSkip;
 			egaDestOff += bytesToSkip;
@@ -1200,7 +1200,7 @@ void VWL_UpdateScreenBlocks (void)
 		iterationsToDo = bytesPerRow;
 		for (; iterationsToDo; --iterationsToDo)
 		{
-			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
 		}
 		iterationsToDo = 0;
 		// was 0, now 0xFFFF for above loop
@@ -1391,7 +1391,7 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 
 #endif
 #endif
-	BE_SDL_SetScreenStartAddress(CRTC);
+	BE_ST_SetScreenStartAddress(CRTC);
 #if WAITFORVBL
 #if 0
 ;
@@ -1408,9 +1408,9 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 
 #endif
 #endif
-	BE_SDL_EGASetPelPanning(pelpan);
+	BE_ST_EGASetPelPanning(pelpan);
 #if WAITFORVBL
-	// (REFKEEN) Doing this before BE_SDL_EGASetPelPanning leads to
+	// (REFKEEN) Doing this before BE_ST_EGASetPelPanning leads to
 	// very scrolling glitches, so call here instead
 	VW_WaitVBL(1);
 #endif
@@ -1528,7 +1528,7 @@ void VWL_XORBuffer(id0_byte_t *buffer)
 		do
 		{
 			// Originally the mask is set from VW_DrawPropString
-			BE_SDL_EGAXorGFXByte(egaDestOff++, *(srcPtr++), fontcolor);
+			BE_ST_EGAXorGFXByte(egaDestOff++, *(srcPtr++), fontcolor);
 			--bytesLeft;
 		} while (bytesLeft);
 		srcPtr += bufferextra;

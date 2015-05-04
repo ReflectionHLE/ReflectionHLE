@@ -147,7 +147,7 @@ void CheckKeys (void)
 		IN_Ack();
 		SD_MusicOn();
 		Paused = false;
-		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 
@@ -164,7 +164,7 @@ void CheckKeys (void)
 		VW_UpdateScreen ();
 		US_ControlPanel();
 		// REFKEEN - Alternative controllers support (maybe user has changed some keys which may currently have an effect)
-		BE_SDL_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+		BE_ST_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
 		//
 		if (abortgame)
 		{
@@ -180,7 +180,7 @@ void CheckKeys (void)
 		DrawPlayScreen ();
 		CacheScaleds ();
 		lasttimecount = SD_GetTimeCount();
-		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 
@@ -190,7 +190,7 @@ void CheckKeys (void)
 	if (Keyboard[sc_F10])
 	{
 		DebugKeys();
-		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL); // Clear accumulated mouse 			// if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse 			// if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 		lasttimecount = SD_GetTimeCount();
 	}
 
@@ -356,8 +356,8 @@ void PollControls (void)
 
 	if (MousePresent)
 	{
-		buttons = BE_SDL_GetMouseButtons();
-		BE_SDL_GetMouseDelta(&mousexmove, &mouseymove);		
+		buttons = BE_ST_GetMouseButtons();
+		BE_ST_GetMouseDelta(&mousexmove, &mouseymove);		
 #if 0
 		Mouse(MButtons);
 		buttons = _BX;
@@ -467,8 +467,8 @@ void StartMusic(void)
 void PlayLoop (void)
 {
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
 
 	id0_int_t		give;
 
@@ -502,7 +502,7 @@ void PlayLoop (void)
 		SD_SetTimeCount(SD_GetTimeCount()+1);
 		if (SD_GetTimeCount() == 300)
 		{
-			BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 			return;
 		}
 #endif
@@ -598,7 +598,7 @@ nextactor:;
 		// is held. As a consequence, if the wait is done before the
 		// call to CheckKeys then the game may seem to get stuck while
 		// the debug key modifier is held.
-		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		BE_ST_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
 		//
 		if (singlestep)
 		{
@@ -623,6 +623,6 @@ nextactor:;
 	else
 		abortgame = false;
 
-	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 

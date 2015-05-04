@@ -186,7 +186,7 @@ asm     sti     // Let the keyboard interrupts come through
 			return(RETRY);
 			break;
 		}
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 oh_kill_me:
@@ -567,7 +567,7 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 {
 	id0_byte_t    id0_far *screen,id0_far *oscreen;
 
-	screen = BE_SDL_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2);
+	screen = BE_ST_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2);
 	//screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
 	oscreen = (/*&*/(id0_byte_t *)introscn + 7) + ((x - 1) * 2) + (y * 80 * 2) + 1;
 	while (*s)
@@ -581,7 +581,7 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 		else
 			screen++;
 	}
-	BE_SDL_MarkGfxForUpdate();
+	BE_ST_MarkGfxForUpdate();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -594,9 +594,9 @@ static void
 USL_ClearTextScreen(void)
 {
 	// Set to 80x25 color text mode
-	BE_SDL_SetScreenMode(3); // Mode 3
+	BE_ST_SetScreenMode(3); // Mode 3
 	// Move the cursor to the bottom of the screen
-	BE_SDL_MoveTextCursorTo(0/*Lefthand side of the screen*/, 24/*Bottom row*/);
+	BE_ST_MoveTextCursorTo(0/*Lefthand side of the screen*/, 24/*Bottom row*/);
 #if 0
 	// Set to 80x25 color text mode
 	_AL = 3;                                // Mode 3
@@ -627,8 +627,8 @@ US_TextScreen(void)
 
 	USL_ClearTextScreen();
 
-	memcpy(BE_SDL_GetTextModeMemoryPtr(), 7 + introscn, 80 * 25 * 2);
-	BE_SDL_MarkGfxForUpdate();
+	memcpy(BE_ST_GetTextModeMemoryPtr(), 7 + introscn, 80 * 25 * 2);
+	BE_ST_MarkGfxForUpdate();
 	//_fmemcpy(MK_FP(0xb800,0),7 + &introscn,80 * 25 * 2);
 
 	// Check for TED launching here
@@ -665,7 +665,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 {
 	id0_byte_t    id0_far *screen,id0_far *oscreen;
 
-	screen = BE_SDL_GetTextModeMemoryPtr() + ((x - 1) * 2) + (y * 80 * 2);
+	screen = BE_ST_GetTextModeMemoryPtr() + ((x - 1) * 2) + (y * 80 * 2);
 	//screen = MK_FP(0xb800,((x - 1) * 2) + (y * 80 * 2));
 	oscreen = (/*&*/(id0_byte_t *)introscn + 7) + ((x - 1) * 2) + (y * 80 * 2) - 1;
 	*screen++ = show? 251 : ' ';    // Checkmark char or space
@@ -737,7 +737,7 @@ US_UpdateTextScreen(void)
 		x = 21;
 		y = 16;
 		w = 14;
-		screen = BE_SDL_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2) - 1;
+		screen = BE_ST_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2) - 1;
 		//screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2) - 1);
 		oscreen = (/*&*/(id0_byte_t *)introscn + 7) + (x * 2) + (y * 80 * 2) - 1;
 		oscreen += 2;
@@ -1315,8 +1315,8 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 	LastScan = sc_None;
 
 	// REFKEEN - Alternative controllers support
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareTextInput();
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareTextInput();
 
 	while (!done)
 	{
@@ -1326,7 +1326,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 	//asm     pushf
 	//asm     cli
 		// For buggy blinking cursor in Catacomb Abyss, should be called here and later
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 
 		sc = LastScan;
 		LastScan = sc_None;
@@ -1458,11 +1458,11 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 		VW_UpdateScreen();
 
 		// For buggy blinking cursor in Catacomb Abyss, should be called here and earlier
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 	// REFKEEN - Alternative controllers support
-	BE_SDL_AltControlScheme_Pop();
+	BE_ST_AltControlScheme_Pop();
 
 	if (cursorvis)
 		USL_XORICursor(x,y,s,cursor);

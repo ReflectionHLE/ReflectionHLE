@@ -564,7 +564,7 @@ void LatchDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 
 	for (id0_unsigned_t lineCount = height; lineCount; --lineCount)
 	{
-		BE_SDL_EGAUpdateGFXBufferScrToScr(dest, source, wide);
+		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, wide);
 		source += wide;
 		dest += linewidth;
 	}
@@ -766,7 +766,7 @@ void LoadLatchMem (void)
 		for (p=0;p<4;p++)
 		{
 			m = 1<<p;
-			BE_SDL_EGAUpdateGFXBuffer(destoff, src, 8, m);
+			BE_ST_EGAUpdateGFXBuffer(destoff, src, 8, m);
 			src+=8;
 #if 0
 			asm     mov     dx,SC_INDEX
@@ -797,7 +797,7 @@ void LoadLatchMem (void)
 			for (p=0;p<4;p++)
 			{
 				m = 1<<p;
-				BE_SDL_EGAUpdateGFXBuffer(destoff, src, 32, m);
+				BE_ST_EGAUpdateGFXBuffer(destoff, src, 32, m);
 				src+=32;
 #if 0
 				asm     mov     dx,SC_INDEX
@@ -944,7 +944,7 @@ noxor:
 			//
 			// In ported code we update all planes at once
 
-			BE_SDL_EGAUpdateGFXBitsScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
+			BE_ST_EGAUpdateGFXBitsScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
 #if 0
 			asm     mov     cx,[x]
 			asm     mov     si,cx
@@ -1015,7 +1015,7 @@ noxor:
 			};
 		}
 		frame++;
-		BE_SDL_TimeCountWaitForDest(frame);
+		BE_ST_TimeCountWaitForDest(frame);
 #if 0
 		while (TimeCount<frame)         // don't go too fast
 		;

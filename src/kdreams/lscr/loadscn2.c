@@ -403,7 +403,7 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 
 		if (*MemPtr == NULL)
 		{
-			BE_SDL_Delay(2000);
+			BE_ST_Delay(2000);
 			if ((*MemPtr = (id0_char_t *)/*far*/malloc(FileEntry.OrginalLength)) == NULL)
 				TrashProg("Can't get memory");
 		}
@@ -511,7 +511,7 @@ int loadscn2_main(int argc, const char **argv)
 
 	if (BE_Cross_strcasecmp(argv[1], "/VER") == 0)
 	{
-		BE_SDL_clrscr();
+		BE_ST_clrscr();
 		printf("\nG.E. Load Text Screen.\n");
 		printf("Copyright 1992 Softdisk Publishing\n");
 		printf("Version Number %s\n", VERSION_NUM);
@@ -530,20 +530,20 @@ int loadscn2_main(int argc, const char **argv)
 		return(1);
 		}
 
-	BE_SDL_ToggleTextCursor(false);
+	BE_ST_ToggleTextCursor(false);
 
 	if (!LoadLIBFile(argv[1],argv[2], (id0_char_t **)&bufferptr))
 		TrashProg("Error loading TEXT_SCEENS");
 
-	memcpy(BE_SDL_GetTextModeMemoryPtr(), bufferptr+7, 4000);
-	BE_SDL_MarkGfxForUpdate();
+	memcpy(BE_ST_GetTextModeMemoryPtr(), bufferptr+7, 4000);
+	BE_ST_MarkGfxForUpdate();
 	//_fmemcpy(MK_FP(0xB800,0), bufferptr+7, 4000);
 
-	BE_SDL_ToggleTextCursor(true);
+	BE_ST_ToggleTextCursor(true);
 
-	BE_SDL_MoveTextCursorTo(0, 23); // gotoxy(1, 24)
+	BE_ST_MoveTextCursorTo(0, 23); // gotoxy(1, 24)
 
-	BE_SDL_HandleExit(0);
+	BE_ST_HandleExit(0);
 
 	return 0; // REFKEEN: Could also declare this function as void instead..
 
@@ -557,15 +557,15 @@ static void TrashProg(const id0_char_t *OutMsg)
 {
 	id0_int_t error = 0;
 
-	BE_SDL_ToggleTextCursor(true);
+	BE_ST_ToggleTextCursor(true);
 
 	if (OutMsg)
 	{
-		BE_SDL_puts(OutMsg);
+		BE_ST_puts(OutMsg);
 		//printf("%s\n",OutMsg);
 		error = 1;
 	}
 
-	BE_SDL_HandleExit(error);
+	BE_ST_HandleExit(error);
 }
 

@@ -71,7 +71,7 @@ void CalibrateJoystick(id0_short_t joynum)
 
 	while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joynum))
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 	if (LastScan == sc_Escape)
 		return;
@@ -79,7 +79,7 @@ void CalibrateJoystick(id0_short_t joynum)
 	IN_GetJoyAbs(joynum,&minx,&miny);
 	while (IN_GetJoyButtonsDB(joynum))
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 	US_Print("\n");
@@ -89,7 +89,7 @@ void CalibrateJoystick(id0_short_t joynum)
 
 	while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joynum))
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 	if (LastScan == sc_Escape)
 		return;
@@ -102,7 +102,7 @@ void CalibrateJoystick(id0_short_t joynum)
 
 	while (IN_GetJoyButtonsDB(joynum))
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 	if (LastScan)
 		IN_ClearKeysDown();
@@ -119,8 +119,8 @@ void CalibrateJoystick(id0_short_t joynum)
 void WaitKeyVBL(id0_short_t key, id0_short_t vbls)
 {
 	// REFKEEN - Alternative controllers support
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){key, 0});
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){key, 0});
 
 	while (vbls--)
 	{
@@ -130,7 +130,7 @@ void WaitKeyVBL(id0_short_t key, id0_short_t vbls)
 			break;
 	}
 	// REFKEEN - Alternative controllers support
-	BE_SDL_AltControlScheme_Pop();
+	BE_ST_AltControlScheme_Pop();
 }
 #endif
 
@@ -204,7 +204,7 @@ void DoPiracy()
 	WaitKeyVBL(57,200);
 	while (Keyboard[57])
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 
@@ -214,7 +214,7 @@ void DoPiracy()
 	WaitKeyVBL(57,300);
 	while (Keyboard[57])
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 	VW_FadeOut();
@@ -365,8 +365,8 @@ void PrintPropText(const id0_char_t id0_far *text)
 void DisplayText(textinfo *textinfo)
 {
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PreparePageScrollingControls(sc_PgUp, sc_PgDn);
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PreparePageScrollingControls(sc_PgUp, sc_PgDn);
 
 	#define PAGE_WIDTH 	78
 
@@ -395,7 +395,7 @@ void DisplayText(textinfo *textinfo)
 	PageNum = 1;
 	while (InHelp)
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 		// Display new page of text.
 		//
 		if (PageNum != LastNum)
@@ -427,7 +427,7 @@ void DisplayText(textinfo *textinfo)
 				PageNum--;
 				while ((control.dir == dir_North) || (control.dir == dir_West))
 				{
-					BE_SDL_ShortSleep();
+					BE_ST_ShortSleep();
 					IN_ReadControl(0,&control);
 				}
 			}
@@ -437,7 +437,7 @@ void DisplayText(textinfo *textinfo)
 					PageNum++;
 					while ((control.dir == dir_South) || (control.dir == dir_East))
 					{
-						BE_SDL_ShortSleep();
+						BE_ST_ShortSleep();
 						IN_ReadControl(0,&control);
 					}
 				}
@@ -448,7 +448,7 @@ void DisplayText(textinfo *textinfo)
 	//
 	while (control.button1 || Keyboard[1])
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 		IN_ReadControl(0,&control);
 	}
 
@@ -463,7 +463,7 @@ void DisplayText(textinfo *textinfo)
 	VW_ScreenToScreen(FREESTART-STATUSLEN,0,40,80);
 
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Pop();
+	BE_ST_AltControlScheme_Pop();
 }
 
 //--------------------------------------------------------------------------
@@ -473,7 +473,7 @@ void BlackPalette()
 {
 	extern id0_char_t colors[7][17];
 
-	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[0]);
+	BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[0]);
 	screenfaded = true;
 }
 
@@ -484,7 +484,7 @@ void ColoredPalette()
 {
 	extern id0_char_t colors[7][17];
 
-	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
+	BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
 	screenfaded = false;
 }
 
@@ -579,15 +579,15 @@ void GE_SaveGame()
 				VW_UpdateScreen();
 
 				// REFKEEN - Alternative controllers support
-				BE_SDL_AltControlScheme_Push();
-				BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){21, 49, 27, 0});
+				BE_ST_AltControlScheme_Push();
+				BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){21, 49, 27, 0});
 				while((!Keyboard[21]) && (!Keyboard[49]) && !Keyboard[27])
 				{
-					BE_SDL_ShortSleep();
+					BE_ST_ShortSleep();
 				}
 
 				// REFKEEN - Alternative controllers support
-				BE_SDL_AltControlScheme_Pop();
+				BE_ST_AltControlScheme_Pop();
 
 				if (Keyboard[27])
 					goto EXIT_FUNC;
@@ -639,23 +639,23 @@ EXIT_FUNC:;
 		US_CPrintLine("Press SPACE to continue.", NULL);
 		VW_UpdateScreen();
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_Push();
-		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+		BE_ST_AltControlScheme_Push();
+		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
 		while (!Keyboard[57])
 		{
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 		while (Keyboard[57])
 		{
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_Pop();
+		BE_ST_AltControlScheme_Pop();
 	}
 
 	while (Keyboard[1])
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 
@@ -710,19 +710,19 @@ id0_boolean_t GE_LoadGame()
 			US_CPrintLine("Press SPACE to try again.", NULL);
 			VW_UpdateScreen();
 			// REFKEEN - Alternative controllers support
-			BE_SDL_AltControlScheme_Push();
-			BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+			BE_ST_AltControlScheme_Push();
+			BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
 
 			while (!Keyboard[57])
 			{
-				BE_SDL_ShortSleep();
+				BE_ST_ShortSleep();
 			}
 			while (Keyboard[57])
 			{
-				BE_SDL_ShortSleep();
+				BE_ST_ShortSleep();
 			}
 			// REFKEEN - Alternative controllers support
-			BE_SDL_AltControlScheme_Pop();
+			BE_ST_AltControlScheme_Pop();
 
 			GettingFilename = true;
 		}
@@ -743,18 +743,18 @@ id0_boolean_t GE_LoadGame()
 		US_CPrintLine("Press SPACE to continue.", NULL);
 		VW_UpdateScreen();
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_Push();
-		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+		BE_ST_AltControlScheme_Push();
+		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
 		while (!Keyboard[57])
 		{
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 		while (Keyboard[57])
 		{
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_Pop();
+		BE_ST_AltControlScheme_Pop();
 
 		if (!screenfaded)
 			VW_FadeOut();
@@ -778,18 +778,18 @@ EXIT_FUNC:;
 		US_CPrintLine("DISK ERROR ** LOAD **", NULL);
 		US_CPrintLine("Press SPACE to continue.", NULL);
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_Push();
-		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+		BE_ST_AltControlScheme_Push();
+		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
 		while (!Keyboard[57])
 		{
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 		while (Keyboard[57])
 		{
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_Pop();
+		BE_ST_AltControlScheme_Pop();
 	}
 //	else
 //		close(handle);
@@ -891,7 +891,7 @@ asm	sti	// Let the keyboard interrupts come through
 			return(RETRY);
 			break;
 		}
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 oh_kill_me:
@@ -1606,7 +1606,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 							n--;
 
 						while (n--)
-							BE_SDL_EGAUpdateGFXByte(DstOff[Plane]++, Rep, 1<<Plane);
+							BE_ST_EGAUpdateGFXByte(DstOff[Plane]++, Rep, 1<<Plane);
 							//*Dst[Plane]++ = Rep;
 					}
 					else
@@ -1620,7 +1620,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 						n--;
 
 					while (n--)
-						BE_SDL_EGAUpdateGFXByte(DstOff[Plane]++, *Src++, 1<<Plane);
+						BE_ST_EGAUpdateGFXByte(DstOff[Plane]++, *Src++, 1<<Plane);
 						//*Dst[Plane]++ = *Src++;
 
 					if ((!BPR) && (NotWordAligned))     // IGNORE WORD ALIGN
@@ -1646,8 +1646,8 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 	const id0_char_t *s/*,*ss*/;
 
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes(choices);
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes(choices);
 
 	IN_ClearKeysDown();
 
@@ -1663,10 +1663,10 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 				break;
 			}
 		}
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
-	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 
 	IN_ClearKeysDown();
 
@@ -2402,7 +2402,7 @@ noxor:
 			//
 			// In ported code we update all planes at once
 
-			BE_SDL_EGAUpdateGFXBitsScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
+			BE_ST_EGAUpdateGFXBitsScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
 #if 0
 			asm     mov     cx,[x]
 			asm     mov     si,cx
@@ -2470,7 +2470,7 @@ noxor:
 		}
 		// REFKEEN - Code is commented out as in the original sources
 		// (of C4, not C3), but better have *some* delay at the least
-		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		BE_ST_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
 		// REFKEEN - No need to increment frame, comment it out as well
 #if 0
 		frame++;
@@ -2693,8 +2693,8 @@ id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0
 		{
 			if (ge_textmode)
 			{
-				BE_SDL_clrscr();
-				BE_SDL_MoveTextCursorTo(0, 0); // gotoxy(1,1);
+				BE_ST_clrscr();
+				BE_ST_MoveTextCursorTo(0, 0); // gotoxy(1,1);
 				// (REFKEEN) Because our printf is simplified... (also re-using command buffer as in gfx case)
 				strcpy(command,"\nInsert ");
 				strcat(command,disktext);
@@ -2703,8 +2703,8 @@ id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0
 				strcat(command," into drive ");
 				strcat(command,drive);
 				strcat(command,".");
-				BE_SDL_puts(command);
-				BE_SDL_puts("Press SPACE to continue, ESC to abort.\n");
+				BE_ST_puts(command);
+				BE_ST_puts("Press SPACE to continue, ESC to abort.\n");
 				//printf("\nInsert %s disk %d into drive %s.\n",disktext,disknum,drive);
 				//printf("Press SPACE to continue, ESC to abort.\n");
 			}
@@ -2737,10 +2737,10 @@ id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0
 				US_CPrint("Press SPACE to continue, ESC to abort.");
 			}
 
-			BE_SDL_BSound(300);
+			BE_ST_BSound(300);
 			//sound(300);
 			VW_WaitVBL(20);
-			BE_SDL_BNoSound();
+			BE_ST_BNoSound();
 			//nosound();
 
 			if (!ge_textmode)

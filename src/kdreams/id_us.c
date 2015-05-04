@@ -187,7 +187,7 @@ static	id0_boolean_t		oldleavedriveon;
 	IN_ClearKeysDown();
 
 //asm	sti	// Let the keyboard interrupts come through
-	BE_SDL_PollEvents();
+	BE_ST_PollEvents();
 
 	while (true)
 	{
@@ -519,14 +519,14 @@ USL_ScreenDraw(id0_word_t x,id0_word_t y,const id0_char_t *s,id0_byte_t attr)
 {
 	id0_byte_t	id0_far *screen;
 
-	screen = BE_SDL_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2);
+	screen = BE_ST_GetTextModeMemoryPtr() + (x * 2) + (y * 80 * 2);
 	//screen = MK_FP(0xb800,(x * 2) + (y * 80 * 2));
 	while (*s)
 	{
 		*screen++ = *s++;
 		*screen++ = attr;
 	}
-	BE_SDL_MarkGfxForUpdate();
+	BE_ST_MarkGfxForUpdate();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -539,9 +539,9 @@ static void
 USL_ClearTextScreen(void)
 {
 	// Set to 80x25 color text mode
-	BE_SDL_SetScreenMode(3); // Mode 3
+	BE_ST_SetScreenMode(3); // Mode 3
 	// Move the cursor to the bottom of the screen
-	BE_SDL_MoveTextCursorTo(0/*Lefthand side of the screen*/, 24/*Bottom row*/);
+	BE_ST_MoveTextCursorTo(0/*Lefthand side of the screen*/, 24/*Bottom row*/);
 #if 0
 	_AL = 3;				// Mode 3
 	_AH = 0x00;
@@ -610,7 +610,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 {
 	id0_byte_t	id0_far *screen;
 
-	screen = BE_SDL_GetTextModeMemoryPtr() + ((x - 1) * 2) + (y * 80 * 2);
+	screen = BE_ST_GetTextModeMemoryPtr() + ((x - 1) * 2) + (y * 80 * 2);
 	//screen = MK_FP(0xb800,((x - 1) * 2) + (y * 80 * 2));
 	*screen++ = show? 251 : ' ';	// Checkmark char or space
 	*screen = 0x48;
@@ -619,7 +619,7 @@ USL_Show(id0_word_t x,id0_word_t y,id0_word_t w,id0_boolean_t show,id0_boolean_t
 		for (w++;w--;screen += 2)
 			*screen = 0x4f;
 	}
-	BE_SDL_MarkGfxForUpdate();
+	BE_ST_MarkGfxForUpdate();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -694,11 +694,11 @@ US_UpdateTextScreen(void)
 	USL_Show(53,17,23,mminfo.XMSmem? true : false,true);
 	totalmem = mminfo.mainmem + mminfo.EMSmem + mminfo.XMSmem;
 	USL_ShowMem(63,18,totalmem / 1024);
-	screen = BE_SDL_GetTextModeMemoryPtr() + 1 + (((63 - 1) * 2) + (18 * 80 * 2));
+	screen = BE_ST_GetTextModeMemoryPtr() + 1 + (((63 - 1) * 2) + (18 * 80 * 2));
 	//screen = MK_FP(0xb800,1 + (((63 - 1) * 2) + (18 * 80 * 2)));
 	for (i = 0;i < 13;i++,screen += 2)
 		*screen = 0x4f;
-	BE_SDL_MarkGfxForUpdate();
+	BE_ST_MarkGfxForUpdate();
 
 	// Change Initializing... to Loading...
 	USL_ScreenDraw(27,22,"  Loading...   ",0x9c);
@@ -1191,8 +1191,8 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 	LastScan = sc_None;
 
 	// REFKEEN - Alternative controllers support
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareTextInput();
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareTextInput();
 
 	while (!done)
 	{
@@ -1201,7 +1201,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 
 //	asm	pushf
 //	asm	cli
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 
 		sc = LastScan;
 		LastScan = sc_None;
@@ -1334,7 +1334,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 	}
 
 	// REFKEEN - Alternative controllers support
-	BE_SDL_AltControlScheme_Pop();
+	BE_ST_AltControlScheme_Pop();
 
 	if (cursorvis)
 		USL_XORICursor(x,y,s,cursor);
@@ -1866,7 +1866,7 @@ USL_TrackItem(id0_word_t hiti,id0_word_t hitn)
 		while (US_UpdateCursor())
 		{
 			VW_UpdateScreen();
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 
 		FlushHelp = true;
@@ -1908,7 +1908,7 @@ USL_TrackItem(id0_word_t hiti,id0_word_t hitn)
 			last = inside;
 		}
 		VW_UpdateScreen();
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	} while (US_UpdateCursor());
 
 	if (op)
@@ -2242,7 +2242,7 @@ USL_CtlCKbdButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		{
 			while (US_UpdateCursor())
 			{
-				BE_SDL_ShortSleep();
+				BE_ST_ShortSleep();
 			}
 			scan = sc_Escape;
 			break;
@@ -2250,7 +2250,7 @@ USL_CtlCKbdButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 
 //		asm	pushf
 //		asm	cli
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 		if (LastScan == sc_LShift)
 			LastScan = sc_None;
 //		asm	popf
@@ -2321,7 +2321,7 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		VW_UpdateScreen();
 		while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joy))
 		{
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 
 		if (LastScan != sc_Escape)
@@ -2329,14 +2329,14 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 			IN_GetJoyAbs(joy,&minx,&miny);
 			while (IN_GetJoyButtonsDB(joy))
 			{
-				BE_SDL_ShortSleep();
+				BE_ST_ShortSleep();
 			}
 
 			USL_ShowHelp("Move Joystick to the Lower-Right");
 			VW_UpdateScreen();
 			while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joy))
 			{
-				BE_SDL_ShortSleep();
+				BE_ST_ShortSleep();
 			}
 
 			if (LastScan != sc_Escape)
@@ -2351,7 +2351,7 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 				else
 					while (IN_GetJoyButtonsDB(joy))
 					{
-						BE_SDL_ShortSleep();
+						BE_ST_ShortSleep();
 					}
 			}
 			else
@@ -2364,7 +2364,7 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	if (LastScan != sc_Escape)
 		while (IN_GetJoyButtonsDB(joy))
 			{
-				BE_SDL_ShortSleep();
+				BE_ST_ShortSleep();
 			}
 
 	if (LastScan)
@@ -2485,8 +2485,8 @@ static void
 USL_DoHelp(memptr text,id0_long_t len)
 {
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PreparePageScrollingControls(sc_PgUp, sc_PgDn);
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PreparePageScrollingControls(sc_PgUp, sc_PgDn);
 
 	id0_boolean_t		done,
 				moved;
@@ -2529,7 +2529,7 @@ USL_DoHelp(memptr text,id0_long_t len)
 	{
 		if (moved)
 		{
-			BE_SDL_TimeCountWaitFromSrc(lasttime, 5);
+			BE_ST_TimeCountWaitFromSrc(lasttime, 5);
 #if 0
 			while (TimeCount - lasttime < 5)
 				;
@@ -2621,7 +2621,7 @@ USL_DoHelp(memptr text,id0_long_t len)
 		if (waitkey)
 			while (IN_KeyDown(waitkey))
 			{
-				BE_SDL_ShortSleep();
+				BE_ST_ShortSleep();
 			}
 		waitkey = sc_None;
 
@@ -2689,13 +2689,13 @@ USL_DoHelp(memptr text,id0_long_t len)
 				break;
 			}
 		}
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 	IN_ClearKeysDown();
 	do
 	{
 		IN_ReadCursor(&info);
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	} while (info.button0 || info.button1);
 
 	VW_ShowCursor();
@@ -2703,7 +2703,7 @@ USL_DoHelp(memptr text,id0_long_t len)
 	VW_UpdateScreen();
 	US_RestoreWindow(&wr);
 
-	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3544,8 +3544,8 @@ void
 US_ControlPanel(void)
 {
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareMenuControls();
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareMenuControls();
 
 	id0_char_t		gamename[MaxGameName + 10 + 1];
 	ScanCode	c;
@@ -3619,7 +3619,7 @@ US_ControlPanel(void)
 	)
 	{
 		VW_UpdateScreen();
-		BE_SDL_ShortSleep(); // TODO (REFKEEN): Correct place?
+		BE_ST_ShortSleep(); // TODO (REFKEEN): Correct place?
 
 		buttondown = US_UpdateCursor();
 		inrect = USL_IsInRect(CursorX,CursorY,&i,&n);
@@ -3717,7 +3717,7 @@ US_ControlPanel(void)
 					USL_DrawItem(hiti,hitn);
 					VW_UpdateScreen();
 
-					BE_SDL_TimeCountWaitFromSrc(lasttime, TickBase / 4);
+					BE_ST_TimeCountWaitFromSrc(lasttime, TickBase / 4);
 #if 0
 					while (TimeCount - lasttime < TickBase / 4)
 						;
@@ -3728,7 +3728,7 @@ US_ControlPanel(void)
 					USL_DrawItem(hiti,hitn);
 					VW_UpdateScreen();
 
-					BE_SDL_TimeCountWaitFromSrc(lasttime, TickBase / 4);
+					BE_ST_TimeCountWaitFromSrc(lasttime, TickBase / 4);
 #if 0
 					while (TimeCount - lasttime < TickBase / 4)
 						;
@@ -3790,7 +3790,7 @@ US_ControlPanel(void)
 
 	CA_DownLevel();
 
-	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 //	High score routines

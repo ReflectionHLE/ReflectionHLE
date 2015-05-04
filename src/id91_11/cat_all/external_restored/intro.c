@@ -122,9 +122,9 @@ static void Beep(void)
 {
 	if (havebeep)
 	{
-		BE_SDL_BSound(800);
-		BE_SDL_Delay(170);
-		BE_SDL_BNoSound();
+		BE_ST_BSound(800);
+		BE_ST_Delay(170);
+		BE_ST_BNoSound();
 	}
 }
 #endif
@@ -144,39 +144,39 @@ void intro_exe_main(void)
 	{
 		id0_argv[1] = "^(a@&r`";
 		GAMEEXE_MAIN_FUNCNAME ();
-		BE_SDL_HandleExit(0);
+		BE_ST_HandleExit(0);
 	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/?"))
 	{
-		BE_SDL_clrscr();
-		BE_SDL_textcolor(15);
-		BE_SDL_textbackground(1);
-		BE_SDL_cprintf(FRAMETOP_STR);
-		BE_SDL_cprintf(TITLE_STR);
-		BE_SDL_cprintf(AUTHOR_STR);
-		BE_SDL_cprintf(COPYRIGHT_STR);
-		BE_SDL_cprintf(FRAMEBOT_STR);
-		BE_SDL_printf("\n");
-		BE_SDL_printf("/VER  - version number\n");
-		BE_SDL_printf("/?    - this help\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_clrscr();
+		BE_ST_textcolor(15);
+		BE_ST_textbackground(1);
+		BE_ST_cprintf(FRAMETOP_STR);
+		BE_ST_cprintf(TITLE_STR);
+		BE_ST_cprintf(AUTHOR_STR);
+		BE_ST_cprintf(COPYRIGHT_STR);
+		BE_ST_cprintf(FRAMEBOT_STR);
+		BE_ST_printf("\n");
+		BE_ST_printf("/VER  - version number\n");
+		BE_ST_printf("/?    - this help\n");
+		BE_ST_HandleExit(0);
 	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/VER"))
 	{
-		BE_SDL_clrscr();
-		BE_SDL_textcolor(15);
-		BE_SDL_textbackground(1);
-		BE_SDL_cprintf(FRAMETOP_STR);
-		BE_SDL_cprintf(TITLE_STR);
-		BE_SDL_cprintf(AUTHOR_STR);
-		BE_SDL_cprintf(COPYRIGHT_STR);
-		BE_SDL_cprintf(FRAMEBOT_STR);
-		BE_SDL_printf("\n");
-		BE_SDL_printf("%s %s\n", VERSION_TITLE_STR, VERSION_REV_STR);
-		BE_SDL_printf("\n");
-		BE_SDL_printf("This program requires an EGA monitor or better,\n");
-		BE_SDL_printf("                640K, and MS-DOS 3.0 or better.\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_clrscr();
+		BE_ST_textcolor(15);
+		BE_ST_textbackground(1);
+		BE_ST_cprintf(FRAMETOP_STR);
+		BE_ST_cprintf(TITLE_STR);
+		BE_ST_cprintf(AUTHOR_STR);
+		BE_ST_cprintf(COPYRIGHT_STR);
+		BE_ST_cprintf(FRAMEBOT_STR);
+		BE_ST_printf("\n");
+		BE_ST_printf("%s %s\n", VERSION_TITLE_STR, VERSION_REV_STR);
+		BE_ST_printf("\n");
+		BE_ST_printf("This program requires an EGA monitor or better,\n");
+		BE_ST_printf("                640K, and MS-DOS 3.0 or better.\n");
+		BE_ST_HandleExit(0);
 	}
 	// REFKEEN havebeep is always false (and code was removed for Apocalypse)
 #if 0
@@ -212,7 +212,7 @@ void intro_exe_main(void)
 	ScreenToScreen(8000, 0, 40, 200);
 	ext_FreeShape(&app_start_shape);
 	// (REFKEEN) Add an artificial delay so we can actually see loading message...
-	BE_SDL_Delay(250);
+	BE_ST_Delay(250);
 	WaitForKeyRelease();
 
 #ifdef REFKEEN_VER_CATABYSS
@@ -302,12 +302,12 @@ void intro_exe_main(void)
 		id0_argv[id0_argc] = NULL;
 	}
 
-	BE_SDL_AltControlScheme_Push(); // REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push(); // REFKEEN - Alternative controllers support
 
 	do
 	{
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes(
+		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes(
 		(const char [])
 		{0x1C/*Enter*/, 0x1/*Escape*/, 0x3E/*F4*/
 #ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
@@ -397,12 +397,12 @@ void intro_exe_main(void)
 #endif
 			for (general_loop_var = 0; general_loop_var <= init_sequence_iters_upperbound; ++general_loop_var)
 			{
-				BE_SDL_Delay(50);
+				BE_ST_Delay(50);
 				last_key = TryGetScanCode();
 				if (last_key == 0x1/*0x11B*/) // ESC
 				{
 					// REFKEEN - Alternative controllers support
-					BE_SDL_AltControlScheme_Pop();
+					BE_ST_AltControlScheme_Pop();
 
 					FreeAllShapes();
 					SetScreenMode(1);
@@ -419,12 +419,12 @@ void intro_exe_main(void)
 					if (execv("LOADSCN.EXE", id0_argv) == -1)
 					{
 						SetScreenMode(1);
-						BE_SDL_puts("Couldn't find executable LOADSCN.EXE.\n");
-						BE_SDL_HandleExit(1);
+						BE_ST_puts("Couldn't find executable LOADSCN.EXE.\n");
+						BE_ST_HandleExit(1);
 					}
 #endif
 #else
-					BE_SDL_HandleExit(0);
+					BE_ST_HandleExit(0);
 #endif
 				}
 				else if (last_key == 0x1C/*0x1C0D*/) // Enter
@@ -443,15 +443,15 @@ void intro_exe_main(void)
 				{
 					SetScreenMode(1);
 					// REFKEEN: This is currently unsupported
-					BE_SDL_printf("ERROR : Can't find executable.\nOr rather, the \"Demo\" feature is unsupported in this source port.\n");
-					BE_SDL_BiosScanCode(0);
+					BE_ST_printf("ERROR : Can't find executable.\nOr rather, the \"Demo\" feature is unsupported in this source port.\n");
+					BE_ST_BiosScanCode(0);
 					SetScreenMode(3);
 					general_loop_var = 600;
 #if 0
 					if (execv("DEMOCAT.EXE", id0_argv) == -1)
 					{
-						BE_SDL_printf("ERROR : Can't find executable.\n");
-						BE_SDL_HandleExit(0);
+						BE_ST_printf("ERROR : Can't find executable.\n");
+						BE_ST_HandleExit(0);
 					}
 #endif
 				}
@@ -463,7 +463,7 @@ void intro_exe_main(void)
 			if (select_saved_game) // Launch CATABYSS.EXE and select saved game
 			{
 				// REFKEEN - Alternative controllers support
-				BE_SDL_AltControlScheme_Pop();
+				BE_ST_AltControlScheme_Pop();
 
 				if (!id0_argv[3])
 				{
@@ -500,7 +500,7 @@ void intro_exe_main(void)
 				//Beep();
 
 				// REFKEEN - Alternative controllers support
-				BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){0x31/*N*/, 0x11/*W*/, 0});
+				BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){0x31/*N*/, 0x11/*W*/, 0});
 
 				for (leave_skill_selection = false; !leave_skill_selection; )
 				{
@@ -508,7 +508,7 @@ void intro_exe_main(void)
 					if ((last_key == 0x11/*0x1157*/)/* || (last_key == 0x1177)*/) // W or w (Warrior)
 					{
 						// REFKEEN - Alternative controllers support
-						BE_SDL_AltControlScheme_Pop();
+						BE_ST_AltControlScheme_Pop();
 
 						if (!id0_argv[2])
 						{
@@ -527,11 +527,11 @@ void intro_exe_main(void)
 						//Beep();
 						WaitForKeyRelease();
 						while (!(last_key = TryGetScanCode()))
-							BE_SDL_ShortSleep();
+							BE_ST_ShortSleep();
 						if (last_key == 0x1/*0x11B*/) // ESC
 						{
 							// REFKEEN - Alternative controllers support
-							BE_SDL_AltControlScheme_Push();
+							BE_ST_AltControlScheme_Push();
 
 							leave_skill_selection = true;
 						}
@@ -542,14 +542,14 @@ void intro_exe_main(void)
 							ScreenToScreen(8000, 0, 40, 200);
 							// REFKEEN havebeep is always false (and code was removed for Apocalypse)
 							//Beep();
-							BE_SDL_BiosScanCode(0);
+							BE_ST_BiosScanCode(0);
 							TrashProg(NULL);
 						}
 					}
 					else if ((last_key == 0x31/*0x314E*/)/* || (last_key == 0x316E)*/) // N or n (Novice)
 					{
 						// REFKEEN - Alternative controllers support
-						BE_SDL_AltControlScheme_Pop();
+						BE_ST_AltControlScheme_Pop();
 
 						if (!id0_argv[2])
 						{
@@ -568,11 +568,11 @@ void intro_exe_main(void)
 						//Beep();
 						WaitForKeyRelease();
 						while (!(last_key = TryGetScanCode()))
-							BE_SDL_ShortSleep();
+							BE_ST_ShortSleep();
 						if (last_key == 0x1/*0x11B*/)
 						{
 							// REFKEEN - Alternative controllers support
-							BE_SDL_AltControlScheme_Push();
+							BE_ST_AltControlScheme_Push();
 
 							leave_skill_selection = true;
 						}
@@ -583,7 +583,7 @@ void intro_exe_main(void)
 							ScreenToScreen(8000, 0, 40, 200);
 							// REFKEEN havebeep is always false (and code was removed for Apocalypse)
 							//Beep();
-							BE_SDL_BiosScanCode(0);
+							BE_ST_BiosScanCode(0);
 							TrashProg(NULL);
 						}
 					}
@@ -599,7 +599,7 @@ void intro_exe_main(void)
 					}
 					else
 					{
-						BE_SDL_ShortSleep();
+						BE_ST_ShortSleep();
 					}
 				}
 			}
@@ -612,7 +612,7 @@ void intro_TrashProg (const id0_char_t *OutMsg, ...)
 	va_list ap;
 
 	FreeAllShapes();
-	BE_SDL_ToggleTextCursor(true);
+	BE_ST_ToggleTextCursor(true);
 	//_setcursortype(_NORMALCURSOR);
 
 	if (!OutMsg)
@@ -635,7 +635,7 @@ void intro_TrashProg (const id0_char_t *OutMsg, ...)
 		{
 			SetScreenMode(1);
 			printf("ERROR : Can't find executable.\n");
-			BE_SDL_HandleExit(0);
+			BE_ST_HandleExit(0);
 		}
 #endif
 	}
@@ -647,11 +647,11 @@ void intro_TrashProg (const id0_char_t *OutMsg, ...)
 		va_start(ap, OutMsg);
 
 		if (OutMsg && *OutMsg)
-			BE_SDL_vprintf(OutMsg,ap);
+			BE_ST_vprintf(OutMsg,ap);
 
 		va_end(ap);
 	}
-	BE_SDL_HandleExit(0);
+	BE_ST_HandleExit(0);
 }
 
 static void SetScreenMode (id0_int_t mode)
@@ -659,11 +659,11 @@ static void SetScreenMode (id0_int_t mode)
 	switch (mode)
 	{
 	case 1:
-		BE_SDL_SetScreenMode(3);
+		BE_ST_SetScreenMode(3);
 		SetLineWidth(80);
 		break;
 	case 3:
-		BE_SDL_SetScreenMode(0xd);
+		BE_ST_SetScreenMode(0xd);
 		SetLineWidth(40);
 		break;
 	}
@@ -689,7 +689,7 @@ static void SetLineWidth (id0_int_t width)
 //
 // set wide virtual screen
 //
-	BE_SDL_EGASetLineWidth(width); // Ported from ASM
+	BE_ST_EGASetLineWidth(width); // Ported from ASM
 #endif
 
 //
@@ -711,7 +711,7 @@ static void SetLineWidth (id0_int_t width)
 
 static id0_boolean_t IsKeyPressed (void)
 {
-	return BE_SDL_KbHit();
+	return BE_ST_KbHit();
 #if 0
 asm	mov ah, 1
 asm	int 0x16
@@ -729,7 +729,7 @@ static void WaitForKeyRelease (void)
 	if (IsKeyPressed())
 		while (IsKeyPressed())
 		{
-			BE_SDL_BiosScanCode(0);
+			BE_ST_BiosScanCode(0);
 			//getch();
 		}
 }

@@ -1219,14 +1219,14 @@ void ClearScreen (void)
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// Originally done with pairs of 0x0000 words
-		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 0, (VIEWWIDTH/16)*2+1, 0xFF);
+		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 0, (VIEWWIDTH/16)*2+1, 0xFF);
 		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 	// bottom loop
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// Originally done with pairs of 0x0808 words
-		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 8, (VIEWWIDTH/16)*2+1, 0xFF);
+		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 8, (VIEWWIDTH/16)*2+1, 0xFF);
 		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 #if 0
@@ -1469,7 +1469,7 @@ void CalcTics (void)
 // take DEMOTICS or more tics, and modify Timecount to reflect time taken
 //
 		oldtimecount = lasttimecount;
-		BE_SDL_TimeCountWaitForDest(oldtimecount+DEMOTICS*2);
+		BE_ST_TimeCountWaitForDest(oldtimecount+DEMOTICS*2);
 #if 0
 		while (TimeCount<oldtimecount+DEMOTICS*2)
 		;
@@ -1677,12 +1677,12 @@ asm	rep stosw
 		// (REFKEEN) Minor difference from vanilla Catacomb
 		if (MousePresent)
 		{
-			BE_SDL_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
+			BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
 		}
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 
-	BE_SDL_SetScreenStartAddress(bufferofs);
+	BE_ST_SetScreenStartAddress(bufferofs);
 #if 0
 asm	cli
 asm	mov	cx,[bufferofs]

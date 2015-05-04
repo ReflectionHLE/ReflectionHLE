@@ -127,7 +127,7 @@ void SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
 void ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t wide, id0_unsigned_t height);
 
-#include "be_sdl.h"
+#include "be_st.h"
 #include "be_cross.h"
 
 #endif

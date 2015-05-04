@@ -182,15 +182,15 @@ void VW_SetScreenMode (id0_int_t grmode)
 	switch (grmode)
 	{
 	  case TEXTGR:
-		BE_SDL_SetScreenMode(3);
-		screenseg=BE_SDL_GetTextModeMemoryPtr();
+		BE_ST_SetScreenMode(3);
+		screenseg=BE_ST_GetTextModeMemoryPtr();
 		break;
 	  case CGAGR:
-		BE_SDL_SetScreenMode(4);
+		BE_ST_SetScreenMode(4);
 		// screenseg is actually a main mem buffer
 		break;
 	  case EGAGR:
-		BE_SDL_SetScreenMode(0xd);
+		BE_ST_SetScreenMode(0xd);
 		// REFKEEN no need to obtain screenseg
 		// - different EGA planes are accessed with new functions
 		break;
@@ -232,7 +232,7 @@ id0_char_t colors[7][17]=
 
 void VW_ColorBorder (id0_int_t color)
 {
-	BE_SDL_SetBorderColor(color);
+	BE_ST_SetBorderColor(color);
 	bordercolor = color;
 }
 
@@ -240,7 +240,7 @@ void VW_SetDefaultColors(void)
 {
 #if GRMODE == EGAGR
 	colors[3][16] = bordercolor;
-	BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
+	BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
 	screenfaded = false;
 #endif
 }
@@ -254,7 +254,7 @@ void VW_FadeOut(void)
 	for (i=3;i>=0;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
+	  BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -270,7 +270,7 @@ void VW_FadeIn(void)
 	for (i=0;i<4;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
+	  BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
@@ -285,7 +285,7 @@ void VW_FadeUp(void)
 	for (i=3;i<6;i++)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
+	  BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
@@ -300,7 +300,7 @@ void VW_FadeDown(void)
 	for (i=5;i>2;i--)
 	{
 	  colors[i][16] = bordercolor;
-	  BE_SDL_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
+	  BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[i]);
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
@@ -329,7 +329,7 @@ void VW_SetLineWidth (id0_int_t width)
 //
 // set wide virtual screen
 //
-	BE_SDL_EGASetLineWidth(width); // Ported from ASM
+	BE_ST_EGASetLineWidth(width); // Ported from ASM
 #endif
 
 //
@@ -364,11 +364,11 @@ void	VW_ClearVideo (id0_int_t color)
 #endif
 
 #if GRMODE == EGAGR
-	BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(0, color, 0xffff, 0xff);
+	BE_ST_EGAUpdateGFXPixel4bppRepeatedly(0, color, 0xffff, 0xff);
 #endif
 #if GRMODE == CGAGR
 	memset(screenseg, color, 0xffff);
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 #endif
 
 
@@ -523,25 +523,25 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 
 	maskleft&=maskright;
 
-	BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+	BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
 	return;
   }
 
 	//
 	// draw left side
 	//
-	BE_SDL_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
+	BE_ST_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
 
 	//
 	// draw middle
 	//
-	BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+	BE_ST_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
 	dest += mid;
 
 	//
 	// draw right side
 	//
-	BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskright);
+	BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskright);
 }
 #endif
 
@@ -581,7 +581,7 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 		// mask out pixels; 'or' in color
 		screenseg[dest] = (screenseg[dest] & ~maskleft) | ((id0_byte_t)color & maskleft);
 
-		//BE_SDL_MarkGfxForPendingUpdate();
+		//BE_ST_MarkGfxForPendingUpdate();
 		return;
 	}
 
@@ -608,7 +608,7 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 	// mask out pixels; 'or' in color
 	screenseg[dest] = (screenseg[dest] & ~maskright) | ((id0_byte_t)color & maskright);
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 #endif
 
@@ -667,7 +667,7 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 
 		do
 		{
-			BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+			BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
 			dest += linewidth; // down to next line
 			--height;
 		} while (height);
@@ -681,18 +681,18 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 		//
 		// draw left side
 		//
-		BE_SDL_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
+		BE_ST_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
 
 		//
 		// draw middle
 		//
-		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
 		dest += mid;
 
 		//
 		// draw right side
 		//
-		BE_SDL_EGAUpdateGFXPixel4bpp(dest, color, maskright);
+		BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskright);
 
 		dest += bytesToAdd; // move to start of next line
 		--height;
@@ -787,10 +787,10 @@ void VW_CGAFullUpdate (void)
 	displayofs = bufferofs+panadjust;
 
 
-	BE_SDL_CGAFullUpdateFromWrappedMem(screenseg, screenseg+displayofs, linewidth);
+	BE_ST_CGAFullUpdateFromWrappedMem(screenseg, screenseg+displayofs, linewidth);
 #if 0
 	uint8_t *srcPtr = &screenseg[displayofs];
-	uint8_t *destPtr = BE_SDL_GetCGAMemoryPtr();
+	uint8_t *destPtr = BE_ST_GetCGAMemoryPtr();
 
 	id0_unsigned_t linePairsToCopy = 100; // pairs of scan lines to copy
 
@@ -816,8 +816,8 @@ void VW_CGAFullUpdate (void)
 	updateptr = baseupdateptr;
 	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
 
-	// Rather than BE_SDL_MarkGfxForPendingUpdate()...
-	//BE_SDL_MarkGfxForUpdate();
+	// Rather than BE_ST_MarkGfxForPendingUpdate()...
+	//BE_ST_MarkGfxForUpdate();
 
 #if 0
 	id0_byte_t	*update;
@@ -1159,7 +1159,7 @@ void VW_UpdateScreen (void)
 #if GRMODE == EGAGR
 	VWL_UpdateScreenBlocks();
 
-	BE_SDL_SetScreenStartAddress(displayofs+panadjust); // Ported from ASM
+	BE_ST_SetScreenStartAddress(displayofs+panadjust); // Ported from ASM
 #endif
 #if GRMODE == CGAGR
 	VW_CGAFullUpdate();

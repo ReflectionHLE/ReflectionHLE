@@ -172,25 +172,25 @@ void DrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile)
 	if (id0_workaround_catadventures_nodraw_digits_on_startup)
 	{
 		// FIXME: Have a separate handler accepting plane?
-		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff, egaSrcOff, 8);
-		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff, egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
 	}
 	else
 	{
-		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
-		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
+		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
 	}
 #if 0
 	id0_unsigned_t junk = latchpics[0];
@@ -1674,13 +1674,13 @@ void ReadScroll (id0_int_t scroll)
 	lasttext = -1;
 	DisplayMsg("Press ENTER or ESC to exit.",NULL);
 	// REFKEEN - Alternative controllers support
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){sc_Enter, sc_Escape, 0});
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){sc_Enter, sc_Escape, 0});
 	while ((!Keyboard[sc_Escape]) && (!Keyboard[sc_Enter]))
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
-	BE_SDL_AltControlScheme_Pop();
+	BE_ST_AltControlScheme_Pop();
 // MDM end
 	IN_ClearKeysDown ();
 

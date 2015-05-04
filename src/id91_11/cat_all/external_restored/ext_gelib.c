@@ -122,7 +122,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 							n--;
 
 						while (n--)
-							BE_SDL_EGAUpdateGFXByte(DstOff[Plane]++, Rep, 1<<Plane);
+							BE_ST_EGAUpdateGFXByte(DstOff[Plane]++, Rep, 1<<Plane);
 							//*Dst[Plane]++ = Rep;
 					}
 					else
@@ -136,7 +136,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 						n--;
 
 					while (n--)
-						BE_SDL_EGAUpdateGFXByte(DstOff[Plane]++, *Src++, 1<<Plane);
+						BE_ST_EGAUpdateGFXByte(DstOff[Plane]++, *Src++, 1<<Plane);
 						//*Dst[Plane]++ = *Src++;
 
 					if ((!BPR) && (NotWordAligned))     // IGNORE WORD ALIGN
@@ -179,8 +179,8 @@ id0_long_t Verify(const id0_char_t *filename)
 // NOTE: THIS VERSION OMITS THE ASCII CODE (but We don't need it)
 id0_int_t TryGetScanCode/*TryGetKey*/(void)
 {
-	if (BE_SDL_BiosScanCode(1))
-		return BE_SDL_BiosScanCode(0);
+	if (BE_ST_BiosScanCode(1))
+		return BE_ST_BiosScanCode(0);
 	return 0;
 #if  0
 asm	mov ah, 1

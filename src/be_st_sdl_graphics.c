@@ -2,7 +2,7 @@
 #include "SDL.h"
 
 #include "be_cross.h"
-#include "be_sdl.h"
+#include "be_st.h"
 
 /*static*/ SDL_Window *g_sdlWindow;
 static SDL_Renderer *g_sdlRenderer;
@@ -12,7 +12,7 @@ static SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 static bool g_sdlDoRefreshGfxOutput;
 bool g_sdlForceGfxControlUiRefresh;
 
-void BE_SDL_MarkGfxForUpdate(void)
+void BE_ST_MarkGfxForUpdate(void)
 {
 	g_sdlDoRefreshGfxOutput = true;
 }
@@ -114,9 +114,9 @@ static int g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY;
 static bool g_sdlTextInputIsKeyPressed, g_sdlTextInputIsShifted;
 
 
-void BE_SDL_SetGfxOutputRects(void);
+void BE_ST_SetGfxOutputRects(void);
 
-void BE_SDL_InitGfx(void)
+void BE_ST_InitGfx(void)
 {
 #ifdef REFKEEN_VER_KDREAMS
 	const char *windowTitle = "Reflection Keen";
@@ -196,10 +196,10 @@ void BE_SDL_InitGfx(void)
 		//Destroy window?
 		exit(0);
 	}
-	BE_SDL_SetScreenMode(3); // Includes SDL_Texture handling and output rects preparation
+	BE_ST_SetScreenMode(3); // Includes SDL_Texture handling and output rects preparation
 }
 
-void BE_SDL_ShutdownGfx(void)
+void BE_ST_ShutdownGfx(void)
 {
 	SDL_DestroyTexture(g_sdlFaceButtonsTexture);
 	g_sdlFaceButtonsTexture = NULL;
@@ -217,7 +217,7 @@ void BE_SDL_ShutdownGfx(void)
 	g_sdlWindow = NULL;
 }
 
-static void BEL_SDL_RecreateTexture(void)
+static void BEL_ST_RecreateTexture(void)
 {
 	if (g_sdlTexture)
 	{
@@ -329,7 +329,7 @@ static const uint32_t g_sdlEGABGRAScreenColors[] = {
 	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
 };
 
-static void BEL_SDL_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr)
+static void BEL_ST_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr)
 {
 	if (*padTexturePtrPtr)
 	{
@@ -346,7 +346,7 @@ static void BEL_SDL_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr)
 	SDL_SetTextureBlendMode(*padTexturePtrPtr, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
 }
 
-static void BEL_SDL_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char *text)
+static void BEL_ST_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char *text)
 {
 	for (int currRow = 0, fontXpmIndex = 3; currRow < ALTCONTROLLER_CHAR_PIX_HEIGHT; ++currRow, picPtr += picWidth, ++fontXpmIndex)
 	{
@@ -366,9 +366,9 @@ static void BEL_SDL_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const cha
 	}
 }
 
-static const char * BEL_SDL_PrepareToShowOnePad(const char *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr)
+static const char * BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr)
 {
-	BEL_SDL_CreatePadTextureIfNeeded(padTexturePtrPtr);
+	BEL_ST_CreatePadTextureIfNeeded(padTexturePtrPtr);
 
 	uint32_t pixels[ALTCONTROLLER_PAD_PIX_WIDTH*ALTCONTROLLER_PAD_PIX_HEIGHT];
 	uint32_t *currPtr = pixels;
@@ -398,7 +398,7 @@ static const char * BEL_SDL_PrepareToShowOnePad(const char *scanCodes, const cha
 	for (int counter = 0; (*scanCodes) && (counter < 4); ++scanCodes, ++counter)
 	{
 		const char *str = g_sdlDOSScanCodeStrs[(unsigned char)(*scanCodes)];
-		BEL_SDL_RedrawTextToBuffer(pixels + g_sdlControllerFaceButtonsTextLocs[2*counter] + g_sdlControllerFaceButtonsTextLocs[2*counter+1]*ALTCONTROLLER_PAD_PIX_WIDTH + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), ALTCONTROLLER_PAD_PIX_WIDTH, str);
+		BEL_ST_RedrawTextToBuffer(pixels + g_sdlControllerFaceButtonsTextLocs[2*counter] + g_sdlControllerFaceButtonsTextLocs[2*counter+1]*ALTCONTROLLER_PAD_PIX_WIDTH + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), ALTCONTROLLER_PAD_PIX_WIDTH, str);
 	}
 	// Add some alpha channel
 	currPtr = pixels;
@@ -414,14 +414,14 @@ static const char * BEL_SDL_PrepareToShowOnePad(const char *scanCodes, const cha
 	return scanCodes; // Check if there's something left
 }
 
-/*static*/ void BEL_SDL_PrepareToShowFaceButtonsAndDpad(const char *scanCodes)
+/*static*/ void BEL_ST_PrepareToShowFaceButtonsAndDpad(const char *scanCodes)
 {
-	scanCodes =  BEL_SDL_PrepareToShowOnePad(scanCodes, pad_thumb_buttons_xpm, &g_sdlFaceButtonsTexture, &g_sdlFaceButtonsAreShown);
+	scanCodes =  BEL_ST_PrepareToShowOnePad(scanCodes, pad_thumb_buttons_xpm, &g_sdlFaceButtonsTexture, &g_sdlFaceButtonsAreShown);
 	if (*scanCodes)
-		BEL_SDL_PrepareToShowOnePad(scanCodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown);
+		BEL_ST_PrepareToShowOnePad(scanCodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown);
 }
 
-static void BEL_SDL_CreateTextInputTextureIfNeeded(void)
+static void BEL_ST_CreateTextInputTextureIfNeeded(void)
 {
 	if (g_sdlTextInputTexture)
 	{
@@ -438,7 +438,7 @@ static void BEL_SDL_CreateTextInputTextureIfNeeded(void)
 	SDL_SetTextureBlendMode(g_sdlTextInputTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
 }
 
-static void BEL_SDL_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isSelected)
+static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isSelected)
 {
 #if 0
 	// This can happen for space that should be skipped
@@ -476,7 +476,7 @@ static void BEL_SDL_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char
 		*currPtr = frameColor;
 	}
 	/*** Draw text ***/
-	BEL_SDL_RedrawTextToBuffer(picPtr + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH-ALTCONTROLLER_CHAR_PIX_WIDTH*strlen(text))/2 + picWidth*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT-ALTCONTROLLER_CHAR_PIX_HEIGHT)/2, picWidth, text);
+	BEL_ST_RedrawTextToBuffer(picPtr + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH-ALTCONTROLLER_CHAR_PIX_WIDTH*strlen(text))/2 + picWidth*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT-ALTCONTROLLER_CHAR_PIX_HEIGHT)/2, picWidth, text);
 	// Add some alpha channel (shouldn't be a lot)
 	currPtr = picPtr;
 	for (int currRow = 0; currRow < ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT; ++currRow, currPtr += picWidth-ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
@@ -488,7 +488,7 @@ static void BEL_SDL_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char
 	}
 }
 
-static void BEL_SDL_RedrawWholeTextInputUI(void)
+static void BEL_ST_RedrawWholeTextInputUI(void)
 {
 	uint32_t pixels[ALTCONTROLLER_KEYBOARD_PIX_WIDTH*ALTCONTROLLER_KEYBOARD_PIX_HEIGHT];
 	uint32_t *currPtr = pixels;
@@ -497,18 +497,18 @@ static void BEL_SDL_RedrawWholeTextInputUI(void)
 	{
 		for (int currKeyCol = 0; currKeyCol < ALTCONTROLLER_KEYBOARD_WIDTH; ++currKeyCol, currPtr += ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
 		{
-			BEL_SDL_RedrawKeyToBuffer(currPtr, ALTCONTROLLER_KEYBOARD_PIX_WIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[currKeyRow][currKeyCol]], false);
+			BEL_ST_RedrawKeyToBuffer(currPtr, ALTCONTROLLER_KEYBOARD_PIX_WIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[currKeyRow][currKeyCol]], false);
 		}
 	}
 	// Simpler to do so outside the loop
-	BEL_SDL_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlTextInputSelectedKeyX) + ALTCONTROLLER_KEYBOARD_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlTextInputSelectedKeyY), ALTCONTROLLER_KEYBOARD_PIX_WIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX]], true);
+	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlTextInputSelectedKeyX) + ALTCONTROLLER_KEYBOARD_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlTextInputSelectedKeyY), ALTCONTROLLER_KEYBOARD_PIX_WIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX]], true);
 
 	SDL_UpdateTexture(g_sdlTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_KEYBOARD_PIX_WIDTH);
 }
 
-/*static*/ void BEL_SDL_PrepareToShowTextInputUI(void)
+/*static*/ void BEL_ST_PrepareToShowTextInputUI(void)
 {
-	BEL_SDL_CreateTextInputTextureIfNeeded();
+	BEL_ST_CreateTextInputTextureIfNeeded();
 
 	g_sdlTextInputSelectedKeyX = 0;
 	g_sdlTextInputSelectedKeyY = 0;
@@ -516,27 +516,27 @@ static void BEL_SDL_RedrawWholeTextInputUI(void)
 	g_sdlTextInputIsShifted = false;
 	g_sdlDOSScanCodeKeyboardStrs_Ptr = g_sdlDOSScanCodeKeyboardNonShiftedStrs;
 
-	BEL_SDL_RedrawWholeTextInputUI();
+	BEL_ST_RedrawWholeTextInputUI();
 	g_sdlTextInputUIIsShown = true;
 
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-static void BEL_SDL_ToggleTextInputUIKey(int x, int y, bool toggle)
+static void BEL_ST_ToggleTextInputUIKey(int x, int y, bool toggle)
 {
 	uint32_t pixels[ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT];
 
-	BEL_SDL_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[y][x]], toggle);
+	BEL_ST_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[y][x]], toggle);
 
 	SDL_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
 
 	SDL_UpdateTexture(g_sdlTextInputTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
 }
 
-int BEL_SDL_MoveUpInTextInputUI(void)
+int BEL_ST_MoveUpInTextInputUI(void)
 {
 	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
-	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
 	g_sdlTextInputIsKeyPressed = false;
 
 	--g_sdlTextInputSelectedKeyY;
@@ -544,14 +544,14 @@ int BEL_SDL_MoveUpInTextInputUI(void)
 	{
 		g_sdlTextInputSelectedKeyY = ALTCONTROLLER_KEYBOARD_HEIGHT-1;
 	}
-	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
 	return origScanCode;
 }
 
-int BEL_SDL_MoveDownInTextInputUI(void)
+int BEL_ST_MoveDownInTextInputUI(void)
 {
 	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
-	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
 	g_sdlTextInputIsKeyPressed = false;
 
 	++g_sdlTextInputSelectedKeyY;
@@ -559,14 +559,14 @@ int BEL_SDL_MoveDownInTextInputUI(void)
 	{
 		g_sdlTextInputSelectedKeyY = 0;
 	}
-	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
 	return origScanCode;
 }
 
-int BEL_SDL_MoveLeftInTextInputUI(void)
+int BEL_ST_MoveLeftInTextInputUI(void)
 {
 	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
-	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
 	g_sdlTextInputIsKeyPressed = false;
 
 	--g_sdlTextInputSelectedKeyX;
@@ -574,14 +574,14 @@ int BEL_SDL_MoveLeftInTextInputUI(void)
 	{
 		g_sdlTextInputSelectedKeyX = ALTCONTROLLER_KEYBOARD_WIDTH-1;
 	}
-	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
 	return origScanCode;
 }
 
-int BEL_SDL_MoveRightInTextInputUI(void)
+int BEL_ST_MoveRightInTextInputUI(void)
 {
 	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
-	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
 	g_sdlTextInputIsKeyPressed = false;
 
 	++g_sdlTextInputSelectedKeyX;
@@ -589,11 +589,11 @@ int BEL_SDL_MoveRightInTextInputUI(void)
 	{
 		g_sdlTextInputSelectedKeyX = 0;
 	}
-	BEL_SDL_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
 	return origScanCode;
 }
 
-int BEL_SDL_ToggleShiftStateInTextInputUI(bool *pToggle)
+int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle)
 {
 	if (!(*pToggle))
 		return 0;
@@ -601,36 +601,36 @@ int BEL_SDL_ToggleShiftStateInTextInputUI(bool *pToggle)
 	*pToggle = g_sdlTextInputIsShifted;
 	g_sdlDOSScanCodeKeyboardStrs_Ptr = g_sdlTextInputIsShifted ? g_sdlDOSScanCodeKeyboardShiftedStrs : g_sdlDOSScanCodeKeyboardNonShiftedStrs;
 
-	BEL_SDL_RedrawWholeTextInputUI();
+	BEL_ST_RedrawWholeTextInputUI();
 
 	return EMULATEDKEYSCANCODE_LSHIFT;
 }
 
-int BEL_SDL_ToggleKeyPressInTextInputUI(bool *pToggle)
+int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle)
 {
 	if (g_sdlTextInputIsKeyPressed == *pToggle)
 		return 0;
 	g_sdlTextInputIsKeyPressed = *pToggle;
 	// Shift key is a special case
 	if ((g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] == EMULATEDKEYSCANCODE_LSHIFT))
-		return BEL_SDL_ToggleShiftStateInTextInputUI(pToggle);
+		return BEL_ST_ToggleShiftStateInTextInputUI(pToggle);
 
 	return (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX];
 }
 
 // Note: IGNORES shift status
-int BEL_SDL_GetPressedKeyScanCodeFromTextInputUI(void)
+int BEL_ST_GetPressedKeyScanCodeFromTextInputUI(void)
 {
 	return g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
 }
 
 // May be additionally required
-bool BEL_SDL_IsTextInputUIShifted(void)
+bool BEL_ST_IsTextInputUIShifted(void)
 {
 	return g_sdlTextInputIsShifted;
 }
 
-/*static*/ void BEL_SDL_HideAltInputUI(void)
+/*static*/ void BEL_ST_HideAltInputUI(void)
 {
 	g_sdlFaceButtonsAreShown = false;
 	g_sdlDpadIsShown = false;
@@ -639,7 +639,7 @@ bool BEL_SDL_IsTextInputUIShifted(void)
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-void BE_SDL_SetGfxOutputRects(void)
+void BE_ST_SetGfxOutputRects(void)
 {
 	int srcWidth = g_sdlTexWidth;
 	int srcHeight = g_sdlTexHeight;
@@ -725,13 +725,13 @@ void BE_SDL_SetGfxOutputRects(void)
 	g_sdlControllerTextInputRect.y = winHeight-g_sdlControllerTextInputRect.h;
 }
 
-void BE_SDL_SetScreenStartAddress(uint16_t crtc)
+void BE_ST_SetScreenStartAddress(uint16_t crtc)
 {
 	g_sdlScreenStartAddress = crtc;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-uint8_t *BE_SDL_GetTextModeMemoryPtr(void)
+uint8_t *BE_ST_GetTextModeMemoryPtr(void)
 {
 	return g_sdlVidMem.text;
 }
@@ -749,41 +749,41 @@ static uint32_t g_sdlEGACurrBGRAPaletteAndBorder[17], g_sdlEGACurrBGRAPaletteAnd
  * modes used by Keen the Secondary-Green signal is treated as an Intensity
  * one and the two other intensity signals are ignored.
  */
-static int BEL_SDL_ConvertEGASignalToEGAEntry(int color)
+static int BEL_ST_ConvertEGASignalToEGAEntry(int color)
 {
 	return (color & 7) | ((color & 16) >> 1);
 }
 
 
-void BE_SDL_SetBorderColor(uint8_t color)
+void BE_ST_SetBorderColor(uint8_t color)
 {
-	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_SDL_ConvertEGASignalToEGAEntry(color)];
+	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_ST_ConvertEGASignalToEGAEntry(color)];
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGASetPaletteAndBorder(const uint8_t *palette)
+void BE_ST_EGASetPaletteAndBorder(const uint8_t *palette)
 {
 	for (int entry = 0; entry < 16; ++entry)
 	{
-		g_sdlEGACurrBGRAPaletteAndBorder[entry] =  g_sdlEGABGRAScreenColors[BEL_SDL_ConvertEGASignalToEGAEntry(palette[entry])];
+		g_sdlEGACurrBGRAPaletteAndBorder[entry] =  g_sdlEGABGRAScreenColors[BEL_ST_ConvertEGASignalToEGAEntry(palette[entry])];
 	}
-	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_SDL_ConvertEGASignalToEGAEntry(palette[16])];
+	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_ST_ConvertEGASignalToEGAEntry(palette[16])];
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGASetPelPanning(uint8_t panning)
+void BE_ST_EGASetPelPanning(uint8_t panning)
 {
 	g_sdlPelPanning = panning;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGASetLineWidth(uint8_t widthInBytes)
+void BE_ST_EGASetLineWidth(uint8_t widthInBytes)
 {
 	g_sdlLineWidth = widthInBytes;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGASetSplitScreen(int16_t linenum)
+void BE_ST_EGASetSplitScreen(int16_t linenum)
 {
 	// VGA only for now (200-lines graphics modes)
 	if (g_sdlTexHeight == GFX_TEX_HEIGHT)
@@ -799,7 +799,7 @@ void BE_SDL_EGASetSplitScreen(int16_t linenum)
 		g_sdlSplitScreenLine = linenum;
 }
 
-void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
+void BE_ST_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
 {
 	if (planeMask & 1)
 		g_sdlVidMem.egaGfx[0][destOff] = srcVal;
@@ -812,8 +812,8 @@ void BE_SDL_EGAUpdateGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMas
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-// Same as BE_SDL_EGAUpdateGFXByte but picking specific bits out of each byte, and WITHOUT plane mask
-void BE_SDL_EGAUpdateGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
+// Same as BE_ST_EGAUpdateGFXByte but picking specific bits out of each byte, and WITHOUT plane mask
+void BE_ST_EGAUpdateGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
 {
 	g_sdlVidMem.egaGfx[0][destOff] = (g_sdlVidMem.egaGfx[0][destOff] & ~bitsMask) | (srcVal & bitsMask); 
 	g_sdlVidMem.egaGfx[1][destOff] = (g_sdlVidMem.egaGfx[1][destOff] & ~bitsMask) | (srcVal & bitsMask); 
@@ -823,7 +823,7 @@ void BE_SDL_EGAUpdateGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
 }
 
 // Based on BE_Cross_LinearToWrapped_MemCopy
-static void BEL_SDL_LinearToEGAPlane_MemCopy(uint8_t *planeDstPtr, uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num)
+static void BEL_ST_LinearToEGAPlane_MemCopy(uint8_t *planeDstPtr, uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num)
 {
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
@@ -839,7 +839,7 @@ static void BEL_SDL_LinearToEGAPlane_MemCopy(uint8_t *planeDstPtr, uint16_t plan
 }
 
 // Based on BE_Cross_WrappedToLinear_MemCopy
-static void BEL_SDL_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, const uint8_t *planeSrcPtr, uint16_t planeSrcOff, uint16_t num)
+static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, const uint8_t *planeSrcPtr, uint16_t planeSrcOff, uint16_t num)
 {
 	uint16_t bytesToEnd = 0x10000-planeSrcOff;
 	if (num <= bytesToEnd)
@@ -856,7 +856,7 @@ static void BEL_SDL_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, const uint8_t *
 }
 
 // Based on BE_Cross_WrappedToWrapped_MemCopy
-static void BEL_SDL_EGAPlaneToEGAPlane_MemCopy(uint8_t *planeCommonPtr, uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num)
+static void BEL_ST_EGAPlaneToEGAPlane_MemCopy(uint8_t *planeCommonPtr, uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num)
 {
 	uint16_t srcBytesToEnd = 0x10000-planeSrcOff;
 	uint16_t dstBytesToEnd = 0x10000-planeDstOff;
@@ -897,20 +897,20 @@ static void BEL_SDL_EGAPlaneToEGAPlane_MemCopy(uint8_t *planeCommonPtr, uint16_t
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeMask)
+void BE_ST_EGAUpdateGFXBuffer(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeMask)
 {
 	if (planeMask & 1)
-		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[0], destOff, srcPtr, num);
+		BEL_ST_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[0], destOff, srcPtr, num);
 	if (planeMask & 2)
-		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[1], destOff, srcPtr, num);
+		BEL_ST_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[1], destOff, srcPtr, num);
 	if (planeMask & 4)
-		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[2], destOff, srcPtr, num);
+		BEL_ST_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[2], destOff, srcPtr, num);
 	if (planeMask & 8)
-		BEL_SDL_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[3], destOff, srcPtr, num);
+		BEL_ST_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[3], destOff, srcPtr, num);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
+void BE_ST_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
 {
 	g_sdlVidMem.egaGfx[0][destOff] = g_sdlVidMem.egaGfx[0][srcOff];
 	g_sdlVidMem.egaGfx[1][destOff] = g_sdlVidMem.egaGfx[1][srcOff];
@@ -919,8 +919,8 @@ void BE_SDL_EGAUpdateGFXByteScrToScr(uint16_t destOff, uint16_t srcOff)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-// Same as BE_SDL_EGAUpdateGFXByteScrToScr but with plane mask (added for Catacomb Abyss vanilla bug reproduction/workaround)
-void BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t planeMask)
+// Same as BE_ST_EGAUpdateGFXByteScrToScr but with plane mask (added for Catacomb Abyss vanilla bug reproduction/workaround)
+void BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t planeMask)
 {
 	if (planeMask & 1)
 		g_sdlVidMem.egaGfx[0][destOff] = g_sdlVidMem.egaGfx[0][srcOff];
@@ -933,8 +933,8 @@ void BE_SDL_EGAUpdateGFXByteWithPlaneMaskScrToScr(uint16_t destOff, uint16_t src
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-// Same as BE_SDL_EGAUpdateGFXByteScrToScr but picking specific bits out of each byte
-void BE_SDL_EGAUpdateGFXBitsScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t bitsMask)
+// Same as BE_ST_EGAUpdateGFXByteScrToScr but picking specific bits out of each byte
+void BE_ST_EGAUpdateGFXBitsScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t bitsMask)
 {
 	g_sdlVidMem.egaGfx[0][destOff] = (g_sdlVidMem.egaGfx[0][destOff] & ~bitsMask) | (g_sdlVidMem.egaGfx[0][srcOff] & bitsMask); 
 	g_sdlVidMem.egaGfx[1][destOff] = (g_sdlVidMem.egaGfx[1][destOff] & ~bitsMask) | (g_sdlVidMem.egaGfx[1][srcOff] & bitsMask); 
@@ -943,26 +943,26 @@ void BE_SDL_EGAUpdateGFXBitsScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t 
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num)
+void BE_ST_EGAUpdateGFXBufferScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num)
 {
-	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[0], destOff, srcOff, num);
-	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[1], destOff, srcOff, num);
-	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[2], destOff, srcOff, num);
-	BEL_SDL_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[3], destOff, srcOff, num);
+	BEL_ST_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[0], destOff, srcOff, num);
+	BEL_ST_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[1], destOff, srcOff, num);
+	BEL_ST_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[2], destOff, srcOff, num);
+	BEL_ST_EGAPlaneToEGAPlane_MemCopy(g_sdlVidMem.egaGfx[3], destOff, srcOff, num);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-uint8_t BE_SDL_EGAFetchGFXByte(uint16_t destOff, uint16_t planenum)
+uint8_t BE_ST_EGAFetchGFXByte(uint16_t destOff, uint16_t planenum)
 {
 	return g_sdlVidMem.egaGfx[planenum][destOff];
 }
 
-void BE_SDL_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planenum)
+void BE_ST_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planenum)
 {
-	BEL_SDL_EGAPlaneToLinear_MemCopy(destPtr, g_sdlVidMem.egaGfx[planenum], srcOff, num);
+	BEL_ST_EGAPlaneToLinear_MemCopy(destPtr, g_sdlVidMem.egaGfx[planenum], srcOff, num);
 }
 
-void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint8_t bitsMask)
+void BE_ST_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint8_t bitsMask)
 {
 	for (int currBitNum = 0, currBitMask = 1; currBitNum < 8; ++currBitNum, currBitMask <<= 1)
 	{
@@ -981,15 +981,15 @@ void BE_SDL_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint8_t bitsM
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint8_t bitsMask)
+void BE_ST_EGAUpdateGFXPixel4bppRepeatedly(uint16_t destOff, uint8_t color, uint16_t count, uint8_t bitsMask)
 {
 	for (uint16_t loopVar = 0; loopVar < count; ++loopVar, ++destOff)
 	{
-		BE_SDL_EGAUpdateGFXPixel4bpp(destOff, color, bitsMask);
+		BE_ST_EGAUpdateGFXPixel4bpp(destOff, color, bitsMask);
 	}
 }
 
-void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
+void BE_ST_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
 {
 	if (planeMask & 1)
 		g_sdlVidMem.egaGfx[0][destOff] ^= srcVal;
@@ -1002,11 +1002,11 @@ void BE_SDL_EGAXorGFXByte(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-// Like BE_SDL_EGAXorGFXByte, but:
+// Like BE_ST_EGAXorGFXByte, but:
 // - OR instead of XOR.
 // - All planes are updated.
 // - Only specific bits are updated in each plane's byte.
-void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
+void BE_ST_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
 {
 	g_sdlVidMem.egaGfx[0][destOff] |= (srcVal & bitsMask); 
 	g_sdlVidMem.egaGfx[1][destOff] |= (srcVal & bitsMask); 
@@ -1017,7 +1017,7 @@ void BE_SDL_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask)
 
 
 
-void BE_SDL_CGAFullUpdateFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth)
+void BE_ST_CGAFullUpdateFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth)
 {
 	const uint8_t *endSegPtr = segPtr + 0x10000;
 	uint8_t *cgaHostPtr = g_sdlHostScrMem.cgaGfx, *cgaHostCachePtr = g_sdlHostScrMemCache.cgaGfx;
@@ -1051,7 +1051,7 @@ void BE_SDL_CGAFullUpdateFromWrappedMem(const uint8_t *segPtr, const uint8_t *of
 }
 
 
-void BE_SDL_SetScreenMode(int mode)
+void BE_ST_SetScreenMode(int mode)
 {
 	g_sdlDoRefreshGfxOutput = true;
 	switch (mode)
@@ -1062,7 +1062,7 @@ void BE_SDL_SetScreenMode(int mode)
 		g_sdlTxtColor = 7;
 		g_sdlTxtBackground = 0;
 		g_sdlTxtCursorPosX = g_sdlTxtCursorPosY = 0;
-		BE_SDL_clrscr();
+		BE_ST_clrscr();
 		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		break;
 	case 4:
@@ -1106,21 +1106,21 @@ void BE_SDL_SetScreenMode(int mode)
 		break;
 	}
 	g_sdlScreenMode = mode;
-	BE_SDL_SetGfxOutputRects();
-	BEL_SDL_RecreateTexture();
+	BE_ST_SetGfxOutputRects();
+	BEL_ST_RecreateTexture();
 }
 
-void BE_SDL_textcolor(int color)
+void BE_ST_textcolor(int color)
 {
 	g_sdlTxtColor = color;
 }
 
-void BE_SDL_textbackground(int color)
+void BE_ST_textbackground(int color)
 {
 	g_sdlTxtBackground = color;
 }
 
-void BE_SDL_clrscr(void)
+void BE_ST_clrscr(void)
 {
 	uint8_t *currMemByte = g_sdlVidMem.text;
 	for (int i = 0; i < 2*TXT_COLS_NUM*TXT_ROWS_NUM; ++i)
@@ -1131,19 +1131,19 @@ void BE_SDL_clrscr(void)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_MoveTextCursorTo(int x, int y)
+void BE_ST_MoveTextCursorTo(int x, int y)
 {
 	g_sdlTxtCursorPosX = x;
 	g_sdlTxtCursorPosY = y;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_SDL_ToggleTextCursor(bool isEnabled)
+void BE_ST_ToggleTextCursor(bool isEnabled)
 {
 	g_sdlTxtCursorEnabled = isEnabled;
 }
 
-static uint8_t *BEL_SDL_printchar(uint8_t *currMemByte, char ch, bool iscolored, bool requirecrchar)
+static uint8_t *BEL_ST_printchar(uint8_t *currMemByte, char ch, bool iscolored, bool requirecrchar)
 {
 	if (ch == '\t')
 	{
@@ -1207,44 +1207,44 @@ static uint8_t *BEL_SDL_printchar(uint8_t *currMemByte, char ch, bool iscolored,
 	return currMemByte;
 }
 
-void BE_SDL_puts(const char *str)
+void BE_ST_puts(const char *str)
 {
 	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
 	for (; *str; ++str)
 	{
-		currMemByte = BEL_SDL_printchar(currMemByte, *str, true, false);
+		currMemByte = BEL_ST_printchar(currMemByte, *str, true, false);
 	}
-	BEL_SDL_printchar(currMemByte, '\n', true, false);
+	BEL_ST_printchar(currMemByte, '\n', true, false);
 
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-static void BEL_SDL_vprintf_impl(const char *format, va_list args, bool iscolored, bool requirecrchar);
+static void BEL_ST_vprintf_impl(const char *format, va_list args, bool iscolored, bool requirecrchar);
 
-void BE_SDL_printf(const char *format, ...)
+void BE_ST_printf(const char *format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	BEL_SDL_vprintf_impl(format, args, false, false);
+	BEL_ST_vprintf_impl(format, args, false, false);
 	va_end(args);
 }
 
-void BE_SDL_cprintf(const char *format, ...)
+void BE_ST_cprintf(const char *format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	BEL_SDL_vprintf_impl(format, args, true, true);
+	BEL_ST_vprintf_impl(format, args, true, true);
 	va_end(args);
 }
 
-void BE_SDL_vprintf(const char *format, va_list args)
+void BE_ST_vprintf(const char *format, va_list args)
 {
-	BEL_SDL_vprintf_impl(format, args, false, false);
+	BEL_ST_vprintf_impl(format, args, false, false);
 }
 
 // There's no colored version of vprintf in the original codebase
 
-static void BEL_SDL_vprintf_impl(const char *format, va_list args, bool iscolored, bool requirecrchar)
+static void BEL_ST_vprintf_impl(const char *format, va_list args, bool iscolored, bool requirecrchar)
 {
 	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
 	while (*format)
@@ -1254,35 +1254,35 @@ static void BEL_SDL_vprintf_impl(const char *format, va_list args, bool iscolore
 			switch (*(++format))
 			{
 			case '%':
-				currMemByte = BEL_SDL_printchar(currMemByte, '%', iscolored, requirecrchar);
+				currMemByte = BEL_ST_printchar(currMemByte, '%', iscolored, requirecrchar);
 				break;
 			case 's':
 			{
 				for (const char *str = va_arg(args, char *); *str; ++str)
 				{
-					currMemByte = BEL_SDL_printchar(currMemByte, *str, iscolored, requirecrchar);
+					currMemByte = BEL_ST_printchar(currMemByte, *str, iscolored, requirecrchar);
 				}
 				break;
 			}
 			default:
 			{
 				// Do NOT constify this cause of hack...
-				char errorMsg[] = "REFKEEN ERROR in BE_SDL_vprintf - Unsupported format specifier flag: X";
+				char errorMsg[] = "REFKEEN ERROR in BE_ST_vprintf - Unsupported format specifier flag: X";
 				errorMsg[strlen(errorMsg)-1] = *format; // Hack
-				BE_SDL_ExitWithErrorMsg(errorMsg);
+				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
 			}
 		}
 		else
 		{
-			currMemByte = BEL_SDL_printchar(currMemByte, *format, iscolored, requirecrchar);
+			currMemByte = BEL_ST_printchar(currMemByte, *format, iscolored, requirecrchar);
 		}
 		++format;
 	}
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-static void BEL_SDL_FinishHostDisplayUpdate(void)
+static void BEL_ST_FinishHostDisplayUpdate(void)
 {
 	g_sdlForceGfxControlUiRefresh = false;
 
@@ -1306,7 +1306,7 @@ static void BEL_SDL_FinishHostDisplayUpdate(void)
 }
 
 
-void BEL_SDL_UpdateHostDisplay(void)
+void BEL_ST_UpdateHostDisplay(void)
 {
 	if (g_sdlScreenMode == 3) // Text mode
 	{
@@ -1319,7 +1319,7 @@ void BEL_SDL_UpdateHostDisplay(void)
 		if (!g_sdlDoRefreshGfxOutput && (wereBlinkingCharsShown == areBlinkingCharsShown) && (wasBlinkingCursorShown == isBlinkingCursorShown))
 		{
 			if (g_sdlForceGfxControlUiRefresh)
-				BEL_SDL_FinishHostDisplayUpdate();
+				BEL_ST_FinishHostDisplayUpdate();
 			return;
 		}
 		/****** Do update ******/
@@ -1394,7 +1394,7 @@ void BEL_SDL_UpdateHostDisplay(void)
 		if (!g_sdlDoRefreshGfxOutput)
 		{
 			if (g_sdlForceGfxControlUiRefresh)
-				BEL_SDL_FinishHostDisplayUpdate();
+				BEL_ST_FinishHostDisplayUpdate();
 			return;
 		}
 		// That's easy now since there isn't a lot that can be done...
@@ -1413,7 +1413,7 @@ void BEL_SDL_UpdateHostDisplay(void)
 		if (!g_sdlDoRefreshGfxOutput)
 		{
 			if (g_sdlForceGfxControlUiRefresh)
-				BEL_SDL_FinishHostDisplayUpdate();
+				BEL_ST_FinishHostDisplayUpdate();
 			return;
 		}
 		uint16_t currLineFirstByte = (g_sdlScreenStartAddress + g_sdlPelPanning/8) % 0x10000;
@@ -1486,7 +1486,7 @@ void BEL_SDL_UpdateHostDisplay(void)
 			{
 				g_sdlDoRefreshGfxOutput = false;
 				if (g_sdlForceGfxControlUiRefresh)
-					BEL_SDL_FinishHostDisplayUpdate();
+					BEL_ST_FinishHostDisplayUpdate();
 				return;
 			}
 		}
@@ -1519,5 +1519,5 @@ void BEL_SDL_UpdateHostDisplay(void)
 		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionRect);
 	}
 
-	BEL_SDL_FinishHostDisplayUpdate();
+	BEL_ST_FinishHostDisplayUpdate();
 }

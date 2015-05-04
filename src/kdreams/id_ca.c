@@ -1723,7 +1723,7 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 					lastx = xh;
 					VW_UpdateScreen();
 					// (REFKEEN) HACK: Ensure this is at least seen
-					BE_SDL_ShortSleep();
+					BE_ST_ShortSleep();
 				}
 
 			}
@@ -1807,7 +1807,7 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 #endif
 			VW_UpdateScreen();
 			// (REFKEEN) And again...
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 }
 

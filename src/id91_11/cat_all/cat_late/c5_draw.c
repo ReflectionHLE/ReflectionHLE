@@ -1774,7 +1774,7 @@ void ClearScreen (void)
 		// but we ignore one of the two for the sake of simplicity and a bit better performance, since
 		// skycolor always points to a member of sky_colors, where each pair has the exact same color repeated twice.
 		//
-		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, (id0_byte_t)topcolor, (VIEWWIDTH/16)*2+1, 0xFF);
+		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, (id0_byte_t)topcolor, (VIEWWIDTH/16)*2+1, 0xFF);
 		// no need to add (40-VIEWWIDTH/8) i.e., 0 modulo
 		egaDestOff += ((VIEWWIDTH/16)*2+1) /*+ (40-VIEWWIDTH/8)*/;
 	}
@@ -1782,7 +1782,7 @@ void ClearScreen (void)
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// (REFKEEN) DIFFERENCE FROM VANILLA: Same as above but with bottomcolor
-		BE_SDL_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, (id0_byte_t)bottomcolor, (VIEWWIDTH/16)*2+1, 0xFF);
+		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, (id0_byte_t)bottomcolor, (VIEWWIDTH/16)*2+1, 0xFF);
 		// no need to add (40-VIEWWIDTH/8) i.e., 0 modulo
 		egaDestOff += ((VIEWWIDTH/16)*2+1) /*+ (40-VIEWWIDTH/8)*/;
 	}
@@ -2087,7 +2087,7 @@ void CalcTics (void)
 // take DEMOTICS or more tics, and modify Timecount to reflect time taken
 //
 		oldtimecount = lasttimecount;
-		BE_SDL_TimeCountWaitForDest(oldtimecount+DEMOTICS*2);
+		BE_ST_TimeCountWaitForDest(oldtimecount+DEMOTICS*2);
 #if 0
 		while (TimeCount<oldtimecount+DEMOTICS*2)
 		;
@@ -2302,12 +2302,12 @@ asm	rep stosw
 		// (REFKEEN) Minor difference from vanilla Catacomb
 		if (MousePresent)
 		{
-			BE_SDL_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
+			BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
 		}
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 
-	BE_SDL_SetScreenStartAddress(bufferofs);
+	BE_ST_SetScreenStartAddress(bufferofs);
 #if 0
 asm	cli
 asm	mov	cx,[bufferofs]

@@ -550,12 +550,12 @@ USL_CtlDialog(const id0_char_t *s1,const id0_char_t *s2,const id0_char_t *s3)
 			c = sc_Escape;
 		else
 			c = LastScan;
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	} while (c == sc_None);
 	do
 	{
 		IN_ReadCursor(&cursorinfo);
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	} while (cursorinfo.button0 || cursorinfo.button1);
 
 	IN_ClearKeysDown();
@@ -608,10 +608,10 @@ USL_ConfirmComm(UComm comm)
 	// (WARNING: Technically this belongs to USL_CtlDialog, but this is the only place where its returned value is actually checked)
 	if (dialog)
 	{
-		BE_SDL_AltControlScheme_Push();
-		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){sc_Y, sc_N, 0});
+		BE_ST_AltControlScheme_Push();
+		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){sc_Y, sc_N, 0});
 		confirm = USL_CtlDialog(s1,s2,s3);
-		BE_SDL_AltControlScheme_Pop();
+		BE_ST_AltControlScheme_Pop();
 	}
 	else
 	{
@@ -794,12 +794,12 @@ USL_CKSetKey(UserItem id0_far *item,id0_word_t i)
 		{
 			IN_ReadCursor(&cursorinfo);
 			LastScan = sc_Escape;
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 		}
 
 	//asm     pushf
 	//asm     cli
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 		if (LastScan == sc_LShift)
 			LastScan = sc_None;
 	//asm     popf
@@ -900,7 +900,7 @@ USL_CJGet(id0_word_t joy,id0_word_t button,id0_word_t x,id0_word_t y,id0_word_t 
 	{
 		if (LastScan == sc_Escape)
 			return(false);
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 	on = false;
@@ -917,7 +917,7 @@ USL_CJGet(id0_word_t joy,id0_word_t button,id0_word_t x,id0_word_t y,id0_word_t 
 
 		if (LastScan == sc_Escape)
 			return(false);
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 	IN_GetJoyAbs(joy,xaxis,yaxis);
 	return(true);
@@ -956,7 +956,7 @@ USL_ConfigJoystick(id0_word_t joy)
 
 	while (IN_GetJoyButtonsDB(joy))
 	{
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 	IN_SetupJoy(joy,minx,maxx,miny,maxy);
@@ -1384,11 +1384,11 @@ USL_PlayPong(void)
 			by = (BallMinY + ((BallMaxY - BallMinY) / 2)) << 2;
 		}
 		VW_UpdateScreen();
-		BE_SDL_TimeCountWaitFromSrc(waittime, 1);
+		BE_ST_TimeCountWaitFromSrc(waittime, 1);
 #if 0
 		while (waittime == TimeCount)
 			;       // DEBUG - do adaptiveness
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 #endif
 	} while ((LastScan != sc_Escape) && !done);
 	IN_ClearKeysDown();
@@ -1734,8 +1734,8 @@ void
 US_ControlPanel(void)
 {
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareMenuControls();
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareMenuControls();
 
 extern void HelpScreens(void);
 
@@ -1754,7 +1754,7 @@ extern void HelpScreens(void);
 		CtlPanelDone = true;
 		loadedgame = true;
 		USL_TearDownCtlPanel();
-		BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+		BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 		return;
 	}
 #endif
@@ -1857,7 +1857,7 @@ extern void HelpScreens(void);
 				do
 				{
 					IN_ReadCursor(&cursorinfo);
-					BE_SDL_ShortSleep();
+					BE_ST_ShortSleep();
 				} while (cursorinfo.button0);
 				USL_DoItem();
 				resetitem = true;
@@ -1867,7 +1867,7 @@ extern void HelpScreens(void);
 				do
 				{
 					IN_ReadCursor(&cursorinfo);
-					BE_SDL_ShortSleep();
+					BE_ST_ShortSleep();
 				} while (cursorinfo.button1);
 				USL_UpLevel();
 				resetitem = true;
@@ -1885,10 +1885,10 @@ extern void HelpScreens(void);
 				resetitem = true;
 			}
 		}
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	}
 
 	USL_TearDownCtlPanel();
 
-	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }

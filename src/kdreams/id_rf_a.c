@@ -91,7 +91,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 		}
 		BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH);
 
-		//BE_SDL_MarkGfxForPendingUpdate();
+		//BE_ST_MarkGfxForPendingUpdate();
 		return;
 	}
 	//=========
@@ -128,7 +128,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 #endif
 	}
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 #endif
 
@@ -199,13 +199,13 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 			id0_unsigned_t egaDestOff = screenstartcs;
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-				BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
 				egaSrcOff += SCREENWIDTH-2;
 				egaDestOff += SCREENWIDTH-2;
 			}
-			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-			BE_SDL_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
+			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
 
 			return;
 		}
@@ -223,11 +223,11 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 			id0_unsigned_t egaDestOff = screenstartcs; // start at same place in all planes
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				BE_SDL_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, 2, mapMask);
+				BE_ST_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, 2, mapMask);
 				backSrcPtr += 2;
 				egaDestOff += SCREENWIDTH;
 			}
-			BE_SDL_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, 2, mapMask);
+			BE_ST_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, 2, mapMask);
 			backSrcPtr += 2;
 		}
 
@@ -252,10 +252,10 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 			// backSrcPtr - background tile
 			// foreSrcPtr - mask
 			// &foreSrcPtr[dataLoc] - masked data
-			BE_SDL_EGAUpdateGFXByte(egaDestOff+lineoffset, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], mapMask);
+			BE_ST_EGAUpdateGFXByte(egaDestOff+lineoffset, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], mapMask);
 			++backSrcPtr;
 			++foreSrcPtr;
-			BE_SDL_EGAUpdateGFXByte(egaDestOff+lineoffset+1, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], mapMask);
+			BE_ST_EGAUpdateGFXByte(egaDestOff+lineoffset+1, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], mapMask);
 			++backSrcPtr;
 			++foreSrcPtr;
 		}
@@ -318,7 +318,7 @@ void RFL_UpdateTiles (void)
 
 		if (scanPtr == scanEndPtr)
 		{
-			//BE_SDL_MarkGfxForPendingUpdate();
+			//BE_ST_MarkGfxForPendingUpdate();
 			return; // Nothing left
 		}
 		if (*scanPtr != 1)
@@ -346,11 +346,11 @@ void RFL_UpdateTiles (void)
 			id0_word_t egaSrcOff = tileLoc+masterofs; // source in master screen
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				BE_SDL_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH);
+				BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH);
 				egaSrcOff += SCREENWIDTH;
 				egaDestOff += SCREENWIDTH;
 			}
-			BE_SDL_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH);
+			BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH);
 #endif
 			continue;
 		}
@@ -398,7 +398,7 @@ void RFL_UpdateTiles (void)
 			BE_Cross_Wrapped_Add(screenseg, &destPtr, bytesToSkip);
 #endif
 #if (GRMODE == EGAGR)
-			BE_SDL_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
+			BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
 			iterationsToDo = 0;
 			egaSrcOff += bytesToSkip+bytesPerRow;
 			egaDestOff += bytesToSkip+bytesPerRow;
@@ -415,7 +415,7 @@ void RFL_UpdateTiles (void)
 		}
 #endif
 #if (GRMODE == EGAGR)
-		BE_SDL_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
+		BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
 		iterationsToDo = 0;
 #endif
 		// was 0, now 0xFFFF for above loop
@@ -456,7 +456,7 @@ void RFL_MaskForegroundTiles (void)
 		};
 		if (scanPtr == scanEndPtr)
 		{
-			//BE_SDL_MarkGfxForPendingUpdate();
+			//BE_ST_MarkGfxForPendingUpdate();
 			return; // Nothing left
 		}
 
@@ -540,10 +540,10 @@ void RFL_MaskForegroundTiles (void)
 			id0_unsigned_t egaDestOff = screenstartcs;
 			for (int loopVar = 0; loopVar < 16; ++loopVar, egaDestOff += SCREENWIDTH-1)
 			{
-				BE_SDL_EGAUpdateGFXByte(egaDestOff, (BE_SDL_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+				BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
 				++srcPtr;
 				++egaDestOff;
-				BE_SDL_EGAUpdateGFXByte(egaDestOff, (BE_SDL_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+				BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
 				++srcPtr;
 				//++egaDestOff;
 			}

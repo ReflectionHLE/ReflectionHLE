@@ -95,7 +95,7 @@ void SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 
 #endif
 #endif
-	BE_SDL_SetScreenStartAddress(CRTC);
+	BE_ST_SetScreenStartAddress(CRTC);
 #if WAITFORVBL
 #if 0
 ;
@@ -112,9 +112,9 @@ void SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 
 #endif
 #endif
-	BE_SDL_EGASetPelPanning(pelpan);
+	BE_ST_EGASetPelPanning(pelpan);
 #if WAITFORVBL
-	// (REFKEEN) Doing this before BE_SDL_EGASetPelPanning leads to
+	// (REFKEEN) Doing this before BE_ST_EGASetPelPanning leads to
 	// very scrolling glitches, so call here instead
 	VW_WaitVBL(1);
 #endif
@@ -138,7 +138,7 @@ void ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 {
 	for (id0_unsigned_t lineCounter = height; lineCounter; --lineCounter, source += 40, dest += 40)
 	{
-		BE_SDL_EGAUpdateGFXBufferScrToScr(dest, source, wide);
+		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, wide);
 	}
 
 }

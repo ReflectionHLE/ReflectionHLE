@@ -211,7 +211,7 @@ extern const char **id0_argv;
 
 extern id0_char_t *introscn;
 
-#include "be_sdl.h"
+#include "be_st.h"
 
 #include "id_mm.h"
 #include "id_ca.h"

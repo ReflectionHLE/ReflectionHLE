@@ -192,7 +192,7 @@ void CheckKeys (void)
 //		SD_MusicOn();
 		Paused = false;
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 	else
@@ -203,7 +203,7 @@ void CheckKeys (void)
 		IN_Ack();
 //		SD_MusicOn();
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 	else
@@ -220,7 +220,7 @@ void CheckKeys (void)
 		IN_Ack();
 //		SD_MusicOn();
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 #endif
@@ -248,8 +248,8 @@ void CheckKeys (void)
 		VW_UpdateScreen();
 
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_Push();
-		BE_SDL_AltControlScheme_PrepareFaceButtonsDOSScancodes(AdLibPresent ? (const char []){2, 3, 4, sc_Escape, 0} : (const char []){2, 3, sc_Escape, 0});
+		BE_ST_AltControlScheme_Push();
+		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes(AdLibPresent ? (const char []){2, 3, 4, sc_Escape, 0} : (const char []){2, 3, sc_Escape, 0});
 
 		// Switch audio device ON/OFF & load sounds if there
 		// was a change in the device.
@@ -281,12 +281,12 @@ void CheckKeys (void)
 				ChoiceMade = true;
 			}
 
-			BE_SDL_ShortSleep();
+			BE_ST_ShortSleep();
 
 		} while (!ChoiceMade);
 
 		// REFKEEN - Alternative controllers support
-		BE_SDL_AltControlScheme_Pop();
+		BE_ST_AltControlScheme_Pop();
 
 		tics = realtics = 1;
 		IN_ClearKeysDown();
@@ -452,7 +452,7 @@ deadloop:;
 	{
 		DebugKeys();
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		if (MousePresent) BE_SDL_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 		lasttimecount = SD_GetTimeCount();
 	}
@@ -688,8 +688,8 @@ void PollControls (void)
 	if (MousePresent)
 	{
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		buttons = BE_SDL_GetMouseButtons();
-		BE_SDL_GetMouseDelta(&mousexmove, &mouseymove);
+		buttons = BE_ST_GetMouseButtons();
+		BE_ST_GetMouseDelta(&mousexmove, &mouseymove);
 #if 0
 		Mouse(MButtons);
 		buttons = _BX;
@@ -783,8 +783,8 @@ void StartMusic(void)
 void PlayLoop (void)
 {
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
 
 	id0_char_t shot_color[3] = {4,9,14};
 
@@ -869,7 +869,7 @@ void PlayLoop (void)
 		SD_SetTimeCount(SD_GetTimeCount()+1);
 		if (SD_GetTimeCount() == 300)
 		{
-			BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 			return;
 		}
 #endif
@@ -1252,7 +1252,7 @@ nextactor:;
 		// is held. As a consequence, if the wait is done before the
 		// call to CheckKeys then the game may seem to get stuck while
 		// the debug key modifier is held.
-		BE_SDL_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		BE_ST_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
 		//
 
 	}while (!playstate);
@@ -1268,7 +1268,7 @@ nextactor:;
 	if (abortgame)
 		abortgame = false;
 
-	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 //--------------------------------------------------------------------------

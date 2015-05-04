@@ -1719,7 +1719,7 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 	if ((id0_longword_t)lasttimecount > SD_GetTimeCount())
 		lasttimecount = SD_GetTimeCount();		// if the game was paused a LONG time
 	// REFKEEN - Some replacement
-	BE_SDL_TimeCountWaitFromSrc(lasttimecount, MINTICS);
+	BE_ST_TimeCountWaitFromSrc(lasttimecount, MINTICS);
 	newtime = SD_GetTimeCount();
 	tics = newtime-lasttimecount;
 #if 0
@@ -2359,7 +2359,7 @@ void RF_Refresh (void)
 	if ((id0_longword_t)lasttimecount > SD_GetTimeCount())
 		lasttimecount = SD_GetTimeCount();		// if the game was paused a LONG time
 	// REFKEEN - Some replacement
-	BE_SDL_TimeCountWaitFromSrc(lasttimecount, MINTICS);
+	BE_ST_TimeCountWaitFromSrc(lasttimecount, MINTICS);
 	newtime = SD_GetTimeCount();
 	tics = newtime-lasttimecount;
 #if 0
@@ -2367,7 +2367,7 @@ void RF_Refresh (void)
 	{
 		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	} while (tics<MINTICS);
 #endif
 	lasttimecount = newtime;

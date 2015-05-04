@@ -151,7 +151,7 @@ void PicturePause (void)
 	IN_Shutdown ();
 
 	VW_WaitVBL(70);
-	BE_SDL_BiosScanCode(0);
+	BE_ST_BiosScanCode(0);
 	VW_WaitVBL(70);
 	Quit (NULL);
 }
@@ -405,14 +405,14 @@ void LatchDrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 	dest = bufferofs + ylookup[y]+x;
 	source = latchpics[0]+picnum*8;
 
-	BE_SDL_EGAUpdateGFXByteScrToScr(dest, source);
-	BE_SDL_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_SDL_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_SDL_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_SDL_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_SDL_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_SDL_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_SDL_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteScrToScr(dest, source);
+	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
 #if 0
 	EGAWRITEMODE(1);
 	EGAMAPMASK(15);
@@ -468,7 +468,7 @@ void LatchDrawTile (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 
 	for (int lineCount = 16; lineCount; --lineCount)
 	{
-		BE_SDL_EGAUpdateGFXBufferScrToScr(dest, source, 2);
+		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, 2);
 		source += 2;
 		dest += linewidth;
 	}

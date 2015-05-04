@@ -271,7 +271,7 @@ void CheckKeys (void)
 		VW_UpdateScreen ();
 		US_ControlPanel();
 		// REFKEEN - Alternative controllers support (maybe user has changed some keys which may currently have an effect)
-		BE_SDL_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+		BE_ST_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
 		//
 		IN_ClearKeysDown();
 		if (restartgame)
@@ -1534,8 +1534,8 @@ void NewState (objtype *ob,statetype *state)
 void PlayLoop (void)
 {
 	// REFKEEN - Alternative controllers support	
-	BE_SDL_AltControlScheme_Push();
-	BE_SDL_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
 
 	objtype	*obj, *check;
 	//id0_long_t	newtime;
@@ -1669,7 +1669,7 @@ void PlayLoop (void)
 
 	ingame = false;
 
-	BE_SDL_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 
@@ -1846,7 +1846,7 @@ void HandleDeath (void)
 			selection = 0;
 		else if (c.yaxis == 1 || LastScan == sc_DownArrow)
 			selection = 1;
-		BE_SDL_ShortSleep();
+		BE_ST_ShortSleep();
 	} while (1);
 
 }

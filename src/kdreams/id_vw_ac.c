@@ -53,7 +53,7 @@ void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 	id0_byte_t maskOff = ~plotpixels[x&3]; // mask off other pixels
 	*destPtr = (((*destPtr) & maskOff) | maskOn);
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -72,7 +72,7 @@ void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigne
 		*destPtr = (((*destPtr) & maskOff) | maskOn);
 	}
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -103,7 +103,7 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 	BE_Cross_Wrapped_Inc(screenseg, &destPtr);
 	*destPtr = *tilePtr;
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -149,7 +149,7 @@ void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 		}
 	}
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -173,7 +173,7 @@ void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 		BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, wide);
 	}
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -200,7 +200,7 @@ void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 		BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, srcPtr, wide);
 	}
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //===========================================================================
@@ -244,7 +244,7 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 #if 0
 void VW_SetScreen (id0_unsigned_t crtc, id0_unsigned_t pelpan)
 {
-	BE_SDL_SetScreenStartAddress(crtc);
+	BE_ST_SetScreenStartAddress(crtc);
 }
 #endif
 
@@ -351,7 +351,7 @@ void VWL_XORBuffer(id0_byte_t *buffer)
 		}
 	}
 
-	//BE_SDL_MarkGfxForPendingUpdate();
+	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================

@@ -378,18 +378,18 @@ void Quit (const id0_char_t *error)
   ShutdownId ();
   if (error && *error)
   {
-	BE_SDL_clrscr();
-	BE_SDL_puts(error);
-	BE_SDL_puts("\n");
+	BE_ST_clrscr();
+	BE_ST_puts(error);
+	BE_ST_puts("\n");
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-//      BE_SDL_puts("For techinical assistance with running this software, type HELP at");
-//      BE_SDL_puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
+//      BE_ST_puts("For techinical assistance with running this software, type HELP at");
+//      BE_ST_puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
 #elif defined REFKEEN_VER_KDREAMS_SHAR_113
-	BE_SDL_puts("For techinical assistance with running this software, type HELP at");
-	BE_SDL_puts("    the DOS prompt or call Gamer's Edge at 1-318-221-8311");
+	BE_ST_puts("For techinical assistance with running this software, type HELP at");
+	BE_ST_puts("    the DOS prompt or call Gamer's Edge at 1-318-221-8311");
 #endif
 	// No additional lines for later versions (registered v1.93, shareware v1.20)
-	BE_SDL_HandleExit(1);
+	BE_ST_HandleExit(1);
   }
 
 // TODO (REFKEEN) Maybe we can define CATALOG based on version?
@@ -407,12 +407,12 @@ void Quit (const id0_char_t *error)
 
 #if (defined REFKEEN_VER_KDREAMS_CGA_ALL) && (defined CATALOG)
 	VW_SetScreenMode(TEXTGR);
-	BE_SDL_HandleExit(0);
+	BE_ST_HandleExit(0);
 #endif
 
 // For all other versions (registered v1.93, shareware v1.20), just exit
 #if (!defined REFKEEN_VER_KDREAMS_SHAR_113) && (!defined REFKEEN_VER_KDREAMS_CGA_ALL)
-	BE_SDL_HandleExit(0);
+	BE_ST_HandleExit(0);
 #endif
 
 }
@@ -441,7 +441,7 @@ void InitGame (void)
 	// Handle piracy screen...
 	//
 	movedata(FP_SEG(PIRACY),(id0_unsigned_t)PIRACY,0xb800,displayofs,4000);
-	while (BE_SDL_BiosScanCode(0) != sc_Return);
+	while (BE_ST_BiosScanCode(0) != sc_Return);
 	//while ((bioskey(0)>>8) != sc_Return);
 #endif
 
@@ -451,24 +451,24 @@ void InitGame (void)
 //#pragma warn    -pro
 //#pragma warn    -nod
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-		BE_SDL_textcolor(7);
+		BE_ST_textcolor(7);
 #endif
 #if (defined REFKEEN_VER_KDREAMS_CGA_ALL) || (defined REFKEEN_VER_KDREAMS_SHAR_113)
-		BE_SDL_textbackground(0);
+		BE_ST_textbackground(0);
 #endif
 //#pragma warn    +nod
 //#pragma warn    +pro
-		BE_SDL_clrscr();                       // we can't include CONIO because of a name conflict
+		BE_ST_clrscr();                       // we can't include CONIO because of a name conflict
 //#pragma warn    +nod
 //#pragma warn    +pro
-		BE_SDL_puts ("There is not enough memory available to play the game reliably.  You can");
-		BE_SDL_puts ("play anyway, but an out of memory condition will eventually pop up.  The");
-		BE_SDL_puts ("correct solution is to unload some TSRs or rename your CONFIG.SYS and");
-		BE_SDL_puts ("AUTOEXEC.BAT to free up more memory.\n");
-		BE_SDL_puts ("Do you want to (Q)uit, or (C)ontinue?");
+		BE_ST_puts ("There is not enough memory available to play the game reliably.  You can");
+		BE_ST_puts ("play anyway, but an out of memory condition will eventually pop up.  The");
+		BE_ST_puts ("correct solution is to unload some TSRs or rename your CONFIG.SYS and");
+		BE_ST_puts ("AUTOEXEC.BAT to free up more memory.\n");
+		BE_ST_puts ("Do you want to (Q)uit, or (C)ontinue?");
 		//i = bioskey (0);
 		//if ( (i>>8) != sc_C)
-		i = BE_SDL_BiosScanCode (0);
+		i = BE_ST_BiosScanCode (0);
 		if (i != sc_C)
 			Quit ("");
 	}
@@ -552,34 +552,34 @@ void kdreams_exe_main (void)
 
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	BE_SDL_textcolor(7);
-	BE_SDL_textbackground(0);
+	BE_ST_textcolor(7);
+	BE_ST_textbackground(0);
 
 	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
-		BE_SDL_printf("KEEN DREAMS\n");
-		BE_SDL_printf("CGA Version\n");
-		BE_SDL_printf("Copyright 1991-93 Softdisk Publishing\n");
-		BE_SDL_printf("Version 1.05 (rev 1)\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_printf("KEEN DREAMS\n");
+		BE_ST_printf("CGA Version\n");
+		BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n");
+		BE_ST_printf("Version 1.05 (rev 1)\n");
+		BE_ST_HandleExit(0);
 	}
 
 	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
 	{
-		BE_SDL_printf("\nKeen Dreams CGA version 1.05\n");
-		BE_SDL_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
-		BE_SDL_printf("Commander Keen is a trademark of Id Software.\n");
-		BE_SDL_printf("Type KDREAMS from the DOS prompt to run.\n\n");
-		BE_SDL_printf("KDREAMS /COMP for SVGA compatibility mode\n");
-		BE_SDL_printf("KDREAMS /NODR stops program hang with the drive still on\n");
-		BE_SDL_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
-		BE_SDL_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
-		BE_SDL_printf("KDREAMS /NOJOYS ignores joystick\n");
-		BE_SDL_printf("KDREAMS /NOMOUSE ignores mouse\n");
-		BE_SDL_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
-		BE_SDL_printf("KDREAMS /VER  for version and compatibility information\n");
-		BE_SDL_printf("KDREAMS /? for this help information\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_printf("\nKeen Dreams CGA version 1.05\n");
+		BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+		BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
+		BE_ST_printf("Type KDREAMS from the DOS prompt to run.\n\n");
+		BE_ST_printf("KDREAMS /COMP for SVGA compatibility mode\n");
+		BE_ST_printf("KDREAMS /NODR stops program hang with the drive still on\n");
+		BE_ST_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
+		BE_ST_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
+		BE_ST_printf("KDREAMS /NOJOYS ignores joystick\n");
+		BE_ST_printf("KDREAMS /NOMOUSE ignores mouse\n");
+		BE_ST_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
+		BE_ST_printf("KDREAMS /VER  for version and compatibility information\n");
+		BE_ST_printf("KDREAMS /? for this help information\n");
+		BE_ST_HandleExit(0);
 	}
 #endif // VERSION
 
@@ -603,31 +603,31 @@ void kdreams_exe_main (void)
 #if (defined REFKEEN_VER_KDREAMS_REG_193)
 	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
-		BE_SDL_printf("\nKeen Dreams version 1.93  (Rev 1)\n");
-		BE_SDL_printf("developed for use with 100%% IBM compatibles\n");
-		BE_SDL_printf("that have 640K memory, DOS version 3.3 or later,\n");
-		BE_SDL_printf("and an EGA or VGA display adapter.\n");
-		BE_SDL_printf("Copyright 1991-1993 Softdisk Publishing.\n");
-		BE_SDL_printf("Commander Keen is a trademark of Id Software.\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_printf("\nKeen Dreams version 1.93  (Rev 1)\n");
+		BE_ST_printf("developed for use with 100%% IBM compatibles\n");
+		BE_ST_printf("that have 640K memory, DOS version 3.3 or later,\n");
+		BE_ST_printf("and an EGA or VGA display adapter.\n");
+		BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n");
+		BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
+		BE_ST_HandleExit(0);
 	}
 
 	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
 	{
-		BE_SDL_printf("\nKeen Dreams version 1.93\n");
-		BE_SDL_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
-		BE_SDL_printf("Commander Keen is a trademark of Id Software.\n");
-		BE_SDL_printf("Type KDREAMS from the DOS prompt to run.\n\n");
-		BE_SDL_printf("KDREAMS /COMP for SVGA compatibility mode\n");
-		BE_SDL_printf("KDREAMS /NODR stops program hang with the drive still on\n");
-		BE_SDL_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
-		BE_SDL_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
-		BE_SDL_printf("KDREAMS /NOJOYS ignores joystick\n");
-		BE_SDL_printf("KDREAMS /NOMOUSE ignores mouse\n");
-		BE_SDL_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
-		BE_SDL_printf("KDREAMS /VER  for version and compatibility information\n");
-		BE_SDL_printf("KDREAMS /? for this help information\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_printf("\nKeen Dreams version 1.93\n");
+		BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+		BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
+		BE_ST_printf("Type KDREAMS from the DOS prompt to run.\n\n");
+		BE_ST_printf("KDREAMS /COMP for SVGA compatibility mode\n");
+		BE_ST_printf("KDREAMS /NODR stops program hang with the drive still on\n");
+		BE_ST_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
+		BE_ST_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
+		BE_ST_printf("KDREAMS /NOJOYS ignores joystick\n");
+		BE_ST_printf("KDREAMS /NOMOUSE ignores mouse\n");
+		BE_ST_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
+		BE_ST_printf("KDREAMS /VER  for version and compatibility information\n");
+		BE_ST_printf("KDREAMS /? for this help information\n");
+		BE_ST_HandleExit(0);
 	}
 #endif // VERSION
 
@@ -644,31 +644,31 @@ void kdreams_exe_main (void)
 		}
 		if (BE_Cross_strcasecmp(id0_argv[i], "/VER") == 0)
 		{
-			BE_SDL_printf("\nKeen Dreams Shareware Version 1.20  (Rev 1)\n");
-			BE_SDL_printf("developed for use with 100%% IBM compatibles\n");
-			BE_SDL_printf("that have 640K memory, DOS version 3.3 or later,\n");
-			BE_SDL_printf("and an EGA or VGA display adapter.\n");
-			BE_SDL_printf("Copyright 1991-1993 Softdisk Publishing.\n");
-			BE_SDL_printf("Commander Keen is a trademark of Id Software.\n");
-			BE_SDL_HandleExit(0);
+			BE_ST_printf("\nKeen Dreams Shareware Version 1.20  (Rev 1)\n");
+			BE_ST_printf("developed for use with 100%% IBM compatibles\n");
+			BE_ST_printf("that have 640K memory, DOS version 3.3 or later,\n");
+			BE_ST_printf("and an EGA or VGA display adapter.\n");
+			BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n");
+			BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
+			BE_ST_HandleExit(0);
 		}
 
 		if (BE_Cross_strcasecmp(id0_argv[i], "/?") == 0)
 		{
-			BE_SDL_printf("\nKeen Dreams Shareware Version 1.20\n");
-			BE_SDL_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
-			BE_SDL_printf("Commander Keen is a trademark of Id Software.\n");
-			BE_SDL_printf("Type KDREAMS from the DOS prompt to run.\n\n");
-			BE_SDL_printf("KDREAMS /COMP for SVGA compatibility mode\n");
-			BE_SDL_printf("KDREAMS /NODR stops program hang with the drive still on\n");
-			BE_SDL_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
-			BE_SDL_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
-			BE_SDL_printf("KDREAMS /NOJOYS ignores joystick\n");
-			BE_SDL_printf("KDREAMS /NOMOUSE ignores mouse\n");
-			BE_SDL_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
-			BE_SDL_printf("KDREAMS /VER  for version and compatibility information\n");
-			BE_SDL_printf("KDREAMS /? for this help information\n");
-			BE_SDL_HandleExit(0);
+			BE_ST_printf("\nKeen Dreams Shareware Version 1.20\n");
+			BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+			BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
+			BE_ST_printf("Type KDREAMS from the DOS prompt to run.\n\n");
+			BE_ST_printf("KDREAMS /COMP for SVGA compatibility mode\n");
+			BE_ST_printf("KDREAMS /NODR stops program hang with the drive still on\n");
+			BE_ST_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
+			BE_ST_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
+			BE_ST_printf("KDREAMS /NOJOYS ignores joystick\n");
+			BE_ST_printf("KDREAMS /NOMOUSE ignores mouse\n");
+			BE_ST_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
+			BE_ST_printf("KDREAMS /VER  for version and compatibility information\n");
+			BE_ST_printf("KDREAMS /? for this help information\n");
+			BE_ST_HandleExit(0);
 		}
 	}
 #endif // VERSION
@@ -682,17 +682,17 @@ void kdreams_exe_main (void)
 	if (LaunchedFromShell)
 	//if (!LaunchedFromShell)
 	{
-		BE_SDL_clrscr();
-		BE_SDL_puts("You must type START at the DOS prompt to run KEEN DREAMS.");
-		BE_SDL_HandleExit(0);
+		BE_ST_clrscr();
+		BE_ST_puts("You must type START at the DOS prompt to run KEEN DREAMS.");
+		BE_ST_HandleExit(0);
 	}
 #endif
 
 
 
 #if (defined REFKEEN_VER_KDREAMS_REG_193) || (defined REFKEEN_VER_KDREAMS_SHAR_120)
-	BE_SDL_textcolor(7);
-	BE_SDL_textbackground(0);
+	BE_ST_textcolor(7);
+	BE_ST_textbackground(0);
 #endif
 
 

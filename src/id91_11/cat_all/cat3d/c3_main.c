@@ -610,21 +610,21 @@ void Quit (const id0_char_t *error)
 	ShutdownId ();
 	if (error && *error)
 	{
-	  BE_SDL_puts(error);
-	  BE_SDL_HandleExit(1);
+	  BE_ST_puts(error);
+	  BE_ST_HandleExit(1);
 	}
 
 #ifdef REFKEEN_VER_CAT3D_100
 	if (!NoWait)
 	{
-		memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen, 4000);
+		memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 4000);
 		//movedata (finscreen,0,0xb800,0,4000);
-		BE_SDL_BiosScanCode (0);
-		BE_SDL_clrscr();
+		BE_ST_BiosScanCode (0);
+		BE_ST_clrscr();
 	}
 #endif
 
-	BE_SDL_HandleExit(0);
+	BE_ST_HandleExit(0);
 }
 
 //===========================================================================
@@ -856,10 +856,10 @@ void	CheckMemory(void)
 	finscreen = (id0_byte_t *)grsegs[OUTOFMEM];
 	//finscreen = (id0_unsigned_t)grsegs[OUTOFMEM];
 	ShutdownId ();
-	memcpy(BE_SDL_GetTextModeMemoryPtr(), finscreen+7, 4000);
+	memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen+7, 4000);
 	//movedata (finscreen,7,0xb800,0,4000);
-	BE_SDL_MoveTextCursorTo(0, 23); //gotoxy (1,24);
-	BE_SDL_HandleExit(1);
+	BE_ST_MoveTextCursorTo(0, 23); //gotoxy (1,24);
+	BE_ST_HandleExit(1);
 }
 
 //===========================================================================
@@ -881,32 +881,32 @@ void cat3d_exe_main (void)
 #ifdef REFKEEN_VER_CAT3D_122
 	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 	{
-		BE_SDL_printf("Catacomb 3-D version 1.22  (Rev 1)\n");
-		BE_SDL_printf("Copyright 1991-93 Softdisk Publishing\n");
-		BE_SDL_printf("Developed for use with 100%% IBM compatibles\n");
-		BE_SDL_printf("that have 640K memory and DOS version 3.3 or later\n");
-		BE_SDL_printf("and EGA graphics or better.\n");
-		BE_SDL_HandleExit(0);
+		BE_ST_printf("Catacomb 3-D version 1.22  (Rev 1)\n");
+		BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n");
+		BE_ST_printf("Developed for use with 100%% IBM compatibles\n");
+		BE_ST_printf("that have 640K memory and DOS version 3.3 or later\n");
+		BE_ST_printf("and EGA graphics or better.\n");
+		BE_ST_HandleExit(0);
 	}
 
 	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
 	{
-		BE_SDL_printf("Catacomb 3-D version 1.22\n");
-		BE_SDL_printf("Copyright 1991-93 Softdisk Publishing\n\n");
-		BE_SDL_printf("Syntax:\n");
-		BE_SDL_printf("CAT3D [/<switch>]\n\n");
-		BE_SDL_printf("Switch       What it does\n");
-		BE_SDL_printf("/?           This Information\n");
-		BE_SDL_printf("/VER         Display Program Version Information\n");
-		BE_SDL_printf("/COMP        Fix problems with SVGA screens\n");
-		BE_SDL_printf("/NOAL        No AdLib or SoundBlaster detection\n");
-		BE_SDL_printf("/NOJOYS      Tell program to ignore joystick\n");
-		BE_SDL_printf("/NOMOUSE     Tell program to ignore mouse\n");
-		BE_SDL_printf("/HIDDENCARD  Overrides video detection\n\n");
-		BE_SDL_printf("Each switch must include a '/' and multiple switches\n");
-		BE_SDL_printf("must be seperated by at least one space.\n\n");
+		BE_ST_printf("Catacomb 3-D version 1.22\n");
+		BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n\n");
+		BE_ST_printf("Syntax:\n");
+		BE_ST_printf("CAT3D [/<switch>]\n\n");
+		BE_ST_printf("Switch       What it does\n");
+		BE_ST_printf("/?           This Information\n");
+		BE_ST_printf("/VER         Display Program Version Information\n");
+		BE_ST_printf("/COMP        Fix problems with SVGA screens\n");
+		BE_ST_printf("/NOAL        No AdLib or SoundBlaster detection\n");
+		BE_ST_printf("/NOJOYS      Tell program to ignore joystick\n");
+		BE_ST_printf("/NOMOUSE     Tell program to ignore mouse\n");
+		BE_ST_printf("/HIDDENCARD  Overrides video detection\n\n");
+		BE_ST_printf("Each switch must include a '/' and multiple switches\n");
+		BE_ST_printf("must be seperated by at least one space.\n\n");
 
-		BE_SDL_HandleExit(0);
+		BE_ST_HandleExit(0);
 	}
 #endif
 	// jabhack(); // REFKEEN - Commented out

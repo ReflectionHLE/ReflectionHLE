@@ -91,8 +91,8 @@ int BE_Cross_strcasecmp(const char *s1, const char *s2)
 #if (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
 uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void)
 {
-	uint16_t BE_SDL_Compat_GetFarPtrRelocationSegOffset(void);
-	return BE_SDL_Compat_GetFarPtrRelocationSegOffset();
+	uint16_t BE_ST_Compat_GetFarPtrRelocationSegOffset(void);
+	return BE_ST_Compat_GetFarPtrRelocationSegOffset();
 }
 #endif
 

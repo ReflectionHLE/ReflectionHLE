@@ -87,7 +87,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 							n--;
 
 						while (n--)
-							BE_SDL_EGAUpdateGFXByte(DstOff[Plane]++, Rep, 1<<Plane);
+							BE_ST_EGAUpdateGFXByte(DstOff[Plane]++, Rep, 1<<Plane);
 							//*Dst[Plane]++ = Rep;
 					}
 					else
@@ -101,7 +101,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 						n--;
 
 					while (n--)
-						BE_SDL_EGAUpdateGFXByte(DstOff[Plane]++, *Src++, 1<<Plane);
+						BE_ST_EGAUpdateGFXByte(DstOff[Plane]++, *Src++, 1<<Plane);
 						//*Dst[Plane]++ = *Src++;
 
 					if ((!BPR) && (NotWordAligned))     // IGNORE WORD ALIGN
