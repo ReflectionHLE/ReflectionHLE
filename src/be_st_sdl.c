@@ -1425,7 +1425,7 @@ void BEL_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes_Low(const char *scan
 		if (++counter == 9)
 		{
 			char buffer[3*80];
-			strcpy(buffer, "Error in BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes:\n"
+			strcpy(buffer, "Error in BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes_Low:\n"
 			               "Gotten too many scancodes as the input, input scancodes string:\n"
 			);
 			strncat(buffer+strlen(buffer), scanCodes, 80);
