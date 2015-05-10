@@ -11,4 +11,19 @@
 #define REFKEEN_ARCH_BIG_ENDIAN
 #endif
 
+#ifdef _WIN32 // Should also cover _WIN64
+#define REFKEEN_PLATFORM_WINDOWS
+#endif
+
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#if (!defined TARGET_OS_IPHONE) && (!defined TARGET_IPHONE_SIMULATOR)
+#define REFKEEN_PLATFORM_OSX
+#endif
+#endif
+
+#ifdef __unix
+#define REFKEEN_PLATFORM_UNIX
+#endif
+
 #endif // REFKEEN_CONFIG_H

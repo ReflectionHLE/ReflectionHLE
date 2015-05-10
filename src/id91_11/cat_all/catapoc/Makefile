@@ -70,12 +70,14 @@ EXTOBJECTS=$(EXTOBJ)/ext_ca.o \
 
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
+          $(BEOBJ)/be_cross_fs.o \
           $(BEOBJ)/be_cross_compat.o \
           $(BEOBJ)/be_cross_doszeroseg.o \
           $(BEOBJ)/be_st_sdl.o \
           $(BEOBJ)/be_st_sdl_audio_timer.o \
           $(BEOBJ)/be_st_sdl_graphics.o \
           $(BEOBJ)/be_textmode_fonts.o \
+          $(BEOBJ)/crc32.o \
           $(BEOBJ)/dbopl.o
 
 #NOTE: Unnecessary resources may be omitted
@@ -107,6 +109,8 @@ endif
 ifeq ($(PLATFORM), WINDOWS)
 	EXE_EXT=.exe
 	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
+	#We need this for registry entry retrieval
+	INTLDFLAGS+= -lshlwapi
 endif
 
 EXE_PATH=$(BESRC)/$(EXENAME)$(EXE_EXT)
@@ -122,6 +126,9 @@ $(EXE_PATH): $(OBJECTS) $(EXTOBJECTS) $(IDOBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
 ifeq ($(DEBUG),0)
 	$(STRIPBIN) $(EXE_PATH)
 endif
+
+$(BEOBJ)/crc32.o: $(BESRC)/crc32/crc32.c | $(BEOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(BEOBJ)/dbopl.o: $(BESRC)/opl/dbopl.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@

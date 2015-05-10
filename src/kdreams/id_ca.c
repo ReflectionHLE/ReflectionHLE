@@ -234,7 +234,8 @@ id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr)
 	int handle;
 	id0_long_t size;
 
-	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
 	size = BE_Cross_FileLengthFromHandle (handle);
@@ -495,12 +496,14 @@ void CAL_SetupGrFile (void)
 //
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if ((handle = open(GREXT"DICT."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(GREXT"DICT."EXTENSION)) == -1)
+	//if ((handle = open(GREXT"DICT."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if ((handle = open("KDREAMS.EGA",
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading("KDREAMS.EGA")) == -1)
+	//if ((handle = open("KDREAMS.EGA",
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open KDREAMS.EGA!");
 #endif
 
@@ -520,8 +523,9 @@ void CAL_SetupGrFile (void)
 //
 	MM_GetPtr ((memptr *)&grstarts,(NUMCHUNKS+1)*4);
 
-	if ((handle = open(GREXT"HEAD."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(GREXT"HEAD."EXTENSION)) == -1)
+	//if ((handle = open(GREXT"HEAD."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
 
 	BE_Cross_readInt32LE(handle, grstarts, (NUMCHUNKS+1)*4);
@@ -536,11 +540,13 @@ void CAL_SetupGrFile (void)
 // Open the graphics file, leaving it open until the game is finished
 //
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
+	grhandle = BE_Cross_open_for_reading(GREXT"GRAPH."EXTENSION);
+	//grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
 	if (grhandle == -1)
 		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	grhandle = open("KDREAMS.EGA", O_RDONLY | O_BINARY);
+	grhandle = BE_Cross_open_for_reading("KDREAMS.EGA");
+	//grhandle = open("KDREAMS.EGA", O_RDONLY | O_BINARY);
  	if (grhandle == -1)
 		Quit ("Cannot open KDREAMS.EGA!");
 #endif
@@ -633,12 +639,14 @@ void CAL_SetupMapFile (void)
 //
 #ifndef MAPHEADERLINKED
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if ((handle = open("MAPHEAD."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading("MAPHEAD."EXTENSION)) == -1)
+	//if ((handle = open("MAPHEAD."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if ((handle = open("KDREAMS.MAP",
- 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading("KDREAMS.MAP")) == -1)
+	//if ((handle = open("KDREAMS.MAP",
+ 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open KDREAMS.MAP!");
 #endif
 	length = BE_Cross_FileLengthFromHandle(handle);
@@ -668,17 +676,20 @@ void CAL_SetupMapFile (void)
 //
 #ifdef MAPHEADERLINKED
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if ((maphandle = open("GAMEMAPS."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((maphandle = BE_Cross_open_for_reading("GAMEMAPS."EXTENSION)) == -1)
+	//if ((maphandle = open("GAMEMAPS."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open GAMEMAPS."EXTENSION"!");
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if ((maphandle = open("KDREAMS.MAP",
- 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((maphandle = BE_Cross_open_for_reading("KDREAMS.MAP")) == -1)
+	//if ((maphandle = open("KDREAMS.MAP",
+ 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open KDREAMS.MAP!");
 #endif // VERSION
 #else
-	if ((maphandle = open("MAPTEMP."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((maphandle = BE_Cross_open_for_reading("MAPTEMP."EXTENSION)) == -1)
+	//if ((maphandle = open("MAPTEMP."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPTEMP."EXTENSION"!");
 #endif
 }
@@ -706,8 +717,9 @@ void CAL_SetupAudioFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef AUDIOHEADERLINKED
-	if ((handle = open("AUDIOHED."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading("AUDIOHED."EXTENSION)) == -1)
+	//if ((handle = open("AUDIOHED."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&audiostarts,length);
@@ -724,17 +736,20 @@ void CAL_SetupAudioFile (void)
 // open the data file
 //
 #ifndef AUDIOHEADERLINKED
-	if ((audiohandle = open("AUDIOT."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((audiohandle = BE_Cross_open_for_reading("AUDIOT."EXTENSION)) == -1)
+	//if ((audiohandle = open("AUDIOT."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIOT."EXTENSION"!");
 #else
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if ((audiohandle = open("AUDIO."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((audiohandle = BE_Cross_open_for_reading("AUDIO."EXTENSION)) == -1)
+	//if ((audiohandle = open("AUDIO."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIO."EXTENSION"!");
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if ((audiohandle = open("KDREAMS.AUD",
- 		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((audiohandle = BE_Cross_open_for_reading("KDREAMS.AUD")) == -1)
+	//if ((audiohandle = open("KDREAMS.AUD",
+ 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open KDREAMS.AUD!");
 #endif // VERSION
 #endif

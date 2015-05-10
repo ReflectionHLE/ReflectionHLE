@@ -253,7 +253,8 @@ USL_ReadConfig(void)
 	SMMode          sm;
 	ControlType     ctl;
 
-	if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
+	if ((file = BE_Cross_open_for_reading("CONFIG."EXTENSION)) != -1)
+	//if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 	{
 		// REFKEEN Cross Platform file I/O
 		BE_Cross_readInt8LEBuffer(file, sig, sizeof(sig));
@@ -340,8 +341,9 @@ USL_WriteConfig(void)
 	int             file;
 
 	version = ConfigVersion;
-	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
-				/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
+	file = BE_Cross_open_for_overwriting("CONFIG."EXTENSION);
+	//file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
+	//			S_IREAD | S_IWRITE | S_IFREG);
 	if (file != -1)
 	{
 		BE_Cross_writeInt8LEBuffer(file, EXTENSION, sizeof(EXTENSION));
@@ -419,7 +421,8 @@ USL_CheckSavedGames(void)
 	{
 		filename = USL_GiveSaveName(i);
 		ok = false;
-		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
+		if ((file = BE_Cross_open_for_reading(filename)) != -1)
+		//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding; // Apparently one byte of struct padding

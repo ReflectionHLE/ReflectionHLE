@@ -267,7 +267,8 @@ id0_long_t Verify(const id0_char_t *filename)
 	int handle;
 	id0_long_t size;
 
-	if ((handle=open(filename,O_BINARY))==-1)
+	if ((handle=BE_Cross_open_for_reading(filename))==-1)
+	//if ((handle=open(filename,O_BINARY))==-1)
 		return (0);
 	size=BE_Cross_FileLengthFromHandle(handle);
 	close(handle);
@@ -362,7 +363,8 @@ void GE_SaveGame()
 		}
 	}
 
-	handle = open(Filename,O_RDWR|O_CREAT|O_BINARY,/*S_IREAD|S_IWRITE*/S_IRUSR|S_IWUSR);
+	handle = BE_Cross_open_for_overwriting(Filename);
+	//handle = open(Filename,O_RDWR|O_CREAT|O_BINARY,S_IREAD|S_IWRITE);
 	if (handle==-1)
 		goto EXIT_FUNC;
 
@@ -489,7 +491,8 @@ id0_boolean_t GE_LoadGame()
 		}
 	}
 
-	handle = open(Filename,O_RDWR|O_BINARY);
+	handle = BE_Cross_open_for_reading(Filename);
+	//handle = open(Filename,O_RDWR|O_BINARY);
 	if (handle==-1)
 		goto EXIT_FUNC;
 
@@ -1517,45 +1520,7 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 //
 void ReadGameList()
 {
-	// TODO (REFKEEN) Use "cross platform" file searching functions/wrappers instead?
-	DIR *dir;
-	struct dirent *direntry;
-	dir = opendir(".");
-	NumGames = -1;
-	if (!dir)
-	{
-		perror("opendir");
-	}
-	else
-	{
-		for (direntry = readdir(dir); direntry; direntry = readdir(dir))
-		{
-			size_t len = strlen(direntry->d_name);
-			if ((len < 4) || memcmp(direntry->d_name+len-4, ".SAV", 4))
-			{
-				continue;
-			}
-			if (NumGames == MAX_GAMELIST_NAMES)
-				memmove/*memcpy*/(GameListNames,GameListNames[1],MAX_GAMELIST_NAMES*sizeof(GameListNames[0]));
-			else
-				NumGames++;
-			len -= 4;
-			if (len < sizeof(GameListNames[NumGames]))
-			{
-				memcpy(GameListNames[NumGames], direntry->d_name, len);
-				GameListNames[NumGames][len] = '\0';
-			}
-			else
-			{
-				memcpy(GameListNames[NumGames], direntry->d_name, sizeof(GameListNames[NumGames])-1);
-				GameListNames[NumGames][sizeof(GameListNames[NumGames])-1] = '\0';
-			}
-			// REFKEEN - Do NOT convert to uppercase (case-sensitive filesystems)
-		}
-		closedir(dir);
-	}
-
-	NumGames++;
+	NumGames = BE_Cross_GetSortedFilenames((id0_char_t *)GameListNames, MAX_GAMELIST_NAMES+1, FNAME_LEN, ".sav");
 #if 0
 	struct ffblk ffblk;
 	id0_short_t done,len;

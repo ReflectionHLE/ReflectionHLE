@@ -305,7 +305,8 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 	// OPEN SOFTLIB FILE
 	//
 
-	if ((handle = open(LibName,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(LibName)) == -1)
+	//if ((handle = open(LibName,O_RDONLY | O_BINARY, S_IRUSR)) == -1)
 		TrashProg("LOADSCN ERROR : Error openning file.");
 
 
@@ -461,7 +462,8 @@ static id0_long_t FileSize(const id0_char_t *filename)
 	  id0_long_t filesize;
 	  int handle;
 
-	  if ((handle = open(filename,O_RDONLY)) != -1)
+	  if ((handle = BE_Cross_open_for_reading(filename)) != -1)
+	  //if ((handle = open(filename,O_RDONLY)) != -1)
 	  {
 			filesize = BE_Cross_FileLengthFromHandle(handle) ;
 			close(handle);

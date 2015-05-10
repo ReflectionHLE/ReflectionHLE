@@ -50,6 +50,29 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 int BE_Cross_toupper(int c);
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 
+// Semi cross-platform file opening wrappers, hiding search paths
+int BE_Cross_open_for_reading(const char *filename);
+int BE_Cross_open_for_overwriting(const char *filename);
+
+// Outputs a list of file names matching given name suffix from a corresponding
+// "search path" (used by an implementation of gelib.c:ReadGameList), sorted
+// alphabetically in a case-insensitive manner (English locale).
+//
+// Output is upper-case and has the suffix removed. If a filename length is
+// at least strLenBound characters (excluding the suffix, only the first
+// strLenBound-1 characters are stored. In addition, if there are more than
+// maxNum matching files, the last maxNum entries are written.
+//
+// Input is assumed to point to a buffer (bidimensional array) of size
+// maxNum*strLenBound;
+//
+// Returns: Number of filled entries.
+int BE_Cross_GetSortedFilenames(char *outFilenames, int maxNum, int strLenBound, const char *suffix);
+
+// Used preparing game installations and search paths
+void BE_Cross_PrepareGameInstallations(void);
+void BE_Cross_PrepareSearchPaths(void);
+
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
 size_t BE_Cross_readInt8LE(int handle, void *ptr);
 size_t BE_Cross_readInt16LE(int handle, void *ptr);

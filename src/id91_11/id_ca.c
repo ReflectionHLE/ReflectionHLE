@@ -311,7 +311,8 @@ id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr)
 	int handle;
 	id0_long_t size;
 
-	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IRUSR)) == -1)
 		return false;
 
 	size = BE_Cross_FileLengthFromHandle (handle);
@@ -341,7 +342,8 @@ id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr)
 	int handle;
 	id0_long_t size;
 
-	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
 	size = BE_Cross_FileLengthFromHandle (handle);
@@ -683,8 +685,9 @@ void CAL_SetupGrFile (void)
 // load ???dict.ext (huffman dictionary for graphics files)
 //
 
-	if ((handle = open(GREXT"DICT."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(GREXT"DICT."EXTENSION)) == -1)
+	//if ((handle = open(GREXT"DICT."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
 
 	read(handle, &grhuffman, sizeof(grhuffman));
@@ -703,8 +706,9 @@ void CAL_SetupGrFile (void)
 //
 	MM_GetPtr (&(memptr)grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
 
-	if ((handle = open(GREXT"HEAD."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(GREXT"HEAD."EXTENSION)) == -1)
+	//if ((handle = open(GREXT"HEAD."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
 
 	// REFKEEN - Hack for Big Endian (even though it may be useless)
@@ -723,7 +727,8 @@ void CAL_SetupGrFile (void)
 //
 // Open the graphics file, leaving it open until the game is finished
 //
-	grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
+	grhandle = BE_Cross_open_for_reading(GREXT"GRAPH."EXTENSION);
+	//grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
 	if (grhandle == -1)
 		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
 
@@ -814,8 +819,9 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef MAPHEADERLINKED
-	if ((handle = open("MAPHEAD."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading("MAPHEAD."EXTENSION)) == -1)
+	//if ((handle = open("MAPHEAD."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr (&(memptr)tinf,length);
@@ -841,12 +847,14 @@ void CAL_SetupMapFile (void)
 // open the data file
 //
 #ifdef MAPHEADERLINKED
-	if ((maphandle = open("GAMEMAPS."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((maphandle = BE_Cross_open_for_reading("GAMEMAPS."EXTENSION)) == -1)
+	//if ((maphandle = open("GAMEMAPS."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open GAMEMAPS."EXTENSION"!");
 #else
-	if ((maphandle = open("MAPTEMP."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((maphandle = BE_Cross_open_for_reading("MAPTEMP."EXTENSION)) == -1)
+	//if ((maphandle = open("MAPTEMP."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPTEMP."EXTENSION"!");
 #endif
 }
@@ -874,8 +882,9 @@ void CAL_SetupAudioFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef AUDIOHEADERLINKED
-	if ((handle = open("AUDIOHED."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading("AUDIOHED."EXTENSION)) == -1)
+	//if ((handle = open("AUDIOHED."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr (&(memptr)audiostarts,length);
@@ -892,12 +901,14 @@ void CAL_SetupAudioFile (void)
 // open the data file
 //
 #ifndef AUDIOHEADERLINKED
-	if ((audiohandle = open("AUDIOT."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((audiohandle = BE_Cross_open_for_reading("AUDIOT."EXTENSION)) == -1)
+	//if ((audiohandle = open("AUDIOT."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOT."EXTENSION"!");
 #else
-	if ((audiohandle = open("AUDIO."EXTENSION,
-		 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((audiohandle = BE_Cross_open_for_reading("AUDIO."EXTENSION)) == -1)
+	//if ((audiohandle = open("AUDIO."EXTENSION,
+	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIO."EXTENSION"!");
 #endif
 }

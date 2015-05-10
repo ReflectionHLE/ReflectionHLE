@@ -367,15 +367,15 @@ static const char *g_sdlControlSchemeMenuMouseMapCfgVals[] = {
 RefKeenConfig g_refKeenCfg;
 
 #ifdef REFKEEN_VER_KDREAMS
-#define REFKEEN_DREAMS_CONFIG_FILEPATH "refkdreams.cfg"
+#define REFKEEN_CONFIG_FILEPATH "refkdreams.cfg"
 #elif defined REFKEEN_VER_CAT3D
-#define REFKEEN_DREAMS_CONFIG_FILEPATH "refcat3d.cfg"
+#define REFKEEN_CONFIG_FILEPATH "refcat3d.cfg"
 #elif defined REFKEEN_VER_CATABYSS
-#define REFKEEN_DREAMS_CONFIG_FILEPATH "refcatabyss.cfg"
+#define REFKEEN_CONFIG_FILEPATH "refcatabyss.cfg"
 #elif defined REFKEEN_VER_CATARM
-#define REFKEEN_DREAMS_CONFIG_FILEPATH "refcatarm.cfg"
+#define REFKEEN_CONFIG_FILEPATH "refcatarm.cfg"
 #elif defined REFKEEN_VER_CATAPOC
-#define REFKEEN_DREAMS_CONFIG_FILEPATH "refcatapoc.cfg"
+#define REFKEEN_CONFIG_FILEPATH "refcatapoc.cfg"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
@@ -517,7 +517,7 @@ static void BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap(const char *keypr
 	}
 	if (keyindex == CONTROLSCHEME_CONFIG_BUTMAP_AFTERLAST)
 	{
-		BE_ST_ExitWithErrorMsg("Error in BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap: Invalid config key, this shouldn't happen!\n");
+		BE_ST_ExitWithErrorMsg("BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap: Invalid config key!\n");
 	}
 	for (valindex = 0; valindex < (int)(sizeof(g_sdlControlSchemeKeyMapCfgVals)/sizeof(*g_sdlControlSchemeKeyMapCfgVals)); ++valindex)
 	{
@@ -662,7 +662,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.farPtrSegOffset = BE_ST_DEFAULT_FARPTRSEGOFFSET;
 #endif
 	// Try to load config
-	FILE *fp = fopen(REFKEEN_DREAMS_CONFIG_FILEPATH, "r");
+	FILE *fp = fopen(REFKEEN_CONFIG_FILEPATH, "r");
 	if (fp)
 	{
 		char buffer[80];
@@ -689,7 +689,7 @@ static void BEL_ST_ParseConfig(void)
 		fclose(fp);
 	}
 	// Try to save current settings just in case (first time file is created or new fields added)
-	fp = fopen(REFKEEN_DREAMS_CONFIG_FILEPATH, "w");
+	fp = fopen(REFKEEN_CONFIG_FILEPATH, "w");
 	if (!fp)
 	{
 		return;
@@ -1348,7 +1348,7 @@ void BE_ST_AltControlScheme_Push(void)
 	++g_sdlControllertoScanCodeMaps.currPtr;
 	if (g_sdlControllertoScanCodeMaps.currPtr == g_sdlControllertoScanCodeMaps.endPtr)
 	{
-		BE_ST_ExitWithErrorMsg("Error in BE_ST_AltControlScheme_Push: Out of stack bounds!\n");
+		BE_ST_ExitWithErrorMsg("BE_ST_AltControlScheme_Push: Out of stack bounds!\n");
 	}
 
 	g_sdlControllerActualCurrPtr = g_sdlControllertoScanCodeMaps.currPtr;
@@ -1384,7 +1384,7 @@ void BE_ST_AltControlScheme_Pop(void)
 
 	if (g_sdlControllertoScanCodeMaps.currPtr == &g_sdlControllertoScanCodeMaps.stack[0])
 	{
-		BE_ST_ExitWithErrorMsg("Error in BE_ST_AltControlScheme_Pop: Popped more than necessary!\n");
+		BE_ST_ExitWithErrorMsg("BE_ST_AltControlScheme_Pop: Popped more than necessary!\n");
 	}
 	--g_sdlControllertoScanCodeMaps.currPtr;
 
@@ -1425,10 +1425,10 @@ void BEL_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes_Low(const char *scan
 		if (++counter == 9)
 		{
 			char buffer[3*80];
-			strcpy(buffer, "Error in BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes_Low:\n"
+			strcpy(buffer, "BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes_Low:\n"
 			               "Gotten too many scancodes as the input, input scancodes string:\n"
 			);
-			strncat(buffer+strlen(buffer), scanCodes, 80);
+			strncat(buffer, scanCodes, 80);
 
 			BE_ST_ExitWithErrorMsg(buffer);
 		}

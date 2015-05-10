@@ -282,9 +282,11 @@ USL_ReadConfig(void)
 	ControlType	ctl;
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
+	if ((file = BE_Cross_open_for_reading("CONFIG."EXTENSION)) != -1)
+	//if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if ((file = open("KDREAMS.CFG",O_BINARY | O_RDONLY)) != -1)
+	if ((file = BE_Cross_open_for_reading("KDREAMS.CFG")) != -1)
+	//if ((file = open("KDREAMS.CFG",O_BINARY | O_RDONLY)) != -1)
 #endif
 	{
 		// REFKEEN Cross Platform file I/O
@@ -340,11 +342,14 @@ USL_WriteConfig(void)
 	int	file;
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
+	file = BE_Cross_open_for_overwriting("CONFIG."EXTENSION);
+	//file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
+	//			S_IREAD | S_IWRITE | S_IFREG);
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	file = open("KDREAMS.CFG", O_CREAT | O_BINARY | O_WRONLY,
+	file = BE_Cross_open_for_overwriting("KDREAMS.CFG");
+	//file = open("KDREAMS.CFG", O_CREAT | O_BINARY | O_WRONLY,
+	//			S_IREAD | S_IWRITE | S_IFREG);
 #endif
-				/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
 	if (file != -1)
 	{
 		// REFKEEN Cross Platform file I/O
@@ -394,7 +399,8 @@ USL_CheckSavedGames(void)
 	{
 		filename = USL_GiveSaveName(i);
 		ok = false;
-		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
+		if ((file = BE_Cross_open_for_reading(filename)) != -1)
+		//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding; // Apparently one byte of struct padding
@@ -2931,7 +2937,8 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		VW_UpdateScreen();
 
 		err = 0;
-		if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
+		if ((file = BE_Cross_open_for_reading(filename)) != -1)
+		//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding; // Apparently one byte of struct padding
@@ -3020,8 +3027,9 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 #endif
 		filename = USL_GiveSaveName(n / 2);
 		err = 0;
-		file = open(filename,O_CREAT | O_BINARY | O_WRONLY,
-					/*S_IREAD | S_IWRITE*/ S_IRUSR | S_IWUSR /*| S_IFREG*/);
+		file = BE_Cross_open_for_overwriting(filename);
+		//file = open(filename,O_CREAT | O_BINARY | O_WRONLY,
+		//			S_IREAD | S_IWRITE | S_IFREG);
 		if (file != -1)
 		{
 			// REFKEEN Cross Platform file I/O

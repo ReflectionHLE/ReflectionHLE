@@ -764,7 +764,8 @@ DemoLoop (void)
 	US_SetLoadSaveHooks(LoadGame,SaveGame,ResetGame);
 	restartgame = gd_Continue;
 
-	int handle = open("KDREAMS.CMP" ,O_BINARY | O_RDONLY);
+	int handle = BE_Cross_open_for_reading("KDREAMS.CMP");
+	//int handle = open("KDREAMS.CMP" ,O_BINARY | O_RDONLY);
 	if (handle == -1)
 		Quit("Couldn't find KDREAMS.CMP");
 	close(handle);

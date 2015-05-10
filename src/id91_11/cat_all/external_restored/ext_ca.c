@@ -71,7 +71,8 @@ id0_boolean_t ReadFile (id0_char_t *filename, memptr ptr)
 	int handle;
 	id0_long_t size;
 
-	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
 	size = filelength (handle);
@@ -101,7 +102,8 @@ id0_boolean_t LoadFile (const id0_char_t *filename, memptr *ptr)
 	int handle;
 	id0_long_t size;
 
-	if ((handle = open(filename,O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
+	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
 	size = BE_Cross_FileLengthFromHandle (handle);

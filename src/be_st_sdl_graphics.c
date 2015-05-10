@@ -1267,8 +1267,8 @@ static void BEL_ST_vprintf_impl(const char *format, va_list args, bool iscolored
 			default:
 			{
 				// Do NOT constify this cause of hack...
-				char errorMsg[] = "REFKEEN ERROR in BEL_ST_vprintf_impl - Unsupported format specifier flag: X";
-				errorMsg[strlen(errorMsg)-1] = *format; // Hack
+				char errorMsg[] = "BEL_ST_vprintf_impl: Unsupported format specifier flag: X\n";
+				errorMsg[strlen(errorMsg)-2] = *format; // Hack
 				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
 			}

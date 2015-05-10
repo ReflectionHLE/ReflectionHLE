@@ -36,6 +36,8 @@ int main(int argc, char **argv)
 		id0_argv = (const char **)argv;
 	}
 	BE_ST_InitAll();
+	BE_Cross_PrepareGameInstallations();
+	BE_Cross_PrepareSearchPaths();
 	BE_Cross_Compat_FillObjStatesWithDOSPointers(); // Saved games compatibility
 	second_main();
 	BE_ST_ShutdownAll();
