@@ -419,8 +419,8 @@ void SmallSound(objtype *ob);
 
 
 void NewGame (void);
-id0_boolean_t	SaveTheGame(int file);
-id0_boolean_t	LoadTheGame(int file);
+id0_boolean_t	SaveTheGame(BE_FILE_T file);
+id0_boolean_t	LoadTheGame(BE_FILE_T file);
 void ResetGame(void);
 void ShutdownId (void);
 void InitGame (void);

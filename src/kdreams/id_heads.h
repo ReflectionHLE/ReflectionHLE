@@ -35,7 +35,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
+#include "refkeen.h"
 
 #define __ID_GLOB__
 
@@ -129,16 +129,9 @@ typedef	struct
 
 #endif
 
-// FIXME (REFKEEN) a real hack for now
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
 // Initialized before calling vanilla Keen Dreams' (now renamed) main function
 extern int id0_argc;
 extern const char **id0_argv;
-
-#include "be_st.h"
 
 #include "id_mm.h"
 #include "id_ca.h"
@@ -147,7 +140,3 @@ extern const char **id0_argv;
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
-
-#include "be_cross.h"
-
-

@@ -198,7 +198,7 @@ void StatusWindow (void)
 }
 
 // REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
-static id0_boolean_t SaveObject(int file, objtype *o)
+static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy = 0;
 	// for active enum (anonymous type)
@@ -208,7 +208,7 @@ static id0_boolean_t SaveObject(int file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
-	size_t BE_Cross_write_classtype_To16LE(int handle, const classtype *ptr);
+	size_t BE_Cross_write_classtype_To16LE(BE_FILE_T fp, const classtype *ptr);
 	return ((BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
 	        && (BE_Cross_writeInt16LE(file, &activeint) == 2)
 	        && (BE_Cross_write_boolean_To16LE(file, &o->needtoreact) == 2)
@@ -254,7 +254,7 @@ static id0_boolean_t SaveObject(int file, objtype *o)
 	);
 }
 
-static id0_boolean_t LoadObject(int file, objtype *o)
+static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy;
 	// for active enum (anonymous type)
@@ -264,7 +264,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
-	size_t BE_Cross_read_classtype_From16LE(int handle, classtype *ptr);
+	size_t BE_Cross_read_classtype_From16LE(BE_FILE_T fp, classtype *ptr);
 	if ((BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
 	    || (BE_Cross_readInt16LE(file, &activeint) != 2)
 	    || (BE_Cross_read_boolean_From16LE(file, &o->needtoreact) != 2)
@@ -321,7 +321,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 }
 
 // Similar new methods for writing/reading game state
-static id0_boolean_t SaveGameState(int file, gametype *state)
+static id0_boolean_t SaveGameState(BE_FILE_T file, gametype *state)
 {
 	return ((BE_Cross_writeInt16LE(file, &state->worldx) == 2)
 	        && (BE_Cross_writeInt16LE(file, &state->worldy) == 2)
@@ -338,7 +338,7 @@ static id0_boolean_t SaveGameState(int file, gametype *state)
 	);
 }
 
-static id0_boolean_t LoadGameState(int file, gametype *state)
+static id0_boolean_t LoadGameState(BE_FILE_T file, gametype *state)
 {
 	return ((BE_Cross_readInt16LE(file, &state->worldx) == 2)
 	        && (BE_Cross_readInt16LE(file, &state->worldy) == 2)
@@ -357,7 +357,7 @@ static id0_boolean_t LoadGameState(int file, gametype *state)
 
 
 id0_boolean_t
-SaveGame(int file)
+SaveGame(BE_FILE_T file)
 {
 	id0_word_t    i/*,size*/,compressed,expanded;
 	objtype *o;
@@ -404,7 +404,7 @@ SaveGame(int file)
 
 
 id0_boolean_t
-LoadGame(int file)
+LoadGame(BE_FILE_T file)
 {
 	id0_word_t    i/*,j,size*/;
 	//objtype *o;
@@ -764,11 +764,12 @@ DemoLoop (void)
 	US_SetLoadSaveHooks(LoadGame,SaveGame,ResetGame);
 	restartgame = gd_Continue;
 
-	int handle = BE_Cross_open_for_reading("KDREAMS.CMP");
+	BE_FILE_T handle = BE_Cross_open_for_reading("KDREAMS.CMP");
 	//int handle = open("KDREAMS.CMP" ,O_BINARY | O_RDONLY);
-	if (handle == -1)
+	if (!BE_Cross_IsFileValid(handle))
+	//if (handle == -1)
 		Quit("Couldn't find KDREAMS.CMP");
-	close(handle);
+	BE_Cross_close(handle);
 #if 0
 	if (findfirst("KDREAMS.CMP", &ffblk, 0) == -1)
 		Quit("Couldn't find KDREAMS.CMP");

@@ -30,7 +30,6 @@
 \*----------------------------------------------------------------------------*/
 
 int Crc32_ComputeFile( FILE *file, uint32_t *outCrc32 );
-int Crc32_ComputeFileDescriptor( int fd, uint32_t *outCrc32 );
 
 static uint32_t Crc32_ComputeBuf( uint32_t inCrc32, const void *buf,
                                        size_t bufLen );
@@ -94,7 +93,6 @@ ERR_EXIT:
 }
 #endif
 
-#if 0
 /*----------------------------------------------------------------------------*\
  *  NAME:
  *     Crc32_ComputeFile() - compute CRC-32 value for a file
@@ -121,35 +119,6 @@ int Crc32_ComputeFile( FILE *file, uint32_t *outCrc32 )
         bufLen = fread( buf, 1, CRC_BUFFER_SIZE, file );
         if (bufLen == 0) {
             if (ferror(file)) {
-                fprintf( stderr, "error reading file\n" );
-                goto ERR_EXIT;
-            }
-            break;
-        }
-        *outCrc32 = Crc32_ComputeBuf( *outCrc32, buf, bufLen );
-    }
-    return( 0 );
-
-    /** error exit **/
-ERR_EXIT:
-    return( -1 );
-}
-#endif
-
-/*** ADDITION TO crc32.c: Same as Crc32_ComputeFile, but reads using an fd. ***/
-
-int Crc32_ComputeFileDescriptor( int fd, uint32_t *outCrc32 )
-{
-#   define CRC_BUFFER_SIZE  8192
-    unsigned char buf[CRC_BUFFER_SIZE];
-    ssize_t bufLen;
-
-    /** accumulate crc32 from file **/
-    *outCrc32 = 0;
-    while (1) {
-        bufLen = read( fd, buf, CRC_BUFFER_SIZE );
-        if (bufLen <= 0) {
-            if (bufLen < 0) {
                 fprintf( stderr, "error reading file\n" );
                 goto ERR_EXIT;
             }

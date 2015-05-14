@@ -51,7 +51,7 @@
 //#include <alloc.h>
 //#include <dos.h>
 
-#include "ext_heads.h" // For types like id0_int_t, and refkeen_config.h
+#include "ext_heads.h" // For types like id0_int_t, and refkeen.h
 
 #include "ext_lzhuff.h"
 #include "ext_jam_io.h"

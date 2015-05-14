@@ -72,7 +72,7 @@ typedef enum {ged_none, ged_SoundSource,ged_SoundBlaster} AudioDeviceType;
 //} textinfo;
 
 typedef struct {
-	int handle;			// handle of file
+	BE_FILE_T handle;			// handle of file
 	memptr buffer;		// pointer to buffer
 	id0_word_t offset;		// offset into buffer
 	id0_word_t status;		// read/write status
@@ -172,9 +172,9 @@ void RefreshBOBList(objtype *obj);
 id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr);
 void lzwDecompressFromRAM(id0_byte_t id0_far *SrcPtr, id0_byte_t id0_far *DstPtr, id0_longword_t SrcLen);
 void lzwDecompressFromFile(BufferedIO *SrcPtr, id0_byte_t id0_far *DstPtr, id0_longword_t SrcLen);
-id0_byte_t readch(int handle);
+id0_byte_t readch(BE_FILE_T handle);
 
-memptr InitBufferedIO(int handle, BufferedIO *bio);
+memptr InitBufferedIO(BE_FILE_T handle, BufferedIO *bio);
 void FreeBufferedIO(BufferedIO *bio);
 id0_byte_t bio_readch(BufferedIO *bio);
 void bio_fillbuffer(BufferedIO *bio);

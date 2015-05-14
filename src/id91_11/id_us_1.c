@@ -93,7 +93,7 @@ static  id0_boolean_t         US_Started;
 		void            (*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
 					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *) = VWB_DrawPropString;
 
-		id0_boolean_t         (*USL_SaveGame)(int),(*USL_LoadGame)(int);
+		id0_boolean_t         (*USL_SaveGame)(BE_FILE_T),(*USL_LoadGame)(BE_FILE_T);
 		void            (*USL_ResetGame)(void);
 		SaveGame        Games[MaxSaveGames];
 		HighScore       Scores[MaxScores] =
@@ -228,7 +228,7 @@ static  id0_char_t    name[] = "SAVEGAMx."EXTENSION;
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetLoadSaveHooks(id0_boolean_t (*load)(int),id0_boolean_t (*save)(int),void (*reset)(void))
+US_SetLoadSaveHooks(id0_boolean_t (*load)(BE_FILE_T),id0_boolean_t (*save)(BE_FILE_T),void (*reset)(void))
 {
 	USL_LoadGame = load;
 	USL_SaveGame = save;
@@ -248,12 +248,12 @@ USL_ReadConfig(void)
 	id0_boolean_t         gotit;
 	id0_char_t            sig[sizeof(EXTENSION)];
 	id0_word_t            version;
-	int                     file;
+	BE_FILE_T                     file;
 	SDMode          sd;
 	SMMode          sm;
 	ControlType     ctl;
 
-	if ((file = BE_Cross_open_for_reading("CONFIG."EXTENSION)) != -1)
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_for_reading("CONFIG."EXTENSION)))
 	//if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 	{
 		// REFKEEN Cross Platform file I/O
@@ -261,7 +261,7 @@ USL_ReadConfig(void)
 		BE_Cross_readInt16LE(file, &version);
 		if (strcmp(sig,EXTENSION) || (version != ConfigVersion))
 		{
-			close(file);
+			BE_Cross_close(file);
 			goto rcfailed;
 		}
 		for (int i = 0; i < MaxScores; ++i)
@@ -270,11 +270,11 @@ USL_ReadConfig(void)
 			BE_Cross_readInt32LE(file, &Scores[i].score);
 			BE_Cross_readInt16LE(file, &Scores[i].completed);
 		}
-		size_t BE_Cross_read_SDMode_From16LE(int handle, SDMode *ptr);
+		size_t BE_Cross_read_SDMode_From16LE(BE_FILE_T handle, SDMode *ptr);
 		BE_Cross_read_SDMode_From16LE(file, &sd);
-		size_t BE_Cross_read_SMMode_From16LE(int handle, SMMode *ptr);
+		size_t BE_Cross_read_SMMode_From16LE(BE_FILE_T handle, SMMode *ptr);
 		BE_Cross_read_SMMode_From16LE(file, &sm);
-		size_t BE_Cross_read_ControlType_From16LE(int handle, ControlType *ptr);
+		size_t BE_Cross_read_ControlType_From16LE(BE_FILE_T handle, ControlType *ptr);
 		BE_Cross_read_ControlType_From16LE(file, &ctl);
 		// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
 		BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
@@ -304,7 +304,7 @@ USL_ReadConfig(void)
 		read(file,&firescan,sizeof(firescan));
 #endif
 #endif
-		close(file);
+		BE_Cross_close(file);
 
 		HighScoresDirty = false;
 		gotit = true;
@@ -338,13 +338,13 @@ static void
 USL_WriteConfig(void)
 {
 	id0_word_t    version;
-	int             file;
+	BE_FILE_T             file;
 
 	version = ConfigVersion;
 	file = BE_Cross_open_for_overwriting("CONFIG."EXTENSION);
 	//file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
 	//			S_IREAD | S_IWRITE | S_IFREG);
-	if (file != -1)
+	if (BE_Cross_IsFileValid(file))
 	{
 		BE_Cross_writeInt8LEBuffer(file, EXTENSION, sizeof(EXTENSION));
 		BE_Cross_writeInt16LE(file, &version);
@@ -355,9 +355,9 @@ USL_WriteConfig(void)
 			BE_Cross_writeInt32LE(file, &Scores[i].score);
 			BE_Cross_writeInt16LE(file, &Scores[i].completed);
 		}
-		size_t BE_Cross_write_SDMode_To16LE(int handle, const SDMode *ptr);
+		size_t BE_Cross_write_SDMode_To16LE(BE_FILE_T handle, const SDMode *ptr);
 		BE_Cross_write_SDMode_To16LE(file, &SoundMode);
-		size_t BE_Cross_write_SMMode_To16LE(int handle, const SMMode *ptr);
+		size_t BE_Cross_write_SMMode_To16LE(BE_FILE_T handle, const SMMode *ptr);
 		BE_Cross_write_SMMode_To16LE(file, &MusicMode);
 		if      // Hack
 		(
@@ -365,7 +365,7 @@ USL_WriteConfig(void)
 		||      (Controls[0] == ctrl_Joystick2)
 		)
 			Controls[0] = ctrl_Keyboard;
-		size_t BE_Cross_write_ControlType_To16LE(int handle, const ControlType *ptr);
+		size_t BE_Cross_write_ControlType_To16LE(BE_FILE_T handle, const ControlType *ptr);
 		BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
 		BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
 		BE_Cross_write_boolean_To16LE(file, &showscorebox);
@@ -395,7 +395,7 @@ USL_WriteConfig(void)
 		write(file,&firescan,sizeof(firescan));
 #endif
 #endif
-		close(file);
+		BE_Cross_close(file);
 	}
 }
 
@@ -411,7 +411,7 @@ USL_CheckSavedGames(void)
 	id0_boolean_t         ok;
 	id0_char_t            *filename;
 	id0_word_t            i;
-	int                     file;
+	BE_FILE_T                     file;
 	SaveGame        *game;
 
 	USL_SaveGame = 0;
@@ -421,7 +421,7 @@ USL_CheckSavedGames(void)
 	{
 		filename = USL_GiveSaveName(i);
 		ok = false;
-		if ((file = BE_Cross_open_for_reading(filename)) != -1)
+		if (BE_Cross_IsFileValid(file = BE_Cross_open_for_reading(filename)))
 		//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// REFKEEN Cross Platform file I/O
@@ -441,7 +441,7 @@ USL_CheckSavedGames(void)
 			)
 				ok = true;
 
-			close(file);
+			BE_Cross_close(file);
 		}
 
 		if (ok)

@@ -121,21 +121,21 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 //
 id0_long_t Verify(const id0_char_t *filename)
 {
-	int handle;
+	BE_FILE_T handle;
 	id0_long_t size;
 
-	if ((handle=BE_Cross_open_for_reading(filename))==-1)
+	if (!BE_Cross_IsFileValid(handle=BE_Cross_open_for_reading(filename)))
 	//if ((handle=open(filename,O_BINARY))==-1)
 		return (0);
 	size=BE_Cross_FileLengthFromHandle(handle);
-	close(handle);
+	BE_Cross_close(handle);
 	return(size);
 }
 
 //--------------------------------------------------------------------------
 // InitBufferedIO()
 //--------------------------------------------------------------------------
-memptr InitBufferedIO(int handle, BufferedIO *bio)
+memptr InitBufferedIO(BE_FILE_T handle, BufferedIO *bio)
 {
 	bio->handle = handle;
 	bio->offset = BIO_BUFFER_LEN;
@@ -201,7 +201,8 @@ void bio_fillbuffer(BufferedIO *bio)
 		else
 			bytes_requested = bio_length;
 
-		read(bio->handle,near_buffer,bytes_requested);
+		BE_Cross_readInt8LEBuffer(bio->handle,near_buffer,bytes_requested);
+		//read(bio->handle,near_buffer,bytes_requested);
 		memcpy((id0_byte_t *)(bio->buffer) + bytes_read,near_buffer,bytes_requested);
 		//_fmemcpy(MK_FP(bio->buffer,bytes_read),near_buffer,bytes_requested);
 

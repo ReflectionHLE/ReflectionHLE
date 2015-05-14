@@ -68,7 +68,7 @@ BufferedIO lzwBIO;
 //--------------------------------------------------------------------------
 id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 {
-	int handle;
+	BE_FILE_T handle;
 
 	memptr SrcPtr;
 	//id0_unsigned_long_t i, j, k, r, c;
@@ -85,7 +85,7 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	// Open file to load....
 	//
 
-	if ((handle = BE_Cross_open_for_reading(SourceFile)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(SourceFile)))
 	//if ((handle = open(SourceFile, O_RDONLY|O_BINARY)) == -1)
 		return(0);
 
@@ -93,7 +93,8 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	// Look for JAMPAK headers
 	//
 
-	read(handle,Buffer,4);
+	BE_Cross_readInt8LEBuffer(handle,Buffer,4);
+	//read(handle,Buffer,4);
 
 	if (!strncmp((char *)Buffer,COMP,4))
 	{
@@ -121,7 +122,8 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		Compressed = true;
 		SrcLen = Verify(SourceFile);
 
-		read(handle,(void *)&CompHeader,sizeof(struct CMP1Header));
+		BE_Cross_readInt8LEBuffer(handle,(void *)&CompHeader,sizeof(struct CMP1Header));
+		//read(handle,(void *)&CompHeader,sizeof(struct CMP1Header));
 		// REFKEEN - Big Endian support
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 		CompHeader.CompType = BE_Cross_Swap16LE(CompHeader.CompType);
@@ -176,7 +178,7 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		else
 		{
 			// REFKEEN - Better close the current file handle before re-opening here
-			close(handle);
+			BE_Cross_close(handle);
 			//
 			CA_LoadFile(SourceFile,&SrcPtr);
 			switch (CompHeader.CompType)
@@ -207,12 +209,12 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	else
 	{
 		// REFKEEN - Again we close the current file handle first, then load and finally return DstLen without re-closing file handle
-		close(handle);
+		BE_Cross_close(handle);
 		CA_LoadFile(SourceFile,DstPtr);
 		return(DstLen);
 	}
 
-	close(handle);
+	BE_Cross_close(handle);
 	return(DstLen);
 }
 
@@ -359,7 +361,7 @@ EXIT_FUNC:;
 //----------------------------------------------------------------------------
 memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *MemPtr)
 {
-	int handle;
+	BE_FILE_T handle;
 	id0_unsigned_long_t header;
 	struct ChunkHeader Header;
 	id0_unsigned_long_t ChunkLen;
@@ -376,7 +378,7 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 	// OPEN SOFTLIB FILE
 	//
 
-	if ((handle = BE_Cross_open_for_reading(LibName)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(LibName)))
 	//if ((handle = open(LibName,O_RDONLY|O_BINARY, S_IREAD)) == -1)
 		return(NULL);
 
@@ -385,15 +387,16 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 	//	VERIFY it is a SOFTLIB (SLIB) file
 	//
 
-	if (read(handle,&header,4) == -1)
+	if (BE_Cross_readInt8LEBuffer(handle,&header,4) < 4)
+	//if (read(handle,&header,4) == -1)
 	{
-		close(handle);
+		BE_Cross_close(handle);
 		return(NULL);
 	}
 
 	if (header != id_slib)
 	{
-		close(handle);
+		BE_Cross_close(handle);
 		return(NULL);
 	}
 
@@ -402,7 +405,8 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 	// CHECK LIBRARY HEADER VERSION NUMBER
 	//
 
-	if (read(handle, &LibraryHeader,sizeof(struct SoftLibHdr)) == -1)
+	if (BE_Cross_readInt8LEBuffer(handle, &LibraryHeader,sizeof(struct SoftLibHdr)) < sizeof(struct SoftLibHdr))
+	//if (read(handle, &LibraryHeader,sizeof(struct SoftLibHdr)) == -1)
 		Quit("read error in LoadSLIBFile()\n");
 	// REFKEEN - Big Endian support
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
@@ -420,9 +424,10 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 
 	for (x = 1;x<=LibraryHeader.FileCount;x++)
 	{
-		if (read(handle, &FileEntryHeader,sizeof(struct FileEntryHdr)) == -1)
+		if (BE_Cross_readInt8LEBuffer(handle, &FileEntryHeader,sizeof(struct FileEntryHdr)) < sizeof(struct FileEntryHdr))
+		//if (read(handle, &FileEntryHeader,sizeof(struct FileEntryHdr)) == -1)
 		{
-			close(handle);
+			BE_Cross_close(handle);
 			return(NULL);
 		}
 		// REFKEEN - Big Endian support
@@ -448,9 +453,9 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 
 	if (FileFound)
 	{
-		if (lseek(handle,FileEntry.Offset,SEEK_CUR) == -1)
+		if (BE_Cross_seek(handle,FileEntry.Offset,SEEK_CUR) == -1)
 		{
-			close(handle);
+			BE_Cross_close(handle);
 			return(NULL);
 		}
 
@@ -458,7 +463,8 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 		// READ CHUNK HEADER - Verify we are at the beginning of a chunk..
 		//
 
-		if (read(handle,(id0_char_t *)&Header,sizeof(struct ChunkHeader)) == -1)
+		if (BE_Cross_readInt8LEBuffer(handle,(id0_char_t *)&Header,sizeof(struct ChunkHeader)) < sizeof(struct ChunkHeader))
+		//if (read(handle,(id0_char_t *)&Header,sizeof(struct ChunkHeader)) == -1)
 			Quit("LIB File - Unable to read Header!");
 		// REFKEEN - Big Endian support
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
@@ -516,13 +522,13 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 				//if (!CA_FarRead(handle,MK_FP(*MemPtr,0),ChunkLen))
 				if (!CA_FarRead(handle,(id0_byte_t *)(*MemPtr),ChunkLen))
 				{
-//					close(handle);
+//					BE_Cross_close(handle);
 					*MemPtr = NULL;
 				}
 				break;
 
 			default:
-				close(handle);
+				BE_Cross_close(handle);
 				Quit("Unknown Chunk.Compression Type!");
 				break;
 		}
@@ -530,7 +536,7 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 	else
 		*MemPtr = NULL;
 
-	close(handle);
+	BE_Cross_close(handle);
 	return(*MemPtr);
 }
 

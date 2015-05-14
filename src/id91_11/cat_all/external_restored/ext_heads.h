@@ -38,7 +38,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
+#include "refkeen.h"
 
 #ifdef REFKEEN_VER_CATABYSS
 #define EXTENSION "ABS"
@@ -91,11 +91,6 @@ typedef uint32_t id0_longword_t;
 #define id0_huge
 #define id0_seg
 
-// FIXME (REFKEEN) a real hack for now
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
 // Initialized before calling vanilla app's (now renamed) main function
 extern int id0_argc;
 extern const char **id0_argv;
@@ -126,8 +121,5 @@ cardtype VideoID (void);
 void SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
 void ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t wide, id0_unsigned_t height);
-
-#include "be_st.h"
-#include "be_cross.h"
 
 #endif

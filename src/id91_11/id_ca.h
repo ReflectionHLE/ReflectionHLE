@@ -83,7 +83,7 @@ extern	id0_byte_t		ca_levelbit,ca_levelnum;
 
 extern	id0_char_t		*titleptr[8];
 
-extern	int			profilehandle,debughandle;
+extern	BE_FILE_T			profilehandle,debughandle;
 
 //
 // hooks for custom cache dialogs
@@ -108,8 +108,8 @@ void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 void CA_OpenDebug (void);
 void CA_CloseDebug (void);
 #endif
-id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length);
-id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t length);
+id0_boolean_t CA_FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t length);
+id0_boolean_t CA_FarWrite (BE_FILE_T handle, id0_byte_t id0_far *source, id0_long_t length);
 id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr);
 id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr);
 

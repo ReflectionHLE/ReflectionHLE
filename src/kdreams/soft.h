@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-//memptr InitBufferedIO(int handle, BufferedIO *bio);
+//memptr InitBufferedIO(BE_FILE_T handle, BufferedIO *bio);
 //void FreeBufferedIO(BufferedIO *bio);
 //byte bio_readch(BufferedIO *bio);
 

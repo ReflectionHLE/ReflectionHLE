@@ -85,7 +85,7 @@ void		id0_seg	*grsegs[NUMCHUNKS];
 id0_byte_t		id0_far	grneeded[NUMCHUNKS];
 id0_byte_t		ca_levelbit,ca_levelnum;
 
-int			profilehandle,debughandle;
+BE_FILE_T			profilehandle,debughandle;
 
 void	(*drawcachebox)		(const id0_char_t *title, id0_unsigned_t numcache);
 void	(*updatecachebox)	(void);
@@ -125,9 +125,9 @@ huffnode	audiohuffman[255];
 #endif
 
 
-int			grhandle;		// handle to EGAGRAPH
-int			maphandle;		// handle to MAPTEMP / GAMEMAPS
-int			audiohandle;	// handle to AUDIOT / AUDIO
+BE_FILE_T			grhandle;		// handle to EGAGRAPH
+BE_FILE_T			maphandle;		// handle to MAPTEMP / GAMEMAPS
+BE_FILE_T			audiohandle;	// handle to AUDIOT / AUDIO
 
 id0_long_t		chunkcomplen,chunkexplen;
 
@@ -206,7 +206,7 @@ void CA_OpenDebug (void)
 
 void CA_CloseDebug (void)
 {
-	close (debughandle);
+	BE_Cross_close (debughandle);
 }
 #endif
 
@@ -225,7 +225,7 @@ void CA_CloseDebug (void)
 
 void CAL_GetGrChunkLength (id0_int_t chunk)
 {
-	lseek(grhandle,GRFILEPOS(chunk),SEEK_SET);
+	BE_Cross_seek(grhandle,GRFILEPOS(chunk),SEEK_SET);
 	BE_Cross_readInt32LE(grhandle, &chunkexplen);
 	//read(grhandle,&chunkexplen,sizeof(chunkexplen));
 	chunkcomplen = GRFILEPOS(chunk+1)-GRFILEPOS(chunk)-4;
@@ -242,13 +242,13 @@ void CAL_GetGrChunkLength (id0_int_t chunk)
 ==========================
 */
 
-id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length)
+id0_boolean_t CA_FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t length)
 {
 	if (length>0xffffl)
 		Quit ("CA_FarRead doesn't support 64K reads yet!");
 	// Ported from ASM
-	int bytesread = read(handle, dest, length);
-	if (bytesread < 0)
+	int bytesread = BE_Cross_readInt8LEBuffer(handle, dest, length);
+	if (bytesread == 0)
 	{
 		// Keep errno as set by read
 		return false;
@@ -275,19 +275,19 @@ id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t lengt
 ==========================
 */
 
-id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t length)
+id0_boolean_t CA_FarWrite (BE_FILE_T handle, id0_byte_t id0_far *source, id0_long_t length)
 {
 	if (length>0xffffl)
 		Quit ("CA_FarWrite doesn't support 64K reads yet!");
 	// Ported from ASM
-	int bytesread = write(handle, source, length);
-	if (bytesread < 0)
+	int byteswritten = BE_Cross_writeInt8LEBuffer(handle, source, length);
+	if (byteswritten == 0)
 	{
 		// Keep errno as set by write
 		return false;
 	}
 
-	if (bytesread != length)
+	if (byteswritten != length)
 	{
 		errno = ENOMEM; // user manager knows this is bad write
 		return false;
@@ -308,20 +308,20 @@ id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t le
 
 id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr)
 {
-	int handle;
+	BE_FILE_T handle;
 	id0_long_t size;
 
-	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(filename)))
 	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IRUSR)) == -1)
 		return false;
 
 	size = BE_Cross_FileLengthFromHandle (handle);
 	if (!CA_FarRead (handle,(id0_byte_t *)(*ptr),size))
 	{
-		close (handle);
+		BE_Cross_close (handle);
 		return false;
 	}
-	close (handle);
+	BE_Cross_close (handle);
 	return true;
 }
 
@@ -339,10 +339,10 @@ id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr)
 
 id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr)
 {
-	int handle;
+	BE_FILE_T handle;
 	id0_long_t size;
 
-	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(filename)))
 	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
@@ -350,10 +350,10 @@ id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr)
 	MM_GetPtr (ptr,size);
 	if (!CA_FarRead (handle,(id0_byte_t *)(*ptr),size))
 	{
-		close (handle);
+		BE_Cross_close (handle);
 		return false;
 	}
-	close (handle);
+	BE_Cross_close (handle);
 	return true;
 }
 
@@ -659,7 +659,7 @@ void CAL_SetupGrFile (void)
 {
 	// REFKEEN - Shut up compiler warnings
 #ifndef GRHEADERLINKED
-	int handle;
+	BE_FILE_T handle;
 #endif
 #if (NUMPICS>0) || (NUMPICM>0) || (NUMSPRITES>0)
 	memptr compseg;
@@ -685,13 +685,13 @@ void CAL_SetupGrFile (void)
 // load ???dict.ext (huffman dictionary for graphics files)
 //
 
-	if ((handle = BE_Cross_open_for_reading(GREXT"DICT."EXTENSION)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(GREXT"DICT."EXTENSION)))
 	//if ((handle = open(GREXT"DICT."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
 
 	read(handle, &grhuffman, sizeof(grhuffman));
-	close(handle);
+	BE_Cross_close(handle);
 	// REFKEEN - Big Endian support
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 	for (int i = 0; i < sizeof(grhuffman)/sizeof(*grhuffman); ++i)
@@ -706,7 +706,7 @@ void CAL_SetupGrFile (void)
 //
 	MM_GetPtr (&(memptr)grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
 
-	if ((handle = BE_Cross_open_for_reading(GREXT"HEAD."EXTENSION)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(GREXT"HEAD."EXTENSION)))
 	//if ((handle = open(GREXT"HEAD."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
@@ -719,7 +719,7 @@ void CAL_SetupGrFile (void)
 #endif
 	//CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 
-	close(handle);
+	BE_Cross_close(handle);
 
 
 #endif
@@ -729,7 +729,7 @@ void CAL_SetupGrFile (void)
 //
 	grhandle = BE_Cross_open_for_reading(GREXT"GRAPH."EXTENSION);
 	//grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
-	if (grhandle == -1)
+	if (!BE_Cross_IsFileValid(grhandle))
 		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
 
 
@@ -811,7 +811,7 @@ void CAL_SetupMapFile (void)
 {
 	// REFKEEN - Shut up compiler warnings
 #ifndef MAPHEADERLINKED
-	int handle;
+	BE_FILE_T handle;
 	id0_long_t length;
 #endif
 
@@ -819,14 +819,14 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef MAPHEADERLINKED
-	if ((handle = BE_Cross_open_for_reading("MAPHEAD."EXTENSION)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading("MAPHEAD."EXTENSION)))
 	//if ((handle = open("MAPHEAD."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr (&(memptr)tinf,length);
 	CA_FarRead(handle, tinf, length);
-	close(handle);
+	BE_Cross_close(handle);
 	// REFKEEN - Big Endian support
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 	mapfiletype id0_seg *tinfasmapfile = (mapfiletype id0_seg *)tinf;
@@ -847,12 +847,12 @@ void CAL_SetupMapFile (void)
 // open the data file
 //
 #ifdef MAPHEADERLINKED
-	if ((maphandle = BE_Cross_open_for_reading("GAMEMAPS."EXTENSION)) == -1)
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_for_reading("GAMEMAPS."EXTENSION)))
 	//if ((maphandle = open("GAMEMAPS."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open GAMEMAPS."EXTENSION"!");
 #else
-	if ((maphandle = BE_Cross_open_for_reading("MAPTEMP."EXTENSION)) == -1)
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_for_reading("MAPTEMP."EXTENSION)))
 	//if ((maphandle = open("MAPTEMP."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPTEMP."EXTENSION"!");
@@ -874,7 +874,7 @@ void CAL_SetupAudioFile (void)
 {
 	// REFKEEN - Shut up compiler warnings
 #ifndef MAPHEADERLINKED
-	int handle;
+	BE_FILE_T handle;
 	id0_long_t length;
 #endif
 
@@ -882,7 +882,7 @@ void CAL_SetupAudioFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef AUDIOHEADERLINKED
-	if ((handle = BE_Cross_open_for_reading("AUDIOHED."EXTENSION)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading("AUDIOHED."EXTENSION)))
 	//if ((handle = open("AUDIOHED."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
@@ -890,7 +890,7 @@ void CAL_SetupAudioFile (void)
 	MM_GetPtr (&(memptr)audiostarts,length);
 	BE_Cross_readInt32LE(handle, audiostarts, length);
 	//CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
-	close(handle);
+	BE_Cross_close(handle);
 #else
 	audiohuffman = (huffnode *)audiodict;
 	CAL_OptimizeNodes (audiohuffman);
@@ -901,12 +901,12 @@ void CAL_SetupAudioFile (void)
 // open the data file
 //
 #ifndef AUDIOHEADERLINKED
-	if ((audiohandle = BE_Cross_open_for_reading("AUDIOT."EXTENSION)) == -1)
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_for_reading("AUDIOT."EXTENSION)))
 	//if ((audiohandle = open("AUDIOT."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOT."EXTENSION"!");
 #else
-	if ((audiohandle = BE_Cross_open_for_reading("AUDIO."EXTENSION)) == -1)
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_for_reading("AUDIO."EXTENSION)))
 	//if ((audiohandle = open("AUDIO."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIO."EXTENSION"!");
@@ -1011,12 +1011,12 @@ void CA_Startup (void)
 void CA_Shutdown (void)
 {
 #ifdef PROFILE
-	close (profilehandle);
+	BE_Cross_close (profilehandle);
 #endif
 
-	close (maphandle);
-	close (grhandle);
-	close (audiohandle);
+	BE_Cross_close (maphandle);
+	BE_Cross_close (grhandle);
+	BE_Cross_close (audiohandle);
 }
 
 //===========================================================================
@@ -1062,7 +1062,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 	pos = audiostarts[chunk];
 	compressed = audiostarts[chunk+1]-pos;
 
-	lseek(audiohandle,pos,SEEK_SET);
+	BE_Cross_seek(audiohandle,pos,SEEK_SET);
 
 #ifndef AUDIOHEADERLINKED
 
@@ -1509,7 +1509,7 @@ void CAL_ReadGrChunk (id0_int_t chunk)
 
 	compressed = GRFILEPOS(next)-pos;
 
-	lseek(grhandle,pos,SEEK_SET);
+	BE_Cross_seek(grhandle,pos,SEEK_SET);
 
 	if (compressed<=BUFFERSIZE)
 	{
@@ -1582,7 +1582,7 @@ void CA_CacheGrChunk (id0_int_t chunk)
 
 	compressed = GRFILEPOS(next)-pos;
 
-	lseek(grhandle,pos,SEEK_SET);
+	BE_Cross_seek(grhandle,pos,SEEK_SET);
 
 	if (compressed<=BUFFERSIZE)
 	{
@@ -1666,7 +1666,7 @@ void CA_CacheMap (id0_int_t mapnum)
 		  Quit ("CA_CacheMap: Tried to load a non existent map!");
 
 		MM_GetPtr((memptr *)&mapheaderseg[mapnum],sizeof(maptype));
-		lseek(maphandle,pos,SEEK_SET);
+		BE_Cross_seek(maphandle,pos,SEEK_SET);
 		CA_FarRead (maphandle,(id0_byte_t *)((memptr)mapheaderseg[mapnum]),sizeof(maptype));
 		//CA_FarRead (maphandle,(memptr)mapheaderseg[mapnum],sizeof(maptype));
 
@@ -1704,7 +1704,7 @@ void CA_CacheMap (id0_int_t mapnum)
 		dest = (memptr *)&mapsegs[plane];
 		MM_GetPtr(dest,size);
 
-		lseek(maphandle,pos,SEEK_SET);
+		BE_Cross_seek(maphandle,pos,SEEK_SET);
 		if (compressed<=BUFFERSIZE)
 			source = (id0_unsigned_t *)bufferseg;
 		else
@@ -2147,7 +2147,7 @@ void CA_CacheMarks (const id0_char_t *title)
 							next = NUMCHUNKS;			// read pos to posend
 					}
 
-					lseek(grhandle,pos,SEEK_SET);
+					BE_Cross_seek(grhandle,pos,SEEK_SET);
 					CA_FarRead(grhandle,(id0_byte_t *)bufferseg,endpos-pos);
 					bufferstart = pos;
 					bufferend = endpos;
@@ -2161,7 +2161,7 @@ void CA_CacheMarks (const id0_char_t *title)
 				if (mmerror)
 					return;
 				MM_SetLock (&bigbufferseg,true);
-				lseek(grhandle,pos,SEEK_SET);
+				BE_Cross_seek(grhandle,pos,SEEK_SET);
 				CA_FarRead(grhandle,(id0_byte_t *)bigbufferseg,compressed);
 				source = (id0_byte_t *)bigbufferseg;
 			}

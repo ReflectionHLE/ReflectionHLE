@@ -72,7 +72,7 @@
 //--------------------------------------------------------------------------
 id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 {
-	int handle;
+	BE_FILE_T handle;
 
 	memptr SrcPtr = NULL;
 	//id0_unsigned_long_t i, j, k, r, c;
@@ -90,7 +90,7 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	// Open file to load....
 	//
 
-	if ((handle = BE_Cross_open_for_reading(SourceFile)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(SourceFile)))
 	//if ((handle = open(SourceFile, O_RDONLY|O_BINARY)) == -1)
 		return(0);
 
@@ -98,7 +98,8 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	// Look for JAMPAK headers
 	//
 
-	read(handle,Buffer,4);
+	BE_Cross_readInt8LEBuffer(handle,Buffer,4);
+	//read(handle,Buffer,4);
 
 	if (!strncmp((char *)Buffer,COMP,4))
 	{
@@ -127,7 +128,8 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		Compressed = true;
 		SrcLen = Verify(SourceFile);
 
-		read(handle,(void *)&CompHeader,sizeof(struct CMP1Header));
+		BE_Cross_readInt8LEBuffer(handle,(void *)&CompHeader,sizeof(struct CMP1Header));
+		//read(handle,(void *)&CompHeader,sizeof(struct CMP1Header));
 		// REFKEEN - Big Endian support
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 		CompHeader.CompType = BE_Cross_Swap16LE(CompHeader.CompType);
@@ -161,15 +163,15 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 			{
 				#if LZW_SUPPORT
 				case ct_LZW:
-					// REFKEEN (FIXME) Hack that assumes sizeof(intptr_t)>=sizeof(int)
-					lzwDecompress((void *)(intptr_t)(handle),*DstPtr,CompHeader.OrginalLen,(SRC_BFILE|DEST_MEM));
+					// REFKEEN - This is a BE_FILE_T (FILE*) instead of int now, but this call was buggy and unused anyway (should've been SRC_FILE)
+					lzwDecompress(handle,*DstPtr,CompHeader.OrginalLen,(SRC_BFILE|DEST_MEM));
 				break;
 				#endif
 
 				#if LZH_SUPPORT
 				case ct_LZH:
-					// REFKEEN (FIXME) Hack that assumes sizeof(intptr_t)>=sizeof(int)
-					lzhDecompress((void *)(intptr_t)(handle),*DstPtr,CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_BFILE|DEST_MEM));
+					// REFKEEN - This is a BE_FILE_T (FILE*) instead of int now, but this call was buggy and unused anyway (should've been SRC_FILE)
+					lzhDecompress(handle,*DstPtr,CompHeader.OrginalLen,CompHeader.CompressLen,(SRC_BFILE|DEST_MEM));
 				break;
 				#endif
 
@@ -183,7 +185,7 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		else
 		{
 			// REFKEEN - Better close the current file handle before re-opening here
-			close(handle);
+			BE_Cross_close(handle);
 			//
 			LoadFile(SourceFile,&SrcPtr);
 			switch (CompHeader.CompType)
@@ -212,12 +214,12 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	else
 	{
 		// REFKEEN - Again we close the current file handle first, then load and finally return DstLen without re-closing file handle
-		close(handle);
+		BE_Cross_close(handle);
 		LoadFile(SourceFile,DstPtr);
 		return(DstLen);
 	}
 
-	close(handle);
+	BE_Cross_close(handle);
 	return(DstLen);
 }
 

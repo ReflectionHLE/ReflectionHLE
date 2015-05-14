@@ -53,7 +53,9 @@ id0_char_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned_t Ptr
 	switch (PtrType & DEST_TYPES)
 	{
 		case DEST_FILE:
-			write(*(int *)outfile,(id0_char_t *)&data,1);
+			// REFKEEN: Actually DEST_FFILE but done for compatibility
+			returnval = BE_Cross_putc(data, *(BE_FILE_T *)outfile);
+			//write(*(int *)outfile,(id0_char_t *)&data,1);
 		break;
 
 		case DEST_FFILE:
@@ -96,7 +98,8 @@ id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType)
 	switch (PtrType & SRC_TYPES)
 	{
 		case SRC_FILE:
-			read((int)(intptr_t)(*infile),(id0_char_t *)&returnval,1);
+			// REFKEEN: Actually SRC_FFILE but done for compatibility
+			returnval = BE_Cross_getc(*(BE_FILE_T *)infile);
 			//read(*(int *)infile,(id0_char_t *)&returnval,1);
 		break;
 

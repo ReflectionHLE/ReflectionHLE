@@ -111,7 +111,7 @@ jabunhack(void)
 
 
 // REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
-static id0_boolean_t SaveObject(int file, objtype *o)
+static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy = 0;
 	// for active enum (anonymous type)
@@ -121,8 +121,8 @@ static id0_boolean_t SaveObject(int file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
-	size_t BE_Cross_write_classtype_To16LE(int handle, const classtype *ptr);
-	size_t BE_Cross_write_dirtype_To16LE(int handle, const dirtype *ptr);
+	size_t BE_Cross_write_classtype_To16LE(BE_FILE_T fp, const classtype *ptr);
+	size_t BE_Cross_write_dirtype_To16LE(BE_FILE_T fp, const dirtype *ptr);
 	return ((BE_Cross_writeInt16LE(file, &activeint) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
 	        && (BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
@@ -156,7 +156,7 @@ static id0_boolean_t SaveObject(int file, objtype *o)
 	);
 }
 
-static id0_boolean_t LoadObject(int file, objtype *o)
+static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy;
 	// for active enum (anonymous type)
@@ -166,8 +166,8 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
-	size_t BE_Cross_read_classtype_From16LE(int handle, classtype *ptr);
-	size_t BE_Cross_read_dirtype_From16LE(int handle, dirtype *ptr);
+	size_t BE_Cross_read_classtype_From16LE(BE_FILE_T fp, classtype *ptr);
+	size_t BE_Cross_read_dirtype_From16LE(BE_FILE_T fp, dirtype *ptr);
 	if ((BE_Cross_readInt16LE(file, &activeint) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->ticcount) != 2)
 	    || (BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
@@ -210,7 +210,7 @@ static id0_boolean_t LoadObject(int file, objtype *o)
 }
 
 // Similar new methods for writing/reading game state
-static id0_boolean_t SaveGameState(int file, gametype *state)
+static id0_boolean_t SaveGameState(BE_FILE_T file, gametype *state)
 {
 	return ((BE_Cross_writeInt16LE(file, &state->difficulty) == 2)
 	        && (BE_Cross_writeInt16LE(file, &state->mapon) == 2)
@@ -225,7 +225,7 @@ static id0_boolean_t SaveGameState(int file, gametype *state)
 	);
 }
 
-static id0_boolean_t LoadGameState(int file, gametype *state)
+static id0_boolean_t LoadGameState(BE_FILE_T file, gametype *state)
 {
 	return ((BE_Cross_readInt16LE(file, &state->difficulty) == 2)
 	        && (BE_Cross_readInt16LE(file, &state->mapon) == 2)
@@ -270,7 +270,7 @@ void NewGame (void)
 ==================
 */
 
-id0_boolean_t	SaveTheGame(int file)
+id0_boolean_t	SaveTheGame(BE_FILE_T file)
 {
 	id0_word_t	i,compressed,expanded;
 	objtype	*o;
@@ -326,7 +326,7 @@ id0_boolean_t	SaveTheGame(int file)
 ==================
 */
 
-id0_boolean_t	LoadTheGame(int file)
+id0_boolean_t	LoadTheGame(BE_FILE_T file)
 {
 	id0_unsigned_t	i,x,y;
 	objtype		/**obj,*/*prev,*next,*followed;

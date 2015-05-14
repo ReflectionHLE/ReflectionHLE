@@ -33,14 +33,14 @@
 ==========================
 */
 
-id0_boolean_t FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length)
+id0_boolean_t FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t length)
 {
 	if (length>0xffffl)
 		TrashProg ("CA_FarRead doesn't support 64K reads yet!");
 
 	// Ported from ASM
-	int bytesread = read(handle, dest, length);
-	if (bytesread < 0)
+	int bytesread = BE_Cross_readInt8LEBuffer(handle, dest, length);
+	if (bytesread == 0)
 	{
 		// Keep errno as set by read
 		return false;
@@ -68,10 +68,10 @@ id0_boolean_t FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length)
 
 id0_boolean_t ReadFile (id0_char_t *filename, memptr ptr)
 {
-	int handle;
+	BE_FILE_T handle;
 	id0_long_t size;
 
-	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(filename)))
 	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
@@ -99,10 +99,10 @@ id0_boolean_t ReadFile (id0_char_t *filename, memptr ptr)
 
 id0_boolean_t LoadFile (const id0_char_t *filename, memptr *ptr)
 {
-	int handle;
+	BE_FILE_T handle;
 	id0_long_t size;
 
-	if ((handle = BE_Cross_open_for_reading(filename)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(filename)))
 	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
@@ -114,10 +114,10 @@ id0_boolean_t LoadFile (const id0_char_t *filename, memptr *ptr)
 	}
 	if (!FarRead (handle,(id0_byte_t *)*ptr,size))
 	{
-		close (handle);
+		BE_Cross_close (handle);
 		return false;
 	}
-	close (handle);
+	BE_Cross_close (handle);
 	return true;
 }
 

@@ -494,14 +494,14 @@ void ColoredPalette()
 //
 id0_long_t Verify(const id0_char_t *filename)
 {
-	int handle;
+	BE_FILE_T handle;
 	id0_long_t size;
 
-	if ((handle=BE_Cross_open_for_reading(filename))==-1)
+	if (!BE_Cross_IsFileValid(handle=BE_Cross_open_for_reading(filename)))
 	//if ((handle=open(filename,O_BINARY))==-1)
 		return (0);
 	size=BE_Cross_FileLengthFromHandle(handle);
-	close(handle);
+	BE_Cross_close(handle);
 	return(size);
 }
 
@@ -518,7 +518,7 @@ void GE_SaveGame()
 	id0_boolean_t GettingFilename=true;
 	//id0_char_t drive; // REFKEEN - Removed
 //	id0_char_t Filename[FILENAME_LEN+1],drive; //, ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DATA)];
-	int handle = 0; // REFKEEN - Initialized to 0 (taking care of possibly undefined behaviors)
+	BE_FILE_T handle;
 	//struct dfree dfree; // REFKEEN - Removed
 	//id0_long_t davail; // REFKEEN - Removed
 
@@ -603,34 +603,32 @@ void GE_SaveGame()
 
 	handle = BE_Cross_open_for_overwriting(Filename);
 	//handle = open(Filename,O_RDWR|O_CREAT|O_BINARY,S_IREAD|S_IWRITE);
-	if (handle==-1)
-		goto EXIT_FUNC;
 
-	if ((BE_Cross_writeInt8LEBuffer(handle, GAMENAME, sizeof(GAMENAME)) != sizeof(GAMENAME)) ||  (BE_Cross_writeInt8LEBuffer(handle, SAVEVER_DATA, sizeof(SAVEVER_DATA)) != sizeof(SAVEVER_DATA)))
-	//if ((!CA_FarWrite(handle,(void id0_far *)GAMENAME,sizeof(GAMENAME))) || (!CA_FarWrite(handle,(void id0_far *)SAVEVER_DATA,sizeof(SAVEVER_DATA))))
+	/* REFKEEN - Refactoring: EXIT_FUNC label relocated below error
+	 * handling, not using label at all if execution arrives this.
+	 */
+	if (BE_Cross_IsFileValid(handle))
+	//if (handle!=-1)
 	{
-		if (!screenfaded)
-			VW_FadeOut();
+		if ((BE_Cross_writeInt8LEBuffer(handle, GAMENAME, sizeof(GAMENAME)) != sizeof(GAMENAME)) ||  (BE_Cross_writeInt8LEBuffer(handle, SAVEVER_DATA, sizeof(SAVEVER_DATA)) != sizeof(SAVEVER_DATA)))
+		//if ((!CA_FarWrite(handle,(void far *)GAMENAME,sizeof(GAMENAME))) || (!CA_FarWrite(handle,(void far *)SAVEVER_DATA,sizeof(SAVEVER_DATA))))
+		{
+			if (!screenfaded)
+				VW_FadeOut();
 
-		return;
+			BE_Cross_close(handle); // REFKEEN - Avoid resource leak and implementation-defined behaviors
+			return;
+		}
+
+		if (!USL_SaveGame(handle))
+		{
+			BE_Cross_close(handle); // REFKEEN - Avoid resource leak and implementation-defined behaviors
+			Quit("Save game error");
+		}
+
+		BE_Cross_close(handle); // REFKEEN - Originally preceded by valid handle check
 	}
-
-	if (!USL_SaveGame(handle))
-		Quit("Save game error");
-
-
-
-	// (REFKEEN) Move EXIT_FUNC label below call to "close"
-	// (otherwise there are chances we don't know what happens!)
-
-//EXIT_FUNC:;
-
-	if (handle!=-1)
-		close(handle);
-
-EXIT_FUNC:;
-
-	if (handle==-1)
+	else // REFKEEN - Originally preceded by valid handle check
 	{
 		remove(Filename);
 		US_CenterWindow(22,6);
@@ -655,11 +653,12 @@ EXIT_FUNC:;
 		BE_ST_AltControlScheme_Pop();
 	}
 
+EXIT_FUNC:;
+
 	while (Keyboard[1])
 	{
 		BE_ST_ShortSleep();
 	}
-
 
 	if (!screenfaded)
 		VW_FadeOut();
@@ -677,7 +676,7 @@ EXIT_FUNC:;
 id0_boolean_t GE_LoadGame()
 {
 	id0_boolean_t GettingFilename=true,rt_code=false;
-	int handle = 0; // REFKEEN - Initialized to 0 (taking care of possibly undefined behaviors)
+	BE_FILE_T handle;
 
 	IN_ClearKeysDown();
 	memset(ID,0,sizeof(ID));
@@ -732,50 +731,58 @@ id0_boolean_t GE_LoadGame()
 
 	handle = BE_Cross_open_for_reading(Filename);
 	//handle = open(Filename,O_RDWR|O_BINARY);
-	if (handle==-1)
-		goto EXIT_FUNC;
 
-	if ((!CA_FarRead(handle,(id0_byte_t id0_far *)&ID,sizeof(ID))) || (!CA_FarRead(handle,(id0_byte_t id0_far *)&VER,sizeof(VER))))
-		return(false);
-
-	if ((strcmp(ID,GAMENAME)) || (strcmp(VER,SAVEVER_DATA)))
+	/* REFKEEN - Refactoring: EXIT_FUNC label relocated below error
+	 * handling, not using label at all if execution arrives this.
+	 */
+	if (BE_Cross_IsFileValid(handle))
+	//if (handle==-1)
 	{
-		US_CenterWindow(32,4);
-		US_CPrintLine("That isn't a "GAMENAME, NULL);
-		US_CPrintLine(".SAV file.", NULL);
-		US_CPrintLine("Press SPACE to continue.", NULL);
-		VW_UpdateScreen();
-		// REFKEEN - Alternative controllers support
-		BE_ST_AltControlScheme_Push();
-		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
-		while (!Keyboard[57])
+		if ((!CA_FarRead(handle,(id0_byte_t id0_far *)&ID,sizeof(ID))) || (!CA_FarRead(handle,(id0_byte_t id0_far *)&VER,sizeof(VER))))
 		{
-			BE_ST_ShortSleep();
+			BE_Cross_close(handle); // REFKEEN - Avoid resource leak and implementation-defined behaviors
+			return(false);
 		}
-		while (Keyboard[57])
+
+		if ((strcmp(ID,GAMENAME)) || (strcmp(VER,SAVEVER_DATA)))
 		{
-			BE_ST_ShortSleep();
+			US_CenterWindow(32,4);
+			US_CPrintLine("That isn't a "GAMENAME, NULL);
+			US_CPrintLine(".SAV file.", NULL);
+			US_CPrintLine("Press SPACE to continue.", NULL);
+			VW_UpdateScreen();
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Push();
+			BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+			while (!Keyboard[57])
+			{
+				BE_ST_ShortSleep();
+			}
+			while (Keyboard[57])
+			{
+				BE_ST_ShortSleep();
+			}
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Pop();
+
+			if (!screenfaded)
+				VW_FadeOut();
+
+			BE_Cross_close(handle); // REFKEEN - Avoid resource leak and implementation-defined behaviors
+			return(false);
 		}
-		// REFKEEN - Alternative controllers support
-		BE_ST_AltControlScheme_Pop();
 
-		if (!screenfaded)
-			VW_FadeOut();
+		if (!USL_LoadGame(handle))
+		{
+			BE_Cross_close(handle); // REFKEEN - Avoid resource leak and implementation-defined behaviors
+			Quit("Load game error.");
+		}
 
-		return(false);
+		rt_code = true;
+
+		BE_Cross_close(handle); // REFKEEN - Originally preceded by valid handle check
 	}
-
-	if (!USL_LoadGame(handle))
-		Quit("Load game error.");
-
-	rt_code = true;
-
-	// (REFKEEN) Don't call close if we got to here via EXIT_FUNC
-
-	if (handle!=-1)
-		close(handle);
-EXIT_FUNC:;
-	if (handle==-1)
+	else // REFKEEN - Originally preceded by valid handle check
 	{
 		US_CenterWindow(22,3);
 		US_CPrintLine("DISK ERROR ** LOAD **", NULL);
@@ -794,8 +801,8 @@ EXIT_FUNC:;
 		// REFKEEN - Alternative controllers support
 		BE_ST_AltControlScheme_Pop();
 	}
-//	else
-//		close(handle);
+
+EXIT_FUNC:;
 
 	if (!screenfaded)
 		VW_FadeOut();
@@ -1120,7 +1127,7 @@ BufferedIO lzwBIO;
 //--------------------------------------------------------------------------
 id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 {
-	int handle;
+	BE_FILE_T handle;
 
 	memptr SrcPtr;
 	//id0_longword_t i, j, k, r, c;
@@ -1129,13 +1136,14 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	id0_longword_t DstLen, SrcLen;
 	id0_boolean_t comp;
 
-	if ((handle = BE_Cross_open_for_reading(SourceFile)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(SourceFile)))
 	//if ((handle = open(SourceFile, O_RDONLY|O_BINARY)) == -1)
 		return(0);
 
 	// Look for 'COMP' header
 	//
-	read(handle,Buffer,4);
+	BE_Cross_readInt8LEBuffer(handle,Buffer,4);
+	//read(handle,Buffer,4);
 	comp = !strncmp((char *)Buffer,COMP,4);
 
 	// Get source and destination length.
@@ -1169,7 +1177,7 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		else
 		{
 			// REFKEEN - Better close the current file handle before re-opening here
-			close(handle);
+			BE_Cross_close(handle);
 			//
 			CA_LoadFile(SourceFile,&SrcPtr);
 			//lzwDecompressFromRAM(MK_FP(SrcPtr,8),MK_FP(*DstPtr,0),SrcLen+8);
@@ -1182,12 +1190,12 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	else
 	{
 		// REFKEEN - Again we close the current file handle first, then load and finally return DstLen without re-closing file handle
-		close(handle);
+		BE_Cross_close(handle);
 		CA_LoadFile(SourceFile,DstPtr);
 		return(DstLen);
 	}
 
-	close(handle);
+	BE_Cross_close(handle);
 	return(DstLen);
 }
 
@@ -1336,7 +1344,7 @@ void lzwDecompressFromFile(BufferedIO *SrcPtr, id0_byte_t id0_far *DstPtr, id0_l
 //--------------------------------------------------------------------------
 // InitBufferedIO()
 //--------------------------------------------------------------------------
-memptr InitBufferedIO(int handle, BufferedIO *bio)
+memptr InitBufferedIO(BE_FILE_T handle, BufferedIO *bio)
 {
 	bio->handle = handle;
 	bio->offset = BIO_BUFFER_LEN;
@@ -1402,7 +1410,8 @@ void bio_fillbuffer(BufferedIO *bio)
 		else
 			bytes_requested = bio_length;
 
-		read(bio->handle,near_buffer,bytes_requested);
+		BE_Cross_readInt8LEBuffer(bio->handle,near_buffer,bytes_requested);
+		//read(bio->handle,near_buffer,bytes_requested);
 		memcpy((id0_byte_t *)(bio->buffer) + bytes_read,near_buffer,bytes_requested);
 		//_fmemcpy(MK_FP(bio->buffer,bytes_read),near_buffer,bytes_requested);
 

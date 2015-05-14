@@ -29,11 +29,6 @@
 //#include "be_cross.h"
 #include "crc32/crc32.h"
 
-// FIXME (REFKEEN) a real hack for now
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
 #define BE_CROSS_PATH_LEN_BOUND 256
 #define BE_CROSS_MAX_SEARCH_PATHS 2
 #define BE_CROSS_MAX_GAME_INSTALLATIONS 4
@@ -350,14 +345,14 @@ static const BE_GameFileDetails_T g_be_gameverfiles_catapoc101[] = {
 #endif
 
 // Opens *existing* file from given directory in a case-insensitive manner
-static int BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const char *searchdir)
+static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const char *searchdir)
 {
 	/*** TODO - Any reason to save (cache) DIR handles? ***/
 	DIR *dir;
 	struct dirent *direntry;
 	dir = opendir(searchdir);
 	if (!dir)
-		return -1;
+		return NULL;
 
 	for (direntry = readdir(dir); direntry; direntry = readdir(dir))
 	{
@@ -367,7 +362,7 @@ static int BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest
 			if (strlen(searchdir) + 1 + strlen(direntry->d_name) >= BE_CROSS_PATH_LEN_BOUND)
 			{
 				closedir(dir);
-				return -1;
+				return NULL;
 			}
 			char fullpath[BE_CROSS_PATH_LEN_BOUND];
 			// FIXME: Yeah, maybe not the most efficient, but shouldn't take that long
@@ -376,29 +371,29 @@ static int BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest
 			strcat(fullpath, direntry->d_name);
 
 			closedir(dir);
-			return isOverwriteRequest ? open(fullpath,O_CREAT | O_BINARY | O_WRONLY, S_IRUSR | S_IWUSR) : open(fullpath,O_BINARY | O_RDONLY);
+			return fopen(fullpath, isOverwriteRequest ? "wb" : "rb");
 		}
 	}
 	closedir(dir);
-	return -1;
+	return NULL;
 }
 
 static bool BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const char *searchdir)
 {
-	int fd = BEL_Cross_open_from_dir(details->filename, false, searchdir);
-	if (fd < 0)
+	BE_FILE_T fp = BEL_Cross_open_from_dir(details->filename, false, searchdir);
+	if (!fp)
 		return false;
 
-	if (details->filesize == BE_Cross_FileLengthFromHandle(fd))
+	if (details->filesize == BE_Cross_FileLengthFromHandle(fp))
 	{
 		uint32_t crc32;
-		if (!Crc32_ComputeFileDescriptor(fd, &crc32) && (crc32 == details->crc32))
+		if (!Crc32_ComputeFile(fp, &crc32) && (crc32 == details->crc32))
 		{
-			close(fd);
+			BE_Cross_close(fp);
 			return true;
 		}
 	}
-	close(fd);
+	BE_Cross_close(fp);
 	return false;
 }
 
@@ -430,28 +425,28 @@ static void BEL_Cross_ConditionallyAddGameInstallation(BE_GameVer_T verId, const
 
 
 // Opens file for reading from a "search path" in a case-insensitive manner
-int BE_Cross_open_for_reading(const char *filename)
+BE_FILE_T BE_Cross_open_for_reading(const char *filename)
 {
 	for (int loopvar = 0; loopvar < g_be_searchpaths_num; ++loopvar)
 	{
-		int fd = BEL_Cross_open_from_dir(filename, false, g_be_searchpaths[loopvar]);
-		if (fd >= 0)
+		BE_FILE_T fp = BEL_Cross_open_from_dir(filename, false, g_be_searchpaths[loopvar]);
+		if (fp)
 		{
-			return fd;
+			return fp;
 		}
 	}
-	return -1;
+	return NULL;
 }
 
 // Opens file for overwriting from a "search path" (if exists) in a case-insensitive manner
-int BE_Cross_open_for_overwriting(const char *filename)
+BE_FILE_T BE_Cross_open_for_overwriting(const char *filename)
 {
-	int fd = BEL_Cross_open_from_dir(filename, true, ".");
-	if (fd >= 0)
+	BE_FILE_T fp = BEL_Cross_open_from_dir(filename, true, ".");
+	if (fp)
 	{
-		return fd;
+		return fp;
 	}
-	return open(filename, O_CREAT | O_BINARY | O_WRONLY, S_IRUSR | S_IWUSR);
+	return fopen(filename, "wb");
 }
 
 // MICRO-OPTIMIZATION: Not needed for all games
@@ -480,7 +475,7 @@ int BE_Cross_GetSortedFilenames(char *outFilenames, int maxNum, int strLenBound,
 			}
 			len -= sufLen;
 			/*** Possibly a HACK - Modify d_name itself ***/
-			len = (len >= strLenBound) ? (strLenBound-1) : len;
+			len = (len >= (size_t)strLenBound) ? (strLenBound-1) : len;
 			direntry->d_name[len] = '\0';
 			// Convert to upper case
 			for (checkCh = direntry->d_name; *checkCh; ++checkCh)
@@ -659,22 +654,23 @@ void BE_Cross_PrepareSearchPaths(void)
 	}
 }
 
-int32_t BE_Cross_FileLengthFromHandle(int handle)
+int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp)
 {
-    off_t origOffset = lseek(handle, 0, SEEK_CUR);
-    off_t len = lseek(handle, 0, SEEK_END);
-    lseek(handle, origOffset, SEEK_SET);
-    return len;
+	long int origOffset = ftell(fp);
+	fseek(fp, 0, SEEK_END);
+	long int len = ftell(fp);
+	fseek(fp, origOffset, SEEK_SET);
+	return len;
 }
 
-size_t BE_Cross_readInt8LE(int handle, void *ptr)
+size_t BE_Cross_readInt8LE(BE_FILE_T fp, void *ptr)
 {
-	return read(handle, ptr, 1);
+	return fread(ptr, 1, 1, fp);
 }
 
-size_t BE_Cross_readInt16LE(int handle, void *ptr)
+size_t BE_Cross_readInt16LE(BE_FILE_T fp, void *ptr)
 {
-	size_t bytesread = read(handle, ptr, 2);
+	size_t bytesread = fread(ptr, 1, 2, fp);
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 	if (bytesread == 2)
 	{
@@ -684,9 +680,9 @@ size_t BE_Cross_readInt16LE(int handle, void *ptr)
 	return bytesread;
 }
 
-size_t BE_Cross_readInt32LE(int handle, void *ptr)
+size_t BE_Cross_readInt32LE(BE_FILE_T fp, void *ptr)
 {
-	size_t bytesread = read(handle, ptr, 4);
+	size_t bytesread = fread(ptr, 1, 4, fp);
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 	if (bytesread == 4)
 	{
@@ -696,17 +692,17 @@ size_t BE_Cross_readInt32LE(int handle, void *ptr)
 	return bytesread;
 }
 
-size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte)
+size_t BE_Cross_readInt8LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte)
 {
-	return read(handle, ptr, nbyte);
+	return fread(ptr, 1, nbyte, fp);
 }
 
-size_t BE_Cross_readInt16LEBuffer(int handle, void *ptr, size_t nbyte)
+size_t BE_Cross_readInt16LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte)
 {
 #ifndef REFKEEN_ARCH_BIG_ENDIAN
-	return read(handle, ptr, nbyte);
+	return fread(ptr, 1, nbyte, fp);
 #else
-	size_t result = read(handle, ptr, nbyte);
+	size_t result = fread(ptr, 1, nbyte, fp);
 	for (uint16_t *currptr = (uint16_t *)ptr, *endptr = currptr + result/2; currptr < endptr; ++currptr)
 	{
 		*currptr = BE_Cross_Swap16LE(*currptr);
@@ -715,12 +711,12 @@ size_t BE_Cross_readInt16LEBuffer(int handle, void *ptr, size_t nbyte)
 #endif
 }
 
-size_t BE_Cross_readInt32LEBuffer(int handle, void *ptr, size_t nbyte)
+size_t BE_Cross_readInt32LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte)
 {
 #ifndef REFKEEN_ARCH_BIG_ENDIAN
-	return read(handle, ptr, nbyte);
+	return fread(ptr, 1, nbyte, fp);
 #else
-	size_t result = read(handle, ptr, nbyte);
+	size_t result = fread(ptr, 1, nbyte, fp);
 	for (uint32_t *currptr = (uint32_t *)ptr, *endptr = currptr + result/4; currptr < endptr; ++currptr)
 	{
 		*currptr = BE_Cross_Swap32LE(*currptr);
@@ -730,12 +726,12 @@ size_t BE_Cross_readInt32LEBuffer(int handle, void *ptr, size_t nbyte)
 }
 
 // This exists for the EGAHEADs from the Catacombs
-size_t BE_Cross_readInt24LEBuffer(int handle, void *ptr, size_t nbyte)
+size_t BE_Cross_readInt24LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte)
 {
 #ifndef REFKEEN_ARCH_BIG_ENDIAN
-	return read(handle, ptr, nbyte);
+	return fread(ptr, 1, nbyte, fp);
 #else
-	size_t result = read(handle, ptr, nbyte);
+	size_t result = fread(ptr, 1, nbyte, fp);
 	uint8_t tempbyte;
 	// Let's ensure there's no buffer overflow in case nbyte is not divisible by 3
 	for (uint8_t *currbyteptr = (uint8_t *)ptr, *endbyteptr = currbyteptr + (nbyte/3)*3; currbyteptr < endbyteptr; currbyteptr += 3)
@@ -748,46 +744,46 @@ size_t BE_Cross_readInt24LEBuffer(int handle, void *ptr, size_t nbyte)
 #endif
 }
 
-size_t BE_Cross_writeInt8LE(int handle, const void *ptr)
+size_t BE_Cross_writeInt8LE(BE_FILE_T fp, const void *ptr)
 {
-	return write(handle, ptr, 1);
+	return fwrite(ptr, 1, 1, fp);
 }
 
-size_t BE_Cross_writeInt16LE(int handle, const void *ptr)
+size_t BE_Cross_writeInt16LE(BE_FILE_T fp, const void *ptr)
 {
 #ifndef REFKEEN_ARCH_BIG_ENDIAN
-	return write(handle, ptr, 2);
+	return fwrite(ptr, 1, 2, fp);
 #else
 	uint16_t val = BE_Cross_Swap16LE(*(uint16_t *) ptr);
-	return write(handle, &val, 2);
+	return fwrite(&val, 1, 2, fp);
 #endif
 }
 
-size_t BE_Cross_writeInt32LE(int handle, const void *ptr)
+size_t BE_Cross_writeInt32LE(BE_FILE_T fp, const void *ptr)
 {
 #ifndef REFKEEN_ARCH_BIG_ENDIAN
-	return write(handle, ptr, 4);
+	return fwrite(ptr, 1, 4, fp);
 #else
 	uint32_t val = BE_Cross_Swap32LE(*(uint32_t *) ptr);
-	return write(handle, &val, 4);
+	return fwrite(&val, 1, 4, fp);
 #endif
 }
 
-size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte)
+size_t BE_Cross_writeInt8LEBuffer(BE_FILE_T fp, const void *ptr, size_t nbyte)
 {
-	return write(handle, ptr, nbyte);
+	return fwrite(ptr, 1, nbyte, fp);
 }
 
-size_t BE_Cross_writeInt16LEBuffer(int handle, const void *ptr, size_t nbyte)
+size_t BE_Cross_writeInt16LEBuffer(BE_FILE_T fp, const void *ptr, size_t nbyte)
 {
 #ifndef REFKEEN_ARCH_BIG_ENDIAN
-	return write(handle, ptr, nbyte);
+	return fwrite(ptr, 1, nbyte, fp);
 #else
 	size_t result = 0;
 	for (uint16_t *currptr = (uint16_t *)ptr, *endptr = currptr + nbyte/2; currptr < endptr; ++currptr)
 	{
 		uint16_t val = BE_Cross_Swap16LE(*currptr);
-		size_t bytesread = write(handle, &val, 2);
+		size_t bytesread = fwrite(&val, 1, 2, fp);
 		result += bytesread;
 		if (bytesread < 2)
 		{
@@ -800,10 +796,10 @@ size_t BE_Cross_writeInt16LEBuffer(int handle, const void *ptr, size_t nbyte)
 
 // Template implementation of enum reads/writes
 #define BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ourSampleEnum) \
-size_t BE_Cross_read_ ## ourSampleEnum ## _From16LE (int handle, ourSampleEnum *ptr) \
+size_t BE_Cross_read_ ## ourSampleEnum ## _From16LE (BE_FILE_T fp, ourSampleEnum *ptr) \
 { \
 	uint16_t val; \
-	size_t bytesread = read(handle, &val, 2); \
+	size_t bytesread = fread(&val, 1, 2, fp); \
 	if (bytesread == 2) \
 	{ \
 		*ptr = (ourSampleEnum)BE_Cross_Swap16LE(val); \
@@ -811,10 +807,10 @@ size_t BE_Cross_read_ ## ourSampleEnum ## _From16LE (int handle, ourSampleEnum *
 	return bytesread; \
 } \
 \
-size_t BE_Cross_write_ ## ourSampleEnum ## _To16LE (int handle, const ourSampleEnum *ptr) \
+size_t BE_Cross_write_ ## ourSampleEnum ## _To16LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
 { \
 	uint16_t val = BE_Cross_Swap16LE((uint16_t)(*ptr)); \
-	return write(handle, &val, 2); \
+	return fwrite(&val, 1, 2, fp); \
 }
 
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
@@ -825,10 +821,10 @@ BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
 #endif
 
-size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr)
+size_t BE_Cross_read_boolean_From16LE(BE_FILE_T fp, bool *ptr)
 {
 	uint16_t val;
-	size_t bytesread = read(handle, &val, 2);
+	size_t bytesread = fread(&val, 1, 2, fp);
 	if (bytesread == 2)
 	{
 		*ptr = val; // No need to swap byte-order here
@@ -836,13 +832,13 @@ size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr)
 	return bytesread;
 }
 
-size_t BE_Cross_read_booleans_From16LEBuffer(int handle, bool *ptr, size_t nbyte)
+size_t BE_Cross_read_booleans_From16LEBuffer(BE_FILE_T fp, bool *ptr, size_t nbyte)
 {
 	uint16_t val;
 	size_t totalbytesread = 0, currbytesread;
 	for (size_t curbyte = 0; curbyte < nbyte; curbyte += 2, ++ptr)
 	{
-		currbytesread = read(handle, &val, 2);
+		currbytesread = fread(&val, 1, 2, fp);
 		totalbytesread += currbytesread;
 		if (currbytesread < 2)
 		{
@@ -854,20 +850,20 @@ size_t BE_Cross_read_booleans_From16LEBuffer(int handle, bool *ptr, size_t nbyte
 }
 
 
-size_t BE_Cross_write_boolean_To16LE(int handle, const bool *ptr)
+size_t BE_Cross_write_boolean_To16LE(BE_FILE_T fp, const bool *ptr)
 {
 	uint16_t val = BE_Cross_Swap16LE((uint16_t)(*ptr)); // Better to swap just in case...
-	return write(handle, &val, 2);
+	return fwrite(&val, 1, 2, fp);
 }
 
-size_t BE_Cross_write_booleans_To16LEBuffer(int handle, const bool *ptr, size_t nbyte)
+size_t BE_Cross_write_booleans_To16LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte)
 {
 	uint16_t val;
 	size_t totalbyteswritten = 0, currbyteswritten;
 	for (size_t curbyte = 0; curbyte < nbyte; curbyte += 2, ++ptr)
 	{
 		val = BE_Cross_Swap16LE((uint16_t)(*ptr)); // Better to swap just in case...
-		currbyteswritten = write(handle, &val, 2);
+		currbyteswritten = fwrite(&val, 1, 2, fp);
 		totalbyteswritten += currbyteswritten;
 		if (currbyteswritten < 2)
 		{

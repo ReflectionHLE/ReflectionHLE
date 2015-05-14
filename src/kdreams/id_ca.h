@@ -81,7 +81,7 @@ extern	id0_byte_t		ca_levelbit,ca_levelnum;
 
 extern	const id0_char_t		*titleptr[8];
 
-extern	int			profilehandle;
+extern	BE_FILE_T			profilehandle;
 
 //===========================================================================
 
@@ -94,8 +94,8 @@ void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 
 //===========================================================================
 
-id0_boolean_t CA_FarRead (int handle, id0_byte_t id0_far *dest, id0_long_t length);
-id0_boolean_t CA_FarWrite (int handle, id0_byte_t id0_far *source, id0_long_t length);
+id0_boolean_t CA_FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t length);
+id0_boolean_t CA_FarWrite (BE_FILE_T handle, id0_byte_t id0_far *source, id0_long_t length);
 id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr);
 
 id0_long_t CA_RLEWCompress (id0_unsigned_t id0_huge *source, id0_long_t length, id0_unsigned_t id0_huge *dest,

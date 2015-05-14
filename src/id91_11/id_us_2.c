@@ -1019,7 +1019,7 @@ USL_DoLoadGame(UserItem id0_far *item)
 	id0_char_t            *filename;
 	id0_word_t            n,
 				err;
-	int                     file;
+	BE_FILE_T                     file;
 	SaveGame        *game;
 
 	if (!USL_ConfirmComm(uc_Loaded))
@@ -1032,7 +1032,7 @@ USL_DoLoadGame(UserItem id0_far *item)
 
 	err = 0;
 	filename = USL_GiveSaveName(n);
-	if ((file = BE_Cross_open_for_reading(filename)) != -1)
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_for_reading(filename)))
 	//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 	{
 		// REFKEEN Cross Platform file I/O
@@ -1051,7 +1051,7 @@ USL_DoLoadGame(UserItem id0_far *item)
 		}
 		else
 			USL_HandleError(err = errno);
-		close(file);
+		BE_Cross_close(file);
 	}
 	else
 		USL_HandleError(err = errno);
@@ -1120,7 +1120,7 @@ USL_DoSaveGame(UserItem id0_far *item)
 	id0_boolean_t         ok;
 	id0_char_t            *filename;
 	id0_word_t            n,err;
-	int         file;
+	BE_FILE_T         file;
 	SaveGame        *game;
 
 	BottomS1 = "Type name";
@@ -1148,7 +1148,8 @@ USL_DoSaveGame(UserItem id0_far *item)
 		file = BE_Cross_open_for_overwriting(filename);
 		//file = open(filename,O_CREAT | O_BINARY | O_WRONLY,
 		//			S_IREAD | S_IWRITE | S_IFREG);
-		if (file != -1)
+		if (BE_Cross_IsFileValid(file))
+		//if (file != -1)
 		{
 			// REFKEEN Cross Platform file I/O
 			id0_byte_t padding = 0; // Apparently one byte of struct padding
@@ -1167,7 +1168,7 @@ USL_DoSaveGame(UserItem id0_far *item)
 			}
 			else
 				USL_HandleError(err = ((errno == ENOENT)? ENOMEM : errno));
-			close(file);
+			BE_Cross_close(file);
 		}
 		else
 			USL_HandleError(err = ((errno == ENOENT)? ENOMEM : errno));

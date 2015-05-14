@@ -36,7 +36,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
+#include "refkeen.h"
 
 #define __ID_GLOB__
 
@@ -193,11 +193,6 @@ typedef	struct
 
 #endif
 
-// FIXME (REFKEEN) a real hack for now
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
 // (REFKEEN) VANILLA BUG REPRODUCTION: In the original code, a call to
 // VW_DrawPic on startup leaves the map mask value at 8 (intensity plane),
 // so numbers aren't drawn in the following call to RedrawStatusWindow.
@@ -211,16 +206,12 @@ extern const char **id0_argv;
 
 extern id0_char_t *introscn;
 
-#include "be_st.h"
-
 #include "id_mm.h"
 #include "id_ca.h"
 #include "id_vw.h"
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
-
-#include "be_cross.h"
 
 
 #ifdef REFKEEN_VER_CATADVENTURES

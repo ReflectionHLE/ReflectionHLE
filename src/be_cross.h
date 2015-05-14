@@ -2,6 +2,7 @@
 #define __BE_CROSS_H__
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <inttypes.h>
 
 // WARNING: It's actually safer to include this earlier (e.g., for endianness
@@ -39,7 +40,17 @@ typedef enum BE_Log_Message_Class_T
 #define BE_Cross_SwapGroup32LE(a, b, c, d) d, c, b, a,
 #endif
 
-int32_t BE_Cross_FileLengthFromHandle(int handle);
+// Often used as a replacement for file handles of type "int",
+// this one is given a different name so it's easy to swap in case of a need
+typedef FILE * BE_FILE_T;
+
+// TODO - Inline?
+#define BE_Cross_IsFileValid(fp) (fp)
+#define BE_Cross_seek fseek
+#define BE_Cross_putc putc
+#define BE_Cross_getc getc
+
+int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp);
 char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);
 char *BE_Cross_ltoa_dec(int32_t n, char *buffer);
 char *BE_Cross_itoa_dec(int16_t n, char *buffer);
@@ -51,8 +62,9 @@ int BE_Cross_toupper(int c);
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 
 // Semi cross-platform file opening wrappers, hiding search paths
-int BE_Cross_open_for_reading(const char *filename);
-int BE_Cross_open_for_overwriting(const char *filename);
+BE_FILE_T BE_Cross_open_for_reading(const char *filename);
+BE_FILE_T BE_Cross_open_for_overwriting(const char *filename);
+#define BE_Cross_close(fp) fclose(fp)
 
 // Outputs a list of file names matching given name suffix from a corresponding
 // "search path" (used by an implementation of gelib.c:ReadGameList), sorted
@@ -74,38 +86,38 @@ void BE_Cross_PrepareGameInstallations(void);
 void BE_Cross_PrepareSearchPaths(void);
 
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
-size_t BE_Cross_readInt8LE(int handle, void *ptr);
-size_t BE_Cross_readInt16LE(int handle, void *ptr);
-size_t BE_Cross_readInt32LE(int handle, void *ptr);
-size_t BE_Cross_readInt8LEBuffer(int handle, void *ptr, size_t nbyte);
-size_t BE_Cross_readInt16LEBuffer(int handle, void *ptr, size_t nbyte);
-size_t BE_Cross_readInt32LEBuffer(int handle, void *ptr, size_t nbyte);
+size_t BE_Cross_readInt8LE(BE_FILE_T fp, void *ptr);
+size_t BE_Cross_readInt16LE(BE_FILE_T fp, void *ptr);
+size_t BE_Cross_readInt32LE(BE_FILE_T fp, void *ptr);
+size_t BE_Cross_readInt8LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte);
+size_t BE_Cross_readInt16LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte);
+size_t BE_Cross_readInt32LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte);
 // This exists for the EGAHEADs from the Catacombs
-size_t BE_Cross_readInt24LEBuffer(int handle, void *ptr, size_t nbyte);
+size_t BE_Cross_readInt24LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte);
 // A template for enum reading (from 16-bit little-endian int).
 // A declaration and implementation must exist for each used type separately
 // (implementation should be found in be_cross.c).
 #if 0
-size_t BE_Cross_read_EnumType_From16LE(int handle, EnumType *ptr);
+size_t BE_Cross_read_EnumType_From16LE(BE_FILE_T fp, EnumType *ptr);
 #endif
 // boolean implementation may be separated from enums, otherwise it's the same
-size_t BE_Cross_read_boolean_From16LE(int handle, bool *ptr);
+size_t BE_Cross_read_boolean_From16LE(BE_FILE_T fp, bool *ptr);
 // booleans buffer
-size_t BE_Cross_read_booleans_From16LEBuffer(int handle, bool *ptr, size_t nbyte);
+size_t BE_Cross_read_booleans_From16LEBuffer(BE_FILE_T fp, bool *ptr, size_t nbyte);
 
 // Same but for writing
-size_t BE_Cross_writeInt8LE(int handle, const void *ptr);
-size_t BE_Cross_writeInt16LE(int handle, const void *ptr);
-size_t BE_Cross_writeInt32LE(int handle, const void *ptr);
-size_t BE_Cross_writeInt8LEBuffer(int handle, const void *ptr, size_t nbyte);
-size_t BE_Cross_writeInt16LEBuffer(int handle, const void *ptr, size_t nbyte);
+size_t BE_Cross_writeInt8LE(BE_FILE_T fp, const void *ptr);
+size_t BE_Cross_writeInt16LE(BE_FILE_T fp, const void *ptr);
+size_t BE_Cross_writeInt32LE(BE_FILE_T fp, const void *ptr);
+size_t BE_Cross_writeInt8LEBuffer(BE_FILE_T fp, const void *ptr, size_t nbyte);
+size_t BE_Cross_writeInt16LEBuffer(BE_FILE_T fp, const void *ptr, size_t nbyte);
 
 #if 0
-size_t BE_Cross_write_EnumType_To16LE(int handle, const EnumType *ptr);
+size_t BE_Cross_write_EnumType_To16LE(BE_FILE_T fp, const EnumType *ptr);
 #endif
 
-size_t BE_Cross_write_boolean_To16LE(int handle, const bool *ptr);
-size_t BE_Cross_write_booleans_To16LEBuffer(int handle, const bool *ptr, size_t nbyte);
+size_t BE_Cross_write_boolean_To16LE(BE_FILE_T fp, const bool *ptr);
+size_t BE_Cross_write_booleans_To16LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte);
 
 // Assuming segPtr is replacement for a 16-bit segment pointer, and offInSegPtr
 // is a replacement for an offset in this segment (pointing to a place in the

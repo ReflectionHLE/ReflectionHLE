@@ -194,7 +194,7 @@ struct Shape {
 };
 
 typedef struct {
-	int handle;			// handle of file
+	BE_FILE_T handle;			// handle of file
 	memptr buffer;		// pointer to buffer
 	id0_word_t offset;		// offset into buffer
 	id0_word_t status;		// read/write status
@@ -258,8 +258,8 @@ void	StatusWindow (void);
 void	NewGame (void);
 void	TEDDeath (void);
 
-id0_boolean_t	LoadGame (int file);
-id0_boolean_t	SaveGame (int file);
+id0_boolean_t	LoadGame (BE_FILE_T file);
+id0_boolean_t	SaveGame (BE_FILE_T file);
 void	ResetGame (void);
 
 /*
@@ -418,7 +418,7 @@ void FreeShape(struct Shape *shape);
 id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t starty);
 
 id0_long_t Verify(const id0_char_t *filename);
-memptr InitBufferedIO(int handle, BufferedIO *bio);
+memptr InitBufferedIO(BE_FILE_T handle, BufferedIO *bio);
 void FreeBufferedIO(BufferedIO *bio);
 id0_byte_t bio_readch(BufferedIO *bio);
 void bio_fillbuffer(BufferedIO *bio);

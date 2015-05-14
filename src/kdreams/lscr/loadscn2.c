@@ -28,7 +28,7 @@
 #include <stdlib.h>
 //#include <process.h>
 
-#include "id_heads.h" // For types like id0_int_t, and refkeen_config.h
+#include "id_heads.h" // For types like id0_int_t, and refkeen.h
 
 #include "jampak.h"
 #include "sl_file.h"
@@ -61,7 +61,7 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 
 //static id0_long_t FileSize(const id0_char_t *filename);
 
-static id0_boolean_t FarRead (int handle, id0_char_t id0_far *dest, id0_long_t length);
+static id0_boolean_t FarRead (BE_FILE_T handle, id0_char_t id0_far *dest, id0_long_t length);
 
 int loadscn2_main(int argc, const char **argv); // Renamed from main
 static void TrashProg(const id0_char_t *OutMsg);
@@ -107,7 +107,9 @@ static id0_int_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned
 	switch (PtrType & DEST_TYPES)
 	{
 		case DEST_FILE:
-			write(*(int id0_far *)outfile,(id0_char_t *)&data,1);
+			// REFKEEN: Actually DEST_FFILE but done for compatibility
+			returnval = BE_Cross_putc(data, *(BE_FILE_T *)outfile);
+			//write(*(int id0_far *)outfile,(id0_char_t *)&data,1);
 		break;
 
 		case DEST_FFILE:
@@ -152,7 +154,8 @@ static id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType)
 	switch (PtrType & SRC_TYPES)
 	{
 		case SRC_FILE:
-			read((int)(intptr_t)(*infile),(id0_char_t *)&returnval,1);
+			// REFKEEN: Actually SRC_FFILE but done for compatibility
+			returnval = BE_Cross_getc(*(BE_FILE_T *)infile);
 			//read(*(int id0_far *)infile,(id0_char_t *)&returnval,1);
 		break;
 
@@ -287,7 +290,7 @@ static void id0_far lzwDecompress(void id0_far *infile, void id0_far *outfile, i
 //----------------------------------------------------------------------------
 static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *FileName, id0_char_t id0_far **MemPtr)
 {
-	int handle;
+	BE_FILE_T handle;
 	id0_unsigned_long_t header;
 	struct ChunkHeader Header;
 	id0_unsigned_long_t ChunkLen;
@@ -305,7 +308,7 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 	// OPEN SOFTLIB FILE
 	//
 
-	if ((handle = BE_Cross_open_for_reading(LibName)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(LibName)))
 	//if ((handle = open(LibName,O_RDONLY | O_BINARY, S_IRUSR)) == -1)
 		TrashProg("LOADSCN ERROR : Error openning file.");
 
@@ -314,15 +317,16 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 	//	VERIFY it is a SOFTLIB (SLIB) file
 	//
 
-	if (read(handle,&header,4) == -1)
+	if (BE_Cross_readInt8LEBuffer(handle,&header,4) < 4)
+	//if (read(handle,&header,4) == -1)
 	{
-		close(handle);
+		BE_Cross_close(handle);
 		TrashProg("LOADSCN ERROR : Error reading first header.");
 	}
 
 	if (header != id_slib)
 	{
-		close(handle);
+		BE_Cross_close(handle);
 		TrashProg("LOADSCN ERROR : Header on id_slib.");
 	}
 
@@ -331,7 +335,8 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 	// CHECK LIBRARY HEADER VERSION NUMBER
 	//
 
-	if (read(handle, &LibraryHeader,sizeof(struct SoftLibHdr)) == -1)
+	if (BE_Cross_readInt8LEBuffer(handle, &LibraryHeader,sizeof(struct SoftLibHdr)) < sizeof(struct SoftLibHdr))
+	//if (read(handle, &LibraryHeader,sizeof(struct SoftLibHdr)) == -1)
 		TrashProg("read error in LoadSLIBFile()");
 	// REFKEEN - Big Endian support
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
@@ -349,9 +354,10 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 
 	for (x = 1;x<=LibraryHeader.FileCount;x++)
 	{
-		if (read(handle, &FileEntryHeader,sizeof(struct FileEntryHdr)) == -1)
+		if (BE_Cross_readInt8LEBuffer(handle, &FileEntryHeader,sizeof(struct FileEntryHdr)) < sizeof(struct FileEntryHdr))
+		//if (read(handle, &FileEntryHeader,sizeof(struct FileEntryHdr)) == -1)
 		{
-			close(handle);
+			BE_Cross_close(handle);
 			TrashProg("LOADSCN ERROR : Error reading second header.");
 		}
 		// REFKEEN - Big Endian support
@@ -376,9 +382,9 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 
 	if (FileFound)
 	{
-		if (lseek(handle,FileEntry.Offset,SEEK_CUR) == -1)
+		if (BE_Cross_seek(handle,FileEntry.Offset,SEEK_CUR) == -1)
 		{
-			close(handle);
+			BE_Cross_close(handle);
 			TrashProg("LOADSCN ERROR : Error seeking through file.");
 		}
 
@@ -386,7 +392,8 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 		// READ CHUNK HEADER - Verify we are at the beginning of a chunk..
 		//
 
-		if (read(handle,(id0_char_t *)&Header,sizeof(struct ChunkHeader)) == -1)
+		if (BE_Cross_readInt8LEBuffer(handle,(id0_char_t *)&Header,sizeof(struct ChunkHeader)) < sizeof(struct ChunkHeader))
+		//if (read(handle,(id0_char_t *)&Header,sizeof(struct ChunkHeader)) == -1)
 			TrashProg("LIB File - Unable to read Header!");
 		// REFKEEN - Big Endian support
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
@@ -422,8 +429,8 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 		switch (Header.Compression)
 		{
 			case ct_LZW:
-				// REFKEEN (FIXME) Hack that assumes sizeof(intptr_t)>=sizeof(int)
-				lzwDecompress((void *)(intptr_t)handle,*MemPtr,ChunkLen,(SRC_FILE|DEST_MEM));
+				// REFKEEN - This is a BE_FILE_T (FILE*) instead of int now, but still specifying SRC_FILE for compatibility
+				lzwDecompress(handle,*MemPtr,ChunkLen,(SRC_FILE|DEST_MEM));
 				break;
 
 			case ct_NONE:
@@ -431,7 +438,7 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 				break;
 
 			default:
-				close(handle);
+				BE_Cross_close(handle);
 				TrashProg("Unknown Chunk.Compression Type!");
 				break;
 		}
@@ -439,7 +446,7 @@ static id0_boolean_t LoadLIBFile(const id0_char_t *LibName, const id0_char_t *Fi
 	else
 		Success = false;
 
-	close(handle);
+	BE_Cross_close(handle);
 
 	return(Success);
 }
@@ -479,13 +486,13 @@ static id0_long_t FileSize(const id0_char_t *filename)
 //--------------------------------------------------------------------------
 // FarRead()
 //-------------------------------------------------------------------------
-static id0_boolean_t FarRead (int handle, id0_char_t id0_far *dest, id0_long_t length)
+static id0_boolean_t FarRead (BE_FILE_T handle, id0_char_t id0_far *dest, id0_long_t length)
 {
 	if (length>0xffffl)
 		TrashProg("CA_FarRead doesn't support 64K reads yet!");
 	// Ported from ASM (based on CA_FarRead)
-	int bytesread = read(handle, dest, length);
-	if (bytesread < 0)
+	int bytesread = BE_Cross_readInt8LEBuffer(handle, dest, length);
+	if (bytesread == 0)
 	{
 		// Keep errno as set by read
 		return false;
