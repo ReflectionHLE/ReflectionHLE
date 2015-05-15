@@ -9,23 +9,10 @@
 
 #include "be_cross.h"
 
-char *BE_Cross_ultoa_dec(uint32_t n, char *buffer)
-{
-	sprintf(buffer, "%"PRIu32, n);
-	return buffer;
-}
-
-char *BE_Cross_ltoa_dec(int32_t n, char *buffer)
-{
-	sprintf(buffer, "%"PRId32, n);
-	return buffer;
-}
-
-char *BE_Cross_itoa_dec(int16_t n, char *buffer)
-{
-	sprintf(buffer, "%"PRId16, n);
-	return buffer;
-}
+// C99
+char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);
+char *BE_Cross_ltoa_dec(int32_t n, char *buffer);
+char *BE_Cross_itoa_dec(int16_t n, char *buffer);
 
 // Used for debugging
 void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ...)
@@ -50,12 +37,8 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 	va_end(args);
 }
 
-// More (possibly semi) standard C functions emulated,
-// taking English locale into account (and more, but NOT all)
-int BE_Cross_toupper(int c)
-{
-	return ((c >= 'a') && (c <= 'z')) ? (c - 'a' + 'A') : c;
-}
+// C99
+int BE_Cross_toupper(int c);
 
 int BE_Cross_strcasecmp(const char *s1, const char *s2)
 {

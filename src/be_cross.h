@@ -40,31 +40,49 @@ typedef enum BE_Log_Message_Class_T
 #define BE_Cross_SwapGroup32LE(a, b, c, d) d, c, b, a,
 #endif
 
-// Often used as a replacement for file handles of type "int",
-// this one is given a different name so it's easy to swap in case of a need
-typedef FILE * BE_FILE_T;
+inline char *BE_Cross_ultoa_dec(uint32_t n, char *buffer)
+{
+	sprintf(buffer, "%"PRIu32, n);
+	return buffer;
+}
 
-// TODO - Inline?
-#define BE_Cross_IsFileValid(fp) (fp)
-#define BE_Cross_seek fseek
-#define BE_Cross_putc putc
-#define BE_Cross_getc getc
+inline char *BE_Cross_ltoa_dec(int32_t n, char *buffer)
+{
+	sprintf(buffer, "%"PRId32, n);
+	return buffer;
+}
 
-int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp);
-char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);
-char *BE_Cross_ltoa_dec(int32_t n, char *buffer);
-char *BE_Cross_itoa_dec(int16_t n, char *buffer);
+inline char *BE_Cross_itoa_dec(int16_t n, char *buffer)
+{
+	sprintf(buffer, "%"PRId16, n);
+	return buffer;
+}
+
 // Used for debugging
 void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ...);
 // More (possibly semi) standard C functions emulated,
 // taking English locale into account (and more, but NOT all)
-int BE_Cross_toupper(int c);
+inline int BE_Cross_toupper(int c)
+{
+	return ((c >= 'a') && (c <= 'z')) ? (c - 'a' + 'A') : c;
+}
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
+
+// Often used as a replacement for file handles of type "int",
+// this one is given a different name so it's easy to swap in case of a need
+typedef FILE * BE_FILE_T;
+
+inline BE_FILE_T BE_Cross_IsFileValid(BE_FILE_T fp) { return fp; }
+inline int BE_Cross_seek(BE_FILE_T fp, long int offset, int origin) { return fseek(fp, offset, origin); }
+inline int BE_Cross_putc(int character, BE_FILE_T fp) { return putc(character, fp); }
+inline int BE_Cross_getc(BE_FILE_T fp) { return getc(fp); }
+
+int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp);
 
 // Semi cross-platform file opening wrappers, hiding search paths
 BE_FILE_T BE_Cross_open_for_reading(const char *filename);
 BE_FILE_T BE_Cross_open_for_overwriting(const char *filename);
-#define BE_Cross_close(fp) fclose(fp)
+inline void BE_Cross_close(BE_FILE_T fp) { fclose(fp); }
 
 // Outputs a list of file names matching given name suffix from a corresponding
 // "search path" (used by an implementation of gelib.c:ReadGameList), sorted
