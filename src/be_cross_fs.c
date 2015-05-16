@@ -28,6 +28,7 @@
 
 //#include "be_cross.h"
 #include "crc32/crc32.h"
+#include "unlzexe/unlzexe.h"
 
 #define BE_CROSS_PATH_LEN_BOUND 256
 #define BE_CROSS_MAX_SEARCH_PATHS 2
@@ -66,11 +67,31 @@ typedef enum {
 #endif
 } BE_GameVer_T;
 
+// Describes a required file from a specific game version
 typedef struct {
 	const char *filename;
 	int filesize;
 	uint32_t crc32;
 } BE_GameFileDetails_T;
+
+// Describes a file originally embedded somewhere (in an EXE file)
+typedef struct {
+	BE_GameFileDetails_T fileDetails;
+	int offset; // Location of file/chunk in the EXE
+} BE_EmbeddedGameFileDetails_T;
+
+typedef enum {
+	BE_EXECOMPRESSION_NONE, BE_EXECOMPRESSION_LZEXE9X
+} BE_ExeCompression_T;
+
+typedef struct {
+	const BE_GameFileDetails_T *reqFiles;
+	const BE_EmbeddedGameFileDetails_T *embeddedFiles;
+	const char *exeName;
+	int decompExeSize;
+	BE_ExeCompression_T compressionType;
+	BE_GameVer_T verId;
+} BE_GameVerDetails_T;
 
 typedef struct {
 	const char *descStr;
@@ -85,7 +106,7 @@ static BE_GameInstallation_T g_be_gameinstallations[BE_CROSS_MAX_GAME_INSTALLATI
 static int g_be_gameinstallations_num;
 
 #ifdef REFKEEN_VER_KDREAMS_SHAR_113
-static const BE_GameFileDetails_T g_be_gameverfiles_kdreamse113[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse113[] = {
 	{"KDREAMS.AUD", 3498, 0x80ac85e5},
 	{"KDREAMS.CMP", 14189, 0x97628ca0},
 	{"KDREAMS.EGA", 213045, 0x2dc94687},
@@ -94,15 +115,59 @@ static const BE_GameFileDetails_T g_be_gameverfiles_kdreamse113[] = {
 	{"LAST.SHL", 1634, 0xc0a3560f},
 	{0}
 };
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse113[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2bc42},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x24480},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x245e0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x2b446},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1e720},
+	{"GAMETEXT.KDR", 413, 0xb0df2792, 0x24af0},
+	{"MAPDICT.KDR", 1020, 0x9faa7213, 0x2b846},
+	{"MAPHEAD.KDR", 11824, 0xb2f36c60, 0x21650},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x24c90},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
+	g_be_reqgameverfiles_kdreamse113,
+	g_be_embeddedgameverfiles_kdreamse113,
+	"KDREAMS.EXE",
+	213536,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_KDREAMSE113
+};
 #endif
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_105
-static const BE_GameFileDetails_T g_be_gameverfiles_kdreamsc105[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc105[] = {
 	{"AUDIO.KDR", 3498, 0x80ac85e5},
 	{"CGAGRAPH.KDR", 134691, 0x05e32626},
 	{"GAMEMAPS.KDR", 65736, 0x4b92df5f},
 	{"KDREAMS.EXE", 78253, 0x5af7ce2b},
 	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc105[] = {
+	{"audiodct.kdr", 1024, 0x8b6116d7, 0x29c90},
+	{"audiohhd.kdr", 340, 0x499e0cbf, 0x20350},
+	{"cgadict.kdr", 1024, 0xaba89759, 0x29494},
+	{"cgahead.kdr", 12068, 0x36d48226, 0x1a5f0},
+	{"context.kdr", 4759, 0x5bae2337, 0x204b0},
+	{"gametext.kdr", 4686, 0x046c5328, 0x21750},
+	{"mapdict.kdr", 1020, 0xfa8362f3, 0x29894},
+	{"maphead.kdr", 11824, 0x66c122b4, 0x1d520},
+	{"story.kdr", 2487, 0xed0ea5fe, 0x229a0},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
+	g_be_reqgameverfiles_kdreamsc105,
+	g_be_embeddedgameverfiles_kdreamsc105,
+	"KDREAMS.EXE",
+	202320,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_KDREAMSC105
 };
 #endif
 
@@ -110,7 +175,7 @@ static const BE_GameFileDetails_T g_be_gameverfiles_kdreamsc105[] = {
 // minus the EXE (and v1.92 is also the same, except for KDREAMS.CMP).
 
 #ifdef REFKEEN_VER_KDREAMS_REG_193
-static const BE_GameFileDetails_T g_be_gameverfiles_kdreamse193[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse193[] = {
 	{"KDREAMS.AUD", 3498, 0x80ac85e5},
 	{"KDREAMS.CMP", 14620, 0x1681bc21},
 	{"KDREAMS.EGA", 213045, 0x2dc94687},
@@ -118,10 +183,32 @@ static const BE_GameFileDetails_T g_be_gameverfiles_kdreamse193[] = {
 	{"KDREAMS.MAP", 65674, 0x78bd24fc},
 	{0}
 };
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse193[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2bbba},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x23590},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x236f0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x2b3be},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1d830},
+	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x23c00},
+	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2b7be},
+	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x20760},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x24ca0},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
+	g_be_reqgameverfiles_kdreamse193,
+	g_be_embeddedgameverfiles_kdreamse193,
+	"KDREAMS.EXE",
+	213200,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_KDREAMSE193
+};
 #endif
 
 #ifdef REFKEEN_VER_KDREAMS_SHAR_120
-static const BE_GameFileDetails_T g_be_gameverfiles_kdreamse120[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse120[] = {
 	{"KDREAMS.AUD", 3498, 0x80ac85e5},
 	{"KDREAMS.CMP", 14620, 0x1681bc21},
 	{"KDREAMS.EGA", 213045, 0x2dc94687},
@@ -129,25 +216,87 @@ static const BE_GameFileDetails_T g_be_gameverfiles_kdreamse120[] = {
 	{"KDREAMS.MAP", 65674, 0x78bd24fc},
 	{0}
 };
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse120[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2c26c},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x23970},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x23ad0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x2ba70},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1dc10},
+	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x23fe0},
+	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2be70},
+	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x20b40},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x25080},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_kdreamse120 = {
+	g_be_reqgameverfiles_kdreamse120,
+	g_be_embeddedgameverfiles_kdreamse120,
+	"KDREAMS.EXE",
+	214912,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_KDREAMSE120
+};
 #endif
 
 #ifdef REFKEEN_VER_CAT3D_100
-static const BE_GameFileDetails_T g_be_gameverfiles_cat3d100[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d100[] = {
 	{"AUDIO.C3D", 5062, 0x074f7525},
 	{"EGAGRAPH.C3D", 258007, 0x7b756d01},
 	{"GAMEMAPS.C3D", 14288, 0x1d8d501e},
 	{"CAT3D.EXE", 78483, 0xe20992c7},
 	{0}
 };
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d100[] = {
+	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x24064},
+	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1be60},
+	{"EGADICT.C3D", 1024, 0xab94fb6c, 0x24464},
+	{"EGAHEAD.C3D", 1437, 0x33772bb0, 0x1bfd0},
+	{"INTROSCN.SCN", 4008, 0xec236c5c, 0x1a6c0},
+	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1c570},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_cat3d100 = {
+	g_be_reqgameverfiles_cat3d100,
+	g_be_embeddedgameverfiles_cat3d100,
+	"CAT3D.EXE",
+	191536,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_CAT3D100
+};
 #endif
 
 #ifdef REFKEEN_VER_CAT3D_122
-static const BE_GameFileDetails_T g_be_gameverfiles_cat3d122[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d122[] = {
 	{"AUDIO.C3D", 5062, 0x074f7525},
 	{"EGAGRAPH.C3D", 256899, 0xbc122f40},
 	{"GAMEMAPS.C3D", 14288, 0x1ecb107b},
 	{"CAT3D.EXE", 78285, 0xfaa27410},
 	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d122[] = {
+	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x241d8},
+	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1bd10},
+	{"EGADICT.C3D", 1024, 0xb26a70a6, 0x245d8},
+	{"EGAHEAD.C3D", 1437, 0x3fde00c4, 0x1be80},
+	// INTROSCN.SCN isn't displayed in vanilla v1.22, but there's still 
+	// allocated and in use, so it's safer to require this chunk
+	{"INTROSCN.SCN", 4008, 0xcf9696af, 0x1a570},
+	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1c420},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
+	g_be_reqgameverfiles_cat3d122,
+	g_be_embeddedgameverfiles_cat3d122,
+	"CAT3D.EXE",
+	191904,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_CAT3D122
 };
 #endif
 
@@ -155,7 +304,7 @@ static const BE_GameFileDetails_T g_be_gameverfiles_cat3d122[] = {
 // (possibly optionally, except for Abyss v1.13, where INTRO may call DEMOCAT)
 
 #ifdef REFKEEN_VER_CATABYSS_113
-static const BE_GameFileDetails_T g_be_gameverfiles_catabyss113[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
 	{"ARMAPC.ABS", 10489, 0x9562020e},
 	{"AUDIO.ABS", 6904, 0x462d2eb2},
 	{"CATABYSS.EXE", 82662, 0xbc3b015e},
@@ -203,10 +352,28 @@ static const BE_GameFileDetails_T g_be_gameverfiles_catabyss113[] = {
 	{"VICTORY.CAT", 7194, 0x70846fc6},
 	{0}
 };
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss113[] = {
+	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x26f4c},
+	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1bc10},
+	{"EGADICT.ABS", 1024, 0xbb760f1d, 0x2734c},
+	{"EGAHEAD.ABS", 1888, 0x58062b03, 0x1bdb0},
+	{"MTEMP.TMP", 848, 0x6517c97d, 0x1c510},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_catabyss113 = {
+	g_be_reqgameverfiles_catabyss113,
+	g_be_embeddedgameverfiles_catabyss113,
+	"CATABYSS.EXE",
+	201120,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_CATABYSS113
+};
 #endif
 
 #ifdef REFKEEN_VER_CATABYSS_124
-static const BE_GameFileDetails_T g_be_gameverfiles_catabyss124[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss124[] = {
 	{"ABYSGAME.EXE", 82479, 0x5f0319db},
 	{"AUDIO.ABS", 6904, 0x462d2eb2},
 	{"EGAGRAPH.ABS", 335994, 0xfd9995ad},
@@ -249,10 +416,28 @@ static const BE_GameFileDetails_T g_be_gameverfiles_catabyss124[] = {
 	{"VICTORY.HNT", 7301, 0xb2a16e89},
 	{0}
 };
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss124[] = {
+	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x26e3a},
+	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1bb40},
+	{"EGADICT.ABS", 1024, 0x63eb06d3, 0x2723a},
+	{"EGAHEAD.ABS", 1881, 0x94967205, 0x1bce0},
+	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1c440},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_catabyss124 = {
+	g_be_reqgameverfiles_catabyss124,
+	g_be_embeddedgameverfiles_catabyss124,
+	"ABYSGAME.EXE",
+	200848,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_CATABYSS124
+};
 #endif
 
 #ifdef REFKEEN_VER_CATARM
-static const BE_GameFileDetails_T g_be_gameverfiles_catarm102[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_catarm102[] = {
 	{"ARMGAME.EXE", 82198, 0x7bf5e3d5},
 	// Looks like ARM_SLIB.ARM is mentioned in DEF.H but unused
 	{"AUDIO.ARM", 7104, 0xb6c28bc7},
@@ -296,10 +481,28 @@ static const BE_GameFileDetails_T g_be_gameverfiles_catarm102[] = {
 	{"SCRIPT.HNT", 90, 0x79a7f746},
 	{0}
 };
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catarm102[] = {
+	{"AUDIODCT.ARM", 1024, 0x8f1d4dd2, 0x260b0},
+	{"AUDIOHHD.ARM", 428, 0x5f863ad2, 0x1db20},
+	{"EGADICT.ARM", 1024, 0xab662db8, 0x264b0},
+	{"EGAHEAD.ARM", 1977, 0x711cbf10, 0x1dcd0},
+	{"MTEMP.TMP", 834, 0x546f00d1, 0x1d7d0},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_catarm102 = {
+	g_be_reqgameverfiles_catarm102,
+	g_be_embeddedgameverfiles_catarm102,
+	"ARMGAME.EXE",
+	198304,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_CATARM102
+};
 #endif
 
 #ifdef REFKEEN_VER_CATAPOC
-static const BE_GameFileDetails_T g_be_gameverfiles_catapoc101[] = {
+static const BE_GameFileDetails_T g_be_reqgameverfiles_catapoc101[] = {
 	{"APOCGAME.EXE", 82386, 0x48ca6808},
 	// No APC_SLIB.APC file was found, although it is mentioned in DEF.H
 	{"AUDIO.APC", 7366, 0x23934cec},
@@ -341,6 +544,24 @@ static const BE_GameFileDetails_T g_be_gameverfiles_catapoc101[] = {
 	{"HINT19.HNT", 7301, 0xb2a16e89},
 	{"SCRIPT.HNT", 88, 0x8dd529b2},
 	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catapoc101[] = {
+	{"AUDIODCT.APC", 1024, 0x26658498, 0x2659c},
+	{"AUDIOHHD.APC", 452, 0x76adb051, 0x1df80},
+	{"EGADICT.APC", 1024, 0xb2ed57fd, 0x2699c},
+	{"EGAHEAD.APC", 2049, 0xd7548ed8, 0x1e150},
+	{"MTEMP.TMP", 834, 0x90742162, 0x1dc30},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
+	g_be_reqgameverfiles_catapoc101,
+	g_be_embeddedgameverfiles_catapoc101,
+	"APOCGAME.EXE",
+	200064,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_CATAPOC101
 };
 #endif
 
@@ -404,30 +625,84 @@ static bool BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, 
 	return false;
 }
 
-static bool BEL_Cross_CheckGameVersionInDir(const BE_GameFileDetails_T *detailsBuffer, const char *searchdir)
-{
-	for (; detailsBuffer->filename; ++detailsBuffer)
-		if (!BEL_Cross_CheckGameFileDetails(detailsBuffer, searchdir))
-			return false;
-
-	return true;
-}
-
 // ***ASSUMPTION: descStr points to a C string literal which is never modified nor deleted!!!***
-static void BEL_Cross_ConditionallyAddGameInstallation(BE_GameVer_T verId, const BE_GameFileDetails_T *detailsBuffer, const char *searchdir, const char *descStr)
+static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T *details, const char *searchdir, const char *descStr)
 {
-	if (BEL_Cross_CheckGameVersionInDir(detailsBuffer, searchdir))
-	{
-		if (g_be_gameinstallations_num >= BE_CROSS_MAX_GAME_INSTALLATIONS)
+	for (const BE_GameFileDetails_T *fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filename; ++fileDetailsBuffer)
+		if (!BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, searchdir))
+			return;
+
+	if (g_be_gameinstallations_num >= BE_CROSS_MAX_GAME_INSTALLATIONS)
+		BE_ST_ExitWithErrorMsg("BEL_Cross_ConditionallyAddGameInstallation: Too many game installations!");
+
+	unsigned char *decompexebuffer = NULL;
+	char errorMsg[100];
+
+	for (const BE_EmbeddedGameFileDetails_T *embeddedfileDetailsBuffer = details->embeddedFiles; embeddedfileDetailsBuffer->fileDetails.filename; ++embeddedfileDetailsBuffer)
+		// TODO: Pick a better path for this
+		if (!BEL_Cross_CheckGameFileDetails(&embeddedfileDetailsBuffer->fileDetails, "."))
 		{
-			BE_ST_ExitWithErrorMsg("BEL_Cross_ConditionallyAddGameInstallation: Too many game installations!");
+			if (!decompexebuffer)
+			{
+				FILE *exeFp = BEL_Cross_open_from_dir(details->exeName, false, searchdir);
+				if (!exeFp)
+				{
+					snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't open EXE after checking it!\nFilename: %s", details->exeName);
+					BE_ST_ExitWithErrorMsg(errorMsg);
+				}
+
+				decompexebuffer = (unsigned char *)malloc(details->decompExeSize);
+				if (!decompexebuffer)
+				{
+					fclose(exeFp);
+					snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't allocate memory for unpacked EXE copy!\nFilename: %s", details->exeName);
+					BE_ST_ExitWithErrorMsg(errorMsg);
+				}
+
+				bool success;
+				switch (details->compressionType)
+				{
+				case BE_EXECOMPRESSION_NONE:
+					success = (fread(decompexebuffer, details->decompExeSize, 1, exeFp) != 1);
+					break;
+				case BE_EXECOMPRESSION_LZEXE9X:
+					success = Unlzexe_unpack(exeFp, decompexebuffer, details->decompExeSize);
+					break;
+				}
+
+				fclose(exeFp);
+				if (!success)
+				{
+					free(decompexebuffer);
+					snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Failed to copy EXE in unpacked form!\nFilename: %s", details->exeName);
+					BE_ST_ExitWithErrorMsg(errorMsg);
+				}
+			}
+			// TODO: Again pick a better path for this
+			FILE *outFp = BE_Cross_open_for_overwriting(embeddedfileDetailsBuffer->fileDetails.filename);
+			if (!outFp)
+			{
+				free(decompexebuffer);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't open file for writing!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+				BE_ST_ExitWithErrorMsg(errorMsg);
+			}
+			if (fwrite(decompexebuffer + embeddedfileDetailsBuffer->offset, embeddedfileDetailsBuffer->fileDetails.filesize, 1, outFp) != 1)
+			{
+				fclose(outFp);
+				free(decompexebuffer);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't write to file!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+				BE_ST_ExitWithErrorMsg(errorMsg);
+			}
+			fclose(outFp);
 		}
-		// If used correctly this SHOULD have enough space
-		strncpy(g_be_gameinstallations[g_be_gameinstallations_num].path, searchdir, sizeof(g_be_gameinstallations[g_be_gameinstallations_num].path));
-		g_be_gameinstallations[g_be_gameinstallations_num].verId = verId;
-		g_be_gameinstallations[g_be_gameinstallations_num].descStr = descStr; // ASSUMPTION: This is a C string literal!!!
-		++g_be_gameinstallations_num;
-	}
+
+	free(decompexebuffer);
+
+	// If used correctly this SHOULD have enough space
+	strncpy(g_be_gameinstallations[g_be_gameinstallations_num].path, searchdir, sizeof(g_be_gameinstallations[g_be_gameinstallations_num].path));
+	g_be_gameinstallations[g_be_gameinstallations_num].verId = details->verId;
+	g_be_gameinstallations[g_be_gameinstallations_num].descStr = descStr; // ASSUMPTION: This is a C string literal!!!
+	++g_be_gameinstallations_num;
 }
 
 
@@ -560,82 +835,82 @@ void BE_Cross_PrepareGameInstallations(void)
 	/*** Now handling each version separately ***/
 
 #ifdef REFKEEN_VER_KDREAMS_SHAR_113
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_KDREAMSE113, g_be_gameverfiles_kdreamse113, ".", "Keen Dreams EGA v1.13 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, ".", "Keen Dreams EGA v1.13 (Local)");
 #endif
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_105
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_KDREAMSC105, g_be_gameverfiles_kdreamsc105, ".", "Keen Dreams CGA v1.05 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, ".", "Keen Dreams CGA v1.05 (Local)");
 #ifdef REFKEEN_PLATFORM_UNIX
 	if (homedir)
 	{
 		strncpy(path, homedir, sizeof(path));
 		path[sizeof(path)-1] = '\0';
 		strncat(path, "/.steam/steam/SteamApps/common/Keen Dreams/cga", sizeof(path));
-		BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_KDREAMSC105, g_be_gameverfiles_kdreamsc105, path, "Keen Dreams CGA v1.05 (Steam)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, path, "Keen Dreams CGA v1.05 (Steam)");
 	}
 #endif
 #endif
 
 #ifdef REFKEEN_VER_KDREAMS_REG_193
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_KDREAMSE193, g_be_gameverfiles_kdreamse193, ".", "Keen Dreams EGA v1.93 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, ".", "Keen Dreams EGA v1.93 (Local)");
 #endif
 
 #ifdef REFKEEN_VER_KDREAMS_SHAR_120
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_KDREAMSE120, g_be_gameverfiles_kdreamse120, ".", "Keen Dreams EGA v1.20 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse120, ".", "Keen Dreams EGA v1.20 (Local)");
 #endif
 
 #ifdef REFKEEN_VER_CAT3D_100
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CAT3D100, g_be_gameverfiles_cat3d100, ".", "Catacomb 3-D v1.00 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, ".", "Catacomb 3-D v1.00 (Local)");
 #endif
 
 #ifdef REFKEEN_VER_CAT3D_122
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CAT3D122, g_be_gameverfiles_cat3d122, ".", "Catacomb 3-D v1.22 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, ".", "Catacomb 3-D v1.22 (Local)");
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
 		strncat(path, "\\Cat3D", sizeof(path));
-		BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CAT3D122, g_be_gameverfiles_cat3d122, path, "Catacomb 3-D v1.22 (GOG.com)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, path, "Catacomb 3-D v1.22 (GOG.com)");
 	}
 #endif
 #endif
 
 #ifdef REFKEEN_VER_CATABYSS_113
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CATABYSS113, g_be_gameverfiles_catabyss113, ".", "Catacomb Abyss v1.13 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss113, ".", "Catacomb Abyss v1.13 (Local)");
 #endif
 
 #ifdef REFKEEN_VER_CATABYSS_124
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CATABYSS124, g_be_gameverfiles_catabyss124, ".", "Catacomb Abyss v1.24 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, ".", "Catacomb Abyss v1.24 (Local)");
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
 		strncat(path, "\\Abyss", sizeof(path));
-		BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CATABYSS124, g_be_gameverfiles_catabyss124, path, "Catacomb Abyss v1.24 (GOG.com)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, path, "Catacomb Abyss v1.24 (GOG.com)");
 	}
 #endif
 #endif
 
 #ifdef REFKEEN_VER_CATARM
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CATARM102, g_be_gameverfiles_catarm102, ".", "Catacomb Armageddon v1.02 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, ".", "Catacomb Armageddon v1.02 (Local)");
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
 		strncat(path, "\\Armageddon", sizeof(path));
-		BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CATARM102, g_be_gameverfiles_catarm102, path, "Catacomb Armageddon v1.02 (GOG.com)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, path, "Catacomb Armageddon v1.02 (GOG.com)");
 	}
 #endif
 #endif
 
 #ifdef REFKEEN_VER_CATAPOC
-	BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CATAPOC101, g_be_gameverfiles_catapoc101, ".", "Catacomb Apocalypse v1.01 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, ".", "Catacomb Apocalypse v1.01 (Local)");
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
 		strncat(path, "\\Apocalypse", sizeof(path));
-		BEL_Cross_ConditionallyAddGameInstallation(BE_GAMEVER_CATAPOC101, g_be_gameverfiles_catapoc101, path, "Catacomb Apocalypse v1.01 (GOG.com)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, path, "Catacomb Apocalypse v1.01 (GOG.com)");
 	}
 #endif
 #endif

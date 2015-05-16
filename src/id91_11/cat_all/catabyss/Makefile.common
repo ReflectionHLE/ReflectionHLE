@@ -74,7 +74,8 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_st_sdl_graphics.o \
           $(BEOBJ)/be_textmode_fonts.o \
           $(BEOBJ)/crc32.o \
-          $(BEOBJ)/dbopl.o
+          $(BEOBJ)/dbopl.o \
+          $(BEOBJ)/unlzexe.o
 
 #NOTE: Unnecessary resources may be omitted
 RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
@@ -133,6 +134,9 @@ $(BEOBJ)/crc32.o: $(BESRC)/crc32/crc32.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(BEOBJ)/dbopl.o: $(BESRC)/opl/dbopl.c | $(BEOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(BEOBJ)/unlzexe.o: $(BESRC)/unlzexe/unlzexe.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(BEOBJ)/be_cross_compat.o: $(VERSRC)/be_cross_compat.c | $(BEOBJ)
