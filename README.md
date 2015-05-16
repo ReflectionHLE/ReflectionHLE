@@ -486,6 +486,7 @@ including static data (e.g., game text and audio/graphics/maps header files).
 - The Catacomb Apocalypse v1.01 source code release, including static data.
 - The DBOPL emulator from the DOSBox project.
 - A CRC-32 implementation.
+- unlzexe v0.8.
 
 --------------------------------------------
 Additional sources/data used for these ports
@@ -512,7 +513,8 @@ Note that this does not cover the static data included for usage with Ref Keen
 Dreams. However, as an exception to the terms above you may link and distribute
 that data for the purposes of compatibility with the original game.
 
-Furthermore, the included CRC-32 implementation is in the public domain.
+Furthermore, the included CRC-32 implementation is in the public domain. The
+same applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
 
 ---------------------------------------------------------------------------
 Based on the README.md file of the original Keen Dreams source code release
@@ -555,6 +557,10 @@ of DOS games on more recent platforms, but its DBOPL emulator is used for AdLib
 emulation; This also applies to modern source ports, not just DOSBox itself.
 Furthermore, while not necessarily intended for assistance with porting,
 the DOSBox debugger has surely (seriously) been very useful.
+
+* Mitugu (Kou) Kurizono, David Kirschbaum, Toad Hall, Dan Lewis, Alan Modra,
+Vesselin Bontchev (and possibly others) for their contributions leading to
+unlzexe v0.8.
 
 * Craig Bruce for his CRC-32 implementation.
 
