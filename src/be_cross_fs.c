@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <dirent.h>
 #include <fcntl.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -23,7 +22,8 @@
 //#include "be_st.h" // For BE_ST_ExitWithErrorMsg
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
-#include <shlwapi.h>
+#include <shlwapi.h> // SHGetValue
+#include <io.h> // mkdir
 #endif
 
 //#include "be_cross.h"
@@ -33,6 +33,8 @@
 #define BE_CROSS_PATH_LEN_BOUND 256
 #define BE_CROSS_MAX_SEARCH_PATHS 2
 #define BE_CROSS_MAX_GAME_INSTALLATIONS 4
+
+#define BE_ALL_WRITABLE_FILES_DIR "refkeen_internal_files"
 
 typedef enum {
 #ifdef REFKEEN_VER_KDREAMS_SHAR_113
@@ -87,6 +89,7 @@ typedef enum {
 typedef struct {
 	const BE_GameFileDetails_T *reqFiles;
 	const BE_EmbeddedGameFileDetails_T *embeddedFiles;
+	const char *writableFilesDir;
 	const char *exeName;
 	int decompExeSize;
 	BE_ExeCompression_T compressionType;
@@ -96,6 +99,8 @@ typedef struct {
 typedef struct {
 	const char *descStr;
 	char path[BE_CROSS_PATH_LEN_BOUND];
+	char writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
+	char embeddedRsrcPath[BE_CROSS_PATH_LEN_BOUND];
 	BE_GameVer_T verId;
 } BE_GameInstallation_T;
 
@@ -132,6 +137,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse113[
 static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
 	g_be_reqgameverfiles_kdreamse113,
 	g_be_embeddedgameverfiles_kdreamse113,
+	"kdreamse_113",
 	"KDREAMS.EXE",
 	213536,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -164,6 +170,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc105[
 static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
 	g_be_reqgameverfiles_kdreamsc105,
 	g_be_embeddedgameverfiles_kdreamsc105,
+	"kdreamsc_105",
 	"KDREAMS.EXE",
 	202320,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -200,6 +207,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse193[
 static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
 	g_be_reqgameverfiles_kdreamse193,
 	g_be_embeddedgameverfiles_kdreamse193,
+	"kdreamse_193",
 	"KDREAMS.EXE",
 	213200,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -233,6 +241,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse120[
 static const BE_GameVerDetails_T g_be_gamever_kdreamse120 = {
 	g_be_reqgameverfiles_kdreamse120,
 	g_be_embeddedgameverfiles_kdreamse120,
+	"kdreamse_120",
 	"KDREAMS.EXE",
 	214912,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -262,6 +271,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d100[] =
 static const BE_GameVerDetails_T g_be_gamever_cat3d100 = {
 	g_be_reqgameverfiles_cat3d100,
 	g_be_embeddedgameverfiles_cat3d100,
+	"cat3d_100",
 	"CAT3D.EXE",
 	191536,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -293,6 +303,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d122[] =
 static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
 	g_be_reqgameverfiles_cat3d122,
 	g_be_embeddedgameverfiles_cat3d122,
+	"cat3d_122",
 	"CAT3D.EXE",
 	191904,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -365,6 +376,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss113[
 static const BE_GameVerDetails_T g_be_gamever_catabyss113 = {
 	g_be_reqgameverfiles_catabyss113,
 	g_be_embeddedgameverfiles_catabyss113,
+	"catabyss_113",
 	"CATABYSS.EXE",
 	201120,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -429,6 +441,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss124[
 static const BE_GameVerDetails_T g_be_gamever_catabyss124 = {
 	g_be_reqgameverfiles_catabyss124,
 	g_be_embeddedgameverfiles_catabyss124,
+	"catabyss_124",
 	"ABYSGAME.EXE",
 	200848,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -494,6 +507,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catarm102[] 
 static const BE_GameVerDetails_T g_be_gamever_catarm102 = {
 	g_be_reqgameverfiles_catarm102,
 	g_be_embeddedgameverfiles_catarm102,
+	"catarm_102",
 	"ARMGAME.EXE",
 	198304,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -558,6 +572,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catapoc101[]
 static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
 	g_be_reqgameverfiles_catapoc101,
 	g_be_embeddedgameverfiles_catapoc101,
+	"catapoc_101",
 	"APOCGAME.EXE",
 	200064,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -572,6 +587,16 @@ int BE_Cross_putc(int character, BE_FILE_T fp);
 int BE_Cross_getc(BE_FILE_T fp);
 void BE_Cross_close(BE_FILE_T fp);
 
+// WARNING: Do *not* assume this is recursive!!
+static void BEL_Cross_mkdir(const char *path)
+{
+#ifdef REFKEEN_PLATFORM_WINDOWS
+	mkdir(path);
+#else
+	mkdir(path, 0755);
+#endif
+}
+
 // Opens *existing* file from given directory in a case-insensitive manner
 static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const char *searchdir)
 {
@@ -581,6 +606,8 @@ static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteR
 	dir = opendir(searchdir);
 	if (!dir)
 		return NULL;
+
+	char fullpath[BE_CROSS_PATH_LEN_BOUND];
 
 	for (direntry = readdir(dir); direntry; direntry = readdir(dir))
 	{
@@ -592,7 +619,6 @@ static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteR
 				closedir(dir);
 				return NULL;
 			}
-			char fullpath[BE_CROSS_PATH_LEN_BOUND];
 			// FIXME: Yeah, maybe not the most efficient, but shouldn't take that long
 			strcpy(fullpath, searchdir);
 			strcat(fullpath, "/");
@@ -603,7 +629,13 @@ static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteR
 		}
 	}
 	closedir(dir);
-	return NULL;
+	// If tried to open for reading, we return NULL, otherwise we attempt create new file
+	if (!isOverwriteRequest)
+		return NULL;
+	strcpy(fullpath, searchdir);
+	strcat(fullpath, "/");
+	strcat(fullpath, filename);
+	return fopen(fullpath, "wb");
 }
 
 static bool BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const char *searchdir)
@@ -635,15 +667,34 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 	if (g_be_gameinstallations_num >= BE_CROSS_MAX_GAME_INSTALLATIONS)
 		BE_ST_ExitWithErrorMsg("BEL_Cross_ConditionallyAddGameInstallation: Too many game installations!");
 
+	BE_GameInstallation_T *gameInstallation = &g_be_gameinstallations[g_be_gameinstallations_num++];
+	// If used correctly then these SHOULD have enough space
+	strncpy(gameInstallation->path, searchdir, sizeof(gameInstallation->path));
+	gameInstallation->verId = details->verId;
+	gameInstallation->descStr = descStr; // ASSUMPTION: This is a C string literal!!!
+
+	char writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
+
+	strncpy(writableFilesPath, BE_ALL_WRITABLE_FILES_DIR, sizeof(gameInstallation->embeddedRsrcPath));
+	strcat(writableFilesPath, "/");
+	strcat(writableFilesPath, details->writableFilesDir);
+	strcpy(gameInstallation->embeddedRsrcPath, writableFilesPath);
+	strcat(gameInstallation->embeddedRsrcPath, "/");
+	strcat(gameInstallation->embeddedRsrcPath, "embedded");
+
 	unsigned char *decompexebuffer = NULL;
 	char errorMsg[100];
 
 	for (const BE_EmbeddedGameFileDetails_T *embeddedfileDetailsBuffer = details->embeddedFiles; embeddedfileDetailsBuffer->fileDetails.filename; ++embeddedfileDetailsBuffer)
-		// TODO: Pick a better path for this
-		if (!BEL_Cross_CheckGameFileDetails(&embeddedfileDetailsBuffer->fileDetails, "."))
+		if (!BEL_Cross_CheckGameFileDetails(&embeddedfileDetailsBuffer->fileDetails, gameInstallation->embeddedRsrcPath))
 		{
 			if (!decompexebuffer)
 			{
+				// First time we do this, so create dir (creation isn't recursive)
+				BEL_Cross_mkdir(BE_ALL_WRITABLE_FILES_DIR); // Non-recursive
+				BEL_Cross_mkdir(writableFilesPath);
+				BEL_Cross_mkdir(gameInstallation->embeddedRsrcPath);
+
 				FILE *exeFp = BEL_Cross_open_from_dir(details->exeName, false, searchdir);
 				if (!exeFp)
 				{
@@ -678,8 +729,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 					BE_ST_ExitWithErrorMsg(errorMsg);
 				}
 			}
-			// TODO: Again pick a better path for this
-			FILE *outFp = BE_Cross_open_for_overwriting(embeddedfileDetailsBuffer->fileDetails.filename);
+			FILE *outFp = BEL_Cross_open_from_dir(embeddedfileDetailsBuffer->fileDetails.filename, true, gameInstallation->embeddedRsrcPath);
 			if (!outFp)
 			{
 				free(decompexebuffer);
@@ -697,12 +747,6 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 		}
 
 	free(decompexebuffer);
-
-	// If used correctly this SHOULD have enough space
-	strncpy(g_be_gameinstallations[g_be_gameinstallations_num].path, searchdir, sizeof(g_be_gameinstallations[g_be_gameinstallations_num].path));
-	g_be_gameinstallations[g_be_gameinstallations_num].verId = details->verId;
-	g_be_gameinstallations[g_be_gameinstallations_num].descStr = descStr; // ASSUMPTION: This is a C string literal!!!
-	++g_be_gameinstallations_num;
 }
 
 
@@ -723,12 +767,7 @@ BE_FILE_T BE_Cross_open_for_reading(const char *filename)
 // Opens file for overwriting from a "search path" (if exists) in a case-insensitive manner
 BE_FILE_T BE_Cross_open_for_overwriting(const char *filename)
 {
-	BE_FILE_T fp = BEL_Cross_open_from_dir(filename, true, ".");
-	if (fp)
-	{
-		return fp;
-	}
-	return fopen(filename, "wb");
+	return BEL_Cross_open_from_dir(filename, true, ".");
 }
 
 // MICRO-OPTIMIZATION: Not needed for all games
