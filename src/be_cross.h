@@ -66,7 +66,47 @@ inline int BE_Cross_toupper(int c)
 {
 	return ((c >= 'a') && (c <= 'z')) ? (c - 'a' + 'A') : c;
 }
+inline int BE_Cross_tolower(int c)
+{
+	return ((c >= 'A') && (c <= 'Z')) ? (c - 'A' + 'a') : c;
+}
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
+
+/* A safe(r) string copying function that:
+ * - Gets a pointer to the destination buffer's end (little performance bit).
+ * - Returns the END of the written string. (This differs from stdcpy!)
+ * - Is ALLOWED to write past the written string's end, if there's room
+ * (e.g., any additional null terminator).
+ *
+ * ASSUMPTIONS: The pointers do point to valid buffers, there's enough room for
+ * a null terminator, and the source and destination buffers do NOT overlap.
+ */
+inline char *BE_Cross_safeandfastcstringcopy(char *dest, char *destEnd, const char *src)
+{
+	char ch;
+	// We assume that initially, destEnd - dest > 0.
+	do
+	{
+		ch = *src++;
+		*dest++ = ch; // This includes the null terminator if there's the room
+	} while ((dest < destEnd) && ch);
+	// These work in case dest == destEnd, and also if not
+	--dest;
+	*dest = '\0';
+	return dest; // WARNING: This differs from strcpy!!
+}
+
+// A few convenience functions for concatenating multiple strings together
+inline char *BE_Cross_safeandfastcstringcopy_2strs(char *dest, char *destEnd, const char *src0, const char *src1)
+{
+	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1);
+}
+
+inline char *BE_Cross_safeandfastcstringcopy_3strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2)
+{
+	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2);
+}
+
 
 // Often used as a replacement for file handles of type "int",
 // this one is given a different name so it's easy to swap in case of a need

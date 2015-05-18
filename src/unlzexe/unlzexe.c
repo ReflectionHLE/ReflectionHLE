@@ -53,7 +53,7 @@ v0.8  Vesselin Bontchev, bontchev@fbihh.informatik.uni-hamburg.de, Aug 92
 #endif
 #endif
 
-#include "be_cross.h" // For endianness handling
+#include "be_cross.h"
 
 #define FAILURE 1
 #define SUCCESS 0
@@ -403,7 +403,7 @@ static int mkreltbl(FILE *ifile,unsigned char *obuff,int ver) {
     default: i=FAILURE; break;
     }
     if(i!=SUCCESS){
-	printf("error at relocation table.\n");
+	BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "mkreltbl (unlzexe) - error at relocation table.\n");
 	return (FAILURE);
     }
 
@@ -513,18 +513,20 @@ static int unpack(FILE *ifile,unsigned char *obuff){
     unsigned char *obuffptr = obuff+fpos;
     //fseek(ofile,fpos,SEEK_SET);
     initbits(&bits,ifile);
-    printf(" unpacking. ");
+    BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "unpack (unlzexe) - unpacking...\n");
+    //printf(" unpacking. ");
     for(;;){
-	if(ferror(ifile)) {printf("\nread error\n"); return(FAILURE); }
+        if(ferror(ifile)) { BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "unpack (unlzexe) - read error\n"); return(FAILURE); }
+	//if(ferror(ifile)) {printf("\nread error\n"); return(FAILURE); }
 	//if(ferror(ofile)) {printf("\nwrite error\n"); return(FAILURE); }
 	if(p-data>0x4000){
-            memcpy(obuffptr,data,0x2000);
-            obuffptr += 0x2000;
+	    memcpy(obuffptr,data,0x2000);
+	    obuffptr += 0x2000;
 	    //fwrite(data,sizeof data[0],0x2000,ofile);
 	    p-=0x2000;
 	    memmove(data,data+0x2000,p-data);
 	    //memcpy(data,data+0x2000,p-data);
-	    putchar('.');
+	    //putchar('.');
 	}
 	if(getbit(&bits)) {
 	    *p++=getc(ifile);
@@ -564,7 +566,8 @@ static int unpack(FILE *ifile,unsigned char *obuff){
     }
     loadsize = (obuffptr-obuff)-fpos;
     //loadsize=ftell(ofile)-fpos;
-    printf("end\n");
+    BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "unpack (unlzexe) - end\n");
+    //printf("end\n");
     return(SUCCESS);
 }
 

@@ -25,6 +25,8 @@
 #include <stdint.h>
 #include <unistd.h> // For read
 
+#include "be_cross.h"
+
 /*----------------------------------------------------------------------------*\
  *  Local functions
 \*----------------------------------------------------------------------------*/
@@ -119,7 +121,7 @@ int Crc32_ComputeFile( FILE *file, uint32_t *outCrc32 )
         bufLen = fread( buf, 1, CRC_BUFFER_SIZE, file );
         if (bufLen == 0) {
             if (ferror(file)) {
-                fprintf( stderr, "error reading file\n" );
+                BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Crc32_ComputeFile - error reading file\n");
                 goto ERR_EXIT;
             }
             break;

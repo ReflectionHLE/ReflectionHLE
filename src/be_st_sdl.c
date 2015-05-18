@@ -661,8 +661,10 @@ static void BEL_ST_ParseConfig(void)
 #ifdef BE_ST_ENABLE_FARPTR_CFG
 	g_refKeenCfg.farPtrSegOffset = BE_ST_DEFAULT_FARPTRSEGOFFSET;
 #endif
+	// Little hack
+	BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const char *searchdir);
 	// Try to load config
-	FILE *fp = fopen(REFKEEN_CONFIG_FILEPATH, "r");
+	FILE *fp = BEL_Cross_open_from_dir(REFKEEN_CONFIG_FILEPATH, false, ".");
 	if (fp)
 	{
 		char buffer[80];
@@ -689,7 +691,7 @@ static void BEL_ST_ParseConfig(void)
 		fclose(fp);
 	}
 	// Try to save current settings just in case (first time file is created or new fields added)
-	fp = fopen(REFKEEN_CONFIG_FILEPATH, "w");
+	fp = BEL_Cross_open_from_dir(REFKEEN_CONFIG_FILEPATH, true, ".");
 	if (!fp)
 	{
 		return;
