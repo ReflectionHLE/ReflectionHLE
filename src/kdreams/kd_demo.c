@@ -312,9 +312,9 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 		return false;
 	}
 	o->active = (activetype)activeint;
-	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosoffset);
+	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// ANOTHER SPECIAL CASE (for almost all creatures as flowers)
-	o->temp2stateptr = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(o->temp2);
+	o->temp2stateptr = RefKeen_GetObjStatePtrFromDOSPointer(o->temp2);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
 	return true;

@@ -204,20 +204,10 @@ typedef struct {
 
 // (REFKEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
 // objstruct may store a 16-bit pointer with another object.
-// For Keen Dreams CGA v1.05 it should be replicated with the following macros.
-#ifdef REFKEEN_VER_KDREAMS_SHAR_113
-#define COMPAT_OBJ_CONVERSION_OFFSET 0x712A
-#elif defined REFKEEN_VER_KDREAMS_CGA_105
-#define COMPAT_OBJ_CONVERSION_OFFSET 0x7470
-#elif defined REFKEEN_VER_KDREAMS_REG_193
-#define COMPAT_OBJ_CONVERSION_OFFSET 0x707A
-#elif defined REFKEEN_VER_KDREAMS_SHAR_120
-#define COMPAT_OBJ_CONVERSION_OFFSET 0x734C
-#endif
+#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+refkeen_compat_kd_play_objoffset)):(id0_word_t)0)
+#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objarray+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_kd_play_objoffset)/sizeof(objtype)):NULL)
 
-#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+COMPAT_OBJ_CONVERSION_OFFSET))
-#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) (objarray+(id0_word_t)((id0_word_t)(dosptr)-(id0_word_t)COMPAT_OBJ_CONVERSION_OFFSET)/sizeof(objtype))
-
+extern id0_word_t refkeen_compat_kd_play_objoffset;
 extern objtype objarray[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY
 
 
@@ -427,3 +417,6 @@ void SwapWord(id0_unsigned_int_t id0_far *Var);
 void MoveGfxDst(id0_short_t x, id0_short_t y);
 
 #endif
+
+// (REFKEEN) Backwards compatibility: Used for statetype offset conversions.
+extern statetype* (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);

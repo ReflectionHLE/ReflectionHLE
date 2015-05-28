@@ -216,15 +216,10 @@ typedef	enum	{ex_stillplaying,ex_died,ex_warped,ex_resetgame
 // declared as a bidimensional array of objtype pointers, but it is also used
 // to store plain 16-bit integers.
 
-#ifdef REFKEEN_VER_CAT3D_122
-#define COMPAT_OBJ_CONVERSION_OFFSET 0xADB3
-#elif defined REFKEEN_VER_CAT3D_100
-#define COMPAT_OBJ_CONVERSION_OFFSET 0xAAF5
-#endif
+#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objlist)*sizeof(objtype)+refkeen_compat_c3_play_objoffset)):(id0_word_t)0)
+#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objlist+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_c3_play_objoffset)/sizeof(objtype)):NULL)
 
-#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objlist)*sizeof(objtype)+COMPAT_OBJ_CONVERSION_OFFSET)):(id0_word_t)0)
-#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objlist+(id0_word_t)((id0_word_t)(dosptr)-(id0_word_t)COMPAT_OBJ_CONVERSION_OFFSET)/sizeof(objtype)):NULL)
-
+extern id0_word_t refkeen_compat_c3_play_objoffset;
 extern objtype objlist[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY
 
 
@@ -610,3 +605,6 @@ void SpawnMage (id0_int_t tilex, id0_int_t tiley);
 void SpawnNemesis (id0_int_t tilex, id0_int_t tiley);
 void SpawnBounce (id0_int_t tilex, id0_int_t tiley, id0_boolean_t towest);
 void ExplodeWall (id0_int_t tilex, id0_int_t tiley);
+
+// (REFKEEN) Backwards compatibility: Used for statetype offset conversions.
+extern statetype* (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);

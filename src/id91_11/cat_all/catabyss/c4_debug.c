@@ -327,7 +327,8 @@ id0_int_t DebugKeys (void)
 	{
 		displayofs = bufferofs = screenloc[screenpage];
 		CenterWindow (20,5);
-		US_CPrint("\n"GAMENAME);
+		US_CPrint(refkeen_compat_gelib_c4_debug_str_with_gamename);
+		//US_CPrint("\n"GAMENAME);
 		US_CPrint(VERSION);
 		US_CPrint(REVISION);
 		VW_UpdateScreen();

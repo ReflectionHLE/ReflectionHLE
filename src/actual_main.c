@@ -37,8 +37,7 @@ int main(int argc, char **argv)
 	}
 	BE_ST_InitAll();
 	BE_Cross_PrepareGameInstallations();
-	BE_Cross_PrepareSearchPaths();
-	BE_Cross_Compat_FillObjStatesWithDOSPointers(); // Saved games compatibility
+	BE_Cross_SelectGameInstallation();
 	second_main();
 	BE_ST_ShutdownAll();
 	return 0;

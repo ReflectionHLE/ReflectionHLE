@@ -342,11 +342,7 @@ void ScanText (void)
 static  const id0_char_t    *levelnames[] =
 				{
 					"The Approach",
-#ifdef REFKEEN_VER_CAT3D_100
-					"Grelminar's Keep",
-#else
 					"Nemesis's Keep",
-#endif
 					"Ground Floor",
 					"Second Floor",
 					"Third Floor",
@@ -364,11 +360,7 @@ static  const id0_char_t    *levelnames[] =
 					"Chaos Corridors",
 					"The Labyrinth",
 					"Halls of Blood",
-#ifdef REFKEEN_VER_CAT3D_100
-					"Grelminar's Lair"
-#else
 					"Nemesis's Lair"
-#endif
 	// REFKEEN - Vanilla Cat3D behavior reproduction:
 	// If F10+E cheat is used in the very last map, this is called with
 	// the following map, for which no title is shown,
@@ -1272,4 +1264,20 @@ itoa(end-start,str,10);
 
 	} while (1);
 
+}
+
+// (REFKEEN) Used for patching version-specific stuff
+void RefKeen_Patch_c3_game(void)
+{
+	switch (refkeen_current_gamever)
+	{
+	case BE_GAMEVER_CAT3D100:
+		levelnames[1] = "Grelminar's Keep";
+		levelnames[19] = "Grelminar's Lair";
+		break;
+	case BE_GAMEVER_CAT3D122:
+		levelnames[1] = "Nemesis's Keep";
+		levelnames[19] = "Nemesis's Lair";
+		break;
+	}
 }

@@ -384,25 +384,33 @@ void Quit (const id0_char_t *error)
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 //      BE_ST_puts("For techinical assistance with running this software, type HELP at");
 //      BE_ST_puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
-#elif defined REFKEEN_VER_KDREAMS_SHAR_113
-	BE_ST_puts("For techinical assistance with running this software, type HELP at");
-	BE_ST_puts("    the DOS prompt or call Gamer's Edge at 1-318-221-8311");
+#else
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
+	{
+		BE_ST_puts("For techinical assistance with running this software, type HELP at");
+		BE_ST_puts("    the DOS prompt or call Gamer's Edge at 1-318-221-8311");
+	}
 #endif
 	// No additional lines for later versions (registered v1.93, shareware v1.20)
 	BE_ST_HandleExit(1);
   }
 
 // TODO (REFKEEN) Maybe we can define CATALOG based on version?
-#if (defined REFKEEN_VER_KDREAMS_SHAR_113) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
-	id0_argc = 2;
-	id0_argv[1] = "LAST.SHL";
-	id0_argv[2] = "ENDSCN.SCN";
-	id0_argv[3] = NULL;
+#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
+#endif
+	{
+		id0_argc = 2;
+		id0_argv[1] = "LAST.SHL";
+		id0_argv[2] = "ENDSCN.SCN";
+		id0_argv[3] = NULL;
 
-	//if (execv("LOADSCN.EXE", _argv) == -1)
-	//	Quit("Couldn't find executable LOADSCN.EXE.\n");
-	void loadscn2_main(int argc, const char **argv);
-	loadscn2_main(id0_argc+1, id0_argv);
+		//if (execv("LOADSCN.EXE", _argv) == -1)
+		//	Quit("Couldn't find executable LOADSCN.EXE.\n");
+		void loadscn2_main(int argc, const char **argv);
+		loadscn2_main(id0_argc+1, id0_argv);
+	}
 #endif
 
 #if (defined REFKEEN_VER_KDREAMS_CGA_ALL) && (defined CATALOG)
@@ -411,8 +419,11 @@ void Quit (const id0_char_t *error)
 #endif
 
 // For all other versions (registered v1.93, shareware v1.20), just exit
-#if (!defined REFKEEN_VER_KDREAMS_SHAR_113) && (!defined REFKEEN_VER_KDREAMS_CGA_ALL)
-	BE_ST_HandleExit(0);
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	if (refkeen_current_gamever != BE_GAMEVER_KDREAMSE113)
+	{
+		BE_ST_HandleExit(0);
+	}
 #endif
 
 }
@@ -453,9 +464,12 @@ void InitGame (void)
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 		BE_ST_textcolor(7);
 #endif
-#if (defined REFKEEN_VER_KDREAMS_CGA_ALL) || (defined REFKEEN_VER_KDREAMS_SHAR_113)
-		BE_ST_textbackground(0);
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
 #endif
+		{
+			BE_ST_textbackground(0);
+		}
 //#pragma warn    +nod
 //#pragma warn    +pro
 		BE_ST_clrscr();                       // we can't include CONIO because of a name conflict
@@ -537,14 +551,14 @@ void InitGame (void)
 ==========================
 */
 
-#if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
+#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
 static const id0_char_t *EntryParmStrings[] = {"detour",id0_nil_t};
 #endif
 
 // The original starting point of the game EXE
 void kdreams_exe_main (void)
 {
-#if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
+#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
 #endif
@@ -585,66 +599,31 @@ void kdreams_exe_main (void)
 
 
 	// REFKEEN - The code is also in CGA v1.05 but LaunchedFromShell is ignored (while CATALOG is defined)...
-#if (defined REFKEEN_VER_KDREAMS_SHAR_113) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
-//#if (defined REFKEEN_VER_KDREAMS_SHAR_113) || (defined REFKEEN_VER_KDREAMS_CGA_ALL)
-	for (i = 1;i < id0_argc;i++)
+#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
+#endif
 	{
-		switch (US_CheckParm(id0_argv[i],EntryParmStrings))
+		for (i = 1;i < id0_argc;i++)
 		{
-		case 0:
-			LaunchedFromShell = true;
-			break;
+			switch (US_CheckParm(id0_argv[i],EntryParmStrings))
+			{
+			case 0:
+				LaunchedFromShell = true;
+				break;
+			}
 		}
 	}
 #endif
 
 
 
-#if (defined REFKEEN_VER_KDREAMS_REG_193)
-	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE193)
 	{
-		BE_ST_printf("\nKeen Dreams version 1.93  (Rev 1)\n");
-		BE_ST_printf("developed for use with 100%% IBM compatibles\n");
-		BE_ST_printf("that have 640K memory, DOS version 3.3 or later,\n");
-		BE_ST_printf("and an EGA or VGA display adapter.\n");
-		BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n");
-		BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
-		BE_ST_HandleExit(0);
-	}
-
-	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
-	{
-		BE_ST_printf("\nKeen Dreams version 1.93\n");
-		BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
-		BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
-		BE_ST_printf("Type KDREAMS from the DOS prompt to run.\n\n");
-		BE_ST_printf("KDREAMS /COMP for SVGA compatibility mode\n");
-		BE_ST_printf("KDREAMS /NODR stops program hang with the drive still on\n");
-		BE_ST_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
-		BE_ST_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
-		BE_ST_printf("KDREAMS /NOJOYS ignores joystick\n");
-		BE_ST_printf("KDREAMS /NOMOUSE ignores mouse\n");
-		BE_ST_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
-		BE_ST_printf("KDREAMS /VER  for version and compatibility information\n");
-		BE_ST_printf("KDREAMS /? for this help information\n");
-		BE_ST_HandleExit(0);
-	}
-#endif // VERSION
-
-
-
-#ifdef REFKEEN_VER_KDREAMS_SHAR_120
-	for (i = 1;i < id0_argc;i++)
-	{
-		switch (US_CheckParm(id0_argv[i],EntryParmStrings))
+		if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
 		{
-		case 0:
-			LaunchedFromShell = true;
-			break;
-		}
-		if (BE_Cross_strcasecmp(id0_argv[i], "/VER") == 0)
-		{
-			BE_ST_printf("\nKeen Dreams Shareware Version 1.20  (Rev 1)\n");
+			BE_ST_printf("\nKeen Dreams version 1.93  (Rev 1)\n");
 			BE_ST_printf("developed for use with 100%% IBM compatibles\n");
 			BE_ST_printf("that have 640K memory, DOS version 3.3 or later,\n");
 			BE_ST_printf("and an EGA or VGA display adapter.\n");
@@ -653,9 +632,9 @@ void kdreams_exe_main (void)
 			BE_ST_HandleExit(0);
 		}
 
-		if (BE_Cross_strcasecmp(id0_argv[i], "/?") == 0)
+		if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
 		{
-			BE_ST_printf("\nKeen Dreams Shareware Version 1.20\n");
+			BE_ST_printf("\nKeen Dreams version 1.93\n");
 			BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
 			BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
 			BE_ST_printf("Type KDREAMS from the DOS prompt to run.\n\n");
@@ -674,25 +653,75 @@ void kdreams_exe_main (void)
 #endif // VERSION
 
 
-
-#if (defined REFKEEN_VER_KDREAMS_SHAR_ALL) || ((defined REFKEEN_VER_KDREAMS_CGA_ALL) && (!defined CATALOG))
-	// REFKEEN difference from vanilla Keen Dreams (Shareware releases):
-	// Role of /DETOUR has been flipped. No need to pass it (or use START),
-	// but if /DETOUR is added then you get this message.
-	if (LaunchedFromShell)
-	//if (!LaunchedFromShell)
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE120)
 	{
-		BE_ST_clrscr();
-		BE_ST_puts("You must type START at the DOS prompt to run KEEN DREAMS.");
-		BE_ST_HandleExit(0);
+		for (i = 1;i < id0_argc;i++)
+		{
+			switch (US_CheckParm(id0_argv[i],EntryParmStrings))
+			{
+			case 0:
+				LaunchedFromShell = true;
+				break;
+			}
+			if (BE_Cross_strcasecmp(id0_argv[i], "/VER") == 0)
+			{
+				BE_ST_printf("\nKeen Dreams Shareware Version 1.20  (Rev 1)\n");
+				BE_ST_printf("developed for use with 100%% IBM compatibles\n");
+				BE_ST_printf("that have 640K memory, DOS version 3.3 or later,\n");
+				BE_ST_printf("and an EGA or VGA display adapter.\n");
+				BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n");
+				BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
+				BE_ST_HandleExit(0);
+			}
+
+			if (BE_Cross_strcasecmp(id0_argv[i], "/?") == 0)
+			{
+				BE_ST_printf("\nKeen Dreams Shareware Version 1.20\n");
+				BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+				BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
+				BE_ST_printf("Type KDREAMS from the DOS prompt to run.\n\n");
+				BE_ST_printf("KDREAMS /COMP for SVGA compatibility mode\n");
+				BE_ST_printf("KDREAMS /NODR stops program hang with the drive still on\n");
+				BE_ST_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
+				BE_ST_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
+				BE_ST_printf("KDREAMS /NOJOYS ignores joystick\n");
+				BE_ST_printf("KDREAMS /NOMOUSE ignores mouse\n");
+				BE_ST_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
+				BE_ST_printf("KDREAMS /VER  for version and compatibility information\n");
+				BE_ST_printf("KDREAMS /? for this help information\n");
+				BE_ST_HandleExit(0);
+			}
+		}
 	}
 #endif
 
 
+#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	if ((refkeen_current_gamever == BE_GAMEVER_KDREAMSE113) || (refkeen_current_gamever == BE_GAMEVER_KDREAMSE120))
+#endif
+	{
+		// REFKEEN difference from vanilla Keen Dreams (Shareware releases):
+		// Role of /DETOUR has been flipped. No need to pass it (or use START),
+		// but if /DETOUR is added then you get this message.
+		if (LaunchedFromShell)
+		//if (!LaunchedFromShell)
+		{
+			BE_ST_clrscr();
+			BE_ST_puts("You must type START at the DOS prompt to run KEEN DREAMS.");
+			BE_ST_HandleExit(0);
+		}
+	}
+#endif
 
-#if (defined REFKEEN_VER_KDREAMS_REG_193) || (defined REFKEEN_VER_KDREAMS_SHAR_120)
-	BE_ST_textcolor(7);
-	BE_ST_textbackground(0);
+
+#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	if (refkeen_current_gamever != BE_GAMEVER_KDREAMSE113)
+	{
+		BE_ST_textcolor(7);
+		BE_ST_textbackground(0);
+	}
 #endif
 
 

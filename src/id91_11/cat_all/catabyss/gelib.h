@@ -25,19 +25,20 @@
 #define SAVEVER_DATA "0.93"
 #define FILENAME_LEN 15
 
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
+// REFKEEN - Replace with variables that can be dynamically exchanged
+extern const char *refkeen_compat_gelib_gamename;
+extern const char *refkeen_compat_gelib_version;
+extern const char *refkeen_compat_gelib_revision;
+// This includes the null terminator
+extern size_t refkeen_compat_gelib_gamename_strbufflen;
+// A few strings that include gamename
+extern char refkeen_compat_gelib_c4_debug_str_with_gamename[];
+extern char refkeen_compat_gelib_str_with_gamename[];
 
-#define  GAMENAME               "CATACOMB ABYSS  "
-#define VERSION         "V1.13   "
-#define  REVISION               "QA [0]"
-
-#else
-
-#define  GAMENAME               "CATACOMB ABYSS 3-D"
-#define VERSION         "V1.24   "
-#define  REVISION               "1"
-
-#endif
+// REFKEEN - Compatibility/Reference stuff (where possible)
+#define GAMENAME refkeen_compat_gelib_gamename
+#define VERSION refkeen_compat_gelib_version
+#define REVISION refkeen_compat_gelib_revision
 
 //#define BOBLIST 1                          //SP - Undefine if not using BOBList
 

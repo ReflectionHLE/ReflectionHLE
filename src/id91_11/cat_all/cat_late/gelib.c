@@ -1529,7 +1529,7 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 //
 void ReadGameList()
 {
-	NumGames = BE_Cross_GetSortedFilenames((id0_char_t *)GameListNames, MAX_GAMELIST_NAMES+1, FNAME_LEN, ".sav");
+	NumGames = BE_Cross_GetSortedRewritableFilenames_AsUpperCase((id0_char_t *)GameListNames, MAX_GAMELIST_NAMES+1, FNAME_LEN, ".sav");
 #if 0
 	struct ffblk ffblk;
 	id0_short_t done,len;

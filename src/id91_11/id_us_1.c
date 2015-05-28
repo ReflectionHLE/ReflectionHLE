@@ -78,7 +78,7 @@ extern  ScanCode        firescan;
 // 1. Originally ParmStrings, ParmStrings2 were not terminated...
 // Any better way to emulate this? (Probably insignificant)
 // 2. ParmStrings isn't always used, for now don't compile in such cases.
-#if (!defined REFKEEN_VER_CATADVENTURES) && (!defined REFKEEN_VER_CAT3D_122)
+#ifndef REFKEEN_VER_CATADVENTURES
 static const id0_char_t *ParmStrings[] = {"TEDLEVEL","NOWAIT",NULL};
 #endif
 static const id0_char_t *ParmStrings2[] = {"COMP","NOCOMP",NULL};
@@ -436,7 +436,7 @@ USL_CheckSavedGames(void)
 
 				//(read(file,game,sizeof(*game)) == sizeof(*game))
 			&&      (!strcmp(game->signature,EXTENSION))
-			&&	(game->oldtestoffset == COMPAT_US_PRINTX_OFFSET)
+			&&	(game->oldtestoffset == refkeen_compat_id_us_printx_offset)
 			//&&      (game->oldtest == &PrintX)
 			)
 				ok = true;
@@ -555,9 +555,8 @@ US_CheckParm(const id0_char_t *parm,const id0_char_t **strings)
 	return(-1);
 }
 
-// REFKEEN - Disable not just for The Catacomb 3-D Adventures, but also
-// Catacomb 3-D: The Descent v1.22, since we don't link any introscn for this
-#if (!defined REFKEEN_VER_CATADVENTURES) && (!defined REFKEEN_VER_CAT3D_122)
+// REFKEEN - Disable for The Catacomb 3-D Adventures, but not for Catacomb 3-D
+#ifndef REFKEEN_VER_CATADVENTURES
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -773,6 +772,8 @@ US_UpdateTextScreen(void)
 void
 US_FinishTextScreen(void)
 {
+	// REFKEEN - A few bits of code were commented out for Cat3D v1.22,
+	// but this function is never called in v1.22 anyway.
 static  id0_byte_t    colors[] = {4,6,13,15,15,15,15,15,15};
 		id0_boolean_t up;
 		id0_int_t             i,c;
@@ -781,9 +782,9 @@ static  id0_byte_t    colors[] = {4,6,13,15,15,15,15,15,15};
 
 	if (!(tedlevel || NoWait))
 	{
-#ifndef REFKEEN_VER_CAT3D_122
+//#ifndef REFKEEN_VER_CAT3D_122
 		IN_ClearKeysDown();
-#endif
+//#endif
 		for (i = 0,up = true;!IN_UserInput(4,true);)
 		{
 			c = colors[i];
@@ -798,21 +799,21 @@ static  id0_byte_t    colors[] = {4,6,13,15,15,15,15,15,15};
 					i = 1,up = true;
 			}
 
-#ifndef REFKEEN_VER_CAT3D_122
+//#ifndef REFKEEN_VER_CAT3D_122
 			USL_ScreenDraw(29,22," Ready - Press a Key     ",0x00 + c);
-#endif
+//#endif
 		}
 	}
-#ifndef REFKEEN_VER_CAT3D_122
+//#ifndef REFKEEN_VER_CAT3D_122
 	else
 		USL_ScreenDraw(29,22," Ready - Press a Key     ",0x9a);
 	IN_ClearKeysDown();
-#endif
+//#endif
 
 	USL_ClearTextScreen();
 }
 
-#endif // No REFKEEN_VER_CAT3D_122 / REFKEEN_VER_CATADVENTURES
+#endif // REFKEEN_VER_CATADVENTURES
 
 //      Window/Printing routines
 
@@ -1480,4 +1481,50 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 
 	IN_ClearKeysDown();
 	return(result);
+}
+
+// (REFKEEN) Used for patching version-specific stuff
+id0_char_t *introscn;
+id0_word_t refkeen_compat_id_us_printx_offset;
+
+void RefKeen_Patch_id_us(void)
+{
+#ifdef REFKEEN_VER_CAT3D
+	// Just in case this may ever be reloaded
+	BE_Cross_free_mem_loaded_embedded_rsrc(introscn);
+	// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
+	if (BE_Cross_load_embedded_rsrc_to_mem("INTROSCN.SCN", (memptr *)&introscn) < 0)
+		// Similarly we don't use Quit
+		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load INTROSCN.SCN.");
+#endif
+
+	switch (refkeen_current_gamever)
+	{
+#ifdef REFKEEN_VER_CAT3D
+	case BE_GAMEVER_CAT3D100:
+		refkeen_compat_id_us_printx_offset = 0xA24E;
+		break;
+	case BE_GAMEVER_CAT3D122:
+		refkeen_compat_id_us_printx_offset = 0xA50C;
+		break;
+#endif
+#ifdef REFKEEN_VER_CATABYSS
+	case BE_GAMEVER_CATABYSS113:
+		refkeen_compat_id_us_printx_offset = 0xEB23;
+		break;
+	case BE_GAMEVER_CATABYSS124:
+		refkeen_compat_id_us_printx_offset = 0xEAE1;
+		break;
+#endif
+#ifdef REFKEEN_VER_CATARM
+	case BE_GAMEVER_CATARM102:
+		refkeen_compat_id_us_printx_offset = 0x5B14;
+		break;
+#endif
+#ifdef REFKEEN_VER_CATAPOC
+	case BE_GAMEVER_CATAPOC101:
+		refkeen_compat_id_us_printx_offset = 0x5639;
+		break;
+#endif
+	}
 }

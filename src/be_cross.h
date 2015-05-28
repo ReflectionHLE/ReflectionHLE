@@ -124,6 +124,14 @@ BE_FILE_T BE_Cross_open_for_reading(const char *filename);
 BE_FILE_T BE_Cross_open_for_overwriting(const char *filename);
 inline void BE_Cross_close(BE_FILE_T fp) { fclose(fp); }
 
+// Loads a file originally embedded in the EXE (for DOS) to a newly allocated
+// chunk of memory. Should be freed using BE_Cross_free_mem_loaded_file.
+// Returns chunk size if successful, or a negative number in case of failure.
+int BE_Cross_load_embedded_rsrc_to_mem(const char *filename, void **ptr);
+
+// Frees file loaded using BE_Cross_load_file_to_mem. Accepts a NULL pointer.
+void BE_Cross_free_mem_loaded_embedded_rsrc(void *ptr);
+
 // Outputs a list of file names matching given name suffix from a corresponding
 // "search path" (used by an implementation of gelib.c:ReadGameList), sorted
 // alphabetically in a case-insensitive manner (English locale).
@@ -137,11 +145,11 @@ inline void BE_Cross_close(BE_FILE_T fp) { fclose(fp); }
 // maxNum*strLenBound;
 //
 // Returns: Number of filled entries.
-int BE_Cross_GetSortedFilenames(char *outFilenames, int maxNum, int strLenBound, const char *suffix);
+int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int maxNum, int strLenBound, const char *suffix);
 
 // Used preparing game installations and search paths
 void BE_Cross_PrepareGameInstallations(void);
-void BE_Cross_PrepareSearchPaths(void);
+void BE_Cross_SelectGameInstallation(void);
 
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
 size_t BE_Cross_readInt8LE(BE_FILE_T fp, void *ptr);

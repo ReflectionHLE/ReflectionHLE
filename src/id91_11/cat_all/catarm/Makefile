@@ -1,4 +1,4 @@
-VERDIRNAME=catarm102
+VERDIRNAME=catarm
 
 DEBUG=0
 BUILDASCPP=0
@@ -24,12 +24,6 @@ IDOBJ=$(OBJ)/id
 BEOBJ=$(OBJ)/be
 EXTOBJ=$(OBJ)/ext
 
-VERSRC=$(SRC)/$(VERDIRNAME)
-
-# HACK (Kind of)
-RSRCSRC=$(VERSRC)/static
-RSRCOBJ=$(OBJ)/static
-
 OBJECTS=$(OBJ)/c5_act1.o \
         $(OBJ)/c5_act2.o \
         $(OBJ)/c5_act3.o \
@@ -38,7 +32,8 @@ OBJECTS=$(OBJ)/c5_act1.o \
         $(OBJ)/c5_main.o \
         $(OBJ)/c5_play.o \
         $(OBJ)/c5_state.o \
-        $(OBJ)/c5_wiz.o
+        $(OBJ)/c5_wiz.o \
+        $(OBJ)/statetype_ptr_conversion.o
 
 #Shared with The Catacomb Armageddon and Apocalypse
 OBJECTS+= $(OBJ)/c5_debug.o \
@@ -71,7 +66,6 @@ EXTOBJECTS=$(EXTOBJ)/ext_ca.o \
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_fs.o \
-          $(BEOBJ)/be_cross_compat.o \
           $(BEOBJ)/be_cross_doszeroseg.o \
           $(BEOBJ)/be_st_sdl.o \
           $(BEOBJ)/be_st_sdl_audio_timer.o \
@@ -81,14 +75,7 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/dbopl.o \
           $(BEOBJ)/unlzexe.o
 
-#NOTE: Unnecessary resources may be omitted
-RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
-             $(RSRCOBJ)/audiohhd.o \
-             $(RSRCOBJ)/egadict.o \
-             $(RSRCOBJ)/egahead.o \
-             $(RSRCOBJ)/mtemp.o
-
-INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(CATLATECOMMONSRC) -I$(VERSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATARM=1 -DREFKEEN_VER_CATACOMB_ALL=1
+INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(CATLATECOMMONSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATARM=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
 EXENAME=refcatarm-102
 
@@ -122,8 +109,8 @@ all: game
 
 game: $(EXE_PATH)
 
-$(EXE_PATH): $(OBJECTS) $(EXTOBJECTS) $(IDOBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
-	$(CXX) $(OBJECTS) $(EXTOBJECTS) $(IDOBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
+$(EXE_PATH): $(OBJECTS) $(EXTOBJECTS) $(IDOBJECTS) $(BEOBJECTS)
+	$(CXX) $(OBJECTS) $(EXTOBJECTS) $(IDOBJECTS) $(BEOBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
 ifeq ($(DEBUG),0)
 	$(STRIPBIN) $(EXE_PATH)
 endif
@@ -135,9 +122,6 @@ $(BEOBJ)/dbopl.o: $(BESRC)/opl/dbopl.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(BEOBJ)/unlzexe.o: $(BESRC)/unlzexe/unlzexe.c | $(BEOBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-
-$(BEOBJ)/be_cross_compat.o: $(VERSRC)/be_cross_compat.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
@@ -163,11 +147,7 @@ $(OBJ)/c3_trace.o: $(C3DCOMMONSRC)/c3_trace.c | $(OBJ)
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(RSRCOBJ)/%.o: $(RSRCSRC)/%.c | $(RSRCOBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
-$(RSRCOBJ): | $(OBJ)
-	-mkdir $(RSRCOBJ)
 $(EXTOBJ): | $(OBJ)
 	-mkdir $(EXTOBJ)
 $(BEOBJ): | $(OBJ)
@@ -180,5 +160,5 @@ $(OBJPREFIX):
 	-mkdir $(OBJPREFIX)
 
 clean:
-	-rm -f $(EXE_PATH) $(OBJECTS) $(IDOBJECTS) $(EXTOBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
+	-rm -f $(EXE_PATH) $(OBJECTS) $(IDOBJECTS) $(EXTOBJECTS) $(BEOBJECTS)
 

@@ -16,11 +16,6 @@ OBJPREFIX=obj
 OBJ=$(OBJPREFIX)/$(VERDIRNAME)
 BEOBJ=$(OBJ)/be
 
-VERSRC=$(SRC)/$(VERDIRNAME)
-
-RSRCSRC=$(VERSRC)/static
-RSRCOBJ=$(OBJ)/static
-
 OBJECTS=$(OBJ)/id_ca.o \
         $(OBJ)/id_in.o \
         $(OBJ)/id_mm.o \
@@ -36,12 +31,12 @@ OBJECTS=$(OBJ)/id_ca.o \
         $(OBJ)/kd_demo.o \
         $(OBJ)/kd_keen.o \
         $(OBJ)/kd_main.o \
-        $(OBJ)/kd_play.o
+        $(OBJ)/kd_play.o \
+        $(OBJ)/statetype_ptr_conversion.o
 
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_fs.o \
-          $(BEOBJ)/be_cross_compat.o \
           $(BEOBJ)/be_cross_doszeroseg.o \
           $(BEOBJ)/be_st_sdl.o \
           $(BEOBJ)/be_st_sdl_audio_timer.o \
@@ -51,7 +46,7 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/dbopl.o \
           $(BEOBJ)/unlzexe.o
 
-ifeq ($(EGABUILD), 1)
+ifeq ($(VERDIRNAME), kdreamse)
 OBJECTS+= $(OBJ)/id_vw_ae.o \
           $(OBJ)/gelib.o \
           $(OBJ)/jam_io.o \
@@ -62,41 +57,14 @@ else
 OBJECTS+= $(OBJ)/id_vw_ac.o
 endif
 
-#NOTE: Unnecessary resources may be omitted
-RSRC_OBJECTS=$(RSRCOBJ)/audiodct.o \
-             $(RSRCOBJ)/audiohhd.o \
-             $(RSRCOBJ)/context.o \
-             $(RSRCOBJ)/gametext.o \
-             $(RSRCOBJ)/mapdict.o \
-             $(RSRCOBJ)/maphead.o \
-             $(RSRCOBJ)/story.o
+INTCXXFLAGS=-I$(SRC) -I$(BESRC) -DREFKEEN_VER_KDREAMS=1
 
-ifeq ($(EGABUILD), 1)
-RSRC_OBJECTS+= $(RSRCOBJ)/egadict.o $(RSRCOBJ)/egahead.o
-else
-RSRC_OBJECTS+= $(RSRCOBJ)/cgadict.o $(RSRCOBJ)/cgahead.o
-endif
-
-INTCXXFLAGS=-I$(SRC) -I$(VERSRC) -I$(BESRC) -DREFKEEN_VER_KDREAMS=1
-
-ifeq ($(VERDIRNAME), kdshar113)
-INTCXXFLAGS+= -DREFKEEN_VER_KDREAMS_SHAR_113=1
-EXENAME=refkdreams-shar113
-else ifeq ($(VERDIRNAME), kdcga105)
-INTCXXFLAGS+= -DREFKEEN_VER_KDREAMS_CGA_105=1
-EXENAME=refkdreams-cga105
-else ifeq ($(VERDIRNAME), kdreg193)
-INTCXXFLAGS+= -DREFKEEN_VER_KDREAMS_REG_193=1
-EXENAME=refkdreams-reg193
-else ifeq ($(VERDIRNAME), kdshar120)
-INTCXXFLAGS+= -DREFKEEN_VER_KDREAMS_SHAR_120=1
-EXENAME=refkdreams-shar120
-endif
-
-ifeq ($(EGABUILD), 1)
+ifeq ($(VERDIRNAME), kdreamse)
 INTCXXFLAGS+= -DREFKEEN_VER_KDREAMS_ANYEGA_ALL=1
+EXENAME=refkdreamse
 else
 INTCXXFLAGS+= -DREFKEEN_VER_KDREAMS_CGA_ALL=1 -DREFKEEN_VER_ANY_CGA=1
+EXENAME=refkdreamsc
 endif
 
 ifeq ($(SHARBUILD), 1)
@@ -134,13 +102,13 @@ all: game
 
 game: $(EXE_PATH)
 
-$(EXE_PATH): $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
-	$(CXX) $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
+$(EXE_PATH): $(OBJECTS) $(BEOBJECTS)
+	$(CXX) $(OBJECTS) $(BEOBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
 ifeq ($(DEBUG),0)
 	$(STRIPBIN) $(EXE_PATH)
 endif
 
-$(EXE_PATH): $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
+$(EXE_PATH): $(OBJECTS) $(BEOBJECTS)
 
 $(BEOBJ)/crc32.o: $(BESRC)/crc32/crc32.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
@@ -151,10 +119,7 @@ $(BEOBJ)/dbopl.o: $(BESRC)/opl/dbopl.c | $(BEOBJ)
 $(BEOBJ)/unlzexe.o: $(BESRC)/unlzexe/unlzexe.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
-$(BEOBJ)/be_cross_compat.o: $(VERSRC)/be_cross_compat.c | $(BEOBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-
-ifeq ($(EGABUILD), 1)
+ifeq ($(VERDIRNAME), kdreamse)
 $(OBJ)/gelib.o: $(SRC)/gelib.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(OBJ)/jam_io.o: $(SRC)/jam_io.c | $(OBJ)
@@ -172,11 +137,7 @@ $(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(RSRCOBJ)/%.o: $(RSRCSRC)/%.c | $(RSRCOBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
-$(RSRCOBJ): | $(OBJ)
-	-mkdir $(RSRCOBJ)
 $(BEOBJ): | $(OBJ)
 	-mkdir $(BEOBJ)
 $(OBJ): | $(OBJPREFIX)
@@ -185,5 +146,5 @@ $(OBJPREFIX):
 	-mkdir $(OBJPREFIX)
 
 clean:
-	-rm -f $(EXE_PATH) $(OBJECTS) $(BEOBJECTS) $(RSRC_OBJECTS)
+	-rm -f $(EXE_PATH) $(OBJECTS) $(BEOBJECTS)
 

@@ -626,3 +626,18 @@ nextactor:;
 	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
+// (REFKEEN) Used for patching version-specific stuff
+id0_word_t refkeen_compat_c3_play_objoffset;
+
+void RefKeen_Patch_c3_play(void)
+{
+	switch (refkeen_current_gamever)
+	{
+	case BE_GAMEVER_CAT3D100:
+		refkeen_compat_c3_play_objoffset = 0xAAF5;
+		break;
+	case BE_GAMEVER_CAT3D122:
+		refkeen_compat_c3_play_objoffset = 0xADB3;
+		break;
+	}
+}

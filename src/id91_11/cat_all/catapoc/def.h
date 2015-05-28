@@ -1220,3 +1220,6 @@ void SpawnWarp (id0_int_t tilex, id0_int_t tiley);
 void SpawnFTime(id0_int_t tilex, id0_int_t tiley);
 void SpawnForceField(id0_int_t tilex, id0_int_t tiley);
 void ExplodeWall (id0_int_t tilex, id0_int_t tiley);
+
+// (REFKEEN) Backwards compatibility: Used for statetype offset conversions.
+extern statetype* (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);

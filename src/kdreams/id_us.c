@@ -581,7 +581,23 @@ US_TextScreen(void)
 
 #define	scr_rowcol(y,x)	{sx = (x) - 1;sy = (y) - 1;}
 #define	scr_aputs(s,a)	USL_ScreenDraw(sx,sy,(s),(a))
-#include "id_us_s.c"
+	// REFKEEN - Embed multiple versions of id_us_s.c
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
+#include "id_us_s_kdreams192andlater.c" // Also used in versions 1.05 and 1.93
+#else
+	switch (refkeen_current_gamever)
+	{
+	case BE_GAMEVER_KDREAMSE113:
+#include "id_us_s_kdreams113.c"
+		break;
+	case BE_GAMEVER_KDREAMSE193:
+#include "id_us_s_kdreams192andlater.c"
+		break;
+	case BE_GAMEVER_KDREAMSE120:
+#include "id_us_s_kdreams120.c"
+		break;
+	}
+#endif // EGA/CGA
 #undef	scr_rowcol
 #undef	scr_aputs
 
@@ -3931,4 +3947,22 @@ US_CheckHighScore(id0_long_t score,id0_word_t other)
 
 	US_DisplayHighScores(n);
 	IN_UserInput(5 * TickBase,false);
+}
+
+// (REFKEEN) Used for patching version-specific stuff
+id0_char_t *gametext, *context, *story;
+
+void RefKeen_Patch_id_us(void)
+{
+	// Just in case these may ever be reloaded
+	BE_Cross_free_mem_loaded_embedded_rsrc(gametext);
+	BE_Cross_free_mem_loaded_embedded_rsrc(context);
+	BE_Cross_free_mem_loaded_embedded_rsrc(story);
+	// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
+	if (!BE_Cross_load_embedded_rsrc_to_mem("GAMETEXT."EXTENSION, (memptr *)&gametext) ||
+	    !BE_Cross_load_embedded_rsrc_to_mem("CONTEXT."EXTENSION, (memptr *)&context) ||
+	    !BE_Cross_load_embedded_rsrc_to_mem("STORY."EXTENSION, (memptr *)&story)
+	)
+		// Similarly we don't use Quit
+		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load at least one file.");
 }

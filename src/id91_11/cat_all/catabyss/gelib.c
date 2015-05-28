@@ -45,7 +45,9 @@ id0_char_t GameListNames[MAX_GAMELIST_NAMES+1][FNAME_LEN],current_disk=1;
 id0_short_t NumGames = 0; // REFKEEN - Set to 0 here rather than in c*_main.c
 id0_short_t PPT_LeftEdge=0,PPT_RightEdge=320;
 id0_boolean_t LeaveDriveOn=false,ge_textmode=true;
-id0_char_t Filename[FILENAME_LEN+1], ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DATA)];
+// REFKEEN - GAMENAME depends on the version now so put some good max.,
+// which is checked in RefKeen_Patch_gelib
+id0_char_t Filename[FILENAME_LEN+1], ID[19/*sizeof(GAMENAME)*/], VER[sizeof(SAVEVER_DATA)];
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -610,7 +612,7 @@ void GE_SaveGame()
 	if (BE_Cross_IsFileValid(handle))
 	//if (handle!=-1)
 	{
-		if ((BE_Cross_writeInt8LEBuffer(handle, GAMENAME, sizeof(GAMENAME)) != sizeof(GAMENAME)) ||  (BE_Cross_writeInt8LEBuffer(handle, SAVEVER_DATA, sizeof(SAVEVER_DATA)) != sizeof(SAVEVER_DATA)))
+		if ((BE_Cross_writeInt8LEBuffer(handle, refkeen_compat_gelib_gamename, refkeen_compat_gelib_gamename_strbufflen) != refkeen_compat_gelib_gamename_strbufflen) ||  (BE_Cross_writeInt8LEBuffer(handle, SAVEVER_DATA, sizeof(SAVEVER_DATA)) != sizeof(SAVEVER_DATA)))
 		//if ((!CA_FarWrite(handle,(void far *)GAMENAME,sizeof(GAMENAME))) || (!CA_FarWrite(handle,(void far *)SAVEVER_DATA,sizeof(SAVEVER_DATA))))
 		{
 			if (!screenfaded)
@@ -679,7 +681,8 @@ id0_boolean_t GE_LoadGame()
 	BE_FILE_T handle;
 
 	IN_ClearKeysDown();
-	memset(ID,0,sizeof(ID));
+	memset(ID,0,refkeen_compat_gelib_gamename_strbufflen);
+	//memset(ID,0,sizeof(ID));
 	memset(VER,0,sizeof(VER));
 	VW_FixRefreshBuffer();
 	ReadGameList();
@@ -738,7 +741,8 @@ id0_boolean_t GE_LoadGame()
 	if (BE_Cross_IsFileValid(handle))
 	//if (handle==-1)
 	{
-		if ((!CA_FarRead(handle,(id0_byte_t id0_far *)&ID,sizeof(ID))) || (!CA_FarRead(handle,(id0_byte_t id0_far *)&VER,sizeof(VER))))
+		if ((!CA_FarRead(handle,(id0_byte_t id0_far *)&ID,refkeen_compat_gelib_gamename_strbufflen)) || (!CA_FarRead(handle,(id0_byte_t id0_far *)&VER,sizeof(VER))))
+		//if ((!CA_FarRead(handle,(id0_byte_t id0_far *)&ID,sizeof(ID))) || (!CA_FarRead(handle,(id0_byte_t id0_far *)&VER,sizeof(VER))))
 		{
 			BE_Cross_close(handle); // REFKEEN - Avoid resource leak and implementation-defined behaviors
 			return(false);
@@ -747,7 +751,8 @@ id0_boolean_t GE_LoadGame()
 		if ((strcmp(ID,GAMENAME)) || (strcmp(VER,SAVEVER_DATA)))
 		{
 			US_CenterWindow(32,4);
-			US_CPrintLine("That isn't a "GAMENAME, NULL);
+			US_CPrintLine(refkeen_compat_gelib_str_with_gamename, NULL);
+			//US_CPrintLine("That isn't a "GAMENAME, NULL);
 			US_CPrintLine(".SAV file.", NULL);
 			US_CPrintLine("Press SPACE to continue.", NULL);
 			VW_UpdateScreen();
@@ -2021,7 +2026,7 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 //
 void ReadGameList()
 {
-	NumGames = BE_Cross_GetSortedFilenames((id0_char_t *)GameListNames, MAX_GAMELIST_NAMES+1, FNAME_LEN, ".sav");
+	NumGames = BE_Cross_GetSortedRewritableFilenames_AsUpperCase((id0_char_t *)GameListNames, MAX_GAMELIST_NAMES+1, FNAME_LEN, ".sav");
 #if 0
 	struct ffblk ffblk;
 	id0_short_t done,len;
@@ -2828,3 +2833,38 @@ id0_unsigned_char_t id0_huge *GE_DecompressToRAM(id0_char_t *SourceFile, id0_uns
 }
 
 #endif
+
+// (REFKEEN) Used for patching version-specific stuff
+const char *refkeen_compat_gelib_gamename;
+const char *refkeen_compat_gelib_version;
+const char *refkeen_compat_gelib_revision;
+size_t refkeen_compat_gelib_gamename_strbufflen;
+char refkeen_compat_gelib_c4_debug_str_with_gamename[20];
+char refkeen_compat_gelib_str_with_gamename[32];
+
+void RefKeen_Patch_gelib(void)
+{
+	switch (refkeen_current_gamever)
+	{
+	case BE_GAMEVER_CATABYSS113:
+		refkeen_compat_gelib_gamename = "CATACOMB ABYSS  ";
+		refkeen_compat_gelib_version = "V1.13   ";
+		refkeen_compat_gelib_revision = "QA [0]";
+		break;
+	case BE_GAMEVER_CATABYSS124:
+		refkeen_compat_gelib_gamename = "CATACOMB ABYSS 3-D";
+		refkeen_compat_gelib_version = "V1.24   ";
+		refkeen_compat_gelib_revision = "1";
+		break;
+	}
+	refkeen_compat_gelib_gamename_strbufflen = 1+strlen(refkeen_compat_gelib_gamename);
+	// Make this sanity checks, because the size of the ID array was originally sizeof(GAMENAME)
+	if (sizeof(ID) < refkeen_compat_gelib_gamename_strbufflen)
+		// Don't use Quit; It may fail to work as expected.
+		BE_ST_ExitWithErrorMsg("RefKeen_Patch_gelib - ID string buffer is too small.");
+
+	if ((snprintf(refkeen_compat_gelib_c4_debug_str_with_gamename, sizeof(refkeen_compat_gelib_c4_debug_str_with_gamename), "\n%s", refkeen_compat_gelib_gamename) >= (int)sizeof(refkeen_compat_gelib_c4_debug_str_with_gamename)) ||
+	    (snprintf(refkeen_compat_gelib_str_with_gamename, sizeof(refkeen_compat_gelib_str_with_gamename), "That isn't a %s", refkeen_compat_gelib_gamename) >= (int)sizeof(refkeen_compat_gelib_str_with_gamename))
+	)
+		BE_ST_ExitWithErrorMsg("RefKeen_Patch_gelib - String buffer containing GAMENAME is too small.");
+}

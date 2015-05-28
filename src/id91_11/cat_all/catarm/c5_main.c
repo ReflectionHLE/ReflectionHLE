@@ -267,7 +267,7 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 		return false;
 	}
 	o->active = (activetype)activeint;
-	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosfarptr);
+	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosfarptr);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
 	return true;

@@ -17,8 +17,13 @@
  */
 
 // C3_MAIN.C
+
+// REFKEEN - Use replacement for the CATALOG macro
+// (originally present in v1.24 but not v1.13)
+#if 0
 #ifndef REFKEEN_VER_CATABYSS_SHAR_ALL
 #define CATALOG
+#endif
 #endif
 
 
@@ -29,6 +34,10 @@
 #include "gelib.h"
 //#pragma hdrstop
 //#include <dir.h>
+
+// REFKEEN - Use replacement for the CATALOG macro
+// (originally present in v1.24 but not v1.13)
+extern id0_boolean_t refkeen_compat_c4_main_def_catalog;
 
 /*
 =============================================================================
@@ -219,7 +228,7 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 		return false;
 	}
 	o->active = (activetype)activeint;
-	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosoffset);
+	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
 	return true;
@@ -641,10 +650,8 @@ void InitGame (void)
 void Quit (const id0_char_t *error, ...)
 {
 	id0_short_t exit_code=0;
-#ifndef CATALOG
 	void *finscreen;
 	//id0_unsigned_t	finscreen;
-#endif
 
 	va_list ap;
 
@@ -653,11 +660,12 @@ void Quit (const id0_char_t *error, ...)
 	if (!error)
 	{
 		CA_SetAllPurge ();
-#ifndef CATALOG
-		CA_CacheGrChunk (PIRACY);
-		finscreen = grsegs[PIRACY];
-		//finscreen = (id0_unsigned_t)grsegs[PIRACY];
-#endif
+		if (!refkeen_compat_c4_main_def_catalog)
+		{
+			CA_CacheGrChunk (PIRACY);
+			finscreen = grsegs[PIRACY];
+			//finscreen = (id0_unsigned_t)grsegs[PIRACY];
+		}
 	}
 	ShutdownId ();
 
@@ -667,50 +675,48 @@ void Quit (const id0_char_t *error, ...)
 		exit_code = 1;
 	}
 
-#ifndef CATALOG
-
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL // ...
-	else if (!NoWait)
-#else
-	else
-#endif
+	else if (!refkeen_compat_c4_main_def_catalog)
 	{
-		memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 4000);
-		BE_ST_MarkGfxForUpdate();
-		//movedata (finscreen,0,0xb800,0,4000);
-#ifndef REFKEEN_VER_CATABYSS_SHAR_ALL
-		if (BE_ST_KbHit())
+		if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS124) || !NoWait)
 		{
-			while (BE_ST_KbHit())
-				BE_ST_BiosScanCode(0);
+			memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 4000);
+			BE_ST_MarkGfxForUpdate();
+			//movedata (finscreen,0,0xb800,0,4000);
+			if (refkeen_current_gamever == BE_GAMEVER_CATABYSS124)
+			{
+				if (BE_ST_KbHit())
+				{
+					while (BE_ST_KbHit())
+						BE_ST_BiosScanCode(0);
+				}
+			}
+			BE_ST_BiosScanCode(0);
 		}
-#endif
-		BE_ST_BiosScanCode(0);
 	}
-#endif
 
 	va_end(ap);
 
-#ifndef CATALOG
-	if (!error)
+	if (!refkeen_compat_c4_main_def_catalog)
 	{
-
-		id0_argc = 2;
-		id0_argv[1] = "LAST.SHL";
-		id0_argv[2] = "ENDSCN.SCN";
-		id0_argv[3] = NULL;
-#if 0
-		if (execv("LOADSCN.EXE", id0_argv) == -1)
+		if (!error)
 		{
-			BE_ST_clrscr();
-			BE_ST_puts("Couldn't find executable LOADSCN.EXE.\n");
-			BE_ST_HandleExit(1);
+
+			id0_argc = 2;
+			id0_argv[1] = "LAST.SHL";
+			id0_argv[2] = "ENDSCN.SCN";
+			id0_argv[3] = NULL;
+	#if 0
+			if (execv("LOADSCN.EXE", id0_argv) == -1)
+			{
+				BE_ST_clrscr();
+				BE_ST_puts("Couldn't find executable LOADSCN.EXE.\n");
+				BE_ST_HandleExit(1);
+			}
+	#endif
+			void id0_loadscn_exe_main(void);
+			id0_loadscn_exe_main();
 		}
-#endif
-		void id0_loadscn_exe_main(void);
-		id0_loadscn_exe_main();
 	}
-#endif
 
 	BE_ST_HandleExit(exit_code);
 }
@@ -1021,11 +1027,14 @@ void abysgame_exe_main (void)
 			break;
 
 			case 2:
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-				BE_ST_printf("%s   %s   %s\n",GAMENAME,VERSION,REVISION);
-#else
-				BE_ST_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
-#endif
+				if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
+				{
+					BE_ST_printf("%s   %s   %s\n",GAMENAME,VERSION,REVISION);
+				}
+				else
+				{
+					BE_ST_printf("%s  %s  rev %s\n",GAMENAME,VERSION,REVISION);
+				}
 				BE_ST_HandleExit(0);
 			break;
 
@@ -1041,11 +1050,14 @@ void abysgame_exe_main (void)
 	if (!LaunchedFromShell)
 	{
 		BE_ST_clrscr();
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-		BE_ST_puts("You must type START at the DOS prompt to run CATACOMB ABYSS.");
-#else
-		BE_ST_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
-#endif
+		if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
+		{
+			BE_ST_puts("You must type START at the DOS prompt to run CATACOMB ABYSS.");
+		}
+		else
+		{
+			BE_ST_puts("You must type CATABYSS at the DOS prompt to run CATACOMB ABYSS 3-D.");
+		}
 		BE_ST_HandleExit(0);
 	}
 
@@ -1061,4 +1073,20 @@ void abysgame_exe_main (void)
 
 	DemoLoop();
 	Quit(NULL);
+}
+
+// (REFKEEN) Used for patching version-specific stuff
+id0_boolean_t refkeen_compat_c4_main_def_catalog;
+
+void RefKeen_Patch_c4_main(void)
+{
+	switch (refkeen_current_gamever)
+	{
+	case BE_GAMEVER_CATABYSS113:
+		refkeen_compat_c4_main_def_catalog = false;
+		break;
+	case BE_GAMEVER_CATABYSS124:
+		refkeen_compat_c4_main_def_catalog = true;
+		break;
+	}
 }

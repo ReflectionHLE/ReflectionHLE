@@ -203,7 +203,7 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 		return false;
 	}
 	o->active = (activetype)activeint;
-	o->state = (statetype *)BE_Cross_Compat_GetObjStatePtrFromDOSPointer(statedosoffset);
+	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
 	return true;
@@ -478,9 +478,11 @@ void InitGame (void)
 	id0_int_t			i,x,y;
 	id0_unsigned_t	*blockstart;
 
-#ifdef REFKEEN_VER_CAT3D_100
-	US_TextScreen();
-#endif
+	if (refkeen_current_gamever == BE_GAMEVER_CAT3D100)
+	{
+		US_TextScreen();
+	}
+
 	MM_Startup ();
 	VW_Startup ();
 #ifndef PROFILE
@@ -488,9 +490,10 @@ void InitGame (void)
 	SD_Startup ();
 #endif
 	US_Startup ();
-#ifdef REFKEEN_VER_CAT3D_100
-	US_UpdateTextScreen();
-#endif
+	if (refkeen_current_gamever == BE_GAMEVER_CAT3D100)
+	{
+		US_UpdateTextScreen();
+	}
 	CA_Startup ();
 	US_Setup ();
 
@@ -540,9 +543,10 @@ void InitGame (void)
 	SetupScaling ();
 
 #ifndef PROFILE
-#ifdef REFKEEN_VER_CAT3D_100
-	US_FinishTextScreen();
-#endif
+	if (refkeen_current_gamever == BE_GAMEVER_CAT3D100)
+	{
+		US_FinishTextScreen();
+	}
 #endif
 
 //
@@ -592,20 +596,19 @@ void clrscr (void);		// can't include CONIO.H because of name conflicts...
 
 void Quit (const id0_char_t *error)
 {
-#ifdef REFKEEN_VER_CAT3D_100
 	void *finscreen;
 	//id0_unsigned_t	finscreen;
-#endif
 
-#ifdef REFKEEN_VER_CAT3D_100
-	if (!error)
+	if (refkeen_current_gamever == BE_GAMEVER_CAT3D100)
 	{
-		CA_SetAllPurge ();
-		CA_CacheGrChunk (PIRACY);
-		finscreen = grsegs[PIRACY];
-		//finscreen = (id0_unsigned_t)grsegs[PIRACY];
+		if (!error)
+		{
+			CA_SetAllPurge ();
+			CA_CacheGrChunk (PIRACY);
+			finscreen = grsegs[PIRACY];
+			//finscreen = (id0_unsigned_t)grsegs[PIRACY];
+		}
 	}
-#endif
 
 	ShutdownId ();
 	if (error && *error)
@@ -614,15 +617,16 @@ void Quit (const id0_char_t *error)
 	  BE_ST_HandleExit(1);
 	}
 
-#ifdef REFKEEN_VER_CAT3D_100
-	if (!NoWait)
+	if (refkeen_current_gamever == BE_GAMEVER_CAT3D100)
 	{
-		memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 4000);
-		//movedata (finscreen,0,0xb800,0,4000);
-		BE_ST_BiosScanCode (0);
-		BE_ST_clrscr();
+		if (!NoWait)
+		{
+			memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 4000);
+			//movedata (finscreen,0,0xb800,0,4000);
+			BE_ST_BiosScanCode (0);
+			BE_ST_clrscr();
+		}
 	}
-#endif
 
 	BE_ST_HandleExit(0);
 }
@@ -878,37 +882,38 @@ void cat3d_exe_main (void)
 {
 	//id0_short_t i;
 
-#ifdef REFKEEN_VER_CAT3D_122
-	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
+	if (refkeen_current_gamever == BE_GAMEVER_CAT3D122)
 	{
-		BE_ST_printf("Catacomb 3-D version 1.22  (Rev 1)\n");
-		BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n");
-		BE_ST_printf("Developed for use with 100%% IBM compatibles\n");
-		BE_ST_printf("that have 640K memory and DOS version 3.3 or later\n");
-		BE_ST_printf("and EGA graphics or better.\n");
-		BE_ST_HandleExit(0);
-	}
+		if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
+		{
+			BE_ST_printf("Catacomb 3-D version 1.22  (Rev 1)\n");
+			BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n");
+			BE_ST_printf("Developed for use with 100%% IBM compatibles\n");
+			BE_ST_printf("that have 640K memory and DOS version 3.3 or later\n");
+			BE_ST_printf("and EGA graphics or better.\n");
+			BE_ST_HandleExit(0);
+		}
 
-	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
-	{
-		BE_ST_printf("Catacomb 3-D version 1.22\n");
-		BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n\n");
-		BE_ST_printf("Syntax:\n");
-		BE_ST_printf("CAT3D [/<switch>]\n\n");
-		BE_ST_printf("Switch       What it does\n");
-		BE_ST_printf("/?           This Information\n");
-		BE_ST_printf("/VER         Display Program Version Information\n");
-		BE_ST_printf("/COMP        Fix problems with SVGA screens\n");
-		BE_ST_printf("/NOAL        No AdLib or SoundBlaster detection\n");
-		BE_ST_printf("/NOJOYS      Tell program to ignore joystick\n");
-		BE_ST_printf("/NOMOUSE     Tell program to ignore mouse\n");
-		BE_ST_printf("/HIDDENCARD  Overrides video detection\n\n");
-		BE_ST_printf("Each switch must include a '/' and multiple switches\n");
-		BE_ST_printf("must be seperated by at least one space.\n\n");
+		if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
+		{
+			BE_ST_printf("Catacomb 3-D version 1.22\n");
+			BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n\n");
+			BE_ST_printf("Syntax:\n");
+			BE_ST_printf("CAT3D [/<switch>]\n\n");
+			BE_ST_printf("Switch       What it does\n");
+			BE_ST_printf("/?           This Information\n");
+			BE_ST_printf("/VER         Display Program Version Information\n");
+			BE_ST_printf("/COMP        Fix problems with SVGA screens\n");
+			BE_ST_printf("/NOAL        No AdLib or SoundBlaster detection\n");
+			BE_ST_printf("/NOJOYS      Tell program to ignore joystick\n");
+			BE_ST_printf("/NOMOUSE     Tell program to ignore mouse\n");
+			BE_ST_printf("/HIDDENCARD  Overrides video detection\n\n");
+			BE_ST_printf("Each switch must include a '/' and multiple switches\n");
+			BE_ST_printf("must be seperated by at least one space.\n\n");
 
-		BE_ST_HandleExit(0);
+			BE_ST_HandleExit(0);
+		}
 	}
-#endif
 	// jabhack(); // REFKEEN - Commented out
 
 	InitGame ();

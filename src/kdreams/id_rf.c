@@ -79,18 +79,10 @@ id0_unsigned_t	SX_T_SHIFT;		// screen x >> ?? = tile EGA = 1, CGA = 2;
 // (REFKEEN) BACKWARDS COMPATIBILITY (DOS EXE build specific):
 // When animated tile step is stored in a map's info plane, use same 16-bit
 // value as in DOS (originally a pointer to a cell of allanims)
-#ifdef REFKEEN_VER_KDREAMS_SHAR_113
-#define COMPAT_ALLANIMS_TABLE_OFFSET 0xC11E
-#elif defined REFKEEN_VER_KDREAMS_CGA_105
-#define COMPAT_ALLANIMS_TABLE_OFFSET 0xC450
-#elif defined REFKEEN_VER_KDREAMS_REG_193
-#define COMPAT_ALLANIMS_TABLE_OFFSET 0xC06E
-#elif defined REFKEEN_VER_KDREAMS_SHAR_120
-#define COMPAT_ALLANIMS_TABLE_OFFSET 0xC340
-#endif
 
-#define COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i) (4*(i)+COMPAT_ALLANIMS_TABLE_OFFSET)
-#define COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(dosptr) (((dosptr)-COMPAT_ALLANIMS_TABLE_OFFSET)/4)
+id0_word_t refkeen_compat_id_rf_allanims_table_offset;
+#define COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i) (4*(i)+refkeen_compat_id_rf_allanims_table_offset)
+#define COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(dosptr) (((dosptr)-refkeen_compat_id_rf_allanims_table_offset)/4)
 
 /*
 =============================================================================
@@ -2389,3 +2381,26 @@ void RF_Refresh (void)
 }
 
 #endif		// GRMODE == CGAGR
+
+// (REFKEEN) Used for patching version-specific stuff
+void RefKeen_Patch_id_rf(void)
+{
+	switch (refkeen_current_gamever)
+	{
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
+	case BE_GAMEVER_KDREAMSC105:
+		refkeen_compat_id_rf_allanims_table_offset = 0xC450;
+		break;
+#else
+	case BE_GAMEVER_KDREAMSE113:
+		refkeen_compat_id_rf_allanims_table_offset = 0xC11E;
+		break;
+	case BE_GAMEVER_KDREAMSE193:
+		refkeen_compat_id_rf_allanims_table_offset = 0xC06E;
+		break;
+	case BE_GAMEVER_KDREAMSE120:
+		refkeen_compat_id_rf_allanims_table_offset = 0xC340;
+		break;
+#endif
+	}
+}

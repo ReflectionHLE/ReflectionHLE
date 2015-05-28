@@ -1450,3 +1450,19 @@ void DisplayStatus (status_flags *stat_flag)
 
 	}
 }
+
+// (REFKEEN) Used for patching version-specific stuff
+id0_word_t refkeen_compat_c4_play_objoffset;
+
+void RefKeen_Patch_c4_play(void)
+{
+	switch (refkeen_current_gamever)
+	{
+	case BE_GAMEVER_CATABYSS113:
+		refkeen_compat_c4_play_objoffset = 0xC303;
+		break;
+	case BE_GAMEVER_CATABYSS124:
+		refkeen_compat_c4_play_objoffset = 0xC2C1;
+		break;
+	}
+}

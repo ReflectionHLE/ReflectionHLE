@@ -1131,7 +1131,7 @@ USL_DoSaveGame(UserItem id0_far *item)
 	game = &Games[n];
 	fontcolor = HiliteColor;
 	VWB_Bar(item->x + 1,item->y + 2,CtlPanelW - 12 - 2,7,BackColor);
-	game->oldtestoffset = COMPAT_US_PRINTX_OFFSET;
+	game->oldtestoffset = refkeen_compat_id_us_printx_offset;
 	//game->oldtest = &PrintX;
 	ok = US_LineInput(item->x + 2,item->y + 2,
 						game->name,game->present? game->name : id0_nil_t,

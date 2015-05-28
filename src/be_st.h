@@ -22,8 +22,8 @@ uint16_t BE_ST_GetJoyButtons(uint16_t joy);
 int16_t BE_ST_KbHit(void);
 int16_t BE_ST_BiosScanCode(int16_t command);
 
-// Used internally, or at least for new errors: Logs to emulated text screen
-// *and* possibly also to somewhere else (e.g., actual stdout). Note that
+// Used internally, or alternatively for new errors: Logs to emulated text
+// screen *and* possibly also somewhere else (e.g., actual stdout). Note that
 // this function does *not* access a variable number of arguments like printf,
 // since format specifiers may differ between the two methods of outputs.
 void BE_ST_ExitWithErrorMsg(const char *msg);

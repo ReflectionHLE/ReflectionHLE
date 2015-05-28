@@ -50,8 +50,8 @@ void TrashProg (const id0_char_t *OutMsg, ...)
 	va_list ap;
 	va_start(ap, OutMsg);
 
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-	if (strcmp(id0_argv[0], "INTRO.EXE"))
+#ifdef REFKEEN_VER_CATABYSS
+	if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && strcmp(id0_argv[0], "INTRO.EXE"))
 	{
 		void loadscn_TrashProg (const id0_char_t *OutMsg, ...);
 		loadscn_TrashProg(OutMsg, ap);

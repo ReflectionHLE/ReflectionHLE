@@ -157,30 +157,6 @@ extern	id0_int_t		US_CheckParm(const id0_char_t *parm,const id0_char_t **strings
 // directory for saved games (probably for picking the compatible ones).
 // But it's a 16-bit pointer, so we use the original offset as-is
 // (for saved game compatibility where needed).
-#ifdef REFKEEN_VER_CAT3D_122
-
-#define COMPAT_US_PRINTX_OFFSET 0xA50C
-
-#elif defined REFKEEN_VER_CAT3D_100
-
-#define COMPAT_US_PRINTX_OFFSET 0xA24E
-
-#elif defined REFKEEN_VER_CATABYSS
-
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
-#define COMPAT_US_PRINTX_OFFSET 0xEB23
-#else
-#define COMPAT_US_PRINTX_OFFSET 0xEAE1
-#endif
-
-#elif defined REFKEEN_VER_CATARM
-
-#define COMPAT_US_PRINTX_OFFSET 0x5B14
-
-#elif defined REFKEEN_VER_CATAPOC
-
-#define COMPAT_US_PRINTX_OFFSET 0x5639
-
-#endif
+extern id0_word_t refkeen_compat_id_us_printx_offset;
 
 #endif

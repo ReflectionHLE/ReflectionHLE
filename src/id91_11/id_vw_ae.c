@@ -199,8 +199,9 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 	// This one is really weird, but looks like STARTTILE8 is really 314,
 	// rather than 315, in the case of the original Catacomb Abyss
 	// Shareware v1.13 EXE (only in ID_VW_AE.ASM, not e.g., C code).
+	// There's a similar difference in the v1.24 EXE.
 	// In practice, though, it looks like STARTTILE8 is never used anyway...
-#ifdef REFKEEN_VER_CATABYSS_SHAR_ALL
+#ifdef REFKEEN_VER_CATABYSS
 	id0_byte_t *tilePtr = (id0_byte_t *)grsegs[STARTTILE8-1]+(tile<<5);
 #else
 	id0_byte_t *tilePtr = (id0_byte_t *)grsegs[STARTTILE8]+(tile<<5);
