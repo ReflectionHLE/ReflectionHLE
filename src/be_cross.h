@@ -70,6 +70,10 @@ inline int BE_Cross_tolower(int c)
 {
 	return ((c >= 'A') && (c <= 'Z')) ? (c - 'A' + 'a') : c;
 }
+inline int BE_Cross_isupper(int c)
+{
+	return ((c >= 'A') && (c <= 'Z'));
+}
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 
 /* A safe(r) string copying function that:
@@ -149,7 +153,8 @@ int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int ma
 
 // Used preparing game installations and search paths
 void BE_Cross_PrepareGameInstallations(void);
-void BE_Cross_SelectGameInstallation(void);
+// gameVer should be BE_GAMEVER_LAST if no specific version is desired
+void BE_Cross_SelectGameInstallation(int gameVerVal);
 
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
 size_t BE_Cross_readInt8LE(BE_FILE_T fp, void *ptr);

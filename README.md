@@ -10,6 +10,10 @@ It may be true that Keen Dreams is a smooth-scrolling 2D platformer game,
 while the Catacombs are 3D first person shooters, but there are still common
 low-level 2D picture and font drawing routines, as well as very similar user
 input and sound routines. Files with such code are often marked "ID Engine".
+This is probably more noticeable if Catacomb 3-D is compared to Keen 4-6,
+given that these games share the same control panel (menu) code
+(including the Paddle War game) and more.
+
 A later revision of the original codebase is also found in Wolfenstein 3D.
 
 Nevertheless, there is still a lot in the 3D Catacomb titles which is not found
@@ -18,7 +22,7 @@ used again.
 
 These source ports aim to reproduce behaviors of original executables
 for DOS, including bugs, at least if it's not too difficult
-(e.g., anything that highly depends on the memory layout).
+(e.g., anything that greatly depends on the memory layout).
 With the exception of The Catacomb Armageddon/Apocalypse, this also includes
 compatibility with saved games for original DOS executables (done per version).
 The Chocolate Doom source port can be considered an inspiration for that.
@@ -34,38 +38,43 @@ are still found, here and there.
 Differences from the original executables
 -----------------------------------------
 
-As of this version, you don't need to execute a separate "START" file in
-order to play a game from any release. But, if relevant, you can emulate
-the behaviors of skipping this in the original release, i.e., get a
-message telling you should type START.
+There are some differences when it comes to the way command-line arguments are
+parsed. The fact that a single EXE may support more than one version of a game
+has an influence on that. Adding the single argument of -? should tell
+the details. For instance, on Windows, in case refkdreamse.exe is,
+chosen, the command should look like this: "refkdreamse -?"
 
-For Keen Dreams it can be done by adding the /detour command line argument,
-e.g., typing "refkdreams-shar113.exe /detour" in a command prompt on Windows.
-This is, by the way, the exact opposite of the behaviors of the original.
+The following arguments are supported by all EXEs:
+-gamever <VER>: Tells to pick a specific game version, if found. A list of
+compatible versions can be shown by running with "-?" as mentioned above.
+-passorigargs <...>: Tells to pass all arguments following -passorigargs to
+a ported codebase, to be handled like to the original DOS executables, although
+there are a few exceptions.
 
-The same applies to The Catacomb Abyss (refcatabyss-113 for Shareware release),
-but may be a bit tricky. Basically, the very first command line argument
-should be (yeah that's no mistake): ^(a@&r`
-Depending on the environment, you may need to escape some characters and/or
-add e.g., quotation marks.
-Again, that's the opposite of the original behaviors. In addition,
-we're actually talking about the behaviors of the INTRO.EXE file (letting you
-choose the difficulty as of v1.13), rather than CATABYSS.EXE (the actual game).
+This one is specific to the Catacomb Adventure Series executables:
+-skipintro: Skips the intro (port of INTRO.EXE from The Catacomb Abyss v1.13,
+or CATABYSS.EXE/CATARM.EXE/CATAPOC.EXE from the supported registered release).
+Instead, the game itself is launched (CATABYSS.EXE in The Catacomb Abyss v1.13
+or ABYSGAME.EXE/ARMGAME.EXE/APOCGAME.EXE in the same registered release).
+
+There are a few modifications from the originals when it comes to the arguments
+following -passorigargs. For one, in the Shareware versions of Keen Dreams,
+there's no need to execute a separate "START" file in order to launch the game.
+However, the behaviors can be emulated by adding the /detour argument, e.g.,
+by typing "refkdreamse.exe -passorigargs /detour". This means that,
+in fact, the behaviors are reversed in comparison to the originals.
+
+The same applies to The Catacomb Adventure Series (intro in the Shareware,
+the game itself for all episodes and supported versions), although it may be
+a bit tricky. Basically, the very first command line argument
+(after -passorigargs) should be (yeah that's no mistake): ^(a@&r`
+Depending on the environment in use, you may need to escape some characters
+and/or add e.g., quotation marks. Again, that's the opposite
+of the original behaviors.
+
 There are also a few differences in regards to memory management when it comes
 to the additional executables of LOADSCN.EXE (which includes the last textual
 screen shown on quit) and INTRO.EXE: They may share some memory in this port.
-
-Furthermore, if you want to skip the intro sequence and get right into the game
-(same behaviors as executing "CATABYSS.EXE ^(a@&r`" for the original, v1.13),
-simply specify /skipintro as the very first command line argument.
-More arguments can be added, with behaviors similar to
-what you'll get with the original DOS EXE.
-
-/skipintro can similarly be used with the supported non-shareware versions of
-the Adventure Series' episodes, identified by the following DOS executables:
-CATABYSS.EXE (intro) and ABYSGAME.EXE (game) for The Catacomb Abyss v1.13,
-CATARM.EXE and ARMGAME.EXE for The Catacomb Armageddon v1.02,
-and CATAPOC.EXE and APOCGAME.EXE for The Catacomb Apocalypse v1.01.
 
 Finally, about INTRO.EXE (or registered CATABYSS.EXE/CATARM.EXE/CATAPOC.EXE)
 and LOADSCN.EXE, source codes for these EXEs had to be manually restored.
@@ -81,13 +90,13 @@ may seem harmless, but a crash and/or other unexpected side-effects may occur.
 What is included
 ----------------
 
-The Keen Dreams port consists of four executables, each of them being
-compatible with a different version of Keen Dreams. The original releases
-supported by the port, using source codes for them, are Shareware (EGA) v1.13,
+The Keen Dreams port consists of two executables, one compatible with a few
+EGA releases, the other with one CGA release. The original releases supported
+by the port, using source codes for them, are Shareware (EGA) v1.13,
 CGA v1.05, Registered (EGA) v1.93 and Shareware (EGA) v1.20.
 
-For Catacomb 3-D, versions 1.00 and 1.22 should be supported. The source code
-release has been modified for the addition of 1.00.
+For Catacomb 3-D, versions 1.00 and 1.22 should be supported. The original
+source code release has been modified for the addition of 1.00.
 
 For The Catacomb Abyss, versions 1.13 (QA [0], Shareware) and 1.24 (rev 1)
 are supported. The source code release has been modified for support of v1.13.
@@ -153,9 +162,9 @@ Furthermore, from the campaign's pages, you may also be able to find links to
 copies of the game already offered for purchase. Note that they may be updated
 as the time passes, and these may further be considered betas at the moment.
 
--------------------------------------------------------------------------
-Where can I get compatible Catacomb game data (updated as of Dec 22 2014)
--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Where can I get compatible Catacombs game data (updated as of Dec 22 2014)
+--------------------------------------------------------------------------
 
 The Catacomb Abyss v1.13 can be downloaded as Shareware from the net. You can
 try any of these links (updated as of December 22):
@@ -164,7 +173,7 @@ http://cd.textfiles.com/maxx/tothemaxpcg/ARCADE/CATABS13.ZIP
 (You want v1.13) http://www.classicdosgames.com/game/The_Catacomb_Abyss.html
 
 Copies of all games from the Catacomb series, including Catacomb 3-D and
-The Catacomb Adventure Series, are currently available from gog.com under
+The Catacomb Adventure Series, are currently available from GOG.com under
 the "Catacombs Pack": http://www.gog.com/game/catacombs_pack
 
 ----------------------
@@ -174,18 +183,18 @@ Making Keen Dreams run
 This requires one of the following releases: Keen Dreams Shareware v1.13,
 CGA v1.05, Registered v1.93, Shareware v1.20.
 
-For the Shareware release, v1.13, and on Windows desktops, you should simply
-drop the files SDL2.dll and refkdreams-shar113.exe along with the files coming
-with this Shareware release (v1.13), and then launch refkdreams-shar113.exe.
+For any of the EGA (i.e., non-CGA) releases, and on Windows desktops, you may
+simply drop the files SDL2.dll and refkdreamse.exe along with the files coming
+with the release in use (say v1.13), and then launch refkdreamse.exe.
 
-Similarly, refkdreams-cga105.exe should be used if playability of
-the CGA release (v1.05) is desired.
+Similarly, refkdreamsc.exe should be used if playability of the CGA release
+(v1.05) is desired.
 
-Other versions should be supported in a similar manner. Note that v1.20
-hasn't been widely available so far, although it is briefly mentioned in
-the Apogee FAQ. Furthermore, based on the source codes release the differences
-between v1.13, v1.93 and v1.20 are quite small, and the two releases of v1.20
-and v1.93 share the same static game data (e.g., common EGA and map headers).
+Note that v1.20 hasn't been widely available so far, although it is briefly
+mentioned in the Apogee FAQ. Furthermore, based on the source codes release
+the differences between v1.13, v1.93 and v1.20 are quite small, and the two
+releases of v1.20 and v1.93 share the same static game data
+(e.g., common EGA and map headers).
 
 Check above for "game data" in order to find a way to obtain compatible data.
 
@@ -195,9 +204,9 @@ Making Catacomb 3-D (The Descent) run
 
 This requires either Catacomb 3-D v1.00 or Catacomb 3-D: The Descent v1.22.
 
-On Windows desktops, you should simply drop the file SDL2.dll, as well as
-refcat3d-100.exe or refcat3d-122.exe (depending on the version) along with
-the files coming with the corresponding release of the game for DOS.
+On Windows desktops, you should simply drop the files SDL2.dll and
+refcat3d.exe, along with the files coming with the corresponding
+release of the game for DOS.
 
 Check above for "game data" in order to find a way to obtain compatible data.
 
@@ -208,15 +217,14 @@ Making any of the Catacomb Adventure Series episodes run
 In order to play The Catacomb Abyss, you need a release of The Catacomb Abyss
 for DOS, either Shareware v1.13 (QA [0]) or v1.24 (rev 1).
 
-On Windows desktops, you should simply drop the files SDL2.dll, and one of
-refcatabyss-113.exe and refcatabyss-124.exe (pick the correct version),
-along with the files coming with the desired release.
+On Windows desktops, you should simply drop the files SDL2.dll and
+refcatabyss.exe, along with the files coming with the desired release.
 
 For The Catacomb Armageddon, version 1.02 (rev 1) is supported, and on Windows,
-you want to use refcatarm-102.exe.
+you want to use refcatarm.exe.
 
 Regarding The Catacomb Apocalypse, version 1.01 (rev 1) is supported, and the
-corresponding Windows EXE is refcatapoc-101.exe.
+corresponding Windows EXE is refcatapoc.exe.
 
 Check above for "game data" in order to find a way to obtain compatible data.
 
@@ -308,7 +316,7 @@ to be shared with these was originally ported from the Catacomb 3-D source code
 (https://github.com/FlatRockSoft/Catacomb3D), with no actual testing.
 CGA routines were preferred, given possible complications with the EGA
 bit planes and multiple read/write modes. While Catacomb 3-D is EGA-only,
-this assisted with the porting of Keen Dreams CGA later.
+this assisted with the porting of Keen Dreams with CGA graphics later.
 
 --------------------------------------------------------
 Alternative Controller Schemes - Why are these available
@@ -474,16 +482,15 @@ two more such subdirectories for The Catacomb Armageddon and Apocalypse.
 - MinGW can be used as well (tested on Linux). If you try to cross-compile
 then you may wish to set PLATFORM=WINDOWS and BINPREFIX accordingly.
 
---------------------------------------
-Original sources/data this is based on
---------------------------------------
+---------------------------------
+Original sources this is based on
+---------------------------------
 
-- Original Keen Dreams source code releases (all supported versions),
-including static data (e.g., game text and audio/graphics/maps header files).
-- Catacomb 3-D v1.22 source code release, including static data.
-- The Catacomb Abyss v1.24 source code release, including static data.
-- The Catacomb Armageddon v1.02 source code release, including static data.
-- The Catacomb Apocalypse v1.01 source code release, including static data.
+- Original Keen Dreams source code releases (all supported versions).
+- Catacomb 3-D v1.22 source code release.
+- The Catacomb Abyss v1.24 source code release.
+- The Catacomb Armageddon v1.02 source code release.
+- The Catacomb Apocalypse v1.01 source code release.
 - The DBOPL emulator from the DOSBox project.
 - A CRC-32 implementation.
 - unlzexe v0.8.
@@ -492,8 +499,8 @@ including static data (e.g., game text and audio/graphics/maps header files).
 Additional sources/data used for these ports
 --------------------------------------------
 
-- Minor source code modifications and static data additions, for reproduction
-of Catacomb 3-D v1.00 and The Catacomb Abyss v1.13.
+- Minor source code modifications, for reproduction of Catacomb 3-D v1.00 and
+The Catacomb Abyss v1.13.
 - Reconstructed source codes for INTRO.EXE/CATABYSS.EXE/CATARM.EXE/CATAPOC.EXE
 (intro with title screen and credits) and LOADSCN.EXE (screens shown on quit),
 a couple of DOS programs distributed with the Catacomb Adventure Series
@@ -509,12 +516,12 @@ Terms of use
 Reflection Keen and the DBOPL emulator are released under the GNU GPLv2+.
 See LICENSE for more details.
 
-Note that this does not cover the static data included for usage with Ref Keen
-Dreams. However, as an exception to the terms above you may link and distribute
-that data for the purposes of compatibility with the original game.
-
 Furthermore, the included CRC-32 implementation is in the public domain. The
 same applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
+
+Note that these terms do not cover any original game data required for usage
+with Reflection Keen, which should be obtained separately. Check above
+for "game data" in order to find a way to obtain compatible data.
 
 ---------------------------------------------------------------------------
 Based on the README.md file of the original Keen Dreams source code release

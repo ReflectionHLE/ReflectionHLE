@@ -91,15 +91,6 @@ void intro_exe_main(void)
 	id0_boolean_t leave_init_sequence = false, leave_pre_skill_selection = false, leave_skill_selection = false, select_saved_game = false;
 	id0_int_t general_loop_var, init_sequence_iters_upperbound;
 	id0_int_t current_page = 0, last_key;
-	// (REFKEEN) DIFFERENCE FROM VANILLA CATACOMB ADVENTURES:
-	// Use this to skip the intro EXE and continue into the game
-	// immediately (with the code that makes it possible to play at all)
-	if (!BE_Cross_strcasecmp(id0_argv[1], "/SKIPINTRO"))
-	{
-		id0_argv[1] = "^(a@&r`";
-		GAMEEXE_MAIN_FUNCNAME ();
-		BE_ST_HandleExit(0);
-	}
 	if (!BE_Cross_strcasecmp(id0_argv[1], "/?"))
 	{
 		BE_ST_clrscr();
@@ -138,7 +129,7 @@ void intro_exe_main(void)
 		havebeep = false;
 #endif
 	// REFKEEN difference from vanilla Catacomb Abyss (Shareware release):
-	// Role of ^(a@&r` for INTRO.EXE has been filled. No need to pass it
+	// Role of ^(a@&r` for INTRO.EXE has been flipped. No need to pass it
 	// (or use start), but if ^(a@&r` is added then you get this message.
 #ifdef REFKEEN_VER_CATABYSS
 	if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
@@ -577,14 +568,17 @@ void intro_TrashProg (const id0_char_t *OutMsg, ...)
 
 	if (!OutMsg)
 	{
+		// REFKEEN difference from vanilla Catacomb Adventures:
+		// Role of ^(a@&r` for game EXE has been flipped. No need to pass it
+		// (or use start/intro EXE), but if ^(a@&r` is added then you may get some message.
 		if (!id0_argv[1])
 		{
-			id0_argv[id0_argc++] = "^(a@&r`";
+			id0_argv[id0_argc++] = "z"/*"^(a@&r`"*/;
 		}
 		else
 		{
 			id0_argv[id0_argc++] = id0_argv[1];
-			id0_argv[1] = "^(a@&r`";
+			id0_argv[1] = "z"/*"^(a@&r`"*/;
 		}
 		id0_argv[id0_argc++] = "/NODR";
 		id0_argv[id0_argc] = NULL;

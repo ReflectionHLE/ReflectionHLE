@@ -72,6 +72,31 @@ typedef struct {
 } BE_GameInstallation_T;
 
 BE_GameVer_T refkeen_current_gamever;
+// These MUST have the same order as in the BE_GameVer_T enum
+const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
+#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
+	"kdreamsc105",
+#endif
+#ifdef REFKEEN_VER_KDREAMS_ANYEGA_ALL
+	"kdreamse113",
+	"kdreamse193",
+	"kdreamse120",
+#endif
+#ifdef REFKEEN_VER_CAT3D
+	"cat3d100",
+	"cat3d122",
+#endif
+#ifdef REFKEEN_VER_CATABYSS
+	"catabyss113",
+	"catabyss124",
+#endif
+#ifdef REFKEEN_VER_CATARM
+	"catarm102",
+#endif
+#ifdef REFKEEN_VER_CATAPOC
+	"catapoc101",
+#endif
+};
 
 static BE_GameInstallation_T* g_be_selectedGameInstallation;
 
@@ -944,15 +969,35 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif
 }
 
-// TODO: This loads just the very first matching installation,
-// and also does more than that
-void BE_Cross_SelectGameInstallation(void)
+// gameVer should be BE_GAMEVER_LAST if no specific version is desired
+void BE_Cross_SelectGameInstallation(int gameVerVal)
 {
-	if (!g_be_gameinstallations_num)
+	if (gameVerVal == BE_GAMEVER_LAST)
 	{
-		BE_ST_ExitWithErrorMsg("BE_Cross_SelectGameInstallation: No compatible game installation found!");
+		if (!g_be_gameinstallations_num)
+		{
+			BE_ST_ExitWithErrorMsg("BE_Cross_SelectGameInstallation: No compatible game installation found!");
+		}
+		g_be_selectedGameInstallation = &g_be_gameinstallations[0];
 	}
-	g_be_selectedGameInstallation = &g_be_gameinstallations[0];
+	else
+	{
+		int gameInstNum;
+		for (gameInstNum = 0; gameInstNum < g_be_gameinstallations_num; ++gameInstNum)
+		{
+			if (g_be_gameinstallations[gameInstNum].verId == gameVerVal)
+			{
+				break;
+			}
+		}
+		if (gameInstNum == g_be_gameinstallations_num)
+		{
+			char errorBuffer[80];
+			BE_Cross_safeandfastcstringcopy_2strs(errorBuffer, errorBuffer+sizeof(errorBuffer), "BE_Cross_SelectGameInstallation: Can't find game installation: ",  refkeen_gamever_strs[gameVerVal]);
+			BE_ST_ExitWithErrorMsg(errorBuffer);
+		}
+		g_be_selectedGameInstallation = &g_be_gameinstallations[gameInstNum];
+	}
 
 	refkeen_current_gamever = g_be_selectedGameInstallation->verId;
 

@@ -2516,8 +2516,8 @@ void Presenter(PresenterInfo *pi)
 
 			first_ch++;
 #ifndef PI_CASE_SENSITIVE
-			*first_ch=toupper(*first_ch);
-			*(first_ch+1)=toupper(*(first_ch+1));
+			*first_ch=BE_Cross_toupper(*first_ch);
+			*(first_ch+1)=BE_Cross_toupper(*(first_ch+1));
 #endif
 			switch (*((id0_unsigned_t id0_far *)first_ch)++)
 			{
@@ -2864,8 +2864,8 @@ void CachePage(id0_char_t id0_far *script)
 		{
 			case PI_CONTROL_CHAR:
 #ifndef PI_CASE_SENSITIVE
-				*script=toupper(*script);
-				*(script+1)=toupper(*(script+1));
+				*script=BE_Cross_toupper(*script);
+				*(script+1)=BE_Cross_toupper(*(script+1));
 #endif
 				switch (*((id0_unsigned_t id0_far *)script)++)
 				{
@@ -2920,7 +2920,7 @@ id0_unsigned_t PI_VALUE(id0_char_t id0_far *ptr,id0_char_t num_nybbles)
 		ch = *ptr++;
 		if (isxdigit(ch))
 			if (isalpha(ch))
-				value |= (toupper(ch)-'A'+10)<<shift;
+				value |= (BE_Cross_toupper(ch)-'A'+10)<<shift;
 			else
 				value |= (ch-'0')<<shift;
 	}
@@ -2969,8 +2969,8 @@ void InitPresenterScript(PresenterInfo *pi)
 		{
 			case PI_CONTROL_CHAR:
 #ifndef PI_CASE_SENSITIVE
-				*script=toupper(*script);
-				*(script+1)=toupper(*(script+1));
+				*script=BE_Cross_toupper(*script);
+				*(script+1)=BE_Cross_toupper(*(script+1));
 #endif
 				switch (*((id0_unsigned_t id0_far *)script)++)
 				{

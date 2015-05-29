@@ -506,10 +506,10 @@ US_CheckParm(const id0_char_t *parm,const id0_char_t **strings)
 				return(i);
 			cp = *p++;
 
-			if (isupper(cs))
-				cs = tolower(cs);
-			if (isupper(cp))
-				cp = tolower(cp);
+			if (BE_Cross_isupper(cs))
+				cs = BE_Cross_tolower(cs);
+			if (BE_Cross_isupper(cp))
+				cp = BE_Cross_tolower(cp);
 		}
 	}
 	return(-1);

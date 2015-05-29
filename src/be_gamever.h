@@ -28,8 +28,11 @@ typedef enum {
 #ifdef REFKEEN_VER_CATAPOC
 	BE_GAMEVER_CATAPOC101,
 #endif
+	BE_GAMEVER_LAST
 } BE_GameVer_T;
 
 extern BE_GameVer_T refkeen_current_gamever;
+// These MUST have the same order as in the BE_GameVer_T enum
+extern const char *refkeen_gamever_strs[BE_GAMEVER_LAST];
 
 #endif // __BE_GAMEVER_H__

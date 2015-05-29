@@ -40,6 +40,7 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 // C99
 int BE_Cross_toupper(int c);
 int BE_Cross_tolower(int c);
+int BE_Cross_isupper(int c);
 char *BE_Cross_safeandfastcstringcopy(char *dest, char *destEnd, const char *src);
 char *BE_Cross_safeandfastcstringcopy_2strs(char *dest, char *destEnd, const char *src0, const char *src1);
 char *BE_Cross_safeandfastcstringcopy_3strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2);

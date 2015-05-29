@@ -1047,7 +1047,11 @@ void abysgame_exe_main (void)
 	if (!BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
 			LaunchedFromShell = true;
 
-	if (!LaunchedFromShell)
+	// REFKEEN difference from vanilla Catacomb Adventures:
+	// Role of ^(a@&r` for game EXE has been flipped. No need to pass it
+	// (or use start/intro EXE), but if ^(a@&r` is added then you may get some message.
+	if (LaunchedFromShell)
+	//if (!LaunchedFromShell)
 	{
 		BE_ST_clrscr();
 		if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)

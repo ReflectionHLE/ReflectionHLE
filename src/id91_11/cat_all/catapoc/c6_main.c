@@ -1184,7 +1184,11 @@ void apocgame_exe_main (void)
 		}
 	}
 
-	if (BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
+	// REFKEEN difference from vanilla Catacomb Adventures:
+	// Role of ^(a@&r` for game EXE has been flipped. No need to pass it
+	// (or use start/intro EXE), but if ^(a@&r` is added then you may get some message.
+	if (!BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
+	//if (BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
 		Quit("You must type CATAPOC to run CATACOMB APOCALYPSE\n");
 
 
