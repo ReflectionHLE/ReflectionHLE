@@ -803,7 +803,9 @@ void Quit (const id0_char_t *error, ...)
 void	TEDDeath(void)
 {
 	ShutdownId();
-	execlp("TED5.EXE","TED5.EXE","/LAUNCH",NULL);
+	// REFKEEN - DISABLED
+	BE_ST_ExitWithErrorMsg("Sorry, but TED5.EXE cannot be launched from game in this source port.");
+	//execlp("TED5.EXE","TED5.EXE","/LAUNCH",NULL);
 }
 
 //===========================================================================
