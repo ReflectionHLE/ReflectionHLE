@@ -34,6 +34,17 @@ The originally released WOLF3D.PRJ file was used as a base for the
 various project files included in this source tree. Each of them can
 be used for building a specific game version out of the ones above.
 
+What is this based on
+---------------------
+
+This codebase is based on the Wolfenstein 3D + Spear of Destiny sources
+as originally released by id Software on 1995. While this release
+includes GAMEPAL.OBJ and SIGNON.OBJ data files, other versions
+of these were extracted from original EXEs.
+
+Alternative GFXV_APO.H definitions were used, taken off the
+Wolf4SDL source port by Moritz "Ripper" Kroll.
+
 How were the project files (and a bit more) modified from the original
 ----------------------------------------------------------------------
 
