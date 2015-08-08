@@ -62,6 +62,13 @@ CP_iteminfo
 	NewEitems={NE_X,NE_Y,11,0,88},
 	NewItems={NM_X,NM_Y,4,2,24};
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define GAMEVER_N3D_SS_OFFSET 1
+#else
+#define GAMEVER_N3D_SS_OFFSET 0
+#endif
+
 #pragma warn -sus
 CP_itemtype GAMEVER_RESTORATION_CONDFARPTR
 MainMenu[]=
@@ -131,7 +138,10 @@ GAMEVER_RESTORATION_CONDFARPTR SndMenu[]=
 	{0,"",0},
 	{0,"",0},
 	{1,STR_NONE,0},
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	{1,STR_DISNEY,0},
+#endif
 	{1,STR_SB,0},
 	{0,"",0},
 	{0,"",0},
@@ -627,9 +637,16 @@ void DrawMainMenu(void)
 ////////////////////////////////////////////////////////////////////
 void CP_ReadThis(void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	StartCPMusic(SONG1_MUS);
+	HelpScreens();
+	StartCPMusic(MENUSONG);
+#else
 	StartCPMusic(CORNER_MUS);
 	HelpScreens();
 	StartCPMusic(MENUSONG);
+#endif
 }
 #endif
 #endif
@@ -736,6 +753,11 @@ int CP_CheckQuick(unsigned scancode)
 				CA_CacheGrChunk(C_CURSOR2PIC);
 				CA_CacheGrChunk(C_DISKLOADING1PIC);
 				CA_CacheGrChunk(C_DISKLOADING2PIC);
+				// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				CA_CacheGrChunk(C_DISKLOADING3PIC);
+				CA_CacheGrChunk(C_DISKLOADING4PIC);
+#endif
 				CA_CacheGrChunk(C_SAVEGAMEPIC);
 				CA_CacheGrChunk(C_MOUSELBACKPIC);
 				#else
@@ -780,6 +802,11 @@ int CP_CheckQuick(unsigned scancode)
 				UNCACHEGRCHUNK(C_CURSOR2PIC);
 				UNCACHEGRCHUNK(C_DISKLOADING1PIC);
 				UNCACHEGRCHUNK(C_DISKLOADING2PIC);
+				// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				UNCACHEGRCHUNK(C_DISKLOADING3PIC);
+				UNCACHEGRCHUNK(C_DISKLOADING4PIC);
+#endif
 				UNCACHEGRCHUNK(C_SAVEGAMEPIC);
 				UNCACHEGRCHUNK(C_MOUSELBACKPIC);
 				#else
@@ -827,6 +854,11 @@ int CP_CheckQuick(unsigned scancode)
 				CA_CacheGrChunk(C_CURSOR2PIC);
 				CA_CacheGrChunk(C_DISKLOADING1PIC);
 				CA_CacheGrChunk(C_DISKLOADING2PIC);
+				// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				CA_CacheGrChunk(C_DISKLOADING3PIC);
+				CA_CacheGrChunk(C_DISKLOADING4PIC);
+#endif
 				CA_CacheGrChunk(C_LOADGAMEPIC);
 				CA_CacheGrChunk(C_MOUSELBACKPIC);
 				#else
@@ -871,6 +903,11 @@ int CP_CheckQuick(unsigned scancode)
 				UNCACHEGRCHUNK(C_CURSOR2PIC);
 				UNCACHEGRCHUNK(C_DISKLOADING1PIC);
 				UNCACHEGRCHUNK(C_DISKLOADING2PIC);
+				// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				UNCACHEGRCHUNK(C_DISKLOADING3PIC);
+				UNCACHEGRCHUNK(C_DISKLOADING4PIC);
+#endif
 				UNCACHEGRCHUNK(C_LOADGAMEPIC);
 				UNCACHEGRCHUNK(C_MOUSELBACKPIC);
 				#else
@@ -983,6 +1020,9 @@ void CP_ViewScores(void)
 #ifdef SPEAR
 	UnCacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 	StartCPMusic (XAWARD_MUS);
+	// *** S3DNA RESTORATION ***
+#elif defined GAMEVER_RESTORATION_N3D_WIS10
+	StartCPMusic (SONG11_MUS);
 #else
 	StartCPMusic (ROSTER_MUS);
 #endif
@@ -1046,7 +1086,20 @@ firstpart:
 				}
 				else
 				{
+					// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+					switch (which/2)
+					{
+						case 1: episode = 3; break;
+						case 2: episode = 7; break;
+						case 3: episode = 12; break;
+						case 4: episode = 17; break;
+						case 5: episode = 23; break;
+						default: episode = 0;
+					}
+#else
 					episode = which/2;
+#endif
 					which = 1;
 				}
 				break;
@@ -1285,6 +1338,8 @@ void CP_Sound(void)
 					DrawSoundMenu();
 				}
 				break;
+			// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 			case 6:
 				if (DigiMode!=sds_SoundSource)
 				{
@@ -1293,7 +1348,8 @@ void CP_Sound(void)
 					ShootSnd();
 				}
 				break;
-			case 7:
+#endif
+			case 7-GAMEVER_N3D_SS_OFFSET:
 				if (DigiMode!=sds_SoundBlaster)
 				{
 					SD_SetDigiDevice(sds_SoundBlaster);
@@ -1305,7 +1361,8 @@ void CP_Sound(void)
 			//
 			// MUSIC
 			//
-			case 10:
+
+			case 10-GAMEVER_N3D_SS_OFFSET:
 				if (MusicMode!=smm_Off)
 				{
 					SD_SetMusicMode(smm_Off);
@@ -1313,7 +1370,7 @@ void CP_Sound(void)
 					ShootSnd();
 				}
 				break;
-			case 11:
+			case 11-GAMEVER_N3D_SS_OFFSET:
 				if (MusicMode!=smm_AdLib)
 				{
 					SD_SetMusicMode(smm_AdLib);
@@ -1362,16 +1419,24 @@ void DrawSoundMenu(void)
 	//
 	if (!AdLibPresent && !SoundBlasterPresent)
 	{
-		SndMenu[2].active=SndMenu[10].active=SndMenu[11].active=0;
+		SndMenu[2].active=SndMenu[10-GAMEVER_N3D_SS_OFFSET].active=SndMenu[11-GAMEVER_N3D_SS_OFFSET].active=0;
 	}
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if (!SoundSourcePresent)
 		SndMenu[6].active=0;
+#endif
 
 	if (!SoundBlasterPresent)
-		SndMenu[7].active=0;
+		SndMenu[7-GAMEVER_N3D_SS_OFFSET].active=0;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!SoundBlasterPresent)
+#else
 	if (!SoundSourcePresent && !SoundBlasterPresent)
+#endif
 		SndMenu[5].active=0;
 
 	DrawMenu(&SndItems,&SndMenu[0]);
@@ -1405,14 +1470,17 @@ void DrawSoundMenu(void)
 				// DIGITIZED SOUND
 				//
 				case 5: if (DigiMode==sds_Off) on=1; break;
+				// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 				case 6: if (DigiMode==sds_SoundSource) on=1; break;
-				case 7: if (DigiMode==sds_SoundBlaster) on=1; break;
+#endif
+				case 7-GAMEVER_N3D_SS_OFFSET: if (DigiMode==sds_SoundBlaster) on=1; break;
 
 				//
 				// MUSIC
 				//
-				case 10: if (MusicMode==smm_Off) on=1; break;
-				case 11: if (MusicMode==smm_AdLib) on=1; break;
+				case 10-GAMEVER_N3D_SS_OFFSET: if (MusicMode==smm_Off) on=1; break;
+				case 11-GAMEVER_N3D_SS_OFFSET: if (MusicMode==smm_AdLib) on=1; break;
 			}
 
 			if (on)
@@ -1802,9 +1870,13 @@ int CalibrateJoystick(void)
 		jb=IN_JoyButtons();
 		if (Keyboard[sc_Escape])
 			return 0;
-		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
-		// This is also skipped in the Apogee EXEs
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
+		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
+		// This is also skipped in the Apogee and S3DNA EXEs
+		//
+		// TODO (RESTORATION) - Was there an earlier revision closer
+		// to WL6APO14 or SODFOR14, but still with the STR_FRWD fix,
+		// on which N3DWIS10 is based?
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -1839,9 +1911,9 @@ int CalibrateJoystick(void)
 		jb=IN_JoyButtons();
 		if (Keyboard[sc_Escape])
 			return 0;
-		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
+		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -3021,6 +3093,8 @@ void CP_Quit(void)
 }
 
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 ////////////////////////////////////////////////////////////////////
 //
 // HANDLE INTRO SCREEN (SYSTEM CONFIG)
@@ -3117,6 +3191,7 @@ void IntroScreen(void)
 	if (SoundSourcePresent)
 		VWB_Bar(164,174,12,2,FILLCOLOR);
 }
+#endif
 
 
 ////////////////////////////////////////////////////////////////////
@@ -3819,9 +3894,9 @@ int Confirm(char GAMEVER_RESTORATION_CONDFARPTR *string)
 			TimeCount=0;
 		}
 
-		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
+		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -4069,12 +4144,15 @@ void DrawMenuGun(CP_iteminfo *iteminfo)
 ///////////////////////////////////////////////////////////////////////////
 void DrawStripes(int y)
 {
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 #ifndef SPEAR
 	VWB_Bar(0,y,320,24,0);
 	VWB_Hlin(0,319,y+22,STRIPE);
 #else
 	VWB_Bar(0,y,320,22,0);
 	VWB_Hlin(0,319,y+23,0);
+#endif
 #endif
 }
 
@@ -4093,6 +4171,33 @@ void CheckForEpisodes(void)
 {
 	struct ffblk f;
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!findfirst("*.N3D",&f,FA_ARCH))
+	{
+		strcpy(extension,"N3D");
+		NewEmenu[2].active =
+		NewEmenu[4].active =
+		NewEmenu[6].active =
+		NewEmenu[8].active =
+		NewEmenu[10].active =
+		EpisodeSelect[1] =
+		EpisodeSelect[2] =
+		EpisodeSelect[3] =
+		EpisodeSelect[4] =
+		EpisodeSelect[5] = 1;
+
+		strcat(configname,extension);
+		strcat(SaveName,extension);
+		strcat(PageFileName,extension);
+		strcat(audioname,extension);
+		strcat(demoname,extension);
+		return;
+	}
+	else
+		Quit("Unable to find data files!\n");
+
+#else
 //
 // JAPANESE VERSION
 //
@@ -4120,6 +4225,7 @@ void CheckForEpisodes(void)
 	else
 		Quit("NO JAPANESE WOLFENSTEIN 3-D DATA FILES to be found!");
 #else
+
 
 //
 // ENGLISH
@@ -4195,8 +4301,11 @@ void CheckForEpisodes(void)
 #endif
 	strcat(endfilename,extension);
 #endif
-#endif
+	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	strcat(demoname,extension);
 #endif
+#endif
+
+#endif // S3DNA RESTORATION
 }

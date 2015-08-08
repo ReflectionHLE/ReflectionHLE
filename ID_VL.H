@@ -84,6 +84,11 @@ void Quit (char *error);
 extern	unsigned	bufferofs;			// all drawing is reletive to this
 extern	unsigned	displayofs,pelpan;	// last setscreen coordinates
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	boolean		vgamodeset;
+#endif
+
 extern	unsigned	screenseg;			// set to 0xa000 for asm convenience
 
 extern	unsigned	linewidth;
@@ -156,9 +161,14 @@ void VL_ScreenToScreen (unsigned source, unsigned dest,int width, int height);
 void VL_MemToScreen (byte far *source, int width, int height, int x, int y);
 void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y);
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void VL_WriteTextCharsWithAttr (char chr, byte attr, int count);
+#else
 void VL_DrawTile8String (char *str, char far *tile8ptr, int printx, int printy);
 void VL_DrawLatch8String (char *str, unsigned tile8ptr, int printx, int printy);
 void VL_SizeTile8String (char *str, int *width, int *height);
+#endif
 void VL_DrawPropString (char *str, unsigned tile8ptr, int printx, int printy);
 void VL_SizePropString (char *str, int *width, int *height, char far *font);
 

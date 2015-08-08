@@ -24,6 +24,11 @@ typedef	struct
 
 //===========================================================================
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	boolean		CA_Started;
+#endif
+
 extern	char		audioname[13];
 
 extern	byte 		_seg	*tinf;

@@ -59,11 +59,17 @@
 #define	readstat()	inportb(alFMStatus)
 
 //	Imports from ID_SD_A.ASM
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	void interrupt		SDL_t0FastAsmService(void),
+						SDL_t0SlowAsmService(void);
+#else
 extern	void			SDL_SetDS(void),
 						SDL_IndicatePC(boolean on);
 extern	void interrupt	SDL_t0ExtremeAsmService(void),
 						SDL_t0FastAsmService(void),
 						SDL_t0SlowAsmService(void);
+#endif
 
 //	Global variables
 	boolean		SoundSourcePresent,
@@ -232,6 +238,8 @@ SDL_SetTimerSpeed(void)
 	word	rate;
 	void interrupt	(*isr)(void);
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if ((DigiMode == sds_PC) && DigiPlaying)
 	{
 		rate = TickBase * 100;
@@ -242,6 +250,9 @@ SDL_SetTimerSpeed(void)
 		(MusicMode == smm_AdLib)
 	||	((DigiMode == sds_SoundSource) && DigiPlaying)
 	)
+#else
+	if (MusicMode == smm_AdLib)
+#endif
 	{
 		rate = TickBase * 10;
 		isr = SDL_t0FastAsmService;
@@ -1107,12 +1118,15 @@ SDL_PlayDigiSegment(memptr addr,word len)
 {
 	switch (DigiMode)
 	{
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case sds_PC:
     	SDL_PCPlaySample(addr,len);
 		break;
 	case sds_SoundSource:
 		SDL_SSPlaySample(addr,len);
 		break;
+#endif
 	case sds_SoundBlaster:
 		SDL_SBPlaySample(addr,len);
 		break;
@@ -1137,17 +1151,23 @@ asm	cli
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 	SoundPositioned = false;
 #endif
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 		SDL_SoundFinished();
+#endif
 
 	switch (DigiMode)
 	{
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case sds_PC:
 		SDL_PCStopSample();
 		break;
 	case sds_SoundSource:
 		SDL_SSStopSample();
 		break;
+#endif
 	case sds_SoundBlaster:
 		SDL_SBStopSample();
 		break;
@@ -1260,17 +1280,20 @@ SDL_DigitizedDone(void)
 		{
 			DigiPlaying = false;
 			DigiLastSegment = false;
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+			// *** S3DNA + SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 			DigiPriority = 0;
 #endif
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 			if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 			{
 				SDL_SoundFinished();
 			}
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#endif
 #ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 			else
+#endif
 				DigiNumber = DigiPriority = 0;
 #endif
 			SoundPositioned = false;
@@ -1296,27 +1319,39 @@ SD_SetDigiDevice(SDSMode mode)
 	case sds_SoundBlaster:
 		if (!SoundBlasterPresent)
 		{
+			// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 			if (SoundSourcePresent)
 				mode = sds_SoundSource;
 			else
+#endif
 				devicenotpresent = true;
 		}
 		break;
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case sds_SoundSource:
 		if (!SoundSourcePresent)
 			devicenotpresent = true;
 		break;
+#endif
 	}
 
 	if (!devicenotpresent)
 	{
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		if (DigiMode == sds_SoundSource)
 			SDL_ShutSS();
+#endif
 
 		DigiMode = mode;
 
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		if (mode == sds_SoundSource)
 			SDL_StartSS();
+#endif
 
 		SDL_SetTimerSpeed();
 	}
@@ -1963,7 +1998,11 @@ SD_Startup(void)
 	if (SD_Started)
 		return;
 
+	GAMEVER_N3D_1ARG_PRINTF("SD_Startup: ");
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	SDL_SetDS();
+#endif
 
 	ssIsTandy = false;
 	ssNoCheck = false;
@@ -2244,6 +2283,8 @@ SD_PlaySound(soundnames sound)
 
 	if ((DigiMode != sds_Off) && (DigiMap[sound] != -1))
 	{
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 		{
 			if (s->priority < SoundPriority)
@@ -2264,6 +2305,7 @@ SD_PlaySound(soundnames sound)
 			SoundPriority = s->priority;
 		}
 		else
+#endif
 		{
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
@@ -2470,6 +2512,10 @@ boolean
 SD_MusicPlaying(void)
 {
 	boolean	result;
+// *** S3DNA RESTORATION *** (TODO DEBUG)
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	_fstrncmp("","",4);
+#endif
 
 	switch (MusicMode)
 	{

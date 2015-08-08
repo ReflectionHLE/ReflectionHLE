@@ -715,11 +715,19 @@ void SetupGameLevel (void)
 //
 // load the level
 //
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	CA_CacheMap (gamestate.mapon);
+
+	mapwidth = mapheaderseg[gamestate.mapon]->width;
+	mapheight = mapheaderseg[gamestate.mapon]->height;
+#else
 	CA_CacheMap (gamestate.mapon+10*gamestate.episode);
 	mapon-=gamestate.episode*10;
 
 	mapwidth = mapheaderseg[mapon]->width;
 	mapheight = mapheaderseg[mapon]->height;
+#endif
 
 	if (mapwidth != 64 || mapheight != 64)
 		Quit ("Map not 64*64!");
@@ -1187,7 +1195,11 @@ void PlayDemo (int demonumber)
 
 #ifdef DEMOSEXTERN
 // debug: load chunk
-#ifndef SPEARDEMO
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	int dems[3]={T_DEMO0,T_DEMO1,T_DEMO2};
+#elif (!defined SPEARDEMO)
+//#ifndef SPEARDEMO
 	int dems[4]={T_DEMO0,T_DEMO1,T_DEMO2,T_DEMO3};
 #else
 	int dems[1]={T_DEMO0};
@@ -1512,6 +1524,10 @@ startplayloop:
 #endif
 			gamestate.keys = 0;
 			DrawKeys ();
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			gamestate.fullmap = false;
+#endif
 			VW_FadeOut ();
 
 			ClearMemory ();
@@ -1563,7 +1579,9 @@ startplayloop:
 
 			gamestate.oldscore = gamestate.score;
 
-#ifndef SPEAR
+			// *** S3DNA RESTORATION ***
+#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+//#ifndef SPEAR
 			//
 			// COMING BACK FROM SECRET LEVEL
 			//
@@ -1583,8 +1601,18 @@ startplayloop:
 				gamestate.mapon = 9;
 #else
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define FROMSECRET1		7
+#define FROMSECRET2		25
+#define GAMEVER_RESTORATION_SECRET1 11
+#define GAMEVER_RESTORATION_SECRET2 29
+#else
 #define FROMSECRET1		3
 #define FROMSECRET2		11
+#define GAMEVER_RESTORATION_SECRET1 18
+#define GAMEVER_RESTORATION_SECRET2 19
+#endif
 
 			//
 			// GOING TO SECRET LEVEL
@@ -1592,19 +1620,35 @@ startplayloop:
 			if (playstate == ex_secretlevel)
 				switch(gamestate.mapon)
 				{
-				 case FROMSECRET1: gamestate.mapon = 18; break;
-				 case FROMSECRET2: gamestate.mapon = 19; break;
+				 case FROMSECRET1: gamestate.mapon = GAMEVER_RESTORATION_SECRET1; break;
+				 case FROMSECRET2: gamestate.mapon = GAMEVER_RESTORATION_SECRET2; break;
+				 // *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				 default:
+					sprintf(str,"GameLoop(): Invalid secret exit on level %d!\n",gamestate.mapon);
+					Quit(str);
+					break;
+#endif
 				}
 			else
 			//
 			// COMING BACK FROM SECRET LEVEL
 			//
-			if (gamestate.mapon == 18 || gamestate.mapon == 19)
+			if (gamestate.mapon == GAMEVER_RESTORATION_SECRET1 || gamestate.mapon == GAMEVER_RESTORATION_SECRET2)
 				switch(gamestate.mapon)
 				{
-				 case 18: gamestate.mapon = FROMSECRET1+1; break;
-				 case 19: gamestate.mapon = FROMSECRET2+1; break;
+				 case GAMEVER_RESTORATION_SECRET1: gamestate.mapon = FROMSECRET1+1; break;
+				 case GAMEVER_RESTORATION_SECRET2: gamestate.mapon = FROMSECRET2+1; break;
 				}
+#endif
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			else
+			//
+			// SKIPPING SECRET LEVEL
+			//
+			if (gamestate.mapon == 10)
+				gamestate.mapon == 12;
 #endif
 			else
 			//

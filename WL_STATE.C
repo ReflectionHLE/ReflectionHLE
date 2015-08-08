@@ -1409,6 +1409,8 @@ boolean CheckSight (objtype *ob)
 	&& deltay > -MINSIGHT && deltay < MINSIGHT)
 		return true;
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 //
 // see if they are looking in the right direction
 //
@@ -1434,6 +1436,7 @@ boolean CheckSight (objtype *ob)
 			return false;
 		break;
 	}
+#endif
 
 //
 // trace a line to check for blocking tiles (corners)
@@ -1542,6 +1545,8 @@ void FirstSighting (objtype *ob)
 		ob->speed *= 3;			// go faster when chasing player
 		break;
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case fakeobj:
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
@@ -1552,6 +1557,7 @@ void FirstSighting (objtype *ob)
 		NewState (ob,&s_fakechase1);
 		ob->speed *= 3;			// go faster when chasing player
 		break;
+#endif
 
 	case mechahitlerobj:
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***

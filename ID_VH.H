@@ -106,8 +106,14 @@ void VH_SetDefaultColors (void);
 #define VW_SetLineWidth		VL_SetLineWidth
 #define VW_ColorBorder	VL_ColorBorder
 #define VW_WaitVBL		VL_WaitVBL
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define VW_FadeIn()		VL_FadeIn(0,255,&gamepal,24);
+#define VW_FadeOut()	VL_FadeOut(0,255,0,0,0,24);
+#else
 #define VW_FadeIn()		VL_FadeIn(0,255,&gamepal,30);
 #define VW_FadeOut()	VL_FadeOut(0,255,0,0,0,30);
+#endif
 #define VW_ScreenToScreen	VL_ScreenToScreen
 #define VW_SetDefaultColors	VH_SetDefaultColors
 void	VW_MeasurePropString (char far *string, word *width, word *height);

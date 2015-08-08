@@ -87,6 +87,14 @@ void DrawSpans (int x1, int x2, int height)
 
 
 
+// *** S3DNA RESTORATION ***
+// TODO IMPLEMENT
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void LoadFloorTiles (int tile)
+{
+}
+#endif
+
 /*
 ===================
 =

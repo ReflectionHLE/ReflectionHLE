@@ -11,6 +11,16 @@
 
 #define MenuFadeOut()	VL_FadeOut(0,255,0,0,51,10)
 
+// *** S3DNA RESTORATION ***
+#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+
+#define BORDCOLOR	0xd9
+#define BORD2COLOR	0xd7
+#define DEACTIVE	0xdb
+#define BKGDCOLOR	0xdd
+
+#define MenuFadeOut()	VL_FadeOut(0,255,30,23,11,8)
+
 #else
 
 #define BORDCOLOR	0x29
@@ -23,6 +33,18 @@
 
 #endif
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+
+#define READCOLOR	0x50
+#define READHCOLOR	0x0f
+#define VIEWCOLOR	0xda
+#define TEXTCOLOR	0xcc
+#define HIGHLIGHT	0xc5
+#define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,8)
+
+#else
+
 #define READCOLOR	0x4a
 #define READHCOLOR	0x47
 #define VIEWCOLOR	0x7f
@@ -30,6 +52,16 @@
 #define HIGHLIGHT	0x13
 #define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,10)
 
+#endif
+
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+
+#define MENUSONG	SONG1_MUS
+#define INTROSONG	ALL_GOOD_MUS
+
+#else
 
 #define MENUSONG	WONDERIN_MUS
 
@@ -38,6 +70,8 @@
 #else
 #define INTROSONG	XTOWER2_MUS
 #endif
+
+#endif // S3DNA RESTORATION
 
 #define SENSITIVE	60
 #define CENTER		SENSITIVE*2
@@ -224,6 +258,10 @@ menuitems
 typedef struct {
 		int kill,secret,treasure;
 		long time;
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		long par;
+#endif
 		} LRstruct;
 
 extern LRstruct LevelRatios[];

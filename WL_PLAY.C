@@ -110,7 +110,69 @@ objtype dummyobj;
 //
 int songs[]=
 {
-#ifndef SPEAR
+ // *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+ //
+ // Episode One
+ //
+ SONG1_MUS,
+ ALL_GOOD_MUS,
+ SONG7_MUS,
+
+ //
+ // Episode Two
+ //
+ SONG3_MUS,
+ SONG1_MUS,
+ ALL_GOOD_MUS,
+ SONG7_MUS,
+
+ //
+ // Episode Three
+ //
+ SONG4_MUS,
+ SONG3_MUS,
+ SONG1_MUS,
+ SONG7_MUS,
+ SONG9_MUS,
+
+ //
+ // Episode Four
+ //
+ SONG6_MUS,
+ SONG4_MUS,
+ ALL_GOOD_MUS,
+ SONG3_MUS,
+ SONG7_MUS,
+
+ //
+ // Episode Five
+ //
+ SONG8_MUS,
+ SONG1_MUS,
+ SONG6_MUS,
+ SONG4_MUS,
+ THEHAPPY_MUS,
+ SONG7_MUS,
+
+ //
+ // Episode Six
+ //
+ SONG11_MUS,
+ ALL_GOOD_MUS,
+ SONG3_MUS,
+ SONG8_MUS,
+ SONG6_MUS,
+ SONG7_MUS,
+ SONG9_MUS,
+
+ //
+ // Finale
+ //
+ ALL_GOOD_MUS
+
+#elif (!defined SPEAR)
+//#ifndef SPEAR
  //
  // Episode One
  //
@@ -1121,7 +1183,12 @@ void StartMusic(void)
 	musicnames	chunk;
 
 	SD_MusicOff();
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	chunk = songs[gamestate.mapon];
+#else
 	chunk = songs[gamestate.mapon+gamestate.episode*10];
+#endif
 
 //	if ((chunk == -1) || (MusicMode != smm_AdLib))
 //DEBUG control panel		return;

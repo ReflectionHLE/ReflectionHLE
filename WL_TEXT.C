@@ -25,7 +25,12 @@ TEXT FORMATTING COMMANDS
 =============================================================================
 */
 
+// *** S3DNA RESTORATION *** - No T_ENDART1
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define BACKCOLOR		0x24
+#else
 #define BACKCOLOR		0x11
+#endif
 
 
 #define WORDLIMIT		80
@@ -739,9 +744,9 @@ void ShowArticle (char far *article)
 			break;
 		}
 
-		// *** APOGEE VERSIONS RESTORATION ***
-		// This is also skipped in the Shareware 1.4 Apogee EXE
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
+		// *** APOGEE VERSIONS + S3NA RESTORATION ***
+		// This is also skipped in these versions
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -759,7 +764,10 @@ void ShowArticle (char far *article)
 #ifndef JAPAN
 #ifdef ARTSEXTERN
 // *** PRE-V1.4 APOGEE RESTORATION *** - Change the the order of appearances endextern and helpextern in the v1.2 EXE's layout (and SPEAR wasn't ready for that)
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+// *** S3DNA RESTORATION *** - No T_ENDART1
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+int		helpextern = T_HELPART;
+#elif defined GAMEVER_RESTORATION_ANY_APO_PRE14
 int		helpextern = T_HELPART;
 int 	endextern = T_ENDART1;
 #else
@@ -767,7 +775,7 @@ int 	endextern = T_ENDART1;
 #ifndef SPEAR
 int		helpextern = T_HELPART;
 #endif
-#endif // GAMEVER_RESTORATION_ANY_APO_PRE14
+#endif // VERSIONS RESTORATION
 #endif
 char helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";
@@ -788,8 +796,11 @@ void HelpScreens (void)
 	memptr		layout;
 
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	CA_UpLevel ();
 	MM_SortMem ();
+#endif
 #ifdef JAPAN
 	ShowArticle (0);
 	VW_FadeOut();
@@ -829,13 +840,18 @@ void HelpScreens (void)
 	VW_FadeOut();
 #endif
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	FreeMusic ();
 	CA_DownLevel ();
 	MM_SortMem ();
 #endif
+#endif
 }
 #endif
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 //
 // END ARTICLES
 //
@@ -913,3 +929,4 @@ void EndText (void)
 	MM_SortMem ();
 #endif
 }
+#endif

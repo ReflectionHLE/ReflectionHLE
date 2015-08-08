@@ -15,6 +15,11 @@
 unsigned	bufferofs;
 unsigned	displayofs,pelpan;
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+boolean		vgamodeset;
+#endif
+
 unsigned	screenseg=SCREENSEG;		// set to 0xa000 for asm convenience
 
 unsigned	linewidth;
@@ -960,6 +965,20 @@ asm	mov	ds,ax
 */
 
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+
+void VL_WriteTextCharsWithAttr (char chr, byte attr, int count)
+{
+asm	mov	ah,9
+asm	mov	al,[chr]
+asm	mov	bh,0
+asm	mov	bl,[attr]
+asm	mov	cx,[count]
+asm	int	0x10
+}
+
+#else
 
 
 /*
@@ -1087,7 +1106,7 @@ void VL_SizeTile8String (char *str, int *width, int *height)
 	*width = 8*strlen(str);
 }
 
-
+#endif // S3DNA RESTORATION
 
 
 

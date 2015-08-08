@@ -75,6 +75,12 @@ struct atkinf
 
 int	strafeangle[9] = {0,90,180,270,45,135,225,315,0};
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+int	episodetable[]   = {1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,5,6,6,6,6,6,6,6,7};
+int	mapnumbertable[] = {1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1};
+#endif
+
 void DrawWeapon (void);
 void GiveWeapon (int weapon);
 void	GiveAmmo (int ammo);
@@ -296,7 +302,9 @@ void DrawFace (void)
 	}
 	else
 	{
-#ifndef SPEAR
+	// *** S3DNA RESTORATION ***
+#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+//#ifndef SPEAR
 	 if (LastAttacker->obclass == needleobj)
 	   StatusDrawPic (17,4,MUTANTBJPIC);
 	 else
@@ -593,7 +601,10 @@ void DrawWeapon (void)
 	temp = bufferofs;
 	bufferofs = 0;
 #endif
+	// *** S3DNA RESTORATION *** (TODO may actually comment out DrawWeapon)
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
+#endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 	bufferofs = temp;
@@ -847,6 +858,8 @@ void GetBonus (statobj_t *check)
 		HealSelf (4);
 		break;
 
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case	bo_gibs:
 		if (gamestate.health >10)
 			return;
@@ -854,6 +867,7 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (SLURPIESND);
 		HealSelf (1);
 		break;
+#endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
@@ -992,7 +1006,9 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 
 void VictoryTile (void)
 {
-#ifndef SPEAR
+	// *** S3DNA RESTORATION ***
+#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+//#ifndef SPEAR
 	SpawnBJVictory ();
 #endif
 
@@ -1152,7 +1168,10 @@ void Cmd_Use (void)
 		else
 #endif
 			playstate = ex_completed;
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		SD_PlaySound (LEVELDONESND);
+#endif
 		SD_WaitSoundDone();
 	}
 	else if (!buttonheld[bt_use] && doornum & 0x80)
@@ -1160,8 +1179,11 @@ void Cmd_Use (void)
 		buttonheld[bt_use] = true;
 		OperateDoor (doornum & ~0x80);
 	}
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	else
 		SD_PlaySound (DONOTHINGSND);
+#endif
 
 }
 

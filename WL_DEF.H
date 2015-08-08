@@ -48,8 +48,14 @@
 
 #define MAXACTORS		150				// max number of nazis, etc / map
 #define MAXSTATS		400				// max number of lamps, bonus, etc
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define MAXDOORS		32				// max number of sliding doors
+#define MAXWALLTILES	32				// max number of wall tiles
+#else
 #define MAXDOORS		64				// max number of sliding doors
 #define MAXWALLTILES	64				// max number of wall tiles
+#endif
 
 //
 // tile constants
@@ -684,6 +690,11 @@ typedef struct doorstruct
 {
 	byte	tilex,tiley;
 	boolean	vertical;
+	// *** S3DNA RESTORATION ***
+	// TODO fill this
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	int	field_4;
+#endif
 	byte	lock;
 	enum	{dr_open,dr_closed,dr_opening,dr_closing}	action;
 	int		ticcount;
@@ -711,6 +722,10 @@ typedef struct objstruct
 	fixed 		x,y;
 	unsigned	tilex,tiley;
 	byte		areanumber;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	byte		snoozeframe;		// 2.6 number. Upper is frame, Lower is tics*2
+#endif
 
 	int	 		viewx;
 	unsigned	viewheight;
@@ -720,7 +735,12 @@ typedef struct objstruct
 	int			hitpoints;
 	long		speed;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	int			temp2;
+#else
 	int			temp1,temp2,temp3;
+#endif
 	struct		objstruct	*next,*prev;
 } objtype;
 
@@ -769,13 +789,27 @@ typedef	struct
 	int			lives;
 	int			health;
 	int			ammo;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	int			fruit;
+	int			maxammo;
+	int			ammo2;
+	int			ammo3;
+	int			weaponinv[4];
+	boolean			fullmap;
+#endif
 	int			keys;
 	weapontype		bestweapon,weapon,chosenweapon;
 
 	int			faceframe;
 	int			attackframe,attackcount,weaponframe;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	int			secretcount,treasurecount,killcount,
+#else
 	int			episode,secretcount,treasurecount,killcount,
+#endif
 				secrettotal,treasuretotal,killtotal;
 	long		TimeCount;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -824,6 +858,11 @@ extern	int			tedlevelnum;
 extern	boolean		tedlevel;
 extern	boolean		nospr;
 extern	boolean		IsA386;
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	boolean		FloorsDisabled;
+extern	boolean		BibleQuizDisabled;
+#endif
 
 extern	byte far	*scalermemory;
 
@@ -1210,6 +1249,12 @@ extern	unsigned	plux,pluy;		// player coordinates scaled to unsigned
 
 extern	int			anglefrac;
 extern	int			facecount;
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern int	episodetable[];
+extern int	mapnumbertable[];
+#endif
 
 void	SpawnPlayer (int tilex, int tiley, int dir);
 void 	DrawFace (void);

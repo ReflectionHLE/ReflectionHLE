@@ -28,7 +28,12 @@ typedef	enum	{
 					smm_Off,smm_AdLib
 				}	SMMode;
 typedef	enum	{
+					// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+					sds_Off,sds_SoundBlaster
+#else
 					sds_Off,sds_PC,sds_SoundSource,sds_SoundBlaster
+#endif
 				}	SDSMode;
 typedef	struct
 		{

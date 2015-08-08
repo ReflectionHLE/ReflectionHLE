@@ -1003,7 +1003,12 @@ unsigned vgaCeiling[]=
 
 void VGAClearScreen (void)
 {
+ // *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+ unsigned ceiling=vgaCeiling[gamestate.mapon];
+#else
  unsigned ceiling=vgaCeiling[gamestate.episode*10+mapon];
+#endif
 
   //
   // clear the screen
@@ -1196,8 +1201,11 @@ void DrawScaleds (void)
 
 			visptr->viewx = obj->viewx;
 			visptr->viewheight = obj->viewheight;
+			// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 			if (visptr->shapenum == -1)
 				visptr->shapenum = obj->temp1;	// special shape
+#endif
 
 			if (obj->state->rotate)
 				visptr->shapenum += CalcRotate (obj);
@@ -1267,8 +1275,8 @@ void DrawPlayerWeapon (void)
 #ifndef SPEAR
 	if (gamestate.victoryflag)
 	{
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		if (player->state == &s_deathcam && (TimeCount&32) )
 			SimpleScaleShape(viewwidth/2,SPR_DEATHCAM,viewheight+1);
 #endif

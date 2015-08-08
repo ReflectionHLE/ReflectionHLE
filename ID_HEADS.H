@@ -24,7 +24,13 @@ extern	char		far signon;
 
 #define	introscn	signon
 
-#ifdef JAPAN
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#include "GFXV_N3D.H"
+#include "AUDION3D.H"
+//#include "MAPSN3D.H" // Unused anyway
+#elif (defined JAPAN)
+//#ifdef JAPAN
 #ifdef JAPDEMO
 #include "FOREIGN\JAPAN\GFXV_WJ1.H"
 #else
@@ -133,3 +139,9 @@ extern	byte		fontcolor,backcolor;
 
 #define SETFONTCOLOR(f,b) fontcolor=f;backcolor=b;
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define GAMEVER_N3D_1ARG_PRINTF(f) printf(f)
+#else
+#define GAMEVER_N3D_1ARG_PRINTF(f)
+#endif
