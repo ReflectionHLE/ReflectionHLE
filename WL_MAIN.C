@@ -398,7 +398,7 @@ boolean SaveTheGame(int file,int x,int y)
 	// *** SHAREWARE V1.0 APOGEE + SOD (DEMO) V1.0+V1.4 FORMGEN RESTORATION ***
 	// LevelRatios should have 8 entries in these versions of SOD (like WL1/WL6) but don't write anything in Wolf3D v1.0
 #ifndef GAMEVER_RESTORATION_WL1_APO10
-#if (defined SPEAR) && (defined GOODTIMES)
+#if (defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 //#ifdef SPEAR
 	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
@@ -524,7 +524,7 @@ boolean LoadTheGame(int file,int x,int y)
 	// *** SHAREWARE V1.0 APOGEE + SOD (DEMO) V1.0+V1.4 FORMGEN RESTORATION ***
 	// LevelRatios should have 8 entries in these versions of SOD (like WL1/WL6) but don't read anything in Wolf3D v1.0
 #ifndef GAMEVER_RESTORATION_WL1_APO10
-#if (defined SPEAR) && (defined GOODTIMES)
+#if (defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 //#ifdef SPEAR
 	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
@@ -1754,7 +1754,7 @@ void    DemoLoop (void)
 #endif
 			// *** REGISTERED SOD V1.4 ACTIVISION RESTORATION ***
 			// Different restored code
-#if (defined SPEAR) && (defined GOODTIMES)
+#if (defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 			VW_ScreenToScreen (bufferofs,bufferofs+ylookup[175],30,17);
 			VW_ScreenToScreen (bufferofs+ylookup[168]+30,displayofs,50,30);
 			VW_ScreenToScreen (bufferofs+ylookup[42],bufferofs+ylookup[170]+30,20,30);

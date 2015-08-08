@@ -741,7 +741,7 @@ void ShowArticle (char far *article)
 
 		// *** APOGEE VERSIONS RESTORATION ***
 		// This is also skipped in the Shareware 1.4 Apogee EXE
-		#if (!defined SPEAR) && (defined GOODTIMES)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();

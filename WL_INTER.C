@@ -178,13 +178,13 @@ void Victory (void)
 #endif
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocated this, depending on version
-#ifndef GOODTIMES
+#ifdef GAMEVER_RESTORATION_ANY_PRE_GT
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 #else
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocated this, depending on version
-#ifndef GOODTIMES
+#ifdef GAMEVER_RESTORATION_ANY_PRE_GT
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 
@@ -213,7 +213,7 @@ void Victory (void)
 
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocate this, depending on version
-#ifdef GOODTIMES
+#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
 #ifndef JAPDEMO
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
@@ -335,7 +335,7 @@ void Victory (void)
 
 	// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 	// This is also skipped in the Apogee EXEs
-	#if (!defined SPEAR) && (defined GOODTIMES)
+	#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 	//#ifndef SPEAR
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		PicturePause();
@@ -810,7 +810,7 @@ void LevelCompleted (void)
 
 	 // *** SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	 // Possibly relocated this, depending on version
-	#ifndef GOODTIMES
+	#ifdef GAMEVER_RESTORATION_ANY_PRE_GT
 	 #ifdef SPANISH
 	 Write(30,12,parTimes[gamestate.episode*10+mapon].timestr);
 	 #else
@@ -833,7 +833,7 @@ void LevelCompleted (void)
 
 	 // *** SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	 // Possibly relocate this, depending on version
-	#ifdef GOODTIMES
+	#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
 	 #ifdef SPANISH
 	 Write(30,12,parTimes[gamestate.episode*10+mapon].timestr);
 	 #else
@@ -1187,7 +1187,7 @@ void LevelCompleted (void)
 
 	// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 	// This is also skipped in the Apogee EXEs
-	#if (!defined SPEAR) && (defined GOODTIMES)
+	#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 	//#ifndef SPEAR
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		PicturePause();

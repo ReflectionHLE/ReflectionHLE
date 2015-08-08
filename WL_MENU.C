@@ -1804,7 +1804,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 		// This is also skipped in the Apogee EXEs
-		#if (!defined SPEAR) && (defined GOODTIMES)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -1841,7 +1841,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (defined GOODTIMES)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -2045,7 +2045,7 @@ void MouseSensitivity(void)
 
 		// *** SHAREWARE/REGISTERED V1.4 APOGEE+SOD (DEMO) V1.0 RESTORATION ***
 		// And again - kind of
-		#ifdef GOODTIMES
+		#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		#else
@@ -2919,7 +2919,7 @@ void CP_ChangeView(void)
 
 		// *** SHAREWARE/REGISTERED V1.4 APOGEE+SOD (DEMO) V1.0 RESTORATION ***
 		// And again
-		#ifdef GOODTIMES
+		#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		#else
@@ -3821,7 +3821,7 @@ int Confirm(char GAMEVER_RESTORATION_CONDFARPTR *string)
 
 		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (defined GOODTIMES)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -3879,7 +3879,7 @@ int GetYorN(int x,int y,int pic)
 	{
 		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (defined GOODTIMES)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();

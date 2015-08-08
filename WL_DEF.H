@@ -885,10 +885,11 @@ void		ShutdownId (void);
 */
 
 
-extern	boolean		ingame,fizzlein;
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
-extern	int	splitscreen;
+extern	boolean		ingame,fizzlein,screensplit;
+#else
+extern	boolean		ingame,fizzlein;
 #endif
 extern	unsigned	latchpics[NUMLATCHPICS];
 extern	gametype	gamestate;
@@ -1062,10 +1063,6 @@ extern	int	screenpage;
 extern	long 	lasttimecount;
 extern	long 	frameon;
 extern	boolean	fizzlein;
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
-extern	int	splitscreen;
-#endif
 
 extern	unsigned	wallheight[MAXVIEWWIDTH];
 

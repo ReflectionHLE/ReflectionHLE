@@ -58,6 +58,10 @@
 #define GAMEVER_RESTORATION_ANY_POST_GT114
 #endif
 
+#if (defined GAMEVER_RESTORATION_ANY_ALL_PRE14) || (defined GAMEVER_RESTORATION_ANY_APO14) || (defined GAMEVER_RESTORATION_SOD_FOR14)
+#define GAMEVER_RESTORATION_ANY_PRE_GT
+#endif
+
 // This doesn't cover the SOD case of the debug keys, just Wolf3D v1.0 vs the later releases
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 #define GAMEVER_RESTORATION_W3D_DEBUGPARM "next"

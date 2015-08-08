@@ -162,7 +162,7 @@ void PicturePause (void)
 
 	ClearMemory ();
 	// *** APOGEE+FORMGEN VERSIONS RESTORATION ***
-#ifdef GOODTIMES
+#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
 	CA_SetAllPurge();
 #endif
 	MM_GetPtr (&buffer,64000);

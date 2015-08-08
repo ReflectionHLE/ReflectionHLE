@@ -27,7 +27,7 @@
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
-int	splitscreen;
+boolean	screensplit;
 #endif
 boolean		ingame,fizzlein;
 unsigned	latchpics[NUMLATCHPICS];
@@ -835,7 +835,7 @@ void SetupGameLevel (void)
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 void ResetSplitScreen (void)
 {
-	splitscreen = 0;
+	screensplit = false;
 	VW_SetSplitScreen(200);
 	bufferofs = displayofs = 0;
 	VW_Bar(0,0,320,200,0);
@@ -1006,7 +1006,7 @@ void DrawPlayScreen (void)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
-	splitscreen = 1;
+	screensplit = true;
 	VW_SetSplitScreen(200-STATUSLINES);
 	bufferofs = displayofs = screenloc[0];
 	VW_SetScreen(displayofs, 0);	

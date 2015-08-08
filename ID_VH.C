@@ -391,8 +391,8 @@ void VW_UpdateScreen (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
-	extern int splitscreen;
-	if (splitscreen)
+	extern boolean screensplit;
+	if (screensplit)
 		VH_UpdateSplitScreen ();
 	else
 #endif

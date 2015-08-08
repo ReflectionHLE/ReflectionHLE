@@ -68,10 +68,10 @@
 #define	STR_RIGHT	"Right"
 // *** APOGEE+FORMGEN VERSIONS RESTORATION ***
 // There was a typo fix
-#ifdef GOODTIMES
-#define	STR_FRWD	"Frwd"
-#else
+#ifdef GAMEVER_RESTORATION_ANY_PRE_GT
 #define	STR_FRWD	"Fwrd"
+#else
+#define	STR_FRWD	"Frwd"
 #endif
 
 #define	STR_BKWD	"Bkwrd"
