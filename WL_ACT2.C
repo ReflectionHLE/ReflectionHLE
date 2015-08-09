@@ -213,9 +213,12 @@ void A_DeathScream (objtype *ob);
 
 void	T_Schabb (objtype *ob);
 void	T_SchabbThrow (objtype *ob);
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 void	T_Fake (objtype *ob);
 void	T_FakeFire (objtype *ob);
 void	T_Ghosts (objtype *ob);
+#endif
 
 void A_Slurpie (objtype *ob);
 void A_HitlerMorph (objtype *ob);
@@ -309,7 +312,9 @@ statetype s_grddie3		= {false,SPR_GRD_DIE_3,15,NULL,NULL,&s_grddie4};
 statetype s_grddie4		= {false,SPR_GRD_DEAD,0,NULL,NULL,&s_grddie4};
 
 
-#ifndef SPEAR
+// *** S3DNA RESTORATION ***
+#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+//#ifndef SPEAR
 //
 // ghosts
 //
@@ -738,7 +743,12 @@ statetype s_gretelshoot8 	= {false,SPR_GRETEL_SHOOT1,10,NULL,NULL,&s_gretelchase
 ===============
 */
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void SpawnStand (enemy_t which, int tilex, int tiley, int dir, boolean ambush)
+#else
 void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
+#endif
 {
 	unsigned	far *map,tile;
 
@@ -807,6 +817,8 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 
 
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 ===============
 =
@@ -820,6 +832,7 @@ void SpawnDeadGuard (int tilex, int tiley)
 	SpawnNewObj (tilex,tiley,&s_grddie4);
 	new->obclass = inertobj;
 }
+#endif
 
 
 
@@ -899,6 +912,8 @@ void SpawnGretel (int tilex, int tiley)
 #endif // GAMEVER_RESTORATION_WL1_APO10
 #endif
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 ===============
 =
@@ -979,6 +994,7 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
 
 	actorat[new->tilex][new->tiley] = new;
 }
+#endif
 
 
 
@@ -1954,7 +1970,9 @@ moveok:
 =============================================================================
 */
 
-#ifndef SPEAR
+// *** S3DNA RESTORATION ***
+#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+//#ifndef SPEAR
 /*
 ===============
 =
@@ -1991,6 +2009,7 @@ void SpawnGhosts (int which, int tilex, int tiley)
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
+#endif
 
 
 
@@ -2756,6 +2775,8 @@ void T_Fat (objtype *ob)
 */
 
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 //
 // fake
 //
@@ -2816,6 +2837,7 @@ statetype s_fakeshoot9 	= {false,SPR_FAKE_SHOOT,8,NULL,NULL,&s_fakechase1};
 
 statetype s_fire1 	= {false,SPR_FIRE1,6,NULL,T_Projectile,&s_fire2};
 statetype s_fire2 	= {false,SPR_FIRE2,6,NULL,T_Projectile,&s_fire1};
+#endif
 
 //
 // hitler
@@ -2955,6 +2977,8 @@ statetype s_hitlershoot6 	= {false,SPR_HITLER_SHOOT2,10,NULL,T_Shoot,&s_hitlerch
 
 
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 ===============
 =
@@ -3006,6 +3030,7 @@ void SpawnFakeHitler (int tilex, int tiley)
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
+#endif
 
 
 /*
@@ -3118,17 +3143,19 @@ void A_MechaSound (objtype *ob)
 #pragma argsused
 void A_Slurpie (objtype *ob)
 {
- // *** S3DNA RESTORATION *** (TODO Disable function?)
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
  PlaySoundLocActor (SLURPIESND,ob);
+ // *** S3DNA RESTORATION ***
+#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+ SD_PlaySound(SLEEPSND);
 #else
  SD_PlaySound(SLURPIESND);
 #endif
-#endif
 }
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 =================
 =
@@ -3171,10 +3198,7 @@ void T_FakeFire (objtype *ob)
 	new->active = true;
 #endif
 
- // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	PlaySoundLocActor (FLAMETHROWERSND,new);
-#endif
 
 }
 
@@ -3460,6 +3484,8 @@ void T_Chase (objtype *ob)
 }
 
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 =================
 =
@@ -3523,6 +3549,7 @@ void T_Ghosts (objtype *ob)
 	}
 
 }
+#endif
 
 /*
 =================
@@ -3854,6 +3881,13 @@ void T_Bite (objtype *ob)
 
 
 // *** S3DNA RESTORATION ***
+// TODO (RESTORATION) Probably cannot explain these...
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+statetype s_nullstate;
+statetype s_nullstate2;
+#endif
+
+// *** S3DNA RESTORATION ***
 #if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 //#ifndef SPEAR
 /*
@@ -4162,7 +4196,12 @@ void	A_StartDeathCam (objtype *ob)
 	}
 	bufferofs = temp;
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	fizzlein = 3;
+#else
 	fizzlein = true;
+#endif
 	switch (ob->obclass)
 	{
 #ifndef SPEAR

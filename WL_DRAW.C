@@ -1499,7 +1499,12 @@ asm	rep stosw
 	if (fizzlein)
 	{
 		FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,20,false);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		fizzlein--;
+#else
 		fizzlein = false;
+#endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14

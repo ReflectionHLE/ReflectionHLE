@@ -948,10 +948,13 @@ void KillActor (objtype *ob)
 		PlaceItemType (bo_key1,tilex,tiley);
 #endif
 		break;
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case fakeobj:
 		GivePoints (2000);
 		NewState (ob,&s_fakedie1);
 		break;
+#endif
 
 	case mechahitlerobj:
 		GivePoints (5000);
@@ -1601,10 +1604,13 @@ void FirstSighting (objtype *ob)
 		break;
 #endif
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case ghostobj:
 		NewState (ob,&s_blinkychase1);
 		ob->speed *= 2;			// go faster when chasing player
 		break;
+#endif
 #else
 
 	case spectreobj:
@@ -1720,7 +1726,10 @@ boolean SightPlayer (objtype *ob)
 
 		case bossobj:
 		case schabbobj:
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		case fakeobj:
+#endif
 		case mechahitlerobj:
 		case realhitlerobj:
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***

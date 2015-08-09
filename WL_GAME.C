@@ -29,7 +29,13 @@
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 boolean	screensplit;
 #endif
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+boolean		ingame;
+int		fizzlein,deathtime;
+#else
 boolean		ingame,fizzlein;
+#endif
 unsigned	latchpics[NUMLATCHPICS];
 gametype	gamestate;
 
@@ -370,9 +376,28 @@ void ScanInfoPlane (void)
 				  gamestate.secrettotal++;
 				break;
 
+			// *** S3DNA RESTORATION ***
+			// TODO (RESTORATION) Figure out what are the "new" entries
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			case 99:
+				*(start-1) = 0;
+				break;
+			case 100:
+			case 101:
+				SpawnBonus(x,y,tile==101);
+				break;
+#endif
+
 //
 // guard
 //
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			case 108:
+			case 126:
+				SpawnStand(en_guard,x,y,0,tile==126);
+				break;
+#else
 			case 180:
 			case 181:
 			case 182:
@@ -419,9 +444,17 @@ void ScanInfoPlane (void)
 			case 124:
 				SpawnDeadGuard (x,y);
 				break;
+#endif
 //
 // officer
 //
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			case 109:
+			case 127:
+				SpawnStand(en_officer,x,y,0,tile==127);
+				break;
+#else
 			case 188:
 			case 189:
 			case 190:
@@ -464,11 +497,19 @@ void ScanInfoPlane (void)
 			case 123:
 				SpawnPatrol(en_officer,x,y,tile-120);
 				break;
+#endif
 
 
 //
 // ss
 //
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			case 110:
+			case 128:
+				SpawnStand(en_ss,x,y,0,tile==128);
+				break;
+#else
 			case 198:
 			case 199:
 			case 200:
@@ -511,10 +552,18 @@ void ScanInfoPlane (void)
 			case 133:
 				SpawnPatrol(en_ss,x,y,tile-130);
 				break;
+#endif
 
 //
 // dogs
 //
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			case 111:
+			case 129:
+				SpawnStand(en_dog,x,y,0,tile==129);
+				break;
+#else
 			case 206:
 			case 207:
 			case 208:
@@ -557,15 +606,53 @@ void ScanInfoPlane (void)
 			case 141:
 				SpawnPatrol(en_dog,x,y,tile-138);
 				break;
+#endif
 
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+//
+// mutants
+//
+			case 112:
+			case 130:
+				SpawnStand(en_mutant,x,y,0,tile==130);
+				break;
+#endif
 //
 // boss
 //
-#ifndef SPEAR
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			case 113:
+			case 131:
+				SpawnBoss (x,y);
+				break;
+			case 114:
+			case 132:
+				SpawnSchabbs (x,y);
+				break;
+			case 115:
+			case 133:
+				SpawnGretel (x,y);
+				break;
+			case 116:
+			case 134:
+				SpawnGift (x,y);
+				break;
+			case 117:
+			case 135:
+				SpawnFat (x,y);
+				break;
+			case 118:
+			case 136:
+				SpawnHitler (x,y);
+				break;
+#elif (!defined SPEAR)
+//#ifndef SPEAR
 			case 214:
 				SpawnBoss (x,y);
 				break;
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 			case 197:
 				SpawnGretel (x,y);
@@ -608,6 +695,12 @@ void ScanInfoPlane (void)
 
 #endif
 
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			default:
+				sprintf (str,"ScanInfoPlane: Invalid object $%02X at %d, %d!\n",tile,x,y);
+				Quit (str);
+#else
 //
 // mutants
 //
@@ -675,6 +768,7 @@ void ScanInfoPlane (void)
 				SpawnGhosts (en_inky,x,y);
 				break;
 #endif
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 			}
 
 		}
@@ -705,6 +799,10 @@ void SetupGameLevel (void)
 	 gamestate.secretcount=
 	 gamestate.killcount=
 	 gamestate.treasurecount=0;
+	 // *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	 pwallstate=0;
+#endif
 	}
 
 	if (demoplayback || demorecord)
@@ -745,6 +843,15 @@ void SetupGameLevel (void)
 			tile = *map++;
 			if (tile<AREATILE)
 			{
+				// *** S3DNA RESTORATION ***
+				// TODO (RESTORATION) What's this?
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				if (tile==89)
+					tile = 31;
+				else
+					tile &= 31;
+#else
+#endif
 			// solid wall
 				tilemap[x][y] = tile;
 				(unsigned)actorat[x][y] = tile;
@@ -774,6 +881,25 @@ void SetupGameLevel (void)
 			// door
 				switch (tile)
 				{
+				// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				case 90:
+				case 91:
+					SpawnDoor (x,y,!(tile&1),0);
+					break;
+				case 92:
+				case 93:
+					SpawnDoor (x,y,!(tile&1),1);
+					break;
+				case 94:
+				case 95:
+					SpawnDoor (x,y,!(tile&1),2);
+					break;
+				case 96:
+				case 97:
+					SpawnDoor (x,y,!(tile&1),5);
+					break;
+#else
 				case 90:
 				case 92:
 				case 94:
@@ -790,6 +916,7 @@ void SetupGameLevel (void)
 				case 101:
 					SpawnDoor (x,y,0,(tile-91)/2);
 					break;
+#endif
 				}
 			}
 		}
@@ -799,6 +926,8 @@ void SetupGameLevel (void)
 //
 	ScanInfoPlane ();
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 //
 // take out the ambush markers
 //
@@ -825,6 +954,7 @@ void SetupGameLevel (void)
 				*(map-1) = tile;
 			}
 		}
+#endif
 
 
 
@@ -871,11 +1001,20 @@ void DrawPlayBorderSides (void)
 	xl = 160-viewwidth/2;
 	yl = (200-STATUSLINES-viewheight)/2;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	VWB_Bar (0,0,xl-1,200-STATUSLINES,VIEWCOLOR);
+	VWB_Bar (xl+viewwidth+1,0,xl-2,200-STATUSLINES,VIEWCOLOR);
+
+	VWB_Vlin (yl-1,yl+viewheight,xl-1,220);
+	VWB_Vlin (yl-1,yl+viewheight,xl+viewwidth,216);
+#else
 	VWB_Bar (0,0,xl-1,200-STATUSLINES,127);
 	VWB_Bar (xl+viewwidth+1,0,xl-2,200-STATUSLINES,127);
 
 	VWB_Vlin (yl-1,yl+viewheight,xl-1,0);
 	VWB_Vlin (yl-1,yl+viewheight,xl+viewwidth,125);
+#endif
 }
 
 
@@ -936,17 +1075,31 @@ void DrawPlayBorder (void)
 {
 	int	xl,yl;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	VWB_Bar (0,0,320,200-STATUSLINES,VIEWCOLOR);
+#else
 	VWB_Bar (0,0,320,200-STATUSLINES,127);
+#endif
 
 	xl = 160-viewwidth/2;
 	yl = (200-STATUSLINES-viewheight)/2;
 	VWB_Bar (xl,yl,viewwidth,viewheight,0);
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	VWB_Hlin (xl-1,xl+viewwidth,yl-1,220);
+	VWB_Hlin (xl-1,xl+viewwidth,yl+viewheight,216);
+	VWB_Vlin (yl-1,yl+viewheight,xl-1,220);
+	VWB_Vlin (yl-1,yl+viewheight,xl+viewwidth,216);
+	VWB_Plot (xl-1,yl+viewheight,214);
+#else
 	VWB_Hlin (xl-1,xl+viewwidth,yl-1,0);
 	VWB_Hlin (xl-1,xl+viewwidth,yl+viewheight,125);
 	VWB_Vlin (yl-1,yl+viewheight,xl-1,0);
 	VWB_Vlin (yl-1,yl+viewheight,xl+viewwidth,125);
 	VWB_Plot (xl-1,yl+viewheight,124);
+#endif
 }
 
 
@@ -1073,6 +1226,10 @@ void FinishDemoRecord (void)
 	PrintY+=6;
 	US_Print(" Demo number (0-9):");
 	VW_UpdateScreen();
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	VW_FadeIn();
+#endif
 
 	if (US_LineInput (px,py,str,NULL,true,2,0))
 	{
@@ -1135,7 +1292,8 @@ void RecordDemo (void)
 	NewGame (gd_easy,0);
 	gamestate.mapon = level-1;
 	gamestate.difficulty = gd_hard;
-#elif (!defined SPEAR)
+	// *** S3DNA RESTORATION ***
+#elif (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 //#ifndef SPEAR
 	NewGame (gd_hard,level/10);
 	gamestate.mapon = level%10;
@@ -1160,7 +1318,13 @@ void RecordDemo (void)
 	SetupGameLevel ();
 	StartMusic ();
 	PM_CheckMainMem ();
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	fizzlein = 3;
+	LoadFloorTiles (floortile[gamestate.mapon]);
+#else
 	fizzlein = true;
+#endif
 
 	PlayLoop ();
 
@@ -1205,6 +1369,15 @@ void PlayDemo (int demonumber)
 	int dems[1]={T_DEMO0};
 #endif
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (demonumber>3)
+	{
+		sprintf(str,"PlayDemo: Invalid demo number %d!",demonumber);
+		Quit(str);
+	}
+#endif
+
 	CA_CacheGrChunk(dems[demonumber]);
 	demoptr = grsegs[dems[demonumber]];
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -1237,7 +1410,13 @@ void PlayDemo (int demonumber)
 	SetupGameLevel ();
 	StartMusic ();
 	PM_CheckMainMem ();
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	LoadFloorTiles (floortile[gamestate.mapon]);
+	fizzlein = 3;
+#else
 	fizzlein = true;
+#endif
 
 	PlayLoop ();
 
@@ -1363,11 +1542,16 @@ void Died (void)
 #endif
 	VW_Bar (0,0,viewwidth,viewheight,4);
 	IN_ClearKeysDown ();
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,70,false);
+#endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 	bufferofs -= screenofs;
 #endif
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	IN_UserInput(100);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
@@ -1380,10 +1564,17 @@ void Died (void)
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 	if (tedlevel == false)	// SO'S YA DON'T GET KILLED WHILE LAUNCHING!
 #endif
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 	  gamestate.lives--;
 
 	if (gamestate.lives > -1)
 	{
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		VL_FadeOut (0,255,0,0,0,64);
+		SD_WaitSoundDone ();
+		SD_StopSound ();
+#endif
 		gamestate.health = 100;
 		gamestate.weapon = gamestate.bestweapon
 			= gamestate.chosenweapon = wp_pistol;
@@ -1391,14 +1582,43 @@ void Died (void)
 		gamestate.keys = 0;
 		gamestate.attackframe = gamestate.attackcount =
 		gamestate.weaponframe = 0;
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		gamestate.maxammo = 99;
+		gamestate.ammo2 = gamestate.ammo2 = 0;
+		gamestate.weaponinv[0] = 0;
+		gamestate.weaponinv[1] = 0;
+		gamestate.weaponinv[3] = 0;
+		gamestate.weaponinv[2] = 0;
+		gamestate.fullmap = false;
+		DrawFruit ();
+#endif
 
 		DrawKeys ();
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		DrawWeapon ();
+#endif
 		DrawAmmo ();
 		DrawHealth ();
 		DrawFace ();
 		DrawLives ();
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		return;
+#endif
 	}
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	deathtime = 0;
+	NewState (player,&s_nullstate2);
+	while (deathtime < 192)
+	{
+		UpdatePaletteShifts ();
+		ThreeDRefresh ();
+		CalcTics ();
+	}
+#endif
 
 }
 
@@ -1429,6 +1649,21 @@ restartgame:
 restart:
 	do
 	{
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		deathtime = 0;
+		if (!died)
+			if (!loadedgame)
+				switch (gamestate.mapon)
+				{
+					case 0:  Briefing (0,0); break;
+					case 3:  Briefing (1,0); break;
+					case 7:  Briefing (2,0); break;
+					case 12: Briefing (3,0); break;
+					case 17: Briefing (4,0); break;
+					case 23: Briefing (5,0); break;
+				}
+#endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 		if (!loadedgame)
@@ -1458,7 +1693,12 @@ restart:
 		else
 			died = false;
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		fizzlein = 3;
+#else
 		fizzlein = true;
+#endif
 		DrawLevel ();
 
 startplayloop:
@@ -1514,6 +1754,12 @@ startplayloop:
 
 		if (startgame || loadedgame)
 			goto restartgame;
+
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if ((gamestate.mapon == 28) && ((playstate == ex_completed) || (playstate == ex_secretlevel)))
+			playstate = ex_victorious;
+#endif
 
 		switch (playstate)
 		{
@@ -1648,7 +1894,7 @@ startplayloop:
 			// SKIPPING SECRET LEVEL
 			//
 			if (gamestate.mapon == 10)
-				gamestate.mapon == 12;
+				gamestate.mapon = 12;
 #endif
 			else
 			//
@@ -1692,12 +1938,23 @@ startplayloop:
 
 		case ex_victorious:
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			deathtime = 0;
+#endif
 #ifndef SPEAR
 			VW_FadeOut ();
 #else
 			VL_FadeOut (0,255,0,17,17,300);
 #endif
 			ClearMemory ();
+
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			LevelCompleted ();
+
+			ClearMemory ();
+#endif
 
 			Victory ();
 

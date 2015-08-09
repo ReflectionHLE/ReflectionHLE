@@ -133,6 +133,14 @@ void InitStaticList (void)
 
 
 
+// *** S3DNA RESTORATION ***
+// TODO IMPLEMENT
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void SpawnBonus (int type)
+{
+}
+#endif
+
 /*
 ===============
 =

@@ -274,6 +274,16 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 #endif // GAMEVER_RESTORATION_WL1_APO10
 
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void	LatchNumber (int x, int y, int width, long number);
+
+void DrawFruit ()
+{
+	LatchNumber (35,16,2,gamestate.fruit);
+}
+#endif
+
 /*
 ==================
 =

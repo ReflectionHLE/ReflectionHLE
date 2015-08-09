@@ -927,6 +927,10 @@ void		ShutdownId (void);
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 extern	boolean		ingame,fizzlein,screensplit;
+// *** S3DNA RESTORATION ***
+#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+extern	boolean		ingame;
+extern	int		fizzlein,deathtime; // TODO (RESTORATION) Better name for "died"
 #else
 extern	boolean		ingame,fizzlein;
 #endif
@@ -1063,6 +1067,11 @@ void StartBonusFlash (void);
 =============================================================================
 */
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern unsigned	floortile[];
+#endif
+
 void IntroScreen (void);
 void PreloadGraphics(void);
 void LevelCompleted (void);
@@ -1101,7 +1110,10 @@ extern	int	screenpage;
 
 extern	long 	lasttimecount;
 extern	long 	frameon;
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 extern	boolean	fizzlein;
+#endif
 
 extern	unsigned	wallheight[MAXVIEWWIDTH];
 
@@ -1257,6 +1269,10 @@ extern int	mapnumbertable[];
 #endif
 
 void	SpawnPlayer (int tilex, int tiley, int dir);
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void	DrawFruit (void);
+#endif
 void 	DrawFace (void);
 void	DrawHealth (void);
 // *** PRE-V1.4 APOGEE RESTORATION ***
@@ -1397,8 +1413,21 @@ extern	statetype s_hitlerdeathcam2;
 extern	statetype s_giftdeathcam2;
 extern	statetype s_fatdeathcam2;
 
+// *** S3DNA RESTORATION ***
+// TODO (RESTORATION) Probably cannot explain these...
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	statetype s_nullstate;
+extern	statetype s_nullstate2;
+#endif
+
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void SpawnStand (enemy_t which, int tilex, int tiley, int dir, boolean ambush);
+#else
 void SpawnStand (enemy_t which, int tilex, int tiley, int dir);
 void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir);
+#endif
 void KillActor (objtype *ob);
 
 void	US_ControlPanel(byte);
