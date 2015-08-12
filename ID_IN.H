@@ -53,6 +53,11 @@ typedef	byte		ScanCode;
 #define	sc_F10			0x44
 #define	sc_F11			0x57
 #define	sc_F12			0x59
+// *** S3DNA RESTORATION *** - Let's just add this here for consistency
+// with Blake Stone (although the exact location doesn't matter)
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define	sc_Tilde		0x29
+#endif
 
 #define	sc_1			0x02
 #define	sc_2			0x03

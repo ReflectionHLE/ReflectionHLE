@@ -699,7 +699,12 @@ void	CenterWindow(word w,word h)
 =====================
 */
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void CheckKeys (boolean partial)
+#else
 void CheckKeys (void)
+#endif
 {
 	int		i;
 	byte	scan;
@@ -734,16 +739,59 @@ void CheckKeys (void)
 
 		IN_Ack();
 		godmode ^= 1;
-		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
 		DrawAllPlayBorderSides ();
-#endif
 		IN_ClearKeysDown();
 		return;
 	}
 	#endif
 
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (Keyboard[sc_J] && Keyboard[sc_I] && Keyboard[sc_M])
+	{
+		ClearMemory ();
+		WindowH = 160;
+		godmode ^= 1;
+		if (godmode)
+		{
+			Message ("Invulnerability ON");
+			SD_PlaySound (BONUS1UPSND);
+		}
+		else
+		{
+			Message ("Invulnerability OFF");
+			SD_PlaySound (BONUS1UPSND);
+		}
+
+		IN_Ack();
+		IN_ClearKeysDown();
+
+		gamestate.health = 10;
+		gamestate.ammo = gamestate.maxammo = 299;
+		gamestate.ammo2 = gamestate.ammo3 = 99;
+		gamestate.keys = 3;
+		gamestate.fullmap = true;
+		gamestate.weaponinv[0] = 1;
+		gamestate.weaponinv[1] = 1;
+		gamestate.weaponinv[3] = 1;
+		gamestate.weaponinv[2] = 1;
+		GiveWeapon (wp_chaingun);
+		gamestate.score = 0;
+		gamestate.TimeCount += 42000L;
+
+		DrawHealth();
+		DrawKeys();
+		DrawAmmo();
+		DrawScore();
+
+		PM_CheckMainMem ();
+
+		DrawAllPlayBorder ();
+
+		return;
+	}
+#else
 	//
 	// SECRET CHEAT CODE: 'MLI'
 	//
@@ -791,12 +839,13 @@ void CheckKeys (void)
 		DrawAllPlayBorder ();
 #endif
 	}
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 
 	//
 	// OPEN UP DEBUG KEYS
 	//
 #ifndef SPEAR
-		// *** PRE-V1.4 (INCLUDING V1.0) APOGEE RESTORATION ***
+	// *** PRE-V1.4 (INCLUDING V1.0) APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 	if (Keyboard[sc_Tab] &&
 		Keyboard[sc_Control] &&
@@ -843,6 +892,8 @@ void CheckKeys (void)
 	 DebugOk=1;
 	}
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	//
 	// TRYING THE KEEN CHEAT CODE!
 	//
@@ -876,14 +927,18 @@ void CheckKeys (void)
 	 DrawAllPlayBorder ();
 #endif
 	}
-
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 //
 // pause key weirdness can't be checked as a scan code
 //
 	if (Paused)
 	{
 		bufferofs = displayofs;
-		LatchDrawPic (20-4,80-2*8,PAUSEDPIC);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (!MS_CheckParm("photoshoot"))
+#endif
+			LatchDrawPic (20-4,80-2*8,PAUSEDPIC);
 		SD_MusicOff();
 		IN_Ack();
 		IN_ClearKeysDown ();
@@ -909,6 +964,10 @@ void CheckKeys (void)
 		ClearMemory ();
 		ClearSplitVWB ();
 		VW_ScreenToScreen (displayofs,bufferofs,80,160);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		loadedgame = false;
+#endif
 		US_ControlPanel(scan);
 
 		 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -923,6 +982,10 @@ void CheckKeys (void)
 #endif
 
 		if (scan == sc_F9)
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		 if (loadedgame)
+#endif
 		  StartMusic ();
 
 		PM_CheckMainMem ();
@@ -948,7 +1011,11 @@ void CheckKeys (void)
 		DrawPlayScreen ();
 		if (!startgame && !loadedgame)
 		{
-			VW_FadeIn ();
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			if (!partial)
+#endif
+				VW_FadeIn ();
 			StartMusic ();
 		}
 		if (loadedgame)
@@ -960,10 +1027,23 @@ void CheckKeys (void)
 		return;
 	}
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!partial && Keyboard[sc_Tab])
+	{
+		OpenAutomap();
+		return;
+	}
+#endif
 //
 // TAB-? debug keys
 //
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!partial && Keyboard[sc_Tilde] && DebugOk)
+#else
 	if (Keyboard[sc_Tab] && DebugOk)
+#endif
 	{
 		CA_CacheGrChunk (STARTFONT);
 		fontnumber=0;
@@ -1218,7 +1298,12 @@ void StartMusic(void)
 #define REDSTEPS		8
 
 #define NUMWHITESHIFTS	3
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define WHITESTEPS		14
+#else
 #define WHITESTEPS		20
+#endif
 #define WHITETICS		6
 
 
@@ -1254,11 +1339,21 @@ void InitRedShifts (void)
 
 		for (j=0;j<=255;j++)
 		{
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			delta = 32-*baseptr;
+#else
 			delta = 64-*baseptr;
+#endif
 			*workptr++ = *baseptr++ + delta * i / REDSTEPS;
 			delta = -*baseptr;
 			*workptr++ = *baseptr++ + delta * i / REDSTEPS;
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			delta = 64-*baseptr;
+#else
 			delta = -*baseptr;
+#endif
 			*workptr++ = *baseptr++ + delta * i / REDSTEPS;
 		}
 	}
@@ -1272,7 +1367,12 @@ void InitRedShifts (void)
 		{
 			delta = 64-*baseptr;
 			*workptr++ = *baseptr++ + delta * i / WHITESTEPS;
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			delta = 64-*baseptr;
+#else
 			delta = 62-*baseptr;
+#endif
 			*workptr++ = *baseptr++ + delta * i / WHITESTEPS;
 			delta = 0-*baseptr;
 			*workptr++ = *baseptr++ + delta * i / WHITESTEPS;
@@ -1562,8 +1662,8 @@ long funnyticount;
 void PlayLoop (void)
 {
 	int		give;
-	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 	int	helmetangle;
 #endif
 
@@ -1594,8 +1694,8 @@ void PlayLoop (void)
 
 	do
 	{
-		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		if (virtualreality)
 		{
 			helmetangle = peek (0x40,0xf0);
@@ -1644,7 +1744,12 @@ void PlayLoop (void)
 		if (screenfaded)
 			VW_FadeIn ();
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		CheckKeys(false);
+#else
 		CheckKeys();
+#endif
 
 		// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
@@ -1676,8 +1781,8 @@ void PlayLoop (void)
 		}
 
 
-		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		if (virtualreality)
 		{
 			player->angle -= helmetangle;

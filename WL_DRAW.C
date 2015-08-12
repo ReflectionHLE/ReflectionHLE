@@ -1063,14 +1063,20 @@ asm	jnz	bottomloop
 int	CalcRotate (objtype *ob)
 {
 	int	angle,viewangle;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (ob->obclass == rocketobj || ob->obclass == needleobj)
+		return 0;
+#endif
 
 	// this isn't exactly correct, as it should vary by a trig value,
 	// but it is close enough with only eight rotations
 
 	viewangle = player->angle + (centerx - ob->viewx)/8;
 
-	// *** PRE-V1.4 APOGEE RESTORATION *** - Including special case for v1.0
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+	// Including special cases for Wolf3D v1.0 and S3DNA
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (ob->obclass == rocketobj)
 #else
@@ -1087,8 +1093,14 @@ int	CalcRotate (objtype *ob)
 	while (angle<0)
 		angle+=ANGLES;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (ob->state->rotate == 2)
+		return 0;
+#else
 	if (ob->state->rotate == 2)             // 2 rotation pain frame
 		return 4*(angle/(ANGLES/2));        // seperated by 3 (art layout...)
+#endif
 
 	return angle/(ANGLES/8);
 }
@@ -1266,7 +1278,12 @@ void DrawScaleds (void)
 */
 
 int	weaponscale[NUMWEAPONS] = {SPR_KNIFEREADY,SPR_PISTOLREADY
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	,SPR_MACHINEGUNREADY,SPR_CHAINREADY,SPR_CANTAREADY,SPR_WATERREADY};
+#else
 	,SPR_MACHINEGUNREADY,SPR_CHAINREADY};
+#endif
 
 void DrawPlayerWeapon (void)
 {

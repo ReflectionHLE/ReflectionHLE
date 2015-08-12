@@ -774,6 +774,8 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (GETKEYSND);
 		break;
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case	bo_cross:
 		SD_PlaySound (BONUS1SND);
 		GivePoints (100);
@@ -794,6 +796,7 @@ void GetBonus (statobj_t *check)
 		GivePoints (5000);
 		gamestate.treasurecount++;
 		break;
+#endif
 
 	case	bo_clip:
 		if (gamestate.ammo == 99)
@@ -802,6 +805,8 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (GETAMMOSND);
 		GiveAmmo (8);
 		break;
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case	bo_clip2:
 		if (gamestate.ammo == 99)
 			return;
@@ -809,6 +814,7 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (GETAMMOSND);
 		GiveAmmo (4);
 		break;
+#endif
 
 #ifdef SPEAR
 	case	bo_25clip:
@@ -860,6 +866,8 @@ void GetBonus (statobj_t *check)
 		HealSelf (10);
 		break;
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case	bo_alpo:
 		if (gamestate.health == 100)
 			return;
@@ -868,8 +876,6 @@ void GetBonus (statobj_t *check)
 		HealSelf (4);
 		break;
 
-		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case	bo_gibs:
 		if (gamestate.health >10)
 			return;
@@ -879,8 +885,8 @@ void GetBonus (statobj_t *check)
 		break;
 #endif
 
-	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 	case	bo_spear:
 		spearflag = true;
 		spearx = player->x;

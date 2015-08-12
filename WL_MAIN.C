@@ -79,9 +79,9 @@ int                     minheightdiv;
 
 void            Quit (char *error);
 
-		// *** PRE-V1.4 APOGEE RESTORATION ***
+		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 boolean         startgame,loadedgame
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		,virtualreality
 #endif
 		;
@@ -1076,8 +1076,8 @@ static  int     wolfdigimap[] =
 			HALTSND,                28,
 			ATKMACHINEGUNSND,       29,
 			NAZIFIRESND,            30,
-			MELONHITSND,            31,
-			MELONFIRESND,           32,
+			WATERMELONHITSND,       31,
+			WATERMELONFIRESND,      32,
 			NOWAYSND,               33,
 #elif (!defined SPEAR) // *** S3DNA RESTORATION ***
 			// These first sounds are in the upload version

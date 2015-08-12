@@ -1611,7 +1611,7 @@ void Died (void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	deathtime = 0;
-	NewState (player,&s_nullstate2);
+	NewState (player,&s_playerdeath);
 	while (deathtime < 192)
 	{
 		UpdatePaletteShifts ();

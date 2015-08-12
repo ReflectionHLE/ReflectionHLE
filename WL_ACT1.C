@@ -26,13 +26,30 @@ struct
 {SPR_STAT_2,block},				// Table/chairs    "
 {SPR_STAT_3,block},				// Floor lamp      "
 {SPR_STAT_4},					// Chandelier      "
+// *** S3DNA RESTORATION ***
+// TODO Name these?
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+{SPR_STAT_40,bo_quiz},
+{SPR_STAT_6,block},
+#else
 {SPR_STAT_5,block},				// Hanged man      "
 {SPR_STAT_6,bo_alpo},			// Bad food        "
+#endif
 {SPR_STAT_7,block},				// Red pillar      "
 //
 // NEW PAGE
 //
 {SPR_STAT_8,block},				// Tree            spr2v
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+{SPR_STAT_9,block},
+{SPR_STAT_10,block},
+{SPR_STAT_11},
+{SPR_STAT_12},
+{SPR_STAT_13},
+{SPR_STAT_14,block},
+{SPR_STAT_15,block},
+#else
 {SPR_STAT_9},					// Skeleton flat   "
 {SPR_STAT_10,block},			// Sink            " (SOD:gibs)
 {SPR_STAT_11,block},			// Potted plant    "
@@ -44,9 +61,21 @@ struct
 #else
 {SPR_STAT_15,block},			// Gibs!
 #endif
+#endif
 //
 // NEW PAGE
 //
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+{SPR_STAT_16,bo_key1},
+{SPR_STAT_17,bo_key1},
+{SPR_STAT_18,bo_bag},
+{SPR_STAT_19,bo_25clip},
+{SPR_STAT_20,bo_food},
+{SPR_STAT_21,bo_firstaid},
+{SPR_STAT_22,bo_clip},
+{SPR_STAT_23,bo_machinegun},
+#else
 {SPR_STAT_16,block},			// suit of armor   spr3v
 {SPR_STAT_17,block},			// Hanging cage    "
 {SPR_STAT_18,block},			// SkeletoninCage  "
@@ -55,9 +84,21 @@ struct
 {SPR_STAT_21,bo_key2},			// Key 2           "
 {SPR_STAT_22,block},			// stuff				(SOD:gibs)
 {SPR_STAT_23},					// stuff
+#endif
 //
 // NEW PAGE
 //
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+{SPR_STAT_24,bo_chaingun},
+{SPR_STAT_25,bo_banana},
+{SPR_STAT_26,bo_apple},
+{SPR_STAT_27,bo_grapes},
+{SPR_STAT_28,bo_peach},
+{SPR_STAT_29,bo_fullheal},
+{SPR_STAT_30,block},
+{SPR_STAT_31,block},
+#else
 {SPR_STAT_24,bo_food}, 			// Good food       spr4v
 {SPR_STAT_25,bo_firstaid},		// First aid       "
 {SPR_STAT_26,bo_clip},			// Clip            "
@@ -66,6 +107,18 @@ struct
 {SPR_STAT_29,bo_cross},			// Cross           "
 {SPR_STAT_30,bo_chalice},		// Chalice         "
 {SPR_STAT_31,bo_bible},			// Bible           "
+#endif
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+//
+// NEW PAGE
+//
+{SPR_STAT_32,bo_nutsling},
+{SPR_STAT_33,bo_nuts},
+{SPR_STAT_34,bo_melonsling},
+{SPR_STAT_35,bo_melons},
+{SPR_STAT_36,bo_map},
+#else
 //
 // NEW PAGE
 //
@@ -104,6 +157,7 @@ struct
 #else
 {SPR_STAT_47},					// vines			"
 #endif
+
 //
 // NEW PAGE
 //
@@ -116,6 +170,7 @@ struct
 
 {SPR_STAT_26,bo_clip2},			// Clip            "
 {-1}							// terminator
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 };
 
 /*
@@ -164,10 +219,18 @@ void SpawnStatic (int tilex, int tiley, int type)
 		laststatobj->flags = 0;
 		break;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	case	bo_banana:
+	case 	bo_apple:
+	case 	bo_peach:
+	case	bo_grapes:
+#else
 	case	bo_cross:
 	case	bo_chalice:
 	case	bo_bible:
 	case	bo_crown:
+#endif
 	case	bo_fullheal:
 		if (!loadedgame)
 		  gamestate.treasuretotal++;
@@ -185,11 +248,14 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_machinegun:
 	case	bo_chaingun:
 	case	bo_food:
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case	bo_alpo:
 	case	bo_gibs:
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	case	bo_spear:
+#endif
 #endif
 		laststatobj->flags = FL_BONUS;
 		laststatobj->itemnumber = statinfo[type].type;

@@ -2,6 +2,10 @@
 // at a location in WL_ACT2.C depending on version
 
 extern	statetype s_rocket;
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	statetype s_boom;
+#else
 extern	statetype s_smoke1;
 extern	statetype s_smoke2;
 extern	statetype s_smoke3;
@@ -11,9 +15,15 @@ extern	statetype s_smoke4;
 extern	statetype s_boom2;
 extern	statetype s_boom3;
 #endif
+#endif
 
 void A_Smoke (objtype *ob);
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+statetype s_rocket	 	= {false,SPR_ANIMALPROJ,16,T_Projectile,NULL,&s_rocket};
+statetype s_boom	 	= {false,SPR_ANIMALPROJEXP,18,NULL,NULL,NULL};
+#else
 statetype s_rocket	 	= {true,SPR_ROCKET_1,3,T_Projectile,A_Smoke,&s_rocket};
 statetype s_smoke1	 	= {false,SPR_SMOKE_1,3,NULL,NULL,&s_smoke2};
 statetype s_smoke2	 	= {false,SPR_SMOKE_2,3,NULL,NULL,&s_smoke3};
@@ -26,6 +36,7 @@ statetype s_boom1	 	= {false,SPR_BOOM_1,6,NULL,NULL,&s_boom2};
 statetype s_boom2	 	= {false,SPR_BOOM_2,6,NULL,NULL,&s_boom3};
 statetype s_boom3	 	= {false,SPR_BOOM_3,6,NULL,NULL,NULL};
 #endif
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 
 #ifdef SPEAR
 

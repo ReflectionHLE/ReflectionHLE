@@ -238,8 +238,8 @@ boolean TryWalk (objtype *ob)
 		switch (ob->dir)
 		{
 		case north:
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 			if (ob->obclass == dogobj)
 #else
 			if (ob->obclass == dogobj || ob->obclass == fakeobj)
@@ -263,8 +263,8 @@ boolean TryWalk (objtype *ob)
 			break;
 
 		case east:
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 			if (ob->obclass == dogobj)
 #else
 			if (ob->obclass == dogobj || ob->obclass == fakeobj)
@@ -288,8 +288,8 @@ boolean TryWalk (objtype *ob)
 			break;
 
 		case south:
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 			if (ob->obclass == dogobj)
 #else
 			if (ob->obclass == dogobj || ob->obclass == fakeobj)
@@ -313,8 +313,8 @@ boolean TryWalk (objtype *ob)
 			break;
 
 		case west:
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 			if (ob->obclass == dogobj)
 #else
 			if (ob->obclass == dogobj || ob->obclass == fakeobj)
@@ -746,6 +746,8 @@ void MoveObj (objtype *ob, long move)
 		if (deltay < -MINACTORDIST || deltay > MINACTORDIST)
 			goto moveok;
 
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 		if (obj->obclass == ghostobj)
@@ -753,6 +755,7 @@ void MoveObj (objtype *ob, long move)
 #else
 		if (ob->obclass == ghostobj || ob->obclass == spectreobj)
 			TakeDamage (tics*2,ob);
+#endif
 #endif
 
 	//
@@ -866,19 +869,34 @@ void KillActor (objtype *ob)
 	case guardobj:
 		GivePoints (100);
 		NewState (ob,&s_grddie1);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		PlaceItemType (bo_clip,tilex,tiley);
+#else
 		PlaceItemType (bo_clip2,tilex,tiley);
+#endif
 		break;
 
 	case officerobj:
 		GivePoints (400);
 		NewState (ob,&s_ofcdie1);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		PlaceItemType (bo_clip,tilex,tiley);
+#else
 		PlaceItemType (bo_clip2,tilex,tiley);
+#endif
 		break;
 
 	case mutantobj:
 		GivePoints (700);
 		NewState (ob,&s_mutdie1);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		PlaceItemType (bo_clip,tilex,tiley);
+#else
 		PlaceItemType (bo_clip2,tilex,tiley);
+#endif
 		break;
 
 	case ssobj:
@@ -887,7 +905,12 @@ void KillActor (objtype *ob)
 		if (gamestate.bestweapon < wp_machinegun)
 			PlaceItemType (bo_machinegun,tilex,tiley);
 		else
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			PlaceItemType (bo_clip,tilex,tiley);
+#else
 			PlaceItemType (bo_clip2,tilex,tiley);
+#endif
 		break;
 
 	case dogobj:
@@ -1738,8 +1761,8 @@ boolean SightPlayer (objtype *ob)
 		case giftobj:
 		case fatobj:
 #endif
-		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		case spectreobj:
 		case angelobj:
 		case transobj:

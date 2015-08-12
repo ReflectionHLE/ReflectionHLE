@@ -231,11 +231,17 @@ extern	word	NumDigi;
 extern	word	_seg *DigiList;
 static	char	buf[10];
 
+	// *** S3DNA RESTORATION ***
+	// TODO (RESTORATION) name of variable?
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	boolean			dogetpage = false;
+	int sound; // Define sound variable in S3DNA release here
+#endif
 	boolean			done;
 	ScanCode		scan;
 	int				i,j,k,x;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-	// Define sound variable in pre-v1.4 Apogee releases
+	// Define sound variable in pre-v1.4 Apogee releases here
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	int sound;
 #endif
@@ -248,14 +254,19 @@ static	char	buf[10];
 	for (i = 0,done = false;!done;)
 	{
 		US_ClearWindow();
-		// *** PRE-V1.4 APOGEE RESTORATION ***
-		// Do set sound in pre-v1.4 Apogee releases
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+		// Do set sound in pre-v1.4 Apogee and S3DNA releases
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 		sound = -1;
 #else
 //		sound = -1;
 #endif
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (dogetpage)
+			PM_GetPage(i);
+#endif
 		page = &PMPages[i];
 		US_Print(" Page #");
 		US_PrintUnsigned(i);
@@ -349,9 +360,9 @@ static	char	buf[10];
 				}
 				if (j < NumDigi)
 				{
-					// *** PRE-V1.4 APOGEE RESTORATION ***
-					// Do set sound in pre-v1.4 Apogee releases
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+					// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+					// Do set sound in pre-v1.4 Apogee and S3DNA releases
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 					sound = j;
 #else
 //					sound = j;
@@ -411,9 +422,24 @@ static	char	buf[10];
 			for (j = 0;j < ChunksInFile;j++)
 				PM_GetPage(j);
 			break;
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		case sc_A:
+			dogetpage = true;
+			break;
+#endif
 		case sc_P:
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			if (sound != -1)
+			{
+				PM_GetPage(sound);
+				SD_PlayDigitized(sound,0,0);
+			}
+#else
 //			if (sound != -1)
 //				SD_PlayDigitized(sound);
+#endif
 			break;
 		case sc_Escape:
 			done = true;
@@ -444,6 +470,20 @@ int DebugKeys (void)
 {
 	boolean esc;
 	int level,i;
+
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	memptr ptr;
+	if (Keyboard[sc_A])		// A = allocation test
+	{
+		CenterWindow(12,3);
+		US_PrintCentered("1k allocated");
+		VW_UpdateScreen();
+		IN_Ack();
+		MM_GetPtr(&ptr, 1024);
+		return 1;
+	}
+#endif
 
 	if (Keyboard[sc_B])		// B = border color
 	{
@@ -498,10 +538,18 @@ int DebugKeys (void)
 	if (Keyboard[sc_G])		// G = god mode
 	{
 		CenterWindow (12,2);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (godmode)
+		  US_PrintCentered ("Invulnerability OFF");
+		else
+		  US_PrintCentered ("Invulnerability ON");
+#else
 		if (godmode)
 		  US_PrintCentered ("God mode OFF");
 		else
 		  US_PrintCentered ("God mode ON");
+#endif
 		VW_UpdateScreen();
 		IN_Ack();
 		godmode ^= 1;
@@ -524,11 +572,33 @@ int DebugKeys (void)
 		GivePoints (100000);
 #endif
 		HealSelf (99);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		gamestate.keys = 3;
+		DrawKeys ();
+		gamestate.ammo2 += 10;
+		if (gamestate.ammo2 > 99)
+			gamestate.ammo2 = 99;
+		gamestate.ammo3 += 10;
+		if (gamestate.ammo3 > 99)
+			gamestate.ammo3 = 99;
+		gamestate.maxammo = 299;
+		gamestate.weaponinv[0] = 1;
+		gamestate.weaponinv[1] = 1;
+		gamestate.weaponinv[3] = 1;
+		gamestate.weaponinv[2] = 1;
+		gamestate.fullmap = true;
+		GiveWeapon (wp_chaingun);
+		gamestate.ammo += 50;
+		if (gamestate.ammo > gamestate.maxammo)
+			gamestate.ammo = gamestate.maxammo;
+#else
 		if (gamestate.bestweapon<wp_chaingun)
 			GiveWeapon (gamestate.bestweapon+1);
 		gamestate.ammo += 50;
 		if (gamestate.ammo > 99)
 			gamestate.ammo = 99;
+#endif
 		DrawAmmo ();
 		IN_Ack ();
 		return 1;
@@ -538,8 +608,8 @@ int DebugKeys (void)
 		DebugMemory();
 		return 1;
 	}
-	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (defined SPEAR) || (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+	// *** SHAREWARE V1.0+1.1 APOGEE + S3DNA RESTORATION ***
+#if (defined SPEAR) || (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 //#ifdef SPEAR
 	else if (Keyboard[sc_N])			// N = no clip
 	{
@@ -606,7 +676,11 @@ int DebugKeys (void)
 	{
 		CenterWindow(26,3);
 		PrintY+=6;
-#ifndef SPEAR
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		US_Print("  Warp to which level(1-30):");
+#elif (defined SPEAR)
+//#ifndef SPEAR
 		US_Print("  Warp to which level(1-10):");
 #else
 		US_Print("  Warp to which level(1-21):");
@@ -616,15 +690,16 @@ int DebugKeys (void)
 		if (!esc)
 		{
 			level = atoi (str);
-			// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+			// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			if (level>0 && level<31)
+#elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 			if (level>0 && level<21)
-#else
-#ifndef SPEAR
+#elif (!defined SPEAR)
+//#ifndef SPEAR
 			if (level>0 && level<11)
 #else
 			if (level>0 && level<22)
-#endif
 #endif
 			{
 				gamestate.mapon = level-1;
@@ -638,10 +713,26 @@ int DebugKeys (void)
 		CenterWindow (12,3);
 		US_PrintCentered ("Extra stuff!");
 		VW_UpdateScreen();
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		gamestate.killcount = gamestate.killtotal;
+		gamestate.secretcount = gamestate.secrettotal;
+		gamestate.treasurecount = gamestate.treasuretotal;
+		gamestate.TimeCount = 0;
+#else
 		// DEBUG: put stuff here
+#endif
 		IN_Ack ();
 		return 1;
 	}
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	else if (Keyboard[sc_Z])			// Z = Wait for key input
+	{
+		IN_Ack ();
+		return 1;
+	}
+#endif
 
 	return 0;
 }

@@ -80,8 +80,11 @@ void T_Projectile (objtype *ob)
 	if (!ProjectileTryMove (ob))
 #endif
 	{
-		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+		// *** SHAREWARE V1.0+1.1 APOGEE + S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		PlaySoundLocActor(MISSILEHITSND,ob);
+		ob->state = &s_boom;
+#elif (defined GAMEVER_RESTORATION_WL1_APO10)
 		RemoveObj(ob);
 #elif (defined GAMEVER_RESTORATION_WL1_APO11)
 		ob->state = NULL;
@@ -116,17 +119,20 @@ void T_Projectile (objtype *ob)
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 		case rocketobj:
-		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		case hrocketobj:
 		case sparkobj:
 #endif
 			damage = (US_RndT() >>3) + 30;
 			break;
 #endif
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		case fireobj:
 			damage = (US_RndT() >>3);
 			break;
+#endif
 		}
 
 		TakeDamage (damage,ob);

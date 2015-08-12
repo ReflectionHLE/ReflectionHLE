@@ -102,7 +102,7 @@ void EndSpear(void)
 #endif
 
 // *** S3DNA RESTORATION ***
-// This appears to contains variants of code sfrom places like ThreeDRefresh
+// This appears to contains variants of code from places like ThreeDRefresh
 // (ASM code, frame counting) and PlayLoop (screen fading and user input checks)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 

@@ -44,8 +44,8 @@ typedef enum {
 		HALTSND,                 // 29
 		ATKMACHINEGUNSND,        // 30
 		NAZIFIRESND,             // 31
-		MELONHITSND,             // 32
-		MELONFIRESND,            // 33
+		WATERMELONHITSND,        // 32
+		WATERMELONFIRESND,       // 33
 		NOWAYSND,                // 34
 		ESCPRESSEDSND,           // 35
 		MOVEGUN1SND,             // 36

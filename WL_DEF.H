@@ -173,8 +173,8 @@
 
 enum	{
 		SPR_DEMO,
-		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+		// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		SPR_DEATHCAM,
 #endif
 //
@@ -195,8 +195,22 @@ enum	{
 		SPR_STAT_32,SPR_STAT_33,SPR_STAT_34,SPR_STAT_35,
 		SPR_STAT_36,SPR_STAT_37,SPR_STAT_38,SPR_STAT_39,
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		SPR_STAT_40,
+
+		SPR_WATERMELON,SPR_WATERMELONEXP,
+
+		SPR_GAMEOVER,
+
+		SPR_ANIMALPROJ,SPR_CANTALOUPE,
+		SPR_ANIMALPROJEXP,SPR_CANTALOUPEEXP,
+
+		SPR_YOUWIN,
+#else
 		SPR_STAT_40,SPR_STAT_41,SPR_STAT_42,SPR_STAT_43,
 		SPR_STAT_44,SPR_STAT_45,SPR_STAT_46,SPR_STAT_47,
+#endif
 
 #ifdef SPEAR
 		SPR_STAT_48,SPR_STAT_49,SPR_STAT_50,SPR_STAT_51,
@@ -205,8 +219,11 @@ enum	{
 //
 // guard
 //
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		SPR_GRD_S_1,SPR_GRD_S_2,SPR_GRD_S_3,SPR_GRD_S_4,
 		SPR_GRD_S_5,SPR_GRD_S_6,SPR_GRD_S_7,SPR_GRD_S_8,
+#endif
 
 		SPR_GRD_W1_1,SPR_GRD_W1_2,SPR_GRD_W1_3,SPR_GRD_W1_4,
 		SPR_GRD_W1_5,SPR_GRD_W1_6,SPR_GRD_W1_7,SPR_GRD_W1_8,
@@ -220,10 +237,18 @@ enum	{
 		SPR_GRD_W4_1,SPR_GRD_W4_2,SPR_GRD_W4_3,SPR_GRD_W4_4,
 		SPR_GRD_W4_5,SPR_GRD_W4_6,SPR_GRD_W4_7,SPR_GRD_W4_8,
 
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		SPR_GRD_PAIN_1,SPR_GRD_DIE_1,SPR_GRD_DIE_2,SPR_GRD_DIE_3,
 		SPR_GRD_PAIN_2,SPR_GRD_DEAD,
+#endif
 
 		SPR_GRD_SHOOT1,SPR_GRD_SHOOT2,SPR_GRD_SHOOT3,
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		SPR_GRD_DEAD,SPR_GRD_PAIN,SPR_GRD_DIE_1,SPR_GRD_DIE_2,
+		SPR_GRD_DIE_3,
+#endif
 
 //
 // dogs
@@ -240,16 +265,51 @@ enum	{
 		SPR_DOG_W4_1,SPR_DOG_W4_2,SPR_DOG_W4_3,SPR_DOG_W4_4,
 		SPR_DOG_W4_5,SPR_DOG_W4_6,SPR_DOG_W4_7,SPR_DOG_W4_8,
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		SPR_DOG_JUMP1,SPR_DOG_JUMP2,SPR_DOG_JUMP3,SPR_DOG_JUMP4,
+		SPR_DOG_DIE_1,SPR_DOG_DIE_2,SPR_DOG_DIE_3,SPR_DOG_DEAD,
+#else
 		SPR_DOG_DIE_1,SPR_DOG_DIE_2,SPR_DOG_DIE_3,SPR_DOG_DEAD,
 		SPR_DOG_JUMP1,SPR_DOG_JUMP2,SPR_DOG_JUMP3,
+#endif
+
+
+
+		// *** S3DNA RESTORATION ***
+		// Relocated and modified Officer sprite definitions
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+//
+// officer
+//
+		SPR_OFC_W1_1,SPR_OFC_W1_2,SPR_OFC_W1_3,SPR_OFC_W1_4,
+		SPR_OFC_W1_5,SPR_OFC_W1_6,SPR_OFC_W1_7,SPR_OFC_W1_8,
+
+		SPR_OFC_W2_1,SPR_OFC_W2_2,SPR_OFC_W2_3,SPR_OFC_W2_4,
+		SPR_OFC_W2_5,SPR_OFC_W2_6,SPR_OFC_W2_7,SPR_OFC_W2_8,
+
+		SPR_OFC_W3_1,SPR_OFC_W3_2,SPR_OFC_W3_3,SPR_OFC_W3_4,
+		SPR_OFC_W3_5,SPR_OFC_W3_6,SPR_OFC_W3_7,SPR_OFC_W3_8,
+
+		SPR_OFC_W4_1,SPR_OFC_W4_2,SPR_OFC_W4_3,SPR_OFC_W4_4,
+		SPR_OFC_W4_5,SPR_OFC_W4_6,SPR_OFC_W4_7,SPR_OFC_W4_8,
+
+		SPR_OFC_SHOOT1,SPR_OFC_SHOOT2,SPR_OFC_SHOOT3,
+
+		SPR_OFC_DEAD,SPR_OFC_PAIN,SPR_OFC_DIE_1,SPR_OFC_DIE_2,
+		SPR_OFC_DIE_3,
+#endif
 
 
 
 //
 // ss
 //
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		SPR_SS_S_1,SPR_SS_S_2,SPR_SS_S_3,SPR_SS_S_4,
 		SPR_SS_S_5,SPR_SS_S_6,SPR_SS_S_7,SPR_SS_S_8,
+#endif
 
 		SPR_SS_W1_1,SPR_SS_W1_2,SPR_SS_W1_3,SPR_SS_W1_4,
 		SPR_SS_W1_5,SPR_SS_W1_6,SPR_SS_W1_7,SPR_SS_W1_8,
@@ -263,16 +323,27 @@ enum	{
 		SPR_SS_W4_1,SPR_SS_W4_2,SPR_SS_W4_3,SPR_SS_W4_4,
 		SPR_SS_W4_5,SPR_SS_W4_6,SPR_SS_W4_7,SPR_SS_W4_8,
 
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		SPR_SS_PAIN_1,SPR_SS_DIE_1,SPR_SS_DIE_2,SPR_SS_DIE_3,
 		SPR_SS_PAIN_2,SPR_SS_DEAD,
+#endif
 
 		SPR_SS_SHOOT1,SPR_SS_SHOOT2,SPR_SS_SHOOT3,
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		SPR_SS_DEAD,SPR_SS_PAIN,SPR_SS_DIE_1,SPR_SS_DIE_2,
+		SPR_SS_DIE_3,
+#endif
 
 //
 // mutant
 //
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		SPR_MUT_S_1,SPR_MUT_S_2,SPR_MUT_S_3,SPR_MUT_S_4,
 		SPR_MUT_S_5,SPR_MUT_S_6,SPR_MUT_S_7,SPR_MUT_S_8,
+#endif
 
 		SPR_MUT_W1_1,SPR_MUT_W1_2,SPR_MUT_W1_3,SPR_MUT_W1_4,
 		SPR_MUT_W1_5,SPR_MUT_W1_6,SPR_MUT_W1_7,SPR_MUT_W1_8,
@@ -286,11 +357,22 @@ enum	{
 		SPR_MUT_W4_1,SPR_MUT_W4_2,SPR_MUT_W4_3,SPR_MUT_W4_4,
 		SPR_MUT_W4_5,SPR_MUT_W4_6,SPR_MUT_W4_7,SPR_MUT_W4_8,
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		SPR_MUT_SHOOT1,SPR_MUT_SHOOT2,SPR_MUT_SHOOT3,
+
+		SPR_MUT_DEAD,SPR_MUT_PAIN,SPR_MUT_DIE_1,SPR_MUT_DIE_2,
+		SPR_MUT_DIE_3,
+#else
 		SPR_MUT_PAIN_1,SPR_MUT_DIE_1,SPR_MUT_DIE_2,SPR_MUT_DIE_3,
 		SPR_MUT_PAIN_2,SPR_MUT_DIE_4,SPR_MUT_DEAD,
 
 		SPR_MUT_SHOOT1,SPR_MUT_SHOOT2,SPR_MUT_SHOOT3,SPR_MUT_SHOOT4,
+#endif
 
+		// *** S3DNA RESTORATION ***
+		// Relocated and modified Officer sprite definitions found above
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 //
 // officer
 //
@@ -313,7 +395,57 @@ enum	{
 		SPR_OFC_PAIN_2,SPR_OFC_DIE_4,SPR_OFC_DEAD,
 
 		SPR_OFC_SHOOT1,SPR_OFC_SHOOT2,SPR_OFC_SHOOT3,
+#endif
 
+		// *** S3DNA RESTORATION ***
+		// Some sprite definitions shufflings and edits
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+//
+// hans
+//
+		SPR_BOSS_W1,SPR_BOSS_W2,SPR_BOSS_W3,SPR_BOSS_W4,
+		SPR_BOSS_DIE1,SPR_BOSS_DIE2,SPR_BOSS_DIE3,SPR_BOSS_DEAD,
+		SPR_BOSS_SHOOT1,SPR_BOSS_SHOOT2,SPR_BOSS_SHOOT3,
+
+//
+// gretel
+//
+		SPR_GRETEL_W1,SPR_GRETEL_W2,SPR_GRETEL_W3,SPR_GRETEL_W4,
+		SPR_GRETEL_DIE1,SPR_GRETEL_DIE2,SPR_GRETEL_DIE3,SPR_GRETEL_DEAD,
+		SPR_GRETEL_SHOOT1,SPR_GRETEL_SHOOT2,SPR_GRETEL_SHOOT3,
+
+//
+// giftmacher
+//
+		SPR_GIFT_W1,SPR_GIFT_W2,SPR_GIFT_W3,SPR_GIFT_W4,
+		SPR_GIFT_DIE1,SPR_GIFT_DIE2,SPR_GIFT_DIE3,SPR_GIFT_DEAD,
+		SPR_GIFT_SHOOT1,SPR_GIFT_SHOOT2,SPR_GIFT_SHOOT3,SPR_GIFT_SHOOT4,
+
+//
+// schabbs
+//
+		SPR_SCHABB_W1,SPR_SCHABB_W2,SPR_SCHABB_W3,SPR_SCHABB_W4,
+		SPR_SCHABB_DIE1,SPR_SCHABB_DIE2,SPR_SCHABB_DIE3,SPR_SCHABB_DEAD,
+		SPR_SCHABB_SHOOT1,SPR_SCHABB_SHOOT2,
+
+//
+// fat face
+//
+		SPR_FAT_W1,SPR_FAT_W2,SPR_FAT_W3,SPR_FAT_W4,
+		SPR_FAT_DEAD,SPR_FAT_DIE1,SPR_FAT_DIE2,SPR_FAT_DIE3,
+		SPR_FAT_SHOOT1,SPR_FAT_SHOOT2,SPR_FAT_SHOOT3,SPR_FAT_SHOOT4,
+
+//
+// hitler
+//
+		SPR_MECHA_W1,SPR_MECHA_W2,SPR_MECHA_W3,SPR_MECHA_W4,
+		SPR_MECHA_DIE1,SPR_MECHA_DIE2,SPR_MECHA_DIE3,SPR_MECHA_DEAD,
+		SPR_MECHA_SHOOT1,SPR_MECHA_SHOOT2,SPR_MECHA_SHOOT3,
+
+		SPR_HITLER_W1,SPR_HITLER_W2,SPR_HITLER_W3,SPR_HITLER_W4,
+		SPR_HITLER_DIE1,SPR_HITLER_DIE2,SPR_HITLER_DIE3,SPR_HITLER_DEAD,
+		SPR_HITLER_SHOOT1,SPR_HITLER_SHOOT2,SPR_HITLER_SHOOT3,
+#else
 #ifndef SPEAR
 //
 // ghosts
@@ -486,6 +618,7 @@ enum	{
 		SPR_ANGEL_DIE5,SPR_ANGEL_DIE6,SPR_ANGEL_DIE7,SPR_ANGEL_DEAD,
 
 #endif
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 
 //
 // player attack frames
@@ -502,6 +635,14 @@ enum	{
 		SPR_CHAINREADY,SPR_CHAINATK1,SPR_CHAINATK2,SPR_CHAINATK3,
 		SPR_CHAINATK4,
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		SPR_CANTAREADY,SPR_CANTAATK1,SPR_CANTAATK2,SPR_CANTAATK3,
+		SPR_CANTAATK4,
+
+		SPR_WATERREADY,SPR_WATERATK1,SPR_WATERATK2,SPR_WATERATK3,
+		SPR_WATERATK4,
+#endif
 		};
 
 
@@ -546,8 +687,24 @@ typedef enum {
 	officerobj,
 	ssobj,
 	dogobj,
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	mutantobj,
+#endif
 	bossobj,
 	schabbobj,
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	gretelobj,
+	giftobj,
+	fatobj,
+	mechahitlerobj,
+	realhitlerobj,
+	rocketobj,
+	needleobj,
+	cantaloupeobj,
+	watermelonobj
+#else
 	fakeobj,
 	mechahitlerobj,
 	mutantobj,
@@ -560,7 +717,6 @@ typedef enum {
 	giftobj,
 	fatobj,
 	rocketobj
-
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	,
@@ -573,33 +729,58 @@ typedef enum {
 	hrocketobj,
 	sparkobj
 #endif
+#endif // *** S3DNA RESTORATION ***
 } classtype;
 
 typedef enum {
 	dressing,
 	block,
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	bo_quiz,
+#else
 	bo_gibs,
 	bo_alpo,
+#endif
 	bo_firstaid,
 	bo_key1,
 	bo_key2,
 	bo_key3,
 	bo_key4,
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	bo_banana,
+	bo_apple,
+	bo_peach,
+	bo_clip,
+#else
 	bo_cross,
 	bo_chalice,
 	bo_bible,
 	bo_crown,
 	bo_clip,
 	bo_clip2,
+#endif
 	bo_machinegun,
 	bo_chaingun,
 	bo_food,
 	bo_fullheal
-// *** PRE-V1.4 APOGEE RESTORATION ***
+	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	,
 	bo_25clip,
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	bo_grapes,
+	bo_bag,
+	bo_nutsling,
+	bo_nuts,
+	bo_melonsling,
+	bo_melons,
+	bo_map
+#else
 	bo_spear
+#endif
 #endif
 } stat_t;
 
@@ -629,8 +810,19 @@ typedef enum {
 	en_officer,
 	en_ss,
 	en_dog,
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	en_mutant,
+#endif
 	en_boss,
 	en_schabbs,
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	en_gretel,
+	en_fat,
+	en_gift,
+	en_hitler
+#else
 	en_fake,
 	en_hitler,
 	en_mutant,
@@ -651,6 +843,7 @@ typedef enum {
 	en_will,
 	en_death
 #endif
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 } enemy_t;
 
 
@@ -759,7 +952,12 @@ enum	{
 };
 
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define NUMWEAPONS	7
+#else
 #define NUMWEAPONS	5
+#endif
 typedef enum	{
 	wp_knife,
 	wp_pistol,
@@ -876,9 +1074,9 @@ extern	int			shootdelta;
 
 extern	int			dirangle[9];
 
-// *** PRE-V1.4 APOGEE RESTORATION ***
+// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 extern	boolean         startgame,loadedgame
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 	,virtualreality
 #endif
 	;
@@ -1407,18 +1605,16 @@ extern	statetype s_mutpain1;
 #endif
 
 extern	statetype s_deathcam;
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	statetype s_playerdeath;
+#endif
 
 extern	statetype s_schabbdeathcam2;
 extern	statetype s_hitlerdeathcam2;
 extern	statetype s_giftdeathcam2;
 extern	statetype s_fatdeathcam2;
 
-// *** S3DNA RESTORATION ***
-// TODO (RESTORATION) Probably cannot explain these...
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-extern	statetype s_nullstate;
-extern	statetype s_nullstate2;
-#endif
 
 
 // *** S3DNA RESTORATION ***
