@@ -442,6 +442,14 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
 	unsigned	far *cmdptr;
 	boolean		leftvis,rightvis;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (shapenum >= SPR_LAST)
+	{
+		sprintf (str, "ScaleShape: Invalid sprite %u!", shapenum);
+		Quit (str);
+	}
+#endif
 
 	shape = PM_GetSpritePage (shapenum);
 
@@ -646,6 +654,14 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 	unsigned	far *cmdptr;
 	boolean		leftvis,rightvis;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (shapenum >= SPR_LAST)
+	{
+		sprintf (str, "ScaleShape: Invalid sprite %u!", shapenum);
+		Quit (str);
+	}
+#endif
 
 	shape = PM_GetSpritePage (shapenum);
 

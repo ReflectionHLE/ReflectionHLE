@@ -127,9 +127,9 @@ typedef enum {
 		FACE7BPIC,                           // 117
 		FACE7CPIC,                           // 118
 		FACE8APIC,                           // 119
-		GOD0PIC,                             // 120
-		GOD1PIC,                             // 121
-		GOD2PIC,                             // 122
+		GODMODEFACE1PIC,                     // 120
+		GODMODEFACE2PIC,                     // 121
+		GODMODEFACE3PIC,                     // 122
 		GOTGATLINGPIC,                       // 123
 		PAUSEDPIC,                           // 124
 		GETPSYCHEDPIC,                       // 125

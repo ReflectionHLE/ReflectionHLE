@@ -384,7 +384,7 @@ void ScanInfoPlane (void)
 				break;
 			case 100:
 			case 101:
-				SpawnBonus(x,y,tile==101);
+				SpawnStaircase(x,y,tile==101);
 				break;
 #endif
 
@@ -1156,13 +1156,20 @@ void DrawPlayScreen (void)
 	UNCACHEGRCHUNK (STATUSBARPIC);
 #endif
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	DrawFruit ();
+#endif
 	DrawFace ();
 	DrawHealth ();
 	DrawLives ();
 	DrawLevel ();
 	DrawAmmo ();
 	DrawKeys ();
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	DrawWeapon ();
+#endif
 	DrawScore ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***

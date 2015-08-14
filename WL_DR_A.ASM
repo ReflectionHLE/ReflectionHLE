@@ -440,7 +440,12 @@ vertcheck:
 vertop:								; 0x7e = jle (ytilestep==-1)
 	jle	horizentry					; 0x7d = jge (ytilestep==1)
 vertentry:
+	; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+	test [BYTE tilemap+si],0dfh
+ELSE
 	test [BYTE tilemap+si],0ffh		; tilehit = *((byte *)tilemap+xspot);
+ENDIF
 	jnz	hitvert
 passvert:
 	mov	[BYTE spotvis+si],1			; *((byte *)spotvis+xspot) = true;
@@ -456,6 +461,10 @@ passvert:
 	EVEN
 hitvert:
 	mov	al,[BYTE tilemap+si]		; tilehit = *((byte *)tilemap+xspot);
+	; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+	and	al,0dfh
+ENDIF
 	mov	[BYTE tilehit],al
 	or	al,al						; set flags
 	jns	notvertdoor
@@ -481,7 +490,12 @@ horizcheck:
 horizop:							; 0x7e = jle (xtilestep==-1)
 	jle	vertentry					; 0x7d = jge (xtilestep==1)
 horizentry:
+	; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+	test [BYTE tilemap+di],0dfh
+ELSE
 	test [BYTE tilemap+di],0ffh		; tilehit = *((byte *)tilemap+yspot);
+ENDIF
 	jnz	hithoriz
 passhoriz:
 	mov	[BYTE spotvis+di],1			; *((byte *)spotvis+yspot) = true;
@@ -497,6 +511,10 @@ passhoriz:
 	EVEN
 hithoriz:
 	mov	al,[BYTE tilemap+di]		; tilehit = *((byte *)tilemap+yspot);
+	; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+	and	al,0dfh
+ENDIF
 	mov	[BYTE tilehit],al
 	or	al,al						; set flags
 	js	horizdoor

@@ -81,7 +81,10 @@ int	episodetable[]   = {1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,5,6,6,6,6,6,
 int	mapnumbertable[] = {1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1};
 #endif
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 void DrawWeapon (void);
+#endif
 void GiveWeapon (int weapon);
 void	GiveAmmo (int ammo);
 
@@ -124,16 +127,65 @@ void CheckWeaponChange (void)
 {
 	int	i,buttons;
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if (!gamestate.ammo)		// must use knife with no ammo
 		return;
+#endif
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	for (i=wp_knife ; i<=wp_watermelon ; i++)
+#else
 	for (i=wp_knife ; i<=gamestate.bestweapon ; i++)
+#endif
 		if (buttonstate[bt_readyknife+i-wp_knife])
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			switch (i)
+			{
+			case wp_knife:
+				gamestate.weapon = gamestate.chosenweapon = i;
+				DrawAmmo ();
+				break;
+			case wp_chaingun:
+				if (!gamestate.weaponinv[1])
+					break;
+			case wp_machinegun:
+				if (!gamestate.weaponinv[0])
+					break;
+			case wp_pistol:
+				if (gamestate.ammo)
+				{
+					gamestate.weapon = gamestate.chosenweapon = i;
+					DrawAmmo ();
+					return;
+				}
+				break;
+			case wp_cantaloupe:
+				if (gamestate.weaponinv[3] && gamestate.ammo2)
+				{
+					gamestate.weapon = gamestate.chosenweapon = i;
+					DrawAmmo ();
+					return;
+				}
+				break;
+			case wp_watermelon:
+				if (gamestate.weaponinv[3] && gamestate.ammo3)
+				{
+					gamestate.weapon = gamestate.chosenweapon = i;
+					DrawAmmo ();
+					return;
+				}
+				break;
+			}
+#else
 		{
 			gamestate.weapon = gamestate.chosenweapon = i;
 			DrawWeapon ();
 			return;
 		}
+#endif
 }
 
 
@@ -303,23 +355,34 @@ void DrawFace (void)
 #endif
 	if (gamestate.health)
 	{
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (godmode)
+			StatusDrawPic (19,4,GODMODEFACE1PIC+gamestate.faceframe);
+		else
+			StatusDrawPic (19,4,FACE1APIC+3*((100-gamestate.health)/16)+gamestate.faceframe);
+#else
 		#ifdef SPEAR
 		if (godmode)
 			StatusDrawPic (17,4,GODMODEFACE1PIC+gamestate.faceframe);
 		else
 		#endif
 		StatusDrawPic (17,4,FACE1APIC+3*((100-gamestate.health)/16)+gamestate.faceframe);
+#endif
 	}
 	else
 	{
 	// *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
-//#ifndef SPEAR
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	   StatusDrawPic (19,4,FACE8APIC);
+#else
+#ifndef SPEAR
 	 if (LastAttacker->obclass == needleobj)
 	   StatusDrawPic (17,4,MUTANTBJPIC);
 	 else
 #endif
 	   StatusDrawPic (17,4,FACE8APIC);
+#endif
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
@@ -345,7 +408,12 @@ int	facecount;
 void	UpdateFace (void)
 {
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (SD_SoundPlaying() == GETITEMSND)
+#else
 	if (SD_SoundPlaying() == GETGATLINGSND)
+#endif
 	  return;
 
 	facecount += tics;
@@ -450,8 +518,20 @@ void	TakeDamage (int points,objtype *attacker)
 	if (gamestate.victoryflag)
 		return;
 #endif
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	switch (gamestate.difficulty)
+	{
+	case gd_baby: points>>=2; break;
+	case gd_easy: points>>=1; break;
+	case gd_medium: points-=(points>>2); break;
+	}
+	if (!points && (gamestate.difficulty != gd_baby))
+		points++;
+#else
 	if (gamestate.difficulty==gd_baby)
 	  points>>=2;
+#endif
 
 	if (!godmode)
 		gamestate.health -= points;
@@ -464,6 +544,10 @@ void	TakeDamage (int points,objtype *attacker)
 	}
 
 	StartDamageFlash (points);
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	SD_PlaySound (TAKEDAMAGESND);
+#endif
 
 	gotgatgun=0;
 
@@ -517,12 +601,25 @@ void	HealSelf (int points)
 
 void	DrawLevel (void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	int episode, mapnum;
+
+	if (gamestate.mapon >= 31)
+		Quit ("DrawLevel(): Bad level number!\n");
+
+	episode = episodetable[gamestate.mapon];
+	mapnum = mapnumbertable[gamestate.mapon];
+	LatchNumber (2,16,1,episode);
+	LatchNumber (4,16,1,mapnum);
+#else
 #ifdef SPEAR
 	if (gamestate.mapon == 20)
 		LatchNumber (2,16,2,18);
 	else
 #endif
 	LatchNumber (2,16,2,gamestate.mapon+1);
+#endif
 }
 
 //===========================================================================
@@ -538,7 +635,12 @@ void	DrawLevel (void)
 
 void	DrawLives (void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	LatchNumber (16,16,1,gamestate.lives);
+#else
 	LatchNumber (14,16,1,gamestate.lives);
+#endif
 }
 
 
@@ -570,7 +672,12 @@ void	GiveExtraMan (void)
 
 void	DrawScore (void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	LatchNumber (7,16,7,gamestate.score);
+#else
 	LatchNumber (6,16,6,gamestate.score);
+#endif
 }
 
 /*
@@ -594,6 +701,8 @@ void	GivePoints (long points)
 
 //===========================================================================
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 ==================
 =
@@ -611,15 +720,13 @@ void DrawWeapon (void)
 	temp = bufferofs;
 	bufferofs = 0;
 #endif
-	// *** S3DNA RESTORATION *** (TODO may actually comment out DrawWeapon)
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
-#endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 	bufferofs = temp;
 #endif
 }
+#endif
 
 
 /*
@@ -639,6 +746,18 @@ void DrawKeys (void)
 	temp = bufferofs;
 	bufferofs = 0;
 #endif
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (gamestate.keys & 1)
+		StatusDrawPic (32,4,GOLDKEYPIC);
+	else
+		StatusDrawPic (32,4,NOKEYPIC);
+
+	if (gamestate.keys & 2)
+		StatusDrawPic (32,20,SILVERKEYPIC);
+	else
+		StatusDrawPic (32,20,NOKEYPIC);
+#else
 	if (gamestate.keys & 1)
 		StatusDrawPic (30,4,GOLDKEYPIC);
 	else
@@ -648,6 +767,7 @@ void DrawKeys (void)
 		StatusDrawPic (30,20,SILVERKEYPIC);
 	else
 		StatusDrawPic (30,20,NOKEYPIC);
+#endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 	bufferofs = temp;
@@ -655,6 +775,31 @@ void DrawKeys (void)
 }
 
 
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+/*
+==================
+=
+= GiveFruit
+=
+==================
+*/
+
+void GiveFruit (int amount)
+{
+	gamestate.fruit += amount;
+	while (gamestate.fruit >= 50)
+	{
+		gamestate.fruit -= 50;
+		GiveExtraMan ();
+	}
+	gamestate.treasurecount++;
+	DrawFruit ();
+}
+
+
+#endif
 
 /*
 ==================
@@ -672,7 +817,12 @@ void GiveWeapon (int weapon)
 		gamestate.bestweapon = gamestate.weapon
 		= gamestate.chosenweapon = weapon;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	DrawAmmo ();
+#else
 	DrawWeapon ();
+#endif
 }
 
 
@@ -688,7 +838,29 @@ void GiveWeapon (int weapon)
 
 void	DrawAmmo (void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	int ammo;
+	switch (gamestate.weapon)
+	{
+	case wp_pistol:
+	case wp_machinegun:
+	case wp_chaingun:
+		ammo = gamestate.ammo;
+		break;
+	case wp_cantaloupe:
+		ammo = gamestate.ammo2;
+		break;
+	case wp_watermelon:
+		ammo = gamestate.ammo3;
+		break;
+	default:
+		ammo = 0;
+	}
+	LatchNumber (28,16,3,ammo);
+#else
 	LatchNumber (27,16,2,gamestate.ammo);
+#endif
 }
 
 
@@ -702,6 +874,16 @@ void	DrawAmmo (void)
 
 void	GiveAmmo (int ammo)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	gamestate.ammo += ammo;
+	if (gamestate.ammo > gamestate.maxammo)
+		gamestate.ammo = gamestate.maxammo;
+	if (gamestate.weapon == wp_knife)
+		if (!gamestate.attackframe)
+			if ((gamestate.chosenweapon == wp_chaingun) || (gamestate.chosenweapon == wp_machinegun) || (gamestate.chosenweapon == wp_pistol))
+				gamestate.weapon = gamestate.chosenweapon;
+#else
 	if (!gamestate.ammo)				// knife was out
 	{
 		if (!gamestate.attackframe)
@@ -713,8 +895,61 @@ void	GiveAmmo (int ammo)
 	gamestate.ammo += ammo;
 	if (gamestate.ammo > 99)
 		gamestate.ammo = 99;
+#endif
 	DrawAmmo ();
 }
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+/*
+===============
+=
+= GiveAmmo2
+=
+===============
+*/
+
+void	GiveAmmo2 (int ammo)
+{
+	gamestate.ammo2 += ammo;
+	if (gamestate.ammo2 > 99)
+		gamestate.ammo2 = 99;
+	if (gamestate.weapon == wp_knife)
+		if (gamestate.weaponinv[3])
+		{
+			if (!gamestate.attackframe)
+				gamestate.weapon = wp_cantaloupe;
+			else
+				gamestate.chosenweapon = wp_cantaloupe;
+		}
+	DrawAmmo ();
+}
+
+
+/*
+===============
+=
+= GiveAmmo3
+=
+===============
+*/
+
+void	GiveAmmo3 (int ammo)
+{
+	gamestate.ammo3 += ammo;
+	if (gamestate.ammo3 > 99)
+		gamestate.ammo3 = 99;
+	if (gamestate.weapon == wp_knife)
+		if (gamestate.weaponinv[2])
+		{
+			if (!gamestate.attackframe)
+				gamestate.weapon = wp_watermelon;
+			else
+				gamestate.chosenweapon = wp_watermelon;
+		}
+	DrawAmmo ();
+}
+#endif
 
 //===========================================================================
 
@@ -768,14 +1003,38 @@ void GetBonus (statobj_t *check)
 
 	case	bo_key1:
 	case	bo_key2:
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	case	bo_key3:
 	case	bo_key4:
+#endif
 		GiveKey (check->itemnumber - bo_key1);
 		SD_PlaySound (GETKEYSND);
 		break;
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	case	bo_banana:
+		SD_PlaySound (GETITEMSND);
+		GiveFruit (1);
+		break;
+	case	bo_apple:
+		SD_PlaySound (GETITEMSND);
+		GiveFruit (1);
+		break;
+	case	bo_unusedfruit:
+		SD_PlaySound (GETITEMSND);
+		GiveFruit (1);
+		break;
+	case	bo_peach:
+		SD_PlaySound (GETITEMSND);
+		GiveFruit (1);
+		break;
+	case	bo_grapes:
+		SD_PlaySound (GETITEMSND);
+		GiveFruit (1);
+		break;
+#else
 	case	bo_cross:
 		SD_PlaySound (BONUS1SND);
 		GivePoints (100);
@@ -799,7 +1058,12 @@ void GetBonus (statobj_t *check)
 #endif
 
 	case	bo_clip:
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (gamestate.ammo == gamestate.maxammo)
+#else
 		if (gamestate.ammo == 99)
+#endif
 			return;
 
 		SD_PlaySound (GETAMMOSND);
@@ -816,9 +1080,16 @@ void GetBonus (statobj_t *check)
 		break;
 #endif
 
-#ifdef SPEAR
+		// *** S3DNA RESTORATION ***
+#if (defined SPEAR) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+//#ifdef SPEAR
 	case	bo_25clip:
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (gamestate.ammo == gamestate.maxammo)
+#else
 		if (gamestate.ammo == 99)
+#endif
 		  return;
 
 		SD_PlaySound (GETAMMOBOXSND);
@@ -827,10 +1098,18 @@ void GetBonus (statobj_t *check)
 #endif
 
 	case	bo_machinegun:
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		gamestate.weaponinv[0] = 1;
+#endif
 		SD_PlaySound (GETMACHINESND);
 		GiveWeapon (wp_machinegun);
 		break;
 	case	bo_chaingun:
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		gamestate.weaponinv[1] = 1;
+#endif
 		SD_PlaySound (GETGATLINGSND);
 		GiveWeapon (wp_chaingun);
 
@@ -840,7 +1119,12 @@ void GetBonus (statobj_t *check)
 		bufferofs = 0;
 
 #endif
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		StatusDrawPic (19,4,GOTGATLINGPIC);
+#else
 		StatusDrawPic (17,4,GOTGATLINGPIC);
+#endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 		bufferofs = temp;
@@ -853,7 +1137,10 @@ void GetBonus (statobj_t *check)
 	case	bo_fullheal:
 		SD_PlaySound (BONUS1UPSND);
 		HealSelf (99);
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		GiveAmmo (25);
+#endif
 		GiveExtraMan ();
 		gamestate.treasurecount++;
 		break;
@@ -867,7 +1154,98 @@ void GetBonus (statobj_t *check)
 		break;
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	case	bo_quiz:
+		if (demoplayback)
+		{
+			HealSelf (4);
+			break;
+		}
+		if ((gamestate.health >= 100) && (gamestate.ammo >= gamestate.maxammo))
+			return;
+
+		if (BibleQuizDisabled)
+		{
+			HealSelf (4);
+			StartBonusFlash ();
+		}
+		else
+		{
+			if (AskQuestion (quiznumber))
+				StartBonusFlash ();
+			if (++quiznumber >= 99)
+				quiznumber = 0;
+		}
+		check->shapenum = -1;
+		return;
+
+	case	bo_bag:
+		gamestate.maxammo += 100;
+		if (gamestate.maxammo > 299)
+			gamestate.maxammo = 299;
+		GiveAmmo (100);
+		GiveAmmo2 (1);
+		GiveAmmo3 (1);
+		SD_PlaySound (GETITEMSND);
+		break;
+
+	case	bo_nutsling:
+		SD_PlaySound (GETITEMSND);
+		GiveAmmo2 (20);
+		GiveWeapon (wp_cantaloupe);
+		StatusDrawPic (19,4,GOTGATLINGPIC);
+		facecount = 0;
+		gotgatgun = 1;
+		if (!gamestate.weaponinv[3])
+		{
+			gamestate.weaponinv[3] = 1;
+			gamestate.bestweapon = gamestate.weapon = gamestate.chosenweapon = wp_cantaloupe;
+		}
+		break;
+
+	case	bo_nuts:
+		if (gamestate.ammo2 >= 99)
+			return;
+
+		SD_PlaySound (GETITEMSND);
+		GiveAmmo2 (14);
+		break;
+
+	case	bo_melonsling:
+		SD_PlaySound (GETITEMSND);
+		GiveAmmo3 (5);
+		GiveWeapon (wp_watermelon);
+		StatusDrawPic (19,4,GOTGATLINGPIC);
+		facecount = 0;
+		gotgatgun = 1;
+		if (!gamestate.weaponinv[2])
+		{
+			gamestate.weaponinv[2] = 1;
+			gamestate.bestweapon = gamestate.weapon = gamestate.chosenweapon = wp_watermelon;
+		}
+		break;
+
+	case	bo_melons:
+		if (gamestate.ammo3 >= 99)
+			return;
+
+		SD_PlaySound (GETITEMSND);
+		GiveAmmo3 (5);
+		break;
+
+	case	bo_map:
+		SD_PlaySound (GETKEYSND);
+		gamestate.fullmap = true;
+		break;
+
+	case bo_staircase:
+		playstate = ex_completed;
+		break;
+
+	case bo_secretstaircase:
+		playstate = ex_secretlevel;
+		break;
+#else
 	case	bo_alpo:
 		if (gamestate.health == 100)
 			return;
@@ -893,6 +1271,12 @@ void GetBonus (statobj_t *check)
 		speary = player->y;
 		spearangle = player->angle;
 		playstate = ex_completed;
+#endif
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	default:
+		sprintf (str,"GetBonus: Invalid item $%02X!\n",check->itemnumber);
+		Quit (str);
 #endif
 	}
 
@@ -993,8 +1377,11 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 	&& ob->y < (((long)(mapheight-1))<<TILESHIFT) )
 		return;		// walk through walls
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if (!SD_SoundPlaying())
 		SD_PlaySound (HITWALLSND);
+#endif
 
 	ob->x = basex+xmove;
 	ob->y = basey;
@@ -1124,7 +1511,10 @@ void Cmd_Use (void)
 {
 	objtype 	*check;
 	int			checkx,checky,doornum,dir;
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	boolean		elevatorok;
+#endif
 
 
 //
@@ -1135,31 +1525,48 @@ void Cmd_Use (void)
 		checkx = player->tilex + 1;
 		checky = player->tiley;
 		dir = di_east;
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		elevatorok = true;
+#endif
 	}
 	else if (player->angle < 3*ANGLES/8)
 	{
 		checkx = player->tilex;
 		checky = player->tiley-1;
 		dir = di_north;
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		elevatorok = false;
+#endif
 	}
 	else if (player->angle < 5*ANGLES/8)
 	{
 		checkx = player->tilex - 1;
 		checky = player->tiley;
 		dir = di_west;
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		elevatorok = true;
+#endif
 	}
 	else
 	{
 		checkx = player->tilex;
 		checky = player->tiley + 1;
 		dir = di_south;
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		elevatorok = false;
+#endif
 	}
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	doornum = tilemap[checkx][checky]&0xFFDF;
+#else
 	doornum = tilemap[checkx][checky];
+#endif
 	if (*(mapsegs[1]+farmapylookup[checky]+checkx) == PUSHABLETILE)
 	{
 	//
@@ -1169,6 +1576,8 @@ void Cmd_Use (void)
 		PushWall (checkx,checky,dir);
 		return;
 	}
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if (!buttonheld[bt_use] && doornum == ELEVATORTILE && elevatorok)
 	{
 	//
@@ -1190,14 +1599,18 @@ void Cmd_Use (void)
 #endif
 		SD_WaitSoundDone();
 	}
-	else if (!buttonheld[bt_use] && doornum & 0x80)
+	else
+#endif
+		if (!buttonheld[bt_use] && doornum & 0x80)
 	{
 		buttonheld[bt_use] = true;
 		OperateDoor (doornum & ~0x80);
 	}
-		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	else
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		SD_PlaySound (NOWAYSND);
+#else
 		SD_PlaySound (DONOTHINGSND);
 #endif
 
@@ -1287,7 +1700,12 @@ void	KnifeAttack (objtype *ob)
 	}
 
 // hit something
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	DamageActor (closest,US_RndT() >> 3);
+#else
 	DamageActor (closest,US_RndT() >> 4);
+#endif
 }
 
 
@@ -1355,6 +1773,18 @@ void	GunAttack (objtype *ob)
 	dy = abs(closest->tiley - player->tiley);
 	dist = dx>dy ? dx:dy;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (dist<2)
+		damage = US_RndT() & 0xf;
+	else
+	{
+		damage = US_RndT() & 7;
+		if (dist >= 4)
+			if ( (US_RndT() / 12) < dist)		// missed
+				return;
+	}
+#else
 	if (dist<2)
 		damage = US_RndT() / 4;
 	else if (dist<4)
@@ -1365,9 +1795,68 @@ void	GunAttack (objtype *ob)
 			return;
 		damage = US_RndT() / 6;
 	}
+#endif
 
 	DamageActor (closest,damage);
 }
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void NutslingAttack (objtype *ob)
+{
+	int obcos, obnsin;
+
+	SD_PlaySound (MISSILEFIRESND);
+	madenoise = true;
+	gamestate.ammo2--;
+	DrawAmmo ();
+	GetNewActor ();
+	new->state = &s_playernut;
+	new->obclass = cantaloupeobj;
+	new->ticcount = 1;
+	obcos = costable[ob->angle];
+	obnsin = -sintable[ob->angle];
+	new->x = ob->x + (obcos>>2);
+	new->y = ob->y + (obnsin>>2);
+	new->tilex = new->x >> TILESHIFT;
+	new->tiley = new->y >> TILESHIFT;
+	new->areanumber = ob->areanumber;
+	new->dir = ob->dir;
+	new->angle = ob->angle;
+	new->speed = 0x3000;
+	new->flags = FL_NEVERMARK;
+	new->active = ac_yes;
+}
+#endif
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void MelonslingAttack (objtype *ob)
+{
+	int obcos, obnsin;
+
+	SD_PlaySound (WATERMELONFIRESND);
+	madenoise = true;
+	gamestate.ammo3--;
+	DrawAmmo ();
+	GetNewActor ();
+	new->state = &s_playermelon;
+	new->obclass = watermelonobj;
+	new->ticcount = 1;
+	obcos = costable[ob->angle];
+	obnsin = -sintable[ob->angle];
+	new->x = ob->x + (obcos>>2);
+	new->y = ob->y + (obnsin>>2);
+	new->tilex = new->x >> TILESHIFT;
+	new->tiley = new->y >> TILESHIFT;
+	new->areanumber = ob->areanumber;
+	new->dir = ob->dir;
+	new->angle = ob->angle;
+	new->speed = 0x3000;
+	new->flags = FL_NEVERMARK;
+	new->active = ac_yes;
+}
+#endif
 
 //===========================================================================
 
@@ -1458,6 +1947,45 @@ void	T_Attack (objtype *ob)
 		{
 		case -1:
 			ob->state = &s_player;
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			if ((!gamestate.ammo2 && (gamestate.weapon == wp_cantaloupe)) || (!gamestate.ammo3 && (gamestate.weapon == wp_watermelon)))
+			{
+				if (gamestate.ammo)
+				{
+					if (gamestate.weaponinv[1])
+						gamestate.weapon = gamestate.chosenweapon = wp_chaingun;
+					else if (gamestate.weaponinv[0])
+						gamestate.weapon = gamestate.chosenweapon = wp_machinegun;
+					else
+						gamestate.weapon = gamestate.chosenweapon = wp_pistol;
+					DrawAmmo ();
+				}
+				else
+				{
+					gamestate.weapon = wp_knife;
+					DrawAmmo ();
+				}
+			}
+			else if (!gamestate.ammo)
+			{
+				if (gamestate.weaponinv[2] && gamestate.ammo3)
+					gamestate.weapon = gamestate.chosenweapon = wp_watermelon;
+				else if (gamestate.weaponinv[3] && gamestate.ammo2)
+					gamestate.weapon = gamestate.chosenweapon = wp_cantaloupe;
+				else
+					gamestate.weapon = wp_knife;
+				DrawAmmo ();
+			}
+			else
+			{
+				if (gamestate.weapon != gamestate.chosenweapon)
+				{
+					gamestate.weapon = gamestate.chosenweapon;
+					DrawAmmo ();
+				}
+			};
+#else
 			if (!gamestate.ammo)
 			{
 				gamestate.weapon = wp_knife;
@@ -1471,6 +1999,7 @@ void	T_Attack (objtype *ob)
 					DrawWeapon ();
 				}
 			};
+#endif
 			gamestate.attackframe = gamestate.weaponframe = 0;
 			return;
 
@@ -1498,6 +2027,17 @@ void	T_Attack (objtype *ob)
 			if (gamestate.ammo && buttonstate[bt_attack])
 				gamestate.attackframe -= 2;
 			break;
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		case 5:
+			if (gamestate.ammo2)
+				NutslingAttack (ob);
+			break;
+		case 6:
+			if (gamestate.ammo3)
+				MelonslingAttack (ob);
+			break;
+#endif
 		}
 
 		gamestate.attackcount += cur->tics;
@@ -1534,7 +2074,12 @@ void	T_Player (objtype *ob)
 	if ( buttonstate[bt_use] )
 		Cmd_Use ();
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if ( buttonstate[bt_attack] && (!buttonheld[bt_attack] || (gamestate.weapon == wp_knife) || (gamestate.weapon == wp_pistol)))
+#else
 	if ( buttonstate[bt_attack] && !buttonheld[bt_attack])
+#endif
 		Cmd_Fire ();
 
 	ControlMovement (ob);

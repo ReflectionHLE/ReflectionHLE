@@ -1552,13 +1552,20 @@ int CP_LoadGame(int quick)
 			loadedgame=false;
 			close(handle);
 
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			DrawFruit ();
+#endif
 			DrawFace ();
 			DrawHealth ();
 			DrawLives ();
 			DrawLevel ();
 			DrawAmmo ();
 			DrawKeys ();
+			// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 			DrawWeapon ();
+#endif
 			DrawScore ();
 			return 1;
 		}

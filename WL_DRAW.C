@@ -15,8 +15,14 @@
 =============================================================================
 */
 
+// *** S3DNA RESTORATION ***
+// This seems to be required for S3DNA
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define DOORWALL(x)	((PMSpriteStart-(x))-8)
+#else
 // the door is the last picture before the sprites
 #define DOORWALL	(PMSpriteStart-8)
+#endif
 
 #define ACTORSIZE	0x4000
 
@@ -538,7 +544,12 @@ void HitVertWall (void)
 		{								// check for adjacent doors
 			ytile = yintercept>>TILESHIFT;
 			if ( tilemap[xtile-xtilestep][ytile]&0x80 )
+				// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				wallpic = DOORWALL(1);
+#else
 				wallpic = DOORWALL+3;
+#endif
 			else
 				wallpic = vertwall[tilehit & ~0x40];
 		}
@@ -549,6 +560,10 @@ void HitVertWall (void)
 		(unsigned)postsource = texture;
 
 	}
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	tilemap[xtile][ytile] |= 0x20;
+#endif
 }
 
 
@@ -610,7 +625,12 @@ void HitHorizWall (void)
 		{								// check for adjacent doors
 			xtile = xintercept>>TILESHIFT;
 			if ( tilemap[xtile][ytile-ytilestep]&0x80 )
+				// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+				wallpic = DOORWALL(1);
+#else
 				wallpic = DOORWALL+2;
+#endif
 			else
 				wallpic = horizwall[tilehit & ~0x40];
 		}
@@ -621,6 +641,10 @@ void HitHorizWall (void)
 		(unsigned)postsource = texture;
 	}
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	tilemap[xtile][ytile] |= 0x20;
+#endif
 }
 
 //==========================================================================
@@ -637,7 +661,13 @@ void HitHorizDoor (void)
 {
 	unsigned	texture,doorpage,doornum;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	doornum = tilehit&0x1f;
+	doorobjlist[doornum].field_4 = true;
+#else
 	doornum = tilehit&0x7f;
+#endif
 	texture = ( (xintercept-doorposition[doornum]) >> 4) &0xfc0;
 
 	wallheight[pixx] = CalcHeight();
@@ -672,6 +702,21 @@ void HitHorizDoor (void)
 
 		switch (doorobjlist[doornum].lock)
 		{
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		case dr_normal:
+			doorpage = DOORWALL(5);
+			break;
+		case dr_lock1:
+			doorpage = DOORWALL(4);
+			break;
+		case dr_lock2:
+			doorpage = DOORWALL(3);
+			break;
+		case dr_elevator:
+			doorpage = DOORWALL(2);
+			break;
+#else
 		case dr_normal:
 			doorpage = DOORWALL;
 			break;
@@ -684,11 +729,16 @@ void HitHorizDoor (void)
 		case dr_elevator:
 			doorpage = DOORWALL+4;
 			break;
+#endif
 		}
 
 		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(doorpage);
 		(unsigned)postsource = texture;
 	}
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	tilemap[xtile][ytile] |= 0x20;
+#endif
 }
 
 //==========================================================================
@@ -705,7 +755,13 @@ void HitVertDoor (void)
 {
 	unsigned	texture,doorpage,doornum;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	doornum = tilehit&0x1f;
+	doorobjlist[doornum].field_4 = true;
+#else
 	doornum = tilehit&0x7f;
+#endif
 	texture = ( (yintercept-doorposition[doornum]) >> 4) &0xfc0;
 
 	wallheight[pixx] = CalcHeight();
@@ -740,6 +796,21 @@ void HitVertDoor (void)
 
 		switch (doorobjlist[doornum].lock)
 		{
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		case dr_normal:
+			doorpage = DOORWALL(5);
+			break;
+		case dr_lock1:
+			doorpage = DOORWALL(4);
+			break;
+		case dr_lock2:
+			doorpage = DOORWALL(3);
+			break;
+		case dr_elevator:
+			doorpage = DOORWALL(2);
+			break;
+#else
 		case dr_normal:
 			doorpage = DOORWALL;
 			break;
@@ -752,11 +823,21 @@ void HitVertDoor (void)
 		case dr_elevator:
 			doorpage = DOORWALL+4;
 			break;
+#endif
 		}
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(doorpage);
+#else
 		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(doorpage+1);
+#endif
 		(unsigned)postsource = texture;
 	}
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	tilemap[xtile][ytile] |= 0x20;
+#endif
 }
 
 //==========================================================================
@@ -823,6 +904,10 @@ void HitHorizPWall (void)
 		(unsigned)postsource = texture;
 	}
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	tilemap[xtile][ytile] |= 0x20;
+#endif
 }
 
 
@@ -887,6 +972,10 @@ void HitVertPWall (void)
 		(unsigned)postsource = texture;
 	}
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	tilemap[xtile][ytile] |= 0x20;
+#endif
 }
 
 //==========================================================================
@@ -1065,7 +1154,7 @@ int	CalcRotate (objtype *ob)
 	int	angle,viewangle;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (ob->obclass == rocketobj || ob->obclass == needleobj)
+	if (ob->obclass == cantaloupeobj || ob->obclass == watermelonobj)
 		return 0;
 #endif
 
@@ -1122,7 +1211,13 @@ typedef struct
 {
 	int	viewx,
 		viewheight,
-		shapenum;
+		// *** S3DNA RESTORATION ***
+		shapenum
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		,
+		snoozeframe
+#endif
+		;
 } visobj_t;
 
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION *** - Move back into function body
@@ -1169,8 +1264,18 @@ void DrawScaleds (void)
 			continue;
 		}
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (statptr->shapenum == -2)
+			continue;
+
+#endif
 		if (!visptr->viewheight)
 			continue;						// to close to the object
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		visptr->snoozeframe = 0;
+#endif
 
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
@@ -1222,6 +1327,18 @@ void DrawScaleds (void)
 			if (obj->state->rotate)
 				visptr->shapenum += CalcRotate (obj);
 
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			if ((obj->hitpoints > 0) && (obj->obclass == watermelonobj) || (obj->obclass == watermelonobj) || (obj->obclass == needleobj) || (obj->obclass == rocketobj))
+				visptr->snoozeframe = 0;
+			else
+			{
+				// 2.6 number. Upper is frame, Lower is tics*2
+				visptr->snoozeframe = obj->snoozeframe/64;
+				obj->snoozeframe += 2*tics;
+			}
+#endif
+
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
 			if (visptr < &vislist[MAXVISABLE])
@@ -1260,6 +1377,11 @@ void DrawScaleds (void)
 		//
 		ScaleShape(farthest->viewx,farthest->shapenum,farthest->viewheight);
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (farthest->snoozeframe)
+			ScaleShape(farthest->viewx,farthest->snoozeframe+SPR_SNOOZE_1-1,farthest->viewheight);
+#endif
 		farthest->viewheight = 32000;
 	}
 
@@ -1289,11 +1411,26 @@ void DrawPlayerWeapon (void)
 {
 	int	shapenum;
 
-#ifndef SPEAR
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (player->state == &s_deathcam)
+	{
+		if (deathtime >= 192)
+			playstate = ex_victorious;
+		SimpleScaleShape(viewwidth/2,SPR_YOUWIN,deathtime);
+		deathtime += tics;
+	}
+	else if (player->state == &s_playerdeath)
+	{
+		SimpleScaleShape(viewwidth/2,SPR_GAMEOVER,deathtime);
+		deathtime += tics;
+	}
+#elif (!defined SPEAR)
+//#ifndef SPEAR
 	if (gamestate.victoryflag)
 	{
-// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+#ifndef GAMEVER_RESTORATION_WL1_APO10
 		if (player->state == &s_deathcam && (TimeCount&32) )
 			SimpleScaleShape(viewwidth/2,SPR_DEATHCAM,viewheight+1);
 #endif
@@ -1500,9 +1637,18 @@ asm	rep stosw
 //
 // follow the walls from there to the right, drawwing as we go
 //
-	VGAClearScreen ();
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (FloorsDisabled)
+#endif
+		VGAClearScreen ();
 
 	WallRefresh ();
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!FloorsDisabled)
+		DrawPlanes ();
+#endif
 
 //
 // draw all the scaled images
@@ -1513,13 +1659,18 @@ asm	rep stosw
 //
 // show screen and time last cycle
 //
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (fizzlein && !(--fizzlein))
+#else
 	if (fizzlein)
+#endif
 	{
-		FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,20,false);
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		fizzlein--;
+		VW_FadeIn ();
 #else
+		FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,20,false);
 		fizzlein = false;
 #endif
 

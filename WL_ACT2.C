@@ -39,8 +39,23 @@
 dirtype dirtable[9] = {northwest,north,northeast,west,nodir,east,
 	southwest,south,southeast};
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+int	starthitpoints[NUMENEMIES] =
+	 {6,	// sheeps
+	  12,	// ostriches
+	  25,	// antelopes
+	  1,	// goats
+	  18,	// oxen
+	  150,	// Carl
+	  350,	// Melvin
+	  300,	// Ginny
+	  400,	// Kerry
+	  450,	// Ernie
+	  500	// Burt
+	  };
+#elif (defined GAMEVER_RESTORATION_WL1_APO10)
 int	starthitpoints[NUMENEMIES] =
 	 {25,	// guards
 	  50,	// officer
@@ -358,6 +373,10 @@ statetype s_clydechase2 	= {false,SPR_CLYDE_W2,10,T_Ghosts,NULL,&s_clydechase1};
 // dogs
 //
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	statetype s_dogstand;
+#endif
 extern	statetype s_dogpath1;
 extern	statetype s_dogpath1s;
 extern	statetype s_dogpath2;
@@ -383,6 +402,11 @@ extern	statetype s_dogdie1d;
 extern	statetype s_dogdie2;
 extern	statetype s_dogdie3;
 extern	statetype s_dogdead;
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+statetype s_dogstand	= {false,SPR_DOG_W1_1,0,T_Stand,NULL,&s_dogstand};
+#endif
 
 statetype s_dogpath1 	= {true,SPR_DOG_W1_1,20,T_Path,NULL,&s_dogpath1s};
 statetype s_dogpath1s 	= {true,SPR_DOG_W1_1,5,NULL,NULL,&s_dogpath2};
@@ -866,9 +890,23 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	case en_dog:
+		SpawnNewObj (tilex,tiley,&s_dogstand);
+		new->speed = SPDDOG;
+		if (!loadedgame)
+		  gamestate.killtotal++;
+		break;
+#endif
 	}
 
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (ambush)
+		new->flags |= FL_AMBUSH;
+#else
 	map = mapsegs[0]+farmapylookup[tiley]+tilex;
 	if (*map == AMBUSHTILE)
 	{
@@ -888,10 +926,11 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 
 		new->flags |= FL_AMBUSH;
 	}
+#endif
 
 	new->obclass = guardobj+which;
-	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 	new->hitpoints = starthitpoints[which];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][which];
@@ -943,8 +982,8 @@ void SpawnBoss (int tilex, int tiley)
 	new->speed = SPDPATROL;
 
 	new->obclass = bossobj;
-	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 	new->hitpoints = starthitpoints[en_boss];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_boss];
@@ -983,7 +1022,12 @@ void SpawnGretel (int tilex, int tiley)
 	new->speed = SPDPATROL;
 
 	new->obclass = gretelobj;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	new->hitpoints = starthitpoints[en_gretel];
+#else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gretel];
+#endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	new->dir = dir*2;
@@ -2383,8 +2427,8 @@ void SpawnSchabbs (int tilex, int tiley)
 	new->speed = SPDPATROL;
 
 	new->obclass = schabbobj;
-	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 	new->hitpoints = starthitpoints[en_schabbs];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_schabbs];
@@ -2429,7 +2473,12 @@ void SpawnGift (int tilex, int tiley)
 	new->speed = SPDPATROL;
 
 	new->obclass = giftobj;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	new->hitpoints = starthitpoints[en_gift];
+#else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gift];
+#endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	new->dir = dir*2;
@@ -2468,7 +2517,12 @@ void SpawnFat (int tilex, int tiley)
 	new->speed = SPDPATROL;
 
 	new->obclass = fatobj;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	new->hitpoints = starthitpoints[en_fat];
+#else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_fat];
+#endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	new->dir = dir*2;
@@ -3177,8 +3231,8 @@ void SpawnHitler (int tilex, int tiley)
 	new->speed = SPDPATROL;
 
 	new->obclass = mechahitlerobj;
-	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
 	new->hitpoints = starthitpoints[en_hitler];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_hitler];
@@ -4009,7 +4063,19 @@ void T_Bite (objtype *ob)
 //
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void T_PlayerProjectile (objtype *ob);
+
+extern	statetype s_playernut;
+extern	statetype s_playernutexp1;
+extern	statetype s_playernutexp2;
+extern	statetype s_playernutexp3;
+
+extern	statetype s_playermelon;
+extern	statetype s_playermelonexp1;
+extern	statetype s_playermelonexp2;
+extern	statetype s_playermelonexp3;
+#else
 void T_BJRun (objtype *ob);
 void T_BJJump (objtype *ob);
 void T_BJDone (objtype *ob);
@@ -4055,6 +4121,16 @@ statetype s_deathcam = {false,0,0,NULL,NULL,NULL};
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 statetype s_playerdeath = {false,0,0,NULL,NULL,NULL};
+
+statetype s_playernut = {true,SPR_CANTALOUPE,3,T_PlayerProjectile,NULL,&s_playernut};
+statetype s_playernutexp1 = {true,SPR_CANTALOUPEEXP,6,NULL,NULL,&s_playernutexp2};
+statetype s_playernutexp2 = {true,SPR_CANTALOUPEEXP,6,NULL,NULL,&s_playernutexp3};
+statetype s_playernutexp3 = {true,SPR_CANTALOUPEEXP,6,NULL,NULL,NULL};
+
+statetype s_playermelon = {true,SPR_WATERMELON,3,T_PlayerProjectile,NULL,&s_playernut};
+statetype s_playermelonexp1 = {true,SPR_WATERMELONEXP,6,NULL,NULL,&s_playernutexp2};
+statetype s_playermelonexp2 = {true,SPR_WATERMELONEXP,6,NULL,NULL,&s_playernutexp3};
+statetype s_playermelonexp3 = {true,SPR_WATERMELONEXP,6,NULL,NULL,NULL};
 #endif
 
 
@@ -4181,10 +4257,126 @@ void T_BJDone (objtype *ob)
 //===========================================================================
 
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+
+#define MINPLAYERPROJDIST 0x8000l
+// S3DNA RESTORATION - Has code found in TryMove and ProjectileTryMove
+boolean PlayerProjectileTryMove (objtype *ob)
+{
+	int			xl,yl,xh,yh,x,y;
+	objtype		*check;
+	long		deltax,deltay;
+
+	xl = (ob->x-PROJSIZE) >>TILESHIFT;
+	yl = (ob->y-PROJSIZE) >>TILESHIFT;
+
+	xh = (ob->x+PROJSIZE) >>TILESHIFT;
+	yh = (ob->y+PROJSIZE) >>TILESHIFT;
+
+//
+// check for solid walls
+//
+	for (y=yl;y<=yh;y++)
+		for (x=xl;x<=xh;x++)
+		{
+			check = actorat[x][y];
+			if (check && check<objlist)
+				return false;
+		}
+
+//
+// check for actors
+//
+	if (yl>0)
+		yl--;
+	if (yh<MAPSIZE-1)
+		yh++;
+	if (xl>0)
+		xl--;
+	if (xh<MAPSIZE-1)
+		xh++;
+
+	for (y=yl;y<=yh;y++)
+		for (x=xl;x<=xh;x++)
+		{
+			check = actorat[x][y];
+			if (check > objlist
+			&& (check->flags & FL_SHOOTABLE) )
+			{
+				deltax = ob->x - check->x;
+				if (deltax < -MINPLAYERPROJDIST || deltax > MINPLAYERPROJDIST)
+					continue;
+				deltay = ob->y - check->y;
+				if (deltay < -MINPLAYERPROJDIST || deltay > MINPLAYERPROJDIST)
+					continue;
+
+				if (ob->obclass == cantaloupeobj)
+				{
+					DamageActor (check,(US_RndT()&0xF)+1);
+					// check for pass through
+					if (!(check->flags & FL_SHOOTABLE))
+						return true;
+				}
+				else if (ob->obclass == watermelonobj)
+				{
+					DamageActor (check,((US_RndT()&3)+1)<<4);
+					// check for pass through
+					if (!(check->flags & FL_SHOOTABLE))
+						return true;
+				}
+				return false;
+			}
+		}
+
+	return true;
+}
+
+// S3DNA RESTORATION - Looks based on T_Projectile
+void T_PlayerProjectile (objtype *ob)
+{
+	long	deltax,deltay;
+	int		damage;
+	long	speed;
+
+	speed = (long)ob->speed*tics;
+
+	deltax = FixedByFrac(speed,costable[ob->angle]);
+	deltay = -FixedByFrac(speed,sintable[ob->angle]);
+
+	if (deltax>0x10000l)
+		deltax = 0x10000l;
+	if (deltay>0x10000l)
+		deltay = 0x10000l;
+
+	ob->x += deltax;
+	ob->y += deltay;
+
+	if (!PlayerProjectileTryMove (ob))
+	{
+		if (ob->obclass == cantaloupeobj)
+		{
+			PlaySoundLocActor(MISSILEHITSND,ob);
+			ob->state = &s_playernutexp1;
+		}
+		else if (ob->obclass == watermelonobj)
+		{
+			PlaySoundLocActor(WATERMELONHITSND,ob);
+			ob->state = &s_playermelonexp1;
+		}
+		else
+			ob->state = NULL;		// mark for removal
+
+		return;
+	}
+
+	ob->tilex = ob->x >> TILESHIFT;
+	ob->tiley = ob->y >> TILESHIFT;
+}
+#endif // GAMEVER_RESTORATION_N3D_WIS10
+
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
-// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 ===============
 =
@@ -4217,7 +4409,6 @@ boolean	CheckPosition (objtype *ob)
 
 	return true;
 }
-#endif // GAMEVER_RESTORATION_N3D_WIS10
 
 
 /*

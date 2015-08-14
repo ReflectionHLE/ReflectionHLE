@@ -192,22 +192,27 @@ enum	{
 		SPR_STAT_24,SPR_STAT_25,SPR_STAT_26,SPR_STAT_27,
 		SPR_STAT_28,SPR_STAT_29,SPR_STAT_30,SPR_STAT_31,
 
-		SPR_STAT_32,SPR_STAT_33,SPR_STAT_34,SPR_STAT_35,
-		SPR_STAT_36,SPR_STAT_37,SPR_STAT_38,SPR_STAT_39,
-
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		SPR_STAT_40,
+		SPR_STAT_32,SPR_STAT_33,SPR_STAT_34,SPR_STAT_35,
+		SPR_STAT_36,
+
+		SPR_SNOOZE_1,SPR_SNOOZE_2,SPR_SNOOZE_3,
+
+		SPR_QUIZ,
 
 		SPR_WATERMELON,SPR_WATERMELONEXP,
 
 		SPR_GAMEOVER,
 
 		SPR_ANIMALPROJ,SPR_CANTALOUPE,
-		SPR_ANIMALPROJEXP,SPR_CANTALOUPEEXP,
+		SPR_CANTALOUPEEXP,SPR_ANIMALPROJEXP,
 
 		SPR_YOUWIN,
 #else
+		SPR_STAT_32,SPR_STAT_33,SPR_STAT_34,SPR_STAT_35,
+		SPR_STAT_36,SPR_STAT_37,SPR_STAT_38,SPR_STAT_39,
+
 		SPR_STAT_40,SPR_STAT_41,SPR_STAT_42,SPR_STAT_43,
 		SPR_STAT_44,SPR_STAT_45,SPR_STAT_46,SPR_STAT_47,
 #endif
@@ -642,6 +647,8 @@ enum	{
 
 		SPR_WATERREADY,SPR_WATERATK1,SPR_WATERATK2,SPR_WATERATK3,
 		SPR_WATERATK4,
+
+		SPR_LAST
 #endif
 		};
 
@@ -751,6 +758,7 @@ typedef enum {
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	bo_banana,
 	bo_apple,
+	bo_unusedfruit,
 	bo_peach,
 	bo_clip,
 #else
@@ -777,7 +785,9 @@ typedef enum {
 	bo_nuts,
 	bo_melonsling,
 	bo_melons,
-	bo_map
+	bo_map,
+	bo_staircase,
+	bo_secretstaircase
 #else
 	bo_spear
 #endif
@@ -797,10 +807,12 @@ typedef enum {
 } dirtype;
 
 
-// *** APOGEE VERSIONS RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+// *** APOGEE + S3DNA VERSIONS RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define NUMENEMIES		11
+#elif (defined GAMEVER_RESTORATION_WL1_APO10)
 #define NUMENEMIES		13
-#elif defined GAMEVER_RESTORATION_ANY_APO_PRE14
+#elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 #define NUMENEMIES		16
 #else
 #define NUMENEMIES		22
@@ -886,7 +898,7 @@ typedef struct doorstruct
 	// *** S3DNA RESTORATION ***
 	// TODO fill this
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	int	field_4;
+	boolean	field_4;
 #endif
 	byte	lock;
 	enum	{dr_open,dr_closed,dr_opening,dr_closing}	action;
@@ -938,7 +950,12 @@ typedef struct objstruct
 } objtype;
 
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define NUMBUTTONS	10
+#else
 #define NUMBUTTONS	8
+#endif
 enum	{
 	bt_nobutton=-1,
 	bt_attack=0,
@@ -949,6 +966,12 @@ enum	{
 	bt_readypistol,
 	bt_readymachinegun,
 	bt_readychaingun
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	,
+	bt_readycantaloupe,
+	bt_readywatermelon
+#endif
 };
 
 
@@ -963,6 +986,12 @@ typedef enum	{
 	wp_pistol,
 	wp_machinegun,
 	wp_chaingun
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	,
+	wp_cantaloupe,
+	wp_watermelon
+#endif
 } weapontype;
 
 
@@ -1060,6 +1089,7 @@ extern	boolean		IsA386;
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 extern	boolean		FloorsDisabled;
 extern	boolean		BibleQuizDisabled;
+extern	int		quiznumber;
 #endif
 
 extern	byte far	*scalermemory;
@@ -1483,8 +1513,15 @@ void	DrawLives (void);
 void	GiveExtraMan (void);
 void	DrawScore (void);
 void	GivePoints (long points);
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 void	DrawWeapon (void);
+#endif
 void	DrawKeys (void);
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void	GiveFruit (int amount);
+#endif
 void	GiveWeapon (int weapon);
 void	DrawAmmo (void);
 void	GiveAmmo (int ammo);
@@ -1521,6 +1558,10 @@ extern int			pwalldir;
 void InitDoorList (void);
 void InitStaticList (void);
 void SpawnStatic (int tilex, int tiley, int type);
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void SpawnStaircase (int tilex, int tiley, int type);
+#endif
 void SpawnDoor (int tilex, int tiley, boolean vertical, int lock);
 void MoveDoors (void);
 void MovePWalls (void);
@@ -1608,6 +1649,16 @@ extern	statetype s_deathcam;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 extern	statetype s_playerdeath;
+
+extern	statetype s_playernut;
+extern	statetype s_playernutexp1;
+extern	statetype s_playernutexp2;
+extern	statetype s_playernutexp3;
+
+extern	statetype s_playermelon;
+extern	statetype s_playermelonexp1;
+extern	statetype s_playermelonexp2;
+extern	statetype s_playermelonexp3;
 #endif
 
 extern	statetype s_schabbdeathcam2;
