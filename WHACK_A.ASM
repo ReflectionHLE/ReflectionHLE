@@ -21,11 +21,16 @@ FARDATA
 
 planepics	db	8192 dup(?)	;	// 4k of ceiling, 4k of floor
 PUBLIC	planepics
+; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+lc_xstep	dw	?
+lc_ystep	dw	?
+lc_cxfrac	dw	?
+lc_cyfrac	dw	?
+ENDIF
 
 
 ;============================================================================
-
-CODESEG
 
 ;============================
 ;
@@ -33,6 +38,67 @@ CODESEG
 ;
 ;
 ;============================
+
+CODESEG
+
+; *** S3DNA RESTORATION ***
+; A modified implementation
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+
+PROC	MapRow
+PUBLIC	MapRow
+	push	si
+	push	di
+	push	bp
+	push	ds
+
+	mov		ax,0a000h
+	mov		es,ax
+	mov	bp,[mr_rowofs]
+	mov		cx,[mr_count]
+	mov		di,[mr_dest]
+	push	cx
+	mov		ax,[mr_ystep]
+	mov		bx,[mr_xstep]
+	mov		cx,[mr_yfrac]
+	mov		dx,[mr_xfrac]
+	push	seg planepics
+	pop	ds
+	mov		[ds:lc_ystep],ax
+	mov		[ds:lc_xstep],bx
+	mov		[ds:lc_cyfrac],cx
+	mov		[ds:lc_cxfrac],dx
+	pop	cx
+
+pixelloop:
+	mov		bx,[ds:lc_cxfrac]
+	shr		bx,3
+	and		bx,63*64*2
+	mov		ax,[ds:lc_cyfrac]
+	shr		ax,9
+	or		bx,ax
+	and		bx,63*65*2
+	mov		ax,[ds:lc_xstep]
+	add		[ds:lc_cxfrac],ax
+	mov		ax,[ds:lc_ystep]
+	adc		[ds:lc_cyfrac],ax
+	mov		al,[bx]
+	mov	es:[di],al
+	mov		al,[bx+1]
+	mov	es:[di+bp],al
+	inc		di
+	loop	pixelloop
+
+	pop		ds
+	pop		bp
+	pop		di
+	pop		si
+
+	retf
+
+ENDP
+
+ELSE
 
 PROC	MapRow
 PUBLIC	MapRow
@@ -95,6 +161,8 @@ pixelloop:
 	retf
 
 ENDP
+
+ENDIF ; S3DNA RESTORATION
 
 END
 

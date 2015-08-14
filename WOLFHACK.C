@@ -13,7 +13,12 @@ extern	char	far	planepics[8192];	// 4k of ceiling, 4k of floor
 
 int		halfheight = 0;
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+byte	*planeylookup[MAXVIEWHEIGHT/2];
+#else
 byte	far *planeylookup[MAXVIEWHEIGHT/2];
+#endif
 unsigned	mirrorofs[MAXVIEWHEIGHT/2];
 
 fixed	psin, pcos;
@@ -50,10 +55,20 @@ void DrawSpans (int x1, int x2, int height)
 	fixed		startxfrac, startyfrac;
 
 	int			x, startx, count, plane, startplane;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	byte		*toprow;
+#else
 	byte		far	*toprow, far *dest;
+#endif
 
 	toprow = planeylookup[height]+bufferofs;
 	mr_rowofs = mirrorofs[height];
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!height)
+		Quit ("DrawSpans(): Zero height!");
+#endif
 
 	mr_xstep = (psin<<1)/height;
 	mr_ystep = (pcos<<1)/height;
@@ -88,10 +103,34 @@ void DrawSpans (int x1, int x2, int height)
 
 
 // *** S3DNA RESTORATION ***
-// TODO IMPLEMENT
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 void LoadFloorTiles (int tile)
 {
+	int		i;
+	char	far *floor, far *page;
+
+	tile = tile*2;
+	tile += (PMSpriteStart-8);
+	if (tile+1 >= PMSpriteStart)
+	{
+		sprintf (str,"LoadFloorTiles(): Invalid floor tile %u", (tile-(PMSpriteStart-8))/2);
+		Quit (str);
+	}
+	page = PM_GetPage (tile+1);
+	floor = planepics;
+	for (i=0;i<PMPageSize;i++)
+	{
+		*floor = *page++;
+		floor += 2;
+	}
+	
+	page = PM_GetPage (tile);
+	floor = planepics+1;
+	for (i=0;i<PMPageSize;i++)
+	{
+		*floor = *page++;
+		floor += 2;
+	}
 }
 #endif
 
@@ -114,6 +153,13 @@ void SetPlaneViewSize (void)
 	for (y=0 ; y<halfheight ; y++)
 	{
 		planeylookup[y] = (byte far *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;;
+		// *** S3DNA RESTORATION ***
+		// TODO, need to solve this ("add ax, 0"), for now add a few nops
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	asm	nop
+	asm	nop
+	asm	nop
+#endif
 		mirrorofs[y] = (y*2+1)*SCREENBWIDE;
 
 		stepscale[y] = y*GLOBAL1/32;
@@ -121,6 +167,8 @@ void SetPlaneViewSize (void)
 			basedist[y] = GLOBAL1/2*scale/y;
 	}
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	src = PM_GetPage(0);
 	dest = planepics;
 	for (x=0 ; x<4096 ; x++)
@@ -135,6 +183,7 @@ void SetPlaneViewSize (void)
 		*dest = *src++;
 		dest += 2;
 	}
+#endif
 
 }
 
@@ -152,8 +201,11 @@ void DrawPlanes (void)
 	int		height, lastheight;
 	int		x;
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if (viewheight>>1 != halfheight)
 		SetPlaneViewSize ();		// screen size has changed
+#endif
 
 
 	psin = viewsin;

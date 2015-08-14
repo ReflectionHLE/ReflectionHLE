@@ -129,7 +129,12 @@ typedef struct {
 
 typedef struct {
 		int active;
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		char string[80];
+#else
 		char string[36];
+#endif
 		void (* routine)(int temp1);
 		} CP_itemtype;
 
