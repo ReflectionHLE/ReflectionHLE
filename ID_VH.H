@@ -130,8 +130,11 @@ void	VW_MeasurePropString (char far *string, word *width, word *height);
 
 void LatchDrawPic (unsigned x, unsigned y, unsigned picnum);
 void 	LoadLatchMem (void);
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 boolean 	FizzleFade (unsigned source, unsigned dest,
 	unsigned width,unsigned height, unsigned frames,boolean abortable);
+#endif
 
 
 #define NUMLATCHPICS	100

@@ -19,6 +19,8 @@ DEBUG	=	0
 DATASEG
 
 	EXTRN	sqActive:WORD
+	; *** S3DNA RESTORATION ***
+IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 	EXTRN	ssSample:DWORD
 	EXTRN	ssLengthLeft:WORD
 	EXTRN	ssControl:WORD
@@ -26,6 +28,7 @@ DATASEG
 	EXTRN	ssData:WORD
 	EXTRN	ssOn:BYTE
 	EXTRN	ssOff:BYTE
+ENDIF
 
 	EXTRN	pcSound:DWORD
 	EXTRN	pcLengthLeft:WORD
@@ -361,9 +364,12 @@ extreme		dw	?
 	or	ax,ax
 	jnz	@@dofull
 
+	; *** S3DNA RESTORATION ***
+IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 	mov	ax,[WORD PTR ssSample]			; Is there a sample for the Sound Src?
 	or	ax,[WORD PTR ssSample+2]
 	jz	@@nosave
+ENDIF
 
 @@dofull:
 	pusha
@@ -436,6 +442,8 @@ extreme		dw	?
 	mov	[WORD PTR sqHackTime+2],ax
 @@nosq:
 
+	; *** S3DNA RESTORATION ***
+IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 	les	di,[ssSample]			; Get pointer to Sound Source sample
 	mov	ax,es
 	or	ax,di
@@ -473,6 +481,7 @@ extreme		dw	?
 
 	call SDL_DigitizedDone
 @@ssdone:
+ENDIF
 
 	COMMONEND
 

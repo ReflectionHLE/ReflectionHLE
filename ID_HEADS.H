@@ -139,9 +139,3 @@ extern	byte		fontcolor,backcolor;
 
 #define SETFONTCOLOR(f,b) fontcolor=f;backcolor=b;
 
-// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-#define GAMEVER_N3D_1ARG_PRINTF(f) printf(f)
-#else
-#define GAMEVER_N3D_1ARG_PRINTF(f)
-#endif

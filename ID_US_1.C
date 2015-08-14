@@ -177,6 +177,10 @@ US_Startup(void)
 
 	if (US_Started)
 		return;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("US_Startup: ");
+#endif
 
 	harderr(USL_HardError);	// Install the fatal error handler
 
@@ -207,15 +211,32 @@ US_Startup(void)
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 		   if (tedlevelnum >= 0)
 #endif
+		   // *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		   {
+		     printf("Warp to level %d\n", tedlevelnum+1);
 		     tedlevel = true;
+		   }
+#else
+		     tedlevel = true;
+#endif
 		   break;
 
 		 case 1:
+		   // *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		   printf("NOWAIT enabled\n");
+#endif
 		   NoWait = true;
 		   break;
 		}
 	}
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!tedlevel && !NoWait)
+		printf("Ok\n");
+#endif
 	US_Started = true;
 }
 

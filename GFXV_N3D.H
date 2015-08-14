@@ -171,7 +171,7 @@ typedef enum {
 #define NUMPICS      123
 #define NUMPICM      0
 #define NUMSPRITES   0
-#define NUMTILE8     72
+#define NUMTILE8     144
 #define NUMTILE8M    0
 #define NUMTILE16    0
 #define NUMTILE16M   0

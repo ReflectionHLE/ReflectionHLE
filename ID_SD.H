@@ -197,7 +197,10 @@ typedef	struct
 
 // Global variables
 extern	boolean		AdLibPresent,
+					// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 					SoundSourcePresent,
+#endif
 					SoundBlasterPresent,
 					NeedsMusic,					// For Caching Mgr
 					SoundPositioned;

@@ -78,6 +78,10 @@ void	VL_Startup (void)
 	int i,videocard;
 
 	asm	cld;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("VL_Startup: ");
+#endif
 
 	videocard = VL_VideoID ();
 	for (i = 1;i < _argc;i++)
@@ -87,9 +91,19 @@ void	VL_Startup (void)
 			break;
 		}
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (videocard != 5)
+	{
+		printf("VGA not detected\nUse -VGA option to force detection\n");
+		Quit (NULL);
+	}
+	printf("VGA detected\n");
+#else
 	if (videocard != 5)
 Quit ("Improper video card!  If you really have a VGA card that I am not \n"
 	  "detecting, use the -HIDDENCARD command line parameter!");
+#endif
 
 }
 
@@ -119,6 +133,12 @@ void	VL_Shutdown (void)
 
 void	VL_SetVGAPlaneMode (void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (vgamodeset)
+		return;
+	vgamodeset = true;
+#endif
 asm	mov	ax,0x13
 asm	int	0x10
 	VL_DePlaneVGA ();
@@ -140,6 +160,12 @@ asm	int	0x10
 
 void	VL_SetTextMode (void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!vgamodeset)
+		return;
+	vgamodeset = false;
+#endif
 asm	mov	ax,3
 asm	int	0x10
 }
@@ -965,20 +991,6 @@ asm	mov	ds,ax
 */
 
 
-// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-
-void VL_WriteTextCharsWithAttr (char chr, byte attr, int count)
-{
-asm	mov	ah,9
-asm	mov	al,[chr]
-asm	mov	bh,0
-asm	mov	bl,[attr]
-asm	mov	cx,[count]
-asm	int	0x10
-}
-
-#else
 
 
 /*
@@ -1106,10 +1118,22 @@ void VL_SizeTile8String (char *str, int *width, int *height)
 	*width = 8*strlen(str);
 }
 
-#endif // S3DNA RESTORATION
 
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
 
+void VL_WriteTextCharsWithAttr (char chr, byte attr, int count)
+{
+asm	mov	ah,9
+asm	mov	al,[chr]
+asm	mov	bh,0
+asm	mov	bl,[attr]
+asm	mov	cx,[count]
+asm	int	0x10
+}
+
+#endif
 
 
 

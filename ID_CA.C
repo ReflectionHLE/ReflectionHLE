@@ -53,7 +53,10 @@ typedef struct
 */
 
 byte 		_seg	*tinf;
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 int			mapon;
+#endif
 
 unsigned	_seg	*mapsegs[MAPPLANES];
 maptype		_seg	*mapheaderseg[NUMMAPS];
@@ -868,6 +871,10 @@ void CAL_SetupGrFile (void)
 	char fname[13];
 	int handle;
 	memptr compseg;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("Loading graphics headers...\n");
+#endif
 
 #ifdef GRHEADERLINKED
 
@@ -950,6 +957,10 @@ void CAL_SetupMapFile (void)
 	int handle;
 	long length,pos;
 	char fname[13];
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("Loading maps...\n");
+#endif
 
 //
 // load maphead.ext (offsets and tileinfo for map file)
@@ -1033,6 +1044,10 @@ void CAL_SetupAudioFile (void)
 	int handle;
 	long length;
 	char fname[13];
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("Loading sound headers...\n");
+#endif
 
 //
 // load maphead.ext (offsets and tileinfo for map file)
@@ -1091,14 +1106,25 @@ void CA_Startup (void)
 	unlink ("PROFILE.TXT");
 	profilehandle = open("PROFILE.TXT", O_CREAT | O_WRONLY | O_TEXT);
 #endif
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("CA_Startup: ");
+#endif
 
 	CAL_SetupMapFile ();
 	CAL_SetupGrFile ();
 	CAL_SetupAudioFile ();
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	mapon = -1;
+#endif
 	ca_levelbit = 1;
 	ca_levelnum = 0;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	CA_Started = true;
+#endif
 
 }
 
@@ -1117,6 +1143,11 @@ void CA_Startup (void)
 
 void CA_Shutdown (void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!CA_Started)
+		return;
+#endif
 #ifdef PROFILE
 	close (profilehandle);
 #endif
@@ -1442,7 +1473,10 @@ void CA_CacheMap (int mapnum)
 	long	expanded;
 #endif
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	mapon = mapnum;
+#endif
 
 //
 // load the planes into the allready allocated buffers

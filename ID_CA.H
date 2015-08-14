@@ -32,7 +32,10 @@ extern	boolean		CA_Started;
 extern	char		audioname[13];
 
 extern	byte 		_seg	*tinf;
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 extern	int			mapon;
+#endif
 
 extern	unsigned	_seg	*mapsegs[MAPPLANES];
 extern	maptype		_seg	*mapheaderseg[NUMMAPS];

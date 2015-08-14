@@ -674,6 +674,11 @@ void MM_SortMem (void)
 	unsigned	start,length,source,dest;
 	int			playing;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!mmstarted)
+		return;
+#endif
 	//
 	// lock down a currently playing sound
 	//

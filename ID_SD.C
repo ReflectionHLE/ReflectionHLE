@@ -72,8 +72,13 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 #endif
 
 //	Global variables
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	boolean		AdLibPresent,
+#else
 	boolean		SoundSourcePresent,
 				AdLibPresent,
+#endif
 				SoundBlasterPresent,SBProPresent,
 				NeedsDigitized,NeedsMusic,
 				SoundPositioned;
@@ -83,8 +88,11 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 	longword	TimeCount;
 	word		HackCount;
 	word		*SoundTable;	// Really * _seg *SoundTable, but that don't work
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	boolean		ssIsTandy;
 	word		ssPort = 2;
+#endif
 	int			DigiMap[LASTSOUND];
 
 //	Internal variables
@@ -99,11 +107,14 @@ static	char			*ParmStrings[] =
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 							"nopro",
 #endif
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 							"noss",
 							"sst",
 							"ss1",
 							"ss2",
 							"ss3",
+#endif
 							nil
 						};
 static	void			(*SoundUserHook)(void);
@@ -145,6 +156,8 @@ static	volatile SampledSound	huge *sbSamples;
 static	void interrupt			(*sbOldIntHand)(void);
 static	byte					sbpOldFMMix,sbpOldVOCMix;
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 //	SoundSource variables
 		boolean				ssNoCheck;
 		boolean				ssActive;
@@ -152,6 +165,7 @@ static	byte					sbpOldFMMix,sbpOldVOCMix;
 		byte				ssOn,ssOff;
 		volatile byte		far *ssSample;
 		volatile longword	ssLengthLeft;
+#endif
 
 //	PC Sound variables
 		volatile byte	pcLastSample,far *pcSound;
@@ -175,6 +189,10 @@ static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 
 //	Sequencer variables
 		boolean			sqActive;
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+static	word			midiError;
+#endif
 static	word			alFXReg;
 static	ActiveTrack		*tracks[sqMaxTracks],
 						mytracks[sqMaxTracks];
@@ -204,10 +222,13 @@ asm	cli
 	outportb(0x43,0x36);				// Change timer 0
 	outportb(0x40,speed);
 	outportb(0x40,speed >> 8);
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	// Kludge to handle special case for digitized PC sounds
 	if (TimerDivisor == (1192030 / (TickBase * 100)))
 		TimerDivisor = (1192030 / (TickBase * 10));
 	else
+#endif
 		TimerDivisor = speed;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -665,10 +686,22 @@ SDL_StartSB(void)
 	// Check to see if this is a SB Pro
 	sbOut(sbpMixerAddr,sbpmFMVol);
 	sbpOldFMMix = sbIn(sbpMixerData);
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	sbOut(sbpMixerAddr,0x2e);
+	sbOut(sbpMixerData,0xa5);
+	test = sbIn(sbpMixerData);
+	if (test == 0xa5)
+#else
 	sbOut(sbpMixerData,0xbb);
 	test = sbIn(sbpMixerData);
 	if (test == 0xbb)
+#endif
 	{
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		sbOut(sbpMixerAddr,0x26);
+#endif
 		// Boost FM output levels to be equivilent with digitized output
 		sbOut(sbpMixerData,0xff);
 		test = sbIn(sbpMixerData);
@@ -711,6 +744,8 @@ SDL_ShutSB(void)
 	setvect(sbIntVec,sbOldIntHand);		// Set vector back
 }
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 //	Sound Source Code
 
 ///////////////////////////////////////////////////////////////////////////
@@ -901,11 +936,14 @@ SDL_DetectSoundSource(void)
 			return(true);
 	return(false);
 }
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 
 //
 //	PC Sound code
 //
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_PCPlaySample() - Plays the specified sample on the PC speaker
@@ -954,6 +992,7 @@ asm	out	0x61,al
 
 asm	popf
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1138,6 +1177,11 @@ SD_StopDigitized(void)
 {
 	int	i;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (SD_Started)
+		return;
+#endif
 asm	pushf
 asm	cli
 
@@ -1184,6 +1228,10 @@ asm	popf
 void
 SD_Poll(void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	char error[80];
+#endif
 	if (DigiLeft && !DigiNextAddr)
 	{
 		DigiNextLen = (DigiLeft >= PMPageSize)? PMPageSize : (DigiLeft % PMPageSize);
@@ -1203,7 +1251,16 @@ SD_Poll(void)
 			DigiLastSegment = false;
 		}
 	}
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (midiError)
+	{
+		sprintf(error,"SD_Poll: midiError = %d\n", midiError);
+		Quit(error);
+	}
+#else
 	SDL_SetTimerSpeed();
+#endif
 }
 
 void
@@ -1217,7 +1274,10 @@ SD_SetPosition(int leftpos,int rightpos)
 	||	(leftpos > 15)
 	||	(rightpos < 0)
 	||	(rightpos > 15)
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	||	((leftpos == 15) && (rightpos == 15))
+#endif
 	)
 		Quit("SD_SetPosition: Illegal position");
 #endif
@@ -1235,13 +1295,25 @@ SD_PlayDigitized(word which,int leftpos,int rightpos)
 {
 	word	len;
 	memptr	addr;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	char error[80];
+#endif
 
 	if (!DigiMode)
 		return;
 
 	SD_StopDigitized();
 	if (which >= NumDigi)
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	{
+		sprintf(error,"SD_PlayDigitized: Bad sound number (%d)\n",which);
+		Quit(error);
+	}
+#else
 		Quit("SD_PlayDigitized: bad sound number");
+#endif
 
 	SD_SetPosition(leftpos,rightpos);
 
@@ -1297,6 +1369,10 @@ SDL_DigitizedDone(void)
 				DigiNumber = DigiPriority = 0;
 #endif
 			SoundPositioned = false;
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			SDL_SBStopSample();
+#endif
 		}
 		else
 			DigiMissed = true;
@@ -1998,14 +2074,18 @@ SD_Startup(void)
 	if (SD_Started)
 		return;
 
-	GAMEVER_N3D_1ARG_PRINTF("SD_Startup: ");
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("SD_Startup: ");
+#else
 	SDL_SetDS();
 #endif
 
+	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	ssIsTandy = false;
 	ssNoCheck = false;
+#endif
 	alNoCheck = false;
 	sbNoCheck = false;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -2018,9 +2098,17 @@ SD_Startup(void)
 		switch (US_CheckParm(_argv[i],ParmStrings))
 		{
 		case 0:						// No AdLib detection
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			printf("Skipping AdLib detection\n");
+#endif
 			alNoCheck = true;
 			break;
 		case 1:						// No SoundBlaster detection
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			printf("Skipping SoundBlaster detection\n");
+#endif
 			sbNoCheck = true;
 			break;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -2029,10 +2117,16 @@ SD_Startup(void)
 #define GAMEVER_SD_OFFSET -1
 #else
 		case 2:						// No SoundBlaster Pro detection
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			printf("Skipping SoundBlaster Pro detection\n");
+#endif
 			sbNoProCheck = true;
 			break;
 #define GAMEVER_SD_OFFSET 0
 #endif
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		case 3+GAMEVER_SD_OFFSET:
 			ssNoCheck = true;		// No Sound Source detection
 			break;
@@ -2051,6 +2145,7 @@ SD_Startup(void)
 			ssPort = 3;
 			ssNoCheck = SoundSourcePresent = true;
 			break;
+#endif
 		}
 	}
 #endif
@@ -2064,8 +2159,11 @@ SD_Startup(void)
 	SD_SetSoundMode(sdm_Off);
 	SD_SetMusicMode(smm_Off);
 
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if (!ssNoCheck)
 		SoundSourcePresent = SDL_DetectSoundSource();
+#endif
 
 	if (!alNoCheck)
 	{
@@ -2130,6 +2228,15 @@ SD_Startup(void)
 			SoundBlasterPresent = SDL_DetectSoundBlaster(port);
 		}
 	}
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (AdLibPresent)
+		printf("AdLib detected\n");
+	if (SoundBlasterPresent)
+		printf("SoundBlaster detected (A%03X, I%d, D%d)\n", sbLocation+0x200, sbInterrupt, sbDMA);
+	if (!AdLibPresent && !SoundBlasterPresent)
+		printf("No sound devices detected\n");
+#endif
 
 	for (i = 0;i < 255;i++)
 		pcSoundLookup[i] = i * 60;
@@ -2213,8 +2320,11 @@ SD_Shutdown(void)
 	if (SoundBlasterPresent)
 		SDL_ShutSB();
 
+		// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	if (SoundSourcePresent)
 		SDL_ShutSS();
+#endif
 
 	asm	pushf
 	asm	cli

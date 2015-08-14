@@ -340,6 +340,11 @@ PM_SetMainMemPurge(int level)
 {
 	int	i;
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (!PMStarted)
+		return;
+#endif
 	for (i = 0;i < PMMaxMainMem;i++)
 		if (MainMemPages[i])
 			MM_SetPurge(&MainMemPages[i],level);
@@ -432,6 +437,11 @@ PML_StartupMainMem(void)
 {
 	int		i,n;
 	memptr	*p;
+	// *** S3DNA RESTORATION ***
+	// A little hack for error message (from WL_DEF.H)
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	extern	char str[];
+#endif
 
 	MainPagesAvail = 0;
 	MM_BombOnError(false);
@@ -447,8 +457,19 @@ PML_StartupMainMem(void)
 	MM_BombOnError(true);
 	if (mmerror)
 		mmerror = false;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (MainPagesAvail < PMMinMainMem)
+	{
+		sprintf(str, "PM_StartupMainMem(): Not enough main memory (need %d more pages)!", PMMinMainMem-MainPagesAvail);
+		Quit(str);
+	}
+	else
+		printf("Main memory (%lukb)\n", (long)MainPagesAvail<<2);
+#else
 	if (MainPagesAvail < PMMinMainMem)
 		Quit("PM_SetupMainMem: Not enough main memory");
+#endif
 	MainPresent = true;
 }
 
@@ -502,6 +523,10 @@ PML_OpenPageFile(void)
 	longword		far *offsetptr;
 	word			far *lengthptr;
 	PageListStruct	far *page;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("Opening %s\n", PageFileName);
+#endif
 
 	PageFile = open(PageFileName,O_RDONLY + O_BINARY);
 	if (PageFile == -1)
@@ -1025,6 +1050,10 @@ PM_Preload(boolean (*update)(word current,word total))
 		page++;
 		current++;
 		maintotal--;
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (update)
+#endif
 		update(current,total);
 	}
 
@@ -1061,6 +1090,10 @@ PM_Preload(boolean (*update)(word current,word total))
 			page++;
 			current++;
 			xmstotal--;
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (update)
+#endif
 			update(current,total);
 		}
 
@@ -1068,6 +1101,10 @@ PM_Preload(boolean (*update)(word current,word total))
 		PML_ReadFromFile((byte far *)addr,p->offset,p->length);
 	}
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+if (update)
+#endif
 	update(total,total);
 }
 
@@ -1163,6 +1200,10 @@ PM_Startup(void)
 
 	if (PMStarted)
 		return;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	printf("PM_Startup: ");
+#endif
 
 	nomain = noems = noxms = false;
 	for (i = 1;i < _argc;i++)
@@ -1170,12 +1211,24 @@ PM_Startup(void)
 		switch (US_CheckParm(_argv[i],ParmStrings))
 		{
 		case 0:
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			printf("Main memory disabled\n");
+#endif
 			nomain = true;
 			break;
 		case 1:
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			printf("EMS disabled\n");
+#endif
 			noems = true;
 			break;
 		case 2:
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			printf("XMS disabled\n");
+#endif
 			noxms = true;
 			break;
 		}
@@ -1194,6 +1247,23 @@ PM_Startup(void)
 		PML_StartupMainMem();
 
 	PM_Reset();
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (EMSPresent)
+	{
+		printf("EMS detected (%lukb)\n", (long)EMSPagesAvail<<2);
+	}
+	else
+		printf("EMS not detected\n");
+
+	if (XMSPresent)
+	{
+		printf("XMS detected (%lukb)\n", (long)XMSPagesAvail<<2);
+	}
+	else
+		printf("XMS not detected\n");
+
+#endif
 
 	PMStarted = true;
 }

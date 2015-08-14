@@ -518,6 +518,8 @@ void LoadLatchMem (void)
 
 //==========================================================================
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 ===================
 =
@@ -607,3 +609,4 @@ noxor:
 
 
 }
+#endif // GAMEVER_RESTORATION_N3D_WIS10
