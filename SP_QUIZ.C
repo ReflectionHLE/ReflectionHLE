@@ -1036,7 +1036,7 @@ int AskQuestion (int number)
 		s++;
 	s++;
 
-	// At this point qusetion contains the first answer
+	// At this stage s points to the first answer
 	which = 0;
 	numitems = 4;
 	se = QuizMenu[0].string;

@@ -188,17 +188,32 @@ static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 						pmodifiers[5] = {16,17,18,20,21};
 
 //	Sequencer variables
-		boolean			sqActive;
 // *** S3DNA RESTORATION ***
+// TODO (RESTORATION) There are a lot of question marks regarding this
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-static	word			midiError;
-#endif
+		float			someMidiFloat = 1.86;
+	word	someMidiBuffer1[12] = {0x57};
+	byte	someMidiBuffer2[170] = {0x0};
+		boolean			sqActive;
+		int			midiError;
+
+		longword	sqTrackSeqLen, sqTrackLen;
+		byte	sqSomeByte; // TODO (RESTORATION) RENAME THIS
+		byte	far	*sqTrack, far *sqTrackPtr;
+
+	word			alFXReg;
+
+static	longword	sqHackLen;
+static	byte	far	*sqHackPtr;
+#else
+		boolean			sqActive;
 static	word			alFXReg;
 static	ActiveTrack		*tracks[sqMaxTracks],
 						mytracks[sqMaxTracks];
 static	word			sqMode,sqFadeStep;
 		word			far *sqHack,far *sqHackPtr,sqHackLen,sqHackSeqLen;
 		long			sqHackTime;
+#endif
 
 //	Internal routines
 		void			SDL_DigitizedDone(void);
@@ -1725,6 +1740,397 @@ SDL_ALService(void)
 }
 #endif
 
+// *** S3DNA RESTORATION ***
+// Recreated MIDI to AL translation code
+// TODO (RESTORATION) - Again, a lot of question marks
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+static word
+SDL_MDSwapWord(word num)
+{
+	return ((num&0xFF00)>>8)+((num&0xFF)<<8);
+}
+
+static longword
+SDL_MDSwapLong(longword num)
+{
+	return ((num&0xFF000000)>>24)+((num&0x00FF0000)>>8)+((num&0xFF00)<<8)+((num&0xFF)<<24);
+}
+
+static longword
+SDL_MDCalcVLQ(void)
+{
+	longword result = 0;
+	while (*sqTrackPtr & 0x80)
+	{
+		result = (result << 7) + (*sqTrackPtr & 0x7F);
+		sqTrackPtr++;
+	}
+	result = (result << 7) + *sqTrackPtr;
+	sqTrackPtr++;
+	return result;
+}
+
+static void
+SDL_MDCalcAndSkipVLQ(void)
+{
+	longword result = SDL_MDCalcVLQ();
+	sqTrackPtr += result;
+}
+
+// TODO (RESTORATION) Second argument may really be a long, or it's unused
+static void
+SDL_MDFunc5(int arg0, int arg1, int arg2)
+{
+	unsigned	var1;
+	byte	var2;
+	if (arg0 == 9)
+	{
+		switch (arg1)
+		{
+		case 0x23:
+		case 0x24:
+			someMidiBuffer2[0] &= 0xef;
+			break;
+		case 0x26:
+		case 0x28:
+			someMidiBuffer2[0] &= 0xf7;
+			break;
+		case 0x2a:
+			someMidiBuffer2[0] &= 0xfe;
+			break;
+		default:
+			midiError = -11;
+		}
+		alOut(alEffects,alChar|someMidiBuffer2[0]);
+		return;
+	}
+
+	var1 = someMidiBuffer1[arg1%12];
+	var2 = ((arg1/12)&7)<<2;
+	alOut(alFreqL + 1 + arg0, var1&0xFF);
+	alOut(alFreqH + 1 + arg0, var2+((var1>>8)&3));
+}
+
+static void
+SDL_MDFunc6(int arg0, byte arg1, byte arg2)
+{
+	unsigned	var1,var2;
+	if (arg2)
+	{
+		if (arg0 == 9)
+		{
+			switch (arg1)
+			{
+			case 0x23:
+			case 0x24:
+				someMidiBuffer2[0] |= 0x10;
+				break;
+			case 0x26:
+				someMidiBuffer2[0] |= 0x3;
+				break;
+			case 0x28:
+				someMidiBuffer2[0] |= 0x5;
+				break;
+			case 0x2a:
+				someMidiBuffer2[0] |= 1;
+				break;
+			default:
+				midiError = -11;
+			}
+			alOut(alEffects,alChar|someMidiBuffer2[0]);
+			return;
+		}
+		var1 = someMidiBuffer1[arg1%12];
+		var2 = arg1/12;
+		alOut(alFreqL + 1 + arg0, var1&0xFF);
+		alOut(alFreqH + 1 + arg0, alChar|(var2<<2)|((var1>>8)&3));
+		return;
+	}
+	SDL_MDFunc5 (arg0,arg1,arg2);
+}
+
+static void
+SDL_MDNullFunc(int arg0, int arg1, int arg2)
+{
+}
+
+static void
+SDL_MDPlayTrack(int arg0, int arg1)
+{
+	byte	*buffPtr;
+	int	var3;
+	unsigned	var1,var2;
+	if (arg0 == 9)
+	{
+		buffPtr = &someMidiBuffer2[110];
+		alOut(modifiers[6]+alChar, *buffPtr++);
+		alOut(carriers[6]+alChar, *buffPtr++);
+		alOut(modifiers[6]+alScale, *buffPtr++);
+		alOut(carriers[6]+alScale, *buffPtr++);
+		alOut(modifiers[6]+alAttack, *buffPtr++);
+		alOut(carriers[6]+alAttack, *buffPtr++);
+		alOut(modifiers[6]+alSus, *buffPtr++);
+		alOut(carriers[6]+alSus, *buffPtr++);
+		alOut(modifiers[6]+alWave, *buffPtr++);
+		alOut(carriers[6]+alWave, *buffPtr++);
+
+		alOut(alFeedCon+6, *buffPtr);
+
+		var3 = 24;
+		var1 = someMidiBuffer1[var3%12];
+		var2 = ((var3/12)&7)<<2;
+		alOut(alFreqL+6,var1&0xFF);
+		alOut(alFreqH+6,var2+((var1>>8)&3));
+		var3 = 24;
+		var1 = someMidiBuffer1[var3%12];
+		var2 = ((var3/12)&7)<<2;
+		alOut(alFreqL+7,var1&0xFF);
+		alOut(alFreqH+7,var2+((var1>>8)&3));
+		var3 = 24;
+		var1 = someMidiBuffer1[var3%12];
+		var2 = ((var3/12)&7)<<2;
+		alOut(alFreqL+8,var1&0xFF);
+		alOut(alFreqH+8,var2+((var1>>8)&3));
+
+		buffPtr = &someMidiBuffer2[122];
+		alOut(0x31,*buffPtr);
+		buffPtr += 2;
+		alOut(0x51,*buffPtr);
+		buffPtr += 2;
+		alOut(0x71,*buffPtr);
+		buffPtr += 2;
+		alOut(0x91,*buffPtr);
+		buffPtr += 2;
+
+		alOut(0xF1,*buffPtr);
+		alOut(0xC7,0);
+
+		buffPtr = &someMidiBuffer2[146];
+		alOut(0x32,*buffPtr);
+		buffPtr += 2;
+		alOut(0x52,*buffPtr);
+		buffPtr += 2;
+		alOut(0x72,*buffPtr);
+		buffPtr += 2;
+		alOut(0x92,*buffPtr);
+		buffPtr += 2;
+
+		alOut(0xF2,*buffPtr);
+
+		buffPtr = &someMidiBuffer2[134];
+		alOut(0x34,*buffPtr);
+		buffPtr += 2;
+		alOut(0x54,*buffPtr);
+		buffPtr += 2;
+		alOut(0x74,*buffPtr);
+		buffPtr += 2;
+		alOut(0x94,*buffPtr);
+		buffPtr += 2;
+
+		alOut(0xF4,*buffPtr);
+		alOut(0xC8,0);
+
+		buffPtr = &someMidiBuffer2[122];
+		alOut(0x35,*buffPtr);
+		buffPtr += 2;
+		alOut(0x55,*buffPtr);
+		buffPtr += 2;
+		alOut(0x75,*buffPtr);
+		buffPtr += 2;
+		alOut(0x95,*buffPtr);
+		buffPtr += 2;
+
+		alOut(0xF5,*buffPtr);
+	}
+	else if (arg0 < 5)
+	{
+		switch (arg1 & 0xF8)
+		{
+		case 0:
+			buffPtr = &someMidiBuffer2[2];
+			break;
+		case 8:
+			buffPtr = &someMidiBuffer2[98];
+			break;
+		case 16:
+			buffPtr = &someMidiBuffer2[14];
+			break;
+		case 24:
+			buffPtr = &someMidiBuffer2[2];
+			break;
+		case 32:
+			buffPtr = &someMidiBuffer2[26];
+			break;
+		case 40:
+		case 48:
+			buffPtr = &someMidiBuffer2[2];
+			break;
+		case 56:
+		case 64:
+			buffPtr = &someMidiBuffer2[74];
+			break;
+		case 72:
+			buffPtr = &someMidiBuffer2[86];
+			break;
+		case 80:
+		case 88:
+		case 96:
+			buffPtr = &someMidiBuffer2[2];
+			break;
+		case 104:
+		case 112:
+		case 120:
+			buffPtr = &someMidiBuffer2[98];
+			break;
+		default:
+			midiError = -8;
+			return;
+		}
+		
+		alOut(modifiers[arg0+1]+alChar, *buffPtr++);
+		alOut(carriers[arg0+1]+alChar, *buffPtr++);
+		alOut(modifiers[arg0+1]+alScale, *buffPtr++);
+		alOut(carriers[arg0+1]+alScale, *buffPtr++);
+		alOut(modifiers[arg0+1]+alAttack, *buffPtr++);
+		alOut(carriers[arg0+1]+alAttack, *buffPtr++);
+		alOut(modifiers[arg0+1]+alSus, *buffPtr++);
+		alOut(carriers[arg0+1]+alSus, *buffPtr++);
+		alOut(modifiers[arg0+1]+alWave, *buffPtr++);
+		alOut(carriers[arg0+1]+alWave, *buffPtr++);
+
+		alOut(alFeedCon+arg0, *buffPtr);
+	}
+}
+
+static void
+SDL_MDNullFunc2(byte arg0, int arg1)
+{
+}
+
+static void
+SDL_MDFunc9(byte arg0)
+{
+	byte	var1,var2,var3;
+	switch (arg0&0xF0)
+	{
+	case 0x80:
+		var1 = *sqTrackPtr++;
+		var2 = *sqTrackPtr++;
+		SDL_MDFunc5(arg0&0xF,var1,var2);
+		break;
+	case 0x90:
+		var1 = *sqTrackPtr++;
+		var2 = *sqTrackPtr++;
+		SDL_MDFunc6(arg0&0xF,var1,var2);
+		break;
+	case 0xB0:
+		var3 = *sqTrackPtr++;
+		var1 = *sqTrackPtr++;
+		SDL_MDNullFunc(arg0&0xF,var3,var1);
+		break;
+	case 0xC0:
+		var1 = *sqTrackPtr++;
+		SDL_MDPlayTrack(arg0&0xF,var1);
+		break;
+	case 0xD0:
+		var1 = *sqTrackPtr++;
+		SDL_MDNullFunc2(arg0&0xF,var1);
+		break;
+	default:
+		midiError = -7;
+	}
+}
+
+static void
+SDL_MDFunc10(void)
+{
+	longword	vlq;
+	longword	lv;
+	byte	val = *sqTrackPtr;
+	sqTrackPtr++;
+	if (!(val & 0x80))
+	{
+		switch (sqSomeByte)
+		{
+		case 0:
+			return;
+		}
+		sqTrackPtr--;
+		SDL_MDFunc9(sqSomeByte);
+	}
+	else if (val < 0xF0)
+	{
+		sqSomeByte = val;
+		SDL_MDFunc9(sqSomeByte);
+	}
+	else if (val == 0xF0)
+	{
+		sqSomeByte = 0;
+		midiError = -4;
+	}
+	else if (val == 0xF7)
+	{
+		sqSomeByte = 0;
+		midiError = -5;
+	}
+	else if (val == 0xFF)
+	{
+		sqSomeByte = 0;
+		val = *sqTrackPtr++;
+		switch (val)
+		{
+		case 0x51:
+			vlq = SDL_MDCalcVLQ();
+			lv = ((long)(*sqTrackPtr)<<16) + (long)((*(sqTrackPtr+1))<<8) + (*(sqTrackPtr+2));
+			someMidiFloat = (double)lv/2.74176e5;
+			someMidiFloat *= 1.1;
+			sqTrackPtr += vlq;
+			break;
+		case 0x2F:
+			sqTrackPtr = sqTrack;
+			sqTrackLen = 0;
+			break;
+		default:
+			SDL_MDCalcAndSkipVLQ();
+		}
+	}
+	else
+		midiError = -6;
+}
+
+void
+SDL_MDService(void)
+{
+	int	i = 0;
+
+	if (!sqActive)
+		return;
+
+	if (sqTrackLen)
+	{
+		sqTrackLen--;
+		return;
+	}
+
+	while (!sqTrackLen && (i++ < 32))
+	{
+		SDL_MDFunc10();
+		sqTrackLen = SDL_MDCalcVLQ();
+	}
+
+	if (i >= 32)
+		midiError = -1;
+	else if (sqTrackLen & 0xFFFF0000)
+	{
+		midiError = -2;
+		return;
+	}
+
+	sqTrackLen = sqTrackLen * someMidiFloat;
+}
+
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_ShutAL() - Shuts down the AdLib card for sound effects
@@ -2417,8 +2823,8 @@ SD_PlaySound(soundnames sound)
 		else
 #endif
 		{
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		asm	pushf
 		asm	cli
 			if (DigiPriority && !DigiNumber)
@@ -2454,6 +2860,22 @@ SD_PlaySound(soundnames sound)
 		Quit("SD_PlaySound() - Zero length sound");
 	if (s->priority < SoundPriority)
 		return(false);
+
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (SD_SoundPlaying() == sound)
+		switch (sound)
+		{
+		case NOWAYSND:
+		case ESCPRESSEDSND:
+		case MOVEGUN1SND:
+		case MOVEGUN2SND:
+		case HITWALLSND:
+		case SHOOTSND:
+		case SHOOTDOORSND:
+			return(false);
+		}
+#endif
 
 	switch (SoundMode)
 	{
@@ -2578,6 +3000,63 @@ SD_MusicOff(void)
 void
 SD_StartMusic(MusicGroup far *music)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	char error[80];
+	int result;
+
+	SD_MusicOff();
+	if (MusicMode != smm_AdLib)
+		return;
+
+asm	pushf
+asm	cli
+
+	sqHackPtr = music->values;
+	sqHackLen = music->length;
+	if (_fstrncmp(sqHackPtr,"MThd",4))
+		Quit("SD_StartMusic: MIDI header expected!\n");
+
+	result = SDL_MDSwapWord(((word far *)sqHackPtr)[4]);
+	if (result)
+	{
+		sprintf(error,"SD_StartMusic: Invalid or unsupported MIDI file format (%04X)\n", result);
+		Quit(error);
+	}
+	result = SDL_MDSwapWord(((word far *)sqHackPtr)[5]);
+	if (result != 1)
+	{
+		sprintf(error,"SD_StartMusic: MIDI file type 0 with %d tracks?\n",result);
+		Quit(error);
+	}
+
+	sqHackPtr += SDL_MDSwapLong(((longword far *)sqHackPtr)[1]) + 8;
+	if (_fstrncmp(sqHackPtr,"MTrk",4))
+		Quit("SD_StartMusic: MIDI track header expected!\n");
+
+	sqHackLen = SDL_MDSwapLong(((longword far *)sqHackPtr)[1]);
+	if (!sqHackLen)
+		Quit("SD_StartMusic: MIDI track is 0 length!\n");
+
+	sqHackPtr += 8;
+	sqTrack = sqTrackPtr = sqHackPtr;
+	sqTrackSeqLen = sqHackLen;
+	sqTrackLen = 0;
+	sqTrackLen = SDL_MDCalcVLQ();
+	if (sqTrackLen & 0xFFFF0000)
+	{
+		midiError = -2;
+		return;
+	}
+
+	sqSomeByte = 0;
+	SDL_MDPlayTrack(9,0);
+	alOut(alEffects,alChar);
+	someMidiBuffer2[0] = 0;
+	SD_MusicOn();
+
+asm	popf
+#else
 	SD_MusicOff();
 asm	pushf
 asm	cli
@@ -2592,6 +3071,7 @@ asm	cli
 	}
 
 asm	popf
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2603,6 +3083,12 @@ asm	popf
 void
 SD_FadeOutMusic(void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if (MusicMode == smm_AdLib)
+		// DEBUG - quick hack to turn the music off
+		SD_MusicOff();
+#else
 	switch (MusicMode)
 	{
 	case smm_AdLib:
@@ -2610,6 +3096,7 @@ SD_FadeOutMusic(void)
 		SD_MusicOff();
 		break;
 	}
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2621,11 +3108,15 @@ SD_FadeOutMusic(void)
 boolean
 SD_MusicPlaying(void)
 {
-	boolean	result;
-// *** S3DNA RESTORATION *** (TODO DEBUG)
+	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	_fstrncmp("","",4);
-#endif
+	if (MusicMode == smm_AdLib)
+		// DEBUG - not written
+		return false;
+
+	return false;
+#else
+	boolean	result;
 
 	switch (MusicMode)
 	{
@@ -2638,4 +3129,5 @@ SD_MusicPlaying(void)
 	}
 
 	return(result);
+#endif
 }

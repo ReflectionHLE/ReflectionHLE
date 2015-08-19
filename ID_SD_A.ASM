@@ -13,6 +13,10 @@ DEBUG	=	0
 
 	EXTRN	SDL_DigitizedDone:FAR
 	EXTRN	alOut:FAR
+	; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+	EXTRN	SDL_MDService:FAR
+ENDIF
 
 ;============================================================================
 
@@ -63,6 +67,8 @@ ENDIF
 count_time	dw	?
 count_fx	dw	?
 
+; *** S3DNA RESTORATION ***
+IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 pcdtab	db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
 		db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
 		db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
@@ -79,12 +85,15 @@ pcdtab	db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
 		db	10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b
 		db	10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b
 		db	10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b
+ENDIF
 
 
 ;============================================================================
 
 CODESEG
 
+; *** S3DNA RESTORATION ***
+IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 MyDS	dw	?
 
 pcindicate	dw	?
@@ -98,6 +107,7 @@ extreme		dw	?
 	ret
 
 	ENDP
+ENDIF
 
 ;
 ;	COMMONSTART
@@ -119,7 +129,13 @@ extreme		dw	?
 	push ds
 	push ax
 
+; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+	mov	ax,@data
+	mov	ds,ax
+ELSE
 	mov	ds,[cs:MyDS]
+ENDIF
 	inc	[HackCount]
 	ENDM
 
@@ -264,6 +280,8 @@ extreme		dw	?
 	iret
 	ENDM
 
+; *** S3DNA RESTORATION ***
+IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 ;
 ;	SDL_IndicatePC
 ;
@@ -346,6 +364,7 @@ extreme		dw	?
 ;	jmp	SDL_t0FastAsmService			; Drops through to SDL_t0FastAsmService
 
 	ENDP
+ENDIF ; GAMEVER_RESTORATION_N3D_WIS10
 
 ;
 ;	SDL_t0FastAsmService
@@ -360,12 +379,12 @@ extreme		dw	?
 	cmp	[count_fx],5
 	jae	@@dofull
 
+	; *** S3DNA RESTORATION ***
+IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 	mov	ax,[sqActive]					; Is the sequencer active?
 	or	ax,ax
 	jnz	@@dofull
 
-	; *** S3DNA RESTORATION ***
-IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 	mov	ax,[WORD PTR ssSample]			; Is there a sample for the Sound Src?
 	or	ax,[WORD PTR ssSample+2]
 	jz	@@nosave
@@ -384,6 +403,10 @@ ENDIF
 	TIME
 @@nofx:
 
+	; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+	call SDL_MDService
+ELSE
 	mov	ax,[sqActive]
 	or	ax,ax
 	jz	@@nosq
@@ -442,8 +465,6 @@ ENDIF
 	mov	[WORD PTR sqHackTime+2],ax
 @@nosq:
 
-	; *** S3DNA RESTORATION ***
-IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 	les	di,[ssSample]			; Get pointer to Sound Source sample
 	mov	ax,es
 	or	ax,di
@@ -509,7 +530,13 @@ ENDIF
 	push ds
 	push ax
 
+	; *** S3DNA RESTORATION ***
+IFDEF GAMEVER_RESTORATION_N3D_WIS10
+	mov	ax,@data
+	mov	ds,ax
+ELSE
 	mov	ds,[cs:MyDS]
+ENDIF
 
 	inc	[count_time]
 	TIME
