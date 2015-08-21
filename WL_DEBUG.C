@@ -537,14 +537,15 @@ int DebugKeys (void)
 
 	if (Keyboard[sc_G])		// G = god mode
 	{
-		CenterWindow (12,2);
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
+		CenterWindow (20,2);
 		if (godmode)
 		  US_PrintCentered ("Invulnerability OFF");
 		else
 		  US_PrintCentered ("Invulnerability ON");
 #else
+		CenterWindow (12,2);
 		if (godmode)
 		  US_PrintCentered ("God mode OFF");
 		else

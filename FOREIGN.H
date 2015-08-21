@@ -50,10 +50,18 @@
 #define	STR_SENS	"Mouse Sensitivity"
 #define	STR_CUSTOM	"Customize controls"
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define	STR_DADDY	"Super Easy"
+#define	STR_HURTME	"Easy"
+#define	STR_BRINGEM	"Normal"
+#define	STR_DEATH	"Hard"
+#else
 #define	STR_DADDY	"Can I play, Daddy?"
 #define	STR_HURTME	"Don't hurt me."
 #define	STR_BRINGEM	"Bring 'em on!"
 #define	STR_DEATH	"I am Death incarnate!"
+#endif
 
 #define	STR_MOUSEADJ	"Adjust Mouse Sensitivity"
 #define STR_SLOW	"Slow"

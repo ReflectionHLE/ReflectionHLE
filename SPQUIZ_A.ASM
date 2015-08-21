@@ -102,6 +102,7 @@ PUBLIC	quiz95
 PUBLIC	quiz96
 PUBLIC	quiz97
 PUBLIC	quiz98
+PUBLIC	quizlast
 
 quiz0	db	"Who was Noah's father?", 0
 	db	"Gen 5:30", 0
@@ -697,5 +698,6 @@ quiz98	db	"How old was Lamech when", 10
 	db	"135", 2
 	db	"182", 1
 	db	"199", 4
+quizlast	db	0
 
 END

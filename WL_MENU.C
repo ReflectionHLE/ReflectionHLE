@@ -30,7 +30,19 @@ void CP_BackToDemo(void);
 
 char GAMEVER_RESTORATION_CONDFARPTR endStrings[9][80]=
 {
-#ifndef SPEAR
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	{"Are you sure you're\nready to quit?.\nPress Y to Quit."},
+	{"What? Quitting already?\nPress Y to Quit."},
+	{"Are a few hungry animals\ntoo tough for you?\nPress Y to Quit."},
+	{"Giving up so soon?\nPress Y to Quit."},
+	{"Be sure to take your\numbrella, it's wet out there.\nPress Y to Quit."},
+	{"You're going to let\nthose animals run free?\nPress Y to Quit."},
+	{"Did the animals wear\nyou out?\nPress Y to Quit."},
+	{"Are you monkeying around or\ndo you really want to quit?\nPress Y to Quit."},
+	{"The animals might get\nhungry if you're gone\ntoo long!\nPress Y to Quit."}
+#elif (!defined SPEAR)
+//#ifndef SPEAR
 	{"Dost thou wish to\nleave with such hasty\nabandon?"},
 	{"Chickening out...\nalready?"},
 	{"Press N for more carnage.\nPress Y to be a weenie."},
@@ -208,7 +220,7 @@ GAMEVER_RESTORATION_CONDFARPTR NewEmenu[]=
 #else
 	// *** S3DNA RESTORATION ***
 	#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	{1,"Carel the Camel\n"
+	{1,"Carl the Camel\n"
 	   "Start at level 1-1",0},
 	{0,"",0},
 	{3,"Ginny the Giraffe\n"

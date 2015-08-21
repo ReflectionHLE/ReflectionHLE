@@ -168,6 +168,23 @@ void NewState (objtype *ob, statetype *state)
 	}                                               \
 }
 
+// *** S3DNA RESTORATION ***
+// Different masking for doornum
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define CHECKSIDE(x,y)								\
+{                                                   \
+	temp=(unsigned)actorat[x][y];                   \
+	if (temp)                                       \
+	{                                               \
+		if (temp<128)                               \
+			return false;                           \
+		if (temp<256)                               \
+			doornum = temp&31;                      \
+		else if (((objtype *)temp)->flags&FL_SHOOTABLE)\
+			return false;                           \
+	}                                               \
+}
+#else
 #define CHECKSIDE(x,y)								\
 {                                                   \
 	temp=(unsigned)actorat[x][y];                   \
@@ -181,7 +198,7 @@ void NewState (objtype *ob, statetype *state)
 			return false;                           \
 	}                                               \
 }
-
+#endif
 
 boolean TryWalk (objtype *ob)
 {
@@ -902,7 +919,12 @@ void KillActor (objtype *ob)
 	case ssobj:
 		GivePoints (500);
 		NewState (ob,&s_ssdie1);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (!gamestate.weaponinv[0])
+#else
 		if (gamestate.bestweapon < wp_machinegun)
+#endif
 			PlaceItemType (bo_machinegun,tilex,tiley);
 		else
 			// *** S3DNA RESTORATION ***
@@ -1283,11 +1305,10 @@ boolean CheckLine (objtype *ob)
 			if (!(value = (unsigned)tilemap[x][y]))
 				continue;
 #else
+			value = (unsigned)tilemap[x][y];
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			value = (unsigned)tilemap[x][y]&0xFFDF;
-#else
-			value = (unsigned)tilemap[x][y];
+			value &= 0xFFDF;
 #endif
 			x += xstep;
 
@@ -1398,11 +1419,10 @@ boolean CheckLine (objtype *ob)
 			if (!(value = (unsigned)tilemap[x][y]))
 				continue;
 #else
+			value = (unsigned)tilemap[x][y];
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			value = (unsigned)tilemap[x][y]&0xFFDF;
-#else
-			value = (unsigned)tilemap[x][y];
+			value &= 0xFFDF;
 #endif
 			y += ystep;
 
@@ -1829,13 +1849,13 @@ boolean SightPlayer (objtype *ob)
 		switch (gamestate.difficulty)
 		{
 		case gd_baby:
-			ob->temp2 = (ob->temp2+3)>>1;
+			ob->temp2 += (ob->temp2+3)>>1;
 			break;
 		case gd_easy:
-			ob->temp2 = (ob->temp2+6)>>2;
+			ob->temp2 += (ob->temp2+6)>>2;
 			break;
 		case gd_medium:
-			ob->temp2 = (ob->temp2+9)>>3;
+			ob->temp2 += (ob->temp2+9)>>3;
 			break;
 		}
 #endif

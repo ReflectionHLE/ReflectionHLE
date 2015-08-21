@@ -1214,7 +1214,7 @@ void InitDigiMap (void)
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-CP_iteminfo	MusicItems={CTL_X,CTL_Y,11,0,32};
+CP_iteminfo	MusicItems={CTL_X,40,11,0,32};
 CP_itemtype far MusicMenu[]=
 	{
 		{1,"Song 1",0},

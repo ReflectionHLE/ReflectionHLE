@@ -1248,7 +1248,7 @@ SD_StopDigitized(void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (SD_Started)
+	if (!SD_Started)
 		return;
 #endif
 asm	pushf
@@ -1880,10 +1880,10 @@ SDL_MDFunc6(int arg0, byte arg1, byte arg2)
 				someMidiBuffer2[0] |= 0x10;
 				break;
 			case 0x26:
-				someMidiBuffer2[0] |= 0x3;
+				someMidiBuffer2[0] |= 0x8;
 				break;
 			case 0x28:
-				someMidiBuffer2[0] |= 0x5;
+				someMidiBuffer2[0] |= 0x4;
 				break;
 			case 0x2a:
 				someMidiBuffer2[0] |= 1;
@@ -2057,7 +2057,7 @@ SDL_MDPlayTrack(int arg0, int arg1)
 }
 
 static void
-SDL_MDNullFunc2(byte arg0, int arg1)
+SDL_MDNullFunc2(int arg0, int arg1)
 {
 }
 

@@ -63,7 +63,12 @@ boolean		mouseenabled,joystickenabled,joypadenabled,joystickprogressive;
 int			joystickport;
 int			dirscan[4] = {sc_UpArrow,sc_RightArrow,sc_DownArrow,sc_LeftArrow};
 int			buttonscan[NUMBUTTONS] =
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			{sc_Control,sc_Alt,sc_RShift,sc_Space,sc_1,sc_2,sc_3,sc_4,sc_5,sc_6};
+#else
 			{sc_Control,sc_Alt,sc_RShift,sc_Space,sc_1,sc_2,sc_3,sc_4};
+#endif
 int			buttonmouse[4]={bt_attack,bt_strafe,bt_use,bt_nobutton};
 int			buttonjoy[4]={bt_attack,bt_strafe,bt_use,bt_run};
 
@@ -761,13 +766,13 @@ void CheckKeys (void)
 		else
 		{
 			Message ("Invulnerability OFF");
-			SD_PlaySound (BONUS1UPSND);
+			SD_PlaySound (NOBONUSSND);
 		}
 
 		IN_Ack();
 		IN_ClearKeysDown();
 
-		gamestate.health = 10;
+		gamestate.health = 100;
 		gamestate.ammo = gamestate.maxammo = 299;
 		gamestate.ammo2 = gamestate.ammo3 = 99;
 		gamestate.keys = 3;
@@ -1297,14 +1302,16 @@ void StartMusic(void)
 #define NUMREDSHIFTS	6
 #define REDSTEPS		8
 
-#define NUMWHITESHIFTS	3
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define NUMWHITESHIFTS	4
 #define WHITESTEPS		14
+#define WHITETICS		4
 #else
+#define NUMWHITESHIFTS	3
 #define WHITESTEPS		20
-#endif
 #define WHITETICS		6
+#endif
 
 
 byte	far redshifts[NUMREDSHIFTS][768];

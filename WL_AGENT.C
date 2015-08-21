@@ -73,13 +73,18 @@ attackinfo[4][14] =
 
 {
 { {6,0,1},{6,2,2},{6,0,3},{6,-1,4} },
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+{ {6,0,1},{6,1,2},{6,0,3},{8,-1,4} },
+#else
 { {6,0,1},{6,1,2},{6,0,3},{6,-1,4} },
+#endif
 { {6,0,1},{6,1,2},{6,3,3},{6,-1,4} },
 { {6,0,1},{6,1,2},{6,4,3},{6,-1,4} },
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 { {7,0,1},{7,5,2},{7,5,3},{7,-1,4} },
-{ {6,0,1},{6,0,2},{6,4,3},{6,-1,4} },
+{ {6,0,1},{6,0,2},{6,6,3},{6,-1,4} },
 #endif
 };
 
@@ -182,7 +187,7 @@ void CheckWeaponChange (void)
 				}
 				break;
 			case wp_watermelon:
-				if (gamestate.weaponinv[3] && gamestate.ammo3)
+				if (gamestate.weaponinv[2] && gamestate.ammo3)
 				{
 					gamestate.weapon = gamestate.chosenweapon = i;
 					DrawAmmo ();
@@ -420,14 +425,16 @@ void	UpdateFace (void)
 {
 
 	// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
+	if (SD_SoundPlaying() == GETGATLINGSND)
+	  return;
+#endif
+
+	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	if (SD_SoundPlaying() == GETITEMSND)
-#else
-	if (SD_SoundPlaying() == GETGATLINGSND)
 #endif
-	  return;
-
-	facecount += tics;
+		facecount += tics;
 	if (facecount > US_RndT())
 	{
 		gamestate.faceframe = (US_RndT()>>6);
@@ -508,7 +515,7 @@ void	LatchNumber (int x, int y, int width, long number)
 
 void	DrawHealth (void)
 {
-	LatchNumber (21,16,3,gamestate.health);
+	LatchNumber (23,16,3,gamestate.health);
 }
 
 
@@ -614,7 +621,7 @@ void	DrawLevel (void)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	int episode, mapnum;
+	int 	mapnum,episode;
 
 	if (gamestate.mapon >= 31)
 		Quit ("DrawLevel(): Bad level number!\n");
@@ -1071,14 +1078,19 @@ void GetBonus (statobj_t *check)
 	case	bo_clip:
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		if (gamestate.ammo == gamestate.maxammo)
+		if (gamestate.ammo >= gamestate.maxammo)
 #else
 		if (gamestate.ammo == 99)
 #endif
 			return;
 
 		SD_PlaySound (GETAMMOSND);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		GiveAmmo (5);
+#else
 		GiveAmmo (8);
+#endif
 		break;
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_RESTORATION_N3D_WIS10
@@ -1097,7 +1109,7 @@ void GetBonus (statobj_t *check)
 	case	bo_25clip:
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		if (gamestate.ammo == gamestate.maxammo)
+		if (gamestate.ammo >= gamestate.maxammo)
 #else
 		if (gamestate.ammo == 99)
 #endif
@@ -1194,7 +1206,7 @@ void GetBonus (statobj_t *check)
 		gamestate.maxammo += 100;
 		if (gamestate.maxammo > 299)
 			gamestate.maxammo = 299;
-		GiveAmmo (100);
+		GiveAmmo (10);
 		GiveAmmo2 (1);
 		GiveAmmo3 (1);
 		SD_PlaySound (GETITEMSND);
@@ -1572,11 +1584,10 @@ void Cmd_Use (void)
 #endif
 	}
 
-		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	doornum = tilemap[checkx][checky]&0xFFDF;
-#else
 	doornum = tilemap[checkx][checky];
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	doornum &= 0xFFDF;
 #endif
 	if (*(mapsegs[1]+farmapylookup[checky]+checkx) == PUSHABLETILE)
 	{
@@ -1713,7 +1724,7 @@ void	KnifeAttack (objtype *ob)
 // hit something
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	DamageActor (closest,US_RndT() >> 3);
+	DamageActor (closest,US_RndT()&3);
 #else
 	DamageActor (closest,US_RndT() >> 4);
 #endif
@@ -1973,10 +1984,8 @@ void	T_Attack (objtype *ob)
 					DrawAmmo ();
 				}
 				else
-				{
 					gamestate.weapon = wp_knife;
-					DrawAmmo ();
-				}
+				DrawAmmo ();
 			}
 			else if (!gamestate.ammo)
 			{

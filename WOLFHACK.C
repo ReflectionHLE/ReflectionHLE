@@ -152,10 +152,15 @@ void SetPlaneViewSize (void)
 
 	for (y=0 ; y<halfheight ; y++)
 	{
-		planeylookup[y] = (byte far *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;;
 		// *** S3DNA RESTORATION ***
-		// TODO, need to solve this ("add ax, 0"), for now add a few nops
+		// It's technically useless to cast 0xa0000000l to a 16-bit near
+		// pointer, but this helps to (re)generate some ASM instruction
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
+		planeylookup[y] = (byte *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;
+#else
+		planeylookup[y] = (byte far *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;;
+#endif
+#if 0
 	asm	nop
 	asm	nop
 	asm	nop

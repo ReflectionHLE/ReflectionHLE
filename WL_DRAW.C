@@ -1136,7 +1136,12 @@ asm	jnz	toploop
 
 asm	mov	bh,BYTE PTR [viewheight]
 asm	shr	bh,1					// half height
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+asm	mov	ax,0xd9d9
+#else
 asm	mov	ax,0x1919
+#endif
 
 bottomloop:
 asm	mov	cl,bl
@@ -1336,13 +1341,13 @@ void DrawScaleds (void)
 
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			if ((obj->hitpoints > 0) && (obj->obclass == watermelonobj) || (obj->obclass == watermelonobj) || (obj->obclass == needleobj) || (obj->obclass == rocketobj))
+			if ((obj->hitpoints > 0) || (obj->obclass == watermelonobj) || (obj->obclass == cantaloupeobj) || (obj->obclass == needleobj) || (obj->obclass == rocketobj))
 				visptr->snoozeframe = 0;
 			else
 			{
 				// 2.6 number. Upper is frame, Lower is tics*2
-				visptr->snoozeframe = obj->snoozeframe/64;
-				obj->snoozeframe += 2*tics;
+				visptr->snoozeframe = obj->snoozeframe>>6;
+				obj->snoozeframe += 3*tics;
 			}
 #endif
 

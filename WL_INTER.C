@@ -176,7 +176,15 @@ nexttic:
 			stateiters = state->tictime;
 		}
 
-		memset (spotvis,0,sizeof(spotvis));
+		// S3DNA RESTORATION - Taken off ThreeDRefresh;
+		// If memset is used, a bit different code is generated.
+	asm	mov	ax,ds
+	asm	mov	es,ax
+	asm	mov	di,OFFSET spotvis
+	asm	xor	ax,ax
+	asm	mov	cx,2048
+	asm	rep stosw
+
 		bufferofs += screenofs;
 		PollControls ();
 		WallRefresh ();
@@ -261,8 +269,14 @@ void Victory (void)
 #endif
 	char tempstr[8];
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define RATIOX	9
+#define RATIOY	12
+#else
 #define RATIOX	6
 #define RATIOY	14
+#endif
 #define TIMEX	14
 #define TIMEY	8
 
@@ -380,7 +394,7 @@ void Victory (void)
 	VWB_DrawPic (128,112,W_TREASURESPIC);
 	Write(33,14,"%");
 
-	VWB_DrawPic (128,112,W_SECRETSPIC);
+	VWB_DrawPic (96,128,W_SECRETSPIC);
 	Write(33,16,"%");
 #else
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
@@ -811,7 +825,7 @@ void DrawIntermissionBackground (int mode)
 		sprintf (tempstr,"%d",episodetable[gamestate.mapon]);
 		Write (23,1,tempstr);
 		sprintf (tempstr,"%d",mapnumbertable[gamestate.mapon]);
-		Write (23,13,tempstr);
+		Write (23,3,tempstr);
 	}
 	VWB_DrawPic (104,72,W_BONUSPIC);
 }
@@ -819,7 +833,8 @@ void DrawIntermissionBackground (int mode)
 void WaitForTic (void)
 {
 	long oldtimecount = TimeCount;
-	while (TimeCount != oldtimecount);
+	while (TimeCount == oldtimecount)
+		;
 }
 #endif
 
@@ -862,12 +877,20 @@ void LevelCompleted (void)
 			char timestr[6];
 			} times;
 
+	// *** S3DNA  RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	int	x,i,min,sec,mode,ratio;
+	boolean perfect;
+	long bonus,timeleft;
+	int	kr,sr,tr;
+#else
 	int	x,i,min,sec,ratio,kr,sr,tr;
+#endif
 	unsigned	temp;
 	char tempstr[10];
 	// *** S3DNA  RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	long bonus,timeleft;
+	long	oldtimecount;
 #else
 	long bonus,timeleft=0;
 #endif
@@ -1175,10 +1198,6 @@ void LevelCompleted (void)
 	// *** S3DNA  RESTORATION ***
 	// TODO (RESTORATION) Unify common code groups?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	int mode;
-	long oldtimecount;
-	boolean perfect;
-
 	StartCPMusic(FEEDTIME_MUS);
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	ClearSplitVWB ();			// set up for double buffering in split screen
@@ -1231,7 +1250,7 @@ void LevelCompleted (void)
 			BJ_Breathe();
 	}
 	VWB_DrawPic(96,112,W_PARPIC);
-	Write(29,14,parTimes[gamestate.mapon].timestr);
+	Write(19,14,parTimes[gamestate.mapon].timestr);
 	VWB_DrawPic(88,128,W_TIMEPIC);
 
 	//
@@ -1312,11 +1331,12 @@ void LevelCompleted (void)
 	VW_UpdateScreen();
 	IN_StartAck();
 
-	#define RATIOXX		33
+	#define RATIOXX		29
 	for (i=0;i<=kr;i++)
 	{
 		itoa(i,tempstr,10);
-		Write(29-2*strlen(tempstr),13,tempstr);
+		x=RATIOXX-strlen(tempstr)*2;
+		Write(x,13,tempstr);
 		SD_PlaySound(ENDBONUS1SND);
 		VW_UpdateScreen();
 		BJ_Breathe();
@@ -1349,7 +1369,8 @@ void LevelCompleted (void)
 	for (i=0;i<=tr;i++)
 	{
 		itoa(i,tempstr,10);
-		Write(29-2*strlen(tempstr),15,tempstr);
+		x=RATIOXX-strlen(tempstr)*2;
+		Write(x,15,tempstr);
 		SD_PlaySound(ENDBONUS1SND);
 		VW_UpdateScreen();
 		BJ_Breathe();
@@ -1382,7 +1403,8 @@ void LevelCompleted (void)
 	for (i=0;i<=sr;i++)
 	{
 		itoa(i,tempstr,10);
-		Write(29-2*strlen(tempstr),17,tempstr);
+		x=RATIOXX-strlen(tempstr)*2;
+		Write(x,17,tempstr);
 		SD_PlaySound(ENDBONUS1SND);
 		VW_UpdateScreen();
 		BJ_Breathe();
@@ -1421,15 +1443,15 @@ void LevelCompleted (void)
 
 	itoa(kr,tempstr,10);
 	x=RATIOXX-strlen(tempstr)*2;
-	Write(x,14,tempstr);
-
-	itoa(sr,tempstr,10);
-	x=RATIOXX-strlen(tempstr)*2;
-	Write(x,16,tempstr);
+	Write(x,13,tempstr);
 
 	itoa(tr,tempstr,10);
 	x=RATIOXX-strlen(tempstr)*2;
-	Write(x,18,tempstr);
+	Write(x,15,tempstr);
+
+	itoa(sr,tempstr,10);
+	x=RATIOXX-strlen(tempstr)*2;
+	Write(x,17,tempstr);
 
 	//
 	// SAVE RATIO INFORMATION FOR ENDGAME
@@ -1478,15 +1500,17 @@ void LevelCompleted (void)
 	UnCacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	SD_WaitSoundDone();
 
-	// TODO (RESTORATION) - Reusing variable temp
-	switch (SoundMode)
 	{
-		case sdm_Off: return;
-		case sdm_PC: temp = STARTPCSOUNDS; break;
-		case sdm_AdLib: temp = STARTADLIBSOUNDS; break;
+		unsigned start;
+		switch (SoundMode)
+		{
+			case sdm_Off: return;
+			case sdm_PC: start = STARTPCSOUNDS; break;
+			case sdm_AdLib: start = STARTADLIBSOUNDS; break;
+		}
+		for (i=0;i<NUMSOUNDS;i++,start++)
+			MM_FreePtr((memptr *)&audiosegs[start]);
 	}
-	for (i=0;i<NUMSOUNDS;i++,temp++)
-		MM_FreePtr((memptr *)&audiosegs[temp]);
 
 #else // GAMEVER_RESTORATION_N3D_WIS10
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
@@ -2075,8 +2099,13 @@ void	DrawHighScores(void)
 	UNCACHEGRCHUNK (HIGHSCORESPIC);
 #endif
 
-	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	VWB_DrawPic(4*8,68,C_NAMEPIC);
+	VWB_DrawPic(21*8,68,C_LEVELPIC);
+	VWB_DrawPic(32*8,68,C_SCOREPIC);
+#elif (!defined GAMEVER_RESTORATION_WL1_APO10)
 	VWB_DrawPic(4*8,68,C_NAMEPIC);
 	VWB_DrawPic(20*8,68,C_LEVELPIC);
 	VWB_DrawPic(28*8,68,C_SCOREPIC);
@@ -2352,8 +2381,9 @@ void	CheckHighScore (long score,word other)
 }
 
 // *** S3DNA RESTORATION ***
+// Separating the briefings seems to do the job here (in terms of EXE layout)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-char *briefings[7] = {
+char briefing_ep1[] = {
 	"You'll be out of the ark in six\n"
 	"days, Noah. Unfortunately, the\n"
 	"animals are a tad bit restless and\n"
@@ -2367,8 +2397,10 @@ char *briefings[7] = {
 	"Camel. He's been real cranky lately\n"
 	"and is a bit out of control.\n"
 	"\n"
-	"Good luck and be careful...\n",
+	"Good luck and be careful...\n"
+};
 
+char briefing_ep2[] = {
 	"Wow, Noah! Carl sure was hard to\n"
 	"calm down. But remember, you\n"
 	"were chosen to guide this ark to\n"
@@ -2380,9 +2412,12 @@ char *briefings[7] = {
 	"may be tall and quick, but give\n"
 	"her enough food and it's off to\n"
 	"sleep.\n"
+	"\n"
 	"Oh, and Noah, remember to keep\n"
-	"an eye out for hidden rooms...\n",
+	"an eye out for hidden rooms...\n"
+};
 
+char briefing_ep3[] = {
 	"ZZZZZ... Great job, Noah!. Ginny is\n"
 	"snoring away.\n"
 	"\n"
@@ -2394,8 +2429,10 @@ char *briefings[7] = {
 	"and may try distracting you with\n"
 	"coconuts, but it's your job to get\n"
 	"him settled down for the rest of\n"
-	"your time aboard the ark.",
+	"your time aboard the ark."
+};
 
+char briefing_ep4[] = {
 	"You're doing a great job, Noah!\n"
 	"You took care of that Melvin like\n"
 	"a real pro.\n"
@@ -2408,8 +2445,10 @@ char *briefings[7] = {
 	"and she doesn't look the least\n"
 	"bit tired. Are you ready for her?\n"
 	"She needs to rest like the other\n"
-	"animals.",
+	"animals."
+};
 
+char briefing_ep5[] = {
 	"Wow! Kerry was no challenge for\n"
 	"you! Can you keep up the pace\n"
 	"when faced with Ernie the\n"
@@ -2418,8 +2457,10 @@ char *briefings[7] = {
 	"Don't worry. Very soon you will\n"
 	"be on dry land, and you won't\n"
 	"have to chase the animals around\n"
-	"the ark anymore.",
+	"the ark anymore."
+};
 
+char briefing_ep6[] = {
 	"You are almost there! If you can\n"
 	"get through one more day, you\n"
 	"will be out of here for good!\n"
@@ -2431,8 +2472,10 @@ char *briefings[7] = {
 	"the Bear.\n"
 	"\n"
 	"Get him to sleep and your work\n"
-	"is done!",
+	"is done!"
+};
 
+char briefing_copyright[] = {
 	"\n"
 	"Super 3-D Noah's Ark\n"
 	"\n"
@@ -2447,6 +2490,11 @@ char *briefings[7] = {
 	"(C)1992 Id Software, Inc.\n"
 	"All rights reserved.\n"
 };
+
+
+char *briefings[] =
+	{briefing_ep1,briefing_ep2,briefing_ep3,briefing_ep4,briefing_ep5,briefing_ep6,briefing_copyright};
+
 
 void Briefing (int num, int type)
 {
@@ -2465,7 +2513,7 @@ void Briefing (int num, int type)
 	WindowY = PrintY = 8;
 	WindowW = 320-16;
 	WindowH = 200-16;
-	SETFONTCOLOR (TEXTCOLOR,READHCOLOR);
+	SETFONTCOLOR (READHCOLOR,BKGDCOLOR);
 
 	if (type)
 		US_CPrint (briefings[num]);

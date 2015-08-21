@@ -1280,7 +1280,12 @@ void RecordDemo (void)
 	CA_CacheGrChunk(STARTFONT);
 	fontnumber=0;
 #endif
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	US_Print("  Demo which level(1-30):");
+#else
 	US_Print("  Demo which level(1-10):");
+#endif
 	VW_UpdateScreen();
 	VW_FadeIn ();
 	esc = !US_LineInput (px,py,str,NULL,true,2,0);
@@ -1597,7 +1602,7 @@ void Died (void)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		gamestate.maxammo = 99;
-		gamestate.ammo2 = gamestate.ammo2 = 0;
+		gamestate.ammo2 = gamestate.ammo3 = 0;
 		gamestate.weaponinv[0] = 0;
 		gamestate.weaponinv[1] = 0;
 		gamestate.weaponinv[3] = 0;

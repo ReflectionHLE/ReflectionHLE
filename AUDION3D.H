@@ -54,8 +54,8 @@ typedef enum {
 		SHOOTSND,                // 39
 		SHOOTDOORSND,            // 40
 		ENDBONUS2SND,            // 41
-		GETMACHINESND,           // 42 (TODO: Unused)
-		GETGATLINGSND,           // 43 (TODO: Unused)
+		UNUSED1SND,              // 42 (TODO: Unused)
+		UNUSED2SND,              // 43 (TODO: Unused)
 		LASTSOUND
 	     } soundnames;
 
@@ -95,6 +95,8 @@ typedef enum {
 #define BONUS4SND GETITEMSND
 #define GETAMMOSND GETITEMSND
 #define GETAMMOBOXSND GETITEMSND
+#define GETMACHINESND GETITEMSND
+#define GETGATLINGSND GETITEMSND
 
 #define SSFIRESND NAZIFIRESND
 #define BOSSFIRESND NAZIFIRESND

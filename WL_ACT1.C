@@ -68,7 +68,7 @@ struct
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 {SPR_STAT_16,bo_key1},
-{SPR_STAT_17,bo_key1},
+{SPR_STAT_17,bo_key2},
 {SPR_STAT_18,bo_bag},
 {SPR_STAT_19,bo_25clip},
 {SPR_STAT_20,bo_food},
@@ -478,7 +478,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	if (doornum>=MAXDOORS)
 	{
-		sprintf (str,"SpawnDoor(): Too many doors on level %d",gamestate.mapon);
+		sprintf (str,"SpawnDoor(): Too many doors on level %d!",gamestate.mapon);
 		Quit (str);
 	}
 #else
@@ -875,11 +875,10 @@ void PushWall (int checkx, int checky, int dir)
 	  return;
 
 
+	oldtile = tilemap[checkx][checky];
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	oldtile = tilemap[checkx][checky]&0xFFDF;
-#else
-	oldtile = tilemap[checkx][checky];
+	oldtile &= 0xFFDF;
 #endif
 	if (!oldtile)
 		return;
@@ -983,7 +982,13 @@ void MovePWalls (void)
 		//
 		// see if it should be pushed farther
 		//
+		// *** S3DNA RESTORATION ***
+		// Actually bugfix for a well-known pushwall bug
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (pwallstate>=256)
+#else
 		if (pwallstate>256)
+#endif
 		{
 		//
 		// the block has been pushed two tiles

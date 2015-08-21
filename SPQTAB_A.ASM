@@ -102,6 +102,7 @@ EXTRN	quiz95:FAR
 EXTRN	quiz96:FAR
 EXTRN	quiz97:FAR
 EXTRN	quiz98:FAR
+EXTRN	quizlast:FAR
 
 PUBLIC	quizdata
 
@@ -204,4 +205,5 @@ quizdata	dw	offset quiz0, seg quiz0
 		dw	offset quiz96, seg quiz96
 		dw	offset quiz97, seg quiz97
 		dw	offset quiz98, seg quiz98
+		dw	offset quizlast, seg quizlast
 END

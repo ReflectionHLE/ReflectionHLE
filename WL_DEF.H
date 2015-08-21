@@ -833,8 +833,8 @@ typedef enum {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	en_gretel,
-	en_fat,
 	en_gift,
+	en_fat,
 	en_hitler
 #else
 	en_fake,
