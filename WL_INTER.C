@@ -146,8 +146,8 @@ void EndMap(void)
 	castnum = 0;
 	anglefrac = 0;
 	WindowX = 0;
-	WindowY = 320-16;
-	fontnumber = 0;
+	WindowW = 320-16;
+	fontnumber = 1;
 	lasttimecount = TimeCount = 0;
 	IN_StartAck ();
 
@@ -226,8 +226,8 @@ asm		sti
 	} while (castnum < 12);
 
 	UNCACHEGRCHUNK (STARTFONT+1);
-	fontnumber = 0;
 	StopMusic ();
+	fontnumber = 0;
 	VW_FadeOut ();
 }
 #endif

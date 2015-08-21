@@ -88,11 +88,22 @@
 #define SM_X	48
 #define SM_W	250
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define SM_Y1	28
+#else
 #define SM_Y1	20
+#endif
 #define SM_H1	4*13-7
 #define SM_Y2	SM_Y1+5*13
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define SM_H2	3*13-7
+#define SM_Y3	SM_Y2+4*13
+#else
 #define SM_H2	4*13-7
 #define SM_Y3	SM_Y2+5*13
+#endif
 #define SM_H3	3*13-7
 
 #define CTL_X	24

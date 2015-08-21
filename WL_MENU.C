@@ -63,10 +63,13 @@ CP_iteminfo
 	NewItems={NM_X,NM_Y,4,2,24};
 
 // *** S3DNA RESTORATION ***
+// A few convenience macros
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 #define GAMEVER_N3D_SS_OFFSET 1
+#define GAMEVER_RESTORATION_MOUSELBACKY 192
 #else
 #define GAMEVER_N3D_SS_OFFSET 0
+#define GAMEVER_RESTORATION_MOUSELBACKY 184
 #endif
 
 #pragma warn -sus
@@ -591,7 +594,7 @@ void DrawMainMenu(void)
 #else
 	ClearMScreen();
 
-	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
+	VWB_DrawPic(112,GAMEVER_RESTORATION_MOUSELBACKY,C_MOUSELBACKPIC);
 	DrawStripes(10);
 	VWB_DrawPic(84,0,C_OPTIONSPIC);
 
@@ -1217,7 +1220,7 @@ void DrawNewEpisode(void)
 	CA_CacheScreen(S_EPISODEPIC);
 #else
 	ClearMScreen();
-	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
+	VWB_DrawPic(112,GAMEVER_RESTORATION_MOUSELBACKY,C_MOUSELBACKPIC);
 
 	DrawWindow(NE_X-4,NE_Y-4,NE_W+8,NE_H+8,BKGDCOLOR);
 	SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
@@ -1252,7 +1255,7 @@ void DrawNewGame(void)
 	CA_CacheScreen(S_SKILLPIC);
 #else
 	ClearMScreen();
-	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
+	VWB_DrawPic(112,GAMEVER_RESTORATION_MOUSELBACKY,C_MOUSELBACKPIC);
 
 	SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
 	PrintX=NM_X+20;
@@ -1427,7 +1430,7 @@ void DrawSoundMenu(void)
 	// DRAW SOUND MENU
 	//
 	ClearMScreen();
-	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
+	VWB_DrawPic(112,GAMEVER_RESTORATION_MOUSELBACKY,C_MOUSELBACKPIC);
 
 	DrawWindow(SM_X-8,SM_Y1-3,SM_W,SM_H1,BKGDCOLOR);
 	DrawWindow(SM_X-8,SM_Y2-3,SM_W,SM_H2,BKGDCOLOR);
@@ -1674,7 +1677,7 @@ void DrawLoadSaveScreen(int loadsave)
 
 	ClearMScreen();
 	fontnumber=1;
-	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
+	VWB_DrawPic(112,GAMEVER_RESTORATION_MOUSELBACKY,C_MOUSELBACKPIC);
 	DrawWindow(LSM_X-10,LSM_Y-5,LSM_W,LSM_H,BKGDCOLOR);
 	DrawStripes(10);
 
@@ -2053,7 +2056,7 @@ void DrawMouseSens(void)
 	CA_CacheScreen(S_MOUSESENSPIC);
 #else
 	ClearMScreen();
-	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
+	VWB_DrawPic(112,GAMEVER_RESTORATION_MOUSELBACKY,C_MOUSELBACKPIC);
 	#ifdef SPANISH
 	DrawWindow(10,80,300,43,BKGDCOLOR);
 	#else
@@ -2189,7 +2192,7 @@ void DrawCtlScreen(void)
  ClearMScreen();
  DrawStripes(10);
  VWB_DrawPic(80,0,C_CONTROLPIC);
- VWB_DrawPic(112,184,C_MOUSELBACKPIC);
+ VWB_DrawPic(112,GAMEVER_RESTORATION_MOUSELBACKY,C_MOUSELBACKPIC);
  DrawWindow(CTL_X-8,CTL_Y-5,CTL_W,CTL_H,BKGDCOLOR);
 #endif
  WindowX=0;
@@ -2692,7 +2695,7 @@ void DrawCustomScreen(void)
 	ClearMScreen();
 	WindowX=0;
 	WindowW=320;
-	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
+	VWB_DrawPic(112,GAMEVER_RESTORATION_MOUSELBACKY,C_MOUSELBACKPIC);
 	DrawStripes(10);
 	VWB_DrawPic(80,0,C_CUSTOMIZEPIC);
 

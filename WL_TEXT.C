@@ -25,12 +25,7 @@ TEXT FORMATTING COMMANDS
 =============================================================================
 */
 
-// *** S3DNA RESTORATION *** - No T_ENDART1
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-#define BACKCOLOR		0x24
-#else
 #define BACKCOLOR		0x11
-#endif
 
 
 #define WORDLIMIT		80
@@ -426,7 +421,12 @@ void PageLayout (boolean shownumber)
 //
 // clear the screen
 //
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	VWB_Bar (0,0,320,200,0x24);
+#else
 	VWB_Bar (0,0,320,200,BACKCOLOR);
+#endif
 	// *** SOD V1.4 ACTIVISION RESTORATION ***
 	// Although none of WL_TEXT.C should even be used...
 #ifndef SPEAR
@@ -513,7 +513,12 @@ void PageLayout (boolean shownumber)
 		#endif
 		itoa (numpages,str2,10);
 		strcat (str,str2);
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		fontcolor = 0x10;
+#else
 		fontcolor = 0x4f; 			   //12^BACKCOLOR;
+#endif
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
 		#ifndef GAMEVER_RESTORATION_ANY_FROM_GT214
@@ -680,7 +685,12 @@ void ShowArticle (char far *article)
 	oldfontnumber = fontnumber;
 	fontnumber = 0;
 	CA_MarkGrChunk(STARTFONT);
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	VWB_Bar (0,0,320,200,0x24);
+#else
 	VWB_Bar (0,0,320,200,BACKCOLOR);
+#endif
 	CacheLayoutGraphics ();
 	#endif
 
