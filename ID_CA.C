@@ -70,7 +70,7 @@ int			profilehandle,debughandle;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-boolean		CA_Started;
+boolean		CA_Started = false;
 #endif
 
 char		audioname[13]="AUDIO.";

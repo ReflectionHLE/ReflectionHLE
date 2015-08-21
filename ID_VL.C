@@ -17,7 +17,7 @@ unsigned	displayofs,pelpan;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-boolean		vgamodeset;
+boolean		vgamodeset = false;
 #endif
 
 unsigned	screenseg=SCREENSEG;		// set to 0xa000 for asm convenience
@@ -71,7 +71,12 @@ void	VL_Startup (void)
 =======================
 */
 
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+static	char *ParmStrings[] = {"VGA",""};
+#else
 static	char *ParmStrings[] = {"HIDDENCARD",""};
+#endif
 
 void	VL_Startup (void)
 {

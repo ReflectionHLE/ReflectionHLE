@@ -486,16 +486,16 @@ void PageLayout (boolean shownumber)
 
 	if (shownumber)
 	{
-		// *** APOGEE + EARLY GOODTIMES + ID RELEASES RESTORATION ***
+		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Micro difference - where/when to set px and py...
 		#ifdef SPANISH
 		strcpy (str,"Hoja ");
 		itoa (pagenum,str2,10);
 		strcat (str,str2);
 		strcat (str," de ");
-		// *** APOGEE + EARLY GOODTIMES + ID RELEASES RESTORATION ***
+		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#ifdef GAMEVER_RESTORATION_ANY_POST_GT114
+		#ifdef GAMEVER_RESTORATION_ANY_FROM_GT214
 		py = 183;
 		px = 208;
 		#endif
@@ -504,9 +504,9 @@ void PageLayout (boolean shownumber)
 		itoa (pagenum,str2,10);
 		strcat (str,str2);
 		strcat (str," of ");
-		// *** APOGEE + EARLY GOODTIMES + ID RELEASES RESTORATION ***
+		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#ifdef GAMEVER_RESTORATION_ANY_POST_GT114
+		#ifdef GAMEVER_RESTORATION_ANY_FROM_GT214
 		py = 183;
 		px = 213;
 		#endif
@@ -514,9 +514,9 @@ void PageLayout (boolean shownumber)
 		itoa (numpages,str2,10);
 		strcat (str,str2);
 		fontcolor = 0x4f; 			   //12^BACKCOLOR;
-		// *** APOGEE + EARLY GOODTIMES + ID RELEASES RESTORATION ***
+		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#ifndef GAMEVER_RESTORATION_ANY_POST_GT114
+		#ifndef GAMEVER_RESTORATION_ANY_FROM_GT214
 		#ifdef SPANISH
 		py = 183;
 		px = 208;
@@ -777,8 +777,11 @@ int		helpextern = T_HELPART;
 #endif
 #endif // VERSIONS RESTORATION
 #endif
+// *** S3DNA RESTORATION *** - No T_ENDART1
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 char helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";
+#endif
 #endif
 
 /*

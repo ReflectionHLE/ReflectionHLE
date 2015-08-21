@@ -2353,7 +2353,7 @@ void	CheckHighScore (long score,word other)
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-char *briefings[] = {
+char *briefings[7] = {
 	"You'll be out of the ark in six\n"
 	"days, Noah. Unfortunately, the\n"
 	"animals are a tad bit restless and\n"
@@ -2445,7 +2445,7 @@ char *briefings[] = {
 	"software code owned by\n"
 	"Id Software, Inc\n"
 	"(C)1992 Id Software, Inc.\n"
-	"All rights reserved.\n",0
+	"All rights reserved.\n"
 };
 
 void Briefing (int num, int type)

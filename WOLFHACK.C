@@ -113,7 +113,7 @@ void LoadFloorTiles (int tile)
 	tile += (PMSpriteStart-8);
 	if (tile+1 >= PMSpriteStart)
 	{
-		sprintf (str,"LoadFloorTiles(): Invalid floor tile %u", (tile-(PMSpriteStart-8))/2);
+		sprintf (str,"LoadFloorTiles(): Invalid floor tile %u!", (tile-(PMSpriteStart-8))/2);
 		Quit (str);
 	}
 	page = PM_GetPage (tile+1);

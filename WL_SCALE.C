@@ -658,7 +658,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	if (shapenum >= SPR_LAST)
 	{
-		sprintf (str, "ScaleShape: Invalid sprite %u!", shapenum);
+		sprintf (str, "SimpleScaleShape: Invalid sprite %u!", shapenum);
 		Quit (str);
 	}
 #endif

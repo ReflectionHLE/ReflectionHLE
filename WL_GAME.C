@@ -32,7 +32,7 @@ boolean	screensplit;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 boolean		ingame;
-int		fizzlein,deathtime;
+int		deathtime,fizzlein;
 #else
 boolean		ingame,fizzlein;
 #endif
@@ -50,10 +50,10 @@ boolean		spearflag;
 // ELEVATOR BACK MAPS - REMEMBER (-1)!!
 //
 
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 int ElevatorBackTo[]={1,1,7,0,0,0};
-#else
+#elif (!defined GAMEVER_RESTORATION_N3D_WIS10)
 int ElevatorBackTo[]={1,1,7,3,5,3};
 #endif
 
@@ -828,7 +828,12 @@ void SetupGameLevel (void)
 #endif
 
 	if (mapwidth != 64 || mapheight != 64)
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		Quit ("SetupGameLevel(): Map not 64*64!");
+#else
 		Quit ("Map not 64*64!");
+#endif
 
 
 //

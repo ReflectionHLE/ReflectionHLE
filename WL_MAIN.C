@@ -49,13 +49,12 @@ int				tedlevelnum;
 #endif
 boolean         tedlevel;
 boolean         nospr;
-boolean         IsA386;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-boolean		FloorsDisabled;
-boolean		BibleQuizDisabled;
+boolean		BibleQuizDisabled, FloorsDisabled;
 char		titletxt[] = "SUPER 3D NOAH'S ARK (v1.0)";
 #endif
+boolean         IsA386;
 int                     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
 	5*ANGLES/8,6*ANGLES/8,7*ANGLES/8,ANGLES};
 // *** S3DNA RESTORATION ***
@@ -208,7 +207,12 @@ void ReadConfig(void)
 		joystickport = 0;
 		joystickprogressive = false;
 
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		viewsize = 18;
+#else
 		viewsize = 15;
+#endif
 		mouseadjustment=5;
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
@@ -322,7 +326,7 @@ void NewGame (int difficulty,int episode)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	memset (&LevelRatios,0,sizeof(LevelRatios[0])*sizeof(LRstruct)*30);
+	memset (&LevelRatios,0,sizeof(LRstruct)*30);
 #endif
 	memset (&gamestate,0,sizeof(gamestate));
 	gamestate.difficulty = difficulty;
@@ -417,7 +421,12 @@ boolean SaveTheGame(int file,int x,int y)
 	size += sizeof(nullobj);
 
 	size += sizeof(gamestate) +
+			// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			sizeof(LRstruct)*30 +
+#else
 			sizeof(LRstruct)*8 +
+#endif
 			sizeof(tilemap) +
 			sizeof(actorat) +
 			sizeof(laststatobj) +
@@ -1078,7 +1087,6 @@ static  int     wolfdigimap[] =
 			NAZIFIRESND,            30,
 			WATERMELONHITSND,       31,
 			WATERMELONFIRESND,      32,
-			NOWAYSND,               33,
 #elif (!defined SPEAR) // *** S3DNA RESTORATION ***
 			// These first sounds are in the upload version
 //#ifndef SPEAR
@@ -1351,9 +1359,11 @@ void DoJukebox(void)
 
 	fontnumber=1;
 	ClearMScreen ();
-	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	VWB_DrawPic(112,192,C_MOUSELBACKPIC);
+#else
+	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
 	DrawStripes (10);
 #endif
 	SETFONTCOLOR (TEXTCOLOR,BKGDCOLOR);
@@ -1374,7 +1384,12 @@ void DoJukebox(void)
 	PrintY=15;
 	WindowX = 0;
 	WindowY = 320;
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	US_CPrint ("Noah Tunes");
+#else
 	US_CPrint ("Robert's Jukebox");
+#endif
 
 	SETFONTCOLOR (TEXTCOLOR,BKGDCOLOR);
 	VW_UpdateScreen();
@@ -1756,7 +1771,12 @@ void Quit (char *error)
 #endif
 	if (error && *error)
 	{
+	  // *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	  movedata ((unsigned)screen,0,0xb800,0,7*160);
+#else
 	  movedata ((unsigned)screen,7,0xb800,0,7*160);
+#endif
 	  gotoxy (10,4);
 	  puts(error);
 	  gotoxy (1,8);
@@ -1776,7 +1796,12 @@ void Quit (char *error)
 		// as well as the other "GOODTIMES" releases
 		#if (!defined JAPAN) && (!defined GAMEVER_RESTORATION_ANY_ACT14)
 		//#ifndef JAPAN
+		// *** S3DNA RESTORATION ***
+		#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		movedata ((unsigned)screen,0,0xb800,0,4000);
+		#else
 		movedata ((unsigned)screen,7,0xb800,0,4000);
+		#endif
 		gotoxy(1,24);
 		#endif
 //asm	mov	bh,0
@@ -2106,7 +2131,10 @@ void    DemoLoop (void)
 ==========================
 */
 
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 char    *nosprtxt[] = {"nospr",nil};
+#endif
 
 void main (void)
 {
@@ -2133,7 +2161,7 @@ void main (void)
 	vgamodeset = true;
 	VL_SetTextMode();
 	VL_WriteTextCharsWithAttr(' ',0x5d,80);
-	gotoxy((78+strlen(titletxt))/2,1);
+	gotoxy((79-strlen(titletxt))/2,1);
 	puts(titletxt);
 #endif
 

@@ -296,7 +296,13 @@ extern	statetype s_grddie1;
 extern	statetype s_grddie1d;
 extern	statetype s_grddie2;
 extern	statetype s_grddie3;
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	statetype s_grdsleep1;
+extern	statetype s_grdsleep2;
+#else
 extern	statetype s_grddie4;
+#endif
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
@@ -335,10 +341,19 @@ statetype s_grdchase3 	= {true,SPR_GRD_W3_1,10,T_Chase,NULL,&s_grdchase3s};
 statetype s_grdchase3s 	= {true,SPR_GRD_W3_1,3,NULL,NULL,&s_grdchase4};
 statetype s_grdchase4 	= {true,SPR_GRD_W4_1,8,T_Chase,NULL,&s_grdchase1};
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+statetype s_grddie1		= {false,SPR_GRD_PAIN,15,NULL,A_DeathScream,&s_grddie2};
+statetype s_grddie2		= {false,SPR_GRD_DIE_1,15,NULL,A_DeathScream,&s_grddie3};
+statetype s_grddie3		= {false,SPR_GRD_DIE_2,15,NULL,A_DeathScream,&s_grdsleep1};
+statetype s_grdsleep1		= {false,SPR_GRD_DEAD,55,NULL,A_DeathScream,&s_grdsleep2};
+statetype s_grdsleep2		= {false,SPR_GRD_DIE_3,55,NULL,A_DeathScream,&s_grdsleep1};
+#else
 statetype s_grddie1		= {false,SPR_GRD_DIE_1,15,NULL,A_DeathScream,&s_grddie2};
 statetype s_grddie2		= {false,SPR_GRD_DIE_2,15,NULL,NULL,&s_grddie3};
 statetype s_grddie3		= {false,SPR_GRD_DIE_3,15,NULL,NULL,&s_grddie4};
 statetype s_grddie4		= {false,SPR_GRD_DEAD,0,NULL,NULL,&s_grddie4};
+#endif
 
 
 // *** S3DNA RESTORATION ***
@@ -388,7 +403,10 @@ extern	statetype s_dogjump1;
 extern	statetype s_dogjump2;
 extern	statetype s_dogjump3;
 extern	statetype s_dogjump4;
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 extern	statetype s_dogjump5;
+#endif
 
 extern	statetype s_dogchase1;
 extern	statetype s_dogchase1s;
@@ -418,8 +436,13 @@ statetype s_dogpath4 	= {true,SPR_DOG_W4_1,15,T_Path,NULL,&s_dogpath1};
 statetype s_dogjump1 	= {false,SPR_DOG_JUMP1,10,NULL,NULL,&s_dogjump2};
 statetype s_dogjump2 	= {false,SPR_DOG_JUMP2,10,NULL,T_Bite,&s_dogjump3};
 statetype s_dogjump3 	= {false,SPR_DOG_JUMP3,10,NULL,NULL,&s_dogjump4};
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+statetype s_dogjump4 	= {false,SPR_DOG_JUMP4,20,NULL,NULL,&s_dogchase1};
+#else
 statetype s_dogjump4 	= {false,SPR_DOG_JUMP1,10,NULL,NULL,&s_dogjump5};
 statetype s_dogjump5 	= {false,SPR_DOG_W1_1,10,NULL,NULL,&s_dogchase1};
+#endif
 
 statetype s_dogchase1 	= {true,SPR_DOG_W1_1,10,T_DogChase,NULL,&s_dogchase1s};
 statetype s_dogchase1s 	= {true,SPR_DOG_W1_1,3,NULL,NULL,&s_dogchase2};
@@ -686,7 +709,13 @@ extern	statetype s_sschase4;
 extern	statetype s_ssdie1;
 extern	statetype s_ssdie2;
 extern	statetype s_ssdie3;
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	statetype s_sssleep1;
+extern	statetype s_sssleep2;
+#else
 extern	statetype s_ssdie4;
+#endif
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
@@ -731,10 +760,19 @@ statetype s_sschase3 	= {true,SPR_SS_W3_1,10,T_Chase,NULL,&s_sschase3s};
 statetype s_sschase3s 	= {true,SPR_SS_W3_1,3,NULL,NULL,&s_sschase4};
 statetype s_sschase4 	= {true,SPR_SS_W4_1,8,T_Chase,NULL,&s_sschase1};
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+statetype s_ssdie1		= {false,SPR_SS_PAIN,15,NULL,A_DeathScream,&s_ssdie2};
+statetype s_ssdie2		= {false,SPR_SS_DIE_1,15,NULL,NULL,&s_ssdie3};
+statetype s_ssdie3		= {false,SPR_SS_DIE_2,15,NULL,NULL,&s_sssleep1};
+statetype s_sssleep1		= {false,SPR_SS_DEAD,55,NULL,NULL,&s_sssleep2};
+statetype s_sssleep2		= {false,SPR_SS_DIE_3,55,NULL,NULL,&s_sssleep1};
+#else
 statetype s_ssdie1		= {false,SPR_SS_DIE_1,15,NULL,A_DeathScream,&s_ssdie2};
 statetype s_ssdie2		= {false,SPR_SS_DIE_2,15,NULL,NULL,&s_ssdie3};
 statetype s_ssdie3		= {false,SPR_SS_DIE_3,15,NULL,NULL,&s_ssdie4};
 statetype s_ssdie4		= {false,SPR_SS_DEAD,0,NULL,NULL,&s_ssdie4};
+#endif
 
 
 #ifndef SPEAR
@@ -2166,11 +2204,17 @@ extern	statetype s_schabbchase4;
 extern	statetype s_schabbdie1;
 extern	statetype s_schabbdie2;
 extern	statetype s_schabbdie3;
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	statetype s_schabbsleep1;
+extern	statetype s_schabbsleep2;
+#else
 extern	statetype s_schabbdie4;
 extern	statetype s_schabbdie5;
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
 extern	statetype s_schabbdie6;
+#endif
 #endif
 
 extern	statetype s_schabbshoot1;
@@ -2204,8 +2248,14 @@ statetype s_schabbchase4 	= {false,SPR_SCHABB_W4,8,T_Schabb,NULL,&s_schabbchase1
 statetype s_schabbdeathcam	= {false,SPR_SCHABB_W1,1,NULL,NULL,&s_schabbdie1};
 #endif
 
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+statetype s_schabbdie1	= {false,SPR_SCHABB_W1,10,NULL,NULL,&s_schabbdie2};
+statetype s_schabbdie2	= {false,SPR_SCHABB_DIE1,10,NULL,NULL,&s_schabbdie3};
+statetype s_schabbdie3	= {false,SPR_SCHABB_DIE2,10,NULL,NULL,&s_schabbsleep1};
+statetype s_schabbsleep1	= {false,SPR_SCHABB_DIE3,55,NULL,NULL,&s_schabbsleep2};
+statetype s_schabbsleep2	= {false,SPR_SCHABB_DEAD,55,NULL,NULL,&s_schabbsleep1};
+#elif (defined GAMEVER_RESTORATION_WL1_APO10)
 statetype s_schabbdie1	= {false,SPR_SCHABB_W1,10,NULL,NULL,&s_schabbdie2};
 statetype s_schabbdie2	= {false,SPR_SCHABB_DIE1,10,NULL,NULL,&s_schabbdie3};
 statetype s_schabbdie3	= {false,SPR_SCHABB_DIE2,10,NULL,NULL,&s_schabbdie4};
@@ -2217,12 +2267,7 @@ statetype s_schabbdie2	= {false,SPR_SCHABB_W1,10,NULL,NULL,&s_schabbdie3};
 statetype s_schabbdie3	= {false,SPR_SCHABB_DIE1,10,NULL,NULL,&s_schabbdie4};
 statetype s_schabbdie4	= {false,SPR_SCHABB_DIE2,10,NULL,NULL,&s_schabbdie5};
 statetype s_schabbdie5	= {false,SPR_SCHABB_DIE3,10,NULL,NULL,&s_schabbdie6};
-// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-statetype s_schabbdie6	= {false,SPR_SCHABB_DEAD,20,NULL,NULL,&s_schabbdie6};
-#else
 statetype s_schabbdie6	= {false,SPR_SCHABB_DEAD,20,NULL,A_StartDeathCam,&s_schabbdie6};
-#endif
 #endif
 
 statetype s_schabbshoot1 	= {false,SPR_SCHABB_SHOOT1,30,NULL,NULL,&s_schabbshoot2};
@@ -2260,6 +2305,11 @@ extern	statetype s_giftdie6;
 
 extern	statetype s_giftshoot1;
 extern	statetype s_giftshoot2;
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern	statetype s_giftshoot3;
+extern	statetype s_giftshoot4;
+#endif
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_RESTORATION_N3D_WIS10
@@ -2308,8 +2358,16 @@ statetype s_giftdie6	= {false,SPR_GIFT_DEAD,20,NULL,NULL,&s_giftdie6};
 statetype s_giftdie6	= {false,SPR_GIFT_DEAD,20,NULL,A_StartDeathCam,&s_giftdie6};
 #endif
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+statetype s_giftshoot1 	= {false,SPR_GIFT_SHOOT1,10,NULL,NULL,&s_giftshoot2};
+statetype s_giftshoot2 	= {false,SPR_GIFT_SHOOT2,10,NULL,NULL,&s_giftshoot3};
+statetype s_giftshoot3 	= {false,SPR_GIFT_SHOOT3,10,NULL,NULL,&s_giftshoot4};
+statetype s_giftshoot4 	= {false,SPR_GIFT_SHOOT4,10,NULL,T_GiftThrow,&s_giftchase1};
+#else
 statetype s_giftshoot1 	= {false,SPR_GIFT_SHOOT1,30,NULL,NULL,&s_giftshoot2};
 statetype s_giftshoot2 	= {false,SPR_GIFT_SHOOT2,10,NULL,T_GiftThrow,&s_giftchase1};
+#endif
 
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2

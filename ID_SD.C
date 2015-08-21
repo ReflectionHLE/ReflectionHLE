@@ -45,6 +45,15 @@
 #endif
 #define	nil	0
 
+// *** S3DNA RESTORATION ***
+// Guessing some variables were redefined to be static
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define GAMEVER_RESTORATION_CONDSTATIC static
+#else
+#define GAMEVER_RESTORATION_CONDSTATIC
+#endif
+
+
 #define	SDL_SoundFinished()	{SoundNumber = SoundPriority = 0;}
 
 // Macros for SoundBlaster stuff
@@ -96,8 +105,12 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 	int			DigiMap[LASTSOUND];
 
 //	Internal variables
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+static	boolean			DigiPlaying;
+#endif
 static	boolean			SD_Started;
-		boolean			nextsoundpos;
+		GAMEVER_RESTORATION_CONDSTATIC boolean			nextsoundpos;
 		longword		TimerDivisor,TimerCount;
 static	char			*ParmStrings[] =
 						{
@@ -118,17 +131,35 @@ static	char			*ParmStrings[] =
 							nil
 						};
 static	void			(*SoundUserHook)(void);
+// *** S3DNA RESTORATION ***
+// Apparently variables moved around here, while adding the MIDI handlers
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+static	soundnames		DigiNumber;
+static	word			DigiPriority;
+	soundnames		SoundNumber;
+	word			SoundPriority;
+#else
 		soundnames		SoundNumber,DigiNumber;
 		word			SoundPriority,DigiPriority;
-		int				LeftPosition,RightPosition;
+#endif
+		GAMEVER_RESTORATION_CONDSTATIC int				LeftPosition,RightPosition;
 		void interrupt	(*t0OldService)(void);
 		long			LocalTime;
-		word			TimerRate;
+		GAMEVER_RESTORATION_CONDSTATIC word			TimerRate;
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+static	word			DigiLeft,DigiPage;
+	word			NumDigi;
+#else
 		word			NumDigi,DigiLeft,DigiPage;
+#endif
 		word			_seg *DigiList;
-		word			DigiLastStart,DigiLastEnd;
+		GAMEVER_RESTORATION_CONDSTATIC word			DigiLastStart,DigiLastEnd;
+// *** S3DNA RESTORATION ***
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 		boolean			DigiPlaying;
+#endif
 static	boolean			DigiMissed,DigiLastSegment;
 static	memptr			DigiNextAddr;
 static	word			DigiNextLen;
@@ -173,12 +204,12 @@ static	byte					sbpOldFMMix,sbpOldVOCMix;
 		word			pcSoundLookup[255];
 
 //	AdLib variables
-		boolean			alNoCheck;
+		GAMEVER_RESTORATION_CONDSTATIC boolean			alNoCheck;
 		byte			far *alSound;
 		word			alBlock;
 		longword		alLengthLeft;
 		longword		alTimeCount;
-		Instrument		alZeroInst;
+		GAMEVER_RESTORATION_CONDSTATIC Instrument		alZeroInst;
 
 // This table maps channel numbers to carrier and modulator op cells
 static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
@@ -191,20 +222,20 @@ static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 // *** S3DNA RESTORATION ***
 // TODO (RESTORATION) There are a lot of question marks regarding this
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
+		boolean			sqActive = false;
+		int			midiError = 0;
 		float			someMidiFloat = 1.86;
 	word	someMidiBuffer1[12] = {0x57};
 	byte	someMidiBuffer2[170] = {0x0};
-		boolean			sqActive;
-		int			midiError;
 
-		longword	sqTrackSeqLen, sqTrackLen;
+		byte	far	*sqTrackPtr, far *sqTrack;
 		byte	sqSomeByte; // TODO (RESTORATION) RENAME THIS
-		byte	far	*sqTrack, far *sqTrackPtr;
+		longword	sqTrackSeqLen, sqTrackLen;
 
-	word			alFXReg;
+static	word			alFXReg;
 
-static	longword	sqHackLen;
 static	byte	far	*sqHackPtr;
+static	longword	sqHackLen;
 #else
 		boolean			sqActive;
 static	word			alFXReg;
@@ -2857,7 +2888,12 @@ SD_PlaySound(soundnames sound)
 	if (SoundMode == sdm_Off)
 		return(false);
 	if (!s->length)
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		Quit("SD_PlaySound: Zero length sound");
+#else
 		Quit("SD_PlaySound() - Zero length sound");
+#endif
 	if (s->priority < SoundPriority)
 		return(false);
 

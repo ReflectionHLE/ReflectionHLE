@@ -42,7 +42,12 @@
 //	Internal variables
 #define	ConfigVersion	1
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+static	char		*ParmStrings[] = {"LEVELWARP","NOWAIT"},
+#else
 static	char		*ParmStrings[] = {"TEDLEVEL","NOWAIT"},
+#endif
 					*ParmStrings2[] = {"COMP","NOCOMP"};
 static	boolean		US_Started;
 
@@ -56,7 +61,16 @@ static	boolean		US_Started;
 		SaveGame	Games[MaxSaveGames];
 		HighScore	Scores[MaxScores] =
 					{
-						// *** PRE-V1.4 APOGEE RESTORATION ***
+						// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+						{"Noah",10000,1},
+						{"Eve",10000,1},
+						{"Moses",10000,1},
+						{"Ruth",10000,1},
+						{"Adam",10000,1},
+						{"Deborah",10000,1},
+						{"Abraham",10000,1},
+#else
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 						{"Id Software - '92",10000,1},
 #else
@@ -68,6 +82,7 @@ static	boolean		US_Started;
 						{"Tom Hall",10000,1},
 						{"John Romero",10000,1},
 						{"Jay Wilbur",10000,1},
+#endif
 					};
 
 //	Internal routines
@@ -154,7 +169,12 @@ oh_kill_me:
 	ShutdownId();
 	fprintf(stderr,"Terminal Error: %s\n",s);
 	if (tedlevel)
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		fprintf(stderr,"Warning! Fatal error detected.  Please REBOOT!\n");
+#else
 		fprintf(stderr,"You launched from TED. I suggest that you reboot...\n");
+#endif
 
 	return(ABORT);
 #undef	IGNORE

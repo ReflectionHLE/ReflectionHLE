@@ -203,7 +203,27 @@ GAMEVER_RESTORATION_CONDFARPTR NewEmenu[]=
 	{0,"",0}
 #endif
 #else
-	#ifdef SPANISH
+	// *** S3DNA RESTORATION ***
+	#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	{1,"Carel the Camel\n"
+	   "Start at level 1-1",0},
+	{0,"",0},
+	{3,"Ginny the Giraffe\n"
+	   "Start at level 2-1",0},
+	{0,"",0},
+	{3,"Melvin the Monkey\n"
+	   "Start at level 3-1",0},
+	{0,"",0},
+	{3,"Kerry the Kangaroo\n"
+	   "Start at level 4-1",0},
+	{0,"",0},
+	{3,"Ernie the Elephant\n"
+	   "Start at level 5-1",0},
+	{0,"",0},
+	{3,"Burt the Bear\n"
+	   "Start at level 6-1",0},
+	#elif (defined SPANISH)
+	//#ifdef SPANISH
 	{1,"Episodio 1\n"
 	   "Fuga desde Wolfenstein",0},
 	{0,"",0},

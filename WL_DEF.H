@@ -46,13 +46,15 @@
 =============================================================================
 */
 
-#define MAXACTORS		150				// max number of nazis, etc / map
-#define MAXSTATS		400				// max number of lamps, bonus, etc
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
+#define MAXACTORS		127				// max number of nazis, etc / map
+#define MAXSTATS		200				// max number of lamps, bonus, etc
 #define MAXDOORS		32				// max number of sliding doors
 #define MAXWALLTILES	32				// max number of wall tiles
 #else
+#define MAXACTORS		150				// max number of nazis, etc / map
+#define MAXSTATS		400				// max number of lamps, bonus, etc
 #define MAXDOORS		64				// max number of sliding doors
 #define MAXWALLTILES	64				// max number of wall tiles
 #endif
@@ -1084,13 +1086,12 @@ extern	int			tedlevelnum;
 #endif
 extern	boolean		tedlevel;
 extern	boolean		nospr;
-extern	boolean		IsA386;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-extern	boolean		FloorsDisabled;
-extern	boolean		BibleQuizDisabled;
+extern	boolean		BibleQuizDisabled, FloorsDisabled;
 extern	int		quiznumber;
 #endif
+extern	boolean		IsA386;
 
 extern	byte far	*scalermemory;
 
@@ -1158,7 +1159,7 @@ extern	boolean		ingame,fizzlein,screensplit;
 // *** S3DNA RESTORATION ***
 #elif (defined GAMEVER_RESTORATION_N3D_WIS10)
 extern	boolean		ingame;
-extern	int		fizzlein,deathtime; // TODO (RESTORATION) Better name for "died"
+extern	int		deathtime,fizzlein; // TODO (RESTORATION) Better name for "died"
 #else
 extern	boolean		ingame,fizzlein;
 #endif

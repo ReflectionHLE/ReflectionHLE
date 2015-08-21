@@ -60,16 +60,27 @@ statetype s_attack = {false,0,0,T_Attack,NULL,NULL};
 
 long	playerxmove,playerymove;
 
+// *** S3DNA RESTORATION ***
 struct atkinf
 {
 	char	tics,attack,frame;		// attack is 1 for gun, 2 for knife
-} attackinfo[4][14] =
+}
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+attackinfo[6][14] =
+#else
+attackinfo[4][14] =
+#endif
 
 {
 { {6,0,1},{6,2,2},{6,0,3},{6,-1,4} },
 { {6,0,1},{6,1,2},{6,0,3},{6,-1,4} },
 { {6,0,1},{6,1,2},{6,3,3},{6,-1,4} },
 { {6,0,1},{6,1,2},{6,4,3},{6,-1,4} },
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+{ {7,0,1},{7,5,2},{7,5,3},{7,-1,4} },
+{ {6,0,1},{6,0,2},{6,4,3},{6,-1,4} },
+#endif
 };
 
 
