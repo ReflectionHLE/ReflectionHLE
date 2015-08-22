@@ -120,61 +120,61 @@ int songs[]=
  //
  // Episode One
  //
- SONG1_MUS,
- ALL_GOOD_MUS,
- SONG7_MUS,
+ NOAH01_MUS,
+ NOAH02_MUS,
+ NOAH07_MUS,
 
  //
  // Episode Two
  //
- SONG3_MUS,
- SONG1_MUS,
- ALL_GOOD_MUS,
- SONG7_MUS,
+ NOAH03_MUS,
+ NOAH01_MUS,
+ NOAH02_MUS,
+ NOAH07_MUS,
 
  //
  // Episode Three
  //
- SONG4_MUS,
- SONG3_MUS,
- SONG1_MUS,
- SONG7_MUS,
- SONG9_MUS,
+ NOAH04_MUS,
+ NOAH03_MUS,
+ NOAH01_MUS,
+ NOAH07_MUS,
+ NOAH09_MUS,
 
  //
  // Episode Four
  //
- SONG6_MUS,
- SONG4_MUS,
- ALL_GOOD_MUS,
- SONG3_MUS,
- SONG7_MUS,
+ NOAH06_MUS,
+ NOAH04_MUS,
+ NOAH02_MUS,
+ NOAH03_MUS,
+ NOAH07_MUS,
 
  //
  // Episode Five
  //
- SONG8_MUS,
- SONG1_MUS,
- SONG6_MUS,
- SONG4_MUS,
- THEHAPPY_MUS,
- SONG7_MUS,
+ NOAH08_MUS,
+ NOAH01_MUS,
+ NOAH06_MUS,
+ NOAH04_MUS,
+ NOAH10_MUS,
+ NOAH07_MUS,
 
  //
  // Episode Six
  //
- SONG11_MUS,
- ALL_GOOD_MUS,
- SONG3_MUS,
- SONG8_MUS,
- SONG6_MUS,
- SONG7_MUS,
- SONG9_MUS,
+ NOAH11_MUS,
+ NOAH02_MUS,
+ NOAH03_MUS,
+ NOAH08_MUS,
+ NOAH06_MUS,
+ NOAH07_MUS,
+ NOAH09_MUS,
 
  //
  // Finale
  //
- ALL_GOOD_MUS
+ NOAH02_MUS
 
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -706,7 +706,7 @@ void	CenterWindow(word w,word h)
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-void CheckKeys (boolean partial)
+void CheckKeys (boolean mapmode)
 #else
 void CheckKeys (void)
 #endif
@@ -774,13 +774,13 @@ void CheckKeys (void)
 
 		gamestate.health = 100;
 		gamestate.ammo = gamestate.maxammo = 299;
-		gamestate.ammo2 = gamestate.ammo3 = 99;
+		gamestate.gas = gamestate.missiles = 99;
 		gamestate.keys = 3;
-		gamestate.fullmap = true;
-		gamestate.weaponinv[0] = 1;
-		gamestate.weaponinv[1] = 1;
-		gamestate.weaponinv[3] = 1;
-		gamestate.weaponinv[2] = 1;
+		gamestate.automap = true;
+		gamestate.machinegun = 1;
+		gamestate.chaingun = 1;
+		gamestate.flamethrower = 1;
+		gamestate.missile = 1;
 		GiveWeapon (wp_chaingun);
 		gamestate.score = 0;
 		gamestate.TimeCount += 42000L;
@@ -1018,7 +1018,7 @@ void CheckKeys (void)
 		{
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			if (!partial)
+			if (!mapmode)
 #endif
 				VW_FadeIn ();
 			StartMusic ();
@@ -1034,9 +1034,9 @@ void CheckKeys (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (!partial && Keyboard[sc_Tab])
+	if (!mapmode && Keyboard[sc_Tab])
 	{
-		OpenAutomap();
+		AutoMap();
 		return;
 	}
 #endif
@@ -1045,7 +1045,7 @@ void CheckKeys (void)
 //
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (!partial && Keyboard[sc_Tilde] && DebugOk)
+	if (!mapmode && Keyboard[sc_Tilde] && DebugOk)
 #else
 	if (Keyboard[sc_Tab] && DebugOk)
 #endif

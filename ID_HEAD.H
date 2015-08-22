@@ -11,6 +11,13 @@
 
 #define GRMODE	VGAGR
 
+// *** S3DNA RESTORATION ***
+// Unused, but fpos_t is found in the debugging symbols for ID_VL.C, which is
+// the only place from which ID_HEAD.H is included, and it's mentioned in
+// STDIO.H only (possibly done while adding the FillCharAttr function)
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#include <STDIO.H>
+#endif
 #include "VERSION.H"
 
 typedef	enum	{false,true}	boolean;

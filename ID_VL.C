@@ -17,7 +17,7 @@ unsigned	displayofs,pelpan;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-boolean		vgamodeset = false;
+boolean		VGAMode = false;
 #endif
 
 unsigned	screenseg=SCREENSEG;		// set to 0xa000 for asm convenience
@@ -140,9 +140,9 @@ void	VL_SetVGAPlaneMode (void)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (vgamodeset)
+	if (VGAMode)
 		return;
-	vgamodeset = true;
+	VGAMode = true;
 #endif
 asm	mov	ax,0x13
 asm	int	0x10
@@ -167,9 +167,9 @@ void	VL_SetTextMode (void)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (!vgamodeset)
+	if (!VGAMode)
 		return;
-	vgamodeset = false;
+	VGAMode = false;
 #endif
 asm	mov	ax,3
 asm	int	0x10
@@ -1128,10 +1128,10 @@ void VL_SizeTile8String (char *str, int *width, int *height)
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 
-void VL_WriteTextCharsWithAttr (char chr, byte attr, int count)
+void FillCharAttr (byte c, byte attr, int count)
 {
 asm	mov	ah,9
-asm	mov	al,[chr]
+asm	mov	al,[c]
 asm	mov	bh,0
 asm	mov	bl,[attr]
 asm	mov	cx,[count]

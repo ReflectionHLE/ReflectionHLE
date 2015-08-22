@@ -664,7 +664,7 @@ void HitHorizDoor (void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	doornum = tilehit&0x1f;
-	doorobjlist[doornum].field_4 = true;
+	doorobjlist[doornum].seen = true;
 #else
 	doornum = tilehit&0x7f;
 #endif
@@ -758,7 +758,7 @@ void HitVertDoor (void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	doornum = tilehit&0x1f;
-	doorobjlist[doornum].field_4 = true;
+	doorobjlist[doornum].seen = true;
 #else
 	doornum = tilehit&0x7f;
 #endif
@@ -1166,7 +1166,7 @@ int	CalcRotate (objtype *ob)
 	int	angle,viewangle;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (ob->obclass == cantaloupeobj || ob->obclass == watermelonobj)
+	if (ob->obclass == flameobj || ob->obclass == missileobj)
 		return 0;
 #endif
 
@@ -1227,7 +1227,7 @@ typedef struct
 		shapenum
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		,
-		snoozeframe
+		snoring
 #endif
 		;
 } visobj_t;
@@ -1286,7 +1286,7 @@ void DrawScaleds (void)
 			continue;						// to close to the object
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		visptr->snoozeframe = 0;
+		visptr->snoring = 0;
 #endif
 
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
@@ -1341,13 +1341,14 @@ void DrawScaleds (void)
 
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			if ((obj->hitpoints > 0) || (obj->obclass == watermelonobj) || (obj->obclass == cantaloupeobj) || (obj->obclass == needleobj) || (obj->obclass == rocketobj))
-				visptr->snoozeframe = 0;
+			if ((obj->hitpoints > 0) ||
+			    (obj->obclass == missileobj) || (obj->obclass == flameobj) || (obj->obclass == needleobj) || (obj->obclass == rocketobj))
+				visptr->snoring = 0;
 			else
 			{
 				// 2.6 number. Upper is frame, Lower is tics*2
-				visptr->snoozeframe = obj->snoozeframe>>6;
-				obj->snoozeframe += 3*tics;
+				visptr->snoring = obj->snore>>6;
+				obj->snore += 3*tics;
 			}
 #endif
 
@@ -1391,8 +1392,8 @@ void DrawScaleds (void)
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		if (farthest->snoozeframe)
-			ScaleShape(farthest->viewx,farthest->snoozeframe+SPR_SNOOZE_1-1,farthest->viewheight);
+		if (farthest->snoring)
+			ScaleShape(farthest->viewx,farthest->snoring+SPR_SNOOZE_1-1,farthest->viewheight);
 #endif
 		farthest->viewheight = 32000;
 	}
@@ -1427,15 +1428,15 @@ void DrawPlayerWeapon (void)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	if (player->state == &s_deathcam)
 	{
-		if (deathtime >= 192)
+		if (endtics >= 192)
 			playstate = ex_victorious;
-		SimpleScaleShape(viewwidth/2,SPR_YOUWIN,deathtime);
-		deathtime += tics;
+		SimpleScaleShape(viewwidth/2,SPR_YOUWIN,endtics);
+		endtics += tics;
 	}
-	else if (player->state == &s_playerdeath)
+	else if (player->state == &s_gameover)
 	{
-		SimpleScaleShape(viewwidth/2,SPR_GAMEOVER,deathtime);
-		deathtime += tics;
+		SimpleScaleShape(viewwidth/2,SPR_GAMEOVER,endtics);
+		endtics += tics;
 	}
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -1651,14 +1652,14 @@ asm	rep stosw
 //
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (FloorsDisabled)
+	if (nofloors)
 #endif
 		VGAClearScreen ();
 
 	WallRefresh ();
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (!FloorsDisabled)
+	if (!nofloors)
 		DrawPlanes ();
 #endif
 

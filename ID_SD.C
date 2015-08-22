@@ -222,37 +222,37 @@ static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 // *** S3DNA RESTORATION ***
 // TODO (RESTORATION) There are a lot of question marks regarding this
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		boolean			sqActive = false;
+		boolean			midiOn = false;
 		int			midiError = 0;
-		float			someMidiFloat = 1.86;
+		float			midiTimeScale = 1.86;
 
-word	someMidiBuffer1[12] = {0x157,0x16b,0x181,0x198,0x1b0,0x1ca,0x1e5,0x202,0x220,0x241,0x263,0x287};
-byte	someMidiBuffer2[170] = {
-	0x00, 0x00, 0x21, 0x31, 0x4f, 0x00, 0xf2, 0xd2, 0x52, 0x73, 0x00, 0x00,
-	0x06, 0x00, 0x01, 0x31, 0x4f, 0x04, 0xf0, 0x90, 0xff, 0x0f, 0x00, 0x00,
-	0x06, 0x00, 0x31, 0x22, 0x10, 0x04, 0x83, 0xf4, 0x9f, 0x78, 0x00, 0x00,
-	0x0a, 0x00, 0x11, 0x31, 0x05, 0x00, 0xf9, 0xf1, 0x25, 0x34, 0x00, 0x00,
-	0x0a, 0x00, 0x31, 0x61, 0x1c, 0x80, 0x41, 0x92, 0x0b, 0x3b, 0x00, 0x00,
-	0x0e, 0x00, 0x21, 0x21, 0x19, 0x80, 0x43, 0x85, 0x8c, 0x2f, 0x00, 0x00,
-	0x0c, 0x00, 0x21, 0x24, 0x94, 0x05, 0xf0, 0x90, 0x09, 0x0a, 0x00, 0x00,
-	0x0a, 0x00, 0x21, 0xa2, 0x83, 0x8d, 0x74, 0x65, 0x17, 0x17, 0x00, 0x00,
-	0x07, 0x00, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x07, 0x07, 0x00, 0x00,
-	0x07, 0x00, 0x10, 0x00, 0x00, 0x00, 0xd8, 0x87, 0x4a, 0x3c, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x11, 0x11, 0xfa, 0xfa, 0xb5, 0xb5, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0xf8, 0x88, 0xb5, 0x00, 0x00,
-	0x00, 0x00, 0x15, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x01, 0x00, 0x21, 0x11, 0x4c, 0x00, 0xf1, 0xf2, 0x63, 0x72, 0x00, 0x00,
-	0xc0, 0x00
+static word	NoteTable[12] = {0x157,0x16b,0x181,0x198,0x1b0,0x1ca,0x1e5,0x202,0x220,0x241,0x263,0x287};
+static byte	drums = 0;
+static inst_t	instrument[14] = {
+	{0x21, 0x31, 0x4f, 0x00, 0xf2, 0xd2, 0x52, 0x73, 0x00, 0x00, 0x06},
+	{0x01, 0x31, 0x4f, 0x04, 0xf0, 0x90, 0xff, 0x0f, 0x00, 0x00, 0x06},
+	{0x31, 0x22, 0x10, 0x04, 0x83, 0xf4, 0x9f, 0x78, 0x00, 0x00, 0x0a},
+	{0x11, 0x31, 0x05, 0x00, 0xf9, 0xf1, 0x25, 0x34, 0x00, 0x00, 0x0a},
+	{0x31, 0x61, 0x1c, 0x80, 0x41, 0x92, 0x0b, 0x3b, 0x00, 0x00, 0x0e},
+	{0x21, 0x21, 0x19, 0x80, 0x43, 0x85, 0x8c, 0x2f, 0x00, 0x00, 0x0c},
+	{0x21, 0x24, 0x94, 0x05, 0xf0, 0x90, 0x09, 0x0a, 0x00, 0x00, 0x0a},
+	{0x21, 0xa2, 0x83, 0x8d, 0x74, 0x65, 0x17, 0x17, 0x00, 0x00, 0x07},
+	{0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x07, 0x07, 0x00, 0x00, 0x07},
+	{0x10, 0x00, 0x00, 0x00, 0xd8, 0x87, 0x4a, 0x3c, 0x00, 0x00, 0x00},
+	{0x00, 0x00, 0x11, 0x11, 0xfa, 0xfa, 0xb5, 0xb5, 0x00, 0x00, 0x00},
+	{0x00, 0x00, 0x00, 0x00, 0xf8, 0xf8, 0x88, 0xb5, 0x00, 0x00, 0x00},
+	{0x15, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01},
+	{0x21, 0x11, 0x4c, 0x00, 0xf1, 0xf2, 0x63, 0x72, 0x00, 0x00, 0xc0}
 };
 
-		byte	far	*sqTrackPtr, far *sqTrack;
-		byte	sqSomeByte; // TODO (RESTORATION) RENAME THIS
-		longword	sqTrackSeqLen, sqTrackLen;
+		byte	far	*midiData, far *midiDataStart;
+		byte	midiRunningStatus;
+		longword	midiLength, midiDeltaTime;
 
 static	word			alFXReg;
 
-static	byte	far	*sqHackPtr;
-static	longword	sqHackLen;
+static	byte	far	*seqPtr;
+static	long	seqLength;
 #else
 		boolean			sqActive;
 static	word			alFXReg;
@@ -1297,10 +1297,6 @@ asm	popf
 void
 SD_Poll(void)
 {
-	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	char error[80];
-#endif
 	if (DigiLeft && !DigiNextAddr)
 	{
 		DigiNextLen = (DigiLeft >= PMPageSize)? PMPageSize : (DigiLeft % PMPageSize);
@@ -1324,8 +1320,9 @@ SD_Poll(void)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	if (midiError)
 	{
-		sprintf(error,"SD_Poll: midiError = %d\n", midiError);
-		Quit(error);
+		char str[80];
+		sprintf(str,"SD_Poll: midiError = %d\n", midiError);
+		Quit(str);
 	}
 #else
 	SDL_SetTimerSpeed();
@@ -1364,10 +1361,6 @@ SD_PlayDigitized(word which,int leftpos,int rightpos)
 {
 	word	len;
 	memptr	addr;
-	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	char error[80];
-#endif
 
 	if (!DigiMode)
 		return;
@@ -1377,8 +1370,9 @@ SD_PlayDigitized(word which,int leftpos,int rightpos)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	{
-		sprintf(error,"SD_PlayDigitized: Bad sound number (%d)\n",which);
-		Quit(error);
+		char str[80];
+		sprintf(str,"SD_PlayDigitized: Bad sound number (%d)\n",which);
+		Quit(str);
 	}
 #else
 		Quit("SD_PlayDigitized: bad sound number");
@@ -1799,296 +1793,301 @@ SDL_ALService(void)
 // TODO (RESTORATION) - Again, a lot of question marks
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 static word
-SDL_MDSwapWord(word num)
+fixword(word w)
 {
-	return ((num&0xFF00)>>8)+((num&0xFF)<<8);
+	return ((w&0xFF00)>>8)+((w&0xFF)<<8);
 }
 
 static longword
-SDL_MDSwapLong(longword num)
+fixlongword(longword d)
 {
-	return ((num&0xFF000000)>>24)+((num&0x00FF0000)>>8)+((num&0xFF00)<<8)+((num&0xFF)<<24);
+	return ((d&0xFF000000)>>24)+((d&0x00FF0000)>>8)+((d&0xFF00)<<8)+((d&0xFF)<<24);
 }
 
 static longword
-SDL_MDCalcVLQ(void)
+MIDI_VarLength(void)
 {
-	longword result = 0;
-	while (*sqTrackPtr & 0x80)
+	longword value = 0;
+	while (*midiData & 0x80)
 	{
-		result = (result << 7) + (*sqTrackPtr & 0x7F);
-		sqTrackPtr++;
+		value = (value << 7) + (*midiData & 0x7F);
+		midiData++;
 	}
-	result = (result << 7) + *sqTrackPtr;
-	sqTrackPtr++;
-	return result;
+	value = (value << 7) + *midiData;
+	midiData++;
+	return value;
 }
 
-static void
-SDL_MDCalcAndSkipVLQ(void)
+void
+MIDI_SkipMetaEvent(void)
 {
-	longword result = SDL_MDCalcVLQ();
-	sqTrackPtr += result;
+	longword length = MIDI_VarLength();
+	midiData += length;
 }
 
-// TODO (RESTORATION) Second argument may really be a long, or it's unused
-static void
-SDL_MDFunc5(int arg0, int arg1, int arg2)
+void
+MIDI_NoteOff(int channel, int note, int velocity)
 {
-	unsigned	var1;
-	byte	var2;
-	if (arg0 == 9)
+	unsigned	fnumber;
+	byte	octave;
+	if (channel == 9)
 	{
-		switch (arg1)
+		switch (note)
 		{
 		case 0x23:
 		case 0x24:
-			someMidiBuffer2[0] &= 0xef;
+			drums &= 0xef;
 			break;
 		case 0x26:
 		case 0x28:
-			someMidiBuffer2[0] &= 0xf7;
+			drums &= 0xf7;
 			break;
 		case 0x2a:
-			someMidiBuffer2[0] &= 0xfe;
+			drums &= 0xfe;
 			break;
 		default:
 			midiError = -11;
 		}
-		alOut(alEffects,alChar|someMidiBuffer2[0]);
+		alOut(alEffects,alChar|drums);
 		return;
 	}
 
-	var1 = someMidiBuffer1[arg1%12];
-	var2 = ((arg1/12)&7)<<2;
-	alOut(alFreqL + 1 + arg0, var1&0xFF);
-	alOut(alFreqH + 1 + arg0, var2+((var1>>8)&3));
+	fnumber = NoteTable[note%12];
+	octave = ((note/12)&7)<<2;
+	alOut(alFreqL + 1 + channel, fnumber&0xFF);
+	alOut(alFreqH + 1 + channel, octave+((fnumber>>8)&3));
 }
 
-static void
-SDL_MDFunc6(int arg0, byte arg1, byte arg2)
+void
+MIDI_NoteOn(int channel, byte note, byte velocity)
 {
-	unsigned	var1,var2;
-	if (arg2)
+	unsigned	fnumber;
+	int	octave;
+	if (velocity)
 	{
-		if (arg0 == 9)
+		if (channel == 9)
 		{
-			switch (arg1)
+			switch (note)
 			{
 			case 0x23:
 			case 0x24:
-				someMidiBuffer2[0] |= 0x10;
+				drums |= 0x10;
 				break;
 			case 0x26:
-				someMidiBuffer2[0] |= 0x8;
+				drums |= 0x8;
 				break;
 			case 0x28:
-				someMidiBuffer2[0] |= 0x4;
+				drums |= 0x4;
 				break;
 			case 0x2a:
-				someMidiBuffer2[0] |= 1;
+				drums |= 1;
 				break;
 			default:
 				midiError = -11;
 			}
-			alOut(alEffects,alChar|someMidiBuffer2[0]);
+			alOut(alEffects,alChar|drums);
 			return;
 		}
-		var1 = someMidiBuffer1[arg1%12];
-		var2 = arg1/12;
-		alOut(alFreqL + 1 + arg0, var1&0xFF);
-		alOut(alFreqH + 1 + arg0, alChar|(var2<<2)|((var1>>8)&3));
+		fnumber = NoteTable[note%12];
+		octave = note/12;
+		alOut(alFreqL + 1 + channel, fnumber&0xFF);
+		alOut(alFreqH + 1 + channel, alChar|(octave<<2)|((fnumber>>8)&3));
 		return;
 	}
-	SDL_MDFunc5 (arg0,arg1,arg2);
+	MIDI_NoteOff (channel,note,velocity);
 }
 
-static void
-SDL_MDNullFunc(int arg0, int arg1, int arg2)
+void
+MIDI_ControllerChange(int channel, int id, int value)
 {
 }
 
-static void
-SDL_MDPlayTrack(int arg0, int arg1)
+void
+MIDI_ProgramChange(int channel, int id)
 {
-	byte	*buffPtr;
-	int	var3;
-	unsigned	var1,var2;
-	if (arg0 == 9)
+	// S3DNA RESTORATION - While an inst_t pointer can be used with direct
+	// access to all fields, based on generated machine code it looks like
+	// this wasn't the way the code was written
+	byte	*inst;
+	if (channel == 9)
 	{
-		buffPtr = &someMidiBuffer2[110];
-		alOut(modifiers[6]+alChar, *buffPtr++);
-		alOut(carriers[6]+alChar, *buffPtr++);
-		alOut(modifiers[6]+alScale, *buffPtr++);
-		alOut(carriers[6]+alScale, *buffPtr++);
-		alOut(modifiers[6]+alAttack, *buffPtr++);
-		alOut(carriers[6]+alAttack, *buffPtr++);
-		alOut(modifiers[6]+alSus, *buffPtr++);
-		alOut(carriers[6]+alSus, *buffPtr++);
-		alOut(modifiers[6]+alWave, *buffPtr++);
-		alOut(carriers[6]+alWave, *buffPtr++);
+		int	note;
+		unsigned	fnumber;
+		int	octave;
 
-		alOut(alFeedCon+6, *buffPtr);
+		inst = &instrument[9];
+		alOut(modifiers[6]+alChar, *inst++);
+		alOut(carriers[6]+alChar, *inst++);
+		alOut(modifiers[6]+alScale, *inst++);
+		alOut(carriers[6]+alScale, *inst++);
+		alOut(modifiers[6]+alAttack, *inst++);
+		alOut(carriers[6]+alAttack, *inst++);
+		alOut(modifiers[6]+alSus, *inst++);
+		alOut(carriers[6]+alSus, *inst++);
+		alOut(modifiers[6]+alWave, *inst++);
+		alOut(carriers[6]+alWave, *inst++);
 
-		var3 = 24;
-		var1 = someMidiBuffer1[var3%12];
-		var2 = ((var3/12)&7)<<2;
-		alOut(alFreqL+6,var1&0xFF);
-		alOut(alFreqH+6,var2+((var1>>8)&3));
-		var3 = 24;
-		var1 = someMidiBuffer1[var3%12];
-		var2 = ((var3/12)&7)<<2;
-		alOut(alFreqL+7,var1&0xFF);
-		alOut(alFreqH+7,var2+((var1>>8)&3));
-		var3 = 24;
-		var1 = someMidiBuffer1[var3%12];
-		var2 = ((var3/12)&7)<<2;
-		alOut(alFreqL+8,var1&0xFF);
-		alOut(alFreqH+8,var2+((var1>>8)&3));
+		alOut(alFeedCon+6, *inst);
 
-		buffPtr = &someMidiBuffer2[122];
-		alOut(0x31,*buffPtr);
-		buffPtr += 2;
-		alOut(0x51,*buffPtr);
-		buffPtr += 2;
-		alOut(0x71,*buffPtr);
-		buffPtr += 2;
-		alOut(0x91,*buffPtr);
-		buffPtr += 2;
+		note = 24;
+		fnumber = NoteTable[note%12];
+		octave = ((note/12)&7)<<2;
+		alOut(alFreqL+6,fnumber&0xFF);
+		alOut(alFreqH+6,octave+((fnumber>>8)&3));
+		note = 24;
+		fnumber = NoteTable[note%12];
+		octave = ((note/12)&7)<<2;
+		alOut(alFreqL+7,fnumber&0xFF);
+		alOut(alFreqH+7,octave+((fnumber>>8)&3));
+		note = 24;
+		fnumber = NoteTable[note%12];
+		octave = ((note/12)&7)<<2;
+		alOut(alFreqL+8,fnumber&0xFF);
+		alOut(alFreqH+8,octave+((fnumber>>8)&3));
 
-		alOut(0xF1,*buffPtr);
+		inst = &instrument[10];
+		alOut(0x31,*inst);
+		inst += 2;
+		alOut(0x51,*inst);
+		inst += 2;
+		alOut(0x71,*inst);
+		inst += 2;
+		alOut(0x91,*inst);
+		inst += 2;
+
+		alOut(0xF1,*inst);
 		alOut(0xC7,0);
 
-		buffPtr = &someMidiBuffer2[146];
-		alOut(0x32,*buffPtr);
-		buffPtr += 2;
-		alOut(0x52,*buffPtr);
-		buffPtr += 2;
-		alOut(0x72,*buffPtr);
-		buffPtr += 2;
-		alOut(0x92,*buffPtr);
-		buffPtr += 2;
+		inst = &instrument[12];
+		alOut(0x32,*inst);
+		inst += 2;
+		alOut(0x52,*inst);
+		inst += 2;
+		alOut(0x72,*inst);
+		inst += 2;
+		alOut(0x92,*inst);
+		inst += 2;
 
-		alOut(0xF2,*buffPtr);
+		alOut(0xF2,*inst);
 
-		buffPtr = &someMidiBuffer2[134];
-		alOut(0x34,*buffPtr);
-		buffPtr += 2;
-		alOut(0x54,*buffPtr);
-		buffPtr += 2;
-		alOut(0x74,*buffPtr);
-		buffPtr += 2;
-		alOut(0x94,*buffPtr);
-		buffPtr += 2;
+		inst = &instrument[11];
+		alOut(0x34,*inst);
+		inst += 2;
+		alOut(0x54,*inst);
+		inst += 2;
+		alOut(0x74,*inst);
+		inst += 2;
+		alOut(0x94,*inst);
+		inst += 2;
 
-		alOut(0xF4,*buffPtr);
+		alOut(0xF4,*inst);
 		alOut(0xC8,0);
 
-		buffPtr = &someMidiBuffer2[122];
-		alOut(0x35,*buffPtr);
-		buffPtr += 2;
-		alOut(0x55,*buffPtr);
-		buffPtr += 2;
-		alOut(0x75,*buffPtr);
-		buffPtr += 2;
-		alOut(0x95,*buffPtr);
-		buffPtr += 2;
+		inst = &instrument[10];
+		alOut(0x35,*inst);
+		inst += 2;
+		alOut(0x55,*inst);
+		inst += 2;
+		alOut(0x75,*inst);
+		inst += 2;
+		alOut(0x95,*inst);
+		inst += 2;
 
-		alOut(0xF5,*buffPtr);
+		alOut(0xF5,*inst);
 	}
-	else if (arg0 < 5)
+	else if (channel < 5)
 	{
-		switch (arg1 & 0xF8)
+		switch (id & 0xF8)
 		{
 		case 0:
-			buffPtr = &someMidiBuffer2[2];
+			inst = &instrument[0];
 			break;
 		case 8:
-			buffPtr = &someMidiBuffer2[98];
+			inst = &instrument[8];
 			break;
 		case 16:
-			buffPtr = &someMidiBuffer2[14];
+			inst = &instrument[1];
 			break;
 		case 24:
-			buffPtr = &someMidiBuffer2[2];
+			inst = &instrument[0];
 			break;
 		case 32:
-			buffPtr = &someMidiBuffer2[26];
+			inst = &instrument[2];
 			break;
 		case 40:
 		case 48:
-			buffPtr = &someMidiBuffer2[2];
+			inst = &instrument[0];
 			break;
 		case 56:
 		case 64:
-			buffPtr = &someMidiBuffer2[74];
+			inst = &instrument[6];
 			break;
 		case 72:
-			buffPtr = &someMidiBuffer2[86];
+			inst = &instrument[7];
 			break;
 		case 80:
 		case 88:
 		case 96:
-			buffPtr = &someMidiBuffer2[2];
+			inst = &instrument[0];
 			break;
 		case 104:
 		case 112:
 		case 120:
-			buffPtr = &someMidiBuffer2[98];
+			inst = &instrument[8];
 			break;
 		default:
 			midiError = -8;
 			return;
 		}
 		
-		alOut(modifiers[arg0+1]+alChar, *buffPtr++);
-		alOut(carriers[arg0+1]+alChar, *buffPtr++);
-		alOut(modifiers[arg0+1]+alScale, *buffPtr++);
-		alOut(carriers[arg0+1]+alScale, *buffPtr++);
-		alOut(modifiers[arg0+1]+alAttack, *buffPtr++);
-		alOut(carriers[arg0+1]+alAttack, *buffPtr++);
-		alOut(modifiers[arg0+1]+alSus, *buffPtr++);
-		alOut(carriers[arg0+1]+alSus, *buffPtr++);
-		alOut(modifiers[arg0+1]+alWave, *buffPtr++);
-		alOut(carriers[arg0+1]+alWave, *buffPtr++);
+		alOut(modifiers[channel+1]+alChar, *inst++);
+		alOut(carriers[channel+1]+alChar, *inst++);
+		alOut(modifiers[channel+1]+alScale, *inst++);
+		alOut(carriers[channel+1]+alScale, *inst++);
+		alOut(modifiers[channel+1]+alAttack, *inst++);
+		alOut(carriers[channel+1]+alAttack, *inst++);
+		alOut(modifiers[channel+1]+alSus, *inst++);
+		alOut(carriers[channel+1]+alSus, *inst++);
+		alOut(modifiers[channel+1]+alWave, *inst++);
+		alOut(carriers[channel+1]+alWave, *inst++);
 
-		alOut(alFeedCon+arg0, *buffPtr);
+		alOut(alFeedCon+channel, *inst);
 	}
 }
 
-static void
-SDL_MDNullFunc2(int arg0, int arg1)
+void
+MIDI_ChannelPressure(int channel, int id)
 {
 }
 
-static void
-SDL_MDFunc9(byte arg0)
+void
+MIDI_ProcessEvent(byte event)
 {
-	byte	var1,var2,var3;
-	switch (arg0&0xF0)
+	byte	note,velocity,id,value;
+	switch (event&0xF0)
 	{
 	case 0x80:
-		var1 = *sqTrackPtr++;
-		var2 = *sqTrackPtr++;
-		SDL_MDFunc5(arg0&0xF,var1,var2);
+		note = *midiData++;
+		velocity = *midiData++;
+		MIDI_NoteOff(event&0xF,note,velocity);
 		break;
 	case 0x90:
-		var1 = *sqTrackPtr++;
-		var2 = *sqTrackPtr++;
-		SDL_MDFunc6(arg0&0xF,var1,var2);
+		note = *midiData++;
+		velocity = *midiData++;
+		MIDI_NoteOn(event&0xF,note,velocity);
 		break;
 	case 0xB0:
-		var3 = *sqTrackPtr++;
-		var1 = *sqTrackPtr++;
-		SDL_MDNullFunc(arg0&0xF,var3,var1);
+		id = *midiData++;
+		value = *midiData++;
+		MIDI_ControllerChange(event&0xF,id,value);
 		break;
 	case 0xC0:
-		var1 = *sqTrackPtr++;
-		SDL_MDPlayTrack(arg0&0xF,var1);
+		value = *midiData++;
+		MIDI_ProgramChange(event&0xF,value);
 		break;
 	case 0xD0:
-		var1 = *sqTrackPtr++;
-		SDL_MDNullFunc2(arg0&0xF,var1);
+		value = *midiData++;
+		MIDI_ChannelPressure(event&0xF,value);
 		break;
 	default:
 		midiError = -7;
@@ -2096,56 +2095,56 @@ SDL_MDFunc9(byte arg0)
 }
 
 static void
-SDL_MDFunc10(void)
+MIDI_DoEvent(void)
 {
-	longword	vlq;
-	longword	lv;
-	byte	val = *sqTrackPtr;
-	sqTrackPtr++;
-	if (!(val & 0x80))
+	byte	event = *midiData;
+	longword	length;
+	longword	tempo;
+	midiData++;
+	if (!(event & 0x80))
 	{
-		switch (sqSomeByte)
+		switch (midiRunningStatus)
 		{
 		case 0:
 			return;
 		}
-		sqTrackPtr--;
-		SDL_MDFunc9(sqSomeByte);
+		midiData--;
+		MIDI_ProcessEvent(midiRunningStatus);
 	}
-	else if (val < 0xF0)
+	else if (event < 0xF0)
 	{
-		sqSomeByte = val;
-		SDL_MDFunc9(sqSomeByte);
+		midiRunningStatus = event;
+		MIDI_ProcessEvent(midiRunningStatus);
 	}
-	else if (val == 0xF0)
+	else if (event == 0xF0)
 	{
-		sqSomeByte = 0;
+		midiRunningStatus = 0;
 		midiError = -4;
 	}
-	else if (val == 0xF7)
+	else if (event == 0xF7)
 	{
-		sqSomeByte = 0;
+		midiRunningStatus = 0;
 		midiError = -5;
 	}
-	else if (val == 0xFF)
+	else if (event == 0xFF)
 	{
-		sqSomeByte = 0;
-		val = *sqTrackPtr++;
-		switch (val)
+		midiRunningStatus = 0;
+		event = *midiData++;
+		switch (event)
 		{
 		case 0x51:
-			vlq = SDL_MDCalcVLQ();
-			lv = ((long)(*sqTrackPtr)<<16) + (long)((*(sqTrackPtr+1))<<8) + (*(sqTrackPtr+2));
-			someMidiFloat = (double)lv/2.74176e5;
-			someMidiFloat *= 1.1;
-			sqTrackPtr += vlq;
+			length = MIDI_VarLength();
+			tempo = ((long)(*midiData)<<16) + (long)((*(midiData+1))<<8) + (*(midiData+2));
+			midiTimeScale = (double)tempo/2.74176e5;
+			midiTimeScale *= 1.1;
+			midiData += length;
 			break;
 		case 0x2F:
-			sqTrackPtr = sqTrack;
-			sqTrackLen = 0;
+			midiData = midiDataStart;
+			midiDeltaTime = 0;
 			break;
 		default:
-			SDL_MDCalcAndSkipVLQ();
+			MIDI_SkipMetaEvent();
 		}
 	}
 	else
@@ -2153,34 +2152,34 @@ SDL_MDFunc10(void)
 }
 
 void
-SDL_MDService(void)
+MIDI_IRQService(void)
 {
-	int	i = 0;
+	int	maxevent = 0;
 
-	if (!sqActive)
+	if (!midiOn)
 		return;
 
-	if (sqTrackLen)
+	if (midiDeltaTime)
 	{
-		sqTrackLen--;
+		midiDeltaTime--;
 		return;
 	}
 
-	while (!sqTrackLen && (i++ < 32))
+	while (!midiDeltaTime && (maxevent++ < 32))
 	{
-		SDL_MDFunc10();
-		sqTrackLen = SDL_MDCalcVLQ();
+		MIDI_DoEvent();
+		midiDeltaTime = MIDI_VarLength();
 	}
 
-	if (i >= 32)
+	if (maxevent >= 32)
 		midiError = -1;
-	else if (sqTrackLen & 0xFFFF0000)
+	else if (midiDeltaTime & 0xFFFF0000)
 	{
 		midiError = -2;
 		return;
 	}
 
-	sqTrackLen = sqTrackLen * someMidiFloat;
+	midiDeltaTime = midiDeltaTime * midiTimeScale;
 }
 
 #endif
@@ -3025,7 +3024,12 @@ SD_WaitSoundDone(void)
 void
 SD_MusicOn(void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	midiOn = true;
+#else
 	sqActive = true;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3048,7 +3052,12 @@ SD_MusicOff(void)
 			alOut(alFreqH + i + 1,0);
 		break;
 	}
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	midiOn = false;
+#else
 	sqActive = false;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3061,8 +3070,8 @@ SD_StartMusic(MusicGroup far *music)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	char error[80];
-	int result;
+	char str[80];
+	unsigned int i;
 
 	SD_MusicOff();
 	if (MusicMode != smm_AdLib)
@@ -3071,47 +3080,47 @@ SD_StartMusic(MusicGroup far *music)
 asm	pushf
 asm	cli
 
-	sqHackPtr = music->values;
-	sqHackLen = music->length;
-	if (_fstrncmp(sqHackPtr,"MThd",4))
+	seqPtr = music->values;
+	seqLength = music->length;
+	if (_fstrncmp(seqPtr,"MThd",4))
 		Quit("SD_StartMusic: MIDI header expected!\n");
 
-	result = SDL_MDSwapWord(((word far *)sqHackPtr)[4]);
-	if (result)
+	i = fixword(((word far *)seqPtr)[4]);
+	if (i)
 	{
-		sprintf(error,"SD_StartMusic: Invalid or unsupported MIDI file format (%04X)\n", result);
-		Quit(error);
+		sprintf(str,"SD_StartMusic: Invalid or unsupported MIDI file format (%04X)\n", i);
+		Quit(str);
 	}
-	result = SDL_MDSwapWord(((word far *)sqHackPtr)[5]);
-	if (result != 1)
+	i = fixword(((word far *)seqPtr)[5]);
+	if (i != 1)
 	{
-		sprintf(error,"SD_StartMusic: MIDI file type 0 with %d tracks?\n",result);
-		Quit(error);
+		sprintf(str,"SD_StartMusic: MIDI file type 0 with %d tracks?\n",i);
+		Quit(str);
 	}
 
-	sqHackPtr += SDL_MDSwapLong(((longword far *)sqHackPtr)[1]) + 8;
-	if (_fstrncmp(sqHackPtr,"MTrk",4))
+	seqPtr += fixlongword(((longword far *)seqPtr)[1]) + 8;
+	if (_fstrncmp(seqPtr,"MTrk",4))
 		Quit("SD_StartMusic: MIDI track header expected!\n");
 
-	sqHackLen = SDL_MDSwapLong(((longword far *)sqHackPtr)[1]);
-	if (!sqHackLen)
+	seqLength = fixlongword(((longword far *)seqPtr)[1]);
+	if (!seqLength)
 		Quit("SD_StartMusic: MIDI track is 0 length!\n");
 
-	sqHackPtr += 8;
-	sqTrack = sqTrackPtr = sqHackPtr;
-	sqTrackSeqLen = sqHackLen;
-	sqTrackLen = 0;
-	sqTrackLen = SDL_MDCalcVLQ();
-	if (sqTrackLen & 0xFFFF0000)
+	seqPtr += 8;
+	midiDataStart = midiData = seqPtr;
+	midiLength = seqLength;
+	midiDeltaTime = 0;
+	midiDeltaTime = MIDI_VarLength();
+	if (midiDeltaTime & 0xFFFF0000)
 	{
 		midiError = -2;
 		return;
 	}
 
-	sqSomeByte = 0;
-	SDL_MDPlayTrack(9,0);
+	midiRunningStatus = 0;
+	MIDI_ProgramChange(9,0);
 	alOut(alEffects,alChar);
-	someMidiBuffer2[0] = 0;
+	drums = 0;
 	SD_MusicOn();
 
 asm	popf

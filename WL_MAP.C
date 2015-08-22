@@ -3,15 +3,15 @@
 #include "WL_DEF.H"
 #pragma hdrstop
 
-void DrawAutomapTiles (int tilex, int tiley)
+static void DrawMapWalls (int tx, int ty)
 {
 	int	x,y,tile;
 
-	for (y=tiley;y<tiley+20;y++)
-		for (x=tilex;x<tilex+40;x++)
+	for (y=ty;y<ty+20;y++)
+		for (x=tx;x<tx+40;x++)
 		{
 			tile = tilemap[x][y];
-			if (gamestate.fullmap || (tile&0x20) || ((tile&0x80) && doorobjlist[tile&0x1F].field_4) || ((gamestate.difficulty == gd_baby) && (tile == 15)))
+			if (gamestate.automap || (tile&0x20) || ((tile&0x80) && doorobjlist[tile&0x1F].seen) || ((gamestate.difficulty == gd_baby) && (tile == 15)))
 			{
 				tile &= 0xFFDF;
 				if (tile&0x80)
@@ -28,14 +28,14 @@ void DrawAutomapTiles (int tilex, int tiley)
 			}
 			else
 				tile = 35;
-			VWB_DrawTile8 (8*(x-tilex),8*(y-tiley),tile);
+			VWB_DrawTile8 (8*(x-tx),8*(y-ty),tile);
 		}
 }
 
-void DrawAutomapStatObjs (int tilex, int tiley)
+static void DrawMapPrizes (int tx, int ty)
 {
+	int	x,y,tile;
 	statobj_t	*statptr;
-	int	maptx,mapty,tile;
 
 	for (statptr = &statobjlist[0] ; statptr !=laststatobj ; statptr++)
 	{
@@ -44,17 +44,17 @@ void DrawAutomapStatObjs (int tilex, int tiley)
 		if (statptr->shapenum == -2)
 			continue;
 
-		maptx = statptr->tilex - tilex;
-		if ((maptx < 0) || (maptx > 39))
+		x = statptr->tilex - tx;
+		if ((x < 0) || (x > 39))
 			continue;
 
-		mapty = statptr->tiley - tiley;
-		if ((mapty < 0) || (mapty > 19))
+		y = statptr->tiley - ty;
+		if ((y < 0) || (y > 19))
 			continue;
 
 		switch (statptr->itemnumber)
 		{
-		case bo_quiz:
+		case bo_alpo:
 			tile = 82;
 			break;
 		case bo_firstaid:
@@ -72,17 +72,17 @@ void DrawAutomapStatObjs (int tilex, int tiley)
 		case bo_machinegun:
 		case bo_chaingun:
 		case bo_25clip:
-		case bo_bag:
-		case bo_nutsling:
-		case bo_nuts:
-		case bo_melonsling:
-		case bo_melons:
+		case bo_bandolier:
+		case bo_flamethrower:
+		case bo_gascan:
+		case bo_launcher:
+		case bo_missiles:
 			tile = 80;
 			break;
-		case bo_banana:
-		case bo_apple:
-		case bo_peach:
-		case bo_grapes:
+		case bo_cross:
+		case bo_chalice:
+		case bo_crown:
+		case bo_chest:
 			tile = 81;
 			break;
 		case block:
@@ -93,26 +93,26 @@ void DrawAutomapStatObjs (int tilex, int tiley)
 		}
 
 		if (tile)
-			VWB_DrawTile8 (8*maptx,8*mapty,tile);
+			VWB_DrawTile8 (8*x,8*y,tile);
 	}
 }
 
-void DrawAutomap (int tilex, int tiley)
+static void DrawAutoMap (int tx, int ty)
 {
 	// TODO (RESTORATION) - Are the direction names correct?
-	int	maptx,mapty;
-	dirtype	dir;
+	int	px,py;
+	int	dir;
 
-	DrawAutomapTiles (tilex,tiley);
-	if (gamestate.fullmap)
-		DrawAutomapStatObjs (tilex,tiley);
+	DrawMapWalls (tx,ty);
+	if (gamestate.automap)
+		DrawMapPrizes (tx,ty);
 	// draw at player's location
-	maptx = player->tilex - tilex;
-	if ((maptx < 0) || (maptx > 39))
+	px = player->tilex - tx;
+	if ((px < 0) || (px > 39))
 		return;
 
-	mapty = player->tiley - tiley;
-	if ((mapty < 0) || (mapty > 19))
+	py = player->tiley - ty;
+	if ((py < 0) || (py > 19))
 		return;
 
 	if (player->angle <= ANGLES/16)
@@ -134,56 +134,56 @@ void DrawAutomap (int tilex, int tiley)
 	else
 		dir = east;
 
-	VWB_DrawTile8 (8*maptx,8*mapty,dir+67);
+	VWB_DrawTile8 (8*px,8*py,dir+67);
 }
 
-void OpenAutomap ()
+void AutoMap ()
 {
-	int	tilex,tiley;
-	boolean		quit;
+	int	x,y;
+	boolean		done;
 
-	tilex = player->tilex - 20;
-	if (tilex < 0)
-		tilex = 0;
-	else if (tilex > 24)
-		tilex = 24;
+	x = player->tilex - 20;
+	if (x < 0)
+		x = 0;
+	else if (x > 24)
+		x = 24;
 
-	tiley = player->tiley - 10;
-	if (tiley < 0)
-		tiley = 0;
-	else if (tiley > 44)
-		tiley = 44;
+	y = player->tiley - 10;
+	if (y < 0)
+		y = 0;
+	else if (y > 44)
+		y = 44;
 
 	ClearMemory ();
 	VW_FadeOut ();
-	DrawAutomap (tilex,tiley);
+	DrawAutoMap (x,y);
 	VW_UpdateScreen ();
 	VW_FadeIn ();
 
-	quit = false;
+	done = false;
 	do
 	{
 		PollControls ();
 
-		if ((controlx < 0) && (tilex > 0))
-			tilex--;
-		else if ((controlx > 0) && (tilex+39 < MAPSIZE-1))
-			tilex++;
+		if ((controlx < 0) && (x > 0))
+			x--;
+		else if ((controlx > 0) && (x+39 < MAPSIZE-1))
+			x++;
 
-		if ((controly < 0) && (tiley > 0))
-			tiley--;
-		else if ((controly > 0) && (tiley+19 < MAPSIZE-1))
-			tiley++;
+		if ((controly < 0) && (y > 0))
+			y--;
+		else if ((controly > 0) && (y+19 < MAPSIZE-1))
+			y++;
 
 		if (Keyboard[sc_Escape] || Keyboard[sc_Tab] || buttonstate[bt_attack] || buttonstate[bt_use])
-			quit = true;
+			done = true;
 
-		if (!quit)
+		if (!done)
 		{
-			DrawAutomap (tilex,tiley);
+			DrawAutoMap (x,y);
 			VW_UpdateScreen ();
 		}
-	} while (!quit);
+	} while (!done);
 
 	IN_ClearKeysDown ();
 	if ((playstate == ex_stillplaying) && !loadedgame && !startgame)

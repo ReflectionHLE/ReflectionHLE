@@ -106,27 +106,26 @@ void EndSpear(void)
 // (ASM code, frame counting) and PlayLoop (screen fading and user input checks)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 
-statetype *caststates[] = {&s_dogchase1,&s_grdchase1,&s_ofcchase1,&s_sschase1,
+statetype *caststate[] = {&s_dogchase1,&s_grdchase1,&s_ofcchase1,&s_sschase1,
 	&s_mutchase1,&s_bosschase1,&s_schabbchase1,&s_gretelchase1,
 	&s_giftchase1,&s_fatchase1,&s_mechachase1,&s_hitlerchase1};
 
-char far *castnames[] = {"Goat","Sheep","Ostrich","Antelope",
+char far *casttext[] = {"Goat","Sheep","Ostrich","Antelope",
 	"Ox","Carl the Camel","Melvin the Monkey","Ginny the Giraffe",
 	"Kerry the Kangaroo","Ernie the Elephant","Hiding Burt","Burt the Bear"};
 
-soundnames castsounds[] = {DOGBARKSND,HALTSND,SPIONSND,SCHUTZADSND,
+int castsound[] = {DOGBARKSND,HALTSND,SPIONSND,SCHUTZADSND,
 	GROWLSND,GUTENTAGSND,SCHABBSHASND,KEINSND,
 	EINESND,ERLAUBENSND,DIESND,DIESND};
 
-void EndMap(void)
+void CharacterCast(void)
 {
-	int castnum;
-	int i, stateiters, casttics;
+	int i, en, count, cycle;
 	unsigned temp,buttons;
 	statetype *state;
 
 	ClearMemory ();
-	StartCPMusic (ALL_GOOD_MUS);
+	StartCPMusic (NOAH02_MUS);
 	gamestate.mapon = 30;
 	SetupGameLevel();
 	CA_CacheGrChunk (STARTFONT+1);
@@ -143,7 +142,7 @@ void EndMap(void)
 	}
 	bufferofs = temp;
 
-	castnum = 0;
+	en = 0;
 	anglefrac = 0;
 	WindowX = 0;
 	WindowW = 320-16;
@@ -155,25 +154,25 @@ void EndMap(void)
 	// - Apparently goto was originally used here; Or maybe not?
 	do
 	{
-		state = caststates[castnum];
-		stateiters = state->tictime;
-		casttics = 0;
+		state = caststate[en];
+		count = state->tictime;
+		cycle = 0;
 nexttic:
-		if (casttics == 0)
-			SD_PlaySound (castsounds[castnum]);
+		if (cycle == 0)
+			SD_PlaySound (castsound[en]);
 		CalcTics();
-		casttics += 2*tics;
-		if (casttics > 224)
+		cycle += 2*tics;
+		if (cycle > 224)
 		{
-			if (++castnum >= 12)
-				castnum = 0;
+			if (++en >= 12)
+				en = 0;
 			continue;
 		}
 
-		if (!(--stateiters))
+		if (!(--count))
 		{
 			state = state->next;
-			stateiters = state->tictime;
+			count = state->tictime;
 		}
 
 		// S3DNA RESTORATION - Taken off ThreeDRefresh;
@@ -188,14 +187,14 @@ nexttic:
 		bufferofs += screenofs;
 		PollControls ();
 		WallRefresh ();
-		if (!FloorsDisabled)
+		if (!nofloors)
 			DrawPlanes ();
 		DrawScaleds ();
 
-		SimpleScaleShape (viewwidth/2,state->shapenum,casttics/2+24);
+		SimpleScaleShape (viewwidth/2,state->shapenum,cycle/2+24);
 		VWB_Bar (0,160,320,40,VIEWCOLOR);
 		PrintY = 168;
-		US_CPrintLine (castnames[castnum]);
+		US_CPrintLine (casttext[en]);
 
 		bufferofs -= screenofs;
 		displayofs = bufferofs;
@@ -222,16 +221,16 @@ asm		sti
 		buttons = IN_JoyButtons()*16;
 		if (MousePresent)
 			buttons |= IN_MouseButtons();
-		if ((casttics >= 16) && (Keyboard[sc_Space] || (buttons & 0x11)))
+		if ((cycle >= 16) && (Keyboard[sc_Space] || (buttons & 0x11)))
 		{
-			if (++castnum >= 12)
-				castnum = 0;
+			if (++en >= 12)
+				en = 0;
 			continue;
 		}
 		if (Keyboard[sc_Escape] || Keyboard[sc_Q] || Keyboard[sc_Return] || (buttons & 0x22))
 			break;
 		goto nexttic;
-	} while (castnum < 12);
+	} while (en < 12);
 
 	UNCACHEGRCHUNK (STARTFONT+1);
 	StopMusic ();
@@ -257,13 +256,13 @@ void Victory (void)
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 	int	sec;
 #elif (defined GAMEVER_RESTORATION_N3D_WIS10)
-	long	sec,psec;
+	long	sec,parsec;
 #else
 	long	sec;
 #endif
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	int i,hour,phour,min,pmin,kr,sr,tr,x;
+	int i,hr,min,kr,sr,tr,x;
 #else
 	int i,min,kr,sr,tr,x;
 #endif
@@ -313,7 +312,7 @@ void Victory (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	StartCPMusic (SONG7_MUS);
+	StartCPMusic (NOAH07_MUS);
 #else
 	StartCPMusic (URAHERO_MUS);
 #endif
@@ -409,7 +408,7 @@ void Victory (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	for (kr = sr = tr = sec = psec = i = 0;i < 30;i++)
+	for (kr = sr = tr = sec = parsec = i = 0;i < 30;i++)
 #elif (!defined SPEAR)
 //#ifndef SPEAR
 	for (kr = sr = tr = sec = i = 0;i < 8;i++)
@@ -423,35 +422,35 @@ void Victory (void)
 		tr += LevelRatios[i].treasure;
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		psec += LevelRatios[i].par;
+		parsec += LevelRatios[i].par;
 #endif
 	}
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	pmin = psec/60;
-	psec %= 60;
-	phour = pmin/60;
-	pmin %= 60;
-	if (phour > 9)
+	min = parsec/60;
+	parsec %= 60;
+	hr = min/60;
+	min %= 60;
+	if (hr > 9)
 	{
-		phour = 9;
-		pmin = psec = 99;
+		hr = 9;
+		min = parsec = 99;
 	}
 	i = 23*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+phour);
+	VWB_DrawPic (i,7*8,L_NUM0PIC+hr);
 	i += 2*8;
 	Write (i/8,7,":");
 	i += 1*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+(pmin/10));
+	VWB_DrawPic (i,7*8,L_NUM0PIC+(min/10));
 	i += 2*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+(pmin%10));
+	VWB_DrawPic (i,7*8,L_NUM0PIC+(min%10));
 	i += 2*8;
 	Write (i/8,7,":");
 	i += 1*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+(psec/10));
+	VWB_DrawPic (i,7*8,L_NUM0PIC+(parsec/10));
 	i += 2*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+(psec%10));
+	VWB_DrawPic (i,7*8,L_NUM0PIC+(parsec%10));
 	VW_UpdateScreen ();
 #else
 
@@ -476,11 +475,11 @@ void Victory (void)
 	sec %= 60;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	hour = min/60;
+	hr = min/60;
 	min %= 60;
-	if (hour > 9)
+	if (hr > 9)
 	{
-		hour = 9;
+		hr = 9;
 		min = sec = 99;
 	}
 	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
@@ -492,7 +491,7 @@ void Victory (void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	i = 184;
-	VWB_DrawPic(i,72,L_NUM0PIC+hour);
+	VWB_DrawPic(i,72,L_NUM0PIC+hr);
 	i += 2*8;
 	Write(i/8,9,":");
 	i += 1*8;
@@ -613,7 +612,7 @@ void Victory (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	EndMap();
+	CharacterCast();
 #elif (!defined SPEAR)
 //#ifndef SPEAR
 	EndText();
@@ -784,13 +783,13 @@ void BJ_Breathe(void)
 // *** S3DNA RESTORATION ***
 // Additional functions for LevelCompleted
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-void WriteNumber (long num)
+void ShowBonus (long bonus)
 {
 	char tempstr[10];
-	int	x,i;
 	char	ch;
+	int	x,i;
 
-	ltoa(num,tempstr,10);
+	ltoa(bonus,tempstr,10);
 	x=8*(36-strlen(tempstr)*2);
 
 	for (i=0;i<strlen(tempstr);i++)
@@ -804,36 +803,36 @@ void WriteNumber (long num)
 	}
 }
 
-void DrawIntermissionBackground (int mode)
+void DrawEndLevelScreen (int secretlvl)
 {
 	char tempstr[10];
 
 	VWB_Bar (0,0,320,160,VIEWCOLOR);
 	VWB_DrawPic (8,8,L_GUYPIC);
-	if (mode)
+	if (secretlvl)
 	{
 		VWB_DrawPic (104,8,W_SECRETPIC);
 		VWB_DrawPic (104,24,W_LEVELPIC);
 		VWB_DrawPic (104,40,W_FINISHPIC);
-		VWB_DrawPic (184,24,mode+L_NUM0PIC);
+		VWB_DrawPic (184,24,secretlvl+L_NUM0PIC);
 	}
 	else
 	{
 		VWB_DrawPic (104,8,W_LEVELPIC);
 		VWB_DrawPic (104,24,W_FLOORPIC);
 		VWB_DrawPic (104,40,W_FINISHPIC);
-		sprintf (tempstr,"%d",episodetable[gamestate.mapon]);
+		sprintf (tempstr,"%d",MapEpisode[gamestate.mapon]);
 		Write (23,1,tempstr);
-		sprintf (tempstr,"%d",mapnumbertable[gamestate.mapon]);
+		sprintf (tempstr,"%d",MapLevel[gamestate.mapon]);
 		Write (23,3,tempstr);
 	}
 	VWB_DrawPic (104,72,W_BONUSPIC);
 }
 
-void WaitForTic (void)
+void RollDelay (void)
 {
-	long oldtimecount = TimeCount;
-	while (TimeCount == oldtimecount)
+	unsigned long lasttime = TimeCount;
+	while (TimeCount == lasttime)
 		;
 }
 #endif
@@ -879,7 +878,7 @@ void LevelCompleted (void)
 
 	// *** S3DNA  RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	int	x,i,min,sec,mode,ratio;
+	int	x,i,min,sec,secret,ratio;
 	boolean perfect;
 	long bonus,timeleft;
 	int	kr,sr,tr;
@@ -890,7 +889,7 @@ void LevelCompleted (void)
 	char tempstr[10];
 	// *** S3DNA  RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	long	oldtimecount;
+	unsigned long	lasttime;
 #else
 	long bonus,timeleft=0;
 #endif
@@ -1198,7 +1197,7 @@ void LevelCompleted (void)
 	// *** S3DNA  RESTORATION ***
 	// TODO (RESTORATION) Unify common code groups?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	StartCPMusic(FEEDTIME_MUS);
+	StartCPMusic(NOAH05_MUS);
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	ClearSplitVWB ();			// set up for double buffering in split screen
 	ClearMemory();
@@ -1207,13 +1206,13 @@ void LevelCompleted (void)
 
 	switch (gamestate.mapon)
 	{
-		case 11: mode = 1; break;
-		case 29: mode = 2; break;
-		default: mode = 0;
+		case 11: secret = 1; break;
+		case 29: secret = 2; break;
+		default: secret = 0;
 	}
-	DrawIntermissionBackground (mode);
+	DrawEndLevelScreen (secret);
 	bonus = 0;
-	WriteNumber (0);
+	ShowBonus (0);
 	IN_ClearKeysDown ();
 	IN_StartAck ();
 	// TODO (RESTORATION) - Again, some code pieces may be relocated
@@ -1226,22 +1225,22 @@ void LevelCompleted (void)
 	if (gamestate.treasuretotal)
 		tr=(gamestate.treasurecount*100)/gamestate.treasuretotal;
 
-	if (mode)
+	if (secret)
 	{
 		VW_UpdateScreen();
 		VW_FadeIn();
 		VL_WaitVBL(VBLWAIT);
 		SD_PlaySound(ENDBONUS2SND);
 		bonus = 15000;
-		WriteNumber(15000);
+		ShowBonus(15000);
 		TimeCount = 0;
 		IN_StartAck();
-		oldtimecount = TimeCount;
+		lasttime = TimeCount;
 		do
 		{
 			BJ_Breathe();
 			VW_UpdateScreen();
-		} while (!IN_CheckAck() && (TimeCount - oldtimecount < 2*TickBase));
+		} while (!IN_CheckAck() && (TimeCount - lasttime < 2*TickBase));
 
 		if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -1291,13 +1290,13 @@ void LevelCompleted (void)
 	{
 		for (i=0;i<=timeleft;i++)
 		{
-			WriteNumber(bonus+(long)i*PAR_AMOUNT);
+			ShowBonus(bonus+(long)i*PAR_AMOUNT);
 			SD_PlaySound(ENDBONUS1SND);
 			VW_UpdateScreen();
 			BJ_Breathe();
 			if (IN_CheckAck())
 				break;
-			WaitForTic();
+			RollDelay();
 		}
 		VW_UpdateScreen();
 		SD_PlaySound(ENDBONUS1SND);
@@ -1309,18 +1308,18 @@ void LevelCompleted (void)
 
 	bonus+=timeleft*PAR_AMOUNT;
 	IN_StartAck();
-	oldtimecount = TimeCount;
+	lasttime = TimeCount;
 	do
 	{
 		BJ_Breathe();
 		VW_UpdateScreen();
-	} while (!IN_CheckAck() && (TimeCount - oldtimecount < TickBase*2));
+	} while (!IN_CheckAck() && (TimeCount - lasttime < TickBase*2));
 
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		PicturePause();
 
-	DrawIntermissionBackground(mode);
-	WriteNumber(bonus);
+	DrawEndLevelScreen(secret);
+	ShowBonus(bonus);
 	VWB_DrawPic(80,104,W_KILLSPIC);
 	Write(27,13,"0%");
 	VWB_DrawPic(104,120,W_TREASURESPIC);
@@ -1342,7 +1341,7 @@ void LevelCompleted (void)
 		BJ_Breathe();
 		if (IN_CheckAck())
 			goto done;
-		WaitForTic();
+		RollDelay();
 	}
 
 	if (kr==100)
@@ -1350,7 +1349,7 @@ void LevelCompleted (void)
 		VW_WaitVBL(VBLWAIT);
 		SD_StopSound();
 		bonus+=PERCENT100AMT;
-		WriteNumber(bonus);
+		ShowBonus(bonus);
 		SD_PlaySound(ENDBONUS2SND);
 	}
 	else if (kr==0)
@@ -1376,7 +1375,7 @@ void LevelCompleted (void)
 		BJ_Breathe();
 		if (IN_CheckAck())
 			goto done;
-		WaitForTic();
+		RollDelay();
 	}
 
 	if (tr==100)
@@ -1384,7 +1383,7 @@ void LevelCompleted (void)
 		VW_WaitVBL(VBLWAIT);
 		SD_StopSound();
 		bonus+=PERCENT100AMT;
-		WriteNumber(bonus);
+		ShowBonus(bonus);
 		SD_PlaySound(ENDBONUS2SND);
 	}
 	else if (tr==0)
@@ -1410,7 +1409,7 @@ void LevelCompleted (void)
 		BJ_Breathe();
 		if (IN_CheckAck())
 			goto done;
-		WaitForTic();
+		RollDelay();
 	}
 
 	if (sr==100)
@@ -1418,7 +1417,7 @@ void LevelCompleted (void)
 		VW_WaitVBL(VBLWAIT);
 		SD_StopSound();
 		bonus+=PERCENT100AMT;
-		WriteNumber(bonus);
+		ShowBonus(bonus);
 		SD_PlaySound(ENDBONUS2SND);
 	}
 	else if (sr==0)
@@ -1464,7 +1463,7 @@ void LevelCompleted (void)
 
 
 	GivePoints(bonus);
-	WriteNumber(bonus);
+	ShowBonus(bonus);
 	DrawScore();
 	VW_UpdateScreen();
 
@@ -1473,8 +1472,8 @@ void LevelCompleted (void)
 
 	if (perfect)
 	{
-		DrawIntermissionBackground(mode);
-		WriteNumber(bonus);
+		DrawEndLevelScreen(secret);
+		ShowBonus(bonus);
 		VWB_DrawPic(96,120,W_PERFECTPIC);
 		VW_UpdateScreen();
 		SD_StopSound();
@@ -1498,10 +1497,10 @@ void LevelCompleted (void)
 	bufferofs = temp;
 
 	UnCacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
-	SD_WaitSoundDone();
 
 	{
-		unsigned start;
+		int start;
+		SD_WaitSoundDone();
 		switch (SoundMode)
 		{
 			case sdm_Off: return;
@@ -2006,7 +2005,7 @@ boolean PreloadUpdate(unsigned current, unsigned total)
 // *** S3DNA RESTORATION ***
 // TODO (RESTORATION) Can move this up?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-unsigned	floortile[] = {0,0,2,1,1,1,0,2,2,2,1,3,0,0,0,0,2,1,1,1,1,1,0,2,2,2,2,2,1,3,3};
+int	FloorTile[] = {0,0,2,1,1,1,0,2,2,2,1,3,0,0,0,0,2,1,1,1,1,1,0,2,2,2,2,2,1,3,3};
 #endif
 
 void PreloadGraphics(void)
@@ -2033,7 +2032,7 @@ void PreloadGraphics(void)
 	PM_Preload (PreloadUpdate);
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	LoadFloorTiles(floortile[gamestate.mapon]);
+	LoadFloorTiles(FloorTile[gamestate.mapon]);
 #endif
 	IN_UserInput (70);
 	VW_FadeOut ();
@@ -2165,7 +2164,7 @@ void	DrawHighScores(void)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		if (s->completed >= 30)
 			s->completed = 30;
-		sprintf(buffer,"%d-%d",episodetable[s->completed],mapnumbertable[s->completed]);
+		sprintf(buffer,"%d-%d",MapEpisode[s->completed],MapLevel[s->completed]);
 #else
 		ultoa(s->completed,buffer,10);
 #endif
@@ -2331,7 +2330,7 @@ void	CheckHighScore (long score,word other)
 	StartCPMusic (XAWARD_MUS);
 	// *** S3DNA RESTORATION ***
 #elif defined GAMEVER_RESTORATION_N3D_WIS10
-	StartCPMusic (SONG11_MUS);
+	StartCPMusic (NOAH11_MUS);
 #else
 	StartCPMusic (ROSTER_MUS);
 #endif
@@ -2383,7 +2382,7 @@ void	CheckHighScore (long score,word other)
 // *** S3DNA RESTORATION ***
 // Separating the briefings seems to do the job here (in terms of EXE layout)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-char briefing_ep1[] = {
+char	mission1text[] = {
 	"You'll be out of the ark in six\n"
 	"days, Noah. Unfortunately, the\n"
 	"animals are a tad bit restless and\n"
@@ -2398,9 +2397,9 @@ char briefing_ep1[] = {
 	"and is a bit out of control.\n"
 	"\n"
 	"Good luck and be careful...\n"
-};
+},
 
-char briefing_ep2[] = {
+mission2text[] = {
 	"Wow, Noah! Carl sure was hard to\n"
 	"calm down. But remember, you\n"
 	"were chosen to guide this ark to\n"
@@ -2415,9 +2414,9 @@ char briefing_ep2[] = {
 	"\n"
 	"Oh, and Noah, remember to keep\n"
 	"an eye out for hidden rooms...\n"
-};
+},
 
-char briefing_ep3[] = {
+mission3text[] = {
 	"ZZZZZ... Great job, Noah!. Ginny is\n"
 	"snoring away.\n"
 	"\n"
@@ -2430,9 +2429,9 @@ char briefing_ep3[] = {
 	"coconuts, but it's your job to get\n"
 	"him settled down for the rest of\n"
 	"your time aboard the ark."
-};
+},
 
-char briefing_ep4[] = {
+mission4text[] = {
 	"You're doing a great job, Noah!\n"
 	"You took care of that Melvin like\n"
 	"a real pro.\n"
@@ -2446,9 +2445,9 @@ char briefing_ep4[] = {
 	"bit tired. Are you ready for her?\n"
 	"She needs to rest like the other\n"
 	"animals."
-};
+},
 
-char briefing_ep5[] = {
+mission5text[] = {
 	"Wow! Kerry was no challenge for\n"
 	"you! Can you keep up the pace\n"
 	"when faced with Ernie the\n"
@@ -2458,9 +2457,9 @@ char briefing_ep5[] = {
 	"be on dry land, and you won't\n"
 	"have to chase the animals around\n"
 	"the ark anymore."
-};
+},
 
-char briefing_ep6[] = {
+mission6text[] = {
 	"You are almost there! If you can\n"
 	"get through one more day, you\n"
 	"will be out of here for good!\n"
@@ -2473,9 +2472,9 @@ char briefing_ep6[] = {
 	"\n"
 	"Get him to sleep and your work\n"
 	"is done!"
-};
+},
 
-char briefing_copyright[] = {
+creditstext[] = {
 	"\n"
 	"Super 3-D Noah's Ark\n"
 	"\n"
@@ -2492,16 +2491,16 @@ char briefing_copyright[] = {
 };
 
 
-char *briefings[] =
-	{briefing_ep1,briefing_ep2,briefing_ep3,briefing_ep4,briefing_ep5,briefing_ep6,briefing_copyright};
+char *missiontext[] =
+	{mission1text,mission2text,mission3text,mission4text,mission5text,mission6text,creditstext};
 
 
-void Briefing (int num, int type)
+void Briefing (int mission, boolean credits)
 {
 	ClearMemory ();
-	if (num >= 7)
+	if (mission >= 7)
 	{
-		sprintf (str,"Briefing(): Invalid briefing number %d!",num);
+		sprintf (str,"Briefing(): Invalid briefing number %d!",mission);
 		Quit (str);
 	}
 	CacheLump (LEVELEND_LUMP_START,LEVELEND_LUMP_END);
@@ -2515,19 +2514,19 @@ void Briefing (int num, int type)
 	WindowH = 200-16;
 	SETFONTCOLOR (READHCOLOR,BKGDCOLOR);
 
-	if (type)
-		US_CPrint (briefings[num]);
+	if (credits)
+		US_CPrint (missiontext[mission]);
 	else
-		US_Print (briefings[num]);
+		US_Print (missiontext[mission]);
 
 	VW_UpdateScreen ();
 	VW_FadeIn ();
 
-	if (type)
+	if (credits)
 		UnCacheLump (LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	else
 	{
-		StartCPMusic (SONG9_MUS);
+		StartCPMusic (NOAH09_MUS);
 		IN_ClearKeysDown();
 		IN_Ack();
 		StopMusic();

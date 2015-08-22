@@ -51,15 +51,15 @@ boolean         tedlevel;
 boolean         nospr;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-boolean		BibleQuizDisabled, FloorsDisabled;
-char		titletxt[] = "SUPER 3D NOAH'S ARK (v1.0)";
+boolean		noquestions, nofloors;
+char		logon[] = "SUPER 3D NOAH'S ARK (v1.0)";
 #endif
 boolean         IsA386;
 int                     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
 	5*ANGLES/8,6*ANGLES/8,7*ANGLES/8,ANGLES};
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-int	quiznumber = 0;
+int	questionnum = 0;
 #endif
 
 //
@@ -140,7 +140,7 @@ void ReadConfig(void)
 		read(file,&mouseadjustment,sizeof(mouseadjustment));
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		read(file,&quiznumber,sizeof(quiznumber));
+		read(file,&questionnum,sizeof(questionnum));
 #endif
 
 		close(file);
@@ -216,7 +216,7 @@ void ReadConfig(void)
 		mouseadjustment=5;
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		quiznumber=0;
+		questionnum=0;
 #endif
 	}
 
@@ -265,7 +265,7 @@ void WriteConfig(void)
 		write(file,&mouseadjustment,sizeof(mouseadjustment));
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		write(file,&quiznumber,sizeof(quiznumber));
+		write(file,&questionnum,sizeof(questionnum));
 #endif
 
 		close(file);
@@ -340,12 +340,12 @@ void NewGame (int difficulty,int episode)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	gamestate.mapon=episode;
 	gamestate.maxammo=99;
-	gamestate.ammo2 = gamestate.ammo3 = 0;
-	gamestate.weaponinv[0] = 0;
-	gamestate.weaponinv[1] = 0;
-	gamestate.weaponinv[3] = 0;
-	gamestate.weaponinv[2] = 0;
-	gamestate.fullmap = false;
+	gamestate.gas = gamestate.missiles = 0;
+	gamestate.machinegun = 0;
+	gamestate.chaingun = 0;
+	gamestate.flamethrower = 0;
+	gamestate.missile = 0;
+	gamestate.automap = false;
 #else
 	gamestate.episode=episode;
 #endif
@@ -709,12 +709,12 @@ boolean LoadTheGame(int file,int x,int y)
 	 gamestate.ammo = 8;
 	 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	 gamestate.ammo2 = gamestate.ammo3 = 0;
-	 gamestate.weaponinv[0] = 0;
-	 gamestate.weaponinv[1] = 0;
-	 gamestate.weaponinv[3] = 0;
-	 gamestate.weaponinv[2] = 0;
-	 gamestate.fullmap = false;
+	 gamestate.gas = gamestate.missiles = 0;
+	 gamestate.machinegun = 0;
+	 gamestate.chaingun = 0;
+	 gamestate.flamethrower = 0;
+	 gamestate.missile = 0;
+	 gamestate.automap = false;
 #endif
 	}
 #endif
@@ -1279,17 +1279,17 @@ void DoJukebox(void)
 		{
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			SONG1_MUS,
-			ALL_GOOD_MUS,
-			SONG3_MUS,
-			SONG4_MUS,
-			FEEDTIME_MUS,
-			SONG6_MUS,
-			SONG7_MUS,
-			SONG8_MUS,
-			SONG9_MUS,
-			THEHAPPY_MUS,
-			SONG11_MUS,
+			NOAH01_MUS,
+			NOAH02_MUS,
+			NOAH03_MUS,
+			NOAH04_MUS,
+			NOAH05_MUS,
+			NOAH06_MUS,
+			NOAH07_MUS,
+			NOAH08_MUS,
+			NOAH09_MUS,
+			NOAH10_MUS,
+			NOAH11_MUS,
 #elif (!defined SPEAR)
 //#ifndef SPEAR
 			GETTHEM_MUS,
@@ -1443,12 +1443,12 @@ void InitGame (void)
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	BibleQuizDisabled = false;
+	noquestions = false;
 	if (MS_CheckParm ("noquestions"))
-		BibleQuizDisabled = true;
-	FloorsDisabled = false;
+		noquestions = true;
+	nofloors = false;
 	if (MS_CheckParm ("nofloors"))
-		FloorsDisabled = true;
+		nofloors = true;
 #elif (!defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 	if (MS_CheckParm ("virtual"))
 		virtualreality = true;
@@ -2015,7 +2015,7 @@ void    DemoLoop (void)
 				break;
 
 			VW_FadeOut ();
-			Briefing (6,1);
+			Briefing (6,true);
 #endif
 			// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_RESTORATION_N3D_WIS10
@@ -2158,11 +2158,11 @@ void main (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	vgamodeset = true;
+	VGAMode = true;
 	VL_SetTextMode();
-	VL_WriteTextCharsWithAttr(' ',0x5d,80);
-	gotoxy((79-strlen(titletxt))/2,1);
-	puts(titletxt);
+	FillCharAttr(' ',0x5d,80);
+	gotoxy((79-strlen(logon))/2,1);
+	puts(logon);
 #endif
 
 	CheckForEpisodes();

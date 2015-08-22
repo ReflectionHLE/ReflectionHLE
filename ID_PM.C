@@ -437,11 +437,6 @@ PML_StartupMainMem(void)
 {
 	int		i,n;
 	memptr	*p;
-	// *** S3DNA RESTORATION ***
-	// A little hack for error message (from WL_DEF.H)
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	extern	char str[];
-#endif
 
 	MainPagesAvail = 0;
 	MM_BombOnError(false);
@@ -461,6 +456,11 @@ PML_StartupMainMem(void)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	if (MainPagesAvail < PMMinMainMem)
 	{
+		// *** S3DNA RESTORATION ***
+		// A little hack for error message (from WL_DEF.H)
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		extern	char str[80];
+#endif
 		sprintf(str, "PM_StartupMainMem(): Not enough main memory (need %d more pages)!", PMMinMainMem-MainPagesAvail);
 		Quit(str);
 	}

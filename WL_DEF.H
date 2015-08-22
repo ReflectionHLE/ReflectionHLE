@@ -711,8 +711,8 @@ typedef enum {
 	realhitlerobj,
 	rocketobj,
 	needleobj,
-	cantaloupeobj,
-	watermelonobj
+	flameobj,
+	missileobj
 #else
 	fakeobj,
 	mechahitlerobj,
@@ -745,30 +745,24 @@ typedef enum {
 	dressing,
 	block,
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	bo_quiz,
-#else
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	bo_gibs,
-	bo_alpo,
 #endif
+	bo_alpo,
 	bo_firstaid,
 	bo_key1,
 	bo_key2,
 	bo_key3,
 	bo_key4,
-	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	bo_banana,
-	bo_apple,
-	bo_unusedfruit,
-	bo_peach,
-	bo_clip,
-#else
 	bo_cross,
 	bo_chalice,
 	bo_bible,
 	bo_crown,
 	bo_clip,
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	bo_clip2 = bo_clip,
+#else
 	bo_clip2,
 #endif
 	bo_machinegun,
@@ -781,15 +775,15 @@ typedef enum {
 	bo_25clip,
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	bo_grapes,
-	bo_bag,
-	bo_nutsling,
-	bo_nuts,
-	bo_melonsling,
-	bo_melons,
+	bo_chest,
+	bo_bandolier,
+	bo_flamethrower,
+	bo_gascan,
+	bo_launcher,
+	bo_missiles,
 	bo_map,
-	bo_staircase,
-	bo_secretstaircase
+	bo_exit,
+	bo_secret
 #else
 	bo_spear
 #endif
@@ -810,14 +804,14 @@ typedef enum {
 
 
 // *** APOGEE + S3DNA VERSIONS RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-#define NUMENEMIES		11
-#elif (defined GAMEVER_RESTORATION_WL1_APO10)
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef (defined GAMEVER_RESTORATION_WL1_APO10)
 #define NUMENEMIES		13
 #elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 #define NUMENEMIES		16
 #else
 #define NUMENEMIES		22
+#endif
 #endif
 typedef enum {
 	en_guard,
@@ -858,6 +852,12 @@ typedef enum {
 	en_death
 #endif
 #endif // GAMEVER_RESTORATION_N3D_WIS10
+
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	,
+	NUMENEMIES
+#endif
 } enemy_t;
 
 
@@ -898,9 +898,8 @@ typedef struct doorstruct
 	byte	tilex,tiley;
 	boolean	vertical;
 	// *** S3DNA RESTORATION ***
-	// TODO fill this
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	boolean	field_4;
+	boolean	seen;
 #endif
 	byte	lock;
 	enum	{dr_open,dr_closed,dr_opening,dr_closing}	action;
@@ -931,7 +930,7 @@ typedef struct objstruct
 	byte		areanumber;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	byte		snoozeframe;		// 2.6 number. Upper is frame, Lower is tics*2
+	byte		snore;		// 2.6 number. Upper is frame, Lower is tics*2
 #endif
 
 	int	 		viewx;
@@ -991,8 +990,8 @@ typedef enum	{
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	,
-	wp_cantaloupe,
-	wp_watermelon
+	wp_flamethrower,
+	wp_missile
 #endif
 } weapontype;
 
@@ -1020,12 +1019,15 @@ typedef	struct
 	int			ammo;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	int			fruit;
+	int			treasure;
 	int			maxammo;
-	int			ammo2;
-	int			ammo3;
-	int			weaponinv[4];
-	boolean			fullmap;
+	int			gas;
+	int			missiles;
+	boolean			machinegun;
+	boolean			chaingun;
+	boolean			missile;
+	boolean			flamethrower;
+	boolean			automap;
 #endif
 	int			keys;
 	weapontype		bestweapon,weapon,chosenweapon;
@@ -1088,8 +1090,8 @@ extern	boolean		tedlevel;
 extern	boolean		nospr;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-extern	boolean		BibleQuizDisabled, FloorsDisabled;
-extern	int		quiznumber;
+extern	boolean		noquestions, nofloors;
+extern	int		questionnum;
 #endif
 extern	boolean		IsA386;
 
@@ -1159,7 +1161,7 @@ extern	boolean		ingame,fizzlein,screensplit;
 // *** S3DNA RESTORATION ***
 #elif (defined GAMEVER_RESTORATION_N3D_WIS10)
 extern	boolean		ingame;
-extern	int		deathtime,fizzlein; // TODO (RESTORATION) Better name for "died"
+extern	int		endtics,fizzlein;
 #else
 extern	boolean		ingame,fizzlein;
 #endif
@@ -1298,7 +1300,7 @@ void StartBonusFlash (void);
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-extern unsigned	floortile[];
+extern	int	FloorTile[];
 #endif
 
 void IntroScreen (void);
@@ -1493,14 +1495,14 @@ extern	int			facecount;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-extern int	episodetable[];
-extern int	mapnumbertable[];
+extern int	MapEpisode[];
+extern int	MapLevel[];
 #endif
 
 void	SpawnPlayer (int tilex, int tiley, int dir);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-void	DrawFruit (void);
+void	DrawTreasure (void);
 #endif
 void 	DrawFace (void);
 void	DrawHealth (void);
@@ -1521,7 +1523,7 @@ void	DrawWeapon (void);
 void	DrawKeys (void);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-void	GiveFruit (int amount);
+void	GiveTreasure (int treasure);
 #endif
 void	GiveWeapon (int weapon);
 void	DrawAmmo (void);
@@ -1561,7 +1563,7 @@ void InitStaticList (void);
 void SpawnStatic (int tilex, int tiley, int type);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-void SpawnStaircase (int tilex, int tiley, int type);
+void SpawnExit (int tilex, int tiley, boolean secret);
 #endif
 void SpawnDoor (int tilex, int tiley, boolean vertical, int lock);
 void MoveDoors (void);
@@ -1649,17 +1651,17 @@ extern	statetype s_mutpain1;
 extern	statetype s_deathcam;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-extern	statetype s_playerdeath;
+extern	statetype s_gameover;
 
-extern	statetype s_playernut;
-extern	statetype s_playernutexp1;
-extern	statetype s_playernutexp2;
-extern	statetype s_playernutexp3;
+extern	statetype s_flame;
+extern	statetype s_fexplode1;
+extern	statetype s_fexplode2;
+extern	statetype s_fexplode3;
 
-extern	statetype s_playermelon;
-extern	statetype s_playermelonexp1;
-extern	statetype s_playermelonexp2;
-extern	statetype s_playermelonexp3;
+extern	statetype s_missile;
+extern	statetype s_mexplode1;
+extern	statetype s_mexplode2;
+extern	statetype s_mexplode3;
 #endif
 
 extern	statetype s_schabbdeathcam2;

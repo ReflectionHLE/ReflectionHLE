@@ -5,7 +5,7 @@
 
 extern int gotgatgun;
 
-CP_itemtype
+static CP_itemtype
 QuizMenu[]=
 {
 	1,"1",NULL,
@@ -14,10 +14,10 @@ QuizMenu[]=
 	1,"4",NULL
 };
 
-CP_iteminfo QuizItems = {30,96,4,0,24};
+static CP_iteminfo QuizItems = {30,96,4,0,24};
 
 
-void CleanupQuiz (void)
+void RestorePlayScreen (void)
 {
 	int i;
 	unsigned temp;
@@ -33,7 +33,7 @@ void CleanupQuiz (void)
 	UNCACHEGRCHUNK (STATUSBARPIC);
 	bufferofs = temp;
 
-	DrawFruit ();
+	DrawTreasure ();
 	DrawFace ();
 	DrawHealth ();
 	DrawLives ();
@@ -49,24 +49,20 @@ void CleanupQuiz (void)
 // In addition, that data is preceded by an array of far pointers to the
 // questions. Finally, all data and pointers are stored in single segment.
 //
-// Maybe the raw data was stored in an external file as-is, and pointers to
-// pieces of the data were defined. Still, both the data and the pointers
-// should be in the same segment.
+// It turns out all data was defined in it own far segment in a separate ASM
+// file, named QUESTION.ASM (based on debugging info embedded in the EXE).
 
-// TODO How to store (also, chunks were split based on '4' separator,
-// but it looks like this isn't necessarily the right way)
+extern char	far * far Question[];
 
-extern char	far * far quizdata[];
-
-int AskQuestion (int number)
+int AskQuestion (int question)
 {
-	int which, numitems;
-	char far *s;
-	char *se, *sq;
+	int answer, correct;
+	char far *p;
+	char *p2;
 
-	if (number >= 99)
+	if (question >= 99)
 	{
-		sprintf (str,"AskQuestion(): Invalid question %d!",number);
+		sprintf (str,"AskQuestion(): Invalid question %d!",question);
 		Quit (str);
 	}
 	FinishPaletteShifts ();
@@ -83,7 +79,7 @@ int AskQuestion (int number)
 	WindowW = 320;
 	WindowH = 160;
 
-	sprintf (str,"Question #%d",number+1);
+	sprintf (str,"Question #%d",question+1);
 	US_CPrint (str);
 
 	WindowX = PrintX = 26;
@@ -91,73 +87,71 @@ int AskQuestion (int number)
 	WindowW = 276;
 	WindowH = 132;
 
-	US_Print (quizdata[number]);
-	s = quizdata[number];
-	while (*s)
-		s++;
-	s++;
+	US_Print (Question[question]);
+	p = Question[question];
+	while (*p)
+		p++;
+	p++;
 
 	if (gamestate.difficulty <= gd_easy)
 	{
 		// Print reference
 		US_Print ("\n(");
-		US_Print (s);
+		US_Print (p);
 		US_Print (")");
 	}
 
-	while (*s)
-		s++;
-	s++;
+	while (*p)
+		p++;
+	p++;
 
-	// At this stage s points to the first answer
-	which = 0;
-	numitems = 4;
-	se = QuizMenu[0].string;
-	while (which < 4)
+	// At this stage p points to the first answer
+	answer = 0;
+	correct = 4;
+	while (answer < 4)
 	{
-		sq = se;
-		while (*s > 4)
-			*sq++ = *s++;
-		*sq = '\0';
-		if (*s & 1)
-			numitems = which;
+		p2 = QuizMenu[answer].string;
+		while (*p > 4)
+			*p2++ = *p++;
+		*p2 = '\0';
+		if (*p & 1)
+			correct = answer;
 
-		if (*s >= 3)
+		if (*p >= 3)
 			break;
 
-		if (quizdata[number+1] <= s)
+		if (Question[question+1] <= p)
 		{
-			sprintf (str,"AskQuestion(): Question %d has no end!",number);
+			sprintf (str,"AskQuestion(): Question %d has no end!",question);
 			Quit (str);
 		}
-		s++;
-		se += sizeof(CP_itemtype);
-		which++;
+		p++;
+		answer++;
 	}
-	if (which == 4)
+	if (answer == 4)
 	{
-		sprintf (str,"AskQuestion(): Question %d has too many answers!",number);
+		sprintf (str,"AskQuestion(): Question %d has too many answers!",question);
 		Quit (str);
 	}
-	if (numitems == 4)
+	if (correct == 4)
 	{
-		sprintf (str,"AskQuestion(): Question %d has no correct answer!",number);
+		sprintf (str,"AskQuestion(): Question %d has no correct answer!",question);
 		Quit (str);
 	}
 	// So the correct answer is the one followed by an odd number. 3 or 4 is used to terminate the list.
-	QuizItems.amount = which+1;
+	QuizItems.amount = answer+1;
 	QuizItems.curpos = 0;
 	CacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
 	DrawMenu (&QuizItems,&QuizMenu);
 	VW_UpdateScreen ();
 	WaitKeyUp ();
-	which = HandleMenu (&QuizItems,&QuizMenu,NULL);
+	answer = HandleMenu (&QuizItems,&QuizMenu,NULL);
 
 	DrawWindow (14,21,292,134,BKGDCOLOR);
 	WindowX = PrintX = 0;
 	WindowY = PrintY = 88;
 
-	if (which == numitems)
+	if (answer == correct)
 	{
 		US_CPrint ("Correct!");
 		VW_UpdateScreen ();
@@ -176,7 +170,7 @@ int AskQuestion (int number)
 		gotgatgun = 1;
 		SD_PlaySound (ENDBONUS2SND);
 	}
-	else if (which != -1)
+	else if (answer != -1)
 	{
 		US_CPrint ("Incorrect!");
 		VW_UpdateScreen ();
@@ -190,7 +184,7 @@ int AskQuestion (int number)
 
 	IN_ClearKeysDown ();
 	UnCacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
-	CleanupQuiz ();
+	RestorePlayScreen ();
 	ClearMemory ();
 	PM_CheckMainMem ();
 	lasttimecount = TimeCount;
@@ -198,9 +192,9 @@ int AskQuestion (int number)
 	if (MousePresent)
 		Mouse(MDelta);	// Clear accumulated mouse movement
 
-	if (which == -1)
-		return which;
-	if (which == numitems)
+	if (answer == -1)
+		return answer;
+	if (answer == correct)
 		return 1;
 	return 0;
 }

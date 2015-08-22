@@ -674,7 +674,7 @@ void CP_ReadThis(void)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	StartCPMusic(SONG1_MUS);
+	StartCPMusic(NOAH01_MUS);
 	HelpScreens();
 	StartCPMusic(MENUSONG);
 #else
@@ -1057,7 +1057,7 @@ void CP_ViewScores(void)
 	StartCPMusic (XAWARD_MUS);
 	// *** S3DNA RESTORATION ***
 #elif defined GAMEVER_RESTORATION_N3D_WIS10
-	StartCPMusic (SONG11_MUS);
+	StartCPMusic (NOAH11_MUS);
 #else
 	StartCPMusic (ROSTER_MUS);
 #endif
@@ -1589,7 +1589,7 @@ int CP_LoadGame(int quick)
 
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			DrawFruit ();
+			DrawTreasure ();
 #endif
 			DrawFace ();
 			DrawHealth ();

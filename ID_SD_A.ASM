@@ -15,7 +15,7 @@ DEBUG	=	0
 	EXTRN	alOut:FAR
 	; *** S3DNA RESTORATION ***
 IFDEF GAMEVER_RESTORATION_N3D_WIS10
-	EXTRN	SDL_MDService:FAR
+	EXTRN	MIDI_IRQService:FAR
 ENDIF
 
 ;============================================================================
@@ -405,7 +405,7 @@ ENDIF
 
 	; *** S3DNA RESTORATION ***
 IFDEF GAMEVER_RESTORATION_N3D_WIS10
-	call SDL_MDService
+	call MIDI_IRQService
 ELSE
 	mov	ax,[sqActive]
 	or	ax,ax
@@ -463,8 +463,12 @@ ELSE
 	mov	[WORD PTR alTimeCount+2],ax
 	mov	[WORD PTR sqHackTime],ax
 	mov	[WORD PTR sqHackTime+2],ax
+ENDIF
 @@nosq:
 
+	; *** S3DNA RESTORATION ***
+; Not sure why, but debugging symbols show the nosq label above should be there
+IFNDEF GAMEVER_RESTORATION_N3D_WIS10
 	les	di,[ssSample]			; Get pointer to Sound Source sample
 	mov	ax,es
 	or	ax,di

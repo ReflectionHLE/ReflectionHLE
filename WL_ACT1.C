@@ -15,7 +15,12 @@
 statobj_t	statobjlist[MAXSTATS],*laststatobj;
 
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+struct _statinfo
+#else
 struct
+#endif
 {
 	int		picnum;
 	stat_t	type;
@@ -29,7 +34,7 @@ struct
 // *** S3DNA RESTORATION ***
 // TODO Name these?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-{SPR_QUIZ,bo_quiz},
+{SPR_QUIZ,bo_alpo},
 {SPR_STAT_6,block},
 #else
 {SPR_STAT_5,block},				// Hanged man      "
@@ -69,7 +74,7 @@ struct
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 {SPR_STAT_16,bo_key1},
 {SPR_STAT_17,bo_key2},
-{SPR_STAT_18,bo_bag},
+{SPR_STAT_18,bo_bandolier},
 {SPR_STAT_19,bo_25clip},
 {SPR_STAT_20,bo_food},
 {SPR_STAT_21,bo_firstaid},
@@ -91,10 +96,10 @@ struct
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 {SPR_STAT_24,bo_chaingun},
-{SPR_STAT_25,bo_banana},
-{SPR_STAT_26,bo_apple},
-{SPR_STAT_27,bo_grapes},
-{SPR_STAT_28,bo_peach},
+{SPR_STAT_25,bo_cross},
+{SPR_STAT_26,bo_chalice},
+{SPR_STAT_27,bo_chest},
+{SPR_STAT_28,bo_crown},
 {SPR_STAT_29,bo_fullheal},
 {SPR_STAT_30,block},
 {SPR_STAT_31,block},
@@ -113,10 +118,10 @@ struct
 //
 // NEW PAGE
 //
-{SPR_STAT_32,bo_nutsling},
-{SPR_STAT_33,bo_nuts},
-{SPR_STAT_34,bo_melonsling},
-{SPR_STAT_35,bo_melons},
+{SPR_STAT_32,bo_flamethrower},
+{SPR_STAT_33,bo_gascan},
+{SPR_STAT_34,bo_launcher},
+{SPR_STAT_35,bo_missiles},
 {SPR_STAT_36,bo_map},
 #else
 //
@@ -190,14 +195,14 @@ void InitStaticList (void)
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-void SpawnStaircase (int tilex, int tiley, int type)
+void SpawnExit (int tilex, int tiley, boolean secret)
 {
 	laststatobj->shapenum = -2;
 	laststatobj->tilex = tilex;
 	laststatobj->tiley = tiley;
 	laststatobj->visspot = &spotvis[tilex][tiley];
 	laststatobj->flags = FL_BONUS;
-	laststatobj->itemnumber = type ? bo_secretstaircase : bo_staircase;
+	laststatobj->itemnumber = secret ? bo_secret : bo_exit;
 
 	laststatobj++;
 
@@ -233,27 +238,21 @@ void SpawnStatic (int tilex, int tiley, int type)
 #endif
 		break;
 
-	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	case	bo_banana:
-	case 	bo_apple:
-	case	bo_unusedfruit:
-	case 	bo_peach:
-	case	bo_fullheal:
-	case	bo_grapes:
-#else
 	case	bo_cross:
 	case	bo_chalice:
 	case	bo_bible:
 	case	bo_crown:
 	case	bo_fullheal:
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	case	bo_chest:
 #endif
 		if (!loadedgame)
 		  gamestate.treasuretotal++;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	case	bo_quiz:
+	case	bo_alpo:
 #endif
 	case	bo_firstaid:
 	case	bo_key1:
@@ -270,11 +269,11 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_food:
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	case	bo_bag:
-	case	bo_nutsling:
-	case	bo_nuts:
-	case	bo_melonsling:
-	case	bo_melons:
+	case	bo_bandolier:
+	case	bo_flamethrower:
+	case	bo_gascan:
+	case	bo_launcher:
+	case	bo_missiles:
 	case	bo_map:
 #else
 	case	bo_alpo:
@@ -390,7 +389,7 @@ Every time a door opens or closes the areabyplayer matrix gets recalculated.
 doorobj_t	doorobjlist[MAXDOORS],*lastdoorobj;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-unsigned		pwalltics;
+unsigned		pwallnoise;
 #endif
 int			doornum;
 
@@ -494,7 +493,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
 	lastdoorobj->action = dr_closed;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	lastdoorobj->field_4 = false;
+	lastdoorobj->seen = false;
 #endif
 
 	(unsigned)actorat[tilex][tiley] = doornum | 0x80;	// consider it a solid wall
@@ -938,7 +937,7 @@ void PushWall (int checkx, int checky, int dir)
 	SD_PlaySound (PUSHWALLSND);
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	pwalltics = 0;
+	pwallnoise = 0;
 #endif
 }
 
@@ -1053,11 +1052,11 @@ void MovePWalls (void)
 	pwallpos = (pwallstate/2)&63;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	pwalltics += tics;
-	if (pwalltics > 8)
+	pwallnoise += tics;
+	if (pwallnoise > 8)
 	{
 		SD_PlaySound (PUSHWALLSND);
-		pwalltics -= 8;
+		pwallnoise -= 8;
 	}
 #endif
 

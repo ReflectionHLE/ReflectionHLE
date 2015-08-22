@@ -83,7 +83,7 @@ void T_Projectile (objtype *ob)
 		// *** SHAREWARE V1.0+1.1 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		PlaySoundLocActor(MISSILEHITSND,ob);
-		ob->state = &s_boom;
+		ob->state = &s_cocohit;
 #elif (defined GAMEVER_RESTORATION_WL1_APO10)
 		RemoveObj(ob);
 #elif (defined GAMEVER_RESTORATION_WL1_APO11)

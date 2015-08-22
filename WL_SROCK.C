@@ -1,11 +1,12 @@
 // *** PRE-V1.4 APOGEE RESTORATION *** - #include this file
 // at a location in WL_ACT2.C depending on version
 
-extern	statetype s_rocket;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-extern	statetype s_boom;
+extern	statetype s_coconut;
+extern	statetype s_cocohit;
 #else
+extern	statetype s_rocket;
 extern	statetype s_smoke1;
 extern	statetype s_smoke2;
 extern	statetype s_smoke3;
@@ -21,8 +22,8 @@ void A_Smoke (objtype *ob);
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-statetype s_rocket	 	= {false,SPR_ANIMALPROJ,16,T_Projectile,NULL,&s_rocket};
-statetype s_boom	 	= {false,SPR_ANIMALPROJEXP,18,NULL,NULL,NULL};
+statetype s_coconut	 	= {false,SPR_ANIMALPROJ,16,T_Projectile,NULL,&s_coconut};
+statetype s_cocohit	 	= {false,SPR_ANIMALPROJEXP,18,NULL,NULL,NULL};
 #else
 statetype s_rocket	 	= {true,SPR_ROCKET_1,3,T_Projectile,A_Smoke,&s_rocket};
 statetype s_smoke1	 	= {false,SPR_SMOKE_1,3,NULL,NULL,&s_smoke2};

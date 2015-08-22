@@ -176,6 +176,18 @@ typedef	struct
 		} MusicGroup;
 #endif
 
+// *** S3DNA RESTORATION ***
+// inst_t is mentioned in debugging symbols, while ActiveTrack is not (and is also unused)
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+typedef struct	{
+			byte	mChar,cChar,
+					mScale,cScale,
+					mAttack,cAttack,
+					mSustain,cSustain,
+					mWave,cWave,
+					nFeedConn;
+		} inst_t;
+#else
 typedef	struct
 		{
 			/* This part needs to be set up by the user */
@@ -187,6 +199,7 @@ typedef	struct
 			word		far *seq;
 			longword	nextevent;
 		} ActiveTrack;
+#endif
 
 #define	sqmode_Normal		0
 #define	sqmode_FadeIn		1

@@ -234,7 +234,7 @@ static	char	buf[10];
 	// *** S3DNA RESTORATION ***
 	// TODO (RESTORATION) name of variable?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	boolean			dogetpage = false;
+	boolean			autopage = false;
 	int sound; // Define sound variable in S3DNA release here
 #endif
 	boolean			done;
@@ -264,7 +264,7 @@ static	char	buf[10];
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		if (dogetpage)
+		if (autopage)
 			PM_GetPage(i);
 #endif
 		page = &PMPages[i];
@@ -425,7 +425,7 @@ static	char	buf[10];
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		case sc_A:
-			dogetpage = true;
+			autopage = true;
 			break;
 #endif
 		case sc_P:
@@ -473,14 +473,14 @@ int DebugKeys (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	memptr ptr;
 	if (Keyboard[sc_A])		// A = allocation test
 	{
+		memptr nullblock;
 		CenterWindow(12,3);
 		US_PrintCentered("1k allocated");
 		VW_UpdateScreen();
 		IN_Ack();
-		MM_GetPtr(&ptr, 1024);
+		MM_GetPtr(&nullblock, 1024);
 		return 1;
 	}
 #endif
@@ -577,18 +577,18 @@ int DebugKeys (void)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		gamestate.keys = 3;
 		DrawKeys ();
-		gamestate.ammo2 += 10;
-		if (gamestate.ammo2 > 99)
-			gamestate.ammo2 = 99;
-		gamestate.ammo3 += 10;
-		if (gamestate.ammo3 > 99)
-			gamestate.ammo3 = 99;
+		gamestate.gas += 10;
+		if (gamestate.gas > 99)
+			gamestate.gas = 99;
+		gamestate.missiles += 10;
+		if (gamestate.missiles > 99)
+			gamestate.missiles = 99;
 		gamestate.maxammo = 299;
-		gamestate.weaponinv[0] = 1;
-		gamestate.weaponinv[1] = 1;
-		gamestate.weaponinv[3] = 1;
-		gamestate.weaponinv[2] = 1;
-		gamestate.fullmap = true;
+		gamestate.machinegun = 1;
+		gamestate.chaingun = 1;
+		gamestate.flamethrower = 1;
+		gamestate.missile = 1;
+		gamestate.automap = true;
 		GiveWeapon (wp_chaingun);
 		gamestate.ammo += 50;
 		if (gamestate.ammo > gamestate.maxammo)

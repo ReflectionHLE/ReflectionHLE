@@ -23,10 +23,8 @@ planepics	db	8192 dup(?)	;	// 4k of ceiling, 4k of floor
 PUBLIC	planepics
 ; *** S3DNA RESTORATION ***
 IFDEF GAMEVER_RESTORATION_N3D_WIS10
-lc_xstep	dw	?
-lc_ystep	dw	?
-lc_cxfrac	dw	?
-lc_cyfrac	dw	?
+xystep		dd	?
+xyfrac		dd	?
 ENDIF
 
 
@@ -64,28 +62,28 @@ PUBLIC	MapRow
 	mov		dx,[mr_xfrac]
 	push	seg planepics
 	pop	ds
-	mov		[ds:lc_ystep],ax
-	mov		[ds:lc_xstep],bx
-	mov		[ds:lc_cyfrac],cx
-	mov		[ds:lc_cxfrac],dx
+	mov		[word ptr ds:xystep+2],ax
+	mov		[word ptr ds:xystep],bx
+	mov		[word ptr ds:xyfrac+2],cx
+	mov		[word ptr ds:xyfrac],dx
 	pop	cx
 
 pixelloop:
-	mov		bx,[ds:lc_cxfrac]
+	mov		bx,[word ptr ds:xyfrac]
 	shr		bx,3
 	and		bx,63*64*2
-	mov		ax,[ds:lc_cyfrac]
+	mov		ax,[word ptr ds:xyfrac+2]
 	shr		ax,9
 	or		bx,ax
 	and		bx,63*65*2
-	mov		ax,[ds:lc_xstep]
-	add		[ds:lc_cxfrac],ax
-	mov		ax,[ds:lc_ystep]
-	adc		[ds:lc_cyfrac],ax
+	mov		ax,[word ptr ds:xystep]
+	add		[word ptr ds:xyfrac],ax
+	mov		ax,[word ptr ds:xystep+2]
+	adc		[word ptr ds:xyfrac+2],ax
 	mov		al,[bx]
-	mov	es:[di],al
+	mov	[es:di],al
 	mov		al,[bx+1]
-	mov	es:[di+bp],al
+	mov	[es:di+bp],al
 	inc		di
 	loop	pixelloop
 

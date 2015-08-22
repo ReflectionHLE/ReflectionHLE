@@ -886,34 +886,19 @@ void KillActor (objtype *ob)
 	case guardobj:
 		GivePoints (100);
 		NewState (ob,&s_grddie1);
-		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-		PlaceItemType (bo_clip,tilex,tiley);
-#else
 		PlaceItemType (bo_clip2,tilex,tiley);
-#endif
 		break;
 
 	case officerobj:
 		GivePoints (400);
 		NewState (ob,&s_ofcdie1);
-		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-		PlaceItemType (bo_clip,tilex,tiley);
-#else
 		PlaceItemType (bo_clip2,tilex,tiley);
-#endif
 		break;
 
 	case mutantobj:
 		GivePoints (700);
 		NewState (ob,&s_mutdie1);
-		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-		PlaceItemType (bo_clip,tilex,tiley);
-#else
 		PlaceItemType (bo_clip2,tilex,tiley);
-#endif
 		break;
 
 	case ssobj:
@@ -921,18 +906,13 @@ void KillActor (objtype *ob)
 		NewState (ob,&s_ssdie1);
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		if (!gamestate.weaponinv[0])
+		if (!gamestate.machinegun)
 #else
 		if (gamestate.bestweapon < wp_machinegun)
 #endif
 			PlaceItemType (bo_machinegun,tilex,tiley);
 		else
-			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-			PlaceItemType (bo_clip,tilex,tiley);
-#else
 			PlaceItemType (bo_clip2,tilex,tiley);
-#endif
 		break;
 
 	case dogobj:

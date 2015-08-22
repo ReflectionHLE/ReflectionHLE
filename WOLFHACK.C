@@ -106,8 +106,8 @@ void DrawSpans (int x1, int x2, int height)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 void LoadFloorTiles (int tile)
 {
-	int		i;
-	char	far *floor, far *page;
+	unsigned char	far *dest, far *src;
+	int		x;
 
 	tile = tile*2;
 	tile += (PMSpriteStart-8);
@@ -116,20 +116,20 @@ void LoadFloorTiles (int tile)
 		sprintf (str,"LoadFloorTiles(): Invalid floor tile %u!", (tile-(PMSpriteStart-8))/2);
 		Quit (str);
 	}
-	page = PM_GetPage (tile+1);
-	floor = planepics;
-	for (i=0;i<PMPageSize;i++)
+	src = PM_GetPage (tile+1);
+	dest = planepics;
+	for (x=0;x<PMPageSize;x++)
 	{
-		*floor = *page++;
-		floor += 2;
+		*dest = *src++;
+		dest += 2;
 	}
 	
-	page = PM_GetPage (tile);
-	floor = planepics+1;
-	for (i=0;i<PMPageSize;i++)
+	src = PM_GetPage (tile);
+	dest = planepics+1;
+	for (x=0;x<PMPageSize;x++)
 	{
-		*floor = *page++;
-		floor += 2;
+		*dest = *src++;
+		dest += 2;
 	}
 }
 #endif

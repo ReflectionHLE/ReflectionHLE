@@ -72,17 +72,17 @@ typedef enum {
 // Music names & indexes
 //
 typedef enum {
-		SONG1_MUS,               // 0
-		ALL_GOOD_MUS,            // 1
-		SONG3_MUS,               // 2
-		SONG4_MUS,               // 3
-		FEEDTIME_MUS,            // 4
-		SONG6_MUS,               // 5
-		SONG7_MUS,               // 6
-		SONG8_MUS,               // 7
-		SONG9_MUS,               // 8
-		THEHAPPY_MUS,            // 9
-		SONG11_MUS,              // 10
+		NOAH01_MUS,              // 0
+		NOAH02_MUS,              // 1
+		NOAH03_MUS,              // 2
+		NOAH04_MUS,              // 3
+		NOAH05_MUS,              // 4
+		NOAH06_MUS,              // 5
+		NOAH07_MUS,              // 6
+		NOAH08_MUS,              // 7
+		NOAH09_MUS,              // 8
+		NOAH10_MUS,              // 9
+		NOAH11_MUS,              // 10
 		LASTMUSIC
 	     } musicnames;
 

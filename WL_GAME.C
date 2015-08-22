@@ -32,7 +32,7 @@ boolean	screensplit;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 boolean		ingame;
-int		deathtime,fizzlein;
+int		endtics,fizzlein;
 #else
 boolean		ingame,fizzlein;
 #endif
@@ -384,7 +384,7 @@ void ScanInfoPlane (void)
 				break;
 			case 100:
 			case 101:
-				SpawnStaircase(x,y,tile==101);
+				SpawnExit(x,y,tile==101);
 				break;
 #endif
 
@@ -1163,7 +1163,7 @@ void DrawPlayScreen (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	DrawFruit ();
+	DrawTreasure ();
 #endif
 	DrawFace ();
 	DrawHealth ();
@@ -1338,7 +1338,7 @@ void RecordDemo (void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	fizzlein = 3;
-	LoadFloorTiles (floortile[gamestate.mapon]);
+	LoadFloorTiles (FloorTile[gamestate.mapon]);
 #else
 	fizzlein = true;
 #endif
@@ -1429,7 +1429,7 @@ void PlayDemo (int demonumber)
 	PM_CheckMainMem ();
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	LoadFloorTiles (floortile[gamestate.mapon]);
+	LoadFloorTiles (FloorTile[gamestate.mapon]);
 	fizzlein = 3;
 #else
 	fizzlein = true;
@@ -1602,13 +1602,13 @@ void Died (void)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		gamestate.maxammo = 99;
-		gamestate.ammo2 = gamestate.ammo3 = 0;
-		gamestate.weaponinv[0] = 0;
-		gamestate.weaponinv[1] = 0;
-		gamestate.weaponinv[3] = 0;
-		gamestate.weaponinv[2] = 0;
-		gamestate.fullmap = false;
-		DrawFruit ();
+		gamestate.gas = gamestate.missiles = 0;
+		gamestate.machinegun = 0;
+		gamestate.chaingun = 0;
+		gamestate.flamethrower = 0;
+		gamestate.missile = 0;
+		gamestate.automap = false;
+		DrawTreasure ();
 #endif
 
 		DrawKeys ();
@@ -1627,9 +1627,9 @@ void Died (void)
 	}
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	deathtime = 0;
-	NewState (player,&s_playerdeath);
-	while (deathtime < 192)
+	endtics = 0;
+	NewState (player,&s_gameover);
+	while (endtics < 192)
 	{
 		UpdatePaletteShifts ();
 		ThreeDRefresh ();
@@ -1668,17 +1668,17 @@ restart:
 	{
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		deathtime = 0;
+		endtics = 0;
 		if (!died)
 			if (!loadedgame)
 				switch (gamestate.mapon)
 				{
-					case 0:  Briefing (0,0); break;
-					case 3:  Briefing (1,0); break;
-					case 7:  Briefing (2,0); break;
-					case 12: Briefing (3,0); break;
-					case 17: Briefing (4,0); break;
-					case 23: Briefing (5,0); break;
+					case 0:  Briefing (0,false); break;
+					case 3:  Briefing (1,false); break;
+					case 7:  Briefing (2,false); break;
+					case 12: Briefing (3,false); break;
+					case 17: Briefing (4,false); break;
+					case 23: Briefing (5,false); break;
 				}
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -1789,7 +1789,7 @@ startplayloop:
 			DrawKeys ();
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			gamestate.fullmap = false;
+			gamestate.automap = false;
 #endif
 			VW_FadeOut ();
 
@@ -1957,7 +1957,7 @@ startplayloop:
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			deathtime = 0;
+			endtics = 0;
 #endif
 #ifndef SPEAR
 			VW_FadeOut ();
