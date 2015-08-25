@@ -1250,16 +1250,12 @@ PM_Startup(void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	if (EMSPresent)
-	{
 		printf("EMS detected (%lukb)\n", (long)EMSPagesAvail<<2);
-	}
 	else
 		printf("EMS not detected\n");
 
 	if (XMSPresent)
-	{
 		printf("XMS detected (%lukb)\n", (long)XMSPagesAvail<<2);
-	}
 	else
 		printf("XMS not detected\n");
 

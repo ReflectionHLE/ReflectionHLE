@@ -32,7 +32,6 @@ struct
 {SPR_STAT_3,block},				// Floor lamp      "
 {SPR_STAT_4},					// Chandelier      "
 // *** S3DNA RESTORATION ***
-// TODO Name these?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 {SPR_QUIZ,bo_alpo},
 {SPR_STAT_6,block},
@@ -288,8 +287,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 		break;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	default:
-		sprintf (str,"SpawnStatic: Invalid object $%02X at %d, %d!\n",type,tilex,tiley);
+	default: sprintf (str,"SpawnStatic: Invalid object $%02X at %d, %d!\n",type,tilex,tiley);
 		Quit (str);
 #endif
 	}

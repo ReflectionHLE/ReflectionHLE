@@ -158,7 +158,8 @@ void ReadConfig(void)
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		if (sds == sds_SoundBlaster && !SoundBlasterPresent)
+		if (sds ==
+		    sds_SoundBlaster && !SoundBlasterPresent)
 #else
 		if ((sds == sds_SoundBlaster && !SoundBlasterPresent) ||
 			(sds == sds_SoundSource && !SoundSourcePresent))
@@ -363,9 +364,9 @@ void DiskFlopAnim(int x,int y)
  VWB_DrawPic(x,y,C_DISKLOADING1PIC+which);
  VW_UpdateScreen();
  // *** S3DNA RESTORATION ***
+ // WARNING: The following statement may technically lead to undefined behaviors
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
- which=which+1;
- which=which&3;
+ which=(++which)&3;
 #else
  which^=1;
 #endif
@@ -1053,40 +1054,40 @@ static  int     wolfdigimap[] =
 		{
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			SCHUTZADSND,            0,
-			DIESND,                 1,
-			GETITEMSND,             2,
-			GUTENTAGSND,            3,
-			CLOSEDOORSND,           4,
-			MISSILEHITSND,          5,
-			MISSILEFIRESND,         6,
-			DOGATTACKSND,           7,
-			GULPSND,                8,
-			SLEEPSND,               9,
-			ERLAUBENSND,            10,
-			BONUS1UPSND,            11,
-			ATKGATLINGSND,          12,
-			KEINSND,                13,
-			DOGBARKSND,             14,
-			ATKPISTOLSND,           15,
-			ENDBONUS1SND,           16,
-			EINESND,                17,
-			GETKEYSND,              18,
-			ATKKNIFESND,            19,
-			SCHABBSHASND,           20,
-			MECHSTEPSND,            21,
-			OPENDOORSND,            22,
-			SPIONSND,               23,
-			GROWLSND,               24,
-			TAKEDAMAGESND,          25,
-			PLAYERDEATHSND,         26,
+			D_ANTLPESND,            0,
+			D_BEARSND,              1,
+			D_BONUSSND,             2,
+			D_CAMELSND,             3,
+			D_CLOSDRSND,            4,
+			D_COCHITSND,            5,
+			D_COCTHRSND,            6,
+			D_DBITESND,             7,
+			D_EATSND,               8,
+			D_EDIESND,               9,
+			D_ELPHNTSND,            10,
+			D_EXTRASND,             11,
+			D_GATLINSND,            12,
+			D_GIRAFESND,            13,
+			D_GOATSND,              14,
+			D_GUNSHTSND,            15,
+			D_INCSND,               16,
+			D_KANGROSND,            17,
+			D_KEYSND,               18,
+			D_KNIFESND,             19,
+			D_MONKEYSND,            20,
+			D_MSTEPSND,             21,
+			D_OPENDRSND,            22,
+			D_OSTRCHSND,            23,
+			D_OXSND,                24,
+			D_PAINSND,              25,
+			D_PDIESND,              26,
 
-			PUSHWALLSND,            27,
-			HALTSND,                28,
-			ATKMACHINEGUNSND,       29,
-			NAZIFIRESND,            30,
-			WATERMELONHITSND,       31,
-			WATERMELONFIRESND,      32,
+			D_PWALLSND,             27,
+			D_SHEEPSND,             28,
+			D_SLING2SND,            29,
+			D_SPITSND,              30,
+			D_WATHITSND,            31,
+			D_WATTHRSND,            32,
 #elif (!defined SPEAR) // *** S3DNA RESTORATION ***
 			// These first sounds are in the upload version
 //#ifndef SPEAR

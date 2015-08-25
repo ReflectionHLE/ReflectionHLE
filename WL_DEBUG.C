@@ -232,7 +232,6 @@ extern	word	_seg *DigiList;
 static	char	buf[10];
 
 	// *** S3DNA RESTORATION ***
-	// TODO (RESTORATION) name of variable?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	boolean			autopage = false;
 	int sound; // Define sound variable in S3DNA release here

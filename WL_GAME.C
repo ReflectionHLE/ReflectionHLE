@@ -377,7 +377,6 @@ void ScanInfoPlane (void)
 				break;
 
 			// *** S3DNA RESTORATION ***
-			// TODO (RESTORATION) Figure out what are the "new" entries
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 			case 99:
 				*(start-1) = 0;
@@ -698,7 +697,8 @@ void ScanInfoPlane (void)
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 			default:
-				sprintf (str,"ScanInfoPlane: Invalid object $%02X at %d, %d!\n",tile,x,y);
+				sprintf (str,"ScanInfoPlane: Invalid object $%02X at %d, %d!\n",
+					tile,x,y);
 				Quit (str);
 #else
 //
@@ -1669,17 +1669,22 @@ restart:
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		endtics = 0;
-		if (!died)
-			if (!loadedgame)
-				switch (gamestate.mapon)
-				{
-					case 0:  Briefing (0,false); break;
-					case 3:  Briefing (1,false); break;
-					case 7:  Briefing (2,false); break;
-					case 12: Briefing (3,false); break;
-					case 17: Briefing (4,false); break;
-					case 23: Briefing (5,false); break;
-				}
+		if (!died && !loadedgame)
+			switch (gamestate.mapon)
+			{
+				case 0:  Briefing (0,false);
+					break;
+				case 3:  Briefing (1,false);
+					break;
+				case 7:  Briefing (2,false);
+					break;
+				case 12: Briefing (3,false);
+					break;
+				case 17: Briefing (4,false);
+					break;
+				case 23: Briefing (5,false);
+					break;
+			}
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
@@ -1774,7 +1779,8 @@ startplayloop:
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		if ((gamestate.mapon == 28) && ((playstate == ex_completed) || (playstate == ex_secretlevel)))
+		if ((gamestate.mapon == 28) &&
+		    ((playstate == ex_completed) || (playstate == ex_secretlevel)))
 			playstate = ex_victorious;
 #endif
 
@@ -1890,7 +1896,6 @@ startplayloop:
 				 default:
 					sprintf(str,"GameLoop(): Invalid secret exit on level %d!\n",gamestate.mapon);
 					Quit(str);
-					break;
 #endif
 				}
 			else

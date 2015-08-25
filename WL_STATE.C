@@ -1547,7 +1547,7 @@ void FirstSighting (objtype *ob)
 	case mutantobj:
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		PlaySoundLocActor(GROWLSND,ob);
+		PlaySoundLocActor(D_OXSND,ob);
 #endif
 		NewState (ob,&s_mutchase1);
 		ob->speed *= 3;			// go faster when chasing player

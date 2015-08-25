@@ -1672,11 +1672,10 @@ asm	rep stosw
 //
 // show screen and time last cycle
 //
-	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (fizzlein && !(--fizzlein))
-#else
 	if (fizzlein)
+		// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		if (!(--fizzlein))
 #endif
 	{
 		// *** S3DNA RESTORATION ***

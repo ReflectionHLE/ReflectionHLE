@@ -108,7 +108,7 @@ int AskQuestion (int question)
 	// At this stage p points to the first answer
 	answer = 0;
 	correct = 4;
-	while (answer < 4)
+	for (; answer < 4; answer++)
 	{
 		p2 = QuizMenu[answer].string;
 		while (*p > 4)
@@ -126,7 +126,6 @@ int AskQuestion (int question)
 			Quit (str);
 		}
 		p++;
-		answer++;
 	}
 	if (answer == 4)
 	{
@@ -168,7 +167,7 @@ int AskQuestion (int question)
 		StatusDrawPic (19,4,GOTGATLINGPIC);
 		facecount = 0;
 		gotgatgun = 1;
-		SD_PlaySound (ENDBONUS2SND);
+		SD_PlaySound (PERCENT100SND);
 	}
 	else if (answer != -1)
 	{

@@ -114,9 +114,9 @@ char far *casttext[] = {"Goat","Sheep","Ostrich","Antelope",
 	"Ox","Carl the Camel","Melvin the Monkey","Ginny the Giraffe",
 	"Kerry the Kangaroo","Ernie the Elephant","Hiding Burt","Burt the Bear"};
 
-int castsound[] = {DOGBARKSND,HALTSND,SPIONSND,SCHUTZADSND,
-	GROWLSND,GUTENTAGSND,SCHABBSHASND,KEINSND,
-	EINESND,ERLAUBENSND,DIESND,DIESND};
+int castsound[] = {D_GOATSND,D_SHEEPSND,D_OSTRCHSND,D_ANTLPESND,
+	D_OXSND,D_CAMELSND,D_MONKEYSND,D_GIRAFESND,
+	D_KANGROSND,D_ELPHNTSND,D_BEARSND,D_BEARSND};
 
 void CharacterCast(void)
 {
@@ -150,8 +150,6 @@ void CharacterCast(void)
 	lasttimecount = TimeCount = 0;
 	IN_StartAck ();
 
-	// TODO (RESTORATION)
-	// - Apparently goto was originally used here; Or maybe not?
 	do
 	{
 		state = caststate[en];
@@ -164,7 +162,8 @@ nexttic:
 		cycle += 2*tics;
 		if (cycle > 224)
 		{
-			if (++en >= 12)
+			if (++en
+			    >= 12)
 				en = 0;
 			continue;
 		}
@@ -199,15 +198,15 @@ nexttic:
 		bufferofs -= screenofs;
 		displayofs = bufferofs;
 
-asm		cli
-asm		mov	cx,[displayofs]
-asm		mov	dx,CRTC_INDEX
-asm		mov	al,CRTC_STARTHIGH
-asm		out	dx,al
-asm		inc	dx
-asm		mov	al,ch
-asm		out	dx,al
-asm		sti
+	asm	cli
+	asm	mov	cx,[displayofs]
+	asm	mov	dx,CRTC_INDEX
+	asm	mov	al,CRTC_STARTHIGH
+	asm	out	dx,al
+	asm	inc	dx
+	asm	mov	al,ch
+	asm	out	dx,al
+	asm	sti
 
 		bufferofs += SCREENSIZE;
 		if (bufferofs > PAGE3START)
@@ -227,7 +226,8 @@ asm		sti
 				en = 0;
 			continue;
 		}
-		if (Keyboard[sc_Escape] || Keyboard[sc_Q] || Keyboard[sc_Return] || (buttons & 0x22))
+		if (Keyboard[sc_Escape] || Keyboard[sc_Q] || Keyboard[sc_Return]
+		    || (buttons & 0x22))
 			break;
 		goto nexttic;
 	} while (en < 12);
@@ -1206,8 +1206,10 @@ void LevelCompleted (void)
 
 	switch (gamestate.mapon)
 	{
-		case 11: secret = 1; break;
-		case 29: secret = 2; break;
+		case 11: secret = 1;
+			break;
+		case 29: secret = 2;
+			break;
 		default: secret = 0;
 	}
 	DrawEndLevelScreen (secret);
@@ -1217,7 +1219,8 @@ void LevelCompleted (void)
 	IN_StartAck ();
 	// TODO (RESTORATION) - Again, some code pieces may be relocated
 
-	kr = sr = tr = 0;
+	kr = sr = tr
+		= 0;
 	if (gamestate.killtotal)
 		kr=(gamestate.killcount*100)/gamestate.killtotal;
 	if (gamestate.secrettotal)
@@ -1230,7 +1233,7 @@ void LevelCompleted (void)
 		VW_UpdateScreen();
 		VW_FadeIn();
 		VL_WaitVBL(VBLWAIT);
-		SD_PlaySound(ENDBONUS2SND);
+		SD_PlaySound(PERCENT100SND);
 		bonus = 15000;
 		ShowBonus(15000);
 		TimeCount = 0;
@@ -1240,7 +1243,9 @@ void LevelCompleted (void)
 		{
 			BJ_Breathe();
 			VW_UpdateScreen();
-		} while (!IN_CheckAck() && (TimeCount - lasttime < 2*TickBase));
+			if (IN_CheckAck())
+				break;
+		} while (TimeCount - lasttime < 2*TickBase);
 
 		if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -1291,7 +1296,7 @@ void LevelCompleted (void)
 		for (i=0;i<=timeleft;i++)
 		{
 			ShowBonus(bonus+(long)i*PAR_AMOUNT);
-			SD_PlaySound(ENDBONUS1SND);
+			SD_PlaySound(D_INCSND);
 			VW_UpdateScreen();
 			BJ_Breathe();
 			if (IN_CheckAck())
@@ -1299,7 +1304,7 @@ void LevelCompleted (void)
 			RollDelay();
 		}
 		VW_UpdateScreen();
-		SD_PlaySound(ENDBONUS1SND);
+		SD_PlaySound(D_INCSND);
 		while (SD_SoundPlaying())
 			BJ_Breathe();
 	}
@@ -1313,7 +1318,9 @@ void LevelCompleted (void)
 	{
 		BJ_Breathe();
 		VW_UpdateScreen();
-	} while (!IN_CheckAck() && (TimeCount - lasttime < TickBase*2));
+		if (IN_CheckAck())
+			break;
+	} while (TimeCount - lasttime < 2*TickBase);
 
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		PicturePause();
@@ -1336,7 +1343,7 @@ void LevelCompleted (void)
 		itoa(i,tempstr,10);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,13,tempstr);
-		SD_PlaySound(ENDBONUS1SND);
+		SD_PlaySound(D_INCSND);
 		VW_UpdateScreen();
 		BJ_Breathe();
 		if (IN_CheckAck())
@@ -1350,7 +1357,7 @@ void LevelCompleted (void)
 		SD_StopSound();
 		bonus+=PERCENT100AMT;
 		ShowBonus(bonus);
-		SD_PlaySound(ENDBONUS2SND);
+		SD_PlaySound(PERCENT100SND);
 	}
 	else if (kr==0)
 	{
@@ -1359,7 +1366,7 @@ void LevelCompleted (void)
 		SD_PlaySound(NOBONUSSND);
 	}
 	else
-		SD_PlaySound(ENDBONUS1SND);
+		SD_PlaySound(D_INCSND);
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
@@ -1370,7 +1377,7 @@ void LevelCompleted (void)
 		itoa(i,tempstr,10);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,15,tempstr);
-		SD_PlaySound(ENDBONUS1SND);
+		SD_PlaySound(D_INCSND);
 		VW_UpdateScreen();
 		BJ_Breathe();
 		if (IN_CheckAck())
@@ -1384,7 +1391,7 @@ void LevelCompleted (void)
 		SD_StopSound();
 		bonus+=PERCENT100AMT;
 		ShowBonus(bonus);
-		SD_PlaySound(ENDBONUS2SND);
+		SD_PlaySound(PERCENT100SND);
 	}
 	else if (tr==0)
 	{
@@ -1393,7 +1400,7 @@ void LevelCompleted (void)
 		SD_PlaySound(NOBONUSSND);
 	}
 	else
-		SD_PlaySound(ENDBONUS1SND);
+		SD_PlaySound(D_INCSND);
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
@@ -1404,7 +1411,7 @@ void LevelCompleted (void)
 		itoa(i,tempstr,10);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,17,tempstr);
-		SD_PlaySound(ENDBONUS1SND);
+		SD_PlaySound(D_INCSND);
 		VW_UpdateScreen();
 		BJ_Breathe();
 		if (IN_CheckAck())
@@ -1418,7 +1425,7 @@ void LevelCompleted (void)
 		SD_StopSound();
 		bonus+=PERCENT100AMT;
 		ShowBonus(bonus);
-		SD_PlaySound(ENDBONUS2SND);
+		SD_PlaySound(PERCENT100SND);
 	}
 	else if (sr==0)
 	{
@@ -1427,7 +1434,7 @@ void LevelCompleted (void)
 		SD_PlaySound(NOBONUSSND);
 	}
 	else
-		SD_PlaySound(ENDBONUS1SND);
+		SD_PlaySound(D_INCSND);
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
@@ -1477,7 +1484,7 @@ void LevelCompleted (void)
 		VWB_DrawPic(96,120,W_PERFECTPIC);
 		VW_UpdateScreen();
 		SD_StopSound();
-		SD_PlaySound(ENDBONUS2SND);
+		SD_PlaySound(PERCENT100SND);
 	}
 	IN_StartAck();
 	TimeCount = 0;
@@ -2003,7 +2010,6 @@ boolean PreloadUpdate(unsigned current, unsigned total)
 }
 
 // *** S3DNA RESTORATION ***
-// TODO (RESTORATION) Can move this up?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 int	FloorTile[] = {0,0,2,1,1,1,0,2,2,2,1,3,0,0,0,0,2,1,1,1,1,1,0,2,2,2,2,2,1,3,3};
 #endif

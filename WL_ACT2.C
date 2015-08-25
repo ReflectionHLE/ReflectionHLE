@@ -1218,7 +1218,7 @@ void A_DeathScream (objtype *ob)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	PlaySoundLocActor(SLEEPSND,ob);
+	PlaySoundLocActor(D_EDIESND,ob);
 #else
 #ifndef UPLOAD
 #ifndef SPEAR
@@ -3440,7 +3440,7 @@ void A_Slurpie (objtype *ob)
  PlaySoundLocActor (SLURPIESND,ob);
  // *** S3DNA RESTORATION ***
 #elif (defined GAMEVER_RESTORATION_N3D_WIS10)
- SD_PlaySound(SLEEPSND);
+ SD_PlaySound(D_EDIESND);
 #else
  SD_PlaySound(SLURPIESND);
 #endif
@@ -4479,12 +4479,12 @@ void T_Missile (objtype *ob)
 	{
 		if (ob->obclass == flameobj)
 		{
-			PlaySoundLocActor(MISSILEHITSND,ob);
+			PlaySoundLocActor(D_COCHITSND,ob);
 			ob->state = &s_fexplode1;
 		}
 		else if (ob->obclass == missileobj)
 		{
-			PlaySoundLocActor(WATERMELONHITSND,ob);
+			PlaySoundLocActor(D_WATHITSND,ob);
 			ob->state = &s_mexplode1;
 		}
 		else

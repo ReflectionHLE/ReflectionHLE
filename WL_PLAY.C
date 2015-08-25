@@ -986,10 +986,11 @@ void CheckKeys (void)
 		 DrawAllPlayBorderSides ();
 #endif
 
-		if (scan == sc_F9)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-		 if (loadedgame)
+		if ((scan == sc_F9) && loadedgame)
+#else
+		if (scan == sc_F9)
 #endif
 		  StartMusic ();
 

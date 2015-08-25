@@ -1713,3 +1713,26 @@ extern	char	helpfilename[],endfilename[];
 
 extern	void	HelpScreens(void);
 extern	void	EndText(void);
+
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+/*
+=============================================================================
+
+						 WL_MAP DEFINITIONS
+
+=============================================================================
+*/
+
+void AutoMap (void);
+
+/*
+=============================================================================
+
+						 WL_QUIZ DEFINITIONS
+
+=============================================================================
+*/
+
+int AskQuestion (int question);
+#endif

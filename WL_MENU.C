@@ -1125,11 +1125,16 @@ firstpart:
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 					switch (which/2)
 					{
-						case 1: episode = 3; break;
-						case 2: episode = 7; break;
-						case 3: episode = 12; break;
-						case 4: episode = 17; break;
-						case 5: episode = 23; break;
+						case 1: episode = 3;
+							break;
+						case 2: episode = 7;
+							break;
+						case 3: episode = 12;
+							break;
+						case 4: episode = 17;
+							break;
+						case 5: episode = 23;
+							break;
 						default: episode = 0;
 					}
 #else
@@ -4187,7 +4192,9 @@ void DrawMenuGun(CP_iteminfo *iteminfo)
 void DrawStripes(int y)
 {
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	return;
+#else
 #ifndef SPEAR
 	VWB_Bar(0,y,320,24,0);
 	VWB_Hlin(0,319,y+22,STRIPE);

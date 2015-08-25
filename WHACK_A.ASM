@@ -23,8 +23,10 @@ planepics	db	8192 dup(?)	;	// 4k of ceiling, 4k of floor
 PUBLIC	planepics
 ; *** S3DNA RESTORATION ***
 IFDEF GAMEVER_RESTORATION_N3D_WIS10
-xystep		dd	?
-xyfrac		dd	?
+xystep		dw	?
+		dw	?
+xyfrac		dw	?
+		dw	?
 ENDIF
 
 

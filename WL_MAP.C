@@ -11,7 +11,8 @@ static void DrawMapWalls (int tx, int ty)
 		for (x=tx;x<tx+40;x++)
 		{
 			tile = tilemap[x][y];
-			if (gamestate.automap || (tile&0x20) || ((tile&0x80) && doorobjlist[tile&0x1F].seen) || ((gamestate.difficulty == gd_baby) && (tile == 15)))
+			if (gamestate.automap ||
+			    (tile&0x20) || ((tile&0x80) && doorobjlist[tile&0x1F].seen) || ((gamestate.difficulty == gd_baby) && (tile == 15)))
 			{
 				tile &= 0xFFDF;
 				if (tile&0x80)
@@ -137,7 +138,7 @@ static void DrawAutoMap (int tx, int ty)
 	VWB_DrawTile8 (8*px,8*py,dir+67);
 }
 
-void AutoMap ()
+void AutoMap (void)
 {
 	int	x,y;
 	boolean		done;
@@ -175,7 +176,8 @@ void AutoMap ()
 		else if ((controly > 0) && (y+19 < MAPSIZE-1))
 			y++;
 
-		if (Keyboard[sc_Escape] || Keyboard[sc_Tab] || buttonstate[bt_attack] || buttonstate[bt_use])
+		if (Keyboard[sc_Escape] || Keyboard[sc_Tab] ||
+		    buttonstate[bt_attack] || buttonstate[bt_use])
 			done = true;
 
 		if (!done)

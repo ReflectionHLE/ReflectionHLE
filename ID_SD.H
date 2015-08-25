@@ -185,7 +185,7 @@ typedef struct	{
 					mAttack,cAttack,
 					mSustain,cSustain,
 					mWave,cWave,
-					nFeedConn;
+					mFeedConn;
 		} inst_t;
 #else
 typedef	struct

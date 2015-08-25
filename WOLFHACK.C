@@ -109,8 +109,7 @@ void LoadFloorTiles (int tile)
 	unsigned char	far *dest, far *src;
 	int		x;
 
-	tile = tile*2;
-	tile += (PMSpriteStart-8);
+	tile = tile*2+(PMSpriteStart-8);
 	if (tile+1 >= PMSpriteStart)
 	{
 		sprintf (str,"LoadFloorTiles(): Invalid floor tile %u!", (tile-(PMSpriteStart-8))/2);

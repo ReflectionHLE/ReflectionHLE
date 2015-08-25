@@ -432,7 +432,7 @@ void	UpdateFace (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if (SD_SoundPlaying() == GETITEMSND)
+	if (SD_SoundPlaying() == D_BONUSSND)
 #endif
 		facecount += tics;
 	if (facecount > US_RndT())
@@ -540,9 +540,12 @@ void	TakeDamage (int points,objtype *attacker)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	switch (gamestate.difficulty)
 	{
-	case gd_baby: points>>=2; break;
-	case gd_easy: points>>=1; break;
-	case gd_medium: points-=(points>>2); break;
+	case gd_baby: points>>=2;
+		break;
+	case gd_easy: points>>=1;
+		break;
+	case gd_medium: points-=(points>>2);
+		break;
 	}
 	if (!points && (gamestate.difficulty != gd_baby))
 		points++;
@@ -875,7 +878,8 @@ void	DrawAmmo (void)
 	default:
 		ammo = 0;
 	}
-	LatchNumber (28,16,3,ammo);
+	LatchNumber (28,16,3,
+		ammo);
 #else
 	LatchNumber (27,16,2,gamestate.ammo);
 #endif
@@ -898,9 +902,9 @@ void	GiveAmmo (int ammo)
 	if (gamestate.ammo > gamestate.maxammo)
 		gamestate.ammo = gamestate.maxammo;
 	if (gamestate.weapon == wp_knife)
-		if (!gamestate.attackframe)
-			if ((gamestate.chosenweapon == wp_chaingun) || (gamestate.chosenweapon == wp_machinegun) || (gamestate.chosenweapon == wp_pistol))
-				gamestate.weapon = gamestate.chosenweapon;
+		if (!gamestate.attackframe &&
+			((gamestate.chosenweapon == wp_chaingun) || (gamestate.chosenweapon == wp_machinegun) || (gamestate.chosenweapon == wp_pistol)))
+			gamestate.weapon = gamestate.chosenweapon;
 #else
 	if (!gamestate.ammo)				// knife was out
 	{
@@ -1033,23 +1037,23 @@ void GetBonus (statobj_t *check)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	case	bo_cross:
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveTreasure (1);
 		break;
 	case	bo_chalice:
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveTreasure (1);
 		break;
 	case	bo_bible:
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveTreasure (1);
 		break;
 	case	bo_crown:
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveTreasure (1);
 		break;
 	case	bo_chest:
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveTreasure (1);
 		break;
 #else
@@ -1209,11 +1213,11 @@ void GetBonus (statobj_t *check)
 		GiveAmmo (10);
 		GiveGas (1);
 		GiveMissile (1);
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		break;
 
 	case	bo_flamethrower:
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveGas (20);
 		GiveWeapon (wp_flamethrower);
 		StatusDrawPic (19,4,GOTGATLINGPIC);
@@ -1230,12 +1234,12 @@ void GetBonus (statobj_t *check)
 		if (gamestate.gas >= 99)
 			return;
 
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveGas (14);
 		break;
 
 	case	bo_launcher:
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveMissile (5);
 		GiveWeapon (wp_missile);
 		StatusDrawPic (19,4,GOTGATLINGPIC);
@@ -1252,7 +1256,7 @@ void GetBonus (statobj_t *check)
 		if (gamestate.missiles >= 99)
 			return;
 
-		SD_PlaySound (GETITEMSND);
+		SD_PlaySound (D_BONUSSND);
 		GiveMissile (5);
 		break;
 
@@ -1828,7 +1832,7 @@ void FlameAttack (objtype *ob)
 {
 	int x, y;
 
-	SD_PlaySound (MISSILEFIRESND);
+	SD_PlaySound (D_COCTHRSND);
 	madenoise = true;
 	gamestate.gas--;
 	DrawAmmo ();
@@ -1857,7 +1861,7 @@ void MissileAttack (objtype *ob)
 {
 	int x, y;
 
-	SD_PlaySound (WATERMELONFIRESND);
+	SD_PlaySound (D_WATTHRSND);
 	madenoise = true;
 	gamestate.missiles--;
 	DrawAmmo ();
