@@ -936,14 +936,17 @@ void	GiveGas (int ammo)
 	gamestate.gas += ammo;
 	if (gamestate.gas > 99)
 		gamestate.gas = 99;
-	if (gamestate.weapon == wp_knife)
-		if (gamestate.flamethrower)
+	if ((gamestate.weapon == wp_knife) && gamestate.flamethrower)
+	{
+		if (!gamestate.attackframe)
 		{
-			if (!gamestate.attackframe)
-				gamestate.weapon = wp_flamethrower;
-			else
-				gamestate.chosenweapon = wp_flamethrower;
+			gamestate.weapon = wp_flamethrower;
 		}
+		else
+		{
+			gamestate.chosenweapon = wp_flamethrower;
+		}
+	}
 	DrawAmmo ();
 }
 
@@ -961,14 +964,17 @@ void	GiveMissile (int ammo)
 	gamestate.missiles += ammo;
 	if (gamestate.missiles > 99)
 		gamestate.missiles = 99;
-	if (gamestate.weapon == wp_knife)
-		if (gamestate.missile)
+	if ((gamestate.weapon == wp_knife) && gamestate.missile)
+	{
+		if (!gamestate.attackframe)
 		{
-			if (!gamestate.attackframe)
-				gamestate.weapon = wp_missile;
-			else
-				gamestate.chosenweapon = wp_missile;
+			gamestate.weapon = wp_missile;
 		}
+		else
+		{
+			gamestate.chosenweapon = wp_missile;
+		}
+	}
 	DrawAmmo ();
 }
 #endif
@@ -1185,8 +1191,7 @@ void GetBonus (statobj_t *check)
 	case	bo_alpo:
 		if (demoplayback)
 		{
-			HealSelf (4);
-			break;
+			HealSelf (4); break;
 		}
 		if ((gamestate.health >= 100) && (gamestate.ammo >= gamestate.maxammo))
 			return;
@@ -1226,7 +1231,8 @@ void GetBonus (statobj_t *check)
 		if (!gamestate.flamethrower)
 		{
 			gamestate.flamethrower = 1;
-			gamestate.bestweapon = gamestate.weapon = gamestate.chosenweapon = wp_flamethrower;
+			gamestate.bestweapon = gamestate.weapon = gamestate.chosenweapon
+				= wp_flamethrower;
 		}
 		break;
 
@@ -1248,7 +1254,8 @@ void GetBonus (statobj_t *check)
 		if (!gamestate.missile)
 		{
 			gamestate.missile = 1;
-			gamestate.bestweapon = gamestate.weapon = gamestate.chosenweapon = wp_missile;
+			gamestate.bestweapon = gamestate.weapon = gamestate.chosenweapon
+				= wp_missile;
 		}
 		break;
 
@@ -1806,9 +1813,9 @@ void	GunAttack (objtype *ob)
 	else
 	{
 		damage = US_RndT() & 7;
-		if (dist >= 4)
-			if ( (US_RndT() / 12) < dist)		// missed
-				return;
+
+		if ((dist >= 4) && ( (US_RndT() / 12) < dist))		// missed
+			return;
 	}
 #else
 	if (dist<2)
@@ -1975,7 +1982,8 @@ void	T_Attack (objtype *ob)
 			ob->state = &s_player;
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-			if ((!gamestate.gas && (gamestate.weapon == wp_flamethrower)) || (!gamestate.missiles && (gamestate.weapon == wp_missile)))
+			if ((!gamestate.gas && (gamestate.weapon == wp_flamethrower))
+			    || (!gamestate.missiles && (gamestate.weapon == wp_missile)))
 			{
 				if (gamestate.ammo)
 				{
@@ -2100,7 +2108,9 @@ void	T_Player (objtype *ob)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	if ( buttonstate[bt_attack] && (!buttonheld[bt_attack] || (gamestate.weapon == wp_knife) || (gamestate.weapon == wp_pistol)))
+	if (buttonstate[bt_attack])
+
+	    if (!buttonheld[bt_attack] || (gamestate.weapon == wp_knife) || (gamestate.weapon == wp_pistol))
 #else
 	if ( buttonstate[bt_attack] && !buttonheld[bt_attack])
 #endif

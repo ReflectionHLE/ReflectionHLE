@@ -4547,7 +4547,8 @@ void	A_StartDeathCam (objtype *ob)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	FinishPaletteShifts ();
-	NewState (player,&s_deathcam);
+	NewState (player,
+		&s_deathcam);
 	gamestate.victoryflag = true;
 #else
 	long	dx,dy;

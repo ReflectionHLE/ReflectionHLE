@@ -1314,17 +1314,19 @@ SD_SetPosition(int leftpos,int rightpos)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef GAMEVER_RESTORATION_WL1_APO10
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	if ((leftpos < 0) || (leftpos > 15) || (rightpos < 0) || (rightpos > 15))
+#else
 	if
 	(
 		(leftpos < 0)
 	||	(leftpos > 15)
 	||	(rightpos < 0)
 	||	(rightpos > 15)
-	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
 	||	((leftpos == 15) && (rightpos == 15))
-#endif
 	)
+#endif
 		Quit("SD_SetPosition: Illegal position");
 #endif
 
@@ -1780,7 +1782,8 @@ fixword(word w)
 static longword
 fixlongword(longword d)
 {
-	return ((d&0xFF000000)>>24)+((d&0x00FF0000)>>8)+((d&0xFF00)<<8)+((d&0xFF)<<24);
+	return ((d&0xFF000000)>>24)+((d&0x00FF0000)>>8)
+		+((d&0xFF00)<<8)+((d&0xFF)<<24);
 }
 
 static longword
@@ -1788,12 +1791,8 @@ MIDI_VarLength(void)
 {
 	longword value = 0;
 	while (*midiData & 0x80)
-	{
-		value = (value << 7) + (*midiData & 0x7F);
-		midiData++;
-	}
-	value = (value << 7) + *midiData;
-	midiData++;
+		value = (value << 7) + (*midiData++ & 0x7F);
+	value = (value << 7) + *midiData++;
 	return value;
 }
 
@@ -1890,15 +1889,17 @@ MIDI_NoteOn(int channel, byte note, byte velocity)
 				midiError = -11;
 			}
 			alOut(alEffects,alChar|drums);
-			return;
 		}
-		fnumber = NoteTable[note%12];
-		octave = note/12;
-		alOut(alFreqL + 1 + channel, fnumber&0xFF);
-		alOut(alFreqH + 1 + channel, alChar|(octave<<2)|((fnumber>>8)&3));
-		return;
+		else
+		{
+			fnumber = NoteTable[note%12];
+			octave = note/12;
+			alOut(alFreqL + 1 + channel, fnumber&0xFF);
+			alOut(alFreqH + 1 + channel, alChar|(octave<<2)|((fnumber>>8)&3));
+		}
 	}
-	MIDI_NoteOff (channel,note,velocity);
+	else
+		MIDI_NoteOff (channel,note,velocity);
 }
 
 void
@@ -1950,56 +1951,43 @@ MIDI_ProgramChange(int channel, int id)
 		alOut(alFreqH+8,octave+((fnumber>>8)&3));
 
 		inst = &instrument[10];
-		alOut(0x31,*inst);
-		inst += 2;
-		alOut(0x51,*inst);
-		inst += 2;
-		alOut(0x71,*inst);
-		inst += 2;
-		alOut(0x91,*inst);
-		inst += 2;
+		alOut(0x31,*inst); inst += 2;
+		alOut(0x51,*inst); inst += 2;
+		alOut(0x71,*inst); inst += 2;
+		alOut(0x91,*inst); inst += 2;
 
 		alOut(0xF1,*inst);
 		alOut(0xC7,0);
 
 		inst = &instrument[12];
-		alOut(0x32,*inst);
-		inst += 2;
-		alOut(0x52,*inst);
-		inst += 2;
-		alOut(0x72,*inst);
-		inst += 2;
-		alOut(0x92,*inst);
-		inst += 2;
+		alOut(0x32,*inst); inst += 2;
+		alOut(0x52,*inst); inst += 2;
+		alOut(0x72,*inst); inst += 2;
+		alOut(0x92,*inst); inst += 2;
 
 		alOut(0xF2,*inst);
 
 		inst = &instrument[11];
-		alOut(0x34,*inst);
-		inst += 2;
-		alOut(0x54,*inst);
-		inst += 2;
-		alOut(0x74,*inst);
-		inst += 2;
-		alOut(0x94,*inst);
-		inst += 2;
+		alOut(0x34,*inst); inst += 2;
+		alOut(0x54,*inst); inst += 2;
+		alOut(0x74,*inst); inst += 2;
+		alOut(0x94,*inst); inst += 2;
 
 		alOut(0xF4,*inst);
 		alOut(0xC8,0);
 
 		inst = &instrument[10];
-		alOut(0x35,*inst);
-		inst += 2;
-		alOut(0x55,*inst);
-		inst += 2;
-		alOut(0x75,*inst);
-		inst += 2;
-		alOut(0x95,*inst);
-		inst += 2;
+		alOut(0x35,*inst); inst += 2;
+		alOut(0x55,*inst); inst += 2;
+		alOut(0x75,*inst); inst += 2;
+		alOut(0x95,*inst); inst += 2;
 
 		alOut(0xF5,*inst);
+
+		return;
 	}
-	else if (channel < 5)
+
+	if (channel < 5)
 	{
 		switch (id & 0xF8)
 		{
@@ -2095,16 +2083,18 @@ MIDI_ProcessEvent(byte event)
 		break;
 	default:
 		midiError = -7;
+		break;
 	}
 }
 
 static void
 MIDI_DoEvent(void)
 {
-	byte	event = *midiData;
+	byte	event;
 	longword	length;
 	longword	tempo;
-	midiData++;
+
+	event = *midiData++;
 	if (!(event & 0x80))
 	{
 		switch (midiRunningStatus)
@@ -2149,6 +2139,7 @@ MIDI_DoEvent(void)
 			break;
 		default:
 			MIDI_SkipMetaEvent();
+			break;
 		}
 	}
 	else
@@ -3111,7 +3102,8 @@ asm	cli
 		Quit("SD_StartMusic: MIDI track is 0 length!\n");
 
 	seqPtr += 8;
-	midiDataStart = midiData = seqPtr;
+	midiData = seqPtr;
+	midiDataStart = seqPtr;
 	midiLength = seqLength;
 	midiDeltaTime = 0;
 	midiDeltaTime = MIDI_VarLength();

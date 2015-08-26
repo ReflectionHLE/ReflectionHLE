@@ -91,6 +91,7 @@ static void DrawMapPrizes (int tx, int ty)
 			break;
 		default:
 			tile = 0;
+			break;
 		}
 
 		if (tile)

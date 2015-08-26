@@ -108,7 +108,8 @@ int AskQuestion (int question)
 	// At this stage p points to the first answer
 	answer = 0;
 	correct = 4;
-	for (; answer < 4; answer++)
+
+	for (; answer < 4;)
 	{
 		p2 = QuizMenu[answer].string;
 		while (*p > 4)
@@ -125,8 +126,9 @@ int AskQuestion (int question)
 			sprintf (str,"AskQuestion(): Question %d has no end!",question);
 			Quit (str);
 		}
-		p++;
+		p++; answer++;
 	}
+
 	if (answer == 4)
 	{
 		sprintf (str,"AskQuestion(): Question %d has too many answers!",question);

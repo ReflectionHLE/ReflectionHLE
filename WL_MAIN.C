@@ -366,7 +366,7 @@ void DiskFlopAnim(int x,int y)
  // *** S3DNA RESTORATION ***
  // WARNING: The following statement may technically lead to undefined behaviors
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
- which=(++which)&3;
+ which=which+1; which=which&3;
 #else
  which^=1;
 #endif

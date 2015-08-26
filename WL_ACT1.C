@@ -287,7 +287,9 @@ void SpawnStatic (int tilex, int tiley, int type)
 		break;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	default: sprintf (str,"SpawnStatic: Invalid object $%02X at %d, %d!\n",type,tilex,tiley);
+	default:
+		sprintf (str,"SpawnStatic: Invalid object $%02X at %d, %d!\n",
+			type,tilex,tiley);
 		Quit (str);
 #endif
 	}
