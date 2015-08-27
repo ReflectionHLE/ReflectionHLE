@@ -849,13 +849,11 @@ void SetupGameLevel (void)
 			if (tile<AREATILE)
 			{
 				// *** S3DNA RESTORATION ***
-				// TODO (RESTORATION) What's this?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-				if (tile==89)
+				if (tile == 89)
 					tile = 31;
 				else
 					tile &= 31;
-#else
 #endif
 			// solid wall
 				tilemap[x][y] = tile;

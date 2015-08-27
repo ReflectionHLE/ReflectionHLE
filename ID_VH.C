@@ -387,6 +387,11 @@ void VWB_Vlin (int y1, int y2, int x, int color)
 		VW_Vlin(y1,y2,x,color);
 }
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void VH_UpdateScreen (void);
+#endif
+
 void VW_UpdateScreen (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***

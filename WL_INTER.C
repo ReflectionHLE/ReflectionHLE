@@ -272,12 +272,16 @@ void Victory (void)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 #define RATIOX	9
 #define RATIOY	12
+#define TIMEX	23
+#define TIMEY	9
+#define PARTIMEX	23
+#define PARTIMEY	7
 #else
 #define RATIOX	6
 #define RATIOY	14
-#endif
 #define TIMEX	14
 #define TIMEY	8
+#endif
 
 
 #ifdef SPEAR
@@ -361,7 +365,13 @@ void Victory (void)
 	Write(18,2,STR_YOUWIN);
 #endif
 
+	// *** S3DNA RESTORATION ***
+	// (TIMEX and TIMEY redefined with different values now)
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	Write(14,8-2,STR_TOTALTIME);
+#else
 	Write(TIMEX,TIMEY-2,STR_TOTALTIME);
+#endif
 
 	Write(12,RATIOY-2,"averages");
 
@@ -378,8 +388,6 @@ void Victory (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-	// TODO (RESTORATION) Used macros for calls to write as in Wolf3D?
-	// (Especially a bit later, also for the i variable)
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	VWB_DrawPic (8,8,L_BJWINSPIC);
 
@@ -437,20 +445,20 @@ void Victory (void)
 		hr = 9;
 		min = parsec = 99;
 	}
-	i = 23*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+hr);
+	i = PARTIMEX*8;
+	VWB_DrawPic (i,PARTIMEY*8,L_NUM0PIC+hr);
 	i += 2*8;
-	Write (i/8,7,":");
+	Write (i/8,PARTIMEY,":");
 	i += 1*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+(min/10));
+	VWB_DrawPic (i,PARTIMEY*8,L_NUM0PIC+(min/10));
 	i += 2*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+(min%10));
+	VWB_DrawPic (i,PARTIMEY*8,L_NUM0PIC+(min%10));
 	i += 2*8;
-	Write (i/8,7,":");
+	Write (i/8,PARTIMEY,":");
 	i += 1*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+(parsec/10));
+	VWB_DrawPic (i,PARTIMEY*8,L_NUM0PIC+(parsec/10));
 	i += 2*8;
-	VWB_DrawPic (i,7*8,L_NUM0PIC+(parsec%10));
+	VWB_DrawPic (i,PARTIMEY*8,L_NUM0PIC+(parsec%10));
 	VW_UpdateScreen ();
 #else
 
@@ -490,27 +498,14 @@ void Victory (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-	i = 184;
-	VWB_DrawPic(i,72,L_NUM0PIC+hr);
+	i = TIMEX*8;
+	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+hr);
 	i += 2*8;
-	Write(i/8,9,":");
+	Write(i/8,TIMEY,":");
 	i += 1*8;
-	VWB_DrawPic(i,72,L_NUM0PIC+(min/10));
-	i += 2*8;
-	VWB_DrawPic(i,72,L_NUM0PIC+(min%10));
-	i += 2*8;
-	Write(i/8,9,":");
-	i += 1*8;
-	VWB_DrawPic(i,72,L_NUM0PIC+(sec/10));
-	i += 2*8;
-	VWB_DrawPic(i,72,L_NUM0PIC+(sec%10));
-	VW_UpdateScreen ();
-
-	kr /= 30;
-	sr /= 30;
-	tr /= 30;
 #else
 	i = TIMEX*8+1;
+#endif
 	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+(min/10));
 	i += 2*8;
 	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+(min%10));
@@ -521,6 +516,11 @@ void Victory (void)
 	i += 2*8;
 	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+(sec%10));
 	VW_UpdateScreen ();
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+	kr /= 30;
+	sr /= 30;
+	tr /= 30;
 #endif
 
 	itoa(kr,tempstr,10);
@@ -1195,7 +1195,6 @@ void LevelCompleted (void)
 
 
 	// *** S3DNA  RESTORATION ***
-	// TODO (RESTORATION) Unify common code groups?
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 	StartCPMusic(NOAH05_MUS);
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
@@ -1217,7 +1216,6 @@ void LevelCompleted (void)
 	ShowBonus (0);
 	IN_ClearKeysDown ();
 	IN_StartAck ();
-	// TODO (RESTORATION) - Again, some code pieces may be relocated
 
 	kr = sr = tr
 		= 0;

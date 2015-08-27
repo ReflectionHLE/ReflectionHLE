@@ -2097,11 +2097,9 @@ MIDI_DoEvent(void)
 	event = *midiData++;
 	if (!(event & 0x80))
 	{
-		switch (midiRunningStatus)
-		{
-		case 0:
+		if (!(midiRunningStatus | 0x00))
 			return;
-		}
+
 		midiData--;
 		MIDI_ProcessEvent(midiRunningStatus);
 	}

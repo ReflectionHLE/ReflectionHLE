@@ -163,6 +163,7 @@ void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y);
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
+void VL_LatchToScreen (unsigned source, int width, int height, int x, int y);
 void FillCharAttr (byte c, byte attr, int count);
 #else
 void VL_DrawTile8String (char *str, char far *tile8ptr, int printx, int printy);

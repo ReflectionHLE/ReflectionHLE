@@ -22,7 +22,7 @@ static void DrawMapWalls (int tx, int ty)
 					else
 						tile = 66;
 				}
-				else if (tile==31)
+				else if (tile == 31)
 					tile = 75;
 				else
 					tile = (tile&0x1F)+35;
@@ -101,7 +101,6 @@ static void DrawMapPrizes (int tx, int ty)
 
 static void DrawAutoMap (int tx, int ty)
 {
-	// TODO (RESTORATION) - Are the direction names correct?
 	int	px,py;
 	int	dir;
 

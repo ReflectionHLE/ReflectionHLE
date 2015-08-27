@@ -37,6 +37,10 @@ int		mr_xfrac;
 int		mr_yfrac;
 int		mr_dest;
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void	MapRow (void);
+#endif
 
 /*
 ==============

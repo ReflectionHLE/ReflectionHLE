@@ -1289,6 +1289,10 @@ void 	StartMusic(void);
 void	PlayLoop (void);
 void StartDamageFlash (int damage);
 void StartBonusFlash (void);
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void UpdatePaletteShifts (void);
+#endif
 
 /*
 =============================================================================
@@ -1309,6 +1313,10 @@ void LevelCompleted (void);
 void	CheckHighScore (long score,word other);
 void Victory (void);
 void ClearSplitVWB (void);
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void Briefing (int mission, boolean credits);
+#endif
 
 
 /*
@@ -1392,6 +1400,10 @@ void	CalcTics (void);
 void	FixOfs (void);
 void	ThreeDRefresh (void);
 void  FarScalePost (void);
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+void WallRefresh (void);
+#endif
 
 /*
 =============================================================================
@@ -1502,6 +1514,7 @@ extern int	MapLevel[];
 void	SpawnPlayer (int tilex, int tiley, int dir);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
+void StatusDrawPic (unsigned x, unsigned y, unsigned picnum);
 void	DrawTreasure (void);
 #endif
 void 	DrawFace (void);
@@ -1674,6 +1687,7 @@ extern	statetype s_fatdeathcam2;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 void SpawnStand (enemy_t which, int tilex, int tiley, int dir, boolean ambush);
+void A_DeathScream (objtype *ob);
 #else
 void SpawnStand (enemy_t which, int tilex, int tiley, int dir);
 void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir);
@@ -1735,4 +1749,15 @@ void AutoMap (void);
 */
 
 int AskQuestion (int question);
+/*
+=============================================================================
+
+						 WOLFHACK DEFINITIONS
+
+=============================================================================
+*/
+
+void LoadFloorTiles (int tile);
+void SetPlaneViewSize (void);
+void DrawPlanes (void);
 #endif

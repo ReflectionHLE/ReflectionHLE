@@ -280,7 +280,12 @@ typedef struct {
 #endif
 		} LRstruct;
 
+// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
+extern LRstruct LevelRatios[30];
+#else
 extern LRstruct LevelRatios[];
+#endif
 
 void Write (int x,int y,char *string);
 void NonShareware(void);

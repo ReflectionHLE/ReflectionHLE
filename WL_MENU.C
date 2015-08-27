@@ -1919,10 +1919,6 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// This is also skipped in the Apogee and S3DNA EXEs
-		//
-		// TODO (RESTORATION) - Was there an earlier revision closer
-		// to WL6APO14 or SODFOR14, but still with the STR_FRWD fix,
-		// on which N3DWIS10 is based?
 		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
