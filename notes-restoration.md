@@ -63,7 +63,7 @@ It should be noted that Super 3-D Noah's Ark was originally created as a SNES
 title, based on the SNES port of Wolfenstein 3D. It was followed by the DOS
 port, based on the original Wolfenstein 3D codebase for DOS, while a few
 features from the original SNES title were implemented, like an auto-map
-and an aresnal of up to 6 feeders (weapons), including hand feeding.
+and an arsenal of up to 6 feeders (weapons), including hand feeding.
 
 There are also a couple of more variable and functions names "borrowed" off
 other sources and used for the recreation of Wolfenstein 3D v1.0, although
