@@ -30,6 +30,10 @@ GT Interactive release, except for a different logo in the signon screen).
 - Spear of Destiny v1.0+1.4, FormGen releases (copy protected).  
 - Spear of Destiny v1.4, Activision release (no copy protection).  
 
+In addition, ignoring some differences in debugging symbols as stored in the
+original EXE, this codebase includes recreated code for the following title:
+- Super 3-D Noah's Ark v1.0, Wisdom Tree release (DOS port).
+
 The originally released WOLF3D.PRJ file was used as a base for the
 various project files included in this source tree. Each of them can
 be used for building a specific game version out of the ones above.
@@ -38,12 +42,36 @@ What is this based on
 ---------------------
 
 This codebase is based on the Wolfenstein 3D + Spear of Destiny sources
-as originally released by id Software on 1995. While this release
+as originally released by id Software on 1995. While the 1995 release
 includes GAMEPAL.OBJ and SIGNON.OBJ data files, other versions
 of these were extracted from original EXEs.
 
 Alternative GFXV_APO.H definitions were used, taken off the
 Wolf4SDL source port by Moritz "Ripper" Kroll.
+
+Recreated code for Super 3-D Noah's Ark (DOS port) was added, based on earlier
+research work done for the ECWolf source port by Braden Obrzut. Furthermore, it
+turned out the original EXE contains a lot of debugging information, including
+original function and variable names. The latter were included in the
+recreated codebase. There are very few (local) variables for which original
+names aren't shown in the debugging information. There were also attempts to
+match some other symbols (mostly mentions of types), but given that the
+stripped EXE image can be recreated as-is, and that internal timestamps would
+differ from the originals anyway, these efforts were halted.
+
+It should be noted that Super 3-D Noah's Ark was originally created as a SNES
+title, based on the SNES port of Wolfenstein 3D. It was followed by the DOS
+port, based on the original Wolfenstein 3D codebase for DOS, while a few
+features from the original SNES title were implemented, like an auto-map
+and an aresnal of up to 6 feeders (weapons), including hand feeding.
+
+There are also a couple of more variable and functions names "borrowed" off
+other sources and used for the recreation of Wolfenstein 3D v1.0, although
+most chances are these were originally found in an earlier revision of
+the Wolfenstein 3D codebase under the same names:  
+- screenpage, VW_FixRefreshBuffer and VW_QuitDoubleBuffer, from the
+Catacomb 3-D sources (VW_InitDoubleBuffer was already mentioned in ID_VH.H).  
+- screensplit, from the Blake Stone: Planet Strike sources.
 
 How were the project files (and a bit more) modified from the original
 ----------------------------------------------------------------------
@@ -51,7 +79,7 @@ How were the project files (and a bit more) modified from the original
 The released sources, including the project file, appear to be in a state close
 to what was used to make the late Activision EXEs, so it's not a surprise that
 the various versions were generally made in a kind-of reverse order
-(although it's not exactly a linear order).
+(although it's not exactly a linear order).  
 - The two projects for the Activision builds target the 386 architecture,
 while the ones for all earlier builds target the 286.  
 - The locations of SIGNUP.OBJ and GAMEPAL.OBJ are updated. Different files may
@@ -100,10 +128,25 @@ only "Suppress redundant loads", "Jump optimization" and "Standard stack frame"
 are toggled on. Furthermore, the remaining selected choices are:
 "Register Variable" - "Automatic", "Common Subexpressions" - "No Optimization"
 and "Optimize For" - "Speed".  
+- For an earlier revision of this codebase, a custom tool named STRIPBSS
+(or any comparable tool) was required in order to remove the BSS sections from
+certain executables (basically a bunch of zeros appended to each EXE file's
+end, mostly referring to variables initialized to zeros). Only while working
+on Blake Stone later (in a separate codebase), a way to strip these right
+from Borland C++ was found out. In the debugger settings, Source Debugging
+had to be disabled, meaning debugging information wouldn't be appended to
+the EXE. It's probably the case that the BSS section must be included if
+debugging symbols are, and while tools like LZEXE91 may strip the debugging
+information, they don't compress the BSS section. That is, they don't do
+the job of the above mentioned STRIPBSS, being removing the chunk of zeros,
+while appropriately increasing the amount of additional memory
+the program needs as defined in the EXE's header.  
 - There may be at least one other difference at the least. Obviously, source
 code files other than VERSION.H are edited as required. This includes the
-addition of the new header file GFXV_APO.H for the Apogee builds,
-with resource definitions taken off the Wolf4SDL source port.  
+addition of the new header file GFXV_APO.H for the Apogee builds, with
+resource definitions taken off the Wolf4SDL source port, as well as
+a few more such headers for Super 3-D Noah's Ark, based on
+definitions from ECWolf and debugging information.
 
 Building each EXE
 =================
@@ -111,22 +154,19 @@ Building each EXE
 Required tools:
 - Borland C++ 3.0 (and no other version), for all pre-v1.4 releases of
 Wolf3D and SOD.  
-- Borland C++ 3.1 (exactly this one) for the v1.4 releases of Wolf3D and SOD.  
+- Borland C++ 3.1 (exactly this one) for the v1.4 releases of Wolf3D and SOD,
+as well as S3DNA.  
 - LZEXE 0.91.  
-- STRIPBSS for certain EXEs (should be included in the repository originally
-containing these modified Wolf3D/SOD sources).  
 - UNLZEXE 0.7/0.8 for certain EXEs (one requires 0.8, another one needs 0.7).  
 
 Notes before trying to build anything:
 - This may depend on luck. Maybe you'll get a bit different EXE.  
-- A project file should be opened with Borland C++ using a command similar to
-the following, if not the same: "bc WL1APO10.PRJ".  
+- In order to prepare for the construction of an EXE (including the removal
+of older object files) and then build the EXE (in a possibly-initial form),
+use a command similar to the following, if not the same: "prep WL1APO10".  
 - LZEXE 0.91 and UNLZEXE 0.7/0.8 should be used in a similar manner with the
 corresponding EXE as the input, e.g., "lzexe WL1APO10.EXE". LZEXE may ask you
 to confirm if the EXE has trailing data (e.g., debugging symbols).  
-- STRIPBSS looks for a MAP file generated by Borland C++'s linker, so make
-sure you're in the directory that has the generated MAP file (and EXE) before
-using STRIPBSS. It should be used like this: "stripbss WL1APO10.EXE".  
 - It is assumed that you have a working DOS-compatible environment with a ready
 installation of the correct version of Borland C++, including a properly set
 PATH environment variable.  
@@ -149,27 +189,18 @@ and then retry to compile from there. Repeat until an EXE is built.
 rebuilding. Remember, though, that luck is important here, and again you
 may fail to get an EXE which is clearly close to an original one.  
 
-Building any of the pre-v1.4 Apogee EXEs
-----------------------------------------
+Building any of the pre-v1.4 Apogee EXEs, or the SOD demo v1.0 FormGen EXE
+--------------------------------------------------------------------------
 
-1. Open project with Borland C++ 3.0.  
+1. Prepare and open project with Borland C++ 3.0, using PREP.BAT.  
 2. Press on F9 to build. Skip any compilation error as described above.  
 3. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 4. Hopefully you should get exactly the original EXE.  
 
-Building the SOD demo v1.0 FormGen EXE
---------------------------------------
-
-1. Open project with Borland C++ 3.0.  
-2. Press on F9 to build. Skip any compilation error as described above.  
-3. Quit Borland C++ and run STRIPBSS with the generated EXE as the input.  
-4. Use LZEXE 0.91 to pack the generated EXE.  
-5. Hopefully you should get exactly the original EXE.  
-
 Building the SOD v1.0 FormGen EXE (up to calls to UNLZEXE8 and BSS size)
 ------------------------------------------------------------------------
 
-1. Open project with Borland C++ 3.0.  
+1. Prepare and open project with Borland C++ 3.0, using PREP.BAT.  
 2. Press on F9 to build. Skip any compilation error as described above.  
 3. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 4. Hopefully you should get an EXE close to the original, although the latter
@@ -181,59 +212,61 @@ You can unpack both EXEs with UNLZEXE8 (but better make a backup first) so the
 difference regarding the "LZ91" string is gone (UNLZEXE7 is expected to refuse
 unpacking the original EXE). However, there'll still be a difference with these
 other two bytes. Usually, they're used to specify the size of the so-called
-"BSS section", and STRIPBSS should be used on the EXE created by Borland C++
-to get similar results. In this case, though, even without STRIPBSS, the two
-SOD v1.0 FormGen EXEs (original and recreated) should have the exact same size
-(before, and after LZEXE decompression), so it is not clear why is there any
-"BSS section" in the original. To further add to the confusion, it was common
-to use a modified EXE that skips the Copy Protection screen, possibly more
-often than the original EXE, and this file may have its own "BSS section" size.
+"BSS section", in case the Borland C++ project is configured such that no
+debugging information is included in the created EXE. Otherwise, the two bytes
+above are filled with the size of zero, while the BSS section is appended to
+the EXE as a bunch of zeros, along with additional debugging information.
+With SODFOR10, though, while debugging symbols may initially be included,
+the two SOD v1.0 FormGen EXEs (original and recreated) should have the exact
+same size (before, and after LZEXE decompression), so it is not clear why is
+there any BSS section size in the original. To further add to the confusion,
+it was common to use a modified EXE that skips the Copy Protection screen,
+possibly more often than the original EXE, and this file
+may have its own "BSS section" size.
 
-Building any of the (cheats-enabled) v1.4 Apogee EXEs
------------------------------------------------------
+Building any of the (cheats-enabled) v1.4 Apogee EXEs, or the late GT EXE
+-------------------------------------------------------------------------
 
-1. Open project with Borland C++ 3.1.  
+1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
 2. Press on F9 to build.  
 3. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 4. Hopefully you should get exactly the original EXE.  
 
-Building the SOD v1.4 FormGen EXE
----------------------------------
-1. Open project with Borland C++ 3.1.  
+Building the SOD v1.4 FormGen EXE (note the recreation of WL_GAME.OBJ)
+----------------------------------------------------------------------
+1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
 2. Press on F9 to build.  
 3. Quit Borland C++ and delete the OBJ file OBJ\SODFOR14\WL_GAME.OBJ.  
-4. Repeat step 1 and then repeat step 2.  
-5. Quit Borland C++ and run STRIPBSS with the generated EXE as the input.  
-6. Use LZEXE 0.91 to pack the generated EXE.  
+4. Manually open the project with Borland C++ 3.1 (i.e., do NOT use PREP.BAT).
+The command "bc SODFOR14.PRJ" should do the job with a compatible setup.  
+5. Again press on F9 to build.  
+6. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 7. Hopefully you should get exactly the original EXE.  
 
 Building the Wolf3D v1.4 early GT or ID EXE (same EXE up to SIGNON.OBJ)
 -----------------------------------------------------------------------
-1. Open project with Borland C++ 3.1.  
+1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
 2. Press on F9 to build.  
-3. Quit Borland C++ and run STRIPBSS with the generated EXE as the input.  
-4. Hopefully you should get exactly the original EXE.  
-
-Building the Wolf3D v1.4 late GT EXE
-------------------------------------
-1. Open project with Borland C++ 3.1.  
-2. Press on F9 to build.  
-3. Quit Borland C++ and run STRIPBSS with the generated EXE as the input.  
-4. Use LZEXE 0.91 to pack the generated EXE.  
-5. Hopefully you should get exactly the original EXE.  
+3. Quit Borland C++. Hopefully you should get exactly the original EXE.  
 
 Building any of the v1.4 Activision EXEs (up to calls to UNLZEXE7)
 ------------------------------------------------------------------
-1. Open project with Borland C++ 3.1.  
+1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
 2. Press on F9 to build.  
-3. Quit Borland C++ and run STRIPBSS with the generated EXE as the input.  
-4. Use LZEXE 0.91 to pack the generated EXE.  
-5. Hopefully you should get an EXE close to the original. They should basically
+3. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
+4. Hopefully you should get an EXE close to the original. They should basically
 be more-or-less the same, although the LZEXE signature (not the "LZ91" string)
 of one EXE is a bit different from the other's (seem shifted for most).  
 
 You can unpack both EXEs with UNLZEXE7 (but better make a backup first) so you
 can hopefully get identical EXEs afterwards.
+
+Building the Super 3-D Noah's Ark v1.0 EXE (up to the debugging information)
+----------------------------------------------------------------------------
+1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
+2. Press on F9 to build.  
+3. Quit Borland C++. Ignoring the debugging information, you should hopefully
+get the same EXE, meaning the first 223502 bytes (probably more like 262276).
 
 A few final notes
 -----------------

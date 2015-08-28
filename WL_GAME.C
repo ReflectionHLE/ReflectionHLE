@@ -1944,12 +1944,7 @@ startplayloop:
 
 			#pragma warn -sus
 			#ifndef JAPAN
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
-			strcpy(MainMenu[viewscores].string,STR_VS);
-#else
-			_fstrcpy(MainMenu[viewscores].string,STR_VS);
-#endif
+			GAMEVER_RESTORATION_CONDFARSTRCPY(MainMenu[viewscores].string,STR_VS);
 			#endif
 			MainMenu[viewscores].routine = CP_ViewScores;
 			#pragma warn +sus
@@ -1991,12 +1986,7 @@ startplayloop:
 
 			#pragma warn -sus
 			#ifndef JAPAN
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
-			strcpy(MainMenu[viewscores].string,STR_VS);
-#else
-			_fstrcpy(MainMenu[viewscores].string,STR_VS);
-#endif
+			GAMEVER_RESTORATION_CONDFARSTRCPY(MainMenu[viewscores].string,STR_VS);
 			#endif
 			MainMenu[viewscores].routine = CP_ViewScores;
 			#pragma warn +sus

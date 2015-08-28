@@ -347,7 +347,7 @@ statetype s_grddie1		= {false,SPR_GRD_PAIN,15,NULL,A_DeathScream,&s_grddie2};
 statetype s_grddie2		= {false,SPR_GRD_DIE_1,15,NULL,NULL,&s_grddie3};
 statetype s_grddie3		= {false,SPR_GRD_DIE_2,15,NULL,NULL,&s_grddead};
 statetype s_grddead		= {false,SPR_GRD_DEAD,55,NULL,NULL,&s_grddead2};
-statetype s_grddead2		= {false,SPR_GRD_DIE_3,55,NULL,NULL,&s_grddead};
+statetype s_grddead2		= {false,SPR_GRD_DEAD2,55,NULL,NULL,&s_grddead};
 #else
 statetype s_grddie1		= {false,SPR_GRD_DIE_1,15,NULL,A_DeathScream,&s_grddie2};
 statetype s_grddie2		= {false,SPR_GRD_DIE_2,15,NULL,NULL,&s_grddie3};
@@ -463,8 +463,8 @@ statetype s_dogdie1		= {false,SPR_DOG_DIE_1,15,NULL,A_DeathScream,&s_dogdie2};
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 statetype s_dogdie2		= {false,SPR_DOG_DIE_2,15,NULL,NULL,&s_dogdead};
-statetype s_dogdead		= {false,SPR_DOG_DIE_3,55,NULL,NULL,&s_dogdead2};
-statetype s_dogdead2		= {false,SPR_DOG_DEAD,55,NULL,NULL,&s_dogdead};
+statetype s_dogdead		= {false,SPR_DOG_DEAD,55,NULL,NULL,&s_dogdead2};
+statetype s_dogdead2		= {false,SPR_DOG_DEAD2,55,NULL,NULL,&s_dogdead};
 #else
 statetype s_dogdie2		= {false,SPR_DOG_DIE_2,15,NULL,NULL,&s_dogdie3};
 statetype s_dogdie3		= {false,SPR_DOG_DIE_3,15,NULL,NULL,&s_dogdead};
@@ -560,7 +560,7 @@ statetype s_ofcdie1		= {false,SPR_OFC_PAIN,11,NULL,A_DeathScream,&s_ofcdie2};
 statetype s_ofcdie2		= {false,SPR_OFC_DIE_1,11,NULL,NULL,&s_ofcdie3};
 statetype s_ofcdie3		= {false,SPR_OFC_DIE_2,11,NULL,NULL,&s_ofcdead};
 statetype s_ofcdead		= {false,SPR_OFC_DEAD,55,NULL,NULL,&s_ofcdead2};
-statetype s_ofcdead2		= {false,SPR_OFC_DIE_3,55,NULL,NULL,&s_ofcdead};
+statetype s_ofcdead2		= {false,SPR_OFC_DEAD2,55,NULL,NULL,&s_ofcdead};
 #else
 statetype s_ofcdie1		= {false,SPR_OFC_DIE_1,11,NULL,A_DeathScream,&s_ofcdie2};
 statetype s_ofcdie2		= {false,SPR_OFC_DIE_2,11,NULL,NULL,&s_ofcdie3};
@@ -675,7 +675,7 @@ statetype s_mutdie1		= {false,SPR_MUT_PAIN,7,NULL,A_DeathScream,&s_mutdie2};
 statetype s_mutdie2		= {false,SPR_MUT_DIE_1,7,NULL,NULL,&s_mutdie3};
 statetype s_mutdie3		= {false,SPR_MUT_DIE_2,7,NULL,NULL,&s_mutdead};
 statetype s_mutdead		= {false,SPR_MUT_DEAD,55,NULL,NULL,&s_mutdead2};
-statetype s_mutdead2		= {false,SPR_MUT_DIE_3,55,NULL,NULL,&s_mutdead};
+statetype s_mutdead2		= {false,SPR_MUT_DEAD2,55,NULL,NULL,&s_mutdead};
 #else
 statetype s_mutdie1		= {false,SPR_MUT_DIE_1,7,NULL,A_DeathScream,&s_mutdie2};
 statetype s_mutdie2		= {false,SPR_MUT_DIE_2,7,NULL,NULL,&s_mutdie3};
@@ -781,7 +781,7 @@ statetype s_ssdie1		= {false,SPR_SS_PAIN,15,NULL,A_DeathScream,&s_ssdie2};
 statetype s_ssdie2		= {false,SPR_SS_DIE_1,15,NULL,NULL,&s_ssdie3};
 statetype s_ssdie3		= {false,SPR_SS_DIE_2,15,NULL,NULL,&s_ssdead};
 statetype s_ssdead		= {false,SPR_SS_DEAD,55,NULL,NULL,&s_ssdead2};
-statetype s_ssdead2		= {false,SPR_SS_DIE_3,55,NULL,NULL,&s_ssdead};
+statetype s_ssdead2		= {false,SPR_SS_DEAD2,55,NULL,NULL,&s_ssdead};
 #else
 statetype s_ssdie1		= {false,SPR_SS_DIE_1,15,NULL,A_DeathScream,&s_ssdie2};
 statetype s_ssdie2		= {false,SPR_SS_DIE_2,15,NULL,NULL,&s_ssdie3};
@@ -837,8 +837,8 @@ statetype s_bossdie1	= {false,SPR_BOSS_DIE1,15,NULL,A_DeathScream,&s_bossdie2};
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 statetype s_bossdie2	= {false,SPR_BOSS_DIE2,15,NULL,NULL,&s_bossdead};
-statetype s_bossdead	= {false,SPR_BOSS_DIE3,55,NULL,NULL,&s_bossdead2};
-statetype s_bossdead2	= {false,SPR_BOSS_DEAD,55,NULL,NULL,&s_bossdead};
+statetype s_bossdead	= {false,SPR_BOSS_DEAD,55,NULL,NULL,&s_bossdead2};
+statetype s_bossdead2	= {false,SPR_BOSS_DEAD2,55,NULL,NULL,&s_bossdead};
 #else
 statetype s_bossdie2	= {false,SPR_BOSS_DIE2,15,NULL,NULL,&s_bossdie3};
 statetype s_bossdie3	= {false,SPR_BOSS_DIE3,15,NULL,NULL,&s_bossdie4};
@@ -903,8 +903,8 @@ statetype s_greteldie1	= {false,SPR_GRETEL_DIE1,15,NULL,A_DeathScream,&s_greteld
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 statetype s_greteldie2	= {false,SPR_GRETEL_DIE2,15,NULL,NULL,&s_greteldead};
-statetype s_greteldead	= {false,SPR_GRETEL_DIE3,55,NULL,NULL,&s_greteldead2};
-statetype s_greteldead2	= {false,SPR_GRETEL_DEAD,55,NULL,NULL,&s_greteldead};
+statetype s_greteldead	= {false,SPR_GRETEL_DEAD,55,NULL,NULL,&s_greteldead2};
+statetype s_greteldead2	= {false,SPR_GRETEL_DEAD2,55,NULL,NULL,&s_greteldead};
 #else
 statetype s_greteldie2	= {false,SPR_GRETEL_DIE2,15,NULL,NULL,&s_greteldie3};
 statetype s_greteldie3	= {false,SPR_GRETEL_DIE3,15,NULL,NULL,&s_greteldie4};
@@ -2178,9 +2178,9 @@ moveok:
 =============================================================================
 */
 
+#ifndef SPEAR
 // *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
-//#ifndef SPEAR
+#ifndef GAMEVER_RESTORATION_N3D_WIS10
 /*
 ===============
 =
@@ -2294,8 +2294,8 @@ statetype s_schabbdeathcam	= {false,SPR_SCHABB_W1,1,NULL,NULL,&s_schabbdie1};
 statetype s_schabbdie1	= {false,SPR_SCHABB_W1,10,NULL,A_DeathScream,&s_schabbdie2};
 statetype s_schabbdie2	= {false,SPR_SCHABB_DIE1,10,NULL,NULL,&s_schabbdie3};
 statetype s_schabbdie3	= {false,SPR_SCHABB_DIE2,10,NULL,NULL,&s_schabbdead};
-statetype s_schabbdead	= {false,SPR_SCHABB_DIE3,55,NULL,NULL,&s_schabbdead2};
-statetype s_schabbdead2	= {false,SPR_SCHABB_DEAD,55,NULL,NULL,&s_schabbdead};
+statetype s_schabbdead	= {false,SPR_SCHABB_DEAD,55,NULL,NULL,&s_schabbdead2};
+statetype s_schabbdead2	= {false,SPR_SCHABB_DEAD2,55,NULL,NULL,&s_schabbdead};
 #elif (defined GAMEVER_RESTORATION_WL1_APO10)
 statetype s_schabbdie1	= {false,SPR_SCHABB_W1,10,NULL,NULL,&s_schabbdie2};
 statetype s_schabbdie2	= {false,SPR_SCHABB_DIE1,10,NULL,NULL,&s_schabbdie3};
@@ -2402,8 +2402,8 @@ statetype s_giftdie3	= {false,SPR_GIFT_DIE1,10,NULL,NULL,&s_giftdie4};
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 statetype s_giftdie4	= {false,SPR_GIFT_DIE2,10,NULL,NULL,&s_giftdead};
-statetype s_giftdead	= {false,SPR_GIFT_DIE3,55,NULL,NULL,&s_giftdead2};
-statetype s_giftdead2	= {false,SPR_GIFT_DEAD,55,NULL,NULL,&s_giftdead};
+statetype s_giftdead	= {false,SPR_GIFT_DEAD,55,NULL,NULL,&s_giftdead2};
+statetype s_giftdead2	= {false,SPR_GIFT_DEAD2,55,NULL,NULL,&s_giftdead};
 #else
 statetype s_giftdie4	= {false,SPR_GIFT_DIE2,10,NULL,NULL,&s_giftdie5};
 statetype s_giftdie5	= {false,SPR_GIFT_DIE3,10,NULL,NULL,&s_giftdie6};
@@ -2490,14 +2490,13 @@ statetype s_fatdeathcam	= {false,SPR_FAT_W1,1,NULL,NULL,&s_fatdie1};
 
 statetype s_fatdie1	= {false,SPR_FAT_W1,1,NULL,A_DeathScream,&s_fatdie2};
 statetype s_fatdie2	= {false,SPR_FAT_W1,10,NULL,NULL,&s_fatdie3};
+statetype s_fatdie3	= {false,SPR_FAT_DIE1,10,NULL,NULL,&s_fatdie4};
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
-statetype s_fatdie3	= {false,SPR_FAT_DEAD,10,NULL,NULL,&s_fatdie4};
-statetype s_fatdie4	= {false,SPR_FAT_DIE1,10,NULL,NULL,&s_fatdead};
-statetype s_fatdead	= {false,SPR_FAT_DIE2,55,NULL,NULL,&s_fatdead2};
-statetype s_fatdead2	= {false,SPR_FAT_DIE3,55,NULL,NULL,&s_fatdead};
+statetype s_fatdie4	= {false,SPR_FAT_DIE2,10,NULL,NULL,&s_fatdead};
+statetype s_fatdead	= {false,SPR_FAT_DEAD,55,NULL,NULL,&s_fatdead2};
+statetype s_fatdead2	= {false,SPR_FAT_DEAD2,55,NULL,NULL,&s_fatdead};
 #else
-statetype s_fatdie3	= {false,SPR_FAT_DIE1,10,NULL,NULL,&s_fatdie4};
 statetype s_fatdie4	= {false,SPR_FAT_DIE2,10,NULL,NULL,&s_fatdie5};
 statetype s_fatdie5	= {false,SPR_FAT_DIE3,10,NULL,NULL,&s_fatdie6};
 statetype s_fatdie6	= {false,SPR_FAT_DEAD,20,NULL,A_StartDeathCam,&s_fatdie6};
@@ -3236,18 +3235,18 @@ statetype s_hitlerdie6	= {false,SPR_HITLER_DIE5,10,NULL,NULL,&s_hitlerdie7};
 statetype s_hitlerdie7	= {false,SPR_HITLER_DIE6,10,NULL,NULL,&s_hitlerdie8};
 statetype s_hitlerdie8	= {false,SPR_HITLER_DIE7,10,NULL,NULL,&s_hitlerdie9};
 statetype s_hitlerdie9	= {false,SPR_HITLER_DEAD,0,NULL,NULL,&s_hitlerdie9};
-#else
-statetype s_hitlerdie1	= {false,SPR_HITLER_W1,1,NULL,A_DeathScream,&s_hitlerdie2};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+statetype s_hitlerdie1	= {false,SPR_HITLER_W1,1,NULL,A_DeathScream,&s_hitlerdie2};
 statetype s_hitlerdie2	= {false,SPR_HITLER_W1,15,NULL,NULL,&s_hitlerdie3};
 statetype s_hitlerdie3	= {false,SPR_HITLER_DIE1,15,NULL,A_Slurpie,&s_hitlerdie4};
 statetype s_hitlerdie4	= {false,SPR_HITLER_DIE2,15,NULL,NULL,&s_hitlerdie5};
-statetype s_hitlerdie5	= {false,SPR_HITLER_DIE3,55,NULL,NULL,&s_hitlerdie6};
-statetype s_hitlerdie6	= {false,SPR_HITLER_DEAD,55,NULL,A_StartDeathCam,&s_hitlerdead};
-statetype s_hitlerdead	= {false,SPR_HITLER_DIE3,55,NULL,NULL,&s_hitlerdead2};
-statetype s_hitlerdead2	= {false,SPR_HITLER_DEAD,55,NULL,NULL,&s_hitlerdead};
+statetype s_hitlerdie5	= {false,SPR_HITLER_DEAD,55,NULL,NULL,&s_hitlerdie6};
+statetype s_hitlerdie6	= {false,SPR_HITLER_DEAD2,55,NULL,A_StartDeathCam,&s_hitlerdead};
+statetype s_hitlerdead	= {false,SPR_HITLER_DEAD,55,NULL,NULL,&s_hitlerdead2};
+statetype s_hitlerdead2	= {false,SPR_HITLER_DEAD2,55,NULL,NULL,&s_hitlerdead};
 #else
+statetype s_hitlerdie1	= {false,SPR_HITLER_W1,1,NULL,A_DeathScream,&s_hitlerdie2};
 statetype s_hitlerdie2	= {false,SPR_HITLER_W1,10,NULL,NULL,&s_hitlerdie3};
 statetype s_hitlerdie3	= {false,SPR_HITLER_DIE1,10,NULL,A_Slurpie,&s_hitlerdie4};
 statetype s_hitlerdie4	= {false,SPR_HITLER_DIE2,10,NULL,NULL,&s_hitlerdie5};
@@ -3257,7 +3256,6 @@ statetype s_hitlerdie7	= {false,SPR_HITLER_DIE5,10,NULL,NULL,&s_hitlerdie8};
 statetype s_hitlerdie8	= {false,SPR_HITLER_DIE6,10,NULL,NULL,&s_hitlerdie9};
 statetype s_hitlerdie9	= {false,SPR_HITLER_DIE7,10,NULL,NULL,&s_hitlerdie10};
 statetype s_hitlerdie10	= {false,SPR_HITLER_DEAD,20,NULL,A_StartDeathCam,&s_hitlerdie10};
-#endif
 #endif
 
 statetype s_hitlershoot1 	= {false,SPR_HITLER_SHOOT1,30,NULL,NULL,&s_hitlershoot2};
@@ -3599,6 +3597,7 @@ void T_Fake (objtype *ob)
 	}
 
 }
+#endif // GAMEVER_RESTORATION_N3D_WIS10
 
 #endif
 /*

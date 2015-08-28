@@ -238,7 +238,9 @@ void	VW_MeasureMPropString  (char far *string, word *width, word *height)
 
 #ifdef GAMEVER_RESTORATION_WL1_APO10
 // An unknown do-nothing stub (possibly having disabled debugging code)
-void VW_NullStub1 (void) {}
+void VW_NullStub (void)
+{
+}
 
 // Some v1.0 specific function, guessing it's VW_InitDoubleBuffer
 void VW_InitDoubleBuffer (void)
@@ -248,14 +250,16 @@ void VW_InitDoubleBuffer (void)
 	VL_SetScreen (displayofs,0);
 }
 
-// Another v1.0 specific, but unused, function, guessing some random name
-void VW_CopyBuffer (void)
+// Another v1.0 specific, but unused, function, guessing name from Catacomb 3-D
+void VW_FixRefreshBuffer (void)
 {
 	VL_ScreenToScreen (displayofs,bufferofs,linewidth,160);
 }
 
-// Another unknown do-nothing stub
-void VW_NullStub2 (void) {}
+// Another unused do-nothing stub, again guessing its name from Catacomb 3-D
+void VW_QuitDoubleBuffer (void)
+{
+}
 #endif
 
 /*

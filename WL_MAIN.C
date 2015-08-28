@@ -1617,7 +1617,7 @@ close(profilehandle);
 	VW_FadeOut ();
 
 	LoadLatchMem ();
-#elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
+#elif (!defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 	if (virtualreality)
 	{
 		NoWait = true;

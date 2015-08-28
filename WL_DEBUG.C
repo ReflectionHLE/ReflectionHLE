@@ -679,7 +679,7 @@ int DebugKeys (void)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_RESTORATION_N3D_WIS10
 		US_Print("  Warp to which level(1-30):");
-#elif (defined SPEAR)
+#elif (!defined SPEAR)
 //#ifndef SPEAR
 		US_Print("  Warp to which level(1-10):");
 #else

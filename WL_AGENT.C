@@ -515,7 +515,12 @@ void	LatchNumber (int x, int y, int width, long number)
 
 void	DrawHealth (void)
 {
+	// *** S3DNA RESTORATION ***
+#ifdef GAMEVER_RESTORATION_N3D_WIS10
 	LatchNumber (23,16,3,gamestate.health);
+#else
+	LatchNumber (21,16,3,gamestate.health);
+#endif
 }
 
 
