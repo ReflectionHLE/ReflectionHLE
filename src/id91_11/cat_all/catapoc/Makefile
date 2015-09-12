@@ -67,9 +67,11 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_fs.o \
           $(BEOBJ)/be_cross_doszeroseg.o \
+          $(BEOBJ)/be_launcher.o \
           $(BEOBJ)/be_st_sdl.o \
           $(BEOBJ)/be_st_sdl_audio_timer.o \
           $(BEOBJ)/be_st_sdl_graphics.o \
+          $(BEOBJ)/be_st_sdl_launcher.o \
           $(BEOBJ)/be_textmode_fonts.o \
           $(BEOBJ)/crc32.o \
           $(BEOBJ)/dbopl.o \

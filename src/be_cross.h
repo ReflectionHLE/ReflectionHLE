@@ -78,7 +78,7 @@ int BE_Cross_strcasecmp(const char *s1, const char *s2);
 
 /* A safe(r) string copying function that:
  * - Gets a pointer to the destination buffer's end (little performance bit).
- * - Returns the END of the written string. (This differs from stdcpy!)
+ * - Returns the END of the written string. (This differs from strcpy!)
  * - Is ALLOWED to write past the written string's end, if there's room
  * (e.g., any additional null terminator).
  *
@@ -111,6 +111,17 @@ inline char *BE_Cross_safeandfastcstringcopy_3strs(char *dest, char *destEnd, co
 	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2);
 }
 
+
+// Game installations stuff
+
+#define BE_CROSS_MAX_GAME_INSTALLATIONS 4
+
+const char *BE_Cross_GetGameInstallationDescription(int num);
+int BE_Cross_GetGameVerFromInstallation(int num);
+extern int g_be_gameinstallations_num;
+
+// gameVer should be BE_GAMEVER_LAST if no specific version is desired
+void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc);
 
 // Often used as a replacement for file handles of type "int",
 // this one is given a different name so it's easy to swap in case of a need
@@ -151,10 +162,8 @@ void BE_Cross_free_mem_loaded_embedded_rsrc(void *ptr);
 // Returns: Number of filled entries.
 int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int maxNum, int strLenBound, const char *suffix);
 
-// Used preparing game installations and search paths
+// Used for preparing game installations and search paths
 void BE_Cross_PrepareGameInstallations(void);
-// gameVer should be BE_GAMEVER_LAST if no specific version is desired
-void BE_Cross_SelectGameInstallation(int gameVerVal);
 
 // Semi cross-platform binary (non-textual) file I/O, where it can be used directly (config file)
 size_t BE_Cross_readInt8LE(BE_FILE_T fp, void *ptr);

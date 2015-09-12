@@ -16,7 +16,7 @@
 static void (*g_sdlKeyboardInterruptFuncPtr)(uint8_t) = 0;
 
 static SDL_Joystick *g_sdlJoysticks[BE_ST_MAXJOYSTICKS];
-static SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS];
+SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS]; // Also used in launcher
 
 typedef enum { CONTROLSCHEMEMAP_TYPE_KEYVAL = 0, CONTROLSCHEMEMAP_TYPE_HELPER } SchemeMapTypeEnumT;
 enum { CONTROLSCHEMEMAP_HELPER_FUNCKEYS, CONTROLSCHEMEMAP_HELPER_SCROLLS };
@@ -179,12 +179,99 @@ uint8_t g_sdlLastKeyScanCode;
 
 void BE_ST_InitGfx(void);
 void BE_ST_InitAudio(void);
+void BE_ST_InitTiming(void);
 void BE_ST_ShutdownAudio(void);
 void BE_ST_ShutdownGfx(void);
+static void BEL_ST_ConditionallyAddJoystick(int which);
 static void BEL_ST_ParseConfig(void);
+static void BEL_ST_SaveConfig(void);
 static BESDLControllerMapEntry * BEL_ST_GetKeyMapPtrFromCfgVal(BESDLControllerMap *controllerMapPtr, int mappingCfgVal);
 
-void BE_ST_InitAll(void)
+void BE_ST_InitCommon(void)
+{
+	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER) < 0)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL backend initialization failed,\n%s\n", SDL_GetError());
+		exit(0);
+	}
+
+	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) < 0)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL game controller subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
+	}
+
+	BEL_ST_ParseConfig();
+	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE any SDL_CONTROLLERDEVICEADDED event should arrive (so e.g., before SDL_PollEvents).
+	SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
+}
+
+void BE_ST_PrepareForGameStartup(void)
+{
+	BE_ST_InitGfx();
+	BE_ST_InitAudio();
+	BE_ST_InitTiming();
+
+	// Preparing a controller scheme (with no special UI) in case the relevant feature is enabled
+	memcpy(&g_sdlControllertoScanCodeMaps.stack[0], &g_sdlControllerToScanCodeMap_default, sizeof(g_sdlControllerToScanCodeMap_default));
+	g_sdlControllertoScanCodeMaps.currPtr = &g_sdlControllertoScanCodeMaps.stack[0];
+	g_sdlControllertoScanCodeMaps.endPtr = &g_sdlControllertoScanCodeMaps.stack[NUM_OF_CONTROLLER_MAPS_IN_STACK];
+	g_sdlControllerActualCurrPtr = g_sdlControllertoScanCodeMaps.currPtr;
+
+	// Fill in-game scheme with configurable key mappings (but not the first two, which can further be configured - for keyboard usage)
+#ifdef REFKEEN_VER_KDREAMS
+	BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_STATS])->val = BE_ST_SC_SPACE;
+#else
+	BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_DRINK])->val = BE_ST_SC_SPACE;
+#ifdef REFKEEN_VER_CAT3D
+	BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_BOLT])->val = BE_ST_SC_B;
+	BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_FASTTURN])->val = BE_ST_SC_RSHIFT;
+#else
+	BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_BOLT])->val = BE_ST_SC_Z;
+	BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_FASTTURN])->val = BE_ST_SC_TAB;
+#endif
+	BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_NUKE])->val = BE_ST_SC_ENTER;
+#endif
+
+	BESDLControllerMapEntry *mapEntry;
+#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+	mapEntry = BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_SCROLLS]);
+	mapEntry->type = CONTROLSCHEMEMAP_TYPE_HELPER;
+	mapEntry->val = CONTROLSCHEMEMAP_HELPER_SCROLLS;
+#endif
+#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+	mapEntry = BEL_ST_GetKeyMapPtrFromCfgVal(&g_sdlControllerToScanCodeMap_inGameTemplate, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_FUNCKEYS]);
+	mapEntry->type = CONTROLSCHEMEMAP_TYPE_HELPER;
+	mapEntry->val = CONTROLSCHEMEMAP_HELPER_FUNCKEYS;
+#endif
+	// Simple menu mouse mapping (FIXME use enum)
+	g_sdlXAxisForMenuMouse = (g_refKeenCfg.altControlScheme.menuMouseMapping == 1) ? SDL_CONTROLLER_AXIS_LEFTX : SDL_CONTROLLER_AXIS_RIGHTX;
+	g_sdlYAxisForMenuMouse = (g_refKeenCfg.altControlScheme.menuMouseMapping == 1) ? SDL_CONTROLLER_AXIS_LEFTY : SDL_CONTROLLER_AXIS_RIGHTY;
+
+
+	g_sdlControllerSchemeNeedsCleanUp = true;
+
+	// BEFORE checking for more joysticks been attached/removed in BE_ST_PollEvents, add what's currently available
+	int nOfJoysticks = SDL_NumJoysticks();
+	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
+		nOfJoysticks = BE_ST_MAXJOYSTICKS;
+	for (int i = 0; i < nOfJoysticks; ++i)
+		BEL_ST_ConditionallyAddJoystick(i);
+
+	if (g_refKeenCfg.autolockCursor || (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
+	{
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+	else
+	{
+		SDL_ShowCursor(false);
+	}
+
+	BE_ST_PollEvents(); // e.g., to "reset" some states, and detect joysticks
+	SDL_GetRelativeMouseState(NULL, NULL); // Reset
+}
+
+#if 0
+void BE_ST_InitAllExceptForAudio(void)
 {
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER) < 0)
 	{
@@ -199,15 +286,8 @@ void BE_ST_InitAll(void)
 
 	BEL_ST_ParseConfig();
 	BE_ST_InitGfx();
-	BE_ST_InitAudio();
-	if (g_refKeenCfg.autolockCursor || (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
-	{
-		SDL_SetRelativeMouseMode(SDL_TRUE);
-	}
-	else
-	{
-		SDL_ShowCursor(false);
-	}
+	// Postpone this in case the launcher is shown
+	//BE_ST_InitAudio();
 	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE init so SDL_CONTROLLERDEVICEADDED events actually arrive
 	SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
 	// Preparing a controller scheme (with no special UI) in case the relevant feature is enabled
@@ -252,6 +332,7 @@ void BE_ST_InitAll(void)
 	BE_ST_PollEvents(); // e.g., to "reset" some states, and detect joysticks
 	SDL_GetRelativeMouseState(NULL, NULL); // Reset
 }
+#endif
 
 void BE_ST_ShutdownAll(void)
 {
@@ -336,8 +417,7 @@ void BE_ST_HandleExit(int status)
 		void BEL_ST_UpdateHostDisplay(void);
 		BEL_ST_UpdateHostDisplay();
 	}
-	BE_ST_ShutdownAll();
-	exit(0);
+	BE_ST_QuickExit();
 }
 
 void BE_ST_ExitWithErrorMsg(const char *msg)
@@ -346,6 +426,13 @@ void BE_ST_ExitWithErrorMsg(const char *msg)
 	BE_ST_puts(msg);
 	BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "%s\n", msg);
 	BE_ST_HandleExit(1);
+}
+
+void BE_ST_QuickExit(void)
+{
+	BEL_ST_SaveConfig();
+	BE_ST_ShutdownAll();
+	exit(0);
 }
 
 // Enumerated by SDL_GameControllerButton, for most
@@ -400,6 +487,11 @@ static void BEL_ST_ParseSetting_FullRes(const char *keyprefix, const char *buffe
 static void BEL_ST_ParseSetting_WindowRes(const char *keyprefix, const char *buffer)
 {
 	sscanf(buffer, "%dx%d", &g_refKeenCfg.winWidth, &g_refKeenCfg.winHeight);
+}
+
+static void BEL_ST_ParseSetting_LauncherWindowRes(const char *keyprefix, const char *buffer)
+{
+	sscanf(buffer, "%dx%d", &g_refKeenCfg.launcherWinWidth, &g_refKeenCfg.launcherWinHeight);
 }
 
 static void BEL_ST_ParseSetting_DisplayNum(const char *keyprefix, const char *buffer)
@@ -481,17 +573,31 @@ static void BEL_ST_ParseSetting_AutolockCursor(const char *keyprefix, const char
 static void BEL_ST_ParseSetting_SndSampleRate(const char *keyprefix, const char *buffer)
 {
 	g_refKeenCfg.sndSampleRate = atoi(buffer);
+	if (g_refKeenCfg.sndSampleRate <= 0)
+		g_refKeenCfg.sndSampleRate = 49716; // TODO - Shared define again
 }
 
-static void BEL_ST_ParseSetting_DisableSoundSubSystem(const char *keyprefix, const char *buffer)
+static void BEL_ST_ParseSetting_SoundSubSystem(const char *keyprefix, const char *buffer)
 {
 	if (!strcmp(buffer, "true"))
 	{
-		g_refKeenCfg.disableSoundSubSystem = true;
+		g_refKeenCfg.sndSubSystem = true;
 	}
 	else if (!strcmp(buffer, "false"))
 	{
-		g_refKeenCfg.disableSoundSubSystem = false;
+		g_refKeenCfg.sndSubSystem = false;
+	}
+}
+
+static void BEL_ST_ParseSetting_OPLEmulation(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_refKeenCfg.oplEmulation = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_refKeenCfg.oplEmulation = false;
 	}
 }
 
@@ -578,6 +684,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"fullscreen=", &BEL_ST_ParseSetting_FullScreen},
 	{"fullres=", &BEL_ST_ParseSetting_FullRes},
 	{"windowres=", &BEL_ST_ParseSetting_WindowRes},
+	{"launcherwindowres=", &BEL_ST_ParseSetting_LauncherWindowRes},
 	{"displaynum=", &BEL_ST_ParseSetting_DisplayNum},
 	{"sdlrenderer=", &BEL_ST_ParseSetting_SDLRendererDriver},
 	{"vsync=", &BEL_ST_ParseSetting_VSync},
@@ -586,7 +693,8 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"scalefactor=", &BEL_ST_ParseSetting_ScaleFactor},
 	{"autolock=", &BEL_ST_ParseSetting_AutolockCursor},
 	{"sndsamplerate=", &BEL_ST_ParseSetting_SndSampleRate},
-	{"disablesndsubsystem=", &BEL_ST_ParseSetting_DisableSoundSubSystem},
+	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
+	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
 	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
 
 	// HACK: Copy-paste... if this is updated, check g_sdlControlSchemeKeyMapCfgKeyPrefixes too!!!
@@ -617,6 +725,11 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #endif
 };
 
+
+// Little hack
+BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const char *searchdir);
+
+
 static void BEL_ST_ParseConfig(void)
 {
 	// Defaults
@@ -625,6 +738,8 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.fullHeight = 0;
 	g_refKeenCfg.winWidth = 0;
 	g_refKeenCfg.winHeight = 0;
+	g_refKeenCfg.launcherWinWidth = 0;
+	g_refKeenCfg.launcherWinHeight = 0;
 	g_refKeenCfg.displayNum = 0;
 	g_refKeenCfg.sdlRendererDriver = -1;
 	g_refKeenCfg.vSync = VSYNC_AUTO;
@@ -633,7 +748,8 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.scaleFactor = 2;
 	g_refKeenCfg.autolockCursor = false;
 	g_refKeenCfg.sndSampleRate = 49716; // TODO should be a shared define
-	g_refKeenCfg.disableSoundSubSystem = false;
+	g_refKeenCfg.sndSubSystem = true;
+	g_refKeenCfg.oplEmulation = true;
 	g_refKeenCfg.altControlScheme.isEnabled = false;
 
 #ifdef REFKEEN_VER_KDREAMS
@@ -661,37 +777,40 @@ static void BEL_ST_ParseConfig(void)
 #ifdef BE_ST_ENABLE_FARPTR_CFG
 	g_refKeenCfg.farPtrSegOffset = BE_ST_DEFAULT_FARPTRSEGOFFSET;
 #endif
-	// Little hack
-	BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const char *searchdir);
 	// Try to load config
 	FILE *fp = BEL_Cross_open_from_dir(REFKEEN_CONFIG_FILEPATH, false, ".");
-	if (fp)
+	if (!fp)
 	{
-		char buffer[80];
-		while (fgets(buffer, sizeof(buffer), fp))
+		return;
+	}
+	char buffer[80];
+	while (fgets(buffer, sizeof(buffer), fp))
+	{
+		size_t len = strlen(buffer);
+		if (!len)
 		{
-			size_t len = strlen(buffer);
-			if (!len)
+			continue;
+		}
+		if (buffer[len-1] == '\n')
+		{
+			buffer[len-1] = '\0';
+		}
+		for (int i = 0; i < (int)(sizeof(g_sdlCfgEntries)/sizeof(*g_sdlCfgEntries)); ++i)
+		{
+			if (!strncmp(g_sdlCfgEntries[i].cfgPrefix, buffer, strlen(g_sdlCfgEntries[i].cfgPrefix)))
 			{
-				continue;
-			}
-			if (buffer[len-1] == '\n')
-			{
-				buffer[len-1] = '\0';
-			}
-			for (int i = 0; i < (int)(sizeof(g_sdlCfgEntries)/sizeof(*g_sdlCfgEntries)); ++i)
-			{
-				if (!strncmp(g_sdlCfgEntries[i].cfgPrefix, buffer, strlen(g_sdlCfgEntries[i].cfgPrefix)))
-				{
-					g_sdlCfgEntries[i].handlerPtr(g_sdlCfgEntries[i].cfgPrefix, buffer+strlen(g_sdlCfgEntries[i].cfgPrefix));
-					break;
-				}
+				g_sdlCfgEntries[i].handlerPtr(g_sdlCfgEntries[i].cfgPrefix, buffer+strlen(g_sdlCfgEntries[i].cfgPrefix));
+				break;
 			}
 		}
-		fclose(fp);
 	}
+	fclose(fp);
+}
+
+static void BEL_ST_SaveConfig(void)
+{
 	// Try to save current settings just in case (first time file is created or new fields added)
-	fp = BEL_Cross_open_from_dir(REFKEEN_CONFIG_FILEPATH, true, ".");
+	FILE *fp = BEL_Cross_open_from_dir(REFKEEN_CONFIG_FILEPATH, true, ".");
 	if (!fp)
 	{
 		return;
@@ -699,6 +818,7 @@ static void BEL_ST_ParseConfig(void)
 	fprintf(fp, "fullscreen=%s\n", g_refKeenCfg.isFullscreen ? "true" : "false");
 	fprintf(fp, "fullres=%dx%d\n", g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight);
 	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
+	fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
 	if (g_refKeenCfg.sdlRendererDriver < 0)
 	{
@@ -716,7 +836,8 @@ static void BEL_ST_ParseConfig(void)
 	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
 	fprintf(fp, "autolock=%s\n", g_refKeenCfg.autolockCursor ? "true" : "false");
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
-	fprintf(fp, "disablesndsubsystem=%s\n", g_refKeenCfg.disableSoundSubSystem ? "true" : "false");
+	fprintf(fp, "sndsubsystem=%s\n", g_refKeenCfg.sndSubSystem ? "true" : "false");
+	fprintf(fp, "oplemulation=%s\n", g_refKeenCfg.oplEmulation ? "true" : "false");
 	fprintf(fp, "altcontrolscheme=%s\n", g_refKeenCfg.altControlScheme.isEnabled ? "true" : "false");
 	// Go through an array of keys
 	for (int keyindex = 0; keyindex < CONTROLSCHEME_CONFIG_BUTMAP_AFTERLAST; ++keyindex)
@@ -734,7 +855,6 @@ static void BEL_ST_ParseConfig(void)
 #endif
 	fclose(fp);
 }
-
 
 
 
@@ -1262,6 +1382,26 @@ static bool BEL_ST_AltControlScheme_HandleEntry(BESDLControllerMapEntry entry, b
 }
 
 
+static void BEL_ST_ConditionallyAddJoystick(int which)
+{
+	if (!g_refKeenCfg.altControlScheme.isEnabled)
+	{
+		g_sdlJoysticks[which] = SDL_JoystickOpen(which);
+	}
+	else if (SDL_IsGameController(which))
+	{
+		g_sdlControllers[which] = SDL_GameControllerOpen(which);
+		memset(g_sdlControllersActualButtonsStates[which], 0, sizeof(g_sdlControllersActualButtonsStates[which]));
+		memset(g_sdlControllersActualAxesStates[which], 0, sizeof(g_sdlControllersActualAxesStates[which]));
+
+		extern bool g_sdlShowControllerUI;
+		g_sdlShowControllerUI = true;
+		extern bool g_sdlForceGfxControlUiRefresh;
+		g_sdlForceGfxControlUiRefresh = true;
+	}
+}
+
+
 static void BEL_ST_AltControlScheme_CleanUp(void)
 {
 	if (!g_sdlControllerSchemeNeedsCleanUp)
@@ -1591,23 +1731,7 @@ void BE_ST_PollEvents(void)
 		 */
 		case SDL_JOYDEVICEADDED:
 			if (event.jdevice.which < BE_ST_MAXJOYSTICKS)
-			{
-				if (!g_refKeenCfg.altControlScheme.isEnabled)
-				{
-					g_sdlJoysticks[event.jdevice.which] = SDL_JoystickOpen(event.jdevice.which);
-				}
-				else if (SDL_IsGameController(event.jdevice.which))
-				{
-					g_sdlControllers[event.jdevice.which] = SDL_GameControllerOpen(event.jdevice.which);
-					memset(g_sdlControllersActualButtonsStates[event.jdevice.which], 0, sizeof(g_sdlControllersActualButtonsStates[event.jdevice.which]));
-					memset(g_sdlControllersActualAxesStates[event.jdevice.which], 0, sizeof(g_sdlControllersActualAxesStates[event.jdevice.which]));
-
-					extern bool g_sdlShowControllerUI;
-					g_sdlShowControllerUI = true;
-					extern bool g_sdlForceGfxControlUiRefresh;
-					g_sdlForceGfxControlUiRefresh = true;
-				}
-			}
+				BEL_ST_ConditionallyAddJoystick(event.jdevice.which);
 			break;
 		case SDL_JOYDEVICEREMOVED:
 			if (!g_refKeenCfg.altControlScheme.isEnabled)
@@ -1628,7 +1752,7 @@ void BE_ST_PollEvents(void)
 				{
 					if (g_sdlControllers[i])
 					{
-						if (SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i])) == event.cdevice.which)
+						if (SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i])) == event.jdevice.which)
 						{
 							SDL_GameControllerClose(g_sdlControllers[i]);
 							g_sdlControllers[i] = NULL;
@@ -1664,8 +1788,7 @@ void BE_ST_PollEvents(void)
 				break;
 			break;
 		case SDL_QUIT:
-			BE_ST_ShutdownAll();
-			exit(0);
+			BE_ST_QuickExit();
 			break;
 		default: ;
 		}

@@ -1,14 +1,36 @@
+/* Copyright (C) 2014-2015 NY00123
+ *
+ * This file is part of Reflection Keen.
+ *
+ * Reflection Keen is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #include "refkeen.h"
 
 #define BE_MENU_CHAR_WIDTH 8
 #define BE_MENU_CHAR_HEIGHT 8
 
 #define BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING 2
+#define BE_MENU_ITEM_MIN_TEXT_LINE_PIX_SPACING 4
 #define BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT 32
 
 #define BE_MENU_TITLE_PIX_YPOS (1+(BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT-BE_MENU_CHAR_HEIGHT)/2)
 
 #define BE_MENU_FIRST_ITEM_PIX_YPOS (1+BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT)
+
+#define BE_MENU_BACKBUTTON_PIX_WIDTH BE_MENU_FIRST_ITEM_PIX_YPOS
 
 #define BE_MENU_STATIC_TEXT_MAX_ROW_STRLEN ((BE_LAUNCHER_PIX_WIDTH-2*(BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING+1))/BE_MENU_CHAR_WIDTH)
 
@@ -30,7 +52,7 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 	char error[160];
 
 	const int xPosStart = BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING + 1;
-	const int yPosStart = yPos;
+	int lastYPos;
 	int xPosUpperBound = (menuItem->type == BE_MENUITEM_TYPE_SELECTION) ? BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND : (BE_LAUNCHER_PIX_WIDTH-1-BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING);
 	int xPos = xPosStart;
 	int noOfLabelLines = 1;
@@ -51,18 +73,19 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 		menuItem->nOfChoices = choicePtr-menuItem->choices;
 	}
 
-	menuItem->yPosStart = yPosStart;
+	menuItem->yPosStart = yPos;
 	yPos += BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING + 1;
 	// HACK - Label points to a mutable char array
 	for (char *lastWordPtr = menuItem->label, *chPtr = lastWordPtr; *chPtr;)
 	{
+		lastYPos = yPos;
 		if (*chPtr == ' ')
 		{
 			xPos += BE_MENU_CHAR_WIDTH;
 			if (xPos >= xPosUpperBound)
 			{
 				xPos = xPosStart;
-				yPos += BE_MENU_CHAR_HEIGHT;
+				yPos += BE_MENU_CHAR_HEIGHT + BE_MENU_ITEM_MIN_TEXT_LINE_PIX_SPACING;
 				// HACK - Label points to a mutable char array cause of this reason
 				*chPtr = '\n';
 				++noOfLabelLines;
@@ -81,7 +104,7 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 					BE_ST_ExitWithErrorMsg(error);
 				}
 				xPos = xPosStart;
-				yPos += BE_MENU_CHAR_HEIGHT;
+				yPos += BE_MENU_CHAR_HEIGHT + BE_MENU_ITEM_MIN_TEXT_LINE_PIX_SPACING;
 				// HACK - Label points to a mutable char array cause of this reason
 				*(lastWordPtr-1) = '\n';
 				chPtr = lastWordPtr; // Word relocated to next line
@@ -93,13 +116,13 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 			}	
 		}
 	}
-	menuItem->yPosPastEnd = yPos + BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING;
+	menuItem->yPosPastEnd = lastYPos + BE_MENU_CHAR_HEIGHT + BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING;
 	// Can happen if there's just one row of text
 	if (menuItem->yPosPastEnd - menuItem->yPosStart < BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT + 1)
 		menuItem->yPosPastEnd = menuItem->yPosStart + BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT + 1;
 
-	menuItem->labelYPos = menuItem->yPosStart + (menuItem->yPosPastEnd - (menuItem->yPosStart+1) - BE_MENU_CHAR_HEIGHT*noOfLabelLines) / 2;
-	menuItem->selectionYPos = menuItem->yPosStart + (menuItem->yPosPastEnd - (menuItem->yPosStart+1) - BE_MENU_CHAR_HEIGHT) / 2;
+	menuItem->labelYPos = menuItem->yPosStart + 1 + (menuItem->yPosPastEnd - (menuItem->yPosStart + 1) - (BE_MENU_CHAR_HEIGHT+BE_MENU_ITEM_MIN_TEXT_LINE_PIX_SPACING)*(noOfLabelLines-1) - BE_MENU_CHAR_HEIGHT) / 2;
+	menuItem->selectionYPos = menuItem->yPosStart + 1 + (menuItem->yPosPastEnd - (menuItem->yPosStart + 1) - BE_MENU_CHAR_HEIGHT) / 2;
 
 	return menuItem->yPosPastEnd;
 }
@@ -198,21 +221,44 @@ static void BEL_Launcher_DrawString(const char *str, int x, int y, int color, in
 		currLine = ch;
 		if (*currLine == '\n')
 			++currLine;
+		y += BE_MENU_ITEM_MIN_TEXT_LINE_PIX_SPACING;
 	}
+}
+
+static void BEL_Launcher_DrawBackButtonLabel(bool isPressed)
+{
+	BEL_Launcher_DrawString("\xAE\xAE", (BE_MENU_BACKBUTTON_PIX_WIDTH-BE_MENU_CHAR_WIDTH*strlen("\xAE\xAE"))/2, 1 + (BE_MENU_FIRST_ITEM_PIX_YPOS - BE_MENU_CHAR_HEIGHT - 1)/2, isPressed ? 15 : 7, 0, BE_LAUNCHER_PIX_HEIGHT);
+
+	BE_ST_Launcher_MarkGfxCache();
 }
 
 static void BEL_Launcher_DrawMenuTitleItem(BEMenu *menu)
 {
 	BEL_Launcher_DrawTopRect(0, 0, BE_LAUNCHER_PIX_WIDTH, BE_MENU_FIRST_ITEM_PIX_YPOS, 2, 0, 0, BE_LAUNCHER_PIX_HEIGHT);
 	BEL_Launcher_DrawString(menu->title, menu->titleXPos, BE_MENU_TITLE_PIX_YPOS, 11, 0, BE_LAUNCHER_PIX_HEIGHT);
+	// Back button
+	BEL_Launcher_DrawTopRect(0, 0, BE_MENU_BACKBUTTON_PIX_WIDTH, BE_MENU_FIRST_ITEM_PIX_YPOS, 2, 0, 0, BE_LAUNCHER_PIX_HEIGHT);
+	BEL_Launcher_DrawBackButtonLabel(false);
 
-	BE_ST_MarkGfxForUpdate();
+	BE_ST_Launcher_MarkGfxCache();
 }
 
 static void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem)
 {
+	int labelColor;
+	switch (menuItem->type)
+	{
+	case BE_MENUITEM_TYPE_STATIC:
+		labelColor = 13;
+		break;
+	case BE_MENUITEM_TYPE_SELECTION:
+		labelColor = (g_be_launcher_selectedMenuItemPtr && (menuItem == *g_be_launcher_selectedMenuItemPtr)) ? 15 : 12;
+		break;
+	default:
+		labelColor = (g_be_launcher_selectedMenuItemPtr && (menuItem == *g_be_launcher_selectedMenuItemPtr)) ? 15 : 7;
+	}
 	BEL_Launcher_DrawTopRect(0, menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll, BE_LAUNCHER_PIX_WIDTH, menuItem->yPosPastEnd - menuItem->yPosStart, 2, 0, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
-	BEL_Launcher_DrawString(menuItem->label, BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING + 1, menuItem->labelYPos - g_be_launcher_currMenu->currPixYScroll, g_be_launcher_selectedMenuItemPtr && (menuItem == *g_be_launcher_selectedMenuItemPtr) ? 15 : 7, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
+	BEL_Launcher_DrawString(menuItem->label, BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING + 1, menuItem->labelYPos - g_be_launcher_currMenu->currPixYScroll, labelColor, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 
 	if (menuItem->type == BE_MENUITEM_TYPE_SELECTION)
 	{
@@ -221,7 +267,12 @@ static void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem)
 		BEL_Launcher_DrawString(menuItem->choices[menuItem->choice], BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS + ((BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS+BE_MENU_CHAR_WIDTH) - BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS - BE_MENU_CHAR_WIDTH*strlen(menuItem->choices[menuItem->choice])) / 2, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 	}
 
-	BE_ST_MarkGfxForUpdate();
+	BE_ST_Launcher_MarkGfxCache();
+}
+
+static void BEL_Launcher_DrawMenuTitleBottomLine(void)
+{
+	BEL_Launcher_DrawTopRect(0, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_WIDTH, 1, 2, 0, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 }
 
 static void BEL_Launcher_DrawMenuItems(BEMenu *menu)
@@ -237,11 +288,11 @@ static void BEL_Launcher_DrawMenuItems(BEMenu *menu)
 		BEL_Launcher_DrawMenuItem(menuItemP);
 	}
 	// HACK - Don't forget these!! (top and bottom of menu items)
-	BEL_Launcher_DrawTopRect(0, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_WIDTH, 1, 2, 0, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
+	BEL_Launcher_DrawMenuTitleBottomLine();
 	menuItemP = (*(--menuItemPP));
 	BEL_Launcher_DrawTopRect(0, menuItemP->yPosPastEnd - g_be_launcher_currMenu->currPixYScroll, BE_LAUNCHER_PIX_WIDTH, 1, 2, 0, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 
-	BE_ST_MarkGfxForUpdate();
+	BE_ST_Launcher_MarkGfxCache();
 }
 
 static void BEL_Launcher_SetCurrentMenu(BEMenu *menu)
@@ -359,35 +410,53 @@ void BE_Launcher_HandleInput_ButtonBack(void)
 
 static int g_be_launcher_vscroll_acceleration = 0;
 static bool g_be_launcher_pointer_in_use = false;
+static bool g_be_launcher_back_button_pressed = false;
 static int g_be_launcher_lastpointery;
 
 void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos)
 {
 	g_be_launcher_pointer_in_use = true;
+	g_be_launcher_back_button_pressed = (xpos < BE_MENU_BACKBUTTON_PIX_WIDTH) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS);
+	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
 	g_be_launcher_lastpointery = ypos;
-	ypos += g_be_launcher_currMenu->currPixYScroll;
-	for (BEMenuItem **menuItemPP = g_be_launcher_currMenu->menuItems; *menuItemPP; ++menuItemPP)
-		if ((ypos >= (*menuItemPP)->yPosStart) && (ypos < (*menuItemPP)->yPosPastEnd))
-		{
-			BEMenuItem **prevMenuItemPP = g_be_launcher_selectedMenuItemPtr;
-			g_be_launcher_selectedMenuItemPtr = menuItemPP;
 
-			if (prevMenuItemPP)
-				BEL_Launcher_DrawMenuItem(*prevMenuItemPP);
-			BEL_Launcher_DrawMenuItem(*menuItemPP);
-			return;
-		}
+	if (!g_be_launcher_back_button_pressed)
+	{
+		ypos += g_be_launcher_currMenu->currPixYScroll;
+		for (BEMenuItem **menuItemPP = g_be_launcher_currMenu->menuItems; *menuItemPP; ++menuItemPP)
+			if ((ypos >= (*menuItemPP)->yPosStart) && (ypos < (*menuItemPP)->yPosPastEnd))
+			{
+				BEMenuItem **prevMenuItemPP = g_be_launcher_selectedMenuItemPtr;
+				g_be_launcher_selectedMenuItemPtr = menuItemPP;
 
+				if (prevMenuItemPP)
+					BEL_Launcher_DrawMenuItem(*prevMenuItemPP);
+				BEL_Launcher_DrawMenuItem(*menuItemPP);
+				// HACK - Don't forget this!
+				BEL_Launcher_DrawMenuTitleBottomLine();
+				return;
+			}
+	}
 	BEMenuItem **prevMenuItemPP = g_be_launcher_selectedMenuItemPtr;
 	g_be_launcher_selectedMenuItemPtr = NULL;
 	if (prevMenuItemPP)
 		BEL_Launcher_DrawMenuItem(*prevMenuItemPP);
+	// HACK - Don't forget this!
+	BEL_Launcher_DrawMenuTitleBottomLine();
 }
 
 void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos)
 {
 	g_be_launcher_pointer_in_use = false;
 	//g_be_launcher_lastpointery = ypos;
+	if (g_be_launcher_back_button_pressed)
+	{
+		g_be_launcher_back_button_pressed = false;
+		//BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
+		BE_Launcher_HandleInput_ButtonBack();
+		return;
+	}
+
 	if (g_be_launcher_selectedMenuItemPtr && (ypos+g_be_launcher_currMenu->currPixYScroll >= (*g_be_launcher_selectedMenuItemPtr)->yPosStart) && (ypos+g_be_launcher_currMenu->currPixYScroll < (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd))
 	{
 		// Should work like confirm key except for some exception
@@ -413,6 +482,9 @@ void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos)
 {
 	if (!g_be_launcher_pointer_in_use)
 		return;
+
+	g_be_launcher_back_button_pressed = false;
+	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
 
 	g_be_launcher_selectedMenuItemPtr = NULL;
 	g_be_launcher_vscroll_acceleration = 0;
@@ -460,15 +532,17 @@ void BE_Launcher_RefreshVerticalScrolling(void)
 
 void BE_Launcher_Start(void)
 {
-	BE_ST_PrepareLauncher();
+	BE_ST_Launcher_Prepare();
 
-	g_be_launcher_screenPtr = BE_ST_GetLauncherGfxPtr();
+	g_be_launcher_screenPtr = BE_ST_Launcher_GetGfxPtr();
 
 	BE_Launcher_PrepareMenu(&g_beMainMenu);
 	BE_Launcher_PrepareMenu(&g_beSelectGameMenu);
+	BE_Launcher_PrepareMenu(&g_beDisappearedGameHelpMenu);
 	BE_Launcher_PrepareMenu(&g_beSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beVideoSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beMoreSettingsMenu);
+	BE_Launcher_PrepareMenu(&g_beQuitConfirmMenu);
 
 	BEL_Launcher_SetCurrentMenu(&g_beMainMenu);
 
@@ -479,14 +553,15 @@ void BE_Launcher_Start(void)
 
 void BE_Launcher_Handler_GameLaunch(int menuItemNum)
 {
-	BE_ST_UpdateCfgFromLauncher();
+	BE_ST_Launcher_Shutdown();
 	int argc = 1;
-	char *argv[] = {"proxy.exe"};
+	static char someEXEName[] = "proxy";
+	char *argv[] = {someEXEName};
 	BE_Cross_StartGame(BE_Cross_GetGameVerFromInstallation(menuItemNum), argc, argv, 0);
 }
 
 void BE_Launcher_Handler_MenuQuit(int menuItemNum)
 {
-	BE_ST_UpdateCfgFromLauncher();
+	BE_ST_Launcher_Shutdown();
 	BE_ST_QuickExit();
 }

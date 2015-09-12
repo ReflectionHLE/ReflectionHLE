@@ -4,10 +4,20 @@
 #include "be_cross.h"
 #include "be_st.h"
 
-/*static*/ SDL_Window *g_sdlWindow;
-static SDL_Renderer *g_sdlRenderer;
-static SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
-static SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
+// Some of these are also used in launcher
+SDL_Window *g_sdlWindow;
+SDL_Renderer *g_sdlRenderer;
+SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
+SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
+
+#ifdef REFKEEN_VER_KDREAMS
+	const char *g_sdlWindowTitle = "Reflection Keen";
+#elif (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
+	const char *g_sdlWindowTitle = "Reflection Catacomb 3-D";
+#else
+#error "FATAL ERROR: No Ref port game macro is defined!"
+#endif
+
 
 static bool g_sdlDoRefreshGfxOutput;
 bool g_sdlForceGfxControlUiRefresh;
@@ -114,26 +124,17 @@ static int g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY;
 static bool g_sdlTextInputIsKeyPressed, g_sdlTextInputIsShifted;
 
 
-void BE_ST_SetGfxOutputRects(void);
-
 void BE_ST_InitGfx(void)
 {
-#ifdef REFKEEN_VER_KDREAMS
-	const char *windowTitle = "Reflection Keen";
-#elif (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
-	const char *windowTitle = "Reflection Catacomb 3-D";
-#else
-#error "FATAL ERROR: No Ref port game macro is defined!"
-#endif
 	if (g_refKeenCfg.isFullscreen)
 	{
 		if (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight)
 		{
-			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, SDL_WINDOW_FULLSCREEN);
+			g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, SDL_WINDOW_FULLSCREEN);
 		}
 		else
 		{
-			g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		}
 	}
 	else
@@ -177,7 +178,7 @@ void BE_ST_InitGfx(void)
 				actualWinHeight = mode.h*500/809;
 			}
 		}
-		g_sdlWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), actualWinWidth, actualWinHeight, SDL_WINDOW_RESIZABLE);
+		g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), actualWinWidth, actualWinHeight, SDL_WINDOW_RESIZABLE);
 	}
 	if (!g_sdlWindow)
 	{
@@ -321,8 +322,11 @@ static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
 };
 
 // Same but for the EGA/VGA (and colored text modes on CGA/EGA/VGA)
-
-static const uint32_t g_sdlEGABGRAScreenColors[] = {
+// Note: Also used in launcher; extern is added for C++
+#ifdef __cplusplus
+extern
+#endif
+const uint32_t g_sdlEGABGRAScreenColors[] = {
 	0xff000000/*black*/, 0xff0000aa/*blue*/, 0xff00aa00/*green*/, 0xff00aaaa/*cyan*/,
 	0xffaa0000/*red*/, 0xffaa00aa/*magenta*/, 0xffaa5500/*brown*/, 0xffaaaaaa/*light gray*/,
 	0xff555555/*gray*/, 0xff5555ff/*light blue*/, 0xff55ff55/*light green*/, 0xff55ffff/*light cyan*/,
@@ -669,6 +673,13 @@ void BE_ST_SetGfxOutputRects(void)
 	int srcBorderedHeight = srcBorderTop+srcHeight+srcBorderBottom;
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+	// Save modified window size
+	if (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
+	{
+		g_refKeenCfg.winWidth = winWidth;
+		g_refKeenCfg.winHeight = winHeight;
+	}
+
 	if (g_refKeenCfg.scaleType == SCALE_FILL)
 	{
 		g_sdlAspectCorrectionBorderedRect.w = winWidth;
@@ -735,9 +746,6 @@ uint8_t *BE_ST_GetTextModeMemoryPtr(void)
 {
 	return g_sdlVidMem.text;
 }
-
-
-
 
 static uint32_t g_sdlEGACurrBGRAPaletteAndBorder[17], g_sdlEGACurrBGRAPaletteAndBorderCache[17];
 

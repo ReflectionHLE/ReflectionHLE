@@ -1,6 +1,37 @@
+/* Copyright (C) 2014-2015 NY00123
+ *
+ * This file is part of Reflection Keen.
+ *
+ * Reflection Keen is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #include "SDL.h"
 
 #include "refkeen.h"
+
+// Borrowed from other files
+extern const uint32_t g_sdlEGABGRAScreenColors[];
+extern SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS];
+extern SDL_Window *g_sdlWindow;
+extern SDL_Renderer *g_sdlRenderer;
+extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
+extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
+extern const char *g_sdlWindowTitle;
+
+static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
+static bool g_sdlLauncherGfxCacheMarked = false;
 
 #define BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN 10
 
@@ -8,6 +39,7 @@
 #define BEMENUITEM_DEF_TARGETMENU(menuItemName, label, menuPtr) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, menuPtr, label, BE_MENUITEM_TYPE_TARGETMENU)
 #define BEMENUITEM_DEF_SELECTION(menuItemName, label, choices) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, choices, NULL, label, BE_MENUITEM_TYPE_SELECTION)
 #define BEMENUITEM_DEF_HANDLER(menuItemName, label, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, NULL, NULL, label, BE_MENUITEM_TYPE_HANDLER)
+#define BEMENUITEM_DEF_STATIC(menuItemName, label) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, NULL, label, BE_MENUITEM_TYPE_STATIC)
 
 // A little hack - Store a copy of the label string literal that can be modified
 #define BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, menuPtr, label, type) \
@@ -20,11 +52,11 @@ static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_PlayGame, "Play game", &g_beSelectGameMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
-BEMENUITEM_DEF_HANDLER(g_beMainMenuItem_Quit, "Quit", &BE_Launcher_Handler_MenuQuit)
+BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Quit, "Quit", &g_beQuitConfirmMenu)
 
 BEMenu g_beMainMenu = {
 	"Reflection Keen", // TODO rename this based on EXE
-	&g_beMainMenu,
+	&g_beQuitConfirmMenu,
 	(BEMenuItem *[])
 	{
 		&g_beMainMenuItem_PlayGame,
@@ -39,12 +71,31 @@ BEMenu g_beMainMenu = {
 
 static BEMenuItem g_beSelectGameMenuItems[BE_CROSS_MAX_GAME_INSTALLATIONS];
 static char g_beSelectGameMenuItemsStrs[BE_CROSS_MAX_GAME_INSTALLATIONS][78]; // Should be MUTABLE strings for layout preparation
-static BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_CROSS_MAX_GAME_INSTALLATIONS+1];
+static BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_CROSS_MAX_GAME_INSTALLATIONS+2];
+
+BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_DisappearedGameHelp, "Help! An installed game disappeared from the list!", &g_beDisappearedGameHelpMenu)
 
 BEMenu g_beSelectGameMenu = {
 	"Select game",
 	&g_beMainMenu,
 	g_beSelectGameMenuItemsPtrs, // Array of menu items
+	// Ignore the rest
+};
+
+BEMENUITEM_DEF_STATIC(g_beDisappearedGameHelpMenuItem_Explanation,
+"Reflection Keen can detect compatible DOS game versions from various installations, including ones coming from online sources like Steam and GOG.com. Once such a game installation is updated in any minor way, Reflection Keen may fail to locate it. This is normal."
+);
+
+/*** Disappeared game menu ***/
+
+BEMenu g_beDisappearedGameHelpMenu = {
+	"Where may a game disappear",
+	&g_beSelectGameMenu,
+	(BEMenuItem *[])
+	{
+		&g_beDisappearedGameHelpMenuItem_Explanation,
+		NULL
+	},
 	// Ignore the rest
 };
 
@@ -118,7 +169,7 @@ BEMenu g_beVideoSettingsMenu = {
 	// Ignore the rest
 };
 
-/** More settings menu ***/
+/*** More settings menu ***/
 
 // TODO (REFKEEN) Add more settings for game controller
 
@@ -130,6 +181,7 @@ static const char *g_be_settingsChoices_controllerScheme[] = {"Classic", "Modern
 BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_Autolock, "Autolock mouse cursor in fullscreen", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_SndSampleRate, "Sound sample rate (in Hz)", g_be_settingsChoices_sndSampleRate)
 BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_SndSubSystem, "Enable sound subsystem", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_OPLEmulation, "Enable OPL emulation", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_settingsChoices_controllerScheme)
 
 BEMenu g_beMoreSettingsMenu = {
@@ -140,20 +192,84 @@ BEMenu g_beMoreSettingsMenu = {
 		&g_beMoreSettingsMenuItem_Autolock,
 		&g_beMoreSettingsMenuItem_SndSampleRate,
 		&g_beMoreSettingsMenuItem_SndSubSystem,
+		&g_beMoreSettingsMenuItem_OPLEmulation,
 		&g_beMoreSettingsMenuItem_ControllerScheme,
 		NULL
 	},
 	// Ignore the rest
 };
 
+/*** Quit confirm menu ***/
 
-void BE_ST_PrepareLauncher(void)
+BEMENUITEM_DEF_HANDLER(g_beQuitConfirmMenuItem_Yes, "Yes", &BE_Launcher_Handler_MenuQuit)
+BEMENUITEM_DEF_TARGETMENU(g_beQuitConfirmMenuItem_No, "No", &g_beMainMenu)
+
+BEMenu g_beQuitConfirmMenu = {
+	"Are you sure you want to quit?",
+	&g_beMainMenu,
+	(BEMenuItem *[])
+	{
+		&g_beQuitConfirmMenuItem_Yes,
+		&g_beQuitConfirmMenuItem_No,
+		NULL
+	},
+	// Ignore the rest
+};
+
+static void BEL_ST_Launcher_SetGfxOutputRect();
+
+void BE_ST_Launcher_Prepare(void)
 {
+	/*** Prepare ST stuff ***/
+
+	/* Graphics */
+	if (!g_refKeenCfg.launcherWinWidth || !g_refKeenCfg.launcherWinHeight)
+	{
+		g_refKeenCfg.launcherWinWidth = 2*BE_LAUNCHER_PIX_WIDTH;
+		g_refKeenCfg.launcherWinHeight = 2*BE_LAUNCHER_PIX_HEIGHT;
+	}
+
+	g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight, SDL_WINDOW_RESIZABLE);
+	if (!g_sdlWindow)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window for launcher,\n%s\n", SDL_GetError());
+		exit(0);
+	}
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (!g_sdlRenderer)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer for launcher,\n%s\n", SDL_GetError());
+		//Destroy window?
+		exit(0);
+	}
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT);
+	if (!g_sdlTexture)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture for launcher,\n%s\n", SDL_GetError());
+		//Destroy window and renderer?
+		exit(0);
+	}
+
+	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE); // For clears in refreshes
+	BEL_ST_Launcher_SetGfxOutputRect();
+
+	// Try, if we fail then simply don't use this
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+	g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT);
+	/* Game controllers */
+	int nOfJoysticks = SDL_NumJoysticks();
+	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
+		nOfJoysticks = BE_ST_MAXJOYSTICKS;
+	for (int i = 0; i < nOfJoysticks; ++i)
+		if (SDL_IsGameController(i))
+			g_sdlControllers[i] = SDL_GameControllerOpen(i);
+
 	// Set fullscreen value
 	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;
 	/*** Prepare displays list ***/
 	int nOfDisplays = SDL_GetNumVideoDisplays();
-	if (nOfDisplays >= sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums))
+	if (nOfDisplays >= (int)(sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums)))
 		nOfDisplays = sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums) - 1;
 	g_be_videoSettingsChoices_displayNums[nOfDisplays] = NULL;
 	g_beVideoSettingsMenuItem_DisplayNum.choice = g_refKeenCfg.displayNum;
@@ -213,7 +329,7 @@ void BE_ST_PrepareLauncher(void)
 	// Set ScaleType value
 	g_beVideoSettingsMenuItem_ScaleType.choice = g_refKeenCfg.scaleType;
 	// Set ScaleFactor value
-	if ((g_refKeenCfg.scaleFactor <= 0) || (g_refKeenCfg.scaleFactor >= sizeof(g_be_settingsChoices_scaleFactor)/sizeof(*g_be_settingsChoices_scaleFactor)))
+	if ((g_refKeenCfg.scaleFactor <= 0) || (g_refKeenCfg.scaleFactor >= (int)(sizeof(g_be_settingsChoices_scaleFactor)/sizeof(*g_be_settingsChoices_scaleFactor))))
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = 0;
 	else
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = g_refKeenCfg.scaleFactor-1;
@@ -221,7 +337,7 @@ void BE_ST_PrepareLauncher(void)
 	g_beMoreSettingsMenuItem_Autolock.choice = g_refKeenCfg.autolockCursor;
 	// Set SndSampleRate value
 	g_beMoreSettingsMenuItem_SndSampleRate.choice = 8; // FIXME - Better way to grab default off cfg
-	for (int i = 0; i < sizeof(g_be_settingsChoices_sndSampleRateVals)/sizeof(*g_be_settingsChoices_sndSampleRateVals); ++i)
+	for (int i = 0; i < (int)(sizeof(g_be_settingsChoices_sndSampleRateVals)/sizeof(*g_be_settingsChoices_sndSampleRateVals)); ++i)
 		if (g_be_settingsChoices_sndSampleRateVals[i] == g_refKeenCfg.sndSampleRate)
 		{
 			g_beMoreSettingsMenuItem_SndSampleRate.choice = i;
@@ -229,6 +345,8 @@ void BE_ST_PrepareLauncher(void)
 		}
 	// Set SndSubSystem value
 	g_beMoreSettingsMenuItem_SndSubSystem.choice = g_refKeenCfg.sndSubSystem;
+	// Set OPLEmulation value
+	g_beMoreSettingsMenuItem_OPLEmulation.choice = g_refKeenCfg.oplEmulation;
 	// Set ControllerScheme value
 	g_beMoreSettingsMenuItem_ControllerScheme.choice = g_refKeenCfg.altControlScheme.isEnabled;
 
@@ -241,15 +359,32 @@ void BE_ST_PrepareLauncher(void)
 		g_beSelectGameMenuItems[i].label = g_beSelectGameMenuItemsStrs[i];
 		g_beSelectGameMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
 	}
-	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num] = NULL;
+	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num] = &g_beSelectGameMenuItem_DisappearedGameHelp;
+	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num+1] = NULL;
 
-	/*** Finally prepare window for launcher ***/
-	BE_ST_SetScreenMode(-1);
 }
 
 
-void BE_ST_UpdateCfgFromLauncher(void)
+void BE_ST_Launcher_Shutdown(void)
 {
+	/*** Clear ST stuff ***/
+	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+		if (g_sdlControllers[i])
+		{
+			SDL_GameControllerClose(g_sdlControllers[i]);
+			g_sdlControllers[i] = NULL;
+		}
+
+	SDL_DestroyTexture(g_sdlTexture);
+	g_sdlTexture = NULL;
+	SDL_DestroyTexture(g_sdlTargetTexture);
+	g_sdlTargetTexture = NULL;
+	SDL_DestroyRenderer(g_sdlRenderer);
+	g_sdlRenderer = NULL;
+	SDL_DestroyWindow(g_sdlWindow);
+	g_sdlWindow = NULL;
+
+	/*** Save settings if there's any change ***/
 	if (!g_be_launcher_wasAnySettingChanged)
 		return; // e.g., if there is a cfg value the launcher doesn't cope with (say, out of some range)
 
@@ -268,15 +403,67 @@ void BE_ST_UpdateCfgFromLauncher(void)
 	}
 
 	g_refKeenCfg.sdlRendererDriver = g_beVideoSettingsMenuItem_SDLRenderer.choice - 1;
-	g_refKeenCfg.vSync = g_beVideoSettingsMenuItem_VSync.choice;
+	g_refKeenCfg.vSync = (VSyncSettingType)g_beVideoSettingsMenuItem_VSync.choice;
 	g_refKeenCfg.isBilinear = g_beVideoSettingsMenuItem_Bilinear.choice;
-	g_refKeenCfg.scaleType = g_beVideoSettingsMenuItem_ScaleType.choice;
+	g_refKeenCfg.scaleType = (ScaleTypeSettingType)g_beVideoSettingsMenuItem_ScaleType.choice;
 	g_refKeenCfg.scaleFactor = g_beVideoSettingsMenuItem_ScaleFactor.choice + 1;
 
 	g_refKeenCfg.autolockCursor = g_beMoreSettingsMenuItem_Autolock.choice;
 	g_refKeenCfg.sndSampleRate = g_be_settingsChoices_sndSampleRateVals[g_beMoreSettingsMenuItem_SndSampleRate.choice];
 	g_refKeenCfg.sndSubSystem = g_beMoreSettingsMenuItem_SndSubSystem.choice;
+	g_refKeenCfg.oplEmulation = g_beMoreSettingsMenuItem_OPLEmulation.choice;
 	g_refKeenCfg.altControlScheme.isEnabled = g_beMoreSettingsMenuItem_ControllerScheme.choice;
+}
+
+static void BEL_ST_Launcher_SetGfxOutputRect(void)
+{
+	int winWidth, winHeight;
+	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+
+	g_refKeenCfg.launcherWinWidth = winWidth;
+	g_refKeenCfg.launcherWinHeight = winHeight;
+
+	if (BE_LAUNCHER_PIX_HEIGHT*winWidth < BE_LAUNCHER_PIX_WIDTH*winHeight) // Thinner than BE_LAUNCHER_PIX_WIDTH:BE_LAUNCHER_PIX_HEIGHT
+	{
+		g_sdlAspectCorrectionBorderedRect.w = winWidth;
+		g_sdlAspectCorrectionBorderedRect.h = winWidth*BE_LAUNCHER_PIX_HEIGHT/BE_LAUNCHER_PIX_WIDTH;
+		g_sdlAspectCorrectionBorderedRect.x = 0;
+		g_sdlAspectCorrectionBorderedRect.y = (winHeight-g_sdlAspectCorrectionBorderedRect.h)/2;
+	}
+	else // As wide as BE_LAUNCHER_PIX_WIDTH:BE_LAUNCHER_PIX_HEIGHT at the least
+	{
+		g_sdlAspectCorrectionBorderedRect.w = winHeight*BE_LAUNCHER_PIX_WIDTH/BE_LAUNCHER_PIX_HEIGHT;
+		g_sdlAspectCorrectionBorderedRect.h = winHeight;
+		g_sdlAspectCorrectionBorderedRect.x = (winWidth-g_sdlAspectCorrectionBorderedRect.w)/2;
+		g_sdlAspectCorrectionBorderedRect.y = 0;
+	}
+}
+
+void BE_ST_Launcher_MarkGfxCache(void)
+{
+	g_sdlLauncherGfxCacheMarked = true;
+}
+
+uint8_t *BE_ST_Launcher_GetGfxPtr(void)
+{
+	return g_sdlLauncherGfxCache;
+}
+
+static void BEL_ST_Launcher_NormalizePos(int *px, int *py)
+{
+	if (*px < g_sdlAspectCorrectionBorderedRect.x)
+		*px = 0;
+	if (*px >= g_sdlAspectCorrectionBorderedRect.x + g_sdlAspectCorrectionBorderedRect.w)
+		*px = BE_LAUNCHER_PIX_WIDTH;
+	else
+		*px = BE_LAUNCHER_PIX_WIDTH*(*px-g_sdlAspectCorrectionBorderedRect.x)/g_sdlAspectCorrectionBorderedRect.w;
+
+	if (*py < g_sdlAspectCorrectionBorderedRect.y)
+		*py = 0;
+	if (*py >= g_sdlAspectCorrectionBorderedRect.y + g_sdlAspectCorrectionBorderedRect.h)
+		*py = BE_LAUNCHER_PIX_HEIGHT;
+	else
+		*py = BE_LAUNCHER_PIX_HEIGHT*(*py-g_sdlAspectCorrectionBorderedRect.y)/g_sdlAspectCorrectionBorderedRect.h;
 }
 
 
@@ -314,47 +501,110 @@ void BE_ST_Launcher_RunEventLoop(void)
 					break;
 				}
 				break;
+
 			case SDL_MOUSEBUTTONDOWN:
-				BEL_ST_NormalizeBorderedPos(&event.button.x, &event.button.y);
+				BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
 				BE_Launcher_HandleInput_PointerSelect(event.button.x, event.button.y);
 				break;
 			case SDL_MOUSEBUTTONUP:
-				BEL_ST_NormalizeBorderedPos(&event.button.x, &event.button.y);
+				BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
 				BE_Launcher_HandleInput_PointerRelease(event.button.x, event.button.y);
 				break;
 			case SDL_MOUSEMOTION:
-				BEL_ST_NormalizeBorderedPos(&event.button.x, &event.button.y);
+				BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
 				BE_Launcher_HandleInput_PointerMotion(event.button.x, event.button.y);
 				break;
 			case SDL_MOUSEWHEEL:
 				BE_Launcher_HandleInput_PointerVScroll(-6*event.wheel.y);
 				break;
-			// TODO - Mouse events (including wheel and cursor drags)
-			// TODO - Game controller events (similar to keyboard)
+
+			case SDL_JOYDEVICEADDED:
+				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && SDL_IsGameController(event.jdevice.which))
+					g_sdlControllers[event.jdevice.which] = SDL_GameControllerOpen(event.jdevice.which);
+				break;
+			case SDL_JOYDEVICEREMOVED:
+				for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+					if (g_sdlControllers[i] && (SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i])) == event.jdevice.which))
+					{
+						SDL_GameControllerClose(g_sdlControllers[i]);
+						g_sdlControllers[i] = NULL;
+					}
+				break;
+
+			case SDL_CONTROLLERBUTTONDOWN:
+				switch (event.cbutton.button)
+				{
+				case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+					BE_Launcher_HandleInput_ButtonRight();
+					break;
+				case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+					BE_Launcher_HandleInput_ButtonLeft();
+					break;
+				case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+					BE_Launcher_HandleInput_ButtonDown();
+					break;
+				case SDL_CONTROLLER_BUTTON_DPAD_UP:
+					BE_Launcher_HandleInput_ButtonUp();
+					break;
+				case SDL_CONTROLLER_BUTTON_A:
+					BE_Launcher_HandleInput_ButtonActivate();
+					break;
+				case SDL_CONTROLLER_BUTTON_B:
+				case SDL_CONTROLLER_BUTTON_BACK:
+					BE_Launcher_HandleInput_ButtonBack();
+					break;
+				}
+				break;
+
 			case SDL_WINDOWEVENT:
 				switch (event.window.event)
 				case  SDL_WINDOWEVENT_RESIZED:
 				{
-					void BE_ST_SetGfxOutputRects(void);
-					BE_ST_SetGfxOutputRects();
-					//BE_ST_MarkGfxForPendingUpdate();
-					BE_ST_MarkGfxForUpdate();
+					BEL_ST_Launcher_SetGfxOutputRect();
+					BE_ST_Launcher_MarkGfxCache();
 					break;
 				}
 				case SDL_WINDOWEVENT_EXPOSED:
-					//BE_ST_MarkGfxForPendingUpdate();
-					BE_ST_MarkGfxForUpdate();
+					BE_ST_Launcher_MarkGfxCache();
 					break;
 				break;
 			case SDL_QUIT:
-				BE_ST_UpdateCfgFromLauncher();
+				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
 				break;
 			}
 		}
 		SDL_Delay(1);
 		BE_Launcher_RefreshVerticalScrolling();
-		void BEL_ST_UpdateHostDisplay(void);
-		BEL_ST_UpdateHostDisplay();
+
+		/*** Draw ***/
+		if (g_sdlLauncherGfxCacheMarked)
+		{
+			g_sdlLauncherGfxCacheMarked = false;
+			void *pixels;
+			int pitch;
+			SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
+			uint32_t *currPixPtr = (uint32_t *)pixels;
+			uint8_t *currPalPixPtr = g_sdlLauncherGfxCache;
+			for (int pixnum = 0; pixnum < BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
+			{
+				*currPixPtr = g_sdlEGABGRAScreenColors[*currPalPixPtr];
+			}
+
+			SDL_UnlockTexture(g_sdlTexture);
+			SDL_RenderClear(g_sdlRenderer);
+			if (g_sdlTargetTexture)
+			{
+				SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);
+				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
+				SDL_SetRenderTarget(g_sdlRenderer, NULL);
+				SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+			}
+			else
+			{
+				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+			}
+			SDL_RenderPresent(g_sdlRenderer);
+		}
 	}
 }

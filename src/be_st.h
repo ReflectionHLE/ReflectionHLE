@@ -6,12 +6,14 @@
 
 #include "be_st_sdl.h"
 
-// Direct accesses to any of these functions should be minimized
+#define BE_ST_MAXJOYSTICKS 8
 
 /*** General ***/
-void BE_ST_InitAll(void);
-void BE_ST_ShutdownAll(void);
+void BE_ST_InitCommon(void); // Before game or launcher
+void BE_ST_PrepareForGameStartup(void); // Before game
+void BE_ST_ShutdownAll(void); // After game
 void BE_ST_HandleExit(int status); // Replacement for exit function (useful for displaying text screen)
+void BE_ST_QuickExit(void); // Where the usual exit handler isn't sufficient: Saves last settings, shutdowns subsystems and then exits immediately
 void BE_ST_StartKeyboardService(void (*funcPtr)(uint8_t));
 void BE_ST_StopKeyboardService(void);
 void BE_ST_GetMouseDelta(int16_t *x, int16_t *y);
@@ -45,6 +47,9 @@ void BE_ST_AltControlScheme_PrepareTextInput(void);
 
 
 void BE_ST_PollEvents(void);
+
+// Launcher loop
+void BE_ST_Launcher_RunEventLoop(void);
 
 // Returns an offset that should be added to the 16-bit segments of 32-bit
 // far pointers present in The Catacomb Armageddon/Apocalypse saved games
@@ -84,6 +89,9 @@ void BE_ST_InitGfx(void);
 void BE_ST_ShutdownGfx(void);
 void BE_ST_SetScreenStartAddress(uint16_t crtc);
 
+void BE_ST_MarkGfxForUpdate(void);
+void BE_ST_Launcher_MarkGfxCache(void);
+
 // ***WARNING*** SEE WARNING BELOW BEFORE USING!!!
 //
 // Basically a replacement for B800:0000, points to a 80x25*2 bytes long
@@ -92,6 +100,9 @@ void BE_ST_SetScreenStartAddress(uint16_t crtc);
 // ***WARNING***: After modifying this chunk, it is a MUST to call the function
 // BE_ST_MarkGfxForUpdate (used as an optimization).
 uint8_t *BE_ST_GetTextModeMemoryPtr(void);
+
+// ***WARNING***: Ensure BE_ST_Launcher_MarkGfxCache is called after drawing.
+uint8_t *BE_ST_Launcher_GetGfxPtr(void);
 
 // EGA graphics manipulations
 void BE_ST_EGASetPaletteAndBorder(const uint8_t *palette);
@@ -121,6 +132,9 @@ void BE_ST_EGAOrGFXBits(uint16_t destOff, uint8_t srcVal, uint8_t bitsMask);
 // CGA graphics manipulations
 void BE_ST_CGAFullUpdateFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth);
 
+//
+void BE_ST_Launcher_Prepare(void);
+void BE_ST_Launcher_Shutdown(void);
 
 //
 void BE_ST_SetBorderColor(uint8_t color);
@@ -139,8 +153,6 @@ void BE_ST_puts(const char *str);
 void BE_ST_printf(const char *str, ...);
 void BE_ST_vprintf(const char *str, va_list args);
 void BE_ST_cprintf(const char *str, ...); // Non-standard
-
-void BE_ST_MarkGfxForUpdate(void);
 
 // Used with BE_ST
 

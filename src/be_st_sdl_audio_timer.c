@@ -63,7 +63,7 @@ void BE_ST_InitAudio(void)
 {
 	g_sdlAudioSubsystemUp = false;
 	g_sdlEmulatedOPLChipReady = false;
-	if (!g_refKeenCfg.disableSoundSubSystem)
+	if (g_refKeenCfg.sndSubSystem)
 	{
 		if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 		{
@@ -74,7 +74,10 @@ void BE_ST_InitAudio(void)
 			g_sdlAudioSpec.freq = g_refKeenCfg.sndSampleRate;
 			g_sdlAudioSpec.format = AUDIO_S16;
 			g_sdlAudioSpec.channels = 1;
-			g_sdlAudioSpec.samples = 512;
+			// Should be some power-of-two roughly proportional to the sample rate; Using 512 for 48000Hz.
+			for (g_sdlAudioSpec.samples = 1; g_sdlAudioSpec.samples < g_refKeenCfg.sndSampleRate/128; g_sdlAudioSpec.samples *= 2)
+			{
+			}
 			g_sdlAudioSpec.callback = BEL_ST_CallBack;
 			g_sdlAudioSpec.userdata = NULL;
 			if (SDL_OpenAudio(&g_sdlAudioSpec, NULL))
@@ -103,8 +106,10 @@ void BE_ST_InitAudio(void)
 	if (!g_sdlAudioSubsystemUp)
 	{
 		g_sdlAudioSpec.freq = NUM_OF_SAMPLES_WITH_DISABLED_SUBSYSTEM;
+		return;
 	}
-	else
+
+	if (g_refKeenCfg.oplEmulation)
 	{
 		if (YM3812Init(1, 3579545, OPL_SAMPLE_RATE))
 		{
@@ -135,6 +140,15 @@ void BE_ST_InitAudio(void)
 			}
 		}
 	}
+}
+
+static uint32_t g_sdlTicksOffset = 0;
+
+void BE_ST_InitTiming(void)
+{
+	g_sdlTicksOffset = 0;
+	g_sdlTimeCount = 0;
+	g_sdlLastTicks = SDL_GetTicks();
 }
 
 void BE_ST_ShutdownAudio(void)
@@ -267,37 +281,18 @@ static inline void YM3812UpdateOne(Chip *which, int16_t *stream, int length)
 	// so 512 is sufficient for a sample rate of 358.4 kHz (default 44.1 kHz)
 	if(length > 512)
 		length = 512;
-#if 0
-	if(which->opl3Active)
-	{
-		Chip__GenerateBlock3(which, length, buffer);
 
-		// GenerateBlock3 generates a number of "length" 32-bit stereo samples
-		// so we need to convert them to 16-bit mono samples
-		for(i = 0; i < length; i++)
-		{
-			// Scale volume and pick one channel
-			Bit32s sample = 2*buffer[2*i];
-			if(sample > 16383) sample = 16383;
-			else if(sample < -16384) sample = -16384;
-			stream[i] = sample;
-		}
-	}
-	else
-#endif
-	{
-		Chip__GenerateBlock2(which, length, buffer);
+	Chip__GenerateBlock2(which, length, buffer);
 
-		// GenerateBlock2 generates a number of "length" 32-bit mono samples
-		// so we only need to convert them to 16-bit mono samples
-		for(i = 0; i < length; i++)
-		{
-			// Scale volume
-			Bit32s sample = 2*buffer[i];
-			if(sample > 16383) sample = 16383;
-			else if(sample < -16384) sample = -16384;
-			stream[i] = (int16_t) sample;
-		}
+	// GenerateBlock2 generates a number of "length" 32-bit mono samples
+	// so we only need to convert them to 16-bit mono samples
+	for(i = 0; i < length; i++)
+	{
+		// Scale volume
+		Bit32s sample = 2*buffer[i];
+		if(sample > 16383) sample = 16383;
+		else if(sample < -16384) sample = -16384;
+		stream[i] = (int16_t) sample;
 	}
 }
 
@@ -607,7 +602,6 @@ void BE_ST_SetTimer(uint16_t speed, bool isALMusicOn)
 	g_sdlScaledTimerDivisor = isALMusicOn ? (speed*8) : (speed*2);
 }
 
-static uint32_t g_sdlTicksOffset = 0;
 void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_TicksDelayWithOffset(int sdltickstowait);
 void BEL_ST_TimeCountWaitByPeriod(int16_t timetowait);

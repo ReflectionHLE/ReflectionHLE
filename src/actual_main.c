@@ -1,3 +1,22 @@
+/* Copyright (C) 2014-2015 NY00123
+ *
+ * This file is part of Reflection Keen.
+ *
+ * Reflection Keen is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #include "id_heads.h"
 
 int id0_argc;
@@ -14,6 +33,10 @@ static void show_command_line_help()
 		else
 			gameverstrptr = BE_Cross_safeandfastcstringcopy(gameverstrptr, gameverstrend, refkeen_gamever_strs[gameVerVal]);
 	}
+
+	// HACK - For text mode emulation (and exit handler)
+	BE_ST_PrepareForGameStartup();
+
 #ifdef REFKEEN_VER_KDREAMS
 	BE_ST_puts("Reflection Keen - Command line arguments:");
 #elif (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
@@ -22,6 +45,9 @@ static void show_command_line_help()
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
 	BE_ST_puts("");
+	BE_ST_puts("Launcher is started unless any command line argument is passed.");
+	BE_ST_puts("");
+	BE_ST_puts("List of possible command line arguments:");
 	BE_ST_puts("-gamever <VER>: Selects game version supported by this executable.");
 #ifdef REFKEEN_VER_CATADVENTURES
 	BE_ST_puts("-skipintro: Skips what is found in the original intro EXE and starts game.");
@@ -35,13 +61,14 @@ static void show_command_line_help()
 
 int main(int argc, char **argv)
 {
-	BE_ST_InitAll();
+	BE_ST_InitCommon();
 	// Parse arguments
 	bool showHelp = false;
 #ifdef REFKEEN_VER_CATADVENTURES
 	bool skipIntro = false;
 #endif
 	int selectedGameVerVal = BE_GAMEVER_LAST;
+	bool startLauncher = (argc == 1);
 	while ((argc >= 2) && !showHelp)
 	{
 		if (!(*argv[1]))
@@ -96,54 +123,18 @@ int main(int argc, char **argv)
 	else
 	{
 		BE_Cross_PrepareGameInstallations();
-		BE_Cross_SelectGameInstallation(selectedGameVerVal);
-		// Prepare arguments for ported game code
-		id0_argc = argc;
-		// HACK: In Keen Dreams CGA v1.05, even if argc == 1, argv[1] is accessed...
-		// Furthermore, in Keen Dreams Shareware v1.13, argc, argv[1], argv[2] and argv[3] are all modified...
-		// And then in Catacomb Abyss, argv[3] is compared to "1". In its INTROSCN.EXE argv[4] is compared...
-
-		// FIXME FIXME FIXME Using correct argv[0] for "compatibility" (see catabyss, ext_gelib.c)
-		const char *our_workaround_argv[] = { "INTRO.EXE", "", "", "", "", NULL };
-		if (argc < 6)
+		if (startLauncher)
 		{
-			for (int currarg = 1; currarg < argc; ++currarg)
-			{
-				our_workaround_argv[currarg] = argv[currarg];
-			}
-			id0_argv = our_workaround_argv;
+			BE_Launcher_Start();
 		}
 		else
 		{
-			// REFKEEN - Hack, but we don't access argv directly anyway...
-			id0_argv = (const char **)argv;
-		}
 #ifdef REFKEEN_VER_CATADVENTURES
-		if (skipIntro)
-		{
-#ifdef REFKEEN_VER_CATABYSS
-			extern void abysgame_exe_main(void);
-			abysgame_exe_main();
-#elif defined REFKEEN_VER_CATARM
-			extern void armgame_exe_main(void);
-			armgame_exe_main();
-#elif defined REFKEEN_VER_CATAPOC
-			extern void apocgame_exe_main(void);
-			apocgame_exe_main();
+			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro);
+#else
+			BE_Cross_StartGame(selectedGameVerVal, argc, argv, 0);
 #endif
 		}
-		else
-		{
-			extern void intro_exe_main(void);
-			intro_exe_main();
-		}
-#elif defined REFKEEN_VER_CAT3D
-		extern void cat3d_exe_main(void);
-		cat3d_exe_main();
-#elif defined REFKEEN_VER_KDREAMS
-		extern void kdreams_exe_main(void);
-		kdreams_exe_main();
-#endif
 	}
 	BE_ST_ShutdownAll();
 	return 0;

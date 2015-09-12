@@ -11,6 +11,7 @@ typedef struct
 	bool isFullscreen;
 	int fullWidth, fullHeight;
 	int winWidth, winHeight;
+	int launcherWinWidth, launcherWinHeight;
 	int displayNum;
 	int sdlRendererDriver;
 	VSyncSettingType vSync;
@@ -19,7 +20,8 @@ typedef struct
 	int scaleFactor;
 	bool autolockCursor;
 	int sndSampleRate;
-	bool disableSoundSubSystem;
+	bool sndSubSystem;
+	bool oplEmulation;
 	struct
 	{
 		bool isEnabled;

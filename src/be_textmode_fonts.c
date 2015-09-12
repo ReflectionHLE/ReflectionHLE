@@ -9,9 +9,7 @@
 
 /***********************************************************************
 CGA 80-column font (80x25 chars for a 640x200 mode, 8x8 pixels for each)
-Currently not used
 ***********************************************************************/
-#if 0
 BUFFLINKAGE const uint8_t g_cga_8x8TextFont[256*8*8] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
@@ -2317,7 +2315,6 @@ BUFFLINKAGE const uint8_t g_cga_8x8TextFont[256*8*8] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 };
-#endif
 
 /************************************************************************
 EGA 80-column font (80x25 chars for a 640x350 mode, 8x14 pixels for each)

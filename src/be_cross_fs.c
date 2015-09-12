@@ -31,7 +31,6 @@
 #include "unlzexe/unlzexe.h"
 
 #define BE_CROSS_PATH_LEN_BOUND 256
-#define BE_CROSS_MAX_GAME_INSTALLATIONS 4
 
 #define BE_ALL_REWRITABLE_FILES_DIR "refkeen_internal_files"
 
@@ -101,7 +100,17 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 static BE_GameInstallation_T* g_be_selectedGameInstallation;
 
 static BE_GameInstallation_T g_be_gameinstallations[BE_CROSS_MAX_GAME_INSTALLATIONS];
-static int g_be_gameinstallations_num;
+int g_be_gameinstallations_num;
+
+const char *BE_Cross_GetGameInstallationDescription(int num)
+{
+	return g_be_gameinstallations[num].descStr;
+}
+
+int BE_Cross_GetGameVerFromInstallation(int num)
+{
+	return g_be_gameinstallations[num].verId;
+}
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc105[] = {
@@ -970,13 +979,13 @@ void BE_Cross_PrepareGameInstallations(void)
 }
 
 // gameVer should be BE_GAMEVER_LAST if no specific version is desired
-void BE_Cross_SelectGameInstallation(int gameVerVal)
+static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 {
 	if (gameVerVal == BE_GAMEVER_LAST)
 	{
 		if (!g_be_gameinstallations_num)
 		{
-			BE_ST_ExitWithErrorMsg("BE_Cross_SelectGameInstallation: No compatible game installation found!");
+			BE_ST_ExitWithErrorMsg("BEL_Cross_SelectGameInstallation: No compatible game installation found!");
 		}
 		g_be_selectedGameInstallation = &g_be_gameinstallations[0];
 	}
@@ -993,7 +1002,7 @@ void BE_Cross_SelectGameInstallation(int gameVerVal)
 		if (gameInstNum == g_be_gameinstallations_num)
 		{
 			char errorBuffer[80];
-			BE_Cross_safeandfastcstringcopy_2strs(errorBuffer, errorBuffer+sizeof(errorBuffer), "BE_Cross_SelectGameInstallation: Can't find game installation: ",  refkeen_gamever_strs[gameVerVal]);
+			BE_Cross_safeandfastcstringcopy_2strs(errorBuffer, errorBuffer+sizeof(errorBuffer), "BEL_Cross_SelectGameInstallation: Can't find game installation: ",  refkeen_gamever_strs[gameVerVal]);
 			BE_ST_ExitWithErrorMsg(errorBuffer);
 		}
 		g_be_selectedGameInstallation = &g_be_gameinstallations[gameInstNum];
@@ -1032,6 +1041,66 @@ void BE_Cross_SelectGameInstallation(int gameVerVal)
 	extern void RefKeen_FillObjStatesWithDOSPointers(void);
 	RefKeen_FillObjStatesWithDOSPointers(); // Saved games compatibility
 
+}
+
+void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
+{
+	// TODO uncomment?
+	//extern int id0_argc;
+	//extern const char **id0_argv;
+
+	// Some additional preparation required
+	BE_ST_PrepareForGameStartup();
+
+	BEL_Cross_SelectGameInstallation(gameVerVal);
+	// Prepare arguments for ported game code
+	id0_argc = argc;
+	// HACK: In Keen Dreams CGA v1.05, even if argc == 1, argv[1] is accessed...
+	// Furthermore, in Keen Dreams Shareware v1.13, argc, argv[1], argv[2] and argv[3] are all modified...
+	// And then in Catacomb Abyss, argv[3] is compared to "1". In its INTROSCN.EXE argv[4] is compared...
+
+	// FIXME FIXME FIXME Using correct argv[0] for "compatibility" (see catabyss, ext_gelib.c)
+	const char *our_workaround_argv[] = { "INTRO.EXE", "", "", "", "", NULL };
+	if (argc < 6)
+	{
+		for (int currarg = 1; currarg < argc; ++currarg)
+		{
+			our_workaround_argv[currarg] = argv[currarg];
+		}
+		id0_argv = our_workaround_argv;
+	}
+	else
+	{
+		// REFKEEN - Hack, but we don't access argv directly anyway...
+		id0_argv = (const char **)argv;
+	}
+
+#ifdef REFKEEN_VER_CATADVENTURES
+	if (misc)
+	{
+#ifdef REFKEEN_VER_CATABYSS
+		extern void abysgame_exe_main(void);
+		abysgame_exe_main();
+#elif defined REFKEEN_VER_CATARM
+		extern void armgame_exe_main(void);
+		armgame_exe_main();
+#elif defined REFKEEN_VER_CATAPOC
+		extern void apocgame_exe_main(void);
+		apocgame_exe_main();
+#endif
+	}
+	else
+	{
+		extern void intro_exe_main(void);
+		intro_exe_main();
+	}
+#elif defined REFKEEN_VER_CAT3D
+	extern void cat3d_exe_main(void);
+	cat3d_exe_main();
+#elif defined REFKEEN_VER_KDREAMS
+	extern void kdreams_exe_main(void);
+	kdreams_exe_main();
+#endif
 }
 
 int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp)
