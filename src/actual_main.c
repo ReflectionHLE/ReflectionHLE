@@ -18,6 +18,7 @@
  */
 
 #include "id_heads.h"
+#include "SDL_main.h"
 
 int id0_argc;
 const char **id0_argv;

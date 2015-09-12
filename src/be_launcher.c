@@ -17,6 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <string.h>
+
 #include "refkeen.h"
 
 #define BE_MENU_CHAR_WIDTH 8

@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 // WARNING: It's actually safer to include this earlier (e.g., for endianness
@@ -42,19 +44,19 @@ typedef enum BE_Log_Message_Class_T
 
 inline char *BE_Cross_ultoa_dec(uint32_t n, char *buffer)
 {
-	sprintf(buffer, "%"PRIu32, n);
+	sprintf(buffer, "%" PRIu32, n);
 	return buffer;
 }
 
 inline char *BE_Cross_ltoa_dec(int32_t n, char *buffer)
 {
-	sprintf(buffer, "%"PRId32, n);
+	sprintf(buffer, "%" PRId32, n);
 	return buffer;
 }
 
 inline char *BE_Cross_itoa_dec(int16_t n, char *buffer)
 {
-	sprintf(buffer, "%"PRId16, n);
+	sprintf(buffer, "%" PRId16, n);
 	return buffer;
 }
 

@@ -895,12 +895,13 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS) || (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
 	char path[BE_CROSS_PATH_LEN_BOUND];
+	char *pathEnd = path + sizeof(path);
 	char gog_catacombs_path[BE_CROSS_PATH_LEN_BOUND];
 	DWORD dwType = 0;
 	DWORD dwSize = sizeof(gog_catacombs_path);
 	LSTATUS status = SHGetValueA(HKEY_LOCAL_MACHINE, "SOFTWARE\\GOG.COM\\GOGCATACOMBSPACK", "PATH", &dwType, gog_catacombs_path, &dwSize);
 	bool isGogCatacombsPathFound = ((status == ERROR_SUCCESS) && (dwType == REG_SZ));
-	char *gog_catacombs_path_end;
+	char *path_gog_catacombs_prefix_end;
 	if (isGogCatacombsPathFound)
 	{
 		path_gog_catacombs_prefix_end = path/*NOT gog_catacombs_path*/ + strlen(gog_catacombs_path);
@@ -934,7 +935,7 @@ void BE_Cross_PrepareGameInstallations(void)
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
-		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, ptrEnd, "\\Cat3D");
+		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, pathEnd, "\\Cat3D");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, path, "Catacomb 3-D v1.22 (GOG.com)");
 	}
 #endif
@@ -947,7 +948,7 @@ void BE_Cross_PrepareGameInstallations(void)
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
-		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, ptrEnd, "\\Abyss");
+		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, pathEnd, "\\Abyss");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, path, "Catacomb Abyss v1.24 (GOG.com)");
 	}
 #endif
@@ -959,7 +960,7 @@ void BE_Cross_PrepareGameInstallations(void)
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
-		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, ptrEnd, "\\Armageddon");
+		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, pathEnd, "\\Armageddon");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, path, "Catacomb Armageddon v1.02 (GOG.com)");
 	}
 #endif
@@ -971,7 +972,7 @@ void BE_Cross_PrepareGameInstallations(void)
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
-		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, ptrEnd, "\\Apocalypse");
+		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, pathEnd, "\\Apocalypse");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, path, "Catacomb Apocalypse v1.01 (GOG.com)");
 	}
 #endif
