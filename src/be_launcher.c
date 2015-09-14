@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2015 NY00123
+/* Copyright (C) 2015 NY00123
  *
  * This file is part of Reflection Keen.
  *
@@ -308,7 +308,6 @@ static void BEL_Launcher_SetCurrentMenu(BEMenu *menu)
 
 static void BEL_Launcher_HandleCurrentMenuItem(void)
 {
-	// TODO - Implement entirely
 	if (!g_be_launcher_selectedMenuItemPtr || !(*g_be_launcher_selectedMenuItemPtr))
 		return;
 

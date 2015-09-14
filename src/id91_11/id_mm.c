@@ -1015,6 +1015,8 @@ void MM_SortMem (void)
 #ifndef REFKEEN_VER_CATADVENTURES
 	oldborder = bordercolor;
 	VW_ColorBorder (15);
+	// (REFKEEN) HACK: Actually show border color
+	BE_ST_ShortSleep();
 #endif
 	if (beforesort)
 		beforesort();

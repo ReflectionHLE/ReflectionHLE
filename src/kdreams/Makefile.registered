@@ -1,5 +1,0 @@
-EGABUILD=1
-SHARBUILD=0
-VERDIRNAME=kdreg193
-
-include Makefile.common

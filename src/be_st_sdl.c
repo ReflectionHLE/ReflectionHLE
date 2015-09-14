@@ -1642,7 +1642,7 @@ void BE_ST_AltControlScheme_PrepareInGameControls(int primaryScanCode, int secon
 	BEL_ST_AltControlScheme_CleanUp();
 	g_sdlControllerActualCurrPtr = g_sdlControllertoScanCodeMaps.currPtr;
 
-	memcpy(g_sdlControllertoScanCodeMaps.currPtr,  &g_sdlControllerToScanCodeMap_inGameTemplate, sizeof(g_sdlControllerToScanCodeMap_inGameTemplate));
+	memcpy(g_sdlControllertoScanCodeMaps.currPtr, &g_sdlControllerToScanCodeMap_inGameTemplate, sizeof(g_sdlControllerToScanCodeMap_inGameTemplate));
 
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
 	BEL_ST_GetKeyMapPtrFromCfgVal(g_sdlControllertoScanCodeMaps.currPtr, g_refKeenCfg.altControlScheme.actionMappings[CONTROLSCHEME_CONFIG_BUTMAP_FIRE])->val = primaryScanCode;
