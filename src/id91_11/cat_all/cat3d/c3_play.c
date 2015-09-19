@@ -53,7 +53,7 @@ id0_byte_t		*nearmapylookup[MAPSIZE];
 id0_boolean_t		singlestep,godmode;
 id0_int_t			extravbls;
 
-//
+//7
 // replacing refresh manager
 //
 id0_unsigned_t	mapwidth,mapheight,tics;
@@ -101,6 +101,9 @@ id0_int_t	objectcount;
 void StopMusic(void);
 void StartMusic(void);
 
+// REFKEEN - Alternative controllers support
+static void PrepareGamePlayControllerMapping(void);
+//
 
 //==========================================================================
 
@@ -164,7 +167,7 @@ void CheckKeys (void)
 		VW_UpdateScreen ();
 		US_ControlPanel();
 		// REFKEEN - Alternative controllers support (maybe user has changed some keys which may currently have an effect)
-		BE_ST_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+		PrepareGamePlayControllerMapping();
 		//
 		if (abortgame)
 		{
@@ -468,7 +471,7 @@ void PlayLoop (void)
 {
 	// REFKEEN - Alternative controllers support	
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+	PrepareGamePlayControllerMapping();
 
 	id0_int_t		give;
 
@@ -640,4 +643,30 @@ void RefKeen_Patch_c3_play(void)
 		refkeen_compat_c3_play_objoffset = 0xADB3;
 		break;
 	}
+}
+
+// REFKEEN - Alternative controllers support
+static void PrepareGamePlayControllerMapping(void)
+{
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay;
+
+	extern BE_ST_ControllerSingleMap *g_ingame_altcontrol_button0mappings[], *g_ingame_altcontrol_button1mappings[],
+		*g_ingame_altcontrol_upmappings[], *g_ingame_altcontrol_downmappings[], *g_ingame_altcontrol_leftmappings[], *g_ingame_altcontrol_rightmappings[];
+
+	BE_ST_ControllerSingleMap **singlemappingptr;
+
+	for (singlemappingptr = g_ingame_altcontrol_button0mappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].button0;
+	for (singlemappingptr = g_ingame_altcontrol_button1mappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].button1;
+	for (singlemappingptr = g_ingame_altcontrol_upmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].up;
+	for (singlemappingptr = g_ingame_altcontrol_downmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].down;
+	for (singlemappingptr = g_ingame_altcontrol_leftmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].left;
+	for (singlemappingptr = g_ingame_altcontrol_rightmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].right;
+
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
 }

@@ -756,6 +756,9 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 		}
 
 	free(decompexebuffer);
+
+	// Still need to do this after main game version dir has been created, just in case
+	BEL_Cross_mkdir(gameInstallation->writableVanillaFilesPath);
 }
 
 
@@ -1041,7 +1044,8 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 #endif
 	extern void RefKeen_FillObjStatesWithDOSPointers(void);
 	RefKeen_FillObjStatesWithDOSPointers(); // Saved games compatibility
-
+	extern void RefKeen_PrepareAltControllerScheme(void);
+	RefKeen_PrepareAltControllerScheme(); // Alternative controller scheme stuff
 }
 
 void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
@@ -1267,7 +1271,7 @@ BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
+#ifdef REFKEEN_VER_CATACOMB_ALL
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
 #endif
 

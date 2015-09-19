@@ -40,7 +40,7 @@ static void show_command_line_help()
 
 #ifdef REFKEEN_VER_KDREAMS
 	BE_ST_puts("Reflection Keen - Command line arguments:");
-#elif (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
+#elif (defined REFKEEN_VER_CATACOMB_ALL)
 	BE_ST_puts("Reflection Catacomb 3-D - Command line arguments:");
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"

@@ -29,6 +29,12 @@ extern SDL_Renderer *g_sdlRenderer;
 extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
 extern const char *g_sdlWindowTitle;
+extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
+
+extern bool g_sdlControllersButtonsStates[BE_ST_MAXJOYSTICKS][SDL_CONTROLLER_BUTTON_MAX];
+// We may optionally use analog axes as buttons (e.g., using stick as arrow keys, triggers as buttons)
+extern bool g_sdlControllersAxesStates[BE_ST_MAXJOYSTICKS][SDL_CONTROLLER_AXIS_MAX][2];
+
 
 static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
 static bool g_sdlLauncherGfxCacheMarked = false;
@@ -39,6 +45,8 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 #define BEMENUITEM_DEF_TARGETMENU(menuItemName, label, menuPtr) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, menuPtr, label, BE_MENUITEM_TYPE_TARGETMENU)
 #define BEMENUITEM_DEF_SELECTION(menuItemName, label, choices) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, choices, NULL, label, BE_MENUITEM_TYPE_SELECTION)
 #define BEMENUITEM_DEF_HANDLER(menuItemName, label, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, NULL, NULL, label, BE_MENUITEM_TYPE_HANDLER)
+#define BEMENUITEM_DEF_SELECTION_WITH_HANDLER(menuItemName, label, choices, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, NULL, label, BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER)
+#define BEMENUITEM_DEF_DYNAMIC_SELECTION(menuItemName, label, choices, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, NULL, label, BE_MENUITEM_TYPE_DYNAMIC_SELECTION)
 #define BEMENUITEM_DEF_STATIC(menuItemName, label) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, NULL, label, BE_MENUITEM_TYPE_STATIC)
 
 // A little hack - Store a copy of the label string literal that can be modified
@@ -102,7 +110,8 @@ BEMenu g_beDisappearedGameHelpMenu = {
 /*** Settings menu ***/
 
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_VideoSettings, "Video settings", &g_beVideoSettingsMenu)
-BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_MoreSettings, "More settings", &g_beMoreSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_SoundSettings, "Sound settings", &g_beSoundSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_InputSettings, "Input settings", &g_beInputSettingsMenu)
 
 BEMenu g_beSettingsMenu = {
 	"Settings",
@@ -110,7 +119,8 @@ BEMenu g_beSettingsMenu = {
 	(BEMenuItem *[])
 	{
 		&g_beSettingsMenuItem_VideoSettings,
-		&g_beSettingsMenuItem_MoreSettings,
+		&g_beSettingsMenuItem_SoundSettings,
+		&g_beSettingsMenuItem_InputSettings,
 		NULL
 	},
 	// Ignore the rest
@@ -138,18 +148,20 @@ static char g_be_videoSettingsChoices_sdlRendererDriversStrs[BE_LAUNCHER_MAX_NUM
 // Need to add additional auto entry, plus NULL terminator
 static const char *g_be_videoSettingsChoices_sdlRendererDrivers[BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS+2];
 
-static const char *g_be_settingsChoices_vSync[] = {"Auto","Off","On",NULL};
-static const char *g_be_settingsChoices_scaleType[] = {"4:3","Fill",NULL};
-static const char *g_be_settingsChoices_scaleFactor[] = {"1","2","3","4",NULL};
+static const char *g_be_videoSettingsChoices_vSync[] = {"Auto","Off","On",NULL};
+static const char *g_be_videoSettingsChoices_scaleType[] = {"4:3","Fill",NULL};
+static const char *g_be_videoSettingsChoices_scaleFactor[] = {"1","2","3","4",NULL};
+
+static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP);
 
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Fullscreen, "Fullscreen", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_FullscreenRes, "Fullscreen resolution", g_be_videoSettingsChoices_fullResolutions)
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums)
+BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums, &BEL_ST_Launcher_Handler_DisplayNum)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_SDLRenderer, "SDL renderer", g_be_videoSettingsChoices_sdlRendererDrivers)
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_VSync, "VSync", g_be_settingsChoices_vSync)
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_VSync, "VSync", g_be_videoSettingsChoices_vSync)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type", g_be_settingsChoices_scaleType)
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleFactor, "Scale factor", g_be_settingsChoices_scaleFactor)
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type", g_be_videoSettingsChoices_scaleType)
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleFactor, "Scale factor", g_be_videoSettingsChoices_scaleFactor)
 
 BEMenu g_beVideoSettingsMenu = {
 	"Video settings",
@@ -169,31 +181,114 @@ BEMenu g_beVideoSettingsMenu = {
 	// Ignore the rest
 };
 
-/*** More settings menu ***/
+/*** Sounds settings menu ***/
 
-// TODO (REFKEEN) Add more settings for game controller
+static const int g_be_soundsSettingsChoices_sndSampleRateVals[] = {8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000, 49716, 96000};
+static const char *g_be_soundsSettingsChoices_sndSampleRate[] = {"8000","11025","12000","16000","22050","32000","44100","48000","49716","96000",NULL};
 
-static const int g_be_settingsChoices_sndSampleRateVals[] = {8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000, 49716, 96000};
-static const char *g_be_settingsChoices_sndSampleRate[] = {"8000","11025","12000","16000","22050","32000","44100","48000","49716","96000",NULL};
+BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSampleRate, "Sound sample rate (in Hz)", g_be_soundsSettingsChoices_sndSampleRate)
+BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSubSystem, "Enable sound subsystem", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_OPLEmulation, "Enable OPL emulation", g_be_settingsChoices_boolean)
 
-static const char *g_be_settingsChoices_controllerScheme[] = {"Classic", "Modern", NULL};
-
-BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_Autolock, "Autolock mouse cursor in fullscreen", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_SndSampleRate, "Sound sample rate (in Hz)", g_be_settingsChoices_sndSampleRate)
-BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_SndSubSystem, "Enable sound subsystem", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_OPLEmulation, "Enable OPL emulation", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beMoreSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_settingsChoices_controllerScheme)
-
-BEMenu g_beMoreSettingsMenu = {
-	"More settings",
+BEMenu g_beSoundSettingsMenu = {
+	"Sounds settings",
 	&g_beSettingsMenu,
 	(BEMenuItem *[])
 	{
-		&g_beMoreSettingsMenuItem_Autolock,
-		&g_beMoreSettingsMenuItem_SndSampleRate,
-		&g_beMoreSettingsMenuItem_SndSubSystem,
-		&g_beMoreSettingsMenuItem_OPLEmulation,
-		&g_beMoreSettingsMenuItem_ControllerScheme,
+		&g_beSoundSettingsMenuItem_SndSampleRate,
+		&g_beSoundSettingsMenuItem_SndSubSystem,
+		&g_beSoundSettingsMenuItem_OPLEmulation,
+		NULL
+	},
+	// Ignore the rest
+};
+
+/*** Input settings menu ***/
+
+static const char *g_be_inputSettingsChoices_controllerScheme[] = {"Classic", "Modern", NULL};
+
+BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beControllerSettingsMenu)
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_Autolock, "Autolock mouse cursor in fullscreen", g_be_settingsChoices_boolean)
+
+BEMenu g_beInputSettingsMenu = {
+	"Input settings",
+	&g_beSettingsMenu,
+	(BEMenuItem *[])
+	{
+		&g_beInputSettingsMenuItem_ControllerSettings,
+		&g_beInputSettingsMenuItem_ControllerScheme,
+		&g_beInputSettingsMenuItem_Autolock,
+		NULL
+	},
+	// Ignore the rest
+};
+
+/*** Controller settings menu ***/
+
+static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", NULL, NULL, NULL, NULL, "LTrigger", "RTrigger", "N/A"};
+#ifdef REFKEEN_VER_CATACOMB_ALL
+static const char *g_be_controllerSettingsChoices_analogMotion[] = {"Keyboard", "Mouse", NULL};
+#endif
+
+
+#ifdef REFKEEN_VER_KDREAMS
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Jump, "Action - Jump", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Throw, "Action - Throw", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Stats, "Action - Stats", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+#else
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Fire, "Action - Fire", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Strafe, "Action - Strafe", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Drink, "Action - Drink", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Bolt, "Action - Bolt/Zapper", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Nuke, "Action - Nuke/Xterminator", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FastTurn, "Action - Fast turn", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+#endif
+#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Scrolls, "Action - Scrolls", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+#endif
+#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FuncKeys, "Action - Function keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+#endif
+
+BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_Dpad, "Use d-pad", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
+#ifdef REFKEEN_VER_CATACOMB_ALL
+BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_AnalogMotion, "Motion emulation mode", g_be_controllerSettingsChoices_analogMotion)
+#endif
+
+// TODO (REFKEEN) Add more settings for game controller
+
+BEMenu g_beControllerSettingsMenu = {
+	"Modern controller settings",
+	&g_beInputSettingsMenu,
+	(BEMenuItem *[])
+	{
+#ifdef REFKEEN_VER_KDREAMS
+		&g_beControllerSettingsMenuItem_Action_Jump,
+		&g_beControllerSettingsMenuItem_Action_Throw,
+		&g_beControllerSettingsMenuItem_Action_Stats,
+#else
+		&g_beControllerSettingsMenuItem_Action_Fire,
+		&g_beControllerSettingsMenuItem_Action_Strafe,
+		&g_beControllerSettingsMenuItem_Action_Drink,
+		&g_beControllerSettingsMenuItem_Action_Bolt,
+		&g_beControllerSettingsMenuItem_Action_Nuke,
+		&g_beControllerSettingsMenuItem_Action_FastTurn,
+#endif
+#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+		&g_beControllerSettingsMenuItem_Action_Scrolls,
+#endif
+#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+		&g_beControllerSettingsMenuItem_Action_FuncKeys,
+#endif
+		&g_beControllerSettingsMenuItem_Dpad,
+		&g_beControllerSettingsMenuItem_LeftStick,
+		&g_beControllerSettingsMenuItem_RightStick,
+#ifdef REFKEEN_VER_CATACOMB_ALL
+		&g_beControllerSettingsMenuItem_AnalogMotion,
+#endif
 		NULL
 	},
 	// Ignore the rest
@@ -216,6 +311,7 @@ BEMenu g_beQuitConfirmMenu = {
 	// Ignore the rest
 };
 
+static void BEL_ST_Launcher_ResetDisplayModes(int displayNum);
 static void BEL_ST_Launcher_SetGfxOutputRect();
 
 void BE_ST_Launcher_Prepare(void)
@@ -265,6 +361,9 @@ void BE_ST_Launcher_Prepare(void)
 		if (SDL_IsGameController(i))
 			g_sdlControllers[i] = SDL_GameControllerOpen(i);
 
+	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
+	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
+
 	// Set fullscreen value
 	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;
 	/*** Prepare displays list ***/
@@ -276,35 +375,7 @@ void BE_ST_Launcher_Prepare(void)
 	if (g_beVideoSettingsMenuItem_DisplayNum.choice >= nOfDisplays)
 		g_beVideoSettingsMenuItem_DisplayNum.choice = 0;
 	/*** Prepare fullscreen resolutions list ***/
-	// FIXME: Resolutions list should be reset after choosing another display number
-	int nOfDisplayModes = SDL_GetNumDisplayModes(g_refKeenCfg.displayNum);
-	if (nOfDisplayModes > BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS)
-		nOfDisplayModes = BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS;
-	g_beVideoSettingsMenuItem_FullscreenRes.choices[0] = "Desktop";
-	g_beVideoSettingsMenuItem_FullscreenRes.choice = 0;
-	int actualCounter = 0;
-	for (int i = 0; i < nOfDisplayModes; ++i)
-	{
-		SDL_DisplayMode mode;
-		SDL_GetDisplayMode(g_refKeenCfg.displayNum, i, &mode);
-		// Make sure there's no duplication (this is a possibility, at least when limiting ourselves just to width,height pairs)
-		int j;
-		for (j = 0; j < actualCounter; ++j)
-			if ((g_be_videoSettingsChoices_fullResolutionsVals[j].width == mode.w) && (g_be_videoSettingsChoices_fullResolutionsVals[j].height == mode.h))
-				break;
-		if (j < actualCounter)
-			continue; // Skip duplicated entry
-
-		g_be_videoSettingsChoices_fullResolutionsVals[actualCounter].width = mode.w;
-		g_be_videoSettingsChoices_fullResolutionsVals[actualCounter].height = mode.h;
-		snprintf(g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter], sizeof(g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter]), "%dx%d", mode.w, mode.h);
-		g_beVideoSettingsMenuItem_FullscreenRes.choices[actualCounter+1] =  g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter];
-		if ((g_refKeenCfg.fullWidth == mode.w) && (g_refKeenCfg.fullHeight == mode.h))
-			g_beVideoSettingsMenuItem_FullscreenRes.choice = actualCounter+1;
-
-		++actualCounter;
-	}
-	g_beVideoSettingsMenuItem_FullscreenRes.choices[actualCounter+1] = NULL;
+	BEL_ST_Launcher_ResetDisplayModes(g_refKeenCfg.displayNum);
 	/*** Prepare SDL renderer drivers list ***/
 	int nOfSDLRendererDrivers = SDL_GetNumRenderDrivers();
 	if (nOfSDLRendererDrivers > BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS)
@@ -329,26 +400,55 @@ void BE_ST_Launcher_Prepare(void)
 	// Set ScaleType value
 	g_beVideoSettingsMenuItem_ScaleType.choice = g_refKeenCfg.scaleType;
 	// Set ScaleFactor value
-	if ((g_refKeenCfg.scaleFactor <= 0) || (g_refKeenCfg.scaleFactor >= (int)(sizeof(g_be_settingsChoices_scaleFactor)/sizeof(*g_be_settingsChoices_scaleFactor))))
+	if ((g_refKeenCfg.scaleFactor <= 0) || (g_refKeenCfg.scaleFactor >= (int)(sizeof(g_be_videoSettingsChoices_scaleFactor)/sizeof(*g_be_videoSettingsChoices_scaleFactor))))
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = 0;
 	else
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = g_refKeenCfg.scaleFactor-1;
-	// Set Autolock value
-	g_beMoreSettingsMenuItem_Autolock.choice = g_refKeenCfg.autolockCursor;
 	// Set SndSampleRate value
-	g_beMoreSettingsMenuItem_SndSampleRate.choice = 8; // FIXME - Better way to grab default off cfg
-	for (int i = 0; i < (int)(sizeof(g_be_settingsChoices_sndSampleRateVals)/sizeof(*g_be_settingsChoices_sndSampleRateVals)); ++i)
-		if (g_be_settingsChoices_sndSampleRateVals[i] == g_refKeenCfg.sndSampleRate)
+	g_beSoundSettingsMenuItem_SndSampleRate.choice = 8; // FIXME - Better way to grab default off cfg
+	for (int i = 0; i < (int)(sizeof(g_be_soundsSettingsChoices_sndSampleRateVals)/sizeof(*g_be_soundsSettingsChoices_sndSampleRateVals)); ++i)
+		if (g_be_soundsSettingsChoices_sndSampleRateVals[i] == g_refKeenCfg.sndSampleRate)
 		{
-			g_beMoreSettingsMenuItem_SndSampleRate.choice = i;
+			g_beSoundSettingsMenuItem_SndSampleRate.choice = i;
 			break;
 		}
 	// Set SndSubSystem value
-	g_beMoreSettingsMenuItem_SndSubSystem.choice = g_refKeenCfg.sndSubSystem;
+	g_beSoundSettingsMenuItem_SndSubSystem.choice = g_refKeenCfg.sndSubSystem;
 	// Set OPLEmulation value
-	g_beMoreSettingsMenuItem_OPLEmulation.choice = g_refKeenCfg.oplEmulation;
+	g_beSoundSettingsMenuItem_OPLEmulation.choice = g_refKeenCfg.oplEmulation;
 	// Set ControllerScheme value
-	g_beMoreSettingsMenuItem_ControllerScheme.choice = g_refKeenCfg.altControlScheme.isEnabled;
+	g_beInputSettingsMenuItem_ControllerScheme.choice = g_refKeenCfg.altControlScheme.isEnabled;
+	// Set Autolock value
+	g_beInputSettingsMenuItem_Autolock.choice = g_refKeenCfg.autolockCursor;
+	// Set Dpad value
+	g_beControllerSettingsMenuItem_Dpad.choice = g_refKeenCfg.altControlScheme.useDpad;
+	// Set LeftStick value
+	g_beControllerSettingsMenuItem_LeftStick.choice = g_refKeenCfg.altControlScheme.useLeftStick;
+	// Set RightStick value
+	g_beControllerSettingsMenuItem_RightStick.choice = g_refKeenCfg.altControlScheme.useRightStick;
+#ifdef REFKEEN_VER_CATACOMB_ALL
+	// Set AnalogMotion value
+	g_beControllerSettingsMenuItem_AnalogMotion.choice = g_refKeenCfg.altControlScheme.analogMotion;
+#endif
+	/*** Set controller button bindings ***/
+#ifdef REFKEEN_VER_KDREAMS
+	g_beControllerSettingsMenuItem_Action_Jump.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP];
+	g_beControllerSettingsMenuItem_Action_Throw.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW];
+	g_beControllerSettingsMenuItem_Action_Stats.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS];
+#else
+	g_beControllerSettingsMenuItem_Action_Fire.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE];
+	g_beControllerSettingsMenuItem_Action_Strafe.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE];
+	g_beControllerSettingsMenuItem_Action_Drink.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK];
+	g_beControllerSettingsMenuItem_Action_Bolt.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT];
+	g_beControllerSettingsMenuItem_Action_Nuke.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE];
+	g_beControllerSettingsMenuItem_Action_FastTurn.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN];
+#endif
+#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+	g_beControllerSettingsMenuItem_Action_Scrolls.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS];
+#endif
+#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+	g_beControllerSettingsMenuItem_Action_FuncKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS];
+#endif
 
 	/*** Prepare installed game versions menu ***/
 	for (int i = 0; i < g_be_gameinstallations_num; ++i)
@@ -408,12 +508,81 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.scaleType = (ScaleTypeSettingType)g_beVideoSettingsMenuItem_ScaleType.choice;
 	g_refKeenCfg.scaleFactor = g_beVideoSettingsMenuItem_ScaleFactor.choice + 1;
 
-	g_refKeenCfg.autolockCursor = g_beMoreSettingsMenuItem_Autolock.choice;
-	g_refKeenCfg.sndSampleRate = g_be_settingsChoices_sndSampleRateVals[g_beMoreSettingsMenuItem_SndSampleRate.choice];
-	g_refKeenCfg.sndSubSystem = g_beMoreSettingsMenuItem_SndSubSystem.choice;
-	g_refKeenCfg.oplEmulation = g_beMoreSettingsMenuItem_OPLEmulation.choice;
-	g_refKeenCfg.altControlScheme.isEnabled = g_beMoreSettingsMenuItem_ControllerScheme.choice;
+	g_refKeenCfg.sndSampleRate = g_be_soundsSettingsChoices_sndSampleRateVals[g_beSoundSettingsMenuItem_SndSampleRate.choice];
+	g_refKeenCfg.sndSubSystem = g_beSoundSettingsMenuItem_SndSubSystem.choice;
+	g_refKeenCfg.oplEmulation = g_beSoundSettingsMenuItem_OPLEmulation.choice;
+
+	g_refKeenCfg.altControlScheme.isEnabled = g_beInputSettingsMenuItem_ControllerScheme.choice;
+	g_refKeenCfg.autolockCursor = g_beInputSettingsMenuItem_Autolock.choice;
+
+	g_refKeenCfg.altControlScheme.useDpad = g_beControllerSettingsMenuItem_Dpad.choice;
+	g_refKeenCfg.altControlScheme.useLeftStick = g_beControllerSettingsMenuItem_LeftStick.choice;
+	g_refKeenCfg.altControlScheme.useRightStick = g_beControllerSettingsMenuItem_RightStick.choice;
+#ifdef REFKEEN_VER_CATACOMB_ALL
+	g_refKeenCfg.altControlScheme.analogMotion = g_beControllerSettingsMenuItem_AnalogMotion.choice;
+#endif
+
+#ifdef REFKEEN_VER_KDREAMS
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = g_beControllerSettingsMenuItem_Action_Jump.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = g_beControllerSettingsMenuItem_Action_Throw.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = g_beControllerSettingsMenuItem_Action_Stats.choice;
+#else
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = g_beControllerSettingsMenuItem_Action_Fire.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = g_beControllerSettingsMenuItem_Action_Strafe.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = g_beControllerSettingsMenuItem_Action_Drink.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT] = g_beControllerSettingsMenuItem_Action_Bolt.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = g_beControllerSettingsMenuItem_Action_Nuke.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN] = g_beControllerSettingsMenuItem_Action_FastTurn.choice;
+#endif
+#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = g_beControllerSettingsMenuItem_Action_Scrolls.choice;
+#endif
+#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
+#endif
 }
+
+
+static void BEL_ST_Launcher_ResetDisplayModes(int displayNum)
+{
+	int nOfDisplayModes = SDL_GetNumDisplayModes(displayNum);
+	if (nOfDisplayModes > BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS)
+		nOfDisplayModes = BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS;
+	g_beVideoSettingsMenuItem_FullscreenRes.choices[0] = "Desktop";
+	g_beVideoSettingsMenuItem_FullscreenRes.choice = 0;
+	int actualCounter = 0;
+	for (int i = 0; i < nOfDisplayModes; ++i)
+	{
+		SDL_DisplayMode mode;
+		SDL_GetDisplayMode(displayNum, i, &mode);
+		// Make sure there's no duplication (this is a possibility, at least when limiting ourselves just to width,height pairs)
+		int j;
+		for (j = 0; j < actualCounter; ++j)
+			if ((g_be_videoSettingsChoices_fullResolutionsVals[j].width == mode.w) && (g_be_videoSettingsChoices_fullResolutionsVals[j].height == mode.h))
+				break;
+		if (j < actualCounter)
+			continue; // Skip duplicated entry
+
+		g_be_videoSettingsChoices_fullResolutionsVals[actualCounter].width = mode.w;
+		g_be_videoSettingsChoices_fullResolutionsVals[actualCounter].height = mode.h;
+		snprintf(g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter], sizeof(g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter]), "%dx%d", mode.w, mode.h);
+		g_beVideoSettingsMenuItem_FullscreenRes.choices[actualCounter+1] =  g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter];
+		if ((g_refKeenCfg.fullWidth == mode.w) && (g_refKeenCfg.fullHeight == mode.h))
+			g_beVideoSettingsMenuItem_FullscreenRes.choice = actualCounter+1;
+
+		++actualCounter;
+	}
+	g_beVideoSettingsMenuItem_FullscreenRes.choices[actualCounter+1] = NULL;
+}
+
+extern void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem);
+
+static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP)
+{
+	BEL_ST_Launcher_ResetDisplayModes((*menuItemP)->choice);
+	BEL_Launcher_DrawMenuItem(&g_beVideoSettingsMenuItem_FullscreenRes);
+}
+
 
 static void BEL_ST_Launcher_SetGfxOutputRect(void)
 {
@@ -574,12 +743,56 @@ void BE_ST_Launcher_RunEventLoop(void)
 				break;
 			}
 		}
-		SDL_Delay(1);
+
+		// If SDL_GameController is used, we don't poll for its events. We also limit ourselves to buttons only (not even triggers).
+		SDL_GameControllerUpdate();
+
+		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+		{
+			if (g_sdlControllers[i])
+			{
+				for (int but = 0; but < SDL_CONTROLLER_BUTTON_MAX; ++but)
+				{
+					bool isPressed = SDL_GameControllerGetButton(g_sdlControllers[i], (SDL_GameControllerButton)but);
+					if (isPressed != g_sdlControllersButtonsStates[i][but])
+					{
+						g_sdlControllersButtonsStates[i][but] = isPressed;
+						if (isPressed)
+						{
+							switch (but)
+							{
+							case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+								BE_Launcher_HandleInput_ButtonRight();
+								break;
+							case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+								BE_Launcher_HandleInput_ButtonLeft();
+								break;
+							case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+								BE_Launcher_HandleInput_ButtonDown();
+								break;
+							case SDL_CONTROLLER_BUTTON_DPAD_UP:
+								BE_Launcher_HandleInput_ButtonUp();
+								break;
+							case SDL_CONTROLLER_BUTTON_A:
+								BE_Launcher_HandleInput_ButtonActivate();
+								break;
+							case SDL_CONTROLLER_BUTTON_B:
+							case SDL_CONTROLLER_BUTTON_BACK:
+								BE_Launcher_HandleInput_ButtonBack();
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		BE_Launcher_RefreshVerticalScrolling();
 
 		/*** Draw ***/
 		if (g_sdlLauncherGfxCacheMarked)
 		{
+			SDL_Delay(1);
 			g_sdlLauncherGfxCacheMarked = false;
 			void *pixels;
 			int pitch;
@@ -606,5 +819,167 @@ void BE_ST_Launcher_RunEventLoop(void)
 			}
 			SDL_RenderPresent(g_sdlRenderer);
 		}
+		else
+		{
+			SDL_Delay(10);
+			SDL_RenderClear(g_sdlRenderer);
+
+			if (g_sdlTargetTexture)
+				SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+			else
+				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+
+			SDL_RenderPresent(g_sdlRenderer);
+		}
 	}
+}
+
+void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
+{
+	// HACK - Refresh window and make sure none of it is filled with random data while waiting for button press
+	void *pixels;
+	int pitch;
+	SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
+	uint32_t *currPixPtr = (uint32_t *)pixels;
+	uint8_t *currPalPixPtr = g_sdlLauncherGfxCache;
+	for (int pixnum = 0; pixnum < BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
+	{
+		*currPixPtr = g_sdlEGABGRAScreenColors[*currPalPixPtr];
+	}
+
+	SDL_UnlockTexture(g_sdlTexture);
+
+	if (g_sdlTargetTexture)
+	{
+		SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);
+		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
+		SDL_SetRenderTarget(g_sdlRenderer, NULL);
+	}
+
+	SDL_Event event;
+	bool keepRunning = true;
+	const int defaultChoice = SDL_CONTROLLER_BUTTON_MAX + 2/*triggers*/;
+	int choice = defaultChoice;
+
+	while (keepRunning)
+	{
+		while (SDL_PollEvent(&event))
+		{
+			void BEL_ST_NormalizeBorderedPos(int *px, int *py);
+
+			switch (event.type)
+			{
+			case SDL_KEYDOWN:
+			case SDL_MOUSEBUTTONDOWN:
+				keepRunning = false;
+				break;
+
+			case SDL_JOYDEVICEADDED:
+				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && SDL_IsGameController(event.jdevice.which))
+					g_sdlControllers[event.jdevice.which] = SDL_GameControllerOpen(event.jdevice.which);
+				break;
+			case SDL_JOYDEVICEREMOVED:
+				for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+					if (g_sdlControllers[i] && (SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i])) == event.jdevice.which))
+					{
+						SDL_GameControllerClose(g_sdlControllers[i]);
+						g_sdlControllers[i] = NULL;
+					}
+				break;
+
+			case SDL_WINDOWEVENT:
+				switch (event.window.event)
+				case  SDL_WINDOWEVENT_RESIZED:
+				{
+					BEL_ST_Launcher_SetGfxOutputRect();
+					BE_ST_Launcher_MarkGfxCache();
+					break;
+				}
+				case SDL_WINDOWEVENT_EXPOSED:
+					BE_ST_Launcher_MarkGfxCache();
+					break;
+				break;
+			case SDL_QUIT:
+				BE_ST_Launcher_Shutdown();
+				BE_ST_QuickExit();
+				break;
+			}
+		}
+
+		// We don't poll for SDL_GameController events.
+		SDL_GameControllerUpdate();
+
+		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+		{
+			if (g_sdlControllers[i])
+			{
+				// Check some of the buttons
+				for (int but = 0; but < SDL_CONTROLLER_BUTTON_MAX; ++but)
+				{
+					bool isPressed = SDL_GameControllerGetButton(g_sdlControllers[i], (SDL_GameControllerButton)but);
+					if (isPressed != g_sdlControllersButtonsStates[i][but])
+					{
+						g_sdlControllersButtonsStates[i][but] = isPressed;
+						if (isPressed)
+						{
+							switch (but)
+							{
+							case SDL_CONTROLLER_BUTTON_A:
+							case SDL_CONTROLLER_BUTTON_B:
+							case SDL_CONTROLLER_BUTTON_X:
+							case SDL_CONTROLLER_BUTTON_Y:
+							case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+							case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+							case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+							case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+								choice = but;
+								// Fall-through
+							default:
+								keepRunning = false;
+								break;
+							}
+						}
+					}
+				}
+				// Check trigger axes, positive sides, only
+				for (int axis = SDL_CONTROLLER_AXIS_TRIGGERLEFT; axis <= SDL_CONTROLLER_AXIS_TRIGGERRIGHT; ++axis)
+				{
+					int axisVal = (int)SDL_GameControllerGetAxis(g_sdlControllers[i], (SDL_GameControllerAxis)axis);
+					// Is pressed in the positive direction?
+					bool isPosPressed = (axisVal >= g_sdlJoystickAxisBinaryThreshold);
+					if (isPosPressed != g_sdlControllersAxesStates[i][axis][1])
+					{
+						g_sdlControllersAxesStates[i][axis][1] = isPosPressed;
+						if (isPosPressed)
+						{
+							// HACK
+							choice = SDL_CONTROLLER_BUTTON_MAX + axis - SDL_CONTROLLER_AXIS_TRIGGERLEFT;
+							keepRunning = false;
+						}
+					}
+				}
+			}
+		}
+
+		SDL_Delay(10);
+		SDL_RenderClear(g_sdlRenderer);
+
+		if (g_sdlTargetTexture)
+			SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+		else
+			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+
+		SDL_RenderPresent(g_sdlRenderer);
+	}
+
+	if (choice != defaultChoice)
+	{
+		for (BEMenuItem **menuItemP = g_beControllerSettingsMenu.menuItems; menuItemP != g_beControllerSettingsMenu.menuItems + BE_ST_CTRL_CFG_BUTMAP_AFTERLAST; ++menuItemP)
+			if ((*menuItemP != menuItem) && ((*menuItemP)->choice == choice))
+				(*menuItemP)->choice = defaultChoice; // Remove duplications
+	}
+	menuItem->choice = choice;
+	// Reset
+	g_sdlLauncherGfxCacheMarked = true;
+	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
 }

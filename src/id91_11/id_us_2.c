@@ -608,8 +608,9 @@ USL_ConfirmComm(UComm comm)
 	// (WARNING: Technically this belongs to USL_CtlDialog, but this is the only place where its returned value is actually checked)
 	if (dialog)
 	{
+		extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm;
 		BE_ST_AltControlScheme_Push();
-		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){sc_Y, sc_N, 0});
+		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu_confirm);
 		confirm = USL_CtlDialog(s1,s2,s3);
 		BE_ST_AltControlScheme_Pop();
 	}
@@ -1736,9 +1737,10 @@ USL_TearDownCtlPanel(void)
 void
 US_ControlPanel(void)
 {
-	// REFKEEN - Alternative controllers support	
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;	
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PrepareMenuControls();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu);
 
 extern void HelpScreens(void);
 

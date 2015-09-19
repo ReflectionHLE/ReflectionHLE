@@ -19,14 +19,11 @@
 // New file used for preparing and defining alternative controller schemes,
 // in case their definitions are configurable (possibly in more than one way)
 
-#ifdef REFKEEN_VER_CATADVENTURES
-#include "def.h"
-#else
-#include "c3_def.h"
-#endif
+#include <string.h>
+#include "refkeen.h"
 
-BE_ST_ControllerSingleMap *g_ingame_altcontrol_button0mapping, *g_ingame_altcontrol_button1mapping,
-	*g_ingame_altcontrol_upmapping, *g_ingame_altcontrol_downmapping, *g_ingame_altcontrol_leftmapping, *g_ingame_altcontrol_rightmapping;
+BE_ST_ControllerSingleMap *g_ingame_altcontrol_button0mappings[2], *g_ingame_altcontrol_button1mappings[2],
+	*g_ingame_altcontrol_upmappings[4], *g_ingame_altcontrol_downmappings[4], *g_ingame_altcontrol_leftmappings[4], *g_ingame_altcontrol_rightmappings[4];
 
 // This one is incomplete and partially filled on startup
 BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
@@ -37,7 +34,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		{0},
 		{0},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -90,11 +87,11 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help = {
 	{
 		// Face buttons
 		{0},
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		{0},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start Button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -103,10 +100,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help = {
 		{0},
 		{0},
 		// D-pad
-		{NULL, sc_UpArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_DownArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_LeftArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_RightArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_UP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_DOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
 	{
 	},
@@ -150,7 +147,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_soundoptions = {
 		{NULL, BE_ST_SC_3, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start Button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -172,8 +169,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_saveoverwriteconfirm = {
 	NULL,
 	{
 		// Face buttons
-		{NULL, sc_Y, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_N, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_Y, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_N, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_RBRACKET, 0, BE_ST_CTRL_MAP_KEYSCANCODE}, // This one is weird, but GE_SaveGame checks this
 		{0},
 		{0},
@@ -197,7 +194,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_waitforspace = {
 	NULL,
 	{
 		// Face buttons
-		{NULL, sc_Space, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_SPACE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		{0},
 		{0},
@@ -227,7 +224,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_keychoice = {
 		{0},
 		{0},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start Button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -249,16 +246,16 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro = {
 	NULL,
 	{
 		// Face buttons
-		{NULL, sc_Enter, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_F4, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_F4, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 #ifdef REFKEEN_VER_CATABYSS
-		{NULL, sc_F10, 0, BE_ST_CTRL_MAP_KEYSCANCODE}, // This one depends on game episode and version
+		{NULL, BE_ST_SC_F10, 0, BE_ST_CTRL_MAP_KEYSCANCODE}, // This one depends on game episode and version
 #else
 		{0},
 #endif
 		{0},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start Button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -280,12 +277,12 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro_skillselection = {
 	NULL,
 	{
 		// Face buttons
-		{NULL, sc_N, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_W, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_N, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_W, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		{0},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start Button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -308,25 +305,25 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback = {
 	NULL,
 	{
 		// Face buttons
-		{NULL, sc_Enter, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_Control, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_Alt, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_LCTRL, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_LALT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		{0},
 		// Shoulder buttons
-		{NULL, sc_PgUp, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_PgDn, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_PAGEUP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_PAGEDOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		// D-pad
-		{NULL, sc_UpArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_DownArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_LeftArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_RightArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_UP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_DOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
 	{
 		{0},
@@ -334,6 +331,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback = {
 		{0},
 		{0},
 		// Triggers
+		{{0}, {NULL, BE_ST_SC_HOME, 0, BE_ST_CTRL_MAP_KEYSCANCODE}},
+		{{0}, {NULL, BE_ST_SC_END, 0, BE_ST_CTRL_MAP_KEYSCANCODE}},
 	},
 	false
 };
@@ -344,12 +343,12 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu = {
 	NULL,
 	{
 		// Face buttons
-		{NULL, sc_Enter, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		{0},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start Button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -358,10 +357,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu = {
 		{0},
 		{0},
 		// D-pad
-		{NULL, sc_UpArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_DownArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_LeftArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_RightArrow, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_UP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_DOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
 	{
 	},
@@ -372,12 +371,12 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 	NULL,
 	{
 		// Face buttons
-		{NULL, sc_Y, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, sc_N, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_Y, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_N, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		{0},
 		// Back button
-		{NULL, sc_Escape, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		// Start Button
 		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -412,85 +411,177 @@ void RefKeen_PrepareAltControllerScheme(void)
 {
 	BE_ST_ControllerSingleMap *tempsinglemappingptr;
 	BE_ST_ControllerSingleMap tempsinglemapping = {0};
-	int index = 0;
+	BE_ST_ControllerSingleMap **currupmappingptr = g_ingame_altcontrol_upmappings;
+	BE_ST_ControllerSingleMap **currdownmappingptr = g_ingame_altcontrol_downmappings;
+	BE_ST_ControllerSingleMap **currleftmappingptr = g_ingame_altcontrol_leftmappings;
+	BE_ST_ControllerSingleMap **currrightmappingptr = g_ingame_altcontrol_rightmappings;
 
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-	tempsinglemapping.val = KbdDefs[0].button0;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[index++], &g_ingame_altcontrol_button0mapping, &tempsinglemapping);
-	tempsinglemapping.val = KbdDefs[0].button1;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[index++], &g_ingame_altcontrol_button1mapping, &tempsinglemapping);
-	tempsinglemapping.val = sc_Space;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[index++], &tempsinglemappingptr, &tempsinglemapping);
+	tempsinglemapping.val = BE_ST_SC_LCTRL; // Actually adjusted in game
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE], &g_ingame_altcontrol_button0mappings[0], &tempsinglemapping);
+	tempsinglemapping.val = BE_ST_SC_LALT; // Actually adjusted in game
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE], &g_ingame_altcontrol_button1mappings[0], &tempsinglemapping);
+	// HACK: These two buttons overridden by mouse button mappings due to analog motion (hack for The Catacomb Adventures Series)
+	if (g_refKeenCfg.altControlScheme.analogMotion)
+	{
+		if (g_ingame_altcontrol_button0mappings[0])
+		{
+			g_ingame_altcontrol_button0mappings[0]->mapClass = BE_ST_CTRL_MAP_MOUSEBUTTON;
+			g_ingame_altcontrol_button0mappings[0]->val = 0;
+			// Game code shouldn't touch this
+			g_ingame_altcontrol_button0mappings[0] = NULL;
+		}
+		if (g_ingame_altcontrol_button1mappings[0])
+		{
+			g_ingame_altcontrol_button1mappings[0]->mapClass = BE_ST_CTRL_MAP_MOUSEBUTTON;
+			g_ingame_altcontrol_button1mappings[0]->val = 1;
+			// Game code shouldn't touch this
+			g_ingame_altcontrol_button1mappings[0] = NULL;
+		}
+	}
+
+	tempsinglemapping.val = BE_ST_SC_SPACE;
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK], &tempsinglemappingptr, &tempsinglemapping);
 #ifdef REFKEEN_VER_CAT3D
-	tempsinglemapping.val = sc_B;
+	tempsinglemapping.val = BE_ST_SC_B;
 #else
-	tempsinglemapping.val = sc_Z;
+	tempsinglemapping.val = BE_ST_SC_Z;
 #endif
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[index++], &tempsinglemappingptr, &tempsinglemapping);
-	tempsinglemapping.val = sc_Enter;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[index++], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT], &tempsinglemappingptr, &tempsinglemapping);
+	tempsinglemapping.val = BE_ST_SC_ENTER;
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE], &tempsinglemappingptr, &tempsinglemapping);
 #ifdef REFKEEN_VER_CAT3D
-	tempsinglemapping.val = sc_RShift;
+	tempsinglemapping.val = BE_ST_SC_RSHIFT;
 #else
-	tempsinglemapping.val = sc_Tab;
+	tempsinglemapping.val = BE_ST_SC_TAB;
 #endif
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[index++], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN], &tempsinglemappingptr, &tempsinglemapping);
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_scrolls;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[index++], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS], &tempsinglemappingptr, &tempsinglemapping);
 #endif
 #ifdef REFKEEN_VER_CATADVENTURES
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[index++], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
 #endif
 
-	switch (g_refKeenCfg.altControlScheme.movementMapping)
+	if (g_refKeenCfg.altControlScheme.useDpad)
 	{
-	case 0:
-		g_ingame_altcontrol_upmapping = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_UP];
-		g_ingame_altcontrol_downmapping = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_DOWN];
-		g_ingame_altcontrol_leftmapping = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_LEFT];
-		g_ingame_altcontrol_rightmapping = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
-		break;
-	case 1:
-		g_ingame_altcontrol_upmapping = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][0];
-		g_ingame_altcontrol_downmapping = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][1];
-		g_ingame_altcontrol_leftmapping = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][0];
-		g_ingame_altcontrol_rightmapping = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][1];
-		break;
-	case 2:
-		g_ingame_altcontrol_upmapping = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][0];
-		g_ingame_altcontrol_downmapping = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][1];
-		g_ingame_altcontrol_leftmapping = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][0];
-		g_ingame_altcontrol_rightmapping = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][1];
-		break;
+		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_UP];
+		*currdownmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_DOWN];
+		*currleftmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_LEFT];
+		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+		{
+			(*currupmappingptr)->val = 1;
+			(*currupmappingptr)->secondaryVal = -16;
+			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currdownmappingptr)->val = 1;
+			(*currdownmappingptr)->secondaryVal = 16;
+			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currleftmappingptr)->val = 0;
+			(*currleftmappingptr)->secondaryVal = -16;
+			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currrightmappingptr)->val = 0;
+			(*currrightmappingptr)->secondaryVal = 16;
+			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+		}
+		else
+		{
+			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+		}
 	}
-	g_ingame_altcontrol_upmapping->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-	g_ingame_altcontrol_downmapping->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-	g_ingame_altcontrol_leftmapping->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-	g_ingame_altcontrol_rightmapping->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+	if (g_refKeenCfg.altControlScheme.useLeftStick)
+	{
+		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][0];
+		*currdownmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][1];
+		*currleftmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][0];
+		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][1];
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+		{
+			(*currupmappingptr)->val = 1;
+			(*currupmappingptr)->secondaryVal = -16;
+			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currdownmappingptr)->val = 1;
+			(*currdownmappingptr)->secondaryVal = 16;
+			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currleftmappingptr)->val = 0;
+			(*currleftmappingptr)->secondaryVal = -16;
+			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currrightmappingptr)->val = 0;
+			(*currrightmappingptr)->secondaryVal = 16;
+			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+		}
+		else
+		{
+			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+		}
+	}
+	if (g_refKeenCfg.altControlScheme.useRightStick)
+	{
+		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][0];
+		*currdownmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][1];
+		*currleftmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][0];
+		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][1];
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+		{
+			(*currupmappingptr)->val = 1;
+			(*currupmappingptr)->secondaryVal = -16;
+			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currdownmappingptr)->val = 1;
+			(*currdownmappingptr)->secondaryVal = 16;
+			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currleftmappingptr)->val = 0;
+			(*currleftmappingptr)->secondaryVal = -16;
+			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			(*currrightmappingptr)->val = 0;
+			(*currrightmappingptr)->secondaryVal = 16;
+			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+		}
+		else
+		{
+			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+		}
+	}
+	// Game code shouldn't touch these
+	if (g_refKeenCfg.altControlScheme.analogMotion)
+	{
+		g_ingame_altcontrol_upmappings[0] = NULL;
+		g_ingame_altcontrol_downmappings[0] = NULL;
+		g_ingame_altcontrol_leftmappings[0] = NULL;
+		g_ingame_altcontrol_rightmappings[0] = NULL;
+	}
 
 #ifdef REFKEEN_VER_CAT3D
 	BE_ST_ControllerSingleMap mouseup    = {NULL, 1, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
 	BE_ST_ControllerSingleMap mousedown  = {NULL, 1,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
 	BE_ST_ControllerSingleMap mouseleft  = {NULL, 0, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
 	BE_ST_ControllerSingleMap mouseright = {NULL, 0,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	switch (g_refKeenCfg.altControlScheme.menuMouseMapping)
+
+	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{
-		case 1:
-			memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][0], &mouseup, sizeof(mouseup));
-			memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][1], &mousedown, sizeof(mousedown));
-			memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][0], &mouseleft, sizeof(mouseleft));
-			memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][1], &mouseright, sizeof(mouseright));
-			break;
-		case 2:
-			memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][0], &mouseup, sizeof(mouseup));
-			memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][1], &mousedown, sizeof(mousedown));
-			memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][0], &mouseleft, sizeof(mouseleft));
-			memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][1], &mouseright, sizeof(mouseright));
-			break;
+		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][0], &mouseup, sizeof(mouseup));
+		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][1], &mousedown, sizeof(mousedown));
+		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][0], &mouseleft, sizeof(mouseleft));
+		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][1], &mouseright, sizeof(mouseright));
+	}
+	if (g_refKeenCfg.altControlScheme.useRightStick)
+	{
+		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][0], &mouseup, sizeof(mouseup));
+		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][1], &mousedown, sizeof(mousedown));
+		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][0], &mouseleft, sizeof(mouseleft));
+		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][1], &mouseright, sizeof(mouseright));
 	}
 #endif
 

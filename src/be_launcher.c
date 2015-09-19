@@ -55,12 +55,12 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 
 	const int xPosStart = BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING + 1;
 	int lastYPos;
-	int xPosUpperBound = (menuItem->type == BE_MENUITEM_TYPE_SELECTION) ? BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND : (BE_LAUNCHER_PIX_WIDTH-1-BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING);
+	int xPosUpperBound = ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) || (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION)) ? BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND : (BE_LAUNCHER_PIX_WIDTH-1-BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING);
 	int xPos = xPosStart;
 	int noOfLabelLines = 1;
 
 	// A minor calculation and verification
-	if (menuItem->type == BE_MENUITEM_TYPE_SELECTION)
+	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) || (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION))
 	{
 		const char **choicePtr;
 		for (choicePtr = menuItem->choices; *choicePtr; ++choicePtr)
@@ -245,7 +245,7 @@ static void BEL_Launcher_DrawMenuTitleItem(BEMenu *menu)
 	BE_ST_Launcher_MarkGfxCache();
 }
 
-static void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem)
+/*static*/ void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem)
 {
 	int labelColor;
 	switch (menuItem->type)
@@ -254,6 +254,8 @@ static void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem)
 		labelColor = 13;
 		break;
 	case BE_MENUITEM_TYPE_SELECTION:
+	case BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER:
+	case BE_MENUITEM_TYPE_DYNAMIC_SELECTION:
 		labelColor = (g_be_launcher_selectedMenuItemPtr && (menuItem == *g_be_launcher_selectedMenuItemPtr)) ? 15 : 12;
 		break;
 	default:
@@ -262,12 +264,14 @@ static void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem)
 	BEL_Launcher_DrawTopRect(0, menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll, BE_LAUNCHER_PIX_WIDTH, menuItem->yPosPastEnd - menuItem->yPosStart, 2, 0, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 	BEL_Launcher_DrawString(menuItem->label, BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING + 1, menuItem->labelYPos - g_be_launcher_currMenu->currPixYScroll, labelColor, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 
-	if (menuItem->type == BE_MENUITEM_TYPE_SELECTION)
+	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER))
 	{
 		BEL_Launcher_DrawString("\xAE", BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 		BEL_Launcher_DrawString("\xAF", BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
-		BEL_Launcher_DrawString(menuItem->choices[menuItem->choice], BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS + ((BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS+BE_MENU_CHAR_WIDTH) - BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS - BE_MENU_CHAR_WIDTH*strlen(menuItem->choices[menuItem->choice])) / 2, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 	}
+
+	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) || (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION))
+		BEL_Launcher_DrawString(menuItem->choices[menuItem->choice], BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS + ((BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS+BE_MENU_CHAR_WIDTH) - BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS - BE_MENU_CHAR_WIDTH*strlen(menuItem->choices[menuItem->choice])) / 2, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 
 	BE_ST_Launcher_MarkGfxCache();
 }
@@ -315,14 +319,18 @@ static void BEL_Launcher_HandleCurrentMenuItem(void)
 	switch (menuItem->type)
 	{
 	case BE_MENUITEM_TYPE_SELECTION:
+	case BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER:
 		// FIXME Move this to another place? (don't verify ptr is ok twice)
 		BE_Launcher_HandleInput_ButtonRight();
 		break;
 	case BE_MENUITEM_TYPE_TARGETMENU:
 		BEL_Launcher_SetCurrentMenu(menuItem->targetMenu);
 		break;
+	case BE_MENUITEM_TYPE_DYNAMIC_SELECTION:
+		g_be_launcher_wasAnySettingChanged = true; // Safer to do this here
+		// Fall-through
 	case BE_MENUITEM_TYPE_HANDLER:
-		menuItem->handler(g_be_launcher_selectedMenuItemPtr - g_be_launcher_currMenu->menuItems);
+		menuItem->handler(g_be_launcher_selectedMenuItemPtr);
 		break;
 	}
 }
@@ -336,12 +344,16 @@ void BE_Launcher_HandleInput_ButtonLeft(void)
 		return;
 
 	BEMenuItem *menuItem = *g_be_launcher_selectedMenuItemPtr;
-	if (menuItem->type == BE_MENUITEM_TYPE_SELECTION)
+	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER))
 	{
 		g_be_launcher_wasAnySettingChanged = true;
 
 		if (--(menuItem->choice) < 0)
 			menuItem->choice = menuItem->nOfChoices-1;
+
+		if (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER)
+			menuItem->handler(g_be_launcher_selectedMenuItemPtr);
+
 		BEL_Launcher_DrawMenuItem(menuItem);
 	}
 }
@@ -352,12 +364,16 @@ void BE_Launcher_HandleInput_ButtonRight(void)
 		return;
 
 	BEMenuItem *menuItem = *g_be_launcher_selectedMenuItemPtr;
-	if (menuItem->type == BE_MENUITEM_TYPE_SELECTION)
+	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER))
 	{
 		g_be_launcher_wasAnySettingChanged = true;
 
 		if (++(menuItem->choice) >= menuItem->nOfChoices)
 			menuItem->choice = 0;
+
+		if (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER)
+			menuItem->handler(g_be_launcher_selectedMenuItemPtr);
+
 		BEL_Launcher_DrawMenuItem(menuItem);
 	}
 }
@@ -465,6 +481,7 @@ void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos)
 		switch (menuItem->type)
 		{
 		case BE_MENUITEM_TYPE_SELECTION:
+		case BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER:
 			// FIXME Move these to another places? (don't verify ptr is ok twice)
 			if ((xpos >= BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS) && (xpos < BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS +  BE_MENU_CHAR_WIDTH))
 				BE_Launcher_HandleInput_ButtonLeft();
@@ -542,7 +559,9 @@ void BE_Launcher_Start(void)
 	BE_Launcher_PrepareMenu(&g_beDisappearedGameHelpMenu);
 	BE_Launcher_PrepareMenu(&g_beSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beVideoSettingsMenu);
-	BE_Launcher_PrepareMenu(&g_beMoreSettingsMenu);
+	BE_Launcher_PrepareMenu(&g_beSoundSettingsMenu);
+	BE_Launcher_PrepareMenu(&g_beInputSettingsMenu);
+	BE_Launcher_PrepareMenu(&g_beControllerSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beQuitConfirmMenu);
 
 	BEL_Launcher_SetCurrentMenu(&g_beMainMenu);
@@ -552,8 +571,9 @@ void BE_Launcher_Start(void)
 	BE_ST_Launcher_RunEventLoop();
 }
 
-void BE_Launcher_Handler_GameLaunch(int menuItemNum)
+void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 {
+	int menuItemNum = menuItemP - g_be_launcher_currMenu->menuItems;
 	BE_ST_Launcher_Shutdown();
 	int argc = 1;
 	static char someEXEName[] = "proxy";
@@ -561,8 +581,19 @@ void BE_Launcher_Handler_GameLaunch(int menuItemNum)
 	BE_Cross_StartGame(BE_Cross_GetGameVerFromInstallation(menuItemNum), argc, argv, 0);
 }
 
-void BE_Launcher_Handler_MenuQuit(int menuItemNum)
+void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP)
 {
 	BE_ST_Launcher_Shutdown();
 	BE_ST_QuickExit();
+}
+
+void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP)
+{
+	BEMenuItem *menuItem = *menuItemP;
+	// HACK - Coped from DrawMenuItem, erasing string
+	BEL_Launcher_DrawString(menuItem->choices[menuItem->choice], BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS + ((BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS+BE_MENU_CHAR_WIDTH) - BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS - BE_MENU_CHAR_WIDTH*strlen(menuItem->choices[menuItem->choice])) / 2, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 0, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
+	// And similarly drawing some new string
+	BEL_Launcher_DrawString("Press...", BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS + ((BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS+BE_MENU_CHAR_WIDTH) - BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS - BE_MENU_CHAR_WIDTH*strlen("Press...")) / 2, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 9, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
+	BE_ST_Launcher_WaitForControllerButton(menuItem);
+	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 }

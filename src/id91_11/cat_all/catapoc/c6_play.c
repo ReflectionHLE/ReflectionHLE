@@ -143,6 +143,10 @@ void StartMusic(void);
 
 void CalibrateJoystick(id0_short_t joynum);
 
+// REFKEEN - Alternative controllers support
+static void PrepareGamePlayControllerMapping(void);
+//
+
 //==========================================================================
 
 ///////////////////////////////////////////////////////////////////////////
@@ -248,8 +252,10 @@ void CheckKeys (void)
 		VW_UpdateScreen();
 
 		// REFKEEN - Alternative controllers support
+		extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_soundoptions;
+		g_ingame_altcontrol_mapping_soundoptions.buttons[BE_ST_CTRL_BUT_X].mapClass = AdLibPresent ? BE_ST_CTRL_MAP_KEYSCANCODE : BE_ST_CTRL_MAP_NONE; // A bit of patching
 		BE_ST_AltControlScheme_Push();
-				BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes(AdLibPresent ? (const char []){2, 3, 4, sc_Escape, 0} : (const char []){2, 3, sc_Escape, 0});
+		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_soundoptions);
 
 		// Switch audio device ON/OFF & load sounds if there
 		// was a change in the device.
@@ -344,6 +350,12 @@ deadloop:;
 			break;
 
 			case sc_Q:
+				// REFKEEN - Alternative controllers support
+				{
+					extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+					BE_ST_AltControlScheme_Push();
+					BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+				}
 				DisplaySMsg("FARE THEE WELL!", NULL);
 				VW_WaitVBL(120);
 				if (!Flags & FL_QUICK)
@@ -785,7 +797,7 @@ void PlayLoop (void)
 {
 	// REFKEEN - Alternative controllers support	
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PrepareInGameControls(KbdDefs[0].button0, KbdDefs[0].button1, KbdDefs[0].up, KbdDefs[0].down, KbdDefs[0].left, KbdDefs[0].right);
+	PrepareGamePlayControllerMapping();
 
 	id0_char_t shot_color[3] = {4,9,14};
 
@@ -1519,4 +1531,30 @@ void DisplayStatus (status_flags *stat_flag)
 		bufferofs = displayofs = screenloc[screenpage];
 
 	}
+}
+
+// REFKEEN - Alternative controllers support
+static void PrepareGamePlayControllerMapping(void)
+{
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay;
+
+	extern BE_ST_ControllerSingleMap *g_ingame_altcontrol_button0mappings[], *g_ingame_altcontrol_button1mappings[],
+		*g_ingame_altcontrol_upmappings[], *g_ingame_altcontrol_downmappings[], *g_ingame_altcontrol_leftmappings[], *g_ingame_altcontrol_rightmappings[];
+
+	BE_ST_ControllerSingleMap **singlemappingptr;
+
+	for (singlemappingptr = g_ingame_altcontrol_button0mappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].button0;
+	for (singlemappingptr = g_ingame_altcontrol_button1mappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].button1;
+	for (singlemappingptr = g_ingame_altcontrol_upmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].up;
+	for (singlemappingptr = g_ingame_altcontrol_downmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].down;
+	for (singlemappingptr = g_ingame_altcontrol_leftmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].left;
+	for (singlemappingptr = g_ingame_altcontrol_rightmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].right;
+
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
 }

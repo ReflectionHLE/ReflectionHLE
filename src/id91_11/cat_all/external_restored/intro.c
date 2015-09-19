@@ -250,18 +250,14 @@ void intro_exe_main(void)
 		id0_argv[id0_argc] = NULL;
 	}
 
-	BE_ST_AltControlScheme_Push(); // REFKEEN - Alternative controllers support
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro;
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro_skillselection;
+	BE_ST_AltControlScheme_Push();
 
 	do
 	{
-		// REFKEEN - Alternative controllers support
-		const char scancodes[] = {0x1C/*Enter*/, 0x1/*Escape*/, 0x3E/*F4*/
-#ifdef REFKEEN_VER_CATABYSS
-			, (refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? (char)(0x44)/*F10*/ : (char)0
-#endif
-			, 0
-		};
-		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes(scancodes);
+		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_intro);
 
 		for (leave_init_sequence = false; !leave_init_sequence;)
 		{
@@ -392,12 +388,19 @@ void intro_exe_main(void)
 #ifdef REFKEEN_VER_CATABYSS
 				else if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && (last_key == 0x44/*0x4400*/)) // F10 (Demo)
 				{
+					// REFKEEN - Alternative controllers support
+					BE_ST_AltControlScheme_Pop();
+
 					SetScreenMode(1);
 					// REFKEEN: This is currently unsupported
 					BE_ST_printf("ERROR : Can't find executable.\nOr rather, the \"Demo\" feature is unsupported in this source port.\n");
 					BE_ST_BiosScanCode(0);
 					SetScreenMode(3);
 					general_loop_var = 600;
+
+					// REFKEEN - Alternative controllers support
+					BE_ST_AltControlScheme_Push();
+					BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_intro);
 #if 0
 					if (execv("DEMOCAT.EXE", id0_argv) == -1)
 					{
@@ -451,7 +454,7 @@ void intro_exe_main(void)
 				//Beep();
 
 				// REFKEEN - Alternative controllers support
-				BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){0x31/*N*/, 0x11/*W*/, 0});
+				BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_intro_skillselection);
 
 				for (leave_skill_selection = false; !leave_skill_selection; )
 				{

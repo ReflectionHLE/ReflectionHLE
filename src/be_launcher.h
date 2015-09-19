@@ -23,13 +23,14 @@
 #define BE_LAUNCHER_PIX_WIDTH 320
 #define BE_LAUNCHER_PIX_HEIGHT 240	
 
-typedef enum { BE_MENUITEM_TYPE_STATIC, BE_MENUITEM_TYPE_SELECTION, BE_MENUITEM_TYPE_TARGETMENU, BE_MENUITEM_TYPE_HANDLER } BEMenuItemType;
+typedef enum { BE_MENUITEM_TYPE_STATIC, BE_MENUITEM_TYPE_HANDLER, BE_MENUITEM_TYPE_SELECTION, BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER, BE_MENUITEM_TYPE_DYNAMIC_SELECTION, BE_MENUITEM_TYPE_TARGETMENU } BEMenuItemType;
 
-typedef void (*BEMenuItemHandler)(int menuItemNum);
-
+struct BEMenuItem;
 struct BEMenu;
 
-typedef struct
+typedef void (*BEMenuItemHandler)(struct BEMenuItem **menuItemP);
+
+typedef struct BEMenuItem
 {
 	BEMenuItemHandler handler;
 	const char **choices;
@@ -54,7 +55,8 @@ typedef struct BEMenu
 } BEMenu;
 
 extern BEMenu g_beMainMenu, g_beSelectGameMenu, g_beDisappearedGameHelpMenu,
-              g_beSettingsMenu, g_beVideoSettingsMenu, g_beMoreSettingsMenu,
+              g_beSettingsMenu, g_beVideoSettingsMenu, g_beSoundSettingsMenu,
+              g_beInputSettingsMenu, g_beControllerSettingsMenu,
               g_beQuitConfirmMenu;
 
 extern bool g_be_launcher_wasAnySettingChanged;
@@ -73,8 +75,9 @@ void BE_Launcher_HandleInput_PointerVScroll(int ydiff);
 
 void BE_Launcher_RefreshVerticalScrolling(void);
 
-void BE_Launcher_Handler_GameLaunch(int menuItemNum);
-void BE_Launcher_Handler_MenuQuit(int menuItemNum);
+void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP);
 
 void BE_Launcher_Start();
 

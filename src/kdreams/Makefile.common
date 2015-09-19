@@ -32,6 +32,7 @@ OBJECTS=$(OBJ)/id_ca.o \
         $(OBJ)/kd_keen.o \
         $(OBJ)/kd_main.o \
         $(OBJ)/kd_play.o \
+        $(OBJ)/altcontroller.o \
         $(OBJ)/statetype_ptr_conversion.o
 
 BEOBJECTS=$(BEOBJ)/actual_main.o \
@@ -118,15 +119,6 @@ $(BEOBJ)/unlzexe.o: $(BESRC)/unlzexe/unlzexe.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 ifeq ($(VERDIRNAME), kdreamse)
-$(OBJ)/gelib.o: $(SRC)/gelib.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/jam_io.o: $(SRC)/jam_io.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/lzhuf.o: $(SRC)/lzhuf.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/soft.o: $(SRC)/soft.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-
 $(OBJ)/loadscn2.o: $(SRC)/lscr/loadscn2.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 endif

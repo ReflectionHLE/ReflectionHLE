@@ -1787,8 +1787,9 @@ void ReadScroll (id0_int_t scroll)
 	lasttext = -1;
 	DisplayMsg("Press ENTER or ESC to exit.",NULL);
 	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){sc_Enter, sc_Escape, 0});
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 	while ((!Keyboard[sc_Escape]) && (!Keyboard[sc_Enter]))
 	{
 		BE_ST_ShortSleep();

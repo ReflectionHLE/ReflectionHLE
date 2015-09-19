@@ -12,7 +12,7 @@ SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
 #ifdef REFKEEN_VER_KDREAMS
 	const char *g_sdlWindowTitle = "Reflection Keen";
-#elif (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATADVENTURES)
+#elif (defined REFKEEN_VER_CATACOMB_ALL)
 	const char *g_sdlWindowTitle = "Reflection Catacomb 3-D";
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
@@ -370,7 +370,7 @@ static void BEL_ST_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char
 	}
 }
 
-static const char * BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr)
+static void BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr)
 {
 	BEL_ST_CreatePadTextureIfNeeded(padTexturePtrPtr);
 
@@ -399,8 +399,11 @@ static const char * BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char
 		}
 	}
 	// FIXME Rather than drawing each scancode as the ASCII code, we want something else...
-	for (int counter = 0; (*scanCodes) && (counter < 4); ++scanCodes, ++counter)
+	for (int counter = 0; counter < 4; ++scanCodes, ++counter)
 	{
+		if (!(*scanCodes))
+			continue;
+
 		const char *str = g_sdlDOSScanCodeStrs[(unsigned char)(*scanCodes)];
 		BEL_ST_RedrawTextToBuffer(pixels + g_sdlControllerFaceButtonsTextLocs[2*counter] + g_sdlControllerFaceButtonsTextLocs[2*counter+1]*ALTCONTROLLER_PAD_PIX_WIDTH + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), ALTCONTROLLER_PAD_PIX_WIDTH, str);
 	}
@@ -414,15 +417,29 @@ static const char * BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char
 	*areButtonsShownPtr = true;
 
 	g_sdlForceGfxControlUiRefresh = true;
-
-	return scanCodes; // Check if there's something left
 }
 
-/*static*/ void BEL_ST_PrepareToShowFaceButtonsAndDpad(const char *scanCodes)
+/*static*/ void BEL_ST_PrepareToShowControllerUI(const BE_ST_ControllerMapping *mapping)
 {
-	scanCodes =  BEL_ST_PrepareToShowOnePad(scanCodes, pad_thumb_buttons_xpm, &g_sdlFaceButtonsTexture, &g_sdlFaceButtonsAreShown);
-	if (*scanCodes)
-		BEL_ST_PrepareToShowOnePad(scanCodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown);
+	const char faceButtonsScancodes[4] = {
+		(mapping->buttons[BE_ST_CTRL_BUT_A].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_A].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_B].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_B].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_X].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_X].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_Y].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ?(char) mapping->buttons[BE_ST_CTRL_BUT_Y].val : '\0'
+	};
+	const char dpadScancodes[4] = {
+		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_RIGHT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_RIGHT].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_LEFT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_LEFT].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_UP].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_UP].val : '\0'
+	};
+	const char emptyScancodesArray[4] = {'\0'};
+
+	if (memcmp(&faceButtonsScancodes, &emptyScancodesArray, sizeof(emptyScancodesArray)))
+		BEL_ST_PrepareToShowOnePad(faceButtonsScancodes, pad_thumb_buttons_xpm, &g_sdlFaceButtonsTexture, &g_sdlFaceButtonsAreShown);
+
+	if (memcmp(&dpadScancodes, &emptyScancodesArray, sizeof(emptyScancodesArray)))
+		BEL_ST_PrepareToShowOnePad(dpadScancodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown);
 }
 
 static void BEL_ST_CreateTextInputTextureIfNeeded(void)

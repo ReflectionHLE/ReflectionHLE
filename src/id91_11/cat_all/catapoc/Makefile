@@ -43,7 +43,8 @@ OBJECTS+= $(OBJ)/c5_debug.o \
 #Shared with Catacomb 3-D and The Adventures Series
 OBJECTS+= $(OBJ)/c3_asm.o \
           $(OBJ)/c3_scale.o \
-          $(OBJ)/c3_trace.o
+          $(OBJ)/c3_trace.o \
+          $(OBJ)/altcontroller.o
 
 IDOBJECTS=$(IDOBJ)/id_ca.o \
           $(IDOBJ)/id_in.o \
@@ -133,18 +134,10 @@ $(EXTOBJ)/%.o: $(EXTSRC)/%.c $(EXTOBJ)
 $(IDOBJ)/%.o: $(IDSRC)/%.c $(IDOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
-$(OBJ)/c5_debug.o: $(CATLATECOMMONSRC)/c5_debug.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/c5_draw.o: $(CATLATECOMMONSRC)/c5_draw.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/gelib.o: $(CATLATECOMMONSRC)/gelib.c | $(OBJ)
+$(OBJ)/%.o: $(CATLATECOMMONSRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
-$(OBJ)/c3_asm.o: $(C3DCOMMONSRC)/c3_asm.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/c3_scale.o: $(C3DCOMMONSRC)/c3_scale.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/c3_trace.o: $(C3DCOMMONSRC)/c3_trace.c | $(OBJ)
+$(OBJ)/%.o: $(C3DCOMMONSRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)

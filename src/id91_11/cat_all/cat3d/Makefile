@@ -34,7 +34,8 @@ OBJECTS=$(OBJ)/c3_act1.o \
 #Shared with Catacomb 3-D and The Adventures Series
 OBJECTS+= $(OBJ)/c3_asm.o \
           $(OBJ)/c3_scale.o \
-          $(OBJ)/c3_trace.o
+          $(OBJ)/c3_trace.o \
+          $(OBJ)/altcontroller.o
 
 IDOBJECTS=$(IDOBJ)/id_ca.o \
           $(IDOBJ)/id_in.o \
@@ -61,7 +62,7 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/dbopl.o \
           $(BEOBJ)/unlzexe.o
 
-INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(IDSRC) -I$(BESRC) -DREFKEEN_VER_CAT3D=1
+INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(IDSRC) -I$(BESRC) -DREFKEEN_VER_CAT3D=1 -DREFKEEN_VER_CATACOMB_ALL=1
 EXENAME=refcat3d
 
 ifeq ($(DEBUG),1)
@@ -114,13 +115,8 @@ $(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
 $(IDOBJ)/%.o: $(IDSRC)/%.c $(IDOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
-$(OBJ)/c3_asm.o: $(C3DCOMMONSRC)/c3_asm.c | $(OBJ)
+$(OBJ)/%.o: $(C3DCOMMONSRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/c3_scale.o: $(C3DCOMMONSRC)/c3_scale.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-$(OBJ)/c3_trace.o: $(C3DCOMMONSRC)/c3_trace.c | $(OBJ)
-	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
-
 
 $(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@

@@ -52,6 +52,8 @@ id0_char_t Filename[FILENAME_LEN+1], ID[sizeof(GAMENAME)], VER[sizeof(SAVEVER_DA
 id0_short_t wall_anim_delay,wall_anim_time = 7;
 BufferedIO lzwBIO;
 
+// REFKEEN - Alternative controllers support
+extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_waitforspace;
 
 
 
@@ -341,24 +343,28 @@ void GE_SaveGame()
 				VW_UpdateScreen();
 
 				// REFKEEN - Alternative controllers support
+				extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_saveoverwriteconfirm;
 				BE_ST_AltControlScheme_Push();
-				BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){21, 49, 27, 0});
+				BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_saveoverwriteconfirm);
 
 				while((!Keyboard[21]) && (!Keyboard[49]) && !Keyboard[27])
 				{
 					BE_ST_ShortSleep();
 				}
 
-				// REFKEEN - Alternative controllers support
-				BE_ST_AltControlScheme_Pop();
-
 				if (Keyboard[27])
+				// REFKEEN - Alternative controllers support
+				{
+					BE_ST_AltControlScheme_Pop(); // MUST be done here, not before the last check of key
 					goto EXIT_FUNC;
+				}
 				if (Keyboard[49])
 				{
 					GettingFilename = true;
 					VW_UpdateScreen();
 				}
+				// REFKEEN - Alternative controllers support
+				BE_ST_AltControlScheme_Pop();
 			}
 		}
 	}
@@ -402,7 +408,8 @@ void GE_SaveGame()
 		VW_UpdateScreen();
 		// REFKEEN - Alternative controllers support
 		BE_ST_AltControlScheme_Push();
-		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_waitforspace);
+
 		while (!Keyboard[57])
 		{
 			BE_ST_ShortSleep();
@@ -474,7 +481,7 @@ id0_boolean_t GE_LoadGame()
 			VW_UpdateScreen();
 			// REFKEEN - Alternative controllers support
 			BE_ST_AltControlScheme_Push();
-			BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+			BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_waitforspace);
 
 			while (!Keyboard[57])
 			{
@@ -515,7 +522,8 @@ id0_boolean_t GE_LoadGame()
 			VW_UpdateScreen();
 			// REFKEEN - Alternative controllers support
 			BE_ST_AltControlScheme_Push();
-			BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+			BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_waitforspace);
+
 			while (!Keyboard[57])
 			{
 				BE_ST_ShortSleep();
@@ -551,7 +559,8 @@ id0_boolean_t GE_LoadGame()
 		US_CPrintLine("Press SPACE to continue.", NULL);
 		// REFKEEN - Alternative controllers support
 		BE_ST_AltControlScheme_Push();
-		BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes((const char []){57, 0});
+		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_waitforspace);
+
 		while (!Keyboard[57])
 		{
 			BE_ST_ShortSleep();
@@ -1166,9 +1175,43 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 	id0_boolean_t waiting;
 	const id0_char_t *s/*,*ss*/;
 
-	// REFKEEN - Alternative controllers support	
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_keychoice;
+	// This one is a bit tricky... Also reusing s variable here
+	int controllerbutton;
+	for (controllerbutton = BE_ST_CTRL_BUT_A, s = choices; controllerbutton < BE_ST_CTRL_BUT_A + 4; ++controllerbutton)
+	{
+		while (*s == sc_Escape)
+			++s;
+
+		if (*s)
+		{
+			g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].val = *s;
+			++s;
+		}
+		else
+		{
+			g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_NONE;
+		}
+	}
+	for (controllerbutton = BE_ST_CTRL_BUT_DPAD_UP; controllerbutton < BE_ST_CTRL_BUT_DPAD_UP + 4; ++controllerbutton)
+	{
+		if (*s)
+		{
+			if (*s != sc_Escape)
+			{
+				g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+				g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].val = *s;
+				++s;
+				continue;
+			}
+			++s;
+		}
+		g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_NONE;
+	}
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PrepareFaceButtonsDOSScancodes(choices);
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_keychoice);
 
 	IN_ClearKeysDown();
 

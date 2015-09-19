@@ -1315,10 +1315,17 @@ void ReadScroll (id0_int_t scroll)
 			SetupScaleWall (walldark2[i]);
 		}
 
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 	VW_WaitVBL(80);
 //waitkey:
 	IN_ClearKeysDown ();
 	IN_Ack();
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 
 }
 

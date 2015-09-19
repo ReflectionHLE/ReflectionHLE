@@ -2508,8 +2508,9 @@ static void
 USL_DoHelp(memptr text,id0_long_t len)
 {
 	// REFKEEN - Alternative controllers support	
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_help;
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PreparePageScrollingControls(sc_PgUp, sc_PgDn);
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu_help);
 
 	id0_boolean_t		done,
 				moved;
@@ -3570,8 +3571,9 @@ void
 US_ControlPanel(void)
 {
 	// REFKEEN - Alternative controllers support	
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;	
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PrepareMenuControls();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu);
 
 	id0_char_t		gamename[MaxGameName + 10 + 1];
 	ScanCode	c;
