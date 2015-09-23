@@ -1,0 +1,15 @@
+diff -r 789c61553acd w3d_plus/ID_SD.C
+--- a/w3d_plus/ID_SD.C	Fri Aug 28 16:36:20 2015 +0300
++++ b/w3d_plus/ID_SD.C	Wed Sep 23 10:15:06 2015 +0300
+@@ -2126,9 +2126,9 @@
+ 		{
+ 		case 0x51:
+ 			length = MIDI_VarLength();
+-			tempo = ((long)(*midiData)<<16) + (long)((*(midiData+1))<<8) + (*(midiData+2));
++			tempo = ((long)(*midiData)<<16) + ((long)(*(midiData+1))<<8) + (*(midiData+2));
+ 			midiTimeScale = (double)tempo/2.74176e5;
+-			midiTimeScale *= 1.1;
++			//midiTimeScale *= 1.1;
+ 			midiData += length;
+ 			break;
+ 		case 0x2F:
