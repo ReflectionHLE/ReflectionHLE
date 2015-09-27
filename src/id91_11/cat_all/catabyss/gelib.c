@@ -487,11 +487,14 @@ void ColoredPalette()
 	screenfaded = false;
 }
 
+// (REFKEEN) Split Verify to separate handlers, possibly using different paths
+// - Change Verify to an internal static function with a few changes
+
 ////////////////////////////////////////////////////////////////////////////
 //
 // Verify()
 //
-id0_long_t Verify(const id0_char_t *filename)
+static id0_long_t Verify(const id0_char_t *filename,bool rewritable)
 {
 	BE_FILE_T handle;
 	id0_long_t size;
@@ -502,6 +505,17 @@ id0_long_t Verify(const id0_char_t *filename)
 	size=BE_Cross_FileLengthFromHandle(handle);
 	BE_Cross_close(handle);
 	return(size);
+}
+
+// (REFKEEN) Split Verify function
+id0_long_t VerifyReadOnly(const id0_char_t *filename)
+{
+	return Verify(filename, false);
+}
+
+id0_long_t VerifyRewritable(const id0_char_t *filename)
+{
+	return Verify(filename, true);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -570,7 +584,7 @@ void GE_SaveGame()
 			memcpy(chptr, ".SAV", strlen(".SAV")); // Minor optimization...
 			//strcat(Filename,".SAV");
 			GettingFilename = false;
-			if (Verify(Filename))								// FILE EXISTS
+			if (VerifyRewritable(Filename))								// FILE EXISTS
 			{
 				US_CenterWindow(22,4);
 				US_CPrintLine("That file already exists...", NULL);
@@ -710,7 +724,7 @@ id0_boolean_t GE_LoadGame()
 		//strcat(Filename,".SAV");
 		GettingFilename = false;
 
-		if (!Verify(Filename))								// FILE DOESN'T EXIST
+		if (!VerifyRewritable(Filename))								// FILE DOESN'T EXIST
 		{
 			US_CenterWindow(22,3);
 			US_CPrintLine(" That file doesn't exist....", NULL);
@@ -1160,7 +1174,7 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	//
 	if (comp)
 	{
-		SrcLen = Verify(SourceFile);
+		SrcLen = VerifyReadOnly(SourceFile);
 		BE_Cross_readInt32LE(handle, &DstLen);
 		//read(handle,(void *)&DstLen,4);
 		MM_GetPtr(DstPtr,DstLen);
@@ -1168,7 +1182,7 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 			return(0);
 	}
 	else
-		DstLen = Verify(SourceFile);
+		DstLen = VerifyReadOnly(SourceFile);
 
 	// LZW decompress OR simply load the file.
 	//
@@ -2685,10 +2699,13 @@ void DoFullScreenAnim(id0_char_t *filename, void (*SpawnAll)(), id0_short_t (*Ch
 
 #endif
 
+// (REFKEEN) Split FindFile to separate handlers, possibly using different paths
+// - Change FindFile to an internal static function with a few changes
+
 //--------------------------------------------------------------------------
 // FindFile()
 //--------------------------------------------------------------------------
-id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum)
+static id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum,bool rewritable)
 {
 	extern id0_boolean_t splitscreen;
 
@@ -2706,7 +2723,7 @@ id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0
 	drive[1] = 0;
 	while (rt_code == 2)
 	{
-		if (Verify(filename))
+		if (Verify(filename,rewritable))
 			rt_code = true;
 		else
 		{
@@ -2782,16 +2799,27 @@ id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0
 	return(rt_code);
 }
 
+// (REFKEEN) Split FindFile function
+id0_boolean_t FindReadOnlyFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum)
+{
+	return FindFile(filename,disktext,disknum,false);
+}
+
+id0_boolean_t FindRewritableFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum)
+{
+	return FindFile(filename,disktext,disknum,true);
+}
+
 #if 0
 //--------------------------------------------------------------------------
 // CacheAll()
 //--------------------------------------------------------------------------
 void CacheAV(id0_char_t *title)
 {
-	if (Verify("EGAGRAPH."EXT))
+	if (VerifyReadOnly("EGAGRAPH."EXT))
 	{
 		CA_CacheMarks(title);
-		if (!FindFile("EGAGRAPH."EXT,AUDIO_DISK))
+		if (!FindReadOnlyFile("EGAGRAPH."EXT,AUDIO_DISK))
 			TrashProg("Can't find graphics files.");
 
 // cache in audio
@@ -2803,7 +2831,7 @@ void CacheAV(id0_char_t *title)
 
 // cache in audio
 
-		if (!FindFile("EGAGRAPH."EXT,VIDEO_DISK))
+		if (!FindReadOnlyFile("EGAGRAPH."EXT,VIDEO_DISK))
 			TrashProg("Can't find audio files.");
 		CA_CacheMarks(title);
 

@@ -403,7 +403,7 @@ id0_boolean_t	LoadTheGame(BE_FILE_T file)
 	// Don't do this check, we've already opened the file anyway
 	// and this can lead to unexpected behaviors!
 #if 0
-	if (!FindFile(Filename,"SAVE GAME",-1))
+	if (!FindRewritableFile(Filename,"SAVE GAME",-1))
 		Quit("Error: Can't find saved game file!");
 #endif
 

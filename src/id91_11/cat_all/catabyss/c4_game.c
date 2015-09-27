@@ -824,7 +824,7 @@ void Victory (id0_boolean_t playsounds)
 		VW_FadeOut();
 	screenpage = 1;
 	VW_SetScreen (screenloc[screenpage],0);
-	if (!FindFile("FINALE."EXT,NULL,1))
+	if (!FindReadOnlyFile("FINALE."EXT,NULL,1))
 		Quit("Error: Can't find victory screen.");
 	if (LoadShape("FINALE."EXT,&shape))
 		TrashProg("Can't load FINALE."EXT);

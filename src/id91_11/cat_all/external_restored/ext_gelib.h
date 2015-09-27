@@ -54,7 +54,10 @@ struct Shape {
 //
 
 void ext_MoveGfxDst(id0_short_t x, id0_short_t y);
-id0_long_t Verify(const id0_char_t *filename);
+// (REFKEEN) Split Verify to separate handlers, possibly using different paths
+id0_long_t VerifyReadOnly(const id0_char_t *filename);
+id0_long_t VerifyRewritable(const id0_char_t *filename);
+//id0_long_t Verify(const id0_char_t *filename);
 
 id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr);
 

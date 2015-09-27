@@ -391,7 +391,7 @@ deadloop:;
 		VW_FadeOut();
 
 		FreeUpMemory();
-		if (!FindFile("HELP.TXT",NULL,1))
+		if (!FindReadOnlyFile("HELP.TXT",NULL,1))
 			nohelp = true;
 
 		if (LoadTextFile("HELP.TXT",&MainHelpText))

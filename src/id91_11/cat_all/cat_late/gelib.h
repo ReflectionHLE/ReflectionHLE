@@ -153,7 +153,10 @@ void PrintPropText(const id0_char_t id0_far *text);
 //long LoadTextFile(const id0_char_t *filename,textinfo *textinfo);
 //void FreeTextFile(textinfo *textinfo);
 //void InitTextFile(textinfo *textinfo);
-id0_long_t Verify(const id0_char_t *filename);
+// (REFKEEN) Split Verify to separate handlers, possibly using different paths
+id0_long_t VerifyReadOnly(const id0_char_t *filename);
+id0_long_t VerifyRewritable(const id0_char_t *filename);
+//id0_long_t Verify(const id0_char_t *filename);
 void GE_SaveGame(void);
 id0_boolean_t GE_LoadGame(void);
 id0_int_t GE_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si);
@@ -207,7 +210,10 @@ void cachein(id0_short_t s,id0_short_t e);
 void cacheout(id0_short_t s,id0_short_t e);
 void FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height, id0_boolean_t abortable);
 void mprintf(id0_char_t *msg, ...);
-id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum);
+// (REFKEEN) Split FindFile to separate handlers, possibly using different paths
+id0_boolean_t FindReadOnlyFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum);
+id0_boolean_t FindRewritableFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum);
+//id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum);
 void CacheAV(id0_char_t *title);
 void BlackPalette(void);
 void ColoredPalette(void);

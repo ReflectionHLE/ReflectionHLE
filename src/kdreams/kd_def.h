@@ -407,7 +407,9 @@ struct Shape;
 void FreeShape(struct Shape *shape);
 id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t starty);
 
-id0_long_t Verify(const id0_char_t *filename);
+// (REFKEEN) Rename Verify -> VerifyReadOnly for consistency with the Catacombs
+id0_long_t VerifyReadOnly(const id0_char_t *filename);
+//id0_long_t Verify(const id0_char_t *filename);
 memptr InitBufferedIO(BE_FILE_T handle, BufferedIO *bio);
 void FreeBufferedIO(BufferedIO *bio);
 id0_byte_t bio_readch(BufferedIO *bio);

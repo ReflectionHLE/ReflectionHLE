@@ -41,7 +41,7 @@ loaded into the data segment
 
 // REFKEEN - Using this from gelib for some reason
 #ifdef REFKEEN_VER_CATADVENTURES
-id0_boolean_t FindFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum);
+id0_boolean_t FindReadOnlyFile(const id0_char_t *filename,const id0_char_t *disktext,id0_char_t disknum);
 #endif
 
 /*
@@ -938,7 +938,7 @@ void CA_Startup (void)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindFile("AUDIO."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("AUDIO."EXTENSION,NULL,2))
 		Quit("CA_Startup(): Can't find audio files.");
 //
 // MDM end
@@ -950,9 +950,9 @@ void CA_Startup (void)
 // MDM begin - (GAMERS EDGE)
 //
 #ifdef REFKEEN_VER_CATABYSS
-	if (!FindFile("GAMEMAPS."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("GAMEMAPS."EXTENSION,NULL,2))
 #else
-	if (!FindFile("GAMEMAPS."EXTENSION,NULL,1))
+	if (!FindReadOnlyFile("GAMEMAPS."EXTENSION,NULL,1))
 #endif
 		Quit("CA_Startup(): Can't find level files.");
 //
@@ -968,7 +968,7 @@ void CA_Startup (void)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindFile("EGAGRAPH."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("EGAGRAPH."EXTENSION,NULL,2))
 		Quit("CA_Startup(): Can't find graphics files.");
 //
 // MDM end
@@ -1049,7 +1049,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindFile("AUDIO."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("AUDIO."EXTENSION,NULL,2))
 		Quit("CA_CacheAudioChunk(): Can't find audio files.");
 //
 // MDM end
@@ -1562,7 +1562,7 @@ void CA_CacheGrChunk (id0_int_t chunk)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindFile("EGAGRAPH."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("EGAGRAPH."EXTENSION,NULL,2))
 		Quit("CA_CacheGrChunk(): Can't find graphics files.");
 //
 // MDM end
@@ -1633,9 +1633,9 @@ void CA_CacheMap (id0_int_t mapnum)
 // MDM begin - (GAMERS EDGE)
 //
 #ifdef REFKEEN_VER_CATABYSS
-	if (!FindFile("GAMEMAPS."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("GAMEMAPS."EXTENSION,NULL,2))
 #else
-	if (!FindFile("GAMEMAPS."EXTENSION,NULL,1))
+	if (!FindReadOnlyFile("GAMEMAPS."EXTENSION,NULL,1))
 #endif
 		Quit("CA_CacheMap(): Can't find level files.");
 //
@@ -2075,7 +2075,7 @@ void CA_CacheMarks (const id0_char_t *title)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindFile("EGAGRAPH."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("EGAGRAPH."EXTENSION,NULL,2))
 		Quit("CA_CacheMarks(): Can't find graphics files.");
 //
 // MDM end
