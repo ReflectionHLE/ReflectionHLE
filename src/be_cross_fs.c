@@ -998,13 +998,6 @@ int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int ma
 void BE_Cross_PrepareGameInstallations(void)
 {
 	/*** Some misc. preparation ***/
-#ifdef REFKEEN_PLATFORM_UNIX
-#if (defined REFKEEN_VER_KDREAMS_CGA_ALL)
-	const char *homedir = getenv("HOME");
-	char path[BE_CROSS_PATH_LEN_BOUND];
-	char *pathEnd = path + sizeof(path);
-#endif
-#endif
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS) || (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
@@ -1027,13 +1020,6 @@ void BE_Cross_PrepareGameInstallations(void)
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Keen Dreams CGA v1.05 (Local)");
-#ifdef REFKEEN_PLATFORM_UNIX
-	if (homedir)
-	{
-		BEL_Cross_safeandfastctstringcopy_2strs(path, pathEnd, homedir, "/.steam/steam/SteamApps/common/Keen Dreams/cga");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, path, "Keen Dreams CGA v1.05 (Steam)");
-	}
-#endif
 #endif
 
 #ifdef REFKEEN_VER_KDREAMS_ANYEGA_ALL
