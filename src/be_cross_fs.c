@@ -23,7 +23,7 @@
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #include <shlwapi.h> // SHGetValue
-#include <io.h> // mkdir
+#include <direct.h> // _wmkdir
 #endif
 
 //#include "be_cross.h"
@@ -32,7 +32,32 @@
 
 #define BE_CROSS_PATH_LEN_BOUND 256
 
-#define BE_ALL_REWRITABLE_FILES_DIR "refkeen_internal_files"
+#define BE_ALL_REWRITABLE_FILES_DIR _T("refkeen_internal_files")
+
+/*** Unicode stuff - Using some wide strings on Windows, and narrow strings (possibly UTF-8 encoded) elsewhere ***/
+#ifdef REFKEEN_PLATFORM_WINDOWS
+#define _T(x) L##x
+#define TCHAR wchar_t
+#define _tcslen wcslen
+#define _TDIR _WDIR
+#define _tdirent _wdirent
+#define _tfopen _wfopen
+#define _tmkdir _wmkdir
+#define _topendir _wopendir
+#define _tclosedir _wclosedir
+#define _treaddir _wreaddir
+#else
+#define _T(x) x
+#define TCHAR char
+#define _tcslen strlen
+#define _TDIR DIR
+#define _tdirent dirent
+#define _tfopen fopen
+#define _tmkdir mkdir
+#define _topendir opendir
+#define _tclosedir closedir
+#define _treaddir readdir
+#endif
 
 // Describes a required file from a specific game version
 typedef struct {
@@ -54,7 +79,7 @@ typedef enum {
 typedef struct {
 	const BE_GameFileDetails_T *reqFiles;
 	const BE_EmbeddedGameFileDetails_T *embeddedFiles;
-	const char *writableFilesDir;
+	const TCHAR *writableFilesDir;
 	const char *exeName;
 	int decompExeSize;
 	BE_ExeCompression_T compressionType;
@@ -63,10 +88,10 @@ typedef struct {
 
 typedef struct {
 	const char *descStr;
-	char path[BE_CROSS_PATH_LEN_BOUND];
-	char writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
-	char writableVanillaFilesPath[BE_CROSS_PATH_LEN_BOUND];
-	char embeddedRsrcPath[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR writableVanillaFilesPath[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR embeddedRsrcPath[BE_CROSS_PATH_LEN_BOUND];
 	BE_GameVer_T verId;
 } BE_GameInstallation_T;
 
@@ -137,7 +162,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc105[
 static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
 	g_be_reqgameverfiles_kdreamsc105,
 	g_be_embeddedgameverfiles_kdreamsc105,
-	"kdreamsc_105",
+	_T("kdreamsc_105"),
 	"KDREAMS.EXE",
 	202320,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -172,7 +197,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse113[
 static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
 	g_be_reqgameverfiles_kdreamse113,
 	g_be_embeddedgameverfiles_kdreamse113,
-	"kdreamse_113",
+	_T("kdreamse_113"),
 	"KDREAMS.EXE",
 	213536,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -207,7 +232,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse193[
 static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
 	g_be_reqgameverfiles_kdreamse193,
 	g_be_embeddedgameverfiles_kdreamse193,
-	"kdreamse_193",
+	_T("kdreamse_193"),
 	"KDREAMS.EXE",
 	213200,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -239,7 +264,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse120[
 static const BE_GameVerDetails_T g_be_gamever_kdreamse120 = {
 	g_be_reqgameverfiles_kdreamse120,
 	g_be_embeddedgameverfiles_kdreamse120,
-	"kdreamse_120",
+	_T("kdreamse_120"),
 	"KDREAMS.EXE",
 	214912,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -270,7 +295,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d100[] =
 static const BE_GameVerDetails_T g_be_gamever_cat3d100 = {
 	g_be_reqgameverfiles_cat3d100,
 	g_be_embeddedgameverfiles_cat3d100,
-	"cat3d_100",
+	_T("cat3d_100"),
 	"CAT3D.EXE",
 	191536,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -301,7 +326,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d122[] =
 static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
 	g_be_reqgameverfiles_cat3d122,
 	g_be_embeddedgameverfiles_cat3d122,
-	"cat3d_122",
+	_T("cat3d_122"),
 	"CAT3D.EXE",
 	191904,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -375,7 +400,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss113[
 static const BE_GameVerDetails_T g_be_gamever_catabyss113 = {
 	g_be_reqgameverfiles_catabyss113,
 	g_be_embeddedgameverfiles_catabyss113,
-	"catabyss_113",
+	_T("catabyss_113"),
 	"CATABYSS.EXE",
 	201120,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -439,7 +464,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss124[
 static const BE_GameVerDetails_T g_be_gamever_catabyss124 = {
 	g_be_reqgameverfiles_catabyss124,
 	g_be_embeddedgameverfiles_catabyss124,
-	"catabyss_124",
+	_T("catabyss_124"),
 	"ABYSGAME.EXE",
 	200848,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -505,7 +530,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catarm102[] 
 static const BE_GameVerDetails_T g_be_gamever_catarm102 = {
 	g_be_reqgameverfiles_catarm102,
 	g_be_embeddedgameverfiles_catarm102,
-	"catarm_102",
+	_T("catarm_102"),
 	"ARMGAME.EXE",
 	198304,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -570,7 +595,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catapoc101[]
 static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
 	g_be_reqgameverfiles_catapoc101,
 	g_be_embeddedgameverfiles_catapoc101,
-	"catapoc_101",
+	_T("catapoc_101"),
 	"APOCGAME.EXE",
 	200064,
 	BE_EXECOMPRESSION_LZEXE9X,
@@ -585,53 +610,117 @@ int BE_Cross_putc(int character, BE_FILE_T fp);
 int BE_Cross_getc(BE_FILE_T fp);
 void BE_Cross_close(BE_FILE_T fp);
 
+/*** These are similar to functions from header, but ***/
+/*** should be usable with wide strings on Windows   ***/
+
+static TCHAR *BEL_Cross_safeandfastctstringcopy(TCHAR *dest, TCHAR *destEnd, const TCHAR *src)
+{
+	char ch;
+	// We assume that initially, destEnd - dest > 0.
+	do
+	{
+		ch = *src++;
+		*dest++ = ch; // This includes the null terminator if there's the room
+	} while ((dest < destEnd) && ch);
+	// These work in case dest == destEnd, and also if not
+	--dest;
+	*dest = _T('\0');
+	return dest; // WARNING: This differs from strcpy!!
+}
+
+static TCHAR *BEL_Cross_safeandfastctstringcopy_2strs(TCHAR *dest, TCHAR *destEnd, const TCHAR *src0, const TCHAR *src1)
+{
+	return BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(dest, destEnd, src0), destEnd, src1);
+}
+
+static TCHAR *BEL_Cross_safeandfastctstringcopy_3strs(TCHAR *dest, TCHAR *destEnd, const TCHAR *src0, const TCHAR *src1, const TCHAR *src2)
+{
+	return BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2);
+}
+
+// Another function, similar to BE_Cross_strcasecmp, but:
+// - The first argument is a TCHAR string.
+// - It is assumed BOTH strings are ASCII strings.
+static int BEL_Cross_tstr_to_cstr_ascii_casecmp(const TCHAR *s1, const char *s2)
+{
+	unsigned char uc1;
+	unsigned char uc2;
+	/* This one is easy. We don't care if a value is signed or not. */
+	/* All that matters here is consistency (everything is signed). */
+	for (; (*s1) && (BE_Cross_toupper(*s1) == BE_Cross_toupper(*s2)); s1++, s2++);
+	/* But now, first we cast from int to char, and only *then* to */
+	/* unsigned char, so the correct difference can be calculated. */
+	uc1 = (unsigned char)((char)(BE_Cross_toupper(*s1)));
+	uc2 = (unsigned char)((char)(BE_Cross_toupper(*s2)));
+	/* We should still cast back to int, for a signed difference. */
+	/* Assumption: An int can store any unsigned char value.      */
+	return ((int)uc1 - (int)uc2);
+}
+
+// Returns pointer to first occurrence of a non-ASCII char,
+// or end-of-string NULL terminator in case it's an ASCII string.
+static const TCHAR *BEL_Cross_tstr_find_nonascii_ptr(const TCHAR *s)
+{
+	for (; ((unsigned int)(*s) >= 32) && ((unsigned int)(*s) < 127); ++s)
+		;
+	return s;
+}
+
+
+
+
 // WARNING: Do *not* assume this is recursive!!
-static void BEL_Cross_mkdir(const char *path)
+static void BEL_Cross_mkdir(const TCHAR *path)
 {
 #ifdef REFKEEN_PLATFORM_WINDOWS
-	mkdir(path);
+	_tmkdir(path);
 #else
-	mkdir(path, 0755);
+	_tmkdir(path, 0755);
 #endif
 }
 
-// Opens *existing* file from given directory in a case-insensitive manner
-/*static*/ BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const char *searchdir)
+// Opens a (possibly-existing) file from given directory in a case-insensitive manner
+/*static*/ BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const TCHAR *searchdir)
 {
 	/*** TODO - Any reason to save (cache) DIR handles? ***/
-	DIR *dir;
-	struct dirent *direntry;
-	dir = opendir(searchdir);
+	_TDIR *dir;
+	struct _tdirent *direntry;
+	dir = _topendir(searchdir);
 	if (!dir)
 		return NULL;
 
-	char fullpath[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR fullpath[BE_CROSS_PATH_LEN_BOUND];
 
-	for (direntry = readdir(dir); direntry; direntry = readdir(dir))
+	for (direntry = _treaddir(dir); direntry; direntry = _treaddir(dir))
 	{
-		if (!BE_Cross_strcasecmp(direntry->d_name, filename))
+		/*** Ignore non-ASCII filenames ***/
+		if (*BEL_Cross_tstr_find_nonascii_ptr(direntry->d_name))
+		{
+			continue;
+		}
+		if (!BEL_Cross_tstr_to_cstr_ascii_casecmp(direntry->d_name, filename))
 		{
 			// Just a little sanity check
-			if (strlen(searchdir) + 1 + strlen(direntry->d_name) >= BE_CROSS_PATH_LEN_BOUND)
+			if (_tcslen(searchdir) + 1 + _tcslen(direntry->d_name) >= BE_CROSS_PATH_LEN_BOUND)
 			{
-				closedir(dir);
+				_tclosedir(dir);
 				return NULL;
 			}
-			char *fullpathEnd = fullpath + sizeof(fullpath);
-			BE_Cross_safeandfastcstringcopy_3strs(fullpath, fullpathEnd, searchdir, "/", direntry->d_name);
+			TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
+			BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, searchdir, _T("/"), direntry->d_name);
 
-			closedir(dir);
-			return fopen(fullpath, isOverwriteRequest ? "wb" : "rb");
+			_tclosedir(dir);
+			return _tfopen(fullpath, isOverwriteRequest ? _T("wb") : _T("rb"));
 		}
 	}
-	closedir(dir);
+	_tclosedir(dir);
 	// If tried to open for reading, we return NULL, otherwise we attempt create new file
 	if (!isOverwriteRequest)
 		return NULL;
-	char *fullpathEnd = fullpath + sizeof(fullpath);
-	char *fullpathPtr = BE_Cross_safeandfastcstringcopy_2strs(fullpath, fullpathEnd, searchdir, "/");
+	TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
+	TCHAR *fullpathPtr = BEL_Cross_safeandfastctstringcopy_2strs(fullpath, fullpathEnd, searchdir, _T("/"));
 	// Create actual new files with a lower case, just because that's a common pattern in Unix-like setups
-	// (basically a modified BE_Cross_safeandfastcstringcopy).
+	// (basically a modified BE_Cross_safeandfastcstringcopy, also copying a narrow string to a wide string).
 	//
 	// Note: fullpathPtr should initially point to an instance of '\0', so fullpathPtr < fullpathEnd.
 	char ch;
@@ -642,12 +731,12 @@ static void BEL_Cross_mkdir(const char *path)
 	} while ((fullpathPtr < fullpathEnd) && ch);
 	// These work in case fullpathPtr == fullpathEnd, and also if not
 	--fullpathPtr;
-	*fullpathPtr = '\0';
+	*fullpathPtr = _T('\0');
 
-	return fopen(fullpath, "wb");
+	return _tfopen(fullpath, _T("wb"));
 }
 
-static bool BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const char *searchdir)
+static bool BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const TCHAR *searchdir)
 {
 	BE_FILE_T fp = BEL_Cross_open_from_dir(details->filename, false, searchdir);
 	if (!fp)
@@ -667,7 +756,7 @@ static bool BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, 
 }
 
 // ***ASSUMPTION: descStr points to a C string literal which is never modified nor deleted!!!***
-static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T *details, const char *searchdir, const char *descStr)
+static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T *details, const TCHAR *searchdir, const char *descStr)
 {
 	for (const BE_GameFileDetails_T *fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filename; ++fileDetailsBuffer)
 		if (!BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, searchdir))
@@ -678,18 +767,18 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 
 	BE_GameInstallation_T *gameInstallation = &g_be_gameinstallations[g_be_gameinstallations_num++];
 	// If used correctly then these SHOULD have enough space
-	BE_Cross_safeandfastcstringcopy(gameInstallation->path, gameInstallation->path+sizeof(gameInstallation->path), searchdir);
+	BEL_Cross_safeandfastctstringcopy(gameInstallation->path, gameInstallation->path+sizeof(gameInstallation->path)/sizeof(TCHAR), searchdir);
 	gameInstallation->verId = details->verId;
 	gameInstallation->descStr = descStr; // ASSUMPTION: This is a C string literal!!!
 
-	char writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
-	char *endPtr = writableFilesPath + sizeof(writableFilesPath);
-	BE_Cross_safeandfastcstringcopy_3strs(writableFilesPath, endPtr, BE_ALL_REWRITABLE_FILES_DIR, "/", details->writableFilesDir);
-	endPtr = gameInstallation->embeddedRsrcPath + sizeof(gameInstallation->embeddedRsrcPath);
-	BE_Cross_safeandfastcstringcopy_2strs(gameInstallation->embeddedRsrcPath, endPtr, writableFilesPath, "/embedded");
+	TCHAR writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR *endPtr = writableFilesPath + sizeof(writableFilesPath)/sizeof(TCHAR);
+	BEL_Cross_safeandfastctstringcopy_3strs(writableFilesPath, endPtr, BE_ALL_REWRITABLE_FILES_DIR, _T("/"), details->writableFilesDir);
+	endPtr = gameInstallation->embeddedRsrcPath + sizeof(gameInstallation->embeddedRsrcPath)/sizeof(TCHAR);
+	BEL_Cross_safeandfastctstringcopy_2strs(gameInstallation->embeddedRsrcPath, endPtr, writableFilesPath, _T("/embedded"));
 
-	endPtr = gameInstallation->writableVanillaFilesPath + sizeof(gameInstallation->writableVanillaFilesPath);
-	BE_Cross_safeandfastcstringcopy_2strs(gameInstallation->writableVanillaFilesPath, endPtr, writableFilesPath, "/vanilla");
+	endPtr = gameInstallation->writableVanillaFilesPath + sizeof(gameInstallation->writableVanillaFilesPath)/sizeof(TCHAR);
+	BEL_Cross_safeandfastctstringcopy_2strs(gameInstallation->writableVanillaFilesPath, endPtr, writableFilesPath, _T("/vanilla"));
 
 	unsigned char *decompexebuffer = NULL;
 	char errorMsg[100];
@@ -778,6 +867,17 @@ BE_FILE_T BE_Cross_open_for_overwriting(const char *filename)
 	return BEL_Cross_open_from_dir(filename, true, g_be_selectedGameInstallation->writableVanillaFilesPath);
 }
 
+// Used for e.g., the RefKeen cfg file
+BE_FILE_T BE_Cross_open_additionalfile_for_reading(const char *filename)
+{
+	return BEL_Cross_open_from_dir(filename, false, _T("."));
+}
+
+BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename)
+{
+	return BEL_Cross_open_from_dir(filename, true, _T("."));
+}
+
 // Loads a file originally embedded into the EXE (for DOS) to a newly allocated
 // chunk of memory. Should be freed using BE_Cross_free_mem_loaded_file.
 // Returns chunk size if successful, or a negative number in case of failure.
@@ -807,41 +907,52 @@ void BE_Cross_free_mem_loaded_embedded_rsrc(void *ptr)
 #ifdef REFKEEN_VER_CATADVENTURES
 int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int maxNum, int strLenBound, const char *suffix)
 {
-	struct dirent *direntry;
+	struct _tdirent *direntry;
 	size_t sufLen = strlen(suffix);
 	char *nextFilename = outFilenames, *outFilenamesEnd = outFilenames + maxNum*strLenBound, *outFilenamesLast = outFilenamesEnd - strLenBound;
-	char *checkFilename, *checkCh;
-	DIR *dir;
+	char *checkFilename, *checkCh, *dnameCStr;
+	_TDIR *dir;
 	// For the sake of consistency we go over same paths as in file open for reading function
-	const char *searchpaths[] = {g_be_selectedGameInstallation->writableVanillaFilesPath, g_be_selectedGameInstallation->path};
+	const TCHAR *searchpaths[] = {g_be_selectedGameInstallation->writableVanillaFilesPath, g_be_selectedGameInstallation->path};
 	for (int loopvar = 0; loopvar < (int)(sizeof(searchpaths)/sizeof(*searchpaths)); ++loopvar)
 	{
-		dir = opendir(searchpaths[loopvar]);
+		dir = _topendir(searchpaths[loopvar]);
 		if (!dir)
 		{
 			continue;
 		}
-		for (direntry = readdir(dir); direntry; direntry = readdir(dir))
+		for (direntry = _treaddir(dir); direntry; direntry = _treaddir(dir))
 		{
-			size_t len = strlen(direntry->d_name);
-			if ((len < sufLen) || BE_Cross_strcasecmp(direntry->d_name+len-sufLen, suffix))
+			size_t len = _tcslen(direntry->d_name);
+			TCHAR *tchPtr;
+			/*** Ignore non-ASCII filenames ***/
+			if (*BEL_Cross_tstr_find_nonascii_ptr(direntry->d_name))
+			{
+				continue;
+			}
+			if ((len < sufLen) || BEL_Cross_tstr_to_cstr_ascii_casecmp(direntry->d_name+len-sufLen, suffix))
 			{
 				continue;
 			}
 			len -= sufLen;
 			/*** Possibly a HACK - Modify d_name itself ***/
 			len = (len >= (size_t)strLenBound) ? (strLenBound-1) : len;
-			direntry->d_name[len] = '\0';
-			// Convert to upper case
-			for (checkCh = direntry->d_name; *checkCh; ++checkCh)
+			direntry->d_name[len] = _T('\0');
+			/*** Another HACK - Further convert d_name from wide string on Windows (and watch out due to strict aliasing rules) ***/
+			tchPtr = direntry->d_name;
+			dnameCStr = (char *)tchPtr;
+			for (checkCh = dnameCStr; *tchPtr; ++checkCh, ++tchPtr)
 			{
-				*checkCh = BE_Cross_toupper(*checkCh);
+				*checkCh = BE_Cross_toupper(*tchPtr); // Even if *tchPtr is a wide char, we know it's an ASCII char at this point
 			}
+#ifdef REFKEEN_PLATFORM_WINDOWS
+			*checkCh = '\0'; // Required if converted from wide string
+#endif
 			// This is basically insertion-sort, but we store
 			// the *last* entries if there isn't enough room.
 			for (checkFilename = outFilenames; checkFilename < nextFilename; checkFilename += strLenBound)
 			{
-				if (strcmp(checkFilename, direntry->d_name) > 0)
+				if (strcmp(checkFilename, dnameCStr) > 0)
 				{
 					break;
 				}
@@ -851,13 +962,13 @@ int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int ma
 			{
 				if (nextFilename < outFilenamesEnd)
 				{
-					memcpy(nextFilename, direntry->d_name, 1+len);
+					memcpy(nextFilename, dnameCStr, 1+len);
 					nextFilename += strLenBound;
 				}
 				else
 				{
 					memmove(outFilenames, outFilenames+strLenBound, strLenBound*(maxNum-1));
-					memcpy(outFilenamesLast, direntry->d_name, 1+len);
+					memcpy(outFilenamesLast, dnameCStr, 1+len);
 				}
 			}
 			// Shift existing entries and insert new one
@@ -867,18 +978,18 @@ int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int ma
 				if (nextFilename < outFilenamesEnd)
 				{
 					memmove(checkFilename + strLenBound, checkFilename, outFilenamesEnd-checkFilename-strLenBound);
-					memcpy(checkFilename, direntry->d_name, 1+len);
+					memcpy(checkFilename, dnameCStr, 1+len);
 					nextFilename += strLenBound;
 				}
 				// Otherwise shift "backwards", but only if there's already an entry "smaller" than current one
 				else if (checkFilename != outFilenames)
 				{
 					memmove(outFilenames, outFilenames+strLenBound, (checkFilename-strLenBound)-outFilenames);
-					memcpy(checkFilename-strLenBound, direntry->d_name, 1+len);
+					memcpy(checkFilename-strLenBound, dnameCStr, 1+len);
 				}
 			};
 		}
-		closedir(dir);
+		_tclosedir(dir);
 	}
 	return (nextFilename-outFilenames)/strLenBound;
 }
@@ -897,17 +1008,17 @@ void BE_Cross_PrepareGameInstallations(void)
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS) || (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
-	char path[BE_CROSS_PATH_LEN_BOUND];
-	char *pathEnd = path + sizeof(path);
-	char gog_catacombs_path[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR *pathEnd = path + sizeof(path);
+	TCHAR gog_catacombs_path[BE_CROSS_PATH_LEN_BOUND];
 	DWORD dwType = 0;
 	DWORD dwSize = sizeof(gog_catacombs_path);
-	LSTATUS status = SHGetValueA(HKEY_LOCAL_MACHINE, "SOFTWARE\\GOG.COM\\GOGCATACOMBSPACK", "PATH", &dwType, gog_catacombs_path, &dwSize);
+	LSTATUS status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.COM\\GOGCATACOMBSPACK", L"PATH", &dwType, gog_catacombs_path, &dwSize);
 	bool isGogCatacombsPathFound = ((status == ERROR_SUCCESS) && (dwType == REG_SZ));
-	char *path_gog_catacombs_prefix_end;
+	TCHAR *path_gog_catacombs_prefix_end;
 	if (isGogCatacombsPathFound)
 	{
-		path_gog_catacombs_prefix_end = path/*NOT gog_catacombs_path*/ + strlen(gog_catacombs_path);
+		path_gog_catacombs_prefix_end = path/*NOT gog_catacombs_path*/ + _tcslen(gog_catacombs_path);
 	}
 #endif
 #endif
@@ -915,67 +1026,67 @@ void BE_Cross_PrepareGameInstallations(void)
 	/*** Now handling each version separately ***/
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, ".", "Keen Dreams CGA v1.05 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Keen Dreams CGA v1.05 (Local)");
 #ifdef REFKEEN_PLATFORM_UNIX
 	if (homedir)
 	{
-		BE_Cross_safeandfastcstringcopy_2strs(path, pathEnd, homedir, "/.steam/steam/SteamApps/common/Keen Dreams/cga");
+		BEL_Cross_safeandfastctstringcopy_2strs(path, pathEnd, homedir, "/.steam/steam/SteamApps/common/Keen Dreams/cga");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, path, "Keen Dreams CGA v1.05 (Steam)");
 	}
 #endif
 #endif
 
 #ifdef REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, ".", "Keen Dreams EGA v1.13 (Local)");
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, ".", "Keen Dreams EGA v1.93 (Local)");
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse120, ".", "Keen Dreams EGA v1.20 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, _T("."), "Keen Dreams EGA v1.13 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, _T("."), "Keen Dreams EGA v1.93 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse120, _T("."), "Keen Dreams EGA v1.20 (Local)");
 #endif
 
 #ifdef REFKEEN_VER_CAT3D
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, ".", "Catacomb 3-D v1.00 (Local)");
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, ".", "Catacomb 3-D v1.22 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, _T("."), "Catacomb 3-D v1.00 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, _T("."), "Catacomb 3-D v1.22 (Local)");
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
-		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, pathEnd, "\\Cat3D");
+		BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_end, pathEnd, _T("\\Cat3D"));
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, path, "Catacomb 3-D v1.22 (GOG.com)");
 	}
 #endif
 #endif
 
 #ifdef REFKEEN_VER_CATABYSS
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss113, ".", "Catacomb Abyss v1.13 (Local)");
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, ".", "Catacomb Abyss v1.24 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss113, _T("."), "Catacomb Abyss v1.13 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, _T("."), "Catacomb Abyss v1.24 (Local)");
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
-		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, pathEnd, "\\Abyss");
+		BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_end, pathEnd, _T("\\Abyss"));
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, path, "Catacomb Abyss v1.24 (GOG.com)");
 	}
 #endif
 #endif
 
 #ifdef REFKEEN_VER_CATARM
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, ".", "Catacomb Armageddon v1.02 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, _T("."), "Catacomb Armageddon v1.02 (Local)");
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
-		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, pathEnd, "\\Armageddon");
+		BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_end, pathEnd, _T("\\Armageddon"));
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, path, "Catacomb Armageddon v1.02 (GOG.com)");
 	}
 #endif
 #endif
 
 #ifdef REFKEEN_VER_CATAPOC
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, ".", "Catacomb Apocalypse v1.01 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, _T("."), "Catacomb Apocalypse v1.01 (Local)");
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (isGogCatacombsPathFound)
 	{
 		memcpy(path, gog_catacombs_path, sizeof(path));
-		BE_Cross_safeandfastcstringcopy(path_gog_catacombs_prefix_end, pathEnd, "\\Apocalypse");
+		BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_end, pathEnd, _T("\\Apocalypse"));
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, path, "Catacomb Apocalypse v1.01 (GOG.com)");
 	}
 #endif

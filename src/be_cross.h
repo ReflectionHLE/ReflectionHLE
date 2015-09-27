@@ -139,6 +139,10 @@ int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp);
 // Semi cross-platform file opening wrappers, hiding search paths
 BE_FILE_T BE_Cross_open_for_reading(const char *filename);
 BE_FILE_T BE_Cross_open_for_overwriting(const char *filename);
+// Used for NEW files not originating from the originals (like RefKeen cfg)
+BE_FILE_T BE_Cross_open_additionalfile_for_reading(const char *filename);
+BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename);
+// Should be shared
 inline void BE_Cross_close(BE_FILE_T fp) { fclose(fp); }
 
 // Loads a file originally embedded in the EXE (for DOS) to a newly allocated

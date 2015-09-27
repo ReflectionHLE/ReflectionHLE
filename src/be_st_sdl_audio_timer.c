@@ -120,7 +120,7 @@ void BE_ST_InitAudio(void)
 			g_sdlEmulatedOPLChipReady = true;
 			if (g_sdlAudioSpec.freq != OPL_SAMPLE_RATE)
 			{
-				// The some of all entries should be g_sdlAudioSpec.freq,
+				// The sum of all entries should be g_sdlAudioSpec.freq,
 				// "uniformly" distributed over g_sdlALSampleRateConvTable
 				for (int i = 0; i < OPL_SAMPLE_RATE; ++i)
 				{

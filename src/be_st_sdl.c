@@ -557,9 +557,6 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 };
 
 
-// Little hack
-BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const char *searchdir);
-
 
 static void BEL_ST_ParseConfig(void)
 {
@@ -612,7 +609,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.farPtrSegOffset = BE_ST_DEFAULT_FARPTRSEGOFFSET;
 #endif
 	// Try to load config
-	FILE *fp = BEL_Cross_open_from_dir(REFKEEN_CONFIG_FILEPATH, false, ".");
+	FILE *fp = BE_Cross_open_additionalfile_for_reading(REFKEEN_CONFIG_FILEPATH);
 	if (!fp)
 	{
 		return;
@@ -644,7 +641,7 @@ static void BEL_ST_ParseConfig(void)
 static void BEL_ST_SaveConfig(void)
 {
 	// Try to save current settings just in case (first time file is created or new fields added)
-	FILE *fp = BEL_Cross_open_from_dir(REFKEEN_CONFIG_FILEPATH, true, ".");
+	FILE *fp = BE_Cross_open_additionalfile_for_overwriting(REFKEEN_CONFIG_FILEPATH);
 	if (!fp)
 	{
 		return;
