@@ -162,8 +162,7 @@ id0_long_t Verify(const id0_char_t *filename)
 	int handle;
 	id0_long_t size;
 
-	if ((handle=BE_Cross_open_for_reading(filename))==-1)
-	//if ((handle=open(filename,O_RDONLY))!=-1)
+	if ((handle=open(filename,O_RDONLY))!=-1)
 	{
 		size=BE_Cross_FileLengthFromHandle(handle);
 		close(handle);

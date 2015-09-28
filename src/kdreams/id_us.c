@@ -282,10 +282,10 @@ USL_ReadConfig(void)
 	ControlType	ctl;
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if (BE_Cross_IsFileValid(file = BE_Cross_open_for_reading("CONFIG."EXTENSION)))
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("CONFIG."EXTENSION)))
 	//if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if (BE_Cross_IsFileValid(file = BE_Cross_open_for_reading("KDREAMS.CFG")))
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("KDREAMS.CFG")))
 	//if ((file = open("KDREAMS.CFG",O_BINARY | O_RDONLY)) != -1)
 #endif
 	{
@@ -342,11 +342,11 @@ USL_WriteConfig(void)
 	BE_FILE_T	file;
 
 #ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	file = BE_Cross_open_for_overwriting("CONFIG."EXTENSION);
+	file = BE_Cross_open_rewritable_for_overwriting("CONFIG."EXTENSION);
 	//file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
 	//			S_IREAD | S_IWRITE | S_IFREG);
 #elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	file = BE_Cross_open_for_overwriting("KDREAMS.CFG");
+	file = BE_Cross_open_rewritable_for_overwriting("KDREAMS.CFG");
 	//file = open("KDREAMS.CFG", O_CREAT | O_BINARY | O_WRONLY,
 	//			S_IREAD | S_IWRITE | S_IFREG);
 #endif
@@ -400,7 +400,7 @@ USL_CheckSavedGames(void)
 	{
 		filename = USL_GiveSaveName(i);
 		ok = false;
-		if (BE_Cross_IsFileValid(file = BE_Cross_open_for_reading(filename)))
+		if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading(filename)))
 		//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// REFKEEN Cross Platform file I/O
@@ -2955,7 +2955,7 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		VW_UpdateScreen();
 
 		err = 0;
-		if (BE_Cross_IsFileValid(file = BE_Cross_open_for_reading(filename)))
+		if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading(filename)))
 		//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// REFKEEN Cross Platform file I/O
@@ -3045,7 +3045,7 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 #endif
 		filename = USL_GiveSaveName(n / 2);
 		err = 0;
-		file = BE_Cross_open_for_overwriting(filename);
+		file = BE_Cross_open_rewritable_for_overwriting(filename);
 		//file = open(filename,O_CREAT | O_BINARY | O_WRONLY,
 		//			S_IREAD | S_IWRITE | S_IFREG);
 		if (BE_Cross_IsFileValid(file))

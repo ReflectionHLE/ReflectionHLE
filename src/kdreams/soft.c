@@ -85,7 +85,7 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	// Open file to load....
 	//
 
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(SourceFile)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(SourceFile)))
 	//if ((handle = open(SourceFile, O_RDONLY|O_BINARY)) == -1)
 		return(0);
 
@@ -378,7 +378,7 @@ memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *
 	// OPEN SOFTLIB FILE
 	//
 
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(LibName)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(LibName)))
 	//if ((handle = open(LibName,O_RDONLY|O_BINARY, S_IREAD)) == -1)
 		return(NULL);
 

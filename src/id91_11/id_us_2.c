@@ -1033,7 +1033,7 @@ USL_DoLoadGame(UserItem id0_far *item)
 
 	err = 0;
 	filename = USL_GiveSaveName(n);
-	if (BE_Cross_IsFileValid(file = BE_Cross_open_for_reading(filename)))
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading(filename)))
 	//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 	{
 		// REFKEEN Cross Platform file I/O
@@ -1146,7 +1146,7 @@ USL_DoSaveGame(UserItem id0_far *item)
 
 		filename = USL_GiveSaveName(n);
 		err = 0;
-		file = BE_Cross_open_for_overwriting(filename);
+		file = BE_Cross_open_rewritable_for_overwriting(filename);
 		//file = open(filename,O_CREAT | O_BINARY | O_WRONLY,
 		//			S_IREAD | S_IWRITE | S_IFREG);
 		if (BE_Cross_IsFileValid(file))

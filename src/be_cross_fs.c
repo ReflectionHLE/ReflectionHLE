@@ -32,8 +32,6 @@
 
 #define BE_CROSS_PATH_LEN_BOUND 256
 
-#define BE_ALL_REWRITABLE_FILES_DIR _T("refkeen_internal_files")
-
 /*** Unicode stuff - Using some wide strings on Windows, and narrow strings (possibly UTF-8 encoded) elsewhere ***/
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #define _T(x) L##x
@@ -42,6 +40,7 @@
 #define _TDIR _WDIR
 #define _tdirent _wdirent
 #define _tfopen _wfopen
+#define _tremove _wremove
 #define _tmkdir _wmkdir
 #define _topendir _wopendir
 #define _tclosedir _wclosedir
@@ -53,11 +52,99 @@
 #define _TDIR DIR
 #define _tdirent dirent
 #define _tfopen fopen
+#define _tremove remove
 #define _tmkdir mkdir
 #define _topendir opendir
 #define _tclosedir closedir
 #define _treaddir readdir
 #endif
+
+
+/*** These are similar to functions from header, but ***/
+/*** should be usable with wide strings on Windows   ***/
+
+#ifdef REFKEEN_PLATFORM_WINDOWS
+
+static TCHAR *BEL_Cross_safeandfastctstringcopy(TCHAR *dest, TCHAR *destEnd, const TCHAR *src)
+{
+	TCHAR ch;
+	// We assume that initially, destEnd - dest > 0.
+	do
+	{
+		ch = *src++;
+		*dest++ = ch; // This includes the null terminator if there's the room
+	} while ((dest < destEnd) && ch);
+	// These work in case dest == destEnd, and also if not
+	--dest;
+	*dest = _T('\0');
+	return dest; // WARNING: This differs from strcpy!!
+}
+
+static TCHAR *BEL_Cross_safeandfastctstringcopy_2strs(TCHAR *dest, TCHAR *destEnd, const TCHAR *src0, const TCHAR *src1)
+{
+	return BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(dest, destEnd, src0), destEnd, src1);
+}
+
+static TCHAR *BEL_Cross_safeandfastctstringcopy_3strs(TCHAR *dest, TCHAR *destEnd, const TCHAR *src0, const TCHAR *src1, const TCHAR *src2)
+{
+	return BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2);
+}
+
+// Appends a narrow string to a wide string on Windows
+static TCHAR *BEL_Cross_safeandfastcstringcopytoctstring(TCHAR *dest, TCHAR *destEnd, const char *src)
+{
+	TCHAR ch;
+	// We assume that initially, destEnd - dest > 0.
+	do
+	{
+		ch = *src++; // Casting to TCHAR
+		*dest++ = ch; // This includes the null terminator if there's the room
+	} while ((dest < destEnd) && ch);
+	// These work in case dest == destEnd, and also if not
+	--dest;
+	*dest = _T('\0');
+	return dest; // WARNING: This differs from strcpy!!
+}
+
+// Another function, similar to BE_Cross_strcasecmp, but:
+// - The first argument is a TCHAR string.
+// - It is assumed BOTH strings are ASCII strings.
+static int BEL_Cross_tstr_to_cstr_ascii_casecmp(const TCHAR *s1, const char *s2)
+{
+	unsigned char uc1;
+	unsigned char uc2;
+	/* This one is easy. We don't care if a value is signed or not. */
+	/* All that matters here is consistency (everything is signed). */
+	for (; (*s1) && (BE_Cross_toupper(*s1) == BE_Cross_toupper(*s2)); s1++, s2++);
+	/* But now, first we cast from int to char, and only *then* to */
+	/* unsigned char, so the correct difference can be calculated. */
+	uc1 = (unsigned char)((char)(BE_Cross_toupper(*s1)));
+	uc2 = (unsigned char)((char)(BE_Cross_toupper(*s2)));
+	/* We should still cast back to int, for a signed difference. */
+	/* Assumption: An int can store any unsigned char value.      */
+	return ((int)uc1 - (int)uc2);
+}
+
+#else
+
+#define BEL_Cross_safeandfastctstringcopy BE_Cross_safeandfastcstringcopy
+#define BEL_Cross_safeandfastctstringcopy_2strs BE_Cross_safeandfastcstringcopy_2strs
+#define BEL_Cross_safeandfastctstringcopy_3strs BE_Cross_safeandfastcstringcopy_3strs
+#define BEL_Cross_safeandfastcstringcopytoctstring BE_Cross_safeandfastcstringcopy
+#define BEL_Cross_tstr_to_cstr_ascii_casecmp BE_Cross_strcasecmp
+
+#endif
+
+// Returns pointer to first occurrence of a non-ASCII char,
+// or end-of-string NULL terminator in case it's an ASCII string.
+static const TCHAR *BEL_Cross_tstr_find_nonascii_ptr(const TCHAR *s)
+{
+	for (; ((unsigned int)(*s) >= 32) && ((unsigned int)(*s) < 127); ++s)
+		;
+	return s;
+}
+
+
 
 // Describes a required file from a specific game version
 typedef struct {
@@ -88,10 +175,9 @@ typedef struct {
 
 typedef struct {
 	const char *descStr;
-	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR instPath[BE_CROSS_PATH_LEN_BOUND];
 	TCHAR writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
-	TCHAR writableVanillaFilesPath[BE_CROSS_PATH_LEN_BOUND];
-	TCHAR embeddedRsrcPath[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR readOnlyFilesPath[BE_CROSS_PATH_LEN_BOUND];
 	BE_GameVer_T verId;
 } BE_GameInstallation_T;
 
@@ -121,6 +207,106 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 	"catapoc101",
 #endif
 };
+
+
+static TCHAR g_be_appDataPath[BE_CROSS_PATH_LEN_BOUND];
+static TCHAR g_be_appNewCfgPath[BE_CROSS_PATH_LEN_BOUND];
+
+extern const char *be_main_arg_datadir;
+extern const char *be_main_arg_newcfgdir;
+
+void BE_Cross_PrepareAppPaths(void)
+{
+#ifdef REFKEEN_PLATFORM_WINDOWS
+	const wchar_t *homeVar = _wgetenv(L"HOMEPATH");
+	const wchar_t *envVar = _wgetenv(L"APPDATA");
+
+	// HACK - Ignore be_main_arg_datadir for now
+	if (envVar && *envVar)
+	{
+		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), envVar, L"\\reflection-keen");
+	}
+	else
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "APPDATA environment variable is not properly defined.\n");
+		if (homeVar && *homeVar)
+		{
+			BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, L"\\AppData\\Roaming\\reflection-keen");
+		}
+		else
+		{
+			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "HOMEPATH environment variable is not properly defined.\n");
+			BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), L".");
+		}
+	}
+
+	if (be_main_arg_newcfgdir)
+	{
+		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appDataPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
+	}
+	else // This is why be_main_arg_datadir has been ignored (using g_be_appDataPath as a temporary buffer)
+	{
+		memcpy(g_be_appNewCfgPath, g_be_appDataPath, sizeof(g_be_appDataPath));
+	}
+
+	if (be_main_arg_datadir) // Now checking be_main_arg_datadir
+	{
+		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), be_main_arg_datadir);
+	}
+#endif
+
+#ifdef REFKEEN_PLATFORM_UNIX
+	const char *homeVar = getenv("HOME");
+	const char *envVar;
+
+	if (!homeVar || !(*homeVar))
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "HOME environment variable is not properly defined.\n");
+	}
+
+	if (be_main_arg_datadir)
+	{
+		BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), be_main_arg_datadir);
+	}
+	else
+	{
+		envVar = getenv("XDG_DATA_HOME");
+		if (envVar && *envVar)
+		{
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), envVar, "/reflection-keen");
+		}
+		else if (homeVar && *homeVar)
+		{
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, "/.local/share/reflection-keen");
+		}
+		else
+		{
+			BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), ".");
+		}
+	}
+
+	if (be_main_arg_newcfgdir)
+	{
+		BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
+	}
+	else
+	{
+		envVar = getenv("XDG_CONFIG_HOME");
+		if (envVar && *envVar)
+		{
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), envVar, "/reflection-keen");
+		}
+		else if (homeVar && *homeVar)
+		{
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), homeVar, "/.config/reflection-keen");
+		}
+		else
+		{
+			BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), ".");
+		}
+	}
+#endif
+}
 
 static BE_GameInstallation_T* g_be_selectedGameInstallation;
 
@@ -610,63 +796,6 @@ int BE_Cross_putc(int character, BE_FILE_T fp);
 int BE_Cross_getc(BE_FILE_T fp);
 void BE_Cross_close(BE_FILE_T fp);
 
-/*** These are similar to functions from header, but ***/
-/*** should be usable with wide strings on Windows   ***/
-
-static TCHAR *BEL_Cross_safeandfastctstringcopy(TCHAR *dest, TCHAR *destEnd, const TCHAR *src)
-{
-	char ch;
-	// We assume that initially, destEnd - dest > 0.
-	do
-	{
-		ch = *src++;
-		*dest++ = ch; // This includes the null terminator if there's the room
-	} while ((dest < destEnd) && ch);
-	// These work in case dest == destEnd, and also if not
-	--dest;
-	*dest = _T('\0');
-	return dest; // WARNING: This differs from strcpy!!
-}
-
-static TCHAR *BEL_Cross_safeandfastctstringcopy_2strs(TCHAR *dest, TCHAR *destEnd, const TCHAR *src0, const TCHAR *src1)
-{
-	return BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(dest, destEnd, src0), destEnd, src1);
-}
-
-static TCHAR *BEL_Cross_safeandfastctstringcopy_3strs(TCHAR *dest, TCHAR *destEnd, const TCHAR *src0, const TCHAR *src1, const TCHAR *src2)
-{
-	return BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(BEL_Cross_safeandfastctstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2);
-}
-
-// Another function, similar to BE_Cross_strcasecmp, but:
-// - The first argument is a TCHAR string.
-// - It is assumed BOTH strings are ASCII strings.
-static int BEL_Cross_tstr_to_cstr_ascii_casecmp(const TCHAR *s1, const char *s2)
-{
-	unsigned char uc1;
-	unsigned char uc2;
-	/* This one is easy. We don't care if a value is signed or not. */
-	/* All that matters here is consistency (everything is signed). */
-	for (; (*s1) && (BE_Cross_toupper(*s1) == BE_Cross_toupper(*s2)); s1++, s2++);
-	/* But now, first we cast from int to char, and only *then* to */
-	/* unsigned char, so the correct difference can be calculated. */
-	uc1 = (unsigned char)((char)(BE_Cross_toupper(*s1)));
-	uc2 = (unsigned char)((char)(BE_Cross_toupper(*s2)));
-	/* We should still cast back to int, for a signed difference. */
-	/* Assumption: An int can store any unsigned char value.      */
-	return ((int)uc1 - (int)uc2);
-}
-
-// Returns pointer to first occurrence of a non-ASCII char,
-// or end-of-string NULL terminator in case it's an ASCII string.
-static const TCHAR *BEL_Cross_tstr_find_nonascii_ptr(const TCHAR *s)
-{
-	for (; ((unsigned int)(*s) >= 32) && ((unsigned int)(*s) < 127); ++s)
-		;
-	return s;
-}
-
-
 
 
 // WARNING: Do *not* assume this is recursive!!
@@ -680,7 +809,9 @@ static void BEL_Cross_mkdir(const TCHAR *path)
 }
 
 // Opens a (possibly-existing) file from given directory in a case-insensitive manner
-/*static*/ BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const TCHAR *searchdir)
+//
+// OPTIONAL ARGUMENT (used internally): outfullpath, if not NULL, should point to an out buffer which is BE_CROSS_PATH_LEN_BOUND chars long.
+static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const TCHAR *searchdir, TCHAR *outfullpath)
 {
 	/*** TODO - Any reason to save (cache) DIR handles? ***/
 	_TDIR *dir;
@@ -710,6 +841,10 @@ static void BEL_Cross_mkdir(const TCHAR *path)
 			BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, searchdir, _T("/"), direntry->d_name);
 
 			_tclosedir(dir);
+			if (outfullpath)
+			{
+				memcpy(outfullpath, fullpath, sizeof(fullpath));
+			}
 			return _tfopen(fullpath, isOverwriteRequest ? _T("wb") : _T("rb"));
 		}
 	}
@@ -733,14 +868,21 @@ static void BEL_Cross_mkdir(const TCHAR *path)
 	--fullpathPtr;
 	*fullpathPtr = _T('\0');
 
+	if (outfullpath)
+	{
+		memcpy(outfullpath, fullpath, sizeof(fullpath));
+	}
 	return _tfopen(fullpath, _T("wb"));
 }
 
-static bool BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const TCHAR *searchdir)
+// Returns 0 if not found, 1 if found by data mismatch detected, or 2 otherwise
+//
+// OPTIONAL ARGUMENT (used internally): outfullpath, if not NULL, should point to an out buffer which is BE_CROSS_PATH_LEN_BOUND chars long.
+static int BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const TCHAR *searchdir, TCHAR *outfullpath)
 {
-	BE_FILE_T fp = BEL_Cross_open_from_dir(details->filename, false, searchdir);
+	BE_FILE_T fp = BEL_Cross_open_from_dir(details->filename, false, searchdir, outfullpath);
 	if (!fp)
-		return false;
+		return 0;
 
 	if (details->filesize == BE_Cross_FileLengthFromHandle(fp))
 	{
@@ -748,142 +890,203 @@ static bool BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, 
 		if (!Crc32_ComputeFile(fp, &crc32) && (crc32 == details->crc32))
 		{
 			BE_Cross_close(fp);
-			return true;
+			return 2;
 		}
 	}
 	BE_Cross_close(fp);
-	return false;
+	return 1;
 }
 
 // ***ASSUMPTION: descStr points to a C string literal which is never modified nor deleted!!!***
 static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T *details, const TCHAR *searchdir, const char *descStr)
 {
-	for (const BE_GameFileDetails_T *fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filename; ++fileDetailsBuffer)
-		if (!BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, searchdir))
-			return;
+	unsigned char *decompexebuffer = NULL;
+	char errorMsg[256];
 
 	if (g_be_gameinstallations_num >= BE_CROSS_MAX_GAME_INSTALLATIONS)
 		BE_ST_ExitWithErrorMsg("BEL_Cross_ConditionallyAddGameInstallation: Too many game installations!");
 
-	BE_GameInstallation_T *gameInstallation = &g_be_gameinstallations[g_be_gameinstallations_num++];
+	BE_GameInstallation_T *gameInstallation = &g_be_gameinstallations[g_be_gameinstallations_num];
 	// If used correctly then these SHOULD have enough space
-	BEL_Cross_safeandfastctstringcopy(gameInstallation->path, gameInstallation->path+sizeof(gameInstallation->path)/sizeof(TCHAR), searchdir);
+	BEL_Cross_safeandfastctstringcopy(gameInstallation->instPath, gameInstallation->instPath+sizeof(gameInstallation->instPath)/sizeof(TCHAR), searchdir);
 	gameInstallation->verId = details->verId;
 	gameInstallation->descStr = descStr; // ASSUMPTION: This is a C string literal!!!
 
-	TCHAR writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR writableFilesPath[BE_CROSS_PATH_LEN_BOUND], tempFullPath[BE_CROSS_PATH_LEN_BOUND];
 	TCHAR *endPtr = writableFilesPath + sizeof(writableFilesPath)/sizeof(TCHAR);
-	BEL_Cross_safeandfastctstringcopy_3strs(writableFilesPath, endPtr, BE_ALL_REWRITABLE_FILES_DIR, _T("/"), details->writableFilesDir);
-	endPtr = gameInstallation->embeddedRsrcPath + sizeof(gameInstallation->embeddedRsrcPath)/sizeof(TCHAR);
-	BEL_Cross_safeandfastctstringcopy_2strs(gameInstallation->embeddedRsrcPath, endPtr, writableFilesPath, _T("/embedded"));
+	BEL_Cross_safeandfastctstringcopy_3strs(writableFilesPath, endPtr, g_be_appDataPath, _T("/"), details->writableFilesDir);
+	endPtr = gameInstallation->readOnlyFilesPath + sizeof(gameInstallation->readOnlyFilesPath)/sizeof(TCHAR);
+	BEL_Cross_safeandfastctstringcopy_2strs(gameInstallation->readOnlyFilesPath, endPtr, writableFilesPath, _T("/readonly"));
 
-	endPtr = gameInstallation->writableVanillaFilesPath + sizeof(gameInstallation->writableVanillaFilesPath)/sizeof(TCHAR);
-	BEL_Cross_safeandfastctstringcopy_2strs(gameInstallation->writableVanillaFilesPath, endPtr, writableFilesPath, _T("/vanilla"));
+	endPtr = gameInstallation->writableFilesPath + sizeof(gameInstallation->writableFilesPath)/sizeof(TCHAR);
+	BEL_Cross_safeandfastctstringcopy_2strs(gameInstallation->writableFilesPath, endPtr, writableFilesPath, _T("/writable"));
 
-	unsigned char *decompexebuffer = NULL;
-	char errorMsg[100];
+	for (const BE_GameFileDetails_T *fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filename; ++fileDetailsBuffer)
+	{
+		// Check in readOnlyFilesPath first. If WRONG file is found, REMOVE(!)
+		switch (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, gameInstallation->readOnlyFilesPath, tempFullPath))
+		{
+		case 2: // Match found
+			continue;
+		case 1: // Wrong file found in readOnlyFilesPath: DELETE, then verify it's actually deleted (if there are multiple files differing just by case, this is an error, too.)
+		{
+			_tremove(tempFullPath);
+			BE_FILE_T fp = BEL_Cross_open_from_dir(fileDetailsBuffer->filename, false, gameInstallation->readOnlyFilesPath, NULL);
+			if (fp)
+			{
+				fclose(fp);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Cannot remove readonly file with\ndifferent contents! Alternatively, one such file has been removed, but there's\nanother one differing just by case.\nFilename: %s", fileDetailsBuffer->filename);
+				BE_ST_ExitWithErrorMsg(errorMsg);
+			}
+			break;
+		}
+		}
+		// No match found (and possibly deleted wrong file from readOnlyFilesPath), recheck in installation path
+		if (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, searchdir, NULL) != 2)
+		{
+			return; // Matching file not found, we cannot add a new game installation
+		}
+	}
+
+	++g_be_gameinstallations_num; // We KNOW we have the required data at this point
+
+	// Create dirs in case we need just writableFilesPath (creation isn't recursive)
+	BEL_Cross_mkdir(g_be_appDataPath); // Non-recursive
+	BEL_Cross_mkdir(writableFilesPath);
 
 	for (const BE_EmbeddedGameFileDetails_T *embeddedfileDetailsBuffer = details->embeddedFiles; embeddedfileDetailsBuffer->fileDetails.filename; ++embeddedfileDetailsBuffer)
-		if (!BEL_Cross_CheckGameFileDetails(&embeddedfileDetailsBuffer->fileDetails, gameInstallation->embeddedRsrcPath))
+	{
+		// Check in readOnlyFilesPath first. If WRONG file is found, REMOVE(!)
+		switch (BEL_Cross_CheckGameFileDetails(&embeddedfileDetailsBuffer->fileDetails, gameInstallation->readOnlyFilesPath, tempFullPath))
 		{
+		case 2: // Match found
+			continue;
+		case 1: // Wrong file found in readOnlyFilesPath: DELETE, then verify it's actually deleted (if there are multiple files differing just by case, this is an error, too.)
+		{
+			_tremove(tempFullPath);
+			FILE *fp = BEL_Cross_open_from_dir(embeddedfileDetailsBuffer->fileDetails.filename, false, gameInstallation->readOnlyFilesPath, NULL);
+			if (fp)
+			{
+				fclose(fp);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Cannot remove readonly file with\ndifferent contents! Alternatively, one such file has been removed, but there's\nanother one differing just by case.\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+				BE_ST_ExitWithErrorMsg(errorMsg);
+			}
+			break;
+		}
+		}
+
+		// No match found (and possibly deleted wrong file from readOnlyFilesPath), recheck in installation path
+		if (BEL_Cross_CheckGameFileDetails(&embeddedfileDetailsBuffer->fileDetails, gameInstallation->instPath, NULL) == 2)
+		{
+			continue; // Found a match
+		}
+
+		// Otherwise we extract the embedded data to a file in readOnlyFilesPath (POSSIBLY OVERWRITING AN OLDER FILE)
+		if (!decompexebuffer)
+		{
+			// First time we do this, so create readOnlyFilesPath in addition to writableFilesPath (creation isn't recursive)
+			BEL_Cross_mkdir(gameInstallation->readOnlyFilesPath);
+
+			FILE *exeFp = BEL_Cross_open_from_dir(details->exeName, false, searchdir, NULL);
+			if (!exeFp)
+			{
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't open EXE after checking it!\nFilename: %s", details->exeName);
+				BE_ST_ExitWithErrorMsg(errorMsg);
+			}
+
+			decompexebuffer = (unsigned char *)malloc(details->decompExeSize);
 			if (!decompexebuffer)
 			{
-				// First time we do this, so create dir (creation isn't recursive)
-				BEL_Cross_mkdir(BE_ALL_REWRITABLE_FILES_DIR); // Non-recursive
-				BEL_Cross_mkdir(writableFilesPath);
-				BEL_Cross_mkdir(gameInstallation->embeddedRsrcPath);
-
-				FILE *exeFp = BEL_Cross_open_from_dir(details->exeName, false, searchdir);
-				if (!exeFp)
-				{
-					snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't open EXE after checking it!\nFilename: %s", details->exeName);
-					BE_ST_ExitWithErrorMsg(errorMsg);
-				}
-
-				decompexebuffer = (unsigned char *)malloc(details->decompExeSize);
-				if (!decompexebuffer)
-				{
-					fclose(exeFp);
-					snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't allocate memory for unpacked EXE copy!\nFilename: %s", details->exeName);
-					BE_ST_ExitWithErrorMsg(errorMsg);
-				}
-
-				bool success;
-				switch (details->compressionType)
-				{
-				case BE_EXECOMPRESSION_NONE:
-					success = (fread(decompexebuffer, details->decompExeSize, 1, exeFp) != 1);
-					break;
-				case BE_EXECOMPRESSION_LZEXE9X:
-					success = Unlzexe_unpack(exeFp, decompexebuffer, details->decompExeSize);
-					break;
-				}
-
 				fclose(exeFp);
-				if (!success)
-				{
-					free(decompexebuffer);
-					snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Failed to copy EXE in unpacked form!\nFilename: %s", details->exeName);
-					BE_ST_ExitWithErrorMsg(errorMsg);
-				}
-			}
-			FILE *outFp = BEL_Cross_open_from_dir(embeddedfileDetailsBuffer->fileDetails.filename, true, gameInstallation->embeddedRsrcPath);
-			if (!outFp)
-			{
-				free(decompexebuffer);
-				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't open file for writing!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't allocate memory for unpacked EXE copy!\nFilename: %s", details->exeName);
 				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
-			if (fwrite(decompexebuffer + embeddedfileDetailsBuffer->offset, embeddedfileDetailsBuffer->fileDetails.filesize, 1, outFp) != 1)
+
+			bool success;
+			switch (details->compressionType)
 			{
-				fclose(outFp);
+			case BE_EXECOMPRESSION_NONE:
+				success = (fread(decompexebuffer, details->decompExeSize, 1, exeFp) != 1);
+				break;
+			case BE_EXECOMPRESSION_LZEXE9X:
+				success = Unlzexe_unpack(exeFp, decompexebuffer, details->decompExeSize);
+				break;
+			}
+
+			fclose(exeFp);
+			if (!success)
+			{
 				free(decompexebuffer);
-				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't write to file!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Failed to copy EXE in unpacked form!\nFilename: %s", details->exeName);
 				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
-			fclose(outFp);
 		}
+		FILE *outFp = BEL_Cross_open_from_dir(embeddedfileDetailsBuffer->fileDetails.filename, true, gameInstallation->readOnlyFilesPath, NULL);
+		if (!outFp)
+		{
+			free(decompexebuffer);
+			snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't open file for writing!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+			BE_ST_ExitWithErrorMsg(errorMsg);
+		}
+		if (fwrite(decompexebuffer + embeddedfileDetailsBuffer->offset, embeddedfileDetailsBuffer->fileDetails.filesize, 1, outFp) != 1)
+		{
+			fclose(outFp);
+			free(decompexebuffer);
+			snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't write to file!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+			BE_ST_ExitWithErrorMsg(errorMsg);
+		}
+		fclose(outFp);
+	}
 
 	free(decompexebuffer);
 
 	// Still need to do this after main game version dir has been created, just in case
-	BEL_Cross_mkdir(gameInstallation->writableVanillaFilesPath);
+	BEL_Cross_mkdir(gameInstallation->writableFilesPath);
 }
 
 
-// Opens file for reading from a "search path" in a case-insensitive manner
-BE_FILE_T BE_Cross_open_for_reading(const char *filename)
+// Opens a read-only file for reading from a "search path" in a case-insensitive manner
+BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
 {
-	// Just in case, at least for now
-	BE_FILE_T fp = BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->writableVanillaFilesPath);
+	// Trying readOnlyFilesPath first, and then instPath in case of failure
+	BE_FILE_T fp = BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->readOnlyFilesPath, NULL);
 	if (fp)
 		return fp;
-	return BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->path);
+	return BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->instPath, NULL);
 }
 
-// Opens file for overwriting from a "search path" (if exists) in a case-insensitive manner
-BE_FILE_T BE_Cross_open_for_overwriting(const char *filename)
+// Opens a rewritable file for reading in a case-insensitive manner, checking just a single path
+BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename)
 {
-	return BEL_Cross_open_from_dir(filename, true, g_be_selectedGameInstallation->writableVanillaFilesPath);
+	return BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->writableFilesPath, NULL);
+}
+
+// Opens a rewritable file for overwriting in a case-insensitive manner, checking just a single path
+BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename)
+{
+	return BEL_Cross_open_from_dir(filename, true, g_be_selectedGameInstallation->writableFilesPath, NULL);
 }
 
 // Used for e.g., the RefKeen cfg file
 BE_FILE_T BE_Cross_open_additionalfile_for_reading(const char *filename)
 {
-	return BEL_Cross_open_from_dir(filename, false, _T("."));
+	return BEL_Cross_open_from_dir(filename, false, g_be_appNewCfgPath, NULL);
 }
 
 BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename)
 {
-	return BEL_Cross_open_from_dir(filename, true, _T("."));
+	// Do this just in case, but note that this isn't recursive
+	BEL_Cross_mkdir(g_be_appNewCfgPath); // Non-recursive
+
+	return BEL_Cross_open_from_dir(filename, true, g_be_appNewCfgPath, NULL);
 }
 
 // Loads a file originally embedded into the EXE (for DOS) to a newly allocated
-// chunk of memory. Should be freed using BE_Cross_free_mem_loaded_file.
+// chunk of memory. Should be freed with BE_Cross_free_mem_loaded_embedded_rsrc.
 // Returns chunk size if successful, or a negative number in case of failure.
 int BE_Cross_load_embedded_rsrc_to_mem(const char *filename, void **ptr)
 {
-	BE_FILE_T fp = BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->embeddedRsrcPath);
+	BE_FILE_T fp = BE_Cross_open_readonly_for_reading(filename);
 	if (!fp)
 		return -1;
 
@@ -897,7 +1100,7 @@ int BE_Cross_load_embedded_rsrc_to_mem(const char *filename, void **ptr)
 	return success ? filesize : -1;
 }
 
-// Frees file loaded using BE_Cross_load_file_to_mem. Accepts a NULL pointer.
+// Frees file loaded using BE_Cross_load_embedded_rsrc_to_mem. Accepts a NULL pointer.
 void BE_Cross_free_mem_loaded_embedded_rsrc(void *ptr)
 {
 	free(ptr);
@@ -911,86 +1114,81 @@ int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int ma
 	size_t sufLen = strlen(suffix);
 	char *nextFilename = outFilenames, *outFilenamesEnd = outFilenames + maxNum*strLenBound, *outFilenamesLast = outFilenamesEnd - strLenBound;
 	char *checkFilename, *checkCh, *dnameCStr;
-	_TDIR *dir;
-	// For the sake of consistency we go over same paths as in file open for reading function
-	const TCHAR *searchpaths[] = {g_be_selectedGameInstallation->writableVanillaFilesPath, g_be_selectedGameInstallation->path};
-	for (int loopvar = 0; loopvar < (int)(sizeof(searchpaths)/sizeof(*searchpaths)); ++loopvar)
+	// For the sake of consistency we look for files just in this path
+	_TDIR * dir = _topendir(g_be_selectedGameInstallation->writableFilesPath);
+	if (!dir)
 	{
-		dir = _topendir(searchpaths[loopvar]);
-		if (!dir)
+		return 0;
+	}
+	for (direntry = _treaddir(dir); direntry; direntry = _treaddir(dir))
+	{
+		size_t len = _tcslen(direntry->d_name);
+		TCHAR *tchPtr;
+		/*** Ignore non-ASCII filenames ***/
+		if (*BEL_Cross_tstr_find_nonascii_ptr(direntry->d_name))
 		{
 			continue;
 		}
-		for (direntry = _treaddir(dir); direntry; direntry = _treaddir(dir))
+		if ((len < sufLen) || BEL_Cross_tstr_to_cstr_ascii_casecmp(direntry->d_name+len-sufLen, suffix))
 		{
-			size_t len = _tcslen(direntry->d_name);
-			TCHAR *tchPtr;
-			/*** Ignore non-ASCII filenames ***/
-			if (*BEL_Cross_tstr_find_nonascii_ptr(direntry->d_name))
-			{
-				continue;
-			}
-			if ((len < sufLen) || BEL_Cross_tstr_to_cstr_ascii_casecmp(direntry->d_name+len-sufLen, suffix))
-			{
-				continue;
-			}
-			len -= sufLen;
-			/*** Possibly a HACK - Modify d_name itself ***/
-			len = (len >= (size_t)strLenBound) ? (strLenBound-1) : len;
-			direntry->d_name[len] = _T('\0');
-			/*** Another HACK - Further convert d_name from wide string on Windows (and watch out due to strict aliasing rules) ***/
-			tchPtr = direntry->d_name;
-			dnameCStr = (char *)tchPtr;
-			for (checkCh = dnameCStr; *tchPtr; ++checkCh, ++tchPtr)
-			{
-				*checkCh = BE_Cross_toupper(*tchPtr); // Even if *tchPtr is a wide char, we know it's an ASCII char at this point
-			}
+			continue;
+		}
+		len -= sufLen;
+		/*** Possibly a HACK - Modify d_name itself ***/
+		len = (len >= (size_t)strLenBound) ? (strLenBound-1) : len;
+		direntry->d_name[len] = _T('\0');
+		/*** Another HACK - Further convert d_name from wide string on Windows (and watch out due to strict aliasing rules) ***/
+		tchPtr = direntry->d_name;
+		dnameCStr = (char *)tchPtr;
+		for (checkCh = dnameCStr; *tchPtr; ++checkCh, ++tchPtr)
+		{
+			*checkCh = BE_Cross_toupper(*tchPtr); // Even if *tchPtr is a wide char, we know it's an ASCII char at this point
+		}
 #ifdef REFKEEN_PLATFORM_WINDOWS
-			*checkCh = '\0'; // Required if converted from wide string
+		*checkCh = '\0'; // Required if converted from wide string
 #endif
-			// This is basically insertion-sort, but we store
-			// the *last* entries if there isn't enough room.
-			for (checkFilename = outFilenames; checkFilename < nextFilename; checkFilename += strLenBound)
+		// This is basically insertion-sort, but we store
+		// the *last* entries if there isn't enough room.
+		for (checkFilename = outFilenames; checkFilename < nextFilename; checkFilename += strLenBound)
+		{
+			if (strcmp(checkFilename, dnameCStr) > 0)
 			{
-				if (strcmp(checkFilename, dnameCStr) > 0)
-				{
-					break;
-				}
+				break;
 			}
-			// Gone over all inserted entries
-			if (checkFilename == nextFilename)
+		}
+		// Gone over all inserted entries
+		if (checkFilename == nextFilename)
+		{
+			if (nextFilename < outFilenamesEnd)
 			{
-				if (nextFilename < outFilenamesEnd)
-				{
-					memcpy(nextFilename, dnameCStr, 1+len);
-					nextFilename += strLenBound;
-				}
-				else
-				{
-					memmove(outFilenames, outFilenames+strLenBound, strLenBound*(maxNum-1));
-					memcpy(outFilenamesLast, dnameCStr, 1+len);
-				}
+				memcpy(nextFilename, dnameCStr, 1+len);
+				nextFilename += strLenBound;
 			}
-			// Shift existing entries and insert new one
 			else
 			{
-				// If there's room for another entry, shift "forward"
-				if (nextFilename < outFilenamesEnd)
-				{
-					memmove(checkFilename + strLenBound, checkFilename, outFilenamesEnd-checkFilename-strLenBound);
-					memcpy(checkFilename, dnameCStr, 1+len);
-					nextFilename += strLenBound;
-				}
-				// Otherwise shift "backwards", but only if there's already an entry "smaller" than current one
-				else if (checkFilename != outFilenames)
-				{
-					memmove(outFilenames, outFilenames+strLenBound, (checkFilename-strLenBound)-outFilenames);
-					memcpy(checkFilename-strLenBound, dnameCStr, 1+len);
-				}
-			};
+				memmove(outFilenames, outFilenames+strLenBound, strLenBound*(maxNum-1));
+				memcpy(outFilenamesLast, dnameCStr, 1+len);
+			}
 		}
-		_tclosedir(dir);
+		// Shift existing entries and insert new one
+		else
+		{
+			// If there's room for another entry, shift "forward"
+			if (nextFilename < outFilenamesEnd)
+			{
+				memmove(checkFilename + strLenBound, checkFilename, outFilenamesEnd-checkFilename-strLenBound);
+				memcpy(checkFilename, dnameCStr, 1+len);
+				nextFilename += strLenBound;
+			}
+			// Otherwise shift "backwards", but only if there's already an entry "smaller" than current one
+			else if (checkFilename != outFilenames)
+			{
+				memmove(outFilenames, outFilenames+strLenBound, (checkFilename-strLenBound)-outFilenames);
+				memcpy(checkFilename-strLenBound, dnameCStr, 1+len);
+			}
+		};
 	}
+	_tclosedir(dir);
 	return (nextFilename-outFilenames)/strLenBound;
 }
 #endif

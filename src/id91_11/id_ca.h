@@ -110,7 +110,10 @@ void CA_CloseDebug (void);
 #endif
 id0_boolean_t CA_FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t length);
 id0_boolean_t CA_FarWrite (BE_FILE_T handle, id0_byte_t id0_far *source, id0_long_t length);
+// (REFKEEN) UNUSED FUNCTION
+#if 0
 id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr);
+#endif
 id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr);
 
 id0_long_t CA_RLEWCompress (id0_unsigned_t id0_huge *source, id0_long_t length, id0_unsigned_t id0_huge *dest,

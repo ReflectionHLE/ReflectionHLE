@@ -499,9 +499,18 @@ static id0_long_t Verify(const id0_char_t *filename,bool rewritable)
 	BE_FILE_T handle;
 	id0_long_t size;
 
-	if (!BE_Cross_IsFileValid(handle=BE_Cross_open_for_reading(filename)))
+	if (rewritable)
+	{
+		if (!BE_Cross_IsFileValid(handle=BE_Cross_open_rewritable_for_reading(filename)))
+			return 0;
+	}
+	else
+	{
+		if (!BE_Cross_IsFileValid(handle=BE_Cross_open_readonly_for_reading(filename)))
+			return 0;
+	}
 	//if ((handle=open(filename,O_BINARY))==-1)
-		return (0);
+	//	return (0);
 	size=BE_Cross_FileLengthFromHandle(handle);
 	BE_Cross_close(handle);
 	return(size);
@@ -619,7 +628,7 @@ void GE_SaveGame()
 		}
 	}
 
-	handle = BE_Cross_open_for_overwriting(Filename);
+	handle = BE_Cross_open_rewritable_for_overwriting(Filename);
 	//handle = open(Filename,O_RDWR|O_CREAT|O_BINARY,S_IREAD|S_IWRITE);
 
 	/* REFKEEN - Refactoring: EXIT_FUNC label relocated below error
@@ -749,7 +758,7 @@ id0_boolean_t GE_LoadGame()
 		}
 	}
 
-	handle = BE_Cross_open_for_reading(Filename);
+	handle = BE_Cross_open_rewritable_for_reading(Filename);
 	//handle = open(Filename,O_RDWR|O_BINARY);
 
 	/* REFKEEN - Refactoring: EXIT_FUNC label relocated below error
@@ -1160,7 +1169,7 @@ id0_unsigned_long_t BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	id0_longword_t DstLen, SrcLen;
 	id0_boolean_t comp;
 
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(SourceFile)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_rewritable_for_reading(SourceFile)))
 	//if ((handle = open(SourceFile, O_RDONLY|O_BINARY)) == -1)
 		return(0);
 

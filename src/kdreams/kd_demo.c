@@ -764,7 +764,7 @@ DemoLoop (void)
 	US_SetLoadSaveHooks(LoadGame,SaveGame,ResetGame);
 	restartgame = gd_Continue;
 
-	BE_FILE_T handle = BE_Cross_open_for_reading("KDREAMS.CMP");
+	BE_FILE_T handle = BE_Cross_open_readonly_for_reading("KDREAMS.CMP");
 	//int handle = open("KDREAMS.CMP" ,O_BINARY | O_RDONLY);
 	if (!BE_Cross_IsFileValid(handle))
 	//if (handle == -1)

@@ -23,6 +23,9 @@
 int id0_argc;
 const char **id0_argv;
 
+const char *be_main_arg_datadir = NULL;
+const char *be_main_arg_newcfgdir = NULL;
+
 static void show_command_line_help()
 {
 	char gameverstrbuffer[80] = "";
@@ -54,6 +57,10 @@ static void show_command_line_help()
 	BE_ST_puts("-skipintro: Skips what is found in the original intro EXE and starts game.");
 #endif
 	BE_ST_puts("-passorigargs <...>: Passes all following arguments to the original game port.");
+	BE_ST_puts("-datadir <...>: Specify an alternative path for game data (separated by ver.).");
+	BE_ST_puts("-cfgdir <...>: Specify an alternative path for new cfg files (not old CONFIG).");
+	BE_ST_puts("");
+	BE_ST_puts("Note: the path passed to -datadir or -cfgdir is assumed to exist.");
 	BE_ST_puts("");
 	BE_ST_puts("Supported game versions:");
 	BE_ST_printf("%s\n", gameverstrbuffer);
@@ -112,6 +119,19 @@ int main(int argc, char **argv)
 			++argv;
 			--argc;
 			break;
+		}
+		else if (!BE_Cross_strcasecmp(1+argv[1], "datadir") || !BE_Cross_strcasecmp(1+argv[1], "cfgdir"))
+		{
+			const char **be_main_arg_ptr = !BE_Cross_strcasecmp(1+argv[1], "datadir") ? &be_main_arg_datadir : &be_main_arg_newcfgdir;
+			if ((argc == 2) || !(*argv[2]))
+			{
+				showHelp = true;
+				break;
+			}
+			*be_main_arg_ptr = argv[2];
+
+			argv += 2;
+			argc -= 2;
 		}
 		else
 			showHelp = true;

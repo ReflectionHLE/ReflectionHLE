@@ -118,6 +118,8 @@ void BE_ST_InitCommon(void)
 		//SDL_GameControllerEventState(SDL_DISABLE);
 		//SDL_JoystickEventState(SDL_DISABLE);
 	}
+	// MUST be called BEFORE parsing config (of course!)
+	BE_Cross_PrepareAppPaths();
 
 	BEL_ST_ParseConfig();
 	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE any SDL_CONTROLLERDEVICEADDED event should arrive (so e.g., before SDL_PollEvents).
@@ -254,15 +256,15 @@ static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
 RefKeenConfig g_refKeenCfg;
 
 #ifdef REFKEEN_VER_KDREAMS
-#define REFKEEN_CONFIG_FILEPATH "refkdreams.cfg"
+#define REFKEEN_CONFIG_FILENAME "refkdreams.cfg"
 #elif defined REFKEEN_VER_CAT3D
-#define REFKEEN_CONFIG_FILEPATH "refcat3d.cfg"
+#define REFKEEN_CONFIG_FILENAME "refcat3d.cfg"
 #elif defined REFKEEN_VER_CATABYSS
-#define REFKEEN_CONFIG_FILEPATH "refcatabyss.cfg"
+#define REFKEEN_CONFIG_FILENAME "refcatabyss.cfg"
 #elif defined REFKEEN_VER_CATARM
-#define REFKEEN_CONFIG_FILEPATH "refcatarm.cfg"
+#define REFKEEN_CONFIG_FILENAME "refcatarm.cfg"
 #elif defined REFKEEN_VER_CATAPOC
-#define REFKEEN_CONFIG_FILEPATH "refcatapoc.cfg"
+#define REFKEEN_CONFIG_FILENAME "refcatapoc.cfg"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
@@ -609,7 +611,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.farPtrSegOffset = BE_ST_DEFAULT_FARPTRSEGOFFSET;
 #endif
 	// Try to load config
-	FILE *fp = BE_Cross_open_additionalfile_for_reading(REFKEEN_CONFIG_FILEPATH);
+	FILE *fp = BE_Cross_open_additionalfile_for_reading(REFKEEN_CONFIG_FILENAME);
 	if (!fp)
 	{
 		return;
@@ -641,7 +643,7 @@ static void BEL_ST_ParseConfig(void)
 static void BEL_ST_SaveConfig(void)
 {
 	// Try to save current settings just in case (first time file is created or new fields added)
-	FILE *fp = BE_Cross_open_additionalfile_for_overwriting(REFKEEN_CONFIG_FILEPATH);
+	FILE *fp = BE_Cross_open_additionalfile_for_overwriting(REFKEEN_CONFIG_FILENAME);
 	if (!fp)
 	{
 		return;

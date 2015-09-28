@@ -68,11 +68,10 @@ id0_boolean_t FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t le
 
 id0_boolean_t ReadFile (id0_char_t *filename, memptr ptr)
 {
-	BE_FILE_T handle;
+	int handle;
 	id0_long_t size;
 
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(filename)))
-	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
 	size = filelength (handle);
@@ -102,7 +101,9 @@ id0_boolean_t LoadFile (const id0_char_t *filename, memptr *ptr)
 	BE_FILE_T handle;
 	id0_long_t size;
 
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_for_reading(filename)))
+	// (REFKEEN) - Currently usable only with read-only files like game
+	// data files, but this is the only place where this may be used now
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(filename)))
 	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 

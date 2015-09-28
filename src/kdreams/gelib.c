@@ -126,7 +126,7 @@ id0_long_t VerifyReadOnly(const id0_char_t *filename)
 	BE_FILE_T handle;
 	id0_long_t size;
 
-	if (!BE_Cross_IsFileValid(handle=BE_Cross_open_for_reading(filename)))
+	if (!BE_Cross_IsFileValid(handle=BE_Cross_open_readonly_for_reading(filename)))
 	//if ((handle=open(filename,O_BINARY))==-1)
 		return (0);
 	size=BE_Cross_FileLengthFromHandle(handle);
