@@ -551,6 +551,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
 	{"CEMETRY.CAT", 14983, 0x8cfb3741},
 	{"COOKIE.CAT", 16837, 0xee83c4f4},
 	{"CRYSTAL.CAT", 15320, 0x16fa18f0},
+	{"DEMOCAT.EXE", 32066, 0xce326ea2},
 	{"DRAGONS.CAT", 7107, 0x54ea7eb5},
 	{"EGYPT.CAT", 8863, 0xc78451d7},
 	{"FLAME.CAT", 7062, 0xe422aa64},
@@ -621,6 +622,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss124[] = {
 	{"DEN.HNT", 10520, 0xbea64562},
 	{"GARDEN.HNT", 11125, 0x8c2385b6},
 	{"HAUNT.HNT", 7743, 0x2b9ef944},
+	{"HINTCAT.EXE", 16328, 0x2bd569ac},
 	{"HINTGO1.HNT", 9751, 0x4fa00485},
 	{"HINTGO2.HNT", 9902, 0x6640c7b6},
 	{"HINTGO3.HNT", 8372, 0x8e743b2c},
@@ -700,6 +702,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catarm102[] = {
 	{"HINT18.HNT", 8896, 0x18567f5d},
 	{"HINT19.HNT", 9308, 0xdb5b1b65},
 	{"HINT20.HNT", 7301, 0xb2a16e89},
+	{"HINTCAT.EXE", 15973, 0x79cc6ee3},
 	{"SCRIPT.HNT", 90, 0x79a7f746},
 	{0}
 };
@@ -765,6 +768,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catapoc101[] = {
 	{"HINT17.HNT", 8348, 0x00783edb},
 	{"HINT18.HNT", 9990, 0x04e56bbe},
 	{"HINT19.HNT", 7301, 0xb2a16e89},
+	{"HINTCAT.EXE", 16215, 0xfefa177c},
 	{"SCRIPT.HNT", 88, 0x8dd529b2},
 	{0}
 };
@@ -813,7 +817,6 @@ static void BEL_Cross_mkdir(const TCHAR *path)
 // OPTIONAL ARGUMENT (used internally): outfullpath, if not NULL, should point to an out buffer which is BE_CROSS_PATH_LEN_BOUND chars long.
 static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const TCHAR *searchdir, TCHAR *outfullpath)
 {
-	/*** TODO - Any reason to save (cache) DIR handles? ***/
 	_TDIR *dir;
 	struct _tdirent *direntry;
 	dir = _topendir(searchdir);
