@@ -5,6 +5,7 @@
 
 typedef enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } VSyncSettingType;
 typedef enum { SCALE_ASPECT, SCALE_FILL } ScaleTypeSettingType;
+typedef enum { LAUNCHER_WINDOW_DEFAULT, LAUNCHER_WINDOW_FULL, LAUNCHER_WINDOW_SOFTWARE } LauncherWindowSettingType;
 
 typedef struct
 {
@@ -12,6 +13,7 @@ typedef struct
 	int fullWidth, fullHeight;
 	int winWidth, winHeight;
 	int launcherWinWidth, launcherWinHeight;
+	LauncherWindowSettingType launcherWinType;
 	int displayNum;
 	int sdlRendererDriver;
 	VSyncSettingType vSync;

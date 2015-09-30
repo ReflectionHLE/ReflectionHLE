@@ -42,9 +42,9 @@ static void show_command_line_help()
 	BE_ST_PrepareForGameStartup();
 
 #ifdef REFKEEN_VER_KDREAMS
-	BE_ST_puts("Reflection Keen - Command line arguments:");
+	BE_ST_puts("*** Reflection Keen - Command line arguments ***");
 #elif (defined REFKEEN_VER_CATACOMB_ALL)
-	BE_ST_puts("Reflection Catacomb 3-D - Command line arguments:");
+	BE_ST_puts("*** Reflection Catacomb 3-D - Command line arguments ***");
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
@@ -59,8 +59,10 @@ static void show_command_line_help()
 	BE_ST_puts("-passorigargs <...>: Passes all following arguments to the original game port.");
 	BE_ST_puts("-datadir <...>: Specify an alternative path for game data (separated by ver.).");
 	BE_ST_puts("-cfgdir <...>: Specify an alternative path for new cfg files (not old CONFIG).");
+	BE_ST_puts("-fulllauncher: Show a fullscreen launcher window.");
+	BE_ST_puts("-softlauncher: Show a software-rendered launcher window (not fullscreen).");
 	BE_ST_puts("");
-	BE_ST_puts("Note: the path passed to -datadir or -cfgdir is assumed to exist.");
+	BE_ST_puts("Note: The path passed to -datadir or -cfgdir is assumed to exist.");
 	BE_ST_puts("");
 	BE_ST_puts("Supported game versions:");
 	BE_ST_printf("%s\n", gameverstrbuffer);
@@ -132,6 +134,20 @@ int main(int argc, char **argv)
 
 			argv += 2;
 			argc -= 2;
+		}
+		else if (!BE_Cross_strcasecmp(1+argv[1], "fulllauncher"))
+		{
+			g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_FULL;
+			startLauncher = true;
+			++argv;
+			--argc;
+		}
+		else if (!BE_Cross_strcasecmp(1+argv[1], "softlauncher"))
+		{
+			g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_SOFTWARE;
+			startLauncher = true;
+			++argv;
+			--argc;
 		}
 		else
 			showHelp = true;

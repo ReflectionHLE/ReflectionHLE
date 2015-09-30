@@ -151,6 +151,7 @@ static const char *g_be_videoSettingsChoices_sdlRendererDrivers[BE_LAUNCHER_MAX_
 static const char *g_be_videoSettingsChoices_vSync[] = {"Auto","Off","On",NULL};
 static const char *g_be_videoSettingsChoices_scaleType[] = {"4:3","Fill",NULL};
 static const char *g_be_videoSettingsChoices_scaleFactor[] = {"1","2","3","4",NULL};
+static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default", "Fullscreen", "Software"};
 
 static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP);
 
@@ -162,6 +163,7 @@ BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_VSync, "VSync", g_be_videoSet
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type", g_be_videoSettingsChoices_scaleType)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleFactor, "Scale factor", g_be_videoSettingsChoices_scaleFactor)
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_LauncherWindowType, "Launcher window type", g_be_videoSettingsChoices_launcherWindowType)
 
 BEMenu g_beVideoSettingsMenu = {
 	"Video settings",
@@ -176,6 +178,7 @@ BEMenu g_beVideoSettingsMenu = {
 		&g_beVideoSettingsMenuItem_Bilinear,
 		&g_beVideoSettingsMenuItem_ScaleType,
 		&g_beVideoSettingsMenuItem_ScaleFactor,
+		&g_beVideoSettingsMenuItem_LauncherWindowType,
 		NULL
 	},
 	// Ignore the rest
@@ -186,7 +189,7 @@ BEMenu g_beVideoSettingsMenu = {
 static const int g_be_soundsSettingsChoices_sndSampleRateVals[] = {8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000, 49716, 96000};
 static const char *g_be_soundsSettingsChoices_sndSampleRate[] = {"8000","11025","12000","16000","22050","32000","44100","48000","49716","96000",NULL};
 
-BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSampleRate, "Sound sample rate (in Hz)", g_be_soundsSettingsChoices_sndSampleRate)
+BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSampleRate, "Sound sample rate\n(in Hz)", g_be_soundsSettingsChoices_sndSampleRate)
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSubSystem, "Enable sound subsystem", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_OPLEmulation, "Enable OPL emulation", g_be_settingsChoices_boolean)
 
@@ -209,7 +212,7 @@ static const char *g_be_inputSettingsChoices_controllerScheme[] = {"Classic", "M
 
 BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beControllerSettingsMenu)
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
-BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_Autolock, "Autolock mouse cursor in fullscreen", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_Autolock, "Autolock mouse cursor\nin fullscreen", g_be_settingsChoices_boolean)
 
 BEMenu g_beInputSettingsMenu = {
 	"Input settings",
@@ -319,19 +322,22 @@ void BE_ST_Launcher_Prepare(void)
 	/*** Prepare ST stuff ***/
 
 	/* Graphics */
-	if (!g_refKeenCfg.launcherWinWidth || !g_refKeenCfg.launcherWinHeight)
+	if (!g_refKeenCfg.launcherWinWidth || !g_refKeenCfg.launcherWinHeight || (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE))
 	{
 		g_refKeenCfg.launcherWinWidth = 2*BE_LAUNCHER_PIX_WIDTH;
 		g_refKeenCfg.launcherWinHeight = 2*BE_LAUNCHER_PIX_HEIGHT;
 	}
 
-	g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight, SDL_WINDOW_RESIZABLE);
+	g_sdlWindow = SDL_CreateWindow(
+		g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight,
+		(g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : ((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT) ? SDL_WINDOW_RESIZABLE : 0)
+	);
 	if (!g_sdlWindow)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window for launcher,\n%s\n", SDL_GetError());
 		exit(0);
 	}
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE) ? SDL_RENDERER_SOFTWARE : (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
 	if (!g_sdlRenderer)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer for launcher,\n%s\n", SDL_GetError());
@@ -350,9 +356,12 @@ void BE_ST_Launcher_Prepare(void)
 	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE); // For clears in refreshes
 	BEL_ST_Launcher_SetGfxOutputRect();
 
-	// Try, if we fail then simply don't use this
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-	g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT);
+	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE)
+	{
+		// Try, if we fail then simply don't use this
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+		g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT);
+	}
 	/* Game controllers */
 	int nOfJoysticks = SDL_NumJoysticks();
 	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
@@ -404,6 +413,8 @@ void BE_ST_Launcher_Prepare(void)
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = 0;
 	else
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = g_refKeenCfg.scaleFactor-1;
+	// Set LauncherWindowType value
+	g_beVideoSettingsMenuItem_LauncherWindowType.choice = g_refKeenCfg.launcherWinType;
 	// Set SndSampleRate value
 	g_beSoundSettingsMenuItem_SndSampleRate.choice = 8; // FIXME - Better way to grab default off cfg
 	for (int i = 0; i < (int)(sizeof(g_be_soundsSettingsChoices_sndSampleRateVals)/sizeof(*g_be_soundsSettingsChoices_sndSampleRateVals)); ++i)
@@ -507,6 +518,7 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.isBilinear = g_beVideoSettingsMenuItem_Bilinear.choice;
 	g_refKeenCfg.scaleType = (ScaleTypeSettingType)g_beVideoSettingsMenuItem_ScaleType.choice;
 	g_refKeenCfg.scaleFactor = g_beVideoSettingsMenuItem_ScaleFactor.choice + 1;
+	g_refKeenCfg.launcherWinType = (LauncherWindowSettingType)g_beVideoSettingsMenuItem_LauncherWindowType.choice;
 
 	g_refKeenCfg.sndSampleRate = g_be_soundsSettingsChoices_sndSampleRateVals[g_beSoundSettingsMenuItem_SndSampleRate.choice];
 	g_refKeenCfg.sndSubSystem = g_beSoundSettingsMenuItem_SndSubSystem.choice;
@@ -575,7 +587,7 @@ static void BEL_ST_Launcher_ResetDisplayModes(int displayNum)
 	g_beVideoSettingsMenuItem_FullscreenRes.choices[actualCounter+1] = NULL;
 }
 
-extern void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem);
+void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem);
 
 static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP)
 {
@@ -589,8 +601,11 @@ static void BEL_ST_Launcher_SetGfxOutputRect(void)
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
 
-	g_refKeenCfg.launcherWinWidth = winWidth;
-	g_refKeenCfg.launcherWinHeight = winHeight;
+	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_FULL)
+	{
+		g_refKeenCfg.launcherWinWidth = winWidth;
+		g_refKeenCfg.launcherWinHeight = winHeight;
+	}
 
 	if (BE_LAUNCHER_PIX_HEIGHT*winWidth < BE_LAUNCHER_PIX_WIDTH*winHeight) // Thinner than BE_LAUNCHER_PIX_WIDTH:BE_LAUNCHER_PIX_HEIGHT
 	{

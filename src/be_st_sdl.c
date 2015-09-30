@@ -296,6 +296,22 @@ static void BEL_ST_ParseSetting_LauncherWindowRes(const char *keyprefix, const c
 	sscanf(buffer, "%dx%d", &g_refKeenCfg.launcherWinWidth, &g_refKeenCfg.launcherWinHeight);
 }
 
+static void BEL_ST_ParseSetting_LauncherWindowType(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "default"))
+	{
+		g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
+	}
+	else if (!strcmp(buffer, "full"))
+	{
+		g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_FULL;
+	}
+	else if (!strcmp(buffer, "software"))
+	{
+		g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_SOFTWARE;
+	}
+}
+
 static void BEL_ST_ParseSetting_DisplayNum(const char *keyprefix, const char *buffer)
 {
 	sscanf(buffer, "%d", &g_refKeenCfg.displayNum);
@@ -525,6 +541,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
 	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
 	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
+	{"launcherwindowtype=", &BEL_ST_ParseSetting_LauncherWindowType},
 
 	// HACK: Copy-paste... if this is updated, check g_sdlControlSchemeKeyMapCfgKeyPrefixes too!!!
 #ifdef REFKEEN_VER_KDREAMS
@@ -580,6 +597,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.sndSampleRate = 49716; // TODO should be a shared define
 	g_refKeenCfg.sndSubSystem = true;
 	g_refKeenCfg.oplEmulation = true;
+	g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
 	g_refKeenCfg.altControlScheme.isEnabled = false;
 
 #ifdef REFKEEN_VER_KDREAMS
@@ -652,6 +670,7 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "fullres=%dx%d\n", g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight);
 	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
 	fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
+	fprintf(fp, "launcherwindowtype=%s\n", g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT ? "default" : (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL ? "full" : "software"));
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
 	if (g_refKeenCfg.sdlRendererDriver < 0)
 	{
