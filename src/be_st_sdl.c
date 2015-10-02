@@ -183,10 +183,15 @@ void BE_ST_ShutdownAll(void)
 	SDL_Quit();
 }
 
+static void BEL_ST_AltControlScheme_CleanUp(void);
+
 void BE_ST_HandleExit(int status)
 {
 	SDL_Event event;
 	bool keepRunning = true;
+
+	BEL_ST_AltControlScheme_CleanUp(); // Used for removal of any remaining controller UI (and possibly some more)
+
 	// SPECIAL - Listening to joystick or controller events is considered acceptable here since we quit...
 	SDL_EventState(SDL_JOYAXISMOTION, SDL_ENABLE);
 	SDL_EventState(SDL_JOYBALLMOTION, SDL_ENABLE);
@@ -1238,7 +1243,6 @@ int16_t BE_ST_BiosScanCode(int16_t command)
 	}
 }
 
-static void BEL_ST_AltControlScheme_CleanUp(void);
 static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void);
 
 // May be similar to PrepareControllerMapping, but a bit different:

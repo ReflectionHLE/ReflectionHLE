@@ -1657,7 +1657,7 @@ void BEL_ST_UpdateHostDisplay(void)
 			uint16_t currByte = currLineFirstByte;
 			currPalPixPtr = g_sdlHostScrMem.egaGfx + line*g_sdlTexWidth;
 			currPalPixCachePtr = g_sdlHostScrMemCache.egaGfx + line*g_sdlTexWidth;
-			for (col = 0; col < g_sdlTexWidth; ++col, ++currPalPixPtr)
+			for (col = 0; col < g_sdlTexWidth; ++col, ++currPalPixPtr, ++currPalPixCachePtr)
 			{
 				*currPalPixPtr = ((g_sdlVidMem.egaGfx[0][currByte]&currBitMask)>>currBitNum) |
 				                 (((g_sdlVidMem.egaGfx[1][currByte]&currBitMask)>>currBitNum)<<1) |
@@ -1665,33 +1665,28 @@ void BEL_ST_UpdateHostDisplay(void)
 				                 (((g_sdlVidMem.egaGfx[3][currByte]&currBitMask)>>currBitNum)<<3);
 				doUpdate |= (*currPalPixPtr != *currPalPixCachePtr);
 				*currPalPixCachePtr = *currPalPixPtr;
-				if (currBitNum == 0)
+				if (!(1+col % 8*g_sdlLineWidth)) // Check if we need to re-scan line
 				{
-					++currByte;
-					currByte %= 0x10000;
-					currBitNum = 7;
-					currBitMask = 0x80;
+					currBitNum = 7-panningWithinInByte;
+					currBitMask = 1<<currBitNum;
+					currByte = currLineFirstByte;
 				}
-				else
+				else // Otherwise just update variables as usual
 				{
-					--currBitNum;
-					currBitMask >>= 1;
-				}
-				if (col == 8*g_sdlLineWidth)
-				{
-					++col;
-					++currPalPixPtr;
-					++currPalPixCachePtr;
-					break;
+					if (currBitNum == 0)
+					{
+						++currByte; // This is done mod 0x10000 (with an uint16_t)
+						currBitNum = 7;
+						currBitMask = 0x80;
+					}
+					else
+					{
+						--currBitNum;
+						currBitMask >>= 1;
+					}
 				}
 			}
-			// Just if this makes sense... (FIXME: Check!)
-			for (; col < g_sdlTexWidth; ++col, ++currPalPixPtr, ++currPalPixCachePtr)
-			{
-				doUpdate |= (*currPalPixCachePtr);
-				*currPalPixPtr = 0;
-				*currPalPixCachePtr = 0;
-			}
+
 			if (g_sdlSplitScreenLine == line)
 			{
 				currLineFirstByte = 0; // NEXT line begins split screen, NOT g_sdlSplitScreenLine
