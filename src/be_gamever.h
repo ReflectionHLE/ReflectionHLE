@@ -1,5 +1,5 @@
-#ifndef __BE_GAMEVER_H__
-#define __BE_GAMEVER_H__
+#ifndef _BE_GAMEVER_H_
+#define _BE_GAMEVER_H_
 
 /* This is separate from be_cross.h since the compiled code
  * depends on version-related macros
@@ -35,4 +35,4 @@ extern BE_GameVer_T refkeen_current_gamever;
 // These MUST have the same order as in the BE_GameVer_T enum
 extern const char *refkeen_gamever_strs[BE_GAMEVER_LAST];
 
-#endif // __BE_GAMEVER_H__
+#endif // _BE_GAMEVER_H_

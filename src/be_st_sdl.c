@@ -4,6 +4,7 @@
 
 #include "be_cross.h"
 #include "be_st.h"
+#include "be_st_sdl_private.h"
 
 #define BE_ST_MAXJOYSTICKS 8
 #define BE_ST_EMU_JOYSTICK_RANGEMAX 5000 // id_in.c MaxJoyValue
@@ -49,8 +50,9 @@ static struct {
 static const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 
 static BE_ST_ControllerMapping g_sdlControllerMappingDefault;
-// HACK - This "mapping" is used for identification of text-input (using pointers comparison)
-static BE_ST_ControllerMapping g_sdlControllerMappingTextInput;
+// HACK - These "mapping" is used for identification of on-screen keyboards (using pointers comparisons)
+BE_ST_ControllerMapping g_beStControllerMappingTextInput;
+BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 
 // The index is taken off the enum above so ENSURE THESE ARE CONSISTENT!
 //
@@ -74,6 +76,7 @@ static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
 #if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
 	"altcontrolscheme_funckeys=",
 #endif
+	"altcontrolscheme_debugkeys=",
 	0,
 };
 
@@ -248,7 +251,7 @@ void BE_ST_QuickExit(void)
 
 // Enumerated by SDL_GameControllerButton, for most
 static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
-	"a", "b", "x", "y", 0, 0, 0, 0, 0, "lshoulder", "rshoulder", 0, 0, 0, 0,
+	"a", "b", "x", "y", 0, 0, 0, "lstick", "rstick", "lshoulder", "rshoulder", 0, 0, 0, 0,
 	"ltrigger", "rtrigger", // Actually axes but these are added as extras
 	"" // for any entry which is not set
 };
@@ -562,6 +565,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
 	{"altcontrolscheme_funckeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 #endif
+	{"altcontrolscheme_debugkeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 
 	{"altcontrolscheme_dpad=", &BEL_ST_ParseSetting_AlternativeControlSchemeDpad},
 	{"altcontrolscheme_lstick=", &BEL_ST_ParseSetting_AlternativeControlSchemeLeftStick},
@@ -618,6 +622,8 @@ static void BEL_ST_ParseConfig(void)
 #if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = SDL_CONTROLLER_BUTTON_MAX; // HACK for getting left trigger (technically an axis)
 #endif
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = SDL_CONTROLLER_BUTTON_LEFTSTICK;
+
 	g_refKeenCfg.altControlScheme.useDpad = true;
 	g_refKeenCfg.altControlScheme.useLeftStick = true;
 	g_refKeenCfg.altControlScheme.useRightStick = false;
@@ -713,11 +719,6 @@ static void BEL_ST_SaveConfig(void)
 }
 
 
-
-typedef struct {
-	bool isSpecial; // Scancode of 0xE0 sent?
-	uint8_t dosScanCode;
-} emulatedDOSKeyEvent;
 
 #define emptyDOSKeyEvent {false, 0}
 
@@ -1205,7 +1206,7 @@ int16_t BE_ST_BiosScanCode(int16_t command)
 }
 
 
-static void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, emulatedDOSKeyEvent keyEvent)
+/*static*/ void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, emulatedDOSKeyEvent keyEvent)
 {
 	if (keyEvent.dosScanCode == BE_ST_SC_PAUSE)
 	{
@@ -1238,7 +1239,20 @@ static void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, emulatedDOSKeyEvent ke
 }
 
 static void BEL_ST_AltControlScheme_CleanUp(void);
-static void BEL_ST_AltControlScheme_ConditionallyShowButtonsUI(void);
+static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void);
+
+// May be similar to PrepareControllerMapping, but a bit different:
+// Used in order to replace controller mapping with another one internally
+// (e.g., showing helper function keys)
+static void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping)
+{
+	BEL_ST_AltControlScheme_CleanUp();
+	g_sdlControllerMappingActualCurr = mapping;
+
+	BEL_ST_AltControlScheme_ConditionallyShowControllerUI();
+
+	g_sdlControllerSchemeNeedsCleanUp = true;
+}
 
 static bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, bool isPressed)
 {
@@ -1256,13 +1270,7 @@ static bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap 
 		if (!isPressed)
 			return true; // Do nothing but confirm
 
-		// This isn't exactly the same as PrepareControllerMapping
-		BEL_ST_AltControlScheme_CleanUp();
-		g_sdlControllerMappingActualCurr = map->otherMappingPtr;
-
-		BEL_ST_AltControlScheme_ConditionallyShowButtonsUI();
-
-		g_sdlControllerSchemeNeedsCleanUp = true;
+		BEL_ST_ReplaceControllerMapping(map->otherMappingPtr);
 		return true;
 	}
 	return false;
@@ -1297,25 +1305,15 @@ static void BEL_ST_AltControlScheme_CleanUp(void)
 	if (!g_sdlControllerSchemeNeedsCleanUp)
 		return;
 
-	if (g_sdlControllerMappingActualCurr == &g_sdlControllerMappingTextInput)
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 	{
-		int BEL_ST_GetPressedKeyScanCodeFromTextInputUI(void);
-		bool BEL_ST_IsTextInputUIShifted(void);
-
-		emulatedDOSKeyEvent dosKeyEvent;
-		dosKeyEvent.isSpecial = false;
-		dosKeyEvent.dosScanCode = BEL_ST_GetPressedKeyScanCodeFromTextInputUI();
-		// Don't forget to "release" a key pressed in the text input UI
-		if (dosKeyEvent.dosScanCode)
-		{
-			BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
-		}
-		// Shift key may further be held, don't forget this too!
-		if ((dosKeyEvent.dosScanCode != BE_ST_SC_LSHIFT) && BEL_ST_IsTextInputUIShifted())
-		{
-			dosKeyEvent.dosScanCode = BE_ST_SC_LSHIFT;
-			BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
-		}
+		void BEL_ST_ReleasePressedKeysInTextInputUI(void);
+		BEL_ST_ReleasePressedKeysInTextInputUI();
+	}
+	else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+	{
+		void BEL_ST_ReleasePressedKeysInDebugKeysUI(void);
+		BEL_ST_ReleasePressedKeysInDebugKeysUI();
 	}
 	else // Otherwise simulate key releases based on the mapping
 	{
@@ -1367,17 +1365,22 @@ static void BEL_ST_AltControlScheme_CleanUp(void)
 }
 
 
-static void BEL_ST_AltControlScheme_ConditionallyShowButtonsUI(void)
+static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void)
 {
 	if (g_sdlControllerMappingActualCurr->showUi)
 	{
 		extern void BEL_ST_PrepareToShowControllerUI(const BE_ST_ControllerMapping *mapping);
 		BEL_ST_PrepareToShowControllerUI(g_sdlControllerMappingActualCurr);
 	}
-	else if (g_sdlControllerMappingActualCurr == &g_sdlControllerMappingTextInput)
+	else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 	{
 		extern void BEL_ST_PrepareToShowTextInputUI(void);
 		BEL_ST_PrepareToShowTextInputUI();
+	}
+	else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+	{
+		extern void BEL_ST_PrepareToShowDebugKeysUI(void);
+		BEL_ST_PrepareToShowDebugKeysUI();
 	}
 }
 
@@ -1411,7 +1414,7 @@ void BE_ST_AltControlScheme_Pop(void)
 
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr;
 
-	BEL_ST_AltControlScheme_ConditionallyShowButtonsUI();
+	BEL_ST_AltControlScheme_ConditionallyShowControllerUI();
 
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
@@ -1424,21 +1427,7 @@ void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMappi
 	BEL_ST_AltControlScheme_CleanUp();
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr = mapping;
 
-	BEL_ST_AltControlScheme_ConditionallyShowButtonsUI();
-
-	g_sdlControllerSchemeNeedsCleanUp = true;
-}
-
-void BE_ST_AltControlScheme_PrepareTextInput(void)
-{
-	if (!g_refKeenCfg.altControlScheme.isEnabled)
-		return;
-
-	BEL_ST_AltControlScheme_CleanUp();
-	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr = &g_sdlControllerMappingTextInput;
-
-	extern void BEL_ST_PrepareToShowTextInputUI(void);
-	BEL_ST_PrepareToShowTextInputUI();
+	BEL_ST_AltControlScheme_ConditionallyShowControllerUI();
 
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
@@ -1547,7 +1536,7 @@ void BE_ST_PollEvents(void)
 						{
 							g_sdlControllersButtonsStates[i][but] = isPressed;
 							// Special handling for text input
-							if (g_sdlControllerMappingActualCurr == &g_sdlControllerMappingTextInput)
+							if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 							{
 								emulatedDOSKeyEvent dosKeyEvent;
 								dosKeyEvent.isSpecial = false;
@@ -1607,18 +1596,64 @@ void BE_ST_PollEvents(void)
 									BEL_ST_HandleEmuKeyboardEvent(isPressed, dosKeyEvent);
 								}
 							}
+							// Similar, but for debug keys (behaves a bit different than text input)
+							else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+							{
+								emulatedDOSKeyEvent dosKeyEvent;
+								dosKeyEvent.isSpecial = false;
+								dosKeyEvent.dosScanCode = 0;
+
+								extern void BEL_ST_MoveUpInDebugKeysUI(void);
+								extern void BEL_ST_MoveDownInDebugKeysUI(void);
+								extern void BEL_ST_MoveLeftInDebugKeysUI(void);
+								extern void BEL_ST_MoveRightInDebugKeysUI(void);
+								extern int BEL_ST_ToggleKeyPressInDebugKeysUI(bool *pToggle);
+								switch (but)
+								{
+								case SDL_CONTROLLER_BUTTON_DPAD_UP:
+									if (isPressed)
+										BEL_ST_MoveUpInDebugKeysUI();
+									break;
+								case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+									if (isPressed)
+										BEL_ST_MoveDownInDebugKeysUI();
+									break;
+								case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+									if (isPressed)
+										BEL_ST_MoveLeftInDebugKeysUI();
+									break;
+								case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+									if (isPressed)
+										BEL_ST_MoveRightInDebugKeysUI();
+									break;
+								// A few other special cases
+								case SDL_CONTROLLER_BUTTON_START:
+									dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
+									break;
+								case SDL_CONTROLLER_BUTTON_B:
+								case SDL_CONTROLLER_BUTTON_BACK:
+									dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
+									break;
+								default:
+								{
+									// Select or deselect key from UI, IF actual button is pressed.
+									// NOTE: This returns in isPressed the status of the key.
+									if (isPressed)
+										dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInDebugKeysUI(&isPressed);
+								}
+								}
+
+								if (dosKeyEvent.dosScanCode)
+								{
+									BEL_ST_HandleEmuKeyboardEvent(isPressed, dosKeyEvent);
+								}
+							}
 							// Try the usual otherwise (similar, but not identical, handling done with analog axes, triggers included)
 							else if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], isPressed))
 							{
 								if (g_sdlControllerMappingActualCurr->prevMapping && isPressed)
 								{
-									// This isn't exactly the same as PrepareControllerMapping
-									BEL_ST_AltControlScheme_CleanUp();
-									g_sdlControllerMappingActualCurr = g_sdlControllerMappingActualCurr->prevMapping;
-
-									BEL_ST_AltControlScheme_ConditionallyShowButtonsUI();
-
-									g_sdlControllerSchemeNeedsCleanUp = true;
+									BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
 									goto finish;
 								}
 							}
@@ -1626,7 +1661,7 @@ void BE_ST_PollEvents(void)
 					}
 				}
 				// Repeat with analog axes (ignored with text input scheme in use)
-				if (g_sdlControllerMappingActualCurr == &g_sdlControllerMappingTextInput)
+				if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
 					continue;
 
 				for (int axis = 0; axis < SDL_CONTROLLER_AXIS_MAX; ++axis)
@@ -1658,13 +1693,7 @@ void BE_ST_PollEvents(void)
 								if (((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
 								    && g_sdlControllerMappingActualCurr->prevMapping && isPosPressed)
 								{
-									// This isn't exactly the same as PrepareControllerMapping
-									BEL_ST_AltControlScheme_CleanUp();
-									g_sdlControllerMappingActualCurr = g_sdlControllerMappingActualCurr->prevMapping;
-
-									BEL_ST_AltControlScheme_ConditionallyShowButtonsUI();
-
-									g_sdlControllerSchemeNeedsCleanUp = true;
+									BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
 									goto finish;
 								}
 							}

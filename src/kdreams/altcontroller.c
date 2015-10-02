@@ -229,9 +229,12 @@ void RefKeen_PrepareAltControllerScheme(void)
 	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW], &g_ingame_altcontrol_button1mappings[0], &tempsinglemapping);
 	tempsinglemapping.val = BE_ST_SC_SPACE;
 	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS], &tempsinglemappingptr, &tempsinglemapping);
+
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
 	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
+	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
 
 	if (g_refKeenCfg.altControlScheme.useDpad)
 	{

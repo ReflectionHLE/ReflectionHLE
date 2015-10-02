@@ -1,5 +1,5 @@
-#ifndef	__BE_ST__
-#define __BE_ST__
+#ifndef	_BE_ST_
+#define _BE_ST_
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -71,6 +71,7 @@ typedef enum {
 	BE_ST_CTRL_MAP_MOUSEMOTION,
 	BE_ST_CTRL_MAP_OTHERMAPPING,
 	//BE_ST_CONTROLLER_MAPPING_TEXTINPUTTOGGLE,
+	//BE_ST_CONTROLLER_MAPPING_DEBUGKEYSTOGGLE,
 } BE_ST_ControllerSingleMapClass;
 
 // BE_ST_ControllerMapping is what defines a mapping, consisting of arrays
@@ -105,7 +106,11 @@ void BE_ST_AltControlScheme_Push(void);
 void BE_ST_AltControlScheme_Pop(void);
 // Replace current controller scheme using any of these
 void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMapping *mapping);
-void BE_ST_AltControlScheme_PrepareTextInput(void);
+
+// HACK - Pass corresponding pointer to PrepareControllerMapping for on-screen keyboard
+// (can also be used to go from one mapping to another, e.g., showing debug keys in-game)
+extern BE_ST_ControllerMapping g_beStControllerMappingTextInput;
+extern BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 
 
 // Used when loading controller scheme stuff from cfg
@@ -129,6 +134,7 @@ enum {
 #if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
 	BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS,
 #endif
+	BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS,
 	BE_ST_CTRL_CFG_BUTMAP_AFTERLAST,
 };
 
@@ -349,7 +355,7 @@ typedef enum BE_ST_ScanCode_T {
      BE_ST_SC_DOWN = 0x50,
      BE_ST_SC_RALT = 0x38,
      BE_ST_SC_RCTRL = 0x1D,
-     // Two extra kes
+     // Two extra keys
      BE_ST_SC_LESSTHAN = 0x56,
      BE_ST_SC_KP_MULTIPLY = 0x37,
      // This one is different from all the rest (6 scancodes sent on press ONLY)

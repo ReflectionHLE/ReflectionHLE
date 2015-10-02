@@ -1,5 +1,5 @@
-#ifndef __BE_CROSS_H__
-#define __BE_CROSS_H__
+#ifndef _BE_CROSS_H_
+#define _BE_CROSS_H_
 
 #include <stdbool.h>
 #include <stdio.h>

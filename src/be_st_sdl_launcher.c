@@ -151,7 +151,7 @@ static const char *g_be_videoSettingsChoices_sdlRendererDrivers[BE_LAUNCHER_MAX_
 static const char *g_be_videoSettingsChoices_vSync[] = {"Auto","Off","On",NULL};
 static const char *g_be_videoSettingsChoices_scaleType[] = {"4:3","Fill",NULL};
 static const char *g_be_videoSettingsChoices_scaleFactor[] = {"1","2","3","4",NULL};
-static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default", "Fullscreen", "Software"};
+static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default","Fullscreen","Software",NULL};
 
 static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP);
 
@@ -253,6 +253,7 @@ BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Scrolls, 
 #if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FuncKeys, "Action - Function keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_DebugKeys, "Action - Debug keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_Dpad, "Use d-pad", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
@@ -286,6 +287,7 @@ BEMenu g_beControllerSettingsMenu = {
 #if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
 		&g_beControllerSettingsMenuItem_Action_FuncKeys,
 #endif
+		&g_beControllerSettingsMenuItem_Action_DebugKeys,
 		&g_beControllerSettingsMenuItem_Dpad,
 		&g_beControllerSettingsMenuItem_LeftStick,
 		&g_beControllerSettingsMenuItem_RightStick,
@@ -460,6 +462,7 @@ void BE_ST_Launcher_Prepare(void)
 #if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
 	g_beControllerSettingsMenuItem_Action_FuncKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS];
 #endif
+	g_beControllerSettingsMenuItem_Action_DebugKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS];
 
 	/*** Prepare installed game versions menu ***/
 	for (int i = 0; i < g_be_gameinstallations_num; ++i)
@@ -552,6 +555,7 @@ void BE_ST_Launcher_Shutdown(void)
 #if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
 #endif
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;
 }
 
 

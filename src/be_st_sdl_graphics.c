@@ -3,6 +3,7 @@
 
 #include "be_cross.h"
 #include "be_st.h"
+#include "be_st_sdl_private.h"
 
 // Some of these are also used in launcher
 SDL_Window *g_sdlWindow;
@@ -99,29 +100,37 @@ static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 #define ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO 5
 
 // Measured in keys
-#define ALTCONTROLLER_KEYBOARD_WIDTH 18
-#define ALTCONTROLLER_KEYBOARD_HEIGHT 3
-
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH 22
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT 12
 
-#define ALTCONTROLLER_KEYBOARD_PIX_WIDTH (ALTCONTROLLER_KEYBOARD_WIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
-#define ALTCONTROLLER_KEYBOARD_PIX_HEIGHT (ALTCONTROLLER_KEYBOARD_HEIGHT*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT)
+#define ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH 18
+#define ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT 3
 
-#define ALTCONTROLLER_KEYBOARD_SCREEN_MINDIM_RATIO 2
+#define ALTCONTROLLER_TEXTINPUT_PIX_WIDTH (ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
+#define ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT (ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT)
+
+#define ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH 17
+#define ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT 5
+
+#define ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH (ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
+#define ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT (ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT)
 
 // These are given as (x, y) offset pairs within the non-scaled,
 // face buttons image, assuming longest texts possible (3 chars long)
 static const int g_sdlControllerFaceButtonsTextLocs[] = {15, 34, 28, 21, 2, 21, 15, 8};
 
-static SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect;
-static SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture;
-static bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown;
+static SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect, g_sdlControllerDebugKeysRect;
+static SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture, *g_sdlDebugKeysTexture;
+static bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown, g_sdlDebugKeysUIIsShown;
 // With alternative game controllers scheme, all UI is hidden if no controller is connected
 bool g_sdlShowControllerUI;
 
-static int g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY;
+// Shared among all kinds of keyboard UI
+static int g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY;
+// Text input specific
 static bool g_sdlTextInputIsKeyPressed, g_sdlTextInputIsShifted;
+// Debug keys specific
+static bool g_sdlDebugKeysPressed[ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT][ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH];
 
 
 void BE_ST_InitGfx(void)
@@ -208,6 +217,8 @@ void BE_ST_ShutdownGfx(void)
 	g_sdlDpadTexture = NULL;
 	SDL_DestroyTexture(g_sdlTextInputTexture);
 	g_sdlTextInputTexture = NULL;
+	SDL_DestroyTexture(g_sdlDebugKeysTexture);
+	g_sdlDebugKeysTexture = NULL;
 	SDL_DestroyTexture(g_sdlTexture);
 	g_sdlTexture = NULL;
 	SDL_DestroyTexture(g_sdlTargetTexture);
@@ -257,10 +268,9 @@ static void BEL_ST_RecreateTexture(void)
 	}
 }
 
-// Scancode names for controller face buttons UI and similar
-// (but not a whole on-screen keyboard), based on DOS scancodes
-// (doesn't include "special" keys for which 0xE0 is sent), and others
-static const char *g_sdlDOSScanCodeStrs[] = {
+// Scancode names for controller face buttons and d-pad UI, based on DOS
+// scancodes (doesn't include "special" keys for which 0xE0 is sent) and more
+static const char *g_sdlDOSScanCodePadStrs[] = {
 	NULL, "Esc",
 	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "\x11",
 	"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "Ent",
@@ -272,8 +282,8 @@ static const char *g_sdlDOSScanCodeStrs[] = {
 	"Ins", "Del",
 };
 
-// Same, but for onscreen keyboard in non-shifted state
-static const char *g_sdlDOSScanCodeKeyboardNonShiftedStrs[] = {
+// Same, but for text input keyboard in non-shifted state
+static const char *g_sdlDOSScanCodeTextInputNonShiftedStrs[] = {
 	NULL, "Esc",
 	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "\x11",
 	NULL, "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "Ent",
@@ -286,7 +296,7 @@ static const char *g_sdlDOSScanCodeKeyboardNonShiftedStrs[] = {
 };
 
 // Same but shifted
-static const char *g_sdlDOSScanCodeKeyboardShiftedStrs[] = {
+static const char *g_sdlDOSScanCodeTextInputShiftedStrs[] = {
 	NULL, "Esc",
 	"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "\x11",
 	NULL, "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "{", "}", "Ent",
@@ -298,17 +308,58 @@ static const char *g_sdlDOSScanCodeKeyboardShiftedStrs[] = {
 	NULL, "Del",
 };
 
-// One of the shifted and non-shifted variants
-static const char **g_sdlDOSScanCodeKeyboardStrs_Ptr;
+// Same, but for debug keys
+static const char *g_sdlDOSScanCodeDebugKeysStrs[] = {
+	NULL, "Esc",
+	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "\x11",
+	"Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "[", "]", "Ent",
+	"Ctl", "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`",
+	"L\x1E", "\\", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "/", "R\x1E",
+	"*  ", // SPECIAL - Scancode is also used by Print Screen key
+	"Alt", "[_]", "Cap",
+	"F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "Num", "Scl",
+	"7  ", "8 \x18", "9  ", "-  ", "4 \x1B", "5  ", "6 \x1A", "+  ", "1  ", "2 \x19", "3  ",
+	"0  ", ".  ",
+	NULL, NULL, NULL,
+	"F11", "F12",
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0x59-0x5F
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0x60-0x6F
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0x70-0x7F
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0x80-0x8F
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0x90-0x9F
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0xA0-0xAF
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0xB0-0xBF
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0xC0-0xCF
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, // 0xD0-0xDF
+	NULL, // 0xE0
+	"| |", // Pause key, 0xE1 (worth to add empty space above just for this?)
+};
 
-// On-screen keyboard layout definition (probably better we don't use "special" keys e.g., with scancode 0xE0 sent, even though there shouldn't be a difference)
+// Text input: One of the shifted and non-shifted variants
+static const char **g_sdlDOSScanCodeTextInputStrs_Ptr;
 
-static const BE_ST_ScanCode_T g_sdlDOSScanCodeKeyboardLayout[ALTCONTROLLER_KEYBOARD_HEIGHT][ALTCONTROLLER_KEYBOARD_WIDTH] = {
+// Text input keyboard layout definition (probably better we don't use "special" keys e.g., with scancode 0xE0 sent, even though there shouldn't be a difference)
+
+static const BE_ST_ScanCode_T g_sdlDOSScanCodeTextInputLayout[ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT][ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH] = {
 	{BE_ST_SC_KP_4/*LEFT*/, BE_ST_SC_Q, BE_ST_SC_W, BE_ST_SC_E, BE_ST_SC_R, BE_ST_SC_T, BE_ST_SC_Y, BE_ST_SC_U, BE_ST_SC_I, BE_ST_SC_O, BE_ST_SC_P, BE_ST_SC_LBRACKET, BE_ST_SC_RBRACKET, BE_ST_SC_7, BE_ST_SC_8, BE_ST_SC_9, BE_ST_SC_0, BE_ST_SC_MINUS},
 
 	{BE_ST_SC_KP_6/*RIGHT*/, BE_ST_SC_A, BE_ST_SC_S, BE_ST_SC_D, BE_ST_SC_F, BE_ST_SC_G, BE_ST_SC_H, BE_ST_SC_J, BE_ST_SC_K, BE_ST_SC_L, BE_ST_SC_SEMICOLON, BE_ST_SC_QUOTE, BE_ST_SC_BACKSLASH, BE_ST_SC_4, BE_ST_SC_5, BE_ST_SC_6, BE_ST_SC_SPACE, BE_ST_SC_EQUALS},
 
 	{BE_ST_SC_LSHIFT, BE_ST_SC_Z, BE_ST_SC_X, BE_ST_SC_C, BE_ST_SC_V, BE_ST_SC_B, BE_ST_SC_N, BE_ST_SC_M, BE_ST_SC_COMMA, BE_ST_SC_PERIOD, BE_ST_SC_SLASH, BE_ST_SC_GRAVE, BE_ST_SC_ENTER, BE_ST_SC_1, BE_ST_SC_2, BE_ST_SC_3, BE_ST_SC_KP_PERIOD/*DEL*/, BE_ST_SC_BSPACE},
+};
+
+// Debug keys keyboard layout definition (again not using "special" keys, but the Pause key, for which 6 scancodes are sent on press only, is here)
+
+static const BE_ST_ScanCode_T g_sdlDOSScanCodeDebugKeysLayout[ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT][ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH] = {
+	{BE_ST_SC_ESC, BE_ST_SC_F1, BE_ST_SC_F2, BE_ST_SC_F3, BE_ST_SC_F4, BE_ST_SC_F5, BE_ST_SC_F6, BE_ST_SC_F7, BE_ST_SC_F8, BE_ST_SC_F9, BE_ST_SC_F10, BE_ST_SC_F11, BE_ST_SC_F12, BE_ST_SC_PAUSE, BE_ST_SC_NUMLOCK, BE_ST_SC_KP_MULTIPLY, BE_ST_SC_KP_MINUS},
+
+	{BE_ST_SC_GRAVE, BE_ST_SC_1, BE_ST_SC_2, BE_ST_SC_3, BE_ST_SC_4, BE_ST_SC_5, BE_ST_SC_6, BE_ST_SC_7, BE_ST_SC_8, BE_ST_SC_9, BE_ST_SC_0, BE_ST_SC_MINUS, BE_ST_SC_EQUALS, BE_ST_SC_BSPACE, BE_ST_SC_KP_7, BE_ST_SC_KP_8, BE_ST_SC_KP_9},
+
+	{BE_ST_SC_TAB, BE_ST_SC_Q, BE_ST_SC_W, BE_ST_SC_E, BE_ST_SC_R, BE_ST_SC_T, BE_ST_SC_Y, BE_ST_SC_U, BE_ST_SC_I, BE_ST_SC_O, BE_ST_SC_P, BE_ST_SC_LBRACKET, BE_ST_SC_RBRACKET, BE_ST_SC_BACKSLASH, BE_ST_SC_KP_4, BE_ST_SC_KP_5, BE_ST_SC_KP_6},
+
+	{BE_ST_SC_CAPSLOCK, BE_ST_SC_A, BE_ST_SC_S, BE_ST_SC_D, BE_ST_SC_F, BE_ST_SC_G, BE_ST_SC_H, BE_ST_SC_J, BE_ST_SC_K, BE_ST_SC_L, BE_ST_SC_SEMICOLON, BE_ST_SC_QUOTE, BE_ST_SC_SPACE, BE_ST_SC_SCROLLLOCK, BE_ST_SC_KP_1, BE_ST_SC_KP_2, BE_ST_SC_KP_3},
+
+	{BE_ST_SC_LSHIFT, BE_ST_SC_Z, BE_ST_SC_X, BE_ST_SC_C, BE_ST_SC_V, BE_ST_SC_B, BE_ST_SC_N, BE_ST_SC_M, BE_ST_SC_COMMA, BE_ST_SC_PERIOD, BE_ST_SC_SLASH, BE_ST_SC_RSHIFT, BE_ST_SC_LALT, BE_ST_SC_LCTRL, BE_ST_SC_KP_0, BE_ST_SC_KP_PERIOD, BE_ST_SC_KP_PLUS},
 };
 
 
@@ -398,13 +449,12 @@ static void BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXp
 			}
 		}
 	}
-	// FIXME Rather than drawing each scancode as the ASCII code, we want something else...
 	for (int counter = 0; counter < 4; ++scanCodes, ++counter)
 	{
 		if (!(*scanCodes))
 			continue;
 
-		const char *str = g_sdlDOSScanCodeStrs[(unsigned char)(*scanCodes)];
+		const char *str = g_sdlDOSScanCodePadStrs[(unsigned char)(*scanCodes)];
 		BEL_ST_RedrawTextToBuffer(pixels + g_sdlControllerFaceButtonsTextLocs[2*counter] + g_sdlControllerFaceButtonsTextLocs[2*counter+1]*ALTCONTROLLER_PAD_PIX_WIDTH + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), ALTCONTROLLER_PAD_PIX_WIDTH, str);
 	}
 	// Add some alpha channel
@@ -425,7 +475,7 @@ static void BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXp
 		(mapping->buttons[BE_ST_CTRL_BUT_A].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_A].val : '\0',
 		(mapping->buttons[BE_ST_CTRL_BUT_B].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_B].val : '\0',
 		(mapping->buttons[BE_ST_CTRL_BUT_X].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_X].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_Y].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ?(char) mapping->buttons[BE_ST_CTRL_BUT_Y].val : '\0'
+		(mapping->buttons[BE_ST_CTRL_BUT_Y].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_Y].val : '\0'
 	};
 	const char dpadScancodes[4] = {
 		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].val : '\0',
@@ -442,24 +492,7 @@ static void BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXp
 		BEL_ST_PrepareToShowOnePad(dpadScancodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown);
 }
 
-static void BEL_ST_CreateTextInputTextureIfNeeded(void)
-{
-	if (g_sdlTextInputTexture)
-	{
-		return;
-	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	g_sdlTextInputTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_KEYBOARD_PIX_WIDTH, ALTCONTROLLER_KEYBOARD_PIX_HEIGHT);
-	if (!g_sdlTextInputTexture)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 text input texture,\n%s\n", SDL_GetError());
-		//Destroy window and renderer?
-		exit(0);
-	}
-	SDL_SetTextureBlendMode(g_sdlTextInputTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
-}
-
-static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isSelected)
+static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isMarked, bool isPressed)
 {
 #if 0
 	// This can happen for space that should be skipped
@@ -468,7 +501,7 @@ static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char 
 #endif
 
 	/*** Draw frame ***/
-	uint32_t frameColor = isSelected ? g_sdlEGABGRAScreenColors[15] /*White*/ : g_sdlEGABGRAScreenColors[8] /*Gray*/;
+	uint32_t frameColor = g_sdlEGABGRAScreenColors[isMarked ? 15/*White*/ : 8/*Gray*/];
 	uint32_t *currPtr = picPtr;
 	// Frame top
 	for (int currCol = 0; currCol < ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH; ++currCol, ++currPtr)
@@ -484,7 +517,7 @@ static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char 
 		// Line between frame sides
 		for (int currCol = 1; currCol < ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH-1; ++currCol, ++currPtr)
 		{
-			*currPtr = g_sdlEGABGRAScreenColors[7]/*Light gray*/;
+			*currPtr = g_sdlEGABGRAScreenColors[isPressed ? 12/*Light red*/ : 7/*Light gray*/];
 		}
 		// Frame right pixel
 		*currPtr = frameColor;
@@ -509,33 +542,85 @@ static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char 
 	}
 }
 
+static void BEL_ST_CreateTextInputTextureIfNeeded(void)
+{
+	if (g_sdlTextInputTexture)
+	{
+		return;
+	}
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	g_sdlTextInputTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT);
+	if (!g_sdlTextInputTexture)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 text input texture,\n%s\n", SDL_GetError());
+		//Destroy window and renderer?
+		exit(0);
+	}
+	SDL_SetTextureBlendMode(g_sdlTextInputTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+}
+
+static void BEL_ST_CreateDebugKeysTextureIfNeeded(void)
+{
+	if (g_sdlDebugKeysTexture)
+	{
+		return;
+	}
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	g_sdlDebugKeysTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT);
+	if (!g_sdlDebugKeysTexture)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 debug keys texture,\n%s\n", SDL_GetError());
+		//Destroy window and renderer?
+		exit(0);
+	}
+	SDL_SetTextureBlendMode(g_sdlDebugKeysTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+}
+
 static void BEL_ST_RedrawWholeTextInputUI(void)
 {
-	uint32_t pixels[ALTCONTROLLER_KEYBOARD_PIX_WIDTH*ALTCONTROLLER_KEYBOARD_PIX_HEIGHT];
+	uint32_t pixels[ALTCONTROLLER_TEXTINPUT_PIX_WIDTH*ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT];
 	uint32_t *currPtr = pixels;
 
-	for (int currKeyRow = 0; currKeyRow < ALTCONTROLLER_KEYBOARD_HEIGHT; ++currKeyRow, currPtr += ALTCONTROLLER_KEYBOARD_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT-1))
+	for (int currKeyRow = 0; currKeyRow < ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT; ++currKeyRow, currPtr += ALTCONTROLLER_TEXTINPUT_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT-1))
 	{
-		for (int currKeyCol = 0; currKeyCol < ALTCONTROLLER_KEYBOARD_WIDTH; ++currKeyCol, currPtr += ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
+		for (int currKeyCol = 0; currKeyCol < ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH; ++currKeyCol, currPtr += ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
 		{
-			BEL_ST_RedrawKeyToBuffer(currPtr, ALTCONTROLLER_KEYBOARD_PIX_WIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[currKeyRow][currKeyCol]], false);
+			BEL_ST_RedrawKeyToBuffer(currPtr, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, g_sdlDOSScanCodeTextInputStrs_Ptr[(int)g_sdlDOSScanCodeTextInputLayout[currKeyRow][currKeyCol]], false, false);
 		}
 	}
 	// Simpler to do so outside the loop
-	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlTextInputSelectedKeyX) + ALTCONTROLLER_KEYBOARD_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlTextInputSelectedKeyY), ALTCONTROLLER_KEYBOARD_PIX_WIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX]], true);
+	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlKeyboardUISelectedKeyX) + ALTCONTROLLER_TEXTINPUT_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlKeyboardUISelectedKeyY), ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, g_sdlDOSScanCodeTextInputStrs_Ptr[(int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]], true, g_sdlTextInputIsKeyPressed);
 
-	SDL_UpdateTexture(g_sdlTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_KEYBOARD_PIX_WIDTH);
+	SDL_UpdateTexture(g_sdlTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_TEXTINPUT_PIX_WIDTH);
+}
+
+static void BEL_ST_RedrawWholeDebugKeysUI(void)
+{
+	uint32_t pixels[ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH*ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT];
+	uint32_t *currPtr = pixels;
+
+	for (int currKeyRow = 0; currKeyRow < ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT; ++currKeyRow, currPtr += ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT-1))
+	{
+		for (int currKeyCol = 0; currKeyCol < ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH; ++currKeyCol, currPtr += ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
+		{
+			BEL_ST_RedrawKeyToBuffer(currPtr, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, g_sdlDOSScanCodeDebugKeysStrs[(int)g_sdlDOSScanCodeDebugKeysLayout[currKeyRow][currKeyCol]], false, g_sdlDebugKeysPressed[currKeyRow][currKeyCol]);
+		}
+	}
+	// Simpler to do so outside the loop
+	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlKeyboardUISelectedKeyX) + ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlKeyboardUISelectedKeyY), ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, g_sdlDOSScanCodeDebugKeysStrs[(int)g_sdlDOSScanCodeDebugKeysLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]], true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	SDL_UpdateTexture(g_sdlDebugKeysTexture, NULL, pixels, 4*ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH);
 }
 
 /*static*/ void BEL_ST_PrepareToShowTextInputUI(void)
 {
 	BEL_ST_CreateTextInputTextureIfNeeded();
 
-	g_sdlTextInputSelectedKeyX = 0;
-	g_sdlTextInputSelectedKeyY = 0;
+	g_sdlKeyboardUISelectedKeyX = 0;
+	g_sdlKeyboardUISelectedKeyY = 0;
 	g_sdlTextInputIsKeyPressed = false;
 	g_sdlTextInputIsShifted = false;
-	g_sdlDOSScanCodeKeyboardStrs_Ptr = g_sdlDOSScanCodeKeyboardNonShiftedStrs;
+	g_sdlDOSScanCodeTextInputStrs_Ptr = g_sdlDOSScanCodeTextInputNonShiftedStrs;
 
 	BEL_ST_RedrawWholeTextInputUI();
 	g_sdlTextInputUIIsShown = true;
@@ -543,76 +628,153 @@ static void BEL_ST_RedrawWholeTextInputUI(void)
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-static void BEL_ST_ToggleTextInputUIKey(int x, int y, bool toggle)
+/*static*/ void BEL_ST_PrepareToShowDebugKeysUI(void)
+{
+	BEL_ST_CreateDebugKeysTextureIfNeeded();
+
+	g_sdlKeyboardUISelectedKeyX = 0;
+	g_sdlKeyboardUISelectedKeyY = 0;
+
+	for (int currKeyRow = 0; currKeyRow < ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT; ++currKeyRow)
+		for (int currKeyCol = 0; currKeyCol < ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH; ++currKeyCol)
+			g_sdlDebugKeysPressed[currKeyRow][currKeyCol] = false;
+
+	BEL_ST_RedrawWholeDebugKeysUI();
+	g_sdlDebugKeysUIIsShown = true;
+
+	g_sdlForceGfxControlUiRefresh = true;
+}
+
+static void BEL_ST_ToggleTextInputUIKey(int x, int y, bool isMarked, bool isPressed)
 {
 	uint32_t pixels[ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT];
 
-	BEL_ST_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlDOSScanCodeKeyboardStrs_Ptr[(int)g_sdlDOSScanCodeKeyboardLayout[y][x]], toggle);
+	BEL_ST_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlDOSScanCodeTextInputStrs_Ptr[(int)g_sdlDOSScanCodeTextInputLayout[y][x]], isMarked, isPressed);
 
 	SDL_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
 
 	SDL_UpdateTexture(g_sdlTextInputTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
 }
 
+static void BEL_ST_ToggleDebugKeysKey(int x, int y, bool isMarked, bool isPressed)
+{
+	uint32_t pixels[ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT];
+
+	BEL_ST_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlDOSScanCodeDebugKeysStrs[(int)g_sdlDOSScanCodeDebugKeysLayout[y][x]], isMarked, isPressed);
+
+	SDL_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
+
+	SDL_UpdateTexture(g_sdlDebugKeysTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
+}
+
 int BEL_ST_MoveUpInTextInputUI(void)
 {
-	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
-	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : 0;
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 	g_sdlTextInputIsKeyPressed = false;
 
-	--g_sdlTextInputSelectedKeyY;
-	if (g_sdlTextInputSelectedKeyY < 0)
+	--g_sdlKeyboardUISelectedKeyY;
+	if (g_sdlKeyboardUISelectedKeyY < 0)
 	{
-		g_sdlTextInputSelectedKeyY = ALTCONTROLLER_KEYBOARD_HEIGHT-1;
+		g_sdlKeyboardUISelectedKeyY = ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT-1;
 	}
-	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 	return origScanCode;
 }
 
 int BEL_ST_MoveDownInTextInputUI(void)
 {
-	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
-	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : 0;
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 	g_sdlTextInputIsKeyPressed = false;
 
-	++g_sdlTextInputSelectedKeyY;
-	if (g_sdlTextInputSelectedKeyY >= ALTCONTROLLER_KEYBOARD_HEIGHT)
+	++g_sdlKeyboardUISelectedKeyY;
+	if (g_sdlKeyboardUISelectedKeyY >= ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT)
 	{
-		g_sdlTextInputSelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyY = 0;
 	}
-	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 	return origScanCode;
 }
 
 int BEL_ST_MoveLeftInTextInputUI(void)
 {
-	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
-	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : 0;
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 	g_sdlTextInputIsKeyPressed = false;
 
-	--g_sdlTextInputSelectedKeyX;
-	if (g_sdlTextInputSelectedKeyX < 0)
+	--g_sdlKeyboardUISelectedKeyX;
+	if (g_sdlKeyboardUISelectedKeyX < 0)
 	{
-		g_sdlTextInputSelectedKeyX = ALTCONTROLLER_KEYBOARD_WIDTH-1;
+		g_sdlKeyboardUISelectedKeyX = ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH-1;
 	}
-	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 	return origScanCode;
 }
 
 int BEL_ST_MoveRightInTextInputUI(void)
 {
-	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
-	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, false);
+	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : 0;
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 	g_sdlTextInputIsKeyPressed = false;
 
-	++g_sdlTextInputSelectedKeyX;
-	if (g_sdlTextInputSelectedKeyX >= ALTCONTROLLER_KEYBOARD_WIDTH)
+	++g_sdlKeyboardUISelectedKeyX;
+	if (g_sdlKeyboardUISelectedKeyX >= ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH)
 	{
-		g_sdlTextInputSelectedKeyX = 0;
+		g_sdlKeyboardUISelectedKeyX = 0;
 	}
-	BEL_ST_ToggleTextInputUIKey(g_sdlTextInputSelectedKeyX, g_sdlTextInputSelectedKeyY, true);
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 	return origScanCode;
 }
+
+void BEL_ST_MoveUpInDebugKeysUI(void)
+{
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	--g_sdlKeyboardUISelectedKeyY;
+	if (g_sdlKeyboardUISelectedKeyY < 0)
+	{
+		g_sdlKeyboardUISelectedKeyY = ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT-1;
+	}
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+}
+
+void BEL_ST_MoveDownInDebugKeysUI(void)
+{
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	++g_sdlKeyboardUISelectedKeyY;
+	if (g_sdlKeyboardUISelectedKeyY >= ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT)
+	{
+		g_sdlKeyboardUISelectedKeyY = 0;
+	}
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+}
+
+void BEL_ST_MoveLeftInDebugKeysUI(void)
+{
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	--g_sdlKeyboardUISelectedKeyX;
+	if (g_sdlKeyboardUISelectedKeyX < 0)
+	{
+		g_sdlKeyboardUISelectedKeyX = ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH-1;
+	}
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+}
+
+void BEL_ST_MoveRightInDebugKeysUI(void)
+{
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	++g_sdlKeyboardUISelectedKeyX;
+	if (g_sdlKeyboardUISelectedKeyX >= ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH)
+	{
+		g_sdlKeyboardUISelectedKeyX = 0;
+	}
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+}
+
 
 int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle)
 {
@@ -620,7 +782,7 @@ int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle)
 		return 0;
 	g_sdlTextInputIsShifted = !g_sdlTextInputIsShifted;
 	*pToggle = g_sdlTextInputIsShifted;
-	g_sdlDOSScanCodeKeyboardStrs_Ptr = g_sdlTextInputIsShifted ? g_sdlDOSScanCodeKeyboardShiftedStrs : g_sdlDOSScanCodeKeyboardNonShiftedStrs;
+	g_sdlDOSScanCodeTextInputStrs_Ptr = g_sdlTextInputIsShifted ? g_sdlDOSScanCodeTextInputShiftedStrs : g_sdlDOSScanCodeTextInputNonShiftedStrs;
 
 	BEL_ST_RedrawWholeTextInputUI();
 
@@ -632,23 +794,57 @@ int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle)
 	if (g_sdlTextInputIsKeyPressed == *pToggle)
 		return 0;
 	g_sdlTextInputIsKeyPressed = *pToggle;
+
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, *pToggle);
+	//g_sdlForceGfxControlUiRefresh = true;
+
 	// Shift key is a special case
-	if ((g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] == BE_ST_SC_LSHIFT))
+	if ((g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] == BE_ST_SC_LSHIFT))
 		return BEL_ST_ToggleShiftStateInTextInputUI(pToggle);
 
-	return (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX];
+	return (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
 }
 
-// Note: IGNORES shift status
-int BEL_ST_GetPressedKeyScanCodeFromTextInputUI(void)
+int BEL_ST_ToggleKeyPressInDebugKeysUI(bool *pToggle)
 {
-	return g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeKeyboardLayout[g_sdlTextInputSelectedKeyY][g_sdlTextInputSelectedKeyX] : 0;
+	g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] ^= true;
+	*pToggle = g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
+
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, *pToggle);
+
+	return (int)g_sdlDOSScanCodeDebugKeysLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
 }
 
-// May be additionally required
-bool BEL_ST_IsTextInputUIShifted(void)
+void BEL_ST_ReleasePressedKeysInTextInputUI(void)
 {
-	return g_sdlTextInputIsShifted;
+	if (g_sdlTextInputIsKeyPressed)
+	{
+		emulatedDOSKeyEvent dosKeyEvent;
+		dosKeyEvent.isSpecial = false;
+		dosKeyEvent.dosScanCode = g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
+		// Don't forget to "release" a key pressed in the text input UI
+		BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+		// Shift key may further be held, don't forget this too!
+		if ((dosKeyEvent.dosScanCode != BE_ST_SC_LSHIFT) && g_sdlTextInputIsShifted)
+		{
+			dosKeyEvent.dosScanCode = BE_ST_SC_LSHIFT;
+			BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+		}
+	}
+}
+
+void BEL_ST_ReleasePressedKeysInDebugKeysUI(void)
+{
+	emulatedDOSKeyEvent dosKeyEvent;
+	dosKeyEvent.isSpecial = false;
+	for (int currKeyRow = 0; currKeyRow < ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT; ++currKeyRow)
+		for (int currKeyCol = 0; currKeyCol < ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH; ++currKeyCol)
+			if (g_sdlDebugKeysPressed[currKeyRow][currKeyCol])
+			{
+				dosKeyEvent.dosScanCode = g_sdlDOSScanCodeDebugKeysLayout[currKeyRow][currKeyCol];
+				// Don't forget to "release" a key pressed in the text input UI
+				BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+			}
 }
 
 /*static*/ void BEL_ST_HideAltInputUI(void)
@@ -656,6 +852,7 @@ bool BEL_ST_IsTextInputUIShifted(void)
 	g_sdlFaceButtonsAreShown = false;
 	g_sdlDpadIsShown = false;
 	g_sdlTextInputUIIsShown = false;
+	g_sdlDebugKeysUIIsShown = false;
 
 	g_sdlForceGfxControlUiRefresh = true;
 }
@@ -746,11 +943,16 @@ void BE_ST_SetGfxOutputRects(void)
 	g_sdlControllerDpadRect.w = g_sdlControllerDpadRect.h = g_sdlControllerFaceButtonsRect.w;
 	g_sdlControllerDpadRect.x = offset;
 	g_sdlControllerDpadRect.y = g_sdlControllerFaceButtonsRect.y;
-	// Also this - on-screen keyboard (somewhat different because the keyboard is rectangular, but not square-shaped)
+	// Also this - text-input keyboard (somewhat different because the keyboard is rectangular, but not square-shaped)
 	g_sdlControllerTextInputRect.w = minWinDim;
-	g_sdlControllerTextInputRect.h = g_sdlControllerTextInputRect.w * ALTCONTROLLER_KEYBOARD_HEIGHT / ALTCONTROLLER_KEYBOARD_WIDTH;
+	g_sdlControllerTextInputRect.h = g_sdlControllerTextInputRect.w * ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT / ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH;
 	g_sdlControllerTextInputRect.x = (winWidth-g_sdlControllerTextInputRect.w)/2;
 	g_sdlControllerTextInputRect.y = winHeight-g_sdlControllerTextInputRect.h;
+	// Same with debug keys
+	g_sdlControllerDebugKeysRect.w = minWinDim;
+	g_sdlControllerDebugKeysRect.h = g_sdlControllerDebugKeysRect.w * ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT / ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH;
+	g_sdlControllerDebugKeysRect.x = (winWidth-g_sdlControllerDebugKeysRect.w)/2;
+	g_sdlControllerDebugKeysRect.y = winHeight-g_sdlControllerDebugKeysRect.h;
 }
 
 void BE_ST_SetScreenStartAddress(uint16_t crtc)
@@ -1324,6 +1526,10 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 		if (g_sdlTextInputUIIsShown)
 		{
 			SDL_RenderCopy(g_sdlRenderer, g_sdlTextInputTexture, NULL, &g_sdlControllerTextInputRect);
+		}
+		if (g_sdlDebugKeysUIIsShown)
+		{
+			SDL_RenderCopy(g_sdlRenderer, g_sdlDebugKeysTexture, NULL, &g_sdlControllerDebugKeysRect);
 		}
 	}
 

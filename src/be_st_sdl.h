@@ -1,5 +1,5 @@
-#ifndef	__BE_ST_SDL__
-#define __BE_ST_SDL__
+#ifndef	_BE_ST_SDL_
+#define _BE_ST_SDL_
 
 // WARNING: This struct is used by BE_ST_SDL ONLY (except for controller stuff)
 
@@ -26,7 +26,7 @@ typedef struct
 	bool oplEmulation;
 	struct
 	{
-		int actionMappings[8]; // Buttons/triggers
+		int actionMappings[9]; // Buttons/triggers
 		bool useDpad;
 		bool useLeftStick;
 		bool useRightStick;

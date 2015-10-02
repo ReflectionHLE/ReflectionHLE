@@ -456,16 +456,18 @@ void RefKeen_PrepareAltControllerScheme(void)
 	tempsinglemapping.val = BE_ST_SC_TAB;
 #endif
 	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN], &tempsinglemappingptr, &tempsinglemapping);
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
+#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_scrolls;
 	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS], &tempsinglemappingptr, &tempsinglemapping);
 #endif
 #ifdef REFKEEN_VER_CATADVENTURES
-	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
 	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
 #endif
+	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
 
 	if (g_refKeenCfg.altControlScheme.useDpad)
 	{

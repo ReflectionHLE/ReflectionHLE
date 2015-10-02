@@ -1215,7 +1215,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PrepareTextInput();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_beStControllerMappingTextInput);
 
 	while (!done)
 	{
