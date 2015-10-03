@@ -1026,26 +1026,16 @@ void VWL_UpdateScreenBlocks (void)
 		id0_word_t tileLoc = blockstarts[rowScanStartPtr-updateptr-1]; // start of tile location
 		id0_word_t egaSrcOff = tileLoc+bufferofs;
 		id0_word_t egaDestOff = tileLoc+displayofs;
-		id0_word_t bytesToSkip = linewidth-bytesPerRow;
 		for (int loopVar = 15; loopVar; --loopVar)
 		{
-			iterationsToDo = bytesPerRow;
-			for (; iterationsToDo; --iterationsToDo)
-			{
-				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-			}
-			egaSrcOff += bytesToSkip;
-			egaDestOff += bytesToSkip;
+			BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, bytesPerRow);
+			egaSrcOff += linewidth;
+			egaDestOff += linewidth;
 		}
-		iterationsToDo = bytesPerRow;
-		for (; iterationsToDo; --iterationsToDo)
-		{
-			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-		}
-		iterationsToDo = 0;
-		// was 0, now 0xFFFF for above loop
-		// WARNING: This should be UNSIGNED, or else we get undefined behaviors
-		--iterationsToDo;
+		BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, bytesPerRow);
+		// was originally 0 at this point, then "decremented" by 1 to 0xFFFF for the loop above
+		// WARNING: iterationsToDo should be UNSIGNED in order to work properly
+		iterationsToDo = 0xFFFF;
 	} while (true);
 }
 
