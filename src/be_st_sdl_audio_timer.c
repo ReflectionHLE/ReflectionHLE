@@ -343,7 +343,7 @@ static inline void PCSpeakerUpdateOne(int16_t *stream, int length)
 		{
 			g_sdlBeepHalfCycleCounter %= g_sdlBeepHalfCycleCounterUpperBound;
 			// 32767 - too loud
-			g_sdlCurrentBeepSample = 24575-g_sdlCurrentBeepSample;
+			g_sdlCurrentBeepSample ^= 24575;
 		}
 	}
 }

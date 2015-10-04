@@ -427,14 +427,14 @@ void RefKeen_PrepareAltControllerScheme(void)
 		if (g_ingame_altcontrol_button0mappings[0])
 		{
 			g_ingame_altcontrol_button0mappings[0]->mapClass = BE_ST_CTRL_MAP_MOUSEBUTTON;
-			g_ingame_altcontrol_button0mappings[0]->val = 0;
+			g_ingame_altcontrol_button0mappings[0]->val = 1;
 			// Game code shouldn't touch this
 			g_ingame_altcontrol_button0mappings[0] = NULL;
 		}
 		if (g_ingame_altcontrol_button1mappings[0])
 		{
 			g_ingame_altcontrol_button1mappings[0]->mapClass = BE_ST_CTRL_MAP_MOUSEBUTTON;
-			g_ingame_altcontrol_button1mappings[0]->val = 1;
+			g_ingame_altcontrol_button1mappings[0]->val = 2;
 			// Game code shouldn't touch this
 			g_ingame_altcontrol_button1mappings[0] = NULL;
 		}

@@ -679,6 +679,8 @@ int BEL_ST_MoveUpInTextInputUI(void)
 		g_sdlKeyboardUISelectedKeyY = ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT-1;
 	}
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+
+	g_sdlForceGfxControlUiRefresh = true;
 	return origScanCode;
 }
 
@@ -694,6 +696,8 @@ int BEL_ST_MoveDownInTextInputUI(void)
 		g_sdlKeyboardUISelectedKeyY = 0;
 	}
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+
+	g_sdlForceGfxControlUiRefresh = true;
 	return origScanCode;
 }
 
@@ -709,6 +713,8 @@ int BEL_ST_MoveLeftInTextInputUI(void)
 		g_sdlKeyboardUISelectedKeyX = ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH-1;
 	}
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+
+	g_sdlForceGfxControlUiRefresh = true;
 	return origScanCode;
 }
 
@@ -724,6 +730,8 @@ int BEL_ST_MoveRightInTextInputUI(void)
 		g_sdlKeyboardUISelectedKeyX = 0;
 	}
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+
+	g_sdlForceGfxControlUiRefresh = true;
 	return origScanCode;
 }
 
@@ -737,6 +745,8 @@ void BEL_ST_MoveUpInDebugKeysUI(void)
 		g_sdlKeyboardUISelectedKeyY = ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT-1;
 	}
 	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	g_sdlForceGfxControlUiRefresh = true;
 }
 
 void BEL_ST_MoveDownInDebugKeysUI(void)
@@ -749,6 +759,8 @@ void BEL_ST_MoveDownInDebugKeysUI(void)
 		g_sdlKeyboardUISelectedKeyY = 0;
 	}
 	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	g_sdlForceGfxControlUiRefresh = true;
 }
 
 void BEL_ST_MoveLeftInDebugKeysUI(void)
@@ -761,6 +773,8 @@ void BEL_ST_MoveLeftInDebugKeysUI(void)
 		g_sdlKeyboardUISelectedKeyX = ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH-1;
 	}
 	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	g_sdlForceGfxControlUiRefresh = true;
 }
 
 void BEL_ST_MoveRightInDebugKeysUI(void)
@@ -773,6 +787,8 @@ void BEL_ST_MoveRightInDebugKeysUI(void)
 		g_sdlKeyboardUISelectedKeyX = 0;
 	}
 	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	g_sdlForceGfxControlUiRefresh = true;
 }
 
 
@@ -796,7 +812,8 @@ int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle)
 	g_sdlTextInputIsKeyPressed = *pToggle;
 
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, *pToggle);
-	//g_sdlForceGfxControlUiRefresh = true;
+
+	g_sdlForceGfxControlUiRefresh = true;
 
 	// Shift key is a special case
 	if ((g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] == BE_ST_SC_LSHIFT))
@@ -811,6 +828,8 @@ int BEL_ST_ToggleKeyPressInDebugKeysUI(bool *pToggle)
 	*pToggle = g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
 
 	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, *pToggle);
+
+	g_sdlForceGfxControlUiRefresh = true;
 
 	return (int)g_sdlDOSScanCodeDebugKeysLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
 }
@@ -1550,8 +1569,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		if (!g_sdlDoRefreshGfxOutput && (wereBlinkingCharsShown == areBlinkingCharsShown) && (wasBlinkingCursorShown == isBlinkingCursorShown))
 		{
 			if (g_sdlForceGfxControlUiRefresh)
-				BEL_ST_FinishHostDisplayUpdate();
-			return;
+				goto dorefresh;
 		}
 		/****** Do update ******/
 		wereBlinkingCharsShown = areBlinkingCharsShown;
@@ -1625,8 +1643,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		if (!g_sdlDoRefreshGfxOutput)
 		{
 			if (g_sdlForceGfxControlUiRefresh)
-				BEL_ST_FinishHostDisplayUpdate();
-			return;
+				goto dorefresh;
 		}
 		// That's easy now since there isn't a lot that can be done...
 		void *pixels;
@@ -1644,8 +1661,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		if (!g_sdlDoRefreshGfxOutput)
 		{
 			if (g_sdlForceGfxControlUiRefresh)
-				BEL_ST_FinishHostDisplayUpdate();
-			return;
+				goto dorefresh;
 		}
 		uint16_t currLineFirstByte = (g_sdlScreenStartAddress + g_sdlPelPanning/8) % 0x10000;
 		uint8_t panningWithinInByte = g_sdlPelPanning%8;
@@ -1712,8 +1728,7 @@ void BEL_ST_UpdateHostDisplay(void)
 			{
 				g_sdlDoRefreshGfxOutput = false;
 				if (g_sdlForceGfxControlUiRefresh)
-					BEL_ST_FinishHostDisplayUpdate();
-				return;
+					goto dorefresh;
 			}
 		}
 		void *pixels;
@@ -1729,6 +1744,8 @@ void BEL_ST_UpdateHostDisplay(void)
 
 	g_sdlDoRefreshGfxOutput = false;
 	SDL_UnlockTexture(g_sdlTexture);
+
+dorefresh:
 	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(g_sdlRenderer);
 	SDL_SetRenderDrawColor(g_sdlRenderer, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>16)&0xFF, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>8)&0xFF, g_sdlEGACurrBGRAPaletteAndBorder[16]&0xFF, SDL_ALPHA_OPAQUE);

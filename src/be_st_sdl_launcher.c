@@ -31,10 +31,8 @@ extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
 extern const char *g_sdlWindowTitle;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 
-extern bool g_sdlControllersButtonsStates[BE_ST_MAXJOYSTICKS][SDL_CONTROLLER_BUTTON_MAX];
-// We may optionally use analog axes as buttons (e.g., using stick as arrow keys, triggers as buttons)
-extern bool g_sdlControllersAxesStates[BE_ST_MAXJOYSTICKS][SDL_CONTROLLER_AXIS_MAX][2];
-
+// Need these for triggers
+static bool g_sdlLauncherTriggerBinaryStates[2];
 
 static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
 static bool g_sdlLauncherGfxCacheMarked = false;
@@ -372,8 +370,7 @@ void BE_ST_Launcher_Prepare(void)
 		if (SDL_IsGameController(i))
 			g_sdlControllers[i] = SDL_GameControllerOpen(i);
 
-	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
-	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
+	memset(g_sdlLauncherTriggerBinaryStates, 0, sizeof(g_sdlLauncherTriggerBinaryStates));
 
 	// Set fullscreen value
 	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;
@@ -489,6 +486,15 @@ void BE_ST_Launcher_Shutdown(void)
 			g_sdlControllers[i] = NULL;
 		}
 
+	/* Poll events just in case (e.g., clean up old controller events) */
+	SDL_Event event;
+	bool doExit = false;
+	while (SDL_PollEvent(&event))
+	{
+		if (event.type == SDL_QUIT)
+			doExit = true;
+	}
+
 	SDL_DestroyTexture(g_sdlTexture);
 	g_sdlTexture = NULL;
 	SDL_DestroyTexture(g_sdlTargetTexture);
@@ -556,6 +562,9 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;
+
+	if (doExit)
+		BE_ST_QuickExit();
 }
 
 
@@ -719,6 +728,10 @@ void BE_ST_Launcher_RunEventLoop(void)
 					}
 				break;
 
+			case SDL_CONTROLLERAXISMOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
+				if ((event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT) || (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT))
+					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - SDL_CONTROLLER_AXIS_TRIGGERLEFT] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
+				break;
 			case SDL_CONTROLLERBUTTONDOWN:
 				switch (event.cbutton.button)
 				{
@@ -760,49 +773,6 @@ void BE_ST_Launcher_RunEventLoop(void)
 				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
 				break;
-			}
-		}
-
-		// If SDL_GameController is used, we don't poll for its events. We also limit ourselves to buttons only (not even triggers).
-		SDL_GameControllerUpdate();
-
-		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
-		{
-			if (g_sdlControllers[i])
-			{
-				for (int but = 0; but < SDL_CONTROLLER_BUTTON_MAX; ++but)
-				{
-					bool isPressed = SDL_GameControllerGetButton(g_sdlControllers[i], (SDL_GameControllerButton)but);
-					if (isPressed != g_sdlControllersButtonsStates[i][but])
-					{
-						g_sdlControllersButtonsStates[i][but] = isPressed;
-						if (isPressed)
-						{
-							switch (but)
-							{
-							case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-								BE_Launcher_HandleInput_ButtonRight();
-								break;
-							case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-								BE_Launcher_HandleInput_ButtonLeft();
-								break;
-							case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-								BE_Launcher_HandleInput_ButtonDown();
-								break;
-							case SDL_CONTROLLER_BUTTON_DPAD_UP:
-								BE_Launcher_HandleInput_ButtonUp();
-								break;
-							case SDL_CONTROLLER_BUTTON_A:
-								BE_Launcher_HandleInput_ButtonActivate();
-								break;
-							case SDL_CONTROLLER_BUTTON_B:
-							case SDL_CONTROLLER_BUTTON_BACK:
-								BE_Launcher_HandleInput_ButtonBack();
-								break;
-							}
-						}
-					}
-				}
 			}
 		}
 
@@ -906,6 +876,38 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 					}
 				break;
 
+			case SDL_CONTROLLERAXISMOTION:
+				if ((event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT) || (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT))
+				{
+					int triggerNum = event.caxis.axis - SDL_CONTROLLER_AXIS_TRIGGERLEFT;
+					bool prevBinaryState = g_sdlLauncherTriggerBinaryStates[triggerNum];
+					g_sdlLauncherTriggerBinaryStates[triggerNum] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
+					if (!prevBinaryState && g_sdlLauncherTriggerBinaryStates[triggerNum])
+					{
+						choice = SDL_CONTROLLER_BUTTON_MAX + triggerNum; // HACK
+						keepRunning = false;
+					}
+				}
+				break;
+			case SDL_CONTROLLERBUTTONDOWN:
+				switch (event.cbutton.button)
+				{
+					case SDL_CONTROLLER_BUTTON_A:
+					case SDL_CONTROLLER_BUTTON_B:
+					case SDL_CONTROLLER_BUTTON_X:
+					case SDL_CONTROLLER_BUTTON_Y:
+					case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+					case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+					case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+					case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+						choice = event.cbutton.button;
+						// Fall-through
+					default:
+						keepRunning = false;
+						break;
+				}
+				break;
+
 			case SDL_WINDOWEVENT:
 				switch (event.window.event)
 				case  SDL_WINDOWEVENT_RESIZED:
@@ -922,61 +924,6 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
 				break;
-			}
-		}
-
-		// We don't poll for SDL_GameController events.
-		SDL_GameControllerUpdate();
-
-		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
-		{
-			if (g_sdlControllers[i])
-			{
-				// Check some of the buttons
-				for (int but = 0; but < SDL_CONTROLLER_BUTTON_MAX; ++but)
-				{
-					bool isPressed = SDL_GameControllerGetButton(g_sdlControllers[i], (SDL_GameControllerButton)but);
-					if (isPressed != g_sdlControllersButtonsStates[i][but])
-					{
-						g_sdlControllersButtonsStates[i][but] = isPressed;
-						if (isPressed)
-						{
-							switch (but)
-							{
-							case SDL_CONTROLLER_BUTTON_A:
-							case SDL_CONTROLLER_BUTTON_B:
-							case SDL_CONTROLLER_BUTTON_X:
-							case SDL_CONTROLLER_BUTTON_Y:
-							case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-							case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-							case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-							case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-								choice = but;
-								// Fall-through
-							default:
-								keepRunning = false;
-								break;
-							}
-						}
-					}
-				}
-				// Check trigger axes, positive sides, only
-				for (int axis = SDL_CONTROLLER_AXIS_TRIGGERLEFT; axis <= SDL_CONTROLLER_AXIS_TRIGGERRIGHT; ++axis)
-				{
-					int axisVal = (int)SDL_GameControllerGetAxis(g_sdlControllers[i], (SDL_GameControllerAxis)axis);
-					// Is pressed in the positive direction?
-					bool isPosPressed = (axisVal >= g_sdlJoystickAxisBinaryThreshold);
-					if (isPosPressed != g_sdlControllersAxesStates[i][axis][1])
-					{
-						g_sdlControllersAxesStates[i][axis][1] = isPosPressed;
-						if (isPosPressed)
-						{
-							// HACK
-							choice = SDL_CONTROLLER_BUTTON_MAX + axis - SDL_CONTROLLER_AXIS_TRIGGERLEFT;
-							keepRunning = false;
-						}
-					}
-				}
 			}
 		}
 
@@ -1000,5 +947,4 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 	menuItem->choice = choice;
 	// Reset
 	g_sdlLauncherGfxCacheMarked = true;
-	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
 }
