@@ -1245,8 +1245,8 @@ void BE_ST_SetGfxOutputRects(void)
 
 void BE_ST_SetScreenStartAddress(uint16_t crtc)
 {
-	g_sdlScreenStartAddress = crtc;
 	g_sdlDoRefreshGfxOutput |= (g_sdlScreenStartAddress != crtc);
+	g_sdlScreenStartAddress = crtc;
 }
 
 uint8_t *BE_ST_GetTextModeMemoryPtr(void)
