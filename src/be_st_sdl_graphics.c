@@ -838,6 +838,8 @@ int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle)
 
 	BEL_ST_RedrawWholeTextInputUI();
 
+	g_sdlForceGfxControlUiRefresh = true;
+
 	return BE_ST_SC_LSHIFT;
 }
 
@@ -1244,7 +1246,7 @@ void BE_ST_SetGfxOutputRects(void)
 void BE_ST_SetScreenStartAddress(uint16_t crtc)
 {
 	g_sdlScreenStartAddress = crtc;
-	g_sdlDoRefreshGfxOutput = true;
+	g_sdlDoRefreshGfxOutput |= (g_sdlScreenStartAddress != crtc);
 }
 
 uint8_t *BE_ST_GetTextModeMemoryPtr(void)
@@ -1837,6 +1839,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		{
 			if (g_sdlForceGfxControlUiRefresh)
 				goto dorefresh;
+			return;
 		}
 		/****** Do update ******/
 		wereBlinkingCharsShown = areBlinkingCharsShown;
@@ -1911,6 +1914,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		{
 			if (g_sdlForceGfxControlUiRefresh)
 				goto dorefresh;
+			return;
 		}
 		// That's easy now since there isn't a lot that can be done...
 		void *pixels;
@@ -1929,6 +1933,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		{
 			if (g_sdlForceGfxControlUiRefresh)
 				goto dorefresh;
+			return;
 		}
 		uint16_t currLineFirstByte = (g_sdlScreenStartAddress + g_sdlPelPanning/8) % 0x10000;
 		uint8_t panningWithinInByte = g_sdlPelPanning%8;
@@ -1996,6 +2001,7 @@ void BEL_ST_UpdateHostDisplay(void)
 				g_sdlDoRefreshGfxOutput = false;
 				if (g_sdlForceGfxControlUiRefresh)
 					goto dorefresh;
+				return;
 			}
 		}
 		void *pixels;
