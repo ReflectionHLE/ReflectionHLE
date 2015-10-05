@@ -90,6 +90,9 @@ static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 #include "../rsrc/pad_thumb_buttons.xpm"
 #include "../rsrc/pad_dpad.xpm"
 
+#define ALTCONTROLLER_FONT_XPM_ROW_OFFSET 3
+#define ALTCONTROLLER_PAD_XPM_ROW_OFFSET 8
+
 #define ALTCONTROLLER_PAD_PIX_WIDTH 48
 #define ALTCONTROLLER_PAD_PIX_HEIGHT 48
 #define ALTCONTROLLER_CHAR_PIX_WIDTH 6
@@ -122,11 +125,17 @@ static const int g_sdlControllerFaceButtonsTextLocs[] = {15, 34, 28, 21, 2, 21, 
 static SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect, g_sdlControllerDebugKeysRect;
 static SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture, *g_sdlDebugKeysTexture;
 static bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown, g_sdlDebugKeysUIIsShown;
+
+static int g_sdlFaceButtonsScanCodes[4], g_sdlDpadScanCodes[4];
+static int g_sdlPointerSelectedPadButtonScanCode;
+static bool g_sdlControllerUIPointerPressed;
+
 // With alternative game controllers scheme, all UI is hidden if no controller is connected
 bool g_sdlShowControllerUI;
 
 // Shared among all kinds of keyboard UI
 static int g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY;
+static bool g_sdlKeyboardUIPointerUsed;
 // Text input specific
 static bool g_sdlTextInputIsKeyPressed, g_sdlTextInputIsShifted;
 // Debug keys specific
@@ -384,6 +393,15 @@ const uint32_t g_sdlEGABGRAScreenColors[] = {
 	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
 };
 
+
+void BEL_ST_SetRelativeMouseMotion(bool enable);
+
+/*static*/ void BEL_ST_ConditionallyShowAltInputPointer(void)
+{
+	BEL_ST_SetRelativeMouseMotion(!g_sdlShowControllerUI || !(g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown));
+}
+
+
 static void BEL_ST_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr)
 {
 	if (*padTexturePtrPtr)
@@ -403,7 +421,7 @@ static void BEL_ST_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr)
 
 static void BEL_ST_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char *text)
 {
-	for (int currRow = 0, fontXpmIndex = 3; currRow < ALTCONTROLLER_CHAR_PIX_HEIGHT; ++currRow, picPtr += picWidth, ++fontXpmIndex)
+	for (int currRow = 0, fontXpmIndex = ALTCONTROLLER_FONT_XPM_ROW_OFFSET; currRow < ALTCONTROLLER_CHAR_PIX_HEIGHT; ++currRow, picPtr += picWidth, ++fontXpmIndex)
 	{
 		const char *fontRowPtr = pad_font_mono_xpm[fontXpmIndex];
 		uint32_t *currPtr = picPtr;
@@ -421,13 +439,13 @@ static void BEL_ST_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char
 	}
 }
 
-static void BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr)
+static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr)
 {
 	BEL_ST_CreatePadTextureIfNeeded(padTexturePtrPtr);
 
 	uint32_t pixels[ALTCONTROLLER_PAD_PIX_WIDTH*ALTCONTROLLER_PAD_PIX_HEIGHT];
 	uint32_t *currPtr = pixels;
-	for (int currRow = 0, xpmIndex = 5; currRow < ALTCONTROLLER_PAD_PIX_HEIGHT; ++currRow, ++xpmIndex)
+	for (int currRow = 0, xpmIndex = ALTCONTROLLER_PAD_XPM_ROW_OFFSET; currRow < ALTCONTROLLER_PAD_PIX_HEIGHT; ++currRow, ++xpmIndex)
 	{
 		const char *xpmRowPtr = padXpm[xpmIndex];
 		for (int currCol = 0; currCol < ALTCONTROLLER_PAD_PIX_WIDTH; ++currCol, ++currPtr, ++xpmRowPtr)
@@ -443,7 +461,11 @@ static void BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXp
 			case '+':
 				*currPtr = g_sdlEGABGRAScreenColors[7]; // Light gray
 				break;
+			// HACK - Compress 4 XPM colors into one
 			case '@':
+			case '#':
+			case '$':
+			case '%':
 				*currPtr = g_sdlEGABGRAScreenColors[15]; // White
 				break;
 			}
@@ -454,7 +476,7 @@ static void BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXp
 		if (!(*scanCodes))
 			continue;
 
-		const char *str = g_sdlDOSScanCodePadStrs[(unsigned char)(*scanCodes)];
+		const char *str = g_sdlDOSScanCodePadStrs[*scanCodes];
 		BEL_ST_RedrawTextToBuffer(pixels + g_sdlControllerFaceButtonsTextLocs[2*counter] + g_sdlControllerFaceButtonsTextLocs[2*counter+1]*ALTCONTROLLER_PAD_PIX_WIDTH + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), ALTCONTROLLER_PAD_PIX_WIDTH, str);
 	}
 	// Add some alpha channel
@@ -471,25 +493,32 @@ static void BEL_ST_PrepareToShowOnePad(const char *scanCodes, const char **padXp
 
 /*static*/ void BEL_ST_PrepareToShowControllerUI(const BE_ST_ControllerMapping *mapping)
 {
-	const char faceButtonsScancodes[4] = {
-		(mapping->buttons[BE_ST_CTRL_BUT_A].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_A].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_B].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_B].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_X].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_X].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_Y].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_Y].val : '\0'
+	const int faceButtonsScancodes[4] = {
+		(mapping->buttons[BE_ST_CTRL_BUT_A].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_A].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_B].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_B].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_X].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_X].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_Y].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_Y].val : '\0'
 	};
-	const char dpadScancodes[4] = {
-		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_RIGHT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_RIGHT].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_LEFT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_LEFT].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_UP].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? (char)mapping->buttons[BE_ST_CTRL_BUT_DPAD_UP].val : '\0'
+	const int dpadScancodes[4] = {
+		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_RIGHT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_DPAD_RIGHT].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_LEFT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_DPAD_LEFT].val : '\0',
+		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_UP].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_DPAD_UP].val : '\0'
 	};
-	const char emptyScancodesArray[4] = {'\0'};
+	const int emptyScancodesArray[4] = {'\0'};
 
+	memcpy(g_sdlFaceButtonsScanCodes, faceButtonsScancodes, sizeof(faceButtonsScancodes));
 	if (memcmp(&faceButtonsScancodes, &emptyScancodesArray, sizeof(emptyScancodesArray)))
 		BEL_ST_PrepareToShowOnePad(faceButtonsScancodes, pad_thumb_buttons_xpm, &g_sdlFaceButtonsTexture, &g_sdlFaceButtonsAreShown);
 
+	memcpy(g_sdlDpadScanCodes, dpadScancodes, sizeof(dpadScancodes));
 	if (memcmp(&dpadScancodes, &emptyScancodesArray, sizeof(emptyScancodesArray)))
 		BEL_ST_PrepareToShowOnePad(dpadScancodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown);
+
+	g_sdlPointerSelectedPadButtonScanCode = 0;
+	g_sdlControllerUIPointerPressed = false;
+
+	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
 static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isMarked, bool isPressed)
@@ -612,12 +641,14 @@ static void BEL_ST_RedrawWholeDebugKeysUI(void)
 	SDL_UpdateTexture(g_sdlDebugKeysTexture, NULL, pixels, 4*ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH);
 }
 
+
 /*static*/ void BEL_ST_PrepareToShowTextInputUI(void)
 {
 	BEL_ST_CreateTextInputTextureIfNeeded();
 
 	g_sdlKeyboardUISelectedKeyX = 0;
 	g_sdlKeyboardUISelectedKeyY = 0;
+	g_sdlKeyboardUIPointerUsed = false;
 	g_sdlTextInputIsKeyPressed = false;
 	g_sdlTextInputIsShifted = false;
 	g_sdlDOSScanCodeTextInputStrs_Ptr = g_sdlDOSScanCodeTextInputNonShiftedStrs;
@@ -626,6 +657,8 @@ static void BEL_ST_RedrawWholeDebugKeysUI(void)
 	g_sdlTextInputUIIsShown = true;
 
 	g_sdlForceGfxControlUiRefresh = true;
+
+	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
 /*static*/ void BEL_ST_PrepareToShowDebugKeysUI(void)
@@ -634,6 +667,7 @@ static void BEL_ST_RedrawWholeDebugKeysUI(void)
 
 	g_sdlKeyboardUISelectedKeyX = 0;
 	g_sdlKeyboardUISelectedKeyY = 0;
+	g_sdlKeyboardUIPointerUsed = false;
 
 	for (int currKeyRow = 0; currKeyRow < ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT; ++currKeyRow)
 		for (int currKeyCol = 0; currKeyCol < ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH; ++currKeyCol)
@@ -643,6 +677,8 @@ static void BEL_ST_RedrawWholeDebugKeysUI(void)
 	g_sdlDebugKeysUIIsShown = true;
 
 	g_sdlForceGfxControlUiRefresh = true;
+
+	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
 static void BEL_ST_ToggleTextInputUIKey(int x, int y, bool isMarked, bool isPressed)
@@ -834,6 +870,228 @@ int BEL_ST_ToggleKeyPressInDebugKeysUI(bool *pToggle)
 	return (int)g_sdlDOSScanCodeDebugKeysLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
 }
 
+
+void BEL_ST_CheckMovedPointerInTextInputUI(int x, int y)
+{
+	if (!g_sdlKeyboardUIPointerUsed)
+		return;
+
+	if ((x < g_sdlControllerTextInputRect.x) || (x >= g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
+	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h))
+		return;
+
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+	g_sdlTextInputIsKeyPressed = false;
+
+	// Normalize coordinates to keys
+	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerTextInputRect.x)*ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerTextInputRect.w;
+	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerTextInputRect.y)*ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerTextInputRect.h;
+
+	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+
+	g_sdlForceGfxControlUiRefresh = true;
+}
+
+void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y)
+{
+	g_sdlKeyboardUIPointerUsed = true;
+	BEL_ST_CheckMovedPointerInTextInputUI(x, y);
+}
+
+int BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y)
+{
+	if (!g_sdlKeyboardUIPointerUsed)
+		return 0;
+
+	g_sdlKeyboardUIPointerUsed = false;
+	if ((x < g_sdlControllerTextInputRect.x) || (x >= g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
+	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h))
+		return 0;
+
+	//BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+	// Normalize coordinates to keys
+	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerTextInputRect.x)*ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerTextInputRect.w;
+	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerTextInputRect.y)*ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerTextInputRect.h;
+	// Hack for covering the special case of the shift key
+	g_sdlTextInputIsKeyPressed = false;
+	bool toggle = true;
+	int result = BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+	toggle = false;
+	BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+
+	return result;
+}
+
+
+void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y)
+{
+	if (!g_sdlKeyboardUIPointerUsed)
+		return;
+
+	if ((x < g_sdlControllerDebugKeysRect.x) || (x >= g_sdlControllerDebugKeysRect.x+g_sdlControllerDebugKeysRect.w)
+	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h))
+		return;
+
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	// Normalize coordinates to keys
+	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerDebugKeysRect.x)*ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH/g_sdlControllerDebugKeysRect.w;
+	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerDebugKeysRect.y)*ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT/g_sdlControllerDebugKeysRect.h;
+
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	g_sdlForceGfxControlUiRefresh = true;
+}
+
+void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y)
+{
+	g_sdlKeyboardUIPointerUsed = true;
+	BEL_ST_CheckMovedPointerInDebugKeysUI(x, y);
+}
+
+int BEL_ST_CheckReleasedPointerInDebugKeysUI(int x, int y, bool *pToggle)
+{
+	if (!g_sdlKeyboardUIPointerUsed)
+		return 0;
+
+	g_sdlKeyboardUIPointerUsed = false;
+	if ((x < g_sdlControllerDebugKeysRect.x) || (x >= g_sdlControllerDebugKeysRect.x+g_sdlControllerDebugKeysRect.w)
+	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h))
+		return 0;
+
+	//BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	// Normalize coordinates to keys
+	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerDebugKeysRect.x)*ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH/g_sdlControllerDebugKeysRect.w;
+	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerDebugKeysRect.y)*ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT/g_sdlControllerDebugKeysRect.h;
+
+	return BEL_ST_ToggleKeyPressInDebugKeysUI(pToggle);
+}
+
+// Returns matching scanCode if found (possibly 0 if not set), -1 if not
+// pointed at button/dpad (also checking for transparent pixels, or 0 otherwise
+static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
+{
+	if ((x >= g_sdlControllerFaceButtonsRect.x) && (x < g_sdlControllerFaceButtonsRect.x+g_sdlControllerFaceButtonsRect.w)
+	    && (y >= g_sdlControllerFaceButtonsRect.y) && (y < g_sdlControllerFaceButtonsRect.y+g_sdlControllerFaceButtonsRect.h))
+	{
+		// Normalize coordinates to pad
+		x = (x-g_sdlControllerFaceButtonsRect.x)*ALTCONTROLLER_PAD_PIX_WIDTH/g_sdlControllerFaceButtonsRect.w;
+		y = (y-g_sdlControllerFaceButtonsRect.y)*ALTCONTROLLER_PAD_PIX_HEIGHT/g_sdlControllerFaceButtonsRect.h;
+		switch (pad_thumb_buttons_xpm[y+ALTCONTROLLER_PAD_XPM_ROW_OFFSET][x])
+		{
+			case '%':
+				return g_sdlFaceButtonsScanCodes[0];
+			case '$':
+				return g_sdlFaceButtonsScanCodes[1];
+			case '#':
+				return g_sdlFaceButtonsScanCodes[2];
+			case '@':
+				return g_sdlFaceButtonsScanCodes[3];
+			case ' ':
+				return -1; // Totally transparent
+			default:
+				return 0;
+		}
+	}
+	else if ((x >= g_sdlControllerDpadRect.x) && (x < g_sdlControllerDpadRect.x+g_sdlControllerDpadRect.w)
+	         && (y >= g_sdlControllerDpadRect.y) && (y < g_sdlControllerDpadRect.y+g_sdlControllerDpadRect.h))
+	{
+		// Normalize coordinates to pad
+		x = (x-g_sdlControllerDpadRect.x)*ALTCONTROLLER_PAD_PIX_WIDTH/g_sdlControllerDpadRect.w;
+		y = (y-g_sdlControllerDpadRect.y)*ALTCONTROLLER_PAD_PIX_HEIGHT/g_sdlControllerDpadRect.h;
+		switch (pad_dpad_xpm[y+ALTCONTROLLER_PAD_XPM_ROW_OFFSET][x])
+		{
+			case '%':
+				return g_sdlDpadScanCodes[0];
+			case '$':
+				return g_sdlDpadScanCodes[1];
+			case '#':
+				return g_sdlDpadScanCodes[2];
+			case '@':
+				return g_sdlDpadScanCodes[3];
+			case ' ':
+				return -1; // Totally transparent
+			default:
+				return 0;
+		}
+	}
+	return -1;
+}
+
+extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
+void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping);
+
+void BEL_ST_CheckPressedPointerInControllerUI(int x, int y)
+{
+	if (g_sdlControllerUIPointerPressed)
+		return;
+	g_sdlControllerUIPointerPressed = true;
+
+	g_sdlPointerSelectedPadButtonScanCode = BEL_ST_GetControllerUIScanCodeFromPointer(x,y);
+	if (g_sdlPointerSelectedPadButtonScanCode > 0)
+	{
+		emulatedDOSKeyEvent dosKeyEvent;
+		dosKeyEvent.isSpecial = false;
+		dosKeyEvent.dosScanCode = g_sdlPointerSelectedPadButtonScanCode;
+		BEL_ST_HandleEmuKeyboardEvent(true, dosKeyEvent);
+	}
+	else if (g_sdlPointerSelectedPadButtonScanCode < 0)
+	{
+		g_sdlPointerSelectedPadButtonScanCode = 0;
+		if (g_sdlControllerMappingActualCurr->prevMapping)
+			BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
+	}
+
+}
+
+void BEL_ST_CheckReleasedPointerInControllerUI(void)
+{
+	if (!g_sdlControllerUIPointerPressed)
+		return;
+	g_sdlControllerUIPointerPressed = false;
+
+	if (g_sdlPointerSelectedPadButtonScanCode)
+	{
+		emulatedDOSKeyEvent dosKeyEvent;
+		dosKeyEvent.isSpecial = false;
+		dosKeyEvent.dosScanCode = g_sdlPointerSelectedPadButtonScanCode;
+		BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+	}
+	g_sdlPointerSelectedPadButtonScanCode = 0;
+}
+
+void BEL_ST_CheckMovedPointerInControllerUI(int x, int y)
+{
+	if (!g_sdlControllerUIPointerPressed)
+		return;
+
+	int oldScanCode = g_sdlPointerSelectedPadButtonScanCode;
+	g_sdlPointerSelectedPadButtonScanCode = BEL_ST_GetControllerUIScanCodeFromPointer(x,y);
+
+	if (g_sdlPointerSelectedPadButtonScanCode < 0)
+		g_sdlPointerSelectedPadButtonScanCode = 0;
+
+	if (oldScanCode != g_sdlPointerSelectedPadButtonScanCode)
+	{
+		emulatedDOSKeyEvent dosKeyEvent;
+		dosKeyEvent.isSpecial = false;
+		if (oldScanCode)
+		{
+			dosKeyEvent.dosScanCode = oldScanCode;
+			BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+		}
+		if (g_sdlPointerSelectedPadButtonScanCode)
+		{
+			dosKeyEvent.dosScanCode = g_sdlPointerSelectedPadButtonScanCode;
+			BEL_ST_HandleEmuKeyboardEvent(true, dosKeyEvent);
+		}
+	}
+}
+
+
+
 void BEL_ST_ReleasePressedKeysInTextInputUI(void)
 {
 	if (g_sdlTextInputIsKeyPressed)
@@ -866,6 +1124,12 @@ void BEL_ST_ReleasePressedKeysInDebugKeysUI(void)
 			}
 }
 
+void BEL_ST_ReleasePressedKeysInControllerUI(void)
+{
+	if (g_sdlControllerUIPointerPressed)
+		BEL_ST_CheckReleasedPointerInControllerUI();
+}
+
 /*static*/ void BEL_ST_HideAltInputUI(void)
 {
 	g_sdlFaceButtonsAreShown = false;
@@ -874,7 +1138,10 @@ void BEL_ST_ReleasePressedKeysInDebugKeysUI(void)
 	g_sdlDebugKeysUIIsShown = false;
 
 	g_sdlForceGfxControlUiRefresh = true;
+
+	BEL_ST_ConditionallyShowAltInputPointer();
 }
+
 
 void BE_ST_SetGfxOutputRects(void)
 {

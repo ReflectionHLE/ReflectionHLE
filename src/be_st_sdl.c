@@ -31,6 +31,11 @@ static bool g_sdlControllersButtonsStates[BE_ST_MAXJOYSTICKS][SDL_CONTROLLER_BUT
 // We may optionally use analog axes as buttons (e.g., using stick as arrow keys, triggers as buttons)
 static bool g_sdlControllersAxesStates[BE_ST_MAXJOYSTICKS][SDL_CONTROLLER_AXIS_MAX][2];
 
+/*** These are similar states for a few mouse buttons, required as relative mouse mode is toggled on or off in the middle ***/
+static bool g_sdlMouseButtonsStates[3];
+
+static bool g_sdlRelativeMouseMotion = false;
+
 /*** Emulated mouse and joysticks states (mouse motion state is split for technical reasons) ***/
 static int g_sdlEmuMouseButtonsState;
 static int16_t g_sdlEmuMouseMotionAccumulatedState[2];
@@ -49,7 +54,7 @@ static struct {
 } g_sdlControllerMappingPtrsStack;
 
 // Current mapping, doesn't have to be *(g_sdlControllerMappingPtrsStack.currPtr) as game code can change this (e.g., helper keys)
-static const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
+const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 
 static BE_ST_ControllerMapping g_sdlControllerMappingDefault;
 // HACK - These "mapping" is used for identification of on-screen keyboards (using pointers comparisons)
@@ -95,6 +100,7 @@ void BE_ST_ShutdownGfx(void);
 static void BEL_ST_ConditionallyAddJoystick(int device_index);
 static void BEL_ST_ParseConfig(void);
 static void BEL_ST_SaveConfig(void);
+void BEL_ST_SetRelativeMouseMotion(bool enable);
 
 void BE_ST_InitCommon(void)
 {
@@ -141,14 +147,7 @@ void BE_ST_PrepareForGameStartup(void)
 	for (int i = 0; i < nOfJoysticks; ++i)
 		BEL_ST_ConditionallyAddJoystick(i);
 
-	if (g_refKeenCfg.autolockCursor || (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
-	{
-		SDL_SetRelativeMouseMode(SDL_TRUE);
-	}
-	else
-	{
-		SDL_ShowCursor(false);
-	}
+	BEL_ST_SetRelativeMouseMotion(true);
 
 	// Reset these first
 	g_sdlEmuMouseButtonsState = 0;
@@ -172,14 +171,7 @@ void BE_ST_PrepareForGameStartup(void)
 
 void BE_ST_ShutdownAll(void)
 {
-	if (g_refKeenCfg.autolockCursor || (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
-	{
-		SDL_SetRelativeMouseMode(SDL_FALSE);
-	}
-	else
-	{
-		SDL_ShowCursor(true);
-	}
+	BEL_ST_SetRelativeMouseMotion(false);
 	BE_ST_ShutdownAudio();
 	BE_ST_ShutdownGfx();
 	SDL_Quit();
@@ -713,6 +705,26 @@ static void BEL_ST_SaveConfig(void)
 }
 
 
+void BEL_ST_SetRelativeMouseMotion(bool enable)
+{
+	if (g_sdlRelativeMouseMotion == enable)
+		return;
+	g_sdlRelativeMouseMotion = enable;
+
+	if (g_refKeenCfg.autolockCursor || (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
+	{
+		SDL_SetRelativeMouseMode(enable ? SDL_TRUE : SDL_FALSE);
+	}
+	else
+	{
+		SDL_ShowCursor(!enable);
+	}
+	// Reset these
+	g_sdlMouseButtonsStates[0] = g_sdlMouseButtonsStates[1] = g_sdlMouseButtonsStates[2] = 0;
+	// Also that (HACK)
+	g_sdlEmuMouseButtonsState = 0;
+}
+
 
 #define emptyDOSKeyEvent {false, 0}
 
@@ -1075,8 +1087,8 @@ static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void);
 
 // May be similar to PrepareControllerMapping, but a bit different:
 // Used in order to replace controller mapping with another one internally
-// (e.g., showing helper function keys)
-static void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping)
+// (e.g., showing helper function keys during gameplay, or hiding such keys)
+void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping)
 {
 	BEL_ST_AltControlScheme_CleanUp();
 	g_sdlControllerMappingActualCurr = mapping;
@@ -1151,6 +1163,8 @@ static void BEL_ST_ConditionallyAddJoystick(int device_index)
 				g_sdlShowControllerUI = true;
 				extern bool g_sdlForceGfxControlUiRefresh;
 				g_sdlForceGfxControlUiRefresh = true;
+				void BEL_ST_ConditionallyShowAltInputPointer(void);
+				BEL_ST_ConditionallyShowAltInputPointer();
 
 				break;
 			}
@@ -1178,6 +1192,10 @@ static void BEL_ST_AltControlScheme_CleanUp(void)
 	}
 	else // Otherwise simulate key releases based on the mapping
 	{
+		// But also don't forget this (e.g., if mouse is used)
+		void BEL_ST_ReleasePressedKeysInControllerUI(void);
+		BEL_ST_ReleasePressedKeysInControllerUI();
+
 		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		{
 			if (g_sdlControllers[i])
@@ -1212,12 +1230,7 @@ static void BEL_ST_AltControlScheme_CleanUp(void)
 
 static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void)
 {
-	if (g_sdlControllerMappingActualCurr->showUi)
-	{
-		extern void BEL_ST_PrepareToShowControllerUI(const BE_ST_ControllerMapping *mapping);
-		BEL_ST_PrepareToShowControllerUI(g_sdlControllerMappingActualCurr);
-	}
-	else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 	{
 		extern void BEL_ST_PrepareToShowTextInputUI(void);
 		BEL_ST_PrepareToShowTextInputUI();
@@ -1226,6 +1239,11 @@ static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void)
 	{
 		extern void BEL_ST_PrepareToShowDebugKeysUI(void);
 		BEL_ST_PrepareToShowDebugKeysUI();
+	}
+	else if (g_sdlControllerMappingActualCurr->showUi)
+	{
+		extern void BEL_ST_PrepareToShowControllerUI(const BE_ST_ControllerMapping *mapping);
+		BEL_ST_PrepareToShowControllerUI(g_sdlControllerMappingActualCurr);
 	}
 }
 
@@ -1283,6 +1301,18 @@ void BE_ST_PollEvents(void)
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
+		void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y);
+		void BEL_ST_CheckMovedPointerInTextInputUI(int x, int y);
+		int BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y);
+		void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y);
+		void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y);
+		int BEL_ST_CheckReleasedPointerInDebugKeysUI(int x, int y, bool *pToggle);
+		void BEL_ST_CheckPressedPointerInControllerUI(int x, int y);
+		void BEL_ST_CheckMovedPointerInControllerUI(int x, int y);
+		void BEL_ST_CheckReleasedPointerInControllerUI(void);
+
+		extern bool g_sdlShowControllerUI;
+
 		switch (event.type)
 		{
 		case SDL_KEYDOWN:
@@ -1291,18 +1321,102 @@ void BE_ST_PollEvents(void)
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
+			if ((event.button.button >= 1) && (event.button.button <= 3))
+			{
+				if (g_sdlMouseButtonsStates[event.button.button-1])
+					break; // Ignore (used in case pointer is shown/hidden)
+				g_sdlMouseButtonsStates[event.button.button-1] = true;
+			}
+
+			if (g_refKeenCfg.altControlScheme.isEnabled && g_sdlShowControllerUI)
+			{
+				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+				{
+					BEL_ST_CheckPressedPointerInTextInputUI(event.button.x, event.button.y);
+					break;
+				}
+				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+				{
+					BEL_ST_CheckPressedPointerInDebugKeysUI(event.button.x, event.button.y);
+					break;
+				}
+				if (g_sdlControllerMappingActualCurr->showUi)
+				{
+					BEL_ST_CheckPressedPointerInControllerUI(event.button.x, event.button.y);
+					break;
+				}
+			}
+
 			if (event.button.button == SDL_BUTTON_LEFT)
 				g_sdlEmuMouseButtonsState |= 1;
 			else if (event.button.button == SDL_BUTTON_RIGHT)
 				g_sdlEmuMouseButtonsState |= 2;
 			break;
 		case SDL_MOUSEBUTTONUP:
+			if ((event.button.button >= 1) && (event.button.button <= 3))
+			{
+				if (!g_sdlMouseButtonsStates[event.button.button-1])
+					break; // Ignore (used in case pointer is shown/hidden)
+				g_sdlMouseButtonsStates[event.button.button-1] = false;
+			}
+
+			if (g_refKeenCfg.altControlScheme.isEnabled && g_sdlShowControllerUI)
+			{
+				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+				{
+					emulatedDOSKeyEvent dosKeyEvent;
+					dosKeyEvent.isSpecial = false;
+					dosKeyEvent.dosScanCode = BEL_ST_CheckReleasedPointerInTextInputUI(event.button.x, event.button.y);
+					if (dosKeyEvent.dosScanCode)
+					{
+						BEL_ST_HandleEmuKeyboardEvent(true, dosKeyEvent);
+						// FIXME: A delay may be required here in certain cases, but this works for now...
+						BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+					}
+					break;
+				}
+				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+				{
+					emulatedDOSKeyEvent dosKeyEvent;
+					dosKeyEvent.isSpecial = false;
+					bool isPressed;
+					dosKeyEvent.dosScanCode = BEL_ST_CheckReleasedPointerInDebugKeysUI(event.button.x, event.button.y, &isPressed);
+					if (dosKeyEvent.dosScanCode)
+						BEL_ST_HandleEmuKeyboardEvent(isPressed, dosKeyEvent);
+					break;
+				}
+				if (g_sdlControllerMappingActualCurr->showUi)
+				{
+					BEL_ST_CheckReleasedPointerInControllerUI();
+					break;
+				}
+			}
+
 			if (event.button.button == SDL_BUTTON_LEFT)
 				g_sdlEmuMouseButtonsState &= ~1;
 			else if (event.button.button == SDL_BUTTON_RIGHT)
 				g_sdlEmuMouseButtonsState &= ~2;
 			break;
 		case SDL_MOUSEMOTION:
+			if (g_refKeenCfg.altControlScheme.isEnabled && g_sdlShowControllerUI)
+			{
+				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+				{
+					BEL_ST_CheckMovedPointerInTextInputUI(event.button.x, event.button.y);
+					break;
+				}
+				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+				{
+					BEL_ST_CheckMovedPointerInDebugKeysUI(event.button.x, event.button.y);
+					break;
+				}
+				if (g_sdlControllerMappingActualCurr->showUi)
+				{
+					BEL_ST_CheckMovedPointerInControllerUI(event.button.x, event.button.y);
+					break;
+				}
+			}
+
 			g_sdlEmuMouseMotionAccumulatedState[0] += event.motion.xrel;
 			g_sdlEmuMouseMotionAccumulatedState[1] += event.motion.yrel;
 			break;
@@ -1376,6 +1490,8 @@ void BE_ST_PollEvents(void)
 					g_sdlShowControllerUI = false;
 					extern bool g_sdlForceGfxControlUiRefresh;
 					g_sdlForceGfxControlUiRefresh = true;
+					void BEL_ST_ConditionallyShowAltInputPointer(void);
+					BEL_ST_ConditionallyShowAltInputPointer();
 				}
 			}
 			break;

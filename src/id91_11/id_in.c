@@ -1064,6 +1064,8 @@ IN_AckBack(void)
 				{
 					BE_ST_ShortSleep();
 				}
+				// REFKEEN - Alternative controllers support
+				BE_ST_AltControlScheme_Pop();
 				return;
 			}
 		}
@@ -1078,6 +1080,8 @@ IN_AckBack(void)
 					{
 						BE_ST_ShortSleep();
 					}
+					// REFKEEN - Alternative controllers support
+					BE_ST_AltControlScheme_Pop();
 					return;
 				}
 			}
