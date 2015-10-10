@@ -1288,14 +1288,14 @@ void BE_ST_EGASetPaletteAndBorder(const uint8_t *palette)
 
 void BE_ST_EGASetPelPanning(uint8_t panning)
 {
+	g_sdlDoRefreshGfxOutput |= (g_sdlPelPanning != panning);
 	g_sdlPelPanning = panning;
-	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_ST_EGASetLineWidth(uint8_t widthInBytes)
 {
+	g_sdlDoRefreshGfxOutput |= (g_sdlLineWidth != widthInBytes);
 	g_sdlLineWidth = widthInBytes;
-	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_ST_EGASetSplitScreen(int16_t linenum)

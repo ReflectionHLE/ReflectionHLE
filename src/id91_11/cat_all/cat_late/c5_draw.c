@@ -1770,7 +1770,7 @@ void ClearScreen (void)
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// (REFKEEN) DIFFERENCE FROM VANILLA:
-		// topcolor aka *sycolor is a 16-bit word which is actually a pair of colors (e.g., 0x0404),
+		// topcolor aka *skycolor is a 16-bit word which is actually a pair of colors (e.g., 0x0404),
 		// but we ignore one of the two for the sake of simplicity and a bit better performance, since
 		// skycolor always points to a member of sky_colors, where each pair has the exact same color repeated twice.
 		//

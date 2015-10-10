@@ -253,7 +253,7 @@ BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FuncKeys,
 #endif
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_DebugKeys, "Action - Debug keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 
-BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_Dpad, "Use d-pad", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_Dpad, "Use d-pad for motion", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
 #ifdef REFKEEN_VER_CATACOMB_ALL
@@ -667,6 +667,7 @@ static void BEL_ST_Launcher_NormalizePos(int *px, int *py)
 void BE_ST_Launcher_RunEventLoop(void)
 {
 	SDL_Event event;
+	uint32_t lastRefreshTicks = 0;
 	while (1)
 	{
 		while (SDL_PollEvent(&event))
@@ -807,18 +808,26 @@ void BE_ST_Launcher_RunEventLoop(void)
 				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
 			}
 			SDL_RenderPresent(g_sdlRenderer);
+			lastRefreshTicks = SDL_GetTicks();
 		}
 		else
 		{
+			// Refresh graphics from time to time in case a part of the window is overridden by anything,
+			// like the Steam Overlay. Sleep for less time so the application is somewhat responsive, though.
 			SDL_Delay(10);
-			SDL_RenderClear(g_sdlRenderer);
+			uint32_t currRefreshTicks = SDL_GetTicks();
+			if (currRefreshTicks - lastRefreshTicks >= 100)
+			{
+				SDL_RenderClear(g_sdlRenderer);
 
-			if (g_sdlTargetTexture)
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-			else
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+				if (g_sdlTargetTexture)
+					SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+				else
+					SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
 
-			SDL_RenderPresent(g_sdlRenderer);
+				SDL_RenderPresent(g_sdlRenderer);
+				lastRefreshTicks = currRefreshTicks;
+			}
 		}
 	}
 }
