@@ -11,6 +11,8 @@ SDL_Renderer *g_sdlRenderer;
 SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
+static bool g_sdlIsSoftwareRendered;
+
 #ifdef REFKEEN_VER_KDREAMS
 	const char *g_sdlWindowTitle = "Reflection Keen";
 #elif (defined REFKEEN_VER_CATACOMB_ALL)
@@ -144,6 +146,17 @@ static bool g_sdlDebugKeysPressed[ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT][ALTCONTRO
 
 void BE_ST_InitGfx(void)
 {
+	if (g_refKeenCfg.sdlRendererDriver >= 0)
+	{
+		SDL_RendererInfo info;
+		SDL_GetRenderDriverInfo(g_refKeenCfg.sdlRendererDriver, &info);
+		g_sdlIsSoftwareRendered = (info.flags & SDL_RENDERER_SOFTWARE);
+	}
+	else
+	{
+		g_sdlIsSoftwareRendered = false;
+	}
+
 	if (g_refKeenCfg.isFullscreen)
 	{
 		if (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight)
@@ -160,18 +173,7 @@ void BE_ST_InitGfx(void)
 		int actualWinWidth = g_refKeenCfg.winWidth, actualWinHeight = g_refKeenCfg.winHeight;
 		if (!actualWinWidth || !actualWinHeight)
 		{
-			bool doSoftwareRendering;
-			if (g_refKeenCfg.sdlRendererDriver >= 0)
-			{
-				SDL_RendererInfo info;
-				SDL_GetRenderDriverInfo(g_refKeenCfg.sdlRendererDriver, &info);
-				doSoftwareRendering = (info.flags & SDL_RENDERER_SOFTWARE);
-			}
-			else
-			{
-				doSoftwareRendering = false;
-			}
-			if (doSoftwareRendering)
+			if (g_sdlIsSoftwareRendered)
 			{
 				actualWinWidth = 640;
 				actualWinHeight = 480;
@@ -196,7 +198,7 @@ void BE_ST_InitGfx(void)
 				actualWinHeight = mode.h*500/809;
 			}
 		}
-		g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), actualWinWidth, actualWinHeight, SDL_WINDOW_RESIZABLE);
+		g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), actualWinWidth, actualWinHeight, (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling) ? SDL_WINDOW_RESIZABLE : 0);
 	}
 	if (!g_sdlWindow)
 	{
@@ -1145,7 +1147,7 @@ void BEL_ST_ReleasePressedKeysInControllerUI(void)
 }
 
 
-void BE_ST_SetGfxOutputRects(void)
+void BE_ST_SetGfxOutputRects(bool allowResize)
 {
 	int srcWidth = g_sdlTexWidth;
 	int srcHeight = g_sdlTexHeight;
@@ -1175,6 +1177,18 @@ void BE_ST_SetGfxOutputRects(void)
 	int srcBorderedHeight = srcBorderTop+srcHeight+srcBorderBottom;
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+
+	// Special case - We may resize window based on mode, but only if allowResize == true (to prevent any possible infinite resizes loop)
+	if (allowResize && g_sdlIsSoftwareRendered && !g_refKeenCfg.forceFullSoftScaling && (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)))
+	{
+		if ((g_refKeenCfg.scaleFactor*srcBorderedWidth != winWidth) || (g_refKeenCfg.scaleFactor*srcBorderedHeight != winHeight))
+		{
+			SDL_SetWindowSize(g_sdlWindow, g_refKeenCfg.scaleFactor*srcBorderedWidth, g_refKeenCfg.scaleFactor*srcBorderedHeight);
+			// Not sure this will help, but still trying...
+			SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+		}
+	}
+
 	// Save modified window size
 	if (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
 	{
@@ -1182,7 +1196,31 @@ void BE_ST_SetGfxOutputRects(void)
 		g_refKeenCfg.winHeight = winHeight;
 	}
 
-	if (g_refKeenCfg.scaleType == SCALE_FILL)
+	if (g_sdlIsSoftwareRendered && !g_refKeenCfg.forceFullSoftScaling)
+	{
+		if (g_refKeenCfg.scaleFactor*srcBorderedWidth >= winWidth)
+		{
+			g_sdlAspectCorrectionBorderedRect.w = winWidth;
+			g_sdlAspectCorrectionBorderedRect.x = 0;
+		}
+		else
+		{
+			g_sdlAspectCorrectionBorderedRect.w = g_refKeenCfg.scaleFactor*srcBorderedWidth;
+			g_sdlAspectCorrectionBorderedRect.x = (winWidth-g_sdlAspectCorrectionBorderedRect.w)/2;
+		}
+
+		if (g_refKeenCfg.scaleFactor*srcBorderedHeight >= winHeight)
+		{
+			g_sdlAspectCorrectionBorderedRect.h = winHeight;
+			g_sdlAspectCorrectionBorderedRect.y = 0;
+		}
+		else
+		{
+			g_sdlAspectCorrectionBorderedRect.h = g_refKeenCfg.scaleFactor*srcBorderedHeight;
+			g_sdlAspectCorrectionBorderedRect.y = (winHeight-g_sdlAspectCorrectionBorderedRect.h)/2;
+		}
+	}
+	else if (g_refKeenCfg.scaleType == SCALE_FILL)
 	{
 		g_sdlAspectCorrectionBorderedRect.w = winWidth;
 		g_sdlAspectCorrectionBorderedRect.h = winHeight;
@@ -1621,7 +1659,7 @@ void BE_ST_SetScreenMode(int mode)
 		break;
 	}
 	g_sdlScreenMode = mode;
-	BE_ST_SetGfxOutputRects();
+	BE_ST_SetGfxOutputRects(true);
 	BEL_ST_RecreateTexture();
 }
 

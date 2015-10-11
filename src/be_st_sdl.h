@@ -20,6 +20,7 @@ typedef struct
 	bool isBilinear;
 	ScaleTypeSettingType scaleType;
 	int scaleFactor;
+	bool forceFullSoftScaling;
 	bool autolockCursor;
 	int sndSampleRate;
 	bool sndSubSystem;

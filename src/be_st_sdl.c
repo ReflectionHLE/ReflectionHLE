@@ -195,8 +195,8 @@ void BE_ST_HandleExit(int status)
 			case SDL_WINDOWEVENT:
 				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
 				{
-					void BE_ST_SetGfxOutputRects(void);
-					BE_ST_SetGfxOutputRects();
+					void BE_ST_SetGfxOutputRects(bool allowResize);
+					BE_ST_SetGfxOutputRects(false);
 				}
 				break;
 			case SDL_JOYHATMOTION:
@@ -365,6 +365,18 @@ static void BEL_ST_ParseSetting_ScaleFactor(const char *keyprefix, const char *b
 	g_refKeenCfg.scaleFactor = atoi(buffer);
 }
 
+static void BEL_ST_ParseSetting_ForceFullSoftScaling(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_refKeenCfg.forceFullSoftScaling = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_refKeenCfg.forceFullSoftScaling = false;
+	}
+}
+
 static void BEL_ST_ParseSetting_AutolockCursor(const char *keyprefix, const char *buffer)
 {
 	if (!strcmp(buffer, "true"))
@@ -525,6 +537,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"bilinear=", &BEL_ST_ParseSetting_Bilinear},
 	{"scaletype=", &BEL_ST_ParseSetting_ScaleType},
 	{"scalefactor=", &BEL_ST_ParseSetting_ScaleFactor},
+	{"forcefullsoftscaling=", &BEL_ST_ParseSetting_ForceFullSoftScaling},
 	{"autolock=", &BEL_ST_ParseSetting_AutolockCursor},
 	{"sndsamplerate=", &BEL_ST_ParseSetting_SndSampleRate},
 	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
@@ -583,6 +596,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.isBilinear = true;
 	g_refKeenCfg.scaleType = SCALE_ASPECT;
 	g_refKeenCfg.scaleFactor = 2;
+	g_refKeenCfg.forceFullSoftScaling = false;
 	g_refKeenCfg.autolockCursor = false;
 	g_refKeenCfg.sndSampleRate = 49716; // TODO should be a shared define
 	g_refKeenCfg.sndSubSystem = true;
@@ -678,6 +692,7 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "bilinear=%s\n", g_refKeenCfg.isBilinear ? "true" : "false");
 	fprintf(fp, "scaletype=%s\n", (g_refKeenCfg.scaleType == SCALE_ASPECT) ? "aspect" : "fill");
 	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
+	fprintf(fp, "forcefullsoftscaling=%s\n", g_refKeenCfg.forceFullSoftScaling ? "true" : "false");
 	fprintf(fp, "autolock=%s\n", g_refKeenCfg.autolockCursor ? "true" : "false");
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
 	fprintf(fp, "sndsubsystem=%s\n", g_refKeenCfg.sndSubSystem ? "true" : "false");
@@ -1675,8 +1690,8 @@ void BE_ST_PollEvents(void)
 			switch (event.window.event)
 			case  SDL_WINDOWEVENT_RESIZED:
 			{
-				void BE_ST_SetGfxOutputRects(void);
-				BE_ST_SetGfxOutputRects();
+				void BE_ST_SetGfxOutputRects(bool allowResize);
+				BE_ST_SetGfxOutputRects(false);
 				//BE_ST_MarkGfxForPendingUpdate();
 				BE_ST_MarkGfxForUpdate();
 				break;

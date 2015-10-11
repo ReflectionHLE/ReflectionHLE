@@ -159,9 +159,13 @@ BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beVideoSettingsMenuItem_DisplayNum, "Dis
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_SDLRenderer, "SDL renderer", g_be_videoSettingsChoices_sdlRendererDrivers)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_VSync, "VSync", g_be_videoSettingsChoices_vSync)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type", g_be_videoSettingsChoices_scaleType)
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type*", g_be_videoSettingsChoices_scaleType)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleFactor, "Scale factor", g_be_videoSettingsChoices_scaleFactor)
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ForceFullSoftScaling, "Force full software scaling*", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_LauncherWindowType, "Launcher window type", g_be_videoSettingsChoices_launcherWindowType)
+BEMENUITEM_DEF_STATIC(g_beVideoSettingsMenuItem_SoftScalingComment,
+"* Full software scaling should be manually toggled. Note that it can lead to great slowdowns with high-resolution windows."
+);
 
 BEMenu g_beVideoSettingsMenu = {
 	"Video settings",
@@ -176,7 +180,9 @@ BEMenu g_beVideoSettingsMenu = {
 		&g_beVideoSettingsMenuItem_Bilinear,
 		&g_beVideoSettingsMenuItem_ScaleType,
 		&g_beVideoSettingsMenuItem_ScaleFactor,
+		&g_beVideoSettingsMenuItem_ForceFullSoftScaling,
 		&g_beVideoSettingsMenuItem_LauncherWindowType,
+		&g_beVideoSettingsMenuItem_SoftScalingComment,
 		NULL
 	},
 	// Ignore the rest
@@ -412,6 +418,8 @@ void BE_ST_Launcher_Prepare(void)
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = 0;
 	else
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = g_refKeenCfg.scaleFactor-1;
+	// Set ForceFullSoftScaling value
+	g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice = g_refKeenCfg.forceFullSoftScaling;
 	// Set LauncherWindowType value
 	g_beVideoSettingsMenuItem_LauncherWindowType.choice = g_refKeenCfg.launcherWinType;
 	// Set SndSampleRate value
@@ -527,6 +535,7 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.isBilinear = g_beVideoSettingsMenuItem_Bilinear.choice;
 	g_refKeenCfg.scaleType = (ScaleTypeSettingType)g_beVideoSettingsMenuItem_ScaleType.choice;
 	g_refKeenCfg.scaleFactor = g_beVideoSettingsMenuItem_ScaleFactor.choice + 1;
+	g_refKeenCfg.forceFullSoftScaling = g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice;
 	g_refKeenCfg.launcherWinType = (LauncherWindowSettingType)g_beVideoSettingsMenuItem_LauncherWindowType.choice;
 
 	g_refKeenCfg.sndSampleRate = g_be_soundsSettingsChoices_sndSampleRateVals[g_beSoundSettingsMenuItem_SndSampleRate.choice];
