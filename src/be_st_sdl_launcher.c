@@ -75,11 +75,12 @@ BEMenu g_beMainMenu = {
 
 /*** Select game menu ***/
 
-static BEMenuItem g_beSelectGameMenuItems[BE_CROSS_MAX_GAME_INSTALLATIONS];
-static char g_beSelectGameMenuItemsStrs[BE_CROSS_MAX_GAME_INSTALLATIONS][78]; // Should be MUTABLE strings for layout preparation
-static BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_CROSS_MAX_GAME_INSTALLATIONS+2];
+/*static*/ BEMenuItem g_beSelectGameMenuItems[BE_GAMEVER_LAST];
+/*static*/ char g_beSelectGameMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
+/*static*/ BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAMEVER_LAST+3];
 
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_DisappearedGameHelp, "Help! An installed game disappeared from the list!", &g_beDisappearedGameHelpMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_AddMissingGameVersion, "Add missing game version", &g_beSelectInitialPathMenu)
 
 BEMenu g_beSelectGameMenu = {
 	"Select game",
@@ -89,7 +90,7 @@ BEMenu g_beSelectGameMenu = {
 };
 
 BEMENUITEM_DEF_STATIC(g_beDisappearedGameHelpMenuItem_Explanation,
-"Reflection Keen can detect compatible DOS game versions from various installations, including ones coming from online sources like Steam and GOG.com. Once such a game installation is updated in any minor way, Reflection Keen may fail to locate it. This is normal."
+"Reflection Keen can detect compatible DOS game versions from certain installations, including the Catacombs games from GOG.com. Once such a game installation is updated in any minor way, Reflection Keen may fail to locate it. These are the expected behaviors.\nAs an alternative, you can manually add a compatible game installation (if not yet listed)."
 );
 
 /*** Disappeared game menu ***/
@@ -100,6 +101,77 @@ BEMenu g_beDisappearedGameHelpMenu = {
 	(BEMenuItem *[])
 	{
 		&g_beDisappearedGameHelpMenuItem_Explanation,
+		NULL
+	},
+	// Ignore the rest
+};
+
+/*** Select initial path menu ***/
+
+static BEMenuItem *g_beSelectInitialPathMenuItems;
+static BEMenuItem **g_beSelectInitialPathMenuItemsPtrs;
+static char *g_beSelectInitialPathMenuItemsStrsBuffer;
+
+BEMenu g_beSelectInitialPathMenu = {
+	"Select initial path",
+	&g_beSelectGameMenu,
+	NULL, // Dynamically allocated, filled later
+	// Ignore the rest
+};
+
+/*** Select directory menu (basically a dialog that may change often) ***/
+
+BEMenu g_beSelectDirectoryMenu = {
+	"Select directory",
+	NULL, // SPECIAL (using back button handler)
+	NULL, // Dynamically allocated, filled later
+	&BE_Launcher_Handler_DirectorySelectionGoPrev, // SPECIAL (back button handler)
+	// Ignore the rest
+};
+
+/*** Select directory error menu ***/
+
+BEMENUITEM_DEF_HANDLER(g_beSelectDirectoryErrorMenuItem_DisappearedGameHelp, "Try to go up in directories hierachy", &BE_Launcher_Handler_DirectorySelectionGoPrev)
+
+BEMenu g_beSelectDirectoryErrorMenu = {
+	"Failed to select directory",
+	NULL, // SPECIAL (using back button handler)
+	(BEMenuItem *[])
+	{
+		&g_beSelectDirectoryErrorMenuItem_DisappearedGameHelp,
+		NULL
+	},
+	&BE_Launcher_Handler_DirectorySelectionGoPrev, // SPECIAL (back button handler)
+	// Ignore the rest
+};
+
+/*** Compatible game found menu ***/
+
+// At this point, all directory-selection related resources are freed
+BEMENUITEM_DEF_TARGETMENU(g_beSelectDirectoryFoundGameMenuItem_ShowGamesList, "Show games list", &g_beSelectGameMenu)
+
+BEMenu g_beSelectDirectoryFoundGameMenu = {
+	"New compatible game found!",
+	&g_beSelectGameMenu,
+	(BEMenuItem *[])
+	{
+		&g_beSelectDirectoryFoundGameMenuItem_ShowGamesList,
+		NULL
+	},
+	// Ignore the rest
+};
+
+/*** No additional compatible game found menu ***/
+
+// Here, directory-selection related resources are STILL allocated
+BEMENUITEM_DEF_TARGETMENU(g_beSelectDirectoryNoGameFoundMenu_ReturnToDirectory, "Return to directory", &g_beSelectDirectoryMenu)
+
+BEMenu g_beSelectDirectoryNoGameFoundMenu = {
+	"No new compatible game found",
+	&g_beSelectDirectoryMenu,
+	(BEMenuItem *[])
+	{
+		&g_beSelectDirectoryNoGameFoundMenu_ReturnToDirectory,
 		NULL
 	},
 	// Ignore the rest
@@ -470,22 +542,43 @@ void BE_ST_Launcher_Prepare(void)
 	g_beControllerSettingsMenuItem_Action_DebugKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS];
 
 	/*** Prepare installed game versions menu ***/
-	for (int i = 0; i < g_be_gameinstallations_num; ++i)
-	{
-		g_beSelectGameMenuItemsPtrs[i] = &g_beSelectGameMenuItems[i];
-		g_beSelectGameMenuItems[i].handler = &BE_Launcher_Handler_GameLaunch;
-		snprintf(g_beSelectGameMenuItemsStrs[i], sizeof(g_beSelectGameMenuItemsStrs[i]), "%s", BE_Cross_GetGameInstallationDescription(i));
-		g_beSelectGameMenuItems[i].label = g_beSelectGameMenuItemsStrs[i];
-		g_beSelectGameMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
-	}
-	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num] = &g_beSelectGameMenuItem_DisappearedGameHelp;
-	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num+1] = NULL;
+	BE_ST_Launcher_RefreshSelectGameMenuContents();
 
+	/*** Prepare root paths menu ***/
+	int nOfRootPaths = BE_Cross_DirSelection_GetNumOfRootPaths();
+	const char **rootPathsNames = BE_Cross_DirSelection_GetRootPathsNames();
+	g_beSelectInitialPathMenuItems = (BEMenuItem *)malloc(nOfRootPaths*sizeof(BEMenuItem));
+	g_beSelectInitialPathMenuItemsPtrs =  (BEMenuItem **)malloc((1+nOfRootPaths)*sizeof(BEMenuItem *));
+	const int strBufferLenBound = 40;
+	g_beSelectInitialPathMenuItemsStrsBuffer = (char *)malloc(nOfRootPaths*strBufferLenBound);
+	if (!g_beSelectInitialPathMenuItems || !g_beSelectInitialPathMenuItemsPtrs || !g_beSelectInitialPathMenuItemsStrsBuffer)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BE_ST_Launcher_Prepare: Out of memory!\n");
+		// Destroy window, renderer and more?
+		exit(0);
+	}
+
+	g_beSelectInitialPathMenu.menuItems = g_beSelectInitialPathMenuItemsPtrs;
+	char *label = g_beSelectInitialPathMenuItemsStrsBuffer;
+	const char **rootPathNamePtr = rootPathsNames;
+	for (int i = 0; i < nOfRootPaths; ++i, label += strBufferLenBound, ++rootPathNamePtr)
+	{
+		g_beSelectInitialPathMenuItemsPtrs[i] = &g_beSelectInitialPathMenuItems[i];
+		g_beSelectInitialPathMenuItems[i].handler = &BE_Launcher_Handler_RootPathSelection;
+		g_beSelectInitialPathMenuItems[i].choices = NULL;
+		g_beSelectInitialPathMenuItems[i].targetMenu = NULL;
+		g_beSelectInitialPathMenuItems[i].label = label;
+		g_beSelectInitialPathMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
+		BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, *rootPathNamePtr);
+	}
+	g_beSelectInitialPathMenuItemsPtrs[nOfRootPaths] = NULL;
 }
 
 
 void BE_ST_Launcher_Shutdown(void)
 {
+	/*** Free a few launcher-specific resources ***/
+	BE_Launcher_ClearDirSelectionMenu();
 	/*** Clear ST stuff ***/
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (g_sdlControllers[i])
@@ -574,6 +667,22 @@ void BE_ST_Launcher_Shutdown(void)
 
 	if (doExit)
 		BE_ST_QuickExit();
+}
+
+
+void BE_ST_Launcher_RefreshSelectGameMenuContents(void)
+{
+	for (int i = 0; i < g_be_gameinstallations_num; ++i)
+	{
+		g_beSelectGameMenuItemsPtrs[i] = &g_beSelectGameMenuItems[i];
+		g_beSelectGameMenuItems[i].handler = &BE_Launcher_Handler_GameLaunch;
+		snprintf(g_beSelectGameMenuItemsStrs[i], sizeof(g_beSelectGameMenuItemsStrs[i]), "%s", BE_Cross_GetGameInstallationDescription(i));
+		g_beSelectGameMenuItems[i].label = g_beSelectGameMenuItemsStrs[i];
+		g_beSelectGameMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
+	}
+	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num] = &g_beSelectGameMenuItem_DisappearedGameHelp;
+	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num+1] = &g_beSelectGameMenuItem_AddMissingGameVersion;
+	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num+2] = NULL;
 }
 
 

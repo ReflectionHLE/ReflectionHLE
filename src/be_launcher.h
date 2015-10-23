@@ -48,13 +48,17 @@ typedef struct BEMenu
 	const char *title;
 	struct BEMenu *backMenu;
 	BEMenuItem **menuItems;
+	BEMenuItemHandler backButtonHandler; // Usually unused
 	int nOfItems;
 	int titleXPos;
 	int currPixYScroll;
 	int pixYScrollUpperBound;
 } BEMenu;
 
-extern BEMenu g_beMainMenu, g_beSelectGameMenu, g_beDisappearedGameHelpMenu,
+extern BEMenu g_beMainMenu,
+              g_beSelectGameMenu, g_beDisappearedGameHelpMenu,
+              g_beSelectInitialPathMenu, g_beSelectDirectoryMenu, g_beSelectDirectoryErrorMenu,
+              g_beSelectDirectoryFoundGameMenu, g_beSelectDirectoryNoGameFoundMenu,
               g_beSettingsMenu, g_beVideoSettingsMenu, g_beSoundSettingsMenu,
               g_beInputSettingsMenu, g_beControllerSettingsMenu,
               g_beQuitConfirmMenu;
@@ -76,9 +80,14 @@ void BE_Launcher_HandleInput_PointerVScroll(int ydiff);
 void BE_Launcher_RefreshVerticalScrolling(void);
 
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_RootPathSelection(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_DirectorySelectionGoPrev(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP);
 
-void BE_Launcher_Start();
+void BE_Launcher_Start(void);
+void BE_Launcher_ClearDirSelectionMenu(void);
 
 #endif // _BE_LAUNCHER_

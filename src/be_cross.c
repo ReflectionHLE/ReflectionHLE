@@ -44,6 +44,7 @@ int BE_Cross_isupper(int c);
 char *BE_Cross_safeandfastcstringcopy(char *dest, char *destEnd, const char *src);
 char *BE_Cross_safeandfastcstringcopy_2strs(char *dest, char *destEnd, const char *src0, const char *src1);
 char *BE_Cross_safeandfastcstringcopy_3strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2);
+char *BE_Cross_safeandfastcstringcopy_4strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2, const char *src3);
 
 int BE_Cross_strcasecmp(const char *s1, const char *s2)
 {

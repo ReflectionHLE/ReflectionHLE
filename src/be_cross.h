@@ -113,13 +113,18 @@ inline char *BE_Cross_safeandfastcstringcopy_3strs(char *dest, char *destEnd, co
 	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2);
 }
 
+inline char *BE_Cross_safeandfastcstringcopy_4strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2, const char *src3)
+{
+	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2), destEnd, src3);
+}
+
 
 // This one should be called early
 void BE_Cross_PrepareAppPaths(void);
 
 // Game installations stuff
 
-#define BE_CROSS_MAX_GAME_INSTALLATIONS 4
+#define BE_CROSS_MAX_ROOT_PATHS 32
 
 const char *BE_Cross_GetGameInstallationDescription(int num);
 int BE_Cross_GetGameVerFromInstallation(int num);
@@ -127,6 +132,18 @@ extern int g_be_gameinstallations_num;
 
 // gameVer should be BE_GAMEVER_LAST if no specific version is desired
 void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc);
+
+// Use for game versions selection
+int BE_Cross_DirSelection_GetNumOfRootPaths(void);
+const char **BE_Cross_DirSelection_GetRootPathsNames(void);
+const char **BE_Cross_DirSelection_Start(int rootPathIndex, int *outNumOfSubDirs); // Start dir selection
+void BE_Cross_DirSelection_Finish(void); // Finish dir selection
+const char **BE_Cross_DirSelection_GetNext(int dirIndex, int *outNumOfSubDirs); // Enter dir by index into last array
+const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs); // Go up in the filesystem hierarchy
+
+// Attempt to add a game installation from currently selected dir;
+// Returns BE_GAMEVER_LAST if no new supported game version is found; Otherwise game version id is returned.
+int BE_Cross_DirSelection_TryAddGameInstallation(void);
 
 // Often used as a replacement for file handles of type "int",
 // this one is given a different name so it's easy to swap in case of a need
@@ -226,14 +243,6 @@ void BE_Cross_WrappedToWrapped_MemCopy(uint8_t *segCommonPtr, uint8_t *offDstPtr
 // Wrapped memset
 void BE_Cross_Wrapped_MemSet(uint8_t *segPtr, uint8_t *offInSegPtr, int value, uint16_t num);
 
-// Used for saved game compatibility where 16-bit offset/near pointers are involved
-// (temp2 field which may have a 16-bit offset pointer to an object state)
-void BE_Cross_Compat_FillObjStatesWithDOSPointers(void);
-// Same as above, but in case 32-bit far pointers are saved/loaded instead
-// (the exact segment depends on location of DOS EXE in memory so we allow a variable shift)
-void BE_Cross_Compat_FillObjStatesWithRelocatedDOSPointers(uint_fast16_t segoffset);
-// Return a void* rather than statetype* only because of current header inclusion mess...
-void* BE_Cross_Compat_GetObjStatePtrFromDOSPointer(uint_fast32_t dosptr);
 // Returns an offset that should be added to the 16-bit segments of 32-bit
 // far pointers present in The Catacomb Armageddon/Apocalypse saved games
 // (in the case of the original DOS exes, it depends on the locations of

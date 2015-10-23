@@ -17,6 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "refkeen.h"
@@ -107,7 +108,7 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 			xPos += BE_MENU_CHAR_WIDTH;
 			if (xPos >= xPosUpperBound)
 			{
-				// Verify word isn't too long
+				// If lastWordPtr points to the very beginning of a word, it's a too long word
 				if ((lastWordPtr == menuItem->label) || (*(lastWordPtr-1) == '\n'))
 				{
 					snprintf(error, sizeof(error), "BE_Launcher_PrepareMenuItem: Too long word!\n%s", lastWordPtr);
@@ -433,7 +434,11 @@ void BE_Launcher_HandleInput_ButtonActivate(void)
 
 void BE_Launcher_HandleInput_ButtonBack(void)
 {
-	BEL_Launcher_SetCurrentMenu(g_be_launcher_currMenu->backMenu);
+	// HACK
+	if (g_be_launcher_currMenu->backButtonHandler)
+		g_be_launcher_currMenu->backButtonHandler(NULL);
+	else
+		BEL_Launcher_SetCurrentMenu(g_be_launcher_currMenu->backMenu);
 }
 
 
@@ -565,6 +570,11 @@ void BE_Launcher_Start(void)
 	BE_Launcher_PrepareMenu(&g_beMainMenu);
 	BE_Launcher_PrepareMenu(&g_beSelectGameMenu);
 	BE_Launcher_PrepareMenu(&g_beDisappearedGameHelpMenu);
+	BE_Launcher_PrepareMenu(&g_beSelectInitialPathMenu);
+	//BE_Launcher_PrepareMenu(&g_beSelectDirectoryMenu); // Dynamically adjusted
+	BE_Launcher_PrepareMenu(&g_beSelectDirectoryErrorMenu);
+	BE_Launcher_PrepareMenu(&g_beSelectDirectoryFoundGameMenu);
+	BE_Launcher_PrepareMenu(&g_beSelectDirectoryNoGameFoundMenu);
 	BE_Launcher_PrepareMenu(&g_beSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beVideoSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beSoundSettingsMenu);
@@ -587,6 +597,129 @@ void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 	static char someEXEName[] = "proxy";
 	char *argv[] = {someEXEName};
 	BE_Cross_StartGame(BE_Cross_GetGameVerFromInstallation(menuItemNum), argc, argv, 0);
+}
+
+
+
+static BEMenuItem *g_beSelectDirectoryMenuItems;
+static BEMenuItem **g_beSelectDirectoryMenuItemsPtrs;
+static char *g_beSelectDirectoryMenuItemsStrsBuffer;
+
+static void BEL_Launcher_FillDirSelectionMenu(const char **dirNames, int numOfSubDirs)
+{
+	g_beSelectDirectoryMenuItems = (BEMenuItem *)malloc((3+numOfSubDirs)*sizeof(BEMenuItem));
+	g_beSelectDirectoryMenuItemsPtrs = (BEMenuItem **)malloc((4+numOfSubDirs)*sizeof(BEMenuItem *));
+	const int strBufferLenBound = 40;
+	g_beSelectDirectoryMenuItemsStrsBuffer = (char *)malloc((3+numOfSubDirs)*strBufferLenBound);
+	if (!g_beSelectDirectoryMenuItems || !g_beSelectDirectoryMenuItemsPtrs || !g_beSelectDirectoryMenuItemsStrsBuffer)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BE_ST_Launcher_Prepare: Out of memory!\n");
+		BE_ST_Launcher_Shutdown();
+		BE_ST_QuickExit();
+	}
+
+	g_beSelectDirectoryMenu.menuItems = g_beSelectDirectoryMenuItemsPtrs;
+	char *label = g_beSelectDirectoryMenuItemsStrsBuffer;
+	const char **dirNamePtr = dirNames;
+	for (int i = 0; i < 3+numOfSubDirs; ++i, label += strBufferLenBound)
+	{
+		g_beSelectDirectoryMenuItemsPtrs[i] = &g_beSelectDirectoryMenuItems[i];
+		g_beSelectDirectoryMenuItems[i].choices = NULL;
+		g_beSelectDirectoryMenuItems[i].targetMenu = NULL;
+		g_beSelectDirectoryMenuItems[i].label = label;
+		g_beSelectDirectoryMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
+		switch (i)
+		{
+		case 0:
+			g_beSelectDirectoryMenuItems[i].handler = &BE_Launcher_Handler_DirectorySelectionConfirm;
+			BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, "Confirm");
+			break;
+		case 1:
+			g_beSelectDirectoryMenuItems[i].handler = &BE_Launcher_Handler_DirectorySelectionGoPrev;
+			BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, "Go to previous location");
+			break;
+		case 2:
+			g_beSelectDirectoryMenuItems[i].handler = NULL;
+			BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, "");
+			g_beSelectDirectoryMenuItems[i].type = BE_MENUITEM_TYPE_STATIC; // SPECIAL
+			break;
+		default:
+		{
+			size_t dirNameLen = strlen(*dirNamePtr);
+			g_beSelectDirectoryMenuItems[i].handler = &BE_Launcher_Handler_DirectorySelection;
+			BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, *dirNamePtr++);
+			if (dirNameLen >= strBufferLenBound)
+				memset(label+strBufferLenBound-4, '.', 3);
+		}
+		}
+	}
+	g_beSelectDirectoryMenuItemsPtrs[3+numOfSubDirs] = NULL;
+
+	BE_Launcher_PrepareMenu(&g_beSelectDirectoryMenu);
+	BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryMenu);
+}
+
+void BE_Launcher_ClearDirSelectionMenu(void)
+{
+	free(g_beSelectDirectoryMenuItems);
+	free(g_beSelectDirectoryMenuItemsPtrs);
+	free(g_beSelectDirectoryMenuItemsStrsBuffer);
+	g_beSelectDirectoryMenuItems = NULL;
+	g_beSelectDirectoryMenuItemsPtrs = NULL;
+	g_beSelectDirectoryMenuItemsStrsBuffer = NULL;
+}
+
+void BE_Launcher_Handler_RootPathSelection(BEMenuItem **menuItemP)
+{
+	int menuItemNum = menuItemP - g_be_launcher_currMenu->menuItems;
+	int numOfSubDirs;
+	const char **dirs = BE_Cross_DirSelection_Start(menuItemNum, &numOfSubDirs);
+	if (dirs)
+		BEL_Launcher_FillDirSelectionMenu(dirs, numOfSubDirs);
+	else
+		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryErrorMenu);
+}
+
+void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP)
+{
+	int menuItemNum = menuItemP - g_be_launcher_currMenu->menuItems;
+	int numOfSubDirs;
+	BE_Launcher_ClearDirSelectionMenu();
+	const char **dirs = BE_Cross_DirSelection_GetNext(menuItemNum - 3, &numOfSubDirs);
+	if (dirs)
+		BEL_Launcher_FillDirSelectionMenu(dirs, numOfSubDirs);
+	else
+		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryErrorMenu);
+}
+
+void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
+{
+	int gameVer = BE_Cross_DirSelection_TryAddGameInstallation();
+	if (gameVer != BE_GAMEVER_LAST)
+	{
+		BE_ST_Launcher_RefreshSelectGameMenuContents();
+
+		// Clear resources
+		BE_Launcher_ClearDirSelectionMenu();
+		BE_Cross_DirSelection_Finish();
+
+		BE_Launcher_PrepareMenu(&g_beSelectGameMenu); // Refresh this menu
+
+		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryFoundGameMenu); // Show this "menu" (actually a dialog)
+	}
+	else
+		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryNoGameFoundMenu); // Do NOT clear resources, we stay in current directory
+}
+
+void BE_Launcher_Handler_DirectorySelectionGoPrev(BEMenuItem **menuItemP)
+{
+	int numOfSubDirs;
+	BE_Launcher_ClearDirSelectionMenu();
+	const char **dirs = BE_Cross_DirSelection_GetPrev(&numOfSubDirs);
+	if (dirs)
+		BEL_Launcher_FillDirSelectionMenu(dirs, numOfSubDirs);
+	else
+		BEL_Launcher_SetCurrentMenu(&g_beSelectInitialPathMenu);
 }
 
 void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP)
