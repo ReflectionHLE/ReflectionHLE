@@ -20,6 +20,7 @@
 #include "SDL.h"
 
 #include "refkeen.h"
+#include "be_st_sdl_private.h"
 
 // Borrowed from other files
 extern const uint32_t g_sdlEGABGRAScreenColors[];
@@ -31,8 +32,32 @@ extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
 extern const char *g_sdlWindowTitle;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 
-// Need these for triggers
+static SDL_GameControllerButton g_sdlControllerLastButtonPressed;
+
+static uint32_t g_sdlControllerLastBinaryPressTime;
+static uint32_t g_sdlControllerLastBinaryPressTimeDelay;
+
+// Need these for triggers while letting the user selection buttons for gameplay
 static bool g_sdlLauncherTriggerBinaryStates[2];
+
+// Game controller button -> Handler map
+static void (*g_sdlControllerButtonToLauncherHandlerMap[])(void) = {
+	&BE_Launcher_HandleInput_ButtonActivate,
+	&BE_Launcher_HandleInput_ButtonBack,
+	NULL,
+	NULL,
+	&BE_Launcher_HandleInput_ButtonBack,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	&BE_Launcher_HandleInput_ButtonUp,
+	&BE_Launcher_HandleInput_ButtonDown,
+	&BE_Launcher_HandleInput_ButtonLeft,
+	&BE_Launcher_HandleInput_ButtonRight,
+};
 
 static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
 static bool g_sdlLauncherGfxCacheMarked = false;
@@ -448,7 +473,7 @@ void BE_ST_Launcher_Prepare(void)
 		if (SDL_IsGameController(i))
 			g_sdlControllers[i] = SDL_GameControllerOpen(i);
 
-	memset(g_sdlLauncherTriggerBinaryStates, 0, sizeof(g_sdlLauncherTriggerBinaryStates));
+	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 
 	// Set fullscreen value
 	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;
@@ -788,6 +813,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 	uint32_t lastRefreshTicks = 0;
 	while (1)
 	{
+		uint32_t ticksBeforePoll = SDL_GetTicks();
 		while (SDL_PollEvent(&event))
 		{
 			void BEL_ST_NormalizeBorderedPos(int *px, int *py);
@@ -852,27 +878,21 @@ void BE_ST_Launcher_RunEventLoop(void)
 					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - SDL_CONTROLLER_AXIS_TRIGGERLEFT] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
-				switch (event.cbutton.button)
+			case SDL_CONTROLLERBUTTONUP:
+				if (g_sdlControllerButtonToLauncherHandlerMap[event.cbutton.button])
 				{
-				case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-					BE_Launcher_HandleInput_ButtonRight();
-					break;
-				case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-					BE_Launcher_HandleInput_ButtonLeft();
-					break;
-				case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-					BE_Launcher_HandleInput_ButtonDown();
-					break;
-				case SDL_CONTROLLER_BUTTON_DPAD_UP:
-					BE_Launcher_HandleInput_ButtonUp();
-					break;
-				case SDL_CONTROLLER_BUTTON_A:
-					BE_Launcher_HandleInput_ButtonActivate();
-					break;
-				case SDL_CONTROLLER_BUTTON_B:
-				case SDL_CONTROLLER_BUTTON_BACK:
-					BE_Launcher_HandleInput_ButtonBack();
-					break;
+					if (event.type == SDL_CONTROLLERBUTTONDOWN)
+					{
+						g_sdlControllerLastButtonPressed = event.cbutton.button;
+						g_sdlControllerLastBinaryPressTime = ticksBeforePoll;
+						g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+						g_sdlControllerButtonToLauncherHandlerMap[event.cbutton.button](); // e.g., change selected menu item
+					}
+					else
+					{
+						if (g_sdlControllerLastButtonPressed == event.cbutton.button)
+							g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+					}
 				}
 				break;
 
@@ -893,6 +913,14 @@ void BE_ST_Launcher_RunEventLoop(void)
 				BE_ST_QuickExit();
 				break;
 			}
+		}
+
+		// Emulate "key repeat" for controller buttons
+		if ((g_sdlControllerLastButtonPressed != SDL_CONTROLLER_BUTTON_INVALID) && (ticksBeforePoll - g_sdlControllerLastBinaryPressTime >= g_sdlControllerLastBinaryPressTimeDelay))
+		{
+			g_sdlControllerLastBinaryPressTime += g_sdlControllerLastBinaryPressTimeDelay;
+			g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
+			g_sdlControllerButtonToLauncherHandlerMap[g_sdlControllerLastButtonPressed](); // e.g., change selected menu item
 		}
 
 		BE_Launcher_RefreshVerticalScrolling();
@@ -1072,6 +1100,10 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 				(*menuItemP)->choice = defaultChoice; // Remove duplications
 	}
 	menuItem->choice = choice;
+
 	// Reset
 	g_sdlLauncherGfxCacheMarked = true;
+
+	memset(g_sdlLauncherTriggerBinaryStates, 0, sizeof(g_sdlLauncherTriggerBinaryStates));
+	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 }

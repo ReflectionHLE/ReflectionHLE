@@ -845,9 +845,9 @@ int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle)
 	return BE_ST_SC_LSHIFT;
 }
 
-int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle)
+int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle, bool isRepeated)
 {
-	if (g_sdlTextInputIsKeyPressed == *pToggle)
+	if ((g_sdlTextInputIsKeyPressed == *pToggle) && !isRepeated)
 		return 0;
 	g_sdlTextInputIsKeyPressed = *pToggle;
 
@@ -920,9 +920,9 @@ int BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y)
 	// Hack for covering the special case of the shift key
 	g_sdlTextInputIsKeyPressed = false;
 	bool toggle = true;
-	int result = BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+	int result = BEL_ST_ToggleKeyPressInTextInputUI(&toggle, false);
 	toggle = false;
-	BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+	BEL_ST_ToggleKeyPressInTextInputUI(&toggle, false);
 
 	return result;
 }

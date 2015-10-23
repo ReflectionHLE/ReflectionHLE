@@ -26,10 +26,16 @@ static SDL_Joystick *g_sdlJoysticks[BE_ST_MAXJOYSTICKS];
 SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS]; // Also used in launcher
 SDL_JoystickID g_sdlJoysticksInstanceIds[BE_ST_MAXJOYSTICKS];
 
-/*** These represent button states (pressed/released), although a call to BEL_ST_AltControlScheme_CleanUp zeros these out ***/
-static bool g_sdlControllersButtonsStates[BE_ST_MAXJOYSTICKS][SDL_CONTROLLER_BUTTON_MAX];
+/*** These represent button states (pressed/released, with repeat), although a call to BEL_ST_AltControlScheme_CleanUp zeros these out ***/
+static bool g_sdlControllersButtonsStates[SDL_CONTROLLER_BUTTON_MAX];
+static SDL_GameControllerButton g_sdlControllerLastButtonPressed;
 // We may optionally use analog axes as buttons (e.g., using stick as arrow keys, triggers as buttons)
-static bool g_sdlControllersAxesStates[BE_ST_MAXJOYSTICKS][SDL_CONTROLLER_AXIS_MAX][2];
+static bool g_sdlControllersAxesStates[SDL_CONTROLLER_AXIS_MAX][2];
+static SDL_GameControllerAxis g_sdlControllerLastAxisPressed;
+static bool g_sdlControllerLastAxisPressedIsPos;
+// Shared with buttons and axes (and used by launcher)
+uint32_t g_sdlControllerLastBinaryPressTime;
+uint32_t g_sdlControllerLastBinaryPressTimeDelay;
 
 /*** These are similar states for a few mouse buttons, required as relative mouse mode is toggled on or off in the middle ***/
 static bool g_sdlMouseButtonsStates[3];
@@ -119,7 +125,7 @@ void BE_ST_InitCommon(void)
 	BE_Cross_PrepareAppPaths();
 
 	BEL_ST_ParseConfig();
-	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE any SDL_CONTROLLERDEVICEADDED event should arrive (so e.g., before SDL_PollEvents).
+	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE any SDL_CONTROLLERDEVICEADDED event should arrive (so e.g., before SDL_PollEvent).
 	SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
 }
 
@@ -139,6 +145,8 @@ void BE_ST_PrepareForGameStartup(void)
 
 	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
 	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
+	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlControllerLastAxisPressed = SDL_CONTROLLER_AXIS_INVALID;
 
 	// BEFORE checking for more joysticks been attached/removed in BE_ST_PollEvents, add what's currently available
 	int nOfJoysticks = SDL_NumJoysticks();
@@ -203,6 +211,8 @@ void BE_ST_HandleExit(int status)
 				if (event.jhat.value == SDL_HAT_CENTERED)
 					break; // Ignore
 			case SDL_KEYDOWN:
+				if (event.key.repeat)
+					break; // Ignore
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_JOYBUTTONDOWN:
 			case SDL_CONTROLLERBUTTONDOWN:
@@ -1113,7 +1123,7 @@ void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping)
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
 
-static bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr)
+static bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr, bool isRepeated)
 {
 	bool prevBinaryStatus = *lastBinaryStatusPtr;
 	*lastBinaryStatusPtr = (value >= g_sdlJoystickAxisBinaryThreshold);
@@ -1121,7 +1131,7 @@ static bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap 
 	{
 	case BE_ST_CTRL_MAP_KEYSCANCODE:
 	{
-		if (*lastBinaryStatusPtr != prevBinaryStatus)
+		if ((*lastBinaryStatusPtr != prevBinaryStatus) || isRepeated)
 		{
 			emulatedDOSKeyEvent dosKeyEvent;
 			dosKeyEvent.isSpecial = false;
@@ -1140,7 +1150,8 @@ static bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap 
 		}
 		return true;
 	case BE_ST_CTRL_MAP_MOUSEMOTION:
-		g_sdlEmuMouseMotionAbsoluteState[map->val] = (value <= g_sdlJoystickAxisDeadZone) ? 0 : (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
+		if (!isRepeated)
+			g_sdlEmuMouseMotionAbsoluteState[map->val] = (value <= g_sdlJoystickAxisDeadZone) ? 0 : (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
 		return true;
 	case BE_ST_CTRL_MAP_OTHERMAPPING:
 		if (!prevBinaryStatus && (*lastBinaryStatusPtr))
@@ -1171,9 +1182,6 @@ static void BEL_ST_ConditionallyAddJoystick(int device_index)
 				g_sdlControllers[i] = SDL_GameControllerOpen(device_index);
 				g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i]));
 
-				memset(g_sdlControllersButtonsStates[i], 0, sizeof(g_sdlControllersButtonsStates[i]));
-				memset(g_sdlControllersAxesStates[i], 0, sizeof(g_sdlControllersAxesStates[i]));
-
 				extern bool g_sdlShowControllerUI;
 				g_sdlShowControllerUI = true;
 				extern bool g_sdlForceGfxControlUiRefresh;
@@ -1187,14 +1195,11 @@ static void BEL_ST_ConditionallyAddJoystick(int device_index)
 }
 
 
-/* WARNING: In theory there may be a CleanUp -> HandleEntry -> CleanUp cycle,
+/* WARNING: In theory there may be a Clear -> HandleEntry -> Clear cycle,
  * but it can never occur since isPressed is set to false
  */
-static void BEL_ST_AltControlScheme_CleanUp(void)
+static void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 {
-	if (!g_sdlControllerSchemeNeedsCleanUp)
-		return;
-
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 	{
 		void BEL_ST_ReleasePressedKeysInTextInputUI(void);
@@ -1211,30 +1216,34 @@ static void BEL_ST_AltControlScheme_CleanUp(void)
 		void BEL_ST_ReleasePressedKeysInControllerUI(void);
 		BEL_ST_ReleasePressedKeysInControllerUI();
 
-		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+		// Simulate binary key/button/other action "releases" and clear button states.
+		// FIXME: Unfortunately this means a mistaken key release event can be sent, but hopefully it's less of an issue than an unexpected key press.
+		for (int but = 0; but < SDL_CONTROLLER_BUTTON_MAX; ++but)
 		{
-			if (g_sdlControllers[i])
-			{
-				// Simulate binary key/button/other action "releases" and clear button states.
-				// FIXME: Unfortunately this means a mistaken key release event can be sent, but hopefully it's less of an issue than ab unexpected key press.
-				for (int but = 0; but < SDL_CONTROLLER_BUTTON_MAX; ++but)
-				{
-					BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], 0, &g_sdlControllersButtonsStates[i][but]);
-				}
-				// Repeat with analog axes
-				for (int axis = 0; axis < SDL_CONTROLLER_AXIS_MAX; ++axis)
-				{
-					// Is pressed in the negative direction?
-					BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][0], 0, &g_sdlControllersAxesStates[i][axis][0]);
-					// Repeat with positive
-					BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][1], 0, &g_sdlControllersAxesStates[i][axis][1]);
-				}
-			}
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], 0, &g_sdlControllersButtonsStates[but], false);
+		}
+		// Repeat with analog axes
+		for (int axis = 0; axis < SDL_CONTROLLER_AXIS_MAX; ++axis)
+		{
+			// Is pressed in the negative direction?
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][0], 0, &g_sdlControllersAxesStates[axis][0], false);
+			// Repeat with positive
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][1], 0, &g_sdlControllersAxesStates[axis][1], false);
 		}
 	}
 
 	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
 	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
+	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlControllerLastAxisPressed = SDL_CONTROLLER_AXIS_INVALID;
+}
+
+static void BEL_ST_AltControlScheme_CleanUp(void)
+{
+	if (!g_sdlControllerSchemeNeedsCleanUp)
+		return;
+
+	BEL_ST_AltControlScheme_ClearBinaryStates();
 
 	extern void BEL_ST_HideAltInputUI(void);
 	BEL_ST_HideAltInputUI();
@@ -1311,8 +1320,154 @@ void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMappi
 }
 
 
+
+// BE_ST_PollEvents handler for "modern" game controller button events
+void BEL_ST_AltController_HandleButtonEvent(int but, bool isPressed, bool isRepeated)
+{
+	// Special handling for text input
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+	{
+		// Usually done from BEL_ST_AltControlScheme_HandleEntry
+		if ((isPressed == g_sdlControllersButtonsStates[but]) && !isRepeated)
+			return; // Ignore
+		g_sdlControllersButtonsStates[but] = isPressed;
+
+		emulatedDOSKeyEvent dosKeyEvent;
+		dosKeyEvent.isSpecial = false;
+		dosKeyEvent.dosScanCode = 0;
+
+		extern int BEL_ST_MoveUpInTextInputUI(void);
+		extern int BEL_ST_MoveDownInTextInputUI(void);
+		extern int BEL_ST_MoveLeftInTextInputUI(void);
+		extern int BEL_ST_MoveRightInTextInputUI(void);
+		extern int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle);
+		extern int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle, bool isRepeated);
+		switch (but)
+		{
+		case SDL_CONTROLLER_BUTTON_DPAD_UP:
+			if (isPressed)
+				dosKeyEvent.dosScanCode = BEL_ST_MoveUpInTextInputUI();
+			// Ensure a recently pressed onscreen keyboard is released
+			isPressed = false;
+			isRepeated = false;
+			break;
+		case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+			if (isPressed)
+				dosKeyEvent.dosScanCode = BEL_ST_MoveDownInTextInputUI();
+			// Ensure a recently pressed onscreen keyboard is released
+			isPressed = false;
+			isRepeated = false;
+			break;
+		case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+			if (isPressed)
+				dosKeyEvent.dosScanCode = BEL_ST_MoveLeftInTextInputUI();
+			// Ensure a recently pressed onscreen keyboard is released
+			isPressed = false;
+			isRepeated = false;
+			break;
+		case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+			if (isPressed)
+				dosKeyEvent.dosScanCode = BEL_ST_MoveRightInTextInputUI();
+			// Ensure a recently pressed onscreen keyboard is released
+			isPressed = false;
+			isRepeated = false;
+			break;
+		// A few other special cases
+		case SDL_CONTROLLER_BUTTON_START:
+			dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
+			break;
+		case SDL_CONTROLLER_BUTTON_B:
+		case SDL_CONTROLLER_BUTTON_BACK:
+			dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
+			break;
+		case SDL_CONTROLLER_BUTTON_X:
+			// Change shift state (or at least try to).
+			// NOTE: This can modify isPressed.
+			dosKeyEvent.dosScanCode = BEL_ST_ToggleShiftStateInTextInputUI(&isPressed);
+			break;
+		default:
+		{
+			// Select key from UI.
+			// NOTE: This can modify isPressed e.g., for shift key.
+			dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInTextInputUI(&isPressed, isRepeated);
+		}
+		}
+
+		if (dosKeyEvent.dosScanCode)
+		{
+			BEL_ST_HandleEmuKeyboardEvent(isPressed, dosKeyEvent);
+		}
+	}
+	// Similar, but for debug keys (behaves a bit different than text input)
+	else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+	{
+		// Usually done from BEL_ST_AltControlScheme_HandleEntry
+		if ((isPressed == g_sdlControllersButtonsStates[but]) && !isRepeated)
+			return; // Ignore
+		g_sdlControllersButtonsStates[but] = isPressed;
+
+		emulatedDOSKeyEvent dosKeyEvent;
+		dosKeyEvent.isSpecial = false;
+		dosKeyEvent.dosScanCode = 0;
+
+		extern void BEL_ST_MoveUpInDebugKeysUI(void);
+		extern void BEL_ST_MoveDownInDebugKeysUI(void);
+		extern void BEL_ST_MoveLeftInDebugKeysUI(void);
+		extern void BEL_ST_MoveRightInDebugKeysUI(void);
+		extern int BEL_ST_ToggleKeyPressInDebugKeysUI(bool *pToggle);
+		switch (but)
+		{
+		case SDL_CONTROLLER_BUTTON_DPAD_UP:
+			if (isPressed)
+				BEL_ST_MoveUpInDebugKeysUI();
+			break;
+		case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+			if (isPressed)
+				BEL_ST_MoveDownInDebugKeysUI();
+			break;
+		case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+			if (isPressed)
+				BEL_ST_MoveLeftInDebugKeysUI();
+			break;
+		case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+			if (isPressed)
+				BEL_ST_MoveRightInDebugKeysUI();
+			break;
+		// A few other special cases
+		case SDL_CONTROLLER_BUTTON_START:
+			dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
+			break;
+		case SDL_CONTROLLER_BUTTON_B:
+		case SDL_CONTROLLER_BUTTON_BACK:
+			dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
+			break;
+		default:
+		{
+			// Select or deselect key from UI, IF actual button is pressed.
+			// NOTE: This returns in isPressed the status of the key.
+			if (isPressed)
+				dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInDebugKeysUI(&isPressed);
+		}
+		}
+
+		if (dosKeyEvent.dosScanCode)
+		{
+			BEL_ST_HandleEmuKeyboardEvent(isPressed, dosKeyEvent);
+		}
+	}
+	// Try the usual otherwise (similar, but not identical, handling done with analog axes, triggers included)
+	else if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], g_sdlJoystickAxisMax*isPressed, &g_sdlControllersButtonsStates[but], isRepeated))
+	{
+		if (g_sdlControllerMappingActualCurr->prevMapping && isPressed)
+		{
+			BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
+		}
+	}
+}
+
 void BE_ST_PollEvents(void)
 {
+	uint32_t ticksBeforePoll = SDL_GetTicks();
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
@@ -1484,6 +1639,7 @@ void BE_ST_PollEvents(void)
 			else
 			{
 				bool isAnyControllerStillConnected = false;
+				bool isAnyControllerDisconnected = false;
 				for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 				{
 					if (g_sdlControllers[i])
@@ -1492,6 +1648,7 @@ void BE_ST_PollEvents(void)
 						{
 							SDL_GameControllerClose(g_sdlControllers[i]);
 							g_sdlControllers[i] = NULL;
+							isAnyControllerDisconnected = true;
 						}
 						else
 						{
@@ -1499,6 +1656,10 @@ void BE_ST_PollEvents(void)
 						}
 					}
 				}
+
+				if (isAnyControllerDisconnected)
+					BEL_ST_AltControlScheme_ClearBinaryStates();
+
 				if (!isAnyControllerStillConnected)
 				{
 					extern bool g_sdlShowControllerUI;
@@ -1512,178 +1673,67 @@ void BE_ST_PollEvents(void)
 			break;
 
 		case SDL_CONTROLLERAXISMOTION:
+		{
 			// Do nothing if some on-screen keyboard is in use
 			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
 				break;
 
-			for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+			int axis = event.caxis.axis;
+			int axisVal = event.caxis.value;
+			// Note: We handle BOTH sides in case axisVal == 0, so "release/clear" events can be properly sent
+			if (axisVal <= 0)
 			{
-				if (g_sdlControllers[i] && (g_sdlJoysticksInstanceIds[i] == event.caxis.which))
+				if (-axisVal >= g_sdlJoystickAxisBinaryThreshold)
 				{
-					int axis = event.caxis.axis;
-					int axisVal = event.caxis.value;
-					// Note: We handle BOTH sides in case axisVal == 0, so "release/clear" events can be properly sent
-					if (axisVal <= 0)
-						BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][0], -axisVal, &g_sdlControllersAxesStates[i][axis][0]);
-					if (axisVal >= 0)
-						if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][1], axisVal, &g_sdlControllersAxesStates[i][axis][1]))
-						{
-							// Special case for triggers, treated like digital buttons
-							if (((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
-							    && g_sdlControllerMappingActualCurr->prevMapping && (axisVal >= g_sdlJoystickAxisBinaryThreshold))
-							{
-								BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
-							}
-						}
+					g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID; // There can be only one
+					g_sdlControllerLastAxisPressed = axis;
+					g_sdlControllerLastAxisPressedIsPos = false;
+					g_sdlControllerLastBinaryPressTime = ticksBeforePoll;
+					g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				}
+				else
+					g_sdlControllerLastAxisPressed = SDL_CONTROLLER_AXIS_INVALID;
 
-					break; // Found matching controller
+				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][0], -axisVal, &g_sdlControllersAxesStates[axis][0], false);
+			}
+			if (axisVal >= 0)
+			{
+				if (axisVal >= g_sdlJoystickAxisBinaryThreshold)
+				{
+					g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID; // There can be only one
+					g_sdlControllerLastAxisPressed = axis;
+					g_sdlControllerLastAxisPressedIsPos = true;
+					g_sdlControllerLastBinaryPressTime = ticksBeforePoll;
+					g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				}
+				else
+					g_sdlControllerLastAxisPressed = SDL_CONTROLLER_AXIS_INVALID;
+
+				if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][1], axisVal, &g_sdlControllersAxesStates[axis][1], false))
+				{
+					// Special case for triggers, treated like digital buttons
+					if (((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
+					    && g_sdlControllerMappingActualCurr->prevMapping && (axisVal >= g_sdlJoystickAxisBinaryThreshold))
+					{
+						BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
+					}
 				}
 			}
+
 			break;
+		}
+
 		case SDL_CONTROLLERBUTTONDOWN:
+			g_sdlControllerLastAxisPressed = SDL_CONTROLLER_AXIS_INVALID; // There can be only one
+			g_sdlControllerLastButtonPressed = event.cbutton.button;
+			g_sdlControllerLastBinaryPressTime = ticksBeforePoll;
+			g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+			BEL_ST_AltController_HandleButtonEvent(event.cbutton.button, true, false);
+			break;
 		case SDL_CONTROLLERBUTTONUP:
-			for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
-			{
-				if (g_sdlControllers[i] && (g_sdlJoysticksInstanceIds[i] == event.cbutton.which))
-				{
-					bool isPressed = (event.type == SDL_CONTROLLERBUTTONDOWN);
-					int but = event.cbutton.button;
-
-					// Special handling for text input
-					if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
-					{
-						// Usually done from BEL_ST_AltControlScheme_HandleEntry
-						if (isPressed == g_sdlControllersButtonsStates[i][but])
-							break;
-						g_sdlControllersButtonsStates[i][but] = isPressed;
-
-						emulatedDOSKeyEvent dosKeyEvent;
-						dosKeyEvent.isSpecial = false;
-						dosKeyEvent.dosScanCode = 0;
-
-						extern int BEL_ST_MoveUpInTextInputUI(void);
-						extern int BEL_ST_MoveDownInTextInputUI(void);
-						extern int BEL_ST_MoveLeftInTextInputUI(void);
-						extern int BEL_ST_MoveRightInTextInputUI(void);
-						extern int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle);
-						extern int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle);
-						switch (but)
-						{
-						case SDL_CONTROLLER_BUTTON_DPAD_UP:
-							if (isPressed)
-								dosKeyEvent.dosScanCode = BEL_ST_MoveUpInTextInputUI();
-							isPressed = false; // Ensure a recently pressed onscreen keyboard is released
-							break;
-						case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-							if (isPressed)
-								dosKeyEvent.dosScanCode = BEL_ST_MoveDownInTextInputUI();
-							isPressed = false; // Ensure a recently pressed onscreen keyboard is released
-							break;
-						case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-							if (isPressed)
-								dosKeyEvent.dosScanCode = BEL_ST_MoveLeftInTextInputUI();
-							isPressed = false; // Ensure a recently pressed onscreen keyboard is released
-							break;
-						case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-							if (isPressed)
-								dosKeyEvent.dosScanCode = BEL_ST_MoveRightInTextInputUI();
-							isPressed = false; // Ensure a recently pressed onscreen keyboard is released
-							break;
-						// A few other special cases
-						case SDL_CONTROLLER_BUTTON_START:
-							dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
-							break;
-						case SDL_CONTROLLER_BUTTON_B:
-						case SDL_CONTROLLER_BUTTON_BACK:
-							dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
-							break;
-						case SDL_CONTROLLER_BUTTON_X:
-							// Change shift state (or at least try to).
-							// NOTE: This can modify isPressed.
-							dosKeyEvent.dosScanCode = BEL_ST_ToggleShiftStateInTextInputUI(&isPressed);
-							break;
-						default:
-						{
-							// Select key from UI.
-							// NOTE: This can modify isPressed e.g., for shift key.
-							dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInTextInputUI(&isPressed);
-						}
-						}
-
-						if (dosKeyEvent.dosScanCode)
-						{
-							BEL_ST_HandleEmuKeyboardEvent(isPressed, dosKeyEvent);
-						}
-					}
-					// Similar, but for debug keys (behaves a bit different than text input)
-					else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
-					{
-						// Usually done from BEL_ST_AltControlScheme_HandleEntry
-						if (isPressed == g_sdlControllersButtonsStates[i][but])
-							break;
-						g_sdlControllersButtonsStates[i][but] = isPressed;
-
-						emulatedDOSKeyEvent dosKeyEvent;
-						dosKeyEvent.isSpecial = false;
-						dosKeyEvent.dosScanCode = 0;
-
-						extern void BEL_ST_MoveUpInDebugKeysUI(void);
-						extern void BEL_ST_MoveDownInDebugKeysUI(void);
-						extern void BEL_ST_MoveLeftInDebugKeysUI(void);
-						extern void BEL_ST_MoveRightInDebugKeysUI(void);
-						extern int BEL_ST_ToggleKeyPressInDebugKeysUI(bool *pToggle);
-						switch (but)
-						{
-						case SDL_CONTROLLER_BUTTON_DPAD_UP:
-							if (isPressed)
-								BEL_ST_MoveUpInDebugKeysUI();
-							break;
-						case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-							if (isPressed)
-								BEL_ST_MoveDownInDebugKeysUI();
-							break;
-						case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-							if (isPressed)
-								BEL_ST_MoveLeftInDebugKeysUI();
-							break;
-						case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-							if (isPressed)
-								BEL_ST_MoveRightInDebugKeysUI();
-							break;
-						// A few other special cases
-						case SDL_CONTROLLER_BUTTON_START:
-							dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
-							break;
-						case SDL_CONTROLLER_BUTTON_B:
-						case SDL_CONTROLLER_BUTTON_BACK:
-							dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
-							break;
-						default:
-						{
-							// Select or deselect key from UI, IF actual button is pressed.
-							// NOTE: This returns in isPressed the status of the key.
-							if (isPressed)
-								dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInDebugKeysUI(&isPressed);
-						}
-						}
-
-						if (dosKeyEvent.dosScanCode)
-						{
-							BEL_ST_HandleEmuKeyboardEvent(isPressed, dosKeyEvent);
-						}
-					}
-					// Try the usual otherwise (similar, but not identical, handling done with analog axes, triggers included)
-					else if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], g_sdlJoystickAxisMax*isPressed, &g_sdlControllersButtonsStates[i][but]))
-					{
-						if (g_sdlControllerMappingActualCurr->prevMapping && isPressed)
-						{
-							BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
-						}
-					}
-
-					break; // Found matching controller
-				}
-			}
+			if (event.cbutton.button == g_sdlControllerLastButtonPressed)
+				g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+			BEL_ST_AltController_HandleButtonEvent(event.cbutton.button, false, false);
 			break;
 
 		case SDL_WINDOWEVENT:
@@ -1706,6 +1756,27 @@ void BE_ST_PollEvents(void)
 			break;
 		default: ;
 		}
+	}
+
+	// Key repeat emulation for some cases
+
+	// Axes - Do nothing if there's an on-screen keyboard 
+	if ((g_sdlControllerMappingActualCurr != &g_beStControllerMappingTextInput) && (g_sdlControllerMappingActualCurr != &g_beStControllerMappingDebugKeys))
+		if ((g_sdlControllerLastAxisPressed != SDL_CONTROLLER_AXIS_INVALID) && (ticksBeforePoll - g_sdlControllerLastBinaryPressTime >= g_sdlControllerLastBinaryPressTimeDelay))
+		{
+			g_sdlControllerLastBinaryPressTime += g_sdlControllerLastBinaryPressTimeDelay;
+			g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
+			// Note: Special handling of triggers is *not* covered, that can change the mapping immediately anyway
+			// FIXME: Passing random axis value (repeat case is ignored for e.g., mouse motion)
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[g_sdlControllerLastAxisPressed][g_sdlControllerLastAxisPressedIsPos], g_sdlJoystickAxisMax, &g_sdlControllersAxesStates[g_sdlControllerLastAxisPressed][g_sdlControllerLastAxisPressedIsPos], true);
+		}
+
+	// Buttons - Use handler also covering the on-screen keyboard 
+	if ((g_sdlControllerLastButtonPressed != SDL_CONTROLLER_BUTTON_INVALID) && (ticksBeforePoll - g_sdlControllerLastBinaryPressTime >= g_sdlControllerLastBinaryPressTimeDelay))
+	{
+		g_sdlControllerLastBinaryPressTime += g_sdlControllerLastBinaryPressTimeDelay;
+		g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
+		BEL_ST_AltController_HandleButtonEvent(g_sdlControllerLastButtonPressed, true, true);
 	}
 
 	// HACK - If audio subsystem is disabled we still want to at least

@@ -22,6 +22,9 @@
 #ifndef	_BE_ST_SDL_PRIVATE_
 #define _BE_ST_SDL_PRIVATE_
 
+#define BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS 500
+#define BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS 40
+
 typedef struct {
 	bool isSpecial; // Scancode of 0xE0 sent?
 	uint8_t dosScanCode;
