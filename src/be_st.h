@@ -380,6 +380,9 @@ typedef enum BE_ST_ScanCode_T {
      BE_ST_SC_KP_MULTIPLY = 0x37,
      // This one is different from all the rest (6 scancodes sent on press ONLY)
      BE_ST_SC_PAUSE = 0xE1,
+
+     // SPECIAL - Used to mark maximum, may have to update if 0xFF is actually used
+     BE_ST_SC_MAX = 0xFF,
 } BE_ST_ScanCode_T;
 
 #endif

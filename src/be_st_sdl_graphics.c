@@ -845,9 +845,9 @@ int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle)
 	return BE_ST_SC_LSHIFT;
 }
 
-int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle, bool isRepeated)
+int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle)
 {
-	if ((g_sdlTextInputIsKeyPressed == *pToggle) && !isRepeated)
+	if (g_sdlTextInputIsKeyPressed == *pToggle)
 		return 0;
 	g_sdlTextInputIsKeyPressed = *pToggle;
 
@@ -920,9 +920,9 @@ int BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y)
 	// Hack for covering the special case of the shift key
 	g_sdlTextInputIsKeyPressed = false;
 	bool toggle = true;
-	int result = BEL_ST_ToggleKeyPressInTextInputUI(&toggle, false);
+	int result = BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
 	toggle = false;
-	BEL_ST_ToggleKeyPressInTextInputUI(&toggle, false);
+	BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
 
 	return result;
 }
@@ -1039,7 +1039,7 @@ void BEL_ST_CheckPressedPointerInControllerUI(int x, int y)
 		emulatedDOSKeyEvent dosKeyEvent;
 		dosKeyEvent.isSpecial = false;
 		dosKeyEvent.dosScanCode = g_sdlPointerSelectedPadButtonScanCode;
-		BEL_ST_HandleEmuKeyboardEvent(true, dosKeyEvent);
+		BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
 	}
 	else if (g_sdlPointerSelectedPadButtonScanCode < 0)
 	{
@@ -1061,7 +1061,7 @@ void BEL_ST_CheckReleasedPointerInControllerUI(void)
 		emulatedDOSKeyEvent dosKeyEvent;
 		dosKeyEvent.isSpecial = false;
 		dosKeyEvent.dosScanCode = g_sdlPointerSelectedPadButtonScanCode;
-		BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+		BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
 	}
 	g_sdlPointerSelectedPadButtonScanCode = 0;
 }
@@ -1084,12 +1084,12 @@ void BEL_ST_CheckMovedPointerInControllerUI(int x, int y)
 		if (oldScanCode)
 		{
 			dosKeyEvent.dosScanCode = oldScanCode;
-			BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+			BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
 		}
 		if (g_sdlPointerSelectedPadButtonScanCode)
 		{
 			dosKeyEvent.dosScanCode = g_sdlPointerSelectedPadButtonScanCode;
-			BEL_ST_HandleEmuKeyboardEvent(true, dosKeyEvent);
+			BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
 		}
 	}
 }
@@ -1104,13 +1104,21 @@ void BEL_ST_ReleasePressedKeysInTextInputUI(void)
 		dosKeyEvent.isSpecial = false;
 		dosKeyEvent.dosScanCode = g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
 		// Don't forget to "release" a key pressed in the text input UI
-		BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+		BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
+
+		BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+		g_sdlTextInputIsKeyPressed = false;
 		// Shift key may further be held, don't forget this too!
 		if ((dosKeyEvent.dosScanCode != BE_ST_SC_LSHIFT) && g_sdlTextInputIsShifted)
 		{
 			dosKeyEvent.dosScanCode = BE_ST_SC_LSHIFT;
-			BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+			BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
+
+			g_sdlTextInputIsShifted = false;
+			BEL_ST_RedrawWholeTextInputUI();
+
 		}
+		g_sdlForceGfxControlUiRefresh = true;
 	}
 }
 
@@ -1124,8 +1132,14 @@ void BEL_ST_ReleasePressedKeysInDebugKeysUI(void)
 			{
 				dosKeyEvent.dosScanCode = g_sdlDOSScanCodeDebugKeysLayout[currKeyRow][currKeyCol];
 				// Don't forget to "release" a key pressed in the text input UI
-				BEL_ST_HandleEmuKeyboardEvent(false, dosKeyEvent);
+				BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
+
+				g_sdlDebugKeysPressed[currKeyRow][currKeyCol] = false;
+				BEL_ST_ToggleDebugKeysKey(currKeyCol, currKeyRow, false, false);
 			}
+
+	BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+	g_sdlForceGfxControlUiRefresh = true;
 }
 
 void BEL_ST_ReleasePressedKeysInControllerUI(void)

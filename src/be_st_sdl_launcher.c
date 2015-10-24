@@ -32,7 +32,7 @@ extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
 extern const char *g_sdlWindowTitle;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 
-static SDL_GameControllerButton g_sdlControllerLastButtonPressed;
+static int g_sdlControllerLastButtonPressed;
 
 static uint32_t g_sdlControllerLastBinaryPressTime;
 static uint32_t g_sdlControllerLastBinaryPressTimeDelay;
