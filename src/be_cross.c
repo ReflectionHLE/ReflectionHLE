@@ -61,6 +61,20 @@ int BE_Cross_strcasecmp(const char *s1, const char *s2)
 	return ((int)uc1 - (int)uc2);
 }
 
+// Similar to BE_Cross_strcasecmp, but compares up to count chars
+int BE_Cross_strncasecmp(const char *s1, const char *s2, size_t count)
+{
+	unsigned char uc1, uc2;
+	for (; count && (*s1) && (BE_Cross_toupper(*s1) == BE_Cross_toupper(*s2)); s1++, s2++, count--);
+	// If done, return 0
+	if (!count)
+		return 0;
+	// Otherwise behave as in BE_Cross_strcasecmp
+	uc1 = (unsigned char)((char)(BE_Cross_toupper(*s1)));
+	uc2 = (unsigned char)((char)(BE_Cross_toupper(*s2)));
+	return ((int)uc1 - (int)uc2);
+}
+
 // Technically a little hack...
 #if (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
 uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void)

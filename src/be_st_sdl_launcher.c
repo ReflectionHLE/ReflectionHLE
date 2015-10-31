@@ -32,32 +32,15 @@ extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
 extern const char *g_sdlWindowTitle;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 
+static int g_sdlKeyboardLastKeyPressed;
+static bool g_sdlKeyboardLastKeyPressedIsShifted;
 static int g_sdlControllerLastButtonPressed;
 
-static uint32_t g_sdlControllerLastBinaryPressTime;
-static uint32_t g_sdlControllerLastBinaryPressTimeDelay;
+static uint32_t g_sdlInputLastBinaryPressTime;
+static uint32_t g_sdlInputLastBinaryPressTimeDelay;
 
 // Need these for triggers while letting the user selection buttons for gameplay
 static bool g_sdlLauncherTriggerBinaryStates[2];
-
-// Game controller button -> Handler map
-static void (*g_sdlControllerButtonToLauncherHandlerMap[])(void) = {
-	&BE_Launcher_HandleInput_ButtonActivate,
-	&BE_Launcher_HandleInput_ButtonBack,
-	NULL,
-	NULL,
-	&BE_Launcher_HandleInput_ButtonBack,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	NULL,
-	&BE_Launcher_HandleInput_ButtonUp,
-	&BE_Launcher_HandleInput_ButtonDown,
-	&BE_Launcher_HandleInput_ButtonLeft,
-	&BE_Launcher_HandleInput_ButtonRight,
-};
 
 static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
 static bool g_sdlLauncherGfxCacheMarked = false;
@@ -473,6 +456,7 @@ void BE_ST_Launcher_Prepare(void)
 		if (SDL_IsGameController(i))
 			g_sdlControllers[i] = SDL_GameControllerOpen(i);
 
+	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 
 	// Set fullscreen value
@@ -574,8 +558,7 @@ void BE_ST_Launcher_Prepare(void)
 	const char **rootPathsNames = BE_Cross_DirSelection_GetRootPathsNames();
 	g_beSelectInitialPathMenuItems = (BEMenuItem *)malloc(nOfRootPaths*sizeof(BEMenuItem));
 	g_beSelectInitialPathMenuItemsPtrs =  (BEMenuItem **)malloc((1+nOfRootPaths)*sizeof(BEMenuItem *));
-	const int strBufferLenBound = 40;
-	g_beSelectInitialPathMenuItemsStrsBuffer = (char *)malloc(nOfRootPaths*strBufferLenBound);
+	g_beSelectInitialPathMenuItemsStrsBuffer = (char *)malloc(nOfRootPaths*BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND);
 	if (!g_beSelectInitialPathMenuItems || !g_beSelectInitialPathMenuItemsPtrs || !g_beSelectInitialPathMenuItemsStrsBuffer)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BE_ST_Launcher_Prepare: Out of memory!\n");
@@ -586,7 +569,7 @@ void BE_ST_Launcher_Prepare(void)
 	g_beSelectInitialPathMenu.menuItems = g_beSelectInitialPathMenuItemsPtrs;
 	char *label = g_beSelectInitialPathMenuItemsStrsBuffer;
 	const char **rootPathNamePtr = rootPathsNames;
-	for (int i = 0; i < nOfRootPaths; ++i, label += strBufferLenBound, ++rootPathNamePtr)
+	for (int i = 0; i < nOfRootPaths; ++i, label += BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, ++rootPathNamePtr)
 	{
 		g_beSelectInitialPathMenuItemsPtrs[i] = &g_beSelectInitialPathMenuItems[i];
 		g_beSelectInitialPathMenuItems[i].handler = &BE_Launcher_Handler_RootPathSelection;
@@ -594,7 +577,7 @@ void BE_ST_Launcher_Prepare(void)
 		g_beSelectInitialPathMenuItems[i].targetMenu = NULL;
 		g_beSelectInitialPathMenuItems[i].label = label;
 		g_beSelectInitialPathMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
-		BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, *rootPathNamePtr);
+		BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, *rootPathNamePtr);
 	}
 	g_beSelectInitialPathMenuItemsPtrs[nOfRootPaths] = NULL;
 }
@@ -807,10 +790,85 @@ static void BEL_ST_Launcher_NormalizePos(int *px, int *py)
 }
 
 
+// Maps SDL scancodes to corresponding ASCII chars (including shifted state)
+static const char g_sdlScancodeToNonShiftedCharMap[] = "\0\0\0\0abcdefghijklmnopqrstuvwxyz1234567890\0\0\0\0 -=[]\\\0;'`,./";
+static const char g_sdlScancodeToShiftedCharMap[] = "\0\0\0\0ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()\0\0\0\0 _+{}|\0:\"~<>?";
+
+static void BE_ST_Launcher_HandleKeyPressEvent(int scancode, bool isShifted)
+{
+	switch (scancode)
+	{
+	case SDL_SCANCODE_PAGEUP:
+		BE_Launcher_HandleInput_ButtonPageUp();
+		break;
+	case SDL_SCANCODE_PAGEDOWN:
+		BE_Launcher_HandleInput_ButtonPageDown();
+		break;
+	case SDL_SCANCODE_RIGHT:
+		BE_Launcher_HandleInput_ButtonRight();
+		break;
+	case SDL_SCANCODE_LEFT:
+		BE_Launcher_HandleInput_ButtonLeft();
+		break;
+	case SDL_SCANCODE_DOWN:
+		BE_Launcher_HandleInput_ButtonDown();
+		break;
+	case SDL_SCANCODE_UP:
+		BE_Launcher_HandleInput_ButtonUp();
+		break;
+	case SDL_SCANCODE_RETURN:
+		BE_Launcher_HandleInput_ButtonActivate();
+		break;
+	case SDL_SCANCODE_ESCAPE:
+		BE_Launcher_HandleInput_ButtonBack();
+		break;
+	default:
+		if (((scancode >= SDL_SCANCODE_A) && (scancode <= SDL_SCANCODE_Z)) || // Letters
+		    ((scancode >= SDL_SCANCODE_1) && (scancode <= SDL_SCANCODE_0)) || // Digits
+		    ((scancode >= SDL_SCANCODE_SPACE) && (scancode <= SDL_SCANCODE_SLASH) && (scancode != SDL_SCANCODE_NONUSHASH)) // A few other keys
+		)
+			BE_Launcher_HandleInput_ASCIIChar((isShifted ? g_sdlScancodeToShiftedCharMap : g_sdlScancodeToNonShiftedCharMap)[scancode]);
+		break;
+	}
+}
+
+static void BE_ST_Launcher_HandleControllerButtonPressEvent(Uint8 but)
+{
+	switch (but)
+	{
+	case SDL_CONTROLLER_BUTTON_A:
+		BE_Launcher_HandleInput_ButtonActivate();
+		break;
+	case SDL_CONTROLLER_BUTTON_B:
+	case SDL_CONTROLLER_BUTTON_BACK:
+		BE_Launcher_HandleInput_ButtonBack();
+		break;
+	case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+		BE_Launcher_HandleInput_ButtonPageUp();
+		break;
+	case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+		BE_Launcher_HandleInput_ButtonPageDown();
+		break;
+	case SDL_CONTROLLER_BUTTON_DPAD_UP:
+		BE_Launcher_HandleInput_ButtonUp();
+		break;
+	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+		BE_Launcher_HandleInput_ButtonDown();
+		break;
+	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+		BE_Launcher_HandleInput_ButtonLeft();
+		break;
+	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+		BE_Launcher_HandleInput_ButtonRight();
+		break;
+	}
+}
+
 void BE_ST_Launcher_RunEventLoop(void)
 {
 	SDL_Event event;
 	uint32_t lastRefreshTicks = 0;
+
 	while (1)
 	{
 		uint32_t ticksBeforePoll = SDL_GetTicks();
@@ -821,43 +879,39 @@ void BE_ST_Launcher_RunEventLoop(void)
 			switch (event.type)
 			{
 			case SDL_KEYDOWN:
-				switch (event.key.keysym.scancode)
-				{
-				case SDL_SCANCODE_RIGHT:
-					BE_Launcher_HandleInput_ButtonRight();
-					break;
-				case SDL_SCANCODE_LEFT:
-					BE_Launcher_HandleInput_ButtonLeft();
-					break;
-				case SDL_SCANCODE_DOWN:
-					BE_Launcher_HandleInput_ButtonDown();
-					break;
-				case SDL_SCANCODE_UP:
-					BE_Launcher_HandleInput_ButtonUp();
-					break;
-				case SDL_SCANCODE_RETURN:
-					BE_Launcher_HandleInput_ButtonActivate();
-					break;
-				case SDL_SCANCODE_ESCAPE:
-					BE_Launcher_HandleInput_ButtonBack();
-					break;
-				}
+				if (event.key.repeat)
+					break; // Ignore
+				g_sdlKeyboardLastKeyPressed = event.key.keysym.scancode;
+				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.keysym.mod & KMOD_SHIFT);
+				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
+				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				BE_ST_Launcher_HandleKeyPressEvent(event.key.keysym.scancode, g_sdlKeyboardLastKeyPressedIsShifted);
+				break;
+			case SDL_KEYUP:
+				if (g_sdlKeyboardLastKeyPressed == event.key.keysym.scancode)
+					g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-				BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-				BE_Launcher_HandleInput_PointerSelect(event.button.x, event.button.y);
+				if (event.button.button == SDL_BUTTON_LEFT)
+				{
+					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
+					BE_Launcher_HandleInput_PointerSelect(event.button.x, event.button.y, ticksBeforePoll);
+				}
 				break;
 			case SDL_MOUSEBUTTONUP:
-				BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-				BE_Launcher_HandleInput_PointerRelease(event.button.x, event.button.y);
+				if (event.button.button == SDL_BUTTON_LEFT)
+				{
+					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
+					BE_Launcher_HandleInput_PointerRelease(event.button.x, event.button.y, ticksBeforePoll);
+				}
 				break;
 			case SDL_MOUSEMOTION:
 				BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-				BE_Launcher_HandleInput_PointerMotion(event.button.x, event.button.y);
+				BE_Launcher_HandleInput_PointerMotion(event.button.x, event.button.y, ticksBeforePoll);
 				break;
 			case SDL_MOUSEWHEEL:
-				BE_Launcher_HandleInput_PointerVScroll(-6*event.wheel.y);
+				BE_Launcher_HandleInput_PointerVScroll(-10*event.wheel.y, ticksBeforePoll);
 				break;
 
 			case SDL_JOYDEVICEADDED:
@@ -878,22 +932,15 @@ void BE_ST_Launcher_RunEventLoop(void)
 					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - SDL_CONTROLLER_AXIS_TRIGGERLEFT] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
+				g_sdlControllerLastButtonPressed = event.cbutton.button;
+				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
+				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
+				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				BE_ST_Launcher_HandleControllerButtonPressEvent(event.cbutton.button);
+				break;
 			case SDL_CONTROLLERBUTTONUP:
-				if (g_sdlControllerButtonToLauncherHandlerMap[event.cbutton.button])
-				{
-					if (event.type == SDL_CONTROLLERBUTTONDOWN)
-					{
-						g_sdlControllerLastButtonPressed = event.cbutton.button;
-						g_sdlControllerLastBinaryPressTime = ticksBeforePoll;
-						g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-						g_sdlControllerButtonToLauncherHandlerMap[event.cbutton.button](); // e.g., change selected menu item
-					}
-					else
-					{
-						if (g_sdlControllerLastButtonPressed == event.cbutton.button)
-							g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
-					}
-				}
+				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
+					g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 				break;
 
 			case SDL_WINDOWEVENT:
@@ -915,15 +962,19 @@ void BE_ST_Launcher_RunEventLoop(void)
 			}
 		}
 
-		// Emulate "key repeat" for controller buttons
-		if ((g_sdlControllerLastButtonPressed != SDL_CONTROLLER_BUTTON_INVALID) && (ticksBeforePoll - g_sdlControllerLastBinaryPressTime >= g_sdlControllerLastBinaryPressTimeDelay))
+		// Emulate "key repeat" for keyboard/controller buttons
+		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != SDL_CONTROLLER_BUTTON_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
 		{
-			g_sdlControllerLastBinaryPressTime += g_sdlControllerLastBinaryPressTimeDelay;
-			g_sdlControllerLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
-			g_sdlControllerButtonToLauncherHandlerMap[g_sdlControllerLastButtonPressed](); // e.g., change selected menu item
+			g_sdlInputLastBinaryPressTime += g_sdlInputLastBinaryPressTimeDelay;
+			g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
+
+			if (g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN)
+				BE_ST_Launcher_HandleKeyPressEvent(g_sdlKeyboardLastKeyPressed, g_sdlKeyboardLastKeyPressedIsShifted);
+			else
+				BE_ST_Launcher_HandleControllerButtonPressEvent(g_sdlControllerLastButtonPressed);
 		}
 
-		BE_Launcher_RefreshVerticalScrolling();
+		BE_Launcher_RefreshVerticalScrolling(ticksBeforePoll);
 
 		/*** Draw ***/
 		if (g_sdlLauncherGfxCacheMarked)
@@ -1014,6 +1065,9 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 			switch (event.type)
 			{
 			case SDL_KEYDOWN:
+				if (event.key.repeat)
+					break; // Ignore
+				// Fall-through
 			case SDL_MOUSEBUTTONDOWN:
 				keepRunning = false;
 				break;
@@ -1106,4 +1160,5 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 
 	memset(g_sdlLauncherTriggerBinaryStates, 0, sizeof(g_sdlLauncherTriggerBinaryStates));
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 }

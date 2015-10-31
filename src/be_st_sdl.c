@@ -223,9 +223,11 @@ void BE_ST_HandleExit(int status)
 			case SDL_JOYHATMOTION:
 				if (event.jhat.value == SDL_HAT_CENTERED)
 					break; // Ignore
+				// Fall-through
 			case SDL_KEYDOWN:
 				if (event.key.repeat)
 					break; // Ignore
+				// Fall-through
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_JOYBUTTONDOWN:
 			case SDL_CONTROLLERBUTTONDOWN:
@@ -1510,9 +1512,10 @@ void BE_ST_PollEvents(void)
 		switch (event.type)
 		{
 		case SDL_KEYDOWN:
-		case SDL_KEYUP:
 			if (event.key.repeat)
 				break; // Ignore (we emulate key repeat on our own)
+			// Fall-through
+		case SDL_KEYUP:
 			BEL_ST_HandleEmuKeyboardEvent(event.type == SDL_KEYDOWN, false, sdlKeyMappings[event.key.keysym.scancode]);
 			break;
 

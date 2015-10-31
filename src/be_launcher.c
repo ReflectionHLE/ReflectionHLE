@@ -41,6 +41,9 @@
 #define BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS (BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND+BE_MENU_CHAR_WIDTH)
 #define BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS (BE_LAUNCHER_PIX_WIDTH-1-BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING-BE_MENU_CHAR_WIDTH)
 
+#define BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD 8 // Moving the pointer less than that leads to no effect
+
+
 extern const uint8_t g_cga_8x8TextFont[256*8*8];
 
 static uint8_t *g_be_launcher_screenPtr;
@@ -295,14 +298,24 @@ static void BEL_Launcher_DrawMenuItemString(const char *str, int selectionYPos, 
 	BE_ST_Launcher_MarkGfxCache();
 }
 
+static bool BEL_Launcher_IsMenuItemAboveViewPort(BEMenuItem *menuItem)
+{
+	return (menuItem->yPosPastEnd - g_be_launcher_currMenu->currPixYScroll <= BE_MENU_FIRST_ITEM_PIX_YPOS);
+}
+
+static bool BEL_Launcher_IsMenuItemBelowViewPort(BEMenuItem *menuItem)
+{
+	return (menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll >= BE_LAUNCHER_PIX_HEIGHT);
+}
+
 static void BEL_Launcher_DrawMenuItems(BEMenu *menu)
 {
 	BEMenuItem **menuItemPP, *menuItemP;
 	for (menuItemPP = menu->menuItems, menuItemP = *menuItemPP; menuItemP; ++menuItemPP, menuItemP = *menuItemPP)
 	{
-		if (menuItemP->yPosPastEnd - g_be_launcher_currMenu->currPixYScroll <= BE_MENU_FIRST_ITEM_PIX_YPOS)
+		if (BEL_Launcher_IsMenuItemAboveViewPort(menuItemP))
 			continue;
-		if (menuItemP->yPosStart - g_be_launcher_currMenu->currPixYScroll >= BE_LAUNCHER_PIX_HEIGHT)
+		if (BEL_Launcher_IsMenuItemBelowViewPort(menuItemP))
 			break;
 
 		BEL_Launcher_DrawMenuItem(menuItemP);
@@ -323,8 +336,16 @@ static void BEL_Launcher_SetCurrentMenu(BEMenu *menu)
 	BEL_Launcher_DrawMenuItems(menu);
 }
 
+
+
+static char g_be_launcher_currInputStrSearch[BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND];
+static char *g_be_launcher_currInputStrSearchPtr;
+static char * const g_be_launcher_currInputStrSearchLastCharPtr = g_be_launcher_currInputStrSearch + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND - 1;
+
+
 static void BEL_Launcher_HandleCurrentMenuItem(void)
 {
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
 	if (!g_be_launcher_selectedMenuItemPtr || !(*g_be_launcher_selectedMenuItemPtr))
 		return;
 
@@ -351,8 +372,13 @@ static void BEL_Launcher_HandleCurrentMenuItem(void)
 
 // User input handlers
 
+static int g_be_launcher_vscroll_currrateper100ms = 0;
+
 void BE_Launcher_HandleInput_ButtonLeft(void)
 {
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
+
 	if (!g_be_launcher_selectedMenuItemPtr || !(*g_be_launcher_selectedMenuItemPtr))
 		return;
 
@@ -373,6 +399,9 @@ void BE_Launcher_HandleInput_ButtonLeft(void)
 
 void BE_Launcher_HandleInput_ButtonRight(void)
 {
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
+
 	if (!g_be_launcher_selectedMenuItemPtr || !(*g_be_launcher_selectedMenuItemPtr))
 		return;
 
@@ -393,47 +422,110 @@ void BE_Launcher_HandleInput_ButtonRight(void)
 
 void BE_Launcher_HandleInput_ButtonUp(void)
 {
-	if (g_be_launcher_selectedMenuItemPtr)
-	{
-		if (g_be_launcher_selectedMenuItemPtr == g_be_launcher_currMenu->menuItems)
-			return;
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
 
-		--g_be_launcher_selectedMenuItemPtr;
+	BEMenuItem **menuItemRPP; // Technically used as as "reverse iterator" (this is done since we don't want to mistakenly dereference g_be_launcher_currMenu->menuItems-1)
+	if (!g_be_launcher_selectedMenuItemPtr || BEL_Launcher_IsMenuItemAboveViewPort(*g_be_launcher_selectedMenuItemPtr) || BEL_Launcher_IsMenuItemBelowViewPort(*g_be_launcher_selectedMenuItemPtr))
+		menuItemRPP = g_be_launcher_currMenu->menuItems + g_be_launcher_currMenu->nOfItems;
+	else
+		menuItemRPP = g_be_launcher_selectedMenuItemPtr;
+
+	while ((menuItemRPP != g_be_launcher_currMenu->menuItems) && BEL_Launcher_IsMenuItemBelowViewPort(*(menuItemRPP-1)))
+		--menuItemRPP;
+	while ((menuItemRPP != g_be_launcher_currMenu->menuItems) && !BEL_Launcher_IsMenuItemAboveViewPort(*(menuItemRPP-1)) && ((*(menuItemRPP-1))->type == BE_MENUITEM_TYPE_STATIC))
+		--menuItemRPP;
+
+	if ((menuItemRPP != g_be_launcher_currMenu->menuItems) && !BEL_Launcher_IsMenuItemAboveViewPort(*(menuItemRPP-1))) // Match found
+	{
+		g_be_launcher_selectedMenuItemPtr = menuItemRPP-1;
+		if (g_be_launcher_currMenu->currPixYScroll + (BE_LAUNCHER_PIX_HEIGHT - 1) < (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd)
+			g_be_launcher_currMenu->currPixYScroll = (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd - (BE_LAUNCHER_PIX_HEIGHT - 1);
+		else if (g_be_launcher_currMenu->currPixYScroll + BE_MENU_FIRST_ITEM_PIX_YPOS > (*g_be_launcher_selectedMenuItemPtr)->yPosStart)
+			g_be_launcher_currMenu->currPixYScroll = (*g_be_launcher_selectedMenuItemPtr)->yPosStart - BE_MENU_FIRST_ITEM_PIX_YPOS;
 	}
 	else
-		g_be_launcher_selectedMenuItemPtr = g_be_launcher_currMenu->menuItems;
-
-	if (g_be_launcher_currMenu->currPixYScroll + BE_MENU_FIRST_ITEM_PIX_YPOS > (*g_be_launcher_selectedMenuItemPtr)->yPosStart)
-		g_be_launcher_currMenu->currPixYScroll = (*g_be_launcher_selectedMenuItemPtr)->yPosStart - BE_MENU_FIRST_ITEM_PIX_YPOS;
+	{
+		g_be_launcher_currMenu->currPixYScroll -= BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT;
+		if (g_be_launcher_currMenu->currPixYScroll < 0)
+			g_be_launcher_currMenu->currPixYScroll = 0;
+	}
 
 	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 }
 
 void BE_Launcher_HandleInput_ButtonDown(void)
 {
-	if (g_be_launcher_selectedMenuItemPtr)
-	{
-		if (!(*(g_be_launcher_selectedMenuItemPtr+1)))
-			return;
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
 
-		++g_be_launcher_selectedMenuItemPtr;
+	BEMenuItem **menuItemPP;
+	if (!g_be_launcher_selectedMenuItemPtr || BEL_Launcher_IsMenuItemAboveViewPort(*g_be_launcher_selectedMenuItemPtr) || BEL_Launcher_IsMenuItemBelowViewPort(*g_be_launcher_selectedMenuItemPtr))
+		menuItemPP = g_be_launcher_currMenu->menuItems;
+	else
+		menuItemPP = g_be_launcher_selectedMenuItemPtr+1;
+
+	while ((*menuItemPP) && BEL_Launcher_IsMenuItemAboveViewPort(*menuItemPP))
+		++menuItemPP;
+	while ((*menuItemPP) && !BEL_Launcher_IsMenuItemBelowViewPort(*menuItemPP) && ((*menuItemPP)->type == BE_MENUITEM_TYPE_STATIC))
+		++menuItemPP;
+
+	if ((*menuItemPP) && !BEL_Launcher_IsMenuItemBelowViewPort(*menuItemPP)) // Match found
+	{
+		g_be_launcher_selectedMenuItemPtr = menuItemPP;
+		if (g_be_launcher_currMenu->currPixYScroll + (BE_LAUNCHER_PIX_HEIGHT - 1) < (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd)
+			g_be_launcher_currMenu->currPixYScroll = (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd - (BE_LAUNCHER_PIX_HEIGHT - 1);
+		else if (g_be_launcher_currMenu->currPixYScroll + BE_MENU_FIRST_ITEM_PIX_YPOS > (*g_be_launcher_selectedMenuItemPtr)->yPosStart)
+			g_be_launcher_currMenu->currPixYScroll = (*g_be_launcher_selectedMenuItemPtr)->yPosStart - BE_MENU_FIRST_ITEM_PIX_YPOS;
 	}
 	else
-		g_be_launcher_selectedMenuItemPtr = g_be_launcher_currMenu->menuItems + g_be_launcher_currMenu->nOfItems-1;
-
-	if (g_be_launcher_currMenu->currPixYScroll + (BE_LAUNCHER_PIX_HEIGHT - 1) < (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd)
-		g_be_launcher_currMenu->currPixYScroll = (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd - (BE_LAUNCHER_PIX_HEIGHT - 1);
+	{
+		g_be_launcher_currMenu->currPixYScroll += BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT;
+		if (g_be_launcher_currMenu->currPixYScroll >= g_be_launcher_currMenu->pixYScrollUpperBound)
+			g_be_launcher_currMenu->currPixYScroll = g_be_launcher_currMenu->pixYScrollUpperBound-1;
+	}
 
 	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 }
 
+void BE_Launcher_HandleInput_ButtonPageUp(void)
+{
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
+
+	g_be_launcher_currMenu->currPixYScroll -= BE_LAUNCHER_PIX_HEIGHT-BE_MENU_FIRST_ITEM_PIX_YPOS;
+	if (g_be_launcher_currMenu->currPixYScroll < 0)
+		g_be_launcher_currMenu->currPixYScroll = 0;
+	// HACK
+	g_be_launcher_selectedMenuItemPtr = NULL;
+	BE_Launcher_HandleInput_ButtonDown();
+}
+
+void BE_Launcher_HandleInput_ButtonPageDown(void)
+{
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
+
+	g_be_launcher_currMenu->currPixYScroll += BE_LAUNCHER_PIX_HEIGHT-BE_MENU_FIRST_ITEM_PIX_YPOS;
+	if (g_be_launcher_currMenu->currPixYScroll >= g_be_launcher_currMenu->pixYScrollUpperBound)
+		g_be_launcher_currMenu->currPixYScroll = g_be_launcher_currMenu->pixYScrollUpperBound-1;
+	// HACK
+	g_be_launcher_selectedMenuItemPtr = NULL;
+	BE_Launcher_HandleInput_ButtonUp();
+}
+
 void BE_Launcher_HandleInput_ButtonActivate(void)
 {
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
+
 	BEL_Launcher_HandleCurrentMenuItem();
 }
 
 void BE_Launcher_HandleInput_ButtonBack(void)
 {
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
 	// HACK
 	if (g_be_launcher_currMenu->backButtonHandler)
 		g_be_launcher_currMenu->backButtonHandler(NULL);
@@ -442,23 +534,81 @@ void BE_Launcher_HandleInput_ButtonBack(void)
 }
 
 
-static int g_be_launcher_vscroll_acceleration = 0;
+void BE_Launcher_HandleInput_ASCIIChar(char ch)
+{
+	g_be_launcher_vscroll_currrateper100ms = 0;
+
+	if (g_be_launcher_currInputStrSearchPtr == g_be_launcher_currInputStrSearchLastCharPtr)
+		return;
+
+	*g_be_launcher_currInputStrSearchPtr++ = ch;
+	BEMenuItem **startMenuItemPP = g_be_launcher_selectedMenuItemPtr;
+	if (!startMenuItemPP)
+		startMenuItemPP = g_be_launcher_currMenu->menuItems;
+
+	BEMenuItem **menuItemPP = startMenuItemPP;
+	do
+	{
+		if (((*menuItemPP)->type != BE_MENUITEM_TYPE_STATIC) && !BE_Cross_strncasecmp((*menuItemPP)->label, g_be_launcher_currInputStrSearch, g_be_launcher_currInputStrSearchPtr-g_be_launcher_currInputStrSearch))
+		{
+			g_be_launcher_selectedMenuItemPtr = menuItemPP;
+
+			if (g_be_launcher_currMenu->currPixYScroll + (BE_LAUNCHER_PIX_HEIGHT - 1) < (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd)
+				g_be_launcher_currMenu->currPixYScroll = (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd - (BE_LAUNCHER_PIX_HEIGHT - 1);
+			else if (g_be_launcher_currMenu->currPixYScroll + BE_MENU_FIRST_ITEM_PIX_YPOS > (*g_be_launcher_selectedMenuItemPtr)->yPosStart)
+				g_be_launcher_currMenu->currPixYScroll = (*g_be_launcher_selectedMenuItemPtr)->yPosStart - BE_MENU_FIRST_ITEM_PIX_YPOS;
+
+			BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
+			return;
+		}
+
+		++menuItemPP;
+		if (!(*menuItemPP))
+			menuItemPP = g_be_launcher_currMenu->menuItems;
+	} while (menuItemPP != startMenuItemPP);
+	// Repeat from the beginning if it's not already the first search char
+	if (g_be_launcher_currInputStrSearchPtr != g_be_launcher_currInputStrSearch+1)
+	{
+		g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+		BE_Launcher_HandleInput_ASCIIChar(ch);
+	}
+}
+
+
+
 static bool g_be_launcher_pointer_in_use = false;
 static bool g_be_launcher_back_button_pressed = false;
+static int g_be_launcher_startpointerx;
+static int g_be_launcher_startpointery;
+static bool g_be_launcher_pointermotionactuallystarted;
 static int g_be_launcher_lastpointery;
+static int g_be_launcher_lastpointeryforcurrentratemeasurement;
+static uint32_t g_be_launcher_lastpointerymeasurementticksinms;
+static int g_be_launcher_pointerymotionrateper100ms;
+static uint32_t g_be_launcher_lastaccelarationupdateticks;
+static uint32_t g_be_launcher_lastrefreshvscrollticks;
 
-void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos)
+void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinms)
 {
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+	g_be_launcher_vscroll_currrateper100ms = 0;
+
 	g_be_launcher_pointer_in_use = true;
 	g_be_launcher_back_button_pressed = (xpos < BE_MENU_BACKBUTTON_PIX_WIDTH) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS);
 	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
+	g_be_launcher_startpointerx = xpos;
+	g_be_launcher_startpointery = ypos;
+	g_be_launcher_pointermotionactuallystarted = false;
 	g_be_launcher_lastpointery = ypos;
+	g_be_launcher_lastpointeryforcurrentratemeasurement = ypos;
+	g_be_launcher_lastpointerymeasurementticksinms = ticksinms;
+	g_be_launcher_pointerymotionrateper100ms = 0;
 
 	if (!g_be_launcher_back_button_pressed)
 	{
 		ypos += g_be_launcher_currMenu->currPixYScroll;
 		for (BEMenuItem **menuItemPP = g_be_launcher_currMenu->menuItems; *menuItemPP; ++menuItemPP)
-			if ((ypos >= (*menuItemPP)->yPosStart) && (ypos < (*menuItemPP)->yPosPastEnd))
+			if ((ypos >= (*menuItemPP)->yPosStart) && (ypos < (*menuItemPP)->yPosPastEnd) && ((*menuItemPP)->type != BE_MENUITEM_TYPE_STATIC))
 			{
 				BEMenuItem **prevMenuItemPP = g_be_launcher_selectedMenuItemPtr;
 				g_be_launcher_selectedMenuItemPtr = menuItemPP;
@@ -475,8 +625,10 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos)
 		BEL_Launcher_DrawMenuItem(*prevMenuItemPP);
 }
 
-void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos)
+void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos, uint32_t ticksinms)
 {
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+
 	g_be_launcher_pointer_in_use = false;
 	//g_be_launcher_lastpointery = ypos;
 	if (g_be_launcher_back_button_pressed)
@@ -506,19 +658,35 @@ void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos)
 		}
 	}
 
-	g_be_launcher_vscroll_acceleration = (g_be_launcher_lastpointery-ypos); // Invert direction
+	if (ticksinms != g_be_launcher_lastpointerymeasurementticksinms) // Theoretically this shouldn't ever occur (being handled by a preceding motion event instead), but checking just in case
+		g_be_launcher_pointerymotionrateper100ms = (ypos-g_be_launcher_lastpointeryforcurrentratemeasurement)*100/(int32_t)(ticksinms - g_be_launcher_lastpointerymeasurementticksinms);
+
+	g_be_launcher_vscroll_currrateper100ms = -g_be_launcher_pointerymotionrateper100ms; // Invert direction
+	g_be_launcher_lastaccelarationupdateticks = ticksinms;
+	g_be_launcher_lastrefreshvscrollticks = ticksinms;
 }
 
-void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos)
+void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinms)
 {
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+
 	if (!g_be_launcher_pointer_in_use)
 		return;
+
+	if (!g_be_launcher_pointermotionactuallystarted)
+	{
+		if ((ypos >= g_be_launcher_startpointery-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (ypos <= g_be_launcher_startpointery+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD))
+			return;
+		g_be_launcher_pointermotionactuallystarted = true;
+	}
+
+	g_be_launcher_vscroll_currrateper100ms = 0;
 
 	g_be_launcher_back_button_pressed = false;
 	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
 
 	g_be_launcher_selectedMenuItemPtr = NULL;
-	g_be_launcher_vscroll_acceleration = 0;
+	g_be_launcher_vscroll_currrateper100ms = 0;
 
 	g_be_launcher_currMenu->currPixYScroll += (g_be_launcher_lastpointery-ypos); // Invert direction
 	if (g_be_launcher_currMenu->currPixYScroll >= g_be_launcher_currMenu->pixYScrollUpperBound)
@@ -526,36 +694,72 @@ void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos)
 	else if (g_be_launcher_currMenu->currPixYScroll < 0)
 		g_be_launcher_currMenu->currPixYScroll = 0;
 
+	if (ticksinms - g_be_launcher_lastpointerymeasurementticksinms >= 100)
+	{
+		g_be_launcher_pointerymotionrateper100ms = (ypos-g_be_launcher_lastpointeryforcurrentratemeasurement)*100/(int32_t)(ticksinms - g_be_launcher_lastpointerymeasurementticksinms);
+		g_be_launcher_lastpointerymeasurementticksinms += 100*((ticksinms-g_be_launcher_lastpointerymeasurementticksinms)/100);
+		g_be_launcher_lastpointeryforcurrentratemeasurement = ypos;
+	}
+
 	g_be_launcher_lastpointery = ypos;
 
 	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 }
 
-void BE_Launcher_HandleInput_PointerVScroll(int ydiff)
+void BE_Launcher_HandleInput_PointerVScroll(int ydiff, uint32_t ticksinms)
 {
-	g_be_launcher_vscroll_acceleration += ydiff;
+	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
+
+	if (!g_be_launcher_vscroll_currrateper100ms)
+	{
+		g_be_launcher_lastaccelarationupdateticks = ticksinms;
+		g_be_launcher_lastrefreshvscrollticks = ticksinms;
+	}
+	g_be_launcher_vscroll_currrateper100ms += ydiff;
 }
 
 
-void BE_Launcher_RefreshVerticalScrolling(void)
+void BE_Launcher_RefreshVerticalScrolling(uint32_t ticksinms)
 {
-	if (g_be_launcher_vscroll_acceleration == 0)
+	if (g_be_launcher_vscroll_currrateper100ms == 0)
 		return;
 
+	g_be_launcher_currMenu->currPixYScroll += (int32_t)(ticksinms-g_be_launcher_lastrefreshvscrollticks)*g_be_launcher_vscroll_currrateper100ms/100;
+	g_be_launcher_lastrefreshvscrollticks = ticksinms;
+
+	if (ticksinms - g_be_launcher_lastaccelarationupdateticks >= 10)
+	{
+		int stepsdiff = (ticksinms-g_be_launcher_lastaccelarationupdateticks)/10;
+		g_be_launcher_lastaccelarationupdateticks += 10*stepsdiff;
+		if (g_be_launcher_vscroll_currrateper100ms > 0)
+		{
+			g_be_launcher_vscroll_currrateper100ms -= stepsdiff;
+			if (g_be_launcher_vscroll_currrateper100ms < 0)
+				g_be_launcher_vscroll_currrateper100ms = 0;
+		}
+		else
+		{
+			g_be_launcher_vscroll_currrateper100ms += stepsdiff;
+			if (g_be_launcher_vscroll_currrateper100ms > 0)
+				g_be_launcher_vscroll_currrateper100ms = 0;
+		}
+	}
+#if 0
 	if (g_be_launcher_vscroll_acceleration > 0)
 		g_be_launcher_currMenu->currPixYScroll += g_be_launcher_vscroll_acceleration--;
 	else
 		g_be_launcher_currMenu->currPixYScroll += g_be_launcher_vscroll_acceleration++;
+#endif
 
 	if (g_be_launcher_currMenu->currPixYScroll >= g_be_launcher_currMenu->pixYScrollUpperBound)
 	{
 		g_be_launcher_currMenu->currPixYScroll = g_be_launcher_currMenu->pixYScrollUpperBound-1;
-		g_be_launcher_vscroll_acceleration = 0;
+		g_be_launcher_vscroll_currrateper100ms = 0;
 	}
 	else if (g_be_launcher_currMenu->currPixYScroll < 0)
 	{
 		g_be_launcher_currMenu->currPixYScroll = 0;
-		g_be_launcher_vscroll_acceleration = 0;
+		g_be_launcher_vscroll_currrateper100ms = 0;
 	}
 
 	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
@@ -609,8 +813,7 @@ static void BEL_Launcher_FillDirSelectionMenu(const char **dirNames, int numOfSu
 {
 	g_beSelectDirectoryMenuItems = (BEMenuItem *)malloc((3+numOfSubDirs)*sizeof(BEMenuItem));
 	g_beSelectDirectoryMenuItemsPtrs = (BEMenuItem **)malloc((4+numOfSubDirs)*sizeof(BEMenuItem *));
-	const int strBufferLenBound = 40;
-	g_beSelectDirectoryMenuItemsStrsBuffer = (char *)malloc((3+numOfSubDirs)*strBufferLenBound);
+	g_beSelectDirectoryMenuItemsStrsBuffer = (char *)malloc((3+numOfSubDirs)*BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND);
 	if (!g_beSelectDirectoryMenuItems || !g_beSelectDirectoryMenuItemsPtrs || !g_beSelectDirectoryMenuItemsStrsBuffer)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BE_ST_Launcher_Prepare: Out of memory!\n");
@@ -621,7 +824,7 @@ static void BEL_Launcher_FillDirSelectionMenu(const char **dirNames, int numOfSu
 	g_beSelectDirectoryMenu.menuItems = g_beSelectDirectoryMenuItemsPtrs;
 	char *label = g_beSelectDirectoryMenuItemsStrsBuffer;
 	const char **dirNamePtr = dirNames;
-	for (int i = 0; i < 3+numOfSubDirs; ++i, label += strBufferLenBound)
+	for (int i = 0; i < 3+numOfSubDirs; ++i, label += BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND)
 	{
 		g_beSelectDirectoryMenuItemsPtrs[i] = &g_beSelectDirectoryMenuItems[i];
 		g_beSelectDirectoryMenuItems[i].choices = NULL;
@@ -632,24 +835,24 @@ static void BEL_Launcher_FillDirSelectionMenu(const char **dirNames, int numOfSu
 		{
 		case 0:
 			g_beSelectDirectoryMenuItems[i].handler = &BE_Launcher_Handler_DirectorySelectionConfirm;
-			BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, "Confirm");
+			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "Confirm");
 			break;
 		case 1:
 			g_beSelectDirectoryMenuItems[i].handler = &BE_Launcher_Handler_DirectorySelectionGoPrev;
-			BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, "Go to previous location");
+			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "Go to previous location");
 			break;
 		case 2:
 			g_beSelectDirectoryMenuItems[i].handler = NULL;
-			BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, "");
+			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "");
 			g_beSelectDirectoryMenuItems[i].type = BE_MENUITEM_TYPE_STATIC; // SPECIAL
 			break;
 		default:
 		{
 			size_t dirNameLen = strlen(*dirNamePtr);
 			g_beSelectDirectoryMenuItems[i].handler = &BE_Launcher_Handler_DirectorySelection;
-			BE_Cross_safeandfastcstringcopy(label, label + strBufferLenBound, *dirNamePtr++);
-			if (dirNameLen >= strBufferLenBound)
-				memset(label+strBufferLenBound-4, '.', 3);
+			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, *dirNamePtr++);
+			if (dirNameLen >= BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND)
+				memset(label+BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND-4, '.', 3);
 		}
 		}
 	}

@@ -21,7 +21,9 @@
 #define _BE_LAUNCHER_
 
 #define BE_LAUNCHER_PIX_WIDTH 320
-#define BE_LAUNCHER_PIX_HEIGHT 240	
+#define BE_LAUNCHER_PIX_HEIGHT 240
+// Some upper bound for menu item label buffer length
+#define BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND 40
 
 typedef enum { BE_MENUITEM_TYPE_STATIC, BE_MENUITEM_TYPE_HANDLER, BE_MENUITEM_TYPE_SELECTION, BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER, BE_MENUITEM_TYPE_DYNAMIC_SELECTION, BE_MENUITEM_TYPE_TARGETMENU } BEMenuItemType;
 
@@ -69,15 +71,18 @@ void BE_Launcher_HandleInput_ButtonLeft(void);
 void BE_Launcher_HandleInput_ButtonRight(void);
 void BE_Launcher_HandleInput_ButtonUp(void);
 void BE_Launcher_HandleInput_ButtonDown(void);
+void BE_Launcher_HandleInput_ButtonPageUp(void);
+void BE_Launcher_HandleInput_ButtonPageDown(void);
 void BE_Launcher_HandleInput_ButtonActivate(void);
 void BE_Launcher_HandleInput_ButtonBack(void);
+void BE_Launcher_HandleInput_ASCIIChar(char ch);
 
-void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos);
-void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos);
-void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos);
-void BE_Launcher_HandleInput_PointerVScroll(int ydiff);
+void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinms);
+void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos, uint32_t ticksinms);
+void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinms);
+void BE_Launcher_HandleInput_PointerVScroll(int ydiff, uint32_t ticksinms);
 
-void BE_Launcher_RefreshVerticalScrolling(void);
+void BE_Launcher_RefreshVerticalScrolling(uint32_t ticksinms);
 
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_RootPathSelection(BEMenuItem **menuItemP);

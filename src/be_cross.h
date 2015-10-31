@@ -76,7 +76,9 @@ inline int BE_Cross_isupper(int c)
 {
 	return ((c >= 'A') && (c <= 'Z'));
 }
+
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
+int BE_Cross_strncasecmp(const char *s1, const char *s2, size_t count);
 
 /* A safe(r) string copying function that:
  * - Gets a pointer to the destination buffer's end (little performance bit).

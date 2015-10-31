@@ -787,7 +787,7 @@ void VW_CGAFullUpdate (void)
 	displayofs = bufferofs+panadjust;
 
 
-	BE_ST_CGAFullUpdateFromWrappedMem(screenseg, screenseg+displayofs, linewidth);
+	BE_ST_CGAUpdateGFXBufferFromWrappedMem(screenseg, screenseg+displayofs, linewidth);
 #if 0
 	uint8_t *srcPtr = &screenseg[displayofs];
 	uint8_t *destPtr = BE_ST_GetCGAMemoryPtr();
