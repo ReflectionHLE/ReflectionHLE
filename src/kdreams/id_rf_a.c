@@ -95,7 +95,6 @@ void RFL_NewTile_CGA (id0_unsigned_t updateoffset)
 		}
 		BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH_CGA);
 
-		//BE_ST_MarkGfxForPendingUpdate();
 		return;
 	}
 	//=========
@@ -131,8 +130,6 @@ void RFL_NewTile_CGA (id0_unsigned_t updateoffset)
 		                       | ((id0_longword_t *)foreSrcPtr)[16];
 #endif
 	}
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 //#endif
 
@@ -326,7 +323,6 @@ void RFL_UpdateTiles (void)
 
 		if (scanPtr == scanEndPtr)
 		{
-			//BE_ST_MarkGfxForPendingUpdate();
 			return; // Nothing left
 		}
 		if (*scanPtr != 1)
@@ -465,7 +461,6 @@ void RFL_MaskForegroundTiles (void)
 		};
 		if (scanPtr == scanEndPtr)
 		{
-			//BE_ST_MarkGfxForPendingUpdate();
 			return; // Nothing left
 		}
 

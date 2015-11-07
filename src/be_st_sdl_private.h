@@ -30,6 +30,9 @@ typedef struct {
 	uint8_t dosScanCode;
 } emulatedDOSKeyEvent;
 
+void BEL_ST_ForceHostDisplayUpdate(void);
+void BEL_ST_SetGfxOutputRects(bool allowResize);
+void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSKeyEvent keyEvent);
 
 #endif

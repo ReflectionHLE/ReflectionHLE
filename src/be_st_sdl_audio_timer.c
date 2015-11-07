@@ -2,6 +2,7 @@
 
 #include "be_cross.h"
 #include "be_st.h"
+#include "be_st_sdl_private.h"
 #include "opl/dbopl.h"
 
 #define PC_PIT_RATE 1193182
@@ -602,7 +603,6 @@ void BE_ST_SetTimer(uint16_t speed, bool isALMusicOn)
 	g_sdlScaledTimerDivisor = isALMusicOn ? (speed*8) : (speed*2);
 }
 
-void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_TicksDelayWithOffset(int sdltickstowait);
 void BEL_ST_TimeCountWaitByPeriod(int16_t timetowait);
 

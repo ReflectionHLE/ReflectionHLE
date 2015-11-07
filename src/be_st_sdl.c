@@ -214,12 +214,15 @@ void BE_ST_HandleExit(int status)
 			switch (event.type)
 			{
 			case SDL_WINDOWEVENT:
-				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+				switch (event.window.event)
 				{
-					void BE_ST_SetGfxOutputRects(bool allowResize);
-					BE_ST_SetGfxOutputRects(false);
+				case SDL_WINDOWEVENT_RESIZED:
+					BEL_ST_SetGfxOutputRects(false);
+					// Fall-through
+				case SDL_WINDOWEVENT_EXPOSED:
+					BEL_ST_ForceHostDisplayUpdate();
+					break;
 				}
-				break;
 			case SDL_JOYHATMOTION:
 				if (event.jhat.value == SDL_HAT_CENTERED)
 					break; // Ignore
@@ -239,7 +242,6 @@ void BE_ST_HandleExit(int status)
 		}
 		SDL_Delay(1);
 		// TODO: Make this more efficient
-		void BEL_ST_UpdateHostDisplay(void);
 		BEL_ST_UpdateHostDisplay();
 	}
 	BE_ST_QuickExit();
@@ -1779,18 +1781,14 @@ void BE_ST_PollEvents(void)
 
 		case SDL_WINDOWEVENT:
 			switch (event.window.event)
-			case  SDL_WINDOWEVENT_RESIZED:
 			{
-				void BE_ST_SetGfxOutputRects(bool allowResize);
-				BE_ST_SetGfxOutputRects(false);
-				//BE_ST_MarkGfxForPendingUpdate();
-				BE_ST_MarkGfxForUpdate();
+			case SDL_WINDOWEVENT_RESIZED:
+				BEL_ST_SetGfxOutputRects(false);
+				// Fall-through
+			case SDL_WINDOWEVENT_EXPOSED:
+				BEL_ST_ForceHostDisplayUpdate();
 				break;
 			}
-			case SDL_WINDOWEVENT_EXPOSED:
-				//BE_ST_MarkGfxForPendingUpdate();
-				BE_ST_MarkGfxForUpdate();
-				break;
 			break;
 		case SDL_QUIT:
 			BE_ST_QuickExit();

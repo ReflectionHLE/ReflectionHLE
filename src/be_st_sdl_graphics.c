@@ -1187,7 +1187,7 @@ void BEL_ST_ReleasePressedKeysInControllerUI(void)
 }
 
 
-void BE_ST_SetGfxOutputRects(bool allowResize)
+void BEL_ST_SetGfxOutputRects(bool allowResize)
 {
 	int srcWidth = g_sdlTexWidth;
 	int srcHeight = g_sdlTexHeight;
@@ -1319,6 +1319,11 @@ void BE_ST_SetGfxOutputRects(bool allowResize)
 	g_sdlControllerDebugKeysRect.h = g_sdlControllerDebugKeysRect.w * ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT / ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH;
 	g_sdlControllerDebugKeysRect.x = (winWidth-g_sdlControllerDebugKeysRect.w)/2;
 	g_sdlControllerDebugKeysRect.y = winHeight-g_sdlControllerDebugKeysRect.h;
+}
+
+void BEL_ST_ForceHostDisplayUpdate(void)
+{
+	g_sdlForceGfxControlUiRefresh = true; // HACK that technically does exactly what we want (even if controls are not drawn)
 }
 
 void BE_ST_SetScreenStartAddress(uint16_t crtc)
@@ -1700,7 +1705,7 @@ void BE_ST_SetScreenMode(int mode)
 		break;
 	}
 	g_sdlScreenMode = mode;
-	BE_ST_SetGfxOutputRects(true);
+	BEL_ST_SetGfxOutputRects(true);
 	BEL_ST_RecreateTexture();
 }
 

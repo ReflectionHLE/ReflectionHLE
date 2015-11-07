@@ -373,10 +373,9 @@ void	VW_ClearVideo (id0_int_t color)
 
 		EGAWRITEMODE(0);
 	}
-	if (GRMODE == CGAGR)
+	else if (GRMODE == CGAGR)
 	{
 		memset(screenseg, color, 0xffff);
-		//BE_ST_MarkGfxForPendingUpdate();
 	}
 }
 
@@ -587,7 +586,6 @@ void VW_Hlin_CGA(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_uns
 		// mask out pixels; 'or' in color
 		screenseg[dest] = (screenseg[dest] & ~maskleft) | ((id0_byte_t)color & maskleft);
 
-		//BE_ST_MarkGfxForPendingUpdate();
 		return;
 	}
 
@@ -613,8 +611,6 @@ void VW_Hlin_CGA(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_uns
 
 	// mask out pixels; 'or' in color
 	screenseg[dest] = (screenseg[dest] & ~maskright) | ((id0_byte_t)color & maskright);
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 //#endif
 
@@ -822,9 +818,6 @@ void VW_CGAFullUpdate (void)
 
 	updateptr = baseupdateptr;
 	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
-
-	// Rather than BE_ST_MarkGfxForPendingUpdate()...
-	//BE_ST_MarkGfxForUpdate();
 
 #if 0
 	id0_byte_t	*update;

@@ -60,8 +60,6 @@ void VW_Plot_CGA(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 	id0_byte_t maskOn = (colorbyte[color] & plotpixels[x&3]);
 	id0_byte_t maskOff = ~plotpixels[x&3]; // mask off other pixels
 	*destPtr = (((*destPtr) & maskOff) | maskOn);
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -79,8 +77,6 @@ void VW_Vlin_CGA(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_uns
 	{
 		*destPtr = (((*destPtr) & maskOff) | maskOn);
 	}
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -110,8 +106,6 @@ void VW_DrawTile8_CGA(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned
 	*destPtr = *(tilePtr++);
 	BE_Cross_Wrapped_Inc(screenseg, &destPtr);
 	*destPtr = *tilePtr;
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -156,8 +150,6 @@ void VW_MaskBlock_CGA(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 			*destPtr = ((*destPtr) & (*srcPtr)) | srcPtr[planesize];
 		}
 	}
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -180,8 +172,6 @@ void VW_ScreenToScreen_CGA(id0_unsigned_t source, id0_unsigned_t dest,
 	{
 		BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, wide);
 	}
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
@@ -207,8 +197,6 @@ void VW_MemToScreen_CGA(memptr source, id0_unsigned_t dest,
 	for (id0_word_t lineCounter = height; lineCounter; --lineCounter, srcPtr += wide, BE_Cross_Wrapped_Add(screenseg, &destPtr, linewidth)) {
 		BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, srcPtr, wide);
 	}
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //===========================================================================
@@ -360,8 +348,6 @@ static void VWL_XORBuffer(id0_byte_t *buffer)
 			*(id0_word_t *)destPtr ^= ((*(id0_word_t *)srcPtr) & fontcolormask);
 		}
 	}
-
-	//BE_ST_MarkGfxForPendingUpdate();
 }
 
 //============================================================================
