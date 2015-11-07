@@ -34,9 +34,15 @@ SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 static bool g_sdlIsSoftwareRendered;
 
 #ifdef REFKEEN_VER_KDREAMS
-	const char *g_sdlWindowTitle = "Reflection Keen";
-#elif (defined REFKEEN_VER_CATACOMB_ALL)
+	const char *g_sdlWindowTitle = "Reflection Keen Dreams";
+#elif (defined REFKEEN_VER_CAT3D)
 	const char *g_sdlWindowTitle = "Reflection Catacomb 3-D";
+#elif (defined REFKEEN_VER_CATABYSS)
+	const char *g_sdlWindowTitle = "Reflection Catacomb Abyss";
+#elif (defined REFKEEN_VER_CATARM)
+	const char *g_sdlWindowTitle = "Reflection Catacomb Armageddon";
+#elif (defined REFKEEN_VER_CATAPOC)
+	const char *g_sdlWindowTitle = "Reflection Catacomb Apocalypse";
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif

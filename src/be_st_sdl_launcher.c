@@ -69,7 +69,7 @@ BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMe
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Quit, "Quit", &g_beQuitConfirmMenu)
 
 BEMenu g_beMainMenu = {
-	"Reflection Keen", // TODO rename this based on EXE
+	NULL, // Title filled on init
 	&g_beQuitConfirmMenu,
 	(BEMenuItem *[])
 	{
@@ -458,6 +458,9 @@ void BE_ST_Launcher_Prepare(void)
 
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+
+	/*** Prepare main menu title ***/
+	g_beMainMenu.title = g_sdlWindowTitle;
 
 	// Set fullscreen value
 	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;
