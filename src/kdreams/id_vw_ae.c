@@ -18,6 +18,15 @@
 
 #include "id_heads.h"
 
+// REFKEEN - GRMODE is a variable now, so EGA and CGA versions of functions
+// are defined for all time. Hence, they have been renamed.
+// Correct functions are selected based on game version.
+//
+// EXCEPTIONS:
+// - VWL_UpdateScreenBlocks, an EGA-only function.
+// - VWL_XORBuffer, ShiftPropChar and a few variables, used locally
+// (defined static now).
+
 //=================================
 //
 // EGA view manager routines
@@ -45,10 +54,10 @@
 //
 //============================================================================
 
-id0_byte_t plotpixels[] = {128, 64, 32, 16, 8, 4, 2, 1};
+static id0_byte_t plotpixels[] = {128, 64, 32, 16, 8, 4, 2, 1};
 extern id0_unsigned_t linedelta;
 
-void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
+void VW_Plot_EGA(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 {
 	BE_ST_EGAUpdateGFXPixel4bpp(bufferofs+ylookup[y]+(x>>3), color, plotpixels[x&7]);
 }
@@ -111,7 +120,7 @@ ENDP
 //
 //============================================================================
 
-void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigned_t color)
+void VW_Vlin_EGA(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigned_t color)
 {
 	id0_unsigned_t egaDestOff = bufferofs+ylookup[yl]+(x>>3);
 	id0_byte_t mask = plotpixels[x&7];
@@ -190,9 +199,9 @@ ENDP
 //
 //===================
 
-id0_unsigned_t screendest;
+static id0_unsigned_t screendest;
 
-void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t tile)
+void VW_DrawTile8_EGA(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t tile)
 {
 	id0_unsigned_t egaDestOff;
 	screendest = bufferofs+xcoord+ylookup[ycoord];
@@ -282,7 +291,7 @@ ENDP
 id0_byte_t planemask;
 id0_byte_t planenum;
 
-void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+void VW_MaskBlock_EGA(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize)
 {
 	planemask = 1;
@@ -609,7 +618,7 @@ ENDP
 //
 //============================================================================
 
-void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
+void VW_ScreenToScreen_EGA(id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t wide, id0_unsigned_t height)
 {
 	for (id0_unsigned_t lineCounter = height; lineCounter; --lineCounter, source += linewidth, dest += linewidth)
@@ -682,7 +691,7 @@ ENDP
 //============================================================================
 
 
-void VW_MemToScreen(memptr source, id0_unsigned_t dest,
+void VW_MemToScreen_EGA(memptr source, id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height)
 {
 	id0_byte_t *srcPtr = (id0_byte_t *)source; // block is segment aligned
@@ -881,7 +890,7 @@ ENDP
 //
 //===========================================================================
 
-void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
+void VW_ScreenToMem_EGA(id0_unsigned_t source, memptr dest,
 	id0_unsigned_t wide, id0_unsigned_t height)
 {
 	id0_byte_t *destPtr = (id0_byte_t *)dest;
@@ -1194,7 +1203,7 @@ ENDP
 //
 //==============
 
-void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
+void 	VW_SetScreen_EGA (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 {
 #if WAITFORVBL
 #if 0
@@ -1249,9 +1258,11 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 //
 //===========================================================================
 
-/* SIGNED */ id0_int_t px, py; // proportional character drawing coordinates
+/*** REFKEEN - A few shared CGA/EGA variable definitions moved to id_vw.c ***/
+
+extern /* SIGNED */ id0_int_t px, py; // proportional character drawing coordinates
 //pdrawmode
-id0_byte_t fontcolor = 15; // 0-15 mapmask value
+extern id0_byte_t fontcolor/*= 15*/; // 0-15 mapmask value
 
 /*
  * offsets in font structure
@@ -1262,24 +1273,24 @@ id0_byte_t fontcolor = 15; // 0-15 mapmask value
 
 
 //id0_word_t propchar; // the character number to shift // UNUSED VARIABLE
-id0_char_t *stringptr;
+//id0_char_t *stringptr; // REFKEEN - UNUSED VARIABLE
 
 
 #define BUFFWIDTH 50
 #define BUFFHEIGHT 32 // must be twice as high as font for masked fonts
 
-id0_byte_t databuffer[BUFFWIDTH*BUFFHEIGHT];
+static id0_byte_t databuffer[BUFFWIDTH*BUFFHEIGHT];
 
-id0_word_t bufferwidth; // bytes with valid info / line
-id0_word_t bufferheight; // number of lines currently used
+extern id0_word_t bufferwidth; // bytes with valid info / line
+extern id0_word_t bufferheight; // number of lines currently used
 
-id0_word_t bufferbyte;
-id0_word_t bufferbit;
+extern id0_word_t bufferbyte;
+extern id0_word_t bufferbit;
 
-id0_word_t screenspot; // where the buffer is going
+extern id0_word_t screenspot; // where the buffer is going
 
-id0_word_t bufferextra; // add at end of a line copy
-id0_word_t screenextra;
+extern id0_word_t bufferextra; // add at end of a line copy
+extern id0_word_t screenextra;
 
 //======================
 //
@@ -1319,10 +1330,11 @@ id0_word_t screenextra;
 // register.
 // - The only other function with calls to BufferToScreen
 // is VW_DrawMPropString, but it appears to be unused.
-// - Also a bit more consistent with the CGA counterpart.
+// - Also a bit more consistent with the CGA counterpart, especially
+// since CGA or EGA behaviors may be selected in runtine.
 
 //void BufferToScreen(id0_byte_t *buffer)
-void VWL_XORBuffer(id0_byte_t *buffer)
+static void VWL_XORBuffer(id0_byte_t *buffer)
 {
 	if (!bufferwidth)
 	{
@@ -1369,7 +1381,7 @@ void VWL_XORBuffer(id0_byte_t *buffer)
 //
 //==================
 
-void ShiftPropChar(id0_word_t charnum)
+static void ShiftPropChar(id0_word_t charnum)
 {
 	// WARNING: Later [es:bx] is the source while [di] (ds:di) is the dest
 
@@ -1435,7 +1447,7 @@ void ShiftPropChar(id0_word_t charnum)
 //
 //==================
 
-void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
+void VW_DrawPropString_EGA (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
 	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
@@ -1804,3 +1816,23 @@ ENDP
 #endif // VW_DrawMPropString
 
 #endif // if fonts
+
+// (REFKEEN) Used for patching version-specific stuff
+void RefKeen_Patch_id_vw_ae(void)
+{
+	if (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105)
+	{
+		VW_MaskBlock = VW_MaskBlock_EGA;
+		VW_MemToScreen = VW_MemToScreen_EGA;
+		VW_ScreenToMem = VW_ScreenToMem_EGA;
+		VW_ScreenToScreen = VW_ScreenToScreen_EGA;
+
+		VW_DrawTile8 = VW_DrawTile8_EGA;
+
+		VW_DrawPropString = VW_DrawPropString_EGA;
+		//VW_DrawMPropString = VW_DrawMPropString_EGA; // REFKEEN - Unused function
+
+		VW_Plot = VW_Plot_EGA;
+		VW_Vlin = VW_Vlin_EGA;
+	}
+}

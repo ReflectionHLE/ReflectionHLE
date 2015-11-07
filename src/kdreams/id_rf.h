@@ -100,9 +100,10 @@ extern	id0_unsigned_t	masterofs;
 
 extern	id0_byte_t		*updateptr;				// current start of update window
 
-#if GRMODE == CGAGR
+// REFKEEN - GRMODE is a variable now, so the following is always declared
+//#if GRMODE == CGAGR
 extern	id0_byte_t		*baseupdateptr;
-#endif
+//#endif
 
 extern id0_unsigned_t	blockstarts[UPDATEWIDE*UPDATEHIGH];
 extern id0_unsigned_t	updatemapofs[UPDATEWIDE*UPDATEHIGH];
@@ -129,14 +130,24 @@ void RF_Shutdown (void);
 
 void RF_NewMap (void);
 void RF_MarkTileGraphics (void);
-void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y);
-void RF_Scroll (id0_int_t x, id0_int_t y);
+/*** REFKEEN - A few functions are now pointers (switchable based on game version),  ***/
+/*** but mode-specific prototypes may also be declared as they can be used directly. ***/
+extern void (*RF_NewPosition) (id0_unsigned_t x, id0_unsigned_t y);
+extern void (*RF_Scroll) (id0_int_t x, id0_int_t y);
 
-void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+extern void (*RF_PlaceSprite) (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority);
-void RF_RemoveSprite (void **user);
+extern void (*RF_RemoveSprite) (void **user);
 
-void RF_Refresh (void);
+void RF_PlaceSprite_EGA (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority);
+void RF_RemoveSprite_EGA (void **user);
+
+void RF_PlaceSprite_CGA (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority);
+void RF_RemoveSprite_CGA (void **user);
+
+extern void (*RF_Refresh) (void);
 void RF_ForceRefresh (void);
 void RF_SetRefreshHook (void (*func) (void) );
 

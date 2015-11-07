@@ -166,7 +166,13 @@ BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename); // For
 BE_FILE_T BE_Cross_open_additionalfile_for_reading(const char *filename);
 BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename);
 // Should be shared
-inline void BE_Cross_close(BE_FILE_T fp) { fclose(fp); }
+inline void BE_Cross_close(BE_FILE_T fp)
+{
+	if (!fp) // This may happen e.g., if Keen Dreams doesn't find the GAMEMAPS file (from ID_CA.C)
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "WARNING: Attempted to close a file from a NULL pointer.\n");
+	else
+		fclose(fp);
+}
 
 // Loads a file originally embedded into the EXE (for DOS) to a newly allocated
 // chunk of memory. Should be freed with BE_Cross_free_mem_loaded_embedded_rsrc.

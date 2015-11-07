@@ -109,7 +109,8 @@ void	SpawnScore (void);
 void ScoreThink (objtype *ob);
 void ScoreReact (objtype *ob);
 
-void MemDrawChar (id0_int_t char8,id0_byte_t id0_far *dest,id0_unsigned_t width,id0_unsigned_t planesize);
+// REFKEEN - This is now a function pointer (switchable based on game version)
+extern void (*MemDrawChar) (id0_int_t char8,id0_byte_t id0_far *dest,id0_unsigned_t width,id0_unsigned_t planesize);
 
 statetype s_score	= {0/*NULL*/,0/*NULL*/,think,false,
 	false,0, 0,0, ScoreThink , NULL, ScoreReact, NULL};
@@ -144,14 +145,14 @@ void	FixScoreBox (void)
 {
 	id0_unsigned_t	width, planesize;
 	//id0_unsigned_t smallplane,bigplane;
-	spritetype	id0_seg	*block;
+	void/*spritetype*/	id0_seg	*block;
 	id0_byte_t	id0_far	*dest;
 
 // draw boobus bomb if on level 15, else flower power
-	block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
-	width = block->width[0];
-	planesize = block->planesize[0];
-	dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
+	block = /*(spritetype id0_seg *)*/grsegs[SCOREBOXSPR];
+	width = VW_GetSpriteShiftWidth(block,0)/*block->width[0]*/;
+	planesize = VW_GetSpriteShiftPlaneSize(block,0)/*block->planesize[0]*/;
+	dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+VW_GetSpriteShiftSourceOffset(block,0)/*block->sourceoffset[0]*/
 		+ planesize + width*16 + 4*CHARWIDTH;
 	if (mapon == 15)
 	{
@@ -179,9 +180,12 @@ void	FixScoreBox (void)
 ======================
 */
 
-#if GRMODE == EGAGR
+// REFKEEN - Rename functions from MemDrawChar so they have different names;
+// Correct one is selected based on game version (GRMODE is a variable now).
 
-void MemDrawChar (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t width, id0_unsigned_t planesize)
+//#if GRMODE == EGAGR
+
+void MemDrawCharEGA (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t width, id0_unsigned_t planesize)
 {
 	// Ported from ASM
 
@@ -204,10 +208,10 @@ void MemDrawChar (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t widt
 		dest += planesize;
 	}
 }
-#endif
+//#endif
 
-#if GRMODE == CGAGR
-void MemDrawChar (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t width, id0_unsigned_t planesize)
+//#if GRMODE == CGAGR
+void MemDrawCharCGA (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t width, id0_unsigned_t planesize)
 {
 	// Ported from ASM
 
@@ -225,7 +229,7 @@ void MemDrawChar (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t widt
 	memcpy(destPtr += width, srcPtr += 2, 2);
 	memcpy(destPtr += width, srcPtr += 2, 2);
 }
-#endif
+//#endif
 
 
 /*
@@ -235,14 +239,16 @@ void MemDrawChar (id0_int_t char8, id0_byte_t id0_far *dest, id0_unsigned_t widt
 =
 ====================
 */
-#if GRMODE == EGAGR
+// REFKEEN - Originally defined if GRMODE == EGAGR, but GRMODE has changed
+// to a variable, so always define
+//#if GRMODE == EGAGR
 void ShiftScore (void)
 {
 	spritetabletype id0_far *spr;
-	spritetype id0_seg *dest;
+	spritetype_ega id0_seg *dest;
 
 	spr = &spritetable[SCOREBOXSPR-STARTSPRITES];
-	dest = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
+	dest = (spritetype_ega id0_seg *)grsegs[SCOREBOXSPR];
 
 	CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
 		(id0_byte_t *)dest+dest->sourceoffset[1],spr->width,spr->height,2);
@@ -263,7 +269,7 @@ void ShiftScore (void)
 		dest->sourceoffset[3],spr->width,spr->height,6);
 #endif
 }
-#endif
+//#endif
 
 /*
 ===============
@@ -276,7 +282,7 @@ void ShiftScore (void)
 void ScoreThink (objtype *ob)
 {
 	id0_char_t		str[10],*ch;
-	spritetype	id0_seg	*block;
+	void/*spritetype*/	id0_seg	*block;
 	id0_byte_t		id0_far *dest;
 	id0_unsigned_t	i, length, width, planesize, number;
 
@@ -286,10 +292,10 @@ void ScoreThink (objtype *ob)
 	if ((gamestate.score>>16) != ob->temp1
 		|| (id0_unsigned_t)gamestate.score != ob->temp2 )
 	{
-		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
-		width = block->width[0];
-		planesize = block->planesize[0];
-		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
+		block = /*(spritetype id0_seg *)*/grsegs[SCOREBOXSPR];
+		width = VW_GetSpriteShiftWidth(block,0)/*block->width[0]*/;
+		planesize = VW_GetSpriteShiftPlaneSize(block,0)/*block->planesize[0]*/;
+		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+VW_GetSpriteShiftSourceOffset(block,0)/*block->sourceoffset[0]*/
 			+ planesize + width*4 + 1*CHARWIDTH;
 
 		BE_Cross_ltoa_dec(gamestate.score, str);
@@ -305,9 +311,9 @@ void ScoreThink (objtype *ob)
 		while (*ch)
 			MemDrawChar (*ch++ - '0'+1,dest+=CHARWIDTH,width,planesize);
 
-#if GRMODE == EGAGR
-		ShiftScore ();
-#endif
+		if (GRMODE == EGAGR)
+			ShiftScore ();
+
 		ob->needtoreact = true;
 		ob->temp1 = gamestate.score>>16;
 		ob->temp2 = gamestate.score;
@@ -322,10 +328,10 @@ void ScoreThink (objtype *ob)
 		number = gamestate.flowerpowers;
 	if (number != ob->temp3)
 	{
-		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
-		width = block->width[0];
-		planesize = block->planesize[0];
-		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
+		block = /*(spritetype id0_seg *)*/grsegs[SCOREBOXSPR];
+		width = VW_GetSpriteShiftWidth(block,0)/*block->width[0]*/;
+		planesize = VW_GetSpriteShiftPlaneSize(block,0)/*block->planesize[0]*/;
+		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+VW_GetSpriteShiftSourceOffset(block,0)/*block->sourceoffset[0]*/
 			+ planesize + width*20 + 5*CHARWIDTH;
 
 		if (number > 99)
@@ -344,9 +350,9 @@ void ScoreThink (objtype *ob)
 		while (*ch)
 			MemDrawChar (*ch++ - '0'+1,dest+=CHARWIDTH,width,planesize);
 
-#if GRMODE == EGAGR
-		ShiftScore ();
-#endif
+		if (GRMODE == EGAGR)
+			ShiftScore ();
+
 		ob->needtoreact = true;
 		ob->temp3 = gamestate.flowerpowers;
 	}
@@ -356,10 +362,10 @@ void ScoreThink (objtype *ob)
 //
 	if (gamestate.lives != ob->temp4)
 	{
-		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
-		width = block->width[0];
-		planesize = block->planesize[0];
-		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+block->sourceoffset[0]
+		block = /*(spritetype id0_seg *)*/grsegs[SCOREBOXSPR];
+		width = VW_GetSpriteShiftWidth(block,0)/*block->width[0]*/;
+		planesize = VW_GetSpriteShiftPlaneSize(block,0)/*block->planesize[0]*/;
+		dest = (id0_byte_t id0_far *)grsegs[SCOREBOXSPR]+VW_GetSpriteShiftSourceOffset(block,0)/*block->sourceoffset[0]*/
 			+ planesize + width*20 + 2*CHARWIDTH;
 
 		if (gamestate.lives>9)
@@ -367,9 +373,9 @@ void ScoreThink (objtype *ob)
 		else
 			MemDrawChar (gamestate.lives +1,dest,width,planesize);
 
-#if GRMODE == EGAGR
-		ShiftScore ();
-#endif
+		if (GRMODE == EGAGR)
+			ShiftScore ();
+
 		ob->needtoreact = true;
 		ob->temp4 = gamestate.lives;
 	}
@@ -392,22 +398,21 @@ void ScoreReact (objtype *ob)
 	ob->x = originxglobal;
 	ob->y = originyglobal;
 
-#if GRMODE == EGAGR
-	RF_PlaceSprite (&ob->sprite
-		,ob->x+4*PIXGLOBAL
-		,ob->y+4*PIXGLOBAL
-		,SCOREBOXSPR
-		,spritedraw
-		,PRIORITIES-1);
-#endif
-#if GRMODE == CGAGR
-	RF_PlaceSprite (&ob->sprite
-		,ob->x+8*PIXGLOBAL
-		,ob->y+8*PIXGLOBAL
-		,SCOREBOXSPR
-		,spritedraw
-		,PRIORITIES-1);
-#endif
+	if (GRMODE == EGAGR)
+		RF_PlaceSprite_EGA (&ob->sprite
+			,ob->x+4*PIXGLOBAL
+			,ob->y+4*PIXGLOBAL
+			,SCOREBOXSPR
+			,spritedraw
+			,PRIORITIES-1);
+
+	if (GRMODE == CGAGR)
+		RF_PlaceSprite_CGA (&ob->sprite
+			,ob->x+8*PIXGLOBAL
+			,ob->y+8*PIXGLOBAL
+			,SCOREBOXSPR
+			,spritedraw
+			,PRIORITIES-1);
 }
 
 
@@ -2508,3 +2513,10 @@ void	KeenSlideReact (objtype *ob)
 	PLACESPRITE;
 }
 
+// (REFKEEN) Used for patching version-specific stuff
+void (*MemDrawChar) (id0_int_t char8,id0_byte_t id0_far *dest,id0_unsigned_t width,id0_unsigned_t planesize);
+
+void RefKeen_Patch_kd_keen(void)
+{
+	MemDrawChar = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? &MemDrawCharCGA : &MemDrawCharEGA;
+}

@@ -18,9 +18,9 @@
 
 // KD_DEMO.C
 
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+// REFKEEN - Originally included in certain versions of Keen Dreams,
+// but we don't need this either way
 //#include <dir.h>
-#endif
 #include "kd_def.h"
 
 //#pragma hdrstop
@@ -522,7 +522,6 @@ TEDDeath(void)
 }
 #endif
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 static id0_boolean_t
 MoveTitleTo(id0_int_t offset)
 {
@@ -598,7 +597,6 @@ ShowText(id0_int_t offset,WindowRec *wr,const id0_char_t *s)
 	VW_UpdateScreen();
 	return(false);
 }
-#endif // REFKEEN game versions
 
 /*
 =====================
@@ -608,9 +606,9 @@ ShowText(id0_int_t offset,WindowRec *wr,const id0_char_t *s)
 =====================
 */
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
+// REFKEEN - Rename different versions of DemoLoop for multi-ver support
 void
-DemoLoop (void)
+DemoLoop_Old (void)
 {
 	const id0_char_t            *s;
 	//id0_word_t            move;
@@ -726,9 +724,9 @@ DemoLoop (void)
 		GameLoop();
 	}
 }
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+
 void
-DemoLoop (void)
+DemoLoop_New (void)
 {
 	//id0_char_t		*s;
 	//id0_word_t		move;
@@ -798,10 +796,12 @@ DemoLoop (void)
 			while (true)
 			{
 
-				VW_SetScreen(0, 0);
+				// REFKEEN - We're in an EGA-only function anyway,
+				// so use EGA versions of VW functions...
+				VW_SetScreen_EGA(0, 0);
 				MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&FileShape1, 0, 0);
-				VW_ScreenToScreen (64*200,0,40,200);
+				VW_ScreenToScreen_EGA (64*200,0,40,200);
 
 #if CREDITS
 				if (IN_UserInput(TickBase * 8, false))
@@ -814,14 +814,14 @@ DemoLoop (void)
 #if CREDITS
 				MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&FileShape2, 0, 0);
-				VW_ScreenToScreen (64*200,0,40,200);
+				VW_ScreenToScreen_EGA (64*200,0,40,200);
 
 				if (IN_UserInput(TickBase * 7, false))
 					break;
 #else
 				MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&FileShape1, 0, 0);
-				VW_ScreenToScreen (64*200,0,40,200);
+				VW_ScreenToScreen_EGA (64*200,0,40,200);
 
 				if (IN_UserInput(TickBase * 3, false))
 					break;
@@ -853,4 +853,11 @@ DemoLoop (void)
 		GameLoop();
 	}
 }
-#endif // VERSION
+
+// (REFKEEN) Used for patching version-specific stuff
+void (*DemoLoop) (void);
+
+void RefKeen_Patch_kd_demo(void)
+{
+	DemoLoop = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? &DemoLoop_Old : &DemoLoop_New;
+}

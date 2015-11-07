@@ -121,9 +121,7 @@ void CA_ClearAllMarks (void);
 void CA_CacheGrChunk (id0_int_t chunk);
 void CA_CacheMap (id0_int_t mapnum);
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-void CA_CacheMarks (const id0_char_t *title);
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+// REFKEEN - Originally accepting just one argument in v1.00 and 1.05.
+// Supporting multiple versions, we conditionally ignore the second argument.
 void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel);
-#endif
 

@@ -33,9 +33,9 @@
 #include "kd_def.h"
 //#pragma hdrstop
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-#define CATALOG
-#endif
+// REFKEEN - Apparently the CATALOG macro was added only into version 1.05,
+// so we can ignore it while ensuring the correct behaviors are in effect
+//#define CATALOG
 
 /*
 =============================================================================
@@ -101,9 +101,8 @@ void DebugMemory (void)
 	US_Print ("k\n");
 	VW_UpdateScreen();
 	IN_Ack ();
-#if GRMODE == EGAGR
-	MM_ShowMemory ();
-#endif
+ 	if (GRMODE == EGAGR)
+		MM_ShowMemory ();
 }
 
 /*
@@ -381,25 +380,22 @@ void Quit (const id0_char_t *error)
 	BE_ST_clrscr();
 	BE_ST_puts(error);
 	BE_ST_puts("\n");
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
+	// REFKEEN - Little code piece originally commented out in v1.05...
 //      BE_ST_puts("For techinical assistance with running this software, type HELP at");
 //      BE_ST_puts("    the DOS prompt or call Softdisk Publishing at 1-318-221-8311");
-#else
 	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
 	{
 		BE_ST_puts("For techinical assistance with running this software, type HELP at");
 		BE_ST_puts("    the DOS prompt or call Gamer's Edge at 1-318-221-8311");
 	}
-#endif
 	// No additional lines for later versions (registered v1.93, shareware v1.20)
 	BE_ST_HandleExit(1);
   }
 
-// TODO (REFKEEN) Maybe we can define CATALOG based on version?
-#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	// REFKEEN - Code piece present in versions 1.13 and 1.05, but
+	// compiled in 1.05 only if CATALOG is *not* defined (it was).
+	// Since CATALOG is present only in 1.05, we simply ignore this macro.
 	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
-#endif
 	{
 		id0_argc = 2;
 		id0_argv[1] = "LAST.SHL";
@@ -411,21 +407,16 @@ void Quit (const id0_char_t *error)
 		void loadscn2_main(int argc, const char **argv);
 		loadscn2_main(id0_argc+1, id0_argv);
 	}
-#endif
-
-#if (defined REFKEEN_VER_KDREAMS_CGA_ALL) && (defined CATALOG)
-	VW_SetScreenMode(TEXTGR);
-	BE_ST_HandleExit(0);
-#endif
-
-// For all other versions (registered v1.93, shareware v1.20), just exit
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
-	if (refkeen_current_gamever != BE_GAMEVER_KDREAMSE113)
+	else
 	{
+		// REFKEEN - In all versions other than 1.13 we just exit.
+		// In addition, in v1.05, if CATALOG is defined (it is),
+		// VW_SetScreenMode is called. Again, though, we ignore CATALOG.
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+			VW_SetScreenMode(TEXTGR);
+
 		BE_ST_HandleExit(0);
 	}
-#endif
-
 }
 
 //===========================================================================
@@ -456,20 +447,15 @@ void InitGame (void)
 	//while ((bioskey(0)>>8) != sc_Return);
 #endif
 
-#if GRMODE == EGAGR
-	if (mminfo.mainmem < 335l*1024)
+	if (GRMODE == EGAGR)
+		if (mminfo.mainmem < 335l*1024)
 	{
 //#pragma warn    -pro
 //#pragma warn    -nod
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-		BE_ST_textcolor(7);
-#endif
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
-		if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
-#endif
-		{
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+			BE_ST_textcolor(7);
+		if ((refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) || (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113))
 			BE_ST_textbackground(0);
-		}
 //#pragma warn    +nod
 //#pragma warn    +pro
 		BE_ST_clrscr();                       // we can't include CONIO because of a name conflict
@@ -486,7 +472,6 @@ void InitGame (void)
 		if (i != sc_C)
 			Quit ("");
 	}
-#endif
 
 	US_TextScreen();
 
@@ -496,7 +481,8 @@ void InitGame (void)
 	SD_Startup ();
 	US_Startup ();
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
+	// REFKEEN - Called in v1.05, but is a no-op, so ignore here
+#if 0
 	US_UpdateTextScreen();
 #endif
 
@@ -516,11 +502,9 @@ void InitGame (void)
 	for (i=KEEN_LUMP_START;i<=KEEN_LUMP_END;i++)
 		CA_MarkGrChunk(i);
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	CA_CacheMarks (NULL);
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+	// REFKEEN - Originally accepting just one argument in v1.00 and 1.05.
+	// Supporting multiple versions, we conditionally ignore the second argument.
 	CA_CacheMarks (NULL, 0);
-#endif
 
 	MM_SetLock (&grsegs[STARTFONT],true);
 	MM_SetLock (&grsegs[STARTFONTM],true);
@@ -551,58 +535,52 @@ void InitGame (void)
 ==========================
 */
 
-#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
 static const id0_char_t *EntryParmStrings[] = {"detour",id0_nil_t};
-#endif
 
 // The original starting point of the game EXE
 void kdreams_exe_main (void)
 {
-#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
 	id0_boolean_t LaunchedFromShell = false;
 	id0_short_t i;
-#endif
 
 
-
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	BE_ST_textcolor(7);
-	BE_ST_textbackground(0);
-
-	if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
 	{
-		BE_ST_printf("KEEN DREAMS\n");
-		BE_ST_printf("CGA Version\n");
-		BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n");
-		BE_ST_printf("Version 1.05 (rev 1)\n");
-		BE_ST_HandleExit(0);
+		BE_ST_textcolor(7);
+		BE_ST_textbackground(0);
+
+		if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
+		{
+			BE_ST_printf("KEEN DREAMS\n");
+			BE_ST_printf("CGA Version\n");
+			BE_ST_printf("Copyright 1991-93 Softdisk Publishing\n");
+			BE_ST_printf("Version 1.05 (rev 1)\n");
+			BE_ST_HandleExit(0);
+		}
+
+		if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
+		{
+			BE_ST_printf("\nKeen Dreams CGA version 1.05\n");
+			BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
+			BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
+			BE_ST_printf("Type KDREAMS from the DOS prompt to run.\n\n");
+			BE_ST_printf("KDREAMS /COMP for SVGA compatibility mode\n");
+			BE_ST_printf("KDREAMS /NODR stops program hang with the drive still on\n");
+			BE_ST_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
+			BE_ST_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
+			BE_ST_printf("KDREAMS /NOJOYS ignores joystick\n");
+			BE_ST_printf("KDREAMS /NOMOUSE ignores mouse\n");
+			BE_ST_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
+			BE_ST_printf("KDREAMS /VER  for version and compatibility information\n");
+			BE_ST_printf("KDREAMS /? for this help information\n");
+			BE_ST_HandleExit(0);
+		}
 	}
 
-	if (BE_Cross_strcasecmp(id0_argv[1], "/?") == 0)
-	{
-		BE_ST_printf("\nKeen Dreams CGA version 1.05\n");
-		BE_ST_printf("Copyright 1991-1993 Softdisk Publishing.\n\n");
-		BE_ST_printf("Commander Keen is a trademark of Id Software.\n");
-		BE_ST_printf("Type KDREAMS from the DOS prompt to run.\n\n");
-		BE_ST_printf("KDREAMS /COMP for SVGA compatibility mode\n");
-		BE_ST_printf("KDREAMS /NODR stops program hang with the drive still on\n");
-		BE_ST_printf("KDREAMS /NOAL disables AdLib and Sound Blaster detection\n");
-		BE_ST_printf("KDREAMS /NOSB disables Sound Blaster detection\n");
-		BE_ST_printf("KDREAMS /NOJOYS ignores joystick\n");
-		BE_ST_printf("KDREAMS /NOMOUSE ignores mouse\n");
-		BE_ST_printf("KDREAMS /HIDDENCARD overrides video card detection\n");
-		BE_ST_printf("KDREAMS /VER  for version and compatibility information\n");
-		BE_ST_printf("KDREAMS /? for this help information\n");
-		BE_ST_HandleExit(0);
-	}
-#endif // VERSION
-
-
-	// REFKEEN - The code is also in CGA v1.05 but LaunchedFromShell is ignored (while CATALOG is defined)...
-#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	// REFKEEN - The code is also present in CGA v1.05, but LaunchedFromShell
+	// is ignored if CATALOG is defined. And it is defined in v1.05.
+	// As stated beforehand, though, we have no need for CATALOG here.
 	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
-#endif
 	{
 		for (i = 1;i < id0_argc;i++)
 		{
@@ -614,11 +592,8 @@ void kdreams_exe_main (void)
 			}
 		}
 	}
-#endif
 
 
-
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE193)
 	{
 		if (BE_Cross_strcasecmp(id0_argv[1], "/VER") == 0)
@@ -650,10 +625,8 @@ void kdreams_exe_main (void)
 			BE_ST_HandleExit(0);
 		}
 	}
-#endif // VERSION
 
 
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE120)
 	{
 		for (i = 1;i < id0_argc;i++)
@@ -694,13 +667,10 @@ void kdreams_exe_main (void)
 			}
 		}
 	}
-#endif
 
 
-#if (!defined REFKEEN_VER_KDREAMS_CGA_ALL) || (!defined CATALOG)
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+	// REFKEEN - As hinted above, not useful in v1.05
 	if ((refkeen_current_gamever == BE_GAMEVER_KDREAMSE113) || (refkeen_current_gamever == BE_GAMEVER_KDREAMSE120))
-#endif
 	{
 		// REFKEEN difference from vanilla Keen Dreams (Shareware releases):
 		// Role of /DETOUR has been flipped. No need to pass it (or use START),
@@ -713,16 +683,13 @@ void kdreams_exe_main (void)
 			BE_ST_HandleExit(0);
 		}
 	}
-#endif
 
 
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
-	if (refkeen_current_gamever != BE_GAMEVER_KDREAMSE113)
+	if ((refkeen_current_gamever == BE_GAMEVER_KDREAMSE193) || (refkeen_current_gamever == BE_GAMEVER_KDREAMSE120))
 	{
 		BE_ST_textcolor(7);
 		BE_ST_textbackground(0);
 	}
-#endif
 
 
 

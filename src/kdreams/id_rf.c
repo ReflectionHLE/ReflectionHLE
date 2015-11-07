@@ -45,8 +45,10 @@ updated
 
 #define	SCREENTILESWIDE	20
 #define	SCREENTILESHIGH	13
-
-#define	SCREENSPACE		(SCREENWIDTH*240)
+ 
+// REFKEEN - SCREENSPACE and FREEGAMEM are both EGA-specific, so we may
+// replace SCREENWIDTH (which is a variable now) with SCREENWIDTH_EGA
+#define	SCREENSPACE		(SCREENWIDTH_EGA*240)
 #define FREEEGAMEM		(0x10000l-3l*SCREENSPACE)
 
 //
@@ -203,9 +205,10 @@ id0_unsigned_t	xpanmask;			// prevent panning to odd pixels
 id0_unsigned_t	screenpage;			// screen currently being displayed
 id0_unsigned_t	otherpage;
 
-#if GRMODE == EGAGR
+// REFKEEN - GRMODE is a variable now, so the following is always defined
+//#if GRMODE == EGAGR
 id0_unsigned_t	tilecache[NUMTILE16];
-#endif
+//#endif
 
 spritelisttype	spritearray[MAXSPRITES],*prioritystart[PRIORITIES],
 				*spritefreeptr;
@@ -224,7 +227,12 @@ eraseblocktype	eraselist[2][MAXSPRITES],*eraselistptr[2];
 =============================================================================
 */
 
-void RFL_NewTile (id0_unsigned_t updateoffset);
+// REFKEEN - This is now a function pointer (switchable based on game version),
+// but mode-specific prototypes are also declared as they can be used directly.
+extern void (*RFL_NewTile) (id0_unsigned_t updateoffset);
+void RFL_NewTile_EGA (id0_unsigned_t updateoffset);
+void RFL_NewTile_CGA (id0_unsigned_t updateoffset);
+
 void RFL_MaskForegroundTiles (void);
 void RFL_UpdateTiles (void);
 
@@ -235,8 +243,11 @@ void RFL_CheckForAnimTile (id0_unsigned_t x, id0_unsigned_t y);
 void RFL_AnimateTiles (void);
 void RFL_RemoveAnimsOnX (id0_unsigned_t x);
 void RFL_RemoveAnimsOnY (id0_unsigned_t y);
-void RFL_EraseBlocks (void);
-void RFL_UpdateSprites (void);
+// REFKEEN - Now that GRMODE is a variable, EGA and CGA versions of these
+// are both defined. Since they're used internally, and we know the
+// video mode in use, there's no need for function pointers.
+//void RFL_EraseBlocks (void);
+//void RFL_UpdateSprites (void);
 
 
 /*
@@ -299,7 +310,7 @@ void RF_Startup (void)
 		blockstart = &blockstarts[0];
 		for (y=0;y<UPDATEHIGH;y++)
 			for (x=0;x<UPDATEWIDE;x++)
-				*blockstart++ = SCREENWIDTH*16*y+x*TILEWIDTH;
+				*blockstart++ = SCREENWIDTH_EGA*16*y+x*TILEWIDTH_EGA;
 
 		xpanmask = 6;	// dont pan to odd pixels
 	}
@@ -316,7 +327,7 @@ void RF_Startup (void)
 		blockstart = &blockstarts[0];
 		for (y=0;y<UPDATEHIGH;y++)
 			for (x=0;x<UPDATEWIDE;x++)
-				*blockstart++ = SCREENWIDTH*16*y+x*TILEWIDTH;
+				*blockstart++ = SCREENWIDTH_CGA*16*y+x*TILEWIDTH_CGA;
 	}
 }
 
@@ -761,10 +772,9 @@ void RFL_AnimateTiles (void)
 
 			*(current->mapplane) = tile & 0x7fff; 		// change in map
 
-#if GRMODE == EGAGR
-			if (tile<0x8000)		// background
-				tilecache[tile] = 0;
-#endif
+			if (GRMODE == EGAGR)
+				if (tile<0x8000)		// background
+					tilecache[tile] = 0;
 
 			x = current->x-originxtile;
 			y = current->y-originytile;
@@ -841,19 +851,21 @@ void RFL_CalcOriginStuff (id0_long_t x, id0_long_t y)
 	originyscreen = originytile<<SY_T_SHIFT;
 	originmap = mapbwidthtable[originytile] + originxtile*2;
 
-#if GRMODE == EGAGR
-	panx = (originxglobal>>G_P_SHIFT) & 15;
-	pansx = panx & 8;
-	pany = pansy = (originyglobal>>G_P_SHIFT) & 15;
-	panadjust = panx/8 + ylookup[pany];
-#endif
+	if (GRMODE == EGAGR)
+	{
+		panx = (originxglobal>>G_P_SHIFT) & 15;
+		pansx = panx & 8;
+		pany = pansy = (originyglobal>>G_P_SHIFT) & 15;
+		panadjust = panx/8 + ylookup[pany];
+	}
 
-#if GRMODE == CGAGR
-	panx = (originxglobal>>G_P_SHIFT) & 15;
-	pansx = panx & 12;
-	pany = pansy = (originyglobal>>G_P_SHIFT) & 15;
-	panadjust = pansx/4 + ylookup[pansy];
-#endif
+	if (GRMODE == CGAGR)
+	{
+		panx = (originxglobal>>G_P_SHIFT) & 15;
+		pansx = panx & 12;
+		pany = pansy = (originyglobal>>G_P_SHIFT) & 15;
+		panadjust = pansx/4 + ylookup[pansy];
+	}
 
 }
 
@@ -962,6 +974,11 @@ void RF_ForceRefresh (void)
 }
 
 
+// REFKEEN - GRMODE is a variable now, so EGA and CGA versions of functions
+// are defined for all time. Hence, they have been renamed.
+// Correct functions are selected based on game version.
+//
+// AN EXCEPTION: RFL_OldRow, an EGA-only function.
 
 /*
 =============================================================================
@@ -971,7 +988,7 @@ void RF_ForceRefresh (void)
 =============================================================================
 */
 
-#if GRMODE == EGAGR
+//#if GRMODE == EGAGR
 
 
 /*
@@ -982,7 +999,7 @@ void RF_ForceRefresh (void)
 =====================
 */
 
-void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
+void RF_NewPosition_EGA (id0_unsigned_t x, id0_unsigned_t y)
 {
 	id0_int_t mx,my;
 	id0_byte_t	*page0ptr,*page1ptr;
@@ -1015,7 +1032,7 @@ void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
 	{
 		for (mx=0;mx<PORTTILESWIDE;mx++)
 		{
-			RFL_NewTile(updatenum);			// puts "1"s in both pages
+			RFL_NewTile_EGA(updatenum);			// puts "1"s in both pages
 			RFL_CheckForAnimTile(mx+originxtile,my+originytile);
 			updatenum++;
 		}
@@ -1073,7 +1090,7 @@ void	RFL_OldRow (id0_unsigned_t updatespot,id0_unsigned_t count,id0_unsigned_t s
 =====================
 */
 
-void RF_Scroll (id0_int_t x, id0_int_t y)
+void RF_Scroll_EGA (id0_int_t x, id0_int_t y)
 {
 	//id0_long_t		neworgx,neworgy;
 	id0_int_t			i,deltax,deltay,absdx,absdy;
@@ -1101,7 +1118,7 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 	//
 	// scrolled more than one tile, so start from scratch
 	//
-		RF_NewPosition(originxglobal,originyglobal);
+		RF_NewPosition_EGA(originxglobal,originyglobal);
 		return;
 	}
 
@@ -1112,7 +1129,7 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 //
 // adjust screens and handle SVGA crippled compatability mode
 //
-	screenmove = deltay*16*SCREENWIDTH + deltax*TILEWIDTH;
+	screenmove = deltay*16*SCREENWIDTH_EGA + deltax*TILEWIDTH_EGA;
 	for (i=0;i<3;i++)
 	{
 		screenstart[i]+= screenmove;
@@ -1125,11 +1142,11 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 			oldscreen = screenstart[i] - screenmove;
 			newscreen = oldscreen + screencopy;
 			screenstart[i] = newscreen + screenmove;
-			VW_ScreenToScreen (oldscreen,newscreen,
+			VW_ScreenToScreen_EGA (oldscreen,newscreen,
 				PORTTILESWIDE*2,PORTTILESHIGH*16);
 
 			if (i==screenpage)
-				VW_SetScreen(newscreen+oldpanadjust,oldpanx & xpanmask);
+				VW_SetScreen_EGA(newscreen+oldpanadjust,oldpanx & xpanmask);
 		}
 	}
 	bufferofs = screenstart[otherpage];
@@ -1226,17 +1243,17 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 =====================
 */
 
-void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+void RF_PlaceSprite_EGA (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority)
 {
 	spritelisttype	register *sprite,*next;
 	spritetabletype id0_far *spr;
-	spritetype id0_seg	*block;
+	spritetype_ega id0_seg	*block;
 	id0_unsigned_t	shift,pixx;
 
 	if (!spritenumber)
 	{
-		RF_RemoveSprite (user);
+		RF_RemoveSprite_EGA (user);
 		return;
 	}
 
@@ -1292,7 +1309,7 @@ linknewspot:
 // write the new info to the sprite
 //
 	spr = &spritetable[spritenumber-STARTSPRITES];
-	block = (spritetype id0_seg *)grsegs[spritenumber];
+	block = (spritetype_ega id0_seg *)grsegs[spritenumber];
 
 	globaly+=spr->orgy;
 	globalx+=spr->orgx;
@@ -1334,7 +1351,7 @@ linknewspot:
 =====================
 */
 
-void RF_RemoveSprite (void **user)
+void RF_RemoveSprite_EGA (void **user)
 {
 	spritelisttype	*sprite,*next;
 
@@ -1389,7 +1406,7 @@ void RF_RemoveSprite (void **user)
 ====================
 */
 
-void RFL_EraseBlocks (void)
+void RFL_EraseBlocks_EGA (void)
 {
 	eraseblocktype	*block,*done;
 	id0_int_t			screenxh,screenyh;
@@ -1453,7 +1470,7 @@ void RFL_EraseBlocks (void)
 	// erase the block by copying from the master screen
 	//
 		pos = ylookup[block->screeny]+block->screenx;
-		VW_ScreenToScreen (masterofs+pos,bufferofs+pos,
+		VW_ScreenToScreen_EGA (masterofs+pos,bufferofs+pos,
 			block->width,block->height);
 
 	//
@@ -1501,7 +1518,7 @@ next:
 ====================
 */
 
-void RFL_UpdateSprites (void)
+void RFL_UpdateSprites_EGA (void)
 {
 	spritelisttype	*sprite;
 	id0_int_t	portx,porty,x,y,xtl,xth,ytl,yth;
@@ -1601,7 +1618,7 @@ redraw:
 			switch (sprite->draw)
 			{
 			case spritedraw:
-				VW_MaskBlock(grsegs[sprite->grseg], sourceofs,
+				VW_MaskBlock_EGA(grsegs[sprite->grseg], sourceofs,
 					dest,sprite->width,height,sprite->planesize);
 				break;
 
@@ -1641,7 +1658,7 @@ redraw:
 =====================
 */
 
-void RF_Refresh (void)
+void RF_Refresh_EGA (void)
 {
 	id0_byte_t	*newupdate;
 	id0_long_t	newtime;
@@ -1656,7 +1673,7 @@ void RF_Refresh (void)
 	EGAWRITEMODE(1);
 	EGAMAPMASK(15);
 	RFL_UpdateTiles ();
-	RFL_EraseBlocks ();
+	RFL_EraseBlocks_EGA ();
 
 //
 // Update is all 0 except where sprites have changed or new area has
@@ -1664,7 +1681,7 @@ void RF_Refresh (void)
 // a non 0 update tile
 //
 	EGAWRITEMODE(0);
-	RFL_UpdateSprites ();
+	RFL_UpdateSprites_EGA ();
 
 //
 // if the main program has a refresh hook set, call their function before
@@ -1676,7 +1693,7 @@ void RF_Refresh (void)
 //
 // display the changed screen
 //
-	VW_SetScreen(bufferofs+panadjust,panx & xpanmask);
+	VW_SetScreen_EGA(bufferofs+panadjust,panx & xpanmask);
 
 //
 // prepare for next refresh
@@ -1738,7 +1755,7 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 	}
 }
 
-#endif		// GRMODE == EGAGR
+//#endif		// GRMODE == EGAGR
 
 /*
 =============================================================================
@@ -1748,7 +1765,7 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 =============================================================================
 */
 
-#if GRMODE == CGAGR
+//#if GRMODE == CGAGR
 
 
 /*
@@ -1759,7 +1776,7 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 =====================
 */
 
-void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
+void RF_NewPosition_CGA (id0_unsigned_t x, id0_unsigned_t y)
 {
 	id0_int_t mx,my;
 	id0_byte_t	*spotptr;
@@ -1788,7 +1805,7 @@ void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
 	{
 		for (mx=0;mx<PORTTILESWIDE;mx++)
 		{
-			RFL_NewTile(updatenum);			// puts "1"s in both pages
+			RFL_NewTile_CGA(updatenum);			// puts "1"s in both pages
 			RFL_CheckForAnimTile(mx+originxtile,my+originytile);
 			updatenum++;
 		}
@@ -1813,7 +1830,7 @@ void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y)
 =====================
 */
 
-void RF_Scroll (id0_int_t x, id0_int_t y)
+void RF_Scroll_CGA (id0_int_t x, id0_int_t y)
 {
 	//id0_long_t		neworgx,neworgy;
 	id0_int_t			/*i,*/deltax,deltay,absdx,absdy;
@@ -1838,7 +1855,7 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 	//
 	// scrolled more than one tile, so start from scratch
 	//
-		RF_NewPosition(originxglobal,originyglobal);
+		RF_NewPosition_CGA(originxglobal,originyglobal);
 		return;
 	}
 
@@ -1849,7 +1866,7 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 //
 // float screens
 //
-	screenmove = deltay*16*SCREENWIDTH + deltax*TILEWIDTH;
+	screenmove = deltay*16*SCREENWIDTH_CGA + deltax*TILEWIDTH_CGA;
 	bufferofs += screenmove;
 	masterofs += screenmove;
 
@@ -1928,17 +1945,17 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 =====================
 */
 
-void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+void RF_PlaceSprite_CGA (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority)
 {
 	spritelisttype	register *sprite,*next;
 	spritetabletype id0_far *spr;
-	spritetype id0_seg	*block;
+	spritetype_cga id0_seg	*block;
 	//id0_unsigned_t	shift,pixx;
 
 	if (!spritenumber)
 	{
-		RF_RemoveSprite (user);
+		RF_RemoveSprite_CGA (user);
 		return;
 	}
 
@@ -1990,7 +2007,7 @@ linknewspot:
 // write the new info to the sprite
 //
 	spr = &spritetable[spritenumber-STARTSPRITES];
-	block = (spritetype id0_seg *)grsegs[spritenumber];
+	block = (spritetype_cga id0_seg *)grsegs[spritenumber];
 
 	globaly+=spr->orgy;
 	globalx+=spr->orgx;
@@ -2029,7 +2046,7 @@ linknewspot:
 =====================
 */
 
-void RF_RemoveSprite (void **user)
+void RF_RemoveSprite_CGA (void **user)
 {
 	spritelisttype	*sprite,*next;
 
@@ -2079,7 +2096,7 @@ void RF_RemoveSprite (void **user)
 ====================
 */
 
-void RFL_EraseBlocks (void)
+void RFL_EraseBlocks_CGA (void)
 {
 	eraseblocktype	*block,*done;
 	id0_int_t			screenxh,screenyh;
@@ -2140,7 +2157,7 @@ void RFL_EraseBlocks (void)
 		pos = ylookup[block->screeny]+block->screenx;
 		block->width = (block->width + (pos&1) + 1)& ~1;
 		pos &= ~1;				// make sure a word copy gets used
-		VW_ScreenToScreen (masterofs+pos,bufferofs+pos,
+		VW_ScreenToScreen_CGA (masterofs+pos,bufferofs+pos,
 			block->width,block->height);
 
 	//
@@ -2178,7 +2195,7 @@ next:
 ====================
 */
 
-void RFL_UpdateSprites (void)
+void RFL_UpdateSprites_CGA (void)
 {
 	spritelisttype	*sprite;
 	id0_int_t	portx,porty,x,y,xtl,xth,ytl,yth;
@@ -2280,7 +2297,7 @@ redraw:
 			switch (sprite->draw)
 			{
 			case spritedraw:
-				VW_MaskBlock(grsegs[sprite->grseg], sourceofs,
+				VW_MaskBlock_CGA(grsegs[sprite->grseg], sourceofs,
 					dest,sprite->width,height,sprite->planesize);
 				break;
 
@@ -2313,7 +2330,7 @@ redraw:
 =====================
 */
 
-void RF_Refresh (void)
+void RF_Refresh_CGA (void)
 {
 	id0_long_t newtime;
 
@@ -2323,14 +2340,14 @@ void RF_Refresh (void)
 // update newly scrolled on tiles and animated tiles from the master screen
 //
 	RFL_UpdateTiles ();
-	RFL_EraseBlocks ();
+	RFL_EraseBlocks_CGA ();
 
 //
 // Update is all 0 except where sprites have changed or new area has
 // been scrolled on.  Go through all sprites and update the ones that cover
 // a non 0 update tile
 //
-	RFL_UpdateSprites ();
+	RFL_UpdateSprites_CGA ();
 
 //
 // if the main program has a refresh hook set, call their function before
@@ -2380,20 +2397,27 @@ void RF_Refresh (void)
 
 }
 
-#endif		// GRMODE == CGAGR
+//#endif		// GRMODE == CGAGR
 
 // (REFKEEN) Used for patching version-specific stuff
+void (*RF_NewPosition) (id0_unsigned_t x, id0_unsigned_t y);
+void (*RF_Scroll) (id0_int_t x, id0_int_t y);
+
+void (*RF_PlaceSprite) (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority);
+void (*RF_RemoveSprite) (void **user);
+
+void (*RF_Refresh) (void);
+
 void RefKeen_Patch_id_rf(void)
 {
 	switch (refkeen_current_gamever)
 	{
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	case BE_GAMEVER_KDREAMSC105:
-		refkeen_compat_id_rf_allanims_table_offset = 0xC450;
-		break;
-#else
 	case BE_GAMEVER_KDREAMSE113:
 		refkeen_compat_id_rf_allanims_table_offset = 0xC11E;
+		break;
+	case BE_GAMEVER_KDREAMSC105:
+		refkeen_compat_id_rf_allanims_table_offset = 0xC450;
 		break;
 	case BE_GAMEVER_KDREAMSE193:
 		refkeen_compat_id_rf_allanims_table_offset = 0xC06E;
@@ -2401,6 +2425,22 @@ void RefKeen_Patch_id_rf(void)
 	case BE_GAMEVER_KDREAMSE120:
 		refkeen_compat_id_rf_allanims_table_offset = 0xC340;
 		break;
-#endif
+	}
+
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	{
+		RF_NewPosition = &RF_NewPosition_CGA;
+		RF_Scroll = &RF_Scroll_CGA;
+		RF_PlaceSprite = &RF_PlaceSprite_CGA;
+		RF_RemoveSprite = &RF_RemoveSprite_CGA;
+		RF_Refresh = &RF_Refresh_CGA;
+	}
+	else
+	{
+		RF_NewPosition = &RF_NewPosition_EGA;
+		RF_Scroll = &RF_Scroll_EGA;
+		RF_PlaceSprite = &RF_PlaceSprite_EGA;
+		RF_RemoveSprite = &RF_RemoveSprite_EGA;
+		RF_Refresh = &RF_Refresh_EGA;
 	}
 }

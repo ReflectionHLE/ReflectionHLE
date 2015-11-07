@@ -18,6 +18,9 @@
 
 // ID_VW.H
 
+/*** REFKEEN - A few functions are now pointers (switchable based on game version),  ***/
+/*** but mode-specific prototypes may also be declared as they can be used directly. ***/
+
 #ifndef __TYPES__
 #include "id_types.h"
 #endif
@@ -37,50 +40,61 @@
 
 #define	G_P_SHIFT		4	// global >> ?? = pixels
 
-#if GRMODE == EGAGR
-#define	SCREENWIDTH		64
-#define CHARWIDTH		1
-#define TILEWIDTH		2
-#endif
-#if GRMODE == CGAGR
-#define	SCREENWIDTH		128
-#define CHARWIDTH		2
-#define TILEWIDTH		4
-#endif
+// REFKEEN - Now that GRMODE is a variable, use separate names for EGA and CGA
+// definitions, while optionally maintaining variables in case
+// a video mode-agonstic access to some value is desired
+
+//#if GRMODE == EGAGR
+#define	SCREENWIDTH_EGA		64
+#define CHARWIDTH_EGA		1
+#define TILEWIDTH_EGA		2
+//#endif
+//#if GRMODE == CGAGR
+#define	SCREENWIDTH_CGA		128
+#define CHARWIDTH_CGA		2
+#define TILEWIDTH_CGA		4
+//#endif
+extern	id0_int_t	SCREENWIDTH, CHARWIDTH, TILEWIDTH;
 
 #define VIRTUALHEIGHT	300
 #define	VIRTUALWIDTH	512
 
 
-#if GRMODE == CGAGR
+// REFKEEN - Now that GRMODE is a variable, use separate names for EGA and CGA
+// definitions, while optionally maintaining variables in case
+// a video mode-agonstic access to some value is desired
 
-#define	MAXSHIFTS		1
+//#if GRMODE == CGAGR
 
-#define WHITE			3			// graphics mode independant colors
-#define BLACK			0
-#define FIRSTCOLOR		1
-#define SECONDCOLOR		2
-#define F_WHITE			0			// for XOR font drawing
-#define F_BLACK			3
-#define F_FIRSTCOLOR	2
-#define F_SECONDCOLOR	1
+#define	MAXSHIFTS_CGA		1
 
-#endif
+#define WHITE_CGA			3			// graphics mode independant colors
+#define BLACK_CGA			0
+#define FIRSTCOLOR_CGA		1
+#define SECONDCOLOR_CGA		2
+#define F_WHITE_CGA			0			// for XOR font drawing
+#define F_BLACK_CGA			3
+#define F_FIRSTCOLOR_CGA	2
+#define F_SECONDCOLOR_CGA	1
 
-#if GRMODE == EGAGR
+//#endif
 
-#define	MAXSHIFTS		8
+//#if GRMODE == EGAGR
 
-#define WHITE			15			// graphics mode independant colors
-#define BLACK			0
-#define FIRSTCOLOR		1
-#define SECONDCOLOR		12
-#define F_WHITE			0			// for XOR font drawing
-#define F_BLACK			15
-#define F_FIRSTCOLOR	14
-#define F_SECONDCOLOR	3
+#define	MAXSHIFTS_EGA		8
 
-#endif
+#define WHITE_EGA			15			// graphics mode independant colors
+#define BLACK_EGA			0
+#define FIRSTCOLOR_EGA		1
+#define SECONDCOLOR_EGA		12
+#define F_WHITE_EGA			0			// for XOR font drawing
+#define F_BLACK_EGA			15
+#define F_FIRSTCOLOR_EGA	14
+#define F_SECONDCOLOR_EGA	3
+
+//#endif
+
+extern	id0_int_t	WHITE, BLACK, FIRSTCOLOR, SECONDCOLOR, F_BLACK, F_FIRSTCOLOR, F_SECONDCOLOR;
 
 //===========================================================================
 
@@ -158,13 +172,29 @@ typedef struct
 	shifts;
 } __attribute__((__packed__)) spritetabletype;
 
+// REFKEEN - Split type based on MAXSHIFTS_CGA/MAXSHIFTS_EGA;
+// Special routines may be required for accessing struct members
 typedef	struct
 {
-	id0_unsigned_t	sourceoffset[MAXSHIFTS];
-	id0_unsigned_t	planesize[MAXSHIFTS];
-	id0_unsigned_t	width[MAXSHIFTS];
+	id0_unsigned_t	sourceoffset[MAXSHIFTS_EGA];
+	id0_unsigned_t	planesize[MAXSHIFTS_EGA];
+	id0_unsigned_t	width[MAXSHIFTS_EGA];
 	id0_byte_t		data[];
-} __attribute__((__packed__)) spritetype;		// the memptr for each sprite points to this
+} __attribute__((__packed__)) spritetype_ega;		// the memptr for each sprite points to this
+
+typedef	struct
+{
+	id0_unsigned_t	sourceoffset[MAXSHIFTS_CGA];
+	id0_unsigned_t	planesize[MAXSHIFTS_CGA];
+	id0_unsigned_t	width[MAXSHIFTS_CGA];
+	id0_byte_t		data[];
+} __attribute__((__packed__)) spritetype_cga;		// the memptr for each sprite points to this
+
+// REFKEEN - Add video mode-agnostic spritetype accessors (NEW DEFINITIONS)
+#define VW_GetSpriteShiftSourceOffset(block, i) ((GRMODE == EGAGR) ? (((spritetype_ega *)(block))->sourceoffset[i]) : (((spritetype_cga *)(block))->sourceoffset[i]))
+#define VW_GetSpriteShiftPlaneSize(block, i) ((GRMODE == EGAGR) ? (((spritetype_ega *)(block))->planesize[i]) : (((spritetype_cga *)(block))->planesize[i]))
+#define VW_GetSpriteShiftWidth(block, i) ((GRMODE == EGAGR) ? (((spritetype_ega *)(block))->width[i]) : (((spritetype_cga *)(block))->width[i]))
+#define VW_GetSpriteData(block) ((GRMODE == EGAGR) ? (((spritetype_ega *)(block))->data) : (((spritetype_cga *)(block))->data))
 
 typedef struct
 {
@@ -241,7 +271,10 @@ cardtype	VW_VideoID (void);
 #define EGAMAPMASK(x) {}
 
 void 	VW_SetLineWidth(id0_int_t width);
-void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
+// REFKEEN - No need to turn this into a function pointer,
+// but since there's an unused no-op implementation in id_vw_ac,
+// add EGA suffix for clarity
+void 	VW_SetScreen_EGA (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
 
 void	VW_SetScreenMode (id0_int_t grmode);
 void	VW_ClearVideo (id0_int_t color);
@@ -264,19 +297,62 @@ void	VW_FadeDown(void);
 // block primitives
 //
 
-void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+extern void (*VW_MaskBlock)(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize);
-void VW_MemToScreen(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
-void VW_ScreenToMem(id0_unsigned_t source,memptr dest,id0_unsigned_t width,id0_unsigned_t height);
-void VW_ScreenToScreen(id0_unsigned_t source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+extern void (*VW_MemToScreen)(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+extern void (*VW_ScreenToMem)(id0_unsigned_t source,memptr dest,id0_unsigned_t width,id0_unsigned_t height);
+extern void (*VW_ScreenToScreen)(id0_unsigned_t source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+
+void VW_MaskBlock_EGA(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize);
+void VW_MemToScreen_EGA(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+void VW_ScreenToScreen_EGA(id0_unsigned_t source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+
+void VW_MaskBlock_CGA(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize);
+void VW_MemToScreen_CGA(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+void VW_ScreenToScreen_CGA(id0_unsigned_t source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
 
 
 //
 // block addressable routines
 //
 
-void VW_DrawTile8(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile);
+extern void (*VW_DrawTile8)(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile);
 
+// REFKEEN - Now that GRMODE is a variable, dynamically choose what to do here
+
+#define VW_DrawTile8M(x,y,t) \
+	do \
+	{ \
+		if (GRMODE == EGAGR) \
+			VW_MaskBlock_EGA(grsegs[STARTTILE8M],(t)*40,bufferofs+ylookup[y]+(x),1,8,8); \
+		else \
+			VW_MaskBlock_CGA(grsegs[STARTTILE8M],(t)*32,bufferofs+ylookup[y]+(x),2,8,16); \
+	} \
+	while (0)
+
+#define VW_DrawTile16(x,y,t) \
+	do \
+	{ \
+		if (GRMODE == EGAGR) \
+			VW_MemToScreen_EGA(grsegs[STARTTILE16+t],bufferofs+ylookup[y]+(x),2,16); \
+		else \
+			VW_MemToScreen_CGA(grsegs[STARTTILE16+t],bufferofs+ylookup[y]+(x),4,16); \
+	} \
+	while (0)
+
+#define VW_DrawTile16M(x,y,t) \
+	do \
+	{ \
+		if (GRMODE == EGAGR) \
+			VW_MaskBlock(grsegs[STARTTILE16M],(t)*160,bufferofs+ylookup[y]+(x),2,16,32); \
+		else \
+			VW_MaskBlock(grsegs[STARTTILE16M],(t)*128,bufferofs+ylookup[y]+(x),4,16,64); \
+	} \
+	while (0)
+
+#if 0
 #if GRMODE == EGAGR
 
 #define VW_DrawTile8M(x,y,t) \
@@ -298,6 +374,7 @@ void VW_DrawTile8(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile);
 	VW_MaskBlock(grsegs[STARTTILE16M],(t)*128,bufferofs+ylookup[y]+(x),4,16,64)
 
 #endif
+#endif
 
 void VW_DrawPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum);
 void VW_DrawMPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum);
@@ -308,14 +385,19 @@ void VW_DrawMPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum);
 void	VW_MeasurePropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height);
 void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height);
 
-void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
-void VW_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+extern void (*VW_DrawPropString) (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+// REFKEEN - Unused function
+//extern void (*VW_DrawMPropString) (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
 void VW_DrawSprite(id0_int_t x, id0_int_t y, id0_unsigned_t sprite);
-void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color);
-void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color);
-void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigned_t color);
-void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t height,
+extern void (*VW_Plot)(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color);
+extern void (*VW_Hlin)(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color);
+extern void (*VW_Vlin)(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigned_t color);
+extern void (*VW_Bar) (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t height,
 	id0_unsigned_t color);
+
+void VW_Plot_EGA(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color);
+void VW_Hlin_EGA(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color);
+
 
 //===========================================================================
 
@@ -353,7 +435,8 @@ void VWB_DrawMPic(id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_int_t color);
 
 void VWB_DrawPropString	 (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
-void VWB_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+// REFKEEN - Unused function
+//void VWB_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
 void VWB_DrawSprite (id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Plot (id0_int_t x, id0_int_t y, id0_int_t color);
 void VWB_Hlin (id0_int_t x1, id0_int_t x2, id0_int_t y, id0_int_t color);

@@ -20,16 +20,15 @@
 
 #include "id_heads.h"
 //#include <BIOS.H>
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+// REFKEEN - Originally included in certain versions, we always do for multi-ver support
 #include "soft.h"
 #include "sl_file.h"
-#endif
 
 #define FRILLS	0			// Cut out frills for 360K - MIKE MAYNARD
 
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+// REFKEEN - In the original releases, looks like it's either defined to 0
+// (for new DemoLoop) or not defined (not present in old DemoLoop). So simply define.
 #define CREDITS 0
-#endif
 
 
 /*
@@ -171,7 +170,7 @@ typedef struct	objstruct
 } objtype;
 
 
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+// REFKEEN - Originally defined in certain versions, we always do for multi-ver support
 struct BitMapHeader {
 	id0_unsigned_int_t	w,h,x,y;
 	id0_unsigned_char_t	d,trans,comp,pad;
@@ -199,7 +198,6 @@ typedef struct {
 	id0_word_t offset;		// offset into buffer
 	id0_word_t status;		// read/write status
 } BufferedIO;
-#endif
 
 
 // (REFKEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
@@ -243,7 +241,8 @@ void	InitGame (void);
 
 void	Finale (void);
 void	GameOver (void);
-void	DemoLoop (void);
+// REFKEEN - This is now a function pointer (switchable based on game version)
+extern void	(*DemoLoop) (void);
 void	StatusWindow (void);
 void	NewGame (void);
 void	TEDDeath (void);
@@ -394,7 +393,7 @@ extern	statetype s_deathwait3;
 extern	statetype s_deathboom1;
 extern	statetype s_deathboom2;
 
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
+// REFKEEN - Originally included in certain versions, we always do for multi-ver support
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -418,7 +417,6 @@ void SwapLong(id0_long_t id0_far *Var);
 void SwapWord(id0_unsigned_int_t id0_far *Var);
 void MoveGfxDst(id0_short_t x, id0_short_t y);
 
-#endif
 
 // (REFKEEN) Backwards compatibility: Used for statetype offset conversions.
 extern statetype* (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);

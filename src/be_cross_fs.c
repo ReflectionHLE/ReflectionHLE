@@ -195,11 +195,9 @@ typedef struct {
 BE_GameVer_T refkeen_current_gamever;
 // These MUST have the same order as in the BE_GameVer_T enum
 const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	"kdreamsc105",
-#endif
-#ifdef REFKEEN_VER_KDREAMS_ANYEGA_ALL
+#ifdef REFKEEN_VER_KDREAMS
 	"kdreamse113",
+	"kdreamsc105",
 	"kdreamse193",
 	"kdreamse120",
 #endif
@@ -427,41 +425,8 @@ int BE_Cross_GetGameVerFromInstallation(int num)
 	return g_be_gameinstallations[num].verId;
 }
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc105[] = {
-	{"AUDIO.KDR", 3498, 0x80ac85e5},
-	{"CGAGRAPH.KDR", 134691, 0x05e32626},
-	{"GAMEMAPS.KDR", 65736, 0x4b92df5f},
-	{"KDREAMS.EXE", 78253, 0x5af7ce2b},
-	{0}
-};
-
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc105[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x29c90},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x20350},
-	{"CGADICT.KDR", 1024, 0xaba89759, 0x29494},
-	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x1a5f0},
-	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x204b0},
-	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x21750},
-	{"MAPDICT.KDR", 1020, 0xfa8362f3, 0x29894},
-	{"MAPHEAD.KDR", 11824, 0x66c122b4, 0x1d520},
-	{"STORY.KDR", 2487, 0xed0ea5fe, 0x229a0},
-	{0}
-};
-
-static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
-	g_be_reqgameverfiles_kdreamsc105,
-	g_be_embeddedgameverfiles_kdreamsc105,
-	_T("kdreamsc_105"),
-	"Keen Dreams CGA v1.05 (Custom)",
-	"KDREAMS.EXE",
-	202320,
-	BE_EXECOMPRESSION_LZEXE9X,
-	BE_GAMEVER_KDREAMSC105
-};
-#endif
-
-#ifdef REFKEEN_VER_KDREAMS_ANYEGA_ALL
+#ifdef REFKEEN_VER_KDREAMS
+/*** v1.13 (Shareware) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse113[] = {
 	{"KDREAMS.AUD", 3498, 0x80ac85e5},
 	{"KDREAMS.CMP", 14189, 0x97628ca0},
@@ -496,9 +461,43 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
 	BE_GAMEVER_KDREAMSE113
 };
 
+/*** v1.05 (CGA) ***/
+static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc105[] = {
+	{"AUDIO.KDR", 3498, 0x80ac85e5},
+	{"CGAGRAPH.KDR", 134691, 0x05e32626},
+	{"GAMEMAPS.KDR", 65736, 0x4b92df5f},
+	{"KDREAMS.EXE", 78253, 0x5af7ce2b},
+	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc105[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x29c90},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x20350},
+	{"CGADICT.KDR", 1024, 0xaba89759, 0x29494},
+	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x1a5f0},
+	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x204b0},
+	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x21750},
+	{"MAPDICT.KDR", 1020, 0xfa8362f3, 0x29894},
+	{"MAPHEAD.KDR", 11824, 0x66c122b4, 0x1d520},
+	{"STORY.KDR", 2487, 0xed0ea5fe, 0x229a0},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
+	g_be_reqgameverfiles_kdreamsc105,
+	g_be_embeddedgameverfiles_kdreamsc105,
+	_T("kdreamsc_105"),
+	"Keen Dreams CGA v1.05 (Custom)",
+	"KDREAMS.EXE",
+	202320,
+	BE_EXECOMPRESSION_LZEXE9X,
+	BE_GAMEVER_KDREAMSC105
+};
+
 // Keen Dreams v1.93 and v1.20 actually share the exact same game data,
 // minus the EXE (and v1.92 is also the same, except for KDREAMS.CMP).
 
+/*** v1.93 (Registered EGA) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse193[] = {
 	{"KDREAMS.AUD", 3498, 0x80ac85e5},
 	{"KDREAMS.CMP", 14620, 0x1681bc21},
@@ -532,6 +531,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
 	BE_GAMEVER_KDREAMSE193
 };
 
+/*** v1.20 (Shareware) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse120[] = {
 	{"KDREAMS.AUD", 3498, 0x80ac85e5},
 	{"KDREAMS.CMP", 14620, 0x1681bc21},
@@ -634,7 +634,7 @@ static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
 // (possibly optionally, except for Abyss v1.13, where INTRO may call DEMOCAT)
 
 #ifdef REFKEEN_VER_CATABYSS
-/*** v1.13 ***/
+/*** v1.13 (Shareware) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
 	{"ARMAPC.ABS", 10489, 0x9562020e},
 	{"AUDIO.ABS", 6904, 0x462d2eb2},
@@ -705,7 +705,7 @@ static const BE_GameVerDetails_T g_be_gamever_catabyss113 = {
 	BE_GAMEVER_CATABYSS113
 };
 
-/*** v1.24 ***/
+/*** v1.24 (Registered) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss124[] = {
 	{"ABYSGAME.EXE", 82479, 0x5f0319db},
 	{"AUDIO.ABS", 6904, 0x462d2eb2},
@@ -909,11 +909,9 @@ static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
 
 
 static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	&g_be_gamever_kdreamsc105,
-#endif
-#ifdef REFKEEN_VER_KDREAMS_ANYEGA_ALL
+#ifdef REFKEEN_VER_KDREAMS
 	&g_be_gamever_kdreamse113,
+	&g_be_gamever_kdreamsc105,
 	&g_be_gamever_kdreamse193,
 	&g_be_gamever_kdreamse120,
 #endif
@@ -1368,12 +1366,9 @@ void BE_Cross_PrepareGameInstallations(void)
 
 	/*** Now handling each version separately ***/
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Keen Dreams CGA v1.05 (Local)");
-#endif
-
-#ifdef REFKEEN_VER_KDREAMS_ANYEGA_ALL
+#ifdef REFKEEN_VER_KDREAMS
 	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, _T("."), "Keen Dreams EGA v1.13 (Local)");
+	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Keen Dreams CGA v1.05 (Local)");
 	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, _T("."), "Keen Dreams EGA v1.93 (Local)");
 	BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse120, _T("."), "Keen Dreams EGA v1.20 (Local)");
 #endif
@@ -1699,6 +1694,18 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 #ifdef REFKEEN_VER_KDREAMS
 	extern void RefKeen_Patch_id_rf(void);
 	RefKeen_Patch_id_rf();
+	extern void RefKeen_Patch_id_rf_a(void);
+	RefKeen_Patch_id_rf_a();
+	extern void RefKeen_Patch_id_vw(void);
+	RefKeen_Patch_id_vw();
+	extern void RefKeen_Patch_id_vw_ac(void);
+	RefKeen_Patch_id_vw_ac();
+	extern void RefKeen_Patch_id_vw_ae(void);
+	RefKeen_Patch_id_vw_ae();
+	extern void RefKeen_Patch_kd_demo(void);
+	RefKeen_Patch_kd_demo();
+	extern void RefKeen_Patch_kd_keen(void);
+	RefKeen_Patch_kd_keen();
 	extern void RefKeen_Patch_kd_play(void);
 	RefKeen_Patch_kd_play();
 #endif

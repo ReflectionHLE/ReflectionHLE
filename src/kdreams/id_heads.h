@@ -49,19 +49,20 @@
 #define	EGAGR	2
 #define	VGAGR	3
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-#define GRMODE	CGAGR
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-#define GRMODE	EGAGR	
-#else
-#error "Compatible version of Keen to support isn't defined, this shouldn't happen!"
-#endif
+// REFKEEN - Change GRMODE from a macro to a variable
+// TODO - Defined below so we have id0_int_t (even though we could've used int...)
+//extern id0_int_t GRMODE;
+//#define GRMODE	CGAGR
+//#define GRMODE	EGAGR
 
+// REFKEEN - Unused since transforming GRMODE into a variable
+#if 0
 #if GRMODE == EGAGR
 #define GREXT	"EGA"
 #endif
 #if GRMODE == CGAGR
 #define GREXT	"CGA"
+#endif
 #endif
 
 //#define PROFILE
@@ -132,6 +133,9 @@ typedef	struct
 // Initialized before calling vanilla Keen Dreams' (now renamed) main function
 extern int id0_argc;
 extern const char **id0_argv;
+
+// REFKEEN - Change GRMODE from a macro to a variable
+extern id0_int_t GRMODE;
 
 #include "id_mm.h"
 #include "id_ca.h"

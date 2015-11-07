@@ -18,6 +18,14 @@
 
 #include "id_heads.h"
 
+// REFKEEN - GRMODE is a variable now, so EGA and CGA versions of functions
+// are defined for all time. Hence, they have been renamed.
+// Correct functions are selected based on game version.
+//
+// EXCEPTIONS:
+// - VWL_XORBuffer, ShiftPropChar and a few variables, used locally
+// (defined static now).
+
 //=================================
 //
 // CGA view manager routines
@@ -35,9 +43,9 @@
 //
 //============================================================================
 
-id0_byte_t plotpixels[] = {0xC0, 0x30, 0x0C, 0x03};
-id0_byte_t colorbyte[]  = {0x00, 0x55, 0xAA, 0xFF};
-id0_word_t colorword[] = {0x0000, 0x5555, 0xAAAA, 0xFFFF};
+static id0_byte_t plotpixels[] = {0xC0, 0x30, 0x0C, 0x03};
+id0_byte_t colorbyte[]  = {0x00, 0x55, 0xAA, 0xFF}; // Also used in id_vw.c (CGA only)
+static id0_word_t colorword[] = {0x0000, 0x5555, 0xAAAA, 0xFFFF};
 extern id0_unsigned_t linedelta;
 
 //============================================================================
@@ -46,7 +54,7 @@ extern id0_unsigned_t linedelta;
 //
 //============================================================================
 
-void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
+void VW_Plot_CGA(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 {
 	id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(bufferofs+ylookup[y]+(x>>2))]; // byte on screen
 	id0_byte_t maskOn = (colorbyte[color] & plotpixels[x&3]);
@@ -62,7 +70,7 @@ void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 //
 //============================================================================
 
-void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigned_t color)
+void VW_Vlin_CGA(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigned_t color)
 {
 	id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(bufferofs+ylookup[yl]+(x>>2))]; // byte on screen
 	id0_byte_t maskOn = (colorbyte[color] & plotpixels[x&3]);
@@ -89,7 +97,7 @@ void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigne
 //
 //===================
 
-void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t tile)
+void VW_DrawTile8_CGA(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t tile)
 {
 	id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(bufferofs+xcoord+ylookup[ycoord])];
 	const id0_byte_t *tilePtr = (const id0_byte_t *)grsegs[STARTTILE8]+(tile<<4);
@@ -130,7 +138,7 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 
 #define UNWOUNDMASKS 18
 
-void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+void VW_MaskBlock_CGA(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize)
 {
 	id0_byte_t *srcPtr = (id0_byte_t *)segm + ofs;
@@ -163,7 +171,7 @@ void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 //
 //============================================================================
 
-void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
+void VW_ScreenToScreen_CGA(id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t wide, id0_unsigned_t height)
 {
 	id0_byte_t *srcPtr = &screenseg[source];
@@ -190,7 +198,7 @@ void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 //
 //============================================================================
 
-void VW_MemToScreen(memptr source, id0_unsigned_t dest,
+void VW_MemToScreen_CGA(memptr source, id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height)
 {
 	const id0_byte_t *srcPtr = (const id0_byte_t *)source;
@@ -215,7 +223,7 @@ void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 //
 //===========================================================================
 
-void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
+void VW_ScreenToMem_CGA(id0_unsigned_t source, memptr dest,
 	id0_unsigned_t wide, id0_unsigned_t height)
 {
 	id0_byte_t *srcPtr = &screenseg[source];
@@ -242,7 +250,7 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 
 // (REFKEEN) Unused function
 #if 0
-void VW_SetScreen (id0_unsigned_t crtc, id0_unsigned_t pelpan)
+void VW_SetScreen_CGA (id0_unsigned_t crtc, id0_unsigned_t pelpan)
 {
 	BE_ST_SetScreenStartAddress(crtc);
 }
@@ -256,8 +264,10 @@ void VW_SetScreen (id0_unsigned_t crtc, id0_unsigned_t pelpan)
 //
 //===========================================================================
 
-/* SIGNED */ id0_int_t px, py; // proportional character drawing coordinates
-id0_byte_t fontcolor = 15; // 0-15 mapmask value
+/*** REFKEEN - A few shared CGA/EGA variable definitions moved to id_vw.c ***/
+
+extern /* SIGNED */ id0_int_t px, py; // proportional character drawing coordinates
+extern id0_byte_t fontcolor/* = 15*/; // 0-15 mapmask value
 
 /*
  * offsets in font structure
@@ -268,25 +278,25 @@ id0_byte_t fontcolor = 15; // 0-15 mapmask value
 
 
 //id0_word_t propchar; // the character number to shift // UNUSED VARIABLE
-id0_char_t *stringptr;
+//id0_char_t *stringptr; // REFKEEN - UNUSED VARIABLE
 
-id0_word_t fontcolormask; // font color expands into this
+static id0_word_t fontcolormask; // font color expands into this
 
 #define BUFFWIDTH 100
 #define BUFFHEIGHT 32 // must be twice as high as font for masked fonts
 
-id0_byte_t databuffer[BUFFWIDTH*BUFFHEIGHT];
+static id0_byte_t databuffer[BUFFWIDTH*BUFFHEIGHT];
 
-id0_word_t bufferwidth; // bytes with valid info / line
-id0_word_t bufferheight; // number of lines currently used
+extern id0_word_t bufferwidth; // bytes with valid info / line
+extern id0_word_t bufferheight; // number of lines currently used
 
-id0_word_t bufferbyte;
-id0_word_t bufferbit;
+extern id0_word_t bufferbyte;
+extern id0_word_t bufferbit;
 
-id0_word_t screenspot; // where the buffer is going
+extern id0_word_t screenspot; // where the buffer is going
 
-id0_word_t bufferextra; // add at end of a line copy
-id0_word_t screenextra;
+extern id0_word_t bufferextra; // add at end of a line copy
+extern id0_word_t screenextra;
 
 //======================
 //
@@ -320,7 +330,7 @@ id0_word_t screenextra;
 //
 //========================
 
-void VWL_XORBuffer(id0_byte_t *buffer)
+static void VWL_XORBuffer(id0_byte_t *buffer)
 {
 	fontcolormask = colorword[fontcolor];
 	id0_byte_t *srcPtr = buffer;
@@ -372,7 +382,7 @@ void VWL_XORBuffer(id0_byte_t *buffer)
 //
 //==================
 
-void ShiftPropChar(id0_word_t charnum)
+static void ShiftPropChar(id0_word_t charnum)
 {
 	// WARNING: Later [es:bx] is the source while [di] (ds:di) is the dest
 
@@ -467,7 +477,7 @@ void ShiftPropChar(id0_word_t charnum)
 //
 //==================
 
-void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
+void VW_DrawPropString_CGA (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
 	// (REFKEEN) Modifications from vanilla Keen:
 	// - All input strings are now const.
@@ -803,3 +813,23 @@ ENDP
 #endif // VW_DrawMPropString
 
 #endif // if fonts
+
+// (REFKEEN) Used for patching version-specific stuff
+void RefKeen_Patch_id_vw_ac(void)
+{
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	{
+		VW_MaskBlock = VW_MaskBlock_CGA;
+		VW_MemToScreen = VW_MemToScreen_CGA;
+		VW_ScreenToMem = VW_ScreenToMem_CGA;
+		VW_ScreenToScreen = VW_ScreenToScreen_CGA;
+
+		VW_DrawTile8 = VW_DrawTile8_CGA;
+
+		VW_DrawPropString = VW_DrawPropString_CGA;
+		//VW_DrawMPropString = VW_DrawMPropString_CGA; // REFKEEN - Unused function
+
+		VW_Plot = VW_Plot_CGA;
+		VW_Vlin = VW_Vlin_CGA;
+	}
+}

@@ -32,6 +32,10 @@
 
 #define PIXTOBLOCK		4		// 16 pixels to an update block
 
+// REFKEEN - GRMODE is a variable now, so change these into variables as well.
+// An exception is SCREENXPLUS, which is unused.
+id0_int_t SCREENXMASK, SCREENXDIV;
+#if 0
 #if GRMODE == EGAGR
 #define SCREENXMASK		(~7)
 #define SCREENXPLUS		(7)
@@ -41,6 +45,7 @@
 #if GRMODE == CGAGR
 #define SCREENXMASK		(~3)
 #define SCREENXDIV		(4)
+#endif
 #endif
 /*
 =============================================================================
@@ -129,21 +134,22 @@ void	VW_Startup (void)
 	if (!videocard)
 		videocard = VW_VideoID ();
 
-#if GRMODE == EGAGR
-	grmode = EGAGR;
-	if (videocard != EGAcard && videocard != VGAcard)
-Quit ("Improper video card!  If you really have an EGA/VGA card that I am not \n"
-	  "detecting, use the -HIDDENCARD command line parameter!");
-	EGAWRITEMODE(0);
-#endif
-
-#if GRMODE == CGAGR
-	grmode = CGAGR;
-	if (videocard < CGAcard || videocard > VGAcard)
-Quit ("Improper video card!  If you really have a CGA card that I am not \n"
-	  "detecting, use the -HIDDENCARD command line parameter!");
-	MM_GetPtr ((memptr *)&screenseg,0x10000l);	// grab 64k for floating screen
-#endif
+	if (GRMODE == EGAGR)
+	{
+		grmode = EGAGR;
+		if (videocard != EGAcard && videocard != VGAcard)
+	Quit ("Improper video card!  If you really have an EGA/VGA card that I am not \n"
+		  "detecting, use the -HIDDENCARD command line parameter!");
+		EGAWRITEMODE(0);
+	}
+	else if (GRMODE == CGAGR)
+	{
+		grmode = CGAGR;
+		if (videocard < CGAcard || videocard > VGAcard)
+	Quit ("Improper video card!  If you really have a CGA card that I am not \n"
+		  "detecting, use the -HIDDENCARD command line parameter!");
+		MM_GetPtr ((memptr *)&screenseg,0x10000l);	// grab 64k for floating screen
+	}
 
 	cursorvisible = 0;
 }
@@ -161,9 +167,8 @@ Quit ("Improper video card!  If you really have a CGA card that I am not \n"
 void	VW_Shutdown (void)
 {
 	VW_SetScreenMode (TEXTGR);
-#if GRMODE == EGAGR
-	VW_SetLineWidth (80);
-#endif
+	if (GRMODE == EGAGR)
+		VW_SetLineWidth (80);
 }
 
 //===========================================================================
@@ -238,17 +243,18 @@ void VW_ColorBorder (id0_int_t color)
 
 void VW_SetDefaultColors(void)
 {
-#if GRMODE == EGAGR
+	if (GRMODE != EGAGR)
+		return;
 	colors[3][16] = bordercolor;
 	BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
 	screenfaded = false;
-#endif
 }
 
 
 void VW_FadeOut(void)
 {
-#if GRMODE == EGAGR
+	if (GRMODE != EGAGR)
+		return;
 	id0_int_t i;
 
 	for (i=3;i>=0;i--)
@@ -258,13 +264,13 @@ void VW_FadeOut(void)
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
-#endif
 }
 
 
 void VW_FadeIn(void)
 {
-#if GRMODE == EGAGR
+	if (GRMODE != EGAGR)
+		return;
 	id0_int_t i;
 
 	for (i=0;i<4;i++)
@@ -274,12 +280,12 @@ void VW_FadeIn(void)
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
-#endif
 }
 
 void VW_FadeUp(void)
 {
-#if GRMODE == EGAGR
+	if (GRMODE != EGAGR)
+		return;
 	id0_int_t i;
 
 	for (i=3;i<6;i++)
@@ -289,12 +295,12 @@ void VW_FadeUp(void)
 	  VW_WaitVBL(6);
 	}
 	screenfaded = true;
-#endif
 }
 
 void VW_FadeDown(void)
 {
-#if GRMODE == EGAGR
+	if (GRMODE != EGAGR)
+		return;
 	id0_int_t i;
 
 	for (i=5;i>2;i--)
@@ -304,7 +310,6 @@ void VW_FadeDown(void)
 	  VW_WaitVBL(6);
 	}
 	screenfaded = false;
-#endif
 }
 
 
@@ -325,12 +330,11 @@ void VW_SetLineWidth (id0_int_t width)
 {
   id0_int_t i,offset;
 
-#if GRMODE == EGAGR
+  if (GRMODE == EGAGR)
 //
 // set wide virtual screen
 //
 	BE_ST_EGASetLineWidth(width); // Ported from ASM
-#endif
 
 //
 // set up lookup tables
@@ -358,23 +362,22 @@ void VW_SetLineWidth (id0_int_t width)
 
 void	VW_ClearVideo (id0_int_t color)
 {
-#if GRMODE == EGAGR
-	EGAWRITEMODE(2);
-	EGAMAPMASK(15);
-#endif
+	// REFKEEN - A bit of code re-ordering done
+	// (originally there was code common to CGA and EGA)
+	if (GRMODE == EGAGR)
+	{
+		EGAWRITEMODE(2);
+		EGAMAPMASK(15);
 
-#if GRMODE == EGAGR
-	BE_ST_EGAUpdateGFXPixel4bppRepeatedly(0, color, 0xffff, 0xff);
-#endif
-#if GRMODE == CGAGR
-	memset(screenseg, color, 0xffff);
-	//BE_ST_MarkGfxForPendingUpdate();
-#endif
+		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(0, color, 0xffff, 0xff);
 
-
-#if GRMODE == EGAGR
-	EGAWRITEMODE(0);
-#endif
+		EGAWRITEMODE(0);
+	}
+	if (GRMODE == CGAGR)
+	{
+		memset(screenseg, color, 0xffff);
+		//BE_ST_MarkGfxForPendingUpdate();
+	}
 }
 
 //===========================================================================
@@ -456,21 +459,19 @@ void VW_DrawMPic(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t chunknum)
 void VW_DrawSprite(id0_int_t x, id0_int_t y, id0_unsigned_t chunknum)
 {
 	spritetabletype id0_far *spr;
-	spritetype id0_seg	*block;
+	void/*spritetype*/ id0_seg	*block;
 	id0_unsigned_t	dest,shift;
 
 	spr = &spritetable[chunknum-STARTSPRITES];
-	block = (spritetype id0_seg *)grsegs[chunknum];
+	block = /*(spritetype id0_seg *)*/grsegs[chunknum];
 
 	y+=spr->orgy>>G_P_SHIFT;
 	x+=spr->orgx>>G_P_SHIFT;
 
-#if GRMODE == EGAGR
-	shift = (x&7)/2;
-#endif
-#if GRMODE == CGAGR
-	shift = 0;
-#endif
+	if (GRMODE == EGAGR)
+		shift = (x&7)/2;
+	else if (GRMODE == CGAGR)
+		shift = 0;
 
 	dest = bufferofs + ylookup[y];
 	if (x>=0)
@@ -478,12 +479,17 @@ void VW_DrawSprite(id0_int_t x, id0_int_t y, id0_unsigned_t chunknum)
 	else
 		dest += (x+1)/SCREENXDIV;
 
-	VW_MaskBlock (block,block->sourceoffset[shift],dest,
-		block->width[shift],spr->height,block->planesize[shift]);
+	VW_MaskBlock (block,VW_GetSpriteShiftSourceOffset(block,shift),dest,
+		VW_GetSpriteShiftWidth(block,shift),spr->height,VW_GetSpriteShiftPlaneSize(block,shift));
+	//VW_MaskBlock (block,block->sourceoffset[shift],dest,
+	//	block->width[shift],spr->height,block->planesize[shift]);
 }
 
 #endif
 
+// REFKEEN - GRMODE is a variable now, so EGA and CGA versions of functions
+// are defined for all time. Hence, they have been renamed.
+// Correct functions are selected based on game version.
 
 /*
 ==================
@@ -494,12 +500,12 @@ void VW_DrawSprite(id0_int_t x, id0_int_t y, id0_unsigned_t chunknum)
 */
 
 
-#if GRMODE == EGAGR
+//#if GRMODE == EGAGR
 
-id0_unsigned_char_t leftmask[8] = {0xff,0x7f,0x3f,0x1f,0xf,7,3,1};
-id0_unsigned_char_t rightmask[8] = {0x80,0xc0,0xe0,0xf0,0xf8,0xfc,0xfe,0xff};
+id0_unsigned_char_t leftmask_ega[8] = {0xff,0x7f,0x3f,0x1f,0xf,7,3,1};
+id0_unsigned_char_t rightmask_ega[8] = {0x80,0xc0,0xe0,0xf0,0xf8,0xfc,0xfe,0xff};
 
-void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color)
+void VW_Hlin_EGA(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color)
 {
   id0_unsigned_t dest,xlb,xhb,maskleft,maskright,mid;
 
@@ -509,8 +515,8 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 	EGAWRITEMODE(2);
 	EGAMAPMASK(15);
 
-	maskleft = leftmask[xl&7];
-	maskright = rightmask[xh&7];
+	maskleft = leftmask_ega[xl&7];
+	maskright = rightmask_ega[xh&7];
 
 	mid = xhb-xlb-1;
 	dest = bufferofs+ylookup[y]+xlb;
@@ -543,20 +549,20 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 	//
 	BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskright);
 }
-#endif
+#//endif
 
 
-#if GRMODE == CGAGR
+//#if GRMODE == CGAGR
 
-id0_unsigned_char_t pixmask[4] = {0xc0,0x30,0x0c,0x03};
-id0_unsigned_char_t leftmask[4] = {0xff,0x3f,0x0f,0x03};
-id0_unsigned_char_t rightmask[4] = {0xc0,0xf0,0xfc,0xff};
+//id0_unsigned_char_t pixmask[4] = {0xc0,0x30,0x0c,0x03}; // REFKEEN - Unused variable
+id0_unsigned_char_t leftmask_cga[4] = {0xff,0x3f,0x0f,0x03};
+id0_unsigned_char_t rightmask_cga[4] = {0xc0,0xf0,0xfc,0xff};
 extern id0_unsigned_char_t colorbyte[4];
 
 //
 // could be optimized for rep stosw
 //
-void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color)
+void VW_Hlin_CGA(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color)
 {
 	id0_unsigned_t dest,xlb,xhb,mid;
 	id0_byte_t maskleft,maskright;
@@ -566,8 +572,8 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 	xlb=xl/4;
 	xhb=xh/4;
 
-	maskleft = leftmask[xl&3];
-	maskright = rightmask[xh&3];
+	maskleft = leftmask_cga[xl&3];
+	maskright = rightmask_cga[xh&3];
 
 	mid = xhb-xlb-1;
 	dest = bufferofs+ylookup[y]+xlb;
@@ -610,7 +616,7 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 
 	//BE_ST_MarkGfxForPendingUpdate();
 }
-#endif
+//#endif
 
 
 /*
@@ -623,23 +629,23 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 ==================
 */
 
-#if GRMODE == CGAGR
+//#if GRMODE == CGAGR
 
-void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t height,
+void VW_Bar_CGA (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t height,
 	id0_unsigned_t color)
 {
 	id0_unsigned_t xh = x+width-1;
 
 	while (height--)
-		VW_Hlin (x,xh,y++,color);
+		VW_Hlin_CGA (x,xh,y++,color);
 }
 
-#endif
+//#endif
 
 
-#if	GRMODE == EGAGR
+//#if	GRMODE == EGAGR
 
-void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t height,
+void VW_Bar_EGA (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t height,
 	id0_unsigned_t color)
 {
 	id0_unsigned_t dest,xh,xlb,xhb,maskleft,maskright,mid;
@@ -651,8 +657,8 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 	EGAWRITEMODE(2);
 	EGAMAPMASK(15);
 
-	maskleft = leftmask[x&7];
-	maskright = rightmask[xh&7];
+	maskleft = leftmask_ega[x&7];
+	maskright = rightmask_ega[xh&7];
 
 	mid = xhb-xlb-1;
 	dest = bufferofs+ylookup[y]+xlb;
@@ -699,7 +705,7 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 	} while (height);
 }
 
-#endif
+//#endif
 
 //==========================================================================
 
@@ -764,9 +770,10 @@ void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t 
 =============================================================================
 */
 
-#if GRMODE == CGAGR
+// REFKEEN - GRMODE is a variable now, so the following is always defined
+//#if GRMODE == CGAGR
 
-#define CGACRTCWIDTH	40
+//#define CGACRTCWIDTH	40 // REFKEEN - Unused macro
 
 /*
 ==========================
@@ -897,7 +904,7 @@ asm	rep	stosw
 }
 
 
-#endif
+//#endif
 
 /*
 =============================================================================
@@ -1045,9 +1052,8 @@ void VW_SetCursor (id0_int_t spritenum)
 
 void VW_InitDoubleBuffer (void)
 {
-#if GRMODE == EGAGR
-	VW_SetScreen (displayofs+panadjust,0);			// no pel pan
-#endif
+	if (GRMODE == EGAGR)
+		VW_SetScreen_EGA (displayofs+panadjust,0);			// no pel pan
 }
 
 
@@ -1064,10 +1070,9 @@ void VW_InitDoubleBuffer (void)
 
 void VW_FixRefreshBuffer (void)
 {
-#if GRMODE == EGAGR
-	VW_ScreenToScreen (displayofs,bufferofs,PORTTILESWIDE*4*CHARWIDTH,
-		PORTTILESHIGH*16);
-#endif
+	if (GRMODE == EGAGR)
+		VW_ScreenToScreen (displayofs,bufferofs,PORTTILESWIDE*4*CHARWIDTH_EGA,
+			PORTTILESHIGH*16);
 }
 
 
@@ -1156,14 +1161,16 @@ void VW_UpdateScreen (void)
 	if (cursorvisible>0)
 		VWL_DrawCursor();
 
-#if GRMODE == EGAGR
-	VWL_UpdateScreenBlocks();
+	if (GRMODE == EGAGR)
+	{
+		VWL_UpdateScreenBlocks();
 
-	BE_ST_SetScreenStartAddress(displayofs+panadjust); // Ported from ASM
-#endif
-#if GRMODE == CGAGR
-	VW_CGAFullUpdate();
-#endif
+		BE_ST_SetScreenStartAddress(displayofs+panadjust); // Ported from ASM
+	}
+	else if (GRMODE == CGAGR)
+	{
+		VW_CGAFullUpdate();
+	}
 
 	if (cursorvisible>0)
 		VWL_EraseCursor();
@@ -1276,7 +1283,9 @@ void VWB_DrawPropString	 (const id0_char_t id0_far *string, const id0_char_t id0
 #endif
 
 
-#if NUMFONTM
+// REFKEEN - Unused function
+#if 0
+//#if NUMFONTM
 void VWB_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
 	id0_int_t x,y;
@@ -1291,25 +1300,23 @@ void VWB_DrawMPropString (const id0_char_t id0_far *string, const id0_char_t id0
 void VWB_DrawSprite(id0_int_t x, id0_int_t y, id0_int_t chunknum)
 {
 	spritetabletype id0_far *spr;
-	spritetype id0_seg	*block;
+	void/*spritetype*/ id0_seg	*block;
 	id0_unsigned_t	dest,shift,width,height;
 
 	x+=pansx;
 	y+=pansy;
 
 	spr = &spritetable[chunknum-STARTSPRITES];
-	block = (spritetype id0_seg *)grsegs[chunknum];
+	block = /*(spritetype id0_seg *)*/grsegs[chunknum];
 
 	y+=spr->orgy>>G_P_SHIFT;
 	x+=spr->orgx>>G_P_SHIFT;
 
 
-#if GRMODE == EGAGR
-	shift = (x&7)/2;
-#endif
-#if GRMODE == CGAGR
-	shift = 0;
-#endif
+	if (GRMODE == EGAGR)
+		shift = (x&7)/2;
+	else if (GRMODE == CGAGR)
+		shift = 0;
 
 	dest = bufferofs + ylookup[y];
 	if (x>=0)
@@ -1317,13 +1324,13 @@ void VWB_DrawSprite(id0_int_t x, id0_int_t y, id0_int_t chunknum)
 	else
 		dest += (x+1)/SCREENXDIV;
 
-	width = block->width[shift];
+	width = VW_GetSpriteShiftWidth(block,shift)/*block->width[shift]*/;
 	height = spr->height;
 
 	if (VW_MarkUpdateBlock (x&SCREENXMASK,y,(x&SCREENXMASK)+width*SCREENXDIV-1
 		,y+height-1))
-		VW_MaskBlock (block,block->sourceoffset[shift],dest,
-			width,height,block->planesize[shift]);
+		VW_MaskBlock (block,VW_GetSpriteShiftSourceOffset(block,shift)/*block->sourceoffset[shift]*/,dest,
+			width,height,VW_GetSpriteShiftPlaneSize(block,shift)/*block->planesize[shift]*/);
 }
 #endif
 
@@ -1355,3 +1362,88 @@ void VWB_Vlin (id0_int_t y1, id0_int_t y2, id0_int_t x, id0_int_t color)
 
 
 //===========================================================================
+
+/*** REFKEEN - A few shared CGA/EGA variable definitions moved from id_vw_ac.c/id_vw_ae.c ***/
+/* SIGNED */ id0_int_t px, py; // proportional character drawing coordinates
+//pdrawmode
+id0_byte_t fontcolor = 15; // 0-15 mapmask value
+
+id0_word_t bufferwidth; // bytes with valid info / line
+id0_word_t bufferheight; // number of lines currently used
+
+id0_word_t bufferbyte;
+id0_word_t bufferbit;
+
+id0_word_t screenspot; // where the buffer is going
+
+id0_word_t bufferextra; // add at end of a line copy
+id0_word_t screenextra;
+
+// (REFKEEN) Used for patching version-specific stuff
+id0_int_t	SCREENWIDTH, CHARWIDTH, TILEWIDTH;
+id0_int_t	WHITE, BLACK, FIRSTCOLOR, SECONDCOLOR, F_BLACK, F_FIRSTCOLOR, F_SECONDCOLOR;
+
+void (*VW_MaskBlock)(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize);
+void (*VW_MemToScreen)(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+void (*VW_ScreenToMem)(id0_unsigned_t source,memptr dest,id0_unsigned_t width,id0_unsigned_t height);
+void (*VW_ScreenToScreen)(id0_unsigned_t source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
+
+void (*VW_DrawTile8)(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile);
+
+void (*VW_DrawPropString) (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+// REFKEEN - Unused function
+//void (*VW_DrawMPropString) (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
+
+void (*VW_Plot)(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color);
+void (*VW_Hlin)(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigned_t color);
+void (*VW_Vlin)(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigned_t color);
+void (*VW_Bar) (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t height,
+	id0_unsigned_t color);
+
+void RefKeen_Patch_id_vw(void)
+{
+	// Note: Most functions are rather patched in id_vw_ac or id_vw_ae.
+	// The definitions of all function pointers are given here, though,
+	// since each function pointer may be defined in exactly on place.
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	{
+		SCREENWIDTH = SCREENWIDTH_CGA;
+		CHARWIDTH = CHARWIDTH_CGA;
+		TILEWIDTH = TILEWIDTH_CGA;
+
+		WHITE = WHITE_CGA;
+		BLACK = BLACK_CGA;
+		FIRSTCOLOR = FIRSTCOLOR_CGA;
+		SECONDCOLOR = SECONDCOLOR_CGA;
+		F_BLACK = F_BLACK_CGA;
+		F_FIRSTCOLOR = F_FIRSTCOLOR_CGA;
+		F_SECONDCOLOR = F_SECONDCOLOR_CGA;
+
+		SCREENXMASK = (~3);
+		SCREENXDIV = 4;
+
+		VW_Hlin = VW_Hlin_CGA;
+		VW_Bar = VW_Bar_CGA;
+	}
+	else
+	{
+		SCREENWIDTH = SCREENWIDTH_EGA;
+		CHARWIDTH = CHARWIDTH_EGA;
+		TILEWIDTH = TILEWIDTH_EGA;
+
+		WHITE = WHITE_EGA;
+		BLACK = BLACK_EGA;
+		FIRSTCOLOR = FIRSTCOLOR_EGA;
+		SECONDCOLOR = SECONDCOLOR_EGA;
+		F_BLACK = F_BLACK_EGA;
+		F_FIRSTCOLOR = F_FIRSTCOLOR_EGA;
+		F_SECONDCOLOR = F_SECONDCOLOR_EGA;
+
+		SCREENXMASK = (~7);
+		SCREENXDIV = 8;
+
+		VW_Hlin = VW_Hlin_EGA;
+		VW_Bar = VW_Bar_EGA;
+	}
+}

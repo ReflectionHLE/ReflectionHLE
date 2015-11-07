@@ -47,6 +47,9 @@
 
 #include "id_heads.h"
 
+// REFKEEN - New version-specific variable
+static const id0_char_t *refkeen_compat_config_filename;
+
 #define CTL_M_ADLIBUPPIC	CTL_S_ADLIBUPPIC
 #define CTL_M_ADLIBDNPIC	CTL_S_ADLIBDNPIC
 
@@ -281,13 +284,8 @@ USL_ReadConfig(void)
 	SMMode		sm;
 	ControlType	ctl;
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("CONFIG."EXTENSION)))
-	//if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("KDREAMS.CFG")))
-	//if ((file = open("KDREAMS.CFG",O_BINARY | O_RDONLY)) != -1)
-#endif
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading(refkeen_compat_config_filename)))
+	//if ((file = open(refkeen_compat_config_filename,O_BINARY | O_RDONLY)) != -1)
 	{
 		// REFKEEN Cross Platform file I/O
 		for (int i = 0; i < MaxScores; ++i)
@@ -341,15 +339,9 @@ USL_WriteConfig(void)
 {
 	BE_FILE_T	file;
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	file = BE_Cross_open_rewritable_for_overwriting("CONFIG."EXTENSION);
-	//file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
+	file = BE_Cross_open_rewritable_for_overwriting(refkeen_compat_config_filename);
+	//file = open(refkeen_compat_config_filename,O_CREAT | O_BINARY | O_WRONLY,
 	//			S_IREAD | S_IWRITE | S_IFREG);
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	file = BE_Cross_open_rewritable_for_overwriting("KDREAMS.CFG");
-	//file = open("KDREAMS.CFG", O_CREAT | O_BINARY | O_WRONLY,
-	//			S_IREAD | S_IWRITE | S_IFREG);
-#endif
 	if (BE_Cross_IsFileValid(file))
 	//if (file != -1)
 	{
@@ -582,14 +574,12 @@ US_TextScreen(void)
 #define	scr_rowcol(y,x)	{sx = (x) - 1;sy = (y) - 1;}
 #define	scr_aputs(s,a)	USL_ScreenDraw(sx,sy,(s),(a))
 	// REFKEEN - Embed multiple versions of id_us_s.c
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-#include "id_us_s_kdreams192andlater.c" // Also used in versions 1.05 and 1.93
-#else
 	switch (refkeen_current_gamever)
 	{
 	case BE_GAMEVER_KDREAMSE113:
 #include "id_us_s_kdreams113.c"
 		break;
+	case BE_GAMEVER_KDREAMSC105: // No confusion here, actually a bit later version than 1.92
 	case BE_GAMEVER_KDREAMSE193:
 #include "id_us_s_kdreams192andlater.c"
 		break;
@@ -597,7 +587,6 @@ US_TextScreen(void)
 #include "id_us_s_kdreams120.c"
 		break;
 	}
-#endif // EGA/CGA
 #undef	scr_rowcol
 #undef	scr_aputs
 
@@ -618,7 +607,7 @@ US_TextScreen(void)
 	}
 }
 
-// REFKEEN - Looks like these are used in version 1.0 only
+// REFKEEN - Looks like these are used in version 1.00 only
 
 #if 0
 
@@ -663,9 +652,10 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 	USL_ScreenDraw(x,y,buf,0x48);
 }
 
-#endif // VERSION
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL // Commented out in Shareware v1.13
+// REFKEEN - Commented out in some versions, does nothing in v1.05 due
+// to code internally commented out and apparently useful only in v1.00
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	US_UpdateTextScreen() - Called after the ID libraries are started up.
@@ -675,13 +665,13 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 void
 US_UpdateTextScreen(void)
 {
-	// ...The code is commented out in CGA v1.05, except for variable
-	// definitions, but we don't need these either if commenting out
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
 	id0_boolean_t		b;
 	id0_byte_t		id0_far *screen;
 	id0_word_t		i;
 	id0_longword_t	totalmem;
+
+	// REFKEEN - The following code was originally commented out in v1.05,
+	// but in our port of v1.05, US_UpdateTextScreen isn't even called
 
 	// Show video card info
 	b = (grmode == CGAGR);
@@ -725,7 +715,6 @@ US_UpdateTextScreen(void)
 
 	// Change Initializing... to Loading...
 	USL_ScreenDraw(27,22,"  Loading...   ",0x9c);
-#endif
 }
 
 #endif
@@ -2777,17 +2766,20 @@ USL_CtlHButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		}
 
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-		MM_GetPtr(&dupe,5000);
-		memcpy(dupe, buf, 5000);
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+		{
+			MM_GetPtr(&dupe,5000);
+			memcpy(dupe, buf, 5000);
 
-		USL_DoHelp(dupe,5000);
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-		MM_GetPtr(&dupe,5600);
-		memcpy(dupe,buf,5600);
+			USL_DoHelp(dupe,5000);
+		}
+		else
+		{
+			MM_GetPtr(&dupe,5600);
+			memcpy(dupe,buf,5600);
  
-		USL_DoHelp(dupe,5600);
-#endif
+			USL_DoHelp(dupe,5600);
+		}
 
 		MM_FreePtr(&dupe);
 		if (LineOffsets)
@@ -3544,18 +3536,20 @@ USL_TearDownCtlPanel(void)
 
 		if (!QuitToDos)
 		{
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-			US_CenterWindow(20,8);
-			US_CPrint("Loading");
-#endif
+			if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+			{
+				US_CenterWindow(20,8);
+				US_CPrint("Loading");
+				// REFKEEN - Bits of code present but commented out
+				// in versions other than "old" ones like 1.00 or 1.05
+				// (but also the "old" ones), so keep them here...
 #if 0
-			fontcolor = F_SECONDCOLOR;
-			US_CPrint("Sounds");
-			fontcolor = F_BLACK;
+				fontcolor = F_SECONDCOLOR;
+				US_CPrint("Sounds");
+				fontcolor = F_BLACK;
 #endif
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-			VW_UpdateScreen();
-#endif
+				VW_UpdateScreen();
+			}
 
 			CA_LoadAllSounds();
 		}
@@ -3603,11 +3597,9 @@ US_ControlPanel(void)
 		CA_MarkGrChunk(i);
 	CA_MarkGrChunk(CTL_LITTLEMASKPICM);
 	CA_MarkGrChunk(CTL_LSMASKPICM);
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	CA_CacheMarks("Options Screen");
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+	// REFKEEN - Originally accepting just one argument in v1.00 and 1.05.
+	// Supporting multiple versions, we conditionally ignore the second argument.
 	CA_CacheMarks("Options Screen", 0);
-#endif
 
 	USL_SetUpCtlPanel();
 
@@ -3967,4 +3959,6 @@ void RefKeen_Patch_id_us(void)
 	)
 		// Similarly we don't use Quit
 		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load at least one file.");
+
+	refkeen_compat_config_filename = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? "CONFIG."EXTENSION : "KDREAMS.CFG";
 }

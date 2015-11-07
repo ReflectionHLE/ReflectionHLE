@@ -74,30 +74,6 @@ ControlInfo	c;
 
 objtype dummyobj;
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-const id0_char_t		*levelnames[21] =
-{
-"The Land of Tuberia",
-"Horseradish Hill",
-"The Melon Mines",
-"Bridge Bottoms",
-"Rhubarb Rapids",
-"Parsnip Pass",
-"Cheat Level 1",
-"Spud City",
-"Cheat Level 2",
-"Apple Acres",
-"Grape Grove",
-"Cheat Level 3",
-"Brussels Sprout Bay",
-"Cheat Level 4",
-"Squash Swamp",
-"Boobus' Chamber",
-"Castle Tuberia",
-"",
-"Title Page"
-};
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
 const id0_char_t		*levelnames[21] =
 {
 "The Land of Tuberia",
@@ -120,7 +96,6 @@ const id0_char_t		*levelnames[21] =
 "",
 "Title Page"
 };
-#endif
 
 
 /*
@@ -687,9 +662,9 @@ void FadeAndUnhook (void)
 {
 	if (++fadecount==2)
 	{
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
-		RF_ForceRefresh();
-#endif
+		if (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105)
+			RF_ForceRefresh();
+
 		VW_FadeIn ();
 		RF_SetRefreshHook (NULL);
 		lasttimecount = SD_GetTimeCount();	// don't adaptively time the fade
@@ -749,11 +724,9 @@ void 	SetupGameLevel (id0_boolean_t loadnow)
 			US_PrintCentered ("Boobus Bombs Near!");
 			VW_UpdateScreen ();
 		}
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-		CA_CacheMarks (levelnames[mapon]);
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+		// REFKEEN - Originally accepting just one argument in v1.00 and 1.05.
+		// Supporting multiple versions, we conditionally ignore the second argument.
 		CA_CacheMarks (levelnames[mapon], 0);
-#endif
 	}
 
 #if 0
@@ -1978,13 +1951,11 @@ void RefKeen_Patch_kd_play(void)
 {
 	switch (refkeen_current_gamever)
 	{
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	case BE_GAMEVER_KDREAMSC105:
-		refkeen_compat_kd_play_objoffset = 0x7470;
-		break;
-#else
 	case BE_GAMEVER_KDREAMSE113:
 		refkeen_compat_kd_play_objoffset = 0x712A;
+		break;
+	case BE_GAMEVER_KDREAMSC105:
+		refkeen_compat_kd_play_objoffset = 0x7470;
 		break;
 	case BE_GAMEVER_KDREAMSE193:
 		refkeen_compat_kd_play_objoffset = 0x707A;
@@ -1992,7 +1963,21 @@ void RefKeen_Patch_kd_play(void)
 	case BE_GAMEVER_KDREAMSE120:
 		refkeen_compat_kd_play_objoffset = 0x734C;
 		break;
-#endif
+	}
+
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	{
+		levelnames[6] = "Cheat Level 1";
+		levelnames[8] = "Cheat Level 2";
+		levelnames[11] = "Cheat Level 3";
+		levelnames[13] = "Cheat Level 4";
+	}
+	else
+	{
+		levelnames[6] = "Level 6";
+		levelnames[8] = "Level 8";
+		levelnames[11] = "Level 11";
+		levelnames[13] = "Level 13";
 	}
 }
 

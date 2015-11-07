@@ -39,14 +39,18 @@ extern id0_byte_t planenum;
 id0_unsigned_t screenstartcs; // in code segment for accesability
 
 
-#if GRMODE == CGAGR
+// REFKEEN - GRMODE is a variable now, so EGA and CGA versions of functions
+// are defined for all time. Hence, they have been renamed.
+// Correct functions are selected based on game version.
+
+//#if GRMODE == CGAGR
 //============================================================================
 //
 // CGA refresh routines
 //
 //============================================================================
 
-#define TILEWIDTH 4
+//#define TILEWIDTH_CGA 4 // REFKEEN - Already defined in id_vw.h
 
 //=================
 //
@@ -60,7 +64,7 @@ id0_unsigned_t screenstartcs; // in code segment for accesability
 //
 //=================
 
-void RFL_NewTile (id0_unsigned_t updateoffset)
+void RFL_NewTile_CGA (id0_unsigned_t updateoffset)
 {
 	/*
 	 * mark both update lists at this spot
@@ -85,11 +89,11 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 		//=============
 		const id0_byte_t *backSrcPtr = (const id0_byte_t *)grsegs[STARTTILE16+backtilenum];
 		backSrcPtr = backSrcPtr ? backSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
-		for (int loopVar = 15; loopVar; --loopVar, backSrcPtr += TILEWIDTH, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH))
+		for (int loopVar = 15; loopVar; --loopVar, backSrcPtr += TILEWIDTH_CGA, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH_CGA))
 		{
-			BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH);
+			BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH_CGA);
 		}
-		BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH);
+		BE_Cross_LinearToWrapped_MemCopy(screenseg, destPtr, backSrcPtr, TILEWIDTH_CGA);
 
 		//BE_ST_MarkGfxForPendingUpdate();
 		return;
@@ -103,7 +107,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	const id0_byte_t *backSrcPtr = (const id0_byte_t *)grsegs[STARTTILE16+backtilenum];
 	backSrcPtr = backSrcPtr ? backSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
 
-	for (int loopVar = 16; loopVar; --loopVar, backSrcPtr += TILEWIDTH-3, foreSrcPtr += TILEWIDTH-3, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH-3))
+	for (int loopVar = 16; loopVar; --loopVar, backSrcPtr += TILEWIDTH_CGA-3, foreSrcPtr += TILEWIDTH_CGA-3, BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH_CGA-3))
 	{
 		// backSrcPtr - background tile
 		// foreSrcPtr - mask
@@ -130,21 +134,23 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 
 	//BE_ST_MarkGfxForPendingUpdate();
 }
-#endif
+//#endif
 
 
 
-#if GRMODE == EGAGR
+//#if GRMODE == EGAGR
 //===========================================================================
 //
 // EGA refresh routines
 //
 //===========================================================================
 
+// REFKEEN - Always define/declare these, since GRMODE is a variable now
+
 #define CACHETILES 1 // enable master screen tile caching
 extern id0_unsigned_t tilecache[NUMTILE16];
 
-#define TILEWIDTH 2
+//#define TILEWIDTH_EGA 2 // REFKEEN - Already defined in id_vw.h
 
 //=================
 //
@@ -162,7 +168,7 @@ extern id0_unsigned_t tilecache[NUMTILE16];
 
 extern id0_byte_t *updatestart[2];
 
-void RFL_NewTile (id0_unsigned_t updateoffset)
+void RFL_NewTile_EGA (id0_unsigned_t updateoffset)
 {
 	/*
 	 * mark both update lists at this spot
@@ -201,8 +207,8 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 			{
 				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
 				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-				egaSrcOff += SCREENWIDTH-2;
-				egaDestOff += SCREENWIDTH-2;
+				egaSrcOff += SCREENWIDTH_EGA-2;
+				egaDestOff += SCREENWIDTH_EGA-2;
 			}
 			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
 			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
@@ -223,12 +229,12 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 			id0_unsigned_t egaDestOff = screenstartcs; // start at same place in all planes
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				BE_ST_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, 2, mapMask);
-				backSrcPtr += 2;
-				egaDestOff += SCREENWIDTH;
+				BE_ST_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, TILEWIDTH_EGA, mapMask);
+				backSrcPtr += TILEWIDTH_EGA;
+				egaDestOff += SCREENWIDTH_EGA;
 			}
-			BE_ST_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, 2, mapMask);
-			backSrcPtr += 2;
+			BE_ST_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, TILEWIDTH_EGA, mapMask);
+			backSrcPtr += TILEWIDTH_EGA;
 		}
 
 		return;
@@ -247,7 +253,7 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	{
 		const id0_byte_t *foreSrcPtr = (id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
 		foreSrcPtr = foreSrcPtr ? foreSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
-		for (id0_unsigned_t loopVar = 0, lineoffset = 0; loopVar < 16; ++loopVar, lineoffset += SCREENWIDTH)
+		for (id0_unsigned_t loopVar = 0, lineoffset = 0; loopVar < 16; ++loopVar, lineoffset += SCREENWIDTH_EGA)
 		{
 			// backSrcPtr - background tile
 			// foreSrcPtr - mask
@@ -262,9 +268,11 @@ void RFL_NewTile (id0_unsigned_t updateoffset)
 	}
 }
 
-#endif
+//#endif
 
-#if GRMODE == VGAGR
+// REFKEEN - No VGAGR implementation originally existed for Keen Dreams...
+#if 0
+//#if GRMODE == VGAGR
 ;============================================================================
 ;
 ; VGA refresh routines
@@ -330,28 +338,30 @@ void RFL_UpdateTiles (void)
 			//============
 			++scanPtr; // we know the next tile is nothing
 			id0_word_t tileLoc = blockstarts[scanPtr-updateptr-2]; // start of tile location on screen
-#if (GRMODE == CGAGR)
-			id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
-			id0_byte_t *srcPtr = &screenseg[(id0_unsigned_t)(tileLoc+masterofs)]; // source in master screen
-			for (int loopVar = 15; loopVar; --loopVar)
+			if (GRMODE == CGAGR)
 			{
-				BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH);
-				BE_Cross_Wrapped_Add(screenseg, &srcPtr, SCREENWIDTH);
-				BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH);
+				id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
+				id0_byte_t *srcPtr = &screenseg[(id0_unsigned_t)(tileLoc+masterofs)]; // source in master screen
+				for (int loopVar = 15; loopVar; --loopVar)
+				{
+					BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH_CGA);
+					BE_Cross_Wrapped_Add(screenseg, &srcPtr, SCREENWIDTH_CGA);
+					BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH_CGA);
+				}
+				BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH_CGA);
 			}
-			BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH);
-#endif
-#if (GRMODE == EGAGR)
-			id0_word_t egaDestOff = tileLoc+bufferofs; // dest in current screen
-			id0_word_t egaSrcOff = tileLoc+masterofs; // source in master screen
-			for (int loopVar = 15; loopVar; --loopVar)
+			if (GRMODE == EGAGR)
 			{
-				BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH);
-				egaSrcOff += SCREENWIDTH;
-				egaDestOff += SCREENWIDTH;
+				id0_word_t egaDestOff = tileLoc+bufferofs; // dest in current screen
+				id0_word_t egaSrcOff = tileLoc+masterofs; // source in master screen
+				for (int loopVar = 15; loopVar; --loopVar)
+				{
+					BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH_EGA);
+					egaSrcOff += SCREENWIDTH_EGA;
+					egaDestOff += SCREENWIDTH_EGA;
+				}
+				BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH_EGA);
 			}
-			BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH);
-#endif
 			continue;
 		}
 		//============
@@ -372,52 +382,51 @@ void RFL_UpdateTiles (void)
 		}
 		id0_word_t bytesPerRow = 2*(scanPtr - rowScanStartPtr);
 		id0_word_t tileLoc = blockstarts[rowScanStartPtr-updateptr-1]; // start of tile location
-#if (GRMODE == CGAGR)
-		id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
-		id0_byte_t *srcPtr = &screenseg[(id0_unsigned_t)(tileLoc+masterofs)]; // source in master screen
-		id0_word_t bytesToSkip = SCREENWIDTH-2*bytesPerRow; // words wide in CGA tiles
-#else
-#if (GRMODE == EGAGR)
-		id0_word_t egaDestOff = tileLoc+bufferofs; // dest in current screen
-		id0_word_t egaSrcOff = tileLoc+masterofs; // source in master screen
-#endif
-		id0_word_t bytesToSkip = SCREENWIDTH-bytesPerRow;
-#endif
-		for (int loopVar = 15; loopVar; --loopVar)
+
+		if (GRMODE == CGAGR)
 		{
-			iterationsToDo = bytesPerRow;
-#if (GRMODE == CGAGR)
-			for (; iterationsToDo; --iterationsToDo)
+			id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
+			id0_byte_t *srcPtr = &screenseg[(id0_unsigned_t)(tileLoc+masterofs)]; // source in master screen
+			id0_word_t bytesToSkip = SCREENWIDTH_CGA-2*bytesPerRow; // words wide in CGA tiles
+			for (int loopVar = 15; loopVar; --loopVar)
+			{
+				for (iterationsToDo = bytesPerRow; iterationsToDo; --iterationsToDo)
+				{
+					// Was originally a single instrument, so not calling BE_Cross_LinearToWrapped_MemCopy
+					memcpy(destPtr, srcPtr, TILEWIDTH_CGA/2);
+					BE_Cross_Wrapped_Add(screenseg, &srcPtr, TILEWIDTH_CGA/2);
+					BE_Cross_Wrapped_Add(screenseg, &destPtr, TILEWIDTH_CGA/2);
+				}
+				BE_Cross_Wrapped_Add(screenseg, &srcPtr, bytesToSkip);
+				BE_Cross_Wrapped_Add(screenseg, &destPtr, bytesToSkip);
+			}
+			for (iterationsToDo = bytesPerRow; iterationsToDo; --iterationsToDo)
 			{
 				// Was originally a single instrument, so not calling BE_Cross_LinearToWrapped_MemCopy
-				memcpy(destPtr, srcPtr, TILEWIDTH/2);
-				BE_Cross_Wrapped_Add(screenseg, &srcPtr, TILEWIDTH/2);
-				BE_Cross_Wrapped_Add(screenseg, &destPtr, TILEWIDTH/2);
+				memcpy(destPtr, srcPtr, TILEWIDTH_CGA/2);
+				BE_Cross_Wrapped_Add(screenseg, &srcPtr, TILEWIDTH_CGA/2);
+				BE_Cross_Wrapped_Add(screenseg, &destPtr, TILEWIDTH_CGA/2);
 			}
-			BE_Cross_Wrapped_Add(screenseg, &srcPtr, bytesToSkip);
-			BE_Cross_Wrapped_Add(screenseg, &destPtr, bytesToSkip);
-#endif
-#if (GRMODE == EGAGR)
+		}
+
+		if (GRMODE == EGAGR)
+		{
+			id0_word_t egaDestOff = tileLoc+bufferofs; // dest in current screen
+			id0_word_t egaSrcOff = tileLoc+masterofs; // source in master screen
+			id0_word_t bytesToSkip = SCREENWIDTH_EGA-bytesPerRow;
+			for (int loopVar = 15; loopVar; --loopVar)
+			{
+				iterationsToDo = bytesPerRow;
+				BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
+				iterationsToDo = 0;
+				egaSrcOff += bytesToSkip+bytesPerRow;
+				egaDestOff += bytesToSkip+bytesPerRow;
+			}
+			iterationsToDo = bytesPerRow;
 			BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
 			iterationsToDo = 0;
-			egaSrcOff += bytesToSkip+bytesPerRow;
-			egaDestOff += bytesToSkip+bytesPerRow;
-#endif
 		}
-		iterationsToDo = bytesPerRow;
-#if (GRMODE == CGAGR)
-		for (; iterationsToDo; --iterationsToDo)
-		{
-			// Was originally a single instrument, so not calling BE_Cross_LinearToWrapped_MemCopy
-			memcpy(destPtr, srcPtr, TILEWIDTH/2);
-			BE_Cross_Wrapped_Add(screenseg, &srcPtr, TILEWIDTH/2);
-			BE_Cross_Wrapped_Add(screenseg, &destPtr, TILEWIDTH/2);
-		}
-#endif
-#if (GRMODE == EGAGR)
-		BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
-		iterationsToDo = 0;
-#endif
+
 		// was 0, now 0xFFFF for above loop
 		// WARNING: This should be UNSIGNED, or else we get undefined behaviors
 		--iterationsToDo;
@@ -477,83 +486,93 @@ void RFL_MaskForegroundTiles (void)
 			continue;
 		}
 
-#if (GRMODE == CGAGR)
-		//=================
-		//
-		// mask the tile CGA
-		//
-		//=================
-
-		id0_word_t tileLoc = blockstarts[scanPtr-updateptr-1];
-		id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc + bufferofs)];
-		const id0_byte_t *srcPtr = (const id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
-
-		for (int loopVar = 16; loopVar; --loopVar)
+		if (GRMODE == CGAGR)
 		{
-			// destPtr - background tile
-			// srcPtr - mask
-			// &srcPtr[64] - masked data
-			*destPtr = ((*destPtr) & (*srcPtr))
-				               | srcPtr[64];
-			BE_Cross_Wrapped_Inc(screenseg, &destPtr);
-			++srcPtr;
-			*destPtr = ((*destPtr) & (*srcPtr))
-				               | srcPtr[64];
-			BE_Cross_Wrapped_Inc(screenseg, &destPtr);
-			++srcPtr;
-			*destPtr = ((*destPtr) & (*srcPtr))
-				               | srcPtr[64];
-			BE_Cross_Wrapped_Inc(screenseg, &destPtr);
-			++srcPtr;
-			*destPtr   = ((*destPtr) & (*srcPtr))
-				               | srcPtr[64];
+			//=================
+			//
+			// mask the tile CGA
+			//
+			//=================
 
-			++srcPtr;
-			BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH-3);
-#if 0
-			*((id0_longword_t *)destPtr) =
-				((*((id0_longword_t *)destPtr)) // background
-				 & (*(id0_longword_t *)srcPtr) // mask
-				) | (*(id0_longword_t *)(srcPtr+64)); // masked data
-#endif
-		}
-#endif
+			id0_word_t tileLoc = blockstarts[scanPtr-updateptr-1];
+			id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc + bufferofs)];
+			const id0_byte_t *srcPtr = (const id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
 
-#if (GRMODE == EGAGR)
-		//=================
-		//
-		// mask the tile
-		//
-		//=================
-
-		planemask = 1;
-		planenum = 0;
-
-		id0_word_t tileLoc = blockstarts[scanPtr-updateptr-1];
-		screenstartcs = (id0_unsigned_t)(tileLoc + bufferofs);
-
-		id0_unsigned_t dataLoc = 32; // data starts 32 bytes after mask
-
-		do // plane loop
-		{
-			const id0_byte_t *srcPtr = (id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
-			id0_unsigned_t egaDestOff = screenstartcs;
-			for (int loopVar = 0; loopVar < 16; ++loopVar, egaDestOff += SCREENWIDTH-1)
+			for (int loopVar = 16; loopVar; --loopVar)
 			{
-				BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+				// destPtr - background tile
+				// srcPtr - mask
+				// &srcPtr[64] - masked data
+				*destPtr = ((*destPtr) & (*srcPtr))
+						       | srcPtr[64];
+				BE_Cross_Wrapped_Inc(screenseg, &destPtr);
 				++srcPtr;
-				++egaDestOff;
-				BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+				*destPtr = ((*destPtr) & (*srcPtr))
+						       | srcPtr[64];
+				BE_Cross_Wrapped_Inc(screenseg, &destPtr);
 				++srcPtr;
-				//++egaDestOff;
-			}
-			dataLoc += 32; // the mask is now further away
+				*destPtr = ((*destPtr) & (*srcPtr))
+						       | srcPtr[64];
+				BE_Cross_Wrapped_Inc(screenseg, &destPtr);
+				++srcPtr;
+				*destPtr   = ((*destPtr) & (*srcPtr))
+						       | srcPtr[64];
 
-			++planenum;
-			planemask <<= 1; // shift plane mask over for next plane
-		} while (planemask != 0x10);
+				++srcPtr;
+				BE_Cross_Wrapped_Add(screenseg, &destPtr, SCREENWIDTH_CGA-3);
+#if 0
+				*((id0_longword_t *)destPtr) =
+					((*((id0_longword_t *)destPtr)) // background
+					 & (*(id0_longword_t *)srcPtr) // mask
+					) | (*(id0_longword_t *)(srcPtr+64)); // masked data
 #endif
+			}
+		}
+
+		if (GRMODE == EGAGR)
+		{
+			//=================
+			//
+			// mask the tile
+			//
+			//=================
+
+			planemask = 1;
+			planenum = 0;
+
+			id0_word_t tileLoc = blockstarts[scanPtr-updateptr-1];
+			screenstartcs = (id0_unsigned_t)(tileLoc + bufferofs);
+
+			id0_unsigned_t dataLoc = 32; // data starts 32 bytes after mask
+
+			do // plane loop
+			{
+				const id0_byte_t *srcPtr = (id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
+				id0_unsigned_t egaDestOff = screenstartcs;
+				for (int loopVar = 0; loopVar < 16; ++loopVar, egaDestOff += SCREENWIDTH_EGA-1)
+				{
+					BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+					++srcPtr;
+					++egaDestOff;
+					BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+					++srcPtr;
+					//++egaDestOff;
+				}
+				dataLoc += 32; // the mask is now further away
+
+				++planenum;
+				planemask <<= 1; // shift plane mask over for next plane
+			} while (planemask != 0x10);
+		}
 
 		iterationsToDo = 0xFFFF; // definitely scan the entire thing
 	} while (true);
+}
+
+// (REFKEEN) Used for patching version-specific stuff
+void (*RFL_NewTile) (id0_unsigned_t updateoffset);
+
+void RefKeen_Patch_id_rf_a(void)
+{
+	RFL_NewTile = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? RFL_NewTile_CGA : RFL_NewTile_EGA;
 }

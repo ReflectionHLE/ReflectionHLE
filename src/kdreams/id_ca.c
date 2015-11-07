@@ -87,6 +87,14 @@ BE_FILE_T			profilehandle;
 =============================================================================
 */
 
+// REFKEEN - New version-specific variables
+static	const id0_char_t	*refkeen_compat_grfilename;
+static	const id0_char_t	*refkeen_compat_mapfilename;
+static	const id0_char_t	*refkeen_compat_audiofilename;
+static	const id0_char_t	*refkeen_compat_grfilename_openerrormsg;
+static	const id0_char_t	*refkeen_compat_mapfilename_openerrormsg;
+static	const id0_char_t	*refkeen_compat_audiofilename_openerrormsg;
+
 extern	id0_long_t	*CGAhead;
 extern	id0_long_t	*EGAhead;
 extern	id0_byte_t	*CGAdict;
@@ -480,14 +488,16 @@ void CAL_SetupGrFile (void)
 
 #ifdef GRHEADERLINKED
 
-#if GRMODE == EGAGR
-	grhuffman = (huffnode *)EGAdict;
-	grstarts = EGAhead;
-#endif
-#if GRMODE == CGAGR
-	grhuffman = (huffnode *)CGAdict;
-	grstarts = CGAhead;
-#endif
+	if (GRMODE == EGAGR)
+	{
+		grhuffman = (huffnode *)EGAdict;
+		grstarts = EGAhead;
+	}
+	if (GRMODE == CGAGR)
+	{
+		grhuffman = (huffnode *)CGAdict;
+		grstarts = CGAhead;
+	}
 
 	CAL_OptimizeNodes (grhuffman);
 
@@ -497,12 +507,14 @@ void CAL_SetupGrFile (void)
 // load ???dict.ext (huffman dictionary for graphics files)
 //
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
+	// REFKEEN - This is never compiled anyway, so let's comment out both cases
+#if 0
 	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT"DICT."EXTENSION)))
 	//if ((handle = open(GREXT"DICT."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+#endif
+#if 0
 	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("KDREAMS.EGA")))
 	//if ((handle = open("KDREAMS.EGA",
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
@@ -541,19 +553,11 @@ void CAL_SetupGrFile (void)
 //
 // Open the graphics file, leaving it open until the game is finished
 //
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	grhandle = BE_Cross_open_readonly_for_reading(GREXT"GRAPH."EXTENSION);
-	//grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
-	if (!BE_Cross_IsFileValid(grhandle))
-	//if (grhandle == -1)
-		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	grhandle = BE_Cross_open_readonly_for_reading("KDREAMS.EGA");
-	//grhandle = open("KDREAMS.EGA", O_RDONLY | O_BINARY);
+	grhandle = BE_Cross_open_readonly_for_reading(refkeen_compat_grfilename);
+	//grhandle = open(refkeen_compat_grfilename, O_RDONLY | O_BINARY);
 	if (!BE_Cross_IsFileValid(grhandle))
  	//if (grhandle == -1)
-		Quit ("Cannot open KDREAMS.EGA!");
-#endif
+		Quit (refkeen_compat_grfilename_openerrormsg);
 
 
 //
@@ -642,12 +646,14 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef MAPHEADERLINKED
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
+	// REFKEEN - This is never compiled anyway, so let's comment out both cases
+#if 0
 	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("MAPHEAD."EXTENSION)))
 	//if ((handle = open("MAPHEAD."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+#endif
+#if 0
 	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("KDREAMS.MAP")))
 	//if ((handle = open("KDREAMS.MAP",
  	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
@@ -679,17 +685,10 @@ void CAL_SetupMapFile (void)
 // open the data file
 //
 #ifdef MAPHEADERLINKED
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("GAMEMAPS."EXTENSION)))
-	//if ((maphandle = open("GAMEMAPS."EXTENSION,
-	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open GAMEMAPS."EXTENSION"!");
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("KDREAMS.MAP")))
-	//if ((maphandle = open("KDREAMS.MAP",
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading(refkeen_compat_mapfilename)))
+	//if ((maphandle = open(refkeen_compat_mapfilename,
  	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open KDREAMS.MAP!");
-#endif // VERSION
+		Quit (refkeen_compat_mapfilename_openerrormsg);
 #else
 	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("MAPTEMP."EXTENSION)))
 	//if ((maphandle = open("MAPTEMP."EXTENSION,
@@ -745,17 +744,10 @@ void CAL_SetupAudioFile (void)
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIOT."EXTENSION"!");
 #else
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIO."EXTENSION)))
-	//if ((audiohandle = open("AUDIO."EXTENSION,
-	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open AUDIO."EXTENSION"!");
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("KDREAMS.AUD")))
-	//if ((audiohandle = open("KDREAMS.AUD",
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading(refkeen_compat_audiofilename)))
+	//if ((audiohandle = open(refkeen_compat_audiofilename,
  	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
-		Quit ("Can't open KDREAMS.AUD!");
-#endif // VERSION
+		Quit (refkeen_compat_audiofilename_openerrormsg);
 #endif
 }
 
@@ -965,7 +957,9 @@ cachein:
 
 //===========================================================================
 
-#if GRMODE == EGAGR
+// REFKEEN - Originally defined if GRMODE == EGAGR, but GRMODE has changed
+// to a variable, so always define
+//#if GRMODE == EGAGR
 
 /*
 ======================
@@ -1026,7 +1020,7 @@ void CAL_ShiftSprite (id0_byte_t *source, id0_byte_t *dest,
 	}
 }
 
-#endif
+//#endif
 
 //===========================================================================
 
@@ -1046,124 +1040,128 @@ void CAL_CacheSprite (id0_int_t chunk, id0_char_t id0_far *compressed)
 	//id0_unsigned_t shiftstarts[5];
 	id0_unsigned_t smallplane/*,bigplane,expanded*/;
 	spritetabletype id0_far *spr;
-	spritetype id0_seg *dest;
+	//spritetype id0_seg *dest; // REFKEEN - We have separate CGA and EGA types now
 
-#if GRMODE == CGAGR
-//
-// CGA has no pel panning, so shifts are never needed
-//
-	spr = &spritetable[chunk-STARTSPRITES];
-	smallplane = spr->width*spr->height;
-	MM_GetPtr (&grsegs[chunk],smallplane*2+MAXSHIFTS*6);
-	dest = (spritetype id0_seg *)grsegs[chunk];
-	dest->sourceoffset[0] = MAXSHIFTS*6;	// start data after 3 unsigned tables
-	dest->planesize[0] = smallplane;
-	dest->width[0] = spr->width;
-
-//
-// expand the unshifted shape
-//
-	CAL_HuffExpand ((id0_byte_t *)compressed, &dest->data[0],smallplane*2,grhuffman);
-
-#endif
-
-
-#if GRMODE == EGAGR
-	id0_int_t i;
-	id0_unsigned_t shiftstarts[5];
-	id0_unsigned_t bigplane,expanded;
-
-//
-// calculate sizes
-//
-	spr = &spritetable[chunk-STARTSPRITES];
-	smallplane = spr->width*spr->height;
-	bigplane = (spr->width+1)*spr->height;
-
-	shiftstarts[0] = MAXSHIFTS*6;	// start data after 3 unsigned tables
-	shiftstarts[1] = shiftstarts[0] + smallplane*5;	// 5 planes in a sprite
-	shiftstarts[2] = shiftstarts[1] + bigplane*5;
-	shiftstarts[3] = shiftstarts[2] + bigplane*5;
-	shiftstarts[4] = shiftstarts[3] + bigplane*5;	// nothing ever put here
-
-	expanded = shiftstarts[spr->shifts];
-	MM_GetPtr (&grsegs[chunk],expanded);
-	dest = (spritetype id0_seg *)grsegs[chunk];
-
-//
-// expand the unshifted shape
-//
-	CAL_HuffExpand ((id0_byte_t *)compressed, &dest->data[0],smallplane*5,grhuffman);
-
-//
-// make the shifts!
-//
-	switch (spr->shifts)
+	if (GRMODE == CGAGR)
 	{
-	case	1:
-		for (i=0;i<4;i++)
-		{
-			dest->sourceoffset[i] = shiftstarts[0];
-			dest->planesize[i] = smallplane;
-			dest->width[i] = spr->width;
-		}
-		break;
-
-	case	2:
-		for (i=0;i<2;i++)
-		{
-			dest->sourceoffset[i] = shiftstarts[0];
-			dest->planesize[i] = smallplane;
-			dest->width[i] = spr->width;
-		}
-		for (i=2;i<4;i++)
-		{
-			dest->sourceoffset[i] = shiftstarts[1];
-			dest->planesize[i] = bigplane;
-			dest->width[i] = spr->width+1;
-		}
-		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
-			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[2],spr->width,spr->height,4);
-		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
-		//	dest->sourceoffset[2],spr->width,spr->height,4);
-		break;
-
-	case	4:
-		dest->sourceoffset[0] = shiftstarts[0];
+		spritetype_cga id0_seg *dest;
+	//
+	// CGA has no pel panning, so shifts are never needed
+	//
+		spr = &spritetable[chunk-STARTSPRITES];
+		smallplane = spr->width*spr->height;
+		MM_GetPtr (&grsegs[chunk],smallplane*2+MAXSHIFTS_CGA*6);
+		dest = (spritetype_cga id0_seg *)grsegs[chunk];
+		dest->sourceoffset[0] = MAXSHIFTS_CGA*6;	// start data after 3 unsigned tables
 		dest->planesize[0] = smallplane;
 		dest->width[0] = spr->width;
 
-		dest->sourceoffset[1] = shiftstarts[1];
-		dest->planesize[1] = bigplane;
-		dest->width[1] = spr->width+1;
-		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
-			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[1],spr->width,spr->height,2);
-		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
-		//	dest->sourceoffset[1],spr->width,spr->height,2);
+	//
+	// expand the unshifted shape
+	//
+		CAL_HuffExpand ((id0_byte_t *)compressed, &dest->data[0],smallplane*2,grhuffman);
 
-		dest->sourceoffset[2] = shiftstarts[2];
-		dest->planesize[2] = bigplane;
-		dest->width[2] = spr->width+1;
-		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
-			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[2],spr->width,spr->height,4);
-		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
-		//	dest->sourceoffset[2],spr->width,spr->height,4);
-
-		dest->sourceoffset[3] = shiftstarts[3];
-		dest->planesize[3] = bigplane;
-		dest->width[3] = spr->width+1;
-		CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
-			(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[3],spr->width,spr->height,6);
-		//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
-		//	dest->sourceoffset[3],spr->width,spr->height,6);
-
-		break;
-
-	default:
-		Quit ("CAL_CacheSprite: Bad shifts number!");
 	}
 
-#endif
+
+	if (GRMODE == EGAGR)
+	{
+		spritetype_ega id0_seg *dest;
+		id0_int_t i;
+		id0_unsigned_t shiftstarts[5];
+		id0_unsigned_t bigplane,expanded;
+
+	//
+	// calculate sizes
+	//
+		spr = &spritetable[chunk-STARTSPRITES];
+		smallplane = spr->width*spr->height;
+		bigplane = (spr->width+1)*spr->height;
+
+		shiftstarts[0] = MAXSHIFTS_EGA*6;	// start data after 3 unsigned tables
+		shiftstarts[1] = shiftstarts[0] + smallplane*5;	// 5 planes in a sprite
+		shiftstarts[2] = shiftstarts[1] + bigplane*5;
+		shiftstarts[3] = shiftstarts[2] + bigplane*5;
+		shiftstarts[4] = shiftstarts[3] + bigplane*5;	// nothing ever put here
+
+		expanded = shiftstarts[spr->shifts];
+		MM_GetPtr (&grsegs[chunk],expanded);
+		dest = (spritetype_ega id0_seg *)grsegs[chunk];
+
+	//
+	// expand the unshifted shape
+	//
+		CAL_HuffExpand ((id0_byte_t *)compressed, &dest->data[0],smallplane*5,grhuffman);
+
+	//
+	// make the shifts!
+	//
+		switch (spr->shifts)
+		{
+		case	1:
+			for (i=0;i<4;i++)
+			{
+				dest->sourceoffset[i] = shiftstarts[0];
+				dest->planesize[i] = smallplane;
+				dest->width[i] = spr->width;
+			}
+			break;
+
+		case	2:
+			for (i=0;i<2;i++)
+			{
+				dest->sourceoffset[i] = shiftstarts[0];
+				dest->planesize[i] = smallplane;
+				dest->width[i] = spr->width;
+			}
+			for (i=2;i<4;i++)
+			{
+				dest->sourceoffset[i] = shiftstarts[1];
+				dest->planesize[i] = bigplane;
+				dest->width[i] = spr->width+1;
+			}
+			CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+				(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[2],spr->width,spr->height,4);
+			//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+			//	dest->sourceoffset[2],spr->width,spr->height,4);
+			break;
+
+		case	4:
+			dest->sourceoffset[0] = shiftstarts[0];
+			dest->planesize[0] = smallplane;
+			dest->width[0] = spr->width;
+
+			dest->sourceoffset[1] = shiftstarts[1];
+			dest->planesize[1] = bigplane;
+			dest->width[1] = spr->width+1;
+			CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+				(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[1],spr->width,spr->height,2);
+			//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+			//	dest->sourceoffset[1],spr->width,spr->height,2);
+
+			dest->sourceoffset[2] = shiftstarts[2];
+			dest->planesize[2] = bigplane;
+			dest->width[2] = spr->width+1;
+			CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+				(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[2],spr->width,spr->height,4);
+			//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+			//	dest->sourceoffset[2],spr->width,spr->height,4);
+
+			dest->sourceoffset[3] = shiftstarts[3];
+			dest->planesize[3] = bigplane;
+			dest->width[3] = spr->width+1;
+			CAL_ShiftSprite ((id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[0],
+				(id0_byte_t *)(grsegs[chunk])+dest->sourceoffset[3],spr->width,spr->height,6);
+			//CAL_ShiftSprite ((id0_unsigned_t)grsegs[chunk],dest->sourceoffset[0],
+			//	dest->sourceoffset[3],spr->width,spr->height,6);
+
+			break;
+
+		default:
+			Quit ("CAL_CacheSprite: Bad shifts number!");
+		}
+
+	}
 }
 
 //===========================================================================
@@ -1192,6 +1190,11 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 	// expanded sizes of tile8/16/32 are implicit
 	//
 
+		// REFKEEN - GRMODE is now a variable,
+		// and so should BLOCK and MASKBLOCK be
+		int BLOCK = (GRMODE == EGAGR) ? 32 : 16;
+		int MASKBLOCK = (GRMODE == EGAGR) ? 40 : 32;
+#if 0
 #if GRMODE == EGAGR
 #define BLOCK		32
 #define MASKBLOCK	40
@@ -1200,6 +1203,7 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 #if GRMODE == CGAGR
 #define BLOCK		16
 #define MASKBLOCK	32
+#endif
 #endif
 
 		if (chunk<STARTTILE8M)			// tile 8s are all in one chunk!
@@ -1556,11 +1560,9 @@ void CA_DownLevel (void)
 		Quit ("CA_DownLevel: Down past level 0!");
 	ca_levelbit>>=1;
 	ca_levelnum--;
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	CA_CacheMarks(titleptr[ca_levelnum]);
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+	// REFKEEN - Originally accepting just one argument in v1.00 and 1.05.
+	// Supporting multiple versions, we conditionally ignore the second argument.
 	CA_CacheMarks(titleptr[ca_levelnum], 1);
-#endif
 }
 
 //===========================================================================
@@ -1619,11 +1621,9 @@ void CA_ClearAllMarks (void)
 #define BARSTEP	8
 #define MAXEMPTYREAD	1024
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-void CA_CacheMarks (const id0_char_t *title)
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
+// REFKEEN - Originally accepting just one argument in v1.00 and 1.05.
+// Supporting multiple versions, we conditionally ignore the second argument.
 void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
-#endif
 {
 	id0_boolean_t dialog;
 	id0_int_t 	i,next,homex,homey,x/*,y*/,thx,thy,numcache,lastx/*,xl*/,xh;
@@ -1632,6 +1632,8 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 	id0_long_t	bufferstart,bufferend;	// file position of general buffer
 	id0_byte_t	id0_far *source;
 	memptr	bigbufferseg;
+	// REFKEEN - GRMODE is a variable now, and so may the bar color be (NEW variable added)
+	int	barcolor = (GRMODE == EGAGR) ? 14 : SECONDCOLOR;
 
 	//
 	// save title so cache down level can redraw it
@@ -1639,12 +1641,11 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 	titleptr[ca_levelnum] = title;
 
 	dialog = (title!=NULL);
-#ifndef REFKEEN_VER_KDREAMS_CGA_ALL
-
-	if (cachedownlevel)
+	// REFKEEN - Ignore cachedownlevel in "earlier" versions
+	if ((refkeen_current_gamever != BE_GAMEVER_KDREAMSC105) && cachedownlevel)
+	//if (cachedownlevel)
 		dialog = false;
 
-#endif
 	if (dialog)
 	{
 	//
@@ -1733,12 +1734,7 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 				if (xh - lastx > BARSTEP)
 				{
 					for (x=lastx;x<=xh;x++)
-#if GRMODE == EGAGR
-						VWB_Vlin (thy,thy+13,x,14);
-#endif
-#if GRMODE == CGAGR
-						VWB_Vlin (thy,thy+13,x,SECONDCOLOR);
-#endif
+						VWB_Vlin (thy,thy+13,x,barcolor);
 					lastx = xh;
 					VW_UpdateScreen();
 					// (REFKEEN) HACK: Ensure this is at least seen
@@ -1818,12 +1814,7 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 		{
 			xh = thx + NUMBARS;
 			for (x=lastx;x<=xh;x++)
-#if GRMODE == EGAGR
-				VWB_Vlin (thy,thy+13,x,14);
-#endif
-#if GRMODE == CGAGR
-				VWB_Vlin (thy,thy+13,x,SECONDCOLOR);
-#endif
+				VWB_Vlin (thy,thy+13,x,barcolor);
 			VW_UpdateScreen();
 			// (REFKEEN) And again...
 			BE_ST_ShortSleep();
@@ -1831,28 +1822,23 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 }
 
 // (REFKEEN) Used for patching version-specific stuff
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
 id0_long_t	*CGAhead;
 id0_byte_t	*CGAdict;
-#else
 id0_long_t	*EGAhead;
 id0_byte_t	*EGAdict;
-#endif
 id0_byte_t	*maphead;
 id0_byte_t	*mapdict;
 id0_byte_t	*audiohead;
 id0_byte_t	*audiodict;
 
+id0_int_t GRMODE;
+
 void RefKeen_Patch_id_ca(void)
 {
 	int audiodictsize, audioheadsize, GFXdictsize, GFXheadsize, mapdictsize, mapheadsize;
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	id0_byte_t **GFXdictptr = &CGAdict;
-	id0_long_t **GFXheadptr = &CGAhead;
-#else
-	id0_byte_t **GFXdictptr = &EGAdict;
-	id0_long_t **GFXheadptr = &EGAhead;
-#endif
+	GRMODE = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? CGAGR : EGAGR;
+	id0_byte_t **GFXdictptr = (GRMODE == CGAGR) ? &CGAdict : &EGAdict;
+	id0_long_t **GFXheadptr = (GRMODE == CGAGR) ? &CGAhead : &EGAhead;
 	// Just in case these may ever be reloaded
 	BE_Cross_free_mem_loaded_embedded_rsrc(audiodict);
 	BE_Cross_free_mem_loaded_embedded_rsrc(audiohead);
@@ -1863,18 +1849,42 @@ void RefKeen_Patch_id_ca(void)
 	// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
 	if (((audiodictsize = BE_Cross_load_embedded_rsrc_to_mem("AUDIODCT."EXTENSION, (memptr *)&audiodict)) < 0) ||
 	    ((audioheadsize = BE_Cross_load_embedded_rsrc_to_mem("AUDIOHHD."EXTENSION, (memptr *)&audiohead)) < 0) ||
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	    ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("CGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
-	    ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("CGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0) ||
-#else
-	    ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
-	    ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0) ||
-#endif
+	    ((GRMODE == CGAGR) &&
+	     (
+	      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("CGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
+	      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("CGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
+	     )
+	    ) ||
+	    ((GRMODE == EGAGR) &&
+	     (
+	      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
+	      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
+	     )
+	    ) ||
 	    ((mapdictsize = BE_Cross_load_embedded_rsrc_to_mem("MAPDICT."EXTENSION, (memptr *)&mapdict)) < 0) ||
 	    ((mapheadsize = BE_Cross_load_embedded_rsrc_to_mem("MAPHEAD."EXTENSION, (memptr *)&maphead)) < 0)
 	)
 		// Similarly we don't use Quit
 		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_ca - Failed to load at least one file.");
+
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	{
+		refkeen_compat_grfilename = "CGAGRAPH."EXTENSION;
+		refkeen_compat_mapfilename = "GAMEMAPS."EXTENSION;
+		refkeen_compat_audiofilename = "AUDIO."EXTENSION;
+		refkeen_compat_grfilename_openerrormsg = "Cannot open CGAGRAPH."EXTENSION"!";
+		refkeen_compat_mapfilename_openerrormsg = "Can't open GAMEMAPS."EXTENSION"!";
+		refkeen_compat_audiofilename_openerrormsg = "Can't open AUDIO."EXTENSION"!";
+	}
+	else
+	{
+		refkeen_compat_grfilename = "KDREAMS.EGA";
+		refkeen_compat_mapfilename = "KDREAMS.MAP";
+		refkeen_compat_audiofilename = "KDREAMS.AUD";
+		refkeen_compat_grfilename_openerrormsg = "Cannot open KDREAMS.EGA!";
+		refkeen_compat_mapfilename_openerrormsg = "Can't open KDREAMS.MAP!";
+		refkeen_compat_audiofilename_openerrormsg = "Can't open KDREAMS.AUD!";
+	}
 
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 	for (uint16_t *dictptr = (uint16_t *)audiodict; audiodictsize >= 2; ++dictptr, audiodictsize -= 2)

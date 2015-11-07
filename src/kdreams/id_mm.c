@@ -535,11 +535,7 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 		}
 	}
 
-#ifdef REFKEEN_VER_KDREAMS_CGA_ALL
-	Quit ("MM_GetPtr: Out of memory!");
-#elif defined REFKEEN_VER_KDREAMS_ANYEGA_ALL
-	Quit ("Out of memory!  Please make sure you have enough free memory.");
-#endif
+	Quit ((refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? "MM_GetPtr: Out of memory!" : "Out of memory!  Please make sure you have enough free memory.");
 }
 
 //==========================================================================
@@ -749,10 +745,6 @@ void MM_SortMem (void)
 =====================
 */
 
-// (REFKEEN) Called only if GRMODE==EGAGR - assuming FRILLS is nonzero
-// (VW_SetScreen has been disabled for CGA)
-
-#if GRMODE == EGAGR
 void MM_ShowMemory (void)
 {
 	mmblocktype id0_far *scan;
@@ -762,7 +754,7 @@ void MM_ShowMemory (void)
 	VW_SetLineWidth(40);
 	temp = bufferofs;
 	bufferofs = 0;
-	VW_SetScreen (0,0);
+	VW_SetScreen_EGA (0,0); // REFKEEN - We're in an EGA-only function anyway...
 
 	scan = mmhead;
 
@@ -779,10 +771,11 @@ void MM_ShowMemory (void)
 		if (scan->start<=end)
 			Quit ("MM_ShowMemory: Memory block order currupted!");
 		end = scan->start+scan->length-1;
-		VW_Hlin(scan->start,(id0_unsigned_t)end,0,color);
-		VW_Plot(scan->start,0,15);
+		// REFKEEN - Again we're in an EGA-only function
+		VW_Hlin_EGA(scan->start,(id0_unsigned_t)end,0,color);
+		VW_Plot_EGA(scan->start,0,15);
 		if (scan->next->start > end+1)
-			VW_Hlin(end+1,scan->next->start,0,0);	// black = free
+			VW_Hlin_EGA(end+1,scan->next->start,0,0);	// black = free
 		scan = scan->next;
 	}
 
@@ -790,7 +783,6 @@ void MM_ShowMemory (void)
 	VW_SetLineWidth(64);
 	bufferofs = temp;
 }
-#endif
 
 //==========================================================================
 
