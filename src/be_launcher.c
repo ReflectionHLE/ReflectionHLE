@@ -784,6 +784,7 @@ void BE_Launcher_Start(void)
 	BE_Launcher_PrepareMenu(&g_beSoundSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beInputSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beControllerSettingsMenu);
+	BE_Launcher_PrepareMenu(&g_beShowVersionMenu);
 	BE_Launcher_PrepareMenu(&g_beQuitConfirmMenu);
 
 	BEL_Launcher_SetCurrentMenu(&g_beMainMenu);

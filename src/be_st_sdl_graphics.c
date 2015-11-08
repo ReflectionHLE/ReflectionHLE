@@ -24,6 +24,7 @@
 #include "be_gamever.h" // Enable VSync by default for EGA, not CGA
 #include "be_st.h"
 #include "be_st_sdl_private.h"
+#include "be_title_and_version.h"
 
 // Some of these are also used in launcher
 SDL_Window *g_sdlWindow;
@@ -32,22 +33,6 @@ SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
 static bool g_sdlIsSoftwareRendered;
-
-#ifdef REFKEEN_VER_KDREAMS
-	const char *g_sdlWindowTitle = "Reflection Keen Dreams";
-#elif (defined REFKEEN_VER_CAT3D)
-	const char *g_sdlWindowTitle = "Reflection Catacomb 3-D";
-#elif (defined REFKEEN_VER_CATABYSS)
-	const char *g_sdlWindowTitle = "Reflection Catacomb Abyss";
-#elif (defined REFKEEN_VER_CATARM)
-	const char *g_sdlWindowTitle = "Reflection Catacomb Armageddon";
-#elif (defined REFKEEN_VER_CATAPOC)
-	const char *g_sdlWindowTitle = "Reflection Catacomb Apocalypse";
-#else
-#error "FATAL ERROR: No Ref port game macro is defined!"
-#endif
-
-
 static bool g_sdlDoRefreshGfxOutput;
 bool g_sdlForceGfxControlUiRefresh;
 
@@ -187,11 +172,11 @@ void BE_ST_InitGfx(void)
 	{
 		if (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight)
 		{
-			g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, SDL_WINDOW_FULLSCREEN);
+			g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, SDL_WINDOW_FULLSCREEN);
 		}
 		else
 		{
-			g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		}
 	}
 	else
@@ -224,7 +209,7 @@ void BE_ST_InitGfx(void)
 				actualWinHeight = mode.h*500/809;
 			}
 		}
-		g_sdlWindow = SDL_CreateWindow(g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), actualWinWidth, actualWinHeight, (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling) ? SDL_WINDOW_RESIZABLE : 0);
+		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), actualWinWidth, actualWinHeight, (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling) ? SDL_WINDOW_RESIZABLE : 0);
 	}
 	if (!g_sdlWindow)
 	{

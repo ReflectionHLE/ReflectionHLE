@@ -41,13 +41,7 @@ static void show_command_line_help()
 	// HACK - For text mode emulation (and exit handler)
 	BE_ST_PrepareForGameStartup();
 
-#ifdef REFKEEN_VER_KDREAMS
-	BE_ST_puts("*** Reflection Keen - Command line arguments ***");
-#elif (defined REFKEEN_VER_CATACOMB_ALL)
-	BE_ST_puts("*** Reflection Catacomb 3-D - Command line arguments ***");
-#else
-#error "FATAL ERROR: No Ref port game macro is defined!"
-#endif
+	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " - Command line arguments ***\n");
 	BE_ST_puts("");
 	BE_ST_puts("Launcher is started unless any command line argument is passed.");
 	BE_ST_puts("");

@@ -3,3 +3,4 @@
 #include "be_gamever.h"
 #include "be_launcher.h"
 #include "be_st.h"
+#include "be_title_and_version.h"

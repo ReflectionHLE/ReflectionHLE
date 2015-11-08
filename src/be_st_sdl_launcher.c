@@ -21,6 +21,7 @@
 
 #include "refkeen.h"
 #include "be_st_sdl_private.h"
+#include "be_title_and_version.h"
 
 // Borrowed from other files
 extern const uint32_t g_sdlEGABGRAScreenColors[];
@@ -29,7 +30,6 @@ extern SDL_Window *g_sdlWindow;
 extern SDL_Renderer *g_sdlRenderer;
 extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
-extern const char *g_sdlWindowTitle;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 
 static int g_sdlKeyboardLastKeyPressed;
@@ -66,15 +66,17 @@ static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_PlayGame, "Play game", &g_beSelectGameMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_ShowVersion, "Show version", &g_beShowVersionMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Quit, "Quit", &g_beQuitConfirmMenu)
 
 BEMenu g_beMainMenu = {
-	NULL, // Title filled on init
+	REFKEEN_TITLE_STRING,
 	&g_beQuitConfirmMenu,
 	(BEMenuItem *[])
 	{
 		&g_beMainMenuItem_PlayGame,
 		&g_beMainMenuItem_Settings,
+		&g_beMainMenuItem_ShowVersion,
 		&g_beMainMenuItem_Quit,
 		NULL
 	},
@@ -383,6 +385,21 @@ BEMenu g_beControllerSettingsMenu = {
 	// Ignore the rest
 };
 
+/*** Show version menu ***/
+
+BEMENUITEM_DEF_STATIC(g_beShowVersionMenuItem_Description, REFKEEN_TITLE_AND_VER_STRING ",\na part of Reflection Keen.")
+
+BEMenu g_beShowVersionMenu = {
+	"Version information",
+	&g_beMainMenu,
+	(BEMenuItem *[])
+	{
+		&g_beShowVersionMenuItem_Description,
+		NULL
+	},
+	// Ignore the rest
+};
+
 /*** Quit confirm menu ***/
 
 BEMENUITEM_DEF_HANDLER(g_beQuitConfirmMenuItem_Yes, "Yes", &BE_Launcher_Handler_MenuQuit)
@@ -415,7 +432,7 @@ void BE_ST_Launcher_Prepare(void)
 	}
 
 	g_sdlWindow = SDL_CreateWindow(
-		g_sdlWindowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight,
+		REFKEEN_TITLE_AND_VER_STRING, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight,
 		(g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : ((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT) ? SDL_WINDOW_RESIZABLE : 0)
 	);
 	if (!g_sdlWindow)
@@ -458,9 +475,6 @@ void BE_ST_Launcher_Prepare(void)
 
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
-
-	/*** Prepare main menu title ***/
-	g_beMainMenu.title = g_sdlWindowTitle;
 
 	// Set fullscreen value
 	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;

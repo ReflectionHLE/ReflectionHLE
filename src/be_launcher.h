@@ -63,7 +63,7 @@ extern BEMenu g_beMainMenu,
               g_beSelectDirectoryFoundGameMenu, g_beSelectDirectoryNoGameFoundMenu,
               g_beSettingsMenu, g_beVideoSettingsMenu, g_beSoundSettingsMenu,
               g_beInputSettingsMenu, g_beControllerSettingsMenu,
-              g_beQuitConfirmMenu;
+              g_beShowVersionMenu, g_beQuitConfirmMenu;
 
 extern bool g_be_launcher_wasAnySettingChanged;
 
