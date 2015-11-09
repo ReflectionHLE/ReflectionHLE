@@ -20,7 +20,7 @@
 // in case their definitions are configurable (possibly in more than one way)
 
 #include <string.h>
-#include "refkeen.h"
+#include "id_heads.h"
 
 BE_ST_ControllerSingleMap *g_ingame_altcontrol_button0mappings[2], *g_ingame_altcontrol_button1mappings[2],
 	*g_ingame_altcontrol_upmappings[4], *g_ingame_altcontrol_downmappings[4], *g_ingame_altcontrol_leftmappings[4], *g_ingame_altcontrol_rightmappings[4];
@@ -292,4 +292,24 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 	// Since it's our first time we can do this now
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+}
+
+void PrepareGamePlayControllerMapping(void)
+{
+	BE_ST_ControllerSingleMap **singlemappingptr;
+
+	for (singlemappingptr = g_ingame_altcontrol_button0mappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].button0;
+	for (singlemappingptr = g_ingame_altcontrol_button1mappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].button1;
+	for (singlemappingptr = g_ingame_altcontrol_upmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].up;
+	for (singlemappingptr = g_ingame_altcontrol_downmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].down;
+	for (singlemappingptr = g_ingame_altcontrol_leftmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].left;
+	for (singlemappingptr = g_ingame_altcontrol_rightmappings; *singlemappingptr; ++singlemappingptr)
+		(*singlemappingptr)->val = KbdDefs[0].right;
+
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
 }

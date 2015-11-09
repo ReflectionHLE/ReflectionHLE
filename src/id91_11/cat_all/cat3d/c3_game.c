@@ -1192,6 +1192,10 @@ void GameLoop (void)
 #ifdef PROFILE
 	clock_t start,end;
 #endif
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	void PrepareGamePlayControllerMapping(void);
+	PrepareGamePlayControllerMapping();
 
 	DrawPlayScreen ();
 
@@ -1238,7 +1242,8 @@ itoa(end-start,str,10);
 			NormalScreen ();
 			FreeUpMemory ();
 			CheckHighScore (gamestate.score,gamestate.mapon+1);
-			return;
+			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			//return;
 		case ex_warped:
 			FizzleOut (true);
 			if (gamestate.mapon >= NUMLEVELS)
@@ -1246,12 +1251,14 @@ itoa(end-start,str,10);
 				Victory ();
 				FreeUpMemory ();
 				CheckHighScore(gamestate.score,gamestate.mapon+1);
-				return;
+				goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+				//return;
 			}
 			break;
 		case ex_abort:
 			FreeUpMemory ();
-			return;
+			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			//return;
 		case ex_resetgame:
 		case ex_loadedgame:
 			goto restart;
@@ -1259,11 +1266,15 @@ itoa(end-start,str,10);
 			Victory ();
 			FreeUpMemory();
 			CheckHighScore(gamestate.score,gamestate.mapon+1);
-			return;
+			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			//return;
 		}
 
 	} while (1);
 
+	// REFKEEN - Alternative controllers support
+popcontrolerscheme:
+	BE_ST_AltControlScheme_Pop();
 }
 
 // (REFKEEN) Used for patching version-specific stuff

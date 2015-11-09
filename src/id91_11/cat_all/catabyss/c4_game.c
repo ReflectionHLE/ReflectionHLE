@@ -1223,6 +1223,10 @@ void GameLoop (void)
 #ifdef PROFILE
 	clock_t start,end;
 #endif
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	void PrepareGamePlayControllerMapping(void);
+	PrepareGamePlayControllerMapping();
 
 	DrawPlayScreen ();
 	IN_ClearKeysDown();
@@ -1289,7 +1293,8 @@ itoa(end-start,str,10);
 		{
 		case ex_abort:
 			FreeUpMemory ();
-			return;
+			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			//return;
 		case ex_resetgame:
 			NewGame();
 		case ex_loadedgame:
@@ -1300,6 +1305,9 @@ itoa(end-start,str,10);
 
 	} while (1);
 
+	// REFKEEN - Alternative controllers support
+popcontrolerscheme:
+	BE_ST_AltControlScheme_Pop();
 }
 
 
