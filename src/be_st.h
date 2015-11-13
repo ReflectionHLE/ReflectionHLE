@@ -23,7 +23,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "be_st_sdl.h"
 #include "be_launcher.h"
 
 #define BE_ST_MAXJOYSTICKS 8
@@ -384,5 +383,8 @@ typedef enum BE_ST_ScanCode_T {
      // SPECIAL - Used to mark maximum, may have to update if 0xFF is actually used
      BE_ST_SC_MAX = 0xFF,
 } BE_ST_ScanCode_T;
+
+// MUST be included here (since be_st_sdl.h depends on be_st.h)
+#include "be_st_sdl.h"
 
 #endif

@@ -798,9 +798,30 @@ void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 {
 	int menuItemNum = menuItemP - g_be_launcher_currMenu->menuItems;
 	BE_ST_Launcher_Shutdown();
-	int argc = 1;
+	int argc = 0;
+	// Making a copy since we modify this buffer (separating the arguments)
+	static char argsCopy[sizeof(g_refKeenCfg.launcherExeArgs)];
+	memcpy(argsCopy, g_refKeenCfg.launcherExeArgs, sizeof(argsCopy));
+	char *argv[sizeof(argsCopy)/2+1];
+
 	static char someEXEName[] = "proxy";
-	char *argv[] = {someEXEName};
+	argv[argc++] = someEXEName;
+
+	char *srcPtr = argsCopy;
+	while (*srcPtr)	
+	{
+		while (*srcPtr && (*srcPtr == ' '))
+			++srcPtr;
+		if (*srcPtr)
+		{
+			argv[argc++] = srcPtr;
+			do
+				++srcPtr;
+			while (*srcPtr && (*srcPtr != ' '));
+			if (*srcPtr == ' ')
+				*srcPtr++ = '\0'; // Separate the arguments
+		}
+	}
 	BE_Cross_StartGame(BE_Cross_GetGameVerFromInstallation(menuItemNum), argc, argv, 0);
 }
 

@@ -20,11 +20,14 @@
 #ifndef	_BE_ST_SDL_
 #define _BE_ST_SDL_
 
+#include "be_st.h"
+
 // WARNING: This struct is used by BE_ST_SDL ONLY (except for controller stuff)
 
 typedef enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } VSyncSettingType;
 typedef enum { SCALE_ASPECT, SCALE_FILL } ScaleTypeSettingType;
 typedef enum { LAUNCHER_WINDOW_DEFAULT, LAUNCHER_WINDOW_FULL, LAUNCHER_WINDOW_SOFTWARE } LauncherWindowSettingType;
+#define LAUNCHER_EXE_ARGS_BUFFERLEN 80
 
 typedef struct
 {
@@ -33,6 +36,7 @@ typedef struct
 	int winWidth, winHeight;
 	int launcherWinWidth, launcherWinHeight;
 	LauncherWindowSettingType launcherWinType;
+	char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
 	int displayNum;
 	int sdlRendererDriver;
 	VSyncSettingType vSync;
@@ -46,7 +50,7 @@ typedef struct
 	bool oplEmulation;
 	struct
 	{
-		int actionMappings[9]; // Buttons/triggers
+		int actionMappings[BE_ST_CTRL_CFG_BUTMAP_AFTERLAST]; // Buttons/triggers
 		bool useDpad;
 		bool useLeftStick;
 		bool useRightStick;

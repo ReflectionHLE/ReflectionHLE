@@ -328,6 +328,11 @@ static void BEL_ST_ParseSetting_LauncherWindowType(const char *keyprefix, const 
 	}
 }
 
+static void BEL_ST_ParseSetting_LauncherExeArgs(const char *keyprefix, const char *buffer)
+{
+	BE_Cross_safeandfastcstringcopy(g_refKeenCfg.launcherExeArgs, g_refKeenCfg.launcherExeArgs+sizeof(g_refKeenCfg.launcherExeArgs), buffer);
+}
+
 static void BEL_ST_ParseSetting_DisplayNum(const char *keyprefix, const char *buffer)
 {
 	sscanf(buffer, "%d", &g_refKeenCfg.displayNum);
@@ -558,6 +563,8 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"fullres=", &BEL_ST_ParseSetting_FullRes},
 	{"windowres=", &BEL_ST_ParseSetting_WindowRes},
 	{"launcherwindowres=", &BEL_ST_ParseSetting_LauncherWindowRes},
+	{"launcherwindowtype=", &BEL_ST_ParseSetting_LauncherWindowType},
+	{"launcherexeargs=", &BEL_ST_ParseSetting_LauncherExeArgs},
 	{"displaynum=", &BEL_ST_ParseSetting_DisplayNum},
 	{"sdlrenderer=", &BEL_ST_ParseSetting_SDLRendererDriver},
 	{"vsync=", &BEL_ST_ParseSetting_VSync},
@@ -570,7 +577,6 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
 	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
 	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
-	{"launcherwindowtype=", &BEL_ST_ParseSetting_LauncherWindowType},
 
 	// HACK: Copy-paste... if this is updated, check g_sdlControlSchemeKeyMapCfgKeyPrefixes too!!!
 #ifdef REFKEEN_VER_KDREAMS
@@ -617,6 +623,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.winHeight = 0;
 	g_refKeenCfg.launcherWinWidth = 0;
 	g_refKeenCfg.launcherWinHeight = 0;
+	g_refKeenCfg.launcherExeArgs[0] = '\0';
 	g_refKeenCfg.displayNum = 0;
 	g_refKeenCfg.sdlRendererDriver = -1;
 	g_refKeenCfg.vSync = VSYNC_AUTO;
@@ -704,6 +711,7 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
 	fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
 	fprintf(fp, "launcherwindowtype=%s\n", g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT ? "default" : (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL ? "full" : "software"));
+	fprintf(fp, "launcherexeargs=%s\n", g_refKeenCfg.launcherExeArgs);
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
 	if (g_refKeenCfg.sdlRendererDriver < 0)
 	{

@@ -41,7 +41,7 @@ static void show_command_line_help()
 	// HACK - For text mode emulation (and exit handler)
 	BE_ST_PrepareForGameStartup();
 
-	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " - Command line arguments ***\n");
+	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " - Command line arguments ***");
 	BE_ST_puts("");
 	BE_ST_puts("Launcher is started unless any command line argument is passed.");
 	BE_ST_puts("");

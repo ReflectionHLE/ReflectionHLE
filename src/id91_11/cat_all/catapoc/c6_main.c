@@ -783,7 +783,8 @@ void Quit (const id0_char_t *error, ...)
 			BE_ST_HandleExit(1);
 		}
 #endif
-		id0_loadscn_exe_main(id0_argc+1, id0_argv);
+		void id0_loadscn_exe_main(void);
+		id0_loadscn_exe_main();
 	}
 #endif
 
