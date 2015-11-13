@@ -1067,6 +1067,9 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 
 	for (const BE_GameFileDetails_T *fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filename; ++fileDetailsBuffer)
 	{
+		// In the manual mode, verify just that the EXE is the correct one (for extracting embedded resources, and as a minor matter of safety)
+		if (g_refKeenCfg.manualGameVerMode && BE_Cross_strcasecmp(fileDetailsBuffer->filename, details->exeName))
+			continue;
 		// Check in readOnlyFilesPath first. If WRONG file is found, REMOVE(!)
 		switch (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, gameInstallation->readOnlyFilesPath, tempFullPath))
 		{
@@ -1107,6 +1110,10 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 			continue;
 		case 1: // Wrong file found in readOnlyFilesPath: DELETE, then verify it's actually deleted (if there are multiple files differing just by case, this is an error, too.)
 		{
+			// Actually, there's a special case in which we don't delete...
+			if (g_refKeenCfg.manualGameVerMode)
+				continue;
+
 			_tremove(tempFullPath);
 			FILE *fp = BEL_Cross_open_from_dir(embeddedfileDetailsBuffer->fileDetails.filename, false, gameInstallation->readOnlyFilesPath, NULL);
 			if (fp)
@@ -1120,9 +1127,14 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 		}
 
 		// No match found (and possibly deleted wrong file from readOnlyFilesPath), recheck in installation path
-		if (BEL_Cross_CheckGameFileDetails(&embeddedfileDetailsBuffer->fileDetails, gameInstallation->instPath, NULL) == 2)
+		switch (BEL_Cross_CheckGameFileDetails(&embeddedfileDetailsBuffer->fileDetails, gameInstallation->instPath, NULL))
 		{
+		case 2: // Match found
 			continue; // Found a match
+		case 1: // Wrong file found
+			if (g_refKeenCfg.manualGameVerMode)
+				continue; // A special case again (where a wrong file is acceptable)
+			break;
 		}
 
 		// Otherwise we extract the embedded data to a file in readOnlyFilesPath (POSSIBLY OVERWRITING AN OLDER FILE)
@@ -1349,6 +1361,10 @@ void BE_Cross_PrepareGameInstallations(void)
 
 	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
 	TCHAR *pathEnd = path + sizeof(path)/sizeof(TCHAR);
+
+	if (g_refKeenCfg.manualGameVerMode)
+		goto checkcustomdirs; // This is a generally unsupported case anyway
+
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS) || (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
 	TCHAR gog_catacombs_path[BE_CROSS_PATH_LEN_BOUND];
@@ -1422,8 +1438,10 @@ void BE_Cross_PrepareGameInstallations(void)
 	}
 #endif
 #endif
+
 	/*** Finally check any custom dir ***/
 	char buffer[2*BE_CROSS_PATH_LEN_BOUND];
+checkcustomdirs:
 	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
 	{
 		const BE_GameVerDetails_T *details = g_be_gamever_ptrs[i];

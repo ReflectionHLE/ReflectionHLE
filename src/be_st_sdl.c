@@ -538,6 +538,18 @@ static void BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion(const char 
 }
 #endif
 
+static void BEL_ST_ParseSetting_ManualGameVerMode(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_refKeenCfg.manualGameVerMode = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_refKeenCfg.manualGameVerMode = false;
+	}
+}
+
 #ifdef BE_ST_ENABLE_FARPTR_CFG
 // HACK (cfg file may be rewritten and we don't want to remove any setting)
 static bool g_sdlIsFarPtrSegOffsetSettingRead = false;
@@ -606,6 +618,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"altcontrolscheme_analogmotion=", &BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion},
 #endif
 
+	{"manualgamevermode=", &BEL_ST_ParseSetting_ManualGameVerMode},
 #ifdef BE_ST_ENABLE_FARPTR_CFG
 	{"farptrsegoffset=", &BEL_ST_ParseSetting_FarPtrSegOffset},
 #endif
@@ -665,6 +678,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.analogMotion = false;
 #endif
 
+	g_refKeenCfg.manualGameVerMode = false;
 #ifdef BE_ST_ENABLE_FARPTR_CFG
 	g_refKeenCfg.farPtrSegOffset = BE_ST_DEFAULT_FARPTRSEGOFFSET;
 #endif
@@ -744,6 +758,7 @@ static void BEL_ST_SaveConfig(void)
 #ifdef REFKEEN_VER_CATACOMB_ALL
 	fprintf(fp, "altcontrolscheme_analogmotion=%s\n", g_refKeenCfg.altControlScheme.analogMotion ? "true" : "false");
 #endif
+	fprintf(fp, "manualgamevermode=%s\n", g_refKeenCfg.manualGameVerMode ? "true" : "false");
 #ifdef BE_ST_ENABLE_FARPTR_CFG
 	if (g_sdlIsFarPtrSegOffsetSettingRead)
 	{
