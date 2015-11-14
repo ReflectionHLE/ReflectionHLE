@@ -794,9 +794,8 @@ void BE_Launcher_Start(void)
 	BE_ST_Launcher_RunEventLoop();
 }
 
-void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
+static void BEL_Launcher_DoLaunchGame(int gameVer)
 {
-	int menuItemNum = menuItemP - g_be_launcher_currMenu->menuItems;
 	BE_ST_Launcher_Shutdown();
 	int argc = 0;
 	// Making a copy since we modify this buffer (separating the arguments)
@@ -822,7 +821,17 @@ void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 				*srcPtr++ = '\0'; // Separate the arguments
 		}
 	}
-	BE_Cross_StartGame(BE_Cross_GetGameVerFromInstallation(menuItemNum), argc, argv, 0);
+	BE_Cross_StartGame(gameVer, argc, argv, 0);
+}
+
+void BE_Launcher_Handler_LastGameVerLaunch(BEMenuItem **menuItemP)
+{
+	BEL_Launcher_DoLaunchGame(g_refKeenCfg.lastSelectedGameVer);
+}
+
+void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
+{
+	BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems));
 }
 
 

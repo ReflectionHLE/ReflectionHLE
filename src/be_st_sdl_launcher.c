@@ -64,7 +64,12 @@ static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
 /*** Main menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_PlayGame, "Play game", &g_beSelectGameMenu)
+BEMENUITEM_DEF_HANDLER(
+	g_beMainMenuItem_PlayLastChosenGameVer,
+	"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", // HACK to have enough room for string
+	&BE_Launcher_Handler_LastGameVerLaunch
+)
+BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_SelectGame, "Select game", &g_beSelectGameMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_ShowVersion, "Show version", &g_beShowVersionMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Quit, "Quit", &g_beQuitConfirmMenu)
@@ -74,7 +79,8 @@ BEMenu g_beMainMenu = {
 	&g_beQuitConfirmMenu,
 	(BEMenuItem *[])
 	{
-		&g_beMainMenuItem_PlayGame,
+		&g_beMainMenuItem_PlayLastChosenGameVer, // Either this item's label is filled later, or the menu items array is shifted
+		&g_beMainMenuItem_SelectGame,
 		&g_beMainMenuItem_Settings,
 		&g_beMainMenuItem_ShowVersion,
 		&g_beMainMenuItem_Quit,
@@ -422,6 +428,7 @@ static void BEL_ST_Launcher_SetGfxOutputRect();
 
 void BE_ST_Launcher_Prepare(void)
 {
+	int i;
 	/*** Prepare ST stuff ***/
 
 	/* Graphics */
@@ -469,12 +476,22 @@ void BE_ST_Launcher_Prepare(void)
 	int nOfJoysticks = SDL_NumJoysticks();
 	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
 		nOfJoysticks = BE_ST_MAXJOYSTICKS;
-	for (int i = 0; i < nOfJoysticks; ++i)
+	for (i = 0; i < nOfJoysticks; ++i)
 		if (SDL_IsGameController(i))
 			g_sdlControllers[i] = SDL_GameControllerOpen(i);
 
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+
+	// Check if there's a last chosen game version to show in main menu
+	for (i = 0; i < g_be_gameinstallations_num; ++i)
+		if (g_refKeenCfg.lastSelectedGameVer == BE_Cross_GetGameVerFromInstallation(i))
+		{
+			snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s", BE_Cross_GetGameInstallationDescription(i));
+			break;
+		}
+	if (i == g_be_gameinstallations_num)
+		g_beMainMenu.menuItems++; // Shift the menu items (effectively removing the item above)
 
 	// Set fullscreen value
 	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;
@@ -494,7 +511,7 @@ void BE_ST_Launcher_Prepare(void)
 		nOfSDLRendererDrivers = BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS;
 	g_beVideoSettingsMenuItem_SDLRenderer.choices[0] = "auto";
 	g_beVideoSettingsMenuItem_SDLRenderer.choices[nOfSDLRendererDrivers+1] = NULL;
-	for (int i = 0; i < nOfSDLRendererDrivers; ++i)
+	for (i = 0; i < nOfSDLRendererDrivers; ++i)
 	{
 		SDL_RendererInfo info;
 		SDL_GetRenderDriverInfo(i, &info);
@@ -522,7 +539,7 @@ void BE_ST_Launcher_Prepare(void)
 	g_beVideoSettingsMenuItem_LauncherWindowType.choice = g_refKeenCfg.launcherWinType;
 	// Set SndSampleRate value
 	g_beSoundSettingsMenuItem_SndSampleRate.choice = 8; // FIXME - Better way to grab default off cfg
-	for (int i = 0; i < (int)(sizeof(g_be_soundsSettingsChoices_sndSampleRateVals)/sizeof(*g_be_soundsSettingsChoices_sndSampleRateVals)); ++i)
+	for (i = 0; i < (int)(sizeof(g_be_soundsSettingsChoices_sndSampleRateVals)/sizeof(*g_be_soundsSettingsChoices_sndSampleRateVals)); ++i)
 		if (g_be_soundsSettingsChoices_sndSampleRateVals[i] == g_refKeenCfg.sndSampleRate)
 		{
 			g_beSoundSettingsMenuItem_SndSampleRate.choice = i;
@@ -586,7 +603,7 @@ void BE_ST_Launcher_Prepare(void)
 	g_beSelectInitialPathMenu.menuItems = g_beSelectInitialPathMenuItemsPtrs;
 	char *label = g_beSelectInitialPathMenuItemsStrsBuffer;
 	const char **rootPathNamePtr = rootPathsNames;
-	for (int i = 0; i < nOfRootPaths; ++i, label += BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, ++rootPathNamePtr)
+	for (i = 0; i < nOfRootPaths; ++i, label += BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, ++rootPathNamePtr)
 	{
 		g_beSelectInitialPathMenuItemsPtrs[i] = &g_beSelectInitialPathMenuItems[i];
 		g_beSelectInitialPathMenuItems[i].handler = &BE_Launcher_Handler_RootPathSelection;

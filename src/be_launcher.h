@@ -84,6 +84,7 @@ void BE_Launcher_HandleInput_PointerVScroll(int ydiff, uint32_t ticksinms);
 
 void BE_Launcher_RefreshVerticalScrolling(uint32_t ticksinms);
 
+void BE_Launcher_Handler_LastGameVerLaunch(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_RootPathSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP);

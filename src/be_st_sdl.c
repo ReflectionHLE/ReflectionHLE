@@ -3,6 +3,7 @@
 #include "SDL.h"
 
 #include "be_cross.h"
+#include "be_gamever.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
 
@@ -139,7 +140,9 @@ void BE_ST_InitCommon(void)
 
 	BEL_ST_ParseConfig();
 	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE any SDL_CONTROLLERDEVICEADDED event should arrive (so e.g., before SDL_PollEvent).
-	SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
+	FILE *fp = BE_Cross_open_additionalfile_for_reading("gamecontrollerdb.txt");
+	if (fp)
+		SDL_GameControllerAddMappingsFromRW(SDL_RWFromFP(fp, SDL_TRUE), 1);
 }
 
 void BE_ST_PrepareForGameStartup(void)
@@ -331,6 +334,16 @@ static void BEL_ST_ParseSetting_LauncherWindowType(const char *keyprefix, const 
 static void BEL_ST_ParseSetting_LauncherExeArgs(const char *keyprefix, const char *buffer)
 {
 	BE_Cross_safeandfastcstringcopy(g_refKeenCfg.launcherExeArgs, g_refKeenCfg.launcherExeArgs+sizeof(g_refKeenCfg.launcherExeArgs), buffer);
+}
+
+static void BEL_ST_ParseSetting_LastSelectedGameVer(const char *keyprefix, const char *buffer)
+{
+	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
+		if (!strcmp(buffer, refkeen_gamever_strs[i]))
+		{
+			g_refKeenCfg.lastSelectedGameVer = i;
+			break;
+		}
 }
 
 static void BEL_ST_ParseSetting_DisplayNum(const char *keyprefix, const char *buffer)
@@ -577,6 +590,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"launcherwindowres=", &BEL_ST_ParseSetting_LauncherWindowRes},
 	{"launcherwindowtype=", &BEL_ST_ParseSetting_LauncherWindowType},
 	{"launcherexeargs=", &BEL_ST_ParseSetting_LauncherExeArgs},
+	{"lastselectedgamever=", &BEL_ST_ParseSetting_LastSelectedGameVer},
 	{"displaynum=", &BEL_ST_ParseSetting_DisplayNum},
 	{"sdlrenderer=", &BEL_ST_ParseSetting_SDLRendererDriver},
 	{"vsync=", &BEL_ST_ParseSetting_VSync},
@@ -637,6 +651,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.launcherWinWidth = 0;
 	g_refKeenCfg.launcherWinHeight = 0;
 	g_refKeenCfg.launcherExeArgs[0] = '\0';
+	g_refKeenCfg.lastSelectedGameVer = BE_GAMEVER_LAST;
 	g_refKeenCfg.displayNum = 0;
 	g_refKeenCfg.sdlRendererDriver = -1;
 	g_refKeenCfg.vSync = VSYNC_AUTO;
@@ -726,6 +741,7 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
 	fprintf(fp, "launcherwindowtype=%s\n", g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT ? "default" : (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL ? "full" : "software"));
 	fprintf(fp, "launcherexeargs=%s\n", g_refKeenCfg.launcherExeArgs);
+	fprintf(fp, "lastselectedgamever=%s\n", (g_refKeenCfg.lastSelectedGameVer != BE_GAMEVER_LAST) ? refkeen_gamever_strs[g_refKeenCfg.lastSelectedGameVer] : "");
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
 	if (g_refKeenCfg.sdlRendererDriver < 0)
 	{

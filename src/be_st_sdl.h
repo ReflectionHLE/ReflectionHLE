@@ -37,6 +37,7 @@ typedef struct
 	int launcherWinWidth, launcherWinHeight;
 	LauncherWindowSettingType launcherWinType;
 	char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
+	int lastSelectedGameVer;
 	int displayNum;
 	int sdlRendererDriver;
 	VSyncSettingType vSync;
