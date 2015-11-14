@@ -664,7 +664,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.sndSubSystem = true;
 	g_refKeenCfg.oplEmulation = true;
 	g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
-	g_refKeenCfg.altControlScheme.isEnabled = false;
+	g_refKeenCfg.altControlScheme.isEnabled = true;
 
 #ifdef REFKEEN_VER_KDREAMS
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = SDL_CONTROLLER_BUTTON_A;
