@@ -267,6 +267,13 @@ A few configuration file settings not accessible from the launcher
 
 - "launcherexeargs" can be used to pass command-line arguments to the game
 itself. Used only if the launcher is shown beforehand.
+- "fullres" can be edited to specify a fullscreen resolution, with the form
+<width>x<height>, just like the value of this "windowres". Clearly, it's not
+necessary to pick a windowed resolution from the launcher, since the window
+should be resizable. The reason there's no separate menu item for the full
+screen resolution, is that using any resolution other than the desktop's may
+lead to unexpected behaviors on certain environments, like desktop icons
+getting messed up.
 - "manualgamevermode" can be used if one wants to replace some game data.
 By default, checksum and filesize verifications are done, so Reflection Keen
 won't let you mistakenly start a game with modified data, even if the DOS EXE
