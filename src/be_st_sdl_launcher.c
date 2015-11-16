@@ -239,9 +239,9 @@ static char g_be_videoSettingsChoices_sdlRendererDriversStrs[BE_LAUNCHER_MAX_NUM
 // Need to add additional auto entry, plus NULL terminator
 static const char *g_be_videoSettingsChoices_sdlRendererDrivers[BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS+2];
 
-static const char *g_be_videoSettingsChoices_vSync[] = {"Auto","Off","On",NULL};
 static const char *g_be_videoSettingsChoices_scaleType[] = {"4:3","Fill",NULL};
 static const char *g_be_videoSettingsChoices_scaleFactor[] = {"1","2","3","4",NULL};
+static const char *g_be_videoSettingsChoices_vSync[] = {"Auto","Off","On",NULL};
 static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default","Fullscreen","Software",NULL};
 
 #ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
@@ -256,10 +256,10 @@ BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beVideoSettingsMenuItem_DisplayNum, "Dis
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums)
 #endif
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_SDLRenderer, "SDL renderer", g_be_videoSettingsChoices_sdlRendererDrivers)
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_VSync, "VSync", g_be_videoSettingsChoices_vSync)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type*", g_be_videoSettingsChoices_scaleType)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleFactor, "Scale factor", g_be_videoSettingsChoices_scaleFactor)
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_VSync, "VSync", g_be_videoSettingsChoices_vSync)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ForceFullSoftScaling, "Force full software scaling*", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_LauncherWindowType, "Launcher window type", g_be_videoSettingsChoices_launcherWindowType)
 BEMENUITEM_DEF_STATIC(g_beVideoSettingsMenuItem_SoftScalingComment,
@@ -277,10 +277,10 @@ BEMenu g_beVideoSettingsMenu = {
 #endif
 		&g_beVideoSettingsMenuItem_DisplayNum,
 		&g_beVideoSettingsMenuItem_SDLRenderer,
-		&g_beVideoSettingsMenuItem_VSync,
 		&g_beVideoSettingsMenuItem_Bilinear,
 		&g_beVideoSettingsMenuItem_ScaleType,
 		&g_beVideoSettingsMenuItem_ScaleFactor,
+		&g_beVideoSettingsMenuItem_VSync,
 		&g_beVideoSettingsMenuItem_ForceFullSoftScaling,
 		&g_beVideoSettingsMenuItem_LauncherWindowType,
 		&g_beVideoSettingsMenuItem_SoftScalingComment,
@@ -539,8 +539,6 @@ void BE_ST_Launcher_Prepare(void)
 		g_beVideoSettingsMenuItem_SDLRenderer.choice = 0;
 	else
 		g_beVideoSettingsMenuItem_SDLRenderer.choice = g_refKeenCfg.sdlRendererDriver + 1;
-	// Set VSync value
-	g_beVideoSettingsMenuItem_VSync.choice = g_refKeenCfg.vSync;
 	// Set Bilinear value
 	g_beVideoSettingsMenuItem_Bilinear.choice = g_refKeenCfg.isBilinear;
 	// Set ScaleType value
@@ -550,6 +548,8 @@ void BE_ST_Launcher_Prepare(void)
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = 0;
 	else
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = g_refKeenCfg.scaleFactor-1;
+	// Set VSync value
+	g_beVideoSettingsMenuItem_VSync.choice = g_refKeenCfg.vSync;
 	// Set ForceFullSoftScaling value
 	g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice = g_refKeenCfg.forceFullSoftScaling;
 	// Set LauncherWindowType value
@@ -685,10 +685,10 @@ void BE_ST_Launcher_Shutdown(void)
 #endif
 
 	g_refKeenCfg.sdlRendererDriver = g_beVideoSettingsMenuItem_SDLRenderer.choice - 1;
-	g_refKeenCfg.vSync = (VSyncSettingType)g_beVideoSettingsMenuItem_VSync.choice;
 	g_refKeenCfg.isBilinear = g_beVideoSettingsMenuItem_Bilinear.choice;
 	g_refKeenCfg.scaleType = (ScaleTypeSettingType)g_beVideoSettingsMenuItem_ScaleType.choice;
 	g_refKeenCfg.scaleFactor = g_beVideoSettingsMenuItem_ScaleFactor.choice + 1;
+	g_refKeenCfg.vSync = (VSyncSettingType)g_beVideoSettingsMenuItem_VSync.choice;
 	g_refKeenCfg.forceFullSoftScaling = g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice;
 	g_refKeenCfg.launcherWinType = (LauncherWindowSettingType)g_beVideoSettingsMenuItem_LauncherWindowType.choice;
 
