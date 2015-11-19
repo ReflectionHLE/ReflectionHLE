@@ -22,6 +22,8 @@
 #ifndef	_BE_ST_SDL_PRIVATE_
 #define _BE_ST_SDL_PRIVATE_
 
+#include "SDL_surface.h"
+
 #define BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS 500
 #define BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS 40
 
@@ -34,5 +36,7 @@ void BEL_ST_ForceHostDisplayUpdate(void);
 void BEL_ST_SetGfxOutputRects(bool allowResize);
 void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSKeyEvent keyEvent);
+
+extern SDL_Surface *g_be_sdl_windowIconSurface;
 
 #endif

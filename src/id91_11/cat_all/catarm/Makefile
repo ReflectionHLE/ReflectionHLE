@@ -11,8 +11,10 @@ else
 endif
 
 STRIPBIN=$(BINPREFIX)strip
+WINDRESBIN=$(BINPREFIX)windres
 SDLCONFIG=sdl2-config
 SRC=.
+RSRC=../../../../rsrc
 C3DCOMMONSRC=..
 CATLATECOMMONSRC=../cat_late
 IDSRC=../..
@@ -80,7 +82,7 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
 
 INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(CATLATECOMMONSRC) -I$(IDSRC) -I$(EXTSRC) -I$(BESRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATARM=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
-EXENAME=refcatarm
+EXENAME=reflection-catarm
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG
@@ -97,11 +99,13 @@ ifeq ($(BUILDASCPP), 0)
 	INTCXXFLAGS+= -std=c99
 endif
 
+RES_PATH=$(OBJ)/$(EXENAME).res
+
 ifeq ($(PLATFORM), WINDOWS)
 	EXE_EXT=.exe
+	OBJECTS+= $(RES_PATH)
 	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
-	#We need this for registry entry retrieval
-	INTLDFLAGS+= -lshlwapi
+	INTLDFLAGS+= -lshlwapi #We need this for registry entry retrieval
 endif
 
 EXE_PATH=$(BESRC)/$(EXENAME)$(EXE_EXT)
@@ -117,6 +121,9 @@ $(EXE_PATH): $(OBJECTS) $(EXTOBJECTS) $(IDOBJECTS) $(BEOBJECTS)
 ifeq ($(DEBUG),0)
 	$(STRIPBIN) $(EXE_PATH)
 endif
+
+$(RES_PATH): $(RSRC)/reflection-kdreams.rc
+	$(WINDRESBIN) $< -O coff -o $@
 
 $(BEOBJ)/crc32.o: $(BESRC)/crc32/crc32.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@

@@ -216,6 +216,7 @@ void BE_ST_InitGfx(void)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
 		exit(0);
 	}
+	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
 	// Vanilla Keen Dreams and Keen 4-6 have no VSync in the CGA builds
 #ifdef REFKEEN_VER_KDREAMS
 	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_refKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | (((g_refKeenCfg.vSync == VSYNC_ON) || ((g_refKeenCfg.vSync == VSYNC_AUTO) && (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))) ? SDL_RENDERER_PRESENTVSYNC : 0));

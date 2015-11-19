@@ -11,8 +11,10 @@ else
 endif
 
 STRIPBIN=$(BINPREFIX)strip
+WINDRESBIN=$(BINPREFIX)windres
 SDLCONFIG=sdl2-config
 SRC=.
+RSRC=../../rsrc
 BESRC=..
 OBJPREFIX=obj
 OBJ=$(OBJPREFIX)/$(VERDIRNAME)
@@ -59,7 +61,8 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/unlzexe.o
 
 INTCXXFLAGS=-I$(SRC) -I$(BESRC) -DREFKEEN_VER_KDREAMS=1
-EXENAME=refkdreams
+
+EXENAME=reflection-kdreams
 
 ifeq ($(DEBUG),1)
 	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG
@@ -76,11 +79,13 @@ ifeq ($(BUILDASCPP), 0)
 	INTCXXFLAGS+= -std=c99
 endif
 
+RES_PATH=$(OBJ)/$(EXENAME).res
+
 ifeq ($(PLATFORM), WINDOWS)
 	EXE_EXT=.exe
+	OBJECTS+= $(RES_PATH)
 	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
-	#We need this for registry entry retrieval
-	INTLDFLAGS+= -lshlwapi
+	INTLDFLAGS+= -lshlwapi #We need this for registry entry retrieval
 endif
 
 EXE_PATH=$(BESRC)/$(EXENAME)$(EXE_EXT)
@@ -98,6 +103,9 @@ ifeq ($(DEBUG),0)
 endif
 
 $(EXE_PATH): $(OBJECTS) $(BEOBJECTS)
+
+$(RES_PATH): $(RSRC)/reflection-kdreams.rc
+	$(WINDRESBIN) $< -O coff -o $@
 
 $(BEOBJ)/crc32.o: $(BESRC)/crc32/crc32.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@

@@ -274,6 +274,9 @@ should be resizable. The reason there's no separate menu item for the full
 screen resolution, is that using any resolution other than the desktop's may
 lead to unexpected behaviors on certain environments, like desktop icons
 getting messed up.
+
+The following settings are not even written to the cfg by default:
+
 - "manualgamevermode" can be used if one wants to replace some game data.
 By default, checksum and filesize verifications are done, so Reflection Keen
 won't let you mistakenly start a game with modified data, even if the DOS EXE
@@ -284,8 +287,6 @@ You may wish to make a full backup of the directory containing
 "newly written files" as mentioned above before using this.
 Also note that no automatic detection of game installations, other than what's
 manually added, is done, in case you set "manualgamevermode" to "true".
-
-The following setting is not even written to the cfg by default:
 - "farptrsegoffset" can be used for (some) level of saved game compatibility
 in The Catacomb Armageddon/Apocalypse (doesn't apply to Abyss). Using just any
 of the original DOS executables for one of these titles, it is possible that
@@ -569,10 +570,11 @@ and Chuck Naaden with additional support from:
 Some more credits
 -----------------
 
-* sulix, for a hint about memory wrapping, as well as having earlier experience
-with him in general. Also done research on Keen.
+* sulix, for a quite useful hint about memory wrapping for Keen Dreams, and
+having earlier experience with him in general. Also done some research works on
+at least a couple of Keen games, and worked on the Handmade Penguin tutorial.
 * adurdin, quantumg, keenrush, levellord, levellass and lemm for their
-research works.
+differing research works on Keen games.
 * Caitlin Shaw for CloneKeen, a reimplementation of Keen 1-3.
 * gerstrong for Commander Genius, containing a few engines used as
 reimplementations of Keen 1-3 and Keen 4-6. Originally started
@@ -585,6 +587,9 @@ of DOS games on more recent platforms, but its DBOPL emulator is used for AdLib
 emulation; This also applies to modern source ports, not just DOSBox itself.
 Furthermore, while not necessarily intended for assistance with porting,
 the DOSBox debugger has surely (seriously) been very useful.
+
+* doomjedi for his nice application icon used by Reflection Keen
+(technically a few minor edits are in use).
 
 * Mitugu (Kou) Kurizono, David Kirschbaum, Toad Hall, Dan Lewis, Alan Modra,
 Vesselin Bontchev (and possibly others) for their contributions leading to
@@ -609,7 +614,7 @@ say to all of you, that you should be considered special here. :)
 Changelog
 ---------
 
-??? ??, 2015 (v0.13.0):
+Nov 20, 2015 (v0.13.0):
 - A minor breaking change: The disablesndsubsystem setting was changed to
 sndsubsystem, for avoiding double negatives and being more consistent with
 newly added code (the launcher).
@@ -632,6 +637,12 @@ there's now a single EXE per game, possibly supporting
 multiple original versions of the game.
 - Due to the above change, new files are now written to separate directories,
 based on the game version.
+- The EXE filenames are also longer, just to reduce the chances of weird
+conflicts. Names without file extension: reflection-kdreams, reflection-cat3d,
+reflection-catabyss, reflection-catarm and reflection-catapoc.
+- The cfg files were renamed in a similar manner (for the sake of consistency).
+This may technically look like a breaking change on its own, only the cfg files
+and more should be relocated to different directories anyway.
 - Files can be accessed by filenames in a case insensitive-manner.
 Case sensitivity still applies to folder names, though!
 - By default, the Reflection Keen cfg files are now written to a specific

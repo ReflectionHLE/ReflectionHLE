@@ -122,6 +122,23 @@ static void BEL_ST_ParseConfig(void);
 static void BEL_ST_SaveConfig(void);
 void BEL_ST_SetRelativeMouseMotion(bool enable);
 
+#ifdef REFKEEN_VER_KDREAMS
+#include "../rsrc/reflection-kdreams-icon-32x32.h"
+#elif defined REFKEEN_VER_CAT3D
+#include "../rsrc/reflection-cat3d-icon-32x32.h"
+#elif defined REFKEEN_VER_CATABYSS
+#include "../rsrc/reflection-catabyss-icon-32x32.h"
+#elif defined REFKEEN_VER_CATARM
+#include "../rsrc/reflection-catarm-icon-32x32.h"
+#elif defined REFKEEN_VER_CATAPOC
+#include "../rsrc/reflection-catapoc-icon-32x32.h"
+#else
+#error "FATAL ERROR: No Ref port game macro is defined!"
+#endif
+
+
+SDL_Surface *g_be_sdl_windowIconSurface = NULL;
+
 void BE_ST_InitCommon(void)
 {
 	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER) < 0)
@@ -134,6 +151,10 @@ void BE_ST_InitCommon(void)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL game controller subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
 	}
+
+	g_be_sdl_windowIconSurface = SDL_CreateRGBSurfaceFrom(RefKeen_Window_Icon, 32, 32, 8, 32, 0, 0, 0, 0);
+	SDL_SetPaletteColors(g_be_sdl_windowIconSurface->format->palette, RefKeen_Window_Icon_Palette, '0', 9);
+	SDL_SetColorKey(g_be_sdl_windowIconSurface, SDL_TRUE, SDL_MapRGB(g_be_sdl_windowIconSurface->format, 0xCC, 0xFF, 0xCC));
 
 	// MUST be called BEFORE parsing config (of course!)
 	BE_Cross_PrepareAppPaths();
@@ -198,6 +219,7 @@ void BE_ST_ShutdownAll(void)
 	BEL_ST_SetRelativeMouseMotion(false);
 	BE_ST_ShutdownAudio();
 	BE_ST_ShutdownGfx();
+	SDL_FreeSurface(g_be_sdl_windowIconSurface);
 	SDL_Quit();
 }
 
@@ -275,15 +297,15 @@ static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
 RefKeenConfig g_refKeenCfg;
 
 #ifdef REFKEEN_VER_KDREAMS
-#define REFKEEN_CONFIG_FILENAME "refkdreams.cfg"
+#define REFKEEN_CONFIG_FILENAME "reflection-kdreams.cfg"
 #elif defined REFKEEN_VER_CAT3D
-#define REFKEEN_CONFIG_FILENAME "refcat3d.cfg"
+#define REFKEEN_CONFIG_FILENAME "reflection-cat3d.cfg"
 #elif defined REFKEEN_VER_CATABYSS
-#define REFKEEN_CONFIG_FILENAME "refcatabyss.cfg"
+#define REFKEEN_CONFIG_FILENAME "reflection-catabyss.cfg"
 #elif defined REFKEEN_VER_CATARM
-#define REFKEEN_CONFIG_FILENAME "refcatarm.cfg"
+#define REFKEEN_CONFIG_FILENAME "reflection-catarm.cfg"
 #elif defined REFKEEN_VER_CATAPOC
-#define REFKEEN_CONFIG_FILENAME "refcatapoc.cfg"
+#define REFKEEN_CONFIG_FILENAME "reflection-catapoc.cfg"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
@@ -551,8 +573,11 @@ static void BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion(const char 
 }
 #endif
 
+// HACK (cfg file may be rewritten and we don't want to remove any setting)
+static bool g_sdlIsManualGameVerModeSettingRead = false;
 static void BEL_ST_ParseSetting_ManualGameVerMode(const char *keyprefix, const char *buffer)
 {
+	g_sdlIsManualGameVerModeSettingRead = true;
 	if (!strcmp(buffer, "true"))
 	{
 		g_refKeenCfg.manualGameVerMode = true;
@@ -564,7 +589,7 @@ static void BEL_ST_ParseSetting_ManualGameVerMode(const char *keyprefix, const c
 }
 
 #ifdef BE_ST_ENABLE_FARPTR_CFG
-// HACK (cfg file may be rewritten and we don't want to remove any setting)
+// Same HACK again
 static bool g_sdlIsFarPtrSegOffsetSettingRead = false;
 
 static void BEL_ST_ParseSetting_FarPtrSegOffset(const char *keyprefix, const char *buffer)
@@ -774,11 +799,15 @@ static void BEL_ST_SaveConfig(void)
 #ifdef REFKEEN_VER_CATACOMB_ALL
 	fprintf(fp, "altcontrolscheme_analogmotion=%s\n", g_refKeenCfg.altControlScheme.analogMotion ? "true" : "false");
 #endif
-	fprintf(fp, "manualgamevermode=%s\n", g_refKeenCfg.manualGameVerMode ? "true" : "false");
+	if (g_sdlIsManualGameVerModeSettingRead)
+	{
+		// This should be a relatively hidden setting
+		fprintf(fp, "manualgamevermode=%s\n", g_refKeenCfg.manualGameVerMode ? "true" : "false");
+	}
 #ifdef BE_ST_ENABLE_FARPTR_CFG
 	if (g_sdlIsFarPtrSegOffsetSettingRead)
 	{
-		// This should be a relatively hidden setting
+		// Another hidden setting
 		fprintf(fp, "farptrsegoffset=%X\n", g_refKeenCfg.farPtrSegOffset);
 	}
 #endif

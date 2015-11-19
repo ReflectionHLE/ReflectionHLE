@@ -462,6 +462,7 @@ void BE_ST_Launcher_Prepare(void)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window for launcher,\n%s\n", SDL_GetError());
 		exit(0);
 	}
+	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
 	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE) ? SDL_RENDERER_SOFTWARE : (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
 	if (!g_sdlRenderer)
 	{
