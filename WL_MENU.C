@@ -686,7 +686,7 @@ void CP_ReadThis(void)
 #endif
 #endif
 
-/*** SOD 1.4 ACTIVISION RESTORATION - Should be able to call BossKey... ***/
+/*** SOD VERSIONS RESTORATION - Should be able to call BossKey... ***/
 #if (defined GOODTIMES) || (defined SPEAR)
 //#ifndef SPEAR
 //#ifndef GOODTIMES

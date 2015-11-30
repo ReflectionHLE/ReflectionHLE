@@ -6,4 +6,4 @@ Originally, the cast to long for the middle byte was done in the wrong place, le
 
 Example: if (*midiData+1) is, in binary, the value of 11000100b, then after shifting we get the 16-bit value of 1100010000000000b. By casting from a 16-bit SIGNED int to a 32-bit signed long int (i.e. doing a signed extension to 32-bit), we get the bit pattern of 11111111111111111100010000000000b. This is not the expected result, though, as it should've really been just 0000000000000000100010000000000b stored in a long int.
 
-The multiplication of midiTimeScale by 1.1 is probably an attempt to get the correct tempo, at least for certain musical tracks, as the actual cause of the bug was apparently not found back in the 90s. 
+The multiplication of midiTimeScale by 1.1 is probably an attempt to get the correct tempo, at least for certain musical tracks, as the actual cause of the bug was apparently not found back in the 90s.
