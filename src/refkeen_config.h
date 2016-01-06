@@ -22,7 +22,7 @@
 #endif
 #endif
 
-#ifdef __unix
+#if (defined __unix__) || (defined __unix) || (defined unix)
 #define REFKEEN_PLATFORM_UNIX
 #endif
 
