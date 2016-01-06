@@ -1898,7 +1898,7 @@ void RefKeen_Patch_id_ca(void)
 	for (uint16_t *dictptr = (uint16_t *)mapdict; mapdictsize >= 2; ++dictptr, mapdictsize -= 2)
 		*dictptr = BE_Cross_Swap16LE(*dictptr);
 
-	mapfiletype *tinfasmapfile = (mapfiletype *)mapdict;
+	mapfiletype *tinfasmapfile = (mapfiletype *)maphead;
 	tinfasmapfile->RLEWtag = BE_Cross_Swap16LE(tinfasmapfile->RLEWtag);
 	for (int i = 0; i < sizeof(tinfasmapfile->headeroffsets)/sizeof(*(tinfasmapfile->headeroffsets)); ++i)
 	{

@@ -1136,7 +1136,9 @@ done:
 	{
 		MusicGroup *musicPtr = (MusicGroup *)audiosegs[chunk];
 		musicPtr->length = BE_Cross_Swap16LE(musicPtr->length);
-		// Note: We do *not* swap the words pointed by musicPtr->values
+		// Swap the delays only
+		for (id0_word_t bytesLeft = musicPtr->length, *musicData = 1 + musicPtr->values; bytesLeft >= 4; bytesLeft -= 4, musicData += 2)
+			*musicData = BE_Cross_Swap16LE(*musicData);
 	}
 #endif
 }
@@ -2228,15 +2230,15 @@ void RefKeen_Patch_id_ca(void)
 	{
 		// We want a 24-bit swap i.e., swap bytes no. 0 and 2
 		uint8_t temp = *headptr;
-		*(headptr+2) = temp;
 		*headptr = *(headptr+2);
+		*(headptr+2) = temp;
 	}
 #else
 	for (uint32_t *headptr = (uint32_t *)(*GFXheadptr); GFXheadsize >= 4; ++headptr, GFXheadsize -= 4)
 		*headptr = BE_Cross_Swap32LE(*headptr);
 #endif
 
-	mapfiletype id0_seg *tinfasmapfile = (mapfiletype id0_seg *)mapdict;
+	mapfiletype id0_seg *tinfasmapfile = (mapfiletype id0_seg *)maphead;
 	tinfasmapfile->RLEWtag = BE_Cross_Swap16LE(tinfasmapfile->RLEWtag);
 	for (int i = 0; i < sizeof(tinfasmapfile->headeroffsets)/sizeof(*(tinfasmapfile->headeroffsets)); ++i)
 	{

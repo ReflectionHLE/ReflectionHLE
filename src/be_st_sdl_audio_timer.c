@@ -73,7 +73,7 @@ void BE_ST_InitAudio(void)
 		else
 		{
 			g_sdlAudioSpec.freq = g_refKeenCfg.sndSampleRate;
-			g_sdlAudioSpec.format = AUDIO_S16;
+			g_sdlAudioSpec.format = AUDIO_S16SYS;
 			g_sdlAudioSpec.channels = 1;
 			// Should be some power-of-two roughly proportional to the sample rate; Using 1024 for 48000Hz.
 			for (g_sdlAudioSpec.samples = 1; g_sdlAudioSpec.samples < g_refKeenCfg.sndSampleRate/64; g_sdlAudioSpec.samples *= 2)
