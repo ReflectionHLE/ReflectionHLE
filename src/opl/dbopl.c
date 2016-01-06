@@ -1396,11 +1396,13 @@ void Chip__Setup(Chip *self, Bit32u rate ) {
 			if ( diff < 0 ) {
 				//Better than the last time
 				Bit32s mul = ((original - diff) << 12) / original;
-				guessAdd = ((guessAdd * mul) >> 12);
+				// REFKEEN - Prevent 32-bit signed integer overflow with relevant architectures
+				guessAdd = (((Bit64s)guessAdd * mul) >> 12);
 				guessAdd++;
 			} else if ( diff > 0 ) {
 				Bit32s mul = ((original - diff) << 12) / original;
-				guessAdd = (guessAdd * mul) >> 12;
+				// REFKEEN - Prevent 32-bit signed integer overflow
+				guessAdd = ((Bit64s)guessAdd * mul) >> 12;
 				guessAdd--;
 			}
 		}

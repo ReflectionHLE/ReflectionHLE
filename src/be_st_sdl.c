@@ -183,7 +183,7 @@ void BE_ST_PrepareForGameStartup(void)
 	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
 	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
 
-	// BEFORE checking for more joysticks been attached/removed in BE_ST_PollEvents, add what's currently available
+	// BEFORE checking for more joysticks being attached/removed in BE_ST_PollEvents, add what's currently available
 	int nOfJoysticks = SDL_NumJoysticks();
 	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
 		nOfJoysticks = BE_ST_MAXJOYSTICKS;
