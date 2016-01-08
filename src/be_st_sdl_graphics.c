@@ -1549,20 +1549,10 @@ void BE_ST_EGAFetchGFXBuffer(uint8_t *destPtr, uint16_t srcOff, uint16_t num, ui
 
 void BE_ST_EGAUpdateGFXPixel4bpp(uint16_t destOff, uint8_t color, uint8_t bitsMask)
 {
-	for (int currBitNum = 0, currBitMask = 1; currBitNum < 8; ++currBitNum, currBitMask <<= 1)
-	{
-		if (bitsMask & currBitMask)
-		{
-			g_sdlVidMem.egaGfx[0][destOff] &= ~currBitMask;
-			g_sdlVidMem.egaGfx[0][destOff] |= ((color & 1) << currBitNum);
-			g_sdlVidMem.egaGfx[1][destOff] &= ~currBitMask;
-			g_sdlVidMem.egaGfx[1][destOff] |= (((color & 2) >> 1) << currBitNum);
-			g_sdlVidMem.egaGfx[2][destOff] &= ~currBitMask;
-			g_sdlVidMem.egaGfx[2][destOff] |= (((color & 4) >> 2) << currBitNum);
-			g_sdlVidMem.egaGfx[3][destOff] &= ~currBitMask;
-			g_sdlVidMem.egaGfx[3][destOff] |= (((color & 8) >> 3) << currBitNum);
-		}
-	}
+	g_sdlVidMem.egaGfx[0][destOff] = (g_sdlVidMem.egaGfx[0][destOff] & ~bitsMask) | ((-(color&1)) & bitsMask);
+	g_sdlVidMem.egaGfx[1][destOff] = (g_sdlVidMem.egaGfx[1][destOff] & ~bitsMask) | ((-((color&2)>>1)) & bitsMask);
+	g_sdlVidMem.egaGfx[2][destOff] = (g_sdlVidMem.egaGfx[2][destOff] & ~bitsMask) | ((-((color&4)>>2)) & bitsMask);
+	g_sdlVidMem.egaGfx[3][destOff] = (g_sdlVidMem.egaGfx[3][destOff] & ~bitsMask) | ((-((color&8)>>3)) & bitsMask);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
