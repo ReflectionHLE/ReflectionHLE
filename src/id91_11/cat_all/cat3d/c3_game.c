@@ -556,7 +556,7 @@ void LatchDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 
 	for (id0_unsigned_t lineCount = height; lineCount; --lineCount)
 	{
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, wide);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest, source, wide);
 		source += wide;
 		dest += linewidth;
 	}
@@ -734,7 +734,7 @@ void DrawPlayScreen (void)
 
 void LoadLatchMem (void)
 {
-	id0_int_t     i,j,p,m;
+	id0_int_t     i,j,p/*,m*/;
 	id0_byte_t    id0_far *src/*, id0_far *dest*/;
 	id0_unsigned_t        destoff;
 
@@ -757,8 +757,8 @@ void LoadLatchMem (void)
 	{
 		for (p=0;p<4;p++)
 		{
-			m = 1<<p;
-			BE_ST_EGAUpdateGFXBuffer(destoff, src, 8, m);
+			//m = 1<<p;
+			BE_ST_EGAUpdateGFXBufferInPlane(destoff, src, 8, p);
 			src+=8;
 #if 0
 			asm     mov     dx,SC_INDEX
@@ -788,8 +788,8 @@ void LoadLatchMem (void)
 			//tileoffsets[i] = FP_OFF(dest);
 			for (p=0;p<4;p++)
 			{
-				m = 1<<p;
-				BE_ST_EGAUpdateGFXBuffer(destoff, src, 32, m);
+				//m = 1<<p;
+				BE_ST_EGAUpdateGFXBufferInPlane(destoff, src, 32, p);
 				src+=32;
 #if 0
 				asm     mov     dx,SC_INDEX
@@ -936,7 +936,7 @@ noxor:
 			//
 			// In ported code we update all planes at once
 
-			BE_ST_EGAUpdateGFXBitsScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
+			BE_ST_EGAUpdateGFXBitsInAllPlanesScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
 #if 0
 			asm     mov     cx,[x]
 			asm     mov     si,cx

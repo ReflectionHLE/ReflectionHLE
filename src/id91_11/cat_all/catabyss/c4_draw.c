@@ -1405,14 +1405,14 @@ void ClearScreen (void)
 		// but we ignore one of the two for the sake of simplicity and a bit better performance, since
 		// skycolor always points to a member of sky_colors, where each pair has the exact same color repeated twice.
 		//
-		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, (id0_byte_t)topcolor, (VIEWWIDTH/16)*2+1, 0xFF);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(egaDestOff, (id0_byte_t)topcolor, (VIEWWIDTH/16)*2+1);
 		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 	// bottom loop
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// (REFKEEN) DIFFERENCE FROM VANILLA: Same as above but with bottomcolor
-		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, (id0_byte_t)bottomcolor, (VIEWWIDTH/16)*2+1, 0xFF);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(egaDestOff, (id0_byte_t)bottomcolor, (VIEWWIDTH/16)*2+1);
 		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 #if 0

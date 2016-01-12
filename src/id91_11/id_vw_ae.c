@@ -50,7 +50,7 @@ extern id0_unsigned_t linedelta;
 
 void VW_Plot(id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t color)
 {
-	BE_ST_EGAUpdateGFXPixel4bpp(bufferofs+ylookup[y]+(x>>3), color, plotpixels[x&7]);
+	BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(bufferofs+ylookup[y]+(x>>3), color, plotpixels[x&7]);
 }
 
 #if 0
@@ -117,7 +117,7 @@ void VW_Vlin(id0_unsigned_t yl, id0_unsigned_t yh, id0_unsigned_t x, id0_unsigne
 	id0_byte_t mask = plotpixels[x&7];
 	for (id0_unsigned_t loopVar = yh-yl+1; loopVar; --loopVar, egaDestOff += linewidth)
 	{
-		BE_ST_EGAUpdateGFXPixel4bpp(egaDestOff, color, mask);
+		BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(egaDestOff, color, mask);
 	}
 }
 
@@ -206,14 +206,14 @@ void VW_DrawTile8(id0_unsigned_t xcoord, id0_unsigned_t ycoord, id0_unsigned_t t
 #else
 	id0_byte_t *tilePtr = (id0_byte_t *)grsegs[STARTTILE8]+(tile<<5);
 #endif
-	for (int planeCounter = 4, mapMask = 1; planeCounter; --planeCounter, mapMask <<= 1)
+	for (int currentPlane = 0; currentPlane < 4; ++currentPlane)
 	{
 		egaDestOff = screendest;
 		for (int loopVar = 0; loopVar < 7; ++loopVar, egaDestOff += linewidth, ++tilePtr)
 		{
-			BE_ST_EGAUpdateGFXByte(egaDestOff, *tilePtr, mapMask);
+			BE_ST_EGAUpdateGFXByteInPlane(egaDestOff, *tilePtr, currentPlane);
 		}
-		BE_ST_EGAUpdateGFXByte(egaDestOff, *tilePtr, mapMask);
+		BE_ST_EGAUpdateGFXByteInPlane(egaDestOff, *tilePtr, currentPlane);
 		++tilePtr;
 	}
 }
@@ -288,13 +288,13 @@ ENDP
 
 //#define UNWOUNDMASKS 18
 
-id0_byte_t planemask;
+//id0_byte_t planemask; // REFKEEN - Unused variable
 id0_byte_t planenum;
 
 void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize)
 {
-	planemask = 1;
+	//planemask = 1;
 	planenum = 0;
 	linedelta = linewidth-wide; // amount to add after drawing each line
 	id0_unsigned_t dataLoc = planesize;
@@ -309,7 +309,7 @@ void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 			id0_unsigned_t colsLeft = wide;
 			do
 			{
-				BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+				BE_ST_EGAUpdateGFXByteInPlane(egaDestOff, (BE_ST_EGAFetchGFXByteFromPlane(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planenum);
 				++srcPtr;
 				++egaDestOff;
 				--colsLeft;
@@ -320,8 +320,8 @@ void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 		// Go to next plane
 		dataLoc += planesize; // start of mask = start of next plane
 		++planenum;
-		planemask <<= 1; // shift plane mask over for next plane
-	} while (planemask != 0x10); // done all four planes?
+		//planemask <<= 1; // shift plane mask over for next plane
+	} while (planenum != 4/*planemask != 0x10*/); // done all four planes?
 }
 
 #if 0
@@ -623,7 +623,7 @@ void VW_ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 {
 	for (id0_unsigned_t lineCounter = height; lineCounter; --lineCounter, source += linewidth, dest += linewidth)
 	{
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, wide);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest, source, wide);
 	}
 
 }
@@ -695,7 +695,8 @@ void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height)
 {
 	id0_byte_t *srcPtr = (id0_byte_t *)source; // block is segment aligned
-	id0_unsigned_t mapMask = 1; // map mask for plane 0
+	//id0_unsigned_t mapMask = 1; // map mask for plane 0
+	int currentPlane = 0;
 	do
 	{
 		id0_unsigned_t egaDestOff = dest; // start at same place in all planes
@@ -704,13 +705,13 @@ void VW_MemToScreen(memptr source, id0_unsigned_t dest,
 		// NOTE: Using just one loop instead of four drawing routines now
 		do
 		{
-			BE_ST_EGAUpdateGFXBuffer(egaDestOff, srcPtr, wide, mapMask);
+			BE_ST_EGAUpdateGFXBufferInPlane(egaDestOff, srcPtr, wide, currentPlane);
 			srcPtr += wide;
 			egaDestOff += linewidth;
 			--lineCounter;
 		} while (lineCounter);
-		mapMask <<= 1;
-	} while (mapMask != 0x10);
+		++currentPlane;
+	} while (currentPlane != 4);
 
 }
 
@@ -1054,7 +1055,7 @@ void VW_ScreenToMem(id0_unsigned_t source, memptr dest,
 		id0_unsigned_t lineCounter = height; // scan lines to draw
 		do
 		{
-			BE_ST_EGAFetchGFXBuffer(destPtr, egaSrcOff, wide, planeCounter);
+			BE_ST_EGAFetchGFXBufferFromPlane(destPtr, egaSrcOff, wide, planeCounter);
 			egaSrcOff += linewidth;
 			destPtr += wide;
 			--lineCounter;
@@ -1158,13 +1159,13 @@ void VWL_UpdateScreenBlocks (void)
 			id0_word_t egaDestOff = tileLoc+displayofs;
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff++, egaSrcOff++);
 				egaSrcOff += linewidth-2;
 				egaDestOff += linewidth-2;
 			}
-			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
+			BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff++, egaSrcOff++);
+			BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff, egaSrcOff);
 			continue;
 		}
 		//============
@@ -1189,11 +1190,11 @@ void VWL_UpdateScreenBlocks (void)
 		id0_word_t egaDestOff = tileLoc+displayofs;
 		for (int loopVar = 15; loopVar; --loopVar)
 		{
-			BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, bytesPerRow);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(egaDestOff, egaSrcOff, bytesPerRow);
 			egaSrcOff += linewidth;
 			egaDestOff += linewidth;
 		}
-		BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, bytesPerRow);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(egaDestOff, egaSrcOff, bytesPerRow);
 		// was originally 0 at this point, then "decremented" by 1 to 0xFFFF for the loop above
 		// WARNING: iterationsToDo should be UNSIGNED in order to work properly
 		iterationsToDo = 0xFFFF;
@@ -1519,7 +1520,7 @@ void VWL_XORBuffer(id0_byte_t *buffer)
 		do
 		{
 			// Originally the mask is set from VW_DrawPropString
-			BE_ST_EGAXorGFXByte(egaDestOff++, *(srcPtr++), fontcolor);
+			BE_ST_EGAXorGFXByteByPlaneMask(egaDestOff++, *(srcPtr++), fontcolor);
 			--bytesLeft;
 		} while (bytesLeft);
 		srcPtr += bufferextra;

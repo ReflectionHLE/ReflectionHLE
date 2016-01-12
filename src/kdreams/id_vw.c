@@ -369,7 +369,7 @@ void	VW_ClearVideo (id0_int_t color)
 		EGAWRITEMODE(2);
 		EGAMAPMASK(15);
 
-		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(0, color, 0xffff, 0xff);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(0, color, 0xffff);
 
 		EGAWRITEMODE(0);
 	}
@@ -528,25 +528,25 @@ void VW_Hlin_EGA(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_uns
 
 	maskleft&=maskright;
 
-	BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+	BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest, color, maskleft);
 	return;
   }
 
 	//
 	// draw left side
 	//
-	BE_ST_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
+	BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest++, color, maskleft);
 
 	//
 	// draw middle
 	//
-	BE_ST_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+	BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(dest, color, mid); // no masking
 	dest += mid;
 
 	//
 	// draw right side
 	//
-	BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskright);
+	BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest, color, maskright);
 }
 #//endif
 
@@ -669,7 +669,7 @@ void VW_Bar_EGA (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_u
 
 		do
 		{
-			BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+			BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest, color, maskleft);
 			dest += linewidth; // down to next line
 			--height;
 		} while (height);
@@ -683,18 +683,18 @@ void VW_Bar_EGA (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_u
 		//
 		// draw left side
 		//
-		BE_ST_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
+		BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest++, color, maskleft);
 
 		//
 		// draw middle
 		//
-		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(dest, color, mid); // no masking
 		dest += mid;
 
 		//
 		// draw right side
 		//
-		BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskright);
+		BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest, color, maskright);
 
 		dest += bytesToAdd; // move to start of next line
 		--height;

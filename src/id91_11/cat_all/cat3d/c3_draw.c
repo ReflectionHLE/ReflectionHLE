@@ -1219,14 +1219,14 @@ void ClearScreen (void)
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// Originally done with pairs of 0x0000 words
-		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 0, (VIEWWIDTH/16)*2+1, 0xFF);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(egaDestOff, 0, (VIEWWIDTH/16)*2+1);
 		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 	// bottom loop
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
 		// Originally done with pairs of 0x0808 words
-		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(egaDestOff, 8, (VIEWWIDTH/16)*2+1, 0xFF);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(egaDestOff, 8, (VIEWWIDTH/16)*2+1);
 		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 #if 0

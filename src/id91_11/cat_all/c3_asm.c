@@ -330,7 +330,7 @@ ENDP
 void RadarBlip(id0_word_t x, id0_word_t y, id0_word_t color)
 {
 	id0_word_t egaOffset = ylookup[y] + x/8;
-	BE_ST_EGAUpdateGFXPixel4bpp(egaOffset, color&0xFF, ((unsigned)0x80)>>(x&7));
+	BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(egaOffset, color&0xFF, ((unsigned)0x80)>>(x&7));
 #if 0
 	mov	ax,[screenseg]
 

@@ -33,7 +33,7 @@ extern id0_unsigned_t screenstart[3]; // starts of three screens (0/1/master) in
 extern id0_unsigned_t originmap;
 extern id0_byte_t id0_seg *tinf;
 
-extern id0_byte_t planemask;
+//extern id0_byte_t planemask;  // REFKEEN - Unused variable
 extern id0_byte_t planenum;
 
 id0_unsigned_t screenstartcs; // in code segment for accesability
@@ -202,13 +202,13 @@ void RFL_NewTile_EGA (id0_unsigned_t updateoffset)
 			id0_unsigned_t egaDestOff = screenstartcs;
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-				BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff++, egaSrcOff++);
+				BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff++, egaSrcOff++);
 				egaSrcOff += SCREENWIDTH_EGA-2;
 				egaDestOff += SCREENWIDTH_EGA-2;
 			}
-			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff++, egaSrcOff++);
-			BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
+			BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff++, egaSrcOff++);
+			BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff, egaSrcOff);
 
 			return;
 		}
@@ -221,16 +221,16 @@ void RFL_NewTile_EGA (id0_unsigned_t updateoffset)
 		tilecache[backtilenum] = screenstartcs; // next time it can be drawn from here with latch
 		const id0_byte_t *backSrcPtr = (id0_byte_t *)grsegs[STARTTILE16+backtilenum];
 		backSrcPtr = backSrcPtr ? backSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
-		for (int planeCounter = 4, mapMask = 1; planeCounter; --planeCounter, mapMask <<= 1) // draw four planes
+		for (int currentPlane = 0; currentPlane < 4; ++currentPlane) // draw four planes
 		{
 			id0_unsigned_t egaDestOff = screenstartcs; // start at same place in all planes
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
-				BE_ST_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, TILEWIDTH_EGA, mapMask);
+				BE_ST_EGAUpdateGFXBufferInPlane(egaDestOff, backSrcPtr, TILEWIDTH_EGA, currentPlane);
 				backSrcPtr += TILEWIDTH_EGA;
 				egaDestOff += SCREENWIDTH_EGA;
 			}
-			BE_ST_EGAUpdateGFXBuffer(egaDestOff, backSrcPtr, TILEWIDTH_EGA, mapMask);
+			BE_ST_EGAUpdateGFXBufferInPlane(egaDestOff, backSrcPtr, TILEWIDTH_EGA, currentPlane);
 			backSrcPtr += TILEWIDTH_EGA;
 		}
 
@@ -246,7 +246,7 @@ void RFL_NewTile_EGA (id0_unsigned_t updateoffset)
 	const id0_byte_t *backSrcPtr = (id0_byte_t *)grsegs[STARTTILE16+backtilenum];
 	backSrcPtr = backSrcPtr ? backSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
 	id0_unsigned_t egaDestOff = screenstartcs;
-	for (int planeCounter = 4, mapMask = 1, dataLoc = 32; planeCounter; --planeCounter, mapMask <<= 1, dataLoc += 32)
+	for (int currentPlane = 0, dataLoc = 32; currentPlane < 4; ++currentPlane, dataLoc += 32)
 	{
 		const id0_byte_t *foreSrcPtr = (id0_byte_t *)grsegs[STARTTILE16M+foretilenum];
 		foreSrcPtr = foreSrcPtr ? foreSrcPtr : g_be_cross_dosZeroSeg; // VANILLA KEEN BUG WORKAROUND ("Empty" tile found in map)
@@ -255,10 +255,10 @@ void RFL_NewTile_EGA (id0_unsigned_t updateoffset)
 			// backSrcPtr - background tile
 			// foreSrcPtr - mask
 			// &foreSrcPtr[dataLoc] - masked data
-			BE_ST_EGAUpdateGFXByte(egaDestOff+lineoffset, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], mapMask);
+			BE_ST_EGAUpdateGFXByteInPlane(egaDestOff+lineoffset, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], currentPlane);
 			++backSrcPtr;
 			++foreSrcPtr;
-			BE_ST_EGAUpdateGFXByte(egaDestOff+lineoffset+1, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], mapMask);
+			BE_ST_EGAUpdateGFXByteInPlane(egaDestOff+lineoffset+1, ((*backSrcPtr) & (*foreSrcPtr)) | foreSrcPtr[dataLoc], currentPlane);
 			++backSrcPtr;
 			++foreSrcPtr;
 		}
@@ -352,11 +352,11 @@ void RFL_UpdateTiles (void)
 				id0_word_t egaSrcOff = tileLoc+masterofs; // source in master screen
 				for (int loopVar = 15; loopVar; --loopVar)
 				{
-					BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH_EGA);
+					BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(egaDestOff, egaSrcOff, TILEWIDTH_EGA);
 					egaSrcOff += SCREENWIDTH_EGA;
 					egaDestOff += SCREENWIDTH_EGA;
 				}
-				BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, TILEWIDTH_EGA);
+				BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(egaDestOff, egaSrcOff, TILEWIDTH_EGA);
 			}
 			continue;
 		}
@@ -413,13 +413,13 @@ void RFL_UpdateTiles (void)
 			for (int loopVar = 15; loopVar; --loopVar)
 			{
 				iterationsToDo = bytesPerRow;
-				BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
+				BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
 				iterationsToDo = 0;
 				egaSrcOff += bytesToSkip+bytesPerRow;
 				egaDestOff += bytesToSkip+bytesPerRow;
 			}
 			iterationsToDo = bytesPerRow;
-			BE_ST_EGAUpdateGFXBufferScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(egaDestOff, egaSrcOff, iterationsToDo);
 			iterationsToDo = 0;
 		}
 
@@ -532,7 +532,7 @@ void RFL_MaskForegroundTiles (void)
 			//
 			//=================
 
-			planemask = 1;
+			//planemask = 1;
 			planenum = 0;
 
 			id0_word_t tileLoc = blockstarts[scanPtr-updateptr-1];
@@ -546,18 +546,18 @@ void RFL_MaskForegroundTiles (void)
 				id0_unsigned_t egaDestOff = screenstartcs;
 				for (int loopVar = 0; loopVar < 16; ++loopVar, egaDestOff += SCREENWIDTH_EGA-1)
 				{
-					BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+					BE_ST_EGAUpdateGFXByteInPlane(egaDestOff, (BE_ST_EGAFetchGFXByteFromPlane(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planenum);
 					++srcPtr;
 					++egaDestOff;
-					BE_ST_EGAUpdateGFXByte(egaDestOff, (BE_ST_EGAFetchGFXByte(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planemask);
+					BE_ST_EGAUpdateGFXByteInPlane(egaDestOff, (BE_ST_EGAFetchGFXByteFromPlane(egaDestOff, planenum) & (*srcPtr)) | srcPtr[dataLoc], planenum);
 					++srcPtr;
 					//++egaDestOff;
 				}
 				dataLoc += 32; // the mask is now further away
 
 				++planenum;
-				planemask <<= 1; // shift plane mask over for next plane
-			} while (planemask != 0x10);
+				//planemask <<= 1; // shift plane mask over for next plane
+			} while (planenum != 4/*planemask != 0x10*/);
 		}
 
 		iterationsToDo = 0xFFFF; // definitely scan the entire thing

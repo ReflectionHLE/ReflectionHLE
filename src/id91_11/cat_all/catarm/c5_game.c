@@ -947,7 +947,7 @@ void LatchDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 
 	for (id0_unsigned_t lineCount = height; lineCount; --lineCount)
 	{
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, wide);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest, source, wide);
 		source += wide;
 		dest += linewidth;
 	}
@@ -1198,7 +1198,7 @@ void LoadLatchMem (void)
 {
 	static id0_unsigned_t base_destoff=0;
 	static id0_int_t base_numpics=0;
-	id0_int_t     i,j,p,m,numpics;
+	id0_int_t     i,j,p/*,m*/,numpics;
 	id0_byte_t    id0_far *src/*, id0_far *dest*/;
 	id0_unsigned_t        destoff;
 
@@ -1224,8 +1224,8 @@ void LoadLatchMem (void)
 	{
 		for (p=0;p<4;p++)
 		{
-			m = 1<<p;
-			BE_ST_EGAUpdateGFXBuffer(destoff, src, 8, m);
+			//m = 1<<p;
+			BE_ST_EGAUpdateGFXBufferInPlane(destoff, src, 8, p);
 			src+=8;
 #if 0
 			asm     mov     dx,SC_INDEX
@@ -1255,8 +1255,8 @@ void LoadLatchMem (void)
 			//tileoffsets[i] = FP_OFF(dest);
 			for (p=0;p<4;p++)
 			{
-				m = 1<<p;
-				BE_ST_EGAUpdateGFXBuffer(destoff, src, 32, m);
+				//m = 1<<p;
+				BE_ST_EGAUpdateGFXBufferInPlane(destoff, src, 32, p);
 				src+=32;
 #if 0
 				asm     mov     dx,SC_INDEX

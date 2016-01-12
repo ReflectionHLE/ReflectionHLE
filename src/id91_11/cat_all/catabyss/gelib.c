@@ -1652,7 +1652,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 							n--;
 
 						while (n--)
-							BE_ST_EGAUpdateGFXByte(DstOff[Plane]++, Rep, 1<<Plane);
+							BE_ST_EGAUpdateGFXByteInPlane(DstOff[Plane]++, Rep, Plane);
 							//*Dst[Plane]++ = Rep;
 					}
 					else
@@ -1666,7 +1666,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 						n--;
 
 					while (n--)
-						BE_ST_EGAUpdateGFXByte(DstOff[Plane]++, *Src++, 1<<Plane);
+						BE_ST_EGAUpdateGFXByteInPlane(DstOff[Plane]++, *Src++, Plane);
 						//*Dst[Plane]++ = *Src++;
 
 					if ((!BPR) && (NotWordAligned))     // IGNORE WORD ALIGN
@@ -2444,7 +2444,7 @@ noxor:
 			//
 			// In ported code we update all planes at once
 
-			BE_ST_EGAUpdateGFXBitsScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
+			BE_ST_EGAUpdateGFXBitsInAllPlanesScrToScr((drawofs+(x>>3))+pagedelta, drawofs+(x>>3), maskb[x&7]);
 #if 0
 			asm     mov     cx,[x]
 			asm     mov     si,cx

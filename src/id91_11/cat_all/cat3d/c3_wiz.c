@@ -147,14 +147,14 @@ void DrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile)
 {
 	id0_word_t egaDestOff = x+ylookup[y];
 	id0_word_t egaSrcOff = latchpics[0]+8*tile;
-	BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
-	BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-	BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff, egaSrcOff);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
 #if 0
 	id0_unsigned_t junk = latchpics[0];
 
@@ -641,9 +641,9 @@ void DrawBars (void)
 		id0_int_t linesleft = gamestate.shotpower;
 		do
 		{
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE1START, source, 5);
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE2START, source, 5);
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE3START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE1START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE2START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE3START, source, 5);
 			source += 5;
 			dest += SCREENWIDTH;
 		} while (--linesleft);
@@ -692,9 +692,9 @@ newline:
 		id0_int_t linesleft = gamestate.body;
 		do
 		{
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE1START, source, 5);
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE2START, source, 5);
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE3START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE1START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE2START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE3START, source, 5);
 			source += 5;
 			dest += SCREENWIDTH;
 		} while (--linesleft);
@@ -741,9 +741,9 @@ newline2:
 		id0_int_t linesleft = topline;
 		do
 		{
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE1START, source, 5);
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE2START, source, 5);
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE3START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE1START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE2START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE3START, source, 5);
 			source += 5;
 			dest += SCREENWIDTH;
 		} while (--linesleft);
@@ -965,9 +965,9 @@ void BuildShotPower (void)
 		id0_int_t linesleft = newlines;
 		do
 		{
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE1START, source, 5);
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE2START, source, 5);
-			BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE3START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE1START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE2START, source, 5);
+			BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE3START, source, 5);
 			source += 5;
 			dest += SCREENWIDTH;
 		} while (--linesleft);
@@ -1039,9 +1039,9 @@ void ClearShotPower (void)
 	id0_int_t linesleft = gamestate.shotpower;
 	do
 	{
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE1START, source, 5);
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE2START, source, 5);
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE3START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE1START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE2START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE3START, source, 5);
 		source += 5;
 		dest += SCREENWIDTH;
 	} while (--linesleft);
@@ -1231,9 +1231,9 @@ void DrinkPotion (void)
 	id0_int_t linesleft = MAXBODY;
 	do
 	{
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE1START, source, 5);
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE2START, source, 5);
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE3START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE1START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE2START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE3START, source, 5);
 		source += 5;
 		dest += SCREENWIDTH;
 	} while (--linesleft);
@@ -1379,9 +1379,9 @@ void TakeDamage (id0_int_t points)
 	id0_int_t linesleft = points;
 	do
 	{
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE1START, source, 5);
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE2START, source, 5);
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest+PAGE3START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE1START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE2START, source, 5);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest+PAGE3START, source, 5);
 		source += 5;
 		dest += SCREENWIDTH;
 	} while (--linesleft);

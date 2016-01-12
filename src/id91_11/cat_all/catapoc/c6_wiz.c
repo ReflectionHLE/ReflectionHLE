@@ -181,27 +181,26 @@ void DrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t tile)
 #if 0
 	if (id0_workaround_catadventures_nodraw_digits_on_startup)
 	{
-		// FIXME: Have a separate handler accepting plane?
-		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff, egaSrcOff, 8);
-		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
-		BE_ST_EGAUpdateGFXByteWithPlaneMaskScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 8);
+		BE_ST_EGAUpdateGFXByteInPlaneScrToScr(egaDestOff, egaSrcOff, 3);
+		BE_ST_EGAUpdateGFXByteInPlaneScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 3);
+		BE_ST_EGAUpdateGFXByteInPlaneScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 3);
+		BE_ST_EGAUpdateGFXByteInPlaneScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 3);
+		BE_ST_EGAUpdateGFXByteInPlaneScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 3);
+		BE_ST_EGAUpdateGFXByteInPlaneScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 3);
+		BE_ST_EGAUpdateGFXByteInPlaneScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 3);
+		BE_ST_EGAUpdateGFXByteInPlaneScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff, 3);
 	}
 	else
 #endif
 	{
-		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff, egaSrcOff);
-		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
-		BE_ST_EGAUpdateGFXByteScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff, egaSrcOff);
+		BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
+		BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(egaDestOff += SCREENWIDTH, ++egaSrcOff);
 	}
 #if 0
 	id0_unsigned_t junk = latchpics[0];

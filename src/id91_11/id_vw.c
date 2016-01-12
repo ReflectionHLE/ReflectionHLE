@@ -452,7 +452,7 @@ void	VW_ClearVideo (id0_int_t color)
 #endif
 
 #if GRMODE == EGAGR
-	BE_ST_EGAUpdateGFXPixel4bppRepeatedly(0, color, 0xffff, 0xff);
+	BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(0, color, 0xffff);
 #endif
 #if GRMODE == CGAGR
 	memset(screenseg, color, 0xffff);
@@ -672,25 +672,25 @@ void VW_Hlin(id0_unsigned_t xl, id0_unsigned_t xh, id0_unsigned_t y, id0_unsigne
 
 	maskleft&=maskright;
 
-	BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+	BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest, color, maskleft);
 	return;
   }
 
 	//
 	// draw left side
 	//
-	BE_ST_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
+	BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest++, color, maskleft);
 
 	//
 	// draw middle
 	//
-	BE_ST_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+	BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(dest, color, mid); // no masking
 	dest += mid;
 
 	//
 	// draw right side
 	//
-	BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskright);
+	BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest, color, maskright);
 }
 #endif
 
@@ -813,7 +813,7 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 
 		do
 		{
-			BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskleft);
+			BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest, color, maskleft);
 			dest += linewidth; // down to next line
 			--height;
 		} while (height);
@@ -827,18 +827,18 @@ void VW_Bar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsig
 		//
 		// draw left side
 		//
-		BE_ST_EGAUpdateGFXPixel4bpp(dest++, color, maskleft);
+		BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest++, color, maskleft);
 
 		//
 		// draw middle
 		//
-		BE_ST_EGAUpdateGFXPixel4bppRepeatedly(dest, color, mid, 255); // no masking
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(dest, color, mid); // no masking
 		dest += mid;
 
 		//
 		// draw right side
 		//
-		BE_ST_EGAUpdateGFXPixel4bpp(dest, color, maskright);
+		BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(dest, color, maskright);
 
 		dest += bytesToAdd; // move to start of next line
 		--height;

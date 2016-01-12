@@ -405,14 +405,14 @@ void LatchDrawChar (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 	dest = bufferofs + ylookup[y]+x;
 	source = latchpics[0]+picnum*8;
 
-	BE_ST_EGAUpdateGFXByteScrToScr(dest, source);
-	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
-	BE_ST_EGAUpdateGFXByteScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(dest, source);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(dest += linewidth, ++source);
+	BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(dest += linewidth, ++source);
 #if 0
 	EGAWRITEMODE(1);
 	EGAMAPMASK(15);
@@ -468,7 +468,7 @@ void LatchDrawTile (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 
 	for (int lineCount = 16; lineCount; --lineCount)
 	{
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, 2);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest, source, 2);
 		source += 2;
 		dest += linewidth;
 	}

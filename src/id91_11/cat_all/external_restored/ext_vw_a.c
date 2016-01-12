@@ -138,7 +138,7 @@ void ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 {
 	for (id0_unsigned_t lineCounter = height; lineCounter; --lineCounter, source += 40, dest += 40)
 	{
-		BE_ST_EGAUpdateGFXBufferScrToScr(dest, source, wide);
+		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest, source, wide);
 	}
 
 }
