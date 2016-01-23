@@ -177,7 +177,7 @@ id0_boolean_t		bombonerror;
 // Used to obtain a pointer to some location in mmEmulatedMemSpace
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
-static id0_byte_t mmEmulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS+EMULATED_EMS_PARAGRAPHS+EMULATED_XMS_PARAGRAPHS)];
+static id0_byte_t __attribute__ ((aligned (16))) mmEmulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS+EMULATED_EMS_PARAGRAPHS+EMULATED_XMS_PARAGRAPHS)];
 
 //==========================================================================
 
