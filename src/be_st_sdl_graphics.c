@@ -1959,7 +1959,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		{
 			currPalPixPtr = g_sdlHostScrMem.egaGfx + line*g_sdlTexWidth;
 			// REFKEEN - WARNING: Not checking if GFX_TEX_HEIGHT <= g_sdlPixLineWidth (but this isn't reproduced as of writing this)
-			uint32_t pixelsToEgaMemEnd = 0x80000-currLineFirstPixelNum;
+			int pixelsToEgaMemEnd = 0x80000-currLineFirstPixelNum;
 			if (g_sdlTexWidth <= pixelsToEgaMemEnd)
 			{
 				memcpy(currPalPixPtr, (uint8_t *)g_sdlVidMem.egaGfx + currLineFirstPixelNum, g_sdlTexWidth);
