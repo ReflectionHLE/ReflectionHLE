@@ -17,18 +17,26 @@ typedef enum BE_Log_Message_Class_T
 } BE_Log_Message_Class_T;
 
 #define BE_Cross_Swap16(x) ((uint16_t)(((uint16_t)(x)<<8)|((uint16_t)(x)>>8)))
+
 #define BE_Cross_Swap32(x) ((uint32_t)(((uint32_t)(x)<<24)|(((uint32_t)(x)<<8)&0x00FF0000)|(((uint32_t)(x)>>8)&0x0000FF00)|((uint32_t)(x)>>24)))
+
+#define BE_Cross_Swap64(x) ((uint64_t)(((uint64_t)(x)<<56)|(((uint64_t)(x)<<40)&0x00FF000000000000UL)|(((uint64_t)(x)<<24)&0x0000FF0000000000UL)|(((uint64_t)(x)<<8)&0x000000FF00000000UL)| \
+                           (((uint64_t)(x)>>8)&0x00000000FF000000UL)|(((uint64_t)(x)>>24)&0x0000000000FF0000UL)|(((uint64_t)(x)>>40)&0x000000000000FF00UL)|((uint64_t)(x)>>56)))
 
 #ifdef REFKEEN_ARCH_LITTLE_ENDIAN
 #define BE_Cross_Swap16LE(x) (x)
 #define BE_Cross_Swap16BE(x) BE_Cross_Swap16(x)
 #define BE_Cross_Swap32LE(x) (x)
 #define BE_Cross_Swap32BE(x) BE_Cross_Swap32(x)
+#define BE_Cross_Swap64LE(x) (x)
+#define BE_Cross_Swap64BE(x) BE_Cross_Swap64(x)
 #else
 #define BE_Cross_Swap16LE(x) BE_Cross_Swap16(x)
 #define BE_Cross_Swap16BE(x) (x)
 #define BE_Cross_Swap32LE(x) BE_Cross_Swap32(x)
 #define BE_Cross_Swap32BE(x) (x)
+#define BE_Cross_Swap64LE(x) BE_Cross_Swap64(x)
+#define BE_Cross_Swap64BE(x) (x)
 #endif
 
 // Used for some resource definitions internally

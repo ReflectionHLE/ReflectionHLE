@@ -24,6 +24,7 @@
 #include "be_gamever.h" // Enable VSync by default for EGA, not CGA
 #include "be_st.h"
 #include "be_st_sdl_private.h"
+#include "be_st_ega_lookup_tables.h"
 #include "be_title_and_version.h"
 
 // Some of these are also used in launcher
@@ -76,7 +77,7 @@ extern const uint8_t g_vga_8x16TextFont[256*8*16];
 // We can use a union because the memory contents are refreshed on screen mode change
 // (well, not on change between modes 0xD and 0xE, both sharing planar A000:0000)
 static union {
-	uint8_t egaGfx[8*0x10000]; // Contents of A000:0000, de-planed (1 byte per pixel)
+	uint64_t egaGfx[0x10000]; // Contents of A000:0000, de-planed (1 byte per pixel)
 	uint8_t text[TXT_COLS_NUM*TXT_ROWS_NUM*2]; // Textual contents of B800:0000
 } g_sdlVidMem;
 
@@ -1386,74 +1387,58 @@ void BE_ST_EGASetSplitScreen(int16_t linenum)
 
 void BE_ST_EGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t planeNum)
 {
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff] & ~(1 << planeNum)) | (((srcVal >> 7) & 1) << planeNum);
-	g_sdlVidMem.egaGfx[8*destOff+1] = (g_sdlVidMem.egaGfx[8*destOff+1] & ~(1 << planeNum)) | (((srcVal >> 6) & 1) << planeNum);
-	g_sdlVidMem.egaGfx[8*destOff+2] = (g_sdlVidMem.egaGfx[8*destOff+2] & ~(1 << planeNum)) | (((srcVal >> 5) & 1) << planeNum);
-	g_sdlVidMem.egaGfx[8*destOff+3] = (g_sdlVidMem.egaGfx[8*destOff+3] & ~(1 << planeNum)) | (((srcVal >> 4) & 1) << planeNum);
-	g_sdlVidMem.egaGfx[8*destOff+4] = (g_sdlVidMem.egaGfx[8*destOff+4] & ~(1 << planeNum)) | (((srcVal >> 3) & 1) << planeNum);
-	g_sdlVidMem.egaGfx[8*destOff+5] = (g_sdlVidMem.egaGfx[8*destOff+5] & ~(1 << planeNum)) | (((srcVal >> 2) & 1) << planeNum);
-	g_sdlVidMem.egaGfx[8*destOff+6] = (g_sdlVidMem.egaGfx[8*destOff+6] & ~(1 << planeNum)) | (((srcVal >> 1) & 1) << planeNum);
-	g_sdlVidMem.egaGfx[8*destOff+7] = (g_sdlVidMem.egaGfx[8*destOff+7] & ~(1 << planeNum)) | ((srcVal & 1) << planeNum);
+	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_repeat[1 << planeNum]) | (g_be_st_lookup_linear_to_egaplane[srcVal] << planeNum);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Based on BE_Cross_LinearToWrapped_MemCopy
-static void BEL_ST_LinearToEGAPlane_MemCopy(uint8_t *planeDstPtr, uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num, uint16_t planeNum)
+static void BEL_ST_LinearToEGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num, uint16_t planeNum)
 {
+	uint64_t planeInvRepeatedMask = ~g_be_st_lookup_repeat[1 << planeNum];
+	uint64_t *planeDstPtr = &g_sdlVidMem.egaGfx[planeDstOff];
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
 	{
-		for (int i = 0; i < num; ++i)
-			for (int j = 0; j < 8; ++j)
-				planeDstPtr[8*(planeDstOff+i)+j] = (planeDstPtr[8*(planeDstOff+i)+j] & ~(1 << planeNum)) | (((linearSrc[i] >> (7-j)) & 1) << planeNum);
+		for (int i = 0; i < num; ++i, ++planeDstPtr, ++linearSrc)
+			*planeDstPtr = ((*planeDstPtr) & planeInvRepeatedMask) | (g_be_st_lookup_linear_to_egaplane[*linearSrc] << planeNum);
 	}
 	else
 	{
-		for (int i = 0; i < bytesToEnd; ++i)
-			for (int j = 0; j < 8; ++j)
-				planeDstPtr[8*(planeDstOff+i)+j] = (planeDstPtr[8*(planeDstOff+i)+j] & ~(1 << planeNum)) | (((linearSrc[i] >> (7-j)) & 1) << planeNum);
-		for (int i = 0; i < num-bytesToEnd; ++i)
-			for (int j = 0; j < 8; ++j)
-				planeDstPtr[8*i+j] = (planeDstPtr[8*i+j] & ~(1 << planeNum)) | (((linearSrc[i+bytesToEnd] >> (7-j)) & 1) << planeNum);
+		for (int i = 0; i < bytesToEnd; ++i, ++planeDstPtr, ++linearSrc)
+			*planeDstPtr = ((*planeDstPtr) & planeInvRepeatedMask) | (g_be_st_lookup_linear_to_egaplane[*linearSrc] << planeNum);
+		planeDstPtr = g_sdlVidMem.egaGfx;
+		for (int i = 0; i < num-bytesToEnd; ++i, ++planeDstPtr, ++linearSrc)
+			*planeDstPtr = ((*planeDstPtr) & planeInvRepeatedMask) | (g_be_st_lookup_linear_to_egaplane[*linearSrc] << planeNum);
 	}
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Based on BE_Cross_WrappedToLinear_MemCopy
-static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, const uint8_t *planeSrcPtr, uint16_t planeSrcOff, uint16_t num, uint16_t planenum)
+static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, uint16_t planeSrcOff, uint16_t num, uint16_t planenum)
 {
+	const uint64_t *planeSrcPtr = &g_sdlVidMem.egaGfx[planeSrcOff];
 	uint16_t bytesToEnd = 0x10000-planeSrcOff;
 	if (num <= bytesToEnd)
 	{
-		for (int i = 0; i < num; ++i)
-		{
-			linearDst[i] = 0;
-			for (int j = 0; j < 8; ++j)
-				linearDst[i] |= ((planeSrcPtr[8*(planeSrcOff+i)+j] >> planenum) & 1) << (7-j);
-		}
+		for (int i = 0; i < num; ++i, ++linearDst, ++planeSrcPtr)
+			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planenum);
 	}
 	else
 	{
-		for (int i = 0; i < bytesToEnd; ++i)
-		{
-			linearDst[i] = 0;
-			for (int j = 0; j < 8; ++j)
-				linearDst[i] |= ((planeSrcPtr[8*(planeSrcOff+i)+j] >> planenum) & 1) << (7-j);
-		}
-		for (int i = 0; i < num-bytesToEnd; ++i)
-		{
-			linearDst[i+bytesToEnd] = 0;
-			for (int j = 0; j < 8; ++j)
-				linearDst[i+bytesToEnd] |= ((planeSrcPtr[8*i+j] >> planenum) & 1) << (7-j);
-		}
+		for (int i = 0; i < bytesToEnd; ++i, ++linearDst, ++planeSrcPtr)
+			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planenum);
+		planeSrcPtr = g_sdlVidMem.egaGfx;
+		for (int i = 0; i < num-bytesToEnd; ++i, ++linearDst, ++planeSrcPtr)
+			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planenum);
 	}
 	//No need to since we just read screen data
 	//g_sdlDoRefreshGfxOutput = true;
 }
 
 // Based on BE_Cross_WrappedToWrapped_MemCopy
-static void BEL_ST_EGAPlaneToEGAAllPlanes_MemCopy(uint8_t *planeCommonPtr, uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num)
+static void BEL_ST_EGAPlaneToEGAAllPlanes_MemCopy(uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num)
 {
+	uint64_t *planeCommonPtr = g_sdlVidMem.egaGfx;
 	uint16_t srcBytesToEnd = 0x10000-planeSrcOff;
 	uint16_t dstBytesToEnd = 0x10000-planeDstOff;
 	if (num <= srcBytesToEnd)
@@ -1461,49 +1446,49 @@ static void BEL_ST_EGAPlaneToEGAAllPlanes_MemCopy(uint8_t *planeCommonPtr, uint1
 		// Source is linear: Same as BE_Cross_LinearToWrapped_MemCopy here
 		if (num <= dstBytesToEnd)
 		{
-			memcpy(planeCommonPtr+8*planeDstOff, planeCommonPtr+8*planeSrcOff, 8*num);
+			memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*num);
 		}
 		else
 		{
-			memcpy(planeCommonPtr+8*planeDstOff, planeCommonPtr+8*planeSrcOff, 8*dstBytesToEnd);
-			memcpy(planeCommonPtr, planeCommonPtr+8*(planeSrcOff+dstBytesToEnd), 8*(num-dstBytesToEnd));
+			memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*dstBytesToEnd);
+			memcpy(planeCommonPtr, planeCommonPtr+(planeSrcOff+dstBytesToEnd), 8*(num-dstBytesToEnd));
 		}
 	}
 	// Otherwise, check if at least the destination is linear
 	else if (num <= dstBytesToEnd)
 	{
 		// Destination is linear: Same as BE_Cross_WrappedToLinear_MemCopy, non-linear source
-		memcpy(planeCommonPtr+8*planeDstOff, planeCommonPtr+8*planeSrcOff, 8*srcBytesToEnd);
-		memcpy(planeCommonPtr+8*(planeDstOff+srcBytesToEnd), planeCommonPtr, 8*(num-srcBytesToEnd));
+		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*srcBytesToEnd);
+		memcpy(planeCommonPtr+(planeDstOff+srcBytesToEnd), planeCommonPtr, 8*(num-srcBytesToEnd));
 	}
 	// BOTH buffers have wrapping. We don't check separately if
 	// srcBytesToEnd==dstBytesToEnd (in such a case planeDstOff==planeSrcOff...)
 	else if (srcBytesToEnd <= dstBytesToEnd)
 	{
-		memcpy(planeCommonPtr+8*planeDstOff, planeCommonPtr+8*planeSrcOff, 8*srcBytesToEnd);
-		memcpy(planeCommonPtr+8*(planeDstOff+srcBytesToEnd), planeCommonPtr, 8*(dstBytesToEnd-srcBytesToEnd));
-		memcpy(planeCommonPtr, planeCommonPtr+8*(dstBytesToEnd-srcBytesToEnd), 8*(num-dstBytesToEnd));
+		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*srcBytesToEnd);
+		memcpy(planeCommonPtr+(planeDstOff+srcBytesToEnd), planeCommonPtr, 8*(dstBytesToEnd-srcBytesToEnd));
+		memcpy(planeCommonPtr, planeCommonPtr+(dstBytesToEnd-srcBytesToEnd), 8*(num-dstBytesToEnd));
 	}
 	else // srcBytesToEnd > dstBytesToEnd
 	{
-		memcpy(planeCommonPtr+8*planeDstOff, planeCommonPtr+8*planeSrcOff, 8*dstBytesToEnd);
-		memcpy(planeCommonPtr, planeCommonPtr+8*(planeSrcOff+dstBytesToEnd), 8*(srcBytesToEnd-dstBytesToEnd));
-		memcpy(planeCommonPtr+8*(srcBytesToEnd-dstBytesToEnd), planeCommonPtr, 8*(num-srcBytesToEnd));
+		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*dstBytesToEnd);
+		memcpy(planeCommonPtr, planeCommonPtr+(planeSrcOff+dstBytesToEnd), 8*(srcBytesToEnd-dstBytesToEnd));
+		memcpy(planeCommonPtr+(srcBytesToEnd-dstBytesToEnd), planeCommonPtr, 8*(num-srcBytesToEnd));
 	}
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 // A similar analogue of memset
-static void BEL_ST_EGAPlane_MemSet(uint8_t *planeDstPtr, uint16_t planeDstOff, uint8_t value, uint16_t num)
+static void BEL_ST_EGAPlane_MemSet(uint64_t *planeDstPtr, uint16_t planeDstOff, uint8_t value, uint16_t num)
 {
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
 	{
-		memset(planeDstPtr+8*planeDstOff, value, 8*num);
+		memset(planeDstPtr+planeDstOff, value, 8*num);
 	}
 	else
 	{
-		memset(planeDstPtr+8*planeDstOff, value, 8*bytesToEnd);
+		memset(planeDstPtr+planeDstOff, value, 8*bytesToEnd);
 		memset(planeDstPtr, value, 8*(num-bytesToEnd));
 	}
 	g_sdlDoRefreshGfxOutput = true;
@@ -1511,96 +1496,50 @@ static void BEL_ST_EGAPlane_MemSet(uint8_t *planeDstPtr, uint16_t planeDstOff, u
 
 void BE_ST_EGAUpdateGFXBufferInPlane(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeNum)
 {
-	BEL_ST_LinearToEGAPlane_MemCopy(g_sdlVidMem.egaGfx, destOff, srcPtr, num, planeNum);
+	BEL_ST_LinearToEGAPlane_MemCopy(destOff, srcPtr, num, planeNum);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff)
 {
-	memcpy(&g_sdlVidMem.egaGfx[8*destOff], &g_sdlVidMem.egaGfx[8*srcOff], 8);
+	g_sdlVidMem.egaGfx[destOff] = g_sdlVidMem.egaGfx[srcOff];
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Same as BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr but with a specific plane (added for Catacomb Abyss vanilla bug reproduction/workaround)
 void BE_ST_EGAUpdateGFXByteInPlaneScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t planeNum)
 {
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff] & ~(1<<planeNum)) | (g_sdlVidMem.egaGfx[8*srcOff] & (1<<planeNum));
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff+1] & ~(1<<planeNum)) | (g_sdlVidMem.egaGfx[8*srcOff+1] & (1<<planeNum));
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff+2] & ~(1<<planeNum)) | (g_sdlVidMem.egaGfx[8*srcOff+2] & (1<<planeNum));
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff+3] & ~(1<<planeNum)) | (g_sdlVidMem.egaGfx[8*srcOff+3] & (1<<planeNum));
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff+4] & ~(1<<planeNum)) | (g_sdlVidMem.egaGfx[8*srcOff+4] & (1<<planeNum));
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff+5] & ~(1<<planeNum)) | (g_sdlVidMem.egaGfx[8*srcOff+5] & (1<<planeNum));
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff+6] & ~(1<<planeNum)) | (g_sdlVidMem.egaGfx[8*srcOff+6] & (1<<planeNum));
-	g_sdlVidMem.egaGfx[8*destOff] = (g_sdlVidMem.egaGfx[8*destOff+7] & ~(1<<planeNum)) | (g_sdlVidMem.egaGfx[8*srcOff+7] & (1<<planeNum));
+	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_repeat[1<<planeNum]) | (g_sdlVidMem.egaGfx[srcOff] & g_be_st_lookup_repeat[1<<planeNum]);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Same as BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr but picking specific bits out of each byte
 void BE_ST_EGAUpdateGFXBitsInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t bitsMask)
 {
-	if (bitsMask & 1)
-		g_sdlVidMem.egaGfx[8*destOff+7] = g_sdlVidMem.egaGfx[8*srcOff+7];
-	if (bitsMask & 2)
-		g_sdlVidMem.egaGfx[8*destOff+6] = g_sdlVidMem.egaGfx[8*srcOff+6];
-	if (bitsMask & 4)
-		g_sdlVidMem.egaGfx[8*destOff+5] = g_sdlVidMem.egaGfx[8*srcOff+5];
-	if (bitsMask & 8)
-		g_sdlVidMem.egaGfx[8*destOff+4] = g_sdlVidMem.egaGfx[8*srcOff+4];
-	if (bitsMask & 16)
-		g_sdlVidMem.egaGfx[8*destOff+3] = g_sdlVidMem.egaGfx[8*srcOff+3];
-	if (bitsMask & 32)
-		g_sdlVidMem.egaGfx[8*destOff+2] = g_sdlVidMem.egaGfx[8*srcOff+2];
-	if (bitsMask & 64)
-		g_sdlVidMem.egaGfx[8*destOff+1] = g_sdlVidMem.egaGfx[8*srcOff+1];
-	if (bitsMask & 128)
-		g_sdlVidMem.egaGfx[8*destOff] = g_sdlVidMem.egaGfx[8*srcOff];
+	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_bitsmask[bitsMask]) | (g_sdlVidMem.egaGfx[srcOff] & g_be_st_lookup_bitsmask[bitsMask]);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 
 void BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num)
 {
-	BEL_ST_EGAPlaneToEGAAllPlanes_MemCopy(g_sdlVidMem.egaGfx, destOff, srcOff, num);
+	BEL_ST_EGAPlaneToEGAAllPlanes_MemCopy(destOff, srcOff, num);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 uint8_t BE_ST_EGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planenum)
 {
-	return (
-		((g_sdlVidMem.egaGfx[8*destOff+7]>>planenum)&1)
-		| (((g_sdlVidMem.egaGfx[8*destOff+6]>>planenum)&1)<<1)
-		| (((g_sdlVidMem.egaGfx[8*destOff+5]>>planenum)&1)<<2)
-		| (((g_sdlVidMem.egaGfx[8*destOff+4]>>planenum)&1)<<3)
-		| (((g_sdlVidMem.egaGfx[8*destOff+3]>>planenum)&1)<<4)
-		| (((g_sdlVidMem.egaGfx[8*destOff+2]>>planenum)&1)<<5)
-		| (((g_sdlVidMem.egaGfx[8*destOff+1]>>planenum)&1)<<6)
-		| (((g_sdlVidMem.egaGfx[8*destOff]>>planenum)&1)<<7)
-	);
+	return BEL_ST_Lookup_EGAPlaneToLinear(g_sdlVidMem.egaGfx[destOff]>>planenum);
 }
 
 void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planenum)
 {
-	BEL_ST_EGAPlaneToLinear_MemCopy(destPtr, g_sdlVidMem.egaGfx, srcOff, num, planenum);
+	BEL_ST_EGAPlaneToLinear_MemCopy(destPtr, srcOff, num, planenum);
 }
 
 void BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(uint16_t destOff, uint8_t color, uint8_t bitsMask)
 {
-	if (bitsMask & 1)
-		g_sdlVidMem.egaGfx[8*destOff+7] = color;
-	if (bitsMask & 2)
-		g_sdlVidMem.egaGfx[8*destOff+6] = color;
-	if (bitsMask & 4)
-		g_sdlVidMem.egaGfx[8*destOff+5] = color;
-	if (bitsMask & 8)
-		g_sdlVidMem.egaGfx[8*destOff+4] = color;
-	if (bitsMask & 16)
-		g_sdlVidMem.egaGfx[8*destOff+3] = color;
-	if (bitsMask & 32)
-		g_sdlVidMem.egaGfx[8*destOff+2] = color;
-	if (bitsMask & 64)
-		g_sdlVidMem.egaGfx[8*destOff+1] = color;
-	if (bitsMask & 128)
-		g_sdlVidMem.egaGfx[8*destOff] = color;
+	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_bitsmask[bitsMask]) | (g_be_st_lookup_repeat[color] & g_be_st_lookup_bitsmask[bitsMask]);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -1612,22 +1551,7 @@ void BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(uint16_t destOff, uint8_t color, uin
 
 void BE_ST_EGAXorGFXByteByPlaneMask(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
 {
-	if (srcVal & 1)
-		g_sdlVidMem.egaGfx[8*destOff+7] ^= planeMask;
-	if (srcVal & 2)
-		g_sdlVidMem.egaGfx[8*destOff+6] ^= planeMask;
-	if (srcVal & 4)
-		g_sdlVidMem.egaGfx[8*destOff+5] ^= planeMask;
-	if (srcVal & 8)
-		g_sdlVidMem.egaGfx[8*destOff+4] ^= planeMask;
-	if (srcVal & 16)
-		g_sdlVidMem.egaGfx[8*destOff+3] ^= planeMask;
-	if (srcVal & 32)
-		g_sdlVidMem.egaGfx[8*destOff+2] ^= planeMask;
-	if (srcVal & 64)
-		g_sdlVidMem.egaGfx[8*destOff+1] ^= planeMask;
-	if (srcVal & 128)
-		g_sdlVidMem.egaGfx[8*destOff] ^= planeMask;
+	g_sdlVidMem.egaGfx[destOff] ^= ((g_be_st_lookup_repeat[planeMask] & g_be_st_lookup_bitsmask[srcVal]));
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -2033,18 +1957,18 @@ void BEL_ST_UpdateHostDisplay(void)
 		uint8_t *currPalPixPtr;
 		for (int line = 0; line < GFX_TEX_HEIGHT; ++line)
 		{
-			uint32_t currPixNum = currLineFirstPixelNum;
 			currPalPixPtr = g_sdlHostScrMem.egaGfx + line*g_sdlTexWidth;
-			// FIXME - Check for scanline length (g_sdlPixLineWidth, in pixels)
-			if (g_sdlTexWidth <= 0x80000-currPixNum)
+			// REFKEEN - WARNING: Not checking if GFX_TEX_HEIGHT <= g_sdlPixLineWidth (but this isn't reproduced as of writing this)
+			uint32_t pixelsToEgaMemEnd = 0x80000-currLineFirstPixelNum;
+			if (g_sdlTexWidth <= pixelsToEgaMemEnd)
 			{
-				memcpy(currPalPixPtr, &g_sdlVidMem.egaGfx[currPixNum], g_sdlTexWidth);
+				memcpy(currPalPixPtr, (uint8_t *)g_sdlVidMem.egaGfx + currLineFirstPixelNum, g_sdlTexWidth);
 			}
 			else
 			{
-				memcpy(currPalPixPtr, &g_sdlVidMem.egaGfx[currPixNum], 0x80000-currPixNum);
-				currPalPixPtr += 0x80000-currPixNum;;
-				memcpy(currPalPixPtr, &g_sdlVidMem.egaGfx[0], g_sdlTexWidth-(0x80000-currPixNum));
+				memcpy(currPalPixPtr, (uint8_t *)g_sdlVidMem.egaGfx + currLineFirstPixelNum, pixelsToEgaMemEnd);
+				currPalPixPtr += pixelsToEgaMemEnd;
+				memcpy(currPalPixPtr, g_sdlVidMem.egaGfx, g_sdlTexWidth - pixelsToEgaMemEnd);
 			}
 
 			if (g_sdlSplitScreenLine == line)
