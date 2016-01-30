@@ -329,11 +329,11 @@ void BE_ST_ALOut(uint8_t reg,uint8_t val)
 	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
 }
 
-/************************************************************************
+/**********************************************************************
 PC Speaker emulation; The function mixes audio
 into an EXISTING stream (of OPL sound data)
-ASSUMPTION: The speaker is outputting sound (PCSpeakerUpdateOne == true).
-************************************************************************/
+ASSUMPTION: The speaker is outputting sound (g_sdlPCSpeakerOn == true).
+**********************************************************************/
 static inline void PCSpeakerUpdateOne(int16_t *stream, int length)
 {
 	for (int loopVar = 0; loopVar < length; loopVar++, stream++)
