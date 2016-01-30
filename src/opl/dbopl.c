@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002-2010  The DOSBox Team
+ *  Copyright (C) 2002-2016  The DOSBox Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1350,6 +1350,7 @@ void Chip__Setup(Chip *self, Bit32u rate ) {
 		EnvelopeSelect( i, &index, &shift );
 		self->linearRates[i] = (Bit32u)( scale * (EnvelopeIncreaseTable[ index ] << ( RATE_SH + ENV_EXTRA - shift - 3 )));
 	}
+	/*Bit32s attackDiffs[62];*/
 	//Generate the best matching attack rate
 	for ( i = 0; i < 62; i++ ) {
 		Bit8u index, shift;
@@ -1389,22 +1390,22 @@ void Chip__Setup(Chip *self, Bit32u rate ) {
 			if ( lDiff < bestDiff ) {
 				bestDiff = lDiff;
 				bestAdd = guessAdd;
+				//We hit an exactly matching sample count
 				if ( !bestDiff )
 					break;
 			}
+			//Linear correction factor, not exactly perfect but seems to work
+			double correct = (original - diff) / (double)original;
+			guessAdd = (Bit32u)(guessAdd * correct);
 			//Below our target
 			if ( diff < 0 ) {
-				//Better than the last time
-				Bit32s mul = ((original - diff) << 12) / original;
-				guessAdd = ((guessAdd * mul) >> 12);
+				//Always add one here for rounding, an overshoot will get corrected by another pass decreasing
 				guessAdd++;
-			} else if ( diff > 0 ) {
-				Bit32s mul = ((original - diff) << 12) / original;
-				guessAdd = (guessAdd * mul) >> 12;
-				guessAdd--;
 			}
 		}
 		self->attackRates[i] = bestAdd;
+		//Keep track of the diffs for some debugging
+		/*attackDiffs[i] = bestDiff;*/
 	}
 	for ( i = 62; i < 76; i++ ) {
 		//This should provide instant volume maximizing
