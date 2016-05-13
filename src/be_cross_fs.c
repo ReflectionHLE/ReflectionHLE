@@ -712,8 +712,8 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss113[
 	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x26f4c},
 	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1bc10},
 	{"EGADICT.ABS", 1024, 0xbb760f1d, 0x2734c},
-	{"EGAHEAD.ABS", 1888, 0x58062b03, 0x1bdb0},
-	{"MTEMP.TMP", 848, 0x6517c97d, 0x1c510},
+	{"EGAHEAD.ABS", 1881, 0xe31e1c3b, 0x1bdb0},
+	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1c510},
 	{0}
 };
 
