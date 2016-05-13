@@ -49,6 +49,9 @@ typedef struct
 	int sndSampleRate;
 	bool sndSubSystem;
 	bool oplEmulation;
+#ifndef REFKEEN_RESAMPLER_NONE
+	bool useResampler;
+#endif
 	struct
 	{
 		int actionMappings[BE_ST_CTRL_CFG_BUTMAP_AFTERLAST]; // Buttons/triggers

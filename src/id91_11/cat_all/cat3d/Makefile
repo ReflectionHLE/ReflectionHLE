@@ -1,27 +1,14 @@
 VERDIRNAME=cat3d
-
-DEBUG=0
-BUILDASCPP=0
-BINPREFIX=
-
-ifeq ($(BUILDASCPP), 1)
-	CXX=$(BINPREFIX)g++
-else
-	CXX=$(BINPREFIX)gcc
-endif
-
-STRIPBIN=$(BINPREFIX)strip
-WINDRESBIN=$(BINPREFIX)windres
-SDLCONFIG=sdl2-config
+EXENAME=reflection-cat3d
 SRC=.
+BESRC=../../..
 RSRC=../../../../rsrc
+
+include ../../../Makefile.common
+
 C3DCOMMONSRC=..
 IDSRC=../..
-BESRC=../../..
-OBJPREFIX=obj
-OBJ=$(OBJPREFIX)/$(VERDIRNAME)
 IDOBJ=$(OBJ)/id
-BEOBJ=$(OBJ)/be
 
 OBJECTS=$(OBJ)/c3_act1.o \
         $(OBJ)/c3_debug.o \
@@ -64,35 +51,7 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/dbopl.o \
           $(BEOBJ)/unlzexe.o
 
-INTCXXFLAGS=-I$(SRC) -I$(C3DCOMMONSRC) -I$(IDSRC) -I$(BESRC) -DREFKEEN_VER_CAT3D=1 -DREFKEEN_VER_CATACOMB_ALL=1
-
-EXENAME=reflection-cat3d
-
-ifeq ($(DEBUG),1)
-	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG
-	CXXOPT=
-else
-	CXXOPT=-O2
-endif
-
-INTCXXFLAGS+= $(CXXOPT) `$(SDLCONFIG) --cflags` -Wall -Wno-missing-braces -Wno-switch -Wno-parentheses -Wno-unused-result -Wno-maybe-uninitialized
-#We need -lm for dbopl
-INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
-
-ifeq ($(BUILDASCPP), 0)
-	INTCXXFLAGS+= -std=c99
-endif
-
-RES_PATH=$(OBJ)/$(EXENAME).res
-
-ifeq ($(PLATFORM), WINDOWS)
-	EXE_EXT=.exe
-	OBJECTS+= $(RES_PATH)
-	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
-	INTLDFLAGS+= -lshlwapi #We need this for registry entry retrieval
-endif
-
-EXE_PATH=$(BESRC)/$(EXENAME)$(EXE_EXT)
+INTCXXFLAGS+= -I$(C3DCOMMONSRC) -I$(IDSRC) -DREFKEEN_VER_CAT3D=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
 .PHONY: all game clean veryclean
 
@@ -106,7 +65,7 @@ ifeq ($(DEBUG),0)
 	$(STRIPBIN) $(EXE_PATH)
 endif
 
-$(RES_PATH): $(RSRC)/reflection-kdreams.rc
+$(RES_PATH): $(RSRC)/$(EXENAME).rc
 	$(WINDRESBIN) $< -O coff -o $@
 
 $(BEOBJ)/crc32.o: $(BESRC)/crc32/crc32.c | $(BEOBJ)

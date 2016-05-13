@@ -1,0 +1,65 @@
+# Assumes these are defined: VERDIRNAME, EXENAME, SRC, BESRC.
+
+DEBUG=0
+BUILDASCPP=0
+BINPREFIX=
+
+ifeq ($(BUILDASCPP), 1)
+	CXX=$(BINPREFIX)g++
+else
+	CXX=$(BINPREFIX)gcc
+endif
+
+STRIPBIN=$(BINPREFIX)strip
+WINDRESBIN=$(BINPREFIX)windres
+SDLCONFIG=sdl2-config
+
+OBJPREFIX=obj
+OBJ=$(OBJPREFIX)/$(VERDIRNAME)
+BEOBJ=$(OBJ)/be
+
+RESAMPLER=LIBRESAMPLE
+
+INTCXXFLAGS+= -I$(SRC) -I$(BESRC) -DREFKEEN_RESAMPLER_$(RESAMPLER)
+
+ifeq ($(DEBUG),1)
+	INTCXXFLAGS+= -ggdb -ftrapv -fstack-check -DREFKEEN_CONFIG_DEBUG
+	CXXOPT=
+else
+	CXXOPT=-O2
+endif
+
+INTCXXFLAGS+= $(CXXOPT) `$(SDLCONFIG) --cflags` -Wall -Wno-missing-braces -Wno-switch -Wno-parentheses -Wno-unused-result -Wno-maybe-uninitialized
+#We need -lm for dbopl
+INTLDFLAGS=`$(SDLCONFIG) --libs` -lm
+
+ifeq ($(RESAMPLER), LIBSWRESAMPLE)
+	INTLDFLAGS+= -lswresample
+else ifeq ($(RESAMPLER), LIBAVRESAMPLE)
+	INTLDFLAGS+= -lavresample -lavutil
+else ifeq ($(RESAMPLER), LIBAVCODEC)
+	INTLDFLAGS+= -lavcodec
+else ifeq ($(RESAMPLER), LIBRESAMPLE)
+	INTLDFLAGS+= -lresample
+else ifeq ($(RESAMPLER), LIBSOXR)
+	INTLDFLAGS+= -lsoxr
+else ifeq ($(RESAMPLER), LIBSPEEXDSP)
+	INTLDFLAGS+= -lspeexdsp
+else ifeq ($(RESAMPLER), LIBSAMPLERATE)
+	INTLDFLAGS+= -lsamplerate
+endif
+
+ifeq ($(BUILDASCPP), 0)
+	INTCXXFLAGS+= -std=c99
+endif
+
+RES_PATH=$(OBJ)/$(EXENAME).res
+
+ifeq ($(PLATFORM), WINDOWS)
+	EXE_EXT=.exe
+	OBJECTS+= $(RES_PATH)
+	INTCXXFLAGS+= -mno-ms-bitfields #To make __attribute__((__packed__)) work...
+	INTLDFLAGS+= -lshlwapi #We need this for registry entry retrieval
+endif
+
+EXE_PATH=$(BESRC)/$(EXENAME)$(EXE_EXT)

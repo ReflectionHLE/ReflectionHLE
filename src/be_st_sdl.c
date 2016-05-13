@@ -248,14 +248,15 @@ void BE_ST_HandleExit(int status)
 					BEL_ST_ForceHostDisplayUpdate();
 					break;
 				}
+				break;
 			case SDL_JOYHATMOTION:
-				if (event.jhat.value == SDL_HAT_CENTERED)
-					break; // Ignore
-				// Fall-through
+				if (event.jhat.value != SDL_HAT_CENTERED) // Otherwise ignore
+					keepRunning = false;
+				break;
 			case SDL_KEYDOWN:
-				if (event.key.repeat)
-					break; // Ignore
-				// Fall-through
+				if (!event.key.repeat) // Otherwise ignore
+					keepRunning = false;
+				break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_JOYBUTTONDOWN:
 			case SDL_CONTROLLERBUTTONDOWN:
@@ -487,6 +488,20 @@ static void BEL_ST_ParseSetting_OPLEmulation(const char *keyprefix, const char *
 	}
 }
 
+#ifndef REFKEEN_RESAMPLER_NONE
+static void BEL_ST_ParseSetting_UseResampler(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_refKeenCfg.useResampler = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_refKeenCfg.useResampler = false;
+	}
+}
+#endif
+
 static void BEL_ST_ParseSetting_AlternativeControlScheme(const char *keyprefix, const char *buffer)
 {
 	if (!strcmp(buffer, "true"))
@@ -627,6 +642,9 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"sndsamplerate=", &BEL_ST_ParseSetting_SndSampleRate},
 	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
 	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
+#ifndef REFKEEN_RESAMPLER_NONE
+	{"useresampler=", &BEL_ST_ParseSetting_UseResampler},
+#endif
 	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
 
 	// HACK: Copy-paste... if this is updated, check g_sdlControlSchemeKeyMapCfgKeyPrefixes too!!!
@@ -688,6 +706,9 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.sndSampleRate = 49716; // TODO should be a shared define
 	g_refKeenCfg.sndSubSystem = true;
 	g_refKeenCfg.oplEmulation = true;
+#ifndef REFKEEN_RESAMPLER_NONE
+	g_refKeenCfg.useResampler = true;
+#endif
 	g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
 	g_refKeenCfg.altControlScheme.isEnabled = true;
 
@@ -787,6 +808,9 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
 	fprintf(fp, "sndsubsystem=%s\n", g_refKeenCfg.sndSubSystem ? "true" : "false");
 	fprintf(fp, "oplemulation=%s\n", g_refKeenCfg.oplEmulation ? "true" : "false");
+#ifndef REFKEEN_RESAMPLER_NONE
+	fprintf(fp, "useresampler=%s\n", g_refKeenCfg.useResampler ? "true" : "false");
+#endif
 	fprintf(fp, "altcontrolscheme=%s\n", g_refKeenCfg.altControlScheme.isEnabled ? "true" : "false");
 	// Go through an array of keys
 	for (int keyindex = 0; keyindex < BE_ST_CTRL_CFG_BUTMAP_AFTERLAST; ++keyindex)
@@ -1845,6 +1869,7 @@ void BE_ST_PollEvents(void)
 					BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
 				}
 			}
+			break;
 		}
 
 		case SDL_WINDOWEVENT:

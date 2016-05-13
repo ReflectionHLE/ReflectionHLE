@@ -291,12 +291,16 @@ BEMenu g_beVideoSettingsMenu = {
 
 /*** Sounds settings menu ***/
 
-static const int g_be_soundsSettingsChoices_sndSampleRateVals[] = {8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000, 49716, 96000};
-static const char *g_be_soundsSettingsChoices_sndSampleRate[] = {"8000","11025","12000","16000","22050","32000","44100","48000","49716","96000",NULL};
+static const int g_be_soundsSettingsChoices_sndSampleRateVals[] = {8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000, 49716, 96000, 192000};
+static const char *g_be_soundsSettingsChoices_sndSampleRate[] = {"8000","11025","12000","16000","22050","32000","44100","48000","49716","96000","192000",NULL};
 
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSampleRate, "Sound sample rate\n(in Hz)", g_be_soundsSettingsChoices_sndSampleRate)
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSubSystem, "Enable sound subsystem", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_OPLEmulation, "Enable OPL emulation", g_be_settingsChoices_boolean)
+
+#ifndef REFKEEN_RESAMPLER_NONE
+BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_UseResampler, "Use resampler", g_be_settingsChoices_boolean)
+#endif
 
 BEMenu g_beSoundSettingsMenu = {
 	"Sounds settings",
@@ -306,6 +310,9 @@ BEMenu g_beSoundSettingsMenu = {
 		&g_beSoundSettingsMenuItem_SndSampleRate,
 		&g_beSoundSettingsMenuItem_SndSubSystem,
 		&g_beSoundSettingsMenuItem_OPLEmulation,
+#ifndef REFKEEN_RESAMPLER_NONE
+		&g_beSoundSettingsMenuItem_UseResampler,
+#endif
 		NULL
 	},
 	// Ignore the rest
@@ -567,6 +574,10 @@ void BE_ST_Launcher_Prepare(void)
 	g_beSoundSettingsMenuItem_SndSubSystem.choice = g_refKeenCfg.sndSubSystem;
 	// Set OPLEmulation value
 	g_beSoundSettingsMenuItem_OPLEmulation.choice = g_refKeenCfg.oplEmulation;
+#ifndef REFKEEN_RESAMPLER_NONE
+	// Set UseResampler value
+	g_beSoundSettingsMenuItem_UseResampler.choice = g_refKeenCfg.useResampler;
+#endif
 	// Set ControllerScheme value
 	g_beInputSettingsMenuItem_ControllerScheme.choice = g_refKeenCfg.altControlScheme.isEnabled;
 	// Set Autolock value
@@ -696,6 +707,9 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.sndSampleRate = g_be_soundsSettingsChoices_sndSampleRateVals[g_beSoundSettingsMenuItem_SndSampleRate.choice];
 	g_refKeenCfg.sndSubSystem = g_beSoundSettingsMenuItem_SndSubSystem.choice;
 	g_refKeenCfg.oplEmulation = g_beSoundSettingsMenuItem_OPLEmulation.choice;
+#ifndef REFKEEN_RESAMPLER_NONE
+	g_refKeenCfg.useResampler = g_beSoundSettingsMenuItem_UseResampler.choice;
+#endif
 
 	g_refKeenCfg.altControlScheme.isEnabled = g_beInputSettingsMenuItem_ControllerScheme.choice;
 	g_refKeenCfg.autolockCursor = g_beInputSettingsMenuItem_Autolock.choice;
