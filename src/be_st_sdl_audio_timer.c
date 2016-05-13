@@ -319,29 +319,32 @@ void BE_ST_ShutdownAudio(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
+		if (g_sdlAudioSpec.callback == BEL_ST_Resampling_CallBack)
+		{
 #ifndef REFKEEN_RESAMPLER_NONE
-		if (g_refKeenCfg.useResampler)
-		{
+			if (g_refKeenCfg.useResampler)
+			{
 #if (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
-			swr_free(&g_sdlSwrContext);
+				swr_free(&g_sdlSwrContext);
 #elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-			avresample_free(&g_sdlAvAudioResampleContext);
+				avresample_free(&g_sdlAvAudioResampleContext);
 #elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-			av_resample_close(g_sdlAvResampleContext);
+				av_resample_close(g_sdlAvResampleContext);
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
-			resample_close(g_sdlResampleHandle);
+				resample_close(g_sdlResampleHandle);
 #elif (defined REFKEEN_RESAMPLER_LIBSOXR)
-			soxr_delete(g_sdlSoxr);
+				soxr_delete(g_sdlSoxr);
 #elif (defined REFKEEN_RESAMPLER_LIBSPEEXDSP)
-			speex_resampler_destroy(g_sdlSpeexResamplerState);
+				speex_resampler_destroy(g_sdlSpeexResamplerState);
 #elif (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
-			src_delete(g_sdlSrcResampler);
+				src_delete(g_sdlSrcResampler);
 #endif
-		}
-		else
+			}
+			else
 #endif // REFKEEN_RESAMPLER_NONE
-		{
-			free(g_sdlSampleRateConvTable);
+			{
+				free(g_sdlSampleRateConvTable);
+			}
 		}
 
 		SDL_DestroyMutex(g_sdlCallbackMutex);
