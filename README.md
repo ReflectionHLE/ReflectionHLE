@@ -488,18 +488,29 @@ Note: The path passed to -datadir or -cfgdir is assumed to exist.
 Building the ports from the source codes
 ----------------------------------------
 
-- Development files for SDL 2.0.2+ are required, as well as GNU make and the
-GNU Compiler Collection's C compiler (i.e. gcc). In practice, at the moment
-only SDL 2.0 dev files, "make" and "gcc" are probably required. If nothing goes
-wrong, a single "make" command should build various executables, each of them
-supporting a different game. "make clean" removes any generated object or
-executable file, assuming the *exact* same arguments have been passed
-to "make" as before, with the exception of the "clean" argument.
-- It is possible to build just the Keen Dreams executable by typing "make"
-while in the "src/kdreams" subtree.
+- Development files for SDL 2.0.2+ are required, as well as GNU make, the
+GNU Compiler Collection's C compiler (i.e. gcc), and development files for one
+of select supported libraries used for resampling (list is given below).
+In practice, at the moment only SDL 2.0 dev files, "make" and "gcc" are
+(probably) required. If nothing goes wrong, and you don't mind giving up
+resampling capabilities, then a single "make RESAMPLER=NONE" command should
+build various executables, each of them supporting a different game.
+"make clean" removes any generated object or executable file, assuming
+the *exact* same arguments have been passed to "make" as before,
+with the exceptions of the "clean" and "RESAMPLER=NONE" arguments.
+- One of seven resampling libraries can be selected, by setting the appropriate
+RESAMPLER variable for "make". As in the case of SDL 2.0, you'll need the
+appropriate development files.
+Currently supported libraries for resampling: LIBSWRESAMPLE, LIBAVRESAMPLE,
+LIBAVCODEC (its resampling API was deprecated for LIBAVRESAMPLE), LIBRESAMPLE,
+LIBSOXR, LIBSPEEXDSP and LIBSAMPLERATE. As stated above, NONE is also an
+option if you don't want to add any dependency on a resampling library.
+- Currently RESAMPLER=LIBRESAMPLE is the default choice.
+- It is possible to build just the Keen Dreams executable, by typing "make"
+while in the "src/kdreams" subtree (you can still pass e.g., RESAMPLER=NONE).
 - Similarly, to build just Catacomb 3-D, you can type "make" while in the
 "src/id91_11/cat_all/cat3d" subtree.
-For The Catacomb Abyss it is "src/id91_11/cat_all/catabyss", and there are
+For The Catacomb Abyss, it is "src/id91_11/cat_all/catabyss", and there are
 two more such subdirectories for The Catacomb Armageddon and Apocalypse.
 - MinGW can be used as well (tested on Linux). If you try to cross-compile
 then you may wish to set PLATFORM=WINDOWS and BINPREFIX accordingly.
