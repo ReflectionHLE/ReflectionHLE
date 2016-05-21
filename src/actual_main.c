@@ -43,8 +43,10 @@ static void show_command_line_help()
 
 	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " - Command line arguments ***");
 	BE_ST_puts("");
+#ifdef REFKEEN_ENABLE_LAUNCHER
 	BE_ST_puts("Launcher is started unless any command line argument is passed.");
 	BE_ST_puts("");
+#endif
 	BE_ST_puts("List of possible command line arguments:");
 	BE_ST_puts("-gamever <VER>: Select game version supported by this executable.");
 #ifdef REFKEEN_VER_CATADVENTURES
@@ -53,8 +55,10 @@ static void show_command_line_help()
 	BE_ST_puts("-passorigargs <...>: Pass all following arguments to the original game port.");
 	BE_ST_puts("-datadir <...>: Specify an alternative path for game data (separated by ver.).");
 	BE_ST_puts("-cfgdir <...>: Specify an alternative path for new cfg files (not old CONFIG).");
+#ifdef REFKEEN_ENABLE_LAUNCHER
 	BE_ST_puts("-fulllauncher: Show a fullscreen launcher window.");
 	BE_ST_puts("-softlauncher: Show a software-rendered launcher window (not fullscreen).");
+#endif
 	BE_ST_puts("");
 	BE_ST_puts("Note: The path passed to -datadir or -cfgdir is assumed to exist.");
 	BE_ST_puts("");
@@ -72,7 +76,9 @@ int main(int argc, char **argv)
 	bool skipIntro = false;
 #endif
 	int selectedGameVerVal = BE_GAMEVER_LAST;
+#ifdef REFKEEN_ENABLE_LAUNCHER
 	bool startLauncher = (argc == 1);
+#endif
 	while ((argc >= 2) && !showHelp)
 	{
 		if (!(*argv[1]))
@@ -129,6 +135,7 @@ int main(int argc, char **argv)
 			argv += 2;
 			argc -= 2;
 		}
+#ifdef REFKEEN_ENABLE_LAUNCHER
 		else if (!BE_Cross_strcasecmp(1+argv[1], "fulllauncher"))
 		{
 			g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_FULL;
@@ -143,6 +150,7 @@ int main(int argc, char **argv)
 			++argv;
 			--argc;
 		}
+#endif
 		else
 			showHelp = true;
 	}
@@ -154,11 +162,13 @@ int main(int argc, char **argv)
 	else
 	{
 		BE_Cross_PrepareGameInstallations();
+#ifdef REFKEEN_ENABLE_LAUNCHER
 		if (startLauncher)
 		{
 			BE_Launcher_Start();
 		}
 		else
+#endif
 		{
 #ifdef REFKEEN_VER_CATADVENTURES
 			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro);

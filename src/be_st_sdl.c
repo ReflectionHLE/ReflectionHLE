@@ -77,7 +77,7 @@ static struct {
 const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 
 static BE_ST_ControllerMapping g_sdlControllerMappingDefault;
-// HACK - These "mapping" is used for identification of on-screen keyboards (using pointers comparisons)
+// HACK - These "mappings" are used for identification of on-screen keyboards (using pointers comparisons)
 BE_ST_ControllerMapping g_beStControllerMappingTextInput;
 BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 
@@ -333,6 +333,7 @@ static void BEL_ST_ParseSetting_WindowRes(const char *keyprefix, const char *buf
 	sscanf(buffer, "%dx%d", &g_refKeenCfg.winWidth, &g_refKeenCfg.winHeight);
 }
 
+#ifdef REFKEEN_ENABLE_LAUNCHER
 static void BEL_ST_ParseSetting_LauncherWindowRes(const char *keyprefix, const char *buffer)
 {
 	sscanf(buffer, "%dx%d", &g_refKeenCfg.launcherWinWidth, &g_refKeenCfg.launcherWinHeight);
@@ -358,6 +359,7 @@ static void BEL_ST_ParseSetting_LauncherExeArgs(const char *keyprefix, const cha
 {
 	BE_Cross_safeandfastcstringcopy(g_refKeenCfg.launcherExeArgs, g_refKeenCfg.launcherExeArgs+sizeof(g_refKeenCfg.launcherExeArgs), buffer);
 }
+#endif
 
 static void BEL_ST_ParseSetting_LastSelectedGameVer(const char *keyprefix, const char *buffer)
 {
@@ -627,9 +629,11 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"fullscreen=", &BEL_ST_ParseSetting_FullScreen},
 	{"fullres=", &BEL_ST_ParseSetting_FullRes},
 	{"windowres=", &BEL_ST_ParseSetting_WindowRes},
+#ifdef REFKEEN_ENABLE_LAUNCHER
 	{"launcherwindowres=", &BEL_ST_ParseSetting_LauncherWindowRes},
 	{"launcherwindowtype=", &BEL_ST_ParseSetting_LauncherWindowType},
 	{"launcherexeargs=", &BEL_ST_ParseSetting_LauncherExeArgs},
+#endif
 	{"lastselectedgamever=", &BEL_ST_ParseSetting_LastSelectedGameVer},
 	{"displaynum=", &BEL_ST_ParseSetting_DisplayNum},
 	{"sdlrenderer=", &BEL_ST_ParseSetting_SDLRendererDriver},
@@ -691,9 +695,12 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.fullHeight = 0;
 	g_refKeenCfg.winWidth = 0;
 	g_refKeenCfg.winHeight = 0;
+#ifdef REFKEEN_ENABLE_LAUNCHER
 	g_refKeenCfg.launcherWinWidth = 0;
 	g_refKeenCfg.launcherWinHeight = 0;
 	g_refKeenCfg.launcherExeArgs[0] = '\0';
+	g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
+#endif
 	g_refKeenCfg.lastSelectedGameVer = BE_GAMEVER_LAST;
 	g_refKeenCfg.displayNum = 0;
 	g_refKeenCfg.sdlRendererDriver = -1;
@@ -709,7 +716,6 @@ static void BEL_ST_ParseConfig(void)
 #ifndef REFKEEN_RESAMPLER_NONE
 	g_refKeenCfg.useResampler = true;
 #endif
-	g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
 	g_refKeenCfg.altControlScheme.isEnabled = true;
 
 #ifdef REFKEEN_VER_KDREAMS
@@ -784,9 +790,11 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "fullscreen=%s\n", g_refKeenCfg.isFullscreen ? "true" : "false");
 	fprintf(fp, "fullres=%dx%d\n", g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight);
 	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
+#ifdef REFKEEN_ENABLE_LAUNCHER
 	fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
 	fprintf(fp, "launcherwindowtype=%s\n", g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT ? "default" : (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL ? "full" : "software"));
 	fprintf(fp, "launcherexeargs=%s\n", g_refKeenCfg.launcherExeArgs);
+#endif
 	fprintf(fp, "lastselectedgamever=%s\n", (g_refKeenCfg.lastSelectedGameVer != BE_GAMEVER_LAST) ? refkeen_gamever_strs[g_refKeenCfg.lastSelectedGameVer] : "");
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
 	if (g_refKeenCfg.sdlRendererDriver < 0)

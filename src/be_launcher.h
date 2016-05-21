@@ -20,6 +20,8 @@
 #ifndef	_BE_LAUNCHER_
 #define _BE_LAUNCHER_
 
+#ifdef REFKEEN_ENABLE_LAUNCHER
+
 #define BE_LAUNCHER_PIX_WIDTH 320
 #define BE_LAUNCHER_PIX_HEIGHT 240
 // Some upper bound for menu item label buffer length
@@ -75,6 +77,7 @@ void BE_Launcher_HandleInput_ButtonPageUp(void);
 void BE_Launcher_HandleInput_ButtonPageDown(void);
 void BE_Launcher_HandleInput_ButtonActivate(void);
 void BE_Launcher_HandleInput_ButtonBack(void);
+void BE_Launcher_HandleInput_ButtonSearch(void);
 void BE_Launcher_HandleInput_ASCIIChar(char ch);
 
 void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinms);
@@ -95,5 +98,7 @@ void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP);
 
 void BE_Launcher_Start(void);
 void BE_Launcher_ClearDirSelectionMenu(void);
+
+#endif // REFKEEN_ENABLE_LAUNCHER
 
 #endif // _BE_LAUNCHER_

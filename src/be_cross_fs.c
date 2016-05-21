@@ -1039,7 +1039,7 @@ static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteR
 	return _tfopen(fullpath, _T("wb"));
 }
 
-// Returns 0 if not found, 1 if found by data mismatch detected, or 2 otherwise
+// Returns 0 if not found, 1 if found with some data mismatch, or 2 otherwise
 //
 // OPTIONAL ARGUMENT (used internally): outfullpath, if not NULL, should point to an out buffer which is BE_CROSS_PATH_LEN_BOUND chars long.
 static int BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const TCHAR *searchdir, TCHAR *outfullpath)

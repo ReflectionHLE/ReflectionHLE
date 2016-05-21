@@ -17,6 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifdef REFKEEN_ENABLE_LAUNCHER
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -34,6 +36,8 @@
 #define BE_MENU_FIRST_ITEM_PIX_YPOS (1+BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT)
 
 #define BE_MENU_BACKBUTTON_PIX_WIDTH BE_MENU_FIRST_ITEM_PIX_YPOS
+
+#define BE_MENU_SEARCHBUTTON_PIX_WIDTH BE_MENU_FIRST_ITEM_PIX_YPOS
 
 #define BE_MENU_STATIC_TEXT_MAX_ROW_STRLEN ((BE_LAUNCHER_PIX_WIDTH-2*(BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING+1))/BE_MENU_CHAR_WIDTH)
 
@@ -246,6 +250,13 @@ static void BEL_Launcher_DrawBackButtonLabel(bool isPressed)
 	BE_ST_Launcher_MarkGfxCache();
 }
 
+static void BEL_Launcher_DrawSearchButtonLabel(bool isPressed)
+{
+	BEL_Launcher_DrawString("\xF9\xF9\xF9", BE_LAUNCHER_PIX_WIDTH-(BE_MENU_SEARCHBUTTON_PIX_WIDTH+BE_MENU_CHAR_WIDTH*strlen("\xF9\xF9\xF9"))/2, 1 + (BE_MENU_FIRST_ITEM_PIX_YPOS - BE_MENU_CHAR_HEIGHT - 1)/2, isPressed ? 15 : 7, 0, BE_LAUNCHER_PIX_HEIGHT);
+
+	BE_ST_Launcher_MarkGfxCache();
+}
+
 static void BEL_Launcher_DrawMenuTitleItem(BEMenu *menu)
 {
 	BEL_Launcher_DrawTopRect(0, 0, BE_LAUNCHER_PIX_WIDTH, BE_MENU_FIRST_ITEM_PIX_YPOS, 2, 0, 0, BE_LAUNCHER_PIX_HEIGHT);
@@ -253,6 +264,9 @@ static void BEL_Launcher_DrawMenuTitleItem(BEMenu *menu)
 	// Back button
 	BEL_Launcher_DrawTopRect(0, 0, BE_MENU_BACKBUTTON_PIX_WIDTH, BE_MENU_FIRST_ITEM_PIX_YPOS, 2, 0, 0, BE_LAUNCHER_PIX_HEIGHT);
 	BEL_Launcher_DrawBackButtonLabel(false);
+	// Search button
+	BEL_Launcher_DrawTopRect(BE_LAUNCHER_PIX_WIDTH-BE_MENU_SEARCHBUTTON_PIX_WIDTH, 0, BE_MENU_SEARCHBUTTON_PIX_WIDTH, BE_MENU_FIRST_ITEM_PIX_YPOS, 2, 0, 0, BE_LAUNCHER_PIX_HEIGHT);
+	BEL_Launcher_DrawSearchButtonLabel(false);
 
 	BE_ST_Launcher_MarkGfxCache();
 }
@@ -334,6 +348,9 @@ static void BEL_Launcher_SetCurrentMenu(BEMenu *menu)
 	memset(g_be_launcher_screenPtr, 0, BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT); // Clear screen
 	BEL_Launcher_DrawMenuTitleItem(menu);
 	BEL_Launcher_DrawMenuItems(menu);
+
+	void BEL_ST_Launcher_TurnTextSearchOff(void);
+	BEL_ST_Launcher_TurnTextSearchOff();
 }
 
 
@@ -533,6 +550,11 @@ void BE_Launcher_HandleInput_ButtonBack(void)
 		BEL_Launcher_SetCurrentMenu(g_be_launcher_currMenu->backMenu);
 }
 
+void BE_Launcher_HandleInput_ButtonSearch(void)
+{
+	void BEL_ST_Launcher_ToggleTextSearch(void);
+	BEL_ST_Launcher_ToggleTextSearch();
+}
 
 void BE_Launcher_HandleInput_ASCIIChar(char ch)
 {
@@ -578,6 +600,7 @@ void BE_Launcher_HandleInput_ASCIIChar(char ch)
 
 static bool g_be_launcher_pointer_in_use = false;
 static bool g_be_launcher_back_button_pressed = false;
+static bool g_be_launcher_search_button_pressed = false;
 static int g_be_launcher_startpointerx;
 static int g_be_launcher_startpointery;
 static bool g_be_launcher_pointermotionactuallystarted;
@@ -596,6 +619,8 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinm
 	g_be_launcher_pointer_in_use = true;
 	g_be_launcher_back_button_pressed = (xpos < BE_MENU_BACKBUTTON_PIX_WIDTH) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS);
 	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
+	g_be_launcher_search_button_pressed = (xpos >= BE_LAUNCHER_PIX_WIDTH-BE_MENU_SEARCHBUTTON_PIX_WIDTH) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS);
+	BEL_Launcher_DrawSearchButtonLabel(g_be_launcher_search_button_pressed);
 	g_be_launcher_startpointerx = xpos;
 	g_be_launcher_startpointery = ypos;
 	g_be_launcher_pointermotionactuallystarted = false;
@@ -604,7 +629,7 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinm
 	g_be_launcher_lastpointerymeasurementticksinms = ticksinms;
 	g_be_launcher_pointerymotionrateper100ms = 0;
 
-	if (!g_be_launcher_back_button_pressed)
+	if (!g_be_launcher_back_button_pressed && !g_be_launcher_search_button_pressed && (ypos >= BE_MENU_FIRST_ITEM_PIX_YPOS))
 	{
 		ypos += g_be_launcher_currMenu->currPixYScroll;
 		for (BEMenuItem **menuItemPP = g_be_launcher_currMenu->menuItems; *menuItemPP; ++menuItemPP)
@@ -631,11 +656,20 @@ void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos, uint32_t ticksin
 
 	g_be_launcher_pointer_in_use = false;
 	//g_be_launcher_lastpointery = ypos;
+
 	if (g_be_launcher_back_button_pressed)
 	{
 		g_be_launcher_back_button_pressed = false;
 		//BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
 		BE_Launcher_HandleInput_ButtonBack();
+		return;
+	}
+
+	if (g_be_launcher_search_button_pressed)
+	{
+		g_be_launcher_search_button_pressed = false;
+		BEL_Launcher_DrawSearchButtonLabel(g_be_launcher_search_button_pressed);
+		BE_Launcher_HandleInput_ButtonSearch();
 		return;
 	}
 
@@ -684,6 +718,9 @@ void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinm
 
 	g_be_launcher_back_button_pressed = false;
 	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
+
+	g_be_launcher_search_button_pressed = false;
+	BEL_Launcher_DrawSearchButtonLabel(g_be_launcher_search_button_pressed);
 
 	g_be_launcher_selectedMenuItemPtr = NULL;
 	g_be_launcher_vscroll_currrateper100ms = 0;
@@ -970,3 +1007,5 @@ void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP)
 	BE_ST_Launcher_WaitForControllerButton(menuItem);
 	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 }
+
+#endif // REFKEEN_ENABLE_LAUNCHER

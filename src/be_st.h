@@ -156,9 +156,10 @@ enum {
 	BE_ST_CTRL_CFG_BUTMAP_AFTERLAST,
 };
 
+#ifdef REFKEEN_ENABLE_LAUNCHER
 // Used by launcher for controller button selection
 void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem);
-
+#endif
 
 void BE_ST_PollEvents(void);
 

@@ -116,9 +116,10 @@ static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 #define ALTCONTROLLER_EDGE_PIX_DIST 2
 #define ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO 5
 
-// Measured in keys
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH 22
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT 12
+
+// Measured in keys
 
 #define ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH 18
 #define ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT 3
@@ -536,7 +537,7 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
-static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isMarked, bool isPressed)
+/*static*/ void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isMarked, bool isPressed)
 {
 #if 0
 	// This can happen for space that should be skipped
@@ -581,7 +582,7 @@ static void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char 
 	{
 		for (int currCol = 0; currCol < ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH; ++currCol, ++currPtr)
 		{
-		*currPtr &= 0xDFFFFFFF; // BGRA
+			*currPtr &= 0xDFFFFFFF; // BGRA
 		}
 	}
 }
