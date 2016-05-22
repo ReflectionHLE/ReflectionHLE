@@ -1166,19 +1166,25 @@ static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(int x, int y)
 
 static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(int x, int y)
 {
+	if ((x < g_sdlControllerLauncherTextSearchRect.x) || (x >= g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
+	    || (y < g_sdlControllerLauncherTextSearchRect.y) || (y >= g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
+		BEL_ST_Launcher_TurnTextSearchOff();
+
 	g_sdlKeyboardUIPointerUsed = true;
 	BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(x, y);
 }
 
-static int BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(int x, int y)
+static void BE_ST_Launcher_HandleKeyPressEvent(int scancode, bool isShifted);
+
+static void BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(int x, int y)
 {
 	if (!g_sdlKeyboardUIPointerUsed)
-		return 0;
+		return;
 
 	g_sdlKeyboardUIPointerUsed = false;
 	if ((x < g_sdlControllerLauncherTextSearchRect.x) || (x >= g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
 	    || (y < g_sdlControllerLauncherTextSearchRect.y) || (y >= g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
-		return 0;
+		return;
 
 	//BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 
@@ -1188,11 +1194,12 @@ static int BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(int x, int y)
 	// Hack for covering the special case of the shift key
 	g_sdlKeyboardUIIsKeyPressed = false;
 	bool toggle = true;
-	int result = BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(&toggle);
+	int scanCode = BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(&toggle);
 	toggle = false;
 	BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(&toggle);
 
-	return result;
+	if (scanCode)
+		BE_ST_Launcher_HandleKeyPressEvent(scanCode, g_sdlKeyboardUIIsShifted);
 }
 
 
@@ -1398,11 +1405,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 			case SDL_MOUSEBUTTONUP:
 				if (g_sdlLauncherTextSearchUIIsShown)
 				{
-					int scanCode = BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(event.button.x, event.button.y);
-					if (scanCode)
-						BE_ST_Launcher_HandleKeyPressEvent(scanCode, g_sdlKeyboardUIIsShifted);
-					else
-						BEL_ST_Launcher_TurnTextSearchOff();
+					BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(event.button.x, event.button.y);
 				}
 				else if (event.button.button == SDL_BUTTON_LEFT)
 				{

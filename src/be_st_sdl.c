@@ -1575,9 +1575,9 @@ static void BEL_ST_AltControlScheme_HandleDebugKeysEvent(int but, bool isPressed
 		break;
 	case SDL_CONTROLLER_BUTTON_B:
 	case SDL_CONTROLLER_BUTTON_BACK:
-		dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
-		g_sdlOnScreenKeyboardManualExitScanCode = dosKeyEvent.dosScanCode; // Don't forget to "release" key e.g., if changing controller scheme!!
-		break;
+		if (g_sdlControllerMappingActualCurr->prevMapping && isPressed)
+			BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
+		return;
 	default:
 	{
 		// Select or deselect key from UI, IF actual button is pressed.
@@ -1601,10 +1601,10 @@ void BE_ST_PollEvents(void)
 	{
 		void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y);
 		void BEL_ST_CheckMovedPointerInTextInputUI(int x, int y);
-		int BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y);
+		void BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y);
 		void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y);
 		void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y);
-		int BEL_ST_CheckReleasedPointerInDebugKeysUI(int x, int y, bool *pToggle);
+		void BEL_ST_CheckReleasedPointerInDebugKeysUI(int x, int y);
 		void BEL_ST_CheckPressedPointerInControllerUI(int x, int y);
 		void BEL_ST_CheckMovedPointerInControllerUI(int x, int y);
 		void BEL_ST_CheckReleasedPointerInControllerUI(void);
@@ -1665,25 +1665,12 @@ void BE_ST_PollEvents(void)
 			{
 				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 				{
-					emulatedDOSKeyEvent dosKeyEvent;
-					dosKeyEvent.isSpecial = false;
-					dosKeyEvent.dosScanCode = BEL_ST_CheckReleasedPointerInTextInputUI(event.button.x, event.button.y);
-					if (dosKeyEvent.dosScanCode)
-					{
-						BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
-						// FIXME: A delay may be required here in certain cases, but this works for now...
-						BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
-					}
+					BEL_ST_CheckReleasedPointerInTextInputUI(event.button.x, event.button.y);
 					break;
 				}
 				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
 				{
-					emulatedDOSKeyEvent dosKeyEvent;
-					dosKeyEvent.isSpecial = false;
-					bool isPressed;
-					dosKeyEvent.dosScanCode = BEL_ST_CheckReleasedPointerInDebugKeysUI(event.button.x, event.button.y, &isPressed);
-					if (dosKeyEvent.dosScanCode)
-						BEL_ST_HandleEmuKeyboardEvent(isPressed, false, dosKeyEvent);
+					BEL_ST_CheckReleasedPointerInDebugKeysUI(event.button.x, event.button.y);
 					break;
 				}
 				if (g_sdlControllerMappingActualCurr->showUi)

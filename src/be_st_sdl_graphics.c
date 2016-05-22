@@ -912,21 +912,38 @@ void BEL_ST_CheckMovedPointerInTextInputUI(int x, int y)
 
 void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y)
 {
+	if ((x < g_sdlControllerTextInputRect.x) || (x >= g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
+	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h))
+	{
+		bool toggle = false;
+		BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+		// HACK
+		emulatedDOSKeyEvent dosKeyEvent;
+		dosKeyEvent.isSpecial = false;
+		dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
+		BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
+		BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
+		return;
+	}
+
 	g_sdlKeyboardUIPointerUsed = true;
 	BEL_ST_CheckMovedPointerInTextInputUI(x, y);
 }
 
-int BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y)
+void BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y)
 {
 	if (!g_sdlKeyboardUIPointerUsed)
-		return 0;
+		return;
 
 	g_sdlKeyboardUIPointerUsed = false;
 	if ((x < g_sdlControllerTextInputRect.x) || (x >= g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
 	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h))
-		return 0;
+		return;
 
 	//BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+	emulatedDOSKeyEvent dosKeyEvent;
+	dosKeyEvent.isSpecial = false;
 
 	// Normalize coordinates to keys
 	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerTextInputRect.x)*ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerTextInputRect.w;
@@ -934,11 +951,14 @@ int BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y)
 	// Hack for covering the special case of the shift key
 	g_sdlTextInputIsKeyPressed = false;
 	bool toggle = true;
-	int result = BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+	dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+	if (dosKeyEvent.dosScanCode)
+		BEL_ST_HandleEmuKeyboardEvent(toggle, false, dosKeyEvent);
+	// FIXME: A delay may be required here in certain cases, but this works for now...
 	toggle = false;
-	BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
-
-	return result;
+	dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+	if (dosKeyEvent.dosScanCode)
+		BEL_ST_HandleEmuKeyboardEvent(toggle, false, dosKeyEvent);
 }
 
 
@@ -962,29 +982,45 @@ void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y)
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
+extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
+void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping);
+
 void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y)
 {
+	if ((x < g_sdlControllerDebugKeysRect.x) || (x >= g_sdlControllerDebugKeysRect.x+g_sdlControllerDebugKeysRect.w)
+	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h))
+	{
+		if (g_sdlControllerMappingActualCurr->prevMapping)
+			BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
+	}
+
 	g_sdlKeyboardUIPointerUsed = true;
 	BEL_ST_CheckMovedPointerInDebugKeysUI(x, y);
 }
 
-int BEL_ST_CheckReleasedPointerInDebugKeysUI(int x, int y, bool *pToggle)
+void BEL_ST_CheckReleasedPointerInDebugKeysUI(int x, int y)
 {
 	if (!g_sdlKeyboardUIPointerUsed)
-		return 0;
+		return;
 
 	g_sdlKeyboardUIPointerUsed = false;
 	if ((x < g_sdlControllerDebugKeysRect.x) || (x >= g_sdlControllerDebugKeysRect.x+g_sdlControllerDebugKeysRect.w)
 	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h))
-		return 0;
+		return;
 
 	//BEL_ST_ToggleDebugKeysKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
+
+	emulatedDOSKeyEvent dosKeyEvent;
+	dosKeyEvent.isSpecial = false;
 
 	// Normalize coordinates to keys
 	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerDebugKeysRect.x)*ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH/g_sdlControllerDebugKeysRect.w;
 	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerDebugKeysRect.y)*ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT/g_sdlControllerDebugKeysRect.h;
 
-	return BEL_ST_ToggleKeyPressInDebugKeysUI(pToggle);
+	bool toggle;
+	dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInDebugKeysUI(&toggle);
+	if (dosKeyEvent.dosScanCode)
+		BEL_ST_HandleEmuKeyboardEvent(toggle, false, dosKeyEvent);
 }
 
 // Returns matching scanCode if found (possibly 0 if not set), -1 if not
@@ -1037,9 +1073,6 @@ static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
 	}
 	return -1;
 }
-
-extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
-void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping);
 
 void BEL_ST_CheckPressedPointerInControllerUI(int x, int y)
 {

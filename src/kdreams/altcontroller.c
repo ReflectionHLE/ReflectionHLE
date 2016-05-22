@@ -236,6 +236,9 @@ void RefKeen_PrepareAltControllerScheme(void)
 	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
 	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
 
+	// HACK (hide debug keys by pressing outside keyboard with pointer)
+	g_beStControllerMappingDebugKeys.prevMapping = &g_ingame_altcontrol_mapping_gameplay;
+
 	if (g_refKeenCfg.altControlScheme.useDpad)
 	{
 		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_UP];
