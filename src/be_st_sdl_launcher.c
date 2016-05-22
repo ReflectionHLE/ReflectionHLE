@@ -1396,7 +1396,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				{
 					BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(event.button.x, event.button.y);
 				}
-				else if (event.button.button == SDL_BUTTON_LEFT)
+				else
 				{
 					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
 					BE_Launcher_HandleInput_PointerSelect(event.button.x, event.button.y, ticksBeforePoll);
@@ -1407,7 +1407,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				{
 					BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(event.button.x, event.button.y);
 				}
-				else if (event.button.button == SDL_BUTTON_LEFT)
+				else
 				{
 					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
 					BE_Launcher_HandleInput_PointerRelease(event.button.x, event.button.y, ticksBeforePoll);
