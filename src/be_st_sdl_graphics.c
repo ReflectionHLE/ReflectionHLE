@@ -121,8 +121,8 @@ static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 
 
 // Measured in keys
-#define ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH 18
-#define ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT 3
+#define ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH 14
+#define ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT 4
 
 #define ALTCONTROLLER_TEXTINPUT_PIX_WIDTH (ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
 #define ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT (ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT)
@@ -317,7 +317,7 @@ static const char *g_sdlDOSScanCodeTextInputNonShiftedStrs[] = {
 	"\x1E", "\\", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", NULL,
 	NULL, NULL, "[_]", NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-	NULL, "\x18", NULL, NULL, "\x1B", NULL, "\x1A", "+", NULL, "\x19", NULL,
+	"\x1B\x1B", "\x18", NULL, NULL, "\x1B", NULL, "\x1A", "+", "\x1A\x1A", "\x19", NULL,
 	NULL, "Del",
 };
 
@@ -330,7 +330,7 @@ static const char *g_sdlDOSScanCodeTextInputShiftedStrs[] = {
 	"\x1E", "|", "Z", "X", "C", "V", "B", "N", "M", "<", ">", "?", NULL,
 	NULL, NULL, "[_]", NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-	NULL, "\x18", NULL, NULL, "\x1B", NULL, "\x1A", "+", NULL, "\x19", NULL,
+	"\x1B\x1B", "\x18", NULL, NULL, "\x1B", NULL, "\x1A", "+", "\x1A\x1A", "\x19", NULL,
 	NULL, "Del",
 };
 
@@ -367,11 +367,13 @@ static const char **g_sdlDOSScanCodeTextInputStrs_Ptr;
 // Text input keyboard layout definition (probably better we don't use "special" keys e.g., with scancode 0xE0 sent, even though there shouldn't be a difference)
 
 static const BE_ST_ScanCode_T g_sdlDOSScanCodeTextInputLayout[ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT][ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH] = {
-	{BE_ST_SC_KP_4/*LEFT*/, BE_ST_SC_Q, BE_ST_SC_W, BE_ST_SC_E, BE_ST_SC_R, BE_ST_SC_T, BE_ST_SC_Y, BE_ST_SC_U, BE_ST_SC_I, BE_ST_SC_O, BE_ST_SC_P, BE_ST_SC_LBRACKET, BE_ST_SC_RBRACKET, BE_ST_SC_7, BE_ST_SC_8, BE_ST_SC_9, BE_ST_SC_0, BE_ST_SC_MINUS},
+	{BE_ST_SC_GRAVE, BE_ST_SC_1, BE_ST_SC_2, BE_ST_SC_3, BE_ST_SC_4, BE_ST_SC_5, BE_ST_SC_6, BE_ST_SC_7, BE_ST_SC_8, BE_ST_SC_9, BE_ST_SC_0, BE_ST_SC_MINUS, BE_ST_SC_EQUALS, BE_ST_SC_BSPACE},
 
-	{BE_ST_SC_KP_6/*RIGHT*/, BE_ST_SC_A, BE_ST_SC_S, BE_ST_SC_D, BE_ST_SC_F, BE_ST_SC_G, BE_ST_SC_H, BE_ST_SC_J, BE_ST_SC_K, BE_ST_SC_L, BE_ST_SC_SEMICOLON, BE_ST_SC_QUOTE, BE_ST_SC_BACKSLASH, BE_ST_SC_4, BE_ST_SC_5, BE_ST_SC_6, BE_ST_SC_SPACE, BE_ST_SC_EQUALS},
+	{BE_ST_SC_KP_4/*LEFT*/, BE_ST_SC_Q, BE_ST_SC_W, BE_ST_SC_E, BE_ST_SC_R, BE_ST_SC_T, BE_ST_SC_Y, BE_ST_SC_U, BE_ST_SC_I, BE_ST_SC_O, BE_ST_SC_P, BE_ST_SC_LBRACKET, BE_ST_SC_RBRACKET, BE_ST_SC_HOME},
 
-	{BE_ST_SC_LSHIFT, BE_ST_SC_Z, BE_ST_SC_X, BE_ST_SC_C, BE_ST_SC_V, BE_ST_SC_B, BE_ST_SC_N, BE_ST_SC_M, BE_ST_SC_COMMA, BE_ST_SC_PERIOD, BE_ST_SC_SLASH, BE_ST_SC_GRAVE, BE_ST_SC_ENTER, BE_ST_SC_1, BE_ST_SC_2, BE_ST_SC_3, BE_ST_SC_KP_PERIOD/*DEL*/, BE_ST_SC_BSPACE},
+	{BE_ST_SC_KP_6/*RIGHT*/, BE_ST_SC_A, BE_ST_SC_S, BE_ST_SC_D, BE_ST_SC_F, BE_ST_SC_G, BE_ST_SC_H, BE_ST_SC_J, BE_ST_SC_K, BE_ST_SC_L, BE_ST_SC_SEMICOLON, BE_ST_SC_QUOTE, BE_ST_SC_BACKSLASH, BE_ST_SC_END},
+
+	{BE_ST_SC_LSHIFT, BE_ST_SC_Z, BE_ST_SC_X, BE_ST_SC_C, BE_ST_SC_V, BE_ST_SC_B, BE_ST_SC_N, BE_ST_SC_M, BE_ST_SC_COMMA, BE_ST_SC_PERIOD, BE_ST_SC_SLASH, BE_ST_SC_SPACE, BE_ST_SC_KP_PERIOD/*DEL*/, BE_ST_SC_ENTER},
 };
 
 // Debug keys keyboard layout definition (again not using "special" keys, but the Pause key, for which 6 scancodes are sent on press only, is here)
