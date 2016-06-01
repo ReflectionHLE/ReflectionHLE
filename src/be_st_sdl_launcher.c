@@ -1677,10 +1677,66 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 }
 
 
+static uint32_t g_be_sdlLastRefreshTicks = 0;
+
+static void BEL_ST_Launcher_UpdateHostDisplay(void)
+{
+	if (g_sdlLauncherGfxCacheMarked)
+	{
+		SDL_Delay(1);
+		g_sdlLauncherGfxCacheMarked = false;
+		void *pixels;
+		int pitch;
+		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
+		uint32_t *currPixPtr = (uint32_t *)pixels;
+		uint8_t *currPalPixPtr = g_sdlLauncherGfxCache;
+		for (int pixnum = 0; pixnum < BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
+		{
+			*currPixPtr = g_sdlEGABGRAScreenColors[*currPalPixPtr];
+		}
+
+		SDL_UnlockTexture(g_sdlTexture);
+		SDL_RenderClear(g_sdlRenderer);
+		if (g_sdlTargetTexture)
+		{
+			SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);
+			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
+			SDL_SetRenderTarget(g_sdlRenderer, NULL);
+			SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+		}
+		else
+		{
+			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+		}
+		BEL_ST_Launcher_FinishHostDisplayUpdate();
+		g_be_sdlLastRefreshTicks = SDL_GetTicks();
+	}
+	else
+	{
+		// Refresh graphics from time to time in case a part of the window is overridden by anything,
+		// like the Steam Overlay. Sleep for less time so the application is somewhat responsive, though.
+		SDL_Delay(10);
+		uint32_t currRefreshTicks = SDL_GetTicks();
+		if (currRefreshTicks - g_be_sdlLastRefreshTicks >= 100)
+		{
+			SDL_RenderClear(g_sdlRenderer);
+
+			if (g_sdlTargetTexture)
+				SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+			else
+				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+
+			BEL_ST_Launcher_FinishHostDisplayUpdate();
+			g_be_sdlLastRefreshTicks = currRefreshTicks;
+		}
+	}
+}
+
+
 void BE_ST_Launcher_RunEventLoop(void)
 {
 	SDL_Event event;
-	uint32_t lastRefreshTicks = 0;
+	g_be_sdlLastRefreshTicks = 0;
 
 	while (1)
 	{
@@ -1805,56 +1861,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 
 		BE_Launcher_RefreshVerticalScrolling(ticksBeforePoll);
 
-		/*** Draw ***/
-		if (g_sdlLauncherGfxCacheMarked)
-		{
-			SDL_Delay(1);
-			g_sdlLauncherGfxCacheMarked = false;
-			void *pixels;
-			int pitch;
-			SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-			uint32_t *currPixPtr = (uint32_t *)pixels;
-			uint8_t *currPalPixPtr = g_sdlLauncherGfxCache;
-			for (int pixnum = 0; pixnum < BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
-			{
-				*currPixPtr = g_sdlEGABGRAScreenColors[*currPalPixPtr];
-			}
-
-			SDL_UnlockTexture(g_sdlTexture);
-			SDL_RenderClear(g_sdlRenderer);
-			if (g_sdlTargetTexture)
-			{
-				SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
-				SDL_SetRenderTarget(g_sdlRenderer, NULL);
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-			}
-			else
-			{
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-			}
-			BEL_ST_Launcher_FinishHostDisplayUpdate();
-			lastRefreshTicks = SDL_GetTicks();
-		}
-		else
-		{
-			// Refresh graphics from time to time in case a part of the window is overridden by anything,
-			// like the Steam Overlay. Sleep for less time so the application is somewhat responsive, though.
-			SDL_Delay(10);
-			uint32_t currRefreshTicks = SDL_GetTicks();
-			if (currRefreshTicks - lastRefreshTicks >= 100)
-			{
-				SDL_RenderClear(g_sdlRenderer);
-
-				if (g_sdlTargetTexture)
-					SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-				else
-					SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-
-				BEL_ST_Launcher_FinishHostDisplayUpdate();
-				lastRefreshTicks = currRefreshTicks;
-			}
-		}
+		BEL_ST_Launcher_UpdateHostDisplay();
 	}
 }
 
@@ -2119,8 +2126,8 @@ static bool BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(Uint8 b
 bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 {
 	SDL_Event event;
-	uint32_t lastRefreshTicks = 0;
 	bool confirmed;
+	g_be_sdlLastRefreshTicks = 0;
 
 	while (1)
 	{
@@ -2248,58 +2255,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				return confirmed;
 		}
 
-		// FIXME - This is mostly copied-and-pasted from the usual loop
-
-		/*** Draw ***/
-		if (g_sdlLauncherGfxCacheMarked)
-		{
-			SDL_Delay(1);
-			g_sdlLauncherGfxCacheMarked = false;
-			void *pixels;
-			int pitch;
-			SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-			uint32_t *currPixPtr = (uint32_t *)pixels;
-			uint8_t *currPalPixPtr = g_sdlLauncherGfxCache;
-			for (int pixnum = 0; pixnum < BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
-			{
-				*currPixPtr = g_sdlEGABGRAScreenColors[*currPalPixPtr];
-			}
-
-			SDL_UnlockTexture(g_sdlTexture);
-			SDL_RenderClear(g_sdlRenderer);
-			if (g_sdlTargetTexture)
-			{
-				SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
-				SDL_SetRenderTarget(g_sdlRenderer, NULL);
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-			}
-			else
-			{
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-			}
-			BEL_ST_Launcher_FinishHostDisplayUpdate();
-			lastRefreshTicks = SDL_GetTicks();
-		}
-		else
-		{
-			// Refresh graphics from time to time in case a part of the window is overridden by anything,
-			// like the Steam Overlay. Sleep for less time so the application is somewhat responsive, though.
-			SDL_Delay(10);
-			uint32_t currRefreshTicks = SDL_GetTicks();
-			if (currRefreshTicks - lastRefreshTicks >= 100)
-			{
-				SDL_RenderClear(g_sdlRenderer);
-
-				if (g_sdlTargetTexture)
-					SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-				else
-					SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
-
-				BEL_ST_Launcher_FinishHostDisplayUpdate();
-				lastRefreshTicks = currRefreshTicks;
-			}
-		}
+		BEL_ST_Launcher_UpdateHostDisplay();
 	}
 
 	return false;
