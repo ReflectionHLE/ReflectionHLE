@@ -124,7 +124,7 @@ static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
 BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer,	37/* HACK to have enough room for string*/, &BE_Launcher_Handler_LastGameVerLaunch)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_SelectGame, "Select game", &g_beSelectGameMenu)
-BEMENUITEM_DEF_HANDLER(g_beMainMenuItem_SetArguments, "Set arguments for game (CURRENTLY SET)", &BE_Launcher_Handler_SetArgumentsForGame)
+BEMENUITEM_DEF_HANDLER(g_beMainMenuItem_SetArguments, "Set arguments for game *CURRENTLY SET*", &BE_Launcher_Handler_SetArgumentsForGame)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_ShowVersion, "Show version", &g_beShowVersionMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Quit, "Quit", &g_beQuitConfirmMenu)
@@ -859,7 +859,7 @@ void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void)
 {
 	// HACK
 	if (*g_refKeenCfg.launcherExeArgs != '\0')
-		strcpy(g_beMainMenuItem_SetArguments.label + 23, "(CURRENTLY SET)");
+		strcpy(g_beMainMenuItem_SetArguments.label + 23, "*CURRENTLY SET*");
 	else
 		strcpy(g_beMainMenuItem_SetArguments.label + 23, "               ");
 }
