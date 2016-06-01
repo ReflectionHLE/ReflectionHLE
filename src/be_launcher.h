@@ -88,6 +88,7 @@ void BE_Launcher_HandleInput_PointerVScroll(int ydiff, uint32_t ticksinms);
 void BE_Launcher_RefreshVerticalScrolling(uint32_t ticksinms);
 
 void BE_Launcher_Handler_LastGameVerLaunch(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_RootPathSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP);
@@ -95,6 +96,15 @@ void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_DirectorySelectionGoPrev(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP);
+
+void BE_Launcher_ArgumentsEditing_MoveCursorToEdge(bool moveForward);
+void BE_Launcher_ArgumentsEditing_MoveCursorOnePos(bool moveForward);
+void BE_Launcher_ArgumentsEditing_InsertChar(char ch);
+void BE_Launcher_ArgumentsEditing_DeleteChar(bool deleteAt);
+
+void BE_Launcher_ArgumentsEditing_HandleInput_PointerSelect(int xpos, int ypos);
+bool BE_Launcher_ArgumentsEditing_HandleInput_PointerRelease(int xpos, int ypos);
+void BE_Launcher_ArgumentsEditing_HandleInput_PointerMotion(int xpos, int ypos);
 
 void BE_Launcher_Start(void);
 void BE_Launcher_ClearDirSelectionMenu(void);
