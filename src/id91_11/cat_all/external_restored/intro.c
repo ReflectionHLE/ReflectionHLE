@@ -389,7 +389,8 @@ void intro_exe_main(void)
 				else if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && (last_key == 0x44/*0x4400*/)) // F10 (Demo)
 				{
 					// REFKEEN - Alternative controllers support
-					BE_ST_AltControlScheme_Pop();
+					extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+					BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 					SetScreenMode(1);
 					// REFKEEN: This is currently unsupported
@@ -398,9 +399,7 @@ void intro_exe_main(void)
 					SetScreenMode(3);
 					general_loop_var = 600;
 
-					// REFKEEN - Alternative controllers support
-					BE_ST_AltControlScheme_Push();
-					BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_intro);
+					BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_intro); // REFKEEN - Alternative controllers support
 #if 0
 					if (execv("DEMOCAT.EXE", id0_argv) == -1)
 					{

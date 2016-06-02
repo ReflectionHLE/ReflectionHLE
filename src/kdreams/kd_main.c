@@ -450,6 +450,11 @@ void InitGame (void)
 	if (GRMODE == EGAGR)
 		if (mminfo.mainmem < 335l*1024)
 	{
+		// REFKEEN - Alternative controllers support
+		extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_notenoughmemorytostart;
+		BE_ST_AltControlScheme_Push();
+		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_notenoughmemorytostart);
+
 //#pragma warn    -pro
 //#pragma warn    -nod
 		if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
@@ -471,6 +476,8 @@ void InitGame (void)
 		i = BE_ST_BiosScanCode (0);
 		if (i != sc_C)
 			Quit ("");
+		// REFKEEN - Alternative controllers support
+		BE_ST_AltControlScheme_Pop();
 	}
 
 	US_TextScreen();

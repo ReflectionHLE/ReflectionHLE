@@ -367,6 +367,35 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu = {
 	true
 };
 
+// Similarly this
+BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_paddle = {
+	NULL,
+	{
+		// Face buttons
+		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{0},
+		{0},
+		// Back button
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{0},
+		// Start Button
+		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{0},
+		{0},
+		{0},
+		{0},
+		// D-pad
+		{0},
+		{0},
+		{NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	},
+	{
+	},
+	false
+};
+
 BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 	NULL,
 	{
@@ -472,6 +501,11 @@ void RefKeen_PrepareAltControllerScheme(void)
 	// HACK (hide debug keys by pressing outside keyboard with pointer)
 	g_beStControllerMappingDebugKeys.prevMapping = &g_ingame_altcontrol_mapping_gameplay;
 
+	BE_ST_ControllerSingleMap gamemouseup    = {NULL, 1, -16, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap gamemousedown  = {NULL, 1,  16, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap gamemouseleft  = {NULL, 0, -16, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap gamemouseright = {NULL, 0,  16, BE_ST_CTRL_MAP_MOUSEMOTION};
+
 	if (g_refKeenCfg.altControlScheme.useDpad)
 	{
 		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_UP];
@@ -480,18 +514,10 @@ void RefKeen_PrepareAltControllerScheme(void)
 		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
 		if (g_refKeenCfg.altControlScheme.analogMotion)
 		{
-			(*currupmappingptr)->val = 1;
-			(*currupmappingptr)->secondaryVal = -16;
-			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currdownmappingptr)->val = 1;
-			(*currdownmappingptr)->secondaryVal = 16;
-			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currleftmappingptr)->val = 0;
-			(*currleftmappingptr)->secondaryVal = -16;
-			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currrightmappingptr)->val = 0;
-			(*currrightmappingptr)->secondaryVal = 16;
-			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			**currupmappingptr++ = gamemouseup;
+			**currdownmappingptr++ = gamemousedown;
+			**currleftmappingptr++ = gamemouseleft;
+			**currrightmappingptr++ = gamemouseright;
 		}
 		else
 		{
@@ -509,18 +535,10 @@ void RefKeen_PrepareAltControllerScheme(void)
 		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][1];
 		if (g_refKeenCfg.altControlScheme.analogMotion)
 		{
-			(*currupmappingptr)->val = 1;
-			(*currupmappingptr)->secondaryVal = -16;
-			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currdownmappingptr)->val = 1;
-			(*currdownmappingptr)->secondaryVal = 16;
-			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currleftmappingptr)->val = 0;
-			(*currleftmappingptr)->secondaryVal = -16;
-			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currrightmappingptr)->val = 0;
-			(*currrightmappingptr)->secondaryVal = 16;
-			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			**currupmappingptr++ = gamemouseup;
+			**currdownmappingptr++ = gamemousedown;
+			**currleftmappingptr++ = gamemouseleft;
+			**currrightmappingptr++ = gamemouseright;
 		}
 		else
 		{
@@ -538,18 +556,10 @@ void RefKeen_PrepareAltControllerScheme(void)
 		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][1];
 		if (g_refKeenCfg.altControlScheme.analogMotion)
 		{
-			(*currupmappingptr)->val = 1;
-			(*currupmappingptr)->secondaryVal = -16;
-			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currdownmappingptr)->val = 1;
-			(*currdownmappingptr)->secondaryVal = 16;
-			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currleftmappingptr)->val = 0;
-			(*currleftmappingptr)->secondaryVal = -16;
-			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
-			(*currrightmappingptr)->val = 0;
-			(*currrightmappingptr)->secondaryVal = 16;
-			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_MOUSEMOTION;
+			**currupmappingptr++ = gamemouseup;
+			**currdownmappingptr++ = gamemousedown;
+			**currleftmappingptr++ = gamemouseleft;
+			**currrightmappingptr++ = gamemouseright;
 		}
 		else
 		{
@@ -569,24 +579,46 @@ void RefKeen_PrepareAltControllerScheme(void)
 	}
 
 #ifdef REFKEEN_VER_CAT3D
-	BE_ST_ControllerSingleMap mouseup    = {NULL, 1, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mousedown  = {NULL, 1,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mouseleft  = {NULL, 0, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mouseright = {NULL, 0,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap menumouseup    = {NULL, 1, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap menumousedown  = {NULL, 1,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap menumouseleft  = {NULL, 0, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap menumouseright = {NULL, 0,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
 
 	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{
-		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][0], &mouseup, sizeof(mouseup));
-		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][1], &mousedown, sizeof(mousedown));
-		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][0], &mouseleft, sizeof(mouseleft));
-		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][1], &mouseright, sizeof(mouseright));
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][0] = menumouseup;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][1] = menumousedown;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][0] = menumouseleft;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][1] = menumouseright;
+
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+		{
+			g_ingame_altcontrol_mapping_menu_paddle.axes[BE_ST_CTRL_AXIS_LX][0] = gamemouseleft;
+			g_ingame_altcontrol_mapping_menu_paddle.axes[BE_ST_CTRL_AXIS_LX][1] = gamemouseright;
+		}
+		else
+		{
+			g_ingame_altcontrol_mapping_menu_paddle.axes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_altcontrol_mapping_menu_paddle.buttons[BE_ST_CTRL_BUT_DPAD_LEFT];
+			g_ingame_altcontrol_mapping_menu_paddle.axes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_altcontrol_mapping_menu_paddle.buttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
+		}
 	}
 	if (g_refKeenCfg.altControlScheme.useRightStick)
 	{
-		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][0], &mouseup, sizeof(mouseup));
-		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][1], &mousedown, sizeof(mousedown));
-		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][0], &mouseleft, sizeof(mouseleft));
-		memcpy(&g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][1], &mouseright, sizeof(mouseright));
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][0] = menumouseup;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][1] = menumousedown;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][0] = menumouseleft;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][1] = menumouseright;
+
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+		{
+			g_ingame_altcontrol_mapping_menu_paddle.axes[BE_ST_CTRL_AXIS_RX][0] = gamemouseleft;
+			g_ingame_altcontrol_mapping_menu_paddle.axes[BE_ST_CTRL_AXIS_RX][1] = gamemouseright;
+		}
+		else
+		{
+			g_ingame_altcontrol_mapping_menu_paddle.axes[BE_ST_CTRL_AXIS_RX][0] = g_ingame_altcontrol_mapping_menu_paddle.buttons[BE_ST_CTRL_BUT_DPAD_LEFT];
+			g_ingame_altcontrol_mapping_menu_paddle.axes[BE_ST_CTRL_AXIS_RX][1] = g_ingame_altcontrol_mapping_menu_paddle.buttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
+		}
 	}
 #endif
 

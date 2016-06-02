@@ -621,6 +621,10 @@ void Quit (const id0_char_t *error)
 	{
 		if (!NoWait)
 		{
+			// REFKEEN - Alternative controllers support
+			extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+			BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 			memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 4000);
 			//movedata (finscreen,0,0xb800,0,4000);
 			BE_ST_BiosScanCode (0);

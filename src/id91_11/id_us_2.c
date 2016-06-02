@@ -1248,6 +1248,11 @@ USL_PlayPong(void)
 	id0_longword_t        balltime,waittime;
 	CursorInfo      cursorinfo;
 
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_paddle;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu_paddle);
+
 	kx = cx = PaddleMinX + ((PaddleMaxX - PaddleMinX) / 2);
 	bx = by = bdx = bdy = 0;
 	kscore = cscore = 0;
@@ -1396,6 +1401,8 @@ USL_PlayPong(void)
 #endif
 	} while ((LastScan != sc_Escape) && !done);
 	IN_ClearKeysDown();
+
+	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
 
 //#pragma argsused
@@ -1738,7 +1745,7 @@ void
 US_ControlPanel(void)
 {
 	// REFKEEN - Alternative controllers support
-	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;	
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;
 	BE_ST_AltControlScheme_Push();
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu);
 
