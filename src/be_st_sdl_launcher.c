@@ -75,11 +75,12 @@ static bool g_sdlKeyboardUIIsKeyPressed, g_sdlKeyboardUIIsShifted;
 // Borrowed from other files
 extern const uint32_t g_sdlEGABGRAScreenColors[];
 extern SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS];
-extern SDL_Window *g_sdlWindow;
-extern SDL_Renderer *g_sdlRenderer;
 extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
+// These two are shared ON PURPOSE (for seamless transition from launcher to game, if an SDL_WINDOW_FULLSCREEN_DESKTOP window is used with same features)
+extern SDL_Window *g_sdlWindow;
+extern SDL_Renderer *g_sdlRenderer;
 
 static int g_sdlKeyboardLastKeyPressed;
 static bool g_sdlKeyboardLastKeyPressedIsShifted;
@@ -501,6 +502,8 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void);
 
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void);
 
+void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
+
 void BE_ST_Launcher_Prepare(void)
 {
 	int i;
@@ -513,23 +516,12 @@ void BE_ST_Launcher_Prepare(void)
 		g_refKeenCfg.launcherWinHeight = 2*BE_LAUNCHER_PIX_HEIGHT;
 	}
 
-	g_sdlWindow = SDL_CreateWindow(
-		REFKEEN_TITLE_AND_VER_STRING, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight,
-		(g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : ((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT) ? SDL_WINDOW_RESIZABLE : 0)
+	BEL_ST_RecreateSDLWindowAndRenderer(
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight,
+		(g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : ((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT) ? SDL_WINDOW_RESIZABLE : 0),
+		-1, (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE) ? SDL_RENDERER_SOFTWARE : (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
 	);
-	if (!g_sdlWindow)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window for launcher,\n%s\n", SDL_GetError());
-		exit(0);
-	}
-	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE) ? SDL_RENDERER_SOFTWARE : (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
-	if (!g_sdlRenderer)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer for launcher,\n%s\n", SDL_GetError());
-		//Destroy window?
-		exit(0);
-	}
+
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 	g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT);
 	if (!g_sdlTexture)
@@ -730,10 +722,13 @@ void BE_ST_Launcher_Shutdown(void)
 	g_sdlTexture = NULL;
 	SDL_DestroyTexture(g_sdlTargetTexture);
 	g_sdlTargetTexture = NULL;
+	// Nope - We may re-use window and renderer for game (seamless transition)
+#if 0
 	SDL_DestroyRenderer(g_sdlRenderer);
 	g_sdlRenderer = NULL;
 	SDL_DestroyWindow(g_sdlWindow);
 	g_sdlWindow = NULL;
+#endif
 
 	/*** Save settings if there's any change ***/
 	if (!g_be_launcher_wasAnySettingChanged)

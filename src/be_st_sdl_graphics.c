@@ -157,6 +157,7 @@ static bool g_sdlTextInputIsKeyPressed, g_sdlTextInputIsShifted;
 // Debug keys specific
 static bool g_sdlDebugKeysPressed[ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT][ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH];
 
+void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t windowFlags, int driverIndex, Uint32 rendererFlags);
 
 void BE_ST_InitGfx(void)
 {
@@ -171,26 +172,33 @@ void BE_ST_InitGfx(void)
 		g_sdlIsSoftwareRendered = false;
 	}
 
+	uint32_t windowFlagsToSet;
+	int windowWidthToSet, windowHeightToSet;
 	if (g_refKeenCfg.isFullscreen)
 	{
 		if (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight)
 		{
-			g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, SDL_WINDOW_FULLSCREEN);
+			windowWidthToSet = g_refKeenCfg.fullWidth;
+			windowHeightToSet = g_refKeenCfg.fullHeight;
+			windowFlagsToSet = SDL_WINDOW_FULLSCREEN;
 		}
 		else
 		{
-			g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			windowWidthToSet = 0;
+			windowHeightToSet = 0;
+			windowFlagsToSet = SDL_WINDOW_FULLSCREEN_DESKTOP;
 		}
 	}
 	else
 	{
-		int actualWinWidth = g_refKeenCfg.winWidth, actualWinHeight = g_refKeenCfg.winHeight;
-		if (!actualWinWidth || !actualWinHeight)
+		windowWidthToSet = g_refKeenCfg.winWidth;
+		windowHeightToSet = g_refKeenCfg.winHeight;
+		if (!windowWidthToSet || !windowHeightToSet)
 		{
 			if (g_sdlIsSoftwareRendered)
 			{
-				actualWinWidth = 640;
-				actualWinHeight = 480;
+				windowWidthToSet = 640;
+				windowHeightToSet = 480;
 			}
 			else
 			{
@@ -208,30 +216,23 @@ void BE_ST_InitGfx(void)
 					mode.w = mode.h*280/207;
 				}
 				// Just for the sake of it, using the golden ratio...
-				actualWinWidth = mode.w*500/809;
-				actualWinHeight = mode.h*500/809;
+				windowWidthToSet = mode.w*500/809;
+				windowHeightToSet = mode.h*500/809;
 			}
 		}
-		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), actualWinWidth, actualWinHeight, (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling) ? SDL_WINDOW_RESIZABLE : 0);
+		windowFlagsToSet = (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling) ? SDL_WINDOW_RESIZABLE : 0;
 	}
-	if (!g_sdlWindow)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
-		exit(0);
-	}
-	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
 	// Vanilla Keen Dreams and Keen 4-6 have no VSync in the CGA builds
 #ifdef REFKEEN_VER_KDREAMS
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_refKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | (((g_refKeenCfg.vSync == VSYNC_ON) || ((g_refKeenCfg.vSync == VSYNC_AUTO) && (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))) ? SDL_RENDERER_PRESENTVSYNC : 0));
+	uint32_t rendererFlagsToSet = SDL_RENDERER_ACCELERATED | (((g_refKeenCfg.vSync == VSYNC_ON) || ((g_refKeenCfg.vSync == VSYNC_AUTO) && (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))) ? SDL_RENDERER_PRESENTVSYNC : 0);
 #else
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, g_refKeenCfg.sdlRendererDriver, SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync != VSYNC_OFF) ? SDL_RENDERER_PRESENTVSYNC : 0));
+	uint32_t rendererFlagsToSet = SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync != VSYNC_OFF) ? SDL_RENDERER_PRESENTVSYNC : 0);
 #endif
-	if (!g_sdlRenderer)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
-		//Destroy window?
-		exit(0);
-	}
+	BEL_ST_RecreateSDLWindowAndRenderer(
+		SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum),
+		windowWidthToSet, windowHeightToSet, windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlagsToSet
+	);
+
 	BE_ST_SetScreenMode(3); // Includes SDL_Texture handling and output rects preparation
 }
 
@@ -253,6 +254,52 @@ void BE_ST_ShutdownGfx(void)
 	g_sdlRenderer = NULL;
 	SDL_DestroyWindow(g_sdlWindow);
 	g_sdlWindow = NULL;
+}
+
+void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t windowFlags, int driverIndex, uint32_t rendererFlags)
+{
+	static int prev_x, prev_y, prev_driverIndex;
+	static uint32_t prev_rendererFlags;
+
+	if (g_sdlWindow)
+	{
+		// This is a little bit of a hack:
+		// - x and y are compared to previous values, currently used to pick a display to use (in a multi-display setup).
+		// - Since the actual flags of a window may differ from what we requested (due to toggling fullscreen or any other reason),
+		// we support skipping window recreation only for SDL_WINDOW_FULLSCREEN_DESKTOP windows.
+		// - Renderer flags are compared to the previously requested flags.
+		// - Same is done with with renderer driver index. If -1 is used anywhere, this makes reuse of the same window more probable.
+		if ((x == prev_x) && (y == prev_y) &&
+		    ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) &&
+		    ((SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) &&
+		    (driverIndex == prev_driverIndex) && (rendererFlags == prev_rendererFlags)
+		)
+			return;
+
+		SDL_DestroyRenderer(g_sdlRenderer);
+		g_sdlRenderer = NULL;
+		SDL_DestroyWindow(g_sdlWindow);
+		g_sdlWindow = NULL;
+	}
+
+	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, w, h, windowFlags);
+	if (!g_sdlWindow)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
+		exit(0);
+	}
+	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, driverIndex, rendererFlags);
+	if (!g_sdlRenderer)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
+		exit(0);
+	}
+
+	prev_x = x;
+	prev_y = y;
+	prev_driverIndex = driverIndex;
+	prev_rendererFlags = rendererFlags;
 }
 
 static void BEL_ST_RecreateTexture(void)
