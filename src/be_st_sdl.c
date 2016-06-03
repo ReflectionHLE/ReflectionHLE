@@ -60,8 +60,6 @@ static bool g_sdlEmuKeyboardStateByScanCode[BE_ST_SC_MAX];
 static int g_sdlOnScreenKeyboardLastPressedDirButton;
 static uint32_t g_sdlOnScreenKeyboardLastDirButtonPressTime;
 static uint32_t g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay;
-// SPECIAL - If Back button (or similar) is pressed while an on-screen keyboard is shown, remember this!
-static int g_sdlOnScreenKeyboardManualExitScanCode;
 
 #define NUM_OF_CONTROLLER_MAPS_IN_STACK 8
 
@@ -1333,36 +1331,21 @@ static void BEL_ST_ConditionallyAddJoystick(int device_index)
 }
 
 
+void BEL_ST_ReleasePressedKeysInTextInputUI(void);
+void BEL_ST_ReleasePressedKeysInDebugKeysUI(void);
+
 /* WARNING: In theory there may be a Clear -> HandleEntry -> Clear cycle,
  * but it can never occur since isPressed is set to false
  */
 static void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 {
-	emulatedDOSKeyEvent dosKeyEvent;
-	dosKeyEvent.isSpecial = false;
-	dosKeyEvent.dosScanCode = g_sdlOnScreenKeyboardManualExitScanCode;
-
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 	{
-		void BEL_ST_ReleasePressedKeysInTextInputUI(void);
 		BEL_ST_ReleasePressedKeysInTextInputUI();
-		// SPECIAL
-		if (g_sdlOnScreenKeyboardManualExitScanCode)
-		{
-			BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
-			g_sdlOnScreenKeyboardManualExitScanCode = 0;
-		}
 	}
 	else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
 	{
-		void BEL_ST_ReleasePressedKeysInDebugKeysUI(void);
 		BEL_ST_ReleasePressedKeysInDebugKeysUI();
-		// SPECIAL
-		if (g_sdlOnScreenKeyboardManualExitScanCode)
-		{
-			BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
-			g_sdlOnScreenKeyboardManualExitScanCode = 0;
-		}
 	}
 	else // Otherwise simulate key releases based on the mapping
 	{
@@ -1411,14 +1394,12 @@ static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void)
 		extern void BEL_ST_PrepareToShowTextInputUI(void);
 		BEL_ST_PrepareToShowTextInputUI();
 		g_sdlOnScreenKeyboardLastPressedDirButton = SDL_CONTROLLER_BUTTON_INVALID;
-		g_sdlOnScreenKeyboardManualExitScanCode = 0;
 	}
 	else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
 	{
 		extern void BEL_ST_PrepareToShowDebugKeysUI(void);
 		BEL_ST_PrepareToShowDebugKeysUI();
 		g_sdlOnScreenKeyboardLastPressedDirButton = SDL_CONTROLLER_BUTTON_INVALID;
-		g_sdlOnScreenKeyboardManualExitScanCode = 0;
 	}
 	else if (g_sdlControllerMappingActualCurr->showUi)
 	{
@@ -1517,8 +1498,15 @@ static void BEL_ST_AltControlScheme_HandleTextInputEvent(int but, bool isPressed
 		break;
 	case SDL_CONTROLLER_BUTTON_B:
 	case SDL_CONTROLLER_BUTTON_BACK:
-		dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
-		g_sdlOnScreenKeyboardManualExitScanCode = dosKeyEvent.dosScanCode; // Don't forget to "release" key e.g., if changing controller scheme!!
+		if (isPressed)
+		{
+			BEL_ST_ReleasePressedKeysInTextInputUI(); // Release any key pressed in text input UI *before* the game may change the controller mapping (otherwise a key may get stuck)
+			// HACK
+			dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
+			BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
+			BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
+			return;
+		}
 		break;
 	case SDL_CONTROLLER_BUTTON_X:
 		// Change shift state (or at least try to).

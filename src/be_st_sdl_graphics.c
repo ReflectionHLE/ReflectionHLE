@@ -725,6 +725,9 @@ static void BEL_ST_ToggleDebugKeysKey(int x, int y, bool isMarked, bool isPresse
 int BEL_ST_MoveUpInTextInputUI(void)
 {
 	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : 0;
+	if (origScanCode == BE_ST_SC_LSHIFT)
+		origScanCode = 0;
+
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 	g_sdlTextInputIsKeyPressed = false;
 
@@ -742,6 +745,9 @@ int BEL_ST_MoveUpInTextInputUI(void)
 int BEL_ST_MoveDownInTextInputUI(void)
 {
 	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : 0;
+	if (origScanCode == BE_ST_SC_LSHIFT)
+		origScanCode = 0;
+
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 	g_sdlTextInputIsKeyPressed = false;
 
@@ -759,6 +765,9 @@ int BEL_ST_MoveDownInTextInputUI(void)
 int BEL_ST_MoveLeftInTextInputUI(void)
 {
 	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : 0;
+	if (origScanCode == BE_ST_SC_LSHIFT)
+		origScanCode = 0;
+
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 	g_sdlTextInputIsKeyPressed = false;
 
@@ -776,6 +785,9 @@ int BEL_ST_MoveLeftInTextInputUI(void)
 int BEL_ST_MoveRightInTextInputUI(void)
 {
 	int origScanCode = g_sdlTextInputIsKeyPressed ? (int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : 0;
+	if (origScanCode == BE_ST_SC_LSHIFT)
+		origScanCode = 0;
+
 	BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
 	g_sdlTextInputIsKeyPressed = false;
 
@@ -913,13 +925,14 @@ void BEL_ST_CheckMovedPointerInTextInputUI(int x, int y)
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
+void BEL_ST_ReleasePressedKeysInTextInputUI(void);
+
 void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y)
 {
 	if ((x < g_sdlControllerTextInputRect.x) || (x >= g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
 	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h))
 	{
-		bool toggle = false;
-		BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+		BEL_ST_ReleasePressedKeysInTextInputUI();
 		// HACK
 		emulatedDOSKeyEvent dosKeyEvent;
 		dosKeyEvent.isSpecial = false;
@@ -1148,28 +1161,28 @@ void BEL_ST_CheckMovedPointerInControllerUI(int x, int y)
 
 void BEL_ST_ReleasePressedKeysInTextInputUI(void)
 {
+	emulatedDOSKeyEvent dosKeyEvent;
+	dosKeyEvent.isSpecial = false;
+
 	if (g_sdlTextInputIsKeyPressed)
 	{
-		emulatedDOSKeyEvent dosKeyEvent;
-		dosKeyEvent.isSpecial = false;
-		dosKeyEvent.dosScanCode = g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
-		// Don't forget to "release" a key pressed in the text input UI
+		bool toggle = false;
+		dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInTextInputUI(&toggle);
+		if (dosKeyEvent.dosScanCode) // Don't forget to "release" a key pressed in the text input UI
+			BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
+	}
+
+	// Shift key may further be held, don't forget this too!
+	if (g_sdlTextInputIsShifted)
+	{
+		dosKeyEvent.dosScanCode = BE_ST_SC_LSHIFT;
 		BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
 
-		BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-		g_sdlTextInputIsKeyPressed = false;
-		// Shift key may further be held, don't forget this too!
-		if ((dosKeyEvent.dosScanCode != BE_ST_SC_LSHIFT) && g_sdlTextInputIsShifted)
-		{
-			dosKeyEvent.dosScanCode = BE_ST_SC_LSHIFT;
-			BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
-
-			g_sdlTextInputIsShifted = false;
-			BEL_ST_RedrawWholeTextInputUI();
-
-		}
-		g_sdlForceGfxControlUiRefresh = true;
+		g_sdlTextInputIsShifted = false;
+		BEL_ST_RedrawWholeTextInputUI();
 	}
+
+	g_sdlForceGfxControlUiRefresh = true;
 }
 
 void BEL_ST_ReleasePressedKeysInDebugKeysUI(void)
