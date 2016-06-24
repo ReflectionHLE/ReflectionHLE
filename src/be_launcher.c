@@ -44,6 +44,7 @@
 #define BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND (2*(BE_LAUNCHER_PIX_WIDTH-1)/3-2*BE_MENU_CHAR_WIDTH)
 #define BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS (BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND+BE_MENU_CHAR_WIDTH)
 #define BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS (BE_LAUNCHER_PIX_WIDTH-1-BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING-BE_MENU_CHAR_WIDTH)
+#define BE_LAUNCHER_SELECTION_BOX_PIX_XPOS (BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS-3)
 
 #define BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD 8 // Moving the pointer less than that leads to no effect
 
@@ -206,6 +207,29 @@ static void BEL_Launcher_DrawTopRect(int x, int y, int width, int height, int fr
 
 }
 
+static void BEL_Launcher_DrawVertLine(int x, int y, int height, int color, int yFirstBound, int yEndBound)
+{
+	// Should use g_be_launcher_screenPtr wisely so we don't go out of buffer's bounds
+	// (just cause this can lead to undefined behaviors even without dereferencing)
+
+	if (y >= yEndBound)
+		return;
+
+	int actualEndY = y+height;
+	if (yEndBound < actualEndY)
+		actualEndY = yEndBound;
+
+	if (actualEndY < yFirstBound) // == is OK
+		return;
+
+	if (y < yFirstBound)
+		y = yFirstBound;
+
+	uint8_t *pixPtr;
+	for (pixPtr = g_be_launcher_screenPtr + x + y*BE_LAUNCHER_PIX_WIDTH; y < actualEndY; ++y, pixPtr += BE_LAUNCHER_PIX_WIDTH)
+		*pixPtr = color;
+}
+
 static void BEL_Launcher_DrawStringWithStrLenBound(const char *str, int x, int y, int color, int yFirstBound, int yEndBound, int maxStrLenPerLine)
 {
 	// Should use g_be_launcher_screenPtr wisely so we don't go out of buffer's bounds
@@ -306,6 +330,7 @@ static void BEL_Launcher_DrawMenuItemString(const char *str, int selectionYPos, 
 
 	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER))
 	{
+		BEL_Launcher_DrawVertLine(BE_LAUNCHER_SELECTION_BOX_PIX_XPOS, menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll, menuItem->yPosPastEnd - menuItem->yPosStart, 2, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 		BEL_Launcher_DrawString("\xAE", BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 		BEL_Launcher_DrawString("\xAF", BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 	}
@@ -625,9 +650,9 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinm
 	g_be_launcher_vscroll_currrateper100ms = 0;
 
 	g_be_launcher_pointer_in_use = true;
-	g_be_launcher_back_button_pressed = (xpos < BE_MENU_BACKBUTTON_PIX_WIDTH) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS);
+	g_be_launcher_back_button_pressed = ((xpos >= 0) && (xpos < BE_MENU_BACKBUTTON_PIX_WIDTH) && (ypos >= 0) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS));
 	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
-	g_be_launcher_search_button_pressed = (xpos >= BE_LAUNCHER_PIX_WIDTH-BE_MENU_SEARCHBUTTON_PIX_WIDTH) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS);
+	g_be_launcher_search_button_pressed = ((xpos >= BE_LAUNCHER_PIX_WIDTH-BE_MENU_SEARCHBUTTON_PIX_WIDTH) && (xpos < BE_LAUNCHER_PIX_WIDTH) && (ypos >= 0) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS));
 	BEL_Launcher_DrawSearchButtonLabel(g_be_launcher_search_button_pressed);
 	g_be_launcher_startpointerx = xpos;
 	g_be_launcher_startpointery = ypos;
@@ -637,7 +662,7 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinm
 	g_be_launcher_lastpointerymeasurementticksinms = ticksinms;
 	g_be_launcher_pointerymotionrateper100ms = 0;
 
-	if (!g_be_launcher_back_button_pressed && !g_be_launcher_search_button_pressed && (ypos >= BE_MENU_FIRST_ITEM_PIX_YPOS))
+	if (!g_be_launcher_back_button_pressed && !g_be_launcher_search_button_pressed && (xpos >= 0) && (xpos < BE_LAUNCHER_PIX_WIDTH) && (ypos >= BE_MENU_FIRST_ITEM_PIX_YPOS) && (ypos < BE_LAUNCHER_PIX_HEIGHT))
 	{
 		ypos += g_be_launcher_currMenu->currPixYScroll;
 		for (BEMenuItem **menuItemPP = g_be_launcher_currMenu->menuItems; *menuItemPP; ++menuItemPP)
@@ -690,11 +715,11 @@ void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos, uint32_t ticksin
 		case BE_MENUITEM_TYPE_SELECTION:
 		case BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER:
 			// FIXME Move these to another places? (don't verify ptr is ok twice)
-			if ((xpos >= BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS) && (xpos < BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS +  BE_MENU_CHAR_WIDTH))
+			if ((g_be_launcher_startpointerx >= BE_LAUNCHER_SELECTION_BOX_PIX_XPOS) && (g_be_launcher_startpointerx < BE_LAUNCHER_SELECTION_BOX_PIX_XPOS + (BE_LAUNCHER_PIX_WIDTH-BE_LAUNCHER_SELECTION_BOX_PIX_XPOS)/2))
 				BE_Launcher_HandleInput_ButtonLeft();
-			else if ((xpos >= BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS) && (xpos < BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS +  BE_MENU_CHAR_WIDTH))
-				BE_Launcher_HandleInput_ButtonRight();
 			else
+				BE_Launcher_HandleInput_ButtonRight();
+			break;
 		default:
 			BEL_Launcher_HandleCurrentMenuItem();
 		}
@@ -718,7 +743,18 @@ void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinm
 	if (!g_be_launcher_pointermotionactuallystarted)
 	{
 		if ((ypos >= g_be_launcher_startpointery-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (ypos <= g_be_launcher_startpointery+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD))
-			return;
+		{
+			if (g_be_launcher_back_button_pressed || g_be_launcher_search_button_pressed)
+			{
+				if ((xpos >= g_be_launcher_startpointerx-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (xpos <= g_be_launcher_startpointerx+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD))
+					return;
+			}
+			else
+			{
+				if ((xpos >= -BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (xpos < BE_LAUNCHER_PIX_WIDTH+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD))
+					return;
+			}
+		}
 		g_be_launcher_pointermotionactuallystarted = true;
 	}
 
@@ -1191,9 +1227,9 @@ void BE_Launcher_ArgumentsEditing_DeleteChar(bool deleteAt)
 void BE_Launcher_ArgumentsEditing_HandleInput_PointerSelect(int xpos, int ypos)
 {
 	g_be_launcher_pointer_in_use = true;
-	g_be_launcher_back_button_pressed = (xpos < BE_MENU_BACKBUTTON_PIX_WIDTH) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS);
+	g_be_launcher_back_button_pressed = ((xpos >= 0) && (xpos < BE_MENU_BACKBUTTON_PIX_WIDTH) && (ypos >= 0) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS));
 	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
-	g_be_launcher_search_button_pressed = (xpos >= BE_LAUNCHER_PIX_WIDTH-BE_MENU_SEARCHBUTTON_PIX_WIDTH) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS);
+	g_be_launcher_search_button_pressed = ((xpos >= BE_LAUNCHER_PIX_WIDTH-BE_MENU_SEARCHBUTTON_PIX_WIDTH) && (xpos < BE_LAUNCHER_PIX_WIDTH) && (ypos >= 0) && (ypos < BE_MENU_FIRST_ITEM_PIX_YPOS));
 	BEL_Launcher_DrawSearchButtonLabel(g_be_launcher_search_button_pressed);
 	g_be_launcher_startpointerx = xpos;
 	g_be_launcher_startpointery = ypos;
@@ -1230,7 +1266,9 @@ void BE_Launcher_ArgumentsEditing_HandleInput_PointerMotion(int xpos, int ypos)
 
 	if (!g_be_launcher_pointermotionactuallystarted)
 	{
-		if ((ypos >= g_be_launcher_startpointery-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (ypos <= g_be_launcher_startpointery+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD))
+		// Nothing other than the back or search button may be selected here, so the check is a bit simpler here (compared to the usual menu)
+		if ((xpos >= g_be_launcher_startpointerx-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (xpos <= g_be_launcher_startpointerx+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) &&
+		    (ypos >= g_be_launcher_startpointery-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (ypos <= g_be_launcher_startpointery+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD))
 			return;
 		g_be_launcher_pointermotionactuallystarted = true;
 	}

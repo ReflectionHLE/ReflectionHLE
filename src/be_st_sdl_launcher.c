@@ -932,19 +932,8 @@ uint8_t *BE_ST_Launcher_GetGfxPtr(void)
 
 static void BEL_ST_Launcher_NormalizePos(int *px, int *py)
 {
-	if (*px < g_sdlAspectCorrectionBorderedRect.x)
-		*px = 0;
-	if (*px >= g_sdlAspectCorrectionBorderedRect.x + g_sdlAspectCorrectionBorderedRect.w)
-		*px = BE_LAUNCHER_PIX_WIDTH;
-	else
-		*px = BE_LAUNCHER_PIX_WIDTH*(*px-g_sdlAspectCorrectionBorderedRect.x)/g_sdlAspectCorrectionBorderedRect.w;
-
-	if (*py < g_sdlAspectCorrectionBorderedRect.y)
-		*py = 0;
-	if (*py >= g_sdlAspectCorrectionBorderedRect.y + g_sdlAspectCorrectionBorderedRect.h)
-		*py = BE_LAUNCHER_PIX_HEIGHT;
-	else
-		*py = BE_LAUNCHER_PIX_HEIGHT*(*py-g_sdlAspectCorrectionBorderedRect.y)/g_sdlAspectCorrectionBorderedRect.h;
+	*px = BE_LAUNCHER_PIX_WIDTH*(*px-g_sdlAspectCorrectionBorderedRect.x)/g_sdlAspectCorrectionBorderedRect.w;
+	*py = BE_LAUNCHER_PIX_HEIGHT*(*py-g_sdlAspectCorrectionBorderedRect.y)/g_sdlAspectCorrectionBorderedRect.h;
 }
 
 // Translates our internal key codes (usually the same as SDL2 scancodes) to SDL2 scancodes
