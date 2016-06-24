@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.ny00123.reflection_keen"
+      android:versionCode="1"
+      android:versionName="1.0" >
+
+    <!-- Android 2.3.3 -->
+    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19" />
+
+    <!-- OpenGL ES 2.0 -->
+    <uses-feature android:glEsVersion="0x00020000" />
+
+    <!-- Allow writing to external storage -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+</manifest> 
