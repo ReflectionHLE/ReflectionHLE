@@ -123,7 +123,7 @@ static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
 /*** Main menu ***/
 
-BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer,	37/* HACK to have enough room for string*/, &BE_Launcher_Handler_LastGameVerLaunch)
+BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer,	40/* HACK to have enough room for string*/, &BE_Launcher_Handler_LastGameVerLaunch)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_SelectGame, "Select game", &g_beSelectGameMenu)
 BEMENUITEM_DEF_HANDLER(g_beMainMenuItem_SetArguments, "Set arguments for game *CURRENTLY SET*", &BE_Launcher_Handler_SetArgumentsForGame)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
@@ -378,7 +378,9 @@ static const char *g_be_inputSettingsChoices_controllerScheme[] = {"Classic", "M
 
 BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beControllerSettingsMenu)
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
-BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_Autolock, "Autolock mouse cursor\nin fullscreen", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_settingsChoices_boolean);
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean);
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_Autolock, "Autolock mouse cursor", g_be_settingsChoices_boolean)
 
 BEMenu g_beInputSettingsMenu = {
 	"Input settings",
@@ -387,6 +389,8 @@ BEMenu g_beInputSettingsMenu = {
 	{
 		&g_beInputSettingsMenuItem_ControllerSettings,
 		&g_beInputSettingsMenuItem_ControllerScheme,
+		&g_beInputSettingsMenuItem_TouchControls,
+		&g_beInputSettingsMenuItem_TouchInputDebugging,
 		&g_beInputSettingsMenuItem_Autolock,
 		NULL
 	},
@@ -627,6 +631,10 @@ void BE_ST_Launcher_Prepare(void)
 #endif
 	// Set ControllerScheme value
 	g_beInputSettingsMenuItem_ControllerScheme.choice = g_refKeenCfg.altControlScheme.isEnabled;
+	// Set TouchControls value
+	g_beInputSettingsMenuItem_TouchControls.choice = g_refKeenCfg.enableTouchInput;
+	// Set TouchInputDebugging value
+	g_beInputSettingsMenuItem_TouchInputDebugging.choice = g_refKeenCfg.touchInputDebugging;
 	// Set Autolock value
 	g_beInputSettingsMenuItem_Autolock.choice = g_refKeenCfg.autolockCursor;
 	// Set Dpad value
@@ -767,6 +775,8 @@ void BE_ST_Launcher_Shutdown(void)
 
 	g_refKeenCfg.altControlScheme.isEnabled = g_beInputSettingsMenuItem_ControllerScheme.choice;
 	g_refKeenCfg.autolockCursor = g_beInputSettingsMenuItem_Autolock.choice;
+	g_refKeenCfg.enableTouchInput = g_beInputSettingsMenuItem_TouchControls.choice;
+	g_refKeenCfg.touchInputDebugging = g_beInputSettingsMenuItem_TouchInputDebugging.choice;
 
 	g_refKeenCfg.altControlScheme.useDpad = g_beControllerSettingsMenuItem_Dpad.choice;
 	g_refKeenCfg.altControlScheme.useLeftStick = g_beControllerSettingsMenuItem_LeftStick.choice;

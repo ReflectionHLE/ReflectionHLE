@@ -7,6 +7,10 @@
 
 #include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
 
+#ifdef REFKEEN_PLATFORM_ANDROID
+#include <android/log.h>
+#endif
+
 #include "be_cross.h"
 
 // C99
@@ -22,6 +26,17 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 	va_start(args, format);
 	switch (msgClass)
 	{
+#ifdef REFKEEN_PLATFORM_ANDROID
+	case BE_LOG_MSG_NORMAL:
+		__android_log_vprint(ANDROID_LOG_INFO, "LOG_REFKEEN_INFO", format, args);
+		break;
+	case BE_LOG_MSG_WARNING:
+		__android_log_vprint(ANDROID_LOG_WARN, "LOG_REFKEEN_WARN", format, args);
+		break;
+	case BE_LOG_MSG_ERROR:
+		__android_log_vprint(ANDROID_LOG_ERROR, "LOG_REFKEEN_ERROR", format, args);
+		break;
+#else
 	case BE_LOG_MSG_NORMAL:
 		vprintf(format, args);
 		break;
@@ -33,6 +48,7 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 		fprintf(stderr, "Error: ");
 		vfprintf(stderr, format, args);
 		break;
+#endif
 	}
 	va_end(args);
 }

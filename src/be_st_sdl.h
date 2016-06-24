@@ -57,6 +57,8 @@ typedef struct
 #ifndef REFKEEN_RESAMPLER_NONE
 	bool useResampler;
 #endif
+	bool enableTouchInput; // FIXME Make it Auto/Always/Never
+	bool touchInputDebugging;
 	struct
 	{
 		int actionMappings[BE_ST_CTRL_CFG_BUTMAP_AFTERLAST]; // Buttons/triggers

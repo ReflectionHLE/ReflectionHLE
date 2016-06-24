@@ -27,6 +27,10 @@
 
 #define BE_ST_MAXJOYSTICKS 8
 
+// On-screen touch controls are scaled such that the largest square
+// fitting in the window has the dimensions of 140x140 (scaled) pixels
+#define BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM 140
+
 /*** General ***/
 void BE_ST_InitCommon(void); // Before game or launcher
 void BE_ST_PrepareForGameStartup(void); // Before game
@@ -105,10 +109,32 @@ typedef struct {
 	BE_ST_ControllerSingleMapClass mapClass;
 } BE_ST_ControllerSingleMap;
 
+typedef struct {
+	const char **xpmImage;
+	int xpmWidth, xpmHeight;
+	int xpmPosX, xpmPosY;
+} BE_ST_OnscreenTouchControl;
+
+// Same as above, but invisible (touch regions defined) and with some mapping...
+typedef struct {
+	BE_ST_ControllerSingleMap mapping;
+	const char **xpmImage;
+	int xpmWidth, xpmHeight;
+	int xpmPosX, xpmPosY;
+} BE_ST_TouchControlSingleMap;
+
 typedef struct BE_ST_ControllerMapping {
-	// Set to non-NULL if toggling non-mapped action
-	// (generally digital buttons only, but MAY include the analog triggers)
-	struct BE_ST_ControllerMapping *prevMapping;
+	// Fill this for some default action. Examples of ways to trigger it:
+	// - Pressing on a game controller button (or trigger)
+	// with no mapped action.
+	// - Pressing with mouse, or finger on a touchscreen,
+	// outside touch controls or on-screen keyboard.
+	// - Pressing on game controller's back button while
+	// an on-screen keyboard is shown.
+	BE_ST_ControllerSingleMap defaultMapping;
+
+	BE_ST_OnscreenTouchControl *onScreenTouchControls;
+	BE_ST_TouchControlSingleMap *touchMappings;
 
 	BE_ST_ControllerSingleMap buttons[BE_ST_CTRL_BUT_MAX];
 	BE_ST_ControllerSingleMap axes[BE_ST_CTRL_AXIS_MAX][2];
@@ -124,6 +150,9 @@ void BE_ST_AltControlScheme_Push(void);
 void BE_ST_AltControlScheme_Pop(void);
 // Replace current controller scheme using any of these
 void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMapping *mapping);
+// Use this for absolute mouse cursor position update (e.g., for touch input)
+// Assumes dimensions of 320x200 are used as a base
+void BE_ST_AltControlScheme_UpdateVirtualMouseCursor(int x, int y);
 
 // HACK - Pass corresponding pointer to PrepareControllerMapping for on-screen keyboard
 // (can also be used to go from one mapping to another, e.g., showing debug keys in-game)

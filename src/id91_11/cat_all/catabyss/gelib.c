@@ -1694,11 +1694,16 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 	// REFKEEN - Alternative controllers support
 	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_keychoice;
 	// This one is a bit tricky... Also reusing s variable here
+	g_ingame_altcontrol_mapping_keychoice.defaultMapping.mapClass = BE_ST_CTRL_MAP_NONE;
 	int controllerbutton;
 	for (controllerbutton = BE_ST_CTRL_BUT_A, s = choices; controllerbutton < BE_ST_CTRL_BUT_A + 4; ++controllerbutton)
 	{
 		while (*s == sc_Escape)
+		{
+			g_ingame_altcontrol_mapping_keychoice.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			g_ingame_altcontrol_mapping_keychoice.defaultMapping.val = sc_Escape;
 			++s;
+		}
 
 		if (*s)
 		{
@@ -1722,6 +1727,8 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 				++s;
 				continue;
 			}
+			g_ingame_altcontrol_mapping_keychoice.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			g_ingame_altcontrol_mapping_keychoice.defaultMapping.val = sc_Escape;
 			++s;
 		}
 		g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_NONE;

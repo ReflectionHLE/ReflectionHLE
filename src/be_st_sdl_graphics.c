@@ -33,6 +33,8 @@ SDL_Renderer *g_sdlRenderer;
 SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
+static int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
+
 static bool g_sdlIsSoftwareRendered;
 static bool g_sdlDoRefreshGfxOutput;
 bool g_sdlForceGfxControlUiRefresh;
@@ -72,6 +74,7 @@ void BE_ST_MarkGfxForUpdate(void)
 #define VGA_TXT_CURSOR_BLINK_VERT_FRAME_RATE 8
 #define VGA_TXT_BLINK_VERT_FRAME_RATE 16
 
+static int g_sdlDebugFingerRectSideLen;
 
 extern const uint8_t g_vga_8x16TextFont[256*8*16];
 // We can use a union because the memory contents are refreshed on screen mode change
@@ -98,6 +101,20 @@ static int g_sdlTxtCursorPosX, g_sdlTxtCursorPosY;
 static bool g_sdlTxtCursorEnabled = true;
 static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 
+/* Tracked fingers definitions (multi-touch input) */
+
+#define MAX_NUM_OF_TRACKED_FINGERS 10
+
+typedef struct {
+	SDL_TouchID touchId;
+	SDL_FingerID fingerId;
+	int touchMappingIndex;
+	int lastX, lastY;
+} BESDLTrackedFinger;
+
+static BESDLTrackedFinger g_sdlTrackedFingers[MAX_NUM_OF_TRACKED_FINGERS];
+static int nOfTrackedFingers = 0;
+
 /*** Game controller UI resource definitions ***/
 
 #include "../rsrc/pad_font_mono.xpm"
@@ -114,7 +131,7 @@ static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 #define ALTCONTROLLER_CHAR_TOTAL_PIX_WIDTH 570
 
 #define ALTCONTROLLER_EDGE_PIX_DIST 2
-#define ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO 5
+#define ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO 3
 
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH 22
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT 12
@@ -134,6 +151,9 @@ static int g_sdlTxtColor = 7, g_sdlTxtBackground = 0;
 #define ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH (ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
 #define ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT (ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT)
 
+
+#define ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS 20
+
 // These are given as (x, y) offset pairs within the non-scaled,
 // face buttons image, assuming longest texts possible (3 chars long)
 static const int g_sdlControllerFaceButtonsTextLocs[] = {15, 34, 28, 21, 2, 21, 15, 8};
@@ -145,6 +165,11 @@ static bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown,
 static int g_sdlFaceButtonsScanCodes[4], g_sdlDpadScanCodes[4];
 static int g_sdlPointerSelectedPadButtonScanCode;
 static bool g_sdlControllerUIPointerPressed;
+
+static SDL_Rect g_sdlOnScreenTouchControlsRects[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
+static SDL_Texture *g_sdlOnScreenTouchControlsTextures[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
+static int g_sdlNumOfOnScreenTouchControls = 0;
+static SDL_Rect g_sdlInputTouchControlsRects[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
 
 // With alternative game controllers scheme, all UI is hidden if no controller is connected
 bool g_sdlShowControllerUI;
@@ -464,6 +489,9 @@ void BEL_ST_SetRelativeMouseMotion(bool enable);
 
 /*static*/ void BEL_ST_ConditionallyShowAltInputPointer(void)
 {
+	// FIXME
+	if (g_refKeenCfg.enableTouchInput)
+		return;
 	BEL_ST_SetRelativeMouseMotion(!g_sdlShowControllerUI || !(g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown));
 }
 
@@ -521,14 +549,14 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 			case ' ':
 				*currPtr = 0x00000000; // HACK (BGRA, working with any order) because we don't have it defined elsewhere
 				break;
-			case '.':
+			case '@':
 				*currPtr = g_sdlEGABGRAScreenColors[8]; // Gray
 				break;
-			case '+':
+			case '.':
 				*currPtr = g_sdlEGABGRAScreenColors[7]; // Light gray
 				break;
 			// HACK - Compress 4 XPM colors into one
-			case '@':
+			case '+':
 			case '#':
 			case '$':
 			case '%':
@@ -585,6 +613,82 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 	g_sdlControllerUIPointerPressed = false;
 
 	BEL_ST_ConditionallyShowAltInputPointer();
+}
+
+static void BEL_ST_SetTouchControlsRects(void);
+
+void BEL_ST_PrepareToShowTouchControls(const BE_ST_ControllerMapping *mapping)
+{
+	// FIXME this is bad in terms of performance (texture creation, malloc, etc.)
+	int i;
+	for (int i = 0; i < g_sdlNumOfOnScreenTouchControls; ++i)
+	{
+		SDL_DestroyTexture(g_sdlOnScreenTouchControlsTextures[i]);
+		g_sdlOnScreenTouchControlsTextures[i] = NULL;
+	}
+	BE_ST_OnscreenTouchControl *touchControl;
+	for (i = 0, touchControl = mapping->onScreenTouchControls; touchControl->xpmImage; ++i, ++touchControl)
+	{
+		if (i == ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS)
+			BE_ST_ExitWithErrorMsg("BEL_ST_PrepareToShowTouchControls: On-screen touch controls overflow!");
+
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+		int texWidth = touchControl->xpmWidth, texHeight = touchControl->xpmHeight;
+		g_sdlOnScreenTouchControlsTextures[i] = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, texWidth, texHeight);
+		if (!(g_sdlOnScreenTouchControlsTextures[i]))
+		{
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 touch control texture,\n%s\n", SDL_GetError());
+			//Destroy window and renderer?
+			exit(0);
+		}
+		SDL_SetTextureBlendMode(g_sdlOnScreenTouchControlsTextures[i], SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+		// Update texture
+		uint32_t *pixels = (uint32_t *)malloc(4*texWidth*texHeight); // FIXME!!!!
+		if (pixels == NULL)
+		{
+			BE_ST_ExitWithErrorMsg("BEL_ST_PrepareToShowTouchControls: Out of memory for drawing to textures!");
+		}
+		uint32_t *currPtr = pixels;
+		for (int currRow = 0; currRow < texHeight; ++currRow)
+		{
+			const char *xpmRowPtr = touchControl->xpmImage[currRow];
+			for (int currCol = 0; currCol < texWidth; ++currCol, ++currPtr, ++xpmRowPtr)
+			{
+				switch (*xpmRowPtr)
+				{
+				case ' ':
+					*currPtr = 0x00000000; // HACK (BGRA, working with any order) because we don't have it defined elsewhere
+					break;
+				case '@':
+					*currPtr = g_sdlEGABGRAScreenColors[8]; // Gray
+					break;
+				case '.':
+					*currPtr = g_sdlEGABGRAScreenColors[7]; // Light gray
+					break;
+				// HACK - Compress 4 XPM colors into one
+				case '+':
+				case '#':
+				case '$':
+				case '%':
+					*currPtr = g_sdlEGABGRAScreenColors[15]; // White
+					break;
+				}
+				*currPtr &= 0xBFFFFFFF; // Add some alpha channel
+			}
+		}
+		SDL_UpdateTexture(g_sdlOnScreenTouchControlsTextures[i], NULL, pixels, 4*texWidth);
+		free(pixels);
+	}
+	g_sdlNumOfOnScreenTouchControls = i;
+
+	// Also verify this
+	BE_ST_TouchControlSingleMap *singleMap;
+	for (i = 0, singleMap = mapping->touchMappings; singleMap->xpmImage; ++i, ++singleMap)
+		;
+	if (i > ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS)
+		BE_ST_ExitWithErrorMsg("BEL_ST_PrepareToShowTouchControls: Touch controls overflow!");
+
+	BEL_ST_SetTouchControlsRects();
 }
 
 /*static*/ void BEL_ST_RedrawKeyToBuffer(uint32_t *picPtr, int picWidth, const char *text, bool isMarked, bool isPressed)
@@ -1046,16 +1150,17 @@ void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y)
 }
 
 extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
-void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping);
+extern const int g_sdlJoystickAxisMax;
+extern bool g_sdlDefaultMappingBinaryState;
+
+bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr);
 
 void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y)
 {
 	if ((x < g_sdlControllerDebugKeysRect.x) || (x >= g_sdlControllerDebugKeysRect.x+g_sdlControllerDebugKeysRect.w)
-	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h))
-	{
-		if (g_sdlControllerMappingActualCurr->prevMapping)
-			BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
-	}
+	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h)
+	)
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 
 	g_sdlKeyboardUIPointerUsed = true;
 	BEL_ST_CheckMovedPointerInDebugKeysUI(x, y);
@@ -1104,7 +1209,7 @@ static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
 				return g_sdlFaceButtonsScanCodes[1];
 			case '#':
 				return g_sdlFaceButtonsScanCodes[2];
-			case '@':
+			case '+':
 				return g_sdlFaceButtonsScanCodes[3];
 			case ' ':
 				return -1; // Totally transparent
@@ -1126,7 +1231,7 @@ static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
 				return g_sdlDpadScanCodes[1];
 			case '#':
 				return g_sdlDpadScanCodes[2];
-			case '@':
+			case '+':
 				return g_sdlDpadScanCodes[3];
 			case ' ':
 				return -1; // Totally transparent
@@ -1154,8 +1259,7 @@ void BEL_ST_CheckPressedPointerInControllerUI(int x, int y)
 	else if (g_sdlPointerSelectedPadButtonScanCode < 0)
 	{
 		g_sdlPointerSelectedPadButtonScanCode = 0;
-		if (g_sdlControllerMappingActualCurr->prevMapping)
-			BEL_ST_ReplaceControllerMapping(g_sdlControllerMappingActualCurr->prevMapping);
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 	}
 
 }
@@ -1204,6 +1308,159 @@ void BEL_ST_CheckMovedPointerInControllerUI(int x, int y)
 	}
 }
 
+static int BEL_ST_GetPointedTouchControlIndex(int x, int y)
+{
+	if (!g_sdlControllerMappingActualCurr->touchMappings)
+		return -1;
+
+	BE_ST_TouchControlSingleMap *singleMap;
+	int i;
+	for (i = 0, singleMap = g_sdlControllerMappingActualCurr->touchMappings; singleMap->xpmImage; ++i, ++singleMap)
+	{
+		if ((x >= g_sdlInputTouchControlsRects[i].x) && (x < g_sdlInputTouchControlsRects[i].x+g_sdlInputTouchControlsRects[i].w)
+		    && (y >= g_sdlInputTouchControlsRects[i].y) && (y < g_sdlInputTouchControlsRects[i].y+g_sdlInputTouchControlsRects[i].h))
+		{
+			const char **xpmImage = singleMap->xpmImage;
+			int normalizedX = (x-g_sdlInputTouchControlsRects[i].x)*singleMap->xpmWidth/g_sdlInputTouchControlsRects[i].w;
+			int normalizedY = (y-g_sdlInputTouchControlsRects[i].y)*singleMap->xpmHeight/g_sdlInputTouchControlsRects[i].h;
+			if (xpmImage[normalizedY][normalizedX] != ' ') // Non-transparent pixel
+				return i;
+		}
+	}
+	return -1;
+}
+
+void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	int i;
+	for (i = 0; i < nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
+		{
+			if (g_refKeenCfg.touchInputDebugging)
+			{
+				g_sdlTrackedFingers[i].lastX = x;
+				g_sdlTrackedFingers[i].lastY = y;
+				g_sdlForceGfxControlUiRefresh = true;
+			}
+			return; // In case of some mistaken double-tap of same finger
+		}
+
+
+	if (nOfTrackedFingers == MAX_NUM_OF_TRACKED_FINGERS)
+		return;
+
+	int touchControlIndex = BEL_ST_GetPointedTouchControlIndex(x, y);
+	BESDLTrackedFinger* trackedFinger = &g_sdlTrackedFingers[nOfTrackedFingers++];
+	trackedFinger->touchId = touchId;
+	trackedFinger->fingerId = fingerId;
+	trackedFinger->touchMappingIndex = touchControlIndex;
+	if (g_refKeenCfg.touchInputDebugging)
+	{
+		trackedFinger->lastX = x;
+		trackedFinger->lastY = y;
+		g_sdlForceGfxControlUiRefresh = true;
+	}
+	bool lastBinaryStatus = false;
+	BEL_ST_AltControlScheme_HandleEntry(
+		(touchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[touchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
+		g_sdlJoystickAxisMax,
+		(touchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
+	);
+}
+
+void BEL_ST_CheckPressedMouseInTouchControls(int x, int y)
+{
+	BEL_ST_CheckPressedPointerInTouchControls(0, 0, x, y); // Touch device id of 0 is invalid according to description of SDL_GetTouchDevice, so re-using this for mouse
+}
+
+void BEL_ST_CheckPressedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, float floatX, float floatY)
+{
+	BEL_ST_CheckPressedPointerInTouchControls(touchId, fingerId, floatX * g_sdlLastReportedWindowWidth, floatY * g_sdlLastReportedWindowHeight);
+}
+
+
+void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId)
+{
+	int i;
+	for (i = 0; i < nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
+			break;
+
+	if (i == nOfTrackedFingers)
+		return;
+
+	BESDLTrackedFinger* trackedFinger = &g_sdlTrackedFingers[i];
+	int prevTouchControlIndex = trackedFinger->touchMappingIndex;
+
+	bool lastBinaryStatus = true;
+	BEL_ST_AltControlScheme_HandleEntry(
+		(prevTouchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[prevTouchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
+		0,
+		(prevTouchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
+	);
+
+	*trackedFinger = g_sdlTrackedFingers[--nOfTrackedFingers]; // Remove finger entry without moving the rest, except for maybe the last
+	if (g_refKeenCfg.touchInputDebugging)
+		g_sdlForceGfxControlUiRefresh = true; // Remove debugging finger mark from screen
+}
+
+void BEL_ST_CheckReleasedMouseInTouchControls(void)
+{
+	BEL_ST_CheckReleasedPointerInTouchControls(0, 0); // Touch device id of 0 is invalid according to description of SDL_GetTouchDevice, so re-using this for mouse
+}
+
+void BEL_ST_CheckReleasedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId)
+{
+	BEL_ST_CheckReleasedPointerInTouchControls(touchId, fingerId);
+}
+
+
+void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	int i;
+	for (i = 0; i < nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
+			break;
+
+	if (i == nOfTrackedFingers)
+		return;
+
+	BESDLTrackedFinger* trackedFinger = &g_sdlTrackedFingers[i];
+	int prevTouchControlIndex = trackedFinger->touchMappingIndex;
+	int touchControlIndex = BEL_ST_GetPointedTouchControlIndex(x, y);
+	if (g_refKeenCfg.touchInputDebugging)
+	{
+		trackedFinger->lastX = x;
+		trackedFinger->lastY = y;
+		g_sdlForceGfxControlUiRefresh = true;
+	}
+	if (touchControlIndex != prevTouchControlIndex)
+	{
+		bool lastBinaryStatus = true;
+		BEL_ST_AltControlScheme_HandleEntry(
+			(prevTouchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[prevTouchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
+			0,
+			(prevTouchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
+		);
+		lastBinaryStatus = false;
+		BEL_ST_AltControlScheme_HandleEntry(
+			(touchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[touchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
+			g_sdlJoystickAxisMax,
+			(touchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
+		);
+		trackedFinger->touchMappingIndex = touchControlIndex;
+	}
+}
+
+void BEL_ST_CheckMovedMouseInTouchControls(int x, int y)
+{
+	BEL_ST_CheckMovedPointerInTouchControls(0, 0, x, y); // Touch device id of 0 is invalid according to description of SDL_GetTouchDevice, so re-using this for mouse
+}
+
+void BEL_ST_CheckMovedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, float floatX, float floatY)
+{
+	BEL_ST_CheckMovedPointerInTouchControls(touchId, fingerId, floatX * g_sdlLastReportedWindowWidth, floatY * (float)g_sdlLastReportedWindowHeight);
+}
 
 
 void BEL_ST_ReleasePressedKeysInTextInputUI(void)
@@ -1258,6 +1515,12 @@ void BEL_ST_ReleasePressedKeysInControllerUI(void)
 		BEL_ST_CheckReleasedPointerInControllerUI();
 }
 
+void BEL_ST_ReleasePressedButtonsInTouchControls(void)
+{
+	while (nOfTrackedFingers > 0)
+		BEL_ST_CheckReleasedPointerInTouchControls(g_sdlTrackedFingers[0].touchId, g_sdlTrackedFingers[0].fingerId);
+}
+
 /*static*/ void BEL_ST_HideAltInputUI(void)
 {
 	g_sdlFaceButtonsAreShown = false;
@@ -1270,6 +1533,74 @@ void BEL_ST_ReleasePressedKeysInControllerUI(void)
 	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
+
+static void BEL_ST_SetTouchControlsRects(void)
+{
+	if (((g_sdlControllerMappingActualCurr == NULL) || g_sdlControllerMappingActualCurr->touchMappings == NULL))
+		return;
+
+	SDL_Rect *currRect;
+	int winWidth, winHeight;
+	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
+	{
+		BE_ST_OnscreenTouchControl *touchControl;
+		for (currRect = g_sdlOnScreenTouchControlsRects, touchControl = g_sdlControllerMappingActualCurr->onScreenTouchControls; touchControl->xpmImage; ++currRect, ++touchControl)
+		{
+			if (touchControl->xpmPosX >= BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM/2)
+			{
+				currRect->x = winWidth-(BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-touchControl->xpmPosX)*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			}
+			else
+			{
+				currRect->x = touchControl->xpmPosX*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			}
+			if (touchControl->xpmPosY >= BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM/2)
+			{
+				currRect->y = winHeight-(BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-touchControl->xpmPosY)*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			}
+			else
+			{
+				currRect->y = touchControl->xpmPosY*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			}
+			currRect->w = touchControl->xpmWidth*winWidth/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			currRect->h = touchControl->xpmHeight*winHeight/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			if (currRect->w > currRect->h)
+				currRect->w = currRect->h;
+			else
+				currRect->h = currRect->w;
+		}
+	}
+	// FIXME - Code duplication
+	{
+		BE_ST_TouchControlSingleMap *currMapping;
+		for (currRect = g_sdlInputTouchControlsRects, currMapping = g_sdlControllerMappingActualCurr->touchMappings; currMapping->xpmImage; ++currRect, ++currMapping)
+		{
+			if (currMapping->xpmPosX >= BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM/2)
+			{
+				currRect->x = winWidth-(BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-currMapping->xpmPosX)*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			}
+			else
+			{
+				currRect->x = currMapping->xpmPosX*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			}
+			if (currMapping->xpmPosY >= BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM/2)
+			{
+				currRect->y = winHeight-(BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-currMapping->xpmPosY)*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			}
+			else
+			{
+				currRect->y = currMapping->xpmPosY*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			}
+			currRect->w = currMapping->xpmWidth*winWidth/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			currRect->h = currMapping->xpmHeight*winHeight/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+			if (currRect->w > currRect->h)
+				currRect->w = currRect->h;
+			else
+				currRect->h = currRect->w;
+		}
+	}
+}
 
 void BEL_ST_SetGfxOutputRects(bool allowResize)
 {
@@ -1301,6 +1632,9 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	int srcBorderedHeight = srcBorderTop+srcHeight+srcBorderBottom;
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+
+	g_sdlLastReportedWindowWidth = winWidth;
+	g_sdlLastReportedWindowHeight = winHeight;
 
 	// Special case - We may resize window based on mode, but only if allowResize == true (to prevent any possible infinite resizes loop)
 	if (allowResize && g_sdlIsSoftwareRendered && !g_refKeenCfg.forceFullSoftScaling && (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)))
@@ -1386,7 +1720,7 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	int offset;
 	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
 	g_sdlControllerFaceButtonsRect.w = g_sdlControllerFaceButtonsRect.h = minWinDim/ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO;
-	offset = minWinDim/(16*ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO);
+	offset = minWinDim*8/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
 	g_sdlControllerFaceButtonsRect.x = winWidth-g_sdlControllerFaceButtonsRect.w-offset;
 	g_sdlControllerFaceButtonsRect.y = winHeight-g_sdlControllerFaceButtonsRect.h-offset;
 	// Repeat for D-pad (same dimensions as the face buttons, other side)
@@ -1394,15 +1728,26 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	g_sdlControllerDpadRect.x = offset;
 	g_sdlControllerDpadRect.y = g_sdlControllerFaceButtonsRect.y;
 	// Also this - text-input keyboard (somewhat different because the keyboard is rectangular, but not square-shaped)
-	g_sdlControllerTextInputRect.w = minWinDim;
-	g_sdlControllerTextInputRect.h = g_sdlControllerTextInputRect.w * ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT / ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH;
+	g_sdlControllerTextInputRect.w = winWidth;
+	g_sdlControllerTextInputRect.h = winHeight*3/8;
+	if (g_sdlControllerTextInputRect.w * ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT > g_sdlControllerTextInputRect.h * ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH)
+		g_sdlControllerTextInputRect.w = g_sdlControllerTextInputRect.h * ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH / ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT;
+	else
+		g_sdlControllerTextInputRect.h = g_sdlControllerTextInputRect.w * ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT / ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH;
 	g_sdlControllerTextInputRect.x = (winWidth-g_sdlControllerTextInputRect.w)/2;
 	g_sdlControllerTextInputRect.y = winHeight-g_sdlControllerTextInputRect.h;
 	// Same with debug keys
-	g_sdlControllerDebugKeysRect.w = minWinDim;
-	g_sdlControllerDebugKeysRect.h = g_sdlControllerDebugKeysRect.w * ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT / ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH;
+	g_sdlControllerDebugKeysRect.w = winWidth;
+	g_sdlControllerDebugKeysRect.h = winHeight*3/8;
+	if (g_sdlControllerDebugKeysRect.w * ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT > g_sdlControllerDebugKeysRect.h * ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH)
+		g_sdlControllerDebugKeysRect.w = g_sdlControllerDebugKeysRect.h * ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH / ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT;
+	else
+		g_sdlControllerDebugKeysRect.h = g_sdlControllerDebugKeysRect.w * ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT / ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH;
 	g_sdlControllerDebugKeysRect.x = (winWidth-g_sdlControllerDebugKeysRect.w)/2;
 	g_sdlControllerDebugKeysRect.y = winHeight-g_sdlControllerDebugKeysRect.h;
+
+	g_sdlDebugFingerRectSideLen = minWinDim/4;
+	BEL_ST_SetTouchControlsRects();
 }
 
 void BEL_ST_ForceHostDisplayUpdate(void)
@@ -1916,7 +2261,25 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 {
 	g_sdlForceGfxControlUiRefresh = false;
 
-	if (g_sdlShowControllerUI)
+	if (g_refKeenCfg.touchInputDebugging)
+	{
+		SDL_SetRenderDrawColor(g_sdlRenderer, 0xFF, 0x00, 0x00, 0xBF); // Includes some alpha
+		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_BLEND);
+		BESDLTrackedFinger *trackedFinger = g_sdlTrackedFingers;
+		for (int i = 0; i < nOfTrackedFingers; ++i, ++trackedFinger)
+		{
+			SDL_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
+			SDL_RenderFillRect(g_sdlRenderer, &rect);
+		}
+		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_NONE);
+	}
+
+	if (g_refKeenCfg.enableTouchInput && (g_sdlControllerMappingActualCurr->touchMappings != NULL)) // FIXME use a different state bool var?
+	{
+		for (int i = 0; i < g_sdlNumOfOnScreenTouchControls; ++i)
+			SDL_RenderCopy(g_sdlRenderer, g_sdlOnScreenTouchControlsTextures[i], NULL, &g_sdlOnScreenTouchControlsRects[i]);
+	}
+	if (g_sdlShowControllerUI || g_refKeenCfg.enableTouchInput)
 	{
 		if (g_sdlFaceButtonsAreShown)
 		{
@@ -2115,10 +2478,12 @@ void BEL_ST_UpdateHostDisplay(void)
 	SDL_UnlockTexture(g_sdlTexture);
 
 dorefresh:
+
 	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(g_sdlRenderer);
 	SDL_SetRenderDrawColor(g_sdlRenderer, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>16)&0xFF, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>8)&0xFF, g_sdlEGACurrBGRAPaletteAndBorder[16]&0xFF, SDL_ALPHA_OPAQUE);
 	SDL_RenderFillRect(g_sdlRenderer, &g_sdlAspectCorrectionBorderedRect);
+
 	if (g_sdlTargetTexture)
 	{
 		SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);

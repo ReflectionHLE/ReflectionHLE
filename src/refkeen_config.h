@@ -22,6 +22,10 @@
 #endif
 #endif
 
+#if (defined ANDROID) || (defined __ANDROID__)
+#define REFKEEN_PLATFORM_ANDROID
+#endif
+
 #if (defined __unix__) || (defined __unix) || (defined unix)
 #define REFKEEN_PLATFORM_UNIX
 #endif

@@ -1092,6 +1092,8 @@ US_StartCursor(void)
 	VW_ShowCursor();
 
 	IN_ReadCursor(&info);	// Dispose of any accumulated movement
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_UpdateVirtualMouseCursor(CursorX, CursorY);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1132,6 +1134,9 @@ US_UpdateCursor(void)
 			CursorY = 0;
 
 		VW_MoveCursor(CursorX,CursorY);
+		// REFKEEN - Alternative controllers support
+		BE_ST_AltControlScheme_UpdateVirtualMouseCursor(CursorX, CursorY);
+
 		CursorBad = false;
 	}
 	Button0 = info.button0;

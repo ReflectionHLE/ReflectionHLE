@@ -19,6 +19,11 @@
 #error "FATAL ERROR: No Reflection port game macro is defined!"
 #endif
 
+// HACK - Adding a dependency on SDL2 for Android! (Used for external storage path)
+#ifdef REFKEEN_PLATFORM_ANDROID
+#include "SDL_system.h"
+#endif
+
 //#include "be_st.h" // For BE_ST_ExitWithErrorMsg
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
@@ -359,7 +364,29 @@ void BE_Cross_PrepareAppPaths(void)
 		BEL_Cross_AddRootPathIfDir(path, "gog", "GOG Games (default)");
 #endif
 
-#ifdef REFKEEN_PLATFORM_UNIX
+#ifdef REFKEEN_PLATFORM_ANDROID
+	// HACK - Adding a dependency on SDL2 for Android!
+	const char *externalStoragePath = SDL_AndroidGetExternalStoragePath();
+	if (externalStoragePath && *externalStoragePath)
+	{
+		BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), externalStoragePath);
+		memcpy(g_be_appNewCfgPath, g_be_appDataPath, sizeof(g_be_appDataPath));
+		// HACK - We don't look at arguments set by the user, but then these are never sent on Android...
+	}
+
+	// FIXME - These environment variables don't seem to be shown in any
+	// official documentation for Android, but at least EXTERNAL_STORAGE
+	// appears to do the job, and they're simple to use from C/C++.
+	const char *primaryStorage = getenv("EXTERNAL_STORAGE");
+	if (primaryStorage && *primaryStorage)
+		BEL_Cross_AddRootPathIfDir(primaryStorage, "externalstorage", "Primary storage");
+	else
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "EXTERNAL_STORAGE environment variable is not properly defined.\n");
+	// Let's ignore SECONDARY_STORAGE for now, since we may get a colon-delimited list of paths
+	const char *externalSDCardStorage = getenv("EXTERNAL_SDCARD_STORAGE");
+	if (externalSDCardStorage && *externalSDCardStorage)
+		BEL_Cross_AddRootPathIfDir(externalSDCardStorage, "externalsdcardstorage", "External SD Card storage");
+#elif (defined REFKEEN_PLATFORM_UNIX)
 	const char *homeVar = getenv("HOME");
 	const char *envVar;
 
