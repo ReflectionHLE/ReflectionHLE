@@ -124,14 +124,16 @@ static int nOfTrackedFingers = 0;
 #define ALTCONTROLLER_FONT_XPM_ROW_OFFSET 3
 #define ALTCONTROLLER_PAD_XPM_ROW_OFFSET 8
 
-#define ALTCONTROLLER_PAD_PIX_WIDTH 48
-#define ALTCONTROLLER_PAD_PIX_HEIGHT 48
+#define ALTCONTROLLER_DPAD_PIX_DIM 48
+#define ALTCONTROLLER_FACEBUTTONS_PIX_DIM 56
+// The max. of the above
+#define ALTCONTROLLER_PAD_MAX_PIX_DIM ((ALTCONTROLLER_DPAD_PIX_DIM > ALTCONTROLLER_FACEBUTTONS_PIX_DIM) ? ALTCONTROLLER_DPAD_PIX_DIM : ALTCONTROLLER_FACEBUTTONS_PIX_DIM)
+
 #define ALTCONTROLLER_CHAR_PIX_WIDTH 6
 #define ALTCONTROLLER_CHAR_PIX_HEIGHT 8
 #define ALTCONTROLLER_CHAR_TOTAL_PIX_WIDTH 570
 
 #define ALTCONTROLLER_EDGE_PIX_DIST 2
-#define ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO 3
 
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH 22
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT 12
@@ -156,7 +158,8 @@ static int nOfTrackedFingers = 0;
 
 // These are given as (x, y) offset pairs within the non-scaled,
 // face buttons image, assuming longest texts possible (3 chars long)
-static const int g_sdlControllerFaceButtonsTextLocs[] = {15, 34, 28, 21, 2, 21, 15, 8};
+static const int g_sdlControllerFaceButtonsTextLocs[] = {19, 42, 36, 25, 2, 25, 19, 8};
+static const int g_sdlControllerDpadTextLocs[] = {15, 34, 28, 21, 2, 21, 15, 8};
 
 static SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect, g_sdlControllerDebugKeysRect;
 static SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture, *g_sdlDebugKeysTexture;
@@ -496,14 +499,14 @@ void BEL_ST_SetRelativeMouseMotion(bool enable);
 }
 
 
-static void BEL_ST_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr)
+static void BEL_ST_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr, int len)
 {
 	if (*padTexturePtrPtr)
 	{
 		return;
 	}
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	*padTexturePtrPtr = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_PAD_PIX_WIDTH, ALTCONTROLLER_PAD_PIX_HEIGHT);
+	*padTexturePtrPtr = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, len, len);
 	if (!(*padTexturePtrPtr))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 pad texture,\n%s\n", SDL_GetError());
@@ -533,16 +536,16 @@ static void BEL_ST_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char
 	}
 }
 
-static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr)
+static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr, const int *textLocs, int len)
 {
-	BEL_ST_CreatePadTextureIfNeeded(padTexturePtrPtr);
+	BEL_ST_CreatePadTextureIfNeeded(padTexturePtrPtr, len);
 
-	uint32_t pixels[ALTCONTROLLER_PAD_PIX_WIDTH*ALTCONTROLLER_PAD_PIX_HEIGHT];
+	uint32_t pixels[ALTCONTROLLER_PAD_MAX_PIX_DIM*ALTCONTROLLER_PAD_MAX_PIX_DIM];
 	uint32_t *currPtr = pixels;
-	for (int currRow = 0, xpmIndex = ALTCONTROLLER_PAD_XPM_ROW_OFFSET; currRow < ALTCONTROLLER_PAD_PIX_HEIGHT; ++currRow, ++xpmIndex)
+	for (int currRow = 0, xpmIndex = ALTCONTROLLER_PAD_XPM_ROW_OFFSET; currRow < len; ++currRow, ++xpmIndex)
 	{
 		const char *xpmRowPtr = padXpm[xpmIndex];
-		for (int currCol = 0; currCol < ALTCONTROLLER_PAD_PIX_WIDTH; ++currCol, ++currPtr, ++xpmRowPtr)
+		for (int currCol = 0; currCol < len; ++currCol, ++currPtr, ++xpmRowPtr)
 		{
 			switch (*xpmRowPtr)
 			{
@@ -565,21 +568,24 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 			}
 		}
 	}
-	for (int counter = 0; counter < 4; ++scanCodes, ++counter)
-	{
-		if (!(*scanCodes))
-			continue;
+	// Special case
+	static const int arrowsScanCodes[] = {BE_ST_SC_DOWN, BE_ST_SC_RIGHT, BE_ST_SC_LEFT, BE_ST_SC_UP};
+	if ((padXpm != pad_dpad_xpm) || memcmp(scanCodes, arrowsScanCodes, sizeof(arrowsScanCodes)))
+		for (int counter = 0; counter < 4; ++scanCodes, ++counter)
+		{
+			if (!(*scanCodes))
+				continue;
 
-		const char *str = g_sdlDOSScanCodePadStrs[*scanCodes];
-		BEL_ST_RedrawTextToBuffer(pixels + g_sdlControllerFaceButtonsTextLocs[2*counter] + g_sdlControllerFaceButtonsTextLocs[2*counter+1]*ALTCONTROLLER_PAD_PIX_WIDTH + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), ALTCONTROLLER_PAD_PIX_WIDTH, str);
-	}
+			const char *str = g_sdlDOSScanCodePadStrs[*scanCodes];
+			BEL_ST_RedrawTextToBuffer(pixels + textLocs[2*counter] + textLocs[2*counter+1]*len + (3-strlen(str))*(ALTCONTROLLER_CHAR_PIX_WIDTH/2), len, str);
+		}
 	// Add some alpha channel
 	currPtr = pixels;
-	for (int pixCounter = 0; pixCounter < ALTCONTROLLER_PAD_PIX_WIDTH*ALTCONTROLLER_PAD_PIX_HEIGHT; ++pixCounter, ++currPtr)
+	for (int pixCounter = 0; pixCounter < len*len; ++pixCounter, ++currPtr)
 	{
 		*currPtr &= 0xBFFFFFFF; // BGRA
 	}
-	SDL_UpdateTexture(*padTexturePtrPtr, NULL, pixels, 4*ALTCONTROLLER_PAD_PIX_WIDTH);
+	SDL_UpdateTexture(*padTexturePtrPtr, NULL, pixels, 4*len);
 	*areButtonsShownPtr = true;
 
 	g_sdlForceGfxControlUiRefresh = true;
@@ -603,11 +609,11 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 
 	memcpy(g_sdlFaceButtonsScanCodes, faceButtonsScancodes, sizeof(faceButtonsScancodes));
 	if (memcmp(&faceButtonsScancodes, &emptyScancodesArray, sizeof(emptyScancodesArray)))
-		BEL_ST_PrepareToShowOnePad(faceButtonsScancodes, pad_thumb_buttons_xpm, &g_sdlFaceButtonsTexture, &g_sdlFaceButtonsAreShown);
+		BEL_ST_PrepareToShowOnePad(faceButtonsScancodes, pad_thumb_buttons_xpm, &g_sdlFaceButtonsTexture, &g_sdlFaceButtonsAreShown, g_sdlControllerFaceButtonsTextLocs, ALTCONTROLLER_FACEBUTTONS_PIX_DIM);
 
 	memcpy(g_sdlDpadScanCodes, dpadScancodes, sizeof(dpadScancodes));
 	if (memcmp(&dpadScancodes, &emptyScancodesArray, sizeof(emptyScancodesArray)))
-		BEL_ST_PrepareToShowOnePad(dpadScancodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown);
+		BEL_ST_PrepareToShowOnePad(dpadScancodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown, g_sdlControllerDpadTextLocs, ALTCONTROLLER_DPAD_PIX_DIM);
 
 	g_sdlPointerSelectedPadButtonScanCode = 0;
 	g_sdlControllerUIPointerPressed = false;
@@ -1199,8 +1205,8 @@ static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
 	    && (y >= g_sdlControllerFaceButtonsRect.y) && (y < g_sdlControllerFaceButtonsRect.y+g_sdlControllerFaceButtonsRect.h))
 	{
 		// Normalize coordinates to pad
-		x = (x-g_sdlControllerFaceButtonsRect.x)*ALTCONTROLLER_PAD_PIX_WIDTH/g_sdlControllerFaceButtonsRect.w;
-		y = (y-g_sdlControllerFaceButtonsRect.y)*ALTCONTROLLER_PAD_PIX_HEIGHT/g_sdlControllerFaceButtonsRect.h;
+		x = (x-g_sdlControllerFaceButtonsRect.x)*ALTCONTROLLER_FACEBUTTONS_PIX_DIM/g_sdlControllerFaceButtonsRect.w;
+		y = (y-g_sdlControllerFaceButtonsRect.y)*ALTCONTROLLER_FACEBUTTONS_PIX_DIM/g_sdlControllerFaceButtonsRect.h;
 		switch (pad_thumb_buttons_xpm[y+ALTCONTROLLER_PAD_XPM_ROW_OFFSET][x])
 		{
 			case '%':
@@ -1221,8 +1227,8 @@ static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
 	         && (y >= g_sdlControllerDpadRect.y) && (y < g_sdlControllerDpadRect.y+g_sdlControllerDpadRect.h))
 	{
 		// Normalize coordinates to pad
-		x = (x-g_sdlControllerDpadRect.x)*ALTCONTROLLER_PAD_PIX_WIDTH/g_sdlControllerDpadRect.w;
-		y = (y-g_sdlControllerDpadRect.y)*ALTCONTROLLER_PAD_PIX_HEIGHT/g_sdlControllerDpadRect.h;
+		x = (x-g_sdlControllerDpadRect.x)*ALTCONTROLLER_DPAD_PIX_DIM/g_sdlControllerDpadRect.w;
+		y = (y-g_sdlControllerDpadRect.y)*ALTCONTROLLER_DPAD_PIX_DIM/g_sdlControllerDpadRect.h;
 		switch (pad_dpad_xpm[y+ALTCONTROLLER_PAD_XPM_ROW_OFFSET][x])
 		{
 			case '%':
@@ -1717,16 +1723,15 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	// 1. Use same dimensions independently of scaling.
 	// 2. The dimensions of the controller UI are picked relatively to the host window's internal contents (without borders), not directly related to the client window size.
 	// 3. Also taking the whole window into account (this doesn't depend on "screen mode", borders and more).
-	int offset;
+	// 4. Finally, try to be consistent with the positioning and sizes of touch controls (even though it's not necessary).
 	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
-	g_sdlControllerFaceButtonsRect.w = g_sdlControllerFaceButtonsRect.h = minWinDim/ALTCONTROLLER_FACEBUTTONS_SCREEN_DIM_RATIO;
-	offset = minWinDim*8/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
-	g_sdlControllerFaceButtonsRect.x = winWidth-g_sdlControllerFaceButtonsRect.w-offset;
-	g_sdlControllerFaceButtonsRect.y = winHeight-g_sdlControllerFaceButtonsRect.h-offset;
+	g_sdlControllerFaceButtonsRect.w = g_sdlControllerFaceButtonsRect.h = 56*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+	g_sdlControllerFaceButtonsRect.x = winWidth-(56+8)*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+	g_sdlControllerFaceButtonsRect.y = winHeight-(56+8)*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
 	// Repeat for D-pad (same dimensions as the face buttons, other side)
-	g_sdlControllerDpadRect.w = g_sdlControllerDpadRect.h = g_sdlControllerFaceButtonsRect.w;
-	g_sdlControllerDpadRect.x = offset;
-	g_sdlControllerDpadRect.y = g_sdlControllerFaceButtonsRect.y;
+	g_sdlControllerDpadRect.w = g_sdlControllerDpadRect.h = 48*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+	g_sdlControllerDpadRect.x = minWinDim*8/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
+	g_sdlControllerDpadRect.y = winHeight-(48+8)*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
 	// Also this - text-input keyboard (somewhat different because the keyboard is rectangular, but not square-shaped)
 	g_sdlControllerTextInputRect.w = winWidth;
 	g_sdlControllerTextInputRect.h = winHeight*3/8;

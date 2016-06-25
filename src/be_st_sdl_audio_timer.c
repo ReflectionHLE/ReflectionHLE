@@ -299,7 +299,7 @@ void BE_ST_InitAudio(void)
 				g_sdlSampleRateConvCurrIndex = 0;
 				g_sdlSampleRateConvCounter = 0;
 			}
-			g_sdlPCOutNumOfSamples = 4*g_sdlAudioSpec.samples/sizeof(BE_ST_SndSample_T);
+			g_sdlPCOutNumOfSamples = 2*g_sdlAudioSpec.samples;
 			g_sdlPCOutSamples = (BE_ST_SndSample_T *)malloc(sizeof(BE_ST_SndSample_T) * g_sdlPCOutNumOfSamples); 
 			if (g_sdlPCOutSamples == NULL)
 				BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlPCOutSamples.)");

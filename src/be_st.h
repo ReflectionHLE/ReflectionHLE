@@ -29,7 +29,7 @@
 
 // On-screen touch controls are scaled such that the largest square
 // fitting in the window has the dimensions of 140x140 (scaled) pixels
-#define BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM 140
+#define BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM 130
 
 /*** General ***/
 void BE_ST_InitCommon(void); // Before game or launcher

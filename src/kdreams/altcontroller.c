@@ -34,15 +34,22 @@
 #include "../rsrc/button_stats.xpm"
 #include "../rsrc/button_pageup.xpm"
 #include "../rsrc/button_pagedown.xpm"
+
 #include "../rsrc/pad_dpad.xpm"
 #include "../rsrc/pad_dpad_left_input.xpm"
 #include "../rsrc/pad_dpad_right_input.xpm"
 #include "../rsrc/pad_dpad_up_input.xpm"
 #include "../rsrc/pad_dpad_down_input.xpm"
-#include "../rsrc/pad_dpad_topleft_input.xpm"
-#include "../rsrc/pad_dpad_topright_input.xpm"
-#include "../rsrc/pad_dpad_bottomleft_input.xpm"
-#include "../rsrc/pad_dpad_bottomright_input.xpm"
+
+#include "../rsrc/analog_circle.xpm"
+#include "../rsrc/analog_circle_left_input.xpm"
+#include "../rsrc/analog_circle_right_input.xpm"
+#include "../rsrc/analog_circle_top_input.xpm"
+#include "../rsrc/analog_circle_bottom_input.xpm"
+#include "../rsrc/analog_circle_topleft_input.xpm"
+#include "../rsrc/analog_circle_topright_input.xpm"
+#include "../rsrc/analog_circle_bottomleft_input.xpm"
+#include "../rsrc/analog_circle_bottomright_input.xpm"
 
 BE_ST_ControllerSingleMap *g_ingame_altcontrol_button0mappings[2], *g_ingame_altcontrol_button1mappings[2],
 	*g_ingame_altcontrol_upmappings[4], *g_ingame_altcontrol_downmappings[4], *g_ingame_altcontrol_leftmappings[4], *g_ingame_altcontrol_rightmappings[4];
@@ -60,7 +67,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		{button_stats_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-56-8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-39-8},
 		{button_back_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-22-8, 2+8},
 		{button_pause_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-46-8, 2+8},
-		{pad_dpad_xpm+8, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8},
+		{analog_circle_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8},
 		{button_function_keys_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-46-8, 26+8},
 		{0}
 	},
@@ -74,28 +81,28 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		 button_shoot_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-22-8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-39-8
 		},
 		{{NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 pad_dpad_left_input_xpm+4, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
+		 analog_circle_left_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 		},
 		{{NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 pad_dpad_right_input_xpm+4, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
+		 analog_circle_right_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 		},
 		{{NULL, BE_ST_SC_UP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 pad_dpad_up_input_xpm+4, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
+		 analog_circle_top_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 		},
 		{{NULL, BE_ST_SC_DOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 pad_dpad_down_input_xpm+4, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
+		 analog_circle_bottom_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 		},
 		{{NULL, BE_ST_SC_HOME, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 pad_dpad_topleft_input_xpm+4, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
+		 analog_circle_topleft_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 		},
 		{{NULL, BE_ST_SC_PAGEUP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 pad_dpad_topright_input_xpm+4, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
+		 analog_circle_topright_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 		},
 		{{NULL, BE_ST_SC_END, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 pad_dpad_bottomleft_input_xpm+4, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
+		 analog_circle_bottomleft_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 		},
 		{{NULL, BE_ST_SC_PAGEDOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 pad_dpad_bottomright_input_xpm+4, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
+		 analog_circle_bottomright_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 		},
 		/*** Not adjusted as above ***/
 		{{NULL, BE_ST_SC_SPACE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
