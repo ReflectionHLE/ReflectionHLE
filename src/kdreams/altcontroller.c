@@ -460,6 +460,9 @@ void RefKeen_PrepareAltControllerScheme(void)
 	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
 	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
 
+	// HACK (leave US_LineInput this way)
+	g_beStControllerMappingTextInput.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+	g_beStControllerMappingTextInput.defaultMapping.val = BE_ST_SC_ESC;
 	// HACK (hide debug keys this way)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	g_beStControllerMappingDebugKeys.defaultMapping.otherMappingPtr = &g_ingame_altcontrol_mapping_gameplay;

@@ -1082,22 +1082,18 @@ void BEL_ST_CheckMovedPointerInTextInputUI(int x, int y)
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-void BEL_ST_ReleasePressedKeysInTextInputUI(void);
+extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
+extern const int g_sdlJoystickAxisMax;
+extern bool g_sdlDefaultMappingBinaryState;
+
+bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr);
 
 void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y)
 {
 	if ((x < g_sdlControllerTextInputRect.x) || (x >= g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
-	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h))
-	{
-		BEL_ST_ReleasePressedKeysInTextInputUI();
-		// HACK
-		emulatedDOSKeyEvent dosKeyEvent;
-		dosKeyEvent.isSpecial = false;
-		dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
-		BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
-		BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
-		return;
-	}
+	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h)
+	)
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 
 	g_sdlKeyboardUIPointerUsed = true;
 	BEL_ST_CheckMovedPointerInTextInputUI(x, y);
@@ -1154,12 +1150,6 @@ void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y)
 
 	g_sdlForceGfxControlUiRefresh = true;
 }
-
-extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
-extern const int g_sdlJoystickAxisMax;
-extern bool g_sdlDefaultMappingBinaryState;
-
-bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr);
 
 void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y)
 {
