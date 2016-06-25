@@ -34,10 +34,11 @@
 #include "../rsrc/button_heal.xpm"
 #include "../rsrc/button_nuke.xpm"
 #include "../rsrc/button_bolt.xpm"
-#include "../rsrc/button_run.xpm"
 #ifdef REFKEEN_VER_CAT3D
+#include "../rsrc/button_run.xpm"
 #include "../rsrc/button_pause.xpm"
 #else
+#include "../rsrc/button_quickturn.xpm"
 #include "../rsrc/button_function_keys.xpm"
 #endif
 
@@ -78,11 +79,12 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		{button_heal_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-56-8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-39-8},
 		{button_nuke_xpm+5, 22, 22, 8, 8},
 		{button_bolt_xpm+5, 22, 22, 34+8, 8},
-		{button_run_xpm+5, 22, 22, 17+8, 17+8},
 		{button_back_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-22-8, 2+8},
 #ifdef REFKEEN_VER_CAT3D
+		{button_run_xpm+5, 22, 22, 17+8, 17+8},
 		{button_pause_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-46-8, 2+8},
 #else
+		{button_quickturn_xpm+5, 22, 22, 17+8, 17+8},
 		{button_function_keys_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-46-8, 2+8},
 #endif
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
@@ -139,22 +141,20 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 #endif
 		 button_bolt_xpm+5, 22, 22, 34+8, 8
 		},
-		{
-#ifdef REFKEEN_VER_CAT3D
-		{NULL, BE_ST_SC_RSHIFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-#else
-		{NULL, BE_ST_SC_TAB, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-#endif
-		 button_run_xpm+5, 22, 22, 17+8, 17+8
-		},
 		{{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		 button_back_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-22-8, 2+8
 		},
 #ifdef REFKEEN_VER_CAT3D
+		{{NULL, BE_ST_SC_RSHIFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		 button_run_xpm+5, 22, 22, 17+8, 17+8
+		},
 		{{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		 button_pause_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-46-8, 2+8
 		},
 #else
+		{{NULL, BE_ST_SC_TAB, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		 button_quickturn_xpm+5, 22, 22, 17+8, 17+8
+		},
 		{{&g_ingame_altcontrol_mapping_funckeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
 		 button_function_keys_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-46-8, 2+8
 		},
