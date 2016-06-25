@@ -905,17 +905,23 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 		g_sdlAspectCorrectionBorderedRect.y = 0;
 	}
 
-	// This is similar to code in be_st_sdl_graphics.c:
-	// 1. Use same dimensions independently of scaling.
-	// 2. The dimensions of the controller UI are picked relatively to the host window's internal contents (without borders), not directly related to the client window size.
-	// 3. Also taking the whole window into account (this doesn't depend on "screen mode", borders and more).
-	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
-	g_sdlControllerLauncherTextSearchRect.w = minWinDim;
-	g_sdlControllerLauncherTextSearchRect.h = g_sdlControllerLauncherTextSearchRect.w * ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT / ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH;
+	// This is similar to code in be_st_sdl_graphics.c (possibly with minor differences)
+
+	g_sdlControllerLauncherTextSearchRect.w = winWidth;
+	g_sdlControllerLauncherTextSearchRect.h = winHeight/2;
+	if (g_sdlControllerLauncherTextSearchRect.w * ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT > g_sdlControllerLauncherTextSearchRect.h * ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH)
+		g_sdlControllerLauncherTextSearchRect.w = g_sdlControllerLauncherTextSearchRect.h * ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH / ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT;
+	else
+		g_sdlControllerLauncherTextSearchRect.h = g_sdlControllerLauncherTextSearchRect.w * ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT / ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH;
 	g_sdlControllerLauncherTextSearchRect.x = (winWidth-g_sdlControllerLauncherTextSearchRect.w)/2;
 	g_sdlControllerLauncherTextSearchRect.y = winHeight-g_sdlControllerLauncherTextSearchRect.h;
-	g_sdlControllerLauncherTextInputRect.w = minWinDim;
-	g_sdlControllerLauncherTextInputRect.h = g_sdlControllerLauncherTextInputRect.w * ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT / ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH;
+
+	g_sdlControllerLauncherTextInputRect.w = winWidth;
+	g_sdlControllerLauncherTextInputRect.h = winHeight*3/8;
+	if (g_sdlControllerLauncherTextInputRect.w * ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT > g_sdlControllerLauncherTextInputRect.h * ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH)
+		g_sdlControllerLauncherTextInputRect.w = g_sdlControllerLauncherTextInputRect.h * ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH / ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT;
+	else
+		g_sdlControllerLauncherTextInputRect.h = g_sdlControllerLauncherTextInputRect.w * ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT / ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH;
 	g_sdlControllerLauncherTextInputRect.x = (winWidth-g_sdlControllerLauncherTextInputRect.w)/2;
 	g_sdlControllerLauncherTextInputRect.y = winHeight-g_sdlControllerLauncherTextInputRect.h;
 }
