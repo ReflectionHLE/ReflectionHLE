@@ -1336,6 +1336,43 @@ static int BEL_ST_GetPointedTouchControlIndex(int x, int y)
 	return -1;
 }
 
+static void BEL_ST_HandleDefaultPointerActionInTouchControls(int touchControlIndex, bool isPressed)
+{
+	bool lastBinaryStatus = !isPressed;
+	BEL_ST_AltControlScheme_HandleEntry(
+		(touchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[touchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
+		isPressed ? g_sdlJoystickAxisMax : 0,
+		(touchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
+	);
+}
+
+static void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y)
+{
+	extern int16_t g_sdlEmuMouseMotionAccumulatedState[2];
+	extern int16_t g_sdlVirtualMouseCursorState[2];
+	//g_sdlForceGfxControlUiRefresh = true; // FIXME WHY???
+	if (x < g_sdlAspectCorrectionRect.x)
+		x = 0;
+	else if (x >= g_sdlAspectCorrectionRect.x + g_sdlAspectCorrectionRect.w)
+		x = GFX_TEX_WIDTH-1;
+	else
+		x = (x-g_sdlAspectCorrectionRect.x)*GFX_TEX_WIDTH/g_sdlAspectCorrectionRect.w;
+
+	if (y < g_sdlAspectCorrectionRect.y)
+		y = 0;
+	else if (y >= g_sdlAspectCorrectionRect.y + g_sdlAspectCorrectionRect.h)
+		y = GFX_TEX_HEIGHT-1;
+	else
+		y = (y-g_sdlAspectCorrectionRect.y)*GFX_TEX_HEIGHT/g_sdlAspectCorrectionRect.h;
+
+	g_sdlEmuMouseMotionAccumulatedState[0] += x-g_sdlVirtualMouseCursorState[0];
+	g_sdlEmuMouseMotionAccumulatedState[1] += y-g_sdlVirtualMouseCursorState[1];
+	g_sdlVirtualMouseCursorState[0] = x;
+	g_sdlVirtualMouseCursorState[1] = y;
+}
+
+extern int g_sdlEmuMouseButtonsState;
+
 void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	int i;
@@ -1366,12 +1403,14 @@ void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID
 		trackedFinger->lastY = y;
 		g_sdlForceGfxControlUiRefresh = true;
 	}
-	bool lastBinaryStatus = false;
-	BEL_ST_AltControlScheme_HandleEntry(
-		(touchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[touchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
-		g_sdlJoystickAxisMax,
-		(touchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
-	);
+
+	if ((touchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+	{
+		g_sdlEmuMouseButtonsState |= 1;
+		BEL_ST_UpdateVirtualCursorPositionFromPointer(x, y);
+	}
+	else
+		BEL_ST_HandleDefaultPointerActionInTouchControls(touchControlIndex, true);
 }
 
 void BEL_ST_CheckPressedMouseInTouchControls(int x, int y)
@@ -1398,12 +1437,10 @@ void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerI
 	BESDLTrackedFinger* trackedFinger = &g_sdlTrackedFingers[i];
 	int prevTouchControlIndex = trackedFinger->touchMappingIndex;
 
-	bool lastBinaryStatus = true;
-	BEL_ST_AltControlScheme_HandleEntry(
-		(prevTouchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[prevTouchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
-		0,
-		(prevTouchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
-	);
+	if ((prevTouchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+		g_sdlEmuMouseButtonsState &= ~1;
+	else
+		BEL_ST_HandleDefaultPointerActionInTouchControls(prevTouchControlIndex, false);
 
 	*trackedFinger = g_sdlTrackedFingers[--nOfTrackedFingers]; // Remove finger entry without moving the rest, except for maybe the last
 	if (g_refKeenCfg.touchInputDebugging)
@@ -1442,20 +1479,20 @@ void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID f
 	}
 	if (touchControlIndex != prevTouchControlIndex)
 	{
-		bool lastBinaryStatus = true;
-		BEL_ST_AltControlScheme_HandleEntry(
-			(prevTouchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[prevTouchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
-			0,
-			(prevTouchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
-		);
-		lastBinaryStatus = false;
-		BEL_ST_AltControlScheme_HandleEntry(
-			(touchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[touchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
-			g_sdlJoystickAxisMax,
-			(touchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
-		);
+		if ((prevTouchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+			g_sdlEmuMouseButtonsState &= ~1;
+		else
+			BEL_ST_HandleDefaultPointerActionInTouchControls(prevTouchControlIndex, false);
+
+		if ((touchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+			g_sdlEmuMouseButtonsState |= 1;
+		else
+			BEL_ST_HandleDefaultPointerActionInTouchControls(touchControlIndex, true);
+
 		trackedFinger->touchMappingIndex = touchControlIndex;
 	}
+	if ((touchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+		BEL_ST_UpdateVirtualCursorPositionFromPointer(x, y);
 }
 
 void BEL_ST_CheckMovedMouseInTouchControls(int x, int y)
@@ -2304,7 +2341,7 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 		}
 	}
 
-        SDL_RenderPresent(g_sdlRenderer);
+	SDL_RenderPresent(g_sdlRenderer);
 }
 
 

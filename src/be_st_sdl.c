@@ -44,8 +44,8 @@ static bool g_sdlRelativeMouseMotion = false;
 bool g_sdlDefaultMappingBinaryState;
 
 /*** Emulated mouse and joysticks states (mouse motion state is split for technical reasons) ***/
-static int g_sdlEmuMouseButtonsState;
-static int16_t g_sdlEmuMouseMotionAccumulatedState[2];
+int g_sdlEmuMouseButtonsState;
+int16_t g_sdlEmuMouseMotionAccumulatedState[2];
 static int16_t g_sdlEmuMouseMotionAbsoluteState[2];
 int16_t g_sdlVirtualMouseCursorState[2]; // Used e.g., for touch input handling
 static int g_sdlEmuJoyButtonsState;

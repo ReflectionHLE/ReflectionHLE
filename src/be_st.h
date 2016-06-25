@@ -139,6 +139,7 @@ typedef struct BE_ST_ControllerMapping {
 	BE_ST_ControllerSingleMap buttons[BE_ST_CTRL_BUT_MAX];
 	BE_ST_ControllerSingleMap axes[BE_ST_CTRL_AXIS_MAX][2];
 	bool showUi;
+	bool absoluteFingerPositioning;
 } BE_ST_ControllerMapping;
 
 // Various controller schemes are saved in a stack, so it's straight-forward

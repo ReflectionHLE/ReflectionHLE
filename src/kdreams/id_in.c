@@ -560,6 +560,10 @@ IN_Startup(void)
 
 	INL_StartKbd();
 	MousePresent = checkmouse? INL_StartMouse() : false;
+	// REFKEEN - Alternative controllers support
+	void FillControlPanelTouchMappings(bool withmouse);
+	FillControlPanelTouchMappings(MousePresent);
+	//
 
 	for (i = 0;i < MaxJoys;i++)
 		JoysPresent[i] = checkjoys? INL_StartJoy(i) : false;
