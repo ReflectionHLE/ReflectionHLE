@@ -1457,11 +1457,11 @@ static void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 			// Repeat with positive
 			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][1], 0, &g_sdlControllersAxesStates[axis][1]);
 		}
-
-		// This too
-		if (g_sdlDefaultMappingBinaryState)
-			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
 	}
+
+	// Check this for ALL possible mappings
+	if (g_sdlDefaultMappingBinaryState)
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
 
 	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
 	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
@@ -1604,15 +1604,7 @@ static void BEL_ST_AltControlScheme_HandleTextInputEvent(int but, bool isPressed
 		break;
 	case SDL_CONTROLLER_BUTTON_B:
 	case SDL_CONTROLLER_BUTTON_BACK:
-		if (isPressed)
-		{
-			BEL_ST_ReleasePressedKeysInTextInputUI(); // Release any key pressed in text input UI *before* the game may change the controller mapping (otherwise a key may get stuck)
-			// HACK
-			dosKeyEvent.dosScanCode = BE_ST_SC_ESC;
-			BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
-			BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
-			return;
-		}
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 		break;
 	case SDL_CONTROLLER_BUTTON_X:
 		// Change shift state (or at least try to).
