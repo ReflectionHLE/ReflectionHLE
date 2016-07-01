@@ -33,7 +33,7 @@ SDL_Renderer *g_sdlRenderer;
 SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
-static int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
+int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 
 static bool g_sdlIsSoftwareRendered;
 static bool g_sdlDoRefreshGfxOutput;
@@ -1061,7 +1061,7 @@ int BEL_ST_ToggleKeyPressInDebugKeysUI(bool *pToggle)
 }
 
 
-void BEL_ST_CheckMovedPointerInTextInputUI(int x, int y)
+void BEL_ST_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	if (!g_sdlKeyboardUIPointerUsed)
 		return;
@@ -1088,7 +1088,7 @@ extern bool g_sdlDefaultMappingBinaryState;
 
 bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr);
 
-void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y)
+void BEL_ST_CheckPressedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	if ((x < g_sdlControllerTextInputRect.x) || (x >= g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
 	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h)
@@ -1096,10 +1096,10 @@ void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y)
 		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 
 	g_sdlKeyboardUIPointerUsed = true;
-	BEL_ST_CheckMovedPointerInTextInputUI(x, y);
+	BEL_ST_CheckMovedPointerInTextInputUI(touchId, fingerId, x, y);
 }
 
-void BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y)
+void BEL_ST_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	if (!g_sdlKeyboardUIPointerUsed)
 		return;
@@ -1131,7 +1131,7 @@ void BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y)
 }
 
 
-void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y)
+void BEL_ST_CheckMovedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	if (!g_sdlKeyboardUIPointerUsed)
 		return;
@@ -1151,7 +1151,7 @@ void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y)
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y)
+void BEL_ST_CheckPressedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	if ((x < g_sdlControllerDebugKeysRect.x) || (x >= g_sdlControllerDebugKeysRect.x+g_sdlControllerDebugKeysRect.w)
 	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h)
@@ -1159,10 +1159,10 @@ void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y)
 		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 
 	g_sdlKeyboardUIPointerUsed = true;
-	BEL_ST_CheckMovedPointerInDebugKeysUI(x, y);
+	BEL_ST_CheckMovedPointerInDebugKeysUI(touchId, fingerId, x, y);
 }
 
-void BEL_ST_CheckReleasedPointerInDebugKeysUI(int x, int y)
+void BEL_ST_CheckReleasedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	if (!g_sdlKeyboardUIPointerUsed)
 		return;
@@ -1238,7 +1238,7 @@ static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
 	return -1;
 }
 
-void BEL_ST_CheckPressedPointerInControllerUI(int x, int y)
+void BEL_ST_CheckPressedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	if (g_sdlControllerUIPointerPressed)
 		return;
@@ -1260,7 +1260,7 @@ void BEL_ST_CheckPressedPointerInControllerUI(int x, int y)
 
 }
 
-void BEL_ST_CheckReleasedPointerInControllerUI(void)
+void BEL_ST_CheckReleasedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId)
 {
 	if (!g_sdlControllerUIPointerPressed)
 		return;
@@ -1276,7 +1276,7 @@ void BEL_ST_CheckReleasedPointerInControllerUI(void)
 	g_sdlPointerSelectedPadButtonScanCode = 0;
 }
 
-void BEL_ST_CheckMovedPointerInControllerUI(int x, int y)
+void BEL_ST_CheckMovedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	if (!g_sdlControllerUIPointerPressed)
 		return;
@@ -1403,17 +1403,6 @@ void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID
 		BEL_ST_HandleDefaultPointerActionInTouchControls(touchControlIndex, true);
 }
 
-void BEL_ST_CheckPressedMouseInTouchControls(int x, int y)
-{
-	BEL_ST_CheckPressedPointerInTouchControls(0, 0, x, y); // Touch device id of 0 is invalid according to description of SDL_GetTouchDevice, so re-using this for mouse
-}
-
-void BEL_ST_CheckPressedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, float floatX, float floatY)
-{
-	BEL_ST_CheckPressedPointerInTouchControls(touchId, fingerId, floatX * g_sdlLastReportedWindowWidth, floatY * g_sdlLastReportedWindowHeight);
-}
-
-
 void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId)
 {
 	int i;
@@ -1436,17 +1425,6 @@ void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerI
 	if (g_refKeenCfg.touchInputDebugging)
 		g_sdlForceGfxControlUiRefresh = true; // Remove debugging finger mark from screen
 }
-
-void BEL_ST_CheckReleasedMouseInTouchControls(void)
-{
-	BEL_ST_CheckReleasedPointerInTouchControls(0, 0); // Touch device id of 0 is invalid according to description of SDL_GetTouchDevice, so re-using this for mouse
-}
-
-void BEL_ST_CheckReleasedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId)
-{
-	BEL_ST_CheckReleasedPointerInTouchControls(touchId, fingerId);
-}
-
 
 void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
@@ -1484,17 +1462,6 @@ void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID f
 	if ((touchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 		BEL_ST_UpdateVirtualCursorPositionFromPointer(x, y);
 }
-
-void BEL_ST_CheckMovedMouseInTouchControls(int x, int y)
-{
-	BEL_ST_CheckMovedPointerInTouchControls(0, 0, x, y); // Touch device id of 0 is invalid according to description of SDL_GetTouchDevice, so re-using this for mouse
-}
-
-void BEL_ST_CheckMovedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, float floatX, float floatY)
-{
-	BEL_ST_CheckMovedPointerInTouchControls(touchId, fingerId, floatX * g_sdlLastReportedWindowWidth, floatY * (float)g_sdlLastReportedWindowHeight);
-}
-
 
 void BEL_ST_ReleasePressedKeysInTextInputUI(void)
 {
@@ -1545,7 +1512,7 @@ void BEL_ST_ReleasePressedKeysInDebugKeysUI(void)
 void BEL_ST_ReleasePressedKeysInControllerUI(void)
 {
 	if (g_sdlControllerUIPointerPressed)
-		BEL_ST_CheckReleasedPointerInControllerUI();
+		BEL_ST_CheckReleasedPointerInControllerUI(0, 0); // FIXME - Mouse only
 }
 
 void BEL_ST_ReleasePressedButtonsInTouchControls(void)

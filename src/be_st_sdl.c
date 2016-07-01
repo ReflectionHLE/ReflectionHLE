@@ -111,6 +111,9 @@ static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
 
 
 extern SDL_Window *g_sdlWindow;
+extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
+extern bool g_sdlForceGfxControlUiRefresh;
+extern bool g_sdlShowControllerUI;
 
 static uint8_t g_sdlLastKeyScanCodeBeforeAnyReset; // May be reset by BE_ST_BiosScanCode
 
@@ -1404,9 +1407,7 @@ static void BEL_ST_ConditionallyAddJoystick(int device_index)
 				g_sdlControllers[i] = SDL_GameControllerOpen(device_index);
 				g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i]));
 
-				extern bool g_sdlShowControllerUI;
 				g_sdlShowControllerUI = true;
-				extern bool g_sdlForceGfxControlUiRefresh;
 				g_sdlForceGfxControlUiRefresh = true;
 				void BEL_ST_ConditionallyShowAltInputPointer(void);
 				BEL_ST_ConditionallyShowAltInputPointer();
@@ -1678,29 +1679,119 @@ static void BEL_ST_AltControlScheme_HandleDebugKeysEvent(int but, bool isPressed
 	}
 }
 
+/* Shared with mouse and touch inputs, where mouse's touchId is 0
+ * (documentation of SDL_GetTouchDevice says 0 is returned for an invalid input index)
+ */
+
+void BEL_ST_CheckPressedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckPressedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckMovedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckReleasedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckPressedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckMovedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckReleasedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId);
+void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId);
+
+static bool BEL_ST_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	if (!g_sdlShowControllerUI && !g_refKeenCfg.enableTouchInput)
+		return false;
+
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+	{
+		BEL_ST_CheckPressedPointerInTextInputUI(touchId, fingerId, x, y);
+		return true;
+	}
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+	{
+		BEL_ST_CheckPressedPointerInDebugKeysUI(touchId, fingerId, x, y);
+		return true;
+	}
+	if (g_sdlControllerMappingActualCurr->showUi)
+	{
+		BEL_ST_CheckPressedPointerInControllerUI(touchId, fingerId, x, y);
+		return true;
+	}
+
+	if (g_refKeenCfg.enableTouchInput)
+	{
+		BEL_ST_CheckPressedPointerInTouchControls(touchId, fingerId, x, y);
+		return true;
+	}
+
+	return false;
+}
+
+static bool BEL_ST_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	if (!g_sdlShowControllerUI && !g_refKeenCfg.enableTouchInput)
+		return false;
+
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+	{
+		BEL_ST_CheckReleasedPointerInTextInputUI(touchId, fingerId, x, y);
+		return true;
+	}
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+	{
+		BEL_ST_CheckReleasedPointerInDebugKeysUI(touchId, fingerId, x, y);
+		return true;
+	}
+	if (g_sdlControllerMappingActualCurr->showUi)
+	{
+		BEL_ST_CheckReleasedPointerInControllerUI(touchId, fingerId);
+		return true;
+	}
+
+	if (g_refKeenCfg.enableTouchInput)
+	{
+		BEL_ST_CheckReleasedPointerInTouchControls(touchId, fingerId);
+		return true;
+	}
+
+	return false;
+}
+
+static bool BEL_ST_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	if (!g_sdlShowControllerUI && !g_refKeenCfg.enableTouchInput)
+		return false;
+
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+	{
+		BEL_ST_CheckMovedPointerInTextInputUI(touchId, fingerId, x, y);
+		return true;
+	}
+	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+	{
+		BEL_ST_CheckMovedPointerInDebugKeysUI(touchId, fingerId, x, y);
+		return true;
+	}
+	if (g_sdlControllerMappingActualCurr->showUi)
+	{
+		BEL_ST_CheckMovedPointerInControllerUI(touchId, fingerId, x, y);
+		return true;
+	}
+
+	if (g_refKeenCfg.enableTouchInput)
+	{
+		BEL_ST_CheckMovedPointerInTouchControls(touchId, fingerId, x, y);
+		return true;
+	}
+
+	return false;
+}
+
 void BE_ST_PollEvents(void)
 {
 	SDL_Event event;
 	g_sdlLastPollEventsTime = SDL_GetTicks();
 	while (SDL_PollEvent(&event))
 	{
-		void BEL_ST_CheckPressedPointerInTextInputUI(int x, int y);
-		void BEL_ST_CheckMovedPointerInTextInputUI(int x, int y);
-		void BEL_ST_CheckReleasedPointerInTextInputUI(int x, int y);
-		void BEL_ST_CheckPressedPointerInDebugKeysUI(int x, int y);
-		void BEL_ST_CheckMovedPointerInDebugKeysUI(int x, int y);
-		void BEL_ST_CheckReleasedPointerInDebugKeysUI(int x, int y);
-		void BEL_ST_CheckPressedPointerInControllerUI(int x, int y);
-		void BEL_ST_CheckMovedPointerInControllerUI(int x, int y);
-		void BEL_ST_CheckReleasedPointerInControllerUI(void);
-		void BEL_ST_CheckPressedMouseInTouchControls(int x, int y);
-		void BEL_ST_CheckMovedMouseInTouchControls(int x, int y);
-		void BEL_ST_CheckReleasedMouseInTouchControls(void);
-		void BEL_ST_CheckPressedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, float floatX, float floatY);
-		void BEL_ST_CheckMovedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, float floatX, float floatY);
-		void BEL_ST_CheckReleasedFingerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId);
-
-		extern bool g_sdlShowControllerUI;
 
 		switch (event.type)
 		{
@@ -1713,43 +1804,18 @@ void BE_ST_PollEvents(void)
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
-			// Initial filter by mouse button (not for touch input)
-			if ((event.button.which != SDL_TOUCH_MOUSEID) && (event.button.button >= 1) && (event.button.button <= 3))
+			if (event.button.which == SDL_TOUCH_MOUSEID)
+				break;
+
+			if ((event.button.button >= 1) && (event.button.button <= 3))
 			{
 				if (g_sdlMouseButtonsStates[event.button.button-1])
 					break; // Ignore (used in case pointer is shown/hidden)
 				g_sdlMouseButtonsStates[event.button.button-1] = true;
 			}
 
-			// Currently common to mouse and touch input
-			if (g_refKeenCfg.enableTouchInput || (g_refKeenCfg.altControlScheme.isEnabled && g_sdlShowControllerUI))
-			{
-				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
-				{
-					BEL_ST_CheckPressedPointerInTextInputUI(event.button.x, event.button.y);
-					break;
-				}
-				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
-				{
-					BEL_ST_CheckPressedPointerInDebugKeysUI(event.button.x, event.button.y);
-					break;
-				}
-				if (g_sdlControllerMappingActualCurr->showUi)
-				{
-					BEL_ST_CheckPressedPointerInControllerUI(event.button.x, event.button.y);
-					break;
-				}
-			}
-
-			// Next code is mouse-specific
-			if (event.button.which == SDL_TOUCH_MOUSEID)
+			if (BEL_ST_CheckCommonPointerPressCases(0, 0, event.button.x, event.button.y))
 				break;
-
-			if (g_refKeenCfg.enableTouchInput)
-			{
-				BEL_ST_CheckPressedMouseInTouchControls(event.button.x, event.button.y);
-				break;
-			}
 
 			if (event.button.button == SDL_BUTTON_LEFT)
 				g_sdlEmuMouseButtonsState |= 1;
@@ -1757,43 +1823,18 @@ void BE_ST_PollEvents(void)
 				g_sdlEmuMouseButtonsState |= 2;
 			break;
 		case SDL_MOUSEBUTTONUP:
-			// Initial filter by mouse button (not for touch input)
-			if ((event.button.which != SDL_TOUCH_MOUSEID) && (event.button.button >= 1) && (event.button.button <= 3))
+			if (event.button.which == SDL_TOUCH_MOUSEID)
+				break;
+
+			if ((event.button.button >= 1) && (event.button.button <= 3))
 			{
 				if (!g_sdlMouseButtonsStates[event.button.button-1])
 					break; // Ignore (used in case pointer is shown/hidden)
 				g_sdlMouseButtonsStates[event.button.button-1] = false;
 			}
 
-			// Currently common to mouse and touch input
-			if (g_refKeenCfg.enableTouchInput || (g_refKeenCfg.altControlScheme.isEnabled && g_sdlShowControllerUI))
-			{
-				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
-				{
-					BEL_ST_CheckReleasedPointerInTextInputUI(event.button.x, event.button.y);
-					break;
-				}
-				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
-				{
-					BEL_ST_CheckReleasedPointerInDebugKeysUI(event.button.x, event.button.y);
-					break;
-				}
-				if (g_sdlControllerMappingActualCurr->showUi)
-				{
-					BEL_ST_CheckReleasedPointerInControllerUI();
-					break;
-				}
-			}
-
-			// Next code is mouse-specific
-			if (event.button.which == SDL_TOUCH_MOUSEID)
+			if (BEL_ST_CheckCommonPointerReleaseCases(0, 0, event.button.x, event.button.y))
 				break;
-
-			if (g_refKeenCfg.enableTouchInput)
-			{
-				BEL_ST_CheckReleasedMouseInTouchControls();
-				break;
-			}
 
 			if (event.button.button == SDL_BUTTON_LEFT)
 				g_sdlEmuMouseButtonsState &= ~1;
@@ -1801,60 +1842,24 @@ void BE_ST_PollEvents(void)
 				g_sdlEmuMouseButtonsState &= ~2;
 			break;
 		case SDL_MOUSEMOTION:
-			// Currently common to mouse and touch input
-			if (g_refKeenCfg.enableTouchInput || (g_refKeenCfg.altControlScheme.isEnabled && g_sdlShowControllerUI))
-			{
-				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
-				{
-					BEL_ST_CheckMovedPointerInTextInputUI(event.motion.x, event.motion.y);
-					break;
-				}
-				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
-				{
-					BEL_ST_CheckMovedPointerInDebugKeysUI(event.motion.x, event.motion.y);
-					break;
-				}
-				if (g_sdlControllerMappingActualCurr->showUi)
-				{
-					BEL_ST_CheckMovedPointerInControllerUI(event.motion.x, event.motion.y);
-					break;
-				}
-			}
-
-			// Next code is mouse-specific
 			if (event.button.which == SDL_TOUCH_MOUSEID)
 				break;
 
-			if (g_refKeenCfg.enableTouchInput)
-			{
-				BEL_ST_CheckMovedMouseInTouchControls(event.motion.x, event.motion.y);
+			if (BEL_ST_CheckCommonPointerMoveCases(0, 0, event.motion.x, event.motion.y))
 				break;
-			}
 
 			g_sdlEmuMouseMotionAccumulatedState[0] += event.motion.xrel;
 			g_sdlEmuMouseMotionAccumulatedState[1] += event.motion.yrel;
 			break;
 
 		case SDL_FINGERDOWN:
-			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys) || g_sdlControllerMappingActualCurr->showUi)
-				break; // Currently handled by simulated mouse event
-
-			if (g_refKeenCfg.enableTouchInput)
-				BEL_ST_CheckPressedFingerInTouchControls(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x, event.tfinger.y);
+			BEL_ST_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
 		case SDL_FINGERUP:
-			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys) || g_sdlControllerMappingActualCurr->showUi)
-				break; // Currently handled by simulated mouse event
-
-			if (g_refKeenCfg.enableTouchInput)
-				BEL_ST_CheckReleasedFingerInTouchControls(event.tfinger.touchId, event.tfinger.fingerId);
+			BEL_ST_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
 		case SDL_FINGERMOTION:
-			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys) || g_sdlControllerMappingActualCurr->showUi)
-				break; // Currently handled by simulated mouse event
-
-			if (g_refKeenCfg.enableTouchInput)
-				BEL_ST_CheckMovedFingerInTouchControls(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x, event.tfinger.y);
+			BEL_ST_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
 
 		case SDL_JOYAXISMOTION:
@@ -1928,9 +1933,7 @@ void BE_ST_PollEvents(void)
 
 				if (!isAnyControllerStillConnected)
 				{
-					extern bool g_sdlShowControllerUI;
 					g_sdlShowControllerUI = false;
-					extern bool g_sdlForceGfxControlUiRefresh;
 					g_sdlForceGfxControlUiRefresh = true;
 					void BEL_ST_ConditionallyShowAltInputPointer(void);
 					BEL_ST_ConditionallyShowAltInputPointer();
