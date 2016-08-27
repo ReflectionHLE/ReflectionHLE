@@ -1683,7 +1683,7 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 {
 	if (g_sdlLauncherGfxCacheMarked)
 	{
-		SDL_Delay(1);
+		BEL_ST_SleepMS(1);
 		g_sdlLauncherGfxCacheMarked = false;
 		void *pixels;
 		int pitch;
@@ -1715,7 +1715,7 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 	{
 		// Refresh graphics from time to time in case a part of the window is overridden by anything,
 		// like the Steam Overlay. Sleep for less time so the application is somewhat responsive, though.
-		SDL_Delay(10);
+		BEL_ST_SleepMS(10);
 		uint32_t currRefreshTicks = SDL_GetTicks();
 		if (currRefreshTicks - g_be_sdlLastRefreshTicks >= 100)
 		{
@@ -1974,7 +1974,7 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 			}
 		}
 
-		SDL_Delay(10);
+		BEL_ST_SleepMS(10);
 		SDL_RenderClear(g_sdlRenderer);
 
 		if (g_sdlTargetTexture)

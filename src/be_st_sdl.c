@@ -274,7 +274,7 @@ void BE_ST_HandleExit(int status)
 			default: ;
 			}
 		}
-		SDL_Delay(1);
+		BEL_ST_SleepMS(1);
 		// TODO: Make this more efficient
 		BEL_ST_UpdateHostDisplay();
 	}

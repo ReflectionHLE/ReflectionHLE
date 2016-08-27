@@ -920,7 +920,7 @@ void BE_ST_WaitVBL(int16_t number)
 // Call during a busy loop of some unknown duration (e.g., waiting for key press/release)
 void BE_ST_ShortSleep(void)
 {
-	SDL_Delay(1);
+	BEL_ST_SleepMS(1);
 	// TODO: Make this more efficient
 	BEL_ST_UpdateHostDisplay();
 	BE_ST_PollEvents();
@@ -950,7 +950,7 @@ void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
 	uint32_t currSdlTicks = SDL_GetTicks();
 	while ((int32_t)(currSdlTicks - nextSdlTicks) < 0)
 	{
-		SDL_Delay(1);
+		BEL_ST_SleepMS(1);
 		BE_ST_PollEvents();
 		currSdlTicks = SDL_GetTicks();
 	} 

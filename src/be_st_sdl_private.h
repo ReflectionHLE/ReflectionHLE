@@ -24,6 +24,13 @@
 
 #include "SDL_surface.h"
 
+#ifdef REFKEEN_PLATFORM_EMSCRIPTEN
+#include <emscripten.h>
+#define BEL_ST_SleepMS emscripten_sleep
+#else
+#define BEL_ST_SleepMS SDL_Delay
+#endif
+
 #define BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS 500
 #define BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS 40
 
