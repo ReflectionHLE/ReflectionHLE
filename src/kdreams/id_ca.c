@@ -1224,8 +1224,10 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 	//
 	// everything else has an explicit size longword
 	//
-		// REFKEEN - Big Endian support
-		expanded = BE_Cross_Swap32LE(*(id0_long_t id0_far *)source);
+		// REFKEEN - Safe unaligned accesses (e.g., from CA_CacheMarks)
+		// and Big Endian support
+		memcpy(&expanded, source, 4);
+		expanded = BE_Cross_Swap32LE(expanded);
 		//expanded = *(id0_long_t id0_far *)source;
 		source += 4;			// skip over length
 	}

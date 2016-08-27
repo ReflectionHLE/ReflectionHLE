@@ -954,7 +954,10 @@ void VW_CGAFullUpdate (void)
 	memset(baseupdateptr, 0, UPDATEWIDE*UPDATEHIGH);
 
 	updateptr = baseupdateptr;
-	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
+	// REFKEEN - Safe unaligned accesses
+	*(updateptr + UPDATEWIDE*PORTTILESHIGH) = 1;
+	*(updateptr + UPDATEWIDE*PORTTILESHIGH + 1) = 3;
+	//*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
 
 #if 0
 	id0_byte_t	*update;
@@ -1329,7 +1332,10 @@ void VW_UpdateScreen (void)
 
 	// cat3d patch
 	memset(updateptr, 0, 2*(UPDATEWIDE*UPDATEHIGH/2)); // clear out the update matrix
-	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
+	// REFKEEN - Safe unaligned accesses
+	*(updateptr + UPDATEWIDE*PORTTILESHIGH) = 1;
+	*(updateptr + UPDATEWIDE*PORTTILESHIGH + 1) = 3;
+	//*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
 
 	BE_ST_SetScreenStartAddress(displayofs+panadjust); // Ported from ASM
 #endif

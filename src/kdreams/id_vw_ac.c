@@ -45,7 +45,7 @@
 
 static id0_byte_t plotpixels[] = {0xC0, 0x30, 0x0C, 0x03};
 id0_byte_t colorbyte[]  = {0x00, 0x55, 0xAA, 0xFF}; // Also used in id_vw.c (CGA only)
-static id0_word_t colorword[] = {0x0000, 0x5555, 0xAAAA, 0xFFFF};
+//static id0_word_t colorword[] = {0x0000, 0x5555, 0xAAAA, 0xFFFF}; // REFKEEN - UNUSED VARIABLE
 extern id0_unsigned_t linedelta;
 
 //============================================================================
@@ -265,10 +265,10 @@ extern id0_byte_t fontcolor/* = 15*/; // 0-15 mapmask value
 //#define charwidth		514	// every character's width in pixels
 
 
-//id0_word_t propchar; // the character number to shift // UNUSED VARIABLE
+//id0_word_t propchar; // the character number to shift // REFKEEN - UNUSED VARIABLE
 //id0_char_t *stringptr; // REFKEEN - UNUSED VARIABLE
 
-static id0_word_t fontcolormask; // font color expands into this
+//static id0_word_t fontcolormask; // font color expands into this // REFKEEN - UNUSED VARIABLE
 
 #define BUFFWIDTH 100
 #define BUFFHEIGHT 32 // must be twice as high as font for masked fonts
@@ -320,7 +320,9 @@ extern id0_word_t screenextra;
 
 static void VWL_XORBuffer(id0_byte_t *buffer)
 {
-	fontcolormask = colorword[fontcolor];
+	// REFKEEN - Safe unaligned accesses
+	id0_byte_t fontcolormaskbyte = colorbyte[fontcolor];
+	//fontcolormask = colorword[fontcolor];
 	id0_byte_t *srcPtr = buffer;
 	id0_byte_t *destPtr = &screenseg[screenspot];
 	id0_word_t modbuffwidth = bufferwidth;
@@ -339,6 +341,11 @@ static void VWL_XORBuffer(id0_byte_t *buffer)
 	}
 	screenextra = linewidth-modbuffwidth;
 	bufferextra = BUFFWIDTH-modbuffwidth;
+	// REFKEEN - Safe unaligned accesses
+	for (id0_word_t lineCounter = bufferheight, colCounter; lineCounter; --lineCounter, srcPtr += bufferextra, BE_Cross_Wrapped_Add(screenseg, &destPtr, screenextra))
+		for (colCounter = modbuffwidth; colCounter; --colCounter, ++srcPtr, BE_Cross_Wrapped_Add(screenseg, &destPtr, 1))
+			*destPtr ^= ((*srcPtr) & fontcolormaskbyte);
+#if 0
 	// We next divide this by 2 (words to copy)
 	modbuffwidth >>= 1;
 	for (id0_word_t lineCounter = bufferheight, colPairCounter; lineCounter; --lineCounter, srcPtr += bufferextra, BE_Cross_Wrapped_Add(screenseg, &destPtr, screenextra))
@@ -348,6 +355,7 @@ static void VWL_XORBuffer(id0_byte_t *buffer)
 			*(id0_word_t *)destPtr ^= ((*(id0_word_t *)srcPtr) & fontcolormask);
 		}
 	}
+#endif
 }
 
 //============================================================================

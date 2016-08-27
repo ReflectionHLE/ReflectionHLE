@@ -104,20 +104,20 @@ typedef	struct spriteliststruct
 	id0_unsigned_t	tilex,tiley,tilewide,tilehigh;
 	id0_int_t			priority,updatecount;
 	struct spriteliststruct **prevptr,*nextsprite;
-} __attribute__((__packed__)) spritelisttype;
+} spritelisttype;
 
 
 typedef struct
 {
 	id0_int_t			screenx,screeny;
 	id0_int_t			width,height;
-} __attribute__((__packed__)) eraseblocktype;
+} eraseblocktype;
 
 typedef struct
 {
 	id0_unsigned_t	current;		// foreground tiles have high bit set
 	id0_int_t			count;
-} __attribute__((__packed__)) tiletype;
+} tiletype;
 
 typedef struct animtilestruct
 {
@@ -125,7 +125,7 @@ typedef struct animtilestruct
 	tiletype	*chain;
 	id0_unsigned_t	id0_far *mapplane;
 	struct animtilestruct **prevptr,*nexttile;
-} __attribute__((__packed__)) animtiletype;
+} animtiletype;
 
 /*
 =============================================================================
@@ -1041,8 +1041,13 @@ void RF_NewPosition_EGA (id0_unsigned_t x, id0_unsigned_t y)
 		page0ptr+=(PORTTILESWIDE+1);
 		page1ptr+=(PORTTILESWIDE+1);
 	}
-	*(id0_word_t *)(page0ptr-PORTTILESWIDE)
-		= *(id0_word_t *)(page1ptr-PORTTILESWIDE) = UPDATETERMINATE;
+	// REFKEEN - Safe unaligned accesses
+	*(page0ptr++-PORTTILESWIDE)
+		= *(page1ptr++-PORTTILESWIDE) = 1;
+	*(page0ptr-PORTTILESWIDE)
+		= *(page1ptr-PORTTILESWIDE) = 3;
+	//*(id0_word_t *)(page0ptr-PORTTILESWIDE)
+	//	= *(id0_word_t *)(page1ptr-PORTTILESWIDE) = UPDATETERMINATE;
 }
 
 //===========================================================================
@@ -1230,7 +1235,10 @@ void RF_Scroll_EGA (id0_int_t x, id0_int_t y)
 	update0 = updatestart[0]+UPDATEWIDE*PORTTILESHIGH-1;
 	update1 = updatestart[1]+UPDATEWIDE*PORTTILESHIGH-1;
 	*update0++ = *update1++ = 0;
-	*(id0_unsigned_t *)update0 = *(id0_unsigned_t *)update1 = UPDATETERMINATE;
+	// REFKEEN - Safe unaligned accesses
+	*update0++ = *update1++ = 1;
+	*update0 = *update1 = 3;
+	//*(id0_unsigned_t *)update0 = *(id0_unsigned_t *)update1 = UPDATETERMINATE;
 }
 
 //===========================================================================
@@ -1713,7 +1721,10 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 #endif
 	// Ported from ASM
 	memset(newupdate, 0, 2*((UPDATESCREENSIZE-2)/2));
-	*(id0_unsigned_t *)(newupdate + 2*((UPDATESCREENSIZE-2)/2)) = UPDATETERMINATE;
+	// REFKEEN - Safe unaligned accesses
+	*(newupdate + 2*((UPDATESCREENSIZE-2)/2)) = 1;
+	*(newupdate + 2*((UPDATESCREENSIZE-2)/2) + 1) = 3;
+	//*(id0_unsigned_t *)(newupdate + 2*((UPDATESCREENSIZE-2)/2)) = UPDATETERMINATE;
 	//
 
 	screenpage ^= 1;
@@ -1813,7 +1824,10 @@ void RF_NewPosition_CGA (id0_unsigned_t x, id0_unsigned_t y)
 		*spotptr = 0; // set a 0 at end of a line of tiles
 		spotptr +=(PORTTILESWIDE+1);
 	}
-	*(id0_word_t *)(spotptr-PORTTILESWIDE) = UPDATETERMINATE;
+	// REFKEEN - Safe unaligned accesses
+	*(spotptr-PORTTILESWIDE) = 1;
+	*(spotptr+1-PORTTILESWIDE) = 3;
+	//*(id0_word_t *)(spotptr-PORTTILESWIDE) = UPDATETERMINATE;
 }
 
 
@@ -1934,7 +1948,10 @@ void RF_Scroll_CGA (id0_int_t x, id0_int_t y)
 	//
 	spotptr = updateptr+UPDATEWIDE*PORTTILESHIGH-1;
 	*spotptr++ = 0;
-	*(id0_unsigned_t *)spotptr = UPDATETERMINATE;
+	// REFKEEN - Safe unaligned accesses
+	*spotptr++ = 1;
+	*spotptr = 3;
+	//*(id0_unsigned_t *)spotptr = UPDATETERMINATE;
 }
 
 /*

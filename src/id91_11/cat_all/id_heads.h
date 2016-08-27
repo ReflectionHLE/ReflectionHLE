@@ -233,7 +233,9 @@ void	Quit (const id0_char_t *error);
 #define	MAXTICS				6
 #define DEMOTICS			3
 
-#define	UPDATETERMINATE	0x0301
+// REFKEEN - Not in use due to safe unaligned accesses fixes
+// (and no separate handling for Big-Endian is required)
+//#define	UPDATETERMINATE	0x0301
 
 // REFKEEN - realtics isn't declared in vanilla Catacomb 3-D,
 // but again it's just a declaration so we may keep it here

@@ -695,7 +695,10 @@ void InitGame (void)
 // initialize variables
 //
 	updateptr = &update[0];
-	*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
+	// REFKEEN - Safe unaligned accesses
+	*(updateptr + UPDATEWIDE*PORTTILESHIGH) = 1;
+	*(updateptr + UPDATEWIDE*PORTTILESHIGH + 1) = 3;
+	//*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
 	bufferofs = 0;
 	displayofs = 0;
 	VW_SetLineWidth(SCREENWIDTH);

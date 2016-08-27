@@ -490,7 +490,9 @@ void CAL_CarmackExpand_FromLE_ToNE (id0_unsigned_t id0_far *source, id0_unsigned
 
 	while (length)
 	{
-		ch = BE_Cross_Swap16LE(*((id0_unsigned_t *)inptr)); // REFKEEN: Little-Endian input
+		// REFKEEN: Little-Endian input and safe unaligned accesses
+		memcpy(&ch, inptr, 2);
+		ch = BE_Cross_Swap16LE(ch);
 		inptr += 2;
 		//ch = *inptr++;
 		chhigh = ch>>8;
@@ -526,7 +528,9 @@ void CAL_CarmackExpand_FromLE_ToNE (id0_unsigned_t id0_far *source, id0_unsigned
 			}
 			else
 			{
-				offset = BE_Cross_Swap16LE(*((id0_unsigned_t *)inptr)); // REFKEEN: Little-Endian input
+				// REFKEEN: Little-Endian input and safe unaligned accesses
+				memcpy(&offset, inptr, 2);
+				offset = BE_Cross_Swap16LE(offset);
 				inptr += 2;
 				//offset = *inptr++;
 				copyptr = dest + offset;
@@ -1451,8 +1455,10 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 	//
 	// everything else has an explicit size longword
 	//
-		// REFKEEN - Big Endian support
-		expanded = BE_Cross_Swap32LE(*(id0_long_t id0_far *)source);
+		// REFKEEN - Safe unaligned accesses (e.g., from CA_CacheMarks)
+		// and Big Endian support
+		memcpy(&expanded, source, 4);
+		expanded = BE_Cross_Swap32LE(expanded);
 		//expanded = *(id0_long_t id0_far *)source;
 		source += 4;			// skip over length
 	}

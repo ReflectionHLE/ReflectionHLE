@@ -270,7 +270,9 @@ id0_int_t LoadLIBShape(const id0_char_t *SLIB_Filename, const id0_char_t *Filena
 	FileLen += 4;
 	while (FileLen)
 	{
-		ChunkLen = BE_Cross_Swap32BE(*(id0_long_t id0_far *)(ptr+4));
+		// REFKEEN - Safe unaligned accesses and Big Endian support
+		memcpy(&ChunkLen, ptr+4, 4);
+		ChunkLen = BE_Cross_Swap32BE(ChunkLen);
 		//ChunkLen = *(id0_long_t id0_far *)(ptr+4);
 		//SwapLong((id0_long_t id0_far *)&ChunkLen);
 		ChunkLen = (ChunkLen+1) & 0xFFFFFFFE;
