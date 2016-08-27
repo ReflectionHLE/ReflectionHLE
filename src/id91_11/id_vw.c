@@ -912,7 +912,7 @@ void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t 
 
 #if GRMODE == CGAGR
 
-#define CGACRTCWIDTH	40
+//#define CGACRTCWIDTH	40 // REFKEEN - Unused macro
 
 /*
 ==========================
@@ -924,12 +924,17 @@ void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t 
 
 void VW_CGAFullUpdate (void)
 {
+#if 0
 	id0_byte_t	*update;
 	id0_boolean_t	halftile;
 	id0_unsigned_t	x,y,middlerows,middlecollumns;
+#endif
 
 	displayofs = bufferofs+panadjust;
 
+
+	BE_ST_CGAUpdateGFXBufferFromWrappedMem(screenseg, screenseg+displayofs, linewidth);
+#if 0
 	uint8_t *srcPtr = &screenseg[displayofs];
 	uint8_t *destPtr = BE_ST_GetCGAMemoryPtr();
 
@@ -949,6 +954,7 @@ void VW_CGAFullUpdate (void)
 		//srcPtr += linewidth;
 		destPtr -= (0x2000 - 80); // go to the non interlaced bank
 	} while (--linePairsToCopy);
+#endif
 
 	// clear out the update matrix
 	memset(baseupdateptr, 0, UPDATEWIDE*UPDATEHIGH);
