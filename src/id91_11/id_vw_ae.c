@@ -1428,8 +1428,8 @@ id0_byte_t fontcolor = 15; // 0-15 mapmask value
 //#define charwidth		514	// every character's width in pixels
 
 
-//id0_word_t propchar; // the character number to shift // UNUSED VARIABLE
-id0_char_t *stringptr;
+//id0_word_t propchar; // the character number to shift // REFKEEN - UNUSED VARIABLE
+// id0_char_t *stringptr; // REFKEEN - UNUSED VARIABLE
 
 
 #ifdef REFKEEN_VER_CATADVENTURES
