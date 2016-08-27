@@ -143,7 +143,9 @@ SDL_Surface *g_be_sdl_windowIconSurface = NULL;
 
 void BE_ST_InitCommon(void)
 {
-	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER) < 0)
+	// SDL_INIT_VIDEO implies SDL_INIT_EVENTS, and SDL_INIT_TIMER caused
+	// problems (hangs) in Emscripten prototype builds.
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL backend initialization failed,\n%s\n", SDL_GetError());
 		exit(0);
