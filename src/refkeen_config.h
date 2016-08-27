@@ -11,6 +11,9 @@
 #define REFKEEN_ARCH_BIG_ENDIAN
 #endif
 
+// Note: There may be multiple platform definitions at once,
+// say REFKEEN_PLATFORM_ANDROID/EMSCRIPTEN and REFKEEN_PLATFORM_UNIX.
+
 #ifdef _WIN32 // Should also cover _WIN64
 #define REFKEEN_PLATFORM_WINDOWS
 #endif
@@ -26,8 +29,16 @@
 #define REFKEEN_PLATFORM_ANDROID
 #endif
 
+#ifdef EMSCRIPTEN
+#define REFKEEN_PLATFORM_EMSCRIPTEN
+#endif
+
 #if (defined __unix__) || (defined __unix) || (defined unix)
 #define REFKEEN_PLATFORM_UNIX
+#endif
+
+#ifndef REFKEEN_PLATFORM_EMSCRIPTEN
+#define REFKEEN_CONFIG_THREADS
 #endif
 
 #endif // REFKEEN_CONFIG_H

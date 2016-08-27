@@ -31,7 +31,9 @@
 
 #define PC_PIT_RATE 1193182
 
+#ifdef REFKEEN_CONFIG_THREADS
 static SDL_mutex* g_sdlCallbackMutex = NULL;
+#endif
 static SDL_AudioSpec g_sdlAudioSpec;
 
 bool g_sdlAudioSubsystemUp;
@@ -148,6 +150,7 @@ void BE_ST_InitAudio(void)
 			}
 			else
 			{
+#ifdef REFKEEN_CONFIG_THREADS
 				g_sdlCallbackMutex = SDL_CreateMutex();
 				if (!g_sdlCallbackMutex)
 				{
@@ -156,6 +159,7 @@ void BE_ST_InitAudio(void)
 					SDL_QuitSubSystem(SDL_INIT_AUDIO);
 				}
 				else
+#endif
 				{
 					BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, requested spec: freq %d, format %u, channels %d, samples %u\n", (int)g_sdlAudioSpec.freq, (unsigned int)g_sdlAudioSpec.format, (int)g_sdlAudioSpec.channels, (unsigned int)g_sdlAudioSpec.samples);
 					g_sdlAudioSubsystemUp = true;
@@ -347,9 +351,10 @@ void BE_ST_ShutdownAudio(void)
 				free(g_sdlSampleRateConvTable);
 			}
 		}
-
+#ifdef REFKEEN_CONFIG_THREADS
 		SDL_DestroyMutex(g_sdlCallbackMutex);
 		g_sdlCallbackMutex = NULL;
+#endif
 		SDL_CloseAudio();
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		g_sdlAudioSubsystemUp = false;
@@ -377,18 +382,22 @@ void BE_ST_StopAudioSDService(void)
 
 void BE_ST_LockAudioRecursively(void)
 {
+#ifdef REFKEEN_CONFIG_THREADS
 	if (g_sdlAudioSubsystemUp)
 	{
 		SDL_LockMutex(g_sdlCallbackMutex);
 	}
+#endif
 }
 
 void BE_ST_UnlockAudioRecursively(void)
 {
+#ifdef REFKEEN_CONFIG_THREADS
 	if (g_sdlAudioSubsystemUp)
 	{
 		SDL_UnlockMutex(g_sdlCallbackMutex);
 	}
+#endif
 }
 
 // Use this ONLY if audio subsystem isn't properly started up
