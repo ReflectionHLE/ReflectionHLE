@@ -19,6 +19,8 @@
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
 
+#include <stdlib.h>
+#include <string.h>
 #include "SDL.h"
 
 #include "refkeen.h"

@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <string.h>
 #include "SDL.h"
 
 #ifdef REFKEEN_RESAMPLER_NONE
