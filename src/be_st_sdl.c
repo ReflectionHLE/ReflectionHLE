@@ -1437,13 +1437,16 @@ static void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 	else // Otherwise simulate key releases based on the mapping
 	{
 		// But also don't forget this (e.g., if mouse is used)
-		void BEL_ST_ReleasePressedKeysInControllerUI(void);
-		BEL_ST_ReleasePressedKeysInControllerUI();
-
-		// Similarly this
-		void BEL_ST_ReleasePressedButtonsInTouchControls(void);
-		BEL_ST_ReleasePressedButtonsInTouchControls();
-
+		if (g_sdlControllerMappingActualCurr->showUi)
+		{
+			void BEL_ST_ReleasePressedKeysInControllerUI(void);
+			BEL_ST_ReleasePressedKeysInControllerUI();
+		}
+		else
+		{
+			void BEL_ST_ReleasePressedButtonsInTouchControls(void);
+			BEL_ST_ReleasePressedButtonsInTouchControls();
+		}
 		// Simulate binary key/button/other action "releases" and clear button states.
 		// FIXME: Unfortunately this means a mistaken key release event can be sent, but hopefully it's less of an issue than an unexpected key press.
 		for (int but = 0; but < SDL_CONTROLLER_BUTTON_MAX; ++but)
@@ -1567,41 +1570,39 @@ void BE_ST_AltControlScheme_UpdateVirtualMouseCursor(int x, int y)
 /*** A couple of special handlers call from BE_ST_PollEvents ***/
 static void BEL_ST_AltControlScheme_HandleTextInputEvent(int but, bool isPressed)
 {
-	emulatedDOSKeyEvent dosKeyEvent;
-	dosKeyEvent.isSpecial = false;
-	dosKeyEvent.dosScanCode = 0;
-
-	extern int BEL_ST_MoveUpInTextInputUI(void);
-	extern int BEL_ST_MoveDownInTextInputUI(void);
-	extern int BEL_ST_MoveLeftInTextInputUI(void);
-	extern int BEL_ST_MoveRightInTextInputUI(void);
-	extern int BEL_ST_ToggleShiftStateInTextInputUI(bool *pToggle);
-	extern int BEL_ST_ToggleKeyPressInTextInputUI(bool *pToggle);
+	extern void BEL_ST_MoveUpInTextInputUI(void);
+	extern void BEL_ST_MoveDownInTextInputUI(void);
+	extern void BEL_ST_MoveLeftInTextInputUI(void);
+	extern void BEL_ST_MoveRightInTextInputUI(void);
+	extern void BEL_ST_ToggleShiftStateInTextInputUI(void);
+	extern void BEL_ST_ToggleKeyPressInTextInputUI(bool toggle);
 	switch (but)
 	{
 	case SDL_CONTROLLER_BUTTON_DPAD_UP:
 		if (isPressed)
-			dosKeyEvent.dosScanCode = BEL_ST_MoveUpInTextInputUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_MoveUpInTextInputUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
 		if (isPressed)
-			dosKeyEvent.dosScanCode = BEL_ST_MoveDownInTextInputUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_MoveDownInTextInputUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
 		if (isPressed)
-			dosKeyEvent.dosScanCode = BEL_ST_MoveLeftInTextInputUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_MoveLeftInTextInputUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
 		if (isPressed)
-			dosKeyEvent.dosScanCode = BEL_ST_MoveRightInTextInputUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_MoveRightInTextInputUI();
 		break;
 	// A few other special cases
 	case SDL_CONTROLLER_BUTTON_START:
-		dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
+		if (isPressed) // No need for !isPressed case since pause key send scancodes on release only (under DOS)
+		{
+			emulatedDOSKeyEvent dosKeyEvent;
+			dosKeyEvent.isSpecial = false;
+			dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
+			BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
+		}
 		break;
 	case SDL_CONTROLLER_BUTTON_B:
 	case SDL_CONTROLLER_BUTTON_BACK:
@@ -1609,35 +1610,23 @@ static void BEL_ST_AltControlScheme_HandleTextInputEvent(int but, bool isPressed
 		break;
 	case SDL_CONTROLLER_BUTTON_X:
 		// Change shift state (or at least try to).
-		// NOTE: This can modify isPressed.
-		dosKeyEvent.dosScanCode = BEL_ST_ToggleShiftStateInTextInputUI(&isPressed);
+		if (isPressed)
+			BEL_ST_ToggleShiftStateInTextInputUI();
 		break;
 	default:
-	{
 		// Select key from UI.
-		// NOTE: This can modify isPressed e.g., for shift key.
-		dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInTextInputUI(&isPressed);
-	}
-	}
-
-	if (dosKeyEvent.dosScanCode)
-	{
-		BEL_ST_HandleEmuKeyboardEvent(isPressed, false, dosKeyEvent);
+		BEL_ST_ToggleKeyPressInTextInputUI(isPressed);
 	}
 }
 
 
 static void BEL_ST_AltControlScheme_HandleDebugKeysEvent(int but, bool isPressed)
 {
-	emulatedDOSKeyEvent dosKeyEvent;
-	dosKeyEvent.isSpecial = false;
-	dosKeyEvent.dosScanCode = 0;
-
 	extern void BEL_ST_MoveUpInDebugKeysUI(void);
 	extern void BEL_ST_MoveDownInDebugKeysUI(void);
 	extern void BEL_ST_MoveLeftInDebugKeysUI(void);
 	extern void BEL_ST_MoveRightInDebugKeysUI(void);
-	extern int BEL_ST_ToggleKeyPressInDebugKeysUI(bool *pToggle);
+	extern void BEL_ST_ToggleKeyPressInDebugKeysUI(void);
 	switch (but)
 	{
 	case SDL_CONTROLLER_BUTTON_DPAD_UP:
@@ -1658,24 +1647,22 @@ static void BEL_ST_AltControlScheme_HandleDebugKeysEvent(int but, bool isPressed
 		break;
 	// A few other special cases
 	case SDL_CONTROLLER_BUTTON_START:
-		dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
+		if (isPressed) // No need for !isPressed case since pause key send scancodes on release only (under DOS)
+		{
+			emulatedDOSKeyEvent dosKeyEvent;
+			dosKeyEvent.isSpecial = false;
+			dosKeyEvent.dosScanCode = BE_ST_SC_PAUSE;
+			BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
+		}
 		break;
 	case SDL_CONTROLLER_BUTTON_B:
 	case SDL_CONTROLLER_BUTTON_BACK:
 		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 		return;
 	default:
-	{
 		// Select or deselect key from UI, IF actual button is pressed.
-		// NOTE: This returns in isPressed the status of the key.
 		if (isPressed)
-			dosKeyEvent.dosScanCode = BEL_ST_ToggleKeyPressInDebugKeysUI(&isPressed);
-	}
-	}
-
-	if (dosKeyEvent.dosScanCode)
-	{
-		BEL_ST_HandleEmuKeyboardEvent(isPressed, false, dosKeyEvent);
+			BEL_ST_ToggleKeyPressInDebugKeysUI();
 	}
 }
 
