@@ -74,7 +74,7 @@ void BE_ST_MarkGfxForUpdate(void)
 #define VGA_TXT_CURSOR_BLINK_VERT_FRAME_RATE 8
 #define VGA_TXT_BLINK_VERT_FRAME_RATE 16
 
-static int g_sdlDebugFingerRectSideLen;
+int g_sdlDebugFingerRectSideLen;
 
 extern const uint8_t g_vga_8x16TextFont[256*8*16];
 // We can use a union because the memory contents are refreshed on screen mode change
@@ -120,7 +120,7 @@ typedef struct {
 } BESDLTrackedFinger;
 
 static BESDLTrackedFinger g_sdlTrackedFingers[MAX_NUM_OF_TRACKED_FINGERS];
-static int nOfTrackedFingers = 0;
+static int g_nOfTrackedFingers = 0;
 
 /*** Game controller UI resource definitions ***/
 
@@ -620,7 +620,7 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 	if (memcmp(&dpadScancodes, &emptyScancodesArray, sizeof(emptyScancodesArray)))
 		BEL_ST_PrepareToShowOnePad(dpadScancodes, pad_dpad_xpm, &g_sdlDpadTexture, &g_sdlDpadIsShown, g_sdlControllerDpadTextLocs, ALTCONTROLLER_DPAD_PIX_DIM);
 
-	nOfTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 
 	BEL_ST_ConditionallyShowAltInputPointer();
 }
@@ -698,7 +698,7 @@ void BEL_ST_PrepareToShowTouchControls(const BE_ST_ControllerMapping *mapping)
 	if (i > ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS)
 		BE_ST_ExitWithErrorMsg("BEL_ST_PrepareToShowTouchControls: Touch controls overflow!");
 
-	nOfTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 
 	BEL_ST_SetTouchControlsRects();
 }
@@ -840,7 +840,7 @@ static void BEL_ST_RedrawWholeDebugKeysUI(void)
 
 	g_sdlForceGfxControlUiRefresh = true;
 
-	nOfTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 
 	BEL_ST_ConditionallyShowAltInputPointer();
 }
@@ -862,7 +862,7 @@ static void BEL_ST_RedrawWholeDebugKeysUI(void)
 
 	g_sdlForceGfxControlUiRefresh = true;
 
-	nOfTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 
 	BEL_ST_ConditionallyShowAltInputPointer();
 }
@@ -889,27 +889,28 @@ static void BEL_ST_ToggleDebugKeysUIKey(int x, int y, bool isMarked, bool isPres
 	SDL_UpdateTexture(g_sdlDebugKeysTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
 }
 
+
 static void BEL_ST_ToggleOffAllTextInputUIKeysTrackedbyFingers(void)
 {
 	int i;
-	for (i = 0; i < nOfTrackedFingers; ++i)
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
 		BEL_ST_ToggleTextInputUIKey(g_sdlTrackedFingers[i].miscData.key.x, g_sdlTrackedFingers[i].miscData.key.y, false, false);
 
-	nOfTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
 static void BEL_ST_ToggleOffAllDebugKeysUIKeysTrackedbyFingers(void)
 {
 	int i;
-	for (i = 0; i < nOfTrackedFingers; ++i)
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
 	{
 		int keyX = g_sdlTrackedFingers[i].miscData.key.x;
 		int keyY = g_sdlTrackedFingers[i].miscData.key.y;
 		BEL_ST_ToggleDebugKeysUIKey(keyX, keyY, false, g_sdlDebugKeysPressed[keyY][keyX]);
 	}
 
-	nOfTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
@@ -938,6 +939,7 @@ static void BEL_ST_ChangeKeyStateInDebugKeysUI(BE_ST_ScanCode_T scanCode, bool i
 	BEL_ST_HandleEmuKeyboardEvent(isPressed, false, dosKeyEvent);
 }
 
+
 void BEL_ST_MoveUpInTextInputUI(void)
 {
 	BEL_ST_ToggleOffAllTextInputUIKeysTrackedbyFingers();
@@ -950,7 +952,6 @@ void BEL_ST_MoveUpInTextInputUI(void)
 			g_sdlTextInputIsKeyPressed = false;
 		}
 		BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-		g_sdlTextInputIsKeyPressed = false;
 
 		--g_sdlKeyboardUISelectedKeyY;
 		if (g_sdlKeyboardUISelectedKeyY < 0)
@@ -979,7 +980,6 @@ void BEL_ST_MoveDownInTextInputUI(void)
 			g_sdlTextInputIsKeyPressed = false;
 		}
 		BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-		g_sdlTextInputIsKeyPressed = false;
 
 		++g_sdlKeyboardUISelectedKeyY;
 		if (g_sdlKeyboardUISelectedKeyY >= ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT)
@@ -1008,7 +1008,6 @@ void BEL_ST_MoveLeftInTextInputUI(void)
 			g_sdlTextInputIsKeyPressed = false;
 		}
 		BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-		g_sdlTextInputIsKeyPressed = false;
 
 		--g_sdlKeyboardUISelectedKeyX;
 		if (g_sdlKeyboardUISelectedKeyX < 0)
@@ -1038,7 +1037,6 @@ void BEL_ST_MoveRightInTextInputUI(void)
 			g_sdlTextInputIsKeyPressed = false;
 		}
 		BEL_ST_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-		g_sdlTextInputIsKeyPressed = false;
 
 		++g_sdlKeyboardUISelectedKeyX;
 		if (g_sdlKeyboardUISelectedKeyX >= ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH)
@@ -1165,6 +1163,8 @@ void BEL_ST_ToggleShiftStateInTextInputUI(void)
 
 void BEL_ST_ToggleKeyPressInTextInputUI(bool toggle)
 {
+	BEL_ST_ToggleOffAllTextInputUIKeysTrackedbyFingers();
+
 	if (!g_sdlKeyboardUISelectedKeyIsMarked)
 	{
 		g_sdlKeyboardUISelectedKeyX = g_sdlKeyboardUISelectedKeyY = 0;
@@ -1187,6 +1187,8 @@ void BEL_ST_ToggleKeyPressInTextInputUI(bool toggle)
 
 void BEL_ST_ToggleKeyPressInDebugKeysUI(void)
 {
+	BEL_ST_ToggleOffAllDebugKeysUIKeysTrackedbyFingers();
+
 	bool *keyStatus = &g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
 
 	if (!g_sdlKeyboardUISelectedKeyIsMarked)
@@ -1212,7 +1214,7 @@ void BEL_ST_ToggleKeyPressInDebugKeysUI(void)
 static BESDLTrackedFinger *BEL_ST_ProcessAndGetPressedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	int i;
-	for (i = 0; i < nOfTrackedFingers; ++i)
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
 		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
 		{
 			if (g_refKeenCfg.touchInputDebugging)
@@ -1224,11 +1226,10 @@ static BESDLTrackedFinger *BEL_ST_ProcessAndGetPressedTrackedFinger(SDL_TouchID 
 			return NULL; // In case of some mistaken double-tap of same finger
 		}
 
-
-	if (nOfTrackedFingers == MAX_NUM_OF_TRACKED_FINGERS)
+	if (g_nOfTrackedFingers == MAX_NUM_OF_TRACKED_FINGERS)
 		return NULL;
 
-	BESDLTrackedFinger *trackedFinger = &g_sdlTrackedFingers[nOfTrackedFingers++];
+	BESDLTrackedFinger *trackedFinger = &g_sdlTrackedFingers[g_nOfTrackedFingers++];
 	trackedFinger->touchId = touchId;
 	trackedFinger->fingerId = fingerId;
 	if (g_refKeenCfg.touchInputDebugging)
@@ -1243,11 +1244,11 @@ static BESDLTrackedFinger *BEL_ST_ProcessAndGetPressedTrackedFinger(SDL_TouchID 
 static BESDLTrackedFinger *BEL_ST_ProcessAndGetMovedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	int i;
-	for (i = 0; i < nOfTrackedFingers; ++i)
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
 		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
 			break;
 
-	if (i == nOfTrackedFingers)
+	if (i == g_nOfTrackedFingers)
 		return NULL;
 
 	BESDLTrackedFinger *trackedFinger = &g_sdlTrackedFingers[i];
@@ -1263,7 +1264,7 @@ static BESDLTrackedFinger *BEL_ST_ProcessAndGetMovedTrackedFinger(SDL_TouchID to
 static BESDLTrackedFinger *BEL_ST_GetReleasedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId)
 {
 	int i;
-	for (i = 0; i < nOfTrackedFingers; ++i)
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
 		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
 			return &g_sdlTrackedFingers[i];
 
@@ -1272,7 +1273,7 @@ static BESDLTrackedFinger *BEL_ST_GetReleasedTrackedFinger(SDL_TouchID touchId, 
 
 static void BEL_ST_RemoveTrackedFinger(BESDLTrackedFinger *trackedFinger)
 {
-	*trackedFinger = g_sdlTrackedFingers[--nOfTrackedFingers]; // Remove finger entry without moving the rest, except for maybe the last
+	*trackedFinger = g_sdlTrackedFingers[--g_nOfTrackedFingers]; // Remove finger entry without moving the rest, except for maybe the last
 	if (g_refKeenCfg.touchInputDebugging)
 		g_sdlForceGfxControlUiRefresh = true; // Remove debugging finger mark from screen
 }
@@ -1299,6 +1300,7 @@ static void BEL_ST_UnmarkSelectedKeyInDebugKeysUI(void)
 		g_sdlKeyboardUISelectedKeyIsMarked = false;
 	}
 }
+
 
 void BEL_ST_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
@@ -1734,7 +1736,7 @@ void BEL_ST_ReleasePressedKeysInTextInputUI(void)
 	if (g_sdlTextInputIsShifted)
 		BEL_ST_ToggleShiftStateInTextInputUI();
 
-	nOfTrackedFingers = 0; // Remove all tracked fingers
+	g_nOfTrackedFingers = 0; // Remove all tracked fingers
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
@@ -1749,19 +1751,19 @@ void BEL_ST_ReleasePressedKeysInDebugKeysUI(void)
 				g_sdlDebugKeysPressed[currKeyRow][currKeyCol] = false;
 			}
 
-	nOfTrackedFingers = 0; // Remove all tracked fingers
+	g_nOfTrackedFingers = 0; // Remove all tracked fingers
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
 void BEL_ST_ReleasePressedKeysInControllerUI(void)
 {
-	while (nOfTrackedFingers > 0)
+	while (g_nOfTrackedFingers > 0)
 		BEL_ST_CheckReleasedPointerInControllerUI(g_sdlTrackedFingers[0].touchId, g_sdlTrackedFingers[0].fingerId);
 }
 
 void BEL_ST_ReleasePressedButtonsInTouchControls(void)
 {
-	while (nOfTrackedFingers > 0)
+	while (g_nOfTrackedFingers > 0)
 		BEL_ST_CheckReleasedPointerInTouchControls(g_sdlTrackedFingers[0].touchId, g_sdlTrackedFingers[0].fingerId);
 }
 
@@ -2509,7 +2511,7 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 		SDL_SetRenderDrawColor(g_sdlRenderer, 0xFF, 0x00, 0x00, 0xBF); // Includes some alpha
 		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_BLEND);
 		BESDLTrackedFinger *trackedFinger = g_sdlTrackedFingers;
-		for (int i = 0; i < nOfTrackedFingers; ++i, ++trackedFinger)
+		for (int i = 0; i < g_nOfTrackedFingers; ++i, ++trackedFinger)
 		{
 			SDL_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
 			SDL_RenderFillRect(g_sdlRenderer, &rect);
