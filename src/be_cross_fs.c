@@ -1416,8 +1416,7 @@ void BE_Cross_PrepareGameInstallations(void)
 
 	if (!g_refKeenCfg.manualGameVerMode)
 	{
-#ifdef REFKEEN_PLATFORM_WINDOWS
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS) || (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
+#if (defined REFKEEN_PLATFORM_WINDOWS) && (defined REFKEEN_VER_CATACOMB_ALL)
 		TCHAR gog_catacombs_path[BE_CROSS_PATH_LEN_BOUND];
 		DWORD dwType = 0;
 		DWORD dwSize = sizeof(gog_catacombs_path);
@@ -1428,7 +1427,6 @@ void BE_Cross_PrepareGameInstallations(void)
 		{
 			path_gog_catacombs_prefix_end = path/*NOT gog_catacombs_path*/ + _tcslen(gog_catacombs_path);
 		}
-#endif
 #endif
 
 		/*** Now handling each version separately ***/

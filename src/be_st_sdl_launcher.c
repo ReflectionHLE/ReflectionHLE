@@ -70,16 +70,34 @@ static bool g_sdlLauncherTextSearchUIIsShown, g_sdlLauncherTextInputUIIsShown;
 // some differences. For one, these are not limited just to a specific kind
 // of keyboard UI (partially unused for in-game debug keys UI).
 static int g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY;
-static bool g_sdlKeyboardUIPointerUsed;
+static bool g_sdlKeyboardUISelectedKeyIsMarked;
 
 static bool g_sdlKeyboardUIIsKeyPressed, g_sdlKeyboardUIIsShifted;
 
+/* Tracked fingers definitions (multi-touch input) */
+
+#define MAX_NUM_OF_TRACKED_FINGERS 10
+
+typedef struct {
+	SDL_TouchID touchId;
+	SDL_FingerID fingerId;
+	int lastX, lastY;
+	struct {
+		int x, y;
+	} key;
+} BESDLLauncherTrackedFinger;
+
+static BESDLLauncherTrackedFinger g_sdlTrackedFingers[MAX_NUM_OF_TRACKED_FINGERS];
+static int g_nOfTrackedFingers = 0;
+
 // Borrowed from other files
+extern int g_sdlDebugFingerRectSideLen;
 extern const uint32_t g_sdlEGABGRAScreenColors[];
 extern SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS];
 extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
+extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 // These two are shared ON PURPOSE (for seamless transition from launcher to game, if an SDL_WINDOW_FULLSCREEN_DESKTOP window is used with same features)
 extern SDL_Window *g_sdlWindow;
 extern SDL_Renderer *g_sdlRenderer;
@@ -378,10 +396,12 @@ BEMenu g_beSoundSettingsMenu = {
 
 static const char *g_be_inputSettingsChoices_controllerScheme[] = {"Classic", "Modern", NULL};
 
+static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP);
+
 BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beControllerSettingsMenu)
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_settingsChoices_boolean);
-BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean);
+BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_Autolock, "Autolock mouse cursor", g_be_settingsChoices_boolean)
 
 BEMenu g_beInputSettingsMenu = {
@@ -881,10 +901,19 @@ static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP)
 }
 #endif
 
+static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP)
+{
+	// Apply this immediately, so the effect is observed in the launcher itself
+	g_refKeenCfg.touchInputDebugging = (*menuItemP)->choice;
+}
+
 static void BEL_ST_Launcher_SetGfxOutputRects(void)
 {
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+
+	g_sdlLastReportedWindowWidth = winWidth;
+	g_sdlLastReportedWindowHeight = winHeight;
 
 	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_FULL)
 	{
@@ -926,6 +955,9 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 		g_sdlControllerLauncherTextInputRect.h = g_sdlControllerLauncherTextInputRect.w * ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT / ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH;
 	g_sdlControllerLauncherTextInputRect.x = (winWidth-g_sdlControllerLauncherTextInputRect.w)/2;
 	g_sdlControllerLauncherTextInputRect.y = winHeight-g_sdlControllerLauncherTextInputRect.h;
+
+	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
+	g_sdlDebugFingerRectSideLen = minWinDim/4;
 }
 
 void BE_ST_Launcher_MarkGfxCache(void)
@@ -1093,6 +1125,8 @@ void BEL_ST_Launcher_ToggleTextSearch(void)
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
+	g_nOfTrackedFingers = 0;
+
 	if (!g_sdlLauncherTextSearchUIIsShown)
 		return;
 
@@ -1100,7 +1134,7 @@ void BEL_ST_Launcher_ToggleTextSearch(void)
 
 	g_sdlKeyboardUISelectedKeyX = 0;
 	g_sdlKeyboardUISelectedKeyY = 0;
-	g_sdlKeyboardUIPointerUsed = false;
+	g_sdlKeyboardUISelectedKeyIsMarked = true;
 	g_sdlKeyboardUIIsKeyPressed = false;
 	g_sdlKeyboardUIIsShifted = false;
 	g_sdlIntScanCodeKeyboardUIStrs_Ptr = g_sdlIntCodeKeyboardUINonShiftedStrs;
@@ -1120,6 +1154,8 @@ void BEL_ST_Launcher_ToggleTextInput(void)
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
+	g_nOfTrackedFingers = 0;
+
 	if (!g_sdlLauncherTextInputUIIsShown)
 		return;
 
@@ -1127,7 +1163,7 @@ void BEL_ST_Launcher_ToggleTextInput(void)
 
 	g_sdlKeyboardUISelectedKeyX = 0;
 	g_sdlKeyboardUISelectedKeyY = 0;
-	g_sdlKeyboardUIPointerUsed = false;
+	g_sdlKeyboardUISelectedKeyIsMarked = true;
 	g_sdlKeyboardUIIsKeyPressed = false;
 	g_sdlKeyboardUIIsShifted = false;
 	g_sdlIntScanCodeKeyboardUIStrs_Ptr = g_sdlIntCodeKeyboardUINonShiftedStrs;
@@ -1146,6 +1182,8 @@ void BEL_ST_Launcher_TurnTextSearchOff(void)
 
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
+
+	g_nOfTrackedFingers = 0;
 }
 
 void BEL_ST_Launcher_TurnTextInputOff(void)
@@ -1156,6 +1194,8 @@ void BEL_ST_Launcher_TurnTextInputOff(void)
 
 	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
+
+	g_nOfTrackedFingers = 0;
 }
 
 static void BEL_ST_Launcher_ToggleTextSearchUIKey(int x, int y, bool isMarked, bool isPressed)
@@ -1181,341 +1221,599 @@ static void BEL_ST_Launcher_ToggleTextInputUIKey(int x, int y, bool isMarked, bo
 }
 
 
-static int BEL_ST_Launcher_MoveUpInTextSearchUI(void)
+static void BEL_ST_Launcher_ToggleOffAllTextSearchUIKeysTrackedbyFingers(void)
 {
-	int origScanCode = g_sdlKeyboardUIIsKeyPressed ? g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : SDL_SCANCODE_UNKNOWN;
-	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
+	int i;
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlTrackedFingers[i].key.x, g_sdlTrackedFingers[i].key.y, false, false);
 
-	--g_sdlKeyboardUISelectedKeyY;
-	if (g_sdlKeyboardUISelectedKeyY < 0)
+	g_nOfTrackedFingers = 0;
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
+}
+
+static void BEL_ST_Launcher_ToggleOffAllTextInputUIKeysTrackedbyFingers(void)
+{
+	int i;
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlTrackedFingers[i].key.x, g_sdlTrackedFingers[i].key.y, false, false);
+
+	g_nOfTrackedFingers = 0;
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
+}
+
+static void BEL_ST_Launcher_ToggleShiftStateInTextSearchUI(void);
+static void BEL_ST_Launcher_ToggleShiftStateInTextInputUI(void);
+static void BEL_ST_Launcher_HandleKeyPressEvent(int scancode, bool isShifted);
+static bool BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(int scancode, bool isShifted, bool *pConfirmed);
+
+static void BEL_ST_Launcher_DoKeyPressInTextSearchUI(int scanCode)
+{
+	if (scanCode == ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT)
+		BEL_ST_Launcher_ToggleShiftStateInTextSearchUI();
+	else
+		BEL_ST_Launcher_HandleKeyPressEvent(BEL_ST_Launcher_TranslateInternalKeyCode(scanCode), g_sdlKeyboardUIIsShifted);
+}
+
+static bool BEL_ST_Launcher_DoKeyPressInTextInputUI(int scanCode, bool *pConfirmed)
+{
+	if (scanCode == ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT)
 	{
+		BEL_ST_Launcher_ToggleShiftStateInTextInputUI();
+		return false;
+	}
+	else
+		return BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(BEL_ST_Launcher_TranslateInternalKeyCode(scanCode), g_sdlKeyboardUIIsShifted, pConfirmed);
+}
+
+
+static void BEL_ST_Launcher_MoveUpInTextSearchUI(void)
+{
+	BEL_ST_Launcher_ToggleOffAllTextSearchUIKeysTrackedbyFingers();
+
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		g_sdlKeyboardUIIsKeyPressed = false;
+		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+		--g_sdlKeyboardUISelectedKeyY;
+		if (g_sdlKeyboardUISelectedKeyY < 0)
+			g_sdlKeyboardUISelectedKeyY = ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT-1;
+	}
+	else
+	{
+		g_sdlKeyboardUISelectedKeyX = 0;
 		g_sdlKeyboardUISelectedKeyY = ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT-1;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
 	}
 	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-	return origScanCode;
 }
 
-static int BEL_ST_Launcher_MoveDownInTextSearchUI(void)
+static void BEL_ST_Launcher_MoveDownInTextSearchUI(void)
 {
-	int origScanCode = g_sdlKeyboardUIIsKeyPressed ? g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : SDL_SCANCODE_UNKNOWN;
-	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
+	BEL_ST_Launcher_ToggleOffAllTextSearchUIKeysTrackedbyFingers();
 
-	++g_sdlKeyboardUISelectedKeyY;
-	if (g_sdlKeyboardUISelectedKeyY >= ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT)
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
 	{
+		g_sdlKeyboardUIIsKeyPressed = false;
+		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+		++g_sdlKeyboardUISelectedKeyY;
+		if (g_sdlKeyboardUISelectedKeyY >= ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT)
+			g_sdlKeyboardUISelectedKeyY = 0;
+	}
+	else
+	{
+		g_sdlKeyboardUISelectedKeyX = 0;
 		g_sdlKeyboardUISelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
 	}
 	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-	return origScanCode;
 }
 
-static int BEL_ST_Launcher_MoveLeftInTextSearchUI(void)
+static void BEL_ST_Launcher_MoveLeftInTextSearchUI(void)
 {
-	int origScanCode = g_sdlKeyboardUIIsKeyPressed ? g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : SDL_SCANCODE_UNKNOWN;
-	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
+	BEL_ST_Launcher_ToggleOffAllTextSearchUIKeysTrackedbyFingers();
 
-	--g_sdlKeyboardUISelectedKeyX;
-	if (g_sdlKeyboardUISelectedKeyX < 0)
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		g_sdlKeyboardUIIsKeyPressed = false;
+		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+		--g_sdlKeyboardUISelectedKeyX;
+		if (g_sdlKeyboardUISelectedKeyX < 0)
+			g_sdlKeyboardUISelectedKeyX = ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH-1;
+	}
+	else
 	{
 		g_sdlKeyboardUISelectedKeyX = ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH-1;
+		g_sdlKeyboardUISelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
 	}
 	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-	return origScanCode;
 }
 
-static int BEL_ST_Launcher_MoveRightInTextSearchUI(void)
+static void BEL_ST_Launcher_MoveRightInTextSearchUI(void)
 {
-	int origScanCode = g_sdlKeyboardUIIsKeyPressed ? g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : SDL_SCANCODE_UNKNOWN;
-	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
+	BEL_ST_Launcher_ToggleOffAllTextSearchUIKeysTrackedbyFingers();
 
-	++g_sdlKeyboardUISelectedKeyX;
-	if (g_sdlKeyboardUISelectedKeyX >= ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH)
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		g_sdlKeyboardUIIsKeyPressed = false;
+		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+		++g_sdlKeyboardUISelectedKeyX;
+		if (g_sdlKeyboardUISelectedKeyX >= ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH)
+			g_sdlKeyboardUISelectedKeyX = 0;
+	}
+	else
 	{
 		g_sdlKeyboardUISelectedKeyX = 0;
+		g_sdlKeyboardUISelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
 	}
 	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-	return origScanCode;
 }
 
 
-static int BEL_ST_Launcher_MoveUpInTextInputUI(void)
+static void BEL_ST_Launcher_MoveUpInTextInputUI(void)
 {
-	int origScanCode = g_sdlKeyboardUIIsKeyPressed ? g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : SDL_SCANCODE_UNKNOWN;
-	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
+	BEL_ST_Launcher_ToggleOffAllTextInputUIKeysTrackedbyFingers();
 
-	--g_sdlKeyboardUISelectedKeyY;
-	if (g_sdlKeyboardUISelectedKeyY < 0)
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
 	{
+		g_sdlKeyboardUIIsKeyPressed = false;
+		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+		--g_sdlKeyboardUISelectedKeyY;
+		if (g_sdlKeyboardUISelectedKeyY < 0)
+			g_sdlKeyboardUISelectedKeyY = ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT-1;
+	}
+	else
+	{
+		g_sdlKeyboardUISelectedKeyX = 0;
 		g_sdlKeyboardUISelectedKeyY = ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT-1;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
 	}
 	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-	return origScanCode;
 }
 
-static int BEL_ST_Launcher_MoveDownInTextInputUI(void)
+static void BEL_ST_Launcher_MoveDownInTextInputUI(void)
 {
-	int origScanCode = g_sdlKeyboardUIIsKeyPressed ? g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : SDL_SCANCODE_UNKNOWN;
-	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
+	BEL_ST_Launcher_ToggleOffAllTextInputUIKeysTrackedbyFingers();
 
-	++g_sdlKeyboardUISelectedKeyY;
-	if (g_sdlKeyboardUISelectedKeyY >= ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT)
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
 	{
+		g_sdlKeyboardUIIsKeyPressed = false;
+		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+		++g_sdlKeyboardUISelectedKeyY;
+		if (g_sdlKeyboardUISelectedKeyY >= ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT)
+			g_sdlKeyboardUISelectedKeyY = 0;
+	}
+	else
+	{
+		g_sdlKeyboardUISelectedKeyX = 0;
 		g_sdlKeyboardUISelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
 	}
 	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-	return origScanCode;
 }
 
-static int BEL_ST_Launcher_MoveLeftInTextInputUI(void)
+static void BEL_ST_Launcher_MoveLeftInTextInputUI(void)
 {
-	int origScanCode = g_sdlKeyboardUIIsKeyPressed ? g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : SDL_SCANCODE_UNKNOWN;
-	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
+	BEL_ST_Launcher_ToggleOffAllTextInputUIKeysTrackedbyFingers();
 
-	--g_sdlKeyboardUISelectedKeyX;
-	if (g_sdlKeyboardUISelectedKeyX < 0)
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		g_sdlKeyboardUIIsKeyPressed = false;
+		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+		--g_sdlKeyboardUISelectedKeyX;
+		if (g_sdlKeyboardUISelectedKeyX < 0)
+			g_sdlKeyboardUISelectedKeyX = ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH-1;
+	}
+	else
 	{
 		g_sdlKeyboardUISelectedKeyX = ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH-1;
+		g_sdlKeyboardUISelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
 	}
 	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-	return origScanCode;
 }
 
-static int BEL_ST_Launcher_MoveRightInTextInputUI(void)
+static void BEL_ST_Launcher_MoveRightInTextInputUI(void)
 {
-	int origScanCode = g_sdlKeyboardUIIsKeyPressed ? g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] : SDL_SCANCODE_UNKNOWN;
-	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
+	BEL_ST_Launcher_ToggleOffAllTextInputUIKeysTrackedbyFingers();
 
-	++g_sdlKeyboardUISelectedKeyX;
-	if (g_sdlKeyboardUISelectedKeyX >= ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH)
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		g_sdlKeyboardUIIsKeyPressed = false;
+		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+
+		++g_sdlKeyboardUISelectedKeyX;
+		if (g_sdlKeyboardUISelectedKeyX >= ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH)
+			g_sdlKeyboardUISelectedKeyX = 0;
+	}
+	else
 	{
 		g_sdlKeyboardUISelectedKeyX = 0;
+		g_sdlKeyboardUISelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
 	}
 	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-	return origScanCode;
 }
 
 
-static int BEL_ST_Launcher_ToggleShiftStateInTextSearchUI(bool *pToggle)
+static void BEL_ST_Launcher_ToggleShiftStateInTextSearchUI(void)
 {
-	if (!(*pToggle))
-		return 0;
 	g_sdlKeyboardUIIsShifted = !g_sdlKeyboardUIIsShifted;
-	*pToggle = g_sdlKeyboardUIIsShifted;
 	g_sdlIntScanCodeKeyboardUIStrs_Ptr = g_sdlKeyboardUIIsShifted ? g_sdlIntCodeKeyboardUIShiftedStrs : g_sdlIntCodeKeyboardUINonShiftedStrs;
 
 	BEL_ST_Launcher_RedrawWholeTextSearchUI();
 
+	//BEL_ST_Launcher_HandleKeyPressEvent(BEL_ST_Launcher_TranslateInternalKeyCode(ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT), g_sdlKeyboardUIIsShifted);
+
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
-
-	return ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT;
 }
 
-static int BEL_ST_Launcher_ToggleShiftStateInTextInputUI(bool *pToggle)
+static void BEL_ST_Launcher_ToggleShiftStateInTextInputUI(void)
 {
-	if (!(*pToggle))
-		return 0;
 	g_sdlKeyboardUIIsShifted = !g_sdlKeyboardUIIsShifted;
-	*pToggle = g_sdlKeyboardUIIsShifted;
 	g_sdlIntScanCodeKeyboardUIStrs_Ptr = g_sdlKeyboardUIIsShifted ? g_sdlIntCodeKeyboardUIShiftedStrs : g_sdlIntCodeKeyboardUINonShiftedStrs;
 
 	BEL_ST_Launcher_RedrawWholeTextInputUI();
 
-	//g_sdlForceGfxControlUiRefresh = true;
-	BE_ST_Launcher_MarkGfxCache();
-
-	return ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT;
-}
-
-static int BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(bool *pToggle)
-{
-	//if (g_sdlKeyboardUIIsKeyPressed == *pToggle)
-	//	return 0;
-	g_sdlKeyboardUIIsKeyPressed = *pToggle;
-
-	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, *pToggle);
-
-	//g_sdlForceGfxControlUiRefresh = true;
-	BE_ST_Launcher_MarkGfxCache();
-
-	// Shift key is a special case
-	if ((g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] == ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT))
-		return BEL_ST_Launcher_ToggleShiftStateInTextSearchUI(pToggle);
-
-	return g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
-}
-
-static int BEL_ST_Launcher_ToggleKeyPressInTextInputUI(bool *pToggle)
-{
-	//if (g_sdlKeyboardUIIsKeyPressed == *pToggle)
-	//	return 0;
-	g_sdlKeyboardUIIsKeyPressed = *pToggle;
-
-	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, *pToggle);
-
-	//g_sdlForceGfxControlUiRefresh = true;
-	BE_ST_Launcher_MarkGfxCache();
-
-	// Shift key is a special case
-	if ((g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX] == ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT))
-		return BEL_ST_Launcher_ToggleShiftStateInTextInputUI(pToggle);
-
-	return g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX];
-}
-
-
-static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(int x, int y)
-{
-	if (!g_sdlKeyboardUIPointerUsed)
-		return;
-
-	if ((x < g_sdlControllerLauncherTextSearchRect.x) || (x >= g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
-	    || (y < g_sdlControllerLauncherTextSearchRect.y) || (y >= g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
-		return;
-
-	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
-
-	// Normalize coordinates to keys
-	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerLauncherTextSearchRect.x)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH/g_sdlControllerLauncherTextSearchRect.w;
-	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerLauncherTextSearchRect.y)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT/g_sdlControllerLauncherTextSearchRect.h;
-
-	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+	//BEL_ST_Launcher_HandleKeyPressEvent(BEL_ST_Launcher_TranslateInternalKeyCode(ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT), g_sdlKeyboardUIIsShifted);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
 }
 
-static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(int x, int y)
+static void BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(bool toggle)
 {
-	if ((x < g_sdlControllerLauncherTextSearchRect.x) || (x >= g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
-	    || (y < g_sdlControllerLauncherTextSearchRect.y) || (y >= g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
-		BEL_ST_Launcher_TurnTextSearchOff();
+	BEL_ST_Launcher_ToggleOffAllTextSearchUIKeysTrackedbyFingers();
 
-	g_sdlKeyboardUIPointerUsed = true;
-	BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(x, y);
-}
-
-static void BE_ST_Launcher_HandleKeyPressEvent(int scancode, bool isShifted);
-
-static void BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(int x, int y)
-{
-	if (!g_sdlKeyboardUIPointerUsed)
+	if (!g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		g_sdlKeyboardUISelectedKeyX = g_sdlKeyboardUISelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
+		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+		//g_sdlForceGfxControlUiRefresh = true;
+		BE_ST_Launcher_MarkGfxCache();
 		return;
+	}
 
-	g_sdlKeyboardUIPointerUsed = false;
-	if ((x < g_sdlControllerLauncherTextSearchRect.x) || (x >= g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
-	    || (y < g_sdlControllerLauncherTextSearchRect.y) || (y >= g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
-		return;
+	// Don't check - support gamepad button press repeat
+	//if (g_sdlKeyboardUIIsKeyPressed == toggle)
+	//	return;
+	g_sdlKeyboardUIIsKeyPressed = toggle;
 
-	//BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-
-	// Normalize coordinates to keys
-	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerLauncherTextSearchRect.x)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH/g_sdlControllerLauncherTextSearchRect.w;
-	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerLauncherTextSearchRect.y)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT/g_sdlControllerLauncherTextSearchRect.h;
-	// Hack for covering the special case of the shift key
-	g_sdlKeyboardUIIsKeyPressed = false;
-	bool toggle = true;
-	int scanCode = BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(&toggle);
-	toggle = false;
-	BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(&toggle);
-
-	if (scanCode)
-		BE_ST_Launcher_HandleKeyPressEvent(scanCode, g_sdlKeyboardUIIsShifted); // No need to call BEL_ST_Launcher_TranslateInternalKeyCode here
-}
-
-
-static void BEL_ST_Launcher_CheckMovedPointerInTextInputUI(int x, int y)
-{
-	if (!g_sdlKeyboardUIPointerUsed)
-		return;
-
-	if ((x < g_sdlControllerLauncherTextInputRect.x) || (x >= g_sdlControllerLauncherTextInputRect.x+g_sdlControllerLauncherTextInputRect.w)
-	    || (y < g_sdlControllerLauncherTextInputRect.y) || (y >= g_sdlControllerLauncherTextInputRect.y+g_sdlControllerLauncherTextInputRect.h))
-		return;
-
-	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
-	g_sdlKeyboardUIIsKeyPressed = false;
-
-	// Normalize coordinates to keys
-	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerLauncherTextInputRect.x)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerLauncherTextInputRect.w;
-	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerLauncherTextInputRect.y)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerLauncherTextInputRect.h;
-
-	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, toggle);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
+
+	if (toggle)
+		BEL_ST_Launcher_DoKeyPressInTextSearchUI(g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
 }
 
-static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(int x, int y)
+static bool BEL_ST_Launcher_ToggleKeyPressInTextInputUI(bool toggle, bool *pConfirmed)
 {
-	if ((x < g_sdlControllerLauncherTextInputRect.x) || (x >= g_sdlControllerLauncherTextInputRect.x+g_sdlControllerLauncherTextInputRect.w)
-	    || (y < g_sdlControllerLauncherTextInputRect.y) || (y >= g_sdlControllerLauncherTextInputRect.y+g_sdlControllerLauncherTextInputRect.h))
-		BEL_ST_Launcher_TurnTextInputOff();
+	BEL_ST_Launcher_ToggleOffAllTextInputUIKeysTrackedbyFingers();
 
-	g_sdlKeyboardUIPointerUsed = true;
-	BEL_ST_Launcher_CheckMovedPointerInTextInputUI(x, y);
-}
-
-static bool BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(int scancode, bool isShifted, bool *pConfirmed);
-
-static bool BEL_ST_Launcher_CheckReleasedPointerInTextInputUI(int x, int y, bool *pConfirmed)
-{
-	if (!g_sdlKeyboardUIPointerUsed)
+	if (!g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		g_sdlKeyboardUISelectedKeyX = g_sdlKeyboardUISelectedKeyY = 0;
+		g_sdlKeyboardUISelectedKeyIsMarked = true;
+		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, false);
+		//g_sdlForceGfxControlUiRefresh = true;
+		BE_ST_Launcher_MarkGfxCache();
 		return false;
+	}
 
-	g_sdlKeyboardUIPointerUsed = false;
-	if ((x < g_sdlControllerLauncherTextInputRect.x) || (x >= g_sdlControllerLauncherTextInputRect.x+g_sdlControllerLauncherTextInputRect.w)
-	    || (y < g_sdlControllerLauncherTextInputRect.y) || (y >= g_sdlControllerLauncherTextInputRect.y+g_sdlControllerLauncherTextInputRect.h))
-		return false;
+	// Don't check - support gamepad button press repeat
+	//if (g_sdlKeyboardUIIsKeyPressed == toggle)
+	//	return false;
+	g_sdlKeyboardUIIsKeyPressed = toggle;
 
-	//BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, true, toggle);
 
-	// Normalize coordinates to keys
-	g_sdlKeyboardUISelectedKeyX = (x-g_sdlControllerLauncherTextInputRect.x)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerLauncherTextInputRect.w;
-	g_sdlKeyboardUISelectedKeyY = (y-g_sdlControllerLauncherTextInputRect.y)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerLauncherTextInputRect.h;
-	// Hack for covering the special case of the shift key
-	g_sdlKeyboardUIIsKeyPressed = false;
-	bool toggle = true;
-	int scanCode = BEL_ST_Launcher_ToggleKeyPressInTextInputUI(&toggle);
-	toggle = false;
-	BEL_ST_Launcher_ToggleKeyPressInTextInputUI(&toggle);
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
 
-	if (scanCode)
-		return BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(BEL_ST_Launcher_TranslateInternalKeyCode(scanCode), g_sdlKeyboardUIIsShifted, pConfirmed);
+	if (toggle)
+		return BEL_ST_Launcher_DoKeyPressInTextInputUI(g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX], pConfirmed);
+
 	return false;
+}
+
+/*** Pointer stuff common to all kinds of controller / touch input UI ***/
+
+static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	int i;
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
+		{
+			if (g_refKeenCfg.touchInputDebugging)
+			{
+				g_sdlTrackedFingers[i].lastX = x;
+				g_sdlTrackedFingers[i].lastY = y;
+				//g_sdlForceGfxControlUiRefresh = true;
+				BE_ST_Launcher_MarkGfxCache();
+			}
+			return NULL; // In case of some mistaken double-tap of same finger
+		}
+
+	if (g_nOfTrackedFingers == MAX_NUM_OF_TRACKED_FINGERS)
+		return NULL;
+
+	BESDLLauncherTrackedFinger *trackedFinger = &g_sdlTrackedFingers[g_nOfTrackedFingers++];
+	trackedFinger->touchId = touchId;
+	trackedFinger->fingerId = fingerId;
+	if (g_refKeenCfg.touchInputDebugging)
+	{
+		trackedFinger->lastX = x;
+		trackedFinger->lastY = y;
+		//g_sdlForceGfxControlUiRefresh = true;
+		BE_ST_Launcher_MarkGfxCache();
+	}
+	return trackedFinger;
+}
+
+static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	int i;
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
+			break;
+
+	if (i == g_nOfTrackedFingers)
+		return NULL;
+
+	BESDLLauncherTrackedFinger *trackedFinger = &g_sdlTrackedFingers[i];
+	if (g_refKeenCfg.touchInputDebugging)
+	{
+		trackedFinger->lastX = x;
+		trackedFinger->lastY = y;
+		//g_sdlForceGfxControlUiRefresh = true;
+		BE_ST_Launcher_MarkGfxCache();
+	}
+	return trackedFinger;
+}
+
+static BESDLLauncherTrackedFinger *BEL_ST_Launcher_GetReleasedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId)
+{
+	int i;
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
+			return &g_sdlTrackedFingers[i];
+
+	return NULL;
+}
+
+static void BEL_ST_Launcher_RemoveTrackedFinger(BESDLLauncherTrackedFinger *trackedFinger)
+{
+	*trackedFinger = g_sdlTrackedFingers[--g_nOfTrackedFingers]; // Remove finger entry without moving the rest, except for maybe the last
+	if (g_refKeenCfg.touchInputDebugging)
+		//g_sdlForceGfxControlUiRefresh = true;
+		BE_ST_Launcher_MarkGfxCache(); // Remove debugging finger mark from screen
+}
+
+static void BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextSearchUI(void)
+{
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		if (g_sdlKeyboardUIIsKeyPressed)
+		{
+			//BEL_ST_Launcher_ChangeKeyStateInTextSearchUI(g_sdlDOSScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX], false);
+			g_sdlKeyboardUIIsKeyPressed = false;
+		}
+		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+		g_sdlKeyboardUISelectedKeyIsMarked = false;
+	}
+}
+
+static void BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextInputUI(void)
+{
+	if (g_sdlKeyboardUISelectedKeyIsMarked)
+	{
+		if (g_sdlKeyboardUIIsKeyPressed)
+		{
+			//BEL_ST_Launcher_ChangeKeyStateInTextInputUI(g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX], false);
+			g_sdlKeyboardUIIsKeyPressed = false;
+		}
+		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY, false, false);
+		g_sdlKeyboardUISelectedKeyIsMarked = false;
+	}
+}
+
+
+static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
+	if (!trackedFinger)
+		return;
+
+	if ((x < g_sdlControllerLauncherTextSearchRect.x) || (x >= g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
+	    || (y < g_sdlControllerLauncherTextSearchRect.y) || (y >= g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
+		return;
+
+	BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextSearchUI();
+
+	// Normalize coordinates to keys
+	int keyX = (x-g_sdlControllerLauncherTextSearchRect.x)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH/g_sdlControllerLauncherTextSearchRect.w;
+	int keyY = (y-g_sdlControllerLauncherTextSearchRect.y)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT/g_sdlControllerLauncherTextSearchRect.h;
+
+	if ((trackedFinger->key.x != keyX) || (trackedFinger->key.y != keyY))
+	{
+		BEL_ST_Launcher_ToggleTextSearchUIKey(trackedFinger->key.x, trackedFinger->key.y, false, false);
+		BEL_ST_Launcher_ToggleTextSearchUIKey(keyX, keyY, true, false);
+		trackedFinger->key.x = keyX;
+		trackedFinger->key.y = keyY;
+	}
+
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
+}
+
+static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
+	if (!trackedFinger)
+		return;
+
+	if ((x < g_sdlControllerLauncherTextSearchRect.x) || (x >= g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
+	    || (y < g_sdlControllerLauncherTextSearchRect.y) || (y >= g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
+	{
+		//BEL_ST_Launcher_RemoveTrackedFinger(trackedFinger);
+		BEL_ST_Launcher_TurnTextSearchOff();
+		return;
+	}
+
+	BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextSearchUI();
+
+	// Normalize coordinates to keys
+	trackedFinger->key.x = (x-g_sdlControllerLauncherTextSearchRect.x)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH/g_sdlControllerLauncherTextSearchRect.w;
+	trackedFinger->key.y = (y-g_sdlControllerLauncherTextSearchRect.y)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT/g_sdlControllerLauncherTextSearchRect.h;
+
+	BEL_ST_Launcher_ToggleTextSearchUIKey(trackedFinger->key.x, trackedFinger->key.y, true, false);
+
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
+}
+
+static void BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_GetReleasedTrackedFinger(touchId, fingerId);
+	if (!trackedFinger)
+		return;
+
+	int prevKeyX = trackedFinger->key.x;
+	int prevKeyY = trackedFinger->key.y;
+
+	BEL_ST_Launcher_RemoveTrackedFinger(trackedFinger);
+
+	if ((x >= g_sdlControllerLauncherTextSearchRect.x) && (x < g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
+	    && (y >= g_sdlControllerLauncherTextSearchRect.y) && (y < g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
+		// Do key press (including any special handling possibly required for shift key)
+		BEL_ST_Launcher_DoKeyPressInTextSearchUI(g_sdlIntScanCodeTextSearchLayout[prevKeyY][prevKeyX]);
+
+	BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextSearchUI();
+	BEL_ST_Launcher_ToggleTextSearchUIKey(prevKeyX, prevKeyY, false, false);
+
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
+
+	return;
+}
+
+
+static void BEL_ST_Launcher_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
+	if (!trackedFinger)
+		return;
+
+	if ((x < g_sdlControllerLauncherTextInputRect.x) || (x >= g_sdlControllerLauncherTextInputRect.x+g_sdlControllerLauncherTextInputRect.w)
+	    || (y < g_sdlControllerLauncherTextInputRect.y) || (y >= g_sdlControllerLauncherTextInputRect.y+g_sdlControllerLauncherTextInputRect.h))
+		return;
+
+	BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextInputUI();
+
+	// Normalize coordinates to keys
+	int keyX = (x-g_sdlControllerLauncherTextInputRect.x)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerLauncherTextInputRect.w;
+	int keyY = (y-g_sdlControllerLauncherTextInputRect.y)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerLauncherTextInputRect.h;
+
+	if ((trackedFinger->key.x != keyX) || (trackedFinger->key.y != keyY))
+	{
+		BEL_ST_Launcher_ToggleTextInputUIKey(trackedFinger->key.x, trackedFinger->key.y, false, false);
+		BEL_ST_Launcher_ToggleTextInputUIKey(keyX, keyY, true, false);
+		trackedFinger->key.x = keyX;
+		trackedFinger->key.y = keyY;
+	}
+
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
+}
+
+static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
+	if (!trackedFinger)
+		return;
+
+	if ((x < g_sdlControllerLauncherTextInputRect.x) || (x >= g_sdlControllerLauncherTextInputRect.x+g_sdlControllerLauncherTextInputRect.w)
+	    || (y < g_sdlControllerLauncherTextInputRect.y) || (y >= g_sdlControllerLauncherTextInputRect.y+g_sdlControllerLauncherTextInputRect.h))
+	{
+		//BEL_ST_Launcher_RemoveTrackedFinger(trackedFinger);
+		BEL_ST_Launcher_TurnTextInputOff();
+		return;
+	}
+
+	BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextInputUI();
+
+	// Normalize coordinates to keys
+	trackedFinger->key.x = (x-g_sdlControllerLauncherTextInputRect.x)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerLauncherTextInputRect.w;
+	trackedFinger->key.y = (y-g_sdlControllerLauncherTextInputRect.y)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerLauncherTextInputRect.h;
+
+	BEL_ST_Launcher_ToggleTextInputUIKey(trackedFinger->key.x, trackedFinger->key.y, true, false);
+
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
+}
+
+static bool BEL_ST_Launcher_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, bool *pConfirmed)
+{
+	bool ret = false;
+	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_GetReleasedTrackedFinger(touchId, fingerId);
+	if (!trackedFinger)
+		return ret;
+
+	int prevKeyX = trackedFinger->key.x;
+	int prevKeyY = trackedFinger->key.y;
+
+	BEL_ST_Launcher_RemoveTrackedFinger(trackedFinger);
+
+	if ((x >= g_sdlControllerLauncherTextInputRect.x) && (x < g_sdlControllerLauncherTextInputRect.x+g_sdlControllerLauncherTextInputRect.w)
+	    && (y >= g_sdlControllerLauncherTextInputRect.y) && (y < g_sdlControllerLauncherTextInputRect.y+g_sdlControllerLauncherTextInputRect.h))
+		// Do key press (including any special handling possibly required for shift key)
+		ret = BEL_ST_Launcher_DoKeyPressInTextInputUI(g_sdlIntScanCodeTextInputLayout[prevKeyY][prevKeyX], pConfirmed);
+
+	BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextInputUI();
+	BEL_ST_Launcher_ToggleTextInputUIKey(prevKeyX, prevKeyY, false, false);
+
+	//g_sdlForceGfxControlUiRefresh = true;
+	BE_ST_Launcher_MarkGfxCache();
+
+	return ret;
 }
 
 
@@ -1524,7 +1822,7 @@ static bool BEL_ST_Launcher_CheckReleasedPointerInTextInputUI(int x, int y, bool
 static const char g_sdlScancodeToNonShiftedCharMap[] = "\0\0\0\0abcdefghijklmnopqrstuvwxyz1234567890\0\0\0\0 -=[]\\\0;'`,./";
 static const char g_sdlScancodeToShiftedCharMap[] = "\0\0\0\0ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()\0\0\0\0 _+{}|\0:\"~<>?";
 
-static void BE_ST_Launcher_HandleKeyPressEvent(int scancode, bool isShifted)
+static void BEL_ST_Launcher_HandleKeyPressEvent(int scancode, bool isShifted)
 {
 	switch (scancode)
 	{
@@ -1569,55 +1867,43 @@ static void BE_ST_Launcher_HandleKeyPressEvent(int scancode, bool isShifted)
 
 static void BEL_ST_Launcher_HandleTextSearchEvent(Uint8 but, bool isPressed)
 {
-	int intScanCode = SDL_SCANCODE_UNKNOWN;
-
 	switch (but)
 	{
 	case SDL_CONTROLLER_BUTTON_DPAD_UP:
 		if (isPressed)
-			intScanCode = BEL_ST_Launcher_MoveUpInTextSearchUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_Launcher_MoveUpInTextSearchUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
 		if (isPressed)
-			intScanCode = BEL_ST_Launcher_MoveDownInTextSearchUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_Launcher_MoveDownInTextSearchUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
 		if (isPressed)
-			intScanCode = BEL_ST_Launcher_MoveLeftInTextSearchUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_Launcher_MoveLeftInTextSearchUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
 		if (isPressed)
-			intScanCode = BEL_ST_Launcher_MoveRightInTextSearchUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_Launcher_MoveRightInTextSearchUI();
 		break;
 	// A few other special cases
 	case SDL_CONTROLLER_BUTTON_B:
 	case SDL_CONTROLLER_BUTTON_BACK:
-		intScanCode = SDL_SCANCODE_ESCAPE;
+		if (isPressed)
+			BEL_ST_Launcher_HandleKeyPressEvent(SDL_SCANCODE_ESCAPE, g_sdlKeyboardUIIsShifted);
 		break;
 	case SDL_CONTROLLER_BUTTON_X:
-		// Change shift state (or at least try to).
-		// NOTE: This can modify isPressed.
-		intScanCode = BEL_ST_Launcher_ToggleShiftStateInTextSearchUI(&isPressed);
+		if (isPressed)
+			BEL_ST_Launcher_ToggleShiftStateInTextSearchUI();
 		break;
 	default:
 	{
 		// Select key from UI.
-		// NOTE: This can modify isPressed e.g., for shift key.
-		intScanCode = BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(&isPressed);
+		BEL_ST_Launcher_ToggleKeyPressInTextSearchUI(isPressed);
 	}
-	}
-
-	if (intScanCode && isPressed)
-	{
-		BE_ST_Launcher_HandleKeyPressEvent(BEL_ST_Launcher_TranslateInternalKeyCode(intScanCode), g_sdlKeyboardUIIsShifted);
 	}
 }
 
-static void BE_ST_Launcher_HandleControllerButtonEvent(Uint8 but, bool isPressed)
+static void BEL_ST_Launcher_HandleControllerButtonEvent(Uint8 but, bool isPressed)
 {
 	// Special case (applies with and without on-screen keyboard)
 	if ((but == SDL_CONTROLLER_BUTTON_Y) && isPressed)
@@ -1670,10 +1956,25 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 {
 	//g_sdlForceGfxControlUiRefresh = false;
 
+	if (g_refKeenCfg.touchInputDebugging)
+	{
+		SDL_SetRenderDrawColor(g_sdlRenderer, 0xFF, 0x00, 0x00, 0xBF); // Includes some alpha
+		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_BLEND);
+		BESDLLauncherTrackedFinger *trackedFinger = g_sdlTrackedFingers;
+		for (int i = 0; i < g_nOfTrackedFingers; ++i, ++trackedFinger)
+		{
+			SDL_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
+			SDL_RenderFillRect(g_sdlRenderer, &rect);
+		}
+		SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_NONE);
+	}
+
 	if (g_sdlLauncherTextSearchUIIsShown)
 		SDL_RenderCopy(g_sdlRenderer, g_sdlLauncherTextSearchTexture, NULL, &g_sdlControllerLauncherTextSearchRect);
 	else if (g_sdlLauncherTextInputUIIsShown)
 		SDL_RenderCopy(g_sdlRenderer, g_sdlLauncherTextInputTexture, NULL, &g_sdlControllerLauncherTextInputRect);
+
 
         SDL_RenderPresent(g_sdlRenderer);
 }
@@ -1735,6 +2036,46 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 }
 
 
+static void BEL_ST_Launcher_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
+{
+	if (g_sdlLauncherTextSearchUIIsShown)
+	{
+		g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+		BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(touchId, fingerId, x, y);
+	}
+	else
+	{
+		BEL_ST_Launcher_NormalizePos(&x, &y);
+		BE_Launcher_HandleInput_PointerSelect(x, y, ticksBeforePoll);
+	}
+}
+
+static void BEL_ST_Launcher_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
+{
+	if (g_sdlLauncherTextSearchUIIsShown)
+	{
+		BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(touchId, fingerId, x, y);
+	}
+	else
+	{
+		BEL_ST_Launcher_NormalizePos(&x, &y);
+		BE_Launcher_HandleInput_PointerRelease(x, y, ticksBeforePoll);
+	}
+}
+
+static void BEL_ST_Launcher_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
+{
+	if (g_sdlLauncherTextSearchUIIsShown)
+	{
+		BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(touchId, fingerId, x, y);
+	}
+	else
+	{
+		BEL_ST_Launcher_NormalizePos(&x, &y);
+		BE_Launcher_HandleInput_PointerMotion(x, y, ticksBeforePoll);
+	}
+}
+
 void BE_ST_Launcher_RunEventLoop(void)
 {
 	SDL_Event event;
@@ -1756,7 +2097,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.keysym.mod & KMOD_SHIFT);
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-				BE_ST_Launcher_HandleKeyPressEvent(event.key.keysym.scancode, g_sdlKeyboardLastKeyPressedIsShifted);
+				BEL_ST_Launcher_HandleKeyPressEvent(event.key.keysym.scancode, g_sdlKeyboardLastKeyPressedIsShifted);
 				break;
 			case SDL_KEYUP:
 				if (g_sdlKeyboardLastKeyPressed == event.key.keysym.scancode)
@@ -1764,40 +2105,35 @@ void BE_ST_Launcher_RunEventLoop(void)
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-				if (g_sdlLauncherTextSearchUIIsShown)
-				{
-					BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(event.button.x, event.button.y);
-				}
-				else
-				{
-					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-					BE_Launcher_HandleInput_PointerSelect(event.button.x, event.button.y, ticksBeforePoll);
-				}
+				if (event.button.which == SDL_TOUCH_MOUSEID)
+					break;
+
+				BEL_ST_Launcher_CheckCommonPointerPressCases(0, 0, event.button.x, event.button.y, ticksBeforePoll);
 				break;
 			case SDL_MOUSEBUTTONUP:
-				if (g_sdlLauncherTextSearchUIIsShown)
-				{
-					BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(event.button.x, event.button.y);
-				}
-				else
-				{
-					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-					BE_Launcher_HandleInput_PointerRelease(event.button.x, event.button.y, ticksBeforePoll);
-				}
+				if (event.button.which == SDL_TOUCH_MOUSEID)
+					break;
+
+				BEL_ST_Launcher_CheckCommonPointerReleaseCases(0, 0, event.button.x, event.button.y, ticksBeforePoll);
 				break;
 			case SDL_MOUSEMOTION:
-				if (g_sdlLauncherTextSearchUIIsShown)
-				{
-					BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(event.button.x, event.button.y);
-				}
-				else
-				{
-					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-					BE_Launcher_HandleInput_PointerMotion(event.button.x, event.button.y, ticksBeforePoll);
-				}
+				if (event.button.which == SDL_TOUCH_MOUSEID)
+					break;
+
+				BEL_ST_Launcher_CheckCommonPointerMoveCases(0, 0, event.motion.x, event.motion.y, ticksBeforePoll);
 				break;
 			case SDL_MOUSEWHEEL:
 				BE_Launcher_HandleInput_PointerVScroll(-10*event.wheel.y, ticksBeforePoll);
+				break;
+
+			case SDL_FINGERDOWN:
+				BEL_ST_Launcher_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
+				break;
+			case SDL_FINGERUP:
+				BEL_ST_Launcher_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
+				break;
+			case SDL_FINGERMOTION:
+				BEL_ST_Launcher_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
 
 			case SDL_JOYDEVICEADDED:
@@ -1822,12 +2158,12 @@ void BE_ST_Launcher_RunEventLoop(void)
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-				BE_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, true);
+				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, true);
 				break;
 			case SDL_CONTROLLERBUTTONUP:
 				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
 					g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
-				BE_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, false);
+				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, false);
 				break;
 
 			case SDL_WINDOWEVENT:
@@ -1856,9 +2192,9 @@ void BE_ST_Launcher_RunEventLoop(void)
 			g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
 
 			if (g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN)
-				BE_ST_Launcher_HandleKeyPressEvent(g_sdlKeyboardLastKeyPressed, g_sdlKeyboardLastKeyPressedIsShifted);
+				BEL_ST_Launcher_HandleKeyPressEvent(g_sdlKeyboardLastKeyPressed, g_sdlKeyboardLastKeyPressedIsShifted);
 			else
-				BE_ST_Launcher_HandleControllerButtonEvent(g_sdlControllerLastButtonPressed, true);
+				BEL_ST_Launcher_HandleControllerButtonEvent(g_sdlControllerLastButtonPressed, true);
 		}
 
 		BE_Launcher_RefreshVerticalScrolling(ticksBeforePoll);
@@ -1909,6 +2245,7 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 					break; // Ignore
 				// Fall-through
 			case SDL_MOUSEBUTTONDOWN:
+			case SDL_FINGERDOWN:
 				keepRunning = false;
 				break;
 
@@ -2046,52 +2383,38 @@ static bool BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(int scancode, b
 
 static bool BEL_ST_Launcher_HandleTextInputEvent(Uint8 but, bool isPressed, bool *pConfirmed)
 {
-	int intScanCode = SDL_SCANCODE_UNKNOWN;
-
 	switch (but)
 	{
 	case SDL_CONTROLLER_BUTTON_DPAD_UP:
 		if (isPressed)
-			intScanCode = BEL_ST_Launcher_MoveUpInTextInputUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_Launcher_MoveUpInTextInputUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
 		if (isPressed)
-			intScanCode = BEL_ST_Launcher_MoveDownInTextInputUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_Launcher_MoveDownInTextInputUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
 		if (isPressed)
-			intScanCode = BEL_ST_Launcher_MoveLeftInTextInputUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_Launcher_MoveLeftInTextInputUI();
 		break;
 	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
 		if (isPressed)
-			intScanCode = BEL_ST_Launcher_MoveRightInTextInputUI();
-		isPressed = false; // Ensure a recently pressed onscreen keyboard is released
+			BEL_ST_Launcher_MoveRightInTextInputUI();
 		break;
 	// A few other special cases
 	case SDL_CONTROLLER_BUTTON_B:
 	case SDL_CONTROLLER_BUTTON_BACK:
-		intScanCode = SDL_SCANCODE_ESCAPE;
+		if (isPressed)
+			return BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(SDL_SCANCODE_ESCAPE, g_sdlKeyboardUIIsShifted, pConfirmed);
 		break;
 	case SDL_CONTROLLER_BUTTON_X:
-		// Change shift state (or at least try to).
-		// NOTE: This can modify isPressed.
-		intScanCode = BEL_ST_Launcher_ToggleShiftStateInTextInputUI(&isPressed);
+		if (isPressed)
+			BEL_ST_Launcher_ToggleShiftStateInTextInputUI();
 		break;
 	default:
-	{
-		// Select key from UI.
-		// NOTE: This can modify isPressed e.g., for shift key.
-		intScanCode = BEL_ST_Launcher_ToggleKeyPressInTextInputUI(&isPressed);
-	}
+		return BEL_ST_Launcher_ToggleKeyPressInTextInputUI(isPressed, pConfirmed);
 	}
 
-	if (intScanCode && isPressed)
-	{
-		return BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(BEL_ST_Launcher_TranslateInternalKeyCode(intScanCode), g_sdlKeyboardUIIsShifted, pConfirmed);
-	}
 	return false;
 }
 
@@ -2123,6 +2446,47 @@ static bool BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(Uint8 b
 		return true;
 	}
 	return false;
+}
+
+static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	if (g_sdlLauncherTextInputUIIsShown)
+	{
+		g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+		BEL_ST_Launcher_CheckPressedPointerInTextInputUI(touchId, fingerId, x, y);
+	}
+	else
+	{
+		BEL_ST_Launcher_NormalizePos(&x, &y);
+		BE_Launcher_ArgumentsEditing_HandleInput_PointerSelect(x, y);
+	}
+}
+
+static bool BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, bool *pConfirmed)
+{
+	if (g_sdlLauncherTextInputUIIsShown)
+	{
+		return BEL_ST_Launcher_CheckReleasedPointerInTextInputUI(touchId, fingerId, x, y, pConfirmed);
+	}
+	else
+	{
+		BEL_ST_Launcher_NormalizePos(&x, &y);
+		*pConfirmed = !BE_Launcher_ArgumentsEditing_HandleInput_PointerRelease(x, y);
+		return !(*pConfirmed); // Hack to halt if function returns true, and otherwise remain in the arguments editing loop
+	}
+}
+
+static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+{
+	if (g_sdlLauncherTextInputUIIsShown)
+	{
+		BEL_ST_Launcher_CheckMovedPointerInTextInputUI(touchId, fingerId, x, y);
+	}
+	else
+	{
+		BEL_ST_Launcher_NormalizePos(&x, &y);
+		BE_Launcher_ArgumentsEditing_HandleInput_PointerMotion(x, y);
+	}
 }
 
 bool BEL_ST_SDL_Launcher_DoEditArguments(void)
@@ -2157,39 +2521,34 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-				if (g_sdlLauncherTextInputUIIsShown)
-				{
-					BEL_ST_Launcher_CheckPressedPointerInTextInputUI(event.button.x, event.button.y);
-				}
-				else
-				{
-					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-					BE_Launcher_ArgumentsEditing_HandleInput_PointerSelect(event.button.x, event.button.y);
-				}
+				if (event.button.which == SDL_TOUCH_MOUSEID)
+					break;
+
+				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(0, 0, event.button.x, event.button.y);
 				break;
 			case SDL_MOUSEBUTTONUP:
-				if (g_sdlLauncherTextInputUIIsShown)
-				{
-					if (BEL_ST_Launcher_CheckReleasedPointerInTextInputUI(event.button.x, event.button.y, &confirmed))
-						return confirmed;
-				}
-				else
-				{
-					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-					if (BE_Launcher_ArgumentsEditing_HandleInput_PointerRelease(event.button.x, event.button.y))
-						return false;
-				}
+				if (event.button.which == SDL_TOUCH_MOUSEID)
+					break;
+
+				if (BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(0, 0, event.button.x, event.button.y, &confirmed))
+					return confirmed;
 				break;
 			case SDL_MOUSEMOTION:
-				if (g_sdlLauncherTextInputUIIsShown)
-				{
-					BEL_ST_Launcher_CheckMovedPointerInTextInputUI(event.button.x, event.button.y);
-				}
-				else
-				{
-					BEL_ST_Launcher_NormalizePos(&event.button.x, &event.button.y);
-					BE_Launcher_ArgumentsEditing_HandleInput_PointerMotion(event.button.x, event.button.y);
-				}
+				if (event.button.which == SDL_TOUCH_MOUSEID)
+					break;
+
+				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(0, 0, event.motion.x, event.motion.y);
+				break;
+
+			case SDL_FINGERDOWN:
+				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
+				break;
+			case SDL_FINGERUP:
+				if (BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, &confirmed))
+					return confirmed;
+				break;
+			case SDL_FINGERMOTION:
+				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 				break;
 
 			case SDL_JOYDEVICEADDED:
