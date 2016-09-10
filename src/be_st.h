@@ -113,6 +113,7 @@ typedef struct {
 	const char **xpmImage;
 	int xpmWidth, xpmHeight;
 	int xpmPosX, xpmPosY;
+	void *miscData; // Used to store e.g., texture data
 } BE_ST_OnscreenTouchControl;
 
 // Same as above, but invisible (touch regions defined) and with some mapping...
@@ -154,6 +155,9 @@ void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMappi
 // Use this for absolute mouse cursor position update (e.g., for touch input)
 // Assumes dimensions of 320x200 are used as a base
 void BE_ST_AltControlScheme_UpdateVirtualMouseCursor(int x, int y);
+
+/*** Call this before entering game code (added for textures management) ***/
+void BE_ST_AltControlScheme_InitTouchControlsUI(BE_ST_OnscreenTouchControl *onScreenTouchControls);
 
 // HACK - Pass corresponding pointer to PrepareControllerMapping for on-screen keyboard
 // (can also be used to go from one mapping to another, e.g., showing debug keys in-game)

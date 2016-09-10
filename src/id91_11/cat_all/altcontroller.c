@@ -837,6 +837,16 @@ void RefKeen_PrepareAltControllerScheme(void)
 #ifdef REFKEEN_VER_CATABYSS
 	g_ingame_altcontrol_mapping_intro.buttons[BE_ST_CTRL_BUT_X].mapClass = (refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? BE_ST_CTRL_MAP_KEYSCANCODE : BE_ST_CTRL_MAP_NONE;
 #endif
+
+	// Init touch controls UI
+	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
+#ifdef REFKEEN_VER_CATABYSS
+	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_help.onScreenTouchControls);
+#endif
+#ifdef REFKEEN_VER_CAT3D
+	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_menu_paddle.onScreenTouchControls);
+#endif
+
 	// Since it's our first time we can do this now
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 }

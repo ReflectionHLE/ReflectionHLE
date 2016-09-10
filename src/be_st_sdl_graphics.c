@@ -180,6 +180,15 @@ static SDL_Texture *g_sdlOnScreenTouchControlsTextures[ALTCONTROLLER_MAX_NUM_OF_
 static int g_sdlNumOfOnScreenTouchControls = 0;
 static SDL_Rect g_sdlInputTouchControlsRects[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
 
+typedef struct {
+	const char **xpmImage;
+	int xpmWidth, xpmHeight;
+	SDL_Texture *texture;
+} BESDLCachedOnScreenTouchControl;
+
+static BESDLCachedOnScreenTouchControl g_sdlCachedOnScreenTouchControls[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
+static int g_nOfCachedTouchControlsTextures = 0;
+
 // With alternative game controllers scheme, all UI is hidden if no controller is connected
 bool g_sdlShowControllerUI;
 
@@ -626,69 +635,111 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
+static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *touchControl)
+{
+	if (touchControl->texture)
+	{
+		SDL_DestroyTexture(touchControl->texture);
+		touchControl->texture = NULL;
+	}
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+	int texWidth = touchControl->xpmWidth, texHeight = touchControl->xpmHeight;
+	SDL_Texture *texture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, texWidth, texHeight);
+	if (!texture)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateTouchControlTexture: Failed to (re)create SDL2 touch control texture,\n%s\n", SDL_GetError());
+		//Destroy window and renderer?
+		exit(0);
+	}
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	// Update texture
+	uint32_t *pixels = (uint32_t *)malloc(4*texWidth*texHeight);
+	if (pixels == NULL)
+	{
+		BE_ST_ExitWithErrorMsg("BEL_ST_RecreateTouchControlTexture: Out of memory for drawing to textures!");
+	}
+	uint32_t *currPtr = pixels;
+	const char **xpmImage = touchControl->xpmImage;
+	for (int currRow = 0; currRow < texHeight; ++currRow)
+	{
+		const char *xpmRowPtr = xpmImage[currRow];
+		for (int currCol = 0; currCol < texWidth; ++currCol, ++currPtr, ++xpmRowPtr)
+		{
+			switch (*xpmRowPtr)
+			{
+			case ' ':
+				*currPtr = 0x00000000; // HACK (BGRA, working with any order) because we don't have it defined elsewhere
+				break;
+			case '@':
+				*currPtr = g_sdlEGABGRAScreenColors[8]; // Gray
+				break;
+			case '.':
+				*currPtr = g_sdlEGABGRAScreenColors[7]; // Light gray
+				break;
+			// HACK - Compress 4 XPM colors into one
+			case '+':
+			case '#':
+			case '$':
+			case '%':
+				*currPtr = g_sdlEGABGRAScreenColors[15]; // White
+				break;
+			}
+			*currPtr &= 0xBFFFFFFF; // Add some alpha channel
+		}
+	}
+	SDL_UpdateTexture(texture, NULL, pixels, 4*texWidth);
+	free(pixels);
+
+	touchControl->texture = texture;
+}
+
+void BE_ST_AltControlScheme_InitTouchControlsUI(BE_ST_OnscreenTouchControl *onScreenTouchControls)
+{
+	if (!g_refKeenCfg.enableTouchInput)
+		return;
+
+	int i;
+	BE_ST_OnscreenTouchControl *touchControl;
+	for (i = 0, touchControl = onScreenTouchControls; touchControl->xpmImage; ++i, ++touchControl)
+	{
+		int j;
+		BESDLCachedOnScreenTouchControl *cachedTouchControl;
+		for (j = 0, cachedTouchControl = g_sdlCachedOnScreenTouchControls; j < g_nOfCachedTouchControlsTextures; ++j, ++cachedTouchControl)
+			if ((touchControl->xpmImage == cachedTouchControl->xpmImage) &&
+			    (touchControl->xpmWidth == cachedTouchControl->xpmWidth) &&
+			    (touchControl->xpmHeight == cachedTouchControl->xpmHeight)
+			)
+			{
+				touchControl->miscData = cachedTouchControl; // Re-use texture
+				continue;
+			}
+
+		if (g_nOfCachedTouchControlsTextures == ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS)
+			BE_ST_ExitWithErrorMsg("BEL_ST_AltControlScheme_InitTouchControlsUI: On-screen touch controls overflow!");
+
+		cachedTouchControl->xpmImage = touchControl->xpmImage;
+		cachedTouchControl->xpmWidth = touchControl->xpmWidth;
+		cachedTouchControl->xpmHeight = touchControl->xpmHeight;
+
+		BEL_ST_RecreateTouchControlTexture(cachedTouchControl);
+
+		touchControl->miscData = cachedTouchControl;
+		++g_nOfCachedTouchControlsTextures;
+	}
+}
+
 static void BEL_ST_SetTouchControlsRects(void);
 
 void BEL_ST_PrepareToShowTouchControls(const BE_ST_ControllerMapping *mapping)
 {
-	// FIXME this is bad in terms of performance (texture creation, malloc, etc.)
 	int i;
-	for (int i = 0; i < g_sdlNumOfOnScreenTouchControls; ++i)
-	{
-		SDL_DestroyTexture(g_sdlOnScreenTouchControlsTextures[i]);
-		g_sdlOnScreenTouchControlsTextures[i] = NULL;
-	}
 	BE_ST_OnscreenTouchControl *touchControl;
 	for (i = 0, touchControl = mapping->onScreenTouchControls; touchControl->xpmImage; ++i, ++touchControl)
 	{
 		if (i == ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS)
 			BE_ST_ExitWithErrorMsg("BEL_ST_PrepareToShowTouchControls: On-screen touch controls overflow!");
 
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-		int texWidth = touchControl->xpmWidth, texHeight = touchControl->xpmHeight;
-		g_sdlOnScreenTouchControlsTextures[i] = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, texWidth, texHeight);
-		if (!(g_sdlOnScreenTouchControlsTextures[i]))
-		{
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 touch control texture,\n%s\n", SDL_GetError());
-			//Destroy window and renderer?
-			exit(0);
-		}
-		SDL_SetTextureBlendMode(g_sdlOnScreenTouchControlsTextures[i], SDL_BLENDMODE_BLEND); // Yes there's some Alpha
-		// Update texture
-		uint32_t *pixels = (uint32_t *)malloc(4*texWidth*texHeight); // FIXME!!!!
-		if (pixels == NULL)
-		{
-			BE_ST_ExitWithErrorMsg("BEL_ST_PrepareToShowTouchControls: Out of memory for drawing to textures!");
-		}
-		uint32_t *currPtr = pixels;
-		for (int currRow = 0; currRow < texHeight; ++currRow)
-		{
-			const char *xpmRowPtr = touchControl->xpmImage[currRow];
-			for (int currCol = 0; currCol < texWidth; ++currCol, ++currPtr, ++xpmRowPtr)
-			{
-				switch (*xpmRowPtr)
-				{
-				case ' ':
-					*currPtr = 0x00000000; // HACK (BGRA, working with any order) because we don't have it defined elsewhere
-					break;
-				case '@':
-					*currPtr = g_sdlEGABGRAScreenColors[8]; // Gray
-					break;
-				case '.':
-					*currPtr = g_sdlEGABGRAScreenColors[7]; // Light gray
-					break;
-				// HACK - Compress 4 XPM colors into one
-				case '+':
-				case '#':
-				case '$':
-				case '%':
-					*currPtr = g_sdlEGABGRAScreenColors[15]; // White
-					break;
-				}
-				*currPtr &= 0xBFFFFFFF; // Add some alpha channel
-			}
-		}
-		SDL_UpdateTexture(g_sdlOnScreenTouchControlsTextures[i], NULL, pixels, 4*texWidth);
-		free(pixels);
+		g_sdlOnScreenTouchControlsTextures[i] = ((BESDLCachedOnScreenTouchControl *)(touchControl->miscData))->texture;
 	}
 	g_sdlNumOfOnScreenTouchControls = i;
 

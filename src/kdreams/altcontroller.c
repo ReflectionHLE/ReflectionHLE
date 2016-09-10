@@ -521,6 +521,11 @@ void RefKeen_PrepareAltControllerScheme(void)
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][1] = mouseright;
 	}
 
+	// Init touch controls UI (excludes UI picked in FillControlPanelTouchMappings)
+	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
+	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_simpledialog.onScreenTouchControls);
+	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_menu_help.onScreenTouchControls);
+
 	// Since it's our first time we can do this now
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 }
@@ -538,6 +543,8 @@ void FillControlPanelTouchMappings(bool withmouse)
 		g_ingame_altcontrol_mapping_menu.touchMappings = g_ingame_altcontrol_mapping_menu_touchmappings_keyboardemu;
 	}
 	g_ingame_altcontrol_mapping_menu.absoluteFingerPositioning = withmouse;
+	// Init touch control UIs for this
+	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_menu.onScreenTouchControls);
 }
 
 void PrepareGamePlayControllerMapping(void)
