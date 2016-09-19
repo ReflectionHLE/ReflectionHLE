@@ -61,6 +61,9 @@
 // Used instead of SDL_SCANCODE_CAPSLOCK
 #define ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_END SDL_SCANCODE_CAPSLOCK
 
+// HACK - Remember last event type, so when game is started, we can guess
+// if touch controls should be shown or not (if "auto" is set for these)
+static Uint32 g_sdlLauncherLastEventType;
 
 static SDL_Rect g_sdlControllerLauncherTextSearchRect, g_sdlControllerLauncherTextInputRect;
 static SDL_Texture *g_sdlLauncherTextSearchTexture, *g_sdlLauncherTextInputTexture;
@@ -101,6 +104,8 @@ extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 // These two are shared ON PURPOSE (for seamless transition from launcher to game, if an SDL_WINDOW_FULLSCREEN_DESKTOP window is used with same features)
 extern SDL_Window *g_sdlWindow;
 extern SDL_Renderer *g_sdlRenderer;
+// Similarly, this is also shared *on purpose* - for a HACK (guess if touch controls should be shown when game is started)
+extern bool g_sdlShowTouchUI;
 
 static int g_sdlKeyboardLastKeyPressed;
 static bool g_sdlKeyboardLastKeyPressedIsShifted;
@@ -395,12 +400,13 @@ BEMenu g_beSoundSettingsMenu = {
 /*** Input settings menu ***/
 
 static const char *g_be_inputSettingsChoices_controllerScheme[] = {"Classic", "Modern", NULL};
+static const char *g_be_inputSettingsChoices_touchControls[] = {"Auto", "Off", "Forced", NULL};
 
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP);
 
 BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beControllerSettingsMenu)
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
-BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_settingsChoices_boolean);
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_inputSettingsChoices_touchControls);
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_Autolock, "Autolock mouse cursor", g_be_settingsChoices_boolean)
 
@@ -654,7 +660,7 @@ void BE_ST_Launcher_Prepare(void)
 	// Set ControllerScheme value
 	g_beInputSettingsMenuItem_ControllerScheme.choice = g_refKeenCfg.altControlScheme.isEnabled;
 	// Set TouchControls value
-	g_beInputSettingsMenuItem_TouchControls.choice = g_refKeenCfg.enableTouchInput;
+	g_beInputSettingsMenuItem_TouchControls.choice = g_refKeenCfg.touchInputToggle;
 	// Set TouchInputDebugging value
 	g_beInputSettingsMenuItem_TouchInputDebugging.choice = g_refKeenCfg.touchInputDebugging;
 	// Set Autolock value
@@ -760,6 +766,12 @@ void BE_ST_Launcher_Shutdown(void)
 	g_sdlWindow = NULL;
 #endif
 
+	// BEFORE checking if we need to save anything, apply this HACK
+	if (g_beInputSettingsMenuItem_TouchControls.choice == TOUCHINPUT_AUTO)
+		g_sdlShowTouchUI = ((g_sdlLauncherLastEventType == SDL_FINGERDOWN) || (g_sdlLauncherLastEventType == SDL_FINGERUP));
+	else
+		g_sdlShowTouchUI = (g_beInputSettingsMenuItem_TouchControls.choice == TOUCHINPUT_FORCED);
+
 	/*** Save settings if there's any change ***/
 	if (!g_be_launcher_wasAnySettingChanged)
 		return; // e.g., if there is a cfg value the launcher doesn't cope with (say, out of some range)
@@ -797,7 +809,7 @@ void BE_ST_Launcher_Shutdown(void)
 
 	g_refKeenCfg.altControlScheme.isEnabled = g_beInputSettingsMenuItem_ControllerScheme.choice;
 	g_refKeenCfg.autolockCursor = g_beInputSettingsMenuItem_Autolock.choice;
-	g_refKeenCfg.enableTouchInput = g_beInputSettingsMenuItem_TouchControls.choice;
+	g_refKeenCfg.touchInputToggle = (TouchInputSettingType)g_beInputSettingsMenuItem_TouchControls.choice;
 	g_refKeenCfg.touchInputDebugging = g_beInputSettingsMenuItem_TouchInputDebugging.choice;
 
 	g_refKeenCfg.altControlScheme.useDpad = g_beControllerSettingsMenuItem_Dpad.choice;
@@ -2086,6 +2098,8 @@ void BE_ST_Launcher_RunEventLoop(void)
 		uint32_t ticksBeforePoll = SDL_GetTicks();
 		while (SDL_PollEvent(&event))
 		{
+			g_sdlLauncherLastEventType = event.type;
+
 			void BEL_ST_NormalizeBorderedPos(int *px, int *py);
 
 			switch (event.type)
@@ -2236,6 +2250,8 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 	{
 		while (SDL_PollEvent(&event))
 		{
+			g_sdlLauncherLastEventType = event.type;
+
 			void BEL_ST_NormalizeBorderedPos(int *px, int *py);
 
 			switch (event.type)
@@ -2500,6 +2516,8 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 		uint32_t ticksBeforePoll = SDL_GetTicks();
 		while (SDL_PollEvent(&event))
 		{
+			g_sdlLauncherLastEventType = event.type;
+
 			void BEL_ST_NormalizeBorderedPos(int *px, int *py);
 
 			switch (event.type)

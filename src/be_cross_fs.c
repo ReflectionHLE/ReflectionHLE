@@ -371,6 +371,8 @@ void BE_Cross_PrepareAppPaths(void)
 	{
 		BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), externalStoragePath);
 		memcpy(g_be_appNewCfgPath, g_be_appDataPath, sizeof(g_be_appDataPath));
+		// Let's add this just in case (sdcard directory cannot be naively opened on Android 7.0)
+		BEL_Cross_AddRootPathIfDir(g_be_appDataPath, "appdata", "App data path");
 		// HACK - We don't look at arguments set by the user, but then these are never sent on Android...
 	}
 

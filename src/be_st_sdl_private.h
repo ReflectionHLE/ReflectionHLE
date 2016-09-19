@@ -43,6 +43,7 @@ void BEL_ST_ForceHostDisplayUpdate(void);
 void BEL_ST_SetGfxOutputRects(bool allowResize);
 void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSKeyEvent keyEvent);
+void BEL_ST_ConditionallyShowAltInputPointer(void);
 
 extern SDL_Surface *g_be_sdl_windowIconSurface;
 

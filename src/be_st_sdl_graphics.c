@@ -171,7 +171,7 @@ static const int g_sdlControllerDpadTextLocs[] = {15, 34, 28, 21, 2, 21, 15, 8};
 
 static SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect, g_sdlControllerDebugKeysRect;
 static SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture, *g_sdlDebugKeysTexture;
-static bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown, g_sdlDebugKeysUIIsShown;
+static bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown, g_sdlDebugKeysUIIsShown, g_sdlTouchControlsAreShown;
 
 static int g_sdlFaceButtonsScanCodes[4], g_sdlDpadScanCodes[4];
 
@@ -189,8 +189,10 @@ typedef struct {
 static BESDLCachedOnScreenTouchControl g_sdlCachedOnScreenTouchControls[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
 static int g_nOfCachedTouchControlsTextures = 0;
 
-// With alternative game controllers scheme, all UI is hidden if no controller is connected
+// With alternative game controllers scheme, all UI is hidden if no controller is connected.
+// Similar handling is done for touch input. Furthermore, some UI is shared.
 bool g_sdlShowControllerUI;
+bool g_sdlShowTouchUI;
 
 // Shared among all kinds of keyboard UI
 static int g_sdlKeyboardUISelectedKeyX, g_sdlKeyboardUISelectedKeyY;
@@ -328,14 +330,14 @@ void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t wi
 	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, w, h, windowFlags);
 	if (!g_sdlWindow)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 window,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 window,\n%s\n", SDL_GetError());
 		exit(0);
 	}
 	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
 	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, driverIndex, rendererFlags);
 	if (!g_sdlRenderer)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
 		exit(0);
 	}
 
@@ -369,6 +371,10 @@ static void BEL_ST_RecreateTexture(void)
 		// Try, if we fail then simply don't use this
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 		g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, g_sdlTexWidth*g_refKeenCfg.scaleFactor, g_sdlTexHeight*g_refKeenCfg.scaleFactor);
+		if (g_sdlTargetTexture)
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateTexture: SDL2 target texture created successfully\n");
+		else
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateTexture:  Failed to (re)create SDL2 target texture, continuing anyway\n%s\n", SDL_GetError());
 	}
 	else
 	{
@@ -507,10 +513,9 @@ void BEL_ST_SetRelativeMouseMotion(bool enable);
 
 /*static*/ void BEL_ST_ConditionallyShowAltInputPointer(void)
 {
-	// FIXME
-	if (g_refKeenCfg.enableTouchInput)
+	if (g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED)
 		return;
-	BEL_ST_SetRelativeMouseMotion(!g_sdlShowControllerUI || !(g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown));
+	BEL_ST_SetRelativeMouseMotion(!(g_sdlShowControllerUI || g_sdlShowTouchUI) || !(g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown || (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)));
 }
 
 
@@ -695,7 +700,7 @@ static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *
 
 void BE_ST_AltControlScheme_InitTouchControlsUI(BE_ST_OnscreenTouchControl *onScreenTouchControls)
 {
-	if (!g_refKeenCfg.enableTouchInput)
+	if (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF)
 		return;
 
 	int i;
@@ -751,6 +756,7 @@ void BEL_ST_PrepareToShowTouchControls(const BE_ST_ControllerMapping *mapping)
 		BE_ST_ExitWithErrorMsg("BEL_ST_PrepareToShowTouchControls: Touch controls overflow!");
 
 	g_nOfTrackedFingers = 0;
+	g_sdlTouchControlsAreShown = true;
 
 	BEL_ST_SetTouchControlsRects();
 }
@@ -1692,7 +1698,7 @@ static void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y)
 {
 	extern int16_t g_sdlEmuMouseMotionAccumulatedState[2];
 	extern int16_t g_sdlVirtualMouseCursorState[2];
-	//g_sdlForceGfxControlUiRefresh = true; // FIXME WHY???
+
 	if (x < g_sdlAspectCorrectionRect.x)
 		x = 0;
 	else if (x >= g_sdlAspectCorrectionRect.x + g_sdlAspectCorrectionRect.w)
@@ -1715,7 +1721,7 @@ static void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y)
 
 extern int g_sdlEmuMouseButtonsState;
 
-void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, bool forceAbsoluteFingerPositioning)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -1724,8 +1730,10 @@ void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID
 	int touchControlIndex = BEL_ST_GetPointedTouchControlIndex(x, y);
 	trackedFinger->miscData.touchMappingIndex = touchControlIndex;
 
-	if ((touchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+	if (forceAbsoluteFingerPositioning || ((touchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning))
 	{
+		trackedFinger->miscData.touchMappingIndex = -2; // Special mark
+		// Mouse cursor control
 		g_sdlEmuMouseButtonsState |= 1;
 		BEL_ST_UpdateVirtualCursorPositionFromPointer(x, y);
 	}
@@ -1741,8 +1749,8 @@ void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerI
 
 	int prevTouchControlIndex = trackedFinger->miscData.touchMappingIndex;
 
-	if ((prevTouchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
-		g_sdlEmuMouseButtonsState &= ~1;
+	if (prevTouchControlIndex == -2)
+		g_sdlEmuMouseButtonsState &= ~1; // Mouse cursor control
 	else
 		BEL_ST_HandleDefaultPointerActionInTouchControls(prevTouchControlIndex, false);
 
@@ -1756,23 +1764,23 @@ void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID f
 		return;
 
 	int prevTouchControlIndex = trackedFinger->miscData.touchMappingIndex;
+	if (prevTouchControlIndex == -2)
+	{
+		BEL_ST_UpdateVirtualCursorPositionFromPointer(x, y);  // Mouse cursor control
+		return;
+	}
+
 	int touchControlIndex = BEL_ST_GetPointedTouchControlIndex(x, y);
 	if (touchControlIndex != prevTouchControlIndex)
 	{
-		if ((prevTouchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
-			g_sdlEmuMouseButtonsState &= ~1;
-		else
+		if (prevTouchControlIndex >= 0)
 			BEL_ST_HandleDefaultPointerActionInTouchControls(prevTouchControlIndex, false);
 
-		if ((touchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
-			g_sdlEmuMouseButtonsState |= 1;
-		else
+		if (touchControlIndex >= 0)
 			BEL_ST_HandleDefaultPointerActionInTouchControls(touchControlIndex, true);
 
 		trackedFinger->miscData.touchMappingIndex = touchControlIndex;
 	}
-	if ((touchControlIndex < 0) && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
-		BEL_ST_UpdateVirtualCursorPositionFromPointer(x, y);
 }
 
 void BEL_ST_ReleasePressedKeysInTextInputUI(void)
@@ -1825,6 +1833,7 @@ void BEL_ST_ReleasePressedButtonsInTouchControls(void)
 	g_sdlDpadIsShown = false;
 	g_sdlTextInputUIIsShown = false;
 	g_sdlDebugKeysUIIsShown = false;
+	g_sdlTouchControlsAreShown = false;
 
 	g_sdlForceGfxControlUiRefresh = true;
 
@@ -2571,12 +2580,12 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_NONE);
 	}
 
-	if (g_refKeenCfg.enableTouchInput && (g_sdlControllerMappingActualCurr->touchMappings != NULL)) // FIXME use a different state bool var?
+	if (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)
 	{
 		for (int i = 0; i < g_sdlNumOfOnScreenTouchControls; ++i)
 			SDL_RenderCopy(g_sdlRenderer, g_sdlOnScreenTouchControlsTextures[i], NULL, &g_sdlOnScreenTouchControlsRects[i]);
 	}
-	if (g_sdlShowControllerUI || g_refKeenCfg.enableTouchInput)
+	if (g_sdlShowControllerUI || g_sdlShowTouchUI)
 	{
 		if (g_sdlFaceButtonsAreShown)
 		{

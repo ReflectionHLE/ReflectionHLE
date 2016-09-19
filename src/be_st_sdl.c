@@ -115,6 +115,7 @@ extern SDL_Window *g_sdlWindow;
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 extern bool g_sdlForceGfxControlUiRefresh;
 extern bool g_sdlShowControllerUI;
+extern bool g_sdlShowTouchUI;
 
 static uint8_t g_sdlLastKeyScanCodeBeforeAnyReset; // May be reset by BE_ST_BiosScanCode
 
@@ -155,6 +156,9 @@ void BE_ST_InitCommon(void)
 		exit(0);
 	}
 
+#ifdef REFKEEN_PLATFORM_ANDROID
+	SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
+#endif
 	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL game controller subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
@@ -173,9 +177,11 @@ void BE_ST_InitCommon(void)
 	if (fp)
 		SDL_GameControllerAddMappingsFromRW(SDL_RWFromFP(fp, SDL_TRUE), 1);
 
-#ifdef REFKEEN_PLATFORM_ANDROID
-	SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
-#endif
+	// HACK - If game is *not* started from launcher, TOUCHINPUT_AUTO has
+	// the same initial behaviors as TOUCHINPUT_OFF here (i.e., not showing touch UI).
+	// Otherwise, the launcher **guesses** the correct value to set based
+	// on a recent event type (e.g., mouse event -> no touch UI is shown).
+	g_sdlShowTouchUI = (g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED);
 }
 
 void BE_ST_PrepareForGameStartup(void)
@@ -195,6 +201,8 @@ void BE_ST_PrepareForGameStartup(void)
 	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
 	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
 
+	g_sdlShowControllerUI = false;
+
 	// BEFORE checking for more joysticks being attached/removed in BE_ST_PollEvents, add what's currently available
 	int nOfJoysticks = SDL_NumJoysticks();
 	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
@@ -202,7 +210,7 @@ void BE_ST_PrepareForGameStartup(void)
 	for (int i = 0; i < nOfJoysticks; ++i)
 		BEL_ST_ConditionallyAddJoystick(i);
 
-	BEL_ST_SetRelativeMouseMotion(!g_refKeenCfg.enableTouchInput); // FIXME
+	BEL_ST_SetRelativeMouseMotion(g_refKeenCfg.touchInputToggle != TOUCHINPUT_FORCED); // HACK
 
 	// Reset these first
 	memset(g_sdlEmuKeyboardStateByScanCode, 0, sizeof(g_sdlEmuKeyboardStateByScanCode));
@@ -223,7 +231,6 @@ void BE_ST_PrepareForGameStartup(void)
 	BE_ST_PollEvents();
 	// Events may gradually fill these, especially after messing with a mouse cursor, so reset AFTER poll
 	g_sdlEmuMouseMotionAccumulatedState[0] = g_sdlEmuMouseMotionAccumulatedState[1] = 0;
-
 }
 
 void BE_ST_ShutdownAll(void)
@@ -516,15 +523,19 @@ static void BEL_ST_ParseSetting_UseResampler(const char *keyprefix, const char *
 }
 #endif
 
-static void BEL_ST_ParseSetting_EnableTouchInput(const char *keyprefix, const char *buffer)
+static void BEL_ST_ParseSetting_TouchInputToggle(const char *keyprefix, const char *buffer)
 {
-	if (!strcmp(buffer, "true"))
+	if (!strcmp(buffer, "auto"))
 	{
-		g_refKeenCfg.enableTouchInput = true;
+		g_refKeenCfg.touchInputToggle = TOUCHINPUT_AUTO;
 	}
-	else if (!strcmp(buffer, "false"))
+	else if (!strcmp(buffer, "off"))
 	{
-		g_refKeenCfg.enableTouchInput = false;
+		g_refKeenCfg.touchInputToggle = TOUCHINPUT_OFF;
+	}
+	else if (!strcmp(buffer, "forced"))
+	{
+		g_refKeenCfg.touchInputToggle = TOUCHINPUT_FORCED;
 	}
 }
 
@@ -685,7 +696,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #ifndef REFKEEN_RESAMPLER_NONE
 	{"useresampler=", &BEL_ST_ParseSetting_UseResampler},
 #endif
-	{"enabletouchinput=", &BEL_ST_ParseSetting_EnableTouchInput},
+	{"touchinput=", &BEL_ST_ParseSetting_TouchInputToggle},
 	{"touchinputdebugging=", &BEL_ST_ParseSetting_TouchInputDebugging},
 	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
 
@@ -754,11 +765,7 @@ static void BEL_ST_ParseConfig(void)
 #ifndef REFKEEN_RESAMPLER_NONE
 	g_refKeenCfg.useResampler = true;
 #endif
-#ifdef REFKEEN_PLATFORM_ANDROID
-	g_refKeenCfg.enableTouchInput = true;
-#else
-	g_refKeenCfg.enableTouchInput = false;
-#endif
+	g_refKeenCfg.touchInputToggle = TOUCHINPUT_AUTO;
 	g_refKeenCfg.touchInputDebugging = false;
 	g_refKeenCfg.altControlScheme.isEnabled = true;
 
@@ -851,7 +858,7 @@ static void BEL_ST_SaveConfig(void)
 		SDL_GetRenderDriverInfo(g_refKeenCfg.sdlRendererDriver, &info); // g_refKeenCfg.sdlRendererDriver should be a valid renderer driver index here
 		fprintf(fp, "sdlrenderer=%s\n", info.name);
 	}
-	fprintf(fp, "vsync=%s\n", g_refKeenCfg.vSync == VSYNC_AUTO ? "auto" : (g_refKeenCfg.vSync == VSYNC_ON ? "on" : "off"));
+	fprintf(fp, "vsync=%s\n", (g_refKeenCfg.vSync == VSYNC_AUTO) ? "auto" : ((g_refKeenCfg.vSync == VSYNC_ON) ? "on" : "off"));
 	fprintf(fp, "bilinear=%s\n", g_refKeenCfg.isBilinear ? "true" : "false");
 	fprintf(fp, "scaletype=%s\n", (g_refKeenCfg.scaleType == SCALE_ASPECT) ? "aspect" : "fill");
 	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
@@ -863,7 +870,7 @@ static void BEL_ST_SaveConfig(void)
 #ifndef REFKEEN_RESAMPLER_NONE
 	fprintf(fp, "useresampler=%s\n", g_refKeenCfg.useResampler ? "true" : "false");
 #endif
-	fprintf(fp, "enabletouchinput=%s\n", g_refKeenCfg.enableTouchInput ? "true" : "false");
+	fprintf(fp, "touchinput=%s\n", (g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) ? "auto" : ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED) ? "forced" : "off"));
 	fprintf(fp, "touchinputdebugging=%s\n", g_refKeenCfg.touchInputDebugging ? "true" : "false");
 	fprintf(fp, "altcontrolscheme=%s\n", g_refKeenCfg.altControlScheme.isEnabled ? "true" : "false");
 	// Go through an array of keys
@@ -1049,7 +1056,7 @@ const emulatedDOSKeyEvent sdlKeyMappings[SDL_NUM_SCANCODES] = {
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
-    emptyDOSKeyEvent,
+    {false,  BE_ST_SC_ENTER}, // SDL_SCANCODE_SELECT (for Android, d-pad press)
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
@@ -1337,7 +1344,7 @@ int16_t BE_ST_BiosScanCode(int16_t command)
 	}
 }
 
-static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void);
+static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void);
 
 // May be similar to PrepareControllerMapping, but a bit different:
 // Used in order to replace controller mapping with another one internally
@@ -1347,7 +1354,7 @@ void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping)
 	BEL_ST_AltControlScheme_CleanUp();
 	g_sdlControllerMappingActualCurr = mapping;
 
-	BEL_ST_AltControlScheme_ConditionallyShowControllerUI();
+	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
@@ -1389,7 +1396,29 @@ bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, i
 	return false;
 }
 
+static void BEL_ST_AltControlScheme_ClearBinaryStates(void);
 
+static void BEL_ST_DoHideTouchUI(void)
+{
+	g_sdlShowTouchUI = false;
+	g_sdlForceGfxControlUiRefresh = true;
+	BEL_ST_ConditionallyShowAltInputPointer();
+	if (g_sdlControllerMappingActualCurr->touchMappings
+	    || (!g_sdlShowControllerUI && (
+	         (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
+	         || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
+	         || g_sdlControllerMappingActualCurr->showUi
+	       ))
+	)
+		BEL_ST_AltControlScheme_ClearBinaryStates();
+}
+
+static void BEL_ST_CheckForHidingTouchUI(void)
+{
+	if ((g_refKeenCfg.touchInputToggle != TOUCHINPUT_AUTO) || !g_sdlShowTouchUI)
+		return;
+	BEL_ST_DoHideTouchUI();
+}
 static void BEL_ST_ConditionallyAddJoystick(int device_index)
 {
 	if (!g_refKeenCfg.altControlScheme.isEnabled)
@@ -1399,6 +1428,7 @@ static void BEL_ST_ConditionallyAddJoystick(int device_index)
 			{
 				g_sdlJoysticks[i] = SDL_JoystickOpen(device_index);
 				g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(g_sdlJoysticks[i]);
+				BEL_ST_CheckForHidingTouchUI();
 				break;
 			}
 	}
@@ -1412,9 +1442,8 @@ static void BEL_ST_ConditionallyAddJoystick(int device_index)
 
 				g_sdlShowControllerUI = true;
 				g_sdlForceGfxControlUiRefresh = true;
-				void BEL_ST_ConditionallyShowAltInputPointer(void);
 				BEL_ST_ConditionallyShowAltInputPointer();
-
+				BEL_ST_CheckForHidingTouchUI();
 				break;
 			}
 	}
@@ -1488,7 +1517,7 @@ static void BEL_ST_AltControlScheme_CleanUp(void)
 }
 
 
-static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void)
+static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void)
 {
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 	{
@@ -1507,7 +1536,7 @@ static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void)
 		extern void BEL_ST_PrepareToShowControllerUI(const BE_ST_ControllerMapping *mapping);
 		BEL_ST_PrepareToShowControllerUI(g_sdlControllerMappingActualCurr);
 	}
-	else if (g_sdlControllerMappingActualCurr->touchMappings)
+	else if ((g_refKeenCfg.touchInputToggle != TOUCHINPUT_OFF) && g_sdlControllerMappingActualCurr->touchMappings)
 	{
 		extern void BEL_ST_PrepareToShowTouchControls(const BE_ST_ControllerMapping *mapping);
 		BEL_ST_PrepareToShowTouchControls(g_sdlControllerMappingActualCurr);
@@ -1517,7 +1546,7 @@ static void BEL_ST_AltControlScheme_ConditionallyShowControllerUI(void)
 
 void BE_ST_AltControlScheme_Push(void)
 {
-	if (!g_refKeenCfg.altControlScheme.isEnabled)
+	if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
 		return;
 
 	BEL_ST_AltControlScheme_CleanUp();
@@ -1531,7 +1560,7 @@ void BE_ST_AltControlScheme_Push(void)
 
 void BE_ST_AltControlScheme_Pop(void)
 {
-	if (!g_refKeenCfg.altControlScheme.isEnabled)
+	if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
 		return;
 
 	BEL_ST_AltControlScheme_CleanUp();
@@ -1544,20 +1573,20 @@ void BE_ST_AltControlScheme_Pop(void)
 
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr;
 
-	BEL_ST_AltControlScheme_ConditionallyShowControllerUI();
+	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
 
 void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMapping *mapping)
 {
-	if (!g_refKeenCfg.altControlScheme.isEnabled)
+	if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
 		return;
 
 	BEL_ST_AltControlScheme_CleanUp();
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr = mapping;
 
-	BEL_ST_AltControlScheme_ConditionallyShowControllerUI();
+	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
@@ -1682,13 +1711,13 @@ void BEL_ST_CheckReleasedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID 
 void BEL_ST_CheckPressedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
 void BEL_ST_CheckMovedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
 void BEL_ST_CheckReleasedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId);
-void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
+void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, bool forceAbsoluteFingerPositioning);
 void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
 void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId);
 
 static bool BEL_ST_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
-	if (!g_sdlShowControllerUI && !g_refKeenCfg.enableTouchInput)
+	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
 		return false;
 
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
@@ -1707,9 +1736,9 @@ static bool BEL_ST_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerI
 		return true;
 	}
 
-	if (g_refKeenCfg.enableTouchInput)
+	if (g_sdlShowTouchUI)
 	{
-		BEL_ST_CheckPressedPointerInTouchControls(touchId, fingerId, x, y);
+		BEL_ST_CheckPressedPointerInTouchControls(touchId, fingerId, x, y, false);
 		return true;
 	}
 
@@ -1718,7 +1747,7 @@ static bool BEL_ST_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerI
 
 static bool BEL_ST_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
-	if (!g_sdlShowControllerUI && !g_refKeenCfg.enableTouchInput)
+	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
 		return false;
 
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
@@ -1737,7 +1766,7 @@ static bool BEL_ST_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_Finge
 		return true;
 	}
 
-	if (g_refKeenCfg.enableTouchInput)
+	if (g_sdlShowTouchUI)
 	{
 		BEL_ST_CheckReleasedPointerInTouchControls(touchId, fingerId);
 		return true;
@@ -1748,7 +1777,7 @@ static bool BEL_ST_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_Finge
 
 static bool BEL_ST_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
-	if (!g_sdlShowControllerUI && !g_refKeenCfg.enableTouchInput)
+	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
 		return false;
 
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
@@ -1767,7 +1796,7 @@ static bool BEL_ST_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID
 		return true;
 	}
 
-	if (g_refKeenCfg.enableTouchInput)
+	if (g_sdlShowTouchUI)
 	{
 		BEL_ST_CheckMovedPointerInTouchControls(touchId, fingerId, x, y);
 		return true;
@@ -1788,6 +1817,13 @@ void BE_ST_PollEvents(void)
 		case SDL_KEYDOWN:
 			if (event.key.repeat)
 				break; // Ignore (we emulate key repeat on our own)
+
+			if ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) && g_sdlShowTouchUI)
+			{
+				// Ignore a few specific scancodes on Android
+				if (sdlKeyMappings[event.key.keysym.scancode].dosScanCode && (event.key.keysym.scancode != SDL_SCANCODE_SELECT) && (event.key.keysym.scancode != SDL_SCANCODE_AC_BACK))
+					BEL_ST_DoHideTouchUI();
+			}
 			// Fall-through
 		case SDL_KEYUP:
 			BEL_ST_HandleEmuKeyboardEvent(event.type == SDL_KEYDOWN, false, sdlKeyMappings[event.key.keysym.scancode]);
@@ -1803,6 +1839,8 @@ void BE_ST_PollEvents(void)
 					break; // Ignore (used in case pointer is shown/hidden)
 				g_sdlMouseButtonsStates[event.button.button-1] = true;
 			}
+
+			BEL_ST_CheckForHidingTouchUI();
 
 			if (BEL_ST_CheckCommonPointerPressCases(0, 0, event.button.x, event.button.y))
 				break;
@@ -1843,6 +1881,27 @@ void BE_ST_PollEvents(void)
 			break;
 
 		case SDL_FINGERDOWN:
+			if ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) && !g_sdlShowTouchUI)
+			{
+				g_sdlShowTouchUI = true;
+				g_sdlForceGfxControlUiRefresh = true;
+				BEL_ST_ConditionallyShowAltInputPointer();
+				if (!g_sdlShowControllerUI ||
+				    (
+				      (g_sdlControllerMappingActualCurr != &g_beStControllerMappingTextInput)
+				      && (g_sdlControllerMappingActualCurr != &g_beStControllerMappingDebugKeys)
+				      && !(g_sdlControllerMappingActualCurr->showUi)
+				    )
+				)
+					BEL_ST_AltControlScheme_ClearBinaryStates();
+				// Do take care of mouse cursor if there's a need to
+				if (g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+					BEL_ST_CheckPressedPointerInTouchControls(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, true);
+				// Let's not trigger an immediate action when on-screen controls are shown, *if* there are any, which were *not* previously shown
+				if (g_sdlControllerMappingActualCurr->touchMappings || (!g_sdlShowControllerUI && g_sdlControllerMappingActualCurr->showUi))
+					break;
+			}
+
 			BEL_ST_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
 		case SDL_FINGERUP:
@@ -1863,6 +1922,8 @@ void BE_ST_PollEvents(void)
 			}
 			break;
 		case SDL_JOYBUTTONDOWN:
+			BEL_ST_CheckForHidingTouchUI();
+			// Fall-through
 		case SDL_JOYBUTTONUP:
 			for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 			{
@@ -1925,7 +1986,6 @@ void BE_ST_PollEvents(void)
 				{
 					g_sdlShowControllerUI = false;
 					g_sdlForceGfxControlUiRefresh = true;
-					void BEL_ST_ConditionallyShowAltInputPointer(void);
 					BEL_ST_ConditionallyShowAltInputPointer();
 				}
 			}
@@ -1954,6 +2014,8 @@ void BE_ST_PollEvents(void)
 		}
 
 		case SDL_CONTROLLERBUTTONDOWN:
+			BEL_ST_CheckForHidingTouchUI();
+			// Fall-through
 		case SDL_CONTROLLERBUTTONUP:
 		{
 			bool isPressed = (event.type == SDL_CONTROLLERBUTTONDOWN);
