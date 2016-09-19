@@ -2014,13 +2014,21 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 		SDL_RenderClear(g_sdlRenderer);
 		if (g_sdlTargetTexture)
 		{
-			SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);
+			if (SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture) != 0)
+			{
+				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set target texture as render target (disabling),\n%s\n", SDL_GetError());
+				SDL_DestroyTexture(g_sdlTargetTexture);
+				g_sdlTargetTexture = NULL;
+				goto refreshwithnorendertarget;
+			}
 			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
-			SDL_SetRenderTarget(g_sdlRenderer, NULL);
+			if (SDL_SetRenderTarget(g_sdlRenderer, NULL) != 0)
+				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set default render target!\n%s\n", SDL_GetError());
 			SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
 		}
 		else
 		{
+refreshwithnorendertarget:
 			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
 		}
 		BEL_ST_Launcher_FinishHostDisplayUpdate();
