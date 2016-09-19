@@ -4,5 +4,5 @@
 # APP_STL := stlport_static 
 
 APP_ABI := armeabi armeabi-v7a x86
-# Required due to the lack of project.properties
-APP_PLATFORM := android-19
+# Let's set this as a safe minimum
+APP_PLATFORM := android-10
