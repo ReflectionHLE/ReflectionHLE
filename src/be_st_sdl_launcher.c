@@ -2164,8 +2164,12 @@ void BE_ST_Launcher_RunEventLoop(void)
 				BEL_ST_Launcher_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
 
+			/* Don't use SDL_CONTROLLERDEVICEADDED with alternative controller schemes, and for the sake of consistency avoid SDL_CONTROLLERDEVICEREMOVED as well.
+			 * Reason is that on init, there is a problem handling controller mappings loaded from the database using SDL_CONTROLLERDEVICEADDED
+			 * (if loaded before init, the mappings seem to be deleted, otherwise SDL_CONTROLLERDEVICEADDED is just not spawned for these).
+			 */
 			case SDL_JOYDEVICEADDED:
-				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && SDL_IsGameController(event.jdevice.which))
+				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && !g_sdlControllers[event.jdevice.which] && SDL_IsGameController(event.jdevice.which))
 					g_sdlControllers[event.jdevice.which] = SDL_GameControllerOpen(event.jdevice.which);
 				break;
 			case SDL_JOYDEVICEREMOVED:
