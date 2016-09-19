@@ -742,6 +742,8 @@ void BE_ST_Launcher_Shutdown(void)
 		}
 
 	/* Poll events just in case (e.g., clean up old controller events) */
+	// Update (Sep 19 2016) - DON'T, we might miss newly attached game controllers and other events!
+#if 0
 	SDL_Event event;
 	bool doExit = false;
 	while (SDL_PollEvent(&event))
@@ -749,6 +751,7 @@ void BE_ST_Launcher_Shutdown(void)
 		if (event.type == SDL_QUIT)
 			doExit = true;
 	}
+#endif
 
 	SDL_DestroyTexture(g_sdlLauncherTextSearchTexture);
 	g_sdlLauncherTextSearchTexture = NULL;
@@ -839,8 +842,11 @@ void BE_ST_Launcher_Shutdown(void)
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;
 
+	// Update (Sep 19 2016) - Not doing this
+#if 0
 	if (doExit)
 		BE_ST_QuickExit();
+#endif
 }
 
 
