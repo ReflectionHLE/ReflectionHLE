@@ -328,6 +328,14 @@ void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t wi
 	}
 
 	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, w, h, windowFlags);
+	// A hack for Android x86 on VirtualBox - Try creating an OpenGL ES 1.1 context instead of 2.0
+	if (!g_sdlWindow)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 window, forcing OpenGL (ES) version to 1.1 and retrying,\n%s\n", SDL_GetError());
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, w, h, windowFlags);
+	}
 	if (!g_sdlWindow)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 window,\n%s\n", SDL_GetError());
