@@ -253,6 +253,7 @@ void intro_exe_main(void)
 	// REFKEEN - Alternative controllers support
 	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro;
 	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro_skillselection;
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro_skillconfirm;
 	BE_ST_AltControlScheme_Push();
 
 	do
@@ -461,7 +462,7 @@ void intro_exe_main(void)
 					if ((last_key == 0x11/*0x1157*/)/* || (last_key == 0x1177)*/) // W or w (Warrior)
 					{
 						// REFKEEN - Alternative controllers support
-						BE_ST_AltControlScheme_Pop();
+						BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_intro_skillconfirm);
 
 						if (!id0_argv[2])
 						{
@@ -483,9 +484,6 @@ void intro_exe_main(void)
 							BE_ST_ShortSleep();
 						if (last_key == 0x1/*0x11B*/) // ESC
 						{
-							// REFKEEN - Alternative controllers support
-							BE_ST_AltControlScheme_Push();
-
 							leave_skill_selection = true;
 						}
 						else
@@ -493,6 +491,8 @@ void intro_exe_main(void)
 							ext_MoveGfxDst(0, 200);
 							UnpackEGAShapeToScreen(&app_start_shape, 0, 0);
 							ScreenToScreen(8000, 0, 40, 200);
+							// REFKEEN - Alternative controllers support
+							BE_ST_AltControlScheme_Pop();
 							// REFKEEN havebeep is always false (and code was removed for Apocalypse)
 							//Beep();
 							BE_ST_BiosScanCode(0);
@@ -502,7 +502,7 @@ void intro_exe_main(void)
 					else if ((last_key == 0x31/*0x314E*/)/* || (last_key == 0x316E)*/) // N or n (Novice)
 					{
 						// REFKEEN - Alternative controllers support
-						BE_ST_AltControlScheme_Pop();
+						BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_intro_skillconfirm);
 
 						if (!id0_argv[2])
 						{
@@ -524,9 +524,6 @@ void intro_exe_main(void)
 							BE_ST_ShortSleep();
 						if (last_key == 0x1/*0x11B*/)
 						{
-							// REFKEEN - Alternative controllers support
-							BE_ST_AltControlScheme_Push();
-
 							leave_skill_selection = true;
 						}
 						else
@@ -534,6 +531,8 @@ void intro_exe_main(void)
 							ext_MoveGfxDst(0, 200);
 							UnpackEGAShapeToScreen(&app_start_shape, 0, 0);
 							ScreenToScreen(8000, 0, 40, 200);
+							// REFKEEN - Alternative controllers support
+							BE_ST_AltControlScheme_Pop();
 							// REFKEEN havebeep is always false (and code was removed for Apocalypse)
 							//Beep();
 							BE_ST_BiosScanCode(0);

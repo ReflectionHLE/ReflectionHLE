@@ -393,7 +393,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_waitforspace = {
 
 // This one is dynamically changed during gameplay
 BE_ST_ControllerMapping g_ingame_altcontrol_mapping_keychoice = {
-	{0},
+	{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	NULL,
 	NULL,
 	{
@@ -427,13 +427,13 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro = {
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_F4, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 #ifdef REFKEEN_VER_CATABYSS
 		{NULL, BE_ST_SC_F10, 0, BE_ST_CTRL_MAP_KEYSCANCODE}, // This one depends on game episode and version
 #else
 		{0},
 #endif
-		{0},
 		// Back button
 		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
@@ -460,7 +460,36 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro_skillselection = {
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_N, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_W, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{0},
+		// Back button
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{0},
+		// Start button
+		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0},
+		{0}
+	},
+	{
+	},
+	true
+};
+
+BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro_skillconfirm = {
+	{0},
+	NULL,
+	NULL,
+	{
+		// Face buttons
+		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{0},
 		{0},
 		// Back button
@@ -835,7 +864,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 	// Version-specific patch
 #ifdef REFKEEN_VER_CATABYSS
-	g_ingame_altcontrol_mapping_intro.buttons[BE_ST_CTRL_BUT_X].mapClass = (refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? BE_ST_CTRL_MAP_KEYSCANCODE : BE_ST_CTRL_MAP_NONE;
+	g_ingame_altcontrol_mapping_intro.buttons[BE_ST_CTRL_BUT_Y].mapClass = (refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? BE_ST_CTRL_MAP_KEYSCANCODE : BE_ST_CTRL_MAP_NONE;
 #endif
 
 	// Init touch controls UI
