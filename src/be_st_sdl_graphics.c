@@ -110,6 +110,8 @@ typedef struct {
 	SDL_TouchID touchId;
 	SDL_FingerID fingerId;
 	int lastX, lastY;
+	// Used in multiple mappings, but not necessarily all of them
+	bool isDefaultBinaryStateToggle;
 	// This one depends on current mapping in use
 	union {
 		struct {
@@ -1298,6 +1300,7 @@ static BESDLTrackedFinger *BEL_ST_ProcessAndGetPressedTrackedFinger(SDL_TouchID 
 	BESDLTrackedFinger *trackedFinger = &g_sdlTrackedFingers[g_nOfTrackedFingers++];
 	trackedFinger->touchId = touchId;
 	trackedFinger->fingerId = fingerId;
+	trackedFinger->isDefaultBinaryStateToggle = false;
 	if (g_refKeenCfg.touchInputDebugging)
 	{
 		trackedFinger->lastX = x;
@@ -1371,7 +1374,7 @@ static void BEL_ST_UnmarkSelectedKeyInDebugKeysUI(void)
 void BEL_ST_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
-	if (!trackedFinger)
+	if (!trackedFinger || trackedFinger->isDefaultBinaryStateToggle)
 		return;
 
 	if ((x < g_sdlControllerTextInputRect.x) || (x >= g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
@@ -1411,12 +1414,8 @@ void BEL_ST_CheckPressedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID f
 	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h)
 	)
 	{
-		// Remove finger BEFORE handling entry, since it may change the mapper in the way
-		BEL_ST_RemoveTrackedFinger(trackedFinger);
-		// FIXME: A delay may be required here in certain cases, but this works for now...
-		const BE_ST_ControllerSingleMap *map = &g_sdlControllerMappingActualCurr->defaultMapping; // Store this in var since the mapping may change
-		BEL_ST_AltControlScheme_HandleEntry(map, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
-		BEL_ST_AltControlScheme_HandleEntry(map, 0, &g_sdlDefaultMappingBinaryState);
+		trackedFinger->isDefaultBinaryStateToggle = true;
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 		return;
 	}
 
@@ -1440,7 +1439,14 @@ void BEL_ST_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID 
 	int prevKeyX = trackedFinger->miscData.key.x;
 	int prevKeyY = trackedFinger->miscData.key.y;
 
+	bool isDefaultBinaryStateToggle = trackedFinger->isDefaultBinaryStateToggle;
 	BEL_ST_RemoveTrackedFinger(trackedFinger);
+
+	if (isDefaultBinaryStateToggle)
+	{
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
+		return;
+	}
 
 	if ((x >= g_sdlControllerTextInputRect.x) && (x < g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w)
 	    && (y >= g_sdlControllerTextInputRect.y) && (y < g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h))
@@ -1462,7 +1468,7 @@ void BEL_ST_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID 
 void BEL_ST_CheckMovedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
-	if (!trackedFinger)
+	if (!trackedFinger || trackedFinger->isDefaultBinaryStateToggle)
 		return;
 
 	if ((x < g_sdlControllerDebugKeysRect.x) || (x >= g_sdlControllerDebugKeysRect.x+g_sdlControllerDebugKeysRect.w)
@@ -1496,12 +1502,8 @@ void BEL_ST_CheckPressedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID f
 	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h)
 	)
 	{
-		// Remove finger BEFORE handling entry, since it may change the mapper in the way
-		BEL_ST_RemoveTrackedFinger(trackedFinger);
-		// FIXME: A delay may be required here in certain cases, but this works for now...
-		const BE_ST_ControllerSingleMap *map = &g_sdlControllerMappingActualCurr->defaultMapping; // Store this in var since the mapping may change
-		BEL_ST_AltControlScheme_HandleEntry(map, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
-		BEL_ST_AltControlScheme_HandleEntry(map, 0, &g_sdlDefaultMappingBinaryState);
+		trackedFinger->isDefaultBinaryStateToggle = true;
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 		return;
 	}
 
@@ -1527,7 +1529,14 @@ void BEL_ST_CheckReleasedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID 
 	int prevKeyX = trackedFinger->miscData.key.x;
 	int prevKeyY = trackedFinger->miscData.key.y;
 
+	bool isDefaultBinaryStateToggle = trackedFinger->isDefaultBinaryStateToggle;
 	BEL_ST_RemoveTrackedFinger(trackedFinger);
+
+	if (isDefaultBinaryStateToggle)
+	{
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
+		return;
+	}
 
 	bool *keyStatus = &g_sdlDebugKeysPressed[prevKeyY][prevKeyX];
 
@@ -1612,12 +1621,8 @@ void BEL_ST_CheckPressedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID 
 	}
 	else if (scanCode < 0)
 	{
-		// Remove finger BEFORE handling entry, since it may change the mapper in the way
-		BEL_ST_RemoveTrackedFinger(trackedFinger);
-		// FIXME: A delay may be required here in certain cases, but this works for now...
-		const BE_ST_ControllerSingleMap *map = &g_sdlControllerMappingActualCurr->defaultMapping; // Store this in var since the mapping may change
-		BEL_ST_AltControlScheme_HandleEntry(map, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
-		BEL_ST_AltControlScheme_HandleEntry(map, 0, &g_sdlDefaultMappingBinaryState);
+		trackedFinger->isDefaultBinaryStateToggle = true;
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 	}
 
 }
@@ -1628,21 +1633,30 @@ void BEL_ST_CheckReleasedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID
 	if (!trackedFinger)
 		return;
 
-	if (trackedFinger->miscData.padButtonScanCode)
+	int scanCode = trackedFinger->miscData.padButtonScanCode;
+
+	bool isDefaultBinaryStateToggle = trackedFinger->isDefaultBinaryStateToggle;
+	BEL_ST_RemoveTrackedFinger(trackedFinger);
+
+	if (isDefaultBinaryStateToggle)
+	{
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
+		return;
+	}
+
+	if (scanCode)
 	{
 		emulatedDOSKeyEvent dosKeyEvent;
 		dosKeyEvent.isSpecial = false;
 		dosKeyEvent.dosScanCode = trackedFinger->miscData.padButtonScanCode;
 		BEL_ST_HandleEmuKeyboardEvent(false, false, dosKeyEvent);
 	}
-
-	BEL_ST_RemoveTrackedFinger(trackedFinger);
 }
 
 void BEL_ST_CheckMovedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
-	if (!trackedFinger)
+	if (!trackedFinger || trackedFinger->isDefaultBinaryStateToggle)
 		return;
 
 	int oldScanCode = trackedFinger->miscData.padButtonScanCode;
