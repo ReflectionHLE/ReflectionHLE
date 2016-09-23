@@ -34,7 +34,7 @@
         <activity android:name="com.ny00123.reflection_keen.RefkeenActivity"
                   android:label="@string/app_name"
                   android:screenOrientation="sensorLandscape"
-                  android:configChanges="keyboardHidden|orientation"
+                  android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
                   >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
