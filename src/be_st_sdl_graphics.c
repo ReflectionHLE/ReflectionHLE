@@ -2630,9 +2630,16 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 	SDL_RenderPresent(g_sdlRenderer);
 }
 
+static uint32_t g_be_sdlLastRefreshTicks = 0;
 
 void BEL_ST_UpdateHostDisplay(void)
 {
+	// Refresh graphics from time to time in case a part of the window is overridden by anything,
+	// like the Steam Overlay.
+	uint32_t currRefreshTicks = SDL_GetTicks();
+	if (currRefreshTicks - g_be_sdlLastRefreshTicks >= 100)
+		g_sdlForceGfxControlUiRefresh = true;
+
 	if (g_sdlScreenMode == 3) // Text mode
 	{
 		// For graphics modes we don't have to refresh if g_sdlDoRefreshGfxOutput is set to false,
@@ -2833,4 +2840,5 @@ refreshwithnorendertarget:
 	}
 
 	BEL_ST_FinishHostDisplayUpdate();
+	g_be_sdlLastRefreshTicks = SDL_GetTicks();
 }

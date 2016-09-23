@@ -146,6 +146,8 @@ void BEL_ST_SetRelativeMouseMotion(bool enable);
 
 SDL_Surface *g_be_sdl_windowIconSurface = NULL;
 
+static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event);
+
 void BE_ST_InitCommon(void)
 {
 	// SDL_INIT_VIDEO implies SDL_INIT_EVENTS, and SDL_INIT_TIMER caused
@@ -182,6 +184,8 @@ void BE_ST_InitCommon(void)
 	// Otherwise, the launcher **guesses** the correct value to set based
 	// on a recent event type (e.g., mouse event -> no touch UI is shown).
 	g_sdlShowTouchUI = (g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED);
+
+	SDL_SetEventFilter(BEL_ST_EventsCallback, NULL);
 }
 
 void BE_ST_PrepareForGameStartup(void)
@@ -2118,6 +2122,32 @@ void BE_ST_PollEvents(void)
 	if (! g_sdlAudioSubsystemUp)
 	{
 		BE_ST_PrepareForManualAudioSDServiceCall();
+	}
+}
+
+// Use this to catch a few special events here when required
+static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
+{
+	switch (event->type)
+	{
+	case SDL_APP_TERMINATING:
+		return 0;
+	case SDL_APP_LOWMEMORY:
+		return 0;
+	case SDL_APP_WILLENTERBACKGROUND:
+		return 0;
+	case SDL_APP_DIDENTERBACKGROUND:
+		return 0;
+	case SDL_APP_WILLENTERFOREGROUND:
+		return 0;
+	case SDL_APP_DIDENTERFOREGROUND:
+		// HACK - These may be done from a different thread,
+		// but should be relatively simple anyway
+		BEL_ST_ForceHostDisplayUpdate();
+		BE_ST_Launcher_MarkGfxCache();
+		return 0;
+	default:
+		return 1; // Just send to SDL_PollEvent as usual
 	}
 }
 
