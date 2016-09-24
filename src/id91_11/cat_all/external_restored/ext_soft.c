@@ -312,7 +312,9 @@ id0_int_t ext_LoadShape(const id0_char_t *Filename, struct Shape *SHP)
 		if (CHUNK("BODY"))
 		{
 			ptr += 4;
-			size = BE_Cross_Swap32BE(*((id0_long_t id0_far *)ptr));
+			// REFKEEN - Safe unaligned accesses and Big Endian support
+			memcpy(&size, ptr, 4);
+			size = BE_Cross_Swap32BE(size);
 			//size = *((id0_long_t id0_far *)ptr);
 			ptr += 4;
 			//SwapLong((id0_long_t id0_far *)&size);
