@@ -2309,12 +2309,14 @@ void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_
 
 void BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(uint16_t destOff, uint8_t color, uint8_t bitsMask)
 {
+	color &= 0xF; // We may get a larger value in The Catacombs Armageddon (sky color)
 	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_bitsmask[bitsMask]) | (g_be_st_lookup_repeat[color] & g_be_st_lookup_bitsmask[bitsMask]);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(uint16_t destOff, uint8_t color, uint16_t count)
 {
+	color &= 0xF; // We may get a larger value in The Catacombs Armageddon (sky color)
 	BEL_ST_EGAPlane_MemSet(g_sdlVidMem.egaGfx, destOff, color, count);
 	g_sdlDoRefreshGfxOutput = true;
 }
