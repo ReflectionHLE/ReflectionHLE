@@ -640,8 +640,10 @@ extern	id0_int_t	id0_far walldark1[NUMFLOORS];
 
 extern id0_unsigned_t topcolor,bottomcolor;
 
-extern id0_char_t wall_anim_info[NUMFLOORS];
-extern id0_char_t wall_anim_pos[NUMFLOORS];
+// REFKEEN - Explicitly declare wall_anim_pos as signed (for setups where "char" is really unsigned); Furthermore, omit wall_anim_info which is not even defined
+extern id0_signed_char_t wall_anim_pos[NUMFLOORS];
+//extern id0_char_t wall_anim_info[NUMFLOORS];
+//extern id0_char_t wall_anim_pos[NUMFLOORS];
 
 //==========================================================================
 

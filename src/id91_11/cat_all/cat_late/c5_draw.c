@@ -455,7 +455,9 @@ void near ScaleOneWall (id0_int_t xl, id0_int_t xh)
 
 #endif
 
-id0_char_t wall_anim_pos[NUMFLOORS];
+// REFKEEN - Explicitly define this as signed (for setups where "char" is really unsigned)
+id0_signed_char_t wall_anim_pos[NUMFLOORS];
+//id0_char_t wall_anim_pos[NUMFLOORS];
 
 #ifdef REFKEEN_VER_CATARM
 
