@@ -440,7 +440,9 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 		//
 		// scan past black background pixels
 		//
-			while (spotvis[y][x] == BACKGROUNDPIX && y<64)
+			// REFKEEN - Swap order of comparisons to prevent buffer overrun
+			while ((y<64) && (spotvis[y][x] == BACKGROUNDPIX))
+			//while (spotvis[y][x] == BACKGROUNDPIX && y<64)
 				y++;
 
 			if (y>63)		// no more segments
@@ -451,7 +453,9 @@ id0_unsigned_t BuildCompShape (t_compshape id0_seg **finalspot)
 		//
 		// scan past scalable pixels
 		//
-			while (spotvis[y][x] != BACKGROUNDPIX && y<64)
+			// REFKEEN - Swap order of comparisons to prevent buffer overrun
+			while ((y<64) && (spotvis[y][x] != BACKGROUNDPIX))
+			//while (spotvis[y][x] != BACKGROUNDPIX && y<64)
 				y++;
 
 			if (y>63)

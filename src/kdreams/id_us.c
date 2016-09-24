@@ -486,7 +486,10 @@ US_CheckParm(const id0_char_t *parm,const id0_char_t **strings)
 	const id0_char_t *p,*s;
 	id0_int_t		i;
 
-	while (!isalpha(*parm))	// Skip non-alphas
+	// (REFKEEN) The test has been modified to prevent a buffer overflow.
+	// TODO: Any need to emulate behaviors of the original EXEs?
+	while ((*parm) && !isalpha(*parm)) // Skip non-alphas
+	//while (!isalpha(*parm))	// Skip non-alphas
 		parm++;
 
 	for (i = 0;*strings && **strings;i++)
