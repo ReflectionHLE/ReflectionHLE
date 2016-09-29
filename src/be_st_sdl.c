@@ -334,6 +334,7 @@ RefKeenConfig g_refKeenCfg;
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
 
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 static void BEL_ST_ParseSetting_FullScreen(const char *keyprefix, const char *buffer)
 {
 	if (!strcmp(buffer, "true"))
@@ -345,6 +346,7 @@ static void BEL_ST_ParseSetting_FullScreen(const char *keyprefix, const char *bu
 		g_refKeenCfg.isFullscreen = false;
 	}
 }
+#endif
 
 static void BEL_ST_ParseSetting_FullRes(const char *keyprefix, const char *buffer)
 {
@@ -677,7 +679,9 @@ typedef struct {
 } BESDLCfgEntry;
 
 static BESDLCfgEntry g_sdlCfgEntries[] = {
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	{"fullscreen=", &BEL_ST_ParseSetting_FullScreen},
+#endif
 	{"fullres=", &BEL_ST_ParseSetting_FullRes},
 	{"windowres=", &BEL_ST_ParseSetting_WindowRes},
 #ifdef REFKEEN_ENABLE_LAUNCHER
@@ -743,7 +747,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 static void BEL_ST_ParseConfig(void)
 {
 	// Defaults
-	g_refKeenCfg.isFullscreen = false;
+	g_refKeenCfg.isFullscreen = false; // Always exists internally, regardless of REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	g_refKeenCfg.fullWidth = 0;
 	g_refKeenCfg.fullHeight = 0;
 	g_refKeenCfg.winWidth = 0;
@@ -842,7 +846,9 @@ static void BEL_ST_SaveConfig(void)
 	{
 		return;
 	}
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	fprintf(fp, "fullscreen=%s\n", g_refKeenCfg.isFullscreen ? "true" : "false");
+#endif
 	fprintf(fp, "fullres=%dx%d\n", g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight);
 	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
 #ifdef REFKEEN_ENABLE_LAUNCHER

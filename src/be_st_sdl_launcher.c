@@ -321,13 +321,17 @@ static const char *g_be_videoSettingsChoices_sdlRendererDrivers[BE_LAUNCHER_MAX_
 static const char *g_be_videoSettingsChoices_scaleType[] = {"4:3","Fill",NULL};
 static const char *g_be_videoSettingsChoices_scaleFactor[] = {"1","2","3","4",NULL};
 static const char *g_be_videoSettingsChoices_vSync[] = {"Auto","Off","On",NULL};
+#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default","Fullscreen","Software",NULL};
+#endif
 
 #ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
 static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP);
 #endif
 
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Fullscreen, "Fullscreen", g_be_settingsChoices_boolean)
+#endif
 #ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_FullscreenRes, "Fullscreen resolution", g_be_videoSettingsChoices_fullResolutions)
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums, &BEL_ST_Launcher_Handler_DisplayNum)
@@ -340,7 +344,9 @@ BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type*", g_b
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleFactor, "Scale factor", g_be_videoSettingsChoices_scaleFactor)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_VSync, "VSync", g_be_videoSettingsChoices_vSync)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ForceFullSoftScaling, "Force full software scaling*", g_be_settingsChoices_boolean)
+#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_LauncherWindowType, "Launcher window type", g_be_videoSettingsChoices_launcherWindowType)
+#endif
 BEMENUITEM_DEF_STATIC(g_beVideoSettingsMenuItem_SoftScalingComment,
 "* Full software scaling should be manually toggled. Note that it can lead to great slowdowns with high-resolution windows."
 );
@@ -350,7 +356,9 @@ BEMenu g_beVideoSettingsMenu = {
 	&g_beSettingsMenu,
 	(BEMenuItem *[])
 	{
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 		&g_beVideoSettingsMenuItem_Fullscreen,
+#endif
 #ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
 		&g_beVideoSettingsMenuItem_FullscreenRes,
 #endif
@@ -361,7 +369,9 @@ BEMenu g_beVideoSettingsMenu = {
 		&g_beVideoSettingsMenuItem_ScaleFactor,
 		&g_beVideoSettingsMenuItem_VSync,
 		&g_beVideoSettingsMenuItem_ForceFullSoftScaling,
+#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 		&g_beVideoSettingsMenuItem_LauncherWindowType,
+#endif
 		&g_beVideoSettingsMenuItem_SoftScalingComment,
 		NULL
 	},
@@ -596,7 +606,9 @@ void BE_ST_Launcher_Prepare(void)
 	BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(); // Set menu item label based on arguments string
 
 	// Set fullscreen value
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;
+#endif
 	/*** Prepare displays list ***/
 	int nOfDisplays = SDL_GetNumVideoDisplays();
 	if (nOfDisplays >= (int)(sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums)))
@@ -639,8 +651,10 @@ void BE_ST_Launcher_Prepare(void)
 	g_beVideoSettingsMenuItem_VSync.choice = g_refKeenCfg.vSync;
 	// Set ForceFullSoftScaling value
 	g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice = g_refKeenCfg.forceFullSoftScaling;
+#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 	// Set LauncherWindowType value
 	g_beVideoSettingsMenuItem_LauncherWindowType.choice = g_refKeenCfg.launcherWinType;
+#endif
 	// Set SndSampleRate value
 	g_beSoundSettingsMenuItem_SndSampleRate.choice = 8; // FIXME - Better way to grab default off cfg
 	for (i = 0; i < (int)(sizeof(g_be_soundsSettingsChoices_sndSampleRateVals)/sizeof(*g_be_soundsSettingsChoices_sndSampleRateVals)); ++i)
@@ -779,7 +793,9 @@ void BE_ST_Launcher_Shutdown(void)
 	if (!g_be_launcher_wasAnySettingChanged)
 		return; // e.g., if there is a cfg value the launcher doesn't cope with (say, out of some range)
 
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	g_refKeenCfg.isFullscreen = g_beVideoSettingsMenuItem_Fullscreen.choice;
+#endif
 	g_refKeenCfg.displayNum = g_beVideoSettingsMenuItem_DisplayNum.choice;
 
 #ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
@@ -801,7 +817,9 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.scaleFactor = g_beVideoSettingsMenuItem_ScaleFactor.choice + 1;
 	g_refKeenCfg.vSync = (VSyncSettingType)g_beVideoSettingsMenuItem_VSync.choice;
 	g_refKeenCfg.forceFullSoftScaling = g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice;
+#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 	g_refKeenCfg.launcherWinType = (LauncherWindowSettingType)g_beVideoSettingsMenuItem_LauncherWindowType.choice;
+#endif
 
 	g_refKeenCfg.sndSampleRate = g_be_soundsSettingsChoices_sndSampleRateVals[g_beSoundSettingsMenuItem_SndSampleRate.choice];
 	g_refKeenCfg.sndSubSystem = g_beSoundSettingsMenuItem_SndSubSystem.choice;
