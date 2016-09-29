@@ -313,12 +313,11 @@ void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t wi
 		// This is a little bit of a hack:
 		// - x and y are compared to previous values, currently used to pick a display to use (in a multi-display setup).
 		// - Since the actual flags of a window may differ from what we requested (due to toggling fullscreen or any other reason),
-		// we support skipping window recreation only for SDL_WINDOW_FULLSCREEN_DESKTOP windows.
+		// we support skipping window recreation only if fullscreen state did not change.
 		// - Renderer flags are compared to the previously requested flags.
 		// - Same is done with with renderer driver index. If -1 is used anywhere, this makes reuse of the same window more probable.
 		if ((x == prev_x) && (y == prev_y) &&
-		    ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) &&
-		    ((SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP) &&
+		    ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP)) &&
 		    (driverIndex == prev_driverIndex) && (rendererFlags == prev_rendererFlags)
 		)
 			return;
