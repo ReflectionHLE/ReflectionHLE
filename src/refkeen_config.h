@@ -46,4 +46,11 @@
 #define REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 #endif
 
+// On some platforms e.g., OS X, usage of multitouch trackpad may lead
+// to SDL2 finger events, and these should not be mistakenly detected
+// as touchscreen input (at least by default)
+#ifdef REFKEEN_PLATFORM_ANDROID
+#define REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT
+#endif
+
 #endif // REFKEEN_CONFIG_H

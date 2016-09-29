@@ -773,7 +773,11 @@ static void BEL_ST_ParseConfig(void)
 #ifndef REFKEEN_RESAMPLER_NONE
 	g_refKeenCfg.useResampler = true;
 #endif
+#ifdef REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT
 	g_refKeenCfg.touchInputToggle = TOUCHINPUT_AUTO;
+#else
+	g_refKeenCfg.touchInputToggle = TOUCHINPUT_OFF;
+#endif
 	g_refKeenCfg.touchInputDebugging = false;
 	g_refKeenCfg.altControlScheme.isEnabled = true;
 
