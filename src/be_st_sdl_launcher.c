@@ -263,15 +263,19 @@ BEMenu g_beSelectDirectoryFoundGameMenu = {
 
 // Here, directory-selection related resources are STILL allocated
 BEMENUITEM_DEF_TARGETMENU(g_beSelectDirectoryNoGameFoundMenu_ReturnToDirectory, "Return to directory", &g_beSelectDirectoryMenu)
+BEMENUITEM_DEF_STATIC(g_beSelectDirectoryNoGameFoundMenu_ReportedIssuesByGameVer, "    Reported issues by game version    ") // HACK - Proper spacing for text centering
+
+// Statically allocated, but filled later
+static BEMenuItem *g_beSelectDirectoryNoGameFoundMenu_MenuItemsPtrs[BE_GAMEVER_LAST+3] = {
+	&g_beSelectDirectoryNoGameFoundMenu_ReturnToDirectory,
+	&g_beSelectDirectoryNoGameFoundMenu_ReportedIssuesByGameVer,
+	// All the rest are initialized to NULL, and the last entry shall always be NULL
+};
 
 BEMenu g_beSelectDirectoryNoGameFoundMenu = {
 	"No new compatible game found",
 	&g_beSelectDirectoryMenu,
-	(BEMenuItem *[])
-	{
-		&g_beSelectDirectoryNoGameFoundMenu_ReturnToDirectory,
-		NULL
-	},
+	g_beSelectDirectoryNoGameFoundMenu_MenuItemsPtrs, // Filled later
 	// Ignore the rest
 };
 

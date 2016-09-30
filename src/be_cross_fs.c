@@ -1093,7 +1093,7 @@ static int BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, c
 }
 
 // ***ASSUMPTION: descStr points to a C string literal which is never modified nor deleted!!!***
-static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T *details, const TCHAR *searchdir, const char *descStr)
+static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const BE_GameVerDetails_T *details, const TCHAR *searchdir, const char *descStr, BE_TryAddGameInstallation_ErrorMsg_T *outErrMsg)
 {
 	unsigned char *decompexebuffer = NULL;
 	char errorMsg[256];
@@ -1102,7 +1102,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 		return;
 
 	if (g_be_gameinstallations_num >= BE_CROSS_MAX_GAME_INSTALLATIONS)
-		BE_ST_ExitWithErrorMsg("BEL_Cross_ConditionallyAddGameInstallation: Too many game installations!");
+		BE_ST_ExitWithErrorMsg("BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Too many game installations!");
 
 	BE_GameInstallation_T *gameInstallation = &g_be_gameinstallations[g_be_gameinstallations_num];
 	// If used correctly then these SHOULD have enough space
@@ -1134,7 +1134,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 			if (fp)
 			{
 				fclose(fp);
-				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Cannot remove file with\nunexpected contents! Alternatively, one such file has been removed, but there's\nanother one differing just by case.\nFilename: %s", fileDetailsBuffer->filename);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Cannot remove file with\nunexpected contents! Alternatively, one such file has been removed, but there's\nanother one differing just by case.\nFilename: %s", fileDetailsBuffer->filename);
 				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
 			break;
@@ -1150,7 +1150,10 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 				continue; // A special case again (where a wrong file is acceptable)
 			// Fall-through
 		default:
-			return; // (Matching, and in manual mode, also wrong) file not found, we cannot add a new game installation
+			// (Matching, and in manual mode, also wrong) file not found, we cannot add a new game installation
+			if (outErrMsg)
+				BE_Cross_safeandfastcstringcopy_2strs(*outErrMsg, (*outErrMsg) + sizeof(*outErrMsg), "Wrong/No file ", fileDetailsBuffer->filename);
+			return;
 		}
 	}
 
@@ -1178,7 +1181,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 			if (fp)
 			{
 				fclose(fp);
-				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Cannot remove file with\nunexpected contents! Alternatively, one such file has been removed, but there's\nanother one differing just by case.\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Cannot remove file with\nunexpected contents! Alternatively, one such file has been removed, but there's\nanother one differing just by case.\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
 				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
 			break;
@@ -1202,7 +1205,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 			FILE *exeFp = BEL_Cross_open_from_dir(details->exeName, false, searchdir, NULL);
 			if (!exeFp)
 			{
-				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't open EXE after checking it!\nFilename: %s", details->exeName);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Can't open EXE after checking it!\nFilename: %s", details->exeName);
 				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
 
@@ -1210,7 +1213,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 			if (!decompexebuffer)
 			{
 				fclose(exeFp);
-				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't allocate memory for unpacked EXE copy!\nFilename: %s", details->exeName);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Can't allocate memory for unpacked EXE copy!\nFilename: %s", details->exeName);
 				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
 
@@ -1229,7 +1232,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 			if (!success)
 			{
 				free(decompexebuffer);
-				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Failed to copy EXE in unpacked form!\nFilename: %s", details->exeName);
+				snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Failed to copy EXE in unpacked form!\nFilename: %s", details->exeName);
 				BE_ST_ExitWithErrorMsg(errorMsg);
 			}
 		}
@@ -1237,14 +1240,14 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 		if (!outFp)
 		{
 			free(decompexebuffer);
-			snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't open file for writing!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+			snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Can't open file for writing!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
 			BE_ST_ExitWithErrorMsg(errorMsg);
 		}
 		if (fwrite(decompexebuffer + embeddedfileDetailsBuffer->offset, embeddedfileDetailsBuffer->fileDetails.filesize, 1, outFp) != 1)
 		{
 			fclose(outFp);
 			free(decompexebuffer);
-			snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation: Can't write to file!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
+			snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Can't write to file!\nFilename: %s", embeddedfileDetailsBuffer->fileDetails.filename);
 			BE_ST_ExitWithErrorMsg(errorMsg);
 		}
 		fclose(outFp);
@@ -1256,6 +1259,11 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 	g_be_gameinstallationsbyver[details->verId] = gameInstallation;
 }
 
+// ***ASSUMPTION: Again, descStr points to a C string literal which is never modified nor deleted!!!***
+static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T *details, const TCHAR *searchdir, const char *descStr)
+{
+	BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(details, searchdir, descStr, NULL);
+}
 
 // Opens a read-only file for reading from a "search path" in a case-insensitive manner
 BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
@@ -1692,16 +1700,22 @@ const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs) // Go up in the
 
 // Attempt to add a game installation from currently selected dir;
 // Returns BE_GAMEVER_LAST if no new supported game version is found; Otherwise game version id is returned.
-int BE_Cross_DirSelection_TryAddGameInstallation(void)
+// The given array is used in order to report an error for each checked version, in case of failure.
+//
+// Array MUST have at least BE_GAMEVER_LAST elements.
+int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[])
 {
 	int verId;
 	for (verId = 0; verId < BE_GAMEVER_LAST; ++verId)
 	{
 		if (g_be_gameinstallationsbyver[verId])
+		{
+			BE_Cross_safeandfastcstringcopy(errorMsgsArray[verId], errorMsgsArray[verId] + sizeof(errorMsgsArray[verId]), "Already available");
 			continue;
+		}
 
 		const BE_GameVerDetails_T *details = g_be_gamever_ptrs[verId];
-		BEL_Cross_ConditionallyAddGameInstallation(details, g_be_dirSelection_currPath, details->customInstDescription);
+		BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(details, g_be_dirSelection_currPath, details->customInstDescription, &errorMsgsArray[verId]);
 		if (g_be_gameinstallationsbyver[verId]) // Match found and added
 		{
 			TCHAR path[BE_CROSS_PATH_LEN_BOUND];

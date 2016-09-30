@@ -846,11 +846,24 @@ void BE_Launcher_RefreshVerticalScrolling(uint32_t ticksinms)
 	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 }
 
+// HACK
+static char g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[BE_GAMEVER_LAST][BE_MENU_STATIC_TEXT_MAX_ROW_STRLEN+1];
+static BEMenuItem g_beSelectDirectoryNoGameFoundMenu_GameVers_MenuItems[BE_GAMEVER_LAST];
+
 void BE_Launcher_Start(void)
 {
 	BE_ST_Launcher_Prepare();
 
 	g_be_launcher_screenPtr = BE_ST_Launcher_GetGfxPtr();
+
+	// Partial preparation for g_beSelectDirectoryMenu
+	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
+	{
+		BEMenuItem *menuItem = &g_beSelectDirectoryNoGameFoundMenu_GameVers_MenuItems[i];
+		g_beSelectDirectoryNoGameFoundMenu.menuItems[i+2] = menuItem;
+		menuItem->type = BE_MENUITEM_TYPE_STATIC;
+		menuItem->label = g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i];
+	}
 
 	BE_Launcher_PrepareMenu(&g_beMainMenu);
 	BE_Launcher_PrepareMenu(&g_beSelectGameMenu);
@@ -1095,7 +1108,8 @@ void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP)
 
 void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
 {
-	int gameVer = BE_Cross_DirSelection_TryAddGameInstallation();
+	BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[BE_GAMEVER_LAST];
+	int gameVer = BE_Cross_DirSelection_TryAddGameInstallation(errorMsgsArray);
 	if (gameVer != BE_GAMEVER_LAST)
 	{
 		BE_ST_Launcher_RefreshSelectGameMenuContents();
@@ -1109,7 +1123,13 @@ void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
 		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryFoundGameMenu); // Show this "menu" (actually a dialog)
 	}
 	else
-		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryNoGameFoundMenu); // Do NOT clear resources, we stay in current directory
+	{
+		// Do NOT clear resources, we stay in current directory; But do prepare this menu
+		for (int i = 0; i < BE_GAMEVER_LAST; ++i)
+			BE_Cross_safeandfastcstringcopy_3strs(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i], g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i] + sizeof(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i]), refkeen_gamever_strs[i], ": ", errorMsgsArray[i]);
+		BE_Launcher_PrepareMenu(&g_beSelectDirectoryNoGameFoundMenu);
+		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryNoGameFoundMenu);
+	}
 }
 
 void BE_Launcher_Handler_DirectorySelectionGoPrev(BEMenuItem **menuItemP)

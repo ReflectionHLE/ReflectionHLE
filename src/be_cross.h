@@ -154,9 +154,14 @@ void BE_Cross_DirSelection_Finish(void); // Finish dir selection
 const char **BE_Cross_DirSelection_GetNext(int dirIndex, int *outNumOfSubDirs); // Enter dir by index into last array
 const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs); // Go up in the filesystem hierarchy
 
+typedef char BE_TryAddGameInstallation_ErrorMsg_T[32];
+
 // Attempt to add a game installation from currently selected dir;
 // Returns BE_GAMEVER_LAST if no new supported game version is found; Otherwise game version id is returned.
-int BE_Cross_DirSelection_TryAddGameInstallation(void);
+// The given array is used in order to report an error for each checked version, in case of failure.
+//
+// Array MUST have at least BE_GAMEVER_LAST elements.
+int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[]);
 
 // Often used as a replacement for file handles of type "int",
 // this one is given a different name so it's easy to swap in case of a need
