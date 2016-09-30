@@ -359,11 +359,12 @@ static void BEL_ST_ParseSetting_WindowRes(const char *keyprefix, const char *buf
 }
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
+/*
 static void BEL_ST_ParseSetting_LauncherWindowRes(const char *keyprefix, const char *buffer)
 {
 	sscanf(buffer, "%dx%d", &g_refKeenCfg.launcherWinWidth, &g_refKeenCfg.launcherWinHeight);
 }
-
+*/
 static void BEL_ST_ParseSetting_LauncherWindowType(const char *keyprefix, const char *buffer)
 {
 	if (!strcmp(buffer, "default"))
@@ -685,7 +686,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"fullres=", &BEL_ST_ParseSetting_FullRes},
 	{"windowres=", &BEL_ST_ParseSetting_WindowRes},
 #ifdef REFKEEN_ENABLE_LAUNCHER
-	{"launcherwindowres=", &BEL_ST_ParseSetting_LauncherWindowRes},
+//	{"launcherwindowres=", &BEL_ST_ParseSetting_LauncherWindowRes},
 	{"launcherwindowtype=", &BEL_ST_ParseSetting_LauncherWindowType},
 	{"launcherexeargs=", &BEL_ST_ParseSetting_LauncherExeArgs},
 #endif
@@ -753,8 +754,10 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.winWidth = 0;
 	g_refKeenCfg.winHeight = 0;
 #ifdef REFKEEN_ENABLE_LAUNCHER
+/*
 	g_refKeenCfg.launcherWinWidth = 0;
 	g_refKeenCfg.launcherWinHeight = 0;
+*/
 	g_refKeenCfg.launcherExeArgs[0] = '\0';
 	g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
 #endif
@@ -856,7 +859,7 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "fullres=%dx%d\n", g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight);
 	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
 #ifdef REFKEEN_ENABLE_LAUNCHER
-	fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
+	//fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
 	fprintf(fp, "launcherwindowtype=%s\n", g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT ? "default" : (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL ? "full" : "software"));
 	fprintf(fp, "launcherexeargs=%s\n", g_refKeenCfg.launcherExeArgs);
 #endif

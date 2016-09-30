@@ -581,14 +581,14 @@ void BE_ST_Launcher_Prepare(void)
 	/*** Prepare ST stuff ***/
 
 	/* Graphics */
-	if (!g_refKeenCfg.launcherWinWidth || !g_refKeenCfg.launcherWinHeight || (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE))
+	if (!g_refKeenCfg.winWidth || !g_refKeenCfg.winHeight || (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE))
 	{
-		g_refKeenCfg.launcherWinWidth = 2*BE_LAUNCHER_PIX_WIDTH;
-		g_refKeenCfg.launcherWinHeight = 2*BE_LAUNCHER_PIX_HEIGHT;
+		g_refKeenCfg.winWidth = 2*BE_LAUNCHER_PIX_WIDTH;
+		g_refKeenCfg.winHeight = 2*BE_LAUNCHER_PIX_HEIGHT;
 	}
 
 	BEL_ST_RecreateSDLWindowAndRenderer(
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight,
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.winWidth, g_refKeenCfg.winHeight,
 		(g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : ((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT) ? SDL_WINDOW_RESIZABLE : 0),
 		-1, (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE) ? SDL_RENDERER_SOFTWARE : (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
 	);
@@ -985,8 +985,8 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 
 	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_FULL)
 	{
-		g_refKeenCfg.launcherWinWidth = winWidth;
-		g_refKeenCfg.launcherWinHeight = winHeight;
+		g_refKeenCfg.winWidth = winWidth;
+		g_refKeenCfg.winHeight = winHeight;
 	}
 
 	if (BE_LAUNCHER_PIX_HEIGHT*winWidth < BE_LAUNCHER_PIX_WIDTH*winHeight) // Thinner than BE_LAUNCHER_PIX_WIDTH:BE_LAUNCHER_PIX_HEIGHT

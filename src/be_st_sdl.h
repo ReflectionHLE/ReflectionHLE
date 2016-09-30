@@ -39,7 +39,8 @@ typedef struct
 	int fullWidth, fullHeight;
 	int winWidth, winHeight;
 #ifdef REFKEEN_ENABLE_LAUNCHER
-	int launcherWinWidth, launcherWinHeight;
+	// Now using just winWidth and winHeight due to seamless launcher->game transitions
+	//int launcherWinWidth, launcherWinHeight;
 	LauncherWindowSettingType launcherWinType;
 	char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
 #endif
