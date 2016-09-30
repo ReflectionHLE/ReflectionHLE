@@ -847,14 +847,32 @@ void BE_Launcher_RefreshVerticalScrolling(uint32_t ticksinms)
 }
 
 // HACK
-static char g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[BE_GAMEVER_LAST][BE_MENU_STATIC_TEXT_MAX_ROW_STRLEN+1];
+static char g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[BE_GAMEVER_LAST][2*(BE_MENU_STATIC_TEXT_MAX_ROW_STRLEN+1)]; // Leave room for two rows
 static BEMenuItem g_beSelectDirectoryNoGameFoundMenu_GameVers_MenuItems[BE_GAMEVER_LAST];
+
+static char g_beSupportedGameVersionsMenu_GameVers_Labels[BE_GAMEVER_LAST][BE_MENU_STATIC_TEXT_MAX_ROW_STRLEN+1];
+static BEMenuItem g_beSupportedGameVersionsMenu_GameVers_MenuItems[BE_GAMEVER_LAST];
 
 void BE_Launcher_Start(void)
 {
 	BE_ST_Launcher_Prepare();
 
 	g_be_launcher_screenPtr = BE_ST_Launcher_GetGfxPtr();
+
+	// Partial preparation for g_beSupportedGameVersionsMenu
+	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
+	{
+		BEMenuItem *menuItem = &g_beSupportedGameVersionsMenu_GameVers_MenuItems[i];
+		g_beSupportedGameVersionsMenu.menuItems[i] = menuItem;
+		menuItem->type = BE_MENUITEM_TYPE_HANDLER;
+		menuItem->label = g_beSupportedGameVersionsMenu_GameVers_Labels[i];
+		menuItem->handler = &BE_Launcher_Handler_SupportedGameVersionSelection;
+		BE_Cross_safeandfastcstringcopy(
+			g_beSupportedGameVersionsMenu_GameVers_Labels[i],
+			g_beSupportedGameVersionsMenu_GameVers_Labels[i] + sizeof(g_beSupportedGameVersionsMenu_GameVers_Labels[i]),
+			refkeen_gamever_descriptions[i]
+		);
+	}
 
 	// Partial preparation for g_beSelectDirectoryMenu
 	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
@@ -868,6 +886,8 @@ void BE_Launcher_Start(void)
 	BE_Launcher_PrepareMenu(&g_beMainMenu);
 	BE_Launcher_PrepareMenu(&g_beSelectGameMenu);
 	BE_Launcher_PrepareMenu(&g_beDisappearedGameHelpMenu);
+	BE_Launcher_PrepareMenu(&g_beSupportedGameVersionsMenu);
+	//BE_Launcher_PrepareMenu(&g_beGameVersionDetailsMenu); // Dynamically adjusted
 	BE_Launcher_PrepareMenu(&g_beSelectInitialPathMenu);
 	//BE_Launcher_PrepareMenu(&g_beSelectDirectoryMenu); // Dynamically adjusted
 	BE_Launcher_PrepareMenu(&g_beSelectDirectoryErrorMenu);
@@ -1015,6 +1035,69 @@ void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 }
 
 
+static BEMenuItem *g_beGameVersionDetailsMenuItems;
+static BEMenuItem **g_beGameVersionDetailsMenuItemsPtrs;
+static char *g_beGameVersionDetailsMenuItemsStrsBuffer;
+
+void BE_Launcher_Handler_SupportedGameVersionSelection(BEMenuItem **menuItemP)
+{
+	int gameVer = menuItemP - g_be_launcher_currMenu->menuItems;
+	const BE_GameFileDetails_T *gameFileDetailsArray = g_be_gamefiledetails_ptrs[gameVer];
+
+	const BE_GameFileDetails_T *gameFileDetails;
+	int numOfFiles;
+	for (numOfFiles = 0, gameFileDetails = gameFileDetailsArray; gameFileDetails->filename; ++numOfFiles, ++gameFileDetails)
+		;
+
+	g_beGameVersionDetailsMenuItems = (BEMenuItem *)malloc((2+numOfFiles)*sizeof(BEMenuItem));
+	g_beGameVersionDetailsMenuItemsPtrs = (BEMenuItem **)malloc((3+numOfFiles)*sizeof(BEMenuItem *));
+	g_beGameVersionDetailsMenuItemsStrsBuffer = (char *)malloc((2+numOfFiles)*BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND);
+	if (!g_beGameVersionDetailsMenuItems || !g_beGameVersionDetailsMenuItemsPtrs || !g_beGameVersionDetailsMenuItemsStrsBuffer)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BE_Launcher_Handler_SupportedGameVersionSelection: Out of memory!\n");
+		BE_ST_Launcher_Shutdown();
+		BE_ST_QuickExit();
+	}
+
+	g_beGameVersionDetailsMenu.title = refkeen_gamever_descriptions[gameVer];
+	g_beGameVersionDetailsMenu.menuItems = g_beGameVersionDetailsMenuItemsPtrs;
+	char *label = g_beGameVersionDetailsMenuItemsStrsBuffer;
+	gameFileDetails = gameFileDetailsArray;
+	for (int i = 0; i < 2+numOfFiles; ++i, label += BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND)
+	{
+		g_beGameVersionDetailsMenuItemsPtrs[i] = &g_beGameVersionDetailsMenuItems[i];
+		g_beGameVersionDetailsMenuItems[i].choices = NULL;
+		g_beGameVersionDetailsMenuItems[i].targetMenu = NULL;
+		g_beGameVersionDetailsMenuItems[i].handler = NULL;
+		g_beGameVersionDetailsMenuItems[i].label = label;
+		g_beGameVersionDetailsMenuItems[i].type = BE_MENUITEM_TYPE_STATIC;
+		switch (i)
+		{
+		case 0:
+			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "        List of required files         "); // HACK - Proper spacing for text centering
+			break;
+		case 1:
+			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "Filename     CRC32 (hex)  Size (bytes)");
+			break;
+		default:
+			snprintf(label, BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "%-12s 0x%08X   %d", gameFileDetails->filename, gameFileDetails->crc32, gameFileDetails->filesize);
+			++gameFileDetails;
+		}
+	}
+	g_beGameVersionDetailsMenuItemsPtrs[2+numOfFiles] = NULL;
+
+	BE_Launcher_PrepareMenu(&g_beGameVersionDetailsMenu);
+	BEL_Launcher_SetCurrentMenu(&g_beGameVersionDetailsMenu);
+}
+
+void BE_Launcher_Handler_ReturnToSupportedGameVersionsMenu(BEMenuItem **menuItemP)
+{
+	free(g_beGameVersionDetailsMenuItems);
+	free(g_beGameVersionDetailsMenuItemsPtrs);
+	free(g_beGameVersionDetailsMenuItemsStrsBuffer);
+	BEL_Launcher_SetCurrentMenu(&g_beSupportedGameVersionsMenu);
+}
+
 
 static BEMenuItem *g_beSelectDirectoryMenuItems;
 static BEMenuItem **g_beSelectDirectoryMenuItemsPtrs;
@@ -1126,7 +1209,7 @@ void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
 	{
 		// Do NOT clear resources, we stay in current directory; But do prepare this menu
 		for (int i = 0; i < BE_GAMEVER_LAST; ++i)
-			BE_Cross_safeandfastcstringcopy_3strs(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i], g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i] + sizeof(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i]), refkeen_gamever_strs[i], ": ", errorMsgsArray[i]);
+			BE_Cross_safeandfastcstringcopy_3strs(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i], g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i] + sizeof(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i]), refkeen_gamever_descriptions[i], ":\n", errorMsgsArray[i]);
 		BE_Launcher_PrepareMenu(&g_beSelectDirectoryNoGameFoundMenu);
 		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryNoGameFoundMenu);
 	}

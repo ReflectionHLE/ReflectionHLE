@@ -175,9 +175,10 @@ BEMenu g_beMainMenu = {
 
 /*static*/ BEMenuItem g_beSelectGameMenuItems[BE_GAMEVER_LAST];
 /*static*/ char g_beSelectGameMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
-/*static*/ BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAMEVER_LAST+3];
+/*static*/ BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAMEVER_LAST+4];
 
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_DisappearedGameHelp, "Help! An installed game disappeared from the list!", &g_beDisappearedGameHelpMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_ShowSupportedGameVersions, "Show supported game versions", &g_beSupportedGameVersionsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_AddMissingGameVersion, "Add missing game version", &g_beSelectInitialPathMenu)
 
 BEMenu g_beSelectGameMenu = {
@@ -201,6 +202,30 @@ BEMenu g_beDisappearedGameHelpMenu = {
 		&g_beDisappearedGameHelpMenuItem_Explanation,
 		NULL
 	},
+	// Ignore the rest
+};
+
+/*** Supported game versions menu ***/
+
+// Statically allocated, but filled later
+static BEMenuItem *g_beSupportedGameVersionsMenu_MenuItemsPtrs[BE_GAMEVER_LAST+1] = {
+	// All pointers are initialized to NULL, and the last entry shall always be NULL
+};
+
+BEMenu g_beSupportedGameVersionsMenu = {
+	"Select game version for details",
+	&g_beSelectGameMenu,
+	g_beSupportedGameVersionsMenu_MenuItemsPtrs, // Filled later
+	// Ignore the rest
+};
+
+/*** Game version details menu (details vary by specific game version) ***/
+
+BEMenu g_beGameVersionDetailsMenu = {
+	NULL, // Dynamically chosen
+	&g_beSupportedGameVersionsMenu,
+	NULL, // Dynamically allocated, filled later
+	&BE_Launcher_Handler_ReturnToSupportedGameVersionsMenu, // SPECIAL (back button handler)
 	// Ignore the rest
 };
 
@@ -874,7 +899,8 @@ void BE_ST_Launcher_Shutdown(void)
 
 void BE_ST_Launcher_RefreshSelectGameMenuContents(void)
 {
-	for (int i = 0; i < g_be_gameinstallations_num; ++i)
+	int i;
+	for (i = 0; i < g_be_gameinstallations_num; ++i)
 	{
 		g_beSelectGameMenuItemsPtrs[i] = &g_beSelectGameMenuItems[i];
 		g_beSelectGameMenuItems[i].handler = &BE_Launcher_Handler_GameLaunch;
@@ -882,9 +908,11 @@ void BE_ST_Launcher_RefreshSelectGameMenuContents(void)
 		g_beSelectGameMenuItems[i].label = g_beSelectGameMenuItemsStrs[i];
 		g_beSelectGameMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
 	}
-	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num] = &g_beSelectGameMenuItem_DisappearedGameHelp;
-	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num+1] = &g_beSelectGameMenuItem_AddMissingGameVersion;
-	g_beSelectGameMenuItemsPtrs[g_be_gameinstallations_num+2] = NULL;
+	g_beSelectGameMenuItemsPtrs[i++] = &g_beSelectGameMenuItem_DisappearedGameHelp;
+	g_beSelectGameMenuItemsPtrs[i++] = &g_beSelectGameMenuItem_ShowSupportedGameVersions;
+	if (g_be_gameinstallations_num < BE_GAMEVER_LAST)
+		g_beSelectGameMenuItemsPtrs[i++] = &g_beSelectGameMenuItem_AddMissingGameVersion;
+	g_beSelectGameMenuItemsPtrs[i] = NULL;
 }
 
 

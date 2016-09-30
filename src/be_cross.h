@@ -139,6 +139,16 @@ void BE_Cross_PrepareAppPaths(void);
 
 #define BE_CROSS_MAX_ROOT_PATHS 32
 
+// Describes a required file from a specific game version
+typedef struct {
+	const char *filename;
+	int filesize;
+	uint32_t crc32;
+} BE_GameFileDetails_T;
+
+// Maps each game version to an array of game file details, ending with a NULL entry (filename == NULL)
+extern const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[];
+
 const char *BE_Cross_GetGameInstallationDescription(int num);
 int BE_Cross_GetGameVerFromInstallation(int num);
 extern int g_be_gameinstallations_num;
@@ -154,7 +164,7 @@ void BE_Cross_DirSelection_Finish(void); // Finish dir selection
 const char **BE_Cross_DirSelection_GetNext(int dirIndex, int *outNumOfSubDirs); // Enter dir by index into last array
 const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs); // Go up in the filesystem hierarchy
 
-typedef char BE_TryAddGameInstallation_ErrorMsg_T[32];
+typedef char BE_TryAddGameInstallation_ErrorMsg_T[40];
 
 // Attempt to add a game installation from currently selected dir;
 // Returns BE_GAMEVER_LAST if no new supported game version is found; Otherwise game version id is returned.

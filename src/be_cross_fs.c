@@ -185,13 +185,6 @@ static const TCHAR *BEL_Cross_tstr_find_nonascii_ptr(const TCHAR *s)
 
 
 
-// Describes a required file from a specific game version
-typedef struct {
-	const char *filename;
-	int filesize;
-	uint32_t crc32;
-} BE_GameFileDetails_T;
-
 // Describes a file originally embedded somewhere (in an EXE file)
 typedef struct {
 	BE_GameFileDetails_T fileDetails;
@@ -242,6 +235,29 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #endif
 #ifdef REFKEEN_VER_CATAPOC
 	BE_STR_GAMEVER_CATAPOC101,
+#endif
+};
+
+const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
+#ifdef REFKEEN_VER_KDREAMS
+	"Keen Dreams EGA v1.13",
+	"Keen Dreams CGA v1.05",
+	"Keen Dreams EGA v1.93",
+	"Keen Dreams EGA v1.20",
+#endif
+#ifdef REFKEEN_VER_CAT3D
+	"Catacomb 3-D v1.00",
+	"Catacomb 3-D v1.22",
+#endif
+#ifdef REFKEEN_VER_CATABYSS
+	"Catacomb Abyss v1.13",
+	"Catacomb Abyss v1.24",
+#endif
+#ifdef REFKEEN_VER_CATARM
+	"Catacomb Armageddon v1.02",
+#endif
+#ifdef REFKEEN_VER_CATAPOC
+	"Catacomb Apocalypse v1.01",
 #endif
 };
 
@@ -985,6 +1001,30 @@ static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #endif
 };
 
+const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
+#ifdef REFKEEN_VER_KDREAMS
+	g_be_reqgameverfiles_kdreamse113,
+	g_be_reqgameverfiles_kdreamsc105,
+	g_be_reqgameverfiles_kdreamse193,
+	g_be_reqgameverfiles_kdreamse120,
+#endif
+#ifdef REFKEEN_VER_CAT3D
+	g_be_reqgameverfiles_cat3d100,
+	g_be_reqgameverfiles_cat3d122,
+#endif
+#ifdef REFKEEN_VER_CATABYSS
+	g_be_reqgameverfiles_catabyss113,
+	g_be_reqgameverfiles_catabyss124,
+#endif
+#ifdef REFKEEN_VER_CATARM
+	g_be_reqgameverfiles_catarm102,
+#endif
+#ifdef REFKEEN_VER_CATAPOC
+	g_be_reqgameverfiles_catapoc101,
+#endif
+};
+
+
 // C99
 BE_FILE_T BE_Cross_IsFileValid(BE_FILE_T fp);
 int BE_Cross_seek(BE_FILE_T fp, long int offset, int origin);
@@ -1152,7 +1192,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 		default:
 			// (Matching, and in manual mode, also wrong) file not found, we cannot add a new game installation
 			if (outErrMsg)
-				BE_Cross_safeandfastcstringcopy_2strs(*outErrMsg, (*outErrMsg) + sizeof(*outErrMsg), "Wrong/No file ", fileDetailsBuffer->filename);
+				BE_Cross_safeandfastcstringcopy_2strs(*outErrMsg, (*outErrMsg) + sizeof(*outErrMsg), "Wrong or missing file ", fileDetailsBuffer->filename);
 			return;
 		}
 	}
