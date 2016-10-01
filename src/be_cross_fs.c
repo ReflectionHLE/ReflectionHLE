@@ -19,8 +19,9 @@
 #error "FATAL ERROR: No Reflection port game macro is defined!"
 #endif
 
-// HACK - Adding a dependency on SDL2 for Android! (Used for external storage path)
 #ifdef REFKEEN_PLATFORM_ANDROID
+#include <jni.h>
+// HACK - Adding a dependency on SDL2 for Android! (Used for external storage path, and for calling Java function)
 #include "SDL_system.h"
 #endif
 
@@ -382,6 +383,37 @@ void BE_Cross_PrepareAppPaths(void)
 
 #ifdef REFKEEN_PLATFORM_ANDROID
 	// HACK - Adding a dependency on SDL2 for Android!
+
+	// FIXME - These environment variables don't seem to be shown in any
+	// official documentation for Android, but at least EXTERNAL_STORAGE
+	// appears to do the job, and they're simple to use from C/C++.
+
+	// We still need to check/ask for permission to access the storage, on Android 6.0 and later
+
+	// Prepare to call Javaj function
+	JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
+	jobject activity = (jobject)SDL_AndroidGetActivity();
+	jclass clazz = (*env)->GetObjectClass(env, activity);
+	jmethodID method_id = (*env)->GetMethodID(env, clazz, "requestReadExternalStoragePermission", "()I");
+	// Do call it
+	bool haveReadPermission = (bool)((*env)->CallIntMethod(env, activity, method_id));
+	// Clean up references
+	(*env)->DeleteLocalRef(env, activity);
+	(*env)->DeleteLocalRef(env, clazz);
+
+	if (haveReadPermission)
+	{
+		const char *primaryStorage = getenv("EXTERNAL_STORAGE");
+		if (primaryStorage && *primaryStorage)
+			BEL_Cross_AddRootPathIfDir(primaryStorage, "externalstorage", "Primary storage");
+		else
+			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "EXTERNAL_STORAGE environment variable is not properly defined.\n");
+		// Let's ignore SECONDARY_STORAGE for now, since we may get a colon-delimited list of paths
+		const char *externalSDCardStorage = getenv("EXTERNAL_SDCARD_STORAGE");
+		if (externalSDCardStorage && *externalSDCardStorage)
+			BEL_Cross_AddRootPathIfDir(externalSDCardStorage, "externalsdcardstorage", "External SD Card storage");
+	}
+
 	const char *externalStoragePath = SDL_AndroidGetExternalStoragePath();
 	if (externalStoragePath && *externalStoragePath)
 	{
@@ -391,19 +423,6 @@ void BE_Cross_PrepareAppPaths(void)
 		BEL_Cross_AddRootPathIfDir(g_be_appDataPath, "appdata", "App data path");
 		// HACK - We don't look at arguments set by the user, but then these are never sent on Android...
 	}
-
-	// FIXME - These environment variables don't seem to be shown in any
-	// official documentation for Android, but at least EXTERNAL_STORAGE
-	// appears to do the job, and they're simple to use from C/C++.
-	const char *primaryStorage = getenv("EXTERNAL_STORAGE");
-	if (primaryStorage && *primaryStorage)
-		BEL_Cross_AddRootPathIfDir(primaryStorage, "externalstorage", "Primary storage");
-	else
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "EXTERNAL_STORAGE environment variable is not properly defined.\n");
-	// Let's ignore SECONDARY_STORAGE for now, since we may get a colon-delimited list of paths
-	const char *externalSDCardStorage = getenv("EXTERNAL_SDCARD_STORAGE");
-	if (externalSDCardStorage && *externalSDCardStorage)
-		BEL_Cross_AddRootPathIfDir(externalSDCardStorage, "externalsdcardstorage", "External SD Card storage");
 #elif (defined REFKEEN_PLATFORM_UNIX)
 	const char *homeVar = getenv("HOME");
 	const char *envVar;
