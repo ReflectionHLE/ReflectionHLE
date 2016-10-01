@@ -397,6 +397,11 @@ void Quit (const id0_char_t *error)
 	// Since CATALOG is present only in 1.05, we simply ignore this macro.
 	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE113)
 	{
+		// REFKEEN - Alternative controllers support
+		extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+		BE_ST_AltControlScheme_Push();
+		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 		id0_argc = 2;
 		id0_argv[1] = "LAST.SHL";
 		id0_argv[2] = "ENDSCN.SCN";

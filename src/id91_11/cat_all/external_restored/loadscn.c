@@ -83,7 +83,7 @@ void id0_loadscn_exe_main (void)
 		TrashProg("ERROR : Can't load image.");
 	ext_MoveGfxDst(0, 200);
 	UnpackEGAShapeToScreen(&armashape, 0, 0);
-	// (REFKEEN) Add an artificial (screen not shown immediately on older machines)
+	// (REFKEEN) Add an artificial delay (screen not shown immediately on older machines)
 	BE_ST_Delay(250);
 	ScreenToScreen(8000, 0, 40, 200);
 	for (step = 0; step < 10; ++step)
