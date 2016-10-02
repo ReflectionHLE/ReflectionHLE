@@ -27,6 +27,7 @@
 typedef enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } VSyncSettingType;
 typedef enum { SCALE_ASPECT, SCALE_FILL } ScaleTypeSettingType;
 typedef enum { TOUCHINPUT_AUTO, TOUCHINPUT_OFF, TOUCHINPUT_FORCED } TouchInputSettingType;
+typedef enum { MOUSEGRAB_AUTO, MOUSEGRAB_OFF, MOUSEGRAB_COMMONLY } MouseGrabSettingType;
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
 #define LAUNCHER_EXE_ARGS_BUFFERLEN 80
@@ -52,7 +53,7 @@ typedef struct
 	ScaleTypeSettingType scaleType;
 	int scaleFactor;
 	bool forceFullSoftScaling;
-	bool autolockCursor;
+	MouseGrabSettingType mouseGrab;
 	int sndSampleRate;
 	bool sndSubSystem;
 	bool oplEmulation;

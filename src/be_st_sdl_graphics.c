@@ -519,12 +519,21 @@ const uint32_t g_sdlEGABGRAScreenColors[] = {
 
 
 void BEL_ST_SetRelativeMouseMotion(bool enable);
+extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 
 /*static*/ void BEL_ST_ConditionallyShowAltInputPointer(void)
 {
 	if (g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED)
 		return;
-	BEL_ST_SetRelativeMouseMotion(!(g_sdlShowControllerUI || g_sdlShowTouchUI) || !(g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown || (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)));
+
+	if ((g_sdlShowControllerUI || g_sdlShowTouchUI) && (g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown || (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)))
+		BEL_ST_SetRelativeMouseMotion(false);
+	else
+		BEL_ST_SetRelativeMouseMotion(
+			(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN) ||
+			(g_refKeenCfg.mouseGrab == MOUSEGRAB_COMMONLY) ||
+			((g_refKeenCfg.mouseGrab == MOUSEGRAB_AUTO) && g_sdlControllerMappingActualCurr->grabMouse)
+		);
 }
 
 
@@ -1397,7 +1406,6 @@ void BEL_ST_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fin
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 extern const int g_sdlJoystickAxisMax;
 extern bool g_sdlDefaultMappingBinaryState;
 
@@ -1857,8 +1865,6 @@ void BEL_ST_ReleasePressedButtonsInTouchControls(void)
 	g_sdlTouchControlsAreShown = false;
 
 	g_sdlForceGfxControlUiRefresh = true;
-
-	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
 

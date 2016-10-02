@@ -521,7 +521,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][1] = mouseright;
 	}
 
-	// Init touch controls UI (excludes UI picked in FillControlPanelTouchMappings)
+	// Init touch controls UI (excludes UI picked in FinalizeControlPanelMappingsByMousePresence)
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_simpledialog.onScreenTouchControls);
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_menu_help.onScreenTouchControls);
@@ -530,8 +530,10 @@ void RefKeen_PrepareAltControllerScheme(void)
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 }
 
-void FillControlPanelTouchMappings(bool withmouse)
+void FinalizeControlPanelMappingsByMousePresence(bool withmouse)
 {
+	g_ingame_altcontrol_mapping_menu_help.grabMouse = withmouse;
+
 	if (withmouse)
 	{
 		g_ingame_altcontrol_mapping_menu.onScreenTouchControls = g_ingame_altcontrol_mapping_menu_onscreentouchcontrols_mouseemu;
@@ -545,6 +547,12 @@ void FillControlPanelTouchMappings(bool withmouse)
 	g_ingame_altcontrol_mapping_menu.absoluteFingerPositioning = withmouse;
 	// Init touch control UIs for this
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_menu.onScreenTouchControls);
+}
+
+void UpdateGameplayMappingsByMousePresence(bool withmouse)
+{
+	g_ingame_altcontrol_mapping_gameplay.grabMouse = withmouse;
+	g_ingame_altcontrol_mapping_funckeys.grabMouse = withmouse;
 }
 
 void PrepareGamePlayControllerMapping(void)

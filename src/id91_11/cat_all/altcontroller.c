@@ -880,6 +880,20 @@ void RefKeen_PrepareAltControllerScheme(void)
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 }
 
+void UpdateAltControllerMappingsByMousePresence(bool withmouse)
+{
+	g_ingame_altcontrol_mapping_gameplay.grabMouse = withmouse;
+#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+	g_ingame_altcontrol_mapping_scrolls.grabMouse = withmouse;
+#endif
+#ifdef REFKEEN_VER_CATADVENTURES
+	g_ingame_altcontrol_mapping_funckeys.grabMouse = withmouse;
+#endif
+#ifdef REFKEEN_VER_CAT3D
+	g_ingame_altcontrol_mapping_menu_paddle.grabMouse = withmouse;
+#endif
+}
+
 void PrepareGamePlayControllerMapping(void)
 {
 	BE_ST_ControllerSingleMap **singlemappingptr;

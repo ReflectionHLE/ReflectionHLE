@@ -440,6 +440,7 @@ BEMenu g_beSoundSettingsMenu = {
 
 static const char *g_be_inputSettingsChoices_controllerScheme[] = {"Classic", "Modern", NULL};
 static const char *g_be_inputSettingsChoices_touchControls[] = {"Auto", "Off", "Forced", NULL};
+static const char *g_be_inputSettingsChoices_mouseGrab[] = {"Auto", "Off", "Commonly", NULL};
 
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP);
 
@@ -447,7 +448,10 @@ BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_ControllerSettings, "Modern 
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_inputSettingsChoices_touchControls);
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
-BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_Autolock, "Autolock mouse cursor", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_MouseGrab, "Mouse grab*\n(windowed mode specific)", g_be_inputSettingsChoices_mouseGrab)
+BEMENUITEM_DEF_STATIC(g_beInputSettingsMenuItem_MouseGrabComment,
+"* It's possible for mouse to be ungrabbed even if \"Commonly\" is chosen."
+);
 
 BEMenu g_beInputSettingsMenu = {
 	"Input settings",
@@ -458,7 +462,8 @@ BEMenu g_beInputSettingsMenu = {
 		&g_beInputSettingsMenuItem_ControllerScheme,
 		&g_beInputSettingsMenuItem_TouchControls,
 		&g_beInputSettingsMenuItem_TouchInputDebugging,
-		&g_beInputSettingsMenuItem_Autolock,
+		&g_beInputSettingsMenuItem_MouseGrab,
+		&g_beInputSettingsMenuItem_MouseGrabComment,
 		NULL
 	},
 	// Ignore the rest
@@ -706,8 +711,8 @@ void BE_ST_Launcher_Prepare(void)
 	g_beInputSettingsMenuItem_TouchControls.choice = g_refKeenCfg.touchInputToggle;
 	// Set TouchInputDebugging value
 	g_beInputSettingsMenuItem_TouchInputDebugging.choice = g_refKeenCfg.touchInputDebugging;
-	// Set Autolock value
-	g_beInputSettingsMenuItem_Autolock.choice = g_refKeenCfg.autolockCursor;
+	// Set MouseGrab value
+	g_beInputSettingsMenuItem_MouseGrab.choice = g_refKeenCfg.mouseGrab;
 	// Set Dpad value
 	g_beControllerSettingsMenuItem_Dpad.choice = g_refKeenCfg.altControlScheme.useDpad;
 	// Set LeftStick value
@@ -858,7 +863,7 @@ void BE_ST_Launcher_Shutdown(void)
 #endif
 
 	g_refKeenCfg.altControlScheme.isEnabled = g_beInputSettingsMenuItem_ControllerScheme.choice;
-	g_refKeenCfg.autolockCursor = g_beInputSettingsMenuItem_Autolock.choice;
+	g_refKeenCfg.mouseGrab = (MouseGrabSettingType)g_beInputSettingsMenuItem_MouseGrab.choice;
 	g_refKeenCfg.touchInputToggle = (TouchInputSettingType)g_beInputSettingsMenuItem_TouchControls.choice;
 	g_refKeenCfg.touchInputDebugging = g_beInputSettingsMenuItem_TouchInputDebugging.choice;
 

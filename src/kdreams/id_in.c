@@ -561,8 +561,8 @@ IN_Startup(void)
 	INL_StartKbd();
 	MousePresent = checkmouse? INL_StartMouse() : false;
 	// REFKEEN - Alternative controllers support
-	void FillControlPanelTouchMappings(bool withmouse);
-	FillControlPanelTouchMappings(MousePresent);
+	void FinalizeControlPanelMappingsByMousePresence(bool withmouse);
+	FinalizeControlPanelMappingsByMousePresence(MousePresent);
 	//
 
 	for (i = 0;i < MaxJoys;i++)
@@ -831,6 +831,9 @@ IN_SetControlType(id0_int_t player,ControlType type)
 {
 	// DEBUG - check that type is present?
 	Controls[player] = type;
+	// REFKEEN - Alternative controllers support
+	void UpdateGameplayMappingsByMousePresence(bool withmouse);
+	UpdateGameplayMappingsByMousePresence(MousePresent && (type == ctrl_Mouse));
 }
 
 ///////////////////////////////////////////////////////////////////////////

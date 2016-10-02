@@ -214,8 +214,6 @@ void BE_ST_PrepareForGameStartup(void)
 	for (int i = 0; i < nOfJoysticks; ++i)
 		BEL_ST_ConditionallyAddJoystick(i);
 
-	BEL_ST_SetRelativeMouseMotion(g_refKeenCfg.touchInputToggle != TOUCHINPUT_FORCED); // HACK
-
 	// Reset these first
 	memset(g_sdlEmuKeyboardStateByScanCode, 0, sizeof(g_sdlEmuKeyboardStateByScanCode));
 
@@ -473,15 +471,19 @@ static void BEL_ST_ParseSetting_ForceFullSoftScaling(const char *keyprefix, cons
 	}
 }
 
-static void BEL_ST_ParseSetting_AutolockCursor(const char *keyprefix, const char *buffer)
+static void BEL_ST_ParseSetting_MouseGrab(const char *keyprefix, const char *buffer)
 {
-	if (!strcmp(buffer, "true"))
+	if (!strcmp(buffer, "commonly"))
 	{
-		g_refKeenCfg.autolockCursor = true;
+		g_refKeenCfg.mouseGrab = MOUSEGRAB_COMMONLY;
 	}
-	else if (!strcmp(buffer, "false"))
+	else if (!strcmp(buffer, "off"))
 	{
-		g_refKeenCfg.autolockCursor = false;
+		g_refKeenCfg.mouseGrab = MOUSEGRAB_OFF;
+	}
+	else if (!strcmp(buffer, "auto"))
+	{
+		g_refKeenCfg.mouseGrab = MOUSEGRAB_AUTO;
 	}
 }
 
@@ -698,7 +700,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"scaletype=", &BEL_ST_ParseSetting_ScaleType},
 	{"scalefactor=", &BEL_ST_ParseSetting_ScaleFactor},
 	{"forcefullsoftscaling=", &BEL_ST_ParseSetting_ForceFullSoftScaling},
-	{"autolock=", &BEL_ST_ParseSetting_AutolockCursor},
+	{"mousegrab=", &BEL_ST_ParseSetting_MouseGrab},
 	{"sndsamplerate=", &BEL_ST_ParseSetting_SndSampleRate},
 	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
 	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
@@ -769,7 +771,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.scaleType = SCALE_ASPECT;
 	g_refKeenCfg.scaleFactor = 2;
 	g_refKeenCfg.forceFullSoftScaling = false;
-	g_refKeenCfg.autolockCursor = false;
+	g_refKeenCfg.mouseGrab = MOUSEGRAB_AUTO;
 	g_refKeenCfg.sndSampleRate = 48000; // 49716 may lead to unexpected behaviors on Android
 	g_refKeenCfg.sndSubSystem = true;
 	g_refKeenCfg.oplEmulation = true;
@@ -880,7 +882,7 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "scaletype=%s\n", (g_refKeenCfg.scaleType == SCALE_ASPECT) ? "aspect" : "fill");
 	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
 	fprintf(fp, "forcefullsoftscaling=%s\n", g_refKeenCfg.forceFullSoftScaling ? "true" : "false");
-	fprintf(fp, "autolock=%s\n", g_refKeenCfg.autolockCursor ? "true" : "false");
+	fprintf(fp, "mousegrab=%s\n", (g_refKeenCfg.mouseGrab == MOUSEGRAB_AUTO) ? "auto" : ((g_refKeenCfg.mouseGrab == MOUSEGRAB_COMMONLY) ? "commonly" : "off"));
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
 	fprintf(fp, "sndsubsystem=%s\n", g_refKeenCfg.sndSubSystem ? "true" : "false");
 	fprintf(fp, "oplemulation=%s\n", g_refKeenCfg.oplEmulation ? "true" : "false");
@@ -922,15 +924,7 @@ void BEL_ST_SetRelativeMouseMotion(bool enable)
 	if (g_sdlRelativeMouseMotion == enable)
 		return;
 	g_sdlRelativeMouseMotion = enable;
-
-	if (g_refKeenCfg.autolockCursor || (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
-	{
-		SDL_SetRelativeMouseMode(enable ? SDL_TRUE : SDL_FALSE);
-	}
-	else
-	{
-		SDL_ShowCursor(!enable);
-	}
+	SDL_SetRelativeMouseMode(enable ? SDL_TRUE : SDL_FALSE);
 	// Reset these
 	g_sdlMouseButtonsStates[0] = g_sdlMouseButtonsStates[1] = g_sdlMouseButtonsStates[2] = 0;
 	// Also that (HACK)
@@ -1558,13 +1552,15 @@ static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void)
 		extern void BEL_ST_PrepareToShowTouchControls(const BE_ST_ControllerMapping *mapping);
 		BEL_ST_PrepareToShowTouchControls(g_sdlControllerMappingActualCurr);
 	}
+
+	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
 
 void BE_ST_AltControlScheme_Push(void)
 {
-	if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
-		return;
+	//if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
+	//	return;
 
 	BEL_ST_AltControlScheme_CleanUp();
 
@@ -1577,8 +1573,8 @@ void BE_ST_AltControlScheme_Push(void)
 
 void BE_ST_AltControlScheme_Pop(void)
 {
-	if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
-		return;
+	//if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
+	//	return;
 
 	BEL_ST_AltControlScheme_CleanUp();
 
@@ -1597,8 +1593,8 @@ void BE_ST_AltControlScheme_Pop(void)
 
 void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMapping *mapping)
 {
-	if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
-		return;
+	//if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
+	//	return;
 
 	BEL_ST_AltControlScheme_CleanUp();
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr = mapping;
