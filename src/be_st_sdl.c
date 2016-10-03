@@ -37,9 +37,7 @@ static bool g_sdlControllersButtonsStates[SDL_CONTROLLER_BUTTON_MAX];
 static bool g_sdlControllersAxesStates[SDL_CONTROLLER_AXIS_MAX][2];
 
 /*** These are similar states for a few mouse buttons, required as relative mouse mode is toggled on or off in the middle ***/
-static bool g_sdlMouseButtonsStates[3];
-
-static bool g_sdlRelativeMouseMotion = false;
+bool g_sdlMouseButtonsStates[3];
 
 /*** Another internal state, used for default mapping action ***/
 bool g_sdlDefaultMappingBinaryState;
@@ -127,7 +125,6 @@ void BE_ST_ShutdownGfx(void);
 static void BEL_ST_ConditionallyAddJoystick(int device_index);
 static void BEL_ST_ParseConfig(void);
 static void BEL_ST_SaveConfig(void);
-void BEL_ST_SetRelativeMouseMotion(bool enable);
 
 #ifdef REFKEEN_VER_KDREAMS
 #include "../rsrc/reflection-kdreams-icon-32x32.h"
@@ -237,7 +234,7 @@ void BE_ST_PrepareForGameStartup(void)
 
 void BE_ST_ShutdownAll(void)
 {
-	BEL_ST_SetRelativeMouseMotion(false);
+	BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITH_CURSOR);
 	BE_ST_ShutdownAudio();
 	BE_ST_ShutdownGfx();
 	SDL_FreeSurface(g_be_sdl_windowIconSurface);
@@ -487,6 +484,20 @@ static void BEL_ST_ParseSetting_MouseGrab(const char *keyprefix, const char *buf
 	}
 }
 
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+static void BEL_ST_ParseSetting_AbsMouseMotion(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_refKeenCfg.absMouseMotion = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_refKeenCfg.absMouseMotion = false;
+	}
+}
+#endif
+
 static void BEL_ST_ParseSetting_SndSampleRate(const char *keyprefix, const char *buffer)
 {
 	g_refKeenCfg.sndSampleRate = atoi(buffer);
@@ -701,6 +712,9 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"scalefactor=", &BEL_ST_ParseSetting_ScaleFactor},
 	{"forcefullsoftscaling=", &BEL_ST_ParseSetting_ForceFullSoftScaling},
 	{"mousegrab=", &BEL_ST_ParseSetting_MouseGrab},
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	{"absmousemotion=", &BEL_ST_ParseSetting_AbsMouseMotion},
+#endif
 	{"sndsamplerate=", &BEL_ST_ParseSetting_SndSampleRate},
 	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
 	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
@@ -772,6 +786,9 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.scaleFactor = 2;
 	g_refKeenCfg.forceFullSoftScaling = false;
 	g_refKeenCfg.mouseGrab = MOUSEGRAB_AUTO;
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	g_refKeenCfg.absMouseMotion = false;
+#endif
 	g_refKeenCfg.sndSampleRate = 48000; // 49716 may lead to unexpected behaviors on Android
 	g_refKeenCfg.sndSubSystem = true;
 	g_refKeenCfg.oplEmulation = true;
@@ -883,6 +900,9 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
 	fprintf(fp, "forcefullsoftscaling=%s\n", g_refKeenCfg.forceFullSoftScaling ? "true" : "false");
 	fprintf(fp, "mousegrab=%s\n", (g_refKeenCfg.mouseGrab == MOUSEGRAB_AUTO) ? "auto" : ((g_refKeenCfg.mouseGrab == MOUSEGRAB_COMMONLY) ? "commonly" : "off"));
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	fprintf(fp, "absmousemotion=%s\n", g_refKeenCfg.absMouseMotion ? "true" : "false");
+#endif
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
 	fprintf(fp, "sndsubsystem=%s\n", g_refKeenCfg.sndSubSystem ? "true" : "false");
 	fprintf(fp, "oplemulation=%s\n", g_refKeenCfg.oplEmulation ? "true" : "false");
@@ -919,16 +939,20 @@ static void BEL_ST_SaveConfig(void)
 }
 
 
-void BEL_ST_SetRelativeMouseMotion(bool enable)
+static BESDLMouseModeEnum g_sdlMouseMode = BE_ST_MOUSEMODE_ABS_WITH_CURSOR;
+
+void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode)
 {
-	if (g_sdlRelativeMouseMotion == enable)
+	if (g_sdlMouseMode == mode)
 		return;
-	g_sdlRelativeMouseMotion = enable;
-	SDL_SetRelativeMouseMode(enable ? SDL_TRUE : SDL_FALSE);
-	// Reset these
-	g_sdlMouseButtonsStates[0] = g_sdlMouseButtonsStates[1] = g_sdlMouseButtonsStates[2] = 0;
-	// Also that (HACK)
-	g_sdlEmuMouseButtonsState = 0;
+
+	g_sdlMouseMode = mode;
+	if (mode == BE_ST_MOUSEMODE_ABS_WITHOUT_CURSOR)
+		SDL_ShowCursor(SDL_FALSE);
+	else if (mode == BE_ST_MOUSEMODE_ABS_WITH_CURSOR)
+		SDL_ShowCursor(SDL_TRUE);
+
+	SDL_SetRelativeMouseMode((mode == BE_ST_MOUSEMODE_REL) ? SDL_TRUE : SDL_FALSE);
 }
 
 
@@ -1889,8 +1913,23 @@ void BE_ST_PollEvents(void)
 			if (BEL_ST_CheckCommonPointerMoveCases(0, 0, event.motion.x, event.motion.y))
 				break;
 
-			g_sdlEmuMouseMotionAccumulatedState[0] += event.motion.xrel;
-			g_sdlEmuMouseMotionAccumulatedState[1] += event.motion.yrel;
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+			if (g_refKeenCfg.absMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+			{
+				void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
+				BEL_ST_UpdateVirtualCursorPositionFromPointer(event.motion.x, event.motion.y);
+				// Update cursor shown in black bars
+				extern int g_sdlHostVirtualMouseCursorState[2];
+				g_sdlHostVirtualMouseCursorState[0] = event.motion.x;
+				g_sdlHostVirtualMouseCursorState[1] = event.motion.y;
+				g_sdlForceGfxControlUiRefresh = true;
+			}
+			else
+#endif
+			{
+				g_sdlEmuMouseMotionAccumulatedState[0] += event.motion.xrel;
+				g_sdlEmuMouseMotionAccumulatedState[1] += event.motion.yrel;
+			}
 			break;
 
 		case SDL_FINGERDOWN:

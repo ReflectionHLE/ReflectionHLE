@@ -449,9 +449,17 @@ BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game contr
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_inputSettingsChoices_touchControls);
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_MouseGrab, "Mouse grab*\n(windowed mode specific)", g_be_inputSettingsChoices_mouseGrab)
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion**", g_be_settingsChoices_boolean)
+#endif
 BEMENUITEM_DEF_STATIC(g_beInputSettingsMenuItem_MouseGrabComment,
 "* It's possible for mouse to be ungrabbed even if \"Commonly\" is chosen."
 );
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+BEMENUITEM_DEF_STATIC(g_beInputSettingsMenuItem_AbsMouseMotionComment,
+"** If toggled off, mouse cursor motion behaviors are similar to original DOS versions. Otherwise it may move at a different rate, but be more convenient to use in windowed mode."
+);
+#endif
 
 BEMenu g_beInputSettingsMenu = {
 	"Input settings",
@@ -463,7 +471,13 @@ BEMenu g_beInputSettingsMenu = {
 		&g_beInputSettingsMenuItem_TouchControls,
 		&g_beInputSettingsMenuItem_TouchInputDebugging,
 		&g_beInputSettingsMenuItem_MouseGrab,
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+		&g_beInputSettingsMenuItem_AbsMouseMotion,
+#endif
 		&g_beInputSettingsMenuItem_MouseGrabComment,
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+		&g_beInputSettingsMenuItem_AbsMouseMotionComment,
+#endif
 		NULL
 	},
 	// Ignore the rest
@@ -713,6 +727,10 @@ void BE_ST_Launcher_Prepare(void)
 	g_beInputSettingsMenuItem_TouchInputDebugging.choice = g_refKeenCfg.touchInputDebugging;
 	// Set MouseGrab value
 	g_beInputSettingsMenuItem_MouseGrab.choice = g_refKeenCfg.mouseGrab;
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	// Set AbsMouseMotion value
+	g_beInputSettingsMenuItem_AbsMouseMotion.choice = g_refKeenCfg.absMouseMotion;
+#endif
 	// Set Dpad value
 	g_beControllerSettingsMenuItem_Dpad.choice = g_refKeenCfg.altControlScheme.useDpad;
 	// Set LeftStick value
@@ -864,6 +882,9 @@ void BE_ST_Launcher_Shutdown(void)
 
 	g_refKeenCfg.altControlScheme.isEnabled = g_beInputSettingsMenuItem_ControllerScheme.choice;
 	g_refKeenCfg.mouseGrab = (MouseGrabSettingType)g_beInputSettingsMenuItem_MouseGrab.choice;
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	g_refKeenCfg.absMouseMotion = g_beInputSettingsMenuItem_AbsMouseMotion.choice;
+#endif
 	g_refKeenCfg.touchInputToggle = (TouchInputSettingType)g_beInputSettingsMenuItem_TouchControls.choice;
 	g_refKeenCfg.touchInputDebugging = g_beInputSettingsMenuItem_TouchInputDebugging.choice;
 

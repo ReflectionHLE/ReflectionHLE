@@ -24,6 +24,10 @@
 
 // WARNING: This struct is used by BE_ST_SDL ONLY (except for controller stuff)
 
+#ifdef REFKEEN_VER_KDREAMS
+#define BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+#endif
+
 typedef enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } VSyncSettingType;
 typedef enum { SCALE_ASPECT, SCALE_FILL } ScaleTypeSettingType;
 typedef enum { TOUCHINPUT_AUTO, TOUCHINPUT_OFF, TOUCHINPUT_FORCED } TouchInputSettingType;
@@ -54,6 +58,9 @@ typedef struct
 	int scaleFactor;
 	bool forceFullSoftScaling;
 	MouseGrabSettingType mouseGrab;
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	bool absMouseMotion;
+#endif
 	int sndSampleRate;
 	bool sndSubSystem;
 	bool oplEmulation;

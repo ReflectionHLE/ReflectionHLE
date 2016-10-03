@@ -39,11 +39,16 @@ typedef struct {
 	uint8_t dosScanCode;
 } emulatedDOSKeyEvent;
 
+typedef enum {
+	BE_ST_MOUSEMODE_ABS_WITH_CURSOR, BE_ST_MOUSEMODE_ABS_WITHOUT_CURSOR, BE_ST_MOUSEMODE_REL
+} BESDLMouseModeEnum;
+
 void BEL_ST_ForceHostDisplayUpdate(void);
 void BEL_ST_SetGfxOutputRects(bool allowResize);
 void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSKeyEvent keyEvent);
 void BEL_ST_ConditionallyShowAltInputPointer(void);
+void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode);
 
 extern SDL_Surface *g_be_sdl_windowIconSurface;
 

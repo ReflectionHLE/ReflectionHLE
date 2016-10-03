@@ -518,22 +518,43 @@ const uint32_t g_sdlEGABGRAScreenColors[] = {
 };
 
 
-void BEL_ST_SetRelativeMouseMotion(bool enable);
 extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
+extern bool g_sdlMouseButtonsStates[3];
+extern int g_sdlEmuMouseButtonsState;
+
+static bool g_sdlSomeOnScreenControlWasAccessibleWithMouse = false; // Used internally in BEL_ST_ConditionallyShowAltInputPointer
 
 /*static*/ void BEL_ST_ConditionallyShowAltInputPointer(void)
 {
 	if (g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED)
 		return;
 
-	if ((g_sdlShowControllerUI || g_sdlShowTouchUI) && (g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown || (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)))
-		BEL_ST_SetRelativeMouseMotion(false);
+	bool someOnScreenControlIsAccessibleWithMouse = ((g_sdlShowControllerUI || g_sdlShowTouchUI) && (g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown/* || (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)*/));
+
+	if (someOnScreenControlIsAccessibleWithMouse != g_sdlSomeOnScreenControlWasAccessibleWithMouse)
+	{
+		// Better reset these when on-screen controls usable by the mouse are shown/hidden.
+		// Since touchInputToggle differs from TOUCHINPUT_FORCED, this EXCLUDES the touch controls.
+		g_sdlMouseButtonsStates[0] = g_sdlMouseButtonsStates[1] = g_sdlMouseButtonsStates[2] = 0;
+		g_sdlEmuMouseButtonsState = 0;
+	}
+
+	g_sdlSomeOnScreenControlWasAccessibleWithMouse = someOnScreenControlIsAccessibleWithMouse;
+
+	if (someOnScreenControlIsAccessibleWithMouse)
+		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITH_CURSOR);
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	else if (g_refKeenCfg.absMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITHOUT_CURSOR);
+#endif
+	else if (
+		(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN) ||
+		(g_refKeenCfg.mouseGrab == MOUSEGRAB_COMMONLY) ||
+		((g_refKeenCfg.mouseGrab == MOUSEGRAB_AUTO) && g_sdlControllerMappingActualCurr->grabMouse)
+	)
+		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_REL);
 	else
-		BEL_ST_SetRelativeMouseMotion(
-			(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN) ||
-			(g_refKeenCfg.mouseGrab == MOUSEGRAB_COMMONLY) ||
-			((g_refKeenCfg.mouseGrab == MOUSEGRAB_AUTO) && g_sdlControllerMappingActualCurr->grabMouse)
-		);
+		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITH_CURSOR);
 }
 
 
@@ -1723,7 +1744,7 @@ static void BEL_ST_HandleDefaultPointerActionInTouchControls(int touchControlInd
 	);
 }
 
-static void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y)
+void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y)
 {
 	extern int16_t g_sdlEmuMouseMotionAccumulatedState[2];
 	extern int16_t g_sdlVirtualMouseCursorState[2];
@@ -1936,6 +1957,11 @@ static void BEL_ST_SetTouchControlsRects(void)
 	}
 }
 
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+int g_sdlHostVirtualMouseCursorState[2];
+static int g_sdlHostVirtualMouseCursorSideLen;
+#endif
+
 void BEL_ST_SetGfxOutputRects(bool allowResize)
 {
 	int srcWidth = g_sdlTexWidth;
@@ -2081,6 +2107,12 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 
 	g_sdlDebugFingerRectSideLen = minWinDim/4;
 	BEL_ST_SetTouchControlsRects();
+
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	g_sdlHostVirtualMouseCursorState[0] = winWidth/2;
+	g_sdlHostVirtualMouseCursorState[1] = winHeight/2;
+	g_sdlHostVirtualMouseCursorSideLen = minWinDim/64;
+#endif
 }
 
 void BEL_ST_ForceHostDisplayUpdate(void)
@@ -2825,6 +2857,14 @@ dorefresh:
 	SDL_RenderClear(g_sdlRenderer);
 	SDL_SetRenderDrawColor(g_sdlRenderer, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>16)&0xFF, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>8)&0xFF, g_sdlEGACurrBGRAPaletteAndBorder[16]&0xFF, SDL_ALPHA_OPAQUE);
 	SDL_RenderFillRect(g_sdlRenderer, &g_sdlAspectCorrectionBorderedRect);
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	if (g_refKeenCfg.absMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+	{
+		SDL_SetRenderDrawColor(g_sdlRenderer, 0xFF, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+		SDL_Rect rect = {g_sdlHostVirtualMouseCursorState[0]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorState[1]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorSideLen, g_sdlHostVirtualMouseCursorSideLen};
+		SDL_RenderFillRect(g_sdlRenderer, &rect);
+	}
+#endif
 
 	if (g_sdlTargetTexture)
 	{
