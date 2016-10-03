@@ -15,7 +15,7 @@ LOCAL_CFLAGS += -std=c99
 
 LOCAL_C_INCLUDES := $(SDL_PATH)/include $(SRC) $(BESRC) $(C3DCOMMONSRC) $(IDSRC)
 
-RESAMPLER := LIBSOXR
+RESAMPLER := LIBSPEEXDSP
 
 LOCAL_CFLAGS += -DREFKEEN_VER_CAT3D=1 -DREFKEEN_VER_CATACOMB_ALL=1 -DREFKEEN_RESAMPLER_$(RESAMPLER) -DREFKEEN_ENABLE_LAUNCHER
 
@@ -38,6 +38,9 @@ ifeq ($(RESAMPLER),LIBSOXR)
 else ifeq ($(RESAMPLER),LIBSAMPLERATE)
 	LOCAL_C_INCLUDES += $(BESRC)/android-lib/jni/samplerate/libsamplerate
 	LOCAL_LDLIBS += $(BESRC)/android-lib/libs/$(TARGET_ARCH_ABI)/libsamplerate.so
+else ifeq ($(RESAMPLER),LIBSPEEXDSP)
+	LOCAL_C_INCLUDES += $(BESRC)/android-lib/jni/speexdsp/speexdsp/speexdsp-1.2rc3/include
+	LOCAL_LDLIBS += $(BESRC)/android-lib/libs/$(TARGET_ARCH_ABI)/libspeexdsp.so
 endif
 
 include $(BUILD_SHARED_LIBRARY)

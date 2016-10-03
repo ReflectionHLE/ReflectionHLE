@@ -16,7 +16,8 @@ public class RefkeenActivity extends SDLActivity implements ActivityCompat.OnReq
 		return new String[] {
 			"SDL2",
 			//"samplerate",
-			"soxr",
+			//"soxr",
+			"speexdsp",
 			"main"
 		};
 	}
