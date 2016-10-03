@@ -11,6 +11,16 @@ import android.Manifest;
 
 public class RefkeenActivity extends SDLActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
+	@Override
+	protected String[] getLibraries() {
+		return new String[] {
+			"SDL2",
+			//"samplerate",
+			"soxr",
+			"main"
+		};
+	}
+
 	private final int[] requestNotif = new int[1];
 
 	private void waitForUIThread(Object notif) {
@@ -77,7 +87,7 @@ public class RefkeenActivity extends SDLActivity implements ActivityCompat.OnReq
 	}
 
 	@Override
-	public void onRequestPermissionsResult (int requestCode, String[] permissions, int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 		for (int i = 0; i < permissions.length; i++) {
 			if (permissions[i].equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
 				synchronized (requestNotif) {
