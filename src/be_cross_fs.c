@@ -309,6 +309,7 @@ static void BEL_Cross_AddRootPathIfDir(const TCHAR *rootPath, const char *rootPa
 		BEL_Cross_AddRootPath(rootPath, rootPathKey, rootPathName);
 }
 
+static void BEL_Cross_mkdir(const TCHAR *path);
 
 void BE_Cross_PrepareAppPaths(void)
 {
@@ -414,14 +415,20 @@ void BE_Cross_PrepareAppPaths(void)
 			BEL_Cross_AddRootPathIfDir(externalSDCardStorage, "externalsdcardstorage", "External SD Card storage");
 	}
 
+	char path[BE_CROSS_PATH_LEN_BOUND];
+
 	const char *externalStoragePath = SDL_AndroidGetExternalStoragePath();
 	if (externalStoragePath && *externalStoragePath)
 	{
-		BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), externalStoragePath);
+		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), externalStoragePath, "/appdata");
 		memcpy(g_be_appNewCfgPath, g_be_appDataPath, sizeof(g_be_appDataPath));
 		// Let's add this just in case (sdcard directory cannot be naively opened on Android 7.0)
-		BEL_Cross_AddRootPathIfDir(g_be_appDataPath, "appdata", "App data path");
-		// HACK - We don't look at arguments set by the user, but then these are never sent on Android...
+		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), externalStoragePath, "/user_gameinsts");
+		// In contrary to other root paths, we should create this one on first launch
+		BEL_Cross_mkdir(externalStoragePath); // Non-recursive
+		BEL_Cross_mkdir(path);
+		BEL_Cross_AddRootPathIfDir(path, "appgameinsts", "App-local game installations dir");
+		// HACK - We don't look at arguments set by the user (for modifying e.g., g_be_appDataPath), but then these are never sent on Android...
 	}
 #elif (defined REFKEEN_PLATFORM_UNIX)
 	const char *homeVar = getenv("HOME");
