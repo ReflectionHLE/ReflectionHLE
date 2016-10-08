@@ -120,8 +120,10 @@ static bool g_sdlLauncherTriggerBinaryStates[2];
 static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
 static bool g_sdlLauncherGfxCacheMarked = false;
 
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
 // Let's disable this for now since it may lead to problems on certain platforms, but keep the cfg field
 //#define BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
+#endif
 
 #define BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN 10
 

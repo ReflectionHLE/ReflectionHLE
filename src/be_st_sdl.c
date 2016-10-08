@@ -343,10 +343,12 @@ static void BEL_ST_ParseSetting_FullScreen(const char *keyprefix, const char *bu
 }
 #endif
 
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
 static void BEL_ST_ParseSetting_FullRes(const char *keyprefix, const char *buffer)
 {
 	sscanf(buffer, "%dx%d", &g_refKeenCfg.fullWidth, &g_refKeenCfg.fullHeight);
 }
+#endif
 
 static void BEL_ST_ParseSetting_WindowRes(const char *keyprefix, const char *buffer)
 {
@@ -696,7 +698,9 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	{"fullscreen=", &BEL_ST_ParseSetting_FullScreen},
 #endif
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
 	{"fullres=", &BEL_ST_ParseSetting_FullRes},
+#endif
 	{"windowres=", &BEL_ST_ParseSetting_WindowRes},
 #ifdef REFKEEN_ENABLE_LAUNCHER
 //	{"launcherwindowres=", &BEL_ST_ParseSetting_LauncherWindowRes},
@@ -875,7 +879,9 @@ static void BEL_ST_SaveConfig(void)
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	fprintf(fp, "fullscreen=%s\n", g_refKeenCfg.isFullscreen ? "true" : "false");
 #endif
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
 	fprintf(fp, "fullres=%dx%d\n", g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight);
+#endif
 	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
 #ifdef REFKEEN_ENABLE_LAUNCHER
 	//fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
