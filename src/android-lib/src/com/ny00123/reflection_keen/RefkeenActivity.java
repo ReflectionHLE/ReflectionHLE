@@ -11,17 +11,6 @@ import android.Manifest;
 
 public class RefkeenActivity extends SDLActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-	@Override
-	protected String[] getLibraries() {
-		return new String[] {
-			"SDL2",
-			//"samplerate",
-			//"soxr",
-			"speexdsp",
-			"main"
-		};
-	}
-
 	private final int[] requestNotif = new int[1];
 
 	private void waitForUIThread(Object notif) {
