@@ -606,6 +606,9 @@ ShowText(id0_int_t offset,WindowRec *wr,const id0_char_t *s)
 =====================
 */
 
+// REFKEEN - Alternative controllers support
+extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_demoloop;
+
 // REFKEEN - Rename different versions of DemoLoop for multi-ver support
 void
 DemoLoop_Old (void)
@@ -631,6 +634,10 @@ DemoLoop_Old (void)
 //
 // demo loop
 //
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_demoloop);
+
 	US_SetLoadSaveHooks(LoadGame,SaveGame,ResetGame);
 	restartgame = gd_Continue;
 	while (true)
@@ -723,6 +730,8 @@ DemoLoop_Old (void)
 			NewGame();
 		GameLoop();
 	}
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 void
@@ -759,6 +768,10 @@ DemoLoop_New (void)
 //
 // demo loop
 //
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_demoloop);
+
 	US_SetLoadSaveHooks(LoadGame,SaveGame,ResetGame);
 	restartgame = gd_Continue;
 
@@ -852,6 +865,8 @@ DemoLoop_New (void)
 #endif
 		GameLoop();
 	}
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 // (REFKEEN) Used for patching version-specific stuff
