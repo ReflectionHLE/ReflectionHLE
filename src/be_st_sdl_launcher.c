@@ -925,6 +925,23 @@ void BE_ST_Launcher_Shutdown(void)
 }
 
 
+#ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
+extern SDL_sem *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
+
+static void BEL_ST_Launcher_CheckForExitFromEventsCallback(void)
+{
+	if (SDL_SemTryWait(g_sdlEventsCallbackToMainSem) == 0)
+	{
+		// Let's not call BE_ST_Launcher_Shutdown and/or BEL_ST_SaveConfig here
+		SDL_SemPost(g_sdlMainToEventsCallbackSem);
+		SDL_SemWait(g_sdlEventsCallbackToMainSem); // Wait here "forever"
+	}
+}
+#else
+#define BEL_ST_Launcher_CheckForExitFromEventsCallback()
+#endif
+
+
 void BE_ST_Launcher_RefreshSelectGameMenuContents(void)
 {
 	int i;
@@ -2295,6 +2312,8 @@ void BE_ST_Launcher_RunEventLoop(void)
 			}
 		}
 
+		BEL_ST_Launcher_CheckForExitFromEventsCallback();
+
 		// Emulate "key repeat" for keyboard/controller buttons
 		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != SDL_CONTROLLER_BUTTON_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
 		{
@@ -2425,6 +2444,7 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 			}
 		}
 
+		BEL_ST_Launcher_CheckForExitFromEventsCallback();
 		BEL_ST_SleepMS(10);
 		SDL_RenderClear(g_sdlRenderer);
 
@@ -2714,6 +2734,9 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				break;
 			}
 		}
+
+		BEL_ST_Launcher_CheckForExitFromEventsCallback();
+
 		// Emulate "key repeat" for keyboard/controller buttons
 		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != SDL_CONTROLLER_BUTTON_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
 		{

@@ -47,15 +47,19 @@
 #define REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 #endif
 
+#ifdef REFKEEN_PLATFORM_ANDROID
 // On some platforms e.g., OS X, usage of multitouch trackpad may lead
 // to SDL2 finger events, and these should not be mistakenly detected
 // as touchscreen input (at least by default)
-#ifdef REFKEEN_PLATFORM_ANDROID
 #define REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT
+
+#define REFKEEN_CONFIG_RESET_SDL_HINT_ACCELEROMETER_AS_JOYSTICK
+#define REFKEEN_CONFIG_EVENTS_CALLBACK
 #endif
 
-#ifdef REFKEEN_PLATFORM_ANDROID
-#define REFKEEN_CONFIG_RESET_SDL_HINT_ACCELEROMETER_AS_JOYSTICK
+// Sanity check
+#if (!defined REFKEEN_CONFIG_THREADS) && (defined REFKEEN_CONFIG_EVENTS_CALLBACK)
+#error "REFKEEN sanity check failed - REFKEEN_CONFIG_EVENTS_CALLBACK is defined, but REFKEEN_CONFIG_THREADS is not!"
 #endif
 
 #endif // REFKEEN_CONFIG_H

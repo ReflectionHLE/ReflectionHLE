@@ -143,7 +143,11 @@ static void BEL_ST_SaveConfig(void);
 
 SDL_Surface *g_be_sdl_windowIconSurface = NULL;
 
+#ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
+SDL_sem *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
+
 static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event);
+#endif
 
 void BE_ST_InitCommon(void)
 {
@@ -182,7 +186,22 @@ void BE_ST_InitCommon(void)
 	// on a recent event type (e.g., mouse event -> no touch UI is shown).
 	g_sdlShowTouchUI = (g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED);
 
+#ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
+	g_sdlEventsCallbackToMainSem = SDL_CreateSemaphore(0);
+	if (!g_sdlEventsCallbackToMainSem)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Cannot create events callback to main semaphore,\n%s\n", SDL_GetError());
+		exit(0);
+	}
+	g_sdlMainToEventsCallbackSem = SDL_CreateSemaphore(0);
+	if (!g_sdlMainToEventsCallbackSem)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Cannot create main to events callback semaphore,\n%s\n", SDL_GetError());
+		exit(0);
+	}
+
 	SDL_SetEventFilter(BEL_ST_EventsCallback, NULL);
+#endif
 }
 
 void BE_ST_PrepareForGameStartup(void)
@@ -243,6 +262,20 @@ void BE_ST_ShutdownAll(void)
 
 static void BEL_ST_AltControlScheme_CleanUp(void);
 
+#ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
+static void BEL_ST_CheckForExitFromEventsCallback(void)
+{
+	if (SDL_SemTryWait(g_sdlEventsCallbackToMainSem) == 0)
+	{
+		BEL_ST_SaveConfig(); // From BE_ST_QuickExit
+		SDL_SemPost(g_sdlMainToEventsCallbackSem);
+		SDL_SemWait(g_sdlEventsCallbackToMainSem); // Wait here "forever"
+	}
+}
+#else
+#define BEL_ST_CheckForExitFromEventsCallback()
+#endif
+
 void BE_ST_HandleExit(int status)
 {
 	SDL_Event event;
@@ -284,6 +317,7 @@ void BE_ST_HandleExit(int status)
 			default: ;
 			}
 		}
+		BEL_ST_CheckForExitFromEventsCallback();
 		BEL_ST_SleepMS(1);
 		// TODO: Make this more efficient
 		BEL_ST_UpdateHostDisplay();
@@ -2138,7 +2172,10 @@ void BE_ST_PollEvents(void)
 			break;
 		default: ;
 		}
+
 	}
+
+	BEL_ST_CheckForExitFromEventsCallback();
 
 	// Key repeat emulation
 	if (g_sdlEmuKeyboardLastPressedScanCode && (g_sdlLastPollEventsTime - g_sdlEmuKeyboardLastScanCodePressTime >= g_sdlEmuKeyboardLastScanCodePressTimeDelay))
@@ -2179,19 +2216,21 @@ void BE_ST_PollEvents(void)
 	}
 }
 
+#ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
 // Use this to catch a few special events here when required
 static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 {
 	switch (event->type)
 	{
 	case SDL_APP_TERMINATING:
-		return 0;
-	case SDL_APP_LOWMEMORY:
+	case SDL_APP_LOWMEMORY: // Let's just terminate the app in such a case
+		SDL_SemPost(g_sdlEventsCallbackToMainSem);
+		SDL_SemWait(g_sdlMainToEventsCallbackSem);
+		if (event->type != SDL_APP_TERMINATING)
+			exit(0);
 		return 0;
 	case SDL_APP_WILLENTERBACKGROUND:
-		return 0;
 	case SDL_APP_DIDENTERBACKGROUND:
-		return 0;
 	case SDL_APP_WILLENTERFOREGROUND:
 		return 0;
 	case SDL_APP_DIDENTERFOREGROUND:
@@ -2204,6 +2243,7 @@ static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 		return 1; // Just send to SDL_PollEvent as usual
 	}
 }
+#endif
 
 #ifdef BE_ST_ENABLE_FARPTR_CFG
 uint16_t BE_ST_Compat_GetFarPtrRelocationSegOffset(void)
