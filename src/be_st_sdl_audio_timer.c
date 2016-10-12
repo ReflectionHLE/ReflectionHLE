@@ -31,6 +31,8 @@
 #include "be_st_sdl_private.h"
 #include "opl/dbopl.h"
 
+extern bool g_sdlForceGfxControlUiRefresh;
+
 #define PC_PIT_RATE 1193182
 
 #ifdef REFKEEN_CONFIG_THREADS
@@ -950,11 +952,20 @@ void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
 	BEL_ST_UpdateHostDisplay();
 	BE_ST_PollEvents();
 	uint32_t currSdlTicks = SDL_GetTicks();
+	uint32_t lastRefreshTime = currSdlTicks;
 	while ((int32_t)(currSdlTicks - nextSdlTicks) < 0)
 	{
 		BEL_ST_SleepMS(1);
 		BE_ST_PollEvents();
 		currSdlTicks = SDL_GetTicks();
+		// Refresh graphics from time to time in case a part of the window is overridden by anything,
+		// like the Steam Overlay, but also check if we should refresh the graphics more often
+		if (g_sdlForceGfxControlUiRefresh || (currSdlTicks - lastRefreshTime > 100))
+		{
+			BEL_ST_UpdateHostDisplay();
+			currSdlTicks = SDL_GetTicks(); // Just be a bit more pedantic
+			lastRefreshTime = currSdlTicks;
+		}
 	} 
 	g_sdlTicksOffset = (currSdlTicks - nextSdlTicks);
 }
