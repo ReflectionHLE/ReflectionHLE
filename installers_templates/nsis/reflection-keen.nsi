@@ -47,6 +47,7 @@ Section "Reflection Keen (required)"
   File "reflection-catarm.exe"
   File "reflection-catapoc.exe"
   File "SDL2.dll"
+  File "libspeexdsp-1.dll"
   File "README.txt"
   File "LICENSE.txt"
   
@@ -101,6 +102,7 @@ Section "Uninstall"
   Delete $INSTDIR\reflection-catarm.exe
   Delete $INSTDIR\reflection-catapoc.exe
   Delete $INSTDIR\SDL2.dll
+  Delete $INSTDIR\libspeexdsp-1.dll
   Delete $INSTDIR\README.txt
   Delete $INSTDIR\LICENSE.txt
   Delete $INSTDIR\uninstall.exe
