@@ -130,15 +130,15 @@ codes release, the differences between v1.13, v1.93 and v1.20 are quite small,
 and the two releases of v1.20 and v1.93 share the same static game data
 (e.g., common EGA and map headers).
 
----------------------------------------------------------------------------
-Where can I get compatible Keen Dreams game data (updated as of Oct 8 2016)
----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+Where can I get compatible Keen Dreams game data (updated as of Oct 12 2016)
+----------------------------------------------------------------------------
 
 You can download a Shareware release of Keen Dreams, v1.13, from one of a few
 places online, at the least. Links for reference:
 
-http://cd.textfiles.com/megagames2/GAMES/APOGEE/KEENDR13.ZIP  
-(You want keendm.zip) http://dukeworld.duke4.net/classic%20dukeworld/share/
+- http://cd.textfiles.com/megagames2/GAMES/APOGEE/KEENDR13.ZIP
+- (You want keendm.zip) http://dukeworld.duke4.net/classic%20dukeworld/share/
 
 -----------------------------------
 New *incompatible* Keen Dreams data
@@ -150,18 +150,18 @@ Note that Reflection Keen is technically *not* compatible with the data of this
 port, but you may still be interested. EGA and CGA graphics are both included.
 
 Links to stores' pages:
-http://store.steampowered.com/app/356200/
-https://indiegamestand.com/store/1317/keen-dreams/
+- http://store.steampowered.com/app/356200/
+- https://indiegamestand.com/store/1317/keen-dreams/
 
--------------------------------------------------------------------------
-Where can I get compatible Catacombs game data (updated as of Oct 8 2016)
--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+Where can I get compatible Catacombs game data (updated as of Oct 12 2016)
+--------------------------------------------------------------------------
 
 The Catacomb Abyss v1.13 can be downloaded as Shareware from the net. You can
 try any of these links:
 
-http://cd.textfiles.com/maxx/tothemaxpcg/ARCADE/CATABS13.ZIP  
-(You want v1.13) https://www.classicdosgames.com/game/The_Catacomb_Abyss.html
+- http://cd.textfiles.com/maxx/tothemaxpcg/ARCADE/CATABS13.ZIP
+- (You want v1.13) https://www.classicdosgames.com/game/The_Catacomb_Abyss.html
 
 Copies of all games from the Catacomb series, including Catacomb 3-D and
 The Catacomb Adventure Series, are currently available from GOG.com under
@@ -436,7 +436,7 @@ This file can have additional controller mappings.
 Such a mapping can be prepared for an unsupported game controller.
 There are a few ways to do this:
 
-- Use the SDL2 Gamepad Tool available from General Arcade as of Mar 12 2015:
+- Use the SDL2 Gamepad Tool available from General Arcade as of Oct 12 2016:
 http://generalarcade.com/gamepadtool/
 After using it, simply copy the contents of the newly generated
 gamecontrollerdb.txt file to the one bundled with any of the
@@ -480,6 +480,38 @@ input, then, keyboard/mouse emulation is in use.
 
 Also, you probably do *not* want to mess with the in-game input settings
 while using multi-touch input (say, any in-game keyboard configuration).
+
+----------------------------------
+Android - Granting access to files
+----------------------------------
+
+As stated above, on all supported versions of Android, the source ports
+can write files to directories which are specific to the Android apps. For
+Keen Dreams, this is Android/data/net.duke4.ny.reflection_kdreams/files/appdata
+within the shared storage (as accessible from a PC/Mac, using a USB cable).
+It should be similar for the other ports.
+
+However, read-only access to more directories is desired, so you have
+the freedom to prepare a copy of a supported game (say Keen Dreams v1.13)
+anywhere in the shared storage. You can then select this directory from
+the Reflection Keen launcher, making it possible to play the game.
+
+This is not an issue with versions of Android preceding 6.0. Either you grant
+the app the permission to do so on installation (if required), or the app
+isn't installed at all.
+
+Beginning from Android v6.0, though, you don't have to grant this permission
+on installation. You'll be asked to do so when you start the corresponding
+Reflection Keen port, at least until you ask to permanently grant or deny
+the permission. If it is granted, you can select a game directory as in
+versions of Android preceding 6.0.
+
+Otherwise, though, there are still app-specific directories
+that may be accessed. Again assuming Keen Dreams for now, it's the
+directory Android/data/net.duke4.ny.reflection_kdreams/files/user_gameinsts
+within the shared storage.
+
+You'll have to create this "user_gameinsts" directory (per app), though.
 
 ----------------------
 Command line arguments
@@ -583,7 +615,7 @@ a copy of it within the "src/android-lib/libs" directory in the refkeen tree.
 You may have to create the "libs" subdirectory beforehand.
 - Do NOT copy the android-support-v4.jar file from
 {sdk-dir}/extras/android/support/v4 or any other location.
-- Full SDL 2.0.2+ sources are required. The last HG revision is recommended.
+- Full SDL 2.0.2+ sources are required. SDL 2.0.5 pre-release is recommended.
 - In the refkeen source tree, the directory src/android-lib/jni should have
 a copy of (or a symlink to) the SDL2 sources, named "SDL".
 
@@ -660,7 +692,7 @@ The Catacomb Abyss v1.13.
 a couple of DOS programs distributed with the Catacomb Adventure Series
 (or at least specific versions of the episodes).
 
-As of October 11 2016, these can be found here:
+As of October 12 2016, these can be found here:
 https://bitbucket.org/NY00123/gamesrc-ver-recreation/
 
 ---------------------------------------------------------------------------
