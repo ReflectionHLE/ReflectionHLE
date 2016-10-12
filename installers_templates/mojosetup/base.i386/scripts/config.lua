@@ -23,7 +23,7 @@ Setup.Package
     vendor = "NY00123",
     id = "reflection-keen",
     description = "Reflection Keen",
-    version = "0.13.0",
+    version = "0.16.0",
     --splash = "splash.bmp",
     superuser = false,
     recommended_destinations = { MojoSetup.info.homedir },
