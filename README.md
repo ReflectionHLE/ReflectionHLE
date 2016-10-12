@@ -1,24 +1,44 @@
 Reflection Keen
 ===============
 
-This is a codebase consisting of source ports of Keen Dreams, Catacomb 3-D
-(The Descent) and The Catacomb Adventure Series. Other, but similar, names,
-like "Reflection Keen Dreams", may also be used to describe specific ports.
-Although it may initially seem non-obvious, the reason these ports are
-available under a single project is that a lot of common code can be found.
-It may be true that Keen Dreams is a smooth-scrolling 2D platformer game,
-while the Catacombs are 3D first person shooters, but there are still common
-low-level 2D picture and font drawing routines, as well as very similar user
-input and sound routines. Files with such code are often marked "ID Engine".
-This is probably more noticeable if Catacomb 3-D is compared to Keen 4-6,
-given that these games share the same control panel (menu) code
-(including the Paddle War game) and more.
+This is a project consisting of source ports of Keen Dreams,
+Catacomb 3-D (The Descent) and The Catacomb Adventure Series.
 
-A later revision of the original codebase is also found in Wolfenstein 3D.
+You may encounter some names like "Reflection Keen Dreams" or "Ref KDreams",
+here and there. These are used to described the specific ports (by game).
 
-Nevertheless, there is still a lot in the 3D Catacomb titles which is not found
-in any of the Keens. Hence, a title like "Reflection Catacomb 3-D" may also be
-used again.
+------------
+Terms of use
+------------
+
+Reflection Keen and the DBOPL emulator are released under the GNU GPLv2+.
+See LICENSE for more details.
+
+Furthermore, the included CRC-32 implementation is in the public domain. The
+same applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
+
+Note that these terms do not cover any original game data required for usage
+with Reflection Keen, which should be obtained separately. Check below for
+compatible "game data" in order to find a way to obtain such data.
+
+---------------------------------------------------------------------
+How is Keen Dreams (a 2D platformer) related to the Catacombs (FPSes)
+---------------------------------------------------------------------
+
+A lot of the original Keen Dreams code base, with changes, was re-used by
+id Software not only in the later Keen games from 1991 (i.e., Keen 4-6), but
+also in Catacomb 3-D. This should explain why do Keen 4-6 and Catacomb 3-D seem
+to share features like the control panel (menu), including the Paddle War game.
+
+While the later Catacomb games may have the control panel and other features
+removed or replaced, they're still clear derivatives of Catacomb 3-D.
+
+The Wolfenstein 3D sources are also based on Catacomb 3-D, and again share
+a lot of similarities.
+
+------------------------------------
+Comparisons to original DOS versions
+------------------------------------
 
 These source ports aim to reproduce behaviors of original executables
 for DOS, including bugs, at least if it's not too difficult
@@ -27,63 +47,60 @@ With the exception of The Catacomb Armageddon/Apocalypse, this also includes
 compatibility with saved games for original DOS executables (done per version).
 The Chocolate Doom source port can be considered an inspiration for that.
 
-In fact, originally this codebase started as "Chocolate Keen Dreams". With
-the addition of support for The Catacomb Abyss, and to be a bit more original,
-the titles of "Ref Keen Dreams" and "Ref Catacomb Abyss" were coined. Similar
-titles were later used for the other Catacombs, with no specific name for the
-whole codebase before "Reflection Keen". There are chances some of these names
-are still found, here and there.
+In fact, originally this codebase started as a Keen Dreams port titled
+"Chocolate Keen Dreams". With the addition of support for The Catacomb Abyss,
+and also in order to be a bit more original, the titles of "Ref Keen Dreams"
+and "Ref Catacomb Abyss" were coined. Similar titles were later used for
+the other Catacombs, with no specific name for the codebase. There are
+chances some of these names are still found, here and there.
 
------------------------------------------
-Differences from the original executables
------------------------------------------
+As of this release, the whole codebase has the title of "Reflection Keen".
 
-There are some differences when it comes to the way command-line arguments are
-parsed. The fact that a single EXE may support more than one version of a game
-has an influence on that. See "Command line arguments" for more information
-about supported command line arguments.
+------------------------------------------------------------------------
+Differences from the original releases related to command line arguments
+------------------------------------------------------------------------
 
-There are a few modifications from the originals when it comes to the arguments
-following -passorigargs. For one, in the Shareware versions of Keen Dreams,
-there's no need to execute a separate "START" file in order to launch the game.
-However, the behaviors can be emulated by adding the /detour argument, e.g.,
-by typing "reflection-kdreams.exe -passorigargs /detour" on Windows. This means
-that, in fact, the behaviors are reversed in comparison to the originals.
+- There are some differences when it comes to the way command-line arguments
+are parsed. The fact that a single EXE may support more than one version of
+a game has an influence on that. See "Command line arguments" for more
+information about supported command line arguments.
+- In the original shareware releases of Keen Dreams, versions 1.13 and 1.20,
+the /DETOUR command line argument should be passed in order to start the game.
+This is not required in Reflection Keen Dreams, and in fact, leads to the same
+behaviors as *omitting* this argument in any of these original DOS releases.
+- The same applies to The Catacomb Adventure Series, regarding this command
+line argument (yeah, that's no mistake): ^(a@&r`
 
-The same applies to The Catacomb Adventure Series. The very first command line
-argument (after -passorigargs) should be (yeah that's no mistake): ^(a@&r`
-Depending on the environment in use, you may need to escape some characters
-and/or add e.g., quotation marks. Again, that's the opposite of the
-original behaviors.
+----------------------------------------------------------------------------
+Differences from the original releases related to usage of multiple DOS EXEs
+----------------------------------------------------------------------------
 
-In addition, a portion of the games' versions' came with multiple executables.
-Not all behaviors of these are ported, but this is at least partially the case.
-Following are descriptions of separate executables with ported behaviors:
-- When you quit Keen Dreams v1.13 (Shareware release) within the game, you
-should get a textual screen showing (now outdated) ordering information.
-In the original release, this is done via a separate LOADSCN.EXE program,
-while the game itself is run from KDREAMS.EXE.
-- With a few differences, the same applies to The Catacomb Abyss v1.13
-(another Shareware release) via a similar-yet-different LOADSCN.EXE program.
-- Each of the episodes from The Catacomb Adventure Series begins with an
-intro sequence, being run with an EXE separate from the one used for the game
-itself. The EXE pairs (of intro and game) are as follows:
-[INTRO.EXE, CATABYSS.EXE] for The Catacomb Abyss v1.13,
-[CATABYSS.EXE, ABYSGAME.EXE] for The Catacomb Abyss v1.24,
-[CATARM.EXE, ARMGAME.EXE] for The Catacomb Armageddon v1.02
-and [CATAPOC.EXE, APOCGAME.EXE] for The Catacomb Apocalypse v1.01.
+There are some original game releases that have more than one EXE
+(per release). Not all behaviors of such EXEs are implemented, but
+when they are, there may be a few technical differences.
 
-There are also a few differences in regards to memory management when
-it comes to the additional executables of LOADSCN.EXE and INTRO.EXE:
-They may share some memory in this port.
+- For one, no separate EXE is actually used in each Reflection Keen port.
+As an example, in Keen Dreams v1.13, the behaviors of KDREAMS.EXE (the game)
+and LOADSCN.EXE (showing ordering information on quit) are present
+in a single Reflection Keen Dreams EXE.
+- There are a few differences with the memory management, when
+it comes to LOADSCN.EXE and INTRO.EXE from The Catacomb Abyss v1.13.
+Basically, they may share some memory in the Reflection Catacomb Abyss port.
+- Some of these additional EXES, like INTRO.EXE and LOADSCN.EXE from
+The Catacomb Abyss v1.13, lack original source codes as of this
+release; So such sources had to be manually reconstructed.
+See "Additional sources/data used for these ports"
+below for details about these codes and more.
+- Currently, ports of DEMOCAT.EXE/HINTCAT.EXE from The Catacomb Adventure
+Series are *not* implemented. This is especially noticeable when you
+start up The Catacomb Abyss v1.13 and then press on the "F10" key.
 
-Finally, about INTRO.EXE (or registered CATABYSS.EXE/CATARM.EXE/CATAPOC.EXE)
-and LOADSCN.EXE, source codes for these EXEs had to be manually reconstructed.
-See "Additional sources/data used for these ports" below for details about
-these codes and more.
+----------------------------------------------
+One more difference from the original releases
+----------------------------------------------
 
-For another difference which applies to The Catacomb Armageddon/Apocalypse, if
-the cheat code letting one cycle through ceiling/sky colors is used while there
+This one is specific to The Catacomb Armageddon/Apocalypse. If the
+cheat code letting one cycle through ceiling/sky colors is used while there
 is flashing (a lightning), this can lead to so-called "undefined behaviors". It
 may seem harmless, but a crash and/or other unexpected side-effects may occur.
 
@@ -93,65 +110,29 @@ What is included
 
 Reflection Keen consists of ports of Keen Dreams and all 3D Catacomb games.
 
-The Keen Dreams port is run from a single executable, compatible with four
-DOS releases. The original releases supported by the port, using source codes
-for them, are Shareware (EGA) v1.13, CGA v1.05, Registered (EGA) v1.93
-and Shareware (EGA) v1.20.
-
-For Catacomb 3-D, versions 1.00 and 1.22 should be supported. The original
-source code release was modified for the addition of 1.00.
-
-For The Catacomb Abyss, versions 1.13 (QA [0], Shareware) and 1.24 (rev 1)
-are supported. The source code release was modified for support
-of v1.13. Furthermore, The Catacomb Armageddon v1.02 (rev 1)
-and The Catacomb Apocalypse v1.01 (rev 1) are supported.
-
 Note that these ports do not come with a copy of any game, which is required.
 Look below for mentions of "game data" to find possible sources for these.
 
-Also note that Keen Dreams v1.20 hasn't been widely available so far, although
+----------------------------------------------
+Supported game data, described by DOS versions
+----------------------------------------------
+
+- Keen Dreams: Shareware (EGA) v1.13, CGA v1.05, Registered (EGA) v1.93
+and Shareware (EGA) v1.20.
+- Catacomb 3-D (The Descent): Versions 1.00 and 1.22.
+- The Catacomb Abyss: Versions 1.13 (QA [0], Shareware) and 1.24 (rev 1).
+- The Catacomb Armageddon: Version 1.02 (rev 1).
+- The Catacomb Apocalypse: Version 1.01 (rev 1).
+
+Note that Keen Dreams v1.20 hasn't been widely available so far, although
 it is briefly mentioned in the Apogee FAQ. Furthermore, based on the source
 codes release, the differences between v1.13, v1.93 and v1.20 are quite small,
 and the two releases of v1.20 and v1.93 share the same static game data
 (e.g., common EGA and map headers).
 
---------------
-Current status
---------------
-
-- The mouse can be used for control panel navigation in Keen Dreams, while the
-keyboard is usable basically everywhere in all supported games. The mouse can
-also be used for (partial) in-game controls in the supported Catacomb titles.
-- Basic joystick support is in, being kind-of similar to the DOS days so it
-doesn't remind of more recent titles. However, while currently experimental
-and disabled by default, you can also check "Alternative Controller Schemes"
-below.
-- AdLib and PC Speaker sound emulations are built-in, including music playback
-for Catacomb 3-D. AdLib emulation is possible thanks to the DBOPL emulator
-from DOSBox.
-- CGA/EGA graphics and text mode emulations (on an emulated VGA adapter)
-are in.
-- Games are playable using 64-bit Linux executables (tested on Ubuntu 14.04),
-as well as 32-bit Windows executables, but these haven't yet been entirely
-tested. New non-vanilla bugs are possible!
-- There should be compatibility with the configuration files as generated by
-the original DOS executables, but this hasn't been entirely tested.
-- With the exception of The Catacomb Armageddon/Apocalypse,
-saved game compatibility is implemented per game release separately (e.g.,
-Keen Dreams CGA v1.05 saved games can be used if this version is selected),
-but there can still be some new non-vanilla bugs. Due to technical limitations,
-by default saved games for The Catacomb Armageddon/Apocalypse aren't compatible
-with the original DOS executables (Armageddon v1.02 / Apocalypse v1.01), unless
-you're lucky. In fact, even with any of the original DOS EXEs, there's no
-guarantee that a game being saved will work later while using the exact same
-EXE (some data in the saved game depends on the location of a modified copy
-of the DOS executable in the address space). If you still want some form of
-compatibility, though, there is a way to control this. See "Configuration file"
-below for the hidden farptrsegoffset setting.
-
-----------------------------------------------------------------------------
-Where can I get compatible Keen Dreams game data (updated as of Nov 14 2015)
-----------------------------------------------------------------------------
+---------------------------------------------------------------------------
+Where can I get compatible Keen Dreams game data (updated as of Oct 8 2016)
+---------------------------------------------------------------------------
 
 You can download a Shareware release of Keen Dreams, v1.13, from one of a few
 places online, at the least. Links for reference:
@@ -172,15 +153,15 @@ Links to stores' pages:
 http://store.steampowered.com/app/356200/
 https://indiegamestand.com/store/1317/keen-dreams/
 
---------------------------------------------------------------------------
-Where can I get compatible Catacombs game data (updated as of Nov 14 2015)
---------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Where can I get compatible Catacombs game data (updated as of Oct 8 2016)
+-------------------------------------------------------------------------
 
 The Catacomb Abyss v1.13 can be downloaded as Shareware from the net. You can
 try any of these links:
 
 http://cd.textfiles.com/maxx/tothemaxpcg/ARCADE/CATABS13.ZIP  
-(You want v1.13) http://www.classicdosgames.com/game/The_Catacomb_Abyss.html
+(You want v1.13) https://www.classicdosgames.com/game/The_Catacomb_Abyss.html
 
 Copies of all games from the Catacomb series, including Catacomb 3-D and
 The Catacomb Adventure Series, are currently available from GOG.com under
@@ -188,25 +169,26 @@ the "Catacombs Pack". On the Windows platform and under normal circumstances,
 Reflection Keen can auto-detect and read the data from this pack
 (assuming it was installed from setup_catacombs_pack_2.1.0.5.exe).
 
-Link to the pack on GOG.com: http://www.gog.com/game/catacombs_pack
+Link to the pack on GOG.com: https://www.gog.com/game/catacombs_pack
 
 ------------------------------------------------------------
 Running any of the games using the corresponding source port
 ------------------------------------------------------------
 
+If you used an installer for the games, creating shortcut/launcher icons
+on the way, then selecting the correct icon should be sufficient.
+
 Reflection Keen should consist of five executables, one per game, capable of
 launching all supported versions of the given game:
+
 - reflection-kdreams(.exe) for Keen Dreams.
 - reflection-cat3d(.exe) for Catacomb 3-D (The Descent).
 - reflection-catabyss(.exe) for The Catacomb Abyss.
 - reflection-catarm(.exe) for The Catacomb Armageddon.
 - reflection-catapoc(.exe) for The Catacomb Apocalypse.
 
-If you used an installer for the games, creating shortcuts in the way, clicking
-on the correct shortcut should be sufficient.
-
 If you want to manually start a game on Windows, make sure that SDL2.dll
-resides with the exe of choice.
+and libspeexdsp-1.dll reside with the exe of choice.
 
 Check above for "game data" in order to find a way to obtain compatible data.
 
@@ -215,17 +197,35 @@ The Reflection Keen launcher
 ----------------------------
 
 When you start any of the Reflection Keen ports using the corresponding
-shortcut or EXE file, you should get a window with a launcher. It should be
-possible to navigate through that launcher with a keyboard and/or mouse.
-
-While a US layout keyboard is currently assumed for the launcher
-(mostly for consistency with the games where it's also done, just like in DOS),
-you can use the keyboard's letter keys for selecting menu items. This is
-probably mostly useful when you manually want to add a game installation.
+shortcut/launcher icon or EXE file, you should get a window with an
+internal Reflection Keen launcher. It should be possible to navigate
+through that launcher with a keyboard, a mouse and/or a touchscreen.
 
 It's also possible to use a game controller for navigation, although
-there are good chances you won't be able to do so, initially.
+there are good chances you won't be able to do so, at least initially.
 See "Adding an unsupported game controller" below for more details.
+
+Note that a US keyboard layout is currently assumed for the launcher
+(mostly for consistency with the games themselves, including DOS versions).
+
+You can use the keyboard's letter keys, as well as a few other keys, for
+selecting menu items. This is probably mostly useful when you manually want
+to add a game installation.
+
+Similarly, the keyboard can be used to enter command line arguments for the
+game (after selecting "Set arguments for game" in the main menu). Press on
+the "Enter" key to confirm the changes to the arguments, or "Esc" to cancel.
+
+It's also possible to show an on-screen keyboard, in case you're not using
+an actual keyboard. Click/Touch on the "..." button on the top-right of the
+launcher window in order to show it.
+
+In case you're using a supported game controller with the Xbox 360 controller
+layout, press on the Y button to show the on-screen keyboard. While the
+on-screen keyboard is shown, press on the controller's X button to toggle
+shifted keys on/off. While editing command-line arguments, select
+the "Ent" key in the on-screen keyboard to confirm the changes.
+To discard the changes, press on the controller's B or Back button.
 
 --------------------------------------
 Where is the configuration file stored
@@ -235,9 +235,15 @@ Each EXE should generate its own configuration file, having a filename ending
 with ".cfg".
 
 These are the default locations for the configuration file:
+
 - Windows: %APPDATA%\reflection-keen.
 - Linux: $XDG_CONFIG_HOME/reflection-keen, if $XDG_CONFIG_HOME is defined
 and filled. Otherwise, ~/.config/reflection-keen.
+- Android: This is separated per installed Android app. For Keen Dreams,
+this is the folder Android/data/net.duke4.ny.reflection_kdreams/files/appdata
+within the shared storage, as often accessible when connecting an
+Android-powered device to a PC/Mac using a USB cable. Similar folder
+names are used for the other Reflection Keen apps (games).
 
 The -cfgdir command line argument can be used to override this path, but
 make sure to be consistent with your choice. Otherwise, you may get
@@ -253,9 +259,11 @@ generally split into separate directories, based on original versions
 of the games (although there may be exceptions).
 
 These are the default locations for the various files:
+
 - Windows: %APPDATA%\reflection-keen.
 - Linux: $XDG_DATA_HOME/reflection-keen, if $XDG_DATA_HOME is defined
 and filled. Otherwise, ~/.local/share/reflection-keen.
+- Android: Same as the location of the configuration file.
 
 The -datadir command line argument can be used to override this path, but
 again ensure you're consistent with your choice. Otherwise,
@@ -265,17 +273,15 @@ you may get unexpected behaviors, as with the cfg dir.
 A few configuration file settings not accessible from the launcher
 ------------------------------------------------------------------
 
-- "launcherexeargs" can be used to pass command-line arguments to the game
-itself. Used only if the launcher is shown beforehand.
-- "fullres" can be edited to specify a fullscreen resolution, with the form
-<width>x<height>, just like the value of this "windowres". Clearly, it's not
-necessary to pick a windowed resolution from the launcher, since the window
-should be resizable. The reason there's no separate menu item for the full
-screen resolution, is that using any resolution other than the desktop's may
-lead to unexpected behaviors on certain environments, like desktop icons
-getting messed up.
+- (Not available on all platforms) "fullres" can be edited to specify a
+fullscreen resolution, with the form {width}x{height}, just like the value
+of the "windowres" setting. Clearly, it's not necessary to pick a windowed
+resolution from the launcher, in case the window is resizable. The reason
+there's no separate menu item for the full screen resolution, is that using
+any resolution other than the desktop's may lead to unexpected behaviors on
+certain environments, like desktop icons getting messed up.
 
-The following settings are not even written to the cfg by default:
+The following settings are not even written to the cfg file by default:
 
 - "manualgamevermode" can be used if one wants to replace some game data.
 By default, checksum and filesize verifications are done, so Reflection Keen
@@ -290,10 +296,10 @@ manually added, is done, in case you set "manualgamevermode" to "true".
 - "farptrsegoffset" can be used for (some) level of saved game compatibility
 in The Catacomb Armageddon/Apocalypse (doesn't apply to Abyss). Using just any
 of the original DOS executables for one of these titles, it is possible that
-a game saved at some point will fail to properly load (or even close to that)
-later, due to the location of a modified copy of the DOS EXE in the address
-space. The value given to "farptrsegoffset" is a hexadecimal value that can be
-used to control this location (as if a DOS executable were used).
+a game saved at some point will fail to properly load later, due to
+the location of a modified copy of the DOS EXE in the address space.
+The value given to "farptrsegoffset" is a hexadecimal value that can
+be used to control this location (as if a DOS executable were used).
 If you have a saved game coming from a default setup of DOSBox 0.74, or some
 official SVN build of DOSBox from 2014, chances are farptrsegoffset=1A2 is the
 desired setting.
@@ -330,47 +336,28 @@ Game controllers support
 ------------------------
 
 There are two ways in which game controllers can be used in each game:
-A classic controller scheme, and a modern one. The latter is currently the
-default.
+A classic controller scheme, and a modern one. The latter is currently
+the default.
 
-Following here is an explanation why do these schemes exist (either as an
-experimental feature or not), and why should these be considered "alternative":
-- Back in the beginning of the 90s, the various Keen and Catacomb titles were
-originally released with support for 2-button joysticks. This is related to
-limitations of the game port connector found in various IBM PCs and compatible
-setups. A little bit later releases of Keen 4-6 were also made available,
-with support for the Gravis PC GamePad, including all of its 4 buttons.
-- In all releases, though, it was assumed a keyboard is present for various
-purposes (like text input). While a joystick could be used as an alternative
-for gameplay, the keyboard was practically a mandatory input device.
-- More advanced game controllers were later released. Initially with game port
-connectors, they were later substituted with USB controllers. Game controllers
-also became closer in layouts and features to the gamepads commonly used
-with various gaming consoles.
-- However, one thing didn't change. There wasn't a standard layout for game
-controllers that programmers could depend on with the PCs, the way it's been
-done with keyboards and mice for many years. For instance, two gamepads may
-look similar, with each of them having a d-pad, but one may report the
-d-pad to be be a pair of analog axes (same as analog stick), while
-the other gamepad reports it as four digital buttons.
-- Hence, while keyboards and mice have generally been usable "out of the box"
-with PCs for many years, and the same applies to game controllers for consoles,
-this cannot be said about game controllers for PCs, at least for some time.
-- At some later point, Microsoft introduced XInput, making it possible to
-easily use Xbox 360 controllers with PC games, as well as other XInput-capable
-controllers. As a side-effect, they defined a standard game controller layout
-for PCs.
-- The same cannot be said about other, non-XInput capable controllers, though.
-The lack of a standard layout still applies to them. Hence, a mapping table
-is required if one wants to map each such controller's layout to some
-common layout, so it can be used "out of the box".
-- The SDL_GameController API from SDL2 was created to do exactly that, with
-support for multiple platforms. This is basically a wrapper over the earlier
-SDL_Joystick API, with the wrapper itself doing the mapping above.
-- The modern controller scheme takes advantage of this API for a more
-straightforward controller support. In addition, while the keyboard was
-mandatory back in the days, various functionalities that originally required
-a keyboard are now accessible from game controllers using this scheme.
+Following is a short explanation for the presence of these two schemes:
+
+- The classic controller scheme is used to (somewhat) mimic the behaviors of
+the original DOS versions of the games. These versions have basic support for
+2-buttons joysticks, which are vastly different from a lot of the game
+controllers in use these days, and have great limitations. In particular,
+there is often the need to go through a process called "calibration", and
+a separate keyboard is still required for various purposes (e.g., text input).
+Other games, like Wolfenstein 3D and later releases of Keen 4-6,
+also have support for all 4 buttons of the Gravis PC GamePad,
+but there are still clear limits.
+- The modern controller scheme is a better fit for various game controllers
+used these days, with an emphasis on the Xbox 360 controller layout.
+It makes it possible to exclusively use such a controller, with
+no other input device (like a keyboard) required. There are still
+some limitations, though. Look for "Limitations" below for details.
+
+Note that with the modern scheme, each of the games will behave like there are
+0 joysticks. Instead, keyboard/mouse emulation is used behind the scenes.
 
 ---------------------------------------
 Classic controller scheme - Limitations
@@ -379,37 +366,44 @@ Classic controller scheme - Limitations
 With a few exceptions in mind, any game controller that can be used in general
 should be usable by Reflection Keen with that scheme. However, there isn't
 really a way to configure/select features of the controller (like buttons).
-Limitations from the original DOS versions apply, too. This includes
-the need to calibrate a joystick, as well as the fact that a keyboard device
-(or another alternative) is still mandatory for various purposes.
+Limitations from the original DOS versions apply, too. As stated above, this
+includes the need to calibrate a joystick, as well as the fact that a keyboard
+device (or another alternative) is still mandatory for various purposes.
 
 --------------------------------------
 Modern controller scheme - Limitations
 --------------------------------------
 
-With this scheme in mind, it is currently assumed the controller has the
-following features (although some of these are configurable):
+Unfortunately, due to historical reasons, a lot of game controllers for
+PCs lack a standard layout that requires zero configuration from the user.
+You may wish to check out "Adding an unsupported game controller" if
+your controller cannot be used. Checking if it is usable in
+the launcher is a good way to verify this.
+
+With the modern scheme in mind, it is currently assumed the controller has
+the following features (although some of these are configurable).
+The Xbox 360 controller layout should be covered.
+
 - A d-pad (if there's no d-pad, maybe you can fake one using an analog stick).
 - Four face buttons (A, B, X, Y on the Xbox 360 controller).
 - Two shoulder/bumper buttons.
 - Two trigger buttons (they don't have to be analog).
 - Reserved Back button (Esc key replacement) and Start button (Pause key).
 
-Furthermore, you cannot take advantage of analog stick clicks or guide button
-clicks as technically possible with the Xbox 360 controller.
+It's also possible to take advantage of clickable analog sticks.
 
-In contrary to the situation with the classic controller scheme, the
-Reflection Keen launcher should be used for configuring in-game actions
+However, you *cannot* take advantage of guide button clicks as
+technically possible with the Xbox 360 controller.
+
+The Reflection Keen launcher should be used for configuring in-game actions
 for the controller. Any in-game configuration setting is irrelevant,
 and it's actually better to not touch it. A possible issue with this
 is described below.
 
-The game itself should detect a total of 0 joysticks while the modern
-controller scheme is in use. With some exceptions, controller events
-(like button presses/releases) are translated to keyboard or mouse events
-that are parsed in the same ways as in the original DOS releases.
+As stated above, with the modern controller scheme, 0 joysticks are detected
+in-game, and keyboard/mouse emulation is in use.
 
-Note that while it is still possible to configure the keyboard in-game, as in
+While it is still possible to configure the keyboard in-game, as in
 the original DOS releases, this can lead to side effects. For instance, if you
 configure 'Space' to be the key for shooting a fireball in the game Catacomb
 3-D, it will be used not just for shooting, but also for drinking potions.
@@ -441,6 +435,7 @@ This file can have additional controller mappings.
 
 Such a mapping can be prepared for an unsupported game controller.
 There are a few ways to do this:
+
 - Use the SDL2 Gamepad Tool available from General Arcade as of Mar 12 2015:
 http://generalarcade.com/gamepadtool/
 After using it, simply copy the contents of the newly generated
@@ -460,6 +455,32 @@ based (source code only, no EXE): https://hg.libsdl.org/SDL/
 This should write output to a command prompt or similar, including a mapping
 that can be added to gamecontrollerdb.txt,
 
+--------------------------
+Multi-touch screen support
+--------------------------
+
+Version 0.16.0 of Reflection Keen introduced support for multi-touch input,
+along with support for Android.
+
+- On Windows and Linux, multi-touch input is disabled by default, because there
+are chances such input may arrive from a multi-touch trackpad
+(at least on Macs).
+- On Android, multi-touch input is auto-detected by default. This means
+that touch controls should be shown while touch input is in use, and hidden
+once you begin using a different input device (like a game controller).
+There may be exceptions to this, e.g., pressing on an Android device's "Back"
+button shouldn't immediately hide touch controls.
+
+You may permanently disable, or permanently enable, multi-touch input,
+in case you have issues. Note that if you permanently *enable* multi-touch
+input, then a mouse will behave more-or-less like a finger.
+
+As with the modern controller scheme, if you take advantage of multi-touch
+input, then, keyboard/mouse emulation is in use.
+
+Also, you probably do *not* want to mess with the in-game input settings
+while using multi-touch input (say, any in-game keyboard configuration).
+
 ----------------------
 Command line arguments
 ----------------------
@@ -471,10 +492,10 @@ should look like this: "reflection-kdreams -?"
 In case something goes wrong, these are the supported arguments common to
 all games (i.e., all executables):
 
--gamever <VER>: Select game version supported by this executable.
--passorigargs <...>: Pass all following arguments to the original game port.
--datadir <...>: Specify an alternative path for game data (separated by ver.).
--cfgdir <...>: Specify an alternative path for new cfg files (not old CONFIG).
+-gamever {VER}: Select game version supported by this executable.
+-passorigargs {...}: Pass all following arguments to the original game port.
+-datadir {...}: Specify an alternative path for game data (separated by ver.).
+-cfgdir {...}: Specify an alternative path for new cfg files (not old CONFIG).
 -fulllauncher: Show a fullscreen launcher window.
 -softlauncher: Show a software-rendered launcher window (not fullscreen).
 
@@ -484,20 +505,31 @@ Te following argument is specific to the Catacomb Adventure Series:
 
 Note: The path passed to -datadir or -cfgdir is assumed to exist.
 
-----------------------------------------
-Building the ports from the source codes
-----------------------------------------
+------------------------------------------------------------
+Building the ports from the source codes - Linux executables
+------------------------------------------------------------
+
+Prerequisites:
 
 - Development files for SDL 2.0.2+ are required, as well as GNU make, the
 GNU Compiler Collection's C compiler (i.e. gcc), and development files for one
 of select supported libraries used for resampling (list is given below).
 In practice, at the moment only SDL 2.0 dev files, "make" and "gcc" are
-(probably) required. If nothing goes wrong, and you don't mind giving up
-resampling capabilities, then a single "make RESAMPLER=NONE" command should
-build various executables, each of them supporting a different game.
-"make clean" removes any generated object or executable file, assuming
-the *exact* same arguments have been passed to "make" as before,
-with the exceptions of the "clean" and "RESAMPLER=NONE" arguments.
+(probably) required.
+- Note that SDL 2.0.4 or later is recommended, due to fixes to mouse cursor
+handling in windowed mode, especially when it comes to relative mouse motion.
+
+Building EXEs - the basics:
+
+- Before building a new EXE (or more than one, say for all ports), it is
+recommended for you to enter "make clean", in order to remove any
+object/executable file possibly built beforehand.
+- If nothing goes wrong, and you don't mind giving up
+resampling capabilities, then a single "make RESAMPLER=NONE" command
+should build various executables, each of them supporting a different game.
+
+Using a resampling library:
+
 - One of seven resampling libraries can be selected, by setting the appropriate
 RESAMPLER variable for "make". As in the case of SDL 2.0, you'll need the
 appropriate development files.
@@ -505,15 +537,104 @@ Currently supported libraries for resampling: LIBSWRESAMPLE, LIBAVRESAMPLE,
 LIBAVCODEC (its resampling API was deprecated for LIBAVRESAMPLE), LIBRESAMPLE,
 LIBSOXR, LIBSPEEXDSP and LIBSAMPLERATE. As stated above, NONE is also an
 option if you don't want to add any dependency on a resampling library.
-- Currently RESAMPLER=LIBRESAMPLE is the default choice.
+- Currently RESAMPLER=LIBSPEEXDSP is the default choice.
+
+Building just one EXE:
+
 - It is possible to build just the Keen Dreams executable, by typing "make"
 while in the "src/kdreams" subtree (you can still pass e.g., RESAMPLER=NONE).
 - Similarly, to build just Catacomb 3-D, you can type "make" while in the
 "src/id91_11/cat_all/cat3d" subtree.
 For The Catacomb Abyss, it is "src/id91_11/cat_all/catabyss", and there are
 two more such subdirectories for The Catacomb Armageddon and Apocalypse.
-- MinGW can be used as well (tested on Linux). If you try to cross-compile
-then you may wish to set PLATFORM=WINDOWS and BINPREFIX accordingly.
+
+--------------------------------------------------------------
+Building the ports from the source codes - Windows executables
+--------------------------------------------------------------
+
+Although untested, MinGW can be used for this, and then you should
+be able to follow the above instructions for building Linux executables
+with (virtually) no change.
+
+
+If you try to cross-compile from a Linux environment, then you may wish
+to set PLATFORM=WINDOWS and BINPREFIX accordingly.
+
+-----------------------------------------------------------
+Building the ports from the source codes - Android packages
+-----------------------------------------------------------
+
+This was tested on a Linux environment, although the instructions should
+probably apply on other platforms as well.
+
+Prerequisites (includes some preparation):
+
+- In terms of development tools, a little mix of old and new was used.
+The old Android NDK version r8d was used, along with Android SDK Tools 25.2.2,
+Android SDK Platform-tools 24.0.3 and Android SDK Build-tools 19.1.
+The Target Android API level is currently 24, while the minimum is 10.
+The minimum of 10 is also used for the native code.
+A compatible Java 8 installation is required. On the other hand, "ant" is
+still used to build the Java projects and create the APK packages,
+rather than "gradle".
+- Within the SDK directory, you should look for the file android-support-v4.jar
+as found under {sdk-dir}/extras/android/support/v7/appcompat/libs, and store
+a copy of it within the "src/android-lib/libs" directory in the refkeen tree.
+You may have to create the "libs" subdirectory beforehand.
+- Do NOT copy the android-support-v4.jar file from
+{sdk-dir}/extras/android/support/v4 or any other location.
+- Full SDL 2.0.2+ sources are required. The last HG revision is recommended.
+- In the refkeen source tree, the directory src/android-lib/jni should have
+a copy of (or a symlink to) the SDL2 sources, named "SDL".
+
+Preparing a resampling library:
+
+- One of three resampling libraries can be selected. As in the case of SDL 2.0,
+you'll need full sources. A list of known compatible versions is given below.
+Currently supported libraries for resampling: LIBSAMPLERATE, LIBSOXR and
+LIBSPEEXDSP. NONE is also an option if you don't want to add
+any dependency on a resampling library.
+- Currently RESAMPLER=LIBSPEEXDSP is the default choice.
+- If a resampling library is used, then src/android-lib/jni should contain
+a copy of (or a symlink to) the corresponding resampling library
+sources, using one of these names for the directory/symlink
+(depending on the library in use): samplerate, soxr, speexdsp.
+
+Building native library code:
+
+- To build the native SDL2 code, and (optionally) a resampling library,
+enter the src/android-lib directory inside a compatible shell (e.g., "bash")
+and then type /path/to/ndk-build clean, followed by /path/to/ndk-build.
+You may optionally pass arguments like -j #n.
+
+Building native game code:
+
+- The native code of each game shall be built separately. For instance, in
+the case of Keen Dreams, enter the src/kdreams/android-project directory.
+- You can then use ndk-build in src/kdreams/android-project to build the
+native Reflection Keen Dreams code as usual. Again, though, it's safer
+to run "ndk-build clean" first. You can also set the RESAMPLER variable if you
+want to use a different resampling library (or disable resampling altogether).
+Example: ndk-build RESAMPLER=LIBSOXR
+
+Building the Java code and creating an APK file (assuming Keen Dreams only):
+
+- Create a new local.properties file at src/android-lib, and fill it with
+the path to the SDK, like this: sdk.dir=/path/to/adt-bundle-linux-x86_64/sdk
+- For Keen Dreams, copy src/android-lib/local.properties
+into src/kdreams/android-project.
+- While under src/kdreams/android-project, type "ant clean" and then "ant".
+If there is no unexpected issue, you should get a RefkeenActivity-debug.apk
+package in src/kdreams/android-project/bin.
+
+Installing the APK package:
+
+- If you have a compatible Android device connected via USB,
+*and* USB debugging is enabled, then you may be able
+to install the app by typing "ant installd".
+
+Supported versions/archives of resampling libraries: soxr-0.1.2.Source.tar.xz,
+speexdsp-SpeexDSP-1.2rc3.tar.gz, libsamplerate-0.1.8.tar.gz.
 
 ---------------------------------
 Original sources this is based on
@@ -539,22 +660,8 @@ The Catacomb Abyss v1.13.
 a couple of DOS programs distributed with the Catacomb Adventure Series
 (or at least specific versions of the episodes).
 
-As of December 20 2014, these can be found here:
+As of October 11 2016, these can be found here:
 https://bitbucket.org/NY00123/gamesrc-ver-recreation/
-
-------------
-Terms of use
-------------
-
-Reflection Keen and the DBOPL emulator are released under the GNU GPLv2+.
-See LICENSE for more details.
-
-Furthermore, the included CRC-32 implementation is in the public domain. The
-same applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
-
-Note that these terms do not cover any original game data required for usage
-with Reflection Keen, which should be obtained separately. Check above
-for "game data" in order to find a way to obtain compatible data.
 
 ---------------------------------------------------------------------------
 Based on the README.md file of the original Keen Dreams source code release
@@ -625,7 +732,49 @@ say to all of you, that you should be considered special here. :)
 Changelog
 ---------
 
+Oct 12, 2016 (v0.16.0):
+
+- BREAKING CHANGE: The file HELP.TXT is now required in order to
+play The Catacomb Abyss.
+- Regarding The Catacomb Abyss v1.13, the expected/extracted EGAHEAD.ABS and
+MTEMP.TMP files should be a little bit smaller. Previously, whole segments
+would be extracted from the CATABYSS.EXE file, leading to a little
+bit larger files (with filesizes divisible by 16 bytes).
+- Added support for multi-touch input, along with an Android port;
+Currently requires Android 2.3.3 (API level 10) or later and targets 7.0 (24).
+- Some "modern" game controller input adjustments, including changes to the
+handling of debug keys.
+- Some launcher adjustments; Examples: The ability to set (emulated)
+command-line arguments for the game, showing/hiding an on-screen keyboard for
+text search/input, access to details about files from supported game versions.
+- "autolock" setting was replaced with the "mousegrab" setting, which
+behaves somewhat more (but not exactly) like the mouse grab setting
+from Chocolate Doom.
+- Added a "absmousemotion" setting, optionally letting one seamlessly move
+the mouse cursor out of the window in Keen Dreams' control panel. This is
+disabled by default, since it technically behaves a bit differently
+from vanilla Keen Dreams.
+- If multi-touch input is used, and the /NOMOUSE option is *not* passed
+to Keen Dreams, then the mouse cursor in the control panel can be used
+with a single finger, in a matter similar to enabling "absmousemotion" for
+an actual mouse. That is, the ship cursor (more precisely, its top-left corner)
+is shown where the finger resides.
+- Big Endian fixes (including fixed sound support).
+- Misc. graphics output optimizations. This includes changes to emulated EGA
+memory layout; Using one byte per pixel, rather than four monochromatic
+sections for the four EGA planes. Reason is this is better for the Catacombs,
+and it also didn't seem to make things worse for Keen Dreams.
+- Screen is refreshed more often, even if there's no actual on-screen update.
+This is done for somewhat better Steam Overlay support and other situations.
+- Minor DBOPL fixes.
+- Support better resampling of audio (from the OPL rate of 49716Hz to a
+different rate), using a resampling library. Currently SpeexDSP is used.
+- Fix some unaligned memory accesses, as well as a few buffer overflows.
+- Fix duplicated game controllers on startup, in launcher.
+- Other code modifications.
+
 Nov 20, 2015 (v0.13.0):
+
 - A minor breaking change: The disablesndsubsystem setting was changed to
 sndsubsystem, for avoiding double negatives and being more consistent with
 newly added code (the launcher).
@@ -685,6 +834,7 @@ be_st_sdl.h and be_st_sdl*.c.
 - More fixes and other changes.
 
 Mar 13, 2015 (v0.10.0):
+
 - After some time of not having one title covering the whole codebase,
 "Reflection Keen" is finally in use.
 - Experimental support for alternative controller schemes is implemented. This
@@ -718,6 +868,7 @@ fade after loading a saved game in any of the Catacomb Adventure Series titles
 (except for maybe the first time after starting the application).
 
 Dec 20, 2014 (v0.9.12):
+
 - Complete support for the Catacomb Adventure Series has been integrated.
 In addition to version 1.13 of The Catacomb Abyss (Shareware release),
 there is support for Abyss v1.24, Armageddon v1.02 and Apocalypse v1.01.
@@ -740,6 +891,7 @@ VSync is again toggled on by default for all supported games, with the
 exception of the CGA release of Keen Dreams (where it's off by default).
 
 Nov 30, 2014 (v0.9.6):
+
 - Support for Catacomb 3-D (The Descent) is now in. This includes support for
 versions 1.00 and 1.22, as well as saved game compatibility with each of these
 separately (although this can be buggy as usual). A lot of ID Engine code is
@@ -758,6 +910,7 @@ startup immediately.
 - A few more misc. changes.
 
 Oct 25, 2014 (v0.9.0):
+
 - RENAMING OF PORT: The Keen Dreams port has been renamed "Ref Keen Dreams".
 This is done to be a just a little bit more original, and also follows the
 addition of a new source port called "Ref Catacomb Abyss" (see next point).
@@ -787,6 +940,7 @@ case-preserving.
 refkdreams.cfg. Similarly refcatabyss.cfg is used for Catacomb Abyss.
 
 Oct 11, 2014 (v0.8.10):
+
 - Fixed finale text printing (more generally, modified some functions
 to better handle original code leading to undefined behaviors per the
 C standard, or at least to crashes).
@@ -799,6 +953,7 @@ flashes the borders, but chances are the function is never called in practice).
 - More miscellaneous fixes.
 
 Oct 9, 2014 (v0.8.8):
+
 - EGA graphics emulation has been added, and Chocolate Keen Dreams should be
 compatible with the Shareware release of Keen Dreams, version 1.13.
 - This includes compatibility with saved games (each Chocolate Keen exe should
@@ -814,6 +969,7 @@ command-line argument of /detour (exact opposite of original behaviors).
 - Other miscellaneous fixes.
 
 Oct 3, 2014 (v0.8.2):
+
 - Bilinear filtering can now be toggled on if hardware acceleration is in use.
 - In case off-screen rendering is supported, it can be used for two-step
 scaling of the graphical output: First nearest-neighbor interpolation with
@@ -828,6 +984,7 @@ a different sound sample rate, while the rate used for OPL emulation is still
 new settings can appear in the file if it's not up-to-date.
 
 Sep 29 2014 (v0.8.1):
+
 - Compatibility with saved games from vanilla Keen Dreams CGA v1.05 is in. As
 expected, it can still be buggy (in fact, vanilla Keen also has its limits/bugs
 with this).
@@ -847,6 +1004,7 @@ feel a bit off, but at least we have that.
 shown for about a short moment on sufficiently fast machines.
 
 Sep 26 2014 (v0.8.0):
+
 - Initial release, based on Keen Dreams CGA v1.05. Should be playable with
 sound effects and CGA graphics on Linux and Windows desktops. Game saving and
 more is totally untested and may be incompatible with original data generated
