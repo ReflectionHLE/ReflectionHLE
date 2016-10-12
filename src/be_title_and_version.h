@@ -15,7 +15,7 @@
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
 
-#define REFKEEN_VERSION_STRING "0.13.0"
+#define REFKEEN_VERSION_STRING "0.16.0"
 
 #define REFKEEN_TITLE_AND_VER_STRING REFKEEN_TITLE_STRING " v" REFKEEN_VERSION_STRING
 
