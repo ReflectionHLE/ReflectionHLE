@@ -3,7 +3,7 @@
      com.gamemaker.game
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.ny00123.reflection_kdreams"
+      package="net.duke4.ny.reflection_kdreams"
       android:versionCode="1"
       android:versionName="1.0"
       android:installLocation="auto">
@@ -33,7 +33,7 @@
                  android:allowBackup="true"
                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                  android:hardwareAccelerated="true" >
-        <activity android:name="com.ny00123.reflection_keen.RefkeenActivity"
+        <activity android:name="net.duke4.ny.reflection_keen.RefkeenActivity"
                   android:label="@string/app_name"
                   android:screenOrientation="sensorLandscape"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenSize"

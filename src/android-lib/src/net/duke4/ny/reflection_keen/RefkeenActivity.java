@@ -1,4 +1,4 @@
-package com.ny00123.reflection_keen;
+package net.duke4.ny.reflection_keen;
 
 import org.libsdl.app.SDLActivity; 
 import android.view.View;
