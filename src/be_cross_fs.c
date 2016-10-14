@@ -338,7 +338,7 @@ void BE_Cross_PrepareAppPaths(void)
 
 	if (be_main_arg_newcfgdir)
 	{
-		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appDataPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
+		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
 	}
 	else // This is why be_main_arg_datadir has been ignored (using g_be_appDataPath as a temporary buffer)
 	{
@@ -462,7 +462,7 @@ void BE_Cross_PrepareAppPaths(void)
 
 	if (be_main_arg_newcfgdir)
 	{
-		BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
+		BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
 	}
 	else
 	{
