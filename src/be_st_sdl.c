@@ -300,6 +300,10 @@ void BE_ST_HandleExit(int status)
 					break;
 				}
 				break;
+			case SDL_RENDER_TARGETS_RESET:
+			case SDL_RENDER_DEVICE_RESET:
+				BEL_ST_RecreateAllTextures();
+				break;
 			case SDL_JOYHATMOTION:
 				if (event.jhat.value != SDL_HAT_CENTERED) // Otherwise ignore
 					keepRunning = false;
@@ -2167,6 +2171,12 @@ void BE_ST_PollEvents(void)
 				break;
 			}
 			break;
+
+		case SDL_RENDER_TARGETS_RESET:
+		case SDL_RENDER_DEVICE_RESET:
+			BEL_ST_RecreateAllTextures();
+			break;
+
 		case SDL_QUIT:
 			BE_ST_QuickExit();
 			break;

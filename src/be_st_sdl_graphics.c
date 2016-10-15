@@ -285,17 +285,17 @@ void BE_ST_InitGfx(void)
 
 void BE_ST_ShutdownGfx(void)
 {
-	SDL_DestroyTexture(g_sdlFaceButtonsTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlFaceButtonsTexture);
 	g_sdlFaceButtonsTexture = NULL;
-	SDL_DestroyTexture(g_sdlDpadTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlDpadTexture);
 	g_sdlDpadTexture = NULL;
-	SDL_DestroyTexture(g_sdlTextInputTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTextInputTexture);
 	g_sdlTextInputTexture = NULL;
-	SDL_DestroyTexture(g_sdlDebugKeysTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlDebugKeysTexture);
 	g_sdlDebugKeysTexture = NULL;
-	SDL_DestroyTexture(g_sdlTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
 	g_sdlTexture = NULL;
-	SDL_DestroyTexture(g_sdlTargetTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
 	g_sdlTargetTexture = NULL;
 	SDL_DestroyRenderer(g_sdlRenderer);
 	g_sdlRenderer = NULL;
@@ -360,17 +360,16 @@ static void BEL_ST_RecreateTexture(void)
 {
 	if (g_sdlTexture)
 	{
-		SDL_DestroyTexture(g_sdlTexture);
+		BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
 	}
 	if (g_sdlTargetTexture)
 	{
-		SDL_DestroyTexture(g_sdlTargetTexture);
+		BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
 	}
 	// Try using render target
 	if ((g_refKeenCfg.scaleFactor > 1) && g_refKeenCfg.isBilinear)
 	{
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-		g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight);
+		BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight, "nearest");
 		if (!g_sdlTexture)
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
@@ -378,8 +377,7 @@ static void BEL_ST_RecreateTexture(void)
 			exit(0);
 		}
 		// Try, if we fail then simply don't use this
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-		g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, g_sdlTexWidth*g_refKeenCfg.scaleFactor, g_sdlTexHeight*g_refKeenCfg.scaleFactor);
+		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, g_sdlTexWidth*g_refKeenCfg.scaleFactor, g_sdlTexHeight*g_refKeenCfg.scaleFactor, "linear");
 		if (g_sdlTargetTexture)
 			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateTexture: SDL2 target texture created successfully\n");
 		else
@@ -388,8 +386,7 @@ static void BEL_ST_RecreateTexture(void)
 	else
 	{
 		// Use just a single texture
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, g_refKeenCfg.isBilinear ? "linear" : "nearest");
-		g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight);
+		BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight, g_refKeenCfg.isBilinear ? "linear" : "nearest");
 		if (!g_sdlTexture)
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
@@ -397,6 +394,94 @@ static void BEL_ST_RecreateTexture(void)
 			exit(0);
 		}
 	}
+}
+
+// This code piece exists in order to handle SDL_RENDER* events
+
+#define MAX_TEXTURES_POOL_SIZE 32
+
+typedef struct {
+	SDL_Texture **texturePtr;
+	const char *scaleQuality;
+} BESDLManagedTexture;
+
+static BESDLManagedTexture g_sdlManagedTexturesPool[MAX_TEXTURES_POOL_SIZE];
+static int g_sdlNumOfManagedTexturesInPool = 0;
+
+void BEL_ST_SDLCreateTextureWrapper(SDL_Texture **pTexture, Uint32 format, int access, int w, int h, const char *scaleQuality)
+{
+	int i;
+	for (i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i)
+		if (g_sdlManagedTexturesPool[i].texturePtr == pTexture)
+		{
+			g_sdlManagedTexturesPool[i].scaleQuality = scaleQuality;
+			break;
+		}
+
+	if (i >= MAX_TEXTURES_POOL_SIZE)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_SDLCreateTextureWrapper: Managed textures pool overflow error!\n");
+		//Destroy window and renderer?
+		exit(0);
+	}
+
+	if (i == g_sdlNumOfManagedTexturesInPool)
+	{
+		BESDLManagedTexture *managedTexture = &g_sdlManagedTexturesPool[g_sdlNumOfManagedTexturesInPool++];
+		managedTexture->texturePtr = pTexture;
+		managedTexture->scaleQuality = scaleQuality;
+	}
+
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, scaleQuality);
+	*pTexture = SDL_CreateTexture(g_sdlRenderer, format, access, w, h);
+}
+
+void BEL_ST_SDLDestroyTextureWrapper(SDL_Texture **pTexture)
+{
+	for (int i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i)
+		if (g_sdlManagedTexturesPool[i].texturePtr == pTexture)
+		{
+			// Remove managed texture without moving the rest, except for maybe the last
+			g_sdlManagedTexturesPool[i] = g_sdlManagedTexturesPool[--g_sdlNumOfManagedTexturesInPool];
+			break;
+		}
+
+	SDL_DestroyTexture(*pTexture);
+}
+
+void BEL_ST_RecreateAllTextures(void)
+{
+	Uint32 format;
+	int access, w, h;
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateAllTextures: Recreating textures\n");
+	BESDLManagedTexture *managedTexture = g_sdlManagedTexturesPool;
+	for (int i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i, ++managedTexture)
+	{
+		SDL_Texture **pTexture = managedTexture->texturePtr;
+		if (*pTexture == NULL)
+			continue;
+
+		SDL_QueryTexture(*pTexture, &format, &access, &w, &h);
+		SDL_DestroyTexture(*pTexture);
+
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, managedTexture->scaleQuality);
+		*pTexture = SDL_CreateTexture(g_sdlRenderer, format, access, w, h);
+		if (*pTexture == NULL)
+		{
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateAllTextures: Failed to recreate SDL2 texture %d out of %d,\n%s\n", i+1, g_sdlNumOfManagedTexturesInPool, SDL_GetError());
+			exit(1);
+		}
+		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateAllTextures: Recreated texture no %d out of %d\n", i+1, g_sdlNumOfManagedTexturesInPool);
+	}
+
+	BEL_ST_ForceHostDisplayUpdate();
+	g_sdlDoRefreshGfxOutput = true; // BE_ST_MarkGfxForUpdate();
+	BE_ST_Launcher_MarkGfxCache();
+	// Also need to force refresh this way
+	if (g_sdlScreenMode == 4) // CGA graphics
+		g_sdlHostScrMemCache.cgaGfx[0] = g_sdlHostScrMem.cgaGfx[0]^0xFF;
+	else
+		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF;
 }
 
 // Scancode names for controller face buttons and d-pad UI, based on DOS
@@ -564,8 +649,7 @@ static void BEL_ST_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr, int 
 	{
 		return;
 	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	*padTexturePtrPtr = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, len, len);
+	BEL_ST_SDLCreateTextureWrapper(padTexturePtrPtr, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, len, len, "nearest");
 	if (!(*padTexturePtrPtr))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 pad texture,\n%s\n", SDL_GetError());
@@ -683,12 +767,12 @@ static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *
 {
 	if (touchControl->texture)
 	{
-		SDL_DestroyTexture(touchControl->texture);
+		BEL_ST_SDLDestroyTextureWrapper(&touchControl->texture);
 		touchControl->texture = NULL;
 	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 	int texWidth = touchControl->xpmWidth, texHeight = touchControl->xpmHeight;
-	SDL_Texture *texture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, texWidth, texHeight);
+	BEL_ST_SDLCreateTextureWrapper(&touchControl->texture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, texWidth, texHeight, "nearest");
+	SDL_Texture *texture = touchControl->texture;
 	if (!texture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateTouchControlTexture: Failed to (re)create SDL2 touch control texture,\n%s\n", SDL_GetError());
@@ -733,8 +817,6 @@ static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *
 	}
 	SDL_UpdateTexture(texture, NULL, pixels, 4*texWidth);
 	free(pixels);
-
-	touchControl->texture = texture;
 }
 
 void BE_ST_AltControlScheme_InitTouchControlsUI(BE_ST_OnscreenTouchControl *onScreenTouchControls)
@@ -856,8 +938,7 @@ static void BEL_ST_CreateTextInputTextureIfNeeded(void)
 	{
 		return;
 	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	g_sdlTextInputTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT);
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlTextInputTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT, "nearest");
 	if (!g_sdlTextInputTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 text input texture,\n%s\n", SDL_GetError());
@@ -873,8 +954,7 @@ static void BEL_ST_CreateDebugKeysTextureIfNeeded(void)
 	{
 		return;
 	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	g_sdlDebugKeysTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT);
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlDebugKeysTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT, "nearest");
 	if (!g_sdlDebugKeysTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 debug keys texture,\n%s\n", SDL_GetError());
@@ -2871,7 +2951,7 @@ dorefresh:
 		if (SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture) != 0)
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_UpdateHostDisplay: Failed to set target texture as render target (disabling),\n%s\n", SDL_GetError());
-			SDL_DestroyTexture(g_sdlTargetTexture);
+			BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
 			g_sdlTargetTexture = NULL;
 			goto refreshwithnorendertarget;
 		}

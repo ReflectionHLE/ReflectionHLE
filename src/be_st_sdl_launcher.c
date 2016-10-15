@@ -101,7 +101,9 @@ extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
-// These two are shared ON PURPOSE (for seamless transition from launcher to game, if an SDL_WINDOW_FULLSCREEN_DESKTOP window is used with same features)
+// The window and renderer are shared ON PURPOSE:
+// - For seamless transition from launcher to game, if an SDL_WINDOW_FULLSCREEN_DESKTOP window is used with same features.
+// - Additionaly, the renderer is shared since SDL_Texture ** pointers are managed from be_st_sdl_graphics.c (in case textures should be recreated).
 extern SDL_Window *g_sdlWindow;
 extern SDL_Renderer *g_sdlRenderer;
 // Similarly, this is also shared *on purpose* - for a HACK (guess if touch controls should be shown when game is started)
@@ -614,8 +616,7 @@ void BE_ST_Launcher_Prepare(void)
 		-1, (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE) ? SDL_RENDERER_SOFTWARE : (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
 	);
 
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	g_sdlTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT);
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, "nearest");
 	if (!g_sdlTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture for launcher,\n%s\n", SDL_GetError());
@@ -626,12 +627,10 @@ void BE_ST_Launcher_Prepare(void)
 	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE); // For clears in refreshes
 	BEL_ST_Launcher_SetGfxOutputRects();
 
+	// Try, if we fail then simply don't use this
 	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE)
-	{
-		// Try, if we fail then simply don't use this
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-		g_sdlTargetTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT);
-	}
+		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT, "linear");
+
 	/* Game controllers */
 	int nOfJoysticks = SDL_NumJoysticks();
 	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
@@ -821,13 +820,13 @@ void BE_ST_Launcher_Shutdown(void)
 	}
 #endif
 
-	SDL_DestroyTexture(g_sdlLauncherTextSearchTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextSearchTexture);
 	g_sdlLauncherTextSearchTexture = NULL;
-	SDL_DestroyTexture(g_sdlLauncherTextInputTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextInputTexture);
 	g_sdlLauncherTextInputTexture = NULL;
-	SDL_DestroyTexture(g_sdlTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
 	g_sdlTexture = NULL;
-	SDL_DestroyTexture(g_sdlTargetTexture);
+	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
 	g_sdlTargetTexture = NULL;
 	// Nope - We may re-use window and renderer for game (seamless transition)
 #if 0
@@ -1161,8 +1160,7 @@ static void BEL_ST_Launcher_CreateTextSearchTextureIfNeeded(void)
 	{
 		return;
 	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	g_sdlLauncherTextSearchTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_HEIGHT);
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextSearchTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_HEIGHT, "nearest");
 	if (!g_sdlLauncherTextSearchTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 launcher text search texture,\n%s\n", SDL_GetError());
@@ -1178,8 +1176,7 @@ static void BEL_ST_Launcher_CreateTextInputTextureIfNeeded(void)
 	{
 		return;
 	}
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-	g_sdlLauncherTextInputTexture = SDL_CreateTexture(g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_HEIGHT);
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextInputTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_HEIGHT, "nearest");
 	if (!g_sdlLauncherTextInputTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 launcher text input texture,\n%s\n", SDL_GetError());
@@ -2118,7 +2115,7 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 			if (SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture) != 0)
 			{
 				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set target texture as render target (disabling),\n%s\n", SDL_GetError());
-				SDL_DestroyTexture(g_sdlTargetTexture);
+				BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
 				g_sdlTargetTexture = NULL;
 				goto refreshwithnorendertarget;
 			}
@@ -2305,6 +2302,12 @@ void BE_ST_Launcher_RunEventLoop(void)
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				break;
+
+			case SDL_RENDER_TARGETS_RESET:
+			case SDL_RENDER_DEVICE_RESET:
+				BEL_ST_RecreateAllTextures();
+				break;
+
 			case SDL_QUIT:
 				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
@@ -2437,6 +2440,12 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				break;
+
+			case SDL_RENDER_TARGETS_RESET:
+			case SDL_RENDER_DEVICE_RESET:
+				BEL_ST_RecreateAllTextures();
+				break;
+
 			case SDL_QUIT:
 				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
@@ -2716,6 +2725,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.cbutton.button, false, &confirmed))
 					return confirmed;
 				break;
+
 			case SDL_WINDOWEVENT:
 				switch (event.window.event)
 				case  SDL_WINDOWEVENT_RESIZED:
@@ -2728,6 +2738,12 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				break;
+
+			case SDL_RENDER_TARGETS_RESET:
+			case SDL_RENDER_DEVICE_RESET:
+				BEL_ST_RecreateAllTextures();
+				break;
+
 			case SDL_QUIT:
 				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
