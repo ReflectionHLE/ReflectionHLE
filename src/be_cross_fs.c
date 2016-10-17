@@ -432,7 +432,10 @@ void BE_Cross_PrepareAppPaths(void)
 	}
 #elif (defined REFKEEN_PLATFORM_UNIX)
 	const char *homeVar = getenv("HOME");
+
+#ifndef REFKEEN_PLATFORM_OSX
 	const char *envVar;
+#endif
 
 	if (!homeVar || !(*homeVar))
 	{
@@ -445,6 +448,10 @@ void BE_Cross_PrepareAppPaths(void)
 	}
 	else
 	{
+#ifdef REFKEEN_PLATFORM_OSX
+		// FIXME - Handle sandboxing?
+		BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/reflection-keen");
+#else
 		envVar = getenv("XDG_DATA_HOME");
 		if (envVar && *envVar)
 		{
@@ -458,6 +465,7 @@ void BE_Cross_PrepareAppPaths(void)
 		{
 			BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), ".");
 		}
+#endif
 	}
 
 	if (be_main_arg_newcfgdir)
@@ -466,6 +474,10 @@ void BE_Cross_PrepareAppPaths(void)
 	}
 	else
 	{
+#ifdef REFKEEN_PLATFORM_OSX
+		// FIXME - Handle sandboxing?
+		BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/reflection-keen");
+#else
 		envVar = getenv("XDG_CONFIG_HOME");
 		if (envVar && *envVar)
 		{
@@ -479,6 +491,7 @@ void BE_Cross_PrepareAppPaths(void)
 		{
 			BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), ".");
 		}
+#endif
 	}
 
 	/*** Root paths ***/
@@ -489,12 +502,18 @@ void BE_Cross_PrepareAppPaths(void)
 	{
 		// Home dir
 		BEL_Cross_AddRootPathIfDir(homeVar, "home", "Home dir");
+#ifdef REFKEEN_PLATFORM_OSX
+		// Steam installation dir
+		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam");
+		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
+#else
 		// Steam installation dir
 		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/.steam/steam");
 		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
 		// GOG.com installation dir
 		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/GOG Games");
 		BEL_Cross_AddRootPathIfDir(path, "gog", "GOG Games (default)");
+#endif
 	}
 	// Finally the root itself (better keep it at the bottom of the list)
 	BEL_Cross_AddRootPathIfDir("/", "/", "/");
@@ -1479,6 +1498,18 @@ int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int ma
 }
 #endif
 
+#if (defined REFKEEN_VER_CATACOMB_ALL) && ((defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_OSX))
+#define BE_CHECK_GOG_INSTALLATIONS
+
+#ifdef REFKEEN_PLATFORM_WINDOWS
+static const TCHAR *g_be_catacombs_gog_subdirnames_withdirsep[] = {_T("\\Cat3D"), _T("\\Abyss"), _T("\\Armageddon"), _T("\\Apocalypse")};
+#endif
+#ifdef REFKEEN_PLATFORM_OSX
+static const TCHAR *g_be_catacombs_gog_subdirnames_withdirsep[] = {_T("/2CAT3D"), _T("/3CABYSS"), _T("/4CATARM"), _T("/5APOC")};
+#endif
+
+#endif
+
 void BE_Cross_PrepareGameInstallations(void)
 {
 	/*** Reset these ***/
@@ -1492,17 +1523,36 @@ void BE_Cross_PrepareGameInstallations(void)
 
 	if (!g_refKeenCfg.manualGameVerMode)
 	{
-#if (defined REFKEEN_PLATFORM_WINDOWS) && (defined REFKEEN_VER_CATACOMB_ALL)
-		TCHAR gog_catacombs_path[BE_CROSS_PATH_LEN_BOUND];
+#ifdef REFKEEN_VER_CATACOMB_ALL
+
+#ifdef REFKEEN_PLATFORM_WINDOWS
+		TCHAR gog_catacombs_paths[1][BE_CROSS_PATH_LEN_BOUND];
 		DWORD dwType = 0;
-		DWORD dwSize = sizeof(gog_catacombs_path);
-		LSTATUS status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.COM\\GOGCATACOMBSPACK", L"PATH", &dwType, gog_catacombs_path, &dwSize);
-		bool isGogCatacombsPathFound = ((status == ERROR_SUCCESS) && (dwType == REG_SZ));
-		TCHAR *path_gog_catacombs_prefix_end;
-		if (isGogCatacombsPathFound)
+		DWORD dwSize = sizeof(gog_catacombs_paths[0]);
+		LSTATUS status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.COM\\GOGCATACOMBSPACK", L"PATH", &dwType, gog_catacombs_paths[0], &dwSize);
+		int numOfGogPathsToCheck = ((status == ERROR_SUCCESS) && (dwType == REG_SZ)) ? 1 : 0;
+		TCHAR *path_gog_catacombs_prefix_ends[1];
+		if (numOfGogPathsToCheck)
 		{
-			path_gog_catacombs_prefix_end = path/*NOT gog_catacombs_path*/ + _tcslen(gog_catacombs_path);
+			path_gog_catacombs_prefix_ends[0] = path/*NOT gog_catacombs_paths[0]*/ + _tcslen(gog_catacombs_paths[0]);
 		}
+#endif
+#ifdef REFKEEN_PLATFORM_OSX
+		int numOfGogPathsToCheck = 1;
+		char gog_catacombs_paths[2][BE_CROSS_PATH_LEN_BOUND] = {
+			"/Applications/Catacombs Pack/Catacomb Pack.app/Contents/Resources/Catacomb Pack.boxer/C 1 CATACOMB.harddisk",
+			"" // Fill this very soon
+		};
+		char *path_gog_catacombs_prefix_ends[2] = {path/*NOT gog_catacombs_paths[0]*/ + strlen(gog_catacombs_paths[0]), NULL};
+		const char *homeVar = getenv("HOME");
+		if (homeVar && *homeVar)
+		{
+			BE_Cross_safeandfastcstringcopy_2strs(gog_catacombs_paths[1], gog_catacombs_paths[1]+sizeof(gog_catacombs_paths[1])/sizeof(TCHAR), homeVar, gog_catacombs_paths[0]);
+			path_gog_catacombs_prefix_ends[1] = path/*NOT gog_catacombs_paths[1]*/ + strlen(gog_catacombs_paths[1]);
+			++numOfGogPathsToCheck;
+		}
+#endif
+
 #endif
 
 		/*** Now handling each version separately ***/
@@ -1517,11 +1567,11 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_VER_CAT3D
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, _T("."), "Catacomb 3-D v1.00 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, _T("."), "Catacomb 3-D v1.22 (Local)");
-#ifdef REFKEEN_PLATFORM_WINDOWS
-		if (isGogCatacombsPathFound)
+#ifdef BE_CHECK_GOG_INSTALLATIONS
+		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
-			memcpy(path, gog_catacombs_path, sizeof(path));
-			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_end, pathEnd, _T("\\Cat3D"));
+			memcpy(path, gog_catacombs_paths[i], sizeof(path));
+			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_ends[i], pathEnd, g_be_catacombs_gog_subdirnames_withdirsep[0]);
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, path, "Catacomb 3-D v1.22 (GOG.com)");
 		}
 #endif
@@ -1530,11 +1580,11 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_VER_CATABYSS
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss113, _T("."), "Catacomb Abyss v1.13 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, _T("."), "Catacomb Abyss v1.24 (Local)");
-#ifdef REFKEEN_PLATFORM_WINDOWS
-		if (isGogCatacombsPathFound)
+#ifdef BE_CHECK_GOG_INSTALLATIONS
+		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
-			memcpy(path, gog_catacombs_path, sizeof(path));
-			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_end, pathEnd, _T("\\Abyss"));
+			memcpy(path, gog_catacombs_paths[i], sizeof(path));
+			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_ends[i], pathEnd, g_be_catacombs_gog_subdirnames_withdirsep[1]);
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, path, "Catacomb Abyss v1.24 (GOG.com)");
 		}
 #endif
@@ -1542,11 +1592,11 @@ void BE_Cross_PrepareGameInstallations(void)
 
 #ifdef REFKEEN_VER_CATARM
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, _T("."), "Catacomb Armageddon v1.02 (Local)");
-#ifdef REFKEEN_PLATFORM_WINDOWS
-		if (isGogCatacombsPathFound)
+#ifdef BE_CHECK_GOG_INSTALLATIONS
+		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
-			memcpy(path, gog_catacombs_path, sizeof(path));
-			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_end, pathEnd, _T("\\Armageddon"));
+			memcpy(path, gog_catacombs_paths[i], sizeof(path));
+			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_ends[i], pathEnd, g_be_catacombs_gog_subdirnames_withdirsep[2]);
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, path, "Catacomb Armageddon v1.02 (GOG.com)");
 		}
 #endif
@@ -1554,11 +1604,11 @@ void BE_Cross_PrepareGameInstallations(void)
 
 #ifdef REFKEEN_VER_CATAPOC
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, _T("."), "Catacomb Apocalypse v1.01 (Local)");
-#ifdef REFKEEN_PLATFORM_WINDOWS
-		if (isGogCatacombsPathFound)
+#ifdef BE_CHECK_GOG_INSTALLATIONS
+		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
-			memcpy(path, gog_catacombs_path, sizeof(path));
-			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_end, pathEnd, _T("\\Apocalypse"));
+			memcpy(path, gog_catacombs_paths[i], sizeof(path));
+			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_ends[i], pathEnd, g_be_catacombs_gog_subdirnames_withdirsep[3]);
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, path, "Catacomb Apocalypse v1.01 (GOG.com)");
 		}
 #endif

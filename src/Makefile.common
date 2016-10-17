@@ -18,6 +18,19 @@ OBJPREFIX=obj
 OBJ=$(OBJPREFIX)/$(VERDIRNAME)
 BEOBJ=$(OBJ)/be
 
+ifndef PLATFORM
+	osname=$(strip $(shell uname -s))
+	ifeq ($(findstring MINGW,$(osname)),MINGW)
+		PLATFORM=WINDOWS
+	else ifeq ($(findstring CYGWIN,$(osname)),CYGWIN)
+		PLATFORM=WINDOWS
+	else ifeq ($(findstring Darwin,$(osname)),Darwin)
+		PLATFORM=DARWIN
+	else
+		PLATFORM=UNKNOWN
+	endif
+endif
+
 RESAMPLER=LIBSPEEXDSP
 
 INTCXXFLAGS+= -I$(SRC) -I$(BESRC) -DREFKEEN_RESAMPLER_$(RESAMPLER)
@@ -70,3 +83,79 @@ ifeq ($(PLATFORM), WINDOWS)
 endif
 
 EXE_PATH=$(BESRC)/$(EXENAME)$(EXE_EXT)
+
+ifeq ($(PLATFORM), DARWIN)
+	APPBUNDLE_PATH=$(BESRC)/$(EXENAME).app
+	UNIVERSALBUILD=1
+	ifeq ($(UNIVERSALBUILD), 1)
+		INTCXXFLAGS+= -arch i386 -arch x86_64
+		INTLDFLAGS+= -arch i386 -arch x86_64
+	endif
+endif
+
+# Common targets
+
+.PHONY: all game clean veryclean
+
+all: game
+
+ifeq ($(PLATFORM), DARWIN)
+game: $(APPBUNDLE_PATH)
+else
+game: $(EXE_PATH)
+endif
+
+$(EXE_PATH): $(OBJECTS)
+	$(CXX) $(OBJECTS) $(LDFLAGS) $(INTLDFLAGS) -o $@
+ifeq ($(DEBUG),0)
+	$(STRIPBIN) $(EXE_PATH)
+endif
+
+$(RES_PATH): $(RSRC)/$(EXENAME).rc
+	$(WINDRESBIN) $< -O coff -o $@
+
+$(BEOBJ)/crc32.o: $(BESRC)/crc32/crc32.c | $(BEOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(BEOBJ)/dbopl.o: $(BESRC)/opl/dbopl.c | $(BEOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(BEOBJ)/unlzexe.o: $(BESRC)/unlzexe/unlzexe.c | $(BEOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(BEOBJ)/%.o: $(BESRC)/%.c $(BEOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
+$(BEOBJ): | $(OBJ)
+	-mkdir $(BEOBJ)
+$(OBJ): | $(OBJPREFIX)
+	-mkdir $(OBJ)
+$(OBJPREFIX):
+	-mkdir $(OBJPREFIX)
+
+clean:
+	-rm -f $(EXE_PATH) $(OBJECTS)
+ifeq ($(PLATFORM), DARWIN)
+	-rm -rf $(APPBUNDLE_PATH)
+endif
+
+ifeq ($(PLATFORM), DARWIN)
+
+# If version string has the form "vX.Y.Z", where each of X, Y and Z is made
+# out of at least one digit then write "X.Y.Z". Otherwise, write "0.0.0".
+APPVER=`grep "^\#define REFKEEN_VERSION_STRING" $(BESRC)/be_title_and_version.h | cut -d'"' -f2 | cut -c2- | sed '/[0-9][0-9]*[.][0-9][0-9]*[.][0-9][0-9]*/! s/.*/0.0.0/g'`
+
+$(APPBUNDLE_PATH): $(RSRC)/Info.plist $(EXE_PATH) $(RSRC)/$(EXENAME).icns
+	-mkdir $(APPBUNDLE_PATH)
+	-mkdir $(APPBUNDLE_PATH)/Contents
+	-mkdir $(APPBUNDLE_PATH)/Contents/MacOS
+	-mkdir $(APPBUNDLE_PATH)/Contents/Resources
+	echo -n 'APPL????' > $(APPBUNDLE_PATH)/Contents/PkgInfo
+	sed "s/PutVerHere/$(APPVER)/; s/PutAppNameHere/$(EXENAME)/" $(RSRC)/Info.plist > $(APPBUNDLE_PATH)/Contents/Info.plist
+	cp $(EXE_PATH) $(APPBUNDLE_PATH)/Contents/MacOS/
+	cp $(RSRC)/$(EXENAME).icns $(APPBUNDLE_PATH)/Contents/Resources/
+
+endif
