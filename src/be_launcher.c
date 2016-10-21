@@ -758,8 +758,6 @@ void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinm
 		g_be_launcher_pointermotionactuallystarted = true;
 	}
 
-	g_be_launcher_vscroll_currrateper100ms = 0;
-
 	g_be_launcher_back_button_pressed = false;
 	BEL_Launcher_DrawBackButtonLabel(g_be_launcher_back_button_pressed);
 
