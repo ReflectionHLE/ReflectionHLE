@@ -63,7 +63,7 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 	char error[160];
 
 	const int xPosStart = BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING + 1;
-	int lastYPos;
+	int lastYPos = 0;
 	int xPosUpperBound = ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) || (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION)) ? BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND : (BE_LAUNCHER_PIX_WIDTH-1-BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING);
 	int xPos = xPosStart;
 	int noOfLabelLines = 1;
