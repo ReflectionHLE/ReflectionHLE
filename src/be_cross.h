@@ -287,6 +287,12 @@ uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void);
 void BE_Cross_Brandomize(void);
 int16_t BE_Cross_Brandom(int16_t num);
 
+// UNSAFE alternative for Borland's getdate function used in Keen Dreams v1.00;
+//
+// Do NOT call the function from multiple threads!
+// (Internally it uses localtime, which isn't thread-safe on Linux.)
+void BE_Cross_GetLocalDate_UNSAFE(int *y, int *m, int *d);
+
 // Hack for Catacomb Abyss' INTRO and LOADSCN
 inline int32_t BE_Mem_FarCoreLeft(void)
 {

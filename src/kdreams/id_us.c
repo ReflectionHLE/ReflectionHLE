@@ -579,6 +579,10 @@ US_TextScreen(void)
 	// REFKEEN - Embed multiple versions of id_us_s.c
 	switch (refkeen_current_gamever)
 	{
+	case BE_GAMEVER_KDREAMSE100:
+	case BE_GAMEVER_KDREAMSC100:
+#include "id_us_s_kdreams100.c"
+		break;
 	case BE_GAMEVER_KDREAMSE113:
 #include "id_us_s_kdreams113.c"
 		break;
@@ -609,10 +613,6 @@ US_TextScreen(void)
 		}
 	}
 }
-
-// REFKEEN - Looks like these are used in version 1.00 only
-
-#if 0
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -654,10 +654,6 @@ USL_ShowMem(id0_word_t x,id0_word_t y,id0_long_t mem)
 		USL_ScreenDraw(x++,y," ",0x48);
 	USL_ScreenDraw(x,y,buf,0x48);
 }
-
-
-// REFKEEN - Commented out in some versions, does nothing in v1.05 due
-// to code internally commented out and apparently useful only in v1.00
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -720,8 +716,6 @@ US_UpdateTextScreen(void)
 	USL_ScreenDraw(27,22,"  Loading...   ",0x9c);
 }
 
-#endif
-
 ///////////////////////////////////////////////////////////////////////////
 //
 //	US_FinishTextScreen() - After the main program has finished its initial
@@ -732,8 +726,10 @@ void
 US_FinishTextScreen(void)
 {
 	// Change Loading... to Press a Key
-//	USL_ScreenDraw(29,22," Ready - Press a Key     ",0x9a);
-	USL_ScreenDraw(30, 18, "Ready - Press a Key",0xCE);
+	if (current_gamever_int == 100)
+		USL_ScreenDraw(29,22," Ready - Press a Key     ",0x9a);
+	else
+		USL_ScreenDraw(30, 18, "Ready - Press a Key",0xCE);
 
 	if (!tedlevel)
 	{
@@ -2337,6 +2333,11 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 
 	while (!(Done))
 	{
+		// REFKEEN - Originally this code block was outside any loop
+		// in v1.00, so let's emulate the behaviors this way
+		if (current_gamever_int == 100)
+			Done = true;
+
 		USL_ShowHelp("Move Joystick to the Upper-Left");
 		VW_UpdateScreen();
 		while ((LastScan != sc_Escape) && !IN_GetJoyButtonsDB(joy))
@@ -2363,7 +2364,14 @@ USL_CtlCJoyButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 			{
 				IN_GetJoyAbs(0,&maxx,&maxy);
 
-				if ((maxx != minx) && (maxy != miny))
+				// REFKEEN - For v1.00, we've already set Done
+				// variable, and the max/min comparisons are
+				// not done in vanilla v1.00, so we can
+				// simply do the following
+				if (((maxx != minx) && (maxy != miny))
+				    || (current_gamever_int == 100)
+				)
+				//if ((maxx != minx) && (maxy != miny))
 				{
 					Done = true;
 					IN_SetupJoy(joy,minx,maxx,miny,maxy);
@@ -2774,7 +2782,7 @@ USL_CtlHButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		}
 
 
-		if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+		if (current_gamever_int < 110)
 		{
 			MM_GetPtr(&dupe,5000);
 			memcpy(dupe, buf, 5000);
@@ -3544,7 +3552,7 @@ USL_TearDownCtlPanel(void)
 
 		if (!QuitToDos)
 		{
-			if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+			if (current_gamever_int < 110)
 			{
 				US_CenterWindow(20,8);
 				US_CPrint("Loading");
@@ -3968,5 +3976,6 @@ void RefKeen_Patch_id_us(void)
 		// Similarly we don't use Quit
 		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load at least one file.");
 
-	refkeen_compat_config_filename = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? "CONFIG."EXTENSION : "KDREAMS.CFG";
+	// current_gamever_int *must* be patched first
+	refkeen_compat_config_filename = (current_gamever_int < 110) ? "CONFIG."EXTENSION : "KDREAMS.CFG";
 }

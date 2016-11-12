@@ -1401,8 +1401,10 @@ void RefKeen_Patch_id_vw(void)
 {
 	// Note: Most functions are rather patched in id_vw_ac or id_vw_ae.
 	// The definitions of all function pointers are given here, though,
-	// since each function pointer may be defined in exactly on place.
-	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	// since each function pointer may be defined in exactly one place.
+	//
+	// Additionally, GRMODE *must* be patched first.
+	if (GRMODE == CGAGR)
 	{
 		SCREENWIDTH = SCREENWIDTH_CGA;
 		CHARWIDTH = CHARWIDTH_CGA;

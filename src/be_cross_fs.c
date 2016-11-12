@@ -40,6 +40,8 @@
 
 /*** Common game string versions (for identification in cfg and other locations + directory names) ***/
 #ifdef REFKEEN_VER_KDREAMS
+#define BE_STR_GAMEVER_KDREAMSE100 "kdreamse100"
+#define BE_STR_GAMEVER_KDREAMSC100 "kdreamsc100"
 #define BE_STR_GAMEVER_KDREAMSE113 "kdreamse113"
 #define BE_STR_GAMEVER_KDREAMSC105 "kdreamsc105"
 #define BE_STR_GAMEVER_KDREAMSE193 "kdreamse193"
@@ -218,6 +220,8 @@ BE_GameVer_T refkeen_current_gamever;
 // These MUST have the same order as in the BE_GameVer_T enum
 const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_VER_KDREAMS
+	BE_STR_GAMEVER_KDREAMSE100,
+	BE_STR_GAMEVER_KDREAMSC100,
 	BE_STR_GAMEVER_KDREAMSE113,
 	BE_STR_GAMEVER_KDREAMSC105,
 	BE_STR_GAMEVER_KDREAMSE193,
@@ -241,6 +245,8 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 
 const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_VER_KDREAMS
+	"Keen Dreams EGA v1.00",
+	"Keen Dreams CGA v1.00",
 	"Keen Dreams EGA v1.13",
 	"Keen Dreams CGA v1.05",
 	"Keen Dreams EGA v1.93",
@@ -522,7 +528,7 @@ void BE_Cross_PrepareAppPaths(void)
 
 static BE_GameInstallation_T *g_be_selectedGameInstallation;
 
-#define BE_CROSS_MAX_GAME_INSTALLATIONS 4
+#define BE_CROSS_MAX_GAME_INSTALLATIONS 6
 static BE_GameInstallation_T g_be_gameinstallations[BE_CROSS_MAX_GAME_INSTALLATIONS];
 int g_be_gameinstallations_num;
 
@@ -539,6 +545,76 @@ int BE_Cross_GetGameVerFromInstallation(int num)
 }
 
 #ifdef REFKEEN_VER_KDREAMS
+/*** v1.00 Registered EGA ***/
+static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse100[] = {
+	{"AUDIO.KDR", 3498, 0x80ac85e5},
+	{"EGAGRAPH.KDR", 213045, 0x2dc94687},
+	{"GAMEMAPS.KDR", 63497, 0x7b517fa0},
+	// FIXME - Support compression mechanism
+	//{"KDREAMS.EXE", 77694, 0xc73b8cb2},
+	{"KDREAMS.EXE", 175424, 0x69b1dd23},
+	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse100[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28984+0x1a00},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1f370+0x1a00},
+	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1f4d0+0x1a00},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x28188+0x1a00},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x19610+0x1a00},
+	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x20770+0x1a00},
+	{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x28588+0x1a00},
+	{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1c540+0x1a00},
+	{"STORY.KDR", 2487, 0xed0ea5fe, 0x219c0+0x1a00},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_kdreamse100 = {
+	g_be_reqgameverfiles_kdreamse100,
+	g_be_embeddedgameverfiles_kdreamse100,
+	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE100),
+	"Keen Dreams EGA v1.00 (Custom)",
+	"KDREAMS.EXE",
+	175424,
+	BE_EXECOMPRESSION_NONE/*BE_EXECOMPRESSION_PKLITE*/, // FIXME - Support compression mechanism
+	BE_GAMEVER_KDREAMSE100
+};
+
+/*** v1.00 CGA ***/
+static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc100[] = {
+	{"AUDIO.KDR", 3498, 0x80ac85e5},
+	{"CGAGRAPH.KDR", 134691, 0x05e32626},
+	{"GAMEMAPS.KDR", 63497, 0x7b517fa0},
+	// FIXME - Support compression mechanism
+	//{"KDREAMS.EXE", 75015, 0xb6ff595a},
+	{"KDREAMS.EXE", 172896, 0x4498479d},
+	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc100[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x281c2+0x1800},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1e6b0+0x1800},
+	{"CGADICT.KDR", 1024, 0xaba89759, 0x279c6+0x1800},
+	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18950+0x1800},
+	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1e810+0x1800},
+	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1fab0+0x1800},
+	{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x27dc6+0x1800},
+	{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1b880+0x1800},
+	{"STORY.KDR", 2487, 0xed0ea5fe, 0x20d00+0x1800},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_kdreamsc100 = {
+	g_be_reqgameverfiles_kdreamsc100,
+	g_be_embeddedgameverfiles_kdreamsc100,
+	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSC100),
+	"Keen Dreams CGA v1.00 (Custom)",
+	"KDREAMS.EXE",
+	172896,
+	BE_EXECOMPRESSION_NONE/*BE_EXECOMPRESSION_PKLITE*/, // FIXME - Support compression mechanism
+	BE_GAMEVER_KDREAMSC100
+};
+
 /*** v1.13 (Shareware) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse113[] = {
 	{"KDREAMS.AUD", 3498, 0x80ac85e5},
@@ -1025,6 +1101,8 @@ static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
 
 static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_VER_KDREAMS
+	&g_be_gamever_kdreamse100,
+	&g_be_gamever_kdreamsc100,
 	&g_be_gamever_kdreamse113,
 	&g_be_gamever_kdreamsc105,
 	&g_be_gamever_kdreamse193,
@@ -1048,6 +1126,8 @@ static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 
 const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #ifdef REFKEEN_VER_KDREAMS
+	g_be_reqgameverfiles_kdreamse100,
+	g_be_reqgameverfiles_kdreamsc100,
 	g_be_reqgameverfiles_kdreamse113,
 	g_be_reqgameverfiles_kdreamsc105,
 	g_be_reqgameverfiles_kdreamse193,
@@ -1306,7 +1386,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 			switch (details->compressionType)
 			{
 			case BE_EXECOMPRESSION_NONE:
-				success = (fread(decompexebuffer, details->decompExeSize, 1, exeFp) != 1);
+				success = (fread(decompexebuffer, details->decompExeSize, 1, exeFp) == 1);
 				break;
 			case BE_EXECOMPRESSION_LZEXE9X:
 				success = Unlzexe_unpack(exeFp, decompexebuffer, details->decompExeSize);
@@ -1558,6 +1638,8 @@ void BE_Cross_PrepareGameInstallations(void)
 		/*** Now handling each version separately ***/
 
 #ifdef REFKEEN_VER_KDREAMS
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse100, _T("."), "Keen Dreams EGA v1.00 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc100, _T("."), "Keen Dreams CGA v1.00 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, _T("."), "Keen Dreams EGA v1.13 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Keen Dreams CGA v1.05 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, _T("."), "Keen Dreams EGA v1.93 (Local)");
@@ -1883,6 +1965,7 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 
 	g_refKeenCfg.lastSelectedGameVer = refkeen_current_gamever = g_be_selectedGameInstallation->verId;
 
+	// MUST be the first patched file (at least for Keen Dreams)
 	extern void RefKeen_Patch_id_ca(void);
 	RefKeen_Patch_id_ca();
 	extern void RefKeen_Patch_id_us(void);

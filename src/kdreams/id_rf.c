@@ -2430,6 +2430,12 @@ void RefKeen_Patch_id_rf(void)
 {
 	switch (refkeen_current_gamever)
 	{
+	case BE_GAMEVER_KDREAMSE100:
+		refkeen_compat_id_rf_allanims_table_offset = 0xC128;
+		break;
+	case BE_GAMEVER_KDREAMSC100:
+		refkeen_compat_id_rf_allanims_table_offset = 0xC604;
+		break;
 	case BE_GAMEVER_KDREAMSE113:
 		refkeen_compat_id_rf_allanims_table_offset = 0xC11E;
 		break;
@@ -2444,7 +2450,7 @@ void RefKeen_Patch_id_rf(void)
 		break;
 	}
 
-	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	if (GRMODE == CGAGR) // GRMODE *must* be patched first
 	{
 		RF_NewPosition = &RF_NewPosition_CGA;
 		RF_Scroll = &RF_Scroll_CGA;

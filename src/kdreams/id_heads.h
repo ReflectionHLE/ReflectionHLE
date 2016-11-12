@@ -137,6 +137,10 @@ extern const char **id0_argv;
 // REFKEEN - Change GRMODE from a macro to a variable
 extern id0_int_t GRMODE;
 
+// REFKEEN - New variable, used as an alternative to refkeen_current_gamever
+// on various occassions (e.g., behaviors common to versions 1.00 and 1.05)
+extern int current_gamever_int;
+
 #include "id_mm.h"
 #include "id_ca.h"
 #include "id_vw.h"

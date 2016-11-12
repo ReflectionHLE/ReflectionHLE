@@ -811,7 +811,7 @@ ENDP
 // (REFKEEN) Used for patching version-specific stuff
 void RefKeen_Patch_id_vw_ac(void)
 {
-	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	if (GRMODE == CGAGR) // GRMODE *must* be patched first
 	{
 		VW_MaskBlock = VW_MaskBlock_CGA;
 		VW_MemToScreen = VW_MemToScreen_CGA;

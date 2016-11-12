@@ -694,20 +694,36 @@ DemoLoop_Old (void)
 				mywin.h = 200;
 				mywin.px = mywin.x + 0;
 				mywin.py = mywin.y + 10;
-				s =             "\n"
-						"\"Keen Dreams\"\n"
-						"Copyright 1991-93\n"
-						"Softdisk, Inc.\n"
-						"\n"
-						"\n"
-						"\n"
-						"\n"
-						"Commander Keen\n"
-						"Copyright 1990-91\n"
-						"Id Software, Inc.\n"
-						"\n"
-						"Press F1 for Help\n"
-						"SPACE to Start\n";
+				if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+					s =             "\n"
+							"\"Keen Dreams\"\n"
+							"Copyright 1991-93\n"
+							"Softdisk, Inc.\n"
+							"\n"
+							"\n"
+							"\n"
+							"\n"
+							"Commander Keen\n"
+							"Copyright 1990-91\n"
+							"Id Software, Inc.\n"
+							"\n"
+							"Press F1 for Help\n"
+							"SPACE to Start\n";
+				else
+					s =		"Gamer's Edge\n"
+							"\"Keen Dreams\"\n"
+							"Copyright 1991\n"
+							"Softdisk, Inc.\n"
+							"\n"
+							"Subscriptions\n"
+							"1-800-831-2694\n"
+							"\n"
+							"Commander Keen\n"
+							"Copyright 1990-91\n"
+							"Id Software, Inc.\n"
+							"\n"
+							"Press F1 for Help\n"
+							"SPACE to Start\n";
 				if (ShowText((2 * TILEGLOBAL) + (PIXGLOBAL * 2),&mywin,s))
 					break;
 
@@ -874,5 +890,6 @@ void (*DemoLoop) (void);
 
 void RefKeen_Patch_kd_demo(void)
 {
-	DemoLoop = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? &DemoLoop_Old : &DemoLoop_New;
+	// current_gamever_int *must* be patched first
+	DemoLoop = (current_gamever_int < 110) ? &DemoLoop_Old : &DemoLoop_New;
 }

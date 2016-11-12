@@ -569,5 +569,6 @@ void (*RFL_NewTile) (id0_unsigned_t updateoffset);
 
 void RefKeen_Patch_id_rf_a(void)
 {
-	RFL_NewTile = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? RFL_NewTile_CGA : RFL_NewTile_EGA;
+	// GRMODE *must* be patched first
+	RFL_NewTile = (GRMODE == CGAGR) ? RFL_NewTile_CGA : RFL_NewTile_EGA;
 }

@@ -535,7 +535,7 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 		}
 	}
 
-	Quit ((refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? "MM_GetPtr: Out of memory!" : "Out of memory!  Please make sure you have enough free memory.");
+	Quit ((current_gamever_int < 110) ? "MM_GetPtr: Out of memory!" : "Out of memory!  Please make sure you have enough free memory.");
 }
 
 //==========================================================================

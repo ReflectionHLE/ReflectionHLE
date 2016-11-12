@@ -2518,5 +2518,5 @@ void (*MemDrawChar) (id0_int_t char8,id0_byte_t id0_far *dest,id0_unsigned_t wid
 
 void RefKeen_Patch_kd_keen(void)
 {
-	MemDrawChar = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? &MemDrawCharCGA : &MemDrawCharEGA;
+	MemDrawChar = (GRMODE == CGAGR) ? &MemDrawCharCGA : &MemDrawCharEGA; // GRMODE *must* be patched first
 }

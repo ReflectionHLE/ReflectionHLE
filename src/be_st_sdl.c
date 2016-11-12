@@ -237,8 +237,9 @@ void BE_ST_PrepareForGameStartup(void)
 	memset(g_sdlEmuMouseMotionAbsoluteState, 0, sizeof(g_sdlEmuMouseMotionAbsoluteState));
 	g_sdlEmuJoyButtonsState = 0;
 	// A bit tricky, should be reported as centered *if* any joystick is connected (and *not* while using modern controller scheme)
-	// Note: A single controller may support up to all 4
-	g_sdlEmuJoyMotionState[0] = g_sdlEmuJoyMotionState[1] = g_sdlEmuJoyMotionState[2] = g_sdlEmuJoyMotionState[3] = 0;
+	// Note 1: A single controller may support up to all 4
+	// Note 2: Assigning 0 here may lead to division by zero in Keen Dreams v1.00
+	g_sdlEmuJoyMotionState[0] = g_sdlEmuJoyMotionState[1] = g_sdlEmuJoyMotionState[2] = g_sdlEmuJoyMotionState[3] = BE_ST_EMU_JOYSTICK_RANGEMAX;
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (g_sdlJoysticks[i])
 		{

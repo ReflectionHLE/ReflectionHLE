@@ -1644,7 +1644,7 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 
 	dialog = (title!=NULL);
 	// REFKEEN - Ignore cachedownlevel in "earlier" versions
-	if ((refkeen_current_gamever != BE_GAMEVER_KDREAMSC105) && cachedownlevel)
+	if ((current_gamever_int >= 110) && cachedownlevel)
 	//if (cachedownlevel)
 		dialog = false;
 
@@ -1834,11 +1834,12 @@ id0_byte_t	*audiohead;
 id0_byte_t	*audiodict;
 
 id0_int_t GRMODE;
+int current_gamever_int;
 
 void RefKeen_Patch_id_ca(void)
 {
 	int audiodictsize, audioheadsize, GFXdictsize, GFXheadsize, mapdictsize, mapheadsize;
-	GRMODE = (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105) ? CGAGR : EGAGR;
+	GRMODE = ((refkeen_current_gamever == BE_GAMEVER_KDREAMSC100) || (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)) ? CGAGR : EGAGR;
 	id0_byte_t **GFXdictptr = (GRMODE == CGAGR) ? &CGAdict : &EGAdict;
 	id0_long_t **GFXheadptr = (GRMODE == CGAGR) ? &CGAhead : &EGAhead;
 	// Just in case these may ever be reloaded
@@ -1869,12 +1870,21 @@ void RefKeen_Patch_id_ca(void)
 		// Similarly we don't use Quit
 		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_ca - Failed to load at least one file.");
 
-	if (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)
+	if (GRMODE == CGAGR)
 	{
 		refkeen_compat_grfilename = "CGAGRAPH."EXTENSION;
 		refkeen_compat_mapfilename = "GAMEMAPS."EXTENSION;
 		refkeen_compat_audiofilename = "AUDIO."EXTENSION;
 		refkeen_compat_grfilename_openerrormsg = "Cannot open CGAGRAPH."EXTENSION"!";
+		refkeen_compat_mapfilename_openerrormsg = "Can't open GAMEMAPS."EXTENSION"!";
+		refkeen_compat_audiofilename_openerrormsg = "Can't open AUDIO."EXTENSION"!";
+	}
+	else if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE100)
+	{
+		refkeen_compat_grfilename = "EGAGRAPH."EXTENSION;
+		refkeen_compat_mapfilename = "GAMEMAPS."EXTENSION;
+		refkeen_compat_audiofilename = "AUDIO."EXTENSION;
+		refkeen_compat_grfilename_openerrormsg = "Cannot open EGAGRAPH."EXTENSION"!";
 		refkeen_compat_mapfilename_openerrormsg = "Can't open GAMEMAPS."EXTENSION"!";
 		refkeen_compat_audiofilename_openerrormsg = "Can't open AUDIO."EXTENSION"!";
 	}
@@ -1907,4 +1917,23 @@ void RefKeen_Patch_id_ca(void)
 		tinfasmapfile->headeroffsets[i] = BE_Cross_Swap32LE(tinfasmapfile->headeroffsets[i]);
 	}
 #endif
+	switch (refkeen_current_gamever)
+	{
+	case BE_GAMEVER_KDREAMSE100:
+	case BE_GAMEVER_KDREAMSC100:
+		current_gamever_int = 100;
+		break;
+	case BE_GAMEVER_KDREAMSE113:
+		current_gamever_int = 113;
+		break;
+	case BE_GAMEVER_KDREAMSC105:
+		current_gamever_int = 105;
+		break;
+	case BE_GAMEVER_KDREAMSE193:
+		current_gamever_int = 193;
+		break;
+	case BE_GAMEVER_KDREAMSE120:
+		current_gamever_int = 120;
+		break;
+	}
 }

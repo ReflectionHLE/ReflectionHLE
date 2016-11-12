@@ -237,3 +237,16 @@ void BE_Cross_Brandomize(void)
 {
 	BEL_Cross_srand(time(NULL));
 }
+
+// UNSAFE alternative for Borland's getdate function used in Keen Dreams v1.00;
+//
+// Do NOT call the function from multiple threads!
+// (Internally it uses localtime, which isn't thread-safe on Linux.)
+void BE_Cross_GetLocalDate_UNSAFE(int *y, int *m, int *d)
+{
+	time_t t = time(NULL);
+	struct tm *tmstruct = localtime(&t);
+	*y = tmstruct->tm_year + 1900;
+	*m = tmstruct->tm_mon + 1;
+	*d = tmstruct->tm_mday;
+}
