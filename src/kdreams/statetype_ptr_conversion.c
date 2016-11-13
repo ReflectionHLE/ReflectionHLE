@@ -688,6 +688,7 @@ void RefKeen_FillObjStatesWithDOSPointers(void)
 		break;
 
 	case BE_GAMEVER_KDREAMSE113:
+	case BE_GAMEVER_KDREAMS2015: // Same offsets as v1.13
 		RefKeen_GetObjStatePtrFromDOSPointer = RefKeen_GetObjStatePtrFromDOSPointer_KDreamsE113;
 
 		s_score.compatdospointer = 0x0BB4;

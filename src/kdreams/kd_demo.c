@@ -75,6 +75,10 @@ void NewGame (void)
 	gamestate.nextextra = 20000;
 	gamestate.lives = 3;
 	gamestate.flowerpowers = gamestate.boobusbombs = 0;
+	// REFKEEN - A vanilla bug fixed in the 2015 re-release,
+	// but replicated here with DOS versions data
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		gamestate.keys = 0;
 	for (i = 0;i < GAMELEVELS;i++)
 		gamestate.leveldone[i] = false;
 }
@@ -323,9 +327,12 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 // Similar new methods for writing/reading game state
 static id0_boolean_t SaveGameState(BE_FILE_T file, gametype *state)
 {
+	id0_word_t padding; // Two bytes of struct tail padding for 2015 port
 	return ((BE_Cross_writeInt16LE(file, &state->worldx) == 2)
 	        && (BE_Cross_writeInt16LE(file, &state->worldy) == 2)
-	        && (BE_Cross_write_booleans_To16LEBuffer(file, state->leveldone, 2*sizeof(state->leveldone)/sizeof(id0_boolean_t)) == 2*sizeof(state->leveldone)/sizeof(id0_boolean_t))
+	        && (((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) && (BE_Cross_write_booleans_To16LEBuffer(file, state->leveldone, 2*sizeof(state->leveldone)/sizeof(id0_boolean_t)) == 2*sizeof(state->leveldone)/sizeof(id0_boolean_t)))
+	            || ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) && (BE_Cross_write_booleans_To32LEBuffer(file, state->leveldone, 4*sizeof(state->leveldone)/sizeof(id0_boolean_t)) == 4*sizeof(state->leveldone)/sizeof(id0_boolean_t)))
+	        )
 	        && (BE_Cross_writeInt32LE(file, &state->score) == 4)
 	        && (BE_Cross_writeInt32LE(file, &state->nextextra) == 4)
 	        && (BE_Cross_writeInt16LE(file, &state->flowerpowers) == 2)
@@ -335,14 +342,18 @@ static id0_boolean_t SaveGameState(BE_FILE_T file, gametype *state)
 	        && (BE_Cross_writeInt16LE(file, &state->mapon) == 2)
 	        && (BE_Cross_writeInt16LE(file, &state->lives) == 2)
 	        && (BE_Cross_writeInt16LE(file, &state->difficulty) == 2)
+		&& (((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) || (BE_Cross_writeInt16LE(file, &padding) == 2)))
 	);
 }
 
 static id0_boolean_t LoadGameState(BE_FILE_T file, gametype *state)
 {
+	id0_longword_t padding; // Two bytes of struct tail padding for 2015 port
 	return ((BE_Cross_readInt16LE(file, &state->worldx) == 2)
 	        && (BE_Cross_readInt16LE(file, &state->worldy) == 2)
-	        && (BE_Cross_read_booleans_From16LEBuffer(file, state->leveldone, 2*sizeof(state->leveldone)/sizeof(id0_boolean_t)) == 2*sizeof(state->leveldone)/sizeof(id0_boolean_t))
+	        && (((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) && (BE_Cross_read_booleans_From16LEBuffer(file, state->leveldone, 2*sizeof(state->leveldone)/sizeof(id0_boolean_t)) == 2*sizeof(state->leveldone)/sizeof(id0_boolean_t)))
+	            || ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) && (BE_Cross_read_booleans_From32LEBuffer(file, state->leveldone, 4*sizeof(state->leveldone)/sizeof(id0_boolean_t)) == 4*sizeof(state->leveldone)/sizeof(id0_boolean_t)))
+	        )
 	        && (BE_Cross_readInt32LE(file, &state->score) == 4)
 	        && (BE_Cross_readInt32LE(file, &state->nextextra) == 4)
 	        && (BE_Cross_readInt16LE(file, &state->flowerpowers) == 2)
@@ -352,6 +363,7 @@ static id0_boolean_t LoadGameState(BE_FILE_T file, gametype *state)
 	        && (BE_Cross_readInt16LE(file, &state->mapon) == 2)
 	        && (BE_Cross_readInt16LE(file, &state->lives) == 2)
 	        && (BE_Cross_readInt16LE(file, &state->difficulty) == 2)
+		&& (((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) || (BE_Cross_readInt16LE(file, &padding) == 2)))
 	);
 }
 
@@ -756,12 +768,19 @@ DemoLoop_New (void)
 	//id0_char_t		*s;
 	//id0_word_t		move;
 	//id0_longword_t	lasttime;
+	// REFKEEN - Add FakeCGA shape for 2015 port
+	const id0_char_t *FileName0;
+	struct Shape FileShape0;
 	const id0_char_t *FileName1;
 	struct Shape FileShape1;
-#if CREDITS
+	// REFKEEN - CREDITS is now a variable, set based on version
+//#if CREDITS
 	const id0_char_t *FileName2;
 	struct Shape FileShape2;
-#endif
+	// REFKEEN - Add second credits shape for 2015 port
+	const id0_char_t *FileName3;
+	struct Shape FileShape3;
+//#endif
 	//struct ffblk ffblk;
 	//WindowRec	mywin;
 	id0_int_t bufsave	= bufferofs;
@@ -807,14 +826,29 @@ DemoLoop_New (void)
 
 		loadedgame = false;
 
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		{
+			FileName0 = "TITLECGA.LBM";
+			if (LoadLIBShape("KDREAMS.CMP", FileName0, &FileShape0))
+				Quit("Can't load TITLE SCREEN");
+		}
 		FileName1 = "TITLESCR.LBM";
 		if (LoadLIBShape("KDREAMS.CMP", FileName1, &FileShape1))
 			Quit("Can't load TITLE SCREEN");
-#if CREDITS
-		FileName2 = "CREDITS.LBM";
-		if (LoadLIBShape("KDREAMS.CMP", FileName2, &FileShape2))
-			Quit("Can't load CREDITS SCREEN");
-#endif
+		if (CREDITS)
+		{
+			// REFKEEN - Instead of loading just "CREDITS.LBM"
+			// (which never happened with the original EXEs in practice),
+			// load "CREDITS1.LBM" and "CREDITS2.LBM", as available
+			// in the 2015 release
+			FileName2 = "CREDITS1.LBM";
+			if (LoadLIBShape("KDREAMS.CMP", FileName2, &FileShape2))
+				Quit("Can't load CREDITS SCREEN 1");
+			if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+			FileName3 = "CREDITS2.LBM";
+			if (LoadLIBShape("KDREAMS.CMP", FileName3, &FileShape3))
+				Quit("Can't load CREDITS SCREEN 3");
+		}
 
 		while (!restartgame && !loadedgame)
 		{
@@ -829,32 +863,43 @@ DemoLoop_New (void)
 				// so use EGA versions of VW functions...
 				VW_SetScreen_EGA(0, 0);
 				MoveGfxDst(0, 200);
-				UnpackEGAShapeToScreen(&FileShape1, 0, 0);
+				UnpackEGAShapeToScreen(fakecgamode ? &FileShape0 : &FileShape1, 0, 0);
 				VW_ScreenToScreen_EGA (64*200,0,40,200);
 
-#if CREDITS
-				if (IN_UserInput(TickBase * 8, false))
+				if (IN_UserInput(CREDITS ? (TickBase * 8) : (TickBase * 4), false))
 					break;
-#else
-				if (IN_UserInput(TickBase * 4, false))
-					break;
-#endif
 
-#if CREDITS
+		// REFKEEN - Patch for 2015 port
+		if (!fakecgamode)
+		{
+			if (CREDITS)
+			{
+				// REFKEEN - Show two credits screens
+				// as present in the 2015 release
 				MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&FileShape2, 0, 0);
 				VW_ScreenToScreen_EGA (64*200,0,40,200);
 
 				if (IN_UserInput(TickBase * 7, false))
 					break;
-#else
+
+				MoveGfxDst(0, 200);
+				UnpackEGAShapeToScreen(&FileShape3, 0, 0);
+				VW_ScreenToScreen_EGA (64*200,0,40,200);
+
+				if (IN_UserInput(TickBase * 7, false))
+					break;
+			}
+			else
+			{
 				MoveGfxDst(0, 200);
 				UnpackEGAShapeToScreen(&FileShape1, 0, 0);
 				VW_ScreenToScreen_EGA (64*200,0,40,200);
 
 				if (IN_UserInput(TickBase * 3, false))
 					break;
-#endif
+			}
+		}
 
 				displayofs = 0;
 				VWB_Bar(0,0,320,200,FIRSTCOLOR);
@@ -875,10 +920,15 @@ DemoLoop_New (void)
 		if (!loadedgame)
 			NewGame();
 
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+			FreeShape(&FileShape0);
 		FreeShape(&FileShape1);
-#if CREDITS
-		FreeShape(&FileShape2);
-#endif
+		if (CREDITS)
+		{
+			// REFKEEN - Free two credits screens as present in the 2015 release
+			FreeShape(&FileShape2);
+			FreeShape(&FileShape3);
+		}
 		GameLoop();
 	}
 	// REFKEEN - Alternative controllers support
@@ -888,8 +938,16 @@ DemoLoop_New (void)
 // (REFKEEN) Used for patching version-specific stuff
 void (*DemoLoop) (void);
 
+// REFKEEN - In the original DOS releases, CREDITS is either defined to 0
+// (for new DemoLoop) or not defined (not present in old DemoLoop).
+// In the 2015 release, it looks like it is defined, and a few
+// behaviors were modified. So let's turn this into a
+// variable, with its value depending on the version.
+int CREDITS = 0;
+
 void RefKeen_Patch_kd_demo(void)
 {
 	// current_gamever_int *must* be patched first
 	DemoLoop = (current_gamever_int < 110) ? &DemoLoop_Old : &DemoLoop_New;
+	CREDITS = (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? 1 : 0;
 }

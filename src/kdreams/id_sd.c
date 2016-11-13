@@ -906,6 +906,51 @@ SDL_DetectSoundSource(void)
 }
 #endif // REFKEEN_SD_ENABLE_SOUNDSOURCE
 
+// REFKEEN - 2015 Port Sound Code
+
+/////////////////////////////////////////////////////////
+//
+//	SDL_Port2015StopSample() - Stops a sample playing
+//
+/////////////////////////////////////////////////////////
+#ifdef	_MUSE_
+void
+#else
+static void
+#endif
+SDL_Port2015StopSample(void)
+{
+	BE_ST_StopSoundEffect();
+}
+
+/////////////////////////////////////////////////////////////
+//
+//	SDL_Port2015PlaySample() - Plays the specified sample
+//
+/////////////////////////////////////////////////////////////
+#ifdef	_MUSE_
+void
+#else
+static void
+#endif
+SDL_Port2015PlaySample(Port2015SampledSound *sample)
+{
+	SDL_Port2015StopSample();
+	BE_ST_PlayS16SoundEffect(sample->data, sample->common.length/2);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//	SDL_Port2015Service() - Called when sample playback is (nearly) complete
+//
+////////////////////////////////////////////////////////////////////////////////
+static void /*interrupt*/
+SDL_Port2015Service(void)
+{
+	SDL_SoundFinished();
+}
+
+
 // 	AdLib Code
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1251,6 +1296,12 @@ static	id0_word_t	count = 1
 				;
 				//drivecount = 1;
 
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		SDL_SoundFinished();
+		return;
+	}
+
 	switch (SoundMode)
 	{
 	case sdm_PC:
@@ -1575,7 +1626,7 @@ SD_Startup(void)
 	//*** (REFKEEN) We use an alternative delay mechanism for OPL emulation ***/
 	//SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
 
-	BE_ST_StartAudioSDService(&SDL_t0Service);
+	BE_ST_StartAudioSDService((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? &SDL_Port2015Service : &SDL_t0Service);
 	//setvect(8,SDL_t0Service);	// Set to my timer 0 ISR
 	/*LocalTime = TimeCount = 0;*/
 
@@ -1744,6 +1795,12 @@ SD_PlaySound(id0_word_t sound)
 	if (s->priority < SoundPriority)
 		return;
 
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		if (SoundMode != sdm_Off)
+			SDL_Port2015PlaySample((Port2015SampledSound id0_far *)s);
+	}
+	else
 	switch (SoundMode)
 	{
 	case sdm_PC:
@@ -1782,6 +1839,9 @@ SD_SoundPlaying(void)
 {
 	id0_boolean_t	result = false;
 
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		return(SoundNumber);
+
 	switch (SoundMode)
 	{
 	case sdm_PC:
@@ -1816,6 +1876,12 @@ SD_SoundPlaying(void)
 void
 SD_StopSound(void)
 {
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		if (SoundMode != sdm_Off)
+			SDL_Port2015StopSample();
+	}
+	else
 	switch (SoundMode)
 	{
 	case sdm_PC:

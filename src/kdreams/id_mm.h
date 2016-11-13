@@ -74,5 +74,8 @@ void MM_ShowMemory (void);
 id0_long_t MM_UnusedMemory (void);
 id0_long_t MM_TotalFree (void);
 
+// REFKEEN - New functions, used while swapping CGA/EGA graphics from the 2015 port
+id0_unsigned_t MM_GetAttributes (memptr *baseptr);
+void MM_SetAttributes (memptr *baseptr, id0_unsigned_t attributes);
 
 #endif

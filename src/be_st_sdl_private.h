@@ -69,5 +69,7 @@ void BEL_ST_SDLDestroyTextureWrapper(SDL_Texture **pTexture);
 void BEL_ST_RecreateAllTextures(void);
 
 extern SDL_Surface *g_be_sdl_windowIconSurface;
+// NOT NECESSARILY AVAILABLE FOR ALL GAMES!
+extern bool g_sdlDoAbsMouseMotion;
 
 #endif

@@ -125,3 +125,5 @@ void CA_CacheMap (id0_int_t mapnum);
 // Supporting multiple versions, we conditionally ignore the second argument.
 void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel);
 
+// REFKEEN - New function, reloads CGA/EGA graphics from the 2015 port
+void CA_ReloadGrChunks (void);

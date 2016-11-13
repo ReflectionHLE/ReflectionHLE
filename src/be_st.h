@@ -33,7 +33,8 @@
 
 /*** General ***/
 void BE_ST_InitCommon(void); // Before game or launcher
-void BE_ST_PrepareForGameStartup(void); // Before game
+void BE_ST_PrepareForGameStartupWithoutAudio(void); // Before game, excludes the audio
+void BE_ST_InitAudio(void);
 void BE_ST_ShutdownAll(void); // After game
 void BE_ST_HandleExit(int status); // Replacement for exit function (useful for displaying text screen)
 void BE_ST_QuickExit(void); // Where the usual exit handler isn't sufficient: Saves last settings, shutdowns subsystems and then exits immediately
@@ -196,6 +197,12 @@ enum {
 void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem);
 #endif
 
+// Set callback function, to be called when the app is shut down in a way
+// originally not supported by a given game, say clicking on a window's
+// "close" button. Can be used for saving settings.
+// There may still be cases in which the callback is *not* called, though.
+void BE_ST_SetAppQuitCallback(void (*funcPtr)(void));
+
 void BE_ST_PollEvents(void);
 
 // Launcher loop
@@ -217,6 +224,14 @@ bool BE_ST_IsEmulatedOPLChipReady(void);
 // Should be used in ID_SD.C only - Frequency is about 1193182Hz/spkVal
 void BE_ST_PCSpeakerOn(uint16_t spkVal);
 void BE_ST_PCSpeakerOff(void);
+// Used for playback from digitized sound data in signed 16-bit int format.
+// Do NOT assume the data is copied; You ***must*** call BE_ST_StopSoundEffect.
+// You can also use BE_ST_StartAudioSDService to set a callback function,
+// to be called when reading of sound data is complete. This can happen
+// a bit before actual sound playback is complete, in case
+// some mechanism of resampling is in use.
+void BE_ST_PlayS16SoundEffect(int16_t *data, int numOfSamples);
+void BE_ST_StopSoundEffect(void);
 // Safe alternatives for Borland's sound and nosound functions from Catacomb Abyss' gelib.c
 void BE_ST_BSound(uint16_t frequency);
 void BE_ST_BNoSound(void);
@@ -253,6 +268,17 @@ uint8_t *BE_ST_GetTextModeMemoryPtr(void);
 
 // ***WARNING***: Ensure BE_ST_Launcher_MarkGfxCache is called after drawing.
 uint8_t *BE_ST_Launcher_GetGfxPtr(void);
+
+bool BE_ST_HostGfx_CanToggleAspectRatio(void);
+bool BE_ST_HostGfx_GetAspectRatioToggle(void);
+void BE_ST_HostGfx_SetAspectRatioToggle(bool aspectToggle);
+
+bool BE_ST_HostGfx_CanToggleFullScreen(void);
+bool BE_ST_HostGfx_GetFullScreenToggle(void);
+void BE_ST_HostGfx_SetFullScreenToggle(bool fullScreenToggle);
+
+// NOT NECESSARILY DEFINED FOR ALL GAMES!
+void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle);
 
 // EGA graphics manipulations
 void BE_ST_EGASetPaletteAndBorder(const uint8_t *palette);

@@ -76,7 +76,8 @@ typedef struct mmblockstruct
 #define GETNEWBLOCK {if(!(mmnew=mmfree))Quit("MM_GETNEWBLOCK: No free blocks!")\
 	;mmfree=mmfree->next;}
 
-#define FREEBLOCK(x) {*x->useptr=NULL;x->next=mmfree;mmfree=x;}
+#define FREEBLOCK(x) {if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) free(*x->useptr); *x->useptr=NULL;x->next=mmfree;mmfree=x;}
+//#define FREEBLOCK(x) {*x->useptr=NULL;x->next=mmfree;mmfree=x;}
 
 /*
 =============================================================================
@@ -123,9 +124,11 @@ mmblocktype	id0_far mmblocks[MAXBLOCKS]
 
 // The very first "segment" in the emulated space
 #define EMULATED_FIRST_SEG 0
+// A gap between the near and far heaps
+#define EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS 103
 // Different portions of the space being emulated - start points
 #define EMULATED_NEAR_SEG (EMULATED_FIRST_SEG+EMULATED_FIRST_PARAGRAPHS)
-#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS)
+#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS-SAVENEARHEAP/16+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS)
 #define EMULATED_EMS_SEG (EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS)
 #define EMULATED_XMS_SEG (EMULATED_EMS_SEG+EMULATED_EMS_PARAGRAPHS)
 // Lengths in paragraphs of the different sections
@@ -137,7 +140,7 @@ mmblocktype	id0_far mmblocks[MAXBLOCKS]
 // Used to obtain a pointer to some location in mmEmulatedMemSpace
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
-static id0_byte_t __attribute__ ((aligned (16))) mmEmulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS+EMULATED_EMS_PARAGRAPHS+EMULATED_XMS_PARAGRAPHS)];
+static id0_byte_t __attribute__ ((aligned (16))) mmEmulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS+EMULATED_EMS_PARAGRAPHS+EMULATED_XMS_PARAGRAPHS)];
 
 //==========================================================================
 
@@ -498,7 +501,7 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 
 		while (scan != endscan)
 		{
-			if (scan->start - startseg >= needed)
+			if ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) || (scan->start - startseg >= needed))
 			{
 			//
 			// got enough space between the end of lastscan and
@@ -507,8 +510,19 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 			//
 				purge = lastscan->next;
 				lastscan->next = mmnew;
-				mmnew->start /*= *(id0_unsigned_t *)baseptr*/ = startseg;
-				*baseptr = EMULATED_SEG_TO_PTR(startseg);
+				if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+				{
+					// Add a few more bytes as a workaround for vanilla bugs
+					// in places like CA_HuffExpand
+					*baseptr = malloc(size+16);
+					if (*baseptr == NULL)
+						Quit ("Out of memory!  Please make sure you have enough free memory.");
+				}
+				else
+				{
+					mmnew->start /*= *(id0_unsigned_t *)baseptr*/ = startseg;
+					*baseptr = EMULATED_SEG_TO_PTR(startseg);
+				}
 				mmnew->next = scan;
 				while ( purge != scan)
 				{	// free the purgable block
@@ -560,7 +574,10 @@ void MM_FreePtr (memptr *baseptr)
 	if (baseptr == mmrover->useptr)	// removed the last allocated block
 		mmrover = mmhead;
 
-	while (scan->useptr != baseptr && scan)
+	// REFKEEN - Swap order of evaluation, fixes undefined behaviors in case scan == NULL
+	// (originally observed while adding support for the 2015 port's data)
+	while (scan && (scan->useptr != baseptr))
+	//while (scan->useptr != baseptr && scan)
 	{
 		last = scan;
 		scan = scan->next;
@@ -703,6 +720,10 @@ void MM_SortMem (void)
 					length = scan->length;
 					source = scan->start;
 					dest = start;
+
+					// REFKEEN - We may relocate whole block at once
+					memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), length*16);
+#if 0
 					while (length > 0xf00)
 					{
 						memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), 0xf00*16);
@@ -712,6 +733,7 @@ void MM_SortMem (void)
 						dest += 0xf00;
 					}
 					memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), length*16);
+#endif
 					//movedata(source,0,dest,0,length*16);
 
 					scan->start = start;
@@ -846,3 +868,72 @@ id0_long_t MM_TotalFree (void)
 	return free*16l;
 }
 
+// REFKEEN - New functions, used while swapping CGA/EGA graphics from the 2015 port
+
+//==========================================================================
+
+
+/*
+======================
+=
+= MM_GetAttributes
+=
+======================
+*/
+
+id0_unsigned_t MM_GetAttributes (memptr *baseptr)
+{
+	mmblocktype id0_far *start;
+
+	start = mmrover;
+
+	do
+	{
+		if (mmrover->useptr == baseptr)
+			break;
+
+		mmrover = mmrover->next;
+
+		if (!mmrover)
+			mmrover = mmhead;
+		else if (mmrover == start)
+			Quit ("MM_SetAttributes: Block not found!");
+
+	} while (1);
+
+	return mmrover->attributes;
+}
+
+//==========================================================================
+
+
+/*
+======================
+=
+= MM_SetAttributes
+=
+======================
+*/
+
+void MM_SetAttributes (memptr *baseptr, id0_unsigned_t attributes)
+{
+	mmblocktype id0_far *start;
+
+	start = mmrover;
+
+	do
+	{
+		if (mmrover->useptr == baseptr)
+			break;
+
+		mmrover = mmrover->next;
+
+		if (!mmrover)
+			mmrover = mmhead;
+		else if (mmrover == start)
+			Quit ("MM_SetAttributes: Block not found!");
+
+	} while (1);
+
+	mmrover->attributes = attributes;
+}

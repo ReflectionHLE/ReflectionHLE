@@ -87,6 +87,14 @@ typedef	struct
 						data[1];
 		} __attribute((__packed__)) SampledSound;
 
+// REFKEEN - Sampled sound type for the 2015 port data
+// (actually the same as PCSound, but let's use different type for data)
+typedef	struct
+		{
+			SoundCommon	common;
+			id0_int_t		data[1];
+		} __attribute((__packed__)) Port2015SampledSound;
+
 // 	Registers for the AdLib card
 // Operator stuff
 #define	alChar		0x20

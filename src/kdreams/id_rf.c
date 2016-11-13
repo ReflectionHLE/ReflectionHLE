@@ -83,8 +83,8 @@ id0_unsigned_t	SX_T_SHIFT;		// screen x >> ?? = tile EGA = 1, CGA = 2;
 // value as in DOS (originally a pointer to a cell of allanims)
 
 id0_word_t refkeen_compat_id_rf_allanims_table_offset;
-#define COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i) (4*(i)+refkeen_compat_id_rf_allanims_table_offset)
-#define COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(dosptr) (((dosptr)-refkeen_compat_id_rf_allanims_table_offset)/4)
+#define COMPAT_ALLANIMS_CONVERT_INDEX_TO_DOS_PTR(i) ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? ((i) | 0xFE00) : (4*(i)+refkeen_compat_id_rf_allanims_table_offset))
+#define COMPAT_ALLANIMS_CONVERT_DOS_PTR_TO_INDEX(dosptr) ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? ((dosptr) & 0xFF) : (((dosptr)-refkeen_compat_id_rf_allanims_table_offset)/4))
 
 /*
 =============================================================================
@@ -98,6 +98,7 @@ typedef	struct spriteliststruct
 {
 	id0_int_t			screenx,screeny;
 	id0_int_t			width,height;
+	id0_unsigned_t	shift; // REFKEEN - New member, used after swapping CGA/EGA graphics from the 2015 port
 
 	id0_unsigned_t	grseg,sourceofs,planesize;
 	drawtype	draw;
@@ -818,6 +819,35 @@ void RFL_InitSpriteList (void)
 	memset (prioritystart,0,sizeof(prioritystart));
 }
 
+// REFKEEN - New function, used after swapping CGA/EGA graphics from the 2015 port
+
+/*
+=================
+=
+= RF_RefreshSpriteList
+=
+=================
+*/
+
+void RF_RefreshSpriteList (void)
+{
+	spritelisttype	*sprite;
+	id0_int_t	priority;
+	spritetype_ega	*block;
+	id0_unsigned_t	shift;
+
+	for (priority=0;priority<PRIORITIES;priority++)
+		for (sprite = prioritystart[priority]; sprite ;
+			sprite = (spritelisttype *)sprite->nextsprite)
+		{
+			block = (spritetype_ega id0_seg *)grsegs[sprite->grseg];
+			shift = sprite->shift;
+			sprite->width = block->width[shift];
+			sprite->sourceofs = block->sourceoffset[shift];
+			sprite->planesize = block->planesize[shift];
+		}
+}
+
 //===========================================================================
 
 /*
@@ -1342,6 +1372,8 @@ linknewspot:
 		- sprite->tiley + 1;
 
 	sprite->updatecount = 2;		// draw on next two refreshes
+
+	sprite->shift = shift; // REFKEEN - New member, used after swapping CGA/EGA graphics from the 2015 port
 
 // save the sprite pointer off in the user's pointer so it can be moved
 // again later
@@ -2437,6 +2469,7 @@ void RefKeen_Patch_id_rf(void)
 		refkeen_compat_id_rf_allanims_table_offset = 0xC604;
 		break;
 	case BE_GAMEVER_KDREAMSE113:
+	//case BE_GAMEVER_KDREAMS2015: Field is unused in this version
 		refkeen_compat_id_rf_allanims_table_offset = 0xC11E;
 		break;
 	case BE_GAMEVER_KDREAMSC105:

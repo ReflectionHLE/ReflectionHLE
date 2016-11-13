@@ -26,9 +26,13 @@
 
 #define FRILLS	0			// Cut out frills for 360K - MIKE MAYNARD
 
-// REFKEEN - In the original releases, looks like it's either defined to 0
-// (for new DemoLoop) or not defined (not present in old DemoLoop). So simply define.
-#define CREDITS 0
+// REFKEEN - In the original DOS releases, CREDITS is either defined to 0
+// (for new DemoLoop) or not defined (not present in old DemoLoop).
+// In the 2015 release, it looks like it is defined, and a few
+// behaviors were modified. So let's turn this into a
+// variable, with its value depending on the version.
+extern	int CREDITS;
+//#define CREDITS 0
 
 
 /*
@@ -202,8 +206,23 @@ typedef struct {
 
 // (REFKEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
 // objstruct may store a 16-bit pointer with another object.
-#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+refkeen_compat_kd_play_objoffset)):(id0_word_t)0)
-#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objarray+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_kd_play_objoffset)/sizeof(objtype)):NULL)
+
+#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) \
+	(!(objptr) ? (id0_word_t)0 : \
+		((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? \
+			(id0_word_t)((objptr)-objarray+1) : \
+			((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+refkeen_compat_kd_play_objoffset)) \
+	))
+
+#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) \
+	(!(dosptr) ? NULL : \
+		((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? \
+			(objarray+(id0_word_t)(dosptr)-1) : \
+			(objarray+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_kd_play_objoffset)/sizeof(objtype)) \
+	))
+
+//#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+refkeen_compat_kd_play_objoffset)):(id0_word_t)0)
+//#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objarray+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_kd_play_objoffset)/sizeof(objtype)):NULL)
 
 extern id0_word_t refkeen_compat_kd_play_objoffset;
 extern objtype objarray[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY

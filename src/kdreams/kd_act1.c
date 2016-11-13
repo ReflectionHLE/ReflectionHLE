@@ -235,7 +235,14 @@ void ChangeState (objtype *ob, statetype *state)
 {
 	ob->state = state;
 	ob->ticcount = 0;
-	if (state->rightshapenum)
+	// REFKEEN - It's possible that state == NULL, e.g., after loading
+	// a saved game, after which ChangeFromFlower is going to be called,
+	// while the flower is in one of the s_pooffrom* states.
+	//
+	// If state == NULL then, under DOS (with Borland C++ 2.0), this should
+	// point to a 4 bytes array filled with zeros.
+	if (state && state->rightshapenum)
+	//if (state->rightshapenum)
 	{
 		if (ob->xdir>0)
 			ob->shapenum = state->rightshapenum;

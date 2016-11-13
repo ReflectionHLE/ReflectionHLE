@@ -250,6 +250,13 @@ void ShiftScore (void)
 	spr = &spritetable[SCOREBOXSPR-STARTSPRITES];
 	dest = (spritetype_ega id0_seg *)grsegs[SCOREBOXSPR];
 
+	if (fakecgamode)
+	{
+		CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
+			(id0_byte_t *)dest+dest->sourceoffset[2],spr->width,spr->height,4);
+		return;
+	}
+
 	CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
 		(id0_byte_t *)dest+dest->sourceoffset[1],spr->width,spr->height,2);
 

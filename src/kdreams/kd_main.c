@@ -416,6 +416,10 @@ void Quit (const id0_char_t *error)
 	}
 	else
 	{
+		// REFKEEN - No need to show text screen in this case
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+			BE_ST_QuickExit();
+
 		// REFKEEN - In all versions other than 1.13 we just exit.
 		// In addition, in v1.05, if CATALOG is defined (it is),
 		// VW_SetScreenMode is called. Again, though, we ignore CATALOG.
@@ -492,7 +496,8 @@ void InitGame (void)
 		BE_ST_AltControlScheme_Pop();
 	}
 
-	US_TextScreen();
+	if (refkeen_current_gamever != BE_GAMEVER_KDREAMS2015)
+		US_TextScreen();
 
 	VW_Startup ();
 	RF_Startup ();
@@ -507,6 +512,19 @@ void InitGame (void)
 
 	CA_Startup ();
 	US_Setup ();
+
+	// ShutdownId (actually Quit) is called in the 2015 port when
+	// the user asks to close the window, so do this; As a
+	// side-effect, USL_WriteConfig is called.
+	//
+	// This is NOT done for the DOS versions, since it's not clear
+	// what would be the "correct behaviors". A closest match is
+	// running one of these versions under a window on an early
+	// Windows release (say Win95), where settings are NOT saved
+	// (it's roughly similar to power going down in the middle).
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		BE_ST_SetAppQuitCallback(&ShutdownId);
+
 
 //
 // load in and lock down some basic chunks
@@ -536,9 +554,12 @@ void InitGame (void)
 
 	fontcolor = WHITE;
 
-	US_FinishTextScreen();
+	if (refkeen_current_gamever != BE_GAMEVER_KDREAMS2015)
+		US_FinishTextScreen();
 
 	VW_SetScreenMode (GRMODE);
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		VW_SetDefaultColors ();
 	VW_ClearVideo (BLACK);
 }
 

@@ -596,7 +596,7 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void);
 
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void);
 
-void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
+void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int windowWidth, int windowHeight, int fullWidth, int fullHeight, Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
 
 void BE_ST_Launcher_Prepare(void)
 {
@@ -611,8 +611,8 @@ void BE_ST_Launcher_Prepare(void)
 	}
 
 	BEL_ST_RecreateSDLWindowAndRenderer(
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.winWidth, g_refKeenCfg.winHeight,
-		(g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : ((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT) ? SDL_WINDOW_RESIZABLE : 0),
+		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0,
+		((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) | ((g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE) ? SDL_WINDOW_RESIZABLE : 0),
 		-1, (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE) ? SDL_RENDERER_SOFTWARE : (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
 	);
 

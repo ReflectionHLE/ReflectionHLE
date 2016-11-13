@@ -204,7 +204,8 @@ static bool g_sdlTextInputIsKeyPressed, g_sdlTextInputIsShifted;
 // Debug keys specific
 static bool g_sdlDebugKeysPressed[ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT][ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH];
 
-void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t windowFlags, int driverIndex, Uint32 rendererFlags);
+void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int windowWidth, int windowHeight, int fullWidth, int fullHeight, Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
+static void BEL_ST_CalcWindowDimsFromCfg(int *outWidth, int *outHeight);
 
 void BE_ST_InitGfx(void)
 {
@@ -219,56 +220,14 @@ void BE_ST_InitGfx(void)
 		g_sdlIsSoftwareRendered = false;
 	}
 
-	uint32_t windowFlagsToSet;
+	uint32_t windowFlagsToSet = 0;
 	int windowWidthToSet, windowHeightToSet;
+	BEL_ST_CalcWindowDimsFromCfg(&windowWidthToSet, &windowHeightToSet);
 	if (g_refKeenCfg.isFullscreen)
-	{
-		if (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight)
-		{
-			windowWidthToSet = g_refKeenCfg.fullWidth;
-			windowHeightToSet = g_refKeenCfg.fullHeight;
-			windowFlagsToSet = SDL_WINDOW_FULLSCREEN;
-		}
-		else
-		{
-			windowWidthToSet = 0;
-			windowHeightToSet = 0;
-			windowFlagsToSet = SDL_WINDOW_FULLSCREEN_DESKTOP;
-		}
-	}
-	else
-	{
-		windowWidthToSet = g_refKeenCfg.winWidth;
-		windowHeightToSet = g_refKeenCfg.winHeight;
-		if (!windowWidthToSet || !windowHeightToSet)
-		{
-			if (g_sdlIsSoftwareRendered)
-			{
-				windowWidthToSet = 640;
-				windowHeightToSet = 480;
-			}
-			else
-			{
-				SDL_DisplayMode mode;
-				SDL_GetDesktopDisplayMode(g_refKeenCfg.displayNum, &mode);
-				// In the 200-lines modes on the VGA, where line doubling is in effect,
-				// and after adding the overscan borders, the aspect ratio for the whole output
-				// (after aspect correction i.e., multiplying height by 1.2) is 280:207.
-				if (207*mode.w < 280*mode.h) // Thinner than 280:207
-				{
-					mode.h = mode.w*207/280;
-				}
-				else  // As wide as 280:207 at the least
-				{
-					mode.w = mode.h*280/207;
-				}
-				// Just for the sake of it, using the golden ratio...
-				windowWidthToSet = mode.w*500/809;
-				windowHeightToSet = mode.h*500/809;
-			}
-		}
-		windowFlagsToSet = (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling) ? SDL_WINDOW_RESIZABLE : 0;
-	}
+		windowFlagsToSet = (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+	if (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling)
+		windowFlagsToSet |= SDL_WINDOW_RESIZABLE;
 	// Vanilla Keen Dreams and Keen 4-6 have no VSync in the CGA builds
 #ifdef REFKEEN_VER_KDREAMS
 	uint32_t rendererFlagsToSet = SDL_RENDERER_ACCELERATED | (((g_refKeenCfg.vSync == VSYNC_ON) || ((g_refKeenCfg.vSync == VSYNC_AUTO) && (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))) ? SDL_RENDERER_PRESENTVSYNC : 0);
@@ -277,10 +236,14 @@ void BE_ST_InitGfx(void)
 #endif
 	BEL_ST_RecreateSDLWindowAndRenderer(
 		SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum),
-		windowWidthToSet, windowHeightToSet, windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlagsToSet
+		windowWidthToSet, windowHeightToSet, g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlagsToSet
 	);
 
 	BE_ST_SetScreenMode(3); // Includes SDL_Texture handling and output rects preparation
+
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	g_sdlDoAbsMouseMotion = g_refKeenCfg.absMouseMotion;
+#endif
 }
 
 void BE_ST_ShutdownGfx(void)
@@ -303,7 +266,7 @@ void BE_ST_ShutdownGfx(void)
 	g_sdlWindow = NULL;
 }
 
-void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t windowFlags, int driverIndex, uint32_t rendererFlags)
+void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int windowWidth, int windowHeight, int fullWidth, int fullHeight, Uint32 windowFlags, int driverIndex, Uint32 rendererFlags)
 {
 	static int prev_x, prev_y, prev_driverIndex;
 	static uint32_t prev_rendererFlags;
@@ -316,11 +279,13 @@ void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t wi
 		// we support skipping window recreation only if fullscreen state did not change.
 		// - Renderer flags are compared to the previously requested flags.
 		// - Same is done with with renderer driver index. If -1 is used anywhere, this makes reuse of the same window more probable.
+		//
+		// However, if only the full screen resolution has changed, we update the window's display mode accordingly.
 		if ((x == prev_x) && (y == prev_y) &&
 		    ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP)) &&
 		    (driverIndex == prev_driverIndex) && (rendererFlags == prev_rendererFlags)
 		)
-			return;
+			goto setupforfullscreen;
 
 		SDL_DestroyRenderer(g_sdlRenderer);
 		g_sdlRenderer = NULL;
@@ -328,20 +293,23 @@ void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t wi
 		g_sdlWindow = NULL;
 	}
 
-	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, w, h, windowFlags);
+	// HACK - Create non-fullscreen window and then set as fullscreen, if required.
+	// Reason is this lets us set non-fullscreen window size (for fullscreen toggling).
+	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
 	// A hack for Android x86 on VirtualBox - Try creating an OpenGL ES 1.1 context instead of 2.0
 	if (!g_sdlWindow)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 window, forcing OpenGL (ES) version to 1.1 and retrying,\n%s\n", SDL_GetError());
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, w, h, windowFlags);
+		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 	if (!g_sdlWindow)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 window,\n%s\n", SDL_GetError());
 		exit(0);
 	}
+
 	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
 	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, driverIndex, rendererFlags);
 	if (!g_sdlRenderer)
@@ -354,6 +322,20 @@ void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int w, int h, uint32_t wi
 	prev_y = y;
 	prev_driverIndex = driverIndex;
 	prev_rendererFlags = rendererFlags;
+
+setupforfullscreen:
+
+	// In case non-desktop fullscreen resolution is desired (even if window is currently *not* fullscreen);
+	// But do so AFTER creating renderer! (Looks like SDL_CreateRenderer may re-create the window.)
+	if (fullWidth && fullHeight)
+	{
+		SDL_DisplayMode mode;
+		SDL_GetWindowDisplayMode(g_sdlWindow, &mode);
+		mode.w = fullWidth;
+		mode.h = fullHeight;
+		SDL_SetWindowDisplayMode(g_sdlWindow, &mode);
+	}
+	SDL_SetWindowFullscreen(g_sdlWindow, windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP);
 }
 
 static void BEL_ST_RecreateTexture(void)
@@ -629,7 +611,7 @@ static bool g_sdlSomeOnScreenControlWasAccessibleWithMouse = false; // Used inte
 	if (someOnScreenControlIsAccessibleWithMouse)
 		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITH_CURSOR);
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	else if (g_refKeenCfg.absMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+	else if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITHOUT_CURSOR);
 #endif
 	else if (
@@ -1969,6 +1951,43 @@ void BEL_ST_ReleasePressedButtonsInTouchControls(void)
 }
 
 
+static void BEL_ST_CalcWindowDimsFromCfg(int *outWidth, int *outHeight)
+{
+	int windowWidthToSet = g_refKeenCfg.winWidth;
+	int windowHeightToSet = g_refKeenCfg.winHeight;
+	if (!windowWidthToSet || !windowHeightToSet)
+	{
+		if (g_sdlIsSoftwareRendered)
+		{
+			windowWidthToSet = 640;
+			windowHeightToSet = 480;
+		}
+		else
+		{
+			SDL_DisplayMode mode;
+			SDL_GetDesktopDisplayMode(g_refKeenCfg.displayNum, &mode);
+			// In the 200-lines modes on the VGA, where line doubling is in effect,
+			// and after adding the overscan borders, the aspect ratio for the whole output
+			// (after aspect correction i.e., multiplying height by 1.2) is 280:207.
+			if (207*mode.w < 280*mode.h) // Thinner than 280:207
+			{
+				mode.h = mode.w*207/280;
+			}
+			else  // As wide as 280:207 at the least
+			{
+				mode.w = mode.h*280/207;
+			}
+			// Just for the sake of it, using the golden ratio...
+			windowWidthToSet = mode.w*500/809;
+			windowHeightToSet = mode.h*500/809;
+		}
+	}
+
+	*outWidth = windowWidthToSet;
+	*outHeight = windowHeightToSet;
+}
+
+
 static void BEL_ST_SetTouchControlsRects(void)
 {
 	if (((g_sdlControllerMappingActualCurr == NULL) || g_sdlControllerMappingActualCurr->touchMappings == NULL))
@@ -2038,6 +2057,7 @@ static void BEL_ST_SetTouchControlsRects(void)
 }
 
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+bool g_sdlDoAbsMouseMotion;
 int g_sdlHostVirtualMouseCursorState[2];
 static int g_sdlHostVirtualMouseCursorSideLen;
 #endif
@@ -2210,6 +2230,54 @@ uint8_t *BE_ST_GetTextModeMemoryPtr(void)
 {
 	return g_sdlVidMem.text;
 }
+
+bool BE_ST_HostGfx_CanToggleAspectRatio(void)
+{
+	return (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling);
+}
+
+bool BE_ST_HostGfx_GetAspectRatioToggle(void)
+{
+	return (g_refKeenCfg.scaleType == SCALE_FILL);
+}
+
+void BE_ST_HostGfx_SetAspectRatioToggle(bool aspectToggle)
+{
+	g_refKeenCfg.scaleType = aspectToggle ? SCALE_FILL : SCALE_ASPECT;
+	BEL_ST_SetGfxOutputRects(false);
+	BEL_ST_ForceHostDisplayUpdate();
+}
+
+bool BE_ST_HostGfx_CanToggleFullScreen(void)
+{
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
+	return true;
+#else
+	return false;
+#endif
+}
+
+bool BE_ST_HostGfx_GetFullScreenToggle(void)
+{
+	return ((SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN);
+}
+
+void BE_ST_HostGfx_SetFullScreenToggle(bool fullScreenToggle)
+{
+	if (fullScreenToggle)
+		SDL_SetWindowFullscreen(g_sdlWindow, (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	else
+		SDL_SetWindowFullscreen(g_sdlWindow, 0);
+
+	g_refKeenCfg.isFullscreen = BE_ST_HostGfx_GetFullScreenToggle();
+}
+
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle)
+{
+	g_sdlDoAbsMouseMotion = cursorToggle;
+}
+#endif
 
 static uint32_t g_sdlEGACurrBGRAPaletteAndBorder[17], g_sdlEGACurrBGRAPaletteAndBorderCache[17];
 
@@ -2938,7 +3006,7 @@ dorefresh:
 	SDL_SetRenderDrawColor(g_sdlRenderer, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>16)&0xFF, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>8)&0xFF, g_sdlEGACurrBGRAPaletteAndBorder[16]&0xFF, SDL_ALPHA_OPAQUE);
 	SDL_RenderFillRect(g_sdlRenderer, &g_sdlAspectCorrectionBorderedRect);
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	if (g_refKeenCfg.absMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+	if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 	{
 		SDL_SetRenderDrawColor(g_sdlRenderer, 0xFF, 0x00, 0x00, SDL_ALPHA_OPAQUE);
 		SDL_Rect rect = {g_sdlHostVirtualMouseCursorState[0]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorState[1]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorSideLen, g_sdlHostVirtualMouseCursorSideLen};

@@ -46,6 +46,7 @@
 #define BE_STR_GAMEVER_KDREAMSC105 "kdreamsc105"
 #define BE_STR_GAMEVER_KDREAMSE193 "kdreamse193"
 #define BE_STR_GAMEVER_KDREAMSE120 "kdreamse120"
+#define BE_STR_GAMEVER_KDREAMS2015 "kdreams2015"
 #endif
 #ifdef REFKEEN_VER_CAT3D
 #define BE_STR_GAMEVER_CAT3D100 "cat3d100"
@@ -205,6 +206,7 @@ typedef struct {
 	const char *customInstDescription;
 	const char *exeName;
 	int decompExeSize;
+	int digiAudioFreq; // Set to a common frequency of input digitized sounds, or to 0 if unused
 	BE_ExeCompression_T compressionType;
 	BE_GameVer_T verId;
 } BE_GameVerDetails_T;
@@ -226,6 +228,7 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 	BE_STR_GAMEVER_KDREAMSC105,
 	BE_STR_GAMEVER_KDREAMSE193,
 	BE_STR_GAMEVER_KDREAMSE120,
+	BE_STR_GAMEVER_KDREAMS2015,
 #endif
 #ifdef REFKEEN_VER_CAT3D
 	BE_STR_GAMEVER_CAT3D100,
@@ -251,6 +254,7 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 	"Keen Dreams CGA v1.05",
 	"Keen Dreams EGA v1.93",
 	"Keen Dreams EGA v1.20",
+	"Keen Dreams 2015",
 #endif
 #ifdef REFKEEN_VER_CAT3D
 	"Catacomb 3-D v1.00",
@@ -528,7 +532,7 @@ void BE_Cross_PrepareAppPaths(void)
 
 static BE_GameInstallation_T *g_be_selectedGameInstallation;
 
-#define BE_CROSS_MAX_GAME_INSTALLATIONS 6
+#define BE_CROSS_MAX_GAME_INSTALLATIONS 7
 static BE_GameInstallation_T g_be_gameinstallations[BE_CROSS_MAX_GAME_INSTALLATIONS];
 int g_be_gameinstallations_num;
 
@@ -576,6 +580,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse100 = {
 	"Keen Dreams EGA v1.00 (Custom)",
 	"KDREAMS.EXE",
 	175424,
+	0,
 	BE_EXECOMPRESSION_NONE/*BE_EXECOMPRESSION_PKLITE*/, // FIXME - Support compression mechanism
 	BE_GAMEVER_KDREAMSE100
 };
@@ -611,6 +616,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc100 = {
 	"Keen Dreams CGA v1.00 (Custom)",
 	"KDREAMS.EXE",
 	172896,
+	0,
 	BE_EXECOMPRESSION_NONE/*BE_EXECOMPRESSION_PKLITE*/, // FIXME - Support compression mechanism
 	BE_GAMEVER_KDREAMSC100
 };
@@ -646,6 +652,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
 	"Keen Dreams EGA v1.13 (Custom)",
 	"KDREAMS.EXE",
 	213536,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_KDREAMSE113
 };
@@ -679,6 +686,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
 	"Keen Dreams CGA v1.05 (Custom)",
 	"KDREAMS.EXE",
 	202320,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_KDREAMSC105
 };
@@ -716,6 +724,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
 	"Keen Dreams EGA v1.93 (Custom)",
 	"KDREAMS.EXE",
 	213200,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_KDREAMSE193
 };
@@ -750,8 +759,46 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse120 = {
 	"Keen Dreams EGA v1.20 (Custom)",
 	"KDREAMS.EXE",
 	214912,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_KDREAMSE120
+};
+
+/*** 2015 edition - All files are external here ***/
+static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreams2015[] = {
+	{"CONTEXT.KDR", 1331, 0x70920ec3},
+	{"EGADICT.CGA", 1024, 0x75a458f2},
+	{"EGADICT.KDR", 1024, 0xfe21f5c4},
+	{"EGAHEAD.CGA", 12068, 0x38c15a01},
+	{"EGAHEAD.KDR", 12068, 0xdeb318b3},
+	{"GAMETEXT.KDR", 4314, 0x0996e7f2},
+	{"KDREAMS.CGA", 179725, 0x83b0c6c4},
+	{"KDREAMS.CMP", 40878, 0xf8a33e2f},
+	{"KDREAMS.EGA", 213221, 0xee1024b9},
+	{"KDREAMS.MAP", 65674, 0x934cd898},
+	{"KDREAMS.SND", 1449826, 0xfb74b9a2},
+	{"MAPDICT.KDR", 1020, 0x6bb0de32},
+	{"MAPHEAD.KDR", 11824, 0xff335e8c},
+	{"SOUNDDCT.KDR", 1024, 0x2217ceb9},
+	{"SOUNDHHD.KDR", 228, 0xb8b39c5c},
+	{"STORY.KDR", 2526, 0xcafc1d15},
+	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreams2015[] = {
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_kdreams2015 = {
+	g_be_reqgameverfiles_kdreams2015,
+	g_be_embeddedgameverfiles_kdreams2015,
+	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMS2015),
+	"Keen Dreams 2015 (Custom)",
+	NULL, // No EXE file
+	0, // No EXE file
+	44100, // Digitized sounds have such sample rate (in Hz)
+	BE_EXECOMPRESSION_NONE, // No EXE file
+	BE_GAMEVER_KDREAMS2015
 };
 #endif
 
@@ -782,6 +829,7 @@ static const BE_GameVerDetails_T g_be_gamever_cat3d100 = {
 	"Catacomb 3-D v1.00 (Custom)",
 	"CAT3D.EXE",
 	191536,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CAT3D100
 };
@@ -814,6 +862,7 @@ static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
 	"Catacomb 3-D v1.22 (Custom)",
 	"CAT3D.EXE",
 	191904,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CAT3D122
 };
@@ -891,6 +940,7 @@ static const BE_GameVerDetails_T g_be_gamever_catabyss113 = {
 	"Catacomb Abyss v1.13 (Custom)",
 	"CATABYSS.EXE",
 	201120,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CATABYSS113
 };
@@ -958,6 +1008,7 @@ static const BE_GameVerDetails_T g_be_gamever_catabyss124 = {
 	"Catacomb Abyss v1.24 (Custom)",
 	"ABYSGAME.EXE",
 	200848,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CATABYSS124
 };
@@ -1026,6 +1077,7 @@ static const BE_GameVerDetails_T g_be_gamever_catarm102 = {
 	"Catacomb Armageddon v1.02 (Custom)",
 	"ARMGAME.EXE",
 	198304,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CATARM102
 };
@@ -1093,6 +1145,7 @@ static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
 	"Catacomb Apocalypse v1.01 (Custom)",
 	"APOCGAME.EXE",
 	200064,
+	0,
 	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CATAPOC101
 };
@@ -1107,6 +1160,7 @@ static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 	&g_be_gamever_kdreamsc105,
 	&g_be_gamever_kdreamse193,
 	&g_be_gamever_kdreamse120,
+	&g_be_gamever_kdreams2015,
 #endif
 #ifdef REFKEEN_VER_CAT3D
 	&g_be_gamever_cat3d100,
@@ -1132,6 +1186,7 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 	g_be_reqgameverfiles_kdreamsc105,
 	g_be_reqgameverfiles_kdreamse193,
 	g_be_reqgameverfiles_kdreamse120,
+	g_be_reqgameverfiles_kdreams2015,
 #endif
 #ifdef REFKEEN_VER_CAT3D
 	g_be_reqgameverfiles_cat3d100,
@@ -1152,6 +1207,7 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 
 // C99
 BE_FILE_T BE_Cross_IsFileValid(BE_FILE_T fp);
+BE_FILE_T BE_Cross_GetNilFile(void);
 int BE_Cross_seek(BE_FILE_T fp, long int offset, int origin);
 int BE_Cross_putc(int character, BE_FILE_T fp);
 int BE_Cross_getc(BE_FILE_T fp);
@@ -1291,7 +1347,8 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 		{
 			// Actually, there's a special case in which we don't delete and even accept the different file...
 			// The EXE still must be the original one, though (used for version identification, and possibly also the extraction of embedded resources)
-			if (g_refKeenCfg.manualGameVerMode && BE_Cross_strcasecmp(fileDetailsBuffer->filename, details->exeName))
+			// But it's also possible to have no EXE (e.g., Keen Dreams, 2015 release) so check this
+			if (g_refKeenCfg.manualGameVerMode && ((details->exeName == NULL) || BE_Cross_strcasecmp(fileDetailsBuffer->filename, details->exeName)))
 				continue;
 
 			_tremove(tempFullPath);
@@ -1644,7 +1701,36 @@ void BE_Cross_PrepareGameInstallations(void)
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Keen Dreams CGA v1.05 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, _T("."), "Keen Dreams EGA v1.93 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse120, _T("."), "Keen Dreams EGA v1.20 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, _T("."), "Keen Dreams 2015 (Local)");
+#ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
+
+		TCHAR steam_kdreams_path[BE_CROSS_PATH_LEN_BOUND];
+		bool checkPath;
+
+#ifdef REFKEEN_PLATFORM_WINDOWS
+		DWORD dwType = 0;
+		DWORD dwSize = sizeof(steam_kdreams_path);
+		LSTATUS status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 356200", L"INSTALLLOCATION", &dwType, steam_kdreams_path, &dwSize);
+		checkPath = ((status == ERROR_SUCCESS) && (dwType == REG_SZ));
+#elif (defined REFKEEN_PLATFORM_UNIX)
+		const char *homeVar = getenv("HOME");
+		checkPath = (homeVar && *homeVar);
+		if (checkPath)
+		{
+#ifdef REFKEEN_PLATFORM_OSX
+			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common/Keen Dreams/KDreams.app/Contents/Resources");
+#else
+			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common/Keen Dreams");
 #endif
+		}
+#endif // REFKEEN_PLATFORM
+
+		if (checkPath)
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
+
+#endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
+
+#endif // REFKEEN_VER_KDREAMS
 
 #ifdef REFKEEN_VER_CAT3D
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, _T("."), "Catacomb 3-D v1.00 (Local)");
@@ -1941,6 +2027,12 @@ int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Error
 }
 
 
+int BE_Cross_GetSelectedGameVerSampleRate(void)
+{
+	return g_be_gamever_ptrs[refkeen_current_gamever]->digiAudioFreq;
+}
+
+
 // gameVer should be BE_GAMEVER_LAST if no specific version is desired
 static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 {
@@ -2019,9 +2111,12 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
 	//extern const char **id0_argv;
 
 	// Some additional preparation required
-	BE_ST_PrepareForGameStartup();
+	BE_ST_PrepareForGameStartupWithoutAudio();
 
 	BEL_Cross_SelectGameInstallation(gameVerVal);
+
+	BE_ST_InitAudio(); // Do this now, since we can tell if we want digi audio out or not
+
 	// Prepare arguments for ported game code
 	id0_argc = argc;
 	// HACK: In Keen Dreams CGA v1.05, even if argc == 1, argv[1] is accessed...
@@ -2239,11 +2334,47 @@ BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
 #endif
 
+// Same but for 32-bit reads/writes
+#define BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(ourSampleEnum) \
+size_t BE_Cross_read_ ## ourSampleEnum ## _From32LE (BE_FILE_T fp, ourSampleEnum *ptr) \
+{ \
+	uint32_t val; \
+	size_t bytesread = fread(&val, 1, 4, fp); \
+	if (bytesread == 4) \
+	{ \
+		*ptr = (ourSampleEnum)BE_Cross_Swap32LE(val); \
+	} \
+	return bytesread; \
+} \
+\
+size_t BE_Cross_write_ ## ourSampleEnum ## _To32LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
+{ \
+	uint32_t val = BE_Cross_Swap32LE((uint32_t)(*ptr)); \
+	return fwrite(&val, 1, 4, fp); \
+}
+
+#ifdef REFKEEN_VER_KDREAMS
+BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(ControlType)
+#endif
+
 size_t BE_Cross_read_boolean_From16LE(BE_FILE_T fp, bool *ptr)
 {
 	uint16_t val;
 	size_t bytesread = fread(&val, 1, 2, fp);
 	if (bytesread == 2)
+	{
+		*ptr = val; // No need to swap byte-order here
+	}
+	return bytesread;
+}
+
+size_t BE_Cross_read_boolean_From32LE(BE_FILE_T fp, bool *ptr)
+{
+	uint32_t val;
+	size_t bytesread = fread(&val, 1, 4, fp);
+	if (bytesread == 4)
 	{
 		*ptr = val; // No need to swap byte-order here
 	}
@@ -2267,11 +2398,34 @@ size_t BE_Cross_read_booleans_From16LEBuffer(BE_FILE_T fp, bool *ptr, size_t nby
 	return totalbytesread;
 }
 
+size_t BE_Cross_read_booleans_From32LEBuffer(BE_FILE_T fp, bool *ptr, size_t nbyte)
+{
+	uint32_t val;
+	size_t totalbytesread = 0, currbytesread;
+	for (size_t curbyte = 0; curbyte < nbyte; curbyte += 4, ++ptr)
+	{
+		currbytesread = fread(&val, 1, 4, fp);
+		totalbytesread += currbytesread;
+		if (currbytesread < 4)
+		{
+			return totalbytesread;
+		}
+		*ptr = val; // No need to swap byte-order here
+	}
+	return totalbytesread;
+}
+
 
 size_t BE_Cross_write_boolean_To16LE(BE_FILE_T fp, const bool *ptr)
 {
 	uint16_t val = BE_Cross_Swap16LE((uint16_t)(*ptr)); // Better to swap just in case...
 	return fwrite(&val, 1, 2, fp);
+}
+
+size_t BE_Cross_write_boolean_To32LE(BE_FILE_T fp, const bool *ptr)
+{
+	uint32_t val = BE_Cross_Swap32LE((uint32_t)(*ptr)); // Better to swap just in case...
+	return fwrite(&val, 1, 4, fp);
 }
 
 size_t BE_Cross_write_booleans_To16LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte)
@@ -2284,6 +2438,23 @@ size_t BE_Cross_write_booleans_To16LEBuffer(BE_FILE_T fp, const bool *ptr, size_
 		currbyteswritten = fwrite(&val, 1, 2, fp);
 		totalbyteswritten += currbyteswritten;
 		if (currbyteswritten < 2)
+		{
+			return totalbyteswritten;
+		}
+	}
+	return totalbyteswritten;
+}
+
+size_t BE_Cross_write_booleans_To32LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte)
+{
+	uint32_t val;
+	size_t totalbyteswritten = 0, currbyteswritten;
+	for (size_t curbyte = 0; curbyte < nbyte; curbyte += 4, ++ptr)
+	{
+		val = BE_Cross_Swap16LE((uint32_t)(*ptr)); // Better to swap just in case...
+		currbyteswritten = fwrite(&val, 1, 4, fp);
+		totalbyteswritten += currbyteswritten;
+		if (currbyteswritten < 4)
 		{
 			return totalbyteswritten;
 		}

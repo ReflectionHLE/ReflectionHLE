@@ -148,4 +148,7 @@ extern void (*RF_Refresh) (void);
 void RF_ForceRefresh (void);
 void RF_SetRefreshHook (void (*func) (void) );
 
+// REFKEEN - New function, used after swapping CGA/EGA graphics from the 2015 port
+void RF_RefreshSpriteList (void);
+
 

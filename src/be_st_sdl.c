@@ -20,6 +20,7 @@
 static uint32_t g_sdlLastPollEventsTime;
 
 static void (*g_sdlKeyboardInterruptFuncPtr)(uint8_t) = 0;
+static void (*g_sdlAppQuitCallback)(void) = 0;
 
 // Defined internally, but also used in launcher code. extern is required for C++.
 #ifdef __cplusplus
@@ -118,7 +119,6 @@ extern bool g_sdlShowTouchUI;
 static uint8_t g_sdlLastKeyScanCodeBeforeAnyReset; // May be reset by BE_ST_BiosScanCode
 
 void BE_ST_InitGfx(void);
-void BE_ST_InitAudio(void);
 void BE_ST_InitTiming(void);
 void BE_ST_ShutdownAudio(void);
 void BE_ST_ShutdownGfx(void);
@@ -204,10 +204,10 @@ void BE_ST_InitCommon(void)
 #endif
 }
 
-void BE_ST_PrepareForGameStartup(void)
+void BE_ST_PrepareForGameStartupWithoutAudio(void)
 {
 	BE_ST_InitGfx();
-	BE_ST_InitAudio();
+	//BE_ST_InitAudio(); // Not yet, need to select game version (so have gfx ready for possible errors), and then check if we want digi audio output
 	BE_ST_InitTiming();
 
 	// Preparing a controller scheme (with no special UI) in case the relevant feature is enabled
@@ -1887,6 +1887,11 @@ static bool BEL_ST_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID
 	return false;
 }
 
+void BE_ST_SetAppQuitCallback(void (*funcPtr)(void))
+{
+	g_sdlAppQuitCallback = funcPtr;
+}
+
 void BE_ST_PollEvents(void)
 {
 	SDL_Event event;
@@ -1959,7 +1964,7 @@ void BE_ST_PollEvents(void)
 				break;
 
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-			if (g_refKeenCfg.absMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
+			if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 			{
 				void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
 				BEL_ST_UpdateVirtualCursorPositionFromPointer(event.motion.x, event.motion.y);
@@ -2179,6 +2184,8 @@ void BE_ST_PollEvents(void)
 			break;
 
 		case SDL_QUIT:
+			if (g_sdlAppQuitCallback)
+				g_sdlAppQuitCallback();
 			BE_ST_QuickExit();
 			break;
 		default: ;

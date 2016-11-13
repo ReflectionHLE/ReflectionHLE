@@ -164,6 +164,10 @@ void BE_Cross_DirSelection_Finish(void); // Finish dir selection
 const char **BE_Cross_DirSelection_GetNext(int dirIndex, int *outNumOfSubDirs); // Enter dir by index into last array
 const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs); // Go up in the filesystem hierarchy
 
+// If select game version has digitized sounds with a common sample rate,
+// then this rate is returned, otherwise 0 is returned.
+int BE_Cross_GetSelectedGameVerSampleRate(void);
+
 typedef char BE_TryAddGameInstallation_ErrorMsg_T[40];
 
 // Attempt to add a game installation from currently selected dir;
@@ -178,6 +182,7 @@ int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Error
 typedef FILE * BE_FILE_T;
 
 inline BE_FILE_T BE_Cross_IsFileValid(BE_FILE_T fp) { return fp; }
+inline BE_FILE_T BE_Cross_GetNilFile(void) { return NULL; }
 inline int BE_Cross_seek(BE_FILE_T fp, long int offset, int origin) { return fseek(fp, offset, origin); }
 inline int BE_Cross_putc(int character, BE_FILE_T fp) { return putc(character, fp); }
 inline int BE_Cross_getc(BE_FILE_T fp) { return getc(fp); }
@@ -243,8 +248,10 @@ size_t BE_Cross_read_EnumType_From16LE(BE_FILE_T fp, EnumType *ptr);
 #endif
 // boolean implementation may be separated from enums, otherwise it's the same
 size_t BE_Cross_read_boolean_From16LE(BE_FILE_T fp, bool *ptr);
+size_t BE_Cross_read_boolean_From32LE(BE_FILE_T fp, bool *ptr);
 // booleans buffer
 size_t BE_Cross_read_booleans_From16LEBuffer(BE_FILE_T fp, bool *ptr, size_t nbyte);
+size_t BE_Cross_read_booleans_From32LEBuffer(BE_FILE_T fp, bool *ptr, size_t nbyte);
 
 // Same but for writing
 size_t BE_Cross_writeInt8LE(BE_FILE_T fp, const void *ptr);
@@ -258,7 +265,9 @@ size_t BE_Cross_write_EnumType_To16LE(BE_FILE_T fp, const EnumType *ptr);
 #endif
 
 size_t BE_Cross_write_boolean_To16LE(BE_FILE_T fp, const bool *ptr);
+size_t BE_Cross_write_boolean_To32LE(BE_FILE_T fp, const bool *ptr);
 size_t BE_Cross_write_booleans_To16LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte);
+size_t BE_Cross_write_booleans_To32LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte);
 
 // Assuming segPtr is replacement for a 16-bit segment pointer, and offInSegPtr
 // is a replacement for an offset in this segment (pointing to a place in the

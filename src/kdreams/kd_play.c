@@ -250,6 +250,20 @@ void CheckKeys (void)
 		PrepareGamePlayControllerMapping();
 		//
 		IN_ClearKeysDown();
+		// REFKEEN - Patch for 2015 port: Reduce possible graphical glitches after swapping CGA/EGA graphics
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		{
+			FixScoreBox ();					// draw bomb/flower
+			scoreobj->temp1 = scoreobj->temp2 = -1;		// force score to be updated
+			scoreobj->temp3 = -1;			// and flower power
+			scoreobj->temp4 = -1;			// and lives
+
+			RF_RefreshSpriteList();
+			void ScoreThink (objtype *ob);
+			ScoreThink(scoreobj);
+			void ScoreReact (objtype *ob);
+			ScoreReact(scoreobj);
+		}
 		if (restartgame)
 			playstate = resetgame;
 		else if (!loadedgame)
@@ -1054,7 +1068,14 @@ void ClipToWalls (objtype *ob)
 //
 // make sure it stays in contact with a 45 degree slope
 //
-	if (ob->state->pushtofloor)
+	// REFKEEN - It's possible that state == NULL, e.g., after loading
+	// a saved game, after which ChangeFromFlower is going to be called,
+	// while the flower is in one of the s_pooffrom* states.
+	//
+	// If state == NULL then, under DOS (with Borland C++ 2.0),
+	// then ob->state->pushtofloor is a part of a small Borland C++ string
+	if (!(ob->state) || ob->state->pushtofloor)
+	//if (ob->state->pushtofloor)
 	{
 		if (ob->xmove > 0)
 			ob->ymove = ob->xmove + 16;
@@ -2035,6 +2056,7 @@ void RefKeen_Patch_kd_play(void)
 		refkeen_compat_kd_play_objoffset = 0x7624;
 		break;
 	case BE_GAMEVER_KDREAMSE113:
+	//case BE_GAMEVER_KDREAMS2015: Field is unused in this version
 		refkeen_compat_kd_play_objoffset = 0x712A;
 		break;
 	case BE_GAMEVER_KDREAMSC105:

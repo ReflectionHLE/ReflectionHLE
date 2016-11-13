@@ -27,6 +27,7 @@ GAMEOBJECTS=$(OBJ)/id_ca.o \
             $(OBJ)/loadscn2.o \
             $(OBJ)/lzhuf.o \
             $(OBJ)/soft.o \
+            $(OBJ)/key_scancode_converters.o \
             $(OBJ)/altcontroller.o \
             $(OBJ)/statetype_ptr_conversion.o
 

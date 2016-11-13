@@ -175,7 +175,7 @@ void CAL_GetGrChunkLength (id0_int_t chunk)
 
 id0_boolean_t CA_FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t length)
 {
-	if (length>0xffffl)
+	if ((length>0xffffl) && (refkeen_current_gamever != BE_GAMEVER_KDREAMS2015))
 		Quit ("CA_FarRead doesn't support 64K reads yet!");
 	// Ported from ASM
 	int bytesread = BE_Cross_readInt8LEBuffer(handle, dest, length);
@@ -585,7 +585,10 @@ void CAL_SetupGrFile (void)
 	CAL_GetGrChunkLength(STRUCTPICM);		// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
 	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
-	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)picmtable,NUMPICS*sizeof(pictabletype),grhuffman);
+	// REFKEEN - A vanilla bug that should be fixed with new memory management
+	// scheme, but only if the 2015 port's data is used
+	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)picmtable,((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? NUMPICM : NUMPICS)*sizeof(pictabletype),grhuffman);
+	//CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)picmtable,NUMPICS*sizeof(pictabletype),grhuffman);
 	MM_FreePtr(&compseg);
 	// REFKEEN - Big Endian support (including above vanilla bug with NUMPICS?)
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
@@ -619,8 +622,160 @@ void CAL_SetupGrFile (void)
 		spritetable[i].shifts = BE_Cross_Swap16LE(spritetable[i].shifts);
 	}
 #endif
+	// REFKEEN - CGA graphics from the 2015 port
+	if (fakecgamode)
+		for (int i = 0; i < NUMSPRITES; ++i)
+			spritetable[i].shifts = 2;
 #endif
 
+}
+
+//==========================================================================
+
+// REFKEEN - New function, used for swapping CGA/EGA graphics from the 2015 port
+
+/*
+======================
+=
+= CAL_FreeGrFile
+=
+======================
+*/
+
+void CAL_FreeGrFile (void)
+{
+	BE_Cross_close(grhandle);
+	grhandle = BE_Cross_GetNilFile();
+#if NUMPICS>0
+	MM_FreePtr((memptr *)&pictable);
+#endif
+#if NUMPICM>0
+	MM_FreePtr((memptr *)&picmtable);
+#endif
+#if NUMSPRITES>0
+	MM_FreePtr((memptr *)&spritetable);
+#endif
+}
+
+//==========================================================================
+
+// REFKEEN - New function, sets some CGA/EGA specific values
+
+/*
+=====================
+=
+= CAL_ResetGrModeBits
+=
+=====================
+*/
+
+static void CAL_ResetGrModeBits (void)
+{
+	extern id0_unsigned_t xpanmask; // From id_rf.c
+
+	int GFXdictsize, GFXheadsize;
+	// The CGA graphics were actually converted to the EGA format
+	id0_byte_t **GFXdictptr = &EGAdict;
+	id0_long_t **GFXheadptr = &EGAhead;
+
+	// A little bit of cheating: We retain definitions like GRHEADERLINKED
+	// and fake "linking" of data, even if taken off the 2015 port
+
+	BE_Cross_free_mem_loaded_embedded_rsrc(*GFXdictptr);
+	BE_Cross_free_mem_loaded_embedded_rsrc(*GFXheadptr);
+
+	if (fakecgamode)
+	{
+		refkeen_compat_grfilename = "KDREAMS.CGA";
+		refkeen_compat_grfilename_openerrormsg = "Cannot open KDREAMS.CGA!";
+		if (
+		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT.CGA", (memptr *)GFXdictptr)) < 0) ||
+		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD.CGA", (memptr *)GFXheadptr)) < 0)
+		)
+			BE_ST_ExitWithErrorMsg("CA_ReloadGrChunks - Failed to load at least one CGA file.");
+
+		// HACK
+		WHITE = WHITE_CGA;
+		BLACK = BLACK_CGA;
+		FIRSTCOLOR = FIRSTCOLOR_CGA;
+		SECONDCOLOR = SECONDCOLOR_CGA;
+		F_BLACK = F_BLACK_CGA;
+		F_FIRSTCOLOR = F_FIRSTCOLOR_CGA;
+		F_SECONDCOLOR = F_SECONDCOLOR_CGA;
+
+		xpanmask = 4;	// From id_rf.c - dont pan to odd pixels
+	}
+	else
+	{
+		refkeen_compat_grfilename = "KDREAMS.EGA";
+		refkeen_compat_grfilename_openerrormsg = "Cannot open KDREAMS.EGA!";
+		if (
+		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
+		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
+		)
+			BE_ST_ExitWithErrorMsg("CA_ReloadGrChunks - Failed to load at least one EGA file.");
+
+		// HACK
+		WHITE = WHITE_EGA;
+		BLACK = BLACK_EGA;
+		FIRSTCOLOR = FIRSTCOLOR_EGA;
+		SECONDCOLOR = SECONDCOLOR_EGA;
+		F_BLACK = F_BLACK_EGA;
+		F_FIRSTCOLOR = F_FIRSTCOLOR_EGA;
+		F_SECONDCOLOR = F_SECONDCOLOR_EGA;
+
+		xpanmask = 6;	// From id_rf.c - dont pan to odd pixels
+	}
+
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	for (uint16_t *dictptr = (uint16_t *)(*GFXdictptr); GFXdictsize >= 2; ++dictptr, GFXdictsize -= 2)
+		*dictptr = BE_Cross_Swap16LE(*dictptr);
+	for (uint32_t *headptr = (uint32_t *)(*GFXheadptr); GFXheadsize >= 4; ++headptr, GFXheadsize -= 4)
+		*headptr = BE_Cross_Swap32LE(*headptr);
+#endif
+}
+
+//==========================================================================
+
+// REFKEEN - New function, reloads CGA/EGA graphics from the 2015 port
+
+/*
+===============
+=
+= CA_ReloadGrChunks
+=
+===============
+*/
+
+void CA_ReloadGrChunks (void)
+{
+	id0_unsigned_t chunksFlags[NUMCHUNKS] = {0};
+	int i;
+
+	for (i=0;i<NUMCHUNKS;i++)
+		if (grsegs[i])
+		{
+			chunksFlags[i] = MM_GetAttributes(&grsegs[i]) | 0x40; // HACK - We know 0x40 is unused in id_mm.c
+			MM_FreePtr(&grsegs[i]);
+		}
+
+	CAL_FreeGrFile();
+
+	CAL_ResetGrModeBits();
+	VW_SetDefaultColors();
+
+	CAL_SetupGrFile();
+
+	for (i=0;i<NUMCHUNKS;i++)
+		if (chunksFlags[i])
+		{
+			id0_byte_t lastgrneeded = grneeded[i];
+			CA_CacheGrChunk(i);
+			// Some tiles may be sparse in one file but not the other
+			if (grsegs[i])
+				MM_SetAttributes(&grsegs[i], chunksFlags[i] & ~0x40);
+			grneeded[i] = lastgrneeded;
+		}
 }
 
 //==========================================================================
@@ -772,6 +927,8 @@ void CA_Startup (void)
 #endif
 
 	CAL_SetupMapFile ();
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		CAL_ResetGrModeBits ();
 	CAL_SetupGrFile ();
 	CAL_SetupAudioFile ();
 
@@ -866,22 +1023,31 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 	// REFKEEN - Big Endian support, possibly the most complicated case,
 	// since we need to know the exact type of each chunk.
 	//
-	// FIXME (consider): With matching proper data and definitions, this
-	// should be OK, but otherwise one could consider delaying the swaps
-	// to runtime (although it's a stretch).
+	// Also includes support for 2015 port data.
 
 	// Sanity check before doing the swaps on BE
 #if !((STARTPCSOUNDS <= STARTADLIBSOUNDS) && (STARTADLIBSOUNDS <= STARTDIGISOUNDS) && (STARTDIGISOUNDS <= STARTMUSIC))
 #error "ID_CA.C sanity check for Big-Endian byte swaps (audio chunks) has failed!"
 #endif
 
-#ifdef REFKEEN_ARCH_BIG_ENDIAN
 	if (chunk < STARTMUSIC) // Sound effects
 	{
 		SoundCommon *sndCommonPtr = (SoundCommon *)audiosegs[chunk];
 		sndCommonPtr->length = BE_Cross_Swap32LE(sndCommonPtr->length);
 		sndCommonPtr->priority = BE_Cross_Swap16LE(sndCommonPtr->priority);
-		if ((chunk >= STARTDIGISOUNDS) /*&& (chunk < STARTMUSIC)*/) // Digitized sounds
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) // 2015 port digitized sounds
+		{
+			int16_t prevSample = 0, prevDiff = 0;
+			int16_t *sndPtr = ((Port2015SampledSound *)audiosegs[chunk])->data;
+			int16_t *sndEndPtr = sndPtr + (sndCommonPtr->length/2);
+			while (sndPtr != sndEndPtr)
+			{
+				prevDiff += *sndPtr;
+				prevSample += prevDiff;
+				*sndPtr++ = prevSample;
+			}
+		}
+		else if ((chunk >= STARTDIGISOUNDS) /*&& (chunk < STARTMUSIC)*/) // Old-style digitized sounds
 		{
 			SampledSound *sampledSndPtr = (SampledSound *)audiosegs[chunk];
 			sampledSndPtr->hertz = BE_Cross_Swap16LE(sampledSndPtr->hertz);
@@ -892,7 +1058,6 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 		// NOTE: Doing nothing since we don't even know how was
 		// this used; Original code may be a bit incomplete anyway.
 	}
-#endif
 }
 
 //===========================================================================
@@ -1634,8 +1799,9 @@ void CA_CacheMarks (const id0_char_t *title, id0_boolean_t cachedownlevel)
 	id0_long_t	bufferstart,bufferend;	// file position of general buffer
 	id0_byte_t	id0_far *source;
 	memptr	bigbufferseg;
-	// REFKEEN - GRMODE is a variable now, and so may the bar color be (NEW variable added)
-	int	barcolor = (GRMODE == EGAGR) ? 14 : SECONDCOLOR;
+	// REFKEEN - GRMODE is a variable now, and so may the bar color be (NEW variable added).
+	// There's also separate handling for the 2015 port.
+	int	barcolor = ((GRMODE == EGAGR) && !fakecgamode) ? 14 : SECONDCOLOR;
 
 	//
 	// save title so cache down level can redraw it
@@ -1838,10 +2004,14 @@ int current_gamever_int;
 
 void RefKeen_Patch_id_ca(void)
 {
+	// A little bit of cheating: We retain definitions like GRHEADERLINKED
+	// and fake "linking" of data, even if taken off the 2015 port
+
 	int audiodictsize, audioheadsize, GFXdictsize, GFXheadsize, mapdictsize, mapheadsize;
 	GRMODE = ((refkeen_current_gamever == BE_GAMEVER_KDREAMSC100) || (refkeen_current_gamever == BE_GAMEVER_KDREAMSC105)) ? CGAGR : EGAGR;
 	id0_byte_t **GFXdictptr = (GRMODE == CGAGR) ? &CGAdict : &EGAdict;
 	id0_long_t **GFXheadptr = (GRMODE == CGAGR) ? &CGAhead : &EGAhead;
+	bool is2015Port = (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015);
 	// Just in case these may ever be reloaded
 	BE_Cross_free_mem_loaded_embedded_rsrc(audiodict);
 	BE_Cross_free_mem_loaded_embedded_rsrc(audiohead);
@@ -1850,8 +2020,9 @@ void RefKeen_Patch_id_ca(void)
 	BE_Cross_free_mem_loaded_embedded_rsrc(mapdict);
 	BE_Cross_free_mem_loaded_embedded_rsrc(maphead);
 	// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
-	if (((audiodictsize = BE_Cross_load_embedded_rsrc_to_mem("AUDIODCT."EXTENSION, (memptr *)&audiodict)) < 0) ||
-	    ((audioheadsize = BE_Cross_load_embedded_rsrc_to_mem("AUDIOHHD."EXTENSION, (memptr *)&audiohead)) < 0) ||
+	// (Can't use MM_GetPtr before calling game's main function.)
+	if (((audiodictsize = BE_Cross_load_embedded_rsrc_to_mem(is2015Port ? "SOUNDDCT."EXTENSION : "AUDIODCT."EXTENSION, (memptr *)&audiodict)) < 0) ||
+	    ((audioheadsize = BE_Cross_load_embedded_rsrc_to_mem(is2015Port ? "SOUNDHHD."EXTENSION : "AUDIOHHD."EXTENSION, (memptr *)&audiohead)) < 0) ||
 	    ((GRMODE == CGAGR) &&
 	     (
 	      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("CGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
@@ -1892,10 +2063,10 @@ void RefKeen_Patch_id_ca(void)
 	{
 		refkeen_compat_grfilename = "KDREAMS.EGA";
 		refkeen_compat_mapfilename = "KDREAMS.MAP";
-		refkeen_compat_audiofilename = "KDREAMS.AUD";
+		refkeen_compat_audiofilename = is2015Port ? "KDREAMS.SND" : "KDREAMS.AUD";
 		refkeen_compat_grfilename_openerrormsg = "Cannot open KDREAMS.EGA!";
 		refkeen_compat_mapfilename_openerrormsg = "Can't open KDREAMS.MAP!";
-		refkeen_compat_audiofilename_openerrormsg = "Can't open KDREAMS.AUD!";
+		refkeen_compat_audiofilename_openerrormsg = is2015Port ? "Can't open KDREAMS.SND!" : "Can't open KDREAMS.AUD!";
 	}
 
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
@@ -1934,6 +2105,9 @@ void RefKeen_Patch_id_ca(void)
 		break;
 	case BE_GAMEVER_KDREAMSE120:
 		current_gamever_int = 120;
+		break;
+	case BE_GAMEVER_KDREAMS2015:
+		current_gamever_int = 2015;
 		break;
 	}
 }

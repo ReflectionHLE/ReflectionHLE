@@ -241,6 +241,10 @@ extern	spritetabletype id0_seg *spritetable;
 extern	id0_int_t			px,py;
 extern	id0_byte_t		pdrawmode,fontcolor;
 
+// REFKEEN - New variable for 2015 port data;
+// **MUST** be set to false for DOS versions!!
+extern	id0_boolean_t	fakecgamode;
+
 //
 // asm globals
 //

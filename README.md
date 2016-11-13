@@ -118,7 +118,8 @@ Supported game data, described by DOS versions
 ----------------------------------------------
 
 - Keen Dreams: Shareware (EGA) v1.13, CGA v1.05, Registered (EGA) v1.93
-and Shareware (EGA) v1.20.
+and Shareware (EGA) v1.20. There's also partial support for the data
+from the 2015 re-release (Steam / IndieGameStand).
 - Catacomb 3-D (The Descent): Versions 1.00 and 1.22.
 - The Catacomb Abyss: Versions 1.13 (QA [0], Shareware) and 1.24 (rev 1).
 - The Catacomb Armageddon: Version 1.02 (rev 1).
@@ -140,14 +141,17 @@ places online, at the least. Links for reference:
 - http://cd.textfiles.com/megagames2/GAMES/APOGEE/KEENDR13.ZIP
 - (You want keendm.zip) http://dukeworld.duke4.net/classic%20dukeworld/share/
 
------------------------------------
-New *incompatible* Keen Dreams data
------------------------------------
+-------------------------------------
+Partially compatible Keen Dreams data
+-------------------------------------
 
-As a side-note, there is a new official port of Keen Dreams available on Steam,
-IndieGameStand and possibly also another store.
-Note that Reflection Keen is technically *not* compatible with the data of this
-port, but you may still be interested. EGA and CGA graphics are both included.
+2015 had a re-release of Keen Dreams on Steam, IndieGameStand
+and possibly also another store.
+Note that while Reflection Keen is partially compatible with the 2015
+data, it is still recommended to use data from any of the supported
+DOS versions. In particular, the Reflection Keen Dreams codebase
+is known to be internally different from the re-release's
+codebase in many ways.
 
 Links to stores' pages:
 - http://store.steampowered.com/app/356200/

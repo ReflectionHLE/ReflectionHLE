@@ -113,7 +113,10 @@ extern	id0_unsigned_t	bufferwidth,bufferheight;	// used by font drawing stuff
 =======================
 */
 
-static const id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
+// REFKEEN - Add new /SWMOUSE argument from the 2015 port
+// (/NOASPECT and /WINDOWED don't seem to work as expected, as of Nov 12 2016)
+static const id0_char_t *ParmStrings[] = {"HIDDENCARD","SWMOUSE"};
+//static const id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
 
 void	VW_Startup (void)
 {
@@ -125,11 +128,24 @@ void	VW_Startup (void)
 	videocard = NOcard/*0*/;
 
 	for (i = 1;i < id0_argc;i++)
+		// REFKEEN - Add new /SWMOUSE argument from the 2015 port
+		switch (US_CheckParm(id0_argv[i],ParmStrings))
+		{
+		case 0:
+			videocard = EGAcard;
+			break;
+		case 1:
+			if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+				BE_ST_HostGfx_SetAbsMouseCursorToggle(false);
+			break;
+		}
+#if 0
 		if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
 		{
 			videocard = EGAcard;
 			break;
 		}
+#endif
 
 	if (!videocard)
 		videocard = VW_VideoID ();
@@ -233,7 +249,9 @@ id0_char_t colors[7][17]=
  {0,1,2,3,4,5,6,7,0x18,0x19,0x1a,0x1b,0x1c,0x1d,0x1e,0x1f,0},
  {0,1,2,3,4,5,6,7,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0},
  {0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f}};
-
+// REFKEEN - Patch for 2015 port
+static id0_char_t fakecgacolors[17] =
+{0,0x1b,0x1d,0x1f,0,0x1b,0x1d,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0x1f,0};
 
 void VW_ColorBorder (id0_int_t color)
 {
@@ -245,15 +263,17 @@ void VW_SetDefaultColors(void)
 {
 	if (GRMODE != EGAGR)
 		return;
-	colors[3][16] = bordercolor;
-	BE_ST_EGASetPaletteAndBorder((id0_byte_t *)&colors[3]);
+	// REFKEEN - Patch for 2015 port, use either colors[3] or fakecgacolors
+	id0_char_t *palette = fakecgamode ? fakecgacolors : colors[3];
+	palette[16] = bordercolor;
+	BE_ST_EGASetPaletteAndBorder((id0_byte_t *)palette);
 	screenfaded = false;
 }
 
 
 void VW_FadeOut(void)
 {
-	if (GRMODE != EGAGR)
+	if ((GRMODE != EGAGR) || fakecgamode) // REFKEEN - Patch for 2015 port
 		return;
 	id0_int_t i;
 
@@ -269,7 +289,7 @@ void VW_FadeOut(void)
 
 void VW_FadeIn(void)
 {
-	if (GRMODE != EGAGR)
+	if ((GRMODE != EGAGR) || fakecgamode) // REFKEEN - Patch for 2015 port
 		return;
 	id0_int_t i;
 
@@ -284,7 +304,7 @@ void VW_FadeIn(void)
 
 void VW_FadeUp(void)
 {
-	if (GRMODE != EGAGR)
+	if ((GRMODE != EGAGR) || fakecgamode) // REFKEEN - Patch for 2015 port
 		return;
 	id0_int_t i;
 
@@ -299,7 +319,7 @@ void VW_FadeUp(void)
 
 void VW_FadeDown(void)
 {
-	if (GRMODE != EGAGR)
+	if ((GRMODE != EGAGR) || fakecgamode) // REFKEEN - Patch for 2015 port
 		return;
 	id0_int_t i;
 
@@ -1374,6 +1394,11 @@ id0_word_t screenspot; // where the buffer is going
 
 id0_word_t bufferextra; // add at end of a line copy
 id0_word_t screenextra;
+
+// REFKEEN - New variable for 2015 port data;
+// **MUST** be set to false while DOS version data is in use!!
+// (There isn't necessarily a separate check for game version in each such case)
+id0_boolean_t	fakecgamode = false;
 
 // (REFKEEN) Used for patching version-specific stuff
 id0_int_t	SCREENWIDTH, CHARWIDTH, TILEWIDTH;

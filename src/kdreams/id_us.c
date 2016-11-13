@@ -294,14 +294,40 @@ USL_ReadConfig(void)
 			BE_Cross_readInt32LE(file, &Scores[i].score);
 			BE_Cross_readInt16LE(file, &Scores[i].completed);
 		}
-		size_t BE_Cross_read_SDMode_From16LE(BE_FILE_T fp, SDMode *ptr);
-		BE_Cross_read_SDMode_From16LE(file, &sd);
-		size_t BE_Cross_read_SMMode_From16LE(BE_FILE_T fp, SMMode *ptr);
-		BE_Cross_read_SMMode_From16LE(file, &sm);
-		size_t BE_Cross_read_ControlType_From16LE(BE_FILE_T fp, ControlType *ptr);
-		BE_Cross_read_ControlType_From16LE(file, &ctl);
-		// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
-		BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		{
+			uint8_t RefKeen_TranslateScancodeFromSDL2ToDOS(uint16_t scancode);
+			uint16_t sdl2Keys[sizeof(KeyboardDef)/sizeof(ScanCode)];
+			ScanCode *dosScancodePtr = (ScanCode *)(&(KbdDefs[0]));
+
+			size_t BE_Cross_read_SDMode_From32LE(BE_FILE_T fp, SDMode *ptr);
+			BE_Cross_read_SDMode_From32LE(file, &sd);
+			size_t BE_Cross_read_SMMode_From32LE(BE_FILE_T fp, SMMode *ptr);
+			BE_Cross_read_SMMode_From32LE(file, &sm);
+			size_t BE_Cross_read_ControlType_From32LE(BE_FILE_T fp, ControlType *ptr);
+			BE_Cross_read_ControlType_From32LE(file, &ctl);
+
+			// Convert scancodes from SDL2 to DOS
+			BE_Cross_readInt16LEBuffer(file, &sdl2Keys,sizeof(sdl2Keys));
+			for (int i = 0; i < (int)(sizeof(KeyboardDef)/sizeof(ScanCode)); ++i, ++dosScancodePtr)
+				*dosScancodePtr = RefKeen_TranslateScancodeFromSDL2ToDOS(sdl2Keys[i]);
+
+			BE_Cross_read_boolean_From32LE(file, &fakecgamode);
+			// REFKEEN - We ignore the fullscreen and aspect ratio settings here,
+			// since they're read from the refkeen cfg file
+		}
+		else
+		{
+			size_t BE_Cross_read_SDMode_From16LE(BE_FILE_T fp, SDMode *ptr);
+			BE_Cross_read_SDMode_From16LE(file, &sd);
+			size_t BE_Cross_read_SMMode_From16LE(BE_FILE_T fp, SMMode *ptr);
+			BE_Cross_read_SMMode_From16LE(file, &sm);
+			size_t BE_Cross_read_ControlType_From16LE(BE_FILE_T fp, ControlType *ptr);
+			BE_Cross_read_ControlType_From16LE(file, &ctl);
+			// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
+			BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+		}
 #if 0
 		read(file,Scores,sizeof(HighScore) * MaxScores);
 		read(file,&sd,sizeof(sd));
@@ -319,6 +345,8 @@ USL_ReadConfig(void)
 		sd = sdm_Off;
 		sm = smm_Off;
 		ctl = ctrl_Keyboard;
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+			fakecgamode = false;
 
 		gotit = false;
 		HighScoresDirty = true;
@@ -352,13 +380,42 @@ USL_WriteConfig(void)
 			BE_Cross_writeInt32LE(file, &Scores[i].score);
 			BE_Cross_writeInt16LE(file, &Scores[i].completed);
 		}
-		size_t BE_Cross_write_SDMode_To16LE(BE_FILE_T fp, const SDMode *ptr);
-		BE_Cross_write_SDMode_To16LE(file, &SoundMode);
-		size_t BE_Cross_write_SMMode_To16LE(BE_FILE_T fp, const SMMode *ptr);
-		BE_Cross_write_SMMode_To16LE(file, &MusicMode);
-		size_t BE_Cross_write_ControlType_To16LE(BE_FILE_T fp, const ControlType *ptr);
-		BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
-		BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+
+		if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		{
+			uint16_t RefKeen_TranslateScancodeFromDOSToSDL2(uint8_t scancode);
+			uint16_t sdl2Keys[sizeof(KeyboardDef)/sizeof(ScanCode)];
+			ScanCode *dosScancodePtr = (ScanCode *)(&(KbdDefs[0]));
+
+			size_t BE_Cross_write_SDMode_To32LE(BE_FILE_T fp, const SDMode *ptr);
+			BE_Cross_write_SDMode_To32LE(file, &SoundMode);
+			size_t BE_Cross_write_SMMode_To32LE(BE_FILE_T fp, const SMMode *ptr);
+			BE_Cross_write_SMMode_To32LE(file, &MusicMode);
+			size_t BE_Cross_write_ControlType_To32LE(BE_FILE_T fp, const ControlType *ptr);
+			BE_Cross_write_ControlType_To32LE(file, &(Controls[0]));
+
+			// Convert scancodes from DOS to SDL2
+			for (int i = 0; i < (int)(sizeof(KeyboardDef)/sizeof(ScanCode)); ++i, ++dosScancodePtr)
+				sdl2Keys[i] = RefKeen_TranslateScancodeFromDOSToSDL2(*dosScancodePtr);
+			BE_Cross_writeInt16LEBuffer(file, &sdl2Keys,sizeof(sdl2Keys));
+
+			BE_Cross_write_boolean_To32LE(file, &fakecgamode);
+			// REFKEEN - These ones should also be written to refkeen cfg file
+			uint32_t extraVal = BE_ST_HostGfx_GetAspectRatioToggle() ? 0 : 1;
+			BE_Cross_writeInt32LE(file, &extraVal);
+			extraVal = BE_ST_HostGfx_GetFullScreenToggle() ? 0x1001/*SDL_WINDOW_FULLSCREEN_DESKTOP*/ : 0;
+			BE_Cross_writeInt32LE(file, &extraVal);
+		}
+		else
+		{
+			size_t BE_Cross_write_SDMode_To16LE(BE_FILE_T fp, const SDMode *ptr);
+			BE_Cross_write_SDMode_To16LE(file, &SoundMode);
+			size_t BE_Cross_write_SMMode_To16LE(BE_FILE_T fp, const SMMode *ptr);
+			BE_Cross_write_SMMode_To16LE(file, &MusicMode);
+			size_t BE_Cross_write_ControlType_To16LE(BE_FILE_T fp, const ControlType *ptr);
+			BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
+			BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+		}
 #if 0
 		write(file,Scores,sizeof(HighScore) * MaxScores);
 		write(file,&SoundMode,sizeof(SoundMode));
@@ -396,13 +453,15 @@ USL_CheckSavedGames(void)
 		//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// REFKEEN Cross Platform file I/O
-			id0_byte_t padding; // Apparently one byte of struct padding
+			id0_byte_t padding; // Apparently one byte of struct padding (doesn't apply to 2015 release)
 			if
 			(
 				(BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
-			&&	(BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
+			&&	(((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) && (BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2))
+				 || ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) && (BE_Cross_read_boolean_From32LE(file, &(game->present)) == 4))
+				)
 			&&	(BE_Cross_readInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
-			&&	(BE_Cross_readInt8LE(file, &padding) == 1)
+			&&	((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) || (BE_Cross_readInt8LE(file, &padding) == 1))
 
 				//(read(file,game,sizeof(*game)) == sizeof(*game))
 			&&	(!strcmp(game->signature,EXTENSION))
@@ -1394,6 +1453,7 @@ static	id0_boolean_t		USL_CtlButtonCustom(UserCall,id0_word_t,id0_word_t),
 					USL_CtlDLButtonCustom(UserCall,id0_word_t,id0_word_t),
 					USL_CtlDSButtonCustom(UserCall,id0_word_t,id0_word_t),
 					USL_CtlSButtonCustom(UserCall,id0_word_t,id0_word_t),
+					USL_CtlGButtonCustom(UserCall,id0_word_t,id0_word_t), // REFKEEN - New function, used with data from the 2015 port
 					USL_CtlCButtonCustom(UserCall,id0_word_t,id0_word_t),
 					USL_CtlCKbdButtonCustom(UserCall,id0_word_t,id0_word_t),
 					USL_CtlCJoyButtonCustom(UserCall,id0_word_t,id0_word_t);
@@ -1451,6 +1511,14 @@ static	UserItem	CtlPanels[] =
 					{
 {CtlPanel2R(10,0),uii_RadioButton,CTL_P_NEWGAMEUPPIC,CTL_P_NEWGAMEDNPIC,"Choose Difficulty for the New Game",sc_F5,ui_Normal,USL_CtlPButtonCustom},
 {CtlPanel2R(15,0),uii_RadioButton,CTL_P_RESUMEUPPIC,CTL_P_RESUMEDNPIC,"Go Back to Current Game",sc_None,ui_Normal,USL_CtlPButtonCustom},
+{-1,-1,-1,-1,uii_Bad}
+					},
+// REFKEEN - A new variation of CtlPPanels for the 2015 port
+					CtlPPanels2015Port[] =
+					{
+{CtlPanel2R(8,0),uii_RadioButton,CTL_P_NEWGAMEUPPIC,CTL_P_NEWGAMEDNPIC,"Choose Difficulty for the New Game",sc_F5,ui_Normal,USL_CtlPButtonCustom},
+{CtlPanel2R(13,0),uii_RadioButton,CTL_P_RESUMEUPPIC,CTL_P_RESUMEDNPIC,"Go Back to Current Game",sc_None,ui_Normal,USL_CtlPButtonCustom},
+{CtlPanel2R(18,0),uii_Button,CTL_S_ADLIBUPPIC,CTL_S_ADLIBDNPIC,"High Scores",sc_None,ui_Normal,USL_CtlPButtonCustom},
 {-1,-1,-1,-1,uii_Bad}
 					},
 					CtlPSPanels[] =
@@ -1542,6 +1610,14 @@ static	UserItem	CtlPanels[] =
 {CtlPanel2R(23,0),uii_RadioButton,CTL_S_SNDSRCUPPIC,CTL_S_SNDSRCDNPIC,"Use Sound Source Sound Effects",sc_None,ui_Normal,USL_CtlSButtonCustom},
 {-1,-1,-1,-1,uii_Bad}
 					},
+// REFKEEN - A new variation of CtlSPanels for the 2015 port
+					CtlSPanels2015Port[] =
+					{
+{CtlPanel2R(8,0),uii_RadioButton,CTL_S_NOSNDUPPIC,CTL_S_NOSNDDNPIC,"Turn Sound Off",sc_None,ui_Normal,USL_CtlSButtonCustom},
+{CtlPanel2R(13,0),uii_RadioButton,CTL_S_PCSNDUPPIC,CTL_S_PCSNDDNPIC,"Use PC Speaker",sc_None,ui_Normal,USL_CtlSButtonCustom},
+{CtlPanel2R(18,0),uii_RadioButton,CTL_CHECKUPPIC,CTL_CHECKDNPIC,"Use AdLib Sound Effects",sc_None,ui_Normal,USL_CtlSButtonCustom},
+{-1,-1,-1,-1,uii_Bad}
+					},
 					CtlSSSPanels[] =
 					{
 {CtlPanel3R(7,2),uii_CheckBox,CTL_CHECKUPPIC,CTL_CHECKDNPIC,"Turn Tandy Mode On / Off",sc_None,ui_Normal,0,"Tandy Mode"},
@@ -1552,6 +1628,14 @@ static	UserItem	CtlPanels[] =
 					{
 {CtlPanel2R(9,0),uii_RadioButton,CTL_M_NOMUSUPPIC,CTL_M_NOMUSDNPIC,"Background Music Off"},
 {CtlPanel2R(15,0),uii_RadioButton,CTL_M_ADLIBUPPIC,CTL_M_ADLIBDNPIC,"Use AdLib/SoundBlaster Music"},
+{-1,-1,-1,-1,uii_Bad}
+					},
+// REFKEEN - The replacement of CtlMPanels for the 2015 port
+					CtlGPanels[] =
+					{
+{CtlPanel2R(8,0),uii_CheckBox,CTL_M_NOMUSUPPIC,CTL_M_NOMUSDNPIC,"EGA/CGA",sc_None,ui_Normal,USL_CtlGButtonCustom},
+{CtlPanel2R(13,0),uii_CheckBox,CTL_S_SNDBLUPPIC,CTL_S_SNDBLDNPIC,"Windowed/Fullscreen",sc_None,ui_Normal,USL_CtlGButtonCustom},
+{CtlPanel2R(18,0),uii_CheckBox,CTL_S_SNDSRCUPPIC,CTL_S_SNDSRCDNPIC,"Aspect Ratio",sc_None,ui_Normal,USL_CtlGButtonCustom},
 {-1,-1,-1,-1,uii_Bad}
 					},
 					*CtlPanels2[] =
@@ -2196,11 +2280,20 @@ USL_CtlButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	for (j = 1;j < 4;j++)
 		TheItems[j] = id0_nil_t;
 
-	// Set to new button
-	CtlPanelButton = n;
+	// REFKEEN - Patch for 2015 port
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		// Draw new items
+		TheItems[1] = ip = CtlPanels2[n];
+	}
+	else
+	{
+		// Set to new button
+		CtlPanelButton = n;
 
-	// Draw new items
-	TheItems[1] = ip = CtlPanels2[CtlPanelButton];
+		// Draw new items
+		TheItems[1] = ip = CtlPanels2[CtlPanelButton];
+	}
 	j = 0;
 	while (ip && (ip->type != uii_Bad))
 	{
@@ -2210,6 +2303,8 @@ USL_CtlButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		j++;
 		ip++;
 	}
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+		CtlPanelButton = n; // Set to new button
 
 	return(false);
 }
@@ -2967,11 +3062,13 @@ USL_CtlDLButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		//if ((file = open(filename,O_BINARY | O_RDONLY)) != -1)
 		{
 			// REFKEEN Cross Platform file I/O
-			id0_byte_t padding; // Apparently one byte of struct padding
+			id0_byte_t padding; // Apparently one byte of struct padding (doesn't apply to 2015 release)
 			if ((BE_Cross_readInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
-			    && (BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2)
+			    && (((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) && (BE_Cross_read_boolean_From16LE(file, &(game->present)) == 2))
+			        || ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) && (BE_Cross_read_boolean_From32LE(file, &(game->present)) == 4))
+			    )
 			    && (BE_Cross_readInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
-			    && (BE_Cross_readInt8LE(file, &padding) == 1)
+			    && ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) || (BE_Cross_readInt8LE(file, &padding) == 1))
 			)
 			//if (read(file,game,sizeof(*game)) == sizeof(*game))
 			{
@@ -3060,11 +3157,13 @@ USL_CtlDSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 		//if (file != -1)
 		{
 			// REFKEEN Cross Platform file I/O
-			id0_byte_t padding = 0; // Apparently one byte of struct padding
+			id0_byte_t padding = 0; // Apparently one byte of struct padding (doesn't apply to 2015 release)
 			if ((BE_Cross_writeInt8LEBuffer(file, game->signature, sizeof(game->signature)) == sizeof(game->signature))
-			    && (BE_Cross_write_boolean_To16LE(file, &(game->present)) == 2)
+			    && (((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) && (BE_Cross_write_boolean_To16LE(file, &(game->present)) == 2))
+			        || ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) && (BE_Cross_write_boolean_To32LE(file, &(game->present)) == 4))
+			    )
 			    && (BE_Cross_writeInt8LEBuffer(file, game->name, sizeof(game->name)) == sizeof(game->name))
-			    && (BE_Cross_writeInt8LE(file, &padding) == 1)
+			    && ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) || (BE_Cross_writeInt8LE(file, &padding) == 1))
 			)
 			//if (write(file,game,sizeof(*game)) == sizeof(*game))
 			{
@@ -3145,6 +3244,60 @@ USL_CtlSButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	return(false);
 }
 
+// REFKEEN - New function, used with CtlGPanels for the 2015 port
+static id0_boolean_t
+USL_CtlGButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
+{
+	UserItem *ip;
+
+	if (call != uic_Hit)
+		return(false);
+
+	// HACK - This may be called from USL_CtlButtonCustom, so check this
+	// (this also required a minor patch to USL_CtlButtonCustom)
+	if (CtlPanels2[CtlPanelButton] != CtlGPanels)
+		return(true);
+
+	switch (n)
+	{
+	case 0:
+		fakecgamode ^= true;
+
+		CA_ReloadGrChunks();
+
+		// Reset these (as done in US_ControlPanel)
+
+		fontcolor = F_BLACK;
+
+		VW_InitDoubleBuffer();
+
+		VWB_Bar(0,0,MaxX,MaxY,FIRSTCOLOR);
+		US_DrawWindow(8,22,30,2);
+		US_SaveWindow(&HelpWindow);
+		US_DrawWindow(8,7,30,14);
+		US_SaveWindow(&BottomWindow);
+		US_DrawWindow(8,1,30,20);
+
+		for (ip = CtlPanels;ip->type != uii_Bad;ip++)
+			VWB_DrawPic(ip->r.ul.x,ip->r.ul.y,ip->picup);
+
+		USL_DoHit(0,0);
+		USL_DoHit(0,5);
+		VW_SetCursor(CURSORARROWSPR);
+		USL_ShowHelp(TheItems[i][n].help);
+
+		break;
+	case 1:
+		BE_ST_HostGfx_SetFullScreenToggle(!BE_ST_HostGfx_GetFullScreenToggle());
+		break;
+	case 2:
+		BE_ST_HostGfx_SetAspectRatioToggle(!BE_ST_HostGfx_GetAspectRatioToggle());
+		break;
+	}
+
+	return(false);
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	USL_CtlPButtonCustom() - The custom routine for all of the start game btns
@@ -3162,6 +3315,41 @@ USL_CtlPButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 	ip = &TheItems[i][n];
 	if (ip->sel & ui_Disabled)
 		return(false);
+
+	if ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) && (n == 2))
+	{
+		// HACK - This may be called from USL_CtlButtonCustom, so check this
+		// (this also required a minor patch to USL_CtlButtonCustom)
+		if (CtlPanels2[CtlPanelButton] != CtlPPanels2015Port)
+			return(true);
+
+		VW_HideCursor();
+		VWB_Bar(0,0,320,200,FIRSTCOLOR);
+		US_DisplayHighScores(-1);
+		IN_ClearKeysDown();
+		IN_Ack();
+
+		// Refresh
+		fontcolor = F_BLACK;
+
+		VW_InitDoubleBuffer();
+
+		VWB_Bar(0,0,MaxX,MaxY,FIRSTCOLOR);
+		US_DrawWindow(8,22,30,2);
+		US_SaveWindow(&HelpWindow);
+		US_DrawWindow(8,7,30,14);
+		US_SaveWindow(&BottomWindow);
+		US_DrawWindow(8,1,30,20);
+
+		for (ip = CtlPanels;ip->type != uii_Bad;ip++)
+			VWB_DrawPic(ip->r.ul.x,ip->r.ul.y,ip->picup);
+
+		USL_DoHit(0,5);
+		USL_DoHit(0,0);
+		VW_ShowCursor();
+
+		return(false);
+	}
 
 	USL_ClearBottom();
 
@@ -3449,9 +3637,10 @@ USL_SetUpCtlPanel(void)
 	GameIsDirty = ingame;
 
 	// Set up restart game
-	USL_TurnOff(CtlPPanels);
-	CtlPPanels[0].sel = ingame? ui_Normal : ui_Selected;
-	CtlPPanels[1].sel = ingame? ui_Selected : ui_Disabled;
+	// REFKEEN - Support 2015 port by adding an indirection via CtlPanels2[0]
+	USL_TurnOff(CtlPanels2[0]/*CtlPPanels*/);
+	CtlPanels2[0]/*CtlPPanels*/[0].sel = ingame? ui_Normal : ui_Selected;
+	CtlPanels2[0]/*CtlPPanels*/[1].sel = ingame? ui_Selected : ui_Disabled;
 
 	// Set up disk stuff - default to load/save game
 	USL_TurnOff(CtlDPanels);
@@ -3486,18 +3675,27 @@ USL_SetUpCtlPanel(void)
 		CtlCKbdPanels[i].text = IN_GetScanName(*(KeyMaps[i]));
 
 	// Set up Sounds
-	USL_TurnOff(CtlSPanels);
-	CtlSPanels[sdm_AdLib].sel = AdLibPresent? ui_Normal : ui_Disabled;
-#if 0	// DEBUG - hack because no space for digitized sounds on Keen Dreams
-	CtlSPanels[sdm_SoundBlaster].sel =
-		SoundBlasterPresent? ui_Normal : ui_Disabled;
-	CtlSPanels[sdm_SoundSource].sel =
-		SoundSourcePresent? ui_Normal : ui_Disabled;
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		USL_TurnOff(CtlSPanels2015Port);
+		CtlSPanels2015Port[sdm_AdLib].sel = AdLibPresent? ui_Normal : ui_Disabled;
+		CtlSPanels2015Port[SoundMode].sel |= ui_Selected;
+	}
+	else
+	{
+		USL_TurnOff(CtlSPanels);
+		CtlSPanels[sdm_AdLib].sel = AdLibPresent? ui_Normal : ui_Disabled;
+#if 0		// DEBUG - hack because no space for digitized sounds on Keen Dreams
+		CtlSPanels[sdm_SoundBlaster].sel =
+			SoundBlasterPresent? ui_Normal : ui_Disabled;
+		CtlSPanels[sdm_SoundSource].sel =
+			SoundSourcePresent? ui_Normal : ui_Disabled;
 #else
-	CtlSPanels[sdm_SoundBlaster].sel = ui_Disabled;
-	CtlSPanels[sdm_SoundSource].sel = ui_Disabled;
+		CtlSPanels[sdm_SoundBlaster].sel = ui_Disabled;
+		CtlSPanels[sdm_SoundSource].sel = ui_Disabled;
 #endif
-	CtlSPanels[SoundMode].sel |= ui_Selected;
+		CtlSPanels[SoundMode].sel |= ui_Selected;
+	}
 
 	// Set up SoundSource
 	USL_TurnOff(CtlSSSPanels);
@@ -3506,10 +3704,20 @@ USL_SetUpCtlPanel(void)
 	CtlSSSPanels[1].sel = (ssPort == 2)? ui_Selected : ui_Normal;
 #endif
 
-	// Set up Music
-	USL_TurnOff(CtlMPanels);
-	CtlMPanels[smm_AdLib].sel = AdLibPresent? ui_Normal : ui_Disabled;
-	CtlMPanels[MusicMode].sel |= ui_Selected;
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		// Set up Graphics
+		CtlGPanels[0].sel = fakecgamode? ui_Selected : ui_Normal;
+		CtlGPanels[1].sel = !BE_ST_HostGfx_CanToggleFullScreen() ? ui_Disabled : (!BE_ST_HostGfx_GetFullScreenToggle() ? ui_Selected : ui_Normal);
+		CtlGPanels[2].sel = !BE_ST_HostGfx_CanToggleAspectRatio() ? ui_Disabled : (BE_ST_HostGfx_GetAspectRatioToggle() ? ui_Selected : ui_Normal);
+	}
+	else
+	{
+		// Set up Music
+		USL_TurnOff(CtlMPanels);
+		CtlMPanels[smm_AdLib].sel = AdLibPresent? ui_Normal : ui_Disabled;
+		CtlMPanels[MusicMode].sel |= ui_Selected;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3533,7 +3741,7 @@ USL_TearDownCtlPanel(void)
 
 	CtlCPanels[1].key = CtlCPanels[2].key = sc_None;
 
-	i = USL_FindDown(CtlSPanels);
+	i = USL_FindDown(CtlPanels2[4]/*CtlSPanels*/); // REFKEEN - Support 2015 port this way
 	if (i != -1)
 		// REFKEEN - Casting to enum for C++ (hope it's ok!!)
 		SD_SetSoundMode((SDMode)i);
@@ -3543,8 +3751,10 @@ USL_TearDownCtlPanel(void)
 	ssPort = (CtlSSSPanels[1].sel & ui_Selected)? 2 : 1;
 #endif
 
-	i = USL_FindDown(CtlMPanels);
-	if (i != -1)
+	// Fetch music selection in DOS versions, but do NOT do this with 2015 data
+	if (refkeen_current_gamever != BE_GAMEVER_KDREAMS2015)
+		i = USL_FindDown(CtlMPanels);
+	if ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) || (i != -1))
 	{
 #if REFKEEN_SD_ENABLE_MUSIC
 		SD_SetMusicMode(i);
@@ -3976,6 +4186,20 @@ void RefKeen_Patch_id_us(void)
 		// Similarly we don't use Quit
 		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load at least one file.");
 
-	// current_gamever_int *must* be patched first
 	refkeen_compat_config_filename = (current_gamever_int < 110) ? "CONFIG."EXTENSION : "KDREAMS.CFG";
+
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		CtlPanels[5].help = "Change Graphics Settings";
+		CtlPanels2[0] = CtlPPanels2015Port;
+		CtlPanels2[4] = CtlSPanels2015Port;
+		CtlPanels2[5] = CtlGPanels;
+	}
+	else
+	{
+		CtlPanels[5].help = "Turn Music On / Off";
+		CtlPanels2[0] = CtlPPanels;
+		CtlPanels2[4] = CtlSPanels;
+		CtlPanels2[5] = CtlMPanels;
+	}
 }
