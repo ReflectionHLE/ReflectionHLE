@@ -437,7 +437,7 @@ void BE_ST_PrepareForManualAudioSDServiceCall(void)
 
 	static uint32_t s_lastTicks;
 	uint32_t currTicks = SDL_GetTicks();
-	if (currTicks != s_lastTicks)
+	if (currTicks == s_lastTicks)
 		return;
 
 	if (g_sdlAudioSpec.callback == BEL_ST_Simple_EmuCallBack)
