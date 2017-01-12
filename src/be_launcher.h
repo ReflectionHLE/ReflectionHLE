@@ -112,6 +112,8 @@ void BE_Launcher_ArgumentsEditing_HandleInput_PointerMotion(int xpos, int ypos);
 void BE_Launcher_Start(void);
 void BE_Launcher_ClearDirSelectionMenu(void);
 
+void BE_Launcher_PrepareMenu(BEMenu *menu);
+
 #endif // REFKEEN_ENABLE_LAUNCHER
 
 #endif // _BE_LAUNCHER_

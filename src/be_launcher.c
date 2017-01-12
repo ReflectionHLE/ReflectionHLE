@@ -374,7 +374,7 @@ static void BEL_Launcher_DrawMenuItems(BEMenu *menu)
 	BE_ST_Launcher_MarkGfxCache();
 }
 
-static void BEL_Launcher_SetCurrentMenu(BEMenu *menu)
+/*static*/ void BEL_Launcher_SetCurrentMenu(BEMenu *menu)
 {
 	g_be_launcher_currMenu = menu;
 	g_be_launcher_selectedMenuItemPtr = menu->menuItems;

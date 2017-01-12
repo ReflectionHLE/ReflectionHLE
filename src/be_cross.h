@@ -205,6 +205,15 @@ inline void BE_Cross_close(BE_FILE_T fp)
 		fclose(fp);
 }
 
+// SPECIAL - Attempts to open config/config.vdf file from Steam
+// installation, used for importing controller mappings.
+//
+// Do *NOT* assume any specific format for the newline chars!
+// (May be LF or CR-LF)
+#ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
+BE_FILE_T BE_Cross_open_steamcfg_for_reading(void);
+#endif
+
 // Loads a file originally embedded into the EXE (for DOS) to a newly allocated
 // chunk of memory. Should be freed with BE_Cross_free_mem_loaded_embedded_rsrc.
 // Returns chunk size if successful, or a negative number in case of failure.
