@@ -1,4 +1,4 @@
-/* Copyright (C) 2014-2016 NY00123
+/* Copyright (C) 2014-2017 NY00123
  *
  * This file is part of Reflection Keen.
  *

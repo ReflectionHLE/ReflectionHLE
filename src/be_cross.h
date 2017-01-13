@@ -1,3 +1,22 @@
+/* Copyright (C) 2014-2017 NY00123
+ *
+ * This file is part of Reflection Keen.
+ *
+ * Reflection Keen is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #ifndef _BE_CROSS_H_
 #define _BE_CROSS_H_
 
@@ -190,7 +209,7 @@ inline int BE_Cross_getc(BE_FILE_T fp) { return getc(fp); }
 int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp);
 
 // Semi cross-platform file opening wrappers, hiding search paths
-BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename); // For e.g., read-only gamedata files like EGAGRAPH
+BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename); // For e.g., read-only gamedata files like Catacomb 3-D's EGAGRAPH.C3D
 BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename); // For e.g., rewritable files like saved games
 BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename); // For the same rewritable files
 // Used for NEW files not originating from the originals (like RefKeen cfg)
@@ -222,12 +241,13 @@ int BE_Cross_load_embedded_rsrc_to_mem(const char *filename, void **ptr);
 // Frees file loaded using BE_Cross_load_embedded_rsrc_to_mem. Accepts a NULL pointer.
 void BE_Cross_free_mem_loaded_embedded_rsrc(void *ptr);
 
-// Outputs a list of file names matching given name suffix from a corresponding
-// "search path" (used by an implementation of gelib.c:ReadGameList), sorted
-// alphabetically in a case-insensitive manner (English locale).
+// Outputs a list of *rewritable* file names (e.g., saved games),
+// matching given name suffix from a corresponding "search path"
+// (used by an implementation of gelib.c:ReadGameList from Catacomb Abyss)
+// and sorted alphabetically in a case-insensitive manner (English locale).
 //
 // Output is upper-case and has the suffix removed. If a filename length is
-// at least strLenBound characters (excluding the suffix, only the first
+// at least strLenBound characters (excluding the suffix), only the first
 // strLenBound-1 characters are stored. In addition, if there are more than
 // maxNum matching files, the last maxNum entries are written.
 //
