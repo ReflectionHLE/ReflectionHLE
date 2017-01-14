@@ -17,7 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "id_heads.h"
+#include "refkeen.h"
 #include "SDL_main.h"
 
 int id0_argc;
