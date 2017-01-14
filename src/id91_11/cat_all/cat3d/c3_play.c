@@ -484,6 +484,7 @@ void PlayLoop (void)
 	fizzlein = true;				// fizzle fade in the first refresh
 #endif
 	/*TimeCount = */lasttimecount = lastnuke = 0;
+	SD_SetTimeCount(0);
 
 	PollControls ();				// center mouse
 	StartMusic ();
@@ -495,7 +496,7 @@ void PlayLoop (void)
 		c.xaxis = 1;
 //		if (++TimeCount == 300)
 //			return;
-		SD_SetTimeCount(SD_GetTimeCount()+1);
+		SD_AddToTimeCount(1);
 		if (SD_GetTimeCount() == 300)
 			return;
 #endif

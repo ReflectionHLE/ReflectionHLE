@@ -1793,7 +1793,7 @@ asm	mov	[WORD PTR es:di],UPDATETERMINATE
 
 	if (tics>MAXTICS)
 	{
-		SD_SetTimeCount(SD_GetTimeCount() - (tics-MAXTICS));
+		SD_AddToTimeCount(-(tics-MAXTICS));
 		tics = MAXTICS;
 	}
 }

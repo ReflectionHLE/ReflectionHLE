@@ -830,10 +830,9 @@ void PlayLoop (void)
 		PollControls();
 #else
 		control.xaxis = 1;
-		id0_longword_t currTimeCount = SD_GetTimeCount();
 		//if (++TimeCount == 300)
 		//	return;
-		SD_SetTimeCount(SD_GetTimeCount()+1);
+		SD_AddToTimeCount(1);
 		if (SD_GetTimeCount() == 300)
 			return;
 #endif

@@ -872,7 +872,7 @@ void PlayLoop (void)
 		control.xaxis = 1;
 		//if (++TimeCount == 300)
 		//	return;
-		SD_SetTimeCount(SD_GetTimeCount()+1);
+		SD_AddToTimeCount(1);
 		if (SD_GetTimeCount() == 300)
 			return;
 #endif
