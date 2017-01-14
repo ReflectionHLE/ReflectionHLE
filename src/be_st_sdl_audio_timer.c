@@ -185,7 +185,7 @@ void BE_ST_InitAudio(void)
 	if (!g_sdlAudioSubsystemUp)
 	{
 		g_sdlAudioSpec.freq = doDigitized ? inSampleRate : (NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T));
-		g_sdlAudioSpec.callback = doDigitized ? BEL_ST_Resampling_DigiCallBack : BEL_ST_Resampling_EmuCallBack;
+		g_sdlAudioSpec.callback = doDigitized ? BEL_ST_Simple_DigiCallBack : BEL_ST_Simple_EmuCallBack;
 		return;
 	}
 
