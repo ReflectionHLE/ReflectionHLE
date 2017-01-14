@@ -441,13 +441,14 @@ void BE_ST_PrepareForManualAudioSDServiceCall(void)
 	}
 	else // BEL_ST_Simple_DigiCallBack
 	{
-		// Let's not use the callback directly
-		if (g_sdlSoundEffectSamplesLeft > 0)
-		{
-			g_sdlSoundEffectSamplesLeft -= BE_Cross_TypedMin(uint32_t, g_sdlSoundEffectSamplesLeft, currTicks*g_sdlAudioSpec.freq/1000 - s_lastTicks*g_sdlAudioSpec.freq/1000);
-			if (g_sdlSoundEffectSamplesLeft == 0)
-				g_sdlCallbackSDFuncPtr();
-		}
+		uint8_t buff[NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM];
+		uint32_t samplesPassed = g_sdlAudioSpec.freq*(currTicks-s_lastTicks)/1000; // Using g_sdlAudioSpec.freq as the rate
+		uint32_t bytesPassed = samplesPassed * sizeof(BE_ST_SndSample_T);
+		// Buffer has constant size unrelated to g_sdlAudioSpec.freq, so loop
+		for (; bytesPassed >= sizeof(buff); bytesPassed -= sizeof(buff))
+			BEL_ST_Simple_DigiCallBack(NULL, buff, sizeof(buff));
+		if (bytesPassed > 0)
+			BEL_ST_Simple_DigiCallBack(NULL, buff, bytesPassed);
 		s_lastTicks = currTicks;
 	}
 }
@@ -909,6 +910,11 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 	len /= sizeof(BE_ST_SndSample_T); // Convert to samples
 
+	// A little bit of cheating here since we don't actually call any timer handler here
+	g_sdlSampleOffsetInSound += len;
+	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlSampleOffsetInSound / g_sdlSamplePerPart);
+	g_sdlSampleOffsetInSound %= g_sdlSamplePerPart;
+
 	if ((uint32_t)len >= g_sdlSoundEffectSamplesLeft)
 	{
 		memset((BE_ST_SndSample_T *)stream + g_sdlSoundEffectSamplesLeft, 0, sizeof(BE_ST_SndSample_T) * (len - g_sdlSoundEffectSamplesLeft));
@@ -937,6 +943,11 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 	/////////////////////////////
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 	/////////////////////////////
+
+	// A little bit of cheating here since we don't actually call any timer handler here
+	g_sdlSampleOffsetInSound += (len / sizeof(BE_ST_SndSample_T));
+	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlSampleOffsetInSound / g_sdlSamplePerPart);
+	g_sdlSampleOffsetInSound %= g_sdlSamplePerPart;
 
 	while (len > 0)
 	{

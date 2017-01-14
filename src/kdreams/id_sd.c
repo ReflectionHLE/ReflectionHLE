@@ -1297,12 +1297,6 @@ static	id0_word_t	count = 1
 				;
 				//drivecount = 1;
 
-	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
-	{
-		SDL_SoundFinished();
-		return;
-	}
-
 	switch (SoundMode)
 	{
 	case sdm_PC:
