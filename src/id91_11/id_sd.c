@@ -1458,16 +1458,11 @@ void SD_AddToTimeCount(id0_longword_t count)
 	TimeCount += count;
 }
 
-// FIXME RENAME THIS
-void BE_ST_TimeCountWaitFromSrc(uint32_t src, int16_t ticks)
-{
-	BE_ST_TimeCountWaitForDest(src + ticks);
-}
+void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks); // C99
 
-// FIXME RENAME THIS
-void BE_ST_TimeCountWaitForDest(uint32_t dst)
+void SD_TimeCountWaitForDest(id0_longword_t dst)
 {
-	int32_t diff = (int32_t)(dst - TimeCount);
+	id0_long_t diff = (id0_long_t)(dst - TimeCount);
 	if (diff <= 0)
 		return;
 	const int factor = (MusicMode == smm_AdLib) ? 8 : 2;

@@ -248,13 +248,6 @@ int BE_ST_TimerIntClearLastCalls(void);
 // which may actually be a bit shorter than requested (as a consequence).
 void BE_ST_TimerIntCallsDelayWithOffset(int nCalls);
 
-// Use this as a replacement for busy loops waiting for some ticks to pass
-// e.g., "while (TimeCount-srctimecount<timetowait)"
-void BE_ST_TimeCountWaitFromSrc(uint32_t srctimecount, int16_t timetowait);
-// Same as above, but instead waits to reach dsttimecount
-// e.g., a replacement for "while (TimeCount<dsttimecount)"
-void BE_ST_TimeCountWaitForDest(uint32_t dsttimecount);
-
 /*** Graphics ***/
 void BE_ST_InitGfx(void);
 void BE_ST_ShutdownGfx(void);

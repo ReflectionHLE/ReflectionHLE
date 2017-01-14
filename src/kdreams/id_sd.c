@@ -2019,11 +2019,10 @@ void SD_AddToTimeCount(id0_longword_t count)
 	TimeCount += count;
 }
 
-// FIXME RENAME THIS
-void BE_ST_TimeCountWaitFromSrc(uint32_t src, int16_t ticks)
+void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks)
 {
-	uint32_t dst = src + ticks;
-	int32_t diff = (int32_t)(dst - TimeCount);
+	id0_longword_t dst = src + ticks;
+	id0_long_t diff = (id0_long_t)(dst - TimeCount);
 	if (diff <= 0)
 		return;
 	BE_ST_TimerIntCallsDelayWithOffset(t0CountTable[SoundMode]*(diff-1) + g_t0CountClone);
