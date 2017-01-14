@@ -373,7 +373,7 @@ IN_GetJoyButtonsDB(id0_word_t joy)
 	{
 		result1 = INL_GetJoyButtons(joy);
 		lasttime = SD_GetTimeCount();
-		BE_ST_TimeCountWaitFromSrc(lasttime, 1);
+		SD_TimeCountWaitFromSrc(lasttime, 1);
 #if 0
 		while (TimeCount == lasttime)
 			;

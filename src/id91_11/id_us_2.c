@@ -1393,7 +1393,7 @@ USL_PlayPong(void)
 			by = (BallMinY + ((BallMaxY - BallMinY) / 2)) << 2;
 		}
 		VW_UpdateScreen();
-		BE_ST_TimeCountWaitFromSrc(waittime, 1);
+		SD_TimeCountWaitFromSrc(waittime, 1);
 #if 0
 		while (waittime == TimeCount)
 			;       // DEBUG - do adaptiveness

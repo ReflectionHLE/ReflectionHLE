@@ -215,7 +215,5 @@ void SD_AddToTimeCount(id0_longword_t count);
 // Use this as a replacement for busy loops waiting for some ticks
 // to pass, as in "while (TimeCount-src<ticks)"
 void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks);
-// BACKWARDS COMPATIBILITY
-#define BE_ST_TimeCountWaitFromSrc SD_TimeCountWaitFromSrc
 
 #endif

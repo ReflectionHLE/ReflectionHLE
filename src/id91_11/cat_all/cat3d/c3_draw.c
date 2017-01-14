@@ -1469,7 +1469,7 @@ void CalcTics (void)
 // take DEMOTICS or more tics, and modify Timecount to reflect time taken
 //
 		oldtimecount = lasttimecount;
-		BE_ST_TimeCountWaitForDest(oldtimecount+DEMOTICS*2);
+		SD_TimeCountWaitForDest(oldtimecount+DEMOTICS*2);
 #if 0
 		while (TimeCount<oldtimecount+DEMOTICS*2)
 		;
