@@ -238,10 +238,16 @@ void BE_ST_BNoSound(void);
 // Drop-in replacement for id_sd.c:alOut
 void BE_ST_ALOut(uint8_t reg,uint8_t val);
 // Here, the actual rate is about 1193182Hz/speed
-// NOTE: isALMusicOn is irrelevant for Keen Dreams (even with its music code)
-void BE_ST_SetTimer(uint16_t speed, bool isALMusicOn);
-uint32_t BE_ST_GetTimeCount(void);
-void BE_ST_SetTimeCount(uint32_t newcount);
+void BE_ST_SetTimer(uint16_t speed);
+// Resets to 0 an internal counter of calls to timer interrupt,
+// and returns the original counter's value
+int BE_ST_TimerIntClearLastCalls(void);
+// Attempts to wait for a given amount of calls to timer interrupt.
+// It may wait a bit more in practice (e.g., due to Sync to VBlank).
+// This is taken into account into a following call to the same function,
+// which may actually be a bit shorter than requested (as a consequence).
+void BE_ST_TimerIntCallsDelayWithOffset(int nCalls);
+
 // Use this as a replacement for busy loops waiting for some ticks to pass
 // e.g., "while (TimeCount-srctimecount<timetowait)"
 void BE_ST_TimeCountWaitFromSrc(uint32_t srctimecount, int16_t timetowait);

@@ -175,7 +175,7 @@ extern	id0_boolean_t		SoundSourcePresent,SoundBlasterPresent,AdLibPresent,
 					NeedsDigitized,NeedsMusic;	// For Caching Mgr
 extern	SDMode		SoundMode;
 extern	SMMode		MusicMode;
-//NOT DECLARED HERE - USE SD_GetTimeCount AND/OR SD_SetTimeCount
+//NOT DECLARED HERE - USE WRAPPERS LIKE SD_GetTimeCount
 //extern	id0_longword_t	TimeCount;					// Global time in ticks
 
 extern	id0_boolean_t		ssIsTandy;					// For config file
@@ -209,14 +209,8 @@ extern	void	SDL_PCPlaySound(PCSound id0_far *sound),
 #endif
 
 // Replacements for direct accesses to TimeCount variable
-inline id0_longword_t SD_GetTimeCount(void)
-{
-	return BE_ST_GetTimeCount();
-}
-
-inline void SD_SetTimeCount(id0_longword_t newcount)
-{
-	BE_ST_SetTimeCount(newcount);
-}
+id0_longword_t SD_GetTimeCount(void);
+void SD_SetTimeCount(id0_longword_t newcount);
+void SD_AddToTimeCount(id0_longword_t count);
 
 #endif

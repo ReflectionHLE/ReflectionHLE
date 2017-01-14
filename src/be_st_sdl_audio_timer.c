@@ -47,6 +47,8 @@ static uint32_t g_sdlSampleOffsetInSound, g_sdlSamplePerPart;
 static uint64_t g_sdlScaledSampleOffsetInSound, g_sdlScaledSamplePerPart; // For resampling callback
 static void (*g_sdlCallbackSDFuncPtr)(void) = 0;
 
+static SDL_atomic_t g_sdlTimerIntCounter = {0};
+
 // Used for digitized sound playback
 static int16_t *g_sdlSoundEffectCurrPtr;
 static uint32_t g_sdlSoundEffectSamplesLeft;
@@ -112,16 +114,6 @@ static bool g_sdlPCSpeakerOn = false;
 static BE_ST_SndSample_T g_sdlCurrentBeepSample;
 static uint32_t g_sdlBeepHalfCycleCounter, g_sdlBeepHalfCycleCounterUpperBound;
 
-// PIT timer divisor
-static uint32_t g_sdlScaledTimerDivisor;
-
-// A variable used for timing measurements
-static uint32_t g_sdlLastTicks;
-
-
-// A PRIVATE TimeCount variable we store
-// (SD_GetTimeCount/SD_SetTimeCount should be called instead)
-static uint32_t g_sdlTimeCount;
 
 static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len);
 static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len);
@@ -342,8 +334,6 @@ static uint32_t g_sdlTicksOffset = 0;
 void BE_ST_InitTiming(void)
 {
 	g_sdlTicksOffset = 0;
-	g_sdlTimeCount = 0;
-	g_sdlLastTicks = SDL_GetTicks();
 }
 
 void BE_ST_ShutdownAudio(void)
@@ -391,6 +381,7 @@ void BE_ST_ShutdownAudio(void)
 void BE_ST_StartAudioSDService(void (*funcPtr)(void))
 {
 	g_sdlCallbackSDFuncPtr = funcPtr;
+	SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
 	if (g_sdlAudioSubsystemUp)
 	{
 		SDL_PauseAudio(0);
@@ -699,6 +690,7 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 		{
 			// FUNCTION VARIABLE (We should use this and we want to kind-of separate what we have here from original code.)
 			g_sdlCallbackSDFuncPtr();
+			SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
 		}
 		// Now generate sound
 		currNumOfSamples = BE_Cross_TypedMin(uint32_t, len/sizeof(BE_ST_SndSample_T), g_sdlSamplePerPart-g_sdlSampleOffsetInSound);
@@ -778,6 +770,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			{
 				// FUNCTION VARIABLE (We should use this and we want to kind-of separate what we have here from original code.)
 				g_sdlCallbackSDFuncPtr();
+				SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
 			}
 			// Now generate sound
 			currNumOfScaledSamples = BE_Cross_TypedMin(uint64_t, scaledSamplesToGenerate, g_sdlScaledSamplePerPart-g_sdlScaledSampleOffsetInSound);
@@ -980,83 +973,17 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 
 // Here, the actual rate is about 1193182Hz/speed
-// NOTE: isALMusicOn is irrelevant for Keen Dreams (even with its music code)
-void BE_ST_SetTimer(uint16_t speed, bool isALMusicOn)
+void BE_ST_SetTimer(uint16_t speed)
 {
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
 	g_sdlSamplePerPart = (int32_t)speed * g_sdlAudioSpec.freq / PC_PIT_RATE;
 	g_sdlScaledSamplePerPart = g_sdlSamplePerPart * OPL_SAMPLE_RATE;
-	// In the original code, the id_sd.c:SDL_t0Service callback
-	// is responsible for incrementing TimeCount at a given rate
-	// (~70Hz), although the rate in which the service itself is
-	// 560Hz with music on and 140Hz otherwise.
-	g_sdlScaledTimerDivisor = isALMusicOn ? (speed*8) : (speed*2);
 
 	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
 }
 
-void BEL_ST_TicksDelayWithOffset(int sdltickstowait);
-void BEL_ST_TimeCountWaitByPeriod(int16_t timetowait);
-
-uint32_t BE_ST_GetTimeCount(void)
-{
-	// FIXME: What happens when SDL_GetTicks() reaches the upper bound?
-	// May be challenging to fix... A proper solution should
-	// only work with *differences between SDL_GetTicks values*.
-
-	// WARNING: This must have offset subtracted! (So the game "thinks" it gets the correct (but actually delayed) TimeCount value)
-	uint32_t currOffsettedSdlTicks = SDL_GetTicks() - g_sdlTicksOffset;
-	uint32_t ticksToAdd = (uint64_t)currOffsettedSdlTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor) - (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor);
-	g_sdlTimeCount += ticksToAdd;
-	g_sdlLastTicks = currOffsettedSdlTicks;
-	return g_sdlTimeCount;
-}
-
-void BE_ST_SetTimeCount(uint32_t newcount)
-{
-	g_sdlTimeCount = newcount;
-}
-
-void BE_ST_TimeCountWaitForDest(uint32_t dsttimecount)
-{
-	BEL_ST_TimeCountWaitByPeriod((int32_t)dsttimecount-(int32_t)g_sdlTimeCount);
-}
-
-void BE_ST_TimeCountWaitFromSrc(uint32_t srctimecount, int16_t timetowait)
-{
-	BEL_ST_TimeCountWaitByPeriod((srctimecount+timetowait)-g_sdlTimeCount);
-}
-
-void BEL_ST_TimeCountWaitByPeriod(int16_t timetowait)
-{
-	if (timetowait <= 0)
-	{
-		return;
-	}
-	// COMMENTED OUT - Do NOT refresh TimeCount and g_sdlLastTicks
-	//BE_ST_GetTimeCount();
-
-	// We want to find the minimal currSdlTicks value (mod 2^32) such that...
-	// ticksToWait <= (uint64_t)currSdlTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor) - (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor)
-	// (WARNING: The divisions here are INTEGER divisions!)
-	// i.e.,
-	// ticksToWait + (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor) <= (uint64_t)currSdlTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor)
-	// That is, ignoring the types and up to the division by PC_PIT_RATE being an integer:
-	// currSdlTicks >= [ticksToWait + (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor)]*1000*g_sdlScaledTimerDivisor / PC_PIT_RATE
-	// So it may seem like we can replace ">=" with "=" and give it a go.
-	//
-	// PROBLEM: The last division IS (or at leat should be) integer. Suppose e.g., the condition is
-	// currSdlTicks >= (PC_PIT_RATE-100) / PC_PIT_RATE
-	// Then we get currSdlTicks = 0, which is not what we want (the minimal integer which is at at least this ratio as a noninteger is 1.)
-	//
-	// SOLUTION: Add PC_PIC_RATE-1 to the numerator.
-
-	uint32_t nextSdlTicks = ((timetowait + (uint64_t)g_sdlLastTicks * (uint64_t)PC_PIT_RATE / (1000*g_sdlScaledTimerDivisor))*1000*g_sdlScaledTimerDivisor + (PC_PIT_RATE-1)) / PC_PIT_RATE;
-	// NOTE: nextSdlTicks is already adjusted in terms of offset, so we can simply reset it here
-	g_sdlTicksOffset = 0;
-	BEL_ST_TicksDelayWithOffset(nextSdlTicks-SDL_GetTicks());
-}
+static void BEL_ST_TicksDelayWithOffset(int sdltickstowait);
 
 
 void BE_ST_WaitVBL(int16_t number)
@@ -1098,7 +1025,7 @@ void BE_ST_Delay(uint16_t msec) // Replacement for delay from dos.h
 	BEL_ST_TicksDelayWithOffset(msec);
 }
 
-void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
+static void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
 {
 	if (sdltickstowait <= (int32_t)g_sdlTicksOffset)
 	{
@@ -1130,4 +1057,63 @@ void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
 		}
 	} 
 	g_sdlTicksOffset = (currSdlTicks - nextSdlTicks);
+}
+
+
+// Resets to 0 an internal counter of calls to timer interrupt,
+// and returns the original counter's value
+int BE_ST_TimerIntClearLastCalls(void)
+{
+	return SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
+}
+
+static int g_sdlTimerIntCounterOffset = 0;
+
+// Attempts to wait for a given amount of calls to timer interrupt.
+// It may wait a bit more in practice (e.g., due to Sync to VBlank).
+// This is taken into account into a following call to the same function,
+// which may actually be a bit shorter than requested (as a consequence).
+void BE_ST_TimerIntCallsDelayWithOffset(int nCalls)
+{
+	if (nCalls <= g_sdlTimerIntCounterOffset)
+	{
+		// Already waited for this time earlier, no need to do so now
+		if (nCalls > 0)
+		{
+			g_sdlTimerIntCounterOffset -= nCalls;
+			SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
+		}
+		BE_ST_PollEvents(); // Still safer to do this
+		return;
+	}
+
+	// Call this BEFORE updating host display or doing anything else!!!
+	// (Because of things like VSync which may add their own delays)
+	int oldCount = SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlTimerIntCounterOffset);
+	int newCount;
+
+	BEL_ST_UpdateHostDisplay();
+	BE_ST_PollEvents();
+	uint32_t currSdlTicks;
+	uint32_t lastRefreshTime = SDL_GetTicks();
+
+	do
+	{
+		BEL_ST_SleepMS(1);
+		BE_ST_PollEvents();
+		currSdlTicks = SDL_GetTicks();
+		// Refresh graphics from time to time in case a part of the window is overridden by anything,
+		// like the Steam Overlay, but also check if we should refresh the graphics more often
+		if (g_sdlForceGfxControlUiRefresh || (currSdlTicks - lastRefreshTime > 100))
+		{
+			BEL_ST_UpdateHostDisplay();
+			currSdlTicks = SDL_GetTicks(); // Just be a bit more pedantic
+			lastRefreshTime = currSdlTicks;
+		}
+
+		newCount = SDL_AtomicGet(&g_sdlTimerIntCounter);
+	}
+	while (newCount - oldCount < nCalls);
+	// Do call SDL_AtomicSet instead of accessing 'newCount', in case counter has just been updated again
+	g_sdlTimerIntCounterOffset = (SDL_AtomicSet(&g_sdlTimerIntCounter, 0) - oldCount) - nCalls;
 }

@@ -95,7 +95,8 @@ id0_boolean_t			SoundSourcePresent
 				;
 	SDMode		SoundMode;
 	SMMode		MusicMode;
-	// NEVER accessed directly now - done from backend via functions
+	// NEVER accessed directly now - Done via wrapper functions
+static	id0_longword_t	TimeCount;
 	//id0_longword_t	TimeCount;
 	SoundCommon		**SoundTable;
 	//id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
@@ -181,7 +182,7 @@ static	id0_word_t			alFXReg;
 static void
 SDL_SetTimer0(id0_word_t speed)
 {
-	BE_ST_SetTimer(speed, false);
+	BE_ST_SetTimer(speed);
 #if 0
 #ifndef TPROF	// If using Borland's profiling, don't screw with the timer
 	outportb(0x43,0x36);				// Change timer 0
@@ -1628,7 +1629,7 @@ SD_Startup(void)
 
 	BE_ST_StartAudioSDService((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? &SDL_Port2015Service : &SDL_t0Service);
 	//setvect(8,SDL_t0Service);	// Set to my timer 0 ISR
-	/*LocalTime = TimeCount = 0;*/
+	/*LocalTime = */TimeCount = 0;
 
 	SD_SetSoundMode(sdm_Off);
 #if REFKEEN_SD_ENABLE_MUSIC
@@ -1990,6 +1991,48 @@ SD_MusicPlaying(void)
 #endif // REFKEEN_SD_ENABLE_MUSIC
 
 // Replacements for direct accesses to TimeCount variable
-// (should be instantiated here even if inline, as of C99)
-id0_longword_t SD_GetTimeCount(void);
-void SD_SetTimeCount(id0_longword_t newcount);
+
+// Clone of "count" var from SDL_t0Service
+static id0_word_t g_t0CountClone = 1;
+
+id0_longword_t SD_GetTimeCount(void)
+{
+	int intCallsCount = BE_ST_TimerIntClearLastCalls();
+	// Be pedantic, just in case t0CountTable[SoundMode] has changed
+	// (and some mod can actually make its value different)
+	if (intCallsCount < (int)g_t0CountClone)
+	{
+		g_t0CountClone -= intCallsCount;
+		return TimeCount;
+	}
+	// The original "count" variable (cloned as g_t0CountClone here)
+	// is decremented in each interrupt call, and when it reaches 0,
+	// it's reset to t0CountTable[SoundMode] and TimeCount is incremented.
+	// So, attempt to (roughly) emulate this here.
+	TimeCount += 1 + (intCallsCount - g_t0CountClone) / t0CountTable[SoundMode];
+	g_t0CountClone = t0CountTable[SoundMode] - (intCallsCount - g_t0CountClone) % t0CountTable[SoundMode];
+	return TimeCount;
+}
+
+void SD_SetTimeCount(id0_longword_t newcount)
+{
+	BE_ST_TimerIntClearLastCalls();
+	TimeCount = newcount;
+}
+
+void SD_AddToTimeCount(id0_longword_t count)
+{
+	TimeCount += count;
+}
+
+// FIXME RENAME THIS
+void BE_ST_TimeCountWaitFromSrc(uint32_t src, int16_t ticks)
+{
+	uint32_t dst = src + ticks;
+	int32_t diff = (int32_t)(dst - TimeCount);
+	if (diff <= 0)
+		return;
+	BE_ST_TimerIntCallsDelayWithOffset(t0CountTable[SoundMode]*(diff-1) + g_t0CountClone);
+	TimeCount = dst;
+	g_t0CountClone = t0CountTable[SoundMode];
+}
