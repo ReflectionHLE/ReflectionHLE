@@ -1458,7 +1458,9 @@ void SD_AddToTimeCount(id0_longword_t count)
 	TimeCount += count;
 }
 
-void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks); // C99
+// C99
+void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks);
+void SD_TimeCountWaitTicks(id0_int_t ticks);
 
 void SD_TimeCountWaitForDest(id0_longword_t dst)
 {

@@ -1188,7 +1188,7 @@ nextactor:;
 		// is held. As a consequence, if the wait is done before the
 		// call to CheckKeys then the game may seem to get stuck while
 		// the debug key modifier is held.
-		BE_ST_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		SD_TimeCountWaitTicks(1);
 		//
 
 	}while (!playstate);

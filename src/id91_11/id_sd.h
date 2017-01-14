@@ -219,7 +219,10 @@ inline void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks)
 {
 	SD_TimeCountWaitForDest(src + ticks);
 }
-// BACKWARDS COMPATIBILITY
-#define BE_ST_TimeCountWaitFromSrc SD_TimeCountWaitFromSrc
+// Essentially SD_TimeCountWaitFromSrc with (src == SD_GetTimeCount())
+inline void SD_TimeCountWaitTicks(id0_int_t ticks)
+{
+	SD_TimeCountWaitForDest(SD_GetTimeCount() + ticks);
+}
 
 #endif

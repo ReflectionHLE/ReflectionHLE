@@ -2512,7 +2512,7 @@ noxor:
 		}
 		// REFKEEN - Code is commented out as in the original sources
 		// (of C4, not C3), but better have *some* delay at the least
-		BE_ST_TimeCountWaitFromSrc(SD_GetTimeCount(), 1);
+		SD_TimeCountWaitTicks(1);
 		// REFKEEN - No need to increment frame, comment it out as well
 #if 0
 		frame++;
