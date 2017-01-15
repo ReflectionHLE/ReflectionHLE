@@ -45,7 +45,7 @@ bool g_sdlAudioSubsystemUp;
 static bool g_sdlEmulatedOPLChipReady;
 static uint32_t g_sdlSampleOffsetInSound, g_sdlSamplePerPart;
 static uint64_t g_sdlScaledSampleOffsetInSound, g_sdlScaledSamplePerPart; // For resampling callback
-static void (*g_sdlCallbackSDFuncPtr)(void) = 0;
+static void (*g_sdlTimerIntFuncPtr)(void) = 0;
 
 static SDL_atomic_t g_sdlTimerIntCounter = {0};
 
@@ -375,12 +375,12 @@ void BE_ST_ShutdownAudio(void)
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		g_sdlAudioSubsystemUp = false;
 	}
-	g_sdlCallbackSDFuncPtr = 0; // Just in case this may be called after the audio subsystem was never really started (manual calls to callback)
+	g_sdlTimerIntFuncPtr = 0; // Just in case this may be called after the audio subsystem was never really started (manual calls to callback)
 }
 
 void BE_ST_StartAudioSDService(void (*funcPtr)(void))
 {
-	g_sdlCallbackSDFuncPtr = funcPtr;
+	g_sdlTimerIntFuncPtr = funcPtr;
 	SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
 	if (g_sdlAudioSubsystemUp)
 	{
@@ -394,7 +394,7 @@ void BE_ST_StopAudioSDService(void)
 	{
 		SDL_PauseAudio(1);
 	}
-	g_sdlCallbackSDFuncPtr = 0;
+	g_sdlTimerIntFuncPtr = 0;
 }
 
 void BE_ST_LockAudioRecursively(void)
@@ -421,9 +421,9 @@ void BE_ST_UnlockAudioRecursively(void)
 void BE_ST_PrepareForManualAudioCallbackCall(void)
 {
 	// HACK: Rather than using SDL_PauseAudio for deciding if
-	// we call, just check if g_sdlCallbackSDFuncPtr is non-NULL
+	// we call, just check if g_sdlTimerIntFuncPtr is non-NULL
 	// (not necessarily the same behaviors, but "good enough")
-	if (!g_sdlCallbackSDFuncPtr)
+	if (!g_sdlTimerIntFuncPtr)
 		return;
 
 	static uint32_t s_lastTicks;
@@ -690,7 +690,7 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 		if (!g_sdlSampleOffsetInSound)
 		{
 			// FUNCTION VARIABLE (We should use this and we want to kind-of separate what we have here from original code.)
-			g_sdlCallbackSDFuncPtr();
+			g_sdlTimerIntFuncPtr();
 			SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
 		}
 		// Now generate sound
@@ -770,7 +770,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			if (!g_sdlScaledSampleOffsetInSound)
 			{
 				// FUNCTION VARIABLE (We should use this and we want to kind-of separate what we have here from original code.)
-				g_sdlCallbackSDFuncPtr();
+				g_sdlTimerIntFuncPtr();
 				SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
 			}
 			// Now generate sound
@@ -922,8 +922,8 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len)
 		{
 			BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, (BE_ST_SndSample_T *)stream, g_sdlSoundEffectSamplesLeft);
 			g_sdlSoundEffectSamplesLeft = 0;
-			if (g_sdlCallbackSDFuncPtr)
-				g_sdlCallbackSDFuncPtr();
+			if (g_sdlTimerIntFuncPtr)
+				g_sdlTimerIntFuncPtr();
 		}
 	}
 	else
@@ -959,8 +959,8 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 			g_sdlSoundEffectCurrPtr += samplesToCopy;
 			g_sdlSoundEffectSamplesLeft -= samplesToCopy;
 
-			if ((g_sdlSoundEffectSamplesLeft == 0) && g_sdlCallbackSDFuncPtr)
-				g_sdlCallbackSDFuncPtr();
+			if ((g_sdlSoundEffectSamplesLeft == 0) && g_sdlTimerIntFuncPtr)
+				g_sdlTimerIntFuncPtr();
 		}
 		if (g_sdlMiscOutSamplesEnd < g_sdlMiscOutNumOfSamples)
 			memset(&g_sdlMiscOutSamples[g_sdlMiscOutSamplesEnd], 0, sizeof(BE_ST_SndSample_T)*(g_sdlMiscOutNumOfSamples - g_sdlMiscOutSamplesEnd));
