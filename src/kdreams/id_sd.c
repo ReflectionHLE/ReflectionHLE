@@ -1621,7 +1621,7 @@ SD_Startup(void)
 	//*** (REFKEEN) We use an alternative delay mechanism for OPL emulation ***/
 	//SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
 
-	BE_ST_StartAudioSDService((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? &SDL_Port2015Service : &SDL_t0Service);
+	BE_ST_StartAudioAndTimerInt((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? &SDL_Port2015Service : &SDL_t0Service);
 	//setvect(8,SDL_t0Service);	// Set to my timer 0 ISR
 	/*LocalTime = */TimeCount = 0;
 
@@ -1737,7 +1737,7 @@ SD_Shutdown(void)
 	if (!SD_Started)
 		return;
 
-	BE_ST_StopAudioSDService();
+	BE_ST_StopAudioAndTimerInt();
 
 	SDL_ShutDevice();
 
@@ -1748,7 +1748,7 @@ SD_Shutdown(void)
 	SDL_SetTimer0(0);
 
 // Do NOT call this here - A deadlock is a possibility (via recursive lock)
-//	BE_ST_StopAudioSDService(void);
+//	BE_ST_StopAudioAndTimerInt(void);
 //	setvect(8,t0OldService);
 
 	BE_ST_UnlockAudioRecursively();

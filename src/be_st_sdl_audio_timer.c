@@ -378,7 +378,7 @@ void BE_ST_ShutdownAudio(void)
 	g_sdlTimerIntFuncPtr = 0; // Just in case this may be called after the audio subsystem was never really started (manual calls to callback)
 }
 
-void BE_ST_StartAudioSDService(void (*funcPtr)(void))
+void BE_ST_StartAudioAndTimerInt(void (*funcPtr)(void))
 {
 	g_sdlTimerIntFuncPtr = funcPtr;
 	SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
@@ -388,7 +388,7 @@ void BE_ST_StartAudioSDService(void (*funcPtr)(void))
 	}
 }
 
-void BE_ST_StopAudioSDService(void)
+void BE_ST_StopAudioAndTimerInt(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{

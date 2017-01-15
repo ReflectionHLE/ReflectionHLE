@@ -215,8 +215,8 @@ void BE_ST_Launcher_RunEventLoop(void);
 uint16_t BE_ST_Compat_GetFarPtrRelocationSegOffset(void);
 
 /*** Audio/timer (vanilla Keen kind-of has these mixed) ***/
-void BE_ST_StartAudioSDService(void (*funcPtr)(void));
-void BE_ST_StopAudioSDService(void);
+void BE_ST_StartAudioAndTimerInt(void (*funcPtr)(void));
+void BE_ST_StopAudioAndTimerInt(void);
 void BE_ST_LockAudioRecursively(void);
 void BE_ST_UnlockAudioRecursively(void);
 bool BE_ST_IsEmulatedOPLChipReady(void);
@@ -225,7 +225,7 @@ void BE_ST_PCSpeakerOn(uint16_t spkVal);
 void BE_ST_PCSpeakerOff(void);
 // Used for playback from digitized sound data in signed 16-bit int format.
 // Do NOT assume the data is copied; You ***must*** call BE_ST_StopSoundEffect.
-// You can also use BE_ST_StartAudioSDService to set a callback function,
+// You can also use BE_ST_StartAudioAndTimerInt to set a callback function,
 // to be called when reading of sound data is complete. This can happen
 // a bit before actual sound playback is complete, in case
 // some mechanism of resampling is in use.
