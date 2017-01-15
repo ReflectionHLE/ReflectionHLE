@@ -219,7 +219,6 @@ void BE_ST_StartAudioSDService(void (*funcPtr)(void));
 void BE_ST_StopAudioSDService(void);
 void BE_ST_LockAudioRecursively(void);
 void BE_ST_UnlockAudioRecursively(void);
-void BE_ST_PrepareForManualAudioSDServiceCall(void);
 bool BE_ST_IsEmulatedOPLChipReady(void);
 // Should be used in ID_SD.C only - Frequency is about 1193182Hz/spkVal
 void BE_ST_PCSpeakerOn(uint16_t spkVal);
