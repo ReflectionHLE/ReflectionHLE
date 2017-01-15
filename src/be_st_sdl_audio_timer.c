@@ -418,7 +418,7 @@ void BE_ST_UnlockAudioRecursively(void)
 }
 
 // Use this ONLY if audio subsystem isn't properly started up
-void BE_ST_PrepareForManualAudioSDServiceCall(void)
+void BE_ST_PrepareForManualAudioCallbackCall(void)
 {
 	// HACK: Rather than using SDL_PauseAudio for deciding if
 	// we call, just check if g_sdlCallbackSDFuncPtr is non-NULL

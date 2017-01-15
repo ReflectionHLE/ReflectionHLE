@@ -2228,10 +2228,8 @@ void BE_ST_PollEvents(void)
 	// make the sound callback run (so e.g., no loop gets stuck waiting
 	// for sound playback to complete)
 	extern bool g_sdlAudioSubsystemUp;
-	if (! g_sdlAudioSubsystemUp)
-	{
-		BE_ST_PrepareForManualAudioSDServiceCall();
-	}
+	if (!g_sdlAudioSubsystemUp)
+		BE_ST_PrepareForManualAudioCallbackCall();
 }
 
 #ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
