@@ -9,7 +9,15 @@
 #include "be_st_sdl_private.h"
 
 #define BE_ST_MAXJOYSTICKS 8
-#define BE_ST_EMU_JOYSTICK_RANGEMAX 5000 // id_in.c MaxJoyValue
+// Using example of values from here:
+// http://www.intel-assembler.it/portale/5/program-joystick-port-210h/program-joystick-port-210h.asp
+#define BE_ST_EMU_JOYSTICK_RANGEMIN 8
+#define BE_ST_EMU_JOYSTICK_RANGECENTER 330
+#define BE_ST_EMU_JOYSTICK_RANGEMAX 980
+// This one is for init with no joysticks, for Keen Dreams v1.00
+// (It requires a large value, while 0 will lead to division by zero)
+#define BE_ST_EMU_JOYSTICK_OVERRANGEMAX 16384
+
 #define BE_ST_DEFAULT_FARPTRSEGOFFSET 0x14
 
 #if (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
@@ -239,11 +247,11 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 	// A bit tricky, should be reported as centered *if* any joystick is connected (and *not* while using modern controller scheme)
 	// Note 1: A single controller may support up to all 4
 	// Note 2: Assigning 0 here may lead to division by zero in Keen Dreams v1.00
-	g_sdlEmuJoyMotionState[0] = g_sdlEmuJoyMotionState[1] = g_sdlEmuJoyMotionState[2] = g_sdlEmuJoyMotionState[3] = BE_ST_EMU_JOYSTICK_RANGEMAX;
+	g_sdlEmuJoyMotionState[0] = g_sdlEmuJoyMotionState[1] = g_sdlEmuJoyMotionState[2] = g_sdlEmuJoyMotionState[3] = BE_ST_EMU_JOYSTICK_OVERRANGEMAX;
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (g_sdlJoysticks[i])
 		{
-			g_sdlEmuJoyMotionState[0] = g_sdlEmuJoyMotionState[1] = g_sdlEmuJoyMotionState[2] = g_sdlEmuJoyMotionState[3] = BE_ST_EMU_JOYSTICK_RANGEMAX/2; // These ones aren't centered around 0...
+			g_sdlEmuJoyMotionState[0] = g_sdlEmuJoyMotionState[1] = g_sdlEmuJoyMotionState[2] = g_sdlEmuJoyMotionState[3] = BE_ST_EMU_JOYSTICK_RANGECENTER;
 			break;
 		}
 	// Then use this to reset/update some states, and detect joysticks
@@ -2018,7 +2026,10 @@ void BE_ST_PollEvents(void)
 			{
 				if (g_sdlJoysticks[i] && (g_sdlJoysticksInstanceIds[i] == event.jaxis.which))
 				{
-					g_sdlEmuJoyMotionState[(event.jaxis.axis + 2*i) % 4] = (event.jaxis.value+32768)*BE_ST_EMU_JOYSTICK_RANGEMAX/65535;
+					if (event.jaxis.value >= 0)
+						g_sdlEmuJoyMotionState[(event.jaxis.axis + 2*i) % 4] = event.jaxis.value*(BE_ST_EMU_JOYSTICK_RANGEMAX-BE_ST_EMU_JOYSTICK_RANGECENTER)/32767 + BE_ST_EMU_JOYSTICK_RANGECENTER;
+					else
+						g_sdlEmuJoyMotionState[(event.jaxis.axis + 2*i) % 4] = (event.jaxis.value+32768)*(BE_ST_EMU_JOYSTICK_RANGECENTER-BE_ST_EMU_JOYSTICK_RANGEMIN)/32768 + BE_ST_EMU_JOYSTICK_RANGEMIN;
 					break;
 				}
 			}
