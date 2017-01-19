@@ -1677,7 +1677,7 @@ asm	rep stosw
 		// (REFKEEN) Minor difference from vanilla Catacomb
 		if (MousePresent)
 		{
-			BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
+			BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
 		}
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}

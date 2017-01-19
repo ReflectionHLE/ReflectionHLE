@@ -146,7 +146,7 @@ void CheckKeys (void)
 		IN_Ack();
 		SD_MusicOn();
 		Paused = false;
-		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 
@@ -180,7 +180,7 @@ void CheckKeys (void)
 		DrawPlayScreen ();
 		CacheScaleds ();
 		lasttimecount = SD_GetTimeCount();
-		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 
@@ -190,7 +190,7 @@ void CheckKeys (void)
 	if (Keyboard[sc_F10])
 	{
 		DebugKeys();
-		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL); // Clear accumulated mouse 			// if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse 			// if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 		lasttimecount = SD_GetTimeCount();
 	}
 
@@ -356,8 +356,8 @@ void PollControls (void)
 
 	if (MousePresent)
 	{
-		buttons = BE_ST_GetMouseButtons();
-		BE_ST_GetMouseDelta(&mousexmove, &mouseymove);		
+		buttons = BE_ST_GetEmuMouseButtons();
+		BE_ST_GetEmuAccuMouseMotion(&mousexmove, &mouseymove);
 #if 0
 		Mouse(MButtons);
 		buttons = _BX;

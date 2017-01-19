@@ -1319,36 +1319,36 @@ void BE_ST_StopKeyboardService(void)
 	g_sdlKeyboardInterruptFuncPtr = 0;
 }
 
-void BE_ST_GetMouseDelta(int16_t *x, int16_t *y)
+void BE_ST_GetEmuAccuMouseMotion(int16_t *optX, int16_t *optY)
 {
 	BE_ST_PollEvents();
 
-	if (x)
-		*x = g_sdlEmuMouseMotionAccumulatedState[0] + g_sdlEmuMouseMotionAbsoluteState[0];
-	if (y)
-		*y = g_sdlEmuMouseMotionAccumulatedState[1] + g_sdlEmuMouseMotionAbsoluteState[1];
+	if (optX)
+		*optX = g_sdlEmuMouseMotionAccumulatedState[0] + g_sdlEmuMouseMotionAbsoluteState[0];
+	if (optY)
+		*optY = g_sdlEmuMouseMotionAccumulatedState[1] + g_sdlEmuMouseMotionAbsoluteState[1];
 
 	g_sdlEmuMouseMotionAccumulatedState[0] = g_sdlEmuMouseMotionAccumulatedState[1] = 0;
 }
 
-uint16_t BE_ST_GetMouseButtons(void)
+uint16_t BE_ST_GetEmuMouseButtons(void)
 {
 	BE_ST_PollEvents();
 
 	return g_sdlEmuMouseButtonsState;
 }
 
-void BE_ST_GetJoyAbs(uint16_t joy, uint16_t *xp, uint16_t *yp)
+void BE_ST_GetEmuJoyAxes(uint16_t joy, uint16_t *optX, uint16_t *optY)
 {
 	BE_ST_PollEvents();
 
-	if (xp)
-		*xp = g_sdlEmuJoyMotionState[2*joy];
-	if (yp)
-		*yp = g_sdlEmuJoyMotionState[2*joy+1];
+	if (optX)
+		*optX = g_sdlEmuJoyMotionState[2*joy];
+	if (optY)
+		*optY = g_sdlEmuJoyMotionState[2*joy+1];
 }
 
-uint16_t BE_ST_GetJoyButtons(uint16_t joy)
+uint16_t BE_ST_GetEmuJoyButtons(uint16_t joy)
 {
 	BE_ST_PollEvents();
 

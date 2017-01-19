@@ -192,7 +192,7 @@ void CheckKeys (void)
 //		SD_MusicOn();
 		Paused = false;
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetEmuAccuMouseMotion(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 	else
@@ -203,7 +203,7 @@ void CheckKeys (void)
 		IN_Ack();
 //		SD_MusicOn();
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetEmuAccuMouseMotion(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 	else
@@ -220,7 +220,7 @@ void CheckKeys (void)
 		IN_Ack();
 //		SD_MusicOn();
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetEmuAccuMouseMotion(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 	}
 #endif
@@ -461,7 +461,7 @@ deadloop:;
 	{
 		DebugKeys();
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		if (MousePresent) BE_ST_GetMouseDelta(NULL, NULL);	// Clear accumulated mouse movement
+		if (MousePresent) BE_ST_GetEmuAccuMouseMotion(NULL, NULL);	// Clear accumulated mouse movement
 		//if (MousePresent) Mouse(MDelta);	// Clear accumulated mouse movement
 		lasttimecount = SD_GetTimeCount();
 	}
@@ -697,8 +697,8 @@ void PollControls (void)
 	if (MousePresent)
 	{
 		// (REFKEEN) Minor difference from vanilla Catacomb
-		buttons = BE_ST_GetMouseButtons();
-		BE_ST_GetMouseDelta(&mousexmove, &mouseymove);
+		buttons = BE_ST_GetEmuMouseButtons();
+		BE_ST_GetEmuAccuMouseMotion(&mousexmove, &mouseymove);
 #if 0
 		Mouse(MButtons);
 		buttons = _BX;

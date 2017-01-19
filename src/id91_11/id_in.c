@@ -242,7 +242,7 @@ INL_KeyService(id0_byte_t k)
 static void
 INL_GetMouseDelta(id0_int_t *x,id0_int_t *y)
 {
-	BE_ST_GetMouseDelta(x, y);
+	BE_ST_GetEmuAccuMouseMotion(x, y);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -254,7 +254,7 @@ INL_GetMouseDelta(id0_int_t *x,id0_int_t *y)
 static id0_word_t
 INL_GetMouseButtons(void)
 {
-	return BE_ST_GetMouseButtons();
+	return BE_ST_GetEmuMouseButtons();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -265,7 +265,7 @@ INL_GetMouseButtons(void)
 void
 IN_GetJoyAbs(id0_word_t joy,id0_word_t *xp,id0_word_t *yp)
 {
-	BE_ST_GetJoyAbs(joy, xp, yp);
+	BE_ST_GetEmuJoyAxes(joy, xp, yp);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -354,7 +354,7 @@ static	id0_longword_t	lasttime;
 static id0_word_t
 INL_GetJoyButtons(id0_word_t joy)
 {
-	return BE_ST_GetJoyButtons(joy);
+	return BE_ST_GetEmuJoyButtons(joy);
 }
 
 ///////////////////////////////////////////////////////////////////////////

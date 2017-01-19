@@ -36,14 +36,41 @@ void BE_ST_InitAudio(void);
 void BE_ST_ShutdownAll(void); // After game
 void BE_ST_HandleExit(int status); // Replacement for exit function (useful for displaying text screen)
 void BE_ST_QuickExit(void); // Where the usual exit handler isn't sufficient: Saves last settings, shutdowns subsystems and then exits immediately
+
+// Sets/Unsets interrupt handler for emulated keyboard events
 void BE_ST_StartKeyboardService(void (*funcPtr)(uint8_t));
 void BE_ST_StopKeyboardService(void);
-void BE_ST_GetMouseDelta(int16_t *x, int16_t *y);
-uint16_t BE_ST_GetMouseButtons(void);
-void BE_ST_GetJoyAbs(uint16_t joy, uint16_t *xp, uint16_t *yp);
-uint16_t BE_ST_GetJoyButtons(uint16_t joy);
+// Gets emulated mouse motion accumulated since a preceding call to
+// this function (if any). Note that the output (pointer) arguments
+// are optional; To ignore any of the motion axes,
+// pass NULL for the corresponding argument.
+void BE_ST_GetEmuAccuMouseMotion(int16_t *optX, int16_t *optY);
+// Gets emulated mouse buttons states (pressed/released) as bit flags.
+uint16_t BE_ST_GetEmuMouseButtons(void);
+// Gets the current emulated joystick axes states for the
+// given (emulated) joystick. Note that these axes don't have the
+// usual kind of scale (it's roughly gameport joystick emulation),
+// and some process of "calibration" might be required. Further note
+// that the output (pointer) arguments are optional; To ignore
+// any of the axes, pass NULL for the corresponding argument.
+void BE_ST_GetEmuJoyAxes(uint16_t joy, uint16_t *optX, uint16_t *optY);
+// Gets emulated joystick buttons states (pressed/released)
+// as bit flags, for the given (emulated) joystick.
+uint16_t BE_ST_GetEmuJoyButtons(uint16_t joy);
 
+// Replacement for Borland's kbhit function, checking if a key
+// (of emulated keyboard) has recently been pressed. The key can
+// be cleared by a call to BE_ST_BiosScanCode with command == 0.
 int16_t BE_ST_KbHit(void);
+// ***NON-EQUIVALENT*** replacement for Borland's bioskey function.
+// - If command == 0, the scan code of last pressed key
+// (from emulated keyboard) is returned. If no key is
+// pressed, the function waits for key press. Note that
+// a following call to this function with command == 1 is
+// expected to return 0, if no other key is pressed in-between.
+// - If command == 1, the function returns the scan code of
+// last key pressed, if there's any, or 0 if such code is not stored
+// (e.g., right after a call to the same function with command == 0).
 int16_t BE_ST_BiosScanCode(int16_t command);
 
 // Used internally, or alternatively for new errors: Logs to emulated text
@@ -206,10 +233,11 @@ void BE_ST_PollEvents(void);
 // Launcher loop
 void BE_ST_Launcher_RunEventLoop(void);
 
-// Returns an offset that should be added to the 16-bit segments of 32-bit
-// far pointers present in The Catacomb Armageddon/Apocalypse saved games
-// (in the case of the original DOS exes, it depends on the locations of
-// modified copies of them in memory)
+// Returns an offset that should be added to the 16-bit segments
+// of 32-bit far pointers read from/written to files. Saved games from
+// The Catacomb Armageddon/Apocalypse are good examples of such files.
+// (In the case of the original DOS exes, the offset depends on the
+// locations of modified copies of the far pointers in memory.)
 uint16_t BE_ST_Compat_GetFarPtrRelocationSegOffset(void);
 
 /*** Audio/timer (vanilla Keen kind-of has these mixed) ***/
