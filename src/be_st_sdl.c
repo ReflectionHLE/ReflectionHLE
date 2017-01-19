@@ -8,7 +8,6 @@
 #include "be_st.h"
 #include "be_st_sdl_private.h"
 
-#define BE_ST_MAXJOYSTICKS 8
 // Using example of values from here:
 // http://www.intel-assembler.it/portale/5/program-joystick-port-210h/program-joystick-port-210h.asp
 #define BE_ST_EMU_JOYSTICK_RANGEMIN 8
@@ -245,7 +244,7 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 	memset(g_sdlEmuMouseMotionAbsoluteState, 0, sizeof(g_sdlEmuMouseMotionAbsoluteState));
 	g_sdlEmuJoyButtonsState = 0;
 	// A bit tricky, should be reported as centered *if* any joystick is connected (and *not* while using modern controller scheme)
-	// Note 1: A single controller may support up to all 4
+	// Note 1: A single controller may support up to all 4 axes
 	// Note 2: Assigning 0 here may lead to division by zero in Keen Dreams v1.00
 	g_sdlEmuJoyMotionState[0] = g_sdlEmuJoyMotionState[1] = g_sdlEmuJoyMotionState[2] = g_sdlEmuJoyMotionState[3] = BE_ST_EMU_JOYSTICK_OVERRANGEMAX;
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
@@ -1507,6 +1506,7 @@ static void BEL_ST_CheckForHidingTouchUI(void)
 		return;
 	BEL_ST_DoHideTouchUI();
 }
+
 static void BEL_ST_ConditionallyAddJoystick(int device_index)
 {
 	if (!g_refKeenCfg.altControlScheme.isEnabled)

@@ -910,7 +910,7 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 	len /= sizeof(BE_ST_SndSample_T); // Convert to samples
 
-	// A little bit of cheating here since we don't actually call any timer handler here
+	// A little bit of cheating since we don't actually call any timer handler here
 	g_sdlSampleOffsetInSound += len;
 	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlSampleOffsetInSound / g_sdlSamplePerPart);
 	g_sdlSampleOffsetInSound %= g_sdlSamplePerPart;
@@ -944,7 +944,7 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 	/////////////////////////////
 
-	// A little bit of cheating here since we don't actually call any timer handler here
+	// A little bit of cheating since we don't actually call any timer handler here
 	g_sdlSampleOffsetInSound += (len / sizeof(BE_ST_SndSample_T));
 	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlSampleOffsetInSound / g_sdlSamplePerPart);
 	g_sdlSampleOffsetInSound %= g_sdlSamplePerPart;

@@ -49,7 +49,7 @@
 // Internally we use SDL2 scancodes for on-screen keyboards here,
 // but there are a few exceptions we make for convenience
 
-// Unused as of SDL v2.0.2
+// Unused as of SDL v2.0.5
 #define ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_LEFT 1
 #define ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_RIGHT 2
 #define ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT 3
