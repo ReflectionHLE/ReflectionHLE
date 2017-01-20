@@ -272,8 +272,9 @@ void BE_ST_BNoSound(void);
 // port. For the purpose of OPL emulation, this attempts to cover small
 // delays (measured in microseconds) as given by the AdLib manual.
 void BE_ST_OPL2Write(uint8_t reg,uint8_t val);
-// Here, the actual rate is about 1193182Hz/speed
-void BE_ST_SetTimer(uint16_t speed);
+// Sets the rate in which the timer interrupt is called, to about
+// 1193182Hz/rateVal. May also have an effect on sound generation.
+void BE_ST_SetTimer(uint16_t rateVal);
 // Resets to 0 an internal counter of calls to timer interrupt,
 // and returns the original counter's value
 int BE_ST_TimerIntClearLastCalls(void);
@@ -345,7 +346,7 @@ void BE_ST_Launcher_RefreshSelectGameMenuContents(void);
 //
 void BE_ST_SetBorderColor(uint8_t color);
 void BE_ST_SetScreenMode(int mode);
-void BE_ST_WaitVBL(int16_t number);
+void BE_ST_WaitForNewVerticalRetraces(int16_t number);
 void BE_ST_ShortSleep(void);
 void BE_ST_Delay(uint16_t msec); // Replacement for delay from dos.h
 void BE_ST_textcolor(int color);

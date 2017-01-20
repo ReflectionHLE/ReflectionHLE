@@ -1245,8 +1245,10 @@ void 	VW_SetScreen_EGA (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 #endif
 	BE_ST_EGASetPelPanning(pelpan);
 #if WAITFORVBL
-	// (REFKEEN) Doing this before BE_ST_EGASetPelPanning leads to
-	// very scrolling glitches, so call here instead
+	// TODO (REFKEEN) - This is technically a bit different
+	// from the original behaviors. Also, calling this function
+	// before BE_ST_EGASetPelPanning leads to horizontal
+	// scrolling glitches.
 	VW_WaitVBL(1);
 #endif
 }

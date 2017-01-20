@@ -1,3 +1,22 @@
+/* Copyright (C) 2014-2017 NY00123
+ *
+ * This file is part of Reflection Keen.
+ *
+ * Reflection Keen is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include "SDL.h"
@@ -984,12 +1003,11 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 
 
-// Here, the actual rate is about 1193182Hz/speed
-void BE_ST_SetTimer(uint16_t speed)
+void BE_ST_SetTimer(uint16_t rateVal)
 {
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
-	g_sdlSamplePerPart = (int32_t)speed * g_sdlAudioSpec.freq / PC_PIT_RATE;
+	g_sdlSamplePerPart = (int32_t)rateVal * g_sdlAudioSpec.freq / PC_PIT_RATE;
 	g_sdlScaledSamplePerPart = g_sdlSamplePerPart * OPL_SAMPLE_RATE;
 
 	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
@@ -998,13 +1016,8 @@ void BE_ST_SetTimer(uint16_t speed)
 static void BEL_ST_TicksDelayWithOffset(int sdltickstowait);
 
 
-void BE_ST_WaitVBL(int16_t number)
+void BE_ST_WaitForNewVerticalRetraces(int16_t number)
 {
-	// (REFKEEN) Difference from vanilla: If the input value is not
-	// positive then the game practically hangs for quite long
-	// (ok, more than 7 minutes). It basically feels like a true hang,
-	// which isn't desired anyway. So we assume that number > 0.
-
 	// TODO (REFKEEN) Make a difference based on HW?
 
 	// Simulate waiting while in vertical retrace first, and then

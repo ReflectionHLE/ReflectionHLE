@@ -285,8 +285,9 @@ void	VW_ClearVideo (id0_int_t color);
 
 inline void VW_WaitVBL (id0_int_t number)
 {
+	// TODO (REFKEEN) - Emulate behaviors for number < 0?
 #if WAITFORVBL
-	BE_ST_WaitVBL(number);
+	BE_ST_WaitForNewVerticalRetraces(number);
 #endif
 }
 
