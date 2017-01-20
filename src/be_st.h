@@ -246,7 +246,14 @@ void BE_ST_StopAudioAndTimerInt(void);
 void BE_ST_LockAudioRecursively(void);
 void BE_ST_UnlockAudioRecursively(void);
 bool BE_ST_IsEmulatedOPLChipReady(void);
-// Should be used in ID_SD.C only - Frequency is about 1193182Hz/spkVal
+// WARNING about using BE_ST_PCSpeakerOn/Off:
+//
+// You MUST call BE_ST_LockAudioRecursively before calling any of these
+// functions. Afterwards, you MUST call BE_ST_UnlockAudioRecursively.
+// If you don't, unexpected behaviors may be reproduced
+// (e.g., an audio callback thread hang).
+//
+// The sound frequency is about 1193182Hz/spkVal.
 void BE_ST_PCSpeakerOn(uint16_t spkVal);
 void BE_ST_PCSpeakerOff(void);
 // Used for playback from digitized sound data in signed 16-bit int format.
@@ -260,8 +267,11 @@ void BE_ST_StopSoundEffect(void);
 // Safe alternatives for Borland's sound and nosound functions from Catacomb Abyss' gelib.c
 void BE_ST_BSound(uint16_t frequency);
 void BE_ST_BNoSound(void);
-// Drop-in replacement for id_sd.c:alOut
-void BE_ST_ALOut(uint8_t reg,uint8_t val);
+// Sends data to emulated OPL2/3 chip (e.g., AdLib), where "reg" is
+// written to the address/status port and "val" is written to the data
+// port. For the purpose of OPL emulation, this attempts to cover small
+// delays (measured in microseconds) as given by the AdLib manual.
+void BE_ST_OPL2Write(uint8_t reg,uint8_t val);
 // Here, the actual rate is about 1193182Hz/speed
 void BE_ST_SetTimer(uint16_t speed);
 // Resets to 0 an internal counter of calls to timer interrupt,

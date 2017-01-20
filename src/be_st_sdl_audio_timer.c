@@ -59,9 +59,6 @@ static uint32_t g_sdlSoundEffectSamplesLeft;
 #define MIXER_SAMPLE_FORMAT_SINT16
 #endif
 
-// Used for filling with samples from alOut (alOut_low), in addition to the
-// SDL CallBack itself (because waits between/after AdLib writes are expected)
-
 #define OPL_NUM_OF_SAMPLES 2048 // About 40ms of OPL sound data
 #define OPL_SAMPLE_RATE 49716
 // Use this if the audio subsystem is disabled for most (we want a BYTES rate of 1000Hz, same units as used in values returned by SDL_GetTicks())
@@ -101,6 +98,9 @@ static SRC_STATE *g_sdlSrcResampler;
 static SRC_DATA g_sdlSrcData;
 #endif
 
+// Used for filling with samples from BE_ST_OPL2Write,
+// in addition to the SDL audio CallBack itself
+// (because waits between/after OPL writes are expected)
 static BE_ST_SndSample_T g_sdlALOutSamples[OPL_NUM_OF_SAMPLES];
 static uint32_t g_sdlALOutSamplesEnd = 0;
 
@@ -533,26 +533,27 @@ static inline void YM3812UpdateOne(Chip *which, BE_ST_SndSample_T *stream, int l
 	}
 }
 
-// Drop-in replacement for id_sd.c:alOut
-void BE_ST_ALOut(uint8_t reg,uint8_t val)
+void BE_ST_OPL2Write(uint8_t reg,uint8_t val)
 {
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
-	// FIXME: The original code for alOut adds 6 reads of the
-	// register port after writing to it (3.3 microseconds), and
-	// then 35 more reads of register port after writing to the
-	// data port (23 microseconds).
+	// Per the AdLib manual, this function should simulate 6 reads
+	// of the register port after writing to it (3.3 microseconds),
+	// and then 35 more reads of the register port after
+	// writing to the data port (23 microseconds).
 	//
-	// It is apparently important for a portion of the fuse
-	// breakage sound at the least. For now a hack is implied.
+	// The above appears to be important for reproduction
+	// of the fuse breakage sound in Keen 5 at the least,
+	// as well as a few sound effects in The Catacomb Abyss
+	// (hitting a locked gate, teleportation sound effect).
 	YM3812Write(&oplChip, reg, val);
-	// Hack comes with a "magic number"
-	// that appears to make it work better
+	// FIXME: For now we roughly simulate the above delays with a
+	// hack, using a "magic number" that appears to make this work.
 	unsigned int length = OPL_SAMPLE_RATE / 10000;
 
 	if (length > OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_ST_ALOut overflow, want %u, have %u\n", length, OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd); // FIXME - Other thread
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_ST_OPL2Write overflow, want %u, have %u\n", length, OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd); // FIXME - Other thread
 		length = OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd;
 	}
 	if (length)
@@ -698,7 +699,7 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 		// PC Speaker
 		if (g_sdlPCSpeakerOn)
 			PCSpeakerUpdateOne(currSamplePtr, currNumOfSamples);
-		/*** AdLib (including hack for alOut delays) ***/
+		/*** AdLib (including hack for BE_ST_OPL2Write delays) ***/
 		if (g_sdlEmulatedOPLChipReady)
 		{
 			// We may have pending AL data ready, but probably less than required

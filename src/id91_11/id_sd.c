@@ -414,7 +414,7 @@ asm	out	0x61,al
 void
 alOut(id0_byte_t n,id0_byte_t b)
 {
-	BE_ST_ALOut(n, b);
+	BE_ST_OPL2Write(n, b);
 #if 0
 asm	pushf
 asm	cli

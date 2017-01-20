@@ -962,8 +962,11 @@ SDL_Port2015Service(void)
 void
 alOut(id0_byte_t n,id0_byte_t b)
 {
-	BE_ST_ALOut(n, b);
-	// (REFKEEN) Note: Vanilla Catacomb 3-D doesn't use "SDL_Delay"
+	BE_ST_OPL2Write(n, b);
+	// (REFKEEN) Note: Vanilla Catacomb 3-D doesn't
+	// use "SDL_Delay", and BE_ST_OPL2Write uses possibly
+	// different delays (for the purpose of OPL emulation).
+	//
 	// TODO - Add delay here in some way?
 #if 0
 	asm	pushf
