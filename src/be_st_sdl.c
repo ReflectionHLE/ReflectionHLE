@@ -461,7 +461,9 @@ static void BEL_ST_ParseSetting_LastSelectedGameVer(const char *keyprefix, const
 
 static void BEL_ST_ParseSetting_DisplayNum(const char *keyprefix, const char *buffer)
 {
-	sscanf(buffer, "%d", &g_refKeenCfg.displayNum);
+	if (sscanf(buffer, "%d", &g_refKeenCfg.displayNum) == 1)
+		if ((g_refKeenCfg.displayNum < 0) || (g_refKeenCfg.displayNum >= SDL_GetNumVideoDisplays()))
+			g_refKeenCfg.displayNum = 0;
 }
 
 static void BEL_ST_ParseSetting_SDLRendererDriver(const char *keyprefix, const char *buffer)

@@ -509,7 +509,7 @@ void BE_ST_BNoSound(void)
 OPL emulation, powered by dbopl from DOSBox and using bits of code from Wolf4SDL
 *******************************************************************************/
 
-Chip oplChip;
+static Chip oplChip;
 
 static inline void YM3812Init(int numChips, int clock, int rate)
 {
