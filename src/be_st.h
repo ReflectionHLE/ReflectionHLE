@@ -287,7 +287,6 @@ void BE_ST_TimerIntCallsDelayWithOffset(int nCalls);
 /*** Graphics ***/
 void BE_ST_InitGfx(void);
 void BE_ST_ShutdownGfx(void);
-void BE_ST_SetScreenStartAddress(uint16_t crtc);
 
 void BE_ST_MarkGfxForUpdate(void);
 void BE_ST_Launcher_MarkGfxCache(void);
@@ -344,6 +343,7 @@ void BE_ST_Launcher_Shutdown(void);
 void BE_ST_Launcher_RefreshSelectGameMenuContents(void);
 
 //
+void BE_ST_SetScreenStartAddress(uint16_t crtc);
 void BE_ST_SetBorderColor(uint8_t color);
 void BE_ST_SetScreenMode(int mode);
 void BE_ST_WaitForNewVerticalRetraces(int16_t number);

@@ -2220,12 +2220,6 @@ void BEL_ST_ForceHostDisplayUpdate(void)
 	g_sdlForceGfxControlUiRefresh = true; // HACK that technically does exactly what we want (even if controls are not drawn)
 }
 
-void BE_ST_SetScreenStartAddress(uint16_t crtc)
-{
-	g_sdlDoRefreshGfxOutput |= (g_sdlScreenStartAddress != crtc);
-	g_sdlScreenStartAddress = crtc;
-}
-
 uint8_t *BE_ST_GetTextModeMemoryPtr(void)
 {
 	return g_sdlVidMem.text;
@@ -2294,6 +2288,12 @@ static int BEL_ST_ConvertEGASignalToEGAEntry(int color)
 	return (color & 7) | ((color & 16) >> 1);
 }
 
+
+void BE_ST_SetScreenStartAddress(uint16_t crtc)
+{
+	g_sdlDoRefreshGfxOutput |= (g_sdlScreenStartAddress != crtc);
+	g_sdlScreenStartAddress = crtc;
+}
 
 void BE_ST_SetBorderColor(uint8_t color)
 {
