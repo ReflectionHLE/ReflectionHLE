@@ -17,8 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef	_BE_LAUNCHER_
-#define _BE_LAUNCHER_
+#ifndef BE_LAUNCHER_H
+#define BE_LAUNCHER_H
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
 
@@ -116,4 +116,4 @@ void BE_Launcher_PrepareMenu(BEMenu *menu);
 
 #endif // REFKEEN_ENABLE_LAUNCHER
 
-#endif // _BE_LAUNCHER_
+#endif // BE_LAUNCHER_H

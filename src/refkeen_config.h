@@ -1,7 +1,7 @@
 // This header MUST be included early, so macros can be properly used
 
-#ifndef _REFKEEN_CONFIG_H_
-#define _REFKEEN_CONFIG_H_
+#ifndef REFKEEN_CONFIG_H
+#define REFKEEN_CONFIG_H
 
 // BIG ***FIXME*** - Should probably be externally generated instead
 #include "SDL_endian.h"

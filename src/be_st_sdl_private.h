@@ -19,8 +19,8 @@
 
 // This header should be used by be_st_sdl* code internally
 
-#ifndef	_BE_ST_SDL_PRIVATE_
-#define _BE_ST_SDL_PRIVATE_
+#ifndef BE_ST_SDL_PRIVATE_H
+#define BE_ST_SDL_PRIVATE_H
 
 #include "SDL_version.h" // For SDL_RENDER_DEVICE_RESET hack
 #include "SDL_surface.h"
@@ -76,4 +76,4 @@ extern SDL_Surface *g_be_sdl_windowIconSurface;
 // NOT NECESSARILY AVAILABLE FOR ALL GAMES!
 extern bool g_sdlDoAbsMouseMotion;
 
-#endif
+#endif // BE_ST_SDL_PRIVATE_H

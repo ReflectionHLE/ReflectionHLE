@@ -17,8 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _BE_CROSS_H_
-#define _BE_CROSS_H_
+#ifndef BE_CROSS_H
+#define BE_CROSS_H
 
 #include <stdbool.h>
 #include <stdio.h>

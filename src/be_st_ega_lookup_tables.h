@@ -1,5 +1,5 @@
-#ifndef _BE_ST_EGA_LOOKUP_TABLES_
-#define _BE_ST_EGA_LOOKUP_TABLES_
+#ifndef BE_ST_EGA_LOOKUP_TABLES_H
+#define BE_ST_EGA_LOOKUP_TABLES_H
 
 // Currently used internally in one compilation unit only
 
@@ -802,4 +802,4 @@ static const uint64_t g_be_st_lookup_bitsmask[256] = {
 	BE_Cross_Swap64LE(0xffffffffffffffff),
 };
 
-#endif // _BE_ST_EGA_LOOKUP_TABLES_
+#endif // BE_ST_EGA_LOOKUP_TABLES_H

@@ -17,8 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef	_BE_ST_SDL_
-#define _BE_ST_SDL_
+#ifndef BE_ST_SDL_H
+#define BE_ST_SDL_H
 
 #include "be_st.h"
 
@@ -84,4 +84,4 @@ typedef struct
 
 extern RefKeenConfig g_refKeenCfg;
 
-#endif
+#endif // BE_ST_SDL_H

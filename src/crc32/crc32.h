@@ -1,5 +1,5 @@
-#ifndef __CRC32_H__
-#define __CRC32_H__
+#ifndef CRC32_H
+#define CRC32_H
 
 #include <stdio.h>
 #include <stdint.h>

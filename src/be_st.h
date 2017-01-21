@@ -17,8 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef	_BE_ST_
-#define _BE_ST_
+#ifndef BE_ST_H
+#define BE_ST_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -479,4 +479,4 @@ typedef enum BE_ST_ScanCode_T {
 // MUST be included here (since be_st_sdl.h depends on be_st.h)
 #include "be_st_sdl.h"
 
-#endif
+#endif // BE_ST_H
