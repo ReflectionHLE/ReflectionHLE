@@ -62,8 +62,12 @@ static SDL_AudioSpec g_sdlAudioSpec;
 bool g_sdlAudioSubsystemUp;
 
 static bool g_sdlEmulatedOPLChipReady;
-static uint32_t g_sdlSampleOffsetInSound, g_sdlSamplePerPart;
-static uint64_t g_sdlScaledSampleOffsetInSound, g_sdlScaledSamplePerPart; // For resampling callback
+static uint32_t g_sdlSamplesPartNum = 0;
+// Simple callback: Scale is samples*PC_PIT_RATE
+// Resampling callback (with OPL emulation): Scale is samples*PC_PIT_RATE*OPL_SAMPLE_RATE
+static uint64_t g_sdlScaledSamplesPerPartsTimesPITRate;
+static uint64_t g_sdlScaledSampleOffsetInSound, g_sdlScaledSamplesInCurrentPart;
+
 static void (*g_sdlTimerIntFuncPtr)(void) = 0;
 
 static SDL_atomic_t g_sdlTimerIntCounter = {0};
@@ -707,14 +711,14 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 
 	while (len)
 	{
-		if (!g_sdlSampleOffsetInSound)
+		if (!g_sdlScaledSampleOffsetInSound)
 		{
 			// FUNCTION VARIABLE (We should use this and we want to kind-of separate what we have here from original code.)
 			g_sdlTimerIntFuncPtr();
 			SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
 		}
 		// Now generate sound
-		currNumOfSamples = BE_Cross_TypedMin(uint32_t, len/sizeof(BE_ST_SndSample_T), g_sdlSamplePerPart-g_sdlSampleOffsetInSound);
+		currNumOfSamples = BE_Cross_TypedMin(uint32_t, len/sizeof(BE_ST_SndSample_T), g_sdlScaledSamplesInCurrentPart-g_sdlScaledSampleOffsetInSound);
 		// PC Speaker
 		if (g_sdlPCSpeakerOn)
 			PCSpeakerUpdateOne(currSamplePtr, currNumOfSamples);
@@ -747,12 +751,15 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 		}
 		// We're done for now
 		currSamplePtr += currNumOfSamples;
-		g_sdlSampleOffsetInSound += currNumOfSamples;
+		g_sdlScaledSampleOffsetInSound += currNumOfSamples;
 		len -= sizeof(BE_ST_SndSample_T)*currNumOfSamples;
 		// End of part?
-		if (g_sdlSampleOffsetInSound >= g_sdlSamplePerPart)
+		if (g_sdlScaledSampleOffsetInSound >= g_sdlScaledSamplesInCurrentPart)
 		{
-			g_sdlSampleOffsetInSound = 0;
+			g_sdlScaledSampleOffsetInSound = 0;
+			if (++g_sdlSamplesPartNum == PC_PIT_RATE)
+				g_sdlSamplesPartNum = 0;
+			g_sdlScaledSamplesInCurrentPart = (g_sdlSamplesPartNum + 1) * g_sdlScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE - g_sdlSamplesPartNum * g_sdlScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE;
 		}
 	}
 
@@ -794,7 +801,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 				SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
 			}
 			// Now generate sound
-			currNumOfScaledSamples = BE_Cross_TypedMin(uint64_t, scaledSamplesToGenerate, g_sdlScaledSamplePerPart-g_sdlScaledSampleOffsetInSound);
+			currNumOfScaledSamples = BE_Cross_TypedMin(uint64_t, scaledSamplesToGenerate, g_sdlScaledSamplesInCurrentPart-g_sdlScaledSampleOffsetInSound);
 			processedScaledInputSamples += currNumOfScaledSamples;
 			/*** FIXME - Scaling back to the original rates may be a bit inaccurate (due to divisions) ***/
 
@@ -835,9 +842,12 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			g_sdlScaledSampleOffsetInSound += currNumOfScaledSamples;
 			scaledSamplesToGenerate -= currNumOfScaledSamples;
 			// End of part?
-			if (g_sdlScaledSampleOffsetInSound >= g_sdlScaledSamplePerPart)
+			if (g_sdlScaledSampleOffsetInSound >= g_sdlScaledSamplesInCurrentPart)
 			{
 				g_sdlScaledSampleOffsetInSound = 0;
+				if (++g_sdlSamplesPartNum == PC_PIT_RATE)
+					g_sdlSamplesPartNum = 0;
+				g_sdlScaledSamplesInCurrentPart = (g_sdlSamplesPartNum + 1) * g_sdlScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE - g_sdlSamplesPartNum * g_sdlScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE;
 			}
 		}
 
@@ -931,9 +941,9 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len)
 	len /= sizeof(BE_ST_SndSample_T); // Convert to samples
 
 	// A little bit of cheating since we don't actually call any timer handler here
-	g_sdlSampleOffsetInSound += len;
-	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlSampleOffsetInSound / g_sdlSamplePerPart);
-	g_sdlSampleOffsetInSound %= g_sdlSamplePerPart;
+	g_sdlScaledSampleOffsetInSound += len * PC_PIT_RATE;
+	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
+	g_sdlScaledSampleOffsetInSound %= g_sdlScaledSamplesPerPartsTimesPITRate;
 
 	if ((uint32_t)len >= g_sdlSoundEffectSamplesLeft)
 	{
@@ -965,9 +975,9 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 	/////////////////////////////
 
 	// A little bit of cheating since we don't actually call any timer handler here
-	g_sdlSampleOffsetInSound += (len / sizeof(BE_ST_SndSample_T));
-	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlSampleOffsetInSound / g_sdlSamplePerPart);
-	g_sdlSampleOffsetInSound %= g_sdlSamplePerPart;
+	g_sdlScaledSampleOffsetInSound += (len / sizeof(BE_ST_SndSample_T)) * PC_PIT_RATE;
+	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
+	g_sdlScaledSampleOffsetInSound %= g_sdlScaledSamplesPerPartsTimesPITRate;
 
 	while (len > 0)
 	{
@@ -1007,8 +1017,12 @@ void BE_ST_SetTimer(uint16_t rateVal)
 {
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
-	g_sdlSamplePerPart = (int32_t)rateVal * g_sdlAudioSpec.freq / PC_PIT_RATE;
-	g_sdlScaledSamplePerPart = g_sdlSamplePerPart * OPL_SAMPLE_RATE;
+	g_sdlScaledSamplesPerPartsTimesPITRate = rateVal * g_sdlAudioSpec.freq;
+	if (g_sdlAudioSpec.callback == BEL_ST_Resampling_EmuCallBack)
+		g_sdlScaledSamplesPerPartsTimesPITRate *= OPL_SAMPLE_RATE;
+	// Since the following division may lead to truncation, g_sdlScaledSamplesInCurrentPart
+	// can change during playback by +-1 (otherwise music may be a bit faster than intended).
+	g_sdlScaledSamplesInCurrentPart = g_sdlScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE;
 
 	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
 }
