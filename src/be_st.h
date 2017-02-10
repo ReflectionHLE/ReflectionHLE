@@ -230,8 +230,10 @@ void BE_ST_SetAppQuitCallback(void (*funcPtr)(void));
 
 void BE_ST_PollEvents(void);
 
+#ifdef REFKEEN_ENABLE_LAUNCHER
 // Launcher loop
 void BE_ST_Launcher_RunEventLoop(void);
+#endif
 
 // Returns an offset that should be added to the 16-bit segments
 // of 32-bit far pointers read from/written to files. Saved games from
@@ -289,7 +291,11 @@ void BE_ST_InitGfx(void);
 void BE_ST_ShutdownGfx(void);
 
 void BE_ST_MarkGfxForUpdate(void);
+#ifdef REFKEEN_ENABLE_LAUNCHER
 void BE_ST_Launcher_MarkGfxCache(void);
+#else // HACK for situations in which this should be called, like recreation of textures
+#define BE_ST_Launcher_MarkGfxCache()
+#endif
 
 // ***WARNING*** SEE WARNING BELOW BEFORE USING!!!
 //
@@ -300,8 +306,10 @@ void BE_ST_Launcher_MarkGfxCache(void);
 // BE_ST_MarkGfxForUpdate (used as an optimization).
 uint8_t *BE_ST_GetTextModeMemoryPtr(void);
 
+#ifdef REFKEEN_ENABLE_LAUNCHER
 // ***WARNING***: Ensure BE_ST_Launcher_MarkGfxCache is called after drawing.
 uint8_t *BE_ST_Launcher_GetGfxPtr(void);
+#endif
 
 bool BE_ST_HostGfx_CanToggleAspectRatio(void);
 bool BE_ST_HostGfx_GetAspectRatioToggle(void);
@@ -337,10 +345,11 @@ void BE_ST_EGAXorGFXByteByPlaneMask(uint16_t destOff, uint8_t srcVal, uint16_t p
 // CGA graphics manipulations
 void BE_ST_CGAUpdateGFXBufferFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth);
 
-//
+#ifdef REFKEEN_ENABLE_LAUNCHER
 void BE_ST_Launcher_Prepare(void);
 void BE_ST_Launcher_Shutdown(void);
 void BE_ST_Launcher_RefreshSelectGameMenuContents(void);
+#endif
 
 //
 void BE_ST_SetScreenStartAddress(uint16_t crtc);
