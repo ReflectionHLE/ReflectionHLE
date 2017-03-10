@@ -505,7 +505,9 @@ static int unpack(FILE *ifile,unsigned char *obuff){
     int16_t span;
     long fpos;
     bitstream bits;
-    static BYTE data[0x4500], *p=data;
+    // REFKEEN - Bug fix (support multiple calls to Unlzexe_unpack)
+    static BYTE data[0x4500]/*, *p=data*/;
+    BYTE *p=data;
 
     fpos=((long)ihead[0x0b]-(long)inf[4]+(long)ihead[4])<<4;
     fseek(ifile,fpos,SEEK_SET);
