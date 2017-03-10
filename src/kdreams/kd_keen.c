@@ -2259,7 +2259,8 @@ void	KeenContact (objtype *ob, objtype *hit)
 		}
 		else
 		{
-			SD_PlaySound (NOWAYSND);
+			if ((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) || (hit->state != &s_doorraise))
+				SD_PlaySound (NOWAYSND);
 			ClipToSpriteSide (ob,hit);
 		}
 		break;
