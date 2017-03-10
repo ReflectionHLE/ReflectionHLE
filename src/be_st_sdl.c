@@ -612,6 +612,7 @@ static void BEL_ST_ParseSetting_UseResampler(const char *keyprefix, const char *
 }
 #endif
 
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_ParseSetting_TouchInputToggle(const char *keyprefix, const char *buffer)
 {
 	if (!strcmp(buffer, "auto"))
@@ -639,6 +640,7 @@ static void BEL_ST_ParseSetting_TouchInputDebugging(const char *keyprefix, const
 		g_refKeenCfg.touchInputDebugging = false;
 	}
 }
+#endif // REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 
 static void BEL_ST_ParseSetting_AlternativeControlScheme(const char *keyprefix, const char *buffer)
 {
@@ -792,8 +794,10 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #ifndef REFKEEN_RESAMPLER_NONE
 	{"useresampler=", &BEL_ST_ParseSetting_UseResampler},
 #endif
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	{"touchinput=", &BEL_ST_ParseSetting_TouchInputToggle},
 	{"touchinputdebugging=", &BEL_ST_ParseSetting_TouchInputDebugging},
+#endif
 	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
 
 	// HACK: Copy-paste... if this is updated, check g_sdlControlSchemeKeyMapCfgKeyPrefixes too!!!
@@ -866,7 +870,7 @@ static void BEL_ST_ParseConfig(void)
 #ifndef REFKEEN_RESAMPLER_NONE
 	g_refKeenCfg.useResampler = true;
 #endif
-#ifdef REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT
+#if (defined REFKEEN_CONFIG_ENABLE_TOUCHINPUT) && (defined REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT)
 	g_refKeenCfg.touchInputToggle = TOUCHINPUT_AUTO;
 #else
 	g_refKeenCfg.touchInputToggle = TOUCHINPUT_OFF;
@@ -982,8 +986,10 @@ static void BEL_ST_SaveConfig(void)
 #ifndef REFKEEN_RESAMPLER_NONE
 	fprintf(fp, "useresampler=%s\n", g_refKeenCfg.useResampler ? "true" : "false");
 #endif
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	fprintf(fp, "touchinput=%s\n", (g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) ? "auto" : ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED) ? "forced" : "off"));
 	fprintf(fp, "touchinputdebugging=%s\n", g_refKeenCfg.touchInputDebugging ? "true" : "false");
+#endif
 	fprintf(fp, "altcontrolscheme=%s\n", g_refKeenCfg.altControlScheme.isEnabled ? "true" : "false");
 	// Go through an array of keys
 	for (int keyindex = 0; keyindex < BE_ST_CTRL_CFG_BUTMAP_AFTERLAST; ++keyindex)
@@ -2011,6 +2017,7 @@ void BE_ST_PollEvents(void)
 			}
 			break;
 
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 		case SDL_FINGERDOWN:
 			if ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) && !g_sdlShowTouchUI)
 			{
@@ -2041,6 +2048,7 @@ void BE_ST_PollEvents(void)
 		case SDL_FINGERMOTION:
 			BEL_ST_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
+#endif // REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 
 		case SDL_JOYAXISMOTION:
 			for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)

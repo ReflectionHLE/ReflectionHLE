@@ -20,7 +20,9 @@
 
 #ifdef __APPLE__
 #include "TargetConditionals.h"
-#if (!defined TARGET_OS_IPHONE) && (!defined TARGET_IPHONE_SIMULATOR)
+// Depending on the SDK version, TARGET_OS_IPHONE may either be
+// undefined, or defined to 0. So check the macros this way.
+#if (!TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR)
 #define REFKEEN_PLATFORM_OSX
 #endif
 #endif
@@ -33,7 +35,7 @@
 #define REFKEEN_PLATFORM_EMSCRIPTEN
 #endif
 
-#if (defined __unix__) || (defined __unix) || (defined unix)
+#if (defined __unix__) || (defined __unix) || (defined unix) || (defined __APPLE__)
 #define REFKEEN_PLATFORM_UNIX
 #endif
 
@@ -46,6 +48,13 @@
 #define REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
 #define REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 #define REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
+#endif
+
+// On the Mac, usage of multitouch trackpad may lead to SDL2
+// finger events, and these should not be mistakenly
+// processed as touchscreen input
+#ifndef REFKEEN_PLATFORM_OSX
+#define REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 #endif
 
 #ifdef REFKEEN_PLATFORM_ANDROID

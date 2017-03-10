@@ -443,15 +443,21 @@ BEMenu g_beSoundSettingsMenu = {
 /*** Input settings menu ***/
 
 static const char *g_be_inputSettingsChoices_controllerScheme[] = {"Classic", "Modern", NULL};
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static const char *g_be_inputSettingsChoices_touchControls[] = {"Auto", "Off", "Forced", NULL};
+#endif
 static const char *g_be_inputSettingsChoices_mouseGrab[] = {"Auto", "Off", "Commonly", NULL};
 
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP);
+#endif
 
 BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beControllerSettingsMenu)
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_inputSettingsChoices_touchControls);
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
+#endif
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_MouseGrab, "Mouse grab*\n(windowed mode specific)", g_be_inputSettingsChoices_mouseGrab)
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion**", g_be_settingsChoices_boolean)
@@ -472,8 +478,10 @@ BEMenu g_beInputSettingsMenu = {
 	{
 		&g_beInputSettingsMenuItem_ControllerSettings,
 		&g_beInputSettingsMenuItem_ControllerScheme,
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 		&g_beInputSettingsMenuItem_TouchControls,
 		&g_beInputSettingsMenuItem_TouchInputDebugging,
+#endif
 		&g_beInputSettingsMenuItem_MouseGrab,
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 		&g_beInputSettingsMenuItem_AbsMouseMotion,
@@ -778,10 +786,12 @@ void BE_ST_Launcher_Prepare(void)
 #endif
 	// Set ControllerScheme value
 	g_beInputSettingsMenuItem_ControllerScheme.choice = g_refKeenCfg.altControlScheme.isEnabled;
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	// Set TouchControls value
 	g_beInputSettingsMenuItem_TouchControls.choice = g_refKeenCfg.touchInputToggle;
 	// Set TouchInputDebugging value
 	g_beInputSettingsMenuItem_TouchInputDebugging.choice = g_refKeenCfg.touchInputDebugging;
+#endif
 	// Set MouseGrab value
 	g_beInputSettingsMenuItem_MouseGrab.choice = g_refKeenCfg.mouseGrab;
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
@@ -899,11 +909,13 @@ void BE_ST_Launcher_Shutdown(void)
 	g_sdlWindow = NULL;
 #endif
 
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	// BEFORE checking if we need to save anything, apply this HACK
 	if (g_beInputSettingsMenuItem_TouchControls.choice == TOUCHINPUT_AUTO)
 		g_sdlShowTouchUI = ((g_sdlLauncherLastEventType == SDL_FINGERDOWN) || (g_sdlLauncherLastEventType == SDL_FINGERUP));
 	else
 		g_sdlShowTouchUI = (g_beInputSettingsMenuItem_TouchControls.choice == TOUCHINPUT_FORCED);
+#endif
 
 	/*** Save settings if there's any change ***/
 	if (!g_be_launcher_wasAnySettingChanged)
@@ -949,8 +961,10 @@ void BE_ST_Launcher_Shutdown(void)
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	g_refKeenCfg.absMouseMotion = g_beInputSettingsMenuItem_AbsMouseMotion.choice;
 #endif
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	g_refKeenCfg.touchInputToggle = (TouchInputSettingType)g_beInputSettingsMenuItem_TouchControls.choice;
 	g_refKeenCfg.touchInputDebugging = g_beInputSettingsMenuItem_TouchInputDebugging.choice;
+#endif
 
 	g_refKeenCfg.altControlScheme.useDpad = g_beControllerSettingsMenuItem_Dpad.choice;
 	g_refKeenCfg.altControlScheme.useLeftStick = g_beControllerSettingsMenuItem_LeftStick.choice;
@@ -1202,11 +1216,13 @@ static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP)
 }
 #endif
 
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP)
 {
 	// Apply this immediately, so the effect is observed in the launcher itself
 	g_refKeenCfg.touchInputDebugging = (*menuItemP)->choice;
 }
+#endif
 
 static void BEL_ST_Launcher_SetGfxOutputRects(void)
 {
@@ -2435,6 +2451,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				BE_Launcher_HandleInput_PointerVScroll(-10*event.wheel.y, ticksBeforePoll);
 				break;
 
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 			case SDL_FINGERDOWN:
 				BEL_ST_Launcher_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
@@ -2444,6 +2461,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 			case SDL_FINGERMOTION:
 				BEL_ST_Launcher_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
+#endif
 
 			/* Don't use SDL_CONTROLLERDEVICEADDED with alternative controller schemes, and for the sake of consistency avoid SDL_CONTROLLERDEVICEREMOVED as well.
 			 * Reason is that on init, there is a problem handling controller mappings loaded from the database using SDL_CONTROLLERDEVICEADDED
@@ -2568,9 +2586,11 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 					break; // Ignore
 				// Fall-through
 			case SDL_MOUSEBUTTONDOWN:
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 			case SDL_FINGERDOWN:
 				keepRunning = false;
 				break;
+#endif
 
 			case SDL_JOYDEVICEADDED:
 				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && SDL_IsGameController(event.jdevice.which))
@@ -2872,6 +2892,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(0, 0, event.motion.x, event.motion.y);
 				break;
 
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 			case SDL_FINGERDOWN:
 				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 				break;
@@ -2882,6 +2903,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 			case SDL_FINGERMOTION:
 				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 				break;
+#endif
 
 			case SDL_JOYDEVICEADDED:
 				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && SDL_IsGameController(event.jdevice.which))
