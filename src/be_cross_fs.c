@@ -652,15 +652,15 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse113[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse113[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2bc42 - 0x1c00},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x24480 - 0x1c00},
-	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x245e0 - 0x1c00},
-	{"EGADICT.KDR", 1024, 0xa69af202, 0x2b446 - 0x1c00},
-	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1e720 - 0x1c00},
-	{"GAMETEXT.KDR", 413, 0xb0df2792, 0x24af0 - 0x1c00},
-	{"MAPDICT.KDR", 1020, 0x9faa7213, 0x2b846 - 0x1c00},
-	{"MAPHEAD.KDR", 11824, 0xb2f36c60, 0x21650 - 0x1c00},
-	{"STORY.KDR", 2526, 0xcafc1d15, 0x24c90 - 0x1c00},
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a042},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x22880},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x229e0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x29846},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1cb20},
+	{"GAMETEXT.KDR", 413, 0xb0df2792, 0x22ef0},
+	{"MAPDICT.KDR", 1020, 0x9faa7213, 0x29c46},
+	{"MAPHEAD.KDR", 11824, 0xb2f36c60, 0x1fa50},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x23090},
 	{0}
 };
 
@@ -686,15 +686,15 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc105[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc105[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x29c90 - 0x1800},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x20350 - 0x1800},
-	{"CGADICT.KDR", 1024, 0xaba89759, 0x29494 - 0x1800},
-	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x1a5f0 - 0x1800},
-	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x204b0 - 0x1800},
-	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x21750 - 0x1800},
-	{"MAPDICT.KDR", 1020, 0xfa8362f3, 0x29894 - 0x1800},
-	{"MAPHEAD.KDR", 11824, 0x66c122b4, 0x1d520 - 0x1800},
-	{"STORY.KDR", 2487, 0xed0ea5fe, 0x229a0 - 0x1800},
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28490},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1eb50},
+	{"CGADICT.KDR", 1024, 0xaba89759, 0x27c94},
+	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18df0},
+	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1ecb0},
+	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1ff50},
+	{"MAPDICT.KDR", 1020, 0xfa8362f3, 0x28094},
+	{"MAPHEAD.KDR", 11824, 0x66c122b4, 0x1bd20},
+	{"STORY.KDR", 2487, 0xed0ea5fe, 0x211a0},
 	{0}
 };
 
@@ -724,15 +724,15 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse193[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse193[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2bbba - 0x1c00},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x23590 - 0x1c00},
-	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x236f0 - 0x1c00},
-	{"EGADICT.KDR", 1024, 0xa69af202, 0x2b3be - 0x1c00},
-	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1d830 - 0x1c00},
-	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x23c00 - 0x1c00},
-	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2b7be - 0x1c00},
-	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x20760 - 0x1c00},
-	{"STORY.KDR", 2526, 0xcafc1d15, 0x24ca0 - 0x1c00},
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x29fba},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21990},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21af0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x297be},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1bc30},
+	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x22000},
+	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x29bbe},
+	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1eb60},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x230a0},
 	{0}
 };
 
@@ -759,15 +759,15 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse120[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse120[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2c26c - 0x1c00},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x23970 - 0x1c00},
-	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x23ad0 - 0x1c00},
-	{"EGADICT.KDR", 1024, 0xa69af202, 0x2ba70 - 0x1c00},
-	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1dc10 - 0x1c00},
-	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x23fe0 - 0x1c00},
-	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2be70 - 0x1c00},
-	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x20b40 - 0x1c00},
-	{"STORY.KDR", 2526, 0xcafc1d15, 0x25080 - 0x1c00},
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a66c},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21d70},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21ed0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x29e70},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1c010},
+	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x223e0},
+	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2a270},
+	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1ef40},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x23480},
 	{0}
 };
 
@@ -832,12 +832,12 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d100[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d100[] = {
-	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x24064 - 0x1400},
-	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1be60 - 0x1400},
-	{"EGADICT.C3D", 1024, 0xab94fb6c, 0x24464 - 0x1400},
-	{"EGAHEAD.C3D", 1437, 0x33772bb0, 0x1bfd0 - 0x1400},
-	{"INTROSCN.SCN", 4008, 0xec236c5c, 0x1a6c0 - 0x1400},
-	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1c570 - 0x1400},
+	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22c64},
+	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1aa60},
+	{"EGADICT.C3D", 1024, 0xab94fb6c, 0x23064},
+	{"EGAHEAD.C3D", 1437, 0x33772bb0, 0x1abd0},
+	{"INTROSCN.SCN", 4008, 0xec236c5c, 0x192c0},
+	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1b170},
 	{0}
 };
 
@@ -863,14 +863,14 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d122[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d122[] = {
-	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x241d8 - 0x1600},
-	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1bd10 - 0x1600},
-	{"EGADICT.C3D", 1024, 0xb26a70a6, 0x245d8 - 0x1600},
-	{"EGAHEAD.C3D", 1437, 0x3fde00c4, 0x1be80 - 0x1600},
+	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22bd8},
+	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1a710},
+	{"EGADICT.C3D", 1024, 0xb26a70a6, 0x22fd8},
+	{"EGAHEAD.C3D", 1437, 0x3fde00c4, 0x1a880},
 	// INTROSCN.SCN isn't displayed in vanilla v1.22, but it's still
 	// allocated and in use, so it's safer to require this chunk
-	{"INTROSCN.SCN", 4008, 0xcf9696af, 0x1a570 - 0x1600},
-	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1c420 - 0x1600},
+	{"INTROSCN.SCN", 4008, 0xcf9696af, 0x18f70},
+	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1ae20},
 	{0}
 };
 
@@ -944,11 +944,11 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss113[] = {
-	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x26f4c - 0x1a00},
-	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1bc10 - 0x1a00},
-	{"EGADICT.ABS", 1024, 0xbb760f1d, 0x2734c - 0x1a00},
-	{"EGAHEAD.ABS", 1881, 0xe31e1c3b, 0x1bdb0 - 0x1a00},
-	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1c510 - 0x1a00},
+	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2554c},
+	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a210},
+	{"EGADICT.ABS", 1024, 0xbb760f1d, 0x2594c},
+	{"EGAHEAD.ABS", 1881, 0xe31e1c3b, 0x1a3b0},
+	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1ab10},
 	{0}
 };
 
@@ -1012,11 +1012,11 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss124[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss124[] = {
-	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x26e3a - 0x1a00},
-	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1bb40 - 0x1a00},
-	{"EGADICT.ABS", 1024, 0x63eb06d3, 0x2723a - 0x1a00},
-	{"EGAHEAD.ABS", 1881, 0x94967205, 0x1bce0 - 0x1a00},
-	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1c440 - 0x1a00},
+	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2543a},
+	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a140},
+	{"EGADICT.ABS", 1024, 0x63eb06d3, 0x2583a},
+	{"EGAHEAD.ABS", 1881, 0x94967205, 0x1a2e0},
+	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1aa40},
 	{0}
 };
 
@@ -1081,11 +1081,11 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catarm102[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catarm102[] = {
-	{"AUDIODCT.ARM", 1024, 0x8f1d4dd2, 0x260b0 - 0x2000},
-	{"AUDIOHHD.ARM", 428, 0x5f863ad2, 0x1db20 - 0x2000},
-	{"EGADICT.ARM", 1024, 0xab662db8, 0x264b0 - 0x2000},
-	{"EGAHEAD.ARM", 1977, 0x711cbf10, 0x1dcd0 - 0x2000},
-	{"MTEMP.TMP", 834, 0x546f00d1, 0x1d7d0 - 0x2000},
+	{"AUDIODCT.ARM", 1024, 0x8f1d4dd2, 0x240b0},
+	{"AUDIOHHD.ARM", 428, 0x5f863ad2, 0x1bb20},
+	{"EGADICT.ARM", 1024, 0xab662db8, 0x244b0},
+	{"EGAHEAD.ARM", 1977, 0x711cbf10, 0x1bcd0},
+	{"MTEMP.TMP", 834, 0x546f00d1, 0x1b7d0},
 	{0}
 };
 
@@ -1149,11 +1149,11 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catapoc101[] = {
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catapoc101[] = {
-	{"AUDIODCT.APC", 1024, 0x26658498, 0x2659c - 0x2200},
-	{"AUDIOHHD.APC", 452, 0x76adb051, 0x1df80 - 0x2200},
-	{"EGADICT.APC", 1024, 0xb2ed57fd, 0x2699c - 0x2200},
-	{"EGAHEAD.APC", 2049, 0xd7548ed8, 0x1e150 - 0x2200},
-	{"MTEMP.TMP", 834, 0x90742162, 0x1dc30 - 0x2200},
+	{"AUDIODCT.APC", 1024, 0x26658498, 0x2439c},
+	{"AUDIOHHD.APC", 452, 0x76adb051, 0x1bd80},
+	{"EGADICT.APC", 1024, 0xb2ed57fd, 0x2479c},
+	{"EGAHEAD.APC", 2049, 0xd7548ed8, 0x1bf50},
+	{"MTEMP.TMP", 834, 0x90742162, 0x1ba30},
 	{0}
 };
 
