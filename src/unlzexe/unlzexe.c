@@ -63,8 +63,8 @@ typedef uint8_t BYTE;
 
 static int rdhead(FILE *,int *);
 static int mkreltbl(FILE *,unsigned char *,int);
-static int unpack(FILE *,unsigned char *);
-static void wrhead(unsigned char *);
+static int unpack_image(FILE *,unsigned char *);
+//static void wrhead(unsigned char *);
 
 bool Unlzexe_unpack(FILE *ifile, unsigned char *obuff, int buffsize)
 {
@@ -73,9 +73,9 @@ bool Unlzexe_unpack(FILE *ifile, unsigned char *obuff, int buffsize)
 		return false;
 	if (mkreltbl(ifile,obuff,ver) != SUCCESS)
 		return false;
-	if (unpack(ifile,obuff) != SUCCESS)
+	if (unpack_image(ifile,obuff) != SUCCESS)
 		return false;
-	wrhead(obuff);
+	//wrhead(obuff);
 	return true;
 }
 
@@ -264,7 +264,7 @@ void parsepath(char *pathname, int *fname, int *ext) {
 
 /*-------------------------------------------*/
 static WORD ihead[0x10],ohead[0x10],inf[8];
-static long loadsize;
+//static long loadsize;
 static BYTE sig90 [] = {			/* v0.8 */
     0x06, 0x0E, 0x1F, 0x8B, 0x0E, 0x0C, 0x00, 0x8B,
     0xF1, 0x4E, 0x89, 0xF7, 0x8C, 0xDB, 0x03, 0x1E,
@@ -500,7 +500,7 @@ static int getbit(bitstream *);
 
 /*---------------------*/
 /* decompressor routine */
-static int unpack(FILE *ifile,unsigned char *obuff){
+static int unpack_image(FILE *ifile,unsigned char *obuff){
     int len;
     int16_t span;
     long fpos;
@@ -511,8 +511,10 @@ static int unpack(FILE *ifile,unsigned char *obuff){
 
     fpos=((long)ihead[0x0b]-(long)inf[4]+(long)ihead[4])<<4;
     fseek(ifile,fpos,SEEK_SET);
-    fpos=(long)ohead[4]<<4;
-    unsigned char *obuffptr = obuff+fpos;
+    // REFKEEN - Don't change offset of pointer, we unpack image only
+    unsigned char *obuffptr = obuff;
+    //fpos=(long)ohead[4]<<4;
+    //unsigned char *obuffptr = obuff+fpos;
     //fseek(ofile,fpos,SEEK_SET);
     initbits(&bits,ifile);
     BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "unpack (unlzexe) - unpacking...\n");
@@ -566,13 +568,15 @@ static int unpack(FILE *ifile,unsigned char *obuff){
         memcpy(obuffptr,data,p-data);
         obuffptr += (p-data);
     }
-    loadsize = (obuffptr-obuff)-fpos;
+    // REFKEEN - Again, only the image is written here, so ignore fpos.
+    // In fact, we don't even need loadsize.
     //loadsize=ftell(ofile)-fpos;
     BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "unpack (unlzexe) - end\n");
     //printf("end\n");
     return(SUCCESS);
 }
 
+#if 0
 /* write EXE header*/
 static void wrhead(unsigned char *obuff) {
     if(ihead[6]!=0) {
@@ -594,6 +598,7 @@ static void wrhead(unsigned char *obuff) {
     //fseek(ofile,0L,SEEK_SET);
     //fwrite(ohead,sizeof ohead[0],0x0e,ofile);
 }
+#endif
 
 
 /*-------------------------------------------*/
