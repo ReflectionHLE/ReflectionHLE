@@ -204,17 +204,11 @@ namespace
 	};
 }
 
-ExeUnpacker::ExeUnpacker(FILE *fp)
+bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 {
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Exe Unpacker (pklite) - unpacking...\n");
-	//Debug::mention("Exe Unpacker", "Unpacking \"" + filename + "\".");
 
-	//VFS::IStreamPtr stream = VFS::Manager::get().open(filename.c_str());
-	//Debug::check(stream != nullptr, "Exe Unpacker", "Could not open \"" + filename + "\".");
-
-	fseek(fp, 0, SEEK_END);
-	const auto fileSize = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
+	int32_t fileSize = BE_Cross_FileLengthFromHandle(fp);
 
 	std::vector<uint8_t> srcData(fileSize);
 	fread(reinterpret_cast<char*>(srcData.data()), srcData.size(), 1, fp);
@@ -244,25 +238,11 @@ ExeUnpacker::ExeUnpacker(FILE *fp)
 	const uint8_t *compressedStart = srcData.data() + 800/*752*/;
 	const uint8_t *compressedEnd = srcData.data() + (srcData.size() - 8);
 
-	// Last word of compressed data must be 0xFFFF.
-	//const uint16_t lastCompWord = BE_Cross_Swap16LE(*(uint16_t *)(compressedEnd - 2));
-	//Debug::check(lastCompWord == 0xFFFF, "Exe Unpacker",
-	//	"Invalid last compressed word \"" + String::toHexString(lastCompWord) + "\".");
-
-	// Calculate length of decompressed data -- more precise method (for A.EXE).
-	const size_t decompLen = [compressedEnd]()
-	{
-		const uint16_t segment = BE_Cross_Swap16LE(*(uint16_t *)compressedEnd);
-		const uint16_t offset = BE_Cross_Swap16LE(*(uint16_t *)(compressedEnd + 2));
-		return (segment * 16) + offset;
-	}();
-
 	// Buffer for the decompressed data (also little endian).
-	std::vector<uint8_t> decomp(decompLen);
-	std::fill(decomp.begin(), decomp.end(), 0);
+	memset(decompBuff, 0, buffsize);
 
 	// Current position for inserting decompressed data.
-	size_t decompIndex = 0;
+	unsigned char *decompPtr = decompBuff;
 
 	// A 16-bit array of compressed data.
 	uint16_t bitArray = BE_Cross_Swap16LE(*(uint16_t *)compressedStart);
@@ -380,11 +360,13 @@ ExeUnpacker::ExeUnpacker(FILE *fp)
 			const uint16_t offset = leastSigByte | (mostSigByte << 8);
 
 			// Finally, duplicate the decompressed data using the calculated offset and size.
-			const size_t duplicateBegin = decompIndex - offset;
-			const size_t duplicateEnd = duplicateBegin + copyCount;
-			for (size_t i = duplicateBegin; i < duplicateEnd; ++i, ++decompIndex)
+			// Note that memcpy or even memmove is NOT the right way,
+			// since overlaps are possible
+			unsigned char *duplicateBegin = decompPtr - offset;
+			unsigned char *duplicateEnd = duplicateBegin + copyCount;
+			for (unsigned char *p = duplicateBegin; p < duplicateEnd; ++p, ++decompPtr)
 			{
-				decomp.at(decompIndex) = decomp.at(i);
+				*decompPtr = *p;
 			}
 		}
 		else
@@ -412,22 +394,9 @@ ExeUnpacker::ExeUnpacker(FILE *fp)
 #endif
 
 			// Append the decrypted byte onto the decompressed data.
-			decomp.at(decompIndex) = decryptedByte;
-			decompIndex++;
+			*decompPtr++ = decryptedByte;
 		}
 	}
 
-	// Convert the vector to a string.
-	this->text.resize(decomp.size());
-	std::copy(decomp.begin(), decomp.end(), this->text.begin());
-}
-
-ExeUnpacker::~ExeUnpacker()
-{
-
-}
-
-const std::string &ExeUnpacker::getText() const
-{
-	return this->text;
+	return true;
 }
