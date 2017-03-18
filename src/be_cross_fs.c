@@ -51,9 +51,16 @@
 #include <direct.h> // _wmkdir
 #endif
 
+#ifdef REFKEEN_VER_KDREAMS
+#define ENABLE_PKLITE
+#endif
+
 //#include "be_cross.h"
 #include "crc32/crc32.h"
 #include "unlzexe/unlzexe.h"
+#ifdef ENABLE_PKLITE
+#include "ExeUnpacker/ExeUnpacker.h"
+#endif
 
 #define BE_CROSS_PATH_LEN_BOUND 256
 
@@ -215,7 +222,10 @@ typedef struct {
 } BE_EmbeddedGameFileDetails_T;
 
 typedef enum {
-	BE_EXECOMPRESSION_NONE, BE_EXECOMPRESSION_LZEXE9X
+	BE_EXECOMPRESSION_NONE, BE_EXECOMPRESSION_LZEXE9X,
+#ifdef ENABLE_PKLITE
+	BE_EXECOMPRESSION_PKLITE105,
+#endif
 } BE_ExeCompression_T;
 
 typedef struct {
@@ -573,9 +583,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse100[] = {
 	{"AUDIO.KDR", 3498, 0x80ac85e5},
 	{"EGAGRAPH.KDR", 213045, 0x2dc94687},
 	{"GAMEMAPS.KDR", 63497, 0x7b517fa0},
-	// FIXME - Support compression mechanism
-	//{"KDREAMS.EXE", 77694, 0xc73b8cb2},
-	{"KDREAMS.EXE", 175424, 0x69b1dd23},
+	{"KDREAMS.EXE", 77694, 0xc73b8cb2},
 	{0}
 };
 
@@ -600,7 +608,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse100 = {
 	"KDREAMS.EXE",
 	175424 - 0x1a00,
 	0,
-	BE_EXECOMPRESSION_NONE/*BE_EXECOMPRESSION_PKLITE*/, // FIXME - Support compression mechanism
+	BE_EXECOMPRESSION_PKLITE105,
 	BE_GAMEVER_KDREAMSE100
 };
 
@@ -609,9 +617,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc100[] = {
 	{"AUDIO.KDR", 3498, 0x80ac85e5},
 	{"CGAGRAPH.KDR", 134691, 0x05e32626},
 	{"GAMEMAPS.KDR", 63497, 0x7b517fa0},
-	// FIXME - Support compression mechanism
-	//{"KDREAMS.EXE", 75015, 0xb6ff595a},
-	{"KDREAMS.EXE", 172896, 0x4498479d},
+	{"KDREAMS.EXE", 75015, 0xb6ff595a},
 	{0}
 };
 
@@ -636,7 +642,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc100 = {
 	"KDREAMS.EXE",
 	172896 - 0x1800,
 	0,
-	BE_EXECOMPRESSION_NONE/*BE_EXECOMPRESSION_PKLITE*/, // FIXME - Support compression mechanism
+	BE_EXECOMPRESSION_PKLITE105,
 	BE_GAMEVER_KDREAMSC100
 };
 
@@ -1473,6 +1479,15 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 			case BE_EXECOMPRESSION_LZEXE9X:
 				success = Unlzexe_unpack(exeFp, decompExeImage, details->decompExeImageSize);
 				break;
+#ifdef ENABLE_PKLITE
+			case BE_EXECOMPRESSION_PKLITE105:
+			{
+				ExeUnpacker unpacker(exeFp);
+				memcpy(decompExeImage, unpacker.getText().data(), details->decompExeImageSize);
+				success = true;
+				break;
+			}
+#endif
 			}
 
 			fclose(exeFp);

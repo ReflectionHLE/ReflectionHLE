@@ -43,6 +43,7 @@ BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_textmode_fonts.o \
           $(BEOBJ)/crc32.o \
           $(BEOBJ)/dbopl.o \
+          $(BEOBJ)/ExeUnpacker.o \
           $(BEOBJ)/unlzexe.o
 
 OBJECTS=$(GAMEOBJECTS) $(BEOBJECTS)

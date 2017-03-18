@@ -120,6 +120,9 @@ $(BEOBJ)/crc32.o: $(BESRC)/crc32/crc32.c | $(BEOBJ)
 $(BEOBJ)/dbopl.o: $(BESRC)/opl/dbopl.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
+$(BEOBJ)/ExeUnpacker.o: $(BESRC)/ExeUnpacker/ExeUnpacker.cpp | $(BEOBJ)
+	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
+
 $(BEOBJ)/unlzexe.o: $(BESRC)/unlzexe/unlzexe.c | $(BEOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
 
