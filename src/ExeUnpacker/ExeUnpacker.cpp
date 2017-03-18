@@ -26,114 +26,143 @@ static const void Debug_check(bool expression, const char *msg)
 	}
 }
 
+// A type for a vector of bits
+typedef struct
+{
+	int len;
+	bool *bits;
+} BitsVector;
+
+// FIXME - Temporary functions
+static void DEBUG_FillBitsVector(const std::vector<bool> &bits, BitsVector *bitsVec)
+{
+	bitsVec->len = bits.size();
+	Debug_check(bitsVec->bits = (bool *)calloc(sizeof(bool), bitsVec->len), "(ExeUnpacker) DEBUG_FillBitsVector: Out of memory!\n");
+	for (int i = 0; i < bitsVec->len; ++i)
+		bitsVec->bits[i] = bits[i];
+}
+static void DEBUG_FreeBitsVector(BitsVector *bitsVec)
+{
+	free(bitsVec->bits);
+}
+
+/*** A simple binary tree for retrieving a decoded value, given a vector of bits. ***/
+
+typedef struct Node
+{
+	struct Node *left;
+	struct Node *right;
+	int value;
+} Node;
+
+typedef Node BitTree;
+
+// Initializes tree
+static void BitTree_init(BitTree *bt)
+{
+	memset(bt, 0, sizeof(*bt));
+}
+
+// Frees tree using a recursive implementation
+static void BitTree_free(BitTree *bt)
+{
+	if (bt->left)
+	{
+		BitTree_free(bt->left);
+		free(bt->left);
+	}
+	if (bt->right)
+	{
+		BitTree_free(bt->right);
+		free(bt->right);
+	}
+}
+
+// Inserts a node into the tree, overwriting any existing entry.
+static void BitTree_insert(BitTree *bt, const BitsVector *bitsVec, int value)
+{
+	Node *node = bt;
+
+	// Walk the tree, creating new nodes as necessary. Internal nodes have null values.
+	for (size_t i = 0; i < bitsVec->len; ++i)
+	{
+		const bool bit = bitsVec->bits[i];
+
+		// Decide which branch to use.
+		if (bit)
+		{
+			// Right.
+			if (node->right == NULL)
+			{
+				// Make a new node.
+				Debug_check(node->right = (Node *)calloc(sizeof(Node), 1), "(ExeUnpacker) BitTree_insert - Out of memory!\n");
+			}
+
+			node = node->right;
+		}
+		else
+		{
+			// Left.
+			if (node->left == NULL)
+			{
+				// Make a new node.
+				Debug_check(node->left = (Node *)calloc(sizeof(Node), 1), "(ExeUnpacker) BitTree_insert - Out of memory!\n");
+			}
+
+			node = node->left;
+		}
+	}
+
+	node->value = value;
+}
+
+// Returns a decoded value in the tree. Note that rather than getting
+// an input vector of bits, this gets a pointer to a bits fetcher which
+// is repeatedly called, once per bit.
+template<typename T>
+static const int BitTree_get(const BitTree *bt, T getNextBit)
+{
+	const Node *left = bt->left;
+	const Node *right = bt->right;
+
+	// Walk the tree.
+	while (true)
+	{
+		const bool bit = getNextBit();
+		// Decide which branch to use.
+		if (bit)
+		{
+			// Right.
+			Debug_check(right != NULL, "Bit Tree - No right branch.\n");
+
+			// Check if it's a leaf.
+			if ((right->left == NULL) && (right->right == NULL))
+			{
+				return right->value;
+			}
+
+			left = right->left;
+			right = right->right;
+		}
+		else
+		{
+			// Left.
+			Debug_check(left != NULL, "Bit Tree - No left branch.\n");
+
+			// Check if it's a leaf.
+			if ((left->left == NULL) && (left->right == NULL))
+			{
+				return left->value;
+			}
+
+			right = left->right;
+			left = left->left;
+		}
+	}
+}
+
 namespace
 {
-	// A simple binary tree for retrieving a decoded value, given a vector of bits.
-	class BitTree
-	{
-	private:
-		struct Node
-		{
-			// Only leaves will have non-null values.
-			std::unique_ptr<int> value;
-			std::unique_ptr<Node> left;
-			std::unique_ptr<Node> right;
-		};
-
-		BitTree::Node root;
-	public:
-		BitTree() { }
-		~BitTree() { }
-
-		// Inserts a node into the tree, overwriting any existing entry.
-		void insert(const std::vector<bool> &bits, int value)
-		{
-			BitTree::Node *node = &this->root;
-
-			// Walk the tree, creating new nodes as necessary. Internal nodes have null values.
-			for (size_t i = 0; i < bits.size(); ++i)
-			{
-				const bool bit = bits.at(i);
-
-				// Decide which branch to use.
-				if (bit)
-				{
-					// Right.
-					if (node->right.get() == nullptr)
-					{
-						// Make a new node.
-						node->right = std::unique_ptr<BitTree::Node>(new BitTree::Node());
-					}
-
-					node = node->right.get();
-				}
-				else
-				{
-					// Left.
-					if (node->left.get() == nullptr)
-					{
-						// Make a new node.
-						node->left = std::unique_ptr<BitTree::Node>(new BitTree::Node());
-					}
-
-					node = node->left.get();
-				}
-				
-				// Set the node's value if it's the desired leaf.
-				if (i == (bits.size() - 1))
-				{
-					node->value = std::unique_ptr<int>(new int(value));
-				}
-			}
-		}
-
-		// Returns a pointer to a decoded value in the tree, or null if no entry exists.
-		const int *get(const std::vector<bool> &bits)
-		{
-			const int *value = nullptr;
-			const BitTree::Node *left = this->root.left.get();
-			const BitTree::Node *right = this->root.right.get();
-
-			// Walk the tree.
-			for (const bool bit : bits)
-			{
-				// Decide which branch to use.
-				if (bit)
-				{
-					// Right.
-					Debug_check(right != nullptr, "Bit Tree - No right branch.\n");
-					//Debug::check(right != nullptr, "Bit Tree", "No right branch.");
-
-					// Check if it's a leaf.
-					if ((right->left.get() == nullptr) && (right->right.get() == nullptr))
-					{
-						value = right->value.get();
-					}
-
-					left = right->left.get();
-					right = right->right.get();
-				}
-				else
-				{
-					// Left.
-					Debug_check(left != nullptr, "Bit Tree - No left branch.\n");
-					//Debug::check(left != nullptr, "Bit Tree", "No left branch.");
-
-					// Check if it's a leaf.
-					if ((left->left.get() == nullptr) && (left->right.get() == nullptr))
-					{
-						value = left->value.get();
-					}
-
-					right = left->right.get();
-					left = left->left.get();
-				}
-			}
-
-			return value;
-		}
-	};
-
 	// Bit table from pklite_specification.md, section 4.3.1 "Number of bytes".
 	// The decoded value for a given vector is (index + 2) before index 11, and
 	// (index + 1) after index 11.
@@ -209,6 +238,7 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Exe Unpacker (pklite) - unpacking...\n");
 
 	int32_t fileSize = BE_Cross_FileLengthFromHandle(fp);
+	BitsVector bitsVec;
 
 	std::vector<uint8_t> srcData(fileSize);
 	fread(reinterpret_cast<char*>(srcData.data()), srcData.size(), 1, fp);
@@ -217,21 +247,33 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	// a special case at index 11, split the insertions up for the first bit tree.
 	BitTree bitTree1, bitTree2;
 
+	BitTree_init(&bitTree1);
+	BitTree_init(&bitTree2);
+
 	for (int i = 0; i < 11; ++i)
 	{
-		bitTree1.insert(Duplication1.at(i), i + 2);
+		DEBUG_FillBitsVector(Duplication1.at(i), &bitsVec);
+		BitTree_insert(&bitTree1, &bitsVec, i + 2);
+		DEBUG_FreeBitsVector(&bitsVec);
 	}
 
-	bitTree1.insert(Duplication1.at(11), 13);
+	DEBUG_FillBitsVector(Duplication1.at(11), &bitsVec);
+	BitTree_insert(&bitTree1, &bitsVec, 25); // Use distinct value
+	//BitTree_insert(&bitTree1, &bitsVec, 13);
+	DEBUG_FreeBitsVector(&bitsVec);
 
 	for (int i = 12; i < Duplication1.size(); ++i)
 	{
-		bitTree1.insert(Duplication1.at(i), i + 1);
+		DEBUG_FillBitsVector(Duplication1.at(i), &bitsVec);
+		BitTree_insert(&bitTree1, &bitsVec, i + 1);
+		DEBUG_FreeBitsVector(&bitsVec);
 	}
 
 	for (int i = 0; i < Duplication2.size(); ++i)
 	{
-		bitTree2.insert(Duplication2.at(i), i);
+		DEBUG_FillBitsVector(Duplication2.at(i), &bitsVec);
+		BitTree_insert(&bitTree2, &bitsVec, i);
+		DEBUG_FreeBitsVector(&bitsVec);
 	}
 
 	// Beginning and end of compressed data in the executable.
@@ -291,6 +333,9 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 		{
 			// "Duplication" mode.
 			// Calculate which bytes in the decompressed data to duplicate and append.
+#if 1
+			int copy = BitTree_get(&bitTree1, getNextBit);
+#else
 			std::vector<bool> copyBits;
 			const int *copyPtr = nullptr;
 
@@ -300,12 +345,14 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 				copyBits.push_back(getNextBit());
 				copyPtr = bitTree1.get(copyBits);
 			}
+#endif
 
 			// Calculate the number of bytes in the decompressed data to copy.
 			uint16_t copyCount = 0;
 
 			// Check for the special bit vector case "011100".
-			if (copyBits == Duplication1.at(11))
+			if (copy == 25) // Special value
+			//if (copyBits == Duplication1.at(11))
 			{
 				// Read a compressed byte.
 				const uint8_t encryptedByte = getNextByte();
@@ -329,7 +376,11 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			else
 			{
 				// Use the decoded value from the first bit table.
+#if 1
+				copyCount = copy;
+#else
 				copyCount = *copyPtr;
+#endif
 			}
 
 			// Calculate the offset in decompressed data. It is a two byte value.
@@ -339,6 +390,10 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			// If the copy count is not 2, decode the most significant byte.
 			if (copyCount != 2)
 			{
+#if 1
+				// Use the decoded value from the second bit table.
+				mostSigByte = BitTree_get(&bitTree2, getNextBit);
+#else
 				std::vector<bool> offsetBits;
 				const int* offsetPtr = nullptr;
 
@@ -351,6 +406,7 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 
 				// Use the decoded value from the second bit table.
 				mostSigByte = *offsetPtr;
+#endif
 			}
 
 			// Get the least significant byte of the two bytes.
@@ -397,6 +453,9 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			*decompPtr++ = decryptedByte;
 		}
 	}
+
+	BitTree_free(&bitTree1);
+	BitTree_free(&bitTree2);
 
 	return true;
 }

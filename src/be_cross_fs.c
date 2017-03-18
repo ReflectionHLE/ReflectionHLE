@@ -1482,7 +1482,6 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 #ifdef ENABLE_PKLITE
 			case BE_EXECOMPRESSION_PKLITE105:
 				success = ExeUnpacker_unpack(exeFp, decompExeImage, details->decompExeImageSize);
-				success = true;
 				break;
 #endif
 			}
