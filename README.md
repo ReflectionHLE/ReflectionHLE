@@ -14,8 +14,11 @@ Terms of use
 Reflection Keen and the DBOPL emulator are released under the GNU GPLv2+.
 See LICENSE for more details.
 
-Furthermore, the included CRC-32 implementation is in the public domain. The
-same applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
+The modified ExeUnpacker implementation is released under
+the MIT License. See src/ExeUnpacker/LICENSE.txt for details.
+
+The included CRC-32 implementation is in the public domain. The same
+applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
 
 Note that these terms do not cover any original game data required for usage
 with Reflection Keen, which should be obtained separately. Check below for
@@ -117,9 +120,10 @@ Look below for mentions of "game data" to find possible sources for these.
 Supported game data, described by DOS versions
 ----------------------------------------------
 
-- Keen Dreams: Shareware (EGA) v1.13, CGA v1.05, Registered (EGA) v1.93
-and Shareware (EGA) v1.20. There's also partial support for the data
-from the 2015 re-release (Steam / IndieGameStand).
+- Keen Dreams: Registered CGA+EGA v1.00, Shareware (EGA) v1.13,
+CGA v1.05, Registered (EGA) v1.93 and Shareware (EGA) v1.20.
+There's also partial support for the data from the
+2015 re-release (Steam / IndieGameStand).
 - Catacomb 3-D (The Descent): Versions 1.00 and 1.22.
 - The Catacomb Abyss: Versions 1.13 (QA [0], Shareware) and 1.24 (rev 1).
 - The Catacomb Armageddon: Version 1.02 (rev 1).
@@ -684,6 +688,7 @@ Original sources this is based on
 - The DBOPL emulator from the DOSBox project.
 - A CRC-32 implementation.
 - unlzexe v0.8.
+- ExeUnpacker, a part of OpenTESArena.
 
 --------------------------------------------
 Additional sources/data used for these ports
@@ -748,6 +753,12 @@ the DOSBox debugger has surely (seriously) been very useful.
 * Mitugu (Kou) Kurizono, David Kirschbaum, Toad Hall, Dan Lewis, Alan Modra,
 Vesselin Bontchev (and possibly others) for their contributions leading to
 unlzexe v0.8.
+
+* Past and present developers of OpenTESArena, as well as other contributors,
+including afritz1, Allofich, Dozayon, kcat, mdmallardi, pcercuei and Ragora.
+OpenTESArena is an open-source re-implementation of The Elder Scrolls: Arena.
+A component of it, the ExeUnpacker, was re-used for unpacking
+Keen Dreams v.100 executables (originally packed using PKLITE).
 
 * Craig Bruce for his CRC-32 implementation.
 
