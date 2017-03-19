@@ -21,6 +21,48 @@ static const void Debug_check(bool expression, const char *msg)
 	}
 }
 
+/*** C++11 lambda emulation ***/
+
+// Lambda for getting the next byte from compressed data.
+typedef struct
+{
+	const uint8_t *compressedStart;
+	int byteIndex;
+} GetNextByte_Data;
+
+static uint8_t getNextByte(GetNextByte_Data *data)
+{
+	return data->compressedStart[data->byteIndex++];
+}
+
+// Lambda for getting the next bit in the theoretical bit stream.
+typedef struct
+{
+	uint16_t bitArray;
+	int bitsRead;
+	GetNextByte_Data getNextByteDat;
+} GetNextBit_Data;
+
+static bool getNextBit(GetNextBit_Data *data)
+{
+	const bool bit = (data->bitArray & (1 << data->bitsRead)) != 0;
+	data->bitsRead++;
+
+	// Advance the bit array if done with the current one.
+	if (data->bitsRead == 16)
+	{
+		data->bitsRead = 0;
+
+		// Get two bytes in little endian format.
+		const uint8_t byte1 = getNextByte(&data->getNextByteDat);
+		const uint8_t byte2 = getNextByte(&data->getNextByteDat);
+		data->bitArray = byte1 | (byte2 << 8);
+	}
+
+	return bit;
+};
+
+
 /*** A simple binary tree for retrieving a decoded value, given a vector of bits. ***/
 
 typedef struct Node
@@ -35,15 +77,14 @@ typedef Node BitTree;
 // Returns a decoded value in the tree. Note that rather than getting
 // an input vector of bits, this gets a pointer to a bits fetcher which
 // is repeatedly called, once per bit.
-template<typename T>
-static const int BitTree_get(const BitTree *bt, T getNextBit)
+static const int BitTree_get(const BitTree *bt, GetNextBit_Data *getNextBitDatPtr)
 {
 	const Node *node = bt;
 
 	// Walk the tree.
 	while (true)
 	{
-		const bool bit = getNextBit();
+		const bool bit = getNextBit(getNextBitDatPtr);
 		// Decide which branch to use.
 		if (bit)
 		{
@@ -210,9 +251,10 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	std::vector<uint8_t> srcData(fileSize);
 	fread(reinterpret_cast<char*>(srcData.data()), srcData.size(), 1, fp);
 
-	// Beginning and end of compressed data in the executable.
-	const uint8_t *compressedStart = srcData.data() + 800/*752*/;
-	const uint8_t *compressedEnd = srcData.data() + (srcData.size() - 8);
+	GetNextBit_Data getNextBitData;
+
+	// Beginning of compressed data in the executable.
+	getNextBitData.getNextByteDat.compressedStart = srcData.data() + 800/*752*/;
 
 	// Buffer for the decompressed data (also little endian).
 	memset(decompBuff, 0, buffsize);
@@ -220,19 +262,21 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	// Current position for inserting decompressed data.
 	unsigned char *decompPtr = decompBuff;
 
+
 	// A 16-bit array of compressed data.
-	uint16_t bitArray = BE_Cross_Swap16LE(*(uint16_t *)compressedStart);
+	getNextBitData.bitArray = BE_Cross_Swap16LE(*(uint16_t *)getNextBitData.getNextByteDat.compressedStart);
 
 	// Offset from start of compressed data (start at 2 because of the bit array).
-	int byteIndex = 2;
+	getNextBitData.getNextByteDat.byteIndex = 2;
 
 	// Number of bits consumed in the current 16-bit array.
-	int bitsRead = 0;
+	getNextBitData.bitsRead = 0;
 
 	// Continually read bit arrays from the compressed data and interpret each bit. 
 	// Break once a compressed byte equals 0xFF in duplication mode.
 	while (true)
 	{
+#if 0
 		// Lambda for getting the next byte from compressed data.
 		auto getNextByte = [compressedStart, &byteIndex]()
 		{
@@ -261,13 +305,14 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 
 			return bit;
 		};
+#endif
 
 		// Decide which mode to use for the current bit.
-		if (getNextBit())
+		if (getNextBit(&getNextBitData))
 		{
 			// "Duplication" mode.
 			// Calculate which bytes in the decompressed data to duplicate and append.
-			int copy = BitTree_get(bitTree1, getNextBit);
+			int copy = BitTree_get(bitTree1, &getNextBitData);
 
 			// Calculate the number of bytes in the decompressed data to copy.
 			uint16_t copyCount = 0;
@@ -276,7 +321,7 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			if (copy == 25) // Special value
 			{
 				// Read a compressed byte.
-				const uint8_t encryptedByte = getNextByte();
+				const uint8_t encryptedByte = getNextByte(&getNextBitData.getNextByteDat);
 
 				if (encryptedByte == 0xFE)
 				{
@@ -308,11 +353,11 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			if (copyCount != 2)
 			{
 				// Use the decoded value from the second bit table.
-				mostSigByte = BitTree_get(bitTree2, getNextBit);
+				mostSigByte = BitTree_get(bitTree2, &getNextBitData);
 			}
 
 			// Get the least significant byte of the two bytes.
-			const uint8_t leastSigByte = getNextByte();
+			const uint8_t leastSigByte = getNextByte(&getNextBitData.getNextByteDat);
 
 			// Combine the two bytes.
 			const uint16_t offset = leastSigByte | (mostSigByte << 8);
@@ -331,11 +376,11 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 		{
 #if 1
 			// Get next byte
-			const uint8_t decryptedByte = getNextByte();
+			const uint8_t decryptedByte = getNextByte(&getNextBitData.getNextByteDat);
 #else
 			// "Decryption" mode.
 			// Read the next byte from the compressed data.
-			const uint8_t encryptedByte = getNextByte();
+			const uint8_t encryptedByte = getNextByte(&getNextBitData.getNextByteDat);
 
 			// Lambda for decrypting an encrypted byte with an XOR operation based on 
 			// the current bit index. "bitsRead" is between 0 and 15. It is 0 if the
