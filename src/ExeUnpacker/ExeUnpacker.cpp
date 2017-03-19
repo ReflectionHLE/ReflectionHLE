@@ -247,14 +247,21 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Exe Unpacker (pklite) - unpacking...\n");
 
 	int32_t fileSize = BE_Cross_FileLengthFromHandle(fp);
+	// Offset of compressed data in the executable, which is 800
+	// for Keen Dreams v1.00 (KDREAMS.EXE), and 752 for The Elder Scrolls Arena (A.EXE).
+	const int compressedDataOffset = 800;
 
-	std::vector<uint8_t> srcData(fileSize);
-	fread(reinterpret_cast<char*>(srcData.data()), srcData.size(), 1, fp);
+	Debug_check(fileSize >= compressedDataOffset, "Exe Unpacker (pklite) - Input file is unexpectedly too small!\n");
+
+	uint8_t *compressedStart = (uint8_t *)malloc(fileSize - compressedDataOffset);
+	Debug_check(compressedStart, "Exe Unpacker (pklite) - Out of memory!\n");
+
+	fseek(fp, compressedDataOffset, SEEK_SET);
+	fread(compressedStart, fileSize - compressedDataOffset, 1, fp);
 
 	GetNextBit_Data getNextBitData;
 
-	// Beginning of compressed data in the executable.
-	getNextBitData.getNextByteDat.compressedStart = srcData.data() + 800/*752*/;
+	getNextBitData.getNextByteDat.compressedStart = compressedStart;
 
 	// Buffer for the decompressed data (also little endian).
 	memset(decompBuff, 0, buffsize);
@@ -343,6 +350,7 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 		}
 		else
 		{
+			// Usage of "Decryption" mode isn't required for Keen Dreams v1.00
 #if 1
 			// Get next byte and then append it onto the decompressed data.
 			*decompPtr++ = getNextByte(&getNextBitData.getNextByteDat);
@@ -351,18 +359,10 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			// Read the next byte from the compressed data.
 			const uint8_t encryptedByte = getNextByte(&getNextBitData.getNextByteDat);
 
-			// Lambda for decrypting an encrypted byte with an XOR operation based on 
-			// the current bit index. "bitsRead" is between 0 and 15. It is 0 if the
-			// 16th bit of the previous array was used to get here.
-			auto decrypt = [](uint8_t encryptedByte, int bitsRead)
-			{
-				const uint8_t key = 16 - bitsRead;
-				const uint8_t decryptedByte = encryptedByte ^ key;
-				return decryptedByte;
-			};
-
-			// Decrypt the byte.
-			const uint8_t decryptedByte = decrypt(encryptedByte, bitsRead);
+			// Decrypt an encrypted byte with an XOR operation based
+			// on the current bit index. "bitsRead" is between 0 and 15.
+			// It is 0 if the 16th bit of the previous array was used to get here.
+			const uint8_t decryptedByte = encryptedByte ^ (uint8_t)(16 - getNextBitData.bitsRead);
 
 			// Append the decrypted byte onto the decompressed data.
 			*decompPtr++ = decryptedByte;
@@ -370,5 +370,6 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 		}
 	}
 
+	free(compressedStart);
 	return true;
 }
