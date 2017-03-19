@@ -6,7 +6,7 @@
 #include "be_cross.h"
 
 // Replacement for Debug::check
-static const void Debug_check(bool expression, const char *msg)
+static void Debug_check(bool expression, const char *msg)
 {
 	if (!expression)
 	{
