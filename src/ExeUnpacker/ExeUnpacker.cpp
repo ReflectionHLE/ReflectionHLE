@@ -50,13 +50,16 @@ static void DEBUG_FreeBitsVector(BitsVector *bitsVec)
 
 typedef struct Node
 {
-	struct Node *left;
-	struct Node *right;
+	int left;
+	int right;
+	//struct Node *left;
+	//struct Node *right;
 	int value;
 } Node;
 
 typedef Node BitTree;
 
+#if 0
 // Initializes tree
 static void BitTree_init(BitTree *bt)
 {
@@ -115,6 +118,7 @@ static void BitTree_insert(BitTree *bt, const BitsVector *bitsVec, int value)
 
 	node->value = value;
 }
+#endif
 
 // Returns a decoded value in the tree. Note that rather than getting
 // an input vector of bits, this gets a pointer to a bits fetcher which
@@ -122,8 +126,7 @@ static void BitTree_insert(BitTree *bt, const BitsVector *bitsVec, int value)
 template<typename T>
 static const int BitTree_get(const BitTree *bt, T getNextBit)
 {
-	const Node *left = bt->left;
-	const Node *right = bt->right;
+	const Node *node = bt;
 
 	// Walk the tree.
 	while (true)
@@ -133,33 +136,158 @@ static const int BitTree_get(const BitTree *bt, T getNextBit)
 		if (bit)
 		{
 			// Right.
-			Debug_check(right != NULL, "Bit Tree - No right branch.\n");
-
-			// Check if it's a leaf.
-			if ((right->left == NULL) && (right->right == NULL))
-			{
-				return right->value;
-			}
-
-			left = right->left;
-			right = right->right;
+			Debug_check(node->right != 0, "Bit Tree - No right branch.\n");
+			node += node->right;
 		}
 		else
 		{
 			// Left.
-			Debug_check(left != NULL, "Bit Tree - No left branch.\n");
-
-			// Check if it's a leaf.
-			if ((left->left == NULL) && (left->right == NULL))
-			{
-				return left->value;
-			}
-
-			right = left->right;
-			left = left->left;
+			Debug_check(node->left != 0, "Bit Tree - No left branch.\n");
+			node += node->left;
+		}
+		// Check if it's a leaf.
+		if ((node->left == 0) && (node->right == 0))
+		{
+			return node->value;
 		}
 	}
 }
+
+#define ST(l,r) { l, r, -1 } // Node which isn't a leaf
+#define LF(v) { 0, 0, v } // Leaf
+
+// Bit table from pklite_specification.md, section 4.3.1 "Number of bytes".
+// The decoded value for a given vector is (index + 2) before index 11, and
+// (index + 1) after index 11.
+//
+// The array is illustrated as a binary tree, in which
+// every non-leaf node is shown with its subtrees as follows
+// (although the root node is "reversed" i.e., L and R are swapped):
+//
+// N
+// 	R
+// L
+static const Node bitTree1[] =
+{
+	ST(4,1), // "Reversed" node
+		ST(1,2),
+			LF(2),
+		LF(3),
+	ST(1,6),
+		ST(1,2),
+			LF(4),
+		ST(1,2),
+			LF(5),
+		LF(6),
+	ST(1,6),
+		ST(1,2),
+			LF(7),
+		ST(1,2),
+			LF(8),
+		LF(9),
+	ST(1,6),
+		ST(1,2),
+			LF(10),
+		ST(1,2),
+			LF(11),
+		LF(12),
+	ST(1,6),
+		ST(1,2),
+			LF(25),
+		ST(1,2),
+			LF(13),
+		LF(14),
+	ST(1,6),
+		ST(1,2),
+			LF(15),
+		ST(1,2),
+			LF(16),
+		LF(17),
+	ST(1,6),
+		ST(1,2),
+			LF(18),
+		ST(1,2),
+			LF(19),
+		LF(20),
+	ST(1,4),
+		ST(1,2),
+			LF(21),
+		LF(22),
+	ST(1,2),
+		LF(23),
+	LF(24),
+};
+
+// Bit table from pklite_specification.md, section 4.3.2 "Offset".
+// The decoded value for a given vector is simply its index.
+//
+// The array is illustrated in a similar manner as before.
+static const Node bitTree2[] =
+{
+	ST(2,1), // "Reversed" node
+		LF(0),
+	ST(1,12),
+		ST(1,4),
+			ST(1,2),
+				LF(1),
+			LF(2),
+		ST(1,4),
+			ST(1,2),
+				LF(3),
+			LF(4),
+		ST(1,2),
+			LF(5),
+		LF(6),
+	ST(1,18),
+		ST(1,8),
+			ST(1,4),
+				ST(1,2),
+					LF(7),
+				LF(8),
+			ST(1,2),
+				LF(9),
+			LF(10),
+		ST(1,4),
+			ST(1,2),
+				LF(11),
+			LF(12),
+		ST(1,2),
+			LF(13),
+		ST(1,2),
+			LF(14),
+		LF(15),
+	ST(1,16),
+		ST(1,8),
+			ST(1,4),
+				ST(1,2),
+					LF(16),
+				LF(17),
+			ST(1,2),
+				LF(18),
+			LF(19),
+		ST(1,4),
+			ST(1,2),
+				LF(20),
+			LF(21),
+		ST(1,2),
+			LF(22),
+		LF(23),
+	ST(1,8),
+		ST(1,4),
+			ST(1,2),
+				LF(24),
+			LF(25),
+		ST(1,2),
+			LF(26),
+		LF(27),
+	ST(1,4),
+		ST(1,2),
+			LF(28),
+		LF(29),
+	ST(1,2),
+		LF(30),
+	LF(31),
+};
 
 namespace
 {
@@ -238,11 +366,11 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Exe Unpacker (pklite) - unpacking...\n");
 
 	int32_t fileSize = BE_Cross_FileLengthFromHandle(fp);
-	BitsVector bitsVec;
+	//BitsVector bitsVec;
 
 	std::vector<uint8_t> srcData(fileSize);
 	fread(reinterpret_cast<char*>(srcData.data()), srcData.size(), 1, fp);
-
+#if 0
 	// Generate the bit trees for "duplication mode". Since the Duplication1 table has 
 	// a special case at index 11, split the insertions up for the first bit tree.
 	BitTree bitTree1, bitTree2;
@@ -275,7 +403,7 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 		BitTree_insert(&bitTree2, &bitsVec, i);
 		DEBUG_FreeBitsVector(&bitsVec);
 	}
-
+#endif
 	// Beginning and end of compressed data in the executable.
 	const uint8_t *compressedStart = srcData.data() + 800/*752*/;
 	const uint8_t *compressedEnd = srcData.data() + (srcData.size() - 8);
@@ -334,7 +462,7 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			// "Duplication" mode.
 			// Calculate which bytes in the decompressed data to duplicate and append.
 #if 1
-			int copy = BitTree_get(&bitTree1, getNextBit);
+			int copy = BitTree_get(bitTree1, getNextBit);
 #else
 			std::vector<bool> copyBits;
 			const int *copyPtr = nullptr;
@@ -392,7 +520,7 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			{
 #if 1
 				// Use the decoded value from the second bit table.
-				mostSigByte = BitTree_get(&bitTree2, getNextBit);
+				mostSigByte = BitTree_get(bitTree2, getNextBit);
 #else
 				std::vector<bool> offsetBits;
 				const int* offsetPtr = nullptr;
@@ -453,9 +581,9 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			*decompPtr++ = decryptedByte;
 		}
 	}
-
+#if 0
 	BitTree_free(&bitTree1);
 	BitTree_free(&bitTree2);
-
+#endif
 	return true;
 }
