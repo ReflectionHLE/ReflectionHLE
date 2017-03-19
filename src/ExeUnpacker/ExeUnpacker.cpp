@@ -276,37 +276,6 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	// Break once a compressed byte equals 0xFF in duplication mode.
 	while (true)
 	{
-#if 0
-		// Lambda for getting the next byte from compressed data.
-		auto getNextByte = [compressedStart, &byteIndex]()
-		{
-			const uint8_t byte = compressedStart[byteIndex];
-			byteIndex++;
-
-			return byte;
-		};
-
-		// Lambda for getting the next bit in the theoretical bit stream.
-		auto getNextBit = [&bitArray, &bitsRead, &getNextByte]()
-		{
-			const bool bit = (bitArray & (1 << bitsRead)) != 0;
-			bitsRead++;
-
-			// Advance the bit array if done with the current one.
-			if (bitsRead == 16)
-			{
-				bitsRead = 0;
-
-				// Get two bytes in little endian format.
-				const uint8_t byte1 = getNextByte();
-				const uint8_t byte2 = getNextByte();
-				bitArray = byte1 | (byte2 << 8);
-			}
-
-			return bit;
-		};
-#endif
-
 		// Decide which mode to use for the current bit.
 		if (getNextBit(&getNextBitData))
 		{
@@ -375,8 +344,8 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 		else
 		{
 #if 1
-			// Get next byte
-			const uint8_t decryptedByte = getNextByte(&getNextBitData.getNextByteDat);
+			// Get next byte and then append it onto the decompressed data.
+			*decompPtr++ = getNextByte(&getNextBitData.getNextByteDat);
 #else
 			// "Decryption" mode.
 			// Read the next byte from the compressed data.
@@ -387,17 +356,17 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			// 16th bit of the previous array was used to get here.
 			auto decrypt = [](uint8_t encryptedByte, int bitsRead)
 			{
-				//const uint8_t key = 16 - bitsRead;
+				const uint8_t key = 16 - bitsRead;
 				const uint8_t decryptedByte = encryptedByte ^ key;
 				return decryptedByte;
 			};
 
 			// Decrypt the byte.
 			const uint8_t decryptedByte = decrypt(encryptedByte, bitsRead);
-#endif
 
 			// Append the decrypted byte onto the decompressed data.
 			*decompPtr++ = decryptedByte;
+#endif
 		}
 	}
 
