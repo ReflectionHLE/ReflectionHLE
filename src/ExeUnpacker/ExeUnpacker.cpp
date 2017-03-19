@@ -27,8 +27,6 @@ typedef struct Node
 {
 	int left;
 	int right;
-	//struct Node *left;
-	//struct Node *right;
 	int value;
 } Node;
 
@@ -203,78 +201,6 @@ static const Node bitTree2[] =
 	LF(31),
 };
 
-namespace
-{
-	// Bit table from pklite_specification.md, section 4.3.1 "Number of bytes".
-	// The decoded value for a given vector is (index + 2) before index 11, and
-	// (index + 1) after index 11.
-	const std::vector<std::vector<bool>> Duplication1 =
-	{
-		{ true, false }, // 2
-		{ true, true }, // 3
-		{ false, false, false }, // 4
-		{ false, false, true, false }, // 5
-		{ false, false, true, true }, // 6
-		{ false, true, false, false }, // 7
-		{ false, true, false, true, false }, // 8
-		{ false, true, false, true, true }, // 9
-		{ false, true, true, false, false }, // 10
-		{ false, true, true, false, true, false }, // 11
-		{ false, true, true, false, true, true }, // 12
-		{ false, true, true, true, false, false }, // Special case
-		{ false, true, true, true, false, true, false }, // 13
-		{ false, true, true, true, false, true, true }, // 14
-		{ false, true, true, true, true, false, false }, // 15
-		{ false, true, true, true, true, false, true, false }, // 16
-		{ false, true, true, true, true, false, true, true }, // 17
-		{ false, true, true, true, true, true, false, false }, // 18
-		{ false, true, true, true, true, true, false, true, false }, // 19
-		{ false, true, true, true, true, true, false, true, true }, // 20
-		{ false, true, true, true, true, true, true, false, false }, // 21
-		{ false, true, true, true, true, true, true, false, true }, // 22
-		{ false, true, true, true, true, true, true, true, false }, // 23
-		{ false, true, true, true, true, true, true, true, true } // 24
-	};
-
-	// Bit table from pklite_specification.md, section 4.3.2 "Offset".
-	// The decoded value for a given vector is simply its index.
-	const std::vector<std::vector<bool>> Duplication2 =
-	{
-		{ true }, // 0
-		{ false, false, false, false }, // 1
-		{ false, false, false, true }, // 2
-		{ false, false, true, false, false }, // 3
-		{ false, false, true, false, true }, // 4
-		{ false, false, true, true, false }, // 5
-		{ false, false, true, true, true }, // 6
-		{ false, true, false, false, false, false }, // 7
-		{ false, true, false, false, false, true }, // 8
-		{ false, true, false, false, true, false }, // 9
-		{ false, true, false, false, true, true }, // 10
-		{ false, true, false, true, false, false }, // 11
-		{ false, true, false, true, false, true }, // 12
-		{ false, true, false, true, true, false }, // 13
-		{ false, true, false, true, true, true, false }, // 14
-		{ false, true, false, true, true, true, true }, // 15
-		{ false, true, true, false, false, false, false }, // 16
-		{ false, true, true, false, false, false, true }, // 17
-		{ false, true, true, false, false, true, false }, // 18
-		{ false, true, true, false, false, true, true }, // 19
-		{ false, true, true, false, true, false, false }, // 20
-		{ false, true, true, false, true, false, true }, // 21
-		{ false, true, true, false, true, true, false }, // 22
-		{ false, true, true, false, true, true, true }, // 23
-		{ false, true, true, true, false, false, false }, // 24
-		{ false, true, true, true, false, false, true }, // 25
-		{ false, true, true, true, false, true, false }, // 26
-		{ false, true, true, true, false, true, true }, // 27
-		{ false, true, true, true, true, false, false }, // 28
-		{ false, true, true, true, true, false, true }, // 29
-		{ false, true, true, true, true, true, false }, // 30
-		{ false, true, true, true, true, true, true } // 31
-	};
-}
-
 bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 {
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Exe Unpacker (pklite) - unpacking...\n");
@@ -341,26 +267,13 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 		{
 			// "Duplication" mode.
 			// Calculate which bytes in the decompressed data to duplicate and append.
-#if 1
 			int copy = BitTree_get(bitTree1, getNextBit);
-#else
-			std::vector<bool> copyBits;
-			const int *copyPtr = nullptr;
-
-			// Read bits until they match a bit tree leaf.
-			while (copyPtr == nullptr)
-			{
-				copyBits.push_back(getNextBit());
-				copyPtr = bitTree1.get(copyBits);
-			}
-#endif
 
 			// Calculate the number of bytes in the decompressed data to copy.
 			uint16_t copyCount = 0;
 
 			// Check for the special bit vector case "011100".
 			if (copy == 25) // Special value
-			//if (copyBits == Duplication1.at(11))
 			{
 				// Read a compressed byte.
 				const uint8_t encryptedByte = getNextByte();
@@ -384,11 +297,7 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			else
 			{
 				// Use the decoded value from the first bit table.
-#if 1
 				copyCount = copy;
-#else
-				copyCount = *copyPtr;
-#endif
 			}
 
 			// Calculate the offset in decompressed data. It is a two byte value.
@@ -398,23 +307,8 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			// If the copy count is not 2, decode the most significant byte.
 			if (copyCount != 2)
 			{
-#if 1
 				// Use the decoded value from the second bit table.
 				mostSigByte = BitTree_get(bitTree2, getNextBit);
-#else
-				std::vector<bool> offsetBits;
-				const int* offsetPtr = nullptr;
-
-				// Read bits until they match a bit tree leaf.
-				while (offsetPtr == nullptr)
-				{
-					offsetBits.push_back(getNextBit());
-					offsetPtr = bitTree2.get(offsetBits);
-				}
-
-				// Use the decoded value from the second bit table.
-				mostSigByte = *offsetPtr;
-#endif
 			}
 
 			// Get the least significant byte of the two bytes.
