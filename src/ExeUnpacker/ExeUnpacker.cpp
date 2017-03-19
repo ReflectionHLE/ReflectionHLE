@@ -1,12 +1,6 @@
 // EXE unpacker, adapted from OpenTESArena.
 // Used for decompressing DOS executables compressed with PKLITE.
 
-#include <algorithm>
-#include <array>
-#include <cstdint>
-#include <memory>
-#include <vector>
-
 #include "ExeUnpacker.h"
 
 #include "be_cross.h"
