@@ -10,11 +10,6 @@
 #include "ExeUnpacker.h"
 
 #include "be_cross.h"
-//#include "../Utilities/Bytes.h"
-//#include "../Utilities/Debug.h"
-//#include "../Utilities/String.h"
-
-//#include "components/vfs/manager.hpp"
 
 // Replacement for Debug::check
 static const void Debug_check(bool expression, const char *msg)
@@ -24,26 +19,6 @@ static const void Debug_check(bool expression, const char *msg)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "%s", msg);
 		exit(1);
 	}
-}
-
-// A type for a vector of bits
-typedef struct
-{
-	int len;
-	bool *bits;
-} BitsVector;
-
-// FIXME - Temporary functions
-static void DEBUG_FillBitsVector(const std::vector<bool> &bits, BitsVector *bitsVec)
-{
-	bitsVec->len = bits.size();
-	Debug_check(bitsVec->bits = (bool *)calloc(sizeof(bool), bitsVec->len), "(ExeUnpacker) DEBUG_FillBitsVector: Out of memory!\n");
-	for (int i = 0; i < bitsVec->len; ++i)
-		bitsVec->bits[i] = bits[i];
-}
-static void DEBUG_FreeBitsVector(BitsVector *bitsVec)
-{
-	free(bitsVec->bits);
 }
 
 /*** A simple binary tree for retrieving a decoded value, given a vector of bits. ***/
@@ -58,67 +33,6 @@ typedef struct Node
 } Node;
 
 typedef Node BitTree;
-
-#if 0
-// Initializes tree
-static void BitTree_init(BitTree *bt)
-{
-	memset(bt, 0, sizeof(*bt));
-}
-
-// Frees tree using a recursive implementation
-static void BitTree_free(BitTree *bt)
-{
-	if (bt->left)
-	{
-		BitTree_free(bt->left);
-		free(bt->left);
-	}
-	if (bt->right)
-	{
-		BitTree_free(bt->right);
-		free(bt->right);
-	}
-}
-
-// Inserts a node into the tree, overwriting any existing entry.
-static void BitTree_insert(BitTree *bt, const BitsVector *bitsVec, int value)
-{
-	Node *node = bt;
-
-	// Walk the tree, creating new nodes as necessary. Internal nodes have null values.
-	for (size_t i = 0; i < bitsVec->len; ++i)
-	{
-		const bool bit = bitsVec->bits[i];
-
-		// Decide which branch to use.
-		if (bit)
-		{
-			// Right.
-			if (node->right == NULL)
-			{
-				// Make a new node.
-				Debug_check(node->right = (Node *)calloc(sizeof(Node), 1), "(ExeUnpacker) BitTree_insert - Out of memory!\n");
-			}
-
-			node = node->right;
-		}
-		else
-		{
-			// Left.
-			if (node->left == NULL)
-			{
-				// Make a new node.
-				Debug_check(node->left = (Node *)calloc(sizeof(Node), 1), "(ExeUnpacker) BitTree_insert - Out of memory!\n");
-			}
-
-			node = node->left;
-		}
-	}
-
-	node->value = value;
-}
-#endif
 
 // Returns a decoded value in the tree. Note that rather than getting
 // an input vector of bits, this gets a pointer to a bits fetcher which
@@ -366,44 +280,10 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Exe Unpacker (pklite) - unpacking...\n");
 
 	int32_t fileSize = BE_Cross_FileLengthFromHandle(fp);
-	//BitsVector bitsVec;
 
 	std::vector<uint8_t> srcData(fileSize);
 	fread(reinterpret_cast<char*>(srcData.data()), srcData.size(), 1, fp);
-#if 0
-	// Generate the bit trees for "duplication mode". Since the Duplication1 table has 
-	// a special case at index 11, split the insertions up for the first bit tree.
-	BitTree bitTree1, bitTree2;
 
-	BitTree_init(&bitTree1);
-	BitTree_init(&bitTree2);
-
-	for (int i = 0; i < 11; ++i)
-	{
-		DEBUG_FillBitsVector(Duplication1.at(i), &bitsVec);
-		BitTree_insert(&bitTree1, &bitsVec, i + 2);
-		DEBUG_FreeBitsVector(&bitsVec);
-	}
-
-	DEBUG_FillBitsVector(Duplication1.at(11), &bitsVec);
-	BitTree_insert(&bitTree1, &bitsVec, 25); // Use distinct value
-	//BitTree_insert(&bitTree1, &bitsVec, 13);
-	DEBUG_FreeBitsVector(&bitsVec);
-
-	for (int i = 12; i < Duplication1.size(); ++i)
-	{
-		DEBUG_FillBitsVector(Duplication1.at(i), &bitsVec);
-		BitTree_insert(&bitTree1, &bitsVec, i + 1);
-		DEBUG_FreeBitsVector(&bitsVec);
-	}
-
-	for (int i = 0; i < Duplication2.size(); ++i)
-	{
-		DEBUG_FillBitsVector(Duplication2.at(i), &bitsVec);
-		BitTree_insert(&bitTree2, &bitsVec, i);
-		DEBUG_FreeBitsVector(&bitsVec);
-	}
-#endif
 	// Beginning and end of compressed data in the executable.
 	const uint8_t *compressedStart = srcData.data() + 800/*752*/;
 	const uint8_t *compressedEnd = srcData.data() + (srcData.size() - 8);
@@ -581,9 +461,6 @@ bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 			*decompPtr++ = decryptedByte;
 		}
 	}
-#if 0
-	BitTree_free(&bitTree1);
-	BitTree_free(&bitTree2);
-#endif
+
 	return true;
 }
