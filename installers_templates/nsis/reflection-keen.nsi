@@ -50,6 +50,7 @@ Section "Reflection Keen (required)"
   File "libspeexdsp-1.dll"
   File "README.txt"
   File "LICENSE.txt"
+  File "LICENSE-pklite.txt"
   
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\Reflection_Keen "Install_Dir" "$INSTDIR"
@@ -105,6 +106,7 @@ Section "Uninstall"
   Delete $INSTDIR\libspeexdsp-1.dll
   Delete $INSTDIR\README.txt
   Delete $INSTDIR\LICENSE.txt
+  Delete $INSTDIR\LICENSE-pklite.txt
   Delete $INSTDIR\uninstall.exe
 
   SetShellVarContext all
