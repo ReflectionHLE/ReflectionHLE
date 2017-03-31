@@ -1901,6 +1901,19 @@ void BE_Cross_PrepareGameInstallations(void)
 		BEL_Cross_safeandfastcstringcopytoctstring(BEL_Cross_safeandfastctstringcopy_2strs(path, pathEnd, g_be_rootPaths[j], _T("/")), pathEnd, dirWithoutRoot);
 		BEL_Cross_ConditionallyAddGameInstallation(details, path, details->customInstDescription);
 	}
+	/*** To finish, apply a simple bubble sort on the game installations, by game version (done for visual consistency in the launcher) ***/
+	for (int count = g_be_gameinstallations_num - 1; count > 0; --count)
+		for (int i = 0; i < count; ++i)
+			if (g_be_gameinstallations[i].verId > g_be_gameinstallations[i+1].verId)
+			{
+				// FIXME - Copies are just a little bit expensive, but not a lot...
+				BE_GameInstallation_T tempInst = g_be_gameinstallations[i];
+				g_be_gameinstallations[i] = g_be_gameinstallations[i+1];
+				g_be_gameinstallations[i+1] = tempInst;
+
+				g_be_gameinstallationsbyver[g_be_gameinstallations[i].verId] = &g_be_gameinstallations[i];
+				g_be_gameinstallationsbyver[g_be_gameinstallations[i+1].verId] = &g_be_gameinstallations[i+1];
+			}
 }
 
 
