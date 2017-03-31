@@ -596,6 +596,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse100[
 	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x20770},
 	{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x28588},
 	{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1c540},
+	{"PIRACY.BIN", 4001, 0x94458def, 0x14970}, // A bit different from PIRACY.SCN
 	{"STORY.KDR", 2487, 0xed0ea5fe, 0x219c0},
 	{0}
 };
@@ -630,6 +631,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc100[
 	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1fab0},
 	{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x27dc6},
 	{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1b880},
+	{"PIRACY.BIN", 4001, 0x94458def, 0x13cb0}, // A bit different from PIRACY.SCN
 	{"STORY.KDR", 2487, 0xed0ea5fe, 0x20d00},
 	{0}
 };
@@ -2149,6 +2151,8 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 	RefKeen_Patch_kd_demo();
 	extern void RefKeen_Patch_kd_keen(void);
 	RefKeen_Patch_kd_keen();
+	extern void RefKeen_Patch_kd_main(void);
+	RefKeen_Patch_kd_main();
 	extern void RefKeen_Patch_kd_play(void);
 	RefKeen_Patch_kd_play();
 #endif
