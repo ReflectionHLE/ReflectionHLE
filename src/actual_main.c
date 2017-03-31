@@ -20,12 +20,17 @@
 #include "refkeen.h"
 #include "SDL_main.h"
 
+#if (!defined REFKEEN_ENABLE_LAUNCHER) && (!defined REFKEEN_CONFIG_ENABLE_CMDLINE)
+#error "At least one of REFKEEN_ENABLE_LAUNCHER and REFKEEN_CONFIG_ENABLE_CMDLINE must be defined!"
+#endif
+
 int id0_argc;
 const char **id0_argv;
 
 const char *be_main_arg_datadir = NULL;
 const char *be_main_arg_newcfgdir = NULL;
 
+#ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 static void show_command_line_help()
 {
 	char gameverstrbuffer[80] = "";
@@ -66,10 +71,14 @@ static void show_command_line_help()
 	BE_ST_printf("%s\n", gameverstrbuffer);
 	BE_ST_HandleExit(0);
 }
+#endif // REFKEEN_CONFIG_ENABLE_CMDLINE
 
 int main(int argc, char **argv)
 {
 	BE_ST_InitCommon();
+
+#ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
+
 	// Parse arguments
 	bool showHelp = false;
 #ifdef REFKEEN_VER_CATADVENTURES
@@ -188,6 +197,13 @@ int main(int argc, char **argv)
 #endif
 		}
 	}
+
+#else // REFKEEN_CONFIG_ENABLE_CMDLINE
+
+	BE_Launcher_Start();
+
+#endif // REFKEEN_CONFIG_ENABLE_CMDLINE
+
 	BE_ST_ShutdownAll();
 	return 0;
 }
