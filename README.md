@@ -15,7 +15,7 @@ Reflection Keen and the DBOPL emulator are released under the GNU GPLv2+.
 See LICENSE for more details.
 
 The included depklite implementation, a modification of ExeUnpacker,
-is released under the MIT License. See src/depklite/LICENSE.txt for details.
+is released under the MIT License. See LICENSE-depklite for details.
 
 The included CRC-32 implementation is in the public domain. The same
 applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
