@@ -1,12 +1,12 @@
-#ifndef EXE_UNPACKER_H
-#define EXE_UNPACKER_H
+#ifndef DEPKLITE_H
+#define DEPKLITE_H
 
 #include <stdbool.h>
 #include <stdio.h>
 
-// EXE unpacker, adapted from OpenTESArena.
+// depklite, a derivative of OpenTESArena's ExeUnpacker.
 // Used for decompressing DOS executables compressed with PKLITE.
 
-bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize);
+bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize);
 
 #endif

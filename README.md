@@ -14,8 +14,8 @@ Terms of use
 Reflection Keen and the DBOPL emulator are released under the GNU GPLv2+.
 See LICENSE for more details.
 
-The modified ExeUnpacker implementation is released under
-the MIT License. See src/ExeUnpacker/LICENSE.txt for details.
+The included depklite implementation, a modification of ExeUnpacker,
+is released under the MIT License. See src/depklite/LICENSE.txt for details.
 
 The included CRC-32 implementation is in the public domain. The same
 applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
@@ -688,7 +688,7 @@ Original sources this is based on
 - The DBOPL emulator from the DOSBox project.
 - A CRC-32 implementation.
 - unlzexe v0.8.
-- ExeUnpacker, a part of OpenTESArena.
+- depklite, a modification (mostly a C port) of ExeUnpacker from OpenTESArena.
 
 --------------------------------------------
 Additional sources/data used for these ports
@@ -757,8 +757,9 @@ unlzexe v0.8.
 * Past and present developers of OpenTESArena, as well as other contributors,
 including afritz1, Allofich, Dozayon, kcat, mdmallardi, pcercuei and Ragora.
 OpenTESArena is an open-source re-implementation of The Elder Scrolls: Arena.
-A component of it, the ExeUnpacker, was re-used for unpacking
-Keen Dreams v.100 executables (originally packed using PKLITE).
+A component of OpenTESArena, ExeUnpacker, was modified into depklite
+(mostly a port of ExeUnpacker from C++11 to C99), which is used to
+unpack Keen Dreams v1.00 executables (originally packed using PKLITE).
 
 * Craig Bruce for his CRC-32 implementation.
 

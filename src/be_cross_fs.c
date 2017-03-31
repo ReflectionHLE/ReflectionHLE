@@ -59,7 +59,7 @@
 #include "crc32/crc32.h"
 #include "unlzexe/unlzexe.h"
 #ifdef ENABLE_PKLITE
-#include "ExeUnpacker/ExeUnpacker.h"
+#include "depklite/depklite.h"
 #endif
 
 #define BE_CROSS_PATH_LEN_BOUND 256
@@ -1481,7 +1481,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 				break;
 #ifdef ENABLE_PKLITE
 			case BE_EXECOMPRESSION_PKLITE105:
-				success = ExeUnpacker_unpack(exeFp, decompExeImage, details->decompExeImageSize);
+				success = depklite_unpack(exeFp, decompExeImage, details->decompExeImageSize);
 				break;
 #endif
 			}

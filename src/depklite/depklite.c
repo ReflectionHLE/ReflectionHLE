@@ -1,7 +1,7 @@
-// EXE unpacker, adapted from OpenTESArena.
+// depklite, a derivative of OpenTESArena's ExeUnpacker.
 // Used for decompressing DOS executables compressed with PKLITE.
 
-#include "ExeUnpacker.h"
+#include "depklite.h"
 
 #include "be_cross.h"
 
@@ -236,19 +236,19 @@ static const Node bitTree2[] =
 	LF(31),
 };
 
-bool ExeUnpacker_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
+bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 {
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Exe Unpacker (pklite) - unpacking...\n");
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "depklite - unpacking...\n");
 
 	int32_t fileSize = BE_Cross_FileLengthFromHandle(fp);
 	// Offset of compressed data in the executable, which is 800
 	// for Keen Dreams v1.00 (KDREAMS.EXE), and 752 for The Elder Scrolls Arena (A.EXE).
 	const int compressedDataOffset = 800;
 
-	Debug_check(fileSize >= compressedDataOffset, "Exe Unpacker (pklite) - Input file is unexpectedly too small!\n");
+	Debug_check(fileSize >= compressedDataOffset, "depklite - Input file is unexpectedly too small!\n");
 
 	uint8_t *compressedStart = (uint8_t *)malloc(fileSize - compressedDataOffset);
-	Debug_check(compressedStart, "Exe Unpacker (pklite) - Out of memory!\n");
+	Debug_check(compressedStart, "depklite - Out of memory!\n");
 
 	fseek(fp, compressedDataOffset, SEEK_SET);
 	fread(compressedStart, fileSize - compressedDataOffset, 1, fp);
