@@ -808,6 +808,49 @@ say to all of you, that you should be considered special here. :)
 Changelog
 ---------
 
+Apr 01, 2017 (v0.17.0):
+
+* A POSSIBLE REGRESSION: An unexpectedly low(er) framerate may be reproduced
+on Android, at least in the Catacombs.
+* ANOTHER WARNING: If the classic controller scheme is in use, then
+re-calibration may be required. This is the case due to a few internal changes,
+with one of them fixing a possible division by zero error. The latter could
+be reproduced in Keen Dreams v1.00, for which support is now in (see below).
+* Not well-tested: Launcher window is now positioned in the same display as
+the in-game window, in multi-display setups. Also, there's a new setting,
+which tells if the last display is saved for later runs.
+It's toggled on by default.
+* -cfgdir related bug fix, timing fixes and other misc. fixes.
+* If you don't mind building your own binaries from the sources,
+then compatibility with OS X/macOS is now in (thanks rhoenie and Dominus).
+Note that this isn't well-tested, due to the lack of direct access to a Mac.
+* Added support for Keen Dreams v1.00. Internally, this includes the
+ability to read data from KDREAMS.EXE as originally released, being
+packed with PKLITE v1.05. Doing this is now possible thanks to depklite,
+which is more-or-less a port from C++11 to C99 of OpenTESArena's ExeUnpacker.
+* Known issue: Warping to a non-existant level in Keen Dreams v1.00
+(e.g., level 6) may, essentially, lead to undefined behaviors.
+* Added partial support for the Keen Dreams 2015 re-release
+(Steam, IndieGameStand). Note that this support is essentially a bonus, and
+it's still recommended to use the data from a supported DOS version. A great
+deal of updates were for sound playback support, but there's more than that.
+* Further note that kdreams.cfg is updated after manually closing the
+game window, *only* if the 2015 data is used.
+* Compatibility with saved games from the 2015 re-release is more-or-less
+present, while compatibility with kdreams.cfg is only partial. So, watch out.
+* A few misc. 2015 specific features were implemented, e.g., a bug fix
+resetting the amount of keys when a new game is started. This does *not*
+necessarily cover all behaviors of the 2015 release, though. Also, as expected,
+2015 specific features are *not* in effect when a DOS version's data is in use.
+* Support for joysticks / game controllers with the 2015 data is
+the same as with the DOS versions' data.
+* Mouse support is also the same, although it's possible to pass the
+2015-specific command-line argument of /SWMOUSE to temporarily disable
+the "Absolute mouse motion" toggle. Note that the /NOASPECT and /WINDOWED
+arguments described in GAMETEXT.KDR didn't seem to work in the
+2015 port itself (using an EXE from May 9 2016 or earlier),
+so these are not implemented here, either.
+
 Oct 12, 2016 (v0.16.0):
 
 - BREAKING CHANGE: The file HELP.TXT is now required in order to
