@@ -584,6 +584,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 void FinalizeControlPanelMappingsByMousePresence(bool withmouse)
 {
+	g_ingame_altcontrol_mapping_menu.grabMouse = withmouse;
 	g_ingame_altcontrol_mapping_menu_help.grabMouse = withmouse;
 
 	if (withmouse)
