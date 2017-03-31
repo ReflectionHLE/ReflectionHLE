@@ -23,7 +23,7 @@
 // Depending on the SDK version, TARGET_OS_IPHONE may either be
 // undefined, or defined to 0. So check the macros this way.
 #if (!TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR)
-#define REFKEEN_PLATFORM_OSX
+#define REFKEEN_PLATFORM_MACOS
 #endif
 #endif
 
@@ -54,7 +54,7 @@
 // On the Mac, usage of multitouch trackpad may lead to SDL2
 // finger events, and these should not be mistakenly
 // processed as touchscreen input
-#ifndef REFKEEN_PLATFORM_OSX
+#ifndef REFKEEN_PLATFORM_MACOS
 #define REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 #endif
 

@@ -472,7 +472,7 @@ void BE_Cross_PrepareAppPaths(void)
 #elif (defined REFKEEN_PLATFORM_UNIX)
 	const char *homeVar = getenv("HOME");
 
-#ifndef REFKEEN_PLATFORM_OSX
+#ifndef REFKEEN_PLATFORM_MACOS
 	const char *envVar;
 #endif
 
@@ -487,7 +487,7 @@ void BE_Cross_PrepareAppPaths(void)
 	}
 	else
 	{
-#ifdef REFKEEN_PLATFORM_OSX
+#ifdef REFKEEN_PLATFORM_MACOS
 		// FIXME - Handle sandboxing?
 		BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/reflection-keen");
 #else
@@ -513,7 +513,7 @@ void BE_Cross_PrepareAppPaths(void)
 	}
 	else
 	{
-#ifdef REFKEEN_PLATFORM_OSX
+#ifdef REFKEEN_PLATFORM_MACOS
 		// FIXME - Handle sandboxing?
 		BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/reflection-keen");
 #else
@@ -541,7 +541,7 @@ void BE_Cross_PrepareAppPaths(void)
 	{
 		// Home dir
 		BEL_Cross_AddRootPathIfDir(homeVar, "home", "Home dir");
-#ifdef REFKEEN_PLATFORM_OSX
+#ifdef REFKEEN_PLATFORM_MACOS
 		// Steam installation dir
 		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam");
 		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
@@ -1698,7 +1698,7 @@ BE_FILE_T BE_Cross_open_steamcfg_for_reading(void)
 	if (!homeVar || !(*homeVar))
 		return NULL;
 
-#ifdef REFKEEN_PLATFORM_OSX
+#ifdef REFKEEN_PLATFORM_MACOS
 	BE_Cross_safeandfastcstringcopy_2strs(steam_config_path, steam_config_path+sizeof(steam_config_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/config/config.vdf");
 #else
 	BE_Cross_safeandfastcstringcopy_2strs(steam_config_path, steam_config_path+sizeof(steam_config_path)/sizeof(TCHAR), homeVar, "/.steam/steam/config/config.vdf");
@@ -1709,13 +1709,13 @@ BE_FILE_T BE_Cross_open_steamcfg_for_reading(void)
 }
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
-#if (defined REFKEEN_VER_CATACOMB_ALL) && ((defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_OSX))
+#if (defined REFKEEN_VER_CATACOMB_ALL) && ((defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_MACOS))
 #define BE_CHECK_GOG_INSTALLATIONS
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 static const TCHAR *g_be_catacombs_gog_subdirnames_withdirsep[] = {_T("\\Cat3D"), _T("\\Abyss"), _T("\\Armageddon"), _T("\\Apocalypse")};
 #endif
-#ifdef REFKEEN_PLATFORM_OSX
+#ifdef REFKEEN_PLATFORM_MACOS
 static const TCHAR *g_be_catacombs_gog_subdirnames_withdirsep[] = {_T("/2CAT3D"), _T("/3CABYSS"), _T("/4CATARM"), _T("/5APOC")};
 #endif
 
@@ -1748,7 +1748,7 @@ void BE_Cross_PrepareGameInstallations(void)
 			path_gog_catacombs_prefix_ends[0] = path/*NOT gog_catacombs_paths[0]*/ + _tcslen(gog_catacombs_paths[0]);
 		}
 #endif
-#ifdef REFKEEN_PLATFORM_OSX
+#ifdef REFKEEN_PLATFORM_MACOS
 		int numOfGogPathsToCheck = 1;
 		char gog_catacombs_paths[2][BE_CROSS_PATH_LEN_BOUND] = {
 			"/Applications/Catacombs Pack/Catacomb Pack.app/Contents/Resources/Catacomb Pack.boxer/C 1 CATACOMB.harddisk",
@@ -1791,7 +1791,7 @@ void BE_Cross_PrepareGameInstallations(void)
 		checkPath = (homeVar && *homeVar);
 		if (checkPath)
 		{
-#ifdef REFKEEN_PLATFORM_OSX
+#ifdef REFKEEN_PLATFORM_MACOS
 			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common/Keen Dreams/KDreams.app/Contents/Resources");
 #else
 			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common/Keen Dreams");
