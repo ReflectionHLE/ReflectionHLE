@@ -2093,6 +2093,9 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
 
+	if (g_refKeenCfg.rememberDisplayNum)
+		g_refKeenCfg.displayNum = SDL_GetWindowDisplayIndex(g_sdlWindow);
+
 	g_sdlLastReportedWindowWidth = winWidth;
 	g_sdlLastReportedWindowHeight = winHeight;
 

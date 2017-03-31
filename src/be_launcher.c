@@ -53,7 +53,7 @@ extern const uint8_t g_cga_8x8TextFont[256*8*8];
 
 static uint8_t *g_be_launcher_screenPtr;
 
-static BEMenu *g_be_launcher_currMenu;
+/*static*/ BEMenu *g_be_launcher_currMenu;
 static BEMenuItem **g_be_launcher_selectedMenuItemPtr;
 
 bool g_be_launcher_wasAnySettingChanged;

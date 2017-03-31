@@ -51,6 +51,7 @@ typedef struct
 #endif
 	int lastSelectedGameVer;
 	int displayNum;
+	bool rememberDisplayNum;
 	int sdlRendererDriver;
 	VSyncSettingType vSync;
 	bool isBilinear;

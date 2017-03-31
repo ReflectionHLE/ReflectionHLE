@@ -466,6 +466,18 @@ static void BEL_ST_ParseSetting_DisplayNum(const char *keyprefix, const char *bu
 			g_refKeenCfg.displayNum = 0;
 }
 
+static void BEL_ST_ParseSetting_RememberDisplayNum(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+	{
+		g_refKeenCfg.rememberDisplayNum = true;
+	}
+	else if (!strcmp(buffer, "false"))
+	{
+		g_refKeenCfg.rememberDisplayNum = false;
+	}
+}
+
 static void BEL_ST_ParseSetting_SDLRendererDriver(const char *keyprefix, const char *buffer)
 {
 	SDL_RendererInfo info;
@@ -778,6 +790,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #endif
 	{"lastselectedgamever=", &BEL_ST_ParseSetting_LastSelectedGameVer},
 	{"displaynum=", &BEL_ST_ParseSetting_DisplayNum},
+	{"rememberdisplaynum=", &BEL_ST_ParseSetting_RememberDisplayNum},
 	{"sdlrenderer=", &BEL_ST_ParseSetting_SDLRendererDriver},
 	{"vsync=", &BEL_ST_ParseSetting_VSync},
 	{"bilinear=", &BEL_ST_ParseSetting_Bilinear},
@@ -854,6 +867,7 @@ static void BEL_ST_ParseConfig(void)
 #endif
 	g_refKeenCfg.lastSelectedGameVer = BE_GAMEVER_LAST;
 	g_refKeenCfg.displayNum = 0;
+	g_refKeenCfg.rememberDisplayNum = true;
 	g_refKeenCfg.sdlRendererDriver = -1;
 	g_refKeenCfg.vSync = VSYNC_AUTO;
 	g_refKeenCfg.isBilinear = true;
@@ -961,6 +975,7 @@ static void BEL_ST_SaveConfig(void)
 #endif
 	fprintf(fp, "lastselectedgamever=%s\n", (g_refKeenCfg.lastSelectedGameVer != BE_GAMEVER_LAST) ? refkeen_gamever_strs[g_refKeenCfg.lastSelectedGameVer] : "");
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
+	fprintf(fp, "rememberdisplaynum=%s\n", g_refKeenCfg.rememberDisplayNum ? "true" : "false");
 	if (g_refKeenCfg.sdlRendererDriver < 0)
 	{
 		fprintf(fp, "sdlrenderer=auto\n");

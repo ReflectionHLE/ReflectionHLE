@@ -371,6 +371,7 @@ BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beVideoSettingsMenuItem_DisplayNum, "Dis
 #else
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums)
 #endif
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_RememberDisplayNum, "Remember last used display number", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_SDLRenderer, "SDL renderer", g_be_videoSettingsChoices_sdlRendererDrivers)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type*", g_be_videoSettingsChoices_scaleType)
@@ -396,6 +397,7 @@ BEMenu g_beVideoSettingsMenu = {
 		&g_beVideoSettingsMenuItem_FullscreenRes,
 #endif
 		&g_beVideoSettingsMenuItem_DisplayNum,
+		&g_beVideoSettingsMenuItem_RememberDisplayNum,
 		&g_beVideoSettingsMenuItem_SDLRenderer,
 		&g_beVideoSettingsMenuItem_Bilinear,
 		&g_beVideoSettingsMenuItem_ScaleType,
@@ -734,6 +736,8 @@ void BE_ST_Launcher_Prepare(void)
 	/*** Prepare fullscreen resolutions list ***/
 	BEL_ST_Launcher_ResetDisplayModes(g_refKeenCfg.displayNum);
 #endif
+	// Set this related value
+	g_beVideoSettingsMenuItem_RememberDisplayNum.choice = g_refKeenCfg.rememberDisplayNum;
 	/*** Prepare SDL renderer drivers list ***/
 	int nOfSDLRendererDrivers = SDL_GetNumRenderDrivers();
 	if (nOfSDLRendererDrivers > BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS)
@@ -925,6 +929,7 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.isFullscreen = g_beVideoSettingsMenuItem_Fullscreen.choice;
 #endif
 	g_refKeenCfg.displayNum = g_beVideoSettingsMenuItem_DisplayNum.choice;
+	g_refKeenCfg.rememberDisplayNum = g_beVideoSettingsMenuItem_RememberDisplayNum.choice;
 
 #ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
 	if (g_beVideoSettingsMenuItem_FullscreenRes.choice > 0)
@@ -1228,6 +1233,31 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 {
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+
+
+	if (g_refKeenCfg.rememberDisplayNum)
+	{
+		int displayNum = SDL_GetWindowDisplayIndex(g_sdlWindow);
+		// HUGE FIXME - Bad idea!!!
+		if (displayNum < sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums)) // Ignore last NULL entry
+			if (1/*g_beVideoSettingsMenuItem_DisplayNum.choice != displayNum*/)
+			{
+				extern BEMenu *g_be_launcher_currMenu;
+
+				g_beVideoSettingsMenuItem_DisplayNum.choice = displayNum;
+#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
+				BEL_ST_Launcher_ResetDisplayModes((*menuItemP)->choice);
+#endif
+				if (g_be_launcher_currMenu == &g_beVideoSettingsMenu)
+				{
+#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
+					BEL_Launcher_DrawMenuItem(&g_beVideoSettingsMenuItem_FullscreenRes);
+#endif
+					BEL_Launcher_DrawMenuItem(&g_beVideoSettingsMenuItem_DisplayNum);
+				}
+			}
+	}
+
 
 	g_sdlLastReportedWindowWidth = winWidth;
 	g_sdlLastReportedWindowHeight = winHeight;
