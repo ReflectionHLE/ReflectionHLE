@@ -11,6 +11,7 @@ LOCAL_SRC_FILES := \
 	$(wildcard $(BESRC)/*.c) \
 	$(wildcard $(BESRC)/crc32/*.c) \
 	$(wildcard $(BESRC)/opl/*.c) \
+	$(wildcard $(BESRC)/depklite/*.c) \
 	$(wildcard $(BESRC)/unlzexe/*.c) \
 	$(filter-out $(wildcard $(SRC)/id_us_s*.c), $(wildcard $(SRC)/*.c)) \
 	$(wildcard $(SRC)/lscr/*.c)

@@ -200,6 +200,7 @@ int main(int argc, char **argv)
 
 #else // REFKEEN_CONFIG_ENABLE_CMDLINE
 
+	BE_Cross_PrepareGameInstallations();
 	BE_Launcher_Start();
 
 #endif // REFKEEN_CONFIG_ENABLE_CMDLINE
