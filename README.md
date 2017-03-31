@@ -116,6 +116,15 @@ Reflection Keen consists of ports of Keen Dreams and all 3D Catacomb games.
 Note that these ports do not come with a copy of any game, which is required.
 Look below for mentions of "game data" to find possible sources for these.
 
+-------------------
+Supported platforms
+-------------------
+
+Reflection Keen builds for Windows, Linux and Android are available.
+Thanks to external assistance, it was also made possible to
+build Reflection Keen for OS X/macOS, but this isn't
+well-tested due to lack of access to a Mac.
+
 ----------------------------------------------
 Supported game data, described by DOS versions
 ----------------------------------------------
@@ -245,6 +254,7 @@ with ".cfg".
 These are the default locations for the configuration file:
 
 - Windows: %APPDATA%\reflection-keen.
+- OS X/macOS (not well-tested): ~/Library/Application Support/reflection-keen
 - Linux: $XDG_CONFIG_HOME/reflection-keen, if $XDG_CONFIG_HOME is defined
 and filled. Otherwise, ~/.config/reflection-keen.
 - Android: This is separated per installed Android app. For Keen Dreams,
@@ -269,6 +279,7 @@ of the games (although there may be exceptions).
 These are the default locations for the various files:
 
 - Windows: %APPDATA%\reflection-keen.
+- OS X/macOS (not well-tested): ~/Library/Application Support/reflection-keen
 - Linux: $XDG_DATA_HOME/reflection-keen, if $XDG_DATA_HOME is defined
 and filled. Otherwise, ~/.local/share/reflection-keen.
 - Android: Same as the location of the configuration file.
@@ -473,6 +484,9 @@ along with support for Android.
 - On Windows and Linux, multi-touch input is disabled by default, because there
 are chances such input may arrive from a multi-touch trackpad
 (at least on Macs).
+- In fact, if you're running Reflection Keen on OS X/macOS
+(not well-tested), then multi-touch input is not supported at all.
+Two-finger scrolling should still work in the launcher, though.
 - On Android, multi-touch input is auto-detected by default. This means
 that touch controls should be shown while touch input is in use, and hidden
 once you begin using a different input device (like a game controller).
@@ -587,6 +601,20 @@ while in the "src/kdreams" subtree (you can still pass e.g., RESAMPLER=NONE).
 "src/id91_11/cat_all/cat3d" subtree.
 For The Catacomb Abyss, it is "src/id91_11/cat_all/catabyss", and there are
 two more such subdirectories for The Catacomb Armageddon and Apocalypse.
+
+-----------------------------------------------------------------
+Building the ports from the source codes - OS X/macOS executables
+-----------------------------------------------------------------
+
+Due to the lack of direct access to a Mac, this was done using external
+assistance and isn't well-tested. In general, you should be able to
+follow the above instructions for building Linux executables,
+while using the clang compiler as available from Xcode.
+
+Note that you might have to pass "CXX=clang" to GNU make. For building as C++,
+you might have to pass "CXX=clang++", in addition to "BUILDASCPP=1".
+
+Further note that a successful build's output is a whole application bundle.
 
 --------------------------------------------------------------
 Building the ports from the source codes - Windows executables
