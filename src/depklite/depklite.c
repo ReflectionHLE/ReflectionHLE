@@ -1,6 +1,9 @@
 // depklite, a derivative of OpenTESArena's ExeUnpacker.
 // Used for decompressing DOS executables compressed with PKLITE.
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "depklite.h"
 
 #include "be_cross.h"

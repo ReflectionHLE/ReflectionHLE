@@ -131,8 +131,10 @@ Supported game data, described by DOS versions
 
 - Keen Dreams: Registered CGA+EGA v1.00, Shareware (EGA) v1.13,
 CGA v1.05, Registered (EGA) v1.93 and Shareware (EGA) v1.20.
-There's also partial support for the data from the
-2015 re-release (Steam / IndieGameStand).
+There's also partial support for the data from the 2015 re-release
+(Steam / IndieGameStand). However, this may fail to work with
+the game as downloaded via the Steam client on Windows,
+due to minor differences in GAMETEXT.KDR.
 - Catacomb 3-D (The Descent): Versions 1.00 and 1.22.
 - The Catacomb Abyss: Versions 1.13 (QA [0], Shareware) and 1.24 (rev 1).
 - The Catacomb Armageddon: Version 1.02 (rev 1).
@@ -165,6 +167,10 @@ data, it is still recommended to use data from any of the supported
 DOS versions. In particular, the Reflection Keen Dreams codebase
 is known to be internally different from the re-release's
 codebase in many ways.
+
+Also, this will *not* work with the 2015 re-release as downloaded
+from Steam on Windows, due to minor differences in GAMETEXT.KDR;
+Or at least, not as of this release of Reflection Keen.
 
 Links to stores' pages:
 - http://store.steampowered.com/app/356200/
@@ -834,6 +840,11 @@ which is more-or-less a port from C++11 to C99 of OpenTESArena's ExeUnpacker.
 (Steam, IndieGameStand). Note that this support is essentially a bonus, and
 it's still recommended to use the data from a supported DOS version. A great
 deal of updates were for sound playback support, but there's more than that.
+* Also, as of this release of Reflection Keen, this will *not* work with
+the 2015 re-release as downloaded from Steam on Windows, due to minor
+differences in GAMETEXT.KDR. These are a couple of text bugs, that should
+be corrected if the game is downloaded using the Linux (or Mac) client,
+but they haven't been carried over to Windows so far.
 * Further note that kdreams.cfg is updated after manually closing the
 game window, *only* if the 2015 data is used.
 * Compatibility with saved games from the 2015 re-release is more-or-less
