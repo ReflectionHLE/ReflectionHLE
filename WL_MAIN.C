@@ -50,7 +50,7 @@ int				tedlevelnum;
 boolean         tedlevel;
 boolean         nospr;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 boolean		noquestions, nofloors;
 char		logon[] = "SUPER 3D NOAH'S ARK (v1.0)";
 #endif
@@ -58,7 +58,7 @@ boolean         IsA386;
 int                     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
 	5*ANGLES/8,6*ANGLES/8,7*ANGLES/8,ANGLES};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 int	questionnum = 0;
 #endif
 
@@ -80,7 +80,7 @@ void            Quit (char *error);
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 boolean         startgame,loadedgame
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
 		,virtualreality
 #endif
 		;
@@ -139,7 +139,7 @@ void ReadConfig(void)
 		read(file,&viewsize,sizeof(viewsize));
 		read(file,&mouseadjustment,sizeof(mouseadjustment));
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		read(file,&questionnum,sizeof(questionnum));
 #endif
 
@@ -157,7 +157,7 @@ void ReadConfig(void)
 		}
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (sds ==
 		    sds_SoundBlaster && !SoundBlasterPresent)
 #else
@@ -193,7 +193,7 @@ void ReadConfig(void)
 		if (SoundBlasterPresent)
 			sds = sds_SoundBlaster;
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		else if (SoundSourcePresent)
 			sds = sds_SoundSource;
 #endif
@@ -209,14 +209,14 @@ void ReadConfig(void)
 		joystickprogressive = false;
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		viewsize = 18;
 #else
 		viewsize = 15;
 #endif
 		mouseadjustment=5;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		questionnum=0;
 #endif
 	}
@@ -265,7 +265,7 @@ void WriteConfig(void)
 		write(file,&viewsize,sizeof(viewsize));
 		write(file,&mouseadjustment,sizeof(mouseadjustment));
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		write(file,&questionnum,sizeof(questionnum));
 #endif
 
@@ -326,7 +326,7 @@ extern int far  CheckIs386(void);
 void NewGame (int difficulty,int episode)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	memset (&LevelRatios,0,sizeof(LRstruct)*30);
 #endif
 	memset (&gamestate,0,sizeof(gamestate));
@@ -338,7 +338,7 @@ void NewGame (int difficulty,int episode)
 	gamestate.lives = 3;
 	gamestate.nextextra = EXTRAPOINTS;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	gamestate.mapon=episode;
 	gamestate.maxammo=99;
 	gamestate.gas = gamestate.missiles = 0;
@@ -365,7 +365,7 @@ void DiskFlopAnim(int x,int y)
  VW_UpdateScreen();
  // *** S3DNA RESTORATION ***
  // WARNING: The following statement may technically lead to undefined behaviors
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
  which=which+1; which=which&3;
 #else
  which^=1;
@@ -375,7 +375,7 @@ void DiskFlopAnim(int x,int y)
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // This isn't found in the v1.0 EXE
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 long DoChecksum(byte far *source,unsigned size,long checksum)
 {
  unsigned i;
@@ -401,14 +401,14 @@ boolean SaveTheGame(int file,int x,int y)
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming and free size verifications, plus a bit more
 
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	struct diskfree_t dfree;
 	long avail,size,checksum;
 #endif
 	objtype *ob,nullobj;
 
 
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	if (_dos_getdiskfree(0,&dfree))
 	  Quit("Error in _dos_getdiskfree call");
 
@@ -423,7 +423,7 @@ boolean SaveTheGame(int file,int x,int y)
 
 	size += sizeof(gamestate) +
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			sizeof(LRstruct)*30 +
 #else
 			sizeof(LRstruct)*8 +
@@ -447,24 +447,24 @@ boolean SaveTheGame(int file,int x,int y)
 	}
 
 	checksum = 0;
-#endif // GAMEVER_RESTORATION_WL1_APO10
+#endif // GAMEVER_EXEDEF_WL1AP10
 
 
 	DiskFlopAnim(x,y);
 	CA_FarWrite (file,(void far *)&gamestate,sizeof(gamestate));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&gamestate,sizeof(gamestate),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	// *** SHAREWARE V1.0 APOGEE + SOD (DEMO) V1.0+V1.4 FORMGEN + S3DNA RESTORATION ***
 	// LevelRatios should have 8 entries in these versions of SOD (like WL1/WL6) but don't write anything in Wolf3D v1.0
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 #if (defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 //#ifdef SPEAR
 	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
-#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+#elif (defined GAMEVER_EXEDEF_N3DWT10)
 	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*30);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
 #else
@@ -475,16 +475,16 @@ boolean SaveTheGame(int file,int x,int y)
 	DiskFlopAnim(x,y);
 #endif
 	CA_FarWrite (file,(void far *)tilemap,sizeof(tilemap));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)tilemap,sizeof(tilemap),checksum);
 #endif
 	DiskFlopAnim(x,y);
 	CA_FarWrite (file,(void far *)actorat,sizeof(actorat));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)actorat,sizeof(actorat),checksum);
 #endif
 
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	CA_FarWrite (file,(void far *)areaconnect,sizeof(areaconnect));
 	CA_FarWrite (file,(void far *)areabyplayer,sizeof(areabyplayer));
 #endif
@@ -502,49 +502,49 @@ boolean SaveTheGame(int file,int x,int y)
 
 	DiskFlopAnim(x,y);
 	CA_FarWrite (file,(void far *)&laststatobj,sizeof(laststatobj));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&laststatobj,sizeof(laststatobj),checksum);
 #endif
 	DiskFlopAnim(x,y);
 	CA_FarWrite (file,(void far *)statobjlist,sizeof(statobjlist));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)statobjlist,sizeof(statobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	CA_FarWrite (file,(void far *)doorposition,sizeof(doorposition));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)doorposition,sizeof(doorposition),checksum);
 #endif
 	DiskFlopAnim(x,y);
 	CA_FarWrite (file,(void far *)doorobjlist,sizeof(doorobjlist));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)doorobjlist,sizeof(doorobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	CA_FarWrite (file,(void far *)&pwallstate,sizeof(pwallstate));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwallstate,sizeof(pwallstate),checksum);
 #endif
 	CA_FarWrite (file,(void far *)&pwallx,sizeof(pwallx));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwallx,sizeof(pwallx),checksum);
 #endif
 	CA_FarWrite (file,(void far *)&pwally,sizeof(pwally));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwally,sizeof(pwally),checksum);
 #endif
 	CA_FarWrite (file,(void far *)&pwalldir,sizeof(pwalldir));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwalldir,sizeof(pwalldir),checksum);
 #endif
 	CA_FarWrite (file,(void far *)&pwallpos,sizeof(pwallpos));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwallpos,sizeof(pwallpos),checksum);
 #endif
 
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	//
 	// WRITE OUT CHECKSUM
 	//
@@ -569,31 +569,31 @@ boolean LoadTheGame(int file,int x,int y)
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming, plus a bit more
 
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	long checksum,oldchecksum;
 #endif
 	objtype *ob,nullobj;
 
 
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = 0;
 #endif
 
 	DiskFlopAnim(x,y);
 	CA_FarRead (file,(void far *)&gamestate,sizeof(gamestate));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&gamestate,sizeof(gamestate),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	// *** SHAREWARE V1.0 APOGEE + SOD (DEMO) V1.0+V1.4 FORMGEN + S3DNA RESTORATION ***
 	// LevelRatios should have 8 entries in these versions of SOD (like WL1/WL6) but don't read anything in Wolf3D v1.0
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 #if (defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
 //#ifdef SPEAR
 	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
-#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+#elif (defined GAMEVER_EXEDEF_N3DWT10)
 	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*30);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
 #else
@@ -607,16 +607,16 @@ boolean LoadTheGame(int file,int x,int y)
 
 	DiskFlopAnim(x,y);
 	CA_FarRead (file,(void far *)tilemap,sizeof(tilemap));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)tilemap,sizeof(tilemap),checksum);
 #endif
 	DiskFlopAnim(x,y);
 	CA_FarRead (file,(void far *)actorat,sizeof(actorat));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)actorat,sizeof(actorat),checksum);
 #endif
 
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	CA_FarRead (file,(void far *)areaconnect,sizeof(areaconnect));
 	CA_FarRead (file,(void far *)areabyplayer,sizeof(areabyplayer));
 #endif
@@ -635,7 +635,7 @@ boolean LoadTheGame(int file,int x,int y)
 			break;
 		GetNewActor ();
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11)
 		memcpy (new,&nullobj,sizeof(nullobj));
 #else
 	 // don't copy over the links
@@ -647,49 +647,49 @@ boolean LoadTheGame(int file,int x,int y)
 
 	DiskFlopAnim(x,y);
 	CA_FarRead (file,(void far *)&laststatobj,sizeof(laststatobj));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&laststatobj,sizeof(laststatobj),checksum);
 #endif
 	DiskFlopAnim(x,y);
 	CA_FarRead (file,(void far *)statobjlist,sizeof(statobjlist));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)statobjlist,sizeof(statobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	CA_FarRead (file,(void far *)doorposition,sizeof(doorposition));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)doorposition,sizeof(doorposition),checksum);
 #endif
 	DiskFlopAnim(x,y);
 	CA_FarRead (file,(void far *)doorobjlist,sizeof(doorobjlist));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)doorobjlist,sizeof(doorobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	CA_FarRead (file,(void far *)&pwallstate,sizeof(pwallstate));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwallstate,sizeof(pwallstate),checksum);
 #endif
 	CA_FarRead (file,(void far *)&pwallx,sizeof(pwallx));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwallx,sizeof(pwallx),checksum);
 #endif
 	CA_FarRead (file,(void far *)&pwally,sizeof(pwally));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwally,sizeof(pwally),checksum);
 #endif
 	CA_FarRead (file,(void far *)&pwalldir,sizeof(pwalldir));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwalldir,sizeof(pwalldir),checksum);
 #endif
 	CA_FarRead (file,(void far *)&pwallpos,sizeof(pwallpos));
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	checksum = DoChecksum((byte far *)&pwallpos,sizeof(pwallpos),checksum);
 #endif
 
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	CA_FarRead (file,(void far *)&oldchecksum,sizeof(oldchecksum));
 
 	if (oldchecksum != checksum)
@@ -709,7 +709,7 @@ boolean LoadTheGame(int file,int x,int y)
 	   gamestate.bestweapon = wp_pistol;
 	 gamestate.ammo = 8;
 	 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	 gamestate.gas = gamestate.missiles = 0;
 	 gamestate.machinegun = 0;
 	 gamestate.chaingun = 0;
@@ -898,7 +898,7 @@ void SetupWalls (void)
 //===========================================================================
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 /*
 ==========================
 =
@@ -1053,7 +1053,7 @@ boolean MS_CheckParm (char far *check)
 static  int     wolfdigimap[] =
 		{
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			D_ANTLPESND,            0,
 			D_BEARSND,              1,
 			D_BONUSSND,             2,
@@ -1212,9 +1212,9 @@ void InitDigiMap (void)
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 CP_iteminfo	MusicItems={CTL_X,40,11,0,32};
 CP_itemtype far MusicMenu[]=
 	{
@@ -1279,7 +1279,7 @@ void DoJukebox(void)
 	unsigned start,songs[]=
 		{
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			NOAH01_MUS,
 			NOAH02_MUS,
 			NOAH03_MUS,
@@ -1338,7 +1338,7 @@ void DoJukebox(void)
 
 #ifndef SPEAR
 // *** S3DNA RESTORATION ***
-#if (!defined UPLOAD) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined UPLOAD) && (!defined GAMEVER_EXEDEF_N3DWT10)
 //#ifndef UPLOAD
 	_dos_gettime(&time);
 	start = (time.hsecond%3)*6;
@@ -1361,7 +1361,7 @@ void DoJukebox(void)
 	fontnumber=1;
 	ClearMScreen ();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	VWB_DrawPic(112,192,C_MOUSELBACKPIC);
 #else
 	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
@@ -1370,7 +1370,7 @@ void DoJukebox(void)
 	SETFONTCOLOR (TEXTCOLOR,BKGDCOLOR);
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	DrawWindow (CTL_X-2,CTL_Y-36,280,13*12,BKGDCOLOR);
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -1386,7 +1386,7 @@ void DoJukebox(void)
 	WindowX = 0;
 	WindowY = 320;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	US_CPrint ("Noah Tunes");
 #else
 	US_CPrint ("Robert's Jukebox");
@@ -1424,7 +1424,7 @@ void DoJukebox(void)
 #endif
 }
 #endif
-#endif // GAMEVER_RESTORATION_WL1_APO10
+#endif // GAMEVER_EXEDEF_WL1AP10
 
 
 /*
@@ -1443,7 +1443,7 @@ void InitGame (void)
 	unsigned        *blockstart;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	noquestions = false;
 	if (MS_CheckParm ("noquestions"))
 		noquestions = true;
@@ -1460,7 +1460,7 @@ void InitGame (void)
 	MM_Startup ();                  // so the signon screen can be freed
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	SignonScreen ();
 #endif
 
@@ -1474,9 +1474,9 @@ void InitGame (void)
 
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	if (mminfo.mainmem < 240000L)
-#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+#elif (defined GAMEVER_EXEDEF_N3DWT10)
 	if (mminfo.mainmem < 275000L && !MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -1491,7 +1491,7 @@ void InitGame (void)
 		screen = grsegs[ERRORSCREEN];
 		ShutdownId();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		movedata ((unsigned)screen,7+8*160,0xb800,0,15*160);
 #else
 		movedata ((unsigned)screen,7+7*160,0xb800,0,17*160);
@@ -1522,7 +1522,7 @@ void InitGame (void)
 
 	updateptr = &update[0];
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	*(unsigned *)(updateptr+UPDATEWIDE*UPDATEHIGH) = UPDATETERMINATE;
 #endif
 
@@ -1532,13 +1532,13 @@ void InitGame (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 //
 // HOLDING DOWN 'M' KEY?
 //
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (!defined SPEARDEMO) && (!defined GAMEVER_RESTORATION_WL1_APO10)
+#if (!defined SPEARDEMO) && (!defined GAMEVER_EXEDEF_WL1AP10)
 //#ifndef SPEARDEMO
 	if (Keyboard[sc_M])
 	  DoJukebox();
@@ -1562,7 +1562,7 @@ void InitGame (void)
 	MM_SetLock (&grsegs[STARTFONT],true);
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	LoadLatchMem ();
 #endif
 	BuildTables ();          // trig tables
@@ -1588,7 +1588,7 @@ close(profilehandle);
 //
 	InitRedShifts ();
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (!virtualreality)
 #endif
@@ -1596,13 +1596,13 @@ close(profilehandle);
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	displayofs = PAGE1START;
 	bufferofs = PAGE2START;
 #endif
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (MS_CheckParm ("CHECK"))
 	{
 		printf("Press any key...");
@@ -1664,7 +1664,7 @@ boolean SetViewSize (unsigned width, unsigned height)
 	}
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	SetPlaneViewSize ();
 #endif
 	return true;
@@ -1724,17 +1724,17 @@ void Quit (char *error)
 	memptr	screen;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
 	if (virtualreality)
 		geninterrupt(0x61);
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	ClearMemory ();
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
  if (CA_Started)
  {
 #endif
@@ -1755,7 +1755,7 @@ void Quit (char *error)
 	 screen = grsegs[ERRORSCREEN];
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
  }
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -1765,7 +1765,7 @@ void Quit (char *error)
 	ShutdownId ();
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
  if (CA_Started)
  {
 	clrscr();
@@ -1773,7 +1773,7 @@ void Quit (char *error)
 	if (error && *error)
 	{
 	  // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	  movedata ((unsigned)screen,0,0xb800,0,7*160);
 #else
 	  movedata ((unsigned)screen,7,0xb800,0,7*160);
@@ -1798,7 +1798,7 @@ void Quit (char *error)
 		#if (!defined JAPAN) && (!defined GAMEVER_RESTORATION_ANY_ACT14)
 		//#ifndef JAPAN
 		// *** S3DNA RESTORATION ***
-		#ifdef GAMEVER_RESTORATION_N3D_WIS10
+		#ifdef GAMEVER_EXEDEF_N3DWT10
 		movedata ((unsigned)screen,0,0xb800,0,4000);
 		#else
 		movedata ((unsigned)screen,7,0xb800,0,4000);
@@ -1812,7 +1812,7 @@ void Quit (char *error)
 //asm	int	0x10
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
  }
  else
  {
@@ -1864,7 +1864,7 @@ void    DemoLoop (void)
 		}
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		gamestate.mapon = tedlevelnum;
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -1895,7 +1895,7 @@ void    DemoLoop (void)
 		#ifndef SPEAR
 		#ifndef JAPAN
 		// *** S3DNA RESTORATION ***
-		#ifndef GAMEVER_RESTORATION_N3D_WIS10
+		#ifndef GAMEVER_EXEDEF_N3DWT10
 		if (!NoWait)
 			NonShareware();
 		#endif
@@ -1913,7 +1913,7 @@ void    DemoLoop (void)
 	#endif
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	displayofs = bufferofs = 0;
 #endif
 // *** PRE-V1.4 APOGEE RESTORATION ***
@@ -1922,7 +1922,7 @@ void    DemoLoop (void)
 #endif
 
 // *** S3DNA RESTORATION ***
-#if (!defined JAPAN) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined JAPAN) && (!defined GAMEVER_EXEDEF_N3DWT10)
 //#ifndef JAPAN
 	if (!NoWait)
 		PG13 ();
@@ -1939,7 +1939,7 @@ void    DemoLoop (void)
 //
 			MM_SortMem ();
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 			bufferofs = 19200;
 			displayofs = 0;
 			VW_SetCRTC(displayofs);
@@ -1947,12 +1947,12 @@ void    DemoLoop (void)
 #ifndef DEMOTEST
 
 			// *** S3DNA RESTORATION ***
-#if (defined SPEAR) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (defined SPEAR) || (defined GAMEVER_EXEDEF_N3DWT10)
 //#ifdef SPEAR
 			CA_CacheGrChunk (TITLEPALETTE);
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			CA_CacheScreen(TITLEPIC);
 #else
 			CA_CacheGrChunk (TITLE1PIC);
@@ -1987,7 +1987,7 @@ void    DemoLoop (void)
 #endif
 #endif
 			// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			if (IN_UserInput(TickBase))
 				break;
 #elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
@@ -1999,7 +1999,7 @@ void    DemoLoop (void)
 			VW_FadeOut();
 #endif
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			CA_CacheGrChunk (COPYRIGHTPIC);
 			VWB_DrawPic (0,184,COPYRIGHTPIC);
 			VW_UpdateScreen ();
@@ -2019,7 +2019,7 @@ void    DemoLoop (void)
 			Briefing (6,true);
 #endif
 			// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 //
 // credits page
 //
@@ -2065,7 +2065,7 @@ void    DemoLoop (void)
 //
 
 			// *** S3DNA RESTORATION ***
-			#ifdef GAMEVER_RESTORATION_N3D_WIS10
+			#ifdef GAMEVER_EXEDEF_N3DWT10
 			PlayDemo (LastDemo++%3);
 			#elif (!defined SPEARDEMO)
 			//#ifndef SPEARDEMO
@@ -2094,7 +2094,7 @@ void    DemoLoop (void)
 		VW_FadeOut ();
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (Keyboard[sc_M])
 			DoJukebox();
 #endif
@@ -2133,7 +2133,7 @@ void    DemoLoop (void)
 */
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 char    *nosprtxt[] = {"nospr",nil};
 #endif
 
@@ -2158,7 +2158,7 @@ void main (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	VGAMode = true;
 	VL_SetTextMode();
 	FillCharAttr(' ',0x5d,80);
@@ -2175,7 +2175,7 @@ void main (void)
 	DemoLoop();
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	Quit("FatalError: DemoLoop() exited!");
 #else
 	Quit("Demo loop exited???");
@@ -2183,7 +2183,7 @@ void main (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - Some unused function
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 long GetRandomTableSum (void)
 {
 	extern far byte rndtable[];

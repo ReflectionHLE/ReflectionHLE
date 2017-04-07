@@ -422,7 +422,7 @@ void PageLayout (boolean shownumber)
 // clear the screen
 //
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	VWB_Bar (0,0,320,200,0x24);
 #else
 	VWB_Bar (0,0,320,200,BACKCOLOR);
@@ -514,7 +514,7 @@ void PageLayout (boolean shownumber)
 		itoa (numpages,str2,10);
 		strcat (str,str2);
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		fontcolor = 0x10;
 #else
 		fontcolor = 0x4f; 			   //12^BACKCOLOR;
@@ -686,7 +686,7 @@ void ShowArticle (char far *article)
 	fontnumber = 0;
 	CA_MarkGrChunk(STARTFONT);
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	VWB_Bar (0,0,320,200,0x24);
 #else
 	VWB_Bar (0,0,320,200,BACKCOLOR);
@@ -756,7 +756,7 @@ void ShowArticle (char far *article)
 
 		// *** APOGEE VERSIONS + S3NA RESTORATION ***
 		// This is also skipped in these versions
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_EXEDEF_N3DWT10)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -775,7 +775,7 @@ void ShowArticle (char far *article)
 #ifdef ARTSEXTERN
 // *** PRE-V1.4 APOGEE RESTORATION *** - Change the the order of appearances endextern and helpextern in the v1.2 EXE's layout (and SPEAR wasn't ready for that)
 // *** S3DNA RESTORATION *** - No T_ENDART1
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 int		helpextern = T_HELPART;
 #elif defined GAMEVER_RESTORATION_ANY_APO_PRE14
 int		helpextern = T_HELPART;
@@ -788,7 +788,7 @@ int		helpextern = T_HELPART;
 #endif // VERSIONS RESTORATION
 #endif
 // *** S3DNA RESTORATION *** - No T_ENDART1
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 char helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";
 #endif
@@ -810,7 +810,7 @@ void HelpScreens (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	CA_UpLevel ();
 	MM_SortMem ();
 #endif
@@ -854,7 +854,7 @@ void HelpScreens (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	FreeMusic ();
 	CA_DownLevel ();
 	MM_SortMem ();
@@ -864,7 +864,7 @@ void HelpScreens (void)
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 //
 // END ARTICLES
 //
@@ -878,7 +878,7 @@ void EndText (void)
 	ClearMemory ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	ResetSplitScreen ();
 #endif
 	CA_UpLevel ();
@@ -902,7 +902,7 @@ void EndText (void)
 
 #ifdef ARTSEXTERN
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	artnum = endextern;
 #else
 	artnum = endextern+gamestate.episode;

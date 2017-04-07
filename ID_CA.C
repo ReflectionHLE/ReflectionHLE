@@ -54,7 +54,7 @@ typedef struct
 
 byte 		_seg	*tinf;
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 int			mapon;
 #endif
 
@@ -69,7 +69,7 @@ byte		ca_levelbit,ca_levelnum;
 int			profilehandle,debughandle;
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 boolean		CA_Started = false;
 #endif
 
@@ -872,7 +872,7 @@ void CAL_SetupGrFile (void)
 	int handle;
 	memptr compseg;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	printf("Loading graphics headers...\n");
 #endif
 
@@ -958,7 +958,7 @@ void CAL_SetupMapFile (void)
 	long length,pos;
 	char fname[13];
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	printf("Loading maps...\n");
 #endif
 
@@ -1045,7 +1045,7 @@ void CAL_SetupAudioFile (void)
 	long length;
 	char fname[13];
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	printf("Loading sound headers...\n");
 #endif
 
@@ -1107,7 +1107,7 @@ void CA_Startup (void)
 	profilehandle = open("PROFILE.TXT", O_CREAT | O_WRONLY | O_TEXT);
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	printf("CA_Startup: ");
 #endif
 
@@ -1116,13 +1116,13 @@ void CA_Startup (void)
 	CAL_SetupAudioFile ();
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	mapon = -1;
 #endif
 	ca_levelbit = 1;
 	ca_levelnum = 0;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	CA_Started = true;
 #endif
 
@@ -1144,7 +1144,7 @@ void CA_Startup (void)
 void CA_Shutdown (void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (!CA_Started)
 		return;
 #endif
@@ -1474,7 +1474,7 @@ void CA_CacheMap (int mapnum)
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	mapon = mapnum;
 #endif
 
@@ -1488,7 +1488,7 @@ void CA_CacheMap (int mapnum)
 		pos = mapheaderseg[mapnum]->planestart[plane];
 		compressed = mapheaderseg[mapnum]->planelength[plane];
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		if (!compressed)
 			continue;
 #endif

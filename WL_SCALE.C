@@ -443,7 +443,7 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
 	boolean		leftvis,rightvis;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (shapenum >= SPR_LAST)
 	{
 		sprintf (str, "ScaleShape: Invalid sprite %u!", shapenum);
@@ -655,7 +655,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 	boolean		leftvis,rightvis;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (shapenum >= SPR_LAST)
 	{
 		sprintf (str, "SimpleScaleShape: Invalid sprite %u!", shapenum);

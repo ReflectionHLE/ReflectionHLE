@@ -131,7 +131,7 @@ static	void			(*INL_KeyHook)(void);
 static	void interrupt	(*OldKeyVect)(void);
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 static	char			*ParmStrings[] = {"NOJOY","NOJOYS","NOMOUSE",nil};
 #else
 static	char			*ParmStrings[] = {"nojoys","nomouse",nil};
@@ -603,7 +603,7 @@ IN_Startup(void)
 	if (IN_Started)
 		return;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	printf("IN_Startup: ");
 #endif
 
@@ -615,14 +615,14 @@ IN_Startup(void)
 		{
 		case 0:
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		case 1:
 			printf("Skipping joystick detection\n");
 #endif
 			checkjoys = false;
 			break;
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		case 2:
 			printf("Skipping mouse detection\n");
 #else
@@ -636,19 +636,19 @@ IN_Startup(void)
 	INL_StartKbd();
 	MousePresent = checkmouse? INL_StartMouse() : false;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (MousePresent)
 		printf("Mouse detected\n");
 #endif
 
 	for (i = 0;i < MaxJoys;i++)
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	{
 #endif
 		JoysPresent[i] = checkjoys? INL_StartJoy(i) : false;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (JoysPresent[i])
 			printf("Joystick %d detected\n", i+1);
 	}

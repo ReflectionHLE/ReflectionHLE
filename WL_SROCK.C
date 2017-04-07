@@ -2,7 +2,7 @@
 // at a location in WL_ACT2.C depending on version
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 extern	statetype s_coconut;
 extern	statetype s_cocohit;
 #else
@@ -12,7 +12,7 @@ extern	statetype s_smoke2;
 extern	statetype s_smoke3;
 extern	statetype s_smoke4;
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
+#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
 extern	statetype s_boom2;
 extern	statetype s_boom3;
 #endif
@@ -21,7 +21,7 @@ extern	statetype s_boom3;
 void A_Smoke (objtype *ob);
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 statetype s_coconut	 	= {false,SPR_ANIMALPROJ,16,T_Projectile,NULL,&s_coconut};
 statetype s_cocohit	 	= {false,SPR_ANIMALPROJEXP,18,NULL,NULL,NULL};
 #else
@@ -32,12 +32,12 @@ statetype s_smoke3	 	= {false,SPR_SMOKE_3,3,NULL,NULL,&s_smoke4};
 statetype s_smoke4	 	= {false,SPR_SMOKE_4,3,NULL,NULL,NULL};
 
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
+#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
 statetype s_boom1	 	= {false,SPR_BOOM_1,6,NULL,NULL,&s_boom2};
 statetype s_boom2	 	= {false,SPR_BOOM_2,6,NULL,NULL,&s_boom3};
 statetype s_boom3	 	= {false,SPR_BOOM_3,6,NULL,NULL,NULL};
 #endif
-#endif // GAMEVER_RESTORATION_N3D_WIS10
+#endif // GAMEVER_EXEDEF_N3DWT10
 
 #ifdef SPEAR
 

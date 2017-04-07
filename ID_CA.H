@@ -2,7 +2,7 @@
 //===========================================================================
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 #define NUMMAPS		30
 #define MAPPLANES	3
 #else
@@ -25,7 +25,7 @@ typedef	struct
 //===========================================================================
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 extern	boolean		CA_Started;
 #endif
 
@@ -33,7 +33,7 @@ extern	char		audioname[13];
 
 extern	byte 		_seg	*tinf;
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 extern	int			mapon;
 #endif
 

@@ -107,7 +107,7 @@ void VH_SetDefaultColors (void);
 #define VW_ColorBorder	VL_ColorBorder
 #define VW_WaitVBL		VL_WaitVBL
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 #define VW_FadeIn()		VL_FadeIn(0,255,&gamepal,24);
 #define VW_FadeOut()	VL_FadeOut(0,255,0,0,0,24);
 #else
@@ -131,7 +131,7 @@ void	VW_MeasurePropString (char far *string, word *width, word *height);
 void LatchDrawPic (unsigned x, unsigned y, unsigned picnum);
 void 	LoadLatchMem (void);
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 boolean 	FizzleFade (unsigned source, unsigned dest,
 	unsigned width,unsigned height, unsigned frames,boolean abortable);
 #endif

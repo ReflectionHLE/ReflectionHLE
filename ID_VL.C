@@ -16,7 +16,7 @@ unsigned	bufferofs;
 unsigned	displayofs,pelpan;
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 boolean		VGAMode = false;
 #endif
 
@@ -72,7 +72,7 @@ void	VL_Startup (void)
 */
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 static	char *ParmStrings[] = {"VGA",""};
 #else
 static	char *ParmStrings[] = {"HIDDENCARD",""};
@@ -84,7 +84,7 @@ void	VL_Startup (void)
 
 	asm	cld;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	printf("VL_Startup: ");
 #endif
 
@@ -97,7 +97,7 @@ void	VL_Startup (void)
 		}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (videocard != 5)
 	{
 		printf("VGA not detected\nUse -VGA option to force detection\n");
@@ -139,7 +139,7 @@ void	VL_Shutdown (void)
 void	VL_SetVGAPlaneMode (void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (VGAMode)
 		return;
 	VGAMode = true;
@@ -148,7 +148,7 @@ asm	mov	ax,0x13
 asm	int	0x10
 	VL_DePlaneVGA ();
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	VGAMAPMASK(15);
 #endif
 	VL_SetLineWidth (40);
@@ -166,7 +166,7 @@ asm	int	0x10
 void	VL_SetTextMode (void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (!VGAMode)
 		return;
 	VGAMode = false;
@@ -1126,7 +1126,7 @@ void VL_SizeTile8String (char *str, int *width, int *height)
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 
 void FillCharAttr (byte c, byte attr, int count)
 {

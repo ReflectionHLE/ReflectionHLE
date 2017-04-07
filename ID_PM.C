@@ -341,7 +341,7 @@ PM_SetMainMemPurge(int level)
 	int	i;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (!PMStarted)
 		return;
 #endif
@@ -453,7 +453,7 @@ PML_StartupMainMem(void)
 	if (mmerror)
 		mmerror = false;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (MainPagesAvail < PMMinMainMem)
 	{
 		// *** S3DNA RESTORATION ***
@@ -523,7 +523,7 @@ PML_OpenPageFile(void)
 	word			far *lengthptr;
 	PageListStruct	far *page;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	printf("Opening %s\n", PageFileName);
 #endif
 
@@ -932,7 +932,7 @@ asm	out	dx,al
 		boolean mainonly = (pagenum >= PMSoundStart);
 if (!PMPages[pagenum].offset)	// JDC: sparse page
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	return 0;
 #else
 	Quit ("Tried to load a sparse page!");
@@ -1050,7 +1050,7 @@ PM_Preload(boolean (*update)(word current,word total))
 		current++;
 		maintotal--;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (update)
 #endif
 		update(current,total);
@@ -1090,7 +1090,7 @@ PM_Preload(boolean (*update)(word current,word total))
 			current++;
 			xmstotal--;
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (update)
 #endif
 			update(current,total);
@@ -1101,7 +1101,7 @@ PM_Preload(boolean (*update)(word current,word total))
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 if (update)
 #endif
 	update(total,total);
@@ -1200,7 +1200,7 @@ PM_Startup(void)
 	if (PMStarted)
 		return;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	printf("PM_Startup: ");
 #endif
 
@@ -1211,21 +1211,21 @@ PM_Startup(void)
 		{
 		case 0:
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			printf("Main memory disabled\n");
 #endif
 			nomain = true;
 			break;
 		case 1:
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			printf("EMS disabled\n");
 #endif
 			noems = true;
 			break;
 		case 2:
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			printf("XMS disabled\n");
 #endif
 			noxms = true;
@@ -1247,7 +1247,7 @@ PM_Startup(void)
 
 	PM_Reset();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (EMSPresent)
 		printf("EMS detected (%lukb)\n", (long)EMSPagesAvail<<2);
 	else

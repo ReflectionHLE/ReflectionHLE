@@ -25,7 +25,7 @@ extern	char		far signon;
 #define	introscn	signon
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 #include "GFXV_N3D.H"
 #include "AUDION3D.H"
 //#include "MAPSN3D.H" // Unused anyway
@@ -112,7 +112,7 @@ void	Quit (char *error);		// defined in user program
 //
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 #define	PORTTILESWIDE		22
 #define	PORTTILESHIGH		14
 #else

@@ -236,7 +236,7 @@ void	VW_MeasureMPropString  (char far *string, word *width, word *height)
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 // An unknown do-nothing stub (possibly having disabled debugging code)
 void VW_NullStub (void)
 {
@@ -287,7 +287,7 @@ int VW_MarkUpdateBlock (int x1, int y1, int x2, int y2)
 	if (xt1<0)
 		xt1=0;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	else if (xt1>=UPDATEWIDE-1)
 #else
 	else if (xt1>=UPDATEWIDE)
@@ -302,7 +302,7 @@ int VW_MarkUpdateBlock (int x1, int y1, int x2, int y2)
 	if (xt2<0)
 		return 0;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	else if (xt2>=UPDATEWIDE-1)
 		xt2 = UPDATEWIDE-2;
 #else
@@ -392,14 +392,14 @@ void VWB_Vlin (int y1, int y2, int x, int color)
 }
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 void VH_UpdateScreen (void);
 #endif
 
 void VW_UpdateScreen (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	extern boolean screensplit;
 	if (screensplit)
 		VH_UpdateSplitScreen ();
@@ -476,7 +476,7 @@ void LoadLatchMem (void)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Do compile in v1.0
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 //#if 0	// ran out of latch space!
 //
 // tile 16s
@@ -528,7 +528,7 @@ void LoadLatchMem (void)
 //==========================================================================
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 /*
 ===================
 =
@@ -618,4 +618,4 @@ noxor:
 
 
 }
-#endif // GAMEVER_RESTORATION_N3D_WIS10
+#endif // GAMEVER_EXEDEF_N3DWT10

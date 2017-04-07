@@ -16,7 +16,7 @@ statobj_t	statobjlist[MAXSTATS],*laststatobj;
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 struct _statinfo
 #else
 struct
@@ -32,7 +32,7 @@ struct
 {SPR_STAT_3,block},				// Floor lamp      "
 {SPR_STAT_4},					// Chandelier      "
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 {SPR_QUIZ,bo_alpo},
 {SPR_STAT_6,block},
 #else
@@ -45,7 +45,7 @@ struct
 //
 {SPR_STAT_8,block},				// Tree            spr2v
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 {SPR_STAT_9,block},
 {SPR_STAT_10,block},
 {SPR_STAT_11},
@@ -70,7 +70,7 @@ struct
 // NEW PAGE
 //
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 {SPR_STAT_16,bo_key1},
 {SPR_STAT_17,bo_key2},
 {SPR_STAT_18,bo_bandolier},
@@ -93,7 +93,7 @@ struct
 // NEW PAGE
 //
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 {SPR_STAT_24,bo_chaingun},
 {SPR_STAT_25,bo_cross},
 {SPR_STAT_26,bo_chalice},
@@ -113,7 +113,7 @@ struct
 {SPR_STAT_31,bo_bible},			// Bible           "
 #endif
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 //
 // NEW PAGE
 //
@@ -156,7 +156,7 @@ struct
 {SPR_STAT_45,block},			// stove           " (SOD:gibs)
 {SPR_STAT_46,block},			// spears          " (SOD:gibs)
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 {SPR_STAT_47,block},				// vines			"
 #else
 {SPR_STAT_47},					// vines			"
@@ -174,7 +174,7 @@ struct
 
 {SPR_STAT_26,bo_clip2},			// Clip            "
 {-1}							// terminator
-#endif // GAMEVER_RESTORATION_N3D_WIS10
+#endif // GAMEVER_EXEDEF_N3DWT10
 };
 
 /*
@@ -193,7 +193,7 @@ void InitStaticList (void)
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 void SpawnExit (int tilex, int tiley, boolean secret)
 {
 	laststatobj->shapenum = -2;
@@ -232,7 +232,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case dressing:
 		laststatobj->flags = 0;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		laststatobj->itemnumber = statinfo[type].type;
 #endif
 		break;
@@ -243,14 +243,14 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_crown:
 	case	bo_fullheal:
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	case	bo_chest:
 #endif
 		if (!loadedgame)
 		  gamestate.treasuretotal++;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	case	bo_alpo:
 #endif
 	case	bo_firstaid:
@@ -267,7 +267,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_chaingun:
 	case	bo_food:
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	case	bo_bandolier:
 	case	bo_flamethrower:
 	case	bo_gascan:
@@ -286,7 +286,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 		laststatobj->itemnumber = statinfo[type].type;
 		break;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	default:
 		sprintf (str,"SpawnStatic: Invalid object $%02X at %d, %d!\n",
 			type,tilex,tiley);
@@ -388,7 +388,7 @@ Every time a door opens or closes the areabyplayer matrix gets recalculated.
 
 doorobj_t	doorobjlist[MAXDOORS],*lastdoorobj;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 unsigned		pwallnoise;
 #endif
 int			doornum;
@@ -474,7 +474,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
 	unsigned	far *map;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (doornum>=MAXDOORS)
 	{
 		sprintf (str,"SpawnDoor(): Too many doors on level %d!",gamestate.mapon);
@@ -492,7 +492,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
 	lastdoorobj->lock = lock;
 	lastdoorobj->action = dr_closed;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	lastdoorobj->seen = false;
 #endif
 
@@ -822,7 +822,7 @@ void MoveDoors (void)
 	int		door;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	if (gamestate.victoryflag)		// don't move door during victory sequence
 		return;
 #endif
@@ -876,7 +876,7 @@ void PushWall (int checkx, int checky, int dir)
 
 	oldtile = tilemap[checkx][checky];
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	oldtile &= 0xFFDF;
 #endif
 	if (!oldtile)
@@ -936,7 +936,7 @@ void PushWall (int checkx, int checky, int dir)
 
 	SD_PlaySound (PUSHWALLSND);
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	pwallnoise = 0;
 #endif
 }
@@ -967,7 +967,7 @@ void MovePWalls (void)
 	// block crossed into a new block
 		oldtile = tilemap[pwallx][pwally] & 63;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		oldtile &= 0xFFDF;
 #endif
 
@@ -983,7 +983,7 @@ void MovePWalls (void)
 		//
 		// *** S3DNA RESTORATION ***
 		// Actually bugfix for a well-known pushwall bug
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (pwallstate>=256)
 #else
 		if (pwallstate>256)
@@ -1051,7 +1051,7 @@ void MovePWalls (void)
 
 	pwallpos = (pwallstate/2)&63;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	pwallnoise += tics;
 	if (pwallnoise > 8)
 	{

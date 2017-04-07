@@ -85,7 +85,7 @@ extern	unsigned	bufferofs;			// all drawing is reletive to this
 extern	unsigned	displayofs,pelpan;	// last setscreen coordinates
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 extern	boolean		VGAMode;
 #endif
 
@@ -116,7 +116,7 @@ out dx,al;\
 sti;}
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 #define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX+1;mov al,x;out dx,al;sti;}
 #else
 #define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov al,SC_MAPMASK;mov ah,x;out dx,ax;sti;}
@@ -162,7 +162,7 @@ void VL_MemToScreen (byte far *source, int width, int height, int x, int y);
 void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y);
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 void VL_LatchToScreen (unsigned source, int width, int height, int x, int y);
 void FillCharAttr (byte c, byte attr, int count);
 #else

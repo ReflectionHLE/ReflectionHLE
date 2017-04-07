@@ -65,7 +65,7 @@ struct atkinf
 {
 	char	tics,attack,frame;		// attack is 1 for gun, 2 for knife
 }
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 attackinfo[6][14] =
 #else
 attackinfo[4][14] =
@@ -74,7 +74,7 @@ attackinfo[4][14] =
 {
 { {6,0,1},{6,2,2},{6,0,3},{6,-1,4} },
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 { {6,0,1},{6,1,2},{6,0,3},{8,-1,4} },
 #else
 { {6,0,1},{6,1,2},{6,0,3},{6,-1,4} },
@@ -82,7 +82,7 @@ attackinfo[4][14] =
 { {6,0,1},{6,1,2},{6,3,3},{6,-1,4} },
 { {6,0,1},{6,1,2},{6,4,3},{6,-1,4} },
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 { {7,0,1},{7,5,2},{7,5,3},{7,-1,4} },
 { {6,0,1},{6,0,2},{6,6,3},{6,-1,4} },
 #endif
@@ -92,13 +92,13 @@ attackinfo[4][14] =
 int	strafeangle[9] = {0,90,180,270,45,135,225,315,0};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 int	MapEpisode[]   = {1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,5,6,6,6,6,6,6,6,7};
 int	MapLevel[] = {1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1};
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 void DrawWeapon (void);
 #endif
 void GiveWeapon (int weapon);
@@ -144,20 +144,20 @@ void CheckWeaponChange (void)
 	int	i,buttons;
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	if (!gamestate.ammo)		// must use knife with no ammo
 		return;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	for (i=wp_knife ; i<=wp_missile ; i++)
 #else
 	for (i=wp_knife ; i<=gamestate.bestweapon ; i++)
 #endif
 		if (buttonstate[bt_readyknife+i-wp_knife])
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			switch (i)
 			{
 			case wp_knife:
@@ -310,7 +310,7 @@ void ControlMovement (objtype *ob)
 // instead there was just a call to LatchDrawPic everywhere, more-or-less,
 // along with a few bits of fiddling with bufferofs.
 
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 // HACK for restoration of v1.0
 #define StatusDrawPic LatchDrawPic
 
@@ -339,11 +339,11 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 	bufferofs = temp;
 }
-#endif // GAMEVER_RESTORATION_WL1_APO10
+#endif // GAMEVER_EXEDEF_WL1AP10
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 void	LatchNumber (int x, int y, int width, long number);
 
 void DrawTreasure ()
@@ -363,7 +363,7 @@ void DrawTreasure ()
 void DrawFace (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	unsigned	temp;
 
 	temp = bufferofs;
@@ -372,7 +372,7 @@ void DrawFace (void)
 	if (gamestate.health)
 	{
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (godmode)
 			StatusDrawPic (19,4,GODMODEFACE1PIC+gamestate.faceframe);
 		else
@@ -389,7 +389,7 @@ void DrawFace (void)
 	else
 	{
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	   StatusDrawPic (19,4,FACE8APIC);
 #else
 #ifndef SPEAR
@@ -401,7 +401,7 @@ void DrawFace (void)
 #endif
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	bufferofs = temp;
 #endif
 }
@@ -425,13 +425,13 @@ void	UpdateFace (void)
 {
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	if (SD_SoundPlaying() == GETGATLINGSND)
 	  return;
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (SD_SoundPlaying() == D_BONUSSND)
 #endif
 		facecount += tics;
@@ -461,7 +461,7 @@ void	UpdateFace (void)
 void	LatchNumber (int x, int y, int width, long number)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	unsigned	temp;
 
 #endif
@@ -471,7 +471,7 @@ void	LatchNumber (int x, int y, int width, long number)
 	ltoa (number,str,10);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	temp = bufferofs;
 	bufferofs = 0;
 
@@ -499,7 +499,7 @@ void	LatchNumber (int x, int y, int width, long number)
 		c++;
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	bufferofs = temp;
 #endif
 }
@@ -516,7 +516,7 @@ void	LatchNumber (int x, int y, int width, long number)
 void	DrawHealth (void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	LatchNumber (23,16,3,gamestate.health);
 #else
 	LatchNumber (21,16,3,gamestate.health);
@@ -537,12 +537,12 @@ void	TakeDamage (int points,objtype *attacker)
 	LastAttacker = attacker;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	if (gamestate.victoryflag)
 		return;
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	switch (gamestate.difficulty)
 	{
 	case gd_baby: points>>=2;
@@ -571,7 +571,7 @@ void	TakeDamage (int points,objtype *attacker)
 
 	StartDamageFlash (points);
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	SD_PlaySound (TAKEDAMAGESND);
 #endif
 
@@ -628,7 +628,7 @@ void	HealSelf (int points)
 void	DrawLevel (void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	int 	level,episode;
 
 	if (gamestate.mapon >= 31)
@@ -662,7 +662,7 @@ void	DrawLevel (void)
 void	DrawLives (void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	LatchNumber (16,16,1,gamestate.lives);
 #else
 	LatchNumber (14,16,1,gamestate.lives);
@@ -699,7 +699,7 @@ void	GiveExtraMan (void)
 void	DrawScore (void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	LatchNumber (7,16,7,gamestate.score);
 #else
 	LatchNumber (6,16,6,gamestate.score);
@@ -728,7 +728,7 @@ void	GivePoints (long points)
 //===========================================================================
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 /*
 ==================
 =
@@ -740,7 +740,7 @@ void	GivePoints (long points)
 void DrawWeapon (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	unsigned	temp;
 
 	temp = bufferofs;
@@ -748,7 +748,7 @@ void DrawWeapon (void)
 #endif
 	StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	bufferofs = temp;
 #endif
 }
@@ -766,14 +766,14 @@ void DrawWeapon (void)
 void DrawKeys (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	unsigned	temp;
 
 	temp = bufferofs;
 	bufferofs = 0;
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (gamestate.keys & 1)
 		StatusDrawPic (32,4,GOLDKEYPIC);
 	else
@@ -795,7 +795,7 @@ void DrawKeys (void)
 		StatusDrawPic (30,20,NOKEYPIC);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	bufferofs = temp;
 #endif
 }
@@ -803,7 +803,7 @@ void DrawKeys (void)
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 /*
 ==================
 =
@@ -844,7 +844,7 @@ void GiveWeapon (int weapon)
 		= gamestate.chosenweapon = weapon;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	DrawAmmo ();
 #else
 	DrawWeapon ();
@@ -865,7 +865,7 @@ void GiveWeapon (int weapon)
 void	DrawAmmo (void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	int ammo;
 	switch (gamestate.weapon)
 	{
@@ -902,7 +902,7 @@ void	DrawAmmo (void)
 void	GiveAmmo (int ammo)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	gamestate.ammo += ammo;
 	if (gamestate.ammo > gamestate.maxammo)
 		gamestate.ammo = gamestate.maxammo;
@@ -927,7 +927,7 @@ void	GiveAmmo (int ammo)
 }
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 /*
 ===============
 =
@@ -1021,7 +1021,7 @@ void GiveKey (int key)
 void GetBonus (statobj_t *check)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	unsigned	temp;
 #endif
 	switch (check->itemnumber)
@@ -1037,7 +1037,7 @@ void GetBonus (statobj_t *check)
 	case	bo_key1:
 	case	bo_key2:
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	case	bo_key3:
 	case	bo_key4:
 #endif
@@ -1046,7 +1046,7 @@ void GetBonus (statobj_t *check)
 		break;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	case	bo_cross:
 		SD_PlaySound (D_BONUSSND);
 		GiveTreasure (1);
@@ -1092,7 +1092,7 @@ void GetBonus (statobj_t *check)
 
 	case	bo_clip:
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (gamestate.ammo >= gamestate.maxammo)
 #else
 		if (gamestate.ammo == 99)
@@ -1101,14 +1101,14 @@ void GetBonus (statobj_t *check)
 
 		SD_PlaySound (GETAMMOSND);
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		GiveAmmo (5);
 #else
 		GiveAmmo (8);
 #endif
 		break;
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	case	bo_clip2:
 		if (gamestate.ammo == 99)
 			return;
@@ -1119,11 +1119,11 @@ void GetBonus (statobj_t *check)
 #endif
 
 		// *** S3DNA RESTORATION ***
-#if (defined SPEAR) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (defined SPEAR) || (defined GAMEVER_EXEDEF_N3DWT10)
 //#ifdef SPEAR
 	case	bo_25clip:
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (gamestate.ammo >= gamestate.maxammo)
 #else
 		if (gamestate.ammo == 99)
@@ -1137,7 +1137,7 @@ void GetBonus (statobj_t *check)
 
 	case	bo_machinegun:
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		gamestate.machinegun = 1;
 #endif
 		SD_PlaySound (GETMACHINESND);
@@ -1145,26 +1145,26 @@ void GetBonus (statobj_t *check)
 		break;
 	case	bo_chaingun:
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		gamestate.chaingun = 1;
 #endif
 		SD_PlaySound (GETGATLINGSND);
 		GiveWeapon (wp_chaingun);
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		temp = bufferofs;
 		bufferofs = 0;
 
 #endif
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		StatusDrawPic (19,4,GOTGATLINGPIC);
 #else
 		StatusDrawPic (17,4,GOTGATLINGPIC);
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		bufferofs = temp;
 
 #endif
@@ -1176,7 +1176,7 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (BONUS1UPSND);
 		HealSelf (99);
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		GiveAmmo (25);
 #endif
 		GiveExtraMan ();
@@ -1192,7 +1192,7 @@ void GetBonus (statobj_t *check)
 		break;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	case	bo_alpo:
 		if (demoplayback)
 		{
@@ -1303,7 +1303,7 @@ void GetBonus (statobj_t *check)
 #endif
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
 	case	bo_spear:
 		spearflag = true;
 		spearx = player->x;
@@ -1312,7 +1312,7 @@ void GetBonus (statobj_t *check)
 		playstate = ex_completed;
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	default:
 		sprintf (str,"GetBonus: Invalid item $%02X!\n",check->itemnumber);
 		Quit (str);
@@ -1417,7 +1417,7 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 		return;		// walk through walls
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	if (!SD_SoundPlaying())
 		SD_PlaySound (HITWALLSND);
 #endif
@@ -1449,7 +1449,7 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 void VictoryTile (void)
 {
 	// *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined SPEAR) && (!defined GAMEVER_EXEDEF_N3DWT10)
 //#ifndef SPEAR
 	SpawnBJVictory ();
 #endif
@@ -1551,7 +1551,7 @@ void Cmd_Use (void)
 	objtype 	*check;
 	int			checkx,checky,doornum,dir;
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	boolean		elevatorok;
 #endif
 
@@ -1565,7 +1565,7 @@ void Cmd_Use (void)
 		checky = player->tiley;
 		dir = di_east;
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		elevatorok = true;
 #endif
 	}
@@ -1575,7 +1575,7 @@ void Cmd_Use (void)
 		checky = player->tiley-1;
 		dir = di_north;
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		elevatorok = false;
 #endif
 	}
@@ -1585,7 +1585,7 @@ void Cmd_Use (void)
 		checky = player->tiley;
 		dir = di_west;
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		elevatorok = true;
 #endif
 	}
@@ -1595,14 +1595,14 @@ void Cmd_Use (void)
 		checky = player->tiley + 1;
 		dir = di_south;
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		elevatorok = false;
 #endif
 	}
 
 	doornum = tilemap[checkx][checky];
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	doornum &= 0xFFDF;
 #endif
 	if (*(mapsegs[1]+farmapylookup[checky]+checkx) == PUSHABLETILE)
@@ -1615,7 +1615,7 @@ void Cmd_Use (void)
 		return;
 	}
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	if (!buttonheld[bt_use] && doornum == ELEVATORTILE && elevatorok)
 	{
 	//
@@ -1625,14 +1625,14 @@ void Cmd_Use (void)
 
 		tilemap[checkx][checky]++;		// flip switch
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
+#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
 		if (*(mapsegs[0]+farmapylookup[player->tiley]+player->tilex) == ALTELEVATORTILE)
 			playstate = ex_secretlevel;
 		else
 #endif
 			playstate = ex_completed;
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		SD_PlaySound (LEVELDONESND);
 #endif
 		SD_WaitSoundDone();
@@ -1646,7 +1646,7 @@ void Cmd_Use (void)
 	}
 	else
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		SD_PlaySound (NOWAYSND);
 #else
 		SD_PlaySound (DONOTHINGSND);
@@ -1687,7 +1687,7 @@ void SpawnPlayer (int tilex, int tiley, int dir)
 	if (player->angle<0)
 		player->angle += ANGLES;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	player->flags = FL_NEVERMARK;
 #endif
 	Thrust (0,0);				// set some variables
@@ -1739,7 +1739,7 @@ void	KnifeAttack (objtype *ob)
 
 // hit something
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	DamageActor (closest,US_RndT()&3);
 #else
 	DamageActor (closest,US_RndT() >> 4);
@@ -1812,7 +1812,7 @@ void	GunAttack (objtype *ob)
 	dist = dx>dy ? dx:dy;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (dist<2)
 		damage = US_RndT() & 0xf;
 	else
@@ -1839,7 +1839,7 @@ void	GunAttack (objtype *ob)
 }
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 void FlameAttack (objtype *ob)
 {
 	int x, y;
@@ -1868,7 +1868,7 @@ void FlameAttack (objtype *ob)
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 void MissileAttack (objtype *ob)
 {
 	int x, y;
@@ -1967,7 +1967,7 @@ void	T_Attack (objtype *ob)
 		return;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in unsigned
 	pluy = player->y >> UNSIGNEDSHIFT;
 	player->tilex = player->x >> TILESHIFT;		// scale to tile values
@@ -1986,7 +1986,7 @@ void	T_Attack (objtype *ob)
 		case -1:
 			ob->state = &s_player;
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			if ((!gamestate.gas && (gamestate.weapon == wp_flamethrower))
 			    || (!gamestate.missiles && (gamestate.weapon == wp_missile)))
 			{
@@ -2065,7 +2065,7 @@ void	T_Attack (objtype *ob)
 				gamestate.attackframe -= 2;
 			break;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		case 5:
 			if (gamestate.gas)
 				FlameAttack (ob);
@@ -2112,7 +2112,7 @@ void	T_Player (objtype *ob)
 		Cmd_Use ();
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (buttonstate[bt_attack])
 
 	    if (!buttonheld[bt_attack] || (gamestate.weapon == wp_knife) || (gamestate.weapon == wp_pistol))

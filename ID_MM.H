@@ -15,9 +15,9 @@
 // On the other hand, more were used in Shareware 1.0 Apogee.
 #ifndef GAMEVER_RESTORATION_ANY_PRE_GT
 #define MAXBLOCKS		700
-#elif (defined GAMEVER_RESTORATION_WL1_APO11)
+#elif (defined GAMEVER_EXEDEF_WL1AP11)
 #define MAXBLOCKS		500
-#elif (defined GAMEVER_RESTORATION_WL1_APO10)
+#elif (defined GAMEVER_EXEDEF_WL1AP10)
 #define MAXBLOCKS		1200
 #else
 #define MAXBLOCKS		600

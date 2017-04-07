@@ -2,7 +2,7 @@
 // at a location in WL_ACT2.C depending on version
 
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 /*
 ===================
 =
@@ -39,7 +39,7 @@ boolean ProjectileTryMove (objtype *ob)
 
 	return true;
 }
-#endif // GAMEVER_RESTORATION_WL1_APO10
+#endif // GAMEVER_EXEDEF_WL1AP10
 
 
 
@@ -74,19 +74,19 @@ void T_Projectile (objtype *ob)
 	deltay = LABS(ob->y - player->y);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	if (!TryMove (ob))
 #else
 	if (!ProjectileTryMove (ob))
 #endif
 	{
 		// *** SHAREWARE V1.0+1.1 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		PlaySoundLocActor(MISSILEHITSND,ob);
 		ob->state = &s_cocohit;
-#elif (defined GAMEVER_RESTORATION_WL1_APO10)
+#elif (defined GAMEVER_EXEDEF_WL1AP10)
 		RemoveObj(ob);
-#elif (defined GAMEVER_RESTORATION_WL1_APO11)
+#elif (defined GAMEVER_EXEDEF_WL1AP11)
 		ob->state = NULL;
 		PlaySoundLocActor(MISSILEHITSND,ob);
 #else
@@ -117,10 +117,10 @@ void T_Projectile (objtype *ob)
 			damage = (US_RndT() >>3) + 20;
 			break;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 		case rocketobj:
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
 		case hrocketobj:
 		case sparkobj:
 #endif
@@ -128,7 +128,7 @@ void T_Projectile (objtype *ob)
 			break;
 #endif
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		case fireobj:
 			damage = (US_RndT() >>3);
 			break;
@@ -137,7 +137,7 @@ void T_Projectile (objtype *ob)
 
 		TakeDamage (damage,ob);
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		RemoveObj(ob);
 #else
 		ob->state = NULL;		// mark for removal
@@ -146,7 +146,7 @@ void T_Projectile (objtype *ob)
 	}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	ob->tilex = ob->x >> TILESHIFT;
 	ob->tiley = ob->y >> TILESHIFT;
 #endif

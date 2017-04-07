@@ -17,7 +17,7 @@
 void ClearSplitVWB (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage];
@@ -104,7 +104,7 @@ void EndSpear(void)
 // *** S3DNA RESTORATION ***
 // This appears to contains variants of code from places like ThreeDRefresh
 // (ASM code, frame counting) and PlayLoop (screen fading and user input checks)
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 
 statetype *caststate[] = {&s_dogchase1,&s_grdchase1,&s_ofcchase1,&s_sschase1,
 	&s_mutchase1,&s_bosschase1,&s_schabbchase1,&s_gretelchase1,
@@ -253,15 +253,15 @@ void Victory (void)
 {
 #ifndef SPEARDEMO
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	int	sec;
-#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+#elif (defined GAMEVER_EXEDEF_N3DWT10)
 	long	sec,parsec;
 #else
 	long	sec;
 #endif
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	int i,hr,min,kr,sr,tr,x;
 #else
 	int i,min,kr,sr,tr,x;
@@ -269,7 +269,7 @@ void Victory (void)
 	char tempstr[8];
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 #define RATIOX	9
 #define RATIOY	12
 #define TIMEX	23
@@ -315,7 +315,7 @@ void Victory (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	StartCPMusic (NOAH07_MUS);
 #else
 	StartCPMusic (URAHERO_MUS);
@@ -323,7 +323,7 @@ void Victory (void)
 	ClearSplitVWB ();
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	CA_CacheGrChunk(STARTFONT);
 
 #ifndef SPEAR
@@ -333,7 +333,7 @@ void Victory (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	VWB_Bar (0,0,320,200-STATUSLINES,218);
 #else
 	VWB_Bar (0,0,320,200-STATUSLINES,127);
@@ -350,7 +350,7 @@ void Victory (void)
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 	// *** S3DNA RESTORATION ***
-#elif (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#elif (!defined GAMEVER_EXEDEF_N3DWT10)
 //#else
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocated this, depending on version
@@ -359,7 +359,7 @@ void Victory (void)
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	Write(18,0,STR_YOUWIN);
 #else
 	Write(18,2,STR_YOUWIN);
@@ -367,7 +367,7 @@ void Victory (void)
 
 	// *** S3DNA RESTORATION ***
 	// (TIMEX and TIMEY redefined with different values now)
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	Write(14,8-2,STR_TOTALTIME);
 #else
 	Write(TIMEX,TIMEY-2,STR_TOTALTIME);
@@ -388,7 +388,7 @@ void Victory (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	VWB_DrawPic (8,8,L_BJWINSPIC);
 
 	VWB_DrawPic (104,32,W_RATINGPIC);
@@ -411,11 +411,11 @@ void Victory (void)
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 #endif
-#endif // GAMEVER_RESTORATION_N3D_WIS10
+#endif // GAMEVER_EXEDEF_N3DWT10
 
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	for (kr = sr = tr = sec = parsec = i = 0;i < 30;i++)
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -429,13 +429,13 @@ void Victory (void)
 		sr += LevelRatios[i].secret;
 		tr += LevelRatios[i].treasure;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		parsec += LevelRatios[i].par;
 #endif
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	min = parsec/60;
 	parsec %= 60;
 	hr = min/60;
@@ -472,17 +472,17 @@ void Victory (void)
 	tr /= 14;
 #endif
 	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11)
 	if (sec > 415800)
 		sec = 415800;
 #endif
 
-#endif // GAMEVER_RESTORATION_N3D_WIS10
+#endif // GAMEVER_EXEDEF_N3DWT10
 
 	min = sec/60;
 	sec %= 60;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	hr = min/60;
 	min %= 60;
 	if (hr > 9)
@@ -491,13 +491,13 @@ void Victory (void)
 		min = sec = 99;
 	}
 	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#elif (!defined GAMEVER_RESTORATION_WL1_APO10) && (!defined GAMEVER_RESTORATION_WL1_APO11)
+#elif (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
 	if (min > 99)
 		min = sec = 99;
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	i = TIMEX*8;
 	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+hr);
 	i += 2*8;
@@ -517,7 +517,7 @@ void Victory (void)
 	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+(sec%10));
 	VW_UpdateScreen ();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	kr /= 30;
 	sr /= 30;
 	tr /= 30;
@@ -538,17 +538,17 @@ void Victory (void)
 
 #ifndef SPANISH
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (!defined UPLOAD) || (defined GAMEVER_RESTORATION_WL1_APO10)
+#if (!defined UPLOAD) || (defined GAMEVER_EXEDEF_WL1AP10)
 //#ifndef UPLOAD
 	// *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined SPEAR) && (!defined GAMEVER_EXEDEF_N3DWT10)
 //#ifndef SPEAR
 	//
 	// TOTAL TIME VERIFICATION CODE
 	//
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	if (gamestate.difficulty>=gd_medium)
 #endif
 	{
@@ -556,21 +556,21 @@ void Victory (void)
 		fontnumber = 0;
 		fontcolor = READHCOLOR;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		PrintX = 30*8;
 #else
 		PrintX = 30*8-3;
 #endif
 		PrintY = TIMEY*8+8;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		VWB_Bar (PrintX,PrintY,24,10,0x29);
 #endif
 		PrintX+=4;
 		tempstr[0] = (((min/10)^(min%10))^0xa)+'A';
 		tempstr[1] = (((sec/10)^(sec%10))^0xa)+'A';
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		tempstr[2] = 0;
 #else
 		tempstr[2] = (tempstr[0]^tempstr[1])+'A';
@@ -584,7 +584,7 @@ void Victory (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	fontnumber = 1;
 #endif
 
@@ -604,14 +604,14 @@ void Victory (void)
 	VW_FadeOut ();
 
 	// *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined SPEAR) && (!defined GAMEVER_EXEDEF_N3DWT10)
 //#ifndef SPEAR
 	UNCACHEGRCHUNK(C_TIMECODEPIC);
 #endif
 	UnCacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	CharacterCast();
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -627,7 +627,7 @@ void Victory (void)
 //==========================================================================
 
 // *** S3DNA RESTORATION ***
-#if (!defined JAPAN) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined JAPAN) && (!defined GAMEVER_EXEDEF_N3DWT10)
 //#ifndef JAPAN
 /*
 ==================
@@ -650,7 +650,7 @@ void PG13 (void)
 	CA_CacheGrChunk (PG13PIC);
 	VWB_DrawPic (216,110,PG13PIC);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	VW_UpdateScreen ();
 #endif
 
@@ -674,7 +674,7 @@ void PG13 (void)
 void Write(int x,int y,char *string)
 {
  // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
  int alpha[]={L_NUM0PIC,L_NUM1PIC,L_NUM2PIC,L_NUM3PIC,L_NUM4PIC,L_NUM5PIC,
 	L_NUM6PIC,L_NUM7PIC,L_NUM8PIC,L_NUM9PIC,L_COLONPIC,0,0,0,0,0};
 #else
@@ -712,7 +712,7 @@ void Write(int x,int y,char *string)
 	   continue;
 
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	 case '\'':
 	   VWB_DrawPic(nx,ny,L_APOSTROPHEPIC);
 	   nx+=8;
@@ -731,7 +731,7 @@ void Write(int x,int y,char *string)
 	   break;
 
 	 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	 case '-':
 	   VWB_DrawPic(nx,ny,L_MINUSPIC);
 	   nx+=8;
@@ -767,7 +767,7 @@ void BJ_Breathe(void)
 	{
 		which^=1;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		VWB_DrawPic(8,8,pics[which]);
 #else
 		VWB_DrawPic(0,16,pics[which]);
@@ -782,7 +782,7 @@ void BJ_Breathe(void)
 
 // *** S3DNA RESTORATION ***
 // Additional functions for LevelCompleted
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 void ShowBonus (long bonus)
 {
 	char tempstr[10];
@@ -852,7 +852,7 @@ void RollDelay (void)
 */
 
  // *** S3DNA  RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 LRstruct LevelRatios[30];
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -868,7 +868,7 @@ void LevelCompleted (void)
 	#define PERCENT100AMT	10000
 	typedef struct {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 			word time;
 #else
 			float time;
@@ -877,7 +877,7 @@ void LevelCompleted (void)
 			} times;
 
 	// *** S3DNA  RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	int	x,i,min,sec,secret,ratio;
 	boolean perfect;
 	long bonus,timeleft;
@@ -888,7 +888,7 @@ void LevelCompleted (void)
 	unsigned	temp;
 	char tempstr[10];
 	// *** S3DNA  RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	unsigned long	lasttime;
 #else
 	long bonus,timeleft=0;
@@ -896,7 +896,7 @@ void LevelCompleted (void)
 	times parTimes[]=
 	{
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	 //
 	 // Episode One Par Times
 	 //
@@ -981,7 +981,7 @@ void LevelCompleted (void)
 	 {0,     "??:??"},
 	 {2100,  "00:30"}
 	 // *** S3DNA  RESTORATION ***
-#elif (defined GAMEVER_RESTORATION_N3D_WIS10)
+#elif (defined GAMEVER_EXEDEF_N3DWT10)
 	 //
 	 // Episode One Par Times
 	 //
@@ -1080,7 +1080,7 @@ void LevelCompleted (void)
 	 {0,	"??:??"},
 
 	// *** SHAREWARE V1.1 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO11
+#ifdef GAMEVER_EXEDEF_WL1AP11
 	 //
 	 // Episode Four Par Times
 	 //
@@ -1164,7 +1164,7 @@ void LevelCompleted (void)
 	 {8.5,	"08:30"},
 	 {0,	"??:??"},
 	 {0,	"??:??"}
-#endif // GAMEVER_RESTORATION_WL1_APO11
+#endif // GAMEVER_EXEDEF_WL1AP11
 #else
 	 //
 	 // SPEAR OF DESTINY TIMES
@@ -1195,7 +1195,7 @@ void LevelCompleted (void)
 
 
 	// *** S3DNA  RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	StartCPMusic(NOAH05_MUS);
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	ClearSplitVWB ();			// set up for double buffering in split screen
@@ -1516,7 +1516,7 @@ void LevelCompleted (void)
 			MM_FreePtr((memptr *)&audiosegs[start]);
 	}
 
-#else // GAMEVER_RESTORATION_N3D_WIS10
+#else // GAMEVER_EXEDEF_N3DWT10
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	ClearSplitVWB ();			// set up for double buffering in split screen
 	VWB_Bar (0,0,320,200-STATUSLINES,127);
@@ -1598,7 +1598,7 @@ void LevelCompleted (void)
 	   sec = 99*60;
 
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	 if (gamestate.TimeCount<parTimes[gamestate.episode*10+mapon].time)
 		timeleft=parTimes[gamestate.episode*10+mapon].time/70-sec;
 #else
@@ -1633,16 +1633,16 @@ void LevelCompleted (void)
 	 //
 
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION *** (Always calculate in v1.0)
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	 kr = sr = tr = 0;
 	 if (gamestate.killtotal)
 #endif
 		kr=(gamestate.killcount*100)/gamestate.killtotal;
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	 if (gamestate.secrettotal)
 #endif
 		sr=(gamestate.secretcount*100)/gamestate.secrettotal;
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	 if (gamestate.treasuretotal)
 #endif
 		tr=(gamestate.treasurecount*100)/gamestate.treasuretotal;
@@ -1943,7 +1943,7 @@ void LevelCompleted (void)
 
 	VW_FadeOut ();
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	temp = bufferofs;
 #endif
 	for (i=0;i<3;i++)
@@ -1952,12 +1952,12 @@ void LevelCompleted (void)
 		DrawPlayBorder ();
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	bufferofs = temp;
 #endif
 
 	UnCacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
-#endif // GAMEVER_RESTORATION_N3D_WIS10
+#endif // GAMEVER_EXEDEF_N3DWT10
 }
 
 
@@ -1981,14 +1981,14 @@ boolean PreloadUpdate(unsigned current, unsigned total)
 
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	VWB_Bar(WindowX + 5,WindowY + WindowH - 3,w,2,BLACK);
 #endif
 	w = ((long)w * current) / total;
 	if (w)
 	{
 	 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	 VWB_Bar(WindowX + 5,WindowY + WindowH,w,2,0x55);
 	 VWB_Bar(WindowX + 5,WindowY + WindowH,w-1,1,0x52);
 #else
@@ -2008,7 +2008,7 @@ boolean PreloadUpdate(unsigned current, unsigned total)
 }
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 int	FloorTile[] = {0,0,2,1,1,1,0,2,2,2,1,3,0,0,0,0,2,1,1,1,1,1,0,2,2,2,2,2,1,3,3};
 #endif
 
@@ -2018,7 +2018,7 @@ void PreloadGraphics(void)
 	ClearSplitVWB ();			// set up for double buffering in split screen
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	VWB_Bar (0,0,320,200-STATUSLINES,VIEWCOLOR);
 #else
 	VWB_Bar (0,0,320,200-STATUSLINES,127);
@@ -2035,7 +2035,7 @@ void PreloadGraphics(void)
 
 	PM_Preload (PreloadUpdate);
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	LoadFloorTiles(FloorTile[gamestate.mapon]);
 #endif
 	IN_UserInput (70);
@@ -2086,7 +2086,7 @@ void	DrawHighScores(void)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	CA_CacheGrChunk (C_LEVELPIC);
 	CA_CacheGrChunk (C_SCOREPIC);
 	CA_CacheGrChunk (C_NAMEPIC);
@@ -2104,18 +2104,18 @@ void	DrawHighScores(void)
 
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	VWB_DrawPic(4*8,68,C_NAMEPIC);
 	VWB_DrawPic(21*8,68,C_LEVELPIC);
 	VWB_DrawPic(32*8,68,C_SCOREPIC);
-#elif (!defined GAMEVER_RESTORATION_WL1_APO10)
+#elif (!defined GAMEVER_EXEDEF_WL1AP10)
 	VWB_DrawPic(4*8,68,C_NAMEPIC);
 	VWB_DrawPic(20*8,68,C_LEVELPIC);
 	VWB_DrawPic(28*8,68,C_SCOREPIC);
 #endif
 	// *** SHAREWARE V1.0+REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Uncomment line for Shareware 1.0 and any Registered Apogee release, and early Goodtimes/Id
-#if (!defined GAMEVER_RESTORATION_ANY_POST_GT114) && ((!defined UPLOAD) || (defined GAMEVER_RESTORATION_WL1_APO10))
+#if (!defined GAMEVER_RESTORATION_ANY_POST_GT114) && ((!defined UPLOAD) || (defined GAMEVER_EXEDEF_WL1AP10))
 //#ifndef UPLOAD
 	VWB_DrawPic(35*8,68,C_CODEPIC);
 #endif
@@ -2150,7 +2150,7 @@ void	DrawHighScores(void)
 		//
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		PrintX = 60;
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -2165,7 +2165,7 @@ void	DrawHighScores(void)
 		//
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (s->completed >= 30)
 			s->completed = 30;
 		sprintf(buffer,"%d-%d",MapEpisode[s->completed],MapLevel[s->completed]);
@@ -2173,7 +2173,7 @@ void	DrawHighScores(void)
 		ultoa(s->completed,buffer,10);
 #endif
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		USL_MeasureString(buffer,&w,&h);
 		PrintX = (24 * 8)-w;
 #elif (!defined SPEAR)
@@ -2182,7 +2182,7 @@ void	DrawHighScores(void)
 			*str = *str + (129 - '0');	// Used fixed-width numbers (129...)
 		USL_MeasureString(buffer,&w,&h);
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10)
+#if (defined GAMEVER_EXEDEF_WL1AP10)
 		PrintX = (24 * 8)-w;
 #else
 		PrintX = (22 * 8)-w;
@@ -2193,7 +2193,7 @@ void	DrawHighScores(void)
 #endif
 
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 #ifndef UPLOAD
 #ifndef SPEAR
 		PrintX -= 6;
@@ -2217,7 +2217,7 @@ void	DrawHighScores(void)
 		//
 		ultoa(s->score,buffer,10);
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		USL_MeasureString(buffer,&w,&h);
 		PrintX = 288 - w;
 #elif (!defined SPEAR)
@@ -2237,7 +2237,7 @@ void	DrawHighScores(void)
 		// Do compile verification block for Shareware 1.0 and any Registered Apogee release, and early Goodtimes/Id
 		#ifndef GAMEVER_RESTORATION_ANY_POST_GT114
 		//#if 0
-#if (!defined UPLOAD) || (defined GAMEVER_RESTORATION_WL1_APO10)
+#if (!defined UPLOAD) || (defined GAMEVER_EXEDEF_WL1AP10)
 //#ifndef UPLOAD
 #ifndef SPEAR
 		//
@@ -2271,7 +2271,7 @@ void	DrawHighScores(void)
 
 	// *** PRE-V1.4 APOGEE RESTORATION (INC. SPECIAL CASE FOR V1.0) ***
 	// Relocated line for pre-1.4 Apogee, but don't compile at all in v1.0
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	UNCACHEGRCHUNK (HIGHSCORESPIC);
 #endif
@@ -2304,9 +2304,9 @@ void	CheckHighScore (long score,word other)
 	strcpy(myscore.name,"");
 	myscore.score = score;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	myscore.episode = gamestate.mapon;
-#elif (!defined GAMEVER_RESTORATION_WL1_APO10)
+#elif (!defined GAMEVER_EXEDEF_WL1AP10)
 	myscore.episode = gamestate.episode;
 #endif
 	myscore.completed = other;
@@ -2333,7 +2333,7 @@ void	CheckHighScore (long score,word other)
 #ifdef SPEAR
 	StartCPMusic (XAWARD_MUS);
 	// *** S3DNA RESTORATION ***
-#elif defined GAMEVER_RESTORATION_N3D_WIS10
+#elif defined GAMEVER_EXEDEF_N3DWT10
 	StartCPMusic (NOAH11_MUS);
 #else
 	StartCPMusic (ROSTER_MUS);
@@ -2350,7 +2350,7 @@ void	CheckHighScore (long score,word other)
 		PrintY = 76 + (16 * n);
 #ifndef SPEAR
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		PrintX = 60;
 #else
 		PrintX = 4*8;
@@ -2374,7 +2374,7 @@ void	CheckHighScore (long score,word other)
 	else
 	{
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		VW_UpdateScreen ();
 #endif
 		IN_ClearKeysDown ();
@@ -2385,7 +2385,7 @@ void	CheckHighScore (long score,word other)
 
 // *** S3DNA RESTORATION ***
 // Separating the briefings seems to do the job here (in terms of EXE layout)
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 char	mission1text[] = {
 	"You'll be out of the ark in six\n"
 	"days, Noah. Unfortunately, the\n"

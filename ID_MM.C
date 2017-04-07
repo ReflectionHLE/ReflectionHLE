@@ -675,7 +675,7 @@ void MM_SortMem (void)
 	int			playing;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	if (!mmstarted)
 		return;
 #endif
@@ -820,7 +820,7 @@ void MM_ShowMemory (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** (but looks unused in ALL versions)
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 //==========================================================================
 
 /*
@@ -884,7 +884,7 @@ void MM_DumpData (void)
 	fclose (dumpfile);
 	Quit ("MMDUMP.TXT created.");
 }
-#endif // GAMEVER_RESTORATION_WL1_APO10
+#endif // GAMEVER_EXEDEF_WL1AP10
 
 //==========================================================================
 

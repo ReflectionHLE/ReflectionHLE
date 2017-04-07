@@ -51,7 +51,7 @@
 #define	STR_CUSTOM	"Customize controls"
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 #define	STR_DADDY	"Super Easy"
 #define	STR_HURTME	"Easy"
 #define	STR_BRINGEM	"Normal"

@@ -170,7 +170,7 @@ void NewState (objtype *ob, statetype *state)
 
 // *** S3DNA RESTORATION ***
 // Different masking for doornum
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 #define CHECKSIDE(x,y)								\
 {                                                   \
 	temp=(unsigned)actorat[x][y];                   \
@@ -256,7 +256,7 @@ boolean TryWalk (objtype *ob)
 		{
 		case north:
 			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_N3DWT10)
 			if (ob->obclass == dogobj)
 #else
 			if (ob->obclass == dogobj || ob->obclass == fakeobj)
@@ -281,7 +281,7 @@ boolean TryWalk (objtype *ob)
 
 		case east:
 			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_N3DWT10)
 			if (ob->obclass == dogobj)
 #else
 			if (ob->obclass == dogobj || ob->obclass == fakeobj)
@@ -306,7 +306,7 @@ boolean TryWalk (objtype *ob)
 
 		case south:
 			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_N3DWT10)
 			if (ob->obclass == dogobj)
 #else
 			if (ob->obclass == dogobj || ob->obclass == fakeobj)
@@ -331,7 +331,7 @@ boolean TryWalk (objtype *ob)
 
 		case west:
 			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_N3DWT10)
 			if (ob->obclass == dogobj)
 #else
 			if (ob->obclass == dogobj || ob->obclass == fakeobj)
@@ -764,7 +764,7 @@ void MoveObj (objtype *ob, long move)
 			goto moveok;
 
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 		if (obj->obclass == ghostobj)
@@ -905,7 +905,7 @@ void KillActor (objtype *ob)
 		GivePoints (500);
 		NewState (ob,&s_ssdie1);
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		if (!gamestate.machinegun)
 #else
 		if (gamestate.bestweapon < wp_machinegun)
@@ -928,7 +928,7 @@ void KillActor (objtype *ob)
 		break;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION  ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	case gretelobj:
 		GivePoints (5000);
 		NewState (ob,&s_greteldie1);
@@ -938,12 +938,12 @@ void KillActor (objtype *ob)
 	case giftobj:
 		GivePoints (5000);
 		// *** SHAREWARE V1.1 APOGEE + S3DNA RESTORATION *** - Bits of different code (The APOGEE V1.1 EXE was originally released before registered versions, and the case of S3DNA just occurs to have a common function call)
-#ifndef GAMEVER_RESTORATION_WL1_APO11
+#ifndef GAMEVER_EXEDEF_WL1AP11
 		gamestate.killx = player->x;
 		gamestate.killy = player->y;
 #endif
 		NewState (ob,&s_giftdie1);
-#if (defined GAMEVER_RESTORATION_WL1_APO11) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_N3DWT10)
 		PlaceItemType (bo_key1,tilex,tiley);
 #endif
 		break;
@@ -954,30 +954,30 @@ void KillActor (objtype *ob)
 		gamestate.killy = player->y;
 		NewState (ob,&s_fatdie1);
 		// *** SHAREWARE V1.1 APOGEE + S3DNA RESTORATION *** - Bits of different code (The APOGEE V1.1 EXE was originally released before registered versions, and the case of S3DNA just occurs to have a common function call)
-#if (defined GAMEVER_RESTORATION_WL1_APO11) || (defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_N3DWT10)
 		PlaceItemType (bo_key1,tilex,tiley);
 #endif
 		break;
-#endif // !GAMEVER_RESTORATION_WL1_APO10
+#endif // !GAMEVER_EXEDEF_WL1AP10
 
 	case schabbobj:
 		GivePoints (5000);
 		// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION *** - Bits of different code
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 		gamestate.killx = player->x;
 		gamestate.killy = player->y;
 #endif
 		NewState (ob,&s_schabbdie1);
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		PlaceItemType (bo_key1,tilex,tiley);
 #endif
 		A_DeathScream(ob);
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		PlaceItemType (bo_key1,tilex,tiley);
 #endif
 		break;
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	case fakeobj:
 		GivePoints (2000);
 		NewState (ob,&s_fakedie1);
@@ -991,7 +991,7 @@ void KillActor (objtype *ob)
 	case realhitlerobj:
 		GivePoints (5000);
 		// *** SHAREWARE V1.0 APOGEE RESTORATION *** - Bits of different code
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 		gamestate.killx = player->x;
 		gamestate.killy = player->y;
 #endif
@@ -1039,7 +1039,7 @@ void KillActor (objtype *ob)
 	ob->flags &= ~FL_SHOOTABLE;
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Relocate this
 	// based on version, but disable all that follows in v1.0
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	ob->flags |= FL_NONMARK;
 #endif
@@ -1047,7 +1047,7 @@ void KillActor (objtype *ob)
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	ob->flags |= FL_NONMARK;
 #endif
-#endif // GAMEVER_RESTORATION_WL1_APO10
+#endif // GAMEVER_EXEDEF_WL1AP10
 }
 
 
@@ -1076,7 +1076,7 @@ void DamageActor (objtype *ob, unsigned damage)
 		damage <<= 1;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 	switch (gamestate.difficulty)
 	{
 	case gd_baby:
@@ -1177,18 +1177,18 @@ boolean CheckLine (objtype *ob)
 	int	x1,y1,xt1,yt1,x2,y2,xt2,yt2;
 	int	x,y;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - v1.0 specific variables
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	int	xd1,xd2,yd1,yd2; // This should be the order
 #endif
 	int	xdist,ydist,xstep,ystep;
 	int	temp;
 	int	partial,delta;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - Don't define this in v1.0
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	long	ltemp;
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	unsigned	xfrac,yfrac,deltafrac;
 #else
 	int	xfrac,yfrac,deltafrac;
@@ -1209,7 +1209,7 @@ boolean CheckLine (objtype *ob)
 	xdist = abs(xt2-xt1);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - Relocate line based on version
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 	ydist = abs(yt2-yt1);
 #endif
 
@@ -1219,7 +1219,7 @@ boolean CheckLine (objtype *ob)
 		{
 			partial = 256-(x1&0xff);
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 			xd1 = xt1;
 			xd2 = xt2;
 			yd1 = y1;
@@ -1232,7 +1232,7 @@ boolean CheckLine (objtype *ob)
 		else
 		{
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 			partial = 256-(x2&0xff);
 			xd1 = xt2;
 			xd2 = xt1;
@@ -1246,7 +1246,7 @@ boolean CheckLine (objtype *ob)
 		}
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		delta = yd2-yd1;
 		ystep = ((long)delta<<8)/deltafrac;
 		yfrac = yd1 + (((long)ystep*partial) >>8);
@@ -1271,7 +1271,7 @@ boolean CheckLine (objtype *ob)
 		xt2 += xstep;
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		for (x = xd1+1; x <= xd2; x++)
 #else
 		do
@@ -1281,13 +1281,13 @@ boolean CheckLine (objtype *ob)
 			yfrac += ystep;
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 			if (!(value = (unsigned)tilemap[x][y]))
 				continue;
 #else
 			value = (unsigned)tilemap[x][y];
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			value &= 0xFFDF;
 #endif
 			x += xstep;
@@ -1306,7 +1306,7 @@ boolean CheckLine (objtype *ob)
 			intercept = yfrac-ystep/2;
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			if (doorposition[value]<16384)
 				return false;
 
@@ -1315,7 +1315,7 @@ boolean CheckLine (objtype *ob)
 				return false;
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		}
 #else
 		} while (x != xt2);
@@ -1323,7 +1323,7 @@ boolean CheckLine (objtype *ob)
 	}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - Relocate line based on version
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	ydist = abs(yt2-yt1);
 #endif
 
@@ -1333,7 +1333,7 @@ boolean CheckLine (objtype *ob)
 		{
 			partial = 256-(y1&0xff);
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 			xd1 = x1;
 			xd2 = x2;
 			yd1 = yt1;
@@ -1346,7 +1346,7 @@ boolean CheckLine (objtype *ob)
 		else
 		{
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 			partial = 256-(y2&0xff);
 			xd1 = x2;
 			xd2 = x1;
@@ -1360,7 +1360,7 @@ boolean CheckLine (objtype *ob)
 		}
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		delta = xd2-xd1;
 		xstep = ((long)delta<<8)/deltafrac;
 		xfrac = xd1 + (((long)xstep*partial) >>8);
@@ -1385,7 +1385,7 @@ boolean CheckLine (objtype *ob)
 		yt2 += ystep;
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		for (y = yd1+1; y <= yd2; y++)
 #else
 		do
@@ -1395,13 +1395,13 @@ boolean CheckLine (objtype *ob)
 			xfrac += xstep;
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 			if (!(value = (unsigned)tilemap[x][y]))
 				continue;
 #else
 			value = (unsigned)tilemap[x][y];
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			value &= 0xFFDF;
 #endif
 			y += ystep;
@@ -1420,7 +1420,7 @@ boolean CheckLine (objtype *ob)
 			intercept = xfrac-xstep/2;
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 			if (doorposition[value]<16384)
 				return false;
 
@@ -1428,7 +1428,7 @@ boolean CheckLine (objtype *ob)
 			if (intercept>doorposition[value])
 				return false;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		}
 #else
 		} while (y != yt2);
@@ -1477,7 +1477,7 @@ boolean CheckSight (objtype *ob)
 		return true;
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 //
 // see if they are looking in the right direction
 //
@@ -1546,7 +1546,7 @@ void FirstSighting (objtype *ob)
 
 	case mutantobj:
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		PlaySoundLocActor(D_OXSND,ob);
 #endif
 		NewState (ob,&s_mutchase1);
@@ -1570,7 +1570,7 @@ void FirstSighting (objtype *ob)
 #ifndef SPEAR
 	case bossobj:
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11)
 		PlaySoundLocActor(GUTENTAGSND,ob);
 #else
 		SD_PlaySound(GUTENTAGSND);
@@ -1585,7 +1585,7 @@ void FirstSighting (objtype *ob)
 		break;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 	case gretelobj:
 		SD_PlaySound(KEINSND);
 		NewState (ob,&s_gretelchase1);
@@ -1607,7 +1607,7 @@ void FirstSighting (objtype *ob)
 
 	case schabbobj:
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11)
 		PlaySoundLocActor(SCHABBSHASND,ob);
 #else
 		SD_PlaySound(SCHABBSHASND);
@@ -1617,10 +1617,10 @@ void FirstSighting (objtype *ob)
 		break;
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	case fakeobj:
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		PlaySoundLocActor(TOT_HUNDSND,ob);
 #else
 		SD_PlaySound(TOT_HUNDSND);
@@ -1632,7 +1632,7 @@ void FirstSighting (objtype *ob)
 
 	case mechahitlerobj:
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (defined GAMEVER_RESTORATION_WL1_APO10) || (defined GAMEVER_RESTORATION_WL1_APO11)
+#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11)
 		PlaySoundLocActor(DIESND,ob);
 #else
 		SD_PlaySound(DIESND);
@@ -1643,14 +1643,14 @@ void FirstSighting (objtype *ob)
 
 	case realhitlerobj:
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		PlaySoundLocActor(DIESND,ob);
 #else
 		SD_PlaySound(DIESND);
 #endif
 		NewState (ob,&s_hitlerchase1);
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_WL1_APO10
+#ifdef GAMEVER_EXEDEF_WL1AP10
 		ob->speed *= 3;			// go faster when chasing player
 #else
 		ob->speed *= 5;			// go faster when chasing player
@@ -1673,7 +1673,7 @@ void FirstSighting (objtype *ob)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 	case ghostobj:
 		NewState (ob,&s_blinkychase1);
 		ob->speed *= 2;			// go faster when chasing player
@@ -1795,19 +1795,19 @@ boolean SightPlayer (objtype *ob)
 		case bossobj:
 		case schabbobj:
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_RESTORATION_N3D_WIS10
+#ifndef GAMEVER_EXEDEF_N3DWT10
 		case fakeobj:
 #endif
 		case mechahitlerobj:
 		case realhitlerobj:
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_WL1_APO10
+#ifndef GAMEVER_EXEDEF_WL1AP10
 		case gretelobj:
 		case giftobj:
 		case fatobj:
 #endif
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_RESTORATION_N3D_WIS10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
 		case spectreobj:
 		case angelobj:
 		case transobj:
@@ -1818,14 +1818,14 @@ boolean SightPlayer (objtype *ob)
 			ob->temp2 = 1;
 			break;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		default:
 			sprintf (str,"SightPlayer: Invalid object class %u!\n",ob->obclass);
 			Quit (str);
 #endif
 		}
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_RESTORATION_N3D_WIS10
+#ifdef GAMEVER_EXEDEF_N3DWT10
 		switch (gamestate.difficulty)
 		{
 		case gd_baby:
