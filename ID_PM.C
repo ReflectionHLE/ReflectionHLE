@@ -212,7 +212,7 @@ asm	mov	[WORD PTR XMSDriver+2],es		// function pointer to XMS driver
 
 	XMS_CALL(XMS_QUERYFREE);			// Find out how much XMS is available
 	XMSAvail = _AX;
-	// *** PRE-V1.4 APOGEE + SOD (DEMO) V1.0 RESTORATION ***
+	// *** PRE-V1.4 APOGEE + SOD RESTORATION ***
 	// What preceded bugfix?
 #ifdef GAMEVER_RESTORATION_ANY_ALL_PRE14
 	if (_BL)
@@ -229,7 +229,7 @@ asm	mov	[WORD PTR XMSDriver+2],es		// function pointer to XMS driver
 	XMS_CALL(XMS_ALLOC);				// And do the allocation
 	XMSHandle = _DX;
 
-	// *** PRE-V1.4 APOGEE + SOD (DEMO) V1.0 RESTORATION ***
+	// *** PRE-V1.4 APOGEE + SOD RESTORATION ***
 	// What preceded bugfix?
 #ifdef GAMEVER_RESTORATION_ANY_ALL_PRE14
 	if (_BL)

@@ -1727,7 +1727,7 @@ startplayloop:
 #ifdef SPEAR
 		if (spearflag)
 		{
-			// *** PRE-V1.4 APOGEE+FORMGEN RESTORATION ***
+			// *** SOD VERSIONS RESTORATION ***
 			// Don't stop sound
 #ifndef GAMEVER_RESTORATION_ANY_ALL_PRE14
 			SD_StopSound();
@@ -1735,7 +1735,7 @@ startplayloop:
 			SD_PlaySound(GETSPEARSND);
 			if (DigiMode != sds_Off)
 			{
-				// *** PRE-V1.4 APOGEE+FORMGEN RESTORATION ***
+				// *** SOD VERSIONS RESTORATION ***
 				// Do loop over DigiPlaying
 #ifdef GAMEVER_RESTORATION_ANY_ALL_PRE14
 				while(DigiPlaying!=false)
