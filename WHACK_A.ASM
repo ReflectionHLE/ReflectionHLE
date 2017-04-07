@@ -4,6 +4,9 @@
 IDEAL
 MODEL	MEDIUM,C
 
+; *** S3DNA RESTORATION ***
+INCLUDE 'VERSION.EQU'
+
 
 ;============================================================================
 
