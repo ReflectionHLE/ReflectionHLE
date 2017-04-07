@@ -8,8 +8,6 @@
 
 #if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL1AP14)
 #define UPLOAD
-#elif (defined GAMEVER_RESTORATION_WL6_APO11) || (defined GAMEVER_EXEDEF_WL6AP11) || (defined GAMEVER_EXEDEF_WL6AP14) || (defined GAMEVER_EXEDEF_N3DWT10)
-// Nothing to add in such cases
 #elif (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6AC14)
 #define GOODTIMES
 #elif defined GAMEVER_EXEDEF_SDMFG10
@@ -20,8 +18,41 @@
 #elif defined GAMEVER_EXEDEF_SODAC14
 #define SPEAR
 #define GOODTIMES
+#elif (defined GAMEVER_EXEDEF_N3DWT10)
+// NEW macro, used so EXEDEF isn't redirectly mentioned outside VERSION.*
+// (and since we can't use just GAMEVER_WOLFREV)
+#define GAMEVER_NOAH3D
+#endif
+
+// A new GAMEVER_WOLFREV macro, usually based on some known or guessed
+// release/build date, but does not have to be.
+
+#ifdef GAMEVER_EXEDEF_WL1AP10
+#define GAMEVER_WOLFREV 19920505L
+#elif (defined GAMEVER_EXEDEF_WL1AP11)
+#define GAMEVER_WOLFREV 19920601L
+#elif (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL6AP11)
+// WL1AP12 might be later, but it looks like the same code rev.
+#define GAMEVER_WOLFREV 19920614L
+#elif (defined GAMEVER_EXEDEF_SODFO10)
+#define GAMEVER_WOLFREV 19920928L
+#elif (defined GAMEVER_EXEDEF_SDMFO10)
+#define GAMEVER_WOLFREV 19921022L
+#elif (defined GAMEVER_EXEDEF_WL1AP14) || (defined GAMEVER_EXEDEF_WL6AP14)
+#define GAMEVER_WOLFREV 19921101L
+#elif (defined GAMEVER_EXEDEF_SDMFO14A) || (defined GAMEVER_EXEDEF_SDMFO14B)
+// Only the sign-on screen and project settings really differed
+#define GAMEVER_WOLFREV 19921112L
+#elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_N3DWT10)
+// GT might be later than ID, but only the sign-on screen differs.
+// Also, N3D is missing later changes, essentially residing in a separate "branch".
+#define GAMEVER_WOLFREV 19930903L
+#elif (defined GAMEVER_EXEDEF_WL6GT14B)
+#define GAMEVER_WOLFREV 19940413L
+#elif (defined GAMEVER_EXEDEF_WL6AC14) || (defined GAMEVER_EXEDEF_SODAC14)
+#define GAMEVER_WOLFREV 19980313L
 #else
-#error "No proper game version restoration macro is defined!"
+#error "No proper GAMEVER_EXEDEF macro is defined!"
 #endif
 
 // Additional convenience macros
