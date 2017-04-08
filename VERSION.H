@@ -60,47 +60,7 @@
 #error "No proper GAMEVER_EXEDEF macro is defined!"
 #endif
 
-// Additional convenience macros
-#if (defined GAMEVER_EXEDEF_WL1AP10)
-#define GAMEVER_RESTORATION_ANY_APO10
-#endif
-#if (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_RESTORATION_WL6_APO11)
-#define GAMEVER_RESTORATION_ANY_APO11
-#endif
-#if (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL6AP11)
-#define GAMEVER_RESTORATION_ANY_APO12
-#endif
-#if (defined GAMEVER_EXEDEF_WL1AP14) || (defined GAMEVER_EXEDEF_WL6AP14)
-#define GAMEVER_RESTORATION_ANY_APO14
-#endif
-
-#if (defined GAMEVER_RESTORATION_ANY_APO10) || (defined GAMEVER_RESTORATION_ANY_APO11) || (defined GAMEVER_RESTORATION_ANY_APO12)
-#define GAMEVER_RESTORATION_ANY_APO_PRE14
-#endif
-
-#if (defined GAMEVER_EXEDEF_SDMFG10) || (defined GAMEVER_EXEDEF_SODFG10)
-#define GAMEVER_RESTORATION_ANY_FOR10
-#endif
-
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined GAMEVER_RESTORATION_ANY_FOR10)
-#define GAMEVER_RESTORATION_ANY_ALL_PRE14
-#endif
-
-#if (defined GAMEVER_EXEDEF_WL6AC14) || (defined GAMEVER_EXEDEF_SODAC14)
-#define GAMEVER_RESTORATION_ANY_ACT14
-#endif
-
-#if (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6AC14) || (defined GAMEVER_EXEDEF_SODAC14)
-#define GAMEVER_RESTORATION_ANY_FROM_GT214
-#endif
-
-#if (defined GAMEVER_RESTORATION_ANY_FROM_GT214) || (defined GAMEVER_EXEDEF_N3DWT10)
-#define GAMEVER_RESTORATION_ANY_POST_GT114
-#endif
-
-#if (defined GAMEVER_RESTORATION_ANY_ALL_PRE14) || (defined GAMEVER_RESTORATION_ANY_APO14) || (defined GAMEVER_EXEDEF_SODFG14B)
-#define GAMEVER_RESTORATION_ANY_PRE_GT
-#endif
+/*** Additional convenience macros ***/
 
 // This doesn't cover the SOD case of the debug keys, just Wolf3D v1.0 and S3DNA vs the later releases
 #ifdef GAMEVER_EXEDEF_WL1AP10
