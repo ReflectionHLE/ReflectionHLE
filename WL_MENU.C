@@ -1919,7 +1919,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// This is also skipped in the Apogee and S3DNA EXEs
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -1956,7 +1956,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -2160,7 +2160,7 @@ void MouseSensitivity(void)
 
 		// *** SHAREWARE/REGISTERED V1.4 APOGEE+SOD (DEMO) V1.0 RESTORATION ***
 		// And again - kind of
-		#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
+		#if (GAMEVER_WOLFREV > 19921112L)
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		#else
@@ -3034,7 +3034,7 @@ void CP_ChangeView(void)
 
 		// *** SHAREWARE/REGISTERED V1.4 APOGEE+SOD (DEMO) V1.0 RESTORATION ***
 		// And again
-		#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
+		#if (GAMEVER_WOLFREV > 19921112L)
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		#else
@@ -3939,7 +3939,7 @@ int Confirm(char GAMEVER_RESTORATION_CONDFARPTR *string)
 
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -3997,7 +3997,7 @@ int GetYorN(int x,int y,int pic)
 	{
 		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();

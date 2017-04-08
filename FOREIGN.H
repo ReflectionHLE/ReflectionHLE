@@ -76,7 +76,7 @@
 #define	STR_RIGHT	"Right"
 // *** APOGEE+FORMGEN VERSIONS RESTORATION ***
 // There was a typo fix
-#ifdef GAMEVER_RESTORATION_ANY_PRE_GT
+#if (GAMEVER_WOLFREV <= 19921112L)
 #define	STR_FRWD	"Fwrd"
 #else
 #define	STR_FRWD	"Frwd"

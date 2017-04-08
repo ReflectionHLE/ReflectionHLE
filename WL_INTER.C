@@ -346,7 +346,7 @@ void Victory (void)
 #endif
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocated this, depending on version
-#ifdef GAMEVER_RESTORATION_ANY_PRE_GT
+#if (GAMEVER_WOLFREV <= 19921112L)
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 	// *** S3DNA RESTORATION ***
@@ -354,7 +354,7 @@ void Victory (void)
 //#else
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocated this, depending on version
-#ifdef GAMEVER_RESTORATION_ANY_PRE_GT
+#if (GAMEVER_WOLFREV <= 19921112L)
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 
@@ -406,7 +406,7 @@ void Victory (void)
 #else
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocate this, depending on version
-#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
+#if (GAMEVER_WOLFREV > 19921112L)
 #ifndef JAPDEMO
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
@@ -595,7 +595,7 @@ void Victory (void)
 
 	// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 	// This is also skipped in the Apogee EXEs
-	#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
+	#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L)
 	//#ifndef SPEAR
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		PicturePause();
@@ -1557,7 +1557,7 @@ void LevelCompleted (void)
 
 	 // *** SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	 // Possibly relocated this, depending on version
-	#ifdef GAMEVER_RESTORATION_ANY_PRE_GT
+	#if (GAMEVER_WOLFREV <= 19921112L)
 	 #ifdef SPANISH
 	 Write(30,12,parTimes[gamestate.episode*10+mapon].timestr);
 	 #else
@@ -1581,7 +1581,7 @@ void LevelCompleted (void)
 
 	 // *** SHAREWARE/REGISTERED V1.4 APOGEE + RESTORATION ***
 	 // Possibly relocate this, depending on version
-	#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
+	#if (GAMEVER_WOLFREV > 19921112L)
 	 #ifdef SPANISH
 	 Write(30,12,parTimes[gamestate.episode*10+mapon].timestr);
 	 #else
@@ -1935,7 +1935,7 @@ void LevelCompleted (void)
 
 	// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 	// This is also skipped in the Apogee EXEs
-	#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT)
+	#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L)
 	//#ifndef SPEAR
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 		PicturePause();

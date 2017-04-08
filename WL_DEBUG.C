@@ -162,7 +162,7 @@ void PicturePause (void)
 
 	ClearMemory ();
 	// *** APOGEE+FORMGEN VERSIONS RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_PRE_GT
+#if (GAMEVER_WOLFREV > 19921112L)
 	CA_SetAllPurge();
 #endif
 	MM_GetPtr (&buffer,64000);
