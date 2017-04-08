@@ -31,10 +31,16 @@ ENDIF
 IFDEF GAMEVER_EXEDEF_SDMFG14A OR GAMEVER_EXEDEF_SDMFG14B
 GAMEVER_WOLFREV EQU 19921112 ; Only the sign-on screen and project settings really differed
 ENDIF
-IFDEF GAMEVER_EXEDEF_WL6GT14A OR GAMEVER_EXEDEF_WL6ID14 OR GAMEVER_EXEDEF_N3DWT10
-; GT might be later than ID, but only the sign-on screen differs.
-; Also, N3D is missing later changes, essentially residing in a separate "branch".
+IFDEF GAMEVER_EXEDEF_WL6GT14A OR GAMEVER_EXEDEF_WL6ID14
+; GT might be later than ID, but only the sign-on screen differs
 GAMEVER_WOLFREV EQU 19930903
+ENDIF
+IFDEF GAMEVER_EXEDEF_N3DWT10
+; Like GT14B and later, N3D has the verification block from WL_INTER.C removed,
+; but it lacks a few minor GT14B changes to WL_TEXT.C, and an end-screen is still
+; shown on quit (which isn't the case in the later 1998 Activision release).
+; Since N3D was released on 1994, let's assume the first day of January.
+GAMEVER_WOLFREV EQU 19940101
 ENDIF
 IFDEF GAMEVER_EXEDEF_WL6GT14B
 GAMEVER_WOLFREV EQU 19940413

@@ -43,10 +43,15 @@
 #elif (defined GAMEVER_EXEDEF_SDMFG14A) || (defined GAMEVER_EXEDEF_SDMFG14B)
 // Only the sign-on screen and project settings really differed
 #define GAMEVER_WOLFREV 19921112L
-#elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_N3DWT10)
-// GT might be later than ID, but only the sign-on screen differs.
-// Also, N3D is missing later changes, essentially residing in a separate "branch".
+#elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14)
+// GT might be later than ID, but only the sign-on screen differs
 #define GAMEVER_WOLFREV 19930903L
+#elif (defined GAMEVER_EXEDEF_N3DWT10)
+// Like GT14B and later, N3D has the verification block from WL_INTER.C removed,
+// but it lacks a few minor GT14B changes to WL_TEXT.C, and an end-screen is still
+// shown on quit (which isn't the case in the later 1998 Activision release).
+// Since N3D was released on 1994, let's assume the first day of January.
+#define GAMEVER_WOLFREV 19940101L
 #elif (defined GAMEVER_EXEDEF_WL6GT14B)
 #define GAMEVER_WOLFREV 19940413L
 #elif (defined GAMEVER_EXEDEF_WL6AC14) || (defined GAMEVER_EXEDEF_SODAC14)
