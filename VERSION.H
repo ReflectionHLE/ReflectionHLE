@@ -34,13 +34,13 @@
 #elif (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL6AP11)
 // WL1AP12 might be later, but it looks like the same code rev.
 #define GAMEVER_WOLFREV 19920614L
-#elif (defined GAMEVER_EXEDEF_SODFO10)
+#elif (defined GAMEVER_EXEDEF_SODFG10)
 #define GAMEVER_WOLFREV 19920928L
-#elif (defined GAMEVER_EXEDEF_SDMFO10)
+#elif (defined GAMEVER_EXEDEF_SDMFG10)
 #define GAMEVER_WOLFREV 19921022L
 #elif (defined GAMEVER_EXEDEF_WL1AP14) || (defined GAMEVER_EXEDEF_WL6AP14)
 #define GAMEVER_WOLFREV 19921101L
-#elif (defined GAMEVER_EXEDEF_SDMFO14A) || (defined GAMEVER_EXEDEF_SDMFO14B)
+#elif (defined GAMEVER_EXEDEF_SDMFG14A) || (defined GAMEVER_EXEDEF_SDMFG14B)
 // Only the sign-on screen and project settings really differed
 #define GAMEVER_WOLFREV 19921112L
 #elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_N3DWT10)
