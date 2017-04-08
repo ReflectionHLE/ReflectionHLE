@@ -1729,7 +1729,7 @@ startplayloop:
 		{
 			// *** SOD VERSIONS RESTORATION ***
 			// Don't stop sound
-#ifndef GAMEVER_RESTORATION_ANY_ALL_PRE14
+#if (GAMEVER_WOLFREV > 19920928L)
 			SD_StopSound();
 #endif
 			SD_PlaySound(GETSPEARSND);
@@ -1737,7 +1737,7 @@ startplayloop:
 			{
 				// *** SOD VERSIONS RESTORATION ***
 				// Do loop over DigiPlaying
-#ifdef GAMEVER_RESTORATION_ANY_ALL_PRE14
+#if (GAMEVER_WOLFREV <= 19920928L)
 				while(DigiPlaying!=false)
 					SD_Poll();
 #else

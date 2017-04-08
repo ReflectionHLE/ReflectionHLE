@@ -213,8 +213,7 @@ asm	mov	[WORD PTR XMSDriver+2],es		// function pointer to XMS driver
 	XMS_CALL(XMS_QUERYFREE);			// Find out how much XMS is available
 	XMSAvail = _AX;
 	// *** PRE-V1.4 APOGEE + SOD RESTORATION ***
-	// What preceded bugfix?
-#ifdef GAMEVER_RESTORATION_ANY_ALL_PRE14
+#if (GAMEVER_WOLFREV <= 19921007L)
 	if (_BL)
 #else
 	if (!_AX)				// AJR: bugfix 10/8/92
@@ -230,8 +229,7 @@ asm	mov	[WORD PTR XMSDriver+2],es		// function pointer to XMS driver
 	XMSHandle = _DX;
 
 	// *** PRE-V1.4 APOGEE + SOD RESTORATION ***
-	// What preceded bugfix?
-#ifdef GAMEVER_RESTORATION_ANY_ALL_PRE14
+#if (GAMEVER_WOLFREV <= 19921007L)
 	if (_BL)
 #else
 	if (!_AX)				// AJR: bugfix 10/8/92
