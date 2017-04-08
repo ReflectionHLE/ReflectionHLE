@@ -581,7 +581,7 @@ void US_ControlPanel(byte scancode)
 		#pragma warn -sus
 		MainMenu[viewscores].routine = NULL;
 		#ifndef JAPAN
-		GAMEVER_RESTORATION_CONDFARSTRCPY(MainMenu[viewscores].string,STR_EG);
+		GAMEVER_COND_FSTRCPY(MainMenu[viewscores].string,STR_EG);
 		#endif
 		#pragma warn +sus
 	}
@@ -625,9 +625,9 @@ void DrawMainMenu(void)
 		#ifndef JAPAN
 
 		#ifdef SPANISH
-		GAMEVER_RESTORATION_CONDFARSTRCPY(&MainMenu[backtodemo].string,STR_GAME);
+		GAMEVER_COND_FSTRCPY(&MainMenu[backtodemo].string,STR_GAME);
 		#else
-		GAMEVER_RESTORATION_CONDFARSTRCPY(&MainMenu[backtodemo].string[8],STR_GAME);
+		GAMEVER_COND_FSTRCPY(&MainMenu[backtodemo].string[8],STR_GAME);
 		#endif
 
 		#else
@@ -644,9 +644,9 @@ void DrawMainMenu(void)
 	{
 		#ifndef JAPAN
 		#ifdef SPANISH
-		GAMEVER_RESTORATION_CONDFARSTRCPY(&MainMenu[backtodemo].string,STR_BD);
+		GAMEVER_COND_FSTRCPY(&MainMenu[backtodemo].string,STR_BD);
 		#else
-		GAMEVER_RESTORATION_CONDFARSTRCPY(&MainMenu[backtodemo].string[8],STR_DEMO);
+		GAMEVER_COND_FSTRCPY(&MainMenu[backtodemo].string[8],STR_DEMO);
 		#endif
 		#else
 		CA_CacheGrChunk(C_MRETDEMOPIC);
@@ -1035,7 +1035,7 @@ int CP_EndGame(void)
 #endif
 	MainMenu[viewscores].routine=CP_ViewScores;
 	#ifndef JAPAN
-	GAMEVER_RESTORATION_CONDFARSTRCPY(MainMenu[viewscores].string,STR_VS);
+	GAMEVER_COND_FSTRCPY(MainMenu[viewscores].string,STR_VS);
 	#endif
 	#pragma warn +sus
 

@@ -1944,7 +1944,7 @@ startplayloop:
 
 			#pragma warn -sus
 			#ifndef JAPAN
-			GAMEVER_RESTORATION_CONDFARSTRCPY(MainMenu[viewscores].string,STR_VS);
+			GAMEVER_COND_FSTRCPY(MainMenu[viewscores].string,STR_VS);
 			#endif
 			MainMenu[viewscores].routine = CP_ViewScores;
 			#pragma warn +sus
@@ -1986,7 +1986,7 @@ startplayloop:
 
 			#pragma warn -sus
 			#ifndef JAPAN
-			GAMEVER_RESTORATION_CONDFARSTRCPY(MainMenu[viewscores].string,STR_VS);
+			GAMEVER_COND_FSTRCPY(MainMenu[viewscores].string,STR_VS);
 			#endif
 			MainMenu[viewscores].routine = CP_ViewScores;
 			#pragma warn +sus

@@ -107,7 +107,7 @@
 
 #define GAMEVER_WOLF3D_DEBUGPARM "next"
 #define GAMEVER_COND_FARPTR
-#define GAMEVER_RESTORATION_CONDFARSTRCPY strcpy
+#define GAMEVER_COND_FSTRCPY strcpy
 
 #else
 
@@ -117,7 +117,7 @@
 #define GAMEVER_WOLF3D_DEBUGPARM "goobers"
 #endif
 #define GAMEVER_COND_FARPTR far
-#define GAMEVER_RESTORATION_CONDFARSTRCPY _fstrcpy
+#define GAMEVER_COND_FSTRCPY _fstrcpy
 
 #endif
 
