@@ -1488,7 +1488,7 @@ void CA_CacheMap (int mapnum)
 		pos = mapheaderseg[mapnum]->planestart[plane];
 		compressed = mapheaderseg[mapnum]->planelength[plane];
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 		if (!compressed)
 			continue;
 #endif

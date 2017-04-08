@@ -878,7 +878,7 @@ void EndText (void)
 	ClearMemory ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	ResetSplitScreen ();
 #endif
 	CA_UpLevel ();
@@ -902,7 +902,7 @@ void EndText (void)
 
 #ifdef ARTSEXTERN
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	artnum = endextern;
 #else
 	artnum = endextern+gamestate.episode;

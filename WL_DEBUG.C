@@ -625,7 +625,7 @@ int DebugKeys (void)
 	}
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 //#if 0
 	else if (Keyboard[sc_O])			// O = overhead
 	{
@@ -756,7 +756,7 @@ void OverheadRefresh (void)
 	unsigned	tile;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage]+screenofs;
@@ -803,7 +803,7 @@ void OverheadRefresh (void)
 		}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	displayofs = bufferofs-screenofs;
 	VW_SetScreen(displayofs,0);
 #endif
@@ -812,7 +812,7 @@ void OverheadRefresh (void)
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // Do compile this in v1.0 of Wolfenstein 3D
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 //#if 0
 /*
 ===================

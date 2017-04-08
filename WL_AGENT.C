@@ -310,7 +310,7 @@ void ControlMovement (objtype *ob)
 // instead there was just a call to LatchDrawPic everywhere, more-or-less,
 // along with a few bits of fiddling with bufferofs.
 
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 // HACK for restoration of v1.0
 #define StatusDrawPic LatchDrawPic
 
@@ -339,7 +339,7 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 	bufferofs = temp;
 }
-#endif // GAMEVER_WOLFREV == 19920505L
+#endif // GAMEVER_WOLFREV <= 19920505L
 
 
 // *** S3DNA RESTORATION ***
@@ -363,7 +363,7 @@ void DrawTreasure ()
 void DrawFace (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	unsigned	temp;
 
 	temp = bufferofs;
@@ -401,7 +401,7 @@ void DrawFace (void)
 #endif
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	bufferofs = temp;
 #endif
 }
@@ -461,7 +461,7 @@ void	UpdateFace (void)
 void	LatchNumber (int x, int y, int width, long number)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	unsigned	temp;
 
 #endif
@@ -471,7 +471,7 @@ void	LatchNumber (int x, int y, int width, long number)
 	ltoa (number,str,10);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	temp = bufferofs;
 	bufferofs = 0;
 
@@ -499,7 +499,7 @@ void	LatchNumber (int x, int y, int width, long number)
 		c++;
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	bufferofs = temp;
 #endif
 }
@@ -537,7 +537,7 @@ void	TakeDamage (int points,objtype *attacker)
 	LastAttacker = attacker;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	if (gamestate.victoryflag)
 		return;
 #endif
@@ -740,7 +740,7 @@ void	GivePoints (long points)
 void DrawWeapon (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	unsigned	temp;
 
 	temp = bufferofs;
@@ -748,7 +748,7 @@ void DrawWeapon (void)
 #endif
 	StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	bufferofs = temp;
 #endif
 }
@@ -766,7 +766,7 @@ void DrawWeapon (void)
 void DrawKeys (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	unsigned	temp;
 
 	temp = bufferofs;
@@ -795,7 +795,7 @@ void DrawKeys (void)
 		StatusDrawPic (30,20,NOKEYPIC);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	bufferofs = temp;
 #endif
 }
@@ -1021,7 +1021,7 @@ void GiveKey (int key)
 void GetBonus (statobj_t *check)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	unsigned	temp;
 #endif
 	switch (check->itemnumber)
@@ -1152,7 +1152,7 @@ void GetBonus (statobj_t *check)
 		GiveWeapon (wp_chaingun);
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 		temp = bufferofs;
 		bufferofs = 0;
 
@@ -1164,7 +1164,7 @@ void GetBonus (statobj_t *check)
 		StatusDrawPic (17,4,GOTGATLINGPIC);
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 		bufferofs = temp;
 
 #endif
@@ -1687,7 +1687,7 @@ void SpawnPlayer (int tilex, int tiley, int dir)
 	if (player->angle<0)
 		player->angle += ANGLES;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	player->flags = FL_NEVERMARK;
 #endif
 	Thrust (0,0);				// set some variables
@@ -1967,7 +1967,7 @@ void	T_Attack (objtype *ob)
 		return;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in unsigned
 	pluy = player->y >> UNSIGNEDSHIFT;
 	player->tilex = player->x >> TILESHIFT;		// scale to tile values

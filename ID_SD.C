@@ -117,7 +117,7 @@ static	char			*ParmStrings[] =
 							"noal",
 							"nosb",
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 							"nopro",
 #endif
 // *** S3DNA RESTORATION ***
@@ -167,7 +167,7 @@ static	word			DigiNextLen;
 //	SoundBlaster variables
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 static	boolean					sbNoCheck;
 #else
 static	boolean					sbNoCheck,sbNoProCheck;
@@ -364,7 +364,7 @@ asm	cli
 	{
 		sbSamplePlaying = false;
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV != 19920505L)
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV > 19920505L)
 		asm	pushf
 		asm	cli
 #endif
@@ -379,7 +379,7 @@ asm	cli
 			is &= ~(1 << sbInterrupt);
 		outportb(0x21,is);
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV != 19920505L)
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV > 19920505L)
 		asm	popf
 #endif
 	}
@@ -420,7 +420,7 @@ SDL_SBPlaySeg(volatile byte huge *data,longword length)
 	// Program the DMA controller
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 asm	pushf
 asm	cli
 #endif
@@ -437,7 +437,7 @@ asm	cli
 	// Start playing the thing
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV != 19920505L)
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV > 19920505L)
 asm	popf
 asm	pushf
 asm	cli
@@ -449,7 +449,7 @@ asm	cli
 	sbWriteDelay();
 	sbOut(sbWriteData,(byte)(uselen >> 8));
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 asm	popf
 #endif
 
@@ -523,7 +523,7 @@ asm	cli
 	// Save old interrupt status and unmask ours
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV != 19920505L)
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV > 19920505L)
 asm	pushf
 asm	cli
 #endif
@@ -534,7 +534,7 @@ asm	cli
 	sbOut(sbWriteCmd,0xd4);						// Make sure DSP DMA is enabled
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV != 19920505L)
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV > 19920505L)
 asm	popf
 #endif
 
@@ -559,7 +559,7 @@ SDL_PositionSBP(int leftpos,int rightpos)
 	byte	v;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	if (!SBProPresent)
 		return;
 #endif
@@ -700,7 +700,7 @@ SDL_StartSB(void)
 	sbIntVec = sbIntVectors[sbInterrupt];
 	if (sbIntVec < 0)
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 		Quit("SDL_StartSB: Illegal interrupt number for SoundBlaster");
 #else
 		Quit("SDL_StartSB: Illegal or unsupported interrupt number for SoundBlaster");
@@ -726,7 +726,7 @@ SDL_StartSB(void)
 	sbOut(sbWriteData,timevalue);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	SBProPresent = false;
 	if (sbNoProCheck)
 		return;
@@ -1241,7 +1241,7 @@ asm	cli
 	DigiPlaying = false;
 	DigiNumber = DigiPriority = 0;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	SoundPositioned = false;
 #endif
 	// *** S3DNA RESTORATION ***
@@ -1313,7 +1313,7 @@ void
 SD_SetPosition(int leftpos,int rightpos)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if ((leftpos < 0) || (leftpos > 15) || (rightpos < 0) || (rightpos > 15))
@@ -1398,7 +1398,7 @@ SDL_DigitizedDone(void)
 			DigiPlaying = false;
 			DigiLastSegment = false;
 			// *** S3DNA + SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 			DigiPriority = 0;
 #endif
 #ifndef GAMEVER_NOAH3D
@@ -1407,7 +1407,7 @@ SDL_DigitizedDone(void)
 				SDL_SoundFinished();
 			}
 #endif
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 #ifndef GAMEVER_NOAH3D
 			else
 #endif
@@ -2541,7 +2541,7 @@ SD_Startup(void)
 	alNoCheck = false;
 	sbNoCheck = false;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	sbNoProCheck = false;
 #endif
 #ifndef	_MUSE_
@@ -2565,7 +2565,7 @@ SD_Startup(void)
 			break;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 		// Disable following check and define offset under a macro
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 #define GAMEVER_SD_OFFSET -1
 #else
 		case 2:						// No SoundBlaster Pro detection
@@ -2855,12 +2855,12 @@ SD_PlaySound(soundnames sound)
 			SDL_PCStopSound();
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 			SoundPositioned = ispos;
 #endif
 			SD_PlayDigitized(DigiMap[sound],lp,rp);
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 			SoundPositioned = ispos;
 #endif
 			SoundNumber = sound;
@@ -2870,7 +2870,7 @@ SD_PlaySound(soundnames sound)
 #endif
 		{
 			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
 		asm	pushf
 		asm	cli
 			if (DigiPriority && !DigiNumber)
@@ -2885,12 +2885,12 @@ SD_PlaySound(soundnames sound)
 				return(false);
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 			SoundPositioned = ispos;
 #endif
 			SD_PlayDigitized(DigiMap[sound],lp,rp);
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 			SoundPositioned = ispos;
 #endif
 			DigiNumber = sound;

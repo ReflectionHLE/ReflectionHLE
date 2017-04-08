@@ -932,7 +932,7 @@ asm	out	dx,al
 		boolean mainonly = (pagenum >= PMSoundStart);
 if (!PMPages[pagenum].offset)	// JDC: sparse page
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	return 0;
 #else
 	Quit ("Tried to load a sparse page!");

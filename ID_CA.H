@@ -2,7 +2,7 @@
 //===========================================================================
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 #define NUMMAPS		30
 #define MAPPLANES	3
 #else

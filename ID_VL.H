@@ -116,7 +116,7 @@ out dx,al;\
 sti;}
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 #define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX+1;mov al,x;out dx,al;sti;}
 #else
 #define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov al,SC_MAPMASK;mov ah,x;out dx,ax;sti;}

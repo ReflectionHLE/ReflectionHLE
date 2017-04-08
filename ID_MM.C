@@ -820,7 +820,7 @@ void MM_ShowMemory (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** (but looks unused in ALL versions)
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 //==========================================================================
 
 /*
@@ -884,7 +884,7 @@ void MM_DumpData (void)
 	fclose (dumpfile);
 	Quit ("MMDUMP.TXT created.");
 }
-#endif // GAMEVER_WOLFREV == 19920505L
+#endif // GAMEVER_WOLFREV <= 19920505L
 
 //==========================================================================
 

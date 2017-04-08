@@ -37,7 +37,7 @@
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // Not sure how were these values picked, but here they are
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 #ifdef DEBUGWALLS
 unsigned screenloc[3]= {0,0,0};
 #else
@@ -54,7 +54,7 @@ unsigned freelatch = FREESTART;
 #endif
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 int 	screenpage;
 #endif
 
@@ -984,7 +984,7 @@ void HitVertPWall (void)
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // Re-enable unused EGA code *and* restore egaFloor+egaCeiling
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 unsigned egaFloor[] = {0,0,0,0,0,0,0,0,0,5};
 unsigned egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0d0d};
 
@@ -1068,7 +1068,7 @@ unsigned vgaCeiling[]=
  0x4e4e,0x4e4e,0x4e4e,0x1d1d,0x8d8d,0x4e4e,0x1d1d,0x2d2d,0x1d1d,0x8d8d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x2d2d,0xdddd,0x1d1d,0x1d1d,//0x9898,
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
  0x8d8d,
 #else
  0x9898,
@@ -1081,7 +1081,7 @@ unsigned vgaCeiling[]=
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xd7d7,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
 #endif
-#endif // GAMEVER_WOLFREV == 19920505L
+#endif // GAMEVER_WOLFREV <= 19920505L
 #else
  0x6f6f,0x4f4f,0x1d1d,0xdede,0xdfdf,0x2e2e,0x7f7f,0x9e9e,0xaeae,0x7f7f,
  0x1d1d,0xdede,0xdfdf,0xdede,0xdfdf,0xdede,0xe1e1,0xdcdc,0x2e2e,0x1d1d,0xdcdc
@@ -1176,7 +1176,7 @@ int	CalcRotate (objtype *ob)
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 	// Including special cases for Wolf3D v1.0 and S3DNA
-#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (ob->obclass == rocketobj)
 #else
@@ -1442,7 +1442,7 @@ void DrawPlayerWeapon (void)
 	if (gamestate.victoryflag)
 	{
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 		if (player->state == &s_deathcam && (TimeCount&32) )
 			SimpleScaleShape(viewwidth/2,SPR_DEATHCAM,viewheight+1);
 #endif
@@ -1534,7 +1534,7 @@ void CalcTics (void)
 void	FixOfs (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage];
@@ -1583,7 +1583,7 @@ void WallRefresh (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - An unused function from v1.0
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 //==========================================================================
 
 int someUnusedDrawArray[] = {
@@ -1609,7 +1609,7 @@ void	SomeUnusedDrawFunc (void)
 	}
 }
 
-#endif // GAMEVER_WOLFREV == 19920505L
+#endif // GAMEVER_WOLFREV <= 19920505L
 //==========================================================================
 
 /*
@@ -1638,7 +1638,7 @@ asm	mov	cx,2048							// 64*64 / 2
 asm	rep stosw
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage]+screenofs;
@@ -1695,7 +1695,7 @@ asm	rep stosw
 	}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	displayofs = bufferofs-screenofs;
 #else
 	bufferofs -= screenofs;
@@ -1711,7 +1711,7 @@ asm	rep stosw
 	asm	mov	al,ch
 	asm	out	dx,al   	// set the high byte
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 	asm	dec	dx
 	asm	mov	al,0dh
 	asm	out	dx,al

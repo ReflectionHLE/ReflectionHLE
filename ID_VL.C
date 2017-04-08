@@ -148,7 +148,7 @@ asm	mov	ax,0x13
 asm	int	0x10
 	VL_DePlaneVGA ();
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L)
 	VGAMAPMASK(15);
 #endif
 	VL_SetLineWidth (40);
