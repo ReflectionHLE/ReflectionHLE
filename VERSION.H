@@ -40,7 +40,7 @@
 #define GAMEVER_WOLFREV 19920928L
 #elif (defined GAMEVER_EXEDEF_WL1AP14) || (defined GAMEVER_EXEDEF_WL6AP14)
 #define GAMEVER_WOLFREV 19921101L
-#elif (defined GAMEVER_EXEDEF_SDMFG14A) || (defined GAMEVER_EXEDEF_SDMFG14B)
+#elif (defined GAMEVER_EXEDEF_SODFG14A) || (defined GAMEVER_EXEDEF_SODFG14B)
 // Only the sign-on screen and project settings really differed
 #define GAMEVER_WOLFREV 19921112L
 #elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14)
