@@ -13,7 +13,7 @@
 #elif defined GAMEVER_EXEDEF_SDMFG10
 #define SPEAR
 #define SPEARDEMO
-#elif (defined GAMEVER_EXEDEF_SODFG10) || (defined GAMEVER_EXEDEF_SODFG14B)
+#elif (defined GAMEVER_EXEDEF_SODFG10) || (defined GAMEVER_EXEDEF_SODFG14A) || (defined GAMEVER_EXEDEF_SODFG14B)
 #define SPEAR
 #elif defined GAMEVER_EXEDEF_SODAC14
 #define SPEAR
