@@ -820,7 +820,7 @@ void MM_ShowMemory (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** (but looks unused in ALL versions)
-#if (GAMEVER_WOLFREV != 19920505)
+#if (GAMEVER_WOLFREV != 19920505L)
 //==========================================================================
 
 /*
