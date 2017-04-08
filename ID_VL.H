@@ -85,7 +85,7 @@ extern	unsigned	bufferofs;			// all drawing is reletive to this
 extern	unsigned	displayofs,pelpan;	// last setscreen coordinates
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	boolean		VGAMode;
 #endif
 
@@ -162,7 +162,7 @@ void VL_MemToScreen (byte far *source, int width, int height, int x, int y);
 void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y);
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void VL_LatchToScreen (unsigned source, int width, int height, int x, int y);
 void FillCharAttr (byte c, byte attr, int count);
 #else

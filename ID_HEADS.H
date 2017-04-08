@@ -25,7 +25,7 @@ extern	char		far signon;
 #define	introscn	signon
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #include "GFXV_N3D.H"
 #include "AUDION3D.H"
 //#include "MAPSN3D.H" // Unused anyway

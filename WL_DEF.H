@@ -47,7 +47,7 @@
 */
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define MAXACTORS		127				// max number of nazis, etc / map
 #define MAXSTATS		200				// max number of lamps, bonus, etc
 #define MAXDOORS		32				// max number of sliding doors
@@ -176,7 +176,7 @@
 enum	{
 		SPR_DEMO,
 		// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_NOAH3D)
 		SPR_DEATHCAM,
 #endif
 //
@@ -195,7 +195,7 @@ enum	{
 		SPR_STAT_28,SPR_STAT_29,SPR_STAT_30,SPR_STAT_31,
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		SPR_STAT_32,SPR_STAT_33,SPR_STAT_34,SPR_STAT_35,
 		SPR_STAT_36,
 
@@ -227,7 +227,7 @@ enum	{
 // guard
 //
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 		SPR_GRD_S_1,SPR_GRD_S_2,SPR_GRD_S_3,SPR_GRD_S_4,
 		SPR_GRD_S_5,SPR_GRD_S_6,SPR_GRD_S_7,SPR_GRD_S_8,
 #endif
@@ -245,14 +245,14 @@ enum	{
 		SPR_GRD_W4_5,SPR_GRD_W4_6,SPR_GRD_W4_7,SPR_GRD_W4_8,
 
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 		SPR_GRD_PAIN_1,SPR_GRD_DIE_1,SPR_GRD_DIE_2,SPR_GRD_DIE_3,
 		SPR_GRD_PAIN_2,SPR_GRD_DEAD,
 #endif
 
 		SPR_GRD_SHOOT1,SPR_GRD_SHOOT2,SPR_GRD_SHOOT3,
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		SPR_GRD_DEAD,SPR_GRD_PAIN,SPR_GRD_DIE_1,SPR_GRD_DIE_2,
 		SPR_GRD_DEAD2,
 #endif
@@ -273,7 +273,7 @@ enum	{
 		SPR_DOG_W4_5,SPR_DOG_W4_6,SPR_DOG_W4_7,SPR_DOG_W4_8,
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		SPR_DOG_JUMP1,SPR_DOG_JUMP2,SPR_DOG_JUMP3,SPR_DOG_JUMP4,
 		SPR_DOG_DIE_1,SPR_DOG_DIE_2,SPR_DOG_DEAD,SPR_DOG_DEAD2,
 #else
@@ -285,7 +285,7 @@ enum	{
 
 		// *** S3DNA RESTORATION ***
 		// Relocated and modified Officer sprite definitions
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 //
 // officer
 //
@@ -313,7 +313,7 @@ enum	{
 // ss
 //
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 		SPR_SS_S_1,SPR_SS_S_2,SPR_SS_S_3,SPR_SS_S_4,
 		SPR_SS_S_5,SPR_SS_S_6,SPR_SS_S_7,SPR_SS_S_8,
 #endif
@@ -331,14 +331,14 @@ enum	{
 		SPR_SS_W4_5,SPR_SS_W4_6,SPR_SS_W4_7,SPR_SS_W4_8,
 
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 		SPR_SS_PAIN_1,SPR_SS_DIE_1,SPR_SS_DIE_2,SPR_SS_DIE_3,
 		SPR_SS_PAIN_2,SPR_SS_DEAD,
 #endif
 
 		SPR_SS_SHOOT1,SPR_SS_SHOOT2,SPR_SS_SHOOT3,
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		SPR_SS_DEAD,SPR_SS_PAIN,SPR_SS_DIE_1,SPR_SS_DIE_2,
 		SPR_SS_DEAD2,
 #endif
@@ -347,7 +347,7 @@ enum	{
 // mutant
 //
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 		SPR_MUT_S_1,SPR_MUT_S_2,SPR_MUT_S_3,SPR_MUT_S_4,
 		SPR_MUT_S_5,SPR_MUT_S_6,SPR_MUT_S_7,SPR_MUT_S_8,
 #endif
@@ -365,7 +365,7 @@ enum	{
 		SPR_MUT_W4_5,SPR_MUT_W4_6,SPR_MUT_W4_7,SPR_MUT_W4_8,
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		SPR_MUT_SHOOT1,SPR_MUT_SHOOT2,SPR_MUT_SHOOT3,
 
 		SPR_MUT_DEAD,SPR_MUT_PAIN,SPR_MUT_DIE_1,SPR_MUT_DIE_2,
@@ -379,7 +379,7 @@ enum	{
 
 		// *** S3DNA RESTORATION ***
 		// Relocated and modified Officer sprite definitions found above
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 //
 // officer
 //
@@ -406,7 +406,7 @@ enum	{
 
 		// *** S3DNA RESTORATION ***
 		// Some sprite definitions shufflings and edits
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 //
 // hans
 //
@@ -625,7 +625,7 @@ enum	{
 		SPR_ANGEL_DIE5,SPR_ANGEL_DIE6,SPR_ANGEL_DIE7,SPR_ANGEL_DEAD,
 
 #endif
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 //
 // player attack frames
@@ -643,7 +643,7 @@ enum	{
 		SPR_CHAINATK4,
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		SPR_CANTAREADY,SPR_CANTAATK1,SPR_CANTAATK2,SPR_CANTAATK3,
 		SPR_CANTAATK4,
 
@@ -697,13 +697,13 @@ typedef enum {
 	ssobj,
 	dogobj,
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	mutantobj,
 #endif
 	bossobj,
 	schabbobj,
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	gretelobj,
 	giftobj,
 	fatobj,
@@ -745,7 +745,7 @@ typedef enum {
 	dressing,
 	block,
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	bo_gibs,
 #endif
 	bo_alpo,
@@ -760,7 +760,7 @@ typedef enum {
 	bo_crown,
 	bo_clip,
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	bo_clip2 = bo_clip,
 #else
 	bo_clip2,
@@ -774,7 +774,7 @@ typedef enum {
 	,
 	bo_25clip,
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	bo_chest,
 	bo_bandolier,
 	bo_flamethrower,
@@ -804,7 +804,7 @@ typedef enum {
 
 
 // *** APOGEE + S3DNA VERSIONS RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 #if (GAMEVER_WOLFREV == 19920505L)
 #define NUMENEMIES		13
 #elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
@@ -819,13 +819,13 @@ typedef enum {
 	en_ss,
 	en_dog,
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	en_mutant,
 #endif
 	en_boss,
 	en_schabbs,
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	en_gretel,
 	en_gift,
 	en_fat,
@@ -851,10 +851,10 @@ typedef enum {
 	en_will,
 	en_death
 #endif
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	,
 	NUMENEMIES
 #endif
@@ -898,7 +898,7 @@ typedef struct doorstruct
 	byte	tilex,tiley;
 	boolean	vertical;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	boolean	seen;
 #endif
 	byte	lock;
@@ -929,7 +929,7 @@ typedef struct objstruct
 	unsigned	tilex,tiley;
 	byte		areanumber;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	byte		snore;		// 2.6 number. Upper is frame, Lower is tics*2
 #endif
 
@@ -942,7 +942,7 @@ typedef struct objstruct
 	long		speed;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	int			temp2;
 #else
 	int			temp1,temp2,temp3;
@@ -952,7 +952,7 @@ typedef struct objstruct
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define NUMBUTTONS	10
 #else
 #define NUMBUTTONS	8
@@ -968,7 +968,7 @@ enum	{
 	bt_readymachinegun,
 	bt_readychaingun
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	,
 	bt_readycantaloupe,
 	bt_readywatermelon
@@ -977,7 +977,7 @@ enum	{
 
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define NUMWEAPONS	7
 #else
 #define NUMWEAPONS	5
@@ -988,7 +988,7 @@ typedef enum	{
 	wp_machinegun,
 	wp_chaingun
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	,
 	wp_flamethrower,
 	wp_missile
@@ -1018,7 +1018,7 @@ typedef	struct
 	int			health;
 	int			ammo;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	int			treasure;
 	int			maxammo;
 	int			gas;
@@ -1036,7 +1036,7 @@ typedef	struct
 	int			attackframe,attackcount,weaponframe;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	int			secretcount,treasurecount,killcount,
 #else
 	int			episode,secretcount,treasurecount,killcount,
@@ -1089,7 +1089,7 @@ extern	int			tedlevelnum;
 extern	boolean		tedlevel;
 extern	boolean		nospr;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	boolean		noquestions, nofloors;
 extern	int		questionnum;
 #endif
@@ -1109,7 +1109,7 @@ extern	int			dirangle[9];
 
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 extern	boolean         startgame,loadedgame
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
 	,virtualreality
 #endif
 	;
@@ -1159,7 +1159,7 @@ void		ShutdownId (void);
 #if (GAMEVER_WOLFREV == 19920505L)
 extern	boolean		ingame,fizzlein,screensplit;
 // *** S3DNA RESTORATION ***
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 extern	boolean		ingame;
 extern	int		endtics,fizzlein;
 #else
@@ -1290,7 +1290,7 @@ void	PlayLoop (void);
 void StartDamageFlash (int damage);
 void StartBonusFlash (void);
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void UpdatePaletteShifts (void);
 #endif
 
@@ -1303,7 +1303,7 @@ void UpdatePaletteShifts (void);
 */
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	int	FloorTile[];
 #endif
 
@@ -1314,7 +1314,7 @@ void	CheckHighScore (long score,word other);
 void Victory (void);
 void ClearSplitVWB (void);
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void Briefing (int mission, boolean credits);
 #endif
 
@@ -1350,7 +1350,7 @@ extern	int	screenpage;
 extern	long 	lasttimecount;
 extern	long 	frameon;
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	boolean	fizzlein;
 #endif
 
@@ -1401,7 +1401,7 @@ void	FixOfs (void);
 void	ThreeDRefresh (void);
 void  FarScalePost (void);
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void WallRefresh (void);
 #endif
 
@@ -1506,14 +1506,14 @@ extern	int			anglefrac;
 extern	int			facecount;
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern int	MapEpisode[];
 extern int	MapLevel[];
 #endif
 
 void	SpawnPlayer (int tilex, int tiley, int dir);
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void StatusDrawPic (unsigned x, unsigned y, unsigned picnum);
 void	DrawTreasure (void);
 #endif
@@ -1530,12 +1530,12 @@ void	GiveExtraMan (void);
 void	DrawScore (void);
 void	GivePoints (long points);
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 void	DrawWeapon (void);
 #endif
 void	DrawKeys (void);
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void	GiveTreasure (int treasure);
 #endif
 void	GiveWeapon (int weapon);
@@ -1575,7 +1575,7 @@ void InitDoorList (void);
 void InitStaticList (void);
 void SpawnStatic (int tilex, int tiley, int type);
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void SpawnExit (int tilex, int tiley, boolean secret);
 #endif
 void SpawnDoor (int tilex, int tiley, boolean vertical, int lock);
@@ -1663,7 +1663,7 @@ extern	statetype s_mutpain1;
 
 extern	statetype s_deathcam;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_gameover;
 
 extern	statetype s_flame;
@@ -1685,7 +1685,7 @@ extern	statetype s_fatdeathcam2;
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void SpawnStand (enemy_t which, int tilex, int tiley, int dir, boolean ambush);
 void A_DeathScream (objtype *ob);
 #else
@@ -1729,7 +1729,7 @@ extern	void	HelpScreens(void);
 extern	void	EndText(void);
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 /*
 =============================================================================
 

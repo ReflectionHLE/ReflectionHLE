@@ -29,7 +29,7 @@ typedef	enum	{
 				}	SMMode;
 typedef	enum	{
 					// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 					sds_Off,sds_SoundBlaster
 #else
 					sds_Off,sds_PC,sds_SoundSource,sds_SoundBlaster
@@ -178,7 +178,7 @@ typedef	struct
 
 // *** S3DNA RESTORATION ***
 // inst_t is mentioned in debugging symbols, while ActiveTrack is not (and is also unused)
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 typedef struct	{
 			byte	mChar,cChar,
 					mScale,cScale,
@@ -211,7 +211,7 @@ typedef	struct
 // Global variables
 extern	boolean		AdLibPresent,
 					// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 					SoundSourcePresent,
 #endif
 					SoundBlasterPresent,

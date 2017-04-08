@@ -232,7 +232,7 @@ extern	word	_seg *DigiList;
 static	char	buf[10];
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	boolean			autopage = false;
 	int sound; // Define sound variable in S3DNA release here
 #endif
@@ -255,14 +255,14 @@ static	char	buf[10];
 		US_ClearWindow();
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 		// Do set sound in pre-v1.4 Apogee and S3DNA releases
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined GAMEVER_NOAH3D)
 		sound = -1;
 #else
 //		sound = -1;
 #endif
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (autopage)
 			PM_GetPage(i);
 #endif
@@ -361,7 +361,7 @@ static	char	buf[10];
 				{
 					// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 					// Do set sound in pre-v1.4 Apogee and S3DNA releases
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) || (defined GAMEVER_NOAH3D)
 					sound = j;
 #else
 //					sound = j;
@@ -422,14 +422,14 @@ static	char	buf[10];
 				PM_GetPage(j);
 			break;
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		case sc_A:
 			autopage = true;
 			break;
 #endif
 		case sc_P:
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			if (sound != -1)
 			{
 				PM_GetPage(sound);
@@ -471,7 +471,7 @@ int DebugKeys (void)
 	int level,i;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (Keyboard[sc_A])		// A = allocation test
 	{
 		memptr nullblock;
@@ -537,7 +537,7 @@ int DebugKeys (void)
 	if (Keyboard[sc_G])		// G = god mode
 	{
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		CenterWindow (20,2);
 		if (godmode)
 		  US_PrintCentered ("Invulnerability OFF");
@@ -573,7 +573,7 @@ int DebugKeys (void)
 #endif
 		HealSelf (99);
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		gamestate.keys = 3;
 		DrawKeys ();
 		gamestate.gas += 10;
@@ -609,7 +609,7 @@ int DebugKeys (void)
 		return 1;
 	}
 	// *** SHAREWARE V1.0+1.1 APOGEE + S3DNA RESTORATION ***
-#if (defined SPEAR) || (GAMEVER_WOLFREV <= 19920601L) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (defined SPEAR) || (GAMEVER_WOLFREV <= 19920601L) || (defined GAMEVER_NOAH3D)
 //#ifdef SPEAR
 	else if (Keyboard[sc_N])			// N = no clip
 	{
@@ -677,7 +677,7 @@ int DebugKeys (void)
 		CenterWindow(26,3);
 		PrintY+=6;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		US_Print("  Warp to which level(1-30):");
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -691,7 +691,7 @@ int DebugKeys (void)
 		{
 			level = atoi (str);
 			// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			if (level>0 && level<31)
 #elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 			if (level>0 && level<21)
@@ -714,7 +714,7 @@ int DebugKeys (void)
 		US_PrintCentered ("Extra stuff!");
 		VW_UpdateScreen();
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		gamestate.killcount = gamestate.killtotal;
 		gamestate.secretcount = gamestate.secrettotal;
 		gamestate.treasurecount = gamestate.treasuretotal;
@@ -726,7 +726,7 @@ int DebugKeys (void)
 		return 1;
 	}
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	else if (Keyboard[sc_Z])			// Z = Wait for key input
 	{
 		IN_Ack ();

@@ -64,7 +64,7 @@ int			joystickport;
 int			dirscan[4] = {sc_UpArrow,sc_RightArrow,sc_DownArrow,sc_LeftArrow};
 int			buttonscan[NUMBUTTONS] =
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			{sc_Control,sc_Alt,sc_RShift,sc_Space,sc_1,sc_2,sc_3,sc_4,sc_5,sc_6};
 #else
 			{sc_Control,sc_Alt,sc_RShift,sc_Space,sc_1,sc_2,sc_3,sc_4};
@@ -116,7 +116,7 @@ objtype dummyobj;
 int songs[]=
 {
  // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  //
  // Episode One
  //
@@ -705,7 +705,7 @@ void	CenterWindow(word w,word h)
 */
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void CheckKeys (boolean mapmode)
 #else
 void CheckKeys (void)
@@ -752,7 +752,7 @@ void CheckKeys (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (Keyboard[sc_J] && Keyboard[sc_I] && Keyboard[sc_M])
 	{
 		ClearMemory ();
@@ -844,7 +844,7 @@ void CheckKeys (void)
 		DrawAllPlayBorder ();
 #endif
 	}
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 	//
 	// OPEN UP DEBUG KEYS
@@ -898,7 +898,7 @@ void CheckKeys (void)
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	//
 	// TRYING THE KEEN CHEAT CODE!
 	//
@@ -932,7 +932,7 @@ void CheckKeys (void)
 	 DrawAllPlayBorder ();
 #endif
 	}
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 //
 // pause key weirdness can't be checked as a scan code
 //
@@ -940,7 +940,7 @@ void CheckKeys (void)
 	{
 		bufferofs = displayofs;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (!MS_CheckParm("photoshoot"))
 #endif
 			LatchDrawPic (20-4,80-2*8,PAUSEDPIC);
@@ -970,7 +970,7 @@ void CheckKeys (void)
 		ClearSplitVWB ();
 		VW_ScreenToScreen (displayofs,bufferofs,80,160);
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		loadedgame = false;
 #endif
 		US_ControlPanel(scan);
@@ -987,7 +987,7 @@ void CheckKeys (void)
 #endif
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if ((scan == sc_F9) && loadedgame)
 #else
 		if (scan == sc_F9)
@@ -1018,7 +1018,7 @@ void CheckKeys (void)
 		if (!startgame && !loadedgame)
 		{
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			if (!mapmode)
 #endif
 				VW_FadeIn ();
@@ -1034,7 +1034,7 @@ void CheckKeys (void)
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!mapmode && Keyboard[sc_Tab])
 	{
 		AutoMap();
@@ -1045,7 +1045,7 @@ void CheckKeys (void)
 // TAB-? debug keys
 //
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!mapmode && Keyboard[sc_Tilde] && DebugOk)
 #else
 	if (Keyboard[sc_Tab] && DebugOk)
@@ -1270,7 +1270,7 @@ void StartMusic(void)
 
 	SD_MusicOff();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	chunk = songs[gamestate.mapon];
 #else
 	chunk = songs[gamestate.mapon+gamestate.episode*10];
@@ -1304,7 +1304,7 @@ void StartMusic(void)
 #define REDSTEPS		8
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define NUMWHITESHIFTS	4
 #define WHITESTEPS		14
 #define WHITETICS		4
@@ -1348,7 +1348,7 @@ void InitRedShifts (void)
 		for (j=0;j<=255;j++)
 		{
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			delta = 32-*baseptr;
 #else
 			delta = 64-*baseptr;
@@ -1357,7 +1357,7 @@ void InitRedShifts (void)
 			delta = -*baseptr;
 			*workptr++ = *baseptr++ + delta * i / REDSTEPS;
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			delta = 64-*baseptr;
 #else
 			delta = -*baseptr;
@@ -1376,7 +1376,7 @@ void InitRedShifts (void)
 			delta = 64-*baseptr;
 			*workptr++ = *baseptr++ + delta * i / WHITESTEPS;
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			delta = 64-*baseptr;
 #else
 			delta = 62-*baseptr;
@@ -1671,7 +1671,7 @@ void PlayLoop (void)
 {
 	int		give;
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
 	int	helmetangle;
 #endif
 
@@ -1703,7 +1703,7 @@ void PlayLoop (void)
 	do
 	{
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
 		if (virtualreality)
 		{
 			helmetangle = peek (0x40,0xf0);
@@ -1753,7 +1753,7 @@ void PlayLoop (void)
 			VW_FadeIn ();
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		CheckKeys(false);
 #else
 		CheckKeys();
@@ -1790,7 +1790,7 @@ void PlayLoop (void)
 
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
 		if (virtualreality)
 		{
 			player->angle -= helmetangle;

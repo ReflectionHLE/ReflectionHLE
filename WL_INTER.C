@@ -104,7 +104,7 @@ void EndSpear(void)
 // *** S3DNA RESTORATION ***
 // This appears to contains variants of code from places like ThreeDRefresh
 // (ASM code, frame counting) and PlayLoop (screen fading and user input checks)
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 
 statetype *caststate[] = {&s_dogchase1,&s_grdchase1,&s_ofcchase1,&s_sschase1,
 	&s_mutchase1,&s_bosschase1,&s_schabbchase1,&s_gretelchase1,
@@ -255,13 +255,13 @@ void Victory (void)
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV == 19920505L)
 	int	sec;
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 	long	sec,parsec;
 #else
 	long	sec;
 #endif
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	int i,hr,min,kr,sr,tr,x;
 #else
 	int i,min,kr,sr,tr,x;
@@ -269,7 +269,7 @@ void Victory (void)
 	char tempstr[8];
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define RATIOX	9
 #define RATIOY	12
 #define TIMEX	23
@@ -315,7 +315,7 @@ void Victory (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	StartCPMusic (NOAH07_MUS);
 #else
 	StartCPMusic (URAHERO_MUS);
@@ -323,7 +323,7 @@ void Victory (void)
 	ClearSplitVWB ();
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	CA_CacheGrChunk(STARTFONT);
 
 #ifndef SPEAR
@@ -333,7 +333,7 @@ void Victory (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_Bar (0,0,320,200-STATUSLINES,218);
 #else
 	VWB_Bar (0,0,320,200-STATUSLINES,127);
@@ -350,7 +350,7 @@ void Victory (void)
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 	// *** S3DNA RESTORATION ***
-#elif (!defined GAMEVER_EXEDEF_N3DWT10)
+#elif (!defined GAMEVER_NOAH3D)
 //#else
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocated this, depending on version
@@ -367,7 +367,7 @@ void Victory (void)
 
 	// *** S3DNA RESTORATION ***
 	// (TIMEX and TIMEY redefined with different values now)
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	Write(14,8-2,STR_TOTALTIME);
 #else
 	Write(TIMEX,TIMEY-2,STR_TOTALTIME);
@@ -388,7 +388,7 @@ void Victory (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_DrawPic (8,8,L_BJWINSPIC);
 
 	VWB_DrawPic (104,32,W_RATINGPIC);
@@ -411,11 +411,11 @@ void Victory (void)
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 #endif
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	for (kr = sr = tr = sec = parsec = i = 0;i < 30;i++)
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -429,13 +429,13 @@ void Victory (void)
 		sr += LevelRatios[i].secret;
 		tr += LevelRatios[i].treasure;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		parsec += LevelRatios[i].par;
 #endif
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	min = parsec/60;
 	parsec %= 60;
 	hr = min/60;
@@ -477,12 +477,12 @@ void Victory (void)
 		sec = 415800;
 #endif
 
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 	min = sec/60;
 	sec %= 60;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	hr = min/60;
 	min %= 60;
 	if (hr > 9)
@@ -497,7 +497,7 @@ void Victory (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	i = TIMEX*8;
 	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+hr);
 	i += 2*8;
@@ -517,7 +517,7 @@ void Victory (void)
 	VWB_DrawPic(i,TIMEY*8,L_NUM0PIC+(sec%10));
 	VW_UpdateScreen ();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	kr /= 30;
 	sr /= 30;
 	tr /= 30;
@@ -541,7 +541,7 @@ void Victory (void)
 #if (!defined UPLOAD) || (GAMEVER_WOLFREV == 19920505L)
 //#ifndef UPLOAD
 	// *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
 //#ifndef SPEAR
 	//
 	// TOTAL TIME VERIFICATION CODE
@@ -584,7 +584,7 @@ void Victory (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	fontnumber = 1;
 #endif
 
@@ -604,14 +604,14 @@ void Victory (void)
 	VW_FadeOut ();
 
 	// *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
 //#ifndef SPEAR
 	UNCACHEGRCHUNK(C_TIMECODEPIC);
 #endif
 	UnCacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	CharacterCast();
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -627,7 +627,7 @@ void Victory (void)
 //==========================================================================
 
 // *** S3DNA RESTORATION ***
-#if (!defined JAPAN) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined JAPAN) && (!defined GAMEVER_NOAH3D)
 //#ifndef JAPAN
 /*
 ==================
@@ -674,7 +674,7 @@ void PG13 (void)
 void Write(int x,int y,char *string)
 {
  // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  int alpha[]={L_NUM0PIC,L_NUM1PIC,L_NUM2PIC,L_NUM3PIC,L_NUM4PIC,L_NUM5PIC,
 	L_NUM6PIC,L_NUM7PIC,L_NUM8PIC,L_NUM9PIC,L_COLONPIC,0,0,0,0,0};
 #else
@@ -731,7 +731,7 @@ void Write(int x,int y,char *string)
 	   break;
 
 	 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	 case '-':
 	   VWB_DrawPic(nx,ny,L_MINUSPIC);
 	   nx+=8;
@@ -767,7 +767,7 @@ void BJ_Breathe(void)
 	{
 		which^=1;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		VWB_DrawPic(8,8,pics[which]);
 #else
 		VWB_DrawPic(0,16,pics[which]);
@@ -782,7 +782,7 @@ void BJ_Breathe(void)
 
 // *** S3DNA RESTORATION ***
 // Additional functions for LevelCompleted
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void ShowBonus (long bonus)
 {
 	char tempstr[10];
@@ -852,7 +852,7 @@ void RollDelay (void)
 */
 
  // *** S3DNA  RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 LRstruct LevelRatios[30];
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -877,7 +877,7 @@ void LevelCompleted (void)
 			} times;
 
 	// *** S3DNA  RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	int	x,i,min,sec,secret,ratio;
 	boolean perfect;
 	long bonus,timeleft;
@@ -888,7 +888,7 @@ void LevelCompleted (void)
 	unsigned	temp;
 	char tempstr[10];
 	// *** S3DNA  RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	unsigned long	lasttime;
 #else
 	long bonus,timeleft=0;
@@ -981,7 +981,7 @@ void LevelCompleted (void)
 	 {0,     "??:??"},
 	 {2100,  "00:30"}
 	 // *** S3DNA  RESTORATION ***
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 	 //
 	 // Episode One Par Times
 	 //
@@ -1195,7 +1195,7 @@ void LevelCompleted (void)
 
 
 	// *** S3DNA  RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	StartCPMusic(NOAH05_MUS);
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	ClearSplitVWB ();			// set up for double buffering in split screen
@@ -1516,7 +1516,7 @@ void LevelCompleted (void)
 			MM_FreePtr((memptr *)&audiosegs[start]);
 	}
 
-#else // GAMEVER_EXEDEF_N3DWT10
+#else // GAMEVER_NOAH3D
 	CacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 	ClearSplitVWB ();			// set up for double buffering in split screen
 	VWB_Bar (0,0,320,200-STATUSLINES,127);
@@ -1957,7 +1957,7 @@ void LevelCompleted (void)
 #endif
 
 	UnCacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 }
 
 
@@ -1981,14 +1981,14 @@ boolean PreloadUpdate(unsigned current, unsigned total)
 
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	VWB_Bar(WindowX + 5,WindowY + WindowH - 3,w,2,BLACK);
 #endif
 	w = ((long)w * current) / total;
 	if (w)
 	{
 	 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	 VWB_Bar(WindowX + 5,WindowY + WindowH,w,2,0x55);
 	 VWB_Bar(WindowX + 5,WindowY + WindowH,w-1,1,0x52);
 #else
@@ -2008,7 +2008,7 @@ boolean PreloadUpdate(unsigned current, unsigned total)
 }
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 int	FloorTile[] = {0,0,2,1,1,1,0,2,2,2,1,3,0,0,0,0,2,1,1,1,1,1,0,2,2,2,2,2,1,3,3};
 #endif
 
@@ -2018,7 +2018,7 @@ void PreloadGraphics(void)
 	ClearSplitVWB ();			// set up for double buffering in split screen
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_Bar (0,0,320,200-STATUSLINES,VIEWCOLOR);
 #else
 	VWB_Bar (0,0,320,200-STATUSLINES,127);
@@ -2035,7 +2035,7 @@ void PreloadGraphics(void)
 
 	PM_Preload (PreloadUpdate);
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	LoadFloorTiles(FloorTile[gamestate.mapon]);
 #endif
 	IN_UserInput (70);
@@ -2104,7 +2104,7 @@ void	DrawHighScores(void)
 
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_DrawPic(4*8,68,C_NAMEPIC);
 	VWB_DrawPic(21*8,68,C_LEVELPIC);
 	VWB_DrawPic(32*8,68,C_SCOREPIC);
@@ -2165,7 +2165,7 @@ void	DrawHighScores(void)
 		//
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (s->completed >= 30)
 			s->completed = 30;
 		sprintf(buffer,"%d-%d",MapEpisode[s->completed],MapLevel[s->completed]);
@@ -2173,7 +2173,7 @@ void	DrawHighScores(void)
 		ultoa(s->completed,buffer,10);
 #endif
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		USL_MeasureString(buffer,&w,&h);
 		PrintX = (24 * 8)-w;
 #elif (!defined SPEAR)
@@ -2193,7 +2193,7 @@ void	DrawHighScores(void)
 #endif
 
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 #ifndef UPLOAD
 #ifndef SPEAR
 		PrintX -= 6;
@@ -2217,7 +2217,7 @@ void	DrawHighScores(void)
 		//
 		ultoa(s->score,buffer,10);
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		USL_MeasureString(buffer,&w,&h);
 		PrintX = 288 - w;
 #elif (!defined SPEAR)
@@ -2304,7 +2304,7 @@ void	CheckHighScore (long score,word other)
 	strcpy(myscore.name,"");
 	myscore.score = score;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	myscore.episode = gamestate.mapon;
 #elif (GAMEVER_WOLFREV != 19920505L)
 	myscore.episode = gamestate.episode;
@@ -2333,7 +2333,7 @@ void	CheckHighScore (long score,word other)
 #ifdef SPEAR
 	StartCPMusic (XAWARD_MUS);
 	// *** S3DNA RESTORATION ***
-#elif defined GAMEVER_EXEDEF_N3DWT10
+#elif defined GAMEVER_NOAH3D
 	StartCPMusic (NOAH11_MUS);
 #else
 	StartCPMusic (ROSTER_MUS);
@@ -2385,7 +2385,7 @@ void	CheckHighScore (long score,word other)
 
 // *** S3DNA RESTORATION ***
 // Separating the briefings seems to do the job here (in terms of EXE layout)
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 char	mission1text[] = {
 	"You'll be out of the ark in six\n"
 	"days, Noah. Unfortunately, the\n"

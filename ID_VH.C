@@ -392,7 +392,7 @@ void VWB_Vlin (int y1, int y2, int x, int color)
 }
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void VH_UpdateScreen (void);
 #endif
 
@@ -528,7 +528,7 @@ void LoadLatchMem (void)
 //==========================================================================
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 ===================
 =
@@ -618,4 +618,4 @@ noxor:
 
 
 }
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D

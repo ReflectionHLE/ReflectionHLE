@@ -43,7 +43,7 @@
 #define	ConfigVersion	1
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 static	char		*ParmStrings[] = {"LEVELWARP","NOWAIT"},
 #else
 static	char		*ParmStrings[] = {"TEDLEVEL","NOWAIT"},
@@ -62,7 +62,7 @@ static	boolean		US_Started;
 		HighScore	Scores[MaxScores] =
 					{
 						// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 						{"Noah",10000,1},
 						{"Eve",10000,1},
 						{"Moses",10000,1},
@@ -170,7 +170,7 @@ oh_kill_me:
 	fprintf(stderr,"Terminal Error: %s\n",s);
 	if (tedlevel)
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		fprintf(stderr,"Warning! Fatal error detected.  Please REBOOT!\n");
 #else
 		fprintf(stderr,"You launched from TED. I suggest that you reboot...\n");
@@ -198,7 +198,7 @@ US_Startup(void)
 	if (US_Started)
 		return;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	printf("US_Startup: ");
 #endif
 
@@ -232,7 +232,7 @@ US_Startup(void)
 		   if (tedlevelnum >= 0)
 #endif
 		   // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		   {
 		     printf("Warp to level %d\n", tedlevelnum+1);
 		     tedlevel = true;
@@ -244,7 +244,7 @@ US_Startup(void)
 
 		 case 1:
 		   // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		   printf("NOWAIT enabled\n");
 #endif
 		   NoWait = true;
@@ -253,7 +253,7 @@ US_Startup(void)
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!tedlevel && !NoWait)
 		printf("Ok\n");
 #endif

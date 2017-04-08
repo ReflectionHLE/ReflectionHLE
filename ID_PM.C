@@ -341,7 +341,7 @@ PM_SetMainMemPurge(int level)
 	int	i;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!PMStarted)
 		return;
 #endif
@@ -453,7 +453,7 @@ PML_StartupMainMem(void)
 	if (mmerror)
 		mmerror = false;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (MainPagesAvail < PMMinMainMem)
 	{
 		// *** S3DNA RESTORATION ***
@@ -523,7 +523,7 @@ PML_OpenPageFile(void)
 	word			far *lengthptr;
 	PageListStruct	far *page;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	printf("Opening %s\n", PageFileName);
 #endif
 
@@ -1050,7 +1050,7 @@ PM_Preload(boolean (*update)(word current,word total))
 		current++;
 		maintotal--;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (update)
 #endif
 		update(current,total);
@@ -1090,7 +1090,7 @@ PM_Preload(boolean (*update)(word current,word total))
 			current++;
 			xmstotal--;
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (update)
 #endif
 			update(current,total);
@@ -1101,7 +1101,7 @@ PM_Preload(boolean (*update)(word current,word total))
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 if (update)
 #endif
 	update(total,total);
@@ -1200,7 +1200,7 @@ PM_Startup(void)
 	if (PMStarted)
 		return;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	printf("PM_Startup: ");
 #endif
 
@@ -1211,21 +1211,21 @@ PM_Startup(void)
 		{
 		case 0:
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			printf("Main memory disabled\n");
 #endif
 			nomain = true;
 			break;
 		case 1:
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			printf("EMS disabled\n");
 #endif
 			noems = true;
 			break;
 		case 2:
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			printf("XMS disabled\n");
 #endif
 			noxms = true;
@@ -1247,7 +1247,7 @@ PM_Startup(void)
 
 	PM_Reset();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (EMSPresent)
 		printf("EMS detected (%lukb)\n", (long)EMSPagesAvail<<2);
 	else

@@ -40,7 +40,7 @@ dirtype dirtable[9] = {northwest,north,northeast,west,nodir,east,
 	southwest,south,southeast};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 int	starthitpoints[NUMENEMIES] =
 	 {6,	// sheeps
@@ -229,7 +229,7 @@ void A_DeathScream (objtype *ob);
 void	T_Schabb (objtype *ob);
 void	T_SchabbThrow (objtype *ob);
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 void	T_Fake (objtype *ob);
 void	T_FakeFire (objtype *ob);
 void	T_Ghosts (objtype *ob);
@@ -243,7 +243,7 @@ void A_MechaSound (objtype *ob);
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION *** - Relocated code to separate
 // files for for v1.2, but even here, WL_FSMOK.C is not included for S3DNA.
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 #include "WL_FSMOK.C"
 #endif
 #include "WL_FPROJ.C"
@@ -297,7 +297,7 @@ extern	statetype s_grddie1d;
 extern	statetype s_grddie2;
 extern	statetype s_grddie3;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_grddead;
 extern	statetype s_grddead2;
 #else
@@ -305,7 +305,7 @@ extern	statetype s_grddie4;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_grdstand	= {true,SPR_GRD_W1_1,0,T_Stand,NULL,&s_grdstand};
 #else
 statetype s_grdstand	= {true,SPR_GRD_S_1,0,T_Stand,NULL,&s_grdstand};
@@ -319,7 +319,7 @@ statetype s_grdpath3s 	= {true,SPR_GRD_W3_1,5,NULL,NULL,&s_grdpath4};
 statetype s_grdpath4 	= {true,SPR_GRD_W4_1,15,T_Path,NULL,&s_grdpath1};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_grdpain 	= {2,SPR_GRD_PAIN,10,NULL,NULL,&s_grdchase1};
 statetype s_grdpain1 	= {2,SPR_GRD_PAIN,10,NULL,NULL,&s_grdchase1};
 #else
@@ -342,7 +342,7 @@ statetype s_grdchase3s 	= {true,SPR_GRD_W3_1,3,NULL,NULL,&s_grdchase4};
 statetype s_grdchase4 	= {true,SPR_GRD_W4_1,8,T_Chase,NULL,&s_grdchase1};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_grddie1		= {false,SPR_GRD_PAIN,15,NULL,A_DeathScream,&s_grddie2};
 statetype s_grddie2		= {false,SPR_GRD_DIE_1,15,NULL,NULL,&s_grddie3};
 statetype s_grddie3		= {false,SPR_GRD_DIE_2,15,NULL,NULL,&s_grddead};
@@ -357,7 +357,7 @@ statetype s_grddie4		= {false,SPR_GRD_DEAD,0,NULL,NULL,&s_grddie4};
 
 
 // *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
 //#ifndef SPEAR
 //
 // ghosts
@@ -389,7 +389,7 @@ statetype s_clydechase2 	= {false,SPR_CLYDE_W2,10,T_Ghosts,NULL,&s_clydechase1};
 //
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_dogstand;
 #endif
 extern	statetype s_dogpath1;
@@ -404,7 +404,7 @@ extern	statetype s_dogjump2;
 extern	statetype s_dogjump3;
 extern	statetype s_dogjump4;
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	statetype s_dogjump5;
 #endif
 
@@ -419,7 +419,7 @@ extern	statetype s_dogdie1;
 extern	statetype s_dogdie1d;
 extern	statetype s_dogdie2;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_dogdead;
 extern	statetype s_dogdead2;
 #else
@@ -428,7 +428,7 @@ extern	statetype s_dogdead;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_dogstand	= {true,SPR_DOG_W1_1,0,T_Stand,NULL,&s_dogstand};
 #endif
 
@@ -441,7 +441,7 @@ statetype s_dogpath4 	= {true,SPR_DOG_W4_1,15,T_Path,NULL,&s_dogpath1};
 
 statetype s_dogjump1 	= {false,SPR_DOG_JUMP1,10,NULL,NULL,&s_dogjump2};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_dogjump2 	= {false,SPR_DOG_JUMP2,10,NULL,NULL,&s_dogjump3};
 statetype s_dogjump3 	= {false,SPR_DOG_JUMP3,10,NULL,T_Bite,&s_dogjump4};
 statetype s_dogjump4 	= {false,SPR_DOG_JUMP4,20,NULL,T_Bite,&s_dogchase1};
@@ -461,7 +461,7 @@ statetype s_dogchase4 	= {true,SPR_DOG_W4_1,8,T_DogChase,NULL,&s_dogchase1};
 
 statetype s_dogdie1		= {false,SPR_DOG_DIE_1,15,NULL,A_DeathScream,&s_dogdie2};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_dogdie2		= {false,SPR_DOG_DIE_2,15,NULL,NULL,&s_dogdead};
 statetype s_dogdead		= {false,SPR_DOG_DEAD,55,NULL,NULL,&s_dogdead2};
 statetype s_dogdead2		= {false,SPR_DOG_DEAD2,55,NULL,NULL,&s_dogdead};
@@ -509,7 +509,7 @@ extern	statetype s_ofcdie1;
 extern	statetype s_ofcdie2;
 extern	statetype s_ofcdie3;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_ofcdead;
 extern	statetype s_ofcdead2;
 #else
@@ -518,7 +518,7 @@ extern	statetype s_ofcdie5;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_ofcstand	= {true,SPR_OFC_W1_1,0,T_Stand,NULL,&s_ofcstand};
 #else
 statetype s_ofcstand	= {true,SPR_OFC_S_1,0,T_Stand,NULL,&s_ofcstand};
@@ -532,7 +532,7 @@ statetype s_ofcpath3s 	= {true,SPR_OFC_W3_1,5,NULL,NULL,&s_ofcpath4};
 statetype s_ofcpath4 	= {true,SPR_OFC_W4_1,15,T_Path,NULL,&s_ofcpath1};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_ofcpain 	= {2,SPR_OFC_PAIN,10,NULL,NULL,&s_ofcchase1};
 statetype s_ofcpain1 	= {2,SPR_OFC_PAIN,10,NULL,NULL,&s_ofcchase1};
 #else
@@ -555,7 +555,7 @@ statetype s_ofcchase3s 	= {true,SPR_OFC_W3_1,3,NULL,NULL,&s_ofcchase4};
 statetype s_ofcchase4 	= {true,SPR_OFC_W4_1,8,T_Chase,NULL,&s_ofcchase1};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_ofcdie1		= {false,SPR_OFC_PAIN,11,NULL,A_DeathScream,&s_ofcdie2};
 statetype s_ofcdie2		= {false,SPR_OFC_DIE_1,11,NULL,NULL,&s_ofcdie3};
 statetype s_ofcdie3		= {false,SPR_OFC_DIE_2,11,NULL,NULL,&s_ofcdead};
@@ -595,7 +595,7 @@ extern	statetype s_mutshoot1;
 extern	statetype s_mutshoot2;
 extern	statetype s_mutshoot3;
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	statetype s_mutshoot4;
 #endif
 
@@ -610,7 +610,7 @@ extern	statetype s_mutdie1;
 extern	statetype s_mutdie2;
 extern	statetype s_mutdie3;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_mutdead;
 extern	statetype s_mutdead2;
 #else
@@ -619,7 +619,7 @@ extern	statetype s_mutdie5;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_mutstand	= {true,SPR_MUT_W1_1,0,T_Stand,NULL,&s_mutstand};
 #else
 statetype s_mutstand	= {true,SPR_MUT_S_1,0,T_Stand,NULL,&s_mutstand};
@@ -633,7 +633,7 @@ statetype s_mutpath3s 	= {true,SPR_MUT_W3_1,5,NULL,NULL,&s_mutpath4};
 statetype s_mutpath4 	= {true,SPR_MUT_W4_1,15,T_Path,NULL,&s_mutpath1};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_mutpain 	= {2,SPR_MUT_PAIN,10,NULL,NULL,&s_mutchase1};
 statetype s_mutpain1 	= {2,SPR_MUT_PAIN,10,NULL,NULL,&s_mutchase1};
 #else
@@ -651,7 +651,7 @@ statetype s_mutshoot2 	= {false,SPR_MUT_SHOOT2,20,NULL,T_Shoot,&s_mutshoot3};
 statetype s_mutshoot3 	= {false,SPR_MUT_SHOOT3,10,NULL,NULL,&s_mutshoot4};
 statetype s_mutshoot4 	= {false,SPR_MUT_SHOOT4,20,NULL,T_Shoot,&s_mutchase1};
 // *** S3DNA RESTORATION ***
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 statetype s_mutshoot1 	= {false,SPR_MUT_SHOOT1,6,NULL,T_Shoot,&s_mutshoot2};
 statetype s_mutshoot2 	= {false,SPR_MUT_SHOOT2,30,NULL,T_Shoot,&s_mutshoot3};
 statetype s_mutshoot3 	= {false,SPR_MUT_SHOOT3,20,NULL,NULL,&s_mutchase1};
@@ -670,7 +670,7 @@ statetype s_mutchase3s 	= {true,SPR_MUT_W3_1,3,NULL,NULL,&s_mutchase4};
 statetype s_mutchase4 	= {true,SPR_MUT_W4_1,8,T_Chase,NULL,&s_mutchase1};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_mutdie1		= {false,SPR_MUT_PAIN,7,NULL,A_DeathScream,&s_mutdie2};
 statetype s_mutdie2		= {false,SPR_MUT_DIE_1,7,NULL,NULL,&s_mutdie3};
 statetype s_mutdie3		= {false,SPR_MUT_DIE_2,7,NULL,NULL,&s_mutdead};
@@ -725,7 +725,7 @@ extern	statetype s_ssdie1;
 extern	statetype s_ssdie2;
 extern	statetype s_ssdie3;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_ssdead;
 extern	statetype s_ssdead2;
 #else
@@ -733,7 +733,7 @@ extern	statetype s_ssdie4;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_ssstand	= {true,SPR_SS_W1_1,0,T_Stand,NULL,&s_ssstand};
 #else
 statetype s_ssstand	= {true,SPR_SS_S_1,0,T_Stand,NULL,&s_ssstand};
@@ -747,7 +747,7 @@ statetype s_sspath3s 	= {true,SPR_SS_W3_1,5,NULL,NULL,&s_sspath4};
 statetype s_sspath4 	= {true,SPR_SS_W4_1,15,T_Path,NULL,&s_sspath1};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_sspain 		= {2,SPR_SS_PAIN,10,NULL,NULL,&s_sschase1};
 statetype s_sspain1 	= {2,SPR_SS_PAIN,10,NULL,NULL,&s_sschase1};
 #else
@@ -776,7 +776,7 @@ statetype s_sschase3s 	= {true,SPR_SS_W3_1,3,NULL,NULL,&s_sschase4};
 statetype s_sschase4 	= {true,SPR_SS_W4_1,8,T_Chase,NULL,&s_sschase1};
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_ssdie1		= {false,SPR_SS_PAIN,15,NULL,A_DeathScream,&s_ssdie2};
 statetype s_ssdie2		= {false,SPR_SS_DIE_1,15,NULL,NULL,&s_ssdie3};
 statetype s_ssdie3		= {false,SPR_SS_DIE_2,15,NULL,NULL,&s_ssdead};
@@ -806,7 +806,7 @@ extern	statetype s_bosschase4;
 extern	statetype s_bossdie1;
 extern	statetype s_bossdie2;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_bossdead;
 extern	statetype s_bossdead2;
 #else
@@ -835,7 +835,7 @@ statetype s_bosschase4 	= {false,SPR_BOSS_W4,8,T_Chase,NULL,&s_bosschase1};
 
 statetype s_bossdie1	= {false,SPR_BOSS_DIE1,15,NULL,A_DeathScream,&s_bossdie2};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_bossdie2	= {false,SPR_BOSS_DIE2,15,NULL,NULL,&s_bossdead};
 statetype s_bossdead	= {false,SPR_BOSS_DEAD,55,NULL,NULL,&s_bossdead2};
 statetype s_bossdead2	= {false,SPR_BOSS_DEAD2,55,NULL,NULL,&s_bossdead};
@@ -872,7 +872,7 @@ extern	statetype s_gretelchase4;
 extern	statetype s_greteldie1;
 extern	statetype s_greteldie2;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_greteldead;
 extern	statetype s_greteldead2;
 #else
@@ -901,7 +901,7 @@ statetype s_gretelchase4 	= {false,SPR_GRETEL_W4,8,T_Chase,NULL,&s_gretelchase1}
 
 statetype s_greteldie1	= {false,SPR_GRETEL_DIE1,15,NULL,A_DeathScream,&s_greteldie2};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_greteldie2	= {false,SPR_GRETEL_DIE2,15,NULL,NULL,&s_greteldead};
 statetype s_greteldead	= {false,SPR_GRETEL_DEAD,55,NULL,NULL,&s_greteldead2};
 statetype s_greteldead2	= {false,SPR_GRETEL_DEAD2,55,NULL,NULL,&s_greteldead};
@@ -932,7 +932,7 @@ statetype s_gretelshoot8 	= {false,SPR_GRETEL_SHOOT1,10,NULL,NULL,&s_gretelchase
 */
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void SpawnStand (enemy_t which, int tilex, int tiley, int dir, boolean ambush)
 #else
 void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
@@ -970,7 +970,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 		  gamestate.killtotal++;
 		break;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	case en_dog:
 		SpawnNewObj (tilex,tiley,&s_dogstand);
 		new->speed = SPDDOG;
@@ -982,7 +982,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (ambush)
 		new->flags |= FL_AMBUSH;
 #else
@@ -1009,7 +1009,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 
 	new->obclass = guardobj+which;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV == 19920505L) || (defined GAMEVER_NOAH3D)
 	new->hitpoints = starthitpoints[which];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][which];
@@ -1021,7 +1021,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 ===============
 =
@@ -1062,7 +1062,7 @@ void SpawnBoss (int tilex, int tiley)
 
 	new->obclass = bossobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV == 19920505L) || (defined GAMEVER_NOAH3D)
 	new->hitpoints = starthitpoints[en_boss];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_boss];
@@ -1102,7 +1102,7 @@ void SpawnGretel (int tilex, int tiley)
 
 	new->obclass = gretelobj;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	new->hitpoints = starthitpoints[en_gretel];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gretel];
@@ -1121,7 +1121,7 @@ void SpawnGretel (int tilex, int tiley)
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 ===============
 =
@@ -1202,7 +1202,7 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
 
 	actorat[new->tilex][new->tiley] = new;
 }
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 
 
@@ -1217,7 +1217,7 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
 void A_DeathScream (objtype *ob)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	PlaySoundLocActor(D_EDIESND,ob);
 #else
 #ifndef UPLOAD
@@ -2180,7 +2180,7 @@ moveok:
 
 #ifndef SPEAR
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 ===============
 =
@@ -2246,7 +2246,7 @@ extern	statetype s_schabbdie1;
 extern	statetype s_schabbdie2;
 extern	statetype s_schabbdie3;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_schabbdead;
 extern	statetype s_schabbdead2;
 #else
@@ -2262,7 +2262,7 @@ extern	statetype s_schabbshoot1;
 extern	statetype s_schabbshoot2;
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	statetype s_needle1;
 extern	statetype s_needle2;
 extern	statetype s_needle3;
@@ -2270,7 +2270,7 @@ extern	statetype s_needle4;
 #endif
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_NOAH3D)
 extern	statetype s_schabbdeathcam;
 #endif
 
@@ -2285,12 +2285,12 @@ statetype s_schabbchase3s	= {false,SPR_SCHABB_W3,3,NULL,NULL,&s_schabbchase4};
 statetype s_schabbchase4 	= {false,SPR_SCHABB_W4,8,T_Schabb,NULL,&s_schabbchase1};
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_NOAH3D)
 statetype s_schabbdeathcam	= {false,SPR_SCHABB_W1,1,NULL,NULL,&s_schabbdie1};
 #endif
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_schabbdie1	= {false,SPR_SCHABB_W1,10,NULL,A_DeathScream,&s_schabbdie2};
 statetype s_schabbdie2	= {false,SPR_SCHABB_DIE1,10,NULL,NULL,&s_schabbdie3};
 statetype s_schabbdie3	= {false,SPR_SCHABB_DIE2,10,NULL,NULL,&s_schabbdead};
@@ -2312,7 +2312,7 @@ statetype s_schabbdie6	= {false,SPR_SCHABB_DEAD,20,NULL,A_StartDeathCam,&s_schab
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_schabbshoot1 	= {false,SPR_SCHABB_SHOOT1,20,NULL,NULL,&s_schabbshoot2};
 statetype s_schabbshoot2 	= {false,SPR_SCHABB_SHOOT2,20,NULL,T_SchabbThrow,&s_schabbchase1};
 #else
@@ -2345,7 +2345,7 @@ extern	statetype s_giftdie2;
 extern	statetype s_giftdie3;
 extern	statetype s_giftdie4;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_giftdead;
 extern	statetype s_giftdead2;
 #else
@@ -2356,13 +2356,13 @@ extern	statetype s_giftdie6;
 extern	statetype s_giftshoot1;
 extern	statetype s_giftshoot2;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_giftshoot3;
 extern	statetype s_giftshoot4;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	statetype s_needle1;
 extern	statetype s_needle2;
 extern	statetype s_needle3;
@@ -2370,7 +2370,7 @@ extern	statetype s_needle4;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	statetype s_giftdeathcam;
 #endif
 
@@ -2392,7 +2392,7 @@ statetype s_giftchase3s	= {false,SPR_GIFT_W3,3,NULL,NULL,&s_giftchase4};
 statetype s_giftchase4 	= {false,SPR_GIFT_W4,8,T_Gift,NULL,&s_giftchase1};
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 statetype s_giftdeathcam	= {false,SPR_GIFT_W1,1,NULL,NULL,&s_giftdie1};
 #endif
 
@@ -2400,7 +2400,7 @@ statetype s_giftdie1	= {false,SPR_GIFT_W1,1,NULL,A_DeathScream,&s_giftdie2};
 statetype s_giftdie2	= {false,SPR_GIFT_W1,10,NULL,NULL,&s_giftdie3};
 statetype s_giftdie3	= {false,SPR_GIFT_DIE1,10,NULL,NULL,&s_giftdie4};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_giftdie4	= {false,SPR_GIFT_DIE2,10,NULL,NULL,&s_giftdead};
 statetype s_giftdead	= {false,SPR_GIFT_DEAD,55,NULL,NULL,&s_giftdead2};
 statetype s_giftdead2	= {false,SPR_GIFT_DEAD2,55,NULL,NULL,&s_giftdead};
@@ -2411,7 +2411,7 @@ statetype s_giftdie6	= {false,SPR_GIFT_DEAD,20,NULL,A_StartDeathCam,&s_giftdie6}
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_giftshoot1 	= {false,SPR_GIFT_SHOOT1,10,NULL,NULL,&s_giftshoot2};
 statetype s_giftshoot2 	= {false,SPR_GIFT_SHOOT2,10,NULL,NULL,&s_giftshoot3};
 statetype s_giftshoot3 	= {false,SPR_GIFT_SHOOT3,10,NULL,NULL,&s_giftshoot4};
@@ -2445,7 +2445,7 @@ extern	statetype s_fatdie2;
 extern	statetype s_fatdie3;
 extern	statetype s_fatdie4;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_fatdead;
 extern	statetype s_fatdead2;
 #else
@@ -2461,7 +2461,7 @@ extern	statetype s_fatshoot5;
 extern	statetype s_fatshoot6;
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	statetype s_needle1;
 extern	statetype s_needle2;
 extern	statetype s_needle3;
@@ -2469,7 +2469,7 @@ extern	statetype s_needle4;
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	statetype s_fatdeathcam;
 #endif
 
@@ -2484,7 +2484,7 @@ statetype s_fatchase3s	= {false,SPR_FAT_W3,3,NULL,NULL,&s_fatchase4};
 statetype s_fatchase4 	= {false,SPR_FAT_W4,8,T_Fat,NULL,&s_fatchase1};
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 statetype s_fatdeathcam	= {false,SPR_FAT_W1,1,NULL,NULL,&s_fatdie1};
 #endif
 
@@ -2492,7 +2492,7 @@ statetype s_fatdie1	= {false,SPR_FAT_W1,1,NULL,A_DeathScream,&s_fatdie2};
 statetype s_fatdie2	= {false,SPR_FAT_W1,10,NULL,NULL,&s_fatdie3};
 statetype s_fatdie3	= {false,SPR_FAT_DIE1,10,NULL,NULL,&s_fatdie4};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_fatdie4	= {false,SPR_FAT_DIE2,10,NULL,NULL,&s_fatdead};
 statetype s_fatdead	= {false,SPR_FAT_DEAD,55,NULL,NULL,&s_fatdead2};
 statetype s_fatdead2	= {false,SPR_FAT_DEAD2,55,NULL,NULL,&s_fatdead};
@@ -2546,7 +2546,7 @@ void SpawnSchabbs (int tilex, int tiley)
 
 	new->obclass = schabbobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV == 19920505L) || (defined GAMEVER_NOAH3D)
 	new->hitpoints = starthitpoints[en_schabbs];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_schabbs];
@@ -2592,7 +2592,7 @@ void SpawnGift (int tilex, int tiley)
 
 	new->obclass = giftobj;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	new->hitpoints = starthitpoints[en_gift];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gift];
@@ -2636,7 +2636,7 @@ void SpawnFat (int tilex, int tiley)
 
 	new->obclass = fatobj;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	new->hitpoints = starthitpoints[en_fat];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_fat];
@@ -2684,7 +2684,7 @@ void T_SchabbThrow (objtype *ob)
 
 	GetNewActor ();
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	new->state = &s_coconut;
 #else
 	new->state = &s_needle1;
@@ -2743,7 +2743,7 @@ void T_GiftThrow (objtype *ob)
 
 	GetNewActor ();
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	new->state = &s_coconut;
 #else
 	new->state = &s_rocket;
@@ -3055,7 +3055,7 @@ void T_Fat (objtype *ob)
 
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 //
 // fake
 //
@@ -3155,7 +3155,7 @@ extern	statetype s_hitlerdie4;
 extern	statetype s_hitlerdie5;
 extern	statetype s_hitlerdie6;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_hitlerdead;
 extern	statetype s_hitlerdead2;
 #else
@@ -3176,7 +3176,7 @@ extern	statetype s_hitlershoot5;
 extern	statetype s_hitlershoot6;
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_NOAH3D)
 extern	statetype s_hitlerdeathcam;
 #endif
 
@@ -3220,7 +3220,7 @@ statetype s_hitlerchase4 	= {false,SPR_HITLER_W4,2,T_Chase,NULL,&s_hitlerchase1}
 #endif
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_NOAH3D)
 statetype s_hitlerdeathcam	= {false,SPR_HITLER_W1,10,NULL,NULL,&s_hitlerdie1};
 #endif
 
@@ -3236,7 +3236,7 @@ statetype s_hitlerdie7	= {false,SPR_HITLER_DIE6,10,NULL,NULL,&s_hitlerdie8};
 statetype s_hitlerdie8	= {false,SPR_HITLER_DIE7,10,NULL,NULL,&s_hitlerdie9};
 statetype s_hitlerdie9	= {false,SPR_HITLER_DEAD,0,NULL,NULL,&s_hitlerdie9};
 // *** S3DNA RESTORATION ***
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 statetype s_hitlerdie1	= {false,SPR_HITLER_W1,1,NULL,A_DeathScream,&s_hitlerdie2};
 statetype s_hitlerdie2	= {false,SPR_HITLER_W1,15,NULL,NULL,&s_hitlerdie3};
 statetype s_hitlerdie3	= {false,SPR_HITLER_DIE1,15,NULL,A_Slurpie,&s_hitlerdie4};
@@ -3268,7 +3268,7 @@ statetype s_hitlershoot6 	= {false,SPR_HITLER_SHOOT2,10,NULL,T_Shoot,&s_hitlerch
 
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 ===============
 =
@@ -3354,7 +3354,7 @@ void SpawnHitler (int tilex, int tiley)
 
 	new->obclass = mechahitlerobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV == 19920505L) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV == 19920505L) || (defined GAMEVER_NOAH3D)
 	new->hitpoints = starthitpoints[en_hitler];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_hitler];
@@ -3437,7 +3437,7 @@ void A_Slurpie (objtype *ob)
 #if (GAMEVER_WOLFREV == 19920505L)
  PlaySoundLocActor (SLURPIESND,ob);
  // *** S3DNA RESTORATION ***
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
  SD_PlaySound(D_EDIESND);
 #else
  SD_PlaySound(SLURPIESND);
@@ -3445,7 +3445,7 @@ void A_Slurpie (objtype *ob)
 }
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 =================
 =
@@ -3597,7 +3597,7 @@ void T_Fake (objtype *ob)
 	}
 
 }
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 #endif
 /*
@@ -3776,7 +3776,7 @@ void T_Chase (objtype *ob)
 
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 =================
 =
@@ -4113,7 +4113,7 @@ void T_Shoot (objtype *ob)
 	   PlaySoundLocActor(SCHABBSTHROWSND,ob);
 	   break;
 	 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	 case fakeobj:
 	   PlaySoundLocActor(FLAMETHROWERSND,ob);
 	   break;
@@ -4186,7 +4186,7 @@ void T_Bite (objtype *ob)
 //
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void T_Missile (objtype *ob);
 
 extern	statetype s_flame;
@@ -4242,7 +4242,7 @@ statetype s_bjjump4	= {false,SPR_BJ_JUMP4,300,NULL,T_BJDone,&s_bjjump4};
 statetype s_deathcam = {false,0,0,NULL,NULL,NULL};
 #endif
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_gameover = {false,0,0,NULL,NULL,NULL};
 
 statetype s_flame = {true,SPR_CANTALOUPE,3,T_Missile,NULL,&s_flame};
@@ -4258,7 +4258,7 @@ statetype s_mexplode3 = {true,SPR_WATERMELONEXP,6,NULL,NULL,NULL};
 
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 ===============
 =
@@ -4373,7 +4373,7 @@ void T_BJDone (objtype *ob)
 {
 	playstate = ex_victorious;				// exit castle tile
 }
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 
 
@@ -4381,7 +4381,7 @@ void T_BJDone (objtype *ob)
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 
 #define MINMISSILEDIST 0x8000l
 // S3DNA RESTORATION - Has code found in TryMove and ProjectileTryMove
@@ -4495,7 +4495,7 @@ void T_Missile (objtype *ob)
 	ob->tilex = ob->x >> TILESHIFT;
 	ob->tiley = ob->y >> TILESHIFT;
 }
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV != 19920505L)
@@ -4544,7 +4544,7 @@ boolean	CheckPosition (objtype *ob)
 void	A_StartDeathCam (objtype *ob)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	FinishPaletteShifts ();
 	NewState (player,
 		&s_deathcam);
@@ -4653,7 +4653,7 @@ void	A_StartDeathCam (objtype *ob)
 #endif
 	}
 
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 }
 #endif // GAMEVER_WOLFREV == 19920505L
 

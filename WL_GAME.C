@@ -30,7 +30,7 @@
 boolean	screensplit;
 #endif
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 boolean		ingame;
 int		endtics,fizzlein;
 #else
@@ -53,7 +53,7 @@ boolean		spearflag;
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV == 19920505L)
 int ElevatorBackTo[]={1,1,7,0,0,0};
-#elif (!defined GAMEVER_EXEDEF_N3DWT10)
+#elif (!defined GAMEVER_NOAH3D)
 int ElevatorBackTo[]={1,1,7,3,5,3};
 #endif
 
@@ -377,7 +377,7 @@ void ScanInfoPlane (void)
 				break;
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			case 99:
 				*(start-1) = 0;
 				break;
@@ -391,7 +391,7 @@ void ScanInfoPlane (void)
 // guard
 //
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			case 108:
 			case 126:
 				SpawnStand(en_guard,x,y,0,tile==126);
@@ -448,7 +448,7 @@ void ScanInfoPlane (void)
 // officer
 //
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			case 109:
 			case 127:
 				SpawnStand(en_officer,x,y,0,tile==127);
@@ -503,7 +503,7 @@ void ScanInfoPlane (void)
 // ss
 //
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			case 110:
 			case 128:
 				SpawnStand(en_ss,x,y,0,tile==128);
@@ -557,7 +557,7 @@ void ScanInfoPlane (void)
 // dogs
 //
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			case 111:
 			case 129:
 				SpawnStand(en_dog,x,y,0,tile==129);
@@ -608,7 +608,7 @@ void ScanInfoPlane (void)
 #endif
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 //
 // mutants
 //
@@ -621,7 +621,7 @@ void ScanInfoPlane (void)
 // boss
 //
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			case 113:
 			case 131:
 				SpawnBoss (x,y);
@@ -695,7 +695,7 @@ void ScanInfoPlane (void)
 #endif
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			default:
 				sprintf (str,"ScanInfoPlane: Invalid object $%02X at %d, %d!\n",
 					tile,x,y);
@@ -768,7 +768,7 @@ void ScanInfoPlane (void)
 				SpawnGhosts (en_inky,x,y);
 				break;
 #endif
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 			}
 
 		}
@@ -800,7 +800,7 @@ void SetupGameLevel (void)
 	 gamestate.killcount=
 	 gamestate.treasurecount=0;
 	 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	 pwallstate=0;
 #endif
 	}
@@ -814,7 +814,7 @@ void SetupGameLevel (void)
 // load the level
 //
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	CA_CacheMap (gamestate.mapon);
 
 	mapwidth = mapheaderseg[gamestate.mapon]->width;
@@ -829,7 +829,7 @@ void SetupGameLevel (void)
 
 	if (mapwidth != 64 || mapheight != 64)
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		Quit ("SetupGameLevel(): Map not 64*64!");
 #else
 		Quit ("Map not 64*64!");
@@ -849,7 +849,7 @@ void SetupGameLevel (void)
 			if (tile<AREATILE)
 			{
 				// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				if (tile == 89)
 					tile = 31;
 				else
@@ -885,7 +885,7 @@ void SetupGameLevel (void)
 				switch (tile)
 				{
 				// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				case 90:
 				case 91:
 					SpawnDoor (x,y,!(tile&1),0);
@@ -930,7 +930,7 @@ void SetupGameLevel (void)
 	ScanInfoPlane ();
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 //
 // take out the ambush markers
 //
@@ -1005,7 +1005,7 @@ void DrawPlayBorderSides (void)
 	yl = (200-STATUSLINES-viewheight)/2;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_Bar (0,0,xl-1,200-STATUSLINES,VIEWCOLOR);
 	VWB_Bar (xl+viewwidth+1,0,xl-2,200-STATUSLINES,VIEWCOLOR);
 
@@ -1079,7 +1079,7 @@ void DrawPlayBorder (void)
 	int	xl,yl;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_Bar (0,0,320,200-STATUSLINES,VIEWCOLOR);
 #else
 	VWB_Bar (0,0,320,200-STATUSLINES,127);
@@ -1090,7 +1090,7 @@ void DrawPlayBorder (void)
 	VWB_Bar (xl,yl,viewwidth,viewheight,0);
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_Hlin (xl-1,xl+viewwidth,yl-1,220);
 	VWB_Hlin (xl-1,xl+viewwidth,yl+viewheight,216);
 	VWB_Vlin (yl-1,yl+viewheight,xl-1,220);
@@ -1160,7 +1160,7 @@ void DrawPlayScreen (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	DrawTreasure ();
 #endif
 	DrawFace ();
@@ -1170,7 +1170,7 @@ void DrawPlayScreen (void)
 	DrawAmmo ();
 	DrawKeys ();
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	DrawWeapon ();
 #endif
 	DrawScore ();
@@ -1237,7 +1237,7 @@ void FinishDemoRecord (void)
 	US_Print(" Demo number (0-9):");
 	VW_UpdateScreen();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VW_FadeIn();
 #endif
 
@@ -1279,7 +1279,7 @@ void RecordDemo (void)
 	fontnumber=0;
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	US_Print("  Demo which level(1-30):");
 #else
 	US_Print("  Demo which level(1-10):");
@@ -1308,7 +1308,7 @@ void RecordDemo (void)
 	gamestate.mapon = level-1;
 	gamestate.difficulty = gd_hard;
 	// *** S3DNA RESTORATION ***
-#elif (!defined SPEAR) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#elif (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
 //#ifndef SPEAR
 	NewGame (gd_hard,level/10);
 	gamestate.mapon = level%10;
@@ -1334,7 +1334,7 @@ void RecordDemo (void)
 	StartMusic ();
 	PM_CheckMainMem ();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	fizzlein = 3;
 	LoadFloorTiles (FloorTile[gamestate.mapon]);
 #else
@@ -1375,7 +1375,7 @@ void PlayDemo (int demonumber)
 #ifdef DEMOSEXTERN
 // debug: load chunk
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	int dems[3]={T_DEMO0,T_DEMO1,T_DEMO2};
 #elif (!defined SPEARDEMO)
 //#ifndef SPEARDEMO
@@ -1385,7 +1385,7 @@ void PlayDemo (int demonumber)
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (demonumber>3)
 	{
 		sprintf(str,"PlayDemo: Invalid demo number %d!",demonumber);
@@ -1426,7 +1426,7 @@ void PlayDemo (int demonumber)
 	StartMusic ();
 	PM_CheckMainMem ();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	LoadFloorTiles (FloorTile[gamestate.mapon]);
 	fizzlein = 3;
 #else
@@ -1558,7 +1558,7 @@ void Died (void)
 	VW_Bar (0,0,viewwidth,viewheight,4);
 	IN_ClearKeysDown ();
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,70,false);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -1566,7 +1566,7 @@ void Died (void)
 	bufferofs -= screenofs;
 #endif
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	IN_UserInput(100);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV == 19920505L)
@@ -1579,13 +1579,13 @@ void Died (void)
 #if (GAMEVER_WOLFREV != 19920505L)
 	if (tedlevel == false)	// SO'S YA DON'T GET KILLED WHILE LAUNCHING!
 #endif
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 	  gamestate.lives--;
 
 	if (gamestate.lives > -1)
 	{
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		VL_FadeOut (0,255,0,0,0,64);
 		SD_WaitSoundDone ();
 		SD_StopSound ();
@@ -1598,7 +1598,7 @@ void Died (void)
 		gamestate.attackframe = gamestate.attackcount =
 		gamestate.weaponframe = 0;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		gamestate.maxammo = 99;
 		gamestate.gas = gamestate.missiles = 0;
 		gamestate.machinegun = 0;
@@ -1611,7 +1611,7 @@ void Died (void)
 
 		DrawKeys ();
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 		DrawWeapon ();
 #endif
 		DrawAmmo ();
@@ -1619,12 +1619,12 @@ void Died (void)
 		DrawFace ();
 		DrawLives ();
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		return;
 #endif
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	endtics = 0;
 	NewState (player,&s_gameover);
 	while (endtics < 192)
@@ -1665,7 +1665,7 @@ restart:
 	do
 	{
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		endtics = 0;
 		if (!died && !loadedgame)
 			switch (gamestate.mapon)
@@ -1714,7 +1714,7 @@ restart:
 			died = false;
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		fizzlein = 3;
 #else
 		fizzlein = true;
@@ -1776,7 +1776,7 @@ startplayloop:
 			goto restartgame;
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if ((gamestate.mapon == 28) &&
 		    ((playstate == ex_completed) || (playstate == ex_secretlevel)))
 			playstate = ex_victorious;
@@ -1792,7 +1792,7 @@ startplayloop:
 			gamestate.keys = 0;
 			DrawKeys ();
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			gamestate.automap = false;
 #endif
 			VW_FadeOut ();
@@ -1847,7 +1847,7 @@ startplayloop:
 			gamestate.oldscore = gamestate.score;
 
 			// *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
 //#ifndef SPEAR
 			//
 			// COMING BACK FROM SECRET LEVEL
@@ -1869,7 +1869,7 @@ startplayloop:
 #else
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define FROMSECRET1		7
 #define FROMSECRET2		25
 #define GAMEVER_RESTORATION_SECRET1 11
@@ -1890,7 +1890,7 @@ startplayloop:
 				 case FROMSECRET1: gamestate.mapon = GAMEVER_RESTORATION_SECRET1; break;
 				 case FROMSECRET2: gamestate.mapon = GAMEVER_RESTORATION_SECRET2; break;
 				 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				 default:
 					sprintf(str,"GameLoop(): Invalid secret exit on level %d!\n",gamestate.mapon);
 					Quit(str);
@@ -1908,7 +1908,7 @@ startplayloop:
 				}
 #endif
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			else
 			//
 			// SKIPPING SECRET LEVEL
@@ -1954,7 +1954,7 @@ startplayloop:
 		case ex_victorious:
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			endtics = 0;
 #endif
 #ifndef SPEAR
@@ -1965,7 +1965,7 @@ startplayloop:
 			ClearMemory ();
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			LevelCompleted ();
 
 			ClearMemory ();

@@ -31,7 +31,7 @@ void CP_BackToDemo(void);
 char GAMEVER_RESTORATION_CONDFARPTR endStrings[9][80]=
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	{"Are you sure you're\nready to quit?.\nPress Y to Quit."},
 	{"What? Quitting already?\nPress Y to Quit."},
 	{"Are a few hungry animals\ntoo tough for you?\nPress Y to Quit."},
@@ -76,7 +76,7 @@ CP_iteminfo
 
 // *** S3DNA RESTORATION ***
 // A few convenience macros
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define GAMEVER_N3D_SS_OFFSET 1
 #define GAMEVER_RESTORATION_MOUSELBACKY 192
 #else
@@ -154,7 +154,7 @@ GAMEVER_RESTORATION_CONDFARPTR SndMenu[]=
 	{0,"",0},
 	{1,STR_NONE,0},
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	{1,STR_DISNEY,0},
 #endif
 	{1,STR_SB,0},
@@ -219,7 +219,7 @@ GAMEVER_RESTORATION_CONDFARPTR NewEmenu[]=
 #endif
 #else
 	// *** S3DNA RESTORATION ***
-	#ifdef GAMEVER_EXEDEF_N3DWT10
+	#ifdef GAMEVER_NOAH3D
 	{1,"Carl the Camel\n"
 	   "Start at level 1-1",0},
 	{0,"",0},
@@ -673,7 +673,7 @@ void DrawMainMenu(void)
 void CP_ReadThis(void)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	StartCPMusic(NOAH01_MUS);
 	HelpScreens();
 	StartCPMusic(MENUSONG);
@@ -789,7 +789,7 @@ int CP_CheckQuick(unsigned scancode)
 				CA_CacheGrChunk(C_DISKLOADING1PIC);
 				CA_CacheGrChunk(C_DISKLOADING2PIC);
 				// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				CA_CacheGrChunk(C_DISKLOADING3PIC);
 				CA_CacheGrChunk(C_DISKLOADING4PIC);
 #endif
@@ -838,7 +838,7 @@ int CP_CheckQuick(unsigned scancode)
 				UNCACHEGRCHUNK(C_DISKLOADING1PIC);
 				UNCACHEGRCHUNK(C_DISKLOADING2PIC);
 				// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				UNCACHEGRCHUNK(C_DISKLOADING3PIC);
 				UNCACHEGRCHUNK(C_DISKLOADING4PIC);
 #endif
@@ -890,7 +890,7 @@ int CP_CheckQuick(unsigned scancode)
 				CA_CacheGrChunk(C_DISKLOADING1PIC);
 				CA_CacheGrChunk(C_DISKLOADING2PIC);
 				// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				CA_CacheGrChunk(C_DISKLOADING3PIC);
 				CA_CacheGrChunk(C_DISKLOADING4PIC);
 #endif
@@ -939,7 +939,7 @@ int CP_CheckQuick(unsigned scancode)
 				UNCACHEGRCHUNK(C_DISKLOADING1PIC);
 				UNCACHEGRCHUNK(C_DISKLOADING2PIC);
 				// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				UNCACHEGRCHUNK(C_DISKLOADING3PIC);
 				UNCACHEGRCHUNK(C_DISKLOADING4PIC);
 #endif
@@ -1056,7 +1056,7 @@ void CP_ViewScores(void)
 	UnCacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 	StartCPMusic (XAWARD_MUS);
 	// *** S3DNA RESTORATION ***
-#elif defined GAMEVER_EXEDEF_N3DWT10
+#elif defined GAMEVER_NOAH3D
 	StartCPMusic (NOAH11_MUS);
 #else
 	StartCPMusic (ROSTER_MUS);
@@ -1122,7 +1122,7 @@ firstpart:
 				else
 				{
 					// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 					switch (which/2)
 					{
 						case 1: episode = 3;
@@ -1379,7 +1379,7 @@ void CP_Sound(void)
 				}
 				break;
 			// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 			case 6:
 				if (DigiMode!=sds_SoundSource)
 				{
@@ -1463,7 +1463,7 @@ void DrawSoundMenu(void)
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	if (!SoundSourcePresent)
 		SndMenu[6].active=0;
 #endif
@@ -1472,7 +1472,7 @@ void DrawSoundMenu(void)
 		SndMenu[7-GAMEVER_N3D_SS_OFFSET].active=0;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!SoundBlasterPresent)
 #else
 	if (!SoundSourcePresent && !SoundBlasterPresent)
@@ -1511,7 +1511,7 @@ void DrawSoundMenu(void)
 				//
 				case 5: if (DigiMode==sds_Off) on=1; break;
 				// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 				case 6: if (DigiMode==sds_SoundSource) on=1; break;
 #endif
 				case 7-GAMEVER_N3D_SS_OFFSET: if (DigiMode==sds_SoundBlaster) on=1; break;
@@ -1593,7 +1593,7 @@ int CP_LoadGame(int quick)
 			close(handle);
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			DrawTreasure ();
 #endif
 			DrawFace ();
@@ -1603,7 +1603,7 @@ int CP_LoadGame(int quick)
 			DrawAmmo ();
 			DrawKeys ();
 			// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 			DrawWeapon ();
 #endif
 			DrawScore ();
@@ -1919,7 +1919,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// This is also skipped in the Apogee and S3DNA EXEs
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_EXEDEF_N3DWT10)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -1956,7 +1956,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_EXEDEF_N3DWT10)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -3137,7 +3137,7 @@ void CP_Quit(void)
 
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 ////////////////////////////////////////////////////////////////////
 //
 // HANDLE INTRO SCREEN (SYSTEM CONFIG)
@@ -3939,7 +3939,7 @@ int Confirm(char GAMEVER_RESTORATION_CONDFARPTR *string)
 
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_EXEDEF_N3DWT10)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -4188,7 +4188,7 @@ void DrawMenuGun(CP_iteminfo *iteminfo)
 void DrawStripes(int y)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	return;
 #else
 #ifndef SPEAR
@@ -4217,7 +4217,7 @@ void CheckForEpisodes(void)
 	struct ffblk f;
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!findfirst("*.N3D",&f,FA_ARCH))
 	{
 		strcpy(extension,"N3D");

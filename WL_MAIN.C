@@ -50,7 +50,7 @@ int				tedlevelnum;
 boolean         tedlevel;
 boolean         nospr;
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 boolean		noquestions, nofloors;
 char		logon[] = "SUPER 3D NOAH'S ARK (v1.0)";
 #endif
@@ -58,7 +58,7 @@ boolean         IsA386;
 int                     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
 	5*ANGLES/8,6*ANGLES/8,7*ANGLES/8,ANGLES};
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 int	questionnum = 0;
 #endif
 
@@ -80,7 +80,7 @@ void            Quit (char *error);
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 boolean         startgame,loadedgame
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
 		,virtualreality
 #endif
 		;
@@ -139,7 +139,7 @@ void ReadConfig(void)
 		read(file,&viewsize,sizeof(viewsize));
 		read(file,&mouseadjustment,sizeof(mouseadjustment));
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		read(file,&questionnum,sizeof(questionnum));
 #endif
 
@@ -157,7 +157,7 @@ void ReadConfig(void)
 		}
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (sds ==
 		    sds_SoundBlaster && !SoundBlasterPresent)
 #else
@@ -193,7 +193,7 @@ void ReadConfig(void)
 		if (SoundBlasterPresent)
 			sds = sds_SoundBlaster;
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 		else if (SoundSourcePresent)
 			sds = sds_SoundSource;
 #endif
@@ -209,14 +209,14 @@ void ReadConfig(void)
 		joystickprogressive = false;
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		viewsize = 18;
 #else
 		viewsize = 15;
 #endif
 		mouseadjustment=5;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		questionnum=0;
 #endif
 	}
@@ -265,7 +265,7 @@ void WriteConfig(void)
 		write(file,&viewsize,sizeof(viewsize));
 		write(file,&mouseadjustment,sizeof(mouseadjustment));
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		write(file,&questionnum,sizeof(questionnum));
 #endif
 
@@ -326,7 +326,7 @@ extern int far  CheckIs386(void);
 void NewGame (int difficulty,int episode)
 {
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	memset (&LevelRatios,0,sizeof(LRstruct)*30);
 #endif
 	memset (&gamestate,0,sizeof(gamestate));
@@ -338,7 +338,7 @@ void NewGame (int difficulty,int episode)
 	gamestate.lives = 3;
 	gamestate.nextextra = EXTRAPOINTS;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	gamestate.mapon=episode;
 	gamestate.maxammo=99;
 	gamestate.gas = gamestate.missiles = 0;
@@ -365,7 +365,7 @@ void DiskFlopAnim(int x,int y)
  VW_UpdateScreen();
  // *** S3DNA RESTORATION ***
  // WARNING: The following statement may technically lead to undefined behaviors
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  which=which+1; which=which&3;
 #else
  which^=1;
@@ -423,7 +423,7 @@ boolean SaveTheGame(int file,int x,int y)
 
 	size += sizeof(gamestate) +
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			sizeof(LRstruct)*30 +
 #else
 			sizeof(LRstruct)*8 +
@@ -464,7 +464,7 @@ boolean SaveTheGame(int file,int x,int y)
 //#ifdef SPEAR
 	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*30);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
 #else
@@ -593,7 +593,7 @@ boolean LoadTheGame(int file,int x,int y)
 //#ifdef SPEAR
 	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*30);
 	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
 #else
@@ -709,7 +709,7 @@ boolean LoadTheGame(int file,int x,int y)
 	   gamestate.bestweapon = wp_pistol;
 	 gamestate.ammo = 8;
 	 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	 gamestate.gas = gamestate.missiles = 0;
 	 gamestate.machinegun = 0;
 	 gamestate.chaingun = 0;
@@ -898,7 +898,7 @@ void SetupWalls (void)
 //===========================================================================
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 /*
 ==========================
 =
@@ -1053,7 +1053,7 @@ boolean MS_CheckParm (char far *check)
 static  int     wolfdigimap[] =
 		{
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			D_ANTLPESND,            0,
 			D_BEARSND,              1,
 			D_BONUSSND,             2,
@@ -1214,7 +1214,7 @@ void InitDigiMap (void)
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV != 19920505L)
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 CP_iteminfo	MusicItems={CTL_X,40,11,0,32};
 CP_itemtype far MusicMenu[]=
 	{
@@ -1279,7 +1279,7 @@ void DoJukebox(void)
 	unsigned start,songs[]=
 		{
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			NOAH01_MUS,
 			NOAH02_MUS,
 			NOAH03_MUS,
@@ -1338,7 +1338,7 @@ void DoJukebox(void)
 
 #ifndef SPEAR
 // *** S3DNA RESTORATION ***
-#if (!defined UPLOAD) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined UPLOAD) && (!defined GAMEVER_NOAH3D)
 //#ifndef UPLOAD
 	_dos_gettime(&time);
 	start = (time.hsecond%3)*6;
@@ -1361,7 +1361,7 @@ void DoJukebox(void)
 	fontnumber=1;
 	ClearMScreen ();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_DrawPic(112,192,C_MOUSELBACKPIC);
 #else
 	VWB_DrawPic(112,184,C_MOUSELBACKPIC);
@@ -1370,7 +1370,7 @@ void DoJukebox(void)
 	SETFONTCOLOR (TEXTCOLOR,BKGDCOLOR);
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	DrawWindow (CTL_X-2,CTL_Y-36,280,13*12,BKGDCOLOR);
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -1386,7 +1386,7 @@ void DoJukebox(void)
 	WindowX = 0;
 	WindowY = 320;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	US_CPrint ("Noah Tunes");
 #else
 	US_CPrint ("Robert's Jukebox");
@@ -1443,7 +1443,7 @@ void InitGame (void)
 	unsigned        *blockstart;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	noquestions = false;
 	if (MS_CheckParm ("noquestions"))
 		noquestions = true;
@@ -1460,7 +1460,7 @@ void InitGame (void)
 	MM_Startup ();                  // so the signon screen can be freed
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	SignonScreen ();
 #endif
 
@@ -1476,7 +1476,7 @@ void InitGame (void)
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV == 19920505L)
 	if (mminfo.mainmem < 240000L)
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 	if (mminfo.mainmem < 275000L && !MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -1532,7 +1532,7 @@ void InitGame (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 //
 // HOLDING DOWN 'M' KEY?
 //
@@ -1562,7 +1562,7 @@ void InitGame (void)
 	MM_SetLock (&grsegs[STARTFONT],true);
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	LoadLatchMem ();
 #endif
 	BuildTables ();          // trig tables
@@ -1588,7 +1588,7 @@ close(profilehandle);
 //
 	InitRedShifts ();
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 #ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (!virtualreality)
 #endif
@@ -1602,7 +1602,7 @@ close(profilehandle);
 #endif
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (MS_CheckParm ("CHECK"))
 	{
 		printf("Press any key...");
@@ -1664,7 +1664,7 @@ boolean SetViewSize (unsigned width, unsigned height)
 	}
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	SetPlaneViewSize ();
 #endif
 	return true;
@@ -1724,7 +1724,7 @@ void Quit (char *error)
 	memptr	screen;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
 	if (virtualreality)
 		geninterrupt(0x61);
 #endif
@@ -1734,7 +1734,7 @@ void Quit (char *error)
 	ClearMemory ();
 #endif
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  if (CA_Started)
  {
 #endif
@@ -1755,7 +1755,7 @@ void Quit (char *error)
 	 screen = grsegs[ERRORSCREEN];
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  }
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -1765,7 +1765,7 @@ void Quit (char *error)
 	ShutdownId ();
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  if (CA_Started)
  {
 	clrscr();
@@ -1773,7 +1773,7 @@ void Quit (char *error)
 	if (error && *error)
 	{
 	  // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	  movedata ((unsigned)screen,0,0xb800,0,7*160);
 #else
 	  movedata ((unsigned)screen,7,0xb800,0,7*160);
@@ -1798,7 +1798,7 @@ void Quit (char *error)
 		#if (!defined JAPAN) && (!defined GAMEVER_RESTORATION_ANY_ACT14)
 		//#ifndef JAPAN
 		// *** S3DNA RESTORATION ***
-		#ifdef GAMEVER_EXEDEF_N3DWT10
+		#ifdef GAMEVER_NOAH3D
 		movedata ((unsigned)screen,0,0xb800,0,4000);
 		#else
 		movedata ((unsigned)screen,7,0xb800,0,4000);
@@ -1812,7 +1812,7 @@ void Quit (char *error)
 //asm	int	0x10
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  }
  else
  {
@@ -1864,7 +1864,7 @@ void    DemoLoop (void)
 		}
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		gamestate.mapon = tedlevelnum;
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -1895,7 +1895,7 @@ void    DemoLoop (void)
 		#ifndef SPEAR
 		#ifndef JAPAN
 		// *** S3DNA RESTORATION ***
-		#ifndef GAMEVER_EXEDEF_N3DWT10
+		#ifndef GAMEVER_NOAH3D
 		if (!NoWait)
 			NonShareware();
 		#endif
@@ -1922,7 +1922,7 @@ void    DemoLoop (void)
 #endif
 
 // *** S3DNA RESTORATION ***
-#if (!defined JAPAN) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined JAPAN) && (!defined GAMEVER_NOAH3D)
 //#ifndef JAPAN
 	if (!NoWait)
 		PG13 ();
@@ -1947,12 +1947,12 @@ void    DemoLoop (void)
 #ifndef DEMOTEST
 
 			// *** S3DNA RESTORATION ***
-#if (defined SPEAR) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (defined SPEAR) || (defined GAMEVER_NOAH3D)
 //#ifdef SPEAR
 			CA_CacheGrChunk (TITLEPALETTE);
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			CA_CacheScreen(TITLEPIC);
 #else
 			CA_CacheGrChunk (TITLE1PIC);
@@ -1987,7 +1987,7 @@ void    DemoLoop (void)
 #endif
 #endif
 			// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			if (IN_UserInput(TickBase))
 				break;
 #elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
@@ -1999,7 +1999,7 @@ void    DemoLoop (void)
 			VW_FadeOut();
 #endif
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			CA_CacheGrChunk (COPYRIGHTPIC);
 			VWB_DrawPic (0,184,COPYRIGHTPIC);
 			VW_UpdateScreen ();
@@ -2019,7 +2019,7 @@ void    DemoLoop (void)
 			Briefing (6,true);
 #endif
 			// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 //
 // credits page
 //
@@ -2065,7 +2065,7 @@ void    DemoLoop (void)
 //
 
 			// *** S3DNA RESTORATION ***
-			#ifdef GAMEVER_EXEDEF_N3DWT10
+			#ifdef GAMEVER_NOAH3D
 			PlayDemo (LastDemo++%3);
 			#elif (!defined SPEARDEMO)
 			//#ifndef SPEARDEMO
@@ -2094,7 +2094,7 @@ void    DemoLoop (void)
 		VW_FadeOut ();
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (Keyboard[sc_M])
 			DoJukebox();
 #endif
@@ -2133,7 +2133,7 @@ void    DemoLoop (void)
 */
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 char    *nosprtxt[] = {"nospr",nil};
 #endif
 
@@ -2158,7 +2158,7 @@ void main (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VGAMode = true;
 	VL_SetTextMode();
 	FillCharAttr(' ',0x5d,80);
@@ -2175,7 +2175,7 @@ void main (void)
 	DemoLoop();
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	Quit("FatalError: DemoLoop() exited!");
 #else
 	Quit("Demo loop exited???");

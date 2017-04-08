@@ -17,7 +17,7 @@ DEBUG	=	0
 	EXTRN	SDL_DigitizedDone:FAR
 	EXTRN	alOut:FAR
 	; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 	EXTRN	MIDI_IRQService:FAR
 ENDIF
 
@@ -27,7 +27,7 @@ DATASEG
 
 	EXTRN	sqActive:WORD
 	; *** S3DNA RESTORATION ***
-IFNDEF GAMEVER_EXEDEF_N3DWT10
+IFNDEF GAMEVER_NOAH3D
 	EXTRN	ssSample:DWORD
 	EXTRN	ssLengthLeft:WORD
 	EXTRN	ssControl:WORD
@@ -71,7 +71,7 @@ count_time	dw	?
 count_fx	dw	?
 
 ; *** S3DNA RESTORATION ***
-IFNDEF GAMEVER_EXEDEF_N3DWT10
+IFNDEF GAMEVER_NOAH3D
 pcdtab	db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
 		db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
 		db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
@@ -96,7 +96,7 @@ ENDIF
 CODESEG
 
 ; *** S3DNA RESTORATION ***
-IFNDEF GAMEVER_EXEDEF_N3DWT10
+IFNDEF GAMEVER_NOAH3D
 MyDS	dw	?
 
 pcindicate	dw	?
@@ -133,7 +133,7 @@ ENDIF
 	push ax
 
 ; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 	mov	ax,@data
 	mov	ds,ax
 ELSE
@@ -284,7 +284,7 @@ ENDIF
 	ENDM
 
 ; *** S3DNA RESTORATION ***
-IFNDEF GAMEVER_EXEDEF_N3DWT10
+IFNDEF GAMEVER_NOAH3D
 ;
 ;	SDL_IndicatePC
 ;
@@ -367,7 +367,7 @@ IFNDEF GAMEVER_EXEDEF_N3DWT10
 ;	jmp	SDL_t0FastAsmService			; Drops through to SDL_t0FastAsmService
 
 	ENDP
-ENDIF ; GAMEVER_EXEDEF_N3DWT10
+ENDIF ; GAMEVER_NOAH3D
 
 ;
 ;	SDL_t0FastAsmService
@@ -383,7 +383,7 @@ ENDIF ; GAMEVER_EXEDEF_N3DWT10
 	jae	@@dofull
 
 	; *** S3DNA RESTORATION ***
-IFNDEF GAMEVER_EXEDEF_N3DWT10
+IFNDEF GAMEVER_NOAH3D
 	mov	ax,[sqActive]					; Is the sequencer active?
 	or	ax,ax
 	jnz	@@dofull
@@ -407,7 +407,7 @@ ENDIF
 @@nofx:
 
 	; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 	call MIDI_IRQService
 ELSE
 	mov	ax,[sqActive]
@@ -471,7 +471,7 @@ ENDIF
 
 	; *** S3DNA RESTORATION ***
 ; Not sure why, but debugging symbols show the nosq label above should be there
-IFNDEF GAMEVER_EXEDEF_N3DWT10
+IFNDEF GAMEVER_NOAH3D
 	les	di,[ssSample]			; Get pointer to Sound Source sample
 	mov	ax,es
 	or	ax,di
@@ -538,7 +538,7 @@ ENDIF
 	push ax
 
 	; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 	mov	ax,@data
 	mov	ds,ax
 ELSE

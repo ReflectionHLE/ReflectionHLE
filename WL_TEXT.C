@@ -422,7 +422,7 @@ void PageLayout (boolean shownumber)
 // clear the screen
 //
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_Bar (0,0,320,200,0x24);
 #else
 	VWB_Bar (0,0,320,200,BACKCOLOR);
@@ -514,7 +514,7 @@ void PageLayout (boolean shownumber)
 		itoa (numpages,str2,10);
 		strcat (str,str2);
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		fontcolor = 0x10;
 #else
 		fontcolor = 0x4f; 			   //12^BACKCOLOR;
@@ -686,7 +686,7 @@ void ShowArticle (char far *article)
 	fontnumber = 0;
 	CA_MarkGrChunk(STARTFONT);
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	VWB_Bar (0,0,320,200,0x24);
 #else
 	VWB_Bar (0,0,320,200,BACKCOLOR);
@@ -756,7 +756,7 @@ void ShowArticle (char far *article)
 
 		// *** APOGEE VERSIONS + S3NA RESTORATION ***
 		// This is also skipped in these versions
-		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_EXEDEF_N3DWT10)
+		#if (!defined SPEAR) && (!defined GAMEVER_RESTORATION_ANY_PRE_GT) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 			PicturePause();
@@ -775,7 +775,7 @@ void ShowArticle (char far *article)
 #ifdef ARTSEXTERN
 // *** PRE-V1.4 APOGEE RESTORATION *** - Change the the order of appearances endextern and helpextern in the v1.2 EXE's layout (and SPEAR wasn't ready for that)
 // *** S3DNA RESTORATION *** - No T_ENDART1
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 int		helpextern = T_HELPART;
 #elif defined GAMEVER_RESTORATION_ANY_APO_PRE14
 int		helpextern = T_HELPART;
@@ -788,7 +788,7 @@ int		helpextern = T_HELPART;
 #endif // VERSIONS RESTORATION
 #endif
 // *** S3DNA RESTORATION *** - No T_ENDART1
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 char helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";
 #endif
@@ -810,7 +810,7 @@ void HelpScreens (void)
 
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	CA_UpLevel ();
 	MM_SortMem ();
 #endif
@@ -854,7 +854,7 @@ void HelpScreens (void)
 #endif
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	FreeMusic ();
 	CA_DownLevel ();
 	MM_SortMem ();
@@ -864,7 +864,7 @@ void HelpScreens (void)
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 //
 // END ARTICLES
 //

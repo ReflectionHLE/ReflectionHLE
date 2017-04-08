@@ -25,7 +25,7 @@ FARDATA
 planepics	db	8192 dup(?)	;	// 4k of ceiling, 4k of floor
 PUBLIC	planepics
 ; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 xystep		dw	?
 		dw	?
 xyfrac		dw	?
@@ -46,7 +46,7 @@ CODESEG
 
 ; *** S3DNA RESTORATION ***
 ; A modified implementation
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 
 PROC	MapRow
 PUBLIC	MapRow

@@ -15,7 +15,7 @@
 // Unused, but fpos_t is found in the debugging symbols for ID_VL.C, which is
 // the only place from which ID_HEAD.H is included, and it's mentioned in
 // STDIO.H only (possibly done while adding the FillCharAttr function)
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #include <STDIO.H>
 #endif
 #include "VERSION.H"

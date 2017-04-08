@@ -675,7 +675,7 @@ void MM_SortMem (void)
 	int			playing;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!mmstarted)
 		return;
 #endif

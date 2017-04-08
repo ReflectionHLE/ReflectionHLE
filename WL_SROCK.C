@@ -2,7 +2,7 @@
 // at a location in WL_ACT2.C depending on version
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	statetype s_coconut;
 extern	statetype s_cocohit;
 #else
@@ -21,7 +21,7 @@ extern	statetype s_boom3;
 void A_Smoke (objtype *ob);
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 statetype s_coconut	 	= {false,SPR_ANIMALPROJ,16,T_Projectile,NULL,&s_coconut};
 statetype s_cocohit	 	= {false,SPR_ANIMALPROJEXP,18,NULL,NULL,NULL};
 #else
@@ -37,7 +37,7 @@ statetype s_boom1	 	= {false,SPR_BOOM_1,6,NULL,NULL,&s_boom2};
 statetype s_boom2	 	= {false,SPR_BOOM_2,6,NULL,NULL,&s_boom3};
 statetype s_boom3	 	= {false,SPR_BOOM_3,6,NULL,NULL,NULL};
 #endif
-#endif // GAMEVER_EXEDEF_N3DWT10
+#endif // GAMEVER_NOAH3D
 
 #ifdef SPEAR
 

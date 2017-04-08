@@ -12,7 +12,7 @@
 #define MenuFadeOut()	VL_FadeOut(0,255,0,0,51,10)
 
 // *** S3DNA RESTORATION ***
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
+#elif (defined GAMEVER_NOAH3D)
 
 #define BORDCOLOR	0xd9
 #define BORD2COLOR	0xd7
@@ -34,7 +34,7 @@
 #endif
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 
 #define READCOLOR	0x50
 #define READHCOLOR	0x0f
@@ -56,7 +56,7 @@
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 
 #define MENUSONG	NOAH01_MUS
 #define INTROSONG	NOAH02_MUS
@@ -89,7 +89,7 @@
 #define SM_W	250
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define SM_Y1	28
 #else
 #define SM_Y1	20
@@ -97,7 +97,7 @@
 #define SM_H1	4*13-7
 #define SM_Y2	SM_Y1+5*13
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define SM_H2	3*13-7
 #define SM_Y3	SM_Y2+4*13
 #else
@@ -141,7 +141,7 @@ typedef struct {
 typedef struct {
 		int active;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		char string[80];
 #else
 		char string[36];
@@ -275,13 +275,13 @@ typedef struct {
 		int kill,secret,treasure;
 		long time;
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		long par;
 #endif
 		} LRstruct;
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern LRstruct LevelRatios[30];
 #else
 extern LRstruct LevelRatios[];

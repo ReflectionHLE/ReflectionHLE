@@ -81,7 +81,7 @@ void T_Projectile (objtype *ob)
 #endif
 	{
 		// *** SHAREWARE V1.0+1.1 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		PlaySoundLocActor(MISSILEHITSND,ob);
 		ob->state = &s_cocohit;
 #elif (GAMEVER_WOLFREV == 19920505L)
@@ -120,7 +120,7 @@ void T_Projectile (objtype *ob)
 #if (GAMEVER_WOLFREV != 19920505L)
 		case rocketobj:
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
 		case hrocketobj:
 		case sparkobj:
 #endif
@@ -128,7 +128,7 @@ void T_Projectile (objtype *ob)
 			break;
 #endif
 		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 		case fireobj:
 			damage = (US_RndT() >>3);
 			break;

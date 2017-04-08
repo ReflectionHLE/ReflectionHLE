@@ -14,7 +14,7 @@ extern	char	far	planepics[8192];	// 4k of ceiling, 4k of floor
 int		halfheight = 0;
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 byte	*planeylookup[MAXVIEWHEIGHT/2];
 #else
 byte	far *planeylookup[MAXVIEWHEIGHT/2];
@@ -38,7 +38,7 @@ int		mr_yfrac;
 int		mr_dest;
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void	MapRow (void);
 #endif
 
@@ -60,7 +60,7 @@ void DrawSpans (int x1, int x2, int height)
 
 	int			x, startx, count, plane, startplane;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	byte		*toprow;
 #else
 	byte		far	*toprow, far *dest;
@@ -69,7 +69,7 @@ void DrawSpans (int x1, int x2, int height)
 	toprow = planeylookup[height]+bufferofs;
 	mr_rowofs = mirrorofs[height];
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!height)
 		Quit ("DrawSpans(): Zero height!");
 #endif
@@ -107,7 +107,7 @@ void DrawSpans (int x1, int x2, int height)
 
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 void LoadFloorTiles (int tile)
 {
 	unsigned char	far *dest, far *src;
@@ -158,7 +158,7 @@ void SetPlaneViewSize (void)
 		// *** S3DNA RESTORATION ***
 		// It's technically useless to cast 0xa0000000l to a 16-bit near
 		// pointer, but this helps to (re)generate some ASM instruction
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		planeylookup[y] = (byte *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;
 #else
 		planeylookup[y] = (byte far *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;;
@@ -176,7 +176,7 @@ void SetPlaneViewSize (void)
 	}
 
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	src = PM_GetPage(0);
 	dest = planepics;
 	for (x=0 ; x<4096 ; x++)
@@ -210,7 +210,7 @@ void DrawPlanes (void)
 	int		x;
 
 	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 	if (viewheight>>1 != halfheight)
 		SetPlaneViewSize ();		// screen size has changed
 #endif

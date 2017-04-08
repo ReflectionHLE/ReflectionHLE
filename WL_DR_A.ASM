@@ -444,7 +444,7 @@ vertop:								; 0x7e = jle (ytilestep==-1)
 	jle	horizentry					; 0x7d = jge (ytilestep==1)
 vertentry:
 	; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 	test [BYTE tilemap+si],0dfh
 ELSE
 	test [BYTE tilemap+si],0ffh		; tilehit = *((byte *)tilemap+xspot);
@@ -465,7 +465,7 @@ passvert:
 hitvert:
 	mov	al,[BYTE tilemap+si]		; tilehit = *((byte *)tilemap+xspot);
 	; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 	and	al,0dfh
 ENDIF
 	mov	[BYTE tilehit],al
@@ -494,7 +494,7 @@ horizop:							; 0x7e = jle (xtilestep==-1)
 	jle	vertentry					; 0x7d = jge (xtilestep==1)
 horizentry:
 	; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 	test [BYTE tilemap+di],0dfh
 ELSE
 	test [BYTE tilemap+di],0ffh		; tilehit = *((byte *)tilemap+yspot);
@@ -515,7 +515,7 @@ passhoriz:
 hithoriz:
 	mov	al,[BYTE tilemap+di]		; tilehit = *((byte *)tilemap+yspot);
 	; *** S3DNA RESTORATION ***
-IFDEF GAMEVER_EXEDEF_N3DWT10
+IFDEF GAMEVER_NOAH3D
 	and	al,0dfh
 ENDIF
 	mov	[BYTE tilehit],al

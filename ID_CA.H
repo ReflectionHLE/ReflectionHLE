@@ -25,7 +25,7 @@ typedef	struct
 //===========================================================================
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 extern	boolean		CA_Started;
 #endif
 
@@ -33,7 +33,7 @@ extern	char		audioname[13];
 
 extern	byte 		_seg	*tinf;
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 extern	int			mapon;
 #endif
 

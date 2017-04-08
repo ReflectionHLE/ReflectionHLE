@@ -17,7 +17,7 @@
 
 // *** S3DNA RESTORATION ***
 // This seems to be required for S3DNA
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 #define DOORWALL(x)	((PMSpriteStart-(x))-8)
 #else
 // the door is the last picture before the sprites
@@ -545,7 +545,7 @@ void HitVertWall (void)
 			ytile = yintercept>>TILESHIFT;
 			if ( tilemap[xtile-xtilestep][ytile]&0x80 )
 				// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				wallpic = DOORWALL(1);
 #else
 				wallpic = DOORWALL+3;
@@ -561,7 +561,7 @@ void HitVertWall (void)
 
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	tilemap[xtile][ytile] |= 0x20;
 #endif
 }
@@ -626,7 +626,7 @@ void HitHorizWall (void)
 			xtile = xintercept>>TILESHIFT;
 			if ( tilemap[xtile][ytile-ytilestep]&0x80 )
 				// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 				wallpic = DOORWALL(1);
 #else
 				wallpic = DOORWALL+2;
@@ -642,7 +642,7 @@ void HitHorizWall (void)
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	tilemap[xtile][ytile] |= 0x20;
 #endif
 }
@@ -662,7 +662,7 @@ void HitHorizDoor (void)
 	unsigned	texture,doorpage,doornum;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	doornum = tilehit&0x1f;
 	doorobjlist[doornum].seen = true;
 #else
@@ -703,7 +703,7 @@ void HitHorizDoor (void)
 		switch (doorobjlist[doornum].lock)
 		{
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		case dr_normal:
 			doorpage = DOORWALL(5);
 			break;
@@ -736,7 +736,7 @@ void HitHorizDoor (void)
 		(unsigned)postsource = texture;
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	tilemap[xtile][ytile] |= 0x20;
 #endif
 }
@@ -756,7 +756,7 @@ void HitVertDoor (void)
 	unsigned	texture,doorpage,doornum;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	doornum = tilehit&0x1f;
 	doorobjlist[doornum].seen = true;
 #else
@@ -797,7 +797,7 @@ void HitVertDoor (void)
 		switch (doorobjlist[doornum].lock)
 		{
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		case dr_normal:
 			doorpage = DOORWALL(5);
 			break;
@@ -827,7 +827,7 @@ void HitVertDoor (void)
 		}
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(doorpage);
 #else
 		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(doorpage+1);
@@ -835,7 +835,7 @@ void HitVertDoor (void)
 		(unsigned)postsource = texture;
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	tilemap[xtile][ytile] |= 0x20;
 #endif
 }
@@ -905,7 +905,7 @@ void HitHorizPWall (void)
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	tilemap[xtile][ytile] |= 0x20;
 #endif
 }
@@ -973,7 +973,7 @@ void HitVertPWall (void)
 	}
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	tilemap[xtile][ytile] |= 0x20;
 #endif
 }
@@ -1057,7 +1057,7 @@ asm	out	dx,al
 unsigned vgaCeiling[]=
 {
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,
  0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,
  0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,0xd2d2,
@@ -1099,7 +1099,7 @@ unsigned vgaCeiling[]=
 void VGAClearScreen (void)
 {
  // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
  unsigned ceiling=vgaCeiling[gamestate.mapon];
 #else
  unsigned ceiling=vgaCeiling[gamestate.episode*10+mapon];
@@ -1136,7 +1136,7 @@ asm	jnz	toploop
 asm	mov	bh,BYTE PTR [viewheight]
 asm	shr	bh,1					// half height
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 asm	mov	ax,0xd9d9
 #else
 asm	mov	ax,0x1919
@@ -1164,7 +1164,7 @@ int	CalcRotate (objtype *ob)
 {
 	int	angle,viewangle;
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (ob->obclass == flameobj || ob->obclass == missileobj)
 		return 0;
 #endif
@@ -1176,7 +1176,7 @@ int	CalcRotate (objtype *ob)
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 	// Including special cases for Wolf3D v1.0 and S3DNA
-#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_NOAH3D)
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
 	if (ob->obclass == rocketobj)
 #else
@@ -1194,7 +1194,7 @@ int	CalcRotate (objtype *ob)
 		angle+=ANGLES;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (ob->state->rotate == 2)
 		return 0;
 #else
@@ -1224,7 +1224,7 @@ typedef struct
 		viewheight,
 		// *** S3DNA RESTORATION ***
 		shapenum
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		,
 		snoring
 #endif
@@ -1276,7 +1276,7 @@ void DrawScaleds (void)
 		}
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (statptr->shapenum == -2)
 			continue;
 
@@ -1284,7 +1284,7 @@ void DrawScaleds (void)
 		if (!visptr->viewheight)
 			continue;						// to close to the object
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		visptr->snoring = 0;
 #endif
 
@@ -1330,7 +1330,7 @@ void DrawScaleds (void)
 			visptr->viewx = obj->viewx;
 			visptr->viewheight = obj->viewheight;
 			// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_EXEDEF_N3DWT10
+#ifndef GAMEVER_NOAH3D
 			if (visptr->shapenum == -1)
 				visptr->shapenum = obj->temp1;	// special shape
 #endif
@@ -1339,7 +1339,7 @@ void DrawScaleds (void)
 				visptr->shapenum += CalcRotate (obj);
 
 			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 			if ((obj->hitpoints > 0) ||
 			    (obj->obclass == missileobj) || (obj->obclass == flameobj) || (obj->obclass == needleobj) || (obj->obclass == rocketobj))
 				visptr->snoring = 0;
@@ -1390,7 +1390,7 @@ void DrawScaleds (void)
 		ScaleShape(farthest->viewx,farthest->shapenum,farthest->viewheight);
 
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (farthest->snoring)
 			ScaleShape(farthest->viewx,farthest->snoring+SPR_SNOOZE_1-1,farthest->viewheight);
 #endif
@@ -1413,7 +1413,7 @@ void DrawScaleds (void)
 
 int	weaponscale[NUMWEAPONS] = {SPR_KNIFEREADY,SPR_PISTOLREADY
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	,SPR_MACHINEGUNREADY,SPR_CHAINREADY,SPR_CANTAREADY,SPR_WATERREADY};
 #else
 	,SPR_MACHINEGUNREADY,SPR_CHAINREADY};
@@ -1424,7 +1424,7 @@ void DrawPlayerWeapon (void)
 	int	shapenum;
 
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (player->state == &s_deathcam)
 	{
 		if (endtics >= 192)
@@ -1650,14 +1650,14 @@ asm	rep stosw
 // follow the walls from there to the right, drawwing as we go
 //
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (nofloors)
 #endif
 		VGAClearScreen ();
 
 	WallRefresh ();
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 	if (!nofloors)
 		DrawPlanes ();
 #endif
@@ -1673,12 +1673,12 @@ asm	rep stosw
 //
 	if (fizzlein)
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		if (!(--fizzlein))
 #endif
 	{
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_N3DWT10
+#ifdef GAMEVER_NOAH3D
 		VW_FadeIn ();
 #else
 		FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,20,false);
