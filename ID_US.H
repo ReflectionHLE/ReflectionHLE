@@ -112,10 +112,10 @@ extern	void	US_Startup(void),
 				US_ClearWindow(void),
 				US_SetPrintRoutines(void (*measure)(char far *,word *,word *),
 									void (*print)(char far *)),
-				US_PrintCentered(char GAMEVER_RESTORATION_CONDFARPTR *s),
-				US_CPrint(char GAMEVER_RESTORATION_CONDFARPTR *s),
-				US_CPrintLine(char GAMEVER_RESTORATION_CONDFARPTR *s),
-				US_Print(char GAMEVER_RESTORATION_CONDFARPTR *s),
+				US_PrintCentered(char GAMEVER_COND_FARPTR *s),
+				US_CPrint(char GAMEVER_COND_FARPTR *s),
+				US_CPrintLine(char GAMEVER_COND_FARPTR *s),
+				US_Print(char GAMEVER_COND_FARPTR *s),
 				US_PrintUnsigned(longword n),
 				US_PrintSigned(long n),
 				US_StartCursor(void),
@@ -128,6 +128,6 @@ extern	boolean	US_UpdateCursor(void),
 extern	int		US_CheckParm(char *parm,char **strings),
 				US_RndT(void);
 
-		void	USL_PrintInCenter(char GAMEVER_RESTORATION_CONDFARPTR *s,Rect r);
+		void	USL_PrintInCenter(char GAMEVER_COND_FARPTR *s,Rect r);
 		char 	*USL_GiveSaveName(word game);
 #endif

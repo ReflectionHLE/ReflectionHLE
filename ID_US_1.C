@@ -334,9 +334,9 @@ US_SetPrintRoutines(void (*measure)(char far *,word *,word *),void (*print)(char
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_Print(char GAMEVER_RESTORATION_CONDFARPTR *s)
+US_Print(char GAMEVER_COND_FARPTR *s)
 {
-	char	c,GAMEVER_RESTORATION_CONDFARPTR *se;
+	char	c,GAMEVER_COND_FARPTR *se;
 	word	w,h;
 
 	while (*s)
@@ -397,7 +397,7 @@ US_PrintSigned(long n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-USL_PrintInCenter(char GAMEVER_RESTORATION_CONDFARPTR *s,Rect r)
+USL_PrintInCenter(char GAMEVER_COND_FARPTR *s,Rect r)
 {
 	word	w,h,
 			rw,rh;
@@ -417,7 +417,7 @@ USL_PrintInCenter(char GAMEVER_RESTORATION_CONDFARPTR *s,Rect r)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintCentered(char GAMEVER_RESTORATION_CONDFARPTR *s)
+US_PrintCentered(char GAMEVER_COND_FARPTR *s)
 {
 	Rect	r;
 
@@ -436,7 +436,7 @@ US_PrintCentered(char GAMEVER_RESTORATION_CONDFARPTR *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrintLine(char GAMEVER_RESTORATION_CONDFARPTR *s)
+US_CPrintLine(char GAMEVER_COND_FARPTR *s)
 {
 	word	w,h;
 
@@ -457,9 +457,9 @@ US_CPrintLine(char GAMEVER_RESTORATION_CONDFARPTR *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrint(char GAMEVER_RESTORATION_CONDFARPTR *s)
+US_CPrint(char GAMEVER_COND_FARPTR *s)
 {
-	char	c,GAMEVER_RESTORATION_CONDFARPTR *se;
+	char	c,GAMEVER_COND_FARPTR *se;
 
 	while (*s)
 	{
