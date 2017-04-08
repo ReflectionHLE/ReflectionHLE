@@ -16,18 +16,19 @@ Following the warning, a description of the ways in which the executables were
 reproduced is given.
 
 With the right tools, this patched codebase can be used to reproduce any
-of the executables coming from the following original releases, at least up to
-a call to UNLZEXE 0.7/0.8, and with a micro-difference from the SOD v1.0 EXE:  
+of the executables coming from the following original releases, albeit with
+micro-differences from the SOD v1.0 and early v1.4 EXEs:  
 - Wolfenstein 3D Shareware v1.0+1.1+1.2+1.4, Apogee releases (with cheats).  
 - Wolfenstein 3D Registered v1.1+1.2+1.4, Apogee releases (with cheats).  
 - Wolfenstein 3D Registered v1.4, early GT Interactive release.  
-- Wolfenstein 3D Registered v1.4, ID Software release (same EXE as in the early
-GT Interactive release, except for a different logo in the signon screen).  
+- Wolfenstein 3D Registered v1.4, id Software (Mindscape International) release
+(basically the early GT Interactive EXE with a different signon screen logo).  
 - Wolfenstein 3D Registered v1.4, late GT Interactive release
 (no three-letter code is shown after completing an episode).  
 - Wolfenstein 3D Registered v1.4, Activision release.  
 - Spear of Destiny demo v1.0, FormGen release.  
-- Spear of Destiny v1.0+1.4, FormGen releases (copy protected).  
+- Spear of Destiny v1.0+early v1.4 (mistakenly labeled 1.0)+late v1.4,
+FormGen releases (copy protected).  
 - Spear of Destiny v1.4, Activision release (no copy protection).  
 
 In addition, ignoring some differences in debugging symbols as stored in the
@@ -37,6 +38,26 @@ original EXE, this codebase includes recreated code for the following title:
 The originally released WOLF3D.PRJ file was used as a base for the
 various project files included in this source tree. Each of them can
 be used for building a specific game version out of the ones above.
+
+List of releases by project file names
+--------------------------------------
+
+- WL1AP10: Wolfenstein 3D Shareware v1.0, Apogee release.
+- WL1AP11: Wolfenstein 3D Shareware v1.1, Apogee release.
+- WL1AP12: Wolfenstein 3D Shareware v1.2, Apogee release.
+- WL1AP14: Wolfenstein 3D Shareware v1.4, Apogee release (with cheats).
+- WL6AP11: Wolfenstein 3D Registered v1.1/1.2, Apogee release.
+- WL6AP14: Wolfenstein 3D Registered v1.4, Apogee release (with cheats).
+- WL6ID14: Wolfenstein 3D Registered v1.4, id Software release.
+- WL6GT14A: Wolfenstein 3D Registered v1.4, early GT Interactive release.
+- WL6GT14B: Wolfenstein 3D Registered v1.4, late GT Interactive release.
+- WL6AC14: Wolfenstein 3D Registered v1.4, Activision release.
+- SDMFG10: Spear of Destiny demo v1.0, FormGen release.
+- SODFG10: Spear of Destiny v1.0, FormGen release.
+- SODFG14A: Spear of Destiny early v1.4 (labeled 1.0), FormGen release.
+- SODFG14B: Spear of Destiny late v1.4, FormGen release.
+- SODAC14: Spear of Destiny v1.4, Activision release.
+- N3DWT10: Super 3-D Noah's Ark v1.0, Wisdom Tree release.
 
 What is this based on
 ---------------------
@@ -98,10 +119,11 @@ your setup of development tools.
 which is used to let the preprocessor define a few macros used in the
 original codebase (like UPLOAD for the Apogee shareware release).  
 - This macro is separately added via a command line argument to the assembler
-for ID_VL_A.ASM and ID_VH_A.ASM, though, since the global project setting
-doesn't seem to apply to ASM files. These two ASM files do include a new
-VERSION.EQU file now. No such change was done for any of the other ASM files
-because there's no need.  
+for ID_VH_A.ASM and ID_VL_A.ASM, though. For S3DNA, the same is also done
+for ID_SD_A.ASM, WHACK_A.ASM and WL_DR_A.ASM. For all files, the reason
+is that the global project setting doesn't seem to apply to ASM files.
+These few ASM files do include a new VERSION.EQU file now. No such change
+was done for any of the other ASM files because there's no need.  
 - A few chunks of WL_ACT2.C are relocated into the following three files, which
 are "#included" from WL_ACT2.C: WL_FPROJ.C, WL_FSMOK.C, WL_SROCK.C.
 This is done since the exact location of each such chunk in WL_ACT2.C
@@ -128,6 +150,15 @@ only "Suppress redundant loads", "Jump optimization" and "Standard stack frame"
 are toggled on. Furthermore, the remaining selected choices are:
 "Register Variable" - "Automatic", "Common Subexpressions" - "No Optimization"
 and "Optimize For" - "Speed".  
+- Some simple comparison of the SOD (non-demo) FormGen releases should be
+done. Basically, in terms of compiled/assembled C/ASM sources, the early
+and late v1.4 releases are identical. In addition, both were originally
+built using Borland C++ 3.1, rather than 3.0 as used for v1.0. However,
+not only the wrong version of "1.0" is shown in the signon screen for
+the early v1.4 EXE, but the project files are significantly more similar.
+In fact, there are good chances the exact same project file was originally
+used with no actual change. This refers to properties like the choice
+of optimizations, as well as the order of linkage of objects.
 - For an earlier revision of this codebase, a custom tool named STRIPBSS
 (or any comparable tool) was required in order to remove the BSS sections from
 certain executables (basically a bunch of zeros appended to each EXE file's
@@ -156,21 +187,22 @@ Required tools:
 Wolf3D and SOD.  
 - Borland C++ 3.1 (exactly this one) for the v1.4 releases of Wolf3D and SOD,
 as well as S3DNA.  
-- LZEXE 0.91.  
-- UNLZEXE 0.7/0.8 for certain EXEs (one requires 0.8, another one needs 0.7).  
+- LZEXE 0.91 (French version, NOT 0.91e) for the non-Activision EXEs.  
+- LZEXE 0.91e (English version, NOT 0.91) for the Activision EXEs.  
+- (Optional) UNLZEXE 0.8 for the SOD v1.0 and early v1.4 EXEs.
 
 Notes before trying to build anything:
 - This may depend on luck. Maybe you'll get a bit different EXE.  
 - In order to prepare for the construction of an EXE (including the removal
 of older object files) and then build the EXE (in a possibly-initial form),
-use a command similar to the following, if not the same: "prep WL1APO10".  
-- LZEXE 0.91 and UNLZEXE 0.7/0.8 should be used in a similar manner with the
-corresponding EXE as the input, e.g., "lzexe WL1APO10.EXE". LZEXE may ask you
+use a command similar to the following, if not the same: "prep WL1AP10".  
+- LZEXE 0.91(e) and UNLZEXE 0.8 should be used in a similar manner with the
+corresponding EXE as the input, e.g., "lzexe WL1AP10.EXE". LZEXE may ask you
 to confirm if the EXE has trailing data (e.g., debugging symbols).  
 - It is assumed that you have a working DOS-compatible environment with a ready
 installation of the correct version of Borland C++, including a properly set
 PATH environment variable.  
-- There's no separate WL6APO11 project. You should look for WL6APO12, since
+- There's no separate WL6AP12 project. You should look for WL6AP11, since
 versions 1.1 and 1.2 of Registered Wolf3D share the same EXE.  
 - There's also no separate project for any cheats-disabled Apogee EXE.
 Originally, the cheats were removed by opening each EXE in a hex editor and
@@ -197,13 +229,18 @@ Building any of the pre-v1.4 Apogee EXEs, or the SOD demo v1.0 FormGen EXE
 3. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 4. Hopefully you should get exactly the original EXE.  
 
-Building the SOD v1.0 FormGen EXE (up to calls to UNLZEXE8 and BSS size)
-------------------------------------------------------------------------
+Building the SOD v1.0 FormGen EXE
+(up to "LZ91" string and BSS size, and note the recreation of WL_PLAY.OBJ)
+--------------------------------------------------------------------------
 
 1. Prepare and open project with Borland C++ 3.0, using PREP.BAT.  
 2. Press on F9 to build. Skip any compilation error as described above.  
-3. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
-4. Hopefully you should get an EXE close to the original, although the latter
+3. Quit Borland C++ and delete the OBJ file OBJ\SODFG10\WL_PLAY.OBJ.  
+4. Manually open the project with Borland C++ 3.1 (i.e., do NOT use PREP.BAT).
+The command "bc SODFG10.PRJ" should do the job with a compatible setup.  
+5. Again press on F9 to build.  
+6. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
+7. Hopefully you should get an EXE close to the original, although the latter
 has the "LZ91" string removed, along with a difference in a couple of bytes
 inside the EXE header, specifying an amount of additional memory the program
 needs (measured in paragraphs i.e., 16-bytes groups).  
@@ -216,7 +253,7 @@ other two bytes. Usually, they're used to specify the size of the so-called
 debugging information is included in the created EXE. Otherwise, the two bytes
 above are filled with the size of zero, while the BSS section is appended to
 the EXE as a bunch of zeros, along with additional debugging information.
-With SODFOR10, though, while debugging symbols may initially be included,
+With SODFG10, though, while debugging symbols may initially be included,
 the two SOD v1.0 FormGen EXEs (original and recreated) should have the exact
 same size (before, and after LZEXE decompression), so it is not clear why is
 there any BSS section size in the original. To further add to the confusion,
@@ -232,13 +269,31 @@ Building any of the (cheats-enabled) v1.4 Apogee EXEs, or the late GT EXE
 3. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 4. Hopefully you should get exactly the original EXE.  
 
-Building the SOD v1.4 FormGen EXE (note the recreation of WL_GAME.OBJ)
-----------------------------------------------------------------------
+Building the SOD early v1.4 FormGen EXE
+(up to the lack of a single byte, and note the recreation of WL_GAME.OBJ)
+-------------------------------------------------------------------------
+
 1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
 2. Press on F9 to build.  
-3. Quit Borland C++ and delete the OBJ file OBJ\SODFOR14\WL_GAME.OBJ.  
+3. Quit Borland C++ and delete the OBJ file OBJ\SODFG14A\WL_GAME.OBJ.  
 4. Manually open the project with Borland C++ 3.1 (i.e., do NOT use PREP.BAT).
-The command "bc SODFOR14.PRJ" should do the job with a compatible setup.  
+The command "bc SODFG14A.PRJ" should do the job with a compatible setup.  
+5. Again press on F9 to build.  
+6. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
+7. Hopefully you should get an EXE almost identical to the original.
+The latter has an additional NUL byte appended to it.
+
+Note that when both EXEs are unpacked with UNLZEXE8, you get identical EXEs.
+Also, when re-packing the unpacked EXE with LZEXE91, the last missing byte
+is *not* present in LZEXE91's output.
+
+Building the SOD late v1.4 FormGen EXE (note the recreation of WL_GAME.OBJ)
+---------------------------------------------------------------------------
+1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
+2. Press on F9 to build.  
+3. Quit Borland C++ and delete the OBJ file OBJ\SODFG14B\WL_GAME.OBJ.  
+4. Manually open the project with Borland C++ 3.1 (i.e., do NOT use PREP.BAT).
+The command "bc SODFG14B.PRJ" should do the job with a compatible setup.  
 5. Again press on F9 to build.  
 6. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 7. Hopefully you should get exactly the original EXE.  
@@ -249,17 +304,12 @@ Building the Wolf3D v1.4 early GT or ID EXE (same EXE up to SIGNON.OBJ)
 2. Press on F9 to build.  
 3. Quit Borland C++. Hopefully you should get exactly the original EXE.  
 
-Building any of the v1.4 Activision EXEs (up to calls to UNLZEXE7)
-------------------------------------------------------------------
+Building any of the v1.4 Activision EXEs
+----------------------------------------
 1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
 2. Press on F9 to build.  
-3. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
-4. Hopefully you should get an EXE close to the original. They should basically
-be more-or-less the same, although the LZEXE signature (not the "LZ91" string)
-of one EXE is a bit different from the other's (seem shifted for most).  
-
-You can unpack both EXEs with UNLZEXE7 (but better make a backup first) so you
-can hopefully get identical EXEs afterwards.
+3. Quit Borland C++ and use LZEXE 0.91e (NOT 0.91) to pack the generated EXE.  
+4. Hopefully you should get exactly the original EXE.  
 
 Building the Super 3-D Noah's Ark v1.0 EXE (up to the debugging information)
 ----------------------------------------------------------------------------
@@ -271,7 +321,7 @@ get the same EXE, meaning the first 223502 bytes (probably more like 262276).
 A few final notes
 -----------------
 
-The source code as originally released by ID Software seems to be in some
+The source code as originally released by id Software seems to be in some
 intermediate state in-between the late GT Interactive release of Wolf3D and
 the Activision release. As in the former, the GT logo is shown in the signon
 screen and some text is shown on quit (after changing to text mode). On the
