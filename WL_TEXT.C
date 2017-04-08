@@ -495,7 +495,7 @@ void PageLayout (boolean shownumber)
 		strcat (str," de ");
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#ifdef GAMEVER_RESTORATION_ANY_FROM_GT214
+		#if (GAMEVER_WOLFREV > 19940101L)
 		py = 183;
 		px = 208;
 		#endif
@@ -506,7 +506,7 @@ void PageLayout (boolean shownumber)
 		strcat (str," of ");
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#ifdef GAMEVER_RESTORATION_ANY_FROM_GT214
+		#if (GAMEVER_WOLFREV > 19940101L)
 		py = 183;
 		px = 213;
 		#endif
@@ -521,7 +521,7 @@ void PageLayout (boolean shownumber)
 #endif
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#ifndef GAMEVER_RESTORATION_ANY_FROM_GT214
+		#if (GAMEVER_WOLFREV <= 19940101L)
 		#ifdef SPANISH
 		py = 183;
 		px = 208;

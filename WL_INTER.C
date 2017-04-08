@@ -2075,7 +2075,7 @@ void	DrawHighScores(void)
 	// *** SHAREWARE/REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Uncomment line for Shareware/Registered 1.4 Apogee and early GT/ID,
 	// and relocate it for pre-1.4 Apogee
-#if (!defined GAMEVER_RESTORATION_ANY_POST_GT114) && (!defined GAMEVER_RESTORATION_ANY_APO_PRE14)
+#if (GAMEVER_WOLFREV <= 19930903L) && (!defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	CA_CacheGrChunk (HIGHSCORESPIC);
@@ -2115,7 +2115,7 @@ void	DrawHighScores(void)
 #endif
 	// *** SHAREWARE V1.0+REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Uncomment line for Shareware 1.0 and any Registered Apogee release, and early Goodtimes/Id
-#if (!defined GAMEVER_RESTORATION_ANY_POST_GT114) && ((!defined UPLOAD) || (GAMEVER_WOLFREV <= 19920505L))
+#if (GAMEVER_WOLFREV <= 19930903L) && ((!defined UPLOAD) || (GAMEVER_WOLFREV <= 19920505L))
 //#ifndef UPLOAD
 	VWB_DrawPic(35*8,68,C_CODEPIC);
 #endif
@@ -2235,7 +2235,7 @@ void	DrawHighScores(void)
 		// *** SHAREWARE V1.0+REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 		// *** REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 		// Do compile verification block for Shareware 1.0 and any Registered Apogee release, and early Goodtimes/Id
-		#ifndef GAMEVER_RESTORATION_ANY_POST_GT114
+		#if (GAMEVER_WOLFREV <= 19930903L)
 		//#if 0
 #if (!defined UPLOAD) || (GAMEVER_WOLFREV <= 19920505L)
 //#ifndef UPLOAD
