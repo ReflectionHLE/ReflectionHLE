@@ -112,7 +112,7 @@ void	Quit (char *error);		// defined in user program
 //
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 #define	PORTTILESWIDE		22
 #define	PORTTILESHIGH		14
 #else

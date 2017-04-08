@@ -26,7 +26,7 @@ typedef	struct
 			char	name[MaxHighName + 1];
 			long	score;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 			word	completed;
 #else
 			word	completed,episode;

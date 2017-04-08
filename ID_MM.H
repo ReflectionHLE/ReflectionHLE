@@ -17,7 +17,7 @@
 #define MAXBLOCKS		700
 #elif (defined GAMEVER_EXEDEF_WL1AP11)
 #define MAXBLOCKS		500
-#elif (defined GAMEVER_EXEDEF_WL1AP10)
+#elif (GAMEVER_WOLFREV == 19920505)
 #define MAXBLOCKS		1200
 #else
 #define MAXBLOCKS		600

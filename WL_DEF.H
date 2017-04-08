@@ -78,7 +78,7 @@
 //----------------
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 #define EXTRAPOINTS		20000
 #else
 #define EXTRAPOINTS		40000
@@ -143,7 +143,7 @@
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // Earlier alternatives to these are used for screenloc and freelatch in v1.0
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 #define SCREENSIZE		(SCREENBWIDE*208)
 #define PAGE1START		0
 #define PAGE2START		(SCREENSIZE)
@@ -176,7 +176,7 @@
 enum	{
 		SPR_DEMO,
 		// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV != 19920505L) && (!defined GAMEVER_EXEDEF_N3DWT10)
 		SPR_DEATHCAM,
 #endif
 //
@@ -502,12 +502,12 @@ enum	{
 
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 		// Looks required for correct numbers, guessing this as the name
-#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11)
+#if (GAMEVER_WOLFREV <= 19920601L)
 		SPR_HITLER_DIE8,
 #endif
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 //
 // giftmacher
 //
@@ -521,14 +521,14 @@ enum	{
 // Rocket, smoke and small explosion
 //
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 		SPR_ROCKET_1,SPR_ROCKET_2,SPR_ROCKET_3,SPR_ROCKET_4,
 		SPR_ROCKET_5,SPR_ROCKET_6,SPR_ROCKET_7,SPR_ROCKET_8,
 
 		SPR_SMOKE_1,SPR_SMOKE_2,SPR_SMOKE_3,SPR_SMOKE_4,
 #endif
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
+#if (GAMEVER_WOLFREV > 19920601L)
 		SPR_BOOM_1,SPR_BOOM_2,SPR_BOOM_3,
 #endif
 
@@ -547,7 +547,7 @@ enum	{
 
 #ifndef SPEAR
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 //
 // gretel
 //
@@ -563,7 +563,7 @@ enum	{
 		SPR_FAT_SHOOT1,SPR_FAT_SHOOT2,SPR_FAT_SHOOT3,SPR_FAT_SHOOT4,
 
 		SPR_FAT_DIE1,SPR_FAT_DIE2,SPR_FAT_DIE3,SPR_FAT_DEAD,
-#endif // GAMEVER_EXEDEF_WL1AP10
+#endif // GAMEVER_WOLFREV == 19920505L
 
 //
 // bj
@@ -805,7 +805,7 @@ typedef enum {
 
 // *** APOGEE + S3DNA VERSIONS RESTORATION ***
 #ifndef GAMEVER_EXEDEF_N3DWT10
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 #define NUMENEMIES		13
 #elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
 #define NUMENEMIES		16
@@ -1044,7 +1044,7 @@ typedef	struct
 				secrettotal,treasuretotal,killtotal;
 	long		TimeCount;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	long		killx,killy;
 #endif
 	boolean		victoryflag;		// set during victory animations
@@ -1062,7 +1062,7 @@ typedef	enum	{
 	ex_abort,
 	ex_demodone
 	// *** SHAREWARE V1.0+V1.1 APOGEE RESTORATION ***
-#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
+#if (GAMEVER_WOLFREV > 19920601L)
 	,
 	ex_secretlevel
 #endif
@@ -1156,7 +1156,7 @@ void		ShutdownId (void);
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 extern	boolean		ingame,fizzlein,screensplit;
 // *** S3DNA RESTORATION ***
 #elif (defined GAMEVER_EXEDEF_N3DWT10)
@@ -1190,12 +1190,12 @@ void ClearMemory (void);
 void PlayDemo (int demonumber);
 void RecordDemo (void);
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 void DrawAllPlayBorder (void);
 #endif
 void	DrawHighScores(void);
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 void DrawAllPlayBorderSides (void);
 #endif
 
@@ -1240,7 +1240,7 @@ extern	byte		spotvis[MAPSIZE][MAPSIZE];
 extern	objtype		*actorat[MAPSIZE][MAPSIZE];
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - Not sure why but looks correct
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 #define UPDATESIZE			((UPDATEWIDE+7)*UPDATEHIGH)
 #else
 #define UPDATESIZE			(UPDATEWIDE*UPDATEHIGH)
@@ -1343,7 +1343,7 @@ extern	unsigned screenloc[3];
 extern	unsigned freelatch;
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 extern	int	screenpage;
 #endif
 

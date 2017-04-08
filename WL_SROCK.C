@@ -12,7 +12,7 @@ extern	statetype s_smoke2;
 extern	statetype s_smoke3;
 extern	statetype s_smoke4;
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
+#if (GAMEVER_WOLFREV > 19920601L)
 extern	statetype s_boom2;
 extern	statetype s_boom3;
 #endif
@@ -32,7 +32,7 @@ statetype s_smoke3	 	= {false,SPR_SMOKE_3,3,NULL,NULL,&s_smoke4};
 statetype s_smoke4	 	= {false,SPR_SMOKE_4,3,NULL,NULL,NULL};
 
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
+#if (GAMEVER_WOLFREV > 19920601L)
 statetype s_boom1	 	= {false,SPR_BOOM_1,6,NULL,NULL,&s_boom2};
 statetype s_boom2	 	= {false,SPR_BOOM_2,6,NULL,NULL,&s_boom3};
 statetype s_boom3	 	= {false,SPR_BOOM_3,6,NULL,NULL,NULL};

@@ -26,7 +26,7 @@
 */
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 boolean	screensplit;
 #endif
 // *** S3DNA RESTORATION ***
@@ -51,7 +51,7 @@ boolean		spearflag;
 //
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 int ElevatorBackTo[]={1,1,7,0,0,0};
 #elif (!defined GAMEVER_EXEDEF_N3DWT10)
 int ElevatorBackTo[]={1,1,7,3,5,3};
@@ -94,7 +94,7 @@ void GameLoop (void);
 	int		leftchannel,rightchannel;
 #define ATABLEMAX 15
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 int righttable[ATABLEMAX][ATABLEMAX * 2] = {
 {14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 11,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  4,  6,  8, 10, 12, 15},
 {14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 12,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  5,  7,  9, 11, 13, 15},
@@ -203,7 +203,7 @@ SetSoundLoc(fixed gx,fixed gy)
 	leftchannel  =  lefttable[x][y + ATABLEMAX];
 	rightchannel = righttable[x][y + ATABLEMAX];
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	if (leftchannel > 5)
 		leftchannel = 5;
 	if (rightchannel > 5)
@@ -652,7 +652,7 @@ void ScanInfoPlane (void)
 				SpawnBoss (x,y);
 				break;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 			case 197:
 				SpawnGretel (x,y);
 				break;
@@ -973,7 +973,7 @@ void SetupGameLevel (void)
 //==========================================================================
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - A function that is used in v1.0
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 void ResetSplitScreen (void)
 {
 	screensplit = false;
@@ -1022,7 +1022,7 @@ void DrawPlayBorderSides (void)
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - NOT used in v1.0
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 /*
 ===================
 =
@@ -1063,7 +1063,7 @@ void DrawAllPlayBorder (void)
 	}
 	bufferofs = temp;
 }
-#endif // GAMEVER_EXEDEF_WL1AP10
+#endif // GAMEVER_WOLFREV == 19920505L
 
 
 /*
@@ -1119,14 +1119,14 @@ void DrawPlayScreen (void)
 {
 	int	i,j,p,m;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	unsigned	temp;
 #endif
 
 	VW_FadeOut ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	screenpage = 0;
 	bufferofs = 0;
 #else
@@ -1136,7 +1136,7 @@ void DrawPlayScreen (void)
 	CA_CacheGrChunk (STATUSBARPIC);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	VWB_DrawPic (0,0,STATUSBARPIC);
 	VW_Hlin (0,319,STATUSLINES,127);
 	UNCACHEGRCHUNK (STATUSBARPIC);
@@ -1147,13 +1147,13 @@ void DrawPlayScreen (void)
 		bufferofs = screenloc[i];
 		DrawPlayBorder ();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 		VWB_DrawPic (0,200-STATUSLINES,STATUSBARPIC);
 #endif
 	}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	bufferofs = temp;
 
 	UNCACHEGRCHUNK (STATUSBARPIC);
@@ -1176,7 +1176,7 @@ void DrawPlayScreen (void)
 	DrawScore ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	screensplit = true;
 	VW_SetSplitScreen(200-STATUSLINES);
 	bufferofs = displayofs = screenloc[0];
@@ -1274,7 +1274,7 @@ void RecordDemo (void)
 	CenterWindow(26,3);
 	PrintY+=6;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	CA_CacheGrChunk(STARTFONT);
 	fontnumber=0;
 #endif
@@ -1292,7 +1292,7 @@ void RecordDemo (void)
 
 	level = atoi (str);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	if ((level < 1) || (level > 20))
 		return;
 #else
@@ -1303,7 +1303,7 @@ void RecordDemo (void)
 	VW_FadeOut ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	NewGame (gd_easy,0);
 	gamestate.mapon = level-1;
 	gamestate.difficulty = gd_hard;
@@ -1318,7 +1318,7 @@ void RecordDemo (void)
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	StartDemoRecord (level-1);
 #else
 	StartDemoRecord (level);
@@ -1349,7 +1349,7 @@ void RecordDemo (void)
 	VW_FadeOut ();
 	ClearMemory ();
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	ResetSplitScreen ();
 #endif
 
@@ -1447,7 +1447,7 @@ void PlayDemo (int demonumber)
 	VW_FadeOut ();
 	ClearMemory ();
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	ResetSplitScreen ();
 #endif
 }
@@ -1548,7 +1548,7 @@ void Died (void)
 	FinishPaletteShifts ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage]+screenofs;
@@ -1562,21 +1562,21 @@ void Died (void)
 	FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,70,false);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	bufferofs -= screenofs;
 #endif
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_EXEDEF_N3DWT10
 	IN_UserInput(100);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	displayofs = bufferofs-screenofs;
 	VW_SetCRTC(displayofs);
 #endif
 	SD_WaitSoundDone ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	if (tedlevel == false)	// SO'S YA DON'T GET KILLED WHILE LAUNCHING!
 #endif
 #endif // GAMEVER_EXEDEF_N3DWT10
@@ -1685,7 +1685,7 @@ restart:
 			}
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 		if (!loadedgame)
 #endif
 		  gamestate.score = gamestate.oldscore;
@@ -1786,7 +1786,7 @@ startplayloop:
 		{
 		case ex_completed:
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (!defined GAMEVER_EXEDEF_WL1AP10) && (!defined GAMEVER_EXEDEF_WL1AP11)
+#if (GAMEVER_WOLFREV > 19920601L)
 		case ex_secretlevel:
 #endif
 			gamestate.keys = 0;
@@ -1860,7 +1860,7 @@ startplayloop:
 			//
 
 			// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11)
+#if (GAMEVER_WOLFREV <= 19920601L)
 			if ((gamestate.mapon == 0) && (player->tilex == 10))
 #else
 			if (playstate == ex_secretlevel)
@@ -1936,7 +1936,7 @@ startplayloop:
 
 			ClearMemory ();
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 			ResetSplitScreen ();
 #endif
 
@@ -1974,7 +1974,7 @@ startplayloop:
 			Victory ();
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 			ResetSplitScreen ();
 #endif
 			// *** PRE-V1.4 APOGEE RESTORATION ***

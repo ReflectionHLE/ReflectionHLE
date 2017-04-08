@@ -156,7 +156,7 @@ struct
 {SPR_STAT_45,block},			// stove           " (SOD:gibs)
 {SPR_STAT_46,block},			// spears          " (SOD:gibs)
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 {SPR_STAT_47,block},				// vines			"
 #else
 {SPR_STAT_47},					// vines			"
@@ -822,7 +822,7 @@ void MoveDoors (void)
 	int		door;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	if (gamestate.victoryflag)		// don't move door during victory sequence
 		return;
 #endif

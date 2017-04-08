@@ -609,7 +609,7 @@ int DebugKeys (void)
 		return 1;
 	}
 	// *** SHAREWARE V1.0+1.1 APOGEE + S3DNA RESTORATION ***
-#if (defined SPEAR) || (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (defined SPEAR) || (GAMEVER_WOLFREV <= 19920601L) || (defined GAMEVER_EXEDEF_N3DWT10)
 //#ifdef SPEAR
 	else if (Keyboard[sc_N])			// N = no clip
 	{
@@ -625,7 +625,7 @@ int DebugKeys (void)
 	}
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 //#if 0
 	else if (Keyboard[sc_O])			// O = overhead
 	{
@@ -756,7 +756,7 @@ void OverheadRefresh (void)
 	unsigned	tile;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage]+screenofs;
@@ -803,7 +803,7 @@ void OverheadRefresh (void)
 		}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	displayofs = bufferofs-screenofs;
 	VW_SetScreen(displayofs,0);
 #endif
@@ -812,7 +812,7 @@ void OverheadRefresh (void)
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // Do compile this in v1.0 of Wolfenstein 3D
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 //#if 0
 /*
 ===================

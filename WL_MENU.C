@@ -738,7 +738,7 @@ int CP_CheckQuick(unsigned scancode)
 			{
 				playstate = ex_died;
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 				gamestate.lives = 0;
 #else
 				pickquick = gamestate.lives = 0;
@@ -746,12 +746,12 @@ int CP_CheckQuick(unsigned scancode)
 			}
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 			DrawAllPlayBorder();
 #endif
 			WindowH=200;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 			UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 			fontnumber=0;
@@ -775,7 +775,7 @@ int CP_CheckQuick(unsigned scancode)
 				Message(STR_SAVING"...");
 				CP_SaveGame(1);
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 				UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 				fontnumber=0;
@@ -802,7 +802,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				VW_FadeOut ();
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 				ResetSplitScreen ();
 #endif
 
@@ -830,7 +830,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				#ifndef SPEAR
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 				UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 				UNCACHEGRCHUNK(C_CURSOR1PIC);
@@ -872,11 +872,11 @@ int CP_CheckQuick(unsigned scancode)
 					CP_LoadGame(1);
 
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 				DrawAllPlayBorder();
 #endif
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 				UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 				fontnumber=0;
@@ -903,7 +903,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				VW_FadeOut ();
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 				ResetSplitScreen ();
 #endif
 
@@ -931,7 +931,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				#ifndef SPEAR
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 				UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 				UNCACHEGRCHUNK(C_CURSOR1PIC);
@@ -958,7 +958,7 @@ int CP_CheckQuick(unsigned scancode)
 			CA_CacheGrChunk(STARTFONT+1);
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 			WindowX=WindowY=0;
 			WindowW=320;
 #endif
@@ -990,12 +990,12 @@ int CP_CheckQuick(unsigned scancode)
 			}
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 			DrawAllPlayBorder();
 #endif
 			WindowH=200;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 			UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 			fontnumber=0;
@@ -1021,7 +1021,7 @@ int CP_EndGame(void)
 		return 0;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	gamestate.lives = 0;
 #else
 	pickquick = gamestate.lives = 0;
@@ -2261,7 +2261,7 @@ void DrawCtlScreen(void)
  //
 
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
  if (CtlItems.curpos==-1)
    for (i=0;i<5;i++)
 #else
@@ -3322,7 +3322,7 @@ void SetupControlPanel(void)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Some v1.0 specific function, guessing it's VW_InitDoubleBuffer
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	VW_InitDoubleBuffer();
 #endif
 	//
@@ -3381,7 +3381,7 @@ void SetupControlPanel(void)
 void CleanupControlPanel(void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 #ifndef SPEAR
@@ -4055,7 +4055,7 @@ void Message(char GAMEVER_RESTORATION_CONDFARPTR *string)
 	font=grsegs[STARTFONT+fontnumber];
 	h=font->height;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	for (i=0;i<strlen(string);i++)
 #else
 	for (i=0;i<_fstrlen(string);i++)

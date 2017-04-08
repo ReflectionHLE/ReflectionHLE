@@ -224,7 +224,7 @@ int songs[]=
  PACMAN_MUS,	// Secret level
 
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
  //
  // Episode Four
  //
@@ -269,7 +269,7 @@ int songs[]=
 
  ULTIMATE_MUS,	// Boss level
  FUNKYOU_MUS		// Secret level
-#endif // GAMEVER_EXEDEF_WL1AP10
+#endif // GAMEVER_WOLFREV == 19920505L
 #else
 
  //////////////////////////////////////////////////////////////
@@ -834,7 +834,7 @@ void CheckKeys (void)
 		IN_Ack();
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 		for (i=0;i<3;i++)
 		{
 			bufferofs = screenloc[i];
@@ -851,7 +851,7 @@ void CheckKeys (void)
 	//
 #ifndef SPEAR
 	// *** PRE-V1.4 (INCLUDING V1.0) APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	if (Keyboard[sc_Tab] &&
 		Keyboard[sc_Control] &&
 		Keyboard[sc_Enter] &&
@@ -864,7 +864,7 @@ void CheckKeys (void)
 		Keyboard[sc_LShift] &&
 		Keyboard[sc_Alt] &&
 #endif
-#endif // GAMEVER_EXEDEF_WL1AP10
+#endif // GAMEVER_WOLFREV == 19920505L
 		MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
 #else
 	if (Keyboard[sc_BackSpace] &&
@@ -885,7 +885,7 @@ void CheckKeys (void)
 	 IN_Ack();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	for (i=0;i<3;i++)
 	{
 		bufferofs = screenloc[i];
@@ -922,7 +922,7 @@ void CheckKeys (void)
 	 IN_Ack();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	for (i=0;i<3;i++)
 	{
 		bufferofs = screenloc[i];
@@ -976,7 +976,7 @@ void CheckKeys (void)
 		US_ControlPanel(scan);
 
 		 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 		 for (i=0;i<3;i++)
 		 {
 			 bufferofs = screenloc[i];
@@ -1006,7 +1006,7 @@ void CheckKeys (void)
 		ClearMemory ();
 		VW_FadeOut ();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 		ResetSplitScreen ();
 #endif
 
@@ -1100,7 +1100,7 @@ next element.
 */
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 int	objcount;
 #endif
 
@@ -1123,7 +1123,7 @@ void InitActorList (void)
 	lastobj = NULL;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	objcount = 0;
 #endif
 
@@ -1168,7 +1168,7 @@ void GetNewActor (void)
 	lastobj = new;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	objcount++;
 #endif
 }
@@ -1194,7 +1194,7 @@ void RemoveObj (objtype *gone)
 		Quit ("RemoveObj: Tried to remove the player!");
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	gone->state = NULL;
 #endif
 
@@ -1218,7 +1218,7 @@ void RemoveObj (objtype *gone)
 	objfreelist = gone;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV != 19920505L)
 	objcount--;
 #endif
 }
@@ -1536,7 +1536,7 @@ void DoActor (objtype *ob)
 		return;
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	if (ob != player)
 #else
 	if (!(ob->flags&(FL_NONMARK|FL_NEVERMARK)) )
@@ -1561,7 +1561,7 @@ void DoActor (objtype *ob)
 		}
 
 		// *** PRE-V1.4 APOGEE RESTORATION *** - Including special case for v1.0
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 		if (ob != player)
 			actorat[ob->tilex][ob->tiley] = ob;
 #elif defined GAMEVER_RESTORATION_ANY_APO_PRE14
@@ -1630,7 +1630,7 @@ think:
 	}
 
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Including special case for v1.0
-#ifdef GAMEVER_EXEDEF_WL1AP10
+#if (GAMEVER_WOLFREV == 19920505L)
 	if (ob != player)
 		actorat[ob->tilex][ob->tiley] = ob;
 	return;
