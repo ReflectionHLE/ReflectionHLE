@@ -865,7 +865,7 @@ void CheckKeys (void)
 		Keyboard[sc_Alt] &&
 #endif
 #endif // GAMEVER_WOLFREV <= 19920505L
-		MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 #else
 	if (Keyboard[sc_BackSpace] &&
 		Keyboard[sc_LShift] &&

@@ -105,16 +105,16 @@
 // This doesn't cover the SOD case of the debug keys, just Wolf3D v1.0 and S3DNA vs the later releases
 #ifdef GAMEVER_EXEDEF_WL1AP10
 
-#define GAMEVER_RESTORATION_W3D_DEBUGPARM "next"
+#define GAMEVER_WOLF3D_DEBUGPARM "next"
 #define GAMEVER_RESTORATION_CONDFARPTR
 #define GAMEVER_RESTORATION_CONDFARSTRCPY strcpy
 
 #else
 
 #ifdef GAMEVER_EXEDEF_N3DWT10
-#define GAMEVER_RESTORATION_W3D_DEBUGPARM "debug"
+#define GAMEVER_WOLF3D_DEBUGPARM "debug"
 #else
-#define GAMEVER_RESTORATION_W3D_DEBUGPARM "goobers"
+#define GAMEVER_WOLF3D_DEBUGPARM "goobers"
 #endif
 #define GAMEVER_RESTORATION_CONDFARPTR far
 #define GAMEVER_RESTORATION_CONDFARSTRCPY _fstrcpy

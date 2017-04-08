@@ -1477,7 +1477,7 @@ void InitGame (void)
 #if (GAMEVER_WOLFREV <= 19920505L)
 	if (mminfo.mainmem < 240000L)
 #elif (defined GAMEVER_NOAH3D)
-	if (mminfo.mainmem < 275000L && !MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+	if (mminfo.mainmem < 275000L && !MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 #elif (!defined SPEAR)
 //#ifndef SPEAR
 	if (mminfo.mainmem < 235000L)
@@ -2100,7 +2100,7 @@ void    DemoLoop (void)
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #ifndef SPEAR
-		if (Keyboard[sc_Tab] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_Tab] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 #else
 		if (Keyboard[sc_Tab] && MS_CheckParm("debugmode"))
 #endif

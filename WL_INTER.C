@@ -597,7 +597,7 @@ void Victory (void)
 	// This is also skipped in the Apogee EXEs
 	#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L)
 	//#ifndef SPEAR
-	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
 	#endif
 
@@ -1245,7 +1245,7 @@ void LevelCompleted (void)
 				break;
 		} while (TimeCount - lasttime < 2*TickBase);
 
-		if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 
 		while (SD_SoundPlaying())
@@ -1320,7 +1320,7 @@ void LevelCompleted (void)
 			break;
 	} while (TimeCount - lasttime < 2*TickBase);
 
-	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
 
 	DrawEndLevelScreen(secret);
@@ -1472,7 +1472,7 @@ void LevelCompleted (void)
 	DrawScore();
 	VW_UpdateScreen();
 
-	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
 
 	if (perfect)
@@ -1489,7 +1489,7 @@ void LevelCompleted (void)
 	while (!IN_CheckAck())
 		BJ_Breathe();
 
-	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
 
 	VW_FadeOut();
@@ -1937,7 +1937,7 @@ void LevelCompleted (void)
 	// This is also skipped in the Apogee EXEs
 	#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L)
 	//#ifndef SPEAR
-	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
 	#endif
 

@@ -758,7 +758,7 @@ void ShowArticle (char far *article)
 		// This is also skipped in these versions
 		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
-		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 		#endif
 

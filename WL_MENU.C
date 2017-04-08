@@ -1921,7 +1921,7 @@ int CalibrateJoystick(void)
 		// This is also skipped in the Apogee and S3DNA EXEs
 		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
-		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 		#endif
 
@@ -1958,7 +1958,7 @@ int CalibrateJoystick(void)
 		// And again
 		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
-		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 		#endif
 	} while(!(jb&2));
@@ -2162,7 +2162,7 @@ void MouseSensitivity(void)
 		// And again - kind of
 		#if (GAMEVER_WOLFREV > 19921112L)
 		#ifndef SPEAR
-		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		#else
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("debugmode"))
 		#endif
@@ -3036,7 +3036,7 @@ void CP_ChangeView(void)
 		// And again
 		#if (GAMEVER_WOLFREV > 19921112L)
 		#ifndef SPEAR
-		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		#else
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("debugmode"))
 		#endif
@@ -3474,7 +3474,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_RESTORATION_CONDFARPTR *i
 			// CHECK FOR SCREEN CAPTURE
 			//
 			#ifndef SPEAR
-			if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+			if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			#else
 			if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("debugmode"))
 			#endif
@@ -3941,7 +3941,7 @@ int Confirm(char GAMEVER_RESTORATION_CONDFARPTR *string)
 		// And again
 		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
-		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 		#endif
 
@@ -3999,7 +3999,7 @@ int GetYorN(int x,int y,int pic)
 		// And again
 		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L)
 		//#ifndef SPEAR
-		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_RESTORATION_W3D_DEBUGPARM))
+		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 		#endif
 
