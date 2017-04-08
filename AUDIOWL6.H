@@ -8,7 +8,7 @@
 // Do NOT use any enum value to define a macro like NUMSOUNDS in a
 // "version agnostic" manner, this can lead to a bit different
 // machine code generated from one line in MM_SortMem.
-#ifdef GAMEVER_RESTORATION_ANY_APO10
+#if (GAMEVER_WOLFREV <= 19920505L)
 #define NUMSOUNDS		73
 #define NUMSNDCHUNKS		246
 #else
@@ -93,7 +93,7 @@ typedef enum {
 		MECHSTEPSND,             // 70
 		GOOBSSND,                // 71
 		YEAHSND,                 // 72
-#ifndef GAMEVER_RESTORATION_ANY_APO10
+#if (GAMEVER_WOLFREV > 19920505L)
 		DEATHSCREAM4SND,         // 73
 		DEATHSCREAM5SND,         // 74
 		DEATHSCREAM6SND,         // 75
@@ -116,7 +116,7 @@ typedef enum {
 // Base offsets
 //
 // Again don't use the enum value of LASTSOUND, just use the numbers directly
-#ifdef GAMEVER_RESTORATION_ANY_APO10
+#if (GAMEVER_WOLFREV <= 19920505L)
 #define STARTPCSOUNDS		0
 #define STARTADLIBSOUNDS	73
 #define STARTDIGISOUNDS		146

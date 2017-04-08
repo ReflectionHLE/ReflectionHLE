@@ -25,7 +25,7 @@ typedef enum {
     H_LEFTWINDOWPIC,             // 18
     H_RIGHTWINDOWPIC,            // 19
     H_BOTTOMINFOPIC,             // 20
-#if !defined(GAMEVER_RESTORATION_ANY_APO10) && !defined(GAMEVER_RESTORATION_ANY_APO11) && !defined(GAMEVER_RESTORATION_ANY_APO12)
+#if (GAMEVER_WOLFREV > 19920614L)
     H_SPEARADPIC,                // 21
 #endif
     // Lump Start
@@ -56,12 +56,12 @@ typedef enum {
     C_EPISODE5PIC,               // 46
     C_EPISODE6PIC,               // 47
     C_CODEPIC,                   // 48
-#ifndef GAMEVER_RESTORATION_ANY_APO10
+#if (GAMEVER_WOLFREV > 19920505L)
     C_TIMECODEPIC,               // 49
     C_LEVELPIC,                  // 50
     C_NAMEPIC,                   // 51
     C_SCOREPIC,                  // 52
-#if !defined(GAMEVER_RESTORATION_ANY_APO11) && !defined(GAMEVER_RESTORATION_ANY_APO12)
+#if (GAMEVER_WOLFREV > 19920614L)
     C_JOY1PIC,                   // 53
     C_JOY2PIC,                   // 54
 #endif
@@ -109,7 +109,7 @@ typedef enum {
     L_YPIC,                      // 92
     L_ZPIC,                      // 93
     L_EXPOINTPIC,                // 94
-#ifndef GAMEVER_RESTORATION_ANY_APO10
+#if (GAMEVER_WOLFREV > 19920505L)
     L_APOSTROPHEPIC,             // 95
 #endif
     L_GUY2PIC,                   // 96
@@ -170,14 +170,14 @@ typedef enum {
     ORDERSCREEN,                 // 148
     ERRORSCREEN,                 // 149
     T_HELPART,                   // 150
-#ifdef GAMEVER_RESTORATION_ANY_APO10
+#if (GAMEVER_WOLFREV <= 19920505L)
     T_ENDART1,                   // 143
 #endif
     T_DEMO0,                     // 151
     T_DEMO1,                     // 152
     T_DEMO2,                     // 153
     T_DEMO3,                     // 154
-#ifndef GAMEVER_RESTORATION_ANY_APO10
+#if (GAMEVER_WOLFREV > 19920505L)
     T_ENDART1,                   // 155
     T_ENDART2,                   // 156
     T_ENDART3,                   // 157
