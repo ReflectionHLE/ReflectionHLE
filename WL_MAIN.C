@@ -1795,7 +1795,7 @@ void Quit (char *error)
 		// of Wolf3D and SOD (no copy protection), but compiled in the
 		// (shareware/registered) Apogee and SOD (demo) releases,
 		// as well as the other "GOODTIMES" releases
-		#if (!defined JAPAN) && (!defined GAMEVER_RESTORATION_ANY_ACT14)
+		#if (!defined JAPAN) && (GAMEVER_WOLFREV <= 19940413L)
 		//#ifndef JAPAN
 		// *** S3DNA RESTORATION ***
 		#ifdef GAMEVER_NOAH3D
