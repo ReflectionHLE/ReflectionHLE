@@ -28,7 +28,7 @@ void CP_BackToDemo(void);
 #endif
 #endif
 
-char GAMEVER_RESTORATION_CONDFARPTR endStrings[9][80]=
+char GAMEVER_COND_FARPTR endStrings[9][80]=
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -85,7 +85,7 @@ CP_iteminfo
 #endif
 
 #pragma warn -sus
-CP_itemtype GAMEVER_RESTORATION_CONDFARPTR
+CP_itemtype GAMEVER_COND_FARPTR
 MainMenu[]=
 {
 #ifdef JAPAN
@@ -131,7 +131,7 @@ MainMenu[]=
 #endif
 },
 
-GAMEVER_RESTORATION_CONDFARPTR SndMenu[]=
+GAMEVER_COND_FARPTR SndMenu[]=
 {
 #ifdef JAPAN
 	{1,"",0},
@@ -165,7 +165,7 @@ GAMEVER_RESTORATION_CONDFARPTR SndMenu[]=
 #endif
 },
 
-GAMEVER_RESTORATION_CONDFARPTR CtlMenu[]=
+GAMEVER_COND_FARPTR CtlMenu[]=
 {
 #ifdef JAPAN
 	{0,"",0},
@@ -187,7 +187,7 @@ GAMEVER_RESTORATION_CONDFARPTR CtlMenu[]=
 #pragma warn +sus
 
 #ifndef SPEAR
-GAMEVER_RESTORATION_CONDFARPTR NewEmenu[]=
+GAMEVER_COND_FARPTR NewEmenu[]=
 {
 #ifdef JAPAN
 #ifdef JAPDEMO
@@ -280,7 +280,7 @@ GAMEVER_RESTORATION_CONDFARPTR NewEmenu[]=
 #endif
 
 
-GAMEVER_RESTORATION_CONDFARPTR NewMenu[]=
+GAMEVER_COND_FARPTR NewMenu[]=
 {
 #ifdef JAPAN
 	{1,"",0},
@@ -295,7 +295,7 @@ GAMEVER_RESTORATION_CONDFARPTR NewMenu[]=
 #endif
 },
 
-GAMEVER_RESTORATION_CONDFARPTR LSMenu[]=
+GAMEVER_COND_FARPTR LSMenu[]=
 {
 	{1,"",0},
 	{1,"",0},
@@ -309,7 +309,7 @@ GAMEVER_RESTORATION_CONDFARPTR LSMenu[]=
 	{1,"",0}
 },
 
-GAMEVER_RESTORATION_CONDFARPTR CusMenu[]=
+GAMEVER_COND_FARPTR CusMenu[]=
 {
 	{1,"",0},
 	{0,"",0},
@@ -3399,7 +3399,7 @@ void CleanupControlPanel(void)
 // Handle moving gun around a menu
 //
 ////////////////////////////////////////////////////////////////////
-int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_RESTORATION_CONDFARPTR *items,void (*routine)(int w))
+int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (*routine)(int w))
 {
 	char key;
 	static int redrawitem=1,lastitem=-1;
@@ -3653,7 +3653,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_RESTORATION_CONDFARPTR *i
 //
 // ERASE GUN & DE-HIGHLIGHT STRING
 //
-void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_RESTORATION_CONDFARPTR *items,int x,int y,int which)
+void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int y,int which)
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
@@ -3686,7 +3686,7 @@ void DrawHalfStep(int x,int y)
 //
 // DRAW GUN AT NEW POSITION
 //
-void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_RESTORATION_CONDFARPTR *items,int x,int *y,int which,int basey,void (*routine)(int w))
+void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int *y,int which,int basey,void (*routine)(int w))
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
@@ -3734,7 +3734,7 @@ void TicDelay(int count)
 // Draw a menu
 //
 ////////////////////////////////////////////////////////////////////
-void DrawMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_RESTORATION_CONDFARPTR *items)
+void DrawMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items)
 {
 	int i,which=item_i->curpos;
 
@@ -3768,7 +3768,7 @@ void DrawMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_RESTORATION_CONDFARPTR *it
 // SET TEXT COLOR (HIGHLIGHT OR NO)
 //
 ////////////////////////////////////////////////////////////////////
-void SetTextColor(CP_itemtype GAMEVER_RESTORATION_CONDFARPTR *items,int hlight)
+void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,int hlight)
 {
 	if (hlight)
 		{SETFONTCOLOR(color_hlite[items->active],BKGDCOLOR);}
@@ -3903,7 +3903,7 @@ void ReadAnyControl(ControlInfo *ci)
 // DRAW DIALOG AND CONFIRM YES OR NO TO QUESTION
 //
 ////////////////////////////////////////////////////////////////////
-int Confirm(char GAMEVER_RESTORATION_CONDFARPTR *string)
+int Confirm(char GAMEVER_COND_FARPTR *string)
 {
 	int xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
 
@@ -4041,7 +4041,7 @@ int GetYorN(int x,int y,int pic)
 // PRINT A MESSAGE IN A WINDOW
 //
 ////////////////////////////////////////////////////////////////////
-void Message(char GAMEVER_RESTORATION_CONDFARPTR *string)
+void Message(char GAMEVER_COND_FARPTR *string)
 {
 	int h=0,w=0,mw=0,i,x,y,time;
 	fontstruct _seg *font;
