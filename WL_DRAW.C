@@ -1177,7 +1177,7 @@ int	CalcRotate (objtype *ob)
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 	// Including special cases for Wolf3D v1.0 and S3DNA
 #if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	if (ob->obclass == rocketobj)
 #else
 	if (ob->obclass == rocketobj || ob->obclass == hrocketobj)
@@ -1483,7 +1483,7 @@ void CalcTics (void)
 		TimeCount = lasttimecount;		// if the game was paused a LONG time
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	if (DemoMode != demo_Off)
 	{
 		oldtimecount = lasttimecount;
@@ -1686,7 +1686,7 @@ asm	rep stosw
 #endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 		lasttimecount = TimeCount;
 #else
 		lasttimecount = TimeCount = 0;		// don't make a big tic count

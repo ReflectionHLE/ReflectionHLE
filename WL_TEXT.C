@@ -777,7 +777,7 @@ void ShowArticle (char far *article)
 // *** S3DNA RESTORATION *** - No T_ENDART1
 #ifdef GAMEVER_NOAH3D
 int		helpextern = T_HELPART;
-#elif defined GAMEVER_RESTORATION_ANY_APO_PRE14
+#elif (GAMEVER_WOLFREV <= 19920614L)
 int		helpextern = T_HELPART;
 int 	endextern = T_ENDART1;
 #else
@@ -847,7 +847,7 @@ void HelpScreens (void)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	MenuFadeOut();
 #else
 	VW_FadeOut();
@@ -927,7 +927,7 @@ void EndText (void)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	MenuFadeOut();
 #else
 	VW_FadeOut();

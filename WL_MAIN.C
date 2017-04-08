@@ -42,7 +42,7 @@
 
 char            str[80],str2[20];
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 unsigned				tedlevelnum;
 #else
 int				tedlevelnum;
@@ -80,7 +80,7 @@ void            Quit (char *error);
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 boolean         startgame,loadedgame
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
 		,virtualreality
 #endif
 		;
@@ -146,7 +146,7 @@ void ReadConfig(void)
 		close(file);
 
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 		if (sd == sdm_AdLib && (!AdLibPresent || !SoundBlasterPresent))
 #else
 		if (sd == sdm_AdLib && !AdLibPresent && !SoundBlasterPresent)
@@ -916,7 +916,7 @@ void SignonScreen (void)                        // VGA version
 	VL_SetPalette (&gamepal);
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	if (!virtualreality)
 #endif
 	{
@@ -953,7 +953,7 @@ void FinishSignon (void)
 
 #ifndef SPEAR
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	VW_Bar (0,185,300,15,peekb(0xa000,0));
 #else
 	VW_Bar (0,189,300,11,peekb(0xa000,0));
@@ -961,7 +961,7 @@ void FinishSignon (void)
 	WindowX = 0;
 	WindowW = 320;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	PrintY = 188;
 #else
 	PrintY = 190;
@@ -983,7 +983,7 @@ void FinishSignon (void)
 
 	#ifndef JAPAN
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	VW_Bar (0,185,320,15,peekb(0xa000,0));
 
 	PrintY = 188;
@@ -1415,7 +1415,7 @@ void DoJukebox(void)
 	MenuFadeOut();
 	IN_ClearKeysDown();
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 #ifdef SPEAR
 	UnCacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
 #else
@@ -1450,7 +1450,7 @@ void InitGame (void)
 	nofloors = false;
 	if (MS_CheckParm ("nofloors"))
 		nofloors = true;
-#elif (!defined GAMEVER_RESTORATION_ANY_APO_PRE14)
+#elif (GAMEVER_WOLFREV > 19920614L)
 	if (MS_CheckParm ("virtual"))
 		virtualreality = true;
 	else
@@ -1548,7 +1548,7 @@ void InitGame (void)
 // draw intro screen stuff
 //
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	if (!virtualreality)
 #endif
 		IntroScreen ();
@@ -1589,7 +1589,7 @@ close(profilehandle);
 	InitRedShifts ();
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	if (!virtualreality)
 #endif
 		FinishSignon();
@@ -1617,7 +1617,7 @@ close(profilehandle);
 	VW_FadeOut ();
 
 	LoadLatchMem ();
-#elif (!defined GAMEVER_RESTORATION_ANY_APO_PRE14)
+#elif (GAMEVER_WOLFREV > 19920614L)
 	if (virtualreality)
 	{
 		NoWait = true;
@@ -1693,7 +1693,7 @@ void NewViewSize (int width)
 	MM_SortMem ();
 	viewsize = width;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 resize:
 	if (!SetViewSize (width*16,width*16*HEIGHTRATIO))
 	{
@@ -1724,7 +1724,7 @@ void Quit (char *error)
 	memptr	screen;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
 	if (virtualreality)
 		geninterrupt(0x61);
 #endif
@@ -1745,7 +1745,7 @@ void Quit (char *error)
 	 screen = grsegs[ORDERSCREEN];
 	 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	 WriteConfig ();
 #endif
 	}
@@ -1759,7 +1759,7 @@ void Quit (char *error)
  }
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	WriteConfig ();
 #endif
 	ShutdownId ();
@@ -1784,7 +1784,7 @@ void Quit (char *error)
 	  exit(1);
 	}
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	else
 #endif
 	if (!error || !(*error))
@@ -1917,7 +1917,7 @@ void    DemoLoop (void)
 	displayofs = bufferofs = 0;
 #endif
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	StartCPMusic(INTROSONG);
 #endif
 
@@ -1970,7 +1970,7 @@ void    DemoLoop (void)
 #else
 			CA_CacheScreen (TITLEPIC);
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 			if (screenfaded)
 			{
 				VW_UpdateScreen ();
@@ -1990,7 +1990,7 @@ void    DemoLoop (void)
 #ifdef GAMEVER_NOAH3D
 			if (IN_UserInput(TickBase))
 				break;
-#elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
+#elif (GAMEVER_WOLFREV <= 19920614L)
 			if (IN_UserInput(TickBase*3))
 				break;
 #else
@@ -2027,7 +2027,7 @@ void    DemoLoop (void)
 #endif
 			// *** PRE-V1.4 APOGEE RESTORATION ***
 			// A bit of additional restored code
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 			if (FizzleFade(bufferofs,displayofs,320,200,20,true))
 				break;
 			if (IN_UserInput(TickBase*10))
@@ -2043,7 +2043,7 @@ void    DemoLoop (void)
 			VW_ScreenToScreen (displayofs,bufferofs+ylookup[168]+18,50,30);
 #endif
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 			VW_UpdateScreen();
 			VW_FadeIn ();
 			if (IN_UserInput(TickBase*10))
@@ -2058,7 +2058,7 @@ void    DemoLoop (void)
 
 			if (IN_UserInput(TickBase*10))
 				break;
-#endif // GAMEVER_RESTORATION_ANY_APO_PRE14
+#endif // GAMEVER_WOLFREV > 19920614L
 #endif
 //
 // demo
@@ -2077,7 +2077,7 @@ void    DemoLoop (void)
 			if (playstate == ex_abort)
 				break;
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 			StartCPMusic(ROSTER_MUS);
 
 			DrawHighScores();
@@ -2112,7 +2112,7 @@ void    DemoLoop (void)
 		{
 			GameLoop ();
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 			VW_FadeOut();
 			StartCPMusic(INTROSONG);
 #endif

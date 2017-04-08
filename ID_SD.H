@@ -10,7 +10,7 @@
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 // With no declaration, so the compiler assumes args are passed as 16-bit ints
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 void	alOut(byte n,byte b);
 #endif
 

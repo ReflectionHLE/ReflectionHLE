@@ -727,7 +727,7 @@ typedef enum {
 	fatobj,
 	rocketobj
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	,
 	spectreobj,
 	angelobj,
@@ -770,7 +770,7 @@ typedef enum {
 	bo_food,
 	bo_fullheal
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	,
 	bo_25clip,
 	// *** S3DNA RESTORATION ***
@@ -807,7 +807,7 @@ typedef enum {
 #ifndef GAMEVER_NOAH3D
 #if (GAMEVER_WOLFREV <= 19920505L)
 #define NUMENEMIES		13
-#elif (defined GAMEVER_RESTORATION_ANY_APO_PRE14)
+#elif (GAMEVER_WOLFREV <= 19920614L)
 #define NUMENEMIES		16
 #else
 #define NUMENEMIES		22
@@ -842,7 +842,7 @@ typedef enum {
 	en_gift,
 	en_fat
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	,
 	en_spectre,
 	en_angel,
@@ -1081,7 +1081,7 @@ extern	boolean		MS_CheckParm (char far *string);
 
 extern	char		str[80],str2[20];
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 extern	unsigned			tedlevelnum;
 #else
 extern	int			tedlevelnum;
@@ -1109,7 +1109,7 @@ extern	int			dirangle[9];
 
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 extern	boolean         startgame,loadedgame
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
 	,virtualreality
 #endif
 	;
@@ -1172,7 +1172,7 @@ extern	int			doornum;
 extern	char		demoname[13];
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	long		spearx,speary;
 extern	unsigned	spearangle;
 extern	boolean		spearflag;
@@ -1222,7 +1222,7 @@ extern	long		funnyticount;		// FOR FUNNY BJ FACE
 extern	exit_t		playstate;
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - There was apparently some unused variable here
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 extern	boolean unusedplayvar;
 #endif
 extern	boolean		madenoise;
@@ -1479,7 +1479,7 @@ extern	byte		mapmasks3[4][8];
 extern	int			maxscale,maxscaleshl2;
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	boolean	insetupscaling;
 #endif
 
@@ -1520,7 +1520,7 @@ void	DrawTreasure (void);
 void 	DrawFace (void);
 void	DrawHealth (void);
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 void	TakeDamage (int points,objtype *attacker);
 #endif
 void	HealSelf (int points);
@@ -1570,7 +1570,7 @@ extern int			pwalldir;
 
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 void InitDoorList (void);
 void InitStaticList (void);
 void SpawnStatic (int tilex, int tiley, int type);
@@ -1645,19 +1645,19 @@ extern	statetype s_hitlerchase1;
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Disabling pain1 states
 extern	statetype s_grdpain;
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	statetype s_grdpain1;
 #endif
 extern	statetype s_ofcpain;
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	statetype s_ofcpain1;
 #endif
 extern	statetype s_sspain;
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	statetype s_sspain1;
 #endif
 extern	statetype s_mutpain;
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	statetype s_mutpain1;
 #endif
 
@@ -1697,7 +1697,7 @@ void KillActor (objtype *ob);
 void	US_ControlPanel(byte);
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 void SpawnDeadGuard (int tilex, int tiley);
 void SpawnBoss (int tilex, int tiley);
 void SpawnGretel (int tilex, int tiley);

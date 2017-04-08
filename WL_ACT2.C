@@ -95,7 +95,7 @@ int	starthitpoints[4][NUMENEMIES] =
 	  850,	// Gift
 	  850	// Fat
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	  ,
 	  5,	// en_spectre,
 	  1450,	// en_angel,
@@ -126,7 +126,7 @@ int	starthitpoints[4][NUMENEMIES] =
 	  950,	// Gift
 	  950 	// Fat
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	  ,
 	  10,	// en_spectre,
 	  1550,	// en_angel,
@@ -159,7 +159,7 @@ int	starthitpoints[4][NUMENEMIES] =
 	  1050,	// Gift
 	  1050 	// Fat
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	  ,
 	  15,	// en_spectre,
 	  1650,	// en_angel,
@@ -192,7 +192,7 @@ int	starthitpoints[4][NUMENEMIES] =
 	  1200,	// Gift
 	  1200	// Fat
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	  ,
 	  25,	// en_spectre,
 	  2000,	// en_angel,
@@ -222,7 +222,7 @@ void	T_Stand (objtype *ob);
 void A_DeathScream (objtype *ob);
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 #include "WL_SROCK.C"
 #endif
 
@@ -242,7 +242,7 @@ void A_MechaSound (objtype *ob);
 
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION *** - Relocated code to separate
 // files for for v1.2, but even here, WL_FSMOK.C is not included for S3DNA.
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 #ifndef GAMEVER_NOAH3D
 #include "WL_FSMOK.C"
 #endif
@@ -274,7 +274,7 @@ extern	statetype s_grdpath4;
 
 extern	statetype s_grdpain;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	statetype s_grdpain1;
 #endif
 
@@ -325,7 +325,7 @@ statetype s_grdpain1 	= {2,SPR_GRD_PAIN,10,NULL,NULL,&s_grdchase1};
 #else
 statetype s_grdpain 	= {2,SPR_GRD_PAIN_1,10,NULL,NULL,&s_grdchase1};
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 statetype s_grdpain1 	= {2,SPR_GRD_PAIN_2,10,NULL,NULL,&s_grdchase1};
 #endif
 #endif
@@ -487,7 +487,7 @@ extern	statetype s_ofcpath4;
 
 extern	statetype s_ofcpain;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	statetype s_ofcpain1;
 #endif
 
@@ -538,7 +538,7 @@ statetype s_ofcpain1 	= {2,SPR_OFC_PAIN,10,NULL,NULL,&s_ofcchase1};
 #else
 statetype s_ofcpain 	= {2,SPR_OFC_PAIN_1,10,NULL,NULL,&s_ofcchase1};
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 statetype s_ofcpain1 	= {2,SPR_OFC_PAIN_2,10,NULL,NULL,&s_ofcchase1};
 #endif
 #endif
@@ -585,7 +585,7 @@ extern	statetype s_mutpath4;
 
 extern	statetype s_mutpain;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	statetype s_mutpain1;
 #endif
 
@@ -639,7 +639,7 @@ statetype s_mutpain1 	= {2,SPR_MUT_PAIN,10,NULL,NULL,&s_mutchase1};
 #else
 statetype s_mutpain 	= {2,SPR_MUT_PAIN_1,10,NULL,NULL,&s_mutchase1};
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 statetype s_mutpain1 	= {2,SPR_MUT_PAIN_2,10,NULL,NULL,&s_mutchase1};
 #endif
 #endif
@@ -700,7 +700,7 @@ extern	statetype s_sspath4;
 
 extern	statetype s_sspain;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	statetype s_sspain1;
 #endif
 
@@ -753,7 +753,7 @@ statetype s_sspain1 	= {2,SPR_SS_PAIN,10,NULL,NULL,&s_sschase1};
 #else
 statetype s_sspain 		= {2,SPR_SS_PAIN_1,10,NULL,NULL,&s_sschase1};
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 statetype s_sspain1 	= {2,SPR_SS_PAIN_2,10,NULL,NULL,&s_sschase1};
 #endif
 #endif
@@ -1049,7 +1049,7 @@ void SpawnDeadGuard (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 void SpawnBoss (int tilex, int tiley, int dir)
 #else
 void SpawnBoss (int tilex, int tiley)
@@ -1068,7 +1068,7 @@ void SpawnBoss (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_boss];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	new->dir = dir*2;
 #else
 	new->dir = south;
@@ -1089,7 +1089,7 @@ void SpawnBoss (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 void SpawnGretel (int tilex, int tiley, int dir)
 #else
 void SpawnGretel (int tilex, int tiley)
@@ -1108,7 +1108,7 @@ void SpawnGretel (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gretel];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	new->dir = dir*2;
 #else
 	new->dir = north;
@@ -2423,7 +2423,7 @@ statetype s_giftshoot2 	= {false,SPR_GIFT_SHOOT2,10,NULL,T_GiftThrow,&s_giftchas
 
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 #include "WL_SROCK.C"
 #endif
 
@@ -2520,7 +2520,7 @@ statetype s_fatshoot6 	= {false,SPR_FAT_SHOOT4,10,NULL,T_Shoot,&s_fatchase1};
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 void SpawnSchabbs (int tilex, int tiley, int dir)
 #else
 void SpawnSchabbs (int tilex, int tiley)
@@ -2552,7 +2552,7 @@ void SpawnSchabbs (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_schabbs];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	new->dir = dir*2;
 #else
 	new->dir = south;
@@ -2574,7 +2574,7 @@ void SpawnSchabbs (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 void SpawnGift (int tilex, int tiley, int dir)
 #else
 void SpawnGift (int tilex, int tiley)
@@ -2598,7 +2598,7 @@ void SpawnGift (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gift];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	new->dir = dir*2;
 #else
 	new->dir = north;
@@ -2618,7 +2618,7 @@ void SpawnGift (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 void SpawnFat (int tilex, int tiley, int dir)
 #else
 void SpawnFat (int tilex, int tiley)
@@ -2642,7 +2642,7 @@ void SpawnFat (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_fat];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	new->dir = dir*2;
 #else
 	new->dir = south;
@@ -2655,7 +2655,7 @@ void SpawnFat (int tilex, int tiley)
 
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 #include "WL_FPROJ.C"
 #endif
 
@@ -2713,7 +2713,7 @@ void T_SchabbThrow (objtype *ob)
 }
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2; Not included in v1.0 at all.
-#if (defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV <= 19920614L) && (GAMEVER_WOLFREV > 19920505L)
 #include "WL_FSMOK.C"
 #endif
 
@@ -3278,7 +3278,7 @@ statetype s_hitlershoot6 	= {false,SPR_HITLER_SHOOT2,10,NULL,T_Shoot,&s_hitlerch
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 void SpawnFakeHitler (int tilex, int tiley, int dir)
 #else
 void SpawnFakeHitler (int tilex, int tiley)
@@ -3311,7 +3311,7 @@ void SpawnFakeHitler (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_fake];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	new->dir = dir*2;
 #else
 	new->dir = north;
@@ -3332,7 +3332,7 @@ void SpawnFakeHitler (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 void SpawnHitler (int tilex, int tiley, int dir)
 #else
 void SpawnHitler (int tilex, int tiley)
@@ -3360,7 +3360,7 @@ void SpawnHitler (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_hitler];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	new->dir = dir*2;
 #else
 	new->dir = south;
@@ -4157,7 +4157,7 @@ void T_Bite (objtype *ob)
 		   if (US_RndT()<180)
 		   {
 			  // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 			   TakeDamage (US_RndT()>>4);
 #else
 			   TakeDamage (US_RndT()>>4,ob);

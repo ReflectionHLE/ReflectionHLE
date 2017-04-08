@@ -84,7 +84,7 @@
 
 #define	STR_BKWD	"Bkwrd"
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 #define	STR_THINK	"Computing"
 #else
 #define	STR_THINK	"Thinking"

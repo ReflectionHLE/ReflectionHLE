@@ -83,7 +83,7 @@ void SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
 	GetNewActor ();
 	new->state = state;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	new->ticcount = random(state->tictime) + 1;
 #else
 	if (state->tictime)
@@ -208,7 +208,7 @@ boolean TryWalk (objtype *ob)
 	doornum = -1;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	if (ob->obclass == inertobj)
 	{
 		switch (ob->dir)
@@ -251,7 +251,7 @@ boolean TryWalk (objtype *ob)
 		}
 	}
 	else
-#endif // GAMEVER_RESTORATION_ANY_APO_PRE14
+#endif // GAMEVER_WOLFREV > 19920614L
 		switch (ob->dir)
 		{
 		case north:
@@ -436,7 +436,7 @@ void SelectDodgeDir (objtype *ob)
 	}
 	else
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 		if (deltax<=0)
 #endif
 	{
@@ -451,7 +451,7 @@ void SelectDodgeDir (objtype *ob)
 	}
 	else
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 		if (deltay<=0)
 #endif
 	{
@@ -766,7 +766,7 @@ void MoveObj (objtype *ob, long move)
 		// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 		if (obj->obclass == ghostobj)
 			TakeDamage (tics*2);
 #else
@@ -1040,11 +1040,11 @@ void KillActor (objtype *ob)
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Relocate this
 	// based on version, but disable all that follows in v1.0
 #if (GAMEVER_WOLFREV > 19920505L)
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	ob->flags |= FL_NONMARK;
 #endif
 	actorat[ob->tilex][ob->tiley] = NULL;
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	ob->flags |= FL_NONMARK;
 #endif
 #endif // GAMEVER_WOLFREV <= 19920505L
@@ -1105,7 +1105,7 @@ void DamageActor (objtype *ob, unsigned damage)
 		switch (ob->obclass)		// dogs only have one hit point
 		{
 		case guardobj:
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 			NewState (ob,&s_grdpain);
 #else
 			if (ob->hitpoints&1)
@@ -1116,7 +1116,7 @@ void DamageActor (objtype *ob, unsigned damage)
 			break;
 
 		case officerobj:
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 			NewState (ob,&s_ofcpain);
 #else
 			if (ob->hitpoints&1)
@@ -1127,7 +1127,7 @@ void DamageActor (objtype *ob, unsigned damage)
 			break;
 
 		case mutantobj:
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 			NewState (ob,&s_mutpain);
 #else
 			if (ob->hitpoints&1)
@@ -1138,7 +1138,7 @@ void DamageActor (objtype *ob, unsigned damage)
 			break;
 
 		case ssobj:
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 			NewState (ob,&s_sspain);
 #else
 			if (ob->hitpoints&1)
@@ -1553,7 +1553,7 @@ void FirstSighting (objtype *ob)
 		ob->speed *= 3;			// go faster when chasing player
 		break;
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Relocate based on version
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	case ssobj:
 		PlaySoundLocActor(SCHUTZADSND,ob);
 		NewState (ob,&s_sschase1);
@@ -1577,7 +1577,7 @@ void FirstSighting (objtype *ob)
 #endif
 		NewState (ob,&s_bosschase1);
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 		ob->speed *= 3;			// go faster when chasing player
 #else
 		ob->speed = SPDPATROL*3;	// go faster when chasing player
@@ -1658,7 +1658,7 @@ void FirstSighting (objtype *ob)
 		break;
 
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Relocate based on version
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	case ssobj:
 		PlaySoundLocActor(SCHUTZADSND,ob);
 		NewState (ob,&s_sschase1);
@@ -1807,7 +1807,7 @@ boolean SightPlayer (objtype *ob)
 		case fatobj:
 #endif
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
 		case spectreobj:
 		case angelobj:
 		case transobj:

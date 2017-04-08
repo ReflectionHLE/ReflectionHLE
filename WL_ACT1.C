@@ -260,7 +260,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_key4:
 	case	bo_clip:
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	case	bo_25clip:
 #endif
 	case	bo_machinegun:
@@ -278,7 +278,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_alpo:
 	case	bo_gibs:
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	case	bo_spear:
 #endif
 #endif

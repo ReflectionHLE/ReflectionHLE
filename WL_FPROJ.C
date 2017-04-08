@@ -120,7 +120,7 @@ void T_Projectile (objtype *ob)
 #if (GAMEVER_WOLFREV > 19920505L)
 		case rocketobj:
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (!defined GAMEVER_RESTORATION_ANY_APO_PRE14) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
 		case hrocketobj:
 		case sparkobj:
 #endif

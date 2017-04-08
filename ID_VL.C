@@ -865,7 +865,7 @@ void VL_MemToScreen (byte far *source, int width, int height, int x, int y)
 void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y)
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	byte    far *screen,far *maskptr,far *dest,mask;
 #else
 	byte    far *screen,far *dest,mask;
@@ -878,7 +878,7 @@ void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y)
 //	mask = 1 << (x&3);
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	maskptr = source;
 #else
 //	maskptr = source;

@@ -521,7 +521,7 @@ tryagain:
 
 extern char configname[];
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 extern	boolean	insetupscaling;
 extern	int	viewsize;
 boolean SetViewSize (unsigned width, unsigned height);
@@ -542,7 +542,7 @@ mmblocktype	far *savedmmnew;
 //		unlink(configname);
 #else
 		unlink(configname);
-#endif // GAMEVER_RESTORATION_ANY_APO_PRE14
+#endif // GAMEVER_WOLFREV > 19920614L
 		Quit ("MM_GetPtr: Out of memory!");
 	}
 	else

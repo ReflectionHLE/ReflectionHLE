@@ -641,7 +641,7 @@ void PG13 (void)
 {
 	VW_FadeOut();
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	VWB_Bar(0,0,319,200,0x82);			// background
 #else
 	VWB_Bar(0,0,320,200,0x82);			// background
@@ -658,7 +658,7 @@ void PG13 (void)
 
 	VW_FadeIn();
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	IN_Ack();
 #else
 	IN_UserInput(TickBase*7);
@@ -1872,7 +1872,7 @@ void LevelCompleted (void)
 #endif
 #else
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	  Write(14,4,"secret level\n completed!");
 #else
 	  Write(14,4,"secret floor\n completed!");
@@ -2067,7 +2067,7 @@ void	DrawHighScores(void)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	MM_SortMem ();
 #endif
 
@@ -2075,14 +2075,14 @@ void	DrawHighScores(void)
 	// *** SHAREWARE/REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Uncomment line for Shareware/Registered 1.4 Apogee and early GT/ID,
 	// and relocate it for pre-1.4 Apogee
-#if (GAMEVER_WOLFREV <= 19930903L) && (!defined GAMEVER_RESTORATION_ANY_APO_PRE14)
+#if (GAMEVER_WOLFREV <= 19930903L) && (GAMEVER_WOLFREV > 19920614L)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	CA_CacheGrChunk (HIGHSCORESPIC);
 	CA_CacheGrChunk (STARTFONT);
 	// *** SHAREWARE/REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Relocated line for pre-1.4 Apogee
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -2098,7 +2098,7 @@ void	DrawHighScores(void)
 	VWB_DrawPic(48,0,HIGHSCORESPIC);
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 	// Relocate line for pre-1.4 Apogee
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 	UNCACHEGRCHUNK (HIGHSCORESPIC);
 #endif
 
@@ -2272,7 +2272,7 @@ void	DrawHighScores(void)
 	// *** PRE-V1.4 APOGEE RESTORATION (INC. SPECIAL CASE FOR V1.0) ***
 	// Relocated line for pre-1.4 Apogee, but don't compile at all in v1.0
 #if (GAMEVER_WOLFREV > 19920505L)
-#ifdef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV <= 19920614L)
 	UNCACHEGRCHUNK (HIGHSCORESPIC);
 #endif
 	VW_UpdateScreen ();
@@ -2356,7 +2356,7 @@ void	CheckHighScore (long score,word other)
 		PrintX = 4*8;
 #endif
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#ifndef GAMEVER_RESTORATION_ANY_APO_PRE14
+#if (GAMEVER_WOLFREV > 19920614L)
 		backcolor = BORDCOLOR;
 		fontcolor = 15;
 #endif
