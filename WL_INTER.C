@@ -2075,7 +2075,7 @@ void	DrawHighScores(void)
 	// *** SHAREWARE/REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Uncomment line for Shareware/Registered 1.4 Apogee and early GT/ID,
 	// and relocate it for pre-1.4 Apogee
-#if (GAMEVER_WOLFREV <= 19930903L) && (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920614L) && (GAMEVER_WOLFREV <= 19930903L)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	CA_CacheGrChunk (HIGHSCORESPIC);

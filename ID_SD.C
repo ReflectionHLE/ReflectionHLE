@@ -364,7 +364,7 @@ asm	cli
 	{
 		sbSamplePlaying = false;
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV <= 19920614L) && (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
 		asm	pushf
 		asm	cli
 #endif
@@ -379,7 +379,7 @@ asm	cli
 			is &= ~(1 << sbInterrupt);
 		outportb(0x21,is);
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV <= 19920614L) && (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
 		asm	popf
 #endif
 	}
@@ -437,7 +437,7 @@ asm	cli
 	// Start playing the thing
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV <= 19920614L) && (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
 asm	popf
 asm	pushf
 asm	cli
@@ -523,7 +523,7 @@ asm	cli
 	// Save old interrupt status and unmask ours
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV <= 19920614L) && (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
 asm	pushf
 asm	cli
 #endif
@@ -534,7 +534,7 @@ asm	cli
 	sbOut(sbWriteCmd,0xd4);						// Make sure DSP DMA is enabled
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV <= 19920614L) && (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
 asm	popf
 #endif
 

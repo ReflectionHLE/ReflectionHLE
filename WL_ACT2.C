@@ -2713,7 +2713,7 @@ void T_SchabbThrow (objtype *ob)
 }
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2; Not included in v1.0 at all.
-#if (GAMEVER_WOLFREV <= 19920614L) && (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
 #include "WL_FSMOK.C"
 #endif
 
