@@ -1872,13 +1872,13 @@ startplayloop:
 #ifdef GAMEVER_NOAH3D
 #define FROMSECRET1		7
 #define FROMSECRET2		25
-#define GAMEVER_RESTORATION_SECRET1 11
-#define GAMEVER_RESTORATION_SECRET2 29
+#define GAMEVER_SECRET1 11
+#define GAMEVER_SECRET2 29
 #else
 #define FROMSECRET1		3
 #define FROMSECRET2		11
-#define GAMEVER_RESTORATION_SECRET1 18
-#define GAMEVER_RESTORATION_SECRET2 19
+#define GAMEVER_SECRET1 18
+#define GAMEVER_SECRET2 19
 #endif
 
 			//
@@ -1887,8 +1887,8 @@ startplayloop:
 			if (playstate == ex_secretlevel)
 				switch(gamestate.mapon)
 				{
-				 case FROMSECRET1: gamestate.mapon = GAMEVER_RESTORATION_SECRET1; break;
-				 case FROMSECRET2: gamestate.mapon = GAMEVER_RESTORATION_SECRET2; break;
+				 case FROMSECRET1: gamestate.mapon = GAMEVER_SECRET1; break;
+				 case FROMSECRET2: gamestate.mapon = GAMEVER_SECRET2; break;
 				 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 				 default:
@@ -1900,11 +1900,11 @@ startplayloop:
 			//
 			// COMING BACK FROM SECRET LEVEL
 			//
-			if (gamestate.mapon == GAMEVER_RESTORATION_SECRET1 || gamestate.mapon == GAMEVER_RESTORATION_SECRET2)
+			if (gamestate.mapon == GAMEVER_SECRET1 || gamestate.mapon == GAMEVER_SECRET2)
 				switch(gamestate.mapon)
 				{
-				 case GAMEVER_RESTORATION_SECRET1: gamestate.mapon = FROMSECRET1+1; break;
-				 case GAMEVER_RESTORATION_SECRET2: gamestate.mapon = FROMSECRET2+1; break;
+				 case GAMEVER_SECRET1: gamestate.mapon = FROMSECRET1+1; break;
+				 case GAMEVER_SECRET2: gamestate.mapon = FROMSECRET2+1; break;
 				}
 #endif
 			// *** S3DNA RESTORATION ***
