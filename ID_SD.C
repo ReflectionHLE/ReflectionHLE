@@ -48,9 +48,9 @@
 // *** S3DNA RESTORATION ***
 // Guessing some variables were redefined to be static
 #ifdef GAMEVER_NOAH3D
-#define GAMEVER_RESTORATION_CONDSTATIC static
+#define GAMEVER_COND_STATIC static
 #else
-#define GAMEVER_RESTORATION_CONDSTATIC
+#define GAMEVER_COND_STATIC
 #endif
 
 
@@ -110,7 +110,7 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 static	boolean			DigiPlaying;
 #endif
 static	boolean			SD_Started;
-		GAMEVER_RESTORATION_CONDSTATIC boolean			nextsoundpos;
+		GAMEVER_COND_STATIC boolean			nextsoundpos;
 		longword		TimerDivisor,TimerCount;
 static	char			*ParmStrings[] =
 						{
@@ -142,10 +142,10 @@ static	word			DigiPriority;
 		soundnames		SoundNumber,DigiNumber;
 		word			SoundPriority,DigiPriority;
 #endif
-		GAMEVER_RESTORATION_CONDSTATIC int				LeftPosition,RightPosition;
+		GAMEVER_COND_STATIC int				LeftPosition,RightPosition;
 		void interrupt	(*t0OldService)(void);
 		long			LocalTime;
-		GAMEVER_RESTORATION_CONDSTATIC word			TimerRate;
+		GAMEVER_COND_STATIC word			TimerRate;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -155,7 +155,7 @@ static	word			DigiLeft,DigiPage;
 		word			NumDigi,DigiLeft,DigiPage;
 #endif
 		word			_seg *DigiList;
-		GAMEVER_RESTORATION_CONDSTATIC word			DigiLastStart,DigiLastEnd;
+		GAMEVER_COND_STATIC word			DigiLastStart,DigiLastEnd;
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 		boolean			DigiPlaying;
@@ -204,12 +204,12 @@ static	byte					sbpOldFMMix,sbpOldVOCMix;
 		word			pcSoundLookup[255];
 
 //	AdLib variables
-		GAMEVER_RESTORATION_CONDSTATIC boolean			alNoCheck;
+		GAMEVER_COND_STATIC boolean			alNoCheck;
 		byte			far *alSound;
 		word			alBlock;
 		longword		alLengthLeft;
 		longword		alTimeCount;
-		GAMEVER_RESTORATION_CONDSTATIC Instrument		alZeroInst;
+		GAMEVER_COND_STATIC Instrument		alZeroInst;
 
 // This table maps channel numbers to carrier and modulator op cells
 static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
