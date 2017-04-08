@@ -33,7 +33,7 @@
 #define GAMEVER_WOLFREV 19920601L
 #elif (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL6AP11)
 // WL1AP12 might be later, but it looks like the same code rev.
-#define GAMEVER_WOLFREV 19920614L
+#define GAMEVER_WOLFREV 19920610L
 #elif (defined GAMEVER_EXEDEF_SDMFG10)
 #define GAMEVER_WOLFREV 19920921L
 #elif (defined GAMEVER_EXEDEF_SODFG10)
@@ -42,10 +42,10 @@
 #define GAMEVER_WOLFREV 19921101L
 #elif (defined GAMEVER_EXEDEF_SODFG14A) || (defined GAMEVER_EXEDEF_SODFG14B)
 // Only the sign-on screen and project settings really differed
-#define GAMEVER_WOLFREV 19921112L
+#define GAMEVER_WOLFREV 19921111L
 #elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14)
 // GT might be later than ID, but only the sign-on screen differs
-#define GAMEVER_WOLFREV 19930903L
+#define GAMEVER_WOLFREV 19930902L
 #elif (defined GAMEVER_EXEDEF_N3DWT10)
 // Like GT14B and later, N3D has the verification block from WL_INTER.C removed,
 // but it lacks a few minor GT14B changes to WL_TEXT.C, and an end-screen is still
@@ -55,7 +55,7 @@
 #elif (defined GAMEVER_EXEDEF_WL6GT14B)
 #define GAMEVER_WOLFREV 19940413L
 #elif (defined GAMEVER_EXEDEF_WL6AC14) || (defined GAMEVER_EXEDEF_SODAC14)
-#define GAMEVER_WOLFREV 19980313L
+#define GAMEVER_WOLFREV 19980127L
 #else
 #error "No proper GAMEVER_EXEDEF macro is defined!"
 #endif

@@ -263,7 +263,7 @@ enum
 	quit
 }
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 menuitems
 #endif
 ;

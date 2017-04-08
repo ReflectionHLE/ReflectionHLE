@@ -76,7 +76,7 @@
 #define	STR_RIGHT	"Right"
 // *** APOGEE+FORMGEN VERSIONS RESTORATION ***
 // There was a typo fix
-#if (GAMEVER_WOLFREV <= 19921112L)
+#if (GAMEVER_WOLFREV <= 19921111L)
 #define	STR_FRWD	"Fwrd"
 #else
 #define	STR_FRWD	"Frwd"
@@ -84,7 +84,7 @@
 
 #define	STR_BKWD	"Bkwrd"
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 #define	STR_THINK	"Computing"
 #else
 #define	STR_THINK	"Thinking"

@@ -40,7 +40,7 @@ unsigned	latchpics[NUMLATCHPICS];
 gametype	gamestate;
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 long		spearx,speary;
 unsigned	spearangle;
 boolean		spearflag;
@@ -358,7 +358,7 @@ void ScanInfoPlane (void)
 			case 69:
 			case 70:
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 			case 71:
 			case 72:
 			case 73:						// TRUCK AND SPEAR!
@@ -744,7 +744,7 @@ void ScanInfoPlane (void)
 			case 222:
 			case 223:
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 				SpawnStand(en_mutant,x,y,tile-220);
 #else
 				SpawnPatrol(en_mutant,x,y,tile-220);
@@ -1396,7 +1396,7 @@ void PlayDemo (int demonumber)
 	CA_CacheGrChunk(dems[demonumber]);
 	demoptr = grsegs[dems[demonumber]];
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 	MM_SetLock (&grsegs[dems[demonumber]],true);
 #endif
 #else
@@ -1978,7 +1978,7 @@ startplayloop:
 			ResetSplitScreen ();
 #endif
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 			ClearMemory ();
 #endif
 

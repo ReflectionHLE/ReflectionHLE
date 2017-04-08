@@ -257,7 +257,7 @@ SDL_SetTimer0(word speed)
 {
 #ifndef TPROF	// If using Borland's profiling, don't screw with the timer
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 asm	pushf
 asm	cli
 #endif
@@ -275,7 +275,7 @@ asm	cli
 		TimerDivisor = speed;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 asm	popf
 #endif
 #else
@@ -355,7 +355,7 @@ SDL_SBStopSample(void)
 	byte	is;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 asm	pushf
 asm	cli
 #endif
@@ -364,7 +364,7 @@ asm	cli
 	{
 		sbSamplePlaying = false;
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920610L)
 		asm	pushf
 		asm	cli
 #endif
@@ -379,13 +379,13 @@ asm	cli
 			is &= ~(1 << sbInterrupt);
 		outportb(0x21,is);
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920610L)
 		asm	popf
 #endif
 	}
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 asm	popf
 #endif
 }
@@ -437,7 +437,7 @@ asm	cli
 	// Start playing the thing
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920610L)
 asm	popf
 asm	pushf
 asm	cli
@@ -506,7 +506,7 @@ SDL_SBPlaySample(byte huge *data,longword len)
 	SDL_SBStopSample();
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 asm	pushf
 asm	cli
 #endif
@@ -523,7 +523,7 @@ asm	cli
 	// Save old interrupt status and unmask ours
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920610L)
 asm	pushf
 asm	cli
 #endif
@@ -534,14 +534,14 @@ asm	cli
 	sbOut(sbWriteCmd,0xd4);						// Make sure DSP DMA is enabled
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
-#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920610L)
 asm	popf
 #endif
 
 	sbSamplePlaying = true;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 asm	popf
 #endif
 }
@@ -569,7 +569,7 @@ SDL_PositionSBP(int leftpos,int rightpos)
 	v = ((leftpos & 0x0f) << 4) | (rightpos & 0x0f);
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 asm	pushf
 asm	cli
 #endif
@@ -578,7 +578,7 @@ asm	cli
 	sbOut(sbpMixerData,v);
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 asm	popf
 #endif
 }

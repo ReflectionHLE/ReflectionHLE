@@ -24,7 +24,7 @@ starttime	dw	?
 ; *** PRE-V1.4 APOGEE RESTORATION ***
 ; Older implementation of VL_WaitVBL
 
-IF GAMEVER_WOLFREV LE 19920614
+IF GAMEVER_WOLFREV LE 19920610
 
 ;==============
 ;
@@ -124,7 +124,7 @@ PUBLIC	VL_WaitVBL
 
 ENDP
 
-ELSE ; GAMEVER_WOLFREV LE 19920614L
+ELSE ; GAMEVER_WOLFREV LE 19920610
 
 ;==============
 ;
@@ -162,7 +162,7 @@ PUBLIC	VL_WaitVBL
 
 ENDP
 
-ENDIF ; GAMEVER_WOLFREV LE 19920614L
+ENDIF ; GAMEVER_WOLFREV LE 19920610
 
 ;===========================================================================
 

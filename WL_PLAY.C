@@ -23,7 +23,7 @@
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused variable here
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 boolean		unusedplayvar;
 #endif
 boolean		madenoise;					// true when shooting or screaming
@@ -532,7 +532,7 @@ void PollControls (void)
 	byte	buttonbits;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 //
 // get timing info for last frame
 //
@@ -557,7 +557,7 @@ void PollControls (void)
 	}
 	else
 		CalcTics ();
-#endif // GAMEVER_WOLFREV > 19920614L
+#endif // GAMEVER_WOLFREV > 19920610L
 
 	controlx = 0;
 	controly = 0;
@@ -579,7 +579,7 @@ void PollControls (void)
 		controlx = *demoptr++;
 		controly = *demoptr++;
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 		tics = *demoptr++;
 
 		while (tics > TimeCount - lasttimecount);
@@ -597,7 +597,7 @@ void PollControls (void)
 	}
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	CalcTics();
 #endif
 
@@ -659,7 +659,7 @@ void PollControls (void)
 		*demoptr++ = controlx;
 		*demoptr++ = controly;
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 		*demoptr++ = tics;
 #endif
 
@@ -857,7 +857,7 @@ void CheckKeys (void)
 		Keyboard[sc_Enter] &&
 #else
 	if (Keyboard[sc_BackSpace] &&
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 		Keyboard[sc_Alt] &&
 		Keyboard[sc_LShift] &&
 #else
@@ -1564,7 +1564,7 @@ void DoActor (objtype *ob)
 #if (GAMEVER_WOLFREV <= 19920505L)
 		if (ob != player)
 			actorat[ob->tilex][ob->tiley] = ob;
-#elif (GAMEVER_WOLFREV <= 19920614L)
+#elif (GAMEVER_WOLFREV <= 19920610L)
 		if (!(ob->flags&FL_NEVERMARK))
 			if ( !((ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley]))
 				actorat[ob->tilex][ob->tiley] = ob;
@@ -1634,7 +1634,7 @@ think:
 	if (ob != player)
 		actorat[ob->tilex][ob->tiley] = ob;
 	return;
-#elif (GAMEVER_WOLFREV <= 19920614L)
+#elif (GAMEVER_WOLFREV <= 19920610L)
 	if (!(ob->flags&FL_NEVERMARK))
 		if ( !((ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley]))
 			actorat[ob->tilex][ob->tiley] = ob;
@@ -1662,7 +1662,7 @@ think:
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 long funnyticount;
 #endif
 
@@ -1671,7 +1671,7 @@ void PlayLoop (void)
 {
 	int		give;
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
 	int	helmetangle;
 #endif
 
@@ -1679,7 +1679,7 @@ void PlayLoop (void)
 	frameon = 0;
 	running = false;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	pwallstate = anglefrac = 0;
 	facecount = 0;
 #else
@@ -1694,7 +1694,7 @@ void PlayLoop (void)
 		Mouse(MDelta);	// Clear accumulated mouse movement
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	tics = 1;
 #endif
 	if (demoplayback)
@@ -1703,7 +1703,7 @@ void PlayLoop (void)
 	do
 	{
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
 		if (virtualreality)
 		{
 			helmetangle = peek (0x40,0xf0);
@@ -1760,7 +1760,7 @@ void PlayLoop (void)
 #endif
 
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 		if (demoplayback)
 		{
 			if (demoptr == lastdemoptr)
@@ -1790,7 +1790,7 @@ void PlayLoop (void)
 
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
 		if (virtualreality)
 		{
 			player->angle -= helmetangle;

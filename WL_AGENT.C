@@ -486,7 +486,7 @@ void	LatchNumber (int x, int y, int width, long number)
 	}
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	c = 0;
 #else
 	c= length <= width ? 0 : length-width;
@@ -1303,7 +1303,7 @@ void GetBonus (statobj_t *check)
 #endif
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
 	case	bo_spear:
 		spearflag = true;
 		spearx = player->x;

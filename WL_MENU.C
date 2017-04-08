@@ -12,7 +12,7 @@
 //
 void CP_ReadThis(void);
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 void CP_BackToDemo(void);
 #endif
 
@@ -122,7 +122,7 @@ MainMenu[]=
 
 	{1,STR_VS,CP_ViewScores},
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	{1,STR_BD,CP_BackToDemo},
 #else
 	{1,STR_BD,0},
@@ -511,7 +511,7 @@ void US_ControlPanel(byte scancode)
 				break;
 
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 			case backtodemo:
 				#ifdef SPEAR
 				if (!ingame)
@@ -542,7 +542,7 @@ void US_ControlPanel(byte scancode)
 					StartCPMusic(INTROSONG);
 				VL_FadeOut(0,255,0,0,0,10);
 				break;
-#endif // GAMEVER_WOLFREV > 19920614L
+#endif // GAMEVER_WOLFREV > 19920610L
 
 			case -1:
 			case quit:
@@ -572,7 +572,7 @@ void US_ControlPanel(byte scancode)
 	//
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	if (startgame)
 #else
 	if (startgame || loadedgame)
@@ -756,7 +756,7 @@ int CP_CheckQuick(unsigned scancode)
 #endif
 			fontnumber=0;
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 			MainMenu[savegame].active = 0;
 #endif
 			return 1;
@@ -769,7 +769,7 @@ int CP_CheckQuick(unsigned scancode)
 			{
 				CA_CacheGrChunk(STARTFONT+1);
 				// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 				fontnumber = 1;
 #endif
 				Message(STR_SAVING"...");
@@ -861,7 +861,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				CA_CacheGrChunk(STARTFONT+1);
 				// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 				fontnumber = 1;
 #endif
 
@@ -1030,7 +1030,7 @@ int CP_EndGame(void)
 
 	#pragma warn -sus
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 	MainMenu[savegame].active = 0;
 #endif
 	MainMenu[viewscores].routine=CP_ViewScores;
@@ -1213,7 +1213,7 @@ firstpart:
 	#endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 	pickquick = 0;
 #endif
 
@@ -1816,7 +1816,7 @@ int CP_SaveGame(int quick)
 			VW_UpdateScreen();
 
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 			if (US_LineInput(LSM_X+LSItems.indent+2,LSM_Y+which*13+1,input,input,true,31,LSM_W-LSItems.indent-20))
 #else
 			if (US_LineInput(LSM_X+LSItems.indent+2,LSM_Y+which*13+1,input,input,true,31,LSM_W-LSItems.indent-30))
@@ -1861,7 +1861,7 @@ int CP_SaveGame(int quick)
 #endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	StartGame = 1;	
 #endif
 
@@ -1870,7 +1870,7 @@ int CP_SaveGame(int quick)
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - CalibrateJoystick was added to v1.4,
 // while v1.2 seems to have an unused handler assigned to "Back to demo"
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 void CP_BackToDemo(void)
 {
 	StartGame = 1;
@@ -1919,7 +1919,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// This is also skipped in the Apogee and S3DNA EXEs
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -1956,7 +1956,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -1978,7 +1978,7 @@ int CalibrateJoystick(void)
 
 	return 1;
 }
-#endif // GAMEVER_WOLFREV <= 19920614L
+#endif // GAMEVER_WOLFREV <= 19920610L
 
 
 ////////////////////////////////////////////////////////////////////
@@ -2019,7 +2019,7 @@ void CP_Control(void)
 			case JOYENABLE:
 				joystickenabled^=1;
 				// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 				if (joystickenabled)
 					if (!CalibrateJoystick())
 						joystickenabled = 0;
@@ -2160,7 +2160,7 @@ void MouseSensitivity(void)
 
 		// *** SHAREWARE/REGISTERED V1.4 APOGEE+SOD (DEMO) V1.0 RESTORATION ***
 		// And again - kind of
-		#if (GAMEVER_WOLFREV > 19921112L)
+		#if (GAMEVER_WOLFREV > 19921111L)
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		#else
@@ -2615,7 +2615,7 @@ void FixupCustom(int w)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	VWB_Hlin(7,32,y-2,BORDCOLOR);
 	VWB_Hlin(7,32,y-1,DEACTIVE);
 	VWB_Hlin(7,32,y+12,BORD2COLOR);
@@ -2630,7 +2630,7 @@ void FixupCustom(int w)
 	VWB_Hlin(7,32,y-2,BORD2COLOR);
 	VWB_Hlin(7,32,y+13,BORD2COLOR);
 #endif
-#endif // GAMEVER_WOLFREV <= 19920614L
+#endif // GAMEVER_WOLFREV <= 19920610L
 
 	switch(w)
 	{
@@ -2645,7 +2645,7 @@ void FixupCustom(int w)
 	{
 		y=CST_Y+26+lastwhich*13;
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 		VWB_Hlin(7,32,y-2,BORDCOLOR);
 		VWB_Hlin(7,32,y-1,DEACTIVE);
 		VWB_Hlin(7,32,y+12,BORD2COLOR);
@@ -2660,7 +2660,7 @@ void FixupCustom(int w)
 		VWB_Hlin(7,32,y-2,BORD2COLOR);
 		VWB_Hlin(7,32,y+13,BORD2COLOR);
 #endif
-#endif // GAMEVER_WOLFREV <= 19920614L
+#endif // GAMEVER_WOLFREV <= 19920610L
 
 		if (lastwhich!=w)
 			switch(lastwhich)
@@ -3034,7 +3034,7 @@ void CP_ChangeView(void)
 
 		// *** SHAREWARE/REGISTERED V1.4 APOGEE+SOD (DEMO) V1.0 RESTORATION ***
 		// And again
-		#if (GAMEVER_WOLFREV > 19921112L)
+		#if (GAMEVER_WOLFREV > 19921111L)
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		#else
@@ -3166,7 +3166,7 @@ void IntroScreen(void)
 		main[10]={32,64,96,128,160,192,224,256,288,320};
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	StartCPMusic(NAZI_NOR_MUS);
 #endif
 	///
@@ -3178,7 +3178,7 @@ void IntroScreen(void)
 	for (i=0;i<10;i++)
 		if (memory>=main[i])
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 			VWB_Bar(49,163-8*i,6,5,MAINCOLOR-2*i);
 #else
 			VWB_Bar(49,163-8*i,6,5,MAINCOLOR-i);
@@ -3194,7 +3194,7 @@ void IntroScreen(void)
 		for (i=0;i<10;i++)
 			if (emshere>=ems[i])
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 				VWB_Bar(89,163-8*i,6,5,EMSCOLOR-2*i);
 #else
 				VWB_Bar(89,163-8*i,6,5,EMSCOLOR-i);
@@ -3209,7 +3209,7 @@ void IntroScreen(void)
 		xmshere=4l*XMSPagesAvail;
 		for (i=0;i<10;i++)
 			if (xmshere>=xms[i])
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 				VWB_Bar(129,163-8*i,6,5,XMSCOLOR-2*i);
 #else
 				VWB_Bar(129,163-8*i,6,5,XMSCOLOR-i);
@@ -3280,7 +3280,7 @@ void UnCacheLump(int lumpstart,int lumpend)
 
  for (i=lumpstart;i<=lumpend;i++)
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 	if (grsegs[i])
 #endif
 		UNCACHEGRCHUNK(i);
@@ -3469,7 +3469,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 			int ok=0;
 
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 			//
 			// CHECK FOR SCREEN CAPTURE
 			//
@@ -3479,7 +3479,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 			if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("debugmode"))
 			#endif
 				PicturePause();
-#endif // GAMEVER_WOLFREV > 19920614L
+#endif // GAMEVER_WOLFREV > 19920610L
 
 
 			if (key>='a')
@@ -3607,7 +3607,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 	if (lastitem!=which)
 	{
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 		VWB_Bar(x-1,y,24,16,BKGDCOLOR);
 #else
 		VWB_Bar(x-1,y,25,16,BKGDCOLOR);
@@ -3656,7 +3656,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int y,int which)
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	VWB_Bar(x-1,y,24,16,BKGDCOLOR);
 #else
 	VWB_Bar(x-1,y,25,16,BKGDCOLOR);
@@ -3689,7 +3689,7 @@ void DrawHalfStep(int x,int y)
 void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int *y,int which,int basey,void (*routine)(int w))
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	VWB_Bar(x-1,*y,24,16,BKGDCOLOR);
 #else
 	VWB_Bar(x-1,*y,25,16,BKGDCOLOR);
@@ -3939,7 +3939,7 @@ int Confirm(char GAMEVER_COND_FARPTR *string)
 
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -3997,7 +3997,7 @@ int GetYorN(int x,int y,int pic)
 	{
 		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -4048,7 +4048,7 @@ void Message(char GAMEVER_COND_FARPTR *string)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 	CA_CacheGrChunk (STARTFONT+1);
 #endif
 	fontnumber=1;
@@ -4337,7 +4337,7 @@ void CheckForEpisodes(void)
 	strcat(PageFileName,extension);
 	strcat(audioname,extension);
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Relocate demoname preparation down for earlier releases
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 	strcat(demoname,extension);
 #endif
 #ifndef SPEAR
@@ -4347,7 +4347,7 @@ void CheckForEpisodes(void)
 	strcat(endfilename,extension);
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	strcat(demoname,extension);
 #endif
 #endif

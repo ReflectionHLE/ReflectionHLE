@@ -25,7 +25,7 @@ typedef enum {
     H_LEFTWINDOWPIC,             // 18
     H_RIGHTWINDOWPIC,            // 19
     H_BOTTOMINFOPIC,             // 20
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
     H_SPEARADPIC,                // 21
 #endif
     // Lump Start
@@ -61,7 +61,7 @@ typedef enum {
     C_LEVELPIC,                  // 50
     C_NAMEPIC,                   // 51
     C_SCOREPIC,                  // 52
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
     C_JOY1PIC,                   // 53
     C_JOY2PIC,                   // 54
 #endif

@@ -162,7 +162,7 @@ void PicturePause (void)
 
 	ClearMemory ();
 	// *** APOGEE+FORMGEN VERSIONS RESTORATION ***
-#if (GAMEVER_WOLFREV > 19921112L)
+#if (GAMEVER_WOLFREV > 19921111L)
 	CA_SetAllPurge();
 #endif
 	MM_GetPtr (&buffer,64000);
@@ -172,7 +172,7 @@ void PicturePause (void)
 	   dest = (byte far *)buffer+p;
 	   VGAREADMAP(p);
 	   // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	   for (x=0;x<12800;x++,dest+=4)
 #else
 	   for (x=0;x<16000;x++,dest+=4)
@@ -183,7 +183,7 @@ void PicturePause (void)
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 	// Re-enable code for pre-v1.4 Apogee releases
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 //#if 0
 	for (p=0;p<4;p++)
 	{
@@ -241,7 +241,7 @@ static	char	buf[10];
 	int				i,j,k,x;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 	// Define sound variable in pre-v1.4 Apogee releases here
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	int sound;
 #endif
 	longword		l;
@@ -255,7 +255,7 @@ static	char	buf[10];
 		US_ClearWindow();
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 		// Do set sound in pre-v1.4 Apogee and S3DNA releases
-#if (GAMEVER_WOLFREV <= 19920614L) || (defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= 19920610L) || (defined GAMEVER_NOAH3D)
 		sound = -1;
 #else
 //		sound = -1;
@@ -361,7 +361,7 @@ static	char	buf[10];
 				{
 					// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 					// Do set sound in pre-v1.4 Apogee and S3DNA releases
-#if (GAMEVER_WOLFREV <= 19920614L) || (defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= 19920610L) || (defined GAMEVER_NOAH3D)
 					sound = j;
 #else
 //					sound = j;
@@ -513,7 +513,7 @@ int DebugKeys (void)
 		playstate = ex_completed;
 		// *** PRE-V1.4 APOGEE RESTORATION ***
 		// Do increment map in pre-v1.4 Apogee releases
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 		gamestate.mapon++;
 #else
 //		gamestate.mapon++;
@@ -566,7 +566,7 @@ int DebugKeys (void)
 		US_PrintCentered ("Free items!");
 		VW_UpdateScreen();
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 		GivePoints (1000);
 #else
 		GivePoints (100000);
@@ -693,7 +693,7 @@ int DebugKeys (void)
 			// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 			if (level>0 && level<31)
-#elif (GAMEVER_WOLFREV <= 19920614L)
+#elif (GAMEVER_WOLFREV <= 19920610L)
 			if (level>0 && level<21)
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -740,7 +740,7 @@ int DebugKeys (void)
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 // Do compile this in pre-v1.4, even if it's never called
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 //#if 0
 /*
 ===================

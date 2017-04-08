@@ -71,7 +71,7 @@ static	boolean		US_Started;
 						{"Deborah",10000,1},
 						{"Abraham",10000,1},
 #else
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 						{"Id Software - '92",10000,1},
 #else
 						{"id software-'92",10000,1},
@@ -228,7 +228,7 @@ US_Startup(void)
 		 case 0:
 		   tedlevelnum = atoi(_argv[i + 1]);
 		   // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920614L)
+#if (GAMEVER_WOLFREV > 19920610L)
 		   if (tedlevelnum >= 0)
 #endif
 		   // *** S3DNA RESTORATION ***

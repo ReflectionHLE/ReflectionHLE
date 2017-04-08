@@ -756,7 +756,7 @@ void ShowArticle (char far *article)
 
 		// *** APOGEE VERSIONS + S3NA RESTORATION ***
 		// This is also skipped in these versions
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921112L) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -777,7 +777,7 @@ void ShowArticle (char far *article)
 // *** S3DNA RESTORATION *** - No T_ENDART1
 #ifdef GAMEVER_NOAH3D
 int		helpextern = T_HELPART;
-#elif (GAMEVER_WOLFREV <= 19920614L)
+#elif (GAMEVER_WOLFREV <= 19920610L)
 int		helpextern = T_HELPART;
 int 	endextern = T_ENDART1;
 #else
@@ -847,7 +847,7 @@ void HelpScreens (void)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	MenuFadeOut();
 #else
 	VW_FadeOut();
@@ -927,7 +927,7 @@ void EndText (void)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 	MenuFadeOut();
 #else
 	VW_FadeOut();

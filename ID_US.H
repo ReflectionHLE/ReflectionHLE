@@ -63,7 +63,7 @@ typedef	enum
 //	Hack import for TED launch support
 extern	boolean		tedlevel;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920614L)
+#if (GAMEVER_WOLFREV <= 19920610L)
 extern	word			tedlevelnum;
 #else
 extern	int			tedlevelnum;
