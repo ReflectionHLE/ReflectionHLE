@@ -2375,7 +2375,7 @@ extern	statetype s_giftdeathcam;
 #endif
 
 // *** SHAREWARE V1.1 APOGEE RESTORATION ***
-#ifndef GAMEVER_EXEDEF_WL1AP11
+#if (GAMEVER_WOLFREV > 19920601L)
 extern	statetype s_boom1;
 extern	statetype s_boom2;
 extern	statetype s_boom3;

@@ -938,12 +938,12 @@ void KillActor (objtype *ob)
 	case giftobj:
 		GivePoints (5000);
 		// *** SHAREWARE V1.1 APOGEE + S3DNA RESTORATION *** - Bits of different code (The APOGEE V1.1 EXE was originally released before registered versions, and the case of S3DNA just occurs to have a common function call)
-#ifndef GAMEVER_EXEDEF_WL1AP11
+#if (GAMEVER_WOLFREV > 19920601L)
 		gamestate.killx = player->x;
 		gamestate.killy = player->y;
 #endif
 		NewState (ob,&s_giftdie1);
-#if (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV <= 19920601L) || (defined GAMEVER_EXEDEF_N3DWT10)
 		PlaceItemType (bo_key1,tilex,tiley);
 #endif
 		break;
@@ -954,7 +954,7 @@ void KillActor (objtype *ob)
 		gamestate.killy = player->y;
 		NewState (ob,&s_fatdie1);
 		// *** SHAREWARE V1.1 APOGEE + S3DNA RESTORATION *** - Bits of different code (The APOGEE V1.1 EXE was originally released before registered versions, and the case of S3DNA just occurs to have a common function call)
-#if (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_N3DWT10)
+#if (GAMEVER_WOLFREV <= 19920601L) || (defined GAMEVER_EXEDEF_N3DWT10)
 		PlaceItemType (bo_key1,tilex,tiley);
 #endif
 		break;

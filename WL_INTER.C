@@ -1080,7 +1080,7 @@ void LevelCompleted (void)
 	 {0,	"??:??"},
 
 	// *** SHAREWARE V1.1 APOGEE RESTORATION ***
-#ifdef GAMEVER_EXEDEF_WL1AP11
+#if (GAMEVER_WOLFREV <= 19920601L)
 	 //
 	 // Episode Four Par Times
 	 //
@@ -1164,7 +1164,7 @@ void LevelCompleted (void)
 	 {8.5,	"08:30"},
 	 {0,	"??:??"},
 	 {0,	"??:??"}
-#endif // GAMEVER_EXEDEF_WL1AP11
+#endif // GAMEVER_WOLFREV <= 19920601L
 #else
 	 //
 	 // SPEAR OF DESTINY TIMES

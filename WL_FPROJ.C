@@ -86,7 +86,7 @@ void T_Projectile (objtype *ob)
 		ob->state = &s_cocohit;
 #elif (GAMEVER_WOLFREV == 19920505L)
 		RemoveObj(ob);
-#elif (defined GAMEVER_EXEDEF_WL1AP11)
+#elif (GAMEVER_WOLFREV <= 19920601L)
 		ob->state = NULL;
 		PlaySoundLocActor(MISSILEHITSND,ob);
 #else
