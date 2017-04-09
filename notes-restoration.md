@@ -156,9 +156,9 @@ and late v1.4 releases are identical. In addition, both were originally
 built using Borland C++ 3.1, rather than 3.0 as used for v1.0. However,
 not only the wrong version of "1.0" is shown in the signon screen for
 the early v1.4 EXE, but the project files are significantly more similar.
-In fact, there are good chances the exact same project file was originally
-used with no actual change. This refers to properties like the choice
-of optimizations, as well as the order of linkage of objects.
+In fact, there are good chances the exact same project file
+was originally used with no actual change. This refers
+to properties like the order of linkage of objects.
 - For an earlier revision of this codebase, a custom tool named STRIPBSS
 (or any comparable tool) was required in order to remove the BSS sections from
 certain executables (basically a bunch of zeros appended to each EXE file's
