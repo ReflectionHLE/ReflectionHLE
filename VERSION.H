@@ -10,6 +10,8 @@
 #define UPLOAD
 #elif (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6AC14)
 #define GOODTIMES
+#elif (defined GAMEVER_EXEDEF_WJ6IM14)
+#define JAPAN
 #elif defined GAMEVER_EXEDEF_SDMFG10
 #define SPEAR
 #define SPEARDEMO
@@ -43,6 +45,8 @@
 #elif (defined GAMEVER_EXEDEF_SODFG14A) || (defined GAMEVER_EXEDEF_SODFG14B)
 // Only the sign-on screen and project settings really differed
 #define GAMEVER_WOLFREV 19921111L
+#elif (defined GAMEVER_EXEDEF_WJ6IM14)
+#define GAMEVER_WOLFREV 19930304L
 #elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14)
 // GT might be later than ID, but only the sign-on screen differs
 #define GAMEVER_WOLFREV 19930902L
