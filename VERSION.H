@@ -8,10 +8,8 @@
 
 #if (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL1AP14)
 #define UPLOAD
-#elif (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6SRC) || (defined GAMEVER_EXEDEF_WL6AC14)
+#elif (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6AC14)
 #define GOODTIMES
-#elif (defined GAMEVER_EXEDEF_WJ6IM14)
-#define JAPAN
 #elif defined GAMEVER_EXEDEF_SDMFG10
 #define SPEAR
 #define SPEARDEMO
@@ -45,7 +43,7 @@
 #elif (defined GAMEVER_EXEDEF_SODFG14A) || (defined GAMEVER_EXEDEF_SODFG14B)
 // Only the sign-on screen and project settings really differed
 #define GAMEVER_WOLFREV 19921111L
-#elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_WJ6IM14)
+#elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14)
 // GT might be later than ID, but only the sign-on screen differs
 #define GAMEVER_WOLFREV 19930902L
 #elif (defined GAMEVER_EXEDEF_N3DWT10)
@@ -54,7 +52,7 @@
 // shown on quit (which isn't the case in the later 1998 Activision release).
 // Since N3D was released on 1994, let's assume the first day of January.
 #define GAMEVER_WOLFREV 19940101L
-#elif (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6SRC)
+#elif (defined GAMEVER_EXEDEF_WL6GT14B)
 #define GAMEVER_WOLFREV 19940413L
 #elif (defined GAMEVER_EXEDEF_WL6AC14) || (defined GAMEVER_EXEDEF_SODAC14)
 #define GAMEVER_WOLFREV 19980127L
