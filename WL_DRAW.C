@@ -840,6 +840,8 @@ void HitVertDoor (void)
 #endif
 }
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 //==========================================================================
 
 
@@ -977,16 +979,19 @@ void HitVertPWall (void)
 	tilemap[xtile][ytile] |= 0x20;
 #endif
 }
+#endif // GAMEVER_WOLFREV > 19920312L
 
 //==========================================================================
 
 //==========================================================================
 
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-// Re-enable unused EGA code *and* restore egaFloor+egaCeiling
+// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
+// Re-enable unused EGA code, *and* restore egaFloor+egaCeiling (not in alpha)
 #if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV > 19920312L)
 unsigned egaFloor[] = {0,0,0,0,0,0,0,0,0,5};
 unsigned egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0d0d};
+#endif
 
 //#if 0
 /*
@@ -999,8 +1004,11 @@ unsigned egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808
 
 void ClearScreen (void)
 {
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
  unsigned floor=egaFloor[gamestate.episode*10+mapon],
 	  ceiling=egaCeiling[gamestate.episode*10+mapon];
+#endif
 
   //
   // clear the screen
@@ -1021,7 +1029,11 @@ asm	shr	bx,4					// bl = viewwidth/16
 asm	mov	bh,BYTE PTR [viewheight]
 asm	shr	bh,1					// half height
 
+#if (GAMEVER_WOLFREV <= 19920312L)
+asm	xor	ax,ax
+#else
 asm	mov	ax,[ceiling]
+#endif
 asm	mov	es,[screenseg]
 asm	mov	di,[bufferofs]
 
@@ -1034,7 +1046,11 @@ asm	jnz	toploop
 
 asm	mov	bh,BYTE PTR [viewheight]
 asm	shr	bh,1					// half height
+#if (GAMEVER_WOLFREV <= 19920312L)
+asm	mov	ax,0x0808
+#else
 asm	mov	ax,[floor]
+#endif
 
 bottomloop:
 asm	mov	cl,bl
@@ -1054,6 +1070,8 @@ asm	out	dx,al
 #endif
 //==========================================================================
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 unsigned vgaCeiling[]=
 {
 // *** S3DNA RESTORATION ***
@@ -1087,6 +1105,7 @@ unsigned vgaCeiling[]=
  0x1d1d,0xdede,0xdfdf,0xdede,0xdfdf,0xdede,0xe1e1,0xdcdc,0x2e2e,0x1d1d,0xdcdc
 #endif
 };
+#endif // GAMEVER_WOLFREV > 19920312L
 
 /*
 =====================
@@ -1098,19 +1117,26 @@ unsigned vgaCeiling[]=
 
 void VGAClearScreen (void)
 {
- // *** S3DNA RESTORATION ***
+ // *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
  unsigned ceiling=vgaCeiling[gamestate.mapon];
-#else
+#elif (GAMEVER_WOLFREV > 19920312L)
  unsigned ceiling=vgaCeiling[gamestate.episode*10+mapon];
 #endif
 
   //
   // clear the screen
   //
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+asm	mov	dx,SC_INDEX+1
+asm	mov	al,15
+asm	out	dx,al
+#else
 asm	mov	dx,SC_INDEX
 asm	mov	ax,SC_MAPMASK+15*256	// write through all planes
 asm	out	dx,ax
+#endif
 
 asm	mov	dx,80
 asm	mov	ax,[viewwidth]
@@ -1124,7 +1150,12 @@ asm	shr	bh,1					// half height
 
 asm	mov	es,[screenseg]
 asm	mov	di,[bufferofs]
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+asm	mov	ax,0x1d1d
+#else
 asm	mov	ax,[ceiling]
+#endif
 
 toploop:
 asm	mov	cl,bl
@@ -1437,7 +1468,8 @@ void DrawPlayerWeapon (void)
 		SimpleScaleShape(viewwidth/2,SPR_GAMEOVER,endtics);
 		endtics += tics;
 	}
-#elif (!defined SPEAR)
+	// *** ALPHA RESTORATION ***
+#elif (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
 //#ifndef SPEAR
 	if (gamestate.victoryflag)
 	{

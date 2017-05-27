@@ -2,7 +2,7 @@
 	MODEL	MEDIUM,C
 	P286
 
-; *** S3DNA RESTORATION ***
+; *** VERSIONS RESTORATION ***
 INCLUDE 'VERSION.EQU'
 
 SCREENSEG	=	0a000h
@@ -22,8 +22,11 @@ EXTRN	HitHorizWall:FAR
 EXTRN	HitVertWall:FAR
 EXTRN	HitHorizDoor:FAR
 EXTRN	HitVertDoor:FAR
+; *** ALPHA RESTORATION ***
+IF GAMEVER_WOLFREV GT 19920312
 EXTRN	HitHorizPWall:FAR
 EXTRN	HitVertPWall:FAR
+ENDIF
 
 
 DATASEG
@@ -66,7 +69,13 @@ EXTRN	ystep:DWORD
 EXTRN	doorposition:WORD		; table of door position values
 
 
+; *** ALPHA RESTORATION ***
+; FIXME - Not sure what's this unused variable
+IF GAMEVER_WOLFREV LE 19920312
+unuseddrvar	db	0
+ELSE
 EXTRN	pwallpos:WORD			; amound a pushable wall has been moved
+ENDIF
 
 CODESEG
 
@@ -208,6 +217,11 @@ PUBLIC	AsmRefresh
 ;---------------------------------------------------------------------------
 	EVEN
 pixxloop:
+; *** ALPHA RESTORATION ***
+; FIXME - What's this?
+IF GAMEVER_WOLFREV LE 19920312
+	mov	[BYTE unuseddrvar],0
+ENDIF
 	mov	ax,SEG finetangent
 	mov	es,ax
 	mov	cx,[midangle]			; center of view area
@@ -560,8 +574,11 @@ horizdoor:
 	mov	[xtile],bx					; save off live register variables
 	mov	[WORD yintercept+2],dx
 
+	; *** ALPHA RESTORATION ***
+IF GAMEVER_WOLFREV GT 19920312
 	test al,040h      				; both high bits set == pushable wall
 	jnz	horizpushwall
+ENDIF
 
 	mov	bx,ax
 	and	bx,7fh						; strip high bit
@@ -603,6 +620,8 @@ hithmid:
 	call	FAR HitHorizDoor
 	jmp	nextpix
 
+; *** ALPHA RESTORATION ***
+IF GAMEVER_WOLFREV GT 19920312
 ;============
 ;
 ; hit a sliding horizontal wall
@@ -647,6 +666,7 @@ horizpushwall:
 
 	call	FAR HitHorizPWall
 	jmp	nextpix
+ENDIF ; GAMEVER_WOLFREV GT 19920312
 
 
 
@@ -662,8 +682,11 @@ vertdoor:
 	mov	[xtile],bx					; save off live register variables
 	mov	[WORD yintercept+2],dx
 
+; *** ALPHA RESTORATION ***
+IF GAMEVER_WOLFREV GT 19920312
 	test al,040h      				; both high bits set == pushable wall
 	jnz	vertpushwall
+ENDIF
 
 	mov	bx,ax
 	and	bx,7fh						; strip high bit
@@ -704,6 +727,8 @@ hitvmid:
 	call	FAR HitVertDoor
 	jmp	nextpix
 
+; *** ALPHA RESTORATION ***
+IF GAMEVER_WOLFREV GT 19920312
 ;============
 ;
 ; hit a sliding vertical wall
@@ -749,6 +774,7 @@ vertpushwall:
 
 	call	FAR HitVertPWall
 	jmp	nextpix
+ENDIF ; GAMEVER_WOLFREV GT 19920312
 
 
 
