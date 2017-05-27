@@ -28,9 +28,11 @@ typedef	enum	{
 					smm_Off,smm_AdLib
 				}	SMMode;
 typedef	enum	{
-					// *** S3DNA RESTORATION ***
+					// *** S3DNA + ALPHA VERSION RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 					sds_Off,sds_SoundBlaster
+#elif (defined GAMEVER_ALPHA)
+					sds_Off,sds_SoundSource,sds_SoundBlaster
 #else
 					sds_Off,sds_PC,sds_SoundSource,sds_SoundBlaster
 #endif

@@ -77,8 +77,10 @@
 
 //----------------
 
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920505L)
+#define EXTRAPOINTS		10000
+#elif (GAMEVER_WOLFREV <= 19920505L)
 #define EXTRAPOINTS		20000
 #else
 #define EXTRAPOINTS		40000
@@ -1138,7 +1140,12 @@ void		TEDDeath(void);
 void		Quit (char *error);
 void 		CalcProjection (long focal);
 boolean		SetViewSize (unsigned width, unsigned height);
+// *** ALPHA VERSION RESTORATION ***
+#ifdef GAMEVER_ALPHA
+void		NewGame (int difficulty);
+#else
 void		NewGame (int difficulty,int episode);
+#endif
 void 		NewViewSize (int width);
 boolean 	LoadTheGame(int file,int x,int y);
 boolean		SaveTheGame(int file,int x,int y);
@@ -1155,8 +1162,8 @@ void		ShutdownId (void);
 */
 
 
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920505L)
 extern	boolean		ingame,fizzlein,screensplit;
 // *** S3DNA RESTORATION ***
 #elif (defined GAMEVER_NOAH3D)
@@ -1186,7 +1193,14 @@ void 	NormalScreen (void);
 void 	DrawPlayScreen (void);
 void 	FizzleOut (void);
 void 	GameLoop (void);
+// *** ALPHA RESTORATION ***/
+// FIXME
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define ClearMemory()	// FIXME
+#else
+// JAB
 void ClearMemory (void);
+#endif
 void PlayDemo (int demonumber);
 void RecordDemo (void);
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -1199,12 +1213,19 @@ void	DrawHighScores(void);
 void DrawAllPlayBorderSides (void);
 #endif
 
-
+// *** ALPHA RESTORATION ***/
+// Quick hacks
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define	PlaySoundLocTile(s,tx,ty)	SD_PlaySound(s)
+#define	PlaySoundLocActor(s,ob)		SD_PlaySound(s)
+#define UpdateSoundLoc()		// FIXME
+#else
 // JAB
 #define	PlaySoundLocTile(s,tx,ty)	PlaySoundLocGlobal(s,(((long)(tx) << TILESHIFT) + (1L << (TILESHIFT - 1))),(((long)ty << TILESHIFT) + (1L << (TILESHIFT - 1))))
 #define	PlaySoundLocActor(s,ob)		PlaySoundLocGlobal(s,(ob)->x,(ob)->y)
 void	PlaySoundLocGlobal(word s,fixed gx,fixed gy);
 void UpdateSoundLoc(void);
+#endif
 
 
 /*
@@ -1312,7 +1333,13 @@ void PreloadGraphics(void);
 void LevelCompleted (void);
 void	CheckHighScore (long score,word other);
 void Victory (void);
+// *** ALPHA RESTORATION ***
+// FIXME HACK
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define ClearSplitVWB()
+#else
 void ClearSplitVWB (void);
+#endif
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 void Briefing (int mission, boolean credits);
@@ -1723,7 +1750,10 @@ void SpawnHitler (int tilex, int tiley);
 =============================================================================
 */
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 extern	char	helpfilename[],endfilename[];
+#endif
 
 extern	void	HelpScreens(void);
 extern	void	EndText(void);

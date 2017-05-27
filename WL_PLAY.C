@@ -22,6 +22,11 @@
 =============================================================================
 */
 
+// *** ALPHA RESTORATION*** - FIXME HUGE HACK to get things linking FOR NOW
+#if (GAMEVER_WOLFREV <= 19920505L)
+#define Message Confirm
+#endif
+//
 // *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused variable here
 #if (GAMEVER_WOLFREV <= 19920610L)
 boolean		unusedplayvar;
@@ -455,8 +460,14 @@ void PollMouseMove (void)
 	mousexmove = _CX;
 	mouseymove = _DX;
 
+// *** ALPHA VERSION RESTORATION *** // FIXME GUESSING VALUES
+#ifdef GAMEVER_ALPHA
+	controlx += mousexmove*10;
+	controly += mouseymove*20;
+#else
 	controlx += mousexmove*10/(13-mouseadjustment);
 	controly += mouseymove*20/(13-mouseadjustment);
+#endif
 }
 
 
@@ -1290,6 +1301,62 @@ void StartMusic(void)
 		SD_StartMusic((MusicGroup far *)audiosegs[STARTMUSIC + chunk]);
 	}
 }
+
+/*** ALPHA RESTORATION ***/
+// Earlier versions of the functions found in WL_INTER.C for v1.0+.
+// A few notes:
+// - PreloadUpdate is similar, although if the second calculated value
+// of "w" is nonzero, VWB_Bar is called once with the color SECONDCOLOR,
+// (commented out in the released sources). There's also a check for
+// the Esc key (also commented out in the later sources).
+// - PreloadGraphics is different (smaller).
+
+#if (GAMEVER_WOLFREV <= 19920312L)
+//==========================================================================
+
+
+/*
+=================
+=
+= PreloadGraphics
+=
+= Fill the cache up
+=
+=================
+*/
+
+boolean PreloadUpdate(unsigned current, unsigned total)
+{
+	unsigned w = WindowW - 10;
+
+
+	VWB_Bar(WindowX + 5,WindowY + WindowH - 3,w,2,BLACK);
+	w = ((long)w * current) / total;
+	if (w)
+	{
+	 VWB_Bar(WindowX + 5,WindowY + WindowH - 3,w,2,SECONDCOLOR);
+
+	}
+	VW_UpdateScreen();
+	if (LastScan == sc_Escape)
+	{
+		IN_ClearKeysDown();
+		return(true);
+	}
+	else
+		return(false);
+}
+
+void PreloadGraphics(void)
+{
+	CenterWindow (10,4);
+	PrintY += 5;
+	US_CPrint("Preloading\nCache\n");
+	VW_UpdateScreen();
+
+	PM_Preload (PreloadUpdate);
+}
+#endif // GAMEVER_WOLFREV <= 19920312L
 
 
 /*

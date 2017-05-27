@@ -198,9 +198,12 @@ void HandleCommand (void)
 		VWB_Bar(picx,picy,picwidth,picheight,BACKCOLOR);
 		RipToEOL();
 		break;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	case ';':		// comment
 		RipToEOL();
 		break;
+#endif
 	case 'P':		// ^P is start of next page, ^E is end of file
 	case 'E':
 		layoutdone = true;
@@ -214,19 +217,28 @@ void HandleCommand (void)
 		else if (i>='A' && i<='F')
 			fontcolor = i-'A'+10;
 
+		// *** ALPHA RESTORATION ***
+		// Is this EGA-era?
+#if (GAMEVER_WOLFREV <= 19920312L)
+		fontcolor ^= 4;
+#else
 		fontcolor *= 16;
 		i = toupper(*++text);
 		if (i>='0' && i<='9')
 			fontcolor += i-'0';
 		else if (i>='A' && i<='F')
 			fontcolor += i-'A'+10;
+#endif
 		text++;
 		break;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	case '>':
 		px = 160;
 		text++;
 		break;
+#endif
 
 	case 'L':
 		py=ParseNumber();
@@ -244,7 +256,13 @@ void HandleCommand (void)
 	case 'G':		// ^Gyyy,xxx,ppp draws graphic
 		ParsePicCommand ();
 		VWB_DrawPic (picx&~7,picy,picnum);
+		// *** ALPHA RESTORATION ***
+		// Another EGA thing
+#if (GAMEVER_WOLFREV <= 19920312L)
+		picwidth = 8*pictable[picnum-STARTPICS].width;
+#else
 		picwidth = pictable[picnum-STARTPICS].width;
+#endif
 		picheight = pictable[picnum-STARTPICS].height;
 		//
 		// adjust margins
@@ -427,9 +445,11 @@ void PageLayout (boolean shownumber)
 #else
 	VWB_Bar (0,0,320,200,BACKCOLOR);
 #endif
-	// *** SOD V1.4 ACTIVISION RESTORATION ***
-	// Although none of WL_TEXT.C should even be used...
-#ifndef SPEAR
+	// *** SOD V1.4 ACTIVISION + ALPHA RESTORATION ***
+	// Interestingly this was commented out for the SOD Activision
+	// release, instead of omitting WL_TEXT.C from the project
+	// (also unused in the Wolf3D GT and Activision builds).
+#if ((GAMEVER_WOLFREV <= 19940413L) || (!defined SPEAR)) && (GAMEVER_WOLFREV > 19920312L)
 	VWB_DrawPic (0,0,H_TOPWINDOWPIC);
 	VWB_DrawPic (0,8,H_LEFTWINDOWPIC);
 	VWB_DrawPic (312,8,H_RIGHTWINDOWPIC);
@@ -469,12 +489,15 @@ void PageLayout (boolean shownumber)
 
 		if (ch == '^')
 			HandleCommand ();
+		// *** ALPHA RESTIRATION *** 
+#if (GAMEVER_WOLFREV > 19920312L)
 		else
 		if (ch == 9)
 		{
 		 px = (px+8)&0xf8;
 		 text++;
 		}
+#endif
 		else if (ch <= 32)
 			HandleCtrls ();
 		else
@@ -592,9 +615,9 @@ void CacheLayoutGraphics (void)
 				numpages++;
 			if (ch == 'E')		// end of file, so load graphics and return
 			{
-				// *** SOD 1.4 ACTIVISION RESTORATION ***
-				// Although none of WL_TEXT.C should even be used...
-#ifndef SPEAR
+				// *** SOD 1.4 ACTIVISION + ALPHA RESTORATION ***
+				// Again, none of WL_TEXT.C should even be used in the Activision EXEs...
+#if ((GAMEVER_WOLFREV <= 19940413L) || (!defined SPEAR)) && (GAMEVER_WOLFREV > 19920312L)
 				CA_MarkGrChunk(H_TOPWINDOWPIC);
 				CA_MarkGrChunk(H_LEFTWINDOWPIC);
 				CA_MarkGrChunk(H_RIGHTWINDOWPIC);
@@ -684,7 +707,13 @@ void ShowArticle (char far *article)
 	text = article;
 	oldfontnumber = fontnumber;
 	fontnumber = 0;
+	// *** ALPHA RESTIRATION *** 
+#if (GAMEVER_WOLFREV <= 19920312L)
+	CA_UpLevel ();
+	CA_SetGrPurge ();
+#else
 	CA_MarkGrChunk(STARTFONT);
+#endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	VWB_Bar (0,0,320,200,0x24);
@@ -740,7 +769,10 @@ void ShowArticle (char far *article)
 			}
 			break;
 
+		// *** ALPHA RESTIRATION *** 
+#if (GAMEVER_WOLFREV > 19920312L)
 		case sc_Enter:
+#endif
 		case sc_DownArrow:
 		case sc_PgDn:
 		case sc_RightArrow:		// the text allready points at next page
@@ -764,6 +796,10 @@ void ShowArticle (char far *article)
 
 	} while (LastScan != sc_Escape);
 
+	// *** ALPHA RESTIRATION *** 
+#if (GAMEVER_WOLFREV <= 19920312L)
+	CA_DownLevel ();
+#endif
 	IN_ClearKeysDown ();
 	fontnumber = oldfontnumber;
 }
@@ -787,8 +823,12 @@ int		helpextern = T_HELPART;
 #endif
 #endif // VERSIONS RESTORATION
 #endif
-// *** S3DNA RESTORATION *** - No T_ENDART1
-#ifndef GAMEVER_NOAH3D
+// *** S3DNA RESTORATION + ALPHA *** - No T_ENDART1,
+// and using char * in alpha (instead of char..[])
+#if (GAMEVER_WOLFREV <= 19920312L)
+char *helpfilename = "HELPART.",
+	 *orderfilename = "ORDERART.";
+#elif (!defined GAMEVER_NOAH3D)
 char helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";
 #endif
@@ -809,8 +849,8 @@ void HelpScreens (void)
 	memptr		layout;
 
 
-	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+	// *** S3DNA + ALPHA RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 	CA_UpLevel ();
 	MM_SortMem ();
 #endif
@@ -833,7 +873,10 @@ void HelpScreens (void)
 #else
 	CA_LoadFile (helpfilename,&layout);
 	text = (char _seg *)layout;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	MM_SetLock (&layout, true);
+#endif
 #endif
 
 	ShowArticle (text);
@@ -853,8 +896,8 @@ void HelpScreens (void)
 	VW_FadeOut();
 #endif
 
-	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+	// *** S3DNA + ALPHA RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 	FreeMusic ();
 	CA_DownLevel ();
 	MM_SortMem ();
@@ -863,8 +906,27 @@ void HelpScreens (void)
 }
 #endif
 
-// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+// *** ALPHA RESTORATION ***
+// This is almost identical to HelpScreens; Only the ART file differs.
+// It looks like the function named survived in WL_DEF.H
+#if (GAMEVER_WOLFREV <= 19920312L)
+void OrderingInfo (void)
+{
+	char far 	*text;
+	memptr		layout;
+
+	CA_LoadFile (orderfilename,&layout);
+	text = (char _seg *)layout;
+
+	ShowArticle (text);
+
+	MM_FreePtr (&layout);
+
+	MenuFadeOut();
+}
+
+// *** S3DNA (AND ALPHA) RESTORATION ***
+#elif (!defined GAMEVER_NOAH3D)
 //
 // END ARTICLES
 //

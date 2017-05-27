@@ -146,7 +146,12 @@ typedef struct {
 #else
 		char string[36];
 #endif
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		void (* routine)(void);
+#else
 		void (* routine)(int temp1);
+#endif
 		} CP_itemtype;
 
 typedef struct {
@@ -176,9 +181,18 @@ void CacheLump(int lumpstart,int lumpend);
 void UnCacheLump(int lumpstart,int lumpend);
 void StartCPMusic(int song);
 int  Confirm(char GAMEVER_COND_FARPTR *string);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 void Message(char GAMEVER_COND_FARPTR *string);
+#endif
 void CheckPause(void);
+// *** ALPHA RESTORATION ***
+// Apparently this was originally duplicated (if not defined as a macro)
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define ShootSnd() SD_PlaySound(SHOOTSND)
+#else
 void ShootSnd(void);
+#endif
 void CheckSecretMissions(void);
 void BossKey(void);
 
@@ -187,7 +201,10 @@ void DrawHalfStep(int x,int y);
 void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int y,int which);
 void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,int hlight);
 void DrawMenuGun(CP_iteminfo *iteminfo);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 void DrawStripes(int y);
+#endif
 
 void DefineMouseBtns(void);
 void DefineJoyBtns(void);
@@ -221,15 +238,24 @@ void FixupCustom(int w);
 
 void CP_NewGame(void);
 void CP_Sound(void);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+void CP_LoadGame(void);
+void CP_SaveGame(void);
+#else
 int  CP_LoadGame(int quick);
 int  CP_SaveGame(int quick);
+#endif
 void CP_Control(void);
 void CP_ChangeView(void);
 void CP_ExitOptions(void);
 void CP_Quit(void);
 void CP_ViewScores(void);
 int  CP_EndGame(void);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 int  CP_CheckQuick(unsigned scancode);
+#endif
 void CustomControls(void);
 void MouseSensitivity(void);
 

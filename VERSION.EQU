@@ -9,6 +9,9 @@ ENDIF
 ; A new GAMEVER_WOLFREV macro, usually based on some known or guessed
 ; release/build date, but does not have to be.
 
+IFDEF GAMEVER_EXEDEF_W_920312
+GAMEVER_WOLFREV EQU 19920312
+ENDIF
 IFDEF GAMEVER_EXEDEF_WL1AP10
 GAMEVER_WOLFREV EQU 19920505
 ENDIF

@@ -396,6 +396,11 @@ void VWB_Vlin (int y1, int y2, int x, int color)
 void VH_UpdateScreen (void);
 #endif
 
+// *** ALPHA RESTORATION ***
+// It looks like VW_UpdateScreen was originally defined to VH_UpdateScreen,
+// then got modified to that v1.0 revision with the split screen case and
+// finally was replaced as a simple wrapper (not a macro) over VH_UpdateScreen
+#if (GAMEVER_WOLFREV > 19920312L)
 void VW_UpdateScreen (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -407,6 +412,7 @@ void VW_UpdateScreen (void)
 #endif
 		VH_UpdateScreen ();
 }
+#endif
 
 
 /*

@@ -62,6 +62,11 @@ extern	int	px,py;
 
 void VW_InitDoubleBuffer (void);
 int	 VW_MarkUpdateBlock (int x1, int y1, int x2, int y2);
+// *** ALPHA RESTORATION ***
+// wolfenstein EGA compatability stuff (need to have it here)
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define VW_UpdateScreen		VH_UpdateScreen
+#endif
 void VW_UpdateScreen (void);
 
 //

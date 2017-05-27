@@ -302,14 +302,18 @@ SDL_SetTimerSpeed(void)
 	word	rate;
 	void interrupt	(*isr)(void);
 
-	// *** S3DNA RESTORATION ***
+	// *** S3DNA + ALPHA VERSION RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#ifdef GAMEVER_ALPHA // FIXME DEBUG
+	if
+#else
 	if ((DigiMode == sds_PC) && DigiPlaying)
 	{
 		rate = TickBase * 100;
 		isr = SDL_t0ExtremeAsmService;
 	}
 	else if
+#endif
 	(
 		(MusicMode == smm_AdLib)
 	||	((DigiMode == sds_SoundSource) && DigiPlaying)
@@ -991,8 +995,8 @@ SDL_DetectSoundSource(void)
 //	PC Sound code
 //
 
-// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+// *** S3DNA + ALPHA VERSION RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_PCPlaySample() - Plays the specified sample on the PC speaker
@@ -1041,7 +1045,7 @@ asm	out	0x61,al
 
 asm	popf
 }
-#endif
+#endif // (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1208,9 +1212,12 @@ SDL_PlayDigiSegment(memptr addr,word len)
 	{
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+	// *** ALPHA VERSION RESTORATION ***
+#ifndef GAMEVER_ALPHA
 	case sds_PC:
     	SDL_PCPlaySample(addr,len);
 		break;
+#endif
 	case sds_SoundSource:
 		SDL_SSPlaySample(addr,len);
 		break;
@@ -1244,8 +1251,8 @@ asm	cli
 #if (GAMEVER_WOLFREV > 19920505L)
 	SoundPositioned = false;
 #endif
-	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+	// *** S3DNA + ALPHA VERSION RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
 	if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 		SDL_SoundFinished();
 #endif
@@ -1254,9 +1261,12 @@ asm	cli
 	{
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+	// *** ALPHA VERSION RESTORATION ***
+#ifndef GAMEVER_ALPHA
 	case sds_PC:
 		SDL_PCStopSample();
 		break;
+#endif
 	case sds_SoundSource:
 		SDL_SSStopSample();
 		break;
@@ -1397,11 +1407,11 @@ SDL_DigitizedDone(void)
 		{
 			DigiPlaying = false;
 			DigiLastSegment = false;
-			// *** S3DNA + SHAREWARE V1.0 APOGEE RESTORATION ***
+			// *** S3DNA + SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920505L)
 			DigiPriority = 0;
 #endif
-#ifndef GAMEVER_NOAH3D
+#if (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
 			if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 			{
 				SDL_SoundFinished();
@@ -2635,7 +2645,10 @@ SD_Startup(void)
 					switch (toupper(*env))
 					{
 					case 'A':
+						// *** ALPHA VERSION RESTORATION *** - FIXME HACK
+#ifndef GAMEVER_ALPHA
 						temp = strtol(env + 1,&env,16);
+#endif
 						if
 						(
 							(temp >= 0x210)
@@ -2647,7 +2660,10 @@ SD_Startup(void)
 							Quit("SD_Startup: Unsupported address value in BLASTER");
 						break;
 					case 'I':
+						// *** ALPHA VERSION RESTORATION *** - FIXME HACK
+#ifndef GAMEVER_ALPHA
 						temp = strtol(env + 1,&env,10);
+#endif
 						if
 						(
 							(temp >= 0)
@@ -2662,7 +2678,10 @@ SD_Startup(void)
 							Quit("SD_Startup: Unsupported interrupt value in BLASTER");
 						break;
 					case 'D':
+						// *** ALPHA VERSION RESTORATION *** - FIXME HACK
+#ifndef GAMEVER_ALPHA
 						temp = strtol(env + 1,&env,10);
+#endif
 						if ((temp == 0) || (temp == 1) || (temp == 3))
 							SDL_SBSetDMA(temp);
 						else
@@ -2845,8 +2864,8 @@ SD_PlaySound(soundnames sound)
 
 	if ((DigiMode != sds_Off) && (DigiMap[sound] != -1))
 	{
-		// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+		// *** S3DNA + ALPHA VERSION RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
 		if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 		{
 			if (s->priority < SoundPriority)
