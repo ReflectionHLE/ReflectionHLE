@@ -460,10 +460,10 @@ void PollMouseMove (void)
 	mousexmove = _CX;
 	mouseymove = _DX;
 
-// *** ALPHA VERSION RESTORATION *** // FIXME GUESSING VALUES
-#ifdef GAMEVER_ALPHA
-	controlx += mousexmove*10;
-	controly += mouseymove*20;
+// *** ALPHA VERSION RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	controlx += mousexmove;
+	controly += mouseymove*2;
 #else
 	controlx += mousexmove*10/(13-mouseadjustment);
 	controly += mouseymove*20/(13-mouseadjustment);
@@ -727,7 +727,12 @@ void CheckKeys (void)
 	unsigned	temp;
 
 
+	// *** ALPHA VERSION RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if (screenfaded)	// don't do anything with a faded screen
+#else
 	if (screenfaded || demoplayback)	// don't do anything with a faded screen
+#endif
 		return;
 
 	scan = LastScan;
@@ -762,6 +767,8 @@ void CheckKeys (void)
 	#endif
 
 
+	// *** ALPHA VERSION RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (Keyboard[sc_J] && Keyboard[sc_I] && Keyboard[sc_M])
@@ -944,6 +951,7 @@ void CheckKeys (void)
 #endif
 	}
 #endif // GAMEVER_NOAH3D
+#endif // GAMEVER_WOLFREV > 19920312L
 //
 // pause key weirdness can't be checked as a scan code
 //
@@ -957,7 +965,10 @@ void CheckKeys (void)
 			LatchDrawPic (20-4,80-2*8,PAUSEDPIC);
 		SD_MusicOff();
 		IN_Ack();
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		IN_ClearKeysDown ();
+#endif
 		SD_MusicOn();
 		Paused = false;
 		if (MousePresent)
@@ -970,15 +981,31 @@ void CheckKeys (void)
 // F1-F7/ESC to enter control panel
 //
 	if (
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		scan == sc_F9)
+#else
 #ifndef DEBCHECK
 		scan == sc_F10 ||
 #endif
 		scan == sc_F9 ||
 		scan == sc_F7 ||
 		scan == sc_F8)			// pop up quit dialog
+#endif
 	{
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		PM_UnlockMainMem ();
+		StopMusic ();
+		SD_StopSound ();
+		SD_StopDigitized ();
+		if (++screenpage == 3)
+			screenpage = 0;
+		bufferofs = screenloc[screenpage];
+#else
 		ClearMemory ();
 		ClearSplitVWB ();
+#endif
 		VW_ScreenToScreen (displayofs,bufferofs,80,160);
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -997,10 +1024,10 @@ void CheckKeys (void)
 		 DrawAllPlayBorderSides ();
 #endif
 
-		// *** S3DNA RESTORATION ***
+		// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		if ((scan == sc_F9) && loadedgame)
-#else
+#elif (GAMEVER_WOLFREV > 19920312L)
 		if (scan == sc_F9)
 #endif
 		  StartMusic ();
@@ -1013,8 +1040,18 @@ void CheckKeys (void)
 
 	if ( (scan >= sc_F1 && scan <= sc_F9) || scan == sc_Escape)
 	{
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		PM_UnlockMainMem ();
+#endif
 		StopMusic ();
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		SD_StopDigitized ();
+		SD_StopSound ();
+#else
 		ClearMemory ();
+#endif
 		VW_FadeOut ();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920505L)
@@ -1055,16 +1092,20 @@ void CheckKeys (void)
 //
 // TAB-? debug keys
 //
-	// *** S3DNA RESTORATION ***
+	// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (!mapmode && Keyboard[sc_Tilde] && DebugOk)
+#elif (GAMEVER_WOLFREV <= 19920312L)
+	if (Keyboard[sc_F10])
 #else
 	if (Keyboard[sc_Tab] && DebugOk)
 #endif
 	{
+#if (GAMEVER_WOLFREV > 19920312L)
 		CA_CacheGrChunk (STARTFONT);
 		fontnumber=0;
 		SETFONTCOLOR(0,15);
+#endif
 		DebugKeys();
 		if (MousePresent)
 			Mouse(MDelta);	// Clear accumulated mouse movement
@@ -1280,8 +1321,10 @@ void StartMusic(void)
 	musicnames	chunk;
 
 	SD_MusicOff();
-	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_NOAH3D
+	// *** S3DNA + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	chunk = GETTHEM_MUS;
+#elif (defined GAMEVER_NOAH3D)
 	chunk = songs[gamestate.mapon];
 #else
 	chunk = songs[gamestate.mapon+gamestate.episode*10];
@@ -1305,10 +1348,12 @@ void StartMusic(void)
 /*** ALPHA RESTORATION ***/
 // Earlier versions of the functions found in WL_INTER.C for v1.0+.
 // A few notes:
-// - PreloadUpdate is similar, although if the second calculated value
-// of "w" is nonzero, VWB_Bar is called once with the color SECONDCOLOR,
-// (commented out in the released sources). There's also a check for
-// the Esc key (also commented out in the later sources).
+// - PreloadUpdate is similar. Differences are, the first value of "w"
+// is *not* casted to long in the calculation of the new value of "w",
+// and in case the latter is nonzero, VWB_Bar is called once with the
+// color SECONDCOLOR (commented out in the released sources).
+// There is also a check for the Escape key
+// (also commented out in the later sources).
 // - PreloadGraphics is different (smaller).
 
 #if (GAMEVER_WOLFREV <= 19920312L)
@@ -1331,7 +1376,7 @@ boolean PreloadUpdate(unsigned current, unsigned total)
 
 
 	VWB_Bar(WindowX + 5,WindowY + WindowH - 3,w,2,BLACK);
-	w = ((long)w * current) / total;
+	w = (w * current) / total;
 	if (w)
 	{
 	 VWB_Bar(WindowX + 5,WindowY + WindowH - 3,w,2,SECONDCOLOR);
@@ -1744,6 +1789,8 @@ void PlayLoop (void)
 
 	playstate = TimeCount = lasttimecount = 0;
 	frameon = 0;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	running = false;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920610L)
@@ -1755,6 +1802,7 @@ void PlayLoop (void)
 	funnyticount = 0;
 #endif
 	memset (buttonstate,0,sizeof(buttonstate));
+#endif // GAMEVER_WOLFREV > 19920312L
 	ClearPaletteShifts ();
 
 	if (MousePresent)
@@ -1789,7 +1837,10 @@ void PlayLoop (void)
 		madenoise = false;
 
 		MoveDoors ();
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		MovePWalls ();
+#endif
 
 		for (obj = player;obj;obj = obj->next)
 			DoActor (obj);
@@ -1811,12 +1862,23 @@ void PlayLoop (void)
 		}
 		#endif
 
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		gamestate.TimeCount+=tics;
+#endif
 
 		SD_Poll ();
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		UpdateSoundLoc();	// JAB
+#endif
 
 		if (screenfaded)
+		// *** ALPHA RESTORATION ***
+		// FIXME HUGE HACK
+#if (GAMEVER_WOLFREV <= 19920312L)
+			screenfaded = false,
+#endif
 			VW_FadeIn ();
 
 		// *** S3DNA RESTORATION ***

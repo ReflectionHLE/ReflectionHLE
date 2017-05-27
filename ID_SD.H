@@ -249,7 +249,11 @@ extern	boolean	SD_MusicPlaying(void),
 extern	word	SD_SoundPlaying(void);
 
 extern	void	SD_SetDigiDevice(SDSMode),
+				// *** ALPHA RESTORATION ***/
+				// FIXME - HUGE HACK! Need a separate prototype instead
+#if (GAMEVER_WOLFREV > 19920312L)
 				SD_PlayDigitized(word which,int leftpos,int rightpos),
+#endif
 				SD_StopDigitized(void),
 				SD_Poll(void);
 

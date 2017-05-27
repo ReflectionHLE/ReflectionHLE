@@ -143,7 +143,10 @@ void PicturePause (void)
 	memptr		buffer;
 
 	VW_ColorBorder (15);
+	/// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	FinishPaletteShifts ();
+#endif
 
 	LastScan = 0;
 	while (!LastScan)
@@ -156,6 +159,10 @@ void PicturePause (void)
 
 	VW_ColorBorder (1);
 	VW_SetScreen (0,0);
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	PM_UnlockMainMem ();
+#endif
 //
 // vga stuff...
 //
@@ -428,16 +435,19 @@ static	char	buf[10];
 			break;
 #endif
 		case sc_P:
-			// *** S3DNA RESTORATION ***
+			// *** S3DNA + ALPHA RESTORATION ***
+			// Uncomment code for alpha version,
+			// and also add code for S3DNA
 #ifdef GAMEVER_NOAH3D
 			if (sound != -1)
 			{
 				PM_GetPage(sound);
 				SD_PlayDigitized(sound,0,0);
 			}
-#else
-//			if (sound != -1)
-//				SD_PlayDigitized(sound);
+#elif (GAMEVER_WOLFREV <= 19920312L)
+//#else
+			if (sound != -1)
+				SD_PlayDigitized(sound);
 #endif
 			break;
 		case sc_Escape:
@@ -725,8 +735,38 @@ int DebugKeys (void)
 		IN_Ack ();
 		return 1;
 	}
+	/// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	else if (Keyboard[sc_Y])			// Y = Set view size
+	{
+		CenterWindow (26,3);
+		PrintY+=6;
+		US_Print("  View tiles wide (1-19):");
+		VW_UpdateScreen();
+		esc = !US_LineInput (px,py,str,NULL,true,2,0);
+		if (!esc)
+		{
+			level = atoi(str);
+			if (level>0 && level<20)
+			{
+				PM_UnlockMainMem ();
+				SetViewSize (level*16,level*16*HEIGHTRATIO);
+				for (i=0;i<3;i++)
+				{
+					bufferofs = screenloc[i];
+					DrawPlayBorder ();
+				}
+				PM_CheckMainMem ();
+			}
+		}
+		return 1;
+	}
+	else if (Keyboard[sc_Z])			// Z = Kill player
+	{
+		playstate = ex_died;
+	}
 		// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_NOAH3D
+#elif (defined GAMEVER_NOAH3D)
 	else if (Keyboard[sc_Z])			// Z = Wait for key input
 	{
 		IN_Ack ();

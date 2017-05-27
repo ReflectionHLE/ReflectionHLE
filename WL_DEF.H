@@ -1555,7 +1555,12 @@ void	DrawLevel (void);
 void	DrawLives (void);
 void	GiveExtraMan (void);
 void	DrawScore (void);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+void	GivePoints (int points);
+#else
 void	GivePoints (long points);
+#endif
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 void	DrawWeapon (void);

@@ -7,6 +7,10 @@
 
 typedef enum {
     // Lump Start
+    // FIXME (ALPHA RESTORATION) - Properly fill this
+#if (GAMEVER_WOLFREV <= 19920312L)
+    C_OPTIONSPIC=3,
+#else
     H_BJPIC=3,
     H_CASTLEPIC,                 // 4
     H_KEYBOARDPIC,               // 5
@@ -30,6 +34,7 @@ typedef enum {
 #endif
     // Lump Start
     C_OPTIONSPIC,                // 22
+#endif // GAMEVER_WOLFREV <= 19920312L
     C_CURSOR1PIC,                // 23
     C_CURSOR2PIC,                // 24
     C_NOTSELECTEDPIC,            // 25

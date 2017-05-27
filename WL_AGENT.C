@@ -714,7 +714,12 @@ void	DrawScore (void)
 ===============
 */
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+void	GivePoints (int points)
+#else
 void	GivePoints (long points)
+#endif
 {
 	gamestate.score += points;
 	while (gamestate.score >= gamestate.nextextra)
