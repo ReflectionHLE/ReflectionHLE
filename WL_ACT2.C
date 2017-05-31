@@ -16,10 +16,6 @@
 #define BJRUNSPEED	2048
 #define BJJUMPSPEED	680
 
-// *** ALPHA RESTORATION *** - FIXME! TEMPORARY HACK
-#if (GAMEVER_WOLFREV <= 19920312L)
-#define SelectRunDir(o)
-#endif
 
 /*
 =============================================================================
@@ -65,6 +61,10 @@ int	starthitpoints[NUMENEMIES] =
 	  50,	// officer
 	  100,	// SS
 	  1,	// dogs
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	  297,	// Hans
+#else
 	  850,	// Hans
 	  850,	// Schabbs
 	  300,	// fake hitler
@@ -74,6 +74,7 @@ int	starthitpoints[NUMENEMIES] =
 	  0,	// ghosts
 	  0,	// ghosts
 	  0	// ghosts
+#endif
 	  };
 #else
 int	starthitpoints[4][NUMENEMIES] =
@@ -230,6 +231,8 @@ void A_DeathScream (objtype *ob);
 #include "WL_SROCK.C"
 #endif
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 void	T_Schabb (objtype *ob);
 void	T_SchabbThrow (objtype *ob);
 // *** S3DNA RESTORATION ***
@@ -242,6 +245,7 @@ void	T_Ghosts (objtype *ob);
 void A_Slurpie (objtype *ob);
 void A_HitlerMorph (objtype *ob);
 void A_MechaSound (objtype *ob);
+#endif // GAMEVER_WOLFREV > 19920312L
 
 
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION *** - Relocated code to separate
@@ -360,8 +364,8 @@ statetype s_grddie4		= {false,SPR_GRD_DEAD,0,NULL,NULL,&s_grddie4};
 #endif
 
 
-// *** S3DNA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
+// *** S3DNA + ALPHA RESTORATION ***
+#if (!defined SPEAR) && (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 //#ifndef SPEAR
 //
 // ghosts
@@ -574,6 +578,8 @@ statetype s_ofcdie5		= {false,SPR_OFC_DEAD,0,NULL,NULL,&s_ofcdie5};
 #endif
 
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 //
 // mutant
 //
@@ -688,6 +694,7 @@ statetype s_mutdie4		= {false,SPR_MUT_DIE_4,7,NULL,NULL,&s_mutdie5};
 statetype s_mutdie5		= {false,SPR_MUT_DEAD,0,NULL,NULL,&s_mutdie5};
 #endif
 
+#endif // GAMEVER_WOLFREV > 19920312L
 
 //
 // SS
@@ -794,7 +801,12 @@ statetype s_ssdie4		= {false,SPR_SS_DEAD,0,NULL,NULL,&s_ssdie4};
 #endif
 
 
-#ifndef SPEAR
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+extern	statetype s_bossstand;
+statetype s_bossstand	= {false,SPR_BOSS_W1,0,NULL,NULL,&s_bossstand};
+//#ifndef SPEAR
+#elif (!defined SPEAR)
 //
 // hans
 //
@@ -949,10 +961,15 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 	case en_guard:
 		SpawnNewObj (tilex,tiley,&s_grdstand);
 		new->speed = SPDPATROL;
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		if (!loadedgame)
 		  gamestate.killtotal++;
+#endif
 		break;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	case en_officer:
 		SpawnNewObj (tilex,tiley,&s_ofcstand);
 		new->speed = SPDPATROL;
@@ -966,12 +983,16 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
+#endif
 
 	case en_ss:
 		SpawnNewObj (tilex,tiley,&s_ssstand);
 		new->speed = SPDPATROL;
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		if (!loadedgame)
 		  gamestate.killtotal++;
+#endif
 		break;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1042,7 +1063,6 @@ void SpawnDeadGuard (int tilex, int tiley)
 #endif
 
 
-
 #ifndef SPEAR
 /*
 ===============
@@ -1052,8 +1072,8 @@ void SpawnDeadGuard (int tilex, int tiley)
 ===============
 */
 
-// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+// *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920610L)
 void SpawnBoss (int tilex, int tiley, int dir)
 #else
 void SpawnBoss (int tilex, int tiley)
@@ -1071,6 +1091,10 @@ void SpawnBoss (int tilex, int tiley)
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_boss];
 #endif
+	// *** ALPHA RESTORATION
+#if (GAMEVER_WOLFREV <= 19920312L)
+	new->flags |= FL_SHOOTABLE;
+#else
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920610L)
 	new->dir = dir*2;
@@ -1080,6 +1104,7 @@ void SpawnBoss (int tilex, int tiley)
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
+#endif // GAMEVER_WOLFREV <= 19920312L
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -1141,36 +1166,51 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
 	case en_guard:
 		SpawnNewObj (tilex,tiley,&s_grdpath1);
 		new->speed = SPDPATROL;
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		if (!loadedgame)
 		  gamestate.killtotal++;
+#endif
 		break;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	case en_officer:
 		SpawnNewObj (tilex,tiley,&s_ofcpath1);
 		new->speed = SPDPATROL;
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
+#endif
 
 	case en_ss:
 		SpawnNewObj (tilex,tiley,&s_sspath1);
 		new->speed = SPDPATROL;
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		if (!loadedgame)
 		  gamestate.killtotal++;
+#endif
 		break;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	case en_mutant:
 		SpawnNewObj (tilex,tiley,&s_mutpath1);
 		new->speed = SPDPATROL;
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
+#endif
 
 	case en_dog:
 		SpawnNewObj (tilex,tiley,&s_dogpath1);
 		new->speed = SPDDOG;
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		if (!loadedgame)
 		  gamestate.killtotal++;
+#endif
 		break;
 	}
 
@@ -1246,6 +1286,26 @@ void A_DeathScream (objtype *ob)
 
 	switch (ob->obclass)
 	{
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	case guardobj:
+	case officerobj:
+	case ssobj:
+		switch (US_RndT()/64)
+		{
+		case 0:
+		case 1:
+			SD_PlaySound (DEATHSCREAM1SND);
+			break;
+		case 2:
+			SD_PlaySound (DEATHSCREAM2SND);
+			break;
+		case 3:
+			SD_PlaySound (DEATHSCREAM3SND);
+			break;
+		}
+		break;
+#else // GAMEVER_WOLFREV > 19920312L
 	case mutantobj:
 		PlaySoundLocActor(AHHHGSND,ob);
 		break;
@@ -1286,9 +1346,12 @@ void A_DeathScream (objtype *ob)
 	case ssobj:
 		PlaySoundLocActor(LEBENSND,ob);	// JAB
 		break;
+#endif // GAMEVER_WOLFREV <= 19920312L
 	case dogobj:
 		PlaySoundLocActor(DOGDEATHSND,ob);	// JAB
 		break;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 #ifndef SPEAR
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - Originally PlaySoundLocActor was used
 	case bossobj:
@@ -1358,6 +1421,7 @@ void A_DeathScream (objtype *ob)
 		SD_PlaySound(KNIGHTDEATHSND);
 		break;
 #endif
+#endif // GAMEVER_WOLFREV > 19920312L
 	}
 #endif // S3DNA RESTORATION
 }
@@ -2182,7 +2246,9 @@ moveok:
 =============================================================================
 */
 
-#ifndef SPEAR
+// *** ALPHA RESTORATION ***
+#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+//#ifndef SPEAR
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 /*
@@ -3676,15 +3742,20 @@ void T_Chase (objtype *ob)
 			case guardobj:
 				NewState (ob,&s_grdshoot1);
 				break;
+			// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 			case officerobj:
 				NewState (ob,&s_ofcshoot1);
 				break;
 			case mutantobj:
 				NewState (ob,&s_mutshoot1);
 				break;
+#endif
 			case ssobj:
 				NewState (ob,&s_ssshoot1);
 				break;
+			// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 #ifndef SPEAR
 			case bossobj:
 				NewState (ob,&s_bossshoot1);
@@ -3718,6 +3789,7 @@ void T_Chase (objtype *ob)
 				NewState (ob,&s_deathshoot1);
 				break;
 #endif
+#endif // GAMEVER_WOLFREV > 19920312L
 			}
 			return;
 		}
@@ -3779,8 +3851,8 @@ void T_Chase (objtype *ob)
 }
 
 
-// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+// *** S3DNA + ALPHA RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 /*
 =================
 =
@@ -4052,14 +4124,26 @@ void T_Shoot (objtype *ob)
 		return;
 
 	if (!CheckLine (ob))			// player is behind a wall
+	// *** ALPHA RESTORATION ***
+	// FIXME - is this the correct sound name?
+#if (GAMEVER_WOLFREV <= 19920312L)
+	{
+	  SD_PlaySound (SCHABBSTHROWSND);
 	  return;
+	}
+#else
+	  return;
+#endif
 
 	dx = abs(ob->tilex - player->tilex);
 	dy = abs(ob->tiley - player->tiley);
 	dist = dx>dy ? dx:dy;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	if (ob->obclass == ssobj || ob->obclass == bossobj)
 		dist = dist*2/3;					// ss are better shots
+#endif
 
 	if (thrustspeed >= RUNSPEED)
 	{
@@ -4088,8 +4172,19 @@ void T_Shoot (objtype *ob)
 			damage = US_RndT()>>4;
 
 		TakeDamage (damage,ob);
+		// *** ALPHA RESTORATION ***
+		// FIXME - Correct sound effect?
+#if (GAMEVER_WOLFREV <= 19920312L)
+		SD_PlaySound (NAZIHITPLAYERSND);
+		return;
+#endif
 	}
 
+	// *** ALPHA RESTORATION ***
+	// FIXME - Correct sound effect?
+#if (GAMEVER_WOLFREV <= 19920312L)
+	SD_PlaySound (SCHABBSTHROWSND);
+#else
 	switch(ob->obclass)
 	{
 	 case ssobj:
@@ -4126,6 +4221,7 @@ void T_Shoot (objtype *ob)
 	 default:
 	   PlaySoundLocActor(NAZIFIRESND,ob);
 	}
+#endif // GAMEVER_WOLFREV <= 19920312L
 
 }
 
@@ -4144,7 +4240,10 @@ void T_Bite (objtype *ob)
 	int	hitchance,damage;
 
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	PlaySoundLocActor(DOGATTACKSND,ob);	// JAB
+#endif
 
 	dx = player->x - ob->x;
 	if (dx<0)
@@ -4163,6 +4262,11 @@ void T_Bite (objtype *ob)
 			  // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920610L)
 			   TakeDamage (US_RndT()>>4);
+			   // *** ALPHA RESTORATION ***
+			   // FIXME - Correct sound effect?
+#if (GAMEVER_WOLFREV <= 19920312L)
+			   SD_PlaySound (NAZIHITPLAYERSND);
+#endif
 #else
 			   TakeDamage (US_RndT()>>4,ob);
 #endif
@@ -4171,11 +4275,18 @@ void T_Bite (objtype *ob)
 		}
 	}
 
+	// *** ALPHA RESTORATION ***
+	// FIXME - Correct sound effect?
+#if (GAMEVER_WOLFREV <= 19920312L)
+	SD_PlaySound (SCHABBSTHROWSND);
+#endif
 	return;
 }
 
 
-#ifndef SPEAR
+// *** ALPHA RESTORATION ***
+//#ifndef SPEAR
+#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
 /*
 ============================================================================
 

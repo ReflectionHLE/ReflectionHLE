@@ -811,9 +811,11 @@ typedef enum {
 } dirtype;
 
 
-// *** APOGEE + S3DNA VERSIONS RESTORATION ***
+// *** APOGEE + ALPHA + S3DNA VERSIONS RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define NUMENEMIES		5
+#elif (GAMEVER_WOLFREV <= 19920505L)
 #define NUMENEMIES		13
 #elif (GAMEVER_WOLFREV <= 19920610L)
 #define NUMENEMIES		16
@@ -831,6 +833,8 @@ typedef enum {
 	en_mutant,
 #endif
 	en_boss,
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	en_schabbs,
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -860,6 +864,7 @@ typedef enum {
 	en_death
 #endif
 #endif // GAMEVER_NOAH3D
+#endif // GAMEVER_WOLFREV > 19920312L
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
