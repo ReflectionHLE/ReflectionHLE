@@ -234,11 +234,14 @@ void	VW_MeasureMPropString  (char far *string, word *width, word *height)
 =============================================================================
 */
 
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 
 #if (GAMEVER_WOLFREV <= 19920505L)
-// An unknown do-nothing stub (possibly having disabled debugging code)
-void VW_NullStub (void)
+// An unknown do-nothing stub - at least until the recreation
+// of alpha version from March, hinting that this is
+// a do-nothing VGA implemenation of VW_SetDefaultColors
+// (used in MM_ShowMemory, as in Catacomb 3-D)
+void VW_SetDefaultColors (void)
 {
 }
 

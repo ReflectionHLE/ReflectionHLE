@@ -112,4 +112,7 @@ void CA_CacheMap (int mapnum);
 
 void CA_CacheMarks (void);
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 void CA_CacheScreen (int chunk);
+#endif

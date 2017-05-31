@@ -263,8 +263,11 @@ PML_XMSCopy(boolean toxms,byte far *addr,word xmspage,word length)
 		longword	target_offset;
 	} copy;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	if (!addr)
 		Quit("PML_XMSCopy: zero address");
+#endif
 
 	xoffset = (longword)xmspage * PMPageSize;
 
@@ -438,7 +441,12 @@ PML_StartupMainMem(void)
 
 	MainPagesAvail = 0;
 	MM_BombOnError(false);
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	for (i = 0,p = MainMemPages;(i < PMMaxMainMem) && !mmerror;i++,p++)
+#else
 	for (i = 0,p = MainMemPages;i < PMMaxMainMem;i++,p++)
+#endif
 	{
 		MM_GetPtr(p,PMPageSize);
 		if (mmerror)
@@ -771,8 +779,11 @@ PML_TransferPageSpace(int orig,int new)
 	memptr			addr;
 	PageListStruct	far *origpage,far *newpage;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	if (orig == new)
 		Quit("PML_TransferPageSpace: Identity replacement");
+#endif
 
 	origpage = &PMPages[orig];
 	newpage = &PMPages[new];
@@ -796,8 +807,11 @@ PML_TransferPageSpace(int orig,int new)
 	// Mark replaced page as purged
 	origpage->mainPage = origpage->emsPage = -1;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	if (!addr)
 		Quit("PML_TransferPageSpace: Zero replacement");
+#endif
 
 	return(addr);
 }
@@ -928,13 +942,15 @@ asm	out	dx,al
 	if (!(result = PM_GetPageAddress(pagenum)))
 	{
 		boolean mainonly = (pagenum >= PMSoundStart);
+	// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 if (!PMPages[pagenum].offset)	// JDC: sparse page
-	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920505L)
 	return 0;
 #else
 	Quit ("Tried to load a sparse page!");
 #endif
+#endif // GAMEVER_WOLFREV > 19920312L
 		if (!(result = PML_GetPageFromXMS(pagenum,mainonly)))
 		{
 			if (PMPages[pagenum].lastHit == PMFrameCount)
@@ -972,8 +988,11 @@ asm	out	dx,al
 void
 PM_SetPageLock(int pagenum,PMLockType lock)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	if (pagenum < PMSoundStart)
 		Quit("PM_SetPageLock: Locking/unlocking non-sound page");
+#endif
 
 	PMPages[pagenum].locked = lock;
 }

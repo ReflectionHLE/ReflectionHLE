@@ -1,13 +1,13 @@
 //////////////////////////////////////
 //
 // Graphics .H file for Apogee v1.4
-// Based on header from Wolf4SDL
+// Based on header from Wolf4SDL,
+// with changes (inc. alpha version)
 //
 //////////////////////////////////////
 
 typedef enum {
     // Lump Start
-    // FIXME (ALPHA RESTORATION) - Properly fill this
 #if (GAMEVER_WOLFREV <= 19920312L)
     C_OPTIONSPIC=3,
 #else
@@ -43,13 +43,18 @@ typedef enum {
     C_DIGITITLEPIC,              // 28
     C_MUSICTITLEPIC,             // 29
     C_MOUSELBACKPIC,             // 30
+#if (GAMEVER_WOLFREV > 19920312L)
     C_BABYMODEPIC,               // 31
+#endif
     C_EASYPIC,                   // 32
     C_NORMALPIC,                 // 33
     C_HARDPIC,                   // 34
     C_LOADSAVEDISKPIC,           // 35
     C_DISKLOADING1PIC,           // 36
     C_DISKLOADING2PIC,           // 37
+#if (GAMEVER_WOLFREV <= 19920312L)
+    GETPSYCHEDPIC,
+#else
     C_CONTROLPIC,                // 38
     C_CUSTOMIZEPIC,              // 39
     C_LOADGAMEPIC,               // 40
@@ -119,9 +124,12 @@ typedef enum {
 #endif
     L_GUY2PIC,                   // 96
     L_BJWINSPIC,                 // 97
+#endif // GAMEVER_WOLFREV <= 19920312L
     STATUSBARPIC,                // 98
     TITLEPIC,                    // 99
+#if (GAMEVER_WOLFREV > 19920312L)
     PG13PIC,                     // 100
+#endif
     CREDITSPIC,                  // 101
     HIGHSCORESPIC,               // 102
     // Lump Start
@@ -166,12 +174,17 @@ typedef enum {
     FACE7CPIC,                   // 141
     FACE8APIC,                   // 142
     GOTGATLINGPIC,               // 143
+#if (GAMEVER_WOLFREV > 19920312L)
     MUTANTBJPIC,                 // 144
+#endif
     PAUSEDPIC,                   // 145
+#if (GAMEVER_WOLFREV > 19920312L)
     GETPSYCHEDPIC,               // 146
+#endif
 
     TILE8,                       // 147
 
+#if (GAMEVER_WOLFREV > 19920312L)
     ORDERSCREEN,                 // 148
     ERRORSCREEN,                 // 149
     T_HELPART,                   // 150
@@ -190,6 +203,7 @@ typedef enum {
     T_ENDART5,                   // 159
     T_ENDART6,                   // 160
 #endif
+#endif // GAMEVER_WOLFREV > 19920312L
 
     ENUMEND
 } graphicnums;
@@ -201,7 +215,11 @@ typedef enum {
 #define README_LUMP_END         H_BOTTOMINFOPIC
 
 #define CONTROLS_LUMP_START     C_OPTIONSPIC
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define CONTROLS_LUMP_END       (GETPSYCHEDPIC - 1)
+#else
 #define CONTROLS_LUMP_END       (L_GUYPIC - 1)
+#endif
 
 #define LEVELEND_LUMP_START     L_GUYPIC
 #define LEVELEND_LUMP_END       L_BJWINSPIC
@@ -213,6 +231,21 @@ typedef enum {
 //
 // Amount of each data item
 //
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define NUMCHUNKS    426
+#define NUMFONT      2
+#define NUMFONTM     0
+#define NUMPICS      62
+#define NUMPICM      0
+#define NUMSPRITES   0
+#define NUMTILE8     72
+#define NUMTILE8M    0
+#define NUMTILE16    144
+#define NUMTILE16M   216
+#define NUMTILE32    0
+#define NUMTILE32M   0
+#define NUMEXTERNS   0
+#else
 #define NUMCHUNKS    ENUMEND
 #define NUMFONT      2
 #define NUMFONTM     0
@@ -226,6 +259,7 @@ typedef enum {
 #define NUMTILE32    0
 #define NUMTILE32M   0
 #define NUMEXTERNS   13
+#endif
 //
 // File offsets for data items
 //
@@ -237,12 +271,21 @@ typedef enum {
 #define STARTPICM    TILE8
 #define STARTSPRITES TILE8
 #define STARTTILE8   TILE8
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define STARTTILE8M  66
+#define STARTTILE16  66
+#define STARTTILE16M 210
+#define STARTTILE32  426
+#define STARTTILE32M 426
+#define STARTEXTERNS 426
+#else
 #define STARTTILE8M  ORDERSCREEN
 #define STARTTILE16  ORDERSCREEN
 #define STARTTILE16M ORDERSCREEN
 #define STARTTILE32  ORDERSCREEN
 #define STARTTILE32M ORDERSCREEN
 #define STARTEXTERNS ORDERSCREEN
+#endif
 
 //
 // Thank you for using IGRAB!

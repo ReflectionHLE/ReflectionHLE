@@ -520,7 +520,7 @@ tryagain:
 	{
 
 extern char configname[];
-// *** PRE-V1.4 APOGEE RESTORATION ***
+// *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920610L)
 extern	boolean	insetupscaling;
 extern	int	viewsize;
@@ -540,7 +540,7 @@ mmblocktype	far *savedmmnew;
 		}
 
 //		unlink(configname);
-#else
+#elif (GAMEVER_WOLFREV > 19920312L)
 		unlink(configname);
 #endif // GAMEVER_WOLFREV > 19920610L
 		Quit ("MM_GetPtr: Out of memory!");
@@ -779,6 +779,8 @@ void MM_SortMem (void)
 =====================
 */
 
+// *** ALPHA RESTORATION ***
+// A few differences, basically appears to be the Catacomb 3-D revision
 void MM_ShowMemory (void)
 {
 	mmblocktype far *scan;
@@ -786,8 +788,17 @@ void MM_ShowMemory (void)
 	long	end,owner;
 	char    scratch[80],str[10];
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	VW_SetDefaultColors();
+	VW_SetLineWidth(40);
+	temp = bufferofs;
+	bufferofs = 0;
+	VW_SetScreen (0,0);
+#else
 	temp = bufferofs;
 	bufferofs = displayofs;
+#endif
 	scan = mmhead;
 
 	end = -1;
@@ -802,6 +813,14 @@ void MM_ShowMemory (void)
 			color = 12;		// red = locked
 		if (scan->start<=end)
 			Quit ("MM_ShowMemory: Memory block order currupted!");
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		end = scan->start+scan->length-1;
+		VW_Hlin(scan->start,(unsigned)end,0,color);
+		VW_Plot(scan->start,0,15);
+		if (scan->next->start > end+1)
+			VW_Hlin(end+1,scan->next->start,0,0);	// black = free
+#else
 		end = scan->length-1;
 		y = scan->start/320;
 		x = scan->start%320;
@@ -809,12 +828,19 @@ void MM_ShowMemory (void)
 		VW_Plot(x,y,15);
 		if (scan->next && scan->next->start > end+1)
 			VW_Hlin(x+end+1,x+(scan->next->start-scan->start),y,0);	// black = free
+#endif
 
 		scan = scan->next;
 	}
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	IN_Ack();
+	VW_SetLineWidth(64);
+#else
 	VW_FadeIn ();
 	IN_Ack();
+#endif
 
 	bufferofs = temp;
 }

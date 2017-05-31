@@ -93,6 +93,8 @@ extern	byte	far	audiohead;
 extern	byte	audiodict;
 
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 char extension[5],	// Need a string, not constant to change cache files
      gheadname[10]=GREXT"HEAD.",
      gfilename[10]=GREXT"GRAPH.",
@@ -103,6 +105,7 @@ char extension[5],	// Need a string, not constant to change cache files
      afilename[10]="AUDIOT.";
 
 void CA_CannotOpen(char *string);
+#endif
 
 long		_seg *grstarts;	// array of offsets in egagraph, -1 for sparse
 long		_seg *audiostarts;	// array of offsets in audio / audiot
@@ -423,8 +426,14 @@ void CAL_OptimizeNodes (huffnode *table)
 ======================
 */
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+void CAL_HuffExpand (byte huge *source, byte huge *dest,
+  long length,huffnode *hufftable)
+#else
 void CAL_HuffExpand (byte huge *source, byte huge *dest,
   long length,huffnode *hufftable, boolean screenhack)
+#endif
 {
 //  unsigned bit,byte,node,code;
   unsigned sourceseg,sourceoff,destseg,destoff,endoff;
@@ -439,6 +448,8 @@ void CAL_HuffExpand (byte huge *source, byte huge *dest,
   dest++;
   dest--;
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
   if (screenhack)
   {
 	mapmask = 1;
@@ -447,6 +458,7 @@ asm	mov	ax,SC_MAPMASK + 256
 asm	out	dx,ax
 	length >>= 2;
   }
+#endif
 
   sourceseg = FP_SEG(source);
   sourceoff = FP_OFF(source);
@@ -511,6 +523,8 @@ asm	mov	bx,[headptr]		// back to the head node for next bit
 asm	cmp	di,ax				// done?
 asm	jne	expandshort
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 //
 // perform screenhack if needed
 //
@@ -528,6 +542,7 @@ asm	mov	ax,[endoff]
 asm	jmp	expandshort
 
 notscreen:;
+#endif
 	}
 	else
 	{
@@ -868,7 +883,10 @@ asm	mov	ds,ax
 
 void CAL_SetupGrFile (void)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	char fname[13];
+#endif
 	int handle;
 	memptr compseg;
 	// *** S3DNA RESTORATION ***
@@ -889,12 +907,19 @@ void CAL_SetupGrFile (void)
 // load ???dict.ext (huffman dictionary for graphics files)
 //
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if ((handle = open(GREXT"DICT."EXTENSION,
+		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
+#else
 	strcpy(fname,gdictname);
 	strcat(fname,extension);
 
 	if ((handle = open(fname,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
+#endif
 
 	read(handle, &grhuffman, sizeof(grhuffman));
 	close(handle);
@@ -904,12 +929,19 @@ void CAL_SetupGrFile (void)
 //
 	MM_GetPtr (&(memptr)grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if ((handle = open(GREXT"HEAD."EXTENSION,
+		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
+#else
 	strcpy(fname,gheadname);
 	strcat(fname,extension);
 
 	if ((handle = open(fname,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
+#endif
 
 	CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 
@@ -921,12 +953,19 @@ void CAL_SetupGrFile (void)
 //
 // Open the graphics file, leaving it open until the game is finished
 //
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
+	if (grhandle == -1)
+		Quit ("Can't open "GREXT"GRAPH."EXTENSION"!");
+#else
 	strcpy(fname,gfilename);
 	strcat(fname,extension);
 
 	grhandle = open(fname, O_RDONLY | O_BINARY);
 	if (grhandle == -1)
 		CA_CannotOpen(fname);
+#endif
 
 
 //
@@ -936,7 +975,12 @@ void CAL_SetupGrFile (void)
 	CAL_GetGrChunkLength(STRUCTPIC);		// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
 	CA_FarRead (grhandle,compseg,chunkcomplen);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	CAL_HuffExpand (compseg, (byte huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman);
+#else
 	CAL_HuffExpand (compseg, (byte huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman,false);
+#endif
 	MM_FreePtr(&compseg);
 }
 
@@ -956,7 +1000,10 @@ void CAL_SetupMapFile (void)
 	int	i;
 	int handle;
 	long length,pos;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	char fname[13];
+#endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	printf("Loading maps...\n");
@@ -966,12 +1013,19 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef MAPHEADERLINKED
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if ((handle = open("MAPHEAD."EXTENSION,
+		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		Quit ("Can't open MAPHEAD."EXTENSION"!");
+#else
 	strcpy(fname,mheadname);
 	strcat(fname,extension);
 
 	if ((handle = open(fname,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
+#endif
 
 	length = filelength(handle);
 	MM_GetPtr (&(memptr)tinf,length);
@@ -987,12 +1041,25 @@ void CAL_SetupMapFile (void)
 // open the data file
 //
 #ifdef CARMACIZED
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if ((maphandle = open("GAMEMAPS."EXTENSION,
+		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		Quit ("Can't open GAMEMAPS."EXTENSION"!");
+#else
 	strcpy(fname,"GAMEMAPS.");
 	strcat(fname,extension);
 
 	if ((maphandle = open(fname,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
+#endif
+#else
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if ((maphandle = open("MAPTEMP."EXTENSION,
+		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		Quit ("Can't open MAPTEMP."EXTENSION"!");
 #else
 	strcpy(fname,mfilename);
 	strcat(fname,extension);
@@ -1000,6 +1067,7 @@ void CAL_SetupMapFile (void)
 	if ((maphandle = open(fname,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
+#endif
 #endif
 
 //
@@ -1043,7 +1111,10 @@ void CAL_SetupAudioFile (void)
 {
 	int handle;
 	long length;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	char fname[13];
+#endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	printf("Loading sound headers...\n");
@@ -1053,12 +1124,19 @@ void CAL_SetupAudioFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef AUDIOHEADERLINKED
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if ((handle = open("AUDIOHED."EXTENSION,
+		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		Quit ("Can't open AUDIOHED."EXTENSION"!");
+#else
 	strcpy(fname,aheadname);
 	strcat(fname,extension);
 
 	if ((handle = open(fname,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
+#endif
 
 	length = filelength(handle);
 	MM_GetPtr (&(memptr)audiostarts,length);
@@ -1074,12 +1152,19 @@ void CAL_SetupAudioFile (void)
 // open the data file
 //
 #ifndef AUDIOHEADERLINKED
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if ((audiohandle = open("AUDIOT."EXTENSION,
+		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+		Quit ("Can't open AUDIOT."EXTENSION"!");
+#else
 	strcpy(fname,afilename);
 	strcat(fname,extension);
 
 	if ((audiohandle = open(fname,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
+#endif
 #else
 	if ((audiohandle = open("AUDIO."EXTENSION,
 		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
@@ -1221,7 +1306,12 @@ void CA_CacheAudioChunk (int chunk)
 	MM_GetPtr (&(memptr)audiosegs[chunk],expanded);
 	if (mmerror)
 		goto done;
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	CAL_HuffExpand (source,audiosegs[chunk],expanded,audiohuffman);
+#else
 	CAL_HuffExpand (source,audiosegs[chunk],expanded,audiohuffman,false);
+#endif
 
 done:
 	if (compressed>BUFFERSIZE)
@@ -1337,9 +1427,73 @@ void CAL_ExpandGrChunk (int chunk, byte far *source)
 	MM_GetPtr (&grsegs[chunk],expanded);
 	if (mmerror)
 		return;
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	CAL_HuffExpand (source,grsegs[chunk],expanded,grhuffman);
+#else
 	CAL_HuffExpand (source,grsegs[chunk],expanded,grhuffman,false);
+#endif
 }
 
+
+// *** ALPHA RESTORATION ***
+// A seemingly unused function very similar to CA_CacheGrChunk,
+// right from Catacomb 3-D
+#if (GAMEVER_WOLFREV <= 19920312L)
+/*
+======================
+=
+= CAL_ReadGrChunk
+=
+= Gets a chunk off disk, optimizing reads to general buffer
+=
+======================
+*/
+
+void CAL_ReadGrChunk (int chunk)
+{
+	long	pos,compressed;
+	memptr	bigbufferseg;
+	byte	far *source;
+	int		next;
+
+//
+// load the chunk into a buffer, either the miscbuffer if it fits, or allocate
+// a larger buffer
+//
+	pos = GRFILEPOS(chunk);
+	if (pos<0)							// $FFFFFFFF start is a sparse tile
+	  return;
+
+	next = chunk +1;
+	while (GRFILEPOS(next) == -1)		// skip past any sparse tiles
+		next++;
+
+	compressed = GRFILEPOS(next)-pos;
+
+	lseek(grhandle,pos,SEEK_SET);
+
+	if (compressed<=BUFFERSIZE)
+	{
+		CA_FarRead(grhandle,bufferseg,compressed);
+		source = bufferseg;
+	}
+	else
+	{
+		MM_GetPtr(&bigbufferseg,compressed);
+		if (mmerror)
+			return;
+		MM_SetLock (&bigbufferseg,true);
+		CA_FarRead(grhandle,bigbufferseg,compressed);
+		source = bigbufferseg;
+	}
+
+	CAL_ExpandGrChunk (chunk,source);
+
+	if (compressed>BUFFERSIZE)
+		MM_FreePtr(&bigbufferseg);
+}
+#endif // GAMEVER_WOLFREV <= 19920312L
 
 /*
 ======================
@@ -1402,6 +1556,8 @@ void CA_CacheGrChunk (int chunk)
 
 
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 //==========================================================================
 
 /*
@@ -1448,6 +1604,7 @@ void CA_CacheScreen (int chunk)
 	VW_MarkUpdateBlock (0,0,319,199);
 	MM_FreePtr(&bigbufferseg);
 }
+#endif // GAMEVER_WOLFREV > 19920312L
 
 //==========================================================================
 
@@ -1549,14 +1706,20 @@ void CA_CacheMap (int mapnum)
 
 void CA_UpLevel (void)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	int	i;
+#endif
 
 	if (ca_levelnum==7)
 		Quit ("CA_UpLevel: Up past level 7!");
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	for (i=0;i<NUMCHUNKS;i++)
 		if (grsegs[i])
 			MM_SetPurge (&(memptr)grsegs[i],3);
+#endif
 	ca_levelbit<<=1;
 	ca_levelnum++;
 }
@@ -1801,6 +1964,8 @@ void CA_CacheMarks (void)
 		}
 }
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 void CA_CannotOpen(char *string)
 {
  char str[30];
@@ -1810,3 +1975,4 @@ void CA_CannotOpen(char *string)
  strcat(str,"!\n");
  Quit (str);
 }
+#endif

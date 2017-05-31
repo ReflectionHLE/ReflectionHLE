@@ -20,6 +20,12 @@
 
 //--------------------------------------------------------------------------
 
+// *** ALPHA RESTORATION ***
+// Originally defined in even earlier revisions (Keen Dreams, Catacomb 3-D)
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define EXTENSION	"WL1"
+#endif
+
 extern	char		far signon;
 
 #define	introscn	signon

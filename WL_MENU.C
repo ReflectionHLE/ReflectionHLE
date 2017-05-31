@@ -1421,7 +1421,12 @@ void DrawNewGame(void)
 //
 void DrawNewGameDiff(int w)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	VWB_DrawPic(NM_X+185,NM_Y+7,w+C_EASYPIC);
+#else
 	VWB_DrawPic(NM_X+185,NM_Y+7,w+C_BABYMODEPIC);
+#endif
 }
 
 
