@@ -759,7 +759,10 @@ typedef enum {
 	bo_cross,
 	bo_chalice,
 	bo_bible,
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	bo_crown,
+#endif
 	bo_clip,
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -770,6 +773,8 @@ typedef enum {
 	bo_machinegun,
 	bo_chaingun,
 	bo_food,
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	bo_fullheal
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920610L)
@@ -789,6 +794,7 @@ typedef enum {
 #else
 	bo_spear
 #endif
+#endif // GAMEVER_WOLFREV > 19920312L
 #endif
 } stat_t;
 
@@ -1414,7 +1420,10 @@ extern	unsigned	postwidth;
 
 extern	int		horizwall[],vertwall[];
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 extern	unsigned	pwallpos;
+#endif
 
 
 fixed	FixedByFrac (fixed a, fixed b);
@@ -1529,7 +1538,10 @@ extern	boolean		running;
 extern	long		thrustspeed;
 extern	unsigned	plux,pluy;		// player coordinates scaled to unsigned
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 extern	int			anglefrac;
+#endif
 extern	int			facecount;
 
 // *** S3DNA RESTORATION ***
@@ -1595,10 +1607,13 @@ extern	byte		far areaconnect[NUMAREAS][NUMAREAS];
 
 extern	boolean		areabyplayer[NUMAREAS];
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 extern unsigned	pwallstate;
 extern unsigned	pwallpos;			// amount a pushable wall has been moved (0-63)
 extern unsigned	pwallx,pwally;
 extern int			pwalldir;
+#endif
 
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
@@ -1612,10 +1627,16 @@ void SpawnExit (int tilex, int tiley, boolean secret);
 #endif
 void SpawnDoor (int tilex, int tiley, boolean vertical, int lock);
 void MoveDoors (void);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 void MovePWalls (void);
+#endif
 void OpenDoor (int door);
 void PlaceItemType (int itemtype, int tilex, int tiley);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 void PushWall (int checkx, int checky, int dir);
+#endif
 void OperateDoor (int door);
 void InitAreas (void);
 #endif

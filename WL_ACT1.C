@@ -126,8 +126,14 @@ struct
 //
 // NEW PAGE
 //
+// *** ALPHA RESTORATION *** - FIXME recheck later
+#if (GAMEVER_WOLFREV <= 19920312L)
+{SPR_STAT_32},			// crown           spr5v
+{SPR_STAT_33},		// one up          "
+#else
 {SPR_STAT_32,bo_crown},			// crown           spr5v
 {SPR_STAT_33,bo_fullheal},		// one up          "
+#endif
 {SPR_STAT_34,bo_gibs},			// gibs            "
 {SPR_STAT_35,block},			// barrel          "
 {SPR_STAT_36,block},			// well            "
@@ -240,6 +246,8 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_cross:
 	case	bo_chalice:
 	case	bo_bible:
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	case	bo_crown:
 	case	bo_fullheal:
 	// *** S3DNA RESTORATION ***
@@ -248,6 +256,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 #endif
 		if (!loadedgame)
 		  gamestate.treasuretotal++;
+#endif // GAMEVER_WOLFREV > 19920312L
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -453,7 +462,10 @@ void InitAreas (void)
 void InitDoorList (void)
 {
 	memset (areabyplayer,0,sizeof(areabyplayer));
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	_fmemset (areaconnect,0,sizeof(areaconnect));
+#endif
 
 	lastdoorobj = &doorobjlist[0];
 	doornum = 0;
@@ -845,6 +857,8 @@ void MoveDoors (void)
 }
 
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 /*
 =============================================================================
 
@@ -1061,4 +1075,5 @@ void MovePWalls (void)
 #endif
 
 }
+#endif // GAMEVER_WOLFREV > 19920312L
 

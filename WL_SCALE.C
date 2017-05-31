@@ -83,9 +83,17 @@ void SetupScaling (int maxscaleheight)
 		if (scaledirectory[i])
 			MM_FreePtr (&(memptr)scaledirectory[i]);
 		if (i>=stepbytwo)
+			// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+			i++;
+#else
 			i += 2;
+#endif
 	}
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	memset (scaledirectory,0,sizeof(scaledirectory));
+#endif
 
 	MM_SortMem ();
 
@@ -99,7 +107,12 @@ void SetupScaling (int maxscaleheight)
 	{
 		BuildCompScale (i*2,&(memptr)scaledirectory[i]);
 		if (i>=stepbytwo)
+			// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+			i++;
+#else
 			i+= 2;
+#endif
 	}
 	MM_FreePtr (&(memptr)work);
 
@@ -117,9 +130,14 @@ void SetupScaling (int maxscaleheight)
 		{
 			scaledirectory[i+1] = scaledirectory[i];
 			fullscalefarcall[i+1] = fullscalefarcall[i];
+			// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+			i++;
+#else
 			scaledirectory[i+2] = scaledirectory[i];
 			fullscalefarcall[i+2] = fullscalefarcall[i];
 			i+=2;
+#endif
 		}
 	}
 	scaledirectory[0] = scaledirectory[1];

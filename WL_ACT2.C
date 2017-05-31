@@ -16,6 +16,10 @@
 #define BJRUNSPEED	2048
 #define BJJUMPSPEED	680
 
+// *** ALPHA RESTORATION *** - FIXME! TEMPORARY HACK
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define SelectRunDir(o)
+#endif
 
 /*
 =============================================================================
@@ -4655,6 +4659,6 @@ void	A_StartDeathCam (objtype *ob)
 
 #endif // GAMEVER_NOAH3D
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV > 19920505L
 
 #endif
