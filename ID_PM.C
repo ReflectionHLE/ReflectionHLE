@@ -1006,15 +1006,157 @@ void
 PM_Preload(boolean (*update)(word current,word total))
 {
 	int				i,j,
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+					page,totalxms,oogypage;
+#else
 					page,oogypage;
+#endif
 	word			current,total,
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+					totalnonxms,
+#else
 					totalnonxms,totalxms,
+#endif
 					mainfree,maintotal,
 					emsfree,emstotal,
 					xmsfree,xmstotal;
 	memptr			addr;
 	PageListStruct	far *p;
 
+	// *** ALPHA RESTORATION *** - FIXME: Share code sections?
+#if (GAMEVER_WOLFREV <= 19920312L)
+	j = 0;
+	for (i = totalnonxms = 0;i < ChunksInFile;i++)
+	{
+		if ( PMPages[i].emsPage != -1 || PMPages[i].mainPage != -1 )
+			continue;			// already in main mem
+		totalnonxms++;
+	}
+
+	emsfree = EMSPagesAvail - EMSPagesUsed;
+	if (EMSPresent && emsfree)
+	{
+		emstotal = (totalnonxms > emsfree) ? emsfree : totalnonxms;
+		totalnonxms -= emstotal;
+	}
+	else
+		emstotal = 0;
+
+	mainfree = MainPagesAvail - MainPagesUsed;
+	if (MainPresent && mainfree)
+		maintotal = (totalnonxms > mainfree) ? mainfree : totalnonxms;
+	else
+		maintotal = 0;
+
+	xmsfree = XMSPagesAvail - XMSPagesUsed;
+	if (XMSPresent && (xmsfree > 1))
+	{
+		xmsfree--;
+		for (i = totalxms = 0;i < ChunksInFile;i++)
+			if (PMPages[i].xmsPage == -1)
+				totalxms++;
+
+		xmstotal = (totalxms > xmsfree) ? xmsfree : totalxms;
+	}
+	else
+		xmstotal = 0;
+
+	if (xmstotal)
+	{
+		if (maintotal)
+			maintotal--;
+		else if (emstotal)
+			emstotal--;
+	}
+
+
+	total = maintotal + emstotal + xmstotal;
+
+	if (!total)
+		return;
+
+	current = page = 0;
+
+//
+// cache main/ems blocks
+//
+	while (maintotal + emstotal > current)
+	{
+		while ( ( PMPages[page].mainPage != -1 || PMPages[page].emsPage != -1 )
+			&&	page < ChunksInFile )
+			page++;
+
+		if (page >= ChunksInFile)
+			break;
+
+		PM_GetPage(page);
+
+		if (update(current,total))
+		{
+			j = 1;
+			break;
+		}
+		current++;
+		page++;
+	}
+
+//
+// load stuff to XMS
+//
+	if (xmstotal && !j)
+	{
+		if (page >= ChunksInFile)
+			oogypage = 0;
+		else
+			oogypage = page;
+		addr = PM_GetPage(oogypage);
+		if (!addr)
+			Quit("PM_Preload: XMS buffer failed");
+
+		if (page + xmstotal >= ChunksInFile)
+			page = ChunksInFile - xmstotal;
+
+		p = &PMPages[page];
+
+		while (current < total)
+		{
+			while ( PMPages[page].xmsPage != -1 && page < ChunksInFile)
+			{
+				page++;
+				p++;
+			}
+
+			if (page >= ChunksInFile)
+				break;
+
+			p->xmsPage = XMSPagesUsed++;
+			if (XMSPagesUsed > XMSPagesAvail)
+				Quit("PM_Preload: Exceeded XMS pages");
+			if (p->length > PMPageSize)
+				Quit("PM_Preload: Page too long");
+
+			PML_ReadFromFile((byte far *)addr,p->offset,p->length);
+			PML_CopyToXMS((byte far *)addr,p->xmsPage,p->length);
+
+			if (update(current,total))
+			{
+				j = 1;
+				break;
+			}
+			current++;
+			page++;
+			p++;
+		}
+
+		p = &PMPages[oogypage];
+		PML_ReadFromFile((byte far *)addr,p->offset,p->length);
+	}
+
+	update(total,total);
+
+#else // GAMEVER_WOLFREV > 19920312L
 	mainfree = (MainPagesAvail - MainPagesUsed) + (EMSPagesAvail - EMSPagesUsed);
 	xmsfree = (XMSPagesAvail - XMSPagesUsed);
 
@@ -1122,6 +1264,7 @@ PM_Preload(boolean (*update)(word current,word total))
 if (update)
 #endif
 	update(total,total);
+#endif // GAMEVER_WOLFREV <= 19920312L
 }
 
 /////////////////////////////////////////////////////////////////////////////
