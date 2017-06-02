@@ -231,9 +231,15 @@ extern	void	SD_Startup(void),
 				SD_Shutdown(void),
 				SD_Default(boolean gotit,SDMode sd,SMMode sm),
 
+// *** ALPHA RESTORATION ***
+// Not exactly pretty, but works
+#if (GAMEVER_WOLFREV <= 19920312L)
+		SD_PlaySound(soundnames sound),
+#else
 				SD_PositionSound(int leftvol,int rightvol);
 extern	boolean	SD_PlaySound(soundnames sound);
 extern	void	SD_SetPosition(int leftvol,int rightvol),
+#endif
 				SD_StopSound(void),
 				SD_WaitSoundDone(void),
 
@@ -250,8 +256,9 @@ extern	word	SD_SoundPlaying(void);
 
 extern	void	SD_SetDigiDevice(SDSMode),
 				// *** ALPHA RESTORATION ***/
-				// FIXME - HUGE HACK! Need a separate prototype instead
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV <= 19920312L)
+				SD_PlayDigitized(word which),
+#else
 				SD_PlayDigitized(word which,int leftpos,int rightpos),
 #endif
 				SD_StopDigitized(void),

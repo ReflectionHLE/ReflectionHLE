@@ -53,6 +53,15 @@
 #define GAMEVER_COND_STATIC
 #endif
 
+// *** ALPHA RESTORATION ***
+// A similar definition for SD_PlaySound
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define GAMEVER_COND_RET(x) return
+#else
+#define GAMEVER_COND_RET(x) return(x)
+#endif
+
+
 
 #define	SDL_SoundFinished()	{SoundNumber = SoundPriority = 0;}
 
@@ -89,8 +98,13 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 				AdLibPresent,
 #endif
 				SoundBlasterPresent,SBProPresent,
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
+				NeedsDigitized,NeedsMusic;
+#else
 				NeedsDigitized,NeedsMusic,
 				SoundPositioned;
+#endif
 	SDMode		SoundMode;
 	SMMode		MusicMode;
 	SDSMode		DigiMode;
@@ -110,7 +124,12 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 static	boolean			DigiPlaying;
 #endif
 static	boolean			SD_Started;
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		boolean			UseFastService;
+#else
 		GAMEVER_COND_STATIC boolean			nextsoundpos;
+#endif
 		longword		TimerDivisor,TimerCount;
 static	char			*ParmStrings[] =
 						{
@@ -142,7 +161,10 @@ static	word			DigiPriority;
 		soundnames		SoundNumber,DigiNumber;
 		word			SoundPriority,DigiPriority;
 #endif
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		GAMEVER_COND_STATIC int				LeftPosition,RightPosition;
+#endif
 		void interrupt	(*t0OldService)(void);
 		long			LocalTime;
 		GAMEVER_COND_STATIC word			TimerRate;
@@ -175,11 +197,15 @@ static	boolean					sbNoCheck,sbNoProCheck;
 static	volatile boolean		sbSamplePlaying;
 static	byte					sbOldIntMask = -1;
 static	volatile byte			huge *sbNextSegPtr;
+// *** ALPHA RESTORATION ***
+// Use hardcoded DMA channel, as in Keen Dreams
+#if (GAMEVER_WOLFREV > 19920312L)
 static	byte					sbDMA = 1,
 								sbDMAa1 = 0x83,sbDMAa2 = 2,sbDMAa3 = 3,
 								sba1Vals[] = {0x87,0x83,0,0x82},
 								sba2Vals[] = {0,2,0,6},
 								sba3Vals[] = {1,3,0,7};
+#endif
 static	int						sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
 								sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf,-1,-1,-1};
 static	volatile longword		sbNextSegLen;
@@ -265,8 +291,8 @@ asm	cli
 	outportb(0x43,0x36);				// Change timer 0
 	outportb(0x40,speed);
 	outportb(0x40,speed >> 8);
-	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+	// *** S3DNA + ALPHA RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 	// Kludge to handle special case for digitized PC sounds
 	if (TimerDivisor == (1192030 / (TickBase * 100)))
 		TimerDivisor = (1192030 / (TickBase * 10));
@@ -302,18 +328,38 @@ SDL_SetTimerSpeed(void)
 	word	rate;
 	void interrupt	(*isr)(void);
 
-	// *** S3DNA + ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_NOAH3D
-#ifdef GAMEVER_ALPHA // FIXME DEBUG
+	// *** ALPHA RESTORATION - FIXME Share code sections? ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 	if
+	(
+		(MusicMode == smm_AdLib)
+	||	((DigiMode == sds_SoundSource) && DigiPlaying)
+	)
+	{
+		rate = TickBase * 10;
+		UseFastService = true;
+	}
+	else
+	{
+		rate = TickBase * 2;
+		UseFastService = false;
+	}
+
+	if (rate != TimerRate)
+	{
+		setvect(8,UseFastService ? SDL_t0FastAsmService : SDL_t0SlowAsmService);
+		SDL_SetIntsPerSec(rate);
+		TimerRate = rate;
+	}
 #else
+	// *** S3DNA RSETORATION ***
+#ifndef GAMEVER_NOAH3D
 	if ((DigiMode == sds_PC) && DigiPlaying)
 	{
 		rate = TickBase * 100;
 		isr = SDL_t0ExtremeAsmService;
 	}
 	else if
-#endif
 	(
 		(MusicMode == smm_AdLib)
 	||	((DigiMode == sds_SoundSource) && DigiPlaying)
@@ -337,6 +383,7 @@ SDL_SetTimerSpeed(void)
 		SDL_SetIntsPerSec(rate);
 		TimerRate = rate;
 	}
+#endif // GAMEVER_WOLFREV <= 19920312L
 }
 
 //
@@ -428,15 +475,32 @@ SDL_SBPlaySeg(volatile byte huge *data,longword length)
 asm	pushf
 asm	cli
 #endif
+	// *** ALPHA RESTORATION ***
+	// Use hardcoded DMA channel, as in Keen Dreams
+#if (GAMEVER_WOLFREV <= 19920312L)
+	outportb(0x0a,5);							// Mask off channel 1 DMA
+#else
 	outportb(0x0a,sbDMA | 4);					// Mask off DMA on channel sbDMA
+#endif
 	outportb(0x0c,0);							// Clear byte ptr flip-flop to lower byte
 	outportb(0x0b,0x49);						// Set transfer mode for D/A conv
+	// *** ALPHA RESTORATION ***
+	// Use hardcoded DMA channel, as in Keen Dreams
+#if (GAMEVER_WOLFREV <= 19920312L)
+	outportb(0x02,(byte)dataofs);				// Give LSB of address
+	outportb(0x02,(byte)(dataofs >> 8));		// Give MSB of address
+	outportb(0x83,(byte)datapage);				// Give page of address
+	outportb(0x03,(byte)uselen);				// Give LSB of length
+	outportb(0x03,(byte)(uselen >> 8));			// Give MSB of length
+	outportb(0x0a,1);							// Turn on channel 1 DMA
+#else
 	outportb(sbDMAa2,(byte)dataofs);			// Give LSB of address
 	outportb(sbDMAa2,(byte)(dataofs >> 8));		// Give MSB of address
 	outportb(sbDMAa1,(byte)datapage);			// Give page of address
 	outportb(sbDMAa3,(byte)uselen);				// Give LSB of length
 	outportb(sbDMAa3,(byte)(uselen >> 8));		// Give MSB of length
 	outportb(0x0a,sbDMA);						// Re-enable DMA on channel sbDMA
+#endif
 
 	// Start playing the thing
 
@@ -550,6 +614,8 @@ asm	popf
 #endif
 }
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_PositionSBP() - Sets the attenuation levels for the left and right
@@ -586,6 +652,7 @@ asm	cli
 asm	popf
 #endif
 }
+#endif // GAMEVER_WOLFREV > 19920312L
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -656,12 +723,20 @@ SDL_DetectSoundBlaster(int port)
 		if (SDL_CheckSB(2))			// Check default before scanning
 			return(true);
 
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		if (SDL_CheckSB(4))			// Check other SB Pro location before scan
 			return(true);
+#endif
 
 		for (i = 1;i <= 6;i++)		// Scan through possible SB locations
 		{
+			// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+			if (i == 2)
+#else
 			if ((i == 2) || (i == 4))
+#endif
 				continue;
 
 			if (SDL_CheckSB(i))		// If found at this address,
@@ -673,6 +748,9 @@ SDL_DetectSoundBlaster(int port)
 		return(SDL_CheckSB(port));	// User specified address or default
 }
 
+// *** ALPHA RESTORATION ***
+// Use hardcoded DMA channel, as in Keen Dreams
+#if (GAMEVER_WOLFREV > 19920312L)
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SBSetDMA() - Sets the DMA channel to be used by the SoundBlaster
@@ -690,6 +768,7 @@ SDL_SBSetDMA(byte channel)
 	sbDMAa2 = sba2Vals[channel];
 	sbDMAa3 = sba3Vals[channel];
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -701,6 +780,8 @@ SDL_StartSB(void)
 {
 	byte	timevalue,test;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	sbIntVec = sbIntVectors[sbInterrupt];
 	if (sbIntVec < 0)
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -708,6 +789,7 @@ SDL_StartSB(void)
 		Quit("SDL_StartSB: Illegal interrupt number for SoundBlaster");
 #else
 		Quit("SDL_StartSB: Illegal or unsupported interrupt number for SoundBlaster");
+#endif
 #endif
 
 	sbOldIntHand = getvect(sbIntVec);	// Get old interrupt handler
@@ -729,6 +811,8 @@ SDL_StartSB(void)
 	sbWriteDelay();
 	sbOut(sbWriteData,timevalue);
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920505L)
 	SBProPresent = false;
@@ -771,6 +855,7 @@ SDL_StartSB(void)
 			sbOut(sbpMixerData,0);				// 0=off,2=on
 		}
 	}
+#endif // GAMEVER_WOLFREV > 19920312L
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -783,6 +868,8 @@ SDL_ShutSB(void)
 {
 	SDL_SBStopSample();
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	if (SBProPresent)
 	{
 		// Restore FM output levels (SB Pro)
@@ -793,6 +880,7 @@ SDL_ShutSB(void)
 		sbOut(sbpMixerAddr,sbpmVoiceVol);
 		sbOut(sbpMixerData,sbpOldVOCMix);
 	}
+#endif
 
 	setvect(sbIntVec,sbOldIntHand);		// Set vector back
 }
@@ -813,12 +901,18 @@ static void
 #endif
 SDL_SSStopSample(void)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 asm	pushf
 asm	cli
+#endif
 
 	(long)ssSample = 0;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 asm	popf
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -995,8 +1089,13 @@ SDL_DetectSoundSource(void)
 //	PC Sound code
 //
 
-// *** S3DNA + ALPHA VERSION RESTORATION ***
-#if (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
+// *** S3DNA + ALPHA RESTORATION ***
+// PC sampled sound support was not present in the alpha, and was
+// removed in S3DNA. Furthermore, the usual PC sound playback routines
+// were originally located *after* the various digitized sound
+// related functions in the alpha.
+#if (GAMEVER_WOLFREV > 19920312L)
+#ifndef GAMEVER_NOAH3D
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_PCPlaySample() - Plays the specified sample on the PC speaker
@@ -1168,6 +1267,7 @@ asm	out	0x61,al
 
 asm	popf
 }
+#endif // GAMEVER_WOLFREV > 19920312L
 
 //
 //	Stuff for digitized sounds
@@ -1188,7 +1288,12 @@ asm	out	dx,al
 #endif
 
 	addr = PM_GetSoundPage(page);
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	PM_SetPageLock(page,pml_Locked);
+#else
 	PM_SetPageLock(PMSoundStart + page,pml_Locked);
+#endif
 
 #if 0	// for debugging
 asm	mov	dx,STATUS_REGISTER_1
@@ -1319,6 +1424,8 @@ SD_Poll(void)
 #endif
 }
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 void
 SD_SetPosition(int leftpos,int rightpos)
 {
@@ -1347,9 +1454,15 @@ SD_SetPosition(int leftpos,int rightpos)
 		break;
 	}
 }
+#endif // GAMEVER_WOLFREV > 19920312L
 
 void
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+SD_PlayDigitized(word which)
+#else
 SD_PlayDigitized(word which,int leftpos,int rightpos)
+#endif
 {
 	word	len;
 	memptr	addr;
@@ -1370,7 +1483,10 @@ SD_PlayDigitized(word which,int leftpos,int rightpos)
 		Quit("SD_PlayDigitized: bad sound number");
 #endif
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	SD_SetPosition(leftpos,rightpos);
+#endif
 
 	DigiPage = DigiList[(which * 2) + 0];
 	DigiLeft = DigiList[(which * 2) + 1];
@@ -1408,10 +1524,11 @@ SDL_DigitizedDone(void)
 			DigiPlaying = false;
 			DigiLastSegment = false;
 			// *** S3DNA + SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 #if (GAMEVER_WOLFREV <= 19920505L)
 			DigiPriority = 0;
 #endif
-#if (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
+#ifndef GAMEVER_NOAH3D
 			if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 			{
 				SDL_SoundFinished();
@@ -1428,6 +1545,7 @@ SDL_DigitizedDone(void)
 #ifdef GAMEVER_NOAH3D
 			SDL_SBStopSample();
 #endif
+#endif // GAMEVER_WOLFREV > 19920312L
 		}
 		else
 			DigiMissed = true;
@@ -1450,8 +1568,8 @@ SD_SetDigiDevice(SDSMode mode)
 	case sds_SoundBlaster:
 		if (!SoundBlasterPresent)
 		{
-			// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+			// *** S3DNA + ALPHA RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 			if (SoundSourcePresent)
 				mode = sds_SoundSource;
 			else
@@ -1518,6 +1636,81 @@ SDL_SetupDigi(void)
 		DigiMap[i] = -1;
 }
 
+// *** ALPHA RESTORATION ***
+// These PC sound code routines were originally located here. Note
+// that there's no copy of the commented out SDL_PCService routine.
+#if (GAMEVER_WOLFREV <= 19920312L)
+//
+//	PC Sound code
+//
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	SDL_PCPlaySound() - Plays the specified sound on the PC speaker
+//
+///////////////////////////////////////////////////////////////////////////
+#ifdef	_MUSE_
+void
+#else
+static void
+#endif
+SDL_PCPlaySound(PCSound far *sound)
+{
+asm	pushf
+asm	cli
+
+	pcLastSample = -1;
+	pcLengthLeft = sound->common.length;
+	pcSound = sound->data;
+
+asm	popf
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	SDL_PCStopSound() - Stops the current sound playing on the PC Speaker
+//
+///////////////////////////////////////////////////////////////////////////
+#ifdef	_MUSE_
+void
+#else
+static void
+#endif
+SDL_PCStopSound(void)
+{
+asm	pushf
+asm	cli
+
+	(long)pcSound = 0;
+
+asm	in	al,0x61		  	// Turn the speaker off
+asm	and	al,0xfd			// ~2
+asm	out	0x61,al
+
+asm	popf
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	SDL_ShutPC() - Turns off the pc speaker
+//
+///////////////////////////////////////////////////////////////////////////
+static void
+SDL_ShutPC(void)
+{
+asm	pushf
+asm	cli
+
+	pcSound = 0;
+
+asm	in	al,0x61		  	// Turn the speaker & gate off
+asm	and	al,0xfc			// ~3
+asm	out	0x61,al
+
+asm	popf
+}
+#endif // GAMEVER_WOLFREV <= 19920312L
+
 // 	AdLib Code
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1540,13 +1733,23 @@ asm	in	al,dx
 asm	in	al,dx
 asm	in	al,dx
 asm	in	al,dx
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+asm	mov	dx,0x389
+#else
 asm	inc	dx
+#endif
 asm	mov	al,[b]
 asm	out	dx,al
 
 asm	popf
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+asm	mov	dx,0x388
+#else
 asm	dec	dx
+#endif
 asm	in	al,dx
 asm	in	al,dx
 asm	in	al,dx
@@ -2437,14 +2640,22 @@ SDL_StartDevice(void)
 boolean
 SD_SetSoundMode(SDMode mode)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	boolean	result;
+#else
 	boolean	result = false;
+#endif
 	word	tableoffset;
 
 	SD_StopSound();
 
 #ifndef	_MUSE_
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	if ((mode == sdm_AdLib) && !AdLibPresent)
 		mode = sdm_PC;
+#endif
 
 	switch (mode)
 	{
@@ -2465,6 +2676,11 @@ SD_SetSoundMode(SDMode mode)
 			result = true;
 		}
 		break;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	default:
+		result = false;
+#endif
 	}
 #else
 	result = true;
@@ -2493,7 +2709,12 @@ SD_SetSoundMode(SDMode mode)
 boolean
 SD_SetMusicMode(SMMode mode)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	boolean	result;
+#else
 	boolean	result = false;
+#endif
 
 	SD_FadeOutMusic();
 	while (SD_MusicPlaying())
@@ -2512,6 +2733,11 @@ SD_SetMusicMode(SMMode mode)
 			result = true;
 		}
 		break;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	default:
+		result = false;
+#endif
 	}
 
 	if (result)
@@ -2631,6 +2857,10 @@ SD_Startup(void)
 	{
 		AdLibPresent = SDL_DetectAdLib();
 		if (AdLibPresent && !sbNoCheck)
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+			SoundBlasterPresent = SDL_DetectSoundBlaster(-1);
+#else
 		{
 			int port = -1;
 			char *env = getenv("BLASTER");
@@ -2645,10 +2875,7 @@ SD_Startup(void)
 					switch (toupper(*env))
 					{
 					case 'A':
-						// *** ALPHA VERSION RESTORATION *** - FIXME HACK
-#ifndef GAMEVER_ALPHA
 						temp = strtol(env + 1,&env,16);
-#endif
 						if
 						(
 							(temp >= 0x210)
@@ -2660,10 +2887,7 @@ SD_Startup(void)
 							Quit("SD_Startup: Unsupported address value in BLASTER");
 						break;
 					case 'I':
-						// *** ALPHA VERSION RESTORATION *** - FIXME HACK
-#ifndef GAMEVER_ALPHA
 						temp = strtol(env + 1,&env,10);
-#endif
 						if
 						(
 							(temp >= 0)
@@ -2678,10 +2902,7 @@ SD_Startup(void)
 							Quit("SD_Startup: Unsupported interrupt value in BLASTER");
 						break;
 					case 'D':
-						// *** ALPHA VERSION RESTORATION *** - FIXME HACK
-#ifndef GAMEVER_ALPHA
 						temp = strtol(env + 1,&env,10);
-#endif
 						if ((temp == 0) || (temp == 1) || (temp == 3))
 							SDL_SBSetDMA(temp);
 						else
@@ -2698,6 +2919,7 @@ SD_Startup(void)
 			}
 			SoundBlasterPresent = SDL_DetectSoundBlaster(port);
 		}
+#endif // GAMEVER_WOLFREV <= 19920312L
 	}
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -2821,6 +3043,8 @@ SD_SetUserHook(void (* hook)(void))
 	SoundUserHook = hook;
 }
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SD_PositionSound() - Sets up a stereo imaging location for the next
@@ -2834,17 +3058,28 @@ SD_PositionSound(int leftvol,int rightvol)
 	RightPosition = rightvol;
 	nextsoundpos = true;
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SD_PlaySound() - plays the specified sound on the appropriate hardware
 //
 ///////////////////////////////////////////////////////////////////////////
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+void
+#else
 boolean
+#endif
 SD_PlaySound(soundnames sound)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	boolean		ispos;
+#endif
 	SoundCommon	far *s;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	int	lp,rp;
 
 	lp = LeftPosition;
@@ -2854,9 +3089,10 @@ SD_PlaySound(soundnames sound)
 
 	ispos = nextsoundpos;
 	nextsoundpos = false;
+#endif
 
 	if (sound == -1)
-		return(false);
+		GAMEVER_COND_RET(false);
 
 	s = MK_FP(SoundTable[sound],0);
 	if ((SoundMode != sdm_Off) && !s)
@@ -2869,7 +3105,7 @@ SD_PlaySound(soundnames sound)
 		if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 		{
 			if (s->priority < SoundPriority)
-				return(false);
+				GAMEVER_COND_RET(false);
 
 			SDL_PCStopSound();
 
@@ -2901,26 +3137,30 @@ SD_PlaySound(soundnames sound)
 #endif
 
 			if (s->priority < DigiPriority)
-				return(false);
+				GAMEVER_COND_RET(false);
 
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
+			// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 #if (GAMEVER_WOLFREV <= 19920505L)
 			SoundPositioned = ispos;
 #endif
 			SD_PlayDigitized(DigiMap[sound],lp,rp);
-			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920505L)
 			SoundPositioned = ispos;
 #endif
+#endif // GAMEVER_WOLFREV > 19920312L
 			DigiNumber = sound;
 			DigiPriority = s->priority;
+#if (GAMEVER_WOLFREV <= 19920312L)
+			SD_PlayDigitized(DigiMap[sound]);
+#endif
 		}
 
-		return(true);
+		GAMEVER_COND_RET(true);
 	}
 
 	if (SoundMode == sdm_Off)
-		return(false);
+		GAMEVER_COND_RET(false);
 	if (!s->length)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -2929,7 +3169,7 @@ SD_PlaySound(soundnames sound)
 		Quit("SD_PlaySound() - Zero length sound");
 #endif
 	if (s->priority < SoundPriority)
-		return(false);
+		GAMEVER_COND_RET(false);
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -2943,7 +3183,7 @@ SD_PlaySound(soundnames sound)
 		case HITWALLSND:
 		case SHOOTSND:
 		case SHOOTDOORSND:
-			return(false);
+			GAMEVER_COND_RET(false);
 		}
 #endif
 
@@ -2960,7 +3200,7 @@ SD_PlaySound(soundnames sound)
 	SoundNumber = sound;
 	SoundPriority = s->priority;
 
-	return(false);
+	GAMEVER_COND_RET(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3011,7 +3251,10 @@ SD_StopSound(void)
 		break;
 	}
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	SoundPositioned = false;
+#endif
 
 	SDL_SoundFinished();
 }

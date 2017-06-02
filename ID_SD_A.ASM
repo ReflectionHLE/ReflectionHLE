@@ -7,7 +7,7 @@
 	MODEL	MEDIUM,C
 	JUMPS
 
-	; *** S3DNA RESTORATION ***
+	; *** VERSIONS RESTORATION ***
 	INCLUDE 'VERSION.EQU'
 
 	INCLUDE 'ID_SD.EQU'
@@ -70,8 +70,9 @@ ENDIF
 count_time	dw	?
 count_fx	dw	?
 
-; *** S3DNA RESTORATION ***
+; *** S3DNA + ALPHA RESTORATION ***
 IFNDEF GAMEVER_NOAH3D
+IF GAMEVER_WOLFREV GT 19920312
 pcdtab	db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
 		db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
 		db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
@@ -89,6 +90,7 @@ pcdtab	db	00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b,00b
 		db	10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b
 		db	10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b,10b
 ENDIF
+ENDIF
 
 
 ;============================================================================
@@ -99,8 +101,11 @@ CODESEG
 IFNDEF GAMEVER_NOAH3D
 MyDS	dw	?
 
+; *** ALPHA RESTORATION ***
+IF GAMEVER_WOLFREV GT 19920312
 pcindicate	dw	?
 extreme		dw	?
+ENDIF
 
 	PROC	SDL_SetDS
 	PUBLIC	SDL_SetDS
@@ -283,8 +288,9 @@ ENDIF
 	iret
 	ENDM
 
-; *** S3DNA RESTORATION ***
+; *** S3DNA + ALPHA RESTORATION ***
 IFNDEF GAMEVER_NOAH3D
+IF GAMEVER_WOLFREV GT 19920312
 ;
 ;	SDL_IndicatePC
 ;
@@ -367,6 +373,7 @@ IFNDEF GAMEVER_NOAH3D
 ;	jmp	SDL_t0FastAsmService			; Drops through to SDL_t0FastAsmService
 
 	ENDP
+ENDIF ; GAMEVER_WOLFREV GT 19920312
 ENDIF ; GAMEVER_NOAH3D
 
 ;
