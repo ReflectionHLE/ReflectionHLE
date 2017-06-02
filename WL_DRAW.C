@@ -102,6 +102,10 @@ int		lastside;		// true for vertical
 long	lastintercept;
 int		lasttilehit;
 
+// *** ALPHA RESTORATION *** - A couple of unused variables
+#if (GAMEVER_WOLFREV <= 19920505L)
+int	someUnusedDrawVar1, someUunusedDrawVar2;
+#endif
 
 //
 // ray tracing variables

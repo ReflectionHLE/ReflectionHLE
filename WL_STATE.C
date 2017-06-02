@@ -1589,7 +1589,12 @@ void FirstSighting (objtype *ob)
 	// (Weirdly enough the alpha is like v1.4 here)
 #if (GAMEVER_WOLFREV <= 19920312L) || (GAMEVER_WOLFREV > 19920610L)
 	case ssobj:
+		// *** ALPHA RESTORATION *** - FIXME RECHECK THIS
+	#if (GAMEVER_WOLFREV <= 19920312L)
+		PlaySoundLocActor(HALTSND,ob);
+	#else
 		PlaySoundLocActor(SCHUTZADSND,ob);
+	#endif
 		NewState (ob,&s_sschase1);
 		ob->speed *= 4;			// go faster when chasing player
 		break;

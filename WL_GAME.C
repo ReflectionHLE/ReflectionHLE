@@ -838,14 +838,18 @@ void SetupGameLevel (void)
 // load the level
 //
 	// *** S3DNA + ALPHA RESTORATION ***
-#if (defined GAMEVER_NOAH3D) || (GAMEVER_WOLFREV <= 19920312L)
+#if (defined GAMEVER_NOAH3D)
 	CA_CacheMap (gamestate.mapon);
 
 	mapwidth = mapheaderseg[gamestate.mapon]->width;
 	mapheight = mapheaderseg[gamestate.mapon]->height;
 #else
+#if (GAMEVER_WOLFREV <= 19920312L)
+	CA_CacheMap (gamestate.mapon);
+#else
 	CA_CacheMap (gamestate.mapon+10*gamestate.episode);
 	mapon-=gamestate.episode*10;
+#endif
 
 	mapwidth = mapheaderseg[mapon]->width;
 	mapheight = mapheaderseg[mapon]->height;
@@ -1355,9 +1359,8 @@ void RecordDemo (void)
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
 	VW_FadeOut ();
-	SETFONTCOLOR(0,15);
-
 	NewGame (gd_easy);
+	SETFONTCOLOR(0,15);
 #else
 	SETFONTCOLOR(0,15);
 	VW_FadeOut ();

@@ -25,15 +25,28 @@ TEXT FORMATTING COMMANDS
 =============================================================================
 */
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define BACKCOLOR		4
+#else
 #define BACKCOLOR		0x11
+#endif
 
 
 #define WORDLIMIT		80
 #define FONTHEIGHT		10
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define	TOPMARGIN		10
+#define BOTTOMMARGIN		10
+#define LEFTMARGIN		10
+#define RIGHTMARGIN		10
+#else
 #define	TOPMARGIN		16
 #define BOTTOMMARGIN	32
 #define LEFTMARGIN		16
 #define RIGHTMARGIN		16
+#endif
 #define PICMARGIN		8
 #define TEXTROWS		((200-TOPMARGIN-BOTTOMMARGIN)/FONTHEIGHT)
 #define	SPACEWIDTH		7
@@ -434,7 +447,12 @@ void PageLayout (boolean shownumber)
 
 	oldfontcolor = fontcolor;
 
+	// *** ALPHA RESTORATION *** 
+#if (GAMEVER_WOLFREV <= 19920312L)
+	fontcolor = 0x0a;
+#else
 	fontcolor = 0;
+#endif
 
 //
 // clear the screen
@@ -536,6 +554,12 @@ void PageLayout (boolean shownumber)
 		#endif
 		itoa (numpages,str2,10);
 		strcat (str,str2);
+		// *** ALPHA RESTORATION *** 
+#if (GAMEVER_WOLFREV <= 19920312L)
+		fontcolor = 8;
+		py = 186;
+		px = 218;
+#else
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		fontcolor = 0x10;
@@ -553,6 +577,7 @@ void PageLayout (boolean shownumber)
 		px = 213;
 		#endif
 		#endif
+#endif // GAMEVER_WOLFREV <= 19920312L
 
 		VWB_DrawPropString (str);
 	}
@@ -742,7 +767,12 @@ void ShowArticle (char far *article)
 			VW_UpdateScreen ();
 			if (firstpage)
 			{
+				// *** ALPHA RESTORATION *** 
+#if (GAMEVER_WOLFREV <= 19920312L)
+				VL_FadeIn(0,255,&gamepal,30);
+#else
 				VL_FadeIn(0,255,&gamepal,10);
+#endif
 				// VW_FadeIn ()
 				firstpage = false;
 			}
@@ -892,8 +922,8 @@ void HelpScreens (void)
 
 
 
-	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+	// *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920610L)
 	MenuFadeOut();
 #else
 	VW_FadeOut();
@@ -925,7 +955,7 @@ void OrderingInfo (void)
 
 	MM_FreePtr (&layout);
 
-	MenuFadeOut();
+	VW_FadeOut();
 }
 
 // *** S3DNA (AND ALPHA) RESTORATION ***

@@ -67,8 +67,13 @@ char GAMEVER_COND_FARPTR endStrings[9][80]=
 #endif
 };
 #endif // GAMEVER_WOLFREV > 19920312L
-// *** ALPHA RESTORATION - FIXME TEST ***
+
+// *** ALPHA RESTORATION ***
+// Looks like these were originally defined here, with a few changes.
+// The yet-unused pickquick variable is defined for the purpose
+// of recreating the original EXE, albeit in a different location.
 #if (GAMEVER_WOLFREV <= 19920312L)
+int pickquick;
 int SaveGamesAvail[10],StartGame,SoundStatus=1;
 char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.WL1";
 #endif
@@ -371,7 +376,8 @@ int EpisodeSelect[6]={1};
 #endif
 
 
-// *** ALPHA RESTORATION - FIXME TEST ***
+// *** ALPHA RESTORATION ***
+// Looks like these were originally defined above, with a few changes
 #if (GAMEVER_WOLFREV > 19920312L)
 int SaveGamesAvail[10],StartGame,SoundStatus=1,pickquick;
 char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.";
@@ -4261,13 +4267,10 @@ void ReadAnyControl(ControlInfo *ci)
 ////////////////////////////////////////////////////////////////////
 int Confirm(char GAMEVER_COND_FARPTR *string)
 {
-	int xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
-
-
 	// *** ALPHA RESTORATION ***
 	// FIXME - Originally Message's code was *hardcoded* here
 #if (GAMEVER_WOLFREV <= 19920312L)
-	int h=0,w=0,mw=0;
+	int h=0,w=0,mw=0,xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
 	fontstruct _seg *font;
 
 
@@ -4297,6 +4300,9 @@ int Confirm(char GAMEVER_COND_FARPTR *string)
 	US_Print(string);
 	VW_UpdateScreen();
 #else // GAMEVER_WOLFREV > 19920312L
+	int xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
+
+
 	Message(string);
 #endif
 	IN_ClearKeysDown();

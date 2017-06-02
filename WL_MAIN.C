@@ -995,8 +995,10 @@ void FinishSignon (void)
 {
 
 #ifndef SPEAR
-	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+	// *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	VW_Bar (0,185,320,15,peekb(0xa000,0));
+#elif (GAMEVER_WOLFREV <= 19920610L)
 	VW_Bar (0,185,300,15,peekb(0xa000,0));
 #else
 	VW_Bar (0,189,300,11,peekb(0xa000,0));

@@ -8,7 +8,10 @@
 // Do NOT use any enum value to define a macro like NUMSOUNDS in a
 // "version agnostic" manner, this can lead to a bit different
 // machine code generated from one line in MM_SortMem.
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define NUMSOUNDS		45
+#define NUMSNDCHUNKS		143
+#elif (GAMEVER_WOLFREV <= 19920505L)
 #define NUMSOUNDS		73
 #define NUMSNDCHUNKS		246
 #else
@@ -62,16 +65,21 @@ typedef enum {
 		ESCPRESSEDSND,           // 39
 		LEVELDONESND,            // 40
 		DOGBARKSND,              // 41
+#if (GAMEVER_WOLFREV > 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
 		ENDBONUS1SND,            // 42
 		ENDBONUS2SND,            // 43
+#endif
 		BONUS1UPSND,             // 44
+#if (GAMEVER_WOLFREV > 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
 		BONUS4SND,               // 45
 		PUSHWALLSND,             // 46
 		NOBONUSSND,              // 47
 		PERCENT100SND,           // 48
 		BOSSACTIVESND,           // 49
 		MUTTISND,                // 50
+#endif
 		SCHUTZADSND,             // 51
+#if (GAMEVER_WOLFREV > 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
 		AHHHGSND,                // 52
 		DIESND,                  // 53
 		EVASND,                  // 54
@@ -81,7 +89,9 @@ typedef enum {
 		NAZIFIRESND,             // 58
 		BOSSFIRESND,             // 59
 		SSFIRESND,               // 60
+#endif
 		SLURPIESND,              // 61
+#if (GAMEVER_WOLFREV > 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
 		TOT_HUNDSND,             // 62
 		MEINGOTTSND,             // 63
 		SCHABBSHASND,            // 64
@@ -109,6 +119,7 @@ typedef enum {
 		MISSILEFIRESND,          // 85
 		MISSILEHITSND,           // 86
 #endif
+#endif
 		LASTSOUND
 	     } soundnames;
 
@@ -120,7 +131,7 @@ typedef enum {
 #define STARTPCSOUNDS		0
 #define STARTADLIBSOUNDS	73
 #define STARTDIGISOUNDS		146
-#define STARTMUSIC		219
+#define STARTMUSIC		135
 #else
 #define STARTPCSOUNDS		0
 #define STARTADLIBSOUNDS	87
@@ -132,6 +143,16 @@ typedef enum {
 // Music names & indexes
 //
 typedef enum {
+#if (GAMEVER_WOLFREV <= 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
+		WONDERIN_MUS,            // 0
+		NAZI_NOR_MUS,            // 1
+		CORNER_MUS,              // 2
+		WARMARCH_MUS,            // 3
+		SALUTE_MUS,              // 4
+		HITLWLTZ_MUS,            // 5
+		INTROCW3_MUS,            // 6
+		GETTHEM_MUS,             // 7
+#else
 		CORNER_MUS,              // 0
 		DUNGEON_MUS,             // 1
 		WARMARCH_MUS,            // 2
@@ -159,6 +180,7 @@ typedef enum {
 		URAHERO_MUS,             // 24
 		VICMARCH_MUS,            // 25
 		PACMAN_MUS,              // 26
+#endif
 		LASTMUSIC
 	     } musicnames;
 

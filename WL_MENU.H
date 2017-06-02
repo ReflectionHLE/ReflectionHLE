@@ -29,7 +29,12 @@
 #define BKGDCOLOR	0x2d
 #define STRIPE		0x2c
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define MenuFadeOut()	VL_FadeOut(0,255,43,0,0,20)
+#else
 #define MenuFadeOut()	VL_FadeOut(0,255,43,0,0,10)
+#endif
 
 #endif
 
@@ -50,7 +55,12 @@
 #define VIEWCOLOR	0x7f
 #define TEXTCOLOR	0x17
 #define HIGHLIGHT	0x13
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,20)
+#else
 #define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,10)
+#endif
 
 #endif
 
@@ -266,8 +276,14 @@ void CheckForEpisodes(void);
 //
 // VARIABLES
 //
+// *** ALPHA RESTORATION ***
+// Commenting these out for the alpha is a part of our brute-force
+// way to try and force an additional, unused variable,
+// following SaveGamesAvail (may be called, say, pickquick)
+#if (GAMEVER_WOLFREV > 19920312L)
 extern int SaveGamesAvail[10],StartGame,SoundStatus;
 extern char SaveGameNames[10][32],SaveName[13];
+#endif
 
 enum {MOUSE,JOYSTICK,KEYBOARDBTNS,KEYBOARDMOVE};	// FOR INPUT TYPES
 

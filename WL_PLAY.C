@@ -35,7 +35,10 @@ boolean		madenoise;					// true when shooting or screaming
 
 exit_t		playstate;
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 int			DebugOk;
+#endif
 
 objtype 	objlist[MAXACTORS],*new,*obj,*player,*lastobj,
 			*objfreelist,*killerobj;
@@ -1016,12 +1019,16 @@ void CheckKeys (void)
 #endif
 		US_ControlPanel(scan);
 
-		 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
+		 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920505L)
 		 for (i=0;i<3;i++)
 		 {
 			 bufferofs = screenloc[i];
+	#if (GAMEVER_WOLFREV <= 19920312L)
+			 DrawPlayBorder ();
+	#else
 			 DrawPlayBorderSides ();
+	#endif
 		 }
 #else
 		 DrawAllPlayBorderSides ();

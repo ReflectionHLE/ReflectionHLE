@@ -1010,7 +1010,10 @@ typedef enum	{
 
 
 typedef enum	{
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	gd_baby,
+#endif
 	gd_easy,
 	gd_medium,
 	gd_hard
