@@ -824,10 +824,13 @@ int		helpextern = T_HELPART;
 #endif // VERSIONS RESTORATION
 #endif
 // *** S3DNA RESTORATION + ALPHA *** - No T_ENDART1,
-// and using char * in alpha (instead of char..[])
+// and embedding extension + using char * in alpha (instead of char..[])
 #if (GAMEVER_WOLFREV <= 19920312L)
-char *helpfilename = "HELPART.",
-	 *orderfilename = "ORDERART.";
+char *helpfilename = "HELPART.WL1",
+	 *orderfilename = "ORDERART.WL1",
+	 *storyfilename = "STORYART.WL1",
+	 *orderfilename2 = "ORDERART.WL1", // Weird one
+	 *crackfilename = "CRACK.WL1"; // Hmm?
 #elif (!defined GAMEVER_NOAH3D)
 char helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";

@@ -66,7 +66,10 @@ extern	PageListStruct	far *PMPages;
 #define	PM_UnlockMainMem()	PM_SetMainMemPurge(3)
 
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 extern	char	PageFileName[13];
+#endif
 
 
 extern	void	PM_Startup(void),

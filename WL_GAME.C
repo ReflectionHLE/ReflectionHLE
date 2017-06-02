@@ -50,11 +50,13 @@ boolean		spearflag;
 // ELEVATOR BACK MAPS - REMEMBER (-1)!!
 //
 
-// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
+// *** SHAREWARE V1.0 APOGEE + ALPHA + S3DNA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 #if (GAMEVER_WOLFREV <= 19920505L)
 int ElevatorBackTo[]={1,1,7,0,0,0};
 #elif (!defined GAMEVER_NOAH3D)
 int ElevatorBackTo[]={1,1,7,3,5,3};
+#endif
 #endif
 
 void ScanInfoPlane (void);
@@ -1262,7 +1264,12 @@ void StartDemoRecord (int levelnumber)
 ==================
 */
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+char	demoname[] = "DEMO?.WL1";
+#else
 char	demoname[13] = "DEMO?.";
+#endif
 
 void FinishDemoRecord (void)
 {

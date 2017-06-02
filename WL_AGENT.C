@@ -435,7 +435,12 @@ void DrawFace (void)
 
 #define FACETICS	70
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+static	int	facecount;
+#else
 int	facecount;
+#endif
 
 void	UpdateFace (void)
 {

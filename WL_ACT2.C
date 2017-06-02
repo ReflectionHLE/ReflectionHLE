@@ -62,9 +62,8 @@ int	starthitpoints[NUMENEMIES] =
 	  100,	// SS
 	  1,	// dogs
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
-	  297,	// Hans
-#else
+	// Yes, there's a buffer overflow when Hans is spawned in the alpha
+#if (GAMEVER_WOLFREV > 19920312L)
 	  850,	// Hans
 	  850,	// Schabbs
 	  300,	// fake hitler
@@ -525,6 +524,8 @@ extern	statetype s_ofcdie4;
 extern	statetype s_ofcdie5;
 #endif
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 statetype s_ofcstand	= {true,SPR_OFC_W1_1,0,T_Stand,NULL,&s_ofcstand};
@@ -578,8 +579,6 @@ statetype s_ofcdie5		= {false,SPR_OFC_DEAD,0,NULL,NULL,&s_ofcdie5};
 #endif
 
 
-// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
 //
 // mutant
 //

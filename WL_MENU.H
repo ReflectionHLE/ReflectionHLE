@@ -140,9 +140,11 @@ typedef struct {
 
 typedef struct {
 		int active;
-		// *** S3DNA RESTORATION ***
+		// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		char string[80];
+#elif (GAMEVER_WOLFREV <= 19920312L)
+		char string[40];
 #else
 		char string[36];
 #endif

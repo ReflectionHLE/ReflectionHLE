@@ -26,7 +26,12 @@
 	int				XMSProtectPage = -1;
 
 //	File specific variables
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	char			PageFileName[] = {"VSWAP.WL1"};
+#else
 	char			PageFileName[13] = {"VSWAP."};
+#endif
 	int				PageFile = -1;
 	word			ChunksInFile;
 	word			PMSpriteStart,PMSoundStart;

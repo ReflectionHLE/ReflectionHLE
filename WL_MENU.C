@@ -28,6 +28,8 @@ void CP_BackToDemo(void);
 #endif
 #endif
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 char GAMEVER_COND_FARPTR endStrings[9][80]=
 {
 	// *** S3DNA RESTORATION ***
@@ -64,6 +66,12 @@ char GAMEVER_COND_FARPTR endStrings[9][80]=
 	ENDSTR9
 #endif
 };
+#endif // GAMEVER_WOLFREV > 19920312L
+// *** ALPHA RESTORATION - FIXME TEST ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+int SaveGamesAvail[10],StartGame,SoundStatus=1;
+char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.WL1";
+#endif
 
 CP_iteminfo
 	MainItems={MENU_X,MENU_Y,10,STARTITEM,24},
@@ -71,7 +79,10 @@ CP_iteminfo
 	LSItems={LSM_X,LSM_Y,10,0,24},
 	CtlItems={CTL_X,CTL_Y,6,-1,56},
 	CusItems={8,CST_Y+13*2,9,-1,0},
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	NewEitems={NE_X,NE_Y,11,0,88},
+#endif
 	NewItems={NM_X,NM_Y,4,2,24};
 
 // *** S3DNA RESTORATION ***
@@ -187,8 +198,8 @@ GAMEVER_COND_FARPTR CtlMenu[]=
 	{0,STR_JOYEN,0},
 	{0,STR_PORT2,0},
 	{0,STR_GAMEPAD,0},
-	// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	{0,STR_SENS,MouseSensitivity},
 #endif
 	{1,STR_CUSTOM,CustomControls}
@@ -197,7 +208,9 @@ GAMEVER_COND_FARPTR CtlMenu[]=
 
 #pragma warn +sus
 
-#ifndef SPEAR
+// *** ALPHA RESTORATION ***/
+#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+//#ifndef SPEAR
 GAMEVER_COND_FARPTR NewEmenu[]=
 {
 #ifdef JAPAN
@@ -299,7 +312,10 @@ GAMEVER_COND_FARPTR NewMenu[]=
 	{1,"",0},
 	{1,"",0}
 #else
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	{1,STR_DADDY,0},
+#endif
 	{1,STR_HURTME,0},
 	{1,STR_BRINGEM,0},
 	{1,STR_DEATH,0}
@@ -336,7 +352,7 @@ GAMEVER_COND_FARPTR CusMenu[]=
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV > 19920312L)
 int color_hlite[]={
    DEACTIVE,
    HIGHLIGHT,
@@ -350,13 +366,16 @@ int color_hlite[]={
    READCOLOR,
    0x6b
    };
-#endif
 
 int EpisodeSelect[6]={1};
+#endif
 
 
+// *** ALPHA RESTORATION - FIXME TEST ***
+#if (GAMEVER_WOLFREV > 19920312L)
 int SaveGamesAvail[10],StartGame,SoundStatus=1,pickquick;
 char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.";
+#endif
 
 
 ////////////////////////////////////////////////////////////////////
@@ -1759,7 +1778,7 @@ int CP_LoadGame(int quick)
 		if (which>=0 && SaveGamesAvail[which])
 		{
 			ShootSnd();
-			// *** ALPHA RESTORATION ***
+			// *** ALPHA RESTORATION -- ***
 			// Looks like this got relocated later
 #if (GAMEVER_WOLFREV <= 19920312L)
 			strcpy(name,SaveName);
@@ -2988,7 +3007,12 @@ void DrawCustomScreen(void)
 	//
 #ifndef SPEAR
 	SETFONTCOLOR(READCOLOR,BKGDCOLOR);
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	US_CPrint("Joystick/PC GamePad\n");
+#else
 	US_CPrint("Joystick/Gravis GamePad\n");
+#endif
 #else
 	PrintY += 13;
 	VWB_DrawPic (40,88,C_JOYSTICKPIC);

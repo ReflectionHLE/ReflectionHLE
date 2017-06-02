@@ -84,12 +84,12 @@ boolean         startgame,loadedgame
 		,virtualreality
 #endif
 		;
-// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 int             mouseadjustment;
-#endif
 
 char	configname[13]="CONFIG.";
+#endif
 
 
 /*
@@ -117,7 +117,12 @@ void ReadConfig(void)
 	SDSMode         sds;
 
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	if ( (file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
+#else
 	if ( (file = open(configname,O_BINARY | O_RDONLY)) != -1)
+#endif
 	{
 	//
 	// valid config file
@@ -140,8 +145,8 @@ void ReadConfig(void)
 		read(file,&buttonjoy,sizeof(buttonjoy));
 
 		read(file,&viewsize,sizeof(viewsize));
-		// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		read(file,&mouseadjustment,sizeof(mouseadjustment));
 #endif
 		// *** S3DNA RESTORATION ***
@@ -151,8 +156,8 @@ void ReadConfig(void)
 
 		close(file);
 
-		// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920610L)
 		if (sd == sdm_AdLib && (!AdLibPresent || !SoundBlasterPresent))
@@ -173,15 +178,15 @@ void ReadConfig(void)
 			(sds == sds_SoundSource && !SoundSourcePresent))
 #endif
 			sds = sds_Off;
-#endif // GAMEVER_ALPHA
+#endif // GAMEVER_WOLFREV > 19920312L
 
 		if (!MousePresent)
 			mouseenabled = false;
 		if (!JoysPresent[joystickport])
 			joystickenabled = false;
 
-		// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		MainMenu[6].active=1;
 		MainItems.curpos=0;
 #endif
@@ -226,8 +231,8 @@ void ReadConfig(void)
 #else
 		viewsize = 15;
 #endif
-		// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		mouseadjustment=5;
 #endif
 		// *** S3DNA RESTORATION ***
@@ -255,8 +260,14 @@ void WriteConfig(void)
 {
 	int                     file;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
+				S_IREAD | S_IWRITE | S_IFREG);
+#else
 	file = open(configname,O_CREAT | O_BINARY | O_WRONLY,
 				S_IREAD | S_IWRITE | S_IFREG);
+#endif
 
 	if (file != -1)
 	{
@@ -278,8 +289,8 @@ void WriteConfig(void)
 		write(file,&buttonjoy,sizeof(buttonjoy));
 
 		write(file,&viewsize,sizeof(viewsize));
-		// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		write(file,&mouseadjustment,sizeof(mouseadjustment));
 #endif
 		// *** S3DNA RESTORATION ***
@@ -341,8 +352,8 @@ extern int far  CheckIs386(void);
 =====================
 */
 
-// *** ALPHA VERSION RESTORATION ***
-#ifdef GAMEVER_ALPHA
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 void NewGame (int difficulty)
 #else
 void NewGame (int difficulty,int episode)
@@ -370,7 +381,7 @@ void NewGame (int difficulty,int episode)
 	gamestate.flamethrower = 0;
 	gamestate.missile = 0;
 	gamestate.automap = false;
-#elif (!defined GAMEVER_ALPHA)
+#elif (GAMEVER_WOLFREV > 19920312L)
 	gamestate.episode=episode;
 #endif
 
@@ -382,8 +393,8 @@ void NewGame (int difficulty,int episode)
 void DiskFlopAnim(int x,int y)
 {
  static char which=0;
- // *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+ // *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
  if (!x && !y)
    return;
 #endif
@@ -578,7 +589,7 @@ boolean SaveTheGame(int file,int x,int y)
 	//
 	CA_FarWrite (file,(void far *)&checksum,sizeof(checksum));
 #endif
-#endif //  GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > 19920312L
 
 	return(true);
 }
@@ -1131,14 +1142,19 @@ static  int     wolfdigimap[] =
 			ATKPISTOLSND,           5,
 			ATKGATLINGSND,          6,
 			SCHUTZADSND,            7,
+			// *** ALPHA RESTORATION *** - FIXME RECHECK
+#if (GAMEVER_WOLFREV > 19920312L)
 			GUTENTAGSND,            8,
 			MUTTISND,               9,
 			BOSSFIRESND,            10,
 			SSFIRESND,              11,
+#endif
 			DEATHSCREAM1SND,        12,
 			DEATHSCREAM2SND,        13,
 			DEATHSCREAM3SND,        13,
 			TAKEDAMAGESND,          14,
+			// *** ALPHA RESTORATION *** - FIXME RECHECK
+#if (GAMEVER_WOLFREV > 19920312L)
 			PUSHWALLSND,            15,
 
 			LEBENSND,               20,
@@ -1146,6 +1162,7 @@ static  int     wolfdigimap[] =
 			SLURPIESND,             22,
 
 			YEAHSND,				32,
+#endif
 
 #ifndef UPLOAD
 			// These are in all other episodes
@@ -1505,7 +1522,7 @@ void InitGame (void)
 	US_Startup ();
 
 
-// *** SHAREWARE V1.0 APOGEE + ALPHA VERSION + S3DNA RESTORATION ***
+// *** SHAREWARE V1.0 APOGEE + ALPHA + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
 #if (GAMEVER_WOLFREV <= 19920505L)
 	if (mminfo.mainmem < 240000L)
@@ -1775,8 +1792,8 @@ void Quit (char *error)
 #if (GAMEVER_WOLFREV > 19920505L)
 	ClearMemory ();
 #endif
-	// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
  if (CA_Started)
@@ -1802,7 +1819,7 @@ void Quit (char *error)
 #ifdef GAMEVER_NOAH3D
  }
 #endif
-#endif // GAMEVER_ALPHA
+#endif // GAMEVER_WOLFREV > 19920312L
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920610L)
 	WriteConfig ();
@@ -1817,8 +1834,8 @@ void Quit (char *error)
 #endif
 	if (error && *error)
 	{
-	  // *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+	  // *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	  // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	  movedata ((unsigned)screen,0,0xb800,0,7*160);
@@ -1826,10 +1843,10 @@ void Quit (char *error)
 	  movedata ((unsigned)screen,7,0xb800,0,7*160);
 #endif
 	  gotoxy (10,4);
-#endif // GAMEVER_ALPHA
+#endif // GAMEVER_WOLFREV > 19920312L
 	  puts(error);
-	  // *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+	  // *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	  gotoxy (1,8);
 #endif // GAMEVER_ALPHA
 	  exit(1);
@@ -1840,8 +1857,8 @@ void Quit (char *error)
 #endif
 	if (!error || !(*error))
 	{
-		// *** ALPHA VERSION RESTORATION ***
-#ifdef GAMEVER_ALPHA
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 		if (tedlevel)
 			execlp("TED5.EXE","TED5.EXE","/LAUNCH",NULL);
 #endif
@@ -1882,7 +1899,7 @@ void Quit (char *error)
 	exit(0);
 }
 
-// *** ALPHA VERSION RESTORATION ***
+// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
 //==========================================================================
 
@@ -2018,8 +2035,8 @@ void	CheckHighScore (long score,word other) // FIXME (ALPHA RESTORATION) - Reloc
 =====================
 */
 
-// ALPHA VERSION RESTORATION
-#ifdef GAMEVER_ALPHA
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 static  char *ParmStrings[] = {"easy","normal","hard",""};
 #else
 static  char *ParmStrings[] = {"baby","easy","normal","hard",""};
@@ -2027,7 +2044,10 @@ static  char *ParmStrings[] = {"baby","easy","normal","hard",""};
 
 void    DemoLoop (void)
 {
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	static int LastDemo;
+#endif
 	int     i,level;
 	long nsize;
 	memptr	nullblock;
@@ -2038,8 +2058,8 @@ void    DemoLoop (void)
 	if (tedlevel)
 	{
 		NoWait = true;
-		// ALPHA VERSION RESTORATION
-#ifndef GAMEVER_ALPHA
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 		NewGame(1,0);
 #endif
 
@@ -2047,20 +2067,20 @@ void    DemoLoop (void)
 		{
 			if ( (level = US_CheckParm(_argv[i],ParmStrings)) != -1)
 			{
-			 // ALPHA VERSION RESTORATION
-#ifndef GAMEVER_ALPHA
+			// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 			 gamestate.difficulty=level;
 #endif
 			 break;
 			}
 		}
 
-		// ALPHA VERSION RESTORATION
-#ifdef GAMEVER_ALPHA
+			// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 		NewGame(level);
 #endif
 		// *** S3DNA + ALPHA RESTORATION ***
-#if (defined GAMEVER_NOAH3D) || (defined GAMEVER_ALPHA)
+#if (defined GAMEVER_NOAH3D) || (GAMEVER_WOLFREV <= 19920312L)
 		gamestate.mapon = tedlevelnum;
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -2140,7 +2160,7 @@ void    DemoLoop (void)
 			MM_SortMem ();
 #endif
 			// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= 19920505L)
 			bufferofs = 19200;
 			displayofs = 0;
 #if (GAMEVER_WOLFREV <= 19920312L)
@@ -2373,8 +2393,8 @@ void main (void)
 	int     i;
 
 
-	// *** ALPHA VERSION RESTORATION ***
-#ifdef GAMEVER_ALPHA
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 	for (i = 1;i<_argc;i++)
 		if (US_CheckParm(_argv[i],nosprtxt) == 0)
 			nospr = true;
@@ -2404,8 +2424,8 @@ void main (void)
 	puts(logon);
 #endif
 
-	// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	CheckForEpisodes();
 #endif
 

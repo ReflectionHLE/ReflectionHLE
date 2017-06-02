@@ -73,7 +73,10 @@ int			profilehandle,debughandle;
 boolean		CA_Started = false;
 #endif
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 char		audioname[13]="AUDIO.";
+#endif
 
 /*
 =============================================================================
@@ -94,7 +97,7 @@ extern	byte	audiodict;
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV > 19920312L)
 char extension[5],	// Need a string, not constant to change cache files
      gheadname[10]=GREXT"HEAD.",
      gfilename[10]=GREXT"GRAPH.",

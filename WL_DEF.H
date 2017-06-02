@@ -814,7 +814,7 @@ typedef enum {
 // *** APOGEE + ALPHA + S3DNA VERSIONS RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 #if (GAMEVER_WOLFREV <= 19920312L)
-#define NUMENEMIES		5
+#define NUMENEMIES		4
 #elif (GAMEVER_WOLFREV <= 19920505L)
 #define NUMENEMIES		13
 #elif (GAMEVER_WOLFREV <= 19920610L)
@@ -1026,7 +1026,12 @@ typedef	struct
 {
 	int			difficulty;
 	int			mapon;
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	long		score,nextextra;
+#else
 	long		oldscore,score,nextextra;
+#endif
 	int			lives;
 	int			health;
 	int			ammo;
@@ -1048,6 +1053,8 @@ typedef	struct
 	int			faceframe;
 	int			attackframe,attackcount,weaponframe;
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	int			secretcount,treasurecount,killcount,
@@ -1061,6 +1068,7 @@ typedef	struct
 	long		killx,killy;
 #endif
 	boolean		victoryflag;		// set during victory animations
+#endif // GAMEVER_WOLFREV > 19920312L
 } gametype;
 
 
@@ -1141,7 +1149,10 @@ extern	fixed 	scale,maxslope;
 extern	long	heightnumerator;
 extern	int		minheightdiv;
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 extern	char	configname[13];
+#endif
 
 
 
@@ -1187,7 +1198,10 @@ extern	unsigned	latchpics[NUMLATCHPICS];
 extern	gametype	gamestate;
 extern	int			doornum;
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 extern	char		demoname[13];
+#endif
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920610L)

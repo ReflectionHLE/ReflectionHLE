@@ -29,7 +29,10 @@ typedef	struct
 extern	boolean		CA_Started;
 #endif
 
-extern	char		audioname[13];
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
+eextern	char		audioname[13];
+#endif
 
 extern	byte 		_seg	*tinf;
 // *** S3DNA RESTORATION ***

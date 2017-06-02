@@ -97,11 +97,12 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 	boolean		SoundSourcePresent,
 				AdLibPresent,
 #endif
-				SoundBlasterPresent,SBProPresent,
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV <= 19920312L)
+				SoundBlasterPresent,
 				NeedsDigitized,NeedsMusic;
 #else
+				SoundBlasterPresent,SBProPresent,
 				NeedsDigitized,NeedsMusic,
 				SoundPositioned;
 #endif
@@ -207,11 +208,19 @@ static	byte					sbDMA = 1,
 								sba3Vals[] = {1,3,0,7};
 #endif
 static	int						sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+								sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf};
+#else
 								sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf,-1,-1,-1};
+#endif
 static	volatile longword		sbNextSegLen;
 static	volatile SampledSound	huge *sbSamples;
 static	void interrupt			(*sbOldIntHand)(void);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 static	byte					sbpOldFMMix,sbpOldVOCMix;
+#endif
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D

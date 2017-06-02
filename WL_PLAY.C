@@ -115,6 +115,8 @@ void	PlayLoop (void);
 
 objtype dummyobj;
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 //
 // LIST OF SONGS FOR EACH VERSION
 //
@@ -311,6 +313,7 @@ int songs[]=
 
 #endif
 };
+#endif // GAMEVER_WOLFREV > 19920312L
 
 
 /*
