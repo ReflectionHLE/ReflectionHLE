@@ -197,9 +197,16 @@ asm	in	al,dx
 asm	and	al,0xfc				// write mode 0 to store directly to video
 asm	out	dx,al
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+asm	mov	dx,SC_INDEX+1
+asm	mov	al,15
+asm	out	dx,al
+#else
 asm	mov	dx,SC_INDEX
 asm	mov	ax,SC_MAPMASK+15*256
 asm	out	dx,ax				// write through all four planes
+#endif
 
 asm	mov	ax,SCREENSEG
 asm	mov	es,ax
@@ -524,7 +531,10 @@ void VL_FadeOut (int start, int end, int red, int green, int blue, int steps)
 //
 	VL_FillPalette (red,green,blue);
 
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	screenfaded = true;
+#endif
 }
 
 
@@ -566,7 +576,10 @@ void VL_FadeIn (int start, int end, byte far *palette, int steps)
 // final color
 //
 	VL_SetPalette (palette);
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	screenfaded = false;
+#endif
 }
 
 

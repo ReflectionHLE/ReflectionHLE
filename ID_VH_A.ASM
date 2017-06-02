@@ -43,9 +43,16 @@ PROC	VH_UpdateScreen
 PUBLIC	VH_UpdateScreen
 USES	si,di
 
+; *** ALPHA RESTORATION ***
+IF GAMEVER_WOLFREV LE 19920312
+	mov	dx,SC_INDEX+1
+	mov	al,15
+	out	dx,al
+ELSE
 	mov	dx,SC_INDEX
 	mov	ax,SC_MAPMASK+15*256
 	out	dx,ax
+ENDIF
 
 	mov dx,GC_INDEX
 	mov al,GC_MODE
@@ -120,10 +127,11 @@ ENDM
 ENDP
 
 
-; *** SHAREWARE V1.0 APOGEE RESTORATION ***
+; *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 ; A copy-paste of VH_UpdateScreen for most
 
 IF GAMEVER_WOLFREV LE 19920505
+IF GAMEVER_WOLFREV GT 19920312
 
 ;=================
 ;
@@ -206,6 +214,7 @@ ENDM
 
 ENDP
 
+ENDIF ; GAMEVER_WOLFREV GT 19920312
 ENDIF ; GAMEVER_WOLFREV LE 19920505
 
 

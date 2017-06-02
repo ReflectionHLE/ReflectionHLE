@@ -349,9 +349,16 @@ USES	SI,DI
 	pushf
 	cli
 
+; *** ALPHA RESTORATION ***
+IF GAMEVER_WOLFREV LE 19920312
+	mov	dx,SC_INDEX+1
+	mov	al,15
+	out	dx,al
+ELSE
 	mov	dx,SC_INDEX
 	mov	ax,SC_MAPMASK+15*256
 	out	dx,ax
+ENDIF
 	mov	dx,GC_INDEX
 	mov	al,GC_MODE
 	out	dx,al

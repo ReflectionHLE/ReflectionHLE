@@ -223,6 +223,27 @@ US_Startup(void)
 	for (i = 1;i < _argc;i++)
 	{
 		n = US_CheckParm(_argv[i],ParmStrings);
+		// *** ALPHA RESTORATION ***
+		// Use code from US_TextScreen in Catacomb 3-D
+		// (the earlier Keen Dreams version is also similar)
+#if (GAMEVER_WOLFREV <= 19920312L)
+		if (n == 0)
+		{
+			tedlevelnum = atoi(_argv[i + 1]);
+			if (tedlevelnum >= 0)
+			{
+				tedlevel = true;
+				return;
+			}
+			else
+				break;
+		}
+		else if (n == 1)
+		{
+			NoWait = true;
+			return;
+		}
+#else
 		switch(n)
 		{
 		 case 0:
@@ -250,6 +271,7 @@ US_Startup(void)
 		   NoWait = true;
 		   break;
 		}
+#endif // GAMEVER_WOLFREV <= 19920312L
 	}
 
 	// *** S3DNA RESTORATION ***
