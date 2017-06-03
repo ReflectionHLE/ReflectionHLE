@@ -1870,7 +1870,7 @@ void Quit (char *error)
 	  // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
 	  gotoxy (1,8);
-#endif // GAMEVER_ALPHA
+#endif
 	  exit(1);
 	}
 	// *** PRE-V1.4 APOGEE RESTORATION ***

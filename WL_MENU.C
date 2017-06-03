@@ -2047,7 +2047,7 @@ int CP_SaveGame(int quick)
 
 				unlink(name);
 				handle=creat(name,S_IREAD|S_IWRITE);
-				// *** ALPHA VERSION RESTORATION ***
+				// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
 				write(handle,input,32);
 #else
@@ -2061,7 +2061,7 @@ int CP_SaveGame(int quick)
 				close(handle);
 
 				ShootSnd();
-				// *** ALPHA VERSION RESTORATION ***
+				// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
 				exit=1;
 #endif
@@ -2290,8 +2290,8 @@ void CP_Control(void)
 }
 
 
-// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 ////////////////////////////////
 //
 // DRAW MOUSE SENSITIVITY SCREEN
@@ -2421,7 +2421,7 @@ void MouseSensitivity(void)
 	WaitKeyUp();
 	MenuFadeOut();
 }
-#endif // GAMEVER_ALPHA
+#endif // GAMEVER_WOLFREV > 19920312L
 
 
 ///////////////////////////

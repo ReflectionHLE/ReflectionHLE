@@ -466,7 +466,7 @@ void PollMouseMove (void)
 	mousexmove = _CX;
 	mouseymove = _DX;
 
-// *** ALPHA VERSION RESTORATION ***
+// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
 	controlx += mousexmove;
 	controly += mouseymove*2;
@@ -733,7 +733,7 @@ void CheckKeys (void)
 	unsigned	temp;
 
 
-	// *** ALPHA VERSION RESTORATION ***
+	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
 	if (screenfaded)	// don't do anything with a faded screen
 #else
@@ -773,7 +773,7 @@ void CheckKeys (void)
 	#endif
 
 
-	// *** ALPHA VERSION RESTORATION ***
+	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D

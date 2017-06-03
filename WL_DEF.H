@@ -1195,8 +1195,8 @@ void		TEDDeath(void);
 void		Quit (char *error);
 void 		CalcProjection (long focal);
 boolean		SetViewSize (unsigned width, unsigned height);
-// *** ALPHA VERSION RESTORATION ***
-#ifdef GAMEVER_ALPHA
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
 void		NewGame (int difficulty);
 #else
 void		NewGame (int difficulty,int episode);
