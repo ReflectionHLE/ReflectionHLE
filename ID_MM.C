@@ -780,7 +780,9 @@ void MM_SortMem (void)
 */
 
 // *** ALPHA RESTORATION ***
-// A few differences, basically appears to be the Catacomb 3-D revision
+// A few differences, basically appears to be the Catacomb 3-D
+// revision, and practically (in terms of compiled code) also the same
+// as the Keen Dreams revision, except for call to VW_SetDefaultColors.
 void MM_ShowMemory (void)
 {
 	mmblocktype far *scan;

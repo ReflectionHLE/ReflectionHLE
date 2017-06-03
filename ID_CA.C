@@ -1441,7 +1441,8 @@ void CAL_ExpandGrChunk (int chunk, byte far *source)
 
 // *** ALPHA RESTORATION ***
 // A seemingly unused function very similar to CA_CacheGrChunk,
-// right from Catacomb 3-D
+// right from Catacomb 3-D, and also virtually identical
+// to the earlier revision from Keen Dreams
 #if (GAMEVER_WOLFREV <= 19920312L)
 /*
 ======================
