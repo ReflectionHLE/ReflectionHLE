@@ -1194,11 +1194,12 @@ void		OrderingInfo (void);
 void		TEDDeath(void);
 void		Quit (char *error);
 void 		CalcProjection (long focal);
-boolean		SetViewSize (unsigned width, unsigned height);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
+void		SetViewSize (unsigned width, unsigned height);
 void		NewGame (int difficulty);
 #else
+boolean		SetViewSize (unsigned width, unsigned height);
 void		NewGame (int difficulty,int episode);
 #endif
 void 		NewViewSize (int width);
@@ -1251,14 +1252,8 @@ void 	NormalScreen (void);
 void 	DrawPlayScreen (void);
 void 	FizzleOut (void);
 void 	GameLoop (void);
-// *** ALPHA RESTORATION ***/
-// FIXME
-#if (GAMEVER_WOLFREV <= 19920312L)
-#define ClearMemory()	// FIXME
-#else
 // JAB
 void ClearMemory (void);
-#endif
 void PlayDemo (int demonumber);
 void RecordDemo (void);
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -1276,7 +1271,6 @@ void DrawAllPlayBorderSides (void);
 #if (GAMEVER_WOLFREV <= 19920312L)
 #define	PlaySoundLocTile(s,tx,ty)	SD_PlaySound(s)
 #define	PlaySoundLocActor(s,ob)		SD_PlaySound(s)
-#define UpdateSoundLoc()		// FIXME
 #else
 // JAB
 #define	PlaySoundLocTile(s,tx,ty)	PlaySoundLocGlobal(s,(((long)(tx) << TILESHIFT) + (1L << (TILESHIFT - 1))),(((long)ty << TILESHIFT) + (1L << (TILESHIFT - 1))))
@@ -1392,10 +1386,7 @@ void LevelCompleted (void);
 void	CheckHighScore (long score,word other);
 void Victory (void);
 // *** ALPHA RESTORATION ***
-// FIXME HACK
-#if (GAMEVER_WOLFREV <= 19920312L)
-#define ClearSplitVWB()
-#else
+#if (GAMEVER_WOLFREV > 19920312L)
 void ClearSplitVWB (void);
 #endif
 // *** S3DNA RESTORATION ***

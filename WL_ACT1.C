@@ -126,10 +126,10 @@ struct
 //
 // NEW PAGE
 //
-// *** ALPHA RESTORATION *** - FIXME recheck later
+// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
-{SPR_STAT_32},			// crown           spr5v
-{SPR_STAT_33},		// one up          "
+{SPR_STAT_32},				// crown           spr5v
+{SPR_STAT_33},				// one up          "
 #else
 {SPR_STAT_32,bo_crown},			// crown           spr5v
 {SPR_STAT_33,bo_fullheal},		// one up          "

@@ -22,10 +22,6 @@
 =============================================================================
 */
 
-// *** ALPHA RESTORATION*** - FIXME HUGE HACK to get things linking FOR NOW
-#if (GAMEVER_WOLFREV <= 19920505L)
-#define Message Confirm
-#endif
 //
 // *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused variable here
 #if (GAMEVER_WOLFREV <= 19920610L)
@@ -1885,11 +1881,14 @@ void PlayLoop (void)
 
 		if (screenfaded)
 		// *** ALPHA RESTORATION ***
-		// FIXME HUGE HACK
 #if (GAMEVER_WOLFREV <= 19920312L)
+		{
 			screenfaded = false,
-#endif
 			VW_FadeIn ();
+		}
+#else
+			VW_FadeIn ();
+#endif
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D

@@ -1227,9 +1227,11 @@ void DrawPlayScreen (void)
 
 
 // *** ALPHA RESTORATION ***
-// Same empty function called from GameLoop in the alpha
-// FIXME: Any other name/meaning?
-#if (GAMEVER_WOLFREV <= 19920505L)
+// An empty stub called from GameLoop in the alpha;
+// Its original purpose is unknown. However, given the fact
+// that it precedes StartDemoRecord, using comparisons to Keen 4-6
+// as a base, it might have been an implementation of finishcachebox.
+#if (GAMEVER_WOLFREV <= 19920312L)
 void SomeNullGameLoopFunc(void)
 {
 }
@@ -2144,7 +2146,6 @@ startplayloop:
 #endif
 
 			// *** ALPHA RESTORATION ***
-			// FIXME - Is this the right thing to do?
 #if (GAMEVER_WOLFREV > 19920312L)
 			Victory ();
 #endif

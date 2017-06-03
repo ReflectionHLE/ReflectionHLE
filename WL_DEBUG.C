@@ -167,10 +167,12 @@ void PicturePause (void)
 // vga stuff...
 //
 
+	// APOGEE + FORMGEN + ALPHA RESTORATION
+#if (GAMEVER_WOLFREV > 19920312L)
 	ClearMemory ();
-	// *** APOGEE+FORMGEN VERSIONS RESTORATION ***
 #if (GAMEVER_WOLFREV > 19921111L)
 	CA_SetAllPurge();
+#endif
 #endif
 	MM_GetPtr (&buffer,64000);
 	for (p=0;p<4;p++)

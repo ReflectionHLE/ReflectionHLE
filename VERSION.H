@@ -1,9 +1,14 @@
 // *** VERSIONS RESTORATION ***
-// FIXME - Do NOT defined ARTSEXTERN and DEMOSEXTERN for alpha
+// Notes:
+// 1. ARTSEXTERN and DEMOSEXTERN were relocated after the
+// various GAMEREV_WOLFREV definitions, since they shall *not*
+// be defined in the alpha (WL920312).
+// 2. UPLOAD is defined for v1.0, as well as the alpha, although
+// there are good chances this macro didn't even exist back then.
+// So at the least, it's used for the sake of convenience.
 //#define ARTSEXTERN
 //#define DEMOSEXTERN
 
-// FIXME - Should we define UPLOAD for the alpha version?
 #if (defined GAMEVER_EXEDEF_WL920312) || (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL1AP14)
 #define UPLOAD
 #elif (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6AC14)

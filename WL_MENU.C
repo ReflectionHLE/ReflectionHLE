@@ -434,9 +434,9 @@ void US_ControlPanel(byte scancode)
 
 
 	// *** ALPHA RESTORATION ***
-	// FIXME - Looks like an almost-perfect replica of
-	// the code handling sc_F10 in CP_CheckQuick.
-	// Makes use of QUITSUR string, *not* used in v1.0 or later
+	// Looks like an almost-perfect replica of the code handling
+	// sc_F10 in CP_CheckQuick, as well as CP_Quit.
+	// Makes use of the QUITSUR string, *not* used in v1.0 or later.
 #if (GAMEVER_WOLFREV <= 19920312L)
 	if (scancode == sc_F9)
 	{
@@ -444,9 +444,6 @@ void US_ControlPanel(byte scancode)
 		WindowH=160;
 		if (Confirm(QUITSUR))
 		{
-			//int i;
-
-
 			VW_UpdateScreen();
 			SD_MusicOff();
 			SD_StopSound();
@@ -2459,7 +2456,6 @@ void DrawCtlScreen(void)
    // *** ALPHA RESTORATION ***
    CtlMenu[1].active=
    CtlMenu[2].active=
-   // FIXME - This is so unexpected
 #if (GAMEVER_WOLFREV <= 19920312L)
    CtlMenu[3].active=
    NewMenu[0].active=1;

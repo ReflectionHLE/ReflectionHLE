@@ -1686,7 +1686,12 @@ close(profilehandle);
 ==========================
 */
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+void SetViewSize (unsigned width, unsigned height)
+#else
 boolean SetViewSize (unsigned width, unsigned height)
+#endif
 {
 	viewwidth = width&~15;                  // must be divisable by 16
 	viewheight = height&~1;                 // must be even
@@ -1717,7 +1722,7 @@ boolean SetViewSize (unsigned width, unsigned height)
 #ifdef GAMEVER_NOAH3D
 	SetPlaneViewSize ();
 #endif
-	// *** ALPHA RESTORATION *** - FIXME, change function return type to void?
+	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
 	return true;
 #endif
@@ -1899,6 +1904,9 @@ void Quit (char *error)
 }
 
 // *** ALPHA RESTORATION ***
+// These functions were later moved to WL_INTER.C; Note that the
+// initial offset stored in PrintY is 68, not 76 as in later versions.
+// FIXME: Move to separate file?
 #if (GAMEVER_WOLFREV <= 19920312L)
 //==========================================================================
 
@@ -1910,7 +1918,7 @@ void Quit (char *error)
 ==================
 */
 
-void	DrawHighScores(void) // FIXME (ALPHA RESTORATION) - Relocate function
+void	DrawHighScores(void)
 {
 	char		buffer[16],*str;
 	word		i,
@@ -1923,7 +1931,7 @@ void	DrawHighScores(void) // FIXME (ALPHA RESTORATION) - Relocate function
 
 	for (i = 0,s = Scores;i < MaxScores;i++,s++)
 	{
-		PrintY = 68 + (16 * i); // FIXME (ALPHA RESTORATION) - 68, not 76 as in later versions
+		PrintY = 68 + (16 * i);
 
 		//
 		// name
@@ -1970,7 +1978,7 @@ void	DrawHighScores(void) // FIXME (ALPHA RESTORATION) - Relocate function
 =======================
 */
 
-void	CheckHighScore (long score,word other) // FIXME (ALPHA RESTORATION) - Relocate function
+void	CheckHighScore (long score,word other)
 {
 	word		i,j;
 	int			n;
@@ -2008,7 +2016,7 @@ void	CheckHighScore (long score,word other) // FIXME (ALPHA RESTORATION) - Reloc
 	//
 	// got a high score
 	//
-		PrintY = 68 + (16 * n); // FIXME (ALPHA RESTORATION) - 68 instead of 76
+		PrintY = 68 + (16 * n);
 		PrintX = 60;
 		US_LineInput(PrintX,PrintY,Scores[n].name,nil,true,MaxHighName,100);
 	}
