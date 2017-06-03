@@ -4,7 +4,7 @@
 //#define DEMOSEXTERN
 
 // FIXME - Should we define UPLOAD for the alpha version?
-#if (defined GAMEVER_EXEDEF_W_920312) || (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL1AP14)
+#if (defined GAMEVER_EXEDEF_WL920312) || (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL1AP14)
 #define UPLOAD
 #elif (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6AC14)
 #define GOODTIMES
@@ -27,7 +27,7 @@
 // A new GAMEVER_WOLFREV macro, usually based on some known or guessed
 // release/build date, but does not have to be.
 
-#ifdef GAMEVER_EXEDEF_W_920312
+#ifdef GAMEVER_EXEDEF_WL920312
 #define GAMEVER_WOLFREV 19920312L
 #elif (defined GAMEVER_EXEDEF_WL1AP10)
 #define GAMEVER_WOLFREV 19920505L
