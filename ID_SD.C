@@ -335,10 +335,9 @@ static void
 SDL_SetTimerSpeed(void)
 {
 	word	rate;
-	void interrupt	(*isr)(void);
-
-	// *** ALPHA RESTORATION - FIXME Share code sections? ***
+	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
+
 	if
 	(
 		(MusicMode == smm_AdLib)
@@ -361,6 +360,8 @@ SDL_SetTimerSpeed(void)
 		TimerRate = rate;
 	}
 #else
+	void interrupt	(*isr)(void);
+
 	// *** S3DNA RSETORATION ***
 #ifndef GAMEVER_NOAH3D
 	if ((DigiMode == sds_PC) && DigiPlaying)

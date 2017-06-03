@@ -700,9 +700,9 @@ void DrawMainMenu(void)
 
 	VWB_DrawPic(112,GAMEVER_MOUSELBACKY,C_MOUSELBACKPIC);
 	// *** ALPHA RESTORATION ***
-	// Looks like this was originally hardcoded here
+	// Using color from ID_VH.H here
 #if (GAMEVER_WOLFREV <= 19920312L)
-	VWB_Bar(0,10,320,22,0);
+	VWB_Bar(0,10,320,22,BLACK);
 	VWB_Hlin(0,319,33,0);
 #else
 	DrawStripes(10);
@@ -4275,7 +4275,7 @@ void ReadAnyControl(ControlInfo *ci)
 int Confirm(char GAMEVER_COND_FARPTR *string)
 {
 	// *** ALPHA RESTORATION ***
-	// FIXME - Originally Message's code was *hardcoded* here
+	// Originally the code from the Message function was *hardcoded* here
 #if (GAMEVER_WOLFREV <= 19920312L)
 	int xit=0,h=0,w=0,mw=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
 	fontstruct _seg *font;

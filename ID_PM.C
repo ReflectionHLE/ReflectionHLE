@@ -1036,7 +1036,8 @@ PM_Preload(boolean (*update)(word current,word total))
 	memptr			addr;
 	PageListStruct	far *p;
 
-	// *** ALPHA RESTORATION *** - FIXME: Share code sections?
+	// *** ALPHA RESTORATION ***
+	// Similar to the later code revision, but with some differences
 #if (GAMEVER_WOLFREV <= 19920312L)
 	j = 0;
 	for (i = totalnonxms = 0;i < ChunksInFile;i++)
