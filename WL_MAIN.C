@@ -1095,25 +1095,6 @@ boolean MS_CheckParm (char far *check)
 =====================
 */
 
-			// *** ALPHA RESTORATION *** - FIXME RECHECK
-#if (GAMEVER_WOLFREV <= 19920312L)
-static  int     wolfdigimap[] =
-		{
-			21, 0,
-			29, 1,
-			22, 2,
-			25, 2,
-			41, 3,
-			19, 4,
-			18, 5,
-			27, 6,
-			16, 7,
-			11, 8,
-			26, 8,
-			24, 9,
-			LASTSOUND
-		};
-#else // GAMEVER_WOLFREV > 19920312L
 static  int     wolfdigimap[] =
 		{
 			// *** S3DNA RESTORATION ***
@@ -1127,7 +1108,7 @@ static  int     wolfdigimap[] =
 			D_COCTHRSND,            6,
 			D_DBITESND,             7,
 			D_EATSND,               8,
-			D_EDIESND,               9,
+			D_EDIESND,              9,
 			D_ELPHNTSND,            10,
 			D_EXTRASND,             11,
 			D_GATLINSND,            12,
@@ -1152,7 +1133,21 @@ static  int     wolfdigimap[] =
 			D_SPITSND,              30,
 			D_WATHITSND,            31,
 			D_WATTHRSND,            32,
-#elif (!defined SPEAR) // *** S3DNA RESTORATION ***
+			/// *** ALPHA RESTORATION ***
+#elif (GAMEVER_WOLFREV <= 19920312L)
+			HALTSND,                0,
+			DEATHSCREAM1SND,        1,
+			DEATHSCREAM2SND,        2,
+			DEATHSCREAM3SND,        2,
+			DOGBARKSND,             3,
+			CLOSEDOORSND,           4,
+			OPENDOORSND,            5,
+			HITENEMYSND,            6,
+			TAKEDAMAGESND,          7,
+			ATKGATLINGSND,          8,
+			ATKMACHINEGUNSND,       8,
+			ATKPISTOLSND,           9,
+#elif (!defined SPEAR) // S3DNA + ALPHA
 			// These first sounds are in the upload version
 //#ifndef SPEAR
 			HALTSND,                0,
@@ -1163,27 +1158,10 @@ static  int     wolfdigimap[] =
 			ATKPISTOLSND,           5,
 			ATKGATLINGSND,          6,
 			SCHUTZADSND,            7,
-			// *** ALPHA RESTORATION *** - FIXME RECHECK
-#if (GAMEVER_WOLFREV > 19920312L)
-			GUTENTAGSND,            8,
-			MUTTISND,               9,
-			BOSSFIRESND,            10,
-			SSFIRESND,              11,
-#endif
 			DEATHSCREAM1SND,        12,
 			DEATHSCREAM2SND,        13,
 			DEATHSCREAM3SND,        13,
 			TAKEDAMAGESND,          14,
-			// *** ALPHA RESTORATION *** - FIXME RECHECK
-#if (GAMEVER_WOLFREV > 19920312L)
-			PUSHWALLSND,            15,
-
-			LEBENSND,               20,
-			NAZIFIRESND,            21,
-			SLURPIESND,             22,
-
-			YEAHSND,				32,
-#endif
 
 #ifndef UPLOAD
 			// These are in all other episodes
@@ -1268,7 +1246,6 @@ static  int     wolfdigimap[] =
 #endif
 			LASTSOUND
 		};
-#endif // FIXME ALPHA TEST (GAMEVER_WOLFREV <= 19920312L)
 
 
 void InitDigiMap (void)

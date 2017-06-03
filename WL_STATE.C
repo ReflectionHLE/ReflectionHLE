@@ -1589,7 +1589,7 @@ void FirstSighting (objtype *ob)
 	// (Weirdly enough the alpha is like v1.4 here)
 #if (GAMEVER_WOLFREV <= 19920312L) || (GAMEVER_WOLFREV > 19920610L)
 	case ssobj:
-		// *** ALPHA RESTORATION *** - FIXME RECHECK THIS
+		// *** ALPHA RESTORATION ***
 	#if (GAMEVER_WOLFREV <= 19920312L)
 		PlaySoundLocActor(HALTSND,ob);
 	#else

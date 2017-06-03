@@ -32,7 +32,13 @@ typedef enum {
 		MOVEGUN1SND,             // 5
 		NOWAYSND,                // 6
 		NAZIHITPLAYERSND,        // 7
+		// We can technically use the same name,
+		// but good chances are it originally differed
+#if (GAMEVER_WOLFREV <= 19920312L)
+		FIRESND,                 // 8
+#else
 		SCHABBSTHROWSND,         // 8
+#endif
 		PLAYERDEATHSND,          // 9
 		DOGDEATHSND,             // 10
 		ATKGATLINGSND,           // 11
@@ -66,21 +72,17 @@ typedef enum {
 		ESCPRESSEDSND,           // 39
 		LEVELDONESND,            // 40
 		DOGBARKSND,              // 41
-#if (GAMEVER_WOLFREV > 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
 		ENDBONUS1SND,            // 42
 		ENDBONUS2SND,            // 43
-#endif
 		BONUS1UPSND,             // 44
-#if (GAMEVER_WOLFREV > 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
+#if (GAMEVER_WOLFREV > 19920312L)
 		BONUS4SND,               // 45
 		PUSHWALLSND,             // 46
 		NOBONUSSND,              // 47
 		PERCENT100SND,           // 48
 		BOSSACTIVESND,           // 49
 		MUTTISND,                // 50
-#endif
 		SCHUTZADSND,             // 51
-#if (GAMEVER_WOLFREV > 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
 		AHHHGSND,                // 52
 		DIESND,                  // 53
 		EVASND,                  // 54
@@ -90,9 +92,7 @@ typedef enum {
 		NAZIFIRESND,             // 58
 		BOSSFIRESND,             // 59
 		SSFIRESND,               // 60
-#endif
 		SLURPIESND,              // 61
-#if (GAMEVER_WOLFREV > 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
 		TOT_HUNDSND,             // 62
 		MEINGOTTSND,             // 63
 		SCHABBSHASND,            // 64
@@ -128,11 +128,16 @@ typedef enum {
 // Base offsets
 //
 // Again don't use the enum value of LASTSOUND, just use the numbers directly
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= 19920312L)
 #define STARTPCSOUNDS		0
 #define STARTADLIBSOUNDS	45
 #define STARTDIGISOUNDS		90
 #define STARTMUSIC		135
+#elif (GAMEVER_WOLFREV <= 19920505L)
+#define STARTPCSOUNDS		0
+#define STARTADLIBSOUNDS	73
+#define STARTDIGISOUNDS		146
+#define STARTMUSIC		219
 #else
 #define STARTPCSOUNDS		0
 #define STARTADLIBSOUNDS	87

@@ -4124,10 +4124,9 @@ void T_Shoot (objtype *ob)
 
 	if (!CheckLine (ob))			// player is behind a wall
 	// *** ALPHA RESTORATION ***
-	// FIXME - is this the correct sound name?
 #if (GAMEVER_WOLFREV <= 19920312L)
 	{
-	  SD_PlaySound (SCHABBSTHROWSND);
+	  SD_PlaySound (FIRESND);
 	  return;
 	}
 #else
@@ -4172,7 +4171,6 @@ void T_Shoot (objtype *ob)
 
 		TakeDamage (damage,ob);
 		// *** ALPHA RESTORATION ***
-		// FIXME - Correct sound effect?
 #if (GAMEVER_WOLFREV <= 19920312L)
 		SD_PlaySound (NAZIHITPLAYERSND);
 		return;
@@ -4180,9 +4178,8 @@ void T_Shoot (objtype *ob)
 	}
 
 	// *** ALPHA RESTORATION ***
-	// FIXME - Correct sound effect?
 #if (GAMEVER_WOLFREV <= 19920312L)
-	SD_PlaySound (SCHABBSTHROWSND);
+	SD_PlaySound (FIRESND);
 #else
 	switch(ob->obclass)
 	{
@@ -4262,7 +4259,6 @@ void T_Bite (objtype *ob)
 #if (GAMEVER_WOLFREV <= 19920610L)
 			   TakeDamage (US_RndT()>>4);
 			   // *** ALPHA RESTORATION ***
-			   // FIXME - Correct sound effect?
 #if (GAMEVER_WOLFREV <= 19920312L)
 			   SD_PlaySound (NAZIHITPLAYERSND);
 #endif
@@ -4275,9 +4271,8 @@ void T_Bite (objtype *ob)
 	}
 
 	// *** ALPHA RESTORATION ***
-	// FIXME - Correct sound effect?
 #if (GAMEVER_WOLFREV <= 19920312L)
-	SD_PlaySound (SCHABBSTHROWSND);
+	SD_PlaySound (FIRESND);
 #endif
 	return;
 }
