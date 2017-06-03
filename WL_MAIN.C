@@ -1095,6 +1095,25 @@ boolean MS_CheckParm (char far *check)
 =====================
 */
 
+			// *** ALPHA RESTORATION *** - FIXME RECHECK
+#if (GAMEVER_WOLFREV <= 19920312L)
+static  int     wolfdigimap[] =
+		{
+			21, 0,
+			29, 1,
+			22, 2,
+			25, 2,
+			41, 3,
+			19, 4,
+			18, 5,
+			27, 6,
+			16, 7,
+			11, 8,
+			26, 8,
+			24, 9,
+			LASTSOUND
+		};
+#else // GAMEVER_WOLFREV > 19920312L
 static  int     wolfdigimap[] =
 		{
 			// *** S3DNA RESTORATION ***
@@ -1249,6 +1268,7 @@ static  int     wolfdigimap[] =
 #endif
 			LASTSOUND
 		};
+#endif // FIXME ALPHA TEST (GAMEVER_WOLFREV <= 19920312L)
 
 
 void InitDigiMap (void)

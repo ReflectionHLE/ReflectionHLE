@@ -2,6 +2,7 @@
 gcc MAKEOBJ.C -o MAKEOBJ
 ### The SOD (full/demo) v1.0 and pre-v1.4 Apogee EXEs have the palettes
 ### in their own segments separate from the dsegs...
+./MAKEOBJ f WOLF3D/WL920512/GAMEPAL.BIN WOLF3D/WL920512/GAMEPAL.OBJ _gamepal
 ./MAKEOBJ f WOLF3D/GAMEPAL.BIN WOLF3D/PRE14/GAMEPAL.OBJ _gamepal
 #./MAKEOBJ c WOLF3D/GAMEPAL.BIN WOLF3D/ALL14/GAMEPAL.OBJ _gamepal
 ./MAKEOBJ f SOD/GAMEPAL.BIN SOD/ALL10/GAMEPAL.OBJ GamePal _gamepal

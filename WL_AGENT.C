@@ -32,6 +32,10 @@
 //
 // player state info
 //
+// *** ALPHA RESTORATION *** - FIXME TEST
+#if (GAMEVER_WOLFREV <= 19920312L)
+boolean		someUnusedAgentVar;
+#endif
 boolean		running;
 long		thrustspeed;
 
@@ -40,8 +44,8 @@ unsigned	plux,pluy;			// player coordinates scaled to unsigned
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
 int			anglefrac;
-#endif
 int			gotgatgun;	// JR
+#endif
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
@@ -713,7 +717,12 @@ void	GiveExtraMan (void)
 	if (gamestate.lives<9)
 		gamestate.lives++;
 	DrawLives ();
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	SD_PlaySound (HEALTH1SND);
+#else
 	SD_PlaySound (BONUS1UPSND);
+#endif
 }
 
 //===========================================================================
@@ -1192,7 +1201,12 @@ void GetBonus (statobj_t *check)
 #ifdef GAMEVER_NOAH3D
 		gamestate.machinegun = 1;
 #endif
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		SD_PlaySound (GETGATLINGSND);
+#else
 		SD_PlaySound (GETMACHINESND);
+#endif
 		GiveWeapon (wp_machinegun);
 		break;
 	case	bo_chaingun:
@@ -1200,7 +1214,12 @@ void GetBonus (statobj_t *check)
 #ifdef GAMEVER_NOAH3D
 		gamestate.chaingun = 1;
 #endif
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		SD_PlaySound (GETMACHINESND);
+#else
 		SD_PlaySound (GETGATLINGSND);
+#endif
 		GiveWeapon (wp_chaingun);
 
 		// *** ALPHA RESTORATION ***
@@ -1355,7 +1374,12 @@ void GetBonus (statobj_t *check)
 		if (gamestate.health >10)
 			return;
 
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		SD_PlaySound (HEALTH1SND);
+#else
 		SD_PlaySound (SLURPIESND);
+#endif
 		HealSelf (1);
 		break;
 #endif
@@ -1563,8 +1587,13 @@ void Thrust (int angle, long speed)
 	player->tilex = player->x >> TILESHIFT;		// scale to tile values
 	player->tiley = player->y >> TILESHIFT;
 
+	// Similar to code from T_Attack and T_Player
+#if (GAMEVER_WOLFREV <= 19920312L)
+	player->areanumber = *(mapsegs[0] + farmapylookup[player->tiley]+player->tilex) -AREATILE;
+#else
 	offset = farmapylookup[player->tiley]+player->tilex;
 	player->areanumber = *(mapsegs[0] + offset) -AREATILE;
+#endif
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)

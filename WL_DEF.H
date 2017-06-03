@@ -217,8 +217,14 @@ enum	{
 		SPR_STAT_32,SPR_STAT_33,SPR_STAT_34,SPR_STAT_35,
 		SPR_STAT_36,SPR_STAT_37,SPR_STAT_38,SPR_STAT_39,
 
+		// *** ALPHA RESTORATION ***
+		// These ones aren't available in VSWAP.WL1, but
+		// weirdly enough appear in the statinfo array,
+		// where their offsets in VSWAP.WL1 precede the sounds
+#if (GAMEVER_WOLFREV > 19920312L)
 		SPR_STAT_40,SPR_STAT_41,SPR_STAT_42,SPR_STAT_43,
 		SPR_STAT_44,SPR_STAT_45,SPR_STAT_46,SPR_STAT_47,
+#endif
 #endif
 
 #ifdef SPEAR
@@ -345,6 +351,8 @@ enum	{
 		SPR_SS_DEAD2,
 #endif
 
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 //
 // mutant
 //
@@ -405,6 +413,7 @@ enum	{
 
 		SPR_OFC_SHOOT1,SPR_OFC_SHOOT2,SPR_OFC_SHOOT3,
 #endif
+#endif // GAMEVER_WOLFREV > 19920312L
 
 		// *** S3DNA RESTORATION ***
 		// Some sprite definitions shufflings and edits
@@ -454,6 +463,16 @@ enum	{
 		SPR_HITLER_W1,SPR_HITLER_W2,SPR_HITLER_W3,SPR_HITLER_W4,
 		SPR_HITLER_DIE1,SPR_HITLER_DIE2,SPR_HITLER_DEAD,SPR_HITLER_DEAD2,
 		SPR_HITLER_SHOOT1,SPR_HITLER_SHOOT2,SPR_HITLER_SHOOT3,
+		// *** ALPHA RESTORATION ***
+		// The alpha has virtually no code for Hans,
+		// and ~half the graphics (inc. duplications)
+#elif (GAMEVER_WOLFREV <= 19920312L)
+//
+// hans
+//
+		SPR_BOSS_W1,SPR_BOSS_W2,SPR_BOSS_W3,SPR_BOSS_W4,
+		SPR_BOSS_SHOOT1,SPR_BOSS_SHOOT2,SPR_BOSS_SHOOT3,
+		SPR_BOSS_DEAD,SPR_BOSS_DIE1,SPR_BOSS_DIE2,
 #else
 #ifndef SPEAR
 //
@@ -567,11 +586,14 @@ enum	{
 		SPR_FAT_DIE1,SPR_FAT_DIE2,SPR_FAT_DIE3,SPR_FAT_DEAD,
 #endif // GAMEVER_WOLFREV <= 19920505L
 
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 //
 // bj
 //
 		SPR_BJ_W1,SPR_BJ_W2,SPR_BJ_W3,SPR_BJ_W4,
 		SPR_BJ_JUMP1,SPR_BJ_JUMP2,SPR_BJ_JUMP3,SPR_BJ_JUMP4,
+#endif
 #else
 //
 // THESE ARE FOR 'SPEAR OF DESTINY'
@@ -644,6 +666,14 @@ enum	{
 		SPR_CHAINREADY,SPR_CHAINATK1,SPR_CHAINATK2,SPR_CHAINATK3,
 		SPR_CHAINATK4,
 
+		// *** ALPHA RESTORATION ***
+		// These ones aren't available in VSWAP.WL1, but
+		// weirdly enough appear in the statinfo array,
+		// where their offsets in VSWAP.WL1 precede the sounds
+#if (GAMEVER_WOLFREV <= 19920312L)
+		SPR_STAT_40,SPR_STAT_41,SPR_STAT_42,SPR_STAT_43,
+		SPR_STAT_44,SPR_STAT_45,SPR_STAT_46,SPR_STAT_47,
+#endif
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		SPR_CANTAREADY,SPR_CANTAATK1,SPR_CANTAATK2,SPR_CANTAATK3,
@@ -1556,6 +1586,10 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height);
 //
 // player state info
 //
+// *** ALPHA RESTORATION *** - FIXME TEST
+#if (GAMEVER_WOLFREV <= 19920312L)
+extern	boolean		someUnusedAgentVar;
+#endif
 extern	boolean		running;
 extern	long		thrustspeed;
 extern	unsigned	plux,pluy;		// player coordinates scaled to unsigned
@@ -1563,8 +1597,8 @@ extern	unsigned	plux,pluy;		// player coordinates scaled to unsigned
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
 extern	int			anglefrac;
-#endif
 extern	int			facecount;
+#endif
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D

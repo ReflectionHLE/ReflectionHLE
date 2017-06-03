@@ -52,7 +52,12 @@
 
 #define READCOLOR	0x4a
 #define READHCOLOR	0x47
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define VIEWCOLOR	0x01
+#else
 #define VIEWCOLOR	0x7f
+#endif
 #define TEXTCOLOR	0x17
 #define HIGHLIGHT	0x13
 // *** ALPHA RESTORATION ***
@@ -118,18 +123,34 @@
 
 #define CTL_X	24
 #define CTL_Y	70
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define CTL_W	280
+#define CTL_H	13*7-20
+#else
 #define CTL_W	284
 #define CTL_H	13*7-7
+#endif
 
 #define LSM_X	85
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define LSM_Y	40
+#else
 #define LSM_Y	55
+#endif
 #define LSM_W	175
 #define LSM_H	10*13+10
 
 #define NM_X	50
 #define NM_Y	100
 #define NM_W	225
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define NM_H	13*4+2
+#else
 #define NM_H	13*4+15
+#endif
 
 #define NE_X	10
 #define NE_Y	23
@@ -137,7 +158,12 @@
 #define NE_H	200-NE_Y*2
 
 #define CST_X		20
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define CST_Y		30
+#else
 #define CST_Y		48
+#endif
 #define CST_START	60
 #define CST_SPC	60
 

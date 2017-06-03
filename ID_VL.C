@@ -669,7 +669,12 @@ void VL_Plot (int x, int y, int color)
 =================
 */
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+void VL_Hlin (int x, int y, int width, int color)
+#else
 void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color)
+#endif
 {
 	unsigned		xbyte;
 	byte			far *dest;
@@ -679,7 +684,13 @@ void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color)
 	xbyte = x>>2;
 	leftmask = leftmasks[x&3];
 	rightmask = rightmasks[(x+width-1)&3];
+	// *** ALPHA RESTORATION ***
+	// This one is a bit weird
+#if (GAMEVER_WOLFREV <= 19920312L)
+	midbytes = ((x+width+3)>>2) - xbyte + (-2);
+#else
 	midbytes = ((x+width+3)>>2) - xbyte - 2;
+#endif
 
 	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+xbyte);
 

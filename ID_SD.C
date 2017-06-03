@@ -1153,7 +1153,7 @@ asm	out	0x61,al
 
 asm	popf
 }
-#endif // (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
+#endif // !defined GAMEVER_NOAH3D
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1326,8 +1326,8 @@ SDL_PlayDigiSegment(memptr addr,word len)
 	{
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-	// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 	case sds_PC:
     	SDL_PCPlaySample(addr,len);
 		break;
@@ -1365,18 +1365,26 @@ asm	cli
 #if (GAMEVER_WOLFREV > 19920505L)
 	SoundPositioned = false;
 #endif
-	// *** S3DNA + ALPHA VERSION RESTORATION ***
-#if (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
+	// *** S3DNA + ALPHA RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 	if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 		SDL_SoundFinished();
 #endif
 
 	switch (DigiMode)
 	{
+	// *** ALPHA RESTORATION ***
+	// A few typos
+#if (GAMEVER_WOLFREV <= 19920312L)
+	case sds_SoundSource:
+		SDL_SBStopSample();
+		break;
+	case sds_SoundBlaster:
+		SDL_SSStopSample();
+		break;
+#else
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-	// *** ALPHA VERSION RESTORATION ***
-#ifndef GAMEVER_ALPHA
 	case sds_PC:
 		SDL_PCStopSample();
 		break;
@@ -1384,10 +1392,10 @@ asm	cli
 	case sds_SoundSource:
 		SDL_SSStopSample();
 		break;
-#endif
 	case sds_SoundBlaster:
 		SDL_SBStopSample();
 		break;
+#endif
 	}
 
 asm	popf
@@ -1574,6 +1582,14 @@ SD_SetDigiDevice(SDSMode mode)
 	devicenotpresent = false;
 	switch (mode)
 	{
+	// *** ALPHA RESTORATION ***
+	// Apparently, this case was originally located here
+#if (GAMEVER_WOLFREV <= 19920312L)
+	case sds_SoundSource:
+		if (!SoundSourcePresent)
+			devicenotpresent = true;
+		break;
+#endif
 	case sds_SoundBlaster:
 		if (!SoundBlasterPresent)
 		{
@@ -1586,8 +1602,9 @@ SD_SetDigiDevice(SDSMode mode)
 				devicenotpresent = true;
 		}
 		break;
-	// *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+	// *** S3DNA + ALPHA RESTORATION ***
+	// Not present in S3DNA and located elsewhere in the alpha
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 	case sds_SoundSource:
 		if (!SoundSourcePresent)
 			devicenotpresent = true;
@@ -3109,8 +3126,8 @@ SD_PlaySound(soundnames sound)
 
 	if ((DigiMode != sds_Off) && (DigiMap[sound] != -1))
 	{
-		// *** S3DNA + ALPHA VERSION RESTORATION ***
-#if (!defined GAMEVER_NOAH3D) && (!defined GAMEVER_ALPHA)
+		// *** S3DNA + ALPHA RESTORATION ***
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
 		if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
 		{
 			if (s->priority < SoundPriority)

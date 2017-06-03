@@ -150,7 +150,12 @@ void VL_FadeIn (int start, int end, byte far *palette, int steps);
 void VL_ColorBorder (int color);
 
 void VL_Plot (int x, int y, int color);
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+void VL_Hlin (int x, int y, int width, int color);
+#else
 void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color);
+#endif
 void VL_Vlin (int x, int y, int height, int color);
 void VL_Bar (int x, int y, int width, int height, int color);
 

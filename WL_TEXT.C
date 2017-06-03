@@ -860,7 +860,7 @@ char *helpfilename = "HELPART.WL1",
 	 *orderfilename = "ORDERART.WL1",
 	 *storyfilename = "STORYART.WL1",
 	 *orderfilename2 = "ORDERART.WL1", // Weird one
-	 *crackfilename = "CRACK.WL1"; // Hmm?
+	 *ckartfilename = "CKART.WL1"; // Commander Keen?
 #elif (!defined GAMEVER_NOAH3D)
 char helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";

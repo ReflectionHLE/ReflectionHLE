@@ -20,7 +20,9 @@ void CP_BackToDemo(void);
 #define STARTITEM	newgame
 
 #else
-#ifdef GOODTIMES
+// *** ALPHA RESTORATION ***
+#if (defined GOODTIMES) || (GAMEVER_WOLFREV <= 19920312L)
+//#ifdef GOODTIMES
 #define STARTITEM	newgame
 
 #else
@@ -82,13 +84,17 @@ CP_iteminfo
 	MainItems={MENU_X,MENU_Y,10,STARTITEM,24},
 	SndItems={SM_X,SM_Y1,12,0,52},
 	LSItems={LSM_X,LSM_Y,10,0,24},
+	// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+	CtlItems={CTL_X,CTL_Y,5,-1,56},
+	CusItems={8,CST_Y+13*2,9,-1,0},
+	NewItems={NM_X,NM_Y,3,1,24};
+#else
 	CtlItems={CTL_X,CTL_Y,6,-1,56},
 	CusItems={8,CST_Y+13*2,9,-1,0},
-	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
 	NewEitems={NE_X,NE_Y,11,0,88},
-#endif
 	NewItems={NM_X,NM_Y,4,2,24};
+#endif
 
 // *** S3DNA RESTORATION ***
 // A few convenience macros
@@ -1410,14 +1416,18 @@ void DrawNewGame(void)
 	ClearMScreen();
 	VWB_DrawPic(112,GAMEVER_MOUSELBACKY,C_MOUSELBACKPIC);
 
-	SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
 	// *** ALPHA RESTORATION ***
-	// FIXME fill correct values later
 #if (GAMEVER_WOLFREV <= 19920312L)
+	SETFONTCOLOR(HIGHLIGHT,BKGDCOLOR);
+	DrawWindow(NM_X+15,NM_Y-50,NM_W-40,NM_H-31,BKGDCOLOR);
+	PrintX=NM_X+20;
+	PrintY=NM_Y-45;
+#else
+	SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
 	DrawWindow(NM_X-5,NM_Y-10,NM_W,NM_H,BKGDCOLOR);
-#endif
 	PrintX=NM_X+20;
 	PrintY=NM_Y-32;
+#endif
 
 #ifndef SPEAR
 	#ifdef SPANISH
@@ -1448,7 +1458,7 @@ void DrawNewGameDiff(int w)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
-	VWB_DrawPic(NM_X+185,NM_Y+7,w+C_EASYPIC);
+	VWB_DrawPic(NM_X+165,NM_Y-7,w+C_EASYPIC);
 #else
 	VWB_DrawPic(NM_X+185,NM_Y+7,w+C_BABYMODEPIC);
 #endif
@@ -1876,11 +1886,10 @@ void DrawLoadSaveScreen(int loadsave)
 	DrawWindow(LSM_X-10,LSM_Y-5,LSM_W,LSM_H,BKGDCOLOR);
 	// *** ALPHA RESTORATION ***
 	// Now we have some usage for DISKX and DISKY
-	// FIXME find correct chunk! (And don't hardcore offsets?)
 #if (GAMEVER_WOLFREV <= 19920312L)
-	VWB_DrawPic(DISKX,DISKY,C_MUSICTITLEPIC);
-	PrintX=135;
-	PrintY=10;
+	VWB_DrawPic(DISKX,DISKY,C_LOADSAVEDISKPIC);
+	PrintX=LSM_X+50;
+	PrintY=LSM_Y-30;
 	SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
 
 	if (!loadsave)
@@ -2039,10 +2048,12 @@ int CP_SaveGame(int quick)
 				unlink(name);
 				handle=creat(name,S_IREAD|S_IWRITE);
 				// *** ALPHA VERSION RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV <= 19920312L)
+				write(handle,input,32);
+#else
 				_dos_write(handle,(void far *)input,32,&nwritten);
-#endif
 				lseek(handle,32,SEEK_SET);
+#endif
 
 				DrawLSAction(1);
 				SaveTheGame(handle,LSA_X+8,LSA_Y+5);
@@ -2438,9 +2449,9 @@ void DrawCtlScreen(void)
  WindowW=320;
  // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
+ SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
  PrintY=5;
  US_CPrint("Control Menu");
- SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
 #endif
  SETFONTCOLOR(TEXTCOLOR,BKGDCOLOR);
 
@@ -2451,7 +2462,7 @@ void DrawCtlScreen(void)
    // FIXME - This is so unexpected
 #if (GAMEVER_WOLFREV <= 19920312L)
    CtlMenu[3].active=
-   NewMenu[1].active=1;
+   NewMenu[0].active=1;
 #else
    CtlMenu[3].active=1;
 #endif
@@ -3344,9 +3355,9 @@ void DrawChangeView(int view)
 	ShowViewSize(view);
 #else
 	// *** ALPHA RESTORATION ***
-	// FIXME HARDCODED COLOR
+	// Note that the color is hardcoded here
 #if (GAMEVER_WOLFREV <= 19920312L)
-	VWB_Bar(0,0,320,200,0);
+	VWB_Bar(0,0,320,200,3);
 #endif
 	VWB_Bar(0,160,320,40,VIEWCOLOR);
 	ShowViewSize(view);
@@ -3490,7 +3501,7 @@ void IntroScreen(void)
 #if (GAMEVER_WOLFREV <= 19920312L)
 		num=10;
 		for (i=0;i<10;i++)
-			if (emshere<=ems[i])
+			if (emshere<ems[i])
 			{
 				num=i+1;
 				break;
@@ -3519,7 +3530,7 @@ void IntroScreen(void)
 #if (GAMEVER_WOLFREV <= 19920312L)
 		num=10;
 		for (i=0;i<10;i++)
-			if (xmshere<=xms[i])
+			if (xmshere<xms[i])
 			{
 				num=i+1;
 				break;
@@ -4270,7 +4281,7 @@ int Confirm(char GAMEVER_COND_FARPTR *string)
 	// *** ALPHA RESTORATION ***
 	// FIXME - Originally Message's code was *hardcoded* here
 #if (GAMEVER_WOLFREV <= 19920312L)
-	int h=0,w=0,mw=0,xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
+	int xit=0,h=0,w=0,mw=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
 	fontstruct _seg *font;
 
 

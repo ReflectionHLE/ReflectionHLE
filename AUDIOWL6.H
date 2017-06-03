@@ -129,8 +129,8 @@ typedef enum {
 // Again don't use the enum value of LASTSOUND, just use the numbers directly
 #if (GAMEVER_WOLFREV <= 19920505L)
 #define STARTPCSOUNDS		0
-#define STARTADLIBSOUNDS	73
-#define STARTDIGISOUNDS		146
+#define STARTADLIBSOUNDS	45
+#define STARTDIGISOUNDS		90
 #define STARTMUSIC		135
 #else
 #define STARTPCSOUNDS		0

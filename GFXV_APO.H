@@ -225,7 +225,11 @@ typedef enum {
 #define LEVELEND_LUMP_END       L_BJWINSPIC
 
 #define LATCHPICS_LUMP_START    KNIFEPIC
+#if (GAMEVER_WOLFREV <= 19920312L)
+#define LATCHPICS_LUMP_END      PAUSEDPIC
+#else
 #define LATCHPICS_LUMP_END      GETPSYCHEDPIC
+#endif
 
 
 //

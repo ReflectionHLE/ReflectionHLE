@@ -454,10 +454,16 @@ PML_StartupMainMem(void)
 #endif
 	{
 		MM_GetPtr(p,PMPageSize);
+		// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19920312L)
+		if (!mmerror)
+			MainPagesAvail++;
+#else
 		if (mmerror)
 			break;
 
 		MainPagesAvail++;
+#endif
 		MainMemUsed[i] = pmba_Allocated;
 	}
 	MM_BombOnError(true);

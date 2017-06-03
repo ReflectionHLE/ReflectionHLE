@@ -686,10 +686,10 @@ int DebugKeys (void)
 	{
 		CenterWindow(26,3);
 		PrintY+=6;
-		// *** S3DNA RESTORATION ***
+		// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		US_Print("  Warp to which level(1-30):");
-#elif (!defined SPEAR)
+#elif (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
 //#ifndef SPEAR
 		US_Print("  Warp to which level(1-10):");
 #else

@@ -354,12 +354,12 @@ void ScanInfoPlane (void)
 			case 61:
 			case 62:
 
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L)
 			case 63:
 			case 64:
 			case 65:
 			case 66:
-// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
 			case 67:
 			case 68:
 			case 69:
@@ -1332,9 +1332,11 @@ void RecordDemo (void)
 	CA_CacheGrChunk(STARTFONT);
 	fontnumber=0;
 #endif
-	// *** S3DNA RESTORATION ***
+	// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	US_Print("  Demo which level(1-30):");
+#elif (GAMEVER_WOLFREV <= 19920312L)
+	US_Print("  Demo which level(1-20):");
 #else
 	US_Print("  Demo which level(1-10):");
 #endif
@@ -1359,7 +1361,7 @@ void RecordDemo (void)
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920312L)
 	VW_FadeOut ();
-	NewGame (gd_easy);
+	NewGame (gd_medium);
 	SETFONTCOLOR(0,15);
 #else
 	SETFONTCOLOR(0,15);

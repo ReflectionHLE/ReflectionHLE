@@ -960,7 +960,7 @@ void CAL_SetupGrFile (void)
 #if (GAMEVER_WOLFREV <= 19920312L)
 	grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
 	if (grhandle == -1)
-		Quit ("Can't open "GREXT"GRAPH."EXTENSION"!");
+		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
 #else
 	strcpy(fname,gfilename);
 	strcat(fname,extension);

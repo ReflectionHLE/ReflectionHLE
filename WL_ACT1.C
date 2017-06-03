@@ -161,8 +161,8 @@ struct
 #endif
 {SPR_STAT_45,block},			// stove           " (SOD:gibs)
 {SPR_STAT_46,block},			// spears          " (SOD:gibs)
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920505L)
 {SPR_STAT_47,block},				// vines			"
 #else
 {SPR_STAT_47},					// vines			"

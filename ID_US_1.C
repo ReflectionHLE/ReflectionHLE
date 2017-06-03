@@ -71,17 +71,27 @@ static	boolean		US_Started;
 						{"Deborah",10000,1},
 						{"Abraham",10000,1},
 #else
+// *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= 19920610L)
 						{"Id Software - '92",10000,1},
 #else
 						{"id software-'92",10000,1},
 #endif
+#if (GAMEVER_WOLFREV <= 19920312L)
+						{"",10000,1},
+						{"John Carmack",10000,1},
+						{"",10000,1},
+						{"Adrian Carmack",10000,1},
+						{"Tom Hall",10000,1},
+						{"John Romero",10000,1},
+#else
 						{"Adrian Carmack",10000,1},
 						{"John Carmack",10000,1},
 						{"Kevin Cloud",10000,1},
 						{"Tom Hall",10000,1},
 						{"John Romero",10000,1},
 						{"Jay Wilbur",10000,1},
+#endif
 #endif
 					};
 
