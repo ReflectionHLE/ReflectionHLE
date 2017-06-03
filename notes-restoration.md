@@ -20,12 +20,14 @@ of the executables coming from the following original releases, albeit with
 micro-differences from the SOD v1.0 and early v1.4 EXEs:  
 - Wolfenstein 3D Shareware v1.0+1.1+1.2+1.4, Apogee releases (with cheats).  
 - Wolfenstein 3D Registered v1.1+1.2+1.4, Apogee releases (with cheats).  
-- Wolfenstein 3D Registered v1.4, early GT Interactive release.  
-- Wolfenstein 3D Registered v1.4, id Software (Mindscape International) release
+- Wolfenstein 3D Retail v1.4, Imagineer (DOS/V) release
+(Japanese localization).  
+- Wolfenstein 3D Retail v1.4, early GT Interactive release.  
+- Wolfenstein 3D Retail v1.4, id Software (Mindscape International) release
 (basically the early GT Interactive EXE with a different signon screen logo).  
-- Wolfenstein 3D Registered v1.4, late GT Interactive release
+- Wolfenstein 3D Retail v1.4, late GT Interactive release
 (no three-letter code is shown after completing an episode).  
-- Wolfenstein 3D Registered v1.4, Activision release.  
+- Wolfenstein 3D Retail v1.4, Activision release.  
 - Spear of Destiny demo v1.0, FormGen release.  
 - Spear of Destiny v1.0+early v1.4 (mistakenly labeled 1.0)+late v1.4,
 FormGen releases (copy protected).  
@@ -35,6 +37,11 @@ In addition, ignoring some differences in debugging symbols as stored in the
 original EXE, this codebase includes recreated code for the following title:
 - Super 3-D Noah's Ark v1.0, Wisdom Tree release (DOS port).
 
+Furthermore, as a bonus, an early Wolfenstein 3D alpha/beta build
+(which appeared to find its way out back on April 1992, if not earlier)
+can also be recreated:
+- Wolfenstein 3D (Shareware), early March 1992 build.
+
 The originally released WOLF3D.PRJ file was used as a base for the
 various project files included in this source tree. Each of them can
 be used for building a specific game version out of the ones above.
@@ -42,22 +49,70 @@ be used for building a specific game version out of the ones above.
 List of releases by project file names
 --------------------------------------
 
+- WL920312: Wolfenstein 3D (Shareware), early March 1992 build.
 - WL1AP10: Wolfenstein 3D Shareware v1.0, Apogee release.
 - WL1AP11: Wolfenstein 3D Shareware v1.1, Apogee release.
 - WL1AP12: Wolfenstein 3D Shareware v1.2, Apogee release.
 - WL1AP14: Wolfenstein 3D Shareware v1.4, Apogee release (with cheats).
 - WL6AP11: Wolfenstein 3D Registered v1.1/1.2, Apogee release.
 - WL6AP14: Wolfenstein 3D Registered v1.4, Apogee release (with cheats).
-- WL6ID14: Wolfenstein 3D Registered v1.4, id Software release.
-- WL6GT14A: Wolfenstein 3D Registered v1.4, early GT Interactive release.
-- WL6GT14B: Wolfenstein 3D Registered v1.4, late GT Interactive release.
-- WL6AC14: Wolfenstein 3D Registered v1.4, Activision release.
+- WJ6IM14: Wolfenstein 3D Retail v1.4, Imagineer release.
+- WL6ID14: Wolfenstein 3D Retail v1.4, id Software release.
+- WL6GT14A: Wolfenstein 3D Retail v1.4, early GT Interactive release.
+- WL6GT14B: Wolfenstein 3D Retail v1.4, late GT Interactive release.
+- WL6AC14: Wolfenstein 3D Retail v1.4, Activision release.
 - SDMFG10: Spear of Destiny demo v1.0, FormGen release.
 - SODFG10: Spear of Destiny v1.0, FormGen release.
 - SODFG14A: Spear of Destiny early v1.4 (labeled 1.0), FormGen release.
 - SODFG14B: Spear of Destiny late v1.4, FormGen release.
 - SODAC14: Spear of Destiny v1.4, Activision release.
 - N3DWT10: Super 3-D Noah's Ark v1.0, Wisdom Tree release.
+
+How to identify code changes (and what's this WOLFREV thing)?
+-------------------------------------------------------------
+
+Check out VERSION.H (and VERSION.EQU). Basically, each project
+shall define an EXEDEF macro for the specific project. For instance,
+WL6AP14.PRJ is configured to define GAMEVER_EXEDEF_WL1AP14.
+
+Other than VERSION.H and VERSION.EQU, the GAMEVER_EXEDEF macros are
+not used *anywhere*. Instead, other macros are used. Some of them
+are old macros added to control specific features, like GOODTIMES,
+UPLOAD and CARMACIZED. There are also a few new macros, with two
+important ones being mentioned here.
+
+GAMEVER_NOAH3D is defined for Super 3-D Noah's Ark, and only for
+this game.
+
+GAMEVER_WOLFREV is defined in all projects, with different values.
+It is intended to represent a revision of development of
+the Wolfenstein 3D codebase. Usually, it is based on some
+*guessed* date (e.g., an original modification date of the EXE),
+but it does not have to be the case.
+
+For instance, N3DWT10 uses a WOLFREV in-between the revisions
+of WL6GT14A and WL6GT14B.
+
+These are two good reasons for using WOLFREV as described above:  
+- WL1AP12 and WL6AP11 share the same code revision. However, WL1AP11
+is of an earlier revision. Thus, the usage of WOLFREV can be
+less confusing.  
+- WOLFREV is a good way to describe the early March 1992 build. While
+it's commonly called just "alpha" or "beta", GAMEVER_WOLFREV
+gives us a more explicit description.
+
+Is looking for "#if (GAMEVER_WOLFREV <= abcdefghL)" (or >) sufficient?
+----------------------------------------------------------------------
+
+Nope!
+
+For instance, for a project with GAMEVER_WOLFREV == 19920921L,
+the condition GAMEVER_WOLFREV <= 19920921L holds. However, so
+does GAMEVER_WOLFREV <= 19930304L, and also GAMEVER_WOLFREV > 19920505L.
+Furthermore, PML_StartupXMS (ID_PM.C) has two mentions of a bug fix
+dating 10/8/92, for which the GAMEVER_WOLFREV test was chosen
+appropriately. The exact range of WOLFREV values from this test
+is not based on any specific build/release of an EXE.
 
 What is this based on
 ---------------------
@@ -68,7 +123,8 @@ includes GAMEPAL.OBJ and SIGNON.OBJ data files, other versions
 of these were extracted from original EXEs.
 
 Alternative GFXV_APO.H definitions were used, taken off the
-Wolf4SDL source port by Moritz "Ripper" Kroll.
+Wolf4SDL source port by Moritz "Ripper" Kroll. GFXV_APO.H
+and AUDIOWL6.H were both modified as required.
 
 Recreated code for Super 3-D Noah's Ark (DOS port) was added, based on earlier
 research work done for the ECWolf source port by Braden Obrzut. Furthermore, it
@@ -87,12 +143,20 @@ features from the original SNES title were implemented, like an auto-map
 and an arsenal of up to 6 feeders (weapons), including hand feeding.
 
 There are also a couple of more variable and functions names "borrowed" off
-other sources and used for the recreation of Wolfenstein 3D v1.0, although
-most chances are these were originally found in an earlier revision of
-the Wolfenstein 3D codebase under the same names:  
-- screenpage, VW_FixRefreshBuffer and VW_QuitDoubleBuffer, from the
-Catacomb 3-D sources (VW_InitDoubleBuffer was already mentioned in ID_VH.H).  
+other sources and used for the recreation of Wolfenstein 3D v1.0 and the
+March 1992 build, although most chances are these were originally found in
+earlier revisions of the Wolfenstein 3D codebase under the same names:  
+- screenpage, VW_SetDefaultColor, VW_FixRefreshBuffer
+and VW_QuitDoubleBuffer, from the Catacomb 3-D sources
+(VW_InitDoubleBuffer is already mentioned in ID_VH.H as released on 1995).  
 - screensplit, from the Blake Stone: Planet Strike sources.
+
+Some code pieces were also "borrowed" from Keen Dreams / Catacomb 3-D
+in a similar manner:  
+- CAL_ReadGrChunk (not very far from a clone of CAL_CacheGrChunk).  
+- An earlier revision of MM_ShowMemory.  
+- Usage of hardcoded DMA channel in ID_SD.C.  
+- The check for TED launching in US_Startup.
 
 How were the project files (and a bit more) modified from the original
 ----------------------------------------------------------------------
@@ -172,6 +236,15 @@ information, they don't compress the BSS section. That is, they don't do
 the job of the above mentioned STRIPBSS, being removing the chunk of zeros,
 while appropriately increasing the amount of additional memory
 the program needs as defined in the EXE's header.  
+- SODFG14A and SODFG14B are essentially the exact same revision.
+The only real differences are the changes in SIGNON.OBJ
+and the Borland C++ Source Debugging toggle.
+- WL6GT14A was probably made after WJ6IM14. In terms of project files, though,
+the only real differences are SIGNON.OBJ, as well as the definition of JAPAN
+JAPAN in one project and GOODTIMES in the other one. There are also different
+GAMEVER_WOLFREV values in use, although it wasn't necessary, technically.
+- WL920312.PRJ is quite close to WL1AP10.PRJ. The early build lacks WL_INTER.C.
+Furthermore, the signon *and* palette objects' data differ.
 - There may be at least one other difference at the least. Obviously, source
 code files other than VERSION.H are edited as required. This includes the
 addition of the new header file GFXV_APO.H for the Apogee builds, with
@@ -221,8 +294,9 @@ and then retry to compile from there. Repeat until an EXE is built.
 rebuilding. Remember, though, that luck is important here, and again you
 may fail to get an EXE which is clearly close to an original one.  
 
-Building any of the pre-v1.4 Apogee EXEs, or the SOD demo v1.0 FormGen EXE
---------------------------------------------------------------------------
+Building the March 1992 EXE, any of the pre-v1.4 Apogee EXEs
+or the SOD demo v1.0 FormGen EXE
+------------------------------------------------------------
 
 1. Prepare and open project with Borland C++ 3.0, using PREP.BAT.  
 2. Press on F9 to build. Skip any compilation error as described above.  
@@ -298,8 +372,8 @@ The command "bc SODFG14B.PRJ" should do the job with a compatible setup.
 6. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 7. Hopefully you should get exactly the original EXE.  
 
-Building the Wolf3D v1.4 early GT or ID EXE (same EXE up to SIGNON.OBJ)
------------------------------------------------------------------------
+Building the Wolf3D v1.4 Imageineer, early GT or ID EXE
+-------------------------------------------------------
 1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
 2. Press on F9 to build.  
 3. Quit Borland C++. Hopefully you should get exactly the original EXE.  
