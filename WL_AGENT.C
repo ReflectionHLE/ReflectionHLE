@@ -32,7 +32,8 @@
 //
 // player state info
 //
-// *** ALPHA RESTORATION *** - FIXME TEST
+// *** ALPHA RESTORATION ***
+// Need to define this (and declare in header) for recreation of memory layout
 #if (GAMEVER_WOLFREV <= 19920312L)
 boolean		someUnusedAgentVar;
 #endif

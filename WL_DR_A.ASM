@@ -70,7 +70,7 @@ EXTRN	doorposition:WORD		; table of door position values
 
 
 ; *** ALPHA RESTORATION ***
-; FIXME - Not sure what's this unused variable
+; Not sure what's this unused variable, but it's reset to 0 in the alpha
 IF GAMEVER_WOLFREV LE 19920312
 unuseddrvar	db	0
 ELSE
@@ -218,7 +218,7 @@ PUBLIC	AsmRefresh
 	EVEN
 pixxloop:
 ; *** ALPHA RESTORATION ***
-; FIXME - What's this?
+; An unused variable being reset to 0 just here
 IF GAMEVER_WOLFREV LE 19920312
 	mov	[BYTE unuseddrvar],0
 ENDIF

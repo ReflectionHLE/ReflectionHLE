@@ -1577,7 +1577,8 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height);
 //
 // player state info
 //
-// *** ALPHA RESTORATION *** - FIXME TEST
+// *** ALPHA RESTORATION ***
+// Need to declare and define this for recreation of memory layout
 #if (GAMEVER_WOLFREV <= 19920312L)
 extern	boolean		someUnusedAgentVar;
 #endif
