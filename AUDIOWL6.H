@@ -1,7 +1,8 @@
 /////////////////////////////////////////////////
 //
 // MUSE Header for .WL6
-// Based on header from Wolf4SDL
+// Based on header from Wolf4SDL,
+// with changes (inc. alpha version)
 //
 /////////////////////////////////////////////////
 
@@ -143,14 +144,14 @@ typedef enum {
 // Music names & indexes
 //
 typedef enum {
-#if (GAMEVER_WOLFREV <= 19920312L) // FIXME (ALPHA RESTORATION) - Use the right values!
+#if (GAMEVER_WOLFREV <= 19920312L)
 		WONDERIN_MUS,            // 0
-		NAZI_NOR_MUS,            // 1
-		CORNER_MUS,              // 2
-		WARMARCH_MUS,            // 3
+		VICTORS_MUS,             // 1
+		SUSPENSE_MUS,            // 2
+		NAZI_NOR_MUS,            // 3
 		SALUTE_MUS,              // 4
-		HITLWLTZ_MUS,            // 5
-		INTROCW3_MUS,            // 6
+		POW_MUS,                 // 5
+		CORNER_MUS,              // 6
 		GETTHEM_MUS,             // 7
 #else
 		CORNER_MUS,              // 0
