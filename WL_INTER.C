@@ -610,14 +610,12 @@ void Victory (void)
 #endif
 	UnCacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 
-	// *** S3DNA + ALPHA RESTORATION ***
+	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	CharacterCast();
 #elif (!defined SPEAR)
 //#ifndef SPEAR
-#if (GAMEVER_WOLFREV > 19920312L)
 	EndText();
-#endif
 #else
 	EndSpear();
 #endif
@@ -2048,8 +2046,6 @@ void PreloadGraphics(void)
 }
 
 
-// *** ALPHA VERSION RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
 //==========================================================================
 
 /*
@@ -2386,7 +2382,6 @@ void	CheckHighScore (long score,word other)
 	}
 
 }
-#endif // GAMEVER_WOLFREV > 19920312L
 
 // *** S3DNA RESTORATION ***
 // Separating the briefings seems to do the job here (in terms of EXE layout)
