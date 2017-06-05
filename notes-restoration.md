@@ -126,6 +126,9 @@ Alternative GFXV_APO.H definitions were used, taken off the
 Wolf4SDL source port by Moritz "Ripper" Kroll. GFXV_APO.H
 and AUDIOWL6.H were both modified as required.
 
+Similarly, there is the FOREIGN\JAPAN\GFXV_WJ6.H header file, based on
+recreated definitions coming from choksta.
+
 Recreated code for Super 3-D Noah's Ark (DOS port) was added, based on earlier
 research work done for the ECWolf source port by Braden Obrzut. Furthermore, it
 turned out the original EXE contains a lot of debugging information, including
