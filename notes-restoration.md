@@ -375,8 +375,8 @@ The command "bc SODFG14B.PRJ" should do the job with a compatible setup.
 6. Quit Borland C++ and use LZEXE 0.91 to pack the generated EXE.  
 7. Hopefully you should get exactly the original EXE.  
 
-Building the Wolf3D v1.4 Imageineer, early GT or ID EXE
--------------------------------------------------------
+Building the Wolf3D v1.4 Imagineer, early GT or ID EXE
+------------------------------------------------------
 1. Prepare and open project with Borland C++ 3.1, using PREP.BAT.  
 2. Press on F9 to build.  
 3. Quit Borland C++. Hopefully you should get exactly the original EXE.  
