@@ -31,7 +31,7 @@ extern	boolean		CA_Started;
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > 19920312L)
-eextern	char		audioname[13];
+extern	char		audioname[13];
 #endif
 
 extern	byte 		_seg	*tinf;
