@@ -1389,10 +1389,10 @@ asm	cli
 	case sds_PC:
 		SDL_PCStopSample();
 		break;
-#endif
 	case sds_SoundSource:
 		SDL_SSStopSample();
 		break;
+#endif
 	case sds_SoundBlaster:
 		SDL_SBStopSample();
 		break;
