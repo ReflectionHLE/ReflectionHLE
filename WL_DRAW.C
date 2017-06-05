@@ -103,8 +103,8 @@ long	lastintercept;
 int		lasttilehit;
 
 // *** ALPHA RESTORATION *** - A couple of unused variables
-#if (GAMEVER_WOLFREV <= 19920505L)
-int	someUnusedDrawVar1, someUunusedDrawVar2;
+#if (GAMEVER_WOLFREV <= 19920312L)
+int	someUnusedDrawVar1, someUnusedDrawVar2;
 #endif
 
 //

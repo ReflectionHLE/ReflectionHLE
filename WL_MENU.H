@@ -240,7 +240,7 @@ void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,i
 void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,int hlight);
 void DrawMenuGun(CP_iteminfo *iteminfo);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV > 19920312L)
 void DrawStripes(int y);
 #endif
 

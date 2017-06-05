@@ -1421,7 +1421,6 @@ void DrawNewGame(void)
 	PrintY=NM_Y-45;
 #else
 	SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
-	DrawWindow(NM_X-5,NM_Y-10,NM_W,NM_H,BKGDCOLOR);
 	PrintX=NM_X+20;
 	PrintY=NM_Y-32;
 #endif

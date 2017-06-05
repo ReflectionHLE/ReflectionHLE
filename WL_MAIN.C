@@ -1158,10 +1158,21 @@ static  int     wolfdigimap[] =
 			ATKPISTOLSND,           5,
 			ATKGATLINGSND,          6,
 			SCHUTZADSND,            7,
+			GUTENTAGSND,            8,
+			MUTTISND,               9,
+			BOSSFIRESND,            10,
+			SSFIRESND,              11,
 			DEATHSCREAM1SND,        12,
 			DEATHSCREAM2SND,        13,
 			DEATHSCREAM3SND,        13,
 			TAKEDAMAGESND,          14,
+			PUSHWALLSND,            15,
+
+			LEBENSND,               20,
+			NAZIFIRESND,            21,
+			SLURPIESND,             22,
+
+			YEAHSND,				32,
 
 #ifndef UPLOAD
 			// These are in all other episodes
