@@ -14,7 +14,7 @@
 void	DrawHighScores(void)
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	char		buffer[16],*str;
 	word		i,
 				w,h;
@@ -34,7 +34,7 @@ void	DrawHighScores(void)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	MM_SortMem ();
 #endif
 
@@ -42,18 +42,18 @@ void	DrawHighScores(void)
 	// *** SHAREWARE/REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Uncomment line for Shareware/Registered 1.4 Apogee and early GT/ID,
 	// and relocate it for pre-1.4 Apogee
-#if (GAMEVER_WOLFREV > 19920610L) && (GAMEVER_WOLFREV <= 19930902L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (GAMEVER_WOLFREV <= GV_WR_WL6GT14A)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	CA_CacheGrChunk (HIGHSCORESPIC);
 	CA_CacheGrChunk (STARTFONT);
 	// *** SHAREWARE/REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Relocated line for pre-1.4 Apogee
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	CA_CacheGrChunk (C_CODEPIC);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	CA_CacheGrChunk (C_LEVELPIC);
 	CA_CacheGrChunk (C_SCOREPIC);
 	CA_CacheGrChunk (C_NAMEPIC);
@@ -65,7 +65,7 @@ void	DrawHighScores(void)
 	VWB_DrawPic(48,0,HIGHSCORESPIC);
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 	// Relocate line for pre-1.4 Apogee
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	UNCACHEGRCHUNK (HIGHSCORESPIC);
 #endif
 
@@ -75,14 +75,14 @@ void	DrawHighScores(void)
 	VWB_DrawPic(4*8,68,C_NAMEPIC);
 	VWB_DrawPic(21*8,68,C_LEVELPIC);
 	VWB_DrawPic(32*8,68,C_SCOREPIC);
-#elif (GAMEVER_WOLFREV > 19920505L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	VWB_DrawPic(4*8,68,C_NAMEPIC);
 	VWB_DrawPic(20*8,68,C_LEVELPIC);
 	VWB_DrawPic(28*8,68,C_SCOREPIC);
 #endif
 	// *** SHAREWARE V1.0+REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Uncomment line for Shareware 1.0 and any Registered Apogee release, and early Goodtimes/Id
-#if (GAMEVER_WOLFREV <= 19930902L) && ((!defined UPLOAD) || (GAMEVER_WOLFREV <= 19920505L))
+#if (GAMEVER_WOLFREV <= GV_WR_WL6GT14A) && ((!defined UPLOAD) || (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
 //#ifndef UPLOAD
 	VWB_DrawPic(35*8,68,C_CODEPIC);
 #endif
@@ -108,11 +108,11 @@ void	DrawHighScores(void)
 	SETFONTCOLOR(HIGHLIGHT,0x29);
 #endif
 
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 	for (i = 0,s = Scores;i < MaxScores;i++,s++)
 	{
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		PrintY = 68 + (16 * i);
 #else
 		PrintY = 76 + (16 * i);
@@ -123,7 +123,7 @@ void	DrawHighScores(void)
 		//
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PrintX = 60;
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -155,7 +155,7 @@ void	DrawHighScores(void)
 			*str = *str + (129 - '0');	// Used fixed-width numbers (129...)
 		USL_MeasureString(buffer,&w,&h);
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PrintX = (24 * 8)-w;
 #else
 		PrintX = (22 * 8)-w;
@@ -208,9 +208,9 @@ void	DrawHighScores(void)
 		// *** SHAREWARE V1.0+REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 		// *** REGISTERED V1.4 APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 		// Do compile verification block for Shareware 1.0 and any Registered Apogee release, and early Goodtimes/Id. But *not* for the alpha.
-		#if (GAMEVER_WOLFREV <= 19930902L)
+		#if (GAMEVER_WOLFREV <= GV_WR_WL6GT14A)
 		//#if 0
-#if (!defined UPLOAD) || ((GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920505L))
+#if (!defined UPLOAD) || ((GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
 //#ifndef UPLOAD
 #ifndef SPEAR
 		//
@@ -243,13 +243,13 @@ void	DrawHighScores(void)
 	}
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	SETFONTCOLOR(0,15);
 #else
 	// *** PRE-V1.4 APOGEE RESTORATION (INC. SPECIAL CASE FOR V1.0) ***
 	// Relocated line for pre-1.4 Apogee, but don't compile at all in v1.0
-#if (GAMEVER_WOLFREV > 19920505L)
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	UNCACHEGRCHUNK (HIGHSCORESPIC);
 #endif
 	VW_UpdateScreen ();
@@ -259,7 +259,7 @@ void	DrawHighScores(void)
 	UnCacheLump (HIGHSCORES_LUMP_START,HIGHSCORES_LUMP_END);
 	fontnumber = 0;
 #endif
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 }
 
 //===========================================================================
@@ -284,7 +284,7 @@ void	CheckHighScore (long score,word other)
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	myscore.episode = gamestate.mapon;
-#elif (GAMEVER_WOLFREV > 19920505L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	myscore.episode = gamestate.episode;
 #endif
 	myscore.completed = other;
@@ -313,7 +313,7 @@ void	CheckHighScore (long score,word other)
 	// *** S3DNA + ALPHA RESTORATION ***
 #elif (defined GAMEVER_NOAH3D)
 	StartCPMusic (NOAH11_MUS);
-#elif (GAMEVER_WOLFREV > 19920312L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#else
 	StartCPMusic (ROSTER_MUS);
 #endif
@@ -327,20 +327,20 @@ void	CheckHighScore (long score,word other)
 	// got a high score
 	//
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		PrintY = 68 + (16 * n);
 #else
 		PrintY = 76 + (16 * n);
 #endif
 #ifndef SPEAR
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PrintX = 60;
 #else
 		PrintX = 4*8;
 #endif
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 		backcolor = BORDCOLOR;
 		fontcolor = 15;
 #endif
@@ -358,7 +358,7 @@ void	CheckHighScore (long score,word other)
 	else
 	{
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		VW_UpdateScreen ();
 #endif
 		IN_ClearKeysDown ();

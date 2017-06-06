@@ -144,7 +144,7 @@ void PicturePause (void)
 
 	VW_ColorBorder (15);
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	FinishPaletteShifts ();
 #endif
 
@@ -160,7 +160,7 @@ void PicturePause (void)
 	VW_ColorBorder (1);
 	VW_SetScreen (0,0);
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	PM_UnlockMainMem ();
 #endif
 //
@@ -168,9 +168,9 @@ void PicturePause (void)
 //
 
 	// APOGEE + FORMGEN + ALPHA RESTORATION
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	ClearMemory ();
-#if (GAMEVER_WOLFREV > 19921111L)
+#if (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 	CA_SetAllPurge();
 #endif
 #endif
@@ -181,7 +181,7 @@ void PicturePause (void)
 	   dest = (byte far *)buffer+p;
 	   VGAREADMAP(p);
 	   // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	   for (x=0;x<12800;x++,dest+=4)
 #else
 	   for (x=0;x<16000;x++,dest+=4)
@@ -192,7 +192,7 @@ void PicturePause (void)
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 	// Re-enable code for pre-v1.4 Apogee releases
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 //#if 0
 	for (p=0;p<4;p++)
 	{
@@ -250,7 +250,7 @@ static	char	buf[10];
 	int				i,j,k,x;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 	// Define sound variable in pre-v1.4 Apogee releases here
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	int sound;
 #endif
 	longword		l;
@@ -264,7 +264,7 @@ static	char	buf[10];
 		US_ClearWindow();
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 		// Do set sound in pre-v1.4 Apogee and S3DNA releases
-#if (GAMEVER_WOLFREV <= 19920610L) || (defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11) || (defined GAMEVER_NOAH3D)
 		sound = -1;
 #else
 //		sound = -1;
@@ -370,7 +370,7 @@ static	char	buf[10];
 				{
 					// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 					// Do set sound in pre-v1.4 Apogee and S3DNA releases
-#if (GAMEVER_WOLFREV <= 19920610L) || (defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11) || (defined GAMEVER_NOAH3D)
 					sound = j;
 #else
 //					sound = j;
@@ -446,7 +446,7 @@ static	char	buf[10];
 				PM_GetPage(sound);
 				SD_PlayDigitized(sound,0,0);
 			}
-#elif (GAMEVER_WOLFREV <= 19920312L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
 //#else
 			if (sound != -1)
 				SD_PlayDigitized(sound);
@@ -525,7 +525,7 @@ int DebugKeys (void)
 		playstate = ex_completed;
 		// *** PRE-V1.4 APOGEE RESTORATION ***
 		// Do increment map in pre-v1.4 Apogee releases
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		gamestate.mapon++;
 #else
 //		gamestate.mapon++;
@@ -578,7 +578,7 @@ int DebugKeys (void)
 		US_PrintCentered ("Free items!");
 		VW_UpdateScreen();
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		GivePoints (1000);
 #else
 		GivePoints (100000);
@@ -621,7 +621,7 @@ int DebugKeys (void)
 		return 1;
 	}
 	// *** SHAREWARE V1.0+1.1 APOGEE + S3DNA RESTORATION ***
-#if (defined SPEAR) || (GAMEVER_WOLFREV <= 19920601L) || (defined GAMEVER_NOAH3D)
+#if (defined SPEAR) || (GAMEVER_WOLFREV <= GV_WR_WL1AP11) || (defined GAMEVER_NOAH3D)
 //#ifdef SPEAR
 	else if (Keyboard[sc_N])			// N = no clip
 	{
@@ -637,7 +637,7 @@ int DebugKeys (void)
 	}
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 //#if 0
 	else if (Keyboard[sc_O])			// O = overhead
 	{
@@ -691,7 +691,7 @@ int DebugKeys (void)
 		// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		US_Print("  Warp to which level(1-30):");
-#elif (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+#elif (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#ifndef SPEAR
 		US_Print("  Warp to which level(1-10):");
 #else
@@ -705,7 +705,7 @@ int DebugKeys (void)
 			// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 			if (level>0 && level<31)
-#elif (GAMEVER_WOLFREV <= 19920610L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 			if (level>0 && level<21)
 #elif (!defined SPEAR)
 //#ifndef SPEAR
@@ -738,7 +738,7 @@ int DebugKeys (void)
 		return 1;
 	}
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	else if (Keyboard[sc_Y])			// Y = Set view size
 	{
 		CenterWindow (26,3);
@@ -782,7 +782,7 @@ int DebugKeys (void)
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 // Do compile this in pre-v1.4, even if it's never called
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 //#if 0
 /*
 ===================
@@ -798,7 +798,7 @@ void OverheadRefresh (void)
 	unsigned	tile;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage]+screenofs;
@@ -845,7 +845,7 @@ void OverheadRefresh (void)
 		}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	displayofs = bufferofs-screenofs;
 	VW_SetScreen(displayofs,0);
 #endif
@@ -854,7 +854,7 @@ void OverheadRefresh (void)
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // Do compile this in v1.0 of Wolfenstein 3D
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 //#if 0
 /*
 ===================

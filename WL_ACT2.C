@@ -55,7 +55,7 @@ int	starthitpoints[NUMENEMIES] =
 	  450,	// Ernie
 	  500	// Burt
 	  };
-#elif (GAMEVER_WOLFREV <= 19920505L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 int	starthitpoints[NUMENEMIES] =
 	 {25,	// guards
 	  50,	// officer
@@ -63,7 +63,7 @@ int	starthitpoints[NUMENEMIES] =
 	  1,	// dogs
 	// *** ALPHA RESTORATION ***
 	// Yes, there's a buffer overflow when Hans is spawned in the alpha
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	  850,	// Hans
 	  850,	// Schabbs
 	  300,	// fake hitler
@@ -99,7 +99,7 @@ int	starthitpoints[4][NUMENEMIES] =
 	  850,	// Gift
 	  850	// Fat
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	  ,
 	  5,	// en_spectre,
 	  1450,	// en_angel,
@@ -130,7 +130,7 @@ int	starthitpoints[4][NUMENEMIES] =
 	  950,	// Gift
 	  950 	// Fat
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	  ,
 	  10,	// en_spectre,
 	  1550,	// en_angel,
@@ -163,7 +163,7 @@ int	starthitpoints[4][NUMENEMIES] =
 	  1050,	// Gift
 	  1050 	// Fat
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	  ,
 	  15,	// en_spectre,
 	  1650,	// en_angel,
@@ -196,7 +196,7 @@ int	starthitpoints[4][NUMENEMIES] =
 	  1200,	// Gift
 	  1200	// Fat
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	  ,
 	  25,	// en_spectre,
 	  2000,	// en_angel,
@@ -207,10 +207,10 @@ int	starthitpoints[4][NUMENEMIES] =
 #endif
 	  }}
 	  ;
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 void	A_StartDeathCam (objtype *ob);
 #endif
 
@@ -226,12 +226,12 @@ void	T_Stand (objtype *ob);
 void A_DeathScream (objtype *ob);
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 #include "WL_SROCK.C"
 #endif
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void	T_Schabb (objtype *ob);
 void	T_SchabbThrow (objtype *ob);
 // *** S3DNA RESTORATION ***
@@ -244,12 +244,12 @@ void	T_Ghosts (objtype *ob);
 void A_Slurpie (objtype *ob);
 void A_HitlerMorph (objtype *ob);
 void A_MechaSound (objtype *ob);
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION *** - Relocated code to separate
 // files for for v1.2, but even here, WL_FSMOK.C is not included for S3DNA.
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 #ifndef GAMEVER_NOAH3D
 #include "WL_FSMOK.C"
 #endif
@@ -281,7 +281,7 @@ extern	statetype s_grdpath4;
 
 extern	statetype s_grdpain;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	statetype s_grdpain1;
 #endif
 
@@ -332,7 +332,7 @@ statetype s_grdpain1 	= {2,SPR_GRD_PAIN,10,NULL,NULL,&s_grdchase1};
 #else
 statetype s_grdpain 	= {2,SPR_GRD_PAIN_1,10,NULL,NULL,&s_grdchase1};
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 statetype s_grdpain1 	= {2,SPR_GRD_PAIN_2,10,NULL,NULL,&s_grdchase1};
 #endif
 #endif
@@ -364,7 +364,7 @@ statetype s_grddie4		= {false,SPR_GRD_DEAD,0,NULL,NULL,&s_grddie4};
 
 
 // *** S3DNA + ALPHA RESTORATION ***
-#if (!defined SPEAR) && (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined SPEAR) && (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#ifndef SPEAR
 //
 // ghosts
@@ -494,7 +494,7 @@ extern	statetype s_ofcpath4;
 
 extern	statetype s_ofcpain;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	statetype s_ofcpain1;
 #endif
 
@@ -525,7 +525,7 @@ extern	statetype s_ofcdie5;
 #endif
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 statetype s_ofcstand	= {true,SPR_OFC_W1_1,0,T_Stand,NULL,&s_ofcstand};
@@ -547,7 +547,7 @@ statetype s_ofcpain1 	= {2,SPR_OFC_PAIN,10,NULL,NULL,&s_ofcchase1};
 #else
 statetype s_ofcpain 	= {2,SPR_OFC_PAIN_1,10,NULL,NULL,&s_ofcchase1};
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 statetype s_ofcpain1 	= {2,SPR_OFC_PAIN_2,10,NULL,NULL,&s_ofcchase1};
 #endif
 #endif
@@ -594,7 +594,7 @@ extern	statetype s_mutpath4;
 
 extern	statetype s_mutpain;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	statetype s_mutpain1;
 #endif
 
@@ -648,13 +648,13 @@ statetype s_mutpain1 	= {2,SPR_MUT_PAIN,10,NULL,NULL,&s_mutchase1};
 #else
 statetype s_mutpain 	= {2,SPR_MUT_PAIN_1,10,NULL,NULL,&s_mutchase1};
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 statetype s_mutpain1 	= {2,SPR_MUT_PAIN_2,10,NULL,NULL,&s_mutchase1};
 #endif
 #endif
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 statetype s_mutshoot1 	= {false,SPR_MUT_SHOOT1,6,NULL,NULL,&s_mutshoot2};
 statetype s_mutshoot2 	= {false,SPR_MUT_SHOOT2,20,NULL,T_Shoot,&s_mutshoot3};
 statetype s_mutshoot3 	= {false,SPR_MUT_SHOOT3,10,NULL,NULL,&s_mutshoot4};
@@ -693,7 +693,7 @@ statetype s_mutdie4		= {false,SPR_MUT_DIE_4,7,NULL,NULL,&s_mutdie5};
 statetype s_mutdie5		= {false,SPR_MUT_DEAD,0,NULL,NULL,&s_mutdie5};
 #endif
 
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 //
 // SS
@@ -710,7 +710,7 @@ extern	statetype s_sspath4;
 
 extern	statetype s_sspain;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	statetype s_sspain1;
 #endif
 
@@ -763,7 +763,7 @@ statetype s_sspain1 	= {2,SPR_SS_PAIN,10,NULL,NULL,&s_sschase1};
 #else
 statetype s_sspain 		= {2,SPR_SS_PAIN_1,10,NULL,NULL,&s_sschase1};
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 statetype s_sspain1 	= {2,SPR_SS_PAIN_2,10,NULL,NULL,&s_sschase1};
 #endif
 #endif
@@ -801,7 +801,7 @@ statetype s_ssdie4		= {false,SPR_SS_DEAD,0,NULL,NULL,&s_ssdie4};
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 extern	statetype s_bossstand;
 statetype s_bossstand	= {false,SPR_BOSS_W1,0,NULL,NULL,&s_bossstand};
 //#ifndef SPEAR
@@ -871,7 +871,7 @@ statetype s_bossshoot8 	= {false,SPR_BOSS_SHOOT1,10,NULL,NULL,&s_bosschase1};
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 //
 // gretel
 //
@@ -934,7 +934,7 @@ statetype s_gretelshoot5 	= {false,SPR_GRETEL_SHOOT3,10,NULL,T_Shoot,&s_gretelsh
 statetype s_gretelshoot6 	= {false,SPR_GRETEL_SHOOT2,10,NULL,T_Shoot,&s_gretelshoot7};
 statetype s_gretelshoot7 	= {false,SPR_GRETEL_SHOOT3,10,NULL,T_Shoot,&s_gretelshoot8};
 statetype s_gretelshoot8 	= {false,SPR_GRETEL_SHOOT1,10,NULL,NULL,&s_gretelchase1};
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 #endif
 
 
@@ -961,14 +961,14 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 		SpawnNewObj (tilex,tiley,&s_grdstand);
 		new->speed = SPDPATROL;
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
 		  gamestate.killtotal++;
 #endif
 		break;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case en_officer:
 		SpawnNewObj (tilex,tiley,&s_ofcstand);
 		new->speed = SPDPATROL;
@@ -988,7 +988,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 		SpawnNewObj (tilex,tiley,&s_ssstand);
 		new->speed = SPDPATROL;
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
 		  gamestate.killtotal++;
 #endif
@@ -1033,7 +1033,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 
 	new->obclass = guardobj+which;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L) || (defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
 	new->hitpoints = starthitpoints[which];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][which];
@@ -1072,7 +1072,7 @@ void SpawnDeadGuard (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnBoss (int tilex, int tiley, int dir)
 #else
 void SpawnBoss (int tilex, int tiley)
@@ -1085,17 +1085,17 @@ void SpawnBoss (int tilex, int tiley)
 
 	new->obclass = bossobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L) || (defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
 	new->hitpoints = starthitpoints[en_boss];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_boss];
 #endif
 	// *** ALPHA RESTORATION
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	new->flags |= FL_SHOOTABLE;
 #else
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	new->dir = dir*2;
 #else
 	new->dir = south;
@@ -1103,11 +1103,11 @@ void SpawnBoss (int tilex, int tiley)
 	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 /*
 ===============
 =
@@ -1117,7 +1117,7 @@ void SpawnBoss (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnGretel (int tilex, int tiley, int dir)
 #else
 void SpawnGretel (int tilex, int tiley)
@@ -1136,7 +1136,7 @@ void SpawnGretel (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gretel];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	new->dir = dir*2;
 #else
 	new->dir = north;
@@ -1145,7 +1145,7 @@ void SpawnGretel (int tilex, int tiley)
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 #endif
 
 // *** S3DNA RESTORATION ***
@@ -1166,14 +1166,14 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
 		SpawnNewObj (tilex,tiley,&s_grdpath1);
 		new->speed = SPDPATROL;
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
 		  gamestate.killtotal++;
 #endif
 		break;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case en_officer:
 		SpawnNewObj (tilex,tiley,&s_ofcpath1);
 		new->speed = SPDPATROL;
@@ -1186,14 +1186,14 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
 		SpawnNewObj (tilex,tiley,&s_sspath1);
 		new->speed = SPDPATROL;
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
 		  gamestate.killtotal++;
 #endif
 		break;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case en_mutant:
 		SpawnNewObj (tilex,tiley,&s_mutpath1);
 		new->speed = SPDPATROL;
@@ -1206,7 +1206,7 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
 		SpawnNewObj (tilex,tiley,&s_dogpath1);
 		new->speed = SPDDOG;
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
 		  gamestate.killtotal++;
 #endif
@@ -1216,7 +1216,7 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
 	new->obclass = guardobj+which;
 	new->dir = dir*2;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	new->hitpoints = starthitpoints[which];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][which];
@@ -1286,7 +1286,7 @@ void A_DeathScream (objtype *ob)
 	switch (ob->obclass)
 	{
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	case guardobj:
 	case officerobj:
 	case ssobj:
@@ -1304,7 +1304,7 @@ void A_DeathScream (objtype *ob)
 			break;
 		}
 		break;
-#else // GAMEVER_WOLFREV > 19920312L
+#else // GAMEVER_WOLFREV > GV_WR_WL920312
 	case mutantobj:
 		PlaySoundLocActor(AHHHGSND,ob);
 		break;
@@ -1312,7 +1312,7 @@ void A_DeathScream (objtype *ob)
 	case guardobj:
 		{
 		 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		 int sounds[4]={ DEATHSCREAM1SND,
 				 DEATHSCREAM1SND,
 				 DEATHSCREAM2SND,
@@ -1336,7 +1336,7 @@ void A_DeathScream (objtype *ob)
 		 #else
 		 PlaySoundLocActor(sounds[US_RndT()%2],ob);
 		 #endif
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 		}
 		break;
 	case officerobj:
@@ -1345,51 +1345,51 @@ void A_DeathScream (objtype *ob)
 	case ssobj:
 		PlaySoundLocActor(LEBENSND,ob);	// JAB
 		break;
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 	case dogobj:
 		PlaySoundLocActor(DOGDEATHSND,ob);	// JAB
 		break;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 #ifndef SPEAR
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - Originally PlaySoundLocActor was used
 	case bossobj:
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PlaySoundLocActor(MUTTISND,ob);
 #else
 		SD_PlaySound(MUTTISND);				// JAB
 #endif
 		break;
 	case schabbobj:
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PlaySoundLocActor(MEINGOTTSND,ob);
 #else
 		SD_PlaySound(MEINGOTTSND);
 #endif
 		break;
 	case fakeobj:
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PlaySoundLocActor(HITLERHASND,ob);
 #else
 		SD_PlaySound(HITLERHASND);
 #endif
 		break;
 	case mechahitlerobj:
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PlaySoundLocActor(SCHEISTSND,ob);
 #else
 		SD_PlaySound(SCHEISTSND);
 #endif
 		break;
 	case realhitlerobj:
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PlaySoundLocActor(EVASND,ob);
 #else
 		SD_PlaySound(EVASND);
 #endif
 		break;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - Looks like these were added after v1.0
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	case gretelobj:
 		SD_PlaySound(MEINSND);
 		break;
@@ -1399,7 +1399,7 @@ void A_DeathScream (objtype *ob)
 	case fatobj:
 		SD_PlaySound(ROSESND);
 		break;
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 #else
 	case spectreobj:
 		SD_PlaySound(GHOSTFADESND);
@@ -1420,7 +1420,7 @@ void A_DeathScream (objtype *ob)
 		SD_PlaySound(KNIGHTDEATHSND);
 		break;
 #endif
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 	}
 #endif // S3DNA RESTORATION
 }
@@ -2246,7 +2246,7 @@ moveok:
 */
 
 // *** ALPHA RESTORATION ***
-#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#ifndef SPEAR
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
@@ -2291,7 +2291,7 @@ void SpawnGhosts (int which, int tilex, int tiley)
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 void	T_Gift (objtype *ob);
 void	T_GiftThrow (objtype *ob);
 
@@ -2322,7 +2322,7 @@ extern	statetype s_schabbdead2;
 extern	statetype s_schabbdie4;
 extern	statetype s_schabbdie5;
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 extern	statetype s_schabbdie6;
 #endif
 #endif
@@ -2339,7 +2339,7 @@ extern	statetype s_needle4;
 #endif
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (!defined GAMEVER_NOAH3D)
 extern	statetype s_schabbdeathcam;
 #endif
 
@@ -2354,7 +2354,7 @@ statetype s_schabbchase3s	= {false,SPR_SCHABB_W3,3,NULL,NULL,&s_schabbchase4};
 statetype s_schabbchase4 	= {false,SPR_SCHABB_W4,8,T_Schabb,NULL,&s_schabbchase1};
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (!defined GAMEVER_NOAH3D)
 statetype s_schabbdeathcam	= {false,SPR_SCHABB_W1,1,NULL,NULL,&s_schabbdie1};
 #endif
 
@@ -2365,7 +2365,7 @@ statetype s_schabbdie2	= {false,SPR_SCHABB_DIE1,10,NULL,NULL,&s_schabbdie3};
 statetype s_schabbdie3	= {false,SPR_SCHABB_DIE2,10,NULL,NULL,&s_schabbdead};
 statetype s_schabbdead	= {false,SPR_SCHABB_DEAD,55,NULL,NULL,&s_schabbdead2};
 statetype s_schabbdead2	= {false,SPR_SCHABB_DEAD2,55,NULL,NULL,&s_schabbdead};
-#elif (GAMEVER_WOLFREV <= 19920505L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 statetype s_schabbdie1	= {false,SPR_SCHABB_W1,10,NULL,NULL,&s_schabbdie2};
 statetype s_schabbdie2	= {false,SPR_SCHABB_DIE1,10,NULL,NULL,&s_schabbdie3};
 statetype s_schabbdie3	= {false,SPR_SCHABB_DIE2,10,NULL,NULL,&s_schabbdie4};
@@ -2396,7 +2396,7 @@ statetype s_needle4 	= {false,SPR_HYPO4,6,T_Projectile,NULL,&s_needle1};
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 //
 // gift
 //
@@ -2444,7 +2444,7 @@ extern	statetype s_giftdeathcam;
 #endif
 
 // *** SHAREWARE V1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920601L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 extern	statetype s_boom1;
 extern	statetype s_boom2;
 extern	statetype s_boom3;
@@ -2492,7 +2492,7 @@ statetype s_giftshoot2 	= {false,SPR_GIFT_SHOOT2,10,NULL,T_GiftThrow,&s_giftchas
 
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 #include "WL_SROCK.C"
 #endif
 
@@ -2577,7 +2577,7 @@ statetype s_fatshoot3 	= {false,SPR_FAT_SHOOT3,10,NULL,T_Shoot,&s_fatshoot4};
 statetype s_fatshoot4 	= {false,SPR_FAT_SHOOT4,10,NULL,T_Shoot,&s_fatshoot5};
 statetype s_fatshoot5 	= {false,SPR_FAT_SHOOT3,10,NULL,T_Shoot,&s_fatshoot6};
 statetype s_fatshoot6 	= {false,SPR_FAT_SHOOT4,10,NULL,T_Shoot,&s_fatchase1};
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 
 /*
@@ -2589,7 +2589,7 @@ statetype s_fatshoot6 	= {false,SPR_FAT_SHOOT4,10,NULL,T_Shoot,&s_fatchase1};
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnSchabbs (int tilex, int tiley, int dir)
 #else
 void SpawnSchabbs (int tilex, int tiley)
@@ -2598,7 +2598,7 @@ void SpawnSchabbs (int tilex, int tiley)
 	unsigned	far *map,tile;
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (DigiMode != sds_Off)
 		s_schabbdie1.tictime = 140;
 	else
@@ -2615,13 +2615,13 @@ void SpawnSchabbs (int tilex, int tiley)
 
 	new->obclass = schabbobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L) || (defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
 	new->hitpoints = starthitpoints[en_schabbs];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_schabbs];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	new->dir = dir*2;
 #else
 	new->dir = south;
@@ -2633,7 +2633,7 @@ void SpawnSchabbs (int tilex, int tiley)
 
 
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 /*
 ===============
 =
@@ -2643,7 +2643,7 @@ void SpawnSchabbs (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnGift (int tilex, int tiley, int dir)
 #else
 void SpawnGift (int tilex, int tiley)
@@ -2667,7 +2667,7 @@ void SpawnGift (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_gift];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	new->dir = dir*2;
 #else
 	new->dir = north;
@@ -2687,7 +2687,7 @@ void SpawnGift (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnFat (int tilex, int tiley, int dir)
 #else
 void SpawnFat (int tilex, int tiley)
@@ -2711,7 +2711,7 @@ void SpawnFat (int tilex, int tiley)
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_fat];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	new->dir = dir*2;
 #else
 	new->dir = south;
@@ -2720,11 +2720,11 @@ void SpawnFat (int tilex, int tiley)
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 #include "WL_FPROJ.C"
 #endif
 
@@ -2770,7 +2770,7 @@ void T_SchabbThrow (objtype *ob)
 	new->speed = 0x2000l;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	actorat[new->tilex][new->tiley] = new;
 	new->areanumber = *(mapsegs[0]+farmapylookup[new->tiley]+new->tilex)-AREATILE;
 #else
@@ -2782,13 +2782,13 @@ void T_SchabbThrow (objtype *ob)
 }
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2; Not included in v1.0 at all.
-#if (GAMEVER_WOLFREV > 19920505L) && (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 #include "WL_FSMOK.C"
 #endif
 
 
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 /*
 =================
 =
@@ -2832,7 +2832,7 @@ void T_GiftThrow (objtype *ob)
 
 	PlaySoundLocActor (MISSILEFIRESND,new);
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 
 
@@ -2929,7 +2929,7 @@ void T_Schabb (objtype *ob)
 
 
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 /*
 =================
 =
@@ -3110,7 +3110,7 @@ void T_Fat (objtype *ob)
 	}
 
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 
 
@@ -3232,7 +3232,7 @@ extern	statetype s_hitlerdie7;
 extern	statetype s_hitlerdie8;
 extern	statetype s_hitlerdie9;
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 extern	statetype s_hitlerdie10;
 #endif
 #endif
@@ -3245,7 +3245,7 @@ extern	statetype s_hitlershoot5;
 extern	statetype s_hitlershoot6;
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (!defined GAMEVER_NOAH3D)
 extern	statetype s_hitlerdeathcam;
 #endif
 
@@ -3272,7 +3272,7 @@ statetype s_mechashoot6 	= {false,SPR_MECHA_SHOOT2,10,NULL,T_Shoot,&s_mechachase
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 statetype s_hitlerchase1 	= {false,SPR_HITLER_W1,10,T_Chase,NULL,&s_hitlerchase1s};
 statetype s_hitlerchase1s	= {false,SPR_HITLER_W1,6,NULL,NULL,&s_hitlerchase2};
 statetype s_hitlerchase2 	= {false,SPR_HITLER_W2,8,T_Chase,NULL,&s_hitlerchase3};
@@ -3289,12 +3289,12 @@ statetype s_hitlerchase4 	= {false,SPR_HITLER_W4,2,T_Chase,NULL,&s_hitlerchase1}
 #endif
 
 // *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (!defined GAMEVER_NOAH3D)
 statetype s_hitlerdeathcam	= {false,SPR_HITLER_W1,10,NULL,NULL,&s_hitlerdie1};
 #endif
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 statetype s_hitlerdie1	= {false,SPR_HITLER_W1,10,NULL,NULL,&s_hitlerdie2};
 statetype s_hitlerdie2	= {false,SPR_HITLER_DIE1,10,NULL,A_Slurpie,&s_hitlerdie3};
 statetype s_hitlerdie3	= {false,SPR_HITLER_DIE2,10,NULL,NULL,&s_hitlerdie4};
@@ -3347,7 +3347,7 @@ statetype s_hitlershoot6 	= {false,SPR_HITLER_SHOOT2,10,NULL,T_Shoot,&s_hitlerch
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnFakeHitler (int tilex, int tiley, int dir)
 #else
 void SpawnFakeHitler (int tilex, int tiley)
@@ -3357,7 +3357,7 @@ void SpawnFakeHitler (int tilex, int tiley)
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (DigiMode != sds_Off)
 	  s_hitlerdie1.tictime = 140;
 	else
@@ -3374,13 +3374,13 @@ void SpawnFakeHitler (int tilex, int tiley)
 
 	new->obclass = fakeobj;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	new->hitpoints = starthitpoints[en_fake];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_fake];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	new->dir = dir*2;
 #else
 	new->dir = north;
@@ -3401,7 +3401,7 @@ void SpawnFakeHitler (int tilex, int tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnHitler (int tilex, int tiley, int dir)
 #else
 void SpawnHitler (int tilex, int tiley)
@@ -3410,7 +3410,7 @@ void SpawnHitler (int tilex, int tiley)
 	unsigned	far *map,tile;
 
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	if (DigiMode != sds_Off)
 		s_hitlerdie2.tictime = 140;
 	else
@@ -3423,13 +3423,13 @@ void SpawnHitler (int tilex, int tiley)
 
 	new->obclass = mechahitlerobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L) || (defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
 	new->hitpoints = starthitpoints[en_hitler];
 #else
 	new->hitpoints = starthitpoints[gamestate.difficulty][en_hitler];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	new->dir = dir*2;
 #else
 	new->dir = south;
@@ -3451,7 +3451,7 @@ void SpawnHitler (int tilex, int tiley)
 void A_HitlerMorph (objtype *ob)
 {
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	unsigned	far *map,tile;
 #else
 	unsigned	far *map,tile,hitpoints[4]={500,700,800,900};
@@ -3460,7 +3460,7 @@ void A_HitlerMorph (objtype *ob)
 
 	SpawnNewObj (ob->tilex,ob->tiley,&s_hitlerchase1);
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	new->speed = SPDPATROL;
 #else
 	new->speed = SPDPATROL*5;
@@ -3475,7 +3475,7 @@ void A_HitlerMorph (objtype *ob)
 
 	new->obclass = realhitlerobj;
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	new->hitpoints = 400;
 #else
 	new->hitpoints = hitpoints[gamestate.difficulty];
@@ -3492,7 +3492,7 @@ void A_HitlerMorph (objtype *ob)
 void A_MechaSound (objtype *ob)
 {
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	if (areabyplayer[ob->areanumber])
 #endif
 		PlaySoundLocActor (MECHSTEPSND,ob);
@@ -3503,7 +3503,7 @@ void A_MechaSound (objtype *ob)
 void A_Slurpie (objtype *ob)
 {
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
  PlaySoundLocActor (SLURPIESND,ob);
  // *** S3DNA RESTORATION ***
 #elif (defined GAMEVER_NOAH3D)
@@ -3549,7 +3549,7 @@ void T_FakeFire (objtype *ob)
 	new->obclass = fireobj;
 	new->speed = 0x1200l;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	actorat[new->tilex][new->tiley] = new;
 	new->areanumber = *(mapsegs[0]+farmapylookup[new->tiley]+new->tilex)-AREATILE;
 #else
@@ -3579,7 +3579,7 @@ void T_Fake (objtype *ob)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// A bit closer to Schabb/Gift/Fat behaviors in v1.0
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	dodge = false;
 	dx = abs(ob->tilex - player->tilex);
 	dy = abs(ob->tiley - player->tiley);
@@ -3652,7 +3652,7 @@ void T_Fake (objtype *ob)
 		move -= ob->distance;
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		if (dodge)
 			SelectDodgeDir (ob);
 		else
@@ -3715,7 +3715,7 @@ void T_Chase (objtype *ob)
 	boolean	dodge;
 
 	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920601L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 	if (gamestate.victoryflag)
 		return;
 #endif
@@ -3742,7 +3742,7 @@ void T_Chase (objtype *ob)
 				NewState (ob,&s_grdshoot1);
 				break;
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			case officerobj:
 				NewState (ob,&s_ofcshoot1);
 				break;
@@ -3754,13 +3754,13 @@ void T_Chase (objtype *ob)
 				NewState (ob,&s_ssshoot1);
 				break;
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 #ifndef SPEAR
 			case bossobj:
 				NewState (ob,&s_bossshoot1);
 				break;
 			// *** SHAREWARE V1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 			case gretelobj:
 				NewState (ob,&s_gretelshoot1);
 				break;
@@ -3788,7 +3788,7 @@ void T_Chase (objtype *ob)
 				NewState (ob,&s_deathshoot1);
 				break;
 #endif
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 			}
 			return;
 		}
@@ -3851,7 +3851,7 @@ void T_Chase (objtype *ob)
 
 
 // *** S3DNA + ALPHA RESTORATION ***
-#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 /*
 =================
 =
@@ -3866,7 +3866,7 @@ void T_Ghosts (objtype *ob)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// A bit closer to Schabb/Gift/Fat behaviors in v1.0
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	int	dx,dy,dist;
 
 	dx = abs(ob->tilex - player->tilex);
@@ -3904,7 +3904,7 @@ void T_Ghosts (objtype *ob)
 		move -= ob->distance;
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		if (ob->distance < 1)
 			TakeDamage (5);
 #endif
@@ -4124,7 +4124,7 @@ void T_Shoot (objtype *ob)
 
 	if (!CheckLine (ob))			// player is behind a wall
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	{
 	  SD_PlaySound (FIRESND);
 	  return;
@@ -4138,7 +4138,7 @@ void T_Shoot (objtype *ob)
 	dist = dx>dy ? dx:dy;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (ob->obclass == ssobj || ob->obclass == bossobj)
 		dist = dist*2/3;					// ss are better shots
 #endif
@@ -4171,21 +4171,21 @@ void T_Shoot (objtype *ob)
 
 		TakeDamage (damage,ob);
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		SD_PlaySound (NAZIHITPLAYERSND);
 		return;
 #endif
 	}
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	SD_PlaySound (FIRESND);
 #else
 	switch(ob->obclass)
 	{
 	 case ssobj:
 	   // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	   PlaySoundLocActor(SSFIRESND,obj);
 #else
 	   PlaySoundLocActor(SSFIRESND,ob);
@@ -4193,7 +4193,7 @@ void T_Shoot (objtype *ob)
 	   break;
 #ifndef SPEAR
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	 case giftobj:
 	 case fatobj:
 	   PlaySoundLocActor(MISSILEFIRESND,ob);
@@ -4217,7 +4217,7 @@ void T_Shoot (objtype *ob)
 	 default:
 	   PlaySoundLocActor(NAZIFIRESND,ob);
 	}
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
 }
 
@@ -4237,7 +4237,7 @@ void T_Bite (objtype *ob)
 
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	PlaySoundLocActor(DOGATTACKSND,ob);	// JAB
 #endif
 
@@ -4256,10 +4256,10 @@ void T_Bite (objtype *ob)
 		   if (US_RndT()<180)
 		   {
 			  // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 			   TakeDamage (US_RndT()>>4);
 			   // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			   SD_PlaySound (NAZIHITPLAYERSND);
 #endif
 #else
@@ -4271,7 +4271,7 @@ void T_Bite (objtype *ob)
 	}
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	SD_PlaySound (FIRESND);
 #endif
 	return;
@@ -4280,7 +4280,7 @@ void T_Bite (objtype *ob)
 
 // *** ALPHA RESTORATION ***
 //#ifndef SPEAR
-#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 /*
 ============================================================================
 
@@ -4314,7 +4314,7 @@ void T_BJDone (objtype *ob);
 void T_BJYell (objtype *ob);
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 void T_DeathCam (objtype *ob);
 #endif
 
@@ -4347,7 +4347,7 @@ statetype s_bjjump4	= {false,SPR_BJ_JUMP4,300,NULL,T_BJDone,&s_bjjump4};
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 statetype s_deathcam = {false,0,0,NULL,NULL,NULL};
 #endif
 // *** S3DNA RESTORATION ***
@@ -4381,7 +4381,7 @@ void SpawnBJVictory (void)
 	unsigned	far *map,tile;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	SpawnNewObj (player->tilex,player->tiley,&s_bjrun1);
 #else
 	SpawnNewObj (player->tilex,player->tiley+1,&s_bjrun1);
@@ -4391,7 +4391,7 @@ void SpawnBJVictory (void)
 	new->obclass = bjobj;
 	new->dir = north;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	new->temp1 = 5;			// tiles to run forward
 #else
 	new->temp1 = 6;			// tiles to run forward
@@ -4607,7 +4607,7 @@ void T_Missile (objtype *ob)
 #endif // GAMEVER_NOAH3D
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 /*
 ===============
 =
@@ -4764,6 +4764,6 @@ void	A_StartDeathCam (objtype *ob)
 
 #endif // GAMEVER_NOAH3D
 }
-#endif // GAMEVER_WOLFREV > 19920505L
+#endif // GAMEVER_WOLFREV > GV_WR_WL1AP10
 
 #endif

@@ -19,7 +19,7 @@ long			fullscalefarcall[MAXSCALEHEIGHT+1];
 int			maxscale,maxscaleshl2;
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 boolean	insetupscaling;
 #endif
 
@@ -66,7 +66,7 @@ void SetupScaling (int maxscaleheight)
 	byte	far *dest;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	insetupscaling = true;
 #endif
 
@@ -84,14 +84,14 @@ void SetupScaling (int maxscaleheight)
 			MM_FreePtr (&(memptr)scaledirectory[i]);
 		if (i>=stepbytwo)
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			i++;
 #else
 			i += 2;
 #endif
 	}
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	memset (scaledirectory,0,sizeof(scaledirectory));
 #endif
 
@@ -108,7 +108,7 @@ void SetupScaling (int maxscaleheight)
 		BuildCompScale (i*2,&(memptr)scaledirectory[i]);
 		if (i>=stepbytwo)
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			i++;
 #else
 			i+= 2;
@@ -131,7 +131,7 @@ void SetupScaling (int maxscaleheight)
 			scaledirectory[i+1] = scaledirectory[i];
 			fullscalefarcall[i+1] = fullscalefarcall[i];
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			i++;
 #else
 			scaledirectory[i+2] = scaledirectory[i];
@@ -150,7 +150,7 @@ void SetupScaling (int maxscaleheight)
 		fullscalefarcall[i] = (long)BadScale;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	insetupscaling = false;
 #endif
 }
@@ -272,7 +272,7 @@ extern	unsigned	maskword;
 // *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused
 // variables here (or maybe an array). Also brute forcing order of appearances
 // of mask1,mask2,mask3 in the EXE layout.
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 extern	byte	mask1,mask2,mask3;
 unsigned unusedscalevar1, unusedscalevar2, unusedscalevar3, unusedscalevar4, unusedscalevar5, unusedscalevar6;
 #endif

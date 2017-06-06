@@ -9,10 +9,10 @@
 // Do NOT use any enum value to define a macro like NUMSOUNDS in a
 // "version agnostic" manner, this can lead to a bit different
 // machine code generated from one line in MM_SortMem.
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define NUMSOUNDS		45
 #define NUMSNDCHUNKS		143
-#elif (GAMEVER_WOLFREV <= 19920505L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define NUMSOUNDS		73
 #define NUMSNDCHUNKS		246
 #else
@@ -34,7 +34,7 @@ typedef enum {
 		NAZIHITPLAYERSND,        // 7
 		// We can technically use the same name,
 		// but good chances are it originally differed
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		FIRESND,                 // 8
 #else
 		SCHABBSTHROWSND,         // 8
@@ -75,7 +75,7 @@ typedef enum {
 		ENDBONUS1SND,            // 42
 		ENDBONUS2SND,            // 43
 		BONUS1UPSND,             // 44
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		BONUS4SND,               // 45
 		PUSHWALLSND,             // 46
 		NOBONUSSND,              // 47
@@ -104,7 +104,7 @@ typedef enum {
 		MECHSTEPSND,             // 70
 		GOOBSSND,                // 71
 		YEAHSND,                 // 72
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 		DEATHSCREAM4SND,         // 73
 		DEATHSCREAM5SND,         // 74
 		DEATHSCREAM6SND,         // 75
@@ -128,12 +128,12 @@ typedef enum {
 // Base offsets
 //
 // Again don't use the enum value of LASTSOUND, just use the numbers directly
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define STARTPCSOUNDS		0
 #define STARTADLIBSOUNDS	45
 #define STARTDIGISOUNDS		90
 #define STARTMUSIC		135
-#elif (GAMEVER_WOLFREV <= 19920505L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define STARTPCSOUNDS		0
 #define STARTADLIBSOUNDS	73
 #define STARTDIGISOUNDS		146
@@ -149,7 +149,7 @@ typedef enum {
 // Music names & indexes
 //
 typedef enum {
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		WONDERIN_MUS,            // 0
 		VICTORS_MUS,             // 1
 		SUSPENSE_MUS,            // 2

@@ -67,7 +67,7 @@ extern	PageListStruct	far *PMPages;
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern	char	PageFileName[13];
 #endif
 

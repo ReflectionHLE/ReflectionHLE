@@ -30,7 +30,7 @@
 #define STRIPE		0x2c
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define MenuFadeOut()	VL_FadeOut(0,255,43,0,0,20)
 #else
 #define MenuFadeOut()	VL_FadeOut(0,255,43,0,0,10)
@@ -53,7 +53,7 @@
 #define READCOLOR	0x4a
 #define READHCOLOR	0x47
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define VIEWCOLOR	0x01
 #else
 #define VIEWCOLOR	0x7f
@@ -61,7 +61,7 @@
 #define TEXTCOLOR	0x17
 #define HIGHLIGHT	0x13
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,20)
 #else
 #define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,10)
@@ -124,7 +124,7 @@
 #define CTL_X	24
 #define CTL_Y	70
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define CTL_W	280
 #define CTL_H	13*7-20
 #else
@@ -134,7 +134,7 @@
 
 #define LSM_X	85
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define LSM_Y	40
 #else
 #define LSM_Y	55
@@ -146,7 +146,7 @@
 #define NM_Y	100
 #define NM_W	225
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define NM_H	13*4+2
 #else
 #define NM_H	13*4+15
@@ -159,7 +159,7 @@
 
 #define CST_X		20
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define CST_Y		30
 #else
 #define CST_Y		48
@@ -179,13 +179,13 @@ typedef struct {
 		// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		char string[80];
-#elif (GAMEVER_WOLFREV <= 19920312L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		char string[40];
 #else
 		char string[36];
 #endif
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		void (* routine)(void);
 #else
 		void (* routine)(int temp1);
@@ -220,13 +220,13 @@ void UnCacheLump(int lumpstart,int lumpend);
 void StartCPMusic(int song);
 int  Confirm(char GAMEVER_COND_FARPTR *string);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void Message(char GAMEVER_COND_FARPTR *string);
 #endif
 void CheckPause(void);
 // *** ALPHA RESTORATION ***
 // Apparently this was originally duplicated (if not defined as a macro)
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define ShootSnd() SD_PlaySound(SHOOTSND)
 #else
 void ShootSnd(void);
@@ -240,7 +240,7 @@ void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,i
 void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,int hlight);
 void DrawMenuGun(CP_iteminfo *iteminfo);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void DrawStripes(int y);
 #endif
 
@@ -277,7 +277,7 @@ void FixupCustom(int w);
 void CP_NewGame(void);
 void CP_Sound(void);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void CP_LoadGame(void);
 void CP_SaveGame(void);
 #else
@@ -291,7 +291,7 @@ void CP_Quit(void);
 void CP_ViewScores(void);
 int  CP_EndGame(void);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 int  CP_CheckQuick(unsigned scancode);
 #endif
 void CustomControls(void);
@@ -306,7 +306,7 @@ void CheckForEpisodes(void);
 // Commenting these out for the alpha is a part of our brute-force
 // way to try and force an additional, unused variable,
 // following SaveGamesAvail (may be called, say, pickquick)
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern int SaveGamesAvail[10],StartGame,SoundStatus;
 extern char SaveGameNames[10][32],SaveName[13];
 #endif
@@ -333,7 +333,7 @@ enum
 	quit
 }
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 menuitems
 #endif
 ;

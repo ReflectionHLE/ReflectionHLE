@@ -24,7 +24,7 @@
 
 //
 // *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused variable here
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 boolean		unusedplayvar;
 #endif
 boolean		madenoise;					// true when shooting or screaming
@@ -32,7 +32,7 @@ boolean		madenoise;					// true when shooting or screaming
 exit_t		playstate;
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 int			DebugOk;
 #endif
 
@@ -115,7 +115,7 @@ void	PlayLoop (void);
 objtype dummyobj;
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 //
 // LIST OF SONGS FOR EACH VERSION
 //
@@ -230,7 +230,7 @@ int songs[]=
  PACMAN_MUS,	// Secret level
 
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
  //
  // Episode Four
  //
@@ -275,7 +275,7 @@ int songs[]=
 
  ULTIMATE_MUS,	// Boss level
  FUNKYOU_MUS		// Secret level
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 #else
 
  //////////////////////////////////////////////////////////////
@@ -312,7 +312,7 @@ int songs[]=
 
 #endif
 };
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 /*
@@ -463,7 +463,7 @@ void PollMouseMove (void)
 	mouseymove = _DX;
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	controlx += mousexmove;
 	controly += mouseymove*2;
 #else
@@ -545,7 +545,7 @@ void PollControls (void)
 	byte	buttonbits;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 //
 // get timing info for last frame
 //
@@ -570,7 +570,7 @@ void PollControls (void)
 	}
 	else
 		CalcTics ();
-#endif // GAMEVER_WOLFREV > 19920610L
+#endif // GAMEVER_WOLFREV > GV_WR_WL6AP11
 
 	controlx = 0;
 	controly = 0;
@@ -592,7 +592,7 @@ void PollControls (void)
 		controlx = *demoptr++;
 		controly = *demoptr++;
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		tics = *demoptr++;
 
 		while (tics > TimeCount - lasttimecount);
@@ -610,7 +610,7 @@ void PollControls (void)
 	}
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	CalcTics();
 #endif
 
@@ -672,7 +672,7 @@ void PollControls (void)
 		*demoptr++ = controlx;
 		*demoptr++ = controly;
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		*demoptr++ = tics;
 #endif
 
@@ -730,7 +730,7 @@ void CheckKeys (void)
 
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if (screenfaded)	// don't do anything with a faded screen
 #else
 	if (screenfaded || demoplayback)	// don't do anything with a faded screen
@@ -770,7 +770,7 @@ void CheckKeys (void)
 
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (Keyboard[sc_J] && Keyboard[sc_I] && Keyboard[sc_M])
@@ -854,7 +854,7 @@ void CheckKeys (void)
 		IN_Ack();
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		for (i=0;i<3;i++)
 		{
 			bufferofs = screenloc[i];
@@ -871,20 +871,20 @@ void CheckKeys (void)
 	//
 #ifndef SPEAR
 	// *** PRE-V1.4 (INCLUDING V1.0) APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (Keyboard[sc_Tab] &&
 		Keyboard[sc_Control] &&
 		Keyboard[sc_Enter] &&
 #else
 	if (Keyboard[sc_BackSpace] &&
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		Keyboard[sc_Alt] &&
 		Keyboard[sc_LShift] &&
 #else
 		Keyboard[sc_LShift] &&
 		Keyboard[sc_Alt] &&
 #endif
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 		MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 #else
 	if (Keyboard[sc_BackSpace] &&
@@ -905,7 +905,7 @@ void CheckKeys (void)
 	 IN_Ack();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	for (i=0;i<3;i++)
 	{
 		bufferofs = screenloc[i];
@@ -942,7 +942,7 @@ void CheckKeys (void)
 	 IN_Ack();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	for (i=0;i<3;i++)
 	{
 		bufferofs = screenloc[i];
@@ -953,7 +953,7 @@ void CheckKeys (void)
 #endif
 	}
 #endif // GAMEVER_NOAH3D
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 //
 // pause key weirdness can't be checked as a scan code
 //
@@ -968,7 +968,7 @@ void CheckKeys (void)
 		SD_MusicOff();
 		IN_Ack();
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		IN_ClearKeysDown ();
 #endif
 		SD_MusicOn();
@@ -984,7 +984,7 @@ void CheckKeys (void)
 //
 	if (
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		scan == sc_F9)
 #else
 #ifndef DEBCHECK
@@ -996,7 +996,7 @@ void CheckKeys (void)
 #endif
 	{
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		PM_UnlockMainMem ();
 		StopMusic ();
 		SD_StopSound ();
@@ -1016,11 +1016,11 @@ void CheckKeys (void)
 		US_ControlPanel(scan);
 
 		 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		 for (i=0;i<3;i++)
 		 {
 			 bufferofs = screenloc[i];
-	#if (GAMEVER_WOLFREV <= 19920312L)
+	#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			 DrawPlayBorder ();
 	#else
 			 DrawPlayBorderSides ();
@@ -1033,7 +1033,7 @@ void CheckKeys (void)
 		// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		if ((scan == sc_F9) && loadedgame)
-#elif (GAMEVER_WOLFREV > 19920312L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (scan == sc_F9)
 #endif
 		  StartMusic ();
@@ -1047,12 +1047,12 @@ void CheckKeys (void)
 	if ( (scan >= sc_F1 && scan <= sc_F9) || scan == sc_Escape)
 	{
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		PM_UnlockMainMem ();
 #endif
 		StopMusic ();
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		SD_StopDigitized ();
 		SD_StopSound ();
 #else
@@ -1060,7 +1060,7 @@ void CheckKeys (void)
 #endif
 		VW_FadeOut ();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		ResetSplitScreen ();
 #endif
 
@@ -1101,13 +1101,13 @@ void CheckKeys (void)
 	// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (!mapmode && Keyboard[sc_Tilde] && DebugOk)
-#elif (GAMEVER_WOLFREV <= 19920312L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if (Keyboard[sc_F10])
 #else
 	if (Keyboard[sc_Tab] && DebugOk)
 #endif
 	{
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		CA_CacheGrChunk (STARTFONT);
 		fontnumber=0;
 		SETFONTCOLOR(0,15);
@@ -1158,7 +1158,7 @@ next element.
 */
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 int	objcount;
 #endif
 
@@ -1181,7 +1181,7 @@ void InitActorList (void)
 	lastobj = NULL;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	objcount = 0;
 #endif
 
@@ -1226,7 +1226,7 @@ void GetNewActor (void)
 	lastobj = new;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	objcount++;
 #endif
 }
@@ -1252,7 +1252,7 @@ void RemoveObj (objtype *gone)
 		Quit ("RemoveObj: Tried to remove the player!");
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	gone->state = NULL;
 #endif
 
@@ -1276,7 +1276,7 @@ void RemoveObj (objtype *gone)
 	objfreelist = gone;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	objcount--;
 #endif
 }
@@ -1328,7 +1328,7 @@ void StartMusic(void)
 
 	SD_MusicOff();
 	// *** S3DNA + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	chunk = GETTHEM_MUS;
 #elif (defined GAMEVER_NOAH3D)
 	chunk = songs[gamestate.mapon];
@@ -1362,7 +1362,7 @@ void StartMusic(void)
 // (also commented out in the later sources).
 // - PreloadGraphics is different (smaller).
 
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 //==========================================================================
 
 
@@ -1407,7 +1407,7 @@ void PreloadGraphics(void)
 
 	PM_Preload (PreloadUpdate);
 }
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
 
 /*
@@ -1654,7 +1654,7 @@ void DoActor (objtype *ob)
 		return;
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (ob != player)
 #else
 	if (!(ob->flags&(FL_NONMARK|FL_NEVERMARK)) )
@@ -1679,10 +1679,10 @@ void DoActor (objtype *ob)
 		}
 
 		// *** PRE-V1.4 APOGEE RESTORATION *** - Including special case for v1.0
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		if (ob != player)
 			actorat[ob->tilex][ob->tiley] = ob;
-#elif (GAMEVER_WOLFREV <= 19920610L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		if (!(ob->flags&FL_NEVERMARK))
 			if ( !((ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley]))
 				actorat[ob->tilex][ob->tiley] = ob;
@@ -1748,11 +1748,11 @@ think:
 	}
 
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Including special case for v1.0
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (ob != player)
 		actorat[ob->tilex][ob->tiley] = ob;
 	return;
-#elif (GAMEVER_WOLFREV <= 19920610L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	if (!(ob->flags&FL_NEVERMARK))
 		if ( !((ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley]))
 			actorat[ob->tilex][ob->tiley] = ob;
@@ -1780,7 +1780,7 @@ think:
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 long funnyticount;
 #endif
 
@@ -1789,17 +1789,17 @@ void PlayLoop (void)
 {
 	int		give;
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 	int	helmetangle;
 #endif
 
 	playstate = TimeCount = lasttimecount = 0;
 	frameon = 0;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	running = false;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	pwallstate = anglefrac = 0;
 	facecount = 0;
 #else
@@ -1808,14 +1808,14 @@ void PlayLoop (void)
 	funnyticount = 0;
 #endif
 	memset (buttonstate,0,sizeof(buttonstate));
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 	ClearPaletteShifts ();
 
 	if (MousePresent)
 		Mouse(MDelta);	// Clear accumulated mouse movement
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	tics = 1;
 #endif
 	if (demoplayback)
@@ -1824,7 +1824,7 @@ void PlayLoop (void)
 	do
 	{
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 		if (virtualreality)
 		{
 			helmetangle = peek (0x40,0xf0);
@@ -1844,7 +1844,7 @@ void PlayLoop (void)
 
 		MoveDoors ();
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		MovePWalls ();
 #endif
 
@@ -1869,19 +1869,19 @@ void PlayLoop (void)
 		#endif
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		gamestate.TimeCount+=tics;
 #endif
 
 		SD_Poll ();
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		UpdateSoundLoc();	// JAB
 #endif
 
 		if (screenfaded)
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		{
 			screenfaded = false,
 			VW_FadeIn ();
@@ -1898,7 +1898,7 @@ void PlayLoop (void)
 #endif
 
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		if (demoplayback)
 		{
 			if (demoptr == lastdemoptr)
@@ -1928,7 +1928,7 @@ void PlayLoop (void)
 
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 		if (virtualreality)
 		{
 			player->angle -= helmetangle;

@@ -148,7 +148,7 @@ asm	mov	ax,0x13
 asm	int	0x10
 	VL_DePlaneVGA ();
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	VGAMAPMASK(15);
 #endif
 	VL_SetLineWidth (40);
@@ -198,7 +198,7 @@ asm	and	al,0xfc				// write mode 0 to store directly to video
 asm	out	dx,al
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 asm	mov	dx,SC_INDEX+1
 asm	mov	al,15
 asm	out	dx,al
@@ -532,7 +532,7 @@ void VL_FadeOut (int start, int end, int red, int green, int blue, int steps)
 	VL_FillPalette (red,green,blue);
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	screenfaded = true;
 #endif
 }
@@ -577,7 +577,7 @@ void VL_FadeIn (int start, int end, byte far *palette, int steps)
 //
 	VL_SetPalette (palette);
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	screenfaded = false;
 #endif
 }
@@ -670,7 +670,7 @@ void VL_Plot (int x, int y, int color)
 */
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void VL_Hlin (int x, int y, int width, int color)
 #else
 void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color)
@@ -686,7 +686,7 @@ void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color)
 	rightmask = rightmasks[(x+width-1)&3];
 	// *** ALPHA RESTORATION ***
 	// This one is a bit weird
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	midbytes = ((x+width+3)>>2) - xbyte + (-2);
 #else
 	midbytes = ((x+width+3)>>2) - xbyte - 2;
@@ -889,7 +889,7 @@ void VL_MemToScreen (byte far *source, int width, int height, int x, int y)
 void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y)
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	byte    far *screen,far *maskptr,far *dest,mask;
 #else
 	byte    far *screen,far *dest,mask;
@@ -902,7 +902,7 @@ void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y)
 //	mask = 1 << (x&3);
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	maskptr = source;
 #else
 //	maskptr = source;

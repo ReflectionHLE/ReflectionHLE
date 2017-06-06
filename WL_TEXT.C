@@ -26,7 +26,7 @@ TEXT FORMATTING COMMANDS
 */
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define BACKCOLOR		4
 #else
 #define BACKCOLOR		0x11
@@ -36,7 +36,7 @@ TEXT FORMATTING COMMANDS
 #define WORDLIMIT		80
 #define FONTHEIGHT		10
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define	TOPMARGIN		10
 #define BOTTOMMARGIN		10
 #define LEFTMARGIN		10
@@ -212,7 +212,7 @@ void HandleCommand (void)
 		RipToEOL();
 		break;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case ';':		// comment
 		RipToEOL();
 		break;
@@ -232,7 +232,7 @@ void HandleCommand (void)
 
 		// *** ALPHA RESTORATION ***
 		// Is this EGA-era?
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		fontcolor ^= 4;
 #else
 		fontcolor *= 16;
@@ -246,7 +246,7 @@ void HandleCommand (void)
 		break;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case '>':
 		px = 160;
 		text++;
@@ -271,7 +271,7 @@ void HandleCommand (void)
 		VWB_DrawPic (picx&~7,picy,picnum);
 		// *** ALPHA RESTORATION ***
 		// Another EGA thing
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		picwidth = 8*pictable[picnum-STARTPICS].width;
 #else
 		picwidth = pictable[picnum-STARTPICS].width;
@@ -448,7 +448,7 @@ void PageLayout (boolean shownumber)
 	oldfontcolor = fontcolor;
 
 	// *** ALPHA RESTORATION *** 
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	fontcolor = 0x0a;
 #else
 	fontcolor = 0;
@@ -467,7 +467,7 @@ void PageLayout (boolean shownumber)
 	// Interestingly this was commented out for the SOD Activision
 	// release, instead of omitting WL_TEXT.C from the project
 	// (also unused in the Wolf3D GT and Activision builds).
-#if ((GAMEVER_WOLFREV <= 19940413L) || (!defined SPEAR)) && (GAMEVER_WOLFREV > 19920312L)
+#if ((GAMEVER_WOLFREV <= GV_WR_WL6GT14B) || (!defined SPEAR)) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 	VWB_DrawPic (0,0,H_TOPWINDOWPIC);
 	VWB_DrawPic (0,8,H_LEFTWINDOWPIC);
 	VWB_DrawPic (312,8,H_RIGHTWINDOWPIC);
@@ -508,7 +508,7 @@ void PageLayout (boolean shownumber)
 		if (ch == '^')
 			HandleCommand ();
 		// *** ALPHA RESTIRATION *** 
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		else
 		if (ch == 9)
 		{
@@ -536,7 +536,7 @@ void PageLayout (boolean shownumber)
 		strcat (str," de ");
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#if (GAMEVER_WOLFREV > 19940101L)
+		#if (GAMEVER_WOLFREV > GV_WR_N3DWT10)
 		py = 183;
 		px = 208;
 		#endif
@@ -547,7 +547,7 @@ void PageLayout (boolean shownumber)
 		strcat (str," of ");
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#if (GAMEVER_WOLFREV > 19940101L)
+		#if (GAMEVER_WOLFREV > GV_WR_N3DWT10)
 		py = 183;
 		px = 213;
 		#endif
@@ -555,7 +555,7 @@ void PageLayout (boolean shownumber)
 		itoa (numpages,str2,10);
 		strcat (str,str2);
 		// *** ALPHA RESTORATION *** 
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		fontcolor = 8;
 		py = 186;
 		px = 218;
@@ -568,7 +568,7 @@ void PageLayout (boolean shownumber)
 #endif
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
 		// Pick location based on version
-		#if (GAMEVER_WOLFREV <= 19940101L)
+		#if (GAMEVER_WOLFREV <= GV_WR_N3DWT10)
 		#ifdef SPANISH
 		py = 183;
 		px = 208;
@@ -577,7 +577,7 @@ void PageLayout (boolean shownumber)
 		px = 213;
 		#endif
 		#endif
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
 		VWB_DrawPropString (str);
 	}
@@ -642,7 +642,7 @@ void CacheLayoutGraphics (void)
 			{
 				// *** SOD 1.4 ACTIVISION + ALPHA RESTORATION ***
 				// Again, none of WL_TEXT.C should even be used in the Activision EXEs...
-#if ((GAMEVER_WOLFREV <= 19940413L) || (!defined SPEAR)) && (GAMEVER_WOLFREV > 19920312L)
+#if ((GAMEVER_WOLFREV <= GV_WR_WL6GT14B) || (!defined SPEAR)) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 				CA_MarkGrChunk(H_TOPWINDOWPIC);
 				CA_MarkGrChunk(H_LEFTWINDOWPIC);
 				CA_MarkGrChunk(H_RIGHTWINDOWPIC);
@@ -733,7 +733,7 @@ void ShowArticle (char far *article)
 	oldfontnumber = fontnumber;
 	fontnumber = 0;
 	// *** ALPHA RESTIRATION *** 
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	CA_UpLevel ();
 	CA_SetGrPurge ();
 #else
@@ -768,7 +768,7 @@ void ShowArticle (char far *article)
 			if (firstpage)
 			{
 				// *** ALPHA RESTORATION *** 
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 				VL_FadeIn(0,255,&gamepal,30);
 #else
 				VL_FadeIn(0,255,&gamepal,10);
@@ -800,7 +800,7 @@ void ShowArticle (char far *article)
 			break;
 
 		// *** ALPHA RESTIRATION *** 
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		case sc_Enter:
 #endif
 		case sc_DownArrow:
@@ -818,7 +818,7 @@ void ShowArticle (char far *article)
 
 		// *** APOGEE VERSIONS + S3NA RESTORATION ***
 		// This is also skipped in these versions
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -827,7 +827,7 @@ void ShowArticle (char far *article)
 	} while (LastScan != sc_Escape);
 
 	// *** ALPHA RESTIRATION *** 
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	CA_DownLevel ();
 #endif
 	IN_ClearKeysDown ();
@@ -843,7 +843,7 @@ void ShowArticle (char far *article)
 // *** S3DNA RESTORATION *** - No T_ENDART1
 #ifdef GAMEVER_NOAH3D
 int		helpextern = T_HELPART;
-#elif (GAMEVER_WOLFREV <= 19920610L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 int		helpextern = T_HELPART;
 int 	endextern = T_ENDART1;
 #else
@@ -855,7 +855,7 @@ int		helpextern = T_HELPART;
 #endif
 // *** S3DNA RESTORATION + ALPHA *** - No T_ENDART1,
 // and embedding extension + using char * in alpha (instead of char..[])
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 char *helpfilename = "HELPART.WL1",
 	 *orderfilename = "ORDERART.WL1",
 	 *storyfilename = "STORYART.WL1",
@@ -883,7 +883,7 @@ void HelpScreens (void)
 
 
 	// *** S3DNA + ALPHA RESTORATION ***
-#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 	CA_UpLevel ();
 	MM_SortMem ();
 #endif
@@ -907,7 +907,7 @@ void HelpScreens (void)
 	CA_LoadFile (helpfilename,&layout);
 	text = (char _seg *)layout;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	MM_SetLock (&layout, true);
 #endif
 #endif
@@ -923,14 +923,14 @@ void HelpScreens (void)
 
 
 	// *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	MenuFadeOut();
 #else
 	VW_FadeOut();
 #endif
 
 	// *** S3DNA + ALPHA RESTORATION ***
-#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 	FreeMusic ();
 	CA_DownLevel ();
 	MM_SortMem ();
@@ -942,7 +942,7 @@ void HelpScreens (void)
 // *** ALPHA RESTORATION ***
 // This is almost identical to HelpScreens; Only the ART file differs.
 // It looks like the function named survived in WL_DEF.H
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void OrderingInfo (void)
 {
 	char far 	*text;
@@ -973,7 +973,7 @@ void EndText (void)
 	ClearMemory ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	ResetSplitScreen ();
 #endif
 	CA_UpLevel ();
@@ -997,7 +997,7 @@ void EndText (void)
 
 #ifdef ARTSEXTERN
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	artnum = endextern;
 #else
 	artnum = endextern+gamestate.episode;
@@ -1022,7 +1022,7 @@ void EndText (void)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	MenuFadeOut();
 #else
 	VW_FadeOut();

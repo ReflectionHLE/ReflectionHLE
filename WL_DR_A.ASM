@@ -23,7 +23,7 @@ EXTRN	HitVertWall:FAR
 EXTRN	HitHorizDoor:FAR
 EXTRN	HitVertDoor:FAR
 ; *** ALPHA RESTORATION ***
-IF GAMEVER_WOLFREV GT 19920312
+IF GAMEVER_WOLFREV GT GV_WR_WL920312
 EXTRN	HitHorizPWall:FAR
 EXTRN	HitVertPWall:FAR
 ENDIF
@@ -71,7 +71,7 @@ EXTRN	doorposition:WORD		; table of door position values
 
 ; *** ALPHA RESTORATION ***
 ; Not sure what's this unused variable, but it's reset to 0 in the alpha
-IF GAMEVER_WOLFREV LE 19920312
+IF GAMEVER_WOLFREV LE GV_WR_WL920312
 unuseddrvar	db	0
 ELSE
 EXTRN	pwallpos:WORD			; amound a pushable wall has been moved
@@ -219,7 +219,7 @@ PUBLIC	AsmRefresh
 pixxloop:
 ; *** ALPHA RESTORATION ***
 ; An unused variable being reset to 0 just here
-IF GAMEVER_WOLFREV LE 19920312
+IF GAMEVER_WOLFREV LE GV_WR_WL920312
 	mov	[BYTE unuseddrvar],0
 ENDIF
 	mov	ax,SEG finetangent
@@ -575,7 +575,7 @@ horizdoor:
 	mov	[WORD yintercept+2],dx
 
 	; *** ALPHA RESTORATION ***
-IF GAMEVER_WOLFREV GT 19920312
+IF GAMEVER_WOLFREV GT GV_WR_WL920312
 	test al,040h      				; both high bits set == pushable wall
 	jnz	horizpushwall
 ENDIF
@@ -621,7 +621,7 @@ hithmid:
 	jmp	nextpix
 
 ; *** ALPHA RESTORATION ***
-IF GAMEVER_WOLFREV GT 19920312
+IF GAMEVER_WOLFREV GT GV_WR_WL920312
 ;============
 ;
 ; hit a sliding horizontal wall
@@ -666,7 +666,7 @@ horizpushwall:
 
 	call	FAR HitHorizPWall
 	jmp	nextpix
-ENDIF ; GAMEVER_WOLFREV GT 19920312
+ENDIF ; GAMEVER_WOLFREV GT GV_WR_WL920312
 
 
 
@@ -683,7 +683,7 @@ vertdoor:
 	mov	[WORD yintercept+2],dx
 
 ; *** ALPHA RESTORATION ***
-IF GAMEVER_WOLFREV GT 19920312
+IF GAMEVER_WOLFREV GT GV_WR_WL920312
 	test al,040h      				; both high bits set == pushable wall
 	jnz	vertpushwall
 ENDIF
@@ -728,7 +728,7 @@ hitvmid:
 	jmp	nextpix
 
 ; *** ALPHA RESTORATION ***
-IF GAMEVER_WOLFREV GT 19920312
+IF GAMEVER_WOLFREV GT GV_WR_WL920312
 ;============
 ;
 ; hit a sliding vertical wall
@@ -774,7 +774,7 @@ vertpushwall:
 
 	call	FAR HitVertPWall
 	jmp	nextpix
-ENDIF ; GAMEVER_WOLFREV GT 19920312
+ENDIF ; GAMEVER_WOLFREV GT GV_WR_WL920312
 
 
 

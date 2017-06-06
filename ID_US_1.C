@@ -72,12 +72,12 @@ static	boolean		US_Started;
 						{"Abraham",10000,1},
 #else
 // *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 						{"Id Software - '92",10000,1},
 #else
 						{"id software-'92",10000,1},
 #endif
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 						{"",10000,1},
 						{"John Carmack",10000,1},
 						{"",10000,1},
@@ -236,7 +236,7 @@ US_Startup(void)
 		// *** ALPHA RESTORATION ***
 		// Use code from US_TextScreen in Catacomb 3-D
 		// (the earlier Keen Dreams version is also similar)
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		if (n == 0)
 		{
 			tedlevelnum = atoi(_argv[i + 1]);
@@ -259,7 +259,7 @@ US_Startup(void)
 		 case 0:
 		   tedlevelnum = atoi(_argv[i + 1]);
 		   // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 		   if (tedlevelnum >= 0)
 #endif
 		   // *** S3DNA RESTORATION ***
@@ -281,7 +281,7 @@ US_Startup(void)
 		   NoWait = true;
 		   break;
 		}
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 	}
 
 	// *** S3DNA RESTORATION ***

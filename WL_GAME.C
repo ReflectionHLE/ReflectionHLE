@@ -26,7 +26,7 @@
 */
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 boolean	screensplit;
 #endif
 // *** S3DNA RESTORATION ***
@@ -40,7 +40,7 @@ unsigned	latchpics[NUMLATCHPICS];
 gametype	gamestate;
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 long		spearx,speary;
 unsigned	spearangle;
 boolean		spearflag;
@@ -51,8 +51,8 @@ boolean		spearflag;
 //
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 int ElevatorBackTo[]={1,1,7,0,0,0};
 #elif (!defined GAMEVER_NOAH3D)
 int ElevatorBackTo[]={1,1,7,3,5,3};
@@ -80,7 +80,7 @@ void GameLoop (void);
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 /*
 ==========================
 =
@@ -98,7 +98,7 @@ void GameLoop (void);
 	int		leftchannel,rightchannel;
 #define ATABLEMAX 15
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 int righttable[ATABLEMAX][ATABLEMAX * 2] = {
 {14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 11,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  4,  6,  8, 10, 12, 15},
 {14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 12,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  5,  7,  9, 11, 13, 15},
@@ -207,7 +207,7 @@ SetSoundLoc(fixed gx,fixed gy)
 	leftchannel  =  lefttable[x][y + ATABLEMAX];
 	rightchannel = righttable[x][y + ATABLEMAX];
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (leftchannel > 5)
 		leftchannel = 5;
 	if (rightchannel > 5)
@@ -273,7 +273,7 @@ void ClearMemory (void)
 	SD_StopDigitized();
 	MM_SortMem ();
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 /*
@@ -355,7 +355,7 @@ void ScanInfoPlane (void)
 			case 62:
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			case 63:
 			case 64:
 			case 65:
@@ -365,7 +365,7 @@ void ScanInfoPlane (void)
 			case 69:
 			case 70:
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 			case 71:
 			case 72:
 			case 73:						// TRUCK AND SPEAR!
@@ -377,7 +377,7 @@ void ScanInfoPlane (void)
 				break;
 // *** ALPHA RESTORATION ***
 // Apparently we need the redundant break for code recreation
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			case 74:
 				break;
 #else
@@ -667,12 +667,12 @@ void ScanInfoPlane (void)
 				SpawnBoss (x,y);
 				break;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 			case 197:
 				SpawnGretel (x,y);
 				break;
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			case 215:
 				SpawnGift (x,y);
 				break;
@@ -682,7 +682,7 @@ void ScanInfoPlane (void)
 				break;
 #endif
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			case 196:
 				SpawnSchabbs (x,y);
 				break;
@@ -721,7 +721,7 @@ void ScanInfoPlane (void)
 				sprintf (str,"ScanInfoPlane: Invalid object $%02X at %d, %d!\n",
 					tile,x,y);
 				Quit (str);
-#elif (GAMEVER_WOLFREV > 19920312L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL920312)
 //
 // mutants
 //
@@ -765,7 +765,7 @@ void ScanInfoPlane (void)
 			case 222:
 			case 223:
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 				SpawnStand(en_mutant,x,y,tile-220);
 #else
 				SpawnPatrol(en_mutant,x,y,tile-220);
@@ -812,7 +812,7 @@ void SetupGameLevel (void)
 
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (!loadedgame)
 	{
 	 gamestate.TimeCount=
@@ -844,7 +844,7 @@ void SetupGameLevel (void)
 	mapwidth = mapheaderseg[gamestate.mapon]->width;
 	mapheight = mapheaderseg[gamestate.mapon]->height;
 #else
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	CA_CacheMap (gamestate.mapon);
 #else
 	CA_CacheMap (gamestate.mapon+10*gamestate.episode);
@@ -1001,11 +1001,11 @@ void SetupGameLevel (void)
 //==========================================================================
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - A function that is used in v1.0
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 void ResetSplitScreen (void)
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	screensplit = false;
 #endif
 	VW_SetSplitScreen(200);
@@ -1044,7 +1044,7 @@ void DrawPlayBorderSides (void)
 	VWB_Vlin (yl-1,yl+viewheight,xl+viewwidth,216);
 #else
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	VWB_Bar (0,0,xl-2,200-STATUSLINES,127);
 #else
 	VWB_Bar (0,0,xl-1,200-STATUSLINES,127);
@@ -1058,7 +1058,7 @@ void DrawPlayBorderSides (void)
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - NOT used in v1.0
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 /*
 ===================
 =
@@ -1099,7 +1099,7 @@ void DrawAllPlayBorder (void)
 	}
 	bufferofs = temp;
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 
 /*
@@ -1155,14 +1155,14 @@ void DrawPlayScreen (void)
 {
 	int	i,j,p,m;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	unsigned	temp;
 #endif
 
 	VW_FadeOut ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	screenpage = 0;
 	bufferofs = 0;
 #else
@@ -1172,9 +1172,9 @@ void DrawPlayScreen (void)
 	CA_CacheGrChunk (STATUSBARPIC);
 
 	// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	VWB_DrawPic (0,0,STATUSBARPIC);
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	VW_Hlin (0,319,STATUSLINES,127);
 #endif
 	UNCACHEGRCHUNK (STATUSBARPIC);
@@ -1185,13 +1185,13 @@ void DrawPlayScreen (void)
 		bufferofs = screenloc[i];
 		DrawPlayBorder ();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 		VWB_DrawPic (0,200-STATUSLINES,STATUSBARPIC);
 #endif
 	}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	bufferofs = temp;
 
 	UNCACHEGRCHUNK (STATUSBARPIC);
@@ -1214,8 +1214,8 @@ void DrawPlayScreen (void)
 	DrawScore ();
 
 	// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	screensplit = true;
 #endif
 	VW_SetSplitScreen(200-STATUSLINES);
@@ -1231,7 +1231,7 @@ void DrawPlayScreen (void)
 // Its original purpose is unknown. However, given the fact
 // that it precedes StartDemoRecord, using comparisons to Keen 4-6
 // as a base, it might have been an implementation of finishcachebox.
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void SomeNullGameLoopFunc(void)
 {
 }
@@ -1271,7 +1271,7 @@ void StartDemoRecord (int levelnumber)
 */
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 char	demoname[] = "DEMO?.WL1";
 #else
 char	demoname[13] = "DEMO?.";
@@ -1330,21 +1330,21 @@ void RecordDemo (void)
 	CenterWindow(26,3);
 	PrintY+=6;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	CA_CacheGrChunk(STARTFONT);
 	fontnumber=0;
 #endif
 	// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	US_Print("  Demo which level(1-30):");
-#elif (GAMEVER_WOLFREV <= 19920312L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	US_Print("  Demo which level(1-20):");
 #else
 	US_Print("  Demo which level(1-10):");
 #endif
 	VW_UpdateScreen();
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	VW_FadeIn ();
 #endif
 	esc = !US_LineInput (px,py,str,NULL,true,2,0);
@@ -1353,7 +1353,7 @@ void RecordDemo (void)
 
 	level = atoi (str);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if ((level < 1) || (level > 20))
 		return;
 #else
@@ -1361,7 +1361,7 @@ void RecordDemo (void)
 #endif
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	VW_FadeOut ();
 	NewGame (gd_medium);
 	SETFONTCOLOR(0,15);
@@ -1370,7 +1370,7 @@ void RecordDemo (void)
 	VW_FadeOut ();
 
 	// *** SHAREWARE V1.0 APOGEE  RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	NewGame (gd_easy,0);
 	gamestate.mapon = level-1;
 	gamestate.difficulty = gd_hard;
@@ -1385,21 +1385,21 @@ void RecordDemo (void)
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	StartDemoRecord (level-1);
 #else
 	StartDemoRecord (level);
 #endif
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
 	DrawPlayScreen ();
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	PM_CheckMainMem ();
 #endif
 	VW_FadeIn ();
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	PreloadGraphics ();
 	PM_UnlockMainMem ();
 	gamestate.mapon = level-1;
@@ -1425,29 +1425,29 @@ void RecordDemo (void)
 	demoplayback = false;
 
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	PM_UnlockMainMem ();
 #endif
 	StopMusic ();
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	FinishDemoRecord ();
 #endif
 	VW_FadeOut ();
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	FinishPaletteShifts ();
 	screenfaded = true;
 #else
 	ClearMemory ();
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	ResetSplitScreen ();
 #endif
 
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	FinishDemoRecord ();
 #endif
 }
@@ -1492,7 +1492,7 @@ void PlayDemo (int demonumber)
 	CA_CacheGrChunk(dems[demonumber]);
 	demoptr = grsegs[dems[demonumber]];
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	MM_SetLock (&grsegs[dems[demonumber]],true);
 #endif
 #else
@@ -1503,14 +1503,14 @@ void PlayDemo (int demonumber)
 #endif
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	NewGame (1);
 #else
 	NewGame (1,0);
 #endif
 	gamestate.mapon = *demoptr++;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	gamestate.difficulty = gd_hard;
 #endif
 	length = *((unsigned far *)demoptr)++;
@@ -1522,12 +1522,12 @@ void PlayDemo (int demonumber)
 	SETFONTCOLOR(0,15);
 	DrawPlayScreen ();
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	PM_CheckMainMem ();
 #endif
 	VW_FadeIn ();
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	PreloadGraphics ();
 	PM_UnlockMainMem ();
 #endif
@@ -1557,20 +1557,20 @@ void PlayDemo (int demonumber)
 	demoplayback = false;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	PM_UnlockMainMem ();
 #endif
 	StopMusic ();
 	VW_FadeOut ();
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	FinishPaletteShifts ();
 	screenfaded = true;
 #else
 	ClearMemory ();
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	ResetSplitScreen ();
 #endif
 }
@@ -1671,7 +1671,7 @@ void Died (void)
 	FinishPaletteShifts ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage]+screenofs;
@@ -1685,26 +1685,26 @@ void Died (void)
 	FizzleFade(bufferofs,displayofs+screenofs,viewwidth,viewheight,70,false);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	bufferofs -= screenofs;
 #endif
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	IN_UserInput(300);
 #else
 	IN_UserInput(100);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	displayofs = bufferofs-screenofs;
 	VW_SetCRTC(displayofs);
 #endif
 	SD_WaitSoundDone ();
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	if (tedlevel == false)	// SO'S YA DON'T GET KILLED WHILE LAUNCHING!
 #endif
 #endif // GAMEVER_NOAH3D
@@ -1786,13 +1786,13 @@ void GameLoop (void)
 
 restartgame:
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	ClearMemory ();
 #endif
 	SETFONTCOLOR(0,15);
 	DrawPlayScreen ();
 	/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	PM_CheckMainMem ();
 	VW_FadeIn ();
 	PreloadGraphics ();
@@ -1824,8 +1824,8 @@ restart:
 			}
 #endif
 		// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 		if (!loadedgame)
 #endif
 		  gamestate.score = gamestate.oldscore;
@@ -1850,7 +1850,7 @@ restart:
 		StartMusic ();
 		PM_CheckMainMem ();
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!died)
 			PreloadGraphics ();
 		else
@@ -1873,7 +1873,7 @@ startplayloop:
 		{
 			// *** SOD VERSIONS RESTORATION ***
 			// Don't stop sound
-#if (GAMEVER_WOLFREV > 19920928L)
+#if (GAMEVER_WOLFREV > GV_WR_SODFG10)
 			SD_StopSound();
 #endif
 			SD_PlaySound(GETSPEARSND);
@@ -1881,7 +1881,7 @@ startplayloop:
 			{
 				// *** SOD VERSIONS RESTORATION ***
 				// Do loop over DigiPlaying
-#if (GAMEVER_WOLFREV <= 19920928L)
+#if (GAMEVER_WOLFREV <= GV_WR_SODFG10)
 				while(DigiPlaying!=false)
 					SD_Poll();
 #else
@@ -1911,7 +1911,7 @@ startplayloop:
 #endif
 
 		/// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		PM_UnlockMainMem ();
 #endif
 		StopMusic ();
@@ -1934,7 +1934,7 @@ startplayloop:
 		{
 		case ex_completed:
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920601L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 		case ex_secretlevel:
 #endif
 			gamestate.keys = 0;
@@ -1946,7 +1946,7 @@ startplayloop:
 			VW_FadeOut ();
 
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			SD_StopDigitized();
 			screenfaded = true;
 			gamestate.mapon++;
@@ -2014,7 +2014,7 @@ startplayloop:
 			//
 
 			// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920601L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 			if ((gamestate.mapon == 0) && (player->tilex == 10))
 #else
 			if (playstate == ex_secretlevel)
@@ -2076,14 +2076,14 @@ startplayloop:
 			//
 				gamestate.mapon++;
 
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
 			break;
 
 		case ex_died:
 			Died ();
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			died = true;			// don't "get psyched!"
 #endif
 
@@ -2093,20 +2093,20 @@ startplayloop:
 			VW_FadeOut ();
 
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			SD_StopDigitized ();
 #else
 			ClearMemory ();
 #endif
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 			ResetSplitScreen ();
 #endif
 
 			CheckHighScore (gamestate.score,gamestate.mapon+1);
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			#pragma warn -sus
 			#ifndef JAPAN
 			GAMEVER_COND_FSTRCPY(MainMenu[viewscores].string,STR_VS);
@@ -2124,7 +2124,7 @@ startplayloop:
 			endtics = 0;
 #endif
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			SD_StopDigitized ();
 			SomeNullGameLoopFunc ();
 #endif
@@ -2134,7 +2134,7 @@ startplayloop:
 			VL_FadeOut (0,255,0,17,17,300);
 #endif
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			ClearMemory ();
 #endif
 
@@ -2146,23 +2146,23 @@ startplayloop:
 #endif
 
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			Victory ();
 #endif
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 			ResetSplitScreen ();
 #endif
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 			ClearMemory ();
 #endif
 
 			CheckHighScore (gamestate.score,gamestate.mapon+1);
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			#pragma warn -sus
 			#ifndef JAPAN
 			GAMEVER_COND_FSTRCPY(MainMenu[viewscores].string,STR_VS);
@@ -2174,7 +2174,7 @@ startplayloop:
 			return;
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		default:
 			ClearMemory ();
 			break;

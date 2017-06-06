@@ -27,7 +27,7 @@
 
 //	File specific variables
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	char			PageFileName[] = {"VSWAP.WL1"};
 #else
 	char			PageFileName[13] = {"VSWAP."};
@@ -269,7 +269,7 @@ PML_XMSCopy(boolean toxms,byte far *addr,word xmspage,word length)
 	} copy;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (!addr)
 		Quit("PML_XMSCopy: zero address");
 #endif
@@ -447,7 +447,7 @@ PML_StartupMainMem(void)
 	MainPagesAvail = 0;
 	MM_BombOnError(false);
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	for (i = 0,p = MainMemPages;(i < PMMaxMainMem) && !mmerror;i++,p++)
 #else
 	for (i = 0,p = MainMemPages;i < PMMaxMainMem;i++,p++)
@@ -455,7 +455,7 @@ PML_StartupMainMem(void)
 	{
 		MM_GetPtr(p,PMPageSize);
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		if (!mmerror)
 			MainPagesAvail++;
 #else
@@ -791,7 +791,7 @@ PML_TransferPageSpace(int orig,int new)
 	PageListStruct	far *origpage,far *newpage;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (orig == new)
 		Quit("PML_TransferPageSpace: Identity replacement");
 #endif
@@ -819,7 +819,7 @@ PML_TransferPageSpace(int orig,int new)
 	origpage->mainPage = origpage->emsPage = -1;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (!addr)
 		Quit("PML_TransferPageSpace: Zero replacement");
 #endif
@@ -954,14 +954,14 @@ asm	out	dx,al
 	{
 		boolean mainonly = (pagenum >= PMSoundStart);
 	// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 if (!PMPages[pagenum].offset)	// JDC: sparse page
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	return 0;
 #else
 	Quit ("Tried to load a sparse page!");
 #endif
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 		if (!(result = PML_GetPageFromXMS(pagenum,mainonly)))
 		{
 			if (PMPages[pagenum].lastHit == PMFrameCount)
@@ -1000,7 +1000,7 @@ void
 PM_SetPageLock(int pagenum,PMLockType lock)
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (pagenum < PMSoundStart)
 		Quit("PM_SetPageLock: Locking/unlocking non-sound page");
 #endif
@@ -1018,14 +1018,14 @@ PM_Preload(boolean (*update)(word current,word total))
 {
 	int				i,j,
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 					page,totalxms,oogypage;
 #else
 					page,oogypage;
 #endif
 	word			current,total,
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 					totalnonxms,
 #else
 					totalnonxms,totalxms,
@@ -1038,7 +1038,7 @@ PM_Preload(boolean (*update)(word current,word total))
 
 	// *** ALPHA RESTORATION ***
 	// Similar to the later code revision, but with some differences
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	j = 0;
 	for (i = totalnonxms = 0;i < ChunksInFile;i++)
 	{
@@ -1168,7 +1168,7 @@ PM_Preload(boolean (*update)(word current,word total))
 
 	update(total,total);
 
-#else // GAMEVER_WOLFREV > 19920312L
+#else // GAMEVER_WOLFREV > GV_WR_WL920312
 	mainfree = (MainPagesAvail - MainPagesUsed) + (EMSPagesAvail - EMSPagesUsed);
 	xmsfree = (XMSPagesAvail - XMSPagesUsed);
 
@@ -1276,7 +1276,7 @@ PM_Preload(boolean (*update)(word current,word total))
 if (update)
 #endif
 	update(total,total);
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -116,7 +116,7 @@ out dx,al;\
 sti;}
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX+1;mov al,x;out dx,al;sti;}
 #else
 #define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov al,SC_MAPMASK;mov ah,x;out dx,ax;sti;}
@@ -151,7 +151,7 @@ void VL_ColorBorder (int color);
 
 void VL_Plot (int x, int y, int color);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void VL_Hlin (int x, int y, int width, int color);
 #else
 void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color);

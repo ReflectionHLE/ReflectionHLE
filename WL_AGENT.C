@@ -34,7 +34,7 @@
 //
 // *** ALPHA RESTORATION ***
 // Need to define this (and declare in header) for recreation of memory layout
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 boolean		someUnusedAgentVar;
 #endif
 boolean		running;
@@ -43,13 +43,13 @@ long		thrustspeed;
 unsigned	plux,pluy;			// player coordinates scaled to unsigned
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 int			anglefrac;
 int			gotgatgun;	// JR
 #endif
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 objtype		*LastAttacker;
 #endif
 
@@ -273,7 +273,7 @@ void ControlMovement (objtype *ob)
 	// not strafing
 	//
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		ob->angle -= controlx/ANGLESCALE;
 #else
 		anglefrac += controlx;
@@ -305,7 +305,7 @@ void ControlMovement (objtype *ob)
 	}
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (gamestate.victoryflag)		// watching the BJ actor
 		return;
 #endif
@@ -329,7 +329,7 @@ void ControlMovement (objtype *ob)
 // instead there was just a call to LatchDrawPic everywhere, more-or-less,
 // along with a few bits of fiddling with bufferofs.
 
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 // HACK for restoration of v1.0
 #define StatusDrawPic LatchDrawPic
 
@@ -358,7 +358,7 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 	bufferofs = temp;
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 
 // *** S3DNA RESTORATION ***
@@ -382,7 +382,7 @@ void DrawTreasure ()
 void DrawFace (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	unsigned	temp;
 
 	temp = bufferofs;
@@ -412,7 +412,7 @@ void DrawFace (void)
 	   StatusDrawPic (19,4,FACE8APIC);
 #else
 	// ALPHA RESTORATION
-#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#ifndef SPEAR
 	 if (LastAttacker->obclass == needleobj)
 	   StatusDrawPic (17,4,MUTANTBJPIC);
@@ -422,7 +422,7 @@ void DrawFace (void)
 #endif
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	bufferofs = temp;
 #endif
 }
@@ -441,7 +441,7 @@ void DrawFace (void)
 #define FACETICS	70
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 static	int	facecount;
 #else
 int	facecount;
@@ -451,7 +451,7 @@ void	UpdateFace (void)
 {
 
 	// *** S3DNA + ALPHA RESTORATION ***
-#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined GAMEVER_NOAH3D) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (SD_SoundPlaying() == GETGATLINGSND)
 	  return;
 #endif
@@ -487,7 +487,7 @@ void	UpdateFace (void)
 void	LatchNumber (int x, int y, int width, long number)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	unsigned	temp;
 
 #endif
@@ -497,7 +497,7 @@ void	LatchNumber (int x, int y, int width, long number)
 	ltoa (number,str,10);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	temp = bufferofs;
 	bufferofs = 0;
 
@@ -512,7 +512,7 @@ void	LatchNumber (int x, int y, int width, long number)
 	}
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	c = 0;
 #else
 	c= length <= width ? 0 : length-width;
@@ -525,7 +525,7 @@ void	LatchNumber (int x, int y, int width, long number)
 		c++;
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	bufferofs = temp;
 #endif
 }
@@ -561,12 +561,12 @@ void	DrawHealth (void)
 void	TakeDamage (int points,objtype *attacker)
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	LastAttacker = attacker;
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	if (gamestate.victoryflag)
 		return;
 #endif
@@ -583,7 +583,7 @@ void	TakeDamage (int points,objtype *attacker)
 	}
 	if (!points && (gamestate.difficulty != gd_baby))
 		points++;
-#elif (GAMEVER_WOLFREV > 19920312L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (gamestate.difficulty==gd_baby)
 	  points>>=2;
 #endif
@@ -605,7 +605,7 @@ void	TakeDamage (int points,objtype *attacker)
 #endif
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	gotgatgun=0;
 #endif
 
@@ -642,7 +642,7 @@ void	HealSelf (int points)
 
 	DrawHealth ();
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	gotgatgun = 0;	// JR
 #endif
 	DrawFace ();
@@ -719,7 +719,7 @@ void	GiveExtraMan (void)
 		gamestate.lives++;
 	DrawLives ();
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	SD_PlaySound (HEALTH1SND);
 #else
 	SD_PlaySound (BONUS1UPSND);
@@ -755,7 +755,7 @@ void	DrawScore (void)
 */
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void	GivePoints (int points)
 #else
 void	GivePoints (long points)
@@ -763,7 +763,7 @@ void	GivePoints (long points)
 {
 	gamestate.score += points;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if (gamestate.score >= gamestate.nextextra)
 #else
 	while (gamestate.score >= gamestate.nextextra)
@@ -790,7 +790,7 @@ void	GivePoints (long points)
 void DrawWeapon (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	unsigned	temp;
 
 	temp = bufferofs;
@@ -798,7 +798,7 @@ void DrawWeapon (void)
 #endif
 	StatusDrawPic (32,8,KNIFEPIC+gamestate.weapon);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	bufferofs = temp;
 #endif
 }
@@ -816,7 +816,7 @@ void DrawWeapon (void)
 void DrawKeys (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	unsigned	temp;
 
 	temp = bufferofs;
@@ -845,7 +845,7 @@ void DrawKeys (void)
 		StatusDrawPic (30,20,NOKEYPIC);
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	bufferofs = temp;
 #endif
 }
@@ -1071,7 +1071,7 @@ void GiveKey (int key)
 void GetBonus (statobj_t *check)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	unsigned	temp;
 #endif
 	switch (check->itemnumber)
@@ -1122,7 +1122,7 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (BONUS1SND);
 		GivePoints (100);
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		gamestate.treasurecount++;
 #endif
 		break;
@@ -1130,7 +1130,7 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (BONUS2SND);
 		GivePoints (500);
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		gamestate.treasurecount++;
 #endif
 		break;
@@ -1138,12 +1138,12 @@ void GetBonus (statobj_t *check)
 		SD_PlaySound (BONUS3SND);
 		GivePoints (1000);
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		gamestate.treasurecount++;
 #endif
 		break;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case	bo_crown:
 		SD_PlaySound (BONUS4SND);
 		GivePoints (5000);
@@ -1203,7 +1203,7 @@ void GetBonus (statobj_t *check)
 		gamestate.machinegun = 1;
 #endif
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		SD_PlaySound (GETGATLINGSND);
 #else
 		SD_PlaySound (GETMACHINESND);
@@ -1216,7 +1216,7 @@ void GetBonus (statobj_t *check)
 		gamestate.chaingun = 1;
 #endif
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		SD_PlaySound (GETMACHINESND);
 #else
 		SD_PlaySound (GETGATLINGSND);
@@ -1224,9 +1224,9 @@ void GetBonus (statobj_t *check)
 		GiveWeapon (wp_chaingun);
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		temp = bufferofs;
 		bufferofs = 0;
 
@@ -1238,17 +1238,17 @@ void GetBonus (statobj_t *check)
 		StatusDrawPic (17,4,GOTGATLINGPIC);
 #endif
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		bufferofs = temp;
 
 #endif
 		facecount = 0;
 		gotgatgun = 1;
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 		break;
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case	bo_fullheal:
 		SD_PlaySound (BONUS1UPSND);
 		HealSelf (99);
@@ -1376,7 +1376,7 @@ void GetBonus (statobj_t *check)
 			return;
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		SD_PlaySound (HEALTH1SND);
 #else
 		SD_PlaySound (SLURPIESND);
@@ -1386,7 +1386,7 @@ void GetBonus (statobj_t *check)
 #endif
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 	case	bo_spear:
 		spearflag = true;
 		spearx = player->x;
@@ -1522,7 +1522,7 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 //==========================================================================
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 /*
 ===================
 =
@@ -1541,7 +1541,7 @@ void VictoryTile (void)
 
 	gamestate.victoryflag = true;
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 /*
@@ -1581,7 +1581,7 @@ void Thrust (int angle, long speed)
 
 	// *** ALPHA RESTORATION ***
 	// Similar to code from T_Attack and T_Player
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in unsigned
 	pluy = player->y >> UNSIGNEDSHIFT;
 #endif
@@ -1589,7 +1589,7 @@ void Thrust (int angle, long speed)
 	player->tiley = player->y >> TILESHIFT;
 
 	// Similar to code from T_Attack and T_Player
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	player->areanumber = *(mapsegs[0] + farmapylookup[player->tiley]+player->tilex) -AREATILE;
 #else
 	offset = farmapylookup[player->tiley]+player->tilex;
@@ -1597,7 +1597,7 @@ void Thrust (int angle, long speed)
 #endif
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (*(mapsegs[1] + offset) == EXITTILE)
 		VictoryTile ();
 #endif
@@ -1650,7 +1650,7 @@ void Cmd_Use (void)
 {
 	objtype 	*check;
 	// *** S3DNA + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	int			checkx,checky,doornum;
 #else
 	int			checkx,checky,doornum,dir;
@@ -1661,7 +1661,7 @@ void Cmd_Use (void)
 
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	buttonheld[bt_use] = true;
 #endif
 //
@@ -1672,7 +1672,7 @@ void Cmd_Use (void)
 		checkx = player->tilex + 1;
 		checky = player->tiley;
 		// *** S3DNA + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		dir = di_east;
 #endif
 #ifndef GAMEVER_NOAH3D
@@ -1684,7 +1684,7 @@ void Cmd_Use (void)
 		checkx = player->tilex;
 		checky = player->tiley-1;
 		// *** S3DNA + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		dir = di_north;
 #endif
 #ifndef GAMEVER_NOAH3D
@@ -1696,7 +1696,7 @@ void Cmd_Use (void)
 		checkx = player->tilex - 1;
 		checky = player->tiley;
 		// *** S3DNA + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		dir = di_west;
 #endif
 #ifndef GAMEVER_NOAH3D
@@ -1708,7 +1708,7 @@ void Cmd_Use (void)
 		checkx = player->tilex;
 		checky = player->tiley + 1;
 		// *** S3DNA + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		dir = di_south;
 #endif
 #ifndef GAMEVER_NOAH3D
@@ -1723,7 +1723,7 @@ void Cmd_Use (void)
 #endif
 	// *** ALPHA RESTORATION **/
 	// Somewhat different code
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if ((doornum > 0) && (doornum < AREATILE))
 	{
 		if (*(mapsegs[1]+farmapylookup[checky]+checkx) == PUSHABLETILE)
@@ -1747,7 +1747,7 @@ void Cmd_Use (void)
 	}
 	else if (doornum & 0x80)
 		OperateDoor (doornum & ~0x80);
-#else // GAMEVER_WOLFREV > 19920312
+#else // GAMEVER_WOLFREV > GV_WR_WL920312
 	if (*(mapsegs[1]+farmapylookup[checky]+checkx) == PUSHABLETILE)
 	{
 	//
@@ -1768,7 +1768,7 @@ void Cmd_Use (void)
 
 		tilemap[checkx][checky]++;		// flip switch
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920601L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 		if (*(mapsegs[0]+farmapylookup[player->tiley]+player->tilex) == ALTELEVATORTILE)
 			playstate = ex_secretlevel;
 		else
@@ -1787,7 +1787,7 @@ void Cmd_Use (void)
 		buttonheld[bt_use] = true;
 		OperateDoor (doornum & ~0x80);
 	}
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 	else
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1831,7 +1831,7 @@ void SpawnPlayer (int tilex, int tiley, int dir)
 	if (player->angle<0)
 		player->angle += ANGLES;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	player->flags = FL_NEVERMARK;
 #endif
 	Thrust (0,0);				// set some variables
@@ -2043,7 +2043,7 @@ void MissileAttack (objtype *ob)
 //===========================================================================
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 /*
 ===============
 =
@@ -2078,7 +2078,7 @@ void VictorySpin (void)
 			player->y = desty;
 	}
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 //===========================================================================
@@ -2098,7 +2098,7 @@ void	T_Attack (objtype *ob)
 	UpdateFace ();
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (gamestate.victoryflag)		// watching the BJ actor
 	{
 		VictorySpin ();
@@ -2114,13 +2114,13 @@ void	T_Attack (objtype *ob)
 
 	ControlMovement (ob);
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (gamestate.victoryflag)		// watching the BJ actor
 		return;
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in unsigned
 	pluy = player->y >> UNSIGNEDSHIFT;
 	player->tilex = player->x >> TILESHIFT;		// scale to tile values
@@ -2253,7 +2253,7 @@ void	T_Attack (objtype *ob)
 void	T_Player (objtype *ob)
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (gamestate.victoryflag)		// watching the BJ actor
 	{
 		VictorySpin ();
@@ -2265,7 +2265,7 @@ void	T_Player (objtype *ob)
 	CheckWeaponChange ();
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if ( buttonstate[bt_use] && !buttonheld[bt_use])
 #else
 	if ( buttonstate[bt_use] )
@@ -2284,7 +2284,7 @@ void	T_Player (objtype *ob)
 
 	ControlMovement (ob);
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (gamestate.victoryflag)		// watching the BJ actor
 		return;
 

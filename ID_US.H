@@ -26,7 +26,7 @@ typedef	struct
 			char	name[MaxHighName + 1];
 			long	score;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 			word	completed;
 #else
 			word	completed,episode;
@@ -63,7 +63,7 @@ typedef	enum
 //	Hack import for TED launch support
 extern	boolean		tedlevel;
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 extern	word			tedlevelnum;
 #else
 extern	int			tedlevelnum;

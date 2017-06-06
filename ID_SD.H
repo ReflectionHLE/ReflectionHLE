@@ -10,7 +10,7 @@
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 // With no declaration, so the compiler assumes args are passed as 16-bit ints
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void	alOut(byte n,byte b);
 #endif
 
@@ -31,7 +31,7 @@ typedef	enum	{
 					// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 					sds_Off,sds_SoundBlaster
-#elif (GAMEVER_WOLFREV <= 19920312L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
 					sds_Off,sds_SoundSource,sds_SoundBlaster
 #else
 					sds_Off,sds_PC,sds_SoundSource,sds_SoundBlaster
@@ -233,7 +233,7 @@ extern	void	SD_Startup(void),
 
 // *** ALPHA RESTORATION ***
 // Not exactly pretty, but works
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		SD_PlaySound(soundnames sound),
 #else
 				SD_PositionSound(int leftvol,int rightvol);
@@ -256,7 +256,7 @@ extern	word	SD_SoundPlaying(void);
 
 extern	void	SD_SetDigiDevice(SDSMode),
 				// *** ALPHA RESTORATION ***/
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 				SD_PlayDigitized(word which),
 #else
 				SD_PlayDigitized(word which,int leftpos,int rightpos),

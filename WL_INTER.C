@@ -17,7 +17,7 @@
 void ClearSplitVWB (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage];
@@ -253,7 +253,7 @@ void Victory (void)
 {
 #ifndef SPEARDEMO
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	int	sec;
 #elif (defined GAMEVER_NOAH3D)
 	long	sec,parsec;
@@ -346,7 +346,7 @@ void Victory (void)
 #endif
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocated this, depending on version
-#if (GAMEVER_WOLFREV <= 19921111L)
+#if (GAMEVER_WOLFREV <= GV_WR_SODFG14A)
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 	// *** S3DNA RESTORATION ***
@@ -354,12 +354,12 @@ void Victory (void)
 //#else
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocated this, depending on version
-#if (GAMEVER_WOLFREV <= 19921111L)
+#if (GAMEVER_WOLFREV <= GV_WR_SODFG14A)
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	Write(18,0,STR_YOUWIN);
 #else
 	Write(18,2,STR_YOUWIN);
@@ -406,7 +406,7 @@ void Victory (void)
 #else
 	// ***SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	// Possibly relocate this, depending on version
-#if (GAMEVER_WOLFREV > 19921111L)
+#if (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 #ifndef JAPDEMO
 	VWB_DrawPic (8,4,L_BJWINSPIC);
 #endif
@@ -472,7 +472,7 @@ void Victory (void)
 	tr /= 14;
 #endif
 	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920601L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 	if (sec > 415800)
 		sec = 415800;
 #endif
@@ -491,7 +491,7 @@ void Victory (void)
 		min = sec = 99;
 	}
 	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#elif (GAMEVER_WOLFREV > 19920601L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 	if (min > 99)
 		min = sec = 99;
 #endif
@@ -538,7 +538,7 @@ void Victory (void)
 
 #ifndef SPANISH
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (!defined UPLOAD) || (GAMEVER_WOLFREV <= 19920505L)
+#if (!defined UPLOAD) || (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 //#ifndef UPLOAD
 	// *** S3DNA RESTORATION ***
 #if (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
@@ -548,7 +548,7 @@ void Victory (void)
 	//
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	if (gamestate.difficulty>=gd_medium)
 #endif
 	{
@@ -556,21 +556,21 @@ void Victory (void)
 		fontnumber = 0;
 		fontcolor = READHCOLOR;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PrintX = 30*8;
 #else
 		PrintX = 30*8-3;
 #endif
 		PrintY = TIMEY*8+8;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		VWB_Bar (PrintX,PrintY,24,10,0x29);
 #endif
 		PrintX+=4;
 		tempstr[0] = (((min/10)^(min%10))^0xa)+'A';
 		tempstr[1] = (((sec/10)^(sec%10))^0xa)+'A';
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		tempstr[2] = 0;
 #else
 		tempstr[2] = (tempstr[0]^tempstr[1])+'A';
@@ -595,7 +595,7 @@ void Victory (void)
 
 	// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 	// This is also skipped in the Apogee EXEs
-	#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L)
+	#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 	//#ifndef SPEAR
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
@@ -641,7 +641,7 @@ void PG13 (void)
 {
 	VW_FadeOut();
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	VWB_Bar(0,0,319,200,0x82);			// background
 #else
 	VWB_Bar(0,0,320,200,0x82);			// background
@@ -650,7 +650,7 @@ void PG13 (void)
 	CA_CacheGrChunk (PG13PIC);
 	VWB_DrawPic (216,110,PG13PIC);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	VW_UpdateScreen ();
 #endif
 
@@ -658,7 +658,7 @@ void PG13 (void)
 
 	VW_FadeIn();
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	IN_Ack();
 #else
 	IN_UserInput(TickBase*7);
@@ -712,7 +712,7 @@ void Write(int x,int y,char *string)
 	   continue;
 
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	 case '\'':
 	   VWB_DrawPic(nx,ny,L_APOSTROPHEPIC);
 	   nx+=8;
@@ -868,7 +868,7 @@ void LevelCompleted (void)
 	#define PERCENT100AMT	10000
 	typedef struct {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 			word time;
 #else
 			float time;
@@ -896,7 +896,7 @@ void LevelCompleted (void)
 	times parTimes[]=
 	{
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	 //
 	 // Episode One Par Times
 	 //
@@ -1080,7 +1080,7 @@ void LevelCompleted (void)
 	 {0,	"??:??"},
 
 	// *** SHAREWARE V1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920601L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 	 //
 	 // Episode Four Par Times
 	 //
@@ -1164,7 +1164,7 @@ void LevelCompleted (void)
 	 {8.5,	"08:30"},
 	 {0,	"??:??"},
 	 {0,	"??:??"}
-#endif // GAMEVER_WOLFREV <= 19920601L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP11
 #else
 	 //
 	 // SPEAR OF DESTINY TIMES
@@ -1557,7 +1557,7 @@ void LevelCompleted (void)
 
 	 // *** SHAREWARE/REGISTERED V1.4 APOGEE RESTORATION ***
 	 // Possibly relocated this, depending on version
-	#if (GAMEVER_WOLFREV <= 19921111L)
+	#if (GAMEVER_WOLFREV <= GV_WR_SODFG14A)
 	 #ifdef SPANISH
 	 Write(30,12,parTimes[gamestate.episode*10+mapon].timestr);
 	 #else
@@ -1581,7 +1581,7 @@ void LevelCompleted (void)
 
 	 // *** SHAREWARE/REGISTERED V1.4 APOGEE + RESTORATION ***
 	 // Possibly relocate this, depending on version
-	#if (GAMEVER_WOLFREV > 19921111L)
+	#if (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 	 #ifdef SPANISH
 	 Write(30,12,parTimes[gamestate.episode*10+mapon].timestr);
 	 #else
@@ -1598,7 +1598,7 @@ void LevelCompleted (void)
 	   sec = 99*60;
 
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	 if (gamestate.TimeCount<parTimes[gamestate.episode*10+mapon].time)
 		timeleft=parTimes[gamestate.episode*10+mapon].time/70-sec;
 #else
@@ -1633,16 +1633,16 @@ void LevelCompleted (void)
 	 //
 
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION *** (Always calculate in v1.0)
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	 kr = sr = tr = 0;
 	 if (gamestate.killtotal)
 #endif
 		kr=(gamestate.killcount*100)/gamestate.killtotal;
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	 if (gamestate.secrettotal)
 #endif
 		sr=(gamestate.secretcount*100)/gamestate.secrettotal;
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	 if (gamestate.treasuretotal)
 #endif
 		tr=(gamestate.treasurecount*100)/gamestate.treasuretotal;
@@ -1872,7 +1872,7 @@ void LevelCompleted (void)
 #endif
 #else
 	  // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	  Write(14,4,"secret level\n completed!");
 #else
 	  Write(14,4,"secret floor\n completed!");
@@ -1935,7 +1935,7 @@ void LevelCompleted (void)
 
 	// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 	// This is also skipped in the Apogee EXEs
-	#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L)
+	#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 	//#ifndef SPEAR
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
@@ -1943,7 +1943,7 @@ void LevelCompleted (void)
 
 	VW_FadeOut ();
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	temp = bufferofs;
 #endif
 	for (i=0;i<3;i++)
@@ -1952,7 +1952,7 @@ void LevelCompleted (void)
 		DrawPlayBorder ();
 	}
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	bufferofs = temp;
 #endif
 
@@ -2049,7 +2049,7 @@ void PreloadGraphics(void)
 // *** ALPHA RESTORATION ***
 // The functions included here, DrawHighScores and CheckHighScore,
 // were present in WL_MAIN.C as of an earlier alpha build
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 #include "WL_HSCOR.C"
 #endif
 

@@ -127,7 +127,7 @@ struct
 // NEW PAGE
 //
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 {SPR_STAT_32},				// crown           spr5v
 {SPR_STAT_33},				// one up          "
 #else
@@ -162,7 +162,7 @@ struct
 {SPR_STAT_45,block},			// stove           " (SOD:gibs)
 {SPR_STAT_46,block},			// spears          " (SOD:gibs)
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 {SPR_STAT_47,block},				// vines			"
 #else
 {SPR_STAT_47},					// vines			"
@@ -247,7 +247,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_chalice:
 	case	bo_bible:
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case	bo_crown:
 	case	bo_fullheal:
 	// *** S3DNA RESTORATION ***
@@ -256,7 +256,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 #endif
 		if (!loadedgame)
 		  gamestate.treasuretotal++;
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -269,7 +269,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_key4:
 	case	bo_clip:
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	case	bo_25clip:
 #endif
 	case	bo_machinegun:
@@ -287,7 +287,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 	case	bo_alpo:
 	case	bo_gibs:
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	case	bo_spear:
 #endif
 #endif
@@ -463,7 +463,7 @@ void InitDoorList (void)
 {
 	memset (areabyplayer,0,sizeof(areabyplayer));
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	_fmemset (areaconnect,0,sizeof(areaconnect));
 #endif
 
@@ -834,7 +834,7 @@ void MoveDoors (void)
 	int		door;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	if (gamestate.victoryflag)		// don't move door during victory sequence
 		return;
 #endif
@@ -858,7 +858,7 @@ void MoveDoors (void)
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 /*
 =============================================================================
 
@@ -1075,5 +1075,5 @@ void MovePWalls (void)
 #endif
 
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 

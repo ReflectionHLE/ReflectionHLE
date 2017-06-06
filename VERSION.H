@@ -1,13 +1,46 @@
 // *** VERSIONS RESTORATION ***
-// Notes:
-// 1. ARTSEXTERN and DEMOSEXTERN were relocated after the
-// various GAMEREV_WOLFREV definitions, since they shall *not*
-// be defined in the alpha (WL920312).
-// 2. UPLOAD is defined for v1.0, as well as the alpha, although
+
+// Note: UPLOAD is defined for v1.0, as well as the alpha, although
 // there are good chances this macro didn't even exist back then.
 // So at the least, it's used for the sake of convenience.
-//#define ARTSEXTERN
-//#define DEMOSEXTERN
+
+// GAMEVER_WOLFREV definitions
+
+#define GV_WR_WL920312 19920312L
+#define GV_WR_WL1AP10 19920505L
+#define GV_WR_WL1AP11 19920601L
+#define GV_WR_WL6AP11 19920610L
+// WL1AP12 might be later, but it looks like the same code rev.
+#define GV_WR_WL1AP12 19920610L
+#define GV_WR_SDMFG10 19920921L
+#define GV_WR_SODFG10 19920928L
+#define GV_WR_WL1AP14 19921101L
+#define GV_WR_WL6AP14 19921101L
+#define GV_WR_SODFG14A 19921111L
+// Only the sign-on screen and project settings really differed
+#define GV_WR_SODFG14B 19921111L
+#define GV_WR_WJ6IM14 19930304L
+// GT might be later than ID, but only the sign-on screen differs
+#define GV_WR_WL6GT14A 19930902L
+#define GV_WR_WL6ID14 19930902L
+// Like GT14B and later, N3D has the verification block from WL_INTER.C removed,
+// but it lacks a few minor GT14B changes to WL_TEXT.C, and an end-screen is still
+// shown on quit (which isn't the case in the later 1998 Activision release).
+// Since N3D was released on 1994, let's assume the first day of January.
+#define GV_WR_N3DWT10 19940101L
+#define GV_WR_WL6GT14B 19940413L
+#define GV_WR_WL6AC14 19980127L
+#define GV_WR_SODAC14 19980127L
+
+// Now define GAMEVER_WOLFREV to one of the above,
+// based on the definition of GAMEVER_EXEDEF
+
+#define GAMEVER_CONCAT1(x,y) x ## y
+#define GAMEVER_CONCAT2(x,y) GAMEVER_CONCAT1(x,y)
+#define GAMEVER_WOLFREV GAMEVER_CONCAT2(GV_WR_,GAMEVER_EXEDEF)
+
+// Now defining the usual macros, plus a few more. Note that
+// these use a *separate* GAMEVER_EXEDEF_*** macro
 
 #if (defined GAMEVER_EXEDEF_WL920312) || (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL1AP14)
 #define UPLOAD
@@ -29,50 +62,17 @@
 #define GAMEVER_NOAH3D
 #endif
 
-// A new GAMEVER_WOLFREV macro, usually based on some known or guessed
-// release/build date, but does not have to be.
-
-#ifdef GAMEVER_EXEDEF_WL920312
-#define GAMEVER_WOLFREV 19920312L
-#elif (defined GAMEVER_EXEDEF_WL1AP10)
-#define GAMEVER_WOLFREV 19920505L
-#elif (defined GAMEVER_EXEDEF_WL1AP11)
-#define GAMEVER_WOLFREV 19920601L
-#elif (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL6AP11)
-// WL1AP12 might be later, but it looks like the same code rev.
-#define GAMEVER_WOLFREV 19920610L
-#elif (defined GAMEVER_EXEDEF_SDMFG10)
-#define GAMEVER_WOLFREV 19920921L
-#elif (defined GAMEVER_EXEDEF_SODFG10)
-#define GAMEVER_WOLFREV 19920928L
-#elif (defined GAMEVER_EXEDEF_WL1AP14) || (defined GAMEVER_EXEDEF_WL6AP14)
-#define GAMEVER_WOLFREV 19921101L
-#elif (defined GAMEVER_EXEDEF_SODFG14A) || (defined GAMEVER_EXEDEF_SODFG14B)
-// Only the sign-on screen and project settings really differed
-#define GAMEVER_WOLFREV 19921111L
-#elif (defined GAMEVER_EXEDEF_WJ6IM14)
-#define GAMEVER_WOLFREV 19930304L
-#elif (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6ID14)
-// GT might be later than ID, but only the sign-on screen differs
-#define GAMEVER_WOLFREV 19930902L
-#elif (defined GAMEVER_EXEDEF_N3DWT10)
-// Like GT14B and later, N3D has the verification block from WL_INTER.C removed,
-// but it lacks a few minor GT14B changes to WL_TEXT.C, and an end-screen is still
-// shown on quit (which isn't the case in the later 1998 Activision release).
-// Since N3D was released on 1994, let's assume the first day of January.
-#define GAMEVER_WOLFREV 19940101L
-#elif (defined GAMEVER_EXEDEF_WL6GT14B)
-#define GAMEVER_WOLFREV 19940413L
-#elif (defined GAMEVER_EXEDEF_WL6AC14) || (defined GAMEVER_EXEDEF_SODAC14)
-#define GAMEVER_WOLFREV 19980127L
-#else
-#error "No proper GAMEVER_EXEDEF macro is defined!"
-#endif
-
 #if (GAMEVER_WOLFREV > 19920312L)
 #define ARTSEXTERN
 #define DEMOSEXTERN
 #endif
+
+#if (GAMEVER_WOLFREV > 19920505L)
+#define CARMACIZED
+#endif
+
+//#define MYPROFILE
+//#define DEBCHECK
 
 /*** Additional convenience macros ***/
 
@@ -94,10 +94,3 @@
 #define GAMEVER_COND_FSTRCPY _fstrcpy
 
 #endif
-
-#if (GAMEVER_WOLFREV > 19920505)
-#define CARMACIZED
-#endif
-
-//#define MYPROFILE
-//#define DEBCHECK

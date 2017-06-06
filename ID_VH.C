@@ -94,7 +94,7 @@ bufferwidth = ((dest+1)-origdest)*4;
 
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void VW_DrawColorPropString (char far *string)
 {
 	fontstruct	far	*font;
@@ -156,7 +156,7 @@ asm	mov	ds,ax
 bufferheight = height;
 bufferwidth = ((dest+1)-origdest)*4;
 }
-#endif // GAMEVER_WOLFREV > 19920610L
+#endif // GAMEVER_WOLFREV > GV_WR_WL6AP11
 
 
 //==========================================================================
@@ -236,7 +236,7 @@ void	VW_MeasureMPropString  (char far *string, word *width, word *height)
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 // An unknown do-nothing stub - at least until the recreation
 // of alpha version from March, hinting that this is
 // a do-nothing VGA implemenation of VW_SetDefaultColors
@@ -290,7 +290,7 @@ int VW_MarkUpdateBlock (int x1, int y1, int x2, int y2)
 	if (xt1<0)
 		xt1=0;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	else if (xt1>=UPDATEWIDE-1)
 #else
 	else if (xt1>=UPDATEWIDE)
@@ -305,7 +305,7 @@ int VW_MarkUpdateBlock (int x1, int y1, int x2, int y2)
 	if (xt2<0)
 		return 0;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	else if (xt2>=UPDATEWIDE-1)
 		xt2 = UPDATEWIDE-2;
 #else
@@ -403,11 +403,11 @@ void VH_UpdateScreen (void);
 // It looks like VW_UpdateScreen was originally defined to VH_UpdateScreen,
 // then got modified to that v1.0 revision with the split screen case and
 // finally was replaced as a simple wrapper (not a macro) over VH_UpdateScreen
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void VW_UpdateScreen (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	extern boolean screensplit;
 	if (screensplit)
 		VH_UpdateSplitScreen ();
@@ -459,7 +459,7 @@ void LatchDrawPic (unsigned x, unsigned y, unsigned picnum)
 void LoadLatchMem (void)
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	int	i,j,p,m,width,height;
 #else
 	int	i,j,p,m,width,height,start,end;
@@ -485,7 +485,7 @@ void LoadLatchMem (void)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Do compile in v1.0
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 //#if 0	// ran out of latch space!
 //
 // tile 16s
@@ -508,7 +508,7 @@ void LoadLatchMem (void)
 // pics
 //
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	for (i=LATCHPICS_LUMP_START;i<=LATCHPICS_LUMP_END;i++)
 #else
 	start = LATCHPICS_LUMP_START;
@@ -518,7 +518,7 @@ void LoadLatchMem (void)
 #endif
 	{
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		latchpics[2+i-LATCHPICS_LUMP_START] = destoff;
 #else
 		latchpics[2+i-start] = destoff;

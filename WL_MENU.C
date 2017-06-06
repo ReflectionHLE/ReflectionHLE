@@ -12,7 +12,7 @@
 //
 void CP_ReadThis(void);
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void CP_BackToDemo(void);
 #endif
 
@@ -21,7 +21,7 @@ void CP_BackToDemo(void);
 
 #else
 // *** ALPHA RESTORATION ***
-#if (defined GOODTIMES) || (GAMEVER_WOLFREV <= 19920312L)
+#if (defined GOODTIMES) || (GAMEVER_WOLFREV <= GV_WR_WL920312)
 //#ifdef GOODTIMES
 #define STARTITEM	newgame
 
@@ -31,7 +31,7 @@ void CP_BackToDemo(void);
 #endif
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 char GAMEVER_COND_FARPTR endStrings[9][80]=
 {
 	// *** S3DNA RESTORATION ***
@@ -68,13 +68,13 @@ char GAMEVER_COND_FARPTR endStrings[9][80]=
 	ENDSTR9
 #endif
 };
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 // *** ALPHA RESTORATION ***
 // Looks like these were originally defined here, with a few changes.
 // The yet-unused pickquick variable is defined for the purpose
 // of recreating the original EXE, albeit in a different location.
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 int pickquick;
 int SaveGamesAvail[10],StartGame,SoundStatus=1;
 char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.WL1";
@@ -85,7 +85,7 @@ CP_iteminfo
 	SndItems={SM_X,SM_Y1,12,0,52},
 	LSItems={LSM_X,LSM_Y,10,0,24},
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	CtlItems={CTL_X,CTL_Y,5,-1,56},
 	CusItems={8,CST_Y+13*2,9,-1,0},
 	NewItems={NM_X,NM_Y,3,1,24};
@@ -131,7 +131,7 @@ MainMenu[]=
 	{1,STR_CV,CP_ChangeView},
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	{2,"Read This!",HelpScreens},
 	{1,"Ordering Info",OrderingInfo},
 #else
@@ -149,10 +149,10 @@ MainMenu[]=
 #endif
 
 	{1,STR_VS,CP_ViewScores},
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	{1,STR_BD,CP_BackToDemo},
 #else
 	{1,STR_BD,0},
@@ -210,7 +210,7 @@ GAMEVER_COND_FARPTR CtlMenu[]=
 	{0,STR_PORT2,0},
 	{0,STR_GAMEPAD,0},
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	{0,STR_SENS,MouseSensitivity},
 #endif
 	{1,STR_CUSTOM,CustomControls}
@@ -220,7 +220,7 @@ GAMEVER_COND_FARPTR CtlMenu[]=
 #pragma warn +sus
 
 // *** ALPHA RESTORATION ***/
-#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#ifndef SPEAR
 GAMEVER_COND_FARPTR NewEmenu[]=
 {
@@ -324,7 +324,7 @@ GAMEVER_COND_FARPTR NewMenu[]=
 	{1,"",0}
 #else
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	{1,STR_DADDY,0},
 #endif
 	{1,STR_HURTME,0},
@@ -363,7 +363,7 @@ GAMEVER_COND_FARPTR CusMenu[]=
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 int color_hlite[]={
    DEACTIVE,
    HIGHLIGHT,
@@ -384,7 +384,7 @@ int EpisodeSelect[6]={1};
 
 // *** ALPHA RESTORATION ***
 // Looks like these were originally defined above, with a few changes
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 int SaveGamesAvail[10],StartGame,SoundStatus=1,pickquick;
 char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.";
 #endif
@@ -437,7 +437,7 @@ void US_ControlPanel(byte scancode)
 	// Looks like an almost-perfect replica of the code handling
 	// sc_F10 in CP_CheckQuick, as well as CP_Quit.
 	// Makes use of the QUITSUR string, *not* used in v1.0 or later.
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if (scancode == sc_F9)
 	{
 		CA_CacheGrChunk(STARTFONT+1);
@@ -462,7 +462,7 @@ void US_ControlPanel(byte scancode)
 		fontnumber=0;
 		return;
 	}
-#else // GAMEVER_WOLFREV > 19920312L
+#else // GAMEVER_WOLFREV > GV_WR_WL920312
 	if (ingame)
 		if (CP_CheckQuick(scancode))
 			return;
@@ -490,7 +490,7 @@ void US_ControlPanel(byte scancode)
 
 		case sc_F2:
 			// ALPHA RESTORATION
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			CP_SaveGame();
 #else
 			CP_SaveGame(0);
@@ -499,7 +499,7 @@ void US_ControlPanel(byte scancode)
 
 		case sc_F3:
 			// ALPHA RESTORATION
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			CP_LoadGame();
 #else
 			CP_LoadGame(0);
@@ -588,7 +588,7 @@ void US_ControlPanel(byte scancode)
 		switch(which)
 		{
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			case viewscores:
 				if (MainMenu[viewscores].routine == NULL)
 					if (CP_EndGame())
@@ -600,7 +600,7 @@ void US_ControlPanel(byte scancode)
 #endif
 
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 			case backtodemo:
 				#ifdef SPEAR
 				if (!ingame)
@@ -631,7 +631,7 @@ void US_ControlPanel(byte scancode)
 					StartCPMusic(INTROSONG);
 				VL_FadeOut(0,255,0,0,0,10);
 				break;
-#endif // GAMEVER_WOLFREV > 19920610L
+#endif // GAMEVER_WOLFREV > GV_WR_WL6AP11
 
 			case -1:
 			case quit:
@@ -657,13 +657,13 @@ void US_ControlPanel(byte scancode)
 	CleanupControlPanel();
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	//
 	// CHANGE MAINMENU ITEM
 	//
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	if (startgame)
 #else
 	if (startgame || loadedgame)
@@ -683,7 +683,7 @@ void US_ControlPanel(byte scancode)
 	UnCacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 	MM_SortMem ();
 #endif
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 }
 
 
@@ -701,7 +701,7 @@ void DrawMainMenu(void)
 	VWB_DrawPic(112,GAMEVER_MOUSELBACKY,C_MOUSELBACKPIC);
 	// *** ALPHA RESTORATION ***
 	// Using color from ID_VH.H here
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	VWB_Bar(0,10,320,22,BLACK);
 	VWB_Hlin(0,319,33,0);
 #else
@@ -759,7 +759,7 @@ void DrawMainMenu(void)
 	}
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if (LastScan == sc_F9)
 		return;
 #endif
@@ -770,7 +770,7 @@ void DrawMainMenu(void)
 // *** ALPHA RESTORATION ***
 // Various functions were added after the alpha
 
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 
 #ifndef GOODTIMES
 #ifndef SPEAR
@@ -847,7 +847,7 @@ int CP_CheckQuick(unsigned scancode)
 			{
 				playstate = ex_died;
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 				gamestate.lives = 0;
 #else
 				pickquick = gamestate.lives = 0;
@@ -855,17 +855,17 @@ int CP_CheckQuick(unsigned scancode)
 			}
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 			DrawAllPlayBorder();
 #endif
 			WindowH=200;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 			UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 			fontnumber=0;
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 			MainMenu[savegame].active = 0;
 #endif
 			return 1;
@@ -878,13 +878,13 @@ int CP_CheckQuick(unsigned scancode)
 			{
 				CA_CacheGrChunk(STARTFONT+1);
 				// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 				fontnumber = 1;
 #endif
 				Message(STR_SAVING"...");
 				CP_SaveGame(1);
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 				UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 				fontnumber=0;
@@ -911,7 +911,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				VW_FadeOut ();
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 				ResetSplitScreen ();
 #endif
 
@@ -939,7 +939,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				#ifndef SPEAR
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 				UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 				UNCACHEGRCHUNK(C_CURSOR1PIC);
@@ -970,7 +970,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				CA_CacheGrChunk(STARTFONT+1);
 				// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 				fontnumber = 1;
 #endif
 
@@ -981,11 +981,11 @@ int CP_CheckQuick(unsigned scancode)
 					CP_LoadGame(1);
 
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 				DrawAllPlayBorder();
 #endif
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 				UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 				fontnumber=0;
@@ -1012,7 +1012,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				VW_FadeOut ();
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 				ResetSplitScreen ();
 #endif
 
@@ -1040,7 +1040,7 @@ int CP_CheckQuick(unsigned scancode)
 
 				#ifndef SPEAR
 				// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 				UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 				UNCACHEGRCHUNK(C_CURSOR1PIC);
@@ -1067,7 +1067,7 @@ int CP_CheckQuick(unsigned scancode)
 			CA_CacheGrChunk(STARTFONT+1);
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 			WindowX=WindowY=0;
 			WindowW=320;
 #endif
@@ -1099,12 +1099,12 @@ int CP_CheckQuick(unsigned scancode)
 			}
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 			DrawAllPlayBorder();
 #endif
 			WindowH=200;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 			UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 			fontnumber=0;
@@ -1130,7 +1130,7 @@ int CP_EndGame(void)
 		return 0;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	gamestate.lives = 0;
 #else
 	pickquick = gamestate.lives = 0;
@@ -1139,7 +1139,7 @@ int CP_EndGame(void)
 
 	#pragma warn -sus
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	MainMenu[savegame].active = 0;
 #endif
 	MainMenu[viewscores].routine=CP_ViewScores;
@@ -1186,7 +1186,7 @@ void CP_ViewScores(void)
 	CacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 #endif
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 ////////////////////////////////////////////////////////////////////
@@ -1199,7 +1199,7 @@ void CP_NewGame(void)
 	int which,episode;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 
 #ifdef SPEAR
 	UnCacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
@@ -1297,14 +1297,14 @@ firstpart:
 
 #endif
 
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 	DrawNewGame();
 	which=HandleMenu(&NewItems,&NewMenu[0],DrawNewGameDiff);
 	if (which<0)
 	{
 		MenuFadeOut();
 		// *** ALPHA RESTORATION ***
-		#if (GAMEVER_WOLFREV <= 19920312L)
+		#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		return;
 		#elif (!defined SPEAR)
 		//#ifndef SPEAR
@@ -1318,7 +1318,7 @@ firstpart:
 
 	// *** ALPHA RESTORATION ***
 	// Some code is similar to what's found above (e.g., for SPEAR)
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	//
 	// ALREADY IN A GAME?
 	//
@@ -1332,7 +1332,7 @@ firstpart:
 	ShootSnd();
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	NewGame(which);
 #else
 	NewGame(which,episode);
@@ -1350,7 +1350,7 @@ firstpart:
 	#endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	pickquick = 0;
 #endif
 
@@ -1362,7 +1362,7 @@ firstpart:
 
 
 // *** ALPHA RESTORATION ***
-#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#ifndef SPEAR
 /////////////////////
 //
@@ -1414,7 +1414,7 @@ void DrawNewGame(void)
 	VWB_DrawPic(112,GAMEVER_MOUSELBACKY,C_MOUSELBACKPIC);
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	SETFONTCOLOR(HIGHLIGHT,BKGDCOLOR);
 	DrawWindow(NM_X+15,NM_Y-50,NM_W-40,NM_H-31,BKGDCOLOR);
 	PrintX=NM_X+20;
@@ -1453,7 +1453,7 @@ void DrawNewGame(void)
 void DrawNewGameDiff(int w)
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	VWB_DrawPic(NM_X+165,NM_Y-7,w+C_EASYPIC);
 #else
 	VWB_DrawPic(NM_X+185,NM_Y+7,w+C_BABYMODEPIC);
@@ -1720,14 +1720,14 @@ void DrawLSAction(int which)
 //
 ////////////////////////////////////////////////////////////////////
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void CP_LoadGame(void)
 #else
 int CP_LoadGame(int quick)
 #endif
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	int handle,which;
 #else
 	int handle,which,exit=0;
@@ -1736,7 +1736,7 @@ int CP_LoadGame(int quick)
 
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	strcpy(name,SaveName);
 
 	//
@@ -1774,7 +1774,7 @@ int CP_LoadGame(int quick)
 			return 1;
 		}
 	}
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 #ifdef SPEAR
@@ -1792,7 +1792,7 @@ int CP_LoadGame(int quick)
 			ShootSnd();
 			// *** ALPHA RESTORATION -- ***
 			// Looks like this got relocated later
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			strcpy(name,SaveName);
 #endif
 			name[7]=which+'0';
@@ -1802,7 +1802,7 @@ int CP_LoadGame(int quick)
 
 			DrawLSAction(0);
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			loadedgame=true;
 #endif
 
@@ -1812,12 +1812,12 @@ int CP_LoadGame(int quick)
 			StartGame=1;
 			// *** ALPHA RESTORATION ***
 			// Relocated as well
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			loadedgame=true;
 #endif
 			ShootSnd();
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			//
 			// CHANGE "READ THIS!" TO NORMAL COLOR
 			//
@@ -1843,7 +1843,7 @@ int CP_LoadGame(int quick)
 #endif
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	return exit;
 #endif
 }
@@ -1882,7 +1882,7 @@ void DrawLoadSaveScreen(int loadsave)
 	DrawWindow(LSM_X-10,LSM_Y-5,LSM_W,LSM_H,BKGDCOLOR);
 	// *** ALPHA RESTORATION ***
 	// Now we have some usage for DISKX and DISKY
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	VWB_DrawPic(DISKX,DISKY,C_LOADSAVEDISKPIC);
 	PrintX=LSM_X+50;
 	PrintY=LSM_Y-30;
@@ -1938,14 +1938,14 @@ void PrintLSEntry(int w,int color)
 //
 ////////////////////////////////////////////////////////////////////
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void CP_SaveGame(void)
 #else
 int CP_SaveGame(int quick)
 #endif
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	int handle,which;
 #else
 	int handle,which,exit=0;
@@ -1955,7 +1955,7 @@ int CP_SaveGame(int quick)
 
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	strcpy(name,SaveName);
 
 	//
@@ -1981,7 +1981,7 @@ int CP_SaveGame(int quick)
 			return 1;
 		}
 	}
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 #ifdef SPEAR
@@ -2019,7 +2019,7 @@ int CP_SaveGame(int quick)
 			ShootSnd();
 			// *** ALPHA RESTORATION ***
 			// Looks like this got relocated later
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			strcpy(name,SaveName);
 #endif
 
@@ -2032,7 +2032,7 @@ int CP_SaveGame(int quick)
 			VW_UpdateScreen();
 
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 			if (US_LineInput(LSM_X+LSItems.indent+2,LSM_Y+which*13+1,input,input,true,31,LSM_W-LSItems.indent-20))
 #else
 			if (US_LineInput(LSM_X+LSItems.indent+2,LSM_Y+which*13+1,input,input,true,31,LSM_W-LSItems.indent-30))
@@ -2044,7 +2044,7 @@ int CP_SaveGame(int quick)
 				unlink(name);
 				handle=creat(name,S_IREAD|S_IWRITE);
 				// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 				write(handle,input,32);
 #else
 				_dos_write(handle,(void far *)input,32,&nwritten);
@@ -2058,7 +2058,7 @@ int CP_SaveGame(int quick)
 
 				ShootSnd();
 				// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 				exit=1;
 #endif
 			}
@@ -2085,19 +2085,19 @@ int CP_SaveGame(int quick)
 #endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	StartGame = 1;	
 #endif
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	return exit;
 #endif
 }
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - CalibrateJoystick was added to v1.4,
 // while v1.2 seems to have an unused handler assigned to "Back to demo"
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void CP_BackToDemo(void)
 {
 	StartGame = 1;
@@ -2146,7 +2146,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// This is also skipped in the Apogee and S3DNA EXEs
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -2183,7 +2183,7 @@ int CalibrateJoystick(void)
 			return 0;
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -2205,7 +2205,7 @@ int CalibrateJoystick(void)
 
 	return 1;
 }
-#endif // GAMEVER_WOLFREV <= 19920610L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL6AP11
 
 
 ////////////////////////////////////////////////////////////////////
@@ -2246,7 +2246,7 @@ void CP_Control(void)
 			case JOYENABLE:
 				joystickenabled^=1;
 				// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 				if (joystickenabled)
 					if (!CalibrateJoystick())
 						joystickenabled = 0;
@@ -2287,7 +2287,7 @@ void CP_Control(void)
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 ////////////////////////////////
 //
 // DRAW MOUSE SENSITIVITY SCREEN
@@ -2389,7 +2389,7 @@ void MouseSensitivity(void)
 
 		// *** SHAREWARE/REGISTERED V1.4 APOGEE+SOD (DEMO) V1.0 RESTORATION ***
 		// And again - kind of
-		#if (GAMEVER_WOLFREV > 19921111L)
+		#if (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		#else
@@ -2417,7 +2417,7 @@ void MouseSensitivity(void)
 	WaitKeyUp();
 	MenuFadeOut();
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 ///////////////////////////
@@ -2434,7 +2434,7 @@ void DrawCtlScreen(void)
 #else
  ClearMScreen();
  // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
  DrawStripes(10);
  VWB_DrawPic(80,0,C_CONTROLPIC);
 #endif
@@ -2444,7 +2444,7 @@ void DrawCtlScreen(void)
  WindowX=0;
  WindowW=320;
  // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
  SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
  PrintY=5;
  US_CPrint("Control Menu");
@@ -2455,7 +2455,7 @@ void DrawCtlScreen(void)
    // *** ALPHA RESTORATION ***
    CtlMenu[1].active=
    CtlMenu[2].active=
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
    CtlMenu[3].active=
    NewMenu[0].active=1;
 #else
@@ -2463,21 +2463,21 @@ void DrawCtlScreen(void)
 #endif
 
  // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
  CtlMenu[2].active=CtlMenu[3].active=joystickenabled;
 #endif
 
  if (MousePresent)
  {
   // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
   CtlMenu[4].active=
 #endif
   CtlMenu[0].active=1;
  }
 
  // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
  CtlMenu[4].active=mouseenabled;
 #endif
 
@@ -2515,7 +2515,7 @@ void DrawCtlScreen(void)
  //
 
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
  if (CtlItems.curpos==-1)
    for (i=0;i<5;i++)
 #else
@@ -2869,7 +2869,7 @@ void FixupCustom(int w)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	VWB_Hlin(7,32,y-2,BORDCOLOR);
 	VWB_Hlin(7,32,y-1,DEACTIVE);
 	VWB_Hlin(7,32,y+12,BORD2COLOR);
@@ -2884,7 +2884,7 @@ void FixupCustom(int w)
 	VWB_Hlin(7,32,y-2,BORD2COLOR);
 	VWB_Hlin(7,32,y+13,BORD2COLOR);
 #endif
-#endif // GAMEVER_WOLFREV <= 19920610L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL6AP11
 
 	switch(w)
 	{
@@ -2899,7 +2899,7 @@ void FixupCustom(int w)
 	{
 		y=CST_Y+26+lastwhich*13;
 		// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		VWB_Hlin(7,32,y-2,BORDCOLOR);
 		VWB_Hlin(7,32,y-1,DEACTIVE);
 		VWB_Hlin(7,32,y+12,BORD2COLOR);
@@ -2914,7 +2914,7 @@ void FixupCustom(int w)
 		VWB_Hlin(7,32,y-2,BORD2COLOR);
 		VWB_Hlin(7,32,y+13,BORD2COLOR);
 #endif
-#endif // GAMEVER_WOLFREV <= 19920610L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL6AP11
 
 		if (lastwhich!=w)
 			switch(lastwhich)
@@ -2964,7 +2964,7 @@ void DrawCustomScreen(void)
 	WindowW=320;
 	VWB_DrawPic(112,GAMEVER_MOUSELBACKY,C_MOUSELBACKPIC);
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	SETFONTCOLOR(READHCOLOR,BKGDCOLOR);
 	PrintY = 5;
 	US_CPrint("Customize Controls");
@@ -3020,7 +3020,7 @@ void DrawCustomScreen(void)
 #ifndef SPEAR
 	SETFONTCOLOR(READCOLOR,BKGDCOLOR);
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	US_CPrint("Joystick/PC GamePad\n");
 #else
 	US_CPrint("Joystick/Gravis GamePad\n");
@@ -3300,7 +3300,7 @@ void CP_ChangeView(void)
 
 		// *** SHAREWARE/REGISTERED V1.4 APOGEE+SOD (DEMO) V1.0 RESTORATION ***
 		// And again
-		#if (GAMEVER_WOLFREV > 19921111L)
+		#if (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 		#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		#else
@@ -3326,7 +3326,7 @@ void CP_ChangeView(void)
 	if (oldview!=newview)
 	{
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		SD_PlaySound (SHOOTSND);
 		Message(STR_THINK"...");
 #endif
@@ -3351,7 +3351,7 @@ void DrawChangeView(int view)
 #else
 	// *** ALPHA RESTORATION ***
 	// Note that the color is hardcoded here
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	VWB_Bar(0,0,320,200,3);
 #endif
 	VWB_Bar(0,160,320,40,VIEWCOLOR);
@@ -3390,7 +3390,7 @@ void CP_Quit(void)
 	if (Confirm(ENDGAMESTR))
 	// *** ALPHA RESTORATION ***
 	// This also makes use of QUITSUR string (unused in v1.0+)
-	#elif (GAMEVER_WOLFREV <= 19920312L)
+	#elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if (Confirm(QUITSUR))
 	#else
 	if (Confirm(endStrings[US_RndT()&0x7+(US_RndT()&1)]))
@@ -3430,7 +3430,7 @@ void IntroScreen(void)
 #define XMSCOLOR	0x4f
 
 // *** ALPHA RESTORATION ***
-#elif (GAMEVER_WOLFREV <= 19920312L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
 
 #define MAINCOLOR	0xa
 #define EMSCOLOR	0xb
@@ -3448,7 +3448,7 @@ void IntroScreen(void)
 	long memory,emshere,xmshere;
 	// *** ALPHA RESTORATION ***
 	// Looks like num was used in the alpha, but forgotten later...
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	int i,num,ems[10]={256,512,1000,1500,2000,2500,3000,3500,4000},
 		xms[10]={512,1000,2000,3000,4000,5000,6000,7000,8000};
 #else
@@ -3458,9 +3458,9 @@ void IntroScreen(void)
 #endif
 
 	// *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	StartCPMusic(SALUTE_MUS);
-#elif (GAMEVER_WOLFREV <= 19920610L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	StartCPMusic(NAZI_NOR_MUS);
 #endif
 	///
@@ -3470,7 +3470,7 @@ void IntroScreen(void)
 	//
 	memory=(1023l+mminfo.nearheap+mminfo.farheap)/1024l;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	num=(63l+memory)/64l;
 	for (i=0;i<num;i++)
 		VWB_Bar(49,163-8*i,6,5,MAINCOLOR);
@@ -3478,12 +3478,12 @@ void IntroScreen(void)
 	for (i=0;i<10;i++)
 		if (memory>=main[i])
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 			VWB_Bar(49,163-8*i,6,5,MAINCOLOR-2*i);
 #else
 			VWB_Bar(49,163-8*i,6,5,MAINCOLOR-i);
 #endif
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
 
 	//
@@ -3493,7 +3493,7 @@ void IntroScreen(void)
 	{
 		emshere=4l*EMSPagesAvail;
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		num=10;
 		for (i=0;i<10;i++)
 			if (emshere<ems[i])
@@ -3507,12 +3507,12 @@ void IntroScreen(void)
 		for (i=0;i<10;i++)
 			if (emshere>=ems[i])
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 				VWB_Bar(89,163-8*i,6,5,EMSCOLOR-2*i);
 #else
 				VWB_Bar(89,163-8*i,6,5,EMSCOLOR-i);
 #endif
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 	}
 
 	//
@@ -3522,7 +3522,7 @@ void IntroScreen(void)
 	{
 		xmshere=4l*XMSPagesAvail;
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		num=10;
 		for (i=0;i<10;i++)
 			if (xmshere<xms[i])
@@ -3535,12 +3535,12 @@ void IntroScreen(void)
 #else
 		for (i=0;i<10;i++)
 			if (xmshere>=xms[i])
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 				VWB_Bar(129,163-8*i,6,5,XMSCOLOR-2*i);
 #else
 				VWB_Bar(129,163-8*i,6,5,XMSCOLOR-i);
 #endif
-#endif // GAMEVER_WOLFREV <= 19920312L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 	}
 
 	//
@@ -3607,7 +3607,7 @@ void UnCacheLump(int lumpstart,int lumpend)
 
  for (i=lumpstart;i<=lumpend;i++)
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	if (grsegs[i])
 #endif
 		UNCACHEGRCHUNK(i);
@@ -3649,7 +3649,7 @@ void SetupControlPanel(void)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Some v1.0 specific function, guessing it's VW_InitDoubleBuffer
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	VW_InitDoubleBuffer();
 #endif
 	//
@@ -3708,7 +3708,7 @@ void SetupControlPanel(void)
 void CleanupControlPanel(void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	UNCACHEGRCHUNK(STARTFONT+1);
 #endif
 #ifndef SPEAR
@@ -3796,7 +3796,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 			int ok=0;
 
 			// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 			//
 			// CHECK FOR SCREEN CAPTURE
 			//
@@ -3806,7 +3806,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 			if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm("debugmode"))
 			#endif
 				PicturePause();
-#endif // GAMEVER_WOLFREV > 19920610L
+#endif // GAMEVER_WOLFREV > GV_WR_WL6AP11
 
 
 			if (key>='a')
@@ -3916,7 +3916,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 
 		if (ci.button0 ||
 			// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 			Keyboard[sc_Space] ||
 #endif
 			Keyboard[sc_Enter])
@@ -3930,7 +3930,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	while (Keyboard[sc_Enter] || Keyboard[sc_Escape]);
 #else
 	IN_ClearKeysDown();
@@ -3942,7 +3942,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 	if (lastitem!=which)
 	{
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		VWB_Bar(x-1,y,24,16,BKGDCOLOR);
 #else
 		VWB_Bar(x-1,y,25,16,BKGDCOLOR);
@@ -3963,7 +3963,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 
 	lastitem=which;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	WaitKeyUp();
 #endif
 	switch(exit)
@@ -3977,7 +3977,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 				ShootSnd();
 				MenuFadeOut();
 				// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 				(items+which)->routine();
 #else
 				(items+which)->routine(0);
@@ -4000,7 +4000,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int y,int which)
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	VWB_Bar(x-1,y,24,16,BKGDCOLOR);
 #else
 	VWB_Bar(x-1,y,25,16,BKGDCOLOR);
@@ -4033,7 +4033,7 @@ void DrawHalfStep(int x,int y)
 void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int *y,int which,int basey,void (*routine)(int w))
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	VWB_Bar(x-1,*y,24,16,BKGDCOLOR);
 #else
 	VWB_Bar(x-1,*y,25,16,BKGDCOLOR);
@@ -4093,7 +4093,7 @@ void DrawMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items)
 		SetTextColor(items+i,which==i);
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		PrintY=item_i->y+i*13;
 #endif
 		if ((items+i)->active)
@@ -4118,7 +4118,7 @@ void DrawMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items)
 void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,int hlight)
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	if (items->active == 1)
 	{
 		if (hlight)
@@ -4155,7 +4155,7 @@ void WaitKeyUp(void)
 								ci.button2|
 								ci.button3|
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 								Keyboard[sc_Space]|
 #endif
 								Keyboard[sc_Enter]|
@@ -4275,7 +4275,7 @@ int Confirm(char GAMEVER_COND_FARPTR *string)
 {
 	// *** ALPHA RESTORATION ***
 	// Originally the code from the Message function was *hardcoded* here
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	int xit=0,h=0,w=0,mw=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
 	fontstruct _seg *font;
 
@@ -4305,7 +4305,7 @@ int Confirm(char GAMEVER_COND_FARPTR *string)
 	SETFONTCOLOR(0,TEXTCOLOR);
 	US_Print(string);
 	VW_UpdateScreen();
-#else // GAMEVER_WOLFREV > 19920312L
+#else // GAMEVER_WOLFREV > GV_WR_WL920312
 	int xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
 
 
@@ -4341,7 +4341,7 @@ int Confirm(char GAMEVER_COND_FARPTR *string)
 
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L) && (!defined GAMEVER_NOAH3D)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A) && (!defined GAMEVER_NOAH3D)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -4399,7 +4399,7 @@ int GetYorN(int x,int y,int pic)
 	{
 		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 		// And again
-		#if (!defined SPEAR) && (GAMEVER_WOLFREV > 19921111L)
+		#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 		//#ifndef SPEAR
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -4439,7 +4439,7 @@ int GetYorN(int x,int y,int pic)
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 ////////////////////////////////////////////////////////////////////
 //
 // PRINT A MESSAGE IN A WINDOW
@@ -4452,14 +4452,14 @@ void Message(char GAMEVER_COND_FARPTR *string)
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	CA_CacheGrChunk (STARTFONT+1);
 #endif
 	fontnumber=1;
 	font=grsegs[STARTFONT+fontnumber];
 	h=font->height;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	for (i=0;i<strlen(string);i++)
 #else
 	for (i=0;i<_fstrlen(string);i++)
@@ -4486,11 +4486,11 @@ void Message(char GAMEVER_COND_FARPTR *string)
 	US_Print(string);
 	VW_UpdateScreen();
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 ////////////////////////////////////////////////////////////////////
 //
 // THIS MAY BE FIXED A LITTLE LATER...
@@ -4504,7 +4504,7 @@ void StartCPMusic(int song)
 	musicnames	chunk;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (audiosegs[STARTMUSIC + lastmusic])	// JDC
 		MM_FreePtr ((memptr *)&audiosegs[STARTMUSIC + lastmusic]);
 	lastmusic = song;
@@ -4526,7 +4526,7 @@ void StartCPMusic(int song)
 }
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void FreeMusic (void)
 {
 	if (audiosegs[STARTMUSIC + lastmusic])	// JDC
@@ -4595,7 +4595,7 @@ void DrawMenuGun(CP_iteminfo *iteminfo)
 
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 ///////////////////////////////////////////////////////////////////////////
 //
 // DRAW SCREEN TITLE STRIPES
@@ -4753,7 +4753,7 @@ void CheckForEpisodes(void)
 	strcat(PageFileName,extension);
 	strcat(audioname,extension);
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Relocate demoname preparation down for earlier releases
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	strcat(demoname,extension);
 #endif
 #ifndef SPEAR
@@ -4763,11 +4763,11 @@ void CheckForEpisodes(void)
 	strcat(endfilename,extension);
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	strcat(demoname,extension);
 #endif
 #endif
 
 #endif // S3DNA RESTORATION
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312

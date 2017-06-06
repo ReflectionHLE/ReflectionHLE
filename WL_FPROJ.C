@@ -2,7 +2,7 @@
 // at a location in WL_ACT2.C depending on version
 
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 /*
 ===================
 =
@@ -39,7 +39,7 @@ boolean ProjectileTryMove (objtype *ob)
 
 	return true;
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 
 
@@ -74,7 +74,7 @@ void T_Projectile (objtype *ob)
 	deltay = LABS(ob->y - player->y);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (!TryMove (ob))
 #else
 	if (!ProjectileTryMove (ob))
@@ -84,9 +84,9 @@ void T_Projectile (objtype *ob)
 #ifdef GAMEVER_NOAH3D
 		PlaySoundLocActor(MISSILEHITSND,ob);
 		ob->state = &s_cocohit;
-#elif (GAMEVER_WOLFREV <= 19920505L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		RemoveObj(ob);
-#elif (GAMEVER_WOLFREV <= 19920601L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 		ob->state = NULL;
 		PlaySoundLocActor(MISSILEHITSND,ob);
 #else
@@ -117,10 +117,10 @@ void T_Projectile (objtype *ob)
 			damage = (US_RndT() >>3) + 20;
 			break;
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 		case rocketobj:
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 		case hrocketobj:
 		case sparkobj:
 #endif
@@ -137,7 +137,7 @@ void T_Projectile (objtype *ob)
 
 		TakeDamage (damage,ob);
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		RemoveObj(ob);
 #else
 		ob->state = NULL;		// mark for removal
@@ -146,7 +146,7 @@ void T_Projectile (objtype *ob)
 	}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	ob->tilex = ob->x >> TILESHIFT;
 	ob->tiley = ob->y >> TILESHIFT;
 #endif

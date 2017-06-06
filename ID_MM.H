@@ -13,11 +13,11 @@
 // Looks like less blocks were used for Shareware 1.2/1.4 Apogee
 // and SOD FormGen versions, and even less in Shareware 1.1 Apogee.
 // On the other hand, more were used in Shareware 1.0 Apogee.
-#if (GAMEVER_WOLFREV > 19921111L)
+#if (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 #define MAXBLOCKS		700
-#elif (GAMEVER_WOLFREV <= 19920505L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define MAXBLOCKS		1200
-#elif (GAMEVER_WOLFREV <= 19920601L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 #define MAXBLOCKS		500
 #else
 #define MAXBLOCKS		600

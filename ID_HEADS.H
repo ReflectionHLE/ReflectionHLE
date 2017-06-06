@@ -22,7 +22,7 @@
 
 // *** ALPHA RESTORATION ***
 // Originally defined in even earlier revisions (Keen Dreams, Catacomb 3-D)
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define EXTENSION	"WL1"
 #endif
 
@@ -118,7 +118,7 @@ void	Quit (char *error);		// defined in user program
 //
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define	PORTTILESWIDE		22
 #define	PORTTILESHIGH		14
 #else

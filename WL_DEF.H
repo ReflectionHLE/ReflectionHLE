@@ -78,9 +78,9 @@
 //----------------
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define EXTRAPOINTS		10000
-#elif (GAMEVER_WOLFREV <= 19920505L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define EXTRAPOINTS		20000
 #else
 #define EXTRAPOINTS		40000
@@ -145,7 +145,7 @@
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // Earlier alternatives to these are used for screenloc and freelatch in v1.0
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 #define SCREENSIZE		(SCREENBWIDE*208)
 #define PAGE1START		0
 #define PAGE2START		(SCREENSIZE)
@@ -178,7 +178,7 @@
 enum	{
 		SPR_DEMO,
 		// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (!defined GAMEVER_NOAH3D)
 		SPR_DEATHCAM,
 #endif
 //
@@ -221,7 +221,7 @@ enum	{
 		// These ones aren't available in VSWAP.WL1, but
 		// weirdly enough appear in the statinfo array,
 		// where their offsets in VSWAP.WL1 precede the sounds
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		SPR_STAT_40,SPR_STAT_41,SPR_STAT_42,SPR_STAT_43,
 		SPR_STAT_44,SPR_STAT_45,SPR_STAT_46,SPR_STAT_47,
 #endif
@@ -352,7 +352,7 @@ enum	{
 #endif
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 //
 // mutant
 //
@@ -413,7 +413,7 @@ enum	{
 
 		SPR_OFC_SHOOT1,SPR_OFC_SHOOT2,SPR_OFC_SHOOT3,
 #endif
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 		// *** S3DNA RESTORATION ***
 		// Some sprite definitions shufflings and edits
@@ -466,7 +466,7 @@ enum	{
 		// *** ALPHA RESTORATION ***
 		// The alpha has virtually no code for Hans,
 		// and ~half the graphics (inc. duplications)
-#elif (GAMEVER_WOLFREV <= 19920312L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
 //
 // hans
 //
@@ -523,12 +523,12 @@ enum	{
 
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 		// Looks required for correct numbers, guessing this as the name
-#if (GAMEVER_WOLFREV <= 19920601L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 		SPR_HITLER_DIE8,
 #endif
 
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 //
 // giftmacher
 //
@@ -542,14 +542,14 @@ enum	{
 // Rocket, smoke and small explosion
 //
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 		SPR_ROCKET_1,SPR_ROCKET_2,SPR_ROCKET_3,SPR_ROCKET_4,
 		SPR_ROCKET_5,SPR_ROCKET_6,SPR_ROCKET_7,SPR_ROCKET_8,
 
 		SPR_SMOKE_1,SPR_SMOKE_2,SPR_SMOKE_3,SPR_SMOKE_4,
 #endif
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920601L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 		SPR_BOOM_1,SPR_BOOM_2,SPR_BOOM_3,
 #endif
 
@@ -568,7 +568,7 @@ enum	{
 
 #ifndef SPEAR
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 //
 // gretel
 //
@@ -584,10 +584,10 @@ enum	{
 		SPR_FAT_SHOOT1,SPR_FAT_SHOOT2,SPR_FAT_SHOOT3,SPR_FAT_SHOOT4,
 
 		SPR_FAT_DIE1,SPR_FAT_DIE2,SPR_FAT_DIE3,SPR_FAT_DEAD,
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 //
 // bj
 //
@@ -670,7 +670,7 @@ enum	{
 		// These ones aren't available in VSWAP.WL1, but
 		// weirdly enough appear in the statinfo array,
 		// where their offsets in VSWAP.WL1 precede the sounds
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		SPR_STAT_40,SPR_STAT_41,SPR_STAT_42,SPR_STAT_43,
 		SPR_STAT_44,SPR_STAT_45,SPR_STAT_46,SPR_STAT_47,
 #endif
@@ -759,7 +759,7 @@ typedef enum {
 	fatobj,
 	rocketobj
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	,
 	spectreobj,
 	angelobj,
@@ -790,7 +790,7 @@ typedef enum {
 	bo_chalice,
 	bo_bible,
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	bo_crown,
 #endif
 	bo_clip,
@@ -804,10 +804,10 @@ typedef enum {
 	bo_chaingun,
 	bo_food,
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	bo_fullheal
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	,
 	bo_25clip,
 	// *** S3DNA RESTORATION ***
@@ -824,7 +824,7 @@ typedef enum {
 #else
 	bo_spear
 #endif
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 #endif
 } stat_t;
 
@@ -843,11 +843,11 @@ typedef enum {
 
 // *** APOGEE + ALPHA + S3DNA VERSIONS RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define NUMENEMIES		4
-#elif (GAMEVER_WOLFREV <= 19920505L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define NUMENEMIES		13
-#elif (GAMEVER_WOLFREV <= 19920610L)
+#elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 #define NUMENEMIES		16
 #else
 #define NUMENEMIES		22
@@ -864,7 +864,7 @@ typedef enum {
 #endif
 	en_boss,
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	en_schabbs,
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -884,7 +884,7 @@ typedef enum {
 	en_gift,
 	en_fat
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	,
 	en_spectre,
 	en_angel,
@@ -894,7 +894,7 @@ typedef enum {
 	en_death
 #endif
 #endif // GAMEVER_NOAH3D
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1041,7 +1041,7 @@ typedef enum	{
 
 typedef enum	{
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	gd_baby,
 #endif
 	gd_easy,
@@ -1060,7 +1060,7 @@ typedef	struct
 	int			difficulty;
 	int			mapon;
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	long		score,nextextra;
 #else
 	long		oldscore,score,nextextra;
@@ -1087,7 +1087,7 @@ typedef	struct
 	int			attackframe,attackcount,weaponframe;
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	int			secretcount,treasurecount,killcount,
@@ -1097,11 +1097,11 @@ typedef	struct
 				secrettotal,treasuretotal,killtotal;
 	long		TimeCount;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	long		killx,killy;
 #endif
 	boolean		victoryflag;		// set during victory animations
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 } gametype;
 
 
@@ -1116,7 +1116,7 @@ typedef	enum	{
 	ex_abort,
 	ex_demodone
 	// *** SHAREWARE V1.0+V1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920601L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 	,
 	ex_secretlevel
 #endif
@@ -1135,7 +1135,7 @@ extern	boolean		MS_CheckParm (char far *string);
 
 extern	char		str[80],str2[20];
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 extern	unsigned			tedlevelnum;
 #else
 extern	int			tedlevelnum;
@@ -1163,7 +1163,7 @@ extern	int			dirangle[9];
 
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 extern	boolean         startgame,loadedgame
-#if (GAMEVER_WOLFREV > 19920610L) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 	,virtualreality
 #endif
 	;
@@ -1183,7 +1183,7 @@ extern	long	heightnumerator;
 extern	int		minheightdiv;
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern	char	configname[13];
 #endif
 
@@ -1195,7 +1195,7 @@ void		TEDDeath(void);
 void		Quit (char *error);
 void 		CalcProjection (long focal);
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void		SetViewSize (unsigned width, unsigned height);
 void		NewGame (int difficulty);
 #else
@@ -1219,7 +1219,7 @@ void		ShutdownId (void);
 
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L) && (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 extern	boolean		ingame,fizzlein,screensplit;
 // *** S3DNA RESTORATION ***
 #elif (defined GAMEVER_NOAH3D)
@@ -1233,12 +1233,12 @@ extern	gametype	gamestate;
 extern	int			doornum;
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern	char		demoname[13];
 #endif
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	long		spearx,speary;
 extern	unsigned	spearangle;
 extern	boolean		spearflag;
@@ -1257,18 +1257,18 @@ void ClearMemory (void);
 void PlayDemo (int demonumber);
 void RecordDemo (void);
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 void DrawAllPlayBorder (void);
 #endif
 void	DrawHighScores(void);
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 void DrawAllPlayBorderSides (void);
 #endif
 
 // *** ALPHA RESTORATION ***/
 // Quick hacks
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 #define	PlaySoundLocTile(s,tx,ty)	SD_PlaySound(s)
 #define	PlaySoundLocActor(s,ob)		SD_PlaySound(s)
 #else
@@ -1295,7 +1295,7 @@ extern	long		funnyticount;		// FOR FUNNY BJ FACE
 extern	exit_t		playstate;
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - There was apparently some unused variable here
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 extern	boolean unusedplayvar;
 #endif
 extern	boolean		madenoise;
@@ -1313,7 +1313,7 @@ extern	byte		spotvis[MAPSIZE][MAPSIZE];
 extern	objtype		*actorat[MAPSIZE][MAPSIZE];
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - Not sure why but looks correct
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define UPDATESIZE			((UPDATEWIDE+7)*UPDATEHIGH)
 #else
 #define UPDATESIZE			(UPDATEWIDE*UPDATEHIGH)
@@ -1386,7 +1386,7 @@ void LevelCompleted (void);
 void	CheckHighScore (long score,word other);
 void Victory (void);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void ClearSplitVWB (void);
 #endif
 // *** S3DNA RESTORATION ***
@@ -1419,7 +1419,7 @@ extern	unsigned screenloc[3];
 extern	unsigned freelatch;
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 extern	int	screenpage;
 #endif
 
@@ -1464,7 +1464,7 @@ extern	unsigned	postwidth;
 extern	int		horizwall[],vertwall[];
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern	unsigned	pwallpos;
 #endif
 
@@ -1558,7 +1558,7 @@ extern	byte		mapmasks3[4][8];
 extern	int			maxscale,maxscaleshl2;
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	boolean	insetupscaling;
 #endif
 
@@ -1579,7 +1579,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height);
 //
 // *** ALPHA RESTORATION ***
 // Need to declare and define this for recreation of memory layout
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 extern	boolean		someUnusedAgentVar;
 #endif
 extern	boolean		running;
@@ -1587,7 +1587,7 @@ extern	long		thrustspeed;
 extern	unsigned	plux,pluy;		// player coordinates scaled to unsigned
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern	int			anglefrac;
 extern	int			facecount;
 #endif
@@ -1607,7 +1607,7 @@ void	DrawTreasure (void);
 void 	DrawFace (void);
 void	DrawHealth (void);
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void	TakeDamage (int points,objtype *attacker);
 #endif
 void	HealSelf (int points);
@@ -1616,7 +1616,7 @@ void	DrawLives (void);
 void	GiveExtraMan (void);
 void	DrawScore (void);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void	GivePoints (int points);
 #else
 void	GivePoints (long points);
@@ -1656,7 +1656,7 @@ extern	byte		far areaconnect[NUMAREAS][NUMAREAS];
 extern	boolean		areabyplayer[NUMAREAS];
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern unsigned	pwallstate;
 extern unsigned	pwallpos;			// amount a pushable wall has been moved (0-63)
 extern unsigned	pwallx,pwally;
@@ -1665,7 +1665,7 @@ extern int			pwalldir;
 
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void InitDoorList (void);
 void InitStaticList (void);
 void SpawnStatic (int tilex, int tiley, int type);
@@ -1676,13 +1676,13 @@ void SpawnExit (int tilex, int tiley, boolean secret);
 void SpawnDoor (int tilex, int tiley, boolean vertical, int lock);
 void MoveDoors (void);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void MovePWalls (void);
 #endif
 void OpenDoor (int door);
 void PlaceItemType (int itemtype, int tilex, int tiley);
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void PushWall (int checkx, int checky, int dir);
 #endif
 void OperateDoor (int door);
@@ -1746,19 +1746,19 @@ extern	statetype s_hitlerchase1;
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Disabling pain1 states
 extern	statetype s_grdpain;
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	statetype s_grdpain1;
 #endif
 extern	statetype s_ofcpain;
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	statetype s_ofcpain1;
 #endif
 extern	statetype s_sspain;
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	statetype s_sspain1;
 #endif
 extern	statetype s_mutpain;
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	statetype s_mutpain1;
 #endif
 
@@ -1798,7 +1798,7 @@ void KillActor (objtype *ob);
 void	US_ControlPanel(byte);
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void SpawnDeadGuard (int tilex, int tiley);
 void SpawnBoss (int tilex, int tiley);
 void SpawnGretel (int tilex, int tiley);
@@ -1825,7 +1825,7 @@ void SpawnHitler (int tilex, int tiley);
 */
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern	char	helpfilename[],endfilename[];
 #endif
 

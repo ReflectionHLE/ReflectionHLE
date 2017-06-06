@@ -2,7 +2,7 @@
 //===========================================================================
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define NUMMAPS		30
 #define MAPPLANES	3
 #else
@@ -30,7 +30,7 @@ extern	boolean		CA_Started;
 #endif
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 extern	char		audioname[13];
 #endif
 
@@ -116,6 +116,6 @@ void CA_CacheMap (int mapnum);
 void CA_CacheMarks (void);
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void CA_CacheScreen (int chunk);
 #endif

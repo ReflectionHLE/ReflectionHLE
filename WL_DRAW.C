@@ -37,7 +37,7 @@
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // Not sure how were these values picked, but here they are
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #ifdef DEBUGWALLS
 unsigned screenloc[3]= {0,0,0};
 #else
@@ -54,7 +54,7 @@ unsigned freelatch = FREESTART;
 #endif
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 int 	screenpage;
 #endif
 
@@ -103,7 +103,7 @@ long	lastintercept;
 int		lasttilehit;
 
 // *** ALPHA RESTORATION *** - A couple of unused variables
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 int	someUnusedDrawVar1, someUnusedDrawVar2;
 #endif
 
@@ -845,7 +845,7 @@ void HitVertDoor (void)
 }
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 //==========================================================================
 
 
@@ -983,7 +983,7 @@ void HitVertPWall (void)
 	tilemap[xtile][ytile] |= 0x20;
 #endif
 }
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 //==========================================================================
 
@@ -991,8 +991,8 @@ void HitVertPWall (void)
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 // Re-enable unused EGA code, *and* restore egaFloor+egaCeiling (not in alpha)
-#if (GAMEVER_WOLFREV <= 19920505L)
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 unsigned egaFloor[] = {0,0,0,0,0,0,0,0,0,5};
 unsigned egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0d0d};
 #endif
@@ -1009,7 +1009,7 @@ unsigned egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808
 void ClearScreen (void)
 {
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
  unsigned floor=egaFloor[gamestate.episode*10+mapon],
 	  ceiling=egaCeiling[gamestate.episode*10+mapon];
 #endif
@@ -1033,7 +1033,7 @@ asm	shr	bx,4					// bl = viewwidth/16
 asm	mov	bh,BYTE PTR [viewheight]
 asm	shr	bh,1					// half height
 
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 asm	xor	ax,ax
 #else
 asm	mov	ax,[ceiling]
@@ -1050,7 +1050,7 @@ asm	jnz	toploop
 
 asm	mov	bh,BYTE PTR [viewheight]
 asm	shr	bh,1					// half height
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 asm	mov	ax,0x0808
 #else
 asm	mov	ax,[floor]
@@ -1075,7 +1075,7 @@ asm	out	dx,al
 //==========================================================================
 
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 unsigned vgaCeiling[]=
 {
 // *** S3DNA RESTORATION ***
@@ -1090,11 +1090,11 @@ unsigned vgaCeiling[]=
  0x4e4e,0x4e4e,0x4e4e,0x1d1d,0x8d8d,0x4e4e,0x1d1d,0x2d2d,0x1d1d,0x8d8d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x2d2d,0xdddd,0x1d1d,0x1d1d,//0x9898,
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
  0x8d8d,
 #else
  0x9898,
-#if (GAMEVER_WOLFREV > 19920601L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
  0x1d1d,0x9d9d,0x2d2d,0xdddd,0xdddd,0x9d9d,0x2d2d,0x4d4d,0x1d1d,0xdddd,
  0x7d7d,0x1d1d,0x2d2d,0x2d2d,0xdddd,0xd7d7,0x1d1d,0x1d1d,0x1d1d,0x2d2d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xdddd,0xdddd,0x7d7d,0xdddd,0xdddd,0xdddd
@@ -1103,13 +1103,13 @@ unsigned vgaCeiling[]=
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0xd7d7,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
  0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,0x1d1d,
 #endif
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 #else
  0x6f6f,0x4f4f,0x1d1d,0xdede,0xdfdf,0x2e2e,0x7f7f,0x9e9e,0xaeae,0x7f7f,
  0x1d1d,0xdede,0xdfdf,0xdede,0xdfdf,0xdede,0xe1e1,0xdcdc,0x2e2e,0x1d1d,0xdcdc
 #endif
 };
-#endif // GAMEVER_WOLFREV > 19920312L
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 /*
 =====================
@@ -1124,7 +1124,7 @@ void VGAClearScreen (void)
  // *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
  unsigned ceiling=vgaCeiling[gamestate.mapon];
-#elif (GAMEVER_WOLFREV > 19920312L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL920312)
  unsigned ceiling=vgaCeiling[gamestate.episode*10+mapon];
 #endif
 
@@ -1132,7 +1132,7 @@ void VGAClearScreen (void)
   // clear the screen
   //
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 asm	mov	dx,SC_INDEX+1
 asm	mov	al,15
 asm	out	dx,al
@@ -1155,7 +1155,7 @@ asm	shr	bh,1					// half height
 asm	mov	es,[screenseg]
 asm	mov	di,[bufferofs]
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 asm	mov	ax,0x1d1d
 #else
 asm	mov	ax,[ceiling]
@@ -1211,8 +1211,8 @@ int	CalcRotate (objtype *ob)
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 	// Including special cases for Wolf3D v1.0 and S3DNA
-#if (GAMEVER_WOLFREV > 19920505L) && (!defined GAMEVER_NOAH3D)
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (!defined GAMEVER_NOAH3D)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	if (ob->obclass == rocketobj)
 #else
 	if (ob->obclass == rocketobj || ob->obclass == hrocketobj)
@@ -1267,7 +1267,7 @@ typedef struct
 } visobj_t;
 
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION *** - Move back into function body
-#if (GAMEVER_WOLFREV > 19920601L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 visobj_t	vislist[MAXVISABLE],*visptr,*visstep,*farthest;
 #endif
 
@@ -1283,7 +1283,7 @@ void DrawScaleds (void)
 	objtype		*obj;
 
 // *** SHAREWARE V1.0+1.1 APOGEE RESTORATION *** - Moved back into function body from outside
-#if (GAMEVER_WOLFREV <= 19920601L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 	visobj_t	vislist[MAXVISABLE],*visptr,*visstep,*farthest;
 
 	if (nospr)
@@ -1324,7 +1324,7 @@ void DrawScaleds (void)
 #endif
 
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920601L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 		if (visptr < &vislist[MAXVISABLE])
 #else
 		if (visptr < &vislist[MAXVISABLE-1])	// don't let it overflow
@@ -1387,7 +1387,7 @@ void DrawScaleds (void)
 #endif
 
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920601L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 			if (visptr < &vislist[MAXVISABLE])
 #else
 			if (visptr < &vislist[MAXVISABLE-1])	// don't let it overflow
@@ -1473,12 +1473,12 @@ void DrawPlayerWeapon (void)
 		endtics += tics;
 	}
 	// *** ALPHA RESTORATION ***
-#elif (!defined SPEAR) && (GAMEVER_WOLFREV > 19920312L)
+#elif (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#ifndef SPEAR
 	if (gamestate.victoryflag)
 	{
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 		if (player->state == &s_deathcam && (TimeCount&32) )
 			SimpleScaleShape(viewwidth/2,SPR_DEATHCAM,viewheight+1);
 #endif
@@ -1519,7 +1519,7 @@ void CalcTics (void)
 		TimeCount = lasttimecount;		// if the game was paused a LONG time
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	if (DemoMode != demo_Off)
 	{
 		oldtimecount = lasttimecount;
@@ -1570,7 +1570,7 @@ void CalcTics (void)
 void	FixOfs (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage];
@@ -1619,7 +1619,7 @@ void WallRefresh (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - An unused function from v1.0
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 //==========================================================================
 
 int someUnusedDrawArray[] = {
@@ -1645,7 +1645,7 @@ void	SomeUnusedDrawFunc (void)
 	}
 }
 
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 //==========================================================================
 
 /*
@@ -1674,7 +1674,7 @@ asm	mov	cx,2048							// 64*64 / 2
 asm	rep stosw
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (++screenpage == 3)
 		screenpage = 0;
 	bufferofs = screenloc[screenpage]+screenofs;
@@ -1722,7 +1722,7 @@ asm	rep stosw
 #endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920610L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		lasttimecount = TimeCount;
 #else
 		lasttimecount = TimeCount = 0;		// don't make a big tic count
@@ -1731,7 +1731,7 @@ asm	rep stosw
 	}
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	displayofs = bufferofs-screenofs;
 #else
 	bufferofs -= screenofs;
@@ -1747,7 +1747,7 @@ asm	rep stosw
 	asm	mov	al,ch
 	asm	out	dx,al   	// set the high byte
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920505L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	asm	dec	dx
 	asm	mov	al,0dh
 	asm	out	dx,al

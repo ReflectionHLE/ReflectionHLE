@@ -521,7 +521,7 @@ tryagain:
 
 extern char configname[];
 // *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > 19920610L)
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	boolean	insetupscaling;
 extern	int	viewsize;
 boolean SetViewSize (unsigned width, unsigned height);
@@ -540,9 +540,9 @@ mmblocktype	far *savedmmnew;
 		}
 
 //		unlink(configname);
-#elif (GAMEVER_WOLFREV > 19920312L)
+#elif (GAMEVER_WOLFREV > GV_WR_WL920312)
 		unlink(configname);
-#endif // GAMEVER_WOLFREV > 19920610L
+#endif // GAMEVER_WOLFREV > GV_WR_WL6AP11
 		Quit ("MM_GetPtr: Out of memory!");
 	}
 	else
@@ -791,7 +791,7 @@ void MM_ShowMemory (void)
 	char    scratch[80],str[10];
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	VW_SetDefaultColors();
 	VW_SetLineWidth(40);
 	temp = bufferofs;
@@ -816,7 +816,7 @@ void MM_ShowMemory (void)
 		if (scan->start<=end)
 			Quit ("MM_ShowMemory: Memory block order currupted!");
 		// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		end = scan->start+scan->length-1;
 		VW_Hlin(scan->start,(unsigned)end,0,color);
 		VW_Plot(scan->start,0,15);
@@ -836,7 +836,7 @@ void MM_ShowMemory (void)
 	}
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= 19920312L)
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	IN_Ack();
 	VW_SetLineWidth(64);
 #else
@@ -848,7 +848,7 @@ void MM_ShowMemory (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** (but looks unused in ALL versions)
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 //==========================================================================
 
 /*
@@ -912,7 +912,7 @@ void MM_DumpData (void)
 	fclose (dumpfile);
 	Quit ("MMDUMP.TXT created.");
 }
-#endif // GAMEVER_WOLFREV <= 19920505L
+#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
 //==========================================================================
 
