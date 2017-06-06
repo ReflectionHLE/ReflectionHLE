@@ -230,7 +230,7 @@ not only the wrong version of "1.0" is shown in the signon screen for
 the early v1.4 EXE, but the project files are significantly more similar.
 In fact, there are good chances the exact same project file
 was originally used with no actual change. This refers
-to properties like the order of linkage of objects.
+to properties like the order of linkage of objects.  
 - For an earlier revision of this codebase, a custom tool named STRIPBSS
 (or any comparable tool) was required in order to remove the BSS sections from
 certain executables (basically a bunch of zeros appended to each EXE file's
@@ -246,13 +246,13 @@ while appropriately increasing the amount of additional memory
 the program needs as defined in the EXE's header.  
 - SODFG14A and SODFG14B are essentially the exact same revision.
 The only real differences are the changes in SIGNON.OBJ
-and the Borland C++ Source Debugging toggle.
+and the Borland C++ Source Debugging toggle.  
 - WL6GT14A was probably made after WJ6IM14. In terms of project files, though,
 the only real differences are SIGNON.OBJ, as well as the definition of JAPAN
 JAPAN in one project and GOODTIMES in the other one. There are also different
-GAMEVER_WOLFREV values in use, although it wasn't necessary, technically.
+GAMEVER_WOLFREV values in use, although it wasn't necessary, technically.  
 - WL920312.PRJ is quite close to WL1AP10.PRJ. The early build lacks WL_INTER.C.
-Furthermore, the signon *and* palette objects' data differ.
+Furthermore, the signon *and* palette objects' data differ.  
 - There may be at least one other difference at the least. Obviously, source
 code files other than VERSION.H are edited as required. This includes the
 addition of the new header file GFXV_APO.H for the Apogee builds, with
@@ -263,7 +263,7 @@ definitions from ECWolf and debugging information.
 Building each EXE
 =================
 
-Required tools:
+Required tools:  
 - Borland C++ 3.0 (and no other version), for all pre-v1.4 releases of
 Wolf3D and SOD.  
 - Borland C++ 3.1 (exactly this one) for the v1.4 releases of Wolf3D and SOD,
@@ -272,7 +272,7 @@ as well as S3DNA.
 - LZEXE 0.91e (English version, NOT 0.91) for the Activision EXEs.  
 - (Optional) UNLZEXE 0.8 for the SOD v1.0 and early v1.4 EXEs.
 
-Notes before trying to build anything:
+Notes before trying to build anything:  
 - This may depend on luck. Maybe you'll get a bit different EXE.  
 - In order to prepare for the construction of an EXE (including the removal
 of older object files) and then build the EXE (in a possibly-initial form),
