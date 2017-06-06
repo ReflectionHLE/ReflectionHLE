@@ -62,12 +62,12 @@
 #define GAMEVER_NOAH3D
 #endif
 
-#if (GAMEVER_WOLFREV > 19920312L)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 #define ARTSEXTERN
 #define DEMOSEXTERN
 #endif
 
-#if (GAMEVER_WOLFREV > 19920505L)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 #define CARMACIZED
 #endif
 
@@ -77,7 +77,7 @@
 /*** Additional convenience macros ***/
 
 // This doesn't cover the SOD case of the debug keys, just Wolf3D v1.0/earlier and S3DNA vs the later releases
-#if (GAMEVER_WOLFREV <= 19920505)
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 
 #define GAMEVER_WOLF3D_DEBUGPARM "next"
 #define GAMEVER_COND_FARPTR
