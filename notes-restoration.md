@@ -75,6 +75,10 @@ Check out VERSION.H (and VERSION.EQU). Basically, each project
 shall define an EXEDEF macro for the specific project. For instance,
 WL6AP14.PRJ is configured to define GAMEVER_EXEDEF_WL1AP14.
 
+In addition, for the C sources only (thus excluding the ASM sources),
+there's a separate GAMEVER_EXEDEF macro defined.
+For instance, in WL1AP14.PRJ, GAMEVER_EXEDEF is defined to WL1AP14.
+
 Other than VERSION.H and VERSION.EQU, the GAMEVER_EXEDEF macros are
 not used *anywhere*. Instead, other macros are used. Some of them
 are old macros added to control specific features, like GOODTIMES,
@@ -86,8 +90,8 @@ this game.
 
 GAMEVER_WOLFREV is defined in all projects, with different values.
 It is intended to represent a revision of development of
-the Wolfenstein 3D codebase. Usually, it is based on some
-*guessed* date (e.g., an original modification date of the EXE),
+the Wolfenstein 3D codebase. Usually, this revision value is based on
+some *guessed* date (e.g., an original modification date of the EXE),
 but it does not have to be the case.
 
 For instance, N3DWT10 uses a WOLFREV in-between the revisions
@@ -101,14 +105,15 @@ less confusing.
 it's commonly called just "alpha" or "beta", GAMEVER_WOLFREV
 gives us a more explicit description.
 
-Is looking for "#if (GAMEVER_WOLFREV <= abcdefghL)" (or >) sufficient?
+Is looking for "#if (GAMEVER_WOLFREV <= GV_WR_...)" (or >) sufficient?
 ----------------------------------------------------------------------
 
 Nope!
 
-For instance, for a project with GAMEVER_WOLFREV == 19920921L,
-the condition GAMEVER_WOLFREV <= 19920921L holds. However, so
-does GAMEVER_WOLFREV <= 19930304L, and also GAMEVER_WOLFREV > 19920505L.
+For instance, for a project with GAMEVER_WOLFREV == GV_WR_SDMFG10,
+the condition GAMEVER_WOLFREV <= GV_WR_SDMFG10 holds.
+However, so does GAMEVER_WOLFREV <= GV_WR_WJ6IM14,
+and also GAMEVER_WOLFREV > GV_WR_WL1AP10.
 Furthermore, PML_StartupXMS (ID_PM.C) has two mentions of a bug fix
 dating 10/8/92, for which the GAMEVER_WOLFREV test was chosen
 appropriately. The exact range of WOLFREV values from this test
