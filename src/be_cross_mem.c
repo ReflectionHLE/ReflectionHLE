@@ -30,8 +30,9 @@
 // Based on tests with Catacomb Abyss (even if not precise), targetting...
 // - 3408 bytes returned by coreleft (before manually removing/ignoring a gap between near and far memory in the game's memory manager).
 // - 448592 returned by farcoreleft.
-// - 0 EMS bytes.
-// - 65520 XMS bytes.
+//
+// Previously, there were also 0 EMS bytes and 65520 XMS bytes ranges in use, but
+// these were disabled in be_cross_mem.c (they don't have to be enabled, technically).
 
 // The very first "segment" in the emulated space
 #define EMULATED_FIRST_SEG 0
@@ -39,19 +40,15 @@
 #define EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS 103
 // Different portions of the space being emulated - start points
 #define EMULATED_NEAR_SEG (EMULATED_FIRST_SEG+EMULATED_FIRST_PARAGRAPHS)
-#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS-+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS)
-#define EMULATED_EMS_SEG (EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS)
-#define EMULATED_XMS_SEG (EMULATED_EMS_SEG+EMULATED_EMS_PARAGRAPHS)
+#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS)
 // Lengths in paragraphs of the different sections
 #define EMULATED_FIRST_PARAGRAPHS 4096
 #define EMULATED_NEAR_PARAGRAPHS 213
 #define EMULATED_FAR_PARAGRAPHS 28037
-#define EMULATED_EMS_PARAGRAPHS 0 // Yes!
-#define EMULATED_XMS_PARAGRAPHS 4095
 // Used to obtain a pointer to some location in mmEmulatedMemSpace
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
-/*static*/ uint8_t __attribute__ ((aligned (16))) g_be_emulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS+EMULATED_EMS_PARAGRAPHS+EMULATED_XMS_PARAGRAPHS)];
+/*static*/ uint8_t __attribute__ ((aligned (16))) g_be_emulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS)];
 
 /*** Memory blocks definitions ***/
 
