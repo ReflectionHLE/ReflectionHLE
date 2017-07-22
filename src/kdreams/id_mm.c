@@ -365,11 +365,12 @@ void MM_Startup (void)
 	mmrover = mmnew;
 
 
+	// REFKEEN - Let's disable XMS and EMS (which seem to be unused anyway)
+	mminfo.XMSmem = mminfo.EMSmem = 0;
+#if 0
 //
 // detect EMS and allocate 64K at page frame
 //
-	mminfo.EMSmem = 0x10000; // Looks unused
-#if 0
 	if (MML_CheckForEMS())
 	{
 		MM_MapEMS();					// map in used pages
@@ -379,13 +380,10 @@ void MM_Startup (void)
 	{
 		mminfo.EMSmem = 0;
 	}
-#endif
 
 //
 // detect XMS and get upper memory blocks
 //
-	mminfo.XMSmem = 0; // Unused
-#if 0
 	if (MML_CheckForXMS())
 	{
 

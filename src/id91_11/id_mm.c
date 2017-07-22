@@ -677,6 +677,9 @@ void MM_Startup (void)
 #endif
 
 
+	// REFKEEN - Let's disable XMS and EMS for now
+	mminfo.XMSmem = mminfo.EMSmem = 0;
+#if 0
 //
 // detect EMS and allocate up to 64K at page frame
 //
@@ -687,12 +690,6 @@ void MM_Startup (void)
 			goto emsskip;				// param NOEMS
 	}
 
-	seglength = EMULATED_EMS_PARAGRAPHS;
-	segstart = EMULATED_EMS_SEG;
-	length = seglength*16;
-	MML_UseSpace (segstart,seglength);
-	mminfo.EMSmem = length;
-#if 0
 	if (MML_CheckForEMS())
 	{
 		MML_SetupEMS();					// allocate space
@@ -700,7 +697,6 @@ void MM_Startup (void)
 		MM_MapEMS();					// map in used pages
 		mminfo.EMSmem = EMSpagesmapped*0x4000l;
 	}
-#endif
 
 //
 // detect XMS and get upper memory blocks
@@ -713,12 +709,6 @@ emsskip:
 			goto xmsskip;				// param NOXMS
 	}
 
-	seglength = EMULATED_XMS_PARAGRAPHS;
-	segstart = EMULATED_XMS_SEG;
-	length = seglength*16;
-	MML_UseSpace (segstart,seglength);
-	mminfo.XMSmem = length;
-#if 0
 	if (MML_CheckForXMS())
 		MML_SetupXMS();					// allocate as many UMBs as possible
 #endif
