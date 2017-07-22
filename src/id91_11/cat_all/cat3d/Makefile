@@ -38,6 +38,7 @@ IDOBJECTS=$(IDOBJ)/id_ca.o \
 BEOBJECTS=$(BEOBJ)/actual_main.o \
           $(BEOBJ)/be_cross.o \
           $(BEOBJ)/be_cross_fs.o \
+          $(BEOBJ)/be_cross_mem.o \
           $(BEOBJ)/be_cross_doszeroseg.o \
           $(BEOBJ)/be_launcher.o \
           $(BEOBJ)/be_st_sdl.o \

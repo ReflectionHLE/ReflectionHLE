@@ -337,6 +337,54 @@ inline int32_t BE_Mem_FarCoreLeft(void)
 	return 500000;
 }
 
+/*** Memory management functions - used as alternatives to     ***/
+/*** Borland C++ functions/macros in 16-bit real-mode codebase ***/
+
+void *BE_Cross_Bmalloc(uint16_t size);
+void *BE_Cross_Bfarmalloc(uint32_t size);
+void BE_Cross_Bfree(void *ptr);
+void BE_Cross_Bfarfree(void *ptr);
+
+inline uint16_t BE_Cross_Bcoreleft(void)
+{
+	extern uint16_t g_nearBytesLeft;
+	return g_nearBytesLeft;
+}
+
+inline uint32_t BE_Cross_Bfarcoreleft(void)
+{
+	extern uint32_t g_farBytesLeft;
+	return g_farBytesLeft;
+}
+
+// Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
+//
+// Somewhat similar to FP_SEG, *but* returns the segment of
+// the *normalized* pointer's form (where the offset is < 16)
+inline uint16_t BE_Cross_GetPtrNormalizedSeg(void *ptr)
+{
+	extern uint8_t g_be_emulatedMemSpace[];
+	return ((uint8_t *)ptr-g_be_emulatedMemSpace)/16;
+}
+
+// Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
+//
+// Somewhat similar to FP_OFF, *but* returns the offset of
+// the *normalized* pointer's form (which is always < 16)
+inline uint16_t BE_Cross_GetPtrNormalizedOff(void *ptr)
+{
+	extern uint8_t g_be_emulatedMemSpace[];
+	return ((uint8_t *)ptr-g_be_emulatedMemSpace)%16;
+}
+
+// Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
+// A kind of a MK_FP replacement.
+inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
+{
+	extern uint8_t g_be_emulatedMemSpace[];
+	return g_be_emulatedMemSpace + seg*16 + off;
+}
+
 // Use this in cases an original DOS program attempts to access contents of
 // segment no. 0 for some reason
 extern uint8_t g_be_cross_dosZeroSeg[];
