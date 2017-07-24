@@ -119,9 +119,6 @@ uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void)
 }
 #endif
 
-// C99
-int32_t BE_Mem_FarCoreLeft(void);
-
 
 void BE_Cross_Wrapped_Add(uint8_t *segPtr, uint8_t **offInSegPtrPtr, uint16_t count)
 {

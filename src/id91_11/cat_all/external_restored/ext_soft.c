@@ -154,7 +154,7 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		DstLen = CompHeader.OrginalLen;
 
 		// REFKEEN - Looks like this is an unsigned comparison in original EXE
-		if (((id0_unsigned_long_t)BE_Mem_FarCoreLeft() < 2*SrcLen) && (CompHeader.CompType))
+		if (((id0_unsigned_long_t)BE_Cross_Bfarcoreleft() < 2*SrcLen) && (CompHeader.CompType))
 		{
 			//if (!InitBufferedIO(handle,&lzwBIO))
 			//	TrashProg("No memory for buffered I/O.");

@@ -331,12 +331,6 @@ int16_t BE_Cross_Brandom(int16_t num);
 // (Internally it uses localtime, which isn't thread-safe on Linux.)
 void BE_Cross_GetLocalDate_UNSAFE(int *y, int *m, int *d);
 
-// Hack for Catacomb Abyss' INTRO and LOADSCN
-inline int32_t BE_Mem_FarCoreLeft(void)
-{
-	return 500000;
-}
-
 /*** Memory management functions - used as alternatives to     ***/
 /*** Borland C++ functions/macros in 16-bit real-mode codebase ***/
 
