@@ -110,7 +110,7 @@ id0_boolean_t LoadFile (const id0_char_t *filename, memptr *ptr)
 	size = BE_Cross_FileLengthFromHandle (handle);
 	if (!(*ptr))
 	{
-		if (!(*ptr = malloc/*farmalloc*/(size)))
+		if (!(*ptr = BE_Cross_Bfarmalloc(size)))
 			TrashProg("Can't get memory!");
 	}
 	if (!FarRead (handle,(id0_byte_t *)*ptr,size))

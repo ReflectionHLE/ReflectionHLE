@@ -2896,7 +2896,7 @@ id0_unsigned_char_t id0_huge *GE_DecompressToRAM(id0_char_t *SourceFile, id0_uns
 
 	fread((void *)&DstLen,1,4,infile);
 
-	if (!(DataPtr = farmalloc(DstLen)))
+	if (!(DataPtr = BE_Cross_Bfarmalloc(DstLen)))
 		 return(0);
 
 	 fclose(infile);

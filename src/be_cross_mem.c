@@ -19,6 +19,7 @@
 
 #include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
 
+#include "be_cross.h" // For some inline functions (C99)
 #include "be_st.h" // For BE_ST_ExitWithErrorMsg
 
 // A static memory buffer used for our allocations, made out of 16-bytes
@@ -69,7 +70,37 @@ uint16_t BE_Cross_Bcoreleft(void);
 uint32_t BE_Cross_Bfarcoreleft(void);
 uint16_t BE_Cross_GetPtrNormalizedSeg(void *ptr);
 uint16_t BE_Cross_GetPtrNormalizedOff(void *ptr);
+void *BE_Cross_BGetPtrFromSeg(uint16_t seg);
 void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off);
+
+// FIXME - Maybe not the most efficient, but still working
+static void BE_Cross_RefreshNearBytesLeft(void)
+{
+	const uint8_t *prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_NEAR_SEG;
+	BE_MemoryBlock_T *block = g_nearBlocks;
+	g_nearBytesLeft = 0;
+	for (int i = 0; i < g_numOfNearBlocks; ++i, ++block)
+	{
+		g_nearBytesLeft = BE_Cross_TypedMax(int, g_nearBytesLeft, block->ptr - prevBlockEnd);
+		prevBlockEnd = block->ptr + block->len;
+	}
+	const uint8_t * const endOfNearMem = g_be_emulatedMemSpace + 16*(EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS);
+	g_nearBytesLeft = BE_Cross_TypedMax(int, g_nearBytesLeft, endOfNearMem - prevBlockEnd);
+}
+
+static void BE_Cross_RefreshFarBytesLeft(void)
+{
+	const uint8_t *prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_FAR_SEG;
+	BE_MemoryBlock_T *block = g_farBlocks;
+	g_farBytesLeft = 0;
+	for (int i = 0; i < g_numOfFarBlocks; ++i, ++block)
+	{
+		g_farBytesLeft = BE_Cross_TypedMax(int, g_farBytesLeft, block->ptr - prevBlockEnd);
+		prevBlockEnd = block->ptr + block->len;
+	}
+	const uint8_t * const endOfFarMem = g_be_emulatedMemSpace + 16*(EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS);
+	g_farBytesLeft = BE_Cross_TypedMax(int, g_farBytesLeft, endOfFarMem - prevBlockEnd);
+}
 
 void *BE_Cross_Bmalloc(uint16_t size)
 {
@@ -89,14 +120,14 @@ void *BE_Cross_Bmalloc(uint16_t size)
 		prevBlockEnd = block->ptr + block->len;
 	}
 
-	uint8_t *endOfNearMem = g_be_emulatedMemSpace + 16*(EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS);
+	uint8_t * const endOfNearMem = g_be_emulatedMemSpace + 16*(EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS);
 	if (endOfNearMem - prevBlockEnd >= size) // Add a new block at the end
 	{
 addnewblock:
-		g_nearBytesLeft -= size;
 		++g_numOfNearBlocks;
 		block->ptr = prevBlockEnd;
 		block->len = size;
+		BE_Cross_RefreshNearBytesLeft();
 		return block->ptr;
 	}
 
@@ -125,14 +156,14 @@ void *BE_Cross_Bfarmalloc(uint32_t size)
 		prevBlockEnd = block->ptr + block->len;
 	}
 
-	uint8_t *endOfFarMem = g_be_emulatedMemSpace + 16*(EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS);
+	uint8_t * const endOfFarMem = g_be_emulatedMemSpace + 16*(EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS);
 	if (endOfFarMem - prevBlockEnd >= size) // Add a new block at the end
 	{
 addnewblock:
-		g_farBytesLeft -= size;
 		++g_numOfFarBlocks;
 		block->ptr = prevBlockEnd;
 		block->len = size;
+		BE_Cross_RefreshFarBytesLeft();
 		return block->ptr;
 	}
 
@@ -152,9 +183,9 @@ void BE_Cross_Bfree(void *ptr)
 	for (int i = 0; i < g_numOfNearBlocks; ++i, ++block)
 		if (block->ptr == ptr)
 		{
-			g_nearBytesLeft += block->len;
 			--g_numOfNearBlocks;
-			memmove(block, block+1, (g_numOfNearBlocks-(block-g_nearBlocks)*sizeof(*block)));
+			memmove(block, block+1, (g_numOfNearBlocks-(block-g_nearBlocks))*sizeof(*block));
+			BE_Cross_RefreshNearBytesLeft();
 			return;
 		}
 
@@ -170,9 +201,9 @@ void BE_Cross_Bfarfree(void *ptr)
 	for (int i = 0; i < g_numOfFarBlocks; ++i, ++block)
 		if (block->ptr == ptr)
 		{
-			g_farBytesLeft += block->len;
 			--g_numOfFarBlocks;
-			memmove(block, block+1, (g_numOfFarBlocks-(block-g_farBlocks)*sizeof(*block)));
+			memmove(block, block+1, (g_numOfFarBlocks-(block-g_farBlocks))*sizeof(*block));
+			BE_Cross_RefreshFarBytesLeft();
 			return;
 		}
 

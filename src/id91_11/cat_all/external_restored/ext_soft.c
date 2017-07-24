@@ -113,7 +113,7 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		BE_Cross_readInt32LE(handle, &CompHeader.OrginalLen);
 		//read(handle,(void *)&CompHeader.OrginalLen,4);
 		CompHeader.CompType = ct_LZW;
-		*DstPtr = malloc/*farmalloc*/(CompHeader.OrginalLen);
+		*DstPtr = BE_Cross_Bfarmalloc(CompHeader.OrginalLen);
 		if (!*DstPtr)
 			return(0);
 		offset = 8;
@@ -137,7 +137,7 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		CompHeader.CompressLen = BE_Cross_Swap32LE(CompHeader.CompressLen);
 #endif
 		offset = 14;
-		*DstPtr = malloc/*farmalloc*/(CompHeader.OrginalLen);
+		*DstPtr = BE_Cross_Bfarmalloc(CompHeader.OrginalLen);
 		if (!*DstPtr)
 			return(0);
 	}
@@ -206,7 +206,7 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 					TrashProg("BLoad() - Unrecognized/Supported compression");
 				break;
 			}
-			free/*farfree*/(SrcPtr);
+			BE_Cross_Bfarfree(SrcPtr);
 			// REFKEEN - File handle already closed
 			return(DstLen);
 		}
@@ -319,7 +319,7 @@ id0_int_t ext_LoadShape(const id0_char_t *Filename, struct Shape *SHP)
 			ptr += 4;
 			//SwapLong((id0_long_t id0_far *)&size);
 			SHP->BPR = (SHP->bmHdr.w+7) >> 3;
-			SHP->Data = malloc/*farmalloc*/(size);
+			SHP->Data = BE_Cross_Bfarmalloc(size);
 			if (!SHP->Data)
 				goto EXIT_FUNC;
 			//movedata(FP_SEG(ptr),FP_OFF(ptr),FP_SEG(SHP->Data),FP_OFF(SHP->Data),size);
@@ -340,7 +340,7 @@ EXIT_FUNC:;
 	if (IFFfile)
 	{
 //		segptr = (memptr)FP_SEG(IFFfile);
-		free/*farfree*/(IFFfile);
+		BE_Cross_Bfarfree(IFFfile);
 	}
 
 	return (RT_CODE);
@@ -355,7 +355,7 @@ EXIT_FUNC:;
 void ext_FreeShape(struct Shape *shape)
 {
 	if (shape->Data)
-		free/*farfree*/(shape->Data);
+		BE_Cross_Bfarfree(shape->Data);
 }
 
 // (REFKEEN) Functionality equivalant to SwapLong, SwapWord from CATABYSS.EXE's gelib

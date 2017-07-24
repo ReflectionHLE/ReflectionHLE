@@ -378,6 +378,14 @@ inline uint16_t BE_Cross_GetPtrNormalizedOff(void *ptr)
 }
 
 // Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
+// Converts segment to given pointer (like MK_FP(seg, 0))
+inline void *BE_Cross_BGetPtrFromSeg(uint16_t seg)
+{
+	extern uint8_t g_be_emulatedMemSpace[];
+	return g_be_emulatedMemSpace + seg*16;
+}
+
+// Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
 // A kind of a MK_FP replacement.
 inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
 {

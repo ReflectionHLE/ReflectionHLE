@@ -135,8 +135,8 @@ void		(* aftersort) (void);
 
 id0_boolean_t		mmstarted;
 
-//void id0_far	*farheap;
-//void		*nearheap;
+void id0_far	*farheap;
+void		*nearheap;
 
 mmblocktype	id0_far mmblocks[MAXBLOCKS]
 			,id0_far *mmhead,id0_far *mmfree,id0_far *mmrover,id0_far *mmnew;
@@ -148,36 +148,6 @@ id0_boolean_t		bombonerror;
 //void		(* XMSaddr) (void);		// far pointer to XMS driver
 
 //id0_unsigned_t	numUMBs,UMBbase[MAXUMBS];
-
-// A static memory buffer used for our allocations, made out of 16-bytes
-// long paragraphs (each of them beginning with some emulated "segment")
-//
-// NOTE: Main mem (near+far) should consist of 335*1024 bytes
-// (for Keen Dreams with EGA graphics)
-//
-// Based on tests with Catacomb Abyss (even if not precise), targetting...
-// - 3408 bytes returned by coreleft (before removing SAVENEARHEAP and up to 15 more bytes).
-// - 448592 returned by farcoreleft.
-// - 0 EMS bytes.
-// - 65520 XMS bytes.
-
-// The very first "segment" in the emulated space
-#define EMULATED_FIRST_SEG 0
-// Different portions of the space being emulated - start points
-#define EMULATED_NEAR_SEG (EMULATED_FIRST_SEG+EMULATED_FIRST_PARAGRAPHS)
-#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS)
-#define EMULATED_EMS_SEG (EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS)
-#define EMULATED_XMS_SEG (EMULATED_EMS_SEG+EMULATED_EMS_PARAGRAPHS)
-// Lengths in paragraphs of the different sections
-#define EMULATED_FIRST_PARAGRAPHS 4096
-#define EMULATED_NEAR_PARAGRAPHS 213
-#define EMULATED_FAR_PARAGRAPHS 28037
-#define EMULATED_EMS_PARAGRAPHS 0 // Yes!
-#define EMULATED_XMS_PARAGRAPHS 4095
-// Used to obtain a pointer to some location in mmEmulatedMemSpace
-#define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
-
-static id0_byte_t __attribute__ ((aligned (16))) mmEmulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS+EMULATED_EMS_PARAGRAPHS+EMULATED_XMS_PARAGRAPHS)];
 
 //==========================================================================
 
@@ -599,13 +569,14 @@ void MML_ClearBlock (void)
 ===================
 */
 
-static const id0_char_t *ParmStrings[] = {"noems","noxms",""};
+// REFKEEN - Let's disable XMS and EMS for now
+//static const id0_char_t *ParmStrings[] = {"noems","noxms",""};
 
 void MM_Startup (void)
 {
 	id0_int_t i;
 	id0_unsigned_long_t length;
-	//void id0_far 	*start;
+	void id0_far 	*start;
 	id0_unsigned_t 	segstart,seglength/*,endfree*/;
 
 	if (mmstarted)
@@ -638,43 +609,41 @@ void MM_Startup (void)
 //
 // get all available near conventional memory segments
 //
-	length = EMULATED_NEAR_PARAGRAPHS*16 - SAVENEARHEAP;
-	seglength = length / 16;			// now in paragraphs
-	segstart = EMULATED_NEAR_SEG;
-	MML_UseSpace (segstart,seglength);
-	mminfo.nearheap = length;
-#if 0
-	length=coreleft();
-	start = (void id0_far *)(nearheap = malloc(length));
+	length=BE_Cross_Bcoreleft();
+	start = (void id0_far *)(nearheap = BE_Cross_Bmalloc(length));
 
+	length -= 16-BE_Cross_GetPtrNormalizedOff(start); // REFKEEN - Offset is NORMALIZED, thus < 16
+	length -= SAVENEARHEAP;
+	seglength = length / 16;			// now in paragraphs
+	segstart = BE_Cross_GetPtrNormalizedSeg(start)+(BE_Cross_GetPtrNormalizedOff(start)+15)/16;
+#if 0
 	length -= 16-(FP_OFF(start)&15);
 	length -= SAVENEARHEAP;
 	seglength = length / 16;			// now in paragraphs
 	segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;
+#endif
 	MML_UseSpace (segstart,seglength);
 	mminfo.nearheap = length;
-#endif
 
 //
 // get all available far conventional memory segments
 //
-	length = EMULATED_FAR_PARAGRAPHS*16 - SAVEFARHEAP;
+	length=BE_Cross_Bfarcoreleft();
+	start = farheap = BE_Cross_Bfarmalloc(length);
+
+	length -= 16-BE_Cross_GetPtrNormalizedOff(start); // REFKEEN - Offset is NORMALIZED, thus < 16
+	length -= SAVEFARHEAP;
 	seglength = length / 16;			// now in paragraphs
-	segstart = EMULATED_FAR_SEG;
-	MML_UseSpace (segstart,seglength);
-	mminfo.farheap = length;
-	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
+	segstart = BE_Cross_GetPtrNormalizedSeg(start)+(BE_Cross_GetPtrNormalizedOff(start)+15)/16;
 #if 0
-	length=farcoreleft();
-	start = farheap = farmalloc(length);
 	length -= 16-(FP_OFF(start)&15);
 	length -= SAVEFARHEAP;
 	seglength = length / 16;			// now in paragraphs
 	segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;
+#endif
 	MML_UseSpace (segstart,seglength);
 	mminfo.farheap = length;
 	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
-#endif
 
 
 	// REFKEEN - Let's disable XMS and EMS for now
@@ -711,12 +680,12 @@ emsskip:
 
 	if (MML_CheckForXMS())
 		MML_SetupXMS();					// allocate as many UMBs as possible
-#endif
 
 //
 // allocate the misc buffer
 //
 xmsskip:
+#endif
 	mmrover = mmhead;		// start looking for space after low block
 
 	MM_GetPtr (&bufferseg,BUFFERSIZE);
@@ -736,12 +705,13 @@ xmsskip:
 
 void MM_Shutdown (void)
 {
-#if 0
   if (!mmstarted)
 	return;
 
-  farfree (farheap);
-  free (nearheap);
+  BE_Cross_Bfarfree (farheap);
+  BE_Cross_Bfree (nearheap);
+  // REFKEEN - Don't call these
+#if 0
   MML_ShutdownEMS ();
   MML_ShutdownXMS ();
 #endif
@@ -816,7 +786,7 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 				purge = lastscan->next;
 				lastscan->next = mmnew;
 				mmnew->start /*= *(id0_unsigned_t *)baseptr*/ = startseg;
-				*baseptr = EMULATED_SEG_TO_PTR(startseg);
+				*baseptr = BE_Cross_BGetPtrFromSeg(startseg);
 				mmnew->next = scan;
 				while ( purge != scan)
 				{	// free the purgable block
@@ -1049,18 +1019,18 @@ void MM_SortMem (void)
 					dest = start;
 					while (length > 0xf00)
 					{
-						memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), 0xf00*16);
+						memmove(BE_Cross_BGetPtrFromSeg(dest), BE_Cross_BGetPtrFromSeg(source), 0xf00*16);
 						//movedata(source,0,dest,0,0xf00*16);
 						length -= 0xf00;
 						source += 0xf00;
 						dest += 0xf00;
 					}
-					memmove(EMULATED_SEG_TO_PTR(dest), EMULATED_SEG_TO_PTR(source), length*16);
+					memmove(BE_Cross_BGetPtrFromSeg(dest), BE_Cross_BGetPtrFromSeg(source), length*16);
 					//movedata(source,0,dest,0,length*16);
 
 					scan->start = start;
 					//*(id0_unsigned_t *)scan->useptr = start;
-					*(scan->useptr) = EMULATED_SEG_TO_PTR(start);
+					*(scan->useptr) = BE_Cross_BGetPtrFromSeg(start);
 				}
 				start = scan->start + scan->length;
 			}
