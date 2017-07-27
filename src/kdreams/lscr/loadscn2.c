@@ -520,21 +520,21 @@ int loadscn2_main(int argc, const char **argv)
 	if (BE_Cross_strcasecmp(argv[1], "/VER") == 0)
 	{
 		BE_ST_clrscr();
-		printf("\nG.E. Load Text Screen.\n");
-		printf("Copyright 1992 Softdisk Publishing\n");
-		printf("Version Number %s\n", VERSION_NUM);
+		BE_ST_printf("\nG.E. Load Text Screen.\n");
+		BE_ST_printf("Copyright 1992 Softdisk Publishing\n");
+		BE_ST_printf("Version Number %s\n", VERSION_NUM);
 #ifdef MESSAGE
-		printf("Note : %s\n", MESSAGE);
+		BE_ST_printf("Note : %s\n", MESSAGE);
 #endif
 		return(0);
 	}
 
 	if ((argc < 2) || (argc > 3))
 	{
-		printf("\nG.E. Load Text Screen.\n");
-		printf("Copyright 1992 Softdisk Publishing\n");
-		printf("by Nolan Martin and Jim Row\n");
-		printf("usage : LOADSCN libname Filename\n");
+		BE_ST_printf("\nG.E. Load Text Screen.\n");
+		BE_ST_printf("Copyright 1992 Softdisk Publishing\n");
+		BE_ST_printf("by Nolan Martin and Jim Row\n");
+		BE_ST_printf("usage : LOADSCN libname Filename\n");
 		return(1);
 		}
 
