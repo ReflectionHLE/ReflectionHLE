@@ -39,19 +39,20 @@
 #define MAX_GAMELIST_NAMES 20
 #define FNAME_LEN				9
 
-// REFKEEN (DIFFERENCE FROM VANILLA CAT) - Share these wtih game EXE
+// REFKEEN (DIFFERENCE FROM VANILLA CAT) - Share these with game EXE
 //id0_unsigned_t ylookup[VIRTUALHEIGHT];
 //id0_unsigned_t displayofs;
-
-// (REFKEEN) HACK (FIXME?) Conditionally pick the correct TrashProg function
 
 void TrashProg (const id0_char_t *OutMsg, ...)
 {
 	va_list ap;
 	va_start(ap, OutMsg);
 
+	// REFKEEN - Pick behaviors based on version of Catacomb Abyss
+	// *and* (sub)program actually being run (INTRO vs LOADSCN)
 #ifdef REFKEEN_VER_CATABYSS
-	if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && strcmp(id0_argv[0], "INTRO.EXE"))
+	extern void id0_loadscn_exe_main (void);
+	if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && (be_lastSetMainFuncPtr == id0_loadscn_exe_main))
 	{
 		void loadscn_TrashProg (const id0_char_t *OutMsg, ...);
 		loadscn_TrashProg(OutMsg, ap);

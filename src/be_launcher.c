@@ -915,8 +915,7 @@ static void BEL_Launcher_DoLaunchGame(int gameVer)
 	memcpy(argsCopy, g_refKeenCfg.launcherExeArgs, sizeof(argsCopy));
 	char *argv[sizeof(argsCopy)/2+1];
 
-	static char someEXEName[] = "proxy";
-	argv[argc++] = someEXEName;
+	argv[argc++] = NULL; // Currently unused
 
 	char *srcPtr = argsCopy;
 	while (*srcPtr)	

@@ -2208,8 +2208,8 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
 	// Furthermore, in Keen Dreams Shareware v1.13, argc, argv[1], argv[2] and argv[3] are all modified...
 	// And then in Catacomb Abyss, argv[3] is compared to "1". In its INTROSCN.EXE argv[4] is compared...
 
-	// FIXME FIXME FIXME Using correct argv[0] for "compatibility" (see catabyss, ext_gelib.c)
-	const char *our_workaround_argv[] = { "INTRO.EXE", "", "", "", "", "", "", "", "", NULL };
+	// REFKEEN - As long as argv[0] isn't used, use a placeholder
+	const char *our_workaround_argv[] = { "PROG.EXE", "", "", "", "", "", "", "", "", NULL };
 	if (argc < 10)
 	{
 		for (int currarg = 1; currarg < argc; ++currarg)
