@@ -104,11 +104,14 @@ static void BE_Cross_RefreshFarBytesLeft(void)
 
 void *BE_Cross_Bmalloc(uint16_t size)
 {
+	// Define vars here so C++ compilation doesn't fail with gotos
+	uint8_t *prevBlockEnd, *endOfNearMem;
+	BE_MemoryBlock_T *block;
+
 	if (g_numOfNearBlocks == MAX_NO_OF_BLOCKS_PER_CLASS)
 		goto outofmemory;
-
-	uint8_t *prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_NEAR_SEG;
-	BE_MemoryBlock_T *block = g_nearBlocks;
+	prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_NEAR_SEG;
+	block = g_nearBlocks;
 	for (int i = 0; i < g_numOfNearBlocks; ++i, ++block)
 	{
 		if (block->ptr - prevBlockEnd >= size) // Sufficiently large gap found
@@ -120,7 +123,7 @@ void *BE_Cross_Bmalloc(uint16_t size)
 		prevBlockEnd = block->ptr + block->len;
 	}
 
-	uint8_t * const endOfNearMem = g_be_emulatedMemSpace + 16*(EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS);
+	endOfNearMem = g_be_emulatedMemSpace + 16*(EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS);
 	if (endOfNearMem - prevBlockEnd >= size) // Add a new block at the end
 	{
 addnewblock:
@@ -140,11 +143,14 @@ outofmemory:
 
 void *BE_Cross_Bfarmalloc(uint32_t size)
 {
+	// Define vars here so C++ compilation doesn't fail with gotos
+	uint8_t *prevBlockEnd, *endOfFarMem;
+	BE_MemoryBlock_T *block;
+
 	if (g_numOfFarBlocks == MAX_NO_OF_BLOCKS_PER_CLASS)
 		goto outofmemory;
-
-	uint8_t *prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_FAR_SEG;
-	BE_MemoryBlock_T *block = g_farBlocks;
+	prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_FAR_SEG;
+	block = g_farBlocks;
 	for (int i = 0; i < g_numOfFarBlocks; ++i, ++block)
 	{
 		if (block->ptr - prevBlockEnd >= size) // Sufficiently large gap found
@@ -156,7 +162,7 @@ void *BE_Cross_Bfarmalloc(uint32_t size)
 		prevBlockEnd = block->ptr + block->len;
 	}
 
-	uint8_t * const endOfFarMem = g_be_emulatedMemSpace + 16*(EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS);
+	endOfFarMem = g_be_emulatedMemSpace + 16*(EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS);
 	if (endOfFarMem - prevBlockEnd >= size) // Add a new block at the end
 	{
 addnewblock:

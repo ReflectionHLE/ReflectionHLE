@@ -1239,7 +1239,7 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 	{
 		int displayNum = SDL_GetWindowDisplayIndex(g_sdlWindow);
 		// HUGE FIXME - Bad idea!!!
-		if (displayNum < sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums)) // Ignore last NULL entry
+		if (displayNum < (int)(sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums))) // Ignore last NULL entry
 			if (1/*g_beVideoSettingsMenuItem_DisplayNum.choice != displayNum*/)
 			{
 				extern BEMenu *g_be_launcher_currMenu;
