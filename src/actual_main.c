@@ -27,6 +27,8 @@
 int id0_argc;
 const char **id0_argv;
 
+void (*be_lastSetMainFuncPtr)(void);
+
 const char *be_main_arg_datadir = NULL;
 const char *be_main_arg_newcfgdir = NULL;
 

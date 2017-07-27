@@ -2195,10 +2195,6 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 
 void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
 {
-	// TODO uncomment?
-	//extern int id0_argc;
-	//extern const char **id0_argv;
-
 	// Some additional preparation required
 	BE_ST_PrepareForGameStartupWithoutAudio();
 
@@ -2228,32 +2224,36 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
 		id0_argv = (const char **)argv;
 	}
 
+
 #ifdef REFKEEN_VER_CATADVENTURES
 	if (misc)
 	{
 #ifdef REFKEEN_VER_CATABYSS
 		extern void abysgame_exe_main(void);
-		abysgame_exe_main();
+		be_lastSetMainFuncPtr = abysgame_exe_main;
 #elif defined REFKEEN_VER_CATARM
 		extern void armgame_exe_main(void);
-		armgame_exe_main();
+		be_lastSetMainFuncPtr = armgame_exe_main;
 #elif defined REFKEEN_VER_CATAPOC
 		extern void apocgame_exe_main(void);
-		apocgame_exe_main();
+		be_lastSetMainFuncPtr = apocgame_exe_main;
 #endif
 	}
 	else
 	{
 		extern void intro_exe_main(void);
-		intro_exe_main();
+		be_lastSetMainFuncPtr = intro_exe_main;
 	}
 #elif defined REFKEEN_VER_CAT3D
 	extern void cat3d_exe_main(void);
-	cat3d_exe_main();
+	be_lastSetMainFuncPtr = cat3d_exe_main;
 #elif defined REFKEEN_VER_KDREAMS
 	extern void kdreams_exe_main(void);
-	kdreams_exe_main();
+	be_lastSetMainFuncPtr = kdreams_exe_main;
 #endif
+
+	extern void BEL_Cross_DoCallMainFunc(void);
+	BEL_Cross_DoCallMainFunc(); // Do a bit more preparation and then begin
 }
 
 int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp)

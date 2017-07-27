@@ -391,6 +391,12 @@ inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
 // segment no. 0 for some reason
 extern uint8_t g_be_cross_dosZeroSeg[];
 
+// Variables set for current program - FIXME Rename
+extern const char **id0_argv;
+extern int id0_argc;
+
+extern void (*be_lastSetMainFuncPtr)(void);
+
 // Roughly a replacement for execv, with a few exceptions/notes:
 // - There's NO GUARANTEE the calling "program" (e.g., a game)
 // will be ready in its EXACT original case, once its "main" function

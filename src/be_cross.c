@@ -17,6 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <setjmp.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -267,12 +268,26 @@ void BE_Cross_GetLocalDate_UNSAFE(int *y, int *m, int *d)
 	*d = tmstruct->tm_mday;
 }
 
+static bool g_be_passArgsToMainFunc;
+// Here the magic happens - used to clear a portion of the stack before
+// changing to another "main" function (in case we get a loop).
+// In a way, this should be similar to C++ exception handling,
+// just C-compatible.
+static jmp_buf g_be_mainFuncJumpBuffer;
+
+/*static*/ void BEL_Cross_DoCallMainFunc(void)
+{
+	g_be_passArgsToMainFunc = false;
+	setjmp(g_be_mainFuncJumpBuffer); // Ignore returned value, always doing the same thing
+	// Do start!
+	if (g_be_passArgsToMainFunc)
+		((void (*)(int, const char **))be_lastSetMainFuncPtr)(id0_argc, id0_argv); // HACK
+	else
+		be_lastSetMainFuncPtr();
+}
+
 void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer)(void), bool passArgsToMainFunc)
 {
-	// FIXME - Rename and define somewhere else
-	extern int id0_argc;
-	extern const char **id0_argv;
-
 	if (finalizer)
 		finalizer();
 
@@ -284,9 +299,8 @@ void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer
 	for (id0_argc = 0; *argv; ++id0_argc, ++argv)
 		;
 
-	// *** FIXME *** - Jump back somehow?
-	if (passArgsToMainFunc)
-		((void (*)(int, const char **))mainFunc)(id0_argc, id0_argv); // HACK
-	else
-		mainFunc();
+	be_lastSetMainFuncPtr = mainFunc;
+	g_be_passArgsToMainFunc = passArgsToMainFunc;
+
+	longjmp(g_be_mainFuncJumpBuffer, 0); // A little bit of magic
 }
