@@ -32,6 +32,7 @@
 #endif
 
 #include "be_cross.h"
+#include "be_st.h" // For BE_ST_ExitWithErrorMsg
 
 // C99
 char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);
@@ -275,6 +276,18 @@ static bool g_be_passArgsToMainFunc;
 // just C-compatible.
 static jmp_buf g_be_mainFuncJumpBuffer;
 
+// When a new main function is called in the middle (BE_Cross_Bexecv),
+// by default the current (non-new) main function is stored as
+// a "one time" function that shall *never* be called again.
+//
+// To prevent this, BE_Cross_Bexecv should get a finalizer function pointer,
+// used to reset the sub-program as represented by current main function
+// to its original state. (Emphasis on global and static variables.)
+#define MAX_NUM_OF_ONE_TIME_MAIN_FUNCS 4
+
+static int g_be_numOfOneTimeMainFuncs = 0;
+static void (*g_be_oneTimeMainFuncs[MAX_NUM_OF_ONE_TIME_MAIN_FUNCS])(void);
+
 /*static*/ void BEL_Cross_DoCallMainFunc(void)
 {
 	g_be_passArgsToMainFunc = false;
@@ -288,8 +301,18 @@ static jmp_buf g_be_mainFuncJumpBuffer;
 
 void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer)(void), bool passArgsToMainFunc)
 {
+	for (int i = 0; i < g_be_numOfOneTimeMainFuncs; ++i)
+		if (g_be_oneTimeMainFuncs[i] == mainFunc)
+			BE_ST_ExitWithErrorMsg("BE_Cross_Bexecv - One-time function unexpectedly called again!");
+
 	if (finalizer)
 		finalizer();
+	else
+	{
+		if (g_be_numOfOneTimeMainFuncs == MAX_NUM_OF_ONE_TIME_MAIN_FUNCS)
+			BE_ST_ExitWithErrorMsg("BE_Cross_Bexecv - Too many one-time functions called!");
+		g_be_oneTimeMainFuncs[g_be_numOfOneTimeMainFuncs++] = be_lastSetMainFuncPtr;
+	}
 
 	// Note this does NOT work for memory not managed by us (e.g., simple calls to malloc)
 	void BEL_Cross_ClearMemory(void);
