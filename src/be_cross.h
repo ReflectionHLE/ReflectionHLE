@@ -391,4 +391,24 @@ inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
 // segment no. 0 for some reason
 extern uint8_t g_be_cross_dosZeroSeg[];
 
+// Roughly a replacement for execv, with a few exceptions/notes:
+// - There's NO GUARANTEE the calling "program" (e.g., a game)
+// will be ready in its EXACT original case, once its "main" function
+// is called again.
+// - If, for any reason, memory management was manually done with
+// functions like malloc (rather than, say, BE_Cross_Bmalloc),
+// such memory is NOT cleaned up automatically.
+// - Being optional, a finalizer function pointer can be passed, used
+// to RESTORE the calling "program" to its original state, in terms
+// of e.g., values of global and static variables. Note that while
+// managed memory (e.g., memory allocated by BE_Cross_Bmalloc) may be
+// automatically freed by BE_Cross_Bexecv, the pointer VARIABLES still
+// have to be restored. Furthermore, again, non-managed memory allocated
+// by malloc or another function may remain as a memory leak.
+// - The input main function pointer is assumed to point to a function
+// that does NOT accept any argument. These can be separatedly accessed.
+// - Finally, the last parameter tells if mainFunc expects the argc and argv
+// arguments, or not (they're still stored in global variables).
+void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer)(void), bool passArgsToMainFunc);
+
 #endif // BE_CROSS_H

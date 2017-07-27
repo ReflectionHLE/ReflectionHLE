@@ -266,3 +266,27 @@ void BE_Cross_GetLocalDate_UNSAFE(int *y, int *m, int *d)
 	*m = tmstruct->tm_mon + 1;
 	*d = tmstruct->tm_mday;
 }
+
+void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer)(void), bool passArgsToMainFunc)
+{
+	// FIXME - Rename and define somewhere else
+	extern int id0_argc;
+	extern const char **id0_argv;
+
+	if (finalizer)
+		finalizer();
+
+	// Note this does NOT work for memory not managed by us (e.g., simple calls to malloc)
+	void BEL_Cross_ClearMemory(void);
+	BEL_Cross_ClearMemory();
+
+	id0_argv = argv;
+	for (id0_argc = 0; *argv; ++id0_argc, ++argv)
+		;
+
+	// *** FIXME *** - Jump back somehow?
+	if (passArgsToMainFunc)
+		((void (*)(int, const char **))mainFunc)(id0_argc, id0_argv); // HACK
+	else
+		mainFunc();
+}

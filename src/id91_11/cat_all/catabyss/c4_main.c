@@ -717,7 +717,7 @@ void Quit (const id0_char_t *error, ...)
 			}
 	#endif
 			void id0_loadscn_exe_main(void);
-			id0_loadscn_exe_main();
+			BE_Cross_Bexecv(id0_loadscn_exe_main, id0_argv, NULL, false);
 		}
 	}
 

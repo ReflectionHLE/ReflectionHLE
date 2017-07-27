@@ -411,8 +411,8 @@ void Quit (const id0_char_t *error)
 
 		//if (execv("LOADSCN.EXE", _argv) == -1)
 		//	Quit("Couldn't find executable LOADSCN.EXE.\n");
-		void loadscn2_main(int argc, const char **argv);
-		loadscn2_main(id0_argc+1, id0_argv);
+		void loadscn2_main(void);
+		BE_Cross_Bexecv(loadscn2_main, id0_argv, NULL, true);
 	}
 	else
 	{

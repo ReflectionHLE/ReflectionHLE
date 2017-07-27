@@ -584,7 +584,7 @@ void intro_TrashProg (const id0_char_t *OutMsg, ...)
 		id0_argv[id0_argc++] = "/NODR";
 		id0_argv[id0_argc] = NULL;
 
-		GAMEEXE_MAIN_FUNCNAME ();
+		BE_Cross_Bexecv(GAMEEXE_MAIN_FUNCNAME, id0_argv, NULL, false);
 #if 0
 		if (execv(GAMEEXE_FILENAME, id0_argv) == -1)
 		{
