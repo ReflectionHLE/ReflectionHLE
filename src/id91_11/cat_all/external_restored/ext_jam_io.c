@@ -105,8 +105,21 @@ id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType)
 	switch (PtrType & SRC_TYPES)
 	{
 		case SRC_FILE:
+		// REFKEEN - Pick behaviors based on (sub)program actually
+		// being run (HINTCAT/DEMOCAT or not)
+if (be_lastSetMainFuncPtr == slidecat_exe_main)
+{
+			TrashProg("You need more \"free conventional memory\" in order to view the\n"
+			          "Demo of the Catacomb 3-D Trilogy.  At least 588K free memory\n"
+			          "is required.  Try renaming your AUTOEXEC.BAT and CONFIG.SYS\n"
+			          "files to other names, then reboot your computer, and try again.\n\n\n"
+			);
+}
+else
+{
 			BE_ST_printf("WritePtr - unsupported ptr type\n");
 			BE_ST_HandleExit(0);
+}
 		break;
 
 		case SRC_FFILE:

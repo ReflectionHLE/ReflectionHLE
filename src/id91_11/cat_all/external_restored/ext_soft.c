@@ -91,8 +91,19 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 	//
 
 	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(SourceFile)))
-	//if ((handle = open(SourceFile, O_RDONLY|O_BINARY)) == -1)
+	// REFKEEN - Pick behaviors based on subprogram being run
+{
+if (be_lastSetMainFuncPtr == slidecat_exe_main)
+	{
+		SetScreenMode(1);
+		BE_ST_printf("\n" GAMEVER_SLIDECAT_ERR_STR " : Can't open file. %s\n\n",SourceFile);
+		BE_ST_HandleExit(0);
+	}
+else
 		return(0);
+}
+	//if ((handle = open(SourceFile, O_RDONLY|O_BINARY)) == -1)
+	//	return(0);
 
 	//
 	// Look for JAMPAK headers
@@ -115,7 +126,21 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		CompHeader.CompType = ct_LZW;
 		*DstPtr = BE_Cross_Bfarmalloc(CompHeader.OrginalLen);
 		if (!*DstPtr)
+		// REFKEEN - Pick behaviors based on subprogram being run
+{
+if (be_lastSetMainFuncPtr == slidecat_exe_main)
+		{
+			SetScreenMode(1);
+			BE_ST_printf("You need more \"free conventional memory\" in order to view the\n"
+			             "Demo of the Catacomb 3-D Trilogy.  At least 588K free memory\n"
+			             "is required.  Try renaming your AUTOEXEC.BAT and CONFIG.SYS\n"
+			             "files to other names, then reboot your computer, and try again.\n\n\n"
+			);
+			BE_ST_HandleExit(0);
+		}
+else
 			return(0);
+}
 		offset = 8;
 	}
 	else
@@ -139,7 +164,21 @@ id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr)
 		offset = 14;
 		*DstPtr = BE_Cross_Bfarmalloc(CompHeader.OrginalLen);
 		if (!*DstPtr)
+		// REFKEEN - Pick behaviors based on subprogram being run
+{
+if (be_lastSetMainFuncPtr == slidecat_exe_main)
+		{
+			SetScreenMode(1);
+			BE_ST_printf("You need more \"free conventional memory\" in order to view the\n"
+			             "Demo of the Catacomb 3-D Trilogy.  At least 588K free memory\n"
+			             "is required.  Try renaming your AUTOEXEC.BAT and CONFIG.SYS\n"
+			             "files to other names, then reboot your computer, and try again.\n\n\n"
+			);
+			BE_ST_HandleExit(0);
+		}
+else
 			return(0);
+}
 	}
 	else
 		DstLen = VerifyReadOnly(SourceFile);

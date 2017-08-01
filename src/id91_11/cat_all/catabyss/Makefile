@@ -44,6 +44,7 @@ EXTOBJECTS=$(EXTOBJ)/ext_ca.o \
            $(EXTOBJ)/ext_soft.o \
            $(EXTOBJ)/ext_vw_a.o \
            $(EXTOBJ)/loadscn.o \
+           $(EXTOBJ)/slidecat.o \
            $(EXTOBJ)/intro.o
 
 BEOBJECTS=$(BEOBJ)/actual_main.o \

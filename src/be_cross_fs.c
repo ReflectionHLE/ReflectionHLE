@@ -2186,6 +2186,8 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 #ifdef REFKEEN_VER_CATADVENTURES
 	extern void RefKeen_Patch_intro(void);
 	RefKeen_Patch_intro();
+	extern void RefKeen_Patch_slidecat(void);
+	RefKeen_Patch_slidecat();
 #endif
 	extern void RefKeen_FillObjStatesWithDOSPointers(void);
 	RefKeen_FillObjStatesWithDOSPointers(); // Saved games compatibility

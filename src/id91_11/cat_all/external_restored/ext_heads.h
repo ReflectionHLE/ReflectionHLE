@@ -19,10 +19,15 @@
 #ifndef __HEADS_H__
 #define __HEADS_H__
 
-// Taken off ID_HEADS.H
+/*** VERSIONS RESTORATION ***/
+#include "gamever.h"
+
+// Taken off ID_HEADS.H, WITH POSSIBLE MODIFICATIONS
 
 //#include <ALLOC.H>
-#include <ctype.h>
+// REFKEEN / VERSION RESTORATION - Originally ctype.h was absent on purpose,
+// so the isalpha function would be used instead of a macro in Borland C++.
+//#include <ctype.h>
 //#include <DOS.H>
 #include <errno.h>
 #include <fcntl.h>
@@ -39,14 +44,6 @@
 #include <time.h>
 
 #include "refkeen.h"
-
-#ifdef REFKEEN_VER_CATABYSS
-#define EXTENSION "ABS"
-#elif defined REFKEEN_VER_CATARM
-#define EXTENSION "ARM"
-#elif defined REFKEEN_VER_CATAPOC
-#define EXTENSION "APC"
-#endif
 
 #define GRMODE EGAGR
 
@@ -121,5 +118,9 @@ cardtype VideoID (void);
 void SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
 void ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t wide, id0_unsigned_t height);
+// REFKEEN - Add these
+extern void intro_exe_main(void);
+extern void loadscn_exe_main(void);
+extern void slidecat_exe_main(void);
 
 #endif
