@@ -358,8 +358,8 @@ void intro_exe_main(void)
 						id0_argv[3] = NULL;
 
 						id0_argv[0] = "LOADSCN.EXE";
-						void id0_loadscn_exe_main(void);
-						id0_loadscn_exe_main();
+						void loadscn_exe_main(void);
+						BE_Cross_Bexecv(loadscn_exe_main, id0_argv, NULL, false);
 #if 0
 						if (execv("LOADSCN.EXE", id0_argv) == -1)
 						{

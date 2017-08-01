@@ -51,8 +51,8 @@ void TrashProg (const id0_char_t *OutMsg, ...)
 	// REFKEEN - Pick behaviors based on version of Catacomb Abyss
 	// *and* (sub)program actually being run (INTRO vs LOADSCN)
 #ifdef REFKEEN_VER_CATABYSS
-	extern void id0_loadscn_exe_main (void);
-	if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && (be_lastSetMainFuncPtr == id0_loadscn_exe_main))
+	extern void loadscn_exe_main (void);
+	if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && (be_lastSetMainFuncPtr == loadscn_exe_main))
 	{
 		void loadscn_TrashProg (const id0_char_t *OutMsg, ...);
 		loadscn_TrashProg(OutMsg, ap);
