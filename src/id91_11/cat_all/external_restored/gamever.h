@@ -10,11 +10,10 @@
 #define GAMEVER_CATAPOC
 #endif
 
-// HUGE FIXME!!! - This assumes catabyss *AND* slidecat!
 //#ifdef GAMEVER_SLIDECAT
-//#ifdef GAMEVER_CATABYSS
+#ifdef GAMEVER_CATABYSS
 #define GAMEVER_SLIDECAT_ERR_STR "CATALOG ERROR"
-//#else
-//#define GAMEVER_SLIDECAT_ERR_STR "ERROR"
-//#endif
+#else
+#define GAMEVER_SLIDECAT_ERR_STR "ERROR"
+#endif
 //#endif
