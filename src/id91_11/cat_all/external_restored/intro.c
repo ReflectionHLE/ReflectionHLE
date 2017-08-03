@@ -94,6 +94,21 @@ static void Beep(void)
 // HACK
 void GAMEEXE_MAIN_FUNCNAME (void);
 
+#ifdef GAMEVER_CATABYSS
+// REFKEEN - New function passed to BE_Cross_Bexecv
+static void intro_exe_main_reverter(void)
+{
+	// Skip "constant" version-specific vars like refkeen_compat_intro_frametop_str
+	screenmode = 0;
+	videocard = (cardtype)0;
+	// REFKEEN - Always set to false anyway, but mention this to be pedantic
+	//havebeep = false;
+	// REFKEEN - No need to free shapes, their fields get refilled,
+	// and, if memory was allocated by e.g., BE_Cross_Bfarmalloc,
+	// it gets deallocated from BE_Cross_Bexecv automatically
+}
+#endif
+
 void intro_exe_main(void)
 {
 	id0_boolean_t leave_init_sequence = false, leave_pre_skill_selection = false, leave_skill_selection = false, select_saved_game = false;
@@ -368,7 +383,7 @@ void intro_exe_main(void)
 						id0_argv[3] = NULL;
 
 						void loadscn_exe_main(void);
-						BE_Cross_Bexecv(loadscn_exe_main, id0_argv, NULL, false);
+						BE_Cross_Bexecv(loadscn_exe_main, id0_argv, intro_exe_main_reverter, false);
 #if 0
 						if (execv("LOADSCN.EXE", id0_argv) == -1)
 						{
@@ -402,7 +417,14 @@ void intro_exe_main(void)
 					// HUGE (!) FIXME - Add controller mappings?
 					SetScreenMode(1);
 
-					BE_Cross_Bexecv(slidecat_exe_main, id0_argv, NULL, false);
+					// REFKEEN difference from vanilla Catacomb Abyss (Shareware release):
+					// Role of ^(a@&r` for INTRO.EXE has been flipped. No need to pass it
+					// (or use start), but if ^(a@&r` is added then you get this message.
+					//
+					// However, originally, DEMOCAT.EXE needed it, so it knows to go back
+					// to INTRO.EXE. So let's change the argument.
+					id0_argv[1] = "^(a@&r`";
+					BE_Cross_Bexecv(slidecat_exe_main, id0_argv, intro_exe_main_reverter, false);
 #if 0
 					if (execv("DEMOCAT.EXE", id0_argv) == -1)
 					{

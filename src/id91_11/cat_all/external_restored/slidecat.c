@@ -54,34 +54,63 @@ static void Beep (void);
 static id0_int_t CheckParm(const id0_char_t *parm,const id0_char_t **strings);
 
 id0_int_t screenmode;
-// REFKEEN - Always define these
+#ifdef GAMEVER_CATABYSS
 //#ifdef GAMEVER_SHAREWARE
 id0_long_t pg_t_end, pg_t_str;
-//#endif
+#endif
 id0_int_t pg_curr;
 
 id0_byte_t id0_far *pg_scr[30];
 
 static id0_boolean_t havebeep = true;
 static id0_int_t pg_last = 0;
+#ifdef GAMEVER_CATABYSS // REFKEEN - Define for CATABYSS only
 static id0_boolean_t returntointro = false;
 static id0_boolean_t returntostart = false;
+#endif
 
 cardtype videocard;
 
 struct Shape page_shapes[30];
 
-#ifdef GAMEVER_SHAREWARE
-static id0_char_t *ParmStrings[] = {"auto","ver","s",NULL};
-#else
-static id0_char_t *ParmStrings[] = {"ver","s",NULL};
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+static const id0_char_t *ParmStrings_Shar[] = {"auto","ver","s",NULL};
+#endif
+//#else
+static const id0_char_t *ParmStrings_Reg[] = {"ver","s",NULL};
+//#endif
+static const id0_char_t **ParmStrings; // REFKEEN - Fill this based on version
+
+#ifdef GAMEVER_CATABYSS
+// REFKEEN - New function passed to BE_Cross_Bexecv
+static void slidecat_exe_main_reverter(void)
+{
+	// Skip "constant" version-specific vars like refkeen_compat_intro_frametop_str
+	screenmode = 0;
+	pg_t_end = pg_t_str = 0;
+	pg_curr = 0;
+	pg_last = 0;
+
+	havebeep = true;
+	returntointro = false;
+	returntostart = false;
+
+	videocard = (cardtype)0;
+	// REFKEEN - No need to free shapes, their fields get refilled,
+	// and, if memory was allocated by e.g., BE_Cross_Bfarmalloc,
+	// it gets deallocated from BE_Cross_Bexecv automatically.
+	//
+	// Similarly there's no need to manually free pg_scr.
+}
 #endif
 
 void slidecat_exe_main(void)
 {
 	id0_word_t last_key;
 	id0_byte_t id0_far *script_file_ptr = NULL, id0_far *script_ptr = NULL;
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
 	id0_boolean_t leave_loop = false, page_changed = false, auto_mode = false;
 #else
 	id0_boolean_t leave_loop = false, page_changed = false;
@@ -100,7 +129,9 @@ void slidecat_exe_main(void)
 		BE_ST_cprintf(FRAMEBOT_STR);
 		BE_ST_printf("\n");
 		BE_ST_printf("/VER  - version number\n");
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+	if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
 		BE_ST_printf("/AUTO - auto mode\n");
 #endif
 		BE_ST_printf("/S    - turn sound mode off\n");
@@ -108,20 +139,34 @@ void slidecat_exe_main(void)
 		BE_ST_HandleExit(0);
 	}
 
+	// REFKEEN - PARAM_OFFSET should be a variable (at least in catabyss).
+	// Thus, we need to use subtract PARAM_OFFSET from CheckParm's returned value,
+	// rather than trying to force usage in the switch statement (this is an error).
+#ifdef GAMEVER_CATABYSS
+	const int PARAM_OFFSET = (refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? 1 : 0;
+#else
+#define PARAM_OFFSET 0
+#endif
+
 	for (j=1;j<id0_argc;j++)
-		switch (CheckParm(id0_argv[j], ParmStrings))
+		switch (CheckParm(id0_argv[j], ParmStrings)-PARAM_OFFSET)
+		//switch (CheckParm(id0_argv[j], ParmStrings))
 		{
+#if 0
 #ifdef GAMEVER_SHAREWARE
 #define PARAM_OFFSET 1
 #else
 #define PARAM_OFFSET 0
 #endif
-#ifdef GAMEVER_SHAREWARE
-		case 0:
-			auto_mode = true;
+#endif
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+		case -1/*0*/:
+			if (PARAM_OFFSET)
+				auto_mode = true;
 			break;
 #endif
-		case PARAM_OFFSET:
+		case 0/*PARAM_OFFSET*/:
 			BE_ST_clrscr();
 			BE_ST_textcolor(15);
 			BE_ST_textbackground(1);
@@ -137,16 +182,20 @@ void slidecat_exe_main(void)
 			BE_ST_printf("                640K, and MS-DOS 3.0 or better.\n");
 			BE_ST_HandleExit(0);
 			break;
-		case PARAM_OFFSET+1:
+		case 1/*PARAM_OFFSET+1*/:
 			havebeep = false;
 			break;
 		}
 
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113))
+{
 	if (!BE_Cross_strcasecmp(id0_argv[1], "#*-NM"))
 		returntostart = true;
 	else if (!BE_Cross_strcasecmp(id0_argv[1], "^(a@&r`"))
 		returntointro = true;
+}
 #endif
 	videocard = VideoID();
 	if ((videocard != 3) && (videocard != 5))
@@ -163,10 +212,12 @@ void slidecat_exe_main(void)
 		pg_scr[i] = BE_Cross_Bfarmalloc(14);
 	}
 
-	if (!ext_BLoad(SCRIPT_FILENAME, &script_file_ptr))
+	if (!ext_BLoad(SCRIPT_FILENAME, (memptr *)&script_file_ptr))
 		TrashProg("Can't load Script File - Possibly corrupt file!");
 
 	i = 0;
+	// REFKEEN - Somewhat necessary vanilla bug fix
+	id0_byte_t id0_far *script_file_start = script_file_ptr;
 	while (*script_file_ptr != 0x40)
 	{
 		for (;*script_file_ptr!=0xD;script_file_ptr++,i++)
@@ -180,9 +231,8 @@ void slidecat_exe_main(void)
 		if (*script_file_ptr != 0x40)
 			pg_last++;
 	}
-	// VERSION RESTORATION - Yeah, pointer variable's may have changed,
-	// but this is still the one passed to the function
-	// REFKEEN - MUST fixed this somehow
+	// REFKEEN - As stated above, more-or-less required fix for vanilla bug
+	BE_Cross_Bfarfree(script_file_start);
 	//BE_Cross_Bfarfree(script_file_ptr);
 
 	pages_left = pg_last + 1;
@@ -237,9 +287,13 @@ void slidecat_exe_main(void)
 	}
 
 	pg_curr = 0;
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113))
+{
 	pg_t_str = time(NULL);
 	pg_t_end = pg_t_str;
+}
 #endif
 	while (!leave_loop)
 	{
@@ -283,8 +337,10 @@ void slidecat_exe_main(void)
 		else
 			TrashProg( GAMEVER_SLIDECAT_ERR_STR " : Bad script code\n");
 
-#ifdef GAMEVER_SHAREWARE
-		if (auto_mode)
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+		if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && auto_mode)
+		//if (auto_mode)
 		{
 			id0_byte_t s;
 			for (s=0;s<=50;s++)
@@ -309,7 +365,8 @@ void slidecat_exe_main(void)
 		else
 #endif
 		{
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
 			id0_boolean_t halt_wait_for_key;
 #endif
 			page_changed = false;
@@ -317,7 +374,10 @@ void slidecat_exe_main(void)
 			while (!page_changed)
 			{
 				last_key = 0;
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
+{
 				halt_wait_for_key = false;
 				while (!halt_wait_for_key)
 				{
@@ -344,13 +404,18 @@ void slidecat_exe_main(void)
 					break;
 check_keys:
 				pg_t_str = pg_t_end = time(NULL);
-#else
+}
+else
+#endif
+{
+//#else
 				while (!last_key)
 				{
 					last_key = TryGetScanCode();
 					BE_ST_ShortSleep();
 				}
-#endif
+}
+//#endif
 				switch (last_key)
 				{
 				case 0x4D:
@@ -402,12 +467,17 @@ check_keys:
 				case 0x1/*0x11B*/:
 					TrashProg(NULL);
 					break;
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
 				case 0x19:
 				/*case 0x1970:
 				case 0x1950:*/
-					PrinterDialog();
-					break;
+					if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
+					{
+						PrinterDialog();
+						break;
+					}
+					// Fall-through
 #endif
 				default:
 					if (screenmode != 1)
@@ -446,9 +516,12 @@ check_keys:
 
 void slidecat_TrashProg (const id0_char_t *OutMsg, ...)
 {
-	va_list ap;
+	//va_list ap;
 
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
 	memptr endscreen = NULL;
+#endif
 	id0_int_t i;
 
 	for (i=0;i<30;i++)
@@ -464,7 +537,10 @@ void slidecat_TrashProg (const id0_char_t *OutMsg, ...)
 	if (!OutMsg || !(*OutMsg))
 	//if (!(*OutMsg))
 	{
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
+{
 		if (returntostart)
 		{
 			// REFKEEN - This is unsupported!
@@ -479,7 +555,15 @@ void slidecat_TrashProg (const id0_char_t *OutMsg, ...)
 		}
 		else if (returntointro)
 		{
-			BE_Cross_Bexecv(intro_exe_main, id0_argv, NULL, false);
+			// REFKEEN difference from vanilla Catacomb Abyss (Shareware release):
+			// Role of ^(a@&r` for INTRO.EXE has been flipped. No need to pass it
+			// (or use start), but if ^(a@&r` is added then you get this message.
+			//
+			// However, originally, DEMOCAT.EXE needed it, so it knows to go back
+			// to INTRO.EXE. We still do so here, so let's change it back for
+			// the intro.
+			id0_argv[1] = "z";
+			BE_Cross_Bexecv(intro_exe_main, id0_argv, slidecat_exe_main_reverter, false);
 #if 0
 			if (execv("INTRO.EXE", id0_argv) == -1)
 			{
@@ -504,8 +588,12 @@ void slidecat_TrashProg (const id0_char_t *OutMsg, ...)
 			BE_Cross_Bfarfree(endscreen);
 			BE_ST_MoveTextCursorTo(0, 23); //gotoxy(1,24);
 		}
-#elif (defined GAMEVER_CATABYSS)
+}
+else
+{
+//#elif (defined GAMEVER_CATABYSS)
 		BE_ST_HandleExit(0);
+}
 #endif
 	}
 	else
@@ -685,7 +773,7 @@ void RefKeen_Patch_slidecat(void)
 		FRAMEBOT_STR = "\xD4\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBE\r\n";
 
 		VERSION_TITLE_STR = "CATACOMB ARMAGEDDON 3-D HINT BOOK";
-		VERSION_REV_STR = " version 1.12  (Rev 1)"
+		VERSION_REV_STR = " version 1.12  (Rev 1)";
 		break;
 #endif
 #ifdef GAMEVER_CATAPOC
@@ -706,7 +794,9 @@ void RefKeen_Patch_slidecat(void)
 
 #ifdef GAMEVER_CATABYSS
 	SCRIPT_FILENAME = (refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? "SCRIPT.CAT" : "SCRIPT.HNT";
+	ParmStrings = (refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? ParmStrings_Shar : ParmStrings_Reg;
 #else
 	SCRIPT_FILENAME = "SCRIPT.HNT";
+	ParmStrings = ParmStrings_Reg;
 #endif
 }

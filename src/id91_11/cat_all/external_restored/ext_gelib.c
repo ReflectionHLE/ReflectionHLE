@@ -595,10 +595,10 @@ void WriteColoredTextAt(id0_int_t color, id0_int_t x, id0_int_t y, id0_char_t *t
 //#ifdef GAMEVER_SHAREWARE
 void PrinterDialog(void)
 {
-	id0_char_t str[81];
+	//id0_char_t str[81]; // REFKEEN - No printing support
 	id0_int_t last_key;
 	id0_boolean_t do_finish, leave_loop, got_selection;
-	id0_byte_t id0_far *id0_textptr, id0_far *s;
+	//id0_byte_t id0_far *textptr, id0_far *s; // REFKEEN - No printing support
 
 	leave_loop = false;
 	BE_ST_textbackground(7);
