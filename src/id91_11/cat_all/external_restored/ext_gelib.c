@@ -739,7 +739,7 @@ void PrinterDialog(void)
 				BE_ST_ShortSleep();
 			}
 
-			if (last_key == 0x11B)
+			if (last_key == 0x1/*0x11B*/)
 				leave_loop = true;
 			else
 			{
