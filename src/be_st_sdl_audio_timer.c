@@ -203,6 +203,12 @@ void BE_ST_InitAudio(void)
 			}
 		}
 	}
+
+	// Regardless of the audio subsystem being off or on, have *some*
+	// rate set (being ~18.2Hz). In DEMOCAT from The Catacomb Abyss v1.13,
+	// BE_ST_BSound may be called, so be ready to generate samples.
+	BE_ST_SetTimer(0);
+
 	// If the audio subsystem is off, let us simulate a byte rate
 	// of 1000Hz (same as SDL_GetTicks() time units)
 	if (!g_sdlAudioSubsystemUp)
@@ -350,6 +356,10 @@ void BE_ST_InitAudio(void)
 			g_sdlSampleRateConvCounter = 0;
 		}
 	}
+
+	// As stated above, BE_ST_BSound may be called,
+	// so better start generation of samples
+	SDL_PauseAudio(0);
 }
 
 static uint32_t g_sdlTicksOffset = 0;
@@ -363,6 +373,7 @@ void BE_ST_ShutdownAudio(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
+		SDL_PauseAudio(1);
 		if ((g_sdlAudioSpec.callback == BEL_ST_Resampling_EmuCallBack) || (g_sdlAudioSpec.callback == BEL_ST_Resampling_DigiCallBack))
 		{
 #ifndef REFKEEN_RESAMPLER_NONE
@@ -403,21 +414,21 @@ void BE_ST_ShutdownAudio(void)
 
 void BE_ST_StartAudioAndTimerInt(void (*funcPtr)(void))
 {
+	BE_ST_LockAudioRecursively();
+
 	g_sdlTimerIntFuncPtr = funcPtr;
 	SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
-	if (g_sdlAudioSubsystemUp)
-	{
-		SDL_PauseAudio(0);
-	}
+
+	BE_ST_UnlockAudioRecursively();
 }
 
 void BE_ST_StopAudioAndTimerInt(void)
 {
-	if (g_sdlAudioSubsystemUp)
-	{
-		SDL_PauseAudio(1);
-	}
+	BE_ST_LockAudioRecursively();
+
 	g_sdlTimerIntFuncPtr = 0;
+
+	BE_ST_UnlockAudioRecursively();
 }
 
 void BE_ST_LockAudioRecursively(void)
@@ -443,12 +454,6 @@ void BE_ST_UnlockAudioRecursively(void)
 // Use this ONLY if audio subsystem isn't properly started up
 void BE_ST_PrepareForManualAudioCallbackCall(void)
 {
-	// HACK: Rather than using SDL_PauseAudio for deciding if
-	// we call, just check if g_sdlTimerIntFuncPtr is non-NULL
-	// (not necessarily the same behaviors, but "good enough")
-	if (!g_sdlTimerIntFuncPtr)
-		return;
-
 	static uint32_t s_lastTicks;
 	uint32_t currTicks = SDL_GetTicks();
 	if (currTicks == s_lastTicks)
@@ -714,8 +719,11 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 		if (!g_sdlScaledSampleOffsetInSound)
 		{
 			// FUNCTION VARIABLE (We should use this and we want to kind-of separate what we have here from original code.)
-			g_sdlTimerIntFuncPtr();
-			SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
+			if (g_sdlTimerIntFuncPtr)
+			{
+				g_sdlTimerIntFuncPtr();
+				SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
+			}
 		}
 		// Now generate sound
 		currNumOfSamples = BE_Cross_TypedMin(uint32_t, len/sizeof(BE_ST_SndSample_T), g_sdlScaledSamplesInCurrentPart-g_sdlScaledSampleOffsetInSound);
@@ -797,8 +805,11 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			if (!g_sdlScaledSampleOffsetInSound)
 			{
 				// FUNCTION VARIABLE (We should use this and we want to kind-of separate what we have here from original code.)
-				g_sdlTimerIntFuncPtr();
-				SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
+				if (g_sdlTimerIntFuncPtr)
+				{
+					g_sdlTimerIntFuncPtr();
+					SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
+				}
 			}
 			// Now generate sound
 			currNumOfScaledSamples = BE_Cross_TypedMin(uint64_t, scaledSamplesToGenerate, g_sdlScaledSamplesInCurrentPart-g_sdlScaledSampleOffsetInSound);
@@ -1017,7 +1028,8 @@ void BE_ST_SetTimer(uint16_t rateVal)
 {
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
-	g_sdlScaledSamplesPerPartsTimesPITRate = rateVal * g_sdlAudioSpec.freq;
+	// Note that 0 should be interpreted as 65536
+	g_sdlScaledSamplesPerPartsTimesPITRate = (rateVal ? rateVal : 65536) * g_sdlAudioSpec.freq;
 	if (g_sdlAudioSpec.callback == BEL_ST_Resampling_EmuCallBack)
 		g_sdlScaledSamplesPerPartsTimesPITRate *= OPL_SAMPLE_RATE;
 	// Since the following division may lead to truncation, g_sdlScaledSamplesInCurrentPart

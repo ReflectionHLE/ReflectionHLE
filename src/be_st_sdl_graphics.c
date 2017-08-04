@@ -2552,10 +2552,17 @@ void BE_ST_SetScreenMode(int mode)
 	case 3:
 		g_sdlTexWidth = VGA_TXT_TEX_WIDTH;
 		g_sdlTexHeight = VGA_TXT_TEX_HEIGHT;
+		g_sdlTxtCursorPosX = g_sdlTxtCursorPosY = 0;
+		// REFKEEN - Re-use BE_ST_clrscr with default text and background
+		// colors, but ensure we preserve the previously set colors
+		// for functions like BE_ST_cprintf (required for DEMOCAT)
+		int origTxtColor = g_sdlTxtColor, origTxtBackground = g_sdlTxtBackground;
 		g_sdlTxtColor = 7;
 		g_sdlTxtBackground = 0;
-		g_sdlTxtCursorPosX = g_sdlTxtCursorPosY = 0;
+		g_sdlTxtCursorEnabled = true;
 		BE_ST_clrscr();
+		g_sdlTxtColor = origTxtColor;
+		g_sdlTxtBackground = origTxtBackground;
 		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		break;
 	case 4:
