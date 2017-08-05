@@ -577,9 +577,6 @@ void RefKeen_PrepareAltControllerScheme(void)
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_simpledialog.onScreenTouchControls);
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_demoloop.onScreenTouchControls);
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_menu_help.onScreenTouchControls);
-
-	// Since it's our first time we can do this now
-	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 }
 
 void FinalizeControlPanelMappingsByMousePresence(bool withmouse)

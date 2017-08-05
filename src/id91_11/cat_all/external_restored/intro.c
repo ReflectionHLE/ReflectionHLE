@@ -278,7 +278,7 @@ void intro_exe_main(void)
 	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro;
 	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro_skillselection;
 	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_intro_skillconfirm;
-	BE_ST_AltControlScheme_Push();
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
 
 	do
 	{
@@ -368,9 +368,6 @@ void intro_exe_main(void)
 				last_key = TryGetScanCode();
 				if (last_key == 0x1/*0x11B*/) // ESC
 				{
-					// REFKEEN - Alternative controllers support
-					BE_ST_AltControlScheme_Pop();
-
 					FreeAllShapes();
 					SetScreenMode(1);
 #ifdef GAMEVER_CATABYSS
@@ -440,9 +437,6 @@ void intro_exe_main(void)
 		{
 			if (select_saved_game) // Launch CATABYSS.EXE and select saved game
 			{
-				// REFKEEN - Alternative controllers support
-				BE_ST_AltControlScheme_Pop();
-
 				if (!id0_argv[3])
 				{
 					id0_argv[id0_argc++] = "1";
@@ -516,7 +510,7 @@ void intro_exe_main(void)
 							UnpackEGAShapeToScreen(&app_start_shape, 0, 0);
 							ScreenToScreen(8000, 0, 40, 200);
 							// REFKEEN - Alternative controllers support
-							BE_ST_AltControlScheme_Pop();
+							BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 							// REFKEEN havebeep is always false (and code was removed for Apocalypse)
 							//Beep();
 							BE_ST_BiosScanCode(0);
@@ -556,7 +550,7 @@ void intro_exe_main(void)
 							UnpackEGAShapeToScreen(&app_start_shape, 0, 0);
 							ScreenToScreen(8000, 0, 40, 200);
 							// REFKEEN - Alternative controllers support
-							BE_ST_AltControlScheme_Pop();
+							BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 							// REFKEEN havebeep is always false (and code was removed for Apocalypse)
 							//Beep();
 							BE_ST_BiosScanCode(0);

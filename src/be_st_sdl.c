@@ -95,6 +95,8 @@ static uint32_t g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay;
 
 static bool g_sdlControllerSchemeNeedsCleanUp;
 
+static BE_ST_ControllerMapping g_sdlControllerMappingDefault;
+
 static struct {
 	const BE_ST_ControllerMapping *stack[NUM_OF_CONTROLLER_MAPS_IN_STACK];
 	const BE_ST_ControllerMapping **currPtr;
@@ -102,9 +104,8 @@ static struct {
 } g_sdlControllerMappingPtrsStack;
 
 // Current mapping, doesn't have to be *(g_sdlControllerMappingPtrsStack.currPtr) as game code can change this (e.g., helper keys)
-const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
+const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr = &g_sdlControllerMappingDefault;
 
-static BE_ST_ControllerMapping g_sdlControllerMappingDefault;
 // HACK - These "mappings" are used for identification of on-screen keyboards (using pointers comparisons)
 BE_ST_ControllerMapping g_beStControllerMappingTextInput;
 BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
@@ -236,13 +237,7 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 	//BE_ST_InitAudio(); // Not yet, need to select game version (so have gfx ready for possible errors), and then check if we want digi audio output
 	BE_ST_InitTiming();
 
-	// Preparing a controller scheme (with no special UI) in case the relevant feature is enabled
-	g_sdlControllerMappingPtrsStack.stack[0] = &g_sdlControllerMappingDefault;
-	g_sdlControllerMappingPtrsStack.currPtr = &g_sdlControllerMappingPtrsStack.stack[0];
-	g_sdlControllerMappingPtrsStack.endPtr = &g_sdlControllerMappingPtrsStack.stack[NUM_OF_CONTROLLER_MAPS_IN_STACK];
-	g_sdlControllerMappingActualCurr = g_sdlControllerMappingPtrsStack.stack[0];
-
-	g_sdlControllerSchemeNeedsCleanUp = false;
+	//g_sdlControllerSchemeNeedsCleanUp = false;
 
 	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
 	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
@@ -1706,6 +1701,18 @@ void BE_ST_AltControlScheme_Pop(void)
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr;
 
 	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
+
+	g_sdlControllerSchemeNeedsCleanUp = true;
+}
+
+void BE_ST_AltControlScheme_Reset(void)
+{
+	BEL_ST_AltControlScheme_CleanUp();
+
+	g_sdlControllerMappingPtrsStack.stack[0] = &g_sdlControllerMappingDefault;
+	g_sdlControllerMappingPtrsStack.currPtr = &g_sdlControllerMappingPtrsStack.stack[0];
+	g_sdlControllerMappingPtrsStack.endPtr = &g_sdlControllerMappingPtrsStack.stack[NUM_OF_CONTROLLER_MAPS_IN_STACK];
+	g_sdlControllerMappingActualCurr = g_sdlControllerMappingPtrsStack.stack[0];
 
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }

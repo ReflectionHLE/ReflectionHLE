@@ -592,6 +592,7 @@ void WriteColoredTextAt(id0_int_t color, id0_int_t x, id0_int_t y, id0_char_t *t
 	BE_ST_cprintf(text);
 }
 
+#ifdef GAMEVER_CATABYSS
 //#ifdef GAMEVER_SHAREWARE
 void PrinterDialog(void)
 {
@@ -611,6 +612,11 @@ void PrinterDialog(void)
 	memcpy(BE_ST_GetTextModeMemoryPtr(), textscn, 4000);
 	BE_ST_MarkGfxForUpdate();
 	//movedata(FP_SEG(textscn),FP_OFF(textscn),0xb800,0,4000);
+
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_printerdialog;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_printerdialog);
 
 	while (!leave_loop)
 	{
@@ -765,8 +771,10 @@ void PrinterDialog(void)
 		ScreenToScreen(8000, 0, 40, 200);
 		break;
 	}
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
-//#endif
+#endif
 
 void ShowTextScreen(id0_int_t screen)
 {

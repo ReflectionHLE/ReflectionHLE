@@ -293,6 +293,7 @@ static void (*g_be_oneTimeMainFuncs[MAX_NUM_OF_ONE_TIME_MAIN_FUNCS])(void);
 	g_be_passArgsToMainFunc = false;
 	setjmp(g_be_mainFuncJumpBuffer); // Ignore returned value, always doing the same thing
 	// Do start!
+	BE_ST_AltControlScheme_Reset();
 	if (g_be_passArgsToMainFunc)
 		((void (*)(int, const char **))be_lastSetMainFuncPtr)(id0_argc, id0_argv); // HACK
 	else

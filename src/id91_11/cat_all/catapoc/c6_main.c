@@ -1212,6 +1212,10 @@ void apocgame_exe_main (void)
 
 	BE_Cross_Brandomize();
 
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 	InitGame ();
 //	CheckMemory ();
 	LoadLatchMem ();

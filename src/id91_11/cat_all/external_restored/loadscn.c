@@ -84,6 +84,9 @@ void loadscn_exe_main (void)
 		TrashProg("ERROR : Can't load image.");
 	ext_MoveGfxDst(0, 200);
 	UnpackEGAShapeToScreen(&imagetoshow, 0, 0);
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 	// (REFKEEN) Add an artificial delay (screen not shown immediately on older machines)
 	BE_ST_Delay(250);
 	ScreenToScreen(8000, 0, 40, 200);

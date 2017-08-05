@@ -235,6 +235,12 @@ if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113))
 	BE_Cross_Bfarfree(script_file_start);
 	//BE_Cross_Bfarfree(script_file_ptr);
 
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_slidecat_init;
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_slidecat;
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_slidecat_init);
+
 	pages_left = pg_last + 1;
 	for (i=0;i<=pg_last;i++)
 	{
@@ -295,6 +301,9 @@ if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113))
 	pg_t_end = pg_t_str;
 }
 #endif
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_slidecat);
+
 	while (!leave_loop)
 	{
 		script_ptr = pg_scr[pg_curr];
@@ -480,6 +489,9 @@ else
 					// Fall-through
 #endif
 				default:
+					// REFKEEN - Alternative controllers support
+					BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 					if (screenmode != 1)
 					{
 						SetScreenMode(1);
@@ -506,6 +518,8 @@ else
 						ScreenToScreen(8000, 0, 40, 200);
 						break;
 					}
+					// REFKEEN - Alternative controllers support
+					BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_slidecat);
 					break;
 				}
 			}

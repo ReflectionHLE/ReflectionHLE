@@ -172,11 +172,10 @@ typedef struct BE_ST_ControllerMapping {
 
 // Various controller schemes are saved in a stack, so it's straight-forward
 // to revert to an arbitrary preceding scheme when desired.
-//
-// Note: Do push a new scheme before the first time picking a new scheme
-// (an internal default as filled for the very first one before the push).
 void BE_ST_AltControlScheme_Push(void);
 void BE_ST_AltControlScheme_Pop(void);
+// Use this when a main function is called
+void BE_ST_AltControlScheme_Reset(void);
 // Replace current controller scheme using any of these
 void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMapping *mapping);
 // Use this for absolute mouse cursor position update (e.g., for touch input)
