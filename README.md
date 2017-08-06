@@ -131,10 +131,11 @@ Supported game data, described by DOS versions
 
 - Keen Dreams: Registered CGA+EGA v1.00, Shareware (EGA) v1.13,
 CGA v1.05, Registered (EGA) v1.93 and Shareware (EGA) v1.20.
-There's also partial support for the data from the 2015 re-release
-(Steam / IndieGameStand). However, this may fail to work with
-the game as downloaded via the Steam client on Windows,
-due to minor differences in GAMETEXT.KDR.
+There's also partial support for the data from the (currently unavailable)
+2015 re-release, previously offered on Steam and IndieGameStand. However,
+this may fail to work with the game as downloaded via the Steam client
+on Windows, due to minor differences in GAMETEXT.KDR
+(although this was corrected at some point).
 - Catacomb 3-D (The Descent): Versions 1.00 and 1.22.
 - The Catacomb Abyss: Versions 1.13 (QA [0], Shareware) and 1.24 (rev 1).
 - The Catacomb Armageddon: Version 1.02 (rev 1).
@@ -147,7 +148,7 @@ and the two releases of v1.20 and v1.93 share the same static game data
 (e.g., common EGA and map headers).
 
 ----------------------------------------------------------------------------
-Where can I get compatible Keen Dreams game data (updated as of Oct 12 2016)
+Where can I get compatible Keen Dreams game data (updated as of Aug 06 2017)
 ----------------------------------------------------------------------------
 
 You can download a Shareware release of Keen Dreams, v1.13, from one of a few
@@ -160,7 +161,7 @@ places online, at the least. Links for reference:
 Partially compatible Keen Dreams data
 -------------------------------------
 
-2015 had a re-release of Keen Dreams on Steam, IndieGameStand
+2015 had a (since removed) re-release of Keen Dreams on Steam, IndieGameStand
 and possibly also another store.
 Note that while Reflection Keen is partially compatible with the 2015
 data, it is still recommended to use data from any of the supported
@@ -168,13 +169,10 @@ DOS versions. In particular, the Reflection Keen Dreams codebase
 is known to be internally different from the re-release's
 codebase in many ways.
 
-Also, this will *not* work with the 2015 re-release as downloaded
-from Steam on Windows, due to minor differences in GAMETEXT.KDR;
-Or at least, not as of this release of Reflection Keen.
-
-Links to stores' pages:
-- http://store.steampowered.com/app/356200/
-- https://indiegamestand.com/store/1317/keen-dreams/
+Also, this might *fail* to work with the 2015 re-release as originally
+available from Steam on Windows, due to minor differences
+in GAMETEXT.KDR. Updating the game via the Steam
+client may assist with resolving this issue.
 
 --------------------------------------------------------------------------
 Where can I get compatible Catacombs game data (updated as of Oct 12 2016)
