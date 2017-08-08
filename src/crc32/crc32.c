@@ -33,7 +33,7 @@
 
 int Crc32_ComputeFile( FILE *file, uint32_t *outCrc32 );
 
-static uint32_t Crc32_ComputeBuf( uint32_t inCrc32, const void *buf,
+uint32_t Crc32_ComputeBuf( uint32_t inCrc32, const void *buf,
                                        size_t bufLen );
 
 #if 0
@@ -154,7 +154,7 @@ ERR_EXIT:
  *     (no errors are possible)
 \*----------------------------------------------------------------------------*/
 
-static uint32_t Crc32_ComputeBuf( uint32_t inCrc32, const void *buf,
+uint32_t Crc32_ComputeBuf( uint32_t inCrc32, const void *buf,
                                        size_t bufLen )
 {
     static const uint32_t crcTable[256] = {
