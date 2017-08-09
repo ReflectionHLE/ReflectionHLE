@@ -1626,26 +1626,53 @@ static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T
 	BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(details, searchdir, descStr, NULL);
 }
 
+static void BEL_Cross_CreateTrimmedFilename(const char *inFilename, char (*outFileName)[13])
+{
+	// Remove trailing spaces (required for filenames stored in SCRIPT.HNT The Catacomb Armageddon v1.02 (used by HINTCAT.EXE))
+	char *fixedFilenamePtr = BE_Cross_safeandfastcstringcopy((*outFileName), (*outFileName) + sizeof(*outFileName), inFilename);
+	if (fixedFilenamePtr != *outFileName) // Copied string isn't empty (which would actually be bad, anyway...)
+	{
+		--fixedFilenamePtr;
+		do
+		{
+			if (*fixedFilenamePtr != ' ')
+				break;
+			*fixedFilenamePtr = '\0';
+			// Technically, checking *(fixedFilenamePtr-1) leads to undefined behaviors, and even
+			// the pointer itself doesn't have a clear manner, so do the following check (of the *original ptr)
+			if (fixedFilenamePtr-- == *outFileName)
+				break;
+		}
+		while (true);
+	}
+}
+
 // Opens a read-only file for reading from a "search path" in a case-insensitive manner
 BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
 {
+	char trimmedFilename[13];
+	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
 	// Trying writableFilesPath first, and then instPath in case of failure
-	BE_FILE_T fp = BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->writableFilesPath, NULL);
+	BE_FILE_T fp = BEL_Cross_open_from_dir(trimmedFilename, false, g_be_selectedGameInstallation->writableFilesPath, NULL);
 	if (fp)
 		return fp;
-	return BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->instPath, NULL);
+	return BEL_Cross_open_from_dir(trimmedFilename, false, g_be_selectedGameInstallation->instPath, NULL);
 }
 
 // Opens a rewritable file for reading in a case-insensitive manner, checking just a single path
 BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename)
 {
-	return BEL_Cross_open_from_dir(filename, false, g_be_selectedGameInstallation->writableFilesPath, NULL);
+	char trimmedFilename[13];
+	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
+	return BEL_Cross_open_from_dir(trimmedFilename, false, g_be_selectedGameInstallation->writableFilesPath, NULL);
 }
 
 // Opens a rewritable file for overwriting in a case-insensitive manner, checking just a single path
 BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename)
 {
-	return BEL_Cross_open_from_dir(filename, true, g_be_selectedGameInstallation->writableFilesPath, NULL);
+	char trimmedFilename[13];
+	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
+	return BEL_Cross_open_from_dir(trimmedFilename, true, g_be_selectedGameInstallation->writableFilesPath, NULL);
 }
 
 // Used for e.g., the RefKeen cfg file
