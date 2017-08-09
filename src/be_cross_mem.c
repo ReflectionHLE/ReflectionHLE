@@ -34,6 +34,10 @@
 //
 // Previously, there were also 0 EMS bytes and 65520 XMS bytes ranges in use, but
 // these were disabled in be_cross_mem.c (they don't have to be enabled, technically).
+//
+// Furthermore, after moving a few embedded chunks (mostly TEXTSCN.SCN) to the
+// memory managed *here* (rather than using native malloc function separately),
+// we had to increased available (far) memory.
 
 // The very first "segment" in the emulated space
 #define EMULATED_FIRST_SEG 0
@@ -45,7 +49,7 @@
 // Lengths in paragraphs of the different sections
 #define EMULATED_FIRST_PARAGRAPHS 4096
 #define EMULATED_NEAR_PARAGRAPHS 213
-#define EMULATED_FAR_PARAGRAPHS 28037
+#define EMULATED_FAR_PARAGRAPHS 28222 /*28037*/ // FIXME TEST
 // Used to obtain a pointer to some location in mmEmulatedMemSpace
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
