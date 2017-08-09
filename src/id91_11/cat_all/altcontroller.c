@@ -24,7 +24,7 @@
 
 /*** Touch input UI resource definitions ***/
 
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_VER_CATABYSS
 #include "../rsrc/button_enter.xpm"
 #endif
 #include "../rsrc/button_back.xpm"
