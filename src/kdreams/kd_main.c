@@ -738,14 +738,3 @@ void kdreams_exe_main (void)
 	DemoLoop();                                     // DemoLoop calls Quit when everything is done
 	Quit("Demo loop exited???");
 }
-
-// (REFKEEN) Used for loading PIRACY data from DOS EXE (instead of embedding here)
-id0_unsigned_char_t id0_far	*PIRACY;
-
-void RefKeen_Patch_kd_main(void)
-{
-	int PIRACYsize;
-	if (current_gamever_int == 100)
-		if ((PIRACYsize = BE_Cross_load_embedded_rsrc_to_mem("PIRACY.BIN", (memptr *)&PIRACY)) < 0) // Not exactly PIRACY.SCN
-			BE_ST_ExitWithErrorMsg("RefKeen_Patch_kd_main - Failed to load PIRACY file."); // Too early to use Quit here
-}

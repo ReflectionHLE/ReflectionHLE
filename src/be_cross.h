@@ -387,6 +387,16 @@ inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
 	return g_be_emulatedMemSpace + seg*16 + off;
 }
 
+// Used ONLY before calling a main function - this loads a piece of
+// an original (DOS) EXE (a chunk of data) to near memory.
+//
+// This can be done AS LONG AS a copy of the UNCOMPRESSED EXE IMAGE
+// is internally loaded to memory.
+void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize);
+
+// Same as above, but loads data to far memory
+void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize);
+
 // Use this in cases an original DOS program attempts to access contents of
 // segment no. 0 for some reason
 extern uint8_t g_be_cross_dosZeroSeg[];

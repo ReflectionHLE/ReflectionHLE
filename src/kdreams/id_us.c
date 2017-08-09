@@ -4174,22 +4174,23 @@ id0_char_t *gametext, *context, *story;
 
 void RefKeen_Patch_id_us(void)
 {
-	// Just in case these may ever be reloaded
-	BE_Cross_free_mem_loaded_embedded_rsrc(gametext);
-	BE_Cross_free_mem_loaded_embedded_rsrc(context);
-	BE_Cross_free_mem_loaded_embedded_rsrc(story);
-	// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
-	if (!BE_Cross_load_embedded_rsrc_to_mem("GAMETEXT."EXTENSION, (memptr *)&gametext) ||
-	    !BE_Cross_load_embedded_rsrc_to_mem("CONTEXT."EXTENSION, (memptr *)&context) ||
-	    !BE_Cross_load_embedded_rsrc_to_mem("STORY."EXTENSION, (memptr *)&story)
-	)
-		// Similarly we don't use Quit
-		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load at least one file.");
-
-	refkeen_compat_config_filename = (current_gamever_int < 110) ? "CONFIG."EXTENSION : "KDREAMS.CFG";
-
+	// A little bit of cheating: We retain the HELPTEXTLINKED definition
+	// and fake "linking" of data, even if taken off the 2015 port
+	// (for the DOS versions, there's RefKeen_Load_Embedded_Resources_From_kdreams_exe)
 	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
 	{
+		// Just in case these may ever be reloaded
+		BE_Cross_free_mem_loaded_embedded_rsrc(gametext);
+		BE_Cross_free_mem_loaded_embedded_rsrc(context);
+		BE_Cross_free_mem_loaded_embedded_rsrc(story);
+		// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
+		if (!BE_Cross_load_embedded_rsrc_to_mem("GAMETEXT."EXTENSION, (memptr *)&gametext) ||
+		    !BE_Cross_load_embedded_rsrc_to_mem("CONTEXT."EXTENSION, (memptr *)&context) ||
+		    !BE_Cross_load_embedded_rsrc_to_mem("STORY."EXTENSION, (memptr *)&story)
+		)
+			// Similarly we don't use Quit
+			BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load at least one file.");
+
 		CtlPanels[5].help = "Change Graphics Settings";
 		CtlPanels2[0] = CtlPPanels2015Port;
 		CtlPanels2[4] = CtlSPanels2015Port;
@@ -4202,4 +4203,6 @@ void RefKeen_Patch_id_us(void)
 		CtlPanels2[4] = CtlSPanels;
 		CtlPanels2[5] = CtlMPanels;
 	}
+
+	refkeen_compat_config_filename = (current_gamever_int < 110) ? "CONFIG."EXTENSION : "KDREAMS.CFG";
 }

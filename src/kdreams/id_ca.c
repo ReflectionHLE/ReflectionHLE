@@ -1998,9 +1998,39 @@ id0_byte_t	*maphead;
 id0_byte_t	*mapdict;
 id0_byte_t	*audiohead;
 id0_byte_t	*audiodict;
+// (REFKEEN) Used for loading PIRACY data from DOS EXE (instead of hardcoding)
+id0_unsigned_char_t id0_far	*PIRACY;
+// (REFKEEN) Same but for text files shown in id_us.c (may also be loaded from id_us.c)
+extern id0_char_t *gametext, *context, *story;
 
 id0_int_t GRMODE;
 int current_gamever_int;
+
+#ifndef REFKEEN_ARCH_BIG_ENDIAN
+#define RefKeen_Patch_Embedded_Resources(a,b,c,d,e,f,g)
+#else
+static void RefKeen_Patch_Embedded_Resources(int audiodictsize, int audioheadsize, int GFXdictsize, int GFXheadsize, int mapdictsize, id0_byte_t *GFXdict, id0_long_t *GFXhead)
+{
+	for (uint16_t *dictptr = (uint16_t *)audiodict; audiodictsize >= 2; ++dictptr, audiodictsize -= 2)
+		*dictptr = BE_Cross_Swap16LE(*dictptr);
+	for (uint32_t *headptr = (uint32_t *)audiohead; audioheadsize >= 4; ++headptr, audioheadsize -= 4)
+		*headptr = BE_Cross_Swap32LE(*headptr);
+	for (uint16_t *dictptr = (uint16_t *)GFXdict; GFXdictsize >= 2; ++dictptr, GFXdictsize -= 2)
+		*dictptr = BE_Cross_Swap16LE(*dictptr);
+	for (uint32_t *headptr = (uint32_t *)GFXhead; GFXheadsize >= 4; ++headptr, GFXheadsize -= 4)
+		*headptr = BE_Cross_Swap32LE(*headptr);
+	for (uint16_t *dictptr = (uint16_t *)mapdict; mapdictsize >= 2; ++dictptr, mapdictsize -= 2)
+		*dictptr = BE_Cross_Swap16LE(*dictptr);
+
+	mapfiletype *tinfasmapfile = (mapfiletype *)maphead;
+	tinfasmapfile->RLEWtag = BE_Cross_Swap16LE(tinfasmapfile->RLEWtag);
+	for (int i = 0; i < sizeof(tinfasmapfile->headeroffsets)/sizeof(*(tinfasmapfile->headeroffsets)); ++i)
+	{
+		tinfasmapfile->headeroffsets[i] = BE_Cross_Swap32LE(tinfasmapfile->headeroffsets[i]);
+	}
+}
+#endif
+
 
 void RefKeen_Patch_id_ca(void)
 {
@@ -2012,34 +2042,40 @@ void RefKeen_Patch_id_ca(void)
 	id0_byte_t **GFXdictptr = (GRMODE == CGAGR) ? &CGAdict : &EGAdict;
 	id0_long_t **GFXheadptr = (GRMODE == CGAGR) ? &CGAhead : &EGAhead;
 	bool is2015Port = (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015);
-	// Just in case these may ever be reloaded
-	BE_Cross_free_mem_loaded_embedded_rsrc(audiodict);
-	BE_Cross_free_mem_loaded_embedded_rsrc(audiohead);
-	BE_Cross_free_mem_loaded_embedded_rsrc(*GFXdictptr);
-	BE_Cross_free_mem_loaded_embedded_rsrc(*GFXheadptr);
-	BE_Cross_free_mem_loaded_embedded_rsrc(mapdict);
-	BE_Cross_free_mem_loaded_embedded_rsrc(maphead);
-	// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
-	// (Can't use MM_GetPtr before calling game's main function.)
-	if (((audiodictsize = BE_Cross_load_embedded_rsrc_to_mem(is2015Port ? "SOUNDDCT."EXTENSION : "AUDIODCT."EXTENSION, (memptr *)&audiodict)) < 0) ||
-	    ((audioheadsize = BE_Cross_load_embedded_rsrc_to_mem(is2015Port ? "SOUNDHHD."EXTENSION : "AUDIOHHD."EXTENSION, (memptr *)&audiohead)) < 0) ||
-	    ((GRMODE == CGAGR) &&
-	     (
-	      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("CGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
-	      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("CGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
-	     )
-	    ) ||
-	    ((GRMODE == EGAGR) &&
-	     (
-	      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
-	      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
-	     )
-	    ) ||
-	    ((mapdictsize = BE_Cross_load_embedded_rsrc_to_mem("MAPDICT."EXTENSION, (memptr *)&mapdict)) < 0) ||
-	    ((mapheadsize = BE_Cross_load_embedded_rsrc_to_mem("MAPHEAD."EXTENSION, (memptr *)&maphead)) < 0)
-	)
-		// Similarly we don't use Quit
-		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_ca - Failed to load at least one file.");
+
+	if (is2015Port)
+	{
+		// Just in case these may ever be reloaded
+		BE_Cross_free_mem_loaded_embedded_rsrc(audiodict);
+		BE_Cross_free_mem_loaded_embedded_rsrc(audiohead);
+		BE_Cross_free_mem_loaded_embedded_rsrc(*GFXdictptr);
+		BE_Cross_free_mem_loaded_embedded_rsrc(*GFXheadptr);
+		BE_Cross_free_mem_loaded_embedded_rsrc(mapdict);
+		BE_Cross_free_mem_loaded_embedded_rsrc(maphead);
+		// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
+		// (Can't use MM_GetPtr before calling game's main function.)
+		if (((audiodictsize = BE_Cross_load_embedded_rsrc_to_mem("SOUNDDCT."EXTENSION, (memptr *)&audiodict)) < 0) ||
+		    ((audioheadsize = BE_Cross_load_embedded_rsrc_to_mem("SOUNDHHD."EXTENSION, (memptr *)&audiohead)) < 0) ||
+		    ((GRMODE == CGAGR) &&
+		     (
+		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("CGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
+		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("CGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
+		     )
+		    ) ||
+		    ((GRMODE == EGAGR) &&
+		     (
+		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
+		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
+		     )
+		    ) ||
+		    ((mapdictsize = BE_Cross_load_embedded_rsrc_to_mem("MAPDICT."EXTENSION, (memptr *)&mapdict)) < 0) ||
+		    ((mapheadsize = BE_Cross_load_embedded_rsrc_to_mem("MAPHEAD."EXTENSION, (memptr *)&maphead)) < 0)
+		)
+			// Similarly we don't use Quit
+			BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_ca - Failed to load at least one file.");
+
+		RefKeen_Patch_Embedded_Resources(audiodictsize, audioheadsize, GFXdictsize, GFXheadsize, mapdictsize, *GFXdictptr, *GFXheadptr);
+	}
 
 	if (GRMODE == CGAGR)
 	{
@@ -2069,25 +2105,6 @@ void RefKeen_Patch_id_ca(void)
 		refkeen_compat_audiofilename_openerrormsg = is2015Port ? "Can't open KDREAMS.SND!" : "Can't open KDREAMS.AUD!";
 	}
 
-#ifdef REFKEEN_ARCH_BIG_ENDIAN
-	for (uint16_t *dictptr = (uint16_t *)audiodict; audiodictsize >= 2; ++dictptr, audiodictsize -= 2)
-		*dictptr = BE_Cross_Swap16LE(*dictptr);
-	for (uint32_t *headptr = (uint32_t *)audiohead; audioheadsize >= 4; ++headptr, audioheadsize -= 4)
-		*headptr = BE_Cross_Swap32LE(*headptr);
-	for (uint16_t *dictptr = (uint16_t *)(*GFXdictptr); GFXdictsize >= 2; ++dictptr, GFXdictsize -= 2)
-		*dictptr = BE_Cross_Swap16LE(*dictptr);
-	for (uint32_t *headptr = (uint32_t *)(*GFXheadptr); GFXheadsize >= 4; ++headptr, GFXheadsize -= 4)
-		*headptr = BE_Cross_Swap32LE(*headptr);
-	for (uint16_t *dictptr = (uint16_t *)mapdict; mapdictsize >= 2; ++dictptr, mapdictsize -= 2)
-		*dictptr = BE_Cross_Swap16LE(*dictptr);
-
-	mapfiletype *tinfasmapfile = (mapfiletype *)maphead;
-	tinfasmapfile->RLEWtag = BE_Cross_Swap16LE(tinfasmapfile->RLEWtag);
-	for (int i = 0; i < sizeof(tinfasmapfile->headeroffsets)/sizeof(*(tinfasmapfile->headeroffsets)); ++i)
-	{
-		tinfasmapfile->headeroffsets[i] = BE_Cross_Swap32LE(tinfasmapfile->headeroffsets[i]);
-	}
-#endif
 	switch (refkeen_current_gamever)
 	{
 	case BE_GAMEVER_KDREAMSE100:
@@ -2111,3 +2128,43 @@ void RefKeen_Patch_id_ca(void)
 		break;
 	}
 }
+
+void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void)
+{
+	id0_word_t audiodictsize, GFXdictsize, mapdictsize;
+	id0_longword_t audioheadsize, GFXheadsize, mapheadsize;
+	id0_byte_t **GFXdictptr = (GRMODE == CGAGR) ? &CGAdict : &EGAdict;
+	id0_long_t **GFXheadptr = (GRMODE == CGAGR) ? &CGAhead : &EGAhead;
+
+	if (!(audiodict = BE_Cross_BmallocFromEmbeddedData("AUDIODCT."EXTENSION, &audiodictsize)) ||
+	    !(audiohead = BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD."EXTENSION, &audioheadsize)) ||
+	    ((GRMODE == CGAGR) &&
+	     (
+	      !(*GFXdictptr = BE_Cross_BmallocFromEmbeddedData("CGADICT."EXTENSION, &GFXdictsize)) ||
+	      !(*GFXheadptr = BE_Cross_BfarmallocFromEmbeddedData("CGAHEAD."EXTENSION, &GFXheadsize))
+	     )
+	    ) ||
+	    ((GRMODE == EGAGR) &&
+	     (
+	      !(*GFXdictptr = BE_Cross_BmallocFromEmbeddedData("EGADICT."EXTENSION, &GFXdictsize)) ||
+	      !(*GFXheadptr = BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD."EXTENSION, &GFXheadsize))
+	     )
+
+	    ) ||
+	    !(mapdict = BE_Cross_BmallocFromEmbeddedData("MAPDICT."EXTENSION, &mapdictsize)) ||
+	    !(maphead = BE_Cross_BfarmallocFromEmbeddedData("MAPHEAD."EXTENSION, &mapheadsize)) ||
+
+	    !(gametext = BE_Cross_BfarmallocFromEmbeddedData("GAMETEXT."EXTENSION, NULL)) ||
+	    !(context = BE_Cross_BfarmallocFromEmbeddedData("CONTEXT."EXTENSION, NULL)) ||
+	    !(story = BE_Cross_BfarmallocFromEmbeddedData("STORY."EXTENSION, NULL)) ||
+
+	    ((current_gamever_int == 100) &&
+	     !(PIRACY = BE_Cross_BfarmallocFromEmbeddedData("PIRACY.BIN", NULL)) // A bit different from PIRACY.SCN
+	    )
+	)
+		// Don't use quit, yet
+		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_kdreams_exe - Failed to load\nat least one file.");
+
+	RefKeen_Patch_Embedded_Resources(audiodictsize, audioheadsize, GFXdictsize, GFXheadsize, mapdictsize, *GFXdictptr, *GFXheadptr);
+}
+

@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <setjmp.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -213,7 +214,7 @@ static const TCHAR *BEL_Cross_tstr_find_nonascii_ptr(const TCHAR *s)
 	return s;
 }
 
-
+#define REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS 1
 
 // Describes a file originally embedded somewhere (in an EXE file's image)
 typedef struct {
@@ -229,14 +230,22 @@ typedef enum {
 } BE_ExeCompression_T;
 
 typedef struct {
-	const BE_GameFileDetails_T *reqFiles;
 	const BE_EmbeddedGameFileDetails_T *embeddedFiles;
+	const char *subDescription; // NULL if there's nothing to add
+	const char *exeName; // NULL if all we want is a main function pointer
+	void (*mainFuncPtr)(void);
+	void (*embeddedFilesLoaderFuncPtr)(void);
+	int decompExeImageSize;
+	BE_ExeCompression_T compressionType;
+	bool passArgsToMainFunc;
+} BE_EXEFileDetails_T;
+
+typedef struct {
+	const BE_GameFileDetails_T *reqFiles;
+	const BE_EXEFileDetails_T *exeFiles;
 	const TCHAR *writableFilesDir;
 	const char *customInstDescription;
-	const char *exeName;
-	int decompExeImageSize;
 	int digiAudioFreq; // Set to a common frequency of input digitized sounds, or to 0 if unused
-	BE_ExeCompression_T compressionType;
 	BE_GameVer_T verId;
 } BE_GameVerDetails_T;
 
@@ -559,7 +568,8 @@ void BE_Cross_PrepareAppPaths(void)
 #endif
 }
 
-static BE_GameInstallation_T *g_be_selectedGameInstallation;
+static const BE_GameInstallation_T *g_be_selectedGameInstallation;
+static const BE_EXEFileDetails_T *g_be_current_exeFileDetails;
 
 #define BE_CROSS_MAX_GAME_INSTALLATIONS 7
 static BE_GameInstallation_T g_be_gameinstallations[BE_CROSS_MAX_GAME_INSTALLATIONS];
@@ -577,6 +587,12 @@ int BE_Cross_GetGameVerFromInstallation(int num)
 	return g_be_gameinstallations[num].verId;
 }
 
+// Main functions prototypes
+extern void kdreams_exe_main(void);
+extern int loadscn2_main(int argc, const char **argv);
+// Embedded resources loader functions prototypes
+void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void);
+
 #ifdef REFKEEN_VER_KDREAMS
 /*** v1.00 Registered EGA ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse100[] = {
@@ -587,29 +603,39 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse100[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse100[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28984},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1f370},
-	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1f4d0},
-	{"EGADICT.KDR", 1024, 0xa69af202, 0x28188},
-	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x19610},
-	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x20770},
-	{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x28588},
-	{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1c540},
-	{"PIRACY.BIN", 4001, 0x94458def, 0x14970}, // A bit different from PIRACY.SCN
-	{"STORY.KDR", 2487, 0xed0ea5fe, 0x219c0},
+static const BE_EXEFileDetails_T g_be_exefiles_kdreamse100[] = {
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28984},
+			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1f370},
+			{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1f4d0},
+			{"EGADICT.KDR", 1024, 0xa69af202, 0x28188},
+			{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x19610},
+			{"GAMETEXT.KDR", 4686, 0x046c5328, 0x20770},
+			{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x28588},
+			{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1c540},
+			{"PIRACY.BIN", 4001, 0x94458def, 0x14970}, // A bit different from PIRACY.SCN
+			{"STORY.KDR", 2487, 0xed0ea5fe, 0x219c0},
+			{0}
+		},
+
+		NULL,
+		"KDREAMS.EXE",
+		&kdreams_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
+		175424 - 0x1a00,
+		BE_EXECOMPRESSION_PKLITE105,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_kdreamse100 = {
 	g_be_reqgameverfiles_kdreamse100,
-	g_be_embeddedgameverfiles_kdreamse100,
+	g_be_exefiles_kdreamse100,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE100),
 	"Keen Dreams EGA v1.00 (Custom)",
-	"KDREAMS.EXE",
-	175424 - 0x1a00,
 	0,
-	BE_EXECOMPRESSION_PKLITE105,
 	BE_GAMEVER_KDREAMSE100
 };
 
@@ -622,29 +648,39 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc100[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc100[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x281c2},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1e6b0},
-	{"CGADICT.KDR", 1024, 0xaba89759, 0x279c6},
-	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18950},
-	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1e810},
-	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1fab0},
-	{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x27dc6},
-	{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1b880},
-	{"PIRACY.BIN", 4001, 0x94458def, 0x13cb0}, // A bit different from PIRACY.SCN
-	{"STORY.KDR", 2487, 0xed0ea5fe, 0x20d00},
+static const BE_EXEFileDetails_T g_be_exefiles_kdreamsc100[] = {
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x281c2},
+			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1e6b0},
+			{"CGADICT.KDR", 1024, 0xaba89759, 0x279c6},
+			{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18950},
+			{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1e810},
+			{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1fab0},
+			{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x27dc6},
+			{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1b880},
+			{"PIRACY.BIN", 4001, 0x94458def, 0x13cb0}, // A bit different from PIRACY.SCN
+			{"STORY.KDR", 2487, 0xed0ea5fe, 0x20d00},
+			{0}
+		},
+
+		NULL,
+		"KDREAMS.EXE",
+		&kdreams_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
+		172896 - 0x1800,
+		BE_EXECOMPRESSION_PKLITE105,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_kdreamsc100 = {
 	g_be_reqgameverfiles_kdreamsc100,
-	g_be_embeddedgameverfiles_kdreamsc100,
+	g_be_exefiles_kdreamsc100,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSC100),
 	"Keen Dreams CGA v1.00 (Custom)",
-	"KDREAMS.EXE",
-	172896 - 0x1800,
 	0,
-	BE_EXECOMPRESSION_PKLITE105,
 	BE_GAMEVER_KDREAMSC100
 };
 
@@ -659,28 +695,49 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse113[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse113[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a042},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x22880},
-	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x229e0},
-	{"EGADICT.KDR", 1024, 0xa69af202, 0x29846},
-	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1cb20},
-	{"GAMETEXT.KDR", 413, 0xb0df2792, 0x22ef0},
-	{"MAPDICT.KDR", 1020, 0x9faa7213, 0x29c46},
-	{"MAPHEAD.KDR", 11824, 0xb2f36c60, 0x1fa50},
-	{"STORY.KDR", 2526, 0xcafc1d15, 0x23090},
+static const BE_EXEFileDetails_T g_be_exefiles_kdreamse113[] = {
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a042},
+			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x22880},
+			{"CONTEXT.KDR", 1283, 0x5a33439d, 0x229e0},
+			{"EGADICT.KDR", 1024, 0xa69af202, 0x29846},
+			{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1cb20},
+			{"GAMETEXT.KDR", 413, 0xb0df2792, 0x22ef0},
+			{"MAPDICT.KDR", 1020, 0x9faa7213, 0x29c46},
+			{"MAPHEAD.KDR", 11824, 0xb2f36c60, 0x1fa50},
+			{"STORY.KDR", 2526, 0xcafc1d15, 0x23090},
+			{0}
+		},
+
+		NULL,
+		"KDREAMS.EXE",
+		&kdreams_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
+		213536 - 0x1c00,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		NULL,
+
+		"G.E. Load Text Screen v1.10",
+		"LOADSCN.EXE",
+		(void (*)(void))&loadscn2_main,
+		NULL,
+		17712 - 0x200,
+		BE_EXECOMPRESSION_LZEXE9X,
+		true
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
 	g_be_reqgameverfiles_kdreamse113,
-	g_be_embeddedgameverfiles_kdreamse113,
+	g_be_exefiles_kdreamse113,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE113),
 	"Keen Dreams EGA v1.13 (Custom)",
-	"KDREAMS.EXE",
-	213536 - 0x1c00,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_KDREAMSE113
 };
 
@@ -693,28 +750,38 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc105[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamsc105[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28490},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1eb50},
-	{"CGADICT.KDR", 1024, 0xaba89759, 0x27c94},
-	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18df0},
-	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1ecb0},
-	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1ff50},
-	{"MAPDICT.KDR", 1020, 0xfa8362f3, 0x28094},
-	{"MAPHEAD.KDR", 11824, 0x66c122b4, 0x1bd20},
-	{"STORY.KDR", 2487, 0xed0ea5fe, 0x211a0},
+static const BE_EXEFileDetails_T g_be_exefiles_kdreamsc105[] = {
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28490},
+			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1eb50},
+			{"CGADICT.KDR", 1024, 0xaba89759, 0x27c94},
+			{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18df0},
+			{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1ecb0},
+			{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1ff50},
+			{"MAPDICT.KDR", 1020, 0xfa8362f3, 0x28094},
+			{"MAPHEAD.KDR", 11824, 0x66c122b4, 0x1bd20},
+			{"STORY.KDR", 2487, 0xed0ea5fe, 0x211a0},
+			{0}
+		},
+
+		NULL,
+		"KDREAMS.EXE",
+		&kdreams_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
+		202320 - 0x1800,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
 	g_be_reqgameverfiles_kdreamsc105,
-	g_be_embeddedgameverfiles_kdreamsc105,
+	g_be_exefiles_kdreamsc105,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSC105),
 	"Keen Dreams CGA v1.05 (Custom)",
-	"KDREAMS.EXE",
-	202320 - 0x1800,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_KDREAMSC105
 };
 
@@ -731,28 +798,38 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse193[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse193[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x29fba},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21990},
-	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21af0},
-	{"EGADICT.KDR", 1024, 0xa69af202, 0x297be},
-	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1bc30},
-	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x22000},
-	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x29bbe},
-	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1eb60},
-	{"STORY.KDR", 2526, 0xcafc1d15, 0x230a0},
+static const BE_EXEFileDetails_T g_be_exefiles_kdreamse193[] = {
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x29fba},
+			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21990},
+			{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21af0},
+			{"EGADICT.KDR", 1024, 0xa69af202, 0x297be},
+			{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1bc30},
+			{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x22000},
+			{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x29bbe},
+			{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1eb60},
+			{"STORY.KDR", 2526, 0xcafc1d15, 0x230a0},
+			{0}
+		},
+
+		NULL,
+		"KDREAMS.EXE",
+		&kdreams_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
+		213200 - 0x1c00,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
 	g_be_reqgameverfiles_kdreamse193,
-	g_be_embeddedgameverfiles_kdreamse193,
+	g_be_exefiles_kdreamse193,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE193),
 	"Keen Dreams EGA v1.93 (Custom)",
-	"KDREAMS.EXE",
-	213200 - 0x1c00,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_KDREAMSE193
 };
 
@@ -766,28 +843,38 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse120[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreamse120[] = {
-	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a66c},
-	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21d70},
-	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21ed0},
-	{"EGADICT.KDR", 1024, 0xa69af202, 0x29e70},
-	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1c010},
-	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x223e0},
-	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2a270},
-	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1ef40},
-	{"STORY.KDR", 2526, 0xcafc1d15, 0x23480},
+static const BE_EXEFileDetails_T g_be_exefiles_kdreamse120[] = {
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a66c},
+			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21d70},
+			{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21ed0},
+			{"EGADICT.KDR", 1024, 0xa69af202, 0x29e70},
+			{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1c010},
+			{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x223e0},
+			{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2a270},
+			{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1ef40},
+			{"STORY.KDR", 2526, 0xcafc1d15, 0x23480},
+			{0}
+		},
+
+		NULL,
+		"KDREAMS.EXE",
+		&kdreams_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
+		214912 - 0x1c00,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_kdreamse120 = {
 	g_be_reqgameverfiles_kdreamse120,
-	g_be_embeddedgameverfiles_kdreamse120,
+	g_be_exefiles_kdreamse120,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE120),
 	"Keen Dreams EGA v1.20 (Custom)",
-	"KDREAMS.EXE",
-	214912 - 0x1c00,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_KDREAMSE120
 };
 
@@ -812,19 +899,27 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreams2015[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_kdreams2015[] = {
+static const BE_EXEFileDetails_T g_be_exefiles_kdreams2015[] = {
+	{
+		NULL,
+
+		NULL,
+		NULL, // No EXE file
+		&kdreams_exe_main,
+		NULL, // No EXE file
+		0, // No EXE file
+		BE_EXECOMPRESSION_NONE, // No EXE file
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_kdreams2015 = {
 	g_be_reqgameverfiles_kdreams2015,
-	g_be_embeddedgameverfiles_kdreams2015,
+	g_be_exefiles_kdreams2015,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMS2015),
 	"Keen Dreams 2015 (Custom)",
-	NULL, // No EXE file
-	0, // No EXE file
 	44100, // Digitized sounds have such sample rate (in Hz)
-	BE_EXECOMPRESSION_NONE, // No EXE file
 	BE_GAMEVER_KDREAMS2015
 };
 #endif
@@ -1343,7 +1438,6 @@ static int BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, c
 // ***ASSUMPTION: descStr points to a C string literal which is never modified nor deleted!!!***
 static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const BE_GameVerDetails_T *details, const TCHAR *searchdir, const char *descStr, BE_TryAddGameInstallation_ErrorMsg_T *outErrMsg)
 {
-	unsigned char *decompExeImage = NULL;
 	char errorMsg[256];
 
 	if (g_be_gameinstallationsbyver[details->verId])
@@ -1373,10 +1467,20 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 		case 1: // Wrong file found in writableFilesPath: DELETE, then verify it's actually deleted (if there are multiple files differing just by case, this is an error, too.)
 		{
 			// Actually, there's a special case in which we don't delete and even accept the different file...
-			// The EXE still must be the original one, though (used for version identification, and possibly also the extraction of embedded resources)
-			// But it's also possible to have no EXE (e.g., Keen Dreams, 2015 release) so check this
-			if (g_refKeenCfg.manualGameVerMode && ((details->exeName == NULL) || BE_Cross_strcasecmp(fileDetailsBuffer->filename, details->exeName)))
-				continue;
+			// Each EXE must be unmodified, though (used for version identification, and possibly also the extraction of embedded resources)
+			// But it's also possible to have no EXE (e.g., Keen Dreams, 2015 release) so check this.
+			//
+			// KNOWN LIMITATION: Resources embedded in an EXE may *not* be modified.
+			if (g_refKeenCfg.manualGameVerMode)
+			{
+				const BE_EXEFileDetails_T *exeFileDetailsBuffer;
+				for (exeFileDetailsBuffer = details->exeFiles; exeFileDetailsBuffer->mainFuncPtr; ++exeFileDetailsBuffer)
+					if (!BE_Cross_strcasecmp(fileDetailsBuffer->filename, exeFileDetailsBuffer->exeName))
+						break;
+
+				if (!exeFileDetailsBuffer->mainFuncPtr) // fileDetailsBuffer does not refer to an EXE file, so it may be skipped
+					continue;
+			}
 
 			_tremove(tempFullPath);
 			BE_FILE_T fp = BEL_Cross_open_from_dir(fileDetailsBuffer->filename, false, gameInstallation->writableFilesPath, NULL);
@@ -1412,6 +1516,8 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 	BEL_Cross_mkdir(g_be_appDataPath); // Non-recursive
 	BEL_Cross_mkdir(gameInstallation->writableFilesPath);
 
+	// FIXME - REMOVE THIS!
+#if 0
 	for (const BE_EmbeddedGameFileDetails_T *embeddedfileDetailsBuffer = details->embeddedFiles; embeddedfileDetailsBuffer->fileDetails.filename; ++embeddedfileDetailsBuffer)
 	{
 		// Check in writableFilesPath first. If WRONG file is found, REMOVE(!)
@@ -1514,6 +1620,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 	}
 
 	free(decompExeImage);
+#endif
 
 	// Finish with this
 	g_be_gameinstallationsbyver[details->verId] = gameInstallation;
@@ -1584,6 +1691,58 @@ int BE_Cross_load_embedded_rsrc_to_mem(const char *filename, void **ptr)
 void BE_Cross_free_mem_loaded_embedded_rsrc(void *ptr)
 {
 	free(ptr);
+}
+
+static unsigned char *g_be_current_exeImage;
+
+void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize)
+{
+	const BE_EmbeddedGameFileDetails_T *embeddedFile = g_be_current_exeFileDetails->embeddedFiles;
+	if (embeddedFile)
+		for (; embeddedFile->fileDetails.filename && BE_Cross_strcasecmp(name, embeddedFile->fileDetails.filename); ++embeddedFile)
+			;
+
+	if (!embeddedFile || !(embeddedFile->fileDetails.filename))
+		BE_ST_ExitWithErrorMsg("BE_Cross_BmallocFromEmbeddedData: Unrecognized embedded data name!");
+
+#ifdef REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS
+	if (Crc32_ComputeBuf(0, g_be_current_exeImage + embeddedFile->offset, embeddedFile->fileDetails.filesize) != embeddedFile->fileDetails.crc32)
+		BE_ST_ExitWithErrorMsg("BE_Cross_BmallocFromEmbeddedData: Unexpectedly got the wrong CRC32!");
+#endif
+
+	void *ptr = BE_Cross_Bmalloc(embeddedFile->fileDetails.filesize);
+	if (ptr)
+	{
+		memcpy(ptr, g_be_current_exeImage + embeddedFile->offset, embeddedFile->fileDetails.filesize);
+		if (pSize)
+			*pSize = embeddedFile->fileDetails.filesize;
+	}
+	return ptr;
+}
+
+void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
+{
+	const BE_EmbeddedGameFileDetails_T *embeddedFile = g_be_current_exeFileDetails->embeddedFiles;
+	if (embeddedFile)
+		for (; embeddedFile->fileDetails.filename && BE_Cross_strcasecmp(name, embeddedFile->fileDetails.filename); ++embeddedFile)
+			;
+
+	if (!embeddedFile || !(embeddedFile->fileDetails.filename))
+		BE_ST_ExitWithErrorMsg("BE_Cross_BfarmallocFromEmbeddedData: Unrecognized embedded data name!");
+
+#ifdef REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS
+	if (Crc32_ComputeBuf(0, g_be_current_exeImage + embeddedFile->offset, embeddedFile->fileDetails.filesize) != embeddedFile->fileDetails.crc32)
+		BE_ST_ExitWithErrorMsg("BE_Cross_BfarmallocFromEmbeddedData: Unexpectedly got the wrong CRC32!");
+#endif
+
+	void *ptr = BE_Cross_Bfarmalloc(embeddedFile->fileDetails.filesize);
+	if (ptr)
+	{
+		memcpy(ptr, g_be_current_exeImage + embeddedFile->offset, embeddedFile->fileDetails.filesize);
+		if (pSize)
+			*pSize = embeddedFile->fileDetails.filesize;
+	}
+	return ptr;
 }
 
 // MICRO-OPTIMIZATION: Not needed for all games
@@ -2164,8 +2323,6 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 	RefKeen_Patch_kd_demo();
 	extern void RefKeen_Patch_kd_keen(void);
 	RefKeen_Patch_kd_keen();
-	extern void RefKeen_Patch_kd_main(void);
-	RefKeen_Patch_kd_main();
 	extern void RefKeen_Patch_kd_play(void);
 	RefKeen_Patch_kd_play();
 #endif
@@ -2193,6 +2350,132 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 	RefKeen_FillObjStatesWithDOSPointers(); // Saved games compatibility
 	extern void RefKeen_PrepareAltControllerScheme(void);
 	RefKeen_PrepareAltControllerScheme(); // Alternative controller scheme stuff
+}
+
+// Here the magic happens - used to clear a portion of the stack before
+// changing to another "main" function (in case we get a loop).
+// In a way, this should be similar to C++ exception handling,
+// just C-compatible.
+/*static*/ jmp_buf g_be_mainFuncJumpBuffer;
+
+static void BEL_Cross_LoadEXEImageToMem(void)
+{
+	char errorMsg[256];
+	FILE *exeFp = BEL_Cross_open_from_dir(g_be_current_exeFileDetails->exeName, false, g_be_selectedGameInstallation->instPath, NULL);
+	if (!exeFp)
+	{
+		snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_LoadEXEImageToMem: Can't open EXE after checking it!\nFilename: %s", g_be_current_exeFileDetails->exeName);
+		BE_ST_ExitWithErrorMsg(errorMsg);
+	}
+
+	// FIXME - Use BE_Cross_Bmalloc/farmalloc and shuffle things around
+	g_be_current_exeImage = (unsigned char *)malloc(g_be_current_exeFileDetails->decompExeImageSize);
+	if (!g_be_current_exeImage)
+	{
+		fclose(exeFp);
+		snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_LoadEXEImageToMem: Can't allocate memory for unpacked EXE copy!\nFilename: %s", g_be_current_exeFileDetails->exeName);
+		BE_ST_ExitWithErrorMsg(errorMsg);
+	}
+
+	bool success;
+	switch (g_be_current_exeFileDetails->compressionType)
+	{
+	case BE_EXECOMPRESSION_NONE:
+	{
+		uint16_t offsetInPages;
+		fseek(exeFp, 8, SEEK_SET);
+		BE_Cross_readInt16LE(exeFp, &offsetInPages);
+		fseek(exeFp, 16*offsetInPages, SEEK_SET);
+		success = (fread(g_be_current_exeImage, g_be_current_exeFileDetails->decompExeImageSize, 1, exeFp) == 1);
+		break;
+	}
+	case BE_EXECOMPRESSION_LZEXE9X:
+		success = Unlzexe_unpack(exeFp, g_be_current_exeImage, g_be_current_exeFileDetails->decompExeImageSize);
+		break;
+#ifdef ENABLE_PKLITE
+	case BE_EXECOMPRESSION_PKLITE105:
+		success = depklite_unpack(exeFp, g_be_current_exeImage, g_be_current_exeFileDetails->decompExeImageSize);
+		break;
+#endif
+	}
+
+	fclose(exeFp);
+	if (!success)
+	{
+		free(g_be_current_exeImage);
+		snprintf(errorMsg, sizeof(errorMsg), "decompExeImage: Failed to copy EXE in unpacked form!\nFilename: %s", g_be_current_exeFileDetails->exeName);
+		BE_ST_ExitWithErrorMsg(errorMsg);
+	}
+}
+
+static void BEL_Cross_FreeEXEImageFromMem(void)
+{
+	free(g_be_current_exeImage);
+}
+
+static void BEL_Cross_DoCallMainFunc(void)
+{
+	setjmp(g_be_mainFuncJumpBuffer); // Ignore returned value, always doing the same thing
+
+	// Do start!
+	BE_ST_AltControlScheme_Reset();
+
+	if (g_be_current_exeFileDetails->embeddedFiles)
+	{
+		BEL_Cross_LoadEXEImageToMem();
+		g_be_current_exeFileDetails->embeddedFilesLoaderFuncPtr();
+		BEL_Cross_FreeEXEImageFromMem();
+	}
+
+	be_lastSetMainFuncPtr = g_be_current_exeFileDetails->mainFuncPtr;
+	if (g_be_current_exeFileDetails->passArgsToMainFunc)
+		((void (*)(int, const char **))be_lastSetMainFuncPtr)(id0_argc, id0_argv); // HACK
+	else
+		be_lastSetMainFuncPtr();
+}
+
+// When a new main function is called in the middle (BE_Cross_Bexecv),
+// by default the current (non-new) main function is stored as
+// a "one time" function that shall *never* be called again.
+//
+// To prevent this, BE_Cross_Bexecv should get a finalizer function pointer,
+// used to reset the sub-program as represented by current main function
+// to its original state. (Emphasis on global and static variables.)
+#define MAX_NUM_OF_ONE_TIME_MAIN_FUNCS 4
+
+static int g_be_numOfOneTimeMainFuncs = 0;
+static void (*g_be_oneTimeMainFuncs[MAX_NUM_OF_ONE_TIME_MAIN_FUNCS])(void);
+
+void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer)(void), bool passArgsToMainFunc)
+{
+	for (int i = 0; i < g_be_numOfOneTimeMainFuncs; ++i)
+		if (g_be_oneTimeMainFuncs[i] == mainFunc)
+			BE_ST_ExitWithErrorMsg("BE_Cross_Bexecv - One-time function unexpectedly called again!");
+
+	if (finalizer)
+		finalizer();
+	else
+	{
+		if (g_be_numOfOneTimeMainFuncs == MAX_NUM_OF_ONE_TIME_MAIN_FUNCS)
+			BE_ST_ExitWithErrorMsg("BE_Cross_Bexecv - Too many one-time functions called!");
+		g_be_oneTimeMainFuncs[g_be_numOfOneTimeMainFuncs++] = be_lastSetMainFuncPtr;
+	}
+
+	// Note this does NOT work for memory not managed by us (e.g., simple calls to malloc)
+	void BEL_Cross_ClearMemory(void);
+	BEL_Cross_ClearMemory();
+
+	id0_argv = argv;
+	for (id0_argc = 0; *argv; ++id0_argc, ++argv)
+		;
+
+	// Locate the right EXE
+	for (g_be_current_exeFileDetails = g_be_gamever_ptrs[refkeen_current_gamever]->exeFiles; g_be_current_exeFileDetails->mainFuncPtr && (g_be_current_exeFileDetails->mainFuncPtr != mainFunc); ++g_be_current_exeFileDetails)
+		;
+	if (!g_be_current_exeFileDetails->mainFuncPtr)
+		BE_ST_ExitWithErrorMsg("BE_Cross_Bexecv - Unrecognized main function!");
+
+	longjmp(g_be_mainFuncJumpBuffer, 0); // A little bit of magic
 }
 
 void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
@@ -2226,7 +2509,8 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
 		id0_argv = (const char **)argv;
 	}
 
-
+	// *** HUGE *** FIXME - Do take a look at misc or some variant of it
+#if 0
 #ifdef REFKEEN_VER_CATADVENTURES
 	if (misc)
 	{
@@ -2253,6 +2537,9 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
 	extern void kdreams_exe_main(void);
 	be_lastSetMainFuncPtr = kdreams_exe_main;
 #endif
+#endif
+
+	g_be_current_exeFileDetails = g_be_gamever_ptrs[refkeen_current_gamever]->exeFiles; // HUGE FIXME TEST
 
 	extern void BEL_Cross_DoCallMainFunc(void);
 	BEL_Cross_DoCallMainFunc(); // Do a bit more preparation and then begin

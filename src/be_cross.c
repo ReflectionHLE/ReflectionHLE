@@ -17,7 +17,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <setjmp.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -267,64 +266,4 @@ void BE_Cross_GetLocalDate_UNSAFE(int *y, int *m, int *d)
 	*y = tmstruct->tm_year + 1900;
 	*m = tmstruct->tm_mon + 1;
 	*d = tmstruct->tm_mday;
-}
-
-static bool g_be_passArgsToMainFunc;
-// Here the magic happens - used to clear a portion of the stack before
-// changing to another "main" function (in case we get a loop).
-// In a way, this should be similar to C++ exception handling,
-// just C-compatible.
-static jmp_buf g_be_mainFuncJumpBuffer;
-
-// When a new main function is called in the middle (BE_Cross_Bexecv),
-// by default the current (non-new) main function is stored as
-// a "one time" function that shall *never* be called again.
-//
-// To prevent this, BE_Cross_Bexecv should get a finalizer function pointer,
-// used to reset the sub-program as represented by current main function
-// to its original state. (Emphasis on global and static variables.)
-#define MAX_NUM_OF_ONE_TIME_MAIN_FUNCS 4
-
-static int g_be_numOfOneTimeMainFuncs = 0;
-static void (*g_be_oneTimeMainFuncs[MAX_NUM_OF_ONE_TIME_MAIN_FUNCS])(void);
-
-/*static*/ void BEL_Cross_DoCallMainFunc(void)
-{
-	g_be_passArgsToMainFunc = false;
-	setjmp(g_be_mainFuncJumpBuffer); // Ignore returned value, always doing the same thing
-	// Do start!
-	BE_ST_AltControlScheme_Reset();
-	if (g_be_passArgsToMainFunc)
-		((void (*)(int, const char **))be_lastSetMainFuncPtr)(id0_argc, id0_argv); // HACK
-	else
-		be_lastSetMainFuncPtr();
-}
-
-void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer)(void), bool passArgsToMainFunc)
-{
-	for (int i = 0; i < g_be_numOfOneTimeMainFuncs; ++i)
-		if (g_be_oneTimeMainFuncs[i] == mainFunc)
-			BE_ST_ExitWithErrorMsg("BE_Cross_Bexecv - One-time function unexpectedly called again!");
-
-	if (finalizer)
-		finalizer();
-	else
-	{
-		if (g_be_numOfOneTimeMainFuncs == MAX_NUM_OF_ONE_TIME_MAIN_FUNCS)
-			BE_ST_ExitWithErrorMsg("BE_Cross_Bexecv - Too many one-time functions called!");
-		g_be_oneTimeMainFuncs[g_be_numOfOneTimeMainFuncs++] = be_lastSetMainFuncPtr;
-	}
-
-	// Note this does NOT work for memory not managed by us (e.g., simple calls to malloc)
-	void BEL_Cross_ClearMemory(void);
-	BEL_Cross_ClearMemory();
-
-	id0_argv = argv;
-	for (id0_argc = 0; *argv; ++id0_argc, ++argv)
-		;
-
-	be_lastSetMainFuncPtr = mainFunc;
-	g_be_passArgsToMainFunc = passArgsToMainFunc;
-
-	longjmp(g_be_mainFuncJumpBuffer, 0); // A little bit of magic
 }
