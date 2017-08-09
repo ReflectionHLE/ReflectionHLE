@@ -787,10 +787,12 @@ void ShowTextScreen(id0_int_t screen)
 	if (!screen)
 	{
 		BE_ST_textbackground(4);
-#ifdef GAMEVER_SHAREWARE
-		WriteColoredTextAt(14,5,3," GAMER'S EDGE Electronic Catalog - Vol.1 - The Catacomb 3-D Adventures  ");
-#elif (defined GAMEVER_CATABYSS)
-		WriteColoredTextAt(14,5,3,"              Hints & Solutions for THE CATACOMB ABYSS 3-D              ");
+#ifdef GAMEVER_CATABYSS
+		WriteColoredTextAt(14,5,3,(refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? " GAMER'S EDGE Electronic Catalog - Vol.1 - The Catacomb 3-D Adventures  " : "              Hints & Solutions for THE CATACOMB ABYSS 3-D              ");
+//#ifdef GAMEVER_SHAREWARE
+//		WriteColoredTextAt(14,5,3," GAMER'S EDGE Electronic Catalog - Vol.1 - The Catacomb 3-D Adventures  ");
+//#elif (defined GAMEVER_CATABYSS)
+//		WriteColoredTextAt(14,5,3,"              Hints & Solutions for THE CATACOMB ABYSS 3-D              ");
 #elif (defined GAMEVER_CATARM)
 		WriteColoredTextAt(14,5,3,"           Hints & Solutions for THE CATACOMB ARMAGEDDON 3-D            ");
 #elif (defined GAMEVER_CATAPOC)
@@ -809,8 +811,10 @@ void ShowTextScreen(id0_int_t screen)
 		WriteColoredTextAt(0,33,4,"How to use this");
 		WriteColoredTextAt(4,15,5,"* HELP *");
 		WriteColoredTextAt(4,29,5,"\xBA                      \xBA");
-#ifdef GAMEVER_SHAREWARE
-		WriteColoredTextAt(0,32,5,"Electronic Catalog");
+#ifdef GAMEVER_CATABYSS
+		WriteColoredTextAt(0,32,5,(refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? "Electronic Catalog" : "    Hint Book     ");
+//#ifdef GAMEVER_SHAREWARE
+//		WriteColoredTextAt(0,32,5,"Electronic Catalog");
 #else
 		WriteColoredTextAt(0,32,5,"    Hint Book     ");
 #endif
@@ -818,7 +822,10 @@ void ShowTextScreen(id0_int_t screen)
 		WriteColoredTextAt(4,29,6,"\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC");
 	}
 
-#ifdef GAMEVER_SHAREWARE
+#ifdef GAMEVER_CATABYSS
+//#ifdef GAMEVER_SHAREWARE
+if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
+{
 	WriteColoredTextAt(1,8,offset+8,"VIEWING THIS ELECTRONIC CATALOG");
 	WriteColoredTextAt(0,10,offset+9,"\xF9 Use the        or      keys to view the screens in this catalog.");
 	WriteColoredTextAt(4,20,offset+9,"ARROWS");
@@ -839,7 +846,11 @@ void ShowTextScreen(id0_int_t screen)
 
 	if (screen)
 		WriteColoredTextAt(8,13,23,"- Press any key now to return to the Electronic Catalog. -");
-#else
+}
+else
+#endif
+{
+//#else
 
 #ifdef GAMEVER_CATABYSS
 #define EP_OFFSET 0
@@ -867,7 +878,8 @@ void ShowTextScreen(id0_int_t screen)
 
 	if (screen)
 		WriteColoredTextAt(8,13,23,"  - Press any key now to return to Hints and Solutions. -");
-#endif
+}
+//#endif
 }
 
 //#endif // GAMEVER_SLIDECAT
