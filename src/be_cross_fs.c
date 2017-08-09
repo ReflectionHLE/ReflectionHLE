@@ -990,9 +990,6 @@ static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
 };
 #endif
 
-// TODO: Port DEMOCAT/HINTCAT and figure out a way to support the relevant data
-// (possibly optionally, except for Abyss v1.13, where INTRO may call DEMOCAT)
-
 #ifdef REFKEEN_VER_CATABYSS
 /*** v1.13 (Shareware) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
@@ -1015,8 +1012,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
 	{"SHP10.ABS", 329, 0xaa51f92a},
 	{"SHP11.ABS", 10595, 0x5a95691e},
 	{"SHP12.ABS", 9182, 0x378b5984},
-	// Looks like DEMOCAT stuff; Let's require these since
-	// vanilla INTRO may launch DEMOCAT.
+	// Looks like DEMOCAT stuff; Let's require these.
 	{"ALTAR.CAT", 15014, 0x833d1ca7},
 	{"APC.CAT", 12828, 0x009ec08a},
 	{"CEMETRY.CAT", 14983, 0x8cfb3741},
@@ -1086,9 +1082,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss124[] = {
 	{"SHP10.ABS", 329, 0xaa51f92a},
 	{"SHP11.ABS", 10328, 0x08ee65f4},
 	{"SHP12.ABS", 1652, 0xbeb87fbd},
-	// HINTCAT stuff similar to DEMOCAT; Maybe not accessible via the
-	// version of INTRO used in v1.24 (actually named CATABYSS.EXE) but
-	// it may be good to require these too.
+	// HINTCAT stuff similar to DEMOCAT; Require these as well.
 	{"AQUDUCT.HNT", 7886, 0x66a11ac1},
 	{"CEMETRY.HNT", 10376, 0xf7b3f888},
 	{"COVEN.HNT", 13550, 0xc3fdd8a4},
