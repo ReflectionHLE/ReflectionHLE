@@ -588,10 +588,18 @@ int BE_Cross_GetGameVerFromInstallation(int num)
 }
 
 // Main functions prototypes
-extern void kdreams_exe_main(void);
-extern int loadscn2_main(int argc, const char **argv);
+void kdreams_exe_main(void);
+int loadscn2_main(int argc, const char **argv);
+void cat3d_exe_main(void);
+void abysgame_exe_main(void);
+void armgame_exe_main(void);
+void apocgame_exe_main(void);
+void intro_exe_main(void);
+void slidecat_exe_main(void);
 // Embedded resources loader functions prototypes
 void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void);
+void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
+void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void);
 
 #ifdef REFKEEN_VER_KDREAMS
 /*** v1.00 Registered EGA ***/
@@ -934,25 +942,35 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d100[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d100[] = {
-	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22c64},
-	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1aa60},
-	{"EGADICT.C3D", 1024, 0xab94fb6c, 0x23064},
-	{"EGAHEAD.C3D", 1437, 0x33772bb0, 0x1abd0},
-	{"INTROSCN.SCN", 4008, 0xec236c5c, 0x192c0},
-	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1b170},
+static const BE_EXEFileDetails_T g_be_exefiles_cat3d100[] = {
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22c64},
+			{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1aa60},
+			{"EGADICT.C3D", 1024, 0xab94fb6c, 0x23064},
+			{"EGAHEAD.C3D", 1437, 0x33772bb0, 0x1abd0},
+			{"INTROSCN.SCN", 4008, 0xec236c5c, 0x192c0},
+			{"MTEMP.TMP", 618, 0x6b7cc556, 0x1b170},
+			{0}
+		},
+
+		NULL,
+		"CAT3D.EXE",
+		&cat3d_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		191536 - 0x1400,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_cat3d100 = {
 	g_be_reqgameverfiles_cat3d100,
-	g_be_embeddedgameverfiles_cat3d100,
+	g_be_exefiles_cat3d100,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CAT3D100),
 	"Catacomb 3-D v1.00 (Custom)",
-	"CAT3D.EXE",
-	191536 - 0x1400,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CAT3D100
 };
 
@@ -965,27 +983,37 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d122[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_cat3d122[] = {
-	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22bd8},
-	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1a710},
-	{"EGADICT.C3D", 1024, 0xb26a70a6, 0x22fd8},
-	{"EGAHEAD.C3D", 1437, 0x3fde00c4, 0x1a880},
-	// INTROSCN.SCN isn't displayed in vanilla v1.22, but it's still
-	// allocated and in use, so it's safer to require this chunk
-	{"INTROSCN.SCN", 4008, 0xcf9696af, 0x18f70},
-	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1ae20},
+static const BE_EXEFileDetails_T g_be_exefiles_cat3d122[] = {
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22bd8},
+			{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1a710},
+			{"EGADICT.C3D", 1024, 0xb26a70a6, 0x22fd8},
+			{"EGAHEAD.C3D", 1437, 0x3fde00c4, 0x1a880},
+			// INTROSCN.SCN isn't displayed in vanilla v1.22, but it's still
+			// allocated and in use, so it's safer to require this chunk
+			{"INTROSCN.SCN", 4008, 0xcf9696af, 0x18f70},
+			{"MTEMP.TMP", 618, 0x6b7cc556, 0x1ae20},
+			{0}
+		},
+
+		NULL,
+		"CAT3D.EXE",
+		&cat3d_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		191904 - 0x1600,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
 	g_be_reqgameverfiles_cat3d122,
-	g_be_embeddedgameverfiles_cat3d122,
+	g_be_exefiles_cat3d122,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CAT3D122),
 	"Catacomb 3-D v1.22 (Custom)",
-	"CAT3D.EXE",
-	191904 - 0x1600,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CAT3D122
 };
 #endif
@@ -1042,24 +1070,60 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss113[] = {
-	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2554c},
-	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a210},
-	{"EGADICT.ABS", 1024, 0xbb760f1d, 0x2594c},
-	{"EGAHEAD.ABS", 1881, 0xe31e1c3b, 0x1a3b0},
-	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1ab10},
+static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
+	// Intro EXE is the first one we begin from
+	{
+		NULL,
+
+		NULL,
+		"INTRO.EXE",
+		(void (*)(void))&intro_exe_main,
+		NULL,
+		36560 - 0x600,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2554c},
+			{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a210},
+			{"EGADICT.ABS", 1024, 0xbb760f1d, 0x2594c},
+			{"EGAHEAD.ABS", 1881, 0xe31e1c3b, 0x1a3b0},
+			{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1ab10},
+			{0}
+		},
+
+		NULL,
+		"CATABYSS.EXE",
+		&abysgame_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		201120 - 0x1a00,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"TEXTSCN.SCN", 4000, 0xf7773f42, 0xbf70},
+			{0}
+		},
+
+		"Electronic Calatog v1.00",
+		"DEMOCAT.EXE",
+		&slidecat_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
+		62800 - 0x800,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_catabyss113 = {
 	g_be_reqgameverfiles_catabyss113,
-	g_be_embeddedgameverfiles_catabyss113,
+	g_be_exefiles_catabyss113,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATABYSS113),
 	"Catacomb Abyss v1.13 (Custom)",
-	"CATABYSS.EXE",
-	201120 - 0x1a00,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CATABYSS113
 };
 
@@ -1108,24 +1172,60 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss124[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catabyss124[] = {
-	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2543a},
-	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a140},
-	{"EGADICT.ABS", 1024, 0x63eb06d3, 0x2583a},
-	{"EGAHEAD.ABS", 1881, 0x94967205, 0x1a2e0},
-	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1aa40},
+static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
+	// Again, intro EXE is the first one we begin from
+	{
+		NULL,
+
+		NULL,
+		"CATABYSS.EXE",
+		(void (*)(void))&intro_exe_main,
+		NULL,
+		36064 - 0x600,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2543a},
+			{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a140},
+			{"EGADICT.ABS", 1024, 0x63eb06d3, 0x2583a},
+			{"EGAHEAD.ABS", 1881, 0x94967205, 0x1a2e0},
+			{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1aa40},
+			{0}
+		},
+
+		NULL,
+		"ABYSGAME.EXE",
+		&abysgame_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		200848 - 0x1a00,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6f60},
+			{0}
+		},
+
+		"Catacomb Abyss 3-D Hint Book v1.01",
+		"HINTCAT.EXE",
+		&slidecat_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
+		39968 - 0x600,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_catabyss124 = {
 	g_be_reqgameverfiles_catabyss124,
-	g_be_embeddedgameverfiles_catabyss124,
+	g_be_exefiles_catabyss124,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATABYSS124),
 	"Catacomb Abyss v1.24 (Custom)",
-	"ABYSGAME.EXE",
-	200848 - 0x1a00,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CATABYSS124
 };
 #endif
@@ -1177,24 +1277,59 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catarm102[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catarm102[] = {
-	{"AUDIODCT.ARM", 1024, 0x8f1d4dd2, 0x240b0},
-	{"AUDIOHHD.ARM", 428, 0x5f863ad2, 0x1bb20},
-	{"EGADICT.ARM", 1024, 0xab662db8, 0x244b0},
-	{"EGAHEAD.ARM", 1977, 0x711cbf10, 0x1bcd0},
-	{"MTEMP.TMP", 834, 0x546f00d1, 0x1b7d0},
+static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
+	{
+		NULL,
+
+		NULL,
+		"CATARM.EXE",
+		(void (*)(void))&intro_exe_main,
+		NULL,
+		36448 - 0x600,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.ARM", 1024, 0x8f1d4dd2, 0x240b0},
+			{"AUDIOHHD.ARM", 428, 0x5f863ad2, 0x1bb20},
+			{"EGADICT.ARM", 1024, 0xab662db8, 0x244b0},
+			{"EGAHEAD.ARM", 1977, 0x711cbf10, 0x1bcd0},
+			{"MTEMP.TMP", 834, 0x546f00d1, 0x1b7d0},
+			{0}
+		},
+
+		NULL,
+		"ARMGAME.EXE",
+		&armgame_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		198304 - 0x2000,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6dd0},
+			{0}
+		},
+
+		"Catacomb Armageddon 3-D Hint Book v1.12",
+		"HINTCAT.EXE",
+		&slidecat_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
+		39296 - 0x600,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_catarm102 = {
 	g_be_reqgameverfiles_catarm102,
-	g_be_embeddedgameverfiles_catarm102,
+	g_be_exefiles_catarm102,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATARM102),
 	"Catacomb Armageddon v1.02 (Custom)",
-	"ARMGAME.EXE",
-	198304 - 0x2000,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CATARM102
 };
 #endif
@@ -1245,24 +1380,60 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catapoc101[] = {
 	{0}
 };
 
-static const BE_EmbeddedGameFileDetails_T g_be_embeddedgameverfiles_catapoc101[] = {
-	{"AUDIODCT.APC", 1024, 0x26658498, 0x2439c},
-	{"AUDIOHHD.APC", 452, 0x76adb051, 0x1bd80},
-	{"EGADICT.APC", 1024, 0xb2ed57fd, 0x2479c},
-	{"EGAHEAD.APC", 2049, 0xd7548ed8, 0x1bf50},
-	{"MTEMP.TMP", 834, 0x90742162, 0x1ba30},
+static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
+	{
+		NULL,
+
+		NULL,
+		"CATAPOC.EXE",
+		(void (*)(void))&intro_exe_main,
+		NULL,
+		40208 - 0x600,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"AUDIODCT.APC", 1024, 0x26658498, 0x2439c},
+			{"AUDIOHHD.APC", 452, 0x76adb051, 0x1bd80},
+			{"EGADICT.APC", 1024, 0xb2ed57fd, 0x2479c},
+			{"EGAHEAD.APC", 2049, 0xd7548ed8, 0x1bf50},
+			{"MTEMP.TMP", 834, 0x90742162, 0x1ba30},
+			{0}
+		},
+
+		NULL,
+		"APOCGAME.EXE",
+		&apocgame_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		200064 - 0x2200,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		(const BE_EmbeddedGameFileDetails_T []) {
+			{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6ef0},
+			{0}
+		},
+
+
+		"Catacomb Apocalypse 3-D Hint Book v1.13",
+		"HINTCAT.EXE",
+		&slidecat_exe_main,
+		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
+		39568 - 0x600,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
 	{0}
 };
 
 static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
 	g_be_reqgameverfiles_catapoc101,
-	g_be_embeddedgameverfiles_catapoc101,
+	g_be_exefiles_catapoc101,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATAPOC101),
 	"Catacomb Apocalypse v1.01 (Custom)",
-	"APOCGAME.EXE",
-	200064 - 0x2200,
 	0,
-	BE_EXECOMPRESSION_LZEXE9X,
 	BE_GAMEVER_CATAPOC101
 };
 #endif
@@ -2324,9 +2495,11 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 
 	g_refKeenCfg.lastSelectedGameVer = refkeen_current_gamever = g_be_selectedGameInstallation->verId;
 
+#ifdef REFKEEN_VER_KDREAMS
 	// MUST be the first patched file (at least for Keen Dreams)
 	extern void RefKeen_Patch_id_ca(void);
 	RefKeen_Patch_id_ca();
+#endif
 	extern void RefKeen_Patch_id_us(void);
 	RefKeen_Patch_id_us();
 #ifdef REFKEEN_VER_KDREAMS

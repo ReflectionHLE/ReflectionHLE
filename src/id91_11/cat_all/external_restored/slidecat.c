@@ -817,3 +817,13 @@ void RefKeen_Patch_slidecat(void)
 	ParmStrings = ParmStrings_Reg;
 #endif
 }
+
+// (REFKEEN) Used for loading data from DOS EXE (instead of hardcoding)
+id0_byte_t id0_far *textscn;
+
+void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void)
+{
+	if (!(textscn = BE_Cross_BfarmallocFromEmbeddedData("TEXTSCN.SCN", NULL)))
+		// Don't use quit, yet
+		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_slidecat_exe - Failed to load TEXTSCN.SCN.");
+}

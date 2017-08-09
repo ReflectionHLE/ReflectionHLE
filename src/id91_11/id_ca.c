@@ -2195,34 +2195,35 @@ void CA_CacheMarks (const id0_char_t *title)
 			finishcachebox();
 }
 
-// (REFKEEN) Used for patching version-specific stuff
+// (REFKEEN) Used for loading data from DOS EXE (instead of hardcoding)
 id0_long_t	*EGAhead;
 id0_byte_t	*EGAdict;
 id0_byte_t	*maphead;
 id0_byte_t	*audiohead;
 id0_byte_t	*audiodict;
 
-void RefKeen_Patch_id_ca(void)
+id0_char_t	*introscn; // ID_US
+
+void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void)
 {
-	int audiodictsize, audioheadsize, GFXdictsize, GFXheadsize, mapheadsize;
+	id0_word_t audiodictsize, GFXdictsize;
+	id0_longword_t audioheadsize, GFXheadsize, mapheadsize;
 	// Basically covering the possibility of CGA support
 	id0_byte_t **GFXdictptr = &EGAdict;
 	id0_long_t **GFXheadptr = &EGAhead;
-	// Just in case these may ever be reloaded
-	BE_Cross_free_mem_loaded_embedded_rsrc(audiodict);
-	BE_Cross_free_mem_loaded_embedded_rsrc(audiohead);
-	BE_Cross_free_mem_loaded_embedded_rsrc(EGAdict);
-	BE_Cross_free_mem_loaded_embedded_rsrc(EGAhead);
-	BE_Cross_free_mem_loaded_embedded_rsrc(maphead);
-	// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
-	if (((audiodictsize = BE_Cross_load_embedded_rsrc_to_mem("AUDIODCT."EXTENSION, (memptr *)&audiodict)) < 0) ||
-	    ((audioheadsize = BE_Cross_load_embedded_rsrc_to_mem("AUDIOHHD."EXTENSION, (memptr *)&audiohead)) < 0) ||
-	    ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
-	    ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0) ||
-	    ((mapheadsize = BE_Cross_load_embedded_rsrc_to_mem("MTEMP.TMP", (memptr *)&maphead)) < 0)
+
+	if (!(audiodict = BE_Cross_BmallocFromEmbeddedData("AUDIODCT."EXTENSION, &audiodictsize)) ||
+	    !(audiohead = BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD."EXTENSION, &audioheadsize)) ||
+	    !(*GFXdictptr = BE_Cross_BmallocFromEmbeddedData("EGADICT."EXTENSION, &GFXdictsize)) ||
+	    !(*GFXheadptr = BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD."EXTENSION, &GFXheadsize)) ||
+	    !(maphead = BE_Cross_BfarmallocFromEmbeddedData("MTEMP.TMP", &mapheadsize))
+#ifdef REFKEEN_VER_CAT3D
+	    ||
+	    !(introscn = BE_Cross_BfarmallocFromEmbeddedData("INTROSCN.SCN", NULL))
+#endif
 	)
-		// Similarly we don't use Quit
-		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_ca - Failed to load at least one file.");
+		// Don't use quit, yet
+		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_catacombs_exe - Failed to load\nat least one file.");
 
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 	for (uint16_t *dictptr = (uint16_t *)audiodict; audiodictsize >= 2; ++dictptr, audiodictsize -= 2)

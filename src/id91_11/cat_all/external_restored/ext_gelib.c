@@ -44,11 +44,12 @@
 
 // REFKEEN - Always define these here
 //#ifdef GAMEVER_SLIDECAT
-extern id0_byte_t id0_far textscn[];
+extern id0_byte_t id0_far *textscn;
 extern struct Shape page_shapes[];
 extern id0_int_t pg_curr;
 extern id0_int_t screenmode;
 // FIXME DEBUG
+#if 0
 id0_byte_t id0_far textscn[] = {
   0xdb, 0x04, 0xdb, 0x04, 0xdb, 0x04, 0xdf, 0x04, 0xdf, 0x04, 0xdf, 0x04,
   0xdf, 0x04, 0xdf, 0x04, 0xdf, 0x04, 0xdf, 0x04, 0xdf, 0x04, 0xdf, 0x04,
@@ -386,6 +387,7 @@ id0_byte_t id0_far textscn[] = {
   0x20, 0x4a, 0x20, 0x4a
 };
 unsigned int textscn_scn_len = 4000;
+#endif
 //#endif
 // REFKEEN (DIFFERENCE FROM VANILLA CAT) - Share these with game EXE
 //id0_unsigned_t ylookup[VIRTUALHEIGHT];

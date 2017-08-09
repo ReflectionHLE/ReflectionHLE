@@ -1487,20 +1487,10 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,const id0_char_t *def,id0_b
 }
 
 // (REFKEEN) Used for patching version-specific stuff
-id0_char_t *introscn;
 id0_word_t refkeen_compat_id_us_printx_offset;
 
 void RefKeen_Patch_id_us(void)
 {
-#ifdef REFKEEN_VER_CAT3D
-	// Just in case this may ever be reloaded
-	BE_Cross_free_mem_loaded_embedded_rsrc(introscn);
-	// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
-	if (BE_Cross_load_embedded_rsrc_to_mem("INTROSCN.SCN", (memptr *)&introscn) < 0)
-		// Similarly we don't use Quit
-		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load INTROSCN.SCN.");
-#endif
-
 	switch (refkeen_current_gamever)
 	{
 #ifdef REFKEEN_VER_CAT3D
