@@ -558,7 +558,7 @@ if (refkeen_current_gamever == BE_GAMEVER_CATABYSS113)
 		if (returntostart)
 		{
 			// REFKEEN - This is unsupported!
-			Quit("Can't execute START.EXE - More precisely, unsupported in this port.");
+			BE_ST_ExitWithErrorMsg("Can't execute START.EXE - More precisely, unsupported in this port.");
 #if 0
 			if (execv("START.EXE", id0_argv) == -1)
 			{
