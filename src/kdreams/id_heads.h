@@ -80,6 +80,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// REFKEEN - Define these for backwards compatibility
+#define id0_argc g_be_argc
+#define id0_argv g_be_argv
+
 typedef	bool id0_boolean_t;
 
 // WARNING:
@@ -130,10 +134,6 @@ typedef	struct
 #define id0_seg
 
 #endif
-
-// Initialized before calling vanilla Keen Dreams' (now renamed) main function
-extern int id0_argc;
-extern const char **id0_argv;
 
 // REFKEEN - Change GRMODE from a macro to a variable
 extern id0_int_t GRMODE;

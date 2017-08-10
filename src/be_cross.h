@@ -420,9 +420,9 @@ void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize);
 // segment no. 0 for some reason
 extern uint8_t g_be_cross_dosZeroSeg[];
 
-// Variables set for current program - FIXME Rename
-extern const char **id0_argv;
-extern int id0_argc;
+// Variables set before calling a main function
+extern const char **g_be_argv;
+extern int g_be_argc;
 
 extern void (*be_lastSetMainFuncPtr)(void);
 

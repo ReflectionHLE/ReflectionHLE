@@ -139,6 +139,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// REFKEEN - Define these for backwards compatibility
+#define id0_argc g_be_argc
+#define id0_argv g_be_argv
+
 typedef	bool id0_boolean_t;
 
 // WARNING:
@@ -199,10 +203,6 @@ typedef	struct
 // We add a workaround here since we don't store EGA write/read mode
 // related values internally (we almost don't need these).
 extern bool id0_workaround_catadventures_nodraw_digits_on_startup;
-
-// Initialized before calling vanilla app's (now renamed) main function
-extern int id0_argc;
-extern const char **id0_argv;
 
 extern id0_char_t *introscn;
 

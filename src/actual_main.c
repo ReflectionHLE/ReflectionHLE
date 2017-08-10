@@ -24,8 +24,8 @@
 #error "At least one of REFKEEN_ENABLE_LAUNCHER and REFKEEN_CONFIG_ENABLE_CMDLINE must be defined!"
 #endif
 
-int id0_argc;
-const char **id0_argv;
+int g_be_argc;
+const char **g_be_argv;
 
 void (*be_lastSetMainFuncPtr)(void);
 

@@ -56,6 +56,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+
+// REFKEEN - Define these for backwards compatibility
+#define id0_argc g_be_argc
+#define id0_argv g_be_argv
+
 typedef	bool id0_boolean_t;
 
 // WARNING:
@@ -87,10 +92,6 @@ typedef uint32_t id0_longword_t;
 #define id0_far
 #define id0_huge
 #define id0_seg
-
-// Initialized before calling vanilla app's (now renamed) main function
-extern int id0_argc;
-extern const char **id0_argv;
 
 // WARNING: THIS IS *DIFFERENT* FROM THE ID_MM.H DEFINITION!!!
 // ... in 16-bit code (far vs segment pointer).

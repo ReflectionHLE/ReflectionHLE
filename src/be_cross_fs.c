@@ -2577,7 +2577,7 @@ static void BEL_Cross_DoCallMainFunc(void)
 
 	be_lastSetMainFuncPtr = g_be_current_exeFileDetails->mainFuncPtr;
 	if (g_be_current_exeFileDetails->passArgsToMainFunc)
-		((void (*)(int, const char **))be_lastSetMainFuncPtr)(id0_argc, id0_argv); // HACK
+		((void (*)(int, const char **))be_lastSetMainFuncPtr)(g_be_argc, g_be_argv); // HACK
 	else
 		be_lastSetMainFuncPtr();
 }
@@ -2613,8 +2613,8 @@ void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer
 	void BEL_Cross_ClearMemory(void);
 	BEL_Cross_ClearMemory();
 
-	id0_argv = argv;
-	for (id0_argc = 0; *argv; ++id0_argc, ++argv)
+	g_be_argv = argv;
+	for (g_be_argc = 0; *argv; ++g_be_argc, ++argv)
 		;
 
 	// Locate the right EXE
@@ -2636,7 +2636,7 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, void (*mainFuncPt
 	BE_ST_InitAudio(); // Do this now, since we can tell if we want digi audio out or not
 
 	// Prepare arguments for ported game code
-	id0_argc = argc;
+	g_be_argc = argc;
 	// HACK: In Keen Dreams CGA v1.05, even if argc == 1, argv[1] is accessed...
 	// Furthermore, in Keen Dreams Shareware v1.13, argc, argv[1], argv[2] and argv[3] are all modified...
 	// And then in Catacomb Abyss, argv[3] is compared to "1". In its INTROSCN.EXE argv[4] is compared...
@@ -2649,12 +2649,12 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, void (*mainFuncPt
 		{
 			our_workaround_argv[currarg] = argv[currarg];
 		}
-		id0_argv = our_workaround_argv;
+		g_be_argv = our_workaround_argv;
 	}
 	else
 	{
 		// REFKEEN - Hack, but we don't access argv directly anyway...
-		id0_argv = (const char **)argv;
+		g_be_argv = (const char **)argv;
 	}
 
 	// Locate the right EXE
