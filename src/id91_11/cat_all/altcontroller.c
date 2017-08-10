@@ -24,9 +24,6 @@
 
 /*** Touch input UI resource definitions ***/
 
-#ifdef REFKEEN_VER_CATABYSS
-#include "../rsrc/button_enter.xpm"
-#endif
 #include "../rsrc/button_back.xpm"
 #include "../rsrc/button_debug_keys.xpm"
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
@@ -593,22 +590,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_slidecat = {
 #ifdef REFKEEN_VER_CATABYSS
 BE_ST_ControllerMapping g_ingame_altcontrol_mapping_printerdialog = {
 	{0},
-	(BE_ST_OnscreenTouchControl[])
-	{
-		{button_enter_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-39-8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-22-8},
-		{button_back_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-22-8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-39-8},
-		{0}
-	},
-	(BE_ST_TouchControlSingleMap[])
-	{
-		{{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 button_enter_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-39-8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-22-8
-		},
-		{{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		 button_back_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-22-8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-39-8
-		},
-		{0}
-	},
+	NULL,
+	NULL,
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -630,7 +613,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_printerdialog = {
 	},
 	{
 	},
-	false
+	true
 };
 #endif // REFKEEN_VER_CATABYSS
 #endif // REFKEEN_VER_CATADVENTURES
@@ -996,7 +979,6 @@ void RefKeen_PrepareAltControllerScheme(void)
 #ifdef REFKEEN_VER_CATADVENTURES
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_slidecat_init.onScreenTouchControls);
 #ifdef REFKEEN_VER_CATABYSS
-	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_printerdialog.onScreenTouchControls);
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_help.onScreenTouchControls);
 #endif
 #endif
