@@ -70,7 +70,7 @@ id0_int_t UnpackEGAShapeToScreen(struct Shape *SHP,id0_int_t startx,id0_int_t st
 id0_int_t TryGetScanCode/*TryGetKey*/(void);
 
 // REFKEEN - Additional function prototypes (for slidecat)
-void WriteColoredTextAt(id0_int_t color, id0_int_t x, id0_int_t y, id0_char_t *text);
+void WriteColoredTextAt(id0_int_t color, id0_int_t x, id0_int_t y, const id0_char_t *text);
 void PrinterDialog(void);
 void ShowTextScreen(id0_int_t screen);
 

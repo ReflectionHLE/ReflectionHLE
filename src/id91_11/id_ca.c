@@ -2212,14 +2212,14 @@ void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void)
 	id0_byte_t **GFXdictptr = &EGAdict;
 	id0_long_t **GFXheadptr = &EGAhead;
 
-	if (!(audiodict = BE_Cross_BmallocFromEmbeddedData("AUDIODCT."EXTENSION, &audiodictsize)) ||
-	    !(audiohead = BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD."EXTENSION, &audioheadsize)) ||
-	    !(*GFXdictptr = BE_Cross_BmallocFromEmbeddedData("EGADICT."EXTENSION, &GFXdictsize)) ||
-	    !(*GFXheadptr = BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD."EXTENSION, &GFXheadsize)) ||
-	    !(maphead = BE_Cross_BfarmallocFromEmbeddedData("MTEMP.TMP", &mapheadsize))
+	if (!(audiodict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("AUDIODCT."EXTENSION, &audiodictsize)) ||
+	    !(audiohead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD."EXTENSION, &audioheadsize)) ||
+	    !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("EGADICT."EXTENSION, &GFXdictsize)) ||
+	    !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD."EXTENSION, &GFXheadsize)) ||
+	    !(maphead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("MTEMP.TMP", &mapheadsize))
 #ifdef REFKEEN_VER_CAT3D
 	    ||
-	    !(introscn = BE_Cross_BfarmallocFromEmbeddedData("INTROSCN.SCN", NULL))
+	    !(introscn = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("INTROSCN.SCN", NULL))
 #endif
 	)
 		// Don't use quit, yet

@@ -246,7 +246,7 @@ asm	int 0x21
 }
 #endif
 
-void WriteColoredTextAt(id0_int_t color, id0_int_t x, id0_int_t y, id0_char_t *text)
+void WriteColoredTextAt(id0_int_t color, id0_int_t x, id0_int_t y, const id0_char_t *text)
 {
 	BE_ST_textcolor(color);
 	BE_ST_MoveTextCursorTo(x-1,y-1);

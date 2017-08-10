@@ -2550,6 +2550,7 @@ void BE_ST_SetScreenMode(int mode)
 	switch (mode)
 	{
 	case 3:
+	{
 		g_sdlTexWidth = VGA_TXT_TEX_WIDTH;
 		g_sdlTexHeight = VGA_TXT_TEX_HEIGHT;
 		g_sdlTxtCursorPosX = g_sdlTxtCursorPosY = 0;
@@ -2565,6 +2566,7 @@ void BE_ST_SetScreenMode(int mode)
 		g_sdlTxtBackground = origTxtBackground;
 		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		break;
+	}
 	case 4:
 		g_sdlTexWidth = GFX_TEX_WIDTH;
 		g_sdlTexHeight = GFX_TEX_HEIGHT;

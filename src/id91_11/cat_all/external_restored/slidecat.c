@@ -71,7 +71,8 @@ static id0_boolean_t returntointro = false;
 static id0_boolean_t returntostart = false;
 #endif
 
-cardtype videocard;
+// REFKEEN - HACK - Make this static so there's no conflict with variable from id_vw.c
+static cardtype videocard;
 
 struct Shape page_shapes[30];
 
@@ -211,7 +212,7 @@ if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113))
 
 	for (i=0;i<30;i++)
 	{
-		pg_scr[i] = BE_Cross_Bfarmalloc(14);
+		pg_scr[i] = (id0_byte_t *)BE_Cross_Bfarmalloc(14);
 	}
 
 	if (!ext_BLoad(SCRIPT_FILENAME, (memptr *)&script_file_ptr))
@@ -828,7 +829,7 @@ id0_byte_t id0_far *textscn;
 
 void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void)
 {
-	if (!(textscn = BE_Cross_BfarmallocFromEmbeddedData("TEXTSCN.SCN", NULL)))
+	if (!(textscn = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("TEXTSCN.SCN", NULL)))
 		// Don't use quit, yet
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_slidecat_exe - Failed to load TEXTSCN.SCN.");
 }
