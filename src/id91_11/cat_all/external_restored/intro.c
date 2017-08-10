@@ -56,10 +56,11 @@ extern const char *refkeen_compat_intro_framebot_str;
 extern const char *refkeen_compat_intro_version_title_str;
 extern const char *refkeen_compat_intro_version_rev_str;
 
-static void SetScreenMode (id0_int_t mode);
-static void SetLineWidth (id0_int_t width);
-static id0_boolean_t IsKeyPressed (void);
-static void WaitForKeyRelease (void);
+// REFKEEN - Functions are shared with other sources now, so they aren't static
+/*static*/ void SetScreenMode (id0_int_t mode);
+/*static*/ void SetLineWidth (id0_int_t width);
+/*static*/ id0_boolean_t IsKeyPressed (void);
+/*static*/ void WaitForKeyRelease (void);
 static void FreeAllShapes();
 
 static id0_int_t screenmode;
@@ -627,7 +628,9 @@ void intro_TrashProg (const id0_char_t *OutMsg, ...)
 	BE_ST_HandleExit(0);
 }
 
-static void SetScreenMode (id0_int_t mode)
+// REFKEEN - Functions are shared with other sources now, so they aren't static
+// (applies to SetScreenMode, as well as a few other functions below)
+/*static*/ void SetScreenMode (id0_int_t mode)
 {
 	switch (mode)
 	{
@@ -654,7 +657,7 @@ static void SetScreenMode (id0_int_t mode)
 ====================
 */
 
-static void SetLineWidth (id0_int_t width)
+/*static*/ void SetLineWidth (id0_int_t width)
 {
   id0_int_t i,offset;
 
@@ -682,7 +685,7 @@ static void SetLineWidth (id0_int_t width)
 
 //===========================================================================
 
-static id0_boolean_t IsKeyPressed (void)
+/*static*/ id0_boolean_t IsKeyPressed (void)
 {
 	return BE_ST_KbHit();
 #if 0
@@ -697,7 +700,7 @@ is_pressed:
 #endif
 }
 
-static void WaitForKeyRelease (void)
+/*static*/ void WaitForKeyRelease (void)
 {
 	if (IsKeyPressed())
 		while (IsKeyPressed())

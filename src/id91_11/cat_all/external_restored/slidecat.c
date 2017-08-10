@@ -44,11 +44,13 @@ static const id0_char_t *SCRIPT_FILENAME;
 static const id0_char_t *FRAMETOP_STR, *TITLE_STR, *AUTHOR_STR, *COPYRIGHT_STR, *FRAMEBOT_STR;
 static const id0_char_t *VERSION_TITLE_STR, *VERSION_REV_STR;
 
+// REFKEEN - Re-use functions from intro.c
+#if 0
 void SetScreenMode (id0_int_t mode);
-// REFKEEN - Let all functions be static
-static void SetLineWidth (id0_int_t width);
+void SetLineWidth (id0_int_t width);
 static id0_boolean_t IsKeyPressed (void);
-static void WaitForKeyRelease (void);
+void WaitForKeyRelease (void);
+#endif
 static void Beep (void);
 // REFKEEN - Add this prototype
 static id0_int_t CheckParm(const id0_char_t *parm,const id0_char_t **strings);
@@ -617,6 +619,8 @@ else
 	BE_ST_HandleExit(0);
 }
 
+// REFKEEN - Re-use functions from intro.c
+#if 0
 void SetScreenMode (id0_int_t mode)
 {
 	switch (mode)
@@ -644,7 +648,7 @@ void SetScreenMode (id0_int_t mode)
 ====================
 */
 
-static void SetLineWidth (id0_int_t width)
+void SetLineWidth (id0_int_t width)
 {
   id0_int_t i,offset;
 
@@ -687,7 +691,7 @@ is_pressed:
 #endif
 }
 
-static void WaitForKeyRelease (void)
+void WaitForKeyRelease (void)
 {
 	if (IsKeyPressed())
 		while (IsKeyPressed())
@@ -696,6 +700,7 @@ static void WaitForKeyRelease (void)
 			//getch();
 		}
 }
+#endif // REFKEEN - Re-use functions
 
 
 static void Beep(void)

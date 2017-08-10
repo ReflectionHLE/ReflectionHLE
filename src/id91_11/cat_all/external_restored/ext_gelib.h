@@ -73,3 +73,11 @@ id0_int_t TryGetScanCode/*TryGetKey*/(void);
 void WriteColoredTextAt(id0_int_t color, id0_int_t x, id0_int_t y, id0_char_t *text);
 void PrinterDialog(void);
 void ShowTextScreen(id0_int_t screen);
+
+// REFKEEN - A little bit of cheating, since these functions, including
+// their function bodies (and any affected variable) repeat in
+// the various "main" functions' c sources (e.g., intro.c).
+void SetScreenMode (id0_int_t mode);
+void SetLineWidth (id0_int_t width);
+id0_boolean_t IsKeyPressed (void);
+void WaitForKeyRelease (void);

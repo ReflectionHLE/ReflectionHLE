@@ -25,10 +25,13 @@
 #include "ext_heads.h"
 #include "ext_gelib.h"
 
+// REFKEEN - Re-use functions from intro.c
+#if 0
 static void SetScreenMode (id0_int_t mode);
 static void SetLineWidth (id0_int_t width);
 static id0_boolean_t IsKeyPressed (void);
 static void WaitForKeyRelease (void);
+#endif
 
 // REFKEEN Let these variables be static
 static memptr endscreen;
@@ -133,6 +136,8 @@ void loadscn_TrashProg (const id0_char_t *OutMsg, ...)
 	BE_ST_HandleExit(0);
 }
 
+// REFKEEN - Re-use functions from intro.c
+#if 0
 static void SetScreenMode (id0_int_t mode)
 {
 	switch (mode)
@@ -212,3 +217,4 @@ static void WaitForKeyRelease (void)
 			//getch();
 		}
 }
+#endif // REFKEEN - Re-use functions
