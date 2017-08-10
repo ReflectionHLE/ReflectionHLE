@@ -596,6 +596,7 @@ void armgame_exe_main(void);
 void apocgame_exe_main(void);
 void intro_exe_main(void);
 void slidecat_exe_main(void);
+void loadscn_exe_main(void);
 // Embedded resources loader functions prototypes
 void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void);
 void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
@@ -1112,6 +1113,17 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		&slidecat_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
 		62800 - 0x800,
+		BE_EXECOMPRESSION_LZEXE9X,
+		false
+	},
+	{
+		NULL,
+
+		NULL,
+		"LOADSCN.EXE",
+		&loadscn_exe_main,
+		NULL,
+		28992 - 0x400,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
