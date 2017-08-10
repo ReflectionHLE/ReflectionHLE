@@ -58,6 +58,11 @@ static void show_command_line_help()
 	BE_ST_puts("-gamever <VER>: Select game version supported by this executable.");
 #ifdef REFKEEN_VER_CATADVENTURES
 	BE_ST_puts("-skipintro: Skip what is found in the original intro EXE and start game.");
+#ifdef REFKEEN_VER_CATABYSS
+	BE_ST_puts("-showslides: Show the electronic catalog / hint book.");
+#else
+	BE_ST_puts("-showslides: Show the hint book.");
+#endif
 #endif
 	BE_ST_puts("-passorigargs <...>: Pass all following arguments to the original game port.");
 	BE_ST_puts("-datadir <...>: Specify an alternative path for game data (separated by ver.).");
@@ -85,6 +90,7 @@ int main(int argc, char **argv)
 	bool showHelp = false;
 #ifdef REFKEEN_VER_CATADVENTURES
 	bool skipIntro = false;
+	bool showSlides = false;
 #endif
 	int selectedGameVerVal = BE_GAMEVER_LAST;
 
@@ -132,6 +138,12 @@ int main(int argc, char **argv)
 		else if (!BE_Cross_strcasecmp(1+argv[1], "skipintro"))
 		{
 			skipIntro = true;
+			++argv;
+			--argc;
+		}
+		else if (!BE_Cross_strcasecmp(1+argv[1], "showslides"))
+		{
+			showSlides = true;
 			++argv;
 			--argc;
 		}
@@ -183,6 +195,14 @@ int main(int argc, char **argv)
 	}
 	else
 	{
+// HACK
+#ifdef REFKEEN_VER_CATABYSS
+#define catacombs_exe_main abysgame_exe_main
+#elif (defined REFKEEN_VER_CATARM)
+#define catacombs_exe_main armgame_exe_main
+#elif (defined REFKEEN_VER_CATAPOC)
+#define catacombs_exe_main apocgame_exe_main
+#endif
 		// Main functions prototypes
 		void abysgame_exe_main(void);
 		void armgame_exe_main(void);
@@ -197,12 +217,11 @@ int main(int argc, char **argv)
 		else
 #endif
 		{
-#ifdef REFKEEN_VER_CATABYSS
-			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro ? &abysgame_exe_main : NULL);
-#elif (defined REFKEEN_VER_CATARM)
-			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro ? &armgame_exe_main : NULL);
-#elif (defined REFKEEN_VER_CATAPOC)
-			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro ? &apocgame_exe_main : NULL);
+#ifdef REFKEEN_VER_CATADVENTURES
+			// Main functions prototypes
+			void catacombs_exe_main(void); // See HACK above
+			void slidecat_exe_main(void);
+			BE_Cross_StartGame(selectedGameVerVal, argc, argv, showSlides ? &slidecat_exe_main : (skipIntro ? &catacombs_exe_main : NULL));
 #else
 			BE_Cross_StartGame(selectedGameVerVal, argc, argv, NULL);
 #endif
