@@ -1026,11 +1026,22 @@ void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP)
 	BEL_Launcher_SetCurrentMenu(g_be_launcher_currMenu);
 }
 
+
+static int g_lastGameVerSelectedInMenu;
+
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 {
-	// FIXME TEST
-	BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems), BE_Cross_GetAccessibleMainFuncPtrForGameVer(g_refKeenCfg.lastSelectedGameExe, BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems)));
-	//BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems));
+	g_lastGameVerSelectedInMenu = menuItemP - g_be_launcher_currMenu->menuItems;
+	int nOfExes = BE_Cross_GetAccessibleEXEsCountForGameVer(g_lastGameVerSelectedInMenu);
+	if (nOfExes == 1)
+		BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(g_lastGameVerSelectedInMenu), BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(0, g_lastGameVerSelectedInMenu));
+	else
+		BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(g_lastGameVerSelectedInMenu, nOfExes);
+}
+
+void BE_Launcher_Handler_GameLaunchWithChosenExe(BEMenuItem **menuItemP)
+{
+	BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(g_lastGameVerSelectedInMenu), BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex((menuItemP - g_be_launcher_currMenu->menuItems), g_lastGameVerSelectedInMenu));
 }
 
 

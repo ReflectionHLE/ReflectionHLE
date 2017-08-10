@@ -175,16 +175,32 @@ extern int g_be_gameinstallations_num;
 // gameVer should be BE_GAMEVER_LAST if no specific version is desired
 void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, void (*mainFuncPtr)(void));
 
-// Use for game versions selection
+/*** Use for game versions selection ***/
+
 int BE_Cross_DirSelection_GetNumOfRootPaths(void);
 const char **BE_Cross_DirSelection_GetRootPathsNames(void);
 const char **BE_Cross_DirSelection_Start(int rootPathIndex, int *outNumOfSubDirs); // Start dir selection
 void BE_Cross_DirSelection_Finish(void); // Finish dir selection
 const char **BE_Cross_DirSelection_GetNext(int dirIndex, int *outNumOfSubDirs); // Enter dir by index into last array
 const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs); // Go up in the filesystem hierarchy
-// Use for game EXE (main function) selection
-const char *BE_Cross_GetEXEFileDescriptionStrForGameVer(const char *exeFileName, int verId); // Gets matching description string (AS A C STRING LITERAL), if found, otherwise returns NULL.
-void (*BE_Cross_GetAccessibleMainFuncPtrForGameVer(const char *exeFileName, int verId))(void); // Gets matching main function pointer, if accessible by the user, otherwise returns default function pointer for game version
+
+
+/*** Use for game EXEs (main functions) selection ***/
+
+// Gets matching description string (AS A C STRING LITERAL), if found, otherwise returns NULL.
+const char *BE_Cross_GetEXEFileDescriptionStrForGameVer(const char *exeFileName, int verId);
+// Gets matching main function pointer, if accessible by the user, otherwise returns default function pointer for game version
+void (*BE_Cross_GetAccessibleMainFuncPtrForGameVer(const char *exeFileName, int verId))(void);
+// Returns the amount of main functions accessible by the user, for the given game version
+int BE_Cross_GetAccessibleEXEsCountForGameVer(int verId);
+// Fills array with C STRING LITERALS consisting of descriptions of the accessible main functions.
+//
+// *** WARNING ***
+// The outStrs array *must* have at least BE_Cross_GetAccessibleEXEsCountForGameVer(verId) pointers.
+void BE_Cross_FillAccessibleEXEFileNamesForGameVer(int verId, const char **outStrs);
+// Returns main function pointer for the given version id, indexed by "index", in the same
+// order in which BE_Cross_FillAccessibleEXEFileNamesForGameVer fills the descriptive strings.
+void (*BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(int index, int verId))(void);
 
 // If select game version has digitized sounds with a common sample rate,
 // then this rate is returned, otherwise 0 is returned.

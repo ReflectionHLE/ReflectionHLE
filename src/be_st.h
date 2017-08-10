@@ -348,6 +348,7 @@ void BE_ST_CGAUpdateGFXBufferFromWrappedMem(const uint8_t *segPtr, const uint8_t
 void BE_ST_Launcher_Prepare(void);
 void BE_ST_Launcher_Shutdown(void);
 void BE_ST_Launcher_RefreshSelectGameMenuContents(void);
+void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfExes);
 #endif
 
 //

@@ -177,9 +177,9 @@ BEMenu g_beMainMenu = {
 
 /*** Select game menu ***/
 
-/*static*/ BEMenuItem g_beSelectGameMenuItems[BE_GAMEVER_LAST];
-/*static*/ char g_beSelectGameMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
-/*static*/ BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAMEVER_LAST+4];
+static BEMenuItem g_beSelectGameMenuItems[BE_GAMEVER_LAST];
+static char g_beSelectGameMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
+static BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAMEVER_LAST+4];
 
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_DisappearedGameHelp, "Help! An installed game disappeared from the list!", &g_beDisappearedGameHelpMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_ShowSupportedGameVersions, "Show supported game versions", &g_beSupportedGameVersionsMenu)
@@ -192,11 +192,26 @@ BEMenu g_beSelectGameMenu = {
 	// Ignore the rest
 };
 
+/*** Select game EXE menu ***/
+
+#define MAX_NUM_OF_DISPLAYED_GAME_EXES_PER_VER 4
+
+static BEMenuItem g_beSelectGameExeMenuItems[MAX_NUM_OF_DISPLAYED_GAME_EXES_PER_VER];
+static char g_beSelectGameExeMenuItemsStrs[MAX_NUM_OF_DISPLAYED_GAME_EXES_PER_VER][78]; // Should be MUTABLE strings for layout preparation
+static BEMenuItem *g_beSelectGameExeMenuItemsPtrs[MAX_NUM_OF_DISPLAYED_GAME_EXES_PER_VER];
+
+BEMenu g_beSelectGameExeMenu = {
+	"Choose what to start",
+	&g_beSelectGameMenu,
+	g_beSelectGameExeMenuItemsPtrs, // Array of menu items
+	// Ignore the rest
+};
+
+/*** Disappeared game menu ***/
+
 BEMENUITEM_DEF_STATIC(g_beDisappearedGameHelpMenuItem_Explanation,
 "Reflection Keen can detect compatible DOS game versions from certain installations, including the Catacombs games from GOG.com. Once such a game installation is updated in any minor way, Reflection Keen may fail to locate it. These are the expected behaviors.\nAs an alternative, you can manually add a compatible game installation (if not yet listed)."
 );
-
-/*** Disappeared game menu ***/
 
 BEMenu g_beDisappearedGameHelpMenu = {
 	"Where may a game disappear",
@@ -714,7 +729,7 @@ void BE_ST_Launcher_Prepare(void)
 		{
 			const char *exeDesc = BE_Cross_GetEXEFileDescriptionStrForGameVer(g_refKeenCfg.lastSelectedGameExe, g_refKeenCfg.lastSelectedGameVer);
 			if (exeDesc)
-				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s\n --- %s", BE_Cross_GetGameInstallationDescription(i), exeDesc);
+				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s\n%s", BE_Cross_GetGameInstallationDescription(i), exeDesc);
 			else
 				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s", BE_Cross_GetGameInstallationDescription(i));
 			break;
@@ -1045,6 +1060,35 @@ void BE_ST_Launcher_RefreshSelectGameMenuContents(void)
 	g_beSelectGameMenuItemsPtrs[i] = NULL;
 }
 
+void BEL_Launcher_SetCurrentMenu(BEMenu *menu);
+
+void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfExes)
+{
+	if (nOfExes > MAX_NUM_OF_DISPLAYED_GAME_EXES_PER_VER)
+	{
+		char error[88];
+		snprintf(error, sizeof(error), "BE_Launcher_RefreshAndShowSelectGameExeMenuContents: Too many EXEs!\n%d", nOfExes);
+		BE_ST_ExitWithErrorMsg(error);
+	}
+
+	const char *exesPtrs[MAX_NUM_OF_DISPLAYED_GAME_EXES_PER_VER];
+	BE_Cross_FillAccessibleEXEFileNamesForGameVer(verId, exesPtrs);
+
+	int i;
+	for (i = 0; i < nOfExes; ++i)
+	{
+		g_beSelectGameExeMenuItemsPtrs[i] = &g_beSelectGameExeMenuItems[i];
+		g_beSelectGameExeMenuItems[i].handler = &BE_Launcher_Handler_GameLaunchWithChosenExe;
+		snprintf(g_beSelectGameExeMenuItemsStrs[i], sizeof(g_beSelectGameExeMenuItemsStrs[i]), "%s", exesPtrs[i]);
+		g_beSelectGameExeMenuItems[i].label = g_beSelectGameExeMenuItemsStrs[i];
+		g_beSelectGameExeMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
+	}
+	g_beSelectGameExeMenuItemsPtrs[i] = NULL;
+
+	BE_Launcher_PrepareMenu(&g_beSelectGameExeMenu);
+	BEL_Launcher_SetCurrentMenu(&g_beSelectGameExeMenu);
+}
+
 
 #ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
 static void BEL_ST_Launcher_ResetDisplayModes(int displayNum)
@@ -1093,8 +1137,6 @@ void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void)
 /*** SPECIAL - An extra SDL(2)-specific handler not defined in be_launcher.c ***/
 
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
-void BEL_Launcher_SetCurrentMenu(BEMenu *menu);
-
 /* FIXME - This is incomplete! Go over mappings
  * from Steam config *and* refkeen mapping file,
  * and ask the user if it overwrite anything.

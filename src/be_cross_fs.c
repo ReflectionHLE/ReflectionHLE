@@ -730,7 +730,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse113[] = {
 	{
 		NULL,
 
-		"G.E. Load Text Screen v1.10",
+		NULL,
 		"LOADSCN.EXE",
 		(void (*)(void))&loadscn2_main,
 		NULL,
@@ -2174,7 +2174,6 @@ void BE_Cross_PrepareGameInstallations(void)
 }
 
 
-// Use for game versions selection
 int BE_Cross_DirSelection_GetNumOfRootPaths(void)
 {
 	return g_be_rootPathsNum;
@@ -2326,7 +2325,7 @@ const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs) // Go up in the
 	return BEL_Cross_DirSelection_PrepareDirsAndGetNames(outNumOfSubDirs);
 }
 
-// Use for game EXE (main function) selection
+
 const char *BE_Cross_GetEXEFileDescriptionStrForGameVer(const char *exeFileName, int verId)
 {
 	const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[verId]->exeFiles;
@@ -2342,6 +2341,38 @@ void (*BE_Cross_GetAccessibleMainFuncPtrForGameVer(const char *exeFileName, int 
 		;
 	return ((exeFile->mainFuncPtr && exeFile->subDescription) ? exeFile->mainFuncPtr : g_be_gamever_ptrs[verId]->exeFiles->mainFuncPtr);
 }
+
+int BE_Cross_GetAccessibleEXEsCountForGameVer(int verId)
+{
+	int nOfEXEs = 1;
+	for (const BE_EXEFileDetails_T *exeFile = 1 + g_be_gamever_ptrs[verId]->exeFiles; exeFile->mainFuncPtr; ++exeFile) // Skip first entry, which is the "default" accessible main function
+		if (exeFile->subDescription)
+			++nOfEXEs;
+	return nOfEXEs;
+}
+
+void BE_Cross_FillAccessibleEXEFileNamesForGameVer(int verId, const char **outStrs)
+{
+	*outStrs++ = "Just launch the game normally";
+	for (const BE_EXEFileDetails_T *exeFile = 1 + g_be_gamever_ptrs[verId]->exeFiles; exeFile->mainFuncPtr; ++exeFile) // Skip first entry
+		if (exeFile->subDescription)
+			*outStrs++ = exeFile->subDescription;
+}
+
+void (*BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(int index, int verId))(void)
+{
+	if (!index)
+		return g_be_gamever_ptrs[verId]->exeFiles->mainFuncPtr;
+
+	const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[verId]->exeFiles + 1;
+	for (int i = 0; true; ++exeFile)
+		if (exeFile->subDescription)
+			if (++i == index)
+				break;
+
+	return exeFile->mainFuncPtr;
+}
+
 
 // Attempt to add a game installation from currently selected dir;
 // Returns BE_GAMEVER_LAST if no new supported game version is found; Otherwise game version id is returned.
@@ -2631,6 +2662,8 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, void (*mainFuncPt
 		;
 	if (!g_be_current_exeFileDetails->mainFuncPtr)
 		BE_ST_ExitWithErrorMsg("BE_Cross_StartGame - Unrecognized main function!");
+
+	snprintf(g_refKeenCfg.lastSelectedGameExe, sizeof(g_refKeenCfg.lastSelectedGameExe), "%s", g_be_current_exeFileDetails->exeName ? g_be_current_exeFileDetails->exeName : "");
 
 	BEL_Cross_DoCallMainFunc(); // Do a bit more preparation and then begin
 }
