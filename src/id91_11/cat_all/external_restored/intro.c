@@ -411,7 +411,6 @@ void intro_exe_main(void)
 //#ifdef GAMEVER_SHAREWARE
 				else if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && (last_key == 0x44/*0x4400*/)) // F10 (Demo)
 				{
-					// HUGE (!) FIXME - Add controller mappings?
 					SetScreenMode(1);
 
 					// REFKEEN difference from vanilla Catacomb Abyss (Shareware release):

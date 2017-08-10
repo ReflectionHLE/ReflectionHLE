@@ -49,7 +49,7 @@
 // Lengths in paragraphs of the different sections
 #define EMULATED_FIRST_PARAGRAPHS 4096
 #define EMULATED_NEAR_PARAGRAPHS 213
-#define EMULATED_FAR_PARAGRAPHS 28222 /*28037*/ // FIXME TEST
+#define EMULATED_FAR_PARAGRAPHS 28222
 // Used to obtain a pointer to some location in mmEmulatedMemSpace
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
