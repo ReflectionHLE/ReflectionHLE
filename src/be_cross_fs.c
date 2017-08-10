@@ -1108,7 +1108,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 			{0}
 		},
 
-		"Electronic Calatog v1.00",
+		"Electronic Catalog v1.00",
 		"DEMOCAT.EXE",
 		&slidecat_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
@@ -2326,6 +2326,23 @@ const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs) // Go up in the
 	return BEL_Cross_DirSelection_PrepareDirsAndGetNames(outNumOfSubDirs);
 }
 
+// Use for game EXE (main function) selection
+const char *BE_Cross_GetEXEFileDescriptionStrForGameVer(const char *exeFileName, int verId)
+{
+	const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[verId]->exeFiles;
+	for (; exeFile->mainFuncPtr && (!exeFile->exeName || strcmp(exeFile->exeName, exeFileName)); ++exeFile)
+		;
+	return (exeFile->mainFuncPtr ? exeFile->subDescription : NULL); // subDescription may also be NULL
+}
+
+void (*BE_Cross_GetAccessibleMainFuncPtrForGameVer(const char *exeFileName, int verId))(void)
+{
+	const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[verId]->exeFiles;
+	for (; exeFile->mainFuncPtr && (!exeFile->exeName || strcmp(exeFile->exeName, exeFileName)); ++exeFile)
+		;
+	return ((exeFile->mainFuncPtr && exeFile->subDescription) ? exeFile->mainFuncPtr : g_be_gamever_ptrs[verId]->exeFiles->mainFuncPtr);
+}
+
 // Attempt to add a game installation from currently selected dir;
 // Returns BE_GAMEVER_LAST if no new supported game version is found; Otherwise game version id is returned.
 // The given array is used in order to report an error for each checked version, in case of failure.
@@ -2578,7 +2595,7 @@ void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer
 	longjmp(g_be_mainFuncJumpBuffer, 0); // A little bit of magic
 }
 
-void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
+void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, void (*mainFuncPtr)(void))
 {
 	// Some additional preparation required
 	BE_ST_PrepareForGameStartupWithoutAudio();
@@ -2609,39 +2626,12 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, int misc)
 		id0_argv = (const char **)argv;
 	}
 
-	// *** HUGE *** FIXME - Do take a look at misc or some variant of it
-#if 0
-#ifdef REFKEEN_VER_CATADVENTURES
-	if (misc)
-	{
-#ifdef REFKEEN_VER_CATABYSS
-		extern void abysgame_exe_main(void);
-		be_lastSetMainFuncPtr = abysgame_exe_main;
-#elif defined REFKEEN_VER_CATARM
-		extern void armgame_exe_main(void);
-		be_lastSetMainFuncPtr = armgame_exe_main;
-#elif defined REFKEEN_VER_CATAPOC
-		extern void apocgame_exe_main(void);
-		be_lastSetMainFuncPtr = apocgame_exe_main;
-#endif
-	}
-	else
-	{
-		extern void intro_exe_main(void);
-		be_lastSetMainFuncPtr = intro_exe_main;
-	}
-#elif defined REFKEEN_VER_CAT3D
-	extern void cat3d_exe_main(void);
-	be_lastSetMainFuncPtr = cat3d_exe_main;
-#elif defined REFKEEN_VER_KDREAMS
-	extern void kdreams_exe_main(void);
-	be_lastSetMainFuncPtr = kdreams_exe_main;
-#endif
-#endif
+	// Locate the right EXE
+	for (g_be_current_exeFileDetails = g_be_gamever_ptrs[refkeen_current_gamever]->exeFiles; g_be_current_exeFileDetails->mainFuncPtr && (g_be_current_exeFileDetails->mainFuncPtr != mainFuncPtr); ++g_be_current_exeFileDetails)
+		;
+	if (!g_be_current_exeFileDetails->mainFuncPtr)
+		BE_ST_ExitWithErrorMsg("BE_Cross_StartGame - Unrecognized main function!");
 
-	g_be_current_exeFileDetails = g_be_gamever_ptrs[refkeen_current_gamever]->exeFiles; // HUGE FIXME TEST
-
-	extern void BEL_Cross_DoCallMainFunc(void);
 	BEL_Cross_DoCallMainFunc(); // Do a bit more preparation and then begin
 }
 

@@ -906,7 +906,7 @@ void BE_Launcher_Start(void)
 	BE_ST_Launcher_RunEventLoop();
 }
 
-static void BEL_Launcher_DoLaunchGame(int gameVer)
+static void BEL_Launcher_DoLaunchGame(int gameVer, void (*mainFuncPtr)(void))
 {
 	BE_ST_Launcher_Shutdown();
 	int argc = 0;
@@ -932,12 +932,12 @@ static void BEL_Launcher_DoLaunchGame(int gameVer)
 				*srcPtr++ = '\0'; // Separate the arguments
 		}
 	}
-	BE_Cross_StartGame(gameVer, argc, argv, 0);
+	BE_Cross_StartGame(gameVer, argc, argv, mainFuncPtr);
 }
 
 void BE_Launcher_Handler_LastGameVerLaunch(BEMenuItem **menuItemP)
 {
-	BEL_Launcher_DoLaunchGame(g_refKeenCfg.lastSelectedGameVer);
+	BEL_Launcher_DoLaunchGame(g_refKeenCfg.lastSelectedGameVer, BE_Cross_GetAccessibleMainFuncPtrForGameVer(g_refKeenCfg.lastSelectedGameExe, g_refKeenCfg.lastSelectedGameVer));
 }
 
 
@@ -1028,7 +1028,9 @@ void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP)
 
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 {
-	BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems));
+	// FIXME TEST
+	BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems), BE_Cross_GetAccessibleMainFuncPtrForGameVer(g_refKeenCfg.lastSelectedGameExe, BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems)));
+	//BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems));
 }
 
 

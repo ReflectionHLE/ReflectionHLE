@@ -183,6 +183,11 @@ int main(int argc, char **argv)
 	}
 	else
 	{
+		// Main functions prototypes
+		void abysgame_exe_main(void);
+		void armgame_exe_main(void);
+		void apocgame_exe_main(void);
+
 		BE_Cross_PrepareGameInstallations();
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		if (startLauncher)
@@ -192,10 +197,14 @@ int main(int argc, char **argv)
 		else
 #endif
 		{
-#ifdef REFKEEN_VER_CATADVENTURES
-			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro);
+#ifdef REFKEEN_VER_CATABYSS
+			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro ? &abysgame_exe_main : NULL);
+#elif (defined REFKEEN_VER_CATARM)
+			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro ? &armgame_exe_main : NULL);
+#elif (defined REFKEEN_VER_CATAPOC)
+			BE_Cross_StartGame(selectedGameVerVal, argc, argv, skipIntro ? &apocgame_exe_main : NULL);
 #else
-			BE_Cross_StartGame(selectedGameVerVal, argc, argv, 0);
+			BE_Cross_StartGame(selectedGameVerVal, argc, argv, NULL);
 #endif
 		}
 	}

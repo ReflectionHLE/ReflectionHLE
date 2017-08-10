@@ -152,7 +152,7 @@ static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
 /*** Main menu ***/
 
-BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer,	60/* HACK to have enough room for string*/, &BE_Launcher_Handler_LastGameVerLaunch)
+BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer,	79/* HACK to have enough room for string*/, &BE_Launcher_Handler_LastGameVerLaunch)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_SelectGame, "Select game", &g_beSelectGameMenu)
 BEMENUITEM_DEF_HANDLER(g_beMainMenuItem_SetArguments, "Set arguments for game *CURRENTLY SET*", &BE_Launcher_Handler_SetArgumentsForGame)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
@@ -712,7 +712,11 @@ void BE_ST_Launcher_Prepare(void)
 	for (i = 0; i < g_be_gameinstallations_num; ++i)
 		if (g_refKeenCfg.lastSelectedGameVer == BE_Cross_GetGameVerFromInstallation(i))
 		{
-			snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s", BE_Cross_GetGameInstallationDescription(i));
+			const char *exeDesc = BE_Cross_GetEXEFileDescriptionStrForGameVer(g_refKeenCfg.lastSelectedGameExe, g_refKeenCfg.lastSelectedGameVer);
+			if (exeDesc)
+				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s\n --- %s", BE_Cross_GetGameInstallationDescription(i), exeDesc);
+			else
+				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s", BE_Cross_GetGameInstallationDescription(i));
 			break;
 		}
 	if (i == g_be_gameinstallations_num)

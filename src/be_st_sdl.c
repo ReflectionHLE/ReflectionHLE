@@ -444,6 +444,11 @@ static void BEL_ST_ParseSetting_LauncherExeArgs(const char *keyprefix, const cha
 }
 #endif
 
+static void BEL_ST_ParseSetting_LastSelectedGameExe(const char *keyprefix, const char *buffer)
+{
+	BE_Cross_safeandfastcstringcopy(g_refKeenCfg.lastSelectedGameExe, g_refKeenCfg.lastSelectedGameExe+sizeof(g_refKeenCfg.lastSelectedGameExe), buffer);
+}
+
 static void BEL_ST_ParseSetting_LastSelectedGameVer(const char *keyprefix, const char *buffer)
 {
 	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
@@ -783,6 +788,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"launcherwindowtype=", &BEL_ST_ParseSetting_LauncherWindowType},
 	{"launcherexeargs=", &BEL_ST_ParseSetting_LauncherExeArgs},
 #endif
+	{"lastselectedgameexe=", &BEL_ST_ParseSetting_LastSelectedGameExe},
 	{"lastselectedgamever=", &BEL_ST_ParseSetting_LastSelectedGameVer},
 	{"displaynum=", &BEL_ST_ParseSetting_DisplayNum},
 	{"rememberdisplaynum=", &BEL_ST_ParseSetting_RememberDisplayNum},
@@ -860,6 +866,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.launcherExeArgs[0] = '\0';
 	g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
 #endif
+	g_refKeenCfg.lastSelectedGameExe[0] = '\0';
 	g_refKeenCfg.lastSelectedGameVer = BE_GAMEVER_LAST;
 	g_refKeenCfg.displayNum = 0;
 	g_refKeenCfg.rememberDisplayNum = true;
@@ -968,6 +975,7 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "launcherwindowtype=%s\n", g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT ? "default" : (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL ? "full" : "software"));
 	fprintf(fp, "launcherexeargs=%s\n", g_refKeenCfg.launcherExeArgs);
 #endif
+	fprintf(fp, "lastselectedgameexe=%s\n", g_refKeenCfg.lastSelectedGameExe);
 	fprintf(fp, "lastselectedgamever=%s\n", (g_refKeenCfg.lastSelectedGameVer != BE_GAMEVER_LAST) ? refkeen_gamever_strs[g_refKeenCfg.lastSelectedGameVer] : "");
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
 	fprintf(fp, "rememberdisplaynum=%s\n", g_refKeenCfg.rememberDisplayNum ? "true" : "false");
