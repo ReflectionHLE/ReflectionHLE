@@ -103,7 +103,8 @@ extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 // The window and renderer are shared ON PURPOSE:
 // - For seamless transition from launcher to game, if an SDL_WINDOW_FULLSCREEN_DESKTOP window is used with same features.
-// - Additionaly, the renderer is shared since SDL_Texture ** pointers are managed from be_st_sdl_graphics.c (in case textures should be recreated).
+// - Additionally, the renderer is shared since SDL_Texture ** pointers are managed from be_st_sdl_graphics.c (in case textures should be recreated).
+// - Also used to fetch the window's display number on quit, if g_refKeenCfg.rememberDisplayNum == true.
 extern SDL_Window *g_sdlWindow;
 extern SDL_Renderer *g_sdlRenderer;
 // Similarly, this is also shared *on purpose* - for a HACK (guess if touch controls should be shown when game is started)

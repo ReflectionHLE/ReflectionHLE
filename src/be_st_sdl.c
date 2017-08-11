@@ -977,6 +977,11 @@ static void BEL_ST_SaveConfig(void)
 #endif
 	fprintf(fp, "lastselectedgameexe=%s\n", g_refKeenCfg.lastSelectedGameExe);
 	fprintf(fp, "lastselectedgamever=%s\n", (g_refKeenCfg.lastSelectedGameVer != BE_GAMEVER_LAST) ? refkeen_gamever_strs[g_refKeenCfg.lastSelectedGameVer] : "");
+
+	// g_sdlWindow shouldn't be NULL, but just in case...
+	if (g_refKeenCfg.rememberDisplayNum && g_sdlWindow)
+		g_refKeenCfg.displayNum = SDL_GetWindowDisplayIndex(g_sdlWindow);
+
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
 	fprintf(fp, "rememberdisplaynum=%s\n", g_refKeenCfg.rememberDisplayNum ? "true" : "false");
 	if (g_refKeenCfg.sdlRendererDriver < 0)
