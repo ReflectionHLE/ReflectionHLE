@@ -65,6 +65,7 @@ typedef struct
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	bool absMouseMotion;
 #endif
+	int sndInterThreadBufferRatio;
 	int sndSampleRate;
 	bool sndSubSystem;
 	bool oplEmulation;

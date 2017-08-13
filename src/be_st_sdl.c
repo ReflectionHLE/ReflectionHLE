@@ -579,6 +579,13 @@ static void BEL_ST_ParseSetting_AbsMouseMotion(const char *keyprefix, const char
 }
 #endif
 
+static void BEL_ST_ParseSetting_SndInterThreadBufferRatio(const char *keyprefix, const char *buffer)
+{
+	g_refKeenCfg.sndInterThreadBufferRatio = atoi(buffer);
+	if (g_refKeenCfg.sndInterThreadBufferRatio <= 0)
+		g_refKeenCfg.sndInterThreadBufferRatio = 4;
+}
+
 static void BEL_ST_ParseSetting_SndSampleRate(const char *keyprefix, const char *buffer)
 {
 	g_refKeenCfg.sndSampleRate = atoi(buffer);
@@ -802,6 +809,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	{"absmousemotion=", &BEL_ST_ParseSetting_AbsMouseMotion},
 #endif
+	{"sndinterthreadbufferratio=", &BEL_ST_ParseSetting_SndInterThreadBufferRatio},
 	{"sndsamplerate=", &BEL_ST_ParseSetting_SndSampleRate},
 	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
 	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
@@ -880,6 +888,7 @@ static void BEL_ST_ParseConfig(void)
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	g_refKeenCfg.absMouseMotion = false;
 #endif
+	g_refKeenCfg.sndInterThreadBufferRatio = 4;
 	g_refKeenCfg.sndSampleRate = 48000; // 49716 may lead to unexpected behaviors on Android
 	g_refKeenCfg.sndSubSystem = true;
 	g_refKeenCfg.oplEmulation = true;
@@ -1003,6 +1012,7 @@ static void BEL_ST_SaveConfig(void)
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	fprintf(fp, "absmousemotion=%s\n", g_refKeenCfg.absMouseMotion ? "true" : "false");
 #endif
+	fprintf(fp, "sndinterthreadbufferratio=%d\n", g_refKeenCfg.sndInterThreadBufferRatio);
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
 	fprintf(fp, "sndsubsystem=%s\n", g_refKeenCfg.sndSubSystem ? "true" : "false");
 	fprintf(fp, "oplemulation=%s\n", g_refKeenCfg.oplEmulation ? "true" : "false");
@@ -2299,12 +2309,16 @@ void BE_ST_PollEvents(void)
 		}
 	}
 
+#if BE_ST_FILL_AUDIO_IN_MAIN_THREAD
+	BE_ST_PrepareForManualAudioCallbackCall();
+#else
 	// HACK - If audio subsystem is disabled we still want to at least
 	// make the sound callback run (so e.g., no loop gets stuck waiting
 	// for sound playback to complete)
 	extern bool g_sdlAudioSubsystemUp;
 	if (!g_sdlAudioSubsystemUp)
 		BE_ST_PrepareForManualAudioCallbackCall();
+#endif
 }
 
 #ifdef REFKEEN_CONFIG_EVENTS_CALLBACK

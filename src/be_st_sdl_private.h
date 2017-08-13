@@ -42,6 +42,8 @@
 #define SDL_RENDER_DEVICE_RESET 0x2001
 #endif
 
+#define BE_ST_FILL_AUDIO_IN_MAIN_THREAD 1
+
 typedef struct {
 	bool isSpecial; // Scancode of 0xE0 sent?
 	uint8_t dosScanCode;
