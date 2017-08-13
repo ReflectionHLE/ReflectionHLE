@@ -228,11 +228,6 @@ void BE_ST_InitAudio(void)
 		}
 	}
 
-	// Regardless of the audio subsystem being off or on, have *some*
-	// rate set (being ~18.2Hz). In DEMOCAT from The Catacomb Abyss v1.13,
-	// BE_ST_BSound may be called, so be ready to generate samples.
-	BE_ST_SetTimer(0);
-
 	// If the audio subsystem is off, let us simulate a byte rate
 	// of 1000Hz (same as SDL_GetTicks() time units)
 	if (!g_sdlAudioSubsystemUp)
@@ -402,6 +397,11 @@ void BE_ST_InitAudio(void)
 	SDL_PauseAudio(0);
 
 finish:
+	// Regardless of the audio subsystem being off or on, have *some*
+	// rate set (being ~18.2Hz). In DEMOCAT from The Catacomb Abyss v1.13,
+	// BE_ST_BSound may be called, so be ready to generate samples.
+	BE_ST_SetTimer(0);
+
 	g_sdlManualAudioCallbackCallLastTicks = SDL_GetTicks();
 	g_sdlManualAudioCallbackCallDelayedSamples = 0;
 }
