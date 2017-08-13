@@ -1031,7 +1031,7 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len)
 	len /= sizeof(BE_ST_SndSample_T); // Convert to samples
 
 	// A little bit of cheating since we don't actually call any timer handler here
-	g_sdlScaledSampleOffsetInSound += len * PC_PIT_RATE;
+	g_sdlScaledSampleOffsetInSound += (uint64_t)len * PC_PIT_RATE;
 	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
 	g_sdlScaledSampleOffsetInSound %= g_sdlScaledSamplesPerPartsTimesPITRate;
 
