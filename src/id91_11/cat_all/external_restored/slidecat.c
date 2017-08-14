@@ -23,6 +23,7 @@
  */
 
 //#include <conio.h>
+#include <ctype.h>
 #include <stdarg.h>
 #include <time.h>
 
