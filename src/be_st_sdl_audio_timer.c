@@ -71,7 +71,29 @@ static uint64_t g_sdlScaledSampleOffsetInSound, g_sdlScaledSamplesInCurrentPart;
 
 static void (*g_sdlTimerIntFuncPtr)(void) = 0;
 
+#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
+static int g_sdlTimerIntCounter = 0;
+static int BE_ST_SET_TIMER_INT_COUNTER_SET(int x)
+{
+	int ret = g_sdlTimerIntCounter;
+	g_sdlTimerIntCounter = x;
+	return ret;
+}
+static int BE_ST_SET_TIMER_INT_COUNTER_ADD(int x)
+{
+	int ret = g_sdlTimerIntCounter;
+	g_sdlTimerIntCounter += x;
+	return ret;
+}
+#define BE_ST_SET_TIMER_INT_COUNTER_INC() (g_sdlTimerIntCounter++)
+#define BE_ST_SET_TIMER_INT_COUNTER_GET() g_sdlTimerIntCounter
+#else
 static SDL_atomic_t g_sdlTimerIntCounter = {0};
+#define BE_ST_SET_TIMER_INT_COUNTER_SET(x) SDL_AtomicSet(&g_sdlTimerIntCounter, (x))
+#define BE_ST_SET_TIMER_INT_COUNTER_ADD(x) SDL_AtomicAdd(&g_sdlTimerIntCounter, (x))
+#define BE_ST_SET_TIMER_INT_COUNTER_INC() SDL_AtomicAdd(&g_sdlTimerIntCounter, 1)
+#define BE_ST_SET_TIMER_INT_COUNTER_GET() SDL_AtomicGet(&g_sdlTimerIntCounter)
+#endif
 
 // Used for digitized sound playback
 static int16_t *g_sdlSoundEffectCurrPtr;
@@ -153,7 +175,9 @@ static BE_ST_SndSample_T g_sdlCurrentBeepSample;
 static uint32_t g_sdlBeepHalfCycleCounter, g_sdlBeepHalfCycleCounterUpperBound;
 
 
+#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 static void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len);
+#endif
 
 static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len);
 static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len);
@@ -481,7 +505,7 @@ void BE_ST_StartAudioAndTimerInt(void (*funcPtr)(void))
 	BE_ST_LockAudioRecursively();
 
 	g_sdlTimerIntFuncPtr = funcPtr;
-	SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
+	BE_ST_SET_TIMER_INT_COUNTER_SET(0);
 
 	BE_ST_UnlockAudioRecursively();
 }
@@ -820,7 +844,7 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 			if (g_sdlTimerIntFuncPtr)
 			{
 				g_sdlTimerIntFuncPtr();
-				SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
+				BE_ST_SET_TIMER_INT_COUNTER_INC();
 			}
 		}
 		// Now generate sound
@@ -906,7 +930,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 				if (g_sdlTimerIntFuncPtr)
 				{
 					g_sdlTimerIntFuncPtr();
-					SDL_AtomicAdd(&g_sdlTimerIntCounter, 1);
+					BE_ST_SET_TIMER_INT_COUNTER_INC();
 				}
 			}
 			// Now generate sound
@@ -1051,7 +1075,7 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 	// A little bit of cheating since we don't actually call any timer handler here
 	g_sdlScaledSampleOffsetInSound += (uint64_t)len * PC_PIT_RATE;
-	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
+	BE_ST_SET_TIMER_INT_COUNTER_ADD(g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
 	g_sdlScaledSampleOffsetInSound %= g_sdlScaledSamplesPerPartsTimesPITRate;
 
 	if ((uint32_t)len >= g_sdlSoundEffectSamplesLeft)
@@ -1085,7 +1109,7 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 	// A little bit of cheating since we don't actually call any timer handler here
 	g_sdlScaledSampleOffsetInSound += (len / sizeof(BE_ST_SndSample_T)) * PC_PIT_RATE;
-	SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
+	BE_ST_SET_TIMER_INT_COUNTER_ADD(g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
 	g_sdlScaledSampleOffsetInSound %= g_sdlScaledSamplesPerPartsTimesPITRate;
 
 	while (len > 0)
@@ -1213,7 +1237,7 @@ static void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
 // and returns the original counter's value
 int BE_ST_TimerIntClearLastCalls(void)
 {
-	return SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
+	return BE_ST_SET_TIMER_INT_COUNTER_SET(0);
 }
 
 static int g_sdlTimerIntCounterOffset = 0;
@@ -1230,7 +1254,7 @@ void BE_ST_TimerIntCallsDelayWithOffset(int nCalls)
 		if (nCalls > 0)
 		{
 			g_sdlTimerIntCounterOffset -= nCalls;
-			SDL_AtomicSet(&g_sdlTimerIntCounter, 0);
+			BE_ST_SET_TIMER_INT_COUNTER_SET(0);
 		}
 		BE_ST_PollEvents(); // Still safer to do this
 		return;
@@ -1238,7 +1262,7 @@ void BE_ST_TimerIntCallsDelayWithOffset(int nCalls)
 
 	// Call this BEFORE updating host display or doing anything else!!!
 	// (Because of things like VSync which may add their own delays)
-	int oldCount = SDL_AtomicAdd(&g_sdlTimerIntCounter, g_sdlTimerIntCounterOffset);
+	int oldCount = BE_ST_SET_TIMER_INT_COUNTER_ADD(g_sdlTimerIntCounterOffset);
 	int newCount;
 
 	BEL_ST_UpdateHostDisplay();
@@ -1260,9 +1284,9 @@ void BE_ST_TimerIntCallsDelayWithOffset(int nCalls)
 			lastRefreshTime = currSdlTicks;
 		}
 
-		newCount = SDL_AtomicGet(&g_sdlTimerIntCounter);
+		newCount = BE_ST_SET_TIMER_INT_COUNTER_GET();
 	}
 	while (newCount - oldCount < nCalls);
 	// Do call SDL_AtomicSet instead of accessing 'newCount', in case counter has just been updated again
-	g_sdlTimerIntCounterOffset = (SDL_AtomicSet(&g_sdlTimerIntCounter, 0) - oldCount) - nCalls;
+	g_sdlTimerIntCounterOffset = (BE_ST_SET_TIMER_INT_COUNTER_SET(0) - oldCount) - nCalls;
 }
