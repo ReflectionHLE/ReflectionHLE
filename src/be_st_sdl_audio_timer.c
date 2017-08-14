@@ -284,7 +284,7 @@ void BE_ST_InitAudio(void)
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 		g_sdlALOutNumOfSamples = g_sdlCallbacksSamplesBufferOnePartCount*OPL_SAMPLE_RATE/g_sdlAudioSpec.freq;
 #else
-		g_sdlALOutNumOfSamples = 2*g_sdlAudioSpec.samples*OPL_SAMPLE_RATE/g_sdlAudioSpec.freq;
+		g_sdlALOutNumOfSamples = 2*(2*g_sdlAudioSpec.samples*OPL_SAMPLE_RATE/g_sdlAudioSpec.freq); // Leave some room for calls to BE_ST_OPL2Write
 #endif
 		g_sdlALOutSamples = (BE_ST_SndSample_T *)malloc(sizeof(BE_ST_SndSample_T) * g_sdlALOutNumOfSamples);
 		if (g_sdlALOutSamples == NULL)
