@@ -17,6 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <string.h>
+
 #include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
 
 #include "be_cross.h" // For some inline functions (C99)
