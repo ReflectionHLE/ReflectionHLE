@@ -83,7 +83,6 @@ static uint32_t g_sdlSoundEffectSamplesLeft;
 #define MIXER_SAMPLE_FORMAT_SINT16
 #endif
 
-#define OPL_NUM_OF_SAMPLES 2048 // About 40ms of OPL sound data
 #define OPL_SAMPLE_RATE 49716
 // Use this if the audio subsystem is disabled for most (we want a BYTES rate of 1000Hz, same units as used in values returned by SDL_GetTicks())
 #define NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM 1000
@@ -139,7 +138,8 @@ static SRC_DATA g_sdlSrcData;
 // Used for filling with samples from BE_ST_OPL2Write,
 // in addition to the SDL audio CallBack itself
 // (because waits between/after OPL writes are expected)
-static BE_ST_SndSample_T g_sdlALOutSamples[OPL_NUM_OF_SAMPLES];
+static BE_ST_SndSample_T *g_sdlALOutSamples;
+static uint32_t g_sdlALOutNumOfSamples;
 static uint32_t g_sdlALOutSamplesEnd = 0;
 
 // Used with resampling callback only
@@ -257,12 +257,24 @@ void BE_ST_InitAudio(void)
 	{
 		YM3812Init(1, 3579545, OPL_SAMPLE_RATE);
 		g_sdlEmulatedOPLChipReady = true;
+#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
+		g_sdlALOutNumOfSamples = g_sdlCallbacksSamplesBufferOnePartCount*OPL_SAMPLE_RATE/g_sdlAudioSpec.freq;
+#else
+		g_sdlALOutNumOfSamples = 2*g_sdlAudioSpec.samples*OPL_SAMPLE_RATE/g_sdlAudioSpec.freq;
+#endif
+		g_sdlALOutSamples = (BE_ST_SndSample_T *)malloc(sizeof(BE_ST_SndSample_T) * g_sdlALOutNumOfSamples);
+		if (g_sdlALOutSamples == NULL)
+			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlALOutSamples.)");
 	}
 
 	if ((doDigitized || g_sdlEmulatedOPLChipReady) && (g_sdlAudioSpec.freq != inSampleRate))
 	{
 		// Should allocate this first, for g_sdlSrcData.data_in
+#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
+		g_sdlMiscOutNumOfSamples = g_sdlCallbacksSamplesBufferOnePartCount;
+#else
 		g_sdlMiscOutNumOfSamples = 2*g_sdlAudioSpec.samples;
+#endif
 		g_sdlMiscOutSamples = (BE_ST_SndSample_T *)malloc(sizeof(BE_ST_SndSample_T) * g_sdlMiscOutNumOfSamples); 
 		if (g_sdlMiscOutSamples == NULL)
 			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlMiscOutSamples.)");
@@ -456,6 +468,10 @@ void BE_ST_ShutdownAudio(void)
 
 	free(g_sdlCallbacksSamplesBuffer);
 	g_sdlCallbacksSamplesBuffer = NULL;
+	free(g_sdlALOutSamples);
+	g_sdlALOutSamples = NULL;
+	free(g_sdlMiscOutSamples);
+	g_sdlMiscOutSamples = NULL;
 
 	g_sdlTimerIntFuncPtr = 0; // Just in case this may be called after the audio subsystem was never really started (manual calls to callback)
 }
@@ -611,6 +627,8 @@ static inline void YM3812Write(Chip *which, Bit32u reg, Bit8u val)
 	Chip__WriteReg(which, reg, val);
 }
 
+#define OPL_NUM_OF_SAMPLES 2048 // About 40ms of OPL sound data
+
 static inline void YM3812UpdateOne(Chip *which, BE_ST_SndSample_T *stream, int length)
 {
 	Bit32s buffer[OPL_NUM_OF_SAMPLES * 2];
@@ -618,7 +636,8 @@ static inline void YM3812UpdateOne(Chip *which, BE_ST_SndSample_T *stream, int l
 
 	// length should be at least the max. samplesPerMusicTick
 	// in Catacomb 3-D and Keen 4-6, which is param_samplerate / 700.
-	// So 512 is sufficient for a sample rate of 358.4 kHz.
+	// So 512 is sufficient for a sample rate of 358.4 kHz, which is
+	// significantly higher than the OPL rate anyway.
 	if(length > OPL_NUM_OF_SAMPLES)
 		length = OPL_NUM_OF_SAMPLES;
 
@@ -658,10 +677,10 @@ void BE_ST_OPL2Write(uint8_t reg,uint8_t val)
 	// hack, using a "magic number" that appears to make this work.
 	unsigned int length = OPL_SAMPLE_RATE / 10000;
 
-	if (length > OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd)
+	if (length > g_sdlALOutNumOfSamples - g_sdlALOutSamplesEnd)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_ST_OPL2Write overflow, want %u, have %u\n", length, OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd); // FIXME - Other thread
-		length = OPL_NUM_OF_SAMPLES - g_sdlALOutSamplesEnd;
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_ST_OPL2Write overflow, want %u, have %u\n", length, g_sdlALOutNumOfSamples - g_sdlALOutSamplesEnd); // FIXME - Other thread
+		length = g_sdlALOutNumOfSamples - g_sdlALOutSamplesEnd;
 	}
 	if (length)
 	{
@@ -817,10 +836,10 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 			//
 			// Make sure we don't overthrow the AL buffer, though.
 			uint32_t targetALSamples = currNumOfSamples;
-			if (targetALSamples > OPL_NUM_OF_SAMPLES)
+			if (targetALSamples > g_sdlALOutNumOfSamples)
 			{
-				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BEL_ST_Simple_EmuCallBack AL overflow, want %u, have %u\n", targetALSamples, (unsigned int)OPL_NUM_OF_SAMPLES); // FIXME - Other thread
-				targetALSamples = OPL_NUM_OF_SAMPLES;
+				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BEL_ST_Simple_EmuCallBack AL overflow, want %u, have %u\n", targetALSamples, g_sdlALOutNumOfSamples); // FIXME - Other thread
+				targetALSamples = g_sdlALOutNumOfSamples;
 			}
 			// TODO Output overflow warning if there's any
 			if (targetALSamples > g_sdlALOutSamplesEnd)
@@ -918,10 +937,10 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			//
 			// Make sure we don't overthrow the AL buffer, though.
 			uint32_t targetALSamples = processedScaledInputSamples / g_sdlAudioSpec.freq;
-			if (targetALSamples > OPL_NUM_OF_SAMPLES)
+			if (targetALSamples > g_sdlALOutNumOfSamples)
 			{
-				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BEL_ST_Resampling_EmuCallBack AL overflow, want %u, have %u\n", targetALSamples, (unsigned int)OPL_NUM_OF_SAMPLES);
-				targetALSamples = OPL_NUM_OF_SAMPLES;
+				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BEL_ST_Resampling_EmuCallBack AL overflow, want %u, have %u\n", targetALSamples, g_sdlALOutNumOfSamples);
+				targetALSamples = g_sdlALOutNumOfSamples;
 			}
 			if (targetALSamples > g_sdlALOutSamplesEnd)
 			{
