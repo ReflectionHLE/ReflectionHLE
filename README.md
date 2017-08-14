@@ -79,24 +79,21 @@ Differences from the original releases related to usage of multiple DOS EXEs
 ----------------------------------------------------------------------------
 
 There are some original game releases that have more than one EXE
-(per release). Not all behaviors of such EXEs are implemented, but
-when they are, there may be a few technical differences.
+(per release). There are a few technical differences.
 
 - For one, no separate EXE is actually used in each Reflection Keen port.
 As an example, in Keen Dreams v1.13, the behaviors of KDREAMS.EXE (the game)
 and LOADSCN.EXE (showing ordering information on quit) are present
 in a single Reflection Keen Dreams EXE.
-- There are a few differences with the memory management, when
-it comes to LOADSCN.EXE and INTRO.EXE from The Catacomb Abyss v1.13.
+- There are a few differences with the memory management, when it comes
+to LOADSCN.EXE, INTRO.EXE and DEMOCAT.EXE from The Catacomb Abyss v1.13.
 Basically, they may share some memory in the Reflection Catacomb Abyss port.
-- Some of these additional EXES, like INTRO.EXE and LOADSCN.EXE from
-The Catacomb Abyss v1.13, lack original source codes as of this
-release; So such sources had to be manually reconstructed.
+The same applies when it comes to different revisions of any of
+these EXEs (e.g., HINTCAT.EXE from The Catacomb Abyss v1.24).
+- Some of these additional EXEs lack original source codes as of
+this release; So such sources had to be manually reconstructed.
 See "Additional sources/data used for these ports"
 below for details about these codes and more.
-- Currently, ports of DEMOCAT.EXE/HINTCAT.EXE from The Catacomb Adventure
-Series are *not* implemented. This is especially noticeable when you
-start up The Catacomb Abyss v1.13 and then press on the "F10" key.
 
 ----------------------------------------------
 One more difference from the original releases
@@ -303,6 +300,11 @@ resolution from the launcher, in case the window is resizable. The reason
 there's no separate menu item for the full screen resolution, is that using
 any resolution other than the desktop's may lead to unexpected behaviors on
 certain environments, like desktop icons getting messed up.
+- "sndinterthreadbufferratio" specifies the sizes of a few misc. internal
+audio buffers, relatively to another buffer (which is filled by SDL).
+If you hear crackling sound, then increasing this value *might* resolve
+the issue, although more memory will be consumed. Also, there's
+no *guarantee* that this will solve any problem.
 
 The following settings are not even written to the cfg file by default:
 
@@ -515,7 +517,7 @@ As stated above, on all supported versions of Android, the source ports
 can write files to directories which are specific to the Android apps. For
 Keen Dreams, this is Android/data/net.duke4.ny.reflection_kdreams/files/appdata
 within the shared storage (as accessible from a PC/Mac, using a USB cable).
-It should be similar for the other ports.
+It should be similar for the other games.
 
 However, read-only access to more directories is desired, so you have
 the freedom to prepare a copy of a supported game (say Keen Dreams v1.13)
@@ -557,9 +559,10 @@ all games (i.e., all executables):
 -fulllauncher: Show a fullscreen launcher window.
 -softlauncher: Show a software-rendered launcher window (not fullscreen).
 
-Te following argument is specific to the Catacomb Adventure Series:
+Te following arguments are specific to the Catacomb Adventure Series:
 
 -skipintro: Skip what is found in the original intro EXE and start game.
+-showslides: Show the electronic catalog or hint book.
 
 Note: The path passed to -datadir or -cfgdir is assumed to exist.
 
@@ -591,11 +594,13 @@ Using a resampling library:
 - One of seven resampling libraries can be selected, by setting the appropriate
 RESAMPLER variable for "make". As in the case of SDL 2.0, you'll need the
 appropriate development files.
-Currently supported libraries for resampling: LIBSWRESAMPLE, LIBAVRESAMPLE,
+- However, it's highly recommended to not change the resampling library
+from the default, since it's the only one being tested in general.
+- As of this release, the default choice is RESAMPLER=LIBSPEEXDSP.
+- Current list of libraries to choose from: LIBSWRESAMPLE, LIBAVRESAMPLE,
 LIBAVCODEC (its resampling API was deprecated for LIBAVRESAMPLE), LIBRESAMPLE,
 LIBSOXR, LIBSPEEXDSP and LIBSAMPLERATE. As stated above, NONE is also an
 option if you don't want to add any dependency on a resampling library.
-- Currently RESAMPLER=LIBSPEEXDSP is the default choice.
 
 Building just one EXE:
 
@@ -655,7 +660,7 @@ a copy of it within the "src/android-lib/libs" directory in the refkeen tree.
 You may have to create the "libs" subdirectory beforehand.
 - Do NOT copy the android-support-v4.jar file from
 {sdk-dir}/extras/android/support/v4 or any other location.
-- Full SDL 2.0.2+ sources are required. SDL 2.0.5 pre-release is recommended.
+- Full SDL 2.0.2+ sources are required. SDL 2.0.5 is recommended.
 - In the refkeen source tree, the directory src/android-lib/jni should have
 a copy of (or a symlink to) the SDL2 sources, named "SDL".
 
@@ -693,6 +698,8 @@ Building the Java code and creating an APK file (assuming Keen Dreams only):
 
 - Create a new local.properties file at src/android-lib, and fill it with
 the path to the SDK, like this: sdk.dir=/path/to/adt-bundle-linux-x86_64/sdk
+- Copy to src/android-lib/src/org/libsdl/app the following file from the SDL2
+sources (tested with 2.0.5): android-project/src/org/libsdl/SDLActivity.java
 - For Keen Dreams, copy src/android-lib/local.properties
 into src/kdreams/android-project.
 - While under src/kdreams/android-project, type "ant clean" and then "ant".
@@ -702,8 +709,12 @@ package in src/kdreams/android-project/bin.
 Installing the APK package:
 
 - If you have a compatible Android device connected via USB,
-*and* USB debugging is enabled, then you may be able
-to install the app by typing "ant installd".
+USB debugging is enabled, *and* so is installation of apps from USB,
+then you may be able to install the app by typing "ant installd".
+- Alternatively, you can (probably) manually transfer the app, by copying
+the above APK file to the device's storage and then selecting the file for
+installation, right from the device itself. This may require you to
+allow the device to install packages from unknown sources, though.
 
 Supported versions/archives of resampling libraries: soxr-0.1.2.Source.tar.xz,
 speexdsp-SpeexDSP-1.2rc3.tar.gz, libsamplerate-0.1.8.tar.gz.
@@ -729,11 +740,12 @@ Additional sources/data used for these ports
 - Minor source code modifications, for reproduction of Catacomb 3-D v1.00 and
 The Catacomb Abyss v1.13.
 - Reconstructed source codes for INTRO.EXE/CATABYSS.EXE/CATARM.EXE/CATAPOC.EXE
-(intro with title screen and credits) and LOADSCN.EXE (screens shown on quit),
-a couple of DOS programs distributed with the Catacomb Adventure Series
-(or at least specific versions of the episodes).
+(Introduction Program), LOADSCN.EXE (screens shown on quit)
+and DEMOCAT.EXE/HINTCAT.EXE (Electronic Catalog / Hint book),
+a few DOS programs distributed with the Catacomb Adventure
+Series (or at least specific versions of the episodes).
 
-As of October 12 2016, these can be found here:
+As of August 14 2017, these can be found here:
 https://bitbucket.org/NY00123/gamesrc-ver-recreation/
 
 ---------------------------------------------------------------------------
@@ -811,6 +823,54 @@ say to all of you, that you should be considered special here. :)
 ---------
 Changelog
 ---------
+
+Aug 14, 2017 (v0.18.0):
+* Move some memory management code from the differing id_mm.c files to a
+separate be_cross_mem.c file. For the sake of simplicity, XMS and EMS are
+gone. This newly added source file also grants us some more control over
+memory management, using functions like BE_Cross_Bfarmalloc as replacements
+for functions originally used in the DOS sources (such as farmalloc).
+* Somewhat better support for multi-EXE emulation, like CATABYSS.EXE
+and INTRO.EXE for The Catacomb Abyss v1.13. This includes a replacement
+for the execv function, reverting the state of the runtime stack.
+This is mostly useful when two DOS EXEs may execute each other, over and
+over again (e.g., INTRO.EXE and DEMOCAT.EXE from The Catacomb Abyss v1.13).
+* Minor loadscn changes (mostly renames).
+* An almost complete port of DEMOCAT.EXE/HINTCAT.EXE is now in. It's still
+impossible to send anything to a printer, but otherwise it should have
+similar behaviors (albeit the sound beep periods may be shorter).
+As a side-note, this makes the 'F10' key usable in
+the intro, with The Catacomb Abyss v1.13.
+* Minor related fixes in be_st_sdl_audio_timer.c and be_st_sdl_graphics.c,
+as well as small changes for alt. controller mappings handling.
+* Also fix parsing of filenames from e.g., SCRIPT.HNT, The Catacomb Armageddon
+(for instance, "HINT01.HNT " should first be trimmed to "HINT01.HNT").
+* For the later Catacombs titles, it's now possible to choose between
+the game and HINTCAT.EXE/DEMOCAT.EXE, right from the launcher. The last
+choice is saved for the next time Reflection Keen is started. There's
+further the addition of the related /slidecat command-line argument.
+* More changes for game versions management - We now store a separate list
+of "main functions" for each game version. Usually, they have matching
+EXE filenames (Keen Dreams 2015 is an exception).
+* When Reflection Keen checks for an available game installation, all it does
+is check for recognized game data (and EXE) files. It does not, at this point,
+look for embedded data, like INTROSCN.SCN in CAT3D.EXE. It also does not
+unpack any packed EXE. This may only happen when the game (or slidecat)
+is started, *or* when BE_Cross_Bexecv is called.
+* In particular, embedded data like INTROSCN.SCN is *not* written as
+an external file anymore. It's also impossible to use replacements for
+these with "manualgamevermode=true".
+* Ensure last display number. is saved, regardless of any specific event.
+* On an attempt to resolve the issue of high audio latency leading to a low
+framerate (reproduced on Android), we now basically run the various sound
+callbacks (originally SDL callbacks) in the main thread. This is done in
+virtually the same way as if the sound system were disabled, only that
+an additional buffer is used for passing samples to the SDL audio thread.
+* The new "sndinterthreadbufferratio" setting can be used to adjust this
+buffer's size, as well as the sizes of internal PC and AL buffers.
+They're calculated relatively to the buffer size chosen for
+the SDL callback thread (used only in this callback).
+* Other misc. fixes.
 
 Apr 01, 2017 (v0.17.0):
 
