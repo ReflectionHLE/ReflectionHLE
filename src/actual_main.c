@@ -35,16 +35,6 @@ const char *be_main_arg_newcfgdir = NULL;
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 static void show_command_line_help()
 {
-	char gameverstrbuffer[80] = "";
-	char *gameverstrptr = gameverstrbuffer, *gameverstrend = gameverstrbuffer + sizeof(gameverstrbuffer);
-	for (int gameVerVal = 0; gameVerVal < BE_GAMEVER_LAST; ++gameVerVal)
-	{
-		if (gameVerVal < BE_GAMEVER_LAST-1)
-			gameverstrptr = BE_Cross_safeandfastcstringcopy_2strs(gameverstrptr, gameverstrend, refkeen_gamever_strs[gameVerVal], ", ");
-		else
-			gameverstrptr = BE_Cross_safeandfastcstringcopy(gameverstrptr, gameverstrend, refkeen_gamever_strs[gameVerVal]);
-	}
-
 	// HACK - For text mode emulation (and exit handler)
 	BE_ST_PrepareForGameStartupWithoutAudio();
 
@@ -75,7 +65,18 @@ static void show_command_line_help()
 	BE_ST_puts("Note: The path passed to -datadir or -cfgdir is assumed to exist.");
 	BE_ST_puts("");
 	BE_ST_puts("Supported game versions:");
-	BE_ST_printf("%s\n", gameverstrbuffer);
+	for (int gameVerVal = 0; gameVerVal < BE_GAMEVER_LAST; ++gameVerVal)
+	{
+		if (gameVerVal < BE_GAMEVER_LAST-1)
+		{
+			BE_ST_printf("%s, ", refkeen_gamever_strs[gameVerVal]);
+			if (gameVerVal % 4 == 3) // HACK for line splitting
+				BE_ST_puts("");
+		}
+		else
+			BE_ST_printf("%s.\n", refkeen_gamever_strs[gameVerVal]);
+	}
+
 	BE_ST_HandleExit(0);
 }
 #endif // REFKEEN_CONFIG_ENABLE_CMDLINE

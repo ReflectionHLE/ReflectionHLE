@@ -121,9 +121,9 @@ typedef int16_t BE_ST_SndSample_T;
 // One for main thread use, the other being shared with the audio callback thread.
 static BE_ST_SndSample_T *g_sdlCallbacksSamplesBuffer;
 // If two sub-buffers are used, this is the size of a single one
-static int g_sdlCallbacksSamplesBufferOnePartCount;
+static uint32_t g_sdlCallbacksSamplesBufferOnePartCount;
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-static int g_sdlSamplesRemainingForSDLAudioCallback;
+static uint32_t g_sdlSamplesRemainingForSDLAudioCallback;
 #endif
 
 static uint32_t g_sdlManualAudioCallbackCallLastTicks;
@@ -270,8 +270,7 @@ void BE_ST_InitAudio(void)
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 	// Size may be reported as "0" on Android, so use this just in case
 	g_sdlCallbacksSamplesBufferOnePartCount = g_refKeenCfg.sndInterThreadBufferRatio * (g_sdlAudioSpec.size ? (g_sdlAudioSpec.size / sizeof(BE_ST_SndSample_T)) : g_sdlAudioSpec.samples);
-	int sizeOfOnePartInBytes = g_sdlCallbacksSamplesBufferOnePartCount * sizeof(BE_ST_SndSample_T);
-	g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(2*sizeOfOnePartInBytes); // Allocate TWO parts
+	g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(2*(g_sdlCallbacksSamplesBufferOnePartCount*sizeof(BE_ST_SndSample_T))); // Allocate TWO parts
 	if (!g_sdlCallbacksSamplesBuffer)
 		BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlCallbacksSamplesBuffer.)");
 	g_sdlSamplesRemainingForSDLAudioCallback = 0;
@@ -627,7 +626,7 @@ static void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len)
 
 	BE_ST_UnlockAudioRecursively();
 	// No need to have lock here
-	if (samplesToCopy < len / sizeof(BE_ST_SndSample_T))
+	if (samplesToCopy < len / (int)sizeof(BE_ST_SndSample_T))
 		memset(stream + samplesToCopy * sizeof(BE_ST_SndSample_T), 0, len - samplesToCopy * sizeof(BE_ST_SndSample_T));
 }
 #endif
