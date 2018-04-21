@@ -420,6 +420,9 @@ void BEL_ST_SDLCreateTextureWrapper(SDL_Texture **pTexture, Uint32 format, int a
 
 void BEL_ST_SDLDestroyTextureWrapper(SDL_Texture **pTexture)
 {
+	if (*pTexture == NULL)
+		return;
+
 	for (int i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i)
 		if (g_sdlManagedTexturesPool[i].texturePtr == pTexture)
 		{
