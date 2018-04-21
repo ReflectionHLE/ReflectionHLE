@@ -644,25 +644,21 @@ Building the ports from the source codes - Android packages
 This was tested on a Linux environment, although the instructions should
 probably apply on other platforms as well.
 
-Prerequisites (includes some preparation):
+The following prerequisites were used. Note that other versions may lead
+to issues, and Android Studio (the IDE) was *not* used.
 
-- In terms of development tools, a little mix of old and new was used.
-The old Android NDK version r8d was used, along with Android SDK Tools 25.2.2,
-Android SDK Platform-tools 24.0.3 and Android SDK Build-tools 19.1.
-The Target Android API level is currently 24, while the minimum is 10.
-The minimum of 10 is also used for the native code.
-A compatible Java 8 installation is required. On the other hand, "ant" is
-still used to build the Java projects and create the APK packages,
-rather than "gradle".
-- Within the SDK directory, you should look for the file android-support-v4.jar
-as found under {sdk-dir}/extras/android/support/v7/appcompat/libs, and store
-a copy of it within the "src/android-lib/libs" directory in the refkeen tree.
-You may have to create the "libs" subdirectory beforehand.
-- Do NOT copy the android-support-v4.jar file from
-{sdk-dir}/extras/android/support/v4 or any other location.
-- Full SDL 2.0.2+ sources are required. SDL 2.0.5 is recommended.
-- In the refkeen source tree, the directory src/android-lib/jni should have
-a copy of (or a symlink to) the SDL2 sources, named "SDL".
+- Android NDK version r16b.
+- SDK tools v26.0.1. This was used to install build-tools v26.0.1,
+"extras;android;m2repository" v47.0.0 (for misc. compatibility functions),
+platform-tools v27.0.1 and the Android 8.1 SDK (API level 27).
+- As hinted above, the expected Target Android API level is currently 27.
+The minimum API level is 14. The latter covers the Java
+and C (native) code pieces altogether.
+- A compatible Java 8 installation is required.
+- The built-in gradle wrapper of each game ("gradlew") shall be used.
+- Full SDL 2.0 sources are required; This was tested with the sources from
+the official Mercurial repository, using changeset 11945:ffd52bb02bcc
+(dated "Mon Apr 16 02:11:09 2018 -0400").
 
 Preparing a resampling library:
 
@@ -672,45 +668,39 @@ Currently supported libraries for resampling: LIBSAMPLERATE, LIBSOXR and
 LIBSPEEXDSP. NONE is also an option if you don't want to add
 any dependency on a resampling library.
 - Currently RESAMPLER=LIBSPEEXDSP is the default choice.
-- If a resampling library is used, then src/android-lib/jni should contain
-a copy of (or a symlink to) the corresponding resampling library
-sources, using one of these names for the directory/symlink
-(depending on the library in use): samplerate, soxr, speexdsp.
 
-Building native library code:
+Building the code and creating an APK file (assuming Keen Dreams only):
 
-- To build the native SDL2 code, and (optionally) a resampling library,
-enter the src/android-lib directory inside a compatible shell (e.g., "bash")
-and then type /path/to/ndk-build clean, followed by /path/to/ndk-build.
-You may optionally pass arguments like -j #n.
-
-Building native game code:
-
-- The native code of each game shall be built separately. For instance, in
+- The code of each game shall be built separately. For instance, in
 the case of Keen Dreams, enter the src/kdreams/android-project directory.
-- You can then use ndk-build in src/kdreams/android-project to build the
-native Reflection Keen Dreams code as usual. Again, though, it's safer
-to run "ndk-build clean" first. You can also set the RESAMPLER variable if you
-want to use a different resampling library (or disable resampling altogether).
-Example: ndk-build RESAMPLER=LIBSOXR
-
-Building the Java code and creating an APK file (assuming Keen Dreams only):
-
+- This also covers the shared C (native) and Java library code.
 - Create a new local.properties file at src/android-lib, and fill it with
-the path to the SDK, like this: sdk.dir=/path/to/adt-bundle-linux-x86_64/sdk
-- Copy to src/android-lib/src/org/libsdl/app the following file from the SDL2
-sources (tested with 2.0.5): android-project/src/org/libsdl/SDLActivity.java
+the path to the SDK Tools, like this: sdk.dir=/path/to/android-sdk-tools.
+- The same local.properties file shall also have the path to the NDK,
+formatted like this: ndk.dir=/path/to/android-ndk-r16b.
 - For Keen Dreams, copy src/android-lib/local.properties
 into src/kdreams/android-project.
-- While under src/kdreams/android-project, type "ant clean" and then "ant".
-If there is no unexpected issue, you should get a RefkeenActivity-debug.apk
-package in src/kdreams/android-project/bin.
+- Copy the SDL2 Android Java files to to src/android-lib/app/src/main/java.
+For instance, if android-project/src/org/libsdl/app/SDLActivity.java
+is present, copy it to src/android-lib/app/src/main/java/org/libsdl/app.
+- The directory src/android-lib/app/jni should have a copy of
+(or a symlink to) the SDL2 sources, named "SDL".
+- If a resampling library is used, then src/android-lib/app/jni should
+additionally contain a copy of (or a symlink to) the corresponding resampling
+library sources, using one of these names for the directory/symlink
+(depending on the library in use): samplerate, soxr, speexdsp.
+- While under src/kdreams/android-project, type "./gradlew assembleDebug".
+If there is no unexpected issue, you should get a reflection-kdreams-debug.apk
+package in src/kdreams/android-project/app/build/outputs/apk.
+- In case of issues, try cleaning previous outputs by typing
+"./gradlew clean". Note that this is expected to remove SHARED
+library code as well, having an impact upon building another game's APK.
 
 Installing the APK package:
 
 - If you have a compatible Android device connected via USB,
-USB debugging is enabled, *and* so is installation of apps from USB,
-then you may be able to install the app by typing "ant installd".
+USB debugging is enabled, *and* so is the installation of apps from USB,
+then you might be able to install the app by typing "./gradlew installDebug".
 - Alternatively, you can (probably) manually transfer the app, by copying
 the above APK file to the device's storage and then selecting the file for
 installation, right from the device itself. This may require you to
