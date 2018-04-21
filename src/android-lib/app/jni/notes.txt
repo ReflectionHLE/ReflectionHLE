@@ -1,5 +1,8 @@
-Supported versions/archives of resampling libraries: soxr-0.1.2.Source.tar.xz,
-speexdsp-SpeexDSP-1.2rc3.tar.gz, libsamplerate-0.1.8.tar.gz.
+Supported version/archive of a resampling library:
+speexdsp-SpeexDSP-1.2rc3.tar.gz.
+
+UNSUPPORTED versions (these may malfunction with certain architectures):
+soxr-0.1.2.Source.tar.xz, libsamplerate-0.1.8.tar.gz.
 
 Android Makefiles are based on ones from these repositories:
 https://github.com/xyx119/speexdsp-ndk/

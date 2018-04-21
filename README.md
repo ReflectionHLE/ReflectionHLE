@@ -662,12 +662,15 @@ the official Mercurial repository, using changeset 11945:ffd52bb02bcc
 
 Preparing a resampling library:
 
-- One of three resampling libraries can be selected. As in the case of SDL 2.0,
+- It's possible to use a resampling library. As in the case of SDL 2.0,
 you'll need full sources. A list of known compatible versions is given below.
-Currently supported libraries for resampling: LIBSAMPLERATE, LIBSOXR and
-LIBSPEEXDSP. NONE is also an option if you don't want to add
-any dependency on a resampling library.
+Currently supported library for resampling: LIBSPEEXDSP. NONE is also an
+option if you don't want to add any dependency on a resampling library.
 - Currently RESAMPLER=LIBSPEEXDSP is the default choice.
+- While you may find mentions of LIBSAMPLERATE and LIBSOXR, they haven't been
+used for a while and may fail to work as expected with specific architectures.
+For this reason, a few configuration header files (".h") have been relocated,
+so compilation will fail without moving any of these back.
 
 Building the code and creating an APK file (assuming Keen Dreams only):
 
@@ -706,8 +709,11 @@ the above APK file to the device's storage and then selecting the file for
 installation, right from the device itself. This may require you to
 allow the device to install packages from unknown sources, though.
 
-Supported versions/archives of resampling libraries: soxr-0.1.2.Source.tar.xz,
-speexdsp-SpeexDSP-1.2rc3.tar.gz, libsamplerate-0.1.8.tar.gz.
+Supported version/archive of a resampling library:
+speexdsp-SpeexDSP-1.2rc3.tar.gz.
+
+UNSUPPORTED versions (these may malfunction with certain architectures):
+soxr-0.1.2.Source.tar.xz, libsamplerate-0.1.8.tar.gz.
 
 ---------------------------------
 Original sources this is based on
