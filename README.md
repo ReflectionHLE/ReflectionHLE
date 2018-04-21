@@ -698,6 +698,10 @@ package in src/kdreams/android-project/app/build/outputs/apk.
 - In case of issues, try cleaning previous outputs by typing
 "./gradlew clean". Note that this is expected to remove SHARED
 library code as well, having an impact upon building another game's APK.
+- Also note that currently, src/android-lib/app/jni/Android_common.mk has
+the path to files like libSDL2.so HARDCODED in a way. This was a hack done
+so the same files can be re-used for the separate game projects. In case of
+issues, you may have to change this path by editing Android_common.mk.
 
 Installing the APK package:
 
