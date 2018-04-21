@@ -14,10 +14,10 @@ android {
             }
         }
         ndk {
-            // WARNING: Do *not* change this unless you're sure this is supported by
-            // all code pieces, with an emphasis on jni/config_samplerate/config.h
-            // (so wait before adding x86_64).
-            abiFilters 'armeabi-v7a', 'x86'
+            // WARNING: Do *not* change this unless you're sure this is supported
+            // by all code pieces, with an emphasis on config header
+            // files from the android-lib/app/jni dir
+            abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
         }
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
