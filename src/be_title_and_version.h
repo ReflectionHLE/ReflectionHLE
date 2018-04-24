@@ -15,7 +15,7 @@
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
 
-// Note that the "vX.Y.Z" format is important, since a Makefile command parses
+// Note that the "vX.Y.Z" format is important, since a makefile command parses
 // the string to fill the CFBundleVersion string in Info.plist (OS X/macOS specific)
 
 #define REFKEEN_VERSION_STRING "Dev. Build"
