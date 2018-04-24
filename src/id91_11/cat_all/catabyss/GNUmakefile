@@ -66,7 +66,7 @@ OBJECTS=$(GAMEOBJECTS) $(IDOBJECTS) $(EXTOBJECTS) $(BEOBJECTS)
 
 INTCXXFLAGS+= -Wno-char-subscripts -I$(C3DCOMMONSRC) -I$(IDSRC) -I$(EXTSRC) -DREFKEEN_VER_CATADVENTURES=1 -DREFKEEN_VER_CATABYSS=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
-include ../../../Makefile.common
+include ../../../GNUmakefile.common
 
 $(EXTOBJ)/%.o: $(EXTSRC)/%.c $(EXTOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@

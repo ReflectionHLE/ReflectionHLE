@@ -54,7 +54,7 @@ OBJECTS=$(GAMEOBJECTS) $(IDOBJECTS) $(BEOBJECTS)
 
 INTCXXFLAGS+= -I$(C3DCOMMONSRC) -I$(IDSRC) -DREFKEEN_VER_CAT3D=1 -DREFKEEN_VER_CATACOMB_ALL=1
 
-include ../../../Makefile.common
+include ../../../GNUmakefile.common
 
 $(IDOBJ)/%.o: $(IDSRC)/%.c $(IDOBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@

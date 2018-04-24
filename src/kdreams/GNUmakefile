@@ -51,7 +51,7 @@ OBJECTS=$(GAMEOBJECTS) $(BEOBJECTS)
 
 INTCXXFLAGS+= -DREFKEEN_VER_KDREAMS=1
 
-include ../Makefile.common
+include ../GNUmakefile.common
 
 $(OBJ)/loadscn2.o: $(SRC)/lscr/loadscn2.c | $(OBJ)
 	$(CXX) -c $(INTCXXFLAGS) $(CXXFLAGS) $< -o $@
