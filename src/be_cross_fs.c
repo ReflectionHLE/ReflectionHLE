@@ -2036,28 +2036,29 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_kdreams_path[BE_CROSS_PATH_LEN_BOUND];
-		bool checkPath;
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 		DWORD dwType = 0;
 		DWORD dwSize = sizeof(steam_kdreams_path);
 		LSTATUS status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 356200", L"INSTALLLOCATION", &dwType, steam_kdreams_path, &dwSize);
-		checkPath = ((status == ERROR_SUCCESS) && (dwType == REG_SZ));
+		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
 #elif (defined REFKEEN_PLATFORM_UNIX)
 		const char *homeVar = getenv("HOME");
-		checkPath = (homeVar && *homeVar);
-		if (checkPath)
+		if (homeVar && *homeVar)
 		{
 #ifdef REFKEEN_PLATFORM_MACOS
 			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common/Keen Dreams/KDreams.app/Contents/Resources");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
 #else
+			// They changed from SteamApps to steamapps at some point, so check both two
 			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common/Keen Dreams");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
+			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/.steam/steam/steamapps/common/Keen Dreams");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
 #endif
 		}
 #endif // REFKEEN_PLATFORM
-
-		if (checkPath)
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
 
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
