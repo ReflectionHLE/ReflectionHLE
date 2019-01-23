@@ -583,7 +583,7 @@ static void BEL_ST_ParseSetting_SndInterThreadBufferRatio(const char *keyprefix,
 {
 	g_refKeenCfg.sndInterThreadBufferRatio = atoi(buffer);
 	if (g_refKeenCfg.sndInterThreadBufferRatio <= 0)
-		g_refKeenCfg.sndInterThreadBufferRatio = 8;
+		g_refKeenCfg.sndInterThreadBufferRatio = 2;
 }
 
 static void BEL_ST_ParseSetting_SndSampleRate(const char *keyprefix, const char *buffer)
@@ -888,7 +888,7 @@ static void BEL_ST_ParseConfig(void)
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	g_refKeenCfg.absMouseMotion = false;
 #endif
-	g_refKeenCfg.sndInterThreadBufferRatio = 8;
+	g_refKeenCfg.sndInterThreadBufferRatio = 2;
 	g_refKeenCfg.sndSampleRate = 48000; // 49716 may lead to unexpected behaviors on Android
 	g_refKeenCfg.sndSubSystem = true;
 	g_refKeenCfg.oplEmulation = true;
