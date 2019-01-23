@@ -1,27 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 28
     defaultConfig {
         applicationId "net.duke4.ny.reflection_kdreams"
-	setProperty("archivesBaseName", "reflection-kdreams")
-        minSdkVersion 14
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        setProperty("archivesBaseName", "reflection-kdreams")
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 4
+        versionName "Dev. Build"
         externalNativeBuild {
             ndkBuild {
-                arguments "APP_PLATFORM=android-14"
+                arguments "APP_PLATFORM=android-16"
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
             }
         }
-        ndk {
-            // WARNING: Do *not* change this unless you're sure this is supported
-            // by all code pieces, with an emphasis on config header
-            // files from the android-lib/app/jni dir
-            abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
-        }
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -29,12 +22,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets.main {
-        jniLibs.srcDir 'libs'
-    }
-    externalNativeBuild {
-        ndkBuild {
-            path 'jni/Android.mk'
+    if (!project.hasProperty('EXCLUDE_NATIVE_LIBS')) {
+        sourceSets.main {
+            jniLibs.srcDir 'libs'
+        }
+        externalNativeBuild {
+            ndkBuild {
+                path 'jni/Android.mk'
+            }
         }
     }
     lintOptions {
@@ -43,13 +38,6 @@ android {
 }
 
 dependencies {
-    // Target the relevant variant of the library
-    debugCompile project(path: ':lib', configuration: 'debug')
-    releaseCompile project(path: ':lib', configuration: 'release')
-
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    testCompile 'junit:junit:4.12'
+    // Add library common to all apps
+    implementation project(':lib')
 }

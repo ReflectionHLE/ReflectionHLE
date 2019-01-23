@@ -17,7 +17,7 @@ LOCAL_SRC_FILES += $(SDL_PATH)/src/main/android/SDL_android_main.c
 LOCAL_SRC_FILES := $(LOCAL_SRC_FILES:$(LOCAL_PATH)/%=%)
 
 # The following addition of the directory is a HACK; Same with references to libraries like SDL2.
-LOCAL_LDLIBS := -L$(BESRC)/android-lib/app/build/intermediates/bundles/$(APP_OPTIM)/jni/$(TARGET_ARCH_ABI) -lSDL2 -lGLESv1_CM -lGLESv2 -llog
+LOCAL_LDLIBS := -L$(BESRC)/android-lib/app/build/intermediates/ndkBuild/$(APP_OPTIM)/obj/local/$(TARGET_ARCH_ABI) -lSDL2 -lGLESv1_CM -lGLESv2 -llog
 
 ifeq ($(RESAMPLER),LIBSOXR)
 	LOCAL_C_INCLUDES += $(BESRC)/android-lib/app/jni/soxr/src $(BESRC)/android-lib/app/jni/config_samplerate

@@ -648,17 +648,23 @@ The following prerequisites were used. Note that other versions may lead
 to issues, and Android Studio (the IDE) was *not* used.
 
 - Android NDK version r16b.
-- SDK tools v26.0.1. This was used to install build-tools v26.0.1,
-"extras;android;m2repository" v47.0.0 (for misc. compatibility functions),
-platform-tools v27.0.1 and the Android 8.1 SDK (API level 27).
-- As hinted above, the expected Target Android API level is currently 27.
-The minimum API level is 14. The latter covers the Java
+- SDK tools v26.0.1. This was used to install "build-tools;v28.0.3",
+"extras;android;m2repository" v47.0.0 (for misc. compatibility functions)
+and "platforms;android-28" i.e., the Android 9.0 SDK (tested with rev. 1).
+- Updating the platform tools themselves (from the same package manager)
+is probably desired as well.
+- The expected Target Android API level is currently 28.
+The minimum API level is 16. The latter covers the Java
 and C (native) code pieces altogether.
-- A compatible Java 8 installation is required.
-- The built-in gradle wrapper of each game ("gradlew") shall be used.
+- The built-in gradle wrapper of each game ("gradlew"), ready to work with
+gradle v4.10.2, should be used. It may have to be updated in case of issues,
+along with other files.
+- A compatible Java 8 installation is required. A newer Java installation
+(e.g., Java 9 or later) is not guaranteed to be compatible, although
+updating the SDK tools and/or gradle wrapper may assist.
 - Full SDL 2.0 sources are required; This was tested with the sources from
-the official Mercurial repository, using changeset 11945:ffd52bb02bcc
-(dated "Mon Apr 16 02:11:09 2018 -0400").
+the official Mercurial repository, using changeset 12569:05aff4771d9a
+(dated "Mon Jan 21 23:41:43 2019 +0100").
 
 Preparing a resampling library:
 
@@ -680,7 +686,7 @@ the case of Keen Dreams, enter the src/kdreams/android-project directory.
 - Create a new local.properties file at src/android-lib, and fill it with
 the path to the SDK Tools, like this: sdk.dir=/path/to/android-sdk-tools.
 - The same local.properties file shall also have the path to the NDK,
-formatted like this: ndk.dir=/path/to/android-ndk-r16b.
+formatted like this: ndk.dir=/path/to/android-ndk-r19.
 - For Keen Dreams, copy src/android-lib/local.properties
 into src/kdreams/android-project.
 - Copy the SDL2 Android Java files to to src/android-lib/app/src/main/java.
@@ -690,8 +696,8 @@ is present, copy it to src/android-lib/app/src/main/java/org/libsdl/app.
 (or a symlink to) the SDL2 sources, named "SDL".
 - If a resampling library is used, then src/android-lib/app/jni should
 additionally contain a copy of (or a symlink to) the corresponding resampling
-library sources, using one of these names for the directory/symlink
-(depending on the library in use): samplerate, soxr, speexdsp.
+library sources. SpeexDSP is currently the only library tested and known to
+work, so use "speexdsp" for the name of the directory (or symlink).
 - While under src/kdreams/android-project, type "./gradlew assembleDebug".
 If there is no unexpected issue, you should get a reflection-kdreams-debug.apk
 package in src/kdreams/android-project/app/build/outputs/apk.
