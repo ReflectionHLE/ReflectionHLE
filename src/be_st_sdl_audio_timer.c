@@ -59,6 +59,7 @@ static SDL_mutex* g_sdlCallbackMutex = NULL;
 #endif
 static SDL_AudioSpec g_sdlAudioSpec;
 static SDL_AudioCallback g_sdlOurAudioCallback;
+static SDL_AudioDeviceID g_sdlAudioDevice;
 
 bool g_sdlAudioSubsystemUp;
 
@@ -197,21 +198,25 @@ void BE_ST_InitAudio(void)
 
 	if (g_refKeenCfg.sndSubSystem)
 	{
+#ifdef REFKEEN_PLATFORM_ANDROID
+		setenv("SDL_AUDIODRIVER", "openslES", 0); // HACK intended to force this driver for (hopefully) significantly lower latency
+#endif
 		if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
 		}
 		else
 		{
-			g_sdlAudioSpec.freq = g_refKeenCfg.sndSampleRate;
+			SDL_AudioSpec spec;
+			spec.freq = g_refKeenCfg.sndSampleRate;
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
-			g_sdlAudioSpec.format = AUDIO_F32SYS;
+			spec.format = AUDIO_F32SYS;
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
-			g_sdlAudioSpec.format = AUDIO_S16SYS;
+			spec.format = AUDIO_S16SYS;
 #endif
-			g_sdlAudioSpec.channels = 1;
+			spec.channels = 1;
 			// Should be some power-of-two roughly proportional to the sample rate; Using 1024 for 48000Hz.
-			for (g_sdlAudioSpec.samples = 1; g_sdlAudioSpec.samples < g_refKeenCfg.sndSampleRate/64; g_sdlAudioSpec.samples *= 2)
+			for (spec.samples = 1; spec.samples < g_refKeenCfg.sndSampleRate/64; spec.samples *= 2)
 			{
 			}
 
@@ -221,13 +226,18 @@ void BE_ST_InitAudio(void)
 				g_sdlOurAudioCallback = ((g_refKeenCfg.sndSampleRate == inSampleRate) || !g_refKeenCfg.oplEmulation) ? BEL_ST_Simple_EmuCallBack : BEL_ST_Resampling_EmuCallBack;
 
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-			g_sdlAudioSpec.callback = BEL_ST_InterThread_CallBack;
+			spec.callback = BEL_ST_InterThread_CallBack;
 #else
-			g_sdlAudioSpec.callback = g_sdlOurAudioCallback;
+			spec.callback = g_sdlOurAudioCallback;
 #endif
 
-			g_sdlAudioSpec.userdata = NULL;
-			if (SDL_OpenAudio(&g_sdlAudioSpec, NULL))
+			spec.userdata = NULL;
+#if SDL_VERSION_ATLEAST(2,0,9)
+			g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &spec, &g_sdlAudioSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_SAMPLES_CHANGE);
+#else
+			g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &spec, &g_sdlAudioSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
+#endif
+			if (g_sdlAudioDevice <= 0)
 			{
 				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
 				SDL_QuitSubSystem(SDL_INIT_AUDIO);
@@ -239,7 +249,7 @@ void BE_ST_InitAudio(void)
 				if (!g_sdlCallbackMutex)
 				{
 					BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Cannot create recursive mutex for SDL audio callback,\n%s\nClosing SDL audio subsystem\n", SDL_GetError());
-					SDL_CloseAudio();
+					SDL_CloseAudioDevice(g_sdlAudioDevice);
 					SDL_QuitSubSystem(SDL_INIT_AUDIO);
 				}
 				else
@@ -429,7 +439,7 @@ void BE_ST_InitAudio(void)
 
 	// As stated above, BE_ST_BSound may be called,
 	// so better start generation of samples
-	SDL_PauseAudio(0);
+	SDL_PauseAudioDevice(g_sdlAudioDevice, 0);
 
 finish:
 	// Regardless of the audio subsystem being off or on, have *some*
@@ -452,7 +462,7 @@ void BE_ST_ShutdownAudio(void)
 {
 	if (g_sdlAudioSubsystemUp)
 	{
-		SDL_PauseAudio(1);
+		SDL_PauseAudioDevice(g_sdlAudioDevice, 1);
 		if ((g_sdlOurAudioCallback == BEL_ST_Resampling_EmuCallBack) || (g_sdlOurAudioCallback == BEL_ST_Resampling_DigiCallBack))
 		{
 #ifndef REFKEEN_RESAMPLER_NONE
@@ -484,7 +494,7 @@ void BE_ST_ShutdownAudio(void)
 		SDL_DestroyMutex(g_sdlCallbackMutex);
 		g_sdlCallbackMutex = NULL;
 #endif
-		SDL_CloseAudio();
+		SDL_CloseAudioDevice(g_sdlAudioDevice);
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		g_sdlAudioSubsystemUp = false;
 	}
