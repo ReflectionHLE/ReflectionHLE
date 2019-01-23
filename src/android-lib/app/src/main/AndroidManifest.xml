@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="net.duke4.ny.reflection_keen"
-      android:versionCode="3"
-      android:versionName="0.18.0" >
-
-    <!-- Android 4.0.1 -->
-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="27" />
+      package="net.duke4.ny.reflection_keen">
 
     <!-- OpenGL ES 2.0 -->
     <uses-feature android:glEsVersion="0x00020000" />

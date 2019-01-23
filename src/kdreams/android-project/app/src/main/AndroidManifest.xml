@@ -49,6 +49,7 @@
 
         <activity android:name="net.duke4.ny.reflection_keen.RefkeenActivity"
             android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:alwaysRetainTaskState="true"
             android:screenOrientation="sensorLandscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
