@@ -1031,17 +1031,17 @@ static int g_lastGameVerSelectedInMenu;
 
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 {
-	g_lastGameVerSelectedInMenu = menuItemP - g_be_launcher_currMenu->menuItems;
+	g_lastGameVerSelectedInMenu = BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems);
 	int nOfExes = BE_Cross_GetAccessibleEXEsCountForGameVer(g_lastGameVerSelectedInMenu);
 	if (nOfExes == 1)
-		BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(g_lastGameVerSelectedInMenu), BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(0, g_lastGameVerSelectedInMenu));
+		BEL_Launcher_DoLaunchGame(g_lastGameVerSelectedInMenu, BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(0, g_lastGameVerSelectedInMenu));
 	else
 		BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(g_lastGameVerSelectedInMenu, nOfExes);
 }
 
 void BE_Launcher_Handler_GameLaunchWithChosenExe(BEMenuItem **menuItemP)
 {
-	BEL_Launcher_DoLaunchGame(BE_Cross_GetGameVerFromInstallation(g_lastGameVerSelectedInMenu), BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex((menuItemP - g_be_launcher_currMenu->menuItems), g_lastGameVerSelectedInMenu));
+	BEL_Launcher_DoLaunchGame(g_lastGameVerSelectedInMenu, BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex((menuItemP - g_be_launcher_currMenu->menuItems), g_lastGameVerSelectedInMenu));
 }
 
 
