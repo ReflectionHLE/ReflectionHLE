@@ -112,7 +112,8 @@ id0_int_t	segstart[VIEWHEIGHT],	// addline tracks line segment and draws
 	segcolor[VIEWHEIGHT];	// only when the color changes
 
 
-walltype	walls[MAXWALLS],*leftwall,*rightwall;
+// REFKEEN - leftwall is unused
+walltype	walls[MAXWALLS]/*,*leftwall*/,*rightwall;
 
 
 //==========================================================================
@@ -1706,9 +1707,24 @@ void BuildTables (void)
   for (i=0;i<=ANGLEQUAD;i++)
   {
 	value=GLOBAL1*sin(angle);
+	// REFKEEN - Originally there was a buffer overflow here
+	// for i==ANGLEQUAD, technically leading to undefined behaviors.
+	// Let's emulate the PRESUMED behaviors in the Catacomb Armageddon 1.02
+	// and Catacomb Apocalypse 1.01, which is to write to lastnuke instead.
+	//
+	// FIXME (REFKEEN) - Verify this is actually correct!
+	// The original EXEs weren't 100% reproduced, but at least
+	// this is confirmed for Catacomb Abyss 1.13 and 1.24.
+	sintable[i] = sintable[ANGLES/2-i] = value;
+	if (i == ANGLEQUAD)
+	  lastnuke = value;
+	else
+	  sintable[i+ANGLES] = value;
+#if 0
 	sintable[i]=
 	  sintable[i+ANGLES]=
 	  sintable[ANGLES/2-i] = value;
+#endif
 	sintable[ANGLES-i]=
 	  sintable[ANGLES/2+i] = value | 0x80000000l;
 	angle += anglestep;
@@ -1881,7 +1897,7 @@ void DrawWallList (void)
 	id0_int_t /*i,*/leftx,newleft,rightclip;
 	walltype *wall, *check;
 
-	memset(wallwidth, 0, 2*(VIEWWIDTH/2));
+	memset(wallwidth, 0, 2*(VIEWWIDTH/2)); // REFKEEN - Yes, this resets just half the array
 #if 0
 asm	mov	ax,ds
 asm	mov	es,ax

@@ -107,9 +107,12 @@ static	const char        id0_far ASCIINames[] =		// Unshifted ASCII for scan cod
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 5
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 6
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0   	// 7
+// REFKEEN - A bit hackish but this is how it's done
+#ifdef REFKEEN_VER_CATADVENTURES
+					};
+#else
 					},
 
-#ifndef REFKEEN_VER_CATADVENTURES
 					*ScanNames[] =		// Scan code names with single chars
 					{
 	"?","?","1","2","3","4","5","6","7","8","9","0","-","+","?","?",
@@ -121,7 +124,6 @@ static	const char        id0_far ASCIINames[] =		// Unshifted ASCII for scan cod
 	"?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?",
 	"?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?"
 					},	// DEBUG - consolidate these
-#endif
 
 					id0_far ExtScanCodes[] =	// Scan codes with >1 char names
 					{
@@ -129,12 +131,8 @@ static	const char        id0_far ASCIINames[] =		// Unshifted ASCII for scan cod
 	0x3f,0x40,0x41,0x42,0x43,0x44,0x57,0x59,0x46,0x1c,0x36,
 	0x37,0x38,0x47,0x49,0x4f,0x51,0x52,0x53,0x45,0x48,
 	0x50,0x4b,0x4d,0x00
-					}
-// REFKEEN - A bit hackish but this is how it's done
-#ifdef REFKEEN_VER_CATADVENTURES
-					;
-#else
-					,
+					},
+
 					*ExtScanNames[] =	// Names corresponding to ExtScanCodes
 					{
 	"Esc","BkSp","Tab","Ctrl","LShft","Space","CapsLk","F1","F2","F3","F4",
@@ -142,7 +140,7 @@ static	const char        id0_far ASCIINames[] =		// Unshifted ASCII for scan cod
 	"PrtSc","Alt","Home","PgUp","End","PgDn","Ins","Del","NumLk","Up",
 	"Down","Left","Right",""
 					};
-#endif
+#endif // REFKEEN_VER_CATADVENTURES
 static	Direction	DirTable[] =		// Quick lookup for total direction
 					{
 						dir_NorthWest,	dir_North,	dir_NorthEast,

@@ -633,6 +633,9 @@ Although untested, MinGW can be used for this, and then you should
 be able to follow the above instructions for building Linux executables
 with (virtually) no change.
 
+In case you additionally want to use SpeexDSP for resampling, you may
+have to change the corresponding linker argumet in src/GNUmakefile.common
+so it says -llibspeexdsp-1 instead of -lspeexdsp.
 
 If you try to cross-compile from a Linux environment, then you may wish
 to set PLATFORM=WINDOWS and BINPREFIX accordingly.
@@ -829,6 +832,39 @@ say to all of you, that you should be considered special here. :)
 ---------
 Changelog
 ---------
+
+Jan 25, 2019 (v0.18.3):
+* This is a maintenance release mostly intended for Android users, although
+there are also a few changes which aren't Android-specific.
+* Fixed a bug where the wrong Catalog / Hint Book EXE would be shown
+in the launcher.
+* Further fixed a bug where, for game controller or touchscreen users,
+the 'P' key would mistakenly appear in one of the on-screen buttons
+for the hint book in Catacomb Armageddon/Apocalypse. It'd also be
+usable for no good reason.
+* The Android build files have been updated (twice) from SDL2's repo.
+Unfortunately, the minimum supported Android version has been raised
+to 4.1 (i.e., API level 16).
+* Additionally, the original armeabi ABI (not to be confused with armeabi-v7a)
+is not supported anymore.
+* On the other hand, 64-bit Android binaries (arm64-v8a and x86_64)
+are now built, as currently configured.
+* Using a recent SDL2 Mercurial update, an OpenSL ES sound driver is
+now used on Android by default. While your mileage may vary as usual,
+hopefully this will resolve the great issue of high audible latency.
+* Added circular icons for Android. Also added banners, in case you want to
+try and run any of the games on Android TV. Your mileage may vary, though!
+* Allow the sound sample rate to internally change from the user's choice.
+For EXEs built with SDL 2.0.9 headers or compatible, the same also applies
+to an internal samples field (a part of SDL_AudioSpec).
+* The default value of sndInterThreadBufferRatio was changed from 8 to 2. It
+turned out that 8 was simply too high, at least in a specific setup with the
+2015 Keen Dreams edition. It's probably also less assisting for Android,
+either way, especially after the migration to OpenSL ES.
+* Reflection Keen should now search for game data from Steam in
+the lowercase "steamapps" directory, in addition to "SteamApps"
+(mostly relevant for Linux users).
+* Other few misc. fixes.
 
 Aug 14, 2017 (v0.18.0):
 * Move some memory management code from the differing id_mm.c files to a
