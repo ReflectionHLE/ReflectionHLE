@@ -558,7 +558,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_slidecat = {
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-		{NULL, BE_ST_SC_P, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		{NULL, BE_ST_SC_P, 0, BE_ST_CTRL_MAP_NONE}, // This depends on the game EXE in use
 		{0},
 		// Back button
 		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
