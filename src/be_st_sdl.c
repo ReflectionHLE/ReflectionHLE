@@ -143,6 +143,8 @@ extern bool g_sdlForceGfxControlUiRefresh;
 extern bool g_sdlShowControllerUI;
 extern bool g_sdlShowTouchUI;
 
+extern bool g_sdlAudioSubsystemUp;
+
 static uint8_t g_sdlLastKeyScanCodeBeforeAnyReset; // May be reset by BE_ST_BiosScanCode
 
 void BE_ST_InitGfx(void);
@@ -2315,16 +2317,21 @@ void BE_ST_PollEvents(void)
 	// HACK - If audio subsystem is disabled we still want to at least
 	// make the sound callback run (so e.g., no loop gets stuck waiting
 	// for sound playback to complete)
-	extern bool g_sdlAudioSubsystemUp;
 	if (!g_sdlAudioSubsystemUp)
 		BE_ST_PrepareForManualAudioCallbackCall();
 #endif
 }
 
 #ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
+
 // Use this to catch a few special events here when required
+static uint32_t g_sdl_eventCallback_EnterBackgroundLastTicks;
+
 static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 {
+	extern SDL_AudioDeviceID g_sdlAudioDevice;
+	extern uint32_t g_sdlManualAudioCallbackCallLastTicks;
+
 	switch (event->type)
 	{
 	case SDL_APP_TERMINATING:
@@ -2335,14 +2342,23 @@ static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 			exit(0);
 		return 0;
 	case SDL_APP_WILLENTERBACKGROUND:
+		if (g_sdlAudioSubsystemUp) // FIXME - Hope this works well
+			SDL_PauseAudioDevice(g_sdlAudioDevice, 1);
+		return 0;
 	case SDL_APP_DIDENTERBACKGROUND:
+		g_sdl_eventCallback_EnterBackgroundLastTicks = SDL_GetTicks();
+		return 0;
 	case SDL_APP_WILLENTERFOREGROUND:
+		// FIXME!!! - Hope this works well
+		g_sdlManualAudioCallbackCallLastTicks += (SDL_GetTicks() - g_sdl_eventCallback_EnterBackgroundLastTicks);
 		return 0;
 	case SDL_APP_DIDENTERFOREGROUND:
 		// HACK - These may be done from a different thread,
 		// but should be relatively simple anyway
 		BEL_ST_ForceHostDisplayUpdate();
 		BE_ST_Launcher_MarkGfxCache();
+		if (g_sdlAudioSubsystemUp) // FIXME - Hope this works well
+			SDL_PauseAudioDevice(g_sdlAudioDevice, 0);
 		return 0;
 	default:
 		return 1; // Just send to SDL_PollEvent as usual

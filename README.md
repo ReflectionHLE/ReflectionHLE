@@ -842,6 +842,7 @@ in the launcher.
 the 'P' key would mistakenly appear in one of the on-screen buttons
 for the hint book in Catacomb Armageddon/Apocalypse. It'd also be
 usable for no good reason.
+* Hopefully fix in-game timing after resume from a pause on Android.
 * The Android build files have been updated (twice) from SDL2's repo.
 Unfortunately, the minimum supported Android version has been raised
 to 4.1 (i.e., API level 16).

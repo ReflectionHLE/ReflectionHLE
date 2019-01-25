@@ -59,7 +59,7 @@ static SDL_mutex* g_sdlCallbackMutex = NULL;
 #endif
 static SDL_AudioSpec g_sdlAudioSpec;
 static SDL_AudioCallback g_sdlOurAudioCallback;
-static SDL_AudioDeviceID g_sdlAudioDevice;
+/*static*/ SDL_AudioDeviceID g_sdlAudioDevice;
 
 bool g_sdlAudioSubsystemUp;
 
@@ -127,7 +127,7 @@ static uint32_t g_sdlCallbacksSamplesBufferOnePartCount;
 static uint32_t g_sdlSamplesRemainingForSDLAudioCallback;
 #endif
 
-static uint32_t g_sdlManualAudioCallbackCallLastTicks;
+/*static */uint32_t g_sdlManualAudioCallbackCallLastTicks;
 static uint32_t g_sdlManualAudioCallbackCallDelayedSamples;
 
 // Nearest-neighborhood sample rate conversion, used as
@@ -232,11 +232,8 @@ void BE_ST_InitAudio(void)
 #endif
 
 			spec.userdata = NULL;
-#if SDL_VERSION_ATLEAST(2,0,9)
-			g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &spec, &g_sdlAudioSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_SAMPLES_CHANGE);
-#else
+				BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d, samples %u; size is set to %u\n", (int)spec.freq, (unsigned int)spec.format, (int)spec.channels, (unsigned int)spec.samples, (unsigned int)spec.size);
 			g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &spec, &g_sdlAudioSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
-#endif
 			if (g_sdlAudioDevice <= 0)
 			{
 				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
@@ -255,7 +252,7 @@ void BE_ST_InitAudio(void)
 				else
 #endif
 				{
-					BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, requested spec: freq %d, format %u, channels %d, samples %u; Got: size %u\n", (int)g_sdlAudioSpec.freq, (unsigned int)g_sdlAudioSpec.format, (int)g_sdlAudioSpec.channels, (unsigned int)g_sdlAudioSpec.samples, (unsigned int)g_sdlAudioSpec.size);
+					BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, received spec: freq %d, format %u, channels %d, samples %u, size %u\n", (int)g_sdlAudioSpec.freq, (unsigned int)g_sdlAudioSpec.format, (int)g_sdlAudioSpec.channels, (unsigned int)g_sdlAudioSpec.samples, (unsigned int)g_sdlAudioSpec.size);
 					g_sdlAudioSubsystemUp = true;
 				}
 			}
