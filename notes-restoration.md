@@ -128,7 +128,8 @@ What is this based on
 ---------------------
 
 This codebase is based on the Wolfenstein 3D + Spear of Destiny sources
-as originally released by id Software on 1995. While the 1995 release
+as originally released by John Carmack on 1995, while working as
+a technical director for id Software. While the 1995 release
 includes GAMEPAL.OBJ and SIGNON.OBJ data files, other versions
 of these were extracted from original EXEs.
 
