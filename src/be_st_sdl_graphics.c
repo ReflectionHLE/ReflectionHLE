@@ -2625,7 +2625,7 @@ void BE_ST_textbackground(int color)
 void BE_ST_clrscr(void)
 {
 	uint8_t *currMemByte = g_sdlVidMem.text;
-	for (int i = 0; i < 2*TXT_COLS_NUM*TXT_ROWS_NUM; ++i)
+	for (int i = 0; i < TXT_COLS_NUM*TXT_ROWS_NUM; ++i)
 	{
 		*(currMemByte++) = ' ';
 		*(currMemByte++) = g_sdlTxtColor | (g_sdlTxtBackground << 4);
