@@ -389,7 +389,7 @@ static void BEL_Launcher_DrawMenuItems(BEMenu *menu)
 
 
 static char g_be_launcher_currInputStrSearch[BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND];
-static char *g_be_launcher_currInputStrSearchPtr;
+static char *g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
 static char * const g_be_launcher_currInputStrSearchLastCharPtr = g_be_launcher_currInputStrSearch + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND - 1;
 
 
