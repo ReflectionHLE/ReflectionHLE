@@ -145,14 +145,14 @@ and the two releases of v1.20 and v1.93 share the same static game data
 (e.g., common EGA and map headers).
 
 ----------------------------------------------------------------------------
-Where can I get compatible Keen Dreams game data (updated as of Aug 06 2017)
+Where can I get compatible Keen Dreams game data (updated as of Jun 03 2020)
 ----------------------------------------------------------------------------
 
 You can download a Shareware release of Keen Dreams, v1.13, from one of a few
 places online, at the least. Links for reference:
 
 - http://cd.textfiles.com/megagames2/GAMES/APOGEE/KEENDR13.ZIP
-- (You want keendm.zip) http://dukeworld.duke4.net/classic%20dukeworld/share/
+- (You want keendm.zip) https://dukeworld.duke4.net/classic%20dukeworld/share/
 
 -------------------------------------
 Partially compatible Keen Dreams data
@@ -172,7 +172,7 @@ in GAMETEXT.KDR. Updating the game via the Steam
 client may assist with resolving this issue.
 
 --------------------------------------------------------------------------
-Where can I get compatible Catacombs game data (updated as of Oct 12 2016)
+Where can I get compatible Catacombs game data (updated as of Jun 03 2020)
 --------------------------------------------------------------------------
 
 The Catacomb Abyss v1.13 can be downloaded as Shareware from the net. You can
@@ -461,12 +461,12 @@ This file can have additional controller mappings.
 Such a mapping can be prepared for an unsupported game controller.
 There are a few ways to do this:
 
-- Use the SDL2 Gamepad Tool available from General Arcade as of Oct 12 2016:
-http://generalarcade.com/gamepadtool/
+- Use the SDL2 Gamepad Tool available from General Arcade as of Jun 03 2020:
+https://generalarcade.com/gamepadtool/
 After using it, simply copy the contents of the newly generated
 gamecontrollerdb.txt file to the one bundled with any of the
 Reflection Keen source ports (or use it as-is if one doesn't exist).
-- Alternatively start Steam (http://store.steampowered.com/) in Big Picture
+- Alternatively start Steam (https://store.steampowered.com/) in Big Picture
 mode, then choose Settings -> Controllers and configure the mapping. Once
 that's done, it's expected that you can optionally upload the mapping so other
 users of the same controller can take advantage of it. Either way, though,
@@ -754,8 +754,8 @@ and DEMOCAT.EXE/HINTCAT.EXE (Electronic Catalog / Hint book),
 a few DOS programs distributed with the Catacomb Adventure
 Series (or at least specific versions of the episodes).
 
-As of August 14 2017, these can be found here:
-https://bitbucket.org/NY00123/gamesrc-ver-recreation/
+As of June 03 2020, these can be found here:
+https://bitbucket.org/gamesrc-ver-recreation/catacomb/
 
 ---------------------------------------------------------------------------
 Based on the README.md file of the original Keen Dreams source code release
@@ -1240,5 +1240,3 @@ Sep 26 2014 (v0.8.0):
 sound effects and CGA graphics on Linux and Windows desktops. Game saving and
 more is totally untested and may be incompatible with original data generated
 by the corresponding DOS executable (saved games are known to be incompatible).
-
-NY00123
