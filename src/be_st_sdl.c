@@ -23,6 +23,7 @@
 #include "SDL.h"
 
 #include "be_cross.h"
+#include "be_features.h"
 #include "be_gamever.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
@@ -37,10 +38,6 @@
 #define BE_ST_EMU_JOYSTICK_OVERRANGEMAX 16384
 
 #define BE_ST_DEFAULT_FARPTRSEGOFFSET 0x14
-
-#if (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
-#define BE_ST_ENABLE_FARPTR_CFG 1
-#endif
 
 /*** Last BE_ST_PollEvents time ***/
 static uint32_t g_sdlLastPollEventsTime;
@@ -764,7 +761,7 @@ static void BEL_ST_ParseSetting_ManualGameVerMode(const char *keyprefix, const c
 	}
 }
 
-#ifdef BE_ST_ENABLE_FARPTR_CFG
+#ifdef BE_CROSS_ENABLE_FARPTR_CFG
 // Same HACK again
 static bool g_sdlIsFarPtrSegOffsetSettingRead = false;
 
@@ -853,7 +850,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #endif
 
 	{"manualgamevermode=", &BEL_ST_ParseSetting_ManualGameVerMode},
-#ifdef BE_ST_ENABLE_FARPTR_CFG
+#ifdef BE_CROSS_ENABLE_FARPTR_CFG
 	{"farptrsegoffset=", &BEL_ST_ParseSetting_FarPtrSegOffset},
 #endif
 };
@@ -933,7 +930,7 @@ static void BEL_ST_ParseConfig(void)
 #endif
 
 	g_refKeenCfg.manualGameVerMode = false;
-#ifdef BE_ST_ENABLE_FARPTR_CFG
+#ifdef BE_CROSS_ENABLE_FARPTR_CFG
 	g_refKeenCfg.farPtrSegOffset = BE_ST_DEFAULT_FARPTRSEGOFFSET;
 #endif
 	// Try to load config
@@ -1042,7 +1039,7 @@ static void BEL_ST_SaveConfig(void)
 		// This should be a relatively hidden setting
 		fprintf(fp, "manualgamevermode=%s\n", g_refKeenCfg.manualGameVerMode ? "true" : "false");
 	}
-#ifdef BE_ST_ENABLE_FARPTR_CFG
+#ifdef BE_CROSS_ENABLE_FARPTR_CFG
 	if (g_sdlIsFarPtrSegOffsetSettingRead)
 	{
 		// Another hidden setting
@@ -2366,7 +2363,7 @@ static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 }
 #endif
 
-#ifdef BE_ST_ENABLE_FARPTR_CFG
+#ifdef BE_CROSS_ENABLE_FARPTR_CFG
 uint16_t BE_ST_Compat_GetFarPtrRelocationSegOffset(void)
 {
 	return g_refKeenCfg.farPtrSegOffset;
