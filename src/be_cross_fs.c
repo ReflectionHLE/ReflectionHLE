@@ -1842,7 +1842,7 @@ void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
 }
 
 // MICRO-OPTIMIZATION: Not needed for all games
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef BE_CROSS_ENABLE_SORTED_FILENAMES_FUNC
 int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int maxNum, int strLenBound, const char *suffix)
 {
 	struct _tdirent *direntry;
