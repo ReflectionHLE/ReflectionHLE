@@ -16,6 +16,7 @@
 #endif
 
 #ifdef REFKEEN_VER_KDREAMS
+#define BE_ST_ADAPT_VSYNC_DEFAULT_TO_KDREAMS 1
 #define ENABLE_PKLITE 1
 #endif
 

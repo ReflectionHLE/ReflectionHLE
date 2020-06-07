@@ -229,7 +229,7 @@ void BE_ST_InitGfx(void)
 	if (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling)
 		windowFlagsToSet |= SDL_WINDOW_RESIZABLE;
 	// Vanilla Keen Dreams and Keen 4-6 have no VSync in the CGA builds
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef BE_ST_ADAPT_VSYNC_DEFAULT_TO_KDREAMS
 	uint32_t rendererFlagsToSet = SDL_RENDERER_ACCELERATED | (((g_refKeenCfg.vSync == VSYNC_ON) || ((g_refKeenCfg.vSync == VSYNC_AUTO) && (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))) ? SDL_RENDERER_PRESENTVSYNC : 0);
 #else
 	uint32_t rendererFlagsToSet = SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync != VSYNC_OFF) ? SDL_RENDERER_PRESENTVSYNC : 0);
