@@ -732,7 +732,7 @@ static void BEL_ST_ParseSetting_AlternativeControlSchemeRightStick(const char *k
 	}
 }
 
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 static void BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion(const char *keyprefix, const char *buffer)
 {
 	if (!strcmp(buffer, "true"))
@@ -845,7 +845,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"altcontrolscheme_dpad=", &BEL_ST_ParseSetting_AlternativeControlSchemeDpad},
 	{"altcontrolscheme_lstick=", &BEL_ST_ParseSetting_AlternativeControlSchemeLeftStick},
 	{"altcontrolscheme_rstick=", &BEL_ST_ParseSetting_AlternativeControlSchemeRightStick},
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	{"altcontrolscheme_analogmotion=", &BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion},
 #endif
 
@@ -925,7 +925,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.useDpad = true;
 	g_refKeenCfg.altControlScheme.useLeftStick = true;
 	g_refKeenCfg.altControlScheme.useRightStick = false;
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	g_refKeenCfg.altControlScheme.analogMotion = false;
 #endif
 
@@ -1031,7 +1031,7 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "altcontrolscheme_dpad=%s\n", g_refKeenCfg.altControlScheme.useDpad ? "true" : "false");
 	fprintf(fp, "altcontrolscheme_lstick=%s\n", g_refKeenCfg.altControlScheme.useLeftStick ? "true" : "false");
 	fprintf(fp, "altcontrolscheme_rstick=%s\n", g_refKeenCfg.altControlScheme.useRightStick ? "true" : "false");
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	fprintf(fp, "altcontrolscheme_analogmotion=%s\n", g_refKeenCfg.altControlScheme.analogMotion ? "true" : "false");
 #endif
 	if (g_sdlIsManualGameVerModeSettingRead)

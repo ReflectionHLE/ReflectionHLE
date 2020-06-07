@@ -516,7 +516,7 @@ BEMenu g_beInputSettingsMenu = {
 /*** Controller settings menu ***/
 
 static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", NULL, NULL, NULL, NULL, "LTrigger", "RTrigger", "N/A"};
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 static const char *g_be_controllerSettingsChoices_analogMotion[] = {"Keyboard", "Mouse", NULL};
 #endif
 
@@ -547,7 +547,7 @@ BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_DebugKeys
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_Dpad, "Use d-pad for motion", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_AnalogMotion, "Motion emulation mode", g_be_controllerSettingsChoices_analogMotion)
 #endif
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
@@ -581,7 +581,7 @@ BEMenu g_beControllerSettingsMenu = {
 		&g_beControllerSettingsMenuItem_Dpad,
 		&g_beControllerSettingsMenuItem_LeftStick,
 		&g_beControllerSettingsMenuItem_RightStick,
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 		&g_beControllerSettingsMenuItem_AnalogMotion,
 #endif
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
@@ -828,7 +828,7 @@ void BE_ST_Launcher_Prepare(void)
 	g_beControllerSettingsMenuItem_LeftStick.choice = g_refKeenCfg.altControlScheme.useLeftStick;
 	// Set RightStick value
 	g_beControllerSettingsMenuItem_RightStick.choice = g_refKeenCfg.altControlScheme.useRightStick;
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	// Set AnalogMotion value
 	g_beControllerSettingsMenuItem_AnalogMotion.choice = g_refKeenCfg.altControlScheme.analogMotion;
 #endif
@@ -994,7 +994,7 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.useDpad = g_beControllerSettingsMenuItem_Dpad.choice;
 	g_refKeenCfg.altControlScheme.useLeftStick = g_beControllerSettingsMenuItem_LeftStick.choice;
 	g_refKeenCfg.altControlScheme.useRightStick = g_beControllerSettingsMenuItem_RightStick.choice;
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	g_refKeenCfg.altControlScheme.analogMotion = g_beControllerSettingsMenuItem_AnalogMotion.choice;
 #endif
 
