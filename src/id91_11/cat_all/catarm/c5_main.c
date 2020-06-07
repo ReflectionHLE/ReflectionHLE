@@ -174,6 +174,10 @@ id0_unsigned_t* GetSkyGndColorPtrFromDOSPointer(id0_unsigned_t dosOffset)
 }
 
 // REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
+
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
+
 static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy = 0;
@@ -184,8 +188,6 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
-	size_t BE_Cross_write_classtype_To16LE(BE_FILE_T fp, const classtype *ptr);
-	size_t BE_Cross_write_dirtype_To16LE(BE_FILE_T fp, const dirtype *ptr);
 	return ((BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
 	        && (BE_Cross_writeInt32LE(file, &statedosfarptr) == 4) // BACKWARD COMPATIBILITY
 	        && (BE_Cross_writeInt32LE(file, &o->x) == 4)
@@ -230,8 +232,6 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
-	size_t BE_Cross_read_classtype_From16LE(BE_FILE_T fp, classtype *ptr);
-	size_t BE_Cross_read_dirtype_From16LE(BE_FILE_T fp, dirtype *ptr);
 	if ((BE_Cross_readInt16LE(file, &o->ticcount) != 2)
 	    || (BE_Cross_readInt32LE(file, &statedosfarptr) != 4) // BACKWARD COMPATIBILITY
 	    || (BE_Cross_readInt32LE(file, &o->x) != 4)

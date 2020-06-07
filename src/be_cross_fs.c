@@ -2807,11 +2807,6 @@ size_t BE_Cross_writeInt16LEBuffer(BE_FILE_T fp, const void *ptr, size_t nbyte)
 #endif
 }
 
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
-#ifdef REFKEEN_VER_CATACOMB_ALL
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
-#endif
-
 size_t BE_Cross_read_boolean_From16LE(BE_FILE_T fp, bool *ptr)
 {
 	uint16_t val;
