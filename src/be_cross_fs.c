@@ -52,11 +52,9 @@
 #include <direct.h> // _wmkdir
 #endif
 
-#ifdef REFKEEN_VER_KDREAMS
-#define ENABLE_PKLITE
-#endif
-
 //#include "be_cross.h"
+#include "be_features.h"
+
 #include "crc32/crc32.h"
 #include "unlzexe/unlzexe.h"
 #ifdef ENABLE_PKLITE

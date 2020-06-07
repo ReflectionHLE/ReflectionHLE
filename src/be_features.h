@@ -7,4 +7,8 @@
 #define BE_CROSS_ENABLE_FARPTR_CFG 1
 #endif
 
+#ifdef REFKEEN_VER_KDREAMS
+#define ENABLE_PKLITE 1
+#endif
+
 #endif // BE_FEATURES_H
