@@ -28,31 +28,25 @@
 
 #include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
 
-// For template implementations of reads/writes of enums from/to 16 little-endian integers...
-#ifdef REFKEEN_VER_KDREAMS
-#include "kd_def.h"
-#elif defined REFKEEN_VER_CAT3D
-#include "c3_def.h"
-#elif defined REFKEEN_VER_CATADVENTURES
-#include "def.h"
-#else
-#error "FATAL ERROR: No Reflection port game macro is defined!"
-#endif
-
 #ifdef REFKEEN_PLATFORM_ANDROID
 #include <jni.h>
 // HACK - Adding a dependency on SDL2 for Android! (Used for external storage path, and for calling Java function)
 #include "SDL_system.h"
 #endif
 
-//#include "be_st.h" // For BE_ST_ExitWithErrorMsg
+#include "be_gamever.h"
+#include "be_st.h" // For BE_ST_ExitWithErrorMsg; TODO: Also for g_refKeenCfg
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #include <shlwapi.h> // SHGetValue
 #include <direct.h> // _wmkdir
 #endif
 
-//#include "be_cross.h"
+#ifdef REFKEEN_PLATFORM_UNIX
+#include <sys/stat.h>
+#endif
+
+#include "be_cross.h"
 #include "be_features.h"
 
 #include "crc32/crc32.h"
