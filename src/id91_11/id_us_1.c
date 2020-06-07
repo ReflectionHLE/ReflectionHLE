@@ -110,6 +110,10 @@ static  id0_boolean_t         US_Started;
 
 //      Internal routines
 
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
+
 //      Public routines
 
 #if 0 // USL_HardError IS UNUSED NOW (TODO REFKEEN: Restore?)
@@ -271,11 +275,8 @@ USL_ReadConfig(void)
 			BE_Cross_readInt32LE(file, &Scores[i].score);
 			BE_Cross_readInt16LE(file, &Scores[i].completed);
 		}
-		size_t BE_Cross_read_SDMode_From16LE(BE_FILE_T handle, SDMode *ptr);
 		BE_Cross_read_SDMode_From16LE(file, &sd);
-		size_t BE_Cross_read_SMMode_From16LE(BE_FILE_T handle, SMMode *ptr);
 		BE_Cross_read_SMMode_From16LE(file, &sm);
-		size_t BE_Cross_read_ControlType_From16LE(BE_FILE_T handle, ControlType *ptr);
 		BE_Cross_read_ControlType_From16LE(file, &ctl);
 		// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
 		BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
@@ -356,9 +357,7 @@ USL_WriteConfig(void)
 			BE_Cross_writeInt32LE(file, &Scores[i].score);
 			BE_Cross_writeInt16LE(file, &Scores[i].completed);
 		}
-		size_t BE_Cross_write_SDMode_To16LE(BE_FILE_T handle, const SDMode *ptr);
 		BE_Cross_write_SDMode_To16LE(file, &SoundMode);
-		size_t BE_Cross_write_SMMode_To16LE(BE_FILE_T handle, const SMMode *ptr);
 		BE_Cross_write_SMMode_To16LE(file, &MusicMode);
 		if      // Hack
 		(
@@ -366,7 +365,6 @@ USL_WriteConfig(void)
 		||      (Controls[0] == ctrl_Joystick2)
 		)
 			Controls[0] = ctrl_Keyboard;
-		size_t BE_Cross_write_ControlType_To16LE(BE_FILE_T handle, const ControlType *ptr);
 		BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
 		BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
 		BE_Cross_write_boolean_To16LE(file, &showscorebox);

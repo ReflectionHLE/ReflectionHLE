@@ -130,6 +130,13 @@ static	HighScore	Scores[MaxScores] =
 
 //	Internal routines
 
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
+BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(ControlType)
+
 //	Public routines
 
 #if 0 // USL_HardError IS UNUSED NOW (TODO REFKEEN: Restore?)
@@ -302,11 +309,8 @@ USL_ReadConfig(void)
 			uint16_t sdl2Keys[sizeof(KeyboardDef)/sizeof(ScanCode)];
 			ScanCode *dosScancodePtr = (ScanCode *)(&(KbdDefs[0]));
 
-			size_t BE_Cross_read_SDMode_From32LE(BE_FILE_T fp, SDMode *ptr);
 			BE_Cross_read_SDMode_From32LE(file, &sd);
-			size_t BE_Cross_read_SMMode_From32LE(BE_FILE_T fp, SMMode *ptr);
 			BE_Cross_read_SMMode_From32LE(file, &sm);
-			size_t BE_Cross_read_ControlType_From32LE(BE_FILE_T fp, ControlType *ptr);
 			BE_Cross_read_ControlType_From32LE(file, &ctl);
 
 			// Convert scancodes from SDL2 to DOS
@@ -320,11 +324,8 @@ USL_ReadConfig(void)
 		}
 		else
 		{
-			size_t BE_Cross_read_SDMode_From16LE(BE_FILE_T fp, SDMode *ptr);
 			BE_Cross_read_SDMode_From16LE(file, &sd);
-			size_t BE_Cross_read_SMMode_From16LE(BE_FILE_T fp, SMMode *ptr);
 			BE_Cross_read_SMMode_From16LE(file, &sm);
-			size_t BE_Cross_read_ControlType_From16LE(BE_FILE_T fp, ControlType *ptr);
 			BE_Cross_read_ControlType_From16LE(file, &ctl);
 			// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
 			BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
@@ -388,11 +389,8 @@ USL_WriteConfig(void)
 			uint16_t sdl2Keys[sizeof(KeyboardDef)/sizeof(ScanCode)];
 			ScanCode *dosScancodePtr = (ScanCode *)(&(KbdDefs[0]));
 
-			size_t BE_Cross_write_SDMode_To32LE(BE_FILE_T fp, const SDMode *ptr);
 			BE_Cross_write_SDMode_To32LE(file, &SoundMode);
-			size_t BE_Cross_write_SMMode_To32LE(BE_FILE_T fp, const SMMode *ptr);
 			BE_Cross_write_SMMode_To32LE(file, &MusicMode);
-			size_t BE_Cross_write_ControlType_To32LE(BE_FILE_T fp, const ControlType *ptr);
 			BE_Cross_write_ControlType_To32LE(file, &(Controls[0]));
 
 			// Convert scancodes from DOS to SDL2
@@ -409,11 +407,8 @@ USL_WriteConfig(void)
 		}
 		else
 		{
-			size_t BE_Cross_write_SDMode_To16LE(BE_FILE_T fp, const SDMode *ptr);
 			BE_Cross_write_SDMode_To16LE(file, &SoundMode);
-			size_t BE_Cross_write_SMMode_To16LE(BE_FILE_T fp, const SMMode *ptr);
 			BE_Cross_write_SMMode_To16LE(file, &MusicMode);
-			size_t BE_Cross_write_ControlType_To16LE(BE_FILE_T fp, const ControlType *ptr);
 			BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
 			BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
 		}
