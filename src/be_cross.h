@@ -288,12 +288,7 @@ size_t BE_Cross_readInt16LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte);
 size_t BE_Cross_readInt32LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte);
 // This exists for the EGAHEADs from the Catacombs
 size_t BE_Cross_readInt24LEBuffer(BE_FILE_T fp, void *ptr, size_t nbyte);
-// A template for enum reading (from 16-bit little-endian int).
-// A declaration and implementation must exist for each used type separately
-// (implementation should be found in be_cross.c).
-#if 0
-size_t BE_Cross_read_EnumType_From16LE(BE_FILE_T fp, EnumType *ptr);
-#endif
+
 // boolean implementation may be separated from enums, otherwise it's the same
 size_t BE_Cross_read_boolean_From16LE(BE_FILE_T fp, bool *ptr);
 size_t BE_Cross_read_boolean_From32LE(BE_FILE_T fp, bool *ptr);
@@ -308,14 +303,46 @@ size_t BE_Cross_writeInt32LE(BE_FILE_T fp, const void *ptr);
 size_t BE_Cross_writeInt8LEBuffer(BE_FILE_T fp, const void *ptr, size_t nbyte);
 size_t BE_Cross_writeInt16LEBuffer(BE_FILE_T fp, const void *ptr, size_t nbyte);
 
-#if 0
-size_t BE_Cross_write_EnumType_To16LE(BE_FILE_T fp, const EnumType *ptr);
-#endif
-
 size_t BE_Cross_write_boolean_To16LE(BE_FILE_T fp, const bool *ptr);
 size_t BE_Cross_write_boolean_To32LE(BE_FILE_T fp, const bool *ptr);
 size_t BE_Cross_write_booleans_To16LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte);
 size_t BE_Cross_write_booleans_To32LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte);
+
+// Template implementation of enum reads/writes
+#define BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ourSampleEnum) \
+size_t BE_Cross_read_ ## ourSampleEnum ## _From16LE (BE_FILE_T fp, ourSampleEnum *ptr) \
+{ \
+	uint16_t val; \
+	size_t bytesread = BE_Cross_readInt16LE(fp, &val); \
+	if (bytesread == 2) \
+		*ptr = (ourSampleEnum)val; \
+	return bytesread; \
+} \
+\
+size_t BE_Cross_write_ ## ourSampleEnum ## _To16LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
+{ \
+	uint16_t val = (uint16_t)(*ptr); \
+	return BE_Cross_writeInt16LE(fp, &val); \
+}
+
+// Same but for 32-bit reads/writes
+#define BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(ourSampleEnum) \
+size_t BE_Cross_read_ ## ourSampleEnum ## _From32LE (BE_FILE_T fp, ourSampleEnum *ptr) \
+{ \
+	uint32_t val; \
+	size_t bytesread = fread(&val, 1, 4, fp); \
+	if (bytesread == 4) \
+	{ \
+		*ptr = (ourSampleEnum)BE_Cross_Swap32LE(val); \
+	} \
+	return bytesread; \
+} \
+\
+size_t BE_Cross_write_ ## ourSampleEnum ## _To32LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
+{ \
+	uint32_t val = BE_Cross_Swap32LE((uint32_t)(*ptr)); \
+	return fwrite(&val, 1, 4, fp); \
+}
 
 // Assuming segPtr is replacement for a 16-bit segment pointer, and offInSegPtr
 // is a replacement for an offset in this segment (pointing to a place in the
