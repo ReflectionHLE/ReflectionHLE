@@ -31,6 +31,7 @@
 #endif
 
 #include "be_cross.h"
+#include "be_features.h"
 #include "be_st.h" // For BE_ST_ExitWithErrorMsg
 
 // C99
@@ -112,7 +113,7 @@ int BE_Cross_strncasecmp(const char *s1, const char *s2, size_t count)
 }
 
 // Technically a little hack...
-#if (defined REFKEEN_VER_CATARM) || (defined REFKEEN_VER_CATAPOC)
+#if BE_CROSS_ENABLE_FARPTR_CFG
 uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void)
 {
 	uint16_t BE_ST_Compat_GetFarPtrRelocationSegOffset(void);
