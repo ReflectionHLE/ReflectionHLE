@@ -45,6 +45,9 @@
 
 #include "refkeen.h"
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #define GRMODE EGAGR
 
 //
@@ -52,10 +55,6 @@
 //	Types.h - Generic types, #defines, etc.
 //	v1.0d1
 //
-
-#include <stdint.h>
-#include <stdbool.h>
-
 
 // REFKEEN - Define these for backwards compatibility
 #define id0_argc g_be_argc

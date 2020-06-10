@@ -39,6 +39,9 @@
 
 #include "refkeen.h"
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #define __ID_GLOB__
 
 //--------------------------------------------------------------------------
@@ -136,9 +139,6 @@
 
 #ifndef	__TYPES__
 #define	__TYPES__
-
-#include <stdint.h>
-#include <stdbool.h>
 
 // REFKEEN - Define these for backwards compatibility
 #define id0_argc g_be_argc
