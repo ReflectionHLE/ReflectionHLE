@@ -1657,6 +1657,9 @@ void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, void (*mainFuncPt
 	}
 
 	// Locate the right EXE
+	if (!mainFuncPtr)
+		mainFuncPtr = g_be_gamever_ptrs[refkeen_current_gamever]->exeFiles->mainFuncPtr;
+
 	for (g_be_current_exeFileDetails = g_be_gamever_ptrs[refkeen_current_gamever]->exeFiles; g_be_current_exeFileDetails->mainFuncPtr && (g_be_current_exeFileDetails->mainFuncPtr != mainFuncPtr); ++g_be_current_exeFileDetails)
 		;
 	if (!g_be_current_exeFileDetails->mainFuncPtr)
