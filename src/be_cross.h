@@ -173,7 +173,9 @@ int BE_Cross_GetGameVerFromInstallation(int num);
 extern int g_be_gameinstallations_num;
 
 // gameVer should be BE_GAMEVER_LAST if no specific version is desired
-void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, void (*mainFuncPtr)(void));
+void BE_Cross_InitGame(int gameVerVal);
+// Call this after BE_Cross_InitGame
+void BE_Cross_StartGame(int argc, char **argv, void (*mainFuncPtr)(void));
 
 /*** Use for game versions selection ***/
 

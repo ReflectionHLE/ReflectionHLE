@@ -218,13 +218,14 @@ int main(int argc, char **argv)
 		else
 #endif
 		{
+			BE_Cross_InitGame(selectedGameVerVal);
 #ifdef REFKEEN_VER_CATADVENTURES
 			// Main functions prototypes
 			void catacombs_exe_main(void); // See HACK above
 			void slidecat_exe_main(void);
-			BE_Cross_StartGame(selectedGameVerVal, argc, argv, showSlides ? &slidecat_exe_main : (skipIntro ? &catacombs_exe_main : NULL));
+			BE_Cross_StartGame(argc, argv, showSlides ? &slidecat_exe_main : (skipIntro ? &catacombs_exe_main : NULL));
 #else
-			BE_Cross_StartGame(selectedGameVerVal, argc, argv, NULL);
+			BE_Cross_StartGame(argc, argv, NULL);
 #endif
 		}
 	}

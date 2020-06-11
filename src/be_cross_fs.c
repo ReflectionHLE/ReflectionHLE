@@ -1625,15 +1625,15 @@ void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer
 	longjmp(g_be_mainFuncJumpBuffer, 0); // A little bit of magic
 }
 
-void BE_Cross_StartGame(int gameVerVal, int argc, char **argv, void (*mainFuncPtr)(void))
+void BE_Cross_InitGame(int gameVerVal)
 {
-	// Some additional preparation required
-	BE_ST_PrepareForGameStartupWithoutAudio();
-
+	BE_ST_PrepareForGameStartupWithoutAudio(); // Some additional preparation required
 	BEL_Cross_SelectGameInstallation(gameVerVal);
-
 	BE_ST_InitAudio(); // Do this now, since we can tell if we want digi audio out or not
+}
 
+void BE_Cross_StartGame(int argc, char **argv, void (*mainFuncPtr)(void))
+{
 	// Prepare arguments for ported game code
 	g_be_argc = argc;
 	// HACK: In Keen Dreams CGA v1.05, even if argc == 1, argv[1] is accessed...

@@ -932,7 +932,8 @@ static void BEL_Launcher_DoLaunchGame(int gameVer, void (*mainFuncPtr)(void))
 				*srcPtr++ = '\0'; // Separate the arguments
 		}
 	}
-	BE_Cross_StartGame(gameVer, argc, argv, mainFuncPtr);
+	BE_Cross_InitGame(gameVer);
+	BE_Cross_StartGame(argc, argv, mainFuncPtr);
 }
 
 void BE_Launcher_Handler_LastGameVerLaunch(BEMenuItem **menuItemP)
