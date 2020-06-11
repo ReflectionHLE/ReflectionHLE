@@ -194,7 +194,7 @@ extern BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 // Used when loading controller scheme stuff from cfg
 enum {
 	BE_ST_CTRL_CFG_BUTMAP_BEFOREFIRST = -1, /* The actual first entry is to be numbered 0 */
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 	BE_ST_CTRL_CFG_BUTMAP_JUMP,
 	BE_ST_CTRL_CFG_BUTMAP_THROW,
 	BE_ST_CTRL_CFG_BUTMAP_STATS,
@@ -206,10 +206,10 @@ enum {
 	BE_ST_CTRL_CFG_BUTMAP_NUKE, // Xterminator in the Adventures Series
 	BE_ST_CTRL_CFG_BUTMAP_FASTTURN,
 #endif
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	BE_ST_CTRL_CFG_BUTMAP_SCROLLS,
 #endif
-#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
 	BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS,
 #endif
 	BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS,

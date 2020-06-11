@@ -24,7 +24,7 @@
 
 // WARNING: This struct is used by BE_ST_SDL ONLY (except for controller stuff)
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 #define BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 #endif
 
