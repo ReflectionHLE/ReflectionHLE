@@ -196,19 +196,6 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-// HACK
-#ifdef REFKEEN_VER_CATABYSS
-#define catacombs_exe_main abysgame_exe_main
-#elif (defined REFKEEN_VER_CATARM)
-#define catacombs_exe_main armgame_exe_main
-#elif (defined REFKEEN_VER_CATAPOC)
-#define catacombs_exe_main apocgame_exe_main
-#endif
-		// Main functions prototypes
-		void abysgame_exe_main(void);
-		void armgame_exe_main(void);
-		void apocgame_exe_main(void);
-
 		BE_Cross_PrepareGameInstallations();
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		if (startLauncher)
@@ -220,10 +207,11 @@ int main(int argc, char **argv)
 		{
 			BE_Cross_InitGame(selectedGameVerVal);
 #ifdef REFKEEN_VER_CATADVENTURES
-			// Main functions prototypes
-			void catacombs_exe_main(void); // See HACK above
-			void slidecat_exe_main(void);
-			BE_Cross_StartGame(argc, argv, showSlides ? &slidecat_exe_main : (skipIntro ? &catacombs_exe_main : NULL));
+			extern void (*refkeen_game_exe_main_funcs[BE_GAMEVER_LAST])(void);
+			extern void (*refkeen_slidecat_exe_main_funcs[BE_GAMEVER_LAST])(void);
+
+			BE_Cross_StartGame(argc, argv, showSlides ? refkeen_slidecat_exe_main_funcs[refkeen_current_gamever] :
+			                               (skipIntro ? refkeen_game_exe_main_funcs[refkeen_current_gamever] : NULL));
 #else
 			BE_Cross_StartGame(argc, argv, NULL);
 #endif
