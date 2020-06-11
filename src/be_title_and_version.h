@@ -11,6 +11,8 @@
 #define REFKEEN_TITLE_STRING "Reflection Catacomb Armageddon"
 #elif (defined REFKEEN_VER_CATAPOC)
 #define REFKEEN_TITLE_STRING "Reflection Catacomb Apocalypse"
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+#define REFKEEN_TITLE_STRING "Reflection Catacomb"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
