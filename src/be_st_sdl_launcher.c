@@ -524,7 +524,7 @@ static const char *g_be_controllerSettingsChoices_analogMotion[] = {"Keyboard", 
 static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem **menuItemP);
 #endif
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Jump, "Action - Jump", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Throw, "Action - Throw", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Stats, "Action - Stats", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
@@ -536,10 +536,10 @@ BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Bolt, "Ac
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Nuke, "Action - Nuke/Xterminator", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FastTurn, "Action - Fast turn", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Scrolls, "Action - Scrolls", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
-#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FuncKeys, "Action - Function keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_DebugKeys, "Action - Debug keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
@@ -559,7 +559,7 @@ BEMenu g_beControllerSettingsMenu = {
 	&g_beInputSettingsMenu,
 	(BEMenuItem *[])
 	{
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 		&g_beControllerSettingsMenuItem_Action_Jump,
 		&g_beControllerSettingsMenuItem_Action_Throw,
 		&g_beControllerSettingsMenuItem_Action_Stats,
@@ -571,10 +571,10 @@ BEMenu g_beControllerSettingsMenu = {
 		&g_beControllerSettingsMenuItem_Action_Nuke,
 		&g_beControllerSettingsMenuItem_Action_FastTurn,
 #endif
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 		&g_beControllerSettingsMenuItem_Action_Scrolls,
 #endif
-#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
 		&g_beControllerSettingsMenuItem_Action_FuncKeys,
 #endif
 		&g_beControllerSettingsMenuItem_Action_DebugKeys,
@@ -833,7 +833,7 @@ void BE_ST_Launcher_Prepare(void)
 	g_beControllerSettingsMenuItem_AnalogMotion.choice = g_refKeenCfg.altControlScheme.analogMotion;
 #endif
 	/*** Set controller button bindings ***/
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 	g_beControllerSettingsMenuItem_Action_Jump.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP];
 	g_beControllerSettingsMenuItem_Action_Throw.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW];
 	g_beControllerSettingsMenuItem_Action_Stats.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS];
@@ -845,10 +845,10 @@ void BE_ST_Launcher_Prepare(void)
 	g_beControllerSettingsMenuItem_Action_Nuke.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE];
 	g_beControllerSettingsMenuItem_Action_FastTurn.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN];
 #endif
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	g_beControllerSettingsMenuItem_Action_Scrolls.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS];
 #endif
-#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
 	g_beControllerSettingsMenuItem_Action_FuncKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS];
 #endif
 	g_beControllerSettingsMenuItem_Action_DebugKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS];
@@ -998,7 +998,7 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.analogMotion = g_beControllerSettingsMenuItem_AnalogMotion.choice;
 #endif
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = g_beControllerSettingsMenuItem_Action_Jump.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = g_beControllerSettingsMenuItem_Action_Throw.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = g_beControllerSettingsMenuItem_Action_Stats.choice;
@@ -1010,10 +1010,10 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = g_beControllerSettingsMenuItem_Action_Nuke.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN] = g_beControllerSettingsMenuItem_Action_FastTurn.choice;
 #endif
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = g_beControllerSettingsMenuItem_Action_Scrolls.choice;
 #endif
-#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;

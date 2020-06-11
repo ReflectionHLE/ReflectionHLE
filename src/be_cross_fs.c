@@ -964,7 +964,7 @@ BE_FILE_T BE_Cross_open_steamcfg_for_reading(void)
 }
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
-#if (defined REFKEEN_VER_CATACOMB_ALL) && ((defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_MACOS))
+#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) && ((defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_MACOS))
 #define BE_CHECK_GOG_INSTALLATIONS
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
@@ -989,7 +989,7 @@ void BE_Cross_PrepareGameInstallations(void)
 
 	if (!g_refKeenCfg.manualGameVerMode)
 	{
-#ifdef REFKEEN_VER_CATACOMB_ALL
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 		TCHAR gog_catacombs_paths[1][BE_CROSS_PATH_LEN_BOUND];
@@ -1019,11 +1019,11 @@ void BE_Cross_PrepareGameInstallations(void)
 		}
 #endif
 
-#endif
+#endif // REFKEEN_HAS_VER_CATACOMB_ALL
 
 		/*** Now handling each version separately ***/
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse100, _T("."), "Keen Dreams EGA v1.00 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc100, _T("."), "Keen Dreams CGA v1.00 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, _T("."), "Keen Dreams EGA v1.13 (Local)");
@@ -1060,9 +1060,9 @@ void BE_Cross_PrepareGameInstallations(void)
 
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
-#endif // REFKEEN_VER_KDREAMS
+#endif // REFKEEN_HAS_VER_KDREAMS
 
-#ifdef REFKEEN_VER_CAT3D
+#ifdef REFKEEN_HAS_VER_CAT3D
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, _T("."), "Catacomb 3-D v1.00 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, _T("."), "Catacomb 3-D v1.22 (Local)");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
@@ -1075,7 +1075,7 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif
 #endif
 
-#ifdef REFKEEN_VER_CATABYSS
+#ifdef REFKEEN_HAS_VER_CATABYSS
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss113, _T("."), "Catacomb Abyss v1.13 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, _T("."), "Catacomb Abyss v1.24 (Local)");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
@@ -1088,7 +1088,7 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif
 #endif
 
-#ifdef REFKEEN_VER_CATARM
+#ifdef REFKEEN_HAS_VER_CATARM
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, _T("."), "Catacomb Armageddon v1.02 (Local)");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
@@ -1100,7 +1100,7 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif
 #endif
 
-#ifdef REFKEEN_VER_CATAPOC
+#ifdef REFKEEN_HAS_VER_CATAPOC
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, _T("."), "Catacomb Apocalypse v1.01 (Local)");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
@@ -1448,14 +1448,14 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 
 	g_refKeenCfg.lastSelectedGameVer = refkeen_current_gamever = g_be_selectedGameInstallation->verId;
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 	// MUST be the first patched file (at least for Keen Dreams)
 	extern void RefKeen_Patch_id_ca(void);
 	RefKeen_Patch_id_ca();
 #endif
 	extern void RefKeen_Patch_id_us(void);
 	RefKeen_Patch_id_us();
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 	extern void RefKeen_Patch_id_rf(void);
 	RefKeen_Patch_id_rf();
 	extern void RefKeen_Patch_id_rf_a(void);
@@ -1473,13 +1473,13 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 	extern void RefKeen_Patch_kd_play(void);
 	RefKeen_Patch_kd_play();
 #endif
-#ifdef REFKEEN_VER_CAT3D
+#ifdef REFKEEN_HAS_VER_CAT3D
 	extern void RefKeen_Patch_c3_game(void);
 	RefKeen_Patch_c3_game();
 	extern void RefKeen_Patch_c3_play(void);
 	RefKeen_Patch_c3_play();
 #endif
-#ifdef REFKEEN_VER_CATABYSS
+#ifdef REFKEEN_HAS_VER_CATABYSS
 	extern void RefKeen_Patch_c4_main(void);
 	RefKeen_Patch_c4_main();
 	extern void RefKeen_Patch_c4_play(void);
@@ -1487,7 +1487,7 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 	extern void RefKeen_Patch_gelib(void);
 	RefKeen_Patch_gelib();
 #endif
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
 	extern void RefKeen_Patch_intro(void);
 	RefKeen_Patch_intro();
 	extern void RefKeen_Patch_slidecat(void);

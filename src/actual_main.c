@@ -46,9 +46,9 @@ static void show_command_line_help()
 #endif
 	BE_ST_puts("List of possible command line arguments:");
 	BE_ST_puts("-gamever <VER>: Select game version supported by this executable.");
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
 	BE_ST_puts("-skipintro: Skip what is found in the original intro EXE and start game.");
-#ifdef REFKEEN_VER_CATABYSS
+#ifdef REFKEEN_HAS_VER_CATABYSS
 	BE_ST_puts("-showslides: Show the electronic catalog / hint book.");
 #else
 	BE_ST_puts("-showslides: Show the hint book.");
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 
 	// Parse arguments
 	bool showHelp = false;
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
 	bool skipIntro = false;
 	bool showSlides = false;
 #endif
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 			argv += 2;
 			argc -= 2;
 		}
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
 		else if (!BE_Cross_strcasecmp(1+argv[1], "skipintro"))
 		{
 			skipIntro = true;
@@ -206,7 +206,7 @@ int main(int argc, char **argv)
 #endif
 		{
 			BE_Cross_InitGame(selectedGameVerVal);
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
 			extern void (*refkeen_game_exe_main_funcs[BE_GAMEVER_LAST])(void);
 			extern void (*refkeen_slidecat_exe_main_funcs[BE_GAMEVER_LAST])(void);
 

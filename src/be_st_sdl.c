@@ -111,7 +111,7 @@ BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 //
 // HACK: If this is updated, also check g_sdlCfgEntries!!!
 static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 	"altcontrolscheme_jump=",
 	"altcontrolscheme_throw=",
 	"altcontrolscheme_stats=",
@@ -123,10 +123,10 @@ static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
 	"altcontrolscheme_nuke=", // Xterminator in the Adventures Series
 	"altcontrolscheme_fastturn=",
 #endif
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	"altcontrolscheme_scrolls=",
 #endif
-#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
 	"altcontrolscheme_funckeys=",
 #endif
 	"altcontrolscheme_debugkeys=",
@@ -822,7 +822,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
 
 	// HACK: Copy-paste... if this is updated, check g_sdlControlSchemeKeyMapCfgKeyPrefixes too!!!
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 	{"altcontrolscheme_jump=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_throw=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_stats=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
@@ -834,10 +834,10 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"altcontrolscheme_nuke=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_fastturn=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 #endif
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	{"altcontrolscheme_scrolls=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 #endif
-#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
 	{"altcontrolscheme_funckeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 #endif
 	{"altcontrolscheme_debugkeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
@@ -902,7 +902,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.touchInputDebugging = false;
 	g_refKeenCfg.altControlScheme.isEnabled = true;
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_HAS_VER_KDREAMS
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = SDL_CONTROLLER_BUTTON_A;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = SDL_CONTROLLER_BUTTON_B;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = SDL_CONTROLLER_BUTTON_X;
@@ -914,10 +914,10 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = SDL_CONTROLLER_BUTTON_Y;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN] = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
 #endif
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = SDL_CONTROLLER_BUTTON_MAX+1; // HACK for getting right trigger (technically an axis)
 #endif
-#if (defined REFKEEN_VER_KDREAMS) || (defined REFKEEN_VER_CATADVENTURES)
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = SDL_CONTROLLER_BUTTON_MAX; // HACK for getting left trigger (technically an axis)
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = SDL_CONTROLLER_BUTTON_LEFTSTICK;
