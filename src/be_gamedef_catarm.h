@@ -1,4 +1,4 @@
-/* This header must be included *only* from be_gamedef.h */
+/* This header must be included *only* from be_gamedef_catadventures.h */
 
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catarm102[] = {
 	{"ARMGAME.EXE", 82198, 0x7bf5e3d5},

@@ -1,4 +1,4 @@
-/* This header must be included *only* from be_gamedef.h */
+/* This header must be included *only* from be_gamedef_catadventures.h */
 
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catapoc101[] = {
 	{"APOCGAME.EXE", 82386, 0x48ca6808},

@@ -77,14 +77,8 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_VER_CAT3D
 #include "be_gamedef_cat3d.h"
 #endif
-#ifdef REFKEEN_VER_CATABYSS
-#include "be_gamedef_catabyss.h"
-#endif
-#ifdef REFKEEN_VER_CATARM
-#include "be_gamedef_catarm.h"
-#endif
-#ifdef REFKEEN_VER_CATAPOC
-#include "be_gamedef_catapoc.h"
+#ifdef REFKEEN_VER_CATADVENTURES
+#include "be_gamedef_catadventures.h"
 #endif
 
 

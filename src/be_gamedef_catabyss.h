@@ -1,4 +1,4 @@
-/* This header must be included *only* from be_gamedef.h */
+/* This header must be included *only* from be_gamedef_catadventures.h */
 
 /*** v1.13 (Shareware) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
