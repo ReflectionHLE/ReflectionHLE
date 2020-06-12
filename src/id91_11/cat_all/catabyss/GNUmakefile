@@ -25,7 +25,8 @@ GAMEOBJECTS=$(OBJ)/c4_act1.o \
 GAMEOBJECTS+= $(OBJ)/c3_asm.o \
               $(OBJ)/c3_scale.o \
               $(OBJ)/c3_trace.o \
-              $(OBJ)/altcontroller.o
+              $(OBJ)/altcontroller.o \
+              $(OBJ)/fixed_sintable.o
 
 IDOBJECTS=$(IDOBJ)/id_ca.o \
           $(IDOBJ)/id_in.o \

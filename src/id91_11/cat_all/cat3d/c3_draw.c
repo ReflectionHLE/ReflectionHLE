@@ -135,7 +135,12 @@ id0_int_t firstangle,lastangle;
 
 fixed prestep;
 
-fixed sintable[ANGLES+ANGLES/4],*costable = sintable+(ANGLES/4);
+// REFKEEN - Use pre-calculated fixed sin table
+#define REFKEEN_USE_PRECALC_SINTABLE 1
+#if !REFKEEN_USE_PRECALC_SINTABLE
+fixed sintable[ANGLES+ANGLES/4];
+#endif
+fixed *costable = sintable+(ANGLES/4);
 
 fixed	viewx,viewy;			// the focal point
 id0_int_t	viewangle;
@@ -1100,7 +1105,10 @@ void BuildTables (void)
   id0_int_t 		i;
   id0_long_t		intang;
   id0_long_t		x;
-  float 	angle,anglestep,radtoint;
+#if !REFKEEN_USE_PRECALC_SINTABLE
+  float 	anglestep;
+#endif
+  float 	angle,/*anglestep,*/radtoint;
   double	tang;
   fixed 	value;
 
@@ -1161,6 +1169,7 @@ void BuildTables (void)
   scale *= focallength;
   scale /= (focallength+mindist);
 
+#if !REFKEEN_USE_PRECALC_SINTABLE
 //
 // costable overlays sintable with a quarter phase shift
 // ANGLES is assumed to be divisable by four
@@ -1174,17 +1183,8 @@ void BuildTables (void)
   for (i=0;i<=ANGLEQUAD;i++)
   {
 	value=GLOBAL1*sin(angle);
-	// REFKEEN - Originally there was a buffer overflow here
-	// for i==ANGLEQUAD, technically leading to undefined behaviors.
-	// Let's emulate the behaviors in the Catacomb 3-D 1.00 and 1.22 EXEs,
-	// which is to write to leftwall:numwalls instead.
-	//
-	// While leftwall is technically a pointer, luckily we don't even
-	// use it, so we write just to numwalls here.
 	sintable[i] = sintable[ANGLES/2-i] = value;
-	if (i == ANGLEQUAD)
-	  numwalls = value & 0xff;
-	else
+	if (i != ANGLEQUAD) // REFKEEN - Buffer overflow fix
 	  sintable[i+ANGLES] = value;
 #if 0
 	sintable[i]=
@@ -1195,6 +1195,16 @@ void BuildTables (void)
 	  sintable[ANGLES/2+i] = value | 0x80000000l;
 	angle += anglestep;
   }
+#endif // !REFKEEN_USE_PRECALC_SINTABLE
+
+// REFKEEN - The loop originally had a buffer overflow
+// for i==ANGLEQUAD, technically leading to undefined behaviors.
+// Let's emulate the behaviors in the Catacomb 3-D 1.00 and 1.22 EXEs,
+// which is to write to leftwall:numwalls instead.
+//
+// While leftwall is technically a pointer, luckily we don't even
+// use it, so we write just to numwalls here.
+  numwalls = sintable[ANGLEQUAD] & 0xff;
 
 //
 // figure trace angles for first and last pixel on screen
