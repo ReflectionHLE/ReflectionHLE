@@ -1,5 +1,18 @@
 /* This header must be included *only* from be_gamedef.h */
 
+REFKEEN_NS_B_FOR(cat3d)
+void RefKeen_Patch_id_us(void);
+void RefKeen_Patch_c3_game(void);
+void RefKeen_Patch_c3_play(void);
+void RefKeen_FillObjStatesWithDOSPointers(void);
+void RefKeen_PrepareAltControllerScheme(void);
+
+static void (*g_be_patcherfuncs_cat3d[])(void) = {
+	RefKeen_Patch_id_us, RefKeen_Patch_c3_game, RefKeen_Patch_c3_play,
+	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
+};
+REFKEEN_NS_E
+
 /*** v1.00 ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d100[] = {
 	{"AUDIO.C3D", 5062, 0x074f7525},
@@ -37,6 +50,7 @@ static const BE_GameVerDetails_T g_be_gamever_cat3d100 = {
 	g_be_exefiles_cat3d100,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CAT3D100),
 	"Catacomb 3-D v1.00 (Custom)",
+	REFKEEN_NS_ENCLOSE(cat3d, g_be_patcherfuncs_cat3d),
 	0,
 	BE_GAMEVER_CAT3D100
 };
@@ -80,6 +94,7 @@ static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
 	g_be_exefiles_cat3d122,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CAT3D122),
 	"Catacomb 3-D v1.22 (Custom)",
+	REFKEEN_NS_ENCLOSE(cat3d, g_be_patcherfuncs_cat3d),
 	0,
 	BE_GAMEVER_CAT3D122
 };

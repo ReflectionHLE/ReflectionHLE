@@ -1,5 +1,22 @@
 /* This header must be included *only* from be_gamedef_catadventures.h */
 
+REFKEEN_NS_B_FOR(catabyss)
+void RefKeen_Patch_id_us(void);
+void RefKeen_Patch_c4_main(void);
+void RefKeen_Patch_c4_play(void);
+void RefKeen_Patch_gelib(void);
+void RefKeen_Patch_intro(void);
+void RefKeen_Patch_slidecat(void);
+void RefKeen_FillObjStatesWithDOSPointers(void);
+void RefKeen_PrepareAltControllerScheme(void);
+
+static void (*g_be_patcherfuncs_catabyss[])(void) = {
+	RefKeen_Patch_id_us, RefKeen_Patch_c4_main, RefKeen_Patch_c4_play,
+	RefKeen_Patch_gelib, RefKeen_Patch_intro, RefKeen_Patch_slidecat,
+	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
+};
+REFKEEN_NS_E
+
 /*** v1.13 (Shareware) ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
 	{"ARMAPC.ABS", 10489, 0x9562020e},
@@ -115,6 +132,7 @@ static const BE_GameVerDetails_T g_be_gamever_catabyss113 = {
 	g_be_exefiles_catabyss113,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATABYSS113),
 	"Catacomb Abyss v1.13 (Custom)",
+	REFKEEN_NS_ENCLOSE(catabyss, g_be_patcherfuncs_catabyss),
 	0,
 	BE_GAMEVER_CATABYSS113
 };
@@ -217,6 +235,7 @@ static const BE_GameVerDetails_T g_be_gamever_catabyss124 = {
 	g_be_exefiles_catabyss124,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATABYSS124),
 	"Catacomb Abyss v1.24 (Custom)",
+	REFKEEN_NS_ENCLOSE(catabyss, g_be_patcherfuncs_catabyss),
 	0,
 	BE_GAMEVER_CATABYSS124
 };

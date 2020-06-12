@@ -1,5 +1,18 @@
 /* This header must be included *only* from be_gamedef_catadventures.h */
 
+REFKEEN_NS_B_FOR(catarm)
+void RefKeen_Patch_id_us(void);
+void RefKeen_Patch_intro(void);
+void RefKeen_Patch_slidecat(void);
+void RefKeen_FillObjStatesWithDOSPointers(void);
+void RefKeen_PrepareAltControllerScheme(void);
+
+static void (*g_be_patcherfuncs_catarm[])(void) = {
+	RefKeen_Patch_id_us, RefKeen_Patch_intro, RefKeen_Patch_slidecat,
+	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
+};
+REFKEEN_NS_E
+
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catarm102[] = {
 	{"ARMGAME.EXE", 82198, 0x7bf5e3d5},
 	// Looks like ARM_SLIB.ARM is mentioned in DEF.H but unused
@@ -98,6 +111,7 @@ static const BE_GameVerDetails_T g_be_gamever_catarm102 = {
 	g_be_exefiles_catarm102,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATARM102),
 	"Catacomb Armageddon v1.02 (Custom)",
+	REFKEEN_NS_ENCLOSE(catarm, g_be_patcherfuncs_catarm),
 	0,
 	BE_GAMEVER_CATARM102
 };

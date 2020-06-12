@@ -1,5 +1,18 @@
 /* This header must be included *only* from be_gamedef_catadventures.h */
 
+REFKEEN_NS_B_FOR(catapoc)
+void RefKeen_Patch_id_us(void);
+void RefKeen_Patch_intro(void);
+void RefKeen_Patch_slidecat(void);
+void RefKeen_FillObjStatesWithDOSPointers(void);
+void RefKeen_PrepareAltControllerScheme(void);
+
+static void (*g_be_patcherfuncs_catapoc[])(void) = {
+	RefKeen_Patch_id_us, RefKeen_Patch_intro, RefKeen_Patch_slidecat,
+	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
+};
+REFKEEN_NS_E
+
 static const BE_GameFileDetails_T g_be_reqgameverfiles_catapoc101[] = {
 	{"APOCGAME.EXE", 82386, 0x48ca6808},
 	// No APC_SLIB.APC file was found, although it is mentioned in DEF.H
@@ -98,6 +111,7 @@ static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
 	g_be_exefiles_catapoc101,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATAPOC101),
 	"Catacomb Apocalypse v1.01 (Custom)",
+	REFKEEN_NS_ENCLOSE(catapoc, g_be_patcherfuncs_catapoc),
 	0,
 	BE_GAMEVER_CATAPOC101
 };

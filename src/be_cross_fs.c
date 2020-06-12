@@ -212,6 +212,7 @@ typedef struct {
 	const BE_EXEFileDetails_T *exeFiles;
 	const TCHAR *writableFilesDir;
 	const char *customInstDescription;
+	void (**patcherFuncPtrs)(void);
 	int digiAudioFreq; // Set to a common frequency of input digitized sounds, or to 0 if unused
 	BE_GameVer_T verId;
 } BE_GameVerDetails_T;
