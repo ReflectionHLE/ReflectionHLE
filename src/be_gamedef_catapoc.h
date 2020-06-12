@@ -70,7 +70,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 		NULL,
 		"APOCGAME.EXE",
 		&REFKEEN_NS_ENCLOSE(catapoc, apocgame_exe_main),
-		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		&REFKEEN_NS_ENCLOSE(catapoc, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
 		200064 - 0x2200,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
@@ -85,7 +85,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 		"Catacomb Apocalypse 3-D Hint Book v1.13",
 		"HINTCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catapoc, slidecat_exe_main),
-		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
+		&REFKEEN_NS_ENCLOSE(catapoc, RefKeen_Load_Embedded_Resources_From_slidecat_exe),
 		39568 - 0x600,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false

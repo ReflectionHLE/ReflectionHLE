@@ -77,7 +77,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		NULL,
 		"CATABYSS.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, abysgame_exe_main),
-		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		&REFKEEN_NS_ENCLOSE(catabyss, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
 		201120 - 0x1a00,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
@@ -91,7 +91,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		"Electronic Catalog v1.00",
 		"DEMOCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, slidecat_exe_main),
-		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
+		&REFKEEN_NS_ENCLOSE(catabyss, RefKeen_Load_Embedded_Resources_From_slidecat_exe),
 		62800 - 0x800,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
@@ -190,7 +190,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
 		NULL,
 		"ABYSGAME.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, abysgame_exe_main),
-		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
+		&REFKEEN_NS_ENCLOSE(catabyss, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
 		200848 - 0x1a00,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
@@ -204,7 +204,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
 		"Catacomb Abyss 3-D Hint Book v1.01",
 		"HINTCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, slidecat_exe_main),
-		&RefKeen_Load_Embedded_Resources_From_slidecat_exe,
+		&REFKEEN_NS_ENCLOSE(catabyss, RefKeen_Load_Embedded_Resources_From_slidecat_exe),
 		39968 - 0x600,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
