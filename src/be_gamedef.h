@@ -5,13 +5,30 @@
 // Main functions prototypes
 void kdreams_exe_main(void);
 int loadscn2_main(int argc, const char **argv);
+
+REFKEEN_NS_B_FOR(cat3d)
 void cat3d_exe_main(void);
+REFKEEN_NS_E
+
+REFKEEN_NS_B_FOR(catabyss)
 void abysgame_exe_main(void);
-void armgame_exe_main(void);
-void apocgame_exe_main(void);
 void intro_exe_main(void);
 void slidecat_exe_main(void);
 void loadscn_exe_main(void);
+REFKEEN_NS_E
+
+REFKEEN_NS_B_FOR(catarm)
+void armgame_exe_main(void);
+void intro_exe_main(void);
+void slidecat_exe_main(void);
+REFKEEN_NS_E
+
+REFKEEN_NS_B_FOR(catapoc)
+void apocgame_exe_main(void);
+void intro_exe_main(void);
+void slidecat_exe_main(void);
+REFKEEN_NS_E
+
 // Embedded resources loader functions prototypes
 void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void);
 void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
