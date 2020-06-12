@@ -1449,55 +1449,9 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 
 	g_refKeenCfg.lastSelectedGameVer = refkeen_current_gamever = g_be_selectedGameInstallation->verId;
 
-#ifdef REFKEEN_HAS_VER_KDREAMS
-	// MUST be the first patched file (at least for Keen Dreams)
-	extern void RefKeen_Patch_id_ca(void);
-	RefKeen_Patch_id_ca();
-#endif
-	extern void RefKeen_Patch_id_us(void);
-	RefKeen_Patch_id_us();
-#ifdef REFKEEN_HAS_VER_KDREAMS
-	extern void RefKeen_Patch_id_rf(void);
-	RefKeen_Patch_id_rf();
-	extern void RefKeen_Patch_id_rf_a(void);
-	RefKeen_Patch_id_rf_a();
-	extern void RefKeen_Patch_id_vw(void);
-	RefKeen_Patch_id_vw();
-	extern void RefKeen_Patch_id_vw_ac(void);
-	RefKeen_Patch_id_vw_ac();
-	extern void RefKeen_Patch_id_vw_ae(void);
-	RefKeen_Patch_id_vw_ae();
-	extern void RefKeen_Patch_kd_demo(void);
-	RefKeen_Patch_kd_demo();
-	extern void RefKeen_Patch_kd_keen(void);
-	RefKeen_Patch_kd_keen();
-	extern void RefKeen_Patch_kd_play(void);
-	RefKeen_Patch_kd_play();
-#endif
-#ifdef REFKEEN_HAS_VER_CAT3D
-	extern void RefKeen_Patch_c3_game(void);
-	RefKeen_Patch_c3_game();
-	extern void RefKeen_Patch_c3_play(void);
-	RefKeen_Patch_c3_play();
-#endif
-#ifdef REFKEEN_HAS_VER_CATABYSS
-	extern void RefKeen_Patch_c4_main(void);
-	RefKeen_Patch_c4_main();
-	extern void RefKeen_Patch_c4_play(void);
-	RefKeen_Patch_c4_play();
-	extern void RefKeen_Patch_gelib(void);
-	RefKeen_Patch_gelib();
-#endif
-#ifdef REFKEEN_HAS_VER_CATADVENTURES
-	extern void RefKeen_Patch_intro(void);
-	RefKeen_Patch_intro();
-	extern void RefKeen_Patch_slidecat(void);
-	RefKeen_Patch_slidecat();
-#endif
-	extern void RefKeen_FillObjStatesWithDOSPointers(void);
-	RefKeen_FillObjStatesWithDOSPointers(); // Saved games compatibility
-	extern void RefKeen_PrepareAltControllerScheme(void);
-	RefKeen_PrepareAltControllerScheme(); // Alternative controller scheme stuff
+	for (void (**patcherFuncPtr)(void) = g_be_gamever_ptrs[refkeen_current_gamever]->patcherFuncPtrs;
+             *patcherFuncPtr; ++patcherFuncPtr)
+		(*patcherFuncPtr)();
 }
 
 // Here the magic happens - used to clear a portion of the stack before
