@@ -35,11 +35,13 @@ typedef enum {
 #ifndef REFKEEN_USE_NS
 
 #define REFKEEN_NS_B
+#define REFKEEN_NS_B_FOR(x)
 #define REFKEEN_NS_ENCLOSE(x, f) (f)
 #define REFKEEN_NS_E
 
 #else
 
+#define REFKEEN_NS_B_FOR(x) namespace x {
 #define REFKEEN_NS_ENCLOSE(x, f) (x::f)
 #define REFKEEN_NS_E }
 
