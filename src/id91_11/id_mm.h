@@ -22,6 +22,8 @@
 
 #define __ID_CA__
 
+REFKEEN_NS_B
+
 #define SAVENEARHEAP	0x400		// space to leave in data segment
 #define SAVEFARHEAP		0			// space to leave in far heap
 
@@ -104,5 +106,7 @@ id0_long_t MM_UnusedMemory (void);
 id0_long_t MM_TotalFree (void);
 
 void MM_BombOnError (id0_boolean_t bomb);
+
+REFKEEN_NS_E
 
 #endif

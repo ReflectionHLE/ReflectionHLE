@@ -25,6 +25,8 @@
 //
 //=================================
 
+REFKEEN_NS_B
+
 //============================================================================
 //
 // All EGA drawing routines that write out words need to have alternate forms
@@ -2009,3 +2011,5 @@ ENDP
 #endif // VW_DrawMPropString
 
 #endif // if fonts
+
+REFKEEN_NS_E

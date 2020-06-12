@@ -29,6 +29,7 @@
 #include "time.h"
 #endif
 
+REFKEEN_NS_B
 
 /*
 =============================================================================
@@ -1702,3 +1703,5 @@ popcontrolerscheme:
 			SetupScaleWall (walldark2[i]);
 		}
 #endif
+
+REFKEEN_NS_E

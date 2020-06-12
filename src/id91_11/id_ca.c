@@ -38,6 +38,8 @@ loaded into the data segment
 //#pragma warn -pro
 //#pragma warn -use
 
+REFKEEN_NS_B
+
 #define THREEBYTEGRSTARTS
 
 // REFKEEN - Using this from gelib for some reason
@@ -2254,3 +2256,5 @@ void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void)
 	}
 #endif
 }
+
+REFKEEN_NS_E

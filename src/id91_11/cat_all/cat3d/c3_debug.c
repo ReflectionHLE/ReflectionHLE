@@ -21,6 +21,8 @@
 #include "c3_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -631,4 +633,4 @@ void ViewMap (void)
 	DrawPlayScreen ();
 }
 
-
+REFKEEN_NS_E

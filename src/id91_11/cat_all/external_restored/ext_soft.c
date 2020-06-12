@@ -36,6 +36,7 @@
 #include "ext_lzhuff.h"
 #include "ext_jam_io.h"
 
+REFKEEN_NS_B
 
 
 
@@ -420,3 +421,5 @@ void SwapWord(id0_unsigned_int_t id0_far *Var)
 	*Var = ((*Var) >> 8) | ((*Var) << 8);
 }
 #endif
+
+REFKEEN_NS_E

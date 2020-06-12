@@ -25,6 +25,8 @@
 
 #include "ext_heads.h"
 
+REFKEEN_NS_B
+
 // NOTE: Moved to ext_heads.h
 // #define WAITFORVBL 1
 
@@ -142,3 +144,5 @@ void ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 	}
 
 }
+
+REFKEEN_NS_E

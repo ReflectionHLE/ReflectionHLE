@@ -24,6 +24,7 @@
 //
 //
 
+REFKEEN_NS_B
 
 
 
@@ -107,4 +108,4 @@ struct CMP1Header
 id0_char_t WritePtr(void **outfile, id0_unsigned_char_t data, id0_unsigned_t PtrType);
 id0_int_t ReadPtr(void **infile, id0_unsigned_t PtrType);
 
-
+REFKEEN_NS_E

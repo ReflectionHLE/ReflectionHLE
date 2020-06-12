@@ -22,6 +22,8 @@
 #include "def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 //#define DRAWEACH				// draw walls one at a time for debugging
 
 id0_unsigned_t	highest;
@@ -1920,3 +1922,4 @@ asm	sti
 
 }
 
+REFKEEN_NS_E

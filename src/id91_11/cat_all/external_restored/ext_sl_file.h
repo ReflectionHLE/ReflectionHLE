@@ -19,6 +19,7 @@
 #ifndef _SL_FILE_H
 #define _SL_FILE_H
 
+REFKEEN_NS_B
 
 //==========================================================================
 //
@@ -109,6 +110,6 @@ typedef struct ChunkHeader
 	id0_short_t Compression;								// ct_TYPES
 } __attribute__((__packed__)) ChunkHeader;
 
-
+REFKEEN_NS_E
 
 #endif

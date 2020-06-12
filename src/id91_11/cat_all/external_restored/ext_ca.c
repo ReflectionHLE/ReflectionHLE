@@ -23,6 +23,8 @@
 
 #include "ext_heads.h"
 
+REFKEEN_NS_B
+
 /*
 ==========================
 =
@@ -122,3 +124,4 @@ id0_boolean_t LoadFile (const id0_char_t *filename, memptr *ptr)
 	return true;
 }
 
+REFKEEN_NS_E

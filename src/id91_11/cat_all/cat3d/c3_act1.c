@@ -21,6 +21,8 @@
 #include "c3_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -1262,3 +1264,4 @@ void T_Bounce (objtype *ob)
 	CalcBounds (ob);
 }
 
+REFKEEN_NS_E

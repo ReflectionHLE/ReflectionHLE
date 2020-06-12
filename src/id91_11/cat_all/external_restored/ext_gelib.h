@@ -18,6 +18,7 @@
 
 #include "ext_sl_file.h"
 
+REFKEEN_NS_B
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -81,3 +82,5 @@ void SetScreenMode (id0_int_t mode);
 void SetLineWidth (id0_int_t width);
 id0_boolean_t IsKeyPressed (void);
 void WaitForKeyRelease (void);
+
+REFKEEN_NS_E

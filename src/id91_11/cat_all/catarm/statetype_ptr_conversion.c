@@ -20,6 +20,8 @@
 
 #include "def.h"
 
+REFKEEN_NS_B
+
 // The exact segment of a 32-bit far pointer depends on location of DOS EXE
 // in memory, so make it possible to configure it
 static uint_fast32_t g_farPtrExeLocSegOffset;
@@ -853,3 +855,5 @@ static statetype* RefKeen_GetObjStatePtrFromDOSPointer_CatArm102(uint_fast32_t d
 	}
 	return NULL;
 }
+
+REFKEEN_NS_E

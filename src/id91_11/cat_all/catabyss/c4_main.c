@@ -36,6 +36,8 @@
 //#pragma hdrstop
 //#include <dir.h>
 
+REFKEEN_NS_B
+
 // REFKEEN - Use replacement for the CATALOG macro
 // (originally present in v1.24 but not v1.13)
 extern id0_boolean_t refkeen_compat_c4_main_def_catalog;
@@ -1104,3 +1106,5 @@ void RefKeen_Patch_c4_main(void)
 		break;
 	}
 }
+
+REFKEEN_NS_E

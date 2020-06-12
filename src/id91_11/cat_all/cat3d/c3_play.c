@@ -22,6 +22,8 @@
 #include "c3_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -634,3 +636,5 @@ void RefKeen_Patch_c3_play(void)
 		break;
 	}
 }
+
+REFKEEN_NS_E

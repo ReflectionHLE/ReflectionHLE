@@ -26,6 +26,7 @@
 #include "time.h"
 #endif
 
+REFKEEN_NS_B
 
 /*
 =============================================================================
@@ -1293,3 +1294,5 @@ void RefKeen_Patch_c3_game(void)
 		break;
 	}
 }
+
+REFKEEN_NS_E

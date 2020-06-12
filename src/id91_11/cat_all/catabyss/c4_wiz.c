@@ -23,6 +23,8 @@
 #include "gelib.h" // REFKEEN - For GetKeyChoice
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -3267,3 +3269,4 @@ void SpawnBigExplosion(fixed x, fixed y, id0_short_t Delay, fixed Range)
 #endif
 }
 
+REFKEEN_NS_E

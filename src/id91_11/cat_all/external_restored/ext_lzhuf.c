@@ -56,6 +56,7 @@
 #include "ext_lzhuff.h"
 #include "ext_jam_io.h"
 
+REFKEEN_NS_B
 
 
 //===========================================================================
@@ -1077,3 +1078,5 @@ id0_long_t lzhCompress(void id0_far *infile, void id0_far *outfile,id0_unsigned_
 
 
 #endif
+
+REFKEEN_NS_E

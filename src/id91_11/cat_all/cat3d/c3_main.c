@@ -22,6 +22,8 @@
 #include "c3_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -945,3 +947,5 @@ void cat3d_exe_main (void)
 	DemoLoop();
 	Quit("Demo loop exited???");
 }
+
+REFKEEN_NS_E

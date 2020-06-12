@@ -63,6 +63,8 @@
 #include "../rsrc/analog_circle_bottomleft_input.xpm"
 #include "../rsrc/analog_circle_bottomright_input.xpm"
 
+REFKEEN_NS_B
+
 BE_ST_ControllerSingleMap *g_ingame_altcontrol_button0mappings[2], *g_ingame_altcontrol_button1mappings[2],
 	*g_ingame_altcontrol_upmappings[4], *g_ingame_altcontrol_downmappings[4], *g_ingame_altcontrol_leftmappings[4], *g_ingame_altcontrol_rightmappings[4];
 
@@ -1033,3 +1035,5 @@ void PrepareGamePlayControllerMapping(void)
 
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
 }
+
+REFKEEN_NS_E

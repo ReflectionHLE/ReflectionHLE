@@ -30,6 +30,8 @@
 #ifndef	__ID_SD__
 #define	__ID_SD__
 
+REFKEEN_NS_B
+
 #ifdef	__DEBUG__
 #define	__DEBUG_SoundMgr__
 #endif
@@ -224,5 +226,7 @@ inline void SD_TimeCountWaitTicks(id0_int_t ticks)
 {
 	SD_TimeCountWaitForDest(SD_GetTimeCount() + ticks);
 }
+
+REFKEEN_NS_E
 
 #endif

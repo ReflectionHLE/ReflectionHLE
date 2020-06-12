@@ -48,6 +48,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+REFKEEN_NS_B
+
 #define GRMODE EGAGR
 
 //
@@ -122,5 +124,7 @@ void ScreenToScreen(id0_unsigned_t source, id0_unsigned_t dest,
 extern void intro_exe_main(void);
 extern void loadscn_exe_main(void);
 extern void slidecat_exe_main(void);
+
+REFKEEN_NS_E
 
 #endif

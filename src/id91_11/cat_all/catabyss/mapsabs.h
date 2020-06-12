@@ -16,6 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+REFKEEN_NS_B
+
 ///////////////////////////////////////
 //
 // TED5 Map Header for ABS
@@ -57,3 +59,5 @@ typedef enum {
 //
 #define ANIM		402
 #define FLAGS		(ANIM+NUMTILE16)
+
+REFKEEN_NS_E

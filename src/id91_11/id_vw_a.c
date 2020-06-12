@@ -22,6 +22,8 @@
 
 #include "id_heads.h"
 
+REFKEEN_NS_B
+
 // setting to 0 causes setscreen and waitvbl
 // to skip waiting for VBL (for timing things)
 
@@ -299,3 +301,5 @@ cardtype VW_VideoID (void)
 {
 	return VGAcard;
 }
+
+REFKEEN_NS_E

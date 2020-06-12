@@ -23,6 +23,8 @@
 #include "gelib.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -1521,3 +1523,5 @@ void DisplayStatus (status_flags *stat_flag)
 
 	}
 }
+
+REFKEEN_NS_E

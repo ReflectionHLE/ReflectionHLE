@@ -30,6 +30,8 @@
 #ifndef	__ID_IN__
 #define	__ID_IN__
 
+REFKEEN_NS_B
+
 #ifdef	__DEBUG__
 #define	__DEBUG_InputMgr__
 #endif
@@ -215,5 +217,7 @@ extern	const char *IN_GetScanName(ScanCode);
 extern	id0_char_t		IN_WaitForASCII(void);
 extern	ScanCode	IN_WaitForKey(void);
 extern	id0_word_t		IN_GetJoyButtonsDB(id0_word_t joy);
+
+REFKEEN_NS_E
 
 #endif

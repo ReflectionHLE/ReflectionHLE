@@ -32,6 +32,8 @@
 //#include "ext_gelib.h"
 #include "ext_jam_io.h"
 
+REFKEEN_NS_B
+
 //----------------------------------------------------------------------------
 //
 //	 						PTR/PTR COMPRESSION ROUTINES
@@ -148,5 +150,4 @@ else
 	return(returnval);
 }
 
-
-
+REFKEEN_NS_E

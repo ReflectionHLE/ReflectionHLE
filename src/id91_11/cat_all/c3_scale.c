@@ -28,6 +28,8 @@
 #include <stddef.h> // For offsetof
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 //const	id0_unsigned_t	viewheight = 144;
 const	id0_unsigned_t	screenbwide = 40;
 const	id0_byte_t		BACKGROUNDPIX	=   5;
@@ -897,8 +899,4 @@ id0_byte_t	bitmasks2[8][8] = {
 {0,0,0x80,0xc0,0xe0,0xf0,0xf8,0xfc},
 {0,0x80,0xc0,0xe0,0xf0,0xf8,0xfc,0xfe} };
 
-
-
-
-
-
+REFKEEN_NS_E

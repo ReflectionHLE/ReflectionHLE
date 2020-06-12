@@ -21,6 +21,8 @@
 #include "c3_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -550,3 +552,4 @@ void ShootActor (objtype *ob, id0_unsigned_t damage)
 	ob->ticcount = ob->state->tictime;
 }
 
+REFKEEN_NS_E

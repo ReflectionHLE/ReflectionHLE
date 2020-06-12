@@ -25,6 +25,8 @@
 #include "ext_heads.h"
 #include "ext_gelib.h"
 
+REFKEEN_NS_B
+
 // REFKEEN - Re-use functions from intro.c
 #if 0
 static void SetScreenMode (id0_int_t mode);
@@ -218,3 +220,5 @@ static void WaitForKeyRelease (void)
 		}
 }
 #endif // REFKEEN - Re-use functions
+
+REFKEEN_NS_E

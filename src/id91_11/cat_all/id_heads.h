@@ -80,6 +80,8 @@
 #include "mapsapc.h"
 #endif
 
+REFKEEN_NS_B
+
 //--------------------------------------------------------------------------
 
 #ifdef REFKEEN_VER_CATADVENTURES
@@ -207,6 +209,8 @@ extern bool id0_workaround_catadventures_nodraw_digits_on_startup;
 
 extern id0_char_t *introscn;
 
+REFKEEN_NS_E
+
 #include "id_mm.h"
 #include "id_ca.h"
 #include "id_vw.h"
@@ -214,6 +218,7 @@ extern id0_char_t *introscn;
 #include "id_sd.h"
 #include "id_us.h"
 
+REFKEEN_NS_B
 
 #ifdef REFKEEN_VER_CATADVENTURES
 void	Quit (const id0_char_t *error, ...);		// defined in user program
@@ -246,3 +251,5 @@ extern	id0_boolean_t		compatability;
 extern	id0_byte_t		*updateptr;
 extern	id0_unsigned_t	uwidthtable[UPDATEHIGH];
 extern	id0_unsigned_t	blockstarts[UPDATEWIDE*UPDATEHIGH];
+
+REFKEEN_NS_E

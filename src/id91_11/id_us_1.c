@@ -51,6 +51,7 @@
 
 //#pragma warn    -pia
 
+REFKEEN_NS_B
 
 //      Special imports
 extern  id0_boolean_t         showscorebox;
@@ -1520,3 +1521,5 @@ void RefKeen_Patch_id_us(void)
 #endif
 	}
 }
+
+REFKEEN_NS_E

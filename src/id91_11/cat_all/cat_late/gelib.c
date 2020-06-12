@@ -34,6 +34,7 @@
 // REFKEEN - Unused
 //#include "sl_file.h"
 
+REFKEEN_NS_B
 
 #define MAX_GAMELIST_NAMES 20
 #define FNAME_LEN				9
@@ -3146,3 +3147,4 @@ void AnimateWallList(void)
 	}
 }
 
+REFKEEN_NS_E

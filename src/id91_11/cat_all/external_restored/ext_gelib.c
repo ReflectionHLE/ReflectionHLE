@@ -38,6 +38,7 @@
 #include "ext_gelib.h"
 #include "ext_sl_file.h"
 
+REFKEEN_NS_B
 
 #define MAX_GAMELIST_NAMES 20
 #define FNAME_LEN				9
@@ -555,3 +556,5 @@ void ext_MoveGfxDst(id0_short_t x, id0_short_t y)
 	address = (y*40)+(x/8);
 	displayofs = address;
 }
+
+REFKEEN_NS_E

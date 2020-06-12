@@ -30,6 +30,8 @@
 #include "ext_heads.h"
 #include "ext_gelib.h"
 
+REFKEEN_NS_B
+
 // File names
 // REFKEEN - Dynamically set SCRIPT_FILENAME by version, and let END_SCREEN always be defined
 //#ifdef GAMEVER_SHAREWARE
@@ -834,3 +836,5 @@ void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void)
 		// Don't use quit, yet
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_slidecat_exe - Failed to load TEXTSCN.SCN.");
 }
+
+REFKEEN_NS_E

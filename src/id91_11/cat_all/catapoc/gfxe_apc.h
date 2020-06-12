@@ -16,6 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+REFKEEN_NS_B
+
 //////////////////////////////////////
 //
 // Graphics .H file for .APC
@@ -637,3 +639,5 @@ typedef enum {
 //
 // Thank you for using IGRAB!
 //
+
+REFKEEN_NS_E

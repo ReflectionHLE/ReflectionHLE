@@ -32,6 +32,8 @@
 #include "def.h"
 #include "gelib.h"
 
+REFKEEN_NS_B
+
 #define MAX_GAMELIST_NAMES 20
 #define FNAME_LEN				9
 
@@ -2945,3 +2947,5 @@ void RefKeen_Patch_gelib(void)
 	)
 		BE_ST_ExitWithErrorMsg("RefKeen_Patch_gelib - String buffer containing GAMENAME is too small.");
 }
+
+REFKEEN_NS_E

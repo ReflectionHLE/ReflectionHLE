@@ -21,6 +21,8 @@
 #include "def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -842,3 +844,5 @@ void T_Bunny(objtype *ob)
 		return;
 	}
 }
+
+REFKEEN_NS_E

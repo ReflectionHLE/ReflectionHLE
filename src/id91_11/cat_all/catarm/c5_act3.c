@@ -21,6 +21,8 @@
 #include "def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -1239,3 +1241,5 @@ id0_int_t AngleNearPlayer(objtype *ob)
 
 	return(angle);
 }
+
+REFKEEN_NS_E

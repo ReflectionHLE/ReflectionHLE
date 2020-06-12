@@ -21,6 +21,7 @@
 #include "def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
 
 /*
 =============================================================================
@@ -914,3 +915,5 @@ void T_Head(objtype *ob)
 		break;
 	}
 }
+
+REFKEEN_NS_E

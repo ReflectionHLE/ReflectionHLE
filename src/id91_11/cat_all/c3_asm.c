@@ -25,6 +25,8 @@
 #define VIEWWIDTH (33*8)
 #endif
 
+REFKEEN_NS_B
+
 //=================== Tables filled in by DrawVWall ==========================
 
 /*
@@ -368,3 +370,5 @@ void RadarBlip(id0_word_t x, id0_word_t y, id0_word_t color)
 #endif
 }
 #endif
+
+REFKEEN_NS_E

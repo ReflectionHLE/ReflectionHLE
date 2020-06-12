@@ -31,6 +31,8 @@
 #ifndef	__ID_US__
 #define	__ID_US__
 
+REFKEEN_NS_B
+
 #ifdef	__DEBUG__
 #define	__DEBUG_UserMgr__
 #endif
@@ -159,5 +161,7 @@ extern	id0_int_t		US_CheckParm(const id0_char_t *parm,const id0_char_t **strings
 // But it's a 16-bit pointer, so we use the original offset as-is
 // (for saved game compatibility where needed).
 extern id0_word_t refkeen_compat_id_us_printx_offset;
+
+REFKEEN_NS_E
 
 #endif

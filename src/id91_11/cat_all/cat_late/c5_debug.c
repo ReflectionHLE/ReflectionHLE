@@ -22,6 +22,8 @@
 #include "gelib.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -843,3 +845,4 @@ void ViewMap (void)
 }
 #endif
 
+REFKEEN_NS_E

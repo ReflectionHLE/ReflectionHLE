@@ -67,6 +67,8 @@
 //#pragma	hdrstop
 //#pragma	warn	-pia
 
+REFKEEN_NS_B
+
 #define	SDL_SoundFinished()	{SoundNumber = SoundPriority = 0;}
 
 // Macros for AdLib stuff
@@ -1474,3 +1476,5 @@ void SD_TimeCountWaitForDest(id0_longword_t dst)
 	TimeCount = dst;
 	g_t0CountClone += intCallsCount;
 }
+
+REFKEEN_NS_E

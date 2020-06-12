@@ -17,6 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+REFKEEN_NS_B
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // Defines
@@ -190,3 +192,5 @@ id0_boolean_t FindRewritableFile(const id0_char_t *filename,const id0_char_t *di
 void CacheAV(id0_char_t *title);
 void BlackPalette(void);
 void ColoredPalette(void);
+
+REFKEEN_NS_E

@@ -16,6 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////
 //
 // MUSE Header for .APC
@@ -91,3 +93,5 @@ typedef enum {
 // Thanks for playing with MUSE!
 //
 /////////////////////////////////////////////////
+
+REFKEEN_NS_E

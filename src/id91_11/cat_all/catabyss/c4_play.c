@@ -23,6 +23,8 @@
 #include "gelib.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -1467,3 +1469,5 @@ void RefKeen_Patch_c4_play(void)
 		break;
 	}
 }
+
+REFKEEN_NS_E

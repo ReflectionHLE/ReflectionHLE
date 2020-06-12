@@ -20,6 +20,8 @@
 
 #include "def.h"
 
+REFKEEN_NS_B
+
 // List of all states
 extern statetype s_pshot1;
 extern statetype s_pshot2;
@@ -1123,3 +1125,5 @@ static statetype* RefKeen_GetObjStatePtrFromDOSPointer_CatAbyss124(uint_fast32_t
 	}
 	return NULL;
 }
+
+REFKEEN_NS_E

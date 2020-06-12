@@ -30,6 +30,8 @@
 //#pragma hdrstop
 //#include <dir.h>
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -1300,3 +1302,5 @@ void PrintHelp(void)
 	Display320();
 	fontcolor = oldfontcolor;
 }
+
+REFKEEN_NS_E

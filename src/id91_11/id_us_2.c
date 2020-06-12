@@ -31,6 +31,8 @@
 
 //#pragma warn    -pia
 
+REFKEEN_NS_B
+
 //      Special imports
 extern  id0_boolean_t         showscorebox;
 #ifdef  KEEN
@@ -1905,3 +1907,5 @@ extern void HelpScreens(void);
 
 	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support
 }
+
+REFKEEN_NS_E

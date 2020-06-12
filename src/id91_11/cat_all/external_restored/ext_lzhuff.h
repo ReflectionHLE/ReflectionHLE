@@ -16,6 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+REFKEEN_NS_B
+
 extern void (*LZH_CompressDisplayVector)();
 extern void (*LZH_DecompressDisplayVector)();
 
@@ -31,5 +33,4 @@ extern void (*LZH_DecompressDisplayVector)();
 id0_long_t lzhCompress(void id0_far *infile, void id0_far *outfile,id0_unsigned_long_t DataLength,id0_unsigned_t PtrTypes);
 id0_long_t lzhDecompress(void id0_far *infile, void id0_far *outfile, id0_unsigned_long_t OrginalLength, id0_unsigned_long_t CompressLength, id0_unsigned_t PtrTypes);
 
-
-
+REFKEEN_NS_E

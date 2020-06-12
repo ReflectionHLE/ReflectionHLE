@@ -44,10 +44,13 @@ EMS / XMS unmanaged routines
 */
 
 #include "id_heads.h"
+
 //#pragma hdrstop
 
 //#pragma warn -pro
 //#pragma warn -use
+
+REFKEEN_NS_B
 
 // REFKEEN - Use macro for all titles, with the original message
 
@@ -1200,4 +1203,4 @@ void MM_BombOnError (id0_boolean_t bomb)
 	bombonerror = bomb;
 }
 
-
+REFKEEN_NS_E

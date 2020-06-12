@@ -31,6 +31,8 @@
 #include "id_glob.h"
 #endif
 
+REFKEEN_NS_B
+
 #define __ID_VW__
 
 
@@ -402,3 +404,5 @@ void VWB_Vlin (id0_int_t y1, id0_int_t y2, id0_int_t x, id0_int_t color);
 
 
 //===========================================================================
+
+REFKEEN_NS_E

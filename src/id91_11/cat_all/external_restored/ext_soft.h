@@ -16,6 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+REFKEEN_NS_B
+
 //memptr InitBufferedIO(int handle, BufferedIO *bio);
 //void FreeBufferedIO(BufferedIO *bio);
 //byte bio_readch(BufferedIO *bio);
@@ -25,3 +27,5 @@ struct Shape;
 id0_unsigned_long_t ext_BLoad(const id0_char_t *SourceFile, memptr *DstPtr);
 memptr LoadLIBFile(const id0_char_t *LibName,const id0_char_t *FileName,memptr *MemPtr);
 id0_int_t LoadLIBShape(const id0_char_t *SLIB_Filename, const id0_char_t *Filename,struct Shape *SHP);
+
+REFKEEN_NS_E

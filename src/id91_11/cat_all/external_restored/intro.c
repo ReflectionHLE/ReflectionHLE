@@ -28,6 +28,8 @@
 #include "ext_heads.h"
 #include "ext_gelib.h"
 
+REFKEEN_NS_B
+
 #ifdef GAMEVER_CATABYSS
 #define EXTENSION "ABS"
 #elif defined GAMEVER_CATARM
@@ -802,3 +804,5 @@ void RefKeen_Patch_intro(void)
 #endif
 	}
 }
+
+REFKEEN_NS_E

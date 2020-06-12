@@ -22,6 +22,8 @@
 #include "c3_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -2184,3 +2186,5 @@ void	T_Player (objtype *ob)
 	DrawCompass ();
 
 }
+
+REFKEEN_NS_E

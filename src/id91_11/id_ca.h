@@ -31,6 +31,8 @@
 #include "id_glob.h"
 #endif
 
+REFKEEN_NS_B
+
 #define __ID_CA__
 
 //===========================================================================
@@ -144,3 +146,4 @@ void CA_CacheMap (id0_int_t mapnum);
 
 void CA_CacheMarks (const id0_char_t *title);
 
+REFKEEN_NS_E

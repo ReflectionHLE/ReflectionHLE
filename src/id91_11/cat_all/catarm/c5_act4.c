@@ -21,6 +21,8 @@
 #include "def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -412,3 +414,4 @@ id0_int_t EasyDoDamage(id0_int_t Damage)
 		return(Damage);
 }
 
+REFKEEN_NS_E

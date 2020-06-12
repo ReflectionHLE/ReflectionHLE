@@ -20,6 +20,7 @@
 // REFKEEN - Unused
 //#include "SL_FILE.h"
 
+REFKEEN_NS_B
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -231,3 +232,5 @@ void CachePage(id0_char_t id0_far *script);
 
 
 void AnimateWallList(void);
+
+REFKEEN_NS_E

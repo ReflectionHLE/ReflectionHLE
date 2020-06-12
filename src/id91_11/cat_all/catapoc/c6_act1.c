@@ -21,6 +21,8 @@
 #include "def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -939,3 +941,5 @@ void T_RayShoot (objtype *ob)
 {
 	ShootPlayer(ob, rshotobj, 10000, &s_ray_shot1);
 }
+
+REFKEEN_NS_E

@@ -25,6 +25,8 @@
 
 // Ported from ASM
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 =
@@ -89,3 +91,5 @@ id0_int_t US_RndT(void)
 	rndindex = (rndindex+1)&0xFF;
 	return rndtable[rndindex];
 }
+
+REFKEEN_NS_E

@@ -39,6 +39,8 @@
 #include "id_heads.h"
 //#pragma	hdrstop
 
+REFKEEN_NS_B
+
 #define	KeyInt	9	// The keyboard ISR number
 
 // Stuff for the joystick
@@ -1179,3 +1181,5 @@ IN_UserInput(id0_longword_t delay,id0_boolean_t clear)
 	} while (SD_GetTimeCount() - lasttime < delay);
 	return(false);
 }
+
+REFKEEN_NS_E

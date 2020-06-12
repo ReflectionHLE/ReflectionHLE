@@ -22,6 +22,8 @@
 //#include <VALUES.H>
 #include <limits.h>
 
+REFKEEN_NS_B
+
 //#define PROFILE
 
 /*
@@ -906,3 +908,5 @@ void ExplodeWall (id0_int_t tilex, id0_int_t tiley);
 
 // (REFKEEN) Backwards compatibility: Used for statetype offset conversions.
 extern statetype* (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);
+
+REFKEEN_NS_E

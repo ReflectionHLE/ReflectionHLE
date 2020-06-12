@@ -21,6 +21,8 @@
 #include "def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -821,3 +823,5 @@ void T_DragonShoot (objtype *ob)
 {
 	ShootPlayer(ob,dshotobj,10000,&s_dragon_shot1);
 }
+
+REFKEEN_NS_E
