@@ -23,7 +23,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_cat3d100[] = {
 
 		NULL,
 		"CAT3D.EXE",
-		&cat3d_exe_main,
+		&REFKEEN_NS_ENCLOSE(cat3d, cat3d_exe_main),
 		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
 		191536 - 0x1400,
 		BE_EXECOMPRESSION_LZEXE9X,
@@ -66,7 +66,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_cat3d122[] = {
 
 		NULL,
 		"CAT3D.EXE",
-		&cat3d_exe_main,
+		&REFKEEN_NS_ENCLOSE(cat3d, cat3d_exe_main),
 		&RefKeen_Load_Embedded_Resources_From_catacombs_exe,
 		191904 - 0x1600,
 		BE_EXECOMPRESSION_LZEXE9X,

@@ -16,18 +16,18 @@ void (*refkeen_game_exe_main_funcs[BE_GAMEVER_LAST])(void) = {
 #error "Undefined for Keen Dreams"
 #endif
 #ifdef REFKEEN_HAS_VER_CAT3D
-	&cat3d_exe_main,
-	&cat3d_exe_main,
+	&REFKEEN_NS_ENCLOSE(cat3d, cat3d_exe_main),
+	&REFKEEN_NS_ENCLOSE(cat3d, cat3d_exe_main),
 #endif
 #ifdef REFKEEN_HAS_VER_CATABYSS
-	&abysgame_exe_main,
-	&abysgame_exe_main,
+	&REFKEEN_NS_ENCLOSE(catabyss, abysgame_exe_main),
+	&REFKEEN_NS_ENCLOSE(catabyss, abysgame_exe_main),
 #endif
 #ifdef REFKEEN_HAS_VER_CATARM
-	&armgame_exe_main,
+	&REFKEEN_NS_ENCLOSE(catarm, armgame_exe_main),
 #endif
 #ifdef REFKEEN_HAS_VER_CATAPOC
-	&apocgame_exe_main,
+	&REFKEEN_NS_ENCLOSE(catapoc, apocgame_exe_main),
 #endif
 };
 
@@ -40,13 +40,13 @@ void (*refkeen_slidecat_exe_main_funcs[BE_GAMEVER_LAST])(void) = {
 	NULL,
 #endif
 #ifdef REFKEEN_HAS_VER_CATABYSS
-	&slidecat_exe_main,
-	&slidecat_exe_main,
+	&REFKEEN_NS_ENCLOSE(catabyss, slidecat_exe_main),
+	&REFKEEN_NS_ENCLOSE(catabyss, slidecat_exe_main),
 #endif
 #ifdef REFKEEN_HAS_VER_CATARM
-	&slidecat_exe_main,
+	&REFKEEN_NS_ENCLOSE(catarm, slidecat_exe_main),
 #endif
 #ifdef REFKEEN_HAS_VER_CATAPOC
-	&slidecat_exe_main,
+	&REFKEEN_NS_ENCLOSE(catapoc, slidecat_exe_main),
 #endif
 };
