@@ -2,42 +2,6 @@
 
 #include "be_gamestr.h"
 
-// Prototypes for main functions and Embedded resources loader functions
-void kdreams_exe_main(void);
-int loadscn2_main(int argc, const char **argv);
-void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void);
-
-REFKEEN_NS_B_FOR(cat3d)
-void cat3d_exe_main(void);
-void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
-void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void);
-REFKEEN_NS_E
-
-REFKEEN_NS_B_FOR(catabyss)
-void abysgame_exe_main(void);
-void intro_exe_main(void);
-void slidecat_exe_main(void);
-void loadscn_exe_main(void);
-void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
-void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void);
-REFKEEN_NS_E
-
-REFKEEN_NS_B_FOR(catarm)
-void armgame_exe_main(void);
-void intro_exe_main(void);
-void slidecat_exe_main(void);
-void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
-void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void);
-REFKEEN_NS_E
-
-REFKEEN_NS_B_FOR(catapoc)
-void apocgame_exe_main(void);
-void intro_exe_main(void);
-void slidecat_exe_main(void);
-void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
-void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void);
-REFKEEN_NS_E
-
 // These MUST have the same order as in the BE_GameVer_T enum
 const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_KDREAMS

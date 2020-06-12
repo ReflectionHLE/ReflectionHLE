@@ -1,6 +1,7 @@
 /* This header must be included *only* from be_gamedef_catadventures.h */
 
 REFKEEN_NS_B_FOR(catabyss)
+
 void RefKeen_Patch_id_us(void);
 void RefKeen_Patch_c4_main(void);
 void RefKeen_Patch_c4_play(void);
@@ -15,6 +16,14 @@ static void (*g_be_patcherfuncs_catabyss[])(void) = {
 	RefKeen_Patch_gelib, RefKeen_Patch_intro, RefKeen_Patch_slidecat,
 	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
 };
+
+void abysgame_exe_main(void);
+void intro_exe_main(void);
+void slidecat_exe_main(void);
+void loadscn_exe_main(void);
+void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
+void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void);
+
 REFKEEN_NS_E
 
 /*** v1.13 (Shareware) ***/

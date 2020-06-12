@@ -22,6 +22,10 @@ static void (*g_be_patcherfuncs_kdreams[])(void) = {
 	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
 };
 
+void kdreams_exe_main(void);
+int loadscn2_main(int argc, const char **argv);
+void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void);
+
 /*** v1.00 Registered EGA ***/
 static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse100[] = {
 	{"AUDIO.KDR", 3498, 0x80ac85e5},

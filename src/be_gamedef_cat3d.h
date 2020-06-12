@@ -1,6 +1,7 @@
 /* This header must be included *only* from be_gamedef.h */
 
 REFKEEN_NS_B_FOR(cat3d)
+
 void RefKeen_Patch_id_us(void);
 void RefKeen_Patch_c3_game(void);
 void RefKeen_Patch_c3_play(void);
@@ -11,6 +12,11 @@ static void (*g_be_patcherfuncs_cat3d[])(void) = {
 	RefKeen_Patch_id_us, RefKeen_Patch_c3_game, RefKeen_Patch_c3_play,
 	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
 };
+
+void cat3d_exe_main(void);
+void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void);
+void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void);
+
 REFKEEN_NS_E
 
 /*** v1.00 ***/
