@@ -32,6 +32,29 @@ typedef enum {
 	BE_GAMEVER_LAST
 } BE_GameVer_T;
 
+#ifndef REFKEEN_USE_NS
+
+#define REFKEEN_NS_B
+#define REFKEEN_NS_ENCLOSE(x, f) (f)
+#define REFKEEN_NS_E
+
+#else
+
+#define REFKEEN_NS_ENCLOSE(x, f) (x::f)
+#define REFKEEN_NS_E }
+
+#ifdef REFKEEN_VER_CAT3D
+#define REFKEEN_NS_B namespace cat3d {
+#elif (defined REFKEEN_VER_CATABYSS)
+#define REFKEEN_NS_B namespace catabyss {
+#elif (defined REFKEEN_VER_CATARM)
+#define REFKEEN_NS_B namespace catarm {
+#elif (defined REFKEEN_VER_CATAPOC)
+#define REFKEEN_NS_B namespace catapoc {
+#endif
+
+#endif // REFKEEN_USE_NS
+
 extern BE_GameVer_T refkeen_current_gamever;
 // These MUST have the same order as in the BE_GameVer_T enum
 extern const char *refkeen_gamever_strs[BE_GAMEVER_LAST];
