@@ -19,6 +19,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+#include "refkeen_config.h"
+
 #include "SDL.h"
 
 #ifdef REFKEEN_RESAMPLER_NONE
