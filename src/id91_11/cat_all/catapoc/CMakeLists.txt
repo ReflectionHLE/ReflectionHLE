@@ -1,0 +1,39 @@
+list(APPEND catapoc_src
+	src/id91_11/id_ca.c
+	src/id91_11/id_in.c
+	src/id91_11/id_mm.c
+	src/id91_11/id_sd.c
+	src/id91_11/id_us_1.c
+	src/id91_11/id_us_a.c
+	src/id91_11/id_vw_a.c
+	src/id91_11/id_vw_ae.c
+	src/id91_11/id_vw.c
+	src/id91_11/cat_all/altcontroller.c
+	src/id91_11/cat_all/c3_asm.c
+	src/id91_11/cat_all/c3_scale.c
+	src/id91_11/cat_all/c3_trace.c
+	src/id91_11/cat_all/fixed_sintable.c
+	src/id91_11/cat_all/cat_late/c5_debug.c
+	src/id91_11/cat_all/cat_late/c5_draw.c
+	src/id91_11/cat_all/cat_late/gelib.c
+	src/id91_11/cat_all/catapoc/c6_act1.c
+	src/id91_11/cat_all/catapoc/c6_act2.c
+	src/id91_11/cat_all/catapoc/c6_act3.c
+	src/id91_11/cat_all/catapoc/c6_act4.c
+	src/id91_11/cat_all/catapoc/c6_game.c
+	src/id91_11/cat_all/catapoc/c6_main.c
+	src/id91_11/cat_all/catapoc/c6_play.c
+	src/id91_11/cat_all/catapoc/c6_state.c
+	src/id91_11/cat_all/catapoc/c6_wiz.c
+	src/id91_11/cat_all/catapoc/statetype_ptr_conversion.c
+	src/id91_11/cat_all/external_restored/ext_ca.c
+	src/id91_11/cat_all/external_restored/ext_gelib.c
+	src/id91_11/cat_all/external_restored/ext_jam_io.c
+	src/id91_11/cat_all/external_restored/ext_lzhuf.c
+	src/id91_11/cat_all/external_restored/ext_soft.c
+	src/id91_11/cat_all/external_restored/ext_vw_a.c
+	src/id91_11/cat_all/external_restored/intro.c
+	src/id91_11/cat_all/external_restored/slidecat.c
+)
+
+

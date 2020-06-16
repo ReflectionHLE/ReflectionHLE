@@ -1,0 +1,26 @@
+list(APPEND cat3d_src
+	src/id91_11/id_ca.c
+	src/id91_11/id_in.c
+	src/id91_11/id_mm.c
+	src/id91_11/id_sd.c
+	src/id91_11/id_us_1.c
+	src/id91_11/id_us_2.c
+	src/id91_11/id_us_a.c
+	src/id91_11/id_vw_a.c
+	src/id91_11/id_vw_ae.c
+	src/id91_11/id_vw.c
+	src/id91_11/cat_all/altcontroller.c
+	src/id91_11/cat_all/c3_asm.c
+	src/id91_11/cat_all/c3_scale.c
+	src/id91_11/cat_all/c3_trace.c
+	src/id91_11/cat_all/fixed_sintable.c
+	src/id91_11/cat_all/cat3d/c3_act1.c
+	src/id91_11/cat_all/cat3d/c3_debug.c
+	src/id91_11/cat_all/cat3d/c3_draw.c
+	src/id91_11/cat_all/cat3d/c3_game.c
+	src/id91_11/cat_all/cat3d/c3_main.c
+	src/id91_11/cat_all/cat3d/c3_play.c
+	src/id91_11/cat_all/cat3d/c3_state.c
+	src/id91_11/cat_all/cat3d/c3_wiz.c
+	src/id91_11/cat_all/cat3d/statetype_ptr_conversion.c
+)
