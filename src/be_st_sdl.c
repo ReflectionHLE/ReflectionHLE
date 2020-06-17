@@ -2312,7 +2312,7 @@ void BE_ST_PollEvents(void)
 		}
 	}
 
-#if BE_ST_FILL_AUDIO_IN_MAIN_THREAD
+#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 	BE_ST_PrepareForManualAudioCallbackCall();
 #else
 	// HACK - If audio subsystem is disabled we still want to at least
