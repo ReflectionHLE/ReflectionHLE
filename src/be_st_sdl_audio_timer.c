@@ -648,7 +648,7 @@ OPL emulation, powered by Nuked OPL3 and (originally) using Wolf4SDL code bits
 
 #define OPL_NUM_OF_SAMPLES 2048 // About 40ms of OPL sound data
 
-static inline void YM3812UpdateOne(opl3_chip *which, BE_ST_SndSample_T *stream, int length)
+static inline void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length)
 {
 	Bit16s buffer[OPL_NUM_OF_SAMPLES * 2];
 	int i;
@@ -661,7 +661,7 @@ static inline void YM3812UpdateOne(opl3_chip *which, BE_ST_SndSample_T *stream, 
 		length = OPL_NUM_OF_SAMPLES;
 
 	// Output is 16-bit stereo sound
-	OPL3_GenerateStream(which, buffer, length);
+	OPL3_GenerateStream(&g_oplChip, buffer, length);
 	for(i = 0; i < length; i++)
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
 		stream[i] = (float)buffer[2*i]/32767.0f;
@@ -695,7 +695,7 @@ void BE_ST_OPL2Write(uint8_t reg,uint8_t val)
 	}
 	if (length)
 	{
-		YM3812UpdateOne(&g_oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], length);
+		BEL_ST_GenOPLSamples(&g_sdlALOutSamples[g_sdlALOutSamplesEnd], length);
 		g_sdlALOutSamplesEnd += length;
 	}
 
@@ -855,7 +855,7 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 			// TODO Output overflow warning if there's any
 			if (targetALSamples > g_sdlALOutSamplesEnd)
 			{
-				YM3812UpdateOne(&g_oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], targetALSamples - g_sdlALOutSamplesEnd);
+				BEL_ST_GenOPLSamples(&g_sdlALOutSamples[g_sdlALOutSamplesEnd], targetALSamples - g_sdlALOutSamplesEnd);
 				g_sdlALOutSamplesEnd = targetALSamples;
 			}
 			// Mix with AL data
@@ -955,7 +955,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			}
 			if (targetALSamples > g_sdlALOutSamplesEnd)
 			{
-				YM3812UpdateOne(&g_oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], targetALSamples - g_sdlALOutSamplesEnd);
+				BEL_ST_GenOPLSamples(&g_sdlALOutSamples[g_sdlALOutSamplesEnd], targetALSamples - g_sdlALOutSamplesEnd);
 				g_sdlALOutSamplesEnd = targetALSamples;
 			}
 			// We're done with current part for now
