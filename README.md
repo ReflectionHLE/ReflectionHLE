@@ -11,8 +11,9 @@ here and there. These are used to described the specific ports (by game).
 Terms of use
 ------------
 
-Reflection Keen and the DBOPL emulator are released under the GNU GPLv2+.
-See LICENSE for more details.
+Reflection Keen is released under the GNU GPLv2+. See LICENSE for more details.
+
+Nuked OPL3 is released under the GNU LGPLv2.1+. See LGPL-2.1.txt.
 
 The included depklite implementation, a modification of ExeUnpacker,
 is released under the MIT License. See LICENSE-depklite for details.
@@ -566,6 +567,14 @@ Te following arguments are specific to the Catacomb Adventure Series:
 
 Note: The path passed to -datadir or -cfgdir is assumed to exist.
 
+--------------------------------------------------------
+Building the ports from the sources codes - General note
+--------------------------------------------------------
+
+TODO: CMake is now used as a build system. Exact instructions should still be
+written. For now, the original instructions, written with the previously used
+GNU makefiles in mind, remain here.
+
 ------------------------------------------------------------
 Building the ports from the source codes - Linux executables
 ------------------------------------------------------------
@@ -737,7 +746,7 @@ Original sources this is based on
 - The Catacomb Abyss v1.24 source code release.
 - The Catacomb Armageddon v1.02 source code release.
 - The Catacomb Apocalypse v1.01 source code release.
-- The DBOPL emulator from the DOSBox project.
+- The Nuked OPL3 emulator from Nuke.YKT. (DOSBox' DBOPL was originally used.)
 - A CRC-32 implementation.
 - unlzexe v0.8.
 - depklite, a modification (mostly a C port) of ExeUnpacker from OpenTESArena.
@@ -797,8 +806,15 @@ harekiet, qbix79, finsterr, fanskapet, canadacow, c2woody, h-a-l-9000.
 Not only the DOSBox project makes it possible to (quite faithfully) play a ton
 of DOS games on more recent platforms, but its DBOPL emulator is used for AdLib
 emulation; This also applies to modern source ports, not just DOSBox itself.
-Furthermore, while not necessarily intended for assistance with porting,
-the DOSBox debugger has surely (seriously) been very useful.
+Reflection Keen itself originally made use of DBOPL as well. Furthermore,
+while not necessarily intended for assistance with porting, the
+DOSBox debugger has surely (seriously) been very useful.
+
+* Nuke.YKT for the Nuked OPL3 emulator. This emulator is one example
+of a project of him for which accuracy of behaviors is a high priority.
+Other examples: PCDoom (excluding the proprietary DMX sound library,
+instead using his own DMX wrapper backed by the Apogee Sound System),
+the EDuke32-based Rednukem and NBlood ports.
 
 * doomjedi for his nice application icon used by Reflection Keen
 (technically a few minor edits are in use).
