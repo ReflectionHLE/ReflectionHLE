@@ -317,6 +317,7 @@ void BE_ST_HostGfx_SetAspectRatioToggle(bool aspectToggle);
 bool BE_ST_HostGfx_CanToggleFullScreen(void);
 bool BE_ST_HostGfx_GetFullScreenToggle(void);
 void BE_ST_HostGfx_SetFullScreenToggle(bool fullScreenToggle);
+void BE_ST_HostGfx_ToggleFullScreen(void);
 
 // NOT NECESSARILY DEFINED FOR ALL GAMES!
 void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle);

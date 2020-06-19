@@ -2269,6 +2269,11 @@ void BE_ST_HostGfx_SetFullScreenToggle(bool fullScreenToggle)
 	g_refKeenCfg.isFullscreen = BE_ST_HostGfx_GetFullScreenToggle();
 }
 
+void BE_ST_HostGfx_ToggleFullScreen(void)
+{
+	BE_ST_HostGfx_SetFullScreenToggle(!BE_ST_HostGfx_GetFullScreenToggle());
+}
+
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle)
 {
