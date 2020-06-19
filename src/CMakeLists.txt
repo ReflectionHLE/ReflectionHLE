@@ -10,7 +10,7 @@ list(APPEND be_src
 	src/be_textmode_fonts.c
 	src/crc32/crc32.c
 	src/depklite/depklite.c
-	src/opl/dbopl.c
+	src/nukedopl/opl3.c
 	src/unlzexe/unlzexe.c
 )
 

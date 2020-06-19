@@ -51,7 +51,7 @@
 #include "be_cross.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
-#include "opl/dbopl.h"
+#include "nukedopl/opl3.h"
 
 extern bool g_sdlForceGfxControlUiRefresh;
 
@@ -188,7 +188,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len);
 static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len);
 static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len);
 
-static void YM3812Init(int numChips, int clock, int rate);
+static opl3_chip g_oplChip;
 
 void BE_ST_InitAudio(void)
 {
@@ -288,7 +288,7 @@ void BE_ST_InitAudio(void)
 
 	if (g_refKeenCfg.oplEmulation)
 	{
-		YM3812Init(1, 3579545, OPL_SAMPLE_RATE);
+		OPL3_Reset(&g_oplChip, OPL_SAMPLE_RATE);
 		g_sdlEmulatedOPLChipReady = true;
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 		g_sdlALOutNumOfSamples = g_sdlCallbacksSamplesBufferOnePartCount*OPL_SAMPLE_RATE/g_sdlAudioSpec.freq;
@@ -642,29 +642,15 @@ static void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len)
 #endif
 
 
-/*******************************************************************************
-OPL emulation, powered by dbopl from DOSBox and using bits of code from Wolf4SDL
-*******************************************************************************/
-
-static Chip oplChip;
-
-static inline void YM3812Init(int numChips, int clock, int rate)
-{
-	DBOPL_InitTables();
-	Chip__Chip(&oplChip);
-	Chip__Setup(&oplChip, rate);
-}
-
-static inline void YM3812Write(Chip *which, Bit32u reg, Bit8u val)
-{
-	Chip__WriteReg(which, reg, val);
-}
+/*****************************************************************************
+OPL emulation, powered by Nuked OPL3 and (originally) using Wolf4SDL code bits
+*****************************************************************************/
 
 #define OPL_NUM_OF_SAMPLES 2048 // About 40ms of OPL sound data
 
-static inline void YM3812UpdateOne(Chip *which, BE_ST_SndSample_T *stream, int length)
+static inline void YM3812UpdateOne(opl3_chip *which, BE_ST_SndSample_T *stream, int length)
 {
-	Bit32s buffer[OPL_NUM_OF_SAMPLES * 2];
+	Bit16s buffer[OPL_NUM_OF_SAMPLES * 2];
 	int i;
 
 	// length should be at least the max. samplesPerMusicTick
@@ -674,22 +660,14 @@ static inline void YM3812UpdateOne(Chip *which, BE_ST_SndSample_T *stream, int l
 	if(length > OPL_NUM_OF_SAMPLES)
 		length = OPL_NUM_OF_SAMPLES;
 
-	Chip__GenerateBlock2(which, length, buffer);
-
-	// GenerateBlock2 generates a number of "length" 32-bit mono samples
-	// so we only need to convert them to 16-bit mono samples
+	// Output is 16-bit stereo sound
+	OPL3_GenerateStream(which, buffer, length);
 	for(i = 0; i < length; i++)
-	{
-		// Scale volume
-		Bit32s sample = 2*buffer[i];
-		if(sample > 16383) sample = 16383;
-		else if(sample < -16384) sample = -16384;
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
-		stream[i] = (float)sample/32767.0f;
+		stream[i] = (float)buffer[2*i]/32767.0f;
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
-		stream[i] = sample;
+		stream[i] = buffer[2*i];
 #endif
-	}
 }
 
 void BE_ST_OPL2Write(uint8_t reg,uint8_t val)
@@ -705,7 +683,7 @@ void BE_ST_OPL2Write(uint8_t reg,uint8_t val)
 	// of the fuse breakage sound in Keen 5 at the least,
 	// as well as a few sound effects in The Catacomb Abyss
 	// (hitting a locked gate, teleportation sound effect).
-	YM3812Write(&oplChip, reg, val);
+	OPL3_WriteReg(&g_oplChip, reg, val);
 	// FIXME: For now we roughly simulate the above delays with a
 	// hack, using a "magic number" that appears to make this work.
 	unsigned int length = OPL_SAMPLE_RATE / 10000;
@@ -717,7 +695,7 @@ void BE_ST_OPL2Write(uint8_t reg,uint8_t val)
 	}
 	if (length)
 	{
-		YM3812UpdateOne(&oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], length);
+		YM3812UpdateOne(&g_oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], length);
 		g_sdlALOutSamplesEnd += length;
 	}
 
@@ -877,7 +855,7 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 			// TODO Output overflow warning if there's any
 			if (targetALSamples > g_sdlALOutSamplesEnd)
 			{
-				YM3812UpdateOne(&oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], targetALSamples - g_sdlALOutSamplesEnd);
+				YM3812UpdateOne(&g_oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], targetALSamples - g_sdlALOutSamplesEnd);
 				g_sdlALOutSamplesEnd = targetALSamples;
 			}
 			// Mix with AL data
@@ -977,7 +955,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			}
 			if (targetALSamples > g_sdlALOutSamplesEnd)
 			{
-				YM3812UpdateOne(&oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], targetALSamples - g_sdlALOutSamplesEnd);
+				YM3812UpdateOne(&g_oplChip, &g_sdlALOutSamples[g_sdlALOutSamplesEnd], targetALSamples - g_sdlALOutSamplesEnd);
 				g_sdlALOutSamplesEnd = targetALSamples;
 			}
 			// We're done with current part for now
