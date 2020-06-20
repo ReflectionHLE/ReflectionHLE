@@ -75,24 +75,61 @@ static uint64_t g_sdlScaledSampleOffsetInSound, g_sdlScaledSamplesInCurrentPart;
 
 static void (*g_sdlTimerIntFuncPtr)(void) = 0;
 
-#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
+#if (defined BE_ST_FILL_AUDIO_IN_MAIN_THREAD) && (defined BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO)
+#error "Two incompatible macros are defined"
+#endif
+
+#if (defined BE_ST_FILL_AUDIO_IN_MAIN_THREAD) || (defined BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO)
 static int g_sdlTimerIntCounter = 0;
+#else
+static SDL_atomic_t g_sdlTimerIntCounter = {0};
+#endif
+
+#ifdef BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
+static uint32_t g_pitTimerScaledDivisor;
+static uint32_t g_sdlLastTicksForIntCounter;
+static uint64_t g_sdlScaledTicksRemainder;
+
+static void BEL_ST_RefreshTimerIntCounter(void)
+{
+	uint32_t ticks = SDL_GetTicks();
+	uint64_t scaledAccuTicks =
+		(ticks - g_sdlLastTicksForIntCounter) * (uint64_t)PC_PIT_RATE
+		+ g_sdlScaledTicksRemainder;
+	uint64_t ratio = scaledAccuTicks / g_pitTimerScaledDivisor;
+	g_sdlScaledTicksRemainder = scaledAccuTicks % g_pitTimerScaledDivisor;
+	g_sdlTimerIntCounter += ratio;
+	g_sdlLastTicksForIntCounter = ticks;
+}
+#else
+#define BEL_ST_RefreshTimerIntCounter()
+#endif
+
+#if (defined BE_ST_FILL_AUDIO_IN_MAIN_THREAD) || (defined BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO)
 static int BE_ST_SET_TIMER_INT_COUNTER_SET(int x)
 {
+	BEL_ST_RefreshTimerIntCounter();
 	int ret = g_sdlTimerIntCounter;
 	g_sdlTimerIntCounter = x;
 	return ret;
 }
+
 static int BE_ST_SET_TIMER_INT_COUNTER_ADD(int x)
 {
+	BEL_ST_RefreshTimerIntCounter();
 	int ret = g_sdlTimerIntCounter;
 	g_sdlTimerIntCounter += x;
 	return ret;
 }
+
 #define BE_ST_SET_TIMER_INT_COUNTER_INC() (g_sdlTimerIntCounter++)
-#define BE_ST_SET_TIMER_INT_COUNTER_GET() g_sdlTimerIntCounter
+
+static int BE_ST_SET_TIMER_INT_COUNTER_GET(void)
+{
+	BEL_ST_RefreshTimerIntCounter();
+	return g_sdlTimerIntCounter;
+}
 #else
-static SDL_atomic_t g_sdlTimerIntCounter = {0};
 #define BE_ST_SET_TIMER_INT_COUNTER_SET(x) SDL_AtomicSet(&g_sdlTimerIntCounter, (x))
 #define BE_ST_SET_TIMER_INT_COUNTER_ADD(x) SDL_AtomicAdd(&g_sdlTimerIntCounter, (x))
 #define BE_ST_SET_TIMER_INT_COUNTER_INC() SDL_AtomicAdd(&g_sdlTimerIntCounter, 1)
@@ -177,7 +214,6 @@ static uint32_t g_sdlMiscOutSamplesEnd = 0;
 static bool g_sdlPCSpeakerOn = false;
 static BE_ST_SndSample_T g_sdlCurrentBeepSample;
 static uint32_t g_sdlBeepHalfCycleCounter, g_sdlBeepHalfCycleCounterUpperBound;
-
 
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 static void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len);
@@ -456,6 +492,10 @@ static uint32_t g_sdlTicksOffset = 0;
 void BE_ST_InitTiming(void)
 {
 	g_sdlTicksOffset = 0;
+#ifdef BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
+	g_pitTimerScaledDivisor = 1000 * 65536;
+	g_sdlLastTicksForIntCounter = SDL_GetTicks();
+#endif
 }
 
 void BE_ST_ShutdownAudio(void)
@@ -831,7 +871,9 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 			if (g_sdlTimerIntFuncPtr)
 			{
 				g_sdlTimerIntFuncPtr();
+#ifndef BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
 				BE_ST_SET_TIMER_INT_COUNTER_INC();
+#endif
 			}
 		}
 		// Now generate sound
@@ -917,7 +959,9 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 				if (g_sdlTimerIntFuncPtr)
 				{
 					g_sdlTimerIntFuncPtr();
+#ifndef BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
 					BE_ST_SET_TIMER_INT_COUNTER_INC();
+#endif
 				}
 			}
 			// Now generate sound
@@ -1062,7 +1106,9 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 	// A little bit of cheating since we don't actually call any timer handler here
 	g_sdlScaledSampleOffsetInSound += (uint64_t)len * PC_PIT_RATE;
+#ifndef BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
 	BE_ST_SET_TIMER_INT_COUNTER_ADD(g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
+#endif
 	g_sdlScaledSampleOffsetInSound %= g_sdlScaledSamplesPerPartsTimesPITRate;
 
 	if ((uint32_t)len >= g_sdlSoundEffectSamplesLeft)
@@ -1096,7 +1142,9 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 	// A little bit of cheating since we don't actually call any timer handler here
 	g_sdlScaledSampleOffsetInSound += (len / sizeof(BE_ST_SndSample_T)) * PC_PIT_RATE;
+#ifndef BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
 	BE_ST_SET_TIMER_INT_COUNTER_ADD(g_sdlScaledSampleOffsetInSound / g_sdlScaledSamplesPerPartsTimesPITRate);
+#endif
 	g_sdlScaledSampleOffsetInSound %= g_sdlScaledSamplesPerPartsTimesPITRate;
 
 	while (len > 0)
@@ -1138,6 +1186,10 @@ void BE_ST_SetTimer(uint16_t rateVal)
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
 	// Note that 0 should be interpreted as 65536
+#ifdef BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
+	BEL_ST_RefreshTimerIntCounter();
+	g_pitTimerScaledDivisor = 1000 * (rateVal ? rateVal : 65536);
+#endif
 	g_sdlScaledSamplesPerPartsTimesPITRate = (rateVal ? rateVal : 65536) * g_sdlAudioSpec.freq;
 	if (g_sdlOurAudioCallback == BEL_ST_Resampling_EmuCallBack)
 		g_sdlScaledSamplesPerPartsTimesPITRate *= OPL_SAMPLE_RATE;
@@ -1218,7 +1270,6 @@ static void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
 	} 
 	g_sdlTicksOffset = (currSdlTicks - nextSdlTicks);
 }
-
 
 // Resets to 0 an internal counter of calls to timer interrupt,
 // and returns the original counter's value
