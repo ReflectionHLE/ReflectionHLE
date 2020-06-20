@@ -731,9 +731,9 @@ void BE_ST_Launcher_Prepare(void)
 		{
 			const char *exeDesc = BE_Cross_GetEXEFileDescriptionStrForGameVer(g_refKeenCfg.lastSelectedGameExe, g_refKeenCfg.lastSelectedGameVer);
 			if (exeDesc)
-				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s\n%s", BE_Cross_GetGameInstallationDescription(i), exeDesc);
+				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Start %s: %s", BE_Cross_GetGameInstallationDescription(i), exeDesc);
 			else
-				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Play %s", BE_Cross_GetGameInstallationDescription(i));
+				snprintf(g_beMainMenuItem_PlayLastChosenGameVer_label, sizeof(g_beMainMenuItem_PlayLastChosenGameVer_label), "Start %s", BE_Cross_GetGameInstallationDescription(i));
 			break;
 		}
 	if (i == g_be_gameinstallations_num)
