@@ -106,12 +106,19 @@ static void BEL_ST_RefreshTimerIntCounter(void)
 #endif
 
 #if (defined BE_ST_FILL_AUDIO_IN_MAIN_THREAD) || (defined BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO)
+
 static int BE_ST_SET_TIMER_INT_COUNTER_SET(int x)
 {
 	BEL_ST_RefreshTimerIntCounter();
 	int ret = g_sdlTimerIntCounter;
 	g_sdlTimerIntCounter = x;
 	return ret;
+}
+
+static int BE_ST_SET_TIMER_INT_COUNTER_GET(void)
+{
+	BEL_ST_RefreshTimerIntCounter();
+	return g_sdlTimerIntCounter;
 }
 
 static int BE_ST_SET_TIMER_INT_COUNTER_ADD(int x)
@@ -124,16 +131,13 @@ static int BE_ST_SET_TIMER_INT_COUNTER_ADD(int x)
 
 #define BE_ST_SET_TIMER_INT_COUNTER_INC() (g_sdlTimerIntCounter++)
 
-static int BE_ST_SET_TIMER_INT_COUNTER_GET(void)
-{
-	BEL_ST_RefreshTimerIntCounter();
-	return g_sdlTimerIntCounter;
-}
 #else
+
 #define BE_ST_SET_TIMER_INT_COUNTER_SET(x) SDL_AtomicSet(&g_sdlTimerIntCounter, (x))
+#define BE_ST_SET_TIMER_INT_COUNTER_GET() SDL_AtomicGet(&g_sdlTimerIntCounter)
 #define BE_ST_SET_TIMER_INT_COUNTER_ADD(x) SDL_AtomicAdd(&g_sdlTimerIntCounter, (x))
 #define BE_ST_SET_TIMER_INT_COUNTER_INC() SDL_AtomicAdd(&g_sdlTimerIntCounter, 1)
-#define BE_ST_SET_TIMER_INT_COUNTER_GET() SDL_AtomicGet(&g_sdlTimerIntCounter)
+
 #endif
 
 // Used for digitized sound playback
@@ -588,7 +592,8 @@ void BE_ST_UnlockAudioRecursively(void)
 #endif
 }
 
-// Use this ONLY if audio subsystem isn't properly started up
+// Use this ONLY if audio subsystem isn't properly
+// started up if BE_ST_FILL_AUDIO_IN_MAIN_THREAD is not defined
 void BE_ST_PrepareForManualAudioCallbackCall(void)
 {
 	uint32_t currTicks = SDL_GetTicks();
