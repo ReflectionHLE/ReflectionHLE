@@ -25,6 +25,7 @@
 #include <string.h>
 #include "SDL.h"
 
+#include "be_st_launcher.h"
 #include "be_st_sdl_private.h"
 #include "be_title_and_version.h"
 

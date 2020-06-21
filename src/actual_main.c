@@ -18,6 +18,7 @@
  */
 
 #include "refkeen.h"
+#include "be_launcher.h"
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 #include "be_title_and_version.h"
 #endif

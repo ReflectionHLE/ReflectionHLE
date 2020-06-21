@@ -23,8 +23,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "be_launcher.h"
-
 // On-screen touch controls are scaled such that the largest square
 // fitting in the window has the dimensions of 140x140 (scaled) pixels
 #define BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM 130
