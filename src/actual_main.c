@@ -18,6 +18,10 @@
  */
 
 #include "refkeen.h"
+#ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
+#include "be_title_and_version.h"
+#endif
+
 #include "SDL_main.h"
 
 #if (!defined REFKEEN_ENABLE_LAUNCHER) && (!defined REFKEEN_CONFIG_ENABLE_CMDLINE)
