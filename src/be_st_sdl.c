@@ -26,6 +26,7 @@
 #include "be_features.h"
 #include "be_gamever.h"
 #include "be_st.h"
+#include "be_st_launcher.h"
 #include "be_st_sdl_private.h"
 
 // Using example of values from here:
@@ -2370,7 +2371,9 @@ static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 		// HACK - These may be done from a different thread,
 		// but should be relatively simple anyway
 		BEL_ST_ForceHostDisplayUpdate();
+#ifdef REFKEEN_ENABLE_LAUNCHER
 		BE_ST_Launcher_MarkGfxCache();
+#endif
 		if (g_sdlAudioSubsystemUp) // FIXME - Hope this works well
 			SDL_PauseAudioDevice(g_sdlAudioDevice, 0);
 		return 0;

@@ -216,11 +216,6 @@ enum {
 	BE_ST_CTRL_CFG_BUTMAP_AFTERLAST,
 };
 
-#ifdef REFKEEN_ENABLE_LAUNCHER
-// Used by launcher for controller button selection
-void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem);
-#endif
-
 // Set callback function, to be called when the app is shut down in a way
 // originally not supported by a given game, say clicking on a window's
 // "close" button. Can be used for saving settings.
@@ -228,11 +223,6 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem);
 void BE_ST_SetAppQuitCallback(void (*funcPtr)(void));
 
 void BE_ST_PollEvents(void);
-
-#ifdef REFKEEN_ENABLE_LAUNCHER
-// Launcher loop
-void BE_ST_Launcher_RunEventLoop(void);
-#endif
 
 // Returns an offset that should be added to the 16-bit segments
 // of 32-bit far pointers read from/written to files. Saved games from
@@ -290,11 +280,6 @@ void BE_ST_InitGfx(void);
 void BE_ST_ShutdownGfx(void);
 
 void BE_ST_MarkGfxForUpdate(void);
-#ifdef REFKEEN_ENABLE_LAUNCHER
-void BE_ST_Launcher_MarkGfxCache(void);
-#else // HACK for situations in which this should be called, like recreation of textures
-#define BE_ST_Launcher_MarkGfxCache()
-#endif
 
 // ***WARNING*** SEE WARNING BELOW BEFORE USING!!!
 //
@@ -304,11 +289,6 @@ void BE_ST_Launcher_MarkGfxCache(void);
 // ***WARNING***: After modifying this chunk, it is a MUST to call the function
 // BE_ST_MarkGfxForUpdate (used as an optimization).
 uint8_t *BE_ST_GetTextModeMemoryPtr(void);
-
-#ifdef REFKEEN_ENABLE_LAUNCHER
-// ***WARNING***: Ensure BE_ST_Launcher_MarkGfxCache is called after drawing.
-uint8_t *BE_ST_Launcher_GetGfxPtr(void);
-#endif
 
 bool BE_ST_HostGfx_CanToggleAspectRatio(void);
 bool BE_ST_HostGfx_GetAspectRatioToggle(void);
@@ -345,14 +325,6 @@ void BE_ST_EGAXorGFXByteByPlaneMask(uint16_t destOff, uint8_t srcVal, uint16_t p
 // CGA graphics manipulations
 void BE_ST_CGAUpdateGFXBufferFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth);
 
-#ifdef REFKEEN_ENABLE_LAUNCHER
-void BE_ST_Launcher_Prepare(void);
-void BE_ST_Launcher_Shutdown(void);
-void BE_ST_Launcher_RefreshSelectGameMenuContents(void);
-void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfExes);
-#endif
-
-//
 void BE_ST_SetScreenStartAddress(uint16_t crtc);
 void BE_ST_SetBorderColor(uint8_t color);
 void BE_ST_SetScreenMode(int mode);

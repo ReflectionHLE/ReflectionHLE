@@ -24,6 +24,7 @@
 #include "be_cross.h"
 #include "be_gamever.h" // Enable VSync by default for EGA, not CGA
 #include "be_st.h"
+#include "be_st_launcher.h"
 #include "be_st_sdl_private.h"
 #include "be_st_ega_lookup_tables.h"
 #include "be_title_and_version.h"
@@ -461,7 +462,9 @@ void BEL_ST_RecreateAllTextures(void)
 
 	BEL_ST_ForceHostDisplayUpdate();
 	g_sdlDoRefreshGfxOutput = true; // BE_ST_MarkGfxForUpdate();
+#ifdef REFKEEN_ENABLE_LAUNCHER
 	BE_ST_Launcher_MarkGfxCache();
+#endif
 	// Also need to force refresh this way
 	if (g_sdlScreenMode == 4) // CGA graphics
 		g_sdlHostScrMemCache.cgaGfx[0] = g_sdlHostScrMem.cgaGfx[0]^0xFF;

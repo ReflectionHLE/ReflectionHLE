@@ -18,6 +18,7 @@
  */
 
 #include "refkeen.h"
+#include "be_st_launcher.h"
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
 
