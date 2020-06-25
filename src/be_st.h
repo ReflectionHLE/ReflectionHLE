@@ -300,7 +300,12 @@ void BE_ST_HostGfx_ToggleFullScreen(void);
 // NOT NECESSARILY DEFINED FOR ALL GAMES!
 void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle);
 
-// EGA graphics manipulations
+// 256-color graphics manipulations (e.g., VGA mode 0x13)
+void BE_ST_VGASetPalette(const uint8_t *palette);
+void BE_ST_VGAUpdateGFXBufferInPlane(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeNum);
+
+// 16-color graphics manipulations (say, EGA modes 0xD-0xE),
+// with a portion of the functions also applying to 256-color graphics
 void BE_ST_EGASetPaletteAndBorder(const uint8_t *palette);
 void BE_ST_EGASetLineWidth(uint8_t widthInBytes);
 void BE_ST_EGASetSplitScreen(int16_t linenum);
@@ -320,7 +325,7 @@ void BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(uint16_t destOff, uint8_t color, uint8
 void BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(uint16_t destOff, uint8_t color, uint16_t count);
 void BE_ST_EGAXorGFXByteByPlaneMask(uint16_t destOff, uint8_t srcVal, uint16_t planeMask);
 
-// CGA graphics manipulations
+// 4-color graphics manipulations (e.g., CGA mode 4)
 void BE_ST_CGAUpdateGFXBufferFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth);
 
 void BE_ST_SetScreenStartAddress(uint16_t crtc);

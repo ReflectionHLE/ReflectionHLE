@@ -22,7 +22,7 @@
 #include "SDL.h"
 
 #include "be_cross.h"
-#include "be_gamever.h" // Enable VSync by default for EGA, not CGA
+#include "be_gamever.h" // Enable VSync by default for EGA/VGA, not CGA
 #include "be_st.h"
 #include "be_st_launcher.h"
 #include "be_st_sdl_private.h"
@@ -58,8 +58,10 @@ void BE_ST_MarkGfxForUpdate(void)
 //#define EGACGA_TXT_TEX_HEIGHT 200
 
 // Overscan border dimensions (for each side of the screen)
-#define ENGINE_VGA_GFX_OVERSCAN_LEFT_AFTER_DOUBLING 16 // Doubling from 8 for us
-#define ENGINE_VGA_GFX_OVERSCAN_RIGHT_AFTER_DOUBLING 16 // Doubling from 8 for us
+#define ENGINE_VGA_16COLORGFX_OVERSCAN_LEFT_AFTER_DOUBLING 16 // Doubling from 8 for us
+#define ENGINE_VGA_16COLORGFX_OVERSCAN_RIGHT_AFTER_DOUBLING 16 // Doubling from 8 for us
+#define ENGINE_VGA_256COLORGFX_OVERSCAN_LEFT_AFTER_DOUBLING 8 // Doubling from 4 for us
+#define ENGINE_VGA_256COLORGFX_OVERSCAN_RIGHT_AFTER_DOUBLING 8 // Doubling from 4 for us
 #define ENGINE_VGA_GFX_OVERSCAN_TOP_AFTER_DOUBLING 7    // 200-line doubling
 #define ENGINE_VGA_GFX_OVERSCAN_BOTTOM_AFTER_DOUBLING 7 // 200-line doubling
 #define ENGINE_VGA_TXT_OVERSCAN_LEFT 9
@@ -83,10 +85,11 @@ extern const uint8_t g_vga_8x16TextFont[256*8*16];
 // (well, not on change between modes 0xD and 0xE, both sharing planar A000:0000)
 static union {
 	uint64_t egaGfx[0x10000]; // Contents of A000:0000, de-planed (1 byte per pixel)
+	uint8_t vgaGfx[0x40000]; // Same but for 256-colors. Similarly linear.
 	uint8_t text[TXT_COLS_NUM*TXT_ROWS_NUM*2]; // Textual contents of B800:0000
 } g_sdlVidMem;
 
-// Used for simple caching of EGA graphics (due to page flipping and more)
+// Used for simple caching of EGA/VGA graphics (due to page flipping and more)
 // and similarly CGA graphics (modified only at one place)
 static union {
 	uint8_t egaGfx[2*GFX_TEX_WIDTH*GFX_TEX_HEIGHT]; // Support 640x200 mode for Catacomb Abyss
@@ -569,7 +572,7 @@ static const BE_ST_ScanCode_T g_sdlDOSScanCodeDebugKeysLayout[ALTCONTROLLER_DEBU
 };
 
 
-// Colors in BGRA format/order (on certain platforms)
+// Colors in BGRA format/order for CGA mode 4 (on certain platforms)
 
 static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
 	0xff000000/*black*/,
@@ -578,7 +581,7 @@ static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
 	0xffffffff/*white*/
 };
 
-// Same but for the EGA/VGA (and colored text modes on CGA/EGA/VGA)
+// Same but for EGA/VGA modes 0Dh-0Eh (and colored text modes on CGA/EGA/VGA)
 // Note: Also used in launcher; extern is added for C++
 #ifdef __cplusplus
 extern
@@ -590,6 +593,73 @@ const uint32_t g_sdlEGABGRAScreenColors[] = {
 	0xffff5555/*light red*/, 0xffff55ff/*light magenta*/, 0xffffff55/*yellow*/, 0xffffffff/*white*/
 };
 
+// Same but for VGA mode 013h
+static const uint32_t g_sdlVGADefaultBGRAScreenColors[] = {
+	0xff000000, 0xff0000aa, 0xff00aa00, 0xff00aaaa,
+	0xffaa0000, 0xffaa00aa, 0xffaa5500, 0xffaaaaaa,
+	0xff555555, 0xff5555ff, 0xff55ff55, 0xff55ffff,
+	0xffff5555, 0xffff55ff, 0xffffff55, 0xffffffff,
+	0xff000000, 0xff141414, 0xff202020, 0xff2c2c2c,
+	0xff383838, 0xff454545, 0xff515151, 0xff616161,
+	0xff717171, 0xff828282, 0xff929292, 0xffa2a2a2,
+	0xffb6b6b6, 0xffcbcbcb, 0xffe3e3e3, 0xffffffff,
+	0xff0000ff, 0xff4100ff, 0xff7d00ff, 0xffbe00ff,
+	0xffff00ff, 0xffff00be, 0xffff007d, 0xffff0041,
+	0xffff0000, 0xffff4100, 0xffff7d00, 0xffffbe00,
+	0xffffff00, 0xffbeff00, 0xff7dff00, 0xff41ff00,
+	0xff00ff00, 0xff00ff41, 0xff00ff7d, 0xff00ffbe,
+	0xff00ffff, 0xff00beff, 0xff007dff, 0xff0041ff,
+	0xff7d7dff, 0xff9e7dff, 0xffbe7dff, 0xffdf7dff,
+	0xffff7dff, 0xffff7ddf, 0xffff7dbe, 0xffff7d9e,
+	0xffff7d7d, 0xffff9e7d, 0xffffbe7d, 0xffffdf7d,
+	0xffffff7d, 0xffdfff7d, 0xffbeff7d, 0xff9eff7d,
+	0xff7dff7d, 0xff7dff9e, 0xff7dffbe, 0xff7dffdf,
+	0xff7dffff, 0xff7ddfff, 0xff7dbeff, 0xff7d9eff,
+	0xffb6b6ff, 0xffc7b6ff, 0xffdbb6ff, 0xffebb6ff,
+	0xffffb6ff, 0xffffb6eb, 0xffffb6db, 0xffffb6c7,
+	0xffffb6b6, 0xffffc7b6, 0xffffdbb6, 0xffffebb6,
+	0xffffffb6, 0xffebffb6, 0xffdbffb6, 0xffc7ffb6,
+	0xffb6ffb6, 0xffb6ffc7, 0xffb6ffdb, 0xffb6ffeb,
+	0xffb6ffff, 0xffb6ebff, 0xffb6dbff, 0xffb6c7ff,
+	0xff000071, 0xff1c0071, 0xff380071, 0xff550071,
+	0xff710071, 0xff710055, 0xff710038, 0xff71001c,
+	0xff710000, 0xff711c00, 0xff713800, 0xff715500,
+	0xff717100, 0xff557100, 0xff387100, 0xff1c7100,
+	0xff007100, 0xff00711c, 0xff007138, 0xff007155,
+	0xff007171, 0xff005571, 0xff003871, 0xff001c71,
+	0xff383871, 0xff453871, 0xff553871, 0xff613871,
+	0xff713871, 0xff713861, 0xff713855, 0xff713845,
+	0xff713838, 0xff714538, 0xff715538, 0xff716138,
+	0xff717138, 0xff617138, 0xff557138, 0xff457138,
+	0xff387138, 0xff387145, 0xff387155, 0xff387161,
+	0xff387171, 0xff386171, 0xff385571, 0xff384571,
+	0xff515171, 0xff595171, 0xff615171, 0xff695171,
+	0xff715171, 0xff715169, 0xff715161, 0xff715159,
+	0xff715151, 0xff715951, 0xff716151, 0xff716951,
+	0xff717151, 0xff697151, 0xff617151, 0xff597151,
+	0xff517151, 0xff517159, 0xff517161, 0xff517169,
+	0xff517171, 0xff516971, 0xff516171, 0xff515971,
+	0xff000041, 0xff100041, 0xff200041, 0xff300041,
+	0xff410041, 0xff410030, 0xff410020, 0xff410010,
+	0xff410000, 0xff411000, 0xff412000, 0xff413000,
+	0xff414100, 0xff304100, 0xff204100, 0xff104100,
+	0xff004100, 0xff004110, 0xff004120, 0xff004130,
+	0xff004141, 0xff003041, 0xff002041, 0xff001041,
+	0xff202041, 0xff282041, 0xff302041, 0xff382041,
+	0xff412041, 0xff412038, 0xff412030, 0xff412028,
+	0xff412020, 0xff412820, 0xff413020, 0xff413820,
+	0xff414120, 0xff384120, 0xff304120, 0xff284120,
+	0xff204120, 0xff204128, 0xff204130, 0xff204138,
+	0xff204141, 0xff203841, 0xff203041, 0xff202841,
+	0xff2c2c41, 0xff302c41, 0xff342c41, 0xff3c2c41,
+	0xff412c41, 0xff412c3c, 0xff412c34, 0xff412c30,
+	0xff412c2c, 0xff41302c, 0xff41342c, 0xff413c2c,
+	0xff41412c, 0xff3c412c, 0xff34412c, 0xff30412c,
+	0xff2c412c, 0xff2c4130, 0xff2c4134, 0xff2c413c,
+	0xff2c4141, 0xff2c3c41, 0xff2c3441, 0xff2c3041,
+	0xff000000, 0xff000000, 0xff000000, 0xff000000,
+	0xff000000, 0xff000000, 0xff000000, 0xff000000,
+};
 
 extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 extern bool g_sdlMouseButtonsStates[3];
@@ -2089,8 +2159,16 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	}
 	else
 	{
-		srcBorderLeft = ENGINE_VGA_GFX_OVERSCAN_LEFT_AFTER_DOUBLING;
-		srcBorderRight = ENGINE_VGA_GFX_OVERSCAN_RIGHT_AFTER_DOUBLING;
+		if (g_sdlScreenMode == 0x13)
+		{
+			srcBorderLeft = ENGINE_VGA_256COLORGFX_OVERSCAN_LEFT_AFTER_DOUBLING;
+			srcBorderRight = ENGINE_VGA_256COLORGFX_OVERSCAN_RIGHT_AFTER_DOUBLING;
+		}
+		else
+		{
+			srcBorderLeft = ENGINE_VGA_16COLORGFX_OVERSCAN_LEFT_AFTER_DOUBLING;
+			srcBorderRight = ENGINE_VGA_16COLORGFX_OVERSCAN_RIGHT_AFTER_DOUBLING;
+		}
 		srcBorderTop = ENGINE_VGA_GFX_OVERSCAN_TOP_AFTER_DOUBLING;
 		srcBorderBottom = ENGINE_VGA_GFX_OVERSCAN_BOTTOM_AFTER_DOUBLING;
 	}
@@ -2284,7 +2362,9 @@ void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle)
 }
 #endif
 
-static uint32_t g_sdlEGACurrBGRAPaletteAndBorder[17], g_sdlEGACurrBGRAPaletteAndBorderCache[17];
+static uint32_t g_sdlEGACurrBGRAPalette[256], g_sdlEGACurrBGRAPaletteCache[256];
+static uint32_t g_sdlEGALastBGRABorderColor;
+static uint8_t g_overscanBorderColorIndex, g_overscanBorderColorIndexCache;
 
 /* Gets a value represeting 6 EGA signals determining a color number and
  * returns it in a "Blue Green Red Intensity" 4-bit format.
@@ -2308,17 +2388,27 @@ void BE_ST_SetScreenStartAddress(uint16_t crtc)
 
 void BE_ST_SetBorderColor(uint8_t color)
 {
-	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_ST_ConvertEGASignalToEGAEntry(color)];
+	if (g_sdlScreenMode == 0x13)
+		g_overscanBorderColorIndex = color;
+	else
+		g_overscanBorderColorIndex = BEL_ST_ConvertEGASignalToEGAEntry(color);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_ST_EGASetPaletteAndBorder(const uint8_t *palette)
 {
 	for (int entry = 0; entry < 16; ++entry)
-	{
-		g_sdlEGACurrBGRAPaletteAndBorder[entry] =  g_sdlEGABGRAScreenColors[BEL_ST_ConvertEGASignalToEGAEntry(palette[entry])];
-	}
-	g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[BEL_ST_ConvertEGASignalToEGAEntry(palette[16])];
+		g_sdlEGACurrBGRAPalette[entry] = g_sdlEGABGRAScreenColors[BEL_ST_ConvertEGASignalToEGAEntry(palette[entry])];
+	g_overscanBorderColorIndex = BEL_ST_ConvertEGASignalToEGAEntry(palette[16]);
+	g_sdlDoRefreshGfxOutput = true;
+}
+
+void BE_ST_VGASetPalette(const uint8_t *palette)
+{
+	for (int entry = 0; entry < 256; ++entry, palette += 3)
+		g_sdlEGACurrBGRAPalette[entry] =
+			0xFC000000 | (palette[0] << 18) | (palette[1] << 10) | (palette[2] << 2);
+	g_overscanBorderColorIndexCache = g_overscanBorderColorIndex^0xFF; // Force refresh
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -2375,6 +2465,26 @@ static void BEL_ST_LinearToEGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t 
 		planeDstPtr = g_sdlVidMem.egaGfx;
 		for (int i = 0; i < num-bytesToEnd; ++i, ++planeDstPtr, ++linearSrc)
 			*planeDstPtr = ((*planeDstPtr) & planeInvRepeatedMask) | (g_be_st_lookup_linear_to_egaplane[*linearSrc] << planeNum);
+	}
+	g_sdlDoRefreshGfxOutput = true;
+}
+
+static void BEL_ST_LinearToVGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num, uint16_t planeNum)
+{
+	uint8_t *planeDstPtr = &g_sdlVidMem.vgaGfx[4*planeDstOff + planeNum];
+	uint16_t bytesToEnd = 0x10000-planeDstOff;
+	if (num <= bytesToEnd)
+	{
+		for (int i = 0; i < num; ++i, planeDstPtr += 4, ++linearSrc)
+			*planeDstPtr = *linearSrc;
+	}
+	else
+	{
+		for (int i = 0; i < bytesToEnd; ++i, planeDstPtr += 4, ++linearSrc)
+			*planeDstPtr = *linearSrc;
+		planeDstPtr = &g_sdlVidMem.vgaGfx[planeNum];
+		for (int i = 0; i < num-bytesToEnd; ++i, planeDstPtr += 4, ++linearSrc)
+			*planeDstPtr = *linearSrc;
 	}
 	g_sdlDoRefreshGfxOutput = true;
 }
@@ -2463,6 +2573,12 @@ static void BEL_ST_EGAPlane_MemSet(uint64_t *planeDstPtr, uint16_t planeDstOff, 
 void BE_ST_EGAUpdateGFXBufferInPlane(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeNum)
 {
 	BEL_ST_LinearToEGAPlane_MemCopy(destOff, srcPtr, num, planeNum);
+	g_sdlDoRefreshGfxOutput = true;
+}
+
+void BE_ST_VGAUpdateGFXBufferInPlane(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeNum)
+{
+	BEL_ST_LinearToVGAPlane_MemCopy(destOff, srcPtr, num, planeNum);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -2555,6 +2671,9 @@ void BE_ST_CGAUpdateGFXBufferFromWrappedMem(const uint8_t *segPtr, const uint8_t
 void BE_ST_SetScreenMode(int mode)
 {
 	g_sdlDoRefreshGfxOutput = true;
+	g_overscanBorderColorIndex = 0;
+	g_overscanBorderColorIndexCache = g_overscanBorderColorIndex^0xFF; // Force refresh
+	g_sdlEGALastBGRABorderColor = g_sdlEGABGRAScreenColors[0];
 	switch (mode)
 	{
 	case 3:
@@ -2572,26 +2691,27 @@ void BE_ST_SetScreenMode(int mode)
 		BE_ST_clrscr();
 		g_sdlTxtColor = origTxtColor;
 		g_sdlTxtBackground = origTxtBackground;
-		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		break;
 	}
 	case 4:
 		g_sdlTexWidth = GFX_TEX_WIDTH;
 		g_sdlTexHeight = GFX_TEX_HEIGHT;
 		memset(g_sdlHostScrMem.cgaGfx, 0, sizeof(g_sdlHostScrMem.cgaGfx));
-		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
 		g_sdlHostScrMemCache.cgaGfx[0] = g_sdlHostScrMem.cgaGfx[0]^0xFF; // Force refresh
 		break;
 	case 0xD:
+	case 0x13:
 		g_sdlTexWidth = GFX_TEX_WIDTH;
 		g_sdlTexHeight = GFX_TEX_HEIGHT;
-		memcpy(g_sdlEGACurrBGRAPaletteAndBorder, g_sdlEGABGRAScreenColors, sizeof(g_sdlEGABGRAScreenColors));
-		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
+		if (mode == 0x13)
+			memcpy(g_sdlEGACurrBGRAPalette, g_sdlVGADefaultBGRAScreenColors, sizeof(g_sdlVGADefaultBGRAScreenColors));
+		else
+			memcpy(g_sdlEGACurrBGRAPalette, g_sdlEGABGRAScreenColors, sizeof(g_sdlEGABGRAScreenColors));
 		g_sdlPelPanning = 0;
 		g_sdlPixLineWidth = 8*40;
 		g_sdlSplitScreenLine = -1;
 		// HACK: Looks like this shouldn't be done if changing gfx->gfx
-		if (g_sdlScreenMode != 0xE)
+		if ((mode == 0xD) && (g_sdlScreenMode != 0xE))
 		{
 			memset(g_sdlVidMem.egaGfx, 0, sizeof(g_sdlVidMem.egaGfx));
 		}
@@ -2601,8 +2721,7 @@ void BE_ST_SetScreenMode(int mode)
 	case 0xE:
 		g_sdlTexWidth = 2*GFX_TEX_WIDTH;
 		g_sdlTexHeight = GFX_TEX_HEIGHT;
-		memcpy(g_sdlEGACurrBGRAPaletteAndBorder, g_sdlEGABGRAScreenColors, sizeof(g_sdlEGABGRAScreenColors));
-		g_sdlEGACurrBGRAPaletteAndBorder[16] = g_sdlEGABGRAScreenColors[0];
+		memcpy(g_sdlEGACurrBGRAPalette, g_sdlEGABGRAScreenColors, sizeof(g_sdlEGABGRAScreenColors));
 		g_sdlPelPanning = 0;
 		g_sdlPixLineWidth = 8*80;
 		g_sdlSplitScreenLine = -1;
@@ -2947,7 +3066,7 @@ void BEL_ST_UpdateHostDisplay(void)
 			*currPixPtr = g_sdlCGAGfxBGRAScreenColors[*currPalPixPtr];
 		}
 	}
-	else // EGA graphics mode 0xD or 0xE
+	else // EGA/VGA graphics mode 0xD or 0xE, or VGA mode 0x13
 	{
 		if (!g_sdlDoRefreshGfxOutput)
 		{
@@ -2955,13 +3074,17 @@ void BEL_ST_UpdateHostDisplay(void)
 				goto dorefresh;
 			return;
 		}
-		uint32_t currLineFirstPixelNum = (8*g_sdlScreenStartAddress + g_sdlPelPanning) % 0x80000;
+		uint32_t warpAroundOffset = (g_sdlScreenMode == 0x13) ? 0x40000 : 0x80000;
+		uint32_t currLineFirstPixelNum =
+			((g_sdlScreenMode == 0x13) ?
+			 (4*g_sdlScreenStartAddress + g_sdlPelPanning) :
+			 (8*g_sdlScreenStartAddress + g_sdlPelPanning)) % warpAroundOffset;
 		uint8_t *currPalPixPtr;
 		for (int line = 0; line < GFX_TEX_HEIGHT; ++line)
 		{
 			currPalPixPtr = g_sdlHostScrMem.egaGfx + line*g_sdlTexWidth;
 			// REFKEEN - WARNING: Not checking if GFX_TEX_HEIGHT <= g_sdlPixLineWidth (but this isn't reproduced as of writing this)
-			int pixelsToEgaMemEnd = 0x80000-currLineFirstPixelNum;
+			int pixelsToEgaMemEnd = warpAroundOffset-currLineFirstPixelNum;
 			if (g_sdlTexWidth <= pixelsToEgaMemEnd)
 			{
 				memcpy(currPalPixPtr, (uint8_t *)g_sdlVidMem.egaGfx + currLineFirstPixelNum, g_sdlTexWidth);
@@ -2980,20 +3103,30 @@ void BEL_ST_UpdateHostDisplay(void)
 			else
 			{
 				currLineFirstPixelNum += g_sdlPixLineWidth;
-				currLineFirstPixelNum %= 0x80000;
+				currLineFirstPixelNum %= warpAroundOffset;
 			}
 		}
 
 		bool doUpdate = memcmp(g_sdlHostScrMemCache.egaGfx, g_sdlHostScrMem.egaGfx, sizeof(g_sdlHostScrMem.egaGfx));
 		memcpy(g_sdlHostScrMemCache.egaGfx, g_sdlHostScrMem.egaGfx, sizeof(g_sdlHostScrMem.egaGfx));
+		if (g_overscanBorderColorIndex != g_overscanBorderColorIndexCache)
+		{
+			g_overscanBorderColorIndexCache = g_overscanBorderColorIndex;
+			g_sdlEGALastBGRABorderColor =
+				(g_sdlScreenMode == 0x13) ?
+				g_sdlEGACurrBGRAPalette[g_overscanBorderColorIndex] :
+				g_sdlEGABGRAScreenColors[g_overscanBorderColorIndex];
+			doUpdate = true;
+		}
+
 		if (!doUpdate)
 		{
-			int paletteAndBorderEntry;
-			for (paletteAndBorderEntry = 0; paletteAndBorderEntry < 17; ++paletteAndBorderEntry)
+			int paletteEntry;
+			for (paletteEntry = 0; paletteEntry < 256; ++paletteEntry)
 			{
-				if (g_sdlEGACurrBGRAPaletteAndBorder[paletteAndBorderEntry] != g_sdlEGACurrBGRAPaletteAndBorderCache[paletteAndBorderEntry])
+				if (g_sdlEGACurrBGRAPalette[paletteEntry] != g_sdlEGACurrBGRAPaletteCache[paletteEntry])
 				{
-					g_sdlEGACurrBGRAPaletteAndBorderCache[paletteAndBorderEntry] = g_sdlEGACurrBGRAPaletteAndBorder[paletteAndBorderEntry];
+					g_sdlEGACurrBGRAPaletteCache[paletteEntry] = g_sdlEGACurrBGRAPalette[paletteEntry];
 					doUpdate = true;
 				}
 			}
@@ -3011,9 +3144,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		uint32_t *currPixPtr = (uint32_t *)pixels;
 		currPalPixPtr = g_sdlHostScrMem.egaGfx;
 		for (int pixnum = 0; pixnum < g_sdlTexWidth*GFX_TEX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
-		{
-			*currPixPtr = g_sdlEGACurrBGRAPaletteAndBorder[*currPalPixPtr];
-		}
+			*currPixPtr = g_sdlEGACurrBGRAPalette[*currPalPixPtr];
 	}
 
 	g_sdlDoRefreshGfxOutput = false;
@@ -3023,7 +3154,10 @@ dorefresh:
 
 	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(g_sdlRenderer);
-	SDL_SetRenderDrawColor(g_sdlRenderer, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>16)&0xFF, (g_sdlEGACurrBGRAPaletteAndBorder[16]>>8)&0xFF, g_sdlEGACurrBGRAPaletteAndBorder[16]&0xFF, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(
+		g_sdlRenderer, (g_sdlEGALastBGRABorderColor>>16)&0xFF,
+		(g_sdlEGALastBGRABorderColor>>8)&0xFF,
+		g_sdlEGALastBGRABorderColor&0xFF, SDL_ALPHA_OPAQUE);
 	SDL_RenderFillRect(g_sdlRenderer, &g_sdlAspectCorrectionBorderedRect);
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
