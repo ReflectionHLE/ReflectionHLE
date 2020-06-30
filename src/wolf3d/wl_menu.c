@@ -1726,11 +1726,12 @@ void CP_LoadGame(void)
 int CP_LoadGame(int quick)
 #endif
 {
+	FILE BE_FILE_T handle;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	int handle,which;
+	int which;
 #else
-	int handle,which,exit=0;
+	int which,exit=0;
 #endif
 	char name[13];
 
@@ -1749,12 +1750,13 @@ int CP_LoadGame(int quick)
 		if (SaveGamesAvail[which])
 		{
 			name[7]=which+'0';
-			handle=open(name,O_BINARY);
-			lseek(handle,32,SEEK_SET);
+			handle=BE_Cross_open_rewritable_for_reading(name);
+//			handle=open(name,O_BINARY);
+			BE_Cross_seek(handle,32,SEEK_SET);
 			loadedgame=true;
 			LoadTheGame(handle,0,0);
 			loadedgame=false;
-			close(handle);
+			BE_Cross_close(handle);
 
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1797,8 +1799,9 @@ int CP_LoadGame(int quick)
 #endif
 			name[7]=which+'0';
 
-			handle=open(name,O_BINARY);
-			lseek(handle,32,SEEK_SET);
+			handle=BE_Cross_open_rewritable_for_reading(name);
+//			handle=open(name,O_BINARY);
+			BE_Cross_seek(handle,32,SEEK_SET);
 
 			DrawLSAction(0);
 			// *** ALPHA RESTORATION ***
@@ -1807,7 +1810,7 @@ int CP_LoadGame(int quick)
 #endif
 
 			LoadTheGame(handle,LSA_X+8,LSA_Y+5);
-			close(handle);
+			BE_Cross_close(handle);
 
 			StartGame=1;
 			// *** ALPHA RESTORATION ***
@@ -1944,11 +1947,12 @@ void CP_SaveGame(void)
 int CP_SaveGame(int quick)
 #endif
 {
+	BE_FILE_T handle;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	int handle,which;
+	int which;
 #else
-	int handle,which,exit=0;
+	int which,exit=0;
 	unsigned nwritten;
 #endif
 	char name[13],input[32];
@@ -1969,14 +1973,16 @@ int CP_SaveGame(int quick)
 		{
 			name[7]=which+'0';
 			unlink(name);
-			handle=creat(name,S_IREAD|S_IWRITE);
+			handle=BE_Cross_open_rewritable_for_overwriting(name);
+//			handle=creat(name,S_IREAD|S_IWRITE);
 
 			strcpy(input,&SaveGameNames[which][0]);
 
-			_dos_write(handle,(void far *)input,32,&nwritten);
-			lseek(handle,32,SEEK_SET);
+			BE_Cross_writeInt8LEBuffer(handle,(void far *)input,32);
+			//_dos_write(handle,(void far *)input,32,&nwritten);
+			BE_Cross_seek(handle,32,SEEK_SET);
 			SaveTheGame(handle,0,0);
-			close(handle);
+			BE_Cross_close(handle);
 
 			return 1;
 		}
@@ -2042,19 +2048,21 @@ int CP_SaveGame(int quick)
 				strcpy(&SaveGameNames[which][0],input);
 
 				unlink(name);
-				handle=creat(name,S_IREAD|S_IWRITE);
+				handle=BE_Cross_open_rewritable_for_overwriting(name);
+//				handle=creat(name,S_IREAD|S_IWRITE);
 				// *** ALPHA RESTORATION ***
+				BE_Cross_writeInt8LEBuffer(handle,input,32);
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-				write(handle,input,32);
+				//write(handle,input,32);
 #else
-				_dos_write(handle,(void far *)input,32,&nwritten);
-				lseek(handle,32,SEEK_SET);
+				//_dos_write(handle,(void far *)input,32,&nwritten);
+				BE_Cross_seek(handle,32,SEEK_SET);
 #endif
 
 				DrawLSAction(1);
 				SaveTheGame(handle,LSA_X+8,LSA_Y+5);
 
-				close(handle);
+				BE_Cross_close(handle);
 
 				ShootSnd();
 				// *** ALPHA RESTORATION ***
@@ -3681,13 +3689,14 @@ void SetupControlPanel(void)
 			which=f.ff_name[7]-'0';
 			if (which<10)
 			{
-				int handle;
+				BE_FILE_T handle;
 				char temp[32];
 
 				SaveGamesAvail[which]=1;
-				handle=open(f.ff_name,O_BINARY);
-				read(handle,temp,32);
-				close(handle);
+				handle=BE_Cross_open_rewritable_for_reading(f.ff_name);
+//				handle=open(f.ff_name,O_BINARY);
+				BE_Cross_readInt8LEBuffer(handle,temp,32);
+				BE_Cross_close(handle);
 				strcpy(&SaveGameNames[which][0],temp);
 			}
 		} while(!findnext(&f));
