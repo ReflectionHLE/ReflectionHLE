@@ -507,7 +507,6 @@ int BE_Cross_GetGameVerFromInstallation(int num)
 
 // C99
 BE_FILE_T BE_Cross_IsFileValid(BE_FILE_T fp);
-BE_FILE_T BE_Cross_GetNilFile(void);
 int BE_Cross_seek(BE_FILE_T fp, long int offset, int origin);
 int BE_Cross_putc(int character, BE_FILE_T fp);
 int BE_Cross_getc(BE_FILE_T fp);

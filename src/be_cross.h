@@ -221,8 +221,9 @@ int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Error
 // this one is given a different name so it's easy to swap in case of a need
 typedef FILE * BE_FILE_T;
 
+#define BE_CROSS_NIL_FILE NULL
+
 inline BE_FILE_T BE_Cross_IsFileValid(BE_FILE_T fp) { return fp; }
-inline BE_FILE_T BE_Cross_GetNilFile(void) { return NULL; }
 inline int BE_Cross_seek(BE_FILE_T fp, long int offset, int origin) { return fseek(fp, offset, origin); }
 inline int BE_Cross_putc(int character, BE_FILE_T fp) { return putc(character, fp); }
 inline int BE_Cross_getc(BE_FILE_T fp) { return getc(fp); }

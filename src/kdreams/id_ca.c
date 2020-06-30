@@ -646,7 +646,7 @@ void CAL_SetupGrFile (void)
 void CAL_FreeGrFile (void)
 {
 	BE_Cross_close(grhandle);
-	grhandle = BE_Cross_GetNilFile();
+	grhandle = BE_CROSS_NIL_FILE;
 #if NUMPICS>0
 	MM_FreePtr((memptr *)&pictable);
 #endif
