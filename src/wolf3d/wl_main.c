@@ -111,7 +111,7 @@ char	configname[13]="CONFIG.";
 
 void ReadConfig(void)
 {
-	int                     file;
+	BE_FILE_T                     file;
 	SDMode          sd;
 	SMMode          sm;
 	SDSMode         sds;
@@ -119,9 +119,11 @@ void ReadConfig(void)
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if ( (file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("CONFIG."EXTENSION)))
+//	if ( (file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 #else
-	if ( (file = open(configname,O_BINARY | O_RDONLY)) != -1)
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading(configname)))
+//	if ( (file = open(configname,O_BINARY | O_RDONLY)) != -1)
 #endif
 	{
 	//
@@ -154,7 +156,7 @@ void ReadConfig(void)
 		read(file,&questionnum,sizeof(questionnum));
 #endif
 
-		close(file);
+		BE_Cross_close(file);
 
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -258,18 +260,20 @@ void ReadConfig(void)
 
 void WriteConfig(void)
 {
-	int                     file;
+	BE_FILE_T                     file;
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
-				S_IREAD | S_IWRITE | S_IFREG);
+	file = BE_Cross_open_rewritable_for_overwriting("CONFIG."EXTENSION);
+//	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
+//				S_IREAD | S_IWRITE | S_IFREG);
 #else
-	file = open(configname,O_CREAT | O_BINARY | O_WRONLY,
-				S_IREAD | S_IWRITE | S_IFREG);
+	file = BE_Cross_open_rewritable_for_overwriting(configname);
+//	file = open(configname,O_CREAT | O_BINARY | O_WRONLY,
+//				S_IREAD | S_IWRITE | S_IFREG);
 #endif
 
-	if (file != -1)
+	if (BE_Cross_IsFileValid(file))
 	{
 		write(file,Scores,sizeof(HighScore) * MaxScores);
 
@@ -298,7 +302,7 @@ void WriteConfig(void)
 		write(file,&questionnum,sizeof(questionnum));
 #endif
 
-		close(file);
+		BE_Cross_close(file);
 	}
 }
 
@@ -433,7 +437,7 @@ long DoChecksum(byte far *source,unsigned size,long checksum)
 ==================
 */
 
-boolean SaveTheGame(int file,int x,int y)
+boolean SaveTheGame(BE_FILE_T file,int x,int y)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming and free size verifications, plus a bit more
@@ -604,7 +608,7 @@ boolean SaveTheGame(int file,int x,int y)
 ==================
 */
 
-boolean LoadTheGame(int file,int x,int y)
+boolean LoadTheGame(BE_FILE_T file,int x,int y)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming, plus a bit more
