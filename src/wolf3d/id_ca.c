@@ -66,7 +66,7 @@ void		_seg	*grsegs[NUMCHUNKS];
 byte		far	grneeded[NUMCHUNKS];
 byte		ca_levelbit,ca_levelnum;
 
-int			profilehandle,debughandle;
+BE_FILE_T			profilehandle,debughandle;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -126,9 +126,9 @@ huffnode	audiohuffman[255];
 #endif
 
 
-int			grhandle;		// handle to EGAGRAPH
-int			maphandle;		// handle to MAPTEMP / GAMEMAPS
-int			audiohandle;	// handle to AUDIOT / AUDIO
+BE_FILE_T			grhandle;		// handle to EGAGRAPH
+BE_FILE_T			maphandle;		// handle to MAPTEMP / GAMEMAPS
+BE_FILE_T			audiohandle;	// handle to AUDIOT / AUDIO
 
 long		chunkcomplen,chunkexplen;
 
@@ -190,7 +190,7 @@ void CA_OpenDebug (void)
 
 void CA_CloseDebug (void)
 {
-	close (debughandle);
+	BE_Cross_close (debughandle);
 }
 
 
@@ -208,8 +208,9 @@ void CA_CloseDebug (void)
 
 void CAL_GetGrChunkLength (int chunk)
 {
-	lseek(grhandle,GRFILEPOS(chunk),SEEK_SET);
-	read(grhandle,&chunkexplen,sizeof(chunkexplen));
+	BE_Cross_seek(grhandle,GRFILEPOS(chunk),SEEK_SET);
+	BE_Cross_readInt32LE(grhandle, &chunkexplen);
+	//read(grhandle,&chunkexplen,sizeof(chunkexplen));
 	chunkcomplen = GRFILEPOS(chunk+1)-GRFILEPOS(chunk)-4;
 }
 
@@ -224,7 +225,7 @@ void CAL_GetGrChunkLength (int chunk)
 ==========================
 */
 
-boolean CA_FarRead (int handle, byte far *dest, long length)
+boolean CA_FarRead (BE_FILE_T handle, byte far *dest, long length)
 {
 	if (length>0xffffl)
 		Quit ("CA_FarRead doesn't support 64K reads yet!");
@@ -260,7 +261,7 @@ done:
 ==========================
 */
 
-boolean CA_FarWrite (int handle, byte far *source, long length)
+boolean CA_FarWrite (BE_FILE_T handle, byte far *source, long length)
 {
 	if (length>0xffffl)
 		Quit ("CA_FarWrite doesn't support 64K reads yet!");
@@ -328,21 +329,22 @@ boolean CA_ReadFile (char *filename, memptr *ptr)
 
 boolean CA_WriteFile (char *filename, void far *ptr, long length)
 {
-	int handle;
+	BE_FILE_T handle;
 	long size;
 
-	handle = open(filename,O_CREAT | O_BINARY | O_WRONLY,
-				S_IREAD | S_IWRITE | S_IFREG);
+	handle = BE_Cross_open_rewritable_for_overwriting(filename);
+	//handle = open(filename,O_CREAT | O_BINARY | O_WRONLY,
+	//			S_IREAD | S_IWRITE | S_IFREG);
 
-	if (handle == -1)
+	if (!BE_Cross_IsFileValid(handle))
 		return false;
 
 	if (!CA_FarWrite (handle,ptr,length))
 	{
-		close (handle);
+		BE_Cross_close (handle);
 		return false;
 	}
-	close (handle);
+	BE_Cross_close (handle);
 	return true;
 }
 
@@ -360,9 +362,17 @@ boolean CA_WriteFile (char *filename, void far *ptr, long length)
 
 boolean CA_LoadFile (char *filename, memptr *ptr)
 {
-	int handle;
+	BE_FILE_T handle;
 	long size;
 
+	// TODO (REFKEEN) - BE_Cross_open_readonly_for_reading makes sense for
+	// help files if ARTSEXTERN is not defined, while for demo files,
+	// it's rather BE_Cross_open_rewritable_for_reading which fits better
+	// if DEMOSEXTERN is undefined.
+	// The March 1992 prototype build is one such example.
+#if (!defined ARTSEXTERN) && (!defined DEMOSEXTERN)
+#error "Need to implement CA_LoadFile for no-ARTSEXTERN no-DEMOSEXTERN build"
+#endif
 	if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
@@ -370,10 +380,10 @@ boolean CA_LoadFile (char *filename, memptr *ptr)
 	MM_GetPtr (ptr,size);
 	if (!CA_FarRead (handle,*ptr,size))
 	{
-		close (handle);
+		BE_Cross_close (handle);
 		return false;
 	}
-	close (handle);
+	BE_Cross_close (handle);
 	return true;
 }
 
@@ -890,7 +900,7 @@ void CAL_SetupGrFile (void)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	char fname[13];
 #endif
-	int handle;
+	BE_FILE_T handle;
 	memptr compseg;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -912,15 +922,17 @@ void CAL_SetupGrFile (void)
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if ((handle = open(GREXT"DICT."EXTENSION,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT"DICT."EXTENSION)))
+	//if ((handle = open(GREXT"DICT."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
 #else
 	strcpy(fname,gdictname);
 	strcat(fname,extension);
 
-	if ((handle = open(fname,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
+	//if ((handle = open(fname,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
 #endif
 
@@ -934,19 +946,27 @@ void CAL_SetupGrFile (void)
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if ((handle = open(GREXT"HEAD."EXTENSION,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT"HEAD."EXTENSION)))
+	//if ((handle = open(GREXT"HEAD."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
 #else
 	strcpy(fname,gheadname);
 	strcat(fname,extension);
 
-	if ((handle = open(fname,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
+	//if ((handle = open(fname,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
 #endif
 
-	CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+        // REFKEEN - Hack for Big Endian (even though it may be useless)
+#ifdef THREEBYTEGRSTARTS
+        BE_Cross_readInt24LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+#else
+        BE_Cross_readInt32LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+#endif
+	//CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 
 	close(handle);
 
@@ -958,15 +978,17 @@ void CAL_SetupGrFile (void)
 //
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
-	if (grhandle == -1)
+	grhandle = BE_Cross_open_readonly_for_reading(GREXT"GRAPH."EXTENSION);
+	//grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
+	if (!BE_Cross_IsFileValid(grhandle))
 		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
 #else
 	strcpy(fname,gfilename);
 	strcat(fname,extension);
 
-	grhandle = open(fname, O_RDONLY | O_BINARY);
-	if (grhandle == -1)
+	grhandle = BE_Cross_open_readonly_for_reading(fname);
+	//grhandle = open(fname, O_RDONLY | O_BINARY);
+	if (!BE_Cross_IsFileValid(grhandle))
 		CA_CannotOpen(fname);
 #endif
 
@@ -1001,7 +1023,7 @@ void CAL_SetupGrFile (void)
 void CAL_SetupMapFile (void)
 {
 	int	i;
-	int handle;
+	BE_FILE_T handle;
 	long length,pos;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -1018,22 +1040,24 @@ void CAL_SetupMapFile (void)
 #ifndef MAPHEADERLINKED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if ((handle = open("MAPHEAD."EXTENSION,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("MAPHEAD."EXTENSION)))
+	//if ((handle = open("MAPHEAD."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
 #else
 	strcpy(fname,mheadname);
 	strcat(fname,extension);
 
-	if ((handle = open(fname,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
+	//if ((handle = open(fname,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
 #endif
 
-	length = filelength(handle);
+	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr (&(memptr)tinf,length);
 	CA_FarRead(handle, tinf, length);
-	close(handle);
+	BE_Cross_close(handle);
 #else
 
 	tinf = (byte _seg *)FP_SEG(&maphead);
@@ -1046,29 +1070,33 @@ void CAL_SetupMapFile (void)
 #ifdef CARMACIZED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if ((maphandle = open("GAMEMAPS."EXTENSION,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("GAMEMAPS."EXTENSION)))
+	//if ((maphandle = open("GAMEMAPS."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open GAMEMAPS."EXTENSION"!");
 #else
 	strcpy(fname,"GAMEMAPS.");
 	strcat(fname,extension);
 
-	if ((maphandle = open(fname,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading(fname)))
+	//if ((maphandle = open(fname,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
 #endif
 #else
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if ((maphandle = open("MAPTEMP."EXTENSION,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("MAPTEMP."EXTENSION)))
+	//if ((maphandle = open("MAPTEMP."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPTEMP."EXTENSION"!");
 #else
 	strcpy(fname,mfilename);
 	strcat(fname,extension);
 
-	if ((maphandle = open(fname,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading(fname)))
+	//if ((maphandle = open(fname,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
 #endif
 #endif
@@ -1084,7 +1112,7 @@ void CAL_SetupMapFile (void)
 
 		MM_GetPtr(&(memptr)mapheaderseg[i],sizeof(maptype));
 		MM_SetLock(&(memptr)mapheaderseg[i],true);
-		lseek(maphandle,pos,SEEK_SET);
+		BE_Cross_seek(maphandle,pos,SEEK_SET);
 		CA_FarRead (maphandle,(memptr)mapheaderseg[i],sizeof(maptype));
 	}
 
@@ -1112,7 +1140,7 @@ void CAL_SetupMapFile (void)
 
 void CAL_SetupAudioFile (void)
 {
-	int handle;
+	BE_FILE_T handle;
 	long length;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -1129,22 +1157,25 @@ void CAL_SetupAudioFile (void)
 #ifndef AUDIOHEADERLINKED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if ((handle = open("AUDIOHED."EXTENSION,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("AUDIOHED."EXTENSION)))
+	//if ((handle = open("AUDIOHED."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
 #else
 	strcpy(fname,aheadname);
 	strcat(fname,extension);
 
-	if ((handle = open(fname,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
+	//if ((handle = open(fname,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
 #endif
 
-	length = filelength(handle);
+	length = BE_Cross_FileLength(handle);
 	MM_GetPtr (&(memptr)audiostarts,length);
-	CA_FarRead(handle, (byte far *)audiostarts, length);
-	close(handle);
+	BE_Cross_readInt32LE(handle, audiostarts, length);
+	//CA_FarRead(handle, (byte far *)audiostarts, length);
+	BE_Cross_close(handle);
 #else
 	audiohuffman = (huffnode *)&audiodict;
 	CAL_OptimizeNodes (audiohuffman);
@@ -1157,20 +1188,23 @@ void CAL_SetupAudioFile (void)
 #ifndef AUDIOHEADERLINKED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if ((audiohandle = open("AUDIOT."EXTENSION,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIOT."EXTENSION)))
+	//if ((audiohandle = open("AUDIOT."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIOT."EXTENSION"!");
 #else
 	strcpy(fname,afilename);
 	strcat(fname,extension);
 
-	if ((audiohandle = open(fname,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading(fname)))
+	//if ((audiohandle = open(fname,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
 #endif
 #else
-	if ((audiohandle = open("AUDIO."EXTENSION,
-		 O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIO."EXTENSION)))
+	//if ((audiohandle = open("AUDIO."EXTENSION,
+	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIO."EXTENSION"!");
 #endif
 }
@@ -1240,9 +1274,9 @@ void CA_Shutdown (void)
 	close (profilehandle);
 #endif
 
-	close (maphandle);
-	close (grhandle);
-	close (audiohandle);
+	BE_Cross_close (maphandle);
+	BE_Cross_close (grhandle);
+	BE_Cross_close (audiohandle);
 }
 
 //===========================================================================
@@ -1277,7 +1311,7 @@ void CA_CacheAudioChunk (int chunk)
 	pos = audiostarts[chunk];
 	compressed = audiostarts[chunk+1]-pos;
 
-	lseek(audiohandle,pos,SEEK_SET);
+	BE_Cross_seek(audiohandle,pos,SEEK_SET);
 
 #ifndef AUDIOHEADERLINKED
 
@@ -1475,7 +1509,7 @@ void CAL_ReadGrChunk (int chunk)
 
 	compressed = GRFILEPOS(next)-pos;
 
-	lseek(grhandle,pos,SEEK_SET);
+	BE_Cross_seek(grhandle,pos,SEEK_SET);
 
 	if (compressed<=BUFFERSIZE)
 	{
@@ -1537,7 +1571,7 @@ void CA_CacheGrChunk (int chunk)
 
 	compressed = GRFILEPOS(next)-pos;
 
-	lseek(grhandle,pos,SEEK_SET);
+	BE_Cross_seek(grhandle,pos,SEEK_SET);
 
 	if (compressed<=BUFFERSIZE)
 	{
@@ -1590,7 +1624,7 @@ void CA_CacheScreen (int chunk)
 		next++;
 	compressed = GRFILEPOS(next)-pos;
 
-	lseek(grhandle,pos,SEEK_SET);
+	BE_Cross_seek(grhandle,pos,SEEK_SET);
 
 	MM_GetPtr(&bigbufferseg,compressed);
 	MM_SetLock (&bigbufferseg,true);
@@ -1656,7 +1690,7 @@ void CA_CacheMap (int mapnum)
 
 		dest = &(memptr)mapsegs[plane];
 
-		lseek(maphandle,pos,SEEK_SET);
+		BE_Cross_seek(maphandle,pos,SEEK_SET);
 		if (compressed<=BUFFERSIZE)
 			source = bufferseg;
 		else
@@ -1939,7 +1973,7 @@ void CA_CacheMarks (void)
 							next = NUMCHUNKS;			// read pos to posend
 					}
 
-					lseek(grhandle,pos,SEEK_SET);
+					BE_Cross_seek(grhandle,pos,SEEK_SET);
 					CA_FarRead(grhandle,bufferseg,endpos-pos);
 					bufferstart = pos;
 					bufferend = endpos;
@@ -1953,7 +1987,7 @@ void CA_CacheMarks (void)
 				if (mmerror)
 					return;
 				MM_SetLock (&bigbufferseg,true);
-				lseek(grhandle,pos,SEEK_SET);
+				BE_Cross_seek(grhandle,pos,SEEK_SET);
 				CA_FarRead(grhandle,bigbufferseg,compressed);
 				source = bigbufferseg;
 			}
