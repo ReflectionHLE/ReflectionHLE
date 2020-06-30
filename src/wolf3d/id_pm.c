@@ -32,7 +32,7 @@
 #else
 	char			PageFileName[13] = {"VSWAP."};
 #endif
-	int				PageFile = -1;
+	BE_FILE_T				PageFile = BE_CROSS_NIL_FILE;
 	word			ChunksInFile;
 	word			PMSpriteStart,PMSoundStart;
 
@@ -521,7 +521,7 @@ PML_ReadFromFile(byte far *buf,long offset,word length)
 		Quit("PML_ReadFromFile: Null pointer");
 	if (!offset)
 		Quit("PML_ReadFromFile: Zero offset");
-	if (lseek(PageFile,offset,SEEK_SET) != offset)
+	if (BE_Cross_seek(PageFile,offset,SEEK_SET) != offset)
 		Quit("PML_ReadFromFile: Seek failed");
 	if (!CA_FarRead(PageFile,buf,length))
 		Quit("PML_ReadFromFile: Read failed");
@@ -544,14 +544,16 @@ PML_OpenPageFile(void)
 	printf("Opening %s\n", PageFileName);
 #endif
 
-	PageFile = open(PageFileName,O_RDONLY + O_BINARY);
-	if (PageFile == -1)
+	PageFile = BE_Cross_open_readonly_for_reading(PageFileName,O_RDONLY + O_BINARY);
+//	PageFile = open(PageFileName,O_RDONLY + O_BINARY);
+	if (!BE_Cross_IsFileValid(PageFile))
+//	if (PageFile == -1)
 		Quit("PML_OpenPageFile: Unable to open page file");
 
 	// Read in header variables
-	read(PageFile,&ChunksInFile,sizeof(ChunksInFile));
-	read(PageFile,&PMSpriteStart,sizeof(PMSpriteStart));
-	read(PageFile,&PMSoundStart,sizeof(PMSoundStart));
+	BE_Cross_readInt16LE(PageFile,&ChunksInFile);
+	BE_Cross_readInt16LE(PageFile,&PMSpriteStart);
+	BE_Cross_readInt16LE(PageFile,&PMSoundStart);
 
 	// Allocate and clear the page list
 	PMNumBlocks = ChunksInFile;
@@ -587,8 +589,8 @@ PML_OpenPageFile(void)
 void
 PML_ClosePageFile(void)
 {
-	if (PageFile != -1)
-		close(PageFile);
+	if (BE_Cross_IsFileValid(PageFile))
+		BE_Cross_close(PageFile);
 	if (PMSegPages)
 	{
 		MM_SetLock(&(memptr)PMSegPages,false);
