@@ -4,7 +4,7 @@
 //	Primary coder: Jason Blochowiak
 //
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #pragma hdrstop
 
 //	Main Mem specific variables

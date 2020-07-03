@@ -16,9 +16,9 @@
 // the only place from which ID_HEAD.H is included, and it's mentioned in
 // STDIO.H only (possibly done while adding the FillCharAttr function)
 #ifdef GAMEVER_NOAH3D
-#include <STDIO.H>
+#include <stdio.h>
 #endif
-#include "VERSION.H"
+#include "version.h"
 
 typedef	enum	{false,true}	boolean;
 typedef	unsigned	char		byte;

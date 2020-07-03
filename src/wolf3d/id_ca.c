@@ -14,7 +14,7 @@ loaded into the data segment
 =============================================================================
 */
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 #pragma hdrstop
 
 #pragma warn -pro

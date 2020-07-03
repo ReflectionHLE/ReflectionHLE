@@ -1,6 +1,6 @@
 /*** S3DNA RESTORATION - Recreated automap source file ***/
 
-#include "WL_DEF.H"
+#include "wl_def.h"
 #pragma hdrstop
 
 static void DrawMapWalls (int tx, int ty)

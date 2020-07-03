@@ -1,7 +1,7 @@
 // WL_MAIN.C
 
-#include <conio.h>
-#include "WL_DEF.H"
+//#include <conio.h>
+#include "wl_def.h"
 #pragma hdrstop
 
 
@@ -1922,7 +1922,7 @@ void Quit (char *error)
 // The functions included here, DrawHighScores and CheckHighScore,
 // moved to WL_INTER.C at some point
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-#include "WL_HSCOR.C"
+#include "wl_hscor.c"
 #endif
 
 //===========================================================================

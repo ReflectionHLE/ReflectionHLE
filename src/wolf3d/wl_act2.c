@@ -1,6 +1,6 @@
 // WL_ACT2.C
 
-#include "WL_DEF.H"
+#include "wl_def.h"
 #pragma hdrstop
 
 /*
@@ -227,7 +227,7 @@ void A_DeathScream (objtype *ob);
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-#include "WL_SROCK.C"
+#include "wl_srock.c"
 #endif
 
 // *** ALPHA RESTORATION ***
@@ -251,9 +251,9 @@ void A_MechaSound (objtype *ob);
 // files for for v1.2, but even here, WL_FSMOK.C is not included for S3DNA.
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 #ifndef GAMEVER_NOAH3D
-#include "WL_FSMOK.C"
+#include "wl_fsmok.c"
 #endif
-#include "WL_FPROJ.C"
+#include "wl_fproj.c"
 #endif
 
 
@@ -2493,7 +2493,7 @@ statetype s_giftshoot2 	= {false,SPR_GIFT_SHOOT2,10,NULL,T_GiftThrow,&s_giftchas
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-#include "WL_SROCK.C"
+#include "wl_srock.c"
 #endif
 
 
@@ -2725,7 +2725,7 @@ void SpawnFat (int tilex, int tiley)
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-#include "WL_FPROJ.C"
+#include "wl_fproj.c"
 #endif
 
 
@@ -2783,7 +2783,7 @@ void T_SchabbThrow (objtype *ob)
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2; Not included in v1.0 at all.
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-#include "WL_FSMOK.C"
+#include "wl_fsmok.c"
 #endif
 
 

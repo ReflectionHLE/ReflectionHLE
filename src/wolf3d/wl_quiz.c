@@ -1,6 +1,6 @@
 /*** S3DNA RESTORATION - Recreated quiz source file ***/
 
-#include "WL_DEF.H"
+#include "wl_def.h"
 #pragma hdrstop
 
 extern int gotgatgun;

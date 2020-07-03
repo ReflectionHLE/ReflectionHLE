@@ -1,6 +1,6 @@
 // WOLFHACK.C
 
-#include "WL_DEF.H"
+#include "wl_def.h"
 
 #define	MAXVIEWHEIGHT	200
 
