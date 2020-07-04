@@ -24,17 +24,14 @@
 #include <ctype.h>
 //#include <DOS.H>
 #include <errno.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 //#include <IO.H>
 //#include <MEM.H>
 //#include <PROCESS.H>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
-// for lseek and more
-#include <sys/types.h>
-#include <unistd.h>
+//#include <sys/stat.h>
 #include <time.h>
 
 #include "refkeen.h"

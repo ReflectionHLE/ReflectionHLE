@@ -5,14 +5,14 @@
 #include <ctype.h>
 //#include <DOS.H>
 #include <errno.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 //#include <IO.H>
 //#include <MEM.H>
 //#include <PROCESS.H>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
+//#include <sys/stat.h>
 //#include <VALUES.H>
 //#include <DIR.H>
 #define __ID_GLOB__
