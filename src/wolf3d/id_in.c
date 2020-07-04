@@ -50,26 +50,26 @@
 //
 // configuration variables
 //
-boolean			MousePresent;
-boolean			JoysPresent[MaxJoys];
-boolean			JoyPadPresent;
+id0_boolean_t			MousePresent;
+id0_boolean_t			JoysPresent[MaxJoys];
+id0_boolean_t			JoyPadPresent;
 
 
 // 	Global variables
-		boolean		Keyboard[NumCodes];
-		boolean		Paused;
-		char		LastASCII;
+		id0_boolean_t		Keyboard[NumCodes];
+		id0_boolean_t		Paused;
+		id0_char_t		LastASCII;
 		ScanCode	LastScan;
 
 		KeyboardDef	KbdDefs = {0x1d,0x38,0x47,0x48,0x49,0x4b,0x4d,0x4f,0x50,0x51};
 		JoystickDef	JoyDefs[MaxJoys];
 		ControlType	Controls[MaxPlayers];
 
-		longword	MouseDownCount;
+		id0_longword_t	MouseDownCount;
 
 		Demo		DemoMode = demo_Off;
-		byte _seg	*DemoBuffer;
-		word		DemoOffset,DemoSize;
+		id0_byte_t id0_seg	*DemoBuffer;
+		id0_word_t		DemoOffset,DemoSize;
 
 /*
 =============================================================================
@@ -78,7 +78,7 @@ boolean			JoyPadPresent;
 
 =============================================================================
 */
-static	byte        far ASCIINames[] =		// Unshifted ASCII for scan codes
+static	id0_byte_t        id0_far ASCIINames[] =		// Unshifted ASCII for scan codes
 					{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	0  ,27 ,'1','2','3','4','5','6','7','8','9','0','-','=',8  ,9  ,	// 0
@@ -90,7 +90,7 @@ static	byte        far ASCIINames[] =		// Unshifted ASCII for scan codes
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 6
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0		// 7
 					},
-					far ShiftNames[] =		// Shifted ASCII for scan codes
+					id0_far ShiftNames[] =		// Shifted ASCII for scan codes
 					{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	0  ,27 ,'!','@','#','$','%','^','&','*','(',')','_','+',8  ,9  ,	// 0
@@ -102,7 +102,7 @@ static	byte        far ASCIINames[] =		// Unshifted ASCII for scan codes
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 6
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0   	// 7
 					},
-					far SpecialNames[] =	// ASCII for 0xe0 prefixed codes
+					id0_far SpecialNames[] =	// ASCII for 0xe0 prefixed codes
 					{
 //	 0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F
 	0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,	// 0
@@ -116,8 +116,8 @@ static	byte        far ASCIINames[] =		// Unshifted ASCII for scan codes
 					};
 
 
-static	boolean		IN_Started;
-static	boolean		CapsLock;
+static	id0_boolean_t		IN_Started;
+static	id0_boolean_t		CapsLock;
 static	ScanCode	CurCode,LastCode;
 
 static	Direction	DirTable[] =		// Quick lookup for total direction
@@ -132,9 +132,9 @@ static	void interrupt	(*OldKeyVect)(void);
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	char			*ParmStrings[] = {"NOJOY","NOJOYS","NOMOUSE",nil};
+static	id0_char_t			*ParmStrings[] = {"NOJOY","NOJOYS","NOMOUSE",nil};
 #else
-static	char			*ParmStrings[] = {"nojoys","nomouse",nil};
+static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",nil};
 #endif
 
 //	Internal routines
@@ -147,10 +147,10 @@ static	char			*ParmStrings[] = {"nojoys","nomouse",nil};
 static void interrupt
 INL_KeyService(void)
 {
-static	boolean	special;
-		byte	k,c,
+static	id0_boolean_t	special;
+		id0_byte_t	k,c,
 				temp;
-		int		i;
+		id0_int_t		i;
 
 	k = inportb(0x60);	// Get the scan code
 
@@ -220,7 +220,7 @@ static	boolean	special;
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-INL_GetMouseDelta(int *x,int *y)
+INL_GetMouseDelta(id0_int_t *x,id0_int_t *y)
 {
 	Mouse(MDelta);
 	*x = _CX;
@@ -233,10 +233,10 @@ INL_GetMouseDelta(int *x,int *y)
 //		mouse driver
 //
 ///////////////////////////////////////////////////////////////////////////
-static word
+static id0_word_t
 INL_GetMouseButtons(void)
 {
-	word	buttons;
+	id0_word_t	buttons;
 
 	Mouse(MButtons);
 	buttons = _BX;
@@ -249,11 +249,11 @@ INL_GetMouseButtons(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-IN_GetJoyAbs(word joy,word *xp,word *yp)
+IN_GetJoyAbs(id0_word_t joy,id0_word_t *xp,id0_word_t *yp)
 {
-	byte	xb,yb,
+	id0_byte_t	xb,yb,
 			xs,ys;
-	word	x,y;
+	id0_word_t	x,y;
 
 	x = y = 0;
 	xs = joy? 2 : 0;		// Find shift value for x axis
@@ -326,12 +326,12 @@ asm		popf				// Restore the registers
 //		joystick (from +/-127)
 //
 ///////////////////////////////////////////////////////////////////////////
-void INL_GetJoyDelta(word joy,int *dx,int *dy)
+void INL_GetJoyDelta(id0_word_t joy,id0_int_t *dx,id0_int_t *dy)
 {
-	word		x,y;
-	longword	time;
+	id0_word_t		x,y;
+	id0_longword_t	time;
 	JoystickDef	*def;
-static	longword	lasttime;
+static	id0_longword_t	lasttime;
 
 	IN_GetJoyAbs(joy,&x,&y);
 	def = JoyDefs + joy;
@@ -391,10 +391,10 @@ static	longword	lasttime;
 //		joystick
 //
 ///////////////////////////////////////////////////////////////////////////
-static word
-INL_GetJoyButtons(word joy)
+static id0_word_t
+INL_GetJoyButtons(id0_word_t joy)
 {
-register	word	result;
+register	id0_word_t	result;
 
 	result = inportb(0x201);	// Get all the joystick buttons
 	result >>= joy? 6 : 4;	// Shift into bits 0-1
@@ -409,11 +409,11 @@ register	word	result;
 //		specified joystick
 //
 ///////////////////////////////////////////////////////////////////////////
-word
-IN_GetJoyButtonsDB(word joy)
+id0_word_t
+IN_GetJoyButtonsDB(id0_word_t joy)
 {
-	longword	lasttime;
-	word		result1,result2;
+	id0_longword_t	lasttime;
+	id0_word_t		result1,result2;
 
 	do
 	{
@@ -460,7 +460,7 @@ INL_ShutKbd(void)
 //	INL_StartMouse() - Detects and sets up the mouse
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 INL_StartMouse(void)
 {
 #if 0
@@ -473,7 +473,7 @@ INL_StartMouse(void)
 	return(false);
 #endif
  union REGS regs;
- unsigned char far *vector;
+ id0_unsigned_char_t id0_far *vector;
 
 
  if ((vector=MK_FP(peek(0,0x33*4+2),peek(0,0x33*4)))==NULL)
@@ -500,7 +500,7 @@ INL_ShutMouse(void)
 //	INL_SetJoyScale() - Sets up scaling values for the specified joystick
 //
 static void
-INL_SetJoyScale(word joy)
+INL_SetJoyScale(id0_word_t joy)
 {
 	JoystickDef	*def;
 
@@ -518,9 +518,9 @@ INL_SetJoyScale(word joy)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-IN_SetupJoy(word joy,word minx,word maxx,word miny,word maxy)
+IN_SetupJoy(id0_word_t joy,id0_word_t minx,id0_word_t maxx,id0_word_t miny,id0_word_t maxy)
 {
-	word		d,r;
+	id0_word_t		d,r;
 	JoystickDef	*def;
 
 	def = &JoyDefs[joy];
@@ -557,10 +557,10 @@ IN_SetupJoy(word joy,word minx,word maxx,word miny,word maxy)
 //					The auto-config assumes the joystick is centered
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
-INL_StartJoy(word joy)
+static id0_boolean_t
+INL_StartJoy(id0_word_t joy)
 {
-	word		x,y;
+	id0_word_t		x,y;
 
 	IN_GetJoyAbs(joy,&x,&y);
 
@@ -583,7 +583,7 @@ INL_StartJoy(word joy)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-INL_ShutJoy(word joy)
+INL_ShutJoy(id0_word_t joy)
 {
 	JoysPresent[joy] = false;
 }
@@ -597,8 +597,8 @@ INL_ShutJoy(word joy)
 void
 IN_Startup(void)
 {
-	boolean	checkjoys,checkmouse;
-	word	i;
+	id0_boolean_t	checkjoys,checkmouse;
+	id0_word_t	i;
 
 	if (IN_Started)
 		return;
@@ -663,7 +663,7 @@ IN_Startup(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-IN_Default(boolean gotit,ControlType in)
+IN_Default(id0_boolean_t gotit,ControlType in)
 {
 	if
 	(
@@ -684,7 +684,7 @@ IN_Default(boolean gotit,ControlType in)
 void
 IN_Shutdown(void)
 {
-	word	i;
+	id0_word_t	i;
 
 	if (!IN_Started)
 		return;
@@ -717,7 +717,7 @@ IN_SetKeyHook(void (*hook)())
 void
 IN_ClearKeysDown(void)
 {
-	int	i;
+	id0_int_t	i;
 
 	LastScan = sc_None;
 	LastASCII = key_None;
@@ -732,12 +732,12 @@ IN_ClearKeysDown(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-IN_ReadControl(int player,ControlInfo *info)
+IN_ReadControl(id0_int_t player,ControlInfo *info)
 {
-			boolean		realdelta;
-			byte		dbyte;
-			word		buttons;
-			int			dx,dy;
+			id0_boolean_t		realdelta;
+			id0_byte_t		dbyte;
+			id0_word_t		buttons;
+			id0_int_t			dx,dy;
 			Motion		mx,my;
 			ControlType	type;
 register	KeyboardDef	*def;
@@ -863,7 +863,7 @@ register	KeyboardDef	*def;
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-IN_SetControlType(int player,ControlType type)
+IN_SetControlType(id0_int_t player,ControlType type)
 {
 	// DEBUG - check that requested type is present?
 	Controls[player] = type;
@@ -892,10 +892,10 @@ IN_WaitForKey(void)
 //		returns the ASCII value
 //
 ///////////////////////////////////////////////////////////////////////////
-char
+id0_char_t
 IN_WaitForASCII(void)
 {
-	char		result;
+	id0_char_t		result;
 
 	while (!(result = LastASCII))
 		;
@@ -910,11 +910,11 @@ IN_WaitForASCII(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 
-boolean	btnstate[8];
+id0_boolean_t	btnstate[8];
 
 void IN_StartAck(void)
 {
-	unsigned	i,buttons;
+	id0_unsigned_t	i,buttons;
 
 //
 // get initial state of everything
@@ -932,9 +932,9 @@ void IN_StartAck(void)
 }
 
 
-boolean IN_CheckAck (void)
+id0_boolean_t IN_CheckAck (void)
 {
-	unsigned	i,buttons;
+	id0_unsigned_t	i,buttons;
 
 //
 // see if something has been pressed
@@ -976,9 +976,9 @@ void IN_Ack (void)
 //		button up.
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean IN_UserInput(longword delay)
+id0_boolean_t IN_UserInput(id0_longword_t delay)
 {
-	longword	lasttime;
+	id0_longword_t	lasttime;
 
 	lasttime = TimeCount;
 	IN_StartAck ();
@@ -1000,7 +1000,7 @@ boolean IN_UserInput(longword delay)
 ===================
 */
 
-byte	IN_MouseButtons (void)
+id0_byte_t	IN_MouseButtons (void)
 {
 	if (MousePresent)
 	{
@@ -1020,9 +1020,9 @@ byte	IN_MouseButtons (void)
 ===================
 */
 
-byte	IN_JoyButtons (void)
+id0_byte_t	IN_JoyButtons (void)
 {
-	unsigned joybits;
+	id0_unsigned_t joybits;
 
 	joybits = inportb(0x201);	// Get all the joystick buttons
 	joybits >>= 4;				// only the high bits are useful

@@ -32,7 +32,7 @@ void CP_BackToDemo(void);
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-char GAMEVER_COND_FARPTR endStrings[9][80]=
+id0_char_t GAMEVER_COND_FARPTR endStrings[9][80]=
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -75,9 +75,9 @@ char GAMEVER_COND_FARPTR endStrings[9][80]=
 // The yet-unused pickquick variable is defined for the purpose
 // of recreating the original EXE, albeit in a different location.
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-int pickquick;
-int SaveGamesAvail[10],StartGame,SoundStatus=1;
-char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.WL1";
+id0_int_t pickquick;
+id0_int_t SaveGamesAvail[10],StartGame,SoundStatus=1;
+id0_char_t SaveGameNames[10][32],SaveName[13]="SAVEGAM?.WL1";
 #endif
 
 CP_iteminfo
@@ -364,7 +364,7 @@ GAMEVER_COND_FARPTR CusMenu[]=
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-int color_hlite[]={
+id0_int_t color_hlite[]={
    DEACTIVE,
    HIGHLIGHT,
    READHCOLOR,
@@ -378,15 +378,15 @@ int color_hlite[]={
    0x6b
    };
 
-int EpisodeSelect[6]={1};
+id0_int_t EpisodeSelect[6]={1};
 #endif
 
 
 // *** ALPHA RESTORATION ***
 // Looks like these were originally defined above, with a few changes
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-int SaveGamesAvail[10],StartGame,SoundStatus=1,pickquick;
-char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.";
+id0_int_t SaveGamesAvail[10],StartGame,SoundStatus=1,pickquick;
+id0_char_t SaveGameNames[10][32],SaveName[13]="SAVEGAM?.";
 #endif
 
 
@@ -395,7 +395,7 @@ char SaveGameNames[10][32],SaveName[13]="SAVEGAM?.";
 // INPUT MANAGER SCANCODE TABLES
 //
 ////////////////////////////////////////////////////////////////////
-static byte
+static id0_byte_t
 					*ScanNames[] =		// Scan code names with single chars
 					{
 	"?","?","1","2","3","4","5","6","7","8","9","0","-","+","?","?",
@@ -407,7 +407,7 @@ static byte
 	"?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?",
 	"?","?","?","?","?","?","?","?","?","?","?","?","?","?","?","?"
 					},	// DEBUG - consolidate these
-					far ExtScanCodes[] =	// Scan codes with >1 char names
+					id0_far ExtScanCodes[] =	// Scan codes with >1 char names
 					{
 	1,0xe,0xf,0x1d,0x2a,0x39,0x3a,0x3b,0x3c,0x3d,0x3e,
 	0x3f,0x40,0x41,0x42,0x43,0x44,0x57,0x59,0x46,0x1c,0x36,
@@ -428,9 +428,9 @@ static byte
 // Wolfenstein Control Panel!  Ta Da!
 //
 ////////////////////////////////////////////////////////////////////
-void US_ControlPanel(byte scancode)
+void US_ControlPanel(id0_byte_t scancode)
 {
-	int which,i,start;
+	id0_int_t which,i,start;
 
 
 	// *** ALPHA RESTORATION ***
@@ -828,7 +828,7 @@ void BossKey(void)
 // CHECK QUICK-KEYS & QUIT (WHILE IN A GAME)
 //
 ////////////////////////////////////////////////////////////////////
-int CP_CheckQuick(unsigned scancode)
+id0_int_t CP_CheckQuick(id0_unsigned_t scancode)
 {
 	switch(scancode)
 	{
@@ -965,7 +965,7 @@ int CP_CheckQuick(unsigned scancode)
 		case sc_F9:
 			if (SaveGamesAvail[LSItems.curpos] && pickquick)
 			{
-				char string[100]=STR_LGC;
+				id0_char_t string[100]=STR_LGC;
 
 
 				CA_CacheGrChunk(STARTFONT+1);
@@ -1082,7 +1082,7 @@ int CP_CheckQuick(unsigned scancode)
 				#endif
 			#endif
 			{
-				int i;
+				id0_int_t i;
 
 
 				VW_UpdateScreen();
@@ -1120,7 +1120,7 @@ int CP_CheckQuick(unsigned scancode)
 // END THE CURRENT GAME
 //
 ////////////////////////////////////////////////////////////////////
-int CP_EndGame(void)
+id0_int_t CP_EndGame(void)
 {
 #ifdef JAPAN
 	if (!GetYorN(7,8,C_JAPQUITPIC))
@@ -1196,7 +1196,7 @@ void CP_ViewScores(void)
 ////////////////////////////////////////////////////////////////////
 void CP_NewGame(void)
 {
-	int which,episode;
+	id0_int_t which,episode;
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -1370,7 +1370,7 @@ firstpart:
 //
 void DrawNewEpisode(void)
 {
-	int i;
+	id0_int_t i;
 
 #ifdef JAPAN
 	CA_CacheScreen(S_EPISODEPIC);
@@ -1450,7 +1450,7 @@ void DrawNewGame(void)
 //
 // DRAW NEW GAME GRAPHIC
 //
-void DrawNewGameDiff(int w)
+void DrawNewGameDiff(id0_int_t w)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -1468,7 +1468,7 @@ void DrawNewGameDiff(int w)
 ////////////////////////////////////////////////////////////////////
 void CP_Sound(void)
 {
-	int which,i;
+	id0_int_t which,i;
 
 
 #ifdef SPEAR
@@ -1589,7 +1589,7 @@ void CP_Sound(void)
 //
 void DrawSoundMenu(void)
 {
-	int i,on;
+	id0_int_t i,on;
 
 
 #ifdef JAPAN
@@ -1689,7 +1689,7 @@ void DrawSoundMenu(void)
 //
 // DRAW LOAD/SAVE IN PROGRESS
 //
-void DrawLSAction(int which)
+void DrawLSAction(id0_int_t which)
 {
 	#define LSA_X	96
 	#define LSA_Y	80
@@ -1723,17 +1723,17 @@ void DrawLSAction(int which)
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void CP_LoadGame(void)
 #else
-int CP_LoadGame(int quick)
+id0_int_t CP_LoadGame(id0_int_t quick)
 #endif
 {
 	FILE BE_FILE_T handle;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	int which;
+	id0_int_t which;
 #else
-	int which,exit=0;
+	id0_int_t which,exit=0;
 #endif
-	char name[13];
+	id0_char_t name[13];
 
 
 	// *** ALPHA RESTORATION ***
@@ -1856,9 +1856,9 @@ int CP_LoadGame(int quick)
 //
 // HIGHLIGHT CURRENT SELECTED ENTRY
 //
-void TrackWhichGame(int w)
+void TrackWhichGame(id0_int_t w)
 {
-	static int lastgameon=0;
+	static id0_int_t lastgameon=0;
 
 	PrintLSEntry(lastgameon,TEXTCOLOR);
 	PrintLSEntry(w,HIGHLIGHT);
@@ -1871,12 +1871,12 @@ void TrackWhichGame(int w)
 //
 // DRAW THE LOAD/SAVE SCREEN
 //
-void DrawLoadSaveScreen(int loadsave)
+void DrawLoadSaveScreen(id0_int_t loadsave)
 {
 	#define DISKX	100
 	#define DISKY	0
 
-	int i;
+	id0_int_t i;
 
 
 	ClearMScreen();
@@ -1918,7 +1918,7 @@ void DrawLoadSaveScreen(int loadsave)
 //
 // PRINT LOAD/SAVE GAME ENTRY W/BOX OUTLINE
 //
-void PrintLSEntry(int w,int color)
+void PrintLSEntry(id0_int_t w,id0_int_t color)
 {
 	SETFONTCOLOR(color,BKGDCOLOR);
 	DrawOutline(LSM_X+LSItems.indent,LSM_Y+w*13,LSM_W-LSItems.indent-15,11,color,color);
@@ -1944,18 +1944,18 @@ void PrintLSEntry(int w,int color)
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void CP_SaveGame(void)
 #else
-int CP_SaveGame(int quick)
+id0_int_t CP_SaveGame(id0_int_t quick)
 #endif
 {
 	BE_FILE_T handle;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	int which;
+	id0_int_t which;
 #else
-	int which,exit=0;
-	unsigned nwritten;
+	id0_int_t which,exit=0;
+	id0_unsigned_t nwritten;
 #endif
-	char name[13],input[32];
+	id0_char_t name[13],input[32];
 
 
 	// *** ALPHA RESTORATION ***
@@ -1978,8 +1978,8 @@ int CP_SaveGame(int quick)
 
 			strcpy(input,&SaveGameNames[which][0]);
 
-			BE_Cross_writeInt8LEBuffer(handle,(void far *)input,32);
-			//_dos_write(handle,(void far *)input,32,&nwritten);
+			BE_Cross_writeInt8LEBuffer(handle,(void id0_far *)input,32);
+			//_dos_write(handle,(void id0_far *)input,32,&nwritten);
 			BE_Cross_seek(handle,32,SEEK_SET);
 			SaveTheGame(handle,0,0);
 			BE_Cross_close(handle);
@@ -2055,7 +2055,7 @@ int CP_SaveGame(int quick)
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 				//write(handle,input,32);
 #else
-				//_dos_write(handle,(void far *)input,32,&nwritten);
+				//_dos_write(handle,(void id0_far *)input,32,&nwritten);
 				BE_Cross_seek(handle,32,SEEK_SET);
 #endif
 
@@ -2116,14 +2116,14 @@ void CP_BackToDemo(void)
 // CALIBRATE JOYSTICK
 //
 ////////////////////////////////////////////////////////////////////
-int CalibrateJoystick(void)
+id0_int_t CalibrateJoystick(void)
 {
 	#define CALX	85
 	#define CALY	40
 	#define CALW	158
 	#define CALH	140
 
-	unsigned xmin,ymin,xmax,ymax,jb;
+	id0_unsigned_t xmin,ymin,xmax,ymax,jb;
 
 
 
@@ -2225,7 +2225,7 @@ void CP_Control(void)
 {
 	#define CTL_SPC	70
 	enum {MOUSEENABLE,JOYENABLE,USEPORT2,PADENABLE,MOUSESENS,CUSTOMIZE};
-	int i,which;
+	id0_int_t i,which;
 
 
 #ifdef SPEAR
@@ -2352,7 +2352,7 @@ void DrawMouseSens(void)
 void MouseSensitivity(void)
 {
 	ControlInfo ci;
-	int exit=0,oldMA;
+	id0_int_t exit=0,oldMA;
 
 
 	oldMA=mouseadjustment;
@@ -2434,7 +2434,7 @@ void MouseSensitivity(void)
 //
 void DrawCtlScreen(void)
 {
- int i,x,y;
+ id0_int_t i,x,y;
 
 
 #ifdef JAPAN
@@ -2547,13 +2547,13 @@ void DrawCtlScreen(void)
 //
 ////////////////////////////////////////////////////////////////////
 enum {FIRE,STRAFE,RUN,OPEN};
-char mbarray[4][3]={"b0","b1","b2","b3"},
+id0_char_t mbarray[4][3]={"b0","b1","b2","b3"},
 	   order[4]={RUN,OPEN,FIRE,STRAFE};
 
 
 void CustomControls(void)
 {
- int which;
+ id0_int_t which;
 
 
  DrawCustomScreen();
@@ -2635,11 +2635,11 @@ void DefineKeyMove(void)
 // ENTER CONTROL DATA FOR ANY TYPE OF CONTROL
 //
 enum {FWRD,RIGHT,BKWD,LEFT};
-int moveorder[4]={LEFT,RIGHT,FWRD,BKWD};
+id0_int_t moveorder[4]={LEFT,RIGHT,FWRD,BKWD};
 
-void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*PrintRtn)(int),int type)
+void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),void (*PrintRtn)(id0_int_t),id0_int_t type)
 {
- int j,exit,tick,redraw,which,x,picked;
+ id0_int_t j,exit,tick,redraw,which,x,picked;
  ControlInfo ci;
 
 
@@ -2697,7 +2697,7 @@ void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*Print
 
    do
    {
-	int button,result=0;
+	id0_int_t button,result=0;
 
 
 	if (type==KEYBOARDBTNS||type==KEYBOARDMOVE)
@@ -2740,7 +2740,7 @@ void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*Print
 
 	   if (result)
 	   {
-	int z;
+	id0_int_t z;
 
 
 	for (z=0;z<4;z++)
@@ -2767,7 +2767,7 @@ void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*Print
 
 	   if (result)
 	   {
-	int z;
+	id0_int_t z;
 
 
 	for (z=0;z<4;z++)
@@ -2870,10 +2870,10 @@ void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*Print
 //
 // FIXUP GUN CURSOR OVERDRAW SHIT
 //
-void FixupCustom(int w)
+void FixupCustom(id0_int_t w)
 {
-	static int lastwhich=-1;
-	int y=CST_Y+26+w*13;
+	static id0_int_t lastwhich=-1;
+	id0_int_t y=CST_Y+26+w*13;
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -2944,7 +2944,7 @@ void FixupCustom(int w)
 //
 void DrawCustomScreen(void)
 {
-	int i;
+	id0_int_t i;
 
 
 #ifdef JAPAN
@@ -3144,9 +3144,9 @@ void DrawCustomScreen(void)
 }
 
 
-void PrintCustMouse(int i)
+void PrintCustMouse(id0_int_t i)
 {
-	int j;
+	id0_int_t j;
 
 	for (j=0;j<4;j++)
 		if (order[i]==buttonmouse[j])
@@ -3157,9 +3157,9 @@ void PrintCustMouse(int i)
 		}
 }
 
-void DrawCustMouse(int hilight)
+void DrawCustMouse(id0_int_t hilight)
 {
-	int i,color;
+	id0_int_t i,color;
 
 
 	color=TEXTCOLOR;
@@ -3180,9 +3180,9 @@ void DrawCustMouse(int hilight)
 		PrintCustMouse(i);
 }
 
-void PrintCustJoy(int i)
+void PrintCustJoy(id0_int_t i)
 {
-	int j;
+	id0_int_t j;
 
 	for (j=0;j<4;j++)
 		if (order[i]==buttonjoy[j])
@@ -3193,9 +3193,9 @@ void PrintCustJoy(int i)
 		}
 }
 
-void DrawCustJoy(int hilight)
+void DrawCustJoy(id0_int_t hilight)
 {
-	int i,color;
+	id0_int_t i,color;
 
 
 	color=TEXTCOLOR;
@@ -3217,15 +3217,15 @@ void DrawCustJoy(int hilight)
 }
 
 
-void PrintCustKeybd(int i)
+void PrintCustKeybd(id0_int_t i)
 {
 	PrintX=CST_START+CST_SPC*i;
 	US_Print(IN_GetScanName(buttonscan[order[i]]));
 }
 
-void DrawCustKeybd(int hilight)
+void DrawCustKeybd(id0_int_t hilight)
 {
-	int i,color;
+	id0_int_t i,color;
 
 
 	color=TEXTCOLOR;
@@ -3238,15 +3238,15 @@ void DrawCustKeybd(int hilight)
 		PrintCustKeybd(i);
 }
 
-void PrintCustKeys(int i)
+void PrintCustKeys(id0_int_t i)
 {
 	PrintX=CST_START+CST_SPC*i;
 	US_Print(IN_GetScanName(dirscan[moveorder[i]]));
 }
 
-void DrawCustKeys(int hilight)
+void DrawCustKeys(id0_int_t hilight)
 {
-	int i,color;
+	id0_int_t i,color;
 
 
 	color=TEXTCOLOR;
@@ -3267,7 +3267,7 @@ void DrawCustKeys(int hilight)
 ////////////////////////////////////////////////////////////////////
 void CP_ChangeView(void)
 {
-	int exit=0,oldview,newview;
+	id0_int_t exit=0,oldview,newview;
 	ControlInfo ci;
 
 
@@ -3350,7 +3350,7 @@ void CP_ChangeView(void)
 //
 // DRAW THE CHANGEVIEW SCREEN
 //
-void DrawChangeView(int view)
+void DrawChangeView(id0_int_t view)
 {
 #ifdef JAPAN
 	CA_CacheScreen(S_CHANGEPIC);
@@ -3387,7 +3387,7 @@ void DrawChangeView(int view)
 ////////////////////////////////////////////////////////////////////
 void CP_Quit(void)
 {
-	int i;
+	id0_int_t i;
 
 
 	#ifdef JAPAN
@@ -3453,14 +3453,14 @@ void IntroScreen(void)
 #endif
 #define FILLCOLOR	14
 
-	long memory,emshere,xmshere;
+	id0_long_t memory,emshere,xmshere;
 	// *** ALPHA RESTORATION ***
 	// Looks like num was used in the alpha, but forgotten later...
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	int i,num,ems[10]={256,512,1000,1500,2000,2500,3000,3500,4000},
+	id0_int_t i,num,ems[10]={256,512,1000,1500,2000,2500,3000,3500,4000},
 		xms[10]={512,1000,2000,3000,4000,5000,6000,7000,8000};
 #else
-	int i,num,ems[10]={100,200,300,400,500,600,700,800,900,1000},
+	id0_int_t i,num,ems[10]={100,200,300,400,500,600,700,800,900,1000},
 		xms[10]={100,200,300,400,500,600,700,800,900,1000},
 		main[10]={32,64,96,128,160,192,224,256,288,320};
 #endif
@@ -3600,18 +3600,18 @@ void ClearMScreen(void)
 // Un/Cache a LUMP of graphics
 //
 ////////////////////////////////////////////////////////////////////
-void CacheLump(int lumpstart,int lumpend)
+void CacheLump(id0_int_t lumpstart,id0_int_t lumpend)
 {
- int i;
+ id0_int_t i;
 
  for (i=lumpstart;i<=lumpend;i++)
    CA_CacheGrChunk(i);
 }
 
 
-void UnCacheLump(int lumpstart,int lumpend)
+void UnCacheLump(id0_int_t lumpstart,id0_int_t lumpend)
 {
- int i;
+ id0_int_t i;
 
  for (i=lumpstart;i<=lumpend;i++)
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -3627,14 +3627,14 @@ void UnCacheLump(int lumpstart,int lumpend)
 // Draw a window for a menu
 //
 ////////////////////////////////////////////////////////////////////
-void DrawWindow(int x,int y,int w,int h,int wcolor)
+void DrawWindow(id0_int_t x,id0_int_t y,id0_int_t w,id0_int_t h,id0_int_t wcolor)
 {
 	VWB_Bar(x,y,w,h,wcolor);
 	DrawOutline(x,y,w,h,BORD2COLOR,DEACTIVE);
 }
 
 
-void DrawOutline(int x,int y,int w,int h,int color1,int color2)
+void DrawOutline(id0_int_t x,id0_int_t y,id0_int_t w,id0_int_t h,id0_int_t color1,id0_int_t color2)
 {
 	VWB_Hlin(x,x+w,y,color2);
 	VWB_Vlin(y,y+h,x,color2);
@@ -3651,8 +3651,8 @@ void DrawOutline(int x,int y,int w,int h,int color1,int color2)
 void SetupControlPanel(void)
 {
 	struct ffblk f;
-	char name[13];
-	int which,i;
+	id0_char_t name[13];
+	id0_int_t which,i;
 
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -3690,7 +3690,7 @@ void SetupControlPanel(void)
 			if (which<10)
 			{
 				BE_FILE_T handle;
-				char temp[32];
+				id0_char_t temp[32];
 
 				SaveGamesAvail[which]=1;
 				handle=BE_Cross_open_rewritable_for_reading(f.ff_name);
@@ -3735,11 +3735,11 @@ void CleanupControlPanel(void)
 // Handle moving gun around a menu
 //
 ////////////////////////////////////////////////////////////////////
-int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (*routine)(int w))
+id0_int_t HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (*routine)(id0_int_t w))
 {
-	char key;
-	static int redrawitem=1,lastitem=-1;
-	int i,x,y,basey,exit,which,shape,timer;
+	id0_char_t key;
+	static id0_int_t redrawitem=1,lastitem=-1;
+	id0_int_t i,x,y,basey,exit,which,shape,timer;
 	ControlInfo ci;
 
 
@@ -3802,7 +3802,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 		key=LastASCII;
 		if (key)
 		{
-			int ok=0;
+			id0_int_t ok=0;
 
 			// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -4006,7 +4006,7 @@ int HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,void (
 //
 // ERASE GUN & DE-HIGHLIGHT STRING
 //
-void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int y,int which)
+void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,id0_int_t x,id0_int_t y,id0_int_t which)
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
@@ -4026,7 +4026,7 @@ void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,i
 //
 // DRAW HALF STEP OF GUN TO NEXT POSITION
 //
-void DrawHalfStep(int x,int y)
+void DrawHalfStep(id0_int_t x,id0_int_t y)
 {
 	VWB_DrawPic(x,y,C_CURSOR1PIC);
 	VW_UpdateScreen();
@@ -4039,7 +4039,7 @@ void DrawHalfStep(int x,int y)
 //
 // DRAW GUN AT NEW POSITION
 //
-void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int *y,int which,int basey,void (*routine)(int w))
+void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,id0_int_t x,id0_int_t *y,id0_int_t which,id0_int_t basey,void (*routine)(id0_int_t w))
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
@@ -4069,7 +4069,7 @@ void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,in
 // DELAY FOR AN AMOUNT OF TICS OR UNTIL CONTROLS ARE INACTIVE
 //
 ////////////////////////////////////////////////////////////////////
-void TicDelay(int count)
+void TicDelay(id0_int_t count)
 {
 	ControlInfo ci;
 
@@ -4089,7 +4089,7 @@ void TicDelay(int count)
 ////////////////////////////////////////////////////////////////////
 void DrawMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items)
 {
-	int i,which=item_i->curpos;
+	id0_int_t i,which=item_i->curpos;
 
 
 	WindowX=PrintX=item_i->x+item_i->indent;
@@ -4124,7 +4124,7 @@ void DrawMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items)
 // SET TEXT COLOR (HIGHLIGHT OR NO)
 //
 ////////////////////////////////////////////////////////////////////
-void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,int hlight)
+void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,id0_int_t hlight)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -4179,14 +4179,14 @@ void WaitKeyUp(void)
 ////////////////////////////////////////////////////////////////////
 void ReadAnyControl(ControlInfo *ci)
 {
-	int mouseactive=0;
+	id0_int_t mouseactive=0;
 
 
 	IN_ReadControl(0,ci);
 
 	if (mouseenabled)
 	{
-		int mousey,mousex;
+		id0_int_t mousey,mousex;
 
 
 		// READ MOUSE MOTION COUNTERS
@@ -4242,7 +4242,7 @@ void ReadAnyControl(ControlInfo *ci)
 
 	if (joystickenabled && !mouseactive)
 	{
-		int jx,jy,jb;
+		id0_int_t jx,jy,jb;
 
 
 		INL_GetJoyDelta(joystickport,&jx,&jy);
@@ -4280,13 +4280,13 @@ void ReadAnyControl(ControlInfo *ci)
 // DRAW DIALOG AND CONFIRM YES OR NO TO QUESTION
 //
 ////////////////////////////////////////////////////////////////////
-int Confirm(char GAMEVER_COND_FARPTR *string)
+id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 {
 	// *** ALPHA RESTORATION ***
 	// Originally the code from the Message function was *hardcoded* here
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	int xit=0,h=0,w=0,mw=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
-	fontstruct _seg *font;
+	id0_int_t xit=0,h=0,w=0,mw=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
+	fontstruct id0_seg *font;
 
 
 	fontnumber=1;
@@ -4315,7 +4315,7 @@ int Confirm(char GAMEVER_COND_FARPTR *string)
 	US_Print(string);
 	VW_UpdateScreen();
 #else // GAMEVER_WOLFREV > GV_WR_WL920312
-	int xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
+	id0_int_t xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
 
 
 	Message(string);
@@ -4393,9 +4393,9 @@ int Confirm(char GAMEVER_COND_FARPTR *string)
 // DRAW MESSAGE & GET Y OR N
 //
 ////////////////////////////////////////////////////////////////////
-int GetYorN(int x,int y,int pic)
+id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic)
 {
-	int xit=0,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
+	id0_int_t xit=0,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
 
 
 	CA_CacheGrChunk(pic);
@@ -4454,10 +4454,10 @@ int GetYorN(int x,int y,int pic)
 // PRINT A MESSAGE IN A WINDOW
 //
 ////////////////////////////////////////////////////////////////////
-void Message(char GAMEVER_COND_FARPTR *string)
+void Message(id0_char_t GAMEVER_COND_FARPTR *string)
 {
-	int h=0,w=0,mw=0,i,x,y,time;
-	fontstruct _seg *font;
+	id0_int_t h=0,w=0,mw=0,i,x,y,time;
+	fontstruct id0_seg *font;
 
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -4505,10 +4505,10 @@ void Message(char GAMEVER_COND_FARPTR *string)
 // THIS MAY BE FIXED A LITTLE LATER...
 //
 ////////////////////////////////////////////////////////////////////
-static	int	lastmusic;
+static	id0_int_t	lastmusic;
 #endif
 
-void StartCPMusic(int song)
+void StartCPMusic(id0_int_t song)
 {
 	musicnames	chunk;
 
@@ -4530,7 +4530,7 @@ void StartCPMusic(int song)
 	else
 	{
 		MM_SetLock(&((memptr)audiosegs[STARTMUSIC + chunk]),true);
-		SD_StartMusic((MusicGroup far *)audiosegs[STARTMUSIC + chunk]);
+		SD_StartMusic((MusicGroup id0_far *)audiosegs[STARTMUSIC + chunk]);
 	}
 }
 
@@ -4550,11 +4550,11 @@ void FreeMusic (void)
 //		specified scan code
 //
 ///////////////////////////////////////////////////////////////////////////
-byte *
+id0_byte_t *
 IN_GetScanName(ScanCode scan)
 {
-	byte		**p;
-	ScanCode	far *s;
+	id0_byte_t		**p;
+	ScanCode	id0_far *s;
 
 	for (s = ExtScanCodes,p = ExtScanNames;*s;p++,s++)
 		if (*s == scan)
@@ -4594,7 +4594,7 @@ void CheckPause(void)
 ///////////////////////////////////////////////////////////////////////////
 void DrawMenuGun(CP_iteminfo *iteminfo)
 {
-	int x,y;
+	id0_int_t x,y;
 
 
 	x=iteminfo->x;
@@ -4610,7 +4610,7 @@ void DrawMenuGun(CP_iteminfo *iteminfo)
 // DRAW SCREEN TITLE STRIPES
 //
 ///////////////////////////////////////////////////////////////////////////
-void DrawStripes(int y)
+void DrawStripes(id0_int_t y)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D

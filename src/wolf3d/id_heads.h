@@ -30,7 +30,7 @@
 #define EXTENSION	"WL1"
 #endif
 
-extern	char		far signon;
+extern	id0_char_t		id0_far signon;
 
 #define	introscn	signon
 
@@ -115,7 +115,7 @@ typedef uint32_t id0_longword_t;
 
 typedef	struct
 		{
-			int	x,y;
+			id0_int_t	x,y;
 		} Point;
 typedef	struct
 		{
@@ -143,7 +143,7 @@ typedef	struct
 #include "id_us.h"
 
 
-void	Quit (char *error);		// defined in user program
+void	Quit (id0_char_t *error);		// defined in user program
 
 //
 // replacing refresh manager with custom routines
@@ -166,14 +166,14 @@ void	Quit (char *error);		// defined in user program
 
 #define	UPDATETERMINATE	0x0301
 
-extern	unsigned	mapwidth,mapheight,tics;
-extern	boolean		compatability;
+extern	id0_unsigned_t	mapwidth,mapheight,tics;
+extern	id0_boolean_t		compatability;
 
-extern	byte		*updateptr;
-extern	unsigned	uwidthtable[UPDATEHIGH];
-extern	unsigned	blockstarts[UPDATEWIDE*UPDATEHIGH];
+extern	id0_byte_t		*updateptr;
+extern	id0_unsigned_t	uwidthtable[UPDATEHIGH];
+extern	id0_unsigned_t	blockstarts[UPDATEWIDE*UPDATEHIGH];
 
-extern	byte		fontcolor,backcolor;
+extern	id0_byte_t		fontcolor,backcolor;
 
 #define SETFONTCOLOR(f,b) fontcolor=f;backcolor=b;
 

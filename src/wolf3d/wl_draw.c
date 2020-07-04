@@ -39,29 +39,29 @@
 // Not sure how were these values picked, but here they are
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #ifdef DEBUGWALLS
-unsigned screenloc[3]= {0,0,0};
+id0_unsigned_t screenloc[3]= {0,0,0};
 #else
-unsigned screenloc[3]= {3328,16128,28928};
+id0_unsigned_t screenloc[3]= {3328,16128,28928};
 #endif
-unsigned freelatch = 41728;
+id0_unsigned_t freelatch = 41728;
 #else
 #ifdef DEBUGWALLS
-unsigned screenloc[3]= {0,0,0};
+id0_unsigned_t screenloc[3]= {0,0,0};
 #else
-unsigned screenloc[3]= {PAGE1START,PAGE2START,PAGE3START};
+id0_unsigned_t screenloc[3]= {PAGE1START,PAGE2START,PAGE3START};
 #endif
-unsigned freelatch = FREESTART;
+id0_unsigned_t freelatch = FREESTART;
 #endif
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-int 	screenpage;
+id0_int_t 	screenpage;
 #endif
 
-long 	lasttimecount;
-long 	frameon;
+id0_long_t 	lasttimecount;
+id0_long_t 	frameon;
 
-unsigned	wallheight[MAXVIEWWIDTH];
+id0_unsigned_t	wallheight[MAXVIEWWIDTH];
 
 fixed	tileglobal	= TILEGLOBAL;
 fixed	mindist		= MINDIST;
@@ -70,15 +70,15 @@ fixed	mindist		= MINDIST;
 //
 // math tables
 //
-int			pixelangle[MAXVIEWWIDTH];
-long		far finetangent[FINEANGLES/4];
-fixed 		far sintable[ANGLES+ANGLES/4],far *costable = sintable+(ANGLES/4);
+id0_int_t			pixelangle[MAXVIEWWIDTH];
+id0_long_t		id0_far finetangent[FINEANGLES/4];
+fixed 		id0_far sintable[ANGLES+ANGLES/4],id0_far *costable = sintable+(ANGLES/4);
 
 //
 // refresh variables
 //
 fixed	viewx,viewy;			// the focal point
-int		viewangle;
+id0_int_t		viewangle;
 fixed	viewsin,viewcos;
 
 
@@ -87,7 +87,7 @@ fixed	FixedByFrac (fixed a, fixed b);
 void	TransformActor (objtype *ob);
 void	BuildTables (void);
 void	ClearScreen (void);
-int		CalcRotate (objtype *ob);
+id0_int_t		CalcRotate (objtype *ob);
 void	DrawScaleds (void);
 void	CalcTics (void);
 void	FixOfs (void);
@@ -98,34 +98,34 @@ void	ThreeDRefresh (void);
 //
 // wall optimization variables
 //
-int		lastside;		// true for vertical
-long	lastintercept;
-int		lasttilehit;
+id0_int_t		lastside;		// true for vertical
+id0_long_t	lastintercept;
+id0_int_t		lasttilehit;
 
 // *** ALPHA RESTORATION *** - A couple of unused variables
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-int	someUnusedDrawVar1, someUnusedDrawVar2;
+id0_int_t	someUnusedDrawVar1, someUnusedDrawVar2;
 #endif
 
 //
 // ray tracing variables
 //
-int			focaltx,focalty,viewtx,viewty;
+id0_int_t			focaltx,focalty,viewtx,viewty;
 
-int			midangle,angle;
-unsigned	xpartial,ypartial;
-unsigned	xpartialup,xpartialdown,ypartialup,ypartialdown;
-unsigned	xinttile,yinttile;
+id0_int_t			midangle,angle;
+id0_unsigned_t	xpartial,ypartial;
+id0_unsigned_t	xpartialup,xpartialdown,ypartialup,ypartialdown;
+id0_unsigned_t	xinttile,yinttile;
 
-unsigned	tilehit;
-unsigned	pixx;
+id0_unsigned_t	tilehit;
+id0_unsigned_t	pixx;
 
-int		xtile,ytile;
-int		xtilestep,ytilestep;
-long	xintercept,yintercept;
-long	xstep,ystep;
+id0_int_t		xtile,ytile;
+id0_int_t		xtilestep,ytilestep;
+id0_long_t	xintercept,yintercept;
+id0_long_t	xstep,ystep;
 
-int		horizwall[MAXWALLTILES],vertwall[MAXWALLTILES];
+id0_int_t		horizwall[MAXWALLTILES],vertwall[MAXWALLTILES];
 
 
 /*
@@ -235,9 +235,9 @@ ansok:;
 //
 void TransformActor (objtype *ob)
 {
-	int ratio;
+	id0_int_t ratio;
 	fixed gx,gy,gxt,gyt,nx,ny;
-	long	temp;
+	id0_long_t	temp;
 
 //
 // translate point to view centered coordinates
@@ -310,17 +310,17 @@ void TransformActor (objtype *ob)
 ========================
 */
 
-boolean TransformTile (int tx, int ty, int *dispx, int *dispheight)
+id0_boolean_t TransformTile (id0_int_t tx, id0_int_t ty, id0_int_t *dispx, id0_int_t *dispheight)
 {
-	int ratio;
+	id0_int_t ratio;
 	fixed gx,gy,gxt,gyt,nx,ny;
-	long	temp;
+	id0_long_t	temp;
 
 //
 // translate point to view centered coordinates
 //
-	gx = ((long)tx<<TILESHIFT)+0x8000-viewx;
-	gy = ((long)ty<<TILESHIFT)+0x8000-viewy;
+	gx = ((id0_long_t)tx<<TILESHIFT)+0x8000-viewx;
+	gy = ((id0_long_t)ty<<TILESHIFT)+0x8000-viewy;
 
 //
 // calculate newx
@@ -382,12 +382,12 @@ boolean TransformTile (int tx, int ty, int *dispx, int *dispheight)
 
 #pragma warn -rvl			// I stick the return value in with ASMs
 
-int	CalcHeight (void)
+id0_int_t	CalcHeight (void)
 {
-	int	transheight;
-	int ratio;
+	id0_int_t	transheight;
+	id0_int_t ratio;
 	fixed gxt,gyt,nx,ny;
-	long	gx,gy;
+	id0_long_t	gx,gy;
 
 	gx = xintercept-viewx;
 	gxt = FixedByFrac(gx,viewcos);
@@ -419,9 +419,9 @@ int	CalcHeight (void)
 ===================
 */
 
-long		postsource;
-unsigned	postx;
-unsigned	postwidth;
+id0_long_t		postsource;
+id0_unsigned_t	postx;
+id0_unsigned_t	postwidth;
 
 void	near ScalePost (void)		// VGA version
 {
@@ -502,8 +502,8 @@ void  FarScalePost (void)				// just so other files can call
 
 void HitVertWall (void)
 {
-	int			wallpic;
-	unsigned	texture;
+	id0_int_t			wallpic;
+	id0_unsigned_t	texture;
 
 	texture = (yintercept>>4)&0xfc0;
 	if (xtilestep == -1)
@@ -516,7 +516,7 @@ void HitVertWall (void)
 	if (lastside==1 && lastintercept == xtile && lasttilehit == tilehit)
 	{
 		// in the same wall type as last time, so check for optimized draw
-		if (texture == (unsigned)postsource)
+		if (texture == (id0_unsigned_t)postsource)
 		{
 		// wide scale
 			postwidth++;
@@ -526,7 +526,7 @@ void HitVertWall (void)
 		else
 		{
 			ScalePost ();
-			(unsigned)postsource = texture;
+			(id0_unsigned_t)postsource = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -560,8 +560,8 @@ void HitVertWall (void)
 		else
 			wallpic = vertwall[tilehit];
 
-		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(wallpic);
-		(unsigned)postsource = texture;
+		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
+		(id0_unsigned_t)postsource = texture;
 
 	}
 	// *** S3DNA RESTORATION ***
@@ -584,8 +584,8 @@ void HitVertWall (void)
 
 void HitHorizWall (void)
 {
-	int			wallpic;
-	unsigned	texture;
+	id0_int_t			wallpic;
+	id0_unsigned_t	texture;
 
 	texture = (xintercept>>4)&0xfc0;
 	if (ytilestep == -1)
@@ -597,7 +597,7 @@ void HitHorizWall (void)
 	if (lastside==0 && lastintercept == ytile && lasttilehit == tilehit)
 	{
 		// in the same wall type as last time, so check for optimized draw
-		if (texture == (unsigned)postsource)
+		if (texture == (id0_unsigned_t)postsource)
 		{
 		// wide scale
 			postwidth++;
@@ -607,7 +607,7 @@ void HitHorizWall (void)
 		else
 		{
 			ScalePost ();
-			(unsigned)postsource = texture;
+			(id0_unsigned_t)postsource = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -641,8 +641,8 @@ void HitHorizWall (void)
 		else
 			wallpic = horizwall[tilehit];
 
-		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(wallpic);
-		(unsigned)postsource = texture;
+		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
+		(id0_unsigned_t)postsource = texture;
 	}
 
 	// *** S3DNA RESTORATION ***
@@ -663,7 +663,7 @@ void HitHorizWall (void)
 
 void HitHorizDoor (void)
 {
-	unsigned	texture,doorpage,doornum;
+	id0_unsigned_t	texture,doorpage,doornum;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -679,7 +679,7 @@ void HitHorizDoor (void)
 	if (lasttilehit == tilehit)
 	{
 	// in the same door as last time, so check for optimized draw
-		if (texture == (unsigned)postsource)
+		if (texture == (id0_unsigned_t)postsource)
 		{
 		// wide scale
 			postwidth++;
@@ -689,7 +689,7 @@ void HitHorizDoor (void)
 		else
 		{
 			ScalePost ();
-			(unsigned)postsource = texture;
+			(id0_unsigned_t)postsource = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -736,8 +736,8 @@ void HitHorizDoor (void)
 #endif
 		}
 
-		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(doorpage);
-		(unsigned)postsource = texture;
+		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage);
+		(id0_unsigned_t)postsource = texture;
 	}
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -757,7 +757,7 @@ void HitHorizDoor (void)
 
 void HitVertDoor (void)
 {
-	unsigned	texture,doorpage,doornum;
+	id0_unsigned_t	texture,doorpage,doornum;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -773,7 +773,7 @@ void HitVertDoor (void)
 	if (lasttilehit == tilehit)
 	{
 	// in the same door as last time, so check for optimized draw
-		if (texture == (unsigned)postsource)
+		if (texture == (id0_unsigned_t)postsource)
 		{
 		// wide scale
 			postwidth++;
@@ -783,7 +783,7 @@ void HitVertDoor (void)
 		else
 		{
 			ScalePost ();
-			(unsigned)postsource = texture;
+			(id0_unsigned_t)postsource = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -832,11 +832,11 @@ void HitVertDoor (void)
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(doorpage);
+		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage);
 #else
-		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(doorpage+1);
+		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage+1);
 #endif
-		(unsigned)postsource = texture;
+		(id0_unsigned_t)postsource = texture;
 	}
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -861,8 +861,8 @@ void HitVertDoor (void)
 
 void HitHorizPWall (void)
 {
-	int			wallpic;
-	unsigned	texture,offset;
+	id0_int_t			wallpic;
+	id0_unsigned_t	texture,offset;
 
 	texture = (xintercept>>4)&0xfc0;
 	offset = pwallpos<<10;
@@ -879,7 +879,7 @@ void HitHorizPWall (void)
 	if (lasttilehit == tilehit)
 	{
 		// in the same wall type as last time, so check for optimized draw
-		if (texture == (unsigned)postsource)
+		if (texture == (id0_unsigned_t)postsource)
 		{
 		// wide scale
 			postwidth++;
@@ -889,7 +889,7 @@ void HitHorizPWall (void)
 		else
 		{
 			ScalePost ();
-			(unsigned)postsource = texture;
+			(id0_unsigned_t)postsource = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -906,8 +906,8 @@ void HitHorizPWall (void)
 
 		wallpic = horizwall[tilehit&63];
 
-		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(wallpic);
-		(unsigned)postsource = texture;
+		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
+		(id0_unsigned_t)postsource = texture;
 	}
 
 	// *** S3DNA RESTORATION ***
@@ -929,8 +929,8 @@ void HitHorizPWall (void)
 
 void HitVertPWall (void)
 {
-	int			wallpic;
-	unsigned	texture,offset;
+	id0_int_t			wallpic;
+	id0_unsigned_t	texture,offset;
 
 	texture = (yintercept>>4)&0xfc0;
 	offset = pwallpos<<10;
@@ -947,7 +947,7 @@ void HitVertPWall (void)
 	if (lasttilehit == tilehit)
 	{
 		// in the same wall type as last time, so check for optimized draw
-		if (texture == (unsigned)postsource)
+		if (texture == (id0_unsigned_t)postsource)
 		{
 		// wide scale
 			postwidth++;
@@ -957,7 +957,7 @@ void HitVertPWall (void)
 		else
 		{
 			ScalePost ();
-			(unsigned)postsource = texture;
+			(id0_unsigned_t)postsource = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -974,8 +974,8 @@ void HitVertPWall (void)
 
 		wallpic = vertwall[tilehit&63];
 
-		*( ((unsigned *)&postsource)+1) = (unsigned)PM_GetPage(wallpic);
-		(unsigned)postsource = texture;
+		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
+		(id0_unsigned_t)postsource = texture;
 	}
 
 	// *** S3DNA RESTORATION ***
@@ -993,8 +993,8 @@ void HitVertPWall (void)
 // Re-enable unused EGA code, *and* restore egaFloor+egaCeiling (not in alpha)
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-unsigned egaFloor[] = {0,0,0,0,0,0,0,0,0,5};
-unsigned egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0d0d};
+id0_unsigned_t egaFloor[] = {0,0,0,0,0,0,0,0,0,5};
+id0_unsigned_t egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0d0d};
 #endif
 
 //#if 0
@@ -1010,7 +1010,7 @@ void ClearScreen (void)
 {
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
- unsigned floor=egaFloor[gamestate.episode*10+mapon],
+ id0_unsigned_t floor=egaFloor[gamestate.episode*10+mapon],
 	  ceiling=egaCeiling[gamestate.episode*10+mapon];
 #endif
 
@@ -1076,7 +1076,7 @@ asm	out	dx,al
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-unsigned vgaCeiling[]=
+id0_unsigned_t vgaCeiling[]=
 {
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1123,9 +1123,9 @@ void VGAClearScreen (void)
 {
  // *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
- unsigned ceiling=vgaCeiling[gamestate.mapon];
+ id0_unsigned_t ceiling=vgaCeiling[gamestate.mapon];
 #elif (GAMEVER_WOLFREV > GV_WR_WL920312)
- unsigned ceiling=vgaCeiling[gamestate.episode*10+mapon];
+ id0_unsigned_t ceiling=vgaCeiling[gamestate.episode*10+mapon];
 #endif
 
   //
@@ -1195,9 +1195,9 @@ asm	jnz	bottomloop
 =====================
 */
 
-int	CalcRotate (objtype *ob)
+id0_int_t	CalcRotate (objtype *ob)
 {
-	int	angle,viewangle;
+	id0_int_t	angle,viewangle;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (ob->obclass == flameobj || ob->obclass == missileobj)
@@ -1255,7 +1255,7 @@ int	CalcRotate (objtype *ob)
 
 typedef struct
 {
-	int	viewx,
+	id0_int_t	viewx,
 		viewheight,
 		// *** S3DNA RESTORATION ***
 		shapenum
@@ -1273,11 +1273,11 @@ visobj_t	vislist[MAXVISABLE],*visptr,*visstep,*farthest;
 
 void DrawScaleds (void)
 {
-	int 		i,j,least,numvisable,height;
+	id0_int_t 		i,j,least,numvisable,height;
 	memptr		shape;
-	byte		*tilespot,*visspot;
-	int			shapenum;
-	unsigned	spotloc;
+	id0_byte_t		*tilespot,*visspot;
+	id0_int_t			shapenum;
+	id0_unsigned_t	spotloc;
 
 	statobj_t	*statptr;
 	objtype		*obj;
@@ -1446,7 +1446,7 @@ void DrawScaleds (void)
 ==============
 */
 
-int	weaponscale[NUMWEAPONS] = {SPR_KNIFEREADY,SPR_PISTOLREADY
+id0_int_t	weaponscale[NUMWEAPONS] = {SPR_KNIFEREADY,SPR_PISTOLREADY
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	,SPR_MACHINEGUNREADY,SPR_CHAINREADY,SPR_CANTAREADY,SPR_WATERREADY};
@@ -1456,7 +1456,7 @@ int	weaponscale[NUMWEAPONS] = {SPR_KNIFEREADY,SPR_PISTOLREADY
 
 void DrawPlayerWeapon (void)
 {
-	int	shapenum;
+	id0_int_t	shapenum;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1510,7 +1510,7 @@ void DrawPlayerWeapon (void)
 
 void CalcTics (void)
 {
-	long	newtime,oldtimecount;
+	id0_long_t	newtime,oldtimecount;
 
 //
 // calculate tics since last refresh for adaptive timing
@@ -1622,7 +1622,7 @@ void WallRefresh (void)
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 //==========================================================================
 
-int someUnusedDrawArray[] = {
+id0_int_t someUnusedDrawArray[] = {
 	0x1b, 0x08, 0x1b, 0x1c, 0x00, 0x00, 0x00, 0x00,
 	0x1c, 0x08, 0x1c, 0x1b, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1630,7 +1630,7 @@ int someUnusedDrawArray[] = {
 
 void	SomeUnusedDrawFunc (void)
 {
-	int *arrPtr;
+	id0_int_t *arrPtr;
 	for (arrPtr=someUnusedDrawArray; arrPtr[0]; arrPtr+=8)
 	{
 		arrPtr[7] -= tics;
@@ -1658,7 +1658,7 @@ void	SomeUnusedDrawFunc (void)
 
 void	ThreeDRefresh (void)
 {
-	int tracedir;
+	id0_int_t tracedir;
 
 // this wouldn't need to be done except for my debugger/video wierdness
 	outportb (SC_INDEX,SC_MAPMASK);

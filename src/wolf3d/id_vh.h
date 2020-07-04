@@ -16,7 +16,7 @@
 
 typedef struct
 {
-  int	width,
+  id0_int_t	width,
 	height,
 	orgx,orgy,
 	xl,yl,xh,yh,
@@ -25,43 +25,43 @@ typedef struct
 
 typedef	struct
 {
-	unsigned	sourceoffset[MAXSHIFTS];
-	unsigned	planesize[MAXSHIFTS];
-	unsigned	width[MAXSHIFTS];
-	byte		data[];
+	id0_unsigned_t	sourceoffset[MAXSHIFTS];
+	id0_unsigned_t	planesize[MAXSHIFTS];
+	id0_unsigned_t	width[MAXSHIFTS];
+	id0_byte_t		data[];
 } spritetype;		// the memptr for each sprite points to this
 
 typedef struct
 {
-	int width,height;
+	id0_int_t width,height;
 } pictabletype;
 
 
 typedef struct
 {
-	int height;
-	int location[256];
-	char width[256];
+	id0_int_t height;
+	id0_int_t location[256];
+	id0_char_t width[256];
 } fontstruct;
 
 
 //===========================================================================
 
 
-extern	pictabletype	_seg *pictable;
-extern	pictabletype	_seg *picmtable;
-extern	spritetabletype _seg *spritetable;
+extern	pictabletype	id0_seg *pictable;
+extern	pictabletype	id0_seg *picmtable;
+extern	spritetabletype id0_seg *spritetable;
 
-extern	byte	fontcolor;
-extern	int	fontnumber;
-extern	int	px,py;
+extern	id0_byte_t	fontcolor;
+extern	id0_int_t	fontnumber;
+extern	id0_int_t	px,py;
 
 //
 // Double buffer management routines
 //
 
 void VW_InitDoubleBuffer (void);
-int	 VW_MarkUpdateBlock (int x1, int y1, int x2, int y2);
+id0_int_t	 VW_MarkUpdateBlock (id0_int_t x1, id0_int_t y1, id0_int_t x2, id0_int_t y2);
 // *** ALPHA RESTORATION ***
 // wolfenstein EGA compatability stuff (need to have it here)
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -75,26 +75,26 @@ void VW_UpdateScreen (void);
 // regions marked in double buffer
 //
 
-void VWB_DrawTile8 (int x, int y, int tile);
-void VWB_DrawTile8M (int x, int y, int tile);
-void VWB_DrawTile16 (int x, int y, int tile);
-void VWB_DrawTile16M (int x, int y, int tile);
-void VWB_DrawPic (int x, int y, int chunknum);
-void VWB_DrawMPic(int x, int y, int chunknum);
-void VWB_Bar (int x, int y, int width, int height, int color);
+void VWB_DrawTile8 (id0_int_t x, id0_int_t y, id0_int_t tile);
+void VWB_DrawTile8M (id0_int_t x, id0_int_t y, id0_int_t tile);
+void VWB_DrawTile16 (id0_int_t x, id0_int_t y, id0_int_t tile);
+void VWB_DrawTile16M (id0_int_t x, id0_int_t y, id0_int_t tile);
+void VWB_DrawPic (id0_int_t x, id0_int_t y, id0_int_t chunknum);
+void VWB_DrawMPic(id0_int_t x, id0_int_t y, id0_int_t chunknum);
+void VWB_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_int_t color);
 
-void VWB_DrawPropString	 (char far *string);
-void VWB_DrawMPropString (char far *string);
-void VWB_DrawSprite (int x, int y, int chunknum);
-void VWB_Plot (int x, int y, int color);
-void VWB_Hlin (int x1, int x2, int y, int color);
-void VWB_Vlin (int y1, int y2, int x, int color);
+void VWB_DrawPropString	 (id0_char_t id0_far *string);
+void VWB_DrawMPropString (id0_char_t id0_far *string);
+void VWB_DrawSprite (id0_int_t x, id0_int_t y, id0_int_t chunknum);
+void VWB_Plot (id0_int_t x, id0_int_t y, id0_int_t color);
+void VWB_Hlin (id0_int_t x1, id0_int_t x2, id0_int_t y, id0_int_t color);
+void VWB_Vlin (id0_int_t y1, id0_int_t y2, id0_int_t x, id0_int_t color);
 
 
 //
 // wolfenstein EGA compatability stuff
 //
-extern byte far gamepal;
+extern id0_byte_t id0_far gamepal;
 
 void VH_SetDefaultColors (void);
 
@@ -121,7 +121,7 @@ void VH_SetDefaultColors (void);
 #endif
 #define VW_ScreenToScreen	VL_ScreenToScreen
 #define VW_SetDefaultColors	VH_SetDefaultColors
-void	VW_MeasurePropString (char far *string, word *width, word *height);
+void	VW_MeasurePropString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height);
 #define EGAMAPMASK(x)	VGAMAPMASK(x)
 #define EGAWRITEMODE(x)	VGAWRITEMODE(x)
 
@@ -133,16 +133,16 @@ void	VW_MeasurePropString (char far *string, word *width, word *height);
 #define LatchDrawChar(x,y,p) VL_LatchToScreen(latchpics[0]+(p)*16,2,8,x,y)
 #define LatchDrawTile(x,y,p) VL_LatchToScreen(latchpics[1]+(p)*64,4,16,x,y)
 
-void LatchDrawPic (unsigned x, unsigned y, unsigned picnum);
+void LatchDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum);
 void 	LoadLatchMem (void);
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-boolean 	FizzleFade (unsigned source, unsigned dest,
-	unsigned width,unsigned height, unsigned frames,boolean abortable);
+id0_boolean_t 	FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
+	id0_unsigned_t width,id0_unsigned_t height, id0_unsigned_t frames,id0_boolean_t abortable);
 #endif
 
 
 #define NUMLATCHPICS	100
-extern	unsigned	latchpics[NUMLATCHPICS];
-extern	unsigned freelatch;
+extern	id0_unsigned_t	latchpics[NUMLATCHPICS];
+extern	id0_unsigned_t freelatch;
 

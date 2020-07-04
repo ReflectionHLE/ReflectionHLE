@@ -35,8 +35,8 @@
 #define MAPSPOT(x,y,plane)		(*(mapsegs[plane]+farmapylookup[y]+x))
 
 #define SIGN(x) 	((x)>0?1:-1)
-#define ABS(x) 		((int)(x)>0?(x):-(x))
-#define LABS(x) 	((long)(x)>0?(x):-(x))
+#define ABS(x) 		((id0_int_t)(x)>0?(x):-(x))
+#define LABS(x) 	((id0_long_t)(x)>0?(x):-(x))
 
 /*
 =============================================================================
@@ -695,7 +695,7 @@ enum	{
 =============================================================================
 */
 
-typedef long fixed;
+typedef id0_long_t fixed;
 
 typedef enum {
 	di_north,
@@ -906,9 +906,9 @@ typedef enum {
 
 typedef struct	statestruct
 {
-	boolean	rotate;
-	int		shapenum;			// a shapenum of -1 means get from ob->temp1
-	int		tictime;
+	id0_boolean_t	rotate;
+	id0_int_t		shapenum;			// a shapenum of -1 means get from ob->temp1
+	id0_int_t		tictime;
 	void	(*think) (),(*action) ();
 	struct	statestruct	*next;
 } statetype;
@@ -922,11 +922,11 @@ typedef struct	statestruct
 
 typedef struct statstruct
 {
-	byte	tilex,tiley;
-	byte	*visspot;
-	int		shapenum;			// if shapenum == -1 the obj has been removed
-	byte	flags;
-	byte	itemnumber;
+	id0_byte_t	tilex,tiley;
+	id0_byte_t	*visspot;
+	id0_int_t		shapenum;			// if shapenum == -1 the obj has been removed
+	id0_byte_t	flags;
+	id0_byte_t	itemnumber;
 } statobj_t;
 
 
@@ -938,15 +938,15 @@ typedef struct statstruct
 
 typedef struct doorstruct
 {
-	byte	tilex,tiley;
-	boolean	vertical;
+	id0_byte_t	tilex,tiley;
+	id0_boolean_t	vertical;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	boolean	seen;
+	id0_boolean_t	seen;
 #endif
-	byte	lock;
+	id0_byte_t	lock;
 	enum	{dr_open,dr_closed,dr_opening,dr_closing}	action;
-	int		ticcount;
+	id0_int_t		ticcount;
 } doorobj_t;
 
 
@@ -959,36 +959,36 @@ typedef struct doorstruct
 typedef struct objstruct
 {
 	activetype	active;
-	int			ticcount;
+	id0_int_t			ticcount;
 	classtype	obclass;
 	statetype	*state;
 
-	byte		flags;				//	FL_SHOOTABLE, etc
+	id0_byte_t		flags;				//	FL_SHOOTABLE, etc
 
-	long		distance;			// if negative, wait for that door to open
+	id0_long_t		distance;			// if negative, wait for that door to open
 	dirtype		dir;
 
 	fixed 		x,y;
-	unsigned	tilex,tiley;
-	byte		areanumber;
+	id0_unsigned_t	tilex,tiley;
+	id0_byte_t		areanumber;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	byte		snore;		// 2.6 number. Upper is frame, Lower is tics*2
+	id0_byte_t		snore;		// 2.6 number. Upper is frame, Lower is tics*2
 #endif
 
-	int	 		viewx;
-	unsigned	viewheight;
+	id0_int_t	 		viewx;
+	id0_unsigned_t	viewheight;
 	fixed		transx,transy;		// in global coord
 
-	int 		angle;
-	int			hitpoints;
-	long		speed;
+	id0_int_t 		angle;
+	id0_int_t			hitpoints;
+	id0_long_t		speed;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	int			temp2;
+	id0_int_t			temp2;
 #else
-	int			temp1,temp2,temp3;
+	id0_int_t			temp1,temp2,temp3;
 #endif
 	struct		objstruct	*next,*prev;
 } objtype;
@@ -1057,50 +1057,50 @@ typedef enum	{
 
 typedef	struct
 {
-	int			difficulty;
-	int			mapon;
+	id0_int_t			difficulty;
+	id0_int_t			mapon;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	long		score,nextextra;
+	id0_long_t		score,nextextra;
 #else
-	long		oldscore,score,nextextra;
+	id0_long_t		oldscore,score,nextextra;
 #endif
-	int			lives;
-	int			health;
-	int			ammo;
+	id0_int_t			lives;
+	id0_int_t			health;
+	id0_int_t			ammo;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	int			treasure;
-	int			maxammo;
-	int			gas;
-	int			missiles;
-	boolean			machinegun;
-	boolean			chaingun;
-	boolean			missile;
-	boolean			flamethrower;
-	boolean			automap;
+	id0_int_t			treasure;
+	id0_int_t			maxammo;
+	id0_int_t			gas;
+	id0_int_t			missiles;
+	id0_boolean_t			machinegun;
+	id0_boolean_t			chaingun;
+	id0_boolean_t			missile;
+	id0_boolean_t			flamethrower;
+	id0_boolean_t			automap;
 #endif
-	int			keys;
+	id0_int_t			keys;
 	weapontype		bestweapon,weapon,chosenweapon;
 
-	int			faceframe;
-	int			attackframe,attackcount,weaponframe;
+	id0_int_t			faceframe;
+	id0_int_t			attackframe,attackcount,weaponframe;
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	int			secretcount,treasurecount,killcount,
+	id0_int_t			secretcount,treasurecount,killcount,
 #else
-	int			episode,secretcount,treasurecount,killcount,
+	id0_int_t			episode,secretcount,treasurecount,killcount,
 #endif
 				secrettotal,treasuretotal,killtotal;
-	long		TimeCount;
+	id0_long_t		TimeCount;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	long		killx,killy;
+	id0_long_t		killx,killy;
 #endif
-	boolean		victoryflag;		// set during victory animations
+	id0_boolean_t		victoryflag;		// set during victory animations
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 } gametype;
 
@@ -1131,60 +1131,60 @@ typedef	enum	{
 =============================================================================
 */
 
-extern	boolean		MS_CheckParm (char far *string);
+extern	id0_boolean_t		MS_CheckParm (id0_char_t id0_far *string);
 
-extern	char		str[80],str2[20];
+extern	id0_char_t		str[80],str2[20];
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-extern	unsigned			tedlevelnum;
+extern	id0_unsigned_t			tedlevelnum;
 #else
-extern	int			tedlevelnum;
+extern	id0_int_t			tedlevelnum;
 #endif
-extern	boolean		tedlevel;
-extern	boolean		nospr;
+extern	id0_boolean_t		tedlevel;
+extern	id0_boolean_t		nospr;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-extern	boolean		noquestions, nofloors;
-extern	int		questionnum;
+extern	id0_boolean_t		noquestions, nofloors;
+extern	id0_int_t		questionnum;
 #endif
-extern	boolean		IsA386;
+extern	id0_boolean_t		IsA386;
 
-extern	byte far	*scalermemory;
+extern	id0_byte_t id0_far	*scalermemory;
 
 extern	fixed		focallength;
-extern	unsigned	viewangles;
-extern	unsigned	screenofs;
-extern	int		    viewwidth;
-extern	int			viewheight;
-extern	int			centerx;
-extern	int			shootdelta;
+extern	id0_unsigned_t	viewangles;
+extern	id0_unsigned_t	screenofs;
+extern	id0_int_t		    viewwidth;
+extern	id0_int_t			viewheight;
+extern	id0_int_t			centerx;
+extern	id0_int_t			shootdelta;
 
-extern	int			dirangle[9];
+extern	id0_int_t			dirangle[9];
 
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-extern	boolean         startgame,loadedgame
+extern	id0_boolean_t         startgame,loadedgame
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 	,virtualreality
 #endif
 	;
-extern	int		mouseadjustment;
+extern	id0_int_t		mouseadjustment;
 //
 // math tables
 //
-extern	int			pixelangle[MAXVIEWWIDTH];
-extern	long		far finetangent[FINEANGLES/4];
-extern	fixed 		far sintable[],far *costable;
+extern	id0_int_t			pixelangle[MAXVIEWWIDTH];
+extern	id0_long_t		id0_far finetangent[FINEANGLES/4];
+extern	fixed 		id0_far sintable[],id0_far *costable;
 
 //
 // derived constants
 //
 extern	fixed 	scale,maxslope;
-extern	long	heightnumerator;
-extern	int		minheightdiv;
+extern	id0_long_t	heightnumerator;
+extern	id0_int_t		minheightdiv;
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-extern	char	configname[13];
+extern	id0_char_t	configname[13];
 #endif
 
 
@@ -1192,20 +1192,20 @@ extern	char	configname[13];
 void		HelpScreens (void);
 void		OrderingInfo (void);
 void		TEDDeath(void);
-void		Quit (char *error);
-void 		CalcProjection (long focal);
+void		Quit (id0_char_t *error);
+void 		CalcProjection (id0_long_t focal);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-void		SetViewSize (unsigned width, unsigned height);
-void		NewGame (int difficulty);
+void		SetViewSize (id0_unsigned_t width, id0_unsigned_t height);
+void		NewGame (id0_int_t difficulty);
 #else
-boolean		SetViewSize (unsigned width, unsigned height);
-void		NewGame (int difficulty,int episode);
+id0_boolean_t		SetViewSize (id0_unsigned_t width, id0_unsigned_t height);
+void		NewGame (id0_int_t difficulty,id0_int_t episode);
 #endif
-void 		NewViewSize (int width);
-boolean 	LoadTheGame(int file,int x,int y);
-boolean		SaveTheGame(int file,int x,int y);
-void 		ShowViewSize (int width);
+void 		NewViewSize (id0_int_t width);
+id0_boolean_t 	LoadTheGame(id0_int_t file,id0_int_t x,id0_int_t y);
+id0_boolean_t		SaveTheGame(id0_int_t file,id0_int_t x,id0_int_t y);
+void 		ShowViewSize (id0_int_t width);
 void		ShutdownId (void);
 
 
@@ -1220,28 +1220,28 @@ void		ShutdownId (void);
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-extern	boolean		ingame,fizzlein,screensplit;
+extern	id0_boolean_t		ingame,fizzlein,screensplit;
 // *** S3DNA RESTORATION ***
 #elif (defined GAMEVER_NOAH3D)
-extern	boolean		ingame;
-extern	int		endtics,fizzlein;
+extern	id0_boolean_t		ingame;
+extern	id0_int_t		endtics,fizzlein;
 #else
-extern	boolean		ingame,fizzlein;
+extern	id0_boolean_t		ingame,fizzlein;
 #endif
-extern	unsigned	latchpics[NUMLATCHPICS];
+extern	id0_unsigned_t	latchpics[NUMLATCHPICS];
 extern	gametype	gamestate;
-extern	int			doornum;
+extern	id0_int_t			doornum;
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-extern	char		demoname[13];
+extern	id0_char_t		demoname[13];
 #endif
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-extern	long		spearx,speary;
-extern	unsigned	spearangle;
-extern	boolean		spearflag;
+extern	id0_long_t		spearx,speary;
+extern	id0_unsigned_t	spearangle;
+extern	id0_boolean_t		spearflag;
 #endif
 
 
@@ -1254,7 +1254,7 @@ void 	FizzleOut (void);
 void 	GameLoop (void);
 // JAB
 void ClearMemory (void);
-void PlayDemo (int demonumber);
+void PlayDemo (id0_int_t demonumber);
 void RecordDemo (void);
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
@@ -1273,9 +1273,9 @@ void DrawAllPlayBorderSides (void);
 #define	PlaySoundLocActor(s,ob)		SD_PlaySound(s)
 #else
 // JAB
-#define	PlaySoundLocTile(s,tx,ty)	PlaySoundLocGlobal(s,(((long)(tx) << TILESHIFT) + (1L << (TILESHIFT - 1))),(((long)ty << TILESHIFT) + (1L << (TILESHIFT - 1))))
+#define	PlaySoundLocTile(s,tx,ty)	PlaySoundLocGlobal(s,(((id0_long_t)(tx) << TILESHIFT) + (1L << (TILESHIFT - 1))),(((id0_long_t)ty << TILESHIFT) + (1L << (TILESHIFT - 1))))
 #define	PlaySoundLocActor(s,ob)		PlaySoundLocGlobal(s,(ob)->x,(ob)->y)
-void	PlaySoundLocGlobal(word s,fixed gx,fixed gy);
+void	PlaySoundLocGlobal(id0_word_t s,fixed gx,fixed gy);
 void UpdateSoundLoc(void);
 #endif
 
@@ -1289,27 +1289,27 @@ void UpdateSoundLoc(void);
 */
 
 #ifdef SPEAR
-extern	long		funnyticount;		// FOR FUNNY BJ FACE
+extern	id0_long_t		funnyticount;		// FOR FUNNY BJ FACE
 #endif
 
 extern	exit_t		playstate;
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - There was apparently some unused variable here
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-extern	boolean unusedplayvar;
+extern	id0_boolean_t unusedplayvar;
 #endif
-extern	boolean		madenoise;
+extern	id0_boolean_t		madenoise;
 
 extern	objtype 	objlist[MAXACTORS],*new,*obj,*player,*lastobj,
 					*objfreelist,*killerobj;
 extern	statobj_t	statobjlist[MAXSTATS],*laststatobj;
 extern	doorobj_t	doorobjlist[MAXDOORS],*lastdoorobj;
 
-extern	unsigned	farmapylookup[MAPSIZE];
-extern	byte		*nearmapylookup[MAPSIZE];
+extern	id0_unsigned_t	farmapylookup[MAPSIZE];
+extern	id0_byte_t		*nearmapylookup[MAPSIZE];
 
-extern	byte		tilemap[MAPSIZE][MAPSIZE];	// wall values only
-extern	byte		spotvis[MAPSIZE][MAPSIZE];
+extern	id0_byte_t		tilemap[MAPSIZE][MAPSIZE];	// wall values only
+extern	id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
 extern	objtype		*actorat[MAPSIZE][MAPSIZE];
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - Not sure why but looks correct
@@ -1318,33 +1318,33 @@ extern	objtype		*actorat[MAPSIZE][MAPSIZE];
 #else
 #define UPDATESIZE			(UPDATEWIDE*UPDATEHIGH)
 #endif
-extern	byte		update[UPDATESIZE];
+extern	id0_byte_t		update[UPDATESIZE];
 
-extern	boolean		singlestep,godmode,noclip;
-extern	int			extravbls;
+extern	id0_boolean_t		singlestep,godmode,noclip;
+extern	id0_int_t			extravbls;
 
 //
 // control info
 //
-extern	boolean		mouseenabled,joystickenabled,joypadenabled,joystickprogressive;
-extern	int			joystickport;
-extern	int			dirscan[4];
-extern	int			buttonscan[NUMBUTTONS];
-extern	int			buttonmouse[4];
-extern	int			buttonjoy[4];
+extern	id0_boolean_t		mouseenabled,joystickenabled,joypadenabled,joystickprogressive;
+extern	id0_int_t			joystickport;
+extern	id0_int_t			dirscan[4];
+extern	id0_int_t			buttonscan[NUMBUTTONS];
+extern	id0_int_t			buttonmouse[4];
+extern	id0_int_t			buttonjoy[4];
 
-extern	boolean		buttonheld[NUMBUTTONS];
+extern	id0_boolean_t		buttonheld[NUMBUTTONS];
 
-extern	int			viewsize;
+extern	id0_int_t			viewsize;
 
 //
 // curent user input
 //
-extern	int			controlx,controly;		// range from -100 to 100
-extern	boolean		buttonstate[NUMBUTTONS];
+extern	id0_int_t			controlx,controly;		// range from -100 to 100
+extern	id0_boolean_t		buttonstate[NUMBUTTONS];
 
-extern	boolean		demorecord,demoplayback;
-extern	char		far *demoptr, far *lastdemoptr;
+extern	id0_boolean_t		demorecord,demoplayback;
+extern	id0_char_t		id0_far *demoptr, id0_far *lastdemoptr;
 extern	memptr		demobuffer;
 
 
@@ -1352,7 +1352,7 @@ extern	memptr		demobuffer;
 void	InitRedShifts (void);
 void 	FinishPaletteShifts (void);
 
-void	CenterWindow(word w,word h);
+void	CenterWindow(id0_word_t w,id0_word_t h);
 void 	InitActorList (void);
 void 	GetNewActor (void);
 void 	RemoveObj (objtype *gone);
@@ -1360,7 +1360,7 @@ void 	PollControls (void);
 void 	StopMusic(void);
 void 	StartMusic(void);
 void	PlayLoop (void);
-void StartDamageFlash (int damage);
+void StartDamageFlash (id0_int_t damage);
 void StartBonusFlash (void);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1377,13 +1377,13 @@ void UpdatePaletteShifts (void);
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-extern	int	FloorTile[];
+extern	id0_int_t	FloorTile[];
 #endif
 
 void IntroScreen (void);
 void PreloadGraphics(void);
 void LevelCompleted (void);
-void	CheckHighScore (long score,word other);
+void	CheckHighScore (id0_long_t score,id0_word_t other);
 void Victory (void);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -1391,7 +1391,7 @@ void ClearSplitVWB (void);
 #endif
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void Briefing (int mission, boolean credits);
+void Briefing (id0_int_t mission, id0_boolean_t credits);
 #endif
 
 
@@ -1403,7 +1403,7 @@ void Briefing (int mission, boolean credits);
 =============================================================================
 */
 
-int DebugKeys (void);
+id0_int_t DebugKeys (void);
 void PicturePause (void);
 
 
@@ -1415,22 +1415,22 @@ void PicturePause (void);
 =============================================================================
 */
 
-extern	unsigned screenloc[3];
-extern	unsigned freelatch;
+extern	id0_unsigned_t screenloc[3];
+extern	id0_unsigned_t freelatch;
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-extern	int	screenpage;
+extern	id0_int_t	screenpage;
 #endif
 
-extern	long 	lasttimecount;
-extern	long 	frameon;
+extern	id0_long_t 	lasttimecount;
+extern	id0_long_t 	frameon;
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-extern	boolean	fizzlein;
+extern	id0_boolean_t	fizzlein;
 #endif
 
-extern	unsigned	wallheight[MAXVIEWWIDTH];
+extern	id0_unsigned_t	wallheight[MAXVIEWWIDTH];
 
 extern	fixed	tileglobal;
 extern	fixed	focallength;
@@ -1439,33 +1439,33 @@ extern	fixed	mindist;
 //
 // math tables
 //
-extern	int			pixelangle[MAXVIEWWIDTH];
-extern	long		far finetangent[FINEANGLES/4];
-extern	fixed 		far sintable[],far *costable;
+extern	id0_int_t			pixelangle[MAXVIEWWIDTH];
+extern	id0_long_t		id0_far finetangent[FINEANGLES/4];
+extern	fixed 		id0_far sintable[],id0_far *costable;
 
 //
 // derived constants
 //
 extern	fixed 	scale;
-extern	long	heightnumerator,mindist;
+extern	id0_long_t	heightnumerator,mindist;
 
 //
 // refresh variables
 //
 extern	fixed	viewx,viewy;			// the focal point
-extern	int		viewangle;
+extern	id0_int_t		viewangle;
 extern	fixed	viewsin,viewcos;
 
-extern	long		postsource;
-extern	unsigned	postx;
-extern	unsigned	postwidth;
+extern	id0_long_t		postsource;
+extern	id0_unsigned_t	postx;
+extern	id0_unsigned_t	postwidth;
 
 
-extern	int		horizwall[],vertwall[];
+extern	id0_int_t		horizwall[],vertwall[];
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-extern	unsigned	pwallpos;
+extern	id0_unsigned_t	pwallpos;
 #endif
 
 
@@ -1473,7 +1473,7 @@ fixed	FixedByFrac (fixed a, fixed b);
 void	TransformActor (objtype *ob);
 void	BuildTables (void);
 void	ClearScreen (void);
-int		CalcRotate (objtype *ob);
+id0_int_t		CalcRotate (objtype *ob);
 void	DrawScaleds (void);
 void	CalcTics (void);
 void	FixOfs (void);
@@ -1500,22 +1500,22 @@ extern	dirtype opposite[9];
 extern	dirtype diagonal[9][9];
 
 
-void	InitHitRect (objtype *ob, unsigned radius);
-void	SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state);
+void	InitHitRect (objtype *ob, id0_unsigned_t radius);
+void	SpawnNewObj (id0_unsigned_t tilex, id0_unsigned_t tiley, statetype *state);
 void	NewState (objtype *ob, statetype *state);
 
-boolean TryWalk (objtype *ob);
+id0_boolean_t TryWalk (objtype *ob);
 void 	SelectChaseDir (objtype *ob);
 void 	SelectDodgeDir (objtype *ob);
 void	SelectRunDir (objtype *ob);
-void	MoveObj (objtype *ob, long move);
-boolean SightPlayer (objtype *ob);
+void	MoveObj (objtype *ob, id0_long_t move);
+id0_boolean_t SightPlayer (objtype *ob);
 
 void	KillActor (objtype *ob);
-void	DamageActor (objtype *ob, unsigned damage);
+void	DamageActor (objtype *ob, id0_unsigned_t damage);
 
-boolean CheckLine (objtype *ob);
-boolean	CheckSight (objtype *ob);
+id0_boolean_t CheckLine (objtype *ob);
+id0_boolean_t	CheckSight (objtype *ob);
 
 
 /*
@@ -1531,40 +1531,40 @@ boolean	CheckSight (objtype *ob);
 
 typedef struct
 {
-	unsigned	codeofs[65];
-	unsigned	width[65];
-	byte		code[];
+	id0_unsigned_t	codeofs[65];
+	id0_unsigned_t	width[65];
+	id0_byte_t		code[];
 }	t_compscale;
 
 typedef struct
 {
-	unsigned	leftpix,rightpix;
-	unsigned	dataofs[64];
+	id0_unsigned_t	leftpix,rightpix;
+	id0_unsigned_t	dataofs[64];
 // table data after dataofs[rightpix-leftpix+1]
 }	t_compshape;
 
 
-extern	t_compscale _seg *scaledirectory[MAXSCALEHEIGHT+1];
-extern	long			fullscalefarcall[MAXSCALEHEIGHT+1];
+extern	t_compscale id0_seg *scaledirectory[MAXSCALEHEIGHT+1];
+extern	id0_long_t			fullscalefarcall[MAXSCALEHEIGHT+1];
 
-extern	byte		bitmasks1[8][8];
-extern	byte		bitmasks2[8][8];
-extern	unsigned	wordmasks[8][8];
+extern	id0_byte_t		bitmasks1[8][8];
+extern	id0_byte_t		bitmasks2[8][8];
+extern	id0_unsigned_t	wordmasks[8][8];
 
-extern	byte		mapmasks1[4][8];
-extern	byte		mapmasks2[4][8];
-extern	byte		mapmasks3[4][8];
+extern	id0_byte_t		mapmasks1[4][8];
+extern	id0_byte_t		mapmasks2[4][8];
+extern	id0_byte_t		mapmasks3[4][8];
 
-extern	int			maxscale,maxscaleshl2;
+extern	id0_int_t			maxscale,maxscaleshl2;
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-extern	boolean	insetupscaling;
+extern	id0_boolean_t	insetupscaling;
 #endif
 
-void SetupScaling (int maxscaleheight);
-void ScaleShape (int xcenter, int shapenum, unsigned height);
-void SimpleScaleShape (int xcenter, int shapenum, unsigned height);
+void SetupScaling (id0_int_t maxscaleheight);
+void ScaleShape (id0_int_t xcenter, id0_int_t shapenum, id0_unsigned_t height);
+void SimpleScaleShape (id0_int_t xcenter, id0_int_t shapenum, id0_unsigned_t height);
 
 /*
 =============================================================================
@@ -1580,46 +1580,46 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height);
 // *** ALPHA RESTORATION ***
 // Need to declare and define this for recreation of memory layout
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-extern	boolean		someUnusedAgentVar;
+extern	id0_boolean_t		someUnusedAgentVar;
 #endif
-extern	boolean		running;
-extern	long		thrustspeed;
-extern	unsigned	plux,pluy;		// player coordinates scaled to unsigned
+extern	id0_boolean_t		running;
+extern	id0_long_t		thrustspeed;
+extern	id0_unsigned_t	plux,pluy;		// player coordinates scaled to id0_unsigned_t
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-extern	int			anglefrac;
-extern	int			facecount;
+extern	id0_int_t			anglefrac;
+extern	id0_int_t			facecount;
 #endif
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-extern int	MapEpisode[];
-extern int	MapLevel[];
+extern id0_int_t	MapEpisode[];
+extern id0_int_t	MapLevel[];
 #endif
 
-void	SpawnPlayer (int tilex, int tiley, int dir);
+void	SpawnPlayer (id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void StatusDrawPic (unsigned x, unsigned y, unsigned picnum);
+void StatusDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum);
 void	DrawTreasure (void);
 #endif
 void 	DrawFace (void);
 void	DrawHealth (void);
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-void	TakeDamage (int points,objtype *attacker);
+void	TakeDamage (id0_int_t points,objtype *attacker);
 #endif
-void	HealSelf (int points);
+void	HealSelf (id0_int_t points);
 void	DrawLevel (void);
 void	DrawLives (void);
 void	GiveExtraMan (void);
 void	DrawScore (void);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-void	GivePoints (int points);
+void	GivePoints (id0_int_t points);
 #else
-void	GivePoints (long points);
+void	GivePoints (id0_long_t points);
 #endif
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
@@ -1628,15 +1628,15 @@ void	DrawWeapon (void);
 void	DrawKeys (void);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void	GiveTreasure (int treasure);
+void	GiveTreasure (id0_int_t treasure);
 #endif
-void	GiveWeapon (int weapon);
+void	GiveWeapon (id0_int_t weapon);
 void	DrawAmmo (void);
-void	GiveAmmo (int ammo);
-void	GiveKey (int key);
+void	GiveAmmo (id0_int_t ammo);
+void	GiveKey (id0_int_t key);
 void	GetBonus (statobj_t *check);
 
-void	Thrust (int angle, long speed);
+void	Thrust (id0_int_t angle, id0_long_t speed);
 
 /*
 =============================================================================
@@ -1647,20 +1647,20 @@ void	Thrust (int angle, long speed);
 */
 
 extern	doorobj_t	doorobjlist[MAXDOORS],*lastdoorobj;
-extern	int			doornum;
+extern	id0_int_t			doornum;
 
-extern	unsigned	doorposition[MAXDOORS],pwallstate;
+extern	id0_unsigned_t	doorposition[MAXDOORS],pwallstate;
 
-extern	byte		far areaconnect[NUMAREAS][NUMAREAS];
+extern	id0_byte_t		id0_far areaconnect[NUMAREAS][NUMAREAS];
 
-extern	boolean		areabyplayer[NUMAREAS];
+extern	id0_boolean_t		areabyplayer[NUMAREAS];
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-extern unsigned	pwallstate;
-extern unsigned	pwallpos;			// amount a pushable wall has been moved (0-63)
-extern unsigned	pwallx,pwally;
-extern int			pwalldir;
+extern id0_unsigned_t	pwallstate;
+extern id0_unsigned_t	pwallpos;			// amount a pushable wall has been moved (0-63)
+extern id0_unsigned_t	pwallx,pwally;
+extern id0_int_t			pwalldir;
 #endif
 
 
@@ -1668,24 +1668,24 @@ extern int			pwalldir;
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void InitDoorList (void);
 void InitStaticList (void);
-void SpawnStatic (int tilex, int tiley, int type);
+void SpawnStatic (id0_int_t tilex, id0_int_t tiley, id0_int_t type);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void SpawnExit (int tilex, int tiley, boolean secret);
+void SpawnExit (id0_int_t tilex, id0_int_t tiley, id0_boolean_t secret);
 #endif
-void SpawnDoor (int tilex, int tiley, boolean vertical, int lock);
+void SpawnDoor (id0_int_t tilex, id0_int_t tiley, id0_boolean_t vertical, id0_int_t lock);
 void MoveDoors (void);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void MovePWalls (void);
 #endif
-void OpenDoor (int door);
-void PlaceItemType (int itemtype, int tilex, int tiley);
+void OpenDoor (id0_int_t door);
+void PlaceItemType (id0_int_t itemtype, id0_int_t tilex, id0_int_t tiley);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-void PushWall (int checkx, int checky, int dir);
+void PushWall (id0_int_t checkx, id0_int_t checky, id0_int_t dir);
 #endif
-void OperateDoor (int door);
+void OperateDoor (id0_int_t door);
 void InitAreas (void);
 #endif
 
@@ -1787,33 +1787,33 @@ extern	statetype s_fatdeathcam2;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void SpawnStand (enemy_t which, int tilex, int tiley, int dir, boolean ambush);
+void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir, id0_boolean_t ambush);
 void A_DeathScream (objtype *ob);
 #else
-void SpawnStand (enemy_t which, int tilex, int tiley, int dir);
-void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir);
+void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
+void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
 #endif
 void KillActor (objtype *ob);
 
-void	US_ControlPanel(byte);
+void	US_ControlPanel(id0_byte_t);
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-void SpawnDeadGuard (int tilex, int tiley);
-void SpawnBoss (int tilex, int tiley);
-void SpawnGretel (int tilex, int tiley);
-void SpawnTrans (int tilex, int tiley);
-void SpawnUber (int tilex, int tiley);
-void SpawnWill (int tilex, int tiley);
-void SpawnDeath (int tilex, int tiley);
-void SpawnAngel (int tilex, int tiley);
-void SpawnSpectre (int tilex, int tiley);
-void SpawnGhosts (int which, int tilex, int tiley);
-void SpawnSchabbs (int tilex, int tiley);
-void SpawnGift (int tilex, int tiley);
-void SpawnFat (int tilex, int tiley);
-void SpawnFakeHitler (int tilex, int tiley);
-void SpawnHitler (int tilex, int tiley);
+void SpawnDeadGuard (id0_int_t tilex, id0_int_t tiley);
+void SpawnBoss (id0_int_t tilex, id0_int_t tiley);
+void SpawnGretel (id0_int_t tilex, id0_int_t tiley);
+void SpawnTrans (id0_int_t tilex, id0_int_t tiley);
+void SpawnUber (id0_int_t tilex, id0_int_t tiley);
+void SpawnWill (id0_int_t tilex, id0_int_t tiley);
+void SpawnDeath (id0_int_t tilex, id0_int_t tiley);
+void SpawnAngel (id0_int_t tilex, id0_int_t tiley);
+void SpawnSpectre (id0_int_t tilex, id0_int_t tiley);
+void SpawnGhosts (id0_int_t which, id0_int_t tilex, id0_int_t tiley);
+void SpawnSchabbs (id0_int_t tilex, id0_int_t tiley);
+void SpawnGift (id0_int_t tilex, id0_int_t tiley);
+void SpawnFat (id0_int_t tilex, id0_int_t tiley);
+void SpawnFakeHitler (id0_int_t tilex, id0_int_t tiley);
+void SpawnHitler (id0_int_t tilex, id0_int_t tiley);
 #endif
 
 /*
@@ -1826,7 +1826,7 @@ void SpawnHitler (int tilex, int tiley);
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-extern	char	helpfilename[],endfilename[];
+extern	id0_char_t	helpfilename[],endfilename[];
 #endif
 
 extern	void	HelpScreens(void);
@@ -1852,7 +1852,7 @@ void AutoMap (void);
 =============================================================================
 */
 
-int AskQuestion (int question);
+id0_int_t AskQuestion (id0_int_t question);
 /*
 =============================================================================
 
@@ -1861,7 +1861,7 @@ int AskQuestion (int question);
 =============================================================================
 */
 
-void LoadFloorTiles (int tile);
+void LoadFloorTiles (id0_int_t tile);
 void SetPlaneViewSize (void);
 void DrawPlanes (void);
 #endif

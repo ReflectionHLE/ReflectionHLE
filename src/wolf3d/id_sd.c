@@ -83,7 +83,7 @@ extern	void interrupt		SDL_t0FastAsmService(void),
 						SDL_t0SlowAsmService(void);
 #else
 extern	void			SDL_SetDS(void),
-						SDL_IndicatePC(boolean on);
+						SDL_IndicatePC(id0_boolean_t on);
 extern	void interrupt	SDL_t0ExtremeAsmService(void),
 						SDL_t0FastAsmService(void),
 						SDL_t0SlowAsmService(void);
@@ -92,9 +92,9 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 //	Global variables
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	boolean		AdLibPresent,
+	id0_boolean_t		AdLibPresent,
 #else
-	boolean		SoundSourcePresent,
+	id0_boolean_t		SoundSourcePresent,
 				AdLibPresent,
 #endif
 	// *** ALPHA RESTORATION ***
@@ -109,30 +109,30 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 	SDMode		SoundMode;
 	SMMode		MusicMode;
 	SDSMode		DigiMode;
-	longword	TimeCount;
-	word		HackCount;
-	word		*SoundTable;	// Really * _seg *SoundTable, but that don't work
+	id0_longword_t	TimeCount;
+	id0_word_t		HackCount;
+	id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-	boolean		ssIsTandy;
-	word		ssPort = 2;
+	id0_boolean_t		ssIsTandy;
+	id0_word_t		ssPort = 2;
 #endif
-	int			DigiMap[LASTSOUND];
+	id0_int_t			DigiMap[LASTSOUND];
 
 //	Internal variables
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	boolean			DigiPlaying;
+static	id0_boolean_t			DigiPlaying;
 #endif
-static	boolean			SD_Started;
+static	id0_boolean_t			SD_Started;
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-		boolean			UseFastService;
+		id0_boolean_t			UseFastService;
 #else
-		GAMEVER_COND_STATIC boolean			nextsoundpos;
+		GAMEVER_COND_STATIC id0_boolean_t			nextsoundpos;
 #endif
-		longword		TimerDivisor,TimerCount;
-static	char			*ParmStrings[] =
+		id0_longword_t		TimerDivisor,TimerCount;
+static	id0_char_t			*ParmStrings[] =
 						{
 							"noal",
 							"nosb",
@@ -155,99 +155,99 @@ static	void			(*SoundUserHook)(void);
 // Apparently variables moved around here, while adding the MIDI handlers
 #ifdef GAMEVER_NOAH3D
 static	soundnames		DigiNumber;
-static	word			DigiPriority;
+static	id0_word_t			DigiPriority;
 	soundnames		SoundNumber;
-	word			SoundPriority;
+	id0_word_t			SoundPriority;
 #else
 		soundnames		SoundNumber,DigiNumber;
-		word			SoundPriority,DigiPriority;
+		id0_word_t			SoundPriority,DigiPriority;
 #endif
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-		GAMEVER_COND_STATIC int				LeftPosition,RightPosition;
+		GAMEVER_COND_STATIC id0_int_t				LeftPosition,RightPosition;
 #endif
 		void interrupt	(*t0OldService)(void);
-		long			LocalTime;
-		GAMEVER_COND_STATIC word			TimerRate;
+		id0_long_t			LocalTime;
+		GAMEVER_COND_STATIC id0_word_t			TimerRate;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	word			DigiLeft,DigiPage;
-	word			NumDigi;
+static	id0_word_t			DigiLeft,DigiPage;
+	id0_word_t			NumDigi;
 #else
-		word			NumDigi,DigiLeft,DigiPage;
+		id0_word_t			NumDigi,DigiLeft,DigiPage;
 #endif
-		word			_seg *DigiList;
-		GAMEVER_COND_STATIC word			DigiLastStart,DigiLastEnd;
+		id0_word_t			id0_seg *DigiList;
+		GAMEVER_COND_STATIC id0_word_t			DigiLastStart,DigiLastEnd;
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-		boolean			DigiPlaying;
+		id0_boolean_t			DigiPlaying;
 #endif
-static	boolean			DigiMissed,DigiLastSegment;
+static	id0_boolean_t			DigiMissed,DigiLastSegment;
 static	memptr			DigiNextAddr;
-static	word			DigiNextLen;
+static	id0_word_t			DigiNextLen;
 
 //	SoundBlaster variables
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-static	boolean					sbNoCheck;
+static	id0_boolean_t					sbNoCheck;
 #else
-static	boolean					sbNoCheck,sbNoProCheck;
+static	id0_boolean_t					sbNoCheck,sbNoProCheck;
 #endif
-static	volatile boolean		sbSamplePlaying;
-static	byte					sbOldIntMask = -1;
-static	volatile byte			huge *sbNextSegPtr;
+static	volatile id0_boolean_t		sbSamplePlaying;
+static	id0_byte_t					sbOldIntMask = -1;
+static	volatile id0_byte_t			id0_huge *sbNextSegPtr;
 // *** ALPHA RESTORATION ***
 // Use hardcoded DMA channel, as in Keen Dreams
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-static	byte					sbDMA = 1,
+static	id0_byte_t					sbDMA = 1,
 								sbDMAa1 = 0x83,sbDMAa2 = 2,sbDMAa3 = 3,
 								sba1Vals[] = {0x87,0x83,0,0x82},
 								sba2Vals[] = {0,2,0,6},
 								sba3Vals[] = {1,3,0,7};
 #endif
-static	int						sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
+static	id0_int_t						sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 								sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf};
 #else
 								sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf,-1,-1,-1};
 #endif
-static	volatile longword		sbNextSegLen;
-static	volatile SampledSound	huge *sbSamples;
+static	volatile id0_longword_t		sbNextSegLen;
+static	volatile SampledSound	id0_huge *sbSamples;
 static	void interrupt			(*sbOldIntHand)(void);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-static	byte					sbpOldFMMix,sbpOldVOCMix;
+static	id0_byte_t					sbpOldFMMix,sbpOldVOCMix;
 #endif
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 //	SoundSource variables
-		boolean				ssNoCheck;
-		boolean				ssActive;
-		word				ssControl,ssStatus,ssData;
-		byte				ssOn,ssOff;
-		volatile byte		far *ssSample;
-		volatile longword	ssLengthLeft;
+		id0_boolean_t				ssNoCheck;
+		id0_boolean_t				ssActive;
+		id0_word_t				ssControl,ssStatus,ssData;
+		id0_byte_t				ssOn,ssOff;
+		volatile id0_byte_t		id0_far *ssSample;
+		volatile id0_longword_t	ssLengthLeft;
 #endif
 
 //	PC Sound variables
-		volatile byte	pcLastSample,far *pcSound;
-		longword		pcLengthLeft;
-		word			pcSoundLookup[255];
+		volatile id0_byte_t	pcLastSample,id0_far *pcSound;
+		id0_longword_t		pcLengthLeft;
+		id0_word_t			pcSoundLookup[255];
 
 //	AdLib variables
-		GAMEVER_COND_STATIC boolean			alNoCheck;
-		byte			far *alSound;
-		word			alBlock;
-		longword		alLengthLeft;
-		longword		alTimeCount;
+		GAMEVER_COND_STATIC id0_boolean_t			alNoCheck;
+		id0_byte_t			id0_far *alSound;
+		id0_word_t			alBlock;
+		id0_longword_t		alLengthLeft;
+		id0_longword_t		alTimeCount;
 		GAMEVER_COND_STATIC Instrument		alZeroInst;
 
 // This table maps channel numbers to carrier and modulator op cells
-static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
+static	id0_byte_t			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 						modifiers[9] = { 0, 1, 2, 8, 9,10,16,17,18},
 // This table maps percussive voice numbers to op cells
 						pcarriers[5] = {19,0xff,0xff,0xff,0xff},
@@ -256,26 +256,26 @@ static	byte			carriers[9] =  { 3, 4, 5,11,12,13,19,20,21},
 //	Sequencer variables
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		boolean			midiOn = false;
-		int			midiError = 0;
+		id0_boolean_t			midiOn = false;
+		id0_int_t			midiError = 0;
 		float			midiTimeScale = 1.86;
 
-		byte	far	*midiData, far *midiDataStart;
-		byte	midiRunningStatus;
-		longword	midiLength, midiDeltaTime;
+		id0_byte_t	id0_far	*midiData, id0_far *midiDataStart;
+		id0_byte_t	midiRunningStatus;
+		id0_longword_t	midiLength, midiDeltaTime;
 
-static	word			alFXReg;
+static	id0_word_t			alFXReg;
 
-static	byte	far	*seqPtr;
-static	long	seqLength;
+static	id0_byte_t	id0_far	*seqPtr;
+static	id0_long_t	seqLength;
 #else
-		boolean			sqActive;
-static	word			alFXReg;
+		id0_boolean_t			sqActive;
+static	id0_word_t			alFXReg;
 static	ActiveTrack		*tracks[sqMaxTracks],
 						mytracks[sqMaxTracks];
-static	word			sqMode,sqFadeStep;
-		word			far *sqHack,far *sqHackPtr,sqHackLen,sqHackSeqLen;
-		long			sqHackTime;
+static	id0_word_t			sqMode,sqFadeStep;
+		id0_word_t			id0_far *sqHack,id0_far *sqHackPtr,sqHackLen,sqHackSeqLen;
+		id0_long_t			sqHackTime;
 #endif
 
 //	Internal routines
@@ -288,7 +288,7 @@ static	word			sqMode,sqFadeStep;
 ///////////////////////////////////////////////////////////////////////////
 #pragma	argsused
 static void
-SDL_SetTimer0(word speed)
+SDL_SetTimer0(id0_word_t speed)
 {
 #ifndef TPROF	// If using Borland's profiling, don't screw with the timer
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -325,7 +325,7 @@ asm	popf
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-SDL_SetIntsPerSec(word ints)
+SDL_SetIntsPerSec(id0_word_t ints)
 {
 	TimerRate = ints;
 	SDL_SetTimer0(1192030 / ints);
@@ -334,7 +334,7 @@ SDL_SetIntsPerSec(word ints)
 static void
 SDL_SetTimerSpeed(void)
 {
-	word	rate;
+	id0_word_t	rate;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 
@@ -413,7 +413,7 @@ static void
 #endif
 SDL_SBStopSample(void)
 {
-	byte	is;
+	id0_byte_t	is;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -458,11 +458,11 @@ asm	popf
 //	 controller, and tells the SB to start doing DMA requests for DAC
 //
 ///////////////////////////////////////////////////////////////////////////
-static longword
-SDL_SBPlaySeg(volatile byte huge *data,longword length)
+static id0_longword_t
+SDL_SBPlaySeg(volatile id0_byte_t id0_huge *data,id0_longword_t length)
 {
-	unsigned		datapage;
-	longword		dataofs,uselen;
+	id0_unsigned_t		datapage;
+	id0_longword_t		dataofs,uselen;
 
 	uselen = length;
 	datapage = FP_SEG(data) >> 12;
@@ -497,18 +497,18 @@ asm	cli
 	// *** ALPHA RESTORATION ***
 	// Use hardcoded DMA channel, as in Keen Dreams
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	outportb(0x02,(byte)dataofs);				// Give LSB of address
-	outportb(0x02,(byte)(dataofs >> 8));		// Give MSB of address
-	outportb(0x83,(byte)datapage);				// Give page of address
-	outportb(0x03,(byte)uselen);				// Give LSB of length
-	outportb(0x03,(byte)(uselen >> 8));			// Give MSB of length
+	outportb(0x02,(id0_byte_t)dataofs);				// Give LSB of address
+	outportb(0x02,(id0_byte_t)(dataofs >> 8));		// Give MSB of address
+	outportb(0x83,(id0_byte_t)datapage);				// Give page of address
+	outportb(0x03,(id0_byte_t)uselen);				// Give LSB of length
+	outportb(0x03,(id0_byte_t)(uselen >> 8));			// Give MSB of length
 	outportb(0x0a,1);							// Turn on channel 1 DMA
 #else
-	outportb(sbDMAa2,(byte)dataofs);			// Give LSB of address
-	outportb(sbDMAa2,(byte)(dataofs >> 8));		// Give MSB of address
-	outportb(sbDMAa1,(byte)datapage);			// Give page of address
-	outportb(sbDMAa3,(byte)uselen);				// Give LSB of length
-	outportb(sbDMAa3,(byte)(uselen >> 8));		// Give MSB of length
+	outportb(sbDMAa2,(id0_byte_t)dataofs);			// Give LSB of address
+	outportb(sbDMAa2,(id0_byte_t)(dataofs >> 8));		// Give MSB of address
+	outportb(sbDMAa1,(id0_byte_t)datapage);			// Give page of address
+	outportb(sbDMAa3,(id0_byte_t)uselen);				// Give LSB of length
+	outportb(sbDMAa3,(id0_byte_t)(uselen >> 8));		// Give MSB of length
 	outportb(0x0a,sbDMA);						// Re-enable DMA on channel sbDMA
 #endif
 
@@ -523,9 +523,9 @@ asm	cli
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0x14);
 	sbWriteDelay();
-	sbOut(sbWriteData,(byte)uselen);
+	sbOut(sbWriteData,(id0_byte_t)uselen);
 	sbWriteDelay();
-	sbOut(sbWriteData,(byte)(uselen >> 8));
+	sbOut(sbWriteData,(id0_byte_t)(uselen >> 8));
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 asm	popf
@@ -542,7 +542,7 @@ asm	popf
 static void interrupt
 SDL_SBService(void)
 {
-	longword	used;
+	id0_longword_t	used;
 
 	sbIn(sbDataAvail);	// Ack interrupt to SB
 
@@ -577,9 +577,9 @@ void
 #else
 static void
 #endif
-SDL_SBPlaySample(byte huge *data,longword len)
+SDL_SBPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 {
-	longword	used;
+	id0_longword_t	used;
 
 	SDL_SBStopSample();
 
@@ -634,9 +634,9 @@ asm	popf
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-SDL_PositionSBP(int leftpos,int rightpos)
+SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 {
-	byte	v;
+	id0_byte_t	v;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
@@ -670,10 +670,10 @@ asm	popf
 //		particular I/O location
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
-SDL_CheckSB(int port)
+static id0_boolean_t
+SDL_CheckSB(id0_int_t port)
 {
-	int	i;
+	id0_int_t	i;
 
 	sbLocation = port << 4;		// Initialize stuff for later use
 
@@ -721,10 +721,10 @@ asm	loop usecloop
 //		it just passes it directly to SDL_CheckSB()
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
-SDL_DetectSoundBlaster(int port)
+static id0_boolean_t
+SDL_DetectSoundBlaster(id0_int_t port)
 {
-	int	i;
+	id0_int_t	i;
 
 	if (port == 0)					// If user specifies default, use 2
 		port = 2;
@@ -768,7 +768,7 @@ SDL_DetectSoundBlaster(int port)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-SDL_SBSetDMA(byte channel)
+SDL_SBSetDMA(id0_byte_t channel)
 {
 	if (channel > 3)
 		Quit("SDL_SBSetDMA() - invalid SoundBlaster DMA channel");
@@ -788,7 +788,7 @@ SDL_SBSetDMA(byte channel)
 static void
 SDL_StartSB(void)
 {
-	byte	timevalue,test;
+	id0_byte_t	timevalue,test;
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -917,7 +917,7 @@ asm	pushf
 asm	cli
 #endif
 
-	(long)ssSample = 0;
+	(id0_long_t)ssSample = 0;
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -933,8 +933,8 @@ asm	popf
 static void
 SDL_SSService(void)
 {
-	boolean	gotit;
-	byte	v;
+	id0_boolean_t	gotit;
+	id0_byte_t	v;
 
 	while (ssSample)
 	{
@@ -946,7 +946,7 @@ SDL_SSService(void)
 		v = *ssSample++;
 		if (!(--ssLengthLeft))
 		{
-			(long)ssSample = 0;
+			(id0_long_t)ssSample = 0;
 			SDL_DigitizedDone();
 		}
 
@@ -980,13 +980,13 @@ void
 #else
 static void
 #endif
-SDL_SSPlaySample(byte huge *data,longword len)
+SDL_SSPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 {
 asm	pushf
 asm	cli
 
 	ssLengthLeft = len;
-	ssSample = (volatile byte far *)data;
+	ssSample = (volatile id0_byte_t id0_far *)data;
 
 asm	popf
 }
@@ -1034,11 +1034,11 @@ SDL_ShutSS(void)
 //		location specified by the sound source variables
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 SDL_CheckSS(void)
 {
-	boolean		present = false;
-	longword	lasttime;
+	id0_boolean_t		present = false;
+	id0_longword_t	lasttime;
 
 	// Turn the Sound Source on and wait awhile (4 ticks)
 	SDL_StartSS();
@@ -1085,7 +1085,7 @@ checkdone:
 	return(present);
 }
 
-static boolean
+static id0_boolean_t
 SDL_DetectSoundSource(void)
 {
 	for (ssPort = 1;ssPort <= 3;ssPort++)
@@ -1116,7 +1116,7 @@ void
 #else
 static void
 #endif
-SDL_PCPlaySample(byte huge *data,longword len)
+SDL_PCPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 {
 asm	pushf
 asm	cli
@@ -1124,7 +1124,7 @@ asm	cli
 	SDL_IndicatePC(true);
 
 	pcLengthLeft = len;
-	pcSound = (volatile byte far *)data;
+	pcSound = (volatile id0_byte_t id0_far *)data;
 
 asm	popf
 }
@@ -1144,7 +1144,7 @@ SDL_PCStopSample(void)
 asm	pushf
 asm	cli
 
-	(long)pcSound = 0;
+	(id0_long_t)pcSound = 0;
 
 	SDL_IndicatePC(false);
 
@@ -1166,7 +1166,7 @@ void
 #else
 static void
 #endif
-SDL_PCPlaySound(PCSound far *sound)
+SDL_PCPlaySound(PCSound id0_far *sound)
 {
 asm	pushf
 asm	cli
@@ -1193,7 +1193,7 @@ SDL_PCStopSound(void)
 asm	pushf
 asm	cli
 
-	(long)pcSound = 0;
+	(id0_long_t)pcSound = 0;
 
 asm	in	al,0x61		  	// Turn the speaker off
 asm	and	al,0xfd			// ~2
@@ -1211,8 +1211,8 @@ asm	popf
 static void
 SDL_PCService(void)
 {
-	byte	s;
-	word	t;
+	id0_byte_t	s;
+	id0_word_t	t;
 
 	if (pcSound)
 	{
@@ -1283,7 +1283,7 @@ asm	popf
 //	Stuff for digitized sounds
 //
 memptr
-SDL_LoadDigiSegment(word page)
+SDL_LoadDigiSegment(id0_word_t page)
 {
 	memptr	addr;
 
@@ -1321,7 +1321,7 @@ asm	out	dx,al
 }
 
 void
-SDL_PlayDigiSegment(memptr addr,word len)
+SDL_PlayDigiSegment(memptr addr,id0_word_t len)
 {
 	switch (DigiMode)
 	{
@@ -1346,7 +1346,7 @@ SDL_PlayDigiSegment(memptr addr,word len)
 void
 SD_StopDigitized(void)
 {
-	int	i;
+	id0_int_t	i;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1433,7 +1433,7 @@ SD_Poll(void)
 #ifdef GAMEVER_NOAH3D
 	if (midiError)
 	{
-		char str[80];
+		id0_char_t str[80];
 		sprintf(str,"SD_Poll: midiError = %d\n", midiError);
 		Quit(str);
 	}
@@ -1445,7 +1445,7 @@ SD_Poll(void)
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void
-SD_SetPosition(int leftpos,int rightpos)
+SD_SetPosition(id0_int_t leftpos,id0_int_t rightpos)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
@@ -1477,12 +1477,12 @@ SD_SetPosition(int leftpos,int rightpos)
 void
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-SD_PlayDigitized(word which)
+SD_PlayDigitized(id0_word_t which)
 #else
-SD_PlayDigitized(word which,int leftpos,int rightpos)
+SD_PlayDigitized(id0_word_t which,id0_int_t leftpos,id0_int_t rightpos)
 #endif
 {
-	word	len;
+	id0_word_t	len;
 	memptr	addr;
 
 	if (!DigiMode)
@@ -1493,7 +1493,7 @@ SD_PlayDigitized(word which,int leftpos,int rightpos)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	{
-		char str[80];
+		id0_char_t str[80];
 		sprintf(str,"SD_PlayDigitized: Bad sound number (%d)\n",which);
 		Quit(str);
 	}
@@ -1573,7 +1573,7 @@ SDL_DigitizedDone(void)
 void
 SD_SetDigiDevice(SDSMode mode)
 {
-	boolean	devicenotpresent;
+	id0_boolean_t	devicenotpresent;
 
 	if (mode == DigiMode)
 		return;
@@ -1637,25 +1637,25 @@ void
 SDL_SetupDigi(void)
 {
 	memptr	list;
-	word	far *p,
+	id0_word_t	id0_far *p,
 			pg;
-	int		i;
+	id0_int_t		i;
 
 	PM_UnlockMainMem();
 	MM_GetPtr(&list,PMPageSize);
 	PM_CheckMainMem();
-	p = (word far *)MK_FP(PM_GetPage(ChunksInFile - 1),0);
-	_fmemcpy((void far *)list,(void far *)p,PMPageSize);
+	p = (id0_word_t id0_far *)MK_FP(PM_GetPage(ChunksInFile - 1),0);
+	_fmemcpy((void id0_far *)list,(void id0_far *)p,PMPageSize);
 	pg = PMSoundStart;
-	for (i = 0;i < PMPageSize / (sizeof(word) * 2);i++,p += 2)
+	for (i = 0;i < PMPageSize / (sizeof(id0_word_t) * 2);i++,p += 2)
 	{
 		if (pg >= ChunksInFile - 1)
 			break;
 		pg += (p[1] + (PMPageSize - 1)) / PMPageSize;
 	}
 	PM_UnlockMainMem();
-	MM_GetPtr((memptr *)&DigiList,i * sizeof(word) * 2);
-	_fmemcpy((void far *)DigiList,(void far *)list,i * sizeof(word) * 2);
+	MM_GetPtr((memptr *)&DigiList,i * sizeof(id0_word_t) * 2);
+	_fmemcpy((void id0_far *)DigiList,(void id0_far *)list,i * sizeof(id0_word_t) * 2);
 	MM_FreePtr(&list);
 	NumDigi = i;
 
@@ -1681,7 +1681,7 @@ void
 #else
 static void
 #endif
-SDL_PCPlaySound(PCSound far *sound)
+SDL_PCPlaySound(PCSound id0_far *sound)
 {
 asm	pushf
 asm	cli
@@ -1708,7 +1708,7 @@ SDL_PCStopSound(void)
 asm	pushf
 asm	cli
 
-	(long)pcSound = 0;
+	(id0_long_t)pcSound = 0;
 
 asm	in	al,0x61		  	// Turn the speaker off
 asm	and	al,0xfd			// ~2
@@ -1746,7 +1746,7 @@ asm	popf
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-alOut(byte n,byte b)
+alOut(id0_byte_t n,id0_byte_t b)
 {
 asm	pushf
 asm	cli
@@ -1824,9 +1824,9 @@ asm	in	al,dx
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-SDL_SetInstrument(int track,int which,Instrument far *inst,boolean percussive)
+SDL_SetInstrument(id0_int_t track,id0_int_t which,Instrument id0_far *inst,id0_boolean_t percussive)
 {
-	byte		c,m;
+	id0_byte_t		c,m;
 
 	if (percussive)
 	{
@@ -1878,16 +1878,16 @@ SDL_ALStopSound(void)
 asm	pushf
 asm	cli
 
-	(long)alSound = 0;
+	(id0_long_t)alSound = 0;
 	alOut(alFreqH + 0,0);
 
 asm	popf
 }
 
 static void
-SDL_AlSetFXInst(Instrument far *inst)
+SDL_AlSetFXInst(Instrument id0_far *inst)
 {
-	byte		c,m;
+	id0_byte_t		c,m;
 
 	m = modifiers[0];
 	c = carriers[0];
@@ -1917,10 +1917,10 @@ void
 #else
 static void
 #endif
-SDL_ALPlaySound(AdLibSound far *sound)
+SDL_ALPlaySound(AdLibSound id0_far *sound)
 {
-	Instrument	far *inst;
-	byte		huge *data;
+	Instrument	id0_far *inst;
+	id0_byte_t		id0_huge *data;
 
 	SDL_ALStopSound();
 
@@ -1931,7 +1931,7 @@ asm	cli
 	data = sound->data;
 	data++;
 	data--;
-	alSound = (byte far *)data;
+	alSound = (id0_byte_t id0_far *)data;
 	alBlock = ((sound->block & 7) << 2) | 0x20;
 	inst = &sound->inst;
 
@@ -1957,7 +1957,7 @@ asm	popf
 void
 SDL_ALSoundService(void)
 {
-	byte	s;
+	id0_byte_t	s;
 
 	if (alSound)
 	{
@@ -1972,7 +1972,7 @@ SDL_ALSoundService(void)
 
 		if (!(--alLengthLeft))
 		{
-			(long)alSound = 0;
+			(id0_long_t)alSound = 0;
 			alOut(alFreqH + 0,0);
 			SDL_SoundFinished();
 		}
@@ -1984,8 +1984,8 @@ SDL_ALSoundService(void)
 void
 SDL_ALService(void)
 {
-	byte	a,v;
-	word	w;
+	id0_byte_t	a,v;
+	id0_word_t	w;
 
 	if (!sqActive)
 		return;
@@ -2003,7 +2003,7 @@ SDL_ALService(void)
 	alTimeCount++;
 	if (!sqHackLen)
 	{
-		sqHackPtr = (word far *)sqHack;
+		sqHackPtr = (id0_word_t id0_far *)sqHack;
 		sqHackLen = sqHackSeqLen;
 		alTimeCount = sqHackTime = 0;
 	}
@@ -2013,23 +2013,23 @@ SDL_ALService(void)
 // *** S3DNA RESTORATION ***
 // Recreated MIDI to AL translation code
 #ifdef GAMEVER_NOAH3D
-static word
-fixword(word w)
+static id0_word_t
+fixword(id0_word_t w)
 {
 	return ((w&0xFF00)>>8)+((w&0xFF)<<8);
 }
 
-static longword
-fixlongword(longword d)
+static id0_longword_t
+fixlongword(id0_longword_t d)
 {
 	return ((d&0xFF000000)>>24)+((d&0x00FF0000)>>8)
 		+((d&0xFF00)<<8)+((d&0xFF)<<24);
 }
 
-static longword
+static id0_longword_t
 MIDI_VarLength(void)
 {
-	longword value = 0;
+	id0_longword_t value = 0;
 	while (*midiData & 0x80)
 		value = (value << 7) + (*midiData++ & 0x7F);
 	value = (value << 7) + *midiData++;
@@ -2038,9 +2038,9 @@ MIDI_VarLength(void)
 
 
 
-static word	NoteTable[12] = {0x157,0x16b,0x181,0x198,0x1b0,0x1ca,0x1e5,0x202,0x220,0x241,0x263,0x287};
+static id0_word_t	NoteTable[12] = {0x157,0x16b,0x181,0x198,0x1b0,0x1ca,0x1e5,0x202,0x220,0x241,0x263,0x287};
 
-static byte	drums = 0;
+static id0_byte_t	drums = 0;
 
 static inst_t	instrument[14] = {
 	{0x21, 0x31, 0x4f, 0x00, 0xf2, 0xd2, 0x52, 0x73, 0x00, 0x00, 0x06},
@@ -2064,15 +2064,15 @@ static inst_t	instrument[14] = {
 void
 MIDI_SkipMetaEvent(void)
 {
-	longword length = MIDI_VarLength();
+	id0_longword_t length = MIDI_VarLength();
 	midiData += length;
 }
 
 void
-MIDI_NoteOff(int channel, int note, int velocity)
+MIDI_NoteOff(id0_int_t channel, id0_int_t note, id0_int_t velocity)
 {
-	unsigned	fnumber;
-	byte	octave;
+	id0_unsigned_t	fnumber;
+	id0_byte_t	octave;
 	if (channel == 9)
 	{
 		switch (note)
@@ -2102,10 +2102,10 @@ MIDI_NoteOff(int channel, int note, int velocity)
 }
 
 void
-MIDI_NoteOn(int channel, byte note, byte velocity)
+MIDI_NoteOn(id0_int_t channel, id0_byte_t note, id0_byte_t velocity)
 {
-	unsigned	fnumber;
-	int	octave;
+	id0_unsigned_t	fnumber;
+	id0_int_t	octave;
 	if (velocity)
 	{
 		if (channel == 9)
@@ -2143,22 +2143,22 @@ MIDI_NoteOn(int channel, byte note, byte velocity)
 }
 
 void
-MIDI_ControllerChange(int channel, int id, int value)
+MIDI_ControllerChange(id0_int_t channel, id0_int_t id, id0_int_t value)
 {
 }
 
 void
-MIDI_ProgramChange(int channel, int id)
+MIDI_ProgramChange(id0_int_t channel, id0_int_t id)
 {
 	// S3DNA RESTORATION - While an inst_t pointer can be used with direct
 	// access to all fields, based on generated machine code it looks like
 	// this wasn't the way the code was written
-	byte	*inst;
+	id0_byte_t	*inst;
 	if (channel == 9)
 	{
-		int	note;
-		unsigned	fnumber;
-		int	octave;
+		id0_int_t	note;
+		id0_unsigned_t	fnumber;
+		id0_int_t	octave;
 
 		inst = &instrument[9];
 		alOut(modifiers[6]+alChar, *inst++);
@@ -2288,14 +2288,14 @@ MIDI_ProgramChange(int channel, int id)
 }
 
 void
-MIDI_ChannelPressure(int channel, int id)
+MIDI_ChannelPressure(id0_int_t channel, id0_int_t id)
 {
 }
 
 void
-MIDI_ProcessEvent(byte event)
+MIDI_ProcessEvent(id0_byte_t event)
 {
-	byte	note,velocity,id,value;
+	id0_byte_t	note,velocity,id,value;
 	switch (event&0xF0)
 	{
 	case 0x80:
@@ -2330,9 +2330,9 @@ MIDI_ProcessEvent(byte event)
 static void
 MIDI_DoEvent(void)
 {
-	byte	event;
-	longword	length;
-	longword	tempo;
+	id0_byte_t	event;
+	id0_longword_t	length;
+	id0_longword_t	tempo;
 
 	event = *midiData++;
 	if (!(event & 0x80))
@@ -2366,7 +2366,7 @@ MIDI_DoEvent(void)
 		{
 		case 0x51:
 			length = MIDI_VarLength();
-			tempo = ((long)(*midiData)<<16) + (long)((*(midiData+1))<<8) + (*(midiData+2));
+			tempo = ((id0_long_t)(*midiData)<<16) + (id0_long_t)((*(midiData+1))<<8) + (*(midiData+2));
 			midiTimeScale = (double)tempo/2.74176e5;
 			midiTimeScale *= 1.1;
 			midiData += length;
@@ -2387,7 +2387,7 @@ MIDI_DoEvent(void)
 void
 MIDI_IRQService(void)
 {
-	int	maxevent = 0;
+	id0_int_t	maxevent = 0;
 
 	if (!midiOn)
 		return;
@@ -2444,7 +2444,7 @@ asm	popf
 static void
 SDL_CleanAL(void)
 {
-	int	i;
+	id0_int_t	i;
 
 asm	pushf
 asm	cli
@@ -2475,11 +2475,11 @@ SDL_StartAL(void)
 //		emulating an AdLib) present
 //
 ///////////////////////////////////////////////////////////////////////////
-static boolean
+static id0_boolean_t
 SDL_DetectAdLib(void)
 {
-	byte	status1,status2;
-	int		i;
+	id0_byte_t	status1,status2;
+	id0_int_t		i;
 
 	alOut(4,0x60);	// Reset T1 & T2
 	alOut(4,0x80);	// Reset IRQ
@@ -2524,7 +2524,7 @@ asm	loop usecloop
 static void interrupt
 SDL_t0Service(void)
 {
-static	word	count = 1;
+static	id0_word_t	count = 1;
 
 #if 1	// for debugging
 asm	mov	dx,STATUS_REGISTER_1
@@ -2664,16 +2664,16 @@ SDL_StartDevice(void)
 //	SD_SetSoundMode() - Sets which sound hardware to use for sound effects
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 SD_SetSoundMode(SDMode mode)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	boolean	result;
+	id0_boolean_t	result;
 #else
-	boolean	result = false;
+	id0_boolean_t	result = false;
 #endif
-	word	tableoffset;
+	id0_word_t	tableoffset;
 
 	SD_StopSound();
 
@@ -2718,7 +2718,7 @@ SD_SetSoundMode(SDMode mode)
 		SDL_ShutDevice();
 		SoundMode = mode;
 #ifndef	_MUSE_
-		SoundTable = (word *)(&audiosegs[tableoffset]);
+		SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
 #endif
 		SDL_StartDevice();
 	}
@@ -2733,14 +2733,14 @@ SD_SetSoundMode(SDMode mode)
 //	SD_SetMusicMode() - sets the device to use for background music
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 SD_SetMusicMode(SMMode mode)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	boolean	result;
+	id0_boolean_t	result;
 #else
-	boolean	result = false;
+	id0_boolean_t	result = false;
 #endif
 
 	SD_FadeOutMusic();
@@ -2784,7 +2784,7 @@ SD_SetMusicMode(SMMode mode)
 void
 SD_Startup(void)
 {
-	int	i;
+	id0_int_t	i;
 
 	if (SD_Started)
 		return;
@@ -2889,11 +2889,11 @@ SD_Startup(void)
 			SoundBlasterPresent = SDL_DetectSoundBlaster(-1);
 #else
 		{
-			int port = -1;
-			char *env = getenv("BLASTER");
+			id0_int_t port = -1;
+			id0_char_t *env = getenv("BLASTER");
 			if (env)
 			{
-				long temp;
+				id0_long_t temp;
 				while (*env)
 				{
 					while (isspace(*env))
@@ -2976,9 +2976,9 @@ SD_Startup(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-SD_Default(boolean gotit,SDMode sd,SMMode sm)
+SD_Default(id0_boolean_t gotit,SDMode sd,SMMode sm)
 {
-	boolean	gotsd,gotsm;
+	id0_boolean_t	gotsd,gotsm;
 
 	gotsd = gotsm = gotit;
 
@@ -3079,7 +3079,7 @@ SD_SetUserHook(void (* hook)(void))
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-SD_PositionSound(int leftvol,int rightvol)
+SD_PositionSound(id0_int_t leftvol,id0_int_t rightvol)
 {
 	LeftPosition = leftvol;
 	RightPosition = rightvol;
@@ -3096,18 +3096,18 @@ SD_PositionSound(int leftvol,int rightvol)
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void
 #else
-boolean
+id0_boolean_t
 #endif
 SD_PlaySound(soundnames sound)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	boolean		ispos;
+	id0_boolean_t		ispos;
 #endif
-	SoundCommon	far *s;
+	SoundCommon	id0_far *s;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	int	lp,rp;
+	id0_int_t	lp,rp;
 
 	lp = LeftPosition;
 	rp = RightPosition;
@@ -3217,10 +3217,10 @@ SD_PlaySound(soundnames sound)
 	switch (SoundMode)
 	{
 	case sdm_PC:
-		SDL_PCPlaySound((void far *)s);
+		SDL_PCPlaySound((void id0_far *)s);
 		break;
 	case sdm_AdLib:
-		SDL_ALPlaySound((void far *)s);
+		SDL_ALPlaySound((void id0_far *)s);
 		break;
 	}
 
@@ -3236,10 +3236,10 @@ SD_PlaySound(soundnames sound)
 //		no sound is playing
 //
 ///////////////////////////////////////////////////////////////////////////
-word
+id0_word_t
 SD_SoundPlaying(void)
 {
-	boolean	result = false;
+	id0_boolean_t	result = false;
 
 	switch (SoundMode)
 	{
@@ -3322,7 +3322,7 @@ SD_MusicOn(void)
 void
 SD_MusicOff(void)
 {
-	word	i;
+	id0_word_t	i;
 
 
 	switch (MusicMode)
@@ -3348,12 +3348,12 @@ SD_MusicOff(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-SD_StartMusic(MusicGroup far *music)
+SD_StartMusic(MusicGroup id0_far *music)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	char str[80];
-	unsigned int i;
+	id0_char_t str[80];
+	id0_unsigned_int_t i;
 
 	SD_MusicOff();
 	if (MusicMode != smm_AdLib)
@@ -3367,24 +3367,24 @@ asm	cli
 	if (_fstrncmp(seqPtr,"MThd",4))
 		Quit("SD_StartMusic: MIDI header expected!\n");
 
-	i = fixword(((word far *)seqPtr)[4]);
+	i = fixword(((id0_word_t id0_far *)seqPtr)[4]);
 	if (i)
 	{
 		sprintf(str,"SD_StartMusic: Invalid or unsupported MIDI file format (%04X)\n", i);
 		Quit(str);
 	}
-	i = fixword(((word far *)seqPtr)[5]);
+	i = fixword(((id0_word_t id0_far *)seqPtr)[5]);
 	if (i != 1)
 	{
 		sprintf(str,"SD_StartMusic: MIDI file type 0 with %d tracks?\n",i);
 		Quit(str);
 	}
 
-	seqPtr += fixlongword(((longword far *)seqPtr)[1]) + 8;
+	seqPtr += fixlongword(((id0_longword_t id0_far *)seqPtr)[1]) + 8;
 	if (_fstrncmp(seqPtr,"MTrk",4))
 		Quit("SD_StartMusic: MIDI track header expected!\n");
 
-	seqLength = fixlongword(((longword far *)seqPtr)[1]);
+	seqLength = fixlongword(((id0_longword_t id0_far *)seqPtr)[1]);
 	if (!seqLength)
 		Quit("SD_StartMusic: MIDI track is 0 length!\n");
 
@@ -3456,7 +3456,7 @@ SD_FadeOutMusic(void)
 //		not
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
+id0_boolean_t
 SD_MusicPlaying(void)
 {
 	// *** S3DNA RESTORATION ***
@@ -3467,7 +3467,7 @@ SD_MusicPlaying(void)
 
 	return false;
 #else
-	boolean	result;
+	id0_boolean_t	result;
 
 	switch (MusicMode)
 	{

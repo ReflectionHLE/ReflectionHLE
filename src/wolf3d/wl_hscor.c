@@ -15,8 +15,8 @@ void	DrawHighScores(void)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	char		buffer[16],*str;
-	word		i,
+	id0_char_t		buffer[16],*str;
+	id0_word_t		i,
 				w,h;
 
 	HighScore	*s;
@@ -25,9 +25,9 @@ void	DrawHighScores(void)
 	VWB_DrawPic(0,0,HIGHSCORESPIC);
 	UNCACHEGRCHUNK (HIGHSCORESPIC);
 #else
-	char		buffer[16],*str,buffer1[5];
-	byte		temp,temp1,temp2,temp3;
-	word		i,j,
+	id0_char_t		buffer[16],*str,buffer1[5];
+	id0_byte_t		temp,temp1,temp2,temp3;
+	id0_word_t		i,j,
 				w,h,
 				x,y;
 	HighScore	*s;
@@ -273,10 +273,10 @@ void	DrawHighScores(void)
 =======================
 */
 
-void	CheckHighScore (long score,word other)
+void	CheckHighScore (id0_long_t score,id0_word_t other)
 {
-	word		i,j;
-	int			n;
+	id0_word_t		i,j;
+	id0_int_t			n;
 	HighScore	myscore;
 
 	strcpy(myscore.name,"");

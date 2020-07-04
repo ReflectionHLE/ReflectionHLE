@@ -34,29 +34,29 @@
 
 
 //	Global variables
-		char		*abortprogram;
-		boolean		NoWait;
-		word		PrintX,PrintY;
-		word		WindowX,WindowY,WindowW,WindowH;
+		id0_char_t		*abortprogram;
+		id0_boolean_t		NoWait;
+		id0_word_t		PrintX,PrintY;
+		id0_word_t		WindowX,WindowY,WindowW,WindowH;
 
 //	Internal variables
 #define	ConfigVersion	1
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	char		*ParmStrings[] = {"LEVELWARP","NOWAIT"},
+static	id0_char_t		*ParmStrings[] = {"LEVELWARP","NOWAIT"},
 #else
-static	char		*ParmStrings[] = {"TEDLEVEL","NOWAIT"},
+static	id0_char_t		*ParmStrings[] = {"TEDLEVEL","NOWAIT"},
 #endif
 					*ParmStrings2[] = {"COMP","NOCOMP"};
-static	boolean		US_Started;
+static	id0_boolean_t		US_Started;
 
-		boolean		Button0,Button1,
+		id0_boolean_t		Button0,Button1,
 					CursorBad;
-		int			CursorX,CursorY;
+		id0_int_t			CursorX,CursorY;
 
-		void		(*USL_MeasureString)(char far *,word *,word *) = VW_MeasurePropString,
-					(*USL_DrawString)(char far *) = VWB_DrawPropString;
+		void		(*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
+					(*USL_DrawString)(id0_char_t id0_far *) = VWB_DrawPropString;
 
 		SaveGame	Games[MaxSaveGames];
 		HighScore	Scores[MaxScores] =
@@ -107,18 +107,18 @@ static	boolean		US_Started;
 ///////////////////////////////////////////////////////////////////////////
 #pragma	warn	-par
 #pragma	warn	-rch
-int
-USL_HardError(word errval,int ax,int bp,int si)
+id0_int_t
+USL_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si)
 {
 #define IGNORE  0
 #define RETRY   1
 #define	ABORT   2
 extern	void	ShutdownId(void);
 
-static	char		buf[32];
+static	id0_char_t		buf[32];
 static	WindowRec	wr;
-		int			di;
-		char		c,*s,*t;
+		id0_int_t			di;
+		id0_char_t		c,*s,*t;
 
 
 	di = _DI;
@@ -203,7 +203,7 @@ oh_kill_me:
 void
 US_Startup(void)
 {
-	int	i,n;
+	id0_int_t	i,n;
 
 	if (US_Started)
 		return;
@@ -314,12 +314,12 @@ US_Shutdown(void)
 //		index of the string that matched, or -1 if no matches were found
 //
 ///////////////////////////////////////////////////////////////////////////
-int
-US_CheckParm(char *parm,char **strings)
+id0_int_t
+US_CheckParm(id0_char_t *parm,id0_char_t **strings)
 {
-	char	cp,cs,
+	id0_char_t	cp,cs,
 			*p,*s;
-	int		i;
+	id0_int_t		i;
 
 	while (!isalpha(*parm))	// Skip non-alphas
 		parm++;
@@ -353,7 +353,7 @@ US_CheckParm(char *parm,char **strings)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetPrintRoutines(void (*measure)(char far *,word *,word *),void (*print)(char far *))
+US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),void (*print)(id0_char_t id0_far *))
 {
 	USL_MeasureString = measure;
 	USL_DrawString = print;
@@ -366,10 +366,10 @@ US_SetPrintRoutines(void (*measure)(char far *,word *,word *),void (*print)(char
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_Print(char GAMEVER_COND_FARPTR *s)
+US_Print(id0_char_t GAMEVER_COND_FARPTR *s)
 {
-	char	c,GAMEVER_COND_FARPTR *se;
-	word	w,h;
+	id0_char_t	c,GAMEVER_COND_FARPTR *se;
+	id0_word_t	w,h;
 
 	while (*s)
 	{
@@ -403,9 +403,9 @@ US_Print(char GAMEVER_COND_FARPTR *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintUnsigned(longword n)
+US_PrintUnsigned(id0_longword_t n)
 {
-	char	buffer[32];
+	id0_char_t	buffer[32];
 
 	US_Print(ultoa(n,buffer,10));
 }
@@ -416,9 +416,9 @@ US_PrintUnsigned(longword n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintSigned(long n)
+US_PrintSigned(id0_long_t n)
 {
-	char	buffer[32];
+	id0_char_t	buffer[32];
 
 	US_Print(ltoa(n,buffer,10));
 }
@@ -429,9 +429,9 @@ US_PrintSigned(long n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-USL_PrintInCenter(char GAMEVER_COND_FARPTR *s,Rect r)
+USL_PrintInCenter(id0_char_t GAMEVER_COND_FARPTR *s,Rect r)
 {
-	word	w,h,
+	id0_word_t	w,h,
 			rw,rh;
 
 	USL_MeasureString(s,&w,&h);
@@ -449,7 +449,7 @@ USL_PrintInCenter(char GAMEVER_COND_FARPTR *s,Rect r)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintCentered(char GAMEVER_COND_FARPTR *s)
+US_PrintCentered(id0_char_t GAMEVER_COND_FARPTR *s)
 {
 	Rect	r;
 
@@ -468,9 +468,9 @@ US_PrintCentered(char GAMEVER_COND_FARPTR *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrintLine(char GAMEVER_COND_FARPTR *s)
+US_CPrintLine(id0_char_t GAMEVER_COND_FARPTR *s)
 {
-	word	w,h;
+	id0_word_t	w,h;
 
 	USL_MeasureString(s,&w,&h);
 
@@ -489,9 +489,9 @@ US_CPrintLine(char GAMEVER_COND_FARPTR *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrint(char GAMEVER_COND_FARPTR *s)
+US_CPrint(id0_char_t GAMEVER_COND_FARPTR *s)
 {
-	char	c,GAMEVER_COND_FARPTR *se;
+	id0_char_t	c,GAMEVER_COND_FARPTR *se;
 
 	while (*s)
 	{
@@ -531,9 +531,9 @@ US_ClearWindow(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_DrawWindow(word x,word y,word w,word h)
+US_DrawWindow(id0_word_t x,id0_word_t y,id0_word_t w,id0_word_t h)
 {
-	word	i,
+	id0_word_t	i,
 			sx,sy,sw,sh;
 
 	WindowX = x * 8;
@@ -567,7 +567,7 @@ US_DrawWindow(word x,word y,word w,word h)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CenterWindow(word w,word h)
+US_CenterWindow(id0_word_t w,id0_word_t h)
 {
 	US_DrawWindow(((MaxX / 8) - w) / 2,((MaxY / 8) - h) / 2,w,h);
 }
@@ -616,12 +616,12 @@ US_RestoreWindow(WindowRec *win)
 //
 ///////////////////////////////////////////////////////////////////////////
 static void
-USL_XORICursor(int x,int y,char *s,word cursor)
+USL_XORICursor(id0_int_t x,id0_int_t y,id0_char_t *s,id0_word_t cursor)
 {
-	static	boolean	status;		// VGA doesn't XOR...
-	char	buf[MaxString];
-	int		temp;
-	word	w,h;
+	static	id0_boolean_t	status;		// VGA doesn't XOR...
+	id0_char_t	buf[MaxString];
+	id0_int_t		temp;
+	id0_word_t	w,h;
 
 	strcpy(buf,s);
 	buf[cursor] = '\0';
@@ -651,21 +651,21 @@ USL_XORICursor(int x,int y,char *s,word cursor)
 //		returned
 //
 ///////////////////////////////////////////////////////////////////////////
-boolean
-US_LineInput(int x,int y,char *buf,char *def,boolean escok,
-				int maxchars,int maxwidth)
+id0_boolean_t
+US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean_t escok,
+				id0_int_t maxchars,id0_int_t maxwidth)
 {
-	boolean		redraw,
+	id0_boolean_t		redraw,
 				cursorvis,cursormoved,
 				done,result;
 	ScanCode	sc;
-	char		c,
+	id0_char_t		c,
 				s[MaxString],olds[MaxString];
-	word		i,
+	id0_word_t		i,
 				cursor,
 				w,h,
 				len,temp;
-	longword	lasttime;
+	id0_longword_t	lasttime;
 
 	if (def)
 		strcpy(s,def);

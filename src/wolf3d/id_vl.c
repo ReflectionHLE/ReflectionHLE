@@ -12,34 +12,34 @@
 // SC_INDEX is expected to stay at SC_MAPMASK for proper operation
 //
 
-unsigned	bufferofs;
-unsigned	displayofs,pelpan;
+id0_unsigned_t	bufferofs;
+id0_unsigned_t	displayofs,pelpan;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-boolean		VGAMode = false;
+id0_boolean_t		VGAMode = false;
 #endif
 
-unsigned	screenseg=SCREENSEG;		// set to 0xa000 for asm convenience
+id0_unsigned_t	screenseg=SCREENSEG;		// set to 0xa000 for asm convenience
 
-unsigned	linewidth;
-unsigned	ylookup[MAXSCANLINES];
+id0_unsigned_t	linewidth;
+id0_unsigned_t	ylookup[MAXSCANLINES];
 
-boolean		screenfaded;
-unsigned	bordercolor;
+id0_boolean_t		screenfaded;
+id0_unsigned_t	bordercolor;
 
-boolean		fastpalette;				// if true, use outsb to set
+id0_boolean_t		fastpalette;				// if true, use outsb to set
 
-byte		far	palette1[256][3],far palette2[256][3];
+id0_byte_t		id0_far	palette1[256][3],id0_far palette2[256][3];
 
 //===========================================================================
 
 // asm
 
-int	 VL_VideoID (void);
-void VL_SetCRTC (int crtc);
-void VL_SetScreen (int crtc, int pelpan);
-void VL_WaitVBL (int vbls);
+id0_int_t	 VL_VideoID (void);
+void VL_SetCRTC (id0_int_t crtc);
+void VL_SetScreen (id0_int_t crtc, id0_int_t pelpan);
+void VL_WaitVBL (id0_int_t vbls);
 
 //===========================================================================
 
@@ -73,14 +73,14 @@ void	VL_Startup (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	char *ParmStrings[] = {"VGA",""};
+static	id0_char_t *ParmStrings[] = {"VGA",""};
 #else
-static	char *ParmStrings[] = {"HIDDENCARD",""};
+static	id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
 #endif
 
 void	VL_Startup (void)
 {
-	int i,videocard;
+	id0_int_t i,videocard;
 
 	asm	cld;
 	// *** S3DNA RESTORATION ***
@@ -187,7 +187,7 @@ asm	int	0x10
 =================
 */
 
-void VL_ClearVideo (byte color)
+void VL_ClearVideo (id0_byte_t color)
 {
 asm	mov	dx,GC_INDEX
 asm	mov	al,GC_MODE
@@ -289,9 +289,9 @@ void VL_DePlaneVGA (void)
 ====================
 */
 
-void VL_SetLineWidth (unsigned width)
+void VL_SetLineWidth (id0_unsigned_t width)
 {
-	int i,offset;
+	id0_int_t i,offset;
 
 //
 // set wide virtual screen
@@ -320,7 +320,7 @@ void VL_SetLineWidth (unsigned width)
 ====================
 */
 
-void VL_SetSplitScreen (int linenum)
+void VL_SetSplitScreen (id0_int_t linenum)
 {
 	VL_WaitVBL (1);
 	linenum=linenum*2-1;
@@ -352,9 +352,9 @@ void VL_SetSplitScreen (int linenum)
 =================
 */
 
-void VL_FillPalette (int red, int green, int blue)
+void VL_FillPalette (id0_int_t red, id0_int_t green, id0_int_t blue)
 {
-	int	i;
+	id0_int_t	i;
 
 	outportb (PEL_WRITE_ADR,0);
 	for (i=0;i<256;i++)
@@ -375,7 +375,7 @@ void VL_FillPalette (int red, int green, int blue)
 =================
 */
 
-void VL_SetColor	(int color, int red, int green, int blue)
+void VL_SetColor	(id0_int_t color, id0_int_t red, id0_int_t green, id0_int_t blue)
 {
 	outportb (PEL_WRITE_ADR,color);
 	outportb (PEL_DATA,red);
@@ -393,7 +393,7 @@ void VL_SetColor	(int color, int red, int green, int blue)
 =================
 */
 
-void VL_GetColor	(int color, int *red, int *green, int *blue)
+void VL_GetColor	(id0_int_t color, id0_int_t *red, id0_int_t *green, id0_int_t *blue)
 {
 	outportb (PEL_READ_ADR,color);
 	*red = inportb (PEL_DATA);
@@ -414,9 +414,9 @@ void VL_GetColor	(int color, int *red, int *green, int *blue)
 =================
 */
 
-void VL_SetPalette (byte far *palette)
+void VL_SetPalette (id0_byte_t id0_far *palette)
 {
-	int	i;
+	id0_int_t	i;
 
 //	outportb (PEL_WRITE_ADR,0);
 //	for (i=0;i<768;i++)
@@ -471,9 +471,9 @@ done:
 =================
 */
 
-void VL_GetPalette (byte far *palette)
+void VL_GetPalette (id0_byte_t id0_far *palette)
 {
-	int	i;
+	id0_int_t	i;
 
 	outportb (PEL_READ_ADR,0);
 	for (i=0;i<768;i++)
@@ -493,10 +493,10 @@ void VL_GetPalette (byte far *palette)
 =================
 */
 
-void VL_FadeOut (int start, int end, int red, int green, int blue, int steps)
+void VL_FadeOut (id0_int_t start, id0_int_t end, id0_int_t red, id0_int_t green, id0_int_t blue, id0_int_t steps)
 {
-	int		i,j,orig,delta;
-	byte	far *origptr, far *newptr;
+	id0_int_t		i,j,orig,delta;
+	id0_byte_t	id0_far *origptr, id0_far *newptr;
 
 	VL_WaitVBL(1);
 	VL_GetPalette (&palette1[0][0]);
@@ -546,9 +546,9 @@ void VL_FadeOut (int start, int end, int red, int green, int blue, int steps)
 =================
 */
 
-void VL_FadeIn (int start, int end, byte far *palette, int steps)
+void VL_FadeIn (id0_int_t start, id0_int_t end, id0_byte_t id0_far *palette, id0_int_t steps)
 {
-	int		i,j,delta;
+	id0_int_t		i,j,delta;
 
 	VL_WaitVBL(1);
 	VL_GetPalette (&palette1[0][0]);
@@ -597,7 +597,7 @@ void VL_FadeIn (int start, int end, byte far *palette, int steps)
 
 void VL_TestPaletteSet (void)
 {
-	int	i;
+	id0_int_t	i;
 
 	for (i=0;i<768;i++)
 		palette1[0][i] = i;
@@ -618,7 +618,7 @@ void VL_TestPaletteSet (void)
 ==================
 */
 
-void VL_ColorBorder (int color)
+void VL_ColorBorder (id0_int_t color)
 {
 	_AH=0x10;
 	_AL=1;
@@ -637,9 +637,9 @@ void VL_ColorBorder (int color)
 =============================================================================
 */
 
-byte	pixmasks[4] = {1,2,4,8};
-byte	leftmasks[4] = {15,14,12,8};
-byte	rightmasks[4] = {1,3,7,15};
+id0_byte_t	pixmasks[4] = {1,2,4,8};
+id0_byte_t	leftmasks[4] = {15,14,12,8};
+id0_byte_t	rightmasks[4] = {1,3,7,15};
 
 
 /*
@@ -650,13 +650,13 @@ byte	rightmasks[4] = {1,3,7,15};
 =================
 */
 
-void VL_Plot (int x, int y, int color)
+void VL_Plot (id0_int_t x, id0_int_t y, id0_int_t color)
 {
-	byte mask;
+	id0_byte_t mask;
 
 	mask = pixmasks[x&3];
 	VGAMAPMASK(mask);
-	*(byte far *)MK_FP(SCREENSEG,bufferofs+(ylookup[y]+(x>>2))) = color;
+	*(id0_byte_t id0_far *)MK_FP(SCREENSEG,bufferofs+(ylookup[y]+(x>>2))) = color;
 	VGAMAPMASK(15);
 }
 
@@ -671,15 +671,15 @@ void VL_Plot (int x, int y, int color)
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-void VL_Hlin (int x, int y, int width, int color)
+void VL_Hlin (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t color)
 #else
-void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color)
+void VL_Hlin (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t color)
 #endif
 {
-	unsigned		xbyte;
-	byte			far *dest;
-	byte			leftmask,rightmask;
-	int				midbytes;
+	id0_unsigned_t		xbyte;
+	id0_byte_t			id0_far *dest;
+	id0_byte_t			leftmask,rightmask;
+	id0_int_t				midbytes;
 
 	xbyte = x>>2;
 	leftmask = leftmasks[x&3];
@@ -725,9 +725,9 @@ void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color)
 =================
 */
 
-void VL_Vlin (int x, int y, int height, int color)
+void VL_Vlin (id0_int_t x, id0_int_t y, id0_int_t height, id0_int_t color)
 {
-	byte	far *dest,mask;
+	id0_byte_t	id0_far *dest,mask;
 
 	mask = pixmasks[x&3];
 	VGAMAPMASK(mask);
@@ -752,11 +752,11 @@ void VL_Vlin (int x, int y, int height, int color)
 =================
 */
 
-void VL_Bar (int x, int y, int width, int height, int color)
+void VL_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_int_t color)
 {
-	byte	far *dest;
-	byte	leftmask,rightmask;
-	int		midbytes,linedelta;
+	id0_byte_t	id0_far *dest;
+	id0_byte_t	leftmask,rightmask;
+	id0_int_t		midbytes,linedelta;
 
 	leftmask = leftmasks[x&3];
 	rightmask = rightmasks[(x+width-1)&3];
@@ -812,10 +812,10 @@ void VL_Bar (int x, int y, int width, int height, int color)
 =================
 */
 
-void VL_MemToLatch (byte far *source, int width, int height, unsigned dest)
+void VL_MemToLatch (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_unsigned_t dest)
 {
-	unsigned	count;
-	byte	plane,mask;
+	id0_unsigned_t	count;
+	id0_byte_t	plane,mask;
 
 	count = ((width+3)/4)*height;
 	mask = 1;
@@ -851,10 +851,10 @@ asm	mov	ds,ax
 =================
 */
 
-void VL_MemToScreen (byte far *source, int width, int height, int x, int y)
+void VL_MemToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y)
 {
-	byte    far *screen,far *dest,mask;
-	int		plane;
+	id0_byte_t    id0_far *screen,id0_far *dest,mask;
+	id0_int_t		plane;
 
 	width>>=2;
 	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+(x>>2) );
@@ -886,16 +886,16 @@ void VL_MemToScreen (byte far *source, int width, int height, int x, int y)
 =================
 */
 
-void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y)
+void VL_MaskedToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y)
 {
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	byte    far *screen,far *maskptr,far *dest,mask;
+	id0_byte_t    id0_far *screen,id0_far *maskptr,id0_far *dest,mask;
 #else
-	byte    far *screen,far *dest,mask;
-	byte	far *maskptr;
+	id0_byte_t    id0_far *screen,id0_far *dest,mask;
+	id0_byte_t	id0_far *maskptr;
 #endif
-	int		plane;
+	id0_int_t		plane;
 
 	width>>=2;
 	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+(x>>2) );
@@ -931,7 +931,7 @@ void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y)
 =================
 */
 
-void VL_LatchToScreen (unsigned source, int width, int height, int x, int y)
+void VL_LatchToScreen (id0_unsigned_t source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y)
 {
 	VGAWRITEMODE(1);
 	VGAMAPMASK(15);
@@ -979,7 +979,7 @@ asm	mov	ds,ax
 =================
 */
 
-void VL_ScreenToScreen (unsigned source, unsigned dest,int width, int height)
+void VL_ScreenToScreen (id0_unsigned_t source, id0_unsigned_t dest,id0_int_t width, id0_int_t height)
 {
 	VGAWRITEMODE(1);
 	VGAMAPMASK(15);
@@ -1030,16 +1030,16 @@ asm	mov	ds,ax
 ===================
 */
 
-void VL_DrawTile8String (char *str, char far *tile8ptr, int printx, int printy)
+void VL_DrawTile8String (id0_char_t *str, id0_char_t id0_far *tile8ptr, id0_int_t printx, id0_int_t printy)
 {
-	int		i;
-	unsigned	far *dest,far *screen,far *src;
+	id0_int_t		i;
+	id0_unsigned_t	id0_far *dest,id0_far *screen,id0_far *src;
 
 	dest = MK_FP(SCREENSEG,bufferofs+ylookup[printy]+(printx>>2));
 
 	while (*str)
 	{
-		src = (unsigned far *)(tile8ptr + (*str<<6));
+		src = (id0_unsigned_t id0_far *)(tile8ptr + (*str<<6));
 		// each character is 64 bytes
 
 		VGAMAPMASK(1);
@@ -1075,10 +1075,10 @@ void VL_DrawTile8String (char *str, char far *tile8ptr, int printx, int printy)
 ===================
 */
 
-void VL_DrawLatch8String (char *str, unsigned tile8ptr, int printx, int printy)
+void VL_DrawLatch8String (id0_char_t *str, id0_unsigned_t tile8ptr, id0_int_t printx, id0_int_t printy)
 {
-	int		i;
-	unsigned	src,dest;
+	id0_int_t		i;
+	id0_unsigned_t	src,dest;
 
 	dest = bufferofs+ylookup[printy]+(printx>>2);
 
@@ -1141,7 +1141,7 @@ asm	mov	ds,ax
 ===================
 */
 
-void VL_SizeTile8String (char *str, int *width, int *height)
+void VL_SizeTile8String (id0_char_t *str, id0_int_t *width, id0_int_t *height)
 {
 	*height = 8;
 	*width = 8*strlen(str);
@@ -1152,7 +1152,7 @@ void VL_SizeTile8String (char *str, int *width, int *height)
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 
-void FillCharAttr (byte c, byte attr, int count)
+void FillCharAttr (id0_byte_t c, id0_byte_t attr, id0_int_t count)
 {
 asm	mov	ah,9
 asm	mov	al,[c]

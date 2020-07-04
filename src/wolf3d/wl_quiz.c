@@ -3,7 +3,7 @@
 #include "wl_def.h"
 #pragma hdrstop
 
-extern int gotgatgun;
+extern id0_int_t gotgatgun;
 
 static CP_itemtype
 QuizMenu[]=
@@ -19,8 +19,8 @@ static CP_iteminfo QuizItems = {30,96,4,0,24};
 
 void RestorePlayScreen (void)
 {
-	int i;
-	unsigned temp;
+	id0_int_t i;
+	id0_unsigned_t temp;
 
 	temp = bufferofs;
 	CA_CacheGrChunk (STATUSBARPIC);
@@ -52,13 +52,13 @@ void RestorePlayScreen (void)
 // It turns out all data was defined in it own far segment in a separate ASM
 // file, named QUESTION.ASM (based on debugging info embedded in the EXE).
 
-extern char	far * far Question[];
+extern id0_char_t	id0_far * id0_far Question[];
 
-int AskQuestion (int question)
+id0_int_t AskQuestion (id0_int_t question)
 {
-	int answer, correct;
-	char far *p;
-	char *p2;
+	id0_int_t answer, correct;
+	id0_char_t id0_far *p;
+	id0_char_t *p2;
 
 	if (question >= 99)
 	{

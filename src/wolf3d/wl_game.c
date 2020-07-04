@@ -27,23 +27,23 @@
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-boolean	screensplit;
+id0_boolean_t	screensplit;
 #endif
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-boolean		ingame;
-int		endtics,fizzlein;
+id0_boolean_t		ingame;
+id0_int_t		endtics,fizzlein;
 #else
-boolean		ingame,fizzlein;
+id0_boolean_t		ingame,fizzlein;
 #endif
-unsigned	latchpics[NUMLATCHPICS];
+id0_unsigned_t	latchpics[NUMLATCHPICS];
 gametype	gamestate;
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-long		spearx,speary;
-unsigned	spearangle;
-boolean		spearflag;
+id0_long_t		spearx,speary;
+id0_unsigned_t	spearangle;
+id0_boolean_t		spearflag;
 #endif
 
 //
@@ -53,9 +53,9 @@ boolean		spearflag;
 // *** SHAREWARE V1.0 APOGEE + ALPHA + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-int ElevatorBackTo[]={1,1,7,0,0,0};
+id0_int_t ElevatorBackTo[]={1,1,7,0,0,0};
 #elif (!defined GAMEVER_NOAH3D)
-int ElevatorBackTo[]={1,1,7,3,5,3};
+id0_int_t ElevatorBackTo[]={1,1,7,3,5,3};
 #endif
 #endif
 
@@ -95,11 +95,11 @@ void GameLoop (void);
 */
 
 	fixed	globalsoundx,globalsoundy;
-	int		leftchannel,rightchannel;
+	id0_int_t		leftchannel,rightchannel;
 #define ATABLEMAX 15
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-int righttable[ATABLEMAX][ATABLEMAX * 2] = {
+id0_int_t righttable[ATABLEMAX][ATABLEMAX * 2] = {
 {14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 11,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  4,  6,  8, 10, 12, 15},
 {14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 12,  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  2,  5,  7,  9, 11, 13, 15},
 {14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 13, 12, 10,  6,  0,  0,  0,  0,  0,  0,  0,  0,  1,  3,  5,  7,  9, 11, 13, 15},
@@ -116,7 +116,7 @@ int righttable[ATABLEMAX][ATABLEMAX * 2] = {
 {15, 15, 15, 15, 15, 15, 15, 14, 14, 14, 13, 13, 13, 13, 12, 12, 12, 12, 13, 13, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15},
 {15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 14, 14, 14, 14, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15}
 };
-int lefttable[ATABLEMAX][ATABLEMAX * 2] = {
+id0_int_t lefttable[ATABLEMAX][ATABLEMAX * 2] = {
 {15, 12, 10,  8,  6,  4,  2,  0,  0,  0,  0,  0,  0,  0,  0,  0, 11, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14},
 {15, 13, 11,  9,  7,  5,  2,  0,  0,  0,  0,  0,  0,  0,  0,  0,  8, 12, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14},
 {15, 13, 11,  9,  7,  5,  3,  1,  0,  0,  0,  0,  0,  0,  0,  0,  6, 10, 12, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14},
@@ -134,7 +134,7 @@ int lefttable[ATABLEMAX][ATABLEMAX * 2] = {
 {15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 14, 14, 14, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15}
 };
 #else
-byte righttable[ATABLEMAX][ATABLEMAX * 2] = {
+id0_byte_t righttable[ATABLEMAX][ATABLEMAX * 2] = {
 { 8, 8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 6, 0, 0, 0, 0, 0, 1, 3, 5, 8, 8, 8, 8, 8, 8, 8, 8},
 { 8, 8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 7, 6, 4, 0, 0, 0, 0, 0, 2, 4, 6, 8, 8, 8, 8, 8, 8, 8, 8},
 { 8, 8, 8, 8, 8, 8, 8, 7, 7, 7, 7, 6, 6, 4, 1, 0, 0, 0, 1, 2, 4, 6, 8, 8, 8, 8, 8, 8, 8, 8},
@@ -151,7 +151,7 @@ byte righttable[ATABLEMAX][ATABLEMAX * 2] = {
 { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8},
 { 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}
 };
-byte lefttable[ATABLEMAX][ATABLEMAX * 2] = {
+id0_byte_t lefttable[ATABLEMAX][ATABLEMAX * 2] = {
 { 8, 8, 8, 8, 8, 8, 8, 8, 5, 3, 1, 0, 0, 0, 0, 0, 6, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8},
 { 8, 8, 8, 8, 8, 8, 8, 8, 6, 4, 2, 0, 0, 0, 0, 0, 4, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8},
 { 8, 8, 8, 8, 8, 8, 8, 8, 6, 4, 2, 1, 0, 0, 0, 1, 4, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8},
@@ -174,7 +174,7 @@ void
 SetSoundLoc(fixed gx,fixed gy)
 {
 	fixed	xt,yt;
-	int		x,y;
+	id0_int_t		x,y;
 
 //
 // translate point to view centered coordinates
@@ -234,7 +234,7 @@ SetSoundLoc(fixed gx,fixed gy)
 =
 ==========================
 */
-void PlaySoundLocGlobal(word s,fixed gx,fixed gy)
+void PlaySoundLocGlobal(id0_word_t s,fixed gx,fixed gy)
 {
 	SetSoundLoc(gx,gy);
 	SD_PositionSound(leftchannel,rightchannel);
@@ -288,9 +288,9 @@ void ClearMemory (void)
 
 void ScanInfoPlane (void)
 {
-	unsigned	x,y,i,j;
-	int			tile;
-	unsigned	far	*start;
+	id0_unsigned_t	x,y,i,j;
+	id0_int_t			tile;
+	id0_unsigned_t	id0_far	*start;
 
 	start = mapsegs[1];
 	for (y=0;y<mapheight;y++)
@@ -807,8 +807,8 @@ void ScanInfoPlane (void)
 
 void SetupGameLevel (void)
 {
-	int	x,y,i;
-	unsigned	far *map,tile,spot;
+	id0_int_t	x,y,i;
+	id0_unsigned_t	id0_far *map,tile,spot;
 
 
 	// *** ALPHA RESTORATION ***
@@ -885,13 +885,13 @@ void SetupGameLevel (void)
 #endif
 			// solid wall
 				tilemap[x][y] = tile;
-				(unsigned)actorat[x][y] = tile;
+				(id0_unsigned_t)actorat[x][y] = tile;
 			}
 			else
 			{
 			// area floor
 				tilemap[x][y] = 0;
-				(unsigned)actorat[x][y] = 0;
+				(id0_unsigned_t)actorat[x][y] = 0;
 			}
 		}
 
@@ -970,7 +970,7 @@ void SetupGameLevel (void)
 			if (tile == AMBUSHTILE)
 			{
 				tilemap[x][y] = 0;
-				if ( (unsigned)actorat[x][y] == AMBUSHTILE)
+				if ( (id0_unsigned_t)actorat[x][y] == AMBUSHTILE)
 					actorat[x][y] = NULL;
 
 				if (*map >= AREATILE)
@@ -1030,7 +1030,7 @@ void ResetSplitScreen (void)
 
 void DrawPlayBorderSides (void)
 {
-	int	xl,yl;
+	id0_int_t	xl,yl;
 
 	xl = 160-viewwidth/2;
 	yl = (200-STATUSLINES-viewheight)/2;
@@ -1069,7 +1069,7 @@ void DrawPlayBorderSides (void)
 
 void DrawAllPlayBorderSides (void)
 {
-	unsigned	i,temp;
+	id0_unsigned_t	i,temp;
 
 	temp = bufferofs;
 	for (i=0;i<3;i++)
@@ -1089,7 +1089,7 @@ void DrawAllPlayBorderSides (void)
 */
 void DrawAllPlayBorder (void)
 {
-	unsigned	i,temp;
+	id0_unsigned_t	i,temp;
 
 	temp = bufferofs;
 	for (i=0;i<3;i++)
@@ -1112,7 +1112,7 @@ void DrawAllPlayBorder (void)
 
 void DrawPlayBorder (void)
 {
-	int	xl,yl;
+	id0_int_t	xl,yl;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1153,10 +1153,10 @@ void DrawPlayBorder (void)
 
 void DrawPlayScreen (void)
 {
-	int	i,j,p,m;
+	id0_int_t	i,j,p,m;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	unsigned	temp;
+	id0_unsigned_t	temp;
 #endif
 
 	VW_FadeOut ();
@@ -1249,11 +1249,11 @@ void SomeNullGameLoopFunc(void)
 
 #define MAXDEMOSIZE	8192
 
-void StartDemoRecord (int levelnumber)
+void StartDemoRecord (id0_int_t levelnumber)
 {
 	MM_GetPtr (&demobuffer,MAXDEMOSIZE);
 	MM_SetLock (&demobuffer,true);
-	demoptr = (char far *)demobuffer;
+	demoptr = (id0_char_t id0_far *)demobuffer;
 	lastdemoptr = demoptr+MAXDEMOSIZE;
 
 	*demoptr = levelnumber;
@@ -1272,21 +1272,21 @@ void StartDemoRecord (int levelnumber)
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-char	demoname[] = "DEMO?.WL1";
+id0_char_t	demoname[] = "DEMO?.WL1";
 #else
-char	demoname[13] = "DEMO?.";
+id0_char_t	demoname[13] = "DEMO?.";
 #endif
 
 void FinishDemoRecord (void)
 {
-	long	length,level;
+	id0_long_t	length,level;
 
 	demorecord = false;
 
-	length = demoptr - (char far *)demobuffer;
+	length = demoptr - (id0_char_t id0_far *)demobuffer;
 
-	demoptr = ((char far *)demobuffer)+1;
-	*(unsigned far *)demoptr = length;
+	demoptr = ((id0_char_t id0_far *)demobuffer)+1;
+	*(id0_unsigned_t id0_far *)demoptr = length;
 
 	CenterWindow(24,3);
 	PrintY+=6;
@@ -1303,7 +1303,7 @@ void FinishDemoRecord (void)
 		if (level>=0 && level<=9)
 		{
 			demoname[4] = '0'+level;
-			CA_WriteFile (demoname,(void far *)demobuffer,length);
+			CA_WriteFile (demoname,(void id0_far *)demobuffer,length);
 		}
 	}
 
@@ -1325,7 +1325,7 @@ void FinishDemoRecord (void)
 
 void RecordDemo (void)
 {
-	int level,esc;
+	id0_int_t level,esc;
 
 	CenterWindow(26,3);
 	PrintY+=6;
@@ -1464,20 +1464,20 @@ void RecordDemo (void)
 ==================
 */
 
-void PlayDemo (int demonumber)
+void PlayDemo (id0_int_t demonumber)
 {
-	int length;
+	id0_int_t length;
 
 #ifdef DEMOSEXTERN
 // debug: load chunk
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	int dems[3]={T_DEMO0,T_DEMO1,T_DEMO2};
+	id0_int_t dems[3]={T_DEMO0,T_DEMO1,T_DEMO2};
 #elif (!defined SPEARDEMO)
 //#ifndef SPEARDEMO
-	int dems[4]={T_DEMO0,T_DEMO1,T_DEMO2,T_DEMO3};
+	id0_int_t dems[4]={T_DEMO0,T_DEMO1,T_DEMO2,T_DEMO3};
 #else
-	int dems[1]={T_DEMO0};
+	id0_int_t dems[1]={T_DEMO0};
 #endif
 
 // *** S3DNA RESTORATION ***
@@ -1499,7 +1499,7 @@ void PlayDemo (int demonumber)
 	demoname[4] = '0'+demonumber;
 	CA_LoadFile (demoname,&demobuffer);
 	MM_SetLock (&demobuffer,true);
-	demoptr = (char far *)demobuffer;
+	demoptr = (id0_char_t id0_far *)demobuffer;
 #endif
 
 	// *** ALPHA RESTORATION ***
@@ -1513,7 +1513,7 @@ void PlayDemo (int demonumber)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	gamestate.difficulty = gd_hard;
 #endif
-	length = *((unsigned far *)demoptr)++;
+	length = *((id0_unsigned_t id0_far *)demoptr)++;
 	demoptr++;
 	lastdemoptr = demoptr-4+length;
 
@@ -1590,8 +1590,8 @@ void PlayDemo (int demonumber)
 void Died (void)
 {
 	float	fangle;
-	long	dx,dy;
-	int		iangle,curangle,clockwise,counter,change;
+	id0_long_t	dx,dy;
+	id0_int_t		iangle,curangle,clockwise,counter,change;
 
 	gamestate.weapon = -1;			// take away weapon
 	SD_PlaySound (PLAYERDEATHSND);
@@ -1777,9 +1777,9 @@ void Died (void)
 
 void GameLoop (void)
 {
-	int i,xl,yl,xh,yh;
-	char num[20];
-	boolean	died;
+	id0_int_t i,xl,yl,xh,yh;
+	id0_char_t num[20];
+	id0_boolean_t	died;
 #ifdef MYPROFILE
 	clock_t start,end;
 #endif
@@ -1885,7 +1885,7 @@ startplayloop:
 				while(DigiPlaying!=false)
 					SD_Poll();
 #else
-				long lasttimecount = TimeCount;
+				id0_long_t lasttimecount = TimeCount;
 
 				while(TimeCount < lasttimecount+150)
 				//while(DigiPlaying!=false)

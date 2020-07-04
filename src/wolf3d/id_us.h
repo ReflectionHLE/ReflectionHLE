@@ -23,13 +23,13 @@
 #define	MaxScores	7
 typedef	struct
 		{
-			char	name[MaxHighName + 1];
-			long	score;
+			id0_char_t	name[MaxHighName + 1];
+			id0_long_t	score;
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-			word	completed;
+			id0_word_t	completed;
 #else
-			word	completed,episode;
+			id0_word_t	completed,episode;
 #endif
 		} HighScore;
 
@@ -37,17 +37,17 @@ typedef	struct
 #define	MaxSaveGames	6
 typedef	struct
 		{
-			char	signature[4];
-			word	*oldtest;
-			boolean	present;
-			char	name[MaxGameName + 1];
+			id0_char_t	signature[4];
+			id0_word_t	*oldtest;
+			id0_boolean_t	present;
+			id0_char_t	name[MaxGameName + 1];
 		} SaveGame;
 
 #define	MaxString	128	// Maximum input string size
 
 typedef	struct
 		{
-			int	x,y,
+			id0_int_t	x,y,
 				w,h,
 				px,py;
 		} WindowRec;	// Record used to save & restore screen windows
@@ -61,34 +61,34 @@ typedef	enum
 		} GameDiff;
 
 //	Hack import for TED launch support
-extern	boolean		tedlevel;
+extern	id0_boolean_t		tedlevel;
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-extern	word			tedlevelnum;
+extern	id0_word_t			tedlevelnum;
 #else
-extern	int			tedlevelnum;
+extern	id0_int_t			tedlevelnum;
 #endif
 extern	void		TEDDeath(void);
 
-extern	boolean		ingame,		// Set by game code if a game is in progress
+extern	id0_boolean_t		ingame,		// Set by game code if a game is in progress
 					abortgame,	// Set if a game load failed
 					loadedgame,	// Set if the current game was loaded
 					NoWait,
 					HighScoresDirty;
-extern	char		*abortprogram;	// Set to error msg if program is dying
+extern	id0_char_t		*abortprogram;	// Set to error msg if program is dying
 extern	GameDiff	restartgame;	// Normally gd_Continue, else starts game
-extern	word		PrintX,PrintY;	// Current printing location in the window
-extern	word		WindowX,WindowY,// Current location of window
+extern	id0_word_t		PrintX,PrintY;	// Current printing location in the window
+extern	id0_word_t		WindowX,WindowY,// Current location of window
 					WindowW,WindowH;// Current size of window
 
-extern	boolean		Button0,Button1,
+extern	id0_boolean_t		Button0,Button1,
 					CursorBad;
-extern	int			CursorX,CursorY;
+extern	id0_int_t			CursorX,CursorY;
 
-extern	void		(*USL_MeasureString)(char far *,word *,word *),
-					(*USL_DrawString)(char far *);
+extern	void		(*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),
+					(*USL_DrawString)(id0_char_t id0_far *);
 
-extern	boolean		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
+extern	id0_boolean_t		(*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
 extern	void		(*USL_ResetGame)(void);
 extern	SaveGame	Games[MaxSaveGames];
 extern	HighScore	Scores[];
@@ -98,36 +98,36 @@ extern	HighScore	Scores[];
 extern	void	US_Startup(void),
 				US_Setup(void),
 				US_Shutdown(void),
-				US_InitRndT(boolean randomize),
-				US_SetLoadSaveHooks(boolean (*load)(int),
-									boolean (*save)(int),
+				US_InitRndT(id0_boolean_t randomize),
+				US_SetLoadSaveHooks(id0_boolean_t (*load)(id0_int_t),
+									id0_boolean_t (*save)(id0_int_t),
 									void (*reset)(void)),
 				US_TextScreen(void),
 				US_UpdateTextScreen(void),
 				US_FinishTextScreen(void),
-				US_DrawWindow(word x,word y,word w,word h),
-				US_CenterWindow(word,word),
+				US_DrawWindow(id0_word_t x,id0_word_t y,id0_word_t w,id0_word_t h),
+				US_CenterWindow(id0_word_t,id0_word_t),
 				US_SaveWindow(WindowRec *win),
 				US_RestoreWindow(WindowRec *win),
 				US_ClearWindow(void),
-				US_SetPrintRoutines(void (*measure)(char far *,word *,word *),
-									void (*print)(char far *)),
-				US_PrintCentered(char GAMEVER_COND_FARPTR *s),
-				US_CPrint(char GAMEVER_COND_FARPTR *s),
-				US_CPrintLine(char GAMEVER_COND_FARPTR *s),
-				US_Print(char GAMEVER_COND_FARPTR *s),
-				US_PrintUnsigned(longword n),
-				US_PrintSigned(long n),
+				US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),
+									void (*print)(id0_char_t id0_far *)),
+				US_PrintCentered(id0_char_t GAMEVER_COND_FARPTR *s),
+				US_CPrint(id0_char_t GAMEVER_COND_FARPTR *s),
+				US_CPrintLine(id0_char_t GAMEVER_COND_FARPTR *s),
+				US_Print(id0_char_t GAMEVER_COND_FARPTR *s),
+				US_PrintUnsigned(id0_longword_t n),
+				US_PrintSigned(id0_long_t n),
 				US_StartCursor(void),
 				US_ShutCursor(void),
-				US_CheckHighScore(long score,word other),
-				US_DisplayHighScores(int which);
-extern	boolean	US_UpdateCursor(void),
-				US_LineInput(int x,int y,char *buf,char *def,boolean escok,
-								int maxchars,int maxwidth);
-extern	int		US_CheckParm(char *parm,char **strings),
+				US_CheckHighScore(id0_long_t score,id0_word_t other),
+				US_DisplayHighScores(id0_int_t which);
+extern	id0_boolean_t	US_UpdateCursor(void),
+				US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean_t escok,
+								id0_int_t maxchars,id0_int_t maxwidth);
+extern	id0_int_t		US_CheckParm(id0_char_t *parm,id0_char_t **strings),
 				US_RndT(void);
 
-		void	USL_PrintInCenter(char GAMEVER_COND_FARPTR *s,Rect r);
-		char 	*USL_GiveSaveName(word game);
+		void	USL_PrintInCenter(id0_char_t GAMEVER_COND_FARPTR *s,Rect r);
+		id0_char_t 	*USL_GiveSaveName(id0_word_t game);
 #endif

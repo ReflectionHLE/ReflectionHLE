@@ -61,14 +61,14 @@ TEXT FORMATTING COMMANDS
 =============================================================================
 */
 
-int			pagenum,numpages;
+id0_int_t			pagenum,numpages;
 
-unsigned	leftmargin[TEXTROWS],rightmargin[TEXTROWS];
-char		far *text;
-unsigned	rowon;
+id0_unsigned_t	leftmargin[TEXTROWS],rightmargin[TEXTROWS];
+id0_char_t		id0_far *text;
+id0_unsigned_t	rowon;
 
-int			picx,picy,picnum,picdelay;
-boolean		layoutdone;
+id0_int_t			picx,picy,picnum,picdelay;
+id0_boolean_t		layoutdone;
 
 //===========================================================================
 
@@ -96,10 +96,10 @@ void RipToEOL (void)
 =====================
 */
 
-int	ParseNumber (void)
+id0_int_t	ParseNumber (void)
 {
-	char	ch;
-	char	num[80],*numptr;
+	id0_char_t	ch;
+	id0_char_t	num[80],*numptr;
 
 //
 // scan until a number is found
@@ -198,8 +198,8 @@ void	TimedPicCommand (void)
 
 void HandleCommand (void)
 {
-	int	i,margin,top,bottom;
-	int	picwidth,picheight,picmid;
+	id0_int_t	i,margin,top,bottom;
+	id0_int_t	picwidth,picheight,picmid;
 
 	switch (toupper(*++text))
 	{
@@ -319,7 +319,7 @@ void HandleCommand (void)
 
 void NewLine (void)
 {
-	char	ch;
+	id0_char_t	ch;
 
 	if (++rowon == TEXTROWS)
 	{
@@ -359,7 +359,7 @@ void NewLine (void)
 
 void HandleCtrls (void)
 {
-	char	ch;
+	id0_char_t	ch;
 
 	ch = *text++;			// get the character and advance
 
@@ -382,9 +382,9 @@ void HandleCtrls (void)
 
 void HandleWord (void)
 {
-	char		word[WORDLIMIT];
-	int			i,wordindex;
-	unsigned	wwidth,wheight,newpos;
+	id0_char_t		word[WORDLIMIT];
+	id0_int_t			i,wordindex;
+	id0_unsigned_t	wwidth,wheight,newpos;
 
 
 	//
@@ -403,7 +403,7 @@ void HandleWord (void)
 	//
 	// see if it fits on this line
 	//
-	VW_MeasurePropString (word,&wwidth,&wheight);
+	VW_MeasurePropString (id0_word_t,&wwidth,&wheight);
 
 	while (px+wwidth > rightmargin[rowon])
 	{
@@ -416,7 +416,7 @@ void HandleWord (void)
 	// print it
 	//
 	newpos = px+wwidth;
-	VWB_DrawPropString (word);
+	VWB_DrawPropString (id0_word_t);
 	px = newpos;
 
 	//
@@ -440,10 +440,10 @@ void HandleWord (void)
 =====================
 */
 
-void PageLayout (boolean shownumber)
+void PageLayout (id0_boolean_t shownumber)
 {
-	int		i,oldfontcolor;
-	char	ch;
+	id0_int_t		i,oldfontcolor;
+	id0_char_t	ch;
 
 	oldfontcolor = fontcolor;
 
@@ -624,8 +624,8 @@ void BackPage (void)
 */
 void CacheLayoutGraphics (void)
 {
-	char	far *bombpoint, far *textstart;
-	char	ch;
+	id0_char_t	id0_far *bombpoint, id0_far *textstart;
+	id0_char_t	ch;
 
 	textstart = text;
 	bombpoint = text+30000;
@@ -682,13 +682,13 @@ void CacheLayoutGraphics (void)
 */
 
 #ifdef JAPAN
-void ShowArticle (int which)
+void ShowArticle (id0_int_t which)
 #else
-void ShowArticle (char far *article)
+void ShowArticle (id0_char_t id0_far *article)
 #endif
 {
 	#ifdef JAPAN
-	int		snames[10] = {	H_HELP1PIC,
+	id0_int_t		snames[10] = {	H_HELP1PIC,
 							H_HELP2PIC,
 							H_HELP3PIC,
 							H_HELP4PIC,
@@ -698,7 +698,7 @@ void ShowArticle (char far *article)
 							H_HELP8PIC,
 							H_HELP9PIC,
 							H_HELP10PIC};
-	int		enames[14] = {
+	id0_int_t		enames[14] = {
 							0,0,
 							#ifndef JAPDEMO
 							C_ENDGAME1APIC,
@@ -716,9 +716,9 @@ void ShowArticle (char far *article)
 							#endif
 							};
 	#endif
-	unsigned	oldfontnumber;
-	unsigned	temp;
-	boolean 	newpage,firstpage;
+	id0_unsigned_t	oldfontnumber;
+	id0_unsigned_t	temp;
+	id0_boolean_t 	newpage,firstpage;
 
 	#ifdef JAPAN
 	pagenum = 1;
@@ -842,27 +842,27 @@ void ShowArticle (char far *article)
 // *** PRE-V1.4 APOGEE RESTORATION *** - Change the the order of appearances endextern and helpextern in the v1.2 EXE's layout (and SPEAR wasn't ready for that)
 // *** S3DNA RESTORATION *** - No T_ENDART1
 #ifdef GAMEVER_NOAH3D
-int		helpextern = T_HELPART;
+id0_int_t		helpextern = T_HELPART;
 #elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-int		helpextern = T_HELPART;
-int 	endextern = T_ENDART1;
+id0_int_t		helpextern = T_HELPART;
+id0_int_t 	endextern = T_ENDART1;
 #else
-int 	endextern = T_ENDART1;
+id0_int_t 	endextern = T_ENDART1;
 #ifndef SPEAR
-int		helpextern = T_HELPART;
+id0_int_t		helpextern = T_HELPART;
 #endif
 #endif // VERSIONS RESTORATION
 #endif
 // *** S3DNA RESTORATION + ALPHA *** - No T_ENDART1,
 // and embedding extension + using char * in alpha (instead of char..[])
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-char *helpfilename = "HELPART.WL1",
+id0_char_t *helpfilename = "HELPART.WL1",
 	 *orderfilename = "ORDERART.WL1",
 	 *storyfilename = "STORYART.WL1",
 	 *orderfilename2 = "ORDERART.WL1", // Weird one
 	 *ckartfilename = "CKART.WL1"; // Commander Keen?
 #elif (!defined GAMEVER_NOAH3D)
-char helpfilename[13] = "HELPART.",
+id0_char_t helpfilename[13] = "HELPART.",
 	 endfilename[13] = "ENDART1.";
 #endif
 #endif
@@ -877,8 +877,8 @@ char helpfilename[13] = "HELPART.",
 #ifndef SPEAR
 void HelpScreens (void)
 {
-	int			artnum;
-	char far 	*text;
+	id0_int_t			artnum;
+	id0_char_t id0_far 	*text;
 	memptr		layout;
 
 
@@ -901,11 +901,11 @@ void HelpScreens (void)
 #ifdef ARTSEXTERN
 	artnum = helpextern;
 	CA_CacheGrChunk (artnum);
-	text = (char _seg *)grsegs[artnum];
+	text = (id0_char_t id0_seg *)grsegs[artnum];
 	MM_SetLock (&grsegs[artnum], true);
 #else
 	CA_LoadFile (helpfilename,&layout);
-	text = (char _seg *)layout;
+	text = (id0_char_t id0_seg *)layout;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	MM_SetLock (&layout, true);
@@ -945,11 +945,11 @@ void HelpScreens (void)
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void OrderingInfo (void)
 {
-	char far 	*text;
+	id0_char_t id0_far 	*text;
 	memptr		layout;
 
 	CA_LoadFile (orderfilename,&layout);
-	text = (char _seg *)layout;
+	text = (id0_char_t id0_seg *)layout;
 
 	ShowArticle (text);
 
@@ -965,8 +965,8 @@ void OrderingInfo (void)
 //
 void EndText (void)
 {
-	int			artnum;
-	char far 	*text;
+	id0_int_t			artnum;
+	id0_char_t id0_far 	*text;
 	memptr		layout;
 
 
@@ -1003,12 +1003,12 @@ void EndText (void)
 	artnum = endextern+gamestate.episode;
 #endif
 	CA_CacheGrChunk (artnum);
-	text = (char _seg *)grsegs[artnum];
+	text = (id0_char_t id0_seg *)grsegs[artnum];
 	MM_SetLock (&grsegs[artnum], true);
 #else
 	endfilename[6] = '1'+gamestate.episode;
 	CA_LoadFile (endfilename,&layout);
-	text = (char _seg *)layout;
+	text = (id0_char_t id0_seg *)layout;
 	MM_SetLock (&layout, true);
 #endif
 

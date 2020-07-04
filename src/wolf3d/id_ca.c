@@ -32,15 +32,15 @@ loaded into the data segment
 
 typedef struct
 {
-  unsigned bit0,bit1;	// 0-255 is a character, > is a pointer to a node
+  id0_unsigned_t bit0,bit1;	// 0-255 is a character, > is a pointer to a node
 } huffnode;
 
 
 typedef struct
 {
-	unsigned	RLEWtag;
-	long		headeroffsets[100];
-	byte		tileinfo[];
+	id0_unsigned_t	RLEWtag;
+	id0_long_t		headeroffsets[100];
+	id0_byte_t		tileinfo[];
 } mapfiletype;
 
 
@@ -52,30 +52,30 @@ typedef struct
 =============================================================================
 */
 
-byte 		_seg	*tinf;
+id0_byte_t 		id0_seg	*tinf;
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-int			mapon;
+id0_int_t			mapon;
 #endif
 
-unsigned	_seg	*mapsegs[MAPPLANES];
-maptype		_seg	*mapheaderseg[NUMMAPS];
-byte		_seg	*audiosegs[NUMSNDCHUNKS];
-void		_seg	*grsegs[NUMCHUNKS];
+id0_unsigned_t	id0_seg	*mapsegs[MAPPLANES];
+maptype		id0_seg	*mapheaderseg[NUMMAPS];
+id0_byte_t		id0_seg	*audiosegs[NUMSNDCHUNKS];
+void		id0_seg	*grsegs[NUMCHUNKS];
 
-byte		far	grneeded[NUMCHUNKS];
-byte		ca_levelbit,ca_levelnum;
+id0_byte_t		id0_far	grneeded[NUMCHUNKS];
+id0_byte_t		ca_levelbit,ca_levelnum;
 
 BE_FILE_T			profilehandle,debughandle;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-boolean		CA_Started = false;
+id0_boolean_t		CA_Started = false;
 #endif
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-char		audioname[13]="AUDIO.";
+id0_char_t		audioname[13]="AUDIO.";
 #endif
 
 /*
@@ -86,19 +86,19 @@ char		audioname[13]="AUDIO.";
 =============================================================================
 */
 
-extern	long	far	CGAhead;
-extern	long	far	EGAhead;
-extern	byte	CGAdict;
-extern	byte	EGAdict;
-extern	byte	far	maphead;
-extern	byte	mapdict;
-extern	byte	far	audiohead;
-extern	byte	audiodict;
+extern	id0_long_t	id0_far	CGAhead;
+extern	id0_long_t	id0_far	EGAhead;
+extern	id0_byte_t	CGAdict;
+extern	id0_byte_t	EGAdict;
+extern	id0_byte_t	id0_far	maphead;
+extern	id0_byte_t	mapdict;
+extern	id0_byte_t	id0_far	audiohead;
+extern	id0_byte_t	audiodict;
 
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-char extension[5],	// Need a string, not constant to change cache files
+id0_char_t extension[5],	// Need a string, not constant to change cache files
      gheadname[10]=GREXT"HEAD.",
      gfilename[10]=GREXT"GRAPH.",
      gdictname[10]=GREXT"DICT.",
@@ -107,11 +107,11 @@ char extension[5],	// Need a string, not constant to change cache files
      aheadname[10]="AUDIOHED.",
      afilename[10]="AUDIOT.";
 
-void CA_CannotOpen(char *string);
+void CA_CannotOpen(id0_char_t *string);
 #endif
 
-long		_seg *grstarts;	// array of offsets in egagraph, -1 for sparse
-long		_seg *audiostarts;	// array of offsets in audio / audiot
+id0_long_t		id0_seg *grstarts;	// array of offsets in egagraph, -1 for sparse
+id0_long_t		id0_seg *audiostarts;	// array of offsets in audio / audiot
 
 #ifdef GRHEADERLINKED
 huffnode	*grhuffman;
@@ -130,27 +130,27 @@ BE_FILE_T			grhandle;		// handle to EGAGRAPH
 BE_FILE_T			maphandle;		// handle to MAPTEMP / GAMEMAPS
 BE_FILE_T			audiohandle;	// handle to AUDIOT / AUDIO
 
-long		chunkcomplen,chunkexplen;
+id0_long_t		chunkcomplen,chunkexplen;
 
 SDMode		oldsoundmode;
 
 
 
-void	CAL_CarmackExpand (unsigned far *source, unsigned far *dest,
-		unsigned length);
+void	CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest,
+		id0_unsigned_t length);
 
 
 #ifdef THREEBYTEGRSTARTS
 #define FILEPOSSIZE	3
-//#define	GRFILEPOS(c) (*(long far *)(((byte far *)grstarts)+(c)*3)&0xffffff)
-long GRFILEPOS(int c)
+//#define	GRFILEPOS(c) (*(id0_long_t id0_far *)(((id0_byte_t id0_far *)grstarts)+(c)*3)&0xffffff)
+id0_long_t GRFILEPOS(id0_int_t c)
 {
-	long value;
-	int	offset;
+	id0_long_t value;
+	id0_int_t	offset;
 
 	offset = c*3;
 
-	value = *(long far *)(((byte far *)grstarts)+offset);
+	value = *(id0_long_t id0_far *)(((id0_byte_t id0_far *)grstarts)+offset);
 
 	value &= 0x00ffffffl;
 
@@ -206,7 +206,7 @@ void CA_CloseDebug (void)
 ============================
 */
 
-void CAL_GetGrChunkLength (int chunk)
+void CAL_GetGrChunkLength (id0_int_t chunk)
 {
 	BE_Cross_seek(grhandle,GRFILEPOS(chunk),SEEK_SET);
 	BE_Cross_readInt32LE(grhandle, &chunkexplen);
@@ -225,7 +225,7 @@ void CAL_GetGrChunkLength (int chunk)
 ==========================
 */
 
-boolean CA_FarRead (BE_FILE_T handle, byte far *dest, long length)
+id0_boolean_t CA_FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t length)
 {
 	if (length>0xffffl)
 		Quit ("CA_FarRead doesn't support 64K reads yet!");
@@ -261,7 +261,7 @@ done:
 ==========================
 */
 
-boolean CA_FarWrite (BE_FILE_T handle, byte far *source, long length)
+id0_boolean_t CA_FarWrite (BE_FILE_T handle, id0_byte_t id0_far *source, id0_long_t length)
 {
 	if (length>0xffffl)
 		Quit ("CA_FarWrite doesn't support 64K reads yet!");
@@ -298,10 +298,10 @@ done:
 ==========================
 */
 
-boolean CA_ReadFile (char *filename, memptr *ptr)
+id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
 {
-	int handle;
-	long size;
+	id0_int_t handle;
+	id0_long_t size;
 
 	if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
@@ -327,10 +327,10 @@ boolean CA_ReadFile (char *filename, memptr *ptr)
 ==========================
 */
 
-boolean CA_WriteFile (char *filename, void far *ptr, long length)
+id0_boolean_t CA_WriteFile (id0_char_t *filename, void id0_far *ptr, id0_long_t length)
 {
 	BE_FILE_T handle;
-	long size;
+	id0_long_t size;
 
 	handle = BE_Cross_open_rewritable_for_overwriting(filename);
 	//handle = open(filename,O_CREAT | O_BINARY | O_WRONLY,
@@ -360,10 +360,10 @@ boolean CA_WriteFile (char *filename, void far *ptr, long length)
 ==========================
 */
 
-boolean CA_LoadFile (char *filename, memptr *ptr)
+id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 {
 	BE_FILE_T handle;
-	long size;
+	id0_long_t size;
 
 	// TODO (REFKEEN) - BE_Cross_open_readonly_for_reading makes sense for
 	// help files if ARTSEXTERN is not defined, while for demo files,
@@ -411,16 +411,16 @@ boolean CA_LoadFile (char *filename, memptr *ptr)
 void CAL_OptimizeNodes (huffnode *table)
 {
   huffnode *node;
-  int i;
+  id0_int_t i;
 
   node = table;
 
   for (i=0;i<255;i++)
   {
 	if (node->bit0 >= 256)
-	  node->bit0 = (unsigned)(table+(node->bit0-256));
+	  node->bit0 = (id0_unsigned_t)(table+(node->bit0-256));
 	if (node->bit1 >= 256)
-	  node->bit1 = (unsigned)(table+(node->bit1-256));
+	  node->bit1 = (id0_unsigned_t)(table+(node->bit1-256));
 	node++;
   }
 }
@@ -441,17 +441,17 @@ void CAL_OptimizeNodes (huffnode *table)
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-void CAL_HuffExpand (byte huge *source, byte huge *dest,
-  long length,huffnode *hufftable)
+void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
+  id0_long_t length,huffnode *hufftable)
 #else
-void CAL_HuffExpand (byte huge *source, byte huge *dest,
-  long length,huffnode *hufftable, boolean screenhack)
+void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
+  id0_long_t length,huffnode *hufftable, id0_boolean_t screenhack)
 #endif
 {
-//  unsigned bit,byte,node,code;
-  unsigned sourceseg,sourceoff,destseg,destoff,endoff;
+//  id0_unsigned_t bit,byte,node,code;
+  id0_unsigned_t sourceseg,sourceoff,destseg,destoff,endoff;
   huffnode *headptr;
-  byte		mapmask;
+  id0_byte_t		mapmask;
 //  huffnode *nodeon;
 
   headptr = hufftable+254;	// head node is allways node 254
@@ -642,10 +642,10 @@ asm	mov	ds,ax
 #define NEARTAG	0xa7
 #define FARTAG	0xa8
 
-void CAL_CarmackExpand (unsigned far *source, unsigned far *dest, unsigned length)
+void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest, id0_unsigned_t length)
 {
-	unsigned	ch,chhigh,count,offset;
-	unsigned	far *copyptr, far *inptr, far *outptr;
+	id0_unsigned_t	ch,chhigh,count,offset;
+	id0_unsigned_t	id0_far *copyptr, id0_far *inptr, id0_far *outptr;
 
 	length/=2;
 
@@ -661,13 +661,13 @@ void CAL_CarmackExpand (unsigned far *source, unsigned far *dest, unsigned lengt
 			count = ch&0xff;
 			if (!count)
 			{				// have to insert a word containing the tag byte
-				ch |= *((unsigned char far *)inptr)++;
+				ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
 				*outptr++ = ch;
 				length--;
 			}
 			else
 			{
-				offset = *((unsigned char far *)inptr)++;
+				offset = *((id0_unsigned_char_t id0_far *)inptr)++;
 				copyptr = outptr - offset;
 				length -= count;
 				while (count--)
@@ -679,7 +679,7 @@ void CAL_CarmackExpand (unsigned far *source, unsigned far *dest, unsigned lengt
 			count = ch&0xff;
 			if (!count)
 			{				// have to insert a word containing the tag byte
-				ch |= *((unsigned char far *)inptr)++;
+				ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
 				*outptr++ = ch;
 				length --;
 			}
@@ -710,12 +710,12 @@ void CAL_CarmackExpand (unsigned far *source, unsigned far *dest, unsigned lengt
 ======================
 */
 
-long CA_RLEWCompress (unsigned huge *source, long length, unsigned huge *dest,
-  unsigned rlewtag)
+id0_long_t CA_RLEWCompress (id0_unsigned_t id0_huge *source, id0_long_t length, id0_unsigned_t id0_huge *dest,
+  id0_unsigned_t rlewtag)
 {
-  long complength;
-  unsigned value,count,i;
-  unsigned huge *start,huge *end;
+  id0_long_t complength;
+  id0_unsigned_t value,count,i;
+  id0_unsigned_t id0_huge *start,id0_huge *end;
 
   start = dest;
 
@@ -767,12 +767,12 @@ long CA_RLEWCompress (unsigned huge *source, long length, unsigned huge *dest,
 ======================
 */
 
-void CA_RLEWexpand (unsigned huge *source, unsigned huge *dest,long length,
-  unsigned rlewtag)
+void CA_RLEWexpand (id0_unsigned_t id0_huge *source, id0_unsigned_t id0_huge *dest,id0_long_t length,
+  id0_unsigned_t rlewtag)
 {
-//  unsigned value,count,i;
-  unsigned huge *end;
-  unsigned sourceseg,sourceoff,destseg,destoff,endseg,endoff;
+//  id0_unsigned_t value,count,i;
+  id0_unsigned_t id0_huge *end;
+  id0_unsigned_t sourceseg,sourceoff,destseg,destoff,endseg,endoff;
 
 
 //
@@ -898,7 +898,7 @@ void CAL_SetupGrFile (void)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	char fname[13];
+	id0_char_t fname[13];
 #endif
 	BE_FILE_T handle;
 	memptr compseg;
@@ -910,7 +910,7 @@ void CAL_SetupGrFile (void)
 #ifdef GRHEADERLINKED
 
 	grhuffman = (huffnode *)&EGAdict;
-	grstarts = (long _seg *)FP_SEG(&EGAhead);
+	grstarts = (id0_long_t id0_seg *)FP_SEG(&EGAhead);
 
 	CAL_OptimizeNodes (grhuffman);
 
@@ -1002,9 +1002,9 @@ void CAL_SetupGrFile (void)
 	CA_FarRead (grhandle,compseg,chunkcomplen);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	CAL_HuffExpand (compseg, (byte huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman);
+	CAL_HuffExpand (compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman);
 #else
-	CAL_HuffExpand (compseg, (byte huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman,false);
+	CAL_HuffExpand (compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman,false);
 #endif
 	MM_FreePtr(&compseg);
 }
@@ -1022,12 +1022,12 @@ void CAL_SetupGrFile (void)
 
 void CAL_SetupMapFile (void)
 {
-	int	i;
+	id0_int_t	i;
 	BE_FILE_T handle;
-	long length,pos;
+	id0_long_t length,pos;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	char fname[13];
+	id0_char_t fname[13];
 #endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1060,7 +1060,7 @@ void CAL_SetupMapFile (void)
 	BE_Cross_close(handle);
 #else
 
-	tinf = (byte _seg *)FP_SEG(&maphead);
+	tinf = (id0_byte_t id0_seg *)FP_SEG(&maphead);
 
 #endif
 
@@ -1106,7 +1106,7 @@ void CAL_SetupMapFile (void)
 //
 	for (i=0;i<NUMMAPS;i++)
 	{
-		pos = ((mapfiletype	_seg *)tinf)->headeroffsets[i];
+		pos = ((mapfiletype	id0_seg *)tinf)->headeroffsets[i];
 		if (pos<0)						// $FFFFFFFF start is a sparse map
 			continue;
 
@@ -1141,10 +1141,10 @@ void CAL_SetupMapFile (void)
 void CAL_SetupAudioFile (void)
 {
 	BE_FILE_T handle;
-	long length;
+	id0_long_t length;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	char fname[13];
+	id0_char_t fname[13];
 #endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1174,12 +1174,12 @@ void CAL_SetupAudioFile (void)
 	length = BE_Cross_FileLength(handle);
 	MM_GetPtr (&(memptr)audiostarts,length);
 	BE_Cross_readInt32LE(handle, audiostarts, length);
-	//CA_FarRead(handle, (byte far *)audiostarts, length);
+	//CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
 	BE_Cross_close(handle);
 #else
 	audiohuffman = (huffnode *)&audiodict;
 	CAL_OptimizeNodes (audiohuffman);
-	audiostarts = (long _seg *)FP_SEG(&audiohead);
+	audiostarts = (id0_long_t id0_seg *)FP_SEG(&audiohead);
 #endif
 
 //
@@ -1289,13 +1289,13 @@ void CA_Shutdown (void)
 ======================
 */
 
-void CA_CacheAudioChunk (int chunk)
+void CA_CacheAudioChunk (id0_int_t chunk)
 {
-	long	pos,compressed;
+	id0_long_t	pos,compressed;
 #ifdef AUDIOHEADERLINKED
-	long	expanded;
+	id0_long_t	expanded;
 	memptr	bigbufferseg;
-	byte	far *source;
+	id0_byte_t	id0_far *source;
 #endif
 
 	if (audiosegs[chunk])
@@ -1338,7 +1338,7 @@ void CA_CacheAudioChunk (int chunk)
 		source = bigbufferseg;
 	}
 
-	expanded = *(long far *)source;
+	expanded = *(id0_long_t id0_far *)source;
 	source += 4;			// skip over length
 	MM_GetPtr (&(memptr)audiosegs[chunk],expanded);
 	if (mmerror)
@@ -1370,7 +1370,7 @@ done:
 
 void CA_LoadAllSounds (void)
 {
-	unsigned	start,i;
+	id0_unsigned_t	start,i;
 
 	switch (oldsoundmode)
 	{
@@ -1421,9 +1421,9 @@ cachein:
 ======================
 */
 
-void CAL_ExpandGrChunk (int chunk, byte far *source)
+void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 {
-	long	expanded;
+	id0_long_t	expanded;
 
 
 	if (chunk >= STARTTILE8 && chunk < STARTEXTERNS)
@@ -1453,7 +1453,7 @@ void CAL_ExpandGrChunk (int chunk, byte far *source)
 	//
 	// everything else has an explicit size longword
 	//
-		expanded = *(long far *)source;
+		expanded = *(id0_long_t id0_far *)source;
 		source += 4;			// skip over length
 	}
 
@@ -1488,12 +1488,12 @@ void CAL_ExpandGrChunk (int chunk, byte far *source)
 ======================
 */
 
-void CAL_ReadGrChunk (int chunk)
+void CAL_ReadGrChunk (id0_int_t chunk)
 {
-	long	pos,compressed;
+	id0_long_t	pos,compressed;
 	memptr	bigbufferseg;
-	byte	far *source;
-	int		next;
+	id0_byte_t	id0_far *source;
+	id0_int_t		next;
 
 //
 // load the chunk into a buffer, either the miscbuffer if it fits, or allocate
@@ -1543,12 +1543,12 @@ void CAL_ReadGrChunk (int chunk)
 ======================
 */
 
-void CA_CacheGrChunk (int chunk)
+void CA_CacheGrChunk (id0_int_t chunk)
 {
-	long	pos,compressed;
+	id0_long_t	pos,compressed;
 	memptr	bigbufferseg;
-	byte	far *source;
-	int		next;
+	id0_byte_t	id0_far *source;
+	id0_int_t		next;
 
 	grneeded[chunk] |= ca_levelbit;		// make sure it doesn't get removed
 	if (grsegs[chunk])
@@ -1608,12 +1608,12 @@ void CA_CacheGrChunk (int chunk)
 ======================
 */
 
-void CA_CacheScreen (int chunk)
+void CA_CacheScreen (id0_int_t chunk)
 {
-	long	pos,compressed,expanded;
+	id0_long_t	pos,compressed,expanded;
 	memptr	bigbufferseg;
-	byte	far *source;
-	int		next;
+	id0_byte_t	id0_far *source;
+	id0_int_t		next;
 
 //
 // load the chunk into a buffer
@@ -1631,7 +1631,7 @@ void CA_CacheScreen (int chunk)
 	CA_FarRead(grhandle,bigbufferseg,compressed);
 	source = bigbufferseg;
 
-	expanded = *(long far *)source;
+	expanded = *(id0_long_t id0_far *)source;
 	source += 4;			// skip over length
 
 //
@@ -1656,16 +1656,16 @@ void CA_CacheScreen (int chunk)
 ======================
 */
 
-void CA_CacheMap (int mapnum)
+void CA_CacheMap (id0_int_t mapnum)
 {
-	long	pos,compressed;
-	int		plane;
+	id0_long_t	pos,compressed;
+	id0_int_t		plane;
 	memptr	*dest,bigbufferseg;
-	unsigned	size;
-	unsigned	far	*source;
+	id0_unsigned_t	size;
+	id0_unsigned_t	id0_far	*source;
 #ifdef CARMACIZED
 	memptr	buffer2seg;
-	long	expanded;
+	id0_long_t	expanded;
 #endif
 
 // *** S3DNA RESTORATION ***
@@ -1700,7 +1700,7 @@ void CA_CacheMap (int mapnum)
 			source = bigbufferseg;
 		}
 
-		CA_FarRead(maphandle,(byte far *)source,compressed);
+		CA_FarRead(maphandle,(id0_byte_t id0_far *)source,compressed);
 #ifdef CARMACIZED
 		//
 		// unhuffman, then unRLEW
@@ -1711,9 +1711,9 @@ void CA_CacheMap (int mapnum)
 		expanded = *source;
 		source++;
 		MM_GetPtr (&buffer2seg,expanded);
-		CAL_CarmackExpand (source, (unsigned far *)buffer2seg,expanded);
-		CA_RLEWexpand (((unsigned far *)buffer2seg)+1,*dest,size,
-		((mapfiletype _seg *)tinf)->RLEWtag);
+		CAL_CarmackExpand (source, (id0_unsigned_t id0_far *)buffer2seg,expanded);
+		CA_RLEWexpand (((id0_unsigned_t id0_far *)buffer2seg)+1,*dest,size,
+		((mapfiletype id0_seg *)tinf)->RLEWtag);
 		MM_FreePtr (&buffer2seg);
 
 #else
@@ -1721,7 +1721,7 @@ void CA_CacheMap (int mapnum)
 		// unRLEW, skipping expanded length
 		//
 		CA_RLEWexpand (source+1, *dest,size,
-		((mapfiletype _seg *)tinf)->RLEWtag);
+		((mapfiletype id0_seg *)tinf)->RLEWtag);
 #endif
 
 		if (compressed>BUFFERSIZE)
@@ -1746,7 +1746,7 @@ void CA_UpLevel (void)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	int	i;
+	id0_int_t	i;
 #endif
 
 	if (ca_levelnum==7)
@@ -1798,7 +1798,7 @@ void CA_DownLevel (void)
 
 void CA_ClearMarks (void)
 {
-	int i;
+	id0_int_t i;
 
 	for (i=0;i<NUMCHUNKS;i++)
 		grneeded[i]&=~ca_levelbit;
@@ -1839,7 +1839,7 @@ void CA_ClearAllMarks (void)
 
 void CA_SetGrPurge (void)
 {
-	int i;
+	id0_int_t i;
 
 //
 // free graphics
@@ -1865,7 +1865,7 @@ void CA_SetGrPurge (void)
 
 void CA_SetAllPurge (void)
 {
-	int i;
+	id0_int_t i;
 
 
 //
@@ -1895,10 +1895,10 @@ void CA_SetAllPurge (void)
 
 void CA_CacheMarks (void)
 {
-	int 	i,next,numcache;
-	long	pos,endpos,nextpos,nextendpos,compressed;
-	long	bufferstart,bufferend;	// file position of general buffer
-	byte	far *source;
+	id0_int_t 	i,next,numcache;
+	id0_long_t	pos,endpos,nextpos,nextendpos,compressed;
+	id0_long_t	bufferstart,bufferend;	// file position of general buffer
+	id0_byte_t	id0_far *source;
 	memptr	bigbufferseg;
 
 	numcache = 0;
@@ -1948,7 +1948,7 @@ void CA_CacheMarks (void)
 				&& bufferend>= endpos)
 				{
 				// data is allready in buffer
-					source = (byte _seg *)bufferseg+(pos-bufferstart);
+					source = (id0_byte_t id0_seg *)bufferseg+(pos-bufferstart);
 				}
 				else
 				{
@@ -2004,9 +2004,9 @@ void CA_CacheMarks (void)
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-void CA_CannotOpen(char *string)
+void CA_CannotOpen(id0_char_t *string)
 {
- char str[30];
+ id0_char_t str[30];
 
  strcpy(str,"Can't open ");
  strcat(str,string);

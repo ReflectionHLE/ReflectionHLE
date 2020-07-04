@@ -22,7 +22,7 @@ struct _statinfo
 struct
 #endif
 {
-	int		picnum;
+	id0_int_t		picnum;
 	stat_t	type;
 } statinfo[] =
 {
@@ -200,7 +200,7 @@ void InitStaticList (void)
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void SpawnExit (int tilex, int tiley, boolean secret)
+void SpawnExit (id0_int_t tilex, id0_int_t tiley, id0_boolean_t secret)
 {
 	laststatobj->shapenum = -2;
 	laststatobj->tilex = tilex;
@@ -224,7 +224,7 @@ void SpawnExit (int tilex, int tiley, boolean secret)
 ===============
 */
 
-void SpawnStatic (int tilex, int tiley, int type)
+void SpawnStatic (id0_int_t tilex, id0_int_t tiley, id0_int_t type)
 {
 	laststatobj->shapenum = statinfo[type].picnum;
 	laststatobj->tilex = tilex;
@@ -234,7 +234,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 	switch (statinfo[type].type)
 	{
 	case block:
-		(unsigned)actorat[tilex][tiley] = 1;		// consider it a blocking tile
+		(id0_unsigned_t)actorat[tilex][tiley] = 1;		// consider it a blocking tile
 	case dressing:
 		laststatobj->flags = 0;
 		// *** S3DNA RESTORATION ***
@@ -322,9 +322,9 @@ void SpawnStatic (int tilex, int tiley, int type)
 ===============
 */
 
-void PlaceItemType (int itemtype, int tilex, int tiley)
+void PlaceItemType (id0_int_t itemtype, id0_int_t tilex, id0_int_t tiley)
 {
-	int			type;
+	id0_int_t			type;
 	statobj_t	*spot;
 
 //
@@ -398,16 +398,16 @@ Every time a door opens or closes the areabyplayer matrix gets recalculated.
 doorobj_t	doorobjlist[MAXDOORS],*lastdoorobj;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-unsigned		pwallnoise;
+id0_unsigned_t		pwallnoise;
 #endif
-int			doornum;
+id0_int_t			doornum;
 
-unsigned	doorposition[MAXDOORS];		// leading edge of door 0=closed
+id0_unsigned_t	doorposition[MAXDOORS];		// leading edge of door 0=closed
 										// 0xffff = fully open
 
-byte		far areaconnect[NUMAREAS][NUMAREAS];
+id0_byte_t		id0_far areaconnect[NUMAREAS][NUMAREAS];
 
-boolean		areabyplayer[NUMAREAS];
+id0_boolean_t		areabyplayer[NUMAREAS];
 
 
 /*
@@ -420,9 +420,9 @@ boolean		areabyplayer[NUMAREAS];
 ==============
 */
 
-void RecursiveConnect (int areanumber)
+void RecursiveConnect (id0_int_t areanumber)
 {
-	int	i;
+	id0_int_t	i;
 
 	for (i=0;i<NUMAREAS;i++)
 	{
@@ -480,10 +480,10 @@ void InitDoorList (void)
 ===============
 */
 
-void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
+void SpawnDoor (id0_int_t tilex, id0_int_t tiley, id0_boolean_t vertical, id0_int_t lock)
 {
-	int	areanumber;
-	unsigned	far *map;
+	id0_int_t	areanumber;
+	id0_unsigned_t	id0_far *map;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -508,7 +508,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
 	lastdoorobj->seen = false;
 #endif
 
-	(unsigned)actorat[tilex][tiley] = doornum | 0x80;	// consider it a solid wall
+	(id0_unsigned_t)actorat[tilex][tiley] = doornum | 0x80;	// consider it a solid wall
 
 //
 // make the door tile a special tile, and mark the adjacent tiles
@@ -543,7 +543,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
 =====================
 */
 
-void OpenDoor (int door)
+void OpenDoor (id0_int_t door)
 {
 	if (doorobjlist[door].action == dr_open)
 		doorobjlist[door].ticcount = 0;			// reset open time
@@ -560,9 +560,9 @@ void OpenDoor (int door)
 =====================
 */
 
-void CloseDoor (int door)
+void CloseDoor (id0_int_t door)
 {
-	int	tilex,tiley,area;
+	id0_int_t	tilex,tiley,area;
 	objtype *check;
 
 //
@@ -625,7 +625,7 @@ void CloseDoor (int door)
 //
 // make the door space solid
 //
-	(unsigned)actorat[tilex][tiley]
+	(id0_unsigned_t)actorat[tilex][tiley]
 		= door | 0x80;
 }
 
@@ -641,9 +641,9 @@ void CloseDoor (int door)
 =====================
 */
 
-void OperateDoor (int door)
+void OperateDoor (id0_int_t door)
 {
-	int	lock;
+	id0_int_t	lock;
 
 	lock = doorobjlist[door].lock;
 	if (lock >= dr_lock1 && lock <= dr_lock4)
@@ -681,7 +681,7 @@ void OperateDoor (int door)
 ===============
 */
 
-void DoorOpen (int door)
+void DoorOpen (id0_int_t door)
 {
 	if ( (doorobjlist[door].ticcount += tics) >= OPENTICS)
 		CloseDoor (door);
@@ -697,11 +697,11 @@ void DoorOpen (int door)
 ===============
 */
 
-void DoorOpening (int door)
+void DoorOpening (id0_int_t door)
 {
-	int		area1,area2;
-	unsigned	far	*map;
-	long	position;
+	id0_int_t		area1,area2;
+	id0_unsigned_t	id0_far	*map;
+	id0_long_t	position;
 
 	position = doorposition[door];
 	if (!position)
@@ -760,17 +760,17 @@ void DoorOpening (int door)
 ===============
 */
 
-void DoorClosing (int door)
+void DoorClosing (id0_int_t door)
 {
-	int		area1,area2,move;
-	unsigned	far	*map;
-	long	position;
-	int		tilex,tiley;
+	id0_int_t		area1,area2,move;
+	id0_unsigned_t	id0_far	*map;
+	id0_long_t	position;
+	id0_int_t		tilex,tiley;
 
 	tilex = doorobjlist[door].tilex;
 	tiley = doorobjlist[door].tiley;
 
-	if ( ((unsigned)actorat[tilex][tiley] != (door | 0x80))
+	if ( ((id0_unsigned_t)actorat[tilex][tiley] != (door | 0x80))
 	|| (player->tilex == tilex && player->tiley == tiley) )
 	{			// something got inside the door
 		OpenDoor (door);
@@ -831,7 +831,7 @@ void DoorClosing (int door)
 
 void MoveDoors (void)
 {
-	int		door;
+	id0_int_t		door;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
@@ -867,10 +867,10 @@ void MoveDoors (void)
 =============================================================================
 */
 
-unsigned	pwallstate;
-unsigned	pwallpos;			// amount a pushable wall has been moved (0-63)
-unsigned	pwallx,pwally;
-int			pwalldir;
+id0_unsigned_t	pwallstate;
+id0_unsigned_t	pwallpos;			// amount a pushable wall has been moved (0-63)
+id0_unsigned_t	pwallx,pwally;
+id0_int_t			pwalldir;
 
 /*
 ===============
@@ -880,9 +880,9 @@ int			pwalldir;
 ===============
 */
 
-void PushWall (int checkx, int checky, int dir)
+void PushWall (id0_int_t checkx, id0_int_t checky, id0_int_t dir)
 {
-	int		oldtile;
+	id0_int_t		oldtile;
 
 	if (pwallstate)
 	  return;
@@ -904,7 +904,7 @@ void PushWall (int checkx, int checky, int dir)
 			SD_PlaySound (NOWAYSND);
 			return;
 		}
-		(unsigned)actorat[checkx][checky-1] =
+		(id0_unsigned_t)actorat[checkx][checky-1] =
 		tilemap[checkx][checky-1] = oldtile;
 		break;
 
@@ -914,7 +914,7 @@ void PushWall (int checkx, int checky, int dir)
 			SD_PlaySound (NOWAYSND);
 			return;
 		}
-		(unsigned)actorat[checkx+1][checky] =
+		(id0_unsigned_t)actorat[checkx+1][checky] =
 		tilemap[checkx+1][checky] = oldtile;
 		break;
 
@@ -924,7 +924,7 @@ void PushWall (int checkx, int checky, int dir)
 			SD_PlaySound (NOWAYSND);
 			return;
 		}
-		(unsigned)actorat[checkx][checky+1] =
+		(id0_unsigned_t)actorat[checkx][checky+1] =
 		tilemap[checkx][checky+1] = oldtile;
 		break;
 
@@ -934,7 +934,7 @@ void PushWall (int checkx, int checky, int dir)
 			SD_PlaySound (NOWAYSND);
 			return;
 		}
-		(unsigned)actorat[checkx-1][checky] =
+		(id0_unsigned_t)actorat[checkx-1][checky] =
 		tilemap[checkx-1][checky] = oldtile;
 		break;
 	}
@@ -967,7 +967,7 @@ void PushWall (int checkx, int checky, int dir)
 
 void MovePWalls (void)
 {
-	int		oldblock,oldtile;
+	id0_int_t		oldblock,oldtile;
 
 	if (!pwallstate)
 		return;
@@ -989,7 +989,7 @@ void MovePWalls (void)
 		// the tile can now be walked into
 		//
 		tilemap[pwallx][pwally] = 0;
-		(unsigned)actorat[pwallx][pwally] = 0;
+		(id0_unsigned_t)actorat[pwallx][pwally] = 0;
 		*(mapsegs[0]+farmapylookup[pwally]+pwallx) = player->areanumber+AREATILE;
 
 		//
@@ -1020,7 +1020,7 @@ void MovePWalls (void)
 					pwallstate = 0;
 					return;
 				}
-				(unsigned)actorat[pwallx][pwally-1] =
+				(id0_unsigned_t)actorat[pwallx][pwally-1] =
 				tilemap[pwallx][pwally-1] = oldtile;
 				break;
 
@@ -1031,7 +1031,7 @@ void MovePWalls (void)
 					pwallstate = 0;
 					return;
 				}
-				(unsigned)actorat[pwallx+1][pwally] =
+				(id0_unsigned_t)actorat[pwallx+1][pwally] =
 				tilemap[pwallx+1][pwally] = oldtile;
 				break;
 
@@ -1042,7 +1042,7 @@ void MovePWalls (void)
 					pwallstate = 0;
 					return;
 				}
-				(unsigned)actorat[pwallx][pwally+1] =
+				(id0_unsigned_t)actorat[pwallx][pwally+1] =
 				tilemap[pwallx][pwally+1] = oldtile;
 				break;
 
@@ -1053,7 +1053,7 @@ void MovePWalls (void)
 					pwallstate = 0;
 					return;
 				}
-				(unsigned)actorat[pwallx-1][pwally] =
+				(id0_unsigned_t)actorat[pwallx-1][pwally] =
 				tilemap[pwallx-1][pwally] = oldtile;
 				break;
 			}

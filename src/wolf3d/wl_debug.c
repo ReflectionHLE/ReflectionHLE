@@ -24,7 +24,7 @@
 */
 
 
-int DebugKeys (void);
+id0_int_t DebugKeys (void);
 
 /*
 =============================================================================
@@ -35,8 +35,8 @@ int DebugKeys (void);
 */
 
 
-int	maporgx;
-int	maporgy;
+id0_int_t	maporgx;
+id0_int_t	maporgy;
 enum {mapview,tilemapview,actoratview,visview}	viewtype;
 
 void ViewMap (void);
@@ -53,10 +53,10 @@ void ViewMap (void);
 
 void DebugMemory (void)
 {
-	int	i;
-	char    scratch[80],str[10];
-	long	mem;
-	spritetype _seg	*block;
+	id0_int_t	i;
+	id0_char_t    scratch[80],str[10];
+	id0_long_t	mem;
+	spritetype id0_seg	*block;
 
 	CenterWindow (16,7);
 
@@ -85,7 +85,7 @@ void DebugMemory (void)
 
 void CountObjects (void)
 {
-	int	i,total,count,active,inactive,doors;
+	id0_int_t	i,total,count,active,inactive,doors;
 	objtype	*obj;
 
 	CenterWindow (16,7);
@@ -136,10 +136,10 @@ void CountObjects (void)
 
 void PicturePause (void)
 {
-	int			i;
-	byte		p;
-	unsigned	x;
-	byte		far	*dest,far *src;
+	id0_int_t			i;
+	id0_byte_t		p;
+	id0_unsigned_t	x;
+	id0_byte_t		id0_far	*dest,id0_far *src;
 	memptr		buffer;
 
 	VW_ColorBorder (15);
@@ -178,7 +178,7 @@ void PicturePause (void)
 	for (p=0;p<4;p++)
 	{
 	   src = MK_FP(0xa000,displayofs);
-	   dest = (byte far *)buffer+p;
+	   dest = (id0_byte_t id0_far *)buffer+p;
 	   VGAREADMAP(p);
 	   // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
@@ -197,7 +197,7 @@ void PicturePause (void)
 	for (p=0;p<4;p++)
 	{
 		src = MK_FP(0xa000,0);
-		dest = (byte far *)buffer+51200+p;
+		dest = (id0_byte_t id0_far *)buffer+51200+p;
 		VGAREADMAP(p);
 		for (x=0;x<3200;x++,dest+=4)
 			*dest = *src++;
@@ -236,26 +236,26 @@ void PicturePause (void)
 #pragma warn -pia
 void ShapeTest (void)
 {
-extern	word	NumDigi;
-extern	word	_seg *DigiList;
-static	char	buf[10];
+extern	id0_word_t	NumDigi;
+extern	id0_word_t	id0_seg *DigiList;
+static	id0_char_t	buf[10];
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	boolean			autopage = false;
-	int sound; // Define sound variable in S3DNA release here
+	id0_boolean_t			autopage = false;
+	id0_int_t sound; // Define sound variable in S3DNA release here
 #endif
-	boolean			done;
+	id0_boolean_t			done;
 	ScanCode		scan;
-	int				i,j,k,x;
+	id0_int_t				i,j,k,x;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 	// Define sound variable in pre-v1.4 Apogee releases here
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	int sound;
+	id0_int_t sound;
 #endif
-	longword		l;
+	id0_longword_t		l;
 	memptr			addr;
-	PageListStruct	far *page;
+	PageListStruct	id0_far *page;
 
 	CenterWindow(20,16);
 	VW_UpdateScreen();
@@ -309,7 +309,7 @@ static	char	buf[10];
 
 		US_Print("\n Address: ");
 		addr = PM_GetPageAddress(i);
-		sprintf(buf,"0x%04x",(word)addr);
+		sprintf(buf,"0x%04x",(id0_word_t)addr);
 		US_Print(buf);
 
 		if (addr)
@@ -322,7 +322,7 @@ static	char	buf[10];
 				bufferofs += 32*SCREENWIDTH;
 				postx = 128;
 				postwidth = 1;
-				postsource = ((long)((unsigned)addr))<<16;
+				postsource = ((id0_long_t)((id0_unsigned_t)addr))<<16;
 				for (x=0;x<64;x++,postx++,postsource+=64)
 				{
 					wallheight[postx] = 256;
@@ -355,7 +355,7 @@ static	char	buf[10];
 			}
 			else
 			{
-				byte far *dp = (byte far *)MK_FP(addr,0);
+				id0_byte_t id0_far *dp = (id0_byte_t id0_far *)MK_FP(addr,0);
 				for (j = 0;j < NumDigi;j++)
 				{
 					k = (DigiList[(j * 2) + 1] + (PMPageSize - 1)) / PMPageSize;
@@ -382,8 +382,8 @@ static	char	buf[10];
 				}
 				for (j = 0;j < page->length;j += 32)
 				{
-					byte v = dp[j];
-					int v2 = (unsigned)v;
+					id0_byte_t v = dp[j];
+					id0_int_t v2 = (id0_unsigned_t)v;
 					v2 -= 128;
 					v2 /= 4;
 					if (v2 < 0)
@@ -477,10 +477,10 @@ static	char	buf[10];
 ================
 */
 
-int DebugKeys (void)
+id0_int_t DebugKeys (void)
 {
-	boolean esc;
-	int level,i;
+	id0_boolean_t esc;
+	id0_int_t level,i;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -794,8 +794,8 @@ int DebugKeys (void)
 
 void OverheadRefresh (void)
 {
-	unsigned	x,y,endx,endy,sx,sy;
-	unsigned	tile;
+	id0_unsigned_t	x,y,endx,endy,sx,sy;
+	id0_unsigned_t	tile;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
@@ -829,7 +829,7 @@ void OverheadRefresh (void)
 				break;
 #endif
 			case actoratview:
-				tile = (unsigned)actorat[x][y];
+				tile = (id0_unsigned_t)actorat[x][y];
 				break;
 			}
 
@@ -866,7 +866,7 @@ void OverheadRefresh (void)
 
 void ViewMap (void)
 {
-	boolean		button0held;
+	id0_boolean_t		button0held;
 
 	viewtype = actoratview;
 //	button0held = false;

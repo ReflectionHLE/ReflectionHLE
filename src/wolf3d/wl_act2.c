@@ -42,7 +42,7 @@ dirtype dirtable[9] = {northwest,north,northeast,west,nodir,east,
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
-int	starthitpoints[NUMENEMIES] =
+id0_int_t	starthitpoints[NUMENEMIES] =
 	 {6,	// sheeps
 	  12,	// ostriches
 	  25,	// antelopes
@@ -56,7 +56,7 @@ int	starthitpoints[NUMENEMIES] =
 	  500	// Burt
 	  };
 #elif (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-int	starthitpoints[NUMENEMIES] =
+id0_int_t	starthitpoints[NUMENEMIES] =
 	 {25,	// guards
 	  50,	// officer
 	  100,	// SS
@@ -76,7 +76,7 @@ int	starthitpoints[NUMENEMIES] =
 #endif
 	  };
 #else
-int	starthitpoints[4][NUMENEMIES] =
+id0_int_t	starthitpoints[4][NUMENEMIES] =
 	 //
 	 // BABY MODE
 	 //
@@ -948,12 +948,12 @@ statetype s_gretelshoot8 	= {false,SPR_GRETEL_SHOOT1,10,NULL,NULL,&s_gretelchase
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void SpawnStand (enemy_t which, int tilex, int tiley, int dir, boolean ambush)
+void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir, id0_boolean_t ambush)
 #else
-void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
+void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #endif
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	switch (which)
 	{
@@ -1054,7 +1054,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
 ===============
 */
 
-void SpawnDeadGuard (int tilex, int tiley)
+void SpawnDeadGuard (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj (tilex,tiley,&s_grddie4);
 	new->obclass = inertobj;
@@ -1073,12 +1073,12 @@ void SpawnDeadGuard (int tilex, int tiley)
 
 // *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void SpawnBoss (int tilex, int tiley, int dir)
+void SpawnBoss (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
-void SpawnBoss (int tilex, int tiley)
+void SpawnBoss (id0_int_t tilex, id0_int_t tiley)
 #endif
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	SpawnNewObj (tilex,tiley,&s_bossstand);
 	new->speed = SPDPATROL;
@@ -1118,12 +1118,12 @@ void SpawnBoss (int tilex, int tiley)
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void SpawnGretel (int tilex, int tiley, int dir)
+void SpawnGretel (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
-void SpawnGretel (int tilex, int tiley)
+void SpawnGretel (id0_int_t tilex, id0_int_t tiley)
 #endif
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	SpawnNewObj (tilex,tiley,&s_gretelstand);
 	new->speed = SPDPATROL;
@@ -1158,7 +1158,7 @@ void SpawnGretel (int tilex, int tiley)
 ===============
 */
 
-void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
+void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 {
 	switch (which)
 	{
@@ -1313,7 +1313,7 @@ void A_DeathScream (objtype *ob)
 		{
 		 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-		 int sounds[4]={ DEATHSCREAM1SND,
+		 id0_int_t sounds[4]={ DEATHSCREAM1SND,
 				 DEATHSCREAM1SND,
 				 DEATHSCREAM2SND,
 				 DEATHSCREAM3SND
@@ -1321,7 +1321,7 @@ void A_DeathScream (objtype *ob)
 
 		 PlaySoundLocActor(sounds[US_RndT()/64],ob);
 #else
-		 int sounds[9]={ DEATHSCREAM1SND,
+		 id0_int_t sounds[9]={ DEATHSCREAM1SND,
 				 DEATHSCREAM2SND,
 				 DEATHSCREAM3SND,
 				 DEATHSCREAM4SND,
@@ -1506,9 +1506,9 @@ statetype s_transshoot8 	= {false,SPR_TRANS_SHOOT1,10,NULL,NULL,&s_transchase1};
 ===============
 */
 
-void SpawnTrans (int tilex, int tiley)
+void SpawnTrans (id0_int_t tilex, id0_int_t tiley)
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	if (SoundBlasterPresent && DigiMode != sds_Off)
 		s_transdie01.tictime = 105;
@@ -1587,9 +1587,9 @@ statetype s_ubershoot7 	= {false,SPR_UBER_SHOOT1,12,NULL,NULL,&s_uberchase1};
 ===============
 */
 
-void SpawnUber (int tilex, int tiley)
+void SpawnUber (id0_int_t tilex, id0_int_t tiley)
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	if (SoundBlasterPresent && DigiMode != sds_Off)
 		s_uberdie01.tictime = 70;
@@ -1613,7 +1613,7 @@ void SpawnUber (int tilex, int tiley)
 
 void T_UShoot (objtype *ob)
 {
-	int	dx,dy,dist;
+	id0_int_t	dx,dy,dist;
 
 	T_Shoot (ob);
 
@@ -1686,9 +1686,9 @@ statetype s_willshoot6 	= {false,SPR_WILL_SHOOT4,10,NULL,T_Shoot,&s_willchase1};
 ===============
 */
 
-void SpawnWill (int tilex, int tiley)
+void SpawnWill (id0_int_t tilex, id0_int_t tiley)
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	if (SoundBlasterPresent && DigiMode != sds_Off)
 		s_willdie2.tictime = 70;
@@ -1712,9 +1712,9 @@ void SpawnWill (int tilex, int tiley)
 
 void T_Will (objtype *ob)
 {
-	long move;
-	int	dx,dy,dist;
-	boolean	dodge;
+	id0_long_t move;
+	id0_int_t	dx,dy,dist;
+	id0_boolean_t	dodge;
 
 	dodge = false;
 	dx = abs(ob->tilex - player->tilex);
@@ -1777,8 +1777,8 @@ void T_Will (objtype *ob)
 		//
 		// fix position to account for round off during moving
 		//
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 
 		move -= ob->distance;
 
@@ -1861,9 +1861,9 @@ statetype s_deathshoot5 	= {false,SPR_DEATH_SHOOT4,10,NULL,T_Shoot,&s_deathchase
 ===============
 */
 
-void SpawnDeath (int tilex, int tiley)
+void SpawnDeath (id0_int_t tilex, id0_int_t tiley)
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	if (SoundBlasterPresent && DigiMode != sds_Off)
 		s_deathdie2.tictime = 105;
@@ -1886,9 +1886,9 @@ void SpawnDeath (int tilex, int tiley)
 
 void T_Launch (objtype *ob)
 {
-	long	deltax,deltay;
+	id0_long_t	deltax,deltay;
 	float	angle;
-	int		iangle;
+	id0_int_t		iangle;
 
 	deltax = player->x - ob->x;
 	deltay = ob->y - player->y;
@@ -2054,9 +2054,9 @@ void A_Breathing (objtype *ob)
 ===============
 */
 
-void SpawnAngel (int tilex, int tiley)
+void SpawnAngel (id0_int_t tilex, id0_int_t tiley)
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 
 	if (SoundBlasterPresent && DigiMode != sds_Off)
@@ -2173,9 +2173,9 @@ statetype s_spectrewake	= {false,SPR_SPECTRE_F4,10,NULL,A_Dormant,&s_spectrewake
 ===============
 */
 
-void SpawnSpectre (int tilex, int tiley)
+void SpawnSpectre (id0_int_t tilex, id0_int_t tiley)
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	SpawnNewObj (tilex,tiley,&s_spectrewait1);
 	new->obclass = spectreobj;
@@ -2196,10 +2196,10 @@ void SpawnSpectre (int tilex, int tiley)
 
 void A_Dormant (objtype *ob)
 {
-	long	deltax,deltay;
-	int	xl,xh,yl,yh;
-	int	x,y;
-	unsigned	tile;
+	id0_long_t	deltax,deltay;
+	id0_int_t	xl,xh,yl,yh;
+	id0_int_t	x,y;
+	id0_unsigned_t	tile;
 
 	deltax = ob->x - player->x;
 	if (deltax < -MINACTORDIST || deltax > MINACTORDIST)
@@ -2258,9 +2258,9 @@ moveok:
 ===============
 */
 
-void SpawnGhosts (int which, int tilex, int tiley)
+void SpawnGhosts (id0_int_t which, id0_int_t tilex, id0_int_t tiley)
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	switch(which)
 	{
@@ -2590,12 +2590,12 @@ statetype s_fatshoot6 	= {false,SPR_FAT_SHOOT4,10,NULL,T_Shoot,&s_fatchase1};
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void SpawnSchabbs (int tilex, int tiley, int dir)
+void SpawnSchabbs (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
-void SpawnSchabbs (int tilex, int tiley)
+void SpawnSchabbs (id0_int_t tilex, id0_int_t tiley)
 #endif
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
@@ -2644,12 +2644,12 @@ void SpawnSchabbs (int tilex, int tiley)
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void SpawnGift (int tilex, int tiley, int dir)
+void SpawnGift (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
-void SpawnGift (int tilex, int tiley)
+void SpawnGift (id0_int_t tilex, id0_int_t tiley)
 #endif
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	if (DigiMode != sds_Off)
 	  s_giftdie2.tictime = 140;
@@ -2688,12 +2688,12 @@ void SpawnGift (int tilex, int tiley)
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void SpawnFat (int tilex, int tiley, int dir)
+void SpawnFat (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
-void SpawnFat (int tilex, int tiley)
+void SpawnFat (id0_int_t tilex, id0_int_t tiley)
 #endif
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	if (DigiMode != sds_Off)
 	  s_fatdie2.tictime = 140;
@@ -2740,9 +2740,9 @@ void SpawnFat (int tilex, int tiley)
 
 void T_SchabbThrow (objtype *ob)
 {
-	long	deltax,deltay;
+	id0_long_t	deltax,deltay;
 	float	angle;
-	int		iangle;
+	id0_int_t		iangle;
 
 	deltax = player->x - ob->x;
 	deltay = ob->y - player->y;
@@ -2799,9 +2799,9 @@ void T_SchabbThrow (objtype *ob)
 
 void T_GiftThrow (objtype *ob)
 {
-	long	deltax,deltay;
+	id0_long_t	deltax,deltay;
 	float	angle;
-	int		iangle;
+	id0_int_t		iangle;
 
 	deltax = player->x - ob->x;
 	deltay = ob->y - player->y;
@@ -2846,9 +2846,9 @@ void T_GiftThrow (objtype *ob)
 
 void T_Schabb (objtype *ob)
 {
-	long move;
-	int	dx,dy,dist;
-	boolean	dodge;
+	id0_long_t move;
+	id0_int_t	dx,dy,dist;
+	id0_boolean_t	dodge;
 
 	dodge = false;
 	dx = abs(ob->tilex - player->tilex);
@@ -2907,8 +2907,8 @@ void T_Schabb (objtype *ob)
 		//
 		// fix position to account for round off during moving
 		//
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 
 		move -= ob->distance;
 
@@ -2940,9 +2940,9 @@ void T_Schabb (objtype *ob)
 
 void T_Gift (objtype *ob)
 {
-	long move;
-	int	dx,dy,dist;
-	boolean	dodge;
+	id0_long_t move;
+	id0_int_t	dx,dy,dist;
+	id0_boolean_t	dodge;
 
 	dodge = false;
 	dx = abs(ob->tilex - player->tilex);
@@ -3001,8 +3001,8 @@ void T_Gift (objtype *ob)
 		//
 		// fix position to account for round off during moving
 		//
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 
 		move -= ob->distance;
 
@@ -3032,9 +3032,9 @@ void T_Gift (objtype *ob)
 
 void T_Fat (objtype *ob)
 {
-	long move;
-	int	dx,dy,dist;
-	boolean	dodge;
+	id0_long_t move;
+	id0_int_t	dx,dy,dist;
+	id0_boolean_t	dodge;
 
 	dodge = false;
 	dx = abs(ob->tilex - player->tilex);
@@ -3093,8 +3093,8 @@ void T_Fat (objtype *ob)
 		//
 		// fix position to account for round off during moving
 		//
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 
 		move -= ob->distance;
 
@@ -3348,12 +3348,12 @@ statetype s_hitlershoot6 	= {false,SPR_HITLER_SHOOT2,10,NULL,T_Shoot,&s_hitlerch
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void SpawnFakeHitler (int tilex, int tiley, int dir)
+void SpawnFakeHitler (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
-void SpawnFakeHitler (int tilex, int tiley)
+void SpawnFakeHitler (id0_int_t tilex, id0_int_t tiley)
 #endif
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -3402,12 +3402,12 @@ void SpawnFakeHitler (int tilex, int tiley)
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void SpawnHitler (int tilex, int tiley, int dir)
+void SpawnHitler (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
-void SpawnHitler (int tilex, int tiley)
+void SpawnHitler (id0_int_t tilex, id0_int_t tiley)
 #endif
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
@@ -3452,9 +3452,9 @@ void A_HitlerMorph (objtype *ob)
 {
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 #else
-	unsigned	far *map,tile,hitpoints[4]={500,700,800,900};
+	id0_unsigned_t	id0_far *map,tile,hitpoints[4]={500,700,800,900};
 #endif
 
 
@@ -3525,9 +3525,9 @@ void A_Slurpie (objtype *ob)
 
 void T_FakeFire (objtype *ob)
 {
-	long	deltax,deltay;
+	id0_long_t	deltax,deltay;
 	float	angle;
-	int		iangle;
+	id0_int_t		iangle;
 
 	deltax = player->x - ob->x;
 	deltay = ob->y - player->y;
@@ -3573,9 +3573,9 @@ void T_FakeFire (objtype *ob)
 
 void T_Fake (objtype *ob)
 {
-	long move;
-	int	dx,dy,dist;
-	boolean	dodge;
+	id0_long_t move;
+	id0_int_t	dx,dy,dist;
+	id0_boolean_t	dodge;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// A bit closer to Schabb/Gift/Fat behaviors in v1.0
@@ -3646,8 +3646,8 @@ void T_Fake (objtype *ob)
 		//
 		// fix position to account for round off during moving
 		//
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 
 		move -= ob->distance;
 
@@ -3710,9 +3710,9 @@ void T_Stand (objtype *ob)
 
 void T_Chase (objtype *ob)
 {
-	long move;
-	int	dx,dy,dist,chance;
-	boolean	dodge;
+	id0_long_t move;
+	id0_int_t	dx,dy,dist,chance;
+	id0_boolean_t	dodge;
 
 	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
@@ -3833,8 +3833,8 @@ void T_Chase (objtype *ob)
 		//
 		// fix position to account for round off during moving
 		//
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 
 		move -= ob->distance;
 
@@ -3862,12 +3862,12 @@ void T_Chase (objtype *ob)
 
 void T_Ghosts (objtype *ob)
 {
-	long move;
+	id0_long_t move;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// A bit closer to Schabb/Gift/Fat behaviors in v1.0
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	int	dx,dy,dist;
+	id0_int_t	dx,dy,dist;
 
 	dx = abs(ob->tilex - player->tilex);
 	dy = abs(ob->tiley - player->tiley);
@@ -3898,8 +3898,8 @@ void T_Ghosts (objtype *ob)
 		//
 		// fix position to account for round off during moving
 		//
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 
 		move -= ob->distance;
 
@@ -3927,9 +3927,9 @@ void T_Ghosts (objtype *ob)
 
 void T_DogChase (objtype *ob)
 {
-	long 	move;
-	int		dist,chance;
-	long	dx,dy;
+	id0_long_t 	move;
+	id0_int_t		dist,chance;
+	id0_long_t	dx,dy;
 
 
 	if (ob->dir == nodir)
@@ -3976,8 +3976,8 @@ void T_DogChase (objtype *ob)
 		//
 		// fix position to account for round off during moving
 		//
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 
 		move -= ob->distance;
 
@@ -4010,7 +4010,7 @@ void T_DogChase (objtype *ob)
 
 void SelectPathDir (objtype *ob)
 {
-	unsigned spot;
+	id0_unsigned_t spot;
 
 	spot = MAPSPOT(ob->tilex,ob->tiley,1)-ICONARROWS;
 
@@ -4037,8 +4037,8 @@ void SelectPathDir (objtype *ob)
 
 void T_Path (objtype *ob)
 {
-	long 	move;
-	long 	deltax,deltay,size;
+	id0_long_t 	move;
+	id0_long_t 	deltax,deltay,size;
 
 	if (SightPlayer (ob))
 		return;
@@ -4081,8 +4081,8 @@ void T_Path (objtype *ob)
 
 
 
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 		move -= ob->distance;
 
 		SelectPathDir (ob);
@@ -4114,8 +4114,8 @@ void T_Path (objtype *ob)
 
 void T_Shoot (objtype *ob)
 {
-	int	dx,dy,dist;
-	int	hitchance,damage;
+	id0_int_t	dx,dy,dist;
+	id0_int_t	hitchance,damage;
 
 	hitchance = 128;
 
@@ -4232,8 +4232,8 @@ void T_Shoot (objtype *ob)
 
 void T_Bite (objtype *ob)
 {
-	long	dx,dy;
-	int	hitchance,damage;
+	id0_long_t	dx,dy;
+	id0_int_t	hitchance,damage;
 
 
 	// *** ALPHA RESTORATION ***
@@ -4378,7 +4378,7 @@ statetype s_mexplode3 = {true,SPR_WATERMELONEXP,6,NULL,NULL,NULL};
 
 void SpawnBJVictory (void)
 {
-	unsigned	far *map,tile;
+	id0_unsigned_t	id0_far *map,tile;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
@@ -4410,7 +4410,7 @@ void SpawnBJVictory (void)
 
 void T_BJRun (objtype *ob)
 {
-	long 	move;
+	id0_long_t 	move;
 
 	move = BJRUNSPEED*tics;
 
@@ -4423,8 +4423,8 @@ void T_BJRun (objtype *ob)
 		}
 
 
-		ob->x = ((long)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
-		ob->y = ((long)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
+		ob->x = ((id0_long_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
+		ob->y = ((id0_long_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;
 		move -= ob->distance;
 
 		SelectPathDir (ob);
@@ -4448,7 +4448,7 @@ void T_BJRun (objtype *ob)
 
 void T_BJJump (objtype *ob)
 {
-	long 	move;
+	id0_long_t 	move;
 
 	move = BJJUMPSPEED*tics;
 	MoveObj (ob,move);
@@ -4494,11 +4494,11 @@ void T_BJDone (objtype *ob)
 
 #define MINMISSILEDIST 0x8000l
 // S3DNA RESTORATION - Has code found in TryMove and ProjectileTryMove
-boolean MissileTryMove (objtype *ob)
+id0_boolean_t MissileTryMove (objtype *ob)
 {
-	int			xl,yl,xh,yh,x,y;
+	id0_int_t			xl,yl,xh,yh,x,y;
 	objtype		*check;
-	long		deltax,deltay;
+	id0_long_t		deltax,deltay;
 
 	xl = (ob->x-PROJSIZE) >>TILESHIFT;
 	yl = (ob->y-PROJSIZE) >>TILESHIFT;
@@ -4566,11 +4566,11 @@ boolean MissileTryMove (objtype *ob)
 // S3DNA RESTORATION - Looks based on T_Projectile
 void T_Missile (objtype *ob)
 {
-	long	deltax,deltay;
-	int		damage;
-	long	speed;
+	id0_long_t	deltax,deltay;
+	id0_int_t		damage;
+	id0_long_t	speed;
 
-	speed = (long)ob->speed*tics;
+	speed = (id0_long_t)ob->speed*tics;
 
 	deltax = FixedByFrac(speed,costable[ob->angle]);
 	deltay = -FixedByFrac(speed,sintable[ob->angle]);
@@ -4616,9 +4616,9 @@ void T_Missile (objtype *ob)
 ===============
 */
 
-boolean	CheckPosition (objtype *ob)
+id0_boolean_t	CheckPosition (objtype *ob)
 {
-	int	x,y,xl,yl,xh,yh;
+	id0_int_t	x,y,xl,yl,xh,yh;
 	objtype *check;
 
 	xl = (ob->x-PLAYERSIZE) >>TILESHIFT;
@@ -4659,11 +4659,11 @@ void	A_StartDeathCam (objtype *ob)
 		&s_deathcam);
 	gamestate.victoryflag = true;
 #else
-	long	dx,dy;
+	id0_long_t	dx,dy;
 	float	fangle;
-	long    xmove,ymove;
-	long	dist;
-	int		temp,i;
+	id0_long_t    xmove,ymove;
+	id0_long_t	dist;
+	id0_int_t		temp,i;
 
 	FinishPaletteShifts ();
 

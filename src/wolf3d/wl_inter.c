@@ -40,7 +40,7 @@ void ClearSplitVWB (void)
 //
 ////////////////////////////////////////////////////////
 
-void EndScreen (int palette, int screen)
+void EndScreen (id0_int_t palette, id0_int_t screen)
 {
 	CA_CacheScreen (screen);
 	VW_UpdateScreen ();
@@ -110,18 +110,18 @@ statetype *caststate[] = {&s_dogchase1,&s_grdchase1,&s_ofcchase1,&s_sschase1,
 	&s_mutchase1,&s_bosschase1,&s_schabbchase1,&s_gretelchase1,
 	&s_giftchase1,&s_fatchase1,&s_mechachase1,&s_hitlerchase1};
 
-char far *casttext[] = {"Goat","Sheep","Ostrich","Antelope",
+id0_char_t id0_far *casttext[] = {"Goat","Sheep","Ostrich","Antelope",
 	"Ox","Carl the Camel","Melvin the Monkey","Ginny the Giraffe",
 	"Kerry the Kangaroo","Ernie the Elephant","Hiding Burt","Burt the Bear"};
 
-int castsound[] = {D_GOATSND,D_SHEEPSND,D_OSTRCHSND,D_ANTLPESND,
+id0_int_t castsound[] = {D_GOATSND,D_SHEEPSND,D_OSTRCHSND,D_ANTLPESND,
 	D_OXSND,D_CAMELSND,D_MONKEYSND,D_GIRAFESND,
 	D_KANGROSND,D_ELPHNTSND,D_BEARSND,D_BEARSND};
 
 void CharacterCast(void)
 {
-	int i, en, count, cycle;
-	unsigned temp,buttons;
+	id0_int_t i, en, count, cycle;
+	id0_unsigned_t temp,buttons;
 	statetype *state;
 
 	ClearMemory ();
@@ -254,19 +254,19 @@ void Victory (void)
 #ifndef SPEARDEMO
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	int	sec;
+	id0_int_t	sec;
 #elif (defined GAMEVER_NOAH3D)
-	long	sec,parsec;
+	id0_long_t	sec,parsec;
 #else
-	long	sec;
+	id0_long_t	sec;
 #endif
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	int i,hr,min,kr,sr,tr,x;
+	id0_int_t i,hr,min,kr,sr,tr,x;
 #else
-	int i,min,kr,sr,tr,x;
+	id0_int_t i,min,kr,sr,tr,x;
 #endif
-	char tempstr[8];
+	id0_char_t tempstr[8];
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -671,22 +671,22 @@ void PG13 (void)
 
 //==========================================================================
 
-void Write(int x,int y,char *string)
+void Write(id0_int_t x,id0_int_t y,id0_char_t *string)
 {
  // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
- int alpha[]={L_NUM0PIC,L_NUM1PIC,L_NUM2PIC,L_NUM3PIC,L_NUM4PIC,L_NUM5PIC,
+ id0_int_t alpha[]={L_NUM0PIC,L_NUM1PIC,L_NUM2PIC,L_NUM3PIC,L_NUM4PIC,L_NUM5PIC,
 	L_NUM6PIC,L_NUM7PIC,L_NUM8PIC,L_NUM9PIC,L_COLONPIC,0,0,0,0,0};
 #else
- int alpha[]={L_NUM0PIC,L_NUM1PIC,L_NUM2PIC,L_NUM3PIC,L_NUM4PIC,L_NUM5PIC,
+ id0_int_t alpha[]={L_NUM0PIC,L_NUM1PIC,L_NUM2PIC,L_NUM3PIC,L_NUM4PIC,L_NUM5PIC,
 	L_NUM6PIC,L_NUM7PIC,L_NUM8PIC,L_NUM9PIC,L_COLONPIC,0,0,0,0,0,0,L_APIC,L_BPIC,
 	L_CPIC,L_DPIC,L_EPIC,L_FPIC,L_GPIC,L_HPIC,L_IPIC,L_JPIC,L_KPIC,
 	L_LPIC,L_MPIC,L_NPIC,L_OPIC,L_PPIC,L_QPIC,L_RPIC,L_SPIC,L_TPIC,
 	L_UPIC,L_VPIC,L_WPIC,L_XPIC,L_YPIC,L_ZPIC};
 #endif
 
- int i,ox,nx,ny;
- char ch;
+ id0_int_t i,ox,nx,ny;
+ id0_char_t ch;
 
 
  ox=nx=x*8;
@@ -759,8 +759,8 @@ void Write(int x,int y,char *string)
 //
 void BJ_Breathe(void)
 {
-	static int which=0,max=10;
-	int pics[2]={L_GUYPIC,L_GUY2PIC};
+	static id0_int_t which=0,max=10;
+	id0_int_t pics[2]={L_GUYPIC,L_GUY2PIC};
 
 
 	if (TimeCount>max)
@@ -783,11 +783,11 @@ void BJ_Breathe(void)
 // *** S3DNA RESTORATION ***
 // Additional functions for LevelCompleted
 #ifdef GAMEVER_NOAH3D
-void ShowBonus (long bonus)
+void ShowBonus (id0_long_t bonus)
 {
-	char tempstr[10];
-	char	ch;
-	int	x,i;
+	id0_char_t tempstr[10];
+	id0_char_t	ch;
+	id0_int_t	x,i;
 
 	ltoa(bonus,tempstr,10);
 	x=8*(36-strlen(tempstr)*2);
@@ -803,9 +803,9 @@ void ShowBonus (long bonus)
 	}
 }
 
-void DrawEndLevelScreen (int secretlvl)
+void DrawEndLevelScreen (id0_int_t secretlvl)
 {
-	char tempstr[10];
+	id0_char_t tempstr[10];
 
 	VWB_Bar (0,0,320,160,VIEWCOLOR);
 	VWB_DrawPic (8,8,L_GUYPIC);
@@ -831,7 +831,7 @@ void DrawEndLevelScreen (int secretlvl)
 
 void RollDelay (void)
 {
-	unsigned long lasttime = TimeCount;
+	id0_unsigned_long_t lasttime = TimeCount;
 	while (TimeCount == lasttime)
 		;
 }
@@ -869,29 +869,29 @@ void LevelCompleted (void)
 	typedef struct {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-			word time;
+			id0_word_t time;
 #else
 			float time;
 #endif
-			char timestr[6];
+			id0_char_t timestr[6];
 			} times;
 
 	// *** S3DNA  RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	int	x,i,min,sec,secret,ratio;
-	boolean perfect;
-	long bonus,timeleft;
-	int	kr,sr,tr;
+	id0_int_t	x,i,min,sec,secret,ratio;
+	id0_boolean_t perfect;
+	id0_long_t bonus,timeleft;
+	id0_int_t	kr,sr,tr;
 #else
-	int	x,i,min,sec,ratio,kr,sr,tr;
+	id0_int_t	x,i,min,sec,ratio,kr,sr,tr;
 #endif
-	unsigned	temp;
-	char tempstr[10];
+	id0_unsigned_t	temp;
+	id0_char_t tempstr[10];
 	// *** S3DNA  RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	unsigned long	lasttime;
+	id0_unsigned_long_t	lasttime;
 #else
-	long bonus,timeleft=0;
+	id0_long_t bonus,timeleft=0;
 #endif
 	times parTimes[]=
 	{
@@ -1293,7 +1293,7 @@ void LevelCompleted (void)
 	{
 		for (i=0;i<=timeleft;i++)
 		{
-			ShowBonus(bonus+(long)i*PAR_AMOUNT);
+			ShowBonus(bonus+(id0_long_t)i*PAR_AMOUNT);
 			SD_PlaySound(D_INCSND);
 			VW_UpdateScreen();
 			BJ_Breathe();
@@ -1504,7 +1504,7 @@ void LevelCompleted (void)
 	UnCacheLump(LEVELEND_LUMP_START,LEVELEND_LUMP_END);
 
 	{
-		int start;
+		id0_int_t start;
 		SD_WaitSoundDone();
 		switch (SoundMode)
 		{
@@ -1656,7 +1656,7 @@ void LevelCompleted (void)
 	 {
 	  for (i=0;i<=timeleft;i++)
 	  {
-	   ltoa((long)i*PAR_AMOUNT,tempstr,10);
+	   ltoa((id0_long_t)i*PAR_AMOUNT,tempstr,10);
 	   x=36-strlen(tempstr)*2;
 	   Write(x,7,tempstr);
 	   if (!(i%(PAR_AMOUNT/10)))
@@ -1827,7 +1827,7 @@ void LevelCompleted (void)
 	 x=RATIOXX-strlen(tempstr)*2;
 	 Write(x,18,tempstr);
 
-	 bonus=(long)timeleft*PAR_AMOUNT+
+	 bonus=(id0_long_t)timeleft*PAR_AMOUNT+
 		   (PERCENT100AMT*(kr==100))+
 		   (PERCENT100AMT*(sr==100))+
 		   (PERCENT100AMT*(tr==100));
@@ -1975,16 +1975,16 @@ void LevelCompleted (void)
 =================
 */
 
-boolean PreloadUpdate(unsigned current, unsigned total)
+id0_boolean_t PreloadUpdate(id0_unsigned_t current, id0_unsigned_t total)
 {
-	unsigned w = WindowW - 10;
+	id0_unsigned_t w = WindowW - 10;
 
 
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 	VWB_Bar(WindowX + 5,WindowY + WindowH - 3,w,2,BLACK);
 #endif
-	w = ((long)w * current) / total;
+	w = ((id0_long_t)w * current) / total;
 	if (w)
 	{
 	 // *** S3DNA RESTORATION ***
@@ -2009,7 +2009,7 @@ boolean PreloadUpdate(unsigned current, unsigned total)
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-int	FloorTile[] = {0,0,2,1,1,1,0,2,2,2,1,3,0,0,0,0,2,1,1,1,1,1,0,2,2,2,2,2,1,3,3};
+id0_int_t	FloorTile[] = {0,0,2,1,1,1,0,2,2,2,1,3,0,0,0,0,2,1,1,1,1,1,0,2,2,2,2,2,1,3,3};
 #endif
 
 void PreloadGraphics(void)
@@ -2056,7 +2056,7 @@ void PreloadGraphics(void)
 // *** S3DNA RESTORATION ***
 // Separating the briefings seems to do the job here (in terms of EXE layout)
 #ifdef GAMEVER_NOAH3D
-char	mission1text[] = {
+id0_char_t	mission1text[] = {
 	"You'll be out of the ark in six\n"
 	"days, Noah. Unfortunately, the\n"
 	"animals are a tad bit restless and\n"
@@ -2165,11 +2165,11 @@ creditstext[] = {
 };
 
 
-char *missiontext[] =
+id0_char_t *missiontext[] =
 	{mission1text,mission2text,mission3text,mission4text,mission5text,mission6text,creditstext};
 
 
-void Briefing (int mission, boolean credits)
+void Briefing (id0_int_t mission, id0_boolean_t credits)
 {
 	ClearMemory ();
 	if (mission >= 7)
@@ -2270,7 +2270,7 @@ void NonShareware(void)
 // COPY PROTECTION FOR FormGen
 //
 ////////////////////////////////////////////////////////
-char 	far CopyProFailedStrs[][100] = {
+id0_char_t 	id0_far CopyProFailedStrs[][100] = {
 			STR_COPY1,
 			STR_COPY2,
 
@@ -2299,7 +2299,7 @@ char 	far CopyProFailedStrs[][100] = {
 			""
 			},
 
-		far BackDoorStrs[5][16] = {
+		id0_far BackDoorStrs[5][16] = {
 			"a spoon?",
 			"bite me!",
 			"joshua",
@@ -2311,7 +2311,7 @@ char 	far CopyProFailedStrs[][100] = {
 #endif
 			},
 
-		far GoodBoyStrs[10][40] = {
+		id0_far GoodBoyStrs[10][40] = {
 			"...is the CORRECT ANSWER!",
 			"",
 
@@ -2332,23 +2332,23 @@ char 	far CopyProFailedStrs[][100] = {
 			""
 			},
 
-		far bossstrs[4][24] = {
+		id0_far bossstrs[4][24] = {
 			"DEATH KNIGHT",
 			"BARNACLE WILHELM",
 			"UBERMUTANTUBER MUTANT",
 			"TRANS GROSSE"
 			},
 
-		far WordStr[5][20] = {
+		id0_far WordStr[5][20] = {
 			"New Game",
 			"Sound...F4",
 			"Control...F6",
 			"Change View...F5",
 			"Quit...F10"},
 
-		far	WordCorrect[5][2] = {"3","4","4","5","5"},
+		id0_far	WordCorrect[5][2] = {"3","4","4","5","5"},
 
-		far MemberStr[10][40] = {
+		id0_far MemberStr[10][40] = {
 			STR_COPY15,
 			"",
 
@@ -2364,14 +2364,14 @@ char 	far CopyProFailedStrs[][100] = {
 			STR_COPY21,
 			STR_COPY22},
 
-		far MemberCorrect[5][24] = {
+		id0_far MemberCorrect[5][24] = {
 			"adrian carmack",
 			"john carmackjohn romero",
 			"tom hall",
 			"jay wilbur",
 			"kevin cloud"},
 
-		far DosMessages[9][80] = {
+		id0_far DosMessages[9][80] = {
 			STR_NOPE1,
 			STR_NOPE2,
 			STR_NOPE3,
@@ -2382,14 +2382,14 @@ char 	far CopyProFailedStrs[][100] = {
 			STR_NOPE8,
 			STR_NOPE9},
 
-		far MiscTitle[4][20] = {
+		id0_far MiscTitle[4][20] = {
 			"BLOOD TEST",
 			"STRAIGHT-LACED",
 			"QUITE SHAPELY",
 			"I AM WHAT I AMMO"
 			},
 
-		far MiscStr[12][40] = {
+		id0_far MiscStr[12][40] = {
 			STR_MISC1,
 			STR_MISC2,
 			"",
@@ -2407,12 +2407,12 @@ char 	far CopyProFailedStrs[][100] = {
 			STR_MISC9
 			},
 
-		far MiscCorrect[4][5] = {"ss","8",STR_STAR,"45"};
+		id0_far MiscCorrect[4][5] = {"ss","8",STR_STAR,"45"};
 
 
-int  BackDoor(char *s)
+id0_int_t  BackDoor(id0_char_t *s)
 {
-	int i;
+	id0_int_t i;
 
 
 	strlwr(s);
@@ -2440,12 +2440,12 @@ void CopyProtection(void)
 #define TYPEBOX_BKGD	0x9c
 #define PRINTCOLOR		HIGHLIGHT
 
-	int	i,match,whichboss,bossnum,try,whichline,enemypicked[4]={0,0,0,0},
+	id0_int_t	i,match,whichboss,bossnum,try,whichline,enemypicked[4]={0,0,0,0},
 		bosses[4] = { BOSSPIC1PIC,BOSSPIC2PIC,BOSSPIC3PIC,BOSSPIC4PIC },
 		whichone,whichpicked[4]={0,0,0,0},quiztype,whichmem,
 		memberpicked[5]={0,0,0,0,0},wordpicked[5]={0,0,0,0,0},whichword;
 
-	char	inputbuffer[20],
+	id0_char_t	inputbuffer[20],
 			message[80];
 
 	enum
@@ -2631,7 +2631,7 @@ void CopyProtection(void)
 		}
 		else
 		{
-			int start;
+			id0_int_t start;
 
 
 			SD_PlaySound(BONUS1UPSND);

@@ -90,7 +90,7 @@
 #else
 #define GAMEVER_WOLF3D_DEBUGPARM "goobers"
 #endif
-#define GAMEVER_COND_FARPTR far
+#define GAMEVER_COND_FARPTR id0_far
 #define GAMEVER_COND_FSTRCPY _fstrcpy
 
 #endif

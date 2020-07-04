@@ -171,29 +171,29 @@
 // TYPEDEFS
 //
 typedef struct {
-		int x,y,amount,curpos,indent;
+		id0_int_t x,y,amount,curpos,indent;
 		} CP_iteminfo;
 
 typedef struct {
-		int active;
+		id0_int_t active;
 		// *** S3DNA + ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		char string[80];
+		id0_char_t string[80];
 #elif (GAMEVER_WOLFREV <= GV_WR_WL920312)
-		char string[40];
+		id0_char_t string[40];
 #else
-		char string[36];
+		id0_char_t string[36];
 #endif
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		void (* routine)(void);
 #else
-		void (* routine)(int temp1);
+		void (* routine)(id0_int_t temp1);
 #endif
 		} CP_itemtype;
 
 typedef struct {
-		int allowed[4];
+		id0_int_t allowed[4];
 		} CustomCtrls;
 
 extern CP_itemtype GAMEVER_COND_FARPTR MainMenu[],GAMEVER_COND_FARPTR NewEMenu[];
@@ -206,22 +206,22 @@ void SetupControlPanel(void);
 void CleanupControlPanel(void);
 
 void DrawMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items);
-int  HandleMenu(CP_iteminfo *item_i,
+id0_int_t  HandleMenu(CP_iteminfo *item_i,
 		CP_itemtype GAMEVER_COND_FARPTR *items,
-		void (*routine)(int w));
+		void (*routine)(id0_int_t w));
 void ClearMScreen(void);
-void DrawWindow(int x,int y,int w,int h,int wcolor);
-void DrawOutline(int x,int y,int w,int h,int color1,int color2);
+void DrawWindow(id0_int_t x,id0_int_t y,id0_int_t w,id0_int_t h,id0_int_t wcolor);
+void DrawOutline(id0_int_t x,id0_int_t y,id0_int_t w,id0_int_t h,id0_int_t color1,id0_int_t color2);
 void WaitKeyUp(void);
 void ReadAnyControl(ControlInfo *ci);
-void TicDelay(int count);
-void CacheLump(int lumpstart,int lumpend);
-void UnCacheLump(int lumpstart,int lumpend);
-void StartCPMusic(int song);
-int  Confirm(char GAMEVER_COND_FARPTR *string);
+void TicDelay(id0_int_t count);
+void CacheLump(id0_int_t lumpstart,id0_int_t lumpend);
+void UnCacheLump(id0_int_t lumpstart,id0_int_t lumpend);
+void StartCPMusic(id0_int_t song);
+id0_int_t  Confirm(id0_char_t GAMEVER_COND_FARPTR *string);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-void Message(char GAMEVER_COND_FARPTR *string);
+void Message(id0_char_t GAMEVER_COND_FARPTR *string);
 #endif
 void CheckPause(void);
 // *** ALPHA RESTORATION ***
@@ -234,45 +234,45 @@ void ShootSnd(void);
 void CheckSecretMissions(void);
 void BossKey(void);
 
-void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int *y,int which,int basey,void (*routine)(int w));
-void DrawHalfStep(int x,int y);
-void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,int x,int y,int which);
-void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,int hlight);
+void DrawGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,id0_int_t x,id0_int_t *y,id0_int_t which,id0_int_t basey,void (*routine)(id0_int_t w));
+void DrawHalfStep(id0_int_t x,id0_int_t y);
+void EraseGun(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,id0_int_t x,id0_int_t y,id0_int_t which);
+void SetTextColor(CP_itemtype GAMEVER_COND_FARPTR *items,id0_int_t hlight);
 void DrawMenuGun(CP_iteminfo *iteminfo);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-void DrawStripes(int y);
+void DrawStripes(id0_int_t y);
 #endif
 
 void DefineMouseBtns(void);
 void DefineJoyBtns(void);
 void DefineKeyBtns(void);
 void DefineKeyMove(void);
-void EnterCtrlData(int index,CustomCtrls *cust,void (*DrawRtn)(int),void (*PrintRtn)(int),int type);
+void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),void (*PrintRtn)(id0_int_t),id0_int_t type);
 
 void DrawMainMenu(void);
 void DrawSoundMenu(void);
-void DrawLoadSaveScreen(int loadsave);
+void DrawLoadSaveScreen(id0_int_t loadsave);
 void DrawNewEpisode(void);
 void DrawNewGame(void);
-void DrawChangeView(int view);
+void DrawChangeView(id0_int_t view);
 void DrawMouseSens(void);
 void DrawCtlScreen(void);
 void DrawCustomScreen(void);
-void DrawLSAction(int which);
-void DrawCustMouse(int hilight);
-void DrawCustJoy(int hilight);
-void DrawCustKeybd(int hilight);
-void DrawCustKeys(int hilight);
-void PrintCustMouse(int i);
-void PrintCustJoy(int i);
-void PrintCustKeybd(int i);
-void PrintCustKeys(int i);
+void DrawLSAction(id0_int_t which);
+void DrawCustMouse(id0_int_t hilight);
+void DrawCustJoy(id0_int_t hilight);
+void DrawCustKeybd(id0_int_t hilight);
+void DrawCustKeys(id0_int_t hilight);
+void PrintCustMouse(id0_int_t i);
+void PrintCustJoy(id0_int_t i);
+void PrintCustKeybd(id0_int_t i);
+void PrintCustKeys(id0_int_t i);
 
-void PrintLSEntry(int w,int color);
-void TrackWhichGame(int w);
-void DrawNewGameDiff(int w);
-void FixupCustom(int w);
+void PrintLSEntry(id0_int_t w,id0_int_t color);
+void TrackWhichGame(id0_int_t w);
+void DrawNewGameDiff(id0_int_t w);
+void FixupCustom(id0_int_t w);
 
 void CP_NewGame(void);
 void CP_Sound(void);
@@ -281,18 +281,18 @@ void CP_Sound(void);
 void CP_LoadGame(void);
 void CP_SaveGame(void);
 #else
-int  CP_LoadGame(int quick);
-int  CP_SaveGame(int quick);
+id0_int_t  CP_LoadGame(id0_int_t quick);
+id0_int_t  CP_SaveGame(id0_int_t quick);
 #endif
 void CP_Control(void);
 void CP_ChangeView(void);
 void CP_ExitOptions(void);
 void CP_Quit(void);
 void CP_ViewScores(void);
-int  CP_EndGame(void);
+id0_int_t  CP_EndGame(void);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-int  CP_CheckQuick(unsigned scancode);
+id0_int_t  CP_CheckQuick(id0_unsigned_t scancode);
 #endif
 void CustomControls(void);
 void MouseSensitivity(void);
@@ -307,8 +307,8 @@ void CheckForEpisodes(void);
 // way to try and force an additional, unused variable,
 // following SaveGamesAvail (may be called, say, pickquick)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-extern int SaveGamesAvail[10],StartGame,SoundStatus;
-extern char SaveGameNames[10][32],SaveName[13];
+extern id0_int_t SaveGamesAvail[10],StartGame,SoundStatus;
+extern id0_char_t SaveGameNames[10][32],SaveName[13];
 #endif
 
 enum {MOUSE,JOYSTICK,KEYBOARDBTNS,KEYBOARDMOVE};	// FOR INPUT TYPES
@@ -342,11 +342,11 @@ menuitems
 // WL_INTER
 //
 typedef struct {
-		int kill,secret,treasure;
-		long time;
+		id0_int_t kill,secret,treasure;
+		id0_long_t time;
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		long par;
+		id0_long_t par;
 #endif
 		} LRstruct;
 
@@ -357,8 +357,8 @@ extern LRstruct LevelRatios[30];
 extern LRstruct LevelRatios[];
 #endif
 
-void Write (int x,int y,char *string);
+void Write (id0_int_t x,id0_int_t y,id0_char_t *string);
 void NonShareware(void);
-int GetYorN(int x,int y,int pic);
+id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic);
 
 

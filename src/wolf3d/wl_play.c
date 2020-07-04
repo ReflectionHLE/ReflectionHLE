@@ -25,77 +25,77 @@
 //
 // *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused variable here
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-boolean		unusedplayvar;
+id0_boolean_t		unusedplayvar;
 #endif
-boolean		madenoise;					// true when shooting or screaming
+id0_boolean_t		madenoise;					// true when shooting or screaming
 
 exit_t		playstate;
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-int			DebugOk;
+id0_int_t			DebugOk;
 #endif
 
 objtype 	objlist[MAXACTORS],*new,*obj,*player,*lastobj,
 			*objfreelist,*killerobj;
 
-unsigned	farmapylookup[MAPSIZE];
-byte		*nearmapylookup[MAPSIZE];
+id0_unsigned_t	farmapylookup[MAPSIZE];
+id0_byte_t		*nearmapylookup[MAPSIZE];
 
-boolean		singlestep,godmode,noclip;
-int			extravbls;
+id0_boolean_t		singlestep,godmode,noclip;
+id0_int_t			extravbls;
 
-byte		tilemap[MAPSIZE][MAPSIZE];	// wall values only
-byte		spotvis[MAPSIZE][MAPSIZE];
+id0_byte_t		tilemap[MAPSIZE][MAPSIZE];	// wall values only
+id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
 objtype		*actorat[MAPSIZE][MAPSIZE];
 
 //
 // replacing refresh manager
 //
-unsigned	mapwidth,mapheight,tics;
-boolean		compatability;
-byte		*updateptr;
-unsigned	mapwidthtable[64];
-unsigned	uwidthtable[UPDATEHIGH];
-unsigned	blockstarts[UPDATEWIDE*UPDATEHIGH];
-byte		update[UPDATESIZE];
+id0_unsigned_t	mapwidth,mapheight,tics;
+id0_boolean_t		compatability;
+id0_byte_t		*updateptr;
+id0_unsigned_t	mapwidthtable[64];
+id0_unsigned_t	uwidthtable[UPDATEHIGH];
+id0_unsigned_t	blockstarts[UPDATEWIDE*UPDATEHIGH];
+id0_byte_t		update[UPDATESIZE];
 
 //
 // control info
 //
-boolean		mouseenabled,joystickenabled,joypadenabled,joystickprogressive;
-int			joystickport;
-int			dirscan[4] = {sc_UpArrow,sc_RightArrow,sc_DownArrow,sc_LeftArrow};
-int			buttonscan[NUMBUTTONS] =
+id0_boolean_t		mouseenabled,joystickenabled,joypadenabled,joystickprogressive;
+id0_int_t			joystickport;
+id0_int_t			dirscan[4] = {sc_UpArrow,sc_RightArrow,sc_DownArrow,sc_LeftArrow};
+id0_int_t			buttonscan[NUMBUTTONS] =
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 			{sc_Control,sc_Alt,sc_RShift,sc_Space,sc_1,sc_2,sc_3,sc_4,sc_5,sc_6};
 #else
 			{sc_Control,sc_Alt,sc_RShift,sc_Space,sc_1,sc_2,sc_3,sc_4};
 #endif
-int			buttonmouse[4]={bt_attack,bt_strafe,bt_use,bt_nobutton};
-int			buttonjoy[4]={bt_attack,bt_strafe,bt_use,bt_run};
+id0_int_t			buttonmouse[4]={bt_attack,bt_strafe,bt_use,bt_nobutton};
+id0_int_t			buttonjoy[4]={bt_attack,bt_strafe,bt_use,bt_run};
 
-int			viewsize;
+id0_int_t			viewsize;
 
-boolean		buttonheld[NUMBUTTONS];
+id0_boolean_t		buttonheld[NUMBUTTONS];
 
-boolean		demorecord,demoplayback;
-char		far *demoptr, far *lastdemoptr;
+id0_boolean_t		demorecord,demoplayback;
+id0_char_t		id0_far *demoptr, id0_far *lastdemoptr;
 memptr		demobuffer;
 
 //
 // curent user input
 //
-int			controlx,controly;		// range from -100 to 100 per tic
-boolean		buttonstate[NUMBUTTONS];
+id0_int_t			controlx,controly;		// range from -100 to 100 per tic
+id0_boolean_t		buttonstate[NUMBUTTONS];
 
 
 
 //===========================================================================
 
 
-void	CenterWindow(word w,word h);
+void	CenterWindow(id0_word_t w,id0_word_t h);
 void 	InitObjList (void);
 void 	RemoveObj (objtype *gone);
 void 	PollControls (void);
@@ -119,7 +119,7 @@ objtype dummyobj;
 //
 // LIST OF SONGS FOR EACH VERSION
 //
-int songs[]=
+id0_int_t songs[]=
 {
  // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -341,7 +341,7 @@ int songs[]=
 
 void PollKeyboardButtons (void)
 {
-	int		i;
+	id0_int_t		i;
 
 	for (i=0;i<NUMBUTTONS;i++)
 		if (Keyboard[buttonscan[i]])
@@ -359,7 +359,7 @@ void PollKeyboardButtons (void)
 
 void PollMouseButtons (void)
 {
-	int	buttons;
+	id0_int_t	buttons;
 
 	buttons = IN_MouseButtons ();
 
@@ -383,7 +383,7 @@ void PollMouseButtons (void)
 
 void PollJoystickButtons (void)
 {
-	int	buttons;
+	id0_int_t	buttons;
 
 	buttons = IN_JoyButtons ();
 
@@ -456,7 +456,7 @@ void PollKeyboardMove (void)
 
 void PollMouseMove (void)
 {
-	int	mousexmove,mouseymove;
+	id0_int_t	mousexmove,mouseymove;
 
 	Mouse(MDelta);
 	mousexmove = _CX;
@@ -484,7 +484,7 @@ void PollMouseMove (void)
 
 void PollJoystickMove (void)
 {
-	int	joyx,joyy;
+	id0_int_t	joyx,joyy;
 
 	INL_GetJoyDelta(joystickport,&joyx,&joyy);
 
@@ -541,8 +541,8 @@ void PollJoystickMove (void)
 
 void PollControls (void)
 {
-	int		max,min,i;
-	byte	buttonbits;
+	id0_int_t		max,min,i;
+	id0_byte_t	buttonbits;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -603,8 +603,8 @@ void PollControls (void)
 		if (demoptr == lastdemoptr)
 			playstate = ex_completed;		// demo is done
 
-		controlx *= (int)tics;
-		controly *= (int)tics;
+		controlx *= (id0_int_t)tics;
+		controly *= (id0_int_t)tics;
 
 		return;
 	}
@@ -656,8 +656,8 @@ void PollControls (void)
 	//
 	// save info out to demo buffer
 	//
-		controlx /= (int)tics;
-		controly /= (int)tics;
+		controlx /= (id0_int_t)tics;
+		controly /= (id0_int_t)tics;
 
 		buttonbits = 0;
 
@@ -679,8 +679,8 @@ void PollControls (void)
 		if (demoptr >= lastdemoptr)
 			Quit ("Demo buffer overflowed!");
 
-		controlx *= (int)tics;
-		controly *= (int)tics;
+		controlx *= (id0_int_t)tics;
+		controly *= (id0_int_t)tics;
 	}
 }
 
@@ -700,7 +700,7 @@ void PollControls (void)
 #define MAXX	320
 #define MAXY	160
 
-void	CenterWindow(word w,word h)
+void	CenterWindow(id0_word_t w,id0_word_t h)
 {
 	FixOfs ();
 	US_DrawWindow(((MAXX / 8) - w) / 2,((MAXY / 8) - h) / 2,w,h);
@@ -719,14 +719,14 @@ void	CenterWindow(word w,word h)
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void CheckKeys (boolean mapmode)
+void CheckKeys (id0_boolean_t mapmode)
 #else
 void CheckKeys (void)
 #endif
 {
-	int		i;
-	byte	scan;
-	unsigned	temp;
+	id0_int_t		i;
+	id0_byte_t	scan;
+	id0_unsigned_t	temp;
 
 
 	// *** ALPHA RESTORATION ***
@@ -1159,12 +1159,12 @@ next element.
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-int	objcount;
+id0_int_t	objcount;
 #endif
 
 void InitActorList (void)
 {
-	int	i;
+	id0_int_t	i;
 
 //
 // init the actor lists
@@ -1300,7 +1300,7 @@ void RemoveObj (objtype *gone)
 
 void StopMusic(void)
 {
-	int	i;
+	id0_int_t	i;
 
 	SD_MusicOff();
 	for (i = 0;i < LASTMUSIC;i++)
@@ -1347,7 +1347,7 @@ void StartMusic(void)
 	else
 	{
 		MM_SetLock(&((memptr)audiosegs[STARTMUSIC + chunk]),true);
-		SD_StartMusic((MusicGroup far *)audiosegs[STARTMUSIC + chunk]);
+		SD_StartMusic((MusicGroup id0_far *)audiosegs[STARTMUSIC + chunk]);
 	}
 }
 
@@ -1355,7 +1355,7 @@ void StartMusic(void)
 // Earlier versions of the functions found in WL_INTER.C for v1.0+.
 // A few notes:
 // - PreloadUpdate is similar. Differences are, the first value of "w"
-// is *not* casted to long in the calculation of the new value of "w",
+// is *not* casted to id0_long_t in the calculation of the new value of "w",
 // and in case the latter is nonzero, VWB_Bar is called once with the
 // color SECONDCOLOR (commented out in the released sources).
 // There is also a check for the Escape key
@@ -1376,9 +1376,9 @@ void StartMusic(void)
 =================
 */
 
-boolean PreloadUpdate(unsigned current, unsigned total)
+id0_boolean_t PreloadUpdate(id0_unsigned_t current, id0_unsigned_t total)
 {
-	unsigned w = WindowW - 10;
+	id0_unsigned_t w = WindowW - 10;
 
 
 	VWB_Bar(WindowX + 5,WindowY + WindowH - 3,w,2,BLACK);
@@ -1433,13 +1433,13 @@ void PreloadGraphics(void)
 #endif
 
 
-byte	far redshifts[NUMREDSHIFTS][768];
-byte	far whiteshifts[NUMREDSHIFTS][768];
+id0_byte_t	id0_far redshifts[NUMREDSHIFTS][768];
+id0_byte_t	id0_far whiteshifts[NUMREDSHIFTS][768];
 
-int		damagecount,bonuscount;
-boolean	palshifted;
+id0_int_t		damagecount,bonuscount;
+id0_boolean_t	palshifted;
 
-extern 	byte	far	gamepal;
+extern 	id0_byte_t	id0_far	gamepal;
 
 /*
 =====================
@@ -1451,8 +1451,8 @@ extern 	byte	far	gamepal;
 
 void InitRedShifts (void)
 {
-	byte	far *workptr, far *baseptr;
-	int		i,j,delta;
+	id0_byte_t	id0_far *workptr, id0_far *baseptr;
+	id0_int_t		i,j,delta;
 
 
 //
@@ -1460,7 +1460,7 @@ void InitRedShifts (void)
 //
 	for (i=1;i<=NUMREDSHIFTS;i++)
 	{
-		workptr = (byte far *)&redshifts[i-1][0];
+		workptr = (id0_byte_t id0_far *)&redshifts[i-1][0];
 		baseptr = &gamepal;
 
 		for (j=0;j<=255;j++)
@@ -1486,7 +1486,7 @@ void InitRedShifts (void)
 
 	for (i=1;i<=NUMWHITESHIFTS;i++)
 	{
-		workptr = (byte far *)&whiteshifts[i-1][0];
+		workptr = (id0_byte_t id0_far *)&whiteshifts[i-1][0];
 		baseptr = &gamepal;
 
 		for (j=0;j<=255;j++)
@@ -1543,7 +1543,7 @@ void StartBonusFlash (void)
 =====================
 */
 
-void StartDamageFlash (int damage)
+void StartDamageFlash (id0_int_t damage)
 {
 	damagecount += damage;
 }
@@ -1559,7 +1559,7 @@ void StartDamageFlash (int damage)
 
 void UpdatePaletteShifts (void)
 {
-	int	red,white;
+	id0_int_t	red,white;
 
 	if (bonuscount)
 	{
@@ -1781,16 +1781,16 @@ think:
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-long funnyticount;
+id0_long_t funnyticount;
 #endif
 
 
 void PlayLoop (void)
 {
-	int		give;
+	id0_int_t		give;
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-	int	helmetangle;
+	id0_int_t	helmetangle;
 #endif
 
 	playstate = TimeCount = lasttimecount = 0;

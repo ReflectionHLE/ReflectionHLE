@@ -14,11 +14,11 @@
 
 #define PROJSIZE	0x2000
 
-boolean ProjectileTryMove (objtype *ob)
+id0_boolean_t ProjectileTryMove (objtype *ob)
 {
-	int			xl,yl,xh,yh,x,y;
+	id0_int_t			xl,yl,xh,yh,x,y;
 	objtype		*check;
-	long		deltax,deltay;
+	id0_long_t		deltax,deltay;
 
 	xl = (ob->x-PROJSIZE) >>TILESHIFT;
 	yl = (ob->y-PROJSIZE) >>TILESHIFT;
@@ -53,11 +53,11 @@ boolean ProjectileTryMove (objtype *ob)
 
 void T_Projectile (objtype *ob)
 {
-	long	deltax,deltay;
-	int		damage;
-	long	speed;
+	id0_long_t	deltax,deltay;
+	id0_int_t		damage;
+	id0_long_t	speed;
 
-	speed = (long)ob->speed*tics;
+	speed = (id0_long_t)ob->speed*tics;
 
 	deltax = FixedByFrac(speed,costable[ob->angle]);
 	deltay = -FixedByFrac(speed,sintable[ob->angle]);

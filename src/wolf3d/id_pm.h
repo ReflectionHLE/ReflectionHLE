@@ -34,30 +34,30 @@ typedef	enum
 
 typedef	struct
 		{
-			longword	offset;		// Offset of chunk into file
-			word		length;		// Length of the chunk
+			id0_longword_t	offset;		// Offset of chunk into file
+			id0_word_t		length;		// Length of the chunk
 
-			int			xmsPage;	// If in XMS, (xmsPage * PMPageSize) gives offset into XMS handle
+			id0_int_t			xmsPage;	// If in XMS, (xmsPage * PMPageSize) gives offset into XMS handle
 
 			PMLockType	locked;		// If set, this page can't be purged
-			int			emsPage;	// If in EMS, logical page/offset into page
-			int			mainPage;	// If in Main, index into handle array
+			id0_int_t			emsPage;	// If in EMS, logical page/offset into page
+			id0_int_t			mainPage;	// If in Main, index into handle array
 
-			longword	lastHit;	// Last frame number of hit
+			id0_longword_t	lastHit;	// Last frame number of hit
 		} PageListStruct;
 
 typedef	struct
 		{
-			int			baseEMSPage;	// Base EMS page for this phys frame
-			longword	lastHit;		// Last frame number of hit
+			id0_int_t			baseEMSPage;	// Base EMS page for this phys frame
+			id0_longword_t	lastHit;		// Last frame number of hit
 		} EMSListStruct;
 
-extern	boolean			XMSPresent,EMSPresent;
-extern	word			XMSPagesAvail,EMSPagesAvail;
+extern	id0_boolean_t			XMSPresent,EMSPresent;
+extern	id0_word_t			XMSPagesAvail,EMSPagesAvail;
 
-extern	word			ChunksInFile,
+extern	id0_word_t			ChunksInFile,
 						PMSpriteStart,PMSoundStart;
-extern	PageListStruct	far *PMPages;
+extern	PageListStruct	id0_far *PMPages;
 
 #define	PM_GetSoundPage(v)	PM_GetPage(PMSoundStart + (v))
 #define	PM_GetSpritePage(v)	PM_GetPage(PMSpriteStart + (v))
@@ -68,19 +68,19 @@ extern	PageListStruct	far *PMPages;
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-extern	char	PageFileName[13];
+extern	id0_char_t	PageFileName[13];
 #endif
 
 
 extern	void	PM_Startup(void),
 				PM_Shutdown(void),
 				PM_Reset(void),
-				PM_Preload(boolean (*update)(word current,word total)),
+				PM_Preload(id0_boolean_t (*update)(id0_word_t current,id0_word_t total)),
 				PM_NextFrame(void),
-				PM_SetPageLock(int pagenum,PMLockType lock),
-				PM_SetMainPurge(int level),
+				PM_SetPageLock(id0_int_t pagenum,PMLockType lock),
+				PM_SetMainPurge(id0_int_t level),
 				PM_CheckMainMem(void);
-extern	memptr	PM_GetPageAddress(int pagenum),
-				PM_GetPage(int pagenum);		// Use this one to cache page
+extern	memptr	PM_GetPageAddress(id0_int_t pagenum),
+				PM_GetPage(id0_int_t pagenum);		// Use this one to cache page
 
-void PM_SetMainMemPurge(int level);
+void PM_SetMainMemPurge(id0_int_t level);

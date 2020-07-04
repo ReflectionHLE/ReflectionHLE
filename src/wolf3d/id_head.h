@@ -51,7 +51,7 @@ typedef uint8_t id0_byte_t;
 
 typedef	struct
 		{
-			int	x,y;
+			id0_int_t	x,y;
 		} Point;
 
 typedef	struct
@@ -61,5 +61,5 @@ typedef	struct
 
 #define id0_far // REFKEEN - Use for documentation
 
-void	Quit (char *error);		// defined in user program
+void	Quit (id0_char_t *error);		// defined in user program
 

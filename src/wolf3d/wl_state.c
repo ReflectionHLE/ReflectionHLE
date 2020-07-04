@@ -39,18 +39,18 @@ dirtype diagonal[9][9] =
 
 
 
-void	SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state);
+void	SpawnNewObj (id0_unsigned_t tilex, id0_unsigned_t tiley, statetype *state);
 void	NewState (objtype *ob, statetype *state);
 
-boolean TryWalk (objtype *ob);
-void	MoveObj (objtype *ob, long move);
+id0_boolean_t TryWalk (objtype *ob);
+void	MoveObj (objtype *ob, id0_long_t move);
 
 void	KillActor (objtype *ob);
-void	DamageActor (objtype *ob, unsigned damage);
+void	DamageActor (objtype *ob, id0_unsigned_t damage);
 
-boolean CheckLine (objtype *ob);
+id0_boolean_t CheckLine (objtype *ob);
 void FirstSighting (objtype *ob);
-boolean	CheckSight (objtype *ob);
+id0_boolean_t	CheckSight (objtype *ob);
 
 /*
 =============================================================================
@@ -78,7 +78,7 @@ boolean	CheckSight (objtype *ob);
 ===================
 */
 
-void SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
+void SpawnNewObj (id0_unsigned_t tilex, id0_unsigned_t tiley, statetype *state)
 {
 	GetNewActor ();
 	new->state = state;
@@ -94,8 +94,8 @@ void SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
 
 	new->tilex = tilex;
 	new->tiley = tiley;
-	new->x = ((long)tilex<<TILESHIFT)+TILEGLOBAL/2;
-	new->y = ((long)tiley<<TILESHIFT)+TILEGLOBAL/2;
+	new->x = ((id0_long_t)tilex<<TILESHIFT)+TILEGLOBAL/2;
+	new->y = ((id0_long_t)tiley<<TILESHIFT)+TILEGLOBAL/2;
 	new->dir = nodir;
 
 	actorat[tilex][tiley] = new;
@@ -158,7 +158,7 @@ void NewState (objtype *ob, statetype *state)
 
 #define CHECKDIAG(x,y)								\
 {                                                   \
-	temp=(unsigned)actorat[x][y];                   \
+	temp=(id0_unsigned_t)actorat[x][y];                   \
 	if (temp)                                       \
 	{                                               \
 		if (temp<256)                               \
@@ -173,7 +173,7 @@ void NewState (objtype *ob, statetype *state)
 #ifdef GAMEVER_NOAH3D
 #define CHECKSIDE(x,y)								\
 {                                                   \
-	temp=(unsigned)actorat[x][y];                   \
+	temp=(id0_unsigned_t)actorat[x][y];                   \
 	if (temp)                                       \
 	{                                               \
 		if (temp<128)                               \
@@ -187,7 +187,7 @@ void NewState (objtype *ob, statetype *state)
 #else
 #define CHECKSIDE(x,y)								\
 {                                                   \
-	temp=(unsigned)actorat[x][y];                   \
+	temp=(id0_unsigned_t)actorat[x][y];                   \
 	if (temp)                                       \
 	{                                               \
 		if (temp<128)                               \
@@ -200,10 +200,10 @@ void NewState (objtype *ob, statetype *state)
 }
 #endif
 
-boolean TryWalk (objtype *ob)
+id0_boolean_t TryWalk (objtype *ob)
 {
-	int			doornum;
-	unsigned	temp;
+	id0_int_t			doornum;
+	id0_unsigned_t	temp;
 
 	doornum = -1;
 
@@ -403,8 +403,8 @@ boolean TryWalk (objtype *ob)
 
 void SelectDodgeDir (objtype *ob)
 {
-	int 		deltax,deltay,i;
-	unsigned	absdx,absdy;
+	id0_int_t 		deltax,deltay,i;
+	id0_unsigned_t	absdx,absdy;
 	dirtype 	dirtry[5];
 	dirtype 	turnaround,tdir;
 
@@ -527,7 +527,7 @@ void SelectDodgeDir (objtype *ob)
 
 void SelectChaseDir (objtype *ob)
 {
-	int deltax,deltay,i;
+	id0_int_t deltax,deltay,i;
 	dirtype d[3];
 	dirtype tdir, olddir, turnaround;
 
@@ -647,7 +647,7 @@ void SelectChaseDir (objtype *ob)
 
 void SelectRunDir (objtype *ob)
 {
-	int deltax,deltay,i;
+	id0_int_t deltax,deltay,i;
 	dirtype d[3];
 	dirtype tdir, olddir, turnaround;
 
@@ -720,9 +720,9 @@ void SelectRunDir (objtype *ob)
 =================
 */
 
-void MoveObj (objtype *ob, long move)
+void MoveObj (objtype *ob, id0_long_t move)
 {
-	long	deltax,deltay;
+	id0_long_t	deltax,deltay;
 
 	switch (ob->dir)
 	{
@@ -851,9 +851,9 @@ moveok:
 ===============
 */
 
-void DropItem (stat_t itemtype, int tilex, int tiley)
+void DropItem (stat_t itemtype, id0_int_t tilex, id0_int_t tiley)
 {
-	int	x,y,xl,xh,yl,yh;
+	id0_int_t	x,y,xl,xh,yl,yh;
 
 //
 // find a free spot to put it in
@@ -890,7 +890,7 @@ void DropItem (stat_t itemtype, int tilex, int tiley)
 
 void KillActor (objtype *ob)
 {
-	int	tilex,tiley;
+	id0_int_t	tilex,tiley;
 
 	tilex = ob->tilex = ob->x >> TILESHIFT;		// drop item on center
 	tiley = ob->tiley = ob->y >> TILESHIFT;
@@ -1088,7 +1088,7 @@ void KillActor (objtype *ob)
 ===================
 */
 
-void DamageActor (objtype *ob, unsigned damage)
+void DamageActor (objtype *ob, id0_unsigned_t damage)
 {
 	madenoise = true;
 
@@ -1198,28 +1198,28 @@ void DamageActor (objtype *ob, unsigned damage)
 =====================
 */
 
-boolean CheckLine (objtype *ob)
+id0_boolean_t CheckLine (objtype *ob)
 {
-	int	x1,y1,xt1,yt1,x2,y2,xt2,yt2;
-	int	x,y;
+	id0_int_t	x1,y1,xt1,yt1,x2,y2,xt2,yt2;
+	id0_int_t	x,y;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - v1.0 specific variables
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	int	xd1,xd2,yd1,yd2; // This should be the order
+	id0_int_t	xd1,xd2,yd1,yd2; // This should be the order
 #endif
-	int	xdist,ydist,xstep,ystep;
-	int	temp;
-	int	partial,delta;
+	id0_int_t	xdist,ydist,xstep,ystep;
+	id0_int_t	temp;
+	id0_int_t	partial,delta;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION *** - Don't define this in v1.0
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	long	ltemp;
+	id0_long_t	ltemp;
 #endif
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	unsigned	xfrac,yfrac,deltafrac;
+	id0_unsigned_t	xfrac,yfrac,deltafrac;
 #else
-	int	xfrac,yfrac,deltafrac;
+	id0_int_t	xfrac,yfrac,deltafrac;
 #endif
-	unsigned	value,intercept;
+	id0_unsigned_t	value,intercept;
 
 	x1 = ob->x >> UNSIGNEDSHIFT;		// 1/256 tile precision
 	y1 = ob->y >> UNSIGNEDSHIFT;
@@ -1274,8 +1274,8 @@ boolean CheckLine (objtype *ob)
 		// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		delta = yd2-yd1;
-		ystep = ((long)delta<<8)/deltafrac;
-		yfrac = yd1 + (((long)ystep*partial) >>8);
+		ystep = ((id0_long_t)delta<<8)/deltafrac;
+		yfrac = yd1 + (((id0_long_t)ystep*partial) >>8);
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (ystep < 0)
 		{
@@ -1286,14 +1286,14 @@ boolean CheckLine (objtype *ob)
 #else // GAMEVER_WOLFREV > GV_WR_WL1AP10
 		deltafrac = abs(x2-x1);
 		delta = y2-y1;
-		ltemp = ((long)delta<<8)/deltafrac;
+		ltemp = ((id0_long_t)delta<<8)/deltafrac;
 		if (ltemp > 0x7fffl)
 			ystep = 0x7fff;
 		else if (ltemp < -0x7fffl)
 			ystep = -0x7fff;
 		else
 			ystep = ltemp;
-		yfrac = y1 + (((long)ystep*partial) >>8);
+		yfrac = y1 + (((id0_long_t)ystep*partial) >>8);
 
 		x = xt1+xstep;
 		xt2 += xstep;
@@ -1310,10 +1310,10 @@ boolean CheckLine (objtype *ob)
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-			if (!(value = (unsigned)tilemap[x][y]))
+			if (!(value = (id0_unsigned_t)tilemap[x][y]))
 				continue;
 #else
-			value = (unsigned)tilemap[x][y];
+			value = (id0_unsigned_t)tilemap[x][y];
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 			value &= 0xFFDF;
@@ -1390,8 +1390,8 @@ boolean CheckLine (objtype *ob)
 		// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		delta = xd2-xd1;
-		xstep = ((long)delta<<8)/deltafrac;
-		xfrac = xd1 + (((long)xstep*partial) >>8);
+		xstep = ((id0_long_t)delta<<8)/deltafrac;
+		xfrac = xd1 + (((id0_long_t)xstep*partial) >>8);
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (xstep < 0)
 		{
@@ -1402,14 +1402,14 @@ boolean CheckLine (objtype *ob)
 #else // GAMEVER_WOLFREV > GV_WR_WL1AP10
 		deltafrac = abs(y2-y1);
 		delta = x2-x1;
-		ltemp = ((long)delta<<8)/deltafrac;
+		ltemp = ((id0_long_t)delta<<8)/deltafrac;
 		if (ltemp > 0x7fffl)
 			xstep = 0x7fff;
 		else if (ltemp < -0x7fffl)
 			xstep = -0x7fff;
 		else
 			xstep = ltemp;
-		xfrac = x1 + (((long)xstep*partial) >>8);
+		xfrac = x1 + (((id0_long_t)xstep*partial) >>8);
 
 		y = yt1 + ystep;
 		yt2 += ystep;
@@ -1426,10 +1426,10 @@ boolean CheckLine (objtype *ob)
 
 			// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-			if (!(value = (unsigned)tilemap[x][y]))
+			if (!(value = (id0_unsigned_t)tilemap[x][y]))
 				continue;
 #else
-			value = (unsigned)tilemap[x][y];
+			value = (id0_unsigned_t)tilemap[x][y];
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 			value &= 0xFFDF;
@@ -1486,9 +1486,9 @@ boolean CheckLine (objtype *ob)
 
 #define MINSIGHT	0x18000l
 
-boolean CheckSight (objtype *ob)
+id0_boolean_t CheckSight (objtype *ob)
 {
-	long		deltax,deltay;
+	id0_long_t		deltax,deltay;
 
 //
 // don't bother tracing a line if the area isn't connected to the player's
@@ -1783,7 +1783,7 @@ void FirstSighting (objtype *ob)
 ===============
 */
 
-boolean SightPlayer (objtype *ob)
+id0_boolean_t SightPlayer (objtype *ob)
 {
 	if (ob->flags & FL_ATTACKMODE)
 		Quit ("An actor in ATTACKMODE called SightPlayer!");

@@ -4,7 +4,7 @@
 
 #define MS_Quit	Quit
 
-void Quit (char *error);
+void Quit (id0_char_t *error);
 
 //===========================================================================
 
@@ -81,21 +81,21 @@ void Quit (char *error);
 
 //===========================================================================
 
-extern	unsigned	bufferofs;			// all drawing is reletive to this
-extern	unsigned	displayofs,pelpan;	// last setscreen coordinates
+extern	id0_unsigned_t	bufferofs;			// all drawing is reletive to this
+extern	id0_unsigned_t	displayofs,pelpan;	// last setscreen coordinates
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-extern	boolean		VGAMode;
+extern	id0_boolean_t		VGAMode;
 #endif
 
-extern	unsigned	screenseg;			// set to 0xa000 for asm convenience
+extern	id0_unsigned_t	screenseg;			// set to 0xa000 for asm convenience
 
-extern	unsigned	linewidth;
-extern	unsigned	ylookup[MAXSCANLINES];
+extern	id0_unsigned_t	linewidth;
+extern	id0_unsigned_t	ylookup[MAXSCANLINES];
 
-extern	boolean		screenfaded;
-extern	unsigned	bordercolor;
+extern	id0_boolean_t		screenfaded;
+extern	id0_unsigned_t	bordercolor;
 
 //===========================================================================
 
@@ -131,52 +131,52 @@ void VL_SetVGAPlane (void);
 void VL_SetTextMode (void);
 void VL_DePlaneVGA (void);
 void VL_SetVGAPlaneMode (void);
-void VL_ClearVideo (byte color);
+void VL_ClearVideo (id0_byte_t color);
 
-void VL_SetLineWidth (unsigned width);
-void VL_SetSplitScreen (int linenum);
+void VL_SetLineWidth (id0_unsigned_t width);
+void VL_SetSplitScreen (id0_int_t linenum);
 
-void VL_WaitVBL (int vbls);
-void VL_CrtcStart (int crtc);
-void VL_SetScreen (int crtc, int pelpan);
+void VL_WaitVBL (id0_int_t vbls);
+void VL_CrtcStart (id0_int_t crtc);
+void VL_SetScreen (id0_int_t crtc, id0_int_t pelpan);
 
-void VL_FillPalette (int red, int green, int blue);
-void VL_SetColor	(int color, int red, int green, int blue);
-void VL_GetColor	(int color, int *red, int *green, int *blue);
-void VL_SetPalette (byte far *palette);
-void VL_GetPalette (byte far *palette);
-void VL_FadeOut (int start, int end, int red, int green, int blue, int steps);
-void VL_FadeIn (int start, int end, byte far *palette, int steps);
-void VL_ColorBorder (int color);
+void VL_FillPalette (id0_int_t red, id0_int_t green, id0_int_t blue);
+void VL_SetColor	(id0_int_t color, id0_int_t red, id0_int_t green, id0_int_t blue);
+void VL_GetColor	(id0_int_t color, id0_int_t *red, id0_int_t *green, id0_int_t *blue);
+void VL_SetPalette (id0_byte_t id0_far *palette);
+void VL_GetPalette (id0_byte_t id0_far *palette);
+void VL_FadeOut (id0_int_t start, id0_int_t end, id0_int_t red, id0_int_t green, id0_int_t blue, id0_int_t steps);
+void VL_FadeIn (id0_int_t start, id0_int_t end, id0_byte_t id0_far *palette, id0_int_t steps);
+void VL_ColorBorder (id0_int_t color);
 
-void VL_Plot (int x, int y, int color);
+void VL_Plot (id0_int_t x, id0_int_t y, id0_int_t color);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-void VL_Hlin (int x, int y, int width, int color);
+void VL_Hlin (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t color);
 #else
-void VL_Hlin (unsigned x, unsigned y, unsigned width, unsigned color);
+void VL_Hlin (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsigned_t color);
 #endif
-void VL_Vlin (int x, int y, int height, int color);
-void VL_Bar (int x, int y, int width, int height, int color);
+void VL_Vlin (id0_int_t x, id0_int_t y, id0_int_t height, id0_int_t color);
+void VL_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_int_t color);
 
-void VL_MungePic (byte far *source, unsigned width, unsigned height);
-void VL_DrawPicBare (int x, int y, byte far *pic, int width, int height);
-void VL_MemToLatch (byte far *source, int width, int height, unsigned dest);
-void VL_ScreenToScreen (unsigned source, unsigned dest,int width, int height);
-void VL_MemToScreen (byte far *source, int width, int height, int x, int y);
-void VL_MaskedToScreen (byte far *source, int width, int height, int x, int y);
+void VL_MungePic (id0_byte_t id0_far *source, id0_unsigned_t width, id0_unsigned_t height);
+void VL_DrawPicBare (id0_int_t x, id0_int_t y, id0_byte_t id0_far *pic, id0_int_t width, id0_int_t height);
+void VL_MemToLatch (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_unsigned_t dest);
+void VL_ScreenToScreen (id0_unsigned_t source, id0_unsigned_t dest,id0_int_t width, id0_int_t height);
+void VL_MemToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y);
+void VL_MaskedToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y);
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void VL_LatchToScreen (unsigned source, int width, int height, int x, int y);
-void FillCharAttr (byte c, byte attr, int count);
+void VL_LatchToScreen (id0_unsigned_t source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y);
+void FillCharAttr (id0_byte_t c, id0_byte_t attr, id0_int_t count);
 #else
-void VL_DrawTile8String (char *str, char far *tile8ptr, int printx, int printy);
-void VL_DrawLatch8String (char *str, unsigned tile8ptr, int printx, int printy);
-void VL_SizeTile8String (char *str, int *width, int *height);
+void VL_DrawTile8String (id0_char_t *str, id0_char_t id0_far *tile8ptr, id0_int_t printx, id0_int_t printy);
+void VL_DrawLatch8String (id0_char_t *str, id0_unsigned_t tile8ptr, id0_int_t printx, id0_int_t printy);
+void VL_SizeTile8String (id0_char_t *str, id0_int_t *width, id0_int_t *height);
 #endif
-void VL_DrawPropString (char *str, unsigned tile8ptr, int printx, int printy);
-void VL_SizePropString (char *str, int *width, int *height, char far *font);
+void VL_DrawPropString (id0_char_t *str, id0_unsigned_t tile8ptr, id0_int_t printx, id0_int_t printy);
+void VL_SizePropString (id0_char_t *str, id0_int_t *width, id0_int_t *height, id0_char_t id0_far *font);
 
 void VL_TestPaletteSet (void);
 

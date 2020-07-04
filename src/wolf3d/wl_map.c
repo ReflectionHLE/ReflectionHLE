@@ -3,9 +3,9 @@
 #include "wl_def.h"
 #pragma hdrstop
 
-static void DrawMapWalls (int tx, int ty)
+static void DrawMapWalls (id0_int_t tx, id0_int_t ty)
 {
-	int	x,y,tile;
+	id0_int_t	x,y,tile;
 
 	for (y=ty;y<ty+20;y++)
 		for (x=tx;x<tx+40;x++)
@@ -33,9 +33,9 @@ static void DrawMapWalls (int tx, int ty)
 		}
 }
 
-static void DrawMapPrizes (int tx, int ty)
+static void DrawMapPrizes (id0_int_t tx, id0_int_t ty)
 {
-	int	x,y,tile;
+	id0_int_t	x,y,tile;
 	statobj_t	*statptr;
 
 	for (statptr = &statobjlist[0] ; statptr !=laststatobj ; statptr++)
@@ -99,10 +99,10 @@ static void DrawMapPrizes (int tx, int ty)
 	}
 }
 
-static void DrawAutoMap (int tx, int ty)
+static void DrawAutoMap (id0_int_t tx, id0_int_t ty)
 {
-	int	px,py;
-	int	dir;
+	id0_int_t	px,py;
+	id0_int_t	dir;
 
 	DrawMapWalls (tx,ty);
 	if (gamestate.automap)
@@ -140,8 +140,8 @@ static void DrawAutoMap (int tx, int ty)
 
 void AutoMap (void)
 {
-	int	x,y;
-	boolean		done;
+	id0_int_t	x,y;
+	id0_boolean_t		done;
 
 	x = player->tilex - 20;
 	if (x < 0)

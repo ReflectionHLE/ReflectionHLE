@@ -35,17 +35,17 @@
 // *** ALPHA RESTORATION ***
 // Need to define this (and declare in header) for recreation of memory layout
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-boolean		someUnusedAgentVar;
+id0_boolean_t		someUnusedAgentVar;
 #endif
-boolean		running;
-long		thrustspeed;
+id0_boolean_t		running;
+id0_long_t		thrustspeed;
 
-unsigned	plux,pluy;			// player coordinates scaled to unsigned
+id0_unsigned_t	plux,pluy;			// player coordinates scaled to id0_unsigned_t
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-int			anglefrac;
-int			gotgatgun;	// JR
+id0_int_t			anglefrac;
+id0_int_t			gotgatgun;	// JR
 #endif
 
 // *** ALPHA RESTORATION ***
@@ -69,12 +69,12 @@ statetype s_player = {false,0,0,T_Player,NULL,NULL};
 statetype s_attack = {false,0,0,T_Attack,NULL,NULL};
 
 
-long	playerxmove,playerymove;
+id0_long_t	playerxmove,playerymove;
 
 // *** S3DNA RESTORATION ***
 struct atkinf
 {
-	char	tics,attack,frame;		// attack is 1 for gun, 2 for knife
+	id0_char_t	tics,attack,frame;		// attack is 1 for gun, 2 for knife
 }
 #ifdef GAMEVER_NOAH3D
 attackinfo[6][14] =
@@ -100,20 +100,20 @@ attackinfo[4][14] =
 };
 
 
-int	strafeangle[9] = {0,90,180,270,45,135,225,315,0};
+id0_int_t	strafeangle[9] = {0,90,180,270,45,135,225,315,0};
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-int	MapEpisode[]   = {1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,5,6,6,6,6,6,6,6,7};
-int	MapLevel[] = {1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1};
+id0_int_t	MapEpisode[]   = {1,1,1,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,5,5,5,6,6,6,6,6,6,6,7};
+id0_int_t	MapLevel[] = {1,2,3,1,2,3,4,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,6,1,2,3,4,5,6,7,1};
 #endif
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 void DrawWeapon (void);
 #endif
-void GiveWeapon (int weapon);
-void	GiveAmmo (int ammo);
+void GiveWeapon (id0_int_t weapon);
+void	GiveAmmo (id0_int_t ammo);
 
 //===========================================================================
 
@@ -127,10 +127,10 @@ void SelectItem (void);
 
 //----------
 
-boolean TryMove (objtype *ob);
+id0_boolean_t TryMove (objtype *ob);
 void T_Player (objtype *ob);
 
-void ClipMove (objtype *ob, long xmove, long ymove);
+void ClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove);
 
 /*
 =============================================================================
@@ -152,7 +152,7 @@ void ClipMove (objtype *ob, long xmove, long ymove);
 
 void CheckWeaponChange (void)
 {
-	int	i,buttons;
+	id0_int_t	i,buttons;
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
@@ -233,10 +233,10 @@ void CheckWeaponChange (void)
 
 void ControlMovement (objtype *ob)
 {
-	long	oldx,oldy;
-	int		angle,maxxmove;
-	int		angleunits;
-	long	speed;
+	id0_long_t	oldx,oldy;
+	id0_int_t		angle,maxxmove;
+	id0_int_t		angleunits;
+	id0_long_t	speed;
 
 	thrustspeed = 0;
 
@@ -342,9 +342,9 @@ void ControlMovement (objtype *ob)
 ==================
 */
 
-void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
+void StatusDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum)
 {
-	unsigned	temp;
+	id0_unsigned_t	temp;
 
 	temp = bufferofs;
 	bufferofs = 0;
@@ -363,7 +363,7 @@ void StatusDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void	LatchNumber (int x, int y, int width, long number);
+void	LatchNumber (id0_int_t x, id0_int_t y, id0_int_t width, id0_long_t number);
 
 void DrawTreasure ()
 {
@@ -383,7 +383,7 @@ void DrawFace (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	unsigned	temp;
+	id0_unsigned_t	temp;
 
 	temp = bufferofs;
 	bufferofs = 0;
@@ -442,9 +442,9 @@ void DrawFace (void)
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-static	int	facecount;
+static	id0_int_t	facecount;
 #else
-int	facecount;
+id0_int_t	facecount;
 #endif
 
 void	UpdateFace (void)
@@ -484,15 +484,15 @@ void	UpdateFace (void)
 ===============
 */
 
-void	LatchNumber (int x, int y, int width, long number)
+void	LatchNumber (id0_int_t x, id0_int_t y, id0_int_t width, id0_long_t number)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	unsigned	temp;
+	id0_unsigned_t	temp;
 
 #endif
-	unsigned	length,c;
-	char	str[20];
+	id0_unsigned_t	length,c;
+	id0_char_t	str[20];
 
 	ltoa (number,str,10);
 
@@ -558,7 +558,7 @@ void	DrawHealth (void)
 ===============
 */
 
-void	TakeDamage (int points,objtype *attacker)
+void	TakeDamage (id0_int_t points,objtype *attacker)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -634,7 +634,7 @@ void	TakeDamage (int points,objtype *attacker)
 ===============
 */
 
-void	HealSelf (int points)
+void	HealSelf (id0_int_t points)
 {
 	gamestate.health += points;
 	if (gamestate.health>100)
@@ -664,7 +664,7 @@ void	DrawLevel (void)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	int 	level,episode;
+	id0_int_t 	level,episode;
 
 	if (gamestate.mapon >= 31)
 		Quit ("DrawLevel(): Bad level number!\n");
@@ -756,9 +756,9 @@ void	DrawScore (void)
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-void	GivePoints (int points)
+void	GivePoints (id0_int_t points)
 #else
-void	GivePoints (long points)
+void	GivePoints (id0_long_t points)
 #endif
 {
 	gamestate.score += points;
@@ -791,7 +791,7 @@ void DrawWeapon (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	unsigned	temp;
+	id0_unsigned_t	temp;
 
 	temp = bufferofs;
 	bufferofs = 0;
@@ -817,7 +817,7 @@ void DrawKeys (void)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	unsigned	temp;
+	id0_unsigned_t	temp;
 
 	temp = bufferofs;
 	bufferofs = 0;
@@ -862,7 +862,7 @@ void DrawKeys (void)
 ==================
 */
 
-void GiveTreasure (int treasure)
+void GiveTreasure (id0_int_t treasure)
 {
 	gamestate.treasure += treasure;
 	while (gamestate.treasure >= 50)
@@ -885,7 +885,7 @@ void GiveTreasure (int treasure)
 ==================
 */
 
-void GiveWeapon (int weapon)
+void GiveWeapon (id0_int_t weapon)
 {
 	GiveAmmo (6);
 
@@ -916,7 +916,7 @@ void	DrawAmmo (void)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	int ammo;
+	id0_int_t ammo;
 	switch (gamestate.weapon)
 	{
 	case wp_pistol:
@@ -949,7 +949,7 @@ void	DrawAmmo (void)
 ===============
 */
 
-void	GiveAmmo (int ammo)
+void	GiveAmmo (id0_int_t ammo)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -986,7 +986,7 @@ void	GiveAmmo (int ammo)
 ===============
 */
 
-void	GiveGas (int ammo)
+void	GiveGas (id0_int_t ammo)
 {
 	gamestate.gas += ammo;
 	if (gamestate.gas > 99)
@@ -1014,7 +1014,7 @@ void	GiveGas (int ammo)
 ===============
 */
 
-void	GiveMissile (int ammo)
+void	GiveMissile (id0_int_t ammo)
 {
 	gamestate.missiles += ammo;
 	if (gamestate.missiles > 99)
@@ -1044,7 +1044,7 @@ void	GiveMissile (int ammo)
 ==================
 */
 
-void GiveKey (int key)
+void GiveKey (id0_int_t key)
 {
 	gamestate.keys |= (1<<key);
 	DrawKeys ();
@@ -1072,7 +1072,7 @@ void GetBonus (statobj_t *check)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	unsigned	temp;
+	id0_unsigned_t	temp;
 #endif
 	switch (check->itemnumber)
 	{
@@ -1417,11 +1417,11 @@ void GetBonus (statobj_t *check)
 ===================
 */
 
-boolean TryMove (objtype *ob)
+id0_boolean_t TryMove (objtype *ob)
 {
-	int			xl,yl,xh,yh,x,y;
+	id0_int_t			xl,yl,xh,yh,x,y;
 	objtype		*check;
-	long		deltax,deltay;
+	id0_long_t		deltax,deltay;
 
 	xl = (ob->x-PLAYERSIZE) >>TILESHIFT;
 	yl = (ob->y-PLAYERSIZE) >>TILESHIFT;
@@ -1482,9 +1482,9 @@ boolean TryMove (objtype *ob)
 ===================
 */
 
-void ClipMove (objtype *ob, long xmove, long ymove)
+void ClipMove (objtype *ob, id0_long_t xmove, id0_long_t ymove)
 {
-	long	basex,basey;
+	id0_long_t	basex,basey;
 
 	basex = ob->x;
 	basey = ob->y;
@@ -1495,8 +1495,8 @@ void ClipMove (objtype *ob, long xmove, long ymove)
 		return;
 
 	if (noclip && ob->x > 2*TILEGLOBAL && ob->y > 2*TILEGLOBAL &&
-	ob->x < (((long)(mapwidth-1))<<TILESHIFT)
-	&& ob->y < (((long)(mapheight-1))<<TILESHIFT) )
+	ob->x < (((id0_long_t)(mapwidth-1))<<TILESHIFT)
+	&& ob->y < (((id0_long_t)(mapheight-1))<<TILESHIFT) )
 		return;		// walk through walls
 
 	// *** S3DNA RESTORATION ***
@@ -1552,11 +1552,11 @@ void VictoryTile (void)
 ===================
 */
 
-void Thrust (int angle, long speed)
+void Thrust (id0_int_t angle, id0_long_t speed)
 {
-	long xmove,ymove;
-	long	slowmax;
-	unsigned	offset;
+	id0_long_t xmove,ymove;
+	id0_long_t	slowmax;
+	id0_unsigned_t	offset;
 
 
 	//
@@ -1582,7 +1582,7 @@ void Thrust (int angle, long speed)
 	// *** ALPHA RESTORATION ***
 	// Similar to code from T_Attack and T_Player
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in unsigned
+	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in id0_unsigned_t
 	pluy = player->y >> UNSIGNEDSHIFT;
 #endif
 	player->tilex = player->x >> TILESHIFT;		// scale to tile values
@@ -1651,12 +1651,12 @@ void Cmd_Use (void)
 	objtype 	*check;
 	// *** S3DNA + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	int			checkx,checky,doornum;
+	id0_int_t			checkx,checky,doornum;
 #else
-	int			checkx,checky,doornum,dir;
+	id0_int_t			checkx,checky,doornum,dir;
 #endif
 #ifndef GAMEVER_NOAH3D
-	boolean		elevatorok;
+	id0_boolean_t		elevatorok;
 #endif
 
 
@@ -1816,7 +1816,7 @@ void Cmd_Use (void)
 ===============
 */
 
-void SpawnPlayer (int tilex, int tiley, int dir)
+void SpawnPlayer (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 {
 	player->obclass = playerobj;
 	player->active = true;
@@ -1824,8 +1824,8 @@ void SpawnPlayer (int tilex, int tiley, int dir)
 	player->tiley = tiley;
 	player->areanumber =
 		*(mapsegs[0] + farmapylookup[player->tiley]+player->tilex);
-	player->x = ((long)tilex<<TILESHIFT)+TILEGLOBAL/2;
-	player->y = ((long)tiley<<TILESHIFT)+TILEGLOBAL/2;
+	player->x = ((id0_long_t)tilex<<TILESHIFT)+TILEGLOBAL/2;
+	player->y = ((id0_long_t)tiley<<TILESHIFT)+TILEGLOBAL/2;
 	player->state = &s_player;
 	player->angle = (1-dir)*90;
 	if (player->angle<0)
@@ -1855,7 +1855,7 @@ void SpawnPlayer (int tilex, int tiley, int dir)
 void	KnifeAttack (objtype *ob)
 {
 	objtype *check,*closest;
-	long	dist;
+	id0_long_t	dist;
 
 	SD_PlaySound (ATKKNIFESND);
 // actually fire
@@ -1895,9 +1895,9 @@ void	KnifeAttack (objtype *ob)
 void	GunAttack (objtype *ob)
 {
 	objtype *check,*closest,*oldclosest;
-	int		damage;
-	int		dx,dy,dist;
-	long	viewdist;
+	id0_int_t		damage;
+	id0_int_t		dx,dy,dist;
+	id0_long_t	viewdist;
 
 	switch (gamestate.weapon)
 	{
@@ -1986,7 +1986,7 @@ void	GunAttack (objtype *ob)
 #ifdef GAMEVER_NOAH3D
 void FlameAttack (objtype *ob)
 {
-	int x, y;
+	id0_int_t x, y;
 
 	SD_PlaySound (D_COCTHRSND);
 	madenoise = true;
@@ -2015,7 +2015,7 @@ void FlameAttack (objtype *ob)
 #ifdef GAMEVER_NOAH3D
 void MissileAttack (objtype *ob)
 {
-	int x, y;
+	id0_int_t x, y;
 
 	SD_PlaySound (D_WATTHRSND);
 	madenoise = true;
@@ -2054,7 +2054,7 @@ void MissileAttack (objtype *ob)
 
 void VictorySpin (void)
 {
-	long	desty;
+	id0_long_t	desty;
 
 	if (player->angle > 270)
 	{
@@ -2069,7 +2069,7 @@ void VictorySpin (void)
 			player->angle = 270;
 	}
 
-	desty = (((long)player->tiley-5)<<TILESHIFT)-0x3000;
+	desty = (((id0_long_t)player->tiley-5)<<TILESHIFT)-0x3000;
 
 	if (player->y > desty)
 	{
@@ -2121,7 +2121,7 @@ void	T_Attack (objtype *ob)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in unsigned
+	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in id0_unsigned_t
 	pluy = player->y >> UNSIGNEDSHIFT;
 	player->tilex = player->x >> TILESHIFT;		// scale to tile values
 	player->tiley = player->y >> TILESHIFT;
@@ -2289,7 +2289,7 @@ void	T_Player (objtype *ob)
 		return;
 
 
-	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in unsigned
+	plux = player->x >> UNSIGNEDSHIFT;			// scale to fit in id0_unsigned_t
 	pluy = player->y >> UNSIGNEDSHIFT;
 	player->tilex = player->x >> TILESHIFT;		// scale to tile values
 	player->tiley = player->y >> TILESHIFT;

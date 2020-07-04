@@ -40,55 +40,55 @@
 =============================================================================
 */
 
-char            str[80],str2[20];
+id0_char_t            str[80],str2[20];
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-unsigned				tedlevelnum;
+id0_unsigned_t				tedlevelnum;
 #else
-int				tedlevelnum;
+id0_int_t				tedlevelnum;
 #endif
-boolean         tedlevel;
-boolean         nospr;
+id0_boolean_t         tedlevel;
+id0_boolean_t         nospr;
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-boolean		noquestions, nofloors;
-char		logon[] = "SUPER 3D NOAH'S ARK (v1.0)";
+id0_boolean_t		noquestions, nofloors;
+id0_char_t		logon[] = "SUPER 3D NOAH'S ARK (v1.0)";
 #endif
-boolean         IsA386;
-int                     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
+id0_boolean_t         IsA386;
+id0_int_t                     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
 	5*ANGLES/8,6*ANGLES/8,7*ANGLES/8,ANGLES};
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-int	questionnum = 0;
+id0_int_t	questionnum = 0;
 #endif
 
 //
 // proejection variables
 //
 fixed           focallength;
-unsigned        screenofs;
-int             viewwidth;
-int             viewheight;
-int             centerx;
-int             shootdelta;                     // pixels away from centerx a target can be
+id0_unsigned_t        screenofs;
+id0_int_t             viewwidth;
+id0_int_t             viewheight;
+id0_int_t             centerx;
+id0_int_t             shootdelta;                     // pixels away from centerx a target can be
 fixed           scale,maxslope;
-long            heightnumerator;
-int                     minheightdiv;
+id0_long_t            heightnumerator;
+id0_int_t                     minheightdiv;
 
 
-void            Quit (char *error);
+void            Quit (id0_char_t *error);
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-boolean         startgame,loadedgame
+id0_boolean_t         startgame,loadedgame
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 		,virtualreality
 #endif
 		;
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-int             mouseadjustment;
+id0_int_t             mouseadjustment;
 
-char	configname[13]="CONFIG.";
+id0_char_t	configname[13]="CONFIG.";
 #endif
 
 
@@ -320,13 +320,13 @@ void WriteConfig(void)
 ========================
 */
 
-char    *JHParmStrings[] = {"no386",nil};
+id0_char_t    *JHParmStrings[] = {"no386",nil};
 void Patch386 (void)
 {
-extern void far jabhack2(void);
-extern int far  CheckIs386(void);
+extern void id0_far jabhack2(void);
+extern id0_int_t id0_far  CheckIs386(void);
 
-	int     i;
+	id0_int_t     i;
 
 	for (i = 1;i < _argc;i++)
 		if (US_CheckParm(_argv[i],JHParmStrings) == 0)
@@ -358,9 +358,9 @@ extern int far  CheckIs386(void);
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-void NewGame (int difficulty)
+void NewGame (id0_int_t difficulty)
 #else
-void NewGame (int difficulty,int episode)
+void NewGame (id0_int_t difficulty,id0_int_t episode)
 #endif
 {
 	// *** S3DNA RESTORATION ***
@@ -394,9 +394,9 @@ void NewGame (int difficulty,int episode)
 
 //===========================================================================
 
-void DiskFlopAnim(int x,int y)
+void DiskFlopAnim(id0_int_t x,id0_int_t y)
 {
- static char which=0;
+ static id0_char_t which=0;
  // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
  if (!x && !y)
@@ -417,9 +417,9 @@ void DiskFlopAnim(int x,int y)
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 // This isn't found in the v1.0 EXE
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-long DoChecksum(byte far *source,unsigned size,long checksum)
+id0_long_t DoChecksum(id0_byte_t id0_far *source,id0_unsigned_t size,id0_long_t checksum)
 {
- unsigned i;
+ id0_unsigned_t i;
 
  for (i=0;i<size-1;i++)
    checksum += source[i]^source[i+1];
@@ -437,14 +437,14 @@ long DoChecksum(byte far *source,unsigned size,long checksum)
 ==================
 */
 
-boolean SaveTheGame(BE_FILE_T file,int x,int y)
+id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming and free size verifications, plus a bit more
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	struct diskfree_t dfree;
-	long avail,size,checksum;
+	id0_long_t avail,size,checksum;
 #endif
 	objtype *ob,nullobj;
 
@@ -453,7 +453,7 @@ boolean SaveTheGame(BE_FILE_T file,int x,int y)
 	if (_dos_getdiskfree(0,&dfree))
 	  Quit("Error in _dos_getdiskfree call");
 
-	avail = (long)dfree.avail_clusters *
+	avail = (id0_long_t)dfree.avail_clusters *
 			dfree.bytes_per_sector *
 			dfree.sectors_per_cluster;
 
@@ -492,9 +492,9 @@ boolean SaveTheGame(BE_FILE_T file,int x,int y)
 
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void far *)&gamestate,sizeof(gamestate));
+	CA_FarWrite (file,(void id0_far *)&gamestate,sizeof(gamestate));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&gamestate,sizeof(gamestate),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&gamestate,sizeof(gamestate),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
@@ -503,95 +503,95 @@ boolean SaveTheGame(BE_FILE_T file,int x,int y)
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 #if (defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 //#ifdef SPEAR
-	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
-	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
+	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*20);
+	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
 #elif (defined GAMEVER_NOAH3D)
-	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*30);
-	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
+	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*30);
+	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
 #else
-	CA_FarWrite (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*8);
-	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
+	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*8);
+	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 #endif
-	CA_FarWrite (file,(void far *)tilemap,sizeof(tilemap));
+	CA_FarWrite (file,(void id0_far *)tilemap,sizeof(tilemap));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)tilemap,sizeof(tilemap),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)tilemap,sizeof(tilemap),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void far *)actorat,sizeof(actorat));
+	CA_FarWrite (file,(void id0_far *)actorat,sizeof(actorat));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)actorat,sizeof(actorat),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)actorat,sizeof(actorat),checksum);
 #endif
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarWrite (file,(void far *)areaconnect,sizeof(areaconnect));
-	CA_FarWrite (file,(void far *)areabyplayer,sizeof(areabyplayer));
+	CA_FarWrite (file,(void id0_far *)areaconnect,sizeof(areaconnect));
+	CA_FarWrite (file,(void id0_far *)areabyplayer,sizeof(areabyplayer));
 #endif
 
 	for (ob = player ; ob ; ob=ob->next)
 	{
 	 DiskFlopAnim(x,y);
-	 CA_FarWrite (file,(void far *)ob,sizeof(*ob));
+	 CA_FarWrite (file,(void id0_far *)ob,sizeof(*ob));
 	}
 	nullobj.active = ac_badobject;          // end of file marker
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void far *)&nullobj,sizeof(nullobj));
+	CA_FarWrite (file,(void id0_far *)&nullobj,sizeof(nullobj));
 
 
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void far *)&laststatobj,sizeof(laststatobj));
+	CA_FarWrite (file,(void id0_far *)&laststatobj,sizeof(laststatobj));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&laststatobj,sizeof(laststatobj),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&laststatobj,sizeof(laststatobj),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void far *)statobjlist,sizeof(statobjlist));
+	CA_FarWrite (file,(void id0_far *)statobjlist,sizeof(statobjlist));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)statobjlist,sizeof(statobjlist),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)statobjlist,sizeof(statobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void far *)doorposition,sizeof(doorposition));
+	CA_FarWrite (file,(void id0_far *)doorposition,sizeof(doorposition));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)doorposition,sizeof(doorposition),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)doorposition,sizeof(doorposition),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void far *)doorobjlist,sizeof(doorobjlist));
+	CA_FarWrite (file,(void id0_far *)doorobjlist,sizeof(doorobjlist));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)doorobjlist,sizeof(doorobjlist),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)doorobjlist,sizeof(doorobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	CA_FarWrite (file,(void far *)&pwallstate,sizeof(pwallstate));
+	CA_FarWrite (file,(void id0_far *)&pwallstate,sizeof(pwallstate));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwallstate,sizeof(pwallstate),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwallstate,sizeof(pwallstate),checksum);
 #endif
-	CA_FarWrite (file,(void far *)&pwallx,sizeof(pwallx));
+	CA_FarWrite (file,(void id0_far *)&pwallx,sizeof(pwallx));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwallx,sizeof(pwallx),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwallx,sizeof(pwallx),checksum);
 #endif
-	CA_FarWrite (file,(void far *)&pwally,sizeof(pwally));
+	CA_FarWrite (file,(void id0_far *)&pwally,sizeof(pwally));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwally,sizeof(pwally),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwally,sizeof(pwally),checksum);
 #endif
-	CA_FarWrite (file,(void far *)&pwalldir,sizeof(pwalldir));
+	CA_FarWrite (file,(void id0_far *)&pwalldir,sizeof(pwalldir));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwalldir,sizeof(pwalldir),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwalldir,sizeof(pwalldir),checksum);
 #endif
-	CA_FarWrite (file,(void far *)&pwallpos,sizeof(pwallpos));
+	CA_FarWrite (file,(void id0_far *)&pwallpos,sizeof(pwallpos));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwallpos,sizeof(pwallpos),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwallpos,sizeof(pwallpos),checksum);
 #endif
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	//
 	// WRITE OUT CHECKSUM
 	//
-	CA_FarWrite (file,(void far *)&checksum,sizeof(checksum));
+	CA_FarWrite (file,(void id0_far *)&checksum,sizeof(checksum));
 #endif
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
@@ -608,13 +608,13 @@ boolean SaveTheGame(BE_FILE_T file,int x,int y)
 ==================
 */
 
-boolean LoadTheGame(BE_FILE_T file,int x,int y)
+id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 {
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming, plus a bit more
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	long checksum,oldchecksum;
+	id0_long_t checksum,oldchecksum;
 #endif
 	objtype *ob,nullobj;
 
@@ -624,9 +624,9 @@ boolean LoadTheGame(BE_FILE_T file,int x,int y)
 #endif
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void far *)&gamestate,sizeof(gamestate));
+	CA_FarRead (file,(void id0_far *)&gamestate,sizeof(gamestate));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&gamestate,sizeof(gamestate),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&gamestate,sizeof(gamestate),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
@@ -635,14 +635,14 @@ boolean LoadTheGame(BE_FILE_T file,int x,int y)
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 #if (defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 //#ifdef SPEAR
-	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*20);
-	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
+	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*20);
+	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
 #elif (defined GAMEVER_NOAH3D)
-	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*30);
-	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
+	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*30);
+	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
 #else
-	CA_FarRead (file,(void far *)&LevelRatios[0],sizeof(LRstruct)*8);
-	checksum = DoChecksum((byte far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
+	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*8);
+	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
 #endif
 
 	DiskFlopAnim(x,y);
@@ -650,31 +650,31 @@ boolean LoadTheGame(BE_FILE_T file,int x,int y)
 	SetupGameLevel ();
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void far *)tilemap,sizeof(tilemap));
+	CA_FarRead (file,(void id0_far *)tilemap,sizeof(tilemap));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)tilemap,sizeof(tilemap),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)tilemap,sizeof(tilemap),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void far *)actorat,sizeof(actorat));
+	CA_FarRead (file,(void id0_far *)actorat,sizeof(actorat));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)actorat,sizeof(actorat),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)actorat,sizeof(actorat),checksum);
 #endif
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarRead (file,(void far *)areaconnect,sizeof(areaconnect));
-	CA_FarRead (file,(void far *)areabyplayer,sizeof(areabyplayer));
+	CA_FarRead (file,(void id0_far *)areaconnect,sizeof(areaconnect));
+	CA_FarRead (file,(void id0_far *)areabyplayer,sizeof(areabyplayer));
 #endif
 
 
 
 	InitActorList ();
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void far *)player,sizeof(*player));
+	CA_FarRead (file,(void id0_far *)player,sizeof(*player));
 
 	while (1)
 	{
 	 DiskFlopAnim(x,y);
-		CA_FarRead (file,(void far *)&nullobj,sizeof(nullobj));
+		CA_FarRead (file,(void id0_far *)&nullobj,sizeof(nullobj));
 		if (nullobj.active == ac_badobject)
 			break;
 		GetNewActor ();
@@ -690,53 +690,53 @@ boolean LoadTheGame(BE_FILE_T file,int x,int y)
 
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void far *)&laststatobj,sizeof(laststatobj));
+	CA_FarRead (file,(void id0_far *)&laststatobj,sizeof(laststatobj));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&laststatobj,sizeof(laststatobj),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&laststatobj,sizeof(laststatobj),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void far *)statobjlist,sizeof(statobjlist));
+	CA_FarRead (file,(void id0_far *)statobjlist,sizeof(statobjlist));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)statobjlist,sizeof(statobjlist),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)statobjlist,sizeof(statobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void far *)doorposition,sizeof(doorposition));
+	CA_FarRead (file,(void id0_far *)doorposition,sizeof(doorposition));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)doorposition,sizeof(doorposition),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)doorposition,sizeof(doorposition),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void far *)doorobjlist,sizeof(doorobjlist));
+	CA_FarRead (file,(void id0_far *)doorobjlist,sizeof(doorobjlist));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)doorobjlist,sizeof(doorobjlist),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)doorobjlist,sizeof(doorobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	CA_FarRead (file,(void far *)&pwallstate,sizeof(pwallstate));
+	CA_FarRead (file,(void id0_far *)&pwallstate,sizeof(pwallstate));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwallstate,sizeof(pwallstate),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwallstate,sizeof(pwallstate),checksum);
 #endif
-	CA_FarRead (file,(void far *)&pwallx,sizeof(pwallx));
+	CA_FarRead (file,(void id0_far *)&pwallx,sizeof(pwallx));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwallx,sizeof(pwallx),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwallx,sizeof(pwallx),checksum);
 #endif
-	CA_FarRead (file,(void far *)&pwally,sizeof(pwally));
+	CA_FarRead (file,(void id0_far *)&pwally,sizeof(pwally));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwally,sizeof(pwally),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwally,sizeof(pwally),checksum);
 #endif
-	CA_FarRead (file,(void far *)&pwalldir,sizeof(pwalldir));
+	CA_FarRead (file,(void id0_far *)&pwalldir,sizeof(pwalldir));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwalldir,sizeof(pwalldir),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwalldir,sizeof(pwalldir),checksum);
 #endif
-	CA_FarRead (file,(void far *)&pwallpos,sizeof(pwallpos));
+	CA_FarRead (file,(void id0_far *)&pwallpos,sizeof(pwallpos));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((byte far *)&pwallpos,sizeof(pwallpos),checksum);
+	checksum = DoChecksum((id0_byte_t id0_far *)&pwallpos,sizeof(pwallpos),checksum);
 #endif
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarRead (file,(void far *)&oldchecksum,sizeof(oldchecksum));
+	CA_FarRead (file,(void id0_far *)&oldchecksum,sizeof(oldchecksum));
 
 	if (oldchecksum != checksum)
 	{
@@ -813,7 +813,7 @@ const   float   radtoint = (float)FINEANGLES/2/PI;
 
 void BuildTables (void)
 {
-  int           i;
+  id0_int_t           i;
   float         angle,anglestep;
   double        tang;
   fixed         value;
@@ -866,15 +866,15 @@ void BuildTables (void)
 ====================
 */
 
-void CalcProjection (long focal)
+void CalcProjection (id0_long_t focal)
 {
-	int             i;
-	long            intang;
+	id0_int_t             i;
+	id0_long_t            intang;
 	float   angle;
 	double  tang;
 	double  planedist;
 	double  globinhalf;
-	int             halfview;
+	id0_int_t             halfview;
 	double  halfangle,facedist;
 
 
@@ -902,7 +902,7 @@ void CalcProjection (long focal)
 	for (i=0;i<halfview;i++)
 	{
 	// start 1/2 pixel over, so viewangle bisects two middle pixels
-		tang = (long)i*VIEWGLOBAL/viewwidth/facedist;
+		tang = (id0_long_t)i*VIEWGLOBAL/viewwidth/facedist;
 		angle = atan(tang);
 		intang = angle*radtoint;
 		pixelangle[halfview-1-i] = intang;
@@ -933,7 +933,7 @@ void CalcProjection (long focal)
 
 void SetupWalls (void)
 {
-	int     i;
+	id0_int_t     i;
 
 	for (i=1;i<MAXWALLTILES;i++)
 	{
@@ -956,7 +956,7 @@ void SetupWalls (void)
 
 void SignonScreen (void)                        // VGA version
 {
-	unsigned        segstart,seglength;
+	id0_unsigned_t        segstart,seglength;
 
 	VL_SetVGAPlaneMode ();
 	VL_TestPaletteSet ();
@@ -1069,10 +1069,10 @@ void FinishSignon (void)
 =================
 */
 
-boolean MS_CheckParm (char far *check)
+id0_boolean_t MS_CheckParm (id0_char_t id0_far *check)
 {
-	int             i;
-	char    *parm;
+	id0_int_t             i;
+	id0_char_t    *parm;
 
 	for (i = 1;i<_argc;i++)
 	{
@@ -1099,7 +1099,7 @@ boolean MS_CheckParm (char far *check)
 =====================
 */
 
-static  int     wolfdigimap[] =
+static  id0_int_t     wolfdigimap[] =
 		{
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1265,7 +1265,7 @@ static  int     wolfdigimap[] =
 
 void InitDigiMap (void)
 {
-	int                     *map;
+	id0_int_t                     *map;
 
 	for (map = wolfdigimap;*map != LASTSOUND;map += 2)
 		DigiMap[map[0]] = map[1];
@@ -1279,7 +1279,7 @@ void InitDigiMap (void)
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 CP_iteminfo	MusicItems={CTL_X,40,11,0,32};
-CP_itemtype far MusicMenu[]=
+CP_itemtype id0_far MusicMenu[]=
 	{
 		{1,"Song 1",0},
 		{1,"It's All Good!",0},
@@ -1296,7 +1296,7 @@ CP_itemtype far MusicMenu[]=
 #elif (!defined SPEAR)
 //#ifndef SPEAR
 CP_iteminfo	MusicItems={CTL_X,CTL_Y,6,0,32};
-CP_itemtype far MusicMenu[]=
+CP_itemtype id0_far MusicMenu[]=
 	{
 		{1,"Get Them!",0},
 		{1,"Searching",0},
@@ -1321,7 +1321,7 @@ CP_itemtype far MusicMenu[]=
 	};
 #else
 CP_iteminfo MusicItems={CTL_X,CTL_Y-20,9,0,32};
-CP_itemtype far MusicMenu[]=
+CP_itemtype id0_far MusicMenu[]=
    {
 		{1,"Funky Colonel Bill",0},
 		{1,"Death To The Nazis",0},
@@ -1338,8 +1338,8 @@ CP_itemtype far MusicMenu[]=
 #ifndef SPEARDEMO
 void DoJukebox(void)
 {
-	int which,lastsong=-1;
-	unsigned start,songs[]=
+	id0_int_t which,lastsong=-1;
+	id0_unsigned_t start,songs[]=
 		{
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1502,8 +1502,8 @@ void DoJukebox(void)
 
 void InitGame (void)
 {
-	int                     i,x,y;
-	unsigned        *blockstart;
+	id0_int_t                     i,x,y;
+	id0_unsigned_t        *blockstart;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1556,9 +1556,9 @@ void InitGame (void)
 		ShutdownId();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-		movedata ((unsigned)screen,7+8*160,0xb800,0,15*160);
+		movedata ((id0_unsigned_t)screen,7+8*160,0xb800,0,15*160);
 #else
-		movedata ((unsigned)screen,7+7*160,0xb800,0,17*160);
+		movedata ((id0_unsigned_t)screen,7+7*160,0xb800,0,17*160);
 #endif
 		gotoxy (1,23);
 		exit(1);
@@ -1588,7 +1588,7 @@ void InitGame (void)
 	updateptr = &update[0];
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	*(unsigned *)(updateptr+UPDATEWIDE*UPDATEHIGH) = UPDATETERMINATE;
+	*(id0_unsigned_t *)(updateptr+UPDATEWIDE*UPDATEHIGH) = UPDATETERMINATE;
 #endif
 
 	bufferofs = 0;
@@ -1635,7 +1635,7 @@ void InitGame (void)
 
 #if 0
 {
-int temp,i;
+id0_int_t temp,i;
 temp = viewsize;
 	profilehandle = open("SCALERS.TXT", O_CREAT | O_WRONLY | O_TEXT);
 for (i=1;i<20;i++)
@@ -1703,9 +1703,9 @@ close(profilehandle);
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-void SetViewSize (unsigned width, unsigned height)
+void SetViewSize (id0_unsigned_t width, id0_unsigned_t height)
 #else
-boolean SetViewSize (unsigned width, unsigned height)
+id0_boolean_t SetViewSize (id0_unsigned_t width, id0_unsigned_t height)
 #endif
 {
 	viewwidth = width&~15;                  // must be divisable by 16
@@ -1744,9 +1744,9 @@ boolean SetViewSize (unsigned width, unsigned height)
 }
 
 
-void ShowViewSize (int width)
+void ShowViewSize (id0_int_t width)
 {
-	int     oldwidth,oldheight;
+	id0_int_t     oldwidth,oldheight;
 
 	oldwidth = viewwidth;
 	oldheight = viewheight;
@@ -1760,7 +1760,7 @@ void ShowViewSize (int width)
 }
 
 
-void NewViewSize (int width)
+void NewViewSize (id0_int_t width)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -1796,9 +1796,9 @@ resize:
 ==========================
 */
 
-void Quit (char *error)
+void Quit (id0_char_t *error)
 {
-	unsigned        finscreen;
+	id0_unsigned_t        finscreen;
 	memptr	screen;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
@@ -1857,9 +1857,9 @@ void Quit (char *error)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	  // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	  movedata ((unsigned)screen,0,0xb800,0,7*160);
+	  movedata ((id0_unsigned_t)screen,0,0xb800,0,7*160);
 #else
-	  movedata ((unsigned)screen,7,0xb800,0,7*160);
+	  movedata ((id0_unsigned_t)screen,7,0xb800,0,7*160);
 #endif
 	  gotoxy (10,4);
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
@@ -1892,9 +1892,9 @@ void Quit (char *error)
 		//#ifndef JAPAN
 		// *** S3DNA RESTORATION ***
 		#ifdef GAMEVER_NOAH3D
-		movedata ((unsigned)screen,0,0xb800,0,4000);
+		movedata ((id0_unsigned_t)screen,0,0xb800,0,4000);
 		#else
-		movedata ((unsigned)screen,7,0xb800,0,4000);
+		movedata ((id0_unsigned_t)screen,7,0xb800,0,4000);
 		#endif
 		gotoxy(1,24);
 		#endif
@@ -1939,19 +1939,19 @@ void Quit (char *error)
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-static  char *ParmStrings[] = {"easy","normal","hard",""};
+static  id0_char_t *ParmStrings[] = {"easy","normal","hard",""};
 #else
-static  char *ParmStrings[] = {"baby","easy","normal","hard",""};
+static  id0_char_t *ParmStrings[] = {"baby","easy","normal","hard",""};
 #endif
 
 void    DemoLoop (void)
 {
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	static int LastDemo;
+	static id0_int_t LastDemo;
 #endif
-	int     i,level;
-	long nsize;
+	id0_int_t     i,level;
+	id0_long_t nsize;
 	memptr	nullblock;
 
 //
@@ -2002,7 +2002,7 @@ void    DemoLoop (void)
 //
 
 
-//	nsize = (long)40*1024;
+//	nsize = (id0_long_t)40*1024;
 //	MM_GetPtr(&nullblock,nsize);
 
 #ifndef DEMOTEST
@@ -2287,12 +2287,12 @@ void    DemoLoop (void)
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-char    *nosprtxt[] = {"nospr",nil};
+id0_char_t    *nosprtxt[] = {"nospr",nil};
 #endif
 
 void main (void)
 {
-	int     i;
+	id0_int_t     i;
 
 
 	// *** ALPHA RESTORATION ***
@@ -2347,11 +2347,11 @@ void main (void)
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - Some unused function
 #if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-long GetRandomTableSum (void)
+id0_long_t GetRandomTableSum (void)
 {
-	extern far byte rndtable[];
-	long result = 0;
-	int i;
+	extern id0_far id0_byte_t rndtable[];
+	id0_long_t result = 0;
+	id0_int_t i;
 	for (i=0;i<0x100;i++)
 		result += rndtable[i];
 	return result;

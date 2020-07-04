@@ -13,14 +13,14 @@
 =============================================================================
 */
 
-t_compscale _seg *scaledirectory[MAXSCALEHEIGHT+1];
-long			fullscalefarcall[MAXSCALEHEIGHT+1];
+t_compscale id0_seg *scaledirectory[MAXSCALEHEIGHT+1];
+id0_long_t			fullscalefarcall[MAXSCALEHEIGHT+1];
 
-int			maxscale,maxscaleshl2;
+id0_int_t			maxscale,maxscaleshl2;
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-boolean	insetupscaling;
+id0_boolean_t	insetupscaling;
 #endif
 
 /*
@@ -31,10 +31,10 @@ boolean	insetupscaling;
 =============================================================================
 */
 
-t_compscale 	_seg *work;
-unsigned BuildCompScale (int height, memptr *finalspot);
+t_compscale 	id0_seg *work;
+id0_unsigned_t BuildCompScale (id0_int_t height, memptr *finalspot);
 
-int			stepbytwo;
+id0_int_t			stepbytwo;
 
 //===========================================================================
 
@@ -46,7 +46,7 @@ int			stepbytwo;
 ==============
 */
 
-void far BadScale (void)
+void id0_far BadScale (void)
 {
 	Quit ("BadScale called!");
 }
@@ -60,10 +60,10 @@ void far BadScale (void)
 ==========================
 */
 
-void SetupScaling (int maxscaleheight)
+void SetupScaling (id0_int_t maxscaleheight)
 {
-	int		i,x,y;
-	byte	far *dest;
+	id0_int_t		i,x,y;
+	id0_byte_t	id0_far *dest;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -123,7 +123,7 @@ void SetupScaling (int maxscaleheight)
 	for (i=1;i<=maxscaleheight;i++)
 	{
 		MM_SetLock (&(memptr)scaledirectory[i],true);
-		fullscalefarcall[i] = (unsigned)scaledirectory[i];
+		fullscalefarcall[i] = (id0_unsigned_t)scaledirectory[i];
 		fullscalefarcall[i] <<=16;
 		fullscalefarcall[i] += scaledirectory[i]->codeofs[0];
 		if (i>=stepbytwo)
@@ -147,7 +147,7 @@ void SetupScaling (int maxscaleheight)
 // check for oversize wall drawing
 //
 	for (i=maxscaleheight;i<MAXSCALEHEIGHT;i++)
-		fullscalefarcall[i] = (long)BadScale;
+		fullscalefarcall[i] = (id0_long_t)BadScale;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -177,17 +177,17 @@ void SetupScaling (int maxscaleheight)
 ========================
 */
 
-unsigned BuildCompScale (int height, memptr *finalspot)
+id0_unsigned_t BuildCompScale (id0_int_t height, memptr *finalspot)
 {
-	byte		far *code;
+	id0_byte_t		id0_far *code;
 
-	int			i;
-	long		fix,step;
-	unsigned	src,totalscaled,totalsize;
-	int			startpix,endpix,toppix;
+	id0_int_t			i;
+	id0_long_t		fix,step;
+	id0_unsigned_t	src,totalscaled,totalsize;
+	id0_int_t			startpix,endpix,toppix;
 
 
-	step = ((long)height<<16) / 64;
+	step = ((id0_long_t)height<<16) / 64;
 	code = &work->code[0];
 	toppix = (viewheight-height)/2;
 	fix = 0;
@@ -237,7 +237,7 @@ unsigned BuildCompScale (int height, memptr *finalspot)
 			*code++ = 0x26;
 			*code++ = 0x88;
 			*code++ = 0x85;
-			*((unsigned far *)code)++ = startpix*SCREENBWIDE;
+			*((id0_unsigned_t id0_far *)code)++ = startpix*SCREENBWIDE;
 		}
 
 	}
@@ -249,7 +249,7 @@ unsigned BuildCompScale (int height, memptr *finalspot)
 
 	totalsize = FP_OFF(code);
 	MM_GetPtr (finalspot,totalsize);
-	_fmemcpy ((byte _seg *)(*finalspot),(byte _seg *)work,totalsize);
+	_fmemcpy ((id0_byte_t id0_seg *)(*finalspot),(id0_byte_t id0_seg *)work,totalsize);
 
 	return totalsize;
 }
@@ -260,23 +260,23 @@ unsigned BuildCompScale (int height, memptr *finalspot)
 =
 = ScaleLine
 =
-= linescale should have the high word set to the segment of the scaler
+= linescale should have the high id0_word_t set to the segment of the scaler
 =
 =======================
 */
 
-extern	int			slinex,slinewidth;
-extern	unsigned	far *linecmds;
-extern	long		linescale;
-extern	unsigned	maskword;
+extern	id0_int_t			slinex,slinewidth;
+extern	id0_unsigned_t	id0_far *linecmds;
+extern	id0_long_t		linescale;
+extern	id0_unsigned_t	maskword;
 // *** PRE-V1.4 APOGEE RESTORATION *** - There were apparently some unused
 // variables here (or maybe an array). Also brute forcing order of appearances
 // of mask1,mask2,mask3 in the EXE layout.
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-extern	byte	mask1,mask2,mask3;
-unsigned unusedscalevar1, unusedscalevar2, unusedscalevar3, unusedscalevar4, unusedscalevar5, unusedscalevar6;
+extern	id0_byte_t	mask1,mask2,mask3;
+id0_unsigned_t unusedscalevar1, unusedscalevar2, unusedscalevar3, unusedscalevar4, unusedscalevar5, unusedscalevar6;
 #endif
-byte	mask1,mask2,mask3;
+id0_byte_t	mask1,mask2,mask3;
 
 
 void near ScaleLine (void)
@@ -449,16 +449,16 @@ asm	jmp	scaletriple					// do the next segment
 =======================
 */
 
-static	long		longtemp;
+static	id0_long_t		longtemp;
 
-void ScaleShape (int xcenter, int shapenum, unsigned height)
+void ScaleShape (id0_int_t xcenter, id0_int_t shapenum, id0_unsigned_t height)
 {
-	t_compshape	_seg *shape;
-	t_compscale _seg *comptable;
-	unsigned	scale,srcx,stopx,tempx;
-	int			t;
-	unsigned	far *cmdptr;
-	boolean		leftvis,rightvis;
+	t_compshape	id0_seg *shape;
+	t_compscale id0_seg *comptable;
+	id0_unsigned_t	scale,srcx,stopx,tempx;
+	id0_int_t			t;
+	id0_unsigned_t	id0_far *cmdptr;
+	id0_boolean_t		leftvis,rightvis;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -476,8 +476,8 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
 		return;								// too close or far away
 	comptable = scaledirectory[scale];
 
-	*(((unsigned *)&linescale)+1)=(unsigned)comptable;	// seg of far call
-	*(((unsigned *)&linecmds)+1)=(unsigned)shape;		// seg of shape
+	*(((id0_unsigned_t *)&linescale)+1)=(id0_unsigned_t)comptable;	// seg of far call
+	*(((id0_unsigned_t *)&linecmds)+1)=(id0_unsigned_t)shape;		// seg of shape
 
 //
 // scale to the left (from pixel 31 to shape->leftpix)
@@ -489,7 +489,7 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
 
 	while ( --srcx >=stopx && slinex>0)
 	{
-		(unsigned)linecmds = *cmdptr--;
+		(id0_unsigned_t)linecmds = *cmdptr--;
 		if ( !(slinewidth = comptable->width[srcx]) )
 			continue;
 
@@ -572,7 +572,7 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
 
 	while ( ++srcx <= stopx && (slinex+=slinewidth)<viewwidth)
 	{
-		(unsigned)linecmds = *cmdptr++;
+		(id0_unsigned_t)linecmds = *cmdptr++;
 		if ( !(slinewidth = comptable->width[srcx]) )
 			continue;
 
@@ -663,14 +663,14 @@ void ScaleShape (int xcenter, int shapenum, unsigned height)
 =======================
 */
 
-void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
+void SimpleScaleShape (id0_int_t xcenter, id0_int_t shapenum, id0_unsigned_t height)
 {
-	t_compshape	_seg *shape;
-	t_compscale _seg *comptable;
-	unsigned	scale,srcx,stopx,tempx;
-	int			t;
-	unsigned	far *cmdptr;
-	boolean		leftvis,rightvis;
+	t_compshape	id0_seg *shape;
+	t_compscale id0_seg *comptable;
+	id0_unsigned_t	scale,srcx,stopx,tempx;
+	id0_int_t			t;
+	id0_unsigned_t	id0_far *cmdptr;
+	id0_boolean_t		leftvis,rightvis;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -686,8 +686,8 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 	scale = height>>1;
 	comptable = scaledirectory[scale];
 
-	*(((unsigned *)&linescale)+1)=(unsigned)comptable;	// seg of far call
-	*(((unsigned *)&linecmds)+1)=(unsigned)shape;		// seg of shape
+	*(((id0_unsigned_t *)&linescale)+1)=(id0_unsigned_t)comptable;	// seg of far call
+	*(((id0_unsigned_t *)&linecmds)+1)=(id0_unsigned_t)shape;		// seg of shape
 
 //
 // scale to the left (from pixel 31 to shape->leftpix)
@@ -699,7 +699,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 
 	while ( --srcx >=stopx )
 	{
-		(unsigned)linecmds = *cmdptr--;
+		(id0_unsigned_t)linecmds = *cmdptr--;
 		if ( !(slinewidth = comptable->width[srcx]) )
 			continue;
 
@@ -727,7 +727,7 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 
 	while ( ++srcx <= stopx )
 	{
-		(unsigned)linecmds = *cmdptr++;
+		(id0_unsigned_t)linecmds = *cmdptr++;
 		if ( !(slinewidth = comptable->width[srcx]) )
 			continue;
 
@@ -746,26 +746,26 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
 //
 
 
-byte	mapmasks1[4][8] = {
+id0_byte_t	mapmasks1[4][8] = {
 {1 ,3 ,7 ,15,15,15,15,15},
 {2 ,6 ,14,14,14,14,14,14},
 {4 ,12,12,12,12,12,12,12},
 {8 ,8 ,8 ,8 ,8 ,8 ,8 ,8} };
 
-byte	mapmasks2[4][8] = {
+id0_byte_t	mapmasks2[4][8] = {
 {0 ,0 ,0 ,0 ,1 ,3 ,7 ,15},
 {0 ,0 ,0 ,1 ,3 ,7 ,15,15},
 {0 ,0 ,1 ,3 ,7 ,15,15,15},
 {0 ,1 ,3 ,7 ,15,15,15,15} };
 
-byte	mapmasks3[4][8] = {
+id0_byte_t	mapmasks3[4][8] = {
 {0 ,0 ,0 ,0 ,0 ,0 ,0 ,0},
 {0 ,0 ,0 ,0 ,0 ,0 ,0 ,1},
 {0 ,0 ,0 ,0 ,0 ,0 ,1 ,3},
 {0 ,0 ,0 ,0 ,0 ,1 ,3 ,7} };
 
 
-unsigned	wordmasks[8][8] = {
+id0_unsigned_t	wordmasks[8][8] = {
 {0x0080,0x00c0,0x00e0,0x00f0,0x00f8,0x00fc,0x00fe,0x00ff},
 {0x0040,0x0060,0x0070,0x0078,0x007c,0x007e,0x007f,0x807f},
 {0x0020,0x0030,0x0038,0x003c,0x003e,0x003f,0x803f,0xc03f},
@@ -775,8 +775,8 @@ unsigned	wordmasks[8][8] = {
 {0x0002,0x0003,0x8003,0xc003,0xe003,0xf003,0xf803,0xfc03},
 {0x0001,0x8001,0xc001,0xe001,0xf001,0xf801,0xfc01,0xfe01} };
 
-int			slinex,slinewidth;
-unsigned	far *linecmds;
-long		linescale;
-unsigned	maskword;
+id0_int_t			slinex,slinewidth;
+id0_unsigned_t	id0_far *linecmds;
+id0_long_t		linescale;
+id0_unsigned_t	maskword;
 

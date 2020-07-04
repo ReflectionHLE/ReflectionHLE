@@ -4,22 +4,22 @@
 
 #define	MAXVIEWHEIGHT	200
 
-int		spanstart[MAXVIEWHEIGHT/2];
+id0_int_t		spanstart[MAXVIEWHEIGHT/2];
 
 fixed	stepscale[MAXVIEWHEIGHT/2];
 fixed	basedist[MAXVIEWHEIGHT/2];
 
-extern	char	far	planepics[8192];	// 4k of ceiling, 4k of floor
+extern	id0_char_t	id0_far	planepics[8192];	// 4k of ceiling, 4k of floor
 
-int		halfheight = 0;
+id0_int_t		halfheight = 0;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-byte	*planeylookup[MAXVIEWHEIGHT/2];
+id0_byte_t	*planeylookup[MAXVIEWHEIGHT/2];
 #else
-byte	far *planeylookup[MAXVIEWHEIGHT/2];
+id0_byte_t	id0_far *planeylookup[MAXVIEWHEIGHT/2];
 #endif
-unsigned	mirrorofs[MAXVIEWHEIGHT/2];
+id0_unsigned_t	mirrorofs[MAXVIEWHEIGHT/2];
 
 fixed	psin, pcos;
 
@@ -29,13 +29,13 @@ fixed FixedMul (fixed a, fixed b)
 }
 
 
-int		mr_rowofs;
-int		mr_count;
-int		mr_xstep;
-int		mr_ystep;
-int		mr_xfrac;
-int		mr_yfrac;
-int		mr_dest;
+id0_int_t		mr_rowofs;
+id0_int_t		mr_count;
+id0_int_t		mr_xstep;
+id0_int_t		mr_ystep;
+id0_int_t		mr_xfrac;
+id0_int_t		mr_yfrac;
+id0_int_t		mr_dest;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -51,19 +51,19 @@ void	MapRow (void);
 ==============
 */
 
-void DrawSpans (int x1, int x2, int height)
+void DrawSpans (id0_int_t x1, id0_int_t x2, id0_int_t height)
 {
 	fixed		length;
-	int			ofs;
-	int			prestep;
+	id0_int_t			ofs;
+	id0_int_t			prestep;
 	fixed		startxfrac, startyfrac;
 
-	int			x, startx, count, plane, startplane;
+	id0_int_t			x, startx, count, plane, startplane;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	byte		*toprow;
+	id0_byte_t		*toprow;
 #else
-	byte		far	*toprow, far *dest;
+	id0_byte_t		id0_far	*toprow, id0_far *dest;
 #endif
 
 	toprow = planeylookup[height]+bufferofs;
@@ -92,7 +92,7 @@ void DrawSpans (int x1, int x2, int height)
 		mr_yfrac = startyfrac - (mr_ystep>>2)*prestep;
 
 		startx = x1>>2;
-		mr_dest = (unsigned)toprow + startx;
+		mr_dest = (id0_unsigned_t)toprow + startx;
 		mr_count = ((x2-plane)>>2) - startx + 1;
 		x1++;
 		prestep--;
@@ -108,10 +108,10 @@ void DrawSpans (int x1, int x2, int height)
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void LoadFloorTiles (int tile)
+void LoadFloorTiles (id0_int_t tile)
 {
-	unsigned char	far *dest, far *src;
-	int		x;
+	id0_unsigned_char_t	id0_far *dest, id0_far *src;
+	id0_int_t		x;
 
 	tile = tile*2+(PMSpriteStart-8);
 	if (tile+1 >= PMSpriteStart)
@@ -147,8 +147,8 @@ void LoadFloorTiles (int tile)
 
 void SetPlaneViewSize (void)
 {
-	int		x,y;
-	byte 	far *dest, far *src;
+	id0_int_t		x,y;
+	id0_byte_t 	id0_far *dest, id0_far *src;
 
 	halfheight = viewheight>>1;
 
@@ -159,9 +159,9 @@ void SetPlaneViewSize (void)
 		// It's technically useless to cast 0xa0000000l to a 16-bit near
 		// pointer, but this helps to (re)generate some ASM instruction
 #ifdef GAMEVER_NOAH3D
-		planeylookup[y] = (byte *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;
+		planeylookup[y] = (id0_byte_t *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;
 #else
-		planeylookup[y] = (byte far *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;;
+		planeylookup[y] = (id0_byte_t id0_far *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;;
 #endif
 #if 0
 	asm	nop
@@ -206,8 +206,8 @@ void SetPlaneViewSize (void)
 
 void DrawPlanes (void)
 {
-	int		height, lastheight;
-	int		x;
+	id0_int_t		height, lastheight;
+	id0_int_t		x;
 
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
