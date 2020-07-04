@@ -15,6 +15,10 @@
 //#include <sys/stat.h>
 //#include <VALUES.H>
 //#include <DIR.H>
+
+#include <stdint.h>
+#include <stdbool.h>
+
 #define __ID_GLOB__
 #include "version.h"
 
@@ -83,11 +87,31 @@ extern	char		far signon;
 //	v1.0d1
 //
 
-typedef	enum	{false,true}	boolean;
-typedef	unsigned	char		byte;
-typedef	unsigned	int			word;
-typedef	unsigned	long		longword;
-typedef	byte *					Ptr;
+// REFKEEN - Define these for a bit more consistent style
+#define id0_argc g_be_argc
+#define id0_argv g_be_argv
+
+typedef bool id0_boolean_t;
+
+// WARNING:
+//
+// Should be UNSIGNED for VWL_MeasureString (high scores table) in Keen Dreams
+// but SIGNED in Catacomb Abyss for which casting is done in VWL_MeasureString
+// (and Keen Dreams' loadscn2)
+//
+// BUT, to reduce the amount of compilation warnings in C and errors in C++,
+// we still use plain char here, and fix Keen Dreams' VWL_MeasureString instead
+typedef char id0_char_t;
+
+typedef uint8_t id0_unsigned_char_t;
+
+typedef int16_t id0_int_t;
+typedef uint16_t id0_unsigned_t;
+
+typedef uint8_t id0_byte_t;
+typedef uint16_t id0_word_t;
+typedef uint32_t id0_longword_t;
+//typedef uint8_t * Ptr;
 
 typedef	struct
 		{
@@ -98,8 +122,16 @@ typedef	struct
 			Point	ul,lr;
 		} Rect;
 
-#define	nil	((void *)0)
+#ifdef __cplusplus
+#define	id0_nil_t	NULL
+#else
+#define	id0_nil_t	((void *)0)
+#endif
 
+// REFKEEN - Used for documentation
+#define id0_far
+#define id0_huge
+#define id0_seg
 
 #include "id_mm.h"
 #include "id_pm.h"
