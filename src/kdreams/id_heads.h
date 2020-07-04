@@ -108,7 +108,7 @@ typedef uint16_t id0_word_t;
 typedef uint32_t id0_longword_t;
 // REFKEEN - Used just in Keen Dreams' SD_StartMusic, but there's no music
 // in the original game and it was commented that Ptr shouldn't be used...
-//typedef uint8_t * id0_ptr_t;
+//typedef uint8_t * Ptr;
 
 typedef	struct
 		{

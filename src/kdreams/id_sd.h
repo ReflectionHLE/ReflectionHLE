@@ -190,7 +190,7 @@ extern	void	SD_Startup(void),
 				SD_StopSound(void),
 				SD_WaitSoundDone(void),
 				// REFKEEN - No need for this, and not using pointer type
-				//SD_StartMusic(id0_ptr_t music),	// DEBUG - this shouldn't be a Ptr
+				//SD_StartMusic(Ptr music),	// DEBUG - this shouldn't be a Ptr
 				SD_FadeOutMusic(void),
 				SD_SetUserHook(void (*hook)(void));
 extern	id0_boolean_t	SD_MusicPlaying(void),
