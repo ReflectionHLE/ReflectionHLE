@@ -55,7 +55,7 @@ REFKEEN_NS_B
 //	v1.0d1
 //
 
-// REFKEEN - Define these for backwards compatibility
+// REFKEEN - Define these for a bit more consistent style
 #define id0_argc g_be_argc
 #define id0_argv g_be_argv
 

@@ -139,7 +139,7 @@ REFKEEN_NS_B
 #ifndef	__TYPES__
 #define	__TYPES__
 
-// REFKEEN - Define these for backwards compatibility
+// REFKEEN - Define these for a bit more consistent style
 #define id0_argc g_be_argc
 #define id0_argv g_be_argv
 
