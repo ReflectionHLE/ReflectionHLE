@@ -30,7 +30,9 @@
 #define EXTENSION	"WL1"
 #endif
 
-extern	id0_char_t		id0_far signon;
+// REFKEEN moved to bottom (where id0_char_t and more are defined)
+// - also modified type for different platforms
+//extern	id0_char_t		id0_far signon;
 
 #define	introscn	signon
 
@@ -132,6 +134,8 @@ typedef	struct
 #define id0_far
 #define id0_huge
 #define id0_seg
+
+extern id0_char_t *signon;
 
 #include "id_mm.h"
 #include "id_pm.h"

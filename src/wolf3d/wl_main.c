@@ -968,8 +968,8 @@ void SignonScreen (void)                        // VGA version
 #endif
 	{
 		VW_SetScreen(0x8000,0);
-		VL_MungePic (&introscn,320,200);
-		VL_MemToScreen (&introscn,320,200,0,0);
+		VL_MungePic ((id0_byte_t *)introscn,320,200);
+		VL_MemToScreen ((id0_byte_t *)introscn,320,200,0,0);
 		VW_SetScreen(0,0);
 	}
 
