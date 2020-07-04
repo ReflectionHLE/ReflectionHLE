@@ -1,9 +1,0 @@
-//#define SPEAR
-#define JAPAN
-#define JAPDEMO
-#define UPLOAD
-#define ARTSEXTERN
-#define DEMOSEXTERN
-//#define MYPROFILE
-//#define DEBCHECK
-#define CARMACIZED
