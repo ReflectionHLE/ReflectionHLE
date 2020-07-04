@@ -189,7 +189,7 @@ typedef	struct
 #define	id0_nil_t	((void *)0)
 #endif
 
-// TODO (REFKEEN): These should really be removed, but just for now and to document...
+// REFKEEN - Used for documentation
 #define id0_far
 #define id0_huge
 #define id0_seg

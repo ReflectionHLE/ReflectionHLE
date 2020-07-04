@@ -86,7 +86,7 @@ typedef uint8_t id0_byte_t;
 typedef uint16_t id0_word_t;
 typedef uint32_t id0_longword_t;
 
-// TODO (REFKEEN): These should really be removed, but just for now and to document...
+// REFKEEN - Used for documentation
 #define id0_far
 #define id0_huge
 #define id0_seg
