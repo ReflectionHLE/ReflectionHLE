@@ -160,7 +160,8 @@ typedef int8_t id0_signed_char_t;
 typedef uint8_t id0_unsigned_char_t;
 // Surprise! c5_game.c has this (could simply used signed char but eh...)
 typedef id0_signed_char_t id0_char_signed_t;
-typedef int16_t id0_short_t; // Possibly used in kd_main.c and external decompression routines for Keen Dreams
+typedef int16_t id0_short_t; // Used in the Catacomb Adventure Series
+
 typedef int16_t id0_int_t;
 typedef uint16_t id0_unsigned_t;
 typedef uint16_t id0_unsigned_int_t; // Found in shareware release v1.13
