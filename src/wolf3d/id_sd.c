@@ -400,6 +400,7 @@ SDL_SetTimerSpeed(void)
 #endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 }
 
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 //
 //	SoundBlaster code
 //
@@ -898,6 +899,7 @@ SDL_ShutSB(void)
 
 	setvect(sbIntVec,sbOldIntHand);		// Set vector back
 }
+#endif // REFKEEN_SD_ENABLE_SOUNDSOURCE
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
@@ -1345,9 +1347,11 @@ SDL_PlayDigiSegment(memptr addr,id0_word_t len)
 		break;
 #endif
 #endif
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sds_SoundBlaster:
 		SDL_SBPlaySample(addr,len);
 		break;
+#endif
 	}
 }
 
@@ -1385,9 +1389,11 @@ asm	cli
 	// *** ALPHA RESTORATION ***
 	// A few typos
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sds_SoundSource:
 		SDL_SBStopSample();
 		break;
+#endif
 #if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sds_SoundBlaster:
 		SDL_SSStopSample();
@@ -1405,9 +1411,11 @@ asm	cli
 		break;
 #endif
 #endif
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sds_SoundBlaster:
 		SDL_SBStopSample();
 		break;
+#endif
 #endif
 	}
 
@@ -1477,12 +1485,14 @@ SD_SetPosition(id0_int_t leftpos,id0_int_t rightpos)
 		Quit("SD_SetPosition: Illegal position");
 #endif
 
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	switch (DigiMode)
 	{
 	case sds_SoundBlaster:
 		SDL_PositionSBP(leftpos,rightpos);
 		break;
 	}
+#endif
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
@@ -1573,7 +1583,9 @@ SDL_DigitizedDone(void)
 			SoundPositioned = false;
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 			SDL_SBStopSample();
+#endif
 #endif
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 		}
@@ -2906,6 +2918,7 @@ SD_Startup(void)
 	{
 		AdLibPresent = SDL_DetectAdLib();
 		if (AdLibPresent && !sbNoCheck)
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			SoundBlasterPresent = SDL_DetectSoundBlaster(-1);
@@ -2969,6 +2982,7 @@ SD_Startup(void)
 			SoundBlasterPresent = SDL_DetectSoundBlaster(port);
 		}
 #endif // GAMEVER_WOLFREV <= GV_WR_WL920312
+#endif // REFKEEN_SD_ENABLE_SOUNDBLASTER
 	}
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -2983,8 +2997,10 @@ SD_Startup(void)
 	for (i = 0;i < 255;i++)
 		pcSoundLookup[i] = i * 60;
 
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	if (SoundBlasterPresent)
 		SDL_StartSB();
+#endif
 
 	SDL_SetupDigi();
 
@@ -3059,8 +3075,10 @@ SD_Shutdown(void)
 	SDL_ShutDevice();
 	SDL_CleanDevice();
 
+#if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	if (SoundBlasterPresent)
 		SDL_ShutSB();
+#endif
 
 		// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
