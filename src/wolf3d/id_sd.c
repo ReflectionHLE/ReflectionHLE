@@ -114,8 +114,10 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 	id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	id0_boolean_t		ssIsTandy;
 	id0_word_t		ssPort = 2;
+#endif
 #endif
 	id0_int_t			DigiMap[LASTSOUND];
 
@@ -224,6 +226,7 @@ static	id0_byte_t					sbpOldFMMix,sbpOldVOCMix;
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 //	SoundSource variables
 		id0_boolean_t				ssNoCheck;
 		id0_boolean_t				ssActive;
@@ -231,6 +234,7 @@ static	id0_byte_t					sbpOldFMMix,sbpOldVOCMix;
 		id0_byte_t				ssOn,ssOff;
 		volatile id0_byte_t		id0_far *ssSample;
 		volatile id0_longword_t	ssLengthLeft;
+#endif
 #endif
 
 //	PC Sound variables
@@ -897,6 +901,7 @@ SDL_ShutSB(void)
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 //	Sound Source Code
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1093,6 +1098,7 @@ SDL_DetectSoundSource(void)
 			return(true);
 	return(false);
 }
+#endif // REFKEEN_SD_ENABLE_SOUNDSOURCE
 #endif // GAMEVER_NOAH3D
 
 //
@@ -1333,9 +1339,11 @@ SDL_PlayDigiSegment(memptr addr,id0_word_t len)
     	SDL_PCPlaySample(addr,len);
 		break;
 #endif
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sds_SoundSource:
 		SDL_SSPlaySample(addr,len);
 		break;
+#endif
 #endif
 	case sds_SoundBlaster:
 		SDL_SBPlaySample(addr,len);
@@ -1380,18 +1388,22 @@ asm	cli
 	case sds_SoundSource:
 		SDL_SBStopSample();
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sds_SoundBlaster:
 		SDL_SSStopSample();
 		break;
+#endif
 #else
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 	case sds_PC:
 		SDL_PCStopSample();
 		break;
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sds_SoundSource:
 		SDL_SSStopSample();
 		break;
+#endif
 #endif
 	case sds_SoundBlaster:
 		SDL_SBStopSample();
@@ -1617,16 +1629,20 @@ SD_SetDigiDevice(SDSMode mode)
 	{
 		// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 		if (DigiMode == sds_SoundSource)
 			SDL_ShutSS();
+#endif
 #endif
 
 		DigiMode = mode;
 
 		// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 		if (mode == sds_SoundSource)
 			SDL_StartSS();
+#endif
 #endif
 
 		SDL_SetTimerSpeed();
@@ -2798,8 +2814,10 @@ SD_Startup(void)
 
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	ssIsTandy = false;
 	ssNoCheck = false;
+#endif
 #endif
 	alNoCheck = false;
 	sbNoCheck = false;
@@ -2842,6 +2860,7 @@ SD_Startup(void)
 #endif
 		// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 		case 3+GAMEVER_SD_OFFSET:
 			ssNoCheck = true;		// No Sound Source detection
 			break;
@@ -2860,6 +2879,7 @@ SD_Startup(void)
 			ssPort = 3;
 			ssNoCheck = SoundSourcePresent = true;
 			break;
+#endif // REFKEEN_SD_ENABLE_SOUNDSOURCE
 #endif
 		}
 	}
@@ -2876,8 +2896,10 @@ SD_Startup(void)
 
 		// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	if (!ssNoCheck)
 		SoundSourcePresent = SDL_DetectSoundSource();
+#endif
 #endif
 
 	if (!alNoCheck)
@@ -3042,8 +3064,10 @@ SD_Shutdown(void)
 
 		// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	if (SoundSourcePresent)
 		SDL_ShutSS();
+#endif
 #endif
 
 	asm	pushf

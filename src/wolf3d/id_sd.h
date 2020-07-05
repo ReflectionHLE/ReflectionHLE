@@ -18,6 +18,9 @@ void	alOut(id0_byte_t n,id0_byte_t b);
 #define	__DEBUG_SoundMgr__
 #endif
 
+// REFKEEN - Macro used for disabling unused code, may be re-enabled if required
+#define REFKEEN_SD_ENABLE_SOUNDSOURCE 0
+
 #define	TickBase	70		// 70Hz per tick - used as a base for timer 0
 
 typedef	enum	{
