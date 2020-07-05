@@ -1147,7 +1147,7 @@ extern	id0_boolean_t		nospr;
 extern	id0_boolean_t		noquestions, nofloors;
 extern	id0_int_t		questionnum;
 #endif
-extern	id0_boolean_t		IsA386;
+//extern	id0_boolean_t		IsA386; // REFKEEN - Not needed
 
 extern	id0_byte_t id0_far	*scalermemory;
 

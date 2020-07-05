@@ -54,7 +54,7 @@ id0_boolean_t         nospr;
 id0_boolean_t		noquestions, nofloors;
 id0_char_t		logon[] = "SUPER 3D NOAH'S ARK (v1.0)";
 #endif
-id0_boolean_t         IsA386;
+//id0_boolean_t         IsA386; // REFKEEN - Not needed
 id0_int_t                     dirangle[9] = {0,ANGLES/8,2*ANGLES/8,3*ANGLES/8,4*ANGLES/8,
 	5*ANGLES/8,6*ANGLES/8,7*ANGLES/8,ANGLES};
 // *** S3DNA RESTORATION ***
@@ -310,6 +310,7 @@ void WriteConfig(void)
 //===========================================================================
 
 
+#if 0 // REFKEEN - Not needed
 /*
 ========================
 =
@@ -343,6 +344,7 @@ extern id0_int_t id0_far  CheckIs386(void);
 	else
 		IsA386 = false;
 }
+#endif // REFKEEN - Disable
 
 //===========================================================================
 
@@ -2331,7 +2333,7 @@ void main (void)
 	CheckForEpisodes();
 #endif
 
-	Patch386 ();
+	//Patch386 (); // REFKEEN - Not needed
 
 	InitGame ();
 
