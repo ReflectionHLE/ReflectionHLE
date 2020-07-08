@@ -215,7 +215,7 @@ static uint32_t g_sdlMiscOutNumOfSamples;
 static uint32_t g_sdlMiscOutSamplesEnd = 0;
 
 // PC Speaker current status
-static bool g_sdlPCSpeakerOn = false;
+static bool g_sdlPCSpeakerConnected = false;
 static BE_ST_SndSample_T g_sdlCurrentBeepSample;
 static uint32_t g_sdlBeepHalfCycleCounter, g_sdlBeepHalfCycleCounterUpperBound;
 
@@ -638,31 +638,45 @@ bool BE_ST_IsEmulatedOPLChipReady(void)
 	return g_sdlEmulatedOPLChipReady;
 }
 
-// Frequency is about 1193182Hz/spkVal
-void BE_ST_PCSpeakerOn(uint16_t spkVal)
+// Changing between 0 and max. possible value - too loud
+#ifdef MIXER_SAMPLE_FORMAT_FLOAT
+#define MIXER_SAMPLE_PCSPEAKER_TOP_VAL 0.75f
+#elif (defined MIXER_SAMPLE_FORMAT_SINT16)
+#define MIXER_SAMPLE_PCSPEAKER_TOP_VAL 24575
+#endif
+
+static inline void BEL_ST_PCSpeakerSetBeepSample(bool isUp)
 {
-	g_sdlPCSpeakerOn = true;
-	g_sdlCurrentBeepSample = 0;
-	g_sdlBeepHalfCycleCounter = 0;
-	g_sdlBeepHalfCycleCounterUpperBound = g_sdlAudioSpec.freq * spkVal;
+	// Changing between 0 and max. possible value - too loud
+	g_sdlCurrentBeepSample = isUp ? MIXER_SAMPLE_PCSPEAKER_TOP_VAL : 0;
 }
 
-void BE_ST_PCSpeakerOff(void)
+// Frequency is about 1193182Hz/spkVal
+void BE_ST_PCSpeakerSetInvFreq(uint16_t spkInvFreq)
 {
-	g_sdlPCSpeakerOn = false;
+	g_sdlPCSpeakerConnected = true;
+	BEL_ST_PCSpeakerSetBeepSample(0);
+	g_sdlBeepHalfCycleCounter = 0;
+	g_sdlBeepHalfCycleCounterUpperBound = g_sdlAudioSpec.freq * spkInvFreq;
+}
+
+void BE_ST_PCSpeakerSetConstVal(bool isUp)
+{
+	g_sdlPCSpeakerConnected = false;
+	BEL_ST_PCSpeakerSetBeepSample(isUp);
 }
 
 void BE_ST_BSound(uint16_t frequency)
 {
 	BE_ST_LockAudioRecursively();
-	BE_ST_PCSpeakerOn(PC_PIT_RATE/(uint32_t)frequency);
+	BE_ST_PCSpeakerSetInvFreq(PC_PIT_RATE/(uint32_t)frequency);
 	BE_ST_UnlockAudioRecursively();
 }
 
 void BE_ST_BNoSound(void)
 {
 	BE_ST_LockAudioRecursively();
-	BE_ST_PCSpeakerOff();
+	BE_ST_PCSpeakerSetConstVal(0);
 	BE_ST_UnlockAudioRecursively();
 }
 
@@ -749,10 +763,16 @@ void BE_ST_OPL2Write(uint8_t reg,uint8_t val)
 
 /**********************************************************************
 PC Speaker emulation; The function adds audio data to the stream.
-ASSUMPTION: The speaker is outputting sound (g_sdlPCSpeakerOn == true).
 **********************************************************************/
 static inline void PCSpeakerUpdateOne(BE_ST_SndSample_T *stream, int length)
 {
+	if (!g_sdlPCSpeakerConnected)
+	{
+		for (int loopVar = 0; loopVar < length; loopVar++, *stream++ = g_sdlCurrentBeepSample)
+			;
+		return;
+	}
+
 	for (int loopVar = 0; loopVar < length; loopVar++, stream++)
 	{
 		*stream = g_sdlCurrentBeepSample;
@@ -760,12 +780,7 @@ static inline void PCSpeakerUpdateOne(BE_ST_SndSample_T *stream, int length)
 		if (g_sdlBeepHalfCycleCounter >= g_sdlBeepHalfCycleCounterUpperBound)
 		{
 			g_sdlBeepHalfCycleCounter %= g_sdlBeepHalfCycleCounterUpperBound;
-			// Changing between 0 and max. possible value - too loud
-#ifdef MIXER_SAMPLE_FORMAT_FLOAT
-			g_sdlCurrentBeepSample = (g_sdlCurrentBeepSample < 0.5f) ? 0.75f : 0.0f;
-#elif (defined MIXER_SAMPLE_FORMAT_SINT16)
-			g_sdlCurrentBeepSample ^= 24575;
-#endif
+			BEL_ST_PCSpeakerSetBeepSample(g_sdlCurrentBeepSample < MIXER_SAMPLE_PCSPEAKER_TOP_VAL/2);
 		}
 	}
 }
@@ -884,8 +899,7 @@ static void BEL_ST_Simple_EmuCallBack(void *unused, Uint8 *stream, int len)
 		// Now generate sound
 		currNumOfSamples = BE_Cross_TypedMin(uint32_t, len/sizeof(BE_ST_SndSample_T), g_sdlScaledSamplesInCurrentPart-g_sdlScaledSampleOffsetInSound);
 		// PC Speaker
-		if (g_sdlPCSpeakerOn)
-			PCSpeakerUpdateOne(currSamplePtr, currNumOfSamples);
+		PCSpeakerUpdateOne(currSamplePtr, currNumOfSamples);
 		/*** AdLib (including hack for BE_ST_OPL2Write delays) ***/
 		if (g_sdlEmulatedOPLChipReady)
 		{
@@ -983,11 +997,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			}
 			if (targetPCSamples > g_sdlMiscOutSamplesEnd)
 			{
-				if (g_sdlPCSpeakerOn)
-					PCSpeakerUpdateOne(&g_sdlMiscOutSamples[g_sdlMiscOutSamplesEnd], targetPCSamples - g_sdlMiscOutSamplesEnd);
-				else
-					memset(&g_sdlMiscOutSamples[g_sdlMiscOutSamplesEnd], 0, sizeof(BE_ST_SndSample_T)*(targetPCSamples - g_sdlMiscOutSamplesEnd));
-
+				PCSpeakerUpdateOne(&g_sdlMiscOutSamples[g_sdlMiscOutSamplesEnd], targetPCSamples - g_sdlMiscOutSamplesEnd);
 				g_sdlMiscOutSamplesEnd = targetPCSamples;
 			}
 			// AdLib:

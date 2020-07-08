@@ -309,7 +309,7 @@ SDL_PCStopSound(void)
 //asm	cli
 
 	pcSound = 0;
-	BE_ST_PCSpeakerOff();
+	BE_ST_PCSpeakerSetConstVal(0);
 #if 0
 asm	in	al,0x61		  	// Turn the speaker off
 asm	and	al,0xfd			// ~2
@@ -344,7 +344,7 @@ SDL_PCService(void)
 			if (s)					// We have a frequency!
 			{
 				t = pcSoundLookup[s];
-				BE_ST_PCSpeakerOn(t);
+				BE_ST_PCSpeakerSetInvFreq(t);
 #if 0
 			asm	mov	bx,[t]
 
@@ -362,7 +362,7 @@ SDL_PCService(void)
 			}
 			else					// Time for some silence
 			{
-				BE_ST_PCSpeakerOff();
+				BE_ST_PCSpeakerSetConstVal(0);
 #if 0
 			asm	in	al,0x61		  	// Turn the speaker & gate off
 			asm	and	al,0xfc			// ~3
@@ -396,7 +396,7 @@ SDL_ShutPC(void)
 
 	pcSound = 0;
 
-	BE_ST_PCSpeakerOff();
+	BE_ST_PCSpeakerSetConstVal(0);
 #if 0
 asm	in	al,0x61		  	// Turn the speaker & gate off
 asm	and	al,0xfc			// ~3

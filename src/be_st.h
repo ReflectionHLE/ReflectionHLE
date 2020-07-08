@@ -235,16 +235,17 @@ void BE_ST_StopAudioAndTimerInt(void);
 void BE_ST_LockAudioRecursively(void);
 void BE_ST_UnlockAudioRecursively(void);
 bool BE_ST_IsEmulatedOPLChipReady(void);
-// WARNING about using BE_ST_PCSpeakerOn/Off:
+// WARNING about using BE_ST_PCSpeaker*:
 //
 // You MUST call BE_ST_LockAudioRecursively before calling any of these
 // functions. Afterwards, you MUST call BE_ST_UnlockAudioRecursively.
 // If you don't, unexpected behaviors may be reproduced
 // (e.g., an audio callback thread hang).
 //
-// The sound frequency is about 1193182Hz/spkVal.
-void BE_ST_PCSpeakerOn(uint16_t spkVal);
-void BE_ST_PCSpeakerOff(void);
+// For BE_ST_PCSpeakerSetInvFreq: The frequency is about 1193182Hz/spkInvFreq.
+// To turn the PC Speaker off, call BE_ST_PCSpeakerSetConstVal(0).
+void BE_ST_PCSpeakerSetInvFreq(uint16_t spkInvFreq);
+void BE_ST_PCSpeakerSetConstVal(bool isUp);
 // Used for playback from digitized sound data in signed 16-bit int format.
 // Do NOT assume the data is copied; You ***must*** call BE_ST_StopSoundEffect.
 // You can also use BE_ST_StartAudioAndTimerInt to set a callback function,
