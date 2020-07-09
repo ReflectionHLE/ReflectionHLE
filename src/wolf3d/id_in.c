@@ -145,18 +145,21 @@ static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",nil};
 //
 ///////////////////////////////////////////////////////////////////////////
 static void interrupt
-INL_KeyService(void)
+INL_KeyService(id0_byte_t k)
 {
-static	id0_boolean_t	special;
-		id0_byte_t	k,c,
-				temp;
-		id0_int_t		i;
+	// NOTE: The original signature of the function is static void(void),
+	// but we get the scancode as an argument rather than via inportb now
+	// (and there's no need to clear the key)
 
+	static id0_boolean_t special;
+	id0_byte_t c;
+#if 0
 	k = inportb(0x60);	// Get the scan code
 
 	// Tell the XT keyboard controller to clear the key
 	outportb(0x61,(temp = inportb(0x61)) | 0x80);
 	outportb(0x61,temp);
+#endif
 
 	if (k == 0xe0)		// Special key prefix
 		special = true;
@@ -210,7 +213,7 @@ static	id0_boolean_t	special;
 
 	if (INL_KeyHook && !special)
 		INL_KeyHook();
-	outportb(0x20,0x20);
+//	outportb(0x20,0x20);
 }
 
 ///////////////////////////////////////////////////////////////////////////
