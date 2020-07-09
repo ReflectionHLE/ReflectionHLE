@@ -89,8 +89,8 @@ void	VL_Startup (void)
 #endif
 
 	videocard = VL_VideoID ();
-	for (i = 1;i < _argc;i++)
-		if (US_CheckParm(_argv[i],ParmStrings) == 0)
+	for (i = 1;i < id0_argc;i++)
+		if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
 		{
 			videocard = 5;
 			break;

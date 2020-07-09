@@ -612,9 +612,9 @@ IN_Startup(void)
 
 	checkjoys = true;
 	checkmouse = true;
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],ParmStrings))
+		switch (US_CheckParm(id0_argv[i],ParmStrings))
 		{
 		case 0:
 			// *** S3DNA RESTORATION ***

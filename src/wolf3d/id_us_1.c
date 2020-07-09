@@ -216,9 +216,9 @@ US_Startup(void)
 
 	US_InitRndT(true);		// Initialize the random number generator
 
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],ParmStrings2))
+		switch (US_CheckParm(id0_argv[i],ParmStrings2))
 		{
 		case 0:
 			compatability = true;
@@ -230,16 +230,16 @@ US_Startup(void)
 	}
 
 	// Check for TED launching here
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		n = US_CheckParm(_argv[i],ParmStrings);
+		n = US_CheckParm(id0_argv[i],ParmStrings);
 		// *** ALPHA RESTORATION ***
 		// Use code from US_TextScreen in Catacomb 3-D
 		// (the earlier Keen Dreams version is also similar)
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		if (n == 0)
 		{
-			tedlevelnum = atoi(_argv[i + 1]);
+			tedlevelnum = atoi(id0_argv[i + 1]);
 			if (tedlevelnum >= 0)
 			{
 				tedlevel = true;
@@ -257,7 +257,7 @@ US_Startup(void)
 		switch(n)
 		{
 		 case 0:
-		   tedlevelnum = atoi(_argv[i + 1]);
+		   tedlevelnum = atoi(id0_argv[i + 1]);
 		   // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 		   if (tedlevelnum >= 0)

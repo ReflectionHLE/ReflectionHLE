@@ -2862,9 +2862,9 @@ SD_Startup(void)
 	sbNoProCheck = false;
 #endif
 #ifndef	_MUSE_
-	for (i = 1;i < _argc;i++)
+	for (i = 1;i < id0_argc;i++)
 	{
-		switch (US_CheckParm(_argv[i],ParmStrings))
+		switch (US_CheckParm(id0_argv[i],ParmStrings))
 		{
 		case 0:						// No AdLib detection
 			// *** S3DNA RESTORATION ***

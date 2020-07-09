@@ -329,8 +329,8 @@ extern id0_int_t id0_far  CheckIs386(void);
 
 	id0_int_t     i;
 
-	for (i = 1;i < _argc;i++)
-		if (US_CheckParm(_argv[i],JHParmStrings) == 0)
+	for (i = 1;i < id0_argc;i++)
+		if (US_CheckParm(id0_argv[i],JHParmStrings) == 0)
 		{
 			IsA386 = false;
 			return;
@@ -1076,9 +1076,9 @@ id0_boolean_t MS_CheckParm (id0_char_t id0_far *check)
 	id0_int_t             i;
 	id0_char_t    *parm;
 
-	for (i = 1;i<_argc;i++)
+	for (i = 1;i<id0_argc;i++)
 	{
-		parm = _argv[i];
+		parm = id0_argv[i];
 
 		while ( !isalpha(*parm) )       // skip - / \ etc.. in front of parm
 			if (!*parm++)
@@ -1967,9 +1967,9 @@ void    DemoLoop (void)
 		NewGame(1,0);
 #endif
 
-		for (i = 1;i < _argc;i++)
+		for (i = 1;i < id0_argc;i++)
 		{
-			if ( (level = US_CheckParm(_argv[i],ParmStrings)) != -1)
+			if ( (level = US_CheckParm(id0_argv[i],ParmStrings)) != -1)
 			{
 			// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -2299,8 +2299,8 @@ void main (void)
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	for (i = 1;i<_argc;i++)
-		if (US_CheckParm(_argv[i],nosprtxt) == 0)
+	for (i = 1;i<id0_argc;i++)
+		if (US_CheckParm(id0_argv[i],nosprtxt) == 0)
 			nospr = true;
 #endif
 
