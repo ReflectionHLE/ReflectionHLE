@@ -65,6 +65,10 @@
 
 #define	SDL_SoundFinished()	{SoundNumber = SoundPriority = 0;}
 
+// REFKEEN: Patch a few service functions to work
+// like equivalent ID_SD_A.ASM code, and enable them
+#define REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES 1
+
 // Macros for SoundBlaster stuff
 #define	sbOut(n,b)	outportb((n) + sbLocation,b)
 #define	sbIn(n)		inportb((n) + sbLocation)
@@ -932,12 +936,14 @@ asm	popf
 #endif
 }
 
+#if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES // Also make function non-static
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_SSService() - Handles playing the next sample on the Sound Source
 //
 ///////////////////////////////////////////////////////////////////////////
-static void
+//static void
+void
 SDL_SSService(void)
 {
 	id0_boolean_t	gotit;
@@ -951,11 +957,13 @@ SDL_SSService(void)
 	asm	jnz		done			// Nope - don't push any more data out
 
 		v = *ssSample++;
+#if !REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
 		if (!(--ssLengthLeft))
 		{
 			(id0_long_t)ssSample = 0;
 			SDL_DigitizedDone();
 		}
+#endif
 
 	asm	mov		dx,[ssData]		// Pump the value out
 	asm	mov		al,[v]
@@ -971,11 +979,21 @@ SDL_SSService(void)
 
 	asm	push	ax				// Delay a short while
 	asm	pop		ax
+#if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
+		if (!(--ssLengthLeft))
+		{
+			(id0_long_t)ssSample = 0;
+			SDL_DigitizedDone();
+			break;
+		}
+#else
 	asm	push	ax
 	asm	pop		ax
+#endif
 	}
 done:;
 }
+#endif // REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1210,13 +1228,14 @@ asm	out	0x61,al
 asm	popf
 }
 
-#if 0
+#if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES // Also make function non-static
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_PCService() - Handles playing the next sample in a PC sound
 //
 ///////////////////////////////////////////////////////////////////////////
-static void
+//static void
+void
 SDL_PCService(void)
 {
 	id0_byte_t	s;
@@ -1264,7 +1283,7 @@ SDL_PCService(void)
 		}
 	}
 }
-#endif
+#endif // REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1726,7 +1745,8 @@ asm	popf
 //	SDL_PCStopSound() - Stops the current sound playing on the PC Speaker
 //
 ///////////////////////////////////////////////////////////////////////////
-#ifdef	_MUSE_
+//#ifdef	_MUSE_
+#if 1 // REFKEEN: Make function non-static for id_sd_a.c
 void
 #else
 static void
@@ -1975,7 +1995,7 @@ asm	cli
 asm	popf
 }
 
-#if 0
+#if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
 ///////////////////////////////////////////////////////////////////////////
 //
 // 	SDL_ALSoundService() - Plays the next sample out through the AdLib card
@@ -2006,9 +2026,7 @@ SDL_ALSoundService(void)
 		}
 	}
 }
-#endif
 
-#if 0
 void
 SDL_ALService(void)
 {
@@ -2018,7 +2036,13 @@ SDL_ALService(void)
 	if (!sqActive)
 		return;
 
+#if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
+	while (sqHackLen &&
+	       ((sqHackTime&0xFFFF) <= (alTimeCount&0xFFFF)) &&
+	       (((id0_longword_t)sqHackTime>>16) <= (alTimeCount>>16)))
+#else
 	while (sqHackLen && (sqHackTime <= alTimeCount))
+#endif
 	{
 		w = *sqHackPtr++;
 		sqHackTime = alTimeCount + *sqHackPtr++;
@@ -2036,7 +2060,7 @@ SDL_ALService(void)
 		alTimeCount = sqHackTime = 0;
 	}
 }
-#endif
+#endif // REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
 
 // *** S3DNA RESTORATION ***
 // Recreated MIDI to AL translation code
