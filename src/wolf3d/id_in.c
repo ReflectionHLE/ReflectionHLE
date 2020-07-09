@@ -934,13 +934,8 @@ id0_boolean_t IN_UserInput(id0_longword_t delay)
 
 id0_byte_t	IN_MouseButtons (void)
 {
-	if (MousePresent)
-	{
-		Mouse(MButtons);
-		return _BX;
-	}
-	else
-		return 0;
+	// REFKEEN: This is almost a clone of INL_GetMouseButtons
+	return MousePresent ? BE_ST_GetEmuMouseButtons() : 0;
 }
 
 
@@ -954,13 +949,7 @@ id0_byte_t	IN_MouseButtons (void)
 
 id0_byte_t	IN_JoyButtons (void)
 {
-	id0_unsigned_t joybits;
-
-	joybits = inportb(0x201);	// Get all the joystick buttons
-	joybits >>= 4;				// only the high bits are useful
-	joybits ^= 15;				// return with 1=pressed
-
-	return joybits;
+	return BE_ST_GetEmuJoyButtons(0) | (BE_ST_GetEmuJoyButtons(1) << 2);
 }
 
 
