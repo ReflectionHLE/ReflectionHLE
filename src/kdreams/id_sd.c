@@ -1257,21 +1257,19 @@ SDL_StartAL(void)
 static id0_boolean_t
 SDL_DetectAdLib(void)
 {
-	// REFKEEN - If there's no emulated OPL chip, just return false
-	if (!BE_ST_IsEmulatedOPLChipReady())
-	{
-		return false;
-	}
-
 	//id0_byte_t	status1,status2;
 	//id0_int_t		i;
+
+	// REFKEEN - If there's no emulated OPL chip, just return false
+	if (!BE_ST_IsEmulatedOPLChipReady())
+		return false;
 
 	alOut(4,0x60);	// Reset T1 & T2
 	alOut(4,0x80);	// Reset IRQ
 	//status1 = readstat();
 	alOut(2,0xff);	// Set timer 1
 	alOut(4,0x21);	// Start timer 1
-	// TODO (REFKEEN): Anyway to handle this delay (if at all)?
+	// TODO (REFKEEN): Any way to handle this delay (if at all)?
 	//SDL_Delay(TimerDelay100);
 
 	//status2 = readstat();
@@ -1751,7 +1749,7 @@ SD_Shutdown(void)
 
 	SDL_SetTimer0(0);
 
-// Do NOT call this here - A deadlock is a possibility (via recursive lock)
+// REFKEEN: Do NOT call this here - A deadlock is a possibility (via recursive lock)
 //	BE_ST_StopAudioAndTimerInt(void);
 //	setvect(8,t0OldService);
 
