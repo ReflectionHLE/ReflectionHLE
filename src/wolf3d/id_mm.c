@@ -30,6 +30,8 @@ EMS / XMS unmanaged routines
 //#pragma warn -pro
 //#pragma warn -use
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -53,10 +55,10 @@ typedef struct mmblockstruct
 	struct mmblockstruct id0_far *next;
 } mmblocktype;
 
-
-//#define GETNEWBLOCK {if(!(mmnew=mmfree))Quit("MM_GETNEWBLOCK: No free blocks!")\
-//	;mmfree=mmfree->next;}
-
+/*
+#define GETNEWBLOCK {if(!(mmnew=mmfree))Quit("MM_GETNEWBLOCK: No free blocks!")\
+	;mmfree=mmfree->next;}
+*/
 #define GETNEWBLOCK {if(!mmfree)MML_ClearBlock();mmnew=mmfree;mmfree=mmfree->next;}
 
 #define FREEBLOCK(x) {*x->useptr=NULL;x->next=mmfree;mmfree=x;}
@@ -96,9 +98,9 @@ id0_boolean_t		bombonerror;
 
 //id0_unsigned_t	totalEMSpages,freeEMSpages,EMSpageframe,EMSpagesmapped,EMShandle;
 
-void		(* XMSaddr) (void);		// far pointer to XMS driver
+//void		(* XMSaddr) (void);		// far pointer to XMS driver
 
-id0_unsigned_t	numUMBs,UMBbase[MAXUMBS];
+//id0_unsigned_t	numUMBs,UMBbase[MAXUMBS];
 
 //==========================================================================
 
@@ -106,16 +108,17 @@ id0_unsigned_t	numUMBs,UMBbase[MAXUMBS];
 // local prototypes
 //
 
-id0_boolean_t		MML_CheckForEMS (void);
-void 		MML_ShutdownEMS (void);
-void 		MM_MapEMS (void);
-id0_boolean_t 	MML_CheckForXMS (void);
-void 		MML_ShutdownXMS (void);
+//id0_boolean_t		MML_CheckForEMS (void);
+//void 		MML_ShutdownEMS (void);
+//void 		MM_MapEMS (void);
+//id0_boolean_t 	MML_CheckForXMS (void);
+//void 		MML_ShutdownXMS (void);
 void		MML_UseSpace (id0_unsigned_t segstart, id0_unsigned_t seglength);
 void 		MML_ClearBlock (void);
 
 //==========================================================================
 
+#if 0
 /*
 ======================
 =
@@ -219,6 +222,7 @@ asm	mov	dx,[base]
 asm	call	[DWORD PTR XMSaddr]
 	}
 }
+#endif
 
 //==========================================================================
 
@@ -297,7 +301,7 @@ void MML_UseSpace (id0_unsigned_t segstart, id0_unsigned_t seglength)
 
 void MML_ClearBlock (void)
 {
-	mmblocktype id0_far *scan,id0_far *last;
+	mmblocktype id0_far *scan/*,id0_far *last*/;
 
 	scan = mmhead->next;
 
@@ -328,14 +332,14 @@ void MML_ClearBlock (void)
 ===================
 */
 
-static	id0_char_t *ParmStrings[] = {"noems","noxms",""};
+//static	id0_char_t *ParmStrings[] = {"noems","noxms",""}; // Unused var
 
 void MM_Startup (void)
 {
 	id0_int_t i;
-	id0_unsigned_t 	id0_long_t length;
+	id0_unsigned_long_t length;
 	void id0_far 	*start;
-	id0_unsigned_t 	segstart,seglength,endfree;
+	id0_unsigned_t 	segstart,seglength/*,endfree*/;
 
 	if (mmstarted)
 		MM_Shutdown ();
@@ -367,25 +371,38 @@ void MM_Startup (void)
 //
 // get all available near conventional memory segments
 //
-	length=coreleft();
-	start = (void id0_far *)(nearheap = malloc(length));
+	length=BE_Cross_Bcoreleft();
+	start = (void id0_far *)(nearheap = BE_Cross_Bmalloc(length));
 
+	length -= 16-BE_Cross_GetPtrNormalizedOff(start); // REFKEEN - Offset is NORMALIZED, thus < 16
+	length -= SAVENEARHEAP;
+	seglength = length / 16;			// now in paragraphs
+	segstart = BE_Cross_GetPtrNormalizedSeg(start)+(BE_Cross_GetPtrNormalizedOff(start)+15)/16;
+#if 0
 	length -= 16-(FP_OFF(start)&15);
 	length -= SAVENEARHEAP;
 	seglength = length / 16;			// now in paragraphs
 	segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;
+#endif
 	MML_UseSpace (segstart,seglength);
 	mminfo.nearheap = length;
 
 //
 // get all available far conventional memory segments
 //
-	length=farcoreleft();
-	start = farheap = farmalloc(length);
+	length=BE_Cross_Bfarcoreleft();
+	start = farheap = BE_Cross_Bfarmalloc(length);
+
+	length -= 16-BE_Cross_GetPtrNormalizedOff(start); // REFKEEN - Offset is NORMALIZED, thus < 16
+	length -= SAVEFARHEAP;
+	seglength = length / 16;			// now in paragraphs
+	segstart = BE_Cross_GetPtrNormalizedSeg(start)+(BE_Cross_GetPtrNormalizedOff(start)+15)/16;
+#if 0
 	length -= 16-(FP_OFF(start)&15);
 	length -= SAVEFARHEAP;
 	seglength = length / 16;			// now in paragraphs
 	segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;
+#endif
 	MML_UseSpace (segstart,seglength);
 	mminfo.farheap = length;
 	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
@@ -415,8 +432,8 @@ void MM_Shutdown (void)
   if (!mmstarted)
 	return;
 
-  farfree (farheap);
-  free (nearheap);
+  BE_Cross_Bfarfree (farheap);
+  BE_Cross_Bfree (nearheap);
 //  MML_ShutdownXMS ();
 }
 
@@ -489,7 +506,8 @@ tryagain:
 			//
 				purge = lastscan->next;
 				lastscan->next = mmnew;
-				mmnew->start = *(id0_unsigned_t *)baseptr = startseg;
+				mmnew->start /*= *(id0_unsigned_t *)baseptr*/ = startseg;
+				*baseptr = BE_Cross_BGetPtrFromSeg(startseg);
 				mmnew->next = scan;
 				while ( purge != scan)
 				{	// free the purgable block
@@ -694,7 +712,7 @@ void MM_SortMem (void)
 			playing += STARTADLIBSOUNDS;
 			break;
 		}
-		MM_SetLock(&(memptr)audiosegs[playing],true);
+		MM_SetLock((memptr *)&audiosegs[playing],true);
 	}
 
 
@@ -741,15 +759,18 @@ void MM_SortMem (void)
 					dest = start;
 					while (length > 0xf00)
 					{
-						movedata(source,0,dest,0,0xf00*16);
+						memmove(BE_Cross_BGetPtrFromSeg(dest), BE_Cross_BGetPtrFromSeg(source), 0xf00*16);
+						//movedata(source,0,dest,0,0xf00*16);
 						length -= 0xf00;
 						source += 0xf00;
 						dest += 0xf00;
 					}
-					movedata(source,0,dest,0,length*16);
+					memmove(BE_Cross_BGetPtrFromSeg(dest), BE_Cross_BGetPtrFromSeg(source), length*16);
+					//movedata(source,0,dest,0,length*16);
 
 					scan->start = start;
-					*(id0_unsigned_t *)scan->useptr = start;
+					//*(id0_unsigned_t *)scan->useptr = start;
+					*(scan->useptr) = BE_Cross_BGetPtrFromSeg(start);
 				}
 				start = scan->start + scan->length;
 			}
@@ -765,7 +786,7 @@ void MM_SortMem (void)
 		aftersort();
 
 	if (playing)
-		MM_SetLock(&(memptr)audiosegs[playing],false);
+		MM_SetLock((memptr *)&audiosegs[playing],false);
 }
 
 
@@ -787,8 +808,8 @@ void MM_ShowMemory (void)
 {
 	mmblocktype id0_far *scan;
 	id0_unsigned_t color,temp,x,y;
-	id0_long_t	end,owner;
-	id0_char_t    scratch[80],str[10];
+	id0_long_t	end/*,owner*/;
+	//id0_char_t    scratch[80],str[10];
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -848,7 +869,8 @@ void MM_ShowMemory (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** (but looks unused in ALL versions)
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+#if 0 // REFKEEN: So, don't compile this
+//#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 //==========================================================================
 
 /*
@@ -868,7 +890,7 @@ void MM_DumpData (void)
 	FILE	*dumpfile;
 
 
-	free (nearheap);
+	BE_Cross_Bfree (nearheap);
 	dumpfile = fopen ("MMDUMP.TXT","w");
 	if (!dumpfile)
 		Quit ("MM_DumpData: Couldn't open MMDUMP.TXT!");
@@ -991,4 +1013,4 @@ void MM_BombOnError (id0_boolean_t bomb)
 	bombonerror = bomb;
 }
 
-
+REFKEEN_NS_E
