@@ -94,7 +94,7 @@ mmblocktype	id0_far mmblocks[MAXBLOCKS]
 
 id0_boolean_t		bombonerror;
 
-//unsigned	totalEMSpages,freeEMSpages,EMSpageframe,EMSpagesmapped,EMShandle;
+//id0_unsigned_t	totalEMSpages,freeEMSpages,EMSpageframe,EMSpagesmapped,EMShandle;
 
 void		(* XMSaddr) (void);		// far pointer to XMS driver
 
