@@ -28,7 +28,7 @@
 //			NeedsMusic - load music?
 //
 
-#pragma hdrstop		// Wierdo thing with MUSE
+//#pragma hdrstop		// Wierdo thing with MUSE
 
 //#include <dos.h>
 
@@ -37,8 +37,8 @@
 #else
 #include "id_heads.h"
 #endif
-#pragma	hdrstop
-#pragma	warn	-pia
+//#pragma	hdrstop
+//#pragma	warn	-pia
 
 #ifdef	nil
 #undef	nil
@@ -295,7 +295,7 @@ static	id0_word_t			sqMode,sqFadeStep;
 //	SDL_SetTimer0() - Sets system timer 0 to the specified speed
 //
 ///////////////////////////////////////////////////////////////////////////
-#pragma	argsused
+//#pragma	argsused
 static void
 SDL_SetTimer0(id0_word_t speed)
 {

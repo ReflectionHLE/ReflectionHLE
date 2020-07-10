@@ -1,7 +1,7 @@
 // WL_ACT2.C
 
 #include "wl_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -2034,13 +2034,13 @@ statetype s_spark3 	= {false,SPR_SPARK3,6,T_Projectile,NULL,&s_spark4};
 statetype s_spark4 	= {false,SPR_SPARK4,6,T_Projectile,NULL,&s_spark1};
 
 
-#pragma argsused
+//#pragma argsused
 void A_Slurpie (objtype *ob)
 {
  SD_PlaySound(SLURPIESND);
 }
 
-#pragma argsused
+//#pragma argsused
 void A_Breathing (objtype *ob)
 {
  SD_PlaySound(ANGELTIREDSND);
@@ -2079,7 +2079,7 @@ void SpawnAngel (id0_int_t tilex, id0_int_t tiley)
 =================
 */
 
-#pragma argsused
+//#pragma argsused
 void A_Victory (objtype *ob)
 {
 	playstate = ex_victorious;
@@ -3499,7 +3499,7 @@ void A_MechaSound (objtype *ob)
 }
 
 
-#pragma argsused
+//#pragma argsused
 void A_Slurpie (objtype *ob)
 {
  // *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -4477,7 +4477,7 @@ void T_BJYell (objtype *ob)
 ===============
 */
 
-#pragma argsused
+//#pragma argsused
 void T_BJDone (objtype *ob)
 {
 	playstate = ex_victorious;				// exit castle tile

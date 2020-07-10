@@ -28,9 +28,9 @@
 
 #include "id_heads.h"
 
-#pragma	hdrstop
+//#pragma	hdrstop
 
-#pragma	warn	-pia
+//#pragma	warn	-pia
 
 
 //	Global variables
@@ -105,8 +105,8 @@ static	id0_boolean_t		US_Started;
 //			from DOS.
 //
 ///////////////////////////////////////////////////////////////////////////
-#pragma	warn	-par
-#pragma	warn	-rch
+//#pragma	warn	-par
+//#pragma	warn	-rch
 id0_int_t
 USL_HardError(id0_word_t errval,id0_int_t ax,id0_int_t bp,id0_int_t si)
 {
@@ -191,8 +191,8 @@ oh_kill_me:
 #undef	RETRY
 #undef	ABORT
 }
-#pragma	warn	+par
-#pragma	warn	+rch
+//#pragma	warn	+par
+//#pragma	warn	+rch
 
 
 ///////////////////////////////////////////////////////////////////////////

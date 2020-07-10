@@ -1,7 +1,7 @@
 // WL_GAME.C
 
 #include "wl_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 #ifdef MYPROFILE
 #include <time.h>

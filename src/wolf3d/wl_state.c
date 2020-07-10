@@ -1,7 +1,7 @@
 // WL_STATE.C
 
 #include "wl_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 /*
 =============================================================================

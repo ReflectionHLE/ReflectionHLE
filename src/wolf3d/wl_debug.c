@@ -1,7 +1,7 @@
 // WL_DEBUG.C
 
 #include "wl_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 //#include <BIOS.H>
 
 /*
@@ -233,7 +233,7 @@ void PicturePause (void)
 ================
 */
 
-#pragma warn -pia
+//#pragma warn -pia
 void ShapeTest (void)
 {
 extern	id0_word_t	NumDigi;
@@ -462,7 +462,7 @@ static	id0_char_t	buf[10];
 	}
 	SD_StopDigitized();
 }
-#pragma warn +pia
+//#pragma warn +pia
 
 
 

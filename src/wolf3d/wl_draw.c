@@ -2,7 +2,7 @@
 
 #include "wl_def.h"
 //#include <DOS.H>
-#pragma hdrstop
+//#pragma hdrstop
 
 //#define DEBUGWALLS
 //#define DEBUGTICS
@@ -162,7 +162,7 @@ void AsmRefresh (void);			// in WL_DR_A.ASM
 ========================
 */
 
-#pragma warn -rvl			// I stick the return value in with ASMs
+//#pragma warn -rvl			// I stick the return value in with ASMs
 
 fixed FixedByFrac (fixed a, fixed b)
 {
@@ -206,7 +206,7 @@ ansok:;
 
 }
 
-#pragma warn +rvl
+//#pragma warn +rvl
 
 //==========================================================================
 
@@ -380,7 +380,7 @@ id0_boolean_t TransformTile (id0_int_t tx, id0_int_t ty, id0_int_t *dispx, id0_i
 ====================
 */
 
-#pragma warn -rvl			// I stick the return value in with ASMs
+//#pragma warn -rvl			// I stick the return value in with ASMs
 
 id0_int_t	CalcHeight (void)
 {

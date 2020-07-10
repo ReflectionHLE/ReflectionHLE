@@ -5,7 +5,7 @@
 //
 
 #include "id_heads.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 //	Main Mem specific variables
 	id0_boolean_t			MainPresent;
@@ -612,7 +612,7 @@ PML_ClosePageFile(void)
 //  		use the physical page specified by the lock type
 //
 #if 1
-#pragma argsused	// DEBUG - remove lock parameter
+//#pragma argsused	// DEBUG - remove lock parameter
 memptr
 PML_GetEMSAddress(id0_int_t page,PMLockType lock)
 {
@@ -933,7 +933,7 @@ PML_LoadPage(id0_int_t pagenum,id0_boolean_t mainonly)
 //		Then, check XMS
 //		If not in XMS, load into Main Memory or EMS
 //
-#pragma warn -pia
+//#pragma warn -pia
 memptr
 PM_GetPage(id0_int_t pagenum)
 {
@@ -989,7 +989,7 @@ asm	out	dx,al
 
 	return(result);
 }
-#pragma warn +pia
+//#pragma warn +pia
 
 //
 //	PM_SetPageLock() - Sets the lock type on a given page

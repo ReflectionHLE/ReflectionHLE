@@ -15,10 +15,10 @@ loaded into the data segment
 */
 
 #include "id_heads.h"
-#pragma hdrstop
+//#pragma hdrstop
 
-#pragma warn -pro
-#pragma warn -use
+//#pragma warn -pro
+//#pragma warn -use
 
 #define THREEBYTEGRSTARTS
 

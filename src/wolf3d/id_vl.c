@@ -6,7 +6,7 @@
 #include <string.h>
 #include "id_head.h"
 #include "id_vl.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 //
 // SC_INDEX is expected to stay at SC_MAPMASK for proper operation

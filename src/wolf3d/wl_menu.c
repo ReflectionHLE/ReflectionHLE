@@ -5,7 +5,7 @@
 //
 ////////////////////////////////////////////////////////////////////
 #include "wl_def.h"
-#pragma hdrstop
+//#pragma hdrstop
 
 //
 // PRIVATE PROTOTYPES
@@ -106,7 +106,7 @@ CP_iteminfo
 #define GAMEVER_MOUSELBACKY 184
 #endif
 
-#pragma warn -sus
+//#pragma warn -sus
 CP_itemtype GAMEVER_COND_FARPTR
 MainMenu[]=
 {
@@ -217,7 +217,7 @@ GAMEVER_COND_FARPTR CtlMenu[]=
 #endif
 },
 
-#pragma warn +sus
+//#pragma warn +sus
 
 // *** ALPHA RESTORATION ***/
 #if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
