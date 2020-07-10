@@ -336,7 +336,7 @@ void MM_MapEMS (void)
 {
 	id0_char_t	str[80],str2[10];
 	id0_unsigned_t	error;
-	int	i;
+	id0_int_t	i;
 
 	for (i=0;i<EMSpagesmapped;i++)
 	{
