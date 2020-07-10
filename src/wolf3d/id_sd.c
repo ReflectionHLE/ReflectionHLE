@@ -115,7 +115,8 @@ extern	void interrupt	SDL_t0ExtremeAsmService(void),
 	SDSMode		DigiMode;
 	id0_longword_t	TimeCount;
 	id0_word_t		HackCount;
-	id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
+	SoundCommon             **SoundTable;
+	//id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
 	// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 #if REFKEEN_SD_ENABLE_SOUNDSOURCE
@@ -137,7 +138,7 @@ static	id0_boolean_t			SD_Started;
 #else
 		GAMEVER_COND_STATIC id0_boolean_t			nextsoundpos;
 #endif
-		id0_longword_t		TimerDivisor,TimerCount;
+//		id0_longword_t		TimerDivisor,TimerCount;
 static	id0_char_t			*ParmStrings[] =
 						{
 							"noal",
@@ -298,6 +299,9 @@ static	id0_word_t			sqMode,sqFadeStep;
 static void
 SDL_SetTimer0(id0_word_t speed)
 {
+	// REFKEEN: Just configure the timer, TimerDivisor is unused now
+	BE_ST_SetTimer(speed);
+#if 0
 #ifndef TPROF	// If using Borland's profiling, don't screw with the timer
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -323,6 +327,7 @@ asm	popf
 #endif
 #else
 	TimerDivisor = 0x10000;
+#endif
 #endif
 }
 
@@ -424,10 +429,11 @@ SDL_SBStopSample(void)
 {
 	id0_byte_t	is;
 
+	BE_ST_LockAudioRecursively(); // REFKEEN: Make this unconditional
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-asm	pushf
-asm	cli
+//asm	pushf
+//asm	cli
 #endif
 
 	if (sbSamplePlaying)
@@ -435,8 +441,8 @@ asm	cli
 		sbSamplePlaying = false;
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-		asm	pushf
-		asm	cli
+//		asm	pushf
+//		asm	cli
 #endif
 
 		sbWriteDelay();
@@ -450,13 +456,14 @@ asm	cli
 		outportb(0x21,is);
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-		asm	popf
+//		asm	popf
 #endif
 	}
 
+	BE_ST_UnlockAudioRecursively(); // REFKEEN: Make this unconditional
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-asm	popf
+//asm	popf
 #endif
 }
 
@@ -489,10 +496,11 @@ SDL_SBPlaySeg(volatile id0_byte_t id0_huge *data,id0_longword_t length)
 
 	// Program the DMA controller
 
+	BE_ST_LockAudioRecursively(); // REFKEEN: Make this unconditional
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-asm	pushf
-asm	cli
+//asm	pushf
+//asm	cli
 #endif
 	// *** ALPHA RESTORATION ***
 	// Use hardcoded DMA channel, as in Keen Dreams
@@ -525,9 +533,9 @@ asm	cli
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-asm	popf
-asm	pushf
-asm	cli
+//asm	popf
+//asm	pushf
+//asm	cli
 #endif
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0x14);
@@ -535,9 +543,10 @@ asm	cli
 	sbOut(sbWriteData,(id0_byte_t)uselen);
 	sbWriteDelay();
 	sbOut(sbWriteData,(id0_byte_t)(uselen >> 8));
+	BE_ST_UnlockAudioRecursively(); // REFKEEN: Make this unconditional
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-asm	popf
+//asm	popf
 #endif
 
 	return(uselen + 1);
@@ -592,10 +601,11 @@ SDL_SBPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 
 	SDL_SBStopSample();
 
+	BE_ST_LockAudioRecursively(); // REFKEEN: Make this unconditional
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-asm	pushf
-asm	cli
+//asm	pushf
+//asm	cli
 #endif
 
 	used = SDL_SBPlaySeg(data,len);
@@ -611,8 +621,8 @@ asm	cli
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-asm	pushf
-asm	cli
+//asm	pushf
+//asm	cli
 #endif
 	sbOldIntMask = inportb(0x21);
 	outportb(0x21,sbOldIntMask & ~(1 << sbInterrupt));
@@ -622,14 +632,15 @@ asm	cli
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-asm	popf
+//asm	popf
 #endif
 
 	sbSamplePlaying = true;
 
+	BE_ST_UnlockAudioRecursively(); // REFKEEN: Make this unconditional
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-asm	popf
+//asm	popf
 #endif
 }
 
@@ -658,17 +669,19 @@ SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 	v = ((leftpos & 0x0f) << 4) | (rightpos & 0x0f);
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
+	BE_ST_LockAudioRecursively(); // REFKEEN: Make this unconditional
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-asm	pushf
-asm	cli
+//asm	pushf
+//asm	cli
 #endif
 
 	sbOut(sbpMixerAddr,sbpmVoiceVol);
 	sbOut(sbpMixerData,v);
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
+	BE_ST_UnlockAudioRecursively(); // REFKEEN: Make this unconditional
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-asm	popf
+//asm	popf
 #endif
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
@@ -923,16 +936,18 @@ static void
 SDL_SSStopSample(void)
 {
 	// *** ALPHA RESTORATION ***
+	BE_ST_LockAudioRecursively(); // REFKEEN: Make this unconditional
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-asm	pushf
-asm	cli
+//asm	pushf
+//asm	cli
 #endif
 
 	(id0_long_t)ssSample = 0;
 
 	// *** ALPHA RESTORATION ***
+	BE_ST_UnlockAudioRecursively(); // REFKEEN: Make this unconditional
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-asm	popf
+//asm	popf
 #endif
 }
 
@@ -1007,13 +1022,15 @@ static void
 #endif
 SDL_SSPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	ssLengthLeft = len;
 	ssSample = (volatile id0_byte_t id0_far *)data;
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1144,15 +1161,17 @@ static void
 #endif
 SDL_PCPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	SDL_IndicatePC(true);
 
 	pcLengthLeft = len;
 	pcSound = (volatile id0_byte_t id0_far *)data;
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1167,18 +1186,23 @@ static void
 #endif
 SDL_PCStopSample(void)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	(id0_long_t)pcSound = 0;
 
 	SDL_IndicatePC(false);
 
+	BE_ST_PCSpeakerSetConstVal(0);
+#if 0
 asm	in	al,0x61		  	// Turn the speaker off
 asm	and	al,0xfd			// ~2
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 #endif // !defined GAMEVER_NOAH3D
 
@@ -1194,14 +1218,16 @@ static void
 #endif
 SDL_PCPlaySound(PCSound id0_far *sound)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	pcLastSample = -1;
 	pcLengthLeft = sound->common.length;
 	pcSound = sound->data;
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1216,16 +1242,21 @@ static void
 #endif
 SDL_PCStopSound(void)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	(id0_long_t)pcSound = 0;
 
+	BE_ST_PCSpeakerSetConstVal(0);
+#if 0
 asm	in	al,0x61		  	// Turn the speaker off
 asm	and	al,0xfd			// ~2
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 #if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES // Also make function non-static
@@ -1246,13 +1277,16 @@ SDL_PCService(void)
 		s = *pcSound++;
 		if (s != pcLastSample)
 		{
-		asm	pushf
-		asm	cli
+			BE_ST_LockAudioRecursively();
+		//asm	pushf
+		//asm	cli
 
 			pcLastSample = s;
 			if (s)					// We have a frequency!
 			{
 				t = pcSoundLookup[s];
+				BE_ST_PCSpeakerSetInvFreq(t);
+#if 0
 			asm	mov	bx,[t]
 
 			asm	mov	al,0xb6			// Write to channel 2 (speaker) timer
@@ -1265,15 +1299,20 @@ SDL_PCService(void)
 			asm	in	al,0x61			// Turn the speaker & gate on
 			asm	or	al,3
 			asm	out	0x61,al
+#endif
 			}
 			else					// Time for some silence
 			{
+				BE_ST_PCSpeakerSetConstVal(0);
+#if 0
 			asm	in	al,0x61		  	// Turn the speaker & gate off
 			asm	and	al,0xfc			// ~3
 			asm	out	0x61,al
+#endif
 			}
 
-		asm	popf
+			BE_ST_UnlockAudioRecursively();
+		//asm	popf
 		}
 
 		if (!(--pcLengthLeft))
@@ -1293,16 +1332,21 @@ SDL_PCService(void)
 static void
 SDL_ShutPC(void)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	pcSound = 0;
 
+	BE_ST_PCSpeakerSetConstVal(0);
+#if 0
 asm	in	al,0x61		  	// Turn the speaker & gate off
 asm	and	al,0xfc			// ~3
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
@@ -1384,8 +1428,9 @@ SD_StopDigitized(void)
 	if (!SD_Started)
 		return;
 #endif
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	DigiLeft = 0;
 	DigiNextAddr = nil;
@@ -1438,7 +1483,8 @@ asm	cli
 #endif
 	}
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 
 	for (i = DigiLastStart;i < DigiLastEnd;i++)
 		PM_SetPageLock(i + PMSoundStart,pml_Unlocked);
@@ -1730,14 +1776,16 @@ static void
 #endif
 SDL_PCPlaySound(PCSound id0_far *sound)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	pcLastSample = -1;
 	pcLengthLeft = sound->common.length;
 	pcSound = sound->data;
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1753,16 +1801,21 @@ static void
 #endif
 SDL_PCStopSound(void)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	(id0_long_t)pcSound = 0;
 
+	BE_ST_PCSpeakerSetConstVal(0);
+#if 0
 asm	in	al,0x61		  	// Turn the speaker off
 asm	and	al,0xfd			// ~2
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1773,16 +1826,21 @@ asm	popf
 static void
 SDL_ShutPC(void)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	pcSound = 0;
 
+	BE_ST_PCSpeakerSetConstVal(0)
+#if 0
 asm	in	al,0x61		  	// Turn the speaker & gate off
 asm	and	al,0xfc			// ~3
 asm	out	0x61,al
+#endif
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 #endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
@@ -1796,6 +1854,8 @@ asm	popf
 void
 alOut(id0_byte_t n,id0_byte_t b)
 {
+	BE_ST_OPL2Write(n, b);
+#if 0
 asm	pushf
 asm	cli
 
@@ -1863,6 +1923,7 @@ asm	in	al,dx
 asm	in	al,dx
 asm	in	al,dx
 asm	in	al,dx
+#endif
 }
 
 #if 0
@@ -1923,13 +1984,15 @@ static void
 #endif
 SDL_ALStopSound(void)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	(id0_long_t)alSound = 0;
 	alOut(alFreqH + 0,0);
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 static void
@@ -1972,8 +2035,9 @@ SDL_ALPlaySound(AdLibSound id0_far *sound)
 
 	SDL_ALStopSound();
 
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	alLengthLeft = sound->common.length;
 	data = sound->data;
@@ -1985,14 +2049,16 @@ asm	cli
 
 	if (!(inst->mSus | inst->cSus))
 	{
-	asm	popf
+		BE_ST_UnlockAudioRecursively();
+//	asm	popf
 		Quit("SDL_ALPlaySound() - Bad instrument");
 	}
 
 	SDL_AlSetFXInst(&alZeroInst);	// DEBUG
 	SDL_AlSetFXInst(inst);
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 #if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
@@ -2046,9 +2112,14 @@ SDL_ALService(void)
 	{
 		w = *sqHackPtr++;
 		sqHackTime = alTimeCount + *sqHackPtr++;
+		// REFKEEN - This is the case on Little and Big Endian altogether
+		a = *((id0_byte_t *)&w);
+		v = *((id0_byte_t *)&w + 1);
+#if 0
 	asm	mov	dx,[w]
 	asm	mov	[a],dl
 	asm	mov	[v],dh
+#endif
 		alOut(a,v);
 		sqHackLen -= 4;
 	}
@@ -2477,15 +2548,17 @@ MIDI_IRQService(void)
 static void
 SDL_ShutAL(void)
 {
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	alOut(alEffects,0);
 	alOut(alFreqH + 0,0);
 	SDL_AlSetFXInst(&alZeroInst);
 	alSound = 0;
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2498,14 +2571,16 @@ SDL_CleanAL(void)
 {
 	id0_int_t	i;
 
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	alOut(alEffects,0);
 	for (i = 1;i < 0xf5;i++)
 		alOut(i,0);
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2530,17 +2605,22 @@ SDL_StartAL(void)
 static id0_boolean_t
 SDL_DetectAdLib(void)
 {
-	id0_byte_t	status1,status2;
+	//id0_byte_t	status1,status2;
 	id0_int_t		i;
+
+	// REFKEEN - If there's no emulated OPL chip, just return false
+	if (!BE_ST_IsEmulatedOPLChipReady())
+		return false;
 
 	alOut(4,0x60);	// Reset T1 & T2
 	alOut(4,0x80);	// Reset IRQ
-	status1 = readstat();
+	//status1 = readstat();
 	alOut(2,0xff);	// Set timer 1
 	alOut(4,0x21);	// Start timer 1
 #if 0
 	SDL_Delay(TimerDelay100);
-#else
+#elif 0 // TODO (REFKEEN): Any way to handle this delay (if at all)?
+//#else
 asm	mov	dx,0x388
 asm	mov	cx,100
 usecloop:
@@ -2548,11 +2628,11 @@ asm	in	al,dx
 asm	loop usecloop
 #endif
 
-	status2 = readstat();
+	//status2 = readstat();
 	alOut(4,0x60);
 	alOut(4,0x80);
 
-	if (((status1 & 0xe0) == 0x00) && ((status2 & 0xe0) == 0xc0))
+	//if (((status1 & 0xe0) == 0x00) && ((status2 & 0xe0) == 0xc0))
 	{
 		for (i = 1;i <= 0xf5;i++)	// Zero all the registers
 			alOut(i,0);
@@ -2562,8 +2642,8 @@ asm	loop usecloop
 
 		return(true);
 	}
-	else
-		return(false);
+//	else
+//		return(false);
 }
 
 #if 0
@@ -2770,7 +2850,8 @@ SD_SetSoundMode(SDMode mode)
 		SDL_ShutDevice();
 		SoundMode = mode;
 #ifndef	_MUSE_
-		SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
+		SoundTable = (SoundCommon **)&audiosegs[tableoffset]
+		//SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
 #endif
 		SDL_StartDevice();
 	}
@@ -3094,6 +3175,8 @@ SD_Shutdown(void)
 	if (!SD_Started)
 		return;
 
+	BE_ST_StopAudioAndTimerInt(void);
+
 	SD_MusicOff();
 	SD_StopSound();
 	SDL_ShutDevice();
@@ -3112,14 +3195,18 @@ SD_Shutdown(void)
 #endif
 #endif
 
-	asm	pushf
-	asm	cli
+	BE_ST_LockAudioRecursively();
+//	asm	pushf
+//	asm	cli
 
 	SDL_SetTimer0(0);
 
-	setvect(8,t0OldService);
+// REFKEEN: Do NOT call this here - A deadlock is a possibility (via recursive lock)
+//	BE_ST_StopAudioAndTimerInt(void);
+//	setvect(8,t0OldService);
 
-	asm	popf
+	BE_ST_UnlockAudioRecursively();
+//	asm	popf
 
 	SD_Started = false;
 }
@@ -3187,7 +3274,8 @@ SD_PlaySound(soundnames sound)
 	if (sound == -1)
 		GAMEVER_COND_RET(false);
 
-	s = MK_FP(SoundTable[sound],0);
+	//s = MK_FP(SoundTable[sound],0);
+	s = (SoundCommon id0_far *)(SoundTable[sound]);
 	if ((SoundMode != sdm_Off) && !s)
 		Quit("SD_PlaySound() - Uncached sound");
 
@@ -3219,14 +3307,17 @@ SD_PlaySound(soundnames sound)
 		{
 			// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (!defined GAMEVER_NOAH3D)
-		asm	pushf
-		asm	cli
+			BE_ST_LockAudioRecursively();
+		//asm	pushf
+		//asm	cli
 			if (DigiPriority && !DigiNumber)
 			{
-			asm	popf
+				BE_ST_UnlockAudioRecursively();
+			//asm	popf
 				Quit("SD_PlaySound: Priority without a sound");
 			}
-		asm	popf
+			BE_ST_UnlockAudioRecursively();
+		//asm	popf
 #endif
 
 			if (s->priority < DigiPriority)
@@ -3425,8 +3516,9 @@ SD_StartMusic(MusicGroup id0_far *music)
 	if (MusicMode != smm_AdLib)
 		return;
 
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	seqPtr = music->values;
 	seqLength = music->length;
@@ -3472,11 +3564,13 @@ asm	cli
 	drums = 0;
 	SD_MusicOn();
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 #else
 	SD_MusicOff();
-asm	pushf
-asm	cli
+	BE_ST_LockAudioRecursively();
+//asm	pushf
+//asm	cli
 
 	if (MusicMode == smm_AdLib)
 	{
@@ -3487,7 +3581,8 @@ asm	cli
 		SD_MusicOn();
 	}
 
-asm	popf
+	BE_ST_UnlockAudioRecursively();
+//asm	popf
 #endif
 }
 
