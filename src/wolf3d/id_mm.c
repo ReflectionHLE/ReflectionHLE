@@ -557,9 +557,9 @@ mmblocktype	id0_far *savedmmnew;
 			goto tryagain;
 		}
 
-//		unlink(configname);
+//		BE_Cross_unlink_rewritable(configname);
 #elif (GAMEVER_WOLFREV > GV_WR_WL920312)
-		unlink(configname);
+		BE_Cross_unlink_rewritable(configname);
 #endif // GAMEVER_WOLFREV > GV_WR_WL6AP11
 		Quit ("MM_GetPtr: Out of memory!");
 	}

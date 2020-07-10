@@ -1972,7 +1972,7 @@ id0_int_t CP_SaveGame(id0_int_t quick)
 		if (SaveGamesAvail[which])
 		{
 			name[7]=which+'0';
-			unlink(name);
+			BE_Cross_unlink_rewritable(name);
 			handle=BE_Cross_open_rewritable_for_overwriting(name);
 //			handle=creat(name,S_IREAD|S_IWRITE);
 
@@ -2047,7 +2047,7 @@ id0_int_t CP_SaveGame(id0_int_t quick)
 				SaveGamesAvail[which]=1;
 				strcpy(&SaveGameNames[which][0],input);
 
-				unlink(name);
+				BE_Cross_unlink_rewritable(name);
 				handle=BE_Cross_open_rewritable_for_overwriting(name);
 //				handle=creat(name,S_IREAD|S_IWRITE);
 				// *** ALPHA RESTORATION ***
