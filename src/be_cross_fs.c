@@ -522,10 +522,16 @@ static void BEL_Cross_mkdir(const TCHAR *path)
 #endif
 }
 
-// Opens a (possibly-existing) file from given directory in a case-insensitive manner
+typedef enum {
+	BE_FILE_REQUEST_READ, BE_FILE_REQUEST_OVERWRITE, BE_FILE_REQUEST_DELETE
+} BE_FileRequest_T;
+// Attempts to apply a read, overwrite or delete request for a
+// (possibly-existing) file from given directory, in a case-insensitive manner.
 //
 // OPTIONAL ARGUMENT (used internally): outfullpath, if not NULL, should point to an out buffer which is BE_CROSS_PATH_LEN_BOUND chars long.
-static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteRequest, const TCHAR *searchdir, TCHAR *outfullpath)
+static BE_FILE_T BEL_Cross_apply_file_action_in_dir(
+		const char *filename, BE_FileRequest_T request,
+		const TCHAR *searchdir, TCHAR *outfullpath)
 {
 	_TDIR *dir;
 	struct _tdirent *direntry;
@@ -558,12 +564,21 @@ static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteR
 			{
 				memcpy(outfullpath, fullpath, sizeof(fullpath));
 			}
-			return _tfopen(fullpath, isOverwriteRequest ? _T("wb") : _T("rb"));
+			if (request != BE_FILE_REQUEST_DELETE)
+				return _tfopen(
+				    fullpath,
+				    (request == BE_FILE_REQUEST_OVERWRITE)
+				      ? _T("wb") : _T("rb"));
+			else
+			{
+				_tremove(fullpath);
+				return NULL;
+			}
 		}
 	}
 	_tclosedir(dir);
-	// If tried to open for reading, we return NULL, otherwise we attempt create new file
-	if (!isOverwriteRequest)
+
+	if (request != BE_FILE_REQUEST_OVERWRITE)
 		return NULL;
 	TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
 	TCHAR *fullpathPtr = BEL_Cross_safeandfastctstringcopy_2strs(fullpath, fullpathEnd, searchdir, _T("/"));
@@ -593,7 +608,7 @@ static BE_FILE_T BEL_Cross_open_from_dir(const char *filename, bool isOverwriteR
 // OPTIONAL ARGUMENT (used internally): outfullpath, if not NULL, should point to an out buffer which is BE_CROSS_PATH_LEN_BOUND chars long.
 static int BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const TCHAR *searchdir, TCHAR *outfullpath)
 {
-	BE_FILE_T fp = BEL_Cross_open_from_dir(details->filename, false, searchdir, outfullpath);
+	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(details->filename, BE_FILE_REQUEST_READ, searchdir, outfullpath);
 	if (!fp)
 		return 0;
 
@@ -658,7 +673,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 			}
 
 			_tremove(tempFullPath);
-			BE_FILE_T fp = BEL_Cross_open_from_dir(fileDetailsBuffer->filename, false, gameInstallation->writableFilesPath, NULL);
+			BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(fileDetailsBuffer->filename, BE_FILE_REQUEST_READ, gameInstallation->writableFilesPath, NULL);
 			if (fp)
 			{
 				fclose(fp);
@@ -728,10 +743,10 @@ BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
 	char trimmedFilename[13];
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
 	// Trying writableFilesPath first, and then instPath in case of failure
-	BE_FILE_T fp = BEL_Cross_open_from_dir(trimmedFilename, false, g_be_selectedGameInstallation->writableFilesPath, NULL);
+	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
 	if (fp)
 		return fp;
-	return BEL_Cross_open_from_dir(trimmedFilename, false, g_be_selectedGameInstallation->instPath, NULL);
+	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->instPath, NULL);
 }
 
 // Opens a rewritable file for reading in a case-insensitive manner, checking just a single path
@@ -739,7 +754,7 @@ BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename)
 {
 	char trimmedFilename[13];
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
-	return BEL_Cross_open_from_dir(trimmedFilename, false, g_be_selectedGameInstallation->writableFilesPath, NULL);
+	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
 }
 
 // Opens a rewritable file for overwriting in a case-insensitive manner, checking just a single path
@@ -747,13 +762,21 @@ BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename)
 {
 	char trimmedFilename[13];
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
-	return BEL_Cross_open_from_dir(trimmedFilename, true, g_be_selectedGameInstallation->writableFilesPath, NULL);
+	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_OVERWRITE, g_be_selectedGameInstallation->writableFilesPath, NULL);
+}
+
+// Deletes a rewritable file if found, scanning just like BE_Cross_open_rewritable_for_overwriting
+void BE_Cross_unlink_rewritable(const char *filename)
+{
+	char trimmedFilename[13];
+	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
+	BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_DELETE, g_be_selectedGameInstallation->writableFilesPath, NULL);
 }
 
 // Used for e.g., the RefKeen cfg file
 BE_FILE_T BE_Cross_open_additionalfile_for_reading(const char *filename)
 {
-	return BEL_Cross_open_from_dir(filename, false, g_be_appNewCfgPath, NULL);
+	return BEL_Cross_apply_file_action_in_dir(filename, BE_FILE_REQUEST_READ, g_be_appNewCfgPath, NULL);
 }
 
 BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename)
@@ -761,7 +784,7 @@ BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename)
 	// Do this just in case, but note that this isn't recursive
 	BEL_Cross_mkdir(g_be_appNewCfgPath); // Non-recursive
 
-	return BEL_Cross_open_from_dir(filename, true, g_be_appNewCfgPath, NULL);
+	return BEL_Cross_apply_file_action_in_dir(filename, BE_FILE_REQUEST_OVERWRITE, g_be_appNewCfgPath, NULL);
 }
 
 // Loads a file originally embedded into the EXE (for DOS) to a newly allocated
@@ -1462,7 +1485,7 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 static void BEL_Cross_LoadEXEImageToMem(void)
 {
 	char errorMsg[256];
-	FILE *exeFp = BEL_Cross_open_from_dir(g_be_current_exeFileDetails->exeName, false, g_be_selectedGameInstallation->instPath, NULL);
+	FILE *exeFp = BEL_Cross_apply_file_action_in_dir(g_be_current_exeFileDetails->exeName, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->instPath, NULL);
 	if (!exeFp)
 	{
 		snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_LoadEXEImageToMem: Can't open EXE after checking it!\nFilename: %s", g_be_current_exeFileDetails->exeName);
