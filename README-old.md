@@ -11,12 +11,15 @@ here and there. These are used to described the specific ports (by game).
 Terms of use
 ------------
 
-Reflection Keen is released under the GNU GPLv2+. See LICENSE for more details.
+All corresponding license documents should be found under LICENSES.
 
-Nuked OPL3 is released under the GNU LGPLv2.1+. See LGPL-2.1.txt.
+Reflection Keen is released under the GNU GPLv2+.
+See gpl-2.0.txt for more details.
+
+Nuked OPL3 is released under the GNU LGPLv2.1+. See lgpl-2.1.txt.
 
 The included depklite implementation, a modification of ExeUnpacker,
-is released under the MIT License. See LICENSE-depklite for details.
+is released under the MIT License. See mit-opentesarena.txt for details.
 
 The included CRC-32 implementation is in the public domain. The same
 applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
