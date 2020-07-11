@@ -16,6 +16,10 @@ All corresponding license documents should be found under LICENSES.
 Reflection Keen is released under the GNU GPLv2+.
 See gpl-2.0.txt for more details.
 
+The Wolfenstein 3D port is dual-licensed under the GNU GPLv2+
+and the original terms for the Wolfenstein 3D sources from
+1995. See gpl-2.0.txt and id-wolf3d.txt for more details.
+
 Nuked OPL3 is released under the GNU LGPLv2.1+. See lgpl-2.1.txt.
 
 The included depklite implementation, a modification of ExeUnpacker,
