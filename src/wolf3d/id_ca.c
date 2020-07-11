@@ -20,6 +20,8 @@ loaded into the data segment
 //#pragma warn -pro
 //#pragma warn -use
 
+REFKEEN_NS_B
+
 #define THREEBYTEGRSTARTS
 
 /*
@@ -33,7 +35,7 @@ loaded into the data segment
 typedef struct
 {
   id0_unsigned_t bit0,bit1;	// 0-255 is a character, > is a pointer to a node
-} huffnode;
+} __attribute__((__packed__)) huffnode;
 
 
 typedef struct
@@ -41,7 +43,7 @@ typedef struct
 	id0_unsigned_t	RLEWtag;
 	id0_long_t		headeroffsets[100];
 	id0_byte_t		tileinfo[];
-} mapfiletype;
+} __attribute__((__packed__)) mapfiletype;
 
 
 /*
@@ -86,14 +88,15 @@ id0_char_t		audioname[13]="AUDIO.";
 =============================================================================
 */
 
-extern	id0_long_t	id0_far	CGAhead;
-extern	id0_long_t	id0_far	EGAhead;
-extern	id0_byte_t	CGAdict;
-extern	id0_byte_t	EGAdict;
-extern	id0_byte_t	id0_far	maphead;
-extern	id0_byte_t	mapdict;
-extern	id0_byte_t	id0_far	audiohead;
-extern	id0_byte_t	audiodict;
+// REFKEEN - Comment out what's unused
+//extern	id0_long_t	*CGAhead;
+extern	id0_long_t	*EGAhead;
+//extern	id0_byte_t	*CGAdict;
+extern	id0_byte_t	*EGAdict;
+extern	id0_byte_t	*maphead;
+//extern	id0_byte_t	*mapdict;
+extern	id0_byte_t	*audiohead;
+extern	id0_byte_t	*audiodict;
 
 
 // *** ALPHA RESTORATION ***
@@ -136,7 +139,8 @@ SDMode		oldsoundmode;
 
 
 
-void	CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest,
+/*** WARNING (REFKEEN): Input is assumed to Little-Endian, while the output is Native-Endian. Hence, function is renamed ***/
+void	CAL_CarmackExpand_FromLE_ToNE (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest,
 		id0_unsigned_t length);
 
 
@@ -150,9 +154,19 @@ id0_long_t GRFILEPOS(id0_int_t c)
 
 	offset = c*3;
 
+	// REFKEEN - Just to make things safe, ensure no buffer overflow is
+	// done here by accessing just 3 bytes (and be ready for Big Endian)
+	value = 0;
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	memcpy(((id0_byte_t *)&value) + 1, ((id0_byte_t id0_far *)grstarts)+offset, 3);
+#else
+	memcpy(&value, ((id0_byte_t id0_far *)grstarts)+offset, 3);
+#endif
+#if 0
 	value = *(id0_long_t id0_far *)(((id0_byte_t id0_far *)grstarts)+offset);
 
 	value &= 0x00ffffffl;
+#endif
 
 	if (value == 0xffffffl)
 		value = -1;
@@ -172,6 +186,9 @@ id0_long_t GRFILEPOS(id0_int_t c)
 =============================================================================
 */
 
+
+// (REFKEEN) UNUSED FUNCTIONS
+#if 0
 /*
 ============================
 =
@@ -192,6 +209,7 @@ void CA_CloseDebug (void)
 {
 	BE_Cross_close (debughandle);
 }
+#endif
 
 
 
@@ -229,25 +247,22 @@ id0_boolean_t CA_FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t
 {
 	if (length>0xffffl)
 		Quit ("CA_FarRead doesn't support 64K reads yet!");
+	// Ported from ASM
+	int bytesread = BE_Cross_readInt8LEBuffer(handle, dest, length);
+	if (bytesread == 0)
+	{
+		// Keep errno as set by read
+		return false;
+	}
 
-asm		push	ds
-asm		mov	bx,[handle]
-asm		mov	cx,[WORD PTR length]
-asm		mov	dx,[WORD PTR dest]
-asm		mov	ds,[WORD PTR dest+2]
-asm		mov	ah,0x3f				// READ w/handle
-asm		int	21h
-asm		pop	ds
-asm		jnc	good
-	errno = _AX;
-	return	false;
-good:
-asm		cmp	ax,[WORD PTR length]
-asm		je	done
-	errno = EINVFMT;			// user manager knows this is bad read
-	return	false;
-done:
-	return	true;
+	if (bytesread != length)
+	{
+		/* FIXME (REFKEEN) - Is that the right way? */
+		errno = 11;
+		//errno = EINVFMT; // user manager knows this is bad read
+		return false;
+	}
+	return true;
 }
 
 
@@ -265,29 +280,25 @@ id0_boolean_t CA_FarWrite (BE_FILE_T handle, id0_byte_t id0_far *source, id0_lon
 {
 	if (length>0xffffl)
 		Quit ("CA_FarWrite doesn't support 64K reads yet!");
+	// Ported from ASM
+	int byteswritten = BE_Cross_writeInt8LEBuffer(handle, source, length);
+	if (byteswritten == 0)
+	{
+		// Keep errno as set by write
+		return false;
+	}
 
-asm		push	ds
-asm		mov	bx,[handle]
-asm		mov	cx,[WORD PTR length]
-asm		mov	dx,[WORD PTR source]
-asm		mov	ds,[WORD PTR source+2]
-asm		mov	ah,0x40			// WRITE w/handle
-asm		int	21h
-asm		pop	ds
-asm		jnc	good
-	errno = _AX;
-	return	false;
-good:
-asm		cmp	ax,[WORD PTR length]
-asm		je	done
-	errno = ENOMEM;				// user manager knows this is bad write
-	return	false;
-
-done:
-	return	true;
+	if (byteswritten != length)
+	{
+		errno = ENOMEM; // user manager knows this is bad write
+		return false;
+	}
+	return true;
 }
 
 
+// (REFKEEN) UNUSED FUNCTION
+#if 0
 /*
 ==========================
 =
@@ -298,7 +309,7 @@ done:
 ==========================
 */
 
-id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
+id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr)
 {
 	id0_int_t handle;
 	id0_long_t size;
@@ -315,6 +326,7 @@ id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
 	close (handle);
 	return true;
 }
+#endif
 
 
 /*
@@ -327,7 +339,7 @@ id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr)
 ==========================
 */
 
-id0_boolean_t CA_WriteFile (id0_char_t *filename, void id0_far *ptr, id0_long_t length)
+id0_boolean_t CA_WriteFile (const id0_char_t *filename, void id0_far *ptr, id0_long_t length)
 {
 	BE_FILE_T handle;
 	id0_long_t size;
@@ -373,12 +385,13 @@ id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 #if (!defined ARTSEXTERN) && (!defined DEMOSEXTERN)
 #error "Need to implement CA_LoadFile for no-ARTSEXTERN no-DEMOSEXTERN build"
 #endif
-	if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(filename)))
+	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
 
-	size = filelength (handle);
+	size = BE_Cross_FileLengthFromHandle (handle);
 	MM_GetPtr (ptr,size);
-	if (!CA_FarRead (handle,*ptr,size))
+	if (!CA_FarRead (handle,(id0_byte_t *)(*ptr),size))
 	{
 		BE_Cross_close (handle);
 		return false;
@@ -410,6 +423,8 @@ id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
 
 void CAL_OptimizeNodes (huffnode *table)
 {
+  /*** COMMENTED OUT - Not really useful in modern platforms as-is ***/
+#if 0
   huffnode *node;
   id0_int_t i;
 
@@ -423,6 +438,7 @@ void CAL_OptimizeNodes (huffnode *table)
 	  node->bit1 = (id0_unsigned_t)(table+(node->bit1-256));
 	node++;
   }
+#endif
 }
 
 
@@ -448,184 +464,50 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
   id0_long_t length,huffnode *hufftable, id0_boolean_t screenhack)
 #endif
 {
-//  id0_unsigned_t bit,byte,node,code;
-  id0_unsigned_t sourceseg,sourceoff,destseg,destoff,endoff;
-  huffnode *headptr;
-  id0_byte_t		mapmask;
-//  huffnode *nodeon;
-
-  headptr = hufftable+254;	// head node is allways node 254
-
-  source++;	// normalize
-  source--;
-  dest++;
-  dest--;
-
-// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-  if (screenhack)
-  {
-	mapmask = 1;
-asm	mov	dx,SC_INDEX
-asm	mov	ax,SC_MAPMASK + 256
-asm	out	dx,ax
-	length >>= 2;
-  }
+	// REFKEEN: TODO implement for screenhack==true
 #endif
+	id0_unsigned_t code;
+	huffnode *headptr = hufftable+254; // head node is always node 254
+	huffnode *nodeon = headptr;
 
-  sourceseg = FP_SEG(source);
-  sourceoff = FP_OFF(source);
-  destseg = FP_SEG(dest);
-  destoff = FP_OFF(dest);
-  endoff = destoff+length;
+	//------------
+	// expand data
+	//------------
 
-//
-// ds:si source
-// es:di dest
-// ss:bx node pointer
-//
-
-	if (length <0xfff0)
+	// Ported from ASM
+	id0_byte_t id0_huge *srcptr = source, *dstptr = dest, *dstendptr = dest+length;
+	id0_byte_t byteval = *(srcptr++); // load first byte
+	id0_byte_t bitmask = 1;
+	do
 	{
+		// take bit0 or bit1 path from node
+		code = (byteval & bitmask) ? nodeon->bit1 : nodeon->bit0;
+		if (bitmask & 0x80)
+		{
+			byteval = *(srcptr++); // load next byte
+			bitmask = 1; // back to first bit
+		}
+		else
+		{
+			bitmask <<= 1; // advance to next bit position
+		}
+		// if < 256 it's a byte, else move node
+		if (code >= 256)
+		{
+			// NOTE: CAL_OptimizeNodes does nothing now
+			// and we do refer to hufftable itself here
+			nodeon = hufftable + (code-256);
+			continue;
+		}
+		*(dstptr++) = code; // write a decompressed byte out
+		nodeon = headptr; // back to the head node for next bit
 
-//--------------------------
-// expand less than 64k of data
-//--------------------------
-
-asm mov	bx,[headptr]
-
-asm	mov	si,[sourceoff]
-asm	mov	di,[destoff]
-asm	mov	es,[destseg]
-asm	mov	ds,[sourceseg]
-asm	mov	ax,[endoff]
-
-asm	mov	ch,[si]				// load first byte
-asm	inc	si
-asm	mov	cl,1
-
-expandshort:
-asm	test	ch,cl			// bit set?
-asm	jnz	bit1short
-asm	mov	dx,[ss:bx]			// take bit0 path from node
-asm	shl	cl,1				// advance to next bit position
-asm	jc	newbyteshort
-asm	jnc	sourceupshort
-
-bit1short:
-asm	mov	dx,[ss:bx+2]		// take bit1 path
-asm	shl	cl,1				// advance to next bit position
-asm	jnc	sourceupshort
-
-newbyteshort:
-asm	mov	ch,[si]				// load next byte
-asm	inc	si
-asm	mov	cl,1				// back to first bit
-
-sourceupshort:
-asm	or	dh,dh				// if dx<256 its a byte, else move node
-asm	jz	storebyteshort
-asm	mov	bx,dx				// next node = (huffnode *)code
-asm	jmp	expandshort
-
-storebyteshort:
-asm	mov	[es:di],dl
-asm	inc	di					// write a decopmpressed byte out
-asm	mov	bx,[headptr]		// back to the head node for next bit
-
-asm	cmp	di,ax				// done?
-asm	jne	expandshort
-
-// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL920312)
-//
-// perform screenhack if needed
-//
-asm	test	[screenhack],1
-asm	jz	notscreen
-asm	shl	[mapmask],1
-asm	mov	ah,[mapmask]
-asm	cmp	ah,16
-asm	je	notscreen			// all four planes done
-asm	mov	dx,SC_INDEX
-asm	mov	al,SC_MAPMASK
-asm	out	dx,ax
-asm	mov	di,[destoff]
-asm	mov	ax,[endoff]
-asm	jmp	expandshort
-
-notscreen:;
-#endif
-	}
-	else
-	{
-
-//--------------------------
-// expand more than 64k of data
-//--------------------------
-
-  length--;
-
-asm mov	bx,[headptr]
-asm	mov	cl,1
-
-asm	mov	si,[sourceoff]
-asm	mov	di,[destoff]
-asm	mov	es,[destseg]
-asm	mov	ds,[sourceseg]
-
-asm	lodsb			// load first byte
-
-expand:
-asm	test	al,cl		// bit set?
-asm	jnz	bit1
-asm	mov	dx,[ss:bx]	// take bit0 path from node
-asm	jmp	gotcode
-bit1:
-asm	mov	dx,[ss:bx+2]	// take bit1 path
-
-gotcode:
-asm	shl	cl,1		// advance to next bit position
-asm	jnc	sourceup
-asm	lodsb
-asm	cmp	si,0x10		// normalize ds:si
-asm  	jb	sinorm
-asm	mov	cx,ds
-asm	inc	cx
-asm	mov	ds,cx
-asm	xor	si,si
-sinorm:
-asm	mov	cl,1		// back to first bit
-
-sourceup:
-asm	or	dh,dh		// if dx<256 its a byte, else move node
-asm	jz	storebyte
-asm	mov	bx,dx		// next node = (huffnode *)code
-asm	jmp	expand
-
-storebyte:
-asm	mov	[es:di],dl
-asm	inc	di		// write a decopmpressed byte out
-asm	mov	bx,[headptr]	// back to the head node for next bit
-
-asm	cmp	di,0x10		// normalize es:di
-asm  	jb	dinorm
-asm	mov	dx,es
-asm	inc	dx
-asm	mov	es,dx
-asm	xor	di,di
-dinorm:
-
-asm	sub	[WORD PTR ss:length],1
-asm	jnc	expand
-asm  	dec	[WORD PTR ss:length+2]
-asm	jns	expand		// when length = ffff ffff, done
-
-	}
-
-asm	mov	ax,ss
-asm	mov	ds,ax
-
+		if (dstptr == dstendptr) // done?
+		{
+			break;
+		}
+	} while (true);
 }
 
 
@@ -642,32 +524,41 @@ asm	mov	ds,ax
 #define NEARTAG	0xa7
 #define FARTAG	0xa8
 
-void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest, id0_unsigned_t length)
+/*** WARNING (REFKEEN): Input is assumed to Little-Endian, while the output is Native-Endian. Hence, function is renamed. ***/
+void CAL_CarmackExpand_FromLE_ToNE (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *dest, id0_unsigned_t length)
 {
 	id0_unsigned_t	ch,chhigh,count,offset;
-	id0_unsigned_t	id0_far *copyptr, id0_far *inptr, id0_far *outptr;
+	id0_unsigned_t	id0_far *copyptr, /*id0_far *inptr, */id0_far *outptr;
+	id0_unsigned_char_t *inptr;
 
 	length/=2;
 
-	inptr = source;
+	inptr = (id0_unsigned_char_t *)source;
+	//inptr = source;
 	outptr = dest;
 
 	while (length)
 	{
-		ch = *inptr++;
+		// REFKEEN: Little-Endian input and safe unaligned accesses
+		memcpy(&ch, inptr, 2);
+		ch = BE_Cross_Swap16LE(ch);
+		inptr += 2;
+		//ch = *inptr++;
 		chhigh = ch>>8;
 		if (chhigh == NEARTAG)
 		{
 			count = ch&0xff;
 			if (!count)
 			{				// have to insert a word containing the tag byte
-				ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
+				ch |= *inptr++;
+				//ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
 				*outptr++ = ch;
 				length--;
 			}
 			else
 			{
-				offset = *((id0_unsigned_char_t id0_far *)inptr)++;
+				offset = *inptr++;
+				//offset = *((id0_unsigned_char_t id0_far *)inptr)++;
 				copyptr = outptr - offset;
 				length -= count;
 				while (count--)
@@ -679,13 +570,18 @@ void CAL_CarmackExpand (id0_unsigned_t id0_far *source, id0_unsigned_t id0_far *
 			count = ch&0xff;
 			if (!count)
 			{				// have to insert a word containing the tag byte
-				ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
+				ch |= *inptr++;
+				//ch |= *((id0_unsigned_char_t id0_far *)inptr)++;
 				*outptr++ = ch;
 				length --;
 			}
 			else
 			{
-				offset = *inptr++;
+				// REFKEEN: Little-Endian input and safe unaligned accesses
+				memcpy(&offset, inptr, 2);
+				offset = BE_Cross_Swap16LE(offset);
+				inptr += 2;
+				//offset = *inptr++;
 				copyptr = dest + offset;
 				length -= count;
 				while (count--)
@@ -770,15 +666,13 @@ id0_long_t CA_RLEWCompress (id0_unsigned_t id0_huge *source, id0_long_t length, 
 void CA_RLEWexpand (id0_unsigned_t id0_huge *source, id0_unsigned_t id0_huge *dest,id0_long_t length,
   id0_unsigned_t rlewtag)
 {
-//  id0_unsigned_t value,count,i;
-  id0_unsigned_t id0_huge *end;
-  id0_unsigned_t sourceseg,sourceoff,destseg,destoff,endseg,endoff;
+  id0_unsigned_t value, count, i;
+  id0_unsigned_t id0_huge *end = dest + (length)/2;
 
 
 //
 // expand it
 //
-#if 0
   do
   {
 	value = *source++;
@@ -795,84 +689,9 @@ void CA_RLEWexpand (id0_unsigned_t id0_huge *source, id0_unsigned_t id0_huge *de
 	  count = *source++;
 	  value = *source++;
 	  for (i=1;i<=count;i++)
-	*dest++ = value;
+	    *dest++ = value;
 	}
   } while (dest<end);
-#endif
-
-  end = dest + (length)/2;
-  sourceseg = FP_SEG(source);
-  sourceoff = FP_OFF(source);
-  destseg = FP_SEG(dest);
-  destoff = FP_OFF(dest);
-  endseg = FP_SEG(end);
-  endoff = FP_OFF(end);
-
-
-//
-// ax = source value
-// bx = tag value
-// cx = repeat counts
-// dx = scratch
-//
-// NOTE: A repeat count that produces 0xfff0 bytes can blow this!
-//
-
-asm	mov	bx,rlewtag
-asm	mov	si,sourceoff
-asm	mov	di,destoff
-asm	mov	es,destseg
-asm	mov	ds,sourceseg
-
-expand:
-asm	lodsw
-asm	cmp	ax,bx
-asm	je	repeat
-asm	stosw
-asm	jmp	next
-
-repeat:
-asm	lodsw
-asm	mov	cx,ax		// repeat count
-asm	lodsw			// repeat value
-asm	rep stosw
-
-next:
-
-asm	cmp	si,0x10		// normalize ds:si
-asm  	jb	sinorm
-asm	mov	ax,si
-asm	shr	ax,1
-asm	shr	ax,1
-asm	shr	ax,1
-asm	shr	ax,1
-asm	mov	dx,ds
-asm	add	dx,ax
-asm	mov	ds,dx
-asm	and	si,0xf
-sinorm:
-asm	cmp	di,0x10		// normalize es:di
-asm  	jb	dinorm
-asm	mov	ax,di
-asm	shr	ax,1
-asm	shr	ax,1
-asm	shr	ax,1
-asm	shr	ax,1
-asm	mov	dx,es
-asm	add	dx,ax
-asm	mov	es,dx
-asm	and	di,0xf
-dinorm:
-
-asm	cmp     di,ss:endoff
-asm	jne	expand
-asm	mov	ax,es
-asm	cmp	ax,ss:endseg
-asm	jb	expand
-
-asm	mov	ax,ss
-asm	mov	ds,ax
-
 }
 
 
@@ -909,8 +728,8 @@ void CAL_SetupGrFile (void)
 
 #ifdef GRHEADERLINKED
 
-	grhuffman = (huffnode *)&EGAdict;
-	grstarts = (id0_long_t id0_seg *)FP_SEG(&EGAhead);
+	grhuffman = (huffnode *)EGAdict;
+	grstarts = EGAhead;
 
 	CAL_OptimizeNodes (grhuffman);
 
@@ -936,8 +755,8 @@ void CAL_SetupGrFile (void)
 		CA_CannotOpen(fname);
 #endif
 
-	read(handle, &grhuffman, sizeof(grhuffman));
-	close(handle);
+	BE_Cross_readInt16LEBuffer(handle, &grhuffman, sizeof(grhuffman));
+	BE_Cross_close(handle);
 	CAL_OptimizeNodes (grhuffman);
 //
 // load the data offsets from ???head.ext
@@ -960,15 +779,15 @@ void CAL_SetupGrFile (void)
 		CA_CannotOpen(fname);
 #endif
 
-        // REFKEEN - Hack for Big Endian (even though it may be useless)
+	// REFKEEN - Hack for Big Endian (even though it may be useless)
 #ifdef THREEBYTEGRSTARTS
-        BE_Cross_readInt24LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+	BE_Cross_readInt24LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 #else
-        BE_Cross_readInt32LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+	BE_Cross_readInt32LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 #endif
 	//CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 
-	close(handle);
+	BE_Cross_close(handle);
 
 
 #endif
@@ -996,17 +815,25 @@ void CAL_SetupGrFile (void)
 //
 // load the pic and sprite headers into the arrays in the data segment
 //
-	MM_GetPtr(&(memptr)pictable,NUMPICS*sizeof(pictabletype));
+	MM_GetPtr((memptr *)&pictable,NUMPICS*sizeof(pictabletype));
 	CAL_GetGrChunkLength(STRUCTPIC);		// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
-	CA_FarRead (grhandle,compseg,chunkcomplen);
+	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	CAL_HuffExpand (compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman);
+	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman);
 #else
-	CAL_HuffExpand (compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman,false);
+	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)pictable,NUMPICS*sizeof(pictabletype),grhuffman,false);
 #endif
 	MM_FreePtr(&compseg);
+	// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	for (int i = 0; i < NUMPICS; ++i)
+	{
+		pictable[i].width = BE_Cross_Swap16LE(pictable[i].width);
+		pictable[i].height = BE_Cross_Swap16LE(pictable[i].height);
+	}
+#endif
 }
 
 //==========================================================================
@@ -1055,12 +882,22 @@ void CAL_SetupMapFile (void)
 #endif
 
 	length = BE_Cross_FileLengthFromHandle(handle);
-	MM_GetPtr (&(memptr)tinf,length);
+	MM_GetPtr ((memptr *)&tinf,length);
 	CA_FarRead(handle, tinf, length);
 	BE_Cross_close(handle);
+	// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	mapfiletype id0_seg *tinfasmapfile = (mapfiletype id0_seg *)tinf;
+	tinfasmapfile->RLEWtag = BE_Cross_Swap16LE(tinfasmapfile->RLEWtag);
+	for (int i = 0; i < sizeof(tinfasmapfile->headeroffsets)/sizeof(*(tinfasmapfile->headeroffsets)); ++i)
+	{
+		tinfasmapfile->headeroffsets[i] = BE_Cross_Swap32LE(tinfasmapfile->headeroffsets[i]);
+	}
+#endif
+
 #else
 
-	tinf = (id0_byte_t id0_seg *)FP_SEG(&maphead);
+	tinf = maphead;
 
 #endif
 
@@ -1110,8 +947,8 @@ void CAL_SetupMapFile (void)
 		if (pos<0)						// $FFFFFFFF start is a sparse map
 			continue;
 
-		MM_GetPtr(&(memptr)mapheaderseg[i],sizeof(maptype));
-		MM_SetLock(&(memptr)mapheaderseg[i],true);
+		MM_GetPtr((memptr *)&mapheaderseg[i],sizeof(maptype));
+		MM_SetLock((memptr *)&mapheaderseg[i],true);
 		BE_Cross_seek(maphandle,pos,SEEK_SET);
 		CA_FarRead (maphandle,(memptr)mapheaderseg[i],sizeof(maptype));
 	}
@@ -1121,8 +958,8 @@ void CAL_SetupMapFile (void)
 //
 	for (i=0;i<MAPPLANES;i++)
 	{
-		MM_GetPtr (&(memptr)mapsegs[i],64*64*2);
-		MM_SetLock (&(memptr)mapsegs[i],true);
+		MM_GetPtr ((memptr *)&mapsegs[i],64*64*2);
+		MM_SetLock ((memptr *)&mapsegs[i],true);
 	}
 }
 
@@ -1171,15 +1008,15 @@ void CAL_SetupAudioFile (void)
 		CA_CannotOpen(fname);
 #endif
 
-	length = BE_Cross_FileLength(handle);
-	MM_GetPtr (&(memptr)audiostarts,length);
+	length = BE_Cross_FileLengthFromHandle(handle);
+	MM_GetPtr ((memptr *)&audiostarts,length);
 	BE_Cross_readInt32LE(handle, audiostarts, length);
 	//CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
 	BE_Cross_close(handle);
 #else
-	audiohuffman = (huffnode *)&audiodict;
+	audiohuffman = (huffnode *)audiodict;
 	CAL_OptimizeNodes (audiohuffman);
-	audiostarts = (id0_long_t id0_seg *)FP_SEG(&audiohead);
+	audiostarts = (id0_long_t *)audiohead;
 #endif
 
 //
@@ -1271,7 +1108,7 @@ void CA_Shutdown (void)
 		return;
 #endif
 #ifdef PROFILE
-	close (profilehandle);
+	BE_Cross_close (profilehandle);
 #endif
 
 	BE_Cross_close (maphandle);
@@ -1300,7 +1137,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 	if (audiosegs[chunk])
 	{
-		MM_SetPurge (&(memptr)audiosegs[chunk],0);
+		MM_SetPurge ((memptr *)&audiosegs[chunk],0);
 		return;							// allready in memory
 	}
 
@@ -1315,7 +1152,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 #ifndef AUDIOHEADERLINKED
 
-	MM_GetPtr (&(memptr)audiosegs[chunk],compressed);
+	MM_GetPtr ((memptr *)audiosegs[chunk],compressed);
 	if (mmerror)
 		return;
 
@@ -1325,8 +1162,8 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 	if (compressed<=BUFFERSIZE)
 	{
-		CA_FarRead(audiohandle,bufferseg,compressed);
-		source = bufferseg;
+		CA_FarRead(audiohandle,(id0_byte_t *)bufferseg,compressed);
+		source = (id0_byte_t *)bufferseg;
 	}
 	else
 	{
@@ -1334,13 +1171,15 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 		if (mmerror)
 			return;
 		MM_SetLock (&bigbufferseg,true);
-		CA_FarRead(audiohandle,bigbufferseg,compressed);
-		source = bigbufferseg;
+		CA_FarRead(audiohandle,(id0_byte_t *)bigbufferseg,compressed);
+		source = (id0_byte_t *)bigbufferseg;
 	}
 
-	expanded = *(id0_long_t id0_far *)source;
+	// REFKEEN - Big Endian support
+	expanded = BE_Cross_Swap32LE(*(id0_long_t id0_far *)source);
+	//expanded = *(id0_long_t id0_far *)source;
 	source += 4;			// skip over length
-	MM_GetPtr (&(memptr)audiosegs[chunk],expanded);
+	MM_GetPtr ((memptr *)&audiosegs[chunk],expanded);
 	if (mmerror)
 		goto done;
 // *** ALPHA RESTORATION ***
@@ -1353,6 +1192,40 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 done:
 	if (compressed>BUFFERSIZE)
 		MM_FreePtr(&bigbufferseg);
+#endif
+	// REFKEEN - Big Endian support, possibly the most complicated case,
+	// since we need to know the exact type of each chunk.
+	//
+	// FIXME (consider): With matching proper data and definitions, this
+	// should be OK, but otherwise one could consider delaying the swaps
+	// to runtime (although it's a stretch).
+
+	// Sanity check before doing the swaps on BE
+	// (ignoring STARTDIGISOUNDS as ID_SD doesn't even have code for that)
+#if !((STARTPCSOUNDS <= STARTADLIBSOUNDS) && (STARTADLIBSOUNDS <= STARTMUSIC))
+#error "ID_CA.C sanity check for Big-Endian byte swaps (audio chunks) has failed!"
+#endif
+
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	if (chunk < STARTMUSIC) // Sound effects
+	{
+		SoundCommon *sndCommonPtr = (SoundCommon *)audiosegs[chunk];
+		sndCommonPtr->length = BE_Cross_Swap32LE(sndCommonPtr->length);
+		sndCommonPtr->priority = BE_Cross_Swap16LE(sndCommonPtr->priority);
+		if ((chunk >= STARTDIGISOUNDS) /*&& (chunk < STARTMUSIC)*/) // Digitized sounds
+		{
+			SampledSound *sampledSndPtr = (SampledSound *)audiosegs[chunk];
+			sampledSndPtr->hertz = BE_Cross_Swap16LE(sampledSndPtr->hertz);
+		}
+	}
+	else // Music chunk
+	{
+		MusicGroup *musicPtr = (MusicGroup *)audiosegs[chunk];
+		musicPtr->length = BE_Cross_Swap16LE(musicPtr->length);
+		// Swap the delays only
+		for (id0_word_t bytesLeft = musicPtr->length, *musicData = 1 + musicPtr->values; bytesLeft >= 4; bytesLeft -= 4, musicData += 2)
+			*musicData = BE_Cross_Swap16LE(*musicData);
+	}
 #endif
 }
 
@@ -1386,7 +1259,7 @@ void CA_LoadAllSounds (void)
 
 	for (i=0;i<NUMSOUNDS;i++,start++)
 		if (audiosegs[start])
-			MM_SetPurge (&(memptr)audiosegs[start],3);		// make purgable
+			MM_SetPurge ((memptr *)&audiosegs[start],3);		// make purgable
 
 cachein:
 
@@ -1453,7 +1326,11 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 	//
 	// everything else has an explicit size longword
 	//
-		expanded = *(id0_long_t id0_far *)source;
+		// REFKEEN - Safe unaligned accesses (e.g., from CA_CacheMarks)
+		// and Big Endian support
+		memcpy(&expanded, source, 4);
+		expanded = BE_Cross_Swap32LE(expanded);
+		//expanded = *(id0_long_t id0_far *)source;
 		source += 4;			// skip over length
 	}
 
@@ -1466,9 +1343,19 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 		return;
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	CAL_HuffExpand (source,grsegs[chunk],expanded,grhuffman);
+	CAL_HuffExpand (source,(id0_byte_t *)(grsegs[chunk]),expanded,grhuffman);
 #else
-	CAL_HuffExpand (source,grsegs[chunk],expanded,grhuffman,false);
+	CAL_HuffExpand (source,(id0_byte_t *)(grsegs[chunk]),expanded,grhuffman,false);
+#endif
+	// REFKEEN - Big Endian support
+#ifdef REFKEEN_ARCH_BIG_ENDIAN
+	if (((chunk >= STARTFONT) && (chunk < STARTFONT+NUMFONT)) || ((chunk >= STARTFONTM) && (chunk < STARTFONTM+NUMFONTM)))
+	{
+		fontstruct *font = (fontstruct *)(grsegs[chunk]);
+		font->height = BE_Cross_Swap16LE(font->height);
+		for (int i = 0; i < (int)(sizeof(font->location)/sizeof(*(font->location))); ++i)
+			font->location[i] = BE_Cross_Swap16LE(font->location[i]);
+	}
 #endif
 }
 
@@ -1513,8 +1400,8 @@ void CAL_ReadGrChunk (id0_int_t chunk)
 
 	if (compressed<=BUFFERSIZE)
 	{
-		CA_FarRead(grhandle,bufferseg,compressed);
-		source = bufferseg;
+		CA_FarRead(grhandle,(id0_byte_t *)bufferseg,compressed);
+		source = (id0_byte_t *)bufferseg;
 	}
 	else
 	{
@@ -1522,8 +1409,8 @@ void CAL_ReadGrChunk (id0_int_t chunk)
 		if (mmerror)
 			return;
 		MM_SetLock (&bigbufferseg,true);
-		CA_FarRead(grhandle,bigbufferseg,compressed);
-		source = bigbufferseg;
+		CA_FarRead(grhandle,(id0_byte_t *)bigbufferseg,compressed);
+		source = (id0_byte_t *)bigbufferseg;
 	}
 
 	CAL_ExpandGrChunk (chunk,source);
@@ -1575,15 +1462,15 @@ void CA_CacheGrChunk (id0_int_t chunk)
 
 	if (compressed<=BUFFERSIZE)
 	{
-		CA_FarRead(grhandle,bufferseg,compressed);
-		source = bufferseg;
+		CA_FarRead(grhandle,(id0_byte_t *)bufferseg,compressed);
+		source = (id0_byte_t *)bufferseg;
 	}
 	else
 	{
 		MM_GetPtr(&bigbufferseg,compressed);
 		MM_SetLock (&bigbufferseg,true);
-		CA_FarRead(grhandle,bigbufferseg,compressed);
-		source = bigbufferseg;
+		CA_FarRead(grhandle,(id0_byte_t *)bigbufferseg,compressed);
+		source = (id0_byte_t *)bigbufferseg;
 	}
 
 	CAL_ExpandGrChunk (chunk,source);
@@ -1610,6 +1497,8 @@ void CA_CacheGrChunk (id0_int_t chunk)
 
 void CA_CacheScreen (id0_int_t chunk)
 {
+	// REFKEEN: TODO implement
+#if 0
 	id0_long_t	pos,compressed,expanded;
 	memptr	bigbufferseg;
 	id0_byte_t	id0_far *source;
@@ -1641,6 +1530,7 @@ void CA_CacheScreen (id0_int_t chunk)
 	CAL_HuffExpand (source,MK_FP(SCREENSEG,bufferofs),expanded,grhuffman,true);
 	VW_MarkUpdateBlock (0,0,319,199);
 	MM_FreePtr(&bigbufferseg);
+#endif
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
@@ -1688,16 +1578,16 @@ void CA_CacheMap (id0_int_t mapnum)
 			continue;
 #endif
 
-		dest = &(memptr)mapsegs[plane];
+		dest = (memptr *)&mapsegs[plane];
 
 		BE_Cross_seek(maphandle,pos,SEEK_SET);
 		if (compressed<=BUFFERSIZE)
-			source = bufferseg;
+			source = (id0_unsigned_t *)bufferseg;
 		else
 		{
 			MM_GetPtr(&bigbufferseg,compressed);
 			MM_SetLock (&bigbufferseg,true);
-			source = bigbufferseg;
+			source = (id0_unsigned_t *)bigbufferseg;
 		}
 
 		CA_FarRead(maphandle,(id0_byte_t id0_far *)source,compressed);
@@ -1708,11 +1598,12 @@ void CA_CacheMap (id0_int_t mapnum)
 		// The resulting RLEW chunk also does, even though it's not really
 		// needed
 		//
-		expanded = *source;
+		expanded = BE_Cross_Swap16LE(*source); // REFKEEN - Big Endian support
+		//expanded = *source;
 		source++;
 		MM_GetPtr (&buffer2seg,expanded);
-		CAL_CarmackExpand (source, (id0_unsigned_t id0_far *)buffer2seg,expanded);
-		CA_RLEWexpand (((id0_unsigned_t id0_far *)buffer2seg)+1,*dest,size,
+		CAL_CarmackExpand_FromLE_ToNE (source, (id0_unsigned_t id0_far *)buffer2seg,expanded);
+		CA_RLEWexpand (((id0_unsigned_t id0_far *)buffer2seg)+1,(id0_unsigned_t *)(*dest),size,
 		((mapfiletype id0_seg *)tinf)->RLEWtag);
 		MM_FreePtr (&buffer2seg);
 
@@ -1756,7 +1647,7 @@ void CA_UpLevel (void)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	for (i=0;i<NUMCHUNKS;i++)
 		if (grsegs[i])
-			MM_SetPurge (&(memptr)grsegs[i],3);
+			MM_SetPurge ((memptr *)&grsegs[i],3);
 #endif
 	ca_levelbit<<=1;
 	ca_levelnum++;
@@ -1819,7 +1710,8 @@ void CA_ClearMarks (void)
 
 void CA_ClearAllMarks (void)
 {
-	_fmemset (grneeded,0,sizeof(grneeded));
+	memset (grneeded,0,sizeof(grneeded));
+	//_fmemset (grneeded,0,sizeof(grneeded));
 	ca_levelbit = 1;
 	ca_levelnum = 0;
 }
@@ -1848,7 +1740,7 @@ void CA_SetGrPurge (void)
 
 	for (i=0;i<NUMCHUNKS;i++)
 		if (grsegs[i])
-			MM_SetPurge (&(memptr)grsegs[i],3);
+			MM_SetPurge ((memptr *)&grsegs[i],3);
 }
 
 
@@ -1873,7 +1765,7 @@ void CA_SetAllPurge (void)
 //
 	for (i=0;i<NUMSNDCHUNKS;i++)
 		if (audiosegs[i])
-			MM_SetPurge (&(memptr)audiosegs[i],3);
+			MM_SetPurge ((memptr *)&audiosegs[i],3);
 
 //
 // free graphics
@@ -1974,10 +1866,10 @@ void CA_CacheMarks (void)
 					}
 
 					BE_Cross_seek(grhandle,pos,SEEK_SET);
-					CA_FarRead(grhandle,bufferseg,endpos-pos);
+					CA_FarRead(grhandle,(id0_byte_t *)bufferseg,endpos-pos);
 					bufferstart = pos;
 					bufferend = endpos;
-					source = bufferseg;
+					source = (id0_byte_t *)bufferseg;
 				}
 			}
 			else
@@ -1988,8 +1880,8 @@ void CA_CacheMarks (void)
 					return;
 				MM_SetLock (&bigbufferseg,true);
 				BE_Cross_seek(grhandle,pos,SEEK_SET);
-				CA_FarRead(grhandle,bigbufferseg,compressed);
-				source = bigbufferseg;
+				CA_FarRead(grhandle,(id0_byte_t *)bigbufferseg,compressed);
+				source = (id0_byte_t *)bigbufferseg;
 			}
 
 			CAL_ExpandGrChunk (i,source);
@@ -2014,3 +1906,5 @@ void CA_CannotOpen(id0_char_t *string)
  Quit (str);
 }
 #endif
+
+REFKEEN_NS_E

@@ -1,6 +1,8 @@
 // ID_CA.H
 //===========================================================================
 
+REFKEEN_NS_B
+
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #define NUMMAPS		30
@@ -20,7 +22,7 @@ typedef	struct
 	id0_unsigned_t	planelength[3];
 	id0_unsigned_t	width,height;
 	id0_char_t		name[16];
-} maptype;
+} __attribute__((__packed__)) maptype;
 
 //===========================================================================
 
@@ -66,7 +68,7 @@ extern id0_long_t		id0_seg *audiostarts;	// array of offsets in audio / audiot
 //
 // hooks for custom cache dialogs
 //
-extern	void	(*drawcachebox)		(id0_char_t *title, id0_unsigned_t numcache);
+extern	void	(*drawcachebox)		(const id0_char_t *title, id0_unsigned_t numcache);
 extern	void	(*updatecachebox)	(void);
 extern	void	(*finishcachebox)	(void);
 
@@ -83,9 +85,9 @@ void CA_OpenDebug (void);
 void CA_CloseDebug (void);
 id0_boolean_t CA_FarRead (BE_FILE_T handle, id0_byte_t id0_far *dest, id0_long_t length);
 id0_boolean_t CA_FarWrite (BE_FILE_T handle, id0_byte_t id0_far *source, id0_long_t length);
-id0_boolean_t CA_ReadFile (id0_char_t *filename, memptr *ptr);
-id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr);
-id0_boolean_t CA_WriteFile (id0_char_t *filename, void id0_far *ptr, id0_long_t length);
+id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr);
+id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr);
+id0_boolean_t CA_WriteFile (const id0_char_t *filename, void id0_far *ptr, id0_long_t length);
 
 id0_long_t CA_RLEWCompress (id0_unsigned_t id0_huge *source, id0_long_t length, id0_unsigned_t id0_huge *dest,
   id0_unsigned_t rlewtag);
@@ -119,3 +121,5 @@ void CA_CacheMarks (void);
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 void CA_CacheScreen (id0_int_t chunk);
 #endif
+
+REFKEEN_NS_E
