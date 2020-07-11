@@ -522,16 +522,8 @@ void CAL_SetupGrFile (void)
 		Quit ("Can't open KDREAMS.EGA!");
 #endif
 
-	read(handle, &grhuffman, sizeof(grhuffman));
+	BE_Cross_readInt16LEBuffer(handle, &grhuffman, sizeof(grhuffman));
 	BE_Cross_close(handle);
-	// REFKEEN - Big Endian support
-#ifdef REFKEEN_ARCH_BIG_ENDIAN
-	for (int i = 0; i < sizeof(grhuffman)/sizeof(*grhuffman); ++i)
-	{
-		grhuffman[i].bit0 = BE_Cross_Swap16LE(grhuffman[i].bit0);
-		grhuffman[i].bit1 = BE_Cross_Swap16LE(grhuffman[i].bit1);
-	}
-#endif
 	CAL_OptimizeNodes (grhuffman);
 //
 // load the data offsets from ???head.ext
@@ -1415,9 +1407,7 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 			fontstruct *font = (fontstruct *)(grsegs[chunk]);
 			font->height = BE_Cross_Swap16LE(font->height);
 			for (int i = 0; i < (int)(sizeof(font->location)/sizeof(*(font->location))); ++i)
-			{
 				font->location[i] = BE_Cross_Swap16LE(font->location[i]);
-			}
 		}
 #endif
 	}

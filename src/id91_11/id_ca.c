@@ -314,8 +314,8 @@ id0_boolean_t CA_FarWrite (BE_FILE_T handle, id0_byte_t id0_far *source, id0_lon
 
 id0_boolean_t CA_ReadFile (const id0_char_t *filename, memptr *ptr)
 {
-	int handle;
-	long size;
+	id0_int_t handle;
+	id0_long_t size;
 
 	if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
@@ -702,16 +702,8 @@ void CAL_SetupGrFile (void)
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
 
-	read(handle, &grhuffman, sizeof(grhuffman));
+	BE_Cross_readInt16LEBuffer(handle, &grhuffman, sizeof(grhuffman));
 	BE_Cross_close(handle);
-	// REFKEEN - Big Endian support
-#ifdef REFKEEN_ARCH_BIG_ENDIAN
-	for (int i = 0; i < sizeof(grhuffman)/sizeof(*grhuffman); ++i)
-	{
-		grhuffman[i].bit0 = BE_Cross_Swap16LE(grhuffman[i].bit0);
-		grhuffman[i].bit1 = BE_Cross_Swap16LE(grhuffman[i].bit1);
-	}
-#endif
 	CAL_OptimizeNodes (grhuffman);
 //
 // load the data offsets from ???head.ext
@@ -836,7 +828,7 @@ void CAL_SetupMapFile (void)
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
-	MM_GetPtr (&(memptr)tinf,length);
+	MM_GetPtr ((memptr *)&tinf,length);
 	CA_FarRead(handle, tinf, length);
 	BE_Cross_close(handle);
 	// REFKEEN - Big Endian support
@@ -899,7 +891,7 @@ void CAL_SetupAudioFile (void)
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
-	MM_GetPtr (&(memptr)audiostarts,length);
+	MM_GetPtr ((memptr *)&audiostarts,length);
 	BE_Cross_readInt32LE(handle, audiostarts, length);
 	//CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
 	BE_Cross_close(handle);
@@ -1078,7 +1070,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 #ifndef AUDIOHEADERLINKED
 
-	MM_GetPtr (&(memptr)audiosegs[chunk],compressed);
+	MM_GetPtr ((memptr *)&audiosegs[chunk],compressed);
 	if (mmerror)
 		return;
 
@@ -1089,7 +1081,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 	if (compressed<=BUFFERSIZE)
 	{
 		CA_FarRead(audiohandle,(id0_byte_t *)bufferseg,compressed);
-		source =(id0_byte_t *) bufferseg;
+		source = (id0_byte_t *)bufferseg;
 	}
 	else
 	{
@@ -1485,9 +1477,7 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 			fontstruct *font = (fontstruct *)(grsegs[chunk]);
 			font->height = BE_Cross_Swap16LE(font->height);
 			for (int i = 0; i < (int)(sizeof(font->location)/sizeof(*(font->location))); ++i)
-			{
 				font->location[i] = BE_Cross_Swap16LE(font->location[i]);
-			}
 		}
 #endif
 	}
