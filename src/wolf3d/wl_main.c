@@ -1672,7 +1672,7 @@ close(profilehandle);
 #ifdef GAMEVER_NOAH3D
 	if (MS_CheckParm ("CHECK"))
 	{
-		printf("Press any key...");
+		BE_ST_printf("Press any key...");
 		IN_Ack();
 	}
 	else
@@ -1865,7 +1865,7 @@ void Quit (id0_char_t *error)
 #endif
 	  gotoxy (10,4);
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
-	  puts(error);
+	  BE_Cross_puts(error);
 	  // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	  gotoxy (1,8);
@@ -1913,7 +1913,7 @@ void Quit (id0_char_t *error)
  {
 	VL_SetTextMode();
 	if (error && *error)
-		puts(error);
+		BE_Cross_puts(error);
  }
 #endif
 
@@ -2314,7 +2314,7 @@ void main (void)
 	if (d.year > YEAR ||
 		(d.month >= MONTH && d.day >= DAY))
 	{
-	 printf("Sorry, BETA-TESTING is over. Thanks for you help.\n");
+	 BE_ST_printf("Sorry, BETA-TESTING is over. Thanks for you help.\n");
 	 exit(1);
 	}
 #endif
@@ -2325,7 +2325,7 @@ void main (void)
 	VL_SetTextMode();
 	FillCharAttr(' ',0x5d,80);
 	gotoxy((79-strlen(logon))/2,1);
-	puts(logon);
+	BE_ST_puts(logon);
 #endif
 
 	// *** ALPHA RESTORATION ***

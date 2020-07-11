@@ -810,7 +810,7 @@ void BossKey(void)
 	SD_MusicOff();
 	_AX = 3;
 	geninterrupt(0x10);
-	printf("C>");
+	BE_ST_printf("C>");
 	while (!Keyboard[sc_Escape])
 	IN_ClearKeysDown();
 

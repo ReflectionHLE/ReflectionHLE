@@ -2924,7 +2924,7 @@ SD_Startup(void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("SD_Startup: ");
+	BE_ST_printf("SD_Startup: ");
 #else
 	SDL_SetDS();
 #endif
@@ -2950,14 +2950,14 @@ SD_Startup(void)
 		case 0:						// No AdLib detection
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-			printf("Skipping AdLib detection\n");
+			BE_ST_printf("Skipping AdLib detection\n");
 #endif
 			alNoCheck = true;
 			break;
 		case 1:						// No SoundBlaster detection
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-			printf("Skipping SoundBlaster detection\n");
+			BE_ST_printf("Skipping SoundBlaster detection\n");
 #endif
 			sbNoCheck = true;
 			break;
@@ -2969,7 +2969,7 @@ SD_Startup(void)
 		case 2:						// No SoundBlaster Pro detection
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-			printf("Skipping SoundBlaster Pro detection\n");
+			BE_ST_printf("Skipping SoundBlaster Pro detection\n");
 #endif
 			sbNoProCheck = true;
 			break;
@@ -3092,11 +3092,11 @@ SD_Startup(void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (AdLibPresent)
-		printf("AdLib detected\n");
+		BE_ST_printf("AdLib detected\n");
 	if (SoundBlasterPresent)
-		printf("SoundBlaster detected (A%03X, I%d, D%d)\n", sbLocation+0x200, sbInterrupt, sbDMA);
+		BE_ST_printf("SoundBlaster detected (A%03X, I%d, D%d)\n", sbLocation+0x200, sbInterrupt, sbDMA);
 	if (!AdLibPresent && !SoundBlasterPresent)
-		printf("No sound devices detected\n");
+		BE_ST_printf("No sound devices detected\n");
 #endif
 
 	for (i = 0;i < 255;i++)

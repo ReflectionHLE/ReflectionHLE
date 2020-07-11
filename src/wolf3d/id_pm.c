@@ -481,7 +481,7 @@ PML_StartupMainMem(void)
 		Quit(str);
 	}
 	else
-		printf("Main memory (%lukb)\n", (id0_long_t)MainPagesAvail<<2);
+		BE_ST_printf("Main memory (%lukb)\n", (id0_long_t)MainPagesAvail<<2);
 #else
 	if (MainPagesAvail < PMMinMainMem)
 		Quit("PM_SetupMainMem: Not enough main memory");
@@ -541,7 +541,7 @@ PML_OpenPageFile(void)
 	PageListStruct	id0_far *page;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("Opening %s\n", PageFileName);
+	BE_ST_printf("Opening %s\n", PageFileName);
 #endif
 
 	PageFile = BE_Cross_open_readonly_for_reading(PageFileName,O_RDONLY + O_BINARY);
@@ -1375,7 +1375,7 @@ PM_Startup(void)
 		return;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("PM_Startup: ");
+	BE_ST_printf("PM_Startup: ");
 #endif
 
 	nomain = noems = noxms = false;
@@ -1386,21 +1386,21 @@ PM_Startup(void)
 		case 0:
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-			printf("Main memory disabled\n");
+			BE_ST_printf("Main memory disabled\n");
 #endif
 			nomain = true;
 			break;
 		case 1:
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-			printf("EMS disabled\n");
+			BE_ST_printf("EMS disabled\n");
 #endif
 			noems = true;
 			break;
 		case 2:
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-			printf("XMS disabled\n");
+			BE_ST_printf("XMS disabled\n");
 #endif
 			noxms = true;
 			break;
@@ -1423,14 +1423,14 @@ PM_Startup(void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (EMSPresent)
-		printf("EMS detected (%lukb)\n", (id0_long_t)EMSPagesAvail<<2);
+		BE_ST_printf("EMS detected (%lukb)\n", (id0_long_t)EMSPagesAvail<<2);
 	else
-		printf("EMS not detected\n");
+		BE_ST_printf("EMS not detected\n");
 
 	if (XMSPresent)
-		printf("XMS detected (%lukb)\n", (id0_long_t)XMSPagesAvail<<2);
+		BE_ST_printf("XMS detected (%lukb)\n", (id0_long_t)XMSPagesAvail<<2);
 	else
-		printf("XMS not detected\n");
+		BE_ST_printf("XMS not detected\n");
 
 #endif
 

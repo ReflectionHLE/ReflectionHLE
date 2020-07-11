@@ -536,7 +536,7 @@ IN_Startup(void)
 		return;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("IN_Startup: ");
+	BE_ST_printf("IN_Startup: ");
 #endif
 
 	checkjoys = true;
@@ -549,14 +549,14 @@ IN_Startup(void)
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		case 1:
-			printf("Skipping joystick detection\n");
+			BE_ST_printf("Skipping joystick detection\n");
 #endif
 			checkjoys = false;
 			break;
 			// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		case 2:
-			printf("Skipping mouse detection\n");
+			BE_ST_printf("Skipping mouse detection\n");
 #else
 		case 1:
 #endif
@@ -570,7 +570,7 @@ IN_Startup(void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (MousePresent)
-		printf("Mouse detected\n");
+		BE_ST_printf("Mouse detected\n");
 #endif
 
 	for (i = 0;i < MaxJoys;i++)
@@ -582,7 +582,7 @@ IN_Startup(void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		if (JoysPresent[i])
-			printf("Joystick %d detected\n", i+1);
+			BE_ST_printf("Joystick %d detected\n", i+1);
 	}
 #endif
 

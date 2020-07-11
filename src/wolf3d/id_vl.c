@@ -85,7 +85,7 @@ void	VL_Startup (void)
 	asm	cld;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("VL_Startup: ");
+	BE_ST_printf("VL_Startup: ");
 #endif
 
 	videocard = VL_VideoID ();
@@ -100,10 +100,10 @@ void	VL_Startup (void)
 #ifdef GAMEVER_NOAH3D
 	if (videocard != 5)
 	{
-		printf("VGA not detected\nUse -VGA option to force detection\n");
+		BE_ST_printf("VGA not detected\nUse -VGA option to force detection\n");
 		Quit (NULL);
 	}
-	printf("VGA detected\n");
+	BE_ST_printf("VGA detected\n");
 #else
 	if (videocard != 5)
 Quit ("Improper video card!  If you really have a VGA card that I am not \n"

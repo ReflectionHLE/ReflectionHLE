@@ -2661,7 +2661,7 @@ void CopyProtection(void)
 	_AX = 3;
 	geninterrupt(0x10);
 
-	printf("%s\n",message);
+	BE_ST_printf("%s\n",message);
 	exit(1);
 }
 

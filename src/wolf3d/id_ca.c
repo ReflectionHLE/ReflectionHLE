@@ -723,7 +723,7 @@ void CAL_SetupGrFile (void)
 	memptr compseg;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("Loading graphics headers...\n");
+	BE_ST_printf("Loading graphics headers...\n");
 #endif
 
 #ifdef GRHEADERLINKED
@@ -858,7 +858,7 @@ void CAL_SetupMapFile (void)
 #endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("Loading maps...\n");
+	BE_ST_printf("Loading maps...\n");
 #endif
 
 //
@@ -985,7 +985,7 @@ void CAL_SetupAudioFile (void)
 #endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("Loading sound headers...\n");
+	BE_ST_printf("Loading sound headers...\n");
 #endif
 
 //
@@ -1067,7 +1067,7 @@ void CA_Startup (void)
 #endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	printf("CA_Startup: ");
+	BE_ST_printf("CA_Startup: ");
 #endif
 
 	CAL_SetupMapFile ();
