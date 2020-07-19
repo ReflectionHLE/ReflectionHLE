@@ -3667,3 +3667,48 @@ SD_MusicPlaying(void)
 	return(result);
 #endif
 }
+
+// Replacements for direct accesses to TimeCount variable
+
+// Clone of "count" var from SDL_t0Service.
+// TODO: Consider making this work more like multiple vars from ID_SD_A.ASM:
+// extreme, count_fx, count_time
+static id0_word_t g_t0CountClone = 1;
+
+id0_longword_t SD_GetTimeCount(void)
+{
+	const int factor = TimerRate / TickBase;
+	int intCallsCount = BE_ST_TimerIntClearLastCalls();
+	TimeCount += (intCallsCount + (g_t0CountClone % factor)) / factor;
+	g_t0CountClone += intCallsCount;
+	return TimeCount;
+}
+
+void SD_SetTimeCount(id0_longword_t newcount)
+{
+	BE_ST_TimerIntClearLastCalls();
+	TimeCount = newcount;
+}
+
+void SD_AddToTimeCount(id0_longword_t count)
+{
+	TimeCount += count;
+}
+
+// C99
+void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks);
+void SD_TimeCountWaitTicks(id0_int_t ticks);
+
+void SD_TimeCountWaitForDest(id0_longword_t dst)
+{
+	id0_long_t diff = (id0_long_t)(dst - TimeCount);
+	if (diff <= 0)
+		return;
+	const int factor = TimerRate / TickBase;
+	int intCallsCount = factor*diff - (g_t0CountClone % factor);
+	BE_ST_TimerIntCallsDelayWithOffset(intCallsCount);
+	TimeCount = dst;
+	g_t0CountClone += intCallsCount;
+}
+
+REFKEEN_NS_E
