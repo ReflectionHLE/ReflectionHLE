@@ -1018,9 +1018,7 @@ IN_WaitForKey(void)
 	ScanCode	result;
 
 	while (!(result = LastScan))
-	{
 		BE_ST_ShortSleep();
-	}
 	LastScan = 0;
 	return(result);
 }
@@ -1037,9 +1035,7 @@ IN_WaitForASCII(void)
 	id0_char_t		result;
 
 	while (!(result = LastASCII))
-	{
 		BE_ST_ShortSleep();
-	}
 	LastASCII = '\0';
 	return(result);
 }
@@ -1066,9 +1062,7 @@ IN_AckBack(void)
 			if (INL_GetMouseButtons())
 			{
 				while (INL_GetMouseButtons())
-				{
 					BE_ST_ShortSleep();
-				}
 				// REFKEEN - Alternative controllers support
 				BE_ST_AltControlScheme_Pop();
 				return;
@@ -1082,9 +1076,7 @@ IN_AckBack(void)
 				if (IN_GetJoyButtonsDB(i))
 				{
 					while (IN_GetJoyButtonsDB(i))
-					{
 						BE_ST_ShortSleep();
-					}
 					// REFKEEN - Alternative controllers support
 					BE_ST_AltControlScheme_Pop();
 					return;
@@ -1116,15 +1108,11 @@ IN_Ack(void)
 
 	if (MousePresent)
 		while (INL_GetMouseButtons())
-		{
 			BE_ST_ShortSleep();
-		}
 	for (i = 0;i < MaxJoys;i++)
 		if (JoysPresent[i])
 			while (IN_GetJoyButtonsDB(i))
-			{
 				BE_ST_ShortSleep();
-			}
 
 	IN_AckBack();
 }
