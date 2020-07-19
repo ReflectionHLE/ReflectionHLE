@@ -337,7 +337,7 @@ static	id0_longword_t	lasttime;
 	else
 		*dy = 0;
 
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -368,9 +368,13 @@ IN_GetJoyButtonsDB(id0_word_t joy)
 	{
 		result1 = INL_GetJoyButtons(joy);
 		lasttime = TimeCount;
+		SD_TimeCountWaitFromSrc(lasttime, 1);
+#if 0
 		while (TimeCount == lasttime)
 			;
+#endif
 		result2 = INL_GetJoyButtons(joy);
+		BE_ST_ShortSleep();
 	} while (result1 != result2);
 	return(result1);
 }
@@ -837,7 +841,7 @@ IN_WaitForKey(void)
 	ScanCode	result;
 
 	while (!(result = LastScan))
-		;
+		BE_ST_ShortSleep();
 	LastScan = 0;
 	return(result);
 }
@@ -854,7 +858,7 @@ IN_WaitForASCII(void)
 	id0_char_t		result;
 
 	while (!(result = LastASCII))
-		;
+		BE_ST_ShortSleep();
 	LastASCII = '\0';
 	return(result);
 }
@@ -920,7 +924,7 @@ void IN_Ack (void)
 	IN_StartAck ();
 
 	while (!IN_CheckAck ())
-	;
+		BE_ST_ShortSleep();
 }
 
 
@@ -936,13 +940,14 @@ id0_boolean_t IN_UserInput(id0_longword_t delay)
 {
 	id0_longword_t	lasttime;
 
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 	IN_StartAck ();
 	do
 	{
+		BE_ST_ShortSleep();
 		if (IN_CheckAck())
 			return true;
-	} while (TimeCount - lasttime < delay);
+	} while (SD_GetTimeCount() - lasttime < delay);
 	return(false);
 }
 

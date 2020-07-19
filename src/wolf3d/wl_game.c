@@ -1907,13 +1907,19 @@ startplayloop:
 				// Do loop over DigiPlaying
 #if (GAMEVER_WOLFREV <= GV_WR_SODFG10)
 				while(DigiPlaying!=false)
+				{
 					SD_Poll();
+					BE_ST_ShortSleep();
+				}
 #else
-				id0_long_t lasttimecount = TimeCount;
+				id0_long_t lasttimecount = SD_GetTimeCount();
 
-				while(TimeCount < lasttimecount+150)
+				while(SD_GetTimeCount() < lasttimecount+150)
+				{
 				//while(DigiPlaying!=false)
 					SD_Poll();
+					BE_ST_ShortSleep();
+				}
 #endif
 			}
 			else

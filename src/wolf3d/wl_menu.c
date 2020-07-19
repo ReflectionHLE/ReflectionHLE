@@ -594,7 +594,8 @@ void US_ControlPanel(id0_byte_t scancode)
 			VL_FadeIn(0,255,grsegs[IDGUYSPALETTE],30);
 			UNCACHEGRCHUNK(IDGUYSPALETTE);
 
-			while (Keyboard[sc_I] || Keyboard[sc_D]);
+			while (Keyboard[sc_I] || Keyboard[sc_D])
+				BE_ST_ShortSleep();
 			IN_ClearKeysDown();
 			IN_Ack();
 
@@ -836,7 +837,10 @@ void BossKey(void)
 	geninterrupt(0x10);
 	BE_ST_printf("C>");
 	while (!Keyboard[sc_Escape])
-	IN_ClearKeysDown();
+	{
+		BE_ST_ShortSleep();
+		IN_ClearKeysDown();
+	}
 
 	SD_MusicOn();
 	VL_SetVGAPlaneMode ();
@@ -954,7 +958,7 @@ id0_int_t CP_CheckQuick(id0_unsigned_t scancode)
 
 				if (loadedgame)
 					playstate = ex_abort;
-				lasttimecount = TimeCount;
+				lasttimecount = SD_GetTimeCount();
 
 				if (MousePresent)
 					Mouse(MDelta);	// Clear accumulated mouse movement
@@ -1056,7 +1060,7 @@ id0_int_t CP_CheckQuick(id0_unsigned_t scancode)
 				if (loadedgame)
 					playstate = ex_abort;
 
-				lasttimecount = TimeCount;
+				lasttimecount = SD_GetTimeCount();
 
 				if (MousePresent)
 					Mouse(MDelta);	// Clear accumulated mouse movement
@@ -1596,6 +1600,7 @@ void CP_Sound(void)
 				}
 				break;
 		}
+		BE_ST_ShortSleep();
 	} while(which>=0);
 
 	MenuFadeOut();
@@ -1859,6 +1864,7 @@ id0_int_t CP_LoadGame(id0_int_t quick)
 #endif
 			break;
 		}
+		BE_ST_ShortSleep();
 
 	} while(which>=0);
 
@@ -2106,6 +2112,7 @@ id0_int_t CP_SaveGame(id0_int_t quick)
 			fontnumber=1;
 			break;
 		}
+		BE_ST_ShortSleep();
 
 	} while(which>=0);
 
@@ -2183,6 +2190,7 @@ id0_int_t CalibrateJoystick(void)
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 		#endif
+		BE_ST_ShortSleep();
 
 	} while(!(jb&1));
 
@@ -2220,12 +2228,14 @@ id0_int_t CalibrateJoystick(void)
 		if (Keyboard[sc_Tab] && Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 		#endif
+		BE_ST_ShortSleep();
 	} while(!(jb&2));
 
 	IN_GetJoyAbs(joystickport,&xmax,&ymax);
 	SD_PlaySound(SHOOTSND);
 
-	while (IN_JoyButtons());
+	while (IN_JoyButtons())
+		BE_ST_ShortSleep();
 
 	//
 	// ASSIGN ACTUAL VALUES HERE
@@ -2307,6 +2317,7 @@ void CP_Control(void)
 				WaitKeyUp();
 				break;
 		}
+		BE_ST_ShortSleep();
 	} while(which>=0);
 
 	MenuFadeOut();
@@ -2397,7 +2408,8 @@ void MouseSensitivity(void)
 					VWB_Bar(61+20*mouseadjustment,98,19,9,READHCOLOR);
 					VW_UpdateScreen();
 					SD_PlaySound(MOVEGUN1SND);
-					while(Keyboard[sc_LeftArrow]);
+					while(Keyboard[sc_LeftArrow])
+						BE_ST_ShortSleep();
 					WaitKeyUp();
 				}
 				break;
@@ -2413,7 +2425,8 @@ void MouseSensitivity(void)
 					VWB_Bar(61+20*mouseadjustment,98,19,9,READHCOLOR);
 					VW_UpdateScreen();
 					SD_PlaySound(MOVEGUN1SND);
-					while(Keyboard[sc_RightArrow]);
+					while(Keyboard[sc_RightArrow])
+						BE_ST_ShortSleep();
 					WaitKeyUp();
 				}
 				break;
@@ -2436,6 +2449,7 @@ void MouseSensitivity(void)
 		if (ci.button1 || Keyboard[sc_Escape])
 			exit=2;
 
+		BE_ST_ShortSleep();
 	} while(!exit);
 
 	if (exit==2)
@@ -2602,6 +2616,7 @@ void CustomControls(void)
 	 DefineKeyMove();
 	 DrawCustKeys(0);
   }
+  BE_ST_ShortSleep();
  } while(which>=0);
 
 
@@ -2716,7 +2731,9 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
   if ((ci.button0|ci.button1|ci.button2|ci.button3)||
 	  ((type==KEYBOARDBTNS||type==KEYBOARDMOVE) && LastScan==sc_Enter))
   {
-   tick=TimeCount=picked=0;
+   tick=picked=0;
+   SD_AddToTimeCount(-SD_GetTimeCount());
+//   tick=TimeCount=picked=0;
    SETFONTCOLOR(0,TEXTCOLOR);
 
    do
@@ -2730,7 +2747,7 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
 	//
 	// FLASH CURSOR
 	//
-	if (TimeCount>10)
+	if (SD_GetTimeCount()>10)
 	{
 	 switch(tick)
 	 {
@@ -2743,7 +2760,8 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
 	SD_PlaySound(HITWALLSND);
 	 }
 	 tick^=1;
-	 TimeCount=0;
+	 SD_AddToTimeCount(-SD_GetTimeCount());
+	 //TimeCount=0;
 	 VW_UpdateScreen();
 	}
 
@@ -2862,7 +2880,8 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
 	 } while(!cust->allowed[which]);
 	 redraw=1;
 	 SD_PlaySound(MOVEGUN1SND);
-	 while(ReadAnyControl(&ci),ci.dir!=dir_None);
+	 while(ReadAnyControl(&ci),ci.dir!=dir_None)
+	   BE_ST_ShortSleep();
 	 IN_ClearKeysDown();
 	 break;
 
@@ -2875,13 +2894,15 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
 	 } while(!cust->allowed[which]);
 	 redraw=1;
 	 SD_PlaySound(MOVEGUN1SND);
-	 while(ReadAnyControl(&ci),ci.dir!=dir_None);
+	 while(ReadAnyControl(&ci),ci.dir!=dir_None)
+	   BE_ST_ShortSleep();
 	 IN_ClearKeysDown();
 	 break;
    case dir_North:
    case dir_South:
 	 exit=1;
   }
+  BE_ST_ShortSleep();
  } while(!exit);
 
  SD_PlaySound(ESCPRESSEDSND);
@@ -3351,6 +3372,7 @@ void CP_ChangeView(void)
 			MenuFadeOut();
 			return;
 		}
+		BE_ST_ShortSleep();
 
 	} while(!exit);
 
@@ -3790,7 +3812,8 @@ id0_int_t HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,
 	shape=C_CURSOR1PIC;
 	timer=8;
 	exit=0;
-	TimeCount=0;
+	SD_AddToTimeCount(-SD_GetTimeCount());
+//	TimeCount=0;
 	IN_ClearKeysDown();
 
 
@@ -3799,9 +3822,10 @@ id0_int_t HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,
 		//
 		// CHANGE GUN SHAPE
 		//
-		if (TimeCount>timer)
+		if (SD_GetTimeCount()>timer)
 		{
-			TimeCount=0;
+			SD_AddToTimeCount(-SD_GetTimeCount());
+//			TimeCount=0;
 			if (shape==C_CURSOR1PIC)
 			{
 				shape=C_CURSOR2PIC;
@@ -3964,7 +3988,8 @@ id0_int_t HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	while (Keyboard[sc_Enter] || Keyboard[sc_Escape]);
+	while (Keyboard[sc_Enter] || Keyboard[sc_Escape])
+		BE_ST_ShortSleep();
 #else
 	IN_ClearKeysDown();
 #endif
@@ -4055,8 +4080,9 @@ void DrawHalfStep(id0_int_t x,id0_int_t y)
 	VWB_DrawPic(x,y,C_CURSOR1PIC);
 	VW_UpdateScreen();
 	SD_PlaySound(MOVEGUN1SND);
-	TimeCount=0;
-	while(TimeCount<8);
+	SD_SetTimeCount(0);
+	SD_TimeCountWaitForDest(8);
+//	while(TimeCount<8);
 }
 
 
@@ -4098,11 +4124,12 @@ void TicDelay(id0_int_t count)
 	ControlInfo ci;
 
 
-	TimeCount=0;
+	SD_SetTimeCount(0);
 	do
 	{
 		ReadAnyControl(&ci);
-	} while(TimeCount<count && ci.dir!=dir_None);
+		BE_ST_ShortSleep();
+	} while(SD_GetTimeCount()<count && ci.dir!=dir_None);
 }
 
 
@@ -4192,7 +4219,8 @@ void WaitKeyUp(void)
 								Keyboard[sc_Space]|
 #endif
 								Keyboard[sc_Enter]|
-								Keyboard[sc_Escape]);
+								Keyboard[sc_Escape])
+		BE_ST_ShortSleep();
 }
 
 
@@ -4351,11 +4379,12 @@ id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 	//
 	x=PrintX;
 	y=PrintY;
-	TimeCount=0;
+	SD_AddToTimeCount(-SD_GetTimeCount());
+//	TimeCount=0;
 
 	do
 	{
-		if (TimeCount>=10)
+		if (SD_GetTimeCount()>=10)
 		{
 			switch(tick)
 			{
@@ -4369,7 +4398,8 @@ id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 			}
 			VW_UpdateScreen();
 			tick^=1;
-			TimeCount=0;
+			SD_AddToTimeCount(-SD_GetTimeCount());
+//			TimeCount=0;
 		}
 
 		// *** SHAREWARE/REGISTERED APOGEE + S3DNA RESTORATION ***

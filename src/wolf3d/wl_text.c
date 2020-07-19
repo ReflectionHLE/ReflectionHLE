@@ -201,9 +201,13 @@ void	TimedPicCommand (void)
 //
 // wait for time
 //
+	SD_AddToTimeCount(-SD_GetTimeCount());
+	SD_TimeCountWaitForDest(picdelay);
+#if 0
 	TimeCount = 0;
 	while (TimeCount < picdelay)
 	;
+#endif
 
 //
 // draw pic

@@ -212,7 +212,7 @@ id0_int_t AskQuestion (id0_int_t question)
 	RestorePlayScreen ();
 	ClearMemory ();
 	PM_CheckMainMem ();
-	lasttimecount = TimeCount;
+	lasttimecount = SD_GetTimeCount();
 
 	if (MousePresent)
 		Mouse(MDelta);	// Clear accumulated mouse movement

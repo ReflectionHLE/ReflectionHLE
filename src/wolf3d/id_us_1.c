@@ -196,6 +196,7 @@ asm	sti	// Let the keyboard interrupts come through
 			return(RETRY);
 			break;
 		}
+		BE_ST_ShortSleep();
 	}
 
 oh_kill_me:
@@ -700,7 +701,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 	cursormoved = redraw = true;
 
 	cursorvis = done = false;
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 	LastASCII = key_None;
 	LastScan = sc_None;
 
@@ -709,15 +710,16 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 		if (cursorvis)
 			USL_XORICursor(x,y,s,cursor);
 
-	asm	pushf
-	asm	cli
+//	asm	pushf
+//	asm	cli
+		BE_ST_ShortSleep();
 
 		sc = LastScan;
 		LastScan = sc_None;
 		c = LastASCII;
 		LastASCII = key_None;
 
-	asm	popf
+//	asm	popf
 
 		switch (sc)
 		{
@@ -829,13 +831,13 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 		if (cursormoved)
 		{
 			cursorvis = false;
-			lasttime = TimeCount - TickBase;
+			lasttime = SD_GetTimeCount() - TickBase;
 
 			cursormoved = false;
 		}
-		if (TimeCount - lasttime > TickBase / 2)
+		if (SD_GetTimeCount() - lasttime > TickBase / 2)
 		{
-			lasttime = TimeCount;
+			lasttime = SD_GetTimeCount();
 
 			cursorvis ^= true;
 		}

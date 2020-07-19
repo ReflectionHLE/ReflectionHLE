@@ -209,6 +209,7 @@ void AutoMap (void)
 			DrawAutoMap (x,y);
 			VW_UpdateScreen ();
 		}
+		BE_ST_ShortSleep();
 	} while (!done);
 
 	IN_ClearKeysDown ();
@@ -219,7 +220,7 @@ void AutoMap (void)
 	}
 
 	PM_CheckMainMem ();
-	lasttimecount = TimeCount;
+	lasttimecount = SD_GetTimeCount();
 
 	if (MousePresent)
 		Mouse(MDelta);	// Clear accumulated mouse movement

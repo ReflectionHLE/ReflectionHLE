@@ -1503,7 +1503,7 @@ void DrawPlayerWeapon (void)
 	{
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-		if (player->state == &s_deathcam && (TimeCount&32) )
+		if (player->state == &s_deathcam && (SD_GetTimeCount()&32) )
 			SimpleScaleShape(viewwidth/2,SPR_DEATHCAM,viewheight+1);
 #endif
 		return;
@@ -1539,28 +1539,38 @@ void CalcTics (void)
 //
 // calculate tics since last refresh for adaptive timing
 //
-	if (lasttimecount > TimeCount)
-		TimeCount = lasttimecount;		// if the game was paused a LONG time
+	// REFKEEN - Looks like this is an unsigned comparison in original EXE
+	if ((id0_longword_t)lasttimecount > SD_GetTimeCount())
+		SD_SetTimeCount(lasttimecount);		// if the game was paused a LONG time
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	if (DemoMode != demo_Off)
 	{
 		oldtimecount = lasttimecount;
+		SD_TimeCountWaitForDest(oldtimecount + 2*DEMOTICS);
+#if 0
 		while (oldtimecount + 2*DEMOTICS > TimeCount) ;
+#endif
 
 		lasttimecount = oldtimecount + DEMOTICS;
-		TimeCount = lasttimecount + DEMOTICS;
+		SD_SetTimeCount(lasttimecount + DEMOTICS);
 		tics = DEMOTICS;
 		return;
 	}
 #endif
 
+	// REFKEEN - Some replacement
+	SD_TimeCountWaitFromSrc(lasttimecount, 1);
+	newtime = SD_GetTimeCount();
+	tics = newtime-lasttimecount;
+#if 0
 	do
 	{
-		newtime = TimeCount;
+		newtime = SD_GetTimeCount();
 		tics = newtime-lasttimecount;
 	} while (!tics);			// make sure at least one tic passes
+#endif
 
 	lasttimecount = newtime;
 
@@ -1574,7 +1584,7 @@ void CalcTics (void)
 
 	if (tics>MAXTICS)
 	{
-		TimeCount -= (tics-MAXTICS);
+		SD_AddToTimeCount(-(tics-MAXTICS));
 		tics = MAXTICS;
 	}
 }
@@ -1747,9 +1757,11 @@ asm	rep stosw
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 #else
-		lasttimecount = TimeCount = 0;		// don't make a big tic count
+		SD_SetTimeCount(0);
+		lasttimecount = 0;
+		//lasttimecount = TimeCount = 0;		// don't make a big tic count
 #endif
 
 	}

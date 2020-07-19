@@ -96,8 +96,9 @@ void EndSpear(void)
 	US_CPrint (STR_ENDGAME2);
 	VW_UpdateScreen ();
 	IN_StartAck ();
-	TimeCount = 0;
-	while (!IN_CheckAck () && TimeCount < 700);
+	SD_SetTimeCount(0);
+	while (!IN_CheckAck () && SD_GetTimeCount() < 700)
+		BE_ST_ShortSleep();
 
 	PrintX = 0;
 	PrintY = 180;
@@ -106,8 +107,9 @@ void EndSpear(void)
 	US_CPrint (STR_ENDGAME4);
 	VW_UpdateScreen ();
 	IN_StartAck ();
-	TimeCount = 0;
-	while (!IN_CheckAck () && TimeCount < 700);
+	SD_SetTimeCount(0);
+	while (!IN_CheckAck () && SD_GetTimeCount() < 700)
+		BE_ST_ShortSleep();
 
 	VW_FadeOut ();
 
@@ -171,7 +173,9 @@ void CharacterCast(void)
 	WindowX = 0;
 	WindowW = 320-16;
 	fontnumber = 1;
-	lasttimecount = TimeCount = 0;
+	SD_SetTimeCount(0);
+	lasttimecount = 0;
+	//lasttimecount = TimeCount = 0;
 	IN_StartAck ();
 
 	do
@@ -787,7 +791,9 @@ void BJ_Breathe(void)
 	id0_int_t pics[2]={L_GUYPIC,L_GUY2PIC};
 
 
-	if (TimeCount>max)
+	// REFKEEN TODO: Sleep might be a problem in S3DNA when used in loop with RollDelay
+	BE_ST_ShortSleep();
+	if (SD_GetTimeCount()>max)
 	{
 		which^=1;
 		// *** S3DNA RESTORATION ***
@@ -797,7 +803,14 @@ void BJ_Breathe(void)
 		VWB_DrawPic(0,16,pics[which]);
 #endif
 		VW_UpdateScreen();
-		TimeCount=0;
+		// REFKEEN TODO: Maybe we can change SD_SetTimeCount
+		// to not call BE_ST_TimerIntClearLastCalls instead?
+		// (Assuming change hasn't already been done.)
+		// Also consider this for sets of TimeCount 0 in LevelCompleted,
+		// and further search for mentions of SD_AddToTimeCount
+		// anywhere else in the Wolf3D sources.
+		SD_AddToTimeCount(-SD_GetTimeCount());
+//		TimeCount=0;
 		max=35;
 	}
 }
@@ -855,9 +868,12 @@ void DrawEndLevelScreen (id0_int_t secretlvl)
 
 void RollDelay (void)
 {
+	SD_TimeCountWaitTicks(1);
+#if 0
 	id0_unsigned_long_t lasttime = TimeCount;
 	while (TimeCount == lasttime)
 		;
+#endif
 }
 #endif
 
@@ -1258,16 +1274,17 @@ void LevelCompleted (void)
 		SD_PlaySound(PERCENT100SND);
 		bonus = 15000;
 		ShowBonus(15000);
-		TimeCount = 0;
+		SD_SetTimeCount(0);
 		IN_StartAck();
-		lasttime = TimeCount;
+		lasttime = SD_GetTimeCount();
 		do
 		{
 			BJ_Breathe();
 			VW_UpdateScreen();
 			if (IN_CheckAck())
 				break;
-		} while (TimeCount - lasttime < 2*TickBase);
+			BE_ST_ShortSleep();
+		} while (SD_GetTimeCount() - lasttime < 2*TickBase);
 
 		if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
@@ -1309,7 +1326,7 @@ void LevelCompleted (void)
 	VW_UpdateScreen ();
 	VW_FadeIn ();
 
-	TimeCount=0;
+	SD_SetTimeCount(0);
 	//
 	// PRINT TIME BONUS
 	//
@@ -1335,14 +1352,14 @@ void LevelCompleted (void)
 
 	bonus+=timeleft*PAR_AMOUNT;
 	IN_StartAck();
-	lasttime = TimeCount;
+	lasttime = SD_GetTimeCount();
 	do
 	{
 		BJ_Breathe();
 		VW_UpdateScreen();
 		if (IN_CheckAck())
 			break;
-	} while (TimeCount - lasttime < 2*TickBase);
+	} while (SD_GetTimeCount() - lasttime < 2*TickBase);
 
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
@@ -1509,7 +1526,7 @@ void LevelCompleted (void)
 		SD_PlaySound(PERCENT100SND);
 	}
 	IN_StartAck();
-	TimeCount = 0;
+	SD_SetTimeCount(0);
 	while (!IN_CheckAck())
 		BJ_Breathe();
 
@@ -1915,7 +1932,7 @@ void LevelCompleted (void)
 	DrawScore();
 	VW_UpdateScreen();
 
-	TimeCount=0;
+	SD_SetTimeCount(0);
 	IN_StartAck();
 	while(!IN_CheckAck())
 	  BJ_Breathe();

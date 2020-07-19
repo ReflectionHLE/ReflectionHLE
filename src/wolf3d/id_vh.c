@@ -590,7 +590,9 @@ id0_boolean_t FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 
 	IN_StartAck ();
 
-	TimeCount=frame=0;
+	//TimeCount=frame=0;
+	frame=0;
+	SD_SetTimeCount(0);
 	do	// while (1)
 	{
 		if (abortable && IN_CheckAck () )
@@ -645,8 +647,11 @@ noxor:
 				return false;
 		}
 		frame++;
+		SD_TimeCountWaitForDest(frame);
+#if 0
 		while (TimeCount<frame)		// don't go too fast
 		;
+#endif
 	} while (1);
 
 

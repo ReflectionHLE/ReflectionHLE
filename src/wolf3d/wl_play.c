@@ -575,9 +575,13 @@ void PollControls (void)
 //
 	if (demoplayback)
 	{
+		SD_TimeCountWaitFromSrc(lasttimecount+DEMOTICS);
+		SD_SetTimeCount(lasttimecount + DEMOTICS);
+#if 0
 		while (TimeCount<lasttimecount+DEMOTICS)
 		;
 		TimeCount = lasttimecount + DEMOTICS;
+#endif
 		lasttimecount += DEMOTICS;
 		tics = DEMOTICS;
 	}
@@ -586,9 +590,13 @@ void PollControls (void)
 //
 // take DEMOTICS or more tics, and modify Timecount to reflect time taken
 //
+		SD_TimeCountWaitFromSrc(lasttimecount+DEMOTICS);
+		SD_SetTimeCount(lasttimecount + DEMOTICS);
+#if 0
 		while (TimeCount<lasttimecount+DEMOTICS)
 		;
 		TimeCount = lasttimecount + DEMOTICS;
+#endif
 		lasttimecount += DEMOTICS;
 		tics = DEMOTICS;
 	}
@@ -619,9 +627,10 @@ void PollControls (void)
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		tics = *demoptr++;
 
-		while (tics > TimeCount - lasttimecount);
+		SD_TimeCountWaitFromSrc(lasttimecount, tics);
+//		while (tics > TimeCount - lasttimecount);
 
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 #endif
 
 		if (demoptr == lastdemoptr)
@@ -1104,7 +1113,7 @@ void CheckKeys (void)
 		}
 		if (loadedgame)
 			playstate = ex_abort;
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 		if (MousePresent)
 			Mouse(MDelta);	// Clear accumulated mouse movement
 		PM_CheckMainMem ();
@@ -1139,7 +1148,7 @@ void CheckKeys (void)
 		DebugKeys();
 		if (MousePresent)
 			Mouse(MDelta);	// Clear accumulated mouse movement
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 		return;
 	}
 
@@ -1817,7 +1826,9 @@ void PlayLoop (void)
 	id0_int_t	helmetangle;
 #endif
 
-	playstate = TimeCount = lasttimecount = 0;
+	playstate = lasttimecount = 0;
+	SD_SetTimeCount(0);
+	//playstate = TimeCount = lasttimecount = 0;
 	frameon = 0;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -1936,7 +1947,7 @@ void PlayLoop (void)
 		if (singlestep)
 		{
 			VW_WaitVBL(14);
-			lasttimecount = TimeCount;
+			lasttimecount = SD_GetTimeCount();
 		}
 		if (extravbls)
 			VW_WaitVBL(extravbls);
