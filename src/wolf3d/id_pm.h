@@ -43,6 +43,8 @@
 #define	PMThrashThreshold	1	// Number of page thrashes before panic mode
 #define	PMUnThrashThreshold	5	// Number of non-thrashing frames before leaving panic mode
 
+REFKEEN_NS_B
+
 typedef	enum
 		{
 			pml_Unlocked,
@@ -108,3 +110,5 @@ extern	memptr	PM_GetPageAddress(id0_int_t pagenum),
 				PM_GetPage(id0_int_t pagenum);		// Use this one to cache page
 
 void PM_SetMainMemPurge(id0_int_t level);
+
+REFKEEN_NS_E

@@ -31,6 +31,8 @@
 #include "id_heads.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 //	Main Mem specific variables
 	id0_boolean_t			MainPresent;
 	memptr			MainMemPages[PMMaxMainMem];
@@ -74,6 +76,15 @@
 
 static	id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",nil};
 
+// REFKEEN TODO: Let's begin with a simplified implementation
+#define REFKEEN_SIMPLIFIED 1
+
+#if REFKEEN_SIMPLIFIED
+memptr PMPageData; // Just allocate everything at once for now
+memptr *PMPageDataPtrs; // Use this for exact locations of the data
+#endif
+
+#if !REFKEEN_SIMPLIFIED
 /////////////////////////////////////////////////////////////////////////////
 //
 //	EMS Management code
@@ -550,6 +561,7 @@ PML_ReadFromFile(id0_byte_t id0_far *buf,id0_long_t offset,id0_word_t length)
 	if (!CA_FarRead(PageFile,buf,length))
 		Quit("PML_ReadFromFile: Read failed");
 }
+#endif // !REFKEEN_SIMPLIFIED
 
 //
 //	PML_OpenPageFile() - Opens the page file and sets up the page info
@@ -581,10 +593,11 @@ PML_OpenPageFile(void)
 
 	// Allocate and clear the page list
 	PMNumBlocks = ChunksInFile;
-	MM_GetPtr(&(memptr)PMSegPages,sizeof(PageListStruct) * PMNumBlocks);
-	MM_SetLock(&(memptr)PMSegPages,true);
+	MM_GetPtr((memptr *)&PMSegPages,sizeof(PageListStruct) * PMNumBlocks);
+	MM_SetLock((memptr *)&PMSegPages,true);
 	PMPages = (PageListStruct id0_far *)PMSegPages;
-	_fmemset(PMPages,0,sizeof(PageListStruct) * PMNumBlocks);
+	memset(PMPages,0,sizeof(PageListStruct) * PMNumBlocks);
+//	_fmemset(PMPages,0,sizeof(PageListStruct) * PMNumBlocks);
 
 	// Read in the chunk offsets
 	size = sizeof(id0_longword_t) * ChunksInFile;
@@ -617,11 +630,12 @@ PML_ClosePageFile(void)
 		BE_Cross_close(PageFile);
 	if (PMSegPages)
 	{
-		MM_SetLock(&(memptr)PMSegPages,false);
-		MM_FreePtr(&(void id0_seg *)PMSegPages);
+		MM_SetLock((memptr *)&PMSegPages,false);
+		MM_FreePtr((void id0_seg **)&PMSegPages);
 	}
 }
 
+#if !REFKEEN_SIMPLIFIED
 /////////////////////////////////////////////////////////////////////////////
 //
 //	Allocation, etc., code
@@ -1033,6 +1047,7 @@ PM_SetPageLock(id0_int_t pagenum,PMLockType lock)
 
 	PMPages[pagenum].locked = lock;
 }
+#endif // !REFKEEN_SIMPLIFIED
 
 //
 //	PM_Preload() - Loads as many pages as possible into all types of memory.
@@ -1042,6 +1057,15 @@ PM_SetPageLock(id0_int_t pagenum,PMLockType lock)
 void
 PM_Preload(id0_boolean_t (*update)(id0_word_t current,id0_word_t total))
 {
+#if REFKEEN_SIMPLIFIED
+#ifdef GAMEVER_NOAH3D
+	if (update)
+#endif
+	{
+		update(0,1);
+		update(1,1);
+	}
+#else
 	id0_int_t				i,j,
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -1303,8 +1327,10 @@ if (update)
 #endif
 	update(total,total);
 #endif // GAMEVER_WOLFREV <= GV_WR_WL920312
+#endif // REFKEEN_SIMPLIFIED
 }
 
+#if !REFKEEN_SIMPLIFIED
 /////////////////////////////////////////////////////////////////////////////
 //
 //	General code
@@ -1385,6 +1411,29 @@ PM_Reset(void)
 		page->locked = false;
 	}
 }
+#endif // REFKEEN_SIMPLIFIED
+
+#if REFKEEN_SIMPLIFIED
+void PM_NextFrame(void) {}
+void PM_SetPageLock(id0_int_t pagenum,PMLockType lock) {}
+void PM_CheckMainMein(void) {}
+void PM_SetMainMemPurge(id0_int_t level) {}
+
+memptr
+PM_GetPageAddress(id0_int_t pagenum)
+{
+	return PMPageDataPtrs[pagenum];
+}
+
+memptr
+PM_GetPage(id0_int_t pagenum)
+{
+	if (pagenum >= ChunksInFile)
+		Quit("PM_GetPage: Invalid page request");
+
+	return PM_GetPageAddress(pagenum);
+}
+#endif
 
 //
 //	PM_Startup() - Start up the Page Mgr
@@ -1402,6 +1451,14 @@ PM_Startup(void)
 	BE_ST_printf("PM_Startup: ");
 #endif
 
+#if REFKEEN_SIMPLIFIED
+	nomain = noems = noxms = true;
+#ifdef GAMEVER_NOAH3D
+	BE_ST_printf("Main memory disabled\n");
+	BE_ST_printf("EMS disabled\n");
+	BE_ST_printf("XMS disabled\n");
+#endif
+#else // !REFKEEN_SIMPLIFIED
 	nomain = noems = noxms = false;
 	for (i = 1;i < id0_argc;i++)
 	{
@@ -1430,9 +1487,29 @@ PM_Startup(void)
 			break;
 		}
 	}
+#endif // REFKEEN_SIMPLIFIED
 
 	PML_OpenPageFile();
 
+#if REFKEEN_SIMPLIFIED // Just allocate anything at once for now
+	id0_longword_t totaldata = 0;
+	PageListStruct *page;
+	for (i = 0, page = PMPages; i < ChunksInFile; i++, page++)
+		totaldata += page->length;
+	PMPageData = malloc(totaldata);
+	if (!PMPageData)
+		Quit("PM_Startup: Couldn't allocate memory for page file");
+	PMPageDataPtrs = malloc(sizeof(*PMPageDataPtr) * PMPages);
+	if (!PMPageDataPtrs)
+		Quit("PM_Startup: Couldn't allocate memory for page file");
+	id0_byte_t *ptr = (id0_byte_t *)PMPageData;
+	// Support the case some pages in the file may overlap
+	for (i = 0, page = PMPages; i < ChunksInFile; i++, page++, ptr += page->length)
+	{
+		PML_ReadFromFile(ptr, page->offset, page->length)
+		PMPageDataPtrs[i] = ptr;
+	}
+#else // !REFKEEN_SIMPLIFIED
 	if (!noems)
 		PML_StartupEMS();
 	if (!noxms)
@@ -1444,6 +1521,7 @@ PM_Startup(void)
 		PML_StartupMainMem();
 
 	PM_Reset();
+#endif
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (EMSPresent)
@@ -1467,13 +1545,24 @@ PM_Startup(void)
 void
 PM_Shutdown(void)
 {
+#if !REFKEEN_SIMPLIFIED
 	PML_ShutdownXMS();
 	PML_ShutdownEMS();
+#endif
 
 	if (!PMStarted)
 		return;
 
 	PML_ClosePageFile();
 
+#if REFKEEN_SIMPLIFIED
+	free(PMPageDataPtrs);
+	PMPageDataPtrs = 0;
+	free(PMPageData);
+	PMPageData = 0;
+#else
 	PML_ShutdownMainMem();
+#endif
 }
+
+REFKEEN_NS_E
