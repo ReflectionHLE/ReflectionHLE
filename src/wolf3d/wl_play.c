@@ -1978,3 +1978,15 @@ void PlayLoop (void)
 		FinishPaletteShifts ();
 }
 
+// (REFKEEN) Used for patching version-specific stuff
+id0_word_t refkeen_compat_wl_play_objoffset;
+
+void RefKeen_Patch_wl_play(void)
+{
+        switch (refkeen_current_gamever)
+        {
+        case BE_GAMEVER_WL1AP10:
+                refkeen_compat_wl_play_objoffset = 0xB0B0;
+                break;
+        }
+}
