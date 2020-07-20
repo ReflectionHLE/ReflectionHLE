@@ -2316,7 +2316,7 @@ void    DemoLoop (void)
 id0_char_t    *nosprtxt[] = {"nospr",nil};
 #endif
 
-void main (void)
+void wolf3d_exe_main (void)
 {
 	id0_int_t     i;
 
