@@ -213,19 +213,6 @@ typedef	enum	{ex_stillplaying,ex_died,ex_warped,ex_resetgame
 	,ex_loadedgame,ex_victorious,ex_abort} exittype;
 
 
-// (REFKEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
-// objstruct may store a 16-bit pointer with another object; Or at least this
-// is the case in Keen Dreams. Furthermore, in the Catacombs, actorat may be
-// declared as a bidimensional array of objtype pointers, but it is also used
-// to store plain 16-bit integers.
-
-#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objlist)*sizeof(objtype)+refkeen_compat_c3_play_objoffset)):(id0_word_t)0)
-#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objlist+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_c3_play_objoffset)/sizeof(objtype)):NULL)
-
-extern id0_word_t refkeen_compat_c3_play_objoffset;
-extern objtype objlist[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY
-
-
 /*
 =============================================================================
 
@@ -339,6 +326,17 @@ void RemoveObj (objtype *gone);
 void PollControlls (void);
 void PlayLoop (void);
 
+// (REFKEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
+// objstruct may store a 16-bit pointer with another object; At the least,
+// this is the case in Keen Dreams. Furthermore, in the Catacombs, actorat
+// may be declared as a bidimensional array of objtype pointers, but it is
+// also used to store plain 16-bit integers.
+
+#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objlist)*sizeof(objtype)+refkeen_compat_c3_play_objoffset)):(id0_word_t)0)
+#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objlist+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_c3_play_objoffset)/sizeof(objtype)):NULL)
+
+extern id0_word_t refkeen_compat_c3_play_objoffset;
+extern objtype objlist[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY
 
 /*
 =============================================================================
