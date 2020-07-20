@@ -71,7 +71,11 @@ id0_int_t			extravbls;
 
 id0_byte_t		tilemap[MAPSIZE][MAPSIZE];	// wall values only
 id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
-objtype		*actorat[MAPSIZE][MAPSIZE];
+// (REFKEEN) BACKWARDS COMPATIBILITY: Originally used to store objtype
+// pointers, as well as 16-bit unsigned integers. We now store just integers
+// and convert with a macro when required.
+id0_unsigned_t actorat[MAPSIZE][MAPSIZE];
+//objtype		*actorat[MAPSIZE][MAPSIZE];
 
 //
 // replacing refresh manager
@@ -1714,11 +1718,11 @@ void DoActor (objtype *ob)
 		// *** PRE-V1.4 APOGEE RESTORATION *** - Including special case for v1.0
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		if (ob != player)
-			actorat[ob->tilex][ob->tiley] = ob;
+			actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
 #elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		if (!(ob->flags&FL_NEVERMARK))
 			if ( !((ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley]))
-				actorat[ob->tilex][ob->tiley] = ob;
+				actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
 #else
 		if (ob->flags&FL_NEVERMARK)
 			return;
@@ -1726,7 +1730,7 @@ void DoActor (objtype *ob)
 		if ( (ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley])
 			return;
 
-		actorat[ob->tilex][ob->tiley] = ob;
+		actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
 #endif
 		return;
 	}
@@ -1783,12 +1787,12 @@ think:
 	// *** PRE-V1.4 APOGEE RESTORATION *** - Including special case for v1.0
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	if (ob != player)
-		actorat[ob->tilex][ob->tiley] = ob;
+		actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
 	return;
 #elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	if (!(ob->flags&FL_NEVERMARK))
 		if ( !((ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley]))
-			actorat[ob->tilex][ob->tiley] = ob;
+			actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
 	return;
 #else
 	if (ob->flags&FL_NEVERMARK)
@@ -1797,7 +1801,7 @@ think:
 	if ( (ob->flags&FL_NONMARK) && actorat[ob->tilex][ob->tiley])
 		return;
 
-	actorat[ob->tilex][ob->tiley] = ob;
+	actorat[ob->tilex][ob->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(ob);
 #endif
 }
 

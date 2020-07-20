@@ -1459,8 +1459,9 @@ id0_boolean_t TryMove (objtype *ob)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
-			if (check && check<objlist)
+			if (actorat[x][y] && actorat[x][y]<refkeen_compat_wl_play_objoffset)
+//			check = actorat[x][y];
+//			if (check && check<objlist)
 				return false;
 		}
 
@@ -1479,8 +1480,9 @@ id0_boolean_t TryMove (objtype *ob)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
-			if (check > objlist
+			check = COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(actorat[x][y]);
+			if (/*check > objlist*/
+			    actorat[x][y] > refkeen_compat_wl_play_objoffset
 			&& (check->flags & FL_SHOOTABLE) )
 			{
 				deltax = ob->x - check->x;

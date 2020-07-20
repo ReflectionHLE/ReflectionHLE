@@ -41,7 +41,7 @@
 id0_boolean_t ProjectileTryMove (objtype *ob)
 {
 	id0_int_t			xl,yl,xh,yh,x,y;
-	objtype		*check;
+//	objtype		*check;
 	id0_long_t		deltax,deltay;
 
 	xl = (ob->x-PROJSIZE) >>TILESHIFT;
@@ -56,8 +56,9 @@ id0_boolean_t ProjectileTryMove (objtype *ob)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
-			if (check && check<objlist)
+			if (actorat[x][y] && actorat[x][y]<refkeen_compat_wl_play_objoffset)
+//			check = actorat[x][y];
+//			if (check && check<objlist)
 				return false;
 		}
 

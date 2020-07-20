@@ -1334,7 +1334,11 @@ extern	id0_byte_t		*nearmapylookup[MAPSIZE];
 
 extern	id0_byte_t		tilemap[MAPSIZE][MAPSIZE];	// wall values only
 extern	id0_byte_t		spotvis[MAPSIZE][MAPSIZE];
-extern	objtype		*actorat[MAPSIZE][MAPSIZE];
+// (REFKEEN) BACKWARDS COMPATIBILITY: Originally used to store objtype
+// pointers, as well as 16-bit unsigned integers. We now store just integers
+// and convert with a macro when required.
+extern id0_unsigned_t actorat[MAPSIZE][MAPSIZE];
+//extern	objtype		*actorat[MAPSIZE][MAPSIZE];
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - Not sure why but looks correct
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)

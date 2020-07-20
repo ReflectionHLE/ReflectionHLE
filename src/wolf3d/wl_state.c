@@ -122,7 +122,7 @@ void SpawnNewObj (id0_unsigned_t tilex, id0_unsigned_t tiley, statetype *state)
 	new->y = ((id0_long_t)tiley<<TILESHIFT)+TILEGLOBAL/2;
 	new->dir = nodir;
 
-	actorat[tilex][tiley] = new;
+	actorat[tilex][tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
 	new->areanumber =
 		*(mapsegs[0] + farmapylookup[new->tiley]+new->tilex) - AREATILE;
 }

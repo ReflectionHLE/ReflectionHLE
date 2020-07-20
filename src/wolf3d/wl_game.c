@@ -909,13 +909,13 @@ void SetupGameLevel (void)
 #endif
 			// solid wall
 				tilemap[x][y] = tile;
-				(id0_unsigned_t)actorat[x][y] = tile;
+				/*(id0_unsigned_t)*/actorat[x][y] = tile;
 			}
 			else
 			{
 			// area floor
 				tilemap[x][y] = 0;
-				(id0_unsigned_t)actorat[x][y] = 0;
+				/*(id0_unsigned_t)*/actorat[x][y] = 0;
 			}
 		}
 

@@ -1267,7 +1267,7 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 		break;
 	}
 
-	actorat[new->tilex][new->tiley] = new;
+	actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
 }
 #endif // GAMEVER_NOAH3D
 
@@ -2795,7 +2795,7 @@ void T_SchabbThrow (objtype *ob)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	actorat[new->tilex][new->tiley] = new;
+	actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
 	new->areanumber = *(mapsegs[0]+farmapylookup[new->tiley]+new->tilex)-AREATILE;
 #else
 	new->flags = FL_NONMARK;
@@ -3574,7 +3574,7 @@ void T_FakeFire (objtype *ob)
 	new->speed = 0x1200l;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	actorat[new->tilex][new->tiley] = new;
+	actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
 	new->areanumber = *(mapsegs[0]+farmapylookup[new->tiley]+new->tilex)-AREATILE;
 #else
 	new->flags = FL_NEVERMARK;
@@ -4536,8 +4536,9 @@ id0_boolean_t MissileTryMove (objtype *ob)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
-			if (check && check<objlist)
+			if (actorat[x][y] && actorat[x][y]<refkeen_compat_wl_play_objoffset)
+//			check = actorat[x][y];
+//			if (check && check<objlist)
 				return false;
 		}
 
@@ -4556,8 +4557,10 @@ id0_boolean_t MissileTryMove (objtype *ob)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
-			if (check > objlist && (check->flags & FL_SHOOTABLE) )
+			check = COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(actorat[x][y]);
+			if (actorat[x][y] > refkeen_compat_wl_play_objoffset &&
+			    (check->flags & FL_SHOOTABLE))
+//			if (check > objlist && (check->flags & FL_SHOOTABLE) )
 			{
 				deltax = ob->x - check->x;
 				if (deltax < -MINMISSILEDIST || deltax > MINMISSILEDIST)
@@ -4643,7 +4646,7 @@ void T_Missile (objtype *ob)
 id0_boolean_t	CheckPosition (objtype *ob)
 {
 	id0_int_t	x,y,xl,yl,xh,yh;
-	objtype *check;
+//	objtype *check;
 
 	xl = (ob->x-PLAYERSIZE) >>TILESHIFT;
 	yl = (ob->y-PLAYERSIZE) >>TILESHIFT;
@@ -4657,8 +4660,9 @@ id0_boolean_t	CheckPosition (objtype *ob)
 	for (y=yl;y<=yh;y++)
 		for (x=xl;x<=xh;x++)
 		{
-			check = actorat[x][y];
-			if (check && check<objlist)
+			if (actorat[x][y] && actorat[x][y]<refkeen_compat_wl_play_objoffset)
+//			check = actorat[x][y];
+//			if (check && check<objlist)
 				return false;
 		}
 
