@@ -133,6 +133,8 @@ typedef uint8_t id0_unsigned_char_t;
 
 typedef int16_t id0_int_t;
 typedef uint16_t id0_unsigned_t;
+typedef int32_t id0_long_t;
+typedef uint32_t id0_unsigned_long_t;
 
 typedef uint8_t id0_byte_t;
 typedef uint16_t id0_word_t;
