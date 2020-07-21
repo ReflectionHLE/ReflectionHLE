@@ -396,7 +396,7 @@ id0_boolean_t CA_WriteFile (const id0_char_t *filename, void id0_far *ptr, id0_l
 ==========================
 */
 
-id0_boolean_t CA_LoadFile (id0_char_t *filename, memptr *ptr)
+id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr)
 {
 	BE_FILE_T handle;
 	id0_long_t size;
