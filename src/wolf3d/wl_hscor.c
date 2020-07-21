@@ -368,7 +368,7 @@ void	CheckHighScore (id0_long_t score,id0_word_t other)
 		backcolor = BORDCOLOR;
 		fontcolor = 15;
 #endif
-		US_LineInput(PrintX,PrintY,Scores[n].name,nil,true,MaxHighName,100);
+		US_LineInput(PrintX,PrintY,Scores[n].name,id0_nil_t,true,MaxHighName,100);
 #else
 		PrintX = 16;
 		fontnumber = 1;
@@ -376,7 +376,7 @@ void	CheckHighScore (id0_long_t score,id0_word_t other)
 		VW_UpdateScreen ();
 		backcolor = 0x9c;
 		fontcolor = 15;
-		US_LineInput(PrintX,PrintY,Scores[n].name,nil,true,MaxHighName,130);
+		US_LineInput(PrintX,PrintY,Scores[n].name,id0_nil_t,true,MaxHighName,130);
 #endif
 	}
 	else

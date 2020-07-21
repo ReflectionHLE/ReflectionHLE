@@ -64,10 +64,11 @@
 //#pragma	hdrstop
 //#pragma	warn	-pia
 
-#ifdef	nil
-#undef	nil
+// REFKEEN TODO: Think that I can simply use the default definition
+#ifdef	id0_nil_t
+#undef	id0_nil_t
 #endif
-#define	nil	0
+#define	id0_nil_t	0
 
 // *** S3DNA RESTORATION ***
 // Guessing some variables were redefined to be static
@@ -179,7 +180,7 @@ static	id0_char_t			*ParmStrings[] =
 							"ss2",
 							"ss3",
 #endif
-							nil
+							id0_nil_t
 						};
 static	void			(*SoundUserHook)(void);
 // *** S3DNA RESTORATION ***
@@ -592,7 +593,7 @@ SDL_SBService(void)
 	{
 		used = SDL_SBPlaySeg(sbNextSegPtr,sbNextSegLen);
 		if (sbNextSegLen <= used)
-			sbNextSegPtr = nil;
+			sbNextSegPtr = id0_nil_t;
 		else
 		{
 			sbNextSegPtr += used;
@@ -634,7 +635,7 @@ SDL_SBPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 
 	used = SDL_SBPlaySeg(data,len);
 	if (len <= used)
-		sbNextSegPtr = nil;
+		sbNextSegPtr = id0_nil_t;
 	else
 	{
 		sbNextSegPtr = data + used;
@@ -1457,7 +1458,7 @@ SD_StopDigitized(void)
 //asm	cli
 
 	DigiLeft = 0;
-	DigiNextAddr = nil;
+	DigiNextAddr = id0_nil_t;
 	DigiNextLen = 0;
 	DigiMissed = false;
 	DigiPlaying = false;
@@ -1530,7 +1531,7 @@ SD_Poll(void)
 	if (DigiMissed && DigiNextAddr)
 	{
 		SDL_PlayDigiSegment(DigiNextAddr,DigiNextLen);
-		DigiNextAddr = nil;
+		DigiNextAddr = id0_nil_t;
 		DigiMissed = false;
 		if (DigiLastSegment)
 		{
@@ -1643,7 +1644,7 @@ SDL_DigitizedDone(void)
 	if (DigiNextAddr)
 	{
 		SDL_PlayDigiSegment(DigiNextAddr,DigiNextLen);
-		DigiNextAddr = nil;
+		DigiNextAddr = id0_nil_t;
 		DigiMissed = false;
 	}
 	else

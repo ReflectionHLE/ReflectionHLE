@@ -74,7 +74,7 @@ REFKEEN_NS_B
 	PageListStruct	id0_far *PMPages,
 					id0_seg *PMSegPages;
 
-static	id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",nil};
+static	id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",id0_nil_t};
 
 // REFKEEN TODO: Let's begin with a simplified implementation
 #define REFKEEN_SIMPLIFIED 1
@@ -728,7 +728,7 @@ PM_GetPageAddress(id0_int_t pagenum)
 	else if (page->emsPage != -1)
 		return(PML_GetEMSAddress(page->emsPage,page->locked));
 	else
-		return(nil);
+		return(id0_nil_t);
 }
 
 //
@@ -878,7 +878,7 @@ PML_TransferPageSpace(id0_int_t orig,id0_int_t new)
 id0_byte_t id0_far *
 PML_GetAPageBuffer(id0_int_t pagenum,id0_boolean_t mainonly)
 {
-	id0_byte_t			id0_far *addr = nil;
+	id0_byte_t			id0_far *addr = id0_nil_t;
 	id0_int_t				i,n;
 	PMBlockAttr		*used;
 	PageListStruct	id0_far *page;
@@ -931,7 +931,7 @@ memptr
 PML_GetPageFromXMS(id0_int_t pagenum,id0_boolean_t mainonly)
 {
 	id0_byte_t			id0_far *checkaddr;
-	memptr			addr = nil;
+	memptr			addr = id0_nil_t;
 	PageListStruct	id0_far *page;
 
 	page = &PMPages[pagenum];

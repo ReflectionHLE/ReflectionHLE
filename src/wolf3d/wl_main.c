@@ -345,7 +345,7 @@ void WriteConfig(void)
 ========================
 */
 
-id0_char_t    *JHParmStrings[] = {"no386",nil};
+id0_char_t    *JHParmStrings[] = {"no386",id0_nil_t};
 void Patch386 (void)
 {
 extern void id0_far jabhack2(void);
@@ -2313,7 +2313,7 @@ void    DemoLoop (void)
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-id0_char_t    *nosprtxt[] = {"nospr",nil};
+id0_char_t    *nosprtxt[] = {"nospr",id0_nil_t};
 #endif
 
 void wolf3d_exe_main (void)

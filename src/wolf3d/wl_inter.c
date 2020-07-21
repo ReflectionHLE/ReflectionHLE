@@ -2551,7 +2551,7 @@ void CopyProtection(void)
 				inputbuffer[0] = 0;
 				PrintY = TYPEBOX_Y;
 				fontnumber = 1;
-				US_LineInput(PrintX,PrintY,inputbuffer,nil,true,20,100);
+				US_LineInput(PrintX,PrintY,inputbuffer,id0_nil_t,true,20,100);
 
 				match = 0;
 				for (i=0;i<_fstrlen(bossstrs[whichboss]);i++)
@@ -2585,7 +2585,7 @@ void CopyProtection(void)
 				backcolor = TYPEBOX_BKGD;
 				inputbuffer[0] = 0;
 				PrintY = TYPEBOX_Y;
-				US_LineInput(PrintX,PrintY,inputbuffer,nil,true,6,100);
+				US_LineInput(PrintX,PrintY,inputbuffer,id0_nil_t,true,6,100);
 
 				strlwr(inputbuffer);
 				match = 1-(_fstrcmp(inputbuffer,WordCorrect[whichword])!=0);
@@ -2611,7 +2611,7 @@ void CopyProtection(void)
 				backcolor = TYPEBOX_BKGD;
 				inputbuffer[0] = 0;
 				PrintY = TYPEBOX_Y;
-				US_LineInput(PrintX,PrintY,inputbuffer,nil,true,20,120);
+				US_LineInput(PrintX,PrintY,inputbuffer,id0_nil_t,true,20,120);
 
 				strlwr(inputbuffer);
 				match = 0;
@@ -2642,7 +2642,7 @@ void CopyProtection(void)
 				backcolor = TYPEBOX_BKGD;
 				inputbuffer[0] = 0;
 				PrintY = TYPEBOX_Y;
-				US_LineInput(PrintX,PrintY,inputbuffer,nil,true,6,100);
+				US_LineInput(PrintX,PrintY,inputbuffer,id0_nil_t,true,6,100);
 
 				strlwr(inputbuffer);
 				match = 1-(_fstrcmp(inputbuffer,MiscCorrect[whichone])!=0);

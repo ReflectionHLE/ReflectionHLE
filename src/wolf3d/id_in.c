@@ -156,9 +156,9 @@ static	void			(*INL_KeyHook)(void);
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	id0_char_t			*ParmStrings[] = {"NOJOY","NOJOYS","NOMOUSE",nil};
+static	id0_char_t			*ParmStrings[] = {"NOJOY","NOJOYS","NOMOUSE",id0_nil_t};
 #else
-static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",nil};
+static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
 #endif
 
 //	Internal routines
