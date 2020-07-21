@@ -35,7 +35,7 @@ include(CMakeDependentOption)
 
 option(BUILD_AS_CPP "Build Reflection Keen as C++ code" OFF)
 CMAKE_DEPENDENT_OPTION(
-	UNIFIED "Support the Catacombs from a single EXE" ON
+	UNIFIED "Build aggregated C++ EXEs covering multiple games/versions" ON
 	"BUILD_AS_CPP" OFF
 )
 
