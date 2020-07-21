@@ -165,6 +165,8 @@ static void BEL_ST_SaveConfig(void);
 #include "../rsrc/reflection-catapoc-icon-32x32.h"
 #elif defined REFKEEN_HAS_VER_CATACOMB_ALL
 #include "../rsrc/reflection-cat3d-icon-32x32.h"
+#elif defined REFKEEN_HAS_VER_WOLF3D_ALL
+#include "../rsrc/reflection-wolf3d-icon-32x32.h"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
@@ -389,6 +391,8 @@ RefKeenConfig g_refKeenCfg;
 #define REFKEEN_CONFIG_FILENAME "reflection-catapoc.cfg"
 #elif defined REFKEEN_HAS_VER_CATACOMB_ALL
 #define REFKEEN_CONFIG_FILENAME "reflection-catacomb.cfg"
+#elif defined REFKEEN_HAS_VER_WOLF3D_ALL // TODO: Optionally separate cfg per version?
+#define REFKEEN_CONFIG_FILENAME "reflection-wolf3d.cfg"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif

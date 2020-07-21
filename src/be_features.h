@@ -20,4 +20,8 @@
 #define ENABLE_PKLITE 1
 #endif
 
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+#define BE_ST_ENABLE_SETTING_ANALOGMOTION 1
+#endif
+
 #endif // BE_FEATURES_H

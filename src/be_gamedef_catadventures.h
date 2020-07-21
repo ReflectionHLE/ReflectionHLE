@@ -29,6 +29,9 @@ void (*refkeen_game_exe_main_funcs[BE_GAMEVER_LAST])(void) = {
 #ifdef REFKEEN_HAS_VER_CATAPOC
 	&REFKEEN_NS_ENCLOSE(catapoc, apocgame_exe_main),
 #endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+#error "Undefined for Wolfenstein 3D"
+#endif
 };
 
 void (*refkeen_slidecat_exe_main_funcs[BE_GAMEVER_LAST])(void) = {
@@ -48,5 +51,8 @@ void (*refkeen_slidecat_exe_main_funcs[BE_GAMEVER_LAST])(void) = {
 #endif
 #ifdef REFKEEN_HAS_VER_CATAPOC
 	&REFKEEN_NS_ENCLOSE(catapoc, slidecat_exe_main),
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+#error "Undefined for Wolfenstein 3D"
 #endif
 };

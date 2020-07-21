@@ -24,5 +24,8 @@
 #ifdef REFKEEN_HAS_VER_CATAPOC
 #define BE_STR_GAMEVER_CATAPOC101 "catapoc101"
 #endif
+#ifdef REFKEEN_HAS_VER_WL1AP10
+#define BE_STR_GAMEVER_WL1AP10 "wl1ap10"
+#endif
 
 #endif // BE_GAMESTR_H

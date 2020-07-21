@@ -29,6 +29,9 @@ typedef enum {
 #ifdef REFKEEN_HAS_VER_CATAPOC
 	BE_GAMEVER_CATAPOC101,
 #endif
+#ifdef REFKEEN_HAS_VER_WL1AP10
+	BE_GAMEVER_WL1AP10,
+#endif
 	BE_GAMEVER_LAST
 } BE_GameVer_T;
 
@@ -53,6 +56,8 @@ typedef enum {
 #define REFKEEN_NS_B namespace catarm {
 #elif (defined REFKEEN_VER_CATAPOC)
 #define REFKEEN_NS_B namespace catapoc {
+#elif (defined REFKEEN_VER_WL1AP10)
+#define REFKEEN_NS_B namespace wl1ap10 {
 #endif
 
 #endif // REFKEEN_USE_NS

@@ -13,6 +13,8 @@
 #define REFKEEN_TITLE_STRING "Reflection Catacomb Apocalypse"
 #elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
 #define REFKEEN_TITLE_STRING "Reflection Catacomb"
+#elif (defined REFKEEN_HAS_VER_WOLF3D_ALL) // Even if just a specific version
+#define REFKEEN_TITLE_STRING "Reflection Wolfenstein 3D"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
