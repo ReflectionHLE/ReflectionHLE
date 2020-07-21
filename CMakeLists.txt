@@ -74,9 +74,10 @@ include(src/id91_11/cat_all/cat3d/CMakeLists.txt)
 include(src/id91_11/cat_all/catabyss/CMakeLists.txt)
 include(src/id91_11/cat_all/catarm/CMakeLists.txt)
 include(src/id91_11/cat_all/catapoc/CMakeLists.txt)
+include(src/wolf3d/CMakeLists.txt)
 
 set(all_src ${be_src} ${kdreams_src} ${cat3d_src}
-    ${catabyss_src} ${catarm_src} ${catapoc_src})
+    ${catabyss_src} ${catarm_src} ${catapoc_src} ${wolf3d_src})
 list(REMOVE_DUPLICATES "all_src")
 
 if (BUILD_AS_CPP)
@@ -137,12 +138,30 @@ add_refkeen_separate_target(
 	"${UNIFIED_CAT_GAME_PARAMS}" "${UNIFIED}"
 )
 
+set(UNIFIED_WOLF3D_GAME_PARAMS
+	-DREFKEEN_HAS_VER_WL1AP10=1 -DREFKEEN_HAS_VER_WOLF3D_ALL=1
+)
+
+add_refkeen_separate_target(
+	reflection-wl1ap10 "${targets}" "${LIBRARIES}"
+	"${wolf3d_src}" "${be_src}"
+	"src/wolf3d"
+	"-DGAMEVER_EXEDEF=WL1AP10;-DGAMEVER_EXEDEF_WL1AP10=1;-DREFKEEN_VER_WL1AP10=1;-DREFKEEN_VER_WOLF3D_ALL=1"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+)
+
 if (UNIFIED)
 	string(REPLACE ";" " " UNIFIED_CAT_GAME_PARAMS "${UNIFIED_CAT_GAME_PARAMS}")
 	add_refkeen_unified_target(
 		reflection-catacomb "${targets}"
 		"${be_src}" "${UNIFIED_CAT_GAME_PARAMS}"
 		"${LIBRARIES};reflection-cat3d;reflection-catabyss;reflection-catarm;reflection-catapoc"
+	)
+	string(REPLACE ";" " " UNIFIED_WOLF3D_GAME_PARAMS "${UNIFIED_WOLF3D_GAME_PARAMS}")
+	add_refkeen_unified_target(
+		reflection-wolf3d "${targets}"
+		"${be_src}" "${UNIFIED_WOLF3D_GAME_PARAMS}"
+		"${LIBRARIES};reflection-wl1ap10"
 	)
 endif ()
 
