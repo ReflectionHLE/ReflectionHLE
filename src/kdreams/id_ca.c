@@ -535,7 +535,7 @@ void CAL_SetupGrFile (void)
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
 		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
 
-	BE_Cross_readInt32LE(handle, grstarts, (NUMCHUNKS+1)*4);
+	BE_Cross_readInt32LEBuffer(handle, grstarts, (NUMCHUNKS+1)*4);
 	//CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*4);
 
 	BE_Cross_close(handle);
@@ -874,7 +874,7 @@ void CAL_SetupAudioFile (void)
 		Quit ("Can't open AUDIOHED."EXTENSION"!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&audiostarts,length);
-	BE_Cross_readInt32LE(handle, audiostarts, length);
+	BE_Cross_readInt32LEBuffer(handle, audiostarts, length);
 	//CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
 	BE_Cross_close(handle);
 #else

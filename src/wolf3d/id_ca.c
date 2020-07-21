@@ -805,9 +805,9 @@ void CAL_SetupGrFile (void)
 
 	// REFKEEN - Hack for Big Endian (even though it may be useless)
 #ifdef THREEBYTEGRSTARTS
-	BE_Cross_readInt24LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+	BE_Cross_readInt24LEBuffer(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 #else
-	BE_Cross_readInt32LE(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
+	BE_Cross_readInt32LEBuffer(handle, grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 #endif
 	//CA_FarRead(handle, (memptr)grstarts, (NUMCHUNKS+1)*FILEPOSSIZE);
 
@@ -1034,7 +1034,7 @@ void CAL_SetupAudioFile (void)
 
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&audiostarts,length);
-	BE_Cross_readInt32LE(handle, audiostarts, length);
+	BE_Cross_readInt32LEBuffer(handle, audiostarts, length);
 	//CA_FarRead(handle, (id0_byte_t id0_far *)audiostarts, length);
 	BE_Cross_close(handle);
 #else
