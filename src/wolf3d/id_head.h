@@ -24,6 +24,7 @@
 
 // ID_HEAD.H
 
+#include "refkeen.h"
 
 #define	EXTENSION	"WLF"
 #define WOLF

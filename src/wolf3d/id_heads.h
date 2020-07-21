@@ -40,6 +40,8 @@
 //#include <VALUES.H>
 //#include <DIR.H>
 
+#include "refkeen.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
