@@ -5,9 +5,11 @@ function(add_refkeen_separate_target
 	name targets libraries sources shared_sources
 	include_dirs target_cc_flags common_cc_flags is_lib
 )
-	set(all_cc_flags ${target_cc_flags})
-	list(TRANSFORM all_cc_flags REPLACE "_VER" "_HAS_VER")
-	set(all_cc_flags ${target_cc_flags} ${all_cc_flags})
+	foreach(MACRO ${target_cc_flags})
+		list(APPEND all_cc_flags ${MACRO})
+		string(REPLACE "_VER" "_HAS_VER" MACRO ${MACRO})
+		list(APPEND all_cc_flags ${MACRO})
+	endforeach ()
 	if (is_lib)
 		set(all_cc_flags ${common_cc_flags} ${all_cc_flags})
 		list(REMOVE_DUPLICATES "all_cc_flags")
