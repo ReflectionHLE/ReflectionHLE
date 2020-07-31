@@ -1227,8 +1227,8 @@ id0_boolean_t		SetViewSize (id0_unsigned_t width, id0_unsigned_t height);
 void		NewGame (id0_int_t difficulty,id0_int_t episode);
 #endif
 void 		NewViewSize (id0_int_t width);
-id0_boolean_t 	LoadTheGame(id0_int_t file,id0_int_t x,id0_int_t y);
-id0_boolean_t		SaveTheGame(id0_int_t file,id0_int_t x,id0_int_t y);
+id0_boolean_t 	LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y);
+id0_boolean_t		SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y);
 void 		ShowViewSize (id0_int_t width);
 void		ShutdownId (void);
 
