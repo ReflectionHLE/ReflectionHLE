@@ -108,12 +108,12 @@
 //	Imports from ID_SD_A.ASM
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-extern	void interrupt		SDL_t0FastAsmService(void),
+extern	void /*interrupt*/		SDL_t0FastAsmService(void),
 						SDL_t0SlowAsmService(void);
 #else
 extern	void			SDL_SetDS(void),
 						SDL_IndicatePC(id0_boolean_t on);
-extern	void interrupt	SDL_t0ExtremeAsmService(void),
+extern	void /*interrupt*/	SDL_t0ExtremeAsmService(void),
 						SDL_t0FastAsmService(void),
 						SDL_t0SlowAsmService(void);
 #endif
@@ -198,8 +198,8 @@ static	id0_word_t			DigiPriority;
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		GAMEVER_COND_STATIC id0_int_t				LeftPosition,RightPosition;
 #endif
-		void interrupt	(*t0OldService)(void);
-		id0_long_t			LocalTime;
+//		void interrupt	(*t0OldService)(void);
+//		id0_long_t			LocalTime;
 		GAMEVER_COND_STATIC id0_word_t			TimerRate;
 
 // *** S3DNA RESTORATION ***
@@ -248,7 +248,7 @@ static	id0_int_t						sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
 #endif
 static	volatile id0_longword_t		sbNextSegLen;
 static	volatile SampledSound	id0_huge *sbSamples;
-static	void interrupt			(*sbOldIntHand)(void);
+static	void /*interrupt*/			(*sbOldIntHand)(void);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 static	id0_byte_t					sbpOldFMMix,sbpOldVOCMix;
@@ -398,7 +398,7 @@ SDL_SetTimerSpeed(void)
 		TimerRate = rate;
 	}
 #else
-	void interrupt	(*isr)(void);
+	void /*interrupt*/	(*isr)(void);
 
 	// *** S3DNA RSETORATION ***
 #ifndef GAMEVER_NOAH3D
@@ -1215,7 +1215,7 @@ SDL_PCStopSample(void)
 //asm	pushf
 //asm	cli
 
-	(id0_long_t)pcSound = 0;
+	pcSound = 0;
 
 	SDL_IndicatePC(false);
 
@@ -1271,7 +1271,7 @@ SDL_PCStopSound(void)
 //asm	pushf
 //asm	cli
 
-	(id0_long_t)pcSound = 0;
+	pcSound = 0;
 
 	BE_ST_PCSpeakerSetConstVal(0);
 #if 0
@@ -2013,7 +2013,7 @@ SDL_ALStopSound(void)
 //asm	pushf
 //asm	cli
 
-	(id0_long_t)alSound = 0;
+	alSound = 0;
 	alOut(alFreqH + 0,0);
 
 	BE_ST_UnlockAudioRecursively();
@@ -2111,7 +2111,7 @@ SDL_ALSoundService(void)
 
 		if (!(--alLengthLeft))
 		{
-			(id0_long_t)alSound = 0;
+			alSound = 0;
 			alOut(alFreqH + 0,0);
 			SDL_SoundFinished();
 		}
@@ -2875,7 +2875,7 @@ SD_SetSoundMode(SDMode mode)
 		SDL_ShutDevice();
 		SoundMode = mode;
 #ifndef	_MUSE_
-		SoundTable = (SoundCommon **)&audiosegs[tableoffset]
+		SoundTable = (SoundCommon **)&audiosegs[tableoffset];
 		//SoundTable = (id0_word_t *)(&audiosegs[tableoffset]);
 #endif
 		SDL_StartDevice();
@@ -3029,9 +3029,9 @@ SD_Startup(void)
 
 	SoundUserHook = 0;
 
-	t0OldService = getvect(8);	// Get old timer 0 ISR
+	//t0OldService = getvect(8);	// Get old timer 0 ISR
 
-	LocalTime = TimeCount = alTimeCount = 0;
+	/*LocalTime = */TimeCount = alTimeCount = 0;
 
 	SD_SetSoundMode(sdm_Off);
 	SD_SetMusicMode(smm_Off);
@@ -3047,8 +3047,8 @@ SD_Startup(void)
 	if (!alNoCheck)
 	{
 		AdLibPresent = SDL_DetectAdLib();
-		if (AdLibPresent && !sbNoCheck)
 #if REFKEEN_SD_ENABLE_SOUNDBLASTER
+		if (AdLibPresent && !sbNoCheck)
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			SoundBlasterPresent = SDL_DetectSoundBlaster(-1);
@@ -3200,7 +3200,7 @@ SD_Shutdown(void)
 	if (!SD_Started)
 		return;
 
-	BE_ST_StopAudioAndTimerInt(void);
+	BE_ST_StopAudioAndTimerInt();
 
 	SD_MusicOff();
 	SD_StopSound();
