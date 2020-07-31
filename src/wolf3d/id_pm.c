@@ -580,7 +580,7 @@ PML_OpenPageFile(void)
 	BE_ST_printf("Opening %s\n", PageFileName);
 #endif
 
-	PageFile = BE_Cross_open_readonly_for_reading(PageFileName,O_RDONLY + O_BINARY);
+	PageFile = BE_Cross_open_readonly_for_reading(PageFileName);
 //	PageFile = open(PageFileName,O_RDONLY + O_BINARY);
 	if (!BE_Cross_IsFileValid(PageFile))
 //	if (PageFile == -1)
@@ -1499,14 +1499,14 @@ PM_Startup(void)
 	PMPageData = malloc(totaldata);
 	if (!PMPageData)
 		Quit("PM_Startup: Couldn't allocate memory for page file");
-	PMPageDataPtrs = malloc(sizeof(*PMPageDataPtr) * PMPages);
+	PMPageDataPtrs = malloc(sizeof(*PMPageDataPtrs) * ChunksInFile);
 	if (!PMPageDataPtrs)
 		Quit("PM_Startup: Couldn't allocate memory for page file");
 	id0_byte_t *ptr = (id0_byte_t *)PMPageData;
 	// Support the case some pages in the file may overlap
 	for (i = 0, page = PMPages; i < ChunksInFile; i++, page++, ptr += page->length)
 	{
-		PML_ReadFromFile(ptr, page->offset, page->length)
+		PML_ReadFromFile(ptr, page->offset, page->length);
 		PMPageDataPtrs[i] = ptr;
 	}
 #else // !REFKEEN_SIMPLIFIED
