@@ -123,6 +123,8 @@ static	id0_boolean_t		US_Started;
 
 //	Public routines
 
+#if 0 // USL_HardError IS UNUSED NOW (TODO REFKEEN: Restore?)
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	USL_HardError() - Handles the Abort/Retry/Fail sort of errors passed
@@ -219,6 +221,7 @@ oh_kill_me:
 //#pragma	warn	+par
 //#pragma	warn	+rch
 
+#endif // USL_HardError IS UNUSED NOW
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -237,7 +240,8 @@ US_Startup(void)
 	BE_ST_printf("US_Startup: ");
 #endif
 
-	harderr(USL_HardError);	// Install the fatal error handler
+	// (REFKEEN) UNUSED (TODO restore?)
+	// harderr(USL_HardError);	// Install the fatal error handler
 
 	US_InitRndT(true);		// Initialize the random number generator
 
