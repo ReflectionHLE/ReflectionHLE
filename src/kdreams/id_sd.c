@@ -145,7 +145,7 @@ static	id0_int_t				sbLocation = -1,sbInterrupt = 7,sbIntVec = 0xf,
 						sbIntVectors[] = {-1,-1,0xa,0xb,-1,0xd,-1,0xf};
 static	id0_longword_t		sbNextSegLen;
 static	SampledSound	id0_huge *sbSamples;
-static	void interrupt	(*sbOldIntHand)(void);
+static	void /*interrupt*/	(*sbOldIntHand)(void);
 #endif
 
 //	SoundSource variables
