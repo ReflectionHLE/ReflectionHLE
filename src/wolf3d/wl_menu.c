@@ -2280,8 +2280,9 @@ void CP_Control(void)
 		{
 			case MOUSEENABLE:
 				mouseenabled^=1;
-				_CX=_DX=CENTER;
-				Mouse(4);
+				BE_ST_SetEmuMousePos(CENTER,CENTER);
+//				_CX=_DX=CENTER;
+//				Mouse(4);
 				DrawCtlScreen();
 				CusItems.curpos=-1;
 				ShootSnd();
@@ -2773,8 +2774,9 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
 	switch(type)
 	{
 	 case MOUSE:
-	   Mouse(3);
-	   button=_BX;
+	   button=BE_ST_GetEmuMouseButtons();
+//	   Mouse(3);
+//	   button=_BX;
 	   switch(button)
 	   {
 	case 1: result=1; break;
@@ -3752,8 +3754,9 @@ void SetupControlPanel(void)
 	//
 	// CENTER MOUSE
 	//
-	_CX=_DX=CENTER;
-	Mouse(4);
+	BE_ST_SetEmuMousePos(CENTER,CENTER);
+//	_CX=_DX=CENTER;
+//	Mouse(4);
 }
 
 
@@ -4248,39 +4251,44 @@ void ReadAnyControl(ControlInfo *ci)
 		// HOME MOUSE
 		// CHECK MOUSE BUTTONS
 
-		Mouse(3);
-		mousex=_CX;
-		mousey=_DX;
+		BE_ST_GetEmuMousePos(&mousex,&mousey);
+//		Mouse(3);
+//		mousex=_CX;
+//		mousey=_DX;
 
 		if (mousey<CENTER-SENSITIVE)
 		{
 			ci->dir=dir_North;
-			_CX=_DX=CENTER;
-			Mouse(4);
+			BE_ST_SetEmuMousePos(CENTER,CENTER);
+//			_CX=_DX=CENTER;
+//			Mouse(4);
 			mouseactive=1;
 		}
 		else
 		if (mousey>CENTER+SENSITIVE)
 		{
 			ci->dir=dir_South;
-			_CX=_DX=CENTER;
-			Mouse(4);
+			BE_ST_SetEmuMousePos(CENTER,CENTER);
+//			_CX=_DX=CENTER;
+//			Mouse(4);
 			mouseactive=1;
 		}
 
 		if (mousex<CENTER-SENSITIVE)
 		{
 			ci->dir=dir_West;
-			_CX=_DX=CENTER;
-			Mouse(4);
+			BE_ST_SetEmuMousePos(CENTER,CENTER);
+//			_CX=_DX=CENTER;
+//			Mouse(4);
 			mouseactive=1;
 		}
 		else
 		if (mousex>CENTER+SENSITIVE)
 		{
 			ci->dir=dir_East;
-			_CX=_DX=CENTER;
-			Mouse(4);
+			BE_ST_SetEmuMousePos(CENTER,CENTER);
+//			_CX=_DX=CENTER;
+//			Mouse(4);
 			mouseactive=1;
 		}
 
