@@ -1757,7 +1757,7 @@ void CP_LoadGame(void)
 id0_int_t CP_LoadGame(id0_int_t quick)
 #endif
 {
-	FILE BE_FILE_T handle;
+	BE_FILE_T handle;
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	id0_int_t which;
