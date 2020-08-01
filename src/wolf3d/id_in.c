@@ -418,6 +418,9 @@ INL_ShutKbd(void)
 static id0_boolean_t
 INL_StartMouse(void)
 {
+	// TODO (REFKEEN): Consider optionally returning false?
+	BE_ST_ResetEmuMouse();
+	return(true);
 #if 0
 	if (getvect(MouseInt))
 	{
@@ -427,9 +430,6 @@ INL_StartMouse(void)
 	}
 	return(false);
 #endif
-	// TODO (REFKEEN): Consider optionally returning false?
-	// TODO 2: Do reset mouse here?
-	return(true);
 #if 0
  union REGS regs;
  id0_unsigned_char_t id0_far *vector;

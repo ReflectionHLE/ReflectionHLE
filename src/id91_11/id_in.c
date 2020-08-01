@@ -425,6 +425,7 @@ static id0_boolean_t
 INL_StartMouse(void)
 {
 	// TODO (REFKEEN): Consider optionally returning false?
+	BE_ST_ResetEmuMouse();
 	return(true);
 #if 0
 	if (getvect(MouseInt))
