@@ -646,7 +646,7 @@ void US_ControlPanel(id0_byte_t scancode)
 					if (SoundMode != sdm_Off)
 						for (i=0;i<NUMSOUNDS;i++,start++)
 							if (audiosegs[start])
-								MM_SetPurge (&(memptr)audiosegs[start],3);		// make purgable
+								MM_SetPurge ((memptr *)&audiosegs[start],3);		// make purgable
 				}
 				#endif
 
@@ -4593,7 +4593,7 @@ void StartCPMusic(id0_int_t song)
 		mmerror = false;
 	else
 	{
-		MM_SetLock(&((memptr)audiosegs[STARTMUSIC + chunk]),true);
+		MM_SetLock((memptr *)&audiosegs[STARTMUSIC + chunk],true);
 		SD_StartMusic((MusicGroup id0_far *)audiosegs[STARTMUSIC + chunk]);
 	}
 }
