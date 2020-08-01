@@ -31,6 +31,8 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+#define REFKEEN_ENABLE_FILE_SEARCH 0 // TODO (REFKEEN): Implement
+
 //
 // PRIVATE PROTOTYPES
 //
@@ -3700,7 +3702,9 @@ void DrawOutline(id0_int_t x,id0_int_t y,id0_int_t w,id0_int_t h,id0_int_t color
 ////////////////////////////////////////////////////////////////////
 void SetupControlPanel(void)
 {
+#if REFKEEN_ENABLE_FILE_SEARCH
 	struct ffblk f;
+#endif
 	id0_char_t name[13];
 	id0_int_t which,i;
 
@@ -3729,6 +3733,7 @@ void SetupControlPanel(void)
 	else
 		MainMenu[savegame].active=1;
 
+#if REFKEEN_ENABLE_FILE_SEARCH
 	//
 	// SEE WHICH SAVE GAME FILES ARE AVAILABLE & READ STRING IN
 	//
@@ -3750,6 +3755,7 @@ void SetupControlPanel(void)
 				strcpy(&SaveGameNames[which][0],temp);
 			}
 		} while(!findnext(&f));
+#endif
 
 	//
 	// CENTER MOUSE
@@ -4703,6 +4709,15 @@ void ShootSnd(void)
 ///////////////////////////////////////////////////////////////////////////
 void CheckForEpisodes(void)
 {
+#if !REFKEEN_ENABLE_FILE_SEARCH // TODO: Assume it's v1.0 and files are found
+	strcpy(extension,"WL1");
+	strcat(configname,extension);
+	strcat(SaveName,extension);
+	strcat(PageFileName,extension);
+	strcat(audioname,extension);
+	strcat(helpfilename,extension);
+	strcat(demoname,extension);
+#else // REFKEEN_ENABLE_FILE_SEARCH
 	struct ffblk f;
 
 // *** S3DNA RESTORATION ***
@@ -4842,5 +4857,6 @@ void CheckForEpisodes(void)
 #endif
 
 #endif // S3DNA RESTORATION
+#endif // REFKEEN_ENABLE_FILE_SEARCH
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
