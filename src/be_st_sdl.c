@@ -70,7 +70,7 @@ bool g_sdlDefaultMappingBinaryState;
 /*** Emulated mouse and joysticks states (mouse motion state is split for technical reasons) ***/
 int g_sdlEmuMouseButtonsState;
 int16_t g_sdlEmuMouseMotionAccumulatedState[2];
-static int16_t g_sdlEmuMouseMotionAbsoluteState[2];
+static int16_t g_sdlEmuMouseMotionFromJoystick[2];
 int16_t g_sdlVirtualMouseCursorState[2]; // Used e.g., for touch input handling
 static int g_sdlEmuJoyButtonsState;
 static int16_t g_sdlEmuJoyMotionState[4];
@@ -259,7 +259,7 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 	memset(g_sdlEmuKeyboardStateByScanCode, 0, sizeof(g_sdlEmuKeyboardStateByScanCode));
 
 	g_sdlEmuMouseButtonsState = 0;
-	memset(g_sdlEmuMouseMotionAbsoluteState, 0, sizeof(g_sdlEmuMouseMotionAbsoluteState));
+	memset(g_sdlEmuMouseMotionFromJoystick, 0, sizeof(g_sdlEmuMouseMotionFromJoystick));
 	g_sdlEmuJoyButtonsState = 0;
 	// A bit tricky, should be reported as centered *if* any joystick is connected (and *not* while using modern controller scheme)
 	// Note 1: A single controller may support up to all 4 axes
@@ -1392,9 +1392,9 @@ void BE_ST_GetEmuAccuMouseMotion(int16_t *optX, int16_t *optY)
 	BE_ST_PollEvents();
 
 	if (optX)
-		*optX = g_sdlEmuMouseMotionAccumulatedState[0] + g_sdlEmuMouseMotionAbsoluteState[0];
+		*optX = g_sdlEmuMouseMotionAccumulatedState[0] + g_sdlEmuMouseMotionFromJoystick[0];
 	if (optY)
-		*optY = g_sdlEmuMouseMotionAccumulatedState[1] + g_sdlEmuMouseMotionAbsoluteState[1];
+		*optY = g_sdlEmuMouseMotionAccumulatedState[1] + g_sdlEmuMouseMotionFromJoystick[1];
 
 	g_sdlEmuMouseMotionAccumulatedState[0] = g_sdlEmuMouseMotionAccumulatedState[1] = 0;
 }
@@ -1541,7 +1541,7 @@ bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, i
 		}
 		return true;
 	case BE_ST_CTRL_MAP_MOUSEMOTION:
-		g_sdlEmuMouseMotionAbsoluteState[map->val] = (value <= g_sdlJoystickAxisDeadZone) ? 0 : (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
+		g_sdlEmuMouseMotionFromJoystick[map->val] = (value <= g_sdlJoystickAxisDeadZone) ? 0 : (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
 		return true;
 	case BE_ST_CTRL_MAP_OTHERMAPPING:
 		if (!prevBinaryStatus && (*lastBinaryStatusPtr))
