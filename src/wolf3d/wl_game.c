@@ -1537,8 +1537,10 @@ void PlayDemo (id0_int_t demonumber)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	gamestate.difficulty = gd_hard;
 #endif
-	length = *((id0_unsigned_t id0_far *)demoptr)++;
-	demoptr++;
+	length = *((id0_unsigned_t id0_far *)demoptr);
+	demoptr += sizeof(id0_unsigned_t) + 1;
+//	length = *((id0_unsigned_t id0_far *)demoptr)++;
+//	demoptr++;
 	lastdemoptr = demoptr-4+length;
 
 	VW_FadeOut ();
