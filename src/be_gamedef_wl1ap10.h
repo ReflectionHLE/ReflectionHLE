@@ -25,7 +25,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_wl1ap10[] = {
 	{"VGAGRAPH.WL1", 295394, 0xf431f4a4},
 	{"VGAHEAD.WL1", 447, 0x1343524f},
 	{"VSWAP.WL1", 707072, 0xf97fe230},
-	{"WOLF3D.EXE", 94379, 0x6c6bac36}
+	{"WOLF3D.EXE", 94379, 0x6c6bac36},
 	{0}
 };
 
