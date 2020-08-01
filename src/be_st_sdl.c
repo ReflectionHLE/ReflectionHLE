@@ -29,6 +29,9 @@
 #include "be_st_launcher.h"
 #include "be_st_sdl_private.h"
 
+#define BE_ST_EMU_MOUSE_XRANGE 640
+#define BE_ST_EMU_MOUSE_YRANGE 200
+
 // Using example of values from here:
 // http://www.intel-assembler.it/portale/5/program-joystick-port-210h/program-joystick-port-210h.asp
 #define BE_ST_EMU_JOYSTICK_RANGEMIN 8
@@ -70,6 +73,7 @@ bool g_sdlDefaultMappingBinaryState;
 /*** Emulated mouse and joysticks states (mouse motion state is split for technical reasons) ***/
 int g_sdlEmuMouseButtonsState;
 int16_t g_sdlEmuMouseMotionAccumulatedState[2];
+int16_t g_sdlEmuMouseCursorPos[2];
 static int16_t g_sdlEmuMouseMotionFromJoystick[2];
 int16_t g_sdlVirtualMouseCursorState[2]; // Used e.g., for touch input handling
 static int g_sdlEmuJoyButtonsState;
@@ -275,6 +279,7 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 	BE_ST_PollEvents();
 	// Events may gradually fill these, especially after messing with a mouse cursor, so reset AFTER poll
 	g_sdlEmuMouseMotionAccumulatedState[0] = g_sdlEmuMouseMotionAccumulatedState[1] = 0;
+	BE_ST_ResetEmuMouse();
 }
 
 void BE_ST_ShutdownAll(void)
@@ -1387,14 +1392,47 @@ void BE_ST_StopKeyboardService(void)
 	g_sdlKeyboardInterruptFuncPtr = 0;
 }
 
+void BE_ST_ResetEmuMouse(void)
+{
+	g_sdlEmuMouseCursorPos[0] = BE_ST_EMU_MOUSE_XRANGE/2;
+	g_sdlEmuMouseCursorPos[1] = BE_ST_EMU_MOUSE_YRANGE/2;
+}
+
+void BE_ST_SetEmuMousePos(int16_t x, int16_t y)
+{
+	g_sdlEmuMouseCursorPos[0] = x;
+	g_sdlEmuMouseCursorPos[1] = y;
+
+	if (g_sdlEmuMouseCursorPos[0] < 0)
+		g_sdlEmuMouseCursorPos[0] = 0;
+	else if (g_sdlEmuMouseCursorPos[0] >= BE_ST_EMU_MOUSE_XRANGE)
+		g_sdlEmuMouseCursorPos[0] = BE_ST_EMU_MOUSE_XRANGE - 1;
+
+	if (g_sdlEmuMouseCursorPos[1] < 0)
+		g_sdlEmuMouseCursorPos[1] = 0;
+	else if (g_sdlEmuMouseCursorPos[1] >= BE_ST_EMU_MOUSE_YRANGE)
+		g_sdlEmuMouseCursorPos[1] = BE_ST_EMU_MOUSE_YRANGE - 1;
+}
+
+void BE_ST_GetEmuMousePos(int16_t *x, int16_t *y)
+{
+	*x = g_sdlEmuMouseCursorPos[0];
+	*y = g_sdlEmuMouseCursorPos[1];
+}
+
 void BE_ST_GetEmuAccuMouseMotion(int16_t *optX, int16_t *optY)
 {
 	BE_ST_PollEvents();
 
+	int16_t dx = g_sdlEmuMouseMotionAccumulatedState[0] + g_sdlEmuMouseMotionFromJoystick[0];
+	int16_t dy = g_sdlEmuMouseMotionAccumulatedState[1] + g_sdlEmuMouseMotionFromJoystick[1];
+
+	BE_ST_SetEmuMousePos(g_sdlEmuMouseCursorPos[0] + dx, g_sdlEmuMouseCursorPos[1] + dy);
+
 	if (optX)
-		*optX = g_sdlEmuMouseMotionAccumulatedState[0] + g_sdlEmuMouseMotionFromJoystick[0];
+		*optX = dx;
 	if (optY)
-		*optY = g_sdlEmuMouseMotionAccumulatedState[1] + g_sdlEmuMouseMotionFromJoystick[1];
+		*optY = dy;
 
 	g_sdlEmuMouseMotionAccumulatedState[0] = g_sdlEmuMouseMotionAccumulatedState[1] = 0;
 }

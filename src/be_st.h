@@ -38,6 +38,11 @@ void BE_ST_QuickExit(void); // Where the usual exit handler isn't sufficient: Sa
 // Sets/Unsets interrupt handler for emulated keyboard events
 void BE_ST_StartKeyboardService(void (*funcPtr)(uint8_t));
 void BE_ST_StopKeyboardService(void);
+// Reset emulated mouse state (a possibly partial replacement for x86 int 33h,0)
+void BE_ST_ResetEmuMouse(void);
+// Set/Get emulated mouse cursor position
+void BE_ST_SetEmuMousePos(int16_t x, int16_t y);
+void BE_ST_GetEmuMousePos(int16_t *x, int16_t *y);
 // Gets emulated mouse motion accumulated since a preceding call to
 // this function (if any). Note that the output (pointer) arguments
 // are optional; To ignore any of the motion axes,
