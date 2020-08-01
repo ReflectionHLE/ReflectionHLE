@@ -198,6 +198,7 @@ void PicturePause (void)
 	CA_SetAllPurge();
 #endif
 #endif
+#if 0 // TODO (REFKEEN) IMPLEMENT
 	MM_GetPtr (&buffer,64000);
 	for (p=0;p<4;p++)
 	{
@@ -234,6 +235,7 @@ void PicturePause (void)
 	dest = MK_FP(0xa000,0);
 	_fmemcpy (dest,buffer,64000);
 
+#endif // TODO (REFKEEN) IMPLEMENT
 	VL_SetPalette (&gamepal);
 
 
