@@ -2075,6 +2075,8 @@ void BE_ST_PollEvents(void)
 				g_sdlEmuMouseButtonsState |= 1;
 			else if (event.button.button == SDL_BUTTON_RIGHT)
 				g_sdlEmuMouseButtonsState |= 2;
+			else if (event.button.button == SDL_BUTTON_MIDDLE)
+				g_sdlEmuMouseButtonsState |= 4;
 			break;
 		case SDL_MOUSEBUTTONUP:
 			if (event.button.which == SDL_TOUCH_MOUSEID)
@@ -2094,6 +2096,8 @@ void BE_ST_PollEvents(void)
 				g_sdlEmuMouseButtonsState &= ~1;
 			else if (event.button.button == SDL_BUTTON_RIGHT)
 				g_sdlEmuMouseButtonsState &= ~2;
+			else if (event.button.button == SDL_BUTTON_MIDDLE)
+				g_sdlEmuMouseButtonsState &= ~4;
 			break;
 		case SDL_MOUSEMOTION:
 			if (event.button.which == SDL_TOUCH_MOUSEID)
