@@ -1918,8 +1918,8 @@ void T_Launch (objtype *ob)
 	deltay = ob->y - player->y;
 	angle = atan2 (deltay,deltax);
 	if (angle<0)
-		angle = M_PI*2+angle;
-	iangle = angle/(M_PI*2)*ANGLES;
+		angle = ID0_M_PI*2+angle;
+	iangle = angle/(ID0_M_PI*2)*ANGLES;
 	if (ob->obclass == deathobj)
 	{
 		T_Shoot (ob);
@@ -2772,8 +2772,8 @@ void T_SchabbThrow (objtype *ob)
 	deltay = ob->y - player->y;
 	angle = atan2 (deltay,deltax);
 	if (angle<0)
-		angle = M_PI*2+angle;
-	iangle = angle/(M_PI*2)*ANGLES;
+		angle = ID0_M_PI*2+angle;
+	iangle = angle/(ID0_M_PI*2)*ANGLES;
 
 	GetNewActor ();
 // *** S3DNA RESTORATION ***
@@ -2831,8 +2831,8 @@ void T_GiftThrow (objtype *ob)
 	deltay = ob->y - player->y;
 	angle = atan2 (deltay,deltax);
 	if (angle<0)
-		angle = M_PI*2+angle;
-	iangle = angle/(M_PI*2)*ANGLES;
+		angle = ID0_M_PI*2+angle;
+	iangle = angle/(ID0_M_PI*2)*ANGLES;
 
 	GetNewActor ();
 // *** S3DNA RESTORATION ***
@@ -3557,8 +3557,8 @@ void T_FakeFire (objtype *ob)
 	deltay = ob->y - player->y;
 	angle = atan2 (deltay,deltax);
 	if (angle<0)
-		angle = M_PI*2+angle;
-	iangle = angle/(M_PI*2)*ANGLES;
+		angle = ID0_M_PI*2+angle;
+	iangle = angle/(ID0_M_PI*2)*ANGLES;
 
 	GetNewActor ();
 	new->state = &s_fire1;
@@ -4737,9 +4737,9 @@ void	A_StartDeathCam (objtype *ob)
 
 	fangle = atan2(dy,dx);			// returns -pi to pi
 	if (fangle<0)
-		fangle = M_PI*2+fangle;
+		fangle = ID0_M_PI*2+fangle;
 
-	player->angle = fangle/(M_PI*2)*ANGLES;
+	player->angle = fangle/(ID0_M_PI*2)*ANGLES;
 
 //
 // try to position as close as possible without being in a wall

@@ -1627,9 +1627,9 @@ void Died (void)
 
 	fangle = atan2(dy,dx);			// returns -pi to pi
 	if (fangle<0)
-		fangle = M_PI*2+fangle;
+		fangle = ID0_M_PI*2+fangle;
 
-	iangle = fangle/(M_PI*2)*ANGLES;
+	iangle = fangle/(ID0_M_PI*2)*ANGLES;
 
 	if (player->angle > iangle)
 	{

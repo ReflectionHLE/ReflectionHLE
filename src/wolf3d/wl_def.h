@@ -31,6 +31,10 @@
 #include <math.h>
 //#include <VALUES.H>
 
+// TODO (REFKEEN): Eventually, it'll be better to replace usages of
+// floating point math, but define this like M_PI from Borland C++ for now
+#define ID0_M_PI 3.14159265358979323846
+
 #include "wl_menu.h"
 
 #ifdef SPANISH
