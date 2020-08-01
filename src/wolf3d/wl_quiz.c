@@ -215,7 +215,8 @@ id0_int_t AskQuestion (id0_int_t question)
 	lasttimecount = SD_GetTimeCount();
 
 	if (MousePresent)
-		Mouse(MDelta);	// Clear accumulated mouse movement
+		BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//		Mouse(MDelta);	// Clear accumulated mouse movement
 
 	if (answer == -1)
 		return answer;

@@ -223,5 +223,6 @@ void AutoMap (void)
 	lasttimecount = SD_GetTimeCount();
 
 	if (MousePresent)
-		Mouse(MDelta);	// Clear accumulated mouse movement
+		BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//		Mouse(MDelta);	// Clear accumulated mouse movement
 }

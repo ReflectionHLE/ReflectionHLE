@@ -961,7 +961,8 @@ id0_int_t CP_CheckQuick(id0_unsigned_t scancode)
 				lasttimecount = SD_GetTimeCount();
 
 				if (MousePresent)
-					Mouse(MDelta);	// Clear accumulated mouse movement
+					BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//					Mouse(MDelta);	// Clear accumulated mouse movement
 
 				PM_CheckMainMem ();
 
@@ -1063,7 +1064,8 @@ id0_int_t CP_CheckQuick(id0_unsigned_t scancode)
 				lasttimecount = SD_GetTimeCount();
 
 				if (MousePresent)
-					Mouse(MDelta);	// Clear accumulated mouse movement
+					BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//					Mouse(MDelta);	// Clear accumulated mouse movement
 				PM_CheckMainMem ();
 
 				#ifndef SPEAR

@@ -486,9 +486,12 @@ void PollMouseMove (void)
 {
 	id0_int_t	mousexmove,mouseymove;
 
+	BE_ST_GetEmuAccuMouseMotion(&mousexmove, &mouseymove);
+#if 0
 	Mouse(MDelta);
 	mousexmove = _CX;
 	mouseymove = _DX;
+#endif
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -1011,7 +1014,8 @@ void CheckKeys (void)
 		SD_MusicOn();
 		Paused = false;
 		if (MousePresent)
-			Mouse(MDelta);	// Clear accumulated mouse movement
+			BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//			Mouse(MDelta);	// Clear accumulated mouse movement
 		return;
 	}
 
@@ -1119,7 +1123,8 @@ void CheckKeys (void)
 			playstate = ex_abort;
 		lasttimecount = SD_GetTimeCount();
 		if (MousePresent)
-			Mouse(MDelta);	// Clear accumulated mouse movement
+			BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//			Mouse(MDelta);	// Clear accumulated mouse movement
 		PM_CheckMainMem ();
 		return;
 	}
@@ -1151,7 +1156,8 @@ void CheckKeys (void)
 #endif
 		DebugKeys();
 		if (MousePresent)
-			Mouse(MDelta);	// Clear accumulated mouse movement
+			BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//			Mouse(MDelta);	// Clear accumulated mouse movement
 		lasttimecount = SD_GetTimeCount();
 		return;
 	}
@@ -1851,7 +1857,8 @@ void PlayLoop (void)
 	ClearPaletteShifts ();
 
 	if (MousePresent)
-		Mouse(MDelta);	// Clear accumulated mouse movement
+		BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//		Mouse(MDelta);	// Clear accumulated mouse movement
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)

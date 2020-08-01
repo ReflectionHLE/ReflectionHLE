@@ -1014,7 +1014,8 @@ void EndText (void)
 	SETFONTCOLOR(0,15);
 	IN_ClearKeysDown();
 	if (MousePresent)
-		Mouse(MDelta);	// Clear accumulated mouse movement
+		BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//		Mouse(MDelta);	// Clear accumulated mouse movement
 
 	FreeMusic ();
 	CA_DownLevel ();
@@ -1058,7 +1059,8 @@ void EndText (void)
 	SETFONTCOLOR(0,15);
 	IN_ClearKeysDown();
 	if (MousePresent)
-		Mouse(MDelta);	// Clear accumulated mouse movement
+		BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
+//		Mouse(MDelta);	// Clear accumulated mouse movement
 
 	FreeMusic ();
 	CA_DownLevel ();
