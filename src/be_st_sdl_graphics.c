@@ -2522,35 +2522,67 @@ static void BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(
 	{
 		// Source is linear: Same as BE_Cross_LinearToWrapped_MemCopy here
 		if (num <= dstBytesToEnd)
-		{
-			memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*num);
-		}
+			memcpy(
+				vidMemPtr + pixelsPerAddr*planeDstOff,
+				vidMemPtr + pixelsPerAddr*planeSrcOff,
+				pixelsPerAddr*num);
 		else
 		{
-			memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*dstBytesToEnd);
-			memcpy(vidMemPtr, vidMemPtr + pixelsPerAddr*(planeSrcOff+dstBytesToEnd), pixelsPerAddr*(num-dstBytesToEnd));
+			memcpy(
+				vidMemPtr + pixelsPerAddr*planeDstOff,
+				vidMemPtr + pixelsPerAddr*planeSrcOff,
+				pixelsPerAddr*dstBytesToEnd);
+			memcpy(
+				vidMemPtr,
+				vidMemPtr + pixelsPerAddr*(planeSrcOff+dstBytesToEnd),
+				pixelsPerAddr*(num-dstBytesToEnd));
 		}
 	}
 	// Otherwise, check if at least the destination is linear
 	else if (num <= dstBytesToEnd)
 	{
-		// Destination is linear: Same as BE_Cross_WrappedToLinear_MemCopy, non-linear source
-		memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*srcBytesToEnd);
-		memcpy(vidMemPtr + pixelsPerAddr*(planeDstOff+srcBytesToEnd), vidMemPtr, pixelsPerAddr*(num-srcBytesToEnd));
+		// Destination is linear: Same as
+		// BE_Cross_WrappedToLinear_MemCopy, non-linear source
+		memcpy(
+			vidMemPtr + pixelsPerAddr*planeDstOff,
+			vidMemPtr + pixelsPerAddr*planeSrcOff,
+			pixelsPerAddr*srcBytesToEnd);
+		memcpy(
+			vidMemPtr + pixelsPerAddr*(planeDstOff+srcBytesToEnd),
+			vidMemPtr,
+			pixelsPerAddr*(num-srcBytesToEnd));
 	}
 	// BOTH buffers have wrapping. We don't check separately if
 	// srcBytesToEnd==dstBytesToEnd (in such a case planeDstOff==planeSrcOff...)
 	else if (srcBytesToEnd <= dstBytesToEnd)
 	{
-		memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*srcBytesToEnd);
-		memcpy(vidMemPtr + pixelsPerAddr*(planeDstOff+srcBytesToEnd), vidMemPtr, pixelsPerAddr*(dstBytesToEnd-srcBytesToEnd));
-		memcpy(vidMemPtr, vidMemPtr + pixelsPerAddr*(dstBytesToEnd-srcBytesToEnd), pixelsPerAddr*(num-dstBytesToEnd));
+		memcpy(
+			vidMemPtr + pixelsPerAddr*planeDstOff,
+			vidMemPtr + pixelsPerAddr*planeSrcOff,
+			pixelsPerAddr*srcBytesToEnd);
+		memcpy(
+			vidMemPtr + pixelsPerAddr*(planeDstOff+srcBytesToEnd),
+			vidMemPtr,
+			pixelsPerAddr*(dstBytesToEnd-srcBytesToEnd));
+		memcpy(
+			vidMemPtr,
+			vidMemPtr + pixelsPerAddr*(dstBytesToEnd-srcBytesToEnd),
+			pixelsPerAddr*(num-dstBytesToEnd));
 	}
 	else // srcBytesToEnd > dstBytesToEnd
 	{
-		memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*dstBytesToEnd);
-		memcpy(vidMemPtr, vidMemPtr + pixelsPerAddr*(planeSrcOff+dstBytesToEnd), pixelsPerAddr*(srcBytesToEnd-dstBytesToEnd));
-		memcpy(vidMemPtr + pixelsPerAddr*(srcBytesToEnd-dstBytesToEnd), vidMemPtr, pixelsPerAddr*(num-srcBytesToEnd));
+		memcpy(
+			vidMemPtr + pixelsPerAddr*planeDstOff,
+			vidMemPtr + pixelsPerAddr*planeSrcOff,
+			pixelsPerAddr*dstBytesToEnd);
+		memcpy(
+			vidMemPtr,
+			vidMemPtr + pixelsPerAddr*(planeSrcOff+dstBytesToEnd),
+			pixelsPerAddr*(srcBytesToEnd-dstBytesToEnd));
+		memcpy(
+			vidMemPtr + pixelsPerAddr*(srcBytesToEnd-dstBytesToEnd),
+			vidMemPtr,
+			pixelsPerAddr*(num-srcBytesToEnd));
 	}
 	g_sdlDoRefreshGfxOutput = true;
 }
