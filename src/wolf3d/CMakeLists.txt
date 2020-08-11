@@ -7,6 +7,7 @@ list(APPEND wolf3d_src
 	src/wolf3d/id_sd.c
 	src/wolf3d/id_us_1.c
 	src/wolf3d/id_us_a.c
+	src/wolf3d/id_vh_a.c
 #	src/wolf3d/id_vh.c
 #	src/wolf3d/id_vl.c
 	src/wolf3d/wl_act1.c
