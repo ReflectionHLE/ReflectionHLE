@@ -2642,6 +2642,12 @@ void BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcO
 	g_sdlDoRefreshGfxOutput = true;
 }
 
+void BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num)
+{
+	BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(destOff, srcOff, num, 4);
+	g_sdlDoRefreshGfxOutput = true;
+}
+
 uint8_t BE_ST_EGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planenum)
 {
 	return BEL_ST_Lookup_EGAPlaneToLinear(g_sdlVidMem.egaGfx[destOff]>>planenum);
