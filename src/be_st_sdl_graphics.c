@@ -2512,9 +2512,10 @@ static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, uint16_t planeSr
 }
 
 // Based on BE_Cross_WrappedToWrapped_MemCopy
-static void BEL_ST_EGAPlaneToEGAAllPlanes_MemCopy(uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num)
+static void BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(
+	uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num, int pixelsPerAddr)
 {
-	uint64_t *planeCommonPtr = g_sdlVidMem.egaGfx;
+	uint8_t *vidMemPtr = g_sdlVidMem.vgaGfx;
 	uint16_t srcBytesToEnd = 0x10000-planeSrcOff;
 	uint16_t dstBytesToEnd = 0x10000-planeDstOff;
 	if (num <= srcBytesToEnd)
@@ -2522,34 +2523,34 @@ static void BEL_ST_EGAPlaneToEGAAllPlanes_MemCopy(uint16_t planeDstOff, uint16_t
 		// Source is linear: Same as BE_Cross_LinearToWrapped_MemCopy here
 		if (num <= dstBytesToEnd)
 		{
-			memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*num);
+			memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*num);
 		}
 		else
 		{
-			memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*dstBytesToEnd);
-			memcpy(planeCommonPtr, planeCommonPtr+(planeSrcOff+dstBytesToEnd), 8*(num-dstBytesToEnd));
+			memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*dstBytesToEnd);
+			memcpy(vidMemPtr, vidMemPtr + pixelsPerAddr*(planeSrcOff+dstBytesToEnd), pixelsPerAddr*(num-dstBytesToEnd));
 		}
 	}
 	// Otherwise, check if at least the destination is linear
 	else if (num <= dstBytesToEnd)
 	{
 		// Destination is linear: Same as BE_Cross_WrappedToLinear_MemCopy, non-linear source
-		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*srcBytesToEnd);
-		memcpy(planeCommonPtr+(planeDstOff+srcBytesToEnd), planeCommonPtr, 8*(num-srcBytesToEnd));
+		memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*srcBytesToEnd);
+		memcpy(vidMemPtr + pixelsPerAddr*(planeDstOff+srcBytesToEnd), vidMemPtr, pixelsPerAddr*(num-srcBytesToEnd));
 	}
 	// BOTH buffers have wrapping. We don't check separately if
 	// srcBytesToEnd==dstBytesToEnd (in such a case planeDstOff==planeSrcOff...)
 	else if (srcBytesToEnd <= dstBytesToEnd)
 	{
-		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*srcBytesToEnd);
-		memcpy(planeCommonPtr+(planeDstOff+srcBytesToEnd), planeCommonPtr, 8*(dstBytesToEnd-srcBytesToEnd));
-		memcpy(planeCommonPtr, planeCommonPtr+(dstBytesToEnd-srcBytesToEnd), 8*(num-dstBytesToEnd));
+		memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*srcBytesToEnd);
+		memcpy(vidMemPtr + pixelsPerAddr*(planeDstOff+srcBytesToEnd), vidMemPtr, pixelsPerAddr*(dstBytesToEnd-srcBytesToEnd));
+		memcpy(vidMemPtr, vidMemPtr + pixelsPerAddr*(dstBytesToEnd-srcBytesToEnd), pixelsPerAddr*(num-dstBytesToEnd));
 	}
 	else // srcBytesToEnd > dstBytesToEnd
 	{
-		memcpy(planeCommonPtr+planeDstOff, planeCommonPtr+planeSrcOff, 8*dstBytesToEnd);
-		memcpy(planeCommonPtr, planeCommonPtr+(planeSrcOff+dstBytesToEnd), 8*(srcBytesToEnd-dstBytesToEnd));
-		memcpy(planeCommonPtr+(srcBytesToEnd-dstBytesToEnd), planeCommonPtr, 8*(num-srcBytesToEnd));
+		memcpy(vidMemPtr + pixelsPerAddr*planeDstOff, vidMemPtr + pixelsPerAddr*planeSrcOff, pixelsPerAddr*dstBytesToEnd);
+		memcpy(vidMemPtr, vidMemPtr + pixelsPerAddr*(planeSrcOff+dstBytesToEnd), pixelsPerAddr*(srcBytesToEnd-dstBytesToEnd));
+		memcpy(vidMemPtr + pixelsPerAddr*(srcBytesToEnd-dstBytesToEnd), vidMemPtr, pixelsPerAddr*(num-srcBytesToEnd));
 	}
 	g_sdlDoRefreshGfxOutput = true;
 }
@@ -2605,7 +2606,7 @@ void BE_ST_EGAUpdateGFXBitsInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff
 
 void BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num)
 {
-	BEL_ST_EGAPlaneToEGAAllPlanes_MemCopy(destOff, srcOff, num);
+	BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(destOff, srcOff, num, 8);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
