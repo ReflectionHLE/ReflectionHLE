@@ -2490,22 +2490,22 @@ static void BEL_ST_LinearToVGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t 
 }
 
 // Based on BE_Cross_WrappedToLinear_MemCopy
-static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, uint16_t planeSrcOff, uint16_t num, uint16_t planenum)
+static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, uint16_t planeSrcOff, uint16_t num, uint16_t planeNum)
 {
 	const uint64_t *planeSrcPtr = &g_sdlVidMem.egaGfx[planeSrcOff];
 	uint16_t bytesToEnd = 0x10000-planeSrcOff;
 	if (num <= bytesToEnd)
 	{
 		for (int i = 0; i < num; ++i, ++linearDst, ++planeSrcPtr)
-			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planenum);
+			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planeNum);
 	}
 	else
 	{
 		for (int i = 0; i < bytesToEnd; ++i, ++linearDst, ++planeSrcPtr)
-			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planenum);
+			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planeNum);
 		planeSrcPtr = g_sdlVidMem.egaGfx;
 		for (int i = 0; i < num-bytesToEnd; ++i, ++linearDst, ++planeSrcPtr)
-			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planenum);
+			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planeNum);
 	}
 	//No need to since we just read screen data
 	//g_sdlDoRefreshGfxOutput = true;
@@ -2648,14 +2648,14 @@ void BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcO
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-uint8_t BE_ST_EGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planenum)
+uint8_t BE_ST_EGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum)
 {
-	return BEL_ST_Lookup_EGAPlaneToLinear(g_sdlVidMem.egaGfx[destOff]>>planenum);
+	return BEL_ST_Lookup_EGAPlaneToLinear(g_sdlVidMem.egaGfx[destOff]>>planeNum);
 }
 
-void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planenum)
+void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planeNum)
 {
-	BEL_ST_EGAPlaneToLinear_MemCopy(destPtr, srcOff, num, planenum);
+	BEL_ST_EGAPlaneToLinear_MemCopy(destPtr, srcOff, num, planeNum);
 }
 
 void BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(uint16_t destOff, uint8_t color, uint8_t bitsMask)
