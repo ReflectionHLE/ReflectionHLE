@@ -2418,13 +2418,9 @@ asm     out     dx,al
 			// advance to next random element
 			//
 			if (rndval & 1)
-			{
 				rndval = (rndval >> 1) ^ 0x00012000;
-			}
 			else
-			{
 				rndval >>= 1;
-			}
 #if 0
 			asm     shr     dx,1
 			asm     rcr     ax,1
