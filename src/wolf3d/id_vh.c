@@ -52,7 +52,7 @@ pictabletype	id0_seg *pictable;
 id0_int_t	px,py;
 id0_byte_t	fontcolor,backcolor;
 id0_int_t	fontnumber;
-id0_int_t bufferwidth,bufferheight;
+id0_int_t /*bufferwidth,*/bufferheight; // REFKEEN: bufferwidth is set but not used
 
 
 //==========================================================================
@@ -65,13 +65,16 @@ void VW_DrawPropString (id0_char_t id0_far *string)
 {
 	fontstruct	id0_far	*font;
 	id0_int_t		width,step,height,i;
-	id0_byte_t	id0_far *source, id0_far *dest, id0_far *origdest;
-	id0_byte_t	ch,mask;
+	id0_byte_t	id0_far *source/*, id0_far *dest, id0_far *origdest*/;
+	id0_word_t	destoff, origdestoff;
+	id0_byte_t	ch,plane/*mask*/;
 
 	font = (fontstruct id0_far *)grsegs[STARTFONT+fontnumber];
 	height = bufferheight = font->height;
-	dest = origdest = MK_FP(SCREENSEG,bufferofs+ylookup[py]+(px>>2));
-	mask = 1<<(px&3);
+	destoff = origdestoff = bufferofs+ylookup[py]+(px>>2);
+//	dest = origdest = MK_FP(SCREENSEG,bufferofs+ylookup[py]+(px>>2));
+	plane = px&3;
+//	mask = 1<<(px&3);
 
 
 	while ((ch = *string++)!=0)
@@ -80,6 +83,13 @@ void VW_DrawPropString (id0_char_t id0_far *string)
 		source = ((id0_byte_t id0_far *)font)+font->location[ch];
 		while (width--)
 		{
+			id0_word_t count = height, dst;
+			id0_byte_t *src;
+			for (count = height, dst = destoff, src = source;
+			     count; --count, dst += linewidth, src += step)
+				if (*src)
+					BE_ST_VGAUpdateGFXByteInPlane(dst, fontcolor, plane);
+#if 0
 			VGAMAPMASK(mask);
 
 asm	mov	ah,[BYTE PTR fontcolor]
@@ -101,24 +111,33 @@ asm	add	di,dx
 asm	loop	vertloop
 asm	mov	ax,ss
 asm	mov	ds,ax
+#endif
 
 			source++;
 			px++;
+			if (++plane == 4)
+			{
+				plane = 0;
+				destoff++;
+			}
+#if 0
 			mask <<= 1;
 			if (mask == 16)
 			{
 				mask = 1;
 				dest++;
 			}
+#endif
 		}
 	}
 bufferheight = height;
-bufferwidth = ((dest+1)-origdest)*4;
+//bufferwidth = ((dest+1)-origdest)*4; // REFKEEN: Unused var
 }
 
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
+#if 0 // REFKEEN: Unused function
+//#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void VW_DrawColorPropString (id0_char_t id0_far *string)
 {
 	fontstruct	id0_far	*font;
@@ -178,7 +197,7 @@ asm	mov	ds,ax
 		}
 	}
 bufferheight = height;
-bufferwidth = ((dest+1)-origdest)*4;
+//bufferwidth = ((dest+1)-origdest)*4; // REFKEEN: Unused var
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL6AP11
 
@@ -207,8 +226,9 @@ void VL_MungePic (id0_byte_t id0_far *source, id0_unsigned_t width, id0_unsigned
 //
 // copy the pic to a temp buffer
 //
-	MM_GetPtr (&(memptr)temp,size);
-	_fmemcpy (temp,source,size);
+	MM_GetPtr ((memptr *)&temp,size);
+	memcpy (temp,source,size);
+//	_fmemcpy (temp,source,size);
 
 //
 // munge it back into the original buffer
@@ -227,7 +247,7 @@ void VL_MungePic (id0_byte_t id0_far *source, id0_unsigned_t width, id0_unsigned
 		}
 	}
 
-	MM_FreePtr (&(memptr)temp);
+	MM_FreePtr ((memptr *)&temp);
 }
 
 void VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height
@@ -598,13 +618,16 @@ id0_boolean_t FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 		if (abortable && IN_CheckAck () )
 			return true;
 
-		asm	mov	es,[screenseg]
+//		asm	mov	es,[screenseg]
 
 		for (p=0;p<pixperframe;p++)
 		{
 			//
 			// seperate random value into x/y pair
 			//
+			y = (rndval-1)&0xFF; // low 8 bits - 1 = y xoordinate
+			x = (rndval&0xFFFF00)>>8; // next bits (Cat3D: 9; Wolf3D: 16) = x xoordinate
+#if 0
 			asm	mov	ax,[WORD PTR rndval]
 			asm	mov	dx,[WORD PTR rndval+2]
 			asm	mov	bx,ax
@@ -614,9 +637,15 @@ id0_boolean_t FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 			asm	mov	cx,dx
 			asm	mov	[BYTE PTR x],ah			// next 9 bits = x xoordinate
 			asm	mov	[BYTE PTR x+1],dl
+#endif
 			//
 			// advance to next random element
 			//
+			if (rndval & 1)
+				rndval = (rndval >> 1) ^ 0x00012000;
+			else
+				rndval >>= 1;
+#if 0
 			asm	shr	dx,1
 			asm	rcr	ax,1
 			asm	jnc	noxor
@@ -625,6 +654,7 @@ id0_boolean_t FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 noxor:
 			asm	mov	[WORD PTR rndval],ax
 			asm	mov	[WORD PTR rndval+2],dx
+#endif
 
 			if (x>width || y>height)
 				continue;
@@ -633,6 +663,11 @@ noxor:
 			//
 			// copy one pixel
 			//
+			BE_ST_VGAUpdateGFXByteInPlane(
+				drawofs + pagedelta,
+				BE_ST_VGAFetchGFXByteFromPlane(drawofs, x&3),
+				x&3);
+#if 0
 			mask = x&3;
 			VGAREADMAP(mask);
 			mask = maskb[mask];
@@ -642,6 +677,7 @@ noxor:
 			asm	mov	al,[es:di]
 			asm add	di,[pagedelta]
 			asm	mov	[es:di],al
+#endif
 
 			if (rndval == 1)		// entire sequence has been completed
 				return false;
