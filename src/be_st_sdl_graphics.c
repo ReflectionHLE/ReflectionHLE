@@ -2447,6 +2447,12 @@ void BE_ST_EGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t pl
 	g_sdlDoRefreshGfxOutput = true;
 }
 
+void BE_ST_VGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t planeNum)
+{
+	g_sdlVidMem.vgaGfx[4*destOff + planeNum] = srcVal;
+	g_sdlDoRefreshGfxOutput = true;
+}
+
 // Based on BE_Cross_LinearToWrapped_MemCopy
 static void BEL_ST_LinearToEGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num, uint16_t planeNum)
 {
@@ -2651,6 +2657,11 @@ void BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcO
 uint8_t BE_ST_EGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum)
 {
 	return BEL_ST_Lookup_EGAPlaneToLinear(g_sdlVidMem.egaGfx[destOff]>>planeNum);
+}
+
+uint8_t BE_ST_VGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum)
+{
+	return g_sdlVidMem.vgaGfx[4*destOff + planeNum];
 }
 
 void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planeNum)

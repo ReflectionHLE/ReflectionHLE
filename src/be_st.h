@@ -308,8 +308,10 @@ void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle);
 
 // 256-color graphics manipulations (e.g., VGA mode 0x13)
 void BE_ST_VGASetPalette(const uint8_t *palette);
+void BE_ST_VGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t planeNum);
 void BE_ST_VGAUpdateGFXBufferInPlane(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeNum);
 void BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num);
+uint8_t BE_ST_VGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum);
 
 // 16-color graphics manipulations (say, EGA modes 0xD-0xE),
 // with a portion of the functions also applying to 256-color graphics
