@@ -623,10 +623,7 @@ void VW_ScreenToScreen_EGA(id0_unsigned_t source, id0_unsigned_t dest,
 	id0_unsigned_t wide, id0_unsigned_t height)
 {
 	for (id0_unsigned_t lineCounter = height; lineCounter; --lineCounter, source += linewidth, dest += linewidth)
-	{
 		BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(dest, source, wide);
-	}
-
 }
 #if 0
 PROC	VW_ScreenToScreen	source:WORD, dest:WORD, wide:WORD, height:WORD
