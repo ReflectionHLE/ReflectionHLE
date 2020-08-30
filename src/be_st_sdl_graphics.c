@@ -2409,9 +2409,14 @@ static void BEL_ST_VGAForceRefresh(void)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-void BE_ST_VGASetPaletteColor(uint8_t r, uint8_t g, uint8_t b, int index)
+static void BEL_ST_VGASetPaletteColor_NoRefresh(uint8_t r, uint8_t g, uint8_t b, int index)
 {
 	g_sdlEGACurrBGRAPalette[index] = 0xFC000000 | (b << 18) | (g << 10) | (r << 2);
+}
+
+void BE_ST_VGASetPaletteColor(uint8_t r, uint8_t g, uint8_t b, int index)
+{
+	BEL_ST_VGASetPaletteColor_NoRefresh(r, g, b, index);
 	BEL_ST_VGAForceRefresh();
 }
 
@@ -2440,7 +2445,8 @@ void BE_ST_VGAGetPalette(uint8_t *palette)
 void BE_ST_VGAFillPalette(uint8_t r, uint8_t g, uint8_t b, int first, int last)
 {
 	for (int entry = first; entry <= last; ++entry)
-		BE_ST_VGASetPaletteColor(r, g, b, entry);
+		BEL_ST_VGASetPaletteColor_NoRefresh(r, g, b, entry);
+	BEL_ST_VGAForceRefresh();
 }
 
 void BE_ST_EGASetPelPanning(uint8_t panning)
