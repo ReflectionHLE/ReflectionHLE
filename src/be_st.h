@@ -307,7 +307,11 @@ void BE_ST_HostGfx_ToggleFullScreen(void);
 void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle);
 
 // 256-color graphics manipulations (e.g., VGA mode 0x13)
+void BE_ST_VGASetPaletteColor(uint8_t r, uint8_t g, uint8_t b, int index);
+void BE_ST_VGAGetPaletteColor(uint8_t *r, uint8_t *g, uint8_t *b, int index);
 void BE_ST_VGASetPalette(const uint8_t *palette);
+void BE_ST_VGAGetPalette(uint8_t *palette);
+void BE_ST_VGAFillPalette(uint8_t r, uint8_t g, uint8_t b, int first, int last);
 void BE_ST_VGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t planeNum);
 void BE_ST_VGAUpdateGFXBufferInPlane(uint16_t destOff, const uint8_t *srcPtr, uint16_t num, uint16_t planeNum);
 void BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num);
