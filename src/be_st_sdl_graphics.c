@@ -2403,11 +2403,16 @@ void BE_ST_EGASetPaletteAndBorder(const uint8_t *palette)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
+static void BEL_ST_VGAForceRefresh(void)
+{
+	g_overscanBorderColorIndexCache = g_overscanBorderColorIndex^0xFF;
+	g_sdlDoRefreshGfxOutput = true;
+}
+
 void BE_ST_VGASetPaletteColor(uint8_t r, uint8_t g, uint8_t b, int index)
 {
 	g_sdlEGACurrBGRAPalette[index] = 0xFC000000 | (b << 18) | (g << 10) | (r << 2);
-	g_overscanBorderColorIndexCache = g_overscanBorderColorIndex^0xFF; // Force refresh
-	g_sdlDoRefreshGfxOutput = true;
+	BEL_ST_VGAForceRefresh();
 }
 
 void BE_ST_VGAGetPaletteColor(uint8_t *r, uint8_t *g, uint8_t *b, int index)
@@ -2423,8 +2428,7 @@ void BE_ST_VGASetPalette(const uint8_t *palette)
 	for (int entry = 0; entry < 256; ++entry, palette += 3)
 		g_sdlEGACurrBGRAPalette[entry] =
 			0xFC000000 | (palette[0] << 18) | (palette[1] << 10) | (palette[2] << 2);
-	g_overscanBorderColorIndexCache = g_overscanBorderColorIndex^0xFF; // Force refresh
-	g_sdlDoRefreshGfxOutput = true;
+	BEL_ST_VGAForceRefresh();
 }
 
 void BE_ST_VGAGetPalette(uint8_t *palette)
@@ -2747,10 +2751,9 @@ void BE_ST_CGAUpdateGFXBufferFromWrappedMem(const uint8_t *segPtr, const uint8_t
 
 void BE_ST_SetScreenMode(int mode)
 {
-	g_sdlDoRefreshGfxOutput = true;
 	g_overscanBorderColorIndex = 0;
-	g_overscanBorderColorIndexCache = g_overscanBorderColorIndex^0xFF; // Force refresh
 	g_sdlEGALastBGRABorderColor = g_sdlEGABGRAScreenColors[0];
+	BEL_ST_VGAForceRefresh();
 	switch (mode)
 	{
 	case 3:
