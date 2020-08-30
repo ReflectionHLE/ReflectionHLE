@@ -2431,8 +2431,7 @@ void BE_ST_VGAGetPaletteColor(uint8_t *r, uint8_t *g, uint8_t *b, int index)
 void BE_ST_VGASetPalette(const uint8_t *palette)
 {
 	for (int entry = 0; entry < 256; ++entry, palette += 3)
-		g_sdlEGACurrBGRAPalette[entry] =
-			0xFC000000 | (palette[0] << 18) | (palette[1] << 10) | (palette[2] << 2);
+		BE_ST_VGASetPaletteColor(palette[2], palette[1], palette[0], entry);
 	BEL_ST_VGAForceRefresh();
 }
 
