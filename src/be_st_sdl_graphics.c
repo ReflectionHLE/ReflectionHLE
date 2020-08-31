@@ -2478,8 +2478,9 @@ void BE_ST_EGASetSplitScreen(int16_t linenum)
 	if (g_sdlTexHeight == GFX_TEX_HEIGHT)
 	{
 		// Because 200-lines modes are really double-scanned to 400,
-		// a linenum of x was originally replaced with 2x-1 in id_vw.c.
-		// In practice it should've probably been 2x+1, and this is how
+		// a linenum of x was originally replaced with 2x-1 in
+		// Catacomb Abss's id_vw.c.
+		// In practice, it should've probably been 2x+1, and this is how
 		// we "correct" it here (one less black line in Catacomb Abyss
 		// before gameplay begins in a map, above the status bar).
 		g_sdlSplitScreenLine = linenum/2;
