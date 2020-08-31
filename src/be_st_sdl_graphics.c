@@ -2467,6 +2467,11 @@ void BE_ST_EGASetLineWidth(uint8_t widthInBytes)
 	BEL_ST_SetLineWidth(widthInBytes, 8);
 }
 
+void BE_ST_VGASetLineWidth(uint8_t widthInBytes)
+{
+	BEL_ST_SetLineWidth(widthInBytes, 4);
+}
+
 void BE_ST_EGASetSplitScreen(int16_t linenum)
 {
 	// VGA only for now (200-lines graphics modes)
