@@ -2454,12 +2454,17 @@ void BE_ST_EGASetPelPanning(uint8_t panning)
 	g_sdlPelPanning = panning;
 }
 
+static void BEL_ST_SetLineWidth(int widthInBytes, int pixelsPerAddr)
+{
+	// TODO: Replace BEL_ST_SetLineWidth with function accepting half width instead?
+	widthInBytes &= ~1; // Based on the way the EGA/VGA's CRTC "offset" register was used
+	g_sdlDoRefreshGfxOutput |= (g_sdlPixLineWidth != pixelsPerAddr*widthInBytes);
+	g_sdlPixLineWidth = pixelsPerAddr*widthInBytes;
+}
+
 void BE_ST_EGASetLineWidth(uint8_t widthInBytes)
 {
-	// TODO: Replace BE_ST_EGASetLineWidth with function accepting half width instead?
-	widthInBytes &= ~1; // Based on the way the EGA/VGA's CRTC "offset" register was used
-	g_sdlDoRefreshGfxOutput |= (g_sdlPixLineWidth != 8*widthInBytes);
-	g_sdlPixLineWidth = 8*widthInBytes;
+	BEL_ST_SetLineWidth(widthInBytes, 8);
 }
 
 void BE_ST_EGASetSplitScreen(int16_t linenum)
