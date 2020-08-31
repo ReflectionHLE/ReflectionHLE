@@ -2456,6 +2456,8 @@ void BE_ST_EGASetPelPanning(uint8_t panning)
 
 void BE_ST_EGASetLineWidth(uint8_t widthInBytes)
 {
+	// TODO: Replace BE_ST_EGASetLineWidth with function accepting half width instead?
+	widthInBytes &= ~1; // Based on the way the EGA/VGA's CRTC "offset" register was used
 	g_sdlDoRefreshGfxOutput |= (g_sdlPixLineWidth != 8*widthInBytes);
 	g_sdlPixLineWidth = 8*widthInBytes;
 }
