@@ -1033,11 +1033,11 @@ void FinishSignon (void)
 #ifndef SPEAR
 	// *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	VW_Bar (0,185,320,15,peekb(0xa000,0));
+	VW_Bar (0,185,320,15,BE_ST_VGAFetchGFXByteFromPlane(0,0));
 #elif (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	VW_Bar (0,185,300,15,peekb(0xa000,0));
+	VW_Bar (0,185,300,15,BE_ST_VGAFetchGFXByteFromPlane(0,0));
 #else
-	VW_Bar (0,189,300,11,peekb(0xa000,0));
+	VW_Bar (0,189,300,11,BE_ST_VGAFetchGFXByteFromPlane(0,0));
 #endif
 	WindowX = 0;
 	WindowW = 320;
@@ -1065,11 +1065,11 @@ void FinishSignon (void)
 	#ifndef JAPAN
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	VW_Bar (0,185,320,15,peekb(0xa000,0));
+	VW_Bar (0,185,320,15,BE_ST_VGAFetchGFXByteFromPlane(0,0));
 
 	PrintY = 188;
 #else
-	VW_Bar (0,189,300,11,peekb(0xa000,0));
+	VW_Bar (0,189,300,11,BE_ST_VGAFetchGFXByteFromPlane(0,0));
 
 	PrintY = 190;
 #endif
