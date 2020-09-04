@@ -2397,3 +2397,18 @@ id0_long_t GetRandomTableSum (void)
 	return result;
 }
 #endif
+
+// (REFKEEN) Used for loading data from DOS EXE (instead of hardcoding)
+id0_byte_t *gamepal;
+id0_char_t *signon;
+
+
+void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void)
+{
+	id0_longword_t unusedsize;
+
+	if (!(gamepal = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("GAMEPAL.BIN", &unusedsize)) ||
+	    !(signon = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("SIGNON.BIN", &unusedsize)))
+		// Don't use quit, yet
+		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_wolf3d_exe - Failed to load\nat least one file.");
+}
