@@ -2385,7 +2385,8 @@ void wolf3d_exe_main (void)
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - Some unused function
-#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+#if 0 // REFKEEN: Just ignore it
+//#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 id0_long_t GetRandomTableSum (void)
 {
 	extern id0_far id0_byte_t rndtable[];
