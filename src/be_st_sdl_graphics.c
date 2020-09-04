@@ -2727,10 +2727,23 @@ void BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(uint16_t destOff, uint8_t color, uint8
 	g_sdlDoRefreshGfxOutput = true;
 }
 
+void BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(uint16_t destOff, uint8_t color, uint8_t bitsMask)
+{
+	bitsMask &= 0xF; // TODO add assert instead?
+	g_sdlVidMem.vgaGfx[destOff] = (g_sdlVidMem.vgaGfx[destOff] & ~g_be_st_lookup_vgaplane_bitsmask[bitsMask]) | (g_be_st_lookup_vgaplane_repeat[color] & g_be_st_lookup_vgaplane_bitsmask[bitsMask]);
+	g_sdlDoRefreshGfxOutput = true;
+}
+
 void BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(uint16_t destOff, uint8_t color, uint16_t count)
 {
 	color &= 0xF; // We may get a larger value in The Catacombs Armageddon (sky color)
 	BEL_ST_EGAVGAPlane_MemSet(destOff, color, count, 8);
+	g_sdlDoRefreshGfxOutput = true;
+}
+
+void BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(uint16_t destOff, uint8_t color, uint16_t count)
+{
+	BEL_ST_EGAVGAPlane_MemSet(destOff, color, count, 4);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
