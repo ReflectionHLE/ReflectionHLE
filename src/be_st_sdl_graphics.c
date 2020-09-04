@@ -2643,17 +2643,18 @@ static void BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(
 }
 
 // A similar analogue of memset
-static void BEL_ST_EGAPlane_MemSet(uint64_t *planeDstPtr, uint16_t planeDstOff, uint8_t value, uint16_t num)
+static void BEL_ST_EGAVGAPlane_MemSet(uint16_t planeDstOff, uint8_t value, uint16_t num, int pixelsPerAddr)
 {
+	uint8_t *vidMemPtr = g_sdlVidMem.vgaGfx;
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
 	{
-		memset(planeDstPtr+planeDstOff, value, 8*num);
+		memset(vidMemPtr + pixelsPerAddr*planeDstOff, value, pixelsPerAddr*num);
 	}
 	else
 	{
-		memset(planeDstPtr+planeDstOff, value, 8*bytesToEnd);
-		memset(planeDstPtr, value, 8*(num-bytesToEnd));
+		memset(vidMemPtr + pixelsPerAddr*planeDstOff, value, pixelsPerAddr*bytesToEnd);
+		memset(vidMemPtr, value, pixelsPerAddr*(num-bytesToEnd));
 	}
 	g_sdlDoRefreshGfxOutput = true;
 }
@@ -2728,7 +2729,7 @@ void BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(uint16_t destOff, uint8_t color, uint8
 void BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(uint16_t destOff, uint8_t color, uint16_t count)
 {
 	color &= 0xF; // We may get a larger value in The Catacombs Armageddon (sky color)
-	BEL_ST_EGAPlane_MemSet(g_sdlVidMem.egaGfx, destOff, color, count);
+	BEL_ST_EGAVGAPlane_MemSet(destOff, color, count, 8);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
