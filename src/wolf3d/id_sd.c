@@ -393,7 +393,8 @@ SDL_SetTimerSpeed(void)
 
 	if (rate != TimerRate)
 	{
-		setvect(8,UseFastService ? SDL_t0FastAsmService : SDL_t0SlowAsmService);
+		BE_ST_StartAudioAndTimerInt(UseFastService ? SDL_t0FastAsmService : SDL_t0SlowAsmService);
+		//setvect(8,UseFastService ? SDL_t0FastAsmService : SDL_t0SlowAsmService);
 		SDL_SetIntsPerSec(rate);
 		TimerRate = rate;
 	}
@@ -427,7 +428,8 @@ SDL_SetTimerSpeed(void)
 
 	if (rate != TimerRate)
 	{
-		setvect(8,isr);
+		BE_ST_StartAudioAndTimerInt(isr);
+		//setvect(8,isr);
 		SDL_SetIntsPerSec(rate);
 		TimerRate = rate;
 	}
