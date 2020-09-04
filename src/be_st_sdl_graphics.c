@@ -85,7 +85,8 @@ extern const uint8_t g_vga_8x16TextFont[256*8*16];
 // (well, not on change between modes 0xD and 0xE, both sharing planar A000:0000)
 static union {
 	uint64_t egaGfx[0x10000]; // Contents of A000:0000, de-planed (1 byte per pixel)
-	uint8_t vgaGfx[0x40000]; // Same but for 256-colors. Similarly linear.
+	uint32_t vgaGfx[0x10000]; // Same but for 256-colors. Similarly linear.
+	uint8_t gfxByByte[0x80000]; // Same graphics data, accessible per byte.
 	uint8_t text[TXT_COLS_NUM*TXT_ROWS_NUM*2]; // Textual contents of B800:0000
 } g_sdlVidMem;
 
@@ -2498,7 +2499,7 @@ void BE_ST_EGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t pl
 
 void BE_ST_VGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t planeNum)
 {
-	g_sdlVidMem.vgaGfx[4*destOff + planeNum] = srcVal;
+	g_sdlVidMem.gfxByByte[4*destOff + planeNum] = srcVal;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -2526,7 +2527,7 @@ static void BEL_ST_LinearToEGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t 
 
 static void BEL_ST_LinearToVGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num, uint16_t planeNum)
 {
-	uint8_t *planeDstPtr = &g_sdlVidMem.vgaGfx[4*planeDstOff + planeNum];
+	uint8_t *planeDstPtr = &g_sdlVidMem.gfxByByte[4*planeDstOff + planeNum];
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
 	{
@@ -2537,7 +2538,7 @@ static void BEL_ST_LinearToVGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t 
 	{
 		for (int i = 0; i < bytesToEnd; ++i, planeDstPtr += 4, ++linearSrc)
 			*planeDstPtr = *linearSrc;
-		planeDstPtr = &g_sdlVidMem.vgaGfx[planeNum];
+		planeDstPtr = &g_sdlVidMem.gfxByByte[planeNum];
 		for (int i = 0; i < num-bytesToEnd; ++i, planeDstPtr += 4, ++linearSrc)
 			*planeDstPtr = *linearSrc;
 	}
@@ -2570,7 +2571,7 @@ static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, uint16_t planeSr
 static void BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(
 	uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num, int pixelsPerAddr)
 {
-	uint8_t *vidMemPtr = g_sdlVidMem.vgaGfx;
+	uint8_t *vidMemPtr = g_sdlVidMem.gfxByByte;
 	uint16_t srcBytesToEnd = 0x10000-planeSrcOff;
 	uint16_t dstBytesToEnd = 0x10000-planeDstOff;
 	if (num <= srcBytesToEnd)
@@ -2645,7 +2646,7 @@ static void BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(
 // A similar analogue of memset
 static void BEL_ST_EGAVGAPlane_MemSet(uint16_t planeDstOff, uint8_t value, uint16_t num, int pixelsPerAddr)
 {
-	uint8_t *vidMemPtr = g_sdlVidMem.vgaGfx;
+	uint8_t *vidMemPtr = g_sdlVidMem.gfxByByte;
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
 	{
@@ -2711,7 +2712,7 @@ uint8_t BE_ST_EGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum)
 
 uint8_t BE_ST_VGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum)
 {
-	return g_sdlVidMem.vgaGfx[4*destOff + planeNum];
+	return g_sdlVidMem.gfxByByte[4*destOff + planeNum];
 }
 
 void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planeNum)
