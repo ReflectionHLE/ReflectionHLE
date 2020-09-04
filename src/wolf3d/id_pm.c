@@ -539,6 +539,7 @@ PML_ShutdownMainMem(void)
 		if (*p)
 			MM_FreePtr(p);
 }
+#endif // !REFKEEN_SIMPLIFIED
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -561,7 +562,6 @@ PML_ReadFromFile(id0_byte_t id0_far *buf,id0_long_t offset,id0_word_t length)
 	if (!CA_FarRead(PageFile,buf,length))
 		Quit("PML_ReadFromFile: Read failed");
 }
-#endif // !REFKEEN_SIMPLIFIED
 
 //
 //	PML_OpenPageFile() - Opens the page file and sets up the page info
@@ -1416,7 +1416,7 @@ PM_Reset(void)
 #if REFKEEN_SIMPLIFIED
 void PM_NextFrame(void) {}
 void PM_SetPageLock(id0_int_t pagenum,PMLockType lock) {}
-void PM_CheckMainMein(void) {}
+void PM_CheckMainMem(void) {}
 void PM_SetMainMemPurge(id0_int_t level) {}
 
 memptr
