@@ -303,7 +303,7 @@ id0_unsigned_t unusedscalevar1, unusedscalevar2, unusedscalevar3, unusedscalevar
 id0_byte_t	mask1,mask2,mask3;
 
 
-void near ScaleLine (void)
+void id0_near ScaleLine (void)
 {
 asm	mov	cx,WORD PTR [linescale+2]
 asm	mov	es,cx						// segment of scaler

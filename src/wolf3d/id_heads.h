@@ -159,6 +159,7 @@ typedef	struct
 #endif
 
 // REFKEEN - Used for documentation
+#define id0_near
 #define id0_far
 #define id0_huge
 #define id0_seg

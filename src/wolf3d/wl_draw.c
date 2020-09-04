@@ -475,7 +475,7 @@ id0_long_t		postsource;
 id0_unsigned_t	postx;
 id0_unsigned_t	postwidth;
 
-void	near ScalePost (void)		// VGA version
+void	id0_near ScalePost (void)		// VGA version
 {
 	asm	mov	ax,SCREENSEG
 	asm	mov	es,ax
