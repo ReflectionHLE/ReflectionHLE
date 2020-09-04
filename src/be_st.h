@@ -352,6 +352,7 @@ void BE_ST_textcolor(int color);
 void BE_ST_textbackground(int color);
 void BE_ST_clrscr(void);
 void BE_ST_MoveTextCursorTo(int x, int y);
+static inline void BE_ST_gotoxy(int x, int y) { BE_ST_MoveTextCursorTo(x-1, y-1); }
 void BE_ST_ToggleTextCursor(bool isEnabled);
 // Replacements for functions that print to (emulated) text mode memory
 // (Note: Probably just partially implemented)
