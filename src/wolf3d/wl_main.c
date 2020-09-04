@@ -1002,6 +1002,11 @@ void SignonScreen (void)                        // VGA version
 //
 // reclaim the memory from the linked in signon screen
 //
+	// REFKEEN DIFFERENCE (FIXME: Should we "fix" this at all?)
+	// - Don't handle this, a bit more complicated with our setup and the
+	// difference is (probably) insignificant with well-defined behaviors
+	// anyway...
+#if 0
 	segstart = FP_SEG(&introscn);
 	seglength = 64000/16;
 	if (FP_OFF(&introscn))
@@ -1010,6 +1015,7 @@ void SignonScreen (void)                        // VGA version
 		seglength--;
 	}
 	MML_UseSpace (segstart,seglength);
+#endif
 }
 
 
