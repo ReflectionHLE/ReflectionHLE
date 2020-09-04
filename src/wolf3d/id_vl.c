@@ -106,7 +106,7 @@ void	VL_Startup (void)
 {
 	id0_int_t i,videocard;
 
-	asm	cld;
+//	asm	cld;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	BE_ST_printf("VL_Startup: ");
@@ -168,8 +168,7 @@ void	VL_SetVGAPlaneMode (void)
 		return;
 	VGAMode = true;
 #endif
-asm	mov	ax,0x13
-asm	int	0x10
+	BE_ST_SetScreenMode (0x13);
 	VL_DePlaneVGA ();
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
@@ -195,8 +194,7 @@ void	VL_SetTextMode (void)
 		return;
 	VGAMode = false;
 #endif
-asm	mov	ax,3
-asm	int	0x10
+	BE_ST_SetScreenMode (3);
 }
 
 //===========================================================================
@@ -213,6 +211,11 @@ asm	int	0x10
 
 void VL_ClearVideo (id0_byte_t color)
 {
+	// REFKEEN TODO: Allow 0x10000 from a single call?
+	// The original assembly code was doing 0x8000 stores of a 16-bit word
+	BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(0, color, 0x8000);
+	BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(0x8000, color, 0x8000);
+#if 0
 asm	mov	dx,GC_INDEX
 asm	mov	al,GC_MODE
 asm	out	dx,al
@@ -239,6 +242,7 @@ asm	mov	ah,al
 asm	mov	cx,0x8000			// 0x8000 words, clearing 8 video bytes/word
 asm	xor	di,di
 asm	rep	stosw
+#endif
 }
 
 
@@ -262,6 +266,7 @@ asm	rep	stosw
 void VL_DePlaneVGA (void)
 {
 
+#if 0 // REFKEEN TODO: This might be redundant
 //
 // change CPU addressing to non linear mode
 //
@@ -285,12 +290,14 @@ void VL_DePlaneVGA (void)
 //
 	outportb (GC_INDEX,GC_MISCELLANEOUS);
 	outportb (GC_INDEX+1,inportb(GC_INDEX+1)&~2);
+#endif
 
 //
 // clear the entire buffer space, because int 10h only did 16 k / plane
 //
 	VL_ClearVideo (0);
 
+#if 0 // REFKEEN TODO: This might be redundant
 //
 // change CRTC scanning from doubleword to byte mode, allowing >64k scans
 //
@@ -299,6 +306,7 @@ void VL_DePlaneVGA (void)
 
 	outportb (CRTC_INDEX,CRTC_MODE);
 	outportb (CRTC_INDEX+1,inportb(CRTC_INDEX+1)|0x40);
+#endif
 }
 
 //===========================================================================
@@ -320,7 +328,7 @@ void VL_SetLineWidth (id0_unsigned_t width)
 //
 // set wide virtual screen
 //
-	outport (CRTC_INDEX,CRTC_OFFSET+width*256);
+	BE_ST_VGASetLineWidth(width*2);
 
 //
 // set up lookup tables
@@ -348,12 +356,16 @@ void VL_SetSplitScreen (id0_int_t linenum)
 {
 	VL_WaitVBL (1);
 	linenum=linenum*2-1;
+	// Bit 9 of the VGA's "Line Compare" field was originally cleared
+	BE_ST_EGASetSplitScreen(linenum & ~512);
+#if 0
 	outportb (CRTC_INDEX,CRTC_LINECOMPARE);
 	outportb (CRTC_INDEX+1,linenum % 256);
 	outportb (CRTC_INDEX,CRTC_OVERFLOW);
 	outportb (CRTC_INDEX+1, 1+16*(linenum/256));
 	outportb (CRTC_INDEX,CRTC_MAXSCANLINE);
 	outportb (CRTC_INDEX+1,inportb(CRTC_INDEX+1) & (255-64));
+#endif
 }
 
 
@@ -378,6 +390,8 @@ void VL_SetSplitScreen (id0_int_t linenum)
 
 void VL_FillPalette (id0_int_t red, id0_int_t green, id0_int_t blue)
 {
+	BE_ST_VGAFillPalette (red, green, blue, 0, 255);
+#if 0
 	id0_int_t	i;
 
 	outportb (PEL_WRITE_ADR,0);
@@ -387,6 +401,7 @@ void VL_FillPalette (id0_int_t red, id0_int_t green, id0_int_t blue)
 		outportb (PEL_DATA,green);
 		outportb (PEL_DATA,blue);
 	}
+#endif
 }
 
 //===========================================================================
@@ -401,10 +416,13 @@ void VL_FillPalette (id0_int_t red, id0_int_t green, id0_int_t blue)
 
 void VL_SetColor	(id0_int_t color, id0_int_t red, id0_int_t green, id0_int_t blue)
 {
+	BE_ST_VGASetPaletteColor (red, green, blue, color);
+#if 0
 	outportb (PEL_WRITE_ADR,color);
 	outportb (PEL_DATA,red);
 	outportb (PEL_DATA,green);
 	outportb (PEL_DATA,blue);
+#endif
 }
 
 //===========================================================================
@@ -419,10 +437,17 @@ void VL_SetColor	(id0_int_t color, id0_int_t red, id0_int_t green, id0_int_t blu
 
 void VL_GetColor	(id0_int_t color, id0_int_t *red, id0_int_t *green, id0_int_t *blue)
 {
+	id0_byte_t or, og, ob;
+	BE_ST_VGAGetPaletteColor (&or, &og, &ob, color);
+	*red = or;
+	*green = og;
+	*blue = ob;
+#if 0
 	outportb (PEL_READ_ADR,color);
 	*red = inportb (PEL_DATA);
 	*green = inportb (PEL_DATA);
 	*blue = inportb (PEL_DATA);
+#endif
 }
 
 //===========================================================================
@@ -440,6 +465,8 @@ void VL_GetColor	(id0_int_t color, id0_int_t *red, id0_int_t *green, id0_int_t *
 
 void VL_SetPalette (id0_byte_t id0_far *palette)
 {
+	BE_ST_VGASetPalette (palette);
+#if 0
 	id0_int_t	i;
 
 //	outportb (PEL_WRITE_ADR,0);
@@ -478,6 +505,7 @@ setloop:
 done:
 	asm	mov	ax,ss
 	asm	mov	ds,ax
+#endif
 
 }
 
@@ -497,11 +525,14 @@ done:
 
 void VL_GetPalette (id0_byte_t id0_far *palette)
 {
+	BE_ST_VGAGetPalette (palette);
+#if 0
 	id0_int_t	i;
 
 	outportb (PEL_READ_ADR,0);
 	for (i=0;i<768;i++)
 		*palette++ = inportb(PEL_DATA);
+#endif
 }
 
 
@@ -644,10 +675,7 @@ void VL_TestPaletteSet (void)
 
 void VL_ColorBorder (id0_int_t color)
 {
-	_AH=0x10;
-	_AL=1;
-	_BH=color;
-	geninterrupt (0x10);
+	BE_ST_SetBorderColor(color);
 	bordercolor = color;
 }
 
@@ -676,12 +704,15 @@ id0_byte_t	rightmasks[4] = {1,3,7,15};
 
 void VL_Plot (id0_int_t x, id0_int_t y, id0_int_t color)
 {
+	BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(bufferofs+(ylookup[y]+(x>>2)), color, pixmasks[x&3]);
+#if 0
 	id0_byte_t mask;
 
 	mask = pixmasks[x&3];
 	VGAMAPMASK(mask);
 	*(id0_byte_t id0_far *)MK_FP(SCREENSEG,bufferofs+(ylookup[y]+(x>>2))) = color;
 	VGAMAPMASK(15);
+#endif
 }
 
 
@@ -701,7 +732,8 @@ void VL_Hlin (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsi
 #endif
 {
 	id0_unsigned_t		xbyte;
-	id0_byte_t			id0_far *dest;
+	id0_unsigned_t		destoff;
+//	id0_byte_t			id0_far *dest;
 	id0_byte_t			leftmask,rightmask;
 	id0_int_t				midbytes;
 
@@ -716,17 +748,26 @@ void VL_Hlin (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsi
 	midbytes = ((x+width+3)>>2) - xbyte - 2;
 #endif
 
-	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+xbyte);
+	destoff = bufferofs+ylookup[y]+xbyte;
+//	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+xbyte);
 
 	if (midbytes<0)
 	{
 	// all in one byte
+		BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(destoff, color, leftmask&rightmask);
+#if 0
 		VGAMAPMASK(leftmask&rightmask);
 		*dest = color;
 		VGAMAPMASK(15);
+#endif
 		return;
 	}
 
+	BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(destoff++, color, leftmask);
+	BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destoff, color, midbytes);
+	destoff += midbytes;
+	BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(destoff, color, rightmask);
+#if 0
 	VGAMAPMASK(leftmask);
 	*dest++ = color;
 
@@ -738,6 +779,7 @@ void VL_Hlin (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsi
 	*dest = color;
 
 	VGAMAPMASK(15);
+#endif
 }
 
 
@@ -751,17 +793,26 @@ void VL_Hlin (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t width, id0_unsi
 
 void VL_Vlin (id0_int_t x, id0_int_t y, id0_int_t height, id0_int_t color)
 {
-	id0_byte_t	id0_far *dest,mask;
+	id0_byte_t	/*id0_far *dest,*/mask;
+	id0_unsigned_t	destoff;
 
 	mask = pixmasks[x&3];
+
+	destoff = bufferofs+ylookup[y]+(x>>2);
+#if 0
 	VGAMAPMASK(mask);
 
 	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+(x>>2));
+#endif
 
 	while (height--)
 	{
+		BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(destoff, color, mask);
+		destoff += linewidth;
+#if 0
 		*dest = color;
 		dest += linewidth;
+#endif
 	}
 
 	VGAMAPMASK(15);
@@ -778,7 +829,8 @@ void VL_Vlin (id0_int_t x, id0_int_t y, id0_int_t height, id0_int_t color)
 
 void VL_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_int_t color)
 {
-	id0_byte_t	id0_far *dest;
+	id0_unsigned_t	destoff;
+//	id0_byte_t	id0_far *dest;
 	id0_byte_t	leftmask,rightmask;
 	id0_int_t		midbytes,linedelta;
 
@@ -787,11 +839,18 @@ void VL_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_in
 	midbytes = ((x+width+3)>>2) - (x>>2) - 2;
 	linedelta = linewidth-(midbytes+1);
 
-	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+(x>>2));
+	destoff = bufferofs+ylookup[y]+(x>>2);
+//	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+(x>>2));
 
 	if (midbytes<0)
 	{
 	// all in one byte
+		while (height--)
+		{
+			BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(destoff, color, leftmask&rightmask);
+			destoff += linewidth;
+		}
+#if 0
 		VGAMAPMASK(leftmask&rightmask);
 		while (height--)
 		{
@@ -799,11 +858,18 @@ void VL_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_in
 			dest += linewidth;
 		}
 		VGAMAPMASK(15);
+#endif
 		return;
 	}
 
 	while (height--)
 	{
+		BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(destoff++, color, leftmask);
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destoff, color, midbytes);
+		destoff += midbytes;
+		BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(destoff, color, rightmask);
+		destoff += linedelta;
+#if 0
 		VGAMAPMASK(leftmask);
 		*dest++ = color;
 
@@ -815,6 +881,7 @@ void VL_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_in
 		*dest = color;
 
 		dest+=linedelta;
+#endif
 	}
 
 	VGAMAPMASK(15);
@@ -839,12 +906,14 @@ void VL_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_in
 void VL_MemToLatch (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_unsigned_t dest)
 {
 	id0_unsigned_t	count;
-	id0_byte_t	plane,mask;
+	id0_byte_t	plane/*,mask*/;
 
 	count = ((width+3)/4)*height;
-	mask = 1;
+//	mask = 1;
 	for (plane = 0; plane<4 ; plane++)
 	{
+		BE_ST_VGAUpdateGFXBufferInPlane(dest, source, count, plane);
+#if 0
 		VGAMAPMASK(mask);
 		mask <<= 1;
 
@@ -856,6 +925,7 @@ asm	lds	si,[source]
 asm	rep movsb
 asm mov	ax,ss
 asm	mov	ds,ax
+#endif
 
 		source+= count;
 	}
@@ -877,10 +947,18 @@ asm	mov	ds,ax
 
 void VL_MemToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y)
 {
-	id0_byte_t    id0_far *screen,id0_far *dest,mask;
+	id0_unsigned_t		screenoff,destoff;
+//	id0_byte_t    id0_far *screen,id0_far *dest,mask;
 	id0_int_t		plane;
 
 	width>>=2;
+	destoff = bufferofs+ylookup[y]+(x>>2);
+
+	for (plane = 0; plane<4; plane++)
+		for (y=0, screenoff = destoff;
+		     y < height; y++, screenoff += linewidth, source += width)
+			BE_ST_VGAUpdateGFXBufferInPlane(screenoff, source, width, plane);
+#if 0
 	dest = MK_FP(SCREENSEG,bufferofs+ylookup[y]+(x>>2) );
 	mask = 1 << (x&3);
 
@@ -895,6 +973,7 @@ void VL_MemToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t heig
 		for (y=0;y<height;y++,screen+=linewidth,source+=width)
 			_fmemcpy (screen,source,width);
 	}
+#endif
 }
 
 //==========================================================================
@@ -912,6 +991,9 @@ void VL_MemToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t heig
 
 void VL_MaskedToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y)
 {
+	// REFKEEN: Looks like a clone of VL_MemToScreen
+	VL_MemToScreen (source, width, height, x, y);
+#if 0
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	id0_byte_t    id0_far *screen,id0_far *maskptr,id0_far *dest,mask;
@@ -943,6 +1025,7 @@ void VL_MaskedToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t h
 		for (y=0;y<height;y++,screen+=linewidth,source+=width)
 			_fmemcpy (screen,source,width);
 	}
+#endif
 }
 
 //==========================================================================
@@ -957,6 +1040,11 @@ void VL_MaskedToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t h
 
 void VL_LatchToScreen (id0_unsigned_t source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y)
 {
+	id0_unsigned_t destOff = ((id0_unsigned_t)x>>2)+ylookup[y]+bufferofs;
+	id0_unsigned_t srcOff = source;
+	for (id0_unsigned_t i = height; i; --i, destOff += linewidth, srcOff += width)
+		BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(destOff, srcOff, width);
+#if 0
 	VGAWRITEMODE(1);
 	VGAMAPMASK(15);
 
@@ -988,6 +1076,7 @@ asm	mov	ax,ss
 asm	mov	ds,ax
 
 	VGAWRITEMODE(0);
+#endif
 }
 
 
@@ -1044,7 +1133,7 @@ asm	mov	ds,ax
 */
 
 
-
+#if 0 // REFKEEN: Unused functions
 
 /*
 ===================
@@ -1171,7 +1260,7 @@ void VL_SizeTile8String (id0_char_t *str, id0_int_t *width, id0_int_t *height)
 	*width = 8*strlen(str);
 }
 
-
+#endif // REFKEEN: Unused functions
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
