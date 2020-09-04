@@ -555,7 +555,8 @@ void VL_FadeOut (id0_int_t start, id0_int_t end, id0_int_t red, id0_int_t green,
 
 	VL_WaitVBL(1);
 	VL_GetPalette (&palette1[0][0]);
-	_fmemcpy (palette2,palette1,768);
+	memcpy (palette2,palette1,768);
+//	_fmemcpy (palette2,palette1,768);
 
 //
 // fade through intermediate frames
@@ -607,7 +608,8 @@ void VL_FadeIn (id0_int_t start, id0_int_t end, id0_byte_t id0_far *palette, id0
 
 	VL_WaitVBL(1);
 	VL_GetPalette (&palette1[0][0]);
-	_fmemcpy (&palette2[0][0],&palette1[0][0],sizeof(palette1));
+	memcpy (&palette2[0][0],&palette1[0][0],sizeof(palette1));
+//	_fmemcpy (&palette2[0][0],&palette1[0][0],sizeof(palette1));
 
 	start *= 3;
 	end = end*3+2;
@@ -660,7 +662,8 @@ void VL_TestPaletteSet (void)
 	fastpalette = true;
 	VL_SetPalette (&palette1[0][0]);
 	VL_GetPalette (&palette2[0][0]);
-	if (_fmemcmp (&palette1[0][0],&palette2[0][0],768))
+	if (memcmp (&palette1[0][0],&palette2[0][0],768))
+//	if (_fmemcmp (&palette1[0][0],&palette2[0][0],768))
 		fastpalette = false;
 }
 

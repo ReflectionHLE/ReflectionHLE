@@ -4538,7 +4538,8 @@ void Message(id0_char_t GAMEVER_COND_FARPTR *string)
 	font=grsegs[STARTFONT+fontnumber];
 	h=font->height;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+#if 1 // REFKEEN: Just use strlen
+//#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	for (i=0;i<strlen(string);i++)
 #else
 	for (i=0;i<_fstrlen(string);i++)

@@ -1766,7 +1766,8 @@ SDL_SetupDigi(void)
 	MM_GetPtr(&list,PMPageSize);
 	PM_CheckMainMem();
 	p = (id0_word_t id0_far *)MK_FP(PM_GetPage(ChunksInFile - 1),0);
-	_fmemcpy((void id0_far *)list,(void id0_far *)p,PMPageSize);
+	memcpy((void id0_far *)list,(void id0_far *)p,PMPageSize);
+//	_fmemcpy((void id0_far *)list,(void id0_far *)p,PMPageSize);
 	pg = PMSoundStart;
 	for (i = 0;i < PMPageSize / (sizeof(id0_word_t) * 2);i++,p += 2)
 	{
@@ -1776,7 +1777,8 @@ SDL_SetupDigi(void)
 	}
 	PM_UnlockMainMem();
 	MM_GetPtr((memptr *)&DigiList,i * sizeof(id0_word_t) * 2);
-	_fmemcpy((void id0_far *)DigiList,(void id0_far *)list,i * sizeof(id0_word_t) * 2);
+	memcpy((void id0_far *)DigiList,(void id0_far *)list,i * sizeof(id0_word_t) * 2);
+//	_fmemcpy((void id0_far *)DigiList,(void id0_far *)list,i * sizeof(id0_word_t) * 2);
 	MM_FreePtr(&list);
 	NumDigi = i;
 
@@ -3550,7 +3552,8 @@ SD_StartMusic(MusicGroup id0_far *music)
 
 	seqPtr = music->values;
 	seqLength = music->length;
-	if (_fstrncmp(seqPtr,"MThd",4))
+	if (strncmp(seqPtr,"MThd",4))
+//	if (_fstrncmp(seqPtr,"MThd",4))
 		Quit("SD_StartMusic: MIDI header expected!\n");
 
 	i = fixword(((id0_word_t id0_far *)seqPtr)[4]);
@@ -3567,7 +3570,8 @@ SD_StartMusic(MusicGroup id0_far *music)
 	}
 
 	seqPtr += fixlongword(((id0_longword_t id0_far *)seqPtr)[1]) + 8;
-	if (_fstrncmp(seqPtr,"MTrk",4))
+	if (strncmp(seqPtr,"MTrk",4))
+//	if (_fstrncmp(seqPtr,"MTrk",4))
 		Quit("SD_StartMusic: MIDI track header expected!\n");
 
 	seqLength = fixlongword(((id0_longword_t id0_far *)seqPtr)[1]);

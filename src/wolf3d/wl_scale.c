@@ -273,7 +273,8 @@ id0_unsigned_t BuildCompScale (id0_int_t height, memptr *finalspot)
 
 	totalsize = FP_OFF(code);
 	MM_GetPtr (finalspot,totalsize);
-	_fmemcpy ((id0_byte_t id0_seg *)(*finalspot),(id0_byte_t id0_seg *)work,totalsize);
+	memcpy ((id0_byte_t id0_seg *)(*finalspot),(id0_byte_t id0_seg *)work,totalsize);
+//	_fmemcpy ((id0_byte_t id0_seg *)(*finalspot),(id0_byte_t id0_seg *)work,totalsize);
 
 	return totalsize;
 }

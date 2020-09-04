@@ -1108,7 +1108,8 @@ id0_boolean_t MS_CheckParm (id0_char_t id0_far *check)
 			if (!*parm++)
 				break;                          // hit end of string without an alphanum
 
-		if ( !_fstricmp(check,parm) )
+		if (BE_Cross_strcasecmp(check,parm))
+//		if ( !_fstricmp(check,parm) )
 			return true;
 	}
 

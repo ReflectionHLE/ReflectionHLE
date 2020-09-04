@@ -91,6 +91,7 @@
 #define GAMEVER_WOLF3D_DEBUGPARM "goobers"
 #endif
 #define GAMEVER_COND_FARPTR id0_far
-#define GAMEVER_COND_FSTRCPY _fstrcpy
+#define GAMEVER_COND_FSTRCPY strcpy // REFKEEN: Just use strcpy
+//#define GAMEVER_COND_FSTRCPY _fstrcpy
 
 #endif

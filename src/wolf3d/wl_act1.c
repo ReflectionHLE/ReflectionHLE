@@ -488,7 +488,8 @@ void InitDoorList (void)
 	memset (areabyplayer,0,sizeof(areabyplayer));
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	_fmemset (areaconnect,0,sizeof(areaconnect));
+	memset (areaconnect,0,sizeof(areaconnect));
+//	_fmemset (areaconnect,0,sizeof(areaconnect));
 #endif
 
 	lastdoorobj = &doorobjlist[0];
