@@ -190,6 +190,34 @@ void AsmRefresh (void);			// in WL_DR_A.ASM
 
 fixed FixedByFrac (fixed a, fixed b)
 {
+	int result_sign = (b < 0) ? -1 : 1; // sign of result == sign of fraction
+	id0_longword_t a_as_unsigned = a;
+	if (a < 0) // negative?
+	{
+		//2's complement...
+		a_as_unsigned = -a;
+		//a_as_unsigned ^= -1;
+		//++a_as_unsigned;
+		result_sign *= -1; // toggle sign of result
+	}
+	//
+	// Multiply a_as_unsigned by the low 8 bits of b
+	//
+	id0_word_t b_lo = b&0xFFFF;
+	id0_longword_t result = b_lo*(a_as_unsigned>>16) + ((b_lo*(a_as_unsigned&0xFFFF))>>16);
+	//id0_longword_t result = b_lo*(a_as_unsigned>>16) + b_lo*(a_as_unsigned&0xFFFF);
+	//
+	// put result in 2's complement
+	//
+	if (result_sign < 0) // Is the result negative?
+	{
+		//2's complement...
+		result = -result;
+		//result ^= -1;
+		//++result;
+	}
+	return result;
+#if 0
 //
 // setup
 //
@@ -227,7 +255,7 @@ asm	neg	ax
 asm	sbb	dx,0
 
 ansok:;
-
+#endif
 }
 
 //#pragma warn +rvl
