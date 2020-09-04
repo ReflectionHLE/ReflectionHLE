@@ -242,7 +242,7 @@ void PicturePause (void)
 	IN_Shutdown ();
 
 	VW_WaitVBL(70);
-	bioskey(0);
+	BE_ST_BiosScanCode(0);
 	VW_WaitVBL(70);
 	Quit (NULL);
 }
