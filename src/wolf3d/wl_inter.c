@@ -2703,7 +2703,7 @@ void CopyProtection(void)
 	geninterrupt(0x10);
 
 	BE_ST_printf("%s\n",message);
-	exit(1);
+	BE_ST_HandleExit(1);
 }
 
 #endif // SPEARDEMO

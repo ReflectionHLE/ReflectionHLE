@@ -1586,8 +1586,8 @@ void InitGame (void)
 #else
 		movedata ((id0_unsigned_t)screen,7+7*160,0xb800,0,17*160);
 #endif
-		gotoxy (1,23);
-		exit(1);
+		BE_ST_gotoxy (1,23);
+		BE_ST_HandleExit(1);
 	}
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
@@ -1875,7 +1875,7 @@ void Quit (id0_char_t *error)
 #ifdef GAMEVER_NOAH3D
  if (CA_Started)
  {
-	clrscr();
+	BE_ST_clrscr();
 #endif
 	if (error && *error)
 	{
@@ -1887,14 +1887,14 @@ void Quit (id0_char_t *error)
 #else
 	  movedata ((id0_unsigned_t)screen,7,0xb800,0,7*160);
 #endif
-	  gotoxy (10,4);
+	  BE_ST_gotoxy (10,4);
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 	  BE_ST_puts(error);
 	  // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	  gotoxy (1,8);
+	  BE_ST_gotoxy (1,8);
 #endif
-	  exit(1);
+	  BE_ST_HandleExit(1);
 	}
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -1907,7 +1907,7 @@ void Quit (id0_char_t *error)
 		if (tedlevel)
 			execlp("TED5.EXE","TED5.EXE","/LAUNCH",NULL);
 #endif
-		clrscr();
+		BE_ST_clrscr();
 		// *** ACTIVISION RELEASES + ALPHA RESTORATION ***
 		// This should be commented out in the 1.4 Activision releases
 		// of Wolf3D and SOD (no copy protection), but compiled in the
@@ -1922,7 +1922,7 @@ void Quit (id0_char_t *error)
 		#else
 		movedata ((id0_unsigned_t)screen,7,0xb800,0,4000);
 		#endif
-		gotoxy(1,24);
+		BE_ST_gotoxy(1,24);
 		#endif
 //asm	mov	bh,0
 //asm	mov	dh,23	// row
@@ -1941,7 +1941,7 @@ void Quit (id0_char_t *error)
  }
 #endif
 
-	exit(0);
+	BE_ST_HandleExit(0);
 }
 
 // *** ALPHA RESTORATION ***
@@ -2339,7 +2339,7 @@ void wolf3d_exe_main (void)
 		(d.month >= MONTH && d.day >= DAY))
 	{
 	 BE_ST_printf("Sorry, BETA-TESTING is over. Thanks for you help.\n");
-	 exit(1);
+	 BE_ST_HandleExit(1);
 	}
 #endif
 
@@ -2348,7 +2348,7 @@ void wolf3d_exe_main (void)
 	VGAMode = true;
 	VL_SetTextMode();
 	FillCharAttr(' ',0x5d,80);
-	gotoxy((79-strlen(logon))/2,1);
+	BE_ST_gotoxy((79-strlen(logon))/2,1);
 	BE_ST_puts(logon);
 #endif
 
