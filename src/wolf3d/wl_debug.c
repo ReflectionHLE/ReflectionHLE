@@ -381,7 +381,8 @@ static	id0_char_t	buf[10];
 			}
 			else
 			{
-				id0_byte_t id0_far *dp = (id0_byte_t id0_far *)MK_FP(addr,0);
+				id0_byte_t id0_far *dp = addr;
+//				id0_byte_t id0_far *dp = (id0_byte_t id0_far *)MK_FP(addr,0);
 				for (j = 0;j < NumDigi;j++)
 				{
 					k = (DigiList[(j * 2) + 1] + (PMPageSize - 1)) / PMPageSize;

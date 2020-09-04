@@ -1765,8 +1765,9 @@ SDL_SetupDigi(void)
 	PM_UnlockMainMem();
 	MM_GetPtr(&list,PMPageSize);
 	PM_CheckMainMem();
-	p = (id0_word_t id0_far *)MK_FP(PM_GetPage(ChunksInFile - 1),0);
+	p = (id0_word_t *)PM_GetPage(ChunksInFile - 1);
 	memcpy((void id0_far *)list,(void id0_far *)p,PMPageSize);
+//	p = (id0_word_t id0_far *)MK_FP(PM_GetPage(ChunksInFile - 1),0);
 //	_fmemcpy((void id0_far *)list,(void id0_far *)p,PMPageSize);
 	pg = PMSoundStart;
 	for (i = 0;i < PMPageSize / (sizeof(id0_word_t) * 2);i++,p += 2)
