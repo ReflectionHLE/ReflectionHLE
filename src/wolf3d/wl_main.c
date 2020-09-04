@@ -1583,9 +1583,11 @@ void InitGame (void)
 		ShutdownId();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-		movedata ((id0_unsigned_t)screen,7+8*160,0xb800,0,15*160);
+		memcpy(BE_ST_GetTextModeMemoryPtr(), screen + 7 + 8*160, 15*160);
+//		movedata ((id0_unsigned_t)screen,7+8*160,0xb800,0,15*160);
 #else
-		movedata ((id0_unsigned_t)screen,7+7*160,0xb800,0,17*160);
+		memcpy(BE_ST_GetTextModeMemoryPtr(), screen + 7 + 7*160, 17*160);
+//		movedata ((id0_unsigned_t)screen,7+7*160,0xb800,0,17*160);
 #endif
 		BE_ST_gotoxy (1,23);
 		BE_ST_HandleExit(1);
@@ -1884,9 +1886,11 @@ void Quit (id0_char_t *error)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	  // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	  movedata ((id0_unsigned_t)screen,0,0xb800,0,7*160);
+	  memcpy(BE_ST_GetTextModeMemoryPtr(), screen, 7*160);
+//	  movedata ((id0_unsigned_t)screen,0,0xb800,0,7*160);
 #else
-	  movedata ((id0_unsigned_t)screen,7,0xb800,0,7*160);
+	  memcpy(BE_ST_GetTextModeMemoryPtr(), screen + 7, 7*160);
+//	  movedata ((id0_unsigned_t)screen,7,0xb800,0,7*160);
 #endif
 	  BE_ST_gotoxy (10,4);
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
@@ -1919,9 +1923,11 @@ void Quit (id0_char_t *error)
 		//#ifndef JAPAN
 		// *** S3DNA RESTORATION ***
 		#ifdef GAMEVER_NOAH3D
-		movedata ((id0_unsigned_t)screen,0,0xb800,0,4000);
+		memcpy(BE_ST_GetTextModeMemoryPtr(), screen + 7, 4000);
+//		movedata ((id0_unsigned_t)screen,0,0xb800,0,4000);
 		#else
-		movedata ((id0_unsigned_t)screen,7,0xb800,0,4000);
+		memcpy(BE_ST_GetTextModeMemoryPtr(), screen + 7, 4000);
+//		movedata ((id0_unsigned_t)screen,7,0xb800,0,4000);
 		#endif
 		BE_ST_gotoxy(1,24);
 		#endif
