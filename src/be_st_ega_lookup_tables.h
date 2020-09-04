@@ -5,7 +5,7 @@
 
 #include "be_cross.h"
 
-static const uint64_t g_be_st_lookup_repeat[256] = {
+static const uint64_t g_be_st_lookup_egaplane_repeat[256] = {
 	// These are endianness-independent
 	0x0000000000000000,
 	0x0101010101010101,
@@ -543,7 +543,7 @@ static uint8_t BEL_ST_Lookup_EGAPlaneToLinear(uint64_t val)
 	);
 }
 
-static const uint64_t g_be_st_lookup_bitsmask[256] = {
+static const uint64_t g_be_st_lookup_egaplane_bitsmask[256] = {
 	BE_Cross_Swap64LE(0x0000000000000000),
 	BE_Cross_Swap64LE(0xff00000000000000),
 	BE_Cross_Swap64LE(0x00ff000000000000),
