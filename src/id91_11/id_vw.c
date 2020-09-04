@@ -421,10 +421,15 @@ void VW_SetLineWidth (id0_int_t width)
 void VW_SetSplitScreen (id0_int_t linenum)
 {
 	VW_WaitVBL (1);
+	// Bit 9 of the VGA's "Line Compare" field was originally cleared,
+	// and linenum had to further be adjusted
+	if (videocard==VGAcard)
+		BE_ST_EGASetSplitScreen((linenum*2-1) & ~512);
+	else
+		BE_ST_EGASetSplitScreen(linenum);
+#if 0 
 	if (videocard==VGAcard)
 		linenum=linenum*2-1;
-	BE_ST_EGASetSplitScreen(linenum);
-#if 0 
 	outportb (CRTC_INDEX,CRTC_LINECOMPARE);
 	outportb (CRTC_INDEX+1,linenum % 256);
 	outportb (CRTC_INDEX,CRTC_OVERFLOW);
