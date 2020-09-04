@@ -330,11 +330,15 @@ void TransformActor (objtype *ob)
 //
 // calculate height (heightnumerator/(nx>>8))
 //
+	temp = (heightnumerator / ((nx>>8)&0xFFFF)) & 0xFFFF;
+	temp |= (heightnumerator % ((nx>>8)&0xFFFF)) << 16;
+#if 0
 	asm	mov	ax,[WORD PTR heightnumerator]
 	asm	mov	dx,[WORD PTR heightnumerator+2]
 	asm	idiv	[WORD PTR nx+1]			// nx>>8
 	asm	mov	[WORD PTR temp],ax
 	asm	mov	[WORD PTR temp+2],dx
+#endif
 
 	ob->viewheight = temp;
 }
@@ -403,11 +407,15 @@ id0_boolean_t TransformTile (id0_int_t tx, id0_int_t ty, id0_int_t *dispx, id0_i
 //
 // calculate height (heightnumerator/(nx>>8))
 //
+	temp = (heightnumerator / ((nx>>8)&0xFFFF)) & 0xFFFF;
+	temp |= (heightnumerator % ((nx>>8)&0xFFFF)) << 16;
+#if 0
 	asm	mov	ax,[WORD PTR heightnumerator]
 	asm	mov	dx,[WORD PTR heightnumerator+2]
 	asm	idiv	[WORD PTR nx+1]			// nx>>8
 	asm	mov	[WORD PTR temp],ax
 	asm	mov	[WORD PTR temp+2],dx
+#endif
 
 	*dispheight = temp;
 
@@ -455,9 +463,12 @@ id0_int_t	CalcHeight (void)
 	if (nx<mindist)
 		nx=mindist;			// don't let divide overflow
 
+	return (heightnumerator / ((nx>>8)&0xFFFF)) & 0xFFFF;
+#if 0
 	asm	mov	ax,[WORD PTR heightnumerator]
 	asm	mov	dx,[WORD PTR heightnumerator+2]
 	asm	idiv	[WORD PTR nx+1]			// nx>>8
+#endif
 }
 
 
@@ -477,6 +488,7 @@ id0_unsigned_t	postwidth;
 
 void	id0_near ScalePost (void)		// VGA version
 {
+#if 0	// TODO (REFKEEN) IMPLEMENT
 	asm	mov	ax,SCREENSEG
 	asm	mov	es,ax
 
@@ -533,6 +545,7 @@ heightok:
 nomore:
 	asm	mov	ax,ss
 	asm	mov	ds,ax
+#endif
 }
 
 void  FarScalePost (void)				// just so other files can call
@@ -540,6 +553,7 @@ void  FarScalePost (void)				// just so other files can call
 	ScalePost ();
 }
 
+#if 0 // TODO (REFKEEN) IMPLEMENT
 
 /*
 ====================
@@ -1036,6 +1050,7 @@ void HitVertPWall (void)
 #endif
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
+#endif // TODO (REFKEEN) IMPELMENT
 
 //==========================================================================
 
@@ -1043,7 +1058,8 @@ void HitVertPWall (void)
 
 // *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
 // Re-enable unused EGA code, *and* restore egaFloor+egaCeiling (not in alpha)
-#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+#if 0 // REFKEEN: These are unused
+//#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 id0_unsigned_t egaFloor[] = {0,0,0,0,0,0,0,0,0,5};
 id0_unsigned_t egaCeiling[] = {0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0808,0x0d0d};
@@ -1183,6 +1199,7 @@ void VGAClearScreen (void)
   //
   // clear the screen
   //
+#if 0	// TODO (REFKEEN) IMPLEMENT
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 asm	mov	dx,SC_INDEX+1
@@ -1235,6 +1252,7 @@ asm	rep	stosw
 asm	add	di,dx
 asm	dec	bh
 asm	jnz	bottomloop
+#endif	// TODO (REFKEEN) IMPLEMENT
 }
 
 //==========================================================================
@@ -1676,12 +1694,15 @@ void WallRefresh (void)
 	ypartialup = TILEGLOBAL-ypartialdown;
 
 	lastside = -1;			// the first pixel is on a new wall
+#if 0	// TODO (REFKEEN) IMPLEMENT
 	AsmRefresh ();
+#endif
 	ScalePost ();			// no more optimization on last post
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - An unused function from v1.0
-#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+#if 0 // REFKEEN: Just don't define it
+//#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 //==========================================================================
 
 id0_int_t someUnusedDrawArray[] = {
@@ -1728,12 +1749,15 @@ void	ThreeDRefresh (void)
 //
 // clear out the traced array
 //
+	memset(spotvis, 0, 64*64);
+#if 0
 asm	mov	ax,ds
 asm	mov	es,ax
 asm	mov	di,OFFSET spotvis
 asm	xor	ax,ax
 asm	mov	cx,2048							// 64*64 / 2
 asm	rep stosw
+#endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
@@ -1802,6 +1826,16 @@ asm	rep stosw
 	displayofs = bufferofs;
 #endif
 
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+	BE_ST_SetScreenStartAddress(displayofs);
+#else
+#error	"Implement a limited BE_ST_SetScreenStartAddress for the high part"
+
+	bufferofs += SCREENSIZE;
+	if (bufferofs > PAGE3START)
+		bufferofs = PAGE1START;
+#endif
+#if 0
 	asm	cli
 	asm	mov	cx,[displayofs]
 	asm	mov	dx,3d4h		// CRTC address register
@@ -1825,6 +1859,7 @@ asm	rep stosw
 	bufferofs += SCREENSIZE;
 	if (bufferofs > PAGE3START)
 		bufferofs = PAGE1START;
+#endif
 #endif
 
 	frameon++;
