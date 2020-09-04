@@ -118,7 +118,7 @@ void SDL_t0ExtremeAsmService(void)
 	{
 		id0_byte_t s = *pcSound++;
 		// Nuke some of the precision
-		BE_ST_PCSpeakerSetVal(s & 0x80 != 0);
+		BE_ST_PCSpeakerSetConstVal(s & 0x80 != 0);
 
 		if (!(--pcLengthLeft))
 		{
