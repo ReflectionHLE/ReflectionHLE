@@ -1,5 +1,5 @@
-#ifndef BE_ST_EGA_LOOKUP_TABLES_H
-#define BE_ST_EGA_LOOKUP_TABLES_H
+#ifndef BE_ST_EGAVGA_LOOKUP_TABLES_H
+#define BE_ST_EGAVGA_LOOKUP_TABLES_H
 
 // Currently used internally in one compilation unit only
 
@@ -1081,4 +1081,4 @@ static const uint32_t g_be_st_lookup_vgaplane_bitsmask[16] = {
 	BE_Cross_Swap32LE(0xffffffff),
 };
 
-#endif // BE_ST_EGA_LOOKUP_TABLES_H
+#endif // BE_ST_EGAVGA_LOOKUP_TABLES_H
