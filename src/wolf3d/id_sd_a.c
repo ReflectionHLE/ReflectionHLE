@@ -48,7 +48,7 @@ void SDL_SSService(void);
 void SDL_PCStopSound(void);
 void SDL_DigitizedDone(void);
 
-static void SDL_t0FastAsmService(void);
+void SDL_t0FastAsmService(void);
 
 // ==========================================================================
 
@@ -140,11 +140,15 @@ void SDL_t0ExtremeAsmService(void)
 //	SDL_t0FastAsmService
 //	Timer 0 ISR for 700Hz interrupts
 //
-static void SDL_t0FastAsmService(void)
+void SDL_t0FastAsmService(void)
 {
 	++count_fx;
 #ifndef GAMEVER_NOAH3D // *** S3DNA RESTORATION ***
-	if ((count_fx < 5) && !sqActive && !ssSample)
+	if ((count_fx < 5) && !sqActive
+#if REFKEEN_SD_ENABLE_SOUNDSOURCE
+	    && !ssSample
+#endif
+	)
 		return;
 #endif
 

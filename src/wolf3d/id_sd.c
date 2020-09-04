@@ -1260,7 +1260,8 @@ SDL_PCPlaySound(PCSound id0_far *sound)
 //	SDL_PCStopSound() - Stops the current sound playing on the PC Speaker
 //
 ///////////////////////////////////////////////////////////////////////////
-#ifdef	_MUSE_
+//#ifdef	_MUSE_
+#if 1 // REFKEEN: Make function non-static for id_sd_a.c
 void
 #else
 static void
@@ -2951,7 +2952,7 @@ SD_Startup(void)
 #ifdef GAMEVER_NOAH3D
 	BE_ST_printf("SD_Startup: ");
 #else
-	SDL_SetDS();
+//	SDL_SetDS(); // REFKEEN: No need for this
 #endif
 
 	// *** S3DNA RESTORATION ***
