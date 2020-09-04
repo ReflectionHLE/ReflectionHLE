@@ -1744,7 +1744,7 @@ void	ThreeDRefresh (void)
 	id0_int_t tracedir;
 
 // this wouldn't need to be done except for my debugger/video wierdness
-	outportb (SC_INDEX,SC_MAPMASK);
+//	outportb (SC_INDEX,SC_MAPMASK); // REFKEEN: Disable
 
 //
 // clear out the traced array
