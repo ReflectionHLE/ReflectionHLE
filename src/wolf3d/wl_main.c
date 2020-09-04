@@ -1889,7 +1889,7 @@ void Quit (id0_char_t *error)
 #endif
 	  gotoxy (10,4);
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
-	  BE_Cross_puts(error);
+	  BE_ST_puts(error);
 	  // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	  gotoxy (1,8);
@@ -1937,7 +1937,7 @@ void Quit (id0_char_t *error)
  {
 	VL_SetTextMode();
 	if (error && *error)
-		BE_Cross_puts(error);
+		BE_ST_puts(error);
  }
 #endif
 
