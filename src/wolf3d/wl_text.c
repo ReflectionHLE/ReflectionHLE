@@ -797,9 +797,9 @@ void ShowArticle (id0_char_t id0_far *article)
 			{
 				// *** ALPHA RESTORATION *** 
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-				VL_FadeIn(0,255,&gamepal,30);
+				VL_FadeIn(0,255,gamepal,30);
 #else
-				VL_FadeIn(0,255,&gamepal,10);
+				VL_FadeIn(0,255,gamepal,10);
 #endif
 				// VW_FadeIn ()
 				firstpage = false;

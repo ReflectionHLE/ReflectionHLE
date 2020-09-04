@@ -70,7 +70,7 @@
 #define VIEWCOLOR	0xda
 #define TEXTCOLOR	0xcc
 #define HIGHLIGHT	0xc5
-#define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,8)
+#define MenuFadeIn()	VL_FadeIn(0,255,gamepal,8)
 
 #else
 
@@ -86,9 +86,9 @@
 #define HIGHLIGHT	0x13
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-#define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,20)
+#define MenuFadeIn()	VL_FadeIn(0,255,gamepal,20)
 #else
-#define MenuFadeIn()	VL_FadeIn(0,255,&gamepal,10)
+#define MenuFadeIn()	VL_FadeIn(0,255,gamepal,10)
 #endif
 
 #endif

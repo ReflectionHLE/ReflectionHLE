@@ -986,7 +986,7 @@ void SignonScreen (void)                        // VGA version
 
 	VL_SetVGAPlaneMode ();
 	VL_TestPaletteSet ();
-	VL_SetPalette (&gamepal);
+	VL_SetPalette (gamepal);
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -1707,7 +1707,7 @@ close(profilehandle);
 
 	VL_SetVGAPlaneMode ();
 	VL_TestPaletteSet ();
-	VL_SetPalette (&gamepal);
+	VL_SetPalette (gamepal);
 	VW_FadeOut ();
 
 	LoadLatchMem ();

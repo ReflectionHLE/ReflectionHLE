@@ -118,7 +118,7 @@ void VWB_Vlin (id0_int_t y1, id0_int_t y2, id0_int_t x, id0_int_t color);
 //
 // wolfenstein EGA compatability stuff
 //
-extern id0_byte_t id0_far gamepal;
+extern id0_byte_t *gamepal;
 
 void VH_SetDefaultColors (void);
 
@@ -137,10 +137,10 @@ void VH_SetDefaultColors (void);
 #define VW_WaitVBL		VL_WaitVBL
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-#define VW_FadeIn()		VL_FadeIn(0,255,&gamepal,24);
+#define VW_FadeIn()		VL_FadeIn(0,255,gamepal,24);
 #define VW_FadeOut()	VL_FadeOut(0,255,0,0,0,24);
 #else
-#define VW_FadeIn()		VL_FadeIn(0,255,&gamepal,30);
+#define VW_FadeIn()		VL_FadeIn(0,255,gamepal,30);
 #define VW_FadeOut()	VL_FadeOut(0,255,0,0,0,30);
 #endif
 #define VW_ScreenToScreen	VL_ScreenToScreen

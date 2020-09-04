@@ -236,7 +236,7 @@ void PicturePause (void)
 	_fmemcpy (dest,buffer,64000);
 
 #endif // TODO (REFKEEN) IMPLEMENT
-	VL_SetPalette (&gamepal);
+	VL_SetPalette (gamepal);
 
 
 	IN_Shutdown ();
