@@ -436,7 +436,7 @@ US_PrintUnsigned(id0_longword_t n)
 {
 	id0_char_t	buffer[32];
 
-	US_Print(ultoa(n,buffer,10));
+	US_Print(BE_Cross_ultoa_dec(n,buffer));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -449,7 +449,7 @@ US_PrintSigned(id0_long_t n)
 {
 	id0_char_t	buffer[32];
 
-	US_Print(ltoa(n,buffer,10));
+	US_Print(BE_Cross_ltoa_dec(n,buffer));
 }
 
 ///////////////////////////////////////////////////////////////////////////

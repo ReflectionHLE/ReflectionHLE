@@ -559,7 +559,7 @@ void PageLayout (id0_boolean_t shownumber)
 		// Micro difference - where/when to set px and py...
 		#ifdef SPANISH
 		strcpy (str,"Hoja ");
-		itoa (pagenum,str2,10);
+		BE_Cross_itoa_dec (pagenum,str2);
 		strcat (str,str2);
 		strcat (str," de ");
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
@@ -570,7 +570,7 @@ void PageLayout (id0_boolean_t shownumber)
 		#endif
 		#else
 		strcpy (str,"pg ");
-		itoa (pagenum,str2,10);
+		BE_Cross_itoa_dec (pagenum,str2);
 		strcat (str,str2);
 		strcat (str," of ");
 		// *** APOGEE + EARLY GOODTIMES + ID RELEASES + S3DNA RESTORATION ***
@@ -580,7 +580,7 @@ void PageLayout (id0_boolean_t shownumber)
 		px = 213;
 		#endif
 		#endif
-		itoa (numpages,str2,10);
+		BE_Cross_itoa_dec (numpages,str2);
 		strcat (str,str2);
 		// *** ALPHA RESTORATION *** 
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)

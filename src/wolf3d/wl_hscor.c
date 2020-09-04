@@ -167,7 +167,7 @@ void	DrawHighScores(void)
 			s->completed = 30;
 		sprintf(buffer,"%d-%d",MapEpisode[s->completed],MapLevel[s->completed]);
 #else
-		ultoa(s->completed,buffer,10);
+		BE_Cross_ultoa_dec(s->completed,buffer);
 #endif
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -194,7 +194,7 @@ void	DrawHighScores(void)
 #ifndef UPLOAD
 #ifndef SPEAR
 		PrintX -= 6;
-		itoa(s->episode+1,buffer1,10);
+		BE_Cross_itoa_dec(s->episode+1,buffer1);
 		US_Print("E");
 		US_Print(buffer1);
 		US_Print("/L");
@@ -212,7 +212,7 @@ void	DrawHighScores(void)
 		//
 		// score
 		//
-		ultoa(s->score,buffer,10);
+		BE_Cross_ultoa_dec(s->score,buffer);
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		USL_MeasureString(buffer,&w,&h);

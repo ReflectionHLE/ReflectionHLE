@@ -1622,7 +1622,7 @@ void CalcTics (void)
 
 #ifdef FILEPROFILE
 		strcpy (scratch,"\tTics:");
-		itoa (tics,str,10);
+		BE_Cross_itoa_dec (tics,str);
 		strcat (scratch,str);
 		strcat (scratch,"\n");
 		write (profilehandle,scratch,strlen(scratch));

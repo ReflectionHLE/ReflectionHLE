@@ -518,7 +518,7 @@ void	LatchNumber (id0_int_t x, id0_int_t y, id0_int_t width, id0_long_t number)
 	id0_unsigned_t	length,c;
 	id0_char_t	str[20];
 
-	ltoa (number,str,10);
+	BE_Cross_ltoa_dec (number,str);
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)

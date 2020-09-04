@@ -551,15 +551,15 @@ void Victory (void)
 	tr /= 30;
 #endif
 
-	itoa(kr,tempstr,10);
+	BE_Cross_itoa_dec(kr,tempstr);
 	x=RATIOX+24-strlen(tempstr)*2;
 	Write(x,RATIOY,tempstr);
 
-	itoa(sr,tempstr,10);
+	BE_Cross_itoa_dec(sr,tempstr);
 	x=RATIOX+24-strlen(tempstr)*2;
 	Write(x,RATIOY+2,tempstr);
 
-	itoa(tr,tempstr,10);
+	BE_Cross_itoa_dec(tr,tempstr);
 	x=RATIOX+24-strlen(tempstr)*2;
 	Write(x,RATIOY+4,tempstr);
 
@@ -826,7 +826,7 @@ void ShowBonus (id0_long_t bonus)
 	id0_char_t	ch;
 	id0_int_t	x,i;
 
-	ltoa(bonus,tempstr,10);
+	BE_Cross_ltoa_dec(bonus,tempstr);
 	x=8*(36-strlen(tempstr)*2);
 
 	for (i=0;i<strlen(tempstr);i++)
@@ -1379,7 +1379,7 @@ void LevelCompleted (void)
 	#define RATIOXX		29
 	for (i=0;i<=kr;i++)
 	{
-		itoa(i,tempstr,10);
+		BE_Cross_itoa_dec(i,tempstr);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,13,tempstr);
 		SD_PlaySound(D_INCSND);
@@ -1413,7 +1413,7 @@ void LevelCompleted (void)
 
 	for (i=0;i<=tr;i++)
 	{
-		itoa(i,tempstr,10);
+		BE_Cross_itoa_dec(i,tempstr);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,15,tempstr);
 		SD_PlaySound(D_INCSND);
@@ -1447,7 +1447,7 @@ void LevelCompleted (void)
 
 	for (i=0;i<=sr;i++)
 	{
-		itoa(i,tempstr,10);
+		BE_Cross_itoa_dec(i,tempstr);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,17,tempstr);
 		SD_PlaySound(D_INCSND);
@@ -1486,15 +1486,15 @@ void LevelCompleted (void)
 
 	perfect = (kr==100)&&(tr==100)&&(sr==100);
 
-	itoa(kr,tempstr,10);
+	BE_Cross_itoa_dec(kr,tempstr);
 	x=RATIOXX-strlen(tempstr)*2;
 	Write(x,13,tempstr);
 
-	itoa(tr,tempstr,10);
+	BE_Cross_itoa_dec(tr,tempstr);
 	x=RATIOXX-strlen(tempstr)*2;
 	Write(x,15,tempstr);
 
-	itoa(sr,tempstr,10);
+	BE_Cross_itoa_dec(sr,tempstr);
 	x=RATIOXX-strlen(tempstr)*2;
 	Write(x,17,tempstr);
 
@@ -1616,7 +1616,7 @@ void LevelCompleted (void)
 	 Write(1,18,STR_RAT2TREASURE);
 	 #endif
 
-	 Write(26,2,itoa(gamestate.mapon+1,tempstr,10));
+	 Write(26,2,BE_Cross_itoa_dec(gamestate.mapon+1,tempstr));
 #endif
 
 
@@ -1697,7 +1697,7 @@ void LevelCompleted (void)
 	 {
 	  for (i=0;i<=timeleft;i++)
 	  {
-	   ltoa((id0_long_t)i*PAR_AMOUNT,tempstr,10);
+	   BE_Cross_ltoa_dec((id0_long_t)i*PAR_AMOUNT,tempstr);
 	   x=36-strlen(tempstr)*2;
 	   Write(x,7,tempstr);
 	   if (!(i%(PAR_AMOUNT/10)))
@@ -1727,7 +1727,7 @@ void LevelCompleted (void)
 	 ratio=kr;
 	 for (i=0;i<=ratio;i++)
 	 {
-	  itoa(i,tempstr,10);
+	  BE_Cross_itoa_dec(i,tempstr);
 	  x=RATIOXX-strlen(tempstr)*2;
 	  Write(x,14,tempstr);
 	  if (!(i%10))
@@ -1744,7 +1744,7 @@ void LevelCompleted (void)
 	   VW_WaitVBL(VBLWAIT);
 	   SD_StopSound();
 	   bonus+=PERCENT100AMT;
-	   ltoa(bonus,tempstr,10);
+	   BE_Cross_ltoa_dec(bonus,tempstr);
 	   x=(RATIOXX-1)-strlen(tempstr)*2;
 	   Write(x,7,tempstr);
 	   VW_UpdateScreen();
@@ -1771,7 +1771,7 @@ void LevelCompleted (void)
 	 ratio=sr;
 	 for (i=0;i<=ratio;i++)
 	 {
-	  itoa(i,tempstr,10);
+	  BE_Cross_itoa_dec(i,tempstr);
 	  x=RATIOXX-strlen(tempstr)*2;
 	  Write(x,16,tempstr);
 	  if (!(i%10))
@@ -1789,7 +1789,7 @@ void LevelCompleted (void)
 	   VW_WaitVBL(VBLWAIT);
 	   SD_StopSound();
 	   bonus+=PERCENT100AMT;
-	   ltoa(bonus,tempstr,10);
+	   BE_Cross_ltoa_dec(bonus,tempstr);
 	   x=(RATIOXX-1)-strlen(tempstr)*2;
 	   Write(x,7,tempstr);
 	   VW_UpdateScreen();
@@ -1815,7 +1815,7 @@ void LevelCompleted (void)
 	 ratio=tr;
 	 for (i=0;i<=ratio;i++)
 	 {
-	  itoa(i,tempstr,10);
+	  BE_Cross_itoa_dec(i,tempstr);
 	  x=RATIOXX-strlen(tempstr)*2;
 	  Write(x,18,tempstr);
 	  if (!(i%10))
@@ -1831,7 +1831,7 @@ void LevelCompleted (void)
 	   VW_WaitVBL(VBLWAIT);
 	   SD_StopSound();
 	   bonus+=PERCENT100AMT;
-	   ltoa(bonus,tempstr,10);
+	   BE_Cross_ltoa_dec(bonus,tempstr);
 	   x=(RATIOXX-1)-strlen(tempstr)*2;
 	   Write(x,7,tempstr);
 	   VW_UpdateScreen();
@@ -1856,15 +1856,15 @@ void LevelCompleted (void)
 	 //
 	 done:
 
-	 itoa(kr,tempstr,10);
+	 BE_Cross_itoa_dec(kr,tempstr);
 	 x=RATIOXX-strlen(tempstr)*2;
 	 Write(x,14,tempstr);
 
-	 itoa(sr,tempstr,10);
+	 BE_Cross_itoa_dec(sr,tempstr);
 	 x=RATIOXX-strlen(tempstr)*2;
 	 Write(x,16,tempstr);
 
-	 itoa(tr,tempstr,10);
+	 BE_Cross_itoa_dec(tr,tempstr);
 	 x=RATIOXX-strlen(tempstr)*2;
 	 Write(x,18,tempstr);
 
@@ -1874,7 +1874,7 @@ void LevelCompleted (void)
 		   (PERCENT100AMT*(tr==100));
 
 	 GivePoints(bonus);
-	 ltoa(bonus,tempstr,10);
+	 BE_Cross_ltoa_dec(bonus,tempstr);
 	 x=36-strlen(tempstr)*2;
 	 Write(x,7,tempstr);
 
