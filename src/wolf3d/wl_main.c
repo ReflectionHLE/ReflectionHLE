@@ -1853,7 +1853,10 @@ void Quit (id0_char_t *error)
  if (CA_Started)
  {
 #endif
-	if (!*error)
+	// REFKEEN: null pointer dereference fix. Even with the
+	// original EXEs, these should be the behaviors if nothing's wrong.
+	if (!error || !*error)
+//	if (!*error)
 	{
 	 #ifndef JAPAN
 	 CA_CacheGrChunk (ORDERSCREEN);
