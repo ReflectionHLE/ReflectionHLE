@@ -69,7 +69,7 @@ typedef	struct
 		{
 			id0_longword_t	length;
 			id0_word_t		priority;
-		} SoundCommon;
+		} __attribute((__packed__)) SoundCommon;
 
 //	PC Sound stuff
 #define	pcTimer		0x42
@@ -82,7 +82,7 @@ typedef	struct
 		{
 			SoundCommon	common;
 			id0_byte_t		data[1];
-		} PCSound;
+		} __attribute((__packed__)) PCSound;
 
 // 	Registers for the Sound Blaster card - needs to be offset by n0 (0x10,0x20,0x30,0x40,0x50,0x60)
 #define	sbReset		0x206	// W
@@ -127,7 +127,7 @@ typedef	struct
 			id0_byte_t		bits,
 						reference,
 						data[1];
-		} SampledSound;
+		} __attribute((__packed__)) SampledSound;
 
 // 	Registers for the AdLib card
 #define	alFMStatus	0x388	// R
@@ -161,7 +161,7 @@ typedef	struct
 					voice,
 					mode,
 					unused[3];
-		} Instrument;
+		} __attribute((__packed__)) Instrument;
 
 typedef	struct
 		{
@@ -169,7 +169,7 @@ typedef	struct
 			Instrument	inst;
 			id0_byte_t		block,
 						data[1];
-		} AdLibSound;
+		} __attribute((__packed__)) AdLibSound;
 
 //
 //	Sequencing stuff
@@ -196,14 +196,14 @@ typedef	struct
 		{
 			id0_word_t	length,
 					values[1];
-		} MusicGroup;
+		} __attribute((__packed__)) MusicGroup;
 #else
 typedef	struct
 		{
 			id0_word_t	flags,
 					count,
 					offsets[1];
-		} MusicGroup;
+		} __attribute((__packed__)) MusicGroup;
 #endif
 
 // *** S3DNA RESTORATION ***
@@ -216,7 +216,7 @@ typedef struct	{
 					mSustain,cSustain,
 					mWave,cWave,
 					mFeedConn;
-		} inst_t;
+		} __attribute((__packed__)) inst_t;
 #else
 typedef	struct
 		{
@@ -228,7 +228,7 @@ typedef	struct
 			id0_boolean_t		percussive;
 			id0_word_t		id0_far *seq;
 			id0_longword_t	nextevent;
-		} ActiveTrack;
+		} __attribute((__packed__)) ActiveTrack;
 #endif
 
 #define	sqmode_Normal		0
