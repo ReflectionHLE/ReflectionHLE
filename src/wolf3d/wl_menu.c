@@ -2861,6 +2861,7 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
 	 continue;
 	}
 
+	BE_ST_ShortSleep();
    } while(!picked);
 
    SETFONTCOLOR(TEXTCOLOR,BKGDCOLOR);
@@ -3830,6 +3831,7 @@ id0_int_t HandleMenu(CP_iteminfo *item_i,CP_itemtype GAMEVER_COND_FARPTR *items,
 
 	do
 	{
+		BE_ST_ShortSleep();
 		//
 		// CHANGE GUN SHAPE
 		//
@@ -4426,6 +4428,7 @@ id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 			PicturePause();
 		#endif
 
+		BE_ST_ShortSleep();
 	#ifdef SPANISH
 	} while(!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
 	#else
@@ -4439,7 +4442,8 @@ id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 		ShootSnd();
 	}
 
-	while(Keyboard[sc_S] || Keyboard[sc_N] || Keyboard[sc_Escape]);
+	while(Keyboard[sc_S] || Keyboard[sc_N] || Keyboard[sc_Escape])
+		BE_ST_ShortSleep();
 
 	#else
 
@@ -4449,7 +4453,8 @@ id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 		ShootSnd();
 	}
 
-	while(Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape]);
+	while(Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape])
+		BE_ST_ShortSleep();
 	#endif
 
 	IN_ClearKeysDown();
@@ -4476,6 +4481,7 @@ id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic)
 
 	do
 	{
+		BE_ST_ShortSleep();
 		// *** SHAREWARE/REGISTERED APOGEE RESTORATION ***
 		// And again
 		#if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
@@ -4497,7 +4503,8 @@ id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic)
 		ShootSnd();
 	}
 
-	while(Keyboard[sc_S] || Keyboard[sc_N] || Keyboard[sc_Escape]);
+	while(Keyboard[sc_S] || Keyboard[sc_N] || Keyboard[sc_Escape])
+		BE_ST_ShortSleep();
 
 	#else
 
@@ -4507,7 +4514,8 @@ id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic)
 		ShootSnd();
 	}
 
-	while(Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape]);
+	while(Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape])
+		BE_ST_ShortSleep();
 	#endif
 
 	IN_ClearKeysDown();

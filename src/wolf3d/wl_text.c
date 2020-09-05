@@ -808,7 +808,7 @@ void ShowArticle (id0_char_t id0_far *article)
 
 		LastScan = 0;
 		while (!LastScan)
-		;
+			BE_ST_ShortSleep();
 
 		switch (LastScan)
 		{
