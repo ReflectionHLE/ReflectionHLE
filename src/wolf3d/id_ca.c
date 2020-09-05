@@ -785,7 +785,7 @@ void CAL_SetupGrFile (void)
 //
 // load the data offsets from ???head.ext
 //
-	MM_GetPtr ((memptr *)grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
+	MM_GetPtr ((memptr *)&grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -1176,7 +1176,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 #ifndef AUDIOHEADERLINKED
 
-	MM_GetPtr ((memptr *)audiosegs[chunk],compressed);
+	MM_GetPtr ((memptr *)&audiosegs[chunk],compressed);
 	if (mmerror)
 		return;
 
