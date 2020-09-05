@@ -826,7 +826,7 @@ US_Print(const id0_char_t *s)
 	//id0_char_t	c,*se;
 	id0_word_t	w,h;
 
-	// (REFKEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from the original:
 	// - Input is now const and US_Print does not temporarily modify it.
 	// - Reason is the input is often a C string literal. Modification of
 	// any such string leads to undefined behaviors (or at least a crash).
@@ -936,11 +936,11 @@ US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 {
 	id0_word_t	w,h;
 
-	// (REFKEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from the original:
 	// - All input strings are now const.
 	// - An additional "optse" argument marking one char past end
 	// of string. Set to NULL for original behaviors.
-	// - Related to modifcation to US_CPrint, properly taking care of
+	// - Related to modification to US_CPrint, properly taking care of
 	// C string literals as inputs.
 	// - The functions pointed by USL_MeasureString and USL_DrawString are
 	// similarly modified.
@@ -971,8 +971,8 @@ US_CPrint(const id0_char_t *s)
 	//id0_char_t	c,*se;
 	//id0_word_t	w,h;
 
-	// (REFKEEN) Modifications from vanilla Keen:
-	// - Input is now const and US_Print does not temporarily modify it.
+	// (REFKEEN) Modifications from the original:
+	// - Input is now const and US_CPrint does not temporarily modify it.
 	// - Reason is the input is often a C string literal. Modification of
 	// any such string leads to undefined behaviors (or at least a crash).
 

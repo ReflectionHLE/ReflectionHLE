@@ -1450,11 +1450,11 @@ static void ShiftPropChar(id0_word_t charnum)
 
 void VW_DrawPropString_EGA (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
-	// (REFKEEN) Modifications from vanilla Keen:
+	// (REFKEEN) Modifications from the original:
 	// - All input strings are now const.
 	// - An additional "optsend" argument marking one char past end
 	// of string. Set to NULL for original behaviors.
-	// - Related to modifcation to US_Print and US_CPrint, properly taking
+	// - Related to modification to US_Print and US_CPrint, properly taking
 	// care of C string literals as inputs.
 
 	/*
