@@ -835,13 +835,12 @@ void CP_ReadThis(void)
 void BossKey(void)
 {
 	SD_MusicOff();
-	_AX = 3;
-	geninterrupt(0x10);
+	BE_ST_SetScreenMode(3);
 	BE_ST_printf("C>");
 	while (!Keyboard[sc_Escape])
 	{
-		BE_ST_ShortSleep();
 		IN_ClearKeysDown();
+		BE_ST_ShortSleep();
 	}
 
 	SD_MusicOn();
