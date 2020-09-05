@@ -557,7 +557,7 @@ PML_ReadFromFile(id0_byte_t id0_far *buf,id0_long_t offset,id0_word_t length)
 		Quit("PML_ReadFromFile: Null pointer");
 	if (!offset)
 		Quit("PML_ReadFromFile: Zero offset");
-	if (BE_Cross_seek(PageFile,offset,SEEK_SET) != offset)
+	if (BE_Cross_seek(PageFile,offset,SEEK_SET) != 0)
 		Quit("PML_ReadFromFile: Seek failed");
 	if (!CA_FarRead(PageFile,buf,length))
 		Quit("PML_ReadFromFile: Read failed");
@@ -1506,8 +1506,13 @@ PM_Startup(void)
 	// Support the case some pages in the file may overlap
 	for (i = 0, page = PMPages; i < ChunksInFile; i++, page++, ptr += page->length)
 	{
-		PML_ReadFromFile(ptr, page->offset, page->length);
-		PMPageDataPtrs[i] = ptr;
+		if (page->length)
+		{
+			PML_ReadFromFile(ptr, page->offset, page->length);
+			PMPageDataPtrs[i] = ptr;
+		}
+		else
+			PMPageDataPtrs[i] = 0;
 	}
 #else // !REFKEEN_SIMPLIFIED
 	if (!noems)
