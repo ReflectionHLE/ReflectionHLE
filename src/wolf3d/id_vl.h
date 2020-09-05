@@ -127,6 +127,7 @@ extern	id0_unsigned_t	bordercolor;
 // VGA hardware routines
 //
 
+#if 0
 #define VGAWRITEMODE(x) asm{\
 cli;\
 mov dx,GC_INDEX;\
@@ -146,6 +147,11 @@ sti;}
 #define VGAMAPMASK(x) asm{cli;mov dx,SC_INDEX;mov al,SC_MAPMASK;mov ah,x;out dx,ax;sti;}
 #endif
 #define VGAREADMAP(x) asm{cli;mov dx,GC_INDEX;mov al,GC_READMAP;mov ah,x;out dx,ax;sti;}
+#endif
+// (REFKEEN) Doing nothing
+#define VGAWRITEMODE(x) {}
+#define VGAMAPMASK(x) {}
+#define VGAREADMAP(x) {}
 
 
 void VL_Startup (void);
