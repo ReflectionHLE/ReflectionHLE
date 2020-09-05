@@ -46,7 +46,7 @@ void VH_UpdateScreen (void)
 			update[tilenum] = 0;
 			id0_word_t srcOff = blockstarts[tilenum] + bufferofs;
 			id0_word_t destOff = blockstarts[tilenum] + displayofs;
-			for (int i = 15; i; --i)
+			for (int i = 16; i; --i)
 			{
 				BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(destOff, srcOff, 4);
 				destOff += linewidth;
@@ -73,7 +73,7 @@ void VH_UpdateSplitScreen (void)
 			update[tilenum] = 0;
 			id0_word_t srcOff = blockstarts[tilenum] + bufferofs;
 			id0_word_t destOff = blockstarts[tilenum] + displayofs;
-			for (int i = 15; i; --i)
+			for (int i = 16; i; --i)
 			{
 				BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(destOff, srcOff, 4);
 				destOff += linewidth;
