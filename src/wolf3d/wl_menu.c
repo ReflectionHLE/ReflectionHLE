@@ -2747,6 +2747,7 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
 
 	if (type==KEYBOARDBTNS||type==KEYBOARDMOVE)
 	  IN_ClearKeysDown();
+	BE_ST_ShortSleep(); // REFKEEN: Need to call this after clearing keys
 
 	//
 	// FLASH CURSOR
@@ -2860,7 +2861,6 @@ void EnterCtrlData(id0_int_t index,CustomCtrls *cust,void (*DrawRtn)(id0_int_t),
 	 continue;
 	}
 
-	BE_ST_ShortSleep();
    } while(!picked);
 
    SETFONTCOLOR(TEXTCOLOR,BKGDCOLOR);
