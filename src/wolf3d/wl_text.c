@@ -431,7 +431,7 @@ void HandleWord (void)
 	//
 	// see if it fits on this line
 	//
-	VW_MeasurePropString (word,&wwidth,&wheight);
+	VW_MeasurePropString (word,NULL,&wwidth,&wheight);
 
 	while (px+wwidth > rightmargin[rowon])
 	{
@@ -444,7 +444,7 @@ void HandleWord (void)
 	// print it
 	//
 	newpos = px+wwidth;
-	VWB_DrawPropString (word);
+	VWB_DrawPropString (word,NULL);
 	px = newpos;
 
 	//
@@ -607,7 +607,7 @@ void PageLayout (id0_boolean_t shownumber)
 		#endif
 #endif // GAMEVER_WOLFREV <= GV_WR_WL920312
 
-		VWB_DrawPropString (str);
+		VWB_DrawPropString (str,NULL);
 	}
 
 	fontcolor = oldfontcolor;

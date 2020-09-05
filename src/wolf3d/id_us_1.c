@@ -79,8 +79,8 @@ static	id0_boolean_t		US_Started;
 					CursorBad;
 		id0_int_t			CursorX,CursorY;
 
-		void		(*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
-					(*USL_DrawString)(id0_char_t id0_far *) = VWB_DrawPropString;
+		void		(*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *) = VW_MeasurePropString,
+					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *) = VWB_DrawPropString;
 
 		SaveGame	Games[MaxSaveGames];
 		HighScore	Scores[MaxScores] =
@@ -382,7 +382,7 @@ US_CheckParm(id0_char_t *parm,id0_char_t **strings)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),void (*print)(id0_char_t id0_far *))
+US_SetPrintRoutines(void (*measure)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),void (*print)(const id0_char_t id0_far *,const id0_char_t id0_far *))
 {
 	USL_MeasureString = measure;
 	USL_DrawString = print;
@@ -395,27 +395,36 @@ US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_Print(id0_char_t GAMEVER_COND_FARPTR *s)
+US_Print(const id0_char_t GAMEVER_COND_FARPTR *s)
 {
-	id0_char_t	c,GAMEVER_COND_FARPTR *se;
+	id0_char_t c;
+	const id0_char_t GAMEVER_COND_FARPTR *se;
+	//id0_char_t	c,GAMEVER_COND_FARPTR *se;
 	id0_word_t	w,h;
+
+	// (REFKEEN) Modifications from the original:
+	// - Input is now const and US_Print does not temporarily modify it.
+	// - Reason is the input is often a C string literal. Modification of
+	// any such string leads to undefined behaviors (or at least a crash).
 
 	while (*s)
 	{
 		se = s;
 		while ((c = *se) && (c != '\n'))
 			se++;
-		*se = '\0';
+		//*se = '\0'; Constified
 
-		USL_MeasureString(s,&w,&h);
+		USL_MeasureString(s,se,&w,&h); // Instead of "*se = '\0';"
+		//USL_MeasureString(s,&w,&h);
 		px = PrintX;
 		py = PrintY;
-		USL_DrawString(s);
+		USL_DrawString(s,se); // Instead of "*se = '\0';"
+		//USL_DrawString(s);
 
 		s = se;
 		if (c)
 		{
-			*se = c;
+			//*se = c; // Constified
 			s++;
 
 			PrintX = WindowX;
@@ -463,13 +472,13 @@ USL_PrintInCenter(id0_char_t GAMEVER_COND_FARPTR *s,Rect r)
 	id0_word_t	w,h,
 			rw,rh;
 
-	USL_MeasureString(s,&w,&h);
+	USL_MeasureString(s,NULL,&w,&h);
 	rw = r.lr.x - r.ul.x;
 	rh = r.lr.y - r.ul.y;
 
 	px = r.ul.x + ((rw - w) / 2);
 	py = r.ul.y + ((rh - h) / 2);
-	USL_DrawString(s);
+	USL_DrawString(s,NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -497,17 +506,28 @@ US_PrintCentered(id0_char_t GAMEVER_COND_FARPTR *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrintLine(id0_char_t GAMEVER_COND_FARPTR *s)
+US_CPrintLine(const id0_char_t GAMEVER_COND_FARPTR *s, const id0_char_t *optse)
 {
 	id0_word_t	w,h;
 
-	USL_MeasureString(s,&w,&h);
+	// (REFKEEN) Modifications from the original:
+	// - All input strings are now const.
+	// - An additional "optse" argument marking one char past end
+	// of string. Set to NULL for original behaviors.
+	// - Related to modification to US_CPrint, properly taking care of
+	// C string literals as inputs.
+	// - The functions pointed by USL_MeasureString and USL_DrawString are
+	// similarly modified.
+
+	USL_MeasureString(s,optse,&w,&h);
+	//USL_MeasureString(s,&w,&h);
 
 	if (w > WindowW)
 		Quit("US_CPrintLine() - String exceeds width");
 	px = WindowX + ((WindowW - w) / 2);
 	py = PrintY;
-	USL_DrawString(s);
+	USL_DrawString(s,optse);
+	//USL_DrawString(s);
 	PrintY += h;
 }
 
@@ -518,23 +538,30 @@ US_CPrintLine(id0_char_t GAMEVER_COND_FARPTR *s)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_CPrint(id0_char_t GAMEVER_COND_FARPTR *s)
+US_CPrint(const id0_char_t GAMEVER_COND_FARPTR *s)
 {
-	id0_char_t	c,GAMEVER_COND_FARPTR *se;
+	id0_char_t	c;
+	const id0_char_t	GAMEVER_COND_FARPTR *se;
+	//id0_char_t	c,GAMEVER_COND_FARPTR *se;
+
+	// (REFKEEN) Modifications from the original:
+	// - Input is now const and US_CPrint does not temporarily modify it.
+	// - Reason is the input is often a C string literal. Modification of
+	// any such string leads to undefined behaviors (or at least a crash).
 
 	while (*s)
 	{
 		se = s;
 		while ((c = *se) && (c != '\n'))
 			se++;
-		*se = '\0';
+		//*se = '\0'; // Constified
 
-		US_CPrintLine(s);
+		US_CPrintLine(s,se); // Instead of "*se = '\0';"
 
 		s = se;
 		if (c)
 		{
-			*se = c;
+			//*se = c; // Constified
 			s++;
 		}
 	}
@@ -654,17 +681,17 @@ USL_XORICursor(id0_int_t x,id0_int_t y,id0_char_t *s,id0_word_t cursor)
 
 	strcpy(buf,s);
 	buf[cursor] = '\0';
-	USL_MeasureString(buf,&w,&h);
+	USL_MeasureString(buf,NULL,&w,&h);
 
 	px = x + w - 1;
 	py = y;
 	if (status^=1)
-		USL_DrawString("\x80");
+		USL_DrawString("\x80",NULL);
 	else
 	{
 		temp = fontcolor;
 		fontcolor = backcolor;
-		USL_DrawString("\x80");
+		USL_DrawString("\x80",NULL);
 		fontcolor = temp;
 	}
 
@@ -798,7 +825,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 		if (c)
 		{
 			len = strlen(s);
-			USL_MeasureString(s,&w,&h);
+			USL_MeasureString(s,NULL,&w,&h);
 
 			if
 			(
@@ -821,13 +848,13 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 			py = y;
 			temp = fontcolor;
 			fontcolor = backcolor;
-			USL_DrawString(olds);
+			USL_DrawString(olds,NULL);
 			fontcolor = temp;
 			strcpy(olds,s);
 
 			px = x;
 			py = y;
-			USL_DrawString(s);
+			USL_DrawString(s,NULL);
 
 			redraw = false;
 		}
@@ -857,7 +884,7 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 	{
 		px = x;
 		py = y;
-		USL_DrawString(olds);
+		USL_DrawString(olds,NULL);
 	}
 	VW_UpdateScreen();
 

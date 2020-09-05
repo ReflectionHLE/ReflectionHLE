@@ -61,8 +61,15 @@ void	VWL_UpdateScreenBlocks (void);
 
 //==========================================================================
 
-void VW_DrawPropString (id0_char_t id0_far *string)
+void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
+	// (REFKEEN) Modifications from the original:
+	// - All input strings are now const.
+	// - An additional "optsend" argument marking one char past end
+	// of string. Set to NULL for original behaviors.
+	// - Related to modification to US_Print and US_CPrint, properly taking
+	// care of C string literals as inputs.
+
 	fontstruct	id0_far	*font;
 	id0_int_t		width,step,height,i;
 	id0_byte_t	id0_far *source/*, id0_far *dest, id0_far *origdest*/;
@@ -77,7 +84,8 @@ void VW_DrawPropString (id0_char_t id0_far *string)
 //	mask = 1<<(px&3);
 
 
-	while ((ch = *string++)!=0)
+	while ((string != optsend) && (ch = *string++)!=0)
+//	while ((ch = *string++)!=0)
 	{
 		width = step = font->width[ch];
 		source = ((id0_byte_t id0_far *)font)+font->location[ch];
@@ -250,22 +258,40 @@ void VL_MungePic (id0_byte_t id0_far *source, id0_unsigned_t width, id0_unsigned
 	MM_FreePtr ((memptr *)&temp);
 }
 
-void VWL_MeasureString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height
+void VWL_MeasureString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height
 	, fontstruct id0_seg *font)
 {
+	// (REFKEEN) Modifications from the original:
+	// - All input strings are now const.
+	// - An additional "optsend" argument marking one char past end
+	// of string. Set to NULL for original behaviors.
+	// - Related to modification to US_Print and US_CPrint, properly taking
+	// care of C string literals as inputs.
 	*height = font->height;
+#if 0
 	for (*width = 0;*string;string++)
 		*width += font->width[*((id0_byte_t id0_far *)string)];	// proportional width
+#endif
+	if (optsend)
+	{
+		for (*width = 0;string!=optsend;string++)
+			*width += font->width[*((id0_byte_t id0_far *)string)];		// proportional width
+	}
+	else
+	{
+		for (*width = 0;*string;string++)
+			*width += font->width[*((id0_byte_t id0_far *)string)];		// proportional width
+	}
 }
 
-void	VW_MeasurePropString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height)
+void	VW_MeasurePropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height)
 {
-	VWL_MeasureString(string,width,height,(fontstruct id0_seg *)grsegs[STARTFONT+fontnumber]);
+	VWL_MeasureString(string,optsend,width,height,(fontstruct id0_seg *)grsegs[STARTFONT+fontnumber]);
 }
 
-void	VW_MeasureMPropString  (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height)
+void	VW_MeasureMPropString  (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height)
 {
-	VWL_MeasureString(string,width,height,(fontstruct id0_seg *)grsegs[STARTFONTM+fontnumber]);
+	VWL_MeasureString(string,optsend,width,height,(fontstruct id0_seg *)grsegs[STARTFONTM+fontnumber]);
 }
 
 
@@ -405,11 +431,11 @@ void VWB_DrawPic (id0_int_t x, id0_int_t y, id0_int_t chunknum)
 
 
 
-void VWB_DrawPropString	 (id0_char_t id0_far *string)
+void VWB_DrawPropString	 (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend)
 {
 	id0_int_t x;
 	x=px;
-	VW_DrawPropString (string);
+	VW_DrawPropString (string,optsend);
 	VW_MarkUpdateBlock(x,py,px-1,py+bufferheight-1);
 }
 

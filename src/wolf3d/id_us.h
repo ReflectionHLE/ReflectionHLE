@@ -109,8 +109,8 @@ extern	id0_boolean_t		Button0,Button1,
 					CursorBad;
 extern	id0_int_t			CursorX,CursorY;
 
-extern	void		(*USL_MeasureString)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),
-					(*USL_DrawString)(id0_char_t id0_far *);
+extern	void		(*USL_MeasureString)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),
+					(*USL_DrawString)(const id0_char_t id0_far *,const id0_char_t id0_far *);
 
 extern	id0_boolean_t		(*USL_SaveGame)(id0_int_t),(*USL_LoadGame)(id0_int_t);
 extern	void		(*USL_ResetGame)(void);
@@ -134,12 +134,12 @@ extern	void	US_Startup(void),
 				US_SaveWindow(WindowRec *win),
 				US_RestoreWindow(WindowRec *win),
 				US_ClearWindow(void),
-				US_SetPrintRoutines(void (*measure)(id0_char_t id0_far *,id0_word_t *,id0_word_t *),
-									void (*print)(id0_char_t id0_far *)),
+				US_SetPrintRoutines(void (*measure)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),
+									void (*print)(const id0_char_t id0_far *,const id0_char_t id0_far *)),
 				US_PrintCentered(id0_char_t GAMEVER_COND_FARPTR *s),
-				US_CPrint(id0_char_t GAMEVER_COND_FARPTR *s),
-				US_CPrintLine(id0_char_t GAMEVER_COND_FARPTR *s),
-				US_Print(id0_char_t GAMEVER_COND_FARPTR *s),
+				US_CPrint(const id0_char_t GAMEVER_COND_FARPTR *s),
+				US_CPrintLine(const id0_char_t GAMEVER_COND_FARPTR *s,const id0_char_t GAMEVER_COND_FARPTR *optse),
+				US_Print(const id0_char_t GAMEVER_COND_FARPTR *s),
 				US_PrintUnsigned(id0_longword_t n),
 				US_PrintSigned(id0_long_t n),
 				US_StartCursor(void),

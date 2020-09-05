@@ -107,7 +107,7 @@ void VWB_DrawPic (id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_DrawMPic(id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Bar (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height, id0_int_t color);
 
-void VWB_DrawPropString	 (id0_char_t id0_far *string);
+void VWB_DrawPropString	 (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend);
 void VWB_DrawMPropString (id0_char_t id0_far *string);
 void VWB_DrawSprite (id0_int_t x, id0_int_t y, id0_int_t chunknum);
 void VWB_Plot (id0_int_t x, id0_int_t y, id0_int_t color);
@@ -145,7 +145,7 @@ void VH_SetDefaultColors (void);
 #endif
 #define VW_ScreenToScreen	VL_ScreenToScreen
 #define VW_SetDefaultColors	VH_SetDefaultColors
-void	VW_MeasurePropString (id0_char_t id0_far *string, id0_word_t *width, id0_word_t *height);
+void	VW_MeasurePropString (const id0_char_t id0_far *string, const id0_char_t id0_far *optsend, id0_word_t *width, id0_word_t *height);
 #define EGAMAPMASK(x)	VGAMAPMASK(x)
 #define EGAWRITEMODE(x)	VGAWRITEMODE(x)
 

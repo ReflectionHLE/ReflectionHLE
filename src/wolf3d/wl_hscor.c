@@ -171,13 +171,13 @@ void	DrawHighScores(void)
 #endif
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		USL_MeasureString(buffer,&w,&h);
+		USL_MeasureString(buffer,NULL,&w,&h);
 		PrintX = (24 * 8)-w;
 #elif (!defined SPEAR)
 //#ifndef SPEAR
 		for (str = buffer;*str;str++)
 			*str = *str + (129 - '0');	// Used fixed-width numbers (129...)
-		USL_MeasureString(buffer,&w,&h);
+		USL_MeasureString(buffer,NULL,&w,&h);
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		PrintX = (24 * 8)-w;
@@ -185,7 +185,7 @@ void	DrawHighScores(void)
 		PrintX = (22 * 8)-w;
 #endif
 #else
-		USL_MeasureString(buffer,&w,&h);
+		USL_MeasureString(buffer,NULL,&w,&h);
 		PrintX = 194 - w;
 #endif
 
@@ -215,16 +215,16 @@ void	DrawHighScores(void)
 		BE_Cross_ultoa_dec(s->score,buffer);
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		USL_MeasureString(buffer,&w,&h);
+		USL_MeasureString(buffer,NULL,&w,&h);
 		PrintX = 288 - w;
 #elif (!defined SPEAR)
 //#ifndef SPEAR
 		for (str = buffer;*str;str++)
 			*str = *str + (129 - '0');	// Used fixed-width numbers (129...)
-		USL_MeasureString(buffer,&w,&h);
+		USL_MeasureString(buffer,NULL,&w,&h);
 		PrintX = (34 * 8) - 8 - w;
 #else
-		USL_MeasureString(buffer,&w,&h);
+		USL_MeasureString(buffer,NULL,&w,&h);
 		PrintX = 292 - w;
 #endif
 		US_Print(buffer);
