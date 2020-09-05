@@ -488,12 +488,21 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
   id0_long_t length,huffnode *hufftable, id0_boolean_t screenhack)
 #endif
 {
-#if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	// REFKEEN: TODO implement for screenhack==true
-#endif
 	id0_unsigned_t code;
 	huffnode *headptr = hufftable+254; // head node is always node 254
 	huffnode *nodeon = headptr;
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+	// REFKEEN: The screenhack == true case is somewhat modified. Instead
+	// of using dest, just write from offset bufferofs in screen memory.
+	id0_unsigned_t screendstptr, screendstendptr;
+	int plane;
+	if (screenhack)
+	{
+		plane = 0;
+		screendstptr = bufferofs;
+		screendstendptr = bufferofs + (length >> 2);
+	}
+#endif
 
 	//------------
 	// expand data
@@ -524,6 +533,22 @@ void CAL_HuffExpand (id0_byte_t id0_huge *source, id0_byte_t id0_huge *dest,
 			nodeon = hufftable + (code-256);
 			continue;
 		}
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+		if (screenhack)
+		{
+			// write a decompressed byte out
+			BE_ST_VGAUpdateGFXByteInPlane(screendstptr++, code, plane);
+			nodeon = headptr; // back to the head node for next bit
+
+			if (screendstptr == screendstendptr) // done plane?
+			{
+				if (++plane == 4)
+					break;
+				screendstptr = bufferofs;
+			}
+			continue;
+		}
+#endif
 		*(dstptr++) = code; // write a decompressed byte out
 		nodeon = headptr; // back to the head node for next bit
 
@@ -1521,8 +1546,6 @@ void CA_CacheGrChunk (id0_int_t chunk)
 
 void CA_CacheScreen (id0_int_t chunk)
 {
-	// REFKEEN: TODO implement
-#if 0
 	id0_long_t	pos,compressed,expanded;
 	memptr	bigbufferseg;
 	id0_byte_t	id0_far *source;
@@ -1551,10 +1574,11 @@ void CA_CacheScreen (id0_int_t chunk)
 // allocate final space, decompress it, and free bigbuffer
 // Sprites need to have shifts made and various other junk
 //
-	CAL_HuffExpand (source,MK_FP(SCREENSEG,bufferofs),expanded,grhuffman,true);
+	// REFKEEN: We just ignore the dest param and internally use bufferofs instead
+	CAL_HuffExpand (source,0,expanded,grhuffman,true);
+//	CAL_HuffExpand (source,MK_FP(SCREENSEG,bufferofs),expanded,grhuffman,true);
 	VW_MarkUpdateBlock (0,0,319,199);
 	MM_FreePtr(&bigbufferseg);
-#endif
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
