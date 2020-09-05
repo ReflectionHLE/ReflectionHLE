@@ -187,7 +187,7 @@ void NewState (objtype *ob, statetype *state)
 	{                                               \
 		if (temp<256)                               \
 			return false;                           \
-		if (((objtype *)temp)->flags&FL_SHOOTABLE)  \
+		if (COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(temp)->flags&FL_SHOOTABLE)  \
 			return false;                           \
 	}                                               \
 }
@@ -204,7 +204,7 @@ void NewState (objtype *ob, statetype *state)
 			return false;                           \
 		if (temp<256)                               \
 			doornum = temp&31;                      \
-		else if (((objtype *)temp)->flags&FL_SHOOTABLE)\
+		else if (COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(temp)->flags&FL_SHOOTABLE)\
 			return false;                           \
 	}                                               \
 }
@@ -218,7 +218,7 @@ void NewState (objtype *ob, statetype *state)
 			return false;                           \
 		if (temp<256)                               \
 			doornum = temp&63;                      \
-		else if (((objtype *)temp)->flags&FL_SHOOTABLE)\
+		else if (COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(temp)->flags&FL_SHOOTABLE)\
 			return false;                           \
 	}                                               \
 }
