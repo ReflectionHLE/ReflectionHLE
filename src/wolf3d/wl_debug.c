@@ -428,7 +428,10 @@ static	id0_char_t	buf[10];
 		VW_UpdateScreen();
 
 		while (!(scan = LastScan))
+		{
 			SD_Poll();
+			BE_ST_ShortSleep();
+		}
 
 		IN_ClearKey(scan);
 		switch (scan)
