@@ -1312,7 +1312,15 @@ SDL_PCService(void)
 			pcLastSample = s;
 			if (s)					// We have a frequency!
 			{
-				t = pcSoundLookup[s];
+				// REFKEEN: Vanilla bug emulation:
+				// For all checked versions of Wolf3D/SOD/S3DNA
+				// as of writing this, pcSoundLookup[255]
+				// overflows into pcLengthLeft's low 16-bit word.
+				// This can happen e.g., if digitized sounds are
+				// played via the speaker, due to a bug in the
+				// id_sd_a code where SDL_PCService is processed.
+				t = (s == 255) ? (pcLengthLeft&0xFFFF) :
+				                 pcSoundLookup[s];
 				BE_ST_PCSpeakerSetInvFreq(t);
 #if 0
 			asm	mov	bx,[t]
@@ -2850,6 +2858,9 @@ SD_SetSoundMode(SDMode mode)
 	switch (mode)
 	{
 	case sdm_Off:
+		// (REFKEEN) Originally tableoffset wasn't set here at all,
+		// leading to undefined behaviors in SD_PlaySound
+		tableoffset = 0;
 		NeedsDigitized = false;
 		result = true;
 		break;
@@ -3305,10 +3316,27 @@ SD_PlaySound(soundnames sound)
 	if (sound == -1)
 		GAMEVER_COND_RET(false);
 
+	// REFKEEN: If SoundMode == sdm_Off but DigiMode != sds_Off then:
+	// - If done right on startup, SoundTable is set to 0, so the value
+	// assigned to s, originally a 16-bit segment pointer, is read from
+	// around the beginning of the data segment in the original DOS exes.
+	// s->priority may then be read from an arbitrary memory location.
+	// - If changed from the menu to such a setup, SD_SetSoundMode may
+	// set SoundTable to &audiosegs[tableoffset] where tableoffset is
+	// uninitialized. Thus, depending on the exact value of tableoffset,
+	// it's again possible that s->priority eventually depends on
+	// the environment.
+	// TODO (REFKEEN): For now SD_SetSoundMode will use offset 0 instead
+	// of keeping it uninitialized, while SD_PlaySound will use audiosegs
+	// in case SoundTable or SoundTable[sound] is 0.
+	s = (SoundCommon id0_far *)(SoundTable ? SoundTable[sound] : 0);
 	//s = MK_FP(SoundTable[sound],0);
-	s = (SoundCommon id0_far *)(SoundTable[sound]);
 	if ((SoundMode != sdm_Off) && !s)
 		Quit("SD_PlaySound() - Uncached sound");
+	// REFKEEN: Even if s is zero, it may still be dereferenced when
+	// there's a replacement digitized sound. While the length might be
+	// 0 in the EXE layout, the priority is not, so use a special struct.
+	s = s ? s : audiosegs;
 
 	if ((DigiMode != sds_Off) && (DigiMap[sound] != -1))
 	{
