@@ -2412,7 +2412,7 @@ static void BEL_ST_VGAForceRefresh(void)
 
 static void BEL_ST_VGASetPaletteColor_NoRefresh(uint8_t r, uint8_t g, uint8_t b, int index)
 {
-	g_sdlEGACurrBGRAPalette[index] = 0xFC000000 | (b << 18) | (g << 10) | (r << 2);
+	g_sdlEGACurrBGRAPalette[index] = 0xFC000000 | (r << 18) | (g << 10) | (b << 2);
 }
 
 void BE_ST_VGASetPaletteColor(uint8_t r, uint8_t g, uint8_t b, int index)
@@ -2424,22 +2424,22 @@ void BE_ST_VGASetPaletteColor(uint8_t r, uint8_t g, uint8_t b, int index)
 void BE_ST_VGAGetPaletteColor(uint8_t *r, uint8_t *g, uint8_t *b, int index)
 {
 	uint32_t col = g_sdlEGACurrBGRAPalette[index];
-	*r = col >> 2;
+	*r = col >> 18;
 	*g = col >> 10;
-	*b = col >> 18;
+	*b = col >> 2;
 }
 
 void BE_ST_VGASetPalette(const uint8_t *palette)
 {
 	for (int entry = 0; entry < 256; ++entry, palette += 3)
-		BE_ST_VGASetPaletteColor(palette[2], palette[1], palette[0], entry);
+		BE_ST_VGASetPaletteColor(palette[0], palette[1], palette[2], entry);
 	BEL_ST_VGAForceRefresh();
 }
 
 void BE_ST_VGAGetPalette(uint8_t *palette)
 {
 	for (int entry = 0; entry < 256; ++entry, palette += 3)
-		BE_ST_VGAGetPaletteColor(palette + 2, palette + 1, palette, entry);
+		BE_ST_VGAGetPaletteColor(palette, palette + 1, palette + 2, entry);
 }
 
 void BE_ST_VGAFillPalette(uint8_t r, uint8_t g, uint8_t b, int first, int last)
