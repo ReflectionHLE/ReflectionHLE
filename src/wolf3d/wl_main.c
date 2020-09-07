@@ -124,6 +124,9 @@ id0_char_t	configname[13]="CONFIG.";
 =============================================================================
 */
 
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDSMode)
 
 /*
 ====================
@@ -153,6 +156,38 @@ void ReadConfig(void)
 	//
 	// valid config file
 	//
+		for (int i = 0; i < MaxScores; ++i)
+		{
+			BE_Cross_readInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
+			BE_Cross_readInt32LE(file, &Scores[i].score);
+			BE_Cross_readInt16LE(file, &Scores[i].completed);
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) // REFKEEN: This depends on id_us.h definition
+			BE_Cross_readInt16LE(file, &Scores[i].episode);
+#endif
+		}
+		BE_Cross_read_SDMode_From16LE(file, &sd);
+		BE_Cross_read_SMMode_From16LE(file, &sm);
+		BE_Cross_read_SDSMode_From16LE(file, &sds);
+
+		BE_Cross_read_boolean_From16LE(file, &mouseenabled);
+		BE_Cross_read_boolean_From16LE(file, &joystickenabled);
+		BE_Cross_read_boolean_From16LE(file, &joypadenabled);
+		BE_Cross_read_boolean_From16LE(file, &joystickprogressive);
+		BE_Cross_readInt16LE(file, &joystickport);
+
+		BE_Cross_readInt16LEBuffer(file, dirscan, sizeof(dirscan));
+		BE_Cross_readInt16LEBuffer(file, buttonscan, sizeof(buttonscan));
+		BE_Cross_readInt16LEBuffer(file, buttonmouse, sizeof(buttonmouse));
+		BE_Cross_readInt16LEBuffer(file, buttonjoy, sizeof(buttonjoy));
+
+		BE_Cross_readInt16LE(file, &viewsize);
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+		BE_Cross_readInt16LE(file, &mouseadjustment);
+#endif
+#ifdef GAMEVER_NOAH3D
+		BE_Cross_readInt16LE(file, &questionnum);
+#endif
+#if 0
 		read(file,Scores,sizeof(HighScore) * MaxScores);
 
 		read(file,&sd,sizeof(sd));
@@ -178,6 +213,7 @@ void ReadConfig(void)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		read(file,&questionnum,sizeof(questionnum));
+#endif
 #endif
 
 		BE_Cross_close(file);
@@ -299,6 +335,38 @@ void WriteConfig(void)
 
 	if (BE_Cross_IsFileValid(file))
 	{
+		for (int i = 0; i < MaxScores; ++i)
+		{
+			BE_Cross_writeInt8LEBuffer(file, Scores[i].name, sizeof(Scores[i].name));
+			BE_Cross_writeInt32LE(file, &Scores[i].score);
+			BE_Cross_writeInt16LE(file, &Scores[i].completed);
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10) // REFKEEN: This depends on id_us.h definition
+			BE_Cross_writeInt16LE(file, &Scores[i].episode);
+#endif
+		}
+		BE_Cross_write_SDMode_To16LE(file, &SoundMode);
+		BE_Cross_write_SMMode_To16LE(file, &MusicMode);
+		BE_Cross_write_SDSMode_To16LE(file, &DigiMode);
+
+		BE_Cross_write_boolean_To16LE(file, &mouseenabled);
+		BE_Cross_write_boolean_To16LE(file, &joystickenabled);
+		BE_Cross_write_boolean_To16LE(file, &joypadenabled);
+		BE_Cross_write_boolean_To16LE(file, &joystickprogressive);
+		BE_Cross_writeInt16LE(file, &joystickport);
+
+		BE_Cross_writeInt16LEBuffer(file, dirscan, sizeof(dirscan));
+		BE_Cross_writeInt16LEBuffer(file, buttonscan, sizeof(buttonscan));
+		BE_Cross_writeInt16LEBuffer(file, buttonmouse, sizeof(buttonmouse));
+		BE_Cross_writeInt16LEBuffer(file, buttonjoy, sizeof(buttonjoy));
+
+		BE_Cross_writeInt16LE(file, &viewsize);
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+		BE_Cross_writeInt16LE(file, &mouseadjustment);
+#endif
+#ifdef GAMEVER_NOAH3D
+		BE_Cross_writeInt16LE(file, &questionnum);
+#endif
+#if 0
 		write(file,Scores,sizeof(HighScore) * MaxScores);
 
 		write(file,&SoundMode,sizeof(SoundMode));
@@ -324,6 +392,7 @@ void WriteConfig(void)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		write(file,&questionnum,sizeof(questionnum));
+#endif
 #endif
 
 		BE_Cross_close(file);
