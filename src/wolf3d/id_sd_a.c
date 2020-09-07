@@ -111,14 +111,11 @@ void SDL_IndicatePC(id0_boolean_t on) { pcindicate = on; }
 //
 void SDL_t0ExtremeAsmService(void)
 {
-	if (!pcindicate)
-		return;
-
-	if (pcSound)
+	if (pcindicate && pcSound)
 	{
 		id0_byte_t s = *pcSound++;
 		// Nuke some of the precision
-		BE_ST_PCSpeakerSetConstVal(s & 0x80 != 0);
+		BE_ST_PCSpeakerSetConstVal(s & 0x80);
 
 		if (!(--pcLengthLeft))
 		{
