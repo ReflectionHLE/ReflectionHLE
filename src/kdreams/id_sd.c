@@ -1424,7 +1424,7 @@ SDL_StartDevice(void)
 id0_boolean_t
 SD_SetSoundMode(SDMode mode)
 {
-	id0_boolean_t	result;
+	id0_boolean_t	result = false; // REFKEEN: Always initialize this var
 	id0_word_t	rate/*,speed*/,
 			tableoffset;
 
@@ -1433,12 +1433,13 @@ SD_SetSoundMode(SDMode mode)
 	switch (mode)
 	{
 	case sdm_Off:
+		// (REFKEEN) Originally tableoffset wasn't set here at all,
+		// leading to undefined behaviors (even if offset is irrelevant)...
+		tableoffset = 0;
 #if REFKEEN_SD_ENABLE_DIGITIZED
 		NeedsDigitized = false;
 #endif
 		result = true;
-		// (REFKEEN) Originally tableoffset wasn't set here at all - undefined behaviors (even if offset is irrelevant)...
-		tableoffset = 0;
 		break;
 	case sdm_PC:
 		tableoffset = STARTPCSOUNDS;
@@ -1456,11 +1457,6 @@ SD_SetSoundMode(SDMode mode)
 #endif
 			result = true;
 		}
-		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
-		else
-		{
-			result = false;
-		}
 		break;
 #if REFKEEN_SD_ENABLE_SOUNDBLASTER // Implies REFKEEN_SD_ENABLE_DIGITIZED
 	case sdm_SoundBlaster:
@@ -1469,11 +1465,6 @@ SD_SetSoundMode(SDMode mode)
 			tableoffset = STARTDIGISOUNDS;
 			NeedsDigitized = true;
 			result = true;
-		}
-		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
-		else
-		{
-			result = false;
 		}
 		break;
 #endif
@@ -1519,9 +1510,7 @@ SD_SetMusicMode(SMMode mode)
 
 	SD_FadeOutMusic();
 	while (SD_MusicPlaying())
-	{
 		BE_ST_ShortSleep();
-	}
 
 	switch (mode)
 	{
@@ -1911,9 +1900,7 @@ void
 SD_WaitSoundDone(void)
 {
 	while (SD_SoundPlaying())
-	{
 		BE_ST_ShortSleep();
-	}
 }
 
 #if REFKEEN_SD_ENABLE_MUSIC

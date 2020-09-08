@@ -964,7 +964,7 @@ SDL_SetTimerSpeed(void)
 id0_boolean_t
 SD_SetSoundMode(SDMode mode)
 {
-	id0_boolean_t	result;
+	id0_boolean_t	result = false; // REFKEEN: Always initialize this var
 	id0_word_t	tableoffset;
 
 	SD_StopSound();
@@ -973,10 +973,11 @@ SD_SetSoundMode(SDMode mode)
 	switch (mode)
 	{
 	case sdm_Off:
+		// (REFKEEN) Originally tableoffset wasn't set here at all,
+		// leading to undefined behaviors (even if offset is irrelevant)...
+		tableoffset = 0;
 		NeedsDigitized = false;
 		result = true;
-		// (REFKEEN) Originally tableoffset wasn't set here at all - undefined behaviors (even if offset is irrelevant)...
-		tableoffset = 0;
 		break;
 	case sdm_PC:
 		tableoffset = STARTPCSOUNDS;
@@ -989,11 +990,6 @@ SD_SetSoundMode(SDMode mode)
 			tableoffset = STARTADLIBSOUNDS;
 			NeedsDigitized = false;
 			result = true;
-		}
-		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
-		else
-		{
-			result = false;
 		}
 		break;
 	default:
@@ -1031,9 +1027,7 @@ SD_SetMusicMode(SMMode mode)
 
 	SD_FadeOutMusic();
 	while (SD_MusicPlaying())
-	{
 		BE_ST_ShortSleep();
-	}
 
 	switch (mode)
 	{
@@ -1316,9 +1310,7 @@ void
 SD_WaitSoundDone(void)
 {
 	while (SD_SoundPlaying())
-	{
 		BE_ST_ShortSleep();
-	}
 }
 
 #if USE_MUSIC // A block of music-related functions
