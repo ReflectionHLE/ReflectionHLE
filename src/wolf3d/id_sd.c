@@ -2839,7 +2839,8 @@ id0_boolean_t
 SD_SetSoundMode(SDMode mode)
 {
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
+#if 0 // REFKEEN: Ensure result isn't read if uninitialized
+//#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 	id0_boolean_t	result;
 #else
 	id0_boolean_t	result = false;
