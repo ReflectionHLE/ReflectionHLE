@@ -1504,7 +1504,7 @@ PM_Startup(void)
 		Quit("PM_Startup: Couldn't allocate memory for page file");
 	id0_byte_t *ptr = (id0_byte_t *)PMPageData;
 	// Support the case some pages in the file may overlap
-	for (i = 0, page = PMPages; i < ChunksInFile; i++, page++, ptr += page->length)
+	for (i = 0, page = PMPages; i < ChunksInFile; i++, ptr += page->length, page++)
 	{
 		if (page->length)
 		{
