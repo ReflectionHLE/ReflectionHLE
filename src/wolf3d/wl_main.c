@@ -2484,8 +2484,3 @@ void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void)
 		// Don't use quit, yet
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_wolf3d_exe - Failed to load\nat least one file.");
 }
-
-// TODO (REFKEEN) Temporary placeholders
-void SimpleScaleShape(id0_int_t a, id0_int_t b, id0_unsigned_t c) {}
-void ScaleShape(id0_int_t a, id0_int_t b, id0_unsigned_t c) {}
-void SetupScaling(id0_int_t a) {}
