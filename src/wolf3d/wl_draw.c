@@ -1756,10 +1756,8 @@ void WallRefresh (void)
 	ypartialup = TILEGLOBAL-ypartialdown;
 
 	lastside = -1;			// the first pixel is on a new wall
-#if 0	// TODO (REFKEEN) IMPLEMENT
 	AsmRefresh ();
 	ScalePost ();			// no more optimization on last post
-#endif
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - An unused function from v1.0
