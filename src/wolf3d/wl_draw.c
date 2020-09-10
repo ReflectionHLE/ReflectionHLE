@@ -1195,11 +1195,38 @@ void VGAClearScreen (void)
 #elif (GAMEVER_WOLFREV > GV_WR_WL920312)
  id0_unsigned_t ceiling=vgaCeiling[gamestate.episode*10+mapon];
 #endif
+	// Ported from ASM. Screen updates were originally done with pairs
+	// of equal bytes; Single bytes are used in the port. The destination
+	// offset is updated as done here to match original behaviors.
 
-  //
-  // clear the screen
-  //
-#if 0	// TODO (REFKEEN) IMPLEMENT
+	//
+	// clear the screen
+	//
+
+	id0_unsigned_t destOff = bufferofs;
+	// top loop
+	for (int loopVar = (id0_byte_t)viewheight / 2; loopVar; --loopVar)
+	{
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, 0x1d, (id0_byte_t)(viewwidth/8)*2);
+#else
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, ceiling, (id0_byte_t)(viewwidth/8)*2);
+#endif
+		destOff += (id0_byte_t)(viewwidth/8)*2 + (80 - viewwidth/4);
+	}
+	// bottom loop
+	for (int loopVar = (id0_byte_t)viewheight / 2; loopVar; --loopVar)
+	{
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, 0xd9, (id0_byte_t)(viewwidth/8)*2);
+#else
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, 0x19, (id0_byte_t)(viewwidth/8)*2);
+#endif
+		destOff += (id0_byte_t)(viewwidth/8)*2 + (80 - viewwidth/4);
+	}
+#if 0
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 asm	mov	dx,SC_INDEX+1
@@ -1252,7 +1279,7 @@ asm	rep	stosw
 asm	add	di,dx
 asm	dec	bh
 asm	jnz	bottomloop
-#endif	// TODO (REFKEEN) IMPLEMENT
+#endif
 }
 
 //==========================================================================
