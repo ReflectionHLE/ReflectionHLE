@@ -480,13 +480,40 @@ id0_int_t	CalcHeight (void)
 ===================
 */
 
-id0_long_t		postsource;
+id0_byte_t		*postsource;
+id0_unsigned_t		postsourceoff;
+//id0_long_t		postsource;
 id0_unsigned_t	postx;
 id0_unsigned_t	postwidth;
 
 void	id0_near ScalePost (void)		// VGA version
 {
-#if 0	// TODO (REFKEEN) IMPLEMENT
+	// fractional height (low 3 bits fraction)
+	// h = heightscaler*4
+	id0_unsigned_t h = (wallheight[postx] & 0xfff8) >> 1;
+
+	h = BE_Cross_TypedMin(id0_int_t, h, maxscaleshl2);
+	id0_byte_t *linescale = (id0_byte_t *)fullscalefarcall[h/4];
+//	id0_byte_t *linescale = (id0_byte_t *)(fullscalefarcall[h/sizeof(*fullscalefarcall)]);
+	if (!linescale)
+	{
+		void BadScale(void);
+		BadScale();
+	}
+
+	//
+	// scale a byte wide strip of wall
+	//
+	id0_unsigned_t destoff = (postx >> 2) + bufferofs;
+
+	ExecuteCompScale(linescale, destoff, postsource + postsourceoff, mapmasks1[postx&3][postwidth-1]);
+	if (mapmasks2[postx&3][postwidth-1])
+	{
+		ExecuteCompScale(linescale, destoff + 1, postsource + postsourceoff, mapmasks2[postx&3][postwidth-1]);
+		if (mapmasks3[postx&3][postwidth-1])
+			ExecuteCompScale(linescale, destoff + 2, postsource + postsourceoff, mapmasks2[postx&3][postwidth-1]);
+	}
+#if 0
 	asm	mov	ax,SCREENSEG
 	asm	mov	es,ax
 
@@ -551,8 +578,6 @@ void  FarScalePost (void)				// just so other files can call
 	ScalePost ();
 }
 
-#if 0 // TODO (REFKEEN) IMPLEMENT
-
 /*
 ====================
 =
@@ -580,7 +605,7 @@ void HitVertWall (void)
 	if (lastside==1 && lastintercept == xtile && lasttilehit == tilehit)
 	{
 		// in the same wall type as last time, so check for optimized draw
-		if (texture == (id0_unsigned_t)postsource)
+		if (texture == postsourceoff/*(id0_unsigned_t)postsource*/)
 		{
 		// wide scale
 			postwidth++;
@@ -590,7 +615,7 @@ void HitVertWall (void)
 		else
 		{
 			ScalePost ();
-			(id0_unsigned_t)postsource = texture;
+			postsourceoff/*(id0_unsigned_t)postsource*/ = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -624,8 +649,10 @@ void HitVertWall (void)
 		else
 			wallpic = vertwall[tilehit];
 
-		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
-		(id0_unsigned_t)postsource = texture;
+		postsource = PM_GetPage(wallpic);
+		postsourceoff = texture;
+//		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
+//		(id0_unsigned_t)postsource = texture;
 
 	}
 	// *** S3DNA RESTORATION ***
@@ -661,7 +688,7 @@ void HitHorizWall (void)
 	if (lastside==0 && lastintercept == ytile && lasttilehit == tilehit)
 	{
 		// in the same wall type as last time, so check for optimized draw
-		if (texture == (id0_unsigned_t)postsource)
+		if (texture == postsourceoff/*(id0_unsigned_t)postsource*/)
 		{
 		// wide scale
 			postwidth++;
@@ -671,7 +698,7 @@ void HitHorizWall (void)
 		else
 		{
 			ScalePost ();
-			(id0_unsigned_t)postsource = texture;
+			postsourceoff/*(id0_unsigned_t)postsource*/ = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -705,8 +732,10 @@ void HitHorizWall (void)
 		else
 			wallpic = horizwall[tilehit];
 
-		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
-		(id0_unsigned_t)postsource = texture;
+		postsource = PM_GetPage(wallpic);
+		postsourceoff = texture;
+//		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
+//		(id0_unsigned_t)postsource = texture;
 	}
 
 	// *** S3DNA RESTORATION ***
@@ -743,7 +772,7 @@ void HitHorizDoor (void)
 	if (lasttilehit == tilehit)
 	{
 	// in the same door as last time, so check for optimized draw
-		if (texture == (id0_unsigned_t)postsource)
+		if (texture == postsourceoff/*(id0_unsigned_t)postsource*/)
 		{
 		// wide scale
 			postwidth++;
@@ -753,7 +782,7 @@ void HitHorizDoor (void)
 		else
 		{
 			ScalePost ();
-			(id0_unsigned_t)postsource = texture;
+			postsourceoff/*(id0_unsigned_t)postsource*/ = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -800,8 +829,10 @@ void HitHorizDoor (void)
 #endif
 		}
 
-		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage);
-		(id0_unsigned_t)postsource = texture;
+		postsource = PM_GetPage(doorpage);
+		postsourceoff = texture;
+//		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage);
+//		(id0_unsigned_t)postsource = texture;
 	}
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -837,7 +868,7 @@ void HitVertDoor (void)
 	if (lasttilehit == tilehit)
 	{
 	// in the same door as last time, so check for optimized draw
-		if (texture == (id0_unsigned_t)postsource)
+		if (texture == postsourceoff/*(id0_unsigned_t)postsource*/)
 		{
 		// wide scale
 			postwidth++;
@@ -847,7 +878,7 @@ void HitVertDoor (void)
 		else
 		{
 			ScalePost ();
-			(id0_unsigned_t)postsource = texture;
+			postsourceoff/*(id0_unsigned_t)postsource*/ = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -896,11 +927,14 @@ void HitVertDoor (void)
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage);
+		postsource = PM_GetPage(doorpage);
+//		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage);
 #else
-		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage+1);
+		postsource = PM_GetPage(doorpage+1);
+//		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage+1);
 #endif
-		(id0_unsigned_t)postsource = texture;
+		postsourceoff = texture;
+//		(id0_unsigned_t)postsource = texture;
 	}
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -943,7 +977,7 @@ void HitHorizPWall (void)
 	if (lasttilehit == tilehit)
 	{
 		// in the same wall type as last time, so check for optimized draw
-		if (texture == (id0_unsigned_t)postsource)
+		if (texture == postsourceoff/*(id0_unsigned_t)postsource*/)
 		{
 		// wide scale
 			postwidth++;
@@ -953,7 +987,7 @@ void HitHorizPWall (void)
 		else
 		{
 			ScalePost ();
-			(id0_unsigned_t)postsource = texture;
+			postsourceoff/*(id0_unsigned_t)postsource*/ = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -970,8 +1004,10 @@ void HitHorizPWall (void)
 
 		wallpic = horizwall[tilehit&63];
 
-		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
-		(id0_unsigned_t)postsource = texture;
+		postsource = PM_GetPage(wallpic);
+		postsourceoff = texture;
+//		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
+//		(id0_unsigned_t)postsource = texture;
 	}
 
 	// *** S3DNA RESTORATION ***
@@ -1011,7 +1047,7 @@ void HitVertPWall (void)
 	if (lasttilehit == tilehit)
 	{
 		// in the same wall type as last time, so check for optimized draw
-		if (texture == (id0_unsigned_t)postsource)
+		if (texture == postsourceoff/*(id0_unsigned_t)postsource*/)
 		{
 		// wide scale
 			postwidth++;
@@ -1021,7 +1057,7 @@ void HitVertPWall (void)
 		else
 		{
 			ScalePost ();
-			(id0_unsigned_t)postsource = texture;
+			postsourceoff/*(id0_unsigned_t)postsource*/ = texture;
 			postwidth = 1;
 			postx = pixx;
 		}
@@ -1038,8 +1074,10 @@ void HitVertPWall (void)
 
 		wallpic = vertwall[tilehit&63];
 
-		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
-		(id0_unsigned_t)postsource = texture;
+		postsource = PM_GetPage(wallpic);
+		postsourceoff = texture;
+//		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
+//		(id0_unsigned_t)postsource = texture;
 	}
 
 	// *** S3DNA RESTORATION ***
@@ -1048,7 +1086,6 @@ void HitVertPWall (void)
 #endif
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
-#endif // TODO (REFKEEN) IMPELMENT
 
 //==========================================================================
 
@@ -1721,8 +1758,8 @@ void WallRefresh (void)
 	lastside = -1;			// the first pixel is on a new wall
 #if 0	// TODO (REFKEEN) IMPLEMENT
 	AsmRefresh ();
-#endif
 	ScalePost ();			// no more optimization on last post
+#endif
 }
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION *** - An unused function from v1.0

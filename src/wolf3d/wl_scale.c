@@ -38,7 +38,8 @@
 */
 
 t_compscale id0_seg *scaledirectory[MAXSCALEHEIGHT+1];
-id0_long_t			fullscalefarcall[MAXSCALEHEIGHT+1];
+id0_byte_t			*fullscalefarcall[MAXSCALEHEIGHT+1];
+//id0_long_t			fullscalefarcall[MAXSCALEHEIGHT+1];
 
 id0_int_t			maxscale,maxscaleshl2;
 
@@ -147,8 +148,11 @@ void SetupScaling (id0_int_t maxscaleheight)
 	for (i=1;i<=maxscaleheight;i++)
 	{
 		MM_SetLock ((memptr *)&scaledirectory[i],true);
+		fullscalefarcall[i] = (id0_byte_t *)scaledirectory[i];
+#if 0
 		fullscalefarcall[i] = (id0_unsigned_t)scaledirectory[i];
 		fullscalefarcall[i] <<=16;
+#endif
 		fullscalefarcall[i] += scaledirectory[i]->codeofs[0];
 		if (i>=stepbytwo)
 		{
@@ -171,7 +175,9 @@ void SetupScaling (id0_int_t maxscaleheight)
 // check for oversize wall drawing
 //
 	for (i=maxscaleheight;i<MAXSCALEHEIGHT;i++)
-		fullscalefarcall[i] = (id0_long_t)BadScale;
+		// REFKEEN: This will be checked in ScalePost separately
+		fullscalefarcall[i] = 0;
+		//fullscalefarcall[i] = (id0_long_t)BadScale;
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
