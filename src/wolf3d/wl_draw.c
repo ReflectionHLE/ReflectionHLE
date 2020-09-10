@@ -330,8 +330,7 @@ void TransformActor (objtype *ob)
 //
 // calculate height (heightnumerator/(nx>>8))
 //
-	temp = (heightnumerator / ((nx>>8)&0xFFFF)) & 0xFFFF;
-	temp |= (heightnumerator % ((nx>>8)&0xFFFF)) << 16;
+	temp = heightnumerator / ((nx>>8)&0xFFFF);
 #if 0
 	asm	mov	ax,[WORD PTR heightnumerator]
 	asm	mov	dx,[WORD PTR heightnumerator+2]
@@ -407,8 +406,7 @@ id0_boolean_t TransformTile (id0_int_t tx, id0_int_t ty, id0_int_t *dispx, id0_i
 //
 // calculate height (heightnumerator/(nx>>8))
 //
-	temp = (heightnumerator / ((nx>>8)&0xFFFF)) & 0xFFFF;
-	temp |= (heightnumerator % ((nx>>8)&0xFFFF)) << 16;
+	temp = heightnumerator / ((nx>>8)&0xFFFF);
 #if 0
 	asm	mov	ax,[WORD PTR heightnumerator]
 	asm	mov	dx,[WORD PTR heightnumerator+2]
@@ -463,7 +461,7 @@ id0_int_t	CalcHeight (void)
 	if (nx<mindist)
 		nx=mindist;			// don't let divide overflow
 
-	return (heightnumerator / ((nx>>8)&0xFFFF)) & 0xFFFF;
+	return heightnumerator / ((nx>>8)&0xFFFF);
 #if 0
 	asm	mov	ax,[WORD PTR heightnumerator]
 	asm	mov	dx,[WORD PTR heightnumerator+2]
