@@ -1238,24 +1238,26 @@ void BuildTables (void)
 
 void ClearScreen (void)
 {
+	// Ported from ASM. Screen updates were originally done with pairs
+	// of equal bytes; Single bytes are used in the port. The destination
+	// offset is updated as done here to match original behaviors.
+
 	//
 	// clear the screen
 	//
 
-	id0_unsigned_t egaDestOff = bufferofs;
+	id0_unsigned_t destOff = bufferofs;
 	// top loop
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
-		// Originally done with pairs of 0x0000 words
-		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(egaDestOff, 0, (VIEWWIDTH/16)*2+1);
-		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(destOff, 0, (VIEWWIDTH/16)*2+1);
+		destOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 	// bottom loop
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
-		// Originally done with pairs of 0x0808 words
-		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(egaDestOff, 8, (VIEWWIDTH/16)*2+1);
-		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(destOff, 8, (VIEWWIDTH/16)*2+1);
+		destOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 #if 0
 asm	mov	dx,GC_INDEX

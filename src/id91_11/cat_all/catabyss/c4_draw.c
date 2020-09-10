@@ -1417,28 +1417,26 @@ void ClearScreen (void)
 {
 	id0_unsigned_t topcolor=*skycolor, bottomcolor=*groundcolor;
 
+	// Ported from ASM. Screen updates were originally done with pairs
+	// of equal bytes; Single bytes are used in the port. The destination
+	// offset is updated as done here to match original behaviors.
+
 	//
 	// clear the screen
 	//
 
-	id0_unsigned_t egaDestOff = bufferofs + ((SCREENWIDTH*VIEWY)+(VIEWX/8));
+	id0_unsigned_t destOff = bufferofs + ((SCREENWIDTH*VIEWY)+(VIEWX/8));
 	// top loop
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
-		// (REFKEEN) DIFFERENCE FROM VANILLA:
-		// topcolor aka *skycolor is a 16-bit word which is actually a pair of colors (e.g., 0x0404),
-		// but we ignore one of the two for the sake of simplicity and a bit better performance, since
-		// skycolor always points to a member of sky_colors, where each pair has the exact same color repeated twice.
-		//
-		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(egaDestOff, (id0_byte_t)topcolor, (VIEWWIDTH/16)*2+1);
-		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(destOff, (id0_byte_t)topcolor, (VIEWWIDTH/16)*2+1);
+		destOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 	// bottom loop
 	for (int loopVar = CENTERY+1; loopVar; --loopVar)
 	{
-		// (REFKEEN) DIFFERENCE FROM VANILLA: Same as above but with bottomcolor
-		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(egaDestOff, (id0_byte_t)bottomcolor, (VIEWWIDTH/16)*2+1);
-		egaDestOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
+		BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(destOff, (id0_byte_t)bottomcolor, (VIEWWIDTH/16)*2+1);
+		destOff += ((VIEWWIDTH/16)*2+1) + (40-VIEWWIDTH/8);
 	}
 #if 0
 asm	mov	dx,GC_INDEX
