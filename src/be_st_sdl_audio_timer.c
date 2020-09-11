@@ -174,33 +174,36 @@ static uint32_t g_sdlSamplesRemainingForSDLAudioCallback;
 /*static */uint32_t g_sdlManualAudioCallbackCallLastTicks;
 static uint32_t g_sdlManualAudioCallbackCallDelayedSamples;
 
-// Nearest-neighborhood sample rate conversion, used as
-// a simplistic alternative to any resampling library
-static int *g_sdlSampleRateConvTable;
-static int g_sdlSampleRateConvTableSize;
-// Current location in the conversion process;
-static int g_sdlSampleRateConvCurrIndex; // Index to g_sdlSampleRateConvTable
-static int g_sdlSampleRateConvCounter; // Counter for current cell of g_sdlALSampleRateConvTable
-BE_ST_SndSample_T g_sdlSampleRateConvLastValue; // Last input sample
+typedef struct
+{
+	// Nearest-neighborhood sample rate conversion, used as
+	// a simplistic alternative to any resampling library
+	int *sampleRateConvTable;
+	int sampleRateConvTableSize;
+	// Current location in the conversion process;
+	int sampleRateConvCurrIndex; // Index to sampleRateConvTable
+	int sampleRateConvCounter; // Counter for current cell of g_sdlALSampleRateConvTable
+	BE_ST_SndSample_T sampleRateConvLastValue; // Last input sample
 #ifdef REFKEEN_RESAMPLER_NONE
-// Nothing to add here
+	// Nothing to add here
 #elif (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
-static struct SwrContext *g_sdlSwrContext;
+	struct SwrContext *swrContext;
 #elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-static struct AVAudioResampleContext *g_sdlAvAudioResampleContext;
+	struct AVAudioResampleContext *avAudioResampleContext;
 #elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-static struct AVResampleContext* g_sdlAvResampleContext = 0;
+	struct AVResampleContext* avResampleContext;
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
-static void *g_sdlResampleHandle;
-static double g_sdlResampleFactor;
+	void *resampleHandle;
+	double resampleFactor;
 #elif (defined REFKEEN_RESAMPLER_LIBSOXR)
-static soxr_t g_sdlSoxr;
+	soxr_t soxr;
 #elif (defined REFKEEN_RESAMPLER_LIBSPEEXDSP)
-static SpeexResamplerState *g_sdlSpeexResamplerState = 0;
+	SpeexResamplerState *speexResamplerState;
 #elif (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
-static SRC_STATE *g_sdlSrcResampler;
-static SRC_DATA g_sdlSrcData;
+	SRC_STATE *srcResampler;
+	SRC_DATA srcData;
 #endif
+} BESDLResamplingContext;
 
 // Used for filling with samples from BE_ST_OPL2Write,
 // in addition to the SDL audio CallBack itself
@@ -210,6 +213,7 @@ static uint32_t g_sdlALOutNumOfSamples;
 static uint32_t g_sdlALOutSamplesEnd = 0;
 
 // Used with resampling callback only
+BESDLResamplingContext g_sdlMainResamplingContext;
 static BE_ST_SndSample_T *g_sdlMiscOutSamples;
 static uint32_t g_sdlMiscOutNumOfSamples;
 static uint32_t g_sdlMiscOutSamplesEnd = 0;
@@ -229,6 +233,12 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len);
 static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len);
 
 static opl3_chip g_oplChip;
+
+static void BEL_ST_InitResampling(
+	BESDLResamplingContext *context,
+	int outSampleRate, int inSampleRate,
+	BE_ST_SndSample_T *dataInPtr);
+static void BEL_ST_ShutdownResampling(BESDLResamplingContext *context);
 
 void BE_ST_InitAudio(void)
 {
@@ -342,7 +352,7 @@ void BE_ST_InitAudio(void)
 
 	if ((doDigitized || g_sdlEmulatedOPLChipReady) && (g_sdlAudioSpec.freq != inSampleRate))
 	{
-		// Should allocate this first, for g_sdlSrcData.data_in
+		// Should allocate this first, for srcData.data_in (libsamplerate)
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 		g_sdlMiscOutNumOfSamples = g_sdlCallbacksSamplesBufferOnePartCount;
 #else
@@ -352,129 +362,9 @@ void BE_ST_InitAudio(void)
 		if (g_sdlMiscOutSamples == NULL)
 			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlMiscOutSamples.)");
 
-#ifndef REFKEEN_RESAMPLER_NONE
-		if (g_refKeenCfg.useResampler)
-		{
-#if (!defined REFKEEN_RESAMPLER_LIBRESAMPLE) && (!defined REFKEEN_RESAMPLER_LIBAVCODEC)
-			char errMsg[160];
-#endif
-
-#if (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
-			g_sdlSwrContext = swr_alloc_set_opts(
-				NULL,                // allocating a new context
-				AV_CH_LAYOUT_MONO,   // out channels layout
-				AV_SAMPLE_FMT_S16,   // out format
-				g_sdlAudioSpec.freq, // out rate
-				AV_CH_LAYOUT_MONO,   // in channels layout
-				AV_SAMPLE_FMT_S16,   // in format
-				inSampleRate,        // in rate
-				0,
-				NULL
-			);
-			if (g_sdlSwrContext == NULL)
-				BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: swr_alloc_set_opts failed!");
-			int error = swr_init(g_sdlSwrContext);
-			if (error != 0)
-			{
-				// av_err2str requires libavutil/libavutil-ffmpeg, so don't convert code to string
-				snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: swr_init failed! Error code: %d", error);
-				BE_ST_ExitWithErrorMsg(errMsg);
-			}
-#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-			g_sdlAvAudioResampleContext = avresample_alloc_context();
-			if (g_sdlAvAudioResampleContext == NULL)
-				BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: avresample_alloc_context failed!");
-			av_opt_set_int(g_sdlAvAudioResampleContext, "in_channel_layout",  AV_CH_LAYOUT_MONO,   0);
-			av_opt_set_int(g_sdlAvAudioResampleContext, "out_channel_layout", AV_CH_LAYOUT_MONO,   0);
-			av_opt_set_int(g_sdlAvAudioResampleContext, "in_sample_rate",     inSampleRate,        0);
-			av_opt_set_int(g_sdlAvAudioResampleContext, "out_sample_rate",    g_sdlAudioSpec.freq, 0);
-			av_opt_set_int(g_sdlAvAudioResampleContext, "in_sample_fmt",      AV_SAMPLE_FMT_S16,   0);
-			av_opt_set_int(g_sdlAvAudioResampleContext, "out_sample_fmt",     AV_SAMPLE_FMT_S16,   0);
-			int error = avresample_open(g_sdlAvAudioResampleContext);
-			if (error != 0)
-			{
-				// av_err2str requires libavutil/libavutil-ffmpeg, so don't convert code to string
-				snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: swr_init failed! Error code: %d", error);
-				BE_ST_ExitWithErrorMsg(errMsg);
-			}
-#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-			avcodec_register_all();
-			g_sdlAvResampleContext = av_resample_init(
-				g_sdlAudioSpec.freq,	// out rate
-				inSampleRate,	// in rate
-				16,	// filter length
-				10,	// phase count
-				0,	// linear FIR filter
-				1.0	// cutoff frequency
-			);
-			if (g_sdlAvResampleContext == NULL)
-				BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: av_resample_init failed!");
-#elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
-			g_sdlResampleFactor = (double)g_sdlAudioSpec.freq/inSampleRate;
-			g_sdlResampleHandle = resample_open(0, g_sdlResampleFactor, g_sdlResampleFactor);
-			if (g_sdlResampleHandle == NULL)
-				BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: resample_open failed!");
-#elif (defined REFKEEN_RESAMPLER_LIBSOXR)
-			soxr_io_spec_t io_spec = soxr_io_spec(SOXR_INT16, SOXR_INT16);
-			soxr_quality_spec_t q_spec = soxr_quality_spec(SOXR_LQ, 0); // Default quality spec adds an audible latency for resampling to 8000Hz
-			soxr_error_t error;
-			g_sdlSoxr = soxr_create(
-				inSampleRate, // in rate
-				g_sdlAudioSpec.freq, // out rate
-				1, // channels
-				&error,
-				&io_spec,
-				&q_spec,
-				NULL // runtime spec
-			);
-			if (g_sdlSoxr == NULL)
-			{
-				snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: soxr_create failed!\nError: %s", soxr_strerror(error));
-				BE_ST_ExitWithErrorMsg(errMsg);
-			}
-#elif (defined REFKEEN_RESAMPLER_LIBSPEEXDSP)
-			int error;
-			g_sdlSpeexResamplerState = speex_resampler_init(
-				1, // channels
-				inSampleRate, // in rate
-				g_sdlAudioSpec.freq, // out rate
-				0, // quality in the range 0-10 (10 is higher)
-				&error
-			);
-			if (g_sdlSpeexResamplerState == NULL)
-			{
-				snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: speex_resampler_init failed! Error code: %d\nError: %s", error, speex_resampler_strerror(error));
-				BE_ST_ExitWithErrorMsg(errMsg);
-			}
-#elif (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
-			int error;
-			g_sdlSrcResampler = src_new(SRC_SINC_FASTEST, 1, &error);
-			if (g_sdlSrcResampler == NULL)
-			{
-				snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: src_new failed!\nError code: %d", error);
-				BE_ST_ExitWithErrorMsg(errMsg);
-			}
-			g_sdlSrcData.data_in = doDigitized ? g_sdlMiscOutSamples : g_sdlALOutSamples;
-			g_sdlSrcData.src_ratio = (double)g_sdlAudioSpec.freq / inSampleRate;
-#endif
-		}
-		else
-#endif // REFKEEN_RESAMPLER_NONE
-		{
-			// The sum of all entries should be g_sdlAudioSpec.freq,
-			// "uniformly" distributed over g_sdlALSampleRateConvTable
-			g_sdlSampleRateConvTable = (int *)malloc(sizeof(int) * inSampleRate);
-			if (g_sdlSampleRateConvTable == NULL)
-				BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Failed to allocate memory for sample rate conversion!");
-			g_sdlSampleRateConvTableSize = inSampleRate;
-			for (int i = 0; i < inSampleRate; ++i)
-			{
-				// Using uint64_t cause an overflow is possible
-				g_sdlSampleRateConvTable[i] = ((uint64_t)(i+1)*(uint64_t)g_sdlAudioSpec.freq/inSampleRate)-(uint64_t)i*(uint64_t)g_sdlAudioSpec.freq/inSampleRate;
-			}
-			g_sdlSampleRateConvCurrIndex = 0;
-			g_sdlSampleRateConvCounter = 0;
-		}
+		BEL_ST_InitResampling(&g_sdlMainResamplingContext,
+				      g_sdlAudioSpec.freq, inSampleRate,
+				      doDigitized ? g_sdlMiscOutSamples : g_sdlALOutSamples);
 	}
 
 	// As stated above, BE_ST_BSound may be called,
@@ -508,32 +398,7 @@ void BE_ST_ShutdownAudio(void)
 	{
 		SDL_PauseAudioDevice(g_sdlAudioDevice, 1);
 		if ((g_sdlOurAudioCallback == BEL_ST_Resampling_EmuCallBack) || (g_sdlOurAudioCallback == BEL_ST_Resampling_DigiCallBack))
-		{
-#ifndef REFKEEN_RESAMPLER_NONE
-			if (g_refKeenCfg.useResampler)
-			{
-#if (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
-				swr_free(&g_sdlSwrContext);
-#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-				avresample_free(&g_sdlAvAudioResampleContext);
-#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-				av_resample_close(g_sdlAvResampleContext);
-#elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
-				resample_close(g_sdlResampleHandle);
-#elif (defined REFKEEN_RESAMPLER_LIBSOXR)
-				soxr_delete(g_sdlSoxr);
-#elif (defined REFKEEN_RESAMPLER_LIBSPEEXDSP)
-				speex_resampler_destroy(g_sdlSpeexResamplerState);
-#elif (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
-				src_delete(g_sdlSrcResampler);
-#endif
-			}
-			else
-#endif // REFKEEN_RESAMPLER_NONE
-			{
-				free(g_sdlSampleRateConvTable);
-			}
-		}
+			BEL_ST_ShutdownResampling(&g_sdlMainResamplingContext);
 #ifdef REFKEEN_CONFIG_THREADS
 		SDL_DestroyMutex(g_sdlCallbackMutex);
 		g_sdlCallbackMutex = NULL;
@@ -785,11 +650,171 @@ static inline void PCSpeakerUpdateOne(BE_ST_SndSample_T *stream, int length)
 	}
 }
 
-/**************************
-A common resampling wrapper
-**************************/
+/**************
+Resampling code
+**************/
 
-static inline void BEL_ST_DoResample(uint32_t *outConsumed, uint32_t *outProduced, BE_ST_SndSample_T *inPtr, BE_ST_SndSample_T *outPtr, uint32_t numOfAvailInputSamples, uint32_t maxSamplesToOutput)
+static void BEL_ST_InitResampling(
+	BESDLResamplingContext *context,
+	int outSampleRate, int inSampleRate,
+	BE_ST_SndSample_T *dataInPtr)
+{
+#ifndef REFKEEN_RESAMPLER_NONE
+	if (g_refKeenCfg.useResampler)
+	{
+#if (!defined REFKEEN_RESAMPLER_LIBRESAMPLE) && (!defined REFKEEN_RESAMPLER_LIBAVCODEC)
+		char errMsg[160];
+#endif
+
+#if (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
+		context->swrContext = swr_alloc_set_opts(
+			NULL,                // allocating a new context
+			AV_CH_LAYOUT_MONO,   // out channels layout
+			AV_SAMPLE_FMT_S16,   // out format
+			outSampleRate,       // out rate
+			AV_CH_LAYOUT_MONO,   // in channels layout
+			AV_SAMPLE_FMT_S16,   // in format
+			inSampleRate,        // in rate
+			0,
+			NULL
+		);
+		if (context->swrContext == NULL)
+			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: swr_alloc_set_opts failed!");
+		int error = swr_init(context->swrContext);
+		if (error != 0)
+		{
+			// av_err2str requires libavutil/libavutil-ffmpeg, so don't convert code to string
+			snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: swr_init failed! Error code: %d", error);
+			BE_ST_ExitWithErrorMsg(errMsg);
+		}
+#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
+		context->avAudioResampleContext = avresample_alloc_context();
+		if (context->avAudioResampleContext == NULL)
+			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: avresample_alloc_context failed!");
+		av_opt_set_int(context->avAudioResampleContext, "in_channel_layout",  AV_CH_LAYOUT_MONO,   0);
+		av_opt_set_int(context->avAudioResampleContext, "out_channel_layout", AV_CH_LAYOUT_MONO,   0);
+		av_opt_set_int(context->avAudioResampleContext, "in_sample_rate",     inSampleRate,        0);
+		av_opt_set_int(context->avAudioResampleContext, "out_sample_rate",    outSampleRate,       0);
+		av_opt_set_int(context->avAudioResampleContext, "in_sample_fmt",      AV_SAMPLE_FMT_S16,   0);
+		av_opt_set_int(context->avAudioResampleContext, "out_sample_fmt",     AV_SAMPLE_FMT_S16,   0);
+		int error = avresample_open(context->avAudioResampleContext);
+		if (error != 0)
+		{
+			// av_err2str requires libavutil/libavutil-ffmpeg, so don't convert code to string
+			snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: swr_init failed! Error code: %d", error);
+			BE_ST_ExitWithErrorMsg(errMsg);
+		}
+#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
+		avcodec_register_all();
+		context->avResampleContext = av_resample_init(
+			outSampleRate,	// out rate
+			inSampleRate,	// in rate
+			16,	// filter length
+			10,	// phase count
+			0,	// linear FIR filter
+			1.0	// cutoff frequency
+		);
+		if (context->avResampleContext == NULL)
+			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: av_resample_init failed!");
+#elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
+		context->resampleFactor = (double)outSampleRate/inSampleRate;
+		context->resampleHandle = resample_open(0, context->resampleFactor, context->resampleFactor);
+		if (context->resampleHandle == NULL)
+			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: resample_open failed!");
+#elif (defined REFKEEN_RESAMPLER_LIBSOXR)
+		soxr_io_spec_t io_spec = soxr_io_spec(SOXR_INT16, SOXR_INT16);
+		soxr_quality_spec_t q_spec = soxr_quality_spec(SOXR_LQ, 0); // Default quality spec adds an audible latency for resampling to 8000Hz
+		soxr_error_t error;
+		context->soxr = soxr_create(
+			inSampleRate, // in rate
+			outSampleRate, // out rate
+			1, // channels
+			&error,
+			&io_spec,
+			&q_spec,
+			NULL // runtime spec
+		);
+		if (context->soxr == NULL)
+		{
+			snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: soxr_create failed!\nError: %s", soxr_strerror(error));
+			BE_ST_ExitWithErrorMsg(errMsg);
+		}
+#elif (defined REFKEEN_RESAMPLER_LIBSPEEXDSP)
+		int error;
+		context->speexResamplerState = speex_resampler_init(
+			1, // channels
+			inSampleRate, // in rate
+			outSampleRate, // out rate
+			0, // quality in the range 0-10 (10 is higher)
+			&error
+		);
+		if (context->speexResamplerState == NULL)
+		{
+			snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: speex_resampler_init failed! Error code: %d\nError: %s", error, speex_resampler_strerror(error));
+			BE_ST_ExitWithErrorMsg(errMsg);
+		}
+#elif (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
+		int error;
+		context->srcResampler = src_new(SRC_SINC_FASTEST, 1, &error);
+		if (context->srcResampler == NULL)
+		{
+			snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: src_new failed!\nError code: %d", error);
+			BE_ST_ExitWithErrorMsg(errMsg);
+		}
+		context->srcData.data_in = dataInPtr;
+		context->srcData.src_ratio = (double)outSampleRate / inSampleRate;
+#endif
+	}
+	else
+#endif // REFKEEN_RESAMPLER_NONE
+	{
+		// The sum of all entries should be outSamplerate,
+		// "uniformly" distributed over context->sdlALSampleRateConvTable
+		context->sampleRateConvTable = (int *)malloc(sizeof(int) * inSampleRate);
+		if (context->sampleRateConvTable == NULL)
+			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Failed to allocate memory for sample rate conversion!");
+		context->sampleRateConvTableSize = inSampleRate;
+		for (int i = 0; i < inSampleRate; ++i)
+		{
+			// Using uint64_t cause an overflow is possible
+			context->sampleRateConvTable[i] = ((uint64_t)(i+1)*(uint64_t)outSampleRate/inSampleRate)-(uint64_t)i*(uint64_t)outSampleRate/inSampleRate;
+		}
+		context->sampleRateConvCurrIndex = 0;
+		context->sampleRateConvCounter = 0;
+	}
+}
+
+static void BEL_ST_ShutdownResampling(BESDLResamplingContext *context)
+{
+#ifndef REFKEEN_RESAMPLER_NONE
+	if (g_refKeenCfg.useResampler)
+	{
+#if (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
+		swr_free(&context->swrContext);
+#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
+		avresample_free(&context->avAudioResampleContext);
+#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
+		av_resample_close(context->avResampleContext);
+#elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
+		resample_close(context->resampleHandle);
+#elif (defined REFKEEN_RESAMPLER_LIBSOXR)
+		soxr_delete(context->soxr);
+#elif (defined REFKEEN_RESAMPLER_LIBSPEEXDSP)
+		speex_resampler_destroy(context->speexResamplerState);
+#elif (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
+		src_delete(context->srcResampler);
+#endif
+	}
+	else
+#endif // REFKEEN_RESAMPLER_NONE
+		free(context->sampleRateConvTable);
+}
+
+static inline void BEL_ST_DoResample(
+	BESDLResamplingContext *context,
+	uint32_t *outConsumed, uint32_t *outProduced,
+	BE_ST_SndSample_T *inPtr, BE_ST_SndSample_T *outPtr,
+	uint32_t numOfAvailInputSamples, uint32_t maxSamplesToOutput)
 {
 	// Just some type differences
 #ifdef REFKEEN_RESAMPLER_LIBSOXR
@@ -807,42 +832,42 @@ static inline void BEL_ST_DoResample(uint32_t *outConsumed, uint32_t *outProduce
 		samples_consumed = numOfAvailInputSamples;
 		const uint8_t * inPtrs[] = { inPtr, NULL };
 		uint8_t *outPtrs[] =  { outPtr, NULL };
-		samples_produced = swr_convert(g_sdlSwrContext, outPtrs, maxSamplesToOutput, inPtrs, numOfAvailInputSamples);
+		samples_produced = swr_convert(context->swrContext, outPtrs, maxSamplesToOutput, inPtrs, numOfAvailInputSamples);
 #elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
 		samples_consumed = numOfAvailInputSamples;
 		// Previously generated output samples may be queued, and we should read them separately
-		int pending_produced_samples = avresample_available(g_sdlAvAudioResampleContext);
+		int pending_produced_samples = avresample_available(context->avAudioResampleContext);
 		if (pending_produced_samples > 0)
 		{
 			samples_produced = BE_Cross_TypedMin(int, maxSamplesToOutput, pending_produced_samples);
-			avresample_read(g_sdlAvAudioResampleContext, &outPtr, samples_produced);
+			avresample_read(context->avAudioResampleContext, &outPtr, samples_produced);
 			outPtr += sizeof(BE_ST_SndSample_T)*samples_produced;
 		}
 		else
 			samples_produced = 0;
 
 		if ((uint32_t)samples_produced < maxSamplesToOutput)
-			samples_produced += avresample_convert(g_sdlAvAudioResampleContext, &outPtr, 0, maxSamplesToOutput - samples_produced, &inPtr, 0, numOfAvailInputSamples);
+			samples_produced += avresample_convert(context->avAudioResampleContext, &outPtr, 0, maxSamplesToOutput - samples_produced, &inPtr, 0, numOfAvailInputSamples);
 #elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
 		samples_consumed = 0;
-		samples_produced = av_resample(g_sdlAvResampleContext, outPtr, inPtr, &samples_consumed, numOfAvailInputSamples, maxSamplesToOutput, 1);
+		samples_produced = av_resample(context->avResampleContext, outPtr, inPtr, &samples_consumed, numOfAvailInputSamples, maxSamplesToOutput, 1);
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 		samples_consumed = 0;
-		samples_produced = resample_process(g_sdlResampleHandle, g_sdlResampleFactor, (float *)inPtr, numOfAvailInputSamples, 0, &samples_consumed, (float *)outPtr, maxSamplesToOutput);
+		samples_produced = resample_process(context->resampleHandle, context->resampleFactor, (float *)inPtr, numOfAvailInputSamples, 0, &samples_consumed, (float *)outPtr, maxSamplesToOutput);
 #elif (defined REFKEEN_RESAMPLER_LIBSOXR)
 		samples_consumed = samples_produced = 0;
-		soxr_process(g_sdlSoxr, inPtr, numOfAvailInputSamples, &samples_consumed, outPtr, maxSamplesToOutput, &samples_produced);
+		soxr_process(context->soxr, inPtr, numOfAvailInputSamples, &samples_consumed, outPtr, maxSamplesToOutput, &samples_produced);
 #elif (defined REFKEEN_RESAMPLER_LIBSPEEXDSP)
 		samples_consumed = numOfAvailInputSamples;
 		samples_produced = maxSamplesToOutput;
-		speex_resampler_process_int(g_sdlSpeexResamplerState, 0, (spx_int16_t *)inPtr, &samples_consumed, (spx_int16_t *)outPtr, &samples_produced);
+		speex_resampler_process_int(context->speexResamplerState, 0, (spx_int16_t *)inPtr, &samples_consumed, (spx_int16_t *)outPtr, &samples_produced);
 #elif (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
-		g_sdlSrcData.data_out = (float *)outPtr;
-		g_sdlSrcData.input_frames = numOfAvailInputSamples;
-		g_sdlSrcData.output_frames = maxSamplesToOutput;
-		src_process(g_sdlSrcResampler, &g_sdlSrcData);
-		samples_consumed = g_sdlSrcData.input_frames_used;
-		samples_produced = g_sdlSrcData.output_frames_gen;
+		context->srcData.data_out = (float *)outPtr;
+		context->srcData.input_frames = numOfAvailInputSamples;
+		context->srcData.output_frames = maxSamplesToOutput;
+		src_process(context->srcResampler, &context->srcData);
+		samples_consumed = context->srcData.input_frames_used;
+		samples_produced = context->srcData.output_frames_gen;
 #endif
 	}
 	else
@@ -852,16 +877,16 @@ static inline void BEL_ST_DoResample(uint32_t *outConsumed, uint32_t *outProduce
 		/*** Note: Casting to unsigned in order to suppress comparison-related warnings ***/
 		while (((unsigned)samples_consumed < numOfAvailInputSamples) && ((unsigned)samples_produced < maxSamplesToOutput))
 		{
-			if (g_sdlSampleRateConvCounter)
+			if (context->sampleRateConvCounter)
 			{
-				outPtr[samples_produced++] = g_sdlSampleRateConvLastValue;
-				--g_sdlSampleRateConvCounter;
+				outPtr[samples_produced++] = context->sampleRateConvLastValue;
+				--context->sampleRateConvCounter;
 			}
 			else
 			{
-				g_sdlSampleRateConvLastValue = inPtr[samples_consumed++];
-				g_sdlSampleRateConvCounter = g_sdlSampleRateConvTable[g_sdlSampleRateConvCurrIndex];
-				g_sdlSampleRateConvCurrIndex = (g_sdlSampleRateConvCurrIndex+1) % g_sdlSampleRateConvTableSize;
+				context->sampleRateConvLastValue = inPtr[samples_consumed++];
+				context->sampleRateConvCounter = context->sampleRateConvTable[context->sampleRateConvCurrIndex];
+				context->sampleRateConvCurrIndex = (context->sampleRateConvCurrIndex+1) % context->sampleRateConvTableSize;
 			}
 		}
 	}
@@ -1034,7 +1059,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 		uint32_t maxSamplesToOutput = BE_Cross_TypedMin(uint32_t, len / sizeof(BE_ST_SndSample_T), g_sdlMiscOutSamplesEnd); // Not taking plain (len / sizeof(BE_ST_SndSample_T)), just to make it safer
 
 		uint32_t samples_consumed, samples_produced;
-		BEL_ST_DoResample(&samples_consumed, &samples_produced, g_sdlALOutSamples, currSamplePtr, g_sdlALOutSamplesEnd, maxSamplesToOutput);
+		BEL_ST_DoResample(&g_sdlMainResamplingContext, &samples_consumed, &samples_produced, g_sdlALOutSamples, currSamplePtr, g_sdlALOutSamplesEnd, maxSamplesToOutput);
 
 		len -= sizeof(BE_ST_SndSample_T)*samples_produced;
 		// Mix PC Speaker output
@@ -1180,7 +1205,7 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 
 		// Resample
 		uint32_t samples_consumed, samples_produced;
-		BEL_ST_DoResample(&samples_consumed, &samples_produced, g_sdlMiscOutSamples, (BE_ST_SndSample_T *)stream, g_sdlMiscOutNumOfSamples, len/sizeof(BE_ST_SndSample_T));
+		BEL_ST_DoResample(&g_sdlMainResamplingContext, &samples_consumed, &samples_produced, g_sdlMiscOutSamples, (BE_ST_SndSample_T *)stream, g_sdlMiscOutNumOfSamples, len/sizeof(BE_ST_SndSample_T));
 		stream += sizeof(BE_ST_SndSample_T) * samples_produced;
 		len -= sizeof(BE_ST_SndSample_T) * samples_produced;
 		// Move pending sound data
