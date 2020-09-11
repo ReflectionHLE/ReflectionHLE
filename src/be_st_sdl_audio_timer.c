@@ -30,8 +30,6 @@
 #include <libavutil/channel_layout.h>
 //#include <libavutil/error.h> // av_err2str requires libavutil/libavutil-ffmpeg
 #include <libswresample/swresample.h>
-#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-#include <libavcodec/avcodec.h>
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 #include <libresample.h>
 #elif (defined REFKEEN_RESAMPLER_LIBSOXR)
@@ -184,8 +182,6 @@ typedef struct
 	// Nothing to add here
 #elif (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
 	struct SwrContext *swrContext;
-#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-	struct AVResampleContext* avResampleContext;
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 	void *resampleHandle;
 	double resampleFactor;
@@ -656,7 +652,7 @@ static void BEL_ST_InitResampling(
 #ifndef REFKEEN_RESAMPLER_NONE
 	if (g_refKeenCfg.useResampler)
 	{
-#if (!defined REFKEEN_RESAMPLER_LIBRESAMPLE) && (!defined REFKEEN_RESAMPLER_LIBAVCODEC)
+#ifndef REFKEEN_RESAMPLER_LIBRESAMPLE
 		char errMsg[160];
 #endif
 
@@ -681,18 +677,6 @@ static void BEL_ST_InitResampling(
 			snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: swr_init failed! Error code: %d", error);
 			BE_ST_ExitWithErrorMsg(errMsg);
 		}
-#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-		avcodec_register_all();
-		context->avResampleContext = av_resample_init(
-			outSampleRate,	// out rate
-			inSampleRate,	// in rate
-			16,	// filter length
-			10,	// phase count
-			0,	// linear FIR filter
-			1.0	// cutoff frequency
-		);
-		if (context->avResampleContext == NULL)
-			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: av_resample_init failed!");
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 		context->resampleFactor = (double)outSampleRate/inSampleRate;
 		context->resampleHandle = resample_open(0, context->resampleFactor, context->resampleFactor);
@@ -768,8 +752,6 @@ static void BEL_ST_ShutdownResampling(BESDLResamplingContext *context)
 	{
 #if (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
 		swr_free(&context->swrContext);
-#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-		av_resample_close(context->avResampleContext);
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 		resample_close(context->resampleHandle);
 #elif (defined REFKEEN_RESAMPLER_LIBSOXR)
@@ -796,7 +778,7 @@ static inline void BEL_ST_DoResample(
 	size_t samples_consumed, samples_produced;
 #elif (defined REFKEEN_RESAMPLER_NONE) || (defined REFKEEN_RESAMPLER_LIBSPEEXDSP) || (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
 	uint32_t samples_consumed, samples_produced;
-#elif (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE) || (defined REFKEEN_RESAMPLER_LIBAVCODEC) || (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
+#elif (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE) || (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 	int samples_consumed, samples_produced;
 #endif
 
@@ -808,9 +790,6 @@ static inline void BEL_ST_DoResample(
 		const uint8_t * inPtrs[] = { inPtr, NULL };
 		uint8_t *outPtrs[] =  { outPtr, NULL };
 		samples_produced = swr_convert(context->swrContext, outPtrs, maxSamplesToOutput, inPtrs, numOfAvailInputSamples);
-#elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
-		samples_consumed = 0;
-		samples_produced = av_resample(context->avResampleContext, outPtr, inPtr, &samples_consumed, numOfAvailInputSamples, maxSamplesToOutput, 1);
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 		samples_consumed = 0;
 		samples_produced = resample_process(context->resampleHandle, context->resampleFactor, (float *)inPtr, numOfAvailInputSamples, 0, &samples_consumed, (float *)outPtr, maxSamplesToOutput);
