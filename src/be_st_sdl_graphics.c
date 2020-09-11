@@ -22,6 +22,7 @@
 #include "SDL.h"
 
 #include "be_cross.h"
+#include "be_features.h"
 #include "be_gamever.h" // Enable VSync by default for EGA/VGA, not CGA
 #include "be_st.h"
 #include "be_st_launcher.h"
