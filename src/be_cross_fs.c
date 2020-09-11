@@ -1451,12 +1451,15 @@ int BE_Cross_GetSelectedGameVerSampleRate(void)
 
 
 // gameVer should be BE_GAMEVER_LAST if no specific version is desired
-static void BEL_Cross_SelectGameInstallation(int gameVerVal)
+// FIXME: See BE_Cross_InitGame for explanation about setVerOnly
+static void BEL_Cross_SelectGameInstallation(int gameVerVal, bool setVerOnly)
 {
 	if (gameVerVal == BE_GAMEVER_LAST)
 	{
 		if (!g_be_gameinstallations_num)
 		{
+			if (setVerOnly)
+				return;
 			BE_ST_ExitWithErrorMsg("BEL_Cross_SelectGameInstallation: No compatible game installation found!");
 		}
 		g_be_selectedGameInstallation = &g_be_gameinstallations[0];
@@ -1467,11 +1470,18 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal)
 		if (!g_be_selectedGameInstallation)
 		{
 			char errorBuffer[80];
+			if (setVerOnly)
+				return;
 			BE_Cross_safeandfastcstringcopy_2strs(errorBuffer, errorBuffer+sizeof(errorBuffer), "BEL_Cross_SelectGameInstallation: Can't find game installation: ",  refkeen_gamever_strs[gameVerVal]);
 			BE_ST_ExitWithErrorMsg(errorBuffer);
 		}
 	}
 
+	if (setVerOnly)
+	{
+		refkeen_current_gamever = g_be_selectedGameInstallation->verId;
+		return;
+	}
 	g_refKeenCfg.lastSelectedGameVer = refkeen_current_gamever = g_be_selectedGameInstallation->verId;
 
 	for (void (**patcherFuncPtr)(void) = g_be_gamever_ptrs[refkeen_current_gamever]->patcherFuncPtrs;
@@ -1607,8 +1617,18 @@ void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer
 
 void BE_Cross_InitGame(int gameVerVal)
 {
+	// FIXME: We have a problem:
+	// 1. BE_ST_PrepareForGameStartupWithoutAudio should theoretically be
+	// called before BEL_Cross_SelectGameInstallation, so an error message
+	// can be displayed if no matching game version is found.
+	// 2. On the other hand, as of writing this, we first need to set
+	// refkeen_current_gamever via BEL_Cross_SelectGameInstallation.
+	// Reason is that before the call to BE_ST_PrepareForGameStartupWithoutAudio
+	// is completed, this version may currently determine if VSync is enabled
+	// when AUTO is chosen (it's disabled for Keen Dreams with CGA graphics).
+	BEL_Cross_SelectGameInstallation(gameVerVal, true);
 	BE_ST_PrepareForGameStartupWithoutAudio(); // Some additional preparation required
-	BEL_Cross_SelectGameInstallation(gameVerVal);
+	BEL_Cross_SelectGameInstallation(gameVerVal, false);
 	BE_ST_InitAudio(); // Do this now, since we can tell if we want digi audio out or not
 }
 
