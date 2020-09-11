@@ -30,10 +30,6 @@
 #include <libavutil/channel_layout.h>
 //#include <libavutil/error.h> // av_err2str requires libavutil/libavutil-ffmpeg
 #include <libswresample/swresample.h>
-#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-//#include <libavutil/error.h> // av_err2str requires libavutil/libavutil-ffmpeg, which may actually be used, but let's not depend on this
-#include <libavutil/opt.h>
-#include <libavresample/avresample.h>
 #elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
 #include <libavcodec/avcodec.h>
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
@@ -188,8 +184,6 @@ typedef struct
 	// Nothing to add here
 #elif (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
 	struct SwrContext *swrContext;
-#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-	struct AVAudioResampleContext *avAudioResampleContext;
 #elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
 	struct AVResampleContext* avResampleContext;
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
@@ -687,23 +681,6 @@ static void BEL_ST_InitResampling(
 			snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: swr_init failed! Error code: %d", error);
 			BE_ST_ExitWithErrorMsg(errMsg);
 		}
-#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-		context->avAudioResampleContext = avresample_alloc_context();
-		if (context->avAudioResampleContext == NULL)
-			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: avresample_alloc_context failed!");
-		av_opt_set_int(context->avAudioResampleContext, "in_channel_layout",  AV_CH_LAYOUT_MONO,   0);
-		av_opt_set_int(context->avAudioResampleContext, "out_channel_layout", AV_CH_LAYOUT_MONO,   0);
-		av_opt_set_int(context->avAudioResampleContext, "in_sample_rate",     inSampleRate,        0);
-		av_opt_set_int(context->avAudioResampleContext, "out_sample_rate",    outSampleRate,       0);
-		av_opt_set_int(context->avAudioResampleContext, "in_sample_fmt",      AV_SAMPLE_FMT_S16,   0);
-		av_opt_set_int(context->avAudioResampleContext, "out_sample_fmt",     AV_SAMPLE_FMT_S16,   0);
-		int error = avresample_open(context->avAudioResampleContext);
-		if (error != 0)
-		{
-			// av_err2str requires libavutil/libavutil-ffmpeg, so don't convert code to string
-			snprintf(errMsg, sizeof(errMsg), "BE_ST_InitAudio: swr_init failed! Error code: %d", error);
-			BE_ST_ExitWithErrorMsg(errMsg);
-		}
 #elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
 		avcodec_register_all();
 		context->avResampleContext = av_resample_init(
@@ -791,8 +768,6 @@ static void BEL_ST_ShutdownResampling(BESDLResamplingContext *context)
 	{
 #if (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE)
 		swr_free(&context->swrContext);
-#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-		avresample_free(&context->avAudioResampleContext);
 #elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
 		av_resample_close(context->avResampleContext);
 #elif (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
@@ -821,7 +796,7 @@ static inline void BEL_ST_DoResample(
 	size_t samples_consumed, samples_produced;
 #elif (defined REFKEEN_RESAMPLER_NONE) || (defined REFKEEN_RESAMPLER_LIBSPEEXDSP) || (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
 	uint32_t samples_consumed, samples_produced;
-#elif (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE) || (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE) || (defined REFKEEN_RESAMPLER_LIBAVCODEC) || (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
+#elif (defined REFKEEN_RESAMPLER_LIBSWRESAMPLE) || (defined REFKEEN_RESAMPLER_LIBAVCODEC) || (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 	int samples_consumed, samples_produced;
 #endif
 
@@ -833,21 +808,6 @@ static inline void BEL_ST_DoResample(
 		const uint8_t * inPtrs[] = { inPtr, NULL };
 		uint8_t *outPtrs[] =  { outPtr, NULL };
 		samples_produced = swr_convert(context->swrContext, outPtrs, maxSamplesToOutput, inPtrs, numOfAvailInputSamples);
-#elif (defined REFKEEN_RESAMPLER_LIBAVRESAMPLE)
-		samples_consumed = numOfAvailInputSamples;
-		// Previously generated output samples may be queued, and we should read them separately
-		int pending_produced_samples = avresample_available(context->avAudioResampleContext);
-		if (pending_produced_samples > 0)
-		{
-			samples_produced = BE_Cross_TypedMin(int, maxSamplesToOutput, pending_produced_samples);
-			avresample_read(context->avAudioResampleContext, &outPtr, samples_produced);
-			outPtr += sizeof(BE_ST_SndSample_T)*samples_produced;
-		}
-		else
-			samples_produced = 0;
-
-		if ((uint32_t)samples_produced < maxSamplesToOutput)
-			samples_produced += avresample_convert(context->avAudioResampleContext, &outPtr, 0, maxSamplesToOutput - samples_produced, &inPtr, 0, numOfAvailInputSamples);
 #elif (defined REFKEEN_RESAMPLER_LIBAVCODEC)
 		samples_consumed = 0;
 		samples_produced = av_resample(context->avResampleContext, outPtr, inPtr, &samples_consumed, numOfAvailInputSamples, maxSamplesToOutput, 1);
