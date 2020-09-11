@@ -1624,8 +1624,17 @@ void Died (void)
 //
 // swing around to face attacker
 //
-	dx = killerobj->x - player->x;
-	dy = player->y - killerobj->y;
+	// REFKEEN: If killerobj is 0 then emulate NULL-pointer dereferences
+	if (killerobj)
+	{
+		dx = killerobj->x - player->x;
+		dy = player->y - killerobj->y;
+	}
+	else
+	{
+		dx = 0x6F43202D - player->x;
+		dy = player->y - 0x69727970;
+	}
 
 	fangle = atan2(dy,dx);			// returns -pi to pi
 	if (fangle<0)
