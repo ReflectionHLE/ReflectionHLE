@@ -234,15 +234,11 @@ void BE_ST_InitGfx(void)
 
 	if (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling)
 		windowFlagsToSet |= SDL_WINDOW_RESIZABLE;
-	// Vanilla Keen Dreams and Keen 4-6 have no VSync in the CGA builds
-#ifdef BE_ST_ADAPT_VSYNC_DEFAULT_TO_KDREAMS
-	uint32_t rendererFlagsToSet = SDL_RENDERER_ACCELERATED | (((g_refKeenCfg.vSync == VSYNC_ON) || ((g_refKeenCfg.vSync == VSYNC_AUTO) && (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))) ? SDL_RENDERER_PRESENTVSYNC : 0);
-#else
-	uint32_t rendererFlagsToSet = SDL_RENDERER_ACCELERATED | ((g_refKeenCfg.vSync != VSYNC_OFF) ? SDL_RENDERER_PRESENTVSYNC : 0);
-#endif
+
+	uint32_t rendererFlags = BEL_ST_GetSDLRendererFlagsToSet(false);
 	BEL_ST_RecreateSDLWindowAndRenderer(
 		SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum),
-		windowWidthToSet, windowHeightToSet, g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlagsToSet
+		windowWidthToSet, windowHeightToSet, g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlags
 	);
 
 	BE_ST_SetScreenMode(3); // Includes SDL_Texture handling and output rects preparation
@@ -342,6 +338,22 @@ setupforfullscreen:
 		SDL_SetWindowDisplayMode(g_sdlWindow, &mode);
 	}
 	SDL_SetWindowFullscreen(g_sdlWindow, windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP);
+}
+
+uint32_t BEL_ST_GetSDLRendererFlagsToSet(bool isLauncherWindow)
+{
+	// Vanilla Keen Dreams and Keen 4-6 have no VSync in the CGA builds
+	uint32_t flags = SDL_RENDERER_ACCELERATED;
+#ifdef BE_ST_ADAPT_VSYNC_DEFAULT_TO_KDREAMS
+	if ((g_refKeenCfg.vSync == VSYNC_ON) ||
+	    ((g_refKeenCfg.vSync == VSYNC_AUTO) &&
+	     (isLauncherWindow || (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))))
+		flags |= SDL_RENDERER_PRESENTVSYNC;
+#else
+	if ((g_refKeenCfg.vSync == VSYNC_ON) || (g_refKeenCfg.vSync == VSYNC_AUTO))
+		flags |= SDL_RENDERER_PRESENTVSYNC;
+#endif
+	return flags;
 }
 
 static void BEL_ST_RecreateTexture(void)

@@ -59,6 +59,7 @@ void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSKeyEvent keyEvent);
 void BEL_ST_ConditionallyShowAltInputPointer(void);
 void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode);
+uint32_t BEL_ST_GetSDLRendererFlagsToSet(bool islauncherWindow);
 // A set of texture management wrappers, used to support recreation of textures on an SDL_RENDER* event.
 //
 // ***WARNING*** - You MUST pass a pTexture value which is also used

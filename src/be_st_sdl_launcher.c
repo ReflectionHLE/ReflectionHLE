@@ -694,10 +694,11 @@ void BE_ST_Launcher_Prepare(void)
 		g_refKeenCfg.winHeight = 2*BE_LAUNCHER_PIX_HEIGHT;
 	}
 
+	uint32_t rendererFlags = BEL_ST_GetSDLRendererFlagsToSet(true);
 	BEL_ST_RecreateSDLWindowAndRenderer(
 		SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0,
 		((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) | ((g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE) ? SDL_WINDOW_RESIZABLE : 0),
-		-1, (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE) ? SDL_RENDERER_SOFTWARE : (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
+		-1, rendererFlags
 	);
 
 	BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, "nearest");
