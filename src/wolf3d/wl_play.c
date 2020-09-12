@@ -582,7 +582,7 @@ void PollControls (void)
 //
 	if (demoplayback)
 	{
-		SD_TimeCountWaitFromSrc(lasttimecount+DEMOTICS);
+		SD_TimeCountWaitFromSrc(lasttimecount, DEMOTICS);
 		SD_SetTimeCount(lasttimecount + DEMOTICS);
 #if 0
 		while (TimeCount<lasttimecount+DEMOTICS)
@@ -597,7 +597,7 @@ void PollControls (void)
 //
 // take DEMOTICS or more tics, and modify Timecount to reflect time taken
 //
-		SD_TimeCountWaitFromSrc(lasttimecount+DEMOTICS);
+		SD_TimeCountWaitFromSrc(lasttimecount, DEMOTICS);
 		SD_SetTimeCount(lasttimecount + DEMOTICS);
 #if 0
 		while (TimeCount<lasttimecount+DEMOTICS)
