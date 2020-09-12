@@ -84,4 +84,3 @@
 #define STR_MAN4	"on?"
 
 #define STR_ID1		"Which member of Id Software:"
-
