@@ -4717,13 +4717,24 @@ void ShootSnd(void)
 ///////////////////////////////////////////////////////////////////////////
 void CheckForEpisodes(void)
 {
-#if !REFKEEN_ENABLE_FILE_SEARCH // TODO: Assume it's v1.0 and files are found
+#if !REFKEEN_ENABLE_FILE_SEARCH // TODO: Assume it's WL1/SDM/SOD and files are found
+
+#ifdef SPEAR
+#ifndef SPEARDEMO
+	strcpy(extension,"SOD");
+#else
+	strcpy(extension,"SDM");
+#endif
+#else
 	strcpy(extension,"WL1");
+#endif
 	strcat(configname,extension);
 	strcat(SaveName,extension);
 	strcat(PageFileName,extension);
 	strcat(audioname,extension);
+#if (!defined SPEAR) && (!defined GOODTIMES) // REFKEEN: But not if unneeded
 	strcat(helpfilename,extension);
+#endif
 	strcat(demoname,extension);
 #else // REFKEEN_ENABLE_FILE_SEARCH
 	struct ffblk f;
