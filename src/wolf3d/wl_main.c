@@ -1799,7 +1799,9 @@ close(profilehandle);
 	if (virtualreality)
 	{
 		NoWait = true;
+#if REFKEEN_WL_ENABLE_VR
 		geninterrupt(0x60);
+#endif
 	}
 #endif
 }
@@ -1916,8 +1918,10 @@ void Quit (id0_char_t *error)
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+#if REFKEEN_WL_ENABLE_VR
 	if (virtualreality)
 		geninterrupt(0x61);
+#endif
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***

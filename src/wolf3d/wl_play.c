@@ -1871,6 +1871,7 @@ void PlayLoop (void)
 	{
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+#if REFKEEN_WL_ENABLE_VR
 		if (virtualreality)
 		{
 			helmetangle = peek (0x40,0xf0);
@@ -1878,6 +1879,7 @@ void PlayLoop (void)
 			if (player->angle >= ANGLES)
 				player->angle -= ANGLES;
 		}
+#endif
 #endif
 
 
@@ -1975,12 +1977,14 @@ void PlayLoop (void)
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+#if REFKEEN_WL_ENABLE_VR
 		if (virtualreality)
 		{
 			player->angle -= helmetangle;
 			if (player->angle < 0)
 				player->angle += ANGLES;
 		}
+#endif
 #endif
 
 	}while (!playstate && !startgame);

@@ -1189,6 +1189,8 @@ extern	id0_int_t			shootdelta;
 
 extern	id0_int_t			dirangle[9];
 
+//#define REFKEEN_WL_ENABLE_VR // REFKEEN: Disable all related code
+
 // *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 extern	id0_boolean_t         startgame,loadedgame
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
