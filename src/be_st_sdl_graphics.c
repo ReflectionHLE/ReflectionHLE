@@ -2400,6 +2400,11 @@ void BE_ST_SetScreenStartAddress(uint16_t crtc)
 	g_sdlScreenStartAddress = crtc;
 }
 
+void BE_ST_SetScreenStartAddressHiPart(uint8_t crtc_hi)
+{
+	BE_ST_SetScreenStartAddress((g_sdlScreenStartAddress & 0xFF) | (crtc_hi << 8));
+}
+
 void BE_ST_SetBorderColor(uint8_t color)
 {
 	if (g_sdlScreenMode == 0x13)

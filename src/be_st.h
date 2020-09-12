@@ -345,6 +345,7 @@ void BE_ST_EGAXorGFXByteByPlaneMask(uint16_t destOff, uint8_t srcVal, uint16_t p
 void BE_ST_CGAUpdateGFXBufferFromWrappedMem(const uint8_t *segPtr, const uint8_t *offInSegPtr, uint16_t byteLineWidth);
 
 void BE_ST_SetScreenStartAddress(uint16_t crtc);
+void BE_ST_SetScreenStartAddressHiPart(uint8_t crtc_hi);
 void BE_ST_SetBorderColor(uint8_t color);
 void BE_ST_SetScreenMode(int mode);
 void BE_ST_WaitForNewVerticalRetraces(int16_t number);
