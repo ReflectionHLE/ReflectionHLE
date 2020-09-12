@@ -30,6 +30,9 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_WL1AP10
 	BE_STR_GAMEVER_WL1AP10,
 #endif
+#ifdef REFKEEN_HAS_VER_WL1AP11
+	BE_STR_GAMEVER_WL1AP11,
+#endif
 };
 
 const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
@@ -58,6 +61,9 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP10
 	"Wolfenstein 3D Shareware v1.0",
+#endif
+#ifdef REFKEEN_HAS_VER_WL1AP11
+	"Wolfenstein 3D Shareware v1.1",
 #endif
 };
 
@@ -103,6 +109,9 @@ static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_WL1AP10
 	&g_be_gamever_wl1ap10,
 #endif
+#ifdef REFKEEN_HAS_VER_WL1AP11
+	&g_be_gamever_wl1ap11,
+#endif
 };
 
 const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
@@ -131,5 +140,8 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP10
 	g_be_reqgameverfiles_wl1ap10,
+#endif
+#ifdef REFKEEN_HAS_VER_WL1AP11
+	g_be_reqgameverfiles_wl1ap11,
 #endif
 };

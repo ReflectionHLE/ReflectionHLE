@@ -1137,6 +1137,9 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_HAS_VER_WL1AP10
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap10, _T("."), "Wolfenstein 3D Shareware v1.0 (Local)");
 #endif
+#ifdef REFKEEN_HAS_VER_WL1AP11
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap11, _T("."), "Wolfenstein 3D Shareware v1.1 (Local)");
+#endif
 	}
 	/*** Finally check any custom dir ***/
 	char buffer[2*BE_CROSS_PATH_LEN_BOUND];

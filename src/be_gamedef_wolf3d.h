@@ -3,3 +3,6 @@
 #ifdef REFKEEN_HAS_VER_WL1AP10
 #include "be_gamedef_wl1ap10.h"
 #endif
+#ifdef REFKEEN_HAS_VER_WL1AP11
+#include "be_gamedef_wl1ap11.h"
+#endif
