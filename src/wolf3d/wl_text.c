@@ -27,6 +27,8 @@
 #include "wl_def.h"
 //#pragma	hdrstop
 
+#ifndef SPEAR // REFKEEN: Disable all code for what doesn't need it
+
 /*
 =============================================================================
 
@@ -1068,3 +1070,5 @@ void EndText (void)
 #endif
 }
 #endif
+
+#endif // REFKEEN: Disable code when not required
