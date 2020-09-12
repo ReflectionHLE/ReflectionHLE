@@ -30,5 +30,8 @@
 #ifdef REFKEEN_HAS_VER_WL1AP11
 #define BE_STR_GAMEVER_WL1AP11 "wl1ap11"
 #endif
+#ifdef REFKEEN_HAS_VER_WL1AP12
+#define BE_STR_GAMEVER_WL1AP12 "wl1ap12"
+#endif
 
 #endif // BE_GAMESTR_H
