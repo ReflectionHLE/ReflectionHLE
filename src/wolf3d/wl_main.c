@@ -538,13 +538,16 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 	// Comment out anything to do with checksumming and free size verifications, plus a bit more
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	struct diskfree_t dfree;
-	id0_long_t avail,size,checksum;
+	// REFKEEN (TODO) Let's disable the available disk space check for now
+	id0_long_t checksum;
+//	struct diskfree_t dfree;
+//	id0_long_t avail,size,checksum;
 #endif
 	objtype *ob,nullobj;
 
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+#if 0 // REFKEEN: Disable for now
 	if (_dos_getdiskfree(0,&dfree))
 	  Quit("Error in _dos_getdiskfree call");
 
@@ -581,6 +584,7 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 			 STR_NOSPACE2);
 	 return false;
 	}
+#endif
 
 	checksum = 0;
 #endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
