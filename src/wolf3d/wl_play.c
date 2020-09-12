@@ -1998,5 +1998,7 @@ void RefKeen_Patch_wl_play(void)
 	refkeen_compat_wl_play_objoffset = 0xB0B0;
 #elif (defined REFKEEN_VER_WL1AP11)
 	refkeen_compat_wl_play_objoffset = 0xA73A;
+#elif (defined REFKEEN_VER_WL1AP12)
+	refkeen_compat_wl_play_objoffset = 0xA74A;
 #endif
 }
