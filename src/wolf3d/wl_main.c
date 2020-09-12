@@ -1490,7 +1490,7 @@ void DoJukebox(void)
 			XTOWER2_MUS              // 23
 #endif
 		};
-	struct dostime_t time;
+//	struct dostime_t time;
 
 
 
@@ -1505,8 +1505,12 @@ void DoJukebox(void)
 // *** S3DNA RESTORATION ***
 #if (!defined UPLOAD) && (!defined GAMEVER_NOAH3D)
 //#ifndef UPLOAD
-	_dos_gettime(&time);
-	start = (time.hsecond%3)*6;
+	// REFKEEN: Use second isn't of hundredth of a sec
+	int hour, min, sec;
+	BE_Cross_GetLocalTime_UNSAFE(&hour, &min, &sec);
+	start = (sec%3)*6;
+//	_dos_gettime(&time);
+//	start = (time.hsecond%3)*6;
 #else
 	start = 0;
 #endif
