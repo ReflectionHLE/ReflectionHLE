@@ -108,7 +108,7 @@ void SpawnNewObj (id0_unsigned_t tilex, id0_unsigned_t tiley, statetype *state)
 	new->state = state;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->ticcount = random(state->tictime) + 1;
+	new->ticcount = BE_Cross_Brandom(state->tictime) + 1;
 #else
 	if (state->tictime)
 		new->ticcount = US_RndT () % state->tictime;
