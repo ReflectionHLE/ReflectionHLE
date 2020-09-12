@@ -377,11 +377,13 @@ uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void);
 void BE_Cross_Brandomize(void);
 int16_t BE_Cross_Brandom(int16_t num);
 
-// UNSAFE alternative for Borland's getdate function used in Keen Dreams v1.00;
+// UNSAFE alternatives for Borland's getdate and _dos_gettime functions
+// used in Keen Dreams v1.00 and Wolfenstein 3D, respectively;
 //
-// Do NOT call the function from multiple threads!
-// (Internally it uses localtime, which isn't thread-safe on Linux.)
+// Do NOT call the functions from multiple threads!
+// (Internally they use localtime, which isn't thread-safe on Linux.)
 void BE_Cross_GetLocalDate_UNSAFE(int *y, int *m, int *d);
+void BE_Cross_GetLocalTime_UNSAFE(int *h, int *m, int *s);
 
 /*** Memory management functions - used as alternatives to     ***/
 /*** Borland C++ functions/macros in 16-bit real-mode codebase ***/
