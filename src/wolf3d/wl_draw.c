@@ -1889,7 +1889,7 @@ asm	rep stosw
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	BE_ST_SetScreenStartAddress(displayofs);
 #else
-#error	"Implement a limited BE_ST_SetScreenStartAddress for the high part"
+	BE_ST_SetScreenStartAddressHiPart(displayofs >> 8);
 
 	bufferofs += SCREENSIZE;
 	if (bufferofs > PAGE3START)
