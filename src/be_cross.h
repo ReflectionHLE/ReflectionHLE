@@ -110,6 +110,12 @@ inline int BE_Cross_isupper(int c)
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 int BE_Cross_strncasecmp(const char *s1, const char *s2, size_t count);
 
+inline void BE_Cross_strlwr(char *str)
+{
+	for (; *str; *str = BE_Cross_tolower(*str), ++str)
+		;
+}
+
 /* A safe(r) string copying function that:
  * - Gets a pointer to the destination buffer's end (little performance bit).
  * - Returns the END of the written string. (This differs from strcpy!)
