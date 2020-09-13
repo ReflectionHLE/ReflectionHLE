@@ -934,7 +934,8 @@ typedef enum {
 
 typedef struct	statestruct
 {
-	id0_boolean_t	rotate;
+	id0_int_t	rotate; // REFKEEN: "rotate" may also have the value of 2
+//	id0_boolean_t	rotate;
 	id0_int_t		shapenum;			// a shapenum of -1 means get from ob->temp1
 	id0_int_t		tictime;
 	void	(*think) (),(*action) ();
