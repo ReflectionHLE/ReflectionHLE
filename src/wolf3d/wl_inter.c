@@ -2700,8 +2700,7 @@ void CopyProtection(void)
 
 	strcpy/*_fstrcpy*/(message,DosMessages[US_RndT()%9]);
 
-	_AX = 3;
-	geninterrupt(0x10);
+	BE_ST_SetScreenMode(3);
 
 	BE_ST_printf("%s\n",message);
 	BE_ST_HandleExit(1);
