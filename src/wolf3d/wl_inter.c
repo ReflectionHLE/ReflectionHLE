@@ -2456,7 +2456,7 @@ id0_int_t  BackDoor(id0_char_t *s)
 	id0_int_t i;
 
 
-	strlwr(s);
+	BE_Cross_strlwr(s);
 
 	for (i=0;i<5;i++)
 		if (!strcmp(s,BackDoorStrs[i]))
@@ -2588,7 +2588,7 @@ void CopyProtection(void)
 				PrintY = TYPEBOX_Y;
 				US_LineInput(PrintX,PrintY,inputbuffer,id0_nil_t,true,6,100);
 
-				strlwr(inputbuffer);
+				BE_Cross_strlwr(inputbuffer);
 				match = 1-(strcmp/*_fstrcmp*/(inputbuffer,WordCorrect[whichword])!=0);
 				match += BackDoor(inputbuffer);
 				break;
@@ -2614,7 +2614,7 @@ void CopyProtection(void)
 				PrintY = TYPEBOX_Y;
 				US_LineInput(PrintX,PrintY,inputbuffer,id0_nil_t,true,20,120);
 
-				strlwr(inputbuffer);
+				BE_Cross_strlwr(inputbuffer);
 				match = 0;
 				for (i=0;i<strlen/*_fstrlen*/(MemberCorrect[whichmem]);i++)
 					if (!BE_Cross_strncasecmp/*_fstrnicmp*/(inputbuffer,MemberCorrect[whichmem]+i,strlen(inputbuffer)) &&
@@ -2645,7 +2645,7 @@ void CopyProtection(void)
 				PrintY = TYPEBOX_Y;
 				US_LineInput(PrintX,PrintY,inputbuffer,id0_nil_t,true,6,100);
 
-				strlwr(inputbuffer);
+				BE_Cross_strlwr(inputbuffer);
 				match = 1-(strcmp/*_fstrcmp*/(inputbuffer,MiscCorrect[whichone])!=0);
 				match += BackDoor(inputbuffer);
 				break;
