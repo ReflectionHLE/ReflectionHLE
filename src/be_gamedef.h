@@ -39,6 +39,9 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_WL1AP14
 	BE_STR_GAMEVER_WL1AP14,
 #endif
+#ifdef REFKEEN_HAS_VER_WL6AC14
+	BE_STR_GAMEVER_WL6AC14,
+#endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	BE_STR_GAMEVER_SDMFG10,
 #endif
@@ -79,6 +82,9 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP14
 	"Wolfenstein 3D Shareware v1.4",
+#endif
+#ifdef REFKEEN_HAS_VER_WL6AC14
+	"Wolfenstein 3D Activision v1.4",
 #endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	"Spear of Destiny Demo v1.0",
@@ -136,6 +142,9 @@ static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_WL1AP14
 	&g_be_gamever_wl1ap14,
 #endif
+#ifdef REFKEEN_HAS_VER_WL6AC14
+	&g_be_gamever_wl6ac14,
+#endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	&g_be_gamever_sdmfg10,
 #endif
@@ -176,6 +185,9 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP14
 	g_be_reqgameverfiles_wl1ap14,
+#endif
+#ifdef REFKEEN_HAS_VER_WL6AC14
+	g_be_reqgameverfiles_wl6ac14,
 #endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	g_be_reqgameverfiles_sdmfg10,

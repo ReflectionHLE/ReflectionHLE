@@ -36,6 +36,9 @@
 #ifdef REFKEEN_HAS_VER_WL1AP14
 #define BE_STR_GAMEVER_WL1AP14 "wl1ap14"
 #endif
+#ifdef REFKEEN_HAS_VER_WL6AC14
+#define BE_STR_GAMEVER_WL6AC14 "wl6ac14"
+#endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 #define BE_STR_GAMEVER_SDMFG10 "sdmfg10"
 #endif

@@ -145,6 +145,7 @@ set(UNIFIED_WOLF3D_GAME_PARAMS
 	-DREFKEEN_HAS_VER_WL1AP11=1
 	-DREFKEEN_HAS_VER_WL1AP12=1
 	-DREFKEEN_HAS_VER_WL1AP14=1
+	-DREFKEEN_HAS_VER_WL6AC14=1
 	-DREFKEEN_HAS_VER_SDMFG10=1
 	-DREFKEEN_HAS_VER_WOLF3D_ALL=1
 )
@@ -182,6 +183,14 @@ add_refkeen_separate_target(
 )
 
 add_refkeen_separate_target(
+	reflection-wl6ac14 "${targets}" "${LIBRARIES}"
+	"${wolf3d_src}" "${be_src}"
+	"src/wolf3d"
+	"-DGAMEVER_EXEDEF=WL6AC14;-DGAMEVER_EXEDEF_WL6AC14=1;-DREFKEEN_VER_WL6AC14=1;-DREFKEEN_VER_WOLF3D_ALL=1"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+)
+
+add_refkeen_separate_target(
 	reflection-sdmfg10 "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -200,7 +209,7 @@ if (UNIFIED)
 	add_refkeen_unified_target(
 		reflection-wolf3d "${targets}"
 		"${be_src}" "${UNIFIED_WOLF3D_GAME_PARAMS}"
-		"${LIBRARIES};reflection-wl1ap10;reflection-wl1ap11;reflection-wl1ap12;reflection-wl1ap14;reflection-sdmfg10"
+		"${LIBRARIES};reflection-wl1ap10;reflection-wl1ap11;reflection-wl1ap12;reflection-wl1ap14;reflection-wl6ac14;reflection-sdmfg10"
 	)
 endif ()
 

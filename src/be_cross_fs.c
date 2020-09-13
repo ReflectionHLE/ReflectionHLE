@@ -1146,6 +1146,9 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_HAS_VER_WL1AP14
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap14, _T("."), "Wolfenstein 3D Shareware v1.2 (Local)");
 #endif
+#ifdef REFKEEN_HAS_VER_WL6AC14
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, _T("."), "Wolfenstein 3D Activision v1.4 (Local)");
+#endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sdmfg10, _T("."), "Spear of Destiny Demo v1.0 (Local)");
 #endif
