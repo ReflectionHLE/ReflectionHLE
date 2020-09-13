@@ -47,6 +47,9 @@ typedef enum {
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	BE_GAMEVER_SDMFG10,
 #endif
+#ifdef REFKEEN_HAS_VER_SODAC14
+	BE_GAMEVER_SODAC14,
+#endif
 	BE_GAMEVER_LAST
 } BE_GameVer_T;
 
@@ -83,6 +86,8 @@ typedef enum {
 #define REFKEEN_NS_B namespace wl6ac14 {
 #elif (defined REFKEEN_VER_SDMFG10)
 #define REFKEEN_NS_B namespace sdmfg10 {
+#elif (defined REFKEEN_VER_SODAC14)
+#define REFKEEN_NS_B namespace sodac14 {
 #endif
 
 #endif // REFKEEN_USE_NS

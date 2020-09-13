@@ -45,6 +45,9 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	BE_STR_GAMEVER_SDMFG10,
 #endif
+#ifdef REFKEEN_HAS_VER_SODAC14
+	BE_STR_GAMEVER_SODAC14,
+#endif
 };
 
 const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
@@ -88,6 +91,9 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	"Spear of Destiny Demo v1.0",
+#endif
+#ifdef REFKEEN_HAS_VER_SODAC14
+	"Spear of Destiny Activision v1.4",
 #endif
 };
 
@@ -148,6 +154,9 @@ static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	&g_be_gamever_sdmfg10,
 #endif
+#ifdef REFKEEN_HAS_VER_SODAC14
+	&g_be_gamever_sodac14,
+#endif
 };
 
 const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
@@ -191,5 +200,8 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	g_be_reqgameverfiles_sdmfg10,
+#endif
+#ifdef REFKEEN_HAS_VER_SODAC14
+	g_be_reqgameverfiles_sodac14,
 #endif
 };

@@ -18,3 +18,6 @@
 #ifdef REFKEEN_HAS_VER_SDMFG10
 #include "be_gamedef_sdmfg10.h"
 #endif
+#ifdef REFKEEN_HAS_VER_SODAC14
+#include "be_gamedef_sodac14.h"
+#endif
