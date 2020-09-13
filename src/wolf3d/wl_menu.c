@@ -4726,7 +4726,21 @@ void CheckForEpisodes(void)
 	strcpy(extension,"SDM");
 #endif
 #else
+#ifndef UPLOAD
+	strcpy(extension,"WL6");
+	NewEmenu[2].active =
+	NewEmenu[4].active =
+	NewEmenu[6].active =
+	NewEmenu[8].active =
+	NewEmenu[10].active =
+	EpisodeSelect[1] =
+	EpisodeSelect[2] =
+	EpisodeSelect[3] =
+	EpisodeSelect[4] =
+	EpisodeSelect[5] = 1;
+#else
 	strcpy(extension,"WL1");
+#endif
 #endif
 	strcat(configname,extension);
 	strcat(SaveName,extension);
