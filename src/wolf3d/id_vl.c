@@ -437,11 +437,11 @@ void VL_SetColor	(id0_int_t color, id0_int_t red, id0_int_t green, id0_int_t blu
 
 void VL_GetColor	(id0_int_t color, id0_int_t *red, id0_int_t *green, id0_int_t *blue)
 {
-	id0_byte_t or, og, ob;
-	BE_ST_VGAGetPaletteColor (&or, &og, &ob, color);
-	*red = or;
-	*green = og;
-	*blue = ob;
+	id0_byte_t out_r, out_g, out_b;
+	BE_ST_VGAGetPaletteColor (&out_r, &out_g, &out_b, color);
+	*red = out_r;
+	*green = out_g;
+	*blue = out_b;
 #if 0
 	outportb (PEL_READ_ADR,color);
 	*red = inportb (PEL_DATA);
