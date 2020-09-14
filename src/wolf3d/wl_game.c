@@ -1620,7 +1620,7 @@ void Died (void)
 	id0_long_t	dx,dy;
 	id0_int_t		iangle,curangle,clockwise,counter,change;
 
-	gamestate.weapon = -1;			// take away weapon
+	gamestate.weapon = wp_none;			// take away weapon
 	SD_PlaySound (PLAYERDEATHSND);
 //
 // swing around to face attacker

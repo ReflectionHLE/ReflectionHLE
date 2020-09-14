@@ -1063,6 +1063,7 @@ enum	{
 #define NUMWEAPONS	5
 #endif
 typedef enum	{
+	wp_none = -1, // REFKEEN: New addition for the function Died
 	wp_knife,
 	wp_pistol,
 	wp_machinegun,
