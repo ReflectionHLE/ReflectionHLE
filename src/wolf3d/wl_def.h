@@ -1853,9 +1853,11 @@ extern	statetype s_fatdeathcam2;
 
 
 // *** S3DNA RESTORATION ***
+// REFKEEN: Always declare A_DeathScream
+void A_DeathScream (objtype *ob);
 #ifdef GAMEVER_NOAH3D
 void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir, id0_boolean_t ambush);
-void A_DeathScream (objtype *ob);
+//void A_DeathScream (objtype *ob);
 #else
 void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
 void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
