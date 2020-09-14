@@ -1270,12 +1270,15 @@ void VL_SizeTile8String (id0_char_t *str, id0_int_t *width, id0_int_t *height)
 
 void FillCharAttr (id0_byte_t c, id0_byte_t attr, id0_int_t count)
 {
+	BE_ST_RepeatCharWithColorAttributes(c, attr, count);
+#if 0
 asm	mov	ah,9
 asm	mov	al,[c]
 asm	mov	bh,0
 asm	mov	bl,[attr]
 asm	mov	cx,[count]
 asm	int	0x10
+#endif
 }
 
 #endif
