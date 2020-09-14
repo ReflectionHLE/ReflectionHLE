@@ -148,7 +148,8 @@ objtype dummyobj;
 //
 // LIST OF SONGS FOR EACH VERSION
 //
-id0_int_t songs[]=
+musicnames songs[]=
+//id0_int_t songs[]=
 {
  // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1266,7 +1267,7 @@ void GetNewActor (void)
 		lastobj->next = newobj;
 	newobj->prev = lastobj;	// newobj->next is already NULL from memset
 
-	newobj->active = false;
+	newobj->active = ac_no/*false*/;
 	lastobj = newobj;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -1837,8 +1838,9 @@ void PlayLoop (void)
 	id0_int_t	helmetangle;
 #endif
 
-	playstate = lasttimecount = 0;
+	playstate = ex_stillplaying/*0*/;
 	SD_SetTimeCount(0);
+	lasttimecount = 0;
 	//playstate = TimeCount = lasttimecount = 0;
 	frameon = 0;
 	// *** ALPHA RESTORATION ***
