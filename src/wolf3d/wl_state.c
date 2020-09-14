@@ -808,7 +808,9 @@ void MoveObj (objtype *ob, id0_long_t move)
 		// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 		if (obj->obclass == ghostobj)
-			TakeDamage (tics*2);
+			// REFKEEN: Assume NULL. Most known impact is on player death
+			TakeDamage (tics*2,NULL);
+//			TakeDamage (tics*2);
 #else
 		if (ob->obclass == ghostobj || ob->obclass == spectreobj)
 			TakeDamage (tics*2,ob);
