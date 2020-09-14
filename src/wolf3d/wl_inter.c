@@ -136,7 +136,7 @@ statetype *caststate[] = {&s_dogchase1,&s_grdchase1,&s_ofcchase1,&s_sschase1,
 	&s_mutchase1,&s_bosschase1,&s_schabbchase1,&s_gretelchase1,
 	&s_giftchase1,&s_fatchase1,&s_mechachase1,&s_hitlerchase1};
 
-id0_char_t id0_far *casttext[] = {"Goat","Sheep","Ostrich","Antelope",
+const id0_char_t id0_far *casttext[] = {"Goat","Sheep","Ostrich","Antelope",
 	"Ox","Carl the Camel","Melvin the Monkey","Ginny the Giraffe",
 	"Kerry the Kangaroo","Ernie the Elephant","Hiding Burt","Burt the Bear"};
 
@@ -204,12 +204,15 @@ nexttic:
 
 		// S3DNA RESTORATION - Taken off ThreeDRefresh;
 		// If memset is used, a bit different code is generated.
+		memset(spotvis, 0, 64*64);
+#if 0
 	asm	mov	ax,ds
 	asm	mov	es,ax
 	asm	mov	di,OFFSET spotvis
 	asm	xor	ax,ax
 	asm	mov	cx,2048
 	asm	rep stosw
+#endif
 
 		bufferofs += screenofs;
 		PollControls ();
@@ -221,11 +224,13 @@ nexttic:
 		SimpleScaleShape (viewwidth/2,state->shapenum,cycle/2+24);
 		VWB_Bar (0,160,320,40,VIEWCOLOR);
 		PrintY = 168;
-		US_CPrintLine (casttext[en]);
+		US_CPrintLine (casttext[en], NULL);
 
 		bufferofs -= screenofs;
 		displayofs = bufferofs;
 
+		BE_ST_SetScreenStartAddressHiPart(displayofs >> 8);
+#if 0
 	asm	cli
 	asm	mov	cx,[displayofs]
 	asm	mov	dx,CRTC_INDEX
@@ -235,6 +240,7 @@ nexttic:
 	asm	mov	al,ch
 	asm	out	dx,al
 	asm	sti
+#endif
 
 		bufferofs += SCREENSIZE;
 		if (bufferofs > PAGE3START)
