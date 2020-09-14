@@ -4295,7 +4295,9 @@ void T_Bite (objtype *ob)
 		   {
 			  // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-			   TakeDamage (US_RndT()>>4);
+			   // REFKEEN: Assume NULL. Most known impact is on player death
+			   TakeDamage (US_RndT()>>4,NULL);
+//			   TakeDamage (US_RndT()>>4);
 			   // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			   SD_PlaySound (NAZIHITPLAYERSND);
