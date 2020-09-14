@@ -1499,7 +1499,7 @@ PM_Startup(void)
 	PMPageData = malloc(totaldata);
 	if (!PMPageData)
 		Quit("PM_Startup: Couldn't allocate memory for page file");
-	PMPageDataPtrs = malloc(sizeof(*PMPageDataPtrs) * ChunksInFile);
+	PMPageDataPtrs = (memptr *)malloc(sizeof(*PMPageDataPtrs) * ChunksInFile);
 	if (!PMPageDataPtrs)
 		Quit("PM_Startup: Couldn't allocate memory for page file");
 	id0_byte_t *ptr = (id0_byte_t *)PMPageData;
