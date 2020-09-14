@@ -34,7 +34,8 @@
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
 // With no declaration, so the compiler assumes args are passed as 16-bit ints
-#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
+#if 1 // REFKEEN: Always declare this
+//#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void	alOut(id0_byte_t n,id0_byte_t b);
 #endif
 
