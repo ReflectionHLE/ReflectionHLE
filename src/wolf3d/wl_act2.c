@@ -1096,7 +1096,8 @@ void SpawnDeadGuard (id0_int_t tilex, id0_int_t tiley)
 */
 
 // *** PRE-V1.4 APOGEE + ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
+#if 0 // REFKEEN: dir wasn't actually passed, assume a specific value for now
+//#if (GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnBoss (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
 void SpawnBoss (id0_int_t tilex, id0_int_t tiley)
@@ -1120,7 +1121,8 @@ void SpawnBoss (id0_int_t tilex, id0_int_t tiley)
 #else
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	newobj->dir = dir*2;
+	newobj->dir = nodir; // REFKEEN: Assume uninitialized value is this for now
+//	newobj->dir = dir*2;
 #else
 	newobj->dir = south;
 #endif
@@ -1141,7 +1143,8 @@ void SpawnBoss (id0_int_t tilex, id0_int_t tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
+#if 0 // REFKEEN: dir wasn't actually passed, assume a specific value for now
+//#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnGretel (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
 void SpawnGretel (id0_int_t tilex, id0_int_t tiley)
@@ -1161,7 +1164,8 @@ void SpawnGretel (id0_int_t tilex, id0_int_t tiley)
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	newobj->dir = dir*2;
+	newobj->dir = nodir; // REFKEEN: Assume uninitialized value is this for now
+//	newobj->dir = dir*2;
 #else
 	newobj->dir = north;
 #endif
@@ -2613,7 +2617,8 @@ statetype s_fatshoot6 	= {false,SPR_FAT_SHOOT4,10,NULL,T_Shoot,&s_fatchase1};
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
+#if 0 // REFKEEN: dir wasn't actually passed, assume a specific value for now
+//#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnSchabbs (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
 void SpawnSchabbs (id0_int_t tilex, id0_int_t tiley)
@@ -2646,7 +2651,8 @@ void SpawnSchabbs (id0_int_t tilex, id0_int_t tiley)
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	newobj->dir = dir*2;
+	newobj->dir = nodir; // REFKEEN: Assume uninitialized value is this for now
+//	newobj->dir = dir*2;
 #else
 	newobj->dir = south;
 #endif
@@ -2667,7 +2673,8 @@ void SpawnSchabbs (id0_int_t tilex, id0_int_t tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
+#if 0 // REFKEEN: dir wasn't actually passed, assume a specific value for now
+//#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnGift (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
 void SpawnGift (id0_int_t tilex, id0_int_t tiley)
@@ -2692,7 +2699,8 @@ void SpawnGift (id0_int_t tilex, id0_int_t tiley)
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	newobj->dir = dir*2;
+	newobj->dir = nodir; // REFKEEN: Assume uninitialized value is this for now
+//	newobj->dir = dir*2;
 #else
 	newobj->dir = north;
 #endif
@@ -2711,7 +2719,8 @@ void SpawnGift (id0_int_t tilex, id0_int_t tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
+#if 0 // REFKEEN: dir wasn't actually passed, assume a specific value for now
+//#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnFat (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
 void SpawnFat (id0_int_t tilex, id0_int_t tiley)
@@ -2736,7 +2745,8 @@ void SpawnFat (id0_int_t tilex, id0_int_t tiley)
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	newobj->dir = dir*2;
+	newobj->dir = nodir; // REFKEEN: Assume uninitialized value is this for now
+//	newobj->dir = dir*2;
 #else
 	newobj->dir = south;
 #endif
@@ -3371,7 +3381,8 @@ statetype s_hitlershoot6 	= {false,SPR_HITLER_SHOOT2,10,NULL,T_Shoot,&s_hitlerch
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
+#if 0 // REFKEEN: dir wasn't actually passed, assume a specific value for now
+//#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnFakeHitler (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
 void SpawnFakeHitler (id0_int_t tilex, id0_int_t tiley)
@@ -3405,7 +3416,8 @@ void SpawnFakeHitler (id0_int_t tilex, id0_int_t tiley)
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	newobj->dir = dir*2;
+	newobj->dir = nodir; // REFKEEN: Assume uninitialized value is this for now
+//	newobj->dir = dir*2;
 #else
 	newobj->dir = north;
 #endif
@@ -3425,7 +3437,8 @@ void SpawnFakeHitler (id0_int_t tilex, id0_int_t tiley)
 */
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
+#if 0 // REFKEEN: dir wasn't actually passed, assume a specific value for now
+//#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 void SpawnHitler (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #else
 void SpawnHitler (id0_int_t tilex, id0_int_t tiley)
@@ -3454,7 +3467,8 @@ void SpawnHitler (id0_int_t tilex, id0_int_t tiley)
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	newobj->dir = dir*2;
+	newobj->dir = nodir; // REFKEEN: Assume uninitialized value is this for now
+//	newobj->dir = dir*2;
 #else
 	newobj->dir = south;
 #endif
