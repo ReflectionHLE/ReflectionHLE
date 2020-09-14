@@ -336,7 +336,7 @@ static	id0_char_t	buf[10];
 		US_Print("\n Address: ");
 		addr = PM_GetPageAddress(i);
 		// FIXME (REFKEEN): This is greatly platform-dependent! Can we change it?
-		sprintf(buf,"0x%04x",(id0_word_t)addr);
+		sprintf(buf,"0x%04x",(id0_word_t)(uintptr_t)addr);
 		US_Print(buf);
 
 		if (addr)
@@ -349,7 +349,7 @@ static	id0_char_t	buf[10];
 				bufferofs += 32*SCREENWIDTH;
 				postx = 128;
 				postwidth = 1;
-				postsource = addr;
+				postsource = (id0_byte_t *)addr;
 				postsourceoff = 0;
 //				postsource = ((id0_long_t)((id0_unsigned_t)addr))<<16;
 				for (x=0;x<64;x++,postx++,postsourceoff+=64)
@@ -385,7 +385,7 @@ static	id0_char_t	buf[10];
 			}
 			else
 			{
-				id0_byte_t id0_far *dp = addr;
+				id0_byte_t id0_far *dp = (id0_byte_t *)addr;
 //				id0_byte_t id0_far *dp = (id0_byte_t id0_far *)MK_FP(addr,0);
 				for (j = 0;j < NumDigi;j++)
 				{
