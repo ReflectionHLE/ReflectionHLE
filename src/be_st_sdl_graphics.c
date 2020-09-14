@@ -2972,9 +2972,9 @@ void BE_ST_puts(const char *str)
 	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
 	for (; *str; ++str)
 	{
-		currMemByte = BEL_ST_printchar(currMemByte, *str, true, false);
+		currMemByte = BEL_ST_printchar(currMemByte, *str, false, false);
 	}
-	BEL_ST_printchar(currMemByte, '\n', true, false);
+	BEL_ST_printchar(currMemByte, '\n', false, false);
 
 	g_sdlDoRefreshGfxOutput = true;
 }
