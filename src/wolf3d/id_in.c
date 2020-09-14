@@ -156,9 +156,9 @@ static	void			(*INL_KeyHook)(void);
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	id0_char_t			*ParmStrings[] = {"NOJOY","NOJOYS","NOMOUSE",id0_nil_t};
+static	const id0_char_t			*ParmStrings[] = {"NOJOY","NOJOYS","NOMOUSE",id0_nil_t};
 #else
-static	id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
+static	const id0_char_t			*ParmStrings[] = {"nojoys","nomouse",id0_nil_t};
 #endif
 
 //	Internal routines
@@ -709,8 +709,9 @@ register	KeyboardDef	*def;
 	if (DemoMode == demo_Playback)
 	{
 		dbyte = DemoBuffer[DemoOffset + 1];
-		my = (dbyte & 3) - 1;
-		mx = ((dbyte >> 2) & 3) - 1;
+		// REFKEEN - Let's hope these casts (for C++) are OK..
+		my = (Motion)((dbyte & 3) - 1);
+		mx = (Motion)(((dbyte >> 2) & 3) - 1);
 		buttons = (dbyte >> 4) & 3;
 
 		if (!(--DemoBuffer[DemoOffset]))
