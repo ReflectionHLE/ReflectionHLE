@@ -2014,7 +2014,7 @@ void Quit (id0_char_t *error)
 		//#ifndef JAPAN
 		// *** S3DNA RESTORATION ***
 		#ifdef GAMEVER_NOAH3D
-		memcpy(BE_ST_GetTextModeMemoryPtr(), screen + 7, 4000);
+		memcpy(BE_ST_GetTextModeMemoryPtr(), screen, 4000);
 //		movedata ((id0_unsigned_t)screen,0,0xb800,0,4000);
 		#else
 		memcpy(BE_ST_GetTextModeMemoryPtr(), screen + 7, 4000);
