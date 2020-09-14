@@ -4727,7 +4727,11 @@ void CheckForEpisodes(void)
 #endif
 #else
 #ifndef UPLOAD
+#ifdef GAMEVER_NOAH3D
+	strcpy(extension,"N3D");
+#else
 	strcpy(extension,"WL6");
+#endif
 	NewEmenu[2].active =
 	NewEmenu[4].active =
 	NewEmenu[6].active =
@@ -4746,7 +4750,7 @@ void CheckForEpisodes(void)
 	strcat(SaveName,extension);
 	strcat(PageFileName,extension);
 	strcat(audioname,extension);
-#if (!defined SPEAR) && (!defined GOODTIMES) // REFKEEN: But not if unneeded
+#if (!defined SPEAR) && (!defined GOODTIMES) && (!defined GAMEVER_NOAH3D) // REFKEEN: But not if unneeded
 	strcat(helpfilename,extension);
 #endif
 	strcat(demoname,extension);
