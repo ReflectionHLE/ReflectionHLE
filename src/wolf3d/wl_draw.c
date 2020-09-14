@@ -649,7 +649,7 @@ void HitVertWall (void)
 		else
 			wallpic = vertwall[tilehit];
 
-		postsource = PM_GetPage(wallpic);
+		postsource = (id0_byte_t *)PM_GetPage(wallpic);
 		postsourceoff = texture;
 //		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
 //		(id0_unsigned_t)postsource = texture;
@@ -732,7 +732,7 @@ void HitHorizWall (void)
 		else
 			wallpic = horizwall[tilehit];
 
-		postsource = PM_GetPage(wallpic);
+		postsource = (id0_byte_t *)PM_GetPage(wallpic);
 		postsourceoff = texture;
 //		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
 //		(id0_unsigned_t)postsource = texture;
@@ -829,7 +829,7 @@ void HitHorizDoor (void)
 #endif
 		}
 
-		postsource = PM_GetPage(doorpage);
+		postsource = (id0_byte_t *)PM_GetPage(doorpage);
 		postsourceoff = texture;
 //		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage);
 //		(id0_unsigned_t)postsource = texture;
@@ -927,10 +927,10 @@ void HitVertDoor (void)
 
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		postsource = PM_GetPage(doorpage);
+		postsource = (id0_byte_t *)PM_GetPage(doorpage);
 //		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage);
 #else
-		postsource = PM_GetPage(doorpage+1);
+		postsource = (id0_byte_t *)PM_GetPage(doorpage+1);
 //		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(doorpage+1);
 #endif
 		postsourceoff = texture;
@@ -1004,7 +1004,7 @@ void HitHorizPWall (void)
 
 		wallpic = horizwall[tilehit&63];
 
-		postsource = PM_GetPage(wallpic);
+		postsource = (id0_byte_t *)PM_GetPage(wallpic);
 		postsourceoff = texture;
 //		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
 //		(id0_unsigned_t)postsource = texture;
@@ -1074,7 +1074,7 @@ void HitVertPWall (void)
 
 		wallpic = vertwall[tilehit&63];
 
-		postsource = PM_GetPage(wallpic);
+		postsource = (id0_byte_t *)PM_GetPage(wallpic);
 		postsourceoff = texture;
 //		*( ((id0_unsigned_t *)&postsource)+1) = (id0_unsigned_t)PM_GetPage(wallpic);
 //		(id0_unsigned_t)postsource = texture;
@@ -1489,7 +1489,7 @@ void DrawScaleds (void)
 		|| ( *(visspot+64) && !*(tilespot+64) )
 		|| ( *(visspot+63) && !*(tilespot+63) ) )
 		{
-			obj->active = true;
+			obj->active = ac_yes/*true*/;
 			TransformActor (obj);
 			if (!obj->viewheight)
 				continue;						// too close or far away
