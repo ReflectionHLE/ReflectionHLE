@@ -3574,7 +3574,7 @@ SD_StartMusic(MusicGroup id0_far *music)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	id0_char_t str[80];
-	id0_unsigned_int_t i;
+	id0_word_t i;
 
 	SD_MusicOff();
 	if (MusicMode != smm_AdLib)
