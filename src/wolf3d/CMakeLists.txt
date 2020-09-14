@@ -12,6 +12,7 @@ list(APPEND wolf3d_src
 	src/wolf3d/id_vl.c
 	src/wolf3d/id_vl_a.c
 	src/wolf3d/question.c
+	src/wolf3d/whack_a.c
 	src/wolf3d/wl_act1.c
 	src/wolf3d/wl_act2.c
 	src/wolf3d/wl_agent.c
