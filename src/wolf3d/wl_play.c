@@ -1711,7 +1711,7 @@ void DoActor (objtype *ob)
 
 	if (!ob->ticcount)
 	{
-		think =	ob->state->think;
+		think =	ob->state->thinkptr;
 		if (think)
 		{
 			think (ob);
@@ -1748,7 +1748,7 @@ void DoActor (objtype *ob)
 	ob->ticcount-=tics;
 	while ( ob->ticcount <= 0)
 	{
-		think = ob->state->action;			// end of state action
+		think = ob->state->actionptr;			// end of state action
 		if (think)
 		{
 			think (ob);
@@ -1780,7 +1780,7 @@ think:
 	//
 	// think
 	//
-	think =	ob->state->think;
+	think =	ob->state->thinkptr;
 	if (think)
 	{
 		think (ob);

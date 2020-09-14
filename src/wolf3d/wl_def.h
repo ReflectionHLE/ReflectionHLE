@@ -938,7 +938,11 @@ typedef struct	statestruct
 //	id0_boolean_t	rotate;
 	id0_int_t		shapenum;			// a shapenum of -1 means get from ob->temp1
 	id0_int_t		tictime;
-	void	(*think) (),(*action) ();
+	// REFKEEN - C++ patches: Write the correct arguments list, and
+	// rename function pointer: think ==> thinkptr comes from conflict
+	// with the 'think' enum value for progress in Keen Dreams
+	void	(*thinkptr) (struct objstruct *),(*actionptr) (struct objstruct *);
+	//void	(*think) (),(*action) ();
 	struct	statestruct	*next;
 } statetype;
 
