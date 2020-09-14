@@ -66,13 +66,20 @@
 //	Internal variables
 #define	ConfigVersion	1
 
+// TODO (REFKEEN)
+// Originally ParmStrings, ParmStrings2 were not terminated...
+// Any better way to emulate this? (Probably insignificant)
+
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	const id0_char_t		*ParmStrings[] = {"LEVELWARP","NOWAIT"},
+static	const id0_char_t		*ParmStrings[] = {"LEVELWARP","NOWAIT",NULL},
+//static	const id0_char_t		*ParmStrings[] = {"LEVELWARP","NOWAIT"},
 #else
-static	const id0_char_t		*ParmStrings[] = {"TEDLEVEL","NOWAIT"},
+static	const id0_char_t		*ParmStrings[] = {"TEDLEVEL","NOWAIT",NULL},
+//static	const id0_char_t		*ParmStrings[] = {"TEDLEVEL","NOWAIT"},
 #endif
-					*ParmStrings2[] = {"COMP","NOCOMP"};
+					*ParmStrings2[] = {"COMP","NOCOMP",NULL};
+//					*ParmStrings2[] = {"COMP","NOCOMP"};
 static	id0_boolean_t		US_Started;
 
 		id0_boolean_t		Button0,Button1,
