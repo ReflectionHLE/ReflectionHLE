@@ -1562,6 +1562,7 @@ void VictoryTile (void)
 	// *** S3DNA RESTORATION ***
 #if (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
 //#ifndef SPEAR
+	void SpawnBJVictory (void); // REFKEEN: For C++ build & general good practice
 	SpawnBJVictory ();
 #endif
 
