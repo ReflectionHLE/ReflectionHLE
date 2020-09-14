@@ -375,7 +375,7 @@ id0_boolean_t CA_WriteFile (const id0_char_t *filename, void id0_far *ptr, id0_l
 	if (!BE_Cross_IsFileValid(handle))
 		return false;
 
-	if (!CA_FarWrite (handle,ptr,length))
+	if (!CA_FarWrite (handle,(id0_byte_t *)ptr,length))
 	{
 		BE_Cross_close (handle);
 		return false;
@@ -999,7 +999,7 @@ void CAL_SetupMapFile (void)
 		MM_GetPtr((memptr *)&mapheaderseg[i],sizeof(maptype));
 		MM_SetLock((memptr *)&mapheaderseg[i],true);
 		BE_Cross_seek(maphandle,pos,SEEK_SET);
-		CA_FarRead (maphandle,(memptr)mapheaderseg[i],sizeof(maptype));
+		CA_FarRead (maphandle,(id0_byte_t *)mapheaderseg[i],sizeof(maptype));
 	}
 
 //
@@ -1564,8 +1564,8 @@ void CA_CacheScreen (id0_int_t chunk)
 
 	MM_GetPtr(&bigbufferseg,compressed);
 	MM_SetLock (&bigbufferseg,true);
-	CA_FarRead(grhandle,bigbufferseg,compressed);
-	source = bigbufferseg;
+	CA_FarRead(grhandle,(id0_byte_t *)bigbufferseg,compressed);
+	source = (id0_byte_t *)bigbufferseg;
 
 	expanded = *(id0_long_t id0_far *)source;
 	source += 4;			// skip over length
