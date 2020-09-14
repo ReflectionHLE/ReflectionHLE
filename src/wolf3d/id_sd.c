@@ -2532,7 +2532,9 @@ MIDI_DoEvent(void)
 		{
 		case 0x51:
 			length = MIDI_VarLength();
-			tempo = ((id0_long_t)(*midiData)<<16) + (id0_long_t)((*(midiData+1))<<8) + (*(midiData+2));
+			// REFKEEN: Integer overflow emulation
+			tempo = ((id0_long_t)(*midiData)<<16) + (id0_long_t)(id0_int_t)((*(midiData+1))<<8) + (*(midiData+2));
+//			tempo = ((id0_long_t)(*midiData)<<16) + (id0_long_t)((*(midiData+1))<<8) + (*(midiData+2));
 			midiTimeScale = (double)tempo/2.74176e5;
 			midiTimeScale *= 1.1;
 			midiData += length;
