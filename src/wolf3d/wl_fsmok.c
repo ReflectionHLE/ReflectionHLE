@@ -49,7 +49,7 @@ void A_Smoke (objtype *ob)
 	newobj->x = ob->x;
 	newobj->y = ob->y;
 	newobj->obclass = inertobj;
-	newobj->active = true;
+	newobj->active = ac_yes/*true*/;
 
 	newobj->flags = FL_NEVERMARK;
 }

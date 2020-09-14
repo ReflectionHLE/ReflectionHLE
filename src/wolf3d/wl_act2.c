@@ -1055,14 +1055,14 @@ void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 	}
 #endif
 
-	newobj->obclass = guardobj+which;
+	newobj->obclass = (classtype)(guardobj+which);
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
 	newobj->hitpoints = starthitpoints[which];
 #else
 	newobj->hitpoints = starthitpoints[gamestate.difficulty][which];
 #endif
-	newobj->dir = dir*2;
+	newobj->dir = (dirtype)(dir*2);
 	newobj->flags |= FL_SHOOTABLE;
 }
 
@@ -1237,8 +1237,8 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 		break;
 	}
 
-	newobj->obclass = guardobj+which;
-	newobj->dir = dir*2;
+	newobj->obclass = (classtype)(guardobj+which);
+	newobj->dir = (dirtype)(dir*2);
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	newobj->hitpoints = starthitpoints[which];
@@ -1247,7 +1247,7 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 #endif
 	newobj->distance = tileglobal;
 	newobj->flags |= FL_SHOOTABLE;
-	newobj->active = true;
+	newobj->active = ac_yes/*true*/;
 
 	actorat[newobj->tilex][newobj->tiley] = NULL;		// don't use original spot
 
@@ -2799,7 +2799,7 @@ void T_SchabbThrow (objtype *ob)
 	newobj->areanumber = *(mapsegs[0]+farmapylookup[newobj->tiley]+newobj->tilex)-AREATILE;
 #else
 	newobj->flags = FL_NONMARK;
-	newobj->active = true;
+	newobj->active = ac_yes/*true*/;
 #endif
 
 	PlaySoundLocActor (SCHABBSTHROWSND,newobj);
@@ -2852,7 +2852,7 @@ void T_GiftThrow (objtype *ob)
 	newobj->angle = iangle;
 	newobj->speed = 0x2000l;
 	newobj->flags = FL_NONMARK;
-	newobj->active = true;
+	newobj->active = ac_yes/*true*/;
 
 	PlaySoundLocActor (MISSILEFIRESND,newobj);
 }
@@ -3578,7 +3578,7 @@ void T_FakeFire (objtype *ob)
 	newobj->areanumber = *(mapsegs[0]+farmapylookup[newobj->tiley]+newobj->tilex)-AREATILE;
 #else
 	newobj->flags = FL_NEVERMARK;
-	newobj->active = true;
+	newobj->active = ac_yes/*true*/;
 #endif
 
 	PlaySoundLocActor (FLAMETHROWERSND,newobj);
@@ -4041,7 +4041,7 @@ void SelectPathDir (objtype *ob)
 	if (spot<8)
 	{
 	// new direction
-		ob->dir = spot;
+		ob->dir = (dirtype)spot;
 	}
 
 	ob->distance = TILEGLOBAL;
