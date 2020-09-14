@@ -1670,7 +1670,8 @@ void	DrawTreasure (void);
 void 	DrawFace (void);
 void	DrawHealth (void);
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
+#if 1 // REFKEEN: Always declare
+//#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void	TakeDamage (id0_int_t points,objtype *attacker);
 #endif
 void	HealSelf (id0_int_t points);
@@ -1728,7 +1729,8 @@ extern id0_int_t			pwalldir;
 
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
+#if 1 // REFKEEN: Always declare
+//#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void InitDoorList (void);
 void InitStaticList (void);
 void SpawnStatic (id0_int_t tilex, id0_int_t tiley, id0_int_t type);
