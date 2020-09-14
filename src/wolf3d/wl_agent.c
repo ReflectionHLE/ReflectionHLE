@@ -232,7 +232,7 @@ void CheckWeaponChange (void)
 			}
 #else
 		{
-			gamestate.weapon = gamestate.chosenweapon = i;
+			gamestate.weapon = gamestate.chosenweapon = (weapontype)i;
 			DrawWeapon ();
 			return;
 		}
@@ -915,7 +915,7 @@ void GiveWeapon (id0_int_t weapon)
 
 	if (gamestate.bestweapon<weapon)
 		gamestate.bestweapon = gamestate.weapon
-		= gamestate.chosenweapon = weapon;
+		= gamestate.chosenweapon = (weapontype)weapon;
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -1845,7 +1845,7 @@ void Cmd_Use (void)
 void SpawnPlayer (id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 {
 	player->obclass = playerobj;
-	player->active = true;
+	player->active = ac_yes/*true*/;
 	player->tilex = tilex;
 	player->tiley = tiley;
 	player->areanumber =
