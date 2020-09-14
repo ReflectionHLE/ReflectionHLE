@@ -1177,7 +1177,7 @@ void FinishSignon (void)
 id0_boolean_t MS_CheckParm (id0_char_t id0_far *check)
 {
 	id0_int_t             i;
-	id0_char_t    *parm;
+	const id0_char_t    *parm;
 
 	for (i = 1;i<id0_argc;i++)
 	{
@@ -2063,9 +2063,9 @@ void Quit (id0_char_t *error)
 
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-static  id0_char_t *ParmStrings[] = {"easy","normal","hard",""};
+static  const id0_char_t *ParmStrings[] = {"easy","normal","hard",""};
 #else
-static  id0_char_t *ParmStrings[] = {"baby","easy","normal","hard",""};
+static  const id0_char_t *ParmStrings[] = {"baby","easy","normal","hard",""};
 #endif
 
 void	PG13 (void); // REFKEEN: Need this for DemoLoop
