@@ -27,6 +27,9 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+#ifdef GAMEVER_NOAH3D // REFKEEN: Limit compiled code to S3DNA only for now
+REFKEEN_NS_B
+
 extern id0_int_t gotgatgun;
 
 static CP_itemtype
@@ -76,12 +79,12 @@ void RestorePlayScreen (void)
 // It turns out all data was defined in it own far segment in a separate ASM
 // file, named QUESTION.ASM (based on debugging info embedded in the EXE).
 
-extern id0_char_t	id0_far * id0_far Question[];
+extern const id0_char_t	id0_far * id0_far Question[];
 
 id0_int_t AskQuestion (id0_int_t question)
 {
 	id0_int_t answer, correct;
-	id0_char_t id0_far *p;
+	const id0_char_t id0_far *p;
 	id0_char_t *p2;
 
 	if (question >= 99)
@@ -224,3 +227,6 @@ id0_int_t AskQuestion (id0_int_t question)
 		return 1;
 	return 0;
 }
+
+REFKEEN_NS_E
+#endif
