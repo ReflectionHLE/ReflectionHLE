@@ -27,6 +27,9 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+#ifdef GAMEVER_NOAH3D // REFKEEN: Limit compiled code to S3DNA only for now
+REFKEEN_NS_B
+
 static void DrawMapWalls (id0_int_t tx, id0_int_t ty)
 {
 	id0_int_t	x,y,tile;
@@ -226,3 +229,6 @@ void AutoMap (void)
 		BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
 //		Mouse(MDelta);	// Clear accumulated mouse movement
 }
+
+REFKEEN_NS_E
+#endif

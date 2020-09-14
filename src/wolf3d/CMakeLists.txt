@@ -20,6 +20,7 @@ list(APPEND wolf3d_src
 	src/wolf3d/wl_game.c
 	src/wolf3d/wl_inter.c
 	src/wolf3d/wl_main.c
+	src/wolf3d/wl_map.c
 	src/wolf3d/wl_menu.c
 	src/wolf3d/wl_play.c
 	src/wolf3d/wl_scale.c
