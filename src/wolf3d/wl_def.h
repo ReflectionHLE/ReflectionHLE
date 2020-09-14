@@ -965,6 +965,9 @@ typedef struct statstruct
 //
 //---------------------
 
+// REFKEEN: Move enum type out of doorobj_t for C++
+typedef enum {dr_open,dr_closed,dr_opening,dr_closing} dooraction_t;
+
 typedef struct doorstruct
 {
 	id0_byte_t	tilex,tiley;
@@ -974,7 +977,8 @@ typedef struct doorstruct
 	id0_boolean_t	seen;
 #endif
 	id0_byte_t	lock;
-	enum	{dr_open,dr_closed,dr_opening,dr_closing}	action;
+	dooraction_t	action;
+//	enum	{dr_open,dr_closed,dr_opening,dr_closing}	action;
 	id0_int_t		ticcount;
 } doorobj_t;
 
