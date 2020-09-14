@@ -95,11 +95,13 @@ void	VL_Startup (void)
 =======================
 */
 
+// FIXME (REFKEEN): Better include id_heads.h instead
+extern	id0_int_t US_CheckParm(const id0_char_t *parm,const id0_char_t **strings);
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	id0_char_t *ParmStrings[] = {"VGA",""};
+static	const id0_char_t *ParmStrings[] = {"VGA",""};
 #else
-static	id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
+static	const id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
 #endif
 
 void	VL_Startup (void)
