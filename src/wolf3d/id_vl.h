@@ -197,8 +197,10 @@ void VL_MemToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t heig
 void VL_MaskedToScreen (id0_byte_t id0_far *source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y);
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_NOAH3D
+// REFKEEN: Always declare VL_LatchToScreen, but not FillCharAttr
+//#ifdef GAMEVER_NOAH3D
 void VL_LatchToScreen (id0_unsigned_t source, id0_int_t width, id0_int_t height, id0_int_t x, id0_int_t y);
+#ifdef GAMEVER_NOAH3D
 void FillCharAttr (id0_byte_t c, id0_byte_t attr, id0_int_t count);
 #else
 void VL_DrawTile8String (id0_char_t *str, id0_char_t id0_far *tile8ptr, id0_int_t printx, id0_int_t printy);
