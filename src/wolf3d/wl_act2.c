@@ -1341,7 +1341,7 @@ void A_DeathScream (objtype *ob)
 		{
 		 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-		 id0_int_t sounds[4]={ DEATHSCREAM1SND,
+		 soundnames/*id0_int_t*/ sounds[4]={ DEATHSCREAM1SND,
 				 DEATHSCREAM1SND,
 				 DEATHSCREAM2SND,
 				 DEATHSCREAM3SND
@@ -1349,7 +1349,7 @@ void A_DeathScream (objtype *ob)
 
 		 PlaySoundLocActor(sounds[US_RndT()/64],ob);
 #else
-		 id0_int_t sounds[9]={ DEATHSCREAM1SND,
+		 soundnames/*id0_int_t*/ sounds[9]={ DEATHSCREAM1SND,
 				 DEATHSCREAM2SND,
 				 DEATHSCREAM3SND,
 				 DEATHSCREAM4SND,

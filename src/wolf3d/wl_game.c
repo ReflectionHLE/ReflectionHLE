@@ -258,7 +258,8 @@ SetSoundLoc(fixed gx,fixed gy)
 =
 ==========================
 */
-void PlaySoundLocGlobal(id0_word_t s,fixed gx,fixed gy)
+void PlaySoundLocGlobal(soundnames s,fixed gx,fixed gy)
+//void PlaySoundLocGlobal(id0_word_t s,fixed gx,fixed gy)
 {
 	SetSoundLoc(gx,gy);
 	SD_PositionSound(leftchannel,rightchannel);

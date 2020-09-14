@@ -1314,7 +1314,8 @@ void DrawAllPlayBorderSides (void);
 // JAB
 #define	PlaySoundLocTile(s,tx,ty)	PlaySoundLocGlobal(s,(((id0_long_t)(tx) << TILESHIFT) + (1L << (TILESHIFT - 1))),(((id0_long_t)ty << TILESHIFT) + (1L << (TILESHIFT - 1))))
 #define	PlaySoundLocActor(s,ob)		PlaySoundLocGlobal(s,(ob)->x,(ob)->y)
-void	PlaySoundLocGlobal(id0_word_t s,fixed gx,fixed gy);
+void	PlaySoundLocGlobal(soundnames s,fixed gx,fixed gy);
+//void	PlaySoundLocGlobal(id0_word_t s,fixed gx,fixed gy);
 void UpdateSoundLoc(void);
 #endif
 
