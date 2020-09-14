@@ -45,5 +45,8 @@
 #ifdef REFKEEN_HAS_VER_SODAC14
 #define BE_STR_GAMEVER_SODAC14 "sodac14"
 #endif
+#ifdef REFKEEN_HAS_VER_N3DWT10
+#define BE_STR_GAMEVER_N3DWT10 "n3dwt10"
+#endif
 
 #endif // BE_GAMESTR_H

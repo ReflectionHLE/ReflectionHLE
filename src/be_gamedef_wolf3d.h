@@ -21,3 +21,6 @@
 #ifdef REFKEEN_HAS_VER_SODAC14
 #include "be_gamedef_sodac14.h"
 #endif
+#ifdef REFKEEN_HAS_VER_N3DWT10
+#include "be_gamedef_n3dwt10.h"
+#endif

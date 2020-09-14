@@ -1155,6 +1155,9 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_HAS_VER_SODAC14
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, _T("."), "Spear of Destiny Activision v1.4 (Local)");
 #endif
+#ifdef REFKEEN_HAS_VER_N3DWT10
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, _T("."), "Super 3-D Noah's Ark (Local)");
+#endif
 	}
 	/*** Finally check any custom dir ***/
 	char buffer[2*BE_CROSS_PATH_LEN_BOUND];
