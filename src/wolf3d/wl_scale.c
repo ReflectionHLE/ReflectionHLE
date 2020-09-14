@@ -567,7 +567,7 @@ void ScaleShape (id0_int_t xcenter, id0_int_t shapenum, id0_unsigned_t height)
 	}
 #endif
 
-	shape = PM_GetSpritePage (shapenum);
+	shape = (t_compshape *)PM_GetSpritePage (shapenum);
 
 	scale = height>>3;						// low three bits are fractional
 	if (!scale || scale>maxscale)
@@ -783,7 +783,7 @@ void SimpleScaleShape (id0_int_t xcenter, id0_int_t shapenum, id0_unsigned_t hei
 	}
 #endif
 
-	shape = PM_GetSpritePage (shapenum);
+	shape = (t_compshape *)PM_GetSpritePage (shapenum);
 
 	scale = height>>1;
 	comptable = scaledirectory[scale];
