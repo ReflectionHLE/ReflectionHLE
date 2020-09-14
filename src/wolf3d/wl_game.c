@@ -1515,7 +1515,7 @@ void PlayDemo (id0_int_t demonumber)
 #endif
 
 	CA_CacheGrChunk(dems[demonumber]);
-	demoptr = grsegs[dems[demonumber]];
+	demoptr = (id0_char_t *)grsegs[dems[demonumber]];
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	MM_SetLock (&grsegs[dems[demonumber]],true);
