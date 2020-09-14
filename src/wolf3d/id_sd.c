@@ -2134,6 +2134,7 @@ SDL_ALSoundService(void)
 	}
 }
 
+#ifndef GAMEVER_NOAH3D // *** S3DNA RESTORATION ***
 void
 SDL_ALService(void)
 {
@@ -2172,6 +2173,7 @@ SDL_ALService(void)
 		alTimeCount = sqHackTime = 0;
 	}
 }
+#endif // !defined GAMEVER_NOAH3D
 #endif // REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
 
 // *** S3DNA RESTORATION ***
