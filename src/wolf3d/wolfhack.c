@@ -26,6 +26,9 @@
 
 #include "wl_def.h"
 
+#ifdef GAMEVER_NOAH3D // REFKEEN: Limit compiled code to S3DNA only for now
+REFKEEN_NS_B
+
 #define	MAXVIEWHEIGHT	200
 
 id0_int_t		spanstart[MAXVIEWHEIGHT/2];
@@ -37,11 +40,14 @@ extern	id0_char_t	id0_far	planepics[8192];	// 4k of ceiling, 4k of floor
 
 id0_int_t		halfheight = 0;
 
+id0_word_t	planeylookup[MAXVIEWHEIGHT/2]; // REFKEEN: These are just offsets now
+#if 0
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 id0_byte_t	*planeylookup[MAXVIEWHEIGHT/2];
 #else
 id0_byte_t	id0_far *planeylookup[MAXVIEWHEIGHT/2];
+#endif
 #endif
 id0_unsigned_t	mirrorofs[MAXVIEWHEIGHT/2];
 
@@ -63,7 +69,8 @@ id0_int_t		mr_dest;
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void	MapRow (void);
+void	MapRow (int plane); // REFKEEN: We need the VGA plane
+//void	MapRow (void);
 #endif
 
 /*
@@ -83,11 +90,15 @@ void DrawSpans (id0_int_t x1, id0_int_t x2, id0_int_t height)
 	fixed		startxfrac, startyfrac;
 
 	id0_int_t			x, startx, count, plane, startplane;
+	// REFKEEN: toprow is simplfy an offset now, and we don't need dest.
+	id0_unsigned_t		toprow;
+#if 0
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	id0_byte_t		*toprow;
 #else
 	id0_byte_t		id0_far	*toprow, id0_far *dest;
+#endif
 #endif
 
 	toprow = planeylookup[height]+bufferofs;
@@ -111,7 +122,7 @@ void DrawSpans (id0_int_t x1, id0_int_t x2, id0_int_t height)
 	prestep = viewwidth/2 - x1;
 	do
 	{
-		outportb (SC_INDEX+1,1<<plane);
+//		outportb (SC_INDEX+1,1<<plane);
 		mr_xfrac = startxfrac - (mr_xstep>>2)*prestep;
 		mr_yfrac = startyfrac - (mr_ystep>>2)*prestep;
 
@@ -121,7 +132,8 @@ void DrawSpans (id0_int_t x1, id0_int_t x2, id0_int_t height)
 		x1++;
 		prestep--;
 		if (mr_count)
-			MapRow ();
+			MapRow (plane); // REFKEEN: We need the VGA plane
+//			MapRow ();
 		plane = (plane+1)&3;
 	} while (plane != startplane);
 
@@ -179,6 +191,9 @@ void SetPlaneViewSize (void)
 
 	for (y=0 ; y<halfheight ; y++)
 	{
+		// REFKEEN: It's just an offset now
+		planeylookup[y] = (halfheight-1-y)*SCREENBWIDE;
+#if 0
 		// *** S3DNA RESTORATION ***
 		// It's technically useless to cast 0xa0000000l to a 16-bit near
 		// pointer, but this helps to (re)generate some ASM instruction
@@ -186,6 +201,7 @@ void SetPlaneViewSize (void)
 		planeylookup[y] = (id0_byte_t *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;
 #else
 		planeylookup[y] = (id0_byte_t id0_far *)0xa0000000l + (halfheight-1-y)*SCREENBWIDE;;
+#endif
 #endif
 #if 0
 	asm	nop
@@ -276,3 +292,5 @@ void DrawPlanes (void)
 		DrawSpans (spanstart[lastheight], x-1, lastheight);
 }
 
+REFKEEN_NS_E
+#endif

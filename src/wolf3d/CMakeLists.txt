@@ -28,4 +28,5 @@ list(APPEND wolf3d_src
 	src/wolf3d/wl_scale.c
 	src/wolf3d/wl_state.c
 	src/wolf3d/wl_text.c
+	src/wolf3d/wolfhack.c
 )
