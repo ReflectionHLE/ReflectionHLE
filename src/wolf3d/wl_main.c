@@ -2492,8 +2492,11 @@ void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void)
 {
 	id0_longword_t unusedsize;
 
-	if (!(gamepal = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("GAMEPAL.BIN", &unusedsize)) ||
-	    !(signon = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("SIGNON.BIN", &unusedsize)))
+	if (!(gamepal = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("GAMEPAL.BIN", &unusedsize))
+#ifndef GAMEVER_NOAH3D
+	    || !(signon = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("SIGNON.BIN", &unusedsize))
+#endif
+	)
 		// Don't use quit, yet
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_wolf3d_exe - Failed to load\nat least one file.");
 }
