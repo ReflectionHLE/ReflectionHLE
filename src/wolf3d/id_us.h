@@ -149,7 +149,7 @@ extern	void	US_Startup(void),
 extern	id0_boolean_t	US_UpdateCursor(void),
 				US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean_t escok,
 								id0_int_t maxchars,id0_int_t maxwidth);
-extern	id0_int_t		US_CheckParm(id0_char_t *parm,id0_char_t **strings),
+extern	id0_int_t		US_CheckParm(const id0_char_t *parm,const id0_char_t **strings),
 				US_RndT(void);
 
 		void	USL_PrintInCenter(id0_char_t GAMEVER_COND_FARPTR *s,Rect r);

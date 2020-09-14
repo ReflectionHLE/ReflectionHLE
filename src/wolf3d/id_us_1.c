@@ -344,10 +344,10 @@ US_Shutdown(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 id0_int_t
-US_CheckParm(id0_char_t *parm,id0_char_t **strings)
+US_CheckParm(const id0_char_t *parm,const id0_char_t **strings)
 {
-	id0_char_t	cp,cs,
-			*p,*s;
+	id0_char_t	cp,cs;
+	const id0_char_t	*p,*s;
 	id0_int_t		i;
 
 	while (!isalpha(*parm))	// Skip non-alphas
