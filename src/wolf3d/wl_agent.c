@@ -2019,21 +2019,21 @@ void FlameAttack (objtype *ob)
 	gamestate.gas--;
 	DrawAmmo ();
 	GetNewActor ();
-	new->state = &s_flame;
-	new->obclass = flameobj;
-	new->ticcount = 1;
+	newobj->state = &s_flame;
+	newobj->obclass = flameobj;
+	newobj->ticcount = 1;
 	x = costable[ob->angle];
 	y = -sintable[ob->angle];
-	new->x = ob->x + (x>>2);
-	new->y = ob->y + (y>>2);
-	new->tilex = new->x >> TILESHIFT;
-	new->tiley = new->y >> TILESHIFT;
-	new->areanumber = ob->areanumber;
-	new->dir = ob->dir;
-	new->angle = ob->angle;
-	new->speed = 0x3000;
-	new->flags = FL_NEVERMARK;
-	new->active = ac_yes;
+	newobj->x = ob->x + (x>>2);
+	newobj->y = ob->y + (y>>2);
+	newobj->tilex = newobj->x >> TILESHIFT;
+	newobj->tiley = newobj->y >> TILESHIFT;
+	newobj->areanumber = ob->areanumber;
+	newobj->dir = ob->dir;
+	newobj->angle = ob->angle;
+	newobj->speed = 0x3000;
+	newobj->flags = FL_NEVERMARK;
+	newobj->active = ac_yes;
 }
 #endif
 
@@ -2048,21 +2048,21 @@ void MissileAttack (objtype *ob)
 	gamestate.missiles--;
 	DrawAmmo ();
 	GetNewActor ();
-	new->state = &s_missile;
-	new->obclass = missileobj;
-	new->ticcount = 1;
+	newobj->state = &s_missile;
+	newobj->obclass = missileobj;
+	newobj->ticcount = 1;
 	x = costable[ob->angle];
 	y = -sintable[ob->angle];
-	new->x = ob->x + (x>>2);
-	new->y = ob->y + (y>>2);
-	new->tilex = new->x >> TILESHIFT;
-	new->tiley = new->y >> TILESHIFT;
-	new->areanumber = ob->areanumber;
-	new->dir = ob->dir;
-	new->angle = ob->angle;
-	new->speed = 0x3000;
-	new->flags = FL_NEVERMARK;
-	new->active = ac_yes;
+	newobj->x = ob->x + (x>>2);
+	newobj->y = ob->y + (y>>2);
+	newobj->tilex = newobj->x >> TILESHIFT;
+	newobj->tiley = newobj->y >> TILESHIFT;
+	newobj->areanumber = ob->areanumber;
+	newobj->dir = ob->dir;
+	newobj->angle = ob->angle;
+	newobj->speed = 0x3000;
+	newobj->flags = FL_NEVERMARK;
+	newobj->active = ac_yes;
 }
 #endif
 

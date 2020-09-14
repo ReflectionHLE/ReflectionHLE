@@ -38,19 +38,19 @@ void A_Smoke (objtype *ob)
 	GetNewActor ();
 #ifdef SPEAR
 	if (ob->obclass == hrocketobj)
-		new->state = &s_hsmoke1;
+		newobj->state = &s_hsmoke1;
 	else
 #endif
-		new->state = &s_smoke1;
-	new->ticcount = 6;
+		newobj->state = &s_smoke1;
+	newobj->ticcount = 6;
 
-	new->tilex = ob->tilex;
-	new->tiley = ob->tiley;
-	new->x = ob->x;
-	new->y = ob->y;
-	new->obclass = inertobj;
-	new->active = true;
+	newobj->tilex = ob->tilex;
+	newobj->tiley = ob->tiley;
+	newobj->x = ob->x;
+	newobj->y = ob->y;
+	newobj->obclass = inertobj;
+	newobj->active = true;
 
-	new->flags = FL_NEVERMARK;
+	newobj->flags = FL_NEVERMARK;
 }
 

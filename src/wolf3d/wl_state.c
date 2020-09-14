@@ -97,7 +97,7 @@ id0_boolean_t	CheckSight (objtype *ob);
 = Spaws a new actor at the given TILE coordinates, with the given state, and
 = the given size in GLOBAL units.
 =
-= new			= a pointer to an initialized new actor
+= newobj			= a pointer to an initialized new actor
 =
 ===================
 */
@@ -105,26 +105,26 @@ id0_boolean_t	CheckSight (objtype *ob);
 void SpawnNewObj (id0_unsigned_t tilex, id0_unsigned_t tiley, statetype *state)
 {
 	GetNewActor ();
-	new->state = state;
+	newobj->state = state;
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->ticcount = BE_Cross_Brandom(state->tictime) + 1;
+	newobj->ticcount = BE_Cross_Brandom(state->tictime) + 1;
 #else
 	if (state->tictime)
-		new->ticcount = US_RndT () % state->tictime;
+		newobj->ticcount = US_RndT () % state->tictime;
 	else
-		new->ticcount = 0;
+		newobj->ticcount = 0;
 #endif
 
-	new->tilex = tilex;
-	new->tiley = tiley;
-	new->x = ((id0_long_t)tilex<<TILESHIFT)+TILEGLOBAL/2;
-	new->y = ((id0_long_t)tiley<<TILESHIFT)+TILEGLOBAL/2;
-	new->dir = nodir;
+	newobj->tilex = tilex;
+	newobj->tiley = tiley;
+	newobj->x = ((id0_long_t)tilex<<TILESHIFT)+TILEGLOBAL/2;
+	newobj->y = ((id0_long_t)tiley<<TILESHIFT)+TILEGLOBAL/2;
+	newobj->dir = nodir;
 
-	actorat[tilex][tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
-	new->areanumber =
-		*(mapsegs[0] + farmapylookup[new->tiley]+new->tilex) - AREATILE;
+	actorat[tilex][tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(newobj);
+	newobj->areanumber =
+		*(mapsegs[0] + farmapylookup[newobj->tiley]+newobj->tilex) - AREATILE;
 }
 
 

@@ -983,7 +983,7 @@ void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 	{
 	case en_guard:
 		SpawnNewObj (tilex,tiley,&s_grdstand);
-		new->speed = SPDPATROL;
+		newobj->speed = SPDPATROL;
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
@@ -995,14 +995,14 @@ void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case en_officer:
 		SpawnNewObj (tilex,tiley,&s_ofcstand);
-		new->speed = SPDPATROL;
+		newobj->speed = SPDPATROL;
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
 
 	case en_mutant:
 		SpawnNewObj (tilex,tiley,&s_mutstand);
-		new->speed = SPDPATROL;
+		newobj->speed = SPDPATROL;
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
@@ -1010,7 +1010,7 @@ void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 
 	case en_ss:
 		SpawnNewObj (tilex,tiley,&s_ssstand);
-		new->speed = SPDPATROL;
+		newobj->speed = SPDPATROL;
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
@@ -1021,7 +1021,7 @@ void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 #ifdef GAMEVER_NOAH3D
 	case en_dog:
 		SpawnNewObj (tilex,tiley,&s_dogstand);
-		new->speed = SPDDOG;
+		newobj->speed = SPDDOG;
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
@@ -1032,7 +1032,7 @@ void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (ambush)
-		new->flags |= FL_AMBUSH;
+		newobj->flags |= FL_AMBUSH;
 #else
 	map = mapsegs[0]+farmapylookup[tiley]+tilex;
 	if (*map == AMBUSHTILE)
@@ -1049,21 +1049,21 @@ void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 			tile = *(map-1);
 
 		*map = tile;
-		new->areanumber = tile-AREATILE;
+		newobj->areanumber = tile-AREATILE;
 
-		new->flags |= FL_AMBUSH;
+		newobj->flags |= FL_AMBUSH;
 	}
 #endif
 
-	new->obclass = guardobj+which;
+	newobj->obclass = guardobj+which;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
-	new->hitpoints = starthitpoints[which];
+	newobj->hitpoints = starthitpoints[which];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][which];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][which];
 #endif
-	new->dir = dir*2;
-	new->flags |= FL_SHOOTABLE;
+	newobj->dir = dir*2;
+	newobj->flags |= FL_SHOOTABLE;
 }
 
 
@@ -1081,7 +1081,7 @@ void SpawnStand (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir)
 void SpawnDeadGuard (id0_int_t tilex, id0_int_t tiley)
 {
 	SpawnNewObj (tilex,tiley,&s_grddie4);
-	new->obclass = inertobj;
+	newobj->obclass = inertobj;
 }
 #endif
 
@@ -1105,26 +1105,26 @@ void SpawnBoss (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t	id0_far *map,tile;
 
 	SpawnNewObj (tilex,tiley,&s_bossstand);
-	new->speed = SPDPATROL;
+	newobj->speed = SPDPATROL;
 
-	new->obclass = bossobj;
+	newobj->obclass = bossobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
-	new->hitpoints = starthitpoints[en_boss];
+	newobj->hitpoints = starthitpoints[en_boss];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_boss];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_boss];
 #endif
 	// *** ALPHA RESTORATION
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	new->flags |= FL_SHOOTABLE;
+	newobj->flags |= FL_SHOOTABLE;
 #else
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->dir = dir*2;
+	newobj->dir = dir*2;
 #else
-	new->dir = south;
+	newobj->dir = south;
 #endif
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 #endif // GAMEVER_WOLFREV <= GV_WR_WL920312
@@ -1150,22 +1150,22 @@ void SpawnGretel (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t	id0_far *map,tile;
 
 	SpawnNewObj (tilex,tiley,&s_gretelstand);
-	new->speed = SPDPATROL;
+	newobj->speed = SPDPATROL;
 
-	new->obclass = gretelobj;
+	newobj->obclass = gretelobj;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	new->hitpoints = starthitpoints[en_gretel];
+	newobj->hitpoints = starthitpoints[en_gretel];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_gretel];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_gretel];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->dir = dir*2;
+	newobj->dir = dir*2;
 #else
-	new->dir = north;
+	newobj->dir = north;
 #endif
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -1188,7 +1188,7 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 	{
 	case en_guard:
 		SpawnNewObj (tilex,tiley,&s_grdpath1);
-		new->speed = SPDPATROL;
+		newobj->speed = SPDPATROL;
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
@@ -1200,7 +1200,7 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case en_officer:
 		SpawnNewObj (tilex,tiley,&s_ofcpath1);
-		new->speed = SPDPATROL;
+		newobj->speed = SPDPATROL;
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
@@ -1208,7 +1208,7 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 
 	case en_ss:
 		SpawnNewObj (tilex,tiley,&s_sspath1);
-		new->speed = SPDPATROL;
+		newobj->speed = SPDPATROL;
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
@@ -1220,7 +1220,7 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case en_mutant:
 		SpawnNewObj (tilex,tiley,&s_mutpath1);
-		new->speed = SPDPATROL;
+		newobj->speed = SPDPATROL;
 		if (!loadedgame)
 		  gamestate.killtotal++;
 		break;
@@ -1228,7 +1228,7 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 
 	case en_dog:
 		SpawnNewObj (tilex,tiley,&s_dogpath1);
-		new->speed = SPDDOG;
+		newobj->speed = SPDDOG;
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 		if (!loadedgame)
@@ -1237,37 +1237,37 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 		break;
 	}
 
-	new->obclass = guardobj+which;
-	new->dir = dir*2;
+	newobj->obclass = guardobj+which;
+	newobj->dir = dir*2;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	new->hitpoints = starthitpoints[which];
+	newobj->hitpoints = starthitpoints[which];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][which];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][which];
 #endif
-	new->distance = tileglobal;
-	new->flags |= FL_SHOOTABLE;
-	new->active = true;
+	newobj->distance = tileglobal;
+	newobj->flags |= FL_SHOOTABLE;
+	newobj->active = true;
 
-	actorat[new->tilex][new->tiley] = NULL;		// don't use original spot
+	actorat[newobj->tilex][newobj->tiley] = NULL;		// don't use original spot
 
 	switch (dir)
 	{
 	case 0:
-		new->tilex++;
+		newobj->tilex++;
 		break;
 	case 1:
-		new->tiley--;
+		newobj->tiley--;
 		break;
 	case 2:
-		new->tilex--;
+		newobj->tilex--;
 		break;
 	case 3:
-		new->tiley++;
+		newobj->tiley++;
 		break;
 	}
 
-	actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
+	actorat[newobj->tilex][newobj->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(newobj);
 }
 #endif // GAMEVER_NOAH3D
 
@@ -1538,9 +1538,9 @@ void SpawnTrans (id0_int_t tilex, id0_int_t tiley)
 		s_transdie01.tictime = 105;
 
 	SpawnNewObj (tilex,tiley,&s_transstand);
-	new->obclass = transobj;
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_trans];
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->obclass = transobj;
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_trans];
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -1619,9 +1619,9 @@ void SpawnUber (id0_int_t tilex, id0_int_t tiley)
 		s_uberdie01.tictime = 70;
 
 	SpawnNewObj (tilex,tiley,&s_uberstand);
-	new->obclass = uberobj;
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_uber];
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->obclass = uberobj;
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_uber];
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -1718,9 +1718,9 @@ void SpawnWill (id0_int_t tilex, id0_int_t tiley)
 		s_willdie2.tictime = 70;
 
 	SpawnNewObj (tilex,tiley,&s_willstand);
-	new->obclass = willobj;
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_will];
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->obclass = willobj;
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_will];
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -1893,9 +1893,9 @@ void SpawnDeath (id0_int_t tilex, id0_int_t tiley)
 		s_deathdie2.tictime = 105;
 
 	SpawnNewObj (tilex,tiley,&s_deathstand);
-	new->obclass = deathobj;
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_death];
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->obclass = deathobj;
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_death];
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -1938,35 +1938,35 @@ void T_Launch (objtype *ob)
 	}
 
 	GetNewActor ();
-	new->state = &s_rocket;
-	new->ticcount = 1;
+	newobj->state = &s_rocket;
+	newobj->ticcount = 1;
 
-	new->tilex = ob->tilex;
-	new->tiley = ob->tiley;
-	new->x = ob->x;
-	new->y = ob->y;
-	new->obclass = rocketobj;
+	newobj->tilex = ob->tilex;
+	newobj->tiley = ob->tiley;
+	newobj->x = ob->x;
+	newobj->y = ob->y;
+	newobj->obclass = rocketobj;
 	switch(ob->obclass)
 	{
 	case deathobj:
-		new->state = &s_hrocket;
-		new->obclass = hrocketobj;
-		PlaySoundLocActor (KNIGHTMISSILESND,new);
+		newobj->state = &s_hrocket;
+		newobj->obclass = hrocketobj;
+		PlaySoundLocActor (KNIGHTMISSILESND,newobj);
 		break;
 	case angelobj:
-		new->state = &s_spark1;
-		new->obclass = sparkobj;
-		PlaySoundLocActor (ANGELFIRESND,new);
+		newobj->state = &s_spark1;
+		newobj->obclass = sparkobj;
+		PlaySoundLocActor (ANGELFIRESND,newobj);
 		break;
 	default:
-		PlaySoundLocActor (MISSILEFIRESND,new);
+		PlaySoundLocActor (MISSILEFIRESND,newobj);
 	}
 
-	new->dir = nodir;
-	new->angle = iangle;
-	new->speed = 0x2000l;
-	new->flags = FL_NONMARK;
-	new->active = true;
+	newobj->dir = nodir;
+	newobj->angle = iangle;
+	newobj->speed = 0x2000l;
+	newobj->flags = FL_NONMARK;
+	newobj->active = true;
 }
 
 
@@ -2087,9 +2087,9 @@ void SpawnAngel (id0_int_t tilex, id0_int_t tiley)
 		s_angeldie11.tictime = 105;
 
 	SpawnNewObj (tilex,tiley,&s_angelstand);
-	new->obclass = angelobj;
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_angel];
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->obclass = angelobj;
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_angel];
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -2202,9 +2202,9 @@ void SpawnSpectre (id0_int_t tilex, id0_int_t tiley)
 	id0_unsigned_t	id0_far *map,tile;
 
 	SpawnNewObj (tilex,tiley,&s_spectrewait1);
-	new->obclass = spectreobj;
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_spectre];
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH; // |FL_NEVERMARK|FL_NONMARK;
+	newobj->obclass = spectreobj;
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_spectre];
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH; // |FL_NEVERMARK|FL_NONMARK;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -2302,11 +2302,11 @@ void SpawnGhosts (id0_int_t which, id0_int_t tilex, id0_int_t tiley)
 	   break;
 	}
 
-	new->obclass = ghostobj;
-	new->speed = SPDDOG;
+	newobj->obclass = ghostobj;
+	newobj->speed = SPDDOG;
 
-	new->dir = east;
-	new->flags |= FL_AMBUSH;
+	newobj->dir = east;
+	newobj->flags |= FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -2635,22 +2635,22 @@ void SpawnSchabbs (id0_int_t tilex, id0_int_t tiley)
 #endif
 
 	SpawnNewObj (tilex,tiley,&s_schabbstand);
-	new->speed = SPDPATROL;
+	newobj->speed = SPDPATROL;
 
-	new->obclass = schabbobj;
+	newobj->obclass = schabbobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
-	new->hitpoints = starthitpoints[en_schabbs];
+	newobj->hitpoints = starthitpoints[en_schabbs];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_schabbs];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_schabbs];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->dir = dir*2;
+	newobj->dir = dir*2;
 #else
-	new->dir = south;
+	newobj->dir = south;
 #endif
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -2681,22 +2681,22 @@ void SpawnGift (id0_int_t tilex, id0_int_t tiley)
 	  s_giftdie2.tictime = 5;
 
 	SpawnNewObj (tilex,tiley,&s_giftstand);
-	new->speed = SPDPATROL;
+	newobj->speed = SPDPATROL;
 
-	new->obclass = giftobj;
+	newobj->obclass = giftobj;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	new->hitpoints = starthitpoints[en_gift];
+	newobj->hitpoints = starthitpoints[en_gift];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_gift];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_gift];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->dir = dir*2;
+	newobj->dir = dir*2;
 #else
-	new->dir = north;
+	newobj->dir = north;
 #endif
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -2725,22 +2725,22 @@ void SpawnFat (id0_int_t tilex, id0_int_t tiley)
 	  s_fatdie2.tictime = 5;
 
 	SpawnNewObj (tilex,tiley,&s_fatstand);
-	new->speed = SPDPATROL;
+	newobj->speed = SPDPATROL;
 
-	new->obclass = fatobj;
+	newobj->obclass = fatobj;
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	new->hitpoints = starthitpoints[en_fat];
+	newobj->hitpoints = starthitpoints[en_fat];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_fat];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_fat];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->dir = dir*2;
+	newobj->dir = dir*2;
 #else
-	new->dir = south;
+	newobj->dir = south;
 #endif
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -2778,31 +2778,31 @@ void T_SchabbThrow (objtype *ob)
 	GetNewActor ();
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	new->state = &s_coconut;
+	newobj->state = &s_coconut;
 #else
-	new->state = &s_needle1;
+	newobj->state = &s_needle1;
 #endif
-	new->ticcount = 1;
+	newobj->ticcount = 1;
 
-	new->tilex = ob->tilex;
-	new->tiley = ob->tiley;
-	new->x = ob->x;
-	new->y = ob->y;
-	new->obclass = needleobj;
-	new->dir = nodir;
-	new->angle = iangle;
-	new->speed = 0x2000l;
+	newobj->tilex = ob->tilex;
+	newobj->tiley = ob->tiley;
+	newobj->x = ob->x;
+	newobj->y = ob->y;
+	newobj->obclass = needleobj;
+	newobj->dir = nodir;
+	newobj->angle = iangle;
+	newobj->speed = 0x2000l;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
-	new->areanumber = *(mapsegs[0]+farmapylookup[new->tiley]+new->tilex)-AREATILE;
+	actorat[newobj->tilex][newobj->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(newobj);
+	newobj->areanumber = *(mapsegs[0]+farmapylookup[newobj->tiley]+newobj->tilex)-AREATILE;
 #else
-	new->flags = FL_NONMARK;
-	new->active = true;
+	newobj->flags = FL_NONMARK;
+	newobj->active = true;
 #endif
 
-	PlaySoundLocActor (SCHABBSTHROWSND,new);
+	PlaySoundLocActor (SCHABBSTHROWSND,newobj);
 }
 
 // *** PRE-V1.4 APOGEE RESTORATION *** - Relocated code to a separate file for v1.2; Not included in v1.0 at all.
@@ -2837,24 +2837,24 @@ void T_GiftThrow (objtype *ob)
 	GetNewActor ();
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	new->state = &s_coconut;
+	newobj->state = &s_coconut;
 #else
-	new->state = &s_rocket;
+	newobj->state = &s_rocket;
 #endif
-	new->ticcount = 1;
+	newobj->ticcount = 1;
 
-	new->tilex = ob->tilex;
-	new->tiley = ob->tiley;
-	new->x = ob->x;
-	new->y = ob->y;
-	new->obclass = rocketobj;
-	new->dir = nodir;
-	new->angle = iangle;
-	new->speed = 0x2000l;
-	new->flags = FL_NONMARK;
-	new->active = true;
+	newobj->tilex = ob->tilex;
+	newobj->tiley = ob->tiley;
+	newobj->x = ob->x;
+	newobj->y = ob->y;
+	newobj->obclass = rocketobj;
+	newobj->dir = nodir;
+	newobj->angle = iangle;
+	newobj->speed = 0x2000l;
+	newobj->flags = FL_NONMARK;
+	newobj->active = true;
 
-	PlaySoundLocActor (MISSILEFIRESND,new);
+	PlaySoundLocActor (MISSILEFIRESND,newobj);
 }
 #endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 
@@ -3394,22 +3394,22 @@ void SpawnFakeHitler (id0_int_t tilex, id0_int_t tiley)
 #endif
 
 	SpawnNewObj (tilex,tiley,&s_fakestand);
-	new->speed = SPDPATROL;
+	newobj->speed = SPDPATROL;
 
-	new->obclass = fakeobj;
+	newobj->obclass = fakeobj;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	new->hitpoints = starthitpoints[en_fake];
+	newobj->hitpoints = starthitpoints[en_fake];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_fake];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_fake];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->dir = dir*2;
+	newobj->dir = dir*2;
 #else
-	new->dir = north;
+	newobj->dir = north;
 #endif
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -3443,22 +3443,22 @@ void SpawnHitler (id0_int_t tilex, id0_int_t tiley)
 
 
 	SpawnNewObj (tilex,tiley,&s_mechastand);
-	new->speed = SPDPATROL;
+	newobj->speed = SPDPATROL;
 
-	new->obclass = mechahitlerobj;
+	newobj->obclass = mechahitlerobj;
 	// *** SHAREWARE V1.0 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10) || (defined GAMEVER_NOAH3D)
-	new->hitpoints = starthitpoints[en_hitler];
+	newobj->hitpoints = starthitpoints[en_hitler];
 #else
-	new->hitpoints = starthitpoints[gamestate.difficulty][en_hitler];
+	newobj->hitpoints = starthitpoints[gamestate.difficulty][en_hitler];
 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-	new->dir = dir*2;
+	newobj->dir = dir*2;
 #else
-	new->dir = south;
+	newobj->dir = south;
 #endif
-	new->flags |= FL_SHOOTABLE|FL_AMBUSH;
+	newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
 	if (!loadedgame)
 	  gamestate.killtotal++;
 }
@@ -3485,24 +3485,24 @@ void A_HitlerMorph (objtype *ob)
 	SpawnNewObj (ob->tilex,ob->tiley,&s_hitlerchase1);
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	new->speed = SPDPATROL;
+	newobj->speed = SPDPATROL;
 #else
-	new->speed = SPDPATROL*5;
+	newobj->speed = SPDPATROL*5;
 #endif
 
-	new->x = ob->x;
-	new->y = ob->y;
+	newobj->x = ob->x;
+	newobj->y = ob->y;
 
-	new->distance = ob->distance;
-	new->dir = ob->dir;
-	new->flags = ob->flags | FL_SHOOTABLE;
+	newobj->distance = ob->distance;
+	newobj->dir = ob->dir;
+	newobj->flags = ob->flags | FL_SHOOTABLE;
 
-	new->obclass = realhitlerobj;
+	newobj->obclass = realhitlerobj;
 	 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	new->hitpoints = 400;
+	newobj->hitpoints = 400;
 #else
-	new->hitpoints = hitpoints[gamestate.difficulty];
+	newobj->hitpoints = hitpoints[gamestate.difficulty];
 #endif
 }
 
@@ -3561,27 +3561,27 @@ void T_FakeFire (objtype *ob)
 	iangle = angle/(ID0_M_PI*2)*ANGLES;
 
 	GetNewActor ();
-	new->state = &s_fire1;
-	new->ticcount = 1;
+	newobj->state = &s_fire1;
+	newobj->ticcount = 1;
 
-	new->tilex = ob->tilex;
-	new->tiley = ob->tiley;
-	new->x = ob->x;
-	new->y = ob->y;
-	new->dir = nodir;
-	new->angle = iangle;
-	new->obclass = fireobj;
-	new->speed = 0x1200l;
+	newobj->tilex = ob->tilex;
+	newobj->tiley = ob->tiley;
+	newobj->x = ob->x;
+	newobj->y = ob->y;
+	newobj->dir = nodir;
+	newobj->angle = iangle;
+	newobj->obclass = fireobj;
+	newobj->speed = 0x1200l;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	actorat[new->tilex][new->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(new);
-	new->areanumber = *(mapsegs[0]+farmapylookup[new->tiley]+new->tilex)-AREATILE;
+	actorat[newobj->tilex][newobj->tiley] = COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(newobj);
+	newobj->areanumber = *(mapsegs[0]+farmapylookup[newobj->tiley]+newobj->tilex)-AREATILE;
 #else
-	new->flags = FL_NEVERMARK;
-	new->active = true;
+	newobj->flags = FL_NEVERMARK;
+	newobj->active = true;
 #endif
 
-	PlaySoundLocActor (FLAMETHROWERSND,new);
+	PlaySoundLocActor (FLAMETHROWERSND,newobj);
 
 }
 
@@ -4410,15 +4410,15 @@ void SpawnBJVictory (void)
 #else
 	SpawnNewObj (player->tilex,player->tiley+1,&s_bjrun1);
 #endif
-	new->x = player->x;
-	new->y = player->y;
-	new->obclass = bjobj;
-	new->dir = north;
+	newobj->x = player->x;
+	newobj->y = player->y;
+	newobj->obclass = bjobj;
+	newobj->dir = north;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
-	new->temp1 = 5;			// tiles to run forward
+	newobj->temp1 = 5;			// tiles to run forward
 #else
-	new->temp1 = 6;			// tiles to run forward
+	newobj->temp1 = 6;			// tiles to run forward
 #endif
 }
 

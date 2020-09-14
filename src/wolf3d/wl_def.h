@@ -1331,7 +1331,8 @@ extern	id0_boolean_t unusedplayvar;
 #endif
 extern	id0_boolean_t		madenoise;
 
-extern	objtype 	objlist[MAXACTORS],*new,*obj,*player,*lastobj,
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
+extern	objtype 	objlist[MAXACTORS],*newobj,*obj,*player,*lastobj,
 					*objfreelist,*killerobj;
 extern	statobj_t	statobjlist[MAXSTATS],*laststatobj;
 extern	doorobj_t	doorobjlist[MAXDOORS],*lastdoorobj;

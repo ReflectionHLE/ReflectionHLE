@@ -779,10 +779,10 @@ id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 		GetNewActor ();
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
-		memcpy (new,&nullobj,sizeof(nullobj));
+		memcpy (newobj,&nullobj,sizeof(nullobj));
 #else
 	 // don't copy over the links
-		memcpy (new,&nullobj,sizeof(nullobj)-4);
+		memcpy (newobj,&nullobj,sizeof(nullobj)-4);
 #endif
 	}
 

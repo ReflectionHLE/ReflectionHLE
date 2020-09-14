@@ -60,7 +60,8 @@ exit_t		playstate;
 id0_int_t			DebugOk;
 #endif
 
-objtype 	objlist[MAXACTORS],*new,*obj,*player,*lastobj,
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
+objtype 	objlist[MAXACTORS],*newobj,*obj,*player,*lastobj,
 			*objfreelist,*killerobj;
 
 id0_unsigned_t	farmapylookup[MAPSIZE];
@@ -1232,7 +1233,7 @@ void InitActorList (void)
 // give the player the first free spots
 //
 	GetNewActor ();
-	player = new;
+	player = newobj;
 
 }
 
@@ -1243,7 +1244,7 @@ void InitActorList (void)
 =
 = GetNewActor
 =
-= Sets the global variable new to point to a free spot in objlist.
+= Sets the global variable newobj to point to a free spot in objlist.
 = The free spot is inserted at the end of the liked list
 =
 = When the object list is full, the caller can either have it bomb out ot
@@ -1257,16 +1258,16 @@ void GetNewActor (void)
 	if (!objfreelist)
 		Quit ("GetNewActor: No free spots in objlist!");
 
-	new = objfreelist;
-	objfreelist = new->prev;
-	memset (new,0,sizeof(*new));
+	newobj = objfreelist;
+	objfreelist = newobj->prev;
+	memset (newobj,0,sizeof(*newobj));
 
 	if (lastobj)
-		lastobj->next = new;
-	new->prev = lastobj;	// new->next is allready NULL from memset
+		lastobj->next = newobj;
+	newobj->prev = lastobj;	// newobj->next is already NULL from memset
 
-	new->active = false;
-	lastobj = new;
+	newobj->active = false;
+	lastobj = newobj;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
