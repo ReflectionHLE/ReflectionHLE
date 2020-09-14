@@ -153,7 +153,8 @@ extern	void /*interrupt*/	SDL_t0ExtremeAsmService(void),
 
 //	Internal variables
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_NOAH3D
+#if 0 // REFKEEN: Let's always define the variable as non-static
+//#ifdef GAMEVER_NOAH3D
 static	id0_boolean_t			DigiPlaying;
 #endif
 static	id0_boolean_t			SD_Started;
@@ -212,7 +213,8 @@ static	id0_word_t			DigiLeft,DigiPage;
 		id0_word_t			id0_seg *DigiList;
 		GAMEVER_COND_STATIC id0_word_t			DigiLastStart,DigiLastEnd;
 // *** S3DNA RESTORATION ***
-#ifndef GAMEVER_NOAH3D
+#if 1 // REFKEEN: Let's always define the variable as non-static
+//#ifndef GAMEVER_NOAH3D
 		id0_boolean_t			DigiPlaying;
 #endif
 static	id0_boolean_t			DigiMissed,DigiLastSegment;
