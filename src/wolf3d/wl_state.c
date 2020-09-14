@@ -553,7 +553,10 @@ void SelectChaseDir (objtype *ob)
 {
 	id0_int_t deltax,deltay,i;
 	dirtype d[3];
-	dirtype tdir, olddir, turnaround;
+	// (REFKEEN) Incrementing/Decrementing an enum is a bad idea (leading to undefined behaviors in C, including "Bad dir" bug reproduced with Catacomb Abyss),
+	// and illegal in C++. Hence, tdir is redefined to be a (signed) int here. Casts are done (to be compatible with C++).
+	int tdir;
+	dirtype /*tdir, */olddir, turnaround;
 
 
 	olddir=ob->dir;
@@ -578,7 +581,7 @@ void SelectChaseDir (objtype *ob)
 	{
 		tdir=d[1];
 		d[1]=d[2];
-		d[2]=tdir;
+		d[2]=(dirtype)tdir;
 	}
 
 	if (d[1]==turnaround)
@@ -616,7 +619,7 @@ void SelectChaseDir (objtype *ob)
 		{
 			if (tdir!=turnaround)
 			{
-				ob->dir=tdir;
+				ob->dir=(dirtype)tdir;
 				if ( TryWalk(ob) )
 					return;
 			}
@@ -628,7 +631,7 @@ void SelectChaseDir (objtype *ob)
 		{
 			if (tdir!=turnaround)
 			{
-			  ob->dir=tdir;
+			  ob->dir=(dirtype)tdir;
 			  if ( TryWalk(ob) )
 				return;
 			}
@@ -673,7 +676,9 @@ void SelectRunDir (objtype *ob)
 {
 	id0_int_t deltax,deltay,i;
 	dirtype d[3];
-	dirtype tdir, olddir, turnaround;
+	// (REFKEEN) tdir was changed into an int, as done in SelectChaseDir
+	int tdir;
+	dirtype /*tdir, */olddir, turnaround;
 
 
 	deltax=player->tilex - ob->tilex;
@@ -692,7 +697,7 @@ void SelectRunDir (objtype *ob)
 	{
 		tdir=d[1];
 		d[1]=d[2];
-		d[2]=tdir;
+		d[2]=(dirtype)tdir;
 	}
 
 	ob->dir=d[1];
@@ -709,7 +714,7 @@ void SelectRunDir (objtype *ob)
 	{
 		for (tdir=north;tdir<=west;tdir++)
 		{
-			ob->dir=tdir;
+			ob->dir=(dirtype)tdir;
 			if ( TryWalk(ob) )
 				return;
 		}
@@ -718,7 +723,7 @@ void SelectRunDir (objtype *ob)
 	{
 		for (tdir=west;tdir>=north;tdir--)
 		{
-			ob->dir=tdir;
+			ob->dir=(dirtype)tdir;
 			if ( TryWalk(ob) )
 			  return;
 		}
