@@ -897,6 +897,8 @@ id0_char_t helpfilename[13] = "HELPART.",
 #endif
 #endif
 
+void FreeMusic (void); // REFKEEN: Add this declaration
+
 /*
 =================
 =
