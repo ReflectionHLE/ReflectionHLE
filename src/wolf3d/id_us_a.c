@@ -22,6 +22,7 @@
  * See id-wolf3d.txt for these terms.
  */
 
+#include <time.h>
 #include "id_heads.h"
 
 //	Assembly portion of the User Mgr. This is just John Carmack's table
