@@ -2932,6 +2932,17 @@ static uint8_t *BEL_ST_CheckForTextCursorOverflow(uint8_t *currMemByte)
 	return currMemByte;
 }
 
+void BE_ST_RepeatCharWithColorAttributes(uint8_t ch, uint8_t attr, int count)
+{
+	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
+	while (count--)
+	{
+		*currMemByte++ = ch;
+		*currMemByte++ = attr;
+		currMemByte = BEL_ST_CheckForTextCursorOverflow(currMemByte);
+	}
+}
+
 static uint8_t *BEL_ST_printchar(uint8_t *currMemByte, char ch, bool iscolored, bool requirecrchar)
 {
 	if (ch == '\t')
