@@ -2068,6 +2068,8 @@ static  id0_char_t *ParmStrings[] = {"easy","normal","hard",""};
 static  id0_char_t *ParmStrings[] = {"baby","easy","normal","hard",""};
 #endif
 
+void	PG13 (void); // REFKEEN: Need this for DemoLoop
+
 void    DemoLoop (void)
 {
 	// *** ALPHA RESTORATION ***
