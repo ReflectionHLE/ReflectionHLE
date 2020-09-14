@@ -2903,6 +2903,35 @@ void BE_ST_ToggleTextCursor(bool isEnabled)
 	g_sdlTxtCursorEnabled = isEnabled;
 }
 
+static uint8_t *BEL_ST_CheckForTextCursorOverflow(uint8_t *currMemByte)
+{
+	// Go to next line
+	if (g_sdlTxtCursorPosX == TXT_COLS_NUM)
+	{
+		g_sdlTxtCursorPosX = 0; // Carriage return
+		++g_sdlTxtCursorPosY; // Line feed
+		currMemByte = g_sdlVidMem.text + 2*TXT_COLS_NUM*g_sdlTxtCursorPosY;
+	}
+	// Shift screen by one line
+	if (g_sdlTxtCursorPosY == TXT_ROWS_NUM)
+	{
+		--g_sdlTxtCursorPosY;
+		// Scroll one line down
+		uint8_t lastAttr = g_sdlVidMem.text[sizeof(g_sdlVidMem.text)-1];
+		memmove(g_sdlVidMem.text, g_sdlVidMem.text+2*TXT_COLS_NUM, sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM);
+		currMemByte = g_sdlVidMem.text+sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM;
+		// New empty line
+		for (int i = 0; i < TXT_COLS_NUM; ++i)
+		{
+			*(currMemByte++) = ' ';
+			*(currMemByte++) = lastAttr;
+		}
+		currMemByte -= 2*TXT_COLS_NUM; // Go back to beginning of line
+	}
+
+	return currMemByte;
+}
+
 static uint8_t *BEL_ST_printchar(uint8_t *currMemByte, char ch, bool iscolored, bool requirecrchar)
 {
 	if (ch == '\t')
@@ -2940,31 +2969,7 @@ static uint8_t *BEL_ST_printchar(uint8_t *currMemByte, char ch, bool iscolored, 
 		++g_sdlTxtCursorPosX;
 	}
 
-	// Go to next line
-	if (g_sdlTxtCursorPosX == TXT_COLS_NUM)
-	{
-		g_sdlTxtCursorPosX = 0; // Carriage return
-		++g_sdlTxtCursorPosY; // Line feed
-		currMemByte = g_sdlVidMem.text + 2*TXT_COLS_NUM*g_sdlTxtCursorPosY;
-	}
-	// Shift screen by one line
-	if (g_sdlTxtCursorPosY == TXT_ROWS_NUM)
-	{
-		--g_sdlTxtCursorPosY;
-		// Scroll one line down
-		uint8_t lastAttr = g_sdlVidMem.text[sizeof(g_sdlVidMem.text)-1];
-		memmove(g_sdlVidMem.text, g_sdlVidMem.text+2*TXT_COLS_NUM, sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM);
-		currMemByte = g_sdlVidMem.text+sizeof(g_sdlVidMem.text)-2*TXT_COLS_NUM;
-		// New empty line
-		for (int i = 0; i < TXT_COLS_NUM; ++i)
-		{
-			*(currMemByte++) = ' ';
-			*(currMemByte++) = lastAttr;
-		}
-		currMemByte -= 2*TXT_COLS_NUM; // Go back to beginning of line
-	}
-
-	return currMemByte;
+	return BEL_ST_CheckForTextCursorOverflow(currMemByte);
 }
 
 void BE_ST_puts(const char *str)
