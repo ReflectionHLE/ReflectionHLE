@@ -1865,7 +1865,8 @@ void KillActor (objtype *ob);
 void	US_ControlPanel(id0_byte_t);
 
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
+#if 1 // REFKEEN: Always declared these with the given signatures
+//#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 void SpawnDeadGuard (id0_int_t tilex, id0_int_t tiley);
 void SpawnBoss (id0_int_t tilex, id0_int_t tiley);
 void SpawnGretel (id0_int_t tilex, id0_int_t tiley);
