@@ -88,7 +88,7 @@
 
 
 
-#define	SDL_SoundFinished()	{SoundNumber = SoundPriority = 0;}
+#define	SDL_SoundFinished()	{SoundNumber = (soundnames)0; SoundPriority = 0;}
 
 // REFKEEN: Patch a few service functions to work
 // like equivalent ID_SD_A.ASM code, and enable them
@@ -165,7 +165,7 @@ static	id0_boolean_t			SD_Started;
 		GAMEVER_COND_STATIC id0_boolean_t			nextsoundpos;
 #endif
 //		id0_longword_t		TimerDivisor,TimerCount;
-static	id0_char_t			*ParmStrings[] =
+static const	id0_char_t			*ParmStrings[] =
 						{
 							"noal",
 							"nosb",
@@ -1439,18 +1439,18 @@ SDL_PlayDigiSegment(memptr addr,id0_word_t len)
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	case sds_PC:
-    	SDL_PCPlaySample(addr,len);
+	SDL_PCPlaySample((id0_byte_t *)addr,len);
 		break;
 #endif
 #if REFKEEN_SD_ENABLE_SOUNDSOURCE
 	case sds_SoundSource:
-		SDL_SSPlaySample(addr,len);
+		SDL_SSPlaySample((id0_byte_t *)addr,len);
 		break;
 #endif
 #endif
 #if REFKEEN_SD_ENABLE_SOUNDBLASTER
 	case sds_SoundBlaster:
-		SDL_SBPlaySample(addr,len);
+		SDL_SBPlaySample((id0_byte_t *)addr,len);
 		break;
 #endif
 	}
@@ -1475,7 +1475,8 @@ SD_StopDigitized(void)
 	DigiNextLen = 0;
 	DigiMissed = false;
 	DigiPlaying = false;
-	DigiNumber = DigiPriority = 0;
+	DigiNumber = (soundnames)0;
+	DigiPriority = 0;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	SoundPositioned = false;
@@ -1681,7 +1682,10 @@ SDL_DigitizedDone(void)
 #ifndef GAMEVER_NOAH3D
 			else
 #endif
-				DigiNumber = DigiPriority = 0;
+			{
+				DigiNumber = (soundnames)0;
+				DigiPriority = 0;
+			}
 #endif
 			SoundPositioned = false;
 			// *** S3DNA RESTORATION ***
@@ -2831,7 +2835,8 @@ SDL_StartDevice(void)
 		SDL_StartAL();
 		break;
 	}
-	SoundNumber = SoundPriority = 0;
+	SoundNumber = (soundnames)0;
+	SoundPriority = 0;
 }
 
 //	Public routines
@@ -3343,7 +3348,7 @@ SD_PlaySound(soundnames sound)
 	// REFKEEN: Even if s is zero, it may still be dereferenced when
 	// there's a replacement digitized sound. While the length might be
 	// 0 in the EXE layout, the priority is not, so use a special struct.
-	s = s ? s : audiosegs;
+	s = s ? s : (SoundCommon *)audiosegs[0];
 
 	if ((DigiMode != sds_Off) && (DigiMap[sound] != -1))
 	{
@@ -3440,10 +3445,12 @@ SD_PlaySound(soundnames sound)
 	switch (SoundMode)
 	{
 	case sdm_PC:
-		SDL_PCPlaySound((void id0_far *)s);
+		SDL_PCPlaySound((PCSound id0_far *)s);
+//		SDL_PCPlaySound((void id0_far *)s);
 		break;
 	case sdm_AdLib:
-		SDL_ALPlaySound((void id0_far *)s);
+		SDL_ALPlaySound((AdLibSound id0_far *)s);
+//		SDL_ALPlaySound((void id0_far *)s);
 		break;
 	}
 
