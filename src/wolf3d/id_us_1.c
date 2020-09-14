@@ -68,9 +68,9 @@
 
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-static	id0_char_t		*ParmStrings[] = {"LEVELWARP","NOWAIT"},
+static	const id0_char_t		*ParmStrings[] = {"LEVELWARP","NOWAIT"},
 #else
-static	id0_char_t		*ParmStrings[] = {"TEDLEVEL","NOWAIT"},
+static	const id0_char_t		*ParmStrings[] = {"TEDLEVEL","NOWAIT"},
 #endif
 					*ParmStrings2[] = {"COMP","NOCOMP"};
 static	id0_boolean_t		US_Started;
