@@ -426,7 +426,7 @@ void VWB_DrawPic (id0_int_t x, id0_int_t y, id0_int_t chunknum)
 	height = pictable[picnum].height;
 
 	if (VW_MarkUpdateBlock (x,y,x+width-1,y+height-1))
-		VL_MemToScreen (grsegs[chunknum],width,height,x,y);
+		VL_MemToScreen ((id0_byte_t *)grsegs[chunknum],width,height,x,y);
 }
 
 
@@ -465,9 +465,10 @@ void VWB_Vlin (id0_int_t y1, id0_int_t y2, id0_int_t x, id0_int_t color)
 }
 
 // *** S3DNA RESTORATION ***
-#ifdef GAMEVER_NOAH3D
+// REFKEEN: Always declare it
+//#ifdef GAMEVER_NOAH3D
 void VH_UpdateScreen (void);
-#endif
+//#endif
 
 // *** ALPHA RESTORATION ***
 // It looks like VW_UpdateScreen was originally defined to VH_UpdateScreen,
@@ -596,7 +597,7 @@ void LoadLatchMem (void)
 		CA_CacheGrChunk (i);
 		width = pictable[i-STARTPICS].width;
 		height = pictable[i-STARTPICS].height;
-		VL_MemToLatch (grsegs[i],width,height,destoff);
+		VL_MemToLatch ((id0_byte_t *)grsegs[i],width,height,destoff);
 		destoff += width/4 *height;
 		UNCACHEGRCHUNK(i);
 	}
