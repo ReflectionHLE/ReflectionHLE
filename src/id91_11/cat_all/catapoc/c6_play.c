@@ -596,7 +596,7 @@ void GetNewObj (id0_boolean_t usedummy)
 
 	if (lastobj)
 		lastobj->next = newobj;
-	newobj->prev = lastobj;	// newobj->next is allready NULL from memset
+	newobj->prev = lastobj;	// newobj->next is already NULL from memset
 
 	newobj->active = no/*false*/;
 	lastobj = newobj;
