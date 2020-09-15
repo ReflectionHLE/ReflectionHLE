@@ -1664,9 +1664,11 @@ extern id0_int_t	MapLevel[];
 #endif
 
 void	SpawnPlayer (id0_int_t tilex, id0_int_t tiley, id0_int_t dir);
+// REFKEEN: Always declare StatusDrawPic
+void StatusDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum);
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-void StatusDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum);
+//void StatusDrawPic (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t picnum);
 void	DrawTreasure (void);
 #endif
 void 	DrawFace (void);
