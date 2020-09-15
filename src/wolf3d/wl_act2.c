@@ -1970,7 +1970,7 @@ void T_Launch (objtype *ob)
 	newobj->angle = iangle;
 	newobj->speed = 0x2000l;
 	newobj->flags = FL_NONMARK;
-	newobj->active = true;
+	newobj->active = ac_yes/*true*/;
 }
 
 
