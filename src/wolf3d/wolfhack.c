@@ -155,16 +155,16 @@ void LoadFloorTiles (id0_int_t tile)
 		sprintf (str,"LoadFloorTiles(): Invalid floor tile %u!", (tile-(PMSpriteStart-8))/2);
 		Quit (str);
 	}
-	src = PM_GetPage (tile+1);
-	dest = planepics;
+	src = (id0_byte_t *)PM_GetPage (tile+1);
+	dest = (id0_byte_t *)planepics;
 	for (x=0;x<PMPageSize;x++)
 	{
 		*dest = *src++;
 		dest += 2;
 	}
 	
-	src = PM_GetPage (tile);
-	dest = planepics+1;
+	src = (id0_byte_t *)PM_GetPage (tile);
+	dest = (id0_byte_t *)planepics+1;
 	for (x=0;x<PMPageSize;x++)
 	{
 		*dest = *src++;
@@ -218,14 +218,14 @@ void SetPlaneViewSize (void)
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
 	src = PM_GetPage(0);
-	dest = planepics;
+	dest = (id0_byte_t *)planepics;
 	for (x=0 ; x<4096 ; x++)
 	{
 		*dest = *src++;
 		dest += 2;
 	}
 	src = PM_GetPage(1);
-	dest = planepics+1;
+	dest = (id0_byte_t *)planepics+1;
 	for (x=0 ; x<4096 ; x++)
 	{
 		*dest = *src++;
