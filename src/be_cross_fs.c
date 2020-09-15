@@ -486,7 +486,7 @@ void BE_Cross_PrepareAppPaths(void)
 static const BE_GameInstallation_T *g_be_selectedGameInstallation;
 static const BE_EXEFileDetails_T *g_be_current_exeFileDetails;
 
-#define BE_CROSS_MAX_GAME_INSTALLATIONS 7
+#define BE_CROSS_MAX_GAME_INSTALLATIONS (4*BE_GAMEVER_LAST)
 static BE_GameInstallation_T g_be_gameinstallations[BE_CROSS_MAX_GAME_INSTALLATIONS];
 int g_be_gameinstallations_num;
 
