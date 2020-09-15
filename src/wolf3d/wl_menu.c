@@ -597,7 +597,7 @@ void US_ControlPanel(id0_byte_t scancode)
 			VW_UpdateScreen();
 
 			CA_CacheGrChunk (IDGUYSPALETTE);
-			VL_FadeIn(0,255,grsegs[IDGUYSPALETTE],30);
+			VL_FadeIn(0,255,(id0_byte_t *)grsegs[IDGUYSPALETTE],30);
 			UNCACHEGRCHUNK(IDGUYSPALETTE);
 
 			while (Keyboard[sc_I] || Keyboard[sc_D])

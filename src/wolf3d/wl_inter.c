@@ -69,7 +69,7 @@ void EndScreen (id0_int_t palette, id0_int_t screen)
 	CA_CacheScreen (screen);
 	VW_UpdateScreen ();
 	CA_CacheGrChunk (palette);
-	VL_FadeIn(0,255,grsegs[palette],30);
+	VL_FadeIn(0,255,(id0_byte_t *)grsegs[palette],30);
 	UNCACHEGRCHUNK (palette);
 	IN_ClearKeysDown ();
 	IN_Ack ();
@@ -84,7 +84,7 @@ void EndSpear(void)
 	CA_CacheScreen (ENDSCREEN3PIC);
 	VW_UpdateScreen ();
 	CA_CacheGrChunk (END3PALETTE);
-	VL_FadeIn(0,255,grsegs[END3PALETTE],30);
+	VL_FadeIn(0,255,(id0_byte_t *)grsegs[END3PALETTE],30);
 	UNCACHEGRCHUNK (END3PALETTE);
 	fontnumber = 0;
 	fontcolor = 0xd0;
