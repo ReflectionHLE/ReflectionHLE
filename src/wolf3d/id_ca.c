@@ -1659,7 +1659,7 @@ void CA_CacheMap (id0_int_t mapnum)
 		//
 		// unRLEW, skipping expanded length
 		//
-		CA_RLEWexpand (source+1, *dest,size,
+		CA_RLEWexpand (source+1, (id0_unsigned_t *)(*dest), size,
 		((mapfiletype id0_seg *)tinf)->RLEWtag);
 #endif
 
