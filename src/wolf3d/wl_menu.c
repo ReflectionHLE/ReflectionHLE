@@ -36,10 +36,10 @@
 //
 // PRIVATE PROTOTYPES
 //
-void CP_ReadThis(void);
+CP_routineret CP_ReadThis(CP_routineargs);
 // *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void CP_BackToDemo(void);
+CP_routineret CP_BackToDemo(CP_routineargs);
 #endif
 
 #ifdef SPEAR
@@ -537,15 +537,15 @@ void US_ControlPanel(id0_byte_t scancode)
 			goto finishup;
 
 		case sc_F4:
-			CP_Sound();
+			CP_Sound(CP_itemvalue);
 			goto finishup;
 
 		case sc_F5:
-			CP_ChangeView();
+			CP_ChangeView(CP_itemvalue);
 			goto finishup;
 
 		case sc_F6:
-			CP_Control();
+			CP_Control(CP_itemvalue);
 			goto finishup;
 
 		finishup:
@@ -810,7 +810,7 @@ void DrawMainMenu(void)
 // READ THIS!
 //
 ////////////////////////////////////////////////////////////////////
-void CP_ReadThis(void)
+CP_routineret CP_ReadThis(CP_routineargs)
 {
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -822,6 +822,7 @@ void CP_ReadThis(void)
 	HelpScreens();
 	StartCPMusic(MENUSONG);
 #endif
+	return CP_itemvalue;
 }
 #endif
 #endif
@@ -1192,7 +1193,7 @@ id0_int_t CP_EndGame(void)
 // VIEW THE HIGH SCORES
 //
 ////////////////////////////////////////////////////////////////////
-void CP_ViewScores(void)
+CP_routineret CP_ViewScores(CP_routineargs)
 {
 	fontnumber=0;
 
@@ -1220,6 +1221,7 @@ void CP_ViewScores(void)
 	CacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
 	CacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 #endif
+	return CP_itemvalue;
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
@@ -1229,7 +1231,7 @@ void CP_ViewScores(void)
 // START A NEW GAME
 //
 ////////////////////////////////////////////////////////////////////
-void CP_NewGame(void)
+CP_routineret CP_NewGame(CP_routineargs)
 {
 	id0_int_t which,episode;
 
@@ -1252,7 +1254,7 @@ firstpart:
 		{
 			case -1:
 				MenuFadeOut();
-				return;
+				return CP_itemvalue;
 
 			default:
 				if (!EpisodeSelect[which/2])
@@ -1308,7 +1310,7 @@ firstpart:
 		#endif
 		{
 			MenuFadeOut();
-			return;
+			return CP_itemvalue;
 		}
 
 	MenuFadeOut();
@@ -1327,7 +1329,7 @@ firstpart:
 			MenuFadeOut();
 			UnCacheLump (NEWGAME_LUMP_START,NEWGAME_LUMP_END);
 			CacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
-			return;
+			return CP_itemvalue;
 		}
 
 #endif
@@ -1340,14 +1342,14 @@ firstpart:
 		MenuFadeOut();
 		// *** ALPHA RESTORATION ***
 		#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-		return;
+		return CP_itemvalue;
 		#elif (!defined SPEAR)
 		//#ifndef SPEAR
 		goto firstpart;
 		#else
 		UnCacheLump (NEWGAME_LUMP_START,NEWGAME_LUMP_END);
 		CacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
-		return;
+		return CP_itemvalue;
 		#endif
 	}
 
@@ -1501,7 +1503,7 @@ void DrawNewGameDiff(id0_int_t w)
 // HANDLE SOUND MENU
 //
 ////////////////////////////////////////////////////////////////////
-void CP_Sound(void)
+CP_routineret CP_Sound(CP_routineargs)
 {
 	id0_int_t which,i;
 
@@ -1616,6 +1618,7 @@ void CP_Sound(void)
 	UnCacheLump (SOUND_LUMP_START,SOUND_LUMP_END);
 	CacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 #endif
+	return CP_itemvalue;
 }
 
 
@@ -2144,9 +2147,10 @@ id0_int_t CP_SaveGame(id0_int_t quick)
 // *** PRE-V1.4 APOGEE RESTORATION *** - CalibrateJoystick was added to v1.4,
 // while v1.2 seems to have an unused handler assigned to "Back to demo"
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
-void CP_BackToDemo(void)
+CP_routineret CP_BackToDemo(CP_routineargs)
 {
 	StartGame = 1;
+	return CP_itemvalue;
 }
 #else
 ////////////////////////////////////////////////////////////////////
@@ -2262,7 +2266,7 @@ id0_int_t CalibrateJoystick(void)
 // DEFINE CONTROLS
 //
 ////////////////////////////////////////////////////////////////////
-void CP_Control(void)
+CP_routineret CP_Control(CP_routineargs)
 {
 	#define CTL_SPC	70
 	enum {MOUSEENABLE,JOYENABLE,USEPORT2,PADENABLE,MOUSESENS,CUSTOMIZE};
@@ -2334,6 +2338,7 @@ void CP_Control(void)
 	UnCacheLump (CONTROL_LUMP_START,CONTROL_LUMP_END);
 	CacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 #endif
+	return CP_itemvalue;
 }
 
 
@@ -2392,7 +2397,7 @@ void DrawMouseSens(void)
 //
 // ADJUST MOUSE SENSITIVITY
 //
-void MouseSensitivity(void)
+CP_routineret MouseSensitivity(CP_routineargs)
 {
 	ControlInfo ci;
 	id0_int_t exit=0,oldMA;
@@ -2470,6 +2475,7 @@ void MouseSensitivity(void)
 
 	WaitKeyUp();
 	MenuFadeOut();
+	return CP_itemvalue;
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
@@ -2597,7 +2603,7 @@ id0_char_t mbarray[4][3]={"b0","b1","b2","b3"},
 	   order[4]={RUN,OPEN,FIRE,STRAFE};
 
 
-void CustomControls(void)
+CP_routineret CustomControls(CP_routineargs)
 {
  id0_int_t which;
 
@@ -2630,6 +2636,7 @@ void CustomControls(void)
 
 
  MenuFadeOut();
+ return CP_itemvalue;
 }
 
 
@@ -3320,7 +3327,7 @@ void DrawCustKeys(id0_int_t hilight)
 // CHANGE SCREEN VIEWING SIZE
 //
 ////////////////////////////////////////////////////////////////////
-void CP_ChangeView(void)
+CP_routineret CP_ChangeView(CP_routineargs)
 {
 	id0_int_t exit=0,oldview,newview;
 	ControlInfo ci;
@@ -3380,7 +3387,7 @@ void CP_ChangeView(void)
 			viewwidth=oldview*16;
 			SD_PlaySound(ESCPRESSEDSND);
 			MenuFadeOut();
-			return;
+			return CP_itemvalue;
 		}
 		BE_ST_ShortSleep();
 
@@ -3399,6 +3406,7 @@ void CP_ChangeView(void)
 
 	ShootSnd();
 	MenuFadeOut();
+	return CP_itemvalue;
 }
 
 

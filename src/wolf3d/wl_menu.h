@@ -198,6 +198,20 @@ typedef struct {
 		id0_int_t x,y,amount,curpos,indent;
 		} CP_iteminfo;
 
+// REFKEEN: New specifier for return and param type of a CP_item routine.
+// Functions are now adapted to use this, changing by the version.
+// CP_itemvalue is used to conditionally pass an argument for v1.0+,
+// as well as conditionally returning a value.
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
+#define CP_routineargs void
+#define CP_routineret void
+#define CP_itemvalue
+#else
+#define CP_routineargs id0_int_t unused
+#define CP_routineret id0_int_t
+#define CP_itemvalue 0
+#endif
+
 typedef struct {
 		id0_int_t active;
 		// *** S3DNA + ALPHA RESTORATION ***
@@ -208,11 +222,14 @@ typedef struct {
 #else
 		id0_char_t string[36];
 #endif
+		CP_routineret (* routine)(CP_routineargs);
+#if 0
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		void (* routine)(void);
 #else
 		void (* routine)(id0_int_t temp1);
+#endif
 #endif
 		} CP_itemtype;
 
@@ -298,8 +315,8 @@ void TrackWhichGame(id0_int_t w);
 void DrawNewGameDiff(id0_int_t w);
 void FixupCustom(id0_int_t w);
 
-void CP_NewGame(void);
-void CP_Sound(void);
+CP_routineret CP_NewGame(CP_routineargs);
+CP_routineret CP_Sound(CP_routineargs);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 void CP_LoadGame(void);
@@ -308,18 +325,18 @@ void CP_SaveGame(void);
 id0_int_t  CP_LoadGame(id0_int_t quick);
 id0_int_t  CP_SaveGame(id0_int_t quick);
 #endif
-void CP_Control(void);
-void CP_ChangeView(void);
-void CP_ExitOptions(void);
+CP_routineret CP_Control(CP_routineargs);
+CP_routineret CP_ChangeView(CP_routineargs);
+CP_routineret CP_ExitOptions(CP_routineargs);
 void CP_Quit(void);
-void CP_ViewScores(void);
+CP_routineret CP_ViewScores(CP_routineargs);
 id0_int_t  CP_EndGame(void);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 id0_int_t  CP_CheckQuick(id0_unsigned_t scancode);
 #endif
-void CustomControls(void);
-void MouseSensitivity(void);
+CP_routineret CustomControls(CP_routineargs);
+CP_routineret MouseSensitivity(CP_routineargs);
 
 void CheckForEpisodes(void);
 
