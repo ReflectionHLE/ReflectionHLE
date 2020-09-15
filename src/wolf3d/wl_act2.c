@@ -3944,7 +3944,9 @@ void T_Ghosts (objtype *ob)
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 		if (ob->distance < 1)
-			TakeDamage (5);
+			// REFKEEN: Assume NULL. Most known impact is on player death
+			TakeDamage (5, NULL);
+//			TakeDamage (5);
 #endif
 		SelectChaseDir (ob);
 
