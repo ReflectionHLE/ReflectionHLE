@@ -170,10 +170,10 @@ id0_int_t AskQuestion (id0_int_t question)
 	QuizItems.amount = answer+1;
 	QuizItems.curpos = 0;
 	CacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
-	DrawMenu (&QuizItems,&QuizMenu);
+	DrawMenu (&QuizItems,QuizMenu);
 	VW_UpdateScreen ();
 	WaitKeyUp ();
-	answer = HandleMenu (&QuizItems,&QuizMenu,NULL);
+	answer = HandleMenu (&QuizItems,QuizMenu,NULL);
 
 	DrawWindow (14,21,292,134,BKGDCOLOR);
 	WindowX = PrintX = 0;
