@@ -1,25 +1,9 @@
-/* Catacomb 3-D Source Code
- * Copyright (C) 1993-2014 Flat Rock Software
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
 // New file with pre-calculated sine table, originally
 // dumped by the DOSBox debugger while running Catacomb 3-D v1.22
 
-#ifdef REFKEEN_VER_CATADVENTURES
+#ifdef REFKEEN_VER_WOLF3D_ALL
+#include "wl_def.h"
+#elif (defined REFKEEN_VER_CATADVENTURES)
 #include "def.h"
 #else
 #include "c3_def.h"
@@ -27,7 +11,7 @@
 
 REFKEEN_NS_B
 
-fixed sintable[ANGLES+ANGLES/4] = {
+int32_t sintable[450] = {
 	          0L,        1143L,        2287L,        3429L,
 	       4571L,        5711L,        6850L,        7986L,
 	       9120L,       10252L,       11380L,       12504L,
