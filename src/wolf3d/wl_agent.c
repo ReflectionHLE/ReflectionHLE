@@ -196,7 +196,7 @@ void CheckWeaponChange (void)
 			switch (i)
 			{
 			case wp_knife:
-				gamestate.weapon = gamestate.chosenweapon = i;
+				gamestate.weapon = gamestate.chosenweapon = (weapontype)i;
 				DrawAmmo ();
 				break;
 			case wp_chaingun:
@@ -208,7 +208,7 @@ void CheckWeaponChange (void)
 			case wp_pistol:
 				if (gamestate.ammo)
 				{
-					gamestate.weapon = gamestate.chosenweapon = i;
+					gamestate.weapon = gamestate.chosenweapon = (weapontype)i;
 					DrawAmmo ();
 					return;
 				}
@@ -216,7 +216,7 @@ void CheckWeaponChange (void)
 			case wp_flamethrower:
 				if (gamestate.flamethrower && gamestate.gas)
 				{
-					gamestate.weapon = gamestate.chosenweapon = i;
+					gamestate.weapon = gamestate.chosenweapon = (weapontype)i;
 					DrawAmmo ();
 					return;
 				}
@@ -224,7 +224,7 @@ void CheckWeaponChange (void)
 			case wp_missile:
 				if (gamestate.missile && gamestate.missiles)
 				{
-					gamestate.weapon = gamestate.chosenweapon = i;
+					gamestate.weapon = gamestate.chosenweapon = (weapontype)i;
 					DrawAmmo ();
 					return;
 				}
