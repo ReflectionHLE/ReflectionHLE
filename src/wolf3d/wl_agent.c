@@ -439,7 +439,12 @@ void DrawFace (void)
 	// ALPHA RESTORATION
 #if (!defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_WL920312)
 //#ifndef SPEAR
-	 if (LastAttacker->obclass == needleobj)
+	// REFKEEN: For certain versions, TakeDamage might set
+	// LastAttacker to NULL (uninitialized variable in the original EXEs),
+	// so try to emulate the behaviors.
+	 if ((LastAttacker && (LastAttacker->obclass == needleobj)) ||
+	     (!LastAttacker && ((0x6F42 == needleobj))))
+//	 if (LastAttacker->obclass == needleobj)
 	   StatusDrawPic (17,4,MUTANTBJPIC);
 	 else
 #endif
