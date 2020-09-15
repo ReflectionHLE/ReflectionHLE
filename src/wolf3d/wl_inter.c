@@ -2488,7 +2488,8 @@ void CopyProtection(void)
 #define TYPEBOX_BKGD	0x9c
 #define PRINTCOLOR		HIGHLIGHT
 
-	id0_int_t	i,match,whichboss,bossnum,try,whichline,enemypicked[4]={0,0,0,0},
+	// REFKEEN: "try" was renamed "attempt", since "try" is reserved in C++
+	id0_int_t	i,match,whichboss,bossnum,attempt,whichline,enemypicked[4]={0,0,0,0},
 		bosses[4] = { BOSSPIC1PIC,BOSSPIC2PIC,BOSSPIC3PIC,BOSSPIC4PIC },
 		whichone,whichpicked[4]={0,0,0,0},quiztype,whichmem,
 		memberpicked[5]={0,0,0,0,0},wordpicked[5]={0,0,0,0,0},whichword;
@@ -2508,7 +2509,7 @@ void CopyProtection(void)
 
 
 
-	try = 0;
+	attempt = 0;
 	VW_FadeOut();
 	CA_CacheGrChunk(C_BACKDROPPIC);
 	CacheLump(COPYPROT_LUMP_START,COPYPROT_LUMP_END);
@@ -2517,7 +2518,7 @@ void CopyProtection(void)
 	StartCPMusic(COPYPRO_MUS);
 	US_InitRndT(true);
 
-	while (try<3)
+	while (attempt<3)
 	{
 		fontnumber = 1;
 		SETFONTCOLOR(PRINTCOLOR-2,15);
@@ -2675,7 +2676,7 @@ void CopyProtection(void)
 			SD_PlaySound(NOWAYSND);
 			IN_UserInput(TickBase*3);
 			VW_FadeOut();
-			try++;
+			attempt++;
 		}
 		else
 		{
