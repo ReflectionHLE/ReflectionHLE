@@ -535,6 +535,8 @@ id0_long_t DoChecksum(id0_byte_t id0_far *source,id0_unsigned_t size,id0_long_t 
 
 id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 {
+	return false; // TODO IMPLEMENT
+#if 0
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming and free size verifications, plus a bit more
 
@@ -696,6 +698,7 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 	return(true);
+#endif
 }
 
 //===========================================================================
@@ -710,6 +713,8 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 
 id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 {
+	return false; // TODO IMPLEMENT
+#if 0
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming, plus a bit more
 
@@ -868,6 +873,7 @@ id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 #endif
 
 	return true;
+#endif
 }
 
 //===========================================================================
