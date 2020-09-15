@@ -4364,7 +4364,7 @@ id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 
 
 	fontnumber=1;
-	font=grsegs[STARTFONT+fontnumber];
+	font=(fontstruct *)grsegs[STARTFONT+fontnumber];
 	h=font->height;
 	for (i=0;i<strlen(string);i++)
 		if (string[i]=='\n')
@@ -4548,7 +4548,7 @@ void Message(id0_char_t GAMEVER_COND_FARPTR *string)
 	CA_CacheGrChunk (STARTFONT+1);
 #endif
 	fontnumber=1;
-	font=grsegs[STARTFONT+fontnumber];
+	font=(fontstruct *)grsegs[STARTFONT+fontnumber];
 	h=font->height;
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if 1 // REFKEEN: Just use strlen
