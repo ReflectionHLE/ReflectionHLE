@@ -49,7 +49,7 @@ void VL_WaitVBL (id0_int_t vbls)
 //
 //==============
 
-void VL_SetCRTC (id0_word_t crtc)
+void VL_SetCRTC (id0_int_t crtc)
 {
 	// REFKEEN (TODO): We skip wait for display signal here
 	BE_ST_SetScreenStartAddress(crtc);
