@@ -2330,7 +2330,7 @@ MIDI_ProgramChange(id0_int_t channel, id0_int_t id)
 		id0_unsigned_t	fnumber;
 		id0_int_t	octave;
 
-		inst = &instrument[9];
+		inst = (id0_byte_t *)&instrument[9];
 		alOut(modifiers[6]+alChar, *inst++);
 		alOut(carriers[6]+alChar, *inst++);
 		alOut(modifiers[6]+alScale, *inst++);
@@ -2360,7 +2360,7 @@ MIDI_ProgramChange(id0_int_t channel, id0_int_t id)
 		alOut(alFreqL+8,fnumber&0xFF);
 		alOut(alFreqH+8,octave+((fnumber>>8)&3));
 
-		inst = &instrument[10];
+		inst = (id0_byte_t *)&instrument[10];
 		alOut(0x31,*inst); inst += 2;
 		alOut(0x51,*inst); inst += 2;
 		alOut(0x71,*inst); inst += 2;
@@ -2369,7 +2369,7 @@ MIDI_ProgramChange(id0_int_t channel, id0_int_t id)
 		alOut(0xF1,*inst);
 		alOut(0xC7,0);
 
-		inst = &instrument[12];
+		inst = (id0_byte_t *)&instrument[12];
 		alOut(0x32,*inst); inst += 2;
 		alOut(0x52,*inst); inst += 2;
 		alOut(0x72,*inst); inst += 2;
@@ -2377,7 +2377,7 @@ MIDI_ProgramChange(id0_int_t channel, id0_int_t id)
 
 		alOut(0xF2,*inst);
 
-		inst = &instrument[11];
+		inst = (id0_byte_t *)&instrument[11];
 		alOut(0x34,*inst); inst += 2;
 		alOut(0x54,*inst); inst += 2;
 		alOut(0x74,*inst); inst += 2;
@@ -2386,7 +2386,7 @@ MIDI_ProgramChange(id0_int_t channel, id0_int_t id)
 		alOut(0xF4,*inst);
 		alOut(0xC8,0);
 
-		inst = &instrument[10];
+		inst = (id0_byte_t *)&instrument[10];
 		alOut(0x35,*inst); inst += 2;
 		alOut(0x55,*inst); inst += 2;
 		alOut(0x75,*inst); inst += 2;
@@ -2402,40 +2402,40 @@ MIDI_ProgramChange(id0_int_t channel, id0_int_t id)
 		switch (id & 0xF8)
 		{
 		case 0:
-			inst = &instrument[0];
+			inst = (id0_byte_t *)&instrument[0];
 			break;
 		case 8:
-			inst = &instrument[8];
+			inst = (id0_byte_t *)&instrument[8];
 			break;
 		case 16:
-			inst = &instrument[1];
+			inst = (id0_byte_t *)&instrument[1];
 			break;
 		case 24:
-			inst = &instrument[0];
+			inst = (id0_byte_t *)&instrument[0];
 			break;
 		case 32:
-			inst = &instrument[2];
+			inst = (id0_byte_t *)&instrument[2];
 			break;
 		case 40:
 		case 48:
-			inst = &instrument[0];
+			inst = (id0_byte_t *)&instrument[0];
 			break;
 		case 56:
 		case 64:
-			inst = &instrument[6];
+			inst = (id0_byte_t *)&instrument[6];
 			break;
 		case 72:
-			inst = &instrument[7];
+			inst = (id0_byte_t *)&instrument[7];
 			break;
 		case 80:
 		case 88:
 		case 96:
-			inst = &instrument[0];
+			inst = (id0_byte_t *)&instrument[0];
 			break;
 		case 104:
 		case 112:
 		case 120:
-			inst = &instrument[8];
+			inst = (id0_byte_t *)&instrument[8];
 			break;
 		default:
 			midiError = -8;
@@ -3593,9 +3593,9 @@ SD_StartMusic(MusicGroup id0_far *music)
 //asm	pushf
 //asm	cli
 
-	seqPtr = music->values;
+	seqPtr = (id0_byte_t *)music->values;
 	seqLength = music->length;
-	if (strncmp(seqPtr,"MThd",4))
+	if (strncmp((char *)seqPtr,"MThd",4))
 //	if (_fstrncmp(seqPtr,"MThd",4))
 		Quit("SD_StartMusic: MIDI header expected!\n");
 
@@ -3613,7 +3613,7 @@ SD_StartMusic(MusicGroup id0_far *music)
 	}
 
 	seqPtr += fixlongword(((id0_longword_t id0_far *)seqPtr)[1]) + 8;
-	if (strncmp(seqPtr,"MTrk",4))
+	if (strncmp((char *)seqPtr,"MTrk",4))
 //	if (_fstrncmp(seqPtr,"MTrk",4))
 		Quit("SD_StartMusic: MIDI track header expected!\n");
 
