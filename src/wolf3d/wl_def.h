@@ -1211,6 +1211,8 @@ extern	id0_int_t		mouseadjustment;
 //
 // math tables
 //
+#define REFKEEN_USE_PRECALC_SINTABLE 1 // REFKEEN - Use pre-calculated fixed sin table
+
 extern	id0_int_t			pixelangle[MAXVIEWWIDTH];
 extern	id0_long_t		id0_far finetangent[FINEANGLES/4];
 extern	fixed 		id0_far sintable[],id0_far *costable;

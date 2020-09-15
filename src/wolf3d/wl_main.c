@@ -920,9 +920,13 @@ const   float   radtoint = (float)FINEANGLES/2/PI;
 void BuildTables (void)
 {
   id0_int_t           i;
+#if !REFKEEN_USE_PRECALC_SINTABLE
   float         angle,anglestep;
+#endif
   double        tang;
+#if !REFKEEN_USE_PRECALC_SINTABLE
   fixed         value;
+#endif
 
 
 //
@@ -936,6 +940,7 @@ void BuildTables (void)
 		finetangent[FINEANGLES/4-1-i] = 1/tang*TILEGLOBAL;
 	}
 
+#if !REFKEEN_USE_PRECALC_SINTABLE
 //
 // costable overlays sintable with a quarter phase shift
 // ANGLES is assumed to be divisable by four
@@ -956,6 +961,7 @@ void BuildTables (void)
 	  sintable[ANGLES/2+i] = value | 0x80000000l;
 	angle += anglestep;
   }
+#endif // !REFKEEN_USE_PRECALC_SINTABLE
 
 }
 

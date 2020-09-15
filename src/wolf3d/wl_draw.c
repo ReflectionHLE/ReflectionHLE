@@ -96,7 +96,11 @@ fixed	mindist		= MINDIST;
 //
 id0_int_t			pixelangle[MAXVIEWWIDTH];
 id0_long_t		id0_far finetangent[FINEANGLES/4];
-fixed 		id0_far sintable[ANGLES+ANGLES/4],id0_far *costable = sintable+(ANGLES/4);
+// REFKEEN - Use pre-calculated fixed sin table
+#if !REFKEEN_USE_PRECALC_SINTABLE
+fixed id0_far sintable[ANGLES+ANGLES/4];
+#endif
+fixed id0_far *costable = sintable+(ANGLES/4);
 
 //
 // refresh variables
