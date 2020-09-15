@@ -227,8 +227,9 @@ void ReadConfig(void)
 		if (sd == sdm_AdLib && !AdLibPresent && !SoundBlasterPresent)
 #endif
 		{
-			sd = sdm_PC;
-			sd = smm_Off;
+			// REFKEEN: Vanilla bug
+//			sd = sdm_PC;
+			sd = sdm_Off/*smm_Off*/;
 		}
 
 		// *** S3DNA RESTORATION ***
