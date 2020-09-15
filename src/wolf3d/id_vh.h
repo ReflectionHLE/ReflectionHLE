@@ -121,6 +121,8 @@ void VWB_Vlin (id0_int_t y1, id0_int_t y2, id0_int_t x, id0_int_t color);
 extern id0_byte_t *gamepal;
 
 void VH_SetDefaultColors (void);
+// REFKEEN: Added declaration
+void VL_SetCRTC (id0_int_t crtc);
 
 #define VW_Startup		VL_Startup
 #define VW_Shutdown		VL_Shutdown

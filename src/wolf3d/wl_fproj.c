@@ -100,6 +100,7 @@ void T_Projectile (objtype *ob)
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+	extern id0_boolean_t TryMove(objtype *ob); // REFKEEN: Added declaration
 	if (!TryMove (ob))
 #else
 	if (!ProjectileTryMove (ob))

@@ -1305,6 +1305,9 @@ void	DrawHighScores(void);
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 void DrawAllPlayBorderSides (void);
 #endif
+// REFKEEN: Added declarations
+void DrawPlayBorderSides (void);
+void ResetSplitScreen (void);
 
 // *** ALPHA RESTORATION ***/
 // Quick hacks

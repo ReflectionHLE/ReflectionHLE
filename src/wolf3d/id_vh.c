@@ -480,6 +480,7 @@ void VW_UpdateScreen (void)
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
 	extern id0_boolean_t screensplit;
+	extern void VH_UpdateSplitScreen (void); // REFKEEN: Added declaration
 	if (screensplit)
 		VH_UpdateSplitScreen ();
 	else
