@@ -56,6 +56,7 @@
 
 //#pragma	warn	-pia
 
+REFKEEN_NS_B
 
 //	Global variables
 		id0_char_t		*abortprogram;
@@ -898,3 +899,5 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 	IN_ClearKeysDown();
 	return(result);
 }
+
+REFKEEN_NS_E

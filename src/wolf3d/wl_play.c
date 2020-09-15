@@ -27,6 +27,7 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
 
 /*
 =============================================================================
@@ -2019,3 +2020,5 @@ void RefKeen_Patch_wl_play(void)
 	refkeen_compat_wl_play_objoffset = 0xA94A;
 #endif
 }
+
+REFKEEN_NS_E

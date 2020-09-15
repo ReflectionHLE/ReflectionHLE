@@ -27,6 +27,8 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -1931,4 +1933,4 @@ id0_boolean_t SightPlayer (objtype *ob)
 	return true;
 }
 
-
+REFKEEN_NS_E

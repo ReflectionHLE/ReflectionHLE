@@ -28,6 +28,8 @@
 //#include <DOS.H>
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 //#define DEBUGWALLS
 //#define DEBUGTICS
 
@@ -1933,3 +1935,4 @@ asm	rep stosw
 
 //===========================================================================
 
+REFKEEN_NS_E

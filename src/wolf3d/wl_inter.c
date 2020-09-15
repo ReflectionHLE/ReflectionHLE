@@ -27,6 +27,7 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
 
 //==========================================================================
 
@@ -2716,3 +2717,5 @@ void CopyProtection(void)
 #endif // SPEARDEMO
 #endif // SPEAR
 //===========================================================================
+
+REFKEEN_NS_E

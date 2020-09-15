@@ -27,6 +27,8 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -1102,3 +1104,4 @@ void MovePWalls (void)
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
+REFKEEN_NS_E

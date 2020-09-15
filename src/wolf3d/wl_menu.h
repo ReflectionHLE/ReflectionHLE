@@ -25,6 +25,9 @@
 //
 // WL_MENU.H
 //
+
+REFKEEN_NS_B
+
 #ifdef SPEAR
 
 #define BORDCOLOR	0x99
@@ -402,4 +405,4 @@ void Write (id0_int_t x,id0_int_t y,id0_char_t *string);
 void NonShareware(void);
 id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic);
 
-
+REFKEEN_NS_E

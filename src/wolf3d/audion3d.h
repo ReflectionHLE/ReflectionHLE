@@ -7,6 +7,8 @@
 //
 /////////////////////////////////////////////////
 
+REFKEEN_NS_B
+
 #define NUMSOUNDS		44
 #define NUMSNDCHUNKS		143
 
@@ -144,3 +146,5 @@ typedef enum {
 // Thanks for playing with MUSE!
 //
 /////////////////////////////////////////////////
+
+REFKEEN_NS_E

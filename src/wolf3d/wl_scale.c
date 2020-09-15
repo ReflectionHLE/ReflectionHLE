@@ -27,6 +27,8 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 #define OP_RETF	0xcb
 
 /*
@@ -888,3 +890,4 @@ id0_byte_t		*linescale, *lineshape;
 //id0_long_t		linescale;
 id0_unsigned_t	maskword;
 
+REFKEEN_NS_E

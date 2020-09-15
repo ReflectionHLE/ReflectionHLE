@@ -28,6 +28,7 @@
 //#pragma	hdrstop
 
 #ifndef SPEAR // REFKEEN: Disable all code for what doesn't need it
+REFKEEN_NS_B
 
 /*
 =============================================================================
@@ -1073,4 +1074,5 @@ void EndText (void)
 }
 #endif
 
+REFKEEN_NS_E
 #endif // REFKEEN: Disable code when not required

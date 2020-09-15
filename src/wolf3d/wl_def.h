@@ -47,6 +47,8 @@
 #include "f_spear.h"
 #endif
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -1942,3 +1944,5 @@ void LoadFloorTiles (id0_int_t tile);
 void SetPlaneViewSize (void);
 void DrawPlanes (void);
 #endif
+
+REFKEEN_NS_E

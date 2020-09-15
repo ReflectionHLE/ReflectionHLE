@@ -34,6 +34,8 @@
 #define F_FIRSTCOLOR	1
 #define F_SECONDCOLOR	12
 
+REFKEEN_NS_B
+
 //===========================================================================
 
 #define MAXSHIFTS	1
@@ -172,3 +174,4 @@ id0_boolean_t 	FizzleFade (id0_unsigned_t source, id0_unsigned_t dest,
 extern	id0_unsigned_t	latchpics[NUMLATCHPICS];
 extern	id0_unsigned_t freelatch;
 
+REFKEEN_NS_E

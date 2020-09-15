@@ -5,6 +5,8 @@
 //
 //////////////////////////////////////
 
+REFKEEN_NS_B
+
 typedef enum {
 		// Lump Start
 		H_TOPWINDOWPIC=3,
@@ -199,3 +201,5 @@ typedef enum {
 //
 // Thank you for using IGRAB!
 //
+
+REFKEEN_NS_E

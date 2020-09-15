@@ -48,6 +48,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+REFKEEN_NS_B
+
 // REFKEEN - Define these for a bit more consistent style
 #define id0_argc g_be_argc
 #define id0_argv g_be_argv
@@ -88,3 +90,4 @@ typedef	struct
 
 void	Quit (id0_char_t *error);		// defined in user program
 
+REFKEEN_NS_E

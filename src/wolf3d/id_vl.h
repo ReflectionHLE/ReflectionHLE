@@ -24,6 +24,8 @@
 
 // ID_VL.H
 
+REFKEEN_NS_B
+
 // wolf compatability
 
 #define MS_Quit	Quit
@@ -212,3 +214,4 @@ void VL_SizePropString (id0_char_t *str, id0_int_t *width, id0_int_t *height, id
 
 void VL_TestPaletteSet (void);
 
+REFKEEN_NS_E

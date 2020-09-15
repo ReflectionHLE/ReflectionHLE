@@ -31,6 +31,8 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 #define REFKEEN_ENABLE_FILE_SEARCH 0 // TODO (REFKEEN): Implement
 
 //
@@ -4917,3 +4919,5 @@ void CheckForEpisodes(void)
 #endif // REFKEEN_ENABLE_FILE_SEARCH
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
+
+REFKEEN_NS_E

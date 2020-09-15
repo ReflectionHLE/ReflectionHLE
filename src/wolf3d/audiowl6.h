@@ -20,6 +20,8 @@
 #define NUMSNDCHUNKS		288
 #endif
 
+REFKEEN_NS_B
+
 //
 // Sound names & indexes
 //
@@ -195,3 +197,5 @@ typedef enum {
 // Thanks for playing with MUSE!
 //
 /////////////////////////////////////////////////
+
+REFKEEN_NS_E

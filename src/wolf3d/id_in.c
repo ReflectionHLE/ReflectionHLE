@@ -44,6 +44,8 @@
 #include "id_heads.h"
 //#pragma	hdrstop
 
+REFKEEN_NS_B
+
 #define	KeyInt		9	// The keyboard ISR number
 
 //
@@ -982,4 +984,4 @@ id0_byte_t	IN_JoyButtons (void)
 	return BE_ST_GetEmuJoyButtons(0) | (BE_ST_GetEmuJoyButtons(1) << 2);
 }
 
-
+REFKEEN_NS_E

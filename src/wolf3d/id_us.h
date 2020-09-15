@@ -32,6 +32,8 @@
 #ifndef	__ID_US__
 #define	__ID_US__
 
+REFKEEN_NS_B
+
 #ifdef	__DEBUG__
 #define	__DEBUG_UserMgr__
 #endif
@@ -154,4 +156,7 @@ extern	id0_int_t		US_CheckParm(const id0_char_t *parm,const id0_char_t **strings
 
 		void	USL_PrintInCenter(id0_char_t GAMEVER_COND_FARPTR *s,Rect r);
 		id0_char_t 	*USL_GiveSaveName(id0_word_t game);
+
+REFKEEN_NS_E
+
 #endif

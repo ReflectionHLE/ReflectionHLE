@@ -104,6 +104,9 @@
 
 #endif
 #endif
+
+REFKEEN_NS_B
+
 //-----------------
 
 
@@ -166,6 +169,8 @@ typedef	struct
 
 extern id0_char_t *signon;
 
+REFKEEN_NS_E
+
 #include "id_mm.h"
 #include "id_pm.h"
 #include "id_ca.h"
@@ -175,6 +180,7 @@ extern id0_char_t *signon;
 #include "id_sd.h"
 #include "id_us.h"
 
+REFKEEN_NS_B
 
 void	Quit (id0_char_t *error);		// defined in user program
 
@@ -210,3 +216,4 @@ extern	id0_byte_t		fontcolor,backcolor;
 
 #define SETFONTCOLOR(f,b) fontcolor=f;backcolor=b;
 
+REFKEEN_NS_E

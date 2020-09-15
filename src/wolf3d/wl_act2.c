@@ -27,6 +27,8 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -4813,3 +4815,5 @@ void	A_StartDeathCam (objtype *ob)
 #endif // GAMEVER_WOLFREV > GV_WR_WL1AP10
 
 #endif
+
+REFKEEN_NS_E

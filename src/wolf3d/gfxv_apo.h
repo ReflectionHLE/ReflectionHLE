@@ -6,6 +6,8 @@
 //
 //////////////////////////////////////
 
+REFKEEN_NS_B
+
 typedef enum {
     // Lump Start
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -294,3 +296,5 @@ typedef enum {
 //
 // Thank you for using IGRAB!
 //
+
+REFKEEN_NS_E

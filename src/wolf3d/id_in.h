@@ -32,6 +32,8 @@
 #ifndef	__ID_IN__
 #define	__ID_IN__
 
+REFKEEN_NS_B
+
 #ifdef	__DEBUG__
 #define	__DEBUG_InputMgr__
 #endif
@@ -230,5 +232,7 @@ id0_byte_t	IN_JoyButtons (void);
 void INL_GetJoyDelta(id0_word_t joy,id0_int_t *dx,id0_int_t *dy);
 void IN_StartAck(void);
 id0_boolean_t IN_CheckAck (void);
+
+REFKEEN_NS_E
 
 #endif

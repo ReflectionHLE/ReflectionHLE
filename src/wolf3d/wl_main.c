@@ -28,6 +28,7 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
 
 /*
 =============================================================================
@@ -2517,3 +2518,5 @@ void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void)
 		// Don't use quit, yet
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_wolf3d_exe - Failed to load\nat least one file.");
 }
+
+REFKEEN_NS_E

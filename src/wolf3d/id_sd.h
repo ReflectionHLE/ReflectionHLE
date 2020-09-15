@@ -32,6 +32,8 @@
 #ifndef	__ID_SD__
 #define	__ID_SD__
 
+REFKEEN_NS_B
+
 // *** PRE-V1.4 APOGEE RESTORATION ***
 // With no declaration, so the compiler assumes args are passed as 16-bit ints
 #if 1 // REFKEEN: Always declare this
@@ -318,6 +320,8 @@ inline void SD_TimeCountWaitTicks(id0_int_t ticks)
 {
         SD_TimeCountWaitForDest(SD_GetTimeCount() + ticks);
 }
+
+REFKEEN_NS_E
 
 #endif
 

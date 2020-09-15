@@ -5,6 +5,8 @@
 //
 //////////////////////////////////////
 
+REFKEEN_NS_B
+
 typedef enum {
 		// Lump Start
 		C_BACKDROPPIC=3,
@@ -278,3 +280,5 @@ typedef enum {
 //
 // Thank you for using IGRAB!
 //
+
+REFKEEN_NS_E

@@ -32,6 +32,8 @@
 #include "id_vl.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 //
 // SC_INDEX is expected to stay at SC_MAPMASK for proper operation
 //
@@ -1285,6 +1287,4 @@ asm	int	0x10
 
 #endif
 
-
-
-
+REFKEEN_NS_E

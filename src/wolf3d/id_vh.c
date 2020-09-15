@@ -26,6 +26,8 @@
 
 #include "id_heads.h"
 
+REFKEEN_NS_B
+
 #define	SCREENWIDTH		80
 #define CHARWIDTH		2
 #define TILEWIDTH		4
@@ -721,3 +723,5 @@ noxor:
 
 }
 #endif // GAMEVER_NOAH3D
+
+REFKEEN_NS_E
