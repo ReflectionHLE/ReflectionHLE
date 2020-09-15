@@ -241,7 +241,7 @@ void ReadAnyControl(ControlInfo *ci);
 void TicDelay(id0_int_t count);
 void CacheLump(id0_int_t lumpstart,id0_int_t lumpend);
 void UnCacheLump(id0_int_t lumpstart,id0_int_t lumpend);
-void StartCPMusic(id0_int_t song);
+void StartCPMusic(musicnames/*id0_int_t*/ song); // REFKEEN: For C++ build
 id0_int_t  Confirm(id0_char_t GAMEVER_COND_FARPTR *string);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)

@@ -4355,10 +4355,11 @@ void ReadAnyControl(ControlInfo *ci)
 ////////////////////////////////////////////////////////////////////
 id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 {
+	soundnames whichsnd[2]={ESCPRESSEDSND,SHOOTSND}; // REFKEEN: For C++ build
 	// *** ALPHA RESTORATION ***
 	// Originally the code from the Message function was *hardcoded* here
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	id0_int_t xit=0,h=0,w=0,mw=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
+	id0_int_t xit=0,h=0,w=0,mw=0,i,x,y,tick=0,time/*,whichsnd[2]={ESCPRESSEDSND,SHOOTSND}*/;
 	fontstruct id0_seg *font;
 
 
@@ -4388,7 +4389,7 @@ id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 	US_Print(string);
 	VW_UpdateScreen();
 #else // GAMEVER_WOLFREV > GV_WR_WL920312
-	id0_int_t xit=0,i,x,y,tick=0,time,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
+	id0_int_t xit=0,i,x,y,tick=0,time/*,whichsnd[2]={ESCPRESSEDSND,SHOOTSND}*/;
 
 
 	Message(string);
@@ -4473,7 +4474,8 @@ id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
 ////////////////////////////////////////////////////////////////////
 id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic)
 {
-	id0_int_t xit=0,whichsnd[2]={ESCPRESSEDSND,SHOOTSND};
+	soundnames whichsnd[2]={ESCPRESSEDSND,SHOOTSND}; // REFKEEN: For C++ build
+	id0_int_t xit=0/*,whichsnd[2]={ESCPRESSEDSND,SHOOTSND}*/;
 
 
 	CA_CacheGrChunk(pic);
@@ -4587,10 +4589,10 @@ void Message(id0_char_t GAMEVER_COND_FARPTR *string)
 // THIS MAY BE FIXED A LITTLE LATER...
 //
 ////////////////////////////////////////////////////////////////////
-static	id0_int_t	lastmusic;
+static	musicnames/*id0_int_t*/	lastmusic; // REFKEEN: For C++ build
 #endif
 
-void StartCPMusic(id0_int_t song)
+void StartCPMusic(musicnames/*id0_int_t*/ song)
 {
 	musicnames	chunk;
 
