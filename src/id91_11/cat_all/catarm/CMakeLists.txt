@@ -12,7 +12,6 @@ list(APPEND catarm_src
 	src/id91_11/cat_all/c3_asm.c
 	src/id91_11/cat_all/c3_scale.c
 	src/id91_11/cat_all/c3_trace.c
-	src/id91_11/cat_all/fixed_sintable.c
 	src/id91_11/cat_all/cat_late/c5_debug.c
 	src/id91_11/cat_all/cat_late/c5_draw.c
 	src/id91_11/cat_all/cat_late/gelib.c
@@ -34,5 +33,6 @@ list(APPEND catarm_src
 	src/id91_11/cat_all/external_restored/ext_vw_a.c
 	src/id91_11/cat_all/external_restored/intro.c
 	src/id91_11/cat_all/external_restored/slidecat.c
+	src/idtech_common/fixed_sintable.c
 )
 

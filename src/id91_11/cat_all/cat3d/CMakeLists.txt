@@ -13,7 +13,6 @@ list(APPEND cat3d_src
 	src/id91_11/cat_all/c3_asm.c
 	src/id91_11/cat_all/c3_scale.c
 	src/id91_11/cat_all/c3_trace.c
-	src/id91_11/cat_all/fixed_sintable.c
 	src/id91_11/cat_all/cat3d/c3_act1.c
 	src/id91_11/cat_all/cat3d/c3_debug.c
 	src/id91_11/cat_all/cat3d/c3_draw.c
@@ -23,4 +22,5 @@ list(APPEND cat3d_src
 	src/id91_11/cat_all/cat3d/c3_state.c
 	src/id91_11/cat_all/cat3d/c3_wiz.c
 	src/id91_11/cat_all/cat3d/statetype_ptr_conversion.c
+	src/idtech_common/fixed_sintable.c
 )

@@ -12,7 +12,6 @@ list(APPEND catabyss_src
 	src/id91_11/cat_all/c3_asm.c
 	src/id91_11/cat_all/c3_scale.c
 	src/id91_11/cat_all/c3_trace.c
-	src/id91_11/cat_all/fixed_sintable.c
 	src/id91_11/cat_all/catabyss/c4_act1.c
 	src/id91_11/cat_all/catabyss/c4_debug.c
 	src/id91_11/cat_all/catabyss/c4_draw.c
@@ -32,4 +31,5 @@ list(APPEND catabyss_src
 	src/id91_11/cat_all/external_restored/intro.c
 	src/id91_11/cat_all/external_restored/loadscn.c
 	src/id91_11/cat_all/external_restored/slidecat.c
+	src/idtech_common/fixed_sintable.c
 )
