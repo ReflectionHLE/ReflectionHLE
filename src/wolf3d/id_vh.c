@@ -42,7 +42,7 @@
 
 #define UNCACHEGRCHUNK(chunk)	{MM_FreePtr(&grsegs[chunk]);grneeded[chunk]&=~ca_levelbit;}
 
-id0_byte_t	update[UPDATEHIGH][UPDATEWIDE];
+//id0_byte_t	update[UPDATEHIGH][UPDATEWIDE]; // REFKEEN: We have a separate definition
 
 //==========================================================================
 
