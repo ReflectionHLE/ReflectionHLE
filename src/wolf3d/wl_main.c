@@ -1452,7 +1452,9 @@ CP_itemtype id0_far MusicMenu[]=
 void DoJukebox(void)
 {
 	id0_int_t which,lastsong=-1;
-	id0_unsigned_t start,songs[]=
+	id0_unsigned_t start;
+//	id0_unsigned_t start,songs[]=
+	musicnames songs[]=
 		{
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -2225,7 +2227,7 @@ void    DemoLoop (void)
 			UNCACHEGRCHUNK (TITLE2PIC);
 #endif
 			VW_UpdateScreen ();
-			VL_FadeIn(0,255,grsegs[TITLEPALETTE],30);
+			VL_FadeIn(0,255,(id0_byte_t *)grsegs[TITLEPALETTE],30);
 
 			UNCACHEGRCHUNK (TITLEPALETTE);
 #else
