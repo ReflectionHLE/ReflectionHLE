@@ -64,6 +64,8 @@
 //#pragma	hdrstop
 //#pragma	warn	-pia
 
+REFKEEN_NS_B
+
 // REFKEEN TODO: Think that I can simply use the default definition
 #ifdef	id0_nil_t
 #undef	id0_nil_t
