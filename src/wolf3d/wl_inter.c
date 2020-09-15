@@ -140,7 +140,7 @@ const id0_char_t id0_far *casttext[] = {"Goat","Sheep","Ostrich","Antelope",
 	"Ox","Carl the Camel","Melvin the Monkey","Ginny the Giraffe",
 	"Kerry the Kangaroo","Ernie the Elephant","Hiding Burt","Burt the Bear"};
 
-id0_int_t castsound[] = {D_GOATSND,D_SHEEPSND,D_OSTRCHSND,D_ANTLPESND,
+soundnames/*id0_int_t*/ castsound[] = {D_GOATSND,D_SHEEPSND,D_OSTRCHSND,D_ANTLPESND,
 	D_OXSND,D_CAMELSND,D_MONKEYSND,D_GIRAFESND,
 	D_KANGROSND,D_ELPHNTSND,D_BEARSND,D_BEARSND};
 
