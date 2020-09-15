@@ -421,7 +421,11 @@ id0_char_t SaveGameNames[10][32],SaveName[13]="SAVEGAM?.";
 // INPUT MANAGER SCANCODE TABLES
 //
 ////////////////////////////////////////////////////////////////////
-static id0_byte_t
+
+// REFKEEN - Originally the type was simply "byte" (unsigned 8-bit int), but at
+// least for strings, if we want this to build as C++ (and reduce C warnings)
+// then we should use "const char". Conversions to e.g., ints are done later.
+static const char
 					*ScanNames[] =		// Scan code names with single chars
 					{
 	"?","?","1","2","3","4","5","6","7","8","9","0","-","+","?","?",
@@ -4628,11 +4632,17 @@ void FreeMusic (void)
 //		specified scan code
 //
 ///////////////////////////////////////////////////////////////////////////
-id0_byte_t *
+
+// REFKEEN - const char is used instead of 8-bit unsigned int type for
+// ScanNames, ExtScanCodes and ExtScanNames now, so fixes are required
+const char *
+//id0_byte_t *
 IN_GetScanName(ScanCode scan)
 {
-	id0_byte_t		**p;
-	ScanCode	id0_far *s;
+	const char **p;
+	const char id0_far *s;
+//	id0_byte_t		**p;
+//	ScanCode	id0_far *s;
 
 	for (s = ExtScanCodes,p = ExtScanNames;*s;p++,s++)
 		if (*s == scan)
