@@ -220,6 +220,12 @@ GAMEVER_COND_FARPTR SndMenu[]=
 	{0,"",0},
 	{1,STR_NONE,0},
 	{1,STR_ALSB,0}
+	// REFKEEN: Mimic possible side-effects of buffer overflows reproduced
+	// with an original DOS exe, at least with active and string[0]
+	// being set to 0 (SndItems.amount was not reduced from 12).
+#ifdef GAMEVER_NOAH3D
+	,{0,"",0}
+#endif
 #endif
 },
 
