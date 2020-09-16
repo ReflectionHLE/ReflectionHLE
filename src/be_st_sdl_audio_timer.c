@@ -58,6 +58,8 @@ static SDL_AudioSpec g_sdlAudioSpec;
 static SDL_AudioCallback g_sdlOurAudioCallback;
 /*static*/ SDL_AudioDeviceID g_sdlAudioDevice;
 
+int g_sdlOutputAudioFreq;
+
 bool g_sdlAudioSubsystemUp;
 
 static bool g_sdlEmulatedOPLChipReady;
@@ -296,6 +298,7 @@ void BE_ST_InitAudio(void)
 #endif
 				{
 					BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, received spec: freq %d, format %u, channels %d, samples %u, size %u\n", (int)g_sdlAudioSpec.freq, (unsigned int)g_sdlAudioSpec.format, (int)g_sdlAudioSpec.channels, (unsigned int)g_sdlAudioSpec.samples, (unsigned int)g_sdlAudioSpec.size);
+					g_sdlOutputAudioFreq = g_sdlAudioSpec.freq;
 					g_sdlAudioSubsystemUp = true;
 				}
 			}
@@ -306,7 +309,7 @@ void BE_ST_InitAudio(void)
 	// of 1000Hz (same as SDL_GetTicks() time units)
 	if (!g_sdlAudioSubsystemUp)
 	{
-		g_sdlAudioSpec.freq = doDigitized ? inSampleRate : (NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T));
+		g_sdlOutputAudioFreq = doDigitized ? inSampleRate : (NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T));
 		g_sdlOurAudioCallback = doDigitized ? BEL_ST_Simple_DigiCallBack : BEL_ST_Simple_EmuCallBack;
 
 		g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM);
@@ -331,16 +334,16 @@ void BE_ST_InitAudio(void)
 		OPL3_Reset(&g_oplChip, OPL_SAMPLE_RATE);
 		g_sdlEmulatedOPLChipReady = true;
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-		g_sdlALOutNumOfSamples = g_sdlCallbacksSamplesBufferOnePartCount*OPL_SAMPLE_RATE/g_sdlAudioSpec.freq;
+		g_sdlALOutNumOfSamples = g_sdlCallbacksSamplesBufferOnePartCount*OPL_SAMPLE_RATE/g_sdlOutputAudioFreq;
 #else
-		g_sdlALOutNumOfSamples = 2*(2*g_sdlAudioSpec.samples*OPL_SAMPLE_RATE/g_sdlAudioSpec.freq); // Leave some room for calls to BE_ST_OPL2Write
+		g_sdlALOutNumOfSamples = 2*(2*g_sdlAudioSpec.samples*OPL_SAMPLE_RATE/g_sdlOutputAudioFreq); // Leave some room for calls to BE_ST_OPL2Write
 #endif
 		g_sdlALOutSamples = (BE_ST_SndSample_T *)malloc(sizeof(BE_ST_SndSample_T) * g_sdlALOutNumOfSamples);
 		if (g_sdlALOutSamples == NULL)
 			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlALOutSamples.)");
 	}
 
-	if ((doDigitized || g_sdlEmulatedOPLChipReady) && (g_sdlAudioSpec.freq != inSampleRate))
+	if ((doDigitized || g_sdlEmulatedOPLChipReady) && (g_sdlOutputAudioFreq != inSampleRate))
 	{
 		// Should allocate this first, for srcData.data_in (libsamplerate)
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
@@ -353,7 +356,7 @@ void BE_ST_InitAudio(void)
 			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlMiscOutSamples.)");
 
 		BEL_ST_InitResampling(&g_sdlMainResamplingContext,
-				      g_sdlAudioSpec.freq, inSampleRate,
+				      g_sdlOutputAudioFreq, inSampleRate,
 				      doDigitized ? g_sdlMiscOutSamples : g_sdlALOutSamples);
 	}
 
@@ -460,9 +463,9 @@ void BE_ST_PrepareForManualAudioCallbackCall(void)
 	if (currTicks == g_sdlManualAudioCallbackCallLastTicks)
 		return;
 
-	// Using g_sdlAudioSpec.req as the rate, we (generally) lose precision in the following division,
+	// Using g_sdlOutputAudioFreq as the rate, we (generally) lose precision in the following division,
 	// so we use g_sdlManualAudioCallbackCallDelayedSamples to accumulate lost samples.
-	uint64_t dividend = ((uint64_t)g_sdlAudioSpec.freq)*(currTicks-g_sdlManualAudioCallbackCallLastTicks) + g_sdlManualAudioCallbackCallDelayedSamples;
+	uint64_t dividend = ((uint64_t)g_sdlOutputAudioFreq)*(currTicks-g_sdlManualAudioCallbackCallLastTicks) + g_sdlManualAudioCallbackCallDelayedSamples;
 	uint32_t samplesPassed = dividend/1000;
 	g_sdlManualAudioCallbackCallDelayedSamples = dividend%1000;
 
@@ -512,7 +515,7 @@ void BE_ST_PCSpeakerSetInvFreq(uint16_t spkInvFreq)
 	g_sdlPCSpeakerConnected = true;
 	BEL_ST_PCSpeakerSetBeepSample(0);
 	g_sdlBeepHalfCycleCounter = 0;
-	g_sdlBeepHalfCycleCounterUpperBound = g_sdlAudioSpec.freq * spkInvFreq;
+	g_sdlBeepHalfCycleCounterUpperBound = g_sdlOutputAudioFreq * spkInvFreq;
 }
 
 void BE_ST_PCSpeakerSetConstVal(bool isUp)
@@ -917,7 +920,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 	BE_ST_SndSample_T *currSamplePtr = (BE_ST_SndSample_T *)stream;
 	uint64_t currNumOfScaledSamples;
 	uint64_t scaledSamplesToGenerate = (uint64_t)(len/sizeof(BE_ST_SndSample_T)) * OPL_SAMPLE_RATE; // TODO consider lcm?
-	uint64_t scaledSamplesToGenerateNextTime = (uint64_t)g_sdlAudioSpec.freq * OPL_SAMPLE_RATE / 100; // ~10ms
+	uint64_t scaledSamplesToGenerateNextTime = (uint64_t)g_sdlOutputAudioFreq * OPL_SAMPLE_RATE / 100; // ~10ms
 #if SDL_VERSION_ATLEAST(1,3,0)
 	memset(stream, 0, len);
 #endif
@@ -970,7 +973,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 			// for filling the stream buffer, so generate some silence.
 			//
 			// Make sure we don't overthrow the AL buffer, though.
-			uint32_t targetALSamples = processedScaledInputSamples / g_sdlAudioSpec.freq;
+			uint32_t targetALSamples = processedScaledInputSamples / g_sdlOutputAudioFreq;
 			if (targetALSamples > g_sdlALOutNumOfSamples)
 			{
 				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BEL_ST_Resampling_EmuCallBack AL overflow, want %u, have %u\n", targetALSamples, g_sdlALOutNumOfSamples);
@@ -1023,7 +1026,7 @@ static void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 		// Resampling may add some latency (audible or not), so generate a few more input samples if required.
 		// In case we're stuck with no change, again we should try to generate more samples.
 		if (!samples_consumed && !samples_produced)
-			scaledSamplesToGenerateNextTime += (uint64_t)g_sdlAudioSpec.freq * OPL_SAMPLE_RATE / 1000; // ~1ms
+			scaledSamplesToGenerateNextTime += (uint64_t)g_sdlOutputAudioFreq * OPL_SAMPLE_RATE / 1000; // ~1ms
 		scaledSamplesToGenerate = scaledSamplesToGenerateNextTime;
 	}
 	///////////////////////////////
@@ -1169,7 +1172,7 @@ void BE_ST_SetTimer(uint16_t rateVal)
 	BEL_ST_RefreshTimerIntCounter();
 	g_pitTimerScaledDivisor = 1000 * (rateVal ? rateVal : 65536);
 #endif
-	g_sdlScaledSamplesPerPartsTimesPITRate = (rateVal ? rateVal : 65536) * g_sdlAudioSpec.freq;
+	g_sdlScaledSamplesPerPartsTimesPITRate = (rateVal ? rateVal : 65536) * g_sdlOutputAudioFreq;
 	if (g_sdlOurAudioCallback == BEL_ST_Resampling_EmuCallBack)
 		g_sdlScaledSamplesPerPartsTimesPITRate *= OPL_SAMPLE_RATE;
 	// Since the following division may lead to truncation, g_sdlScaledSamplesInCurrentPart
