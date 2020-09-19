@@ -52,8 +52,8 @@ uint64_t g_sdlScaledSamplesInCurrentPart;
 static uint64_t g_sdlScaledSampleOffsetInSound;
 
 // Used for digitized sound playback
-static int16_t *g_sdlSoundEffectCurrPtr;
-static uint32_t g_sdlSoundEffectSamplesLeft;
+extern int16_t *g_sdlSoundEffectCurrPtr;
+extern uint32_t g_sdlSoundEffectSamplesLeft;
 
 // Use this if the audio subsystem is disabled for most (we want a BYTES rate of 1000Hz, same units as used in values returned by SDL_GetTicks())
 #define NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM 1000
@@ -553,28 +553,6 @@ void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 	///////////////////////////////
 }
 
-
-
-/*** Digitized sounds playback ***/
-
-void BE_ST_PlayS16SoundEffect(int16_t *data, int numOfSamples)
-{
-	BE_ST_LockAudioRecursively();
-
-	g_sdlSoundEffectCurrPtr = data;
-	g_sdlSoundEffectSamplesLeft = numOfSamples;
-
-	BE_ST_UnlockAudioRecursively();
-}
-
-void BE_ST_StopSoundEffect(void)
-{
-	BE_ST_LockAudioRecursively();
-
-	g_sdlSoundEffectSamplesLeft = 0;
-
-	BE_ST_UnlockAudioRecursively();
-}
 
 // Helper function
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
