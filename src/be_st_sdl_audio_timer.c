@@ -52,7 +52,6 @@ uint64_t g_sdlScaledSamplesInCurrentPart;
 static uint64_t g_sdlScaledSampleOffsetInSound;
 
 // Used for digitized sound playback
-extern int16_t *g_sdlSoundEffectCurrPtr;
 extern uint32_t g_sdlSoundEffectSamplesLeft;
 
 // Use this if the audio subsystem is disabled for most (we want a BYTES rate of 1000Hz, same units as used in values returned by SDL_GetTicks())
@@ -554,20 +553,6 @@ void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len)
 }
 
 
-// Helper function
-#ifdef MIXER_SAMPLE_FORMAT_FLOAT
-static void BEL_ST_ConvertS16SamplesToOutputFormat(int16_t *inPtr, float *outPtr, int samplesToCopy)
-{
-	for (int i = 0; i < samplesToCopy; ++i, ++inPtr, ++outPtr)
-		*outPtr = ((float)(*inPtr))/32767.0f;
-}
-#elif (defined MIXER_SAMPLE_FORMAT_SINT16)
-static void BEL_ST_ConvertS16SamplesToOutputFormat(int16_t *inPtr, int16_t *outPtr, int samplesToCopy)
-{
-	memcpy(outPtr, inPtr, 2*samplesToCopy);
-}
-#endif
-
 
 /*** Digitized sounds callbacks ***/
 
@@ -590,23 +575,7 @@ static void BEL_ST_Simple_DigiCallBack(void *unused, Uint8 *stream, int len)
 #endif
 	g_sdlScaledSampleOffsetInSound %= g_sdlScaledSamplesPerPartsTimesPITRate;
 
-	if ((uint32_t)len >= g_sdlSoundEffectSamplesLeft)
-	{
-		memset((BE_ST_SndSample_T *)stream + g_sdlSoundEffectSamplesLeft, 0, sizeof(BE_ST_SndSample_T) * (len - g_sdlSoundEffectSamplesLeft));
-		if (g_sdlSoundEffectSamplesLeft > 0)
-		{
-			BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, (BE_ST_SndSample_T *)stream, g_sdlSoundEffectSamplesLeft);
-			g_sdlSoundEffectSamplesLeft = 0;
-			if (g_sdlTimerIntFuncPtr)
-				g_sdlTimerIntFuncPtr();
-		}
-	}
-	else
-	{
-		BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, (BE_ST_SndSample_T *)stream, len);
-		g_sdlSoundEffectCurrPtr += len;
-		g_sdlSoundEffectSamplesLeft -= len;
-	}
+	BEL_ST_GenDigiSamples((BE_ST_SndSample_T *)stream, len);
 
 	///////////////////////////////
 	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
@@ -631,13 +600,8 @@ static void BEL_ST_Resampling_DigiCallBack(void *unused, Uint8 *stream, int len)
 		if (g_sdlSoundEffectSamplesLeft > 0) // Input is always SINT16, output may differ
 		{
 			int samplesToCopy = BE_Cross_TypedMin(uint32_t, g_sdlMiscOutNumOfSamples - g_sdlMiscOutSamplesEnd, g_sdlSoundEffectSamplesLeft);
-			BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, &g_sdlMiscOutSamples[g_sdlMiscOutSamplesEnd], samplesToCopy);
+			BEL_ST_GenDigiSamples(&g_sdlMiscOutSamples[g_sdlMiscOutSamplesEnd], samplesToCopy);
 			g_sdlMiscOutSamplesEnd += samplesToCopy;
-			g_sdlSoundEffectCurrPtr += samplesToCopy;
-			g_sdlSoundEffectSamplesLeft -= samplesToCopy;
-
-			if ((g_sdlSoundEffectSamplesLeft == 0) && g_sdlTimerIntFuncPtr)
-				g_sdlTimerIntFuncPtr();
 		}
 		if (g_sdlMiscOutSamplesEnd < g_sdlMiscOutNumOfSamples)
 			memset(&g_sdlMiscOutSamples[g_sdlMiscOutSamplesEnd], 0, sizeof(BE_ST_SndSample_T)*(g_sdlMiscOutNumOfSamples - g_sdlMiscOutSamplesEnd));

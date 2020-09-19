@@ -18,8 +18,9 @@
  */
 
 #include "refkeen.h"
+#include "be_audio_private.h"
 
-int16_t *g_sdlSoundEffectCurrPtr;
+static int16_t *g_sdlSoundEffectCurrPtr;
 uint32_t g_sdlSoundEffectSamplesLeft;
 
 void BE_ST_PlayS16SoundEffect(int16_t *data, int numOfSamples)
@@ -39,4 +40,41 @@ void BE_ST_StopSoundEffect(void)
 	g_sdlSoundEffectSamplesLeft = 0;
 
 	BE_ST_UnlockAudioRecursively();
+}
+
+// Helper function
+#ifdef MIXER_SAMPLE_FORMAT_FLOAT
+static void BEL_ST_ConvertS16SamplesToOutputFormat(int16_t *inPtr, float *outPtr, int samplesToCopy)
+{
+	for (int i = 0; i < samplesToCopy; ++i, ++inPtr, ++outPtr)
+		*outPtr = ((float)(*inPtr))/32767.0f;
+}
+#elif (defined MIXER_SAMPLE_FORMAT_SINT16)
+static void BEL_ST_ConvertS16SamplesToOutputFormat(int16_t *inPtr, int16_t *outPtr, int samplesToCopy)
+{
+	memcpy(outPtr, inPtr, 2*samplesToCopy);
+}
+#endif
+
+void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)
+{
+	if ((uint32_t)length >= g_sdlSoundEffectSamplesLeft)
+	{
+		memset(stream + g_sdlSoundEffectSamplesLeft, 0, sizeof(BE_ST_SndSample_T) * (length - g_sdlSoundEffectSamplesLeft));
+		if (g_sdlSoundEffectSamplesLeft > 0)
+		{
+			BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, stream, g_sdlSoundEffectSamplesLeft);
+			g_sdlSoundEffectSamplesLeft = 0;
+			// TODO This will be replaced soon
+			extern void (*g_sdlTimerIntFuncPtr)(void);
+			if (g_sdlTimerIntFuncPtr)
+				g_sdlTimerIntFuncPtr();
+		}
+	}
+	else
+	{
+		BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, stream, length);
+		g_sdlSoundEffectCurrPtr += length;
+		g_sdlSoundEffectSamplesLeft -= length;
+	}
 }

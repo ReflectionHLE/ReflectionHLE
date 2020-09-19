@@ -53,5 +53,6 @@ void BEL_ST_ResetOPLChip(void);
 /*** Use these functions for adding audio data to the stream ***/
 void BEL_ST_GenPCSpeakerSamples(BE_ST_SndSample_T *stream, int length);
 void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length);
+void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length);
 
 #endif
