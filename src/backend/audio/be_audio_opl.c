@@ -18,11 +18,11 @@
  */
 
 #include "refkeen.h"
-#include "be_audio_private.h"
+#include "be_audio_mixer.h"
 #include "nukedopl/opl3.h"
 
 bool g_sdlEmulatedOPLChipReady;
-
+static BE_ST_AudioMixerSource *g_oplMixerSource;
 static opl3_chip g_oplChip;
 
 bool BE_ST_IsEmulatedOPLChipReady(void)
@@ -33,6 +33,11 @@ bool BE_ST_IsEmulatedOPLChipReady(void)
 void BEL_ST_ResetOPLChip(void)
 {
 	OPL3_Reset(&g_oplChip, OPL_SAMPLE_RATE);
+}
+
+void BEL_ST_SetOPLMixerSource(BE_ST_AudioMixerSource *src)
+{
+	g_oplMixerSource = src;
 }
 
 #define OPL_NUM_OF_SAMPLES 2048 // About 40ms of OPL sound data
