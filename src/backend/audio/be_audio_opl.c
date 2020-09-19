@@ -22,7 +22,12 @@
 #include "nukedopl/opl3.h"
 
 bool g_sdlEmulatedOPLChipReady;
+
+// Used for filling with samples from BE_ST_OPL2Write,
+// in addition to the SDL audio CallBack itself
+// (because waits between/after OPL writes are expected)
 static BE_ST_AudioMixerSource *g_oplMixerSource;
+
 static opl3_chip g_oplChip;
 
 bool BE_ST_IsEmulatedOPLChipReady(void)
@@ -41,13 +46,6 @@ void BEL_ST_SetOPLMixerSource(BE_ST_AudioMixerSource *src)
 }
 
 #define OPL_NUM_OF_SAMPLES 2048 // About 40ms of OPL sound data
-
-// Used for filling with samples from BE_ST_OPL2Write,
-// in addition to the SDL audio CallBack itself
-// (because waits between/after OPL writes are expected)
-BE_ST_SndSample_T *g_sdlALOutSamples;
-uint32_t g_sdlALOutNumOfSamples;
-uint32_t g_sdlALOutSamplesEnd = 0;
 
 void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length)
 {
@@ -92,15 +90,15 @@ void BE_ST_OPL2Write(uint8_t reg, uint8_t val)
 	// hack, using a "magic number" that appears to make this work.
 	unsigned int length = OPL_SAMPLE_RATE / 10000;
 
-	if (length > g_sdlALOutNumOfSamples - g_sdlALOutSamplesEnd)
+	if (length > g_oplMixerSource->in.size - g_oplMixerSource->in.num)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_ST_OPL2Write overflow, want %u, have %u\n", length, g_sdlALOutNumOfSamples - g_sdlALOutSamplesEnd); // FIXME - Other thread
-		length = g_sdlALOutNumOfSamples - g_sdlALOutSamplesEnd;
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_ST_OPL2Write overflow, want %u, have %u\n", length, g_oplMixerSource->in.size - g_oplMixerSource->in.num); // FIXME - other thread
+		length = g_oplMixerSource->in.size - g_oplMixerSource->in.num;
 	}
 	if (length)
 	{
-		BEL_ST_GenOPLSamples(&g_sdlALOutSamples[g_sdlALOutSamplesEnd], length);
-		g_sdlALOutSamplesEnd += length;
+		BEL_ST_GenOPLSamples(&g_oplMixerSource->in.buffer[g_oplMixerSource->in.num], length);
+		g_oplMixerSource->in.num += length;
 	}
 
 	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock

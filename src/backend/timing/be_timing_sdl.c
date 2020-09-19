@@ -18,7 +18,7 @@
  */
 
 #include "SDL.h"
-#include "backend/audio/be_audio_private.h"
+#include "backend/audio/be_audio_mixer.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
 #include "be_timing.h"
@@ -123,12 +123,7 @@ void BE_ST_SetTimer(uint16_t rateVal)
 	BEL_ST_RefreshTimerIntCounter();
 	g_pitTimerScaledDivisor = 1000 * (rateVal ? rateVal : 65536);
 #endif
-	g_sdlScaledSamplesPerPartsTimesPITRate = (rateVal ? rateVal : 65536) * g_sdlOutputAudioFreq;
-	if (g_sdlOurAudioCallback == BEL_ST_Resampling_EmuCallBack)
-		g_sdlScaledSamplesPerPartsTimesPITRate *= OPL_SAMPLE_RATE;
-	// Since the following division may lead to truncation, g_sdlScaledSamplesInCurrentPart
-	// can change during playback by +-1 (otherwise music may be a bit faster than intended).
-	g_sdlScaledSamplesInCurrentPart = g_sdlScaledSamplesPerPartsTimesPITRate / PC_PIT_RATE;
+	BEL_ST_AudioMixerUpdateFromPITRateWord(rateVal ? rateVal : 65536);
 
 	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
 }

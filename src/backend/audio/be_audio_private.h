@@ -41,13 +41,6 @@ typedef int16_t BE_ST_SndSample_T;
 extern int g_sdlOutputAudioFreq;
 extern bool g_sdlEmulatedOPLChipReady;
 
-// Used for filling with samples from BE_ST_OPL2Write,
-// in addition to the SDL audio CallBack itself
-// (because waits between/after OPL writes are expected)
-extern BE_ST_SndSample_T *g_sdlALOutSamples;
-extern uint32_t g_sdlALOutNumOfSamples;
-extern uint32_t g_sdlALOutSamplesEnd;
-
 void BEL_ST_ResetOPLChip(void);
 
 /*** Use these functions for adding audio data to the stream ***/
