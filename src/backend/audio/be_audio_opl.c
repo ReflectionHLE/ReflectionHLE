@@ -68,6 +68,9 @@ void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length)
 
 void BE_ST_OPL2Write(uint8_t reg, uint8_t val)
 {
+	if (!g_sdlEmulatedOPLChipReady)
+		return; // Wolf3D may call this function from wl_menu.c on quit
+
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
 	// Per the AdLib manual, this function should simulate 6 reads
