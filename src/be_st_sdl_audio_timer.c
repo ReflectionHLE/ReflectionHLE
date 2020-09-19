@@ -97,9 +97,6 @@ void BE_ST_InitAudio(void)
 
 	if (g_refKeenCfg.sndSubSystem)
 	{
-#ifdef REFKEEN_PLATFORM_ANDROID
-		setenv("SDL_AUDIODRIVER", "openslES", 0); // HACK intended to force this driver for (hopefully) significantly lower latency
-#endif
 		if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
