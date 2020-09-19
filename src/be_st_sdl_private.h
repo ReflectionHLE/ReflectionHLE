@@ -23,6 +23,7 @@
 #define BE_ST_SDL_PRIVATE_H
 
 #include "SDL_version.h" // For SDL_RENDER_DEVICE_RESET hack
+#include "SDL_render.h"
 #include "SDL_surface.h"
 
 #ifdef REFKEEN_PLATFORM_EMSCRIPTEN
