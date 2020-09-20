@@ -3172,7 +3172,8 @@ SD_Startup(void)
 #endif // REFKEEN_SD_ENABLE_SOUNDBLASTER
 	}
 	// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_NOAH3D
+#if 0 // TODO (REFKEEN) Disable because of BE_ST_printf; Re-enable later?
+//#ifdef GAMEVER_NOAH3D
 	if (AdLibPresent)
 		BE_ST_printf("AdLib detected\n");
 	if (SoundBlasterPresent)
