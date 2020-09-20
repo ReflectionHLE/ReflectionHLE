@@ -39,11 +39,9 @@ static struct
 
 static void BEL_ST_AudioMixerFreeSourceBuffers(BE_ST_AudioMixerSource *src)
 {
-	if (src->out.buffer != src->in.buffer)
-	{
+	if (g_stAudioMixer.freq != src->freq)
 		BEL_ST_ShutdownResampling(&src->resamplingContext);
-		free(src->out.buffer);
-	}
+	free(src->out.buffer);
 	free(src->in.buffer);
 }
 
@@ -67,16 +65,13 @@ void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq)
 	if (!src->in.buffer)
 		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
 
-	if (g_stAudioMixer.freq == freq)
-		src->out.buffer = src->in.buffer;
-	else
-	{
+	if (g_stAudioMixer.freq != freq)
 		BEL_ST_InitResampling(&src->resamplingContext,
 		                      g_stAudioMixer.freq, freq, src->in.buffer);
-		src->out.buffer = (BE_ST_SndSample_T *)malloc(src->out.size * sizeof(BE_ST_SndSample_T));
-		if (!src->out.buffer)
-			BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
-	}
+
+	src->out.buffer = (BE_ST_SndSample_T *)malloc(src->out.size * sizeof(BE_ST_SndSample_T));
+	if (!src->out.buffer)
+		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
 finish:
 	BE_ST_LockAudioRecursively();
 	src->skip = false;
@@ -204,18 +199,21 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 				uint32_t, len,
 				src->out.size - src->out.num);
 			if (g_stAudioMixer.freq != src->freq)
-			{
 				BEL_ST_DoResample(&src->resamplingContext,
 				                  &consumed, &produced,
 				                  src->in.buffer,
 				                  &src->out.buffer[src->out.num],
 				                  src->in.num, maxSamplesToOutput);
-				if ((consumed > 0) && (consumed < src->in.num))
-					memmove(src->in.buffer, &src->in.buffer[consumed],
-					        sizeof(BE_ST_SndSample_T) * (src->in.num - consumed));
-			}
 			else
-				consumed = produced = maxSamplesToOutput;
+			{
+				consumed = produced = BE_Cross_TypedMin(
+					uint32_t, maxSamplesToOutput, src->in.num);
+				memcpy(&src->out.buffer[src->out.num], src->in.buffer,
+				       sizeof(BE_ST_SndSample_T) * consumed);
+			}
+			if ((consumed > 0) && (consumed < src->in.num))
+				memmove(src->in.buffer, &src->in.buffer[consumed],
+				        sizeof(BE_ST_SndSample_T) * (src->in.num - consumed));
 
 			src->in.num -= consumed;
 			src->out.num += produced;
