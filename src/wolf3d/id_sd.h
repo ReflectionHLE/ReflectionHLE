@@ -47,7 +47,7 @@ void	alOut(id0_byte_t n,id0_byte_t b);
 
 // REFKEEN - Macros used for disabling unused code, may be re-enabled if required
 #define REFKEEN_SD_ENABLE_SOUNDSOURCE 0
-#define REFKEEN_SD_ENABLE_SOUNDBLASTER 0
+#define REFKEEN_SD_ENABLE_SOUNDBLASTER 1
 
 #define	TickBase	70		// 70Hz per tick - used as a base for timer 0
 

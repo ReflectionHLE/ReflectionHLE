@@ -458,7 +458,7 @@ static void
 #endif
 SDL_SBStopSample(void)
 {
-	id0_byte_t	is;
+//	id0_byte_t	is;
 
 	BE_ST_LockAudioRecursively(); // REFKEEN: Make this unconditional
 	// *** PRE-V1.4 APOGEE RESTORATION ***
@@ -476,6 +476,8 @@ SDL_SBStopSample(void)
 //		asm	cli
 #endif
 
+		BE_ST_StopSoundEffect();
+#if 0
 		sbWriteDelay();
 		sbOut(sbWriteCmd,0xd0);	// Turn off DSP DMA
 
@@ -488,6 +490,7 @@ SDL_SBStopSample(void)
 		// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 //		asm	popf
+#endif
 #endif
 	}
 
@@ -508,6 +511,10 @@ SDL_SBStopSample(void)
 static id0_longword_t
 SDL_SBPlaySeg(volatile id0_byte_t id0_huge *data,id0_longword_t length)
 {
+	length = BE_Cross_TypedMin(id0_longword_t, length, 4096);
+	BE_ST_PlaySoundEffect((void *)data, length, 8); // FIXME is cast ok?
+	return length;
+#if 0
 	id0_unsigned_t		datapage;
 	id0_longword_t		dataofs,uselen;
 
@@ -581,6 +588,7 @@ SDL_SBPlaySeg(volatile id0_byte_t id0_huge *data,id0_longword_t length)
 #endif
 
 	return(uselen + 1);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -588,12 +596,12 @@ SDL_SBPlaySeg(volatile id0_byte_t id0_huge *data,id0_longword_t length)
 //	SDL_SBService() - Services the SoundBlaster DMA interrupt
 //
 ///////////////////////////////////////////////////////////////////////////
-static void interrupt
+static void /*interrupt*/
 SDL_SBService(void)
 {
 	id0_longword_t	used;
 
-	sbIn(sbDataAvail);	// Ack interrupt to SB
+//	sbIn(sbDataAvail);	// Ack interrupt to SB
 
 	if (sbNextSegPtr)
 	{
@@ -612,7 +620,7 @@ SDL_SBService(void)
 		SDL_DigitizedDone();
 	}
 
-	outportb(0x20,0x20);	// Ack interrupt
+//	outportb(0x20,0x20);	// Ack interrupt
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -655,11 +663,13 @@ SDL_SBPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 //asm	pushf
 //asm	cli
 #endif
+#if 0
 	sbOldIntMask = inportb(0x21);
 	outportb(0x21,sbOldIntMask & ~(1 << sbInterrupt));
 
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0xd4);						// Make sure DSP DMA is enabled
+#endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION (EXCLUDING V1.0) ***
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10) && (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
@@ -687,6 +697,8 @@ SDL_SBPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 static void
 SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 {
+	return; // TODO (REFKEEN) IMPLEMENT
+#if 0
 	id0_byte_t	v;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -714,6 +726,7 @@ SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 //asm	popf
 #endif
+#endif
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
@@ -726,6 +739,8 @@ SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 static id0_boolean_t
 SDL_CheckSB(id0_int_t port)
 {
+	return (true); // TODO (REFKEEN) make this configurable later
+#if 0
 	id0_int_t	i;
 
 	sbLocation = port << 4;		// Initialize stuff for later use
@@ -764,6 +779,7 @@ asm	loop usecloop
 	}
 	sbLocation = -1;						// Retry count exceeded - fail
 	return(false);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -855,11 +871,14 @@ SDL_StartSB(void)
 #endif
 #endif
 
+	BE_ST_StartDigiAudioInt(SDL_SBService);
+#if 0
 	sbOldIntHand = getvect(sbIntVec);	// Get old interrupt handler
 	setvect(sbIntVec,SDL_SBService);	// Set mine
 
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0xd1);				// Turn on DSP speaker
+#endif
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
@@ -869,10 +888,13 @@ SDL_StartSB(void)
 	// Set the SoundBlaster DAC time constant for 7KHz
 	timevalue = 256 - (1000000 / 7000);
 #endif
+	BE_ST_SetDigiSoundFreqFromSBTimeValue(timevalue);
+#if 0
 	sbWriteDelay();
 	sbOut(sbWriteCmd,0x40);
 	sbWriteDelay();
 	sbOut(sbWriteData,timevalue);
+#endif
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -883,6 +905,7 @@ SDL_StartSB(void)
 		return;
 #endif
 
+#if 0 // REFKEEN: Do nothing for now
 	// Check to see if this is a SB Pro
 	sbOut(sbpMixerAddr,sbpmFMVol);
 	sbpOldFMMix = sbIn(sbpMixerData);
@@ -919,6 +942,7 @@ SDL_StartSB(void)
 		}
 	}
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -932,7 +956,8 @@ SDL_ShutSB(void)
 	SDL_SBStopSample();
 
 	// *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+#if 0 // REFKEEN: Do nothing for now
+//#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (SBProPresent)
 	{
 		// Restore FM output levels (SB Pro)
@@ -945,7 +970,8 @@ SDL_ShutSB(void)
 	}
 #endif
 
-	setvect(sbIntVec,sbOldIntHand);		// Set vector back
+	BE_ST_StopDigiAudioInt();
+//	setvect(sbIntVec,sbOldIntHand);		// Set vector back
 }
 #endif // REFKEEN_SD_ENABLE_SOUNDSOURCE
 
