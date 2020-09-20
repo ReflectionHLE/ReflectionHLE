@@ -22,18 +22,20 @@
 
 static void (*g_sdlDigiAudioIntFuncPtr)(void);
 
-static int16_t *g_sdlSoundEffectCurrPtr;
+static void *g_sdlSoundEffectCurrPtr;
 static uint32_t g_sdlSoundEffectSamplesLeft;
+static int g_sdlSoundEffectBits;
 
 // Used for changing input sample rate
 static BE_ST_AudioMixerSource *g_sdlDigiMixerSource;
 
-void BE_ST_PlayS16SoundEffect(int16_t *data, int numOfSamples)
+void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits)
 {
 	BE_ST_LockAudioRecursively();
 
 	g_sdlSoundEffectCurrPtr = data;
 	g_sdlSoundEffectSamplesLeft = numOfSamples;
+	g_sdlSoundEffectBits = bits;
 
 	BE_ST_UnlockAudioRecursively();
 }
@@ -49,12 +51,22 @@ void BE_ST_StopSoundEffect(void)
 
 // Helper function
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
+static void BEL_ST_ConvertU8SamplesToOutputFormat(uint8_t *inPtr, float *outPtr, int samplesToCopy)
+{
+	for (int i = 0; i < samplesToCopy; ++i, ++inPtr, ++outPtr)
+		*outPtr = ((float)(*inPtr - 128))/127.0f;
+}
 static void BEL_ST_ConvertS16SamplesToOutputFormat(int16_t *inPtr, float *outPtr, int samplesToCopy)
 {
 	for (int i = 0; i < samplesToCopy; ++i, ++inPtr, ++outPtr)
 		*outPtr = ((float)(*inPtr))/32767.0f;
 }
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
+static void BEL_ST_ConvertU8SamplesToOutputFormat(uint8_t *inPtr, int16_t *outPtr, int samplesToCopy)
+{
+	for (int i = 0; i < samplesToCopy; ++i, ++inPtr, ++outPtr)
+		*outPtr = (*inPtr - 128)*256;
+}
 static void BEL_ST_ConvertS16SamplesToOutputFormat(int16_t *inPtr, int16_t *outPtr, int samplesToCopy)
 {
 	memcpy(outPtr, inPtr, 2*samplesToCopy);
@@ -92,7 +104,10 @@ void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)
 		memset(stream + g_sdlSoundEffectSamplesLeft, 0, sizeof(BE_ST_SndSample_T) * (length - g_sdlSoundEffectSamplesLeft));
 		if (g_sdlSoundEffectSamplesLeft > 0)
 		{
-			BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, stream, g_sdlSoundEffectSamplesLeft);
+			if (g_sdlSoundEffectBits == 16)
+				BEL_ST_ConvertS16SamplesToOutputFormat((int16_t *)g_sdlSoundEffectCurrPtr, stream, g_sdlSoundEffectSamplesLeft);
+			else
+				BEL_ST_ConvertU8SamplesToOutputFormat((uint8_t *)g_sdlSoundEffectCurrPtr, stream, g_sdlSoundEffectSamplesLeft);
 			g_sdlSoundEffectSamplesLeft = 0;
 			if (g_sdlDigiAudioIntFuncPtr)
 				g_sdlDigiAudioIntFuncPtr();
@@ -100,8 +115,16 @@ void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)
 	}
 	else
 	{
-		BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, stream, length);
-		g_sdlSoundEffectCurrPtr += length;
+		if (g_sdlSoundEffectBits == 16)
+		{
+			BEL_ST_ConvertS16SamplesToOutputFormat((int16_t *)g_sdlSoundEffectCurrPtr, stream, length);
+			g_sdlSoundEffectCurrPtr = (int16_t *)g_sdlSoundEffectCurrPtr + length;
+		}
+		else
+		{
+			BEL_ST_ConvertU8SamplesToOutputFormat((uint8_t *)g_sdlSoundEffectCurrPtr, stream, length);
+			g_sdlSoundEffectCurrPtr = (uint8_t *)g_sdlSoundEffectCurrPtr + length;
+		}
 		g_sdlSoundEffectSamplesLeft -= length;
 	}
 }

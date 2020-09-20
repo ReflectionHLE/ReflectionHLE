@@ -938,7 +938,7 @@ static void
 SDL_Port2015PlaySample(Port2015SampledSound *sample)
 {
 	SDL_Port2015StopSample();
-	BE_ST_PlayS16SoundEffect(sample->data, sample->common.length/2);
+	BE_ST_PlaySoundEffect(sample->data, sample->common.length/2, 16);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

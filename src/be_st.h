@@ -253,14 +253,15 @@ bool BE_ST_IsEmulatedOPLChipReady(void);
 // To turn the PC Speaker off, call BE_ST_PCSpeakerSetConstVal(0).
 void BE_ST_PCSpeakerSetInvFreq(uint16_t spkInvFreq);
 void BE_ST_PCSpeakerSetConstVal(bool isUp);
-// Used for playback from digitized sound data in signed 16-bit int format.
+// Used for playback from digitized sound data with
+// unsigned 8-bit or signed 16-bit int sample format.
 // Do NOT assume the data is copied; You ***must*** call BE_ST_StopSoundEffect.
 // You can also use BE_ST_StartAudioAndTimerInt to set a callback function,
 // to be called when reading of sound data is complete. This can happen
 // a bit before actual sound playback is complete, in case
 // some mechanism of resampling is in use.
 void BE_ST_SetDigiSoundFreq(int freq);
-void BE_ST_PlayS16SoundEffect(int16_t *data, int numOfSamples);
+void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits);
 void BE_ST_StopSoundEffect(void);
 // Safe alternatives for Borland's sound and nosound functions from Catacomb Abyss' gelib.c
 void BE_ST_BSound(uint16_t frequency);
