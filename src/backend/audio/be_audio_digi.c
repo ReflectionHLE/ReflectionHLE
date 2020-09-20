@@ -81,10 +81,8 @@ void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)
 		{
 			BEL_ST_ConvertS16SamplesToOutputFormat(g_sdlSoundEffectCurrPtr, stream, g_sdlSoundEffectSamplesLeft);
 			g_sdlSoundEffectSamplesLeft = 0;
-			// TODO This will be replaced soon
-			extern void (*g_sdlTimerIntFuncPtr)(void);
-			if (g_sdlTimerIntFuncPtr)
-				g_sdlTimerIntFuncPtr();
+			if (g_sdlDigiAudioIntFuncPtr)
+				g_sdlDigiAudioIntFuncPtr();
 		}
 	}
 	else
