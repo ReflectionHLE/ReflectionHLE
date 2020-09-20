@@ -1613,7 +1613,10 @@ SD_Startup(void)
 	//SDL_InitDelay();			// SDL_InitDelay() uses t0OldService
 
 	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		BE_ST_SetDigiSoundFreq(44100);
 		BE_ST_StartDigiAudioInt(SDL_Port2015Service);
+	}
 	else
 		BE_ST_StartAudioAndTimerInt(SDL_t0Service);
 	//setvect(8,SDL_t0Service);	// Set to my timer 0 ISR

@@ -139,7 +139,7 @@ void BE_ST_InitAudio(void)
 	// of 1000Hz (same as SDL_GetTicks() time units)
 	if (!g_sdlAudioSubsystemUp)
 	{
-		g_sdlOutputAudioFreq = doDigitized ? inSampleRate : (NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T));
+		g_sdlOutputAudioFreq = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
 		g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM);
 		if (!g_sdlCallbacksSamplesBuffer)
 			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlCallbacksSamplesBuffer.)");
@@ -148,7 +148,7 @@ void BE_ST_InitAudio(void)
 		BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
 		// TODO Verify this works
 		BE_ST_AudioMixerSource *src = BEL_ST_AudioMixerAddSource(
-			g_sdlOutputAudioFreq,
+			doDigitized ? 8000 : g_sdlOutputAudioFreq,
 			NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM,
 			doDigitized ? BEL_ST_GenDigiSamples : BEL_ST_GenPCSpeakerSamples);
 		if (doDigitized)
@@ -174,7 +174,7 @@ void BE_ST_InitAudio(void)
 	{
 		BEL_ST_SetDigiMixerSource(
 			BEL_ST_AudioMixerAddSource(
-				inSampleRate,
+				8000,
 				samplesForSourceBuffer,
 				BEL_ST_GenDigiSamples));
 	}
