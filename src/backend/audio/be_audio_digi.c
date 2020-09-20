@@ -23,7 +23,7 @@
 static void (*g_sdlDigiAudioIntFuncPtr)(void);
 
 static int16_t *g_sdlSoundEffectCurrPtr;
-uint32_t g_sdlSoundEffectSamplesLeft;
+static uint32_t g_sdlSoundEffectSamplesLeft;
 
 void BE_ST_PlayS16SoundEffect(int16_t *data, int numOfSamples)
 {

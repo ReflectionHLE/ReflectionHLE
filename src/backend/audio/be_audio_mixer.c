@@ -25,7 +25,7 @@
 
 enum { BE_ST_AUDIO_MIXER_MAX_SOURCES = 4 };
 
-struct
+static struct
 {
 	BE_ST_AudioMixerSource sources[BE_ST_AUDIO_MIXER_MAX_SOURCES];
 	uint64_t samplesPerPartTimesPITRate;
