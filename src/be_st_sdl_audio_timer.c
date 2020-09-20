@@ -25,6 +25,7 @@
 #include "SDL.h"
 
 #include "be_cross.h"
+#include "be_sound_device_flags.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
 #include "backend/audio/be_audio_mixer.h"
@@ -73,11 +74,8 @@ void BE_ST_InitAudio(void)
 {
 	g_sdlAudioSubsystemUp = false;
 	g_sdlEmulatedOPLChipReady = false;
-	int inSampleRate = BE_Cross_GetSelectedGameVerSampleRate();
 	int samplesForSourceBuffer;
-	bool doDigitized = (inSampleRate != 0);
-	if (!doDigitized)
-		inSampleRate = OPL_SAMPLE_RATE;
+	int audioDeviceFlags = BE_Cross_GetSelectedGameVerAudioDeviceFlags();
 
 	if (g_refKeenCfg.sndSubSystem)
 	{
@@ -146,13 +144,22 @@ void BE_ST_InitAudio(void)
 		g_sdlCallbacksSamplesBufferOnePartCount = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
 
 		BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
+
 		// TODO Verify this works
-		BE_ST_AudioMixerSource *src = BEL_ST_AudioMixerAddSource(
-			doDigitized ? 8000 : g_sdlOutputAudioFreq,
-			NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM,
-			doDigitized ? BEL_ST_GenDigiSamples : BEL_ST_GenPCSpeakerSamples);
-		if (doDigitized)
-			BEL_ST_SetDigiMixerSource(src);
+		if ((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR_REQUIRED)
+		    == BE_AUDIO_DEVICE_PCSPKR_REQUIRED)
+			BEL_ST_AudioMixerAddSource(
+				g_sdlOutputAudioFreq,
+				NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM,
+				BEL_ST_GenPCSpeakerSamples);
+
+		if ((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI_REQUIRED)
+		    == BE_AUDIO_DEVICE_PCSPKR_REQUIRED)
+			BEL_ST_SetDigiMixerSource(
+				BEL_ST_AudioMixerAddSource(
+					8000,
+					NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM,
+					BEL_ST_GenDigiSamples));
 
 		goto finish;
 	}
@@ -170,21 +177,22 @@ void BE_ST_InitAudio(void)
 #endif
 
 	BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
-	if (doDigitized)
-	{
-		BEL_ST_SetDigiMixerSource(
-			BEL_ST_AudioMixerAddSource(
-				8000,
-				samplesForSourceBuffer,
-				BEL_ST_GenDigiSamples));
-	}
-	else
+
+	if ((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR) == BE_AUDIO_DEVICE_PCSPKR)
 		BEL_ST_AudioMixerAddSource(
 			g_sdlOutputAudioFreq,
 			samplesForSourceBuffer,
 			BEL_ST_GenPCSpeakerSamples);
 
-	if (g_refKeenCfg.oplEmulation)
+	if ((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI) == BE_AUDIO_DEVICE_DIGI)
+		BEL_ST_SetDigiMixerSource(
+			BEL_ST_AudioMixerAddSource(
+				8000,
+				samplesForSourceBuffer,
+				BEL_ST_GenDigiSamples));
+
+	if (g_refKeenCfg.oplEmulation &&
+	    ((audioDeviceFlags & BE_AUDIO_DEVICE_OPL) == BE_AUDIO_DEVICE_OPL))
 	{
 		BEL_ST_ResetOPLChip();
 		BEL_ST_SetOPLMixerSource(

@@ -57,7 +57,7 @@ static const BE_GameVerDetails_T g_be_gamever_cat3d100 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CAT3D100),
 	"Catacomb 3-D v1.00 (Custom)",
 	REFKEEN_NS_ENCLOSE(cat3d, g_be_patcherfuncs_cat3d),
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_CAT3D100
 };
 
@@ -101,6 +101,6 @@ static const BE_GameVerDetails_T g_be_gamever_cat3d122 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CAT3D122),
 	"Catacomb 3-D v1.22 (Custom)",
 	REFKEEN_NS_ENCLOSE(cat3d, g_be_patcherfuncs_cat3d),
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_CAT3D122
 };

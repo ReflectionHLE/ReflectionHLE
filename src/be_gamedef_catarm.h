@@ -120,6 +120,6 @@ static const BE_GameVerDetails_T g_be_gamever_catarm102 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATARM102),
 	"Catacomb Armageddon v1.02 (Custom)",
 	REFKEEN_NS_ENCLOSE(catarm, g_be_patcherfuncs_catarm),
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_CATARM102
 };

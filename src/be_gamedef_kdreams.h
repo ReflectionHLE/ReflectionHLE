@@ -68,7 +68,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse100 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE100),
 	"Keen Dreams EGA v1.00 (Custom)",
 	g_be_patcherfuncs_kdreams,
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSE100
 };
 
@@ -114,7 +114,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc100 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSC100),
 	"Keen Dreams CGA v1.00 (Custom)",
 	g_be_patcherfuncs_kdreams,
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSC100
 };
 
@@ -172,7 +172,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE113),
 	"Keen Dreams EGA v1.13 (Custom)",
 	g_be_patcherfuncs_kdreams,
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSE113
 };
 
@@ -217,7 +217,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSC105),
 	"Keen Dreams CGA v1.05 (Custom)",
 	g_be_patcherfuncs_kdreams,
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSC105
 };
 
@@ -266,7 +266,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE193),
 	"Keen Dreams EGA v1.93 (Custom)",
 	g_be_patcherfuncs_kdreams,
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSE193
 };
 
@@ -312,7 +312,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse120 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE120),
 	"Keen Dreams EGA v1.20 (Custom)",
 	g_be_patcherfuncs_kdreams,
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSE120
 };
 
@@ -358,6 +358,6 @@ static const BE_GameVerDetails_T g_be_gamever_kdreams2015 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMS2015),
 	"Keen Dreams 2015 (Custom)",
 	g_be_patcherfuncs_kdreams,
-	44100, // Digitized sounds have such sample rate (in Hz)
+	BE_AUDIO_DEVICE_DIGI_REQUIRED,
 	BE_GAMEVER_KDREAMS2015
 };

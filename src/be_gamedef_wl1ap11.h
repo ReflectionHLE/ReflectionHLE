@@ -54,6 +54,6 @@ static const BE_GameVerDetails_T g_be_gamever_wl1ap11 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL1AP11),
 	"Wolfenstein 3D Shareware v1.1 (Custom)",
 	REFKEEN_NS_ENCLOSE(wl1ap11, g_be_patcherfuncs_wl1ap11),
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL1AP11
 };

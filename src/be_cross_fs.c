@@ -48,6 +48,7 @@
 
 #include "be_cross.h"
 #include "be_features.h"
+#include "be_sound_device_flags.h"
 
 #include "crc32/crc32.h"
 #include "unlzexe/unlzexe.h"
@@ -213,7 +214,7 @@ typedef struct {
 	const TCHAR *writableFilesDir;
 	const char *customInstDescription;
 	void (**patcherFuncPtrs)(void);
-	int digiAudioFreq; // Set to a common frequency of input digitized sounds, or to 0 if unused
+	int audioDeviceFlags;
 	BE_GameVer_T verId;
 } BE_GameVerDetails_T;
 
@@ -1465,9 +1466,9 @@ int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Error
 }
 
 
-int BE_Cross_GetSelectedGameVerSampleRate(void)
+int BE_Cross_GetSelectedGameVerAudioDeviceFlags(void)
 {
-	return g_be_gamever_ptrs[refkeen_current_gamever]->digiAudioFreq;
+	return g_be_gamever_ptrs[refkeen_current_gamever]->audioDeviceFlags;
 }
 
 

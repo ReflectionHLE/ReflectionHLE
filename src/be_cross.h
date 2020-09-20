@@ -210,9 +210,9 @@ void BE_Cross_FillAccessibleEXEFileNamesForGameVer(int verId, const char **outSt
 // order in which BE_Cross_FillAccessibleEXEFileNamesForGameVer fills the descriptive strings.
 void (*BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(int index, int verId))(void);
 
-// If select game version has digitized sounds with a common sample rate,
-// then this rate is returned, otherwise 0 is returned.
-int BE_Cross_GetSelectedGameVerSampleRate(void);
+// Get bit flags representing audio devices which
+// are expected to be present, optionally or not.
+int BE_Cross_GetSelectedGameVerAudioDeviceFlags(void);
 
 typedef char BE_TryAddGameInstallation_ErrorMsg_T[40];
 

@@ -54,6 +54,6 @@ static const BE_GameVerDetails_T g_be_gamever_sdmfg10 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_SDMFG10),
 	"Spear of Destiny Demo v1.0 (Custom)",
 	REFKEEN_NS_ENCLOSE(sdmfg10, g_be_patcherfuncs_sdmfg10),
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_SDMFG10
 };

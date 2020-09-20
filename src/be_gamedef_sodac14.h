@@ -54,6 +54,6 @@ static const BE_GameVerDetails_T g_be_gamever_sodac14 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_SODAC14),
 	"Spear of Destiny Activision v1.4 (Custom)",
 	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs_sodac14),
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_SODAC14
 };

@@ -53,6 +53,6 @@ static const BE_GameVerDetails_T g_be_gamever_n3dwt10 = {
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_N3DWT10),
 	"Super 3-D Noah's Ark (Custom)",
 	REFKEEN_NS_ENCLOSE(n3dwt10, g_be_patcherfuncs_n3dwt10),
-	0,
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_N3DWT10
 };
