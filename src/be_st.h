@@ -261,6 +261,10 @@ void BE_ST_PCSpeakerSetConstVal(bool isUp);
 // a bit before actual sound playback is complete, in case
 // some mechanism of resampling is in use.
 void BE_ST_SetDigiSoundFreq(int freq);
+static inline void BE_ST_SetDigiSoundFreqFromSBTimeValue(uint8_t timevalue)
+{
+	BE_ST_SetDigiSoundFreq(1000000 / (256 - timevalue));
+}
 void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits);
 void BE_ST_StopSoundEffect(void);
 // Safe alternatives for Borland's sound and nosound functions from Catacomb Abyss' gelib.c
