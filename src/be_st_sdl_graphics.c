@@ -2250,7 +2250,7 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 		// if in 320x200 gfx mode, cause 1.2 == (320*3)/(4*200).
 		// More generally, (srcwidth*3)/(4*srcheight).
 		// So multiply width by 4*srcheight and height by 3*srcwidth;
-		int scaledSrcBorderedWidth = (4*srcHeight)*srcBorderedWidth, scaledSrcBorderedHeight = (3*srcWidth)*srcBorderedHeight;
+		uint64_t scaledSrcBorderedWidth = (4*srcHeight)*srcBorderedWidth, scaledSrcBorderedHeight = (3*srcWidth)*srcBorderedHeight;
 		if (scaledSrcBorderedHeight*winWidth < scaledSrcBorderedWidth*winHeight) // Thinner than scaledSrcBorderedWidth:scaledSrcBorderedHeight
 		{
 			g_sdlAspectCorrectionBorderedRect.w = winWidth;
