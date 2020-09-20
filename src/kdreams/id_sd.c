@@ -1260,8 +1260,10 @@ SDL_DetectAdLib(void)
 	//id0_byte_t	status1,status2;
 	//id0_int_t		i;
 
-	// REFKEEN - If there's no emulated OPL chip, just return false
-	if (!BE_ST_IsEmulatedOPLChipReady())
+	// REFKEEN - If there's no emulated OPL chip, just return false,
+	// except for the 2015 release for which we cheat a bit
+	if ((refkeen_current_gamever != BE_GAMEVER_KDREAMS2015) &&
+	    !BE_ST_IsEmulatedOPLChipReady())
 		return false;
 
 	alOut(4,0x60);	// Reset T1 & T2
