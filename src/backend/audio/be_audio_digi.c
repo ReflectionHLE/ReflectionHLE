@@ -18,7 +18,7 @@
  */
 
 #include "refkeen.h"
-#include "be_audio_private.h"
+#include "be_audio_mixer.h"
 
 static void (*g_sdlDigiAudioIntFuncPtr)(void);
 
@@ -78,6 +78,11 @@ void BE_ST_StopDigiAudioInt(void)
 void BEL_ST_SetDigiMixerSource(BE_ST_AudioMixerSource *src)
 {
 	g_sdlDigiMixerSource = src;
+}
+
+void BE_ST_SetDigiSoundFreq(int freq)
+{
+	BE_ST_AudioMixerSetSourceFreq(g_sdlDigiMixerSource, freq);
 }
 
 void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)

@@ -259,6 +259,7 @@ void BE_ST_PCSpeakerSetConstVal(bool isUp);
 // to be called when reading of sound data is complete. This can happen
 // a bit before actual sound playback is complete, in case
 // some mechanism of resampling is in use.
+void BE_ST_SetDigiSoundFreq(int freq);
 void BE_ST_PlayS16SoundEffect(int16_t *data, int numOfSamples);
 void BE_ST_StopSoundEffect(void);
 // Safe alternatives for Borland's sound and nosound functions from Catacomb Abyss' gelib.c
