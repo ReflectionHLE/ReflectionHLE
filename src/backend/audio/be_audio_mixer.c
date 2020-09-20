@@ -37,6 +37,44 @@ static struct
 	int freq;
 } g_stAudioMixer;
 
+static void BEL_ST_AudioMixerFreeSourceBuffers(BE_ST_AudioMixerSource *src)
+{
+	if (src->out.buffer != src->in.buffer)
+	{
+		BEL_ST_ShutdownResampling(&src->resamplingContext);
+		free(src->out.buffer);
+	}
+	free(src->in.buffer);
+}
+
+void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq)
+{
+	if (src->in.buffer)
+		BEL_ST_AudioMixerFreeSourceBuffers(src);
+
+	src->in.num = 0;
+	src->out.num = 0;
+	src->numScaledSamplesToGenNextTime = 0;
+	// src->out.size shall not change, and should've been set earlier
+	src->in.size = src->out.size * freq / g_stAudioMixer.freq;
+	src->freq = freq;
+
+	src->in.buffer = (BE_ST_SndSample_T *)malloc(src->in.size * sizeof(BE_ST_SndSample_T));
+	if (!src->in.buffer)
+		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
+
+	if (g_stAudioMixer.freq == freq)
+		src->out.buffer = src->in.buffer;
+	else
+	{
+		BEL_ST_InitResampling(&src->resamplingContext,
+		                      g_stAudioMixer.freq, freq, src->in.buffer);
+		src->out.buffer = (BE_ST_SndSample_T *)malloc(src->out.size * sizeof(BE_ST_SndSample_T));
+		if (!src->out.buffer)
+			BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
+	}
+}
+
 void BEL_ST_AudioMixerInit(int freq)
 {
 	g_stAudioMixer.offsetInSound = 0;
@@ -48,15 +86,7 @@ void BEL_ST_AudioMixerInit(int freq)
 void BEL_ST_AudioMixerShutdown(void)
 {
 	for (int i = 0; i < g_stAudioMixer.numSources; ++i)
-	{
-		BE_ST_AudioMixerSource *src = &g_stAudioMixer.sources[i];
-		if (src->out.buffer != src->in.buffer)
-		{
-			BEL_ST_ShutdownResampling(&src->resamplingContext);
-			free(src->out.buffer);
-		}
-		free(src->in.buffer);
-	}
+		BEL_ST_AudioMixerFreeSourceBuffers(&g_stAudioMixer.sources[i]);
 }
 
 void BEL_ST_AudioMixerUpdateFromPITRateWord(int_fast32_t rateVal)
@@ -75,28 +105,12 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 	if (g_stAudioMixer.numSources == BE_ST_AUDIO_MIXER_MAX_SOURCES)
 		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Can't add another source!");
 	BE_ST_AudioMixerSource *src = &g_stAudioMixer.sources[g_stAudioMixer.numSources++];
+
 	src->genSamples = genSamples;
-	src->in.num = 0;
-	src->out.num = 0;
-	src->numScaledSamplesToGenNextTime = 0;
-	src->in.size = maxNumOfOutSamples * freq / g_stAudioMixer.freq;
 	src->out.size = maxNumOfOutSamples;
-	src->freq = freq;
+	src->in.buffer = src->out.buffer = 0;
 
-	src->in.buffer = (BE_ST_SndSample_T *)malloc(src->in.size * sizeof(BE_ST_SndSample_T));
-	if (!src->in.buffer)
-		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
-
-	if (g_stAudioMixer.freq == freq)
-		src->out.buffer = src->in.buffer;
-	else
-	{
-		BEL_ST_InitResampling(&src->resamplingContext,
-		                      g_stAudioMixer.freq, freq, src->in.buffer);
-		src->out.buffer = (BE_ST_SndSample_T *)malloc(src->out.size * sizeof(BE_ST_SndSample_T));
-		if (!src->out.buffer)
-			BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
-	}
+	BE_ST_AudioMixerSetSourceFreq(src, freq);
 	return src;
 }
 

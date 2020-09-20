@@ -45,4 +45,6 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 	int freq, int maxNumOfOutSamples,
 	void (*genSamples)(BE_ST_SndSample_T *stream, int len));
 
+void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq);
+
 #endif
