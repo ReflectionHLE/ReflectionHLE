@@ -1,5 +1,6 @@
 list(APPEND wolf3d_src
 	src/idtech_common/fixed_sintable.c
+	src/wolf3d/altcontroller.c
 	src/wolf3d/id_ca.c
 	src/wolf3d/id_in.c
 	src/wolf3d/id_mm.c
