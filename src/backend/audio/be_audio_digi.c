@@ -20,6 +20,8 @@
 #include "refkeen.h"
 #include "be_audio_private.h"
 
+static void (*g_sdlDigiAudioIntFuncPtr)(void);
+
 static int16_t *g_sdlSoundEffectCurrPtr;
 uint32_t g_sdlSoundEffectSamplesLeft;
 
@@ -55,6 +57,20 @@ static void BEL_ST_ConvertS16SamplesToOutputFormat(int16_t *inPtr, int16_t *outP
 	memcpy(outPtr, inPtr, 2*samplesToCopy);
 }
 #endif
+
+void BE_ST_StartDigiAudioInt(void (*funcPtr)(void))
+{
+	BE_ST_LockAudioRecursively();
+	g_sdlDigiAudioIntFuncPtr = funcPtr;
+	BE_ST_UnlockAudioRecursively();
+}
+
+void BE_ST_StopDigiAudioInt(void)
+{
+	BE_ST_LockAudioRecursively();
+	g_sdlDigiAudioIntFuncPtr = 0;
+	BE_ST_UnlockAudioRecursively();
+}
 
 void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)
 {

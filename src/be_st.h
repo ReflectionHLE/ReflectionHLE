@@ -237,6 +237,8 @@ uint16_t BE_ST_Compat_GetFarPtrRelocationSegOffset(void);
 /*** Audio/timer (vanilla Keen kind-of has these mixed) ***/
 void BE_ST_StartAudioAndTimerInt(void (*funcPtr)(void));
 void BE_ST_StopAudioAndTimerInt(void);
+void BE_ST_StartDigiAudioInt(void (*funcPtr)(void));
+void BE_ST_StopDigiAudioInt(void);
 void BE_ST_LockAudioRecursively(void);
 void BE_ST_UnlockAudioRecursively(void);
 bool BE_ST_IsEmulatedOPLChipReady(void);
