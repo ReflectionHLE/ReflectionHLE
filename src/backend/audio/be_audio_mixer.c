@@ -49,6 +49,10 @@ static void BEL_ST_AudioMixerFreeSourceBuffers(BE_ST_AudioMixerSource *src)
 
 void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq)
 {
+	BE_ST_LockAudioRecursively();
+	src->skip = true;
+	BE_ST_UnlockAudioRecursively();
+
 	if (src->in.buffer)
 		BEL_ST_AudioMixerFreeSourceBuffers(src);
 
@@ -73,6 +77,10 @@ void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq)
 		if (!src->out.buffer)
 			BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
 	}
+finish:
+	BE_ST_LockAudioRecursively();
+	src->skip = false;
+	BE_ST_UnlockAudioRecursively();
 }
 
 void BEL_ST_AudioMixerInit(int freq)
@@ -148,6 +156,8 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 			for (i = 0; i < g_stAudioMixer.numSources; ++i)
 			{
 				src = &g_stAudioMixer.sources[i];
+				if (src->skip)
+					continue;
 				uint32_t samplesToGen = processedInputSamples;
 				samplesToGen = samplesToGen * src->freq + src->numScaledSamplesToGenNextTime;
 				src->numScaledSamplesToGenNextTime = samplesToGen % g_stAudioMixer.freq;
@@ -187,6 +197,8 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 		for (i = 0; i < g_stAudioMixer.numSources; ++i)
 		{
 			src = &g_stAudioMixer.sources[i];
+			if (src->skip)
+				continue;
 			uint32_t consumed, produced;
 			uint32_t maxSamplesToOutput = BE_Cross_TypedMin(
 				uint32_t, len,
@@ -218,6 +230,8 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 			for (i = 0; i < g_stAudioMixer.numSources; ++i)
 			{
 				src = &g_stAudioMixer.sources[i];
+				if (src->skip)
+					continue;
 				BE_ST_SndSample_T *ptr = stream;
 				for (j = 0; j < samplesToOutput; ++j, ++ptr)
 					*ptr = (i * (*ptr) + src->out.buffer[j]) / (i + 1);
