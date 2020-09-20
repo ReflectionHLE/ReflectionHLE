@@ -25,6 +25,9 @@ static void (*g_sdlDigiAudioIntFuncPtr)(void);
 static int16_t *g_sdlSoundEffectCurrPtr;
 static uint32_t g_sdlSoundEffectSamplesLeft;
 
+// Used for changing input sample rate
+static BE_ST_AudioMixerSource *g_sdlDigiMixerSource;
+
 void BE_ST_PlayS16SoundEffect(int16_t *data, int numOfSamples)
 {
 	BE_ST_LockAudioRecursively();
@@ -70,6 +73,11 @@ void BE_ST_StopDigiAudioInt(void)
 	BE_ST_LockAudioRecursively();
 	g_sdlDigiAudioIntFuncPtr = 0;
 	BE_ST_UnlockAudioRecursively();
+}
+
+void BEL_ST_SetDigiMixerSource(BE_ST_AudioMixerSource *src)
+{
+	g_sdlDigiMixerSource = src;
 }
 
 void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)

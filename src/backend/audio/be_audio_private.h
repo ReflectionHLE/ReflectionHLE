@@ -49,5 +49,6 @@ void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length);
 void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length);
 
 void BEL_ST_SetOPLMixerSource(struct BE_ST_AudioMixerSource *src);
+void BEL_ST_SetDigiMixerSource(struct BE_ST_AudioMixerSource *src);
 
 #endif

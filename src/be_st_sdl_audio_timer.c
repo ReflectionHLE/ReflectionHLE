@@ -147,10 +147,12 @@ void BE_ST_InitAudio(void)
 
 		BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
 		// TODO Verify this works
-		BEL_ST_AudioMixerAddSource(
+		BE_ST_AudioMixerSource *src = BEL_ST_AudioMixerAddSource(
 			g_sdlOutputAudioFreq,
 			NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM,
 			doDigitized ? BEL_ST_GenDigiSamples : BEL_ST_GenPCSpeakerSamples);
+		if (doDigitized)
+			BEL_ST_SetDigiMixerSource(src);
 
 		goto finish;
 	}
@@ -169,10 +171,13 @@ void BE_ST_InitAudio(void)
 
 	BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
 	if (doDigitized)
-		BEL_ST_AudioMixerAddSource(
-			inSampleRate,
-			samplesForSourceBuffer,
-			BEL_ST_GenDigiSamples);
+	{
+		BEL_ST_SetDigiMixerSource(
+			BEL_ST_AudioMixerAddSource(
+				inSampleRate,
+				samplesForSourceBuffer,
+				BEL_ST_GenDigiSamples));
+	}
 	else
 		BEL_ST_AudioMixerAddSource(
 			g_sdlOutputAudioFreq,
