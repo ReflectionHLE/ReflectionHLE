@@ -1494,8 +1494,9 @@ PM_Startup(void)
 #if REFKEEN_SIMPLIFIED // Just allocate anything at once for now
 	id0_longword_t totaldata = 0;
 	PageListStruct *page;
+	// Round up each page length in memory to a multiply of PMPageSize
 	for (i = 0, page = PMPages; i < ChunksInFile; i++, page++)
-		totaldata += page->length;
+		totaldata += ((page->length + PMPageSize - 1) / PMPageSize) * PMPageSize;
 	PMPageData = malloc(totaldata);
 	if (!PMPageData)
 		Quit("PM_Startup: Couldn't allocate memory for page file");
@@ -1503,8 +1504,10 @@ PM_Startup(void)
 	if (!PMPageDataPtrs)
 		Quit("PM_Startup: Couldn't allocate memory for page file");
 	id0_byte_t *ptr = (id0_byte_t *)PMPageData;
-	// Support the case some pages in the file may overlap
-	for (i = 0, page = PMPages; i < ChunksInFile; i++, ptr += page->length, page++)
+	// Support the case some pages in the file may overlap,
+	// and again round the pages up
+	for (i = 0, page = PMPages; i < ChunksInFile;
+	     i++, ptr += ((page->length + PMPageSize - 1) / PMPageSize) * PMPageSize, page++)
 	{
 		if (page->length)
 		{
