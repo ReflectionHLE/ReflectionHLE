@@ -19,6 +19,7 @@
 
 #include "refkeen.h"
 #include "be_audio_resampling.h"
+#include <stdlib.h>
 
 void BEL_ST_InitResampling(BESDLResamplingContext *context,
                            int outSampleRate, int inSampleRate,

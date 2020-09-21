@@ -19,6 +19,7 @@
 
 #include "refkeen.h"
 #include "be_audio_mixer.h"
+#include <string.h>
 
 static void (*g_sdlDigiAudioIntFuncPtr)(void);
 

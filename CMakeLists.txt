@@ -89,6 +89,9 @@ endif ()
 configure_file(refkeen_config.h.in refkeen_config.h)
 
 set(LIBRARIES ${SDL2_LIBRARIES} ${SPEEXDSP_LIBRARIES} m)
+if (WIN32)
+	set(LIBRARIES ${LIBRARIES} shlwapi)
+endif ()
 
 include_directories(
 	PUBLIC src src/crc32 src/depklite src/opl src/unlzexe

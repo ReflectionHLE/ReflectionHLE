@@ -1168,7 +1168,7 @@ void BE_Cross_PrepareGameInstallations(void)
 		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 2270", L"INSTALLLOCATION", &dwType, steam_wolf3d_path, &dwSize);
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(steam_wolf3d_path+_tcslen(steam_wolf3d_path), steam_wolf3d_path+sizeof(steam_wolf3d_path)/sizeof(TCHAR)-_tcslen(steam_wolf3d_path), "\\base");
+			BEL_Cross_safeandfastctstringcopy(steam_wolf3d_path+_tcslen(steam_wolf3d_path), steam_wolf3d_path+sizeof(steam_wolf3d_path)/sizeof(TCHAR)-_tcslen(steam_wolf3d_path), L"\\base");
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Wolfenstein 3D Activision v1.4 (Steam)");
 		}
 #elif (defined REFKEEN_PLATFORM_UNIX)
@@ -1206,7 +1206,7 @@ void BE_Cross_PrepareGameInstallations(void)
 		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 9000", L"INSTALLLOCATION", &dwType, steam_sod_path, &dwSize);
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(steam_sod_path+_tcslen(steam_sod_path), steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR)-_tcslen(steam_sod_path), "\\base");
+			BEL_Cross_safeandfastctstringcopy(steam_sod_path+_tcslen(steam_sod_path), steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR)-_tcslen(steam_sod_path), L"\\base");
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
 		}
 #elif (defined REFKEEN_PLATFORM_UNIX)

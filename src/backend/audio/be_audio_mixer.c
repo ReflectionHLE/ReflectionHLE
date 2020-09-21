@@ -22,6 +22,8 @@
 #include "be_audio_mixer.h"
 #include "be_audio_resampling.h"
 #include "be_st_sdl_private.h" // For BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
+#include <stdlib.h>
+#include <string.h>
 
 enum { BE_ST_AUDIO_MIXER_MAX_SOURCES = 4 };
 
