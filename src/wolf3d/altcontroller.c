@@ -43,6 +43,15 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 	true,
 };
 
+BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu = {
+	{},
+	NULL,
+	NULL,
+	{},
+	{},
+	false,
+};
+
 void PrepareGamePlayControllerMapping(void)
 {
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
