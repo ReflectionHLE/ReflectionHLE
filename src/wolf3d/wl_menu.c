@@ -1413,6 +1413,7 @@ firstpart:
 	UnCacheLump (NEWGAME_LUMP_START,NEWGAME_LUMP_END);
 	CacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 #endif
+	return CP_itemvalue;
 }
 
 
