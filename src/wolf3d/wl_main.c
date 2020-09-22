@@ -1675,10 +1675,11 @@ void InitGame (void)
 	if (mminfo.mainmem < 257000L && !MS_CheckParm("debugmode"))
 #endif
 	{
-		memptr screen;
+		id0_byte_t *screen;
+//		memptr screen;
 
 		CA_CacheGrChunk (ERRORSCREEN);
-		screen = grsegs[ERRORSCREEN];
+		screen = (id0_byte_t *)grsegs[ERRORSCREEN];
 		ShutdownId();
 		// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
@@ -1930,7 +1931,8 @@ resize:
 void Quit (const id0_char_t *error)
 {
 	id0_unsigned_t        finscreen;
-	memptr	screen;
+	id0_byte_t *screen;
+//	memptr	screen;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
@@ -1958,7 +1960,7 @@ void Quit (const id0_char_t *error)
 	{
 	 #ifndef JAPAN
 	 CA_CacheGrChunk (ORDERSCREEN);
-	 screen = grsegs[ORDERSCREEN];
+	 screen = (id0_byte_t *)grsegs[ORDERSCREEN];
 	 #endif
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
@@ -1968,7 +1970,7 @@ void Quit (const id0_char_t *error)
 	else
 	{
 	 CA_CacheGrChunk (ERRORSCREEN);
-	 screen = grsegs[ERRORSCREEN];
+	 screen = (id0_byte_t *)grsegs[ERRORSCREEN];
 	}
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
