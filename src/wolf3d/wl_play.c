@@ -1705,7 +1705,7 @@ void DoActor (objtype *ob)
 #else
 	if (!(ob->flags&(FL_NONMARK|FL_NEVERMARK)) )
 #endif
-		actorat[ob->tilex][ob->tiley] = NULL;
+		actorat[ob->tilex][ob->tiley] = 0;
 
 //
 // non transitional object

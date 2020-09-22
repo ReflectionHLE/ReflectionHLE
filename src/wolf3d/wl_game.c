@@ -997,7 +997,7 @@ void SetupGameLevel (void)
 			{
 				tilemap[x][y] = 0;
 				if ( (id0_unsigned_t)actorat[x][y] == AMBUSHTILE)
-					actorat[x][y] = NULL;
+					actorat[x][y] = 0;
 
 				if (*map >= AREATILE)
 					tile = *map;

@@ -1255,7 +1255,7 @@ void SpawnPatrol (enemy_t which, id0_int_t tilex, id0_int_t tiley, id0_int_t dir
 	newobj->flags |= FL_SHOOTABLE;
 	newobj->active = ac_yes/*true*/;
 
-	actorat[newobj->tilex][newobj->tiley] = NULL;		// don't use original spot
+	actorat[newobj->tilex][newobj->tiley] = 0;		// don't use original spot
 
 	switch (dir)
 	{

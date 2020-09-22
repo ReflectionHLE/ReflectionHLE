@@ -1099,7 +1099,7 @@ void KillActor (objtype *ob)
 #if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
 	ob->flags |= FL_NONMARK;
 #endif
-	actorat[ob->tilex][ob->tiley] = NULL;
+	actorat[ob->tilex][ob->tiley] = 0;
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	ob->flags |= FL_NONMARK;
 #endif
