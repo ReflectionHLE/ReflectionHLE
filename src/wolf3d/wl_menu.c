@@ -470,6 +470,10 @@ void US_ControlPanel(id0_byte_t scancode)
 {
 	id0_int_t which,i,start;
 
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu);
 
 	// *** ALPHA RESTORATION ***
 	// Looks like an almost-perfect replica of the code handling
@@ -498,12 +502,14 @@ void US_ControlPanel(id0_byte_t scancode)
 		WindowH=200;
 		UNCACHEGRCHUNK(STARTFONT+1);
 		fontnumber=0;
-		return;
+		goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+		//return;
 	}
 #else // GAMEVER_WOLFREV > GV_WR_WL920312
 	if (ingame)
 		if (CP_CheckQuick(scancode))
-			return;
+			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			//return;
 #endif
 
 	StartCPMusic(MENUSONG);
@@ -561,7 +567,8 @@ void US_ControlPanel(id0_byte_t scancode)
 			#ifdef SPEAR
 			UnCacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 			#endif
-			return;
+			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			//return;
 	}
 
 #ifdef SPEAR
@@ -723,6 +730,9 @@ void US_ControlPanel(id0_byte_t scancode)
 	MM_SortMem ();
 #endif
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
+	// REFKEEN - Alternative controllers support
+popcontrolerscheme:
+	BE_ST_AltControlScheme_Pop();
 }
 
 

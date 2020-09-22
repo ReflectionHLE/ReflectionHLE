@@ -1820,6 +1820,10 @@ void GameLoop (void)
 #ifdef MYPROFILE
 	clock_t start,end;
 #endif
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	void PrepareGamePlayControllerMapping(void);
+	PrepareGamePlayControllerMapping();
 
 restartgame:
 	/// *** ALPHA RESTORATION ***
@@ -2016,7 +2020,8 @@ startplayloop:
 				MainMenu[viewscores].routine = CP_ViewScores;
 				#pragma warn +sus
 
-				return;
+				goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+				//return;
 			}
 #endif
 
@@ -2039,7 +2044,8 @@ startplayloop:
 				MainMenu[viewscores].routine = CP_ViewScores;
 				#pragma warn +sus
 
-				return;
+				goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+				//return;
 			}
 #endif
 
@@ -2160,7 +2166,8 @@ startplayloop:
 			#pragma warn +sus
 #endif
 
-			return;
+			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			//return;
 
 		case ex_victorious:
 
@@ -2216,7 +2223,8 @@ startplayloop:
 			#pragma warn +sus
 #endif
 
-			return;
+			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			//return;
 
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -2228,6 +2236,9 @@ startplayloop:
 
 	} while (1);
 
+	// REFKEEN - Alternative controllers support
+popcontrolerscheme:
+	BE_ST_AltControlScheme_Pop();
 }
 
 REFKEEN_NS_E
