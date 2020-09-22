@@ -2232,6 +2232,11 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	}
 	else if (g_refKeenCfg.scaleType == SCALE_FILL)
 	{
+		// Turn off the border in such a case
+		srcBorderLeft = srcBorderRight = srcBorderTop = srcBorderBottom = 0;
+		srcBorderedWidth = srcWidth;
+		srcBorderedHeight = srcHeight;
+
 		g_sdlAspectCorrectionBorderedRect.w = winWidth;
 		g_sdlAspectCorrectionBorderedRect.h = winHeight;
 		g_sdlAspectCorrectionBorderedRect.x = 0;

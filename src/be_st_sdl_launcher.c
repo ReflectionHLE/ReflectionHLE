@@ -369,7 +369,7 @@ static char g_be_videoSettingsChoices_sdlRendererDriversStrs[BE_LAUNCHER_MAX_NUM
 // Need to add additional auto entry, plus NULL terminator
 static const char *g_be_videoSettingsChoices_sdlRendererDrivers[BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS+2];
 
-static const char *g_be_videoSettingsChoices_scaleType[] = {"4:3","Fill",NULL};
+static const char *g_be_videoSettingsChoices_scaleType[] = {"4:3 + Porch","Fill",NULL};
 static const char *g_be_videoSettingsChoices_scaleFactor[] = {"1","2","3","4",NULL};
 static const char *g_be_videoSettingsChoices_vSync[] = {"Auto","Off","On",NULL};
 #ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
