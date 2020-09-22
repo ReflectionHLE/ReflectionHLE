@@ -1,0 +1,411 @@
+---------
+Changelog
+---------
+
+Jan 25, 2019 (v0.18.3):
+* This is a maintenance release mostly intended for Android users, although
+there are also a few changes which aren't Android-specific.
+* Fixed a bug where the wrong Catalog / Hint Book EXE would be shown
+in the launcher.
+* Further fixed a bug where, for game controller or touchscreen users,
+the 'P' key would mistakenly appear in one of the on-screen buttons
+for the hint book in Catacomb Armageddon/Apocalypse. It'd also be
+usable for no good reason.
+* Hopefully fix in-game timing after resume from a pause on Android.
+* The Android build files have been updated (twice) from SDL2's repo.
+Unfortunately, the minimum supported Android version has been raised
+to 4.1 (i.e., API level 16).
+* Additionally, the original armeabi ABI (not to be confused with armeabi-v7a)
+is not supported anymore.
+* On the other hand, 64-bit Android binaries (arm64-v8a and x86_64)
+are now built, as currently configured.
+* Using a recent SDL2 Mercurial update, an OpenSL ES sound driver is
+now used on Android by default. While your mileage may vary as usual,
+hopefully this will resolve the great issue of high audible latency.
+* Added circular icons for Android. Also added banners, in case you want to
+try and run any of the games on Android TV. Your mileage may vary, though!
+* Allow the sound sample rate to internally change from the user's choice.
+For EXEs built with SDL 2.0.9 headers or compatible, the same also applies
+to an internal samples field (a part of SDL_AudioSpec).
+* The default value of sndInterThreadBufferRatio was changed from 8 to 2. It
+turned out that 8 was simply too high, at least in a specific setup with the
+2015 Keen Dreams edition. It's probably also less assisting for Android,
+either way, especially after the migration to OpenSL ES.
+* Reflection Keen should now search for game data from Steam in
+the lowercase "steamapps" directory, in addition to "SteamApps"
+(mostly relevant for Linux users).
+* Other few misc. fixes.
+
+Aug 14, 2017 (v0.18.0):
+* Move some memory management code from the differing id_mm.c files to a
+separate be_cross_mem.c file. For the sake of simplicity, XMS and EMS are
+gone. This newly added source file also grants us some more control over
+memory management, using functions like BE_Cross_Bfarmalloc as replacements
+for functions originally used in the DOS sources (such as farmalloc).
+* Somewhat better support for multi-EXE emulation, like CATABYSS.EXE
+and INTRO.EXE for The Catacomb Abyss v1.13. This includes a replacement
+for the execv function, reverting the state of the runtime stack.
+This is mostly useful when two DOS EXEs may execute each other, over and
+over again (e.g., INTRO.EXE and DEMOCAT.EXE from The Catacomb Abyss v1.13).
+* Minor loadscn changes (mostly renames).
+* An almost complete port of DEMOCAT.EXE/HINTCAT.EXE is now in. It's still
+impossible to send anything to a printer, but otherwise it should have
+similar behaviors (albeit the sound beep periods may be shorter).
+As a side-note, this makes the 'F10' key usable in
+the intro, with The Catacomb Abyss v1.13.
+* Minor related fixes in be_st_sdl_audio_timer.c and be_st_sdl_graphics.c,
+as well as small changes for alt. controller mappings handling.
+* Also fix parsing of filenames from e.g., SCRIPT.HNT, The Catacomb Armageddon
+(for instance, "HINT01.HNT " should first be trimmed to "HINT01.HNT").
+* For the later Catacombs titles, it's now possible to choose between
+the game and HINTCAT.EXE/DEMOCAT.EXE, right from the launcher. The last
+choice is saved for the next time Reflection Keen is started. There's
+further the addition of the related /slidecat command-line argument.
+* More changes for game versions management - We now store a separate list
+of "main functions" for each game version. Usually, they have matching
+EXE filenames (Keen Dreams 2015 is an exception).
+* When Reflection Keen checks for an available game installation, all it does
+is check for recognized game data (and EXE) files. It does not, at this point,
+look for embedded data, like INTROSCN.SCN in CAT3D.EXE. It also does not
+unpack any packed EXE. This may only happen when the game (or slidecat)
+is started, *or* when BE_Cross_Bexecv is called.
+* In particular, embedded data like INTROSCN.SCN is *not* written as
+an external file anymore. It's also impossible to use replacements for
+these with "manualgamevermode=true".
+* Ensure last display number. is saved, regardless of any specific event.
+* On an attempt to resolve the issue of high audio latency leading to a low
+framerate (reproduced on Android), we now basically run the various sound
+callbacks (originally SDL callbacks) in the main thread. This is done in
+virtually the same way as if the sound system were disabled, only that
+an additional buffer is used for passing samples to the SDL audio thread.
+* The new "sndinterthreadbufferratio" setting can be used to adjust this
+buffer's size, as well as the sizes of internal PC and AL buffers.
+They're calculated relatively to the buffer size chosen for
+the SDL callback thread (used only in this callback).
+* Other misc. fixes.
+
+Apr 01, 2017 (v0.17.0):
+
+* A POSSIBLE REGRESSION: An unexpectedly low(er) framerate may be reproduced
+on Android, at least in the Catacombs.
+* ANOTHER WARNING: If the classic controller scheme is in use, then
+re-calibration may be required. This is the case due to a few internal changes,
+with one of them fixing a possible division by zero error. The latter could
+be reproduced in Keen Dreams v1.00, for which support is now in (see below).
+* Not well-tested: Launcher window is now positioned in the same display as
+the in-game window, in multi-display setups. Also, there's a new setting,
+which tells if the last display is saved for later runs.
+It's toggled on by default.
+* -cfgdir related bug fix, timing fixes and other misc. fixes.
+* If you don't mind building your own binaries from the sources,
+then compatibility with OS X/macOS is now in (thanks rhoenie and Dominus).
+Note that this isn't well-tested, due to the lack of direct access to a Mac.
+* Added support for Keen Dreams v1.00. Internally, this includes the
+ability to read data from KDREAMS.EXE as originally released, being
+packed with PKLITE v1.05. Doing this is now possible thanks to depklite,
+which is more-or-less a port from C++11 to C99 of OpenTESArena's ExeUnpacker.
+* Known issue: Warping to a non-existant level in Keen Dreams v1.00
+(e.g., level 6) may, essentially, lead to undefined behaviors.
+* Added partial support for the Keen Dreams 2015 re-release
+(Steam, IndieGameStand). Note that this support is essentially a bonus, and
+it's still recommended to use the data from a supported DOS version. A great
+deal of updates were for sound playback support, but there's more than that.
+* Also, as of this release of Reflection Keen, this will *not* work with
+the 2015 re-release as downloaded from Steam on Windows, due to minor
+differences in GAMETEXT.KDR. These are a couple of text bugs, that should
+be corrected if the game is downloaded using the Linux (or Mac) client,
+but they haven't been carried over to Windows so far.
+* Further note that kdreams.cfg is updated after manually closing the
+game window, *only* if the 2015 data is used.
+* Compatibility with saved games from the 2015 re-release is more-or-less
+present, while compatibility with kdreams.cfg is only partial. So, watch out.
+* A few misc. 2015 specific features were implemented, e.g., a bug fix
+resetting the amount of keys when a new game is started. This does *not*
+necessarily cover all behaviors of the 2015 release, though. Also, as expected,
+2015 specific features are *not* in effect when a DOS version's data is in use.
+* Support for joysticks / game controllers with the 2015 data is
+the same as with the DOS versions' data.
+* Mouse support is also the same, although it's possible to pass the
+2015-specific command-line argument of /SWMOUSE to temporarily disable
+the "Absolute mouse motion" toggle. Note that the /NOASPECT and /WINDOWED
+arguments described in GAMETEXT.KDR didn't seem to work in the
+2015 port itself (using an EXE from May 9 2016 or earlier),
+so these are not implemented here, either.
+
+Oct 12, 2016 (v0.16.0):
+
+- BREAKING CHANGE: The file HELP.TXT is now required in order to
+play The Catacomb Abyss.
+- Regarding The Catacomb Abyss v1.13, the expected/extracted EGAHEAD.ABS and
+MTEMP.TMP files should be a little bit smaller. Previously, whole segments
+would be extracted from the CATABYSS.EXE file, leading to a little
+bit larger files (with filesizes divisible by 16 bytes).
+- Added support for multi-touch input, along with an Android port;
+Currently requires Android 2.3.3 (API level 10) or later and targets 7.0 (24).
+- Some "modern" game controller input adjustments, including changes to the
+handling of debug keys.
+- Some launcher adjustments; Examples: The ability to set (emulated)
+command-line arguments for the game, showing/hiding an on-screen keyboard for
+text search/input, access to details about files from supported game versions.
+- "autolock" setting was replaced with the "mousegrab" setting, which
+behaves somewhat more (but not exactly) like the mouse grab setting
+from Chocolate Doom.
+- Added a "absmousemotion" setting, optionally letting one seamlessly move
+the mouse cursor out of the window in Keen Dreams' control panel. This is
+disabled by default, since it technically behaves a bit differently
+from vanilla Keen Dreams.
+- If multi-touch input is used, and the /NOMOUSE option is *not* passed
+to Keen Dreams, then the mouse cursor in the control panel can be used
+with a single finger, in a matter similar to enabling "absmousemotion" for
+an actual mouse. That is, the ship cursor (more precisely, its top-left corner)
+is shown where the finger resides.
+- Big Endian fixes (including fixed sound support).
+- Misc. graphics output optimizations. This includes changes to emulated EGA
+memory layout; Using one byte per pixel, rather than four monochromatic
+sections for the four EGA planes. Reason is this is better for the Catacombs,
+and it also didn't seem to make things worse for Keen Dreams.
+- Screen is refreshed more often, even if there's no actual on-screen update.
+This is done for somewhat better Steam Overlay support and other situations.
+- Minor DBOPL fixes.
+- Support better resampling of audio (from the OPL rate of 49716Hz to a
+different rate), using a resampling library. Currently SpeexDSP is used.
+- Fix some unaligned memory accesses, as well as a few buffer overflows.
+- Fix duplicated game controllers on startup, in launcher.
+- Other code modifications.
+
+Nov 20, 2015 (v0.13.0):
+
+- A minor breaking change: The disablesndsubsystem setting was changed to
+sndsubsystem, for avoiding double negatives and being more consistent with
+newly added code (the launcher).
+- A new launcher is now in. By default, it is shown before starting any game,
+but command line arguments can be used to skip it. It is now the way to
+configure the Reflection Keen ports as an alternative to manually
+editing cfg files. This may be mostly useful for configuring
+game controllers with the modern controller scheme, but not only.
+- Reflection Keen may detect and use existing game installations from more
+than one location: Current working directory, GOG.com installation of
+the Catacombs for windows, or a directory manually selected from the launcher.
+There are also checksum and filesize validations for game data.
+- Embedded resources like MAPHEAD.KDR are now written externally. They can
+be extracted from original DOS executables automatically and then used by
+Reflection Keen. However, the games still behave as if these resources
+were linked into the EXEs. For each game, they're loaded to memory
+by Reflection Keen before entering the game's main function.
+- Some Reflection Keen EXEs unifications were made. To summarize,
+there's now a single EXE per game, possibly supporting
+multiple original versions of the game.
+- Due to the above change, new files are now written to separate directories,
+based on the game version.
+- The EXE filenames are also longer, just to reduce the chances of weird
+conflicts. Names without file extension: reflection-kdreams, reflection-cat3d,
+reflection-catabyss, reflection-catarm and reflection-catapoc.
+- The cfg files were renamed in a similar manner (for the sake of consistency).
+This may technically look like a breaking change on its own, only the cfg files
+and more should be relocated to different directories anyway.
+- Files can be accessed by filenames in a case insensitive-manner.
+Case sensitivity still applies to folder names, though!
+- By default, the Reflection Keen cfg files are now written to a specific
+directory depending on the current user. It may be overridden using the -cfgdir
+command-line argument. For instance, on Linux, the default location is
+$XDG_CONFIG_HOME/reflection-keen, if $XDG_CONFIG_HOME is defined
+and filled, or ~/.config/reflection-keen otherwise.
+- Reflection Keen looks for gamecontrollerdb.txt in the same place where
+the cfg files are stored.
+- Other files are similarly written to a possible different directory depending
+on the current user, by default. -datadir can be specified
+to override this. For another Linux example, the default location
+is $XDG_DATA_HOME/reflection-keen or ~/.local/share/reflection-keen.
+- Improvements were made to the modern game controller scheme. The ability to
+configure it from the newly added launcher is one thing, but there's more. Some
+of these may be a bit too technical, but a clear example may be the ability
+to show an on-screen keyboard for entering debug keys (e.g., cheat codes).
+- As a consequence, the modern game controller scheme is now the default.
+- Changes were made to "key repeat/delay" behaviors. These are now done in
+software (using SDL_GetTicks for timing), and should be similar while using a
+game controller in the launcher. This is also the case while using a controller
+in-game with the modern controller scheme, as long as keyboard key presses
+are emulated internally, or an on-screen keyboard is in use.
+- While a bit technical, BE_SDL* functions were renamed BE_ST*, emphasizing
+the fact they may contain platform/framework specific code, but it doesn't have
+to be SDL (e.g., in case there's no available port of SDL on some platform).
+Filenames were similarly renamed, so there are now be_st.h,
+be_st_sdl.h and be_st_sdl*.c.
+- More fixes and other changes.
+
+Mar 13, 2015 (v0.10.0):
+
+- After some time of not having one title covering the whole codebase,
+"Reflection Keen" is finally in use.
+- Experimental support for alternative controller schemes is implemented. This
+should theoretically make it more comfortable to use game controllers with the
+Xbox 360 Controller layout. Taking advantage of the SDL_GameController API,
+a mapping table is used so this is theoretically not limited just to XInput
+controllers. This is currently disabled by default, though, and at
+least one edit to the generated cfg file is expected. Furthermore,
+as a side-effect SDL 2.0.2+ is known to be required now.
+- Alright, it's probably better to consider this unofficial, but there is now
+partially-tested support for big-endian architectures (or bi-endian archs in
+big-endian modes). It's a bit difficult to test this with the lack of
+appropriate hardware, though (in particular audio support is totally untested).
+In addition, commonly used architectures of these days (x86, x86-64, ARM)
+generally operate in little-endian modes. So, again, better assume that
+big-endian modes aren't officially supported.
+- It should be possible to disable the sound subsystem by enabling
+the "disablesndsubsystem" setting in the generated cfg file. The code
+changes also include a fix for an infinite loop in SD_WaitSoundDone
+in case the sound subsystem is disabled. Furthermore, in such a case
+a silent PC Speaker is emulated, but the OPL emulator isn't running.
+- Code can optionally be built as C++ now, using g++ version 4:4.8.2-1ubuntu6
+(should be based on v4.8.2). It is still built as C by default, but the ability
+to build the code as C++ assisted with catching at least a few bugs.
+- Added a fix (or possibly more than one) for Catacomb 3-D crashes. Note
+that the way this was done, a vanilla Catacomb 3-D rendering glitch is *not*
+reproduced now. It may be possible with more efforts, although this obviously
+depends on the original EXE's layout.
+- As in the original DOS executables, there shouldn't be a noticeable fizzle
+fade after loading a saved game in any of the Catacomb Adventure Series titles
+(except for maybe the first time after starting the application).
+
+Dec 20, 2014 (v0.9.12):
+
+- Complete support for the Catacomb Adventure Series has been integrated.
+In addition to version 1.13 of The Catacomb Abyss (Shareware release),
+there is support for Abyss v1.24, Armageddon v1.02 and Apocalypse v1.01.
+- It shall be noted that while it's possible to save and load games for The
+Catacomb Armageddon/Apocalypse, most chances are they won't be compatible with
+any of the original DOS executables. A new, hidden farptrsegoffset setting can
+be added to the cfg file in order to make this somewhat more feasible, although
+there's no guarantee it'll always work with the same value, given the structure
+of the saved games (doesn't apply to Abyss).
+- For another note, if the cheat code letting one cycle through ceiling/sky
+colors is used while there is flashing (a lightning), this can lead to
+so-called "undefined behaviors". It may look like there's no harm,
+but a crash and/or other unexpected side-effects may occur.
+- It turns out VSync was still enabled in the preceding release (v0.9.6) by
+default for The Catacomb Abyss (and Catacomb 3-D), as well as Keen Dreams with
+CGA graphics. Now, though, some adjustments were made in regards to timing, so
+Skull 'n' Bones from Catacomb 3-D can be played back at a rate closer to the
+original while VSync is toggled on, and not just while it's off. Furthermore,
+VSync is again toggled on by default for all supported games, with the
+exception of the CGA release of Keen Dreams (where it's off by default).
+
+Nov 30, 2014 (v0.9.6):
+
+- Support for Catacomb 3-D (The Descent) is now in. This includes support for
+versions 1.00 and 1.22, as well as saved game compatibility with each of these
+separately (although this can be buggy as usual). A lot of ID Engine code is
+shared between the two, while an earlier revision of the ID Engine used by
+Keen Dreams remains separate.
+- Intro and exit screens are added for Catacomb Abyss. The intro can be skipped
+by adding the /skipintro command line argument (same as launching vanilla
+CATABYSS.EXE Shareware v1.13 with a seemingly-random pattern as an argument).
+- Known non-vanilla bug/limitation: Skull 'n' Bones is a bit slower than
+vanilla if VSync is toggled on (given a refresh rate of 60Hz), so it's disabled
+by default in Catacomb 3-D for now. For the sake of consistency it's also
+disabled in Catacomb Abyss. It is enabled in Keen Dreams by default if
+EGA graphics are used, though.
+- The Catacomb Abyss Vanilla bug reproduction: Numbers not shown in HUD on
+startup immediately.
+- A few more misc. changes.
+
+Oct 25, 2014 (v0.9.0):
+
+- RENAMING OF PORT: The Keen Dreams port has been renamed "Ref Keen Dreams".
+This is done to be a just a little bit more original, and also follows the
+addition of a new source port called "Ref Catacomb Abyss" (see next point).
+Note that the source codes still have internal mentions of "CHOCO" or similar,
+but from the user's point of view "Ref" is the new prefix for the two ports.
+- Support for Catacomb Abyss (which shares a lot of code with Keen Dreams)
+has been added. It is based on the original source code release from June 2014,
+while modified to be compatible with the data from the Shareware release,
+v1.13 (QA [0]).
+- Apart from major modifications like ports of 3D scaling routines, there are
+also some minor changes, like the support of a 640x200 graphics mode emulation
+(for Catacomb Abyss help section, internally similar to 320x200) and overscan
+borders flashing (technically supported since v0.8.10, but actually used now).
+- There should be compatibility with saved games of the exact same Catacomb
+Abyss release, but this can be buggy as usual. Furthermore, the way saved games
+names are displayed in the corresponding dialogs (via the F3 or F4 key) may
+seem a bit weird. This can be improved, but for now we have that.
+- Another related complication is the fact that the Catacomb Abyss port is
+compatible with a platform where case-sensitive filesystems are commonly used,
+while under DOS this is not the case and filenames tend to be renamed uppercase
+automatically. As of this version of the Catacomb Abyss port, newly saved
+games' filenames are automatically converted to uppercase. The same applies
+when typing a name for game loading (even if lowercase filenames are shown).
+This shouldn't be a problem on case-insensitive filesystems, even if they're
+case-preserving.
+- Partial compatibility breakage: chocolate-keen-dreams.cfg is renamed
+refkdreams.cfg. Similarly refcatabyss.cfg is used for Catacomb Abyss.
+
+Oct 11, 2014 (v0.8.10):
+
+- Fixed finale text printing (more generally, modified some functions
+to better handle original code leading to undefined behaviors per the
+C standard, or at least to crashes).
+- Fixed King Boobus Tuber explosion.
+- Added compatibility with the registered release, v1.93, and the Shareware
+release, v1.20. Taking a look at the source codes release, they are both
+almost identical to v1.13.
+- Overscan borders are drawn now, even if permanently colored black (MM_SortMem
+flashes the borders, but chances are the function is never called in practice).
+- More miscellaneous fixes.
+
+Oct 9, 2014 (v0.8.8):
+
+- EGA graphics emulation has been added, and Chocolate Keen Dreams should be
+compatible with the Shareware release of Keen Dreams, version 1.13.
+- This includes compatibility with saved games (each Chocolate Keen exe should
+be compatible with saved games of the corresponding release for DOS only).
+- Two separate executables are used for the CGA and Shareware releases.
+- chocolate-keen-dreams-cga.exe has been renamed to the shorter filename of
+chocolate-kdreams-cga.exe. There's also chocolate-kdreams-shar.exe now.
+- Difference from behaviors of vanilla Keen: For the Shareware release,
+you don't need to select a "START" executable in order to launch the game.
+But you can still get the message telling you need to type START by adding the
+command-line argument of /detour (exact opposite of original behaviors).
+- High scores table glitch is fixed.
+- Other miscellaneous fixes.
+
+Oct 3, 2014 (v0.8.2):
+
+- Bilinear filtering can now be toggled on if hardware acceleration is in use.
+- In case off-screen rendering is supported, it can be used for two-step
+scaling of the graphical output: First nearest-neighbor interpolation with
+the added "scalefactor" setting, and then bilinear.
+- Sync to VBlank can be manually toggled now (if supported on the used setup).
+By default "vsync=auto" is used, currently implying "off" (with CGA graphics).
+- Live sound interpolation has been implemented, and it's possible to specify
+a different sound sample rate, while the rate used for OPL emulation is still
+49716Hz. Currently 49716 is the default value
+- Fixed a bug: One cfg setting or more not written to file when it's expected.
+- As of this version, the cfg file is (re)written on launch. This is done so
+new settings can appear in the file if it's not up-to-date.
+
+Sep 29 2014 (v0.8.1):
+
+- Compatibility with saved games from vanilla Keen Dreams CGA v1.05 is in. As
+expected, it can still be buggy (in fact, vanilla Keen also has its limits/bugs
+with this).
+- As a possibly indirect consequence, a vanilla Keen bug in
+StateMachine/DoActor leading to a crash in Chocolate Keen Dreams
+has been found (NULL pointer dereference). Workaround is applied now.
+- The environment variables from last release are gone. Instead, you should
+have the configuration file chocolate-keen-dreams.cfg to fiddle with (created
+on launch if it doesn't exist).
+- Custom fullscreen and windowed resolutions can be set in the configuration
+file. Furthermore, aspect correction can be toggled off (e.g., in case screen
+burn-in is a concern).
+- Mouse cursor lock can be toggled off (from the cfg). By default the cursor is
+now unlocked in a non-fullscreen window. Chances are the behaviors may still
+feel a bit off, but at least we have that.
+- Loading window with bars should display (while loading a map), although it's
+shown for about a short moment on sufficiently fast machines.
+
+Sep 26 2014 (v0.8.0):
+
+- Initial release, based on Keen Dreams CGA v1.05. Should be playable with
+sound effects and CGA graphics on Linux and Windows desktops. Game saving and
+more is totally untested and may be incompatible with original data generated
+by the corresponding DOS executable (saved games are known to be incompatible).
