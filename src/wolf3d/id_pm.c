@@ -63,9 +63,11 @@ REFKEEN_NS_B
 	id0_word_t			PMSpriteStart,PMSoundStart;
 
 //	General usage variables
-	id0_boolean_t			PMStarted,
+	id0_boolean_t			PMStarted;
+#if 0 // REFKEEN: Unused boolean variables
+					PMPanicMode,
 					PMThrashing;
-	id0_byte_t			PMPanicMode; // REFKEEN: Was boolean
+#endif
 	id0_word_t			XMSPagesUsed,
 					EMSPagesUsed,
 					MainPagesUsed,
@@ -1055,8 +1057,10 @@ if (!PMPages[pagenum].offset)	// JDC: sparse page
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 		if (!(result = PML_GetPageFromXMS(pagenum,mainonly)))
 		{
+#if 0 // REFKEEN: Unused variable
 			if (PMPages[pagenum].lastHit == PMFrameCount)
 				PMThrashing++;
+#endif
 
 			PML_LoadPage(pagenum,mainonly);
 			result = PM_GetPageAddress(pagenum);
@@ -1422,6 +1426,7 @@ PM_NextFrame(void)
 	}
 #endif
 
+#if 0 // REFKEEN: Unused variables
 	if (PMPanicMode)
 	{
 		// DEBUG - set border color
@@ -1433,6 +1438,7 @@ PM_NextFrame(void)
 	if (PMThrashing >= PMThrashThreshold)
 		PMPanicMode = PMUnThrashThreshold;
 	PMThrashing = false;
+#endif
 }
 
 //
@@ -1451,7 +1457,7 @@ PM_Reset(void)
 
 	MainPagesUsed = EMSPagesUsed = XMSPagesUsed = 0;
 
-	PMPanicMode = 0;
+//	PMPanicMode = 0;	// REFKEEN: Unused variable
 
 	// Initialize page list
 	for (i = 0,page = PMPages;i < PMNumBlocks;i++,page++)
