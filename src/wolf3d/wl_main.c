@@ -2475,8 +2475,6 @@ void wolf3d_exe_main (void)
 
 	//Patch386 (); // REFKEEN - Not needed
 
-	extern void PrepareGamePlayControllerMapping (void);
-	PrepareGamePlayControllerMapping (); // FIXME (REFKEEN) This is teomporary
 	InitGame ();
 
 	DemoLoop();
