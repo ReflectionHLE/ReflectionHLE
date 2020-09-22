@@ -2983,6 +2983,40 @@ static uint8_t *BEL_ST_printchar(uint8_t *currMemByte, char ch, bool iscolored, 
 	return BEL_ST_CheckForTextCursorOverflow(currMemByte);
 }
 
+static uint8_t *BEL_ST_printnumber(uint8_t *currMemByte, int64_t n, bool iscolored)
+{
+	// 64 bit number can be up to 20 base-10 characters in length
+	char buffer[21] = {0};
+	char *c = &buffer[21];
+
+	if (n < 0) // negative
+	{
+		do
+		{
+			*--c = '0' - (n % 10);
+		}
+		while (n /= 10);
+
+		*--c = '-';
+	}
+	else // positive
+	{
+		do
+		{
+			*--c = '0' + (n % 10);
+		}
+		while (n /= 10);
+	}
+
+	do
+	{
+		currMemByte = BEL_ST_printchar(currMemByte, *c, iscolored, false);
+	}
+	while (*++c);
+
+	return currMemByte;
+}
+
 void BE_ST_puts(const char *str)
 {
 	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
@@ -3037,6 +3071,26 @@ static void BEL_ST_vprintf_impl(const char *format, va_list args, bool iscolored
 				for (const char *str = va_arg(args, char *); *str; ++str)
 				{
 					currMemByte = BEL_ST_printchar(currMemByte, *str, iscolored, requirecrchar);
+				}
+				break;
+			}
+			case 'l':
+			{
+				switch(*(++format))
+				{
+				case 'u':
+					currMemByte = BEL_ST_printnumber(currMemByte, va_arg(args, uint32_t), iscolored);
+					break;
+				case 'd':
+					currMemByte = BEL_ST_printnumber(currMemByte, va_arg(args, int32_t), iscolored);
+					break;
+				default:
+				{
+					// Do NOT constify this cause of hack...
+					char errorMsg[] = "BEL_ST_vprintf_impl: Unsupported format specifier flag: lX\n";
+					errorMsg[strlen(errorMsg)-2] = *format; // Hack
+					BE_ST_ExitWithErrorMsg(errorMsg);
+				}
 				}
 				break;
 			}
