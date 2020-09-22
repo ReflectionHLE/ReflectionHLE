@@ -21,6 +21,8 @@
 #define BE_AUDIO_PRIVATE
 
 #include "refkeen_config.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 #define PC_PIT_RATE 1193182
 
@@ -48,6 +50,7 @@ void BEL_ST_GenPCSpeakerSamples(BE_ST_SndSample_T *stream, int length);
 void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length);
 void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length);
 
+struct BE_ST_AudioMixerSource;
 void BEL_ST_SetOPLMixerSource(struct BE_ST_AudioMixerSource *src);
 void BEL_ST_SetDigiMixerSource(struct BE_ST_AudioMixerSource *src);
 
