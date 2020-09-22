@@ -2254,7 +2254,7 @@ moveok:
 				continue;
 			if (tile<256)
 				return;
-			if (((objtype *)tile)->flags&FL_SHOOTABLE)
+			if ((COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(tile))->flags&FL_SHOOTABLE)
 				return;
 		}
 
