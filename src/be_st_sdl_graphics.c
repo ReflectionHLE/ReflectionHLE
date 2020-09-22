@@ -2194,26 +2194,20 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	g_sdlLastReportedWindowWidth = winWidth;
 	g_sdlLastReportedWindowHeight = winHeight;
 
-	// Special case - We may resize window based on mode, but only if allowResize == true (to prevent any possible infinite resizes loop)
-	if (allowResize && g_sdlIsSoftwareRendered && !g_refKeenCfg.forceFullSoftScaling && (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)))
-	{
-		if ((g_refKeenCfg.scaleFactor*srcBorderedWidth != winWidth) || (g_refKeenCfg.scaleFactor*srcBorderedHeight != winHeight))
-		{
-			SDL_SetWindowSize(g_sdlWindow, g_refKeenCfg.scaleFactor*srcBorderedWidth, g_refKeenCfg.scaleFactor*srcBorderedHeight);
-			// Not sure this will help, but still trying...
-			SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
-		}
-	}
-
-	// Save modified window size
-	if (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
-	{
-		g_refKeenCfg.winWidth = winWidth;
-		g_refKeenCfg.winHeight = winHeight;
-	}
-
 	if (g_sdlIsSoftwareRendered && !g_refKeenCfg.forceFullSoftScaling)
 	{
+		// Special case - We may resize window based on mode, but only if
+		// allowResize == true (to prevent any possible infinite resizes loop)
+		if (allowResize && (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)))
+		{
+			if ((g_refKeenCfg.scaleFactor*srcBorderedWidth != winWidth) || (g_refKeenCfg.scaleFactor*srcBorderedHeight != winHeight))
+			{
+				SDL_SetWindowSize(g_sdlWindow, g_refKeenCfg.scaleFactor*srcBorderedWidth, g_refKeenCfg.scaleFactor*srcBorderedHeight);
+				// Not sure this will help, but still trying...
+				SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+			}
+		}
+
 		if (g_refKeenCfg.scaleFactor*srcBorderedWidth >= winWidth)
 		{
 			g_sdlAspectCorrectionBorderedRect.w = winWidth;
@@ -2266,6 +2260,14 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 			g_sdlAspectCorrectionBorderedRect.y = 0;
 		}
 	}
+
+	// Save modified window size
+	if (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
+	{
+		g_refKeenCfg.winWidth = winWidth;
+		g_refKeenCfg.winHeight = winHeight;
+	}
+
 	// Finish with internal (non-bordered) rect
 	g_sdlAspectCorrectionRect.x = g_sdlAspectCorrectionBorderedRect.x + g_sdlAspectCorrectionBorderedRect.w*srcBorderLeft/srcBorderedWidth;
 	g_sdlAspectCorrectionRect.y = g_sdlAspectCorrectionBorderedRect.y + g_sdlAspectCorrectionBorderedRect.h*srcBorderTop/srcBorderedHeight;
