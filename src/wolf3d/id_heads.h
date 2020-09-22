@@ -118,6 +118,8 @@ REFKEEN_NS_B
 //	v1.0d1
 //
 
+#define ID0_MAXLONG 0x7FFFFFFF
+
 // REFKEEN - Define these for a bit more consistent style
 #define id0_argc g_be_argc
 #define id0_argv g_be_argv
