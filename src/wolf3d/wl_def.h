@@ -1236,7 +1236,7 @@ extern	id0_char_t	configname[13];
 void		HelpScreens (void);
 void		OrderingInfo (void);
 void		TEDDeath(void);
-void		Quit (id0_char_t *error);
+void		Quit (const id0_char_t *error);
 void 		CalcProjection (id0_long_t focal);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)

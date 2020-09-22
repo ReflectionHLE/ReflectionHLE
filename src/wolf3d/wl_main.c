@@ -101,7 +101,7 @@ id0_long_t            heightnumerator;
 id0_int_t                     minheightdiv;
 
 
-void            Quit (id0_char_t *error);
+void            Quit (const id0_char_t *error);
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 id0_boolean_t         startgame,loadedgame
@@ -1927,7 +1927,7 @@ resize:
 ==========================
 */
 
-void Quit (id0_char_t *error)
+void Quit (const id0_char_t *error)
 {
 	id0_unsigned_t        finscreen;
 	memptr	screen;

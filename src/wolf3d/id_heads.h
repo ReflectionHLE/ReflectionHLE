@@ -184,7 +184,7 @@ REFKEEN_NS_E
 
 REFKEEN_NS_B
 
-void	Quit (id0_char_t *error);		// defined in user program
+void	Quit (const id0_char_t *error);		// defined in user program
 
 //
 // replacing refresh manager with custom routines

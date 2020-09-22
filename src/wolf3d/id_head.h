@@ -88,6 +88,6 @@ typedef	struct
 
 #define id0_far // REFKEEN - Use for documentation
 
-void	Quit (id0_char_t *error);		// defined in user program
+void	Quit (const id0_char_t *error);		// defined in user program
 
 REFKEEN_NS_E

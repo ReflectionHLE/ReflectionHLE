@@ -30,7 +30,7 @@ REFKEEN_NS_B
 
 #define MS_Quit	Quit
 
-void Quit (id0_char_t *error);
+void Quit (const id0_char_t *error);
 
 //===========================================================================
 
