@@ -77,14 +77,16 @@ REFKEEN_NS_B
 static	id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",id0_nil_t};
 
 // REFKEEN TODO: Let's begin with a simplified implementation
-#define REFKEEN_SIMPLIFIED 1
+#define REFKEEN_SIMPLIFIED 0
+#define REFKEEN_NOEMS 1
+#define REFKEEN_NOXMS 1
 
 #if REFKEEN_SIMPLIFIED
 memptr PMPageData; // Just allocate everything at once for now
 memptr *PMPageDataPtrs; // Use this for exact locations of the data
 #endif
 
-#if !REFKEEN_SIMPLIFIED
+#if !REFKEEN_NOEMS
 /////////////////////////////////////////////////////////////////////////////
 //
 //	EMS Management code
@@ -220,7 +222,28 @@ PML_ShutdownEMS(void)
 			Quit ("PML_ShutdownEMS: Error freeing EMS");
 	}
 }
+#else
+void
+PML_MapEMS(id0_word_t logical,id0_word_t physical)
+{
+	BE_ST_ExitWithErrorMsg ("PML_MapEMS called without EMS support");
+}
 
+id0_boolean_t
+PML_StartupEMS(void)
+{
+	EMSPresent = false;
+	EMSAvail = 0;
+	return false;
+}
+
+void
+PML_ShutdownEMS(void)
+{
+}
+#endif
+
+#if !REFKEEN_NOXMS
 /////////////////////////////////////////////////////////////////////////////
 //
 //	XMS Management code
@@ -364,7 +387,31 @@ PML_ShutdownXMS(void)
 			Quit("PML_ShutdownXMS: Error freeing XMS");
 	}
 }
+#else
+id0_boolean_t
+PML_StartupXMS(void)
+{
+	XMSPresent = false;
+	XMSAvail = 0;
+	return false;
+}
 
+void
+PML_XMSCopy(id0_boolean_t toxms,void id0_far *addr,id0_word_t xmspage,id0_word_t length)
+{
+	BE_ST_ExitWithErrorMsg ("PML_XMSCopy called without XMS support");
+}
+
+#define	PML_CopyToXMS(s,t,l)	PML_XMSCopy(true,(s),(t),(l))
+#define	PML_CopyFromXMS(t,s,l)	PML_XMSCopy(false,(t),(s),(l))
+
+void
+PML_ShutdownXMS(void)
+{
+}
+#endif
+
+#if !REFKEEN_SIMPLIFIED
 /////////////////////////////////////////////////////////////////////////////
 //
 //	Main memory code
@@ -674,7 +721,7 @@ PML_GetEMSAddress(id0_int_t page,PMLockType lock)
 	// If page isn't already mapped in, find LRU EMS frame, and use it
 	if (emspage == -1)
 	{
-		id0_longword_t last = MAXLONG;
+		id0_longword_t last = ID0_MAXLONG;
 		for (i = 0;i < EMSFrameCount;i++)
 		{
 			if (EMSList[i].lastHit < last)
@@ -742,7 +789,7 @@ PML_GiveLRUPage(id0_boolean_t mainonly)
 	id0_long_t			last;
 	PageListStruct	id0_far *page;
 
-	for (i = 0,page = PMPages,lru = -1,last = MAXLONG;i < ChunksInFile;i++,page++)
+	for (i = 0,page = PMPages,lru = -1,last = ID0_MAXLONG;i < ChunksInFile;i++,page++)
 	{
 		if
 		(
@@ -774,7 +821,7 @@ PML_GiveLRUXMSPage(void)
 	id0_long_t			last;
 	PageListStruct	id0_far *page;
 
-	for (i = 0,page = PMPages,lru = -1,last = MAXLONG;i < ChunksInFile;i++,page++)
+	for (i = 0,page = PMPages,lru = -1,last = ID0_MAXLONG;i < ChunksInFile;i++,page++)
 	{
 		if
 		(
@@ -937,6 +984,7 @@ PML_GetPageFromXMS(id0_int_t pagenum,id0_boolean_t mainonly)
 	page = &PMPages[pagenum];
 	if (XMSPresent && (page->xmsPage != -1))
 	{
+#if !REFKEEN_NOXMS
 		XMSProtectPage = pagenum;
 		checkaddr = PML_GetAPageBuffer(pagenum,mainonly);
 		if (FP_OFF(checkaddr))
@@ -944,6 +992,9 @@ PML_GetPageFromXMS(id0_int_t pagenum,id0_boolean_t mainonly)
 		addr = (memptr)FP_SEG(checkaddr);
 		PML_CopyFromXMS(addr,page->xmsPage,page->length);
 		XMSProtectPage = -1;
+#else
+		BE_ST_ExitWithErrorMsg ("Attempt to get XMS page without XMS support");
+#endif
 	}
 
 	return(addr);
@@ -1352,7 +1403,7 @@ PM_NextFrame(void)
 	id0_int_t	i;
 
 	// Frame count overrun - kill the LRU hit entries & reset frame count
-	if (++PMFrameCount >= MAXLONG - 4)
+	if (++PMFrameCount >= ID0_MAXLONG - 4)
 	{
 		for (i = 0;i < PMNumBlocks;i++)
 			PMPages[i].lastHit = 0;
