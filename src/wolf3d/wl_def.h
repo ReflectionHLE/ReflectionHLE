@@ -1087,7 +1087,7 @@ typedef enum	{
 	gd_easy,
 	gd_medium,
 	gd_hard
-};
+} gamedifficulty; // REFKEEN: Enum is now named
 
 //---------------
 //
