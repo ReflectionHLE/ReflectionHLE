@@ -2429,7 +2429,7 @@ void    DemoLoop (void)
 
 // *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-id0_char_t    *nosprtxt[] = {"nospr",id0_nil_t};
+const id0_char_t    *nosprtxt[] = {"nospr",id0_nil_t};
 #endif
 
 void wolf3d_exe_main (void)
