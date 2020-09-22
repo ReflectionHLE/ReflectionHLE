@@ -262,10 +262,10 @@ void TicDelay(id0_int_t count);
 void CacheLump(id0_int_t lumpstart,id0_int_t lumpend);
 void UnCacheLump(id0_int_t lumpstart,id0_int_t lumpend);
 void StartCPMusic(musicnames/*id0_int_t*/ song); // REFKEEN: For C++ build
-id0_int_t  Confirm(id0_char_t GAMEVER_COND_FARPTR *string);
+id0_int_t  Confirm(const id0_char_t GAMEVER_COND_FARPTR *string);
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-void Message(id0_char_t GAMEVER_COND_FARPTR *string);
+void Message(const id0_char_t GAMEVER_COND_FARPTR *string);
 #endif
 void CheckPause(void);
 // *** ALPHA RESTORATION ***
@@ -401,7 +401,7 @@ extern LRstruct LevelRatios[30];
 extern LRstruct LevelRatios[];
 #endif
 
-void Write (id0_int_t x,id0_int_t y,id0_char_t *string);
+void Write (id0_int_t x,id0_int_t y,const id0_char_t *string);
 void NonShareware(void);
 id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic);
 

@@ -706,7 +706,7 @@ void PG13 (void)
 
 //==========================================================================
 
-void Write(id0_int_t x,id0_int_t y,id0_char_t *string)
+void Write(id0_int_t x,id0_int_t y,const id0_char_t *string)
 {
  // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D

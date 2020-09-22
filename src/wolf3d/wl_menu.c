@@ -4379,7 +4379,7 @@ void ReadAnyControl(ControlInfo *ci)
 // DRAW DIALOG AND CONFIRM YES OR NO TO QUESTION
 //
 ////////////////////////////////////////////////////////////////////
-id0_int_t Confirm(id0_char_t GAMEVER_COND_FARPTR *string)
+id0_int_t Confirm(const id0_char_t GAMEVER_COND_FARPTR *string)
 {
 	soundnames whichsnd[2]={ESCPRESSEDSND,SHOOTSND}; // REFKEEN: For C++ build
 	// *** ALPHA RESTORATION ***
@@ -4563,7 +4563,7 @@ id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic)
 // PRINT A MESSAGE IN A WINDOW
 //
 ////////////////////////////////////////////////////////////////////
-void Message(id0_char_t GAMEVER_COND_FARPTR *string)
+void Message(const id0_char_t GAMEVER_COND_FARPTR *string)
 {
 	id0_int_t h=0,w=0,mw=0,i,x,y,time;
 	fontstruct id0_seg *font;

@@ -138,7 +138,7 @@ extern	void	US_Startup(void),
 				US_ClearWindow(void),
 				US_SetPrintRoutines(void (*measure)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),
 									void (*print)(const id0_char_t id0_far *,const id0_char_t id0_far *)),
-				US_PrintCentered(id0_char_t GAMEVER_COND_FARPTR *s),
+				US_PrintCentered(const id0_char_t GAMEVER_COND_FARPTR *s),
 				US_CPrint(const id0_char_t GAMEVER_COND_FARPTR *s),
 				US_CPrintLine(const id0_char_t GAMEVER_COND_FARPTR *s,const id0_char_t GAMEVER_COND_FARPTR *optse),
 				US_Print(const id0_char_t GAMEVER_COND_FARPTR *s),
@@ -154,7 +154,7 @@ extern	id0_boolean_t	US_UpdateCursor(void),
 extern	id0_int_t		US_CheckParm(const id0_char_t *parm,const id0_char_t **strings),
 				US_RndT(void);
 
-		void	USL_PrintInCenter(id0_char_t GAMEVER_COND_FARPTR *s,Rect r);
+		void	USL_PrintInCenter(const id0_char_t GAMEVER_COND_FARPTR *s,Rect r);
 		id0_char_t 	*USL_GiveSaveName(id0_word_t game);
 
 REFKEEN_NS_E

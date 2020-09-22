@@ -1188,7 +1188,7 @@ void FinishSignon (void)
 =================
 */
 
-id0_boolean_t MS_CheckParm (id0_char_t id0_far *check)
+id0_boolean_t MS_CheckParm (const id0_char_t id0_far *check)
 {
 	id0_int_t             i;
 	const id0_char_t    *parm;

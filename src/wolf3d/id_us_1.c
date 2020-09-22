@@ -475,7 +475,7 @@ US_PrintSigned(id0_long_t n)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-USL_PrintInCenter(id0_char_t GAMEVER_COND_FARPTR *s,Rect r)
+USL_PrintInCenter(const id0_char_t GAMEVER_COND_FARPTR *s,Rect r)
 {
 	id0_word_t	w,h,
 			rw,rh;
@@ -495,7 +495,7 @@ USL_PrintInCenter(id0_char_t GAMEVER_COND_FARPTR *s,Rect r)
 //
 ///////////////////////////////////////////////////////////////////////////
 void
-US_PrintCentered(id0_char_t GAMEVER_COND_FARPTR *s)
+US_PrintCentered(const id0_char_t GAMEVER_COND_FARPTR *s)
 {
 	Rect	r;
 

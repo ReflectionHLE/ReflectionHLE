@@ -1171,7 +1171,7 @@ typedef	enum	{
 =============================================================================
 */
 
-extern	id0_boolean_t		MS_CheckParm (id0_char_t id0_far *string);
+extern	id0_boolean_t		MS_CheckParm (const id0_char_t id0_far *string);
 
 extern	id0_char_t		str[80],str2[20];
 // *** PRE-V1.4 APOGEE RESTORATION ***
