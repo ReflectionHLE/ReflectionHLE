@@ -21,7 +21,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_n3dwt10[] = {
 	{"AUDIOT.N3D", 45043, 0x10022c23},
 	{"GAMEMAPS.N3D", 60195, 0x5cb6a201},
 	{"MAPHEAD.N3D", 402, 0x420cd93c},
-	{"NOAH3D.EXE", 448468, 0xbac8f80a},
+	{"NOAH3DOS.EXE", 448468, 0xbac8f80a}, // FIXME: For Steam auto-detection
 	{"VGADICT.N3D", 1024, 0x11390697},
 	{"VGAGRAPH.N3D", 235451, 0xb203e02e},
 	{"VGAHEAD.N3D", 405, 0x841542a2},
@@ -37,7 +37,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_n3dwt10[] = {
 		},
 
 		NULL,
-		"NOAH3D.EXE",
+		"NOAH3DOS.EXE", // FIXME: See above
 		&REFKEEN_NS_ENCLOSE(n3dwt10, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(n3dwt10, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		260736 - 0x3000,
