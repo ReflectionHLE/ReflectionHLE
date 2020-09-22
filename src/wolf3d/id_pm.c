@@ -64,8 +64,8 @@ REFKEEN_NS_B
 
 //	General usage variables
 	id0_boolean_t			PMStarted,
-					PMPanicMode,
 					PMThrashing;
+	id0_byte_t			PMPanicMode; // REFKEEN: Was boolean
 	id0_word_t			XMSPagesUsed,
 					EMSPagesUsed,
 					MainPagesUsed,
@@ -74,7 +74,7 @@ REFKEEN_NS_B
 	PageListStruct	id0_far *PMPages,
 					id0_seg *PMSegPages;
 
-static	id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",id0_nil_t};
+static	const id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",id0_nil_t};
 
 // REFKEEN TODO: Let's begin with a simplified implementation
 #define REFKEEN_SIMPLIFIED 0
@@ -485,13 +485,13 @@ PM_CheckMainMem(void)
 		{
 			if (*used & pmba_Allocated)		// If it was allocated
 			{
-				*used &= ~pmba_Allocated;	// Mark as unallocated
+				*used = (PMBlockAttr)(*used & ~pmba_Allocated);	// Mark as unallocated
 				MainPagesAvail--;			// and decrease available count
 			}
 
 			if (*used & pmba_Used)			// If it was used
 			{
-				*used &= ~pmba_Used;		// Mark as unused
+				*used = (PMBlockAttr)(*used & ~pmba_Used);		// Mark as unused
 				MainPagesUsed--;			// and decrease used count
 			}
 
@@ -503,7 +503,7 @@ PM_CheckMainMem(void)
 					allocfailed = true;			//  don't try any more allocations
 				else							// If it worked,
 				{
-					*used |= pmba_Allocated;	// Mark as allocated
+					*used = (PMBlockAttr)(*used | pmba_Allocated);	// Mark as allocated
 					MainPagesAvail++;			// and increase available count
 				}
 				MM_BombOnError(true);
@@ -872,19 +872,19 @@ PML_PutPageInXMS(id0_int_t pagenum)
 //		the old one's address space. Returns the address of the new page.
 //
 memptr
-PML_TransferPageSpace(id0_int_t orig,id0_int_t new)
+PML_TransferPageSpace(id0_int_t orignum,id0_int_t newnum)
 {
 	memptr			addr;
 	PageListStruct	id0_far *origpage,id0_far *newpage;
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	if (orig == new)
+	if (orignum == newnum)
 		Quit("PML_TransferPageSpace: Identity replacement");
 #endif
 
-	origpage = &PMPages[orig];
-	newpage = &PMPages[new];
+	origpage = &PMPages[orignum];
+	newpage = &PMPages[newnum];
 
 	if (origpage->locked != pml_Unlocked)
 		Quit("PML_TransferPageSpace: Killing locked page");
@@ -893,10 +893,10 @@ PML_TransferPageSpace(id0_int_t orig,id0_int_t new)
 		Quit("PML_TransferPageSpace: Reusing non-existent page");
 
 	// Copy page that's about to be purged into XMS
-	PML_PutPageInXMS(orig);
+	PML_PutPageInXMS(orignum);
 
 	// Get the address, and force EMS into a physical page if necessary
-	addr = PM_GetPageAddress(orig);
+	addr = PM_GetPageAddress(orignum);
 
 	// Steal the address
 	newpage->emsPage = origpage->emsPage;
@@ -935,7 +935,7 @@ PML_GetAPageBuffer(id0_int_t pagenum,id0_boolean_t mainonly)
 	{
 		// There's remaining EMS - use it
 		page->emsPage = EMSPagesUsed++;
-		addr = PML_GetEMSAddress(page->emsPage,page->locked);
+		addr = (id0_byte_t *)PML_GetEMSAddress(page->emsPage,page->locked);
 	}
 	else if (MainPagesUsed < MainPagesAvail)
 	{
@@ -945,20 +945,20 @@ PML_GetAPageBuffer(id0_int_t pagenum,id0_boolean_t mainonly)
 			if ((*used & pmba_Allocated) && !(*used & pmba_Used))
 			{
 				n = i;
-				*used |= pmba_Used;
+				*used = (PMBlockAttr)(*used | pmba_Used);
 				break;
 			}
 		}
 		if (n == -1)
 			Quit("PML_GetPageBuffer: MainPagesAvail lied");
-		addr = MainMemPages[n];
+		addr = (id0_byte_t *)MainMemPages[n];
 		if (!addr)
 			Quit("PML_GetPageBuffer: Purged main block");
 		page->mainPage = n;
 		MainPagesUsed++;
 	}
 	else
-		addr = PML_TransferPageSpace(PML_GiveLRUPage(mainonly),pagenum);
+		addr = (id0_byte_t *)PML_TransferPageSpace(PML_GiveLRUPage(mainonly),pagenum);
 
 	if (!addr)
 		Quit("PML_GetPageBuffer: Search failed");
@@ -1451,7 +1451,7 @@ PM_Reset(void)
 
 	MainPagesUsed = EMSPagesUsed = XMSPagesUsed = 0;
 
-	PMPanicMode = false;
+	PMPanicMode = 0;
 
 	// Initialize page list
 	for (i = 0,page = PMPages;i < PMNumBlocks;i++,page++)
@@ -1459,7 +1459,7 @@ PM_Reset(void)
 		page->mainPage = -1;
 		page->emsPage = -1;
 		page->xmsPage = -1;
-		page->locked = false;
+		page->locked = pml_Unlocked;
 	}
 }
 #endif // REFKEEN_SIMPLIFIED
