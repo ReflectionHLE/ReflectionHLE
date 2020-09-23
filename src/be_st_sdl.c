@@ -892,7 +892,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.displayNum = 0;
 	g_refKeenCfg.rememberDisplayNum = true;
 	g_refKeenCfg.sdlRendererDriver = -1;
-	g_refKeenCfg.vSync = VSYNC_AUTO;
+	g_refKeenCfg.vSync = VSYNC_OFF;
 	g_refKeenCfg.isBilinear = true;
 	g_refKeenCfg.scaleType = SCALE_ASPECT;
 	g_refKeenCfg.scaleFactor = 2;
