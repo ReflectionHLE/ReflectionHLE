@@ -503,7 +503,7 @@ int BE_Cross_GetGameVerFromInstallation(int num)
 	return g_be_gameinstallations[num].verId;
 }
 
-#include "be_gamedef.h"
+#include "backend/gamedefs/be_gamedefs.h"
 
 
 // C99

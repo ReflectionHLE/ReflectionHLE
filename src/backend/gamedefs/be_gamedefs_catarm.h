@@ -1,4 +1,4 @@
-/* This header must be included *only* from be_gamedef_catadventures.h */
+/* This header must be included *only* from be_gamedefs_catadventures.h */
 
 REFKEEN_NS_B_FOR(catarm)
 

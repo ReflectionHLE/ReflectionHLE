@@ -1,4 +1,4 @@
-/* This header must be included *only* from be_gamedef_wolf3d.h */
+/* This header must be included *only* from be_gamedefs_wolf3d.h */
 
 REFKEEN_NS_B_FOR(wl1ap10)
 

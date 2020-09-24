@@ -1,4 +1,4 @@
-/* This header must be included *only* from be_gamedef.h */
+/* This header must be included *only* from be_gamedefs.h */
 
 REFKEEN_NS_B_FOR(cat3d)
 

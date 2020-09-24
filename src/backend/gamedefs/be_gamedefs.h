@@ -105,16 +105,16 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
-#include "be_gamedef_kdreams.h"
+#include "be_gamedefs_kdreams.h"
 #endif
 #ifdef REFKEEN_HAS_VER_CAT3D
-#include "be_gamedef_cat3d.h"
+#include "be_gamedefs_cat3d.h"
 #endif
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-#include "be_gamedef_catadventures.h"
+#include "be_gamedefs_catadventures.h"
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-#include "be_gamedef_wolf3d.h"
+#include "be_gamedefs_wolf3d.h"
 #endif
 
 

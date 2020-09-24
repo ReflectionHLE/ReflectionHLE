@@ -1,13 +1,13 @@
-/* This header must be included *only* from be_gamedef.h */
+/* This header must be included *only* from be_gamedefs.h */
 
 #ifdef REFKEEN_HAS_VER_CATABYSS
-#include "be_gamedef_catabyss.h"
+#include "be_gamedefs_catabyss.h"
 #endif
 #ifdef REFKEEN_HAS_VER_CATARM
-#include "be_gamedef_catarm.h"
+#include "be_gamedefs_catarm.h"
 #endif
 #ifdef REFKEEN_HAS_VER_CATAPOC
-#include "be_gamedef_catapoc.h"
+#include "be_gamedefs_catapoc.h"
 #endif
 
 // These MUST have the same order as in the BE_GameVer_T enum

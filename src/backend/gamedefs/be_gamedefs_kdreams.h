@@ -1,4 +1,4 @@
-/* This header must be included *only* from be_gamedef.h */
+/* This header must be included *only* from be_gamedefs.h */
 
 void RefKeen_Patch_id_ca(void);
 void RefKeen_Patch_id_us(void);
