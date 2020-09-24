@@ -35,11 +35,22 @@ REFKEEN_NS_B
 //
 //==============
 
+// TODO (REFKEEN): Use this for somewhat faster rates in the revision
+// of VW_WaitVBL from Wolf3D v1.1 and earlier, albeit this isn't
+// exactly accurate. Same about the wait in VL_SetScreen.
+static unsigned g_waitVblCounter;
+
 void VL_WaitVBL (id0_int_t vbls)
 {
-	// TODO (REFKEEN):
-	// 1. Emulate behaviors for number < 0?
-	// 2. Separately emulate behaviors for v1.1 or earlier?
+	// TODO (REFKEEN): Emulate behaviors for number < 0?
+#if (GAMEVER_WOLFREV <= GV_WR_WL6AP11)
+	int i = 0;
+	while (i < vbls)
+		if ((++g_waitVblCounter) & 3)
+			--vbls;
+		else
+			++i;
+#endif
 	BE_ST_WaitForNewVerticalRetraces(vbls);
 }
 
@@ -63,8 +74,8 @@ void VL_SetCRTC (id0_int_t crtc)
 
 void VL_SetScreen (id0_int_t crtc, id0_int_t pel)
 {
-	// TODO (REFKEEN): Use v1.1 implementation of VL_WaitVBL?
-	VL_WaitVBL(1);
+	if (!((++g_waitVblCounter) & 3))
+		BE_ST_WaitForNewVerticalRetraces(1);
 	BE_ST_SetScreenStartAddress(crtc);
 	BE_ST_EGASetPelPanning(pelpan);
 }
