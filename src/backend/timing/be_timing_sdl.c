@@ -173,10 +173,14 @@ void BE_ST_WaitForNewVerticalRetraces(int16_t number)
 
 	uint32_t currSdlTicks = SDL_GetTicks();
 	uint32_t nextSdlTicks = (int)number*1000000/70086 + currSdlTicks - g_sdlTicksOffset;
+
 	// First iteration takes a bit less time again, so we want
 	// the value "mod" about 1000/70.086 (VGA adapter);
 	// For the sake of a bit better precision we further multiply by 1000
-	nextSdlTicks -= (((uint64_t)1000*(uint64_t)nextSdlTicks) % ((uint64_t)1000000000/70086))/1000;
+
+	// FIXME: The way it's done here is wrong, and leads to faster fades
+	// in Wolfenstein 3D v1.4. Let's disable this for now.
+//	nextSdlTicks -= (((uint64_t)1000*(uint64_t)nextSdlTicks) % ((uint64_t)1000000000/70086))/1000;
 	g_sdlTicksOffset = 0; // Can reset this, taking g_sdlTicksOffset into account above
 	BEL_ST_TicksDelayWithOffset(nextSdlTicks-currSdlTicks);
 }
