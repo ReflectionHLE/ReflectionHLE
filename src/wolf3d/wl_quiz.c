@@ -166,6 +166,11 @@ id0_int_t AskQuestion (id0_int_t question)
 		sprintf (str,"AskQuestion(): Question %d has no correct answer!",question);
 		Quit (str);
 	}
+	// REFKEEN - Alternative controllers support
+	// TODO: Use a different mapping in the future
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu);
 	// So the correct answer is the one followed by an odd number. 3 or 4 is used to terminate the list.
 	QuizItems.amount = answer+1;
 	QuizItems.curpos = 0;
@@ -220,6 +225,8 @@ id0_int_t AskQuestion (id0_int_t question)
 	if (MousePresent)
 		BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
 //		Mouse(MDelta);	// Clear accumulated mouse movement
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 
 	if (answer == -1)
 		return answer;
