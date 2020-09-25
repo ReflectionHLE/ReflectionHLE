@@ -207,7 +207,7 @@ id0_int_t AskQuestion (id0_int_t question)
 	}
 
 	while (SD_SoundPlaying())
-		;
+		BE_ST_ShortSleep();
 	VL_WaitVBL(30); // VBLWAIT in WL_INTER.C
 
 	IN_ClearKeysDown ();
