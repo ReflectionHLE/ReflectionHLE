@@ -2,6 +2,65 @@
 Changelog
 ---------
 
+Sep 26, 2020 (v0.30.0):
+
+* 6-years anniversary release.
+* Initial support for Wolfenstein 3D, Spear of Destiny
+(minus the mission packs) and Super 3-D Noah's Ark (DOS version).
+For Wolfenstein 3D, this covers all known shareware Apogee versions
+which allow cheating, as well as 6-episodes Activision version 1.4.
+For Spear of Destiny, this covers FormGen demo version 1.0 and
+Activision version 1.4. For Super 3-D Noah's Ark, this covers
+the one known version.
+* Note that for technical reasons, the Spear of Destiny mission packs
+cannot be loaded as-is.
+* Additionally, Super 3-D Noah's Ark can only be loaded if the original
+EXE for DOS is found and named "noah3dos.exe". That's because this is
+the way it's currently offered from Steam, and right now, there's no
+good way of supporting detection of the same data with another file name.
+* Currently unsupported in all games from the modified Wolfenstein 3D codebase:
+Game saving/loading, modern game controller scheme, probably more.
+* The rate of palette updates in Wolfenstein 3D is at least somewhat imprecise.
+* VSync was changed to be disabled by default for now. There are other
+potential problems with timing in Wolfenstein 3D, which might partially
+be related to instances in which the game tries to render more often
+than the host display's refresh rate.
+* It is now possible to make a single exe that can be used for starting any
+of the supported Catacomb titles. It is identified as "Reflection Catacomb".
+This requires building the code as C++, since it makes use of namespacing.
+* The exact same method can be used for building a single exe covering
+all currently supported versions of Wolfenstein 3D, Spear of Destiny
+and Super 3-D Noah's Ark. This exe is identified
+as "Reflection Wolfenstein 3D".
+* Template instantiations of reads and writes are now done
+from the game-specific code, so be_cross_fs.c doesn't need
+to include kd_def.h/c3_def.h/def.h.
+* Game definition structs were moved to separate headers.
+* 256-colors VGA graphics can now be drawn for Wolfenstein 3D.
+This was done with a subset of the existing EGA drawing routines as a base.
+* The overscan border is now shown only if aspect correction is toggled on.
+An original goal of the aspect correction toggle was to make the source ports
+more usable with displays that have a greater risk of screen burn-in.
+* Refactor the audio mixing code, so PC Speaker, AdLib / OPL and
+digitized sounds can be concurrently played back in Wolfenstein 3D.
+There's now a single audio mixer callback which can obtain data
+from multiple sound sources, resample the inputs to the output
+sampling rate and then mix them after resampling.
+* Use a pre-calculated sintable array for the Catacombs, as well as
+Wolfenstein 3D. It is present in a newly added fixed_sintable.c file.
+This fixes possible rendering errors, as well as errors related to gameplay.
+The source of the problem (as checked with one of the Catacombs)
+was that sintable[90] could be set to 0x10000, while it was
+rather set to 0xFFFF with the original executables.
+* Switch to Nuked OPL3 for OPL emulation.
+* Make it possible to toggle fullscreen via a key combo. This combo should
+generally be Alt+Enter. While untested, Command+Enter should be used on macOS.
+* Revert to updating ticks (e.g., the games' TimeCount variables) from the
+main thread instead of the SDL audio callback thread, albeit with the
+code in general still being closer to the later revisions.
+* Migrate to CMake for building the executables.
+* Other varying fixes and modifications.
+
 Jan 25, 2019 (v0.18.3):
 
 * This is a maintenance release mostly intended for Android users, although
