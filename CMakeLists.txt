@@ -45,7 +45,7 @@ endfunction()
 
 include(CMakeDependentOption)
 
-option(BUILD_AS_CPP "Build Reflection Keen as C++ code" OFF)
+option(BUILD_AS_CPP "Build Reflection Keen as C++ code" ON)
 CMAKE_DEPENDENT_OPTION(
 	BUILD_UNIFIED "Build aggregated C++ EXEs covering multiple games/versions" ON
 	"BUILD_AS_CPP" OFF
