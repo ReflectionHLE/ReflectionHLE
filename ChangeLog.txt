@@ -3,6 +3,7 @@ Changelog
 ---------
 
 Jan 25, 2019 (v0.18.3):
+
 * This is a maintenance release mostly intended for Android users, although
 there are also a few changes which aren't Android-specific.
 * Fixed a bug where the wrong Catalog / Hint Book EXE would be shown
@@ -37,6 +38,7 @@ the lowercase "steamapps" directory, in addition to "SteamApps"
 * Other few misc. fixes.
 
 Aug 14, 2017 (v0.18.0):
+
 * Move some memory management code from the differing id_mm.c files to a
 separate be_cross_mem.c file. For the sake of simplicity, XMS and EMS are
 gone. This newly added source file also grants us some more control over
