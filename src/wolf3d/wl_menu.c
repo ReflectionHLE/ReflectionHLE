@@ -34,6 +34,7 @@
 REFKEEN_NS_B
 
 #define REFKEEN_ENABLE_FILE_SEARCH 0 // TODO (REFKEEN): Implement
+#define REFKEEN_ENABLE_GAME_SAVING 0 // TODO (REFKEEN): Implement
 
 //
 // PRIVATE PROTOTYPES
@@ -142,7 +143,7 @@ MainMenu[]=
 	{1,"",CP_NewGame},
 	{1,"",CP_Sound},
 	{1,"",CP_Control},
-	{1,"",CP_LoadGame},
+	{REFKEEN_ENABLE_GAME_SAVING,"",CP_LoadGame},
 	{0,"",CP_SaveGame},
 	{1,"",CP_ChangeView},
 	{2,"",CP_ReadThis},
@@ -154,7 +155,7 @@ MainMenu[]=
 	{1,STR_NG,CP_NewGame},
 	{1,STR_SD,CP_Sound},
 	{1,STR_CL,CP_Control},
-	{1,STR_LG,CP_LoadGame},
+	{REFKEEN_ENABLE_GAME_SAVING,STR_LG,CP_LoadGame},
 	{0,STR_SG,CP_SaveGame},
 	{1,STR_CV,CP_ChangeView},
 
@@ -532,6 +533,7 @@ void US_ControlPanel(id0_byte_t scancode)
 			#endif
 			goto finishup;
 
+#if REFKEEN_ENABLE_GAME_SAVING
 		case sc_F2:
 			// ALPHA RESTORATION
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -549,6 +551,7 @@ void US_ControlPanel(id0_byte_t scancode)
 			CP_LoadGame(0);
 #endif
 			goto finishup;
+#endif // REFKEEN_ENABLE_GAME_SAVING
 
 		case sc_F4:
 			CP_Sound(CP_itemvalue);
@@ -926,6 +929,7 @@ id0_int_t CP_CheckQuick(id0_unsigned_t scancode)
 		// QUICKSAVE
 		//
 		case sc_F8:
+#if REFKEEN_ENABLE_GAME_SAVING
 			if (SaveGamesAvail[LSItems.curpos] && pickquick)
 			{
 				CA_CacheGrChunk(STARTFONT+1);
@@ -1010,12 +1014,14 @@ id0_int_t CP_CheckQuick(id0_unsigned_t scancode)
 				UnCacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
 				#endif
 			}
+#endif // REFKEEN_ENABLE_GAME_SAVING
 			return 1;
 
 		//
 		// QUICKLOAD
 		//
 		case sc_F9:
+#if REFKEEN_ENABLE_GAME_SAVING
 			if (SaveGamesAvail[LSItems.curpos] && pickquick)
 			{
 				id0_char_t string[100]=STR_LGC;
@@ -1112,6 +1118,7 @@ id0_int_t CP_CheckQuick(id0_unsigned_t scancode)
 				UnCacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
 				#endif
 			}
+#endif // REFKEEN_ENABLE_GAME_SAVING
 			return 1;
 
 		//
@@ -3761,8 +3768,10 @@ void SetupControlPanel(void)
 
 	if (!ingame)
 		CA_LoadAllSounds();
+#if REFKEEN_ENABLE_GAME_SAVING
 	else
 		MainMenu[savegame].active=1;
+#endif
 
 #if REFKEEN_ENABLE_FILE_SEARCH
 	//
