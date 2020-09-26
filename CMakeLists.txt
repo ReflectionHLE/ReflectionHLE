@@ -70,7 +70,7 @@ endif ()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 find_package(SDL2 REQUIRED)
 find_package(SpeexDSP)
-include_directories(${SDL2_INCLUDE_DIRS} ${SPEEXDSP_INCLUDE_DIRS})
+include_directories(${SDL2_INCLUDE_DIR} ${SPEEXDSP_INCLUDE_DIRS})
 
 if (SPEEXDSP_FOUND)
 	set(REFKEEN_RESAMPLER_LIBSPEEXDSP "1")
@@ -98,7 +98,7 @@ endif ()
 
 configure_file(refkeen_config.h.in refkeen_config.h)
 
-set(LIBRARIES ${SDL2_LIBRARIES} ${SPEEXDSP_LIBRARIES} m)
+set(LIBRARIES ${SDL2_LIBRARY} ${SPEEXDSP_LIBRARIES} m)
 if (WIN32)
 	set(LIBRARIES ${LIBRARIES} shlwapi)
 endif ()
