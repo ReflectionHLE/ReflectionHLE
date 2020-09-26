@@ -47,7 +47,7 @@ include(CMakeDependentOption)
 
 option(BUILD_AS_CPP "Build Reflection Keen as C++ code" OFF)
 CMAKE_DEPENDENT_OPTION(
-	UNIFIED "Build aggregated C++ EXEs covering multiple games/versions" ON
+	BUILD_UNIFIED "Build aggregated C++ EXEs covering multiple games/versions" ON
 	"BUILD_AS_CPP" OFF
 )
 
@@ -63,7 +63,7 @@ if (NOT BUILD_AS_CPP)
 	endif ()
 endif ()
 
-if (UNIFIED)
+if (BUILD_UNIFIED)
 	set(REFKEEN_USE_NS "1")
 endif ()
 
@@ -126,7 +126,7 @@ add_refkeen_separate_target(
 	"${cat3d_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/cat3d"
 	"-DREFKEEN_VER_CAT3D=1;-DREFKEEN_VER_CATACOMB_ALL=1"
-	"${UNIFIED_CAT_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_CAT_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -134,7 +134,7 @@ add_refkeen_separate_target(
 	"${catabyss_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/catabyss"
 	"-DREFKEEN_VER_CATADVENTURES=1;-DREFKEEN_VER_CATABYSS=1;-DREFKEEN_VER_CATACOMB_ALL=1"
-	"${UNIFIED_CAT_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_CAT_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -142,7 +142,7 @@ add_refkeen_separate_target(
 	"${catarm_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/cat_late;src/id91_11/cat_all/catarm"
 	"-DREFKEEN_VER_CATADVENTURES=1;-DREFKEEN_VER_CATARM=1;-DREFKEEN_VER_CATACOMB_ALL=1"
-	"${UNIFIED_CAT_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_CAT_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -150,7 +150,7 @@ add_refkeen_separate_target(
 	"${catapoc_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/cat_late;src/id91_11/cat_all/catapoc"
 	"-DREFKEEN_VER_CATADVENTURES=1;-DREFKEEN_VER_CATAPOC=1;-DREFKEEN_VER_CATACOMB_ALL=1"
-	"${UNIFIED_CAT_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_CAT_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 set(UNIFIED_WOLF3D_GAME_PARAMS
@@ -170,7 +170,7 @@ add_refkeen_separate_target(
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
 	"-DGAMEVER_EXEDEF=WL1AP10;-DGAMEVER_EXEDEF_WL1AP10=1;-DREFKEEN_VER_WL1AP10=1;-DREFKEEN_VER_WOLF3D_ALL=1"
-	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -178,7 +178,7 @@ add_refkeen_separate_target(
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
 	"-DGAMEVER_EXEDEF=WL1AP11;-DGAMEVER_EXEDEF_WL1AP11=1;-DREFKEEN_VER_WL1AP11=1;-DREFKEEN_VER_WOLF3D_ALL=1"
-	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -186,7 +186,7 @@ add_refkeen_separate_target(
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
 	"-DGAMEVER_EXEDEF=WL1AP12;-DGAMEVER_EXEDEF_WL1AP12=1;-DREFKEEN_VER_WL1AP12=1;-DREFKEEN_VER_WOLF3D_ALL=1"
-	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -194,7 +194,7 @@ add_refkeen_separate_target(
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
 	"-DGAMEVER_EXEDEF=WL1AP14;-DGAMEVER_EXEDEF_WL1AP14=1;-DREFKEEN_VER_WL1AP14=1;-DREFKEEN_VER_WOLF3D_ALL=1"
-	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -202,7 +202,7 @@ add_refkeen_separate_target(
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
 	"-DGAMEVER_EXEDEF=WL6AC14;-DGAMEVER_EXEDEF_WL6AC14=1;-DREFKEEN_VER_WL6AC14=1;-DREFKEEN_VER_WOLF3D_ALL=1"
-	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -210,7 +210,7 @@ add_refkeen_separate_target(
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
 	"-DGAMEVER_EXEDEF=SDMFG10;-DGAMEVER_EXEDEF_SDMFG10=1;-DREFKEEN_VER_SDMFG10=1;-DREFKEEN_VER_WOLF3D_ALL=1"
-	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -218,7 +218,7 @@ add_refkeen_separate_target(
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
 	"-DGAMEVER_EXEDEF=SODAC14;-DGAMEVER_EXEDEF_SODAC14=1;-DREFKEEN_VER_SODAC14=1;-DREFKEEN_VER_WOLF3D_ALL=1"
-	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
 add_refkeen_separate_target(
@@ -226,10 +226,10 @@ add_refkeen_separate_target(
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
 	"-DGAMEVER_EXEDEF=N3DWT10;-DGAMEVER_EXEDEF_N3DWT10=1;-DREFKEEN_VER_N3DWT10=1;-DREFKEEN_VER_WOLF3D_ALL=1"
-	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${UNIFIED}"
+	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-if (UNIFIED)
+if (BUILD_UNIFIED)
 	string(REPLACE ";" " " UNIFIED_CAT_GAME_PARAMS "${UNIFIED_CAT_GAME_PARAMS}")
 	add_refkeen_unified_target(
 		reflection-catacomb cat3d "${targets}"
