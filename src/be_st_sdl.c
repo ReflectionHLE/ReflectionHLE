@@ -120,7 +120,7 @@ static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
 	"altcontrolscheme_jump=",
 	"altcontrolscheme_throw=",
 	"altcontrolscheme_stats=",
-#else
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
 	"altcontrolscheme_fire=",
 	"altcontrolscheme_strafe=",
 	"altcontrolscheme_drink=",
@@ -840,7 +840,7 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"altcontrolscheme_jump=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_throw=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_stats=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-#else
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
 	{"altcontrolscheme_fire=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_strafe=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_drink=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
@@ -920,7 +920,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = SDL_CONTROLLER_BUTTON_A;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = SDL_CONTROLLER_BUTTON_B;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = SDL_CONTROLLER_BUTTON_X;
-#else
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = SDL_CONTROLLER_BUTTON_B;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = SDL_CONTROLLER_BUTTON_A;

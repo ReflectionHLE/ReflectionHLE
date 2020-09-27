@@ -530,7 +530,7 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Jump, "Action - Jump", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Throw, "Action - Throw", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Stats, "Action - Stats", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-#else
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Fire, "Action - Fire", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Strafe, "Action - Strafe", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Drink, "Action - Drink", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
@@ -565,7 +565,7 @@ BEMenu g_beControllerSettingsMenu = {
 		&g_beControllerSettingsMenuItem_Action_Jump,
 		&g_beControllerSettingsMenuItem_Action_Throw,
 		&g_beControllerSettingsMenuItem_Action_Stats,
-#else
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
 		&g_beControllerSettingsMenuItem_Action_Fire,
 		&g_beControllerSettingsMenuItem_Action_Strafe,
 		&g_beControllerSettingsMenuItem_Action_Drink,
@@ -840,7 +840,7 @@ void BE_ST_Launcher_Prepare(void)
 	g_beControllerSettingsMenuItem_Action_Jump.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP];
 	g_beControllerSettingsMenuItem_Action_Throw.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW];
 	g_beControllerSettingsMenuItem_Action_Stats.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS];
-#else
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
 	g_beControllerSettingsMenuItem_Action_Fire.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE];
 	g_beControllerSettingsMenuItem_Action_Strafe.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE];
 	g_beControllerSettingsMenuItem_Action_Drink.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK];
@@ -1005,7 +1005,7 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = g_beControllerSettingsMenuItem_Action_Jump.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = g_beControllerSettingsMenuItem_Action_Throw.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = g_beControllerSettingsMenuItem_Action_Stats.choice;
-#else
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = g_beControllerSettingsMenuItem_Action_Fire.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = g_beControllerSettingsMenuItem_Action_Strafe.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = g_beControllerSettingsMenuItem_Action_Drink.choice;
