@@ -1427,6 +1427,7 @@ static const char **BEL_Cross_DirSelection_PrepareDirsAndGetNames(int *outNumOfS
 		dirnameBufferPtr = currDirnameBufferPtr;
 	}
 
+	_tclosedir(dir);
 	*outNumOfSubDirs = repeatedNumOfSubDirs;
 	return (const char **)g_be_dirSelection_dirnamesBufferPtrPtrs;
 }
