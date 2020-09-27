@@ -351,6 +351,11 @@ static bool BEL_Launcher_IsMenuItemAboveViewPort(BEMenuItem *menuItem)
 	return (menuItem->yPosPastEnd - g_be_launcher_currMenu->currPixYScroll <= BE_MENU_FIRST_ITEM_PIX_YPOS);
 }
 
+static bool BEL_Launcher_IsMenuItemWeaklyAboveViewPort(BEMenuItem *menuItem)
+{
+	return (menuItem->yPosPastEnd - g_be_launcher_currMenu->currPixYScroll < BE_MENU_FIRST_ITEM_PIX_YPOS);
+}
+
 static bool BEL_Launcher_IsMenuItemBelowViewPort(BEMenuItem *menuItem)
 {
 	return (menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll >= BE_LAUNCHER_PIX_HEIGHT);
@@ -477,17 +482,17 @@ void BE_Launcher_HandleInput_ButtonUp(void)
 	g_be_launcher_vscroll_currrateper100ms = 0;
 
 	BEMenuItem **menuItemRPP; // Technically used as as "reverse iterator" (this is done since we don't want to mistakenly dereference g_be_launcher_currMenu->menuItems-1)
-	if (!g_be_launcher_selectedMenuItemPtr || BEL_Launcher_IsMenuItemAboveViewPort(*g_be_launcher_selectedMenuItemPtr) || BEL_Launcher_IsMenuItemBelowViewPort(*g_be_launcher_selectedMenuItemPtr))
+	if (!g_be_launcher_selectedMenuItemPtr || BEL_Launcher_IsMenuItemWeaklyAboveViewPort(*g_be_launcher_selectedMenuItemPtr) || BEL_Launcher_IsMenuItemBelowViewPort(*g_be_launcher_selectedMenuItemPtr))
 		menuItemRPP = g_be_launcher_currMenu->menuItems + g_be_launcher_currMenu->nOfItems;
 	else
 		menuItemRPP = g_be_launcher_selectedMenuItemPtr;
 
 	while ((menuItemRPP != g_be_launcher_currMenu->menuItems) && BEL_Launcher_IsMenuItemBelowViewPort(*(menuItemRPP-1)))
 		--menuItemRPP;
-	while ((menuItemRPP != g_be_launcher_currMenu->menuItems) && !BEL_Launcher_IsMenuItemAboveViewPort(*(menuItemRPP-1)) && ((*(menuItemRPP-1))->type == BE_MENUITEM_TYPE_STATIC))
+	while ((menuItemRPP != g_be_launcher_currMenu->menuItems) && !BEL_Launcher_IsMenuItemWeaklyAboveViewPort(*(menuItemRPP-1)) && ((*(menuItemRPP-1))->type == BE_MENUITEM_TYPE_STATIC))
 		--menuItemRPP;
 
-	if ((menuItemRPP != g_be_launcher_currMenu->menuItems) && !BEL_Launcher_IsMenuItemAboveViewPort(*(menuItemRPP-1))) // Match found
+	if ((menuItemRPP != g_be_launcher_currMenu->menuItems) && !BEL_Launcher_IsMenuItemWeaklyAboveViewPort(*(menuItemRPP-1))) // Match found
 	{
 		g_be_launcher_selectedMenuItemPtr = menuItemRPP-1;
 		if (g_be_launcher_currMenu->currPixYScroll + (BE_LAUNCHER_PIX_HEIGHT - 1) < (*g_be_launcher_selectedMenuItemPtr)->yPosPastEnd)
@@ -497,7 +502,7 @@ void BE_Launcher_HandleInput_ButtonUp(void)
 	}
 	else
 	{
-		g_be_launcher_currMenu->currPixYScroll -= BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT;
+		g_be_launcher_currMenu->currPixYScroll -= BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT + 1;
 		if (g_be_launcher_currMenu->currPixYScroll < 0)
 			g_be_launcher_currMenu->currPixYScroll = 0;
 	}
@@ -511,12 +516,12 @@ void BE_Launcher_HandleInput_ButtonDown(void)
 	g_be_launcher_vscroll_currrateper100ms = 0;
 
 	BEMenuItem **menuItemPP;
-	if (!g_be_launcher_selectedMenuItemPtr || BEL_Launcher_IsMenuItemAboveViewPort(*g_be_launcher_selectedMenuItemPtr) || BEL_Launcher_IsMenuItemBelowViewPort(*g_be_launcher_selectedMenuItemPtr))
+	if (!g_be_launcher_selectedMenuItemPtr || BEL_Launcher_IsMenuItemWeaklyAboveViewPort(*g_be_launcher_selectedMenuItemPtr) || BEL_Launcher_IsMenuItemBelowViewPort(*g_be_launcher_selectedMenuItemPtr))
 		menuItemPP = g_be_launcher_currMenu->menuItems;
 	else
 		menuItemPP = g_be_launcher_selectedMenuItemPtr+1;
 
-	while ((*menuItemPP) && BEL_Launcher_IsMenuItemAboveViewPort(*menuItemPP))
+	while ((*menuItemPP) && BEL_Launcher_IsMenuItemWeaklyAboveViewPort(*menuItemPP))
 		++menuItemPP;
 	while ((*menuItemPP) && !BEL_Launcher_IsMenuItemBelowViewPort(*menuItemPP) && ((*menuItemPP)->type == BE_MENUITEM_TYPE_STATIC))
 		++menuItemPP;
@@ -531,7 +536,7 @@ void BE_Launcher_HandleInput_ButtonDown(void)
 	}
 	else
 	{
-		g_be_launcher_currMenu->currPixYScroll += BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT;
+		g_be_launcher_currMenu->currPixYScroll += BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT + 1;
 		if (g_be_launcher_currMenu->currPixYScroll >= g_be_launcher_currMenu->pixYScrollUpperBound)
 			g_be_launcher_currMenu->currPixYScroll = g_be_launcher_currMenu->pixYScrollUpperBound-1;
 	}
