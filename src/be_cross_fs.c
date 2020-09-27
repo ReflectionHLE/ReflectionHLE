@@ -239,8 +239,8 @@ static const char *g_be_rootPathsKeys[BE_CROSS_MAX_ROOT_PATHS];
 static const char *g_be_rootPathsNames[BE_CROSS_MAX_ROOT_PATHS];
 static int g_be_rootPathsNum;
 #ifdef REFKEEN_PLATFORM_WINDOWS
-static const wchar_t *g_be_rootDrivePaths[] = {L"a:",L"b:",L"c:",L"d:",L"e:",L"f:",L"g:",L"h:",L"i:",L"j:",L"k:",L"l:",L"m:",L"n:",L"o:",L"p:",L"q:",L"r:",L"s:",L"t:",L"u:",L"v:",L"w:",L"x:",L"y:",L"z:"};
-static const char *g_be_rootDrivePathsNames[] = {"a:","b:","c:","d:","e:","f:","g:","h:","i:","j:","k:","l:","m:","n:","o:","p:","q:","r:","s:","t:","u:","v:","w:","x:","y:","z:"};
+static const wchar_t *g_be_rootDrivePaths[] = {L"a:\\",L"b:\\",L"c:\\",L"d:\\",L"e:\\",L"f:\\",L"g:\\",L"h:\\",L"i:\\",L"j:\\",L"k:\\",L"l:\\",L"m:\\",L"n:\\",L"o:\\",L"p:\\",L"q:\\",L"r:\\",L"s:\\",L"t:\\",L"u:\\",L"v:\\",L"w:\\",L"x:\\",L"y:\\",L"z:\\"};
+static const char *g_be_rootDrivePathsNames[] = {"a:\\","b:\\","c:\\","d:\\","e:\\","f:\\","g:\\","h:\\","i:\\","j:\\","k:\\","l:\\","m:\\","n:\\","o:\\","p:\\","q:\\","r:\\","s:\\","t:\\","u:\\","v:\\","w:\\","x:\\","y:\\","z:\\"};
 #endif
 
 static bool BEL_Cross_IsDir(const TCHAR* path)
