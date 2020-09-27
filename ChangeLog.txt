@@ -2,6 +2,18 @@
 Changelog
 ---------
 
+Sep 28, 2020 (v0.30.1):
+
+* Don't show controller settings specific to the Catacombs for Wolf3D.
+* When letting the user choose a root drive on Windows for locating
+game data, append a backslash. For instance, use "C:\" instead of "C:".
+Otherwise, the wrong locations may get accessed with _topendir.
+* Fix dir resource leak in BEL_Cross_DirSelection_PrepareDirsAndGetNames.
+* Wolf3D: Fix the occurrence of a stale menu item in the
+main menu for the GOODTIMES and SPEAR versions.
+* Improve the scrolling in the launcher a little bit,
+mostly while pressing on up/down.
+
 Sep 26, 2020 (v0.30.0):
 
 * 6-years anniversary release.
