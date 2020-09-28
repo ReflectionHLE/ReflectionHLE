@@ -5,7 +5,7 @@ list(APPEND be_src
 	src/backend/audio/be_audio_opl.c
 	src/backend/audio/be_audio_pcspkr.c
 	src/backend/audio/be_audio_resampling.c
-	src/backend/timing/be_timing_sdl.c
+	src/backend/timing/be_timing.c
 	src/be_cross.c
 	src/be_cross_doszeroseg.c
 	src/be_cross_fs.c
