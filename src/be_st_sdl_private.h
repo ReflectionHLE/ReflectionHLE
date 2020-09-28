@@ -22,9 +22,7 @@
 #ifndef BE_ST_SDL_PRIVATE_H
 #define BE_ST_SDL_PRIVATE_H
 
-#include "SDL_version.h" // For SDL_RENDER_DEVICE_RESET hack
-#include "SDL_render.h"
-#include "SDL_surface.h"
+#include "SDL.h"
 
 #ifdef REFKEEN_PLATFORM_EMSCRIPTEN
 #include <emscripten.h>
@@ -41,7 +39,7 @@
 #define BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS 40
 
 // Hack for compilation against SDL pre-2.0.4
-#if (SDL_PATCHLEVEL < 4)
+#ifndef SDL_RENDER_DEVICE_RESET
 #define SDL_RENDER_DEVICE_RESET 0x2001
 #endif
 
