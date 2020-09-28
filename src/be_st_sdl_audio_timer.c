@@ -154,7 +154,7 @@ void BE_ST_InitAudio(void)
 				BEL_ST_GenPCSpeakerSamples);
 
 		if ((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI_REQUIRED)
-		    == BE_AUDIO_DEVICE_PCSPKR_REQUIRED)
+		    == BE_AUDIO_DEVICE_DIGI_REQUIRED)
 			BEL_ST_SetDigiMixerSource(
 				BEL_ST_AudioMixerAddSource(
 					8000,
@@ -307,7 +307,7 @@ void BE_ST_PrepareForManualAudioCallbackCall(void)
 	for (; samplesToProcess >= g_sdlCallbacksSamplesBufferOnePartCount; samplesToProcess -= g_sdlCallbacksSamplesBufferOnePartCount)
 		BEL_ST_AudioMixerCallback(g_sdlCallbacksSamplesBuffer, g_sdlCallbacksSamplesBufferOnePartCount);
 	if (samplesToProcess > 0)
-		BEL_ST_AudioMixerCallback(g_sdlCallbacksSamplesBuffer, sizeof(BE_ST_SndSample_T));
+		BEL_ST_AudioMixerCallback(g_sdlCallbacksSamplesBuffer, samplesToProcess);
 	g_sdlManualAudioCallbackCallLastTicks = currTicks;
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 	if (g_sdlAudioSubsystemUp)
