@@ -23,9 +23,6 @@ The terms applying to the source ports (i.e., the executables):
 - Reflection Keen Dreams, Reflection Catacomb and Reflection Wolfenstein 3D
 are all released under the GNU GPLv2+. See gpl-2.0.txt for more details.
 
-- Reflection Wolfenstein 3D is additionally available under the original
-terms for the Wolfenstein 3D sources from 1995. See id-wolf3d.txt for details.
-
 The terms applying to each component separately:
 
 - The ported Keen Dreams, Catacomb 3-D, The Catacomb Adventures Series and
