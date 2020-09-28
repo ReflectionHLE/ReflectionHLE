@@ -132,7 +132,7 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 	{
 		uint32_t processedInputSamples = g_stAudioMixer.pendingSamples;
 		samplesToGenerate -= processedInputSamples;
-		while (samplesToGenerate)
+		while (samplesToGenerate > 0)
 		{
 			// Optionally make an inner callback back, possibly in game code
 			if (!g_stAudioMixer.offsetInSound && g_sdlTimerIntFuncPtr)
