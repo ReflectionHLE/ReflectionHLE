@@ -155,23 +155,23 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 				src = &g_stAudioMixer.sources[i];
 				if (src->skip)
 					continue;
-				uint32_t samplesToGen = processedInputSamples;
-				samplesToGen = samplesToGen * src->freq + src->numScaledSamplesToGenNextTime;
-				src->numScaledSamplesToGenNextTime = samplesToGen % g_stAudioMixer.freq;
-				samplesToGen /= g_stAudioMixer.freq;
-				if (samplesToGen > src->in.size)
+				uint32_t srcSamplesToGen = processedInputSamples;
+				srcSamplesToGen = srcSamplesToGen * src->freq + src->numScaledSamplesToGenNextTime;
+				src->numScaledSamplesToGenNextTime = srcSamplesToGen % g_stAudioMixer.freq;
+				srcSamplesToGen /= g_stAudioMixer.freq;
+				if (srcSamplesToGen > src->in.size)
 				{
 					BE_Cross_LogMessage(
 						BE_LOG_MSG_NORMAL,
 						"BEL_ST_AudioMixerCallback: Overflow for source %d; Want %u, have %u\n",
-						i, samplesToGen, src->in.size);
-					samplesToGen = src->in.size;
+						i, srcSamplesToGen, src->in.size);
+					srcSamplesToGen = src->in.size;
 				}
-				if (samplesToGen > src->in.num)
+				if (srcSamplesToGen > src->in.num)
 				{
 					src->genSamples(&src->in.buffer[src->in.num],
-					                samplesToGen - src->in.num);
-					src->in.num = samplesToGen;
+					                srcSamplesToGen - src->in.num);
+					src->in.num = srcSamplesToGen;
 				}
 			}
 			// We're done with current part for now
