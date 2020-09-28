@@ -45,6 +45,10 @@ extern bool g_sdlEmulatedOPLChipReady;
 
 void BEL_ST_ResetOPLChip(void);
 
+int BEL_ST_InitAudioSubsystem(void);
+void BEL_ST_ShutdownAudioSubsystem(void);
+void BEL_ST_StartAudioSubsystem(void);
+
 /*** Use these functions for adding audio data to the stream ***/
 void BEL_ST_GenPCSpeakerSamples(BE_ST_SndSample_T *stream, int length);
 void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length);
