@@ -113,9 +113,6 @@ void BE_ST_InitTiming(void)
 
 void BE_ST_SetTimer(uint16_t rateVal)
 {
-	void BEL_ST_Resampling_EmuCallBack(void *unused, Uint8 *stream, int len);
-	extern SDL_AudioCallback g_sdlOurAudioCallback;
-
 	BE_ST_LockAudioRecursively(); // RECURSIVE lock
 
 	// Note that 0 should be interpreted as 65536
