@@ -2415,14 +2415,14 @@ refreshwithnorendertarget:
 			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
 		}
 		BEL_ST_Launcher_FinishHostDisplayUpdate();
-		g_be_sdlLastRefreshTicks = SDL_GetTicks();
+		g_be_sdlLastRefreshTicks = BEL_ST_GetTicksMS();
 	}
 	else
 	{
 		// Refresh graphics from time to time in case a part of the window is overridden by anything,
 		// like the Steam Overlay. Sleep for less time so the application is somewhat responsive, though.
 		BEL_ST_SleepMS(10);
-		uint32_t currRefreshTicks = SDL_GetTicks();
+		uint32_t currRefreshTicks = BEL_ST_GetTicksMS();
 		if (currRefreshTicks - g_be_sdlLastRefreshTicks >= 100)
 		{
 			SDL_RenderClear(g_sdlRenderer);
@@ -2486,7 +2486,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 
 	while (1)
 	{
-		uint32_t ticksBeforePoll = SDL_GetTicks();
+		uint32_t ticksBeforePoll = BEL_ST_GetTicksMS();
 		while (SDL_PollEvent(&event))
 		{
 			g_sdlLauncherLastEventType = event.type;
@@ -2927,7 +2927,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 
 	while (1)
 	{
-		uint32_t ticksBeforePoll = SDL_GetTicks();
+		uint32_t ticksBeforePoll = BEL_ST_GetTicksMS();
 		while (SDL_PollEvent(&event))
 		{
 			g_sdlLauncherLastEventType = event.type;

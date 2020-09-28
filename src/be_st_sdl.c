@@ -2021,7 +2021,7 @@ void BE_ST_SetAppQuitCallback(void (*funcPtr)(void))
 void BE_ST_PollEvents(void)
 {
 	SDL_Event event;
-	g_sdlLastPollEventsTime = SDL_GetTicks();
+	g_sdlLastPollEventsTime = BEL_ST_GetTicksMS();
 	while (SDL_PollEvent(&event))
 	{
 
@@ -2407,11 +2407,11 @@ static int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 			SDL_PauseAudioDevice(g_sdlAudioDevice, 1);
 		return 0;
 	case SDL_APP_DIDENTERBACKGROUND:
-		g_sdl_eventCallback_EnterBackgroundLastTicks = SDL_GetTicks();
+		g_sdl_eventCallback_EnterBackgroundLastTicks = BEL_ST_GetTicksMS();
 		return 0;
 	case SDL_APP_WILLENTERFOREGROUND:
 		// FIXME!!! - Hope this works well
-		g_sdlManualAudioCallbackCallLastTicks += (SDL_GetTicks() - g_sdl_eventCallback_EnterBackgroundLastTicks);
+		g_sdlManualAudioCallbackCallLastTicks += (BEL_ST_GetTicksMS() - g_sdl_eventCallback_EnterBackgroundLastTicks);
 		return 0;
 	case SDL_APP_DIDENTERFOREGROUND:
 		// HACK - These may be done from a different thread,

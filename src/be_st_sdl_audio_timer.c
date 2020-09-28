@@ -44,7 +44,7 @@ int g_sdlOutputAudioFreq;
 bool g_sdlAudioSubsystemUp;
 static bool g_sdlAudioInitDone; // Even if audio subsystem isn't brought up
 
-// Use this if the audio subsystem is disabled for most (we want a BYTES rate of 1000Hz, same units as used in values returned by SDL_GetTicks())
+// Use this if the audio subsystem is disabled for most (we want a BYTES rate of 1000Hz, same units as used in values returned by BEL_ST_GetTicksMS())
 #define NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM 1000
 
 // This is used if the sound subsystem is disabled, *or* if it's enabled and BE_ST_FILL_AUDIO_IN_MAIN_THREAD is defined.
@@ -134,7 +134,7 @@ void BE_ST_InitAudio(void)
 	}
 
 	// If the audio subsystem is off, let us simulate a byte rate
-	// of 1000Hz (same as SDL_GetTicks() time units)
+	// of 1000Hz (same as BEL_ST_GetTicksMS() time units)
 	if (!g_sdlAudioSubsystemUp)
 	{
 		g_sdlOutputAudioFreq = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
@@ -210,7 +210,7 @@ finish:
 	// BE_ST_BSound may be called, so be ready to generate samples.
 	BE_ST_SetTimer(0);
 
-	g_sdlManualAudioCallbackCallLastTicks = SDL_GetTicks();
+	g_sdlManualAudioCallbackCallLastTicks = BEL_ST_GetTicksMS();
 	g_sdlManualAudioCallbackCallDelayedSamples = 0;
 
 	g_sdlAudioInitDone = true;
@@ -287,7 +287,7 @@ void BE_ST_UnlockAudioRecursively(void)
 // started up if BE_ST_FILL_AUDIO_IN_MAIN_THREAD is not defined
 void BE_ST_PrepareForManualAudioCallbackCall(void)
 {
-	uint32_t currTicks = SDL_GetTicks();
+	uint32_t currTicks = BEL_ST_GetTicksMS();
 
 	// If e.g., we call this function from BE_ST_PrepareForGameStartupWithoutAudio
 	if (!g_sdlAudioInitDone)

@@ -54,7 +54,7 @@ static uint64_t g_sdlScaledTicksRemainder;
 
 static void BEL_ST_RefreshTimerIntCounter(void)
 {
-	uint32_t ticks = SDL_GetTicks();
+	uint32_t ticks = BEL_ST_GetTicksMS();
 	uint64_t scaledAccuTicks =
 		(ticks - g_sdlLastTicksForIntCounter) * (uint64_t)PC_PIT_RATE
 		+ g_sdlScaledTicksRemainder;
@@ -107,7 +107,7 @@ void BE_ST_InitTiming(void)
 	g_sdlTicksOffset = 0;
 #ifdef BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
 	g_pitTimerScaledDivisor = 1000 * 65536;
-	g_sdlLastTicksForIntCounter = SDL_GetTicks();
+	g_sdlLastTicksForIntCounter = BEL_ST_GetTicksMS();
 #endif
 }
 
@@ -137,22 +137,22 @@ static void BEL_ST_TicksDelayWithOffset(int sdltickstowait)
 		BE_ST_PollEvents(); // Still safer to do this
 		return;
 	}
-	uint32_t nextSdlTicks = SDL_GetTicks() + sdltickstowait - g_sdlTicksOffset;
+	uint32_t nextSdlTicks = BEL_ST_GetTicksMS() + sdltickstowait - g_sdlTicksOffset;
 	BEL_ST_UpdateHostDisplay();
 	BE_ST_PollEvents();
-	uint32_t currSdlTicks = SDL_GetTicks();
+	uint32_t currSdlTicks = BEL_ST_GetTicksMS();
 	uint32_t lastRefreshTime = currSdlTicks;
 	while ((int32_t)(currSdlTicks - nextSdlTicks) < 0)
 	{
 		BEL_ST_SleepMS(1);
 		BE_ST_PollEvents();
-		currSdlTicks = SDL_GetTicks();
+		currSdlTicks = BEL_ST_GetTicksMS();
 		// Refresh graphics from time to time in case a part of the window is overridden by anything,
 		// like the Steam Overlay, but also check if we should refresh the graphics more often
 		if (g_sdlForceGfxControlUiRefresh || (currSdlTicks - lastRefreshTime > 100))
 		{
 			BEL_ST_UpdateHostDisplay();
-			currSdlTicks = SDL_GetTicks(); // Just be a bit more pedantic
+			currSdlTicks = BEL_ST_GetTicksMS(); // Just be a bit more pedantic
 			lastRefreshTime = currSdlTicks;
 		}
 	} 
@@ -168,7 +168,7 @@ void BE_ST_WaitForNewVerticalRetraces(int16_t number)
 	// to the very beginning of the next "refresh cycle".
 	// This is repeated for a total of 'length' times.
 
-	uint32_t currSdlTicks = SDL_GetTicks();
+	uint32_t currSdlTicks = BEL_ST_GetTicksMS();
 	uint32_t nextSdlTicks = (int)number*1000000/70086 + currSdlTicks - g_sdlTicksOffset;
 
 	// First iteration takes a bit less time again, so we want
@@ -232,19 +232,19 @@ void BE_ST_TimerIntCallsDelayWithOffset(int nCalls)
 	BEL_ST_UpdateHostDisplay();
 	BE_ST_PollEvents();
 	uint32_t currSdlTicks;
-	uint32_t lastRefreshTime = SDL_GetTicks();
+	uint32_t lastRefreshTime = BEL_ST_GetTicksMS();
 
 	do
 	{
 		BEL_ST_SleepMS(1);
 		BE_ST_PollEvents();
-		currSdlTicks = SDL_GetTicks();
+		currSdlTicks = BEL_ST_GetTicksMS();
 		// Refresh graphics from time to time in case a part of the window is overridden by anything,
 		// like the Steam Overlay, but also check if we should refresh the graphics more often
 		if (g_sdlForceGfxControlUiRefresh || (currSdlTicks - lastRefreshTime > 100))
 		{
 			BEL_ST_UpdateHostDisplay();
-			currSdlTicks = SDL_GetTicks(); // Just be a bit more pedantic
+			currSdlTicks = BEL_ST_GetTicksMS(); // Just be a bit more pedantic
 			lastRefreshTime = currSdlTicks;
 		}
 

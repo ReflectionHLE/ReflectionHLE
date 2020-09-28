@@ -3170,7 +3170,7 @@ void BEL_ST_UpdateHostDisplay(void)
 {
 	// Refresh graphics from time to time in case a part of the window is overridden by anything,
 	// like the Steam Overlay.
-	uint32_t currRefreshTicks = SDL_GetTicks();
+	uint32_t currRefreshTicks = BEL_ST_GetTicksMS();
 	if (currRefreshTicks - g_be_sdlLastRefreshTicks >= 100)
 		g_sdlForceGfxControlUiRefresh = true;
 
@@ -3180,8 +3180,8 @@ void BEL_ST_UpdateHostDisplay(void)
 		// but in textual mode we have blinking characters and cursor to take care of
 		static bool wereBlinkingCharsShown;
 		static bool wasBlinkingCursorShown;
-		bool areBlinkingCharsShown = (((uint64_t)(70086*SDL_GetTicks()/1000)/(1000*VGA_TXT_BLINK_VERT_FRAME_RATE)) % 2);
-		bool isBlinkingCursorShown = g_sdlTxtCursorEnabled && (((uint64_t)(70086*SDL_GetTicks()/1000)/(1000*VGA_TXT_CURSOR_BLINK_VERT_FRAME_RATE)) % 2);
+		bool areBlinkingCharsShown = (((uint64_t)(70086*BEL_ST_GetTicksMS()/1000)/(1000*VGA_TXT_BLINK_VERT_FRAME_RATE)) % 2);
+		bool isBlinkingCursorShown = g_sdlTxtCursorEnabled && (((uint64_t)(70086*BEL_ST_GetTicksMS()/1000)/(1000*VGA_TXT_CURSOR_BLINK_VERT_FRAME_RATE)) % 2);
 		if (!g_sdlDoRefreshGfxOutput && (wereBlinkingCharsShown == areBlinkingCharsShown) && (wasBlinkingCursorShown == isBlinkingCursorShown))
 		{
 			if (g_sdlForceGfxControlUiRefresh)
@@ -3397,5 +3397,5 @@ refreshwithnorendertarget:
 	}
 
 	BEL_ST_FinishHostDisplayUpdate();
-	g_be_sdlLastRefreshTicks = SDL_GetTicks();
+	g_be_sdlLastRefreshTicks = BEL_ST_GetTicksMS();
 }
