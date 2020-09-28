@@ -33,6 +33,8 @@
 #define BEL_ST_SleepMS SDL_Delay
 #endif
 
+#define BEL_ST_GetTicksMS SDL_GetTicks
+
 #define BE_ST_MAXJOYSTICKS 8
 
 #define BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS 500
