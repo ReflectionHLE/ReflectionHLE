@@ -17,7 +17,7 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#include "SDL.h"
+#include "backend/atomic/be_atomic.h"
 #include "backend/audio/be_audio_mixer.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
@@ -39,7 +39,7 @@ extern uint64_t g_sdlScaledSamplesInCurrentPart;
 #if (defined BE_ST_FILL_AUDIO_IN_MAIN_THREAD) || (defined BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO)
 static int g_sdlTimerIntCounter = 0;
 #else
-static SDL_atomic_t g_sdlTimerIntCounter = {0};
+static BE_ST_AtomicInt_T g_sdlTimerIntCounter = {0};
 #endif
 
 int BE_ST_SET_TIMER_INT_COUNTER_SET(int x);
@@ -95,10 +95,10 @@ int BE_ST_SET_TIMER_INT_COUNTER_INC(void) { return g_sdlTimerIntCounter++; }
 
 #else
 
-int BE_ST_SET_TIMER_INT_COUNTER_SET(int x) { return SDL_AtomicSet(&g_sdlTimerIntCounter, x); }
-int BE_ST_SET_TIMER_INT_COUNTER_GET(void) { return SDL_AtomicGet(&g_sdlTimerIntCounter); }
-int BE_ST_SET_TIMER_INT_COUNTER_ADD(int x) { return SDL_AtomicAdd(&g_sdlTimerIntCounter, x); }
-int BE_ST_SET_TIMER_INT_COUNTER_INC(void) { return SDL_AtomicAdd(&g_sdlTimerIntCounter, 1); }
+int BE_ST_SET_TIMER_INT_COUNTER_SET(int x) { return BE_ST_AtomicInt_Set(&g_sdlTimerIntCounter, x); }
+int BE_ST_SET_TIMER_INT_COUNTER_GET(void) { return BE_ST_AtomicInt_Get(&g_sdlTimerIntCounter); }
+int BE_ST_SET_TIMER_INT_COUNTER_ADD(int x) { return BE_ST_AtomicInt_PostAdd(&g_sdlTimerIntCounter, x); }
+int BE_ST_SET_TIMER_INT_COUNTER_INC(void) { return BE_ST_AtomicInt_PostInc(&g_sdlTimerIntCounter); }
 
 #endif
 
@@ -251,6 +251,7 @@ void BE_ST_TimerIntCallsDelayWithOffset(int nCalls)
 		newCount = BE_ST_SET_TIMER_INT_COUNTER_GET();
 	}
 	while (newCount - oldCount < nCalls);
-	// Do call SDL_AtomicSet instead of accessing 'newCount', in case counter has just been updated again
+	// Do go through BE_ST_SET_TIMER_INT_COUNTER_SET instead of directly
+	// accessing 'newCount', in case counter has just been updated again
 	g_sdlTimerIntCounterOffset = (BE_ST_SET_TIMER_INT_COUNTER_SET(0) - oldCount) - nCalls;
 }
