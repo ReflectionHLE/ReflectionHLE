@@ -96,7 +96,7 @@ int BE_ST_SET_TIMER_INT_COUNTER_INC(void) { return g_sdlTimerIntCounter++; }
 #else
 
 int BE_ST_SET_TIMER_INT_COUNTER_SET(int x) { return SDL_AtomicSet(&g_sdlTimerIntCounter, x); }
-int BE_ST_SET_TIMER_INT_COUNTER_GET(int x) { return SDL_AtomicGet(&g_sdlTimerIntCounter); }
+int BE_ST_SET_TIMER_INT_COUNTER_GET(void) { return SDL_AtomicGet(&g_sdlTimerIntCounter); }
 int BE_ST_SET_TIMER_INT_COUNTER_ADD(int x) { return SDL_AtomicAdd(&g_sdlTimerIntCounter, x); }
 int BE_ST_SET_TIMER_INT_COUNTER_INC(void) { return SDL_AtomicAdd(&g_sdlTimerIntCounter, 1); }
 
