@@ -44,14 +44,13 @@ static void BEL_ST_MixerCallback(void *unused, Uint8 *stream, int len)
 	BEL_ST_AudioMixerCallback((BE_ST_SndSample_T *)stream, len / sizeof(BE_ST_SndSample_T));
 }
 
-
-int BEL_ST_InitAudioSubsystem(void)
+bool BEL_ST_InitAudioSubsystem(int *freq, int *bufferLen)
 {
 	SDL_AudioSpec spec;
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
-		return 0;
+		return false;
 	}
 	spec.freq = g_refKeenCfg.sndSampleRate;
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
@@ -77,7 +76,7 @@ int BEL_ST_InitAudioSubsystem(void)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
-		return 0;
+		return false;
 	}
 #ifdef REFKEEN_CONFIG_THREADS
 	g_sdlCallbackMutex = SDL_CreateMutex();
@@ -86,7 +85,7 @@ int BEL_ST_InitAudioSubsystem(void)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Cannot create recursive mutex for SDL audio callback,\n%s\nClosing SDL audio subsystem\n", SDL_GetError());
 		SDL_CloseAudioDevice(g_sdlAudioDevice);
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
-		return 0;
+		return false;
 	}
 #endif
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, received spec: freq %d, format %u, channels %d, samples %u, size %u\n", (int)g_sdlAudioSpec.freq, (unsigned int)g_sdlAudioSpec.format, (int)g_sdlAudioSpec.channels, (unsigned int)g_sdlAudioSpec.samples, (unsigned int)g_sdlAudioSpec.size);
@@ -94,8 +93,10 @@ int BEL_ST_InitAudioSubsystem(void)
 	g_sdlAudioSubsystemUp = true;
 
 	// Size may be reported as "0" on Android
-	return g_sdlAudioSpec.size ?
-	       (g_sdlAudioSpec.size / sizeof(BE_ST_SndSample_T)) : g_sdlAudioSpec.samples;
+	*freq = g_sdlAudioSpec.freq;
+	*bufferLen = g_sdlAudioSpec.size ?
+	             (g_sdlAudioSpec.size / sizeof(BE_ST_SndSample_T)) : g_sdlAudioSpec.samples;
+	return true;
 }
 
 void BEL_ST_ShutdownAudioSubsystem(void)

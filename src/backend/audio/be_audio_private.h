@@ -45,7 +45,7 @@ extern bool g_sdlEmulatedOPLChipReady;
 
 void BEL_ST_ResetOPLChip(void);
 
-int BEL_ST_InitAudioSubsystem(void);
+bool BEL_ST_InitAudioSubsystem(int *freq, int *bufferLen);
 void BEL_ST_ShutdownAudioSubsystem(void);
 void BEL_ST_StartAudioSubsystem(void);
 

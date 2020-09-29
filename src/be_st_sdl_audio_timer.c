@@ -43,14 +43,10 @@ void BE_ST_InitAudio(void)
 	g_sdlEmulatedOPLChipReady = false;
 	int samplesForSourceBuffer;
 	int audioDeviceFlags = BE_Cross_GetSelectedGameVerAudioDeviceFlags();
-	int expectedCallbackBufferLen = 0;
+	int freq = 0, expectedCallbackBufferLen = 0;
 
-	if (g_refKeenCfg.sndSubSystem)
-		expectedCallbackBufferLen = BEL_ST_InitAudioSubsystem();
-
-	int freq = g_sdlOutputAudioFreq;
-
-	if (g_sdlAudioSubsystemUp)
+	if (g_refKeenCfg.sndSubSystem &&
+	    BEL_ST_InitAudioSubsystem(&freq, &expectedCallbackBufferLen))
 	{
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 		samplesForSourceBuffer =
