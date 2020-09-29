@@ -1,6 +1,7 @@
 list(APPEND be_src
 	src/actual_main.c
 	src/backend/audio/be_audio_digi.c
+	src/backend/audio/be_audio_init.c
 	src/backend/audio/be_audio_main_thread.c
 	src/backend/audio/be_audio_mixer.c
 	src/backend/audio/be_audio_opl.c
@@ -13,7 +14,6 @@ list(APPEND be_src
 	src/be_cross_doszeroseg.c
 	src/be_cross_fs.c
 	src/be_cross_mem.c
-	src/be_st_sdl_audio_timer.c
 	src/be_st_sdl.c
 	src/be_st_sdl_graphics.c
 	src/be_textmode_fonts.c
