@@ -93,6 +93,7 @@ int BEL_ST_InitAudioSubsystem(void)
 	g_sdlOutputAudioFreq = g_sdlAudioSpec.freq;
 	g_sdlAudioSubsystemUp = true;
 
+	// Size may be reported as "0" on Android
 	return g_sdlAudioSpec.size ?
 	       (g_sdlAudioSpec.size / sizeof(BE_ST_SndSample_T)) : g_sdlAudioSpec.samples;
 }

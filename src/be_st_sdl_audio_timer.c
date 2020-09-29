@@ -67,7 +67,6 @@ void BE_ST_InitAudio(void)
 	if (g_sdlAudioSubsystemUp)
 	{
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-		// Size may be reported as "0" on Android, so use this just in case
 		g_sdlCallbacksSamplesBufferOnePartCount = g_refKeenCfg.sndInterThreadBufferRatio * expectedCallbackBufferLen;
 		g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(2*(g_sdlCallbacksSamplesBufferOnePartCount*sizeof(BE_ST_SndSample_T))); // Allocate TWO parts
 		if (!g_sdlCallbacksSamplesBuffer)
