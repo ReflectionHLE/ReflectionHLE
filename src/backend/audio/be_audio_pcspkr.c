@@ -27,6 +27,7 @@
 #define MIXER_SAMPLE_PCSPEAKER_TOP_VAL 24575
 #endif
 
+static int g_be_pcSpeakerSampleFreq;
 // Current PC Speaker status
 static bool g_sdlPCSpeakerConnected = false;
 static BE_ST_SndSample_T g_sdlCurrentBeepSample;
@@ -44,7 +45,7 @@ void BE_ST_PCSpeakerSetInvFreq(uint16_t spkInvFreq)
 	g_sdlPCSpeakerConnected = true;
 	BEL_ST_PCSpeakerSetBeepSample(0);
 	g_sdlBeepHalfCycleCounter = 0;
-	g_sdlBeepHalfCycleCounterUpperBound = g_sdlOutputAudioFreq * spkInvFreq;
+	g_sdlBeepHalfCycleCounterUpperBound = g_be_pcSpeakerSampleFreq * spkInvFreq;
 }
 
 void BE_ST_PCSpeakerSetConstVal(bool isUp)
@@ -65,6 +66,11 @@ void BE_ST_BNoSound(void)
 	BE_ST_LockAudioRecursively();
 	BE_ST_PCSpeakerSetConstVal(0);
 	BE_ST_UnlockAudioRecursively();
+}
+
+void BEL_ST_SetPCSpeakerSampleRate(int rate)
+{
+	g_be_pcSpeakerSampleFreq = rate;
 }
 
 /*** PC Speaker: Add audio data to the stream ***/
