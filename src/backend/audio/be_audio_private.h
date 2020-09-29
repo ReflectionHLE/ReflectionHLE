@@ -40,7 +40,6 @@ typedef float BE_ST_SndSample_T;
 typedef int16_t BE_ST_SndSample_T;
 #endif
 
-extern int g_sdlOutputAudioFreq;
 extern bool g_sdlEmulatedOPLChipReady;
 
 void BEL_ST_ResetOPLChip(void);

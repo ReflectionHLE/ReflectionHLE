@@ -32,8 +32,6 @@
 #include "backend/audio/be_audio_resampling.h"
 #include "backend/timing/be_timing.h"
 
-int g_sdlOutputAudioFreq;
-
 bool g_sdlAudioSubsystemUp;
 bool g_sdlAudioInitDone; // Even if audio subsystem isn't brought up
 
@@ -57,10 +55,7 @@ void BE_ST_InitAudio(void)
 		g_sdlAudioSubsystemUp = true;
 	}
 	else
-	{
 		samplesForSourceBuffer = BEL_ST_PrepareMainThreadForAudio(&freq, 0);
-		g_sdlOutputAudioFreq = freq;
-	}
 
 	BEL_ST_AudioMixerInit(freq);
 
