@@ -54,6 +54,7 @@ void BE_ST_InitAudio(void)
 #else
 		samplesForSourceBuffer = 2*expectedCallbackBufferLen;
 #endif
+		g_sdlAudioSubsystemUp = true;
 	}
 	else
 	{
@@ -113,6 +114,7 @@ void BE_ST_ShutdownAudio(void)
 
 	if (g_sdlAudioSubsystemUp)
 		BEL_ST_ShutdownAudioSubsystem();
+	g_sdlAudioSubsystemUp = false;
 
 	BEL_ST_ClearMainThreadAudioResources();
 

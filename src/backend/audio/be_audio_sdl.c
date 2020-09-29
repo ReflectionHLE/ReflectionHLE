@@ -90,7 +90,6 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *bufferLen)
 #endif
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, received spec: freq %d, format %u, channels %d, samples %u, size %u\n", (int)g_sdlAudioSpec.freq, (unsigned int)g_sdlAudioSpec.format, (int)g_sdlAudioSpec.channels, (unsigned int)g_sdlAudioSpec.samples, (unsigned int)g_sdlAudioSpec.size);
 	g_sdlOutputAudioFreq = g_sdlAudioSpec.freq;
-	g_sdlAudioSubsystemUp = true;
 
 	// Size may be reported as "0" on Android
 	*freq = g_sdlAudioSpec.freq;
@@ -109,7 +108,6 @@ void BEL_ST_ShutdownAudioSubsystem(void)
 #endif
 	SDL_CloseAudioDevice(g_sdlAudioDevice);
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
-	g_sdlAudioSubsystemUp = false;
 }
 
 void BEL_ST_StartAudioSubsystem(void)
