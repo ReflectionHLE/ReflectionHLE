@@ -64,65 +64,51 @@ void BE_ST_InitAudio(void)
 	if (g_refKeenCfg.sndSubSystem)
 		expectedCallbackBufferLen = BEL_ST_InitAudioSubsystem();
 
-	// If the audio subsystem is off, let us simulate a byte rate
-	// of 1000Hz (same as BEL_ST_GetTicksMS() time units)
-	if (!g_sdlAudioSubsystemUp)
+	if (g_sdlAudioSubsystemUp)
 	{
+#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
+		// Size may be reported as "0" on Android, so use this just in case
+		g_sdlCallbacksSamplesBufferOnePartCount = g_refKeenCfg.sndInterThreadBufferRatio * expectedCallbackBufferLen;
+		g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(2*(g_sdlCallbacksSamplesBufferOnePartCount*sizeof(BE_ST_SndSample_T))); // Allocate TWO parts
+		if (!g_sdlCallbacksSamplesBuffer)
+			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlCallbacksSamplesBuffer.)");
+		g_sdlSamplesRemainingForSDLAudioCallback = 0;
+		samplesForSourceBuffer = g_sdlCallbacksSamplesBufferOnePartCount;
+#else
+		samplesForSourceBuffer = 2*expectedCallbackBufferLen;
+#endif
+	}
+	else
+	{
+		// If the audio subsystem is off, let us simulate a byte rate
+		// of 1000Hz (same as BEL_ST_GetTicksMS() time units)
 		g_sdlOutputAudioFreq = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
 		g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM);
 		if (!g_sdlCallbacksSamplesBuffer)
 			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlCallbacksSamplesBuffer.)");
 		g_sdlCallbacksSamplesBufferOnePartCount = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
 
-		BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
-
-		// TODO Verify this works
-		if ((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR_REQUIRED)
-		    == BE_AUDIO_DEVICE_PCSPKR_REQUIRED)
-			BEL_ST_AudioMixerAddSource(
-				g_sdlOutputAudioFreq,
-				NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM,
-				BEL_ST_GenPCSpeakerSamples);
-
-		if ((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI_REQUIRED)
-		    == BE_AUDIO_DEVICE_DIGI_REQUIRED)
-			BEL_ST_SetDigiMixerSource(
-				BEL_ST_AudioMixerAddSource(
-					8000,
-					NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM,
-					BEL_ST_GenDigiSamples));
-
-		goto finish;
+		samplesForSourceBuffer = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM;
 	}
-
-#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-	// Size may be reported as "0" on Android, so use this just in case
-	g_sdlCallbacksSamplesBufferOnePartCount = g_refKeenCfg.sndInterThreadBufferRatio * expectedCallbackBufferLen;
-	g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(2*(g_sdlCallbacksSamplesBufferOnePartCount*sizeof(BE_ST_SndSample_T))); // Allocate TWO parts
-	if (!g_sdlCallbacksSamplesBuffer)
-		BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlCallbacksSamplesBuffer.)");
-	g_sdlSamplesRemainingForSDLAudioCallback = 0;
-	samplesForSourceBuffer = g_sdlCallbacksSamplesBufferOnePartCount;
-#else
-	samplesForSourceBuffer = 2*expectedCallbackBufferLen;
-#endif
 
 	BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
 
-	if ((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR) == BE_AUDIO_DEVICE_PCSPKR)
+	if (((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR_REQUIRED) == BE_AUDIO_DEVICE_PCSPKR_REQUIRED) ||
+	    (g_sdlAudioSubsystemUp && ((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR) == BE_AUDIO_DEVICE_PCSPKR)))
 		BEL_ST_AudioMixerAddSource(
 			g_sdlOutputAudioFreq,
 			samplesForSourceBuffer,
 			BEL_ST_GenPCSpeakerSamples);
 
-	if ((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI) == BE_AUDIO_DEVICE_DIGI)
+	if (((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI_REQUIRED) == BE_AUDIO_DEVICE_DIGI_REQUIRED) ||
+	    (g_sdlAudioSubsystemUp && ((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI) == BE_AUDIO_DEVICE_DIGI)))
 		BEL_ST_SetDigiMixerSource(
 			BEL_ST_AudioMixerAddSource(
 				8000,
 				samplesForSourceBuffer,
 				BEL_ST_GenDigiSamples));
 
-	if (g_refKeenCfg.oplEmulation &&
+	if (g_sdlAudioSubsystemUp && g_refKeenCfg.oplEmulation &&
 	    ((audioDeviceFlags & BE_AUDIO_DEVICE_OPL) == BE_AUDIO_DEVICE_OPL))
 	{
 		BEL_ST_ResetOPLChip();
@@ -135,7 +121,6 @@ void BE_ST_InitAudio(void)
 		g_sdlEmulatedOPLChipReady = true;
 	}
 
-finish:
 	// Regardless of the audio subsystem being off or on, have *some*
 	// rate set (being ~18.2Hz). In DEMOCAT from The Catacomb Abyss v1.13,
 	// BE_ST_BSound may be called, so be ready to generate samples.
