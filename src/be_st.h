@@ -20,6 +20,7 @@
 #ifndef BE_ST_H
 #define BE_ST_H
 
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 
