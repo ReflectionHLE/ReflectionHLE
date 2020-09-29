@@ -87,7 +87,7 @@ void BE_ST_InitAudio(void)
 			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlCallbacksSamplesBuffer.)");
 		g_sdlCallbacksSamplesBufferOnePartCount = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
 
-		samplesForSourceBuffer = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM;
+		samplesForSourceBuffer = g_sdlOutputAudioFreq;
 	}
 
 	BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
