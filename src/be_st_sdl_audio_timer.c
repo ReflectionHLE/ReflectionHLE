@@ -113,22 +113,3 @@ void BE_ST_ShutdownAudio(void)
 
 	BEL_ST_ClearMainThreadAudioResources();
 }
-
-void BE_ST_StartAudioAndTimerInt(void (*funcPtr)(void))
-{
-	BE_ST_LockAudioRecursively();
-
-	g_sdlTimerIntFuncPtr = funcPtr;
-	BE_ST_SET_TIMER_INT_COUNTER_SET(0);
-
-	BE_ST_UnlockAudioRecursively();
-}
-
-void BE_ST_StopAudioAndTimerInt(void)
-{
-	BE_ST_LockAudioRecursively();
-
-	g_sdlTimerIntFuncPtr = 0;
-
-	BE_ST_UnlockAudioRecursively();
-}

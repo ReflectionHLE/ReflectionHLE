@@ -27,8 +27,6 @@ extern bool g_sdlForceGfxControlUiRefresh;
 
 static uint32_t g_sdlTicksOffset = 0;
 
-void (*g_sdlTimerIntFuncPtr)(void);
-
 extern uint64_t g_sdlScaledSamplesPerPartsTimesPITRate;
 extern uint64_t g_sdlScaledSamplesInCurrentPart;
 
