@@ -112,8 +112,6 @@ void BE_ST_ShutdownAudio(void)
 	g_sdlAudioSubsystemUp = false;
 
 	BEL_ST_ClearMainThreadAudioResources();
-
-	g_sdlTimerIntFuncPtr = 0; // Just in case this may be called after the audio subsystem was never really started (manual calls to callback)
 }
 
 void BE_ST_StartAudioAndTimerInt(void (*funcPtr)(void))
