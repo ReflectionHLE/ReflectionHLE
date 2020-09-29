@@ -74,8 +74,6 @@ void BEL_ST_SDLCreateTextureWrapper(SDL_Texture **pTexture, Uint32 format, int a
 void BEL_ST_SDLDestroyTextureWrapper(SDL_Texture **pTexture);
 void BEL_ST_RecreateAllTextures(void);
 
-void BE_ST_PrepareForManualAudioCallbackCall(void);
-
 extern SDL_Surface *g_be_sdl_windowIconSurface;
 // NOT NECESSARILY AVAILABLE FOR ALL GAMES!
 extern bool g_sdlDoAbsMouseMotion;

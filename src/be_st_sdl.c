@@ -22,6 +22,7 @@
 #include <string.h>
 #include "SDL.h"
 
+#include "backend/audio/be_audio_main_thread.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_gamever.h"

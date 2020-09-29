@@ -26,6 +26,7 @@
 #include "be_sound_device_flags.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
+#include "backend/audio/be_audio_main_thread.h"
 #include "backend/audio/be_audio_mixer.h"
 #include "backend/audio/be_audio_private.h"
 #include "backend/audio/be_audio_resampling.h"
@@ -34,24 +35,7 @@
 int g_sdlOutputAudioFreq;
 
 bool g_sdlAudioSubsystemUp;
-static bool g_sdlAudioInitDone; // Even if audio subsystem isn't brought up
-
-// Use this if the audio subsystem is disabled for most (we want a BYTES rate of 1000Hz, same units as used in values returned by BEL_ST_GetTicksMS())
-#define NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM 1000
-
-// This is used if the sound subsystem is disabled, *or* if it's enabled and BE_ST_FILL_AUDIO_IN_MAIN_THREAD is defined.
-//
-// If enabled, this buffer is actually split into two subbuffers:
-// One for main thread use, the other being shared with the audio callback thread.
-static BE_ST_SndSample_T *g_sdlCallbacksSamplesBuffer;
-// If two sub-buffers are used, this is the size of a single one
-static uint32_t g_sdlCallbacksSamplesBufferOnePartCount;
-#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-static uint32_t g_sdlSamplesRemainingForSDLAudioCallback;
-#endif
-
-/*static */uint32_t g_sdlManualAudioCallbackCallLastTicks;
-static uint32_t g_sdlManualAudioCallbackCallDelayedSamples;
+bool g_sdlAudioInitDone; // Even if audio subsystem isn't brought up
 
 void BE_ST_InitAudio(void)
 {
@@ -64,38 +48,29 @@ void BE_ST_InitAudio(void)
 	if (g_refKeenCfg.sndSubSystem)
 		expectedCallbackBufferLen = BEL_ST_InitAudioSubsystem();
 
+	int freq = g_sdlOutputAudioFreq;
+
 	if (g_sdlAudioSubsystemUp)
 	{
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-		g_sdlCallbacksSamplesBufferOnePartCount = g_refKeenCfg.sndInterThreadBufferRatio * expectedCallbackBufferLen;
-		g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(2*(g_sdlCallbacksSamplesBufferOnePartCount*sizeof(BE_ST_SndSample_T))); // Allocate TWO parts
-		if (!g_sdlCallbacksSamplesBuffer)
-			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlCallbacksSamplesBuffer.)");
-		g_sdlSamplesRemainingForSDLAudioCallback = 0;
-		samplesForSourceBuffer = g_sdlCallbacksSamplesBufferOnePartCount;
+		samplesForSourceBuffer =
+			BEL_ST_PrepareMainThreadForAudio(&freq, expectedCallbackBufferLen);
 #else
 		samplesForSourceBuffer = 2*expectedCallbackBufferLen;
 #endif
 	}
 	else
 	{
-		// If the audio subsystem is off, let us simulate a byte rate
-		// of 1000Hz (same as BEL_ST_GetTicksMS() time units)
-		g_sdlOutputAudioFreq = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
-		g_sdlCallbacksSamplesBuffer = (BE_ST_SndSample_T *)malloc(NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM);
-		if (!g_sdlCallbacksSamplesBuffer)
-			BE_ST_ExitWithErrorMsg("BE_ST_InitAudio: Out of memory! (Failed to allocate g_sdlCallbacksSamplesBuffer.)");
-		g_sdlCallbacksSamplesBufferOnePartCount = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
-
-		samplesForSourceBuffer = g_sdlOutputAudioFreq;
+		samplesForSourceBuffer = BEL_ST_PrepareMainThreadForAudio(&freq, 0);
+		g_sdlOutputAudioFreq = freq;
 	}
 
-	BEL_ST_AudioMixerInit(g_sdlOutputAudioFreq);
+	BEL_ST_AudioMixerInit(freq);
 
 	if (((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR_REQUIRED) == BE_AUDIO_DEVICE_PCSPKR_REQUIRED) ||
 	    (g_sdlAudioSubsystemUp && ((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR) == BE_AUDIO_DEVICE_PCSPKR)))
 		BEL_ST_AudioMixerAddSource(
-			g_sdlOutputAudioFreq,
+			freq,
 			samplesForSourceBuffer,
 			BEL_ST_GenPCSpeakerSamples);
 
@@ -125,9 +100,6 @@ void BE_ST_InitAudio(void)
 	// BE_ST_BSound may be called, so be ready to generate samples.
 	BE_ST_SetTimer(0);
 
-	g_sdlManualAudioCallbackCallLastTicks = BEL_ST_GetTicksMS();
-	g_sdlManualAudioCallbackCallDelayedSamples = 0;
-
 	g_sdlAudioInitDone = true;
 
 	// As stated above, BE_ST_BSound may be called,
@@ -143,8 +115,7 @@ void BE_ST_ShutdownAudio(void)
 	if (g_sdlAudioSubsystemUp)
 		BEL_ST_ShutdownAudioSubsystem();
 
-	free(g_sdlCallbacksSamplesBuffer);
-	g_sdlCallbacksSamplesBuffer = NULL;
+	BEL_ST_ClearMainThreadAudioResources();
 
 	g_sdlTimerIntFuncPtr = 0; // Just in case this may be called after the audio subsystem was never really started (manual calls to callback)
 }
@@ -167,64 +138,3 @@ void BE_ST_StopAudioAndTimerInt(void)
 
 	BE_ST_UnlockAudioRecursively();
 }
-
-// Use this ONLY if audio subsystem isn't properly
-// started up if BE_ST_FILL_AUDIO_IN_MAIN_THREAD is not defined
-void BE_ST_PrepareForManualAudioCallbackCall(void)
-{
-	uint32_t currTicks = BEL_ST_GetTicksMS();
-
-	// If e.g., we call this function from BE_ST_PrepareForGameStartupWithoutAudio
-	if (!g_sdlAudioInitDone)
-		return;
-
-	if (currTicks == g_sdlManualAudioCallbackCallLastTicks)
-		return;
-
-	// Using g_sdlOutputAudioFreq as the rate, we (generally) lose precision in the following division,
-	// so we use g_sdlManualAudioCallbackCallDelayedSamples to accumulate lost samples.
-	uint64_t dividend = ((uint64_t)g_sdlOutputAudioFreq)*(currTicks-g_sdlManualAudioCallbackCallLastTicks) + g_sdlManualAudioCallbackCallDelayedSamples;
-	uint32_t samplesPassed = dividend/1000;
-	g_sdlManualAudioCallbackCallDelayedSamples = dividend%1000;
-
-	uint32_t samplesToProcess = samplesPassed;
-	// Buffer has some constant size, so loop if required (which may hint at an overflow)
-	for (; samplesToProcess >= g_sdlCallbacksSamplesBufferOnePartCount; samplesToProcess -= g_sdlCallbacksSamplesBufferOnePartCount)
-		BEL_ST_AudioMixerCallback(g_sdlCallbacksSamplesBuffer, g_sdlCallbacksSamplesBufferOnePartCount);
-	if (samplesToProcess > 0)
-		BEL_ST_AudioMixerCallback(g_sdlCallbacksSamplesBuffer, samplesToProcess);
-	g_sdlManualAudioCallbackCallLastTicks = currTicks;
-#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-	if (g_sdlAudioSubsystemUp)
-	{
-		// Pass samples to audio callback thread (as much as we can)
-		BE_ST_LockAudioRecursively();
-		// Note that if we filled more than g_sdlCallbacksSamplesBufferOnePartCount, and thus discarded some samples, they won't be covered here.
-		int samplesToCopy = BE_Cross_TypedMin(int, samplesPassed, g_sdlCallbacksSamplesBufferOnePartCount - g_sdlSamplesRemainingForSDLAudioCallback);
-		// NOTE: We copy to the SECOND HALF of the buffer!
-		memcpy(g_sdlCallbacksSamplesBuffer + g_sdlCallbacksSamplesBufferOnePartCount + g_sdlSamplesRemainingForSDLAudioCallback, g_sdlCallbacksSamplesBuffer, samplesToCopy * sizeof(BE_ST_SndSample_T));
-		g_sdlSamplesRemainingForSDLAudioCallback += samplesToCopy;
-		BE_ST_UnlockAudioRecursively();
-	}
-#endif
-}
-
-
-// A (relatively) simple callback, used for copying samples from main thread to SDL audio callback thread
-#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len)
-{
-	BE_ST_LockAudioRecursively();
-
-	int samplesToCopy = BE_Cross_TypedMin(int, g_sdlSamplesRemainingForSDLAudioCallback, len / sizeof(BE_ST_SndSample_T));
-	memcpy(stream, g_sdlCallbacksSamplesBuffer + g_sdlCallbacksSamplesBufferOnePartCount, samplesToCopy*sizeof(BE_ST_SndSample_T));
-	// Shift remaining samples
-	memmove(g_sdlCallbacksSamplesBuffer + g_sdlCallbacksSamplesBufferOnePartCount, g_sdlCallbacksSamplesBuffer + g_sdlCallbacksSamplesBufferOnePartCount + samplesToCopy, (g_sdlSamplesRemainingForSDLAudioCallback - samplesToCopy) * sizeof(BE_ST_SndSample_T));
-	g_sdlSamplesRemainingForSDLAudioCallback -= samplesToCopy;
-
-	BE_ST_UnlockAudioRecursively();
-	// No need to have lock here
-	if (samplesToCopy < len / (int)sizeof(BE_ST_SndSample_T))
-		memset(stream + samplesToCopy * sizeof(BE_ST_SndSample_T), 0, len - samplesToCopy * sizeof(BE_ST_SndSample_T));
-}
-#endif

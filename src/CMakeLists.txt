@@ -1,6 +1,7 @@
 list(APPEND be_src
 	src/actual_main.c
 	src/backend/audio/be_audio_digi.c
+	src/backend/audio/be_audio_main_thread.c
 	src/backend/audio/be_audio_mixer.c
 	src/backend/audio/be_audio_opl.c
 	src/backend/audio/be_audio_pcspkr.c
