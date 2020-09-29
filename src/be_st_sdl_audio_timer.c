@@ -17,20 +17,13 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "refkeen_config.h"
 
 #include "be_cross.h"
 #include "be_sound_device_flags.h"
 #include "be_st.h"
-#include "be_st_sdl_private.h"
 #include "backend/audio/be_audio_main_thread.h"
 #include "backend/audio/be_audio_mixer.h"
-#include "backend/audio/be_audio_private.h"
-#include "backend/audio/be_audio_resampling.h"
-#include "backend/timing/be_timing.h"
 
 bool g_sdlAudioSubsystemUp;
 bool g_sdlAudioInitDone; // Even if audio subsystem isn't brought up
