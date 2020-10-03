@@ -23,6 +23,10 @@ list(APPEND be_src
 	src/unlzexe/unlzexe.c
 )
 
+if (MSVC)
+	list(APPEND be_src src/dirent/dirent.c)
+endif ()
+
 if (REFKEEN_ENABLE_LAUNCHER)
 	list(APPEND be_src src/be_launcher.c src/be_st_sdl_launcher.c)
-endif (REFKEEN_ENABLE_LAUNCHER)
+endif ()
