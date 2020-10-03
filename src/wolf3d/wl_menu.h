@@ -377,7 +377,9 @@ enum
 	quit
 }
 // *** PRE-V1.4 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
+// REFKEEN: Disable; This var is unused and shouldn't be repeatedly defined.
+#if 0
+//#if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 menuitems
 #endif
 ;
