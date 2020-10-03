@@ -46,6 +46,8 @@ REFKEEN_NS_B
 
 #define	MaxHelpLines	500
 
+#pragma pack(push, 1)
+
 #define	MaxHighName	57
 #define	MaxScores	7
 typedef	struct
@@ -53,7 +55,7 @@ typedef	struct
 			id0_char_t	name[MaxHighName + 1];
 			id0_long_t	score;
 			id0_word_t	completed;
-		} __attribute((__packed__)) HighScore;
+		} HighScore;
 
 #define	MaxGameName		32
 #define	MaxSaveGames	6
@@ -64,7 +66,9 @@ typedef	struct
 			id0_word_t oldtestoffset; // (REFKEEN) COMPATIBILITY
 			id0_boolean_t	present;
 			id0_char_t	name[MaxGameName + 1];
-		} __attribute((__packed__)) SaveGame;
+		} SaveGame;
+
+#pragma pack(pop)
 
 #define	MaxString	128	// Maximum input string size
 

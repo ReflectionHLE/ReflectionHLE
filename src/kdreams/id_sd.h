@@ -52,11 +52,13 @@ typedef	enum	{
 					smm_Off,smm_AdLib
 				}	SMMode;
 
+#pragma pack(push, 1)
+
 typedef	struct
 		{
 			id0_longword_t	length;
 			id0_word_t		priority;
-		} __attribute((__packed__)) SoundCommon;
+		} SoundCommon;
 
 //	PC Sound stuff
 #define	pcTimer		0x42
@@ -69,7 +71,7 @@ typedef	struct
 		{
 			SoundCommon	common;
 			id0_byte_t		data[1];
-		} __attribute((__packed__)) PCSound;
+		} PCSound;
 
 // 	Registers for the Sound Blaster card - needs to be offset by n0
 #define	sbReset		0x206
@@ -86,7 +88,7 @@ typedef	struct
 			id0_byte_t		bits,
 						reference,
 						data[1];
-		} __attribute((__packed__)) SampledSound;
+		} SampledSound;
 
 // REFKEEN - Sampled sound type for the 2015 port data
 // (actually the same as PCSound, but let's use different type for data)
@@ -94,7 +96,7 @@ typedef	struct
 		{
 			SoundCommon	common;
 			id0_int_t		data[1];
-		} __attribute((__packed__)) Port2015SampledSound;
+		} Port2015SampledSound;
 
 // 	Registers for the AdLib card
 // Operator stuff
@@ -119,7 +121,7 @@ typedef	struct
 					mWave,cWave,
 					nConn,
 					unused[5];
-		} __attribute((__packed__)) Instrument;
+		} Instrument;
 
 typedef	struct
 		{
@@ -127,7 +129,7 @@ typedef	struct
 			Instrument	inst;
 			id0_byte_t		block,
 						data[1];
-		} __attribute((__packed__)) AdLibSound;
+		} AdLibSound;
 
 //
 //	Sequencing stuff
@@ -150,7 +152,7 @@ typedef	struct
 			id0_word_t	flags,
 					count,
 					offsets[1];
-		} __attribute((__packed__)) MusicGroup;
+		} MusicGroup;
 
 typedef	struct
 		{
@@ -161,7 +163,9 @@ typedef	struct
 			Instrument	inst;
 			id0_word_t		*seq;
 			id0_longword_t	nextevent;
-		} __attribute((__packed__)) ActiveTrack;
+		} ActiveTrack;
+
+#pragma pack(pop)
 
 #define	sqmode_Normal		0
 #define	sqmode_FadeIn		1

@@ -68,11 +68,14 @@ typedef	enum	{
 					sds_Off,sds_PC,sds_SoundSource,sds_SoundBlaster
 #endif
 				}	SDSMode;
+
+#pragma pack(push, 1)
+
 typedef	struct
 		{
 			id0_longword_t	length;
 			id0_word_t		priority;
-		} __attribute((__packed__)) SoundCommon;
+		} SoundCommon;
 
 //	PC Sound stuff
 #define	pcTimer		0x42
@@ -85,7 +88,7 @@ typedef	struct
 		{
 			SoundCommon	common;
 			id0_byte_t		data[1];
-		} __attribute((__packed__)) PCSound;
+		} PCSound;
 
 // 	Registers for the Sound Blaster card - needs to be offset by n0 (0x10,0x20,0x30,0x40,0x50,0x60)
 #define	sbReset		0x206	// W
@@ -130,7 +133,7 @@ typedef	struct
 			id0_byte_t		bits,
 						reference,
 						data[1];
-		} __attribute((__packed__)) SampledSound;
+		} SampledSound;
 
 // 	Registers for the AdLib card
 #define	alFMStatus	0x388	// R
@@ -164,7 +167,7 @@ typedef	struct
 					voice,
 					mode,
 					unused[3];
-		} __attribute((__packed__)) Instrument;
+		} Instrument;
 
 typedef	struct
 		{
@@ -172,7 +175,7 @@ typedef	struct
 			Instrument	inst;
 			id0_byte_t		block,
 						data[1];
-		} __attribute((__packed__)) AdLibSound;
+		} AdLibSound;
 
 //
 //	Sequencing stuff
@@ -199,14 +202,14 @@ typedef	struct
 		{
 			id0_word_t	length,
 					values[1];
-		} __attribute((__packed__)) MusicGroup;
+		} MusicGroup;
 #else
 typedef	struct
 		{
 			id0_word_t	flags,
 					count,
 					offsets[1];
-		} __attribute((__packed__)) MusicGroup;
+		} MusicGroup;
 #endif
 
 // *** S3DNA RESTORATION ***
@@ -219,7 +222,7 @@ typedef struct	{
 					mSustain,cSustain,
 					mWave,cWave,
 					mFeedConn;
-		} __attribute((__packed__)) inst_t;
+		} inst_t;
 #else
 typedef	struct
 		{
@@ -231,8 +234,10 @@ typedef	struct
 			id0_boolean_t		percussive;
 			id0_word_t		id0_far *seq;
 			id0_longword_t	nextevent;
-		} __attribute((__packed__)) ActiveTrack;
+		} ActiveTrack;
 #endif
+
+#pragma pack(pop)
 
 #define	sqmode_Normal		0
 #define	sqmode_FadeIn		1

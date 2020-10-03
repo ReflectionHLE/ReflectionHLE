@@ -68,7 +68,7 @@ extern id0_short_t PPT_LeftEdge,PPT_RightEdge;
 typedef struct Sample {
 		id0_char_t *filename;
 		memptr *data;
-} __attribute__((__packed__)) Sample;
+} Sample;
 #endif
 
 typedef enum {ged_none, ged_SoundSource,ged_SoundBlaster} AudioDeviceType;
@@ -91,10 +91,14 @@ typedef enum ANIMINFO {at_NONE,at_INIT,at_WAIT,at_ONCE,at_CYCLE,
 							  at_FWD,at_REV
 } ANIMINFO;
 
+#pragma pack(push, 1)
+
 struct BitMapHeader {
 	id0_unsigned_int_t    w,h,x,y;
 	id0_unsigned_char_t   d,trans,comp,pad;
-} __attribute__((__packed__));
+};
+
+#pragma pack(pop)
 
 // (REFKEEN) Seems unused
 #if 0

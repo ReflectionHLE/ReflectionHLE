@@ -75,6 +75,7 @@ typedef enum LibFileTypes
 } LibFileTypes;
 
 
+#pragma pack(push, 1)
 
 //--------------------------------------------------------------------------
 //   							SOFTLIB Library File header..
@@ -86,7 +87,7 @@ typedef struct SoftLibHdr
 {
 	id0_unsigned_t Version;									// Library Version Num
 	id0_unsigned_t FileCount;
-} __attribute__((__packed__)) SoftlibHdr;
+} SoftlibHdr;
 
 
 
@@ -103,7 +104,7 @@ typedef struct FileEntryHdr
 	id0_unsigned_long_t ChunkLen;
 	id0_unsigned_long_t OrginalLength;
 	id0_short_t Compression;								// ct_TYPES
-} __attribute__((__packed__)) FileEntryHdr;
+} FileEntryHdr;
 
 
 
@@ -116,8 +117,8 @@ typedef struct ChunkHeader
 	id0_unsigned_long_t HeaderID;
 	id0_unsigned_long_t OrginalLength;
 	id0_short_t Compression;								// ct_TYPES
-} __attribute__((__packed__)) ChunkHeader;
+} ChunkHeader;
 
-
+#pragma pack(pop)
 
 #endif

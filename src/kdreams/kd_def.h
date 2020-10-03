@@ -176,10 +176,12 @@ typedef struct	objstruct
 
 
 // REFKEEN - Originally defined in certain versions, we always do for multi-ver support
+#pragma pack(push, 1)
 struct BitMapHeader {
 	id0_unsigned_int_t	w,h,x,y;
 	id0_unsigned_char_t	d,trans,comp,pad;
-} __attribute__((__packed__));
+};
+#pragma pack(pop)
 
 // (REFKEEN) Seems unused
 struct BitMap {

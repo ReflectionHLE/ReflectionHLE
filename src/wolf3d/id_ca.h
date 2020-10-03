@@ -40,13 +40,17 @@ REFKEEN_NS_B
 
 //===========================================================================
 
+#pragma pack(push, 1)
+
 typedef	struct
 {
 	id0_long_t		planestart[3];
 	id0_unsigned_t	planelength[3];
 	id0_unsigned_t	width,height;
 	id0_char_t		name[16];
-} __attribute__((__packed__)) maptype;
+} maptype;
+
+#pragma pack(pop)
 
 //===========================================================================
 

@@ -88,14 +88,16 @@ struct COMPStruct
 };
 #endif
 
+#pragma pack(push, 1)
 
 struct CMP1Header
 {
 	id0_unsigned_t CompType;					// SEE: ct_TYPES above for list of pos.
 	id0_unsigned_long_t OrginalLen;			// Orginal FileLength of compressed Data.
 	id0_unsigned_long_t CompressLen;			// Length of data after compression (A MUST for LZHUFF!)
-} __attribute__((__packed__));
+};
 
+#pragma pack(pop)
 
 
 //---------------------------------------------------------------------------

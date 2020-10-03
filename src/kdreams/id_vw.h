@@ -163,6 +163,8 @@ extern	id0_int_t	WHITE, BLACK, FIRSTCOLOR, SECONDCOLOR, F_BLACK, F_FIRSTCOLOR, F
 typedef enum {NOcard,MDAcard,CGAcard,EGAcard,MCGAcard,VGAcard,
 		  HGCcard=0x80,HGCPcard,HICcard} cardtype;
 
+#pragma pack(push, 1)
+
 typedef struct
 {
   id0_int_t	width,
@@ -170,7 +172,7 @@ typedef struct
 	orgx,orgy,
 	xl,yl,xh,yh,
 	shifts;
-} __attribute__((__packed__)) spritetabletype;
+} spritetabletype;
 
 // REFKEEN - Split type based on MAXSHIFTS_CGA/MAXSHIFTS_EGA;
 // Special routines may be required for accessing struct members
@@ -180,7 +182,7 @@ typedef	struct
 	id0_unsigned_t	planesize[MAXSHIFTS_EGA];
 	id0_unsigned_t	width[MAXSHIFTS_EGA];
 	id0_byte_t		data[];
-} __attribute__((__packed__)) spritetype_ega;		// the memptr for each sprite points to this
+} spritetype_ega;		// the memptr for each sprite points to this
 
 typedef	struct
 {
@@ -188,7 +190,7 @@ typedef	struct
 	id0_unsigned_t	planesize[MAXSHIFTS_CGA];
 	id0_unsigned_t	width[MAXSHIFTS_CGA];
 	id0_byte_t		data[];
-} __attribute__((__packed__)) spritetype_cga;		// the memptr for each sprite points to this
+} spritetype_cga;		// the memptr for each sprite points to this
 
 // REFKEEN - Add video mode-agnostic spritetype accessors (NEW DEFINITIONS)
 #define VW_GetSpriteShiftSourceOffset(block, i) ((GRMODE == EGAGR) ? (((spritetype_ega *)(block))->sourceoffset[i]) : (((spritetype_cga *)(block))->sourceoffset[i]))
@@ -199,7 +201,7 @@ typedef	struct
 typedef struct
 {
 	id0_int_t width,height;
-} __attribute__((__packed__)) pictabletype;
+} pictabletype;
 
 
 typedef struct
@@ -207,8 +209,9 @@ typedef struct
 	id0_int_t height;
 	id0_int_t location[256];
 	id0_char_t width[256];
-} __attribute__((__packed__)) fontstruct;
+} fontstruct;
 
+#pragma pack(pop)
 
 // REFKEEN - Not originally used, and related code won't compile as C++ as-is
 //typedef enum {CGAgr,EGAgr,VGAgr} grtype;

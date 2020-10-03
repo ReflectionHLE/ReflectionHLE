@@ -63,6 +63,8 @@ static const id0_char_t *refkeen_compat_config_filename;
 
 #define	MaxHelpLines	500
 
+#pragma pack(push, 1)
+
 #define	MaxHighName	57
 #define	MaxScores	10
 typedef	struct
@@ -70,7 +72,7 @@ typedef	struct
 			id0_char_t	name[MaxHighName + 1];
 			id0_long_t	score;
 			id0_word_t	completed;
-		} __attribute((__packed__)) HighScore;
+		} HighScore;
 
 #define	MaxGameName		32
 #define	MaxSaveGames	7
@@ -79,7 +81,9 @@ typedef	struct
 			id0_char_t	signature[4];
 			id0_boolean_t	present;
 			id0_char_t	name[MaxGameName + 1];
-		} __attribute((__packed__)) SaveGame;
+		} SaveGame;
+
+#pragma pack(pop)
 
 //	Hack import for TED launch support
 extern	id0_boolean_t		tedlevel;

@@ -56,10 +56,12 @@ REFKEEN_NS_B
 =============================================================================
 */
 
+#pragma pack(push, 1)
+
 typedef struct
 {
   id0_unsigned_t bit0,bit1;	// 0-255 is a character, > is a pointer to a node
-} __attribute__((__packed__)) huffnode;
+} huffnode;
 
 
 typedef struct
@@ -67,7 +69,9 @@ typedef struct
 	id0_unsigned_t	RLEWtag;
 	id0_long_t		headeroffsets[100];
 	id0_byte_t		tileinfo[];
-} __attribute__((__packed__)) mapfiletype;
+} mapfiletype;
+
+#pragma pack(pop)
 
 
 /*

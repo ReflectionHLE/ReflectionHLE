@@ -139,12 +139,15 @@ typedef	struct		{
 						Direction	dir;
 					} CursorInfo;
 typedef	CursorInfo	ControlInfo;
+
+#pragma pack(push, 1)
+
 typedef	struct		{
 						ScanCode	button0,button1,
 									upleft,		up,		upright,
 									left,				right,
 									downleft,	down,	downright;
-					} __attribute__((__packed__)) KeyboardDef;
+					} KeyboardDef;
 typedef	struct		{
 						id0_word_t		joyMinX,joyMinY,
 									threshMinX,threshMinY,
@@ -152,7 +155,10 @@ typedef	struct		{
 									joyMaxX,joyMaxY,
 									joyMultXL,joyMultYL,
 									joyMultXH,joyMultYH;
-					} __attribute__((__packed__)) JoystickDef;
+					} JoystickDef;
+
+#pragma pack(pop)
+
 // Global variables
 extern	id0_boolean_t		Keyboard[],
 					MousePresent,

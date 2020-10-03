@@ -173,6 +173,8 @@ REFKEEN_NS_B
 typedef enum {NOcard,MDAcard,CGAcard,EGAcard,MCGAcard,VGAcard,
 		  HGCcard=0x80,HGCPcard,HICcard} cardtype;
 
+#pragma pack(push, 1)
+
 typedef struct
 {
   id0_int_t	width,
@@ -180,7 +182,7 @@ typedef struct
 	orgx,orgy,
 	xl,yl,xh,yh,
 	shifts;
-} __attribute__((__packed__)) spritetabletype;
+} spritetabletype;
 
 typedef	struct
 {
@@ -188,12 +190,12 @@ typedef	struct
 	id0_unsigned_t	planesize[MAXSHIFTS];
 	id0_unsigned_t	width[MAXSHIFTS];
 	id0_byte_t		data[];
-} __attribute__((__packed__)) spritetype;		// the memptr for each sprite points to this
+} spritetype;		// the memptr for each sprite points to this
 
 typedef struct
 {
 	id0_int_t width,height;
-} __attribute__((__packed__)) pictabletype;
+} pictabletype;
 
 
 typedef struct
@@ -201,8 +203,9 @@ typedef struct
 	id0_int_t height;
 	id0_int_t location[256];
 	id0_char_t width[256];
-} __attribute__((__packed__)) fontstruct;
+} fontstruct;
 
+#pragma pack(pop)
 
 // REFKEEN - Not originally used, and related code won't compile as C++ as-is
 //typedef enum {CGAgr,EGAgr,VGAgr} grtype;
