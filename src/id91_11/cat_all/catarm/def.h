@@ -673,13 +673,13 @@ typedef struct
 	id0_unsigned_t	start[65];
 	id0_unsigned_t	width[65];
 	id0_byte_t		code[];
-}	__attribute__((__packed__)) t_compscale;
+}	t_compscale;
 
 typedef struct
 {
 	id0_unsigned_t	width;
 	id0_unsigned_t	codeofs[64];
-}	__attribute__((__packed__)) t_compshape;
+}	t_compshape;
 
 
 extern id0_unsigned_t	scaleblockwidth,
