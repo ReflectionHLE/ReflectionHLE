@@ -400,12 +400,15 @@ BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpola
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type*", g_be_videoSettingsChoices_scaleType)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleFactor, "Scale factor", g_be_videoSettingsChoices_scaleFactor)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_VSync, "VSync", g_be_videoSettingsChoices_vSync)
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ForceFullSoftScaling, "Force full software scaling*", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ForceFullSoftScaling, "Force full software scaling**", g_be_settingsChoices_boolean)
 #ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_LauncherWindowType, "Launcher window type", g_be_videoSettingsChoices_launcherWindowType)
 #endif
+BEMENUITEM_DEF_STATIC(g_beVideoSettingsMenuItem_ScaleTypeComment,
+"* Border porches aren't separately shown without aspect correction."
+);
 BEMENUITEM_DEF_STATIC(g_beVideoSettingsMenuItem_SoftScalingComment,
-"* Full software scaling should be manually toggled. Note that it can lead to great slowdowns with high-resolution windows."
+"** Full software scaling should be manually toggled. Note that it can lead to great slowdowns with high-resolution windows."
 );
 
 static BEMenuItem *g_beVideoSettingsMenuItems[] = {
@@ -426,6 +429,7 @@ static BEMenuItem *g_beVideoSettingsMenuItems[] = {
 #ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 	&g_beVideoSettingsMenuItem_LauncherWindowType,
 #endif
+	&g_beVideoSettingsMenuItem_ScaleTypeComment,
 	&g_beVideoSettingsMenuItem_SoftScalingComment,
 	NULL
 };
