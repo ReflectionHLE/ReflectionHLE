@@ -337,12 +337,13 @@ id0_int_t DebugKeys (void)
 #if 1//DEBUG_KEYS_AVAILABLE
 	if (Keyboard[sc_O])
 	{
-		extern id0_unsigned_t objectcount,latchmemavail;
+		extern id0_int_t objectcount;
+		extern id0_unsigned_t /*objectcount,*/latchmemavail;
 		id0_unsigned_t unused,total;
 
 		CenterWindow (30,13);
 		US_Print ("Objects: ");
-		US_PrintUnsigned (objectcount);
+		US_PrintUnsigned ((id0_word_t)objectcount);
 
 		US_Print("\n\nTics: ");
 		US_PrintUnsigned (tics);
