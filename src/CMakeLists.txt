@@ -27,6 +27,12 @@ if (MSVC)
 	list(APPEND be_src src/dirent/dirent.c)
 endif ()
 
+if (WIN32)
+	list(APPEND be_src src/backend/filesystem/be_filesystem_dir_win32.c)
+else ()
+	list(APPEND be_src src/backend/filesystem/be_filesystem_dir_unix.c)
+endif ()
+
 if (REFKEEN_ENABLE_LAUNCHER)
 	list(APPEND be_src src/be_launcher.c src/be_st_sdl_launcher.c)
 endif ()
