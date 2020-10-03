@@ -2062,8 +2062,6 @@ void DisplayGameList(id0_short_t winx, id0_short_t winy, id0_short_t list_width,
 	{
 		// Print filename and padding spaces.
 		//
-		void US_Printxy(id0_word_t x, id0_word_t y, id0_char_t *text);
-
 		US_Printxy(col+(SPACES*8),row,GameListNames[games_printed]);
 		col += 8*((SPACES*2)+8);
 

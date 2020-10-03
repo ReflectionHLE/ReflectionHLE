@@ -492,6 +492,8 @@ id0_unsigned_t		postsourceoff;
 id0_unsigned_t	postx;
 id0_unsigned_t	postwidth;
 
+void BadScale(void);
+
 void	id0_near ScalePost (void)		// VGA version
 {
 	// fractional height (low 3 bits fraction)
@@ -502,10 +504,7 @@ void	id0_near ScalePost (void)		// VGA version
 	id0_byte_t *linescale = (id0_byte_t *)fullscalefarcall[h/4];
 //	id0_byte_t *linescale = (id0_byte_t *)(fullscalefarcall[h/sizeof(*fullscalefarcall)]);
 	if (!linescale)
-	{
-		void BadScale(void);
 		BadScale();
-	}
 
 	//
 	// scale a byte wide strip of wall

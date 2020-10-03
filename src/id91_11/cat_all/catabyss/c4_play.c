@@ -752,6 +752,7 @@ void StartMusic(void)
 
 //==========================================================================
 
+id0_int_t IntSqrt(id0_long_t va); // REFKEEN: For namespaced C++ build
 
 /*
 ===================
@@ -924,8 +925,6 @@ nextactor:;
 				{
 					norm_dx = (dx = px-ox)>>TILESHIFT;
 					norm_dy = (dy = oy-py)>>TILESHIFT;
-
-					id0_int_t IntSqrt(id0_long_t va);
 
 					o_radius = IntSqrt((norm_dx * norm_dx) + (norm_dy * norm_dy));
 

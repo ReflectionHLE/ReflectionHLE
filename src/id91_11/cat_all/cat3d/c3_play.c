@@ -166,7 +166,6 @@ void CheckKeys (void)
 		VW_UpdateScreen ();
 		US_ControlPanel();
 		// REFKEEN - Alternative controllers support (maybe user has changed some keys which may currently have an effect)
-		void PrepareGamePlayControllerMapping(void);
 		PrepareGamePlayControllerMapping();
 		//
 		if (abortgame)

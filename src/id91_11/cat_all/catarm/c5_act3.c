@@ -1028,8 +1028,6 @@ void T_AwakeThink(objtype *obj)
 // REFKEEN - Use classtype instead of short for obclass
 id0_boolean_t ShootPlayer(objtype *ob, classtype/*id0_short_t*/ obclass, id0_short_t speed, statetype *state)
 {
-	id0_int_t AngleNearPlayer(objtype *ob); // REFKEEN - Mute compilation error
-
 	id0_int_t angle = AngleNearPlayer(ob);
 
 	if (angle == -1)

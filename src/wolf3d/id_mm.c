@@ -463,6 +463,9 @@ void MM_Shutdown (void)
 
 //==========================================================================
 
+// REFKEEN: Move Wolf3D declaration out of function for namespaced C++ builds
+id0_boolean_t SetViewSize(id0_unsigned_t width, id0_unsigned_t height);
+
 /*
 ====================
 =
@@ -566,7 +569,7 @@ extern id0_char_t configname[];
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 extern	id0_boolean_t	insetupscaling;
 extern	id0_int_t	viewsize;
-id0_boolean_t SetViewSize (id0_unsigned_t width, id0_unsigned_t height);
+//id0_boolean_t SetViewSize (id0_unsigned_t width, id0_unsigned_t height);
 #define HEIGHTRATIO		0.50
 //
 // wolf hack -- size the view down

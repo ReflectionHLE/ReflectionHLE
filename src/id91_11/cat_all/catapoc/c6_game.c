@@ -1532,7 +1532,6 @@ void GameLoop (void)
 #endif
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Push();
-	void PrepareGamePlayControllerMapping(void);
 	PrepareGamePlayControllerMapping();
 
 	DrawPlayScreen ();

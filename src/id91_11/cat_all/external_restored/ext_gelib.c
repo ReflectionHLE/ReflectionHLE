@@ -54,6 +54,10 @@ extern id0_int_t screenmode;
 //id0_unsigned_t ylookup[VIRTUALHEIGHT];
 //id0_unsigned_t displayofs;
 
+void loadscn_TrashProg(const id0_char_t *OutMsg, ...);
+void slidecat_TrashProg(const id0_char_t *OutMsg, ...);
+void intro_TrashProg(const id0_char_t *OutMsg, ...);
+
 void TrashProg (const id0_char_t *OutMsg, ...)
 {
 	va_list ap;
@@ -63,22 +67,13 @@ void TrashProg (const id0_char_t *OutMsg, ...)
 	// *and* (sub)program actually being run (INTRO vs LOADSCN)
 #ifdef REFKEEN_VER_CATABYSS
 	if ((refkeen_current_gamever == BE_GAMEVER_CATABYSS113) && (be_lastSetMainFuncPtr == loadscn_exe_main))
-	{
-		void loadscn_TrashProg (const id0_char_t *OutMsg, ...);
 		loadscn_TrashProg(OutMsg, ap);
-	}
 	else
 #endif
 	if (be_lastSetMainFuncPtr == slidecat_exe_main)
-	{
-		void slidecat_TrashProg (const id0_char_t *OutMsg, ...);
 		slidecat_TrashProg(OutMsg, ap);
-	}
 	else
-	{
-		void intro_TrashProg (const id0_char_t *OutMsg, ...);
 		intro_TrashProg(OutMsg, ap);
-	}
 	va_end(ap);
 }
 

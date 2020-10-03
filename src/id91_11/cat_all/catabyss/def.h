@@ -885,6 +885,7 @@ extern	statetype s_red_demonouch;
 
 extern	statetype s_red_demondie1;
 
+id0_int_t AngleNearPlayer(objtype* ob); // REFKEEN: Added as in the later episodes
 void SpawnBonus (id0_int_t tilex, id0_int_t tiley, id0_int_t number);
 void SpawnWarp (id0_int_t tilex, id0_int_t tiley, id0_int_t type);
 void SpawnTroll (id0_int_t tilex, id0_int_t tiley);

@@ -159,6 +159,11 @@ extern	id0_int_t		US_CheckParm(const id0_char_t *parm,const id0_char_t **strings
 		void	USL_PrintInCenter(const id0_char_t *s,Rect r);
 		id0_char_t 	*USL_GiveSaveName(id0_word_t game);
 
+// REFKEEN: For namespaced C++ builds of the Catacomb Adventure Series
+#ifdef REFKEEN_VER_CATADVENTURES
+void US_Printxy(id0_word_t x, id0_word_t y, id0_char_t* text);
+#endif
+
 // (REFKEEN) BACKWARDS COMPATIBILITY: Pointer to the PrintX var is written
 // to saved game file in id_us_1.c, and it's later checked while scanning a
 // directory for saved games (probably for picking the compatible ones).

@@ -247,7 +247,6 @@ void CheckKeys (void)
 		VW_UpdateScreen ();
 		US_ControlPanel();
 		// REFKEEN - Alternative controllers support (maybe user has changed some keys which may currently have an effect)
-		void PrepareGamePlayControllerMapping(void);
 		PrepareGamePlayControllerMapping();
 		//
 		IN_ClearKeysDown();
@@ -1947,7 +1946,6 @@ void GameLoop (void)
 
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Push();
-	void PrepareGamePlayControllerMapping(void);
 	PrepareGamePlayControllerMapping();
 
 	do

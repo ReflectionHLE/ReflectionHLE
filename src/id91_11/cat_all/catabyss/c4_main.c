@@ -645,6 +645,8 @@ void InitGame (void)
 
 //void clrscr (void);		// can't include CONIO.H because of name conflicts...
 
+void loadscn_exe_main(void);
+
 /*
 ==========================
 =
@@ -719,7 +721,6 @@ void Quit (const id0_char_t *error, ...)
 				BE_ST_HandleExit(1);
 			}
 	#endif
-			void loadscn_exe_main(void);
 			BE_Cross_Bexecv(loadscn_exe_main, id0_argv, NULL, false);
 		}
 	}

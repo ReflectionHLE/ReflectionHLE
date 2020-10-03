@@ -213,6 +213,7 @@ REFKEEN_NS_E
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
+#include "altcontroller.h" // REFKEEN: New addition
 
 REFKEEN_NS_B
 

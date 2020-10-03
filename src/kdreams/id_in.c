@@ -579,7 +579,6 @@ IN_Startup(void)
 	INL_StartKbd();
 	MousePresent = checkmouse? INL_StartMouse() : false;
 	// REFKEEN - Alternative controllers support
-	void FinalizeControlPanelMappingsByMousePresence(bool withmouse);
 	FinalizeControlPanelMappingsByMousePresence(MousePresent);
 	//
 
