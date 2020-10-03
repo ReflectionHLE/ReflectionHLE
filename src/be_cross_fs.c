@@ -21,11 +21,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <setjmp.h>
-#ifdef _MSC_VER
-#include "dirent/dirent.h"
-#else
-#include <dirent.h>
-#endif
 #include <fcntl.h>
 #include <sys/types.h>
 
@@ -49,6 +44,7 @@
 #include <sys/stat.h>
 #endif
 
+#include "backend/filesystem/be_filesystem_dir.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_sound_device_flags.h"
@@ -67,29 +63,17 @@
 #define TCHAR wchar_t
 #define _tcslen wcslen
 #define _tcscmp wcscmp
-#define _TDIR _WDIR
-#define _tdirent _wdirent
 #define _tfopen _wfopen
 #define _tremove _wremove
 #define _tmkdir _wmkdir
-#define _topendir _wopendir
-#define _tclosedir _wclosedir
-#define _treaddir _wreaddir
-#define _trewinddir _wrewinddir
 #else
 #define _T(x) x
 #define TCHAR char
 #define _tcslen strlen
 #define _tcscmp strcmp
-#define _TDIR DIR
-#define _tdirent dirent
 #define _tfopen fopen
 #define _tremove remove
 #define _tmkdir mkdir
-#define _topendir opendir
-#define _tclosedir closedir
-#define _treaddir readdir
-#define _trewinddir rewinddir
 #endif
 
 // Use this in case x is a macro defined to be a narrow string literal
@@ -537,33 +521,32 @@ static BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 		const char *filename, BE_FileRequest_T request,
 		const TCHAR *searchdir, TCHAR *outfullpath)
 {
-	_TDIR *dir;
-	struct _tdirent *direntry;
-	dir = _topendir(searchdir);
+	TCHAR *d_name;
+	BE_DIR_T dir = BEL_Cross_OpenDir(searchdir);
 	if (!dir)
 		return NULL;
 
 	TCHAR fullpath[BE_CROSS_PATH_LEN_BOUND];
 
-	for (direntry = _treaddir(dir); direntry; direntry = _treaddir(dir))
+	for (d_name = BEL_Cross_ReadDir(dir); d_name; d_name = BEL_Cross_ReadDir(dir))
 	{
 		/*** Ignore non-ASCII filenames ***/
-		if (*BEL_Cross_tstr_find_nonascii_ptr(direntry->d_name))
+		if (*BEL_Cross_tstr_find_nonascii_ptr(d_name))
 		{
 			continue;
 		}
-		if (!BEL_Cross_tstr_to_cstr_ascii_casecmp(direntry->d_name, filename))
+		if (!BEL_Cross_tstr_to_cstr_ascii_casecmp(d_name, filename))
 		{
 			// Just a little sanity check
-			if (_tcslen(searchdir) + 1 + _tcslen(direntry->d_name) >= BE_CROSS_PATH_LEN_BOUND)
+			if (_tcslen(searchdir) + 1 + _tcslen(d_name) >= BE_CROSS_PATH_LEN_BOUND)
 			{
-				_tclosedir(dir);
+				BEL_Cross_CloseDir(dir);
 				return NULL;
 			}
 			TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
-			BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, searchdir, _T("/"), direntry->d_name);
+			BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, searchdir, _T("/"), d_name);
 
-			_tclosedir(dir);
+			BEL_Cross_CloseDir(dir);
 			if (outfullpath)
 			{
 				memcpy(outfullpath, fullpath, sizeof(fullpath));
@@ -580,7 +563,7 @@ static BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 			}
 		}
 	}
-	_tclosedir(dir);
+	BEL_Cross_CloseDir(dir);
 
 	if (request != BE_FILE_REQUEST_OVERWRITE)
 		return NULL;
@@ -872,35 +855,35 @@ void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
 #ifdef BE_CROSS_ENABLE_SORTED_FILENAMES_FUNC
 int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int maxNum, int strLenBound, const char *suffix)
 {
-	struct _tdirent *direntry;
+	TCHAR *d_name;
 	size_t sufLen = strlen(suffix);
 	char *nextFilename = outFilenames, *outFilenamesEnd = outFilenames + maxNum*strLenBound, *outFilenamesLast = outFilenamesEnd - strLenBound;
 	char *checkFilename, *checkCh, *dnameCStr;
 	// For the sake of consistency we look for files just in this path
-	_TDIR * dir = _topendir(g_be_selectedGameInstallation->writableFilesPath);
+	BE_DIR_T dir = BEL_Cross_OpenDir(g_be_selectedGameInstallation->writableFilesPath);
 	if (!dir)
 	{
 		return 0;
 	}
-	for (direntry = _treaddir(dir); direntry; direntry = _treaddir(dir))
+	for (d_name = BEL_Cross_ReadDir(dir); d_name; d_name = BEL_Cross_ReadDir(dir))
 	{
-		size_t len = _tcslen(direntry->d_name);
+		size_t len = _tcslen(d_name);
 		TCHAR *tchPtr;
 		/*** Ignore non-ASCII filenames ***/
-		if (*BEL_Cross_tstr_find_nonascii_ptr(direntry->d_name))
+		if (*BEL_Cross_tstr_find_nonascii_ptr(d_name))
 		{
 			continue;
 		}
-		if ((len < sufLen) || BEL_Cross_tstr_to_cstr_ascii_casecmp(direntry->d_name+len-sufLen, suffix))
+		if ((len < sufLen) || BEL_Cross_tstr_to_cstr_ascii_casecmp(d_name+len-sufLen, suffix))
 		{
 			continue;
 		}
 		len -= sufLen;
 		/*** Possibly a HACK - Modify d_name itself ***/
 		len = (len >= (size_t)strLenBound) ? (strLenBound-1) : len;
-		direntry->d_name[len] = _T('\0');
+		d_name[len] = _T('\0');
 		/*** Another HACK - Further convert d_name from wide string on Windows (and watch out due to strict aliasing rules) ***/
-		tchPtr = direntry->d_name;
+		tchPtr = d_name;
 		dnameCStr = (char *)tchPtr;
 		for (checkCh = dnameCStr; *tchPtr; ++checkCh, ++tchPtr)
 		{
@@ -950,7 +933,7 @@ int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int ma
 			}
 		};
 	}
-	_tclosedir(dir);
+	BEL_Cross_CloseDir(dir);
 	return (nextFilename-outFilenames)/strLenBound;
 }
 #endif
@@ -1353,9 +1336,8 @@ static void BEL_Cross_DirSelection_ClearResources(void)
 
 static const char **BEL_Cross_DirSelection_PrepareDirsAndGetNames(int *outNumOfSubDirs)
 {
-	_TDIR *dir;
-	struct _tdirent *direntry;
-	dir = _topendir(g_be_dirSelection_currPath);
+	TCHAR *d_name;
+	BE_DIR_T dir = BEL_Cross_OpenDir(g_be_dirSelection_currPath);
 	if (!dir)
 		return NULL;
 
@@ -1364,19 +1346,19 @@ static const char **BEL_Cross_DirSelection_PrepareDirsAndGetNames(int *outNumOfS
 
 	int numOfSubDirs = 0;
 	int charsToAllocateForNames = 0;
-	for (direntry = _treaddir(dir); direntry; direntry = _treaddir(dir))
+	for (d_name = BEL_Cross_ReadDir(dir); d_name; d_name = BEL_Cross_ReadDir(dir))
 	{
 		/*** Ignore non-ASCII dirnames or any of a few special entries ***/
-		if (*BEL_Cross_tstr_find_nonascii_ptr(direntry->d_name) || !_tcscmp(direntry->d_name, _T(".")) || !_tcscmp(direntry->d_name, _T("..")))
+		if (*BEL_Cross_tstr_find_nonascii_ptr(d_name) || !_tcscmp(d_name, _T(".")) || !_tcscmp(d_name, _T("..")))
 			continue;
 
-		BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, g_be_dirSelection_currPath, _T("/"), direntry->d_name);
+		BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, g_be_dirSelection_currPath, _T("/"), d_name);
 		if (!BEL_Cross_IsDir(fullpath))
 			continue;
 
 		++numOfSubDirs;
 
-		charsToAllocateForNames += 1 + _tcslen(direntry->d_name);
+		charsToAllocateForNames += 1 + _tcslen(d_name);
 	}
 
 	g_be_dirSelection_dirnamesBuffer = (char *)malloc(charsToAllocateForNames);
@@ -1384,26 +1366,26 @@ static const char **BEL_Cross_DirSelection_PrepareDirsAndGetNames(int *outNumOfS
 	if (!(g_be_dirSelection_dirnamesBuffer && g_be_dirSelection_dirnamesBufferPtrPtrs))
 	{
 		BEL_Cross_DirSelection_ClearResources();
-		_tclosedir(dir);
+		BEL_Cross_CloseDir(dir);
 		BE_ST_ExitWithErrorMsg("BEL_Cross_DirSelection_PrepareDirsAndGetNames: Out of memory!");
 	}
 
 	// Re-scan, and be ready for the case directory contents have changed
 	int repeatedNumOfSubDirs = 0;
 	int repeatedCharsToAllocateForNames = 0;
-	_trewinddir(dir);
+	BEL_Cross_RewindDir(dir);
 	char *dirnameBufferPtr = g_be_dirSelection_dirnamesBuffer;
-	for (direntry = _treaddir(dir); direntry; direntry = _treaddir(dir))
+	for (d_name = BEL_Cross_ReadDir(dir); d_name; d_name = BEL_Cross_ReadDir(dir))
 	{
 		/*** Ignore non-ASCII dirnames or any of a few special entries ***/
-		if (*BEL_Cross_tstr_find_nonascii_ptr(direntry->d_name) || !_tcscmp(direntry->d_name, _T(".")) || !_tcscmp(direntry->d_name, _T("..")))
+		if (*BEL_Cross_tstr_find_nonascii_ptr(d_name) || !_tcscmp(d_name, _T(".")) || !_tcscmp(d_name, _T("..")))
 			continue;
 
-		BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, g_be_dirSelection_currPath, _T("/"), direntry->d_name);
+		BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, g_be_dirSelection_currPath, _T("/"), d_name);
 		if (!BEL_Cross_IsDir(fullpath))
 			continue;
 
-		size_t len = _tcslen(direntry->d_name);
+		size_t len = _tcslen(d_name);
 		if ((++repeatedNumOfSubDirs > numOfSubDirs) || ((repeatedCharsToAllocateForNames += 1 + len) > charsToAllocateForNames))
 		{
 			--repeatedNumOfSubDirs;
@@ -1412,7 +1394,7 @@ static const char **BEL_Cross_DirSelection_PrepareDirsAndGetNames(int *outNumOfS
 
 		char *currDirnameBufferPtr = dirnameBufferPtr;
 
-		TCHAR *tchPtr = direntry->d_name;
+		TCHAR *tchPtr = d_name;
 		for (size_t i = 0; i <= len; ++i)
 			*currDirnameBufferPtr++ = *tchPtr++; // Possibly convert (ASCII only) wchar_t to char here
 
@@ -1430,7 +1412,7 @@ static const char **BEL_Cross_DirSelection_PrepareDirsAndGetNames(int *outNumOfS
 		dirnameBufferPtr = currDirnameBufferPtr;
 	}
 
-	_tclosedir(dir);
+	BEL_Cross_CloseDir(dir);
 	*outNumOfSubDirs = repeatedNumOfSubDirs;
 	return (const char **)g_be_dirSelection_dirnamesBufferPtrPtrs;
 }
