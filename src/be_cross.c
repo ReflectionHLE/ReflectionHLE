@@ -22,7 +22,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
-#include <unistd.h>
 
 #include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
 
