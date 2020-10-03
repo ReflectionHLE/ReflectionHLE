@@ -1,13 +1,7 @@
 // New file with pre-calculated sine table, originally
 // dumped by the DOSBox debugger while running Catacomb 3-D v1.22
 
-#ifdef REFKEEN_VER_WOLF3D_ALL
-#include "wl_def.h"
-#elif (defined REFKEEN_VER_CATADVENTURES)
-#include "def.h"
-#else
-#include "c3_def.h"
-#endif
+#include "refkeen.h"
 
 REFKEEN_NS_B
 
