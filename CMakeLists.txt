@@ -98,7 +98,11 @@ endif ()
 
 configure_file(refkeen_config.h.in refkeen_config.h)
 
-set(LIBRARIES ${SDL2_LIBRARY} ${SPEEXDSP_LIBRARIES} m)
+set(LIBRARIES ${SDL2_LIBRARY} ${SPEEXDSP_LIBRARIES})
+check_library_exists(m pow "" LIBM)
+if (LIBM)
+	set(LIBRARIES ${LIBRARIES} m)
+endif ()
 if (WIN32)
 	set(LIBRARIES ${LIBRARIES} shlwapi)
 endif ()
