@@ -956,7 +956,8 @@ void SetupScaling (void)
 
 //===========================================================================
 
-id0_int_t	showscorebox;
+id0_boolean_t	showscorebox;
+//id0_int_t	showscorebox;
 
 void RF_FixOfs (void)
 {

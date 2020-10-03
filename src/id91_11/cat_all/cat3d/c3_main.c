@@ -834,7 +834,8 @@ void SetupScaling (void)
 
 //===========================================================================
 
-id0_int_t	showscorebox;
+id0_boolean_t showscorebox;
+//id0_int_t	showscorebox;
 
 // REFKEEN - Unused in Catacomb 3-D
 #if 0
