@@ -20,8 +20,6 @@
 //#include <dos.h>
 //#include <conio.h>
 #include <stdio.h>
-#include <dirent.h>
-#include <sys/types.h>
 //#include <dir.h>
 //#include "mem.h"
 #include <string.h>
