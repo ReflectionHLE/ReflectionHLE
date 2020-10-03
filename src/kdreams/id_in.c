@@ -689,8 +689,10 @@ IN_ReadCursor(CursorInfo *info)
 	if (MousePresent)
 	{
 		buttons = INL_GetMouseButtons();
+#if 0 // REFKEEN: Reads of uninitialized vars, removed in Catacomb 3-D
 		dx /= 2;
 		dy /= 2;
+#endif
 		INL_GetMouseDelta(&dx,&dy);
 		INL_AdjustCursor(info,buttons,dx,dy);
 	}
