@@ -23,10 +23,6 @@ list(APPEND be_src
 	src/unlzexe/unlzexe.c
 )
 
-if (MSVC)
-	list(APPEND be_src src/dirent/dirent.c)
-endif ()
-
 if (WIN32)
 	list(APPEND be_src src/backend/filesystem/be_filesystem_dir_win32.c)
 else ()
