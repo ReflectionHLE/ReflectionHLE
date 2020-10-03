@@ -2369,6 +2369,7 @@ void BE_ST_HostGfx_SetFullScreenToggle(bool fullScreenToggle)
 		SDL_SetWindowFullscreen(g_sdlWindow, 0);
 
 	g_refKeenCfg.isFullscreen = BE_ST_HostGfx_GetFullScreenToggle();
+	BEL_ST_SetGfxOutputRects(false);
 	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
