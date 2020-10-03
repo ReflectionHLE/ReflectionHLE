@@ -1129,6 +1129,6 @@ extern "C" {
 #endif
 
 #ifndef __CYGWIN__
-#include <sec_api/tchar_s.h>
+//#include <sec_api/tchar_s.h>
 #endif /* __CYGWIN__ */
 #endif

@@ -60,6 +60,7 @@ typedef struct
 	char			dd_name[1];
 } DIR;
 
+#define __MINGW_NOTHROW
 DIR* __cdecl __MINGW_NOTHROW opendir (const char*);
 struct dirent* __cdecl __MINGW_NOTHROW readdir (DIR*);
 int __cdecl __MINGW_NOTHROW closedir (DIR*);

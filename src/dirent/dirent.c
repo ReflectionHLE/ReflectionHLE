@@ -18,16 +18,23 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
+#ifndef UNICODE
+#define UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <io.h>
 #include <direct.h>
-#include <dirent.h>
+#include "dirent.h"
 
 #include <windows.h> /* for GetFileAttributes */
 
-#include <tchar.h>
+#include "dirent/tchar.h"
 #define SUFFIX	_T("*")
 #define	SLASH	_T("\\")
 
