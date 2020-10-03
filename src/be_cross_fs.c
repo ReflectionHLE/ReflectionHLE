@@ -21,7 +21,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <setjmp.h>
+#ifdef _MSC_VER
+#include "dirent/dirent.h"
+#else
 #include <dirent.h>
+#endif
 #include <fcntl.h>
 #include <sys/types.h>
 
