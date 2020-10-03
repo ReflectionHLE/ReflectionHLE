@@ -77,11 +77,24 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss113[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catabyss113_catabyss[] = {
+	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2554c},
+	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a210},
+	{"EGADICT.ABS", 1024, 0xbb760f1d, 0x2594c},
+	{"EGAHEAD.ABS", 1881, 0xe31e1c3b, 0x1a3b0},
+	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1ab10},
+	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catabyss113_democat[] = {
+	{"TEXTSCN.SCN", 4000, 0xf7773f42, 0xbf70},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 	// Intro EXE is the first one we begin from
 	{
 		NULL,
-
 		NULL,
 		"INTRO.EXE",
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catabyss, intro_exe_main),
@@ -91,15 +104,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		false
 	},
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2554c},
-			{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a210},
-			{"EGADICT.ABS", 1024, 0xbb760f1d, 0x2594c},
-			{"EGAHEAD.ABS", 1881, 0xe31e1c3b, 0x1a3b0},
-			{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1ab10},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_catabyss113_catabyss,
 		NULL,
 		"CATABYSS.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, abysgame_exe_main),
@@ -109,11 +114,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		false
 	},
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"TEXTSCN.SCN", 4000, 0xf7773f42, 0xbf70},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_catabyss113_democat,
 		"Electronic Catalog v1.00",
 		"DEMOCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, slidecat_exe_main),
@@ -124,7 +125,6 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 	},
 	{
 		NULL,
-
 		NULL,
 		"LOADSCN.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, loadscn_exe_main),
@@ -191,11 +191,24 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catabyss124[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catabyss124_abysgame[] = {
+	{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2543a},
+	{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a140},
+	{"EGADICT.ABS", 1024, 0x63eb06d3, 0x2583a},
+	{"EGAHEAD.ABS", 1881, 0x94967205, 0x1a2e0},
+	{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1aa40},
+	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catabyss124_hintcat[] = {
+	{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6f60},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
 	// Again, intro EXE is the first one we begin from
 	{
 		NULL,
-
 		NULL,
 		"CATABYSS.EXE",
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catabyss, intro_exe_main),
@@ -205,15 +218,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
 		false
 	},
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.ABS", 1024, 0xe9088011, 0x2543a},
-			{"AUDIOHHD.ABS", 416, 0xfbfff495, 0x1a140},
-			{"EGADICT.ABS", 1024, 0x63eb06d3, 0x2583a},
-			{"EGAHEAD.ABS", 1881, 0x94967205, 0x1a2e0},
-			{"MTEMP.TMP", 834, 0x5d9ccfb3, 0x1aa40},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_catabyss124_abysgame,
 		NULL,
 		"ABYSGAME.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, abysgame_exe_main),
@@ -223,11 +228,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
 		false
 	},
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6f60},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_catabyss124_hintcat,
 		"Catacomb Abyss 3-D Hint Book v1.01",
 		"HINTCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catabyss, slidecat_exe_main),

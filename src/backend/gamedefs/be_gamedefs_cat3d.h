@@ -28,18 +28,19 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d100[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_cat3d100[] = {
+	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22c64},
+	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1aa60},
+	{"EGADICT.C3D", 1024, 0xab94fb6c, 0x23064},
+	{"EGAHEAD.C3D", 1437, 0x33772bb0, 0x1abd0},
+	{"INTROSCN.SCN", 4008, 0xec236c5c, 0x192c0},
+	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1b170},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_cat3d100[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22c64},
-			{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1aa60},
-			{"EGADICT.C3D", 1024, 0xab94fb6c, 0x23064},
-			{"EGAHEAD.C3D", 1437, 0x33772bb0, 0x1abd0},
-			{"INTROSCN.SCN", 4008, 0xec236c5c, 0x192c0},
-			{"MTEMP.TMP", 618, 0x6b7cc556, 0x1b170},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_cat3d100,
 		NULL,
 		"CAT3D.EXE",
 		&REFKEEN_NS_ENCLOSE(cat3d, cat3d_exe_main),
@@ -70,20 +71,21 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_cat3d122[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_cat3d122[] = {
+	{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22bd8},
+	{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1a710},
+	{"EGADICT.C3D", 1024, 0xb26a70a6, 0x22fd8},
+	{"EGAHEAD.C3D", 1437, 0x3fde00c4, 0x1a880},
+	// INTROSCN.SCN isn't displayed in vanilla v1.22, but it's still
+	// allocated and in use, so it's safer to require this chunk
+	{"INTROSCN.SCN", 4008, 0xcf9696af, 0x18f70},
+	{"MTEMP.TMP", 618, 0x6b7cc556, 0x1ae20},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_cat3d122[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.C3D", 1024, 0xd3dbe849, 0x22bd8},
-			{"AUDIOHHD.C3D", 368, 0xb83933bc, 0x1a710},
-			{"EGADICT.C3D", 1024, 0xb26a70a6, 0x22fd8},
-			{"EGAHEAD.C3D", 1437, 0x3fde00c4, 0x1a880},
-			// INTROSCN.SCN isn't displayed in vanilla v1.22, but it's still
-			// allocated and in use, so it's safer to require this chunk
-			{"INTROSCN.SCN", 4008, 0xcf9696af, 0x18f70},
-			{"MTEMP.TMP", 618, 0x6b7cc556, 0x1ae20},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_cat3d122,
 		NULL,
 		"CAT3D.EXE",
 		&REFKEEN_NS_ENCLOSE(cat3d, cat3d_exe_main),

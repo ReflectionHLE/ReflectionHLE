@@ -29,13 +29,14 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_n3dwt10[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_n3dwt10[] = {
+	{"GAMEPAL.BIN", 768, 0xc76ff953, 0x280e0},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_n3dwt10[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"GAMEPAL.BIN", 768, 0xc76ff953, 0x280e0},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_n3dwt10,
 		NULL,
 		"NOAH3DOS.EXE", // FIXME: See above
 		&REFKEEN_NS_ENCLOSE(n3dwt10, wolf3d_exe_main),

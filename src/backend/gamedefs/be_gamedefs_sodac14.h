@@ -29,14 +29,15 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_sodac14[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_sodac14[] = {
+	{"GAMEPAL.BIN", 768, 0xbd030b1d, 0x3d35c},
+	{"SIGNON.BIN", 64000, 0x1644999b, 0x24690},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_sodac14[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"GAMEPAL.BIN", 768, 0xbd030b1d, 0x3d35c},
-			{"SIGNON.BIN", 64000, 0x1644999b, 0x24690},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_sodac14,
 		NULL,
 		"SPEAR.EXE",
 		&REFKEEN_NS_ENCLOSE(sodac14, wolf3d_exe_main),

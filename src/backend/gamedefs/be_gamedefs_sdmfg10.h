@@ -29,14 +29,15 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_sdmfg10[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_sdmfg10[] = {
+	{"GAMEPAL.BIN", 768, 0xbd030b1d, 0x2fef0},
+	{"SIGNON.BIN", 64000, 0x07cf2545, 0x204f0},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_sdmfg10[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"GAMEPAL.BIN", 768, 0xbd030b1d, 0x2fef0},
-			{"SIGNON.BIN", 64000, 0x07cf2545, 0x204f0},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_sdmfg10,
 		NULL,
 		"SOD.EXE",
 		&REFKEEN_NS_ENCLOSE(sdmfg10, wolf3d_exe_main),

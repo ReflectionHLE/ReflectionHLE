@@ -29,14 +29,15 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_wl1ap11[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_wl1ap11[] = {
+	{"GAMEPAL.BIN", 768, 0x7e2ef7db, 0x21c80},
+	{"SIGNON.BIN", 64000, 0xb4ea01ff, 0x21f80},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_wl1ap11[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"GAMEPAL.BIN", 768, 0x7e2ef7db, 0x21c80},
-			{"SIGNON.BIN", 64000, 0xb4ea01ff, 0x21f80},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_wl1ap11,
 		NULL,
 		"WOLF3D.EXE",
 		&REFKEEN_NS_ENCLOSE(wl1ap11, wolf3d_exe_main),

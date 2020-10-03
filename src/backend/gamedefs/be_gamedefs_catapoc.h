@@ -66,10 +66,23 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catapoc101[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catapoc101_apocgame[] = {
+	{"AUDIODCT.APC", 1024, 0x26658498, 0x2439c},
+	{"AUDIOHHD.APC", 452, 0x76adb051, 0x1bd80},
+	{"EGADICT.APC", 1024, 0xb2ed57fd, 0x2479c},
+	{"EGAHEAD.APC", 2049, 0xd7548ed8, 0x1bf50},
+	{"MTEMP.TMP", 834, 0x90742162, 0x1ba30},
+	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catapoc101_hintcat[] = {
+	{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6dd0},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 	{
 		NULL,
-
 		NULL,
 		"CATAPOC.EXE",
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catapoc, intro_exe_main),
@@ -79,15 +92,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 		false
 	},
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.APC", 1024, 0x26658498, 0x2439c},
-			{"AUDIOHHD.APC", 452, 0x76adb051, 0x1bd80},
-			{"EGADICT.APC", 1024, 0xb2ed57fd, 0x2479c},
-			{"EGAHEAD.APC", 2049, 0xd7548ed8, 0x1bf50},
-			{"MTEMP.TMP", 834, 0x90742162, 0x1ba30},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_catapoc101_apocgame,
 		NULL,
 		"APOCGAME.EXE",
 		&REFKEEN_NS_ENCLOSE(catapoc, apocgame_exe_main),
@@ -97,12 +102,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 		false
 	},
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6ef0},
-			{0}
-		},
-
-
+		g_be_embeddedgamefiles_catapoc101_hintcat,
 		"Catacomb Apocalypse 3-D Hint Book v1.13",
 		"HINTCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catapoc, slidecat_exe_main),

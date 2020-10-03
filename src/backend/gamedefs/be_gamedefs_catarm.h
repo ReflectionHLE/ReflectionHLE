@@ -67,10 +67,23 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_catarm102[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catarm102_armgame[] = {
+	{"AUDIODCT.ARM", 1024, 0x8f1d4dd2, 0x240b0},
+	{"AUDIOHHD.ARM", 428, 0x5f863ad2, 0x1bb20},
+	{"EGADICT.ARM", 1024, 0xab662db8, 0x244b0},
+	{"EGAHEAD.ARM", 1977, 0x711cbf10, 0x1bcd0},
+	{"MTEMP.TMP", 834, 0x546f00d1, 0x1b7d0},
+	{0}
+};
+
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catarm102_hintcat[] = {
+	{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6dd0},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 	{
 		NULL,
-
 		NULL,
 		"CATARM.EXE",
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catarm, intro_exe_main),
@@ -80,15 +93,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 		false
 	},
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.ARM", 1024, 0x8f1d4dd2, 0x240b0},
-			{"AUDIOHHD.ARM", 428, 0x5f863ad2, 0x1bb20},
-			{"EGADICT.ARM", 1024, 0xab662db8, 0x244b0},
-			{"EGAHEAD.ARM", 1977, 0x711cbf10, 0x1bcd0},
-			{"MTEMP.TMP", 834, 0x546f00d1, 0x1b7d0},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_catarm102_armgame,
 		NULL,
 		"ARMGAME.EXE",
 		&REFKEEN_NS_ENCLOSE(catarm, armgame_exe_main),
@@ -98,11 +103,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 		false
 	},
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6dd0},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_catarm102_hintcat,
 		"Catacomb Armageddon 3-D Hint Book v1.12",
 		"HINTCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catarm, slidecat_exe_main),

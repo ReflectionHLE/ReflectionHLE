@@ -35,22 +35,23 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse100[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_kdreamse100[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28984},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1f370},
+	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1f4d0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x28188},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x19610},
+	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x20770},
+	{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x28588},
+	{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1c540},
+	{"PIRACY.BIN", 4001, 0x94458def, 0x14970}, // A bit different from PIRACY.SCN
+	{"STORY.KDR", 2487, 0xed0ea5fe, 0x219c0},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_kdreamse100[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28984},
-			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1f370},
-			{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1f4d0},
-			{"EGADICT.KDR", 1024, 0xa69af202, 0x28188},
-			{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x19610},
-			{"GAMETEXT.KDR", 4686, 0x046c5328, 0x20770},
-			{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x28588},
-			{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1c540},
-			{"PIRACY.BIN", 4001, 0x94458def, 0x14970}, // A bit different from PIRACY.SCN
-			{"STORY.KDR", 2487, 0xed0ea5fe, 0x219c0},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_kdreamse100,
 		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
@@ -81,22 +82,23 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc100[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_kdreamsc100[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x281c2},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1e6b0},
+	{"CGADICT.KDR", 1024, 0xaba89759, 0x279c6},
+	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18950},
+	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1e810},
+	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1fab0},
+	{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x27dc6},
+	{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1b880},
+	{"PIRACY.BIN", 4001, 0x94458def, 0x13cb0}, // A bit different from PIRACY.SCN
+	{"STORY.KDR", 2487, 0xed0ea5fe, 0x20d00},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_kdreamsc100[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x281c2},
-			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1e6b0},
-			{"CGADICT.KDR", 1024, 0xaba89759, 0x279c6},
-			{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18950},
-			{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1e810},
-			{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1fab0},
-			{"MAPDICT.KDR", 1020, 0x8aa7334b, 0x27dc6},
-			{"MAPHEAD.KDR", 11824, 0x4b9c9ebe, 0x1b880},
-			{"PIRACY.BIN", 4001, 0x94458def, 0x13cb0}, // A bit different from PIRACY.SCN
-			{"STORY.KDR", 2487, 0xed0ea5fe, 0x20d00},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_kdreamsc100,
 		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
@@ -129,21 +131,22 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse113[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_kdreamse113[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a042},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x22880},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x229e0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x29846},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1cb20},
+	{"GAMETEXT.KDR", 413, 0xb0df2792, 0x22ef0},
+	{"MAPDICT.KDR", 1020, 0x9faa7213, 0x29c46},
+	{"MAPHEAD.KDR", 11824, 0xb2f36c60, 0x1fa50},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x23090},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_kdreamse113[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a042},
-			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x22880},
-			{"CONTEXT.KDR", 1283, 0x5a33439d, 0x229e0},
-			{"EGADICT.KDR", 1024, 0xa69af202, 0x29846},
-			{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1cb20},
-			{"GAMETEXT.KDR", 413, 0xb0df2792, 0x22ef0},
-			{"MAPDICT.KDR", 1020, 0x9faa7213, 0x29c46},
-			{"MAPHEAD.KDR", 11824, 0xb2f36c60, 0x1fa50},
-			{"STORY.KDR", 2526, 0xcafc1d15, 0x23090},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_kdreamse113,
 		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
@@ -154,7 +157,6 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse113[] = {
 	},
 	{
 		NULL,
-
 		NULL,
 		"LOADSCN.EXE",
 		(void (*)(void))&loadscn2_main,
@@ -185,21 +187,22 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamsc105[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_kdreamsc105[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28490},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1eb50},
+	{"CGADICT.KDR", 1024, 0xaba89759, 0x27c94},
+	{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18df0},
+	{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1ecb0},
+	{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1ff50},
+	{"MAPDICT.KDR", 1020, 0xfa8362f3, 0x28094},
+	{"MAPHEAD.KDR", 11824, 0x66c122b4, 0x1bd20},
+	{"STORY.KDR", 2487, 0xed0ea5fe, 0x211a0},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_kdreamsc105[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x28490},
-			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x1eb50},
-			{"CGADICT.KDR", 1024, 0xaba89759, 0x27c94},
-			{"CGAHEAD.KDR", 12068, 0x36d48226, 0x18df0},
-			{"CONTEXT.KDR", 4759, 0x5bae2337, 0x1ecb0},
-			{"GAMETEXT.KDR", 4686, 0x046c5328, 0x1ff50},
-			{"MAPDICT.KDR", 1020, 0xfa8362f3, 0x28094},
-			{"MAPHEAD.KDR", 11824, 0x66c122b4, 0x1bd20},
-			{"STORY.KDR", 2487, 0xed0ea5fe, 0x211a0},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_kdreamsc105,
 		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
@@ -234,21 +237,22 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse193[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_kdreamse193[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x29fba},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21990},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21af0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x297be},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1bc30},
+	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x22000},
+	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x29bbe},
+	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1eb60},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x230a0},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_kdreamse193[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x29fba},
-			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21990},
-			{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21af0},
-			{"EGADICT.KDR", 1024, 0xa69af202, 0x297be},
-			{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1bc30},
-			{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x22000},
-			{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x29bbe},
-			{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1eb60},
-			{"STORY.KDR", 2526, 0xcafc1d15, 0x230a0},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_kdreamse193,
 		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
@@ -280,21 +284,22 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreamse120[] = {
 	{0}
 };
 
+static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_kdreamse120[] = {
+	{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a66c},
+	{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21d70},
+	{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21ed0},
+	{"EGADICT.KDR", 1024, 0xa69af202, 0x29e70},
+	{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1c010},
+	{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x223e0},
+	{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2a270},
+	{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1ef40},
+	{"STORY.KDR", 2526, 0xcafc1d15, 0x23480},
+	{0}
+};
+
 static const BE_EXEFileDetails_T g_be_exefiles_kdreamse120[] = {
 	{
-		(const BE_EmbeddedGameFileDetails_T []) {
-			{"AUDIODCT.KDR", 1024, 0x8b6116d7, 0x2a66c},
-			{"AUDIOHHD.KDR", 340, 0x499e0cbf, 0x21d70},
-			{"CONTEXT.KDR", 1283, 0x5a33439d, 0x21ed0},
-			{"EGADICT.KDR", 1024, 0xa69af202, 0x29e70},
-			{"EGAHEAD.KDR", 12068, 0xb9d789ee, 0x1c010},
-			{"GAMETEXT.KDR", 4256, 0xbfe72f94, 0x223e0},
-			{"MAPDICT.KDR", 1020, 0x6bb0de32, 0x2a270},
-			{"MAPHEAD.KDR", 11824, 0x2b821e29, 0x1ef40},
-			{"STORY.KDR", 2526, 0xcafc1d15, 0x23480},
-			{0}
-		},
-
+		g_be_embeddedgamefiles_kdreamse120,
 		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
@@ -340,7 +345,6 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreams2015[] = {
 static const BE_EXEFileDetails_T g_be_exefiles_kdreams2015[] = {
 	{
 		NULL,
-
 		NULL,
 		NULL, // No EXE file
 		&kdreams_exe_main,

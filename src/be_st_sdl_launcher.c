@@ -155,26 +155,27 @@ static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
 /*** Main menu ***/
 
-BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer,	92/* HACK to have enough room for string*/, &BE_Launcher_Handler_LastGameVerLaunch)
+BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer, 92/* HACK to have enough room for string*/, &BE_Launcher_Handler_LastGameVerLaunch)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_SelectGame, "Select game", &g_beSelectGameMenu)
 BEMENUITEM_DEF_HANDLER(g_beMainMenuItem_SetArguments, "Set arguments for game *CURRENTLY SET*", &BE_Launcher_Handler_SetArgumentsForGame)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_ShowVersion, "Show version", &g_beShowVersionMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Quit, "Quit", &g_beQuitConfirmMenu)
 
+static BEMenuItem *g_beMainMenuItems[] = {
+	&g_beMainMenuItem_PlayLastChosenGameVer, // Either this item's label is filled later, or the menu items array is shifted
+	&g_beMainMenuItem_SelectGame,
+	&g_beMainMenuItem_SetArguments,
+	&g_beMainMenuItem_Settings,
+	&g_beMainMenuItem_ShowVersion,
+	&g_beMainMenuItem_Quit,
+	NULL
+};
+
 BEMenu g_beMainMenu = {
 	REFKEEN_TITLE_STRING,
 	&g_beQuitConfirmMenu,
-	(BEMenuItem *[])
-	{
-		&g_beMainMenuItem_PlayLastChosenGameVer, // Either this item's label is filled later, or the menu items array is shifted
-		&g_beMainMenuItem_SelectGame,
-		&g_beMainMenuItem_SetArguments,
-		&g_beMainMenuItem_Settings,
-		&g_beMainMenuItem_ShowVersion,
-		&g_beMainMenuItem_Quit,
-		NULL
-	},
+	g_beMainMenuItems,
 	// Ignore the rest
 };
 
@@ -216,14 +217,15 @@ BEMENUITEM_DEF_STATIC(g_beDisappearedGameHelpMenuItem_Explanation,
 "Reflection Keen can detect compatible DOS game versions from certain installations, including the Catacombs games from GOG.com. Once such a game installation is updated in any minor way, Reflection Keen may fail to locate it. These are the expected behaviors.\nAs an alternative, you can manually add a compatible game installation (if not yet listed)."
 );
 
+static BEMenuItem *g_beDisappearedGameHelpMenuItems[] = {
+	&g_beDisappearedGameHelpMenuItem_Explanation,
+	NULL
+};
+
 BEMenu g_beDisappearedGameHelpMenu = {
 	"Where may a game disappear",
 	&g_beSelectGameMenu,
-	(BEMenuItem *[])
-	{
-		&g_beDisappearedGameHelpMenuItem_Explanation,
-		NULL
-	},
+	g_beDisappearedGameHelpMenuItems,
 	// Ignore the rest
 };
 
@@ -278,14 +280,15 @@ BEMenu g_beSelectDirectoryMenu = {
 
 BEMENUITEM_DEF_HANDLER(g_beSelectDirectoryErrorMenuItem_DisappearedGameHelp, "Try to go up in directories hierachy", &BE_Launcher_Handler_DirectorySelectionGoPrev)
 
+static BEMenuItem *g_beSelectDirectoryErrorMenuItems[] = {
+	&g_beSelectDirectoryErrorMenuItem_DisappearedGameHelp,
+	NULL
+};
+
 BEMenu g_beSelectDirectoryErrorMenu = {
 	"Failed to select directory",
 	NULL, // SPECIAL (using back button handler)
-	(BEMenuItem *[])
-	{
-		&g_beSelectDirectoryErrorMenuItem_DisappearedGameHelp,
-		NULL
-	},
+	g_beSelectDirectoryErrorMenuItems,
 	&BE_Launcher_Handler_DirectorySelectionGoPrev, // SPECIAL (back button handler)
 	// Ignore the rest
 };
@@ -295,14 +298,15 @@ BEMenu g_beSelectDirectoryErrorMenu = {
 // At this point, all directory-selection related resources are freed
 BEMENUITEM_DEF_TARGETMENU(g_beSelectDirectoryFoundGameMenuItem_ShowGamesList, "Show games list", &g_beSelectGameMenu)
 
+static BEMenuItem *g_beSelectDirectoryFoundGameMenuItems[] = {
+	&g_beSelectDirectoryFoundGameMenuItem_ShowGamesList,
+	NULL
+};
+
 BEMenu g_beSelectDirectoryFoundGameMenu = {
 	"New compatible game found!",
 	&g_beSelectGameMenu,
-	(BEMenuItem *[])
-	{
-		&g_beSelectDirectoryFoundGameMenuItem_ShowGamesList,
-		NULL
-	},
+	g_beSelectDirectoryFoundGameMenuItems,
 	// Ignore the rest
 };
 
@@ -332,16 +336,17 @@ BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_VideoSettings, "Video settings", 
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_SoundSettings, "Sound settings", &g_beSoundSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_InputSettings, "Input settings", &g_beInputSettingsMenu)
 
+static BEMenuItem *g_beSettingsMenuItems[] = {
+	&g_beSettingsMenuItem_VideoSettings,
+	& g_beSettingsMenuItem_SoundSettings,
+	& g_beSettingsMenuItem_InputSettings,
+	NULL
+};
+
 BEMenu g_beSettingsMenu = {
 	"Settings",
 	&g_beMainMenu,
-	(BEMenuItem *[])
-	{
-		&g_beSettingsMenuItem_VideoSettings,
-		&g_beSettingsMenuItem_SoundSettings,
-		&g_beSettingsMenuItem_InputSettings,
-		NULL
-	},
+	g_beSettingsMenuItems,
 	// Ignore the rest
 };
 
@@ -403,31 +408,32 @@ BEMENUITEM_DEF_STATIC(g_beVideoSettingsMenuItem_SoftScalingComment,
 "* Full software scaling should be manually toggled. Note that it can lead to great slowdowns with high-resolution windows."
 );
 
+static BEMenuItem *g_beVideoSettingsMenuItems[] = {
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
+	&g_beVideoSettingsMenuItem_Fullscreen,
+#endif
+#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
+	&g_beVideoSettingsMenuItem_FullscreenRes,
+#endif
+	&g_beVideoSettingsMenuItem_DisplayNum,
+	&g_beVideoSettingsMenuItem_RememberDisplayNum,
+	&g_beVideoSettingsMenuItem_SDLRenderer,
+	&g_beVideoSettingsMenuItem_Bilinear,
+	&g_beVideoSettingsMenuItem_ScaleType,
+	&g_beVideoSettingsMenuItem_ScaleFactor,
+	&g_beVideoSettingsMenuItem_VSync,
+	&g_beVideoSettingsMenuItem_ForceFullSoftScaling,
+#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
+	&g_beVideoSettingsMenuItem_LauncherWindowType,
+#endif
+	&g_beVideoSettingsMenuItem_SoftScalingComment,
+	NULL
+};
+
 BEMenu g_beVideoSettingsMenu = {
 	"Video settings",
 	&g_beSettingsMenu,
-	(BEMenuItem *[])
-	{
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-		&g_beVideoSettingsMenuItem_Fullscreen,
-#endif
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-		&g_beVideoSettingsMenuItem_FullscreenRes,
-#endif
-		&g_beVideoSettingsMenuItem_DisplayNum,
-		&g_beVideoSettingsMenuItem_RememberDisplayNum,
-		&g_beVideoSettingsMenuItem_SDLRenderer,
-		&g_beVideoSettingsMenuItem_Bilinear,
-		&g_beVideoSettingsMenuItem_ScaleType,
-		&g_beVideoSettingsMenuItem_ScaleFactor,
-		&g_beVideoSettingsMenuItem_VSync,
-		&g_beVideoSettingsMenuItem_ForceFullSoftScaling,
-#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
-		&g_beVideoSettingsMenuItem_LauncherWindowType,
-#endif
-		&g_beVideoSettingsMenuItem_SoftScalingComment,
-		NULL
-	},
+	g_beVideoSettingsMenuItems,
 	// Ignore the rest
 };
 
@@ -444,19 +450,20 @@ BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_OPLEmulation, "Enable OPL emu
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_UseResampler, "Use resampler", g_be_settingsChoices_boolean)
 #endif
 
+static BEMenuItem *g_beSoundSettingsMenuItems[] = {
+	&g_beSoundSettingsMenuItem_SndSampleRate,
+	&g_beSoundSettingsMenuItem_SndSubSystem,
+	&g_beSoundSettingsMenuItem_OPLEmulation,
+#ifndef REFKEEN_RESAMPLER_NONE
+	&g_beSoundSettingsMenuItem_UseResampler,
+#endif
+	NULL
+};
+
 BEMenu g_beSoundSettingsMenu = {
 	"Sounds settings",
 	&g_beSettingsMenu,
-	(BEMenuItem *[])
-	{
-		&g_beSoundSettingsMenuItem_SndSampleRate,
-		&g_beSoundSettingsMenuItem_SndSubSystem,
-		&g_beSoundSettingsMenuItem_OPLEmulation,
-#ifndef REFKEEN_RESAMPLER_NONE
-		&g_beSoundSettingsMenuItem_UseResampler,
-#endif
-		NULL
-	},
+	g_beSoundSettingsMenuItems,
 	// Ignore the rest
 };
 
@@ -491,27 +498,28 @@ BEMENUITEM_DEF_STATIC(g_beInputSettingsMenuItem_AbsMouseMotionComment,
 );
 #endif
 
+static BEMenuItem *g_beInputSettingsMenuItems[] = {
+	&g_beInputSettingsMenuItem_ControllerSettings,
+	&g_beInputSettingsMenuItem_ControllerScheme,
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
+	&g_beInputSettingsMenuItem_TouchControls,
+	&g_beInputSettingsMenuItem_TouchInputDebugging,
+#endif
+	&g_beInputSettingsMenuItem_MouseGrab,
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	&g_beInputSettingsMenuItem_AbsMouseMotion,
+#endif
+	&g_beInputSettingsMenuItem_MouseGrabComment,
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	&g_beInputSettingsMenuItem_AbsMouseMotionComment,
+#endif
+	NULL
+};
+
 BEMenu g_beInputSettingsMenu = {
 	"Input settings",
 	&g_beSettingsMenu,
-	(BEMenuItem *[])
-	{
-		&g_beInputSettingsMenuItem_ControllerSettings,
-		&g_beInputSettingsMenuItem_ControllerScheme,
-#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-		&g_beInputSettingsMenuItem_TouchControls,
-		&g_beInputSettingsMenuItem_TouchInputDebugging,
-#endif
-		&g_beInputSettingsMenuItem_MouseGrab,
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-		&g_beInputSettingsMenuItem_AbsMouseMotion,
-#endif
-		&g_beInputSettingsMenuItem_MouseGrabComment,
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-		&g_beInputSettingsMenuItem_AbsMouseMotionComment,
-#endif
-		NULL
-	},
+	g_beInputSettingsMenuItems,
 	// Ignore the rest
 };
 
@@ -556,41 +564,42 @@ BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_AnalogMotion, "Motion em
 BEMENUITEM_DEF_HANDLER(g_beControllerSettingsMenuItem_ImportMappingsFromSteam, "Import controller mappings from Steam\n(shouldn't override existing mappings)", &BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam)
 #endif
 
+static BEMenuItem *g_beControllerSettingsMenuItems[] = {
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	&g_beControllerSettingsMenuItem_Action_Jump,
+	&g_beControllerSettingsMenuItem_Action_Throw,
+	&g_beControllerSettingsMenuItem_Action_Stats,
+#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+	&g_beControllerSettingsMenuItem_Action_Fire,
+	&g_beControllerSettingsMenuItem_Action_Strafe,
+	&g_beControllerSettingsMenuItem_Action_Drink,
+	&g_beControllerSettingsMenuItem_Action_Bolt,
+	&g_beControllerSettingsMenuItem_Action_Nuke,
+	&g_beControllerSettingsMenuItem_Action_FastTurn,
+#endif
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
+	&g_beControllerSettingsMenuItem_Action_Scrolls,
+#endif
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
+	&g_beControllerSettingsMenuItem_Action_FuncKeys,
+#endif
+	&g_beControllerSettingsMenuItem_Action_DebugKeys,
+	&g_beControllerSettingsMenuItem_Dpad,
+	&g_beControllerSettingsMenuItem_LeftStick,
+	&g_beControllerSettingsMenuItem_RightStick,
+#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
+	&g_beControllerSettingsMenuItem_AnalogMotion,
+#endif
+#ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
+	&g_beControllerSettingsMenuItem_ImportMappingsFromSteam,
+#endif
+	NULL
+};
+
 BEMenu g_beControllerSettingsMenu = {
 	"Modern controller settings",
 	&g_beInputSettingsMenu,
-	(BEMenuItem *[])
-	{
-#ifdef REFKEEN_HAS_VER_KDREAMS
-		&g_beControllerSettingsMenuItem_Action_Jump,
-		&g_beControllerSettingsMenuItem_Action_Throw,
-		&g_beControllerSettingsMenuItem_Action_Stats,
-#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
-		&g_beControllerSettingsMenuItem_Action_Fire,
-		&g_beControllerSettingsMenuItem_Action_Strafe,
-		&g_beControllerSettingsMenuItem_Action_Drink,
-		&g_beControllerSettingsMenuItem_Action_Bolt,
-		&g_beControllerSettingsMenuItem_Action_Nuke,
-		&g_beControllerSettingsMenuItem_Action_FastTurn,
-#endif
-#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-		&g_beControllerSettingsMenuItem_Action_Scrolls,
-#endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
-		&g_beControllerSettingsMenuItem_Action_FuncKeys,
-#endif
-		&g_beControllerSettingsMenuItem_Action_DebugKeys,
-		&g_beControllerSettingsMenuItem_Dpad,
-		&g_beControllerSettingsMenuItem_LeftStick,
-		&g_beControllerSettingsMenuItem_RightStick,
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-		&g_beControllerSettingsMenuItem_AnalogMotion,
-#endif
-#ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
-		&g_beControllerSettingsMenuItem_ImportMappingsFromSteam,
-#endif
-		NULL
-	},
+	g_beControllerSettingsMenuItems,
 	// Ignore the rest
 };
 
@@ -599,14 +608,15 @@ BEMenu g_beControllerSettingsMenu = {
 
 BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsFromSteamNotFoundMenuItem_GoBack, "Go back", &g_beControllerSettingsMenu)
 
+static BEMenuItem *g_beControllerMappingsFromSteamNotFoundMenuItems[] = {
+	&g_beControllerMappingsFromSteamNotFoundMenuItem_GoBack,
+	NULL
+};
+
 static BEMenu g_beControllerMappingsFromSteamNotFoundMenu = {
 	"Can't find or open mappings",
 	&g_beControllerSettingsMenu,
-	(BEMenuItem *[])
-	{
-		&g_beControllerMappingsFromSteamNotFoundMenuItem_GoBack,
-		NULL
-	},
+	g_beControllerMappingsFromSteamNotFoundMenuItems,
 	// Ignore the rest
 };
 
@@ -614,14 +624,15 @@ static BEMenu g_beControllerMappingsFromSteamNotFoundMenu = {
 
 BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsFromSteamFailedToImportMenuItem_GoBack, "Go back", &g_beControllerSettingsMenu)
 
+static BEMenuItem *g_beControllerMappingsFromSteamFailedToImportMenuItems[] = {
+	&g_beControllerMappingsFromSteamFailedToImportMenuItem_GoBack,
+	NULL
+};
+
 static BEMenu g_beControllerMappingsFromSteamFailedToImportMenu = {
 	"Failed to import mappings!",
 	&g_beControllerSettingsMenu,
-	(BEMenuItem *[])
-	{
-		&g_beControllerMappingsFromSteamFailedToImportMenuItem_GoBack,
-		NULL
-	},
+	g_beControllerMappingsFromSteamFailedToImportMenuItems,
 	// Ignore the rest
 };
 
@@ -629,14 +640,15 @@ static BEMenu g_beControllerMappingsFromSteamFailedToImportMenu = {
 
 BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsFromSteamImportedSuccessfullyMenuItem_GoBack, "Go back", &g_beControllerSettingsMenu)
 
+static BEMenuItem *g_beControllerMappingsFromSteamImportedSuccessfullyMenuItems[] = {
+	&g_beControllerMappingsFromSteamImportedSuccessfullyMenuItem_GoBack,
+	NULL
+};
+
 static BEMenu g_beControllerMappingsFromSteamImportedSuccessfullyMenu = {
 	"Mappings imported successfully!",
 	&g_beControllerSettingsMenu,
-	(BEMenuItem *[])
-	{
-		&g_beControllerMappingsFromSteamImportedSuccessfullyMenuItem_GoBack,
-		NULL
-	},
+	g_beControllerMappingsFromSteamImportedSuccessfullyMenuItems,
 	// Ignore the rest
 };
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
@@ -645,14 +657,15 @@ static BEMenu g_beControllerMappingsFromSteamImportedSuccessfullyMenu = {
 
 BEMENUITEM_DEF_STATIC(g_beShowVersionMenuItem_Description, REFKEEN_TITLE_AND_VER_STRING ",\na part of Reflection Keen.")
 
+static BEMenuItem *g_beShowVersionMenuItems[] = {
+	&g_beShowVersionMenuItem_Description,
+	NULL
+};
+
 BEMenu g_beShowVersionMenu = {
 	"Version information",
 	&g_beMainMenu,
-	(BEMenuItem *[])
-	{
-		&g_beShowVersionMenuItem_Description,
-		NULL
-	},
+	g_beShowVersionMenuItems,
 	// Ignore the rest
 };
 
@@ -661,15 +674,16 @@ BEMenu g_beShowVersionMenu = {
 BEMENUITEM_DEF_HANDLER(g_beQuitConfirmMenuItem_Yes, "Yes", &BE_Launcher_Handler_MenuQuit)
 BEMENUITEM_DEF_TARGETMENU(g_beQuitConfirmMenuItem_No, "No", &g_beMainMenu)
 
+static BEMenuItem *g_beQuitConfirmMenuItems[] = {
+	&g_beQuitConfirmMenuItem_Yes,
+	&g_beQuitConfirmMenuItem_No,
+	NULL
+};
+
 BEMenu g_beQuitConfirmMenu = {
 	"Are you sure you want to quit?",
 	&g_beMainMenu,
-	(BEMenuItem *[])
-	{
-		&g_beQuitConfirmMenuItem_Yes,
-		&g_beQuitConfirmMenuItem_No,
-		NULL
-	},
+	g_beQuitConfirmMenuItems,
 	// Ignore the rest
 };
 
