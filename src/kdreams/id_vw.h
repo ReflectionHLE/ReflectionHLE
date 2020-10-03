@@ -249,7 +249,7 @@ extern	id0_boolean_t	fakecgamode;
 // asm globals
 //
 
-extern	id0_unsigned_t	**shifttabletable;
+extern	id0_unsigned_t	*shifttabletable[8];
 
 
 //===========================================================================
