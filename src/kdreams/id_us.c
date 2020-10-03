@@ -255,7 +255,7 @@ static	id0_char_t	filename[32];
 	for (s = "SAVEGM",t = filename;*s;)
 		*t++ = *s++;
 	*t++ = game + '0';
-	for (s = "."EXTENSION;*s;)
+	for (s = "." EXTENSION;*s;)
 		*t++ = *s++;
 	*t = '\0';
 
@@ -4180,9 +4180,9 @@ void RefKeen_Patch_id_us(void)
 		BE_Cross_free_mem_loaded_embedded_rsrc(context);
 		BE_Cross_free_mem_loaded_embedded_rsrc(story);
 		// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
-		if (!BE_Cross_load_embedded_rsrc_to_mem("GAMETEXT."EXTENSION, (memptr *)&gametext) ||
-		    !BE_Cross_load_embedded_rsrc_to_mem("CONTEXT."EXTENSION, (memptr *)&context) ||
-		    !BE_Cross_load_embedded_rsrc_to_mem("STORY."EXTENSION, (memptr *)&story)
+		if (!BE_Cross_load_embedded_rsrc_to_mem("GAMETEXT." EXTENSION, (memptr *)&gametext) ||
+		    !BE_Cross_load_embedded_rsrc_to_mem("CONTEXT." EXTENSION, (memptr *)&context) ||
+		    !BE_Cross_load_embedded_rsrc_to_mem("STORY." EXTENSION, (memptr *)&story)
 		)
 			// Similarly we don't use Quit
 			BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_us - Failed to load at least one file.");
@@ -4200,5 +4200,5 @@ void RefKeen_Patch_id_us(void)
 		CtlPanels2[5] = CtlMPanels;
 	}
 
-	refkeen_compat_config_filename = (current_gamever_int < 110) ? "CONFIG."EXTENSION : "KDREAMS.CFG";
+	refkeen_compat_config_filename = (current_gamever_int < 110) ? "CONFIG." EXTENSION : "KDREAMS.CFG";
 }

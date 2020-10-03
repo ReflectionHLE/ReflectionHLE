@@ -731,10 +731,10 @@ void CAL_SetupGrFile (void)
 //
 // Open the graphics file, leaving it open until the game is finished
 //
-	grhandle = BE_Cross_open_readonly_for_reading(GREXT"GRAPH."EXTENSION);
+	grhandle = BE_Cross_open_readonly_for_reading(GREXT "GRAPH." EXTENSION);
 	//grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
 	if (!BE_Cross_IsFileValid(grhandle))
-		Quit ("Cannot open "GREXT"GRAPH."EXTENSION"!");
+		Quit ("Cannot open " GREXT "GRAPH." EXTENSION "!");
 
 
 //
@@ -851,15 +851,15 @@ void CAL_SetupMapFile (void)
 // open the data file
 //
 #ifdef MAPHEADERLINKED
-	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("GAMEMAPS."EXTENSION)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("GAMEMAPS." EXTENSION)))
 	//if ((maphandle = open("GAMEMAPS."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
-		Quit ("Can't open GAMEMAPS."EXTENSION"!");
+		Quit ("Can't open GAMEMAPS." EXTENSION "!");
 #else
-	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("MAPTEMP."EXTENSION)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("MAPTEMP." EXTENSION)))
 	//if ((maphandle = open("MAPTEMP."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
-		Quit ("Can't open MAPTEMP."EXTENSION"!");
+		Quit ("Can't open MAPTEMP." EXTENSION "!");
 #endif
 }
 
@@ -886,10 +886,10 @@ void CAL_SetupAudioFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef AUDIOHEADERLINKED
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("AUDIOHED."EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("AUDIOHED." EXTENSION)))
 	//if ((handle = open("AUDIOHED."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
-		Quit ("Can't open AUDIOHED."EXTENSION"!");
+		Quit ("Can't open AUDIOHED." EXTENSION "!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&audiostarts,length);
 	BE_Cross_readInt32LEBuffer(handle, audiostarts, length);
@@ -905,15 +905,15 @@ void CAL_SetupAudioFile (void)
 // open the data file
 //
 #ifndef AUDIOHEADERLINKED
-	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIOT."EXTENSION)))
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIOT." EXTENSION)))
 	//if ((audiohandle = open("AUDIOT."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
-		Quit ("Can't open AUDIOT."EXTENSION"!");
+		Quit ("Can't open AUDIOT." EXTENSION "!");
 #else
-	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIO."EXTENSION)))
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIO." EXTENSION)))
 	//if ((audiohandle = open("AUDIO."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
-		Quit ("Can't open AUDIO."EXTENSION"!");
+		Quit ("Can't open AUDIO." EXTENSION "!");
 #endif
 }
 
@@ -941,7 +941,7 @@ void CA_Startup (void)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindReadOnlyFile("AUDIO."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("AUDIO." EXTENSION,NULL,2))
 		Quit("CA_Startup(): Can't find audio files.");
 //
 // MDM end
@@ -953,9 +953,9 @@ void CA_Startup (void)
 // MDM begin - (GAMERS EDGE)
 //
 #ifdef REFKEEN_VER_CATABYSS
-	if (!FindReadOnlyFile("GAMEMAPS."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("GAMEMAPS." EXTENSION,NULL,2))
 #else
-	if (!FindReadOnlyFile("GAMEMAPS."EXTENSION,NULL,1))
+	if (!FindReadOnlyFile("GAMEMAPS." EXTENSION,NULL,1))
 #endif
 		Quit("CA_Startup(): Can't find level files.");
 //
@@ -971,7 +971,7 @@ void CA_Startup (void)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindReadOnlyFile("EGAGRAPH."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("EGAGRAPH." EXTENSION,NULL,2))
 		Quit("CA_Startup(): Can't find graphics files.");
 //
 // MDM end
@@ -1052,7 +1052,7 @@ void CA_CacheAudioChunk (id0_int_t chunk)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindReadOnlyFile("AUDIO."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("AUDIO." EXTENSION,NULL,2))
 		Quit("CA_CacheAudioChunk(): Can't find audio files.");
 //
 // MDM end
@@ -1567,7 +1567,7 @@ void CA_CacheGrChunk (id0_int_t chunk)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindReadOnlyFile("EGAGRAPH."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("EGAGRAPH." EXTENSION,NULL,2))
 		Quit("CA_CacheGrChunk(): Can't find graphics files.");
 //
 // MDM end
@@ -1638,9 +1638,9 @@ void CA_CacheMap (id0_int_t mapnum)
 // MDM begin - (GAMERS EDGE)
 //
 #ifdef REFKEEN_VER_CATABYSS
-	if (!FindReadOnlyFile("GAMEMAPS."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("GAMEMAPS." EXTENSION,NULL,2))
 #else
-	if (!FindReadOnlyFile("GAMEMAPS."EXTENSION,NULL,1))
+	if (!FindReadOnlyFile("GAMEMAPS." EXTENSION,NULL,1))
 #endif
 		Quit("CA_CacheMap(): Can't find level files.");
 //
@@ -2080,7 +2080,7 @@ void CA_CacheMarks (const id0_char_t *title)
 
 // MDM begin - (GAMERS EDGE)
 //
-	if (!FindReadOnlyFile("EGAGRAPH."EXTENSION,NULL,2))
+	if (!FindReadOnlyFile("EGAGRAPH." EXTENSION,NULL,2))
 		Quit("CA_CacheMarks(): Can't find graphics files.");
 //
 // MDM end
@@ -2205,10 +2205,10 @@ void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void)
 	id0_byte_t **GFXdictptr = &EGAdict;
 	id0_long_t **GFXheadptr = &EGAhead;
 
-	if (!(audiodict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("AUDIODCT."EXTENSION, &audiodictsize)) ||
-	    !(audiohead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD."EXTENSION, &audioheadsize)) ||
-	    !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("EGADICT."EXTENSION, &GFXdictsize)) ||
-	    !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD."EXTENSION, &GFXheadsize)) ||
+	if (!(audiodict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("AUDIODCT." EXTENSION, &audiodictsize)) ||
+	    !(audiohead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD." EXTENSION, &audioheadsize)) ||
+	    !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("EGADICT." EXTENSION, &GFXdictsize)) ||
+	    !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD." EXTENSION, &GFXheadsize)) ||
 	    !(maphead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("MTEMP.TMP", &mapheadsize))
 #ifdef REFKEEN_VER_CAT3D
 	    ||

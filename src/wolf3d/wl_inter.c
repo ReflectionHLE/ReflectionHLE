@@ -2582,9 +2582,9 @@ void CopyProtection(void)
 				PrintY += 25;
 				US_CPrint(STR_MAN1);
 				US_CPrint(STR_MAN2);
-				strcpy/*_fstrcpy*/(message,STR_MAN3" \"");
+				strcpy/*_fstrcpy*/(message,STR_MAN3 " \"");
 				strcat/*_fstrcat*/(message,WordStr[whichword]);
-				strcat/*_fstrcat*/(message,"\" "STR_MAN4);
+				strcat/*_fstrcat*/(message,"\" " STR_MAN4);
 				US_CPrint(message);
 				VW_UpdateScreen();
 				VW_FadeIn();

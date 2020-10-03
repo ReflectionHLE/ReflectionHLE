@@ -221,7 +221,7 @@ oh_kill_me:
 id0_char_t *
 USL_GiveSaveName(id0_word_t game)
 {
-static  id0_char_t    name[] = "SAVEGAMx."EXTENSION;
+static  id0_char_t    name[] = "SAVEGAMx." EXTENSION;
 
 	name[7] = '0' + game;
 	return(name);
@@ -259,7 +259,7 @@ USL_ReadConfig(void)
 	SMMode          sm;
 	ControlType     ctl;
 
-	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("CONFIG."EXTENSION)))
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("CONFIG." EXTENSION)))
 	//if ((file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 	{
 		// REFKEEN Cross Platform file I/O
@@ -344,7 +344,7 @@ USL_WriteConfig(void)
 	BE_FILE_T             file;
 
 	version = ConfigVersion;
-	file = BE_Cross_open_rewritable_for_overwriting("CONFIG."EXTENSION);
+	file = BE_Cross_open_rewritable_for_overwriting("CONFIG." EXTENSION);
 	//file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
 	//			S_IREAD | S_IWRITE | S_IFREG);
 	if (BE_Cross_IsFileValid(file))

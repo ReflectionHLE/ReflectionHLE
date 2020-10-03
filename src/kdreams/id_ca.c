@@ -703,8 +703,8 @@ static void CAL_ResetGrModeBits (void)
 		refkeen_compat_grfilename = "KDREAMS.EGA";
 		refkeen_compat_grfilename_openerrormsg = "Cannot open KDREAMS.EGA!";
 		if (
-		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
-		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
+		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT." EXTENSION, (memptr *)GFXdictptr)) < 0) ||
+		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD." EXTENSION, (memptr *)GFXheadptr)) < 0)
 		)
 			BE_ST_ExitWithErrorMsg("CA_ReloadGrChunks - Failed to load at least one EGA file.");
 
@@ -2045,22 +2045,22 @@ void RefKeen_Patch_id_ca(void)
 		BE_Cross_free_mem_loaded_embedded_rsrc(maphead);
 		// Don't use CA_LoadFile for (sort-of) compatibility; It also doesn't work!
 		// (Can't use MM_GetPtr before calling game's main function.)
-		if (((audiodictsize = BE_Cross_load_embedded_rsrc_to_mem("SOUNDDCT."EXTENSION, (memptr *)&audiodict)) < 0) ||
-		    ((audioheadsize = BE_Cross_load_embedded_rsrc_to_mem("SOUNDHHD."EXTENSION, (memptr *)&audiohead)) < 0) ||
+		if (((audiodictsize = BE_Cross_load_embedded_rsrc_to_mem("SOUNDDCT." EXTENSION, (memptr *)&audiodict)) < 0) ||
+		    ((audioheadsize = BE_Cross_load_embedded_rsrc_to_mem("SOUNDHHD." EXTENSION, (memptr *)&audiohead)) < 0) ||
 		    ((GRMODE == CGAGR) &&
 		     (
-		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("CGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
-		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("CGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
+		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("CGADICT." EXTENSION, (memptr *)GFXdictptr)) < 0) ||
+		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("CGAHEAD." EXTENSION, (memptr *)GFXheadptr)) < 0)
 		     )
 		    ) ||
 		    ((GRMODE == EGAGR) &&
 		     (
-		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT."EXTENSION, (memptr *)GFXdictptr)) < 0) ||
-		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD."EXTENSION, (memptr *)GFXheadptr)) < 0)
+		      ((GFXdictsize = BE_Cross_load_embedded_rsrc_to_mem("EGADICT." EXTENSION, (memptr *)GFXdictptr)) < 0) ||
+		      ((GFXheadsize = BE_Cross_load_embedded_rsrc_to_mem("EGAHEAD." EXTENSION, (memptr *)GFXheadptr)) < 0)
 		     )
 		    ) ||
-		    ((mapdictsize = BE_Cross_load_embedded_rsrc_to_mem("MAPDICT."EXTENSION, (memptr *)&mapdict)) < 0) ||
-		    ((mapheadsize = BE_Cross_load_embedded_rsrc_to_mem("MAPHEAD."EXTENSION, (memptr *)&maphead)) < 0)
+		    ((mapdictsize = BE_Cross_load_embedded_rsrc_to_mem("MAPDICT." EXTENSION, (memptr *)&mapdict)) < 0) ||
+		    ((mapheadsize = BE_Cross_load_embedded_rsrc_to_mem("MAPHEAD." EXTENSION, (memptr *)&maphead)) < 0)
 		)
 			// Similarly we don't use Quit
 			BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_ca - Failed to load at least one file.");
@@ -2070,21 +2070,21 @@ void RefKeen_Patch_id_ca(void)
 
 	if (GRMODE == CGAGR)
 	{
-		refkeen_compat_grfilename = "CGAGRAPH."EXTENSION;
-		refkeen_compat_mapfilename = "GAMEMAPS."EXTENSION;
-		refkeen_compat_audiofilename = "AUDIO."EXTENSION;
-		refkeen_compat_grfilename_openerrormsg = "Cannot open CGAGRAPH."EXTENSION"!";
-		refkeen_compat_mapfilename_openerrormsg = "Can't open GAMEMAPS."EXTENSION"!";
-		refkeen_compat_audiofilename_openerrormsg = "Can't open AUDIO."EXTENSION"!";
+		refkeen_compat_grfilename = "CGAGRAPH." EXTENSION;
+		refkeen_compat_mapfilename = "GAMEMAPS." EXTENSION;
+		refkeen_compat_audiofilename = "AUDIO." EXTENSION;
+		refkeen_compat_grfilename_openerrormsg = "Cannot open CGAGRAPH." EXTENSION "!";
+		refkeen_compat_mapfilename_openerrormsg = "Can't open GAMEMAPS." EXTENSION "!";
+		refkeen_compat_audiofilename_openerrormsg = "Can't open AUDIO." EXTENSION "!";
 	}
 	else if (refkeen_current_gamever == BE_GAMEVER_KDREAMSE100)
 	{
-		refkeen_compat_grfilename = "EGAGRAPH."EXTENSION;
-		refkeen_compat_mapfilename = "GAMEMAPS."EXTENSION;
-		refkeen_compat_audiofilename = "AUDIO."EXTENSION;
-		refkeen_compat_grfilename_openerrormsg = "Cannot open EGAGRAPH."EXTENSION"!";
-		refkeen_compat_mapfilename_openerrormsg = "Can't open GAMEMAPS."EXTENSION"!";
-		refkeen_compat_audiofilename_openerrormsg = "Can't open AUDIO."EXTENSION"!";
+		refkeen_compat_grfilename = "EGAGRAPH." EXTENSION;
+		refkeen_compat_mapfilename = "GAMEMAPS." EXTENSION;
+		refkeen_compat_audiofilename = "AUDIO." EXTENSION;
+		refkeen_compat_grfilename_openerrormsg = "Cannot open EGAGRAPH." EXTENSION "!";
+		refkeen_compat_mapfilename_openerrormsg = "Can't open GAMEMAPS." EXTENSION "!";
+		refkeen_compat_audiofilename_openerrormsg = "Can't open AUDIO." EXTENSION "!";
 	}
 	else
 	{
@@ -2127,27 +2127,27 @@ void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void)
 	id0_byte_t **GFXdictptr = (GRMODE == CGAGR) ? &CGAdict : &EGAdict;
 	id0_long_t **GFXheadptr = (GRMODE == CGAGR) ? &CGAhead : &EGAhead;
 
-	if (!(audiodict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("AUDIODCT."EXTENSION, &audiodictsize)) ||
-	    !(audiohead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD."EXTENSION, &audioheadsize)) ||
+	if (!(audiodict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("AUDIODCT." EXTENSION, &audiodictsize)) ||
+	    !(audiohead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD." EXTENSION, &audioheadsize)) ||
 	    ((GRMODE == CGAGR) &&
 	     (
-	      !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("CGADICT."EXTENSION, &GFXdictsize)) ||
-	      !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("CGAHEAD."EXTENSION, &GFXheadsize))
+	      !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("CGADICT." EXTENSION, &GFXdictsize)) ||
+	      !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("CGAHEAD." EXTENSION, &GFXheadsize))
 	     )
 	    ) ||
 	    ((GRMODE == EGAGR) &&
 	     (
-	      !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("EGADICT."EXTENSION, &GFXdictsize)) ||
-	      !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD."EXTENSION, &GFXheadsize))
+	      !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("EGADICT." EXTENSION, &GFXdictsize)) ||
+	      !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD." EXTENSION, &GFXheadsize))
 	     )
 
 	    ) ||
-	    !(mapdict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("MAPDICT."EXTENSION, &mapdictsize)) ||
-	    !(maphead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("MAPHEAD."EXTENSION, &mapheadsize)) ||
+	    !(mapdict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("MAPDICT." EXTENSION, &mapdictsize)) ||
+	    !(maphead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("MAPHEAD." EXTENSION, &mapheadsize)) ||
 
-	    !(gametext = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("GAMETEXT."EXTENSION, NULL)) ||
-	    !(context = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("CONTEXT."EXTENSION, NULL)) ||
-	    !(story = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("STORY."EXTENSION, NULL)) ||
+	    !(gametext = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("GAMETEXT." EXTENSION, NULL)) ||
+	    !(context = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("CONTEXT." EXTENSION, NULL)) ||
+	    !(story = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("STORY." EXTENSION, NULL)) ||
 
 	    ((current_gamever_int == 100) &&
 	     !(PIRACY = (id0_unsigned_char_t *)BE_Cross_BfarmallocFromEmbeddedData("PIRACY.BIN", NULL)) // A bit different from PIRACY.SCN

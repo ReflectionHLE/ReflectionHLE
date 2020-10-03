@@ -539,7 +539,7 @@ id0_boolean_t GE_LoadGame()
 		if ((strcmp(ID,GAMENAME)) || (strcmp(VER,SAVEVER_DATA)))
 		{
 			US_CenterWindow(32,4);
-			US_CPrintLine("That isn't a "GAMENAME, NULL);
+			US_CPrintLine("That isn't a " GAMENAME, NULL);
 			US_CPrintLine(".SAV file.", NULL);
 			US_CPrintLine("Press SPACE to continue.", NULL);
 			VW_UpdateScreen();

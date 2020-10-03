@@ -177,9 +177,9 @@ void intro_exe_main(void)
 
 	// Prepare to enter the CATACOMB...
 #ifdef GAMEVER_CATABYSS
-	if (ext_LoadShape("SHP05."EXTENSION, &app_start_shape))
+	if (ext_LoadShape("SHP05." EXTENSION, &app_start_shape))
 #else
-	if (ext_LoadShape("SHP8."EXTENSION, &app_start_shape))
+	if (ext_LoadShape("SHP8." EXTENSION, &app_start_shape))
 #endif
 		TrashProg("ERROR : Can't load image.");
 	ext_MoveGfxDst(0, 200);
@@ -191,77 +191,77 @@ void intro_exe_main(void)
 	WaitForKeyRelease();
 
 #ifdef GAMEVER_CATABYSS
-	if (ext_LoadShape("SHP01."EXTENSION, &page_2_shape))
+	if (ext_LoadShape("SHP01." EXTENSION, &page_2_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP02."EXTENSION, &page_3_shape))
+	if (ext_LoadShape("SHP02." EXTENSION, &page_3_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP03."EXTENSION, &page_4_shape))
+	if (ext_LoadShape("SHP03." EXTENSION, &page_4_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP04."EXTENSION, &app_start_shape))
+	if (ext_LoadShape("SHP04." EXTENSION, &app_start_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP06."EXTENSION, &before_gamelaunch_shape))
+	if (ext_LoadShape("SHP06." EXTENSION, &before_gamelaunch_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP07."EXTENSION, &before_skill_choice_shape))
+	if (ext_LoadShape("SHP07." EXTENSION, &before_skill_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP08."EXTENSION, &novice_choice_shape))
+	if (ext_LoadShape("SHP08." EXTENSION, &novice_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP09."EXTENSION, &warrior_choice_shape))
+	if (ext_LoadShape("SHP09." EXTENSION, &warrior_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP10."EXTENSION, &after_loadgame_choice_shape))
+	if (ext_LoadShape("SHP10." EXTENSION, &after_loadgame_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP11."EXTENSION, &page_5_shape))
+	if (ext_LoadShape("SHP11." EXTENSION, &page_5_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP12."EXTENSION, &page_1_shape))
+	if (ext_LoadShape("SHP12." EXTENSION, &page_1_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
 #else
-	if (ext_LoadShape("SHP1."EXTENSION, &page_2_shape))
+	if (ext_LoadShape("SHP1." EXTENSION, &page_2_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP2."EXTENSION, &page_3_shape))
+	if (ext_LoadShape("SHP2." EXTENSION, &page_3_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP3."EXTENSION, &page_4_shape))
+	if (ext_LoadShape("SHP3." EXTENSION, &page_4_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP4."EXTENSION, &page_5_shape))
+	if (ext_LoadShape("SHP4." EXTENSION, &page_5_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP5."EXTENSION, &page_6_shape))
+	if (ext_LoadShape("SHP5." EXTENSION, &page_6_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP6."EXTENSION, &page_7_shape))
+	if (ext_LoadShape("SHP6." EXTENSION, &page_7_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP7."EXTENSION, &app_start_shape))
+	if (ext_LoadShape("SHP7." EXTENSION, &app_start_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP9."EXTENSION, &before_gamelaunch_shape))
+	if (ext_LoadShape("SHP9." EXTENSION, &before_gamelaunch_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP10."EXTENSION, &before_skill_choice_shape))
+	if (ext_LoadShape("SHP10." EXTENSION, &before_skill_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP11."EXTENSION, &novice_choice_shape))
+	if (ext_LoadShape("SHP11." EXTENSION, &novice_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP12."EXTENSION, &warrior_choice_shape))
+	if (ext_LoadShape("SHP12." EXTENSION, &warrior_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP13."EXTENSION, &after_loadgame_choice_shape))
+	if (ext_LoadShape("SHP13." EXTENSION, &after_loadgame_choice_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
-	if (ext_LoadShape("SHP14."EXTENSION, &page_1_shape))
+	if (ext_LoadShape("SHP14." EXTENSION, &page_1_shape))
 		TrashProg("ERROR : Can't load image.");
 	WaitForKeyRelease();
 #endif

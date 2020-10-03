@@ -2000,7 +2000,7 @@ void PrintLSEntry(id0_int_t w,id0_int_t color)
 	if (SaveGamesAvail[w])
 		US_Print(SaveGameNames[w]);
 	else
-		US_Print("      - "STR_EMPTY" -");
+		US_Print("      - " STR_EMPTY " -");
 
 	fontnumber=1;
 }
@@ -2211,12 +2211,12 @@ id0_int_t CalibrateJoystick(void)
 	WindowW = CALW;
 	WindowH = CALH;
 	WindowY = PrintY = CALY;
-	US_Print("    "STR_CALIB"\n    "STR_JOYST"\n");
+	US_Print("    " STR_CALIB "\n    " STR_JOYST "\n");
 	VWB_DrawPic(CALX+40,CALY+30,C_JOY1PIC);
 	PrintY = CALY+80;
 	US_Print(STR_MOVEJOY);
 	SETFONTCOLOR(BKGDCOLOR,TEXTCOLOR);
-	US_Print("   "STR_ESCEXIT);
+	US_Print("   " STR_ESCEXIT);
 	#endif
 	VW_UpdateScreen();
 
@@ -2249,12 +2249,12 @@ id0_int_t CalibrateJoystick(void)
 
 	PrintX = CALX;
 	PrintY = CALY;
-	US_Print("    "STR_CALIB"\n    "STR_JOYST"\n");
+	US_Print("    " STR_CALIB "\n    " STR_JOYST "\n");
 	VWB_DrawPic(CALX+40,CALY+30,C_JOY2PIC);
 	PrintY = CALY+80;
 	US_Print(STR_MOVEJOY2);
 	SETFONTCOLOR(BKGDCOLOR,TEXTCOLOR);
-	US_Print("   "STR_ESCEXIT);
+	US_Print("   " STR_ESCEXIT);
 	#endif
 	VW_UpdateScreen();
 
