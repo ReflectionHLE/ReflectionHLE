@@ -22,6 +22,7 @@
 #include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
 
 #include "be_cross.h"
+#include "be_cross_mem_internal.h"
 #include "be_st.h" // For BE_ST_ExitWithErrorMsg
 
 // A static memory buffer used for our allocations, made out of 16-bytes
@@ -43,15 +44,9 @@
 
 // The very first "segment" in the emulated space
 #define EMULATED_FIRST_SEG 0
-// A gap between the near and far heaps
-#define EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS 103
 // Different portions of the space being emulated - start points
 #define EMULATED_NEAR_SEG (EMULATED_FIRST_SEG+EMULATED_FIRST_PARAGRAPHS)
 #define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS)
-// Lengths in paragraphs of the different sections
-#define EMULATED_FIRST_PARAGRAPHS 4096
-#define EMULATED_NEAR_PARAGRAPHS 213
-#define EMULATED_FAR_PARAGRAPHS 28222
 // Used to obtain a pointer to some location in mmEmulatedMemSpace
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
