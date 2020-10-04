@@ -48,7 +48,7 @@ REFKEEN_NS_B
 //	XMS specific variables
 	id0_boolean_t			XMSPresent;
 	id0_word_t			XMSAvail,XMSPagesAvail,XMSHandle;
-	id0_longword_t		XMSDriver;
+	BE_XMM_Control		*XMSDriver;
 	id0_int_t				XMSProtectPage = -1;
 
 //	File specific variables
@@ -81,7 +81,7 @@ static	const id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",id0_nil_t};
 // REFKEEN TODO: Let's begin with a simplified implementation
 #define REFKEEN_SIMPLIFIED 0
 #define REFKEEN_NOEMS 1
-#define REFKEEN_NOXMS 1
+#define REFKEEN_NOXMS 0
 
 #if REFKEEN_SIMPLIFIED
 memptr PMPageData; // Just allocate everything at once for now
@@ -261,20 +261,40 @@ PML_ShutdownEMS(void)
 id0_boolean_t
 PML_StartupXMS(void)
 {
+	BE_XMM_Error XMSError;
+
 	XMSPresent = false;					// Assume failure
 	XMSAvail = 0;
 
+	if (!BE_Cross_GetXmsDriverInstalled())
+		goto error;
+#if 0
 asm	mov	ax,0x4300
 asm	int	XMS_INT         				// Check for presence of XMS driver
 	if (_AL != 0x80)
 		goto error;
+#endif
 
 
+	XMSDriver = BE_Cross_GetXmsControl();
+#if 0
 asm	mov	ax,0x4310
 asm	int	XMS_INT							// Get address of XMS driver
 asm	mov	[WORD PTR XMSDriver],bx
 asm	mov	[WORD PTR XMSDriver+2],es		// function pointer to XMS driver
+#endif
 
+	// Find out how much XMS is available
+	XMSError = XMSDriver->queryFreeExtendedMemory(&XMSAvail, NULL);
+	// *** PRE-V1.4 APOGEE + SOD RESTORATION ***
+#if (GAMEVER_WOLFREV > 19921007L)
+	if (BE_Cross_XMM_IsError(XMSError))
+#else
+	if (!XMSAvail)				// AJR: bugfix 10/8/92
+#endif
+		goto error;
+	
+#if 0
 	XMS_CALL(XMS_QUERYFREE);			// Find out how much XMS is available
 	XMSAvail = _AX;
 	// *** PRE-V1.4 APOGEE + SOD RESTORATION ***
@@ -284,20 +304,31 @@ asm	mov	[WORD PTR XMSDriver+2],es		// function pointer to XMS driver
 	if (!_AX)				// AJR: bugfix 10/8/92
 #endif
 		goto error;
+#endif
 
 	XMSAvail &= ~(PMPageSizeKB - 1);	// Round off to nearest page size
 	if (XMSAvail < (PMPageSizeKB * 2))	// Need at least 2 pages
 		goto error;
 
+	XMSError = XMSDriver->allocateExtendedMemoryBlock(XMSAvail, &XMSHandle);
+#if 0
 	_DX = XMSAvail;
 	XMS_CALL(XMS_ALLOC);				// And do the allocation
 	XMSHandle = _DX;
+#endif
 
 	// *** PRE-V1.4 APOGEE + SOD RESTORATION ***
+#if (GAMEVER_WOLFREV <= 19921007L)
+	if (BE_Cross_XMM_IsError(XMSError))
+#else
+	if (XMSError != BE_XMM_SUCCESS)				// AJR: bugfix 10/8/92
+#endif
+#if 0
 #if (GAMEVER_WOLFREV <= 19921007L)
 	if (_BL)
 #else
 	if (!_AX)				// AJR: bugfix 10/8/92
+#endif
 #endif
 	{
 		XMSAvail = 0;
@@ -338,21 +369,24 @@ PML_XMSCopy(id0_boolean_t toxms,id0_byte_t id0_far *addr,id0_word_t xmspage,id0_
 
 	copy.length = (length + 1) & ~1;
 	copy.source_handle = toxms? 0 : XMSHandle;
-	copy.source_offset = toxms? (id0_long_t)addr : xoffset;
+	copy.source_offset = toxms? BE_Cross_GetPtrXmsOff(addr) : xoffset;
 	copy.target_handle = toxms? XMSHandle : 0;
-	copy.target_offset = toxms? xoffset : (id0_long_t)addr;
+	copy.target_offset = toxms? xoffset : BE_Cross_GetPtrXmsOff(addr);
 
+	if (XMSDriver->moveExtendedMemoryBlock(*((BE_XMM_ExtendedMemoryMove*)&copy)) != BE_XMM_SUCCESS)
+#if 0
 asm	push si
 	_SI = (id0_word_t)&copy;
 	XMS_CALL(XMS_MOVE);
 asm	pop	si
 	if (!_AX)
+#endif
 		Quit("PML_XMSCopy: Error on copy");
 }
 
 #if 1
-#define	PML_CopyToXMS(s,t,l)	PML_XMSCopy(true,(s),(t),(l))
-#define	PML_CopyFromXMS(t,s,l)	PML_XMSCopy(false,(t),(s),(l))
+#define	PML_CopyToXMS(s,t,l)	PML_XMSCopy(true,(id0_byte_t*)(s),(t),(l))
+#define	PML_CopyFromXMS(t,s,l)	PML_XMSCopy(false,(id0_byte_t*)(t),(s),(l))
 #else
 //
 //	PML_CopyToXMS() - Copies the specified number of bytes from the real mode
@@ -383,9 +417,12 @@ PML_ShutdownXMS(void)
 {
 	if (XMSPresent)
 	{
+		if (BE_Cross_XMM_IsError(XMSDriver->freeExtendedMemoryBlock(XMSHandle)))
+#if 0
 		_DX = XMSHandle;
 		XMS_CALL(XMS_FREE);
 		if (_BL)
+#endif
 			Quit("PML_ShutdownXMS: Error freeing XMS");
 	}
 }
@@ -989,9 +1026,9 @@ PML_GetPageFromXMS(id0_int_t pagenum,id0_boolean_t mainonly)
 #if !REFKEEN_NOXMS
 		XMSProtectPage = pagenum;
 		checkaddr = PML_GetAPageBuffer(pagenum,mainonly);
-		if (FP_OFF(checkaddr))
+		if (BE_Cross_GetPtrNormalizedOff(checkaddr))
 			Quit("PML_GetPageFromXMS: Non segment pointer");
-		addr = (memptr)FP_SEG(checkaddr);
+		addr = (memptr)checkaddr;
 		PML_CopyFromXMS(addr,page->xmsPage,page->length);
 		XMSProtectPage = -1;
 #else
