@@ -15,6 +15,7 @@ list(APPEND be_src
 	src/be_cross_doszeroseg.c
 	src/be_cross_fs.c
 	src/be_cross_mem.c
+	src/be_cross_xmm.c
 	src/be_st_sdl.c
 	src/be_st_sdl_graphics.c
 	src/be_textmode_fonts.c
