@@ -44,6 +44,7 @@
 #include <sys/stat.h>
 #endif
 
+#include "backend/filesystem/be_filesystem_char.h"
 #include "backend/filesystem/be_filesystem_dir.h"
 #include "be_cross.h"
 #include "be_features.h"
@@ -56,25 +57,6 @@
 #endif
 
 #define BE_CROSS_PATH_LEN_BOUND 256
-
-/*** Unicode stuff - Using some wide strings on Windows, and narrow strings (possibly UTF-8 encoded) elsewhere ***/
-#ifdef REFKEEN_PLATFORM_WINDOWS
-#define _T(x) L##x
-#define TCHAR wchar_t
-#define _tcslen wcslen
-#define _tcscmp wcscmp
-#define _tfopen _wfopen
-#define _tremove _wremove
-#define _tmkdir _wmkdir
-#else
-#define _T(x) x
-#define TCHAR char
-#define _tcslen strlen
-#define _tcscmp strcmp
-#define _tfopen fopen
-#define _tremove remove
-#define _tmkdir mkdir
-#endif
 
 // Use this in case x is a macro defined to be a narrow string literal
 #define CSTR_TO_TCSTR(x) _T(x)
