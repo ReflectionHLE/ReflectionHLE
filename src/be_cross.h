@@ -81,19 +81,19 @@ typedef enum BE_Log_Message_Class_T
 #define BE_Cross_SwapGroup32LE(a, b, c, d) d, c, b, a,
 #endif
 
-inline char *BE_Cross_ultoa_dec(uint32_t n, char *buffer)
+static inline char *BE_Cross_ultoa_dec(uint32_t n, char *buffer)
 {
 	sprintf(buffer, "%" PRIu32, n);
 	return buffer;
 }
 
-inline char *BE_Cross_ltoa_dec(int32_t n, char *buffer)
+static inline char *BE_Cross_ltoa_dec(int32_t n, char *buffer)
 {
 	sprintf(buffer, "%" PRId32, n);
 	return buffer;
 }
 
-inline char *BE_Cross_itoa_dec(int16_t n, char *buffer)
+static inline char *BE_Cross_itoa_dec(int16_t n, char *buffer)
 {
 	sprintf(buffer, "%" PRId16, n);
 	return buffer;
@@ -103,15 +103,15 @@ inline char *BE_Cross_itoa_dec(int16_t n, char *buffer)
 void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ...);
 // More (possibly semi) standard C functions emulated,
 // taking English locale into account (and more, but NOT all)
-inline int BE_Cross_toupper(int c)
+static inline int BE_Cross_toupper(int c)
 {
 	return ((c >= 'a') && (c <= 'z')) ? (c - 'a' + 'A') : c;
 }
-inline int BE_Cross_tolower(int c)
+static inline int BE_Cross_tolower(int c)
 {
 	return ((c >= 'A') && (c <= 'Z')) ? (c - 'A' + 'a') : c;
 }
-inline int BE_Cross_isupper(int c)
+static inline int BE_Cross_isupper(int c)
 {
 	return ((c >= 'A') && (c <= 'Z'));
 }
@@ -119,7 +119,7 @@ inline int BE_Cross_isupper(int c)
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 int BE_Cross_strncasecmp(const char *s1, const char *s2, size_t count);
 
-inline void BE_Cross_strlwr(char *str)
+static inline void BE_Cross_strlwr(char *str)
 {
 	for (; *str; *str = BE_Cross_tolower(*str), ++str)
 		;
@@ -134,7 +134,7 @@ inline void BE_Cross_strlwr(char *str)
  * ASSUMPTIONS: The pointers do point to valid buffers, there's enough room for
  * a null terminator, and the source and destination buffers do NOT overlap.
  */
-inline char *BE_Cross_safeandfastcstringcopy(char *dest, char *destEnd, const char *src)
+static inline char *BE_Cross_safeandfastcstringcopy(char *dest, char *destEnd, const char *src)
 {
 	char ch;
 	// We assume that initially, destEnd - dest > 0.
@@ -150,17 +150,17 @@ inline char *BE_Cross_safeandfastcstringcopy(char *dest, char *destEnd, const ch
 }
 
 // A few convenience functions for concatenating multiple strings together
-inline char *BE_Cross_safeandfastcstringcopy_2strs(char *dest, char *destEnd, const char *src0, const char *src1)
+static inline char *BE_Cross_safeandfastcstringcopy_2strs(char *dest, char *destEnd, const char *src0, const char *src1)
 {
 	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1);
 }
 
-inline char *BE_Cross_safeandfastcstringcopy_3strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2)
+static inline char *BE_Cross_safeandfastcstringcopy_3strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2)
 {
 	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2);
 }
 
-inline char *BE_Cross_safeandfastcstringcopy_4strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2, const char *src3)
+static inline char *BE_Cross_safeandfastcstringcopy_4strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2, const char *src3)
 {
 	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2), destEnd, src3);
 }
@@ -238,10 +238,10 @@ typedef FILE * BE_FILE_T;
 
 #define BE_CROSS_NIL_FILE NULL
 
-inline BE_FILE_T BE_Cross_IsFileValid(BE_FILE_T fp) { return fp; }
-inline int BE_Cross_seek(BE_FILE_T fp, long int offset, int origin) { return fseek(fp, offset, origin); }
-inline int BE_Cross_putc(int character, BE_FILE_T fp) { return putc(character, fp); }
-inline int BE_Cross_getc(BE_FILE_T fp) { return getc(fp); }
+static inline BE_FILE_T BE_Cross_IsFileValid(BE_FILE_T fp) { return fp; }
+static inline int BE_Cross_seek(BE_FILE_T fp, long int offset, int origin) { return fseek(fp, offset, origin); }
+static inline int BE_Cross_putc(int character, BE_FILE_T fp) { return putc(character, fp); }
+static inline int BE_Cross_getc(BE_FILE_T fp) { return getc(fp); }
 
 int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp);
 
@@ -258,7 +258,7 @@ BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename);
 void BE_cross_unlink_rewritable(const char *filename); // Remove rewritable file
 
 // Should be shared
-inline void BE_Cross_close(BE_FILE_T fp)
+static inline void BE_Cross_close(BE_FILE_T fp)
 {
 	if (!fp) // This may happen e.g., if Keen Dreams doesn't find the GAMEMAPS file (from ID_CA.C)
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "WARNING: Attempted to close a file from a NULL pointer.\n");
@@ -410,13 +410,13 @@ void *BE_Cross_Bfarmalloc(uint32_t size);
 void BE_Cross_Bfree(void *ptr);
 void BE_Cross_Bfarfree(void *ptr);
 
-inline uint16_t BE_Cross_Bcoreleft(void)
+static inline uint16_t BE_Cross_Bcoreleft(void)
 {
 	extern uint16_t g_nearBytesLeft;
 	return g_nearBytesLeft;
 }
 
-inline uint32_t BE_Cross_Bfarcoreleft(void)
+static inline uint32_t BE_Cross_Bfarcoreleft(void)
 {
 	extern uint32_t g_farBytesLeft;
 	return g_farBytesLeft;
@@ -426,7 +426,7 @@ inline uint32_t BE_Cross_Bfarcoreleft(void)
 //
 // Somewhat similar to FP_SEG, *but* returns the segment of
 // the *normalized* pointer's form (where the offset is < 16)
-inline uint16_t BE_Cross_GetPtrNormalizedSeg(void *ptr)
+static inline uint16_t BE_Cross_GetPtrNormalizedSeg(void *ptr)
 {
 	extern uint8_t g_be_emulatedMemSpace[];
 	return ((uint8_t *)ptr-g_be_emulatedMemSpace)/16;
@@ -436,7 +436,7 @@ inline uint16_t BE_Cross_GetPtrNormalizedSeg(void *ptr)
 //
 // Somewhat similar to FP_OFF, *but* returns the offset of
 // the *normalized* pointer's form (which is always < 16)
-inline uint16_t BE_Cross_GetPtrNormalizedOff(void *ptr)
+static inline uint16_t BE_Cross_GetPtrNormalizedOff(void *ptr)
 {
 	extern uint8_t g_be_emulatedMemSpace[];
 	return ((uint8_t *)ptr-g_be_emulatedMemSpace)%16;
@@ -444,7 +444,7 @@ inline uint16_t BE_Cross_GetPtrNormalizedOff(void *ptr)
 
 // Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
 // Converts segment to given pointer (like MK_FP(seg, 0))
-inline void *BE_Cross_BGetPtrFromSeg(uint16_t seg)
+static inline void *BE_Cross_BGetPtrFromSeg(uint16_t seg)
 {
 	extern uint8_t g_be_emulatedMemSpace[];
 	return g_be_emulatedMemSpace + seg*16;
@@ -452,7 +452,7 @@ inline void *BE_Cross_BGetPtrFromSeg(uint16_t seg)
 
 // Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
 // A kind of a MK_FP replacement.
-inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
+static inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
 {
 	extern uint8_t g_be_emulatedMemSpace[];
 	return g_be_emulatedMemSpace + seg*16 + off;

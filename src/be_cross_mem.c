@@ -21,7 +21,7 @@
 
 #include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
 
-#include "be_cross.h" // For some inline functions (C99)
+#include "be_cross.h"
 #include "be_st.h" // For BE_ST_ExitWithErrorMsg
 
 // A static memory buffer used for our allocations, made out of 16-bytes
@@ -74,14 +74,6 @@ static int g_numOfNearBlocks, g_numOfFarBlocks;
 /*static*/ uint16_t g_nearBytesLeft = 16*EMULATED_NEAR_PARAGRAPHS;
 /*static*/ uint32_t g_farBytesLeft = 16*EMULATED_FAR_PARAGRAPHS;
 static BE_MemoryBlock_T g_nearBlocks[MAX_NO_OF_BLOCKS_PER_CLASS], g_farBlocks[MAX_NO_OF_BLOCKS_PER_CLASS];
-
-// C99
-uint16_t BE_Cross_Bcoreleft(void);
-uint32_t BE_Cross_Bfarcoreleft(void);
-uint16_t BE_Cross_GetPtrNormalizedSeg(void *ptr);
-uint16_t BE_Cross_GetPtrNormalizedOff(void *ptr);
-void *BE_Cross_BGetPtrFromSeg(uint16_t seg);
-void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off);
 
 // FIXME - Maybe not the most efficient, but still working
 static void BE_Cross_RefreshNearBytesLeft(void)

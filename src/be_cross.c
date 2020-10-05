@@ -33,11 +33,6 @@
 #include "be_features.h"
 #include "be_st.h" // For BE_ST_ExitWithErrorMsg
 
-// C99
-char *BE_Cross_ultoa_dec(uint32_t n, char *buffer);
-char *BE_Cross_ltoa_dec(int32_t n, char *buffer);
-char *BE_Cross_itoa_dec(int16_t n, char *buffer);
-
 // Used for debugging
 void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ...)
 {
@@ -72,16 +67,6 @@ void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ..
 	}
 	va_end(args);
 }
-
-// C99
-int BE_Cross_toupper(int c);
-int BE_Cross_tolower(int c);
-int BE_Cross_isupper(int c);
-void BE_Cross_strlwr(char *str);
-char *BE_Cross_safeandfastcstringcopy(char *dest, char *destEnd, const char *src);
-char *BE_Cross_safeandfastcstringcopy_2strs(char *dest, char *destEnd, const char *src0, const char *src1);
-char *BE_Cross_safeandfastcstringcopy_3strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2);
-char *BE_Cross_safeandfastcstringcopy_4strs(char *dest, char *destEnd, const char *src0, const char *src1, const char *src2, const char *src3);
 
 int BE_Cross_strcasecmp(const char *s1, const char *s2)
 {
