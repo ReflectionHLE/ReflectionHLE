@@ -282,7 +282,7 @@ void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan);
 void	VW_SetScreenMode (id0_int_t grmode);
 void	VW_ClearVideo (id0_int_t color);
 
-inline void VW_WaitVBL (id0_int_t number)
+static inline void VW_WaitVBL (id0_int_t number)
 {
 	// TODO (REFKEEN) - Emulate behaviors for number < 0?
 #if WAITFORVBL

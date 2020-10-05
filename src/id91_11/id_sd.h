@@ -221,12 +221,12 @@ void SD_AddToTimeCount(id0_longword_t count);
 void SD_TimeCountWaitForDest(id0_longword_t dst);
 // Use this as a replacement for busy loops waiting for some ticks
 // to pass, as in "while (TimeCount-src<ticks)"
-inline void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks)
+static inline void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks)
 {
 	SD_TimeCountWaitForDest(src + ticks);
 }
 // Essentially SD_TimeCountWaitFromSrc with (src == SD_GetTimeCount())
-inline void SD_TimeCountWaitTicks(id0_int_t ticks)
+static inline void SD_TimeCountWaitTicks(id0_int_t ticks)
 {
 	SD_TimeCountWaitForDest(SD_GetTimeCount() + ticks);
 }

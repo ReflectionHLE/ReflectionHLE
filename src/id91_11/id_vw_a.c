@@ -243,10 +243,7 @@ id0_unsigned_t linedelta;
 //
 //========
 
-// NOTE: Moved to id_vw.h as an inline implementation calling backend function,
-// but should still be instantiated here as of C99
-
-void VW_WaitVBL(id0_int_t number);
+// NOTE: Moved to id_vw.h as an inline implementation calling backend function
 
 #if 0
 void VW_WaitVBL(id0_int_t number)
