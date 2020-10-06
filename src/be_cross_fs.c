@@ -402,10 +402,11 @@ typedef enum {
 // Attempts to apply a read, overwrite or delete request for a
 // (possibly-existing) file from given directory, in a case-insensitive manner.
 //
-// OPTIONAL ARGUMENT (used internally): outfullpath, if not NULL, should point to an out buffer which is BE_CROSS_PATH_LEN_BOUND chars long.
+// OPTIONAL ARGUMENT: outfullpath, if not NULL,
+// is filled with the file's full path on success.
 static BE_FILE_T BEL_Cross_apply_file_action_in_dir(
-		const char *filename, BE_FileRequest_T request,
-		const TCHAR *searchdir, TCHAR *outfullpath)
+	const char *filename, BE_FileRequest_T request,
+	const TCHAR *searchdir, TCHAR (*outfullpath)[BE_CROSS_PATH_LEN_BOUND])
 {
 	TCHAR *d_name;
 	BE_DIR_T dir = BEL_Cross_OpenDir(searchdir);
@@ -418,9 +419,7 @@ static BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 	{
 		/*** Ignore non-ASCII filenames ***/
 		if (*BEL_Cross_tstr_find_nonascii_ptr(d_name))
-		{
 			continue;
-		}
 		if (!BEL_Cross_tstr_to_cstr_ascii_casecmp(d_name, filename))
 		{
 			// Just a little sanity check
@@ -434,9 +433,7 @@ static BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 
 			BEL_Cross_CloseDir(dir);
 			if (outfullpath)
-			{
-				memcpy(outfullpath, fullpath, sizeof(fullpath));
-			}
+				memcpy(*outfullpath, fullpath, sizeof(fullpath));
 			if (request != BE_FILE_REQUEST_DELETE)
 				return _tfopen(
 				    fullpath,
@@ -470,16 +467,17 @@ static BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 	*fullpathPtr = _T('\0');
 
 	if (outfullpath)
-	{
-		memcpy(outfullpath, fullpath, sizeof(fullpath));
-	}
+		memcpy(*outfullpath, fullpath, sizeof(fullpath));
 	return _tfopen(fullpath, _T("wb"));
 }
 
 // Returns 0 if not found, 1 if found with some data mismatch, or 2 otherwise
 //
-// OPTIONAL ARGUMENT (used internally): outfullpath, if not NULL, should point to an out buffer which is BE_CROSS_PATH_LEN_BOUND chars long.
-static int BEL_Cross_CheckGameFileDetails(const BE_GameFileDetails_T *details, const TCHAR *searchdir, TCHAR *outfullpath)
+// OPTIONAL ARGUMENT: outfullpath, if not NULL, is filled with
+// the file's full path if found, even if its data isn't matching.
+static int BEL_Cross_CheckGameFileDetails(
+	const BE_GameFileDetails_T *details, const TCHAR *searchdir,
+	TCHAR (*outfullpath)[BE_CROSS_PATH_LEN_BOUND])
 {
 	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(details->filename, BE_FILE_REQUEST_READ, searchdir, outfullpath);
 	if (!fp)
@@ -523,7 +521,7 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 	for (const BE_GameFileDetails_T *fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filename; ++fileDetailsBuffer)
 	{
 		// Check in writableFilesPath first. If WRONG file is found, REMOVE(!)
-		switch (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, gameInstallation->writableFilesPath, tempFullPath))
+		switch (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, gameInstallation->writableFilesPath, &tempFullPath))
 		{
 		case 2: // Match found
 			continue;
