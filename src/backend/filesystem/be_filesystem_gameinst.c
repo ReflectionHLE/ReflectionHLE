@@ -31,6 +31,16 @@ int g_be_gameinstallations_num;
 const BE_GameInstallation_T *g_be_gameinstallationsbyver[BE_GAMEVER_LAST];
 const BE_GameInstallation_T *g_be_selectedGameInstallation;
 
+const char *BE_Cross_GetGameInstallationDescription(int num)
+{
+	return g_be_gameinstallations[num].descStr;
+}
+
+int BE_Cross_GetGameVerFromInstallation(int num)
+{
+	return g_be_gameinstallations[num].verId;
+}
+
 // Returns 0 if not found, 1 if found with some data mismatch, or 2 otherwise
 //
 // OPTIONAL ARGUMENT: outfullpath, if not NULL, is filled with

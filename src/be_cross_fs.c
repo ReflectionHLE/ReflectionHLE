@@ -49,16 +49,6 @@
 
 BE_GameVer_T refkeen_current_gamever;
 
-const char *BE_Cross_GetGameInstallationDescription(int num)
-{
-	return g_be_gameinstallations[num].descStr;
-}
-
-int BE_Cross_GetGameVerFromInstallation(int num)
-{
-	return g_be_gameinstallations[num].verId;
-}
-
 #include "backend/gamedefs/be_gamedefs.h"
 
 
