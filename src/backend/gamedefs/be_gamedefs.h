@@ -118,7 +118,8 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #endif
 
 
-static const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
+// FIXME: This should probably be a part of a C file
+const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	&g_be_gamever_kdreamse100,
 	&g_be_gamever_kdreamsc100,

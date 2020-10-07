@@ -20,8 +20,9 @@
 #ifndef BE_FILESYSTEM_FILE_OPS_H
 #define BE_FILESYSTEM_FILE_OPS_H
 
-#include "backend/filesystem/be_filesystem_path_len_bound.h"
 #include "be_cross.h"
+#include "be_filesystem_path_len_bound.h"
+#include "be_filesystem_tchar.h"
 
 typedef enum {
 	BE_FILE_REQUEST_READ, BE_FILE_REQUEST_OVERWRITE, BE_FILE_REQUEST_DELETE
