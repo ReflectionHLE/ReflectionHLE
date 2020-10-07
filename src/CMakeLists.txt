@@ -16,6 +16,7 @@ list(APPEND be_src
 	src/backend/filesystem/be_filesystem_gameinst.c
 	src/backend/filesystem/be_filesystem_root_paths.c
 	src/backend/gamedefs/be_gamedefs_accessors.c
+	src/backend/gamedefs/be_gamedefs_prep.c
 	src/backend/misc/be_misc_steamcfg.c
 	src/backend/startup/be_startup.c
 	src/backend/startup/be_startup_embedded_data.c
@@ -23,7 +24,6 @@ list(APPEND be_src
 	src/backend/timing/be_timing_callback.c
 	src/be_cross.c
 	src/be_cross_doszeroseg.c
-	src/be_cross_fs.c
 	src/be_cross_mem.c
 	src/be_cross_xmm.c
 	src/be_st_sdl.c
