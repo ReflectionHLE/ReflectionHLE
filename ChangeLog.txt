@@ -2,6 +2,25 @@
 Changelog
 ---------
 
+TBA:
+
+* A couple of fixes for bugs introduced after the audio mixer refactoring,
+specific to runs without the audio subsystem.
+* Separate more audio and timing related code into more files, while reducing
+direct references to SDL (albeit it's still used in the same manners).
+* Further split the contents of be_cross_fs.c.
+* Wolf3D: Fix a possible buffer overflow in US_CheckParm, reproduced by
+passing an argument with no alphabetical character. A good example is
+the second argument in the following arguments string: "-tedlevel 1".
+* Make the codebase more usable with Visual Studio.
+* Launcher: Add a missing comment about the impact
+of the scale type setting on the border porches.
+* Bug fix: Conditionally hide or show the mouse cursor after
+toggling fullscreen, depending on game-specific setups.
+* Fix an instance in which the in-game contents don't get
+appropriately resized after toggling fullscreen.
+* Other misc. changes.
+
 Sep 28, 2020 (v0.30.1):
 
 * Don't show controller settings specific to the Catacombs for Wolf3D.
