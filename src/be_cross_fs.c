@@ -17,7 +17,7 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
+#include "refkeen_config.h"
 
 #include "be_gamever.h"
 #include "be_st.h" // For g_refKeenCfg
