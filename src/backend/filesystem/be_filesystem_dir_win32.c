@@ -1,6 +1,8 @@
-#include <windows.h>
+#include "refkeen_config.h" // Unicode
 #include "be_filesystem_dir.h"
 #include "be_st.h"
+
+#include <windows.h>
 
 typedef struct {
 	wchar_t *regex;
