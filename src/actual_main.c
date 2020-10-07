@@ -37,6 +37,8 @@ void (*be_lastSetMainFuncPtr)(void);
 const char *be_main_arg_datadir = NULL;
 const char *be_main_arg_newcfgdir = NULL;
 
+BE_GameVer_T refkeen_current_gamever;
+
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 static void show_command_line_help()
 {

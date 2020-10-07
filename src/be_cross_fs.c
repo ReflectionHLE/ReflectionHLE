@@ -32,8 +32,6 @@
 // Use this in case x is a macro defined to be a narrow string literal
 #define CSTR_TO_TCSTR(x) _T(x)
 
-BE_GameVer_T refkeen_current_gamever;
-
 #include "backend/gamedefs/be_gamedefs.h"
 
 #if (defined REFKEEN_HAS_VER_CATACOMB_ALL) && ((defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_MACOS))
