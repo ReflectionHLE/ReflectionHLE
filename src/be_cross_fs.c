@@ -44,9 +44,9 @@
 #include <sys/stat.h>
 #endif
 
-#include "backend/filesystem/be_filesystem_char.h"
 #include "backend/filesystem/be_filesystem_dir.h"
 #include "backend/filesystem/be_filesystem_string_ops.h"
+#include "backend/filesystem/be_filesystem_tchar.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_sound_device_flags.h"

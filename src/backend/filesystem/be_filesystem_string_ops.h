@@ -2,7 +2,7 @@
 #define BE_FILESYSTEM_STRING_OPS_H
 
 #include "be_cross.h"
-#include "be_filesystem_char.h"
+#include "be_filesystem_tchar.h"
 
 // FIXME: These shouldn't be file-system related, but for now they're here
 

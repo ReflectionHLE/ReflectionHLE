@@ -1,7 +1,7 @@
 #ifndef BE_FILESYSTEM_DIR_H
 #define BE_FILESYSTEM_DIR_H
 
-#include "be_filesystem_char.h"
+#include "be_filesystem_tchar.h"
 
 typedef void *BE_DIR_T;
 
