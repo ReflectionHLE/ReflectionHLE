@@ -8,7 +8,10 @@ list(APPEND be_src
 	src/backend/audio/be_audio_pcspkr.c
 	src/backend/audio/be_audio_resampling.c
 	src/backend/audio/be_audio_sdl.c
+	src/backend/filesystem/be_filesystem_app_paths.c
+	src/backend/filesystem/be_filesystem_root_paths.c
 	src/backend/filesystem/be_filesystem_file.c
+	src/backend/filesystem/be_filesystem_file_ops.c
 	src/backend/timing/be_timing.c
 	src/backend/timing/be_timing_callback.c
 	src/be_cross.c

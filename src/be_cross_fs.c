@@ -26,25 +26,20 @@
 
 #include "refkeen_config.h" // MUST precede other contents due to e.g., endianness-based ifdefs
 
-#ifdef REFKEEN_PLATFORM_ANDROID
-#include <jni.h>
-// HACK - Adding a dependency on SDL2 for Android! (Used for external storage path, and for calling Java function)
-#include "SDL_system.h"
-#endif
-
 #include "be_gamever.h"
 #include "be_st.h" // For BE_ST_ExitWithErrorMsg; TODO: Also for g_refKeenCfg
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #include <shlwapi.h> // SHGetValue
-#include <direct.h> // _wmkdir
 #endif
 
-#ifdef REFKEEN_PLATFORM_UNIX
-#include <sys/stat.h>
-#endif
-
+#include "backend/filesystem/be_filesystem_app_paths.h"
 #include "backend/filesystem/be_filesystem_dir.h"
+#include "backend/filesystem/be_filesystem_file_ops.h"
+#include "backend/filesystem/be_filesystem_gameinst.h"
+#include "backend/filesystem/be_filesystem_mkdir.h"
+#include "backend/filesystem/be_filesystem_path_len_bound.h"
+#include "backend/filesystem/be_filesystem_root_paths.h"
 #include "backend/filesystem/be_filesystem_string_ops.h"
 #include "backend/filesystem/be_filesystem_tchar.h"
 #include "be_cross.h"
@@ -56,8 +51,6 @@
 #ifdef ENABLE_PKLITE
 #include "depklite/depklite.h"
 #endif
-
-#define BE_CROSS_PATH_LEN_BOUND 256
 
 // Use this in case x is a macro defined to be a narrow string literal
 #define CSTR_TO_TCSTR(x) _T(x)
@@ -98,273 +91,9 @@ typedef struct {
 	BE_GameVer_T verId;
 } BE_GameVerDetails_T;
 
-typedef struct {
-	const char *descStr;
-	TCHAR instPath[BE_CROSS_PATH_LEN_BOUND];
-	TCHAR writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
-	BE_GameVer_T verId;
-} BE_GameInstallation_T;
-
 BE_GameVer_T refkeen_current_gamever;
 
-static TCHAR g_be_appDataPath[BE_CROSS_PATH_LEN_BOUND];
-static TCHAR g_be_appNewCfgPath[BE_CROSS_PATH_LEN_BOUND];
-
-extern const char *be_main_arg_datadir;
-extern const char *be_main_arg_newcfgdir;
-
-// A list of "root paths" from which one can choose a game dir (using just ASCII characters)
-static TCHAR g_be_rootPaths[BE_CROSS_MAX_ROOT_PATHS][BE_CROSS_PATH_LEN_BOUND];
-static const char *g_be_rootPathsKeys[BE_CROSS_MAX_ROOT_PATHS];
-static const char *g_be_rootPathsNames[BE_CROSS_MAX_ROOT_PATHS];
-static int g_be_rootPathsNum;
-#ifdef REFKEEN_PLATFORM_WINDOWS
-static const wchar_t *g_be_rootDrivePaths[] = {L"a:\\",L"b:\\",L"c:\\",L"d:\\",L"e:\\",L"f:\\",L"g:\\",L"h:\\",L"i:\\",L"j:\\",L"k:\\",L"l:\\",L"m:\\",L"n:\\",L"o:\\",L"p:\\",L"q:\\",L"r:\\",L"s:\\",L"t:\\",L"u:\\",L"v:\\",L"w:\\",L"x:\\",L"y:\\",L"z:\\"};
-static const char *g_be_rootDrivePathsNames[] = {"a:\\","b:\\","c:\\","d:\\","e:\\","f:\\","g:\\","h:\\","i:\\","j:\\","k:\\","l:\\","m:\\","n:\\","o:\\","p:\\","q:\\","r:\\","s:\\","t:\\","u:\\","v:\\","w:\\","x:\\","y:\\","z:\\"};
-#endif
-
-static bool BEL_Cross_IsDir(const TCHAR* path)
-{
-#ifdef REFKEEN_PLATFORM_WINDOWS
-	return PathIsDirectoryW(path);
-#endif
-#ifdef REFKEEN_PLATFORM_UNIX
-	struct stat info;
-	return ((stat(path, &info) == 0) && S_ISDIR(info.st_mode));
-#endif
-}
-
-/*** WARNING: The key and name are assumed to be C STRING LITERALS, and so are *NOT* copied! ***/
-static void BEL_Cross_AddRootPath(const TCHAR *rootPath, const char *rootPathKey, const char *rootPathName)
-{
-	if (g_be_rootPathsNum >= BE_CROSS_MAX_ROOT_PATHS)
-		BE_ST_ExitWithErrorMsg("BEL_Cross_AddRootPath: Too many root paths!");
-
-	BEL_Cross_safeandfastctstringcopy(g_be_rootPaths[g_be_rootPathsNum], g_be_rootPaths[g_be_rootPathsNum]+sizeof(g_be_rootPaths[g_be_rootPathsNum])/sizeof(TCHAR), rootPath);
-	g_be_rootPathsKeys[g_be_rootPathsNum] = rootPathKey;
-	g_be_rootPathsNames[g_be_rootPathsNum] = rootPathName;
-	++g_be_rootPathsNum;
-}
-
-/*** WARNING: Same as above ***/
-static void BEL_Cross_AddRootPathIfDir(const TCHAR *rootPath, const char *rootPathKey, const char *rootPathName)
-{
-	if (BEL_Cross_IsDir(rootPath))
-		BEL_Cross_AddRootPath(rootPath, rootPathKey, rootPathName);
-}
-
-static void BEL_Cross_mkdir(const TCHAR *path);
-
-void BE_Cross_PrepareAppPaths(void)
-{
-#ifdef REFKEEN_PLATFORM_WINDOWS
-	const wchar_t *homeVar = _wgetenv(L"HOMEPATH");
-	const wchar_t *envVar = _wgetenv(L"APPDATA");
-
-	// HACK - Ignore be_main_arg_datadir for now
-	if (envVar && *envVar)
-	{
-		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), envVar, L"\\reflection-keen");
-	}
-	else
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "APPDATA environment variable is not properly defined.\n");
-		if (homeVar && *homeVar)
-		{
-			BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, L"\\AppData\\Roaming\\reflection-keen");
-		}
-		else
-		{
-			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "HOMEPATH environment variable is not properly defined.\n");
-			BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), L".");
-		}
-	}
-
-	if (be_main_arg_newcfgdir)
-	{
-		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
-	}
-	else // This is why be_main_arg_datadir has been ignored (using g_be_appDataPath as a temporary buffer)
-	{
-		memcpy(g_be_appNewCfgPath, g_be_appDataPath, sizeof(g_be_appDataPath));
-	}
-
-	if (be_main_arg_datadir) // Now checking be_main_arg_datadir
-	{
-		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), be_main_arg_datadir);
-	}
-
-	/*** Root paths ***/
-
-	// List of drives
-	DWORD drivesBitMasks = GetLogicalDrives();
-	for (int driveNum = 0; driveNum < 26; ++driveNum)
-		if (drivesBitMasks & (1 << driveNum))
-			BEL_Cross_AddRootPath(g_be_rootDrivePaths[driveNum], g_be_rootDrivePathsNames[driveNum], g_be_rootDrivePathsNames[driveNum]);
-
-	// Home dir
-	if (homeVar && *homeVar)
-		BEL_Cross_AddRootPathIfDir(homeVar, "home", "Home dir");
-
-	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
-	DWORD dwType;
-	DWORD dwSize;
-	LSTATUS status;
-
-	// Steam installation dir
-	dwType = 0;
-	dwSize = sizeof(path);
-	status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\VALVE\\STEAM", L"INSTALLPATH", &dwType, path, &dwSize);
-	if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
-		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
-	
-	// GOG.com installation dir
-	dwType = 0;
-	dwSize = sizeof(path);
-	status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.COM", L"DEFAULTPACKPATH", &dwType, path, &dwSize);
-	if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
-		BEL_Cross_AddRootPathIfDir(path, "gog", "GOG Games (default)");
-#endif
-
-#ifdef REFKEEN_PLATFORM_ANDROID
-	// HACK - Adding a dependency on SDL2 for Android!
-
-	// FIXME - These environment variables don't seem to be shown in any
-	// official documentation for Android, but at least EXTERNAL_STORAGE
-	// appears to do the job, and they're simple to use from C/C++.
-
-	// We still need to check/ask for permission to access the storage, on Android 6.0 and later
-
-	// Prepare to call Javaj function
-	JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
-	jclass clazz = (*env)->GetObjectClass(env, activity);
-	jmethodID method_id = (*env)->GetMethodID(env, clazz, "requestReadExternalStoragePermission", "()I");
-	// Do call it
-	bool haveReadPermission = (bool)((*env)->CallIntMethod(env, activity, method_id));
-	// Clean up references
-	(*env)->DeleteLocalRef(env, activity);
-	(*env)->DeleteLocalRef(env, clazz);
-
-	if (haveReadPermission)
-	{
-		const char *primaryStorage = getenv("EXTERNAL_STORAGE");
-		if (primaryStorage && *primaryStorage)
-			BEL_Cross_AddRootPathIfDir(primaryStorage, "externalstorage", "Primary storage");
-		else
-			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "EXTERNAL_STORAGE environment variable is not properly defined.\n");
-		// Let's ignore SECONDARY_STORAGE for now, since we may get a colon-delimited list of paths
-		const char *externalSDCardStorage = getenv("EXTERNAL_SDCARD_STORAGE");
-		if (externalSDCardStorage && *externalSDCardStorage)
-			BEL_Cross_AddRootPathIfDir(externalSDCardStorage, "externalsdcardstorage", "External SD Card storage");
-	}
-
-	char path[BE_CROSS_PATH_LEN_BOUND];
-
-	const char *externalStoragePath = SDL_AndroidGetExternalStoragePath();
-	if (externalStoragePath && *externalStoragePath)
-	{
-		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), externalStoragePath, "/appdata");
-		memcpy(g_be_appNewCfgPath, g_be_appDataPath, sizeof(g_be_appDataPath));
-		// Let's add this just in case (sdcard directory cannot be naively opened on Android 7.0)
-		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), externalStoragePath, "/user_gameinsts");
-		// In contrary to other root paths, we should create this one on first launch
-		BEL_Cross_mkdir(externalStoragePath); // Non-recursive
-		BEL_Cross_mkdir(path);
-		BEL_Cross_AddRootPathIfDir(path, "appgameinsts", "App-local game installations dir");
-		// HACK - We don't look at arguments set by the user (for modifying e.g., g_be_appDataPath), but then these are never sent on Android...
-	}
-#elif (defined REFKEEN_PLATFORM_UNIX)
-	const char *homeVar = getenv("HOME");
-
-#ifndef REFKEEN_PLATFORM_MACOS
-	const char *envVar;
-#endif
-
-	if (!homeVar || !(*homeVar))
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "HOME environment variable is not properly defined.\n");
-	}
-
-	if (be_main_arg_datadir)
-	{
-		BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), be_main_arg_datadir);
-	}
-	else
-	{
-#ifdef REFKEEN_PLATFORM_MACOS
-		// FIXME - Handle sandboxing?
-		BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/reflection-keen");
-#else
-		envVar = getenv("XDG_DATA_HOME");
-		if (envVar && *envVar)
-		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), envVar, "/reflection-keen");
-		}
-		else if (homeVar && *homeVar)
-		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, "/.local/share/reflection-keen");
-		}
-		else
-		{
-			BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), ".");
-		}
-#endif
-	}
-
-	if (be_main_arg_newcfgdir)
-	{
-		BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
-	}
-	else
-	{
-#ifdef REFKEEN_PLATFORM_MACOS
-		// FIXME - Handle sandboxing?
-		BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/reflection-keen");
-#else
-		envVar = getenv("XDG_CONFIG_HOME");
-		if (envVar && *envVar)
-		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), envVar, "/reflection-keen");
-		}
-		else if (homeVar && *homeVar)
-		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), homeVar, "/.config/reflection-keen");
-		}
-		else
-		{
-			BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), ".");
-		}
-#endif
-	}
-
-	/*** Root paths ***/
-
-	char path[BE_CROSS_PATH_LEN_BOUND];
-
-	if (homeVar && *homeVar) // Should be set, otherwise there's a big problem (but warning is printed)
-	{
-		// Home dir
-		BEL_Cross_AddRootPathIfDir(homeVar, "home", "Home dir");
-#ifdef REFKEEN_PLATFORM_MACOS
-		// Steam installation dir
-		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam");
-		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
-#else
-		// Steam installation dir
-		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/.steam/steam");
-		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
-		// GOG.com installation dir
-		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/GOG Games");
-		BEL_Cross_AddRootPathIfDir(path, "gog", "GOG Games (default)");
-#endif
-	}
-	// Finally the root itself (better keep it at the bottom of the list)
-	BEL_Cross_AddRootPathIfDir("/", "/", "/");
-#endif
-}
-
-static const BE_GameInstallation_T *g_be_selectedGameInstallation;
+const BE_GameInstallation_T *g_be_selectedGameInstallation;
 static const BE_EXEFileDetails_T *g_be_current_exeFileDetails;
 
 #define BE_CROSS_MAX_GAME_INSTALLATIONS (4*BE_GAMEVER_LAST)
@@ -385,91 +114,6 @@ int BE_Cross_GetGameVerFromInstallation(int num)
 
 #include "backend/gamedefs/be_gamedefs.h"
 
-
-// WARNING: Do *not* assume this is recursive!!
-static void BEL_Cross_mkdir(const TCHAR *path)
-{
-#ifdef REFKEEN_PLATFORM_WINDOWS
-	_tmkdir(path);
-#else
-	_tmkdir(path, 0755);
-#endif
-}
-
-typedef enum {
-	BE_FILE_REQUEST_READ, BE_FILE_REQUEST_OVERWRITE, BE_FILE_REQUEST_DELETE
-} BE_FileRequest_T;
-// Attempts to apply a read, overwrite or delete request for a
-// (possibly-existing) file from given directory, in a case-insensitive manner.
-//
-// OPTIONAL ARGUMENT: outfullpath, if not NULL,
-// is filled with the file's full path on success.
-static BE_FILE_T BEL_Cross_apply_file_action_in_dir(
-	const char *filename, BE_FileRequest_T request,
-	const TCHAR *searchdir, TCHAR (*outfullpath)[BE_CROSS_PATH_LEN_BOUND])
-{
-	TCHAR *d_name;
-	BE_DIR_T dir = BEL_Cross_OpenDir(searchdir);
-	if (!dir)
-		return NULL;
-
-	TCHAR fullpath[BE_CROSS_PATH_LEN_BOUND];
-
-	for (d_name = BEL_Cross_ReadDir(dir); d_name; d_name = BEL_Cross_ReadDir(dir))
-	{
-		/*** Ignore non-ASCII filenames ***/
-		if (*BEL_Cross_tstr_find_nonascii_ptr(d_name))
-			continue;
-		if (!BEL_Cross_tstr_to_cstr_ascii_casecmp(d_name, filename))
-		{
-			// Just a little sanity check
-			if (_tcslen(searchdir) + 1 + _tcslen(d_name) >= BE_CROSS_PATH_LEN_BOUND)
-			{
-				BEL_Cross_CloseDir(dir);
-				return NULL;
-			}
-			TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
-			BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, searchdir, _T("/"), d_name);
-
-			BEL_Cross_CloseDir(dir);
-			if (outfullpath)
-				memcpy(*outfullpath, fullpath, sizeof(fullpath));
-			if (request != BE_FILE_REQUEST_DELETE)
-				return _tfopen(
-				    fullpath,
-				    (request == BE_FILE_REQUEST_OVERWRITE)
-				      ? _T("wb") : _T("rb"));
-			else
-			{
-				_tremove(fullpath);
-				return NULL;
-			}
-		}
-	}
-	BEL_Cross_CloseDir(dir);
-
-	if (request != BE_FILE_REQUEST_OVERWRITE)
-		return NULL;
-	TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
-	TCHAR *fullpathPtr = BEL_Cross_safeandfastctstringcopy_2strs(fullpath, fullpathEnd, searchdir, _T("/"));
-	// Create actual new files with a lower case, just because that's a common pattern in Unix-like setups
-	// (basically a modified BE_Cross_safeandfastcstringcopy, also copying a narrow string to a wide string).
-	//
-	// Note: fullpathPtr should initially point to an instance of '\0', so fullpathPtr < fullpathEnd.
-	char ch;
-	do
-	{
-		ch = *filename++;
-		*fullpathPtr++ = BE_Cross_tolower(ch); // This includes the null terminator if there's the room
-	} while ((fullpathPtr < fullpathEnd) && ch);
-	// These work in case fullpathPtr == fullpathEnd, and also if not
-	--fullpathPtr;
-	*fullpathPtr = _T('\0');
-
-	if (outfullpath)
-		memcpy(*outfullpath, fullpath, sizeof(fullpath));
-	return _tfopen(fullpath, _T("wb"));
-}
 
 // Returns 0 if not found, 1 if found with some data mismatch, or 2 otherwise
 //
@@ -585,77 +229,6 @@ static void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(const 
 static void BEL_Cross_ConditionallyAddGameInstallation(const BE_GameVerDetails_T *details, const TCHAR *searchdir, const char *descStr)
 {
 	BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(details, searchdir, descStr, NULL);
-}
-
-static void BEL_Cross_CreateTrimmedFilename(const char *inFilename, char (*outFileName)[13])
-{
-	// Remove trailing spaces (required for filenames stored in SCRIPT.HNT The Catacomb Armageddon v1.02 (used by HINTCAT.EXE))
-	char *fixedFilenamePtr = BE_Cross_safeandfastcstringcopy((*outFileName), (*outFileName) + sizeof(*outFileName), inFilename);
-	if (fixedFilenamePtr != *outFileName) // Copied string isn't empty (which would actually be bad, anyway...)
-	{
-		--fixedFilenamePtr;
-		do
-		{
-			if (*fixedFilenamePtr != ' ')
-				break;
-			*fixedFilenamePtr = '\0';
-			// Technically, checking *(fixedFilenamePtr-1) leads to undefined behaviors, and even
-			// the pointer itself doesn't have a clear manner, so do the following check (of the *original ptr)
-			if (fixedFilenamePtr-- == *outFileName)
-				break;
-		}
-		while (true);
-	}
-}
-
-// Opens a read-only file for reading from a "search path" in a case-insensitive manner
-BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
-{
-	char trimmedFilename[13];
-	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
-	// Trying writableFilesPath first, and then instPath in case of failure
-	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
-	if (fp)
-		return fp;
-	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->instPath, NULL);
-}
-
-// Opens a rewritable file for reading in a case-insensitive manner, checking just a single path
-BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename)
-{
-	char trimmedFilename[13];
-	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
-	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
-}
-
-// Opens a rewritable file for overwriting in a case-insensitive manner, checking just a single path
-BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename)
-{
-	char trimmedFilename[13];
-	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
-	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_OVERWRITE, g_be_selectedGameInstallation->writableFilesPath, NULL);
-}
-
-// Deletes a rewritable file if found, scanning just like BE_Cross_open_rewritable_for_overwriting
-void BE_Cross_unlink_rewritable(const char *filename)
-{
-	char trimmedFilename[13];
-	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
-	BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_DELETE, g_be_selectedGameInstallation->writableFilesPath, NULL);
-}
-
-// Used for e.g., the RefKeen cfg file
-BE_FILE_T BE_Cross_open_additionalfile_for_reading(const char *filename)
-{
-	return BEL_Cross_apply_file_action_in_dir(filename, BE_FILE_REQUEST_READ, g_be_appNewCfgPath, NULL);
-}
-
-BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename)
-{
-	// Do this just in case, but note that this isn't recursive
-	BEL_Cross_mkdir(g_be_appNewCfgPath); // Non-recursive
-
-	return BEL_Cross_apply_file_action_in_dir(filename, BE_FILE_REQUEST_OVERWRITE, g_be_appNewCfgPath, NULL);
 }
 
 // Loads a file originally embedded into the EXE (for DOS) to a newly allocated
