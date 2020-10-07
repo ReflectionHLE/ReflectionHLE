@@ -5,13 +5,7 @@
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
 
-#define _T(x) L##x
-#define TCHAR wchar_t
-#define _tcslen wcslen
-#define _tcscmp wcscmp
-#define _tfopen _wfopen
-#define _tremove _wremove
-#define _tmkdir _wmkdir
+#include "tchar.h"
 
 #else
 

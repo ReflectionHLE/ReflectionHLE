@@ -21,6 +21,8 @@
 
 #ifdef _WIN32 // Should also cover _WIN64
 #define REFKEEN_PLATFORM_WINDOWS
+#define UNICODE
+#define _UNICODE
 #endif
 
 #ifdef __APPLE__
