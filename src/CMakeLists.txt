@@ -12,6 +12,7 @@ list(APPEND be_src
 	src/backend/filesystem/be_filesystem_dirselection.c
 	src/backend/filesystem/be_filesystem_file.c
 	src/backend/filesystem/be_filesystem_file_ops.c
+	src/backend/filesystem/be_filesystem_file_lists.c
 	src/backend/filesystem/be_filesystem_gameinst.c
 	src/backend/filesystem/be_filesystem_root_paths.c
 	src/backend/gamedefs/be_gamedefs_accessors.c
