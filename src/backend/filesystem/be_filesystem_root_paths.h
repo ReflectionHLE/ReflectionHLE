@@ -22,7 +22,7 @@
 
 #include "be_cross.h"
 #include "be_filesystem_dir.h"
-#include "be_filesystem_path_len_bound.h"
+#include "be_filesystem_len_bounds.h"
 #include "be_filesystem_tchar.h"
 
 // A list of "root paths" from which one can choose a game dir (using just ASCII characters)

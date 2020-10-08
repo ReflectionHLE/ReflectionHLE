@@ -21,7 +21,7 @@
 #define BE_FILESYSTEM_FILE_OPS_H
 
 #include "be_cross.h"
-#include "be_filesystem_path_len_bound.h"
+#include "be_filesystem_len_bounds.h"
 #include "be_filesystem_tchar.h"
 
 typedef enum {
