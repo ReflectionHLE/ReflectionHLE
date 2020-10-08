@@ -93,7 +93,7 @@ BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 	return _tfopen(fullpath, _T("wb"));
 }
 
-static void BEL_Cross_CreateTrimmedFilename(const char *inFilename, char (*outFileName)[13])
+static void BEL_Cross_CreateTrimmedFilename(const char *inFilename, char (*outFileName)[BE_CROSS_DOS_FILENAME_LEN_BOUND])
 {
 	// Remove trailing spaces (required for filenames stored in SCRIPT.HNT The Catacomb Armageddon v1.02 (used by HINTCAT.EXE))
 	char *fixedFilenamePtr = BE_Cross_safeandfastcstringcopy((*outFileName), (*outFileName) + sizeof(*outFileName), inFilename);
@@ -117,7 +117,7 @@ static void BEL_Cross_CreateTrimmedFilename(const char *inFilename, char (*outFi
 // Opens a read-only file for reading from a "search path" in a case-insensitive manner
 BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
 {
-	char trimmedFilename[13];
+	char trimmedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
 	// Trying writableFilesPath first, and then instPath in case of failure
 	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
@@ -129,7 +129,7 @@ BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
 // Opens a rewritable file for reading in a case-insensitive manner, checking just a single path
 BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename)
 {
-	char trimmedFilename[13];
+	char trimmedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
 	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
 }
@@ -137,7 +137,7 @@ BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename)
 // Opens a rewritable file for overwriting in a case-insensitive manner, checking just a single path
 BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename)
 {
-	char trimmedFilename[13];
+	char trimmedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
 	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_OVERWRITE, g_be_selectedGameInstallation->writableFilesPath, NULL);
 }
@@ -145,7 +145,7 @@ BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename)
 // Deletes a rewritable file if found, scanning just like BE_Cross_open_rewritable_for_overwriting
 void BE_Cross_unlink_rewritable(const char *filename)
 {
-	char trimmedFilename[13];
+	char trimmedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
 	BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_DELETE, g_be_selectedGameInstallation->writableFilesPath, NULL);
 }
