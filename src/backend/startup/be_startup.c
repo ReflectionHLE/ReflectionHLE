@@ -83,10 +83,16 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal, bool setVerOnly)
 static void BEL_Cross_LoadEXEImageToMem(void)
 {
 	char errorMsg[256];
-	FILE *exeFp = BEL_Cross_apply_file_action_in_dir(g_be_current_exeFileDetails->exeName, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->instPath, NULL);
+	BE_FILE_T exeFp =
+		BEL_Cross_OpenMatchingGameFileForReading(
+			g_be_current_exeFileDetails->exeNames,
+			g_be_selectedGameInstallation->instPath);
 	if (!exeFp)
 	{
-		snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_LoadEXEImageToMem: Can't open EXE after checking it!\nFilename: %s", g_be_current_exeFileDetails->exeName);
+		snprintf(
+			errorMsg, sizeof(errorMsg),
+			"BEL_Cross_LoadEXEImageToMem: Can't open EXE after checking it!\n"
+			"Possible filenames: %s", g_be_current_exeFileDetails->exeNames);
 		BE_ST_ExitWithErrorMsg(errorMsg);
 	}
 
@@ -95,7 +101,10 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 	if (!g_be_current_exeImage)
 	{
 		fclose(exeFp);
-		snprintf(errorMsg, sizeof(errorMsg), "BEL_Cross_LoadEXEImageToMem: Can't allocate memory for unpacked EXE copy!\nFilename: %s", g_be_current_exeFileDetails->exeName);
+		snprintf(
+			errorMsg, sizeof(errorMsg),
+			"BEL_Cross_LoadEXEImageToMem: Can't allocate memory for unpacked EXE copy!\n"
+			"Possible filename: %s", g_be_current_exeFileDetails->exeNames);
 		BE_ST_ExitWithErrorMsg(errorMsg);
 	}
 
@@ -125,7 +134,10 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 	if (!success)
 	{
 		free(g_be_current_exeImage);
-		snprintf(errorMsg, sizeof(errorMsg), "decompExeImage: Failed to copy EXE in unpacked form!\nFilename: %s", g_be_current_exeFileDetails->exeName);
+		snprintf(
+			errorMsg, sizeof(errorMsg),
+			"decompExeImage: Failed to copy EXE in unpacked form!\n"
+			"Filename: %s", g_be_current_exeFileDetails->exeNames);
 		BE_ST_ExitWithErrorMsg(errorMsg);
 	}
 }
@@ -250,7 +262,9 @@ void BE_Cross_StartGame(int argc, char **argv, void (*mainFuncPtr)(void))
 	if (!g_be_current_exeFileDetails->mainFuncPtr)
 		BE_ST_ExitWithErrorMsg("BE_Cross_StartGame - Unrecognized main function!");
 
-	snprintf(g_refKeenCfg.lastSelectedGameExe, sizeof(g_refKeenCfg.lastSelectedGameExe), "%s", g_be_current_exeFileDetails->exeName ? g_be_current_exeFileDetails->exeName : "");
+	snprintf(
+		g_refKeenCfg.lastSelectedGameExe, sizeof(g_refKeenCfg.lastSelectedGameExe), "%s",
+		g_be_current_exeFileDetails->exeNames ? g_be_current_exeFileDetails->exeNames : "");
 
 	BEL_Cross_DoCallMainFunc(); // Do a bit more preparation and then begin
 }

@@ -53,4 +53,17 @@ static inline void BEL_Cross_ConditionallyAddGameInstallation(
 	BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(details, searchdir, descStr, NULL);
 }
 
+// Given a string representing a list of filenames separated
+// by an internally used delimiter, fills in *outFilename the
+// first one pointed by *filenames, if outFilename is non-NULL.
+// *filenames is updated to point to the following file
+// if any is left. It's otherwise set to NULL.
+void BEL_ST_GetNextGameFileName(
+	const char **filenames,
+	char (*outFilename)[BE_CROSS_DOS_FILENAME_LEN_BOUND]);
+
+// Attempts to open any file matching any of the given filenames in
+// the given path. Assumes refkeen_current_gamever was appropriately set.
+BE_FILE_T BEL_Cross_OpenMatchingGameFileForReading(const char *filenames, const TCHAR *path);
+
 #endif

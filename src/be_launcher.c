@@ -18,6 +18,7 @@
  */
 
 #include "refkeen.h"
+#include "backend/filesystem/be_filesystem_gameinst.h"
 #include "be_st_launcher.h"
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
@@ -1062,13 +1063,17 @@ void BE_Launcher_Handler_SupportedGameVersionSelection(BEMenuItem **menuItemP)
 	const BE_GameFileDetails_T *gameFileDetailsArray = g_be_gamefiledetails_ptrs[gameVer];
 
 	const BE_GameFileDetails_T *gameFileDetails;
-	int numOfFiles;
-	for (numOfFiles = 0, gameFileDetails = gameFileDetailsArray; gameFileDetails->filename; ++numOfFiles, ++gameFileDetails)
-		;
+	const char *filename;
+	int numOfFiles, numOfSubFiles;
+	for (numOfFiles = 0, numOfSubFiles = 0, gameFileDetails = gameFileDetailsArray;
+	     gameFileDetails->filenames; ++numOfFiles, ++gameFileDetails)
+		for (filename = gameFileDetails->filenames; filename;
+		     BEL_ST_GetNextGameFileName(&filename, NULL), ++numOfSubFiles)
+			;
 
 	g_beGameVersionDetailsMenuItems = (BEMenuItem *)malloc((2+numOfFiles)*sizeof(BEMenuItem));
 	g_beGameVersionDetailsMenuItemsPtrs = (BEMenuItem **)malloc((3+numOfFiles)*sizeof(BEMenuItem *));
-	g_beGameVersionDetailsMenuItemsStrsBuffer = (char *)malloc((2+numOfFiles)*BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND);
+	g_beGameVersionDetailsMenuItemsStrsBuffer = (char *)malloc((2+numOfSubFiles)*BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND);
 	if (!g_beGameVersionDetailsMenuItems || !g_beGameVersionDetailsMenuItemsPtrs || !g_beGameVersionDetailsMenuItemsStrsBuffer)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BE_Launcher_Handler_SupportedGameVersionSelection: Out of memory!\n");
@@ -1080,7 +1085,7 @@ void BE_Launcher_Handler_SupportedGameVersionSelection(BEMenuItem **menuItemP)
 	g_beGameVersionDetailsMenu.menuItems = g_beGameVersionDetailsMenuItemsPtrs;
 	char *label = g_beGameVersionDetailsMenuItemsStrsBuffer;
 	gameFileDetails = gameFileDetailsArray;
-	for (int i = 0; i < 2+numOfFiles; ++i, label += BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND)
+	for (int i = 0; i < 2+numOfFiles; ++i)
 	{
 		g_beGameVersionDetailsMenuItemsPtrs[i] = &g_beGameVersionDetailsMenuItems[i];
 		g_beGameVersionDetailsMenuItems[i].choices = NULL;
@@ -1092,13 +1097,31 @@ void BE_Launcher_Handler_SupportedGameVersionSelection(BEMenuItem **menuItemP)
 		{
 		case 0:
 			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "        List of required files         "); // HACK - Proper spacing for text centering
+			label += BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND;
 			break;
 		case 1:
 			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "Filename     CRC32 (hex)  Size (bytes)");
+			label += BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND;
 			break;
 		default:
-			snprintf(label, BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "%-12s 0x%08X   %d", gameFileDetails->filename, gameFileDetails->crc32, gameFileDetails->filesize);
+		{
+			// FIXME: This looks a bit hackish, but it's working.
+			// the menu item length bound applies per internal row.
+			char *labelPtr = label;
+			int n = 0;
+			for (const char *ptr = gameFileDetails->filenames; ptr; ++n)
+			{
+				char filename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
+				BEL_ST_GetNextGameFileName(&ptr, &filename);
+				char line[BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND];
+				snprintf(line, sizeof(line), "%-12s 0x%08X   %d", filename, gameFileDetails->crc32, gameFileDetails->filesize);
+				labelPtr = BE_Cross_safeandfastcstringcopy(labelPtr, label + (n + 1) * BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, line);
+				if (ptr && (labelPtr < label + (n + 1) * BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND - 1))
+					*labelPtr++ = '\n';
+			}
+			label += n * BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND;
 			++gameFileDetails;
+		}
 		}
 	}
 	g_beGameVersionDetailsMenuItemsPtrs[2+numOfFiles] = NULL;

@@ -57,10 +57,10 @@ void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize)
 {
 	const BE_EmbeddedGameFileDetails_T *embeddedFile = g_be_current_exeFileDetails->embeddedFiles;
 	if (embeddedFile)
-		for (; embeddedFile->fileDetails.filename && BE_Cross_strcasecmp(name, embeddedFile->fileDetails.filename); ++embeddedFile)
+		for (; embeddedFile->fileDetails.filenames && BE_Cross_strcasecmp(name, embeddedFile->fileDetails.filenames); ++embeddedFile)
 			;
 
-	if (!embeddedFile || !(embeddedFile->fileDetails.filename))
+	if (!embeddedFile || !(embeddedFile->fileDetails.filenames))
 		BE_ST_ExitWithErrorMsg("BE_Cross_BmallocFromEmbeddedData: Unrecognized embedded data name!");
 
 #ifdef REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS
@@ -82,10 +82,10 @@ void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
 {
 	const BE_EmbeddedGameFileDetails_T *embeddedFile = g_be_current_exeFileDetails->embeddedFiles;
 	if (embeddedFile)
-		for (; embeddedFile->fileDetails.filename && BE_Cross_strcasecmp(name, embeddedFile->fileDetails.filename); ++embeddedFile)
+		for (; embeddedFile->fileDetails.filenames && BE_Cross_strcasecmp(name, embeddedFile->fileDetails.filenames); ++embeddedFile)
 			;
 
-	if (!embeddedFile || !(embeddedFile->fileDetails.filename))
+	if (!embeddedFile || !(embeddedFile->fileDetails.filenames))
 		BE_ST_ExitWithErrorMsg("BE_Cross_BfarmallocFromEmbeddedData: Unrecognized embedded data name!");
 
 #ifdef REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS

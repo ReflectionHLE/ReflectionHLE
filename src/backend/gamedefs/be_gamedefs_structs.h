@@ -42,7 +42,7 @@ typedef enum {
 typedef struct {
 	const BE_EmbeddedGameFileDetails_T *embeddedFiles;
 	const char *subDescription; // NULL if there's nothing to add
-	const char *exeName; // NULL if all we want is a main function pointer
+	const char *exeNames; // NULL if all we want is a main function pointer
 	void (*mainFuncPtr)(void);
 	void (*embeddedFilesLoaderFuncPtr)(void);
 	int decompExeImageSize;

@@ -23,7 +23,7 @@
 const char *BE_Cross_GetEXEFileDescriptionStrForGameVer(const char *exeFileName, int verId)
 {
 	const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[verId]->exeFiles;
-	for (; exeFile->mainFuncPtr && (!exeFile->exeName || strcmp(exeFile->exeName, exeFileName)); ++exeFile)
+	for (; exeFile->mainFuncPtr && (!exeFile->exeNames || strcmp(exeFile->exeNames, exeFileName)); ++exeFile)
 		;
 	return (exeFile->mainFuncPtr ? exeFile->subDescription : NULL); // subDescription may also be NULL
 }
@@ -31,7 +31,7 @@ const char *BE_Cross_GetEXEFileDescriptionStrForGameVer(const char *exeFileName,
 void (*BE_Cross_GetAccessibleMainFuncPtrForGameVer(const char *exeFileName, int verId))(void)
 {
 	const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[verId]->exeFiles;
-	for (; exeFile->mainFuncPtr && (!exeFile->exeName || strcmp(exeFile->exeName, exeFileName)); ++exeFile)
+	for (; exeFile->mainFuncPtr && (!exeFile->exeNames || strcmp(exeFile->exeNames, exeFileName)); ++exeFile)
 		;
 	return ((exeFile->mainFuncPtr && exeFile->subDescription) ? exeFile->mainFuncPtr : g_be_gamever_ptrs[verId]->exeFiles->mainFuncPtr);
 }

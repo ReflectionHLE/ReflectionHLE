@@ -175,7 +175,7 @@ void BE_Cross_PrepareAppPaths(void);
 
 // Describes a required file from a specific game version
 typedef struct {
-	const char *filename;
+	const char *filenames;
 	int filesize;
 	uint32_t crc32;
 } BE_GameFileDetails_T;
