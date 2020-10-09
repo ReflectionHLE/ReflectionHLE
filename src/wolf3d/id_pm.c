@@ -666,7 +666,7 @@ PML_OpenPageFile(void)
 	BE_ST_printf("Opening %s\n", PageFileName);
 #endif
 
-	PageFile = BE_Cross_open_readonly_for_reading(PageFileName);
+	PageFile = BE_Cross_open_matching_readonly_for_reading(PageFileName);
 //	PageFile = open(PageFileName,O_RDONLY + O_BINARY);
 	if (!BE_Cross_IsFileValid(PageFile))
 //	if (PageFile == -1)

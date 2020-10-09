@@ -920,7 +920,7 @@ void CAL_SetupMapFile (void)
 #ifndef MAPHEADERLINKED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("MAPHEAD."EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_matching_readonly_for_reading("MAPHEAD."EXTENSION)))
 	//if ((handle = open("MAPHEAD."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPHEAD."EXTENSION"!");
@@ -928,7 +928,7 @@ void CAL_SetupMapFile (void)
 	strcpy(fname,mheadname);
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_matching_readonly_for_reading(fname)))
 	//if ((handle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
@@ -960,7 +960,7 @@ void CAL_SetupMapFile (void)
 #ifdef CARMACIZED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("GAMEMAPS."EXTENSION)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_matching_readonly_for_reading,("GAMEMAPS."EXTENSION)))
 	//if ((maphandle = open("GAMEMAPS."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open GAMEMAPS."EXTENSION"!");
@@ -968,7 +968,7 @@ void CAL_SetupMapFile (void)
 	strcpy(fname,"GAMEMAPS.");
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading(fname)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_matching_readonly_for_reading(fname)))
 	//if ((maphandle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
@@ -976,7 +976,7 @@ void CAL_SetupMapFile (void)
 #else
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("MAPTEMP."EXTENSION)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_matching_readonly_for_reading("MAPTEMP."EXTENSION)))
 	//if ((maphandle = open("MAPTEMP."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPTEMP."EXTENSION"!");
@@ -984,7 +984,7 @@ void CAL_SetupMapFile (void)
 	strcpy(fname,mfilename);
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading(fname)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_matching_readonly_for_reading(fname)))
 	//if ((maphandle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
