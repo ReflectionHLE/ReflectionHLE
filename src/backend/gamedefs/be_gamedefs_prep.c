@@ -242,6 +242,8 @@ void BE_Cross_PrepareGameInstallations(void)
 
 #ifdef REFKEEN_HAS_VER_SODAC14
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, _T("."), "Spear of Destiny Activision v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, _T("."), "Spear of Destiny M2 Activision v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, _T("."), "Spear of Destiny M3 Activision v1.4 (Local)");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_sod_path[BE_CROSS_PATH_LEN_BOUND];
@@ -254,6 +256,8 @@ void BE_Cross_PrepareGameInstallations(void)
 		{
 			BEL_Cross_safeandfastctstringcopy(steam_sod_path+_tcslen(steam_sod_path), steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR)-_tcslen(steam_sod_path), L"\\base");
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Spear of Destiny M2 Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Spear of Destiny M3 Activision v1.4 (Steam)");
 		}
 #elif (defined REFKEEN_PLATFORM_UNIX)
 		if (homeVar && *homeVar)
@@ -261,12 +265,18 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_PLATFORM_MACOS
 			BE_Cross_safeandfastcstringcopy_2strs(steam_sod_path, steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common/Spear of Destiny/base");
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Spear of Destiny M2 Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Spear of Destiny M3 Activision v1.4 (Steam)");
 #else
 			// They changed from SteamApps to steamapps at some point, so check both two
 			BE_Cross_safeandfastcstringcopy_2strs(steam_sod_path, steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common/Spear of Destiny/base");
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Spear of Destiny M2 Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Spear of Destiny M3 Activision v1.4 (Steam)");
 			BE_Cross_safeandfastcstringcopy_2strs(steam_sod_path, steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR), homeVar, "/.steam/steam/steamapps/common/Spear of Destiny/base");
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Spear of Destiny M2 Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Spear of Destiny M3 Activision v1.4 (Steam)");
 #endif
 		}
 #endif // REFKEEN_PLATFORM

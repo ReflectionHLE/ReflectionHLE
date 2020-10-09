@@ -44,6 +44,8 @@
 #endif
 #ifdef REFKEEN_HAS_VER_SODAC14
 #define BE_STR_GAMEVER_SODAC14 "sodac14"
+#define BE_STR_GAMEVER_SD2AC14 "sd2ac14"
+#define BE_STR_GAMEVER_SD3AC14 "sd3ac14"
 #endif
 #ifdef REFKEEN_HAS_VER_N3DWT10
 #define BE_STR_GAMEVER_N3DWT10 "n3dwt10"
