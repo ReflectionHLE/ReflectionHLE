@@ -249,6 +249,9 @@ int32_t BE_Cross_FileLengthFromHandle(BE_FILE_T fp);
 BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename); // For e.g., read-only gamedata files like Catacomb 3-D's EGAGRAPH.C3D
 BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename); // For e.g., rewritable files like saved games
 BE_FILE_T BE_Cross_open_rewritable_for_overwriting(const char *filename); // For the same rewritable files
+// Similar to BE_Cross_open_readonly_for_reading, but accepts alternative
+// filenames for matching data. Validates file integrity first.
+BE_FILE_T BE_Cross_open_matching_readonly_for_reading(const char *filename);
 // Deletes a rewritable file if found, scanning just like BE_Cross_open_rewritable_for_overwriting
 void BE_Cross_unlink_rewritable(const char *filename);
 // Used for NEW files not originating from the originals (like RefKeen cfg)

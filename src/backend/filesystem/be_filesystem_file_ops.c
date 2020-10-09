@@ -126,6 +126,42 @@ BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
 	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->instPath, NULL);
 }
 
+BE_FILE_T BE_Cross_open_matching_readonly_for_reading(const char *filename)
+{
+	char trimmedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND],
+	     checkedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
+	const char *filenames = NULL;
+	const BE_GameVerDetails_T *details = g_be_gamever_ptrs[refkeen_current_gamever];
+	const BE_GameFileDetails_T *fileDetailsBuffer;
+	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
+	// Get matching filenames list
+	// FIXME: BEL_Cross_OpenMatchingGameFileForReading will repeat going
+	// through details->reqFiles as of writing this, but for now,
+	// this should work.
+	for (fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filenames; ++fileDetailsBuffer)
+	{
+		bool found = false;
+		for (filenames = fileDetailsBuffer->filenames; filenames;)
+		{
+			BEL_ST_GetNextGameFileName(&filenames, &checkedFilename);
+			if (!BE_Cross_strcasecmp(trimmedFilename, checkedFilename))
+			{
+				found = true;
+				break;
+			}
+		}
+		if (found)
+			break;
+	}
+	if (!fileDetailsBuffer->filenames)
+		return BE_CROSS_NIL_FILE;
+	// Trying writableFilesPath first, and then instPath in case of failure
+	BE_FILE_T fp = BEL_Cross_OpenMatchingGameFileForReading(fileDetailsBuffer->filenames, g_be_selectedGameInstallation->writableFilesPath);
+	if (fp)
+		return fp;
+	return BEL_Cross_OpenMatchingGameFileForReading(fileDetailsBuffer->filenames, g_be_selectedGameInstallation->instPath);
+}
+
 // Opens a rewritable file for reading in a case-insensitive manner, checking just a single path
 BE_FILE_T BE_Cross_open_rewritable_for_reading(const char *filename)
 {
