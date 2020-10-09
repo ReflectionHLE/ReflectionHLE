@@ -255,8 +255,6 @@ void BE_Cross_unlink_rewritable(const char *filename);
 BE_FILE_T BE_Cross_open_additionalfile_for_reading(const char *filename);
 BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename);
 
-void BE_cross_unlink_rewritable(const char *filename); // Remove rewritable file
-
 // Should be shared
 static inline void BE_Cross_close(BE_FILE_T fp)
 {
