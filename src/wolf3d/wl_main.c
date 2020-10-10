@@ -2521,4 +2521,8 @@ void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void)
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_wolf3d_exe - Failed to load\nat least one file.");
 }
 
+void RefKeen_Patch_wl_main(void)
+{
+}
+
 REFKEEN_NS_E
