@@ -2010,6 +2010,8 @@ void RefKeen_Patch_wl_play(void)
 	refkeen_compat_wl_play_objoffset = 0xA74A;
 #elif (defined REFKEEN_VER_WL1AP14)
 	refkeen_compat_wl_play_objoffset = 0xAB6E;
+#elif (defined REFKEEN_VER_WL6GT14A) || (defined REFKEEN_VER_WL6GT14B)
+	refkeen_compat_wl_play_objoffset = 0xAC46;
 #elif (defined REFKEEN_VER_WL6AC14)
 	refkeen_compat_wl_play_objoffset = 0xB51C;
 #elif (defined REFKEEN_VER_SDMFG10)

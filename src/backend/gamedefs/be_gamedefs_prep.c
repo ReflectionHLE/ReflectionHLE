@@ -201,6 +201,13 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_HAS_VER_WL1AP14
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap14, _T("."), "Wolfenstein 3D Shareware v1.2 (Local)");
 #endif
+#ifdef REFKEEN_HAS_VER_WL6GT14A
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14a, _T("."), "Wolfenstein 3D GT #1 v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6id14, _T("."), "Wolfenstein 3D id v1.4 (Local)");
+#endif
+#ifdef REFKEEN_HAS_VER_WL6GT14B
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14b, _T("."), "Wolfenstein 3D GT #2 v1.4 (Local)");
+#endif
 
 #ifdef REFKEEN_HAS_VER_WL6AC14
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, _T("."), "Wolfenstein 3D Activision v1.4 (Local)");
