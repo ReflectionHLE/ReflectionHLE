@@ -1,19 +1,7 @@
 /* This header must be included *only* from be_gamedefs_wolf3d.h */
 
 REFKEEN_NS_B_FOR(wl6gt14b)
-
-void RefKeen_Patch_wl_play(void);
-//void RefKeen_FillObjStatesWithDOSPointers(void);
-//void RefKeen_PrepareAltControllerScheme(void);
-
-static void (*g_be_patcherfuncs_wl6gt14b[])(void) = {
-	RefKeen_Patch_wl_play,
-	/*RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme,*/ 0
-};
-
-void wolf3d_exe_main(void);
-void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void);
-
+#include "be_gamedefs_wolf3d_patchers.h"
 REFKEEN_NS_E
 
 static const BE_GameFileDetails_T g_be_reqgameverfiles_wl6gt14b[] = {
@@ -54,7 +42,7 @@ static const BE_GameVerDetails_T g_be_gamever_wl6gt14b = {
 	g_be_exefiles_wl6gt14b,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL6GT14B),
 	"Wolfenstein 3D GT #2 v1.4 (Custom)",
-	REFKEEN_NS_ENCLOSE(wl6gt14b, g_be_patcherfuncs_wl6gt14b),
+	REFKEEN_NS_ENCLOSE(wl6gt14b, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL6GT14B
 };

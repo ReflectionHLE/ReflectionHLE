@@ -1,19 +1,7 @@
 /* This header must be included *only* from be_gamedefs_wolf3d.h */
 
 REFKEEN_NS_B_FOR(sodac14)
-
-void RefKeen_Patch_wl_play(void);
-//void RefKeen_FillObjStatesWithDOSPointers(void);
-//void RefKeen_PrepareAltControllerScheme(void);
-
-static void (*g_be_patcherfuncs_sodac14[])(void) = {
-	RefKeen_Patch_wl_play,
-	/*RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme,*/ 0
-};
-
-void wolf3d_exe_main(void);
-void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void);
-
+#include "be_gamedefs_wolf3d_patchers.h"
 REFKEEN_NS_E
 
 static const BE_GameFileDetails_T g_be_reqgameverfiles_sodac14[] = {
@@ -80,7 +68,7 @@ static const BE_GameVerDetails_T g_be_gamever_sodac14 = {
 	g_be_exefiles_sodac14,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_SODAC14),
 	"Spear of Destiny Activision v1.4 (Custom)",
-	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs_sodac14),
+	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_SODAC14
 };
@@ -90,7 +78,7 @@ static const BE_GameVerDetails_T g_be_gamever_sd2ac14 = {
 	g_be_exefiles_sodac14,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_SD2AC14),
 	"Spear of Destiny M2 Activision v1.4 (Custom)",
-	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs_sodac14),
+	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_SD2AC14
 };
@@ -100,7 +88,7 @@ static const BE_GameVerDetails_T g_be_gamever_sd3ac14 = {
 	g_be_exefiles_sodac14,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_SD3AC14),
 	"Spear of Destiny Activision v1.4 (Custom)",
-	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs_sodac14),
+	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_SD3AC14
 };
