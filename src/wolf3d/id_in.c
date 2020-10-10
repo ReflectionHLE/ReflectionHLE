@@ -924,10 +924,17 @@ id0_boolean_t IN_CheckAck (void)
 
 void IN_Ack (void)
 {
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu);
+
 	IN_StartAck ();
 
 	while (!IN_CheckAck ())
 		BE_ST_ShortSleep();
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 
