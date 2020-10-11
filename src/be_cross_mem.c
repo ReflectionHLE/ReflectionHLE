@@ -51,9 +51,9 @@
 #define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
 
 #ifdef _MSC_VER
-/*static*/ uint8_t __declspec(align(16)) g_be_emulatedMemSpace[16 * (EMULATED_FIRST_PARAGRAPHS + EMULATED_NEAR_PARAGRAPHS + EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS + EMULATED_FAR_PARAGRAPHS)];
+/*static*/ uint8_t __declspec(align(16)) g_be_emulatedMemSpace[EMULATED_CONVENTIONAL_SIZE + EMULATED_EMS_SIZE];
 #else
-/*static*/ uint8_t __attribute__ ((aligned (16))) g_be_emulatedMemSpace[16*(EMULATED_FIRST_PARAGRAPHS+EMULATED_NEAR_PARAGRAPHS+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS+EMULATED_FAR_PARAGRAPHS)];
+/*static*/ uint8_t __attribute__ ((aligned (16))) g_be_emulatedMemSpace[EMULATED_CONVENTIONAL_SIZE + EMULATED_EMS_SIZE];
 #endif
 
 /*** Memory blocks definitions ***/

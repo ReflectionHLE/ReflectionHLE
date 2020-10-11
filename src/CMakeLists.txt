@@ -24,6 +24,7 @@ list(APPEND be_src
 	src/backend/timing/be_timing_callback.c
 	src/be_cross.c
 	src/be_cross_doszeroseg.c
+	src/be_cross_emm.c
 	src/be_cross_mem.c
 	src/be_cross_xmm.c
 	src/be_st_sdl.c
