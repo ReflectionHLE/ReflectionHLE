@@ -80,7 +80,7 @@ static	const id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",id0_nil_t};
 
 // REFKEEN TODO: Let's begin with a simplified implementation
 #define REFKEEN_SIMPLIFIED 0
-#define REFKEEN_NOEMS 1
+#define REFKEEN_NOEMS 0
 #define REFKEEN_NOXMS 0
 
 #if REFKEEN_SIMPLIFIED
@@ -101,6 +101,8 @@ memptr *PMPageDataPtrs; // Use this for exact locations of the data
 void
 PML_MapEMS(id0_word_t logical,id0_word_t physical)
 {
+	if (BE_Cross_EMM_MapPage(EMSHandle, logical, physical) != BE_EMM_NO_ERROR)
+#if 0
 	_AL = physical;
 	_BX = logical;
 	_DX = EMSHandle;
@@ -108,6 +110,7 @@ PML_MapEMS(id0_word_t logical,id0_word_t physical)
 asm	int	EMS_INT
 
 	if (_AH)
+#endif
 		Quit("PML_MapEMS: Page mapping failed");
 }
 
@@ -127,53 +130,93 @@ PML_StartupEMS(void)
 {
 	id0_int_t		i;
 	id0_long_t	size;
+	BE_EMM_AllocationInfo EMSPageCount;
 
 	EMSPresent = false;			// Assume that we'll fail
 	EMSAvail = 0;
 
+	BE_EMM_File EMSDriver = BE_Cross_EMM_Open(EMMDriverName);	// try to open EMMXXXX0 device
+	if (!EMSDriver)
+		goto error;
+#if 0
 	_DX = (id0_word_t)EMMDriverName;
 	_AX = 0x3d00;
 	geninterrupt(0x21);			// try to open EMMXXXX0 device
 asm	jnc	gothandle
 	goto error;
+#endif
 
+	uint16_t EMSDriverInfo;
+	if (!BE_Cross_EMM_Ioctl_GetDeviceData(EMSDriver, &EMSDriverInfo))	// get device info
+		goto error;
+#if 0
 gothandle:
 	_BX = _AX;
 	_AX = 0x4400;
 	geninterrupt(0x21);			// get device info
 asm	jnc	gotinfo;
 	goto error;
+#endif
 
+	if ((EMSDriverInfo & 0x80) != 0x80)
+		goto error;
+#if 0
 gotinfo:
 asm	and	dx,0x80
 	if (!_DX)
 		goto error;
+#endif
 
+	if (!BE_Cross_EMM_Ioctl_GetStatus(EMSDriver))	// get status
+		goto error;
+#if 0
 	_AX = 0x4407;
 	geninterrupt(0x21);			// get status
 asm	jc	error
 	if (!_AL)
 		goto error;
+#endif
 
+	BE_Cross_EMM_Close(EMSDriver);	// close handle
+#if 0
 	_AH = 0x3e;
 	geninterrupt(0x21);			// close handle
+#endif
 
+	if (BE_Cross_EMM_GetStatus())
+		goto error;				// make sure EMS hardware is present
+#if 0
 	_AH = EMS_STATUS;
 	geninterrupt(EMS_INT);
 	if (_AH)
 		goto error;				// make sure EMS hardware is present
+#endif
 
+	if (BE_Cross_EMM_GetVersion() < 0x32)	// only work on EMS 3.2 or greater (silly, but...)
+		goto error;
+#if 0
 	_AH = EMS_VERSION;
 	geninterrupt(EMS_INT);
 	if (_AH || (_AL < 0x32))	// only work on EMS 3.2 or greater (silly, but...)
 		goto error;
+#endif
 
+	EMSPageFrame = BE_Cross_EMM_GetPageFrame();
+	if (!EMSPageFrame)
+		goto error;				// find the page frame address
+#if 0
 	_AH = EMS_GETFRAME;
 	geninterrupt(EMS_INT);
 	if (_AH)
 		goto error;				// find the page frame address
 	EMSPageFrame = _BX;
+#endif
 
+	EMSPageCount = BE_Cross_EMM_GetUnallocedPageCount();
+	if (EMSPageCount.pagesAvailable < 2)
+		goto error;         	// Require at least 2 pages (32k)
+	EMSAvail = EMSPageCount.pagesAvailable;
+#if 0
 	_AH = EMS_GETPAGES;
 	geninterrupt(EMS_INT);
 	if (_AH)
@@ -181,6 +224,7 @@ asm	jc	error
 	if (_BX < 2)
 		goto error;         	// Require at least 2 pages (32k)
 	EMSAvail = _BX;
+#endif
 
 	// Don't hog all available EMS
 	size = EMSAvail * (id0_long_t)EMSPageSize;
@@ -190,12 +234,16 @@ asm	jc	error
 		EMSAvail = size / EMSPageSize;
 	}
 
+	if (BE_Cross_EMM_AllocatePages(EMSAvail, &EMSHandle) != BE_EMM_NO_ERROR)
+		goto error;
+#if 0
 	_AH = EMS_ALLOCPAGES;
 	_BX = EMSAvail;
 	geninterrupt(EMS_INT);
 	if (_AH)
 		goto error;
 	EMSHandle = _DX;
+#endif
 
 	mminfo.EMSmem += EMSAvail * (id0_long_t)EMSPageSize;
 
@@ -217,10 +265,13 @@ PML_ShutdownEMS(void)
 {
 	if (EMSPresent)
 	{
+		if (BE_Cross_EMM_DeallocatePages(EMSHandle) != BE_EMM_NO_ERROR)
+#if 0
 	asm	mov	ah,EMS_FREEPAGES
 	asm	mov	dx,[EMSHandle]
 	asm	int	EMS_INT
 		if (_AH)
+#endif
 			Quit ("PML_ShutdownEMS: Error freeing EMS");
 	}
 }
@@ -780,7 +831,7 @@ PML_GetEMSAddress(id0_int_t page,PMLockType lock)
 	EMSList[emspage].lastHit = PMFrameCount;
 	offset = emspage * EMSPageSizeSeg;
 	offset += emsoff * PMPageSizeSeg;
-	return((memptr)(EMSPageFrame + offset));
+	return((memptr)BE_Cross_BGetPtrFromSeg(EMSPageFrame + offset));
 }
 #else
 memptr
