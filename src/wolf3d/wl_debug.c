@@ -337,8 +337,7 @@ static	id0_char_t	buf[10];
 
 		US_Print("\n Address: ");
 		addr = PM_GetPageAddress(i);
-		// FIXME (REFKEEN): This is greatly platform-dependent! Can we change it?
-		sprintf(buf,"0x%04x",(id0_word_t)(uintptr_t)addr);
+		sprintf(buf,"0x%04x",addr ? BE_Cross_GetPtrNormalizedSeg(addr) : 0);
 		US_Print(buf);
 
 		if (addr)
