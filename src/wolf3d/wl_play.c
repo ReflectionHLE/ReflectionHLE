@@ -2006,7 +2006,7 @@ void RefKeen_Patch_wl_play(void)
 	refkeen_compat_wl_play_objoffset = 0xB0B0;
 #elif (defined REFKEEN_VER_WL1AP11)
 	refkeen_compat_wl_play_objoffset = 0xA73A;
-#elif (defined REFKEEN_VER_WL1AP12)
+#elif (defined REFKEEN_VER_WL6AP11)
 	refkeen_compat_wl_play_objoffset = UPLOAD ? 0xA74A : 0xA82A;
 #elif (defined REFKEEN_VER_WL1AP14)
 	refkeen_compat_wl_play_objoffset = UPLOAD ? 0xAB6E : 0xAC4E;

@@ -33,7 +33,7 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_WL1AP11
 	BE_STR_GAMEVER_WL1AP11,
 #endif
-#ifdef REFKEEN_HAS_VER_WL1AP12
+#ifdef REFKEEN_HAS_VER_WL6AP11
 	BE_STR_GAMEVER_WL6AP11,
 	BE_STR_GAMEVER_WL1AP12,
 	BE_STR_GAMEVER_WL6AP12,
@@ -95,7 +95,7 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_WL1AP11
 	"Wolfenstein 3D Shareware v1.1",
 #endif
-#ifdef REFKEEN_HAS_VER_WL1AP12
+#ifdef REFKEEN_HAS_VER_WL6AP11
 	"Wolfenstein 3D 6-ep Apogee v1.1",
 	"Wolfenstein 3D Shareware v1.2",
 	"Wolfenstein 3D 6-ep Apogee v1.2",
@@ -173,7 +173,7 @@ const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_WL1AP11
 	&g_be_gamever_wl1ap11,
 #endif
-#ifdef REFKEEN_HAS_VER_WL1AP12
+#ifdef REFKEEN_HAS_VER_WL6AP11
 	&g_be_gamever_wl6ap11,
 	&g_be_gamever_wl1ap12,
 	&g_be_gamever_wl6ap12,
@@ -235,7 +235,7 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #ifdef REFKEEN_HAS_VER_WL1AP11
 	g_be_reqgameverfiles_wl1ap11,
 #endif
-#ifdef REFKEEN_HAS_VER_WL1AP12
+#ifdef REFKEEN_HAS_VER_WL6AP11
 	g_be_reqgameverfiles_wl6ap11,
 	g_be_reqgameverfiles_wl1ap12,
 	g_be_reqgameverfiles_wl6ap12,

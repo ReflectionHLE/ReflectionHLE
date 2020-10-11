@@ -35,7 +35,7 @@ typedef enum {
 #ifdef REFKEEN_HAS_VER_WL1AP11
 	BE_GAMEVER_WL1AP11,
 #endif
-#ifdef REFKEEN_HAS_VER_WL1AP12
+#ifdef REFKEEN_HAS_VER_WL6AP11
 	BE_GAMEVER_WL6AP11,
 	BE_GAMEVER_WL1AP12,
 	BE_GAMEVER_WL6AP12,
@@ -93,7 +93,7 @@ typedef enum {
 #define REFKEEN_NS_B namespace wl1ap10 {
 #elif (defined REFKEEN_VER_WL1AP11)
 #define REFKEEN_NS_B namespace wl1ap11 {
-#elif (defined REFKEEN_VER_WL1AP12)
+#elif (defined REFKEEN_VER_WL6AP11)
 #define REFKEEN_NS_B namespace wl1ap12 {
 #elif (defined REFKEEN_VER_WL1AP14)
 #define REFKEEN_NS_B namespace wl1ap14 {
