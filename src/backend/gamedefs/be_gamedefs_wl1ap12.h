@@ -1,6 +1,6 @@
 /* This header must be included *only* from be_gamedefs_wolf3d.h */
 
-REFKEEN_NS_B_FOR(wl1ap12)
+REFKEEN_NS_B_FOR(wl6ap11)
 #include "be_gamedefs_wolf3d_patchers.h"
 REFKEEN_NS_E
 
@@ -30,8 +30,8 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl6ap11[] = {
 		g_be_embeddedgamefiles_wl6ap11,
 		NULL,
 		"WOLF3D.EXE",
-		&REFKEEN_NS_ENCLOSE(wl1ap12, wolf3d_exe_main),
-		&REFKEEN_NS_ENCLOSE(wl1ap12, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
+		&REFKEEN_NS_ENCLOSE(wl6ap11, wolf3d_exe_main),
+		&REFKEEN_NS_ENCLOSE(wl6ap11, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		297920 - 0x2600,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
@@ -44,7 +44,7 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ap11 = {
 	g_be_exefiles_wl6ap11,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL6AP11),
 	"Wolfenstein 3D 6-ep Apogee v1.1 (Custom)",
-	REFKEEN_NS_ENCLOSE(wl1ap12, g_be_patcherfuncs),
+	REFKEEN_NS_ENCLOSE(wl6ap11, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL6AP11
 };
@@ -69,7 +69,7 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ap12 = {
 	g_be_exefiles_wl6ap11,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL6AP12),
 	"Wolfenstein 3D 6-ep Apogee v1.2 (Custom)",
-	REFKEEN_NS_ENCLOSE(wl1ap12, g_be_patcherfuncs),
+	REFKEEN_NS_ENCLOSE(wl6ap11, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL6AP12
 };
@@ -100,8 +100,8 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl1ap12[] = {
 		g_be_embeddedgamefiles_wl1ap12,
 		NULL,
 		"WOLF3D.EXE",
-		&REFKEEN_NS_ENCLOSE(wl1ap12, wolf3d_exe_main),
-		&REFKEEN_NS_ENCLOSE(wl1ap12, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
+		&REFKEEN_NS_ENCLOSE(wl6ap11, wolf3d_exe_main),
+		&REFKEEN_NS_ENCLOSE(wl6ap11, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		296720 - 0x2600,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
@@ -114,7 +114,7 @@ static const BE_GameVerDetails_T g_be_gamever_wl1ap12 = {
 	g_be_exefiles_wl1ap12,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL1AP12),
 	"Wolfenstein 3D Shareware v1.2 (Custom)",
-	REFKEEN_NS_ENCLOSE(wl1ap12, g_be_patcherfuncs),
+	REFKEEN_NS_ENCLOSE(wl6ap11, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL1AP12
 };

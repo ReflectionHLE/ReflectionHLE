@@ -94,7 +94,7 @@ typedef enum {
 #elif (defined REFKEEN_VER_WL1AP11)
 #define REFKEEN_NS_B namespace wl1ap11 {
 #elif (defined REFKEEN_VER_WL6AP11)
-#define REFKEEN_NS_B namespace wl1ap12 {
+#define REFKEEN_NS_B namespace wl6ap11 {
 #elif (defined REFKEEN_VER_WL1AP14)
 #define REFKEEN_NS_B namespace wl1ap14 {
 #elif (defined REFKEEN_VER_WL6GT14A)
