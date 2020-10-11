@@ -78,17 +78,6 @@ REFKEEN_NS_B
 
 static	const id0_char_t		*ParmStrings[] = {"nomain","noems","noxms",id0_nil_t};
 
-// REFKEEN TODO: Let's begin with a simplified implementation
-#define REFKEEN_SIMPLIFIED 0
-#define REFKEEN_NOEMS 0
-#define REFKEEN_NOXMS 0
-
-#if REFKEEN_SIMPLIFIED
-memptr PMPageData; // Just allocate everything at once for now
-memptr *PMPageDataPtrs; // Use this for exact locations of the data
-#endif
-
-#if !REFKEEN_NOEMS
 /////////////////////////////////////////////////////////////////////////////
 //
 //	EMS Management code
@@ -275,28 +264,7 @@ PML_ShutdownEMS(void)
 			Quit ("PML_ShutdownEMS: Error freeing EMS");
 	}
 }
-#else
-void
-PML_MapEMS(id0_word_t logical,id0_word_t physical)
-{
-	BE_ST_ExitWithErrorMsg ("PML_MapEMS called without EMS support");
-}
 
-id0_boolean_t
-PML_StartupEMS(void)
-{
-	EMSPresent = false;
-	EMSAvail = 0;
-	return false;
-}
-
-void
-PML_ShutdownEMS(void)
-{
-}
-#endif
-
-#if !REFKEEN_NOXMS
 /////////////////////////////////////////////////////////////////////////////
 //
 //	XMS Management code
@@ -477,31 +445,7 @@ PML_ShutdownXMS(void)
 			Quit("PML_ShutdownXMS: Error freeing XMS");
 	}
 }
-#else
-id0_boolean_t
-PML_StartupXMS(void)
-{
-	XMSPresent = false;
-	XMSAvail = 0;
-	return false;
-}
 
-void
-PML_XMSCopy(id0_boolean_t toxms,void id0_far *addr,id0_word_t xmspage,id0_word_t length)
-{
-	BE_ST_ExitWithErrorMsg ("PML_XMSCopy called without XMS support");
-}
-
-#define	PML_CopyToXMS(s,t,l)	PML_XMSCopy(true,(s),(t),(l))
-#define	PML_CopyFromXMS(t,s,l)	PML_XMSCopy(false,(t),(s),(l))
-
-void
-PML_ShutdownXMS(void)
-{
-}
-#endif
-
-#if !REFKEEN_SIMPLIFIED
 /////////////////////////////////////////////////////////////////////////////
 //
 //	Main memory code
@@ -676,7 +620,6 @@ PML_ShutdownMainMem(void)
 		if (*p)
 			MM_FreePtr(p);
 }
-#endif // !REFKEEN_SIMPLIFIED
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -772,7 +715,6 @@ PML_ClosePageFile(void)
 	}
 }
 
-#if !REFKEEN_SIMPLIFIED
 /////////////////////////////////////////////////////////////////////////////
 //
 //	Allocation, etc., code
@@ -1074,7 +1016,6 @@ PML_GetPageFromXMS(id0_int_t pagenum,id0_boolean_t mainonly)
 	page = &PMPages[pagenum];
 	if (XMSPresent && (page->xmsPage != -1))
 	{
-#if !REFKEEN_NOXMS
 		XMSProtectPage = pagenum;
 		checkaddr = PML_GetAPageBuffer(pagenum,mainonly);
 		if (BE_Cross_GetPtrNormalizedOff(checkaddr))
@@ -1082,9 +1023,6 @@ PML_GetPageFromXMS(id0_int_t pagenum,id0_boolean_t mainonly)
 		addr = (memptr)checkaddr;
 		PML_CopyFromXMS(addr,page->xmsPage,page->length);
 		XMSProtectPage = -1;
-#else
-		BE_ST_ExitWithErrorMsg ("Attempt to get XMS page without XMS support");
-#endif
 	}
 
 	return(addr);
@@ -1190,7 +1128,6 @@ PM_SetPageLock(id0_int_t pagenum,PMLockType lock)
 
 	PMPages[pagenum].locked = lock;
 }
-#endif // !REFKEEN_SIMPLIFIED
 
 //
 //	PM_Preload() - Loads as many pages as possible into all types of memory.
@@ -1200,15 +1137,6 @@ PM_SetPageLock(id0_int_t pagenum,PMLockType lock)
 void
 PM_Preload(id0_boolean_t (*update)(id0_word_t current,id0_word_t total))
 {
-#if REFKEEN_SIMPLIFIED
-#ifdef GAMEVER_NOAH3D
-	if (update)
-#endif
-	{
-		update(0,1);
-		update(1,1);
-	}
-#else
 	id0_int_t				i,j,
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
@@ -1470,10 +1398,8 @@ if (update)
 #endif
 	update(total,total);
 #endif // GAMEVER_WOLFREV <= GV_WR_WL920312
-#endif // REFKEEN_SIMPLIFIED
 }
 
-#if !REFKEEN_SIMPLIFIED
 /////////////////////////////////////////////////////////////////////////////
 //
 //	General code
@@ -1556,29 +1482,6 @@ PM_Reset(void)
 		page->locked = pml_Unlocked;
 	}
 }
-#endif // REFKEEN_SIMPLIFIED
-
-#if REFKEEN_SIMPLIFIED
-void PM_NextFrame(void) {}
-void PM_SetPageLock(id0_int_t pagenum,PMLockType lock) {}
-void PM_CheckMainMem(void) {}
-void PM_SetMainMemPurge(id0_int_t level) {}
-
-memptr
-PM_GetPageAddress(id0_int_t pagenum)
-{
-	return PMPageDataPtrs[pagenum];
-}
-
-memptr
-PM_GetPage(id0_int_t pagenum)
-{
-	if (pagenum >= ChunksInFile)
-		Quit("PM_GetPage: Invalid page request");
-
-	return PM_GetPageAddress(pagenum);
-}
-#endif
 
 //
 //	PM_Startup() - Start up the Page Mgr
@@ -1596,14 +1499,6 @@ PM_Startup(void)
 	BE_ST_printf("PM_Startup: ");
 #endif
 
-#if REFKEEN_SIMPLIFIED
-	nomain = noems = noxms = true;
-#ifdef GAMEVER_NOAH3D
-	BE_ST_printf("Main memory disabled\n");
-	BE_ST_printf("EMS disabled\n");
-	BE_ST_printf("XMS disabled\n");
-#endif
-#else // !REFKEEN_SIMPLIFIED
 	nomain = noems = noxms = false;
 	for (i = 1;i < id0_argc;i++)
 	{
@@ -1632,37 +1527,9 @@ PM_Startup(void)
 			break;
 		}
 	}
-#endif // REFKEEN_SIMPLIFIED
 
 	PML_OpenPageFile();
 
-#if REFKEEN_SIMPLIFIED // Just allocate anything at once for now
-	id0_longword_t totaldata = 0;
-	PageListStruct *page;
-	// Round up each page length in memory to a multiply of PMPageSize
-	for (i = 0, page = PMPages; i < ChunksInFile; i++, page++)
-		totaldata += ((page->length + PMPageSize - 1) / PMPageSize) * PMPageSize;
-	PMPageData = malloc(totaldata);
-	if (!PMPageData)
-		Quit("PM_Startup: Couldn't allocate memory for page file");
-	PMPageDataPtrs = (memptr *)malloc(sizeof(*PMPageDataPtrs) * ChunksInFile);
-	if (!PMPageDataPtrs)
-		Quit("PM_Startup: Couldn't allocate memory for page file");
-	id0_byte_t *ptr = (id0_byte_t *)PMPageData;
-	// Support the case some pages in the file may overlap,
-	// and again round the pages up
-	for (i = 0, page = PMPages; i < ChunksInFile;
-	     i++, ptr += ((page->length + PMPageSize - 1) / PMPageSize) * PMPageSize, page++)
-	{
-		if (page->length)
-		{
-			PML_ReadFromFile(ptr, page->offset, page->length);
-			PMPageDataPtrs[i] = ptr;
-		}
-		else
-			PMPageDataPtrs[i] = 0;
-	}
-#else // !REFKEEN_SIMPLIFIED
 	if (!noems)
 		PML_StartupEMS();
 	if (!noxms)
@@ -1674,7 +1541,7 @@ PM_Startup(void)
 		PML_StartupMainMem();
 
 	PM_Reset();
-#endif
+
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (EMSPresent)
@@ -1698,24 +1565,15 @@ PM_Startup(void)
 void
 PM_Shutdown(void)
 {
-#if !REFKEEN_SIMPLIFIED
 	PML_ShutdownXMS();
 	PML_ShutdownEMS();
-#endif
 
 	if (!PMStarted)
 		return;
 
 	PML_ClosePageFile();
 
-#if REFKEEN_SIMPLIFIED
-	free(PMPageDataPtrs);
-	PMPageDataPtrs = 0;
-	free(PMPageData);
-	PMPageData = 0;
-#else
 	PML_ShutdownMainMem();
-#endif
 }
 
 REFKEEN_NS_E
