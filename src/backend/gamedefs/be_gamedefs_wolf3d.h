@@ -7,7 +7,7 @@
 #include "be_gamedefs_wl1ap11.h"
 #endif
 #ifdef REFKEEN_HAS_VER_WL6AP11
-#include "be_gamedefs_wl1ap12.h"
+#include "be_gamedefs_wl6ap11.h"
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP14
 #include "be_gamedefs_wl1ap14.h"
