@@ -196,10 +196,13 @@ void BE_Cross_PrepareGameInstallations(void)
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap11, _T("."), "Wolfenstein 3D Shareware v1.1 (Local)");
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP12
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap11, _T("."), "Wolfenstein 3D 6-ep Apogee v1.1 (Local)");
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap12, _T("."), "Wolfenstein 3D Shareware v1.2 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap12, _T("."), "Wolfenstein 3D 6-ep Apogee v1.2 (Local)");
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP14
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap14, _T("."), "Wolfenstein 3D Shareware v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap14, _T("."), "Wolfenstein 3D 6-ep Apogee v1.4 (Local)");
 #endif
 #ifdef REFKEEN_HAS_VER_WL6GT14A
 		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14a, _T("."), "Wolfenstein 3D GT #1 v1.4 (Local)");
