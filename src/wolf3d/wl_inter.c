@@ -573,7 +573,9 @@ void Victory (void)
 
 #ifndef SPANISH
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-#if (!defined UPLOAD) || (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+//#if (!defined UPLOAD) || (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+if (!UPLOAD || (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
+{
 //#ifndef UPLOAD
 	// *** S3DNA RESTORATION ***
 #if (!defined SPEAR) && (!defined GAMEVER_NOAH3D)
@@ -614,7 +616,8 @@ void Victory (void)
 		US_Print(tempstr);
 	}
 #endif
-#endif
+//#endif
+}
 #endif
 
 
@@ -2261,7 +2264,7 @@ void Briefing (id0_int_t mission, id0_boolean_t credits)
 #endif
 
 
-#ifndef UPLOAD
+//#ifndef UPLOAD // REFKEEN: This is a variable now, so always define
 #ifndef SPEAR
 #ifndef JAPAN
 ////////////////////////////////////////////////////////
@@ -2309,7 +2312,7 @@ void NonShareware(void)
 }
 #endif
 #endif
-#endif
+//#endif // REFKEEN: Again, always define
 
 #ifdef SPEAR
 #ifndef SPEARDEMO

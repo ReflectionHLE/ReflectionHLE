@@ -43,7 +43,8 @@
 // these use a *separate* GAMEVER_EXEDEF_*** macro
 
 #if (defined GAMEVER_EXEDEF_WL920312) || (defined GAMEVER_EXEDEF_WL1AP10) || (defined GAMEVER_EXEDEF_WL1AP11) || (defined GAMEVER_EXEDEF_WL1AP12) || (defined GAMEVER_EXEDEF_WL1AP14)
-#define UPLOAD
+// REFKEEN: UPLOAD was changed into a variable
+//#define UPLOAD
 #elif (defined GAMEVER_EXEDEF_WL6ID14) || (defined GAMEVER_EXEDEF_WL6GT14A) || (defined GAMEVER_EXEDEF_WL6GT14B) || (defined GAMEVER_EXEDEF_WL6AC14)
 #define GOODTIMES
 #elif (defined GAMEVER_EXEDEF_WJ6IM14)

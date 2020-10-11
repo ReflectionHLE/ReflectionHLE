@@ -1293,7 +1293,11 @@ void A_DeathScream (objtype *ob)
 #ifdef GAMEVER_NOAH3D
 	PlaySoundLocActor(D_EDIESND,ob);
 #else
-#ifndef UPLOAD
+//#ifndef UPLOAD
+// REFKEEN: UPLOAD is a var, but DEATHSCREAM6SND isn't always defined
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+if (!UPLOAD)
+{
 #ifndef SPEAR
 	if (mapon==9 && !US_RndT())
 #else
@@ -1311,6 +1315,7 @@ void A_DeathScream (objtype *ob)
 		return;
 	 }
 	}
+}
 #endif
 
 	switch (ob->obclass)
@@ -1361,11 +1366,13 @@ void A_DeathScream (objtype *ob)
 				 DEATHSCREAM9SND
 				 };
 
-		 #ifndef UPLOAD
+//		 #ifndef UPLOAD
+	if (!UPLOAD)
 		 PlaySoundLocActor(sounds[US_RndT()%8],ob);
-		 #else
+//		 #else
+	else
 		 PlaySoundLocActor(sounds[US_RndT()%2],ob);
-		 #endif
+//		 #endif
 #endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
 		}
 		break;

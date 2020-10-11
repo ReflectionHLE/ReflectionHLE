@@ -1298,7 +1298,10 @@ static  id0_int_t     wolfdigimap[] =
 
 			YEAHSND,				32,
 
-#ifndef UPLOAD
+// REFKEEN: UPLOAD is now a var, see RefKeen_Patch_wl_main.
+// But some sound enum values aren't defined for all versions.
+//#ifndef UPLOAD
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 			// These are in all other episodes
 			DOGDEATHSND,            16,
 			AHHHGSND,               17,
@@ -1523,7 +1526,10 @@ void DoJukebox(void)
 
 #ifndef SPEAR
 // *** S3DNA RESTORATION ***
-#if (!defined UPLOAD) && (!defined GAMEVER_NOAH3D)
+//#if (!defined UPLOAD) && (!defined GAMEVER_NOAH3D)
+#ifndef GAMEVER_NOAH3D
+if (!UPLOAD)
+{
 //#ifndef UPLOAD
 	// REFKEEN: Use second isn't of hundredth of a sec
 	int hour, min, sec;
@@ -1531,9 +1537,11 @@ void DoJukebox(void)
 	start = (sec%3)*6;
 //	_dos_gettime(&time);
 //	start = (time.hsecond%3)*6;
-#else
-	start = 0;
+//#else
+}
+else
 #endif
+	start = 0;
 #else
 	start = 0;
 #endif
@@ -2151,7 +2159,9 @@ void    DemoLoop (void)
 
 #ifndef DEMOTEST
 
-	#ifndef UPLOAD
+//	#ifndef UPLOAD
+	if (!UPLOAD)
+	{
 
 		#ifndef GOODTIMES
 		#ifndef SPEAR
@@ -2172,7 +2182,8 @@ void    DemoLoop (void)
 
 		#endif
 		#endif
-	#endif
+//	#endif
+	}
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
@@ -2521,8 +2532,29 @@ void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void)
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_wolf3d_exe - Failed to load\nat least one file.");
 }
 
+// REFKEEN: UPLOAD was changed into a variable
+id0_boolean_t UPLOAD; // REFKEEN: UPLOAD was changed into a variable
+
 void RefKeen_Patch_wl_main(void)
 {
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
+	UPLOAD = true;
+#elif (GAMEVER_WOLFREV == GV_WR_WL6AP11)
+	UPLOAD = (refkeen_current_gamever == BE_GAMEVER_WL1AP12);
+#elif (GAMEVER_WOLFREV == GV_WR_WL1AP14)
+	UPLOAD = (refkeen_current_gamever == BE_GAMEVER_WL1AP14);
+#else
+	UPLOAD = false;
+#endif
+
+#ifndef GAMEVER_NOAH3D
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+#ifndef SPEAR
+	if (UPLOAD)
+		wolfdigimap[42] = LASTSOUND;
+#endif
+#endif
+#endif
 }
 
 REFKEEN_NS_E

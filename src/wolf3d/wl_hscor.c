@@ -106,7 +106,11 @@ void	DrawHighScores(void)
 #endif
 	// *** SHAREWARE V1.0+REGISTERED APOGEE + EARLY GOODTIMES/ID RESTORATION ***
 	// Uncomment line for Shareware 1.0 and any Registered Apogee release, and early Goodtimes/Id
-#if (GAMEVER_WOLFREV <= GV_WR_WL6GT14A) && ((!defined UPLOAD) || (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
+//#if (GAMEVER_WOLFREV <= GV_WR_WL6GT14A) && ((!defined UPLOAD) || (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
+// REFKEEN: UPLOAD is now a variable, but we still need the first WOLFREV check
+// to prevent a compilation error (C_CODEPIC isn't defined for S3DNA)
+#if (GAMEVER_WOLFREV <= GV_WR_WL6GT14A)
+if (!UPLOAD || (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
 //#ifndef UPLOAD
 	VWB_DrawPic(35*8,68,C_CODEPIC);
 #endif
@@ -191,7 +195,12 @@ void	DrawHighScores(void)
 
 		// *** S3DNA RESTORATION ***
 #ifndef GAMEVER_NOAH3D
-#ifndef UPLOAD
+//#ifndef UPLOAD
+// REFKEEN: UPLOAD is now a variable, but we still need
+// to check that the episode struct field is present
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+if (!UPLOAD)
+{
 #ifndef SPEAR
 		PrintX -= 6;
 		BE_Cross_itoa_dec(s->episode+1,buffer1);
@@ -199,6 +208,7 @@ void	DrawHighScores(void)
 		US_Print(buffer1);
 		US_Print("/L");
 #endif
+}
 #endif
 #endif
 
@@ -234,7 +244,9 @@ void	DrawHighScores(void)
 		// Do compile verification block for Shareware 1.0 and any Registered Apogee release, and early Goodtimes/Id. But *not* for the alpha.
 		#if (GAMEVER_WOLFREV <= GV_WR_WL6GT14A)
 		//#if 0
-#if (!defined UPLOAD) || ((GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
+//#if (!defined UPLOAD) || ((GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
+if (!UPLOAD || ((GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)))
+{
 //#ifndef UPLOAD
 #ifndef SPEAR
 		//
@@ -262,7 +274,8 @@ void	DrawHighScores(void)
 		 SETFONTCOLOR(15,0x29);
 		}
 #endif
-#endif
+//#endif
+}
 		#endif
 	}
 

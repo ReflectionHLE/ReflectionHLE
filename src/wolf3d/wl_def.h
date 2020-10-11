@@ -49,6 +49,8 @@
 
 REFKEEN_NS_B
 
+extern id0_boolean_t UPLOAD; // REFKEEN: UPLOAD was changed into a variable
+
 /*
 =============================================================================
 
