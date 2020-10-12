@@ -103,13 +103,13 @@ void BE_Cross_PrepareGameInstallations(void)
 		/*** Now handling each version separately ***/
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse100, _T("."), "Keen Dreams EGA v1.00 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc100, _T("."), "Keen Dreams CGA v1.00 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, _T("."), "Keen Dreams EGA v1.13 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Keen Dreams CGA v1.05 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, _T("."), "Keen Dreams EGA v1.93 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse120, _T("."), "Keen Dreams EGA v1.20 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, _T("."), "Keen Dreams 2015 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse100, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc100, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse120, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, _T("."), "Local");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_kdreams_path[BE_CROSS_PATH_LEN_BOUND];
@@ -119,19 +119,19 @@ void BE_Cross_PrepareGameInstallations(void)
 		dwSize = sizeof(steam_kdreams_path);
 		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 356200", L"INSTALLLOCATION", &dwType, steam_kdreams_path, &dwSize);
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Steam");
 #elif (defined REFKEEN_PLATFORM_UNIX)
 		if (homeVar && *homeVar)
 		{
 #ifdef REFKEEN_PLATFORM_MACOS
 			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common/Keen Dreams/KDreams.app/Contents/Resources");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Steam");
 #else
 			// They changed from SteamApps to steamapps at some point, so check both two
 			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common/Keen Dreams");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Steam");
 			BE_Cross_safeandfastcstringcopy_2strs(steam_kdreams_path, steam_kdreams_path+sizeof(steam_kdreams_path)/sizeof(TCHAR), homeVar, "/.steam/steam/steamapps/common/Keen Dreams");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Keen Dreams 2015 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Steam");
 #endif
 		}
 #endif // REFKEEN_PLATFORM
@@ -141,79 +141,79 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif // REFKEEN_HAS_VER_KDREAMS
 
 #ifdef REFKEEN_HAS_VER_CAT3D
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, _T("."), "Catacomb 3-D v1.00 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, _T("."), "Catacomb 3-D v1.22 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, _T("."), "Local");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
 			memcpy(path, gog_catacombs_paths[i], sizeof(path));
 			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_ends[i], pathEnd, g_be_catacombs_gog_subdirnames_withdirsep[0]);
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, path, "Catacomb 3-D v1.22 (GOG.com)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, path, "GOG.com");
 		}
 #endif
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATABYSS
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss113, _T("."), "Catacomb Abyss v1.13 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, _T("."), "Catacomb Abyss v1.24 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss113, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, _T("."), "Local");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
 			memcpy(path, gog_catacombs_paths[i], sizeof(path));
 			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_ends[i], pathEnd, g_be_catacombs_gog_subdirnames_withdirsep[1]);
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, path, "Catacomb Abyss v1.24 (GOG.com)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, path, "GOG.com");
 		}
 #endif
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATARM
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, _T("."), "Catacomb Armageddon v1.02 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, _T("."), "Local");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
 			memcpy(path, gog_catacombs_paths[i], sizeof(path));
 			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_ends[i], pathEnd, g_be_catacombs_gog_subdirnames_withdirsep[2]);
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, path, "Catacomb Armageddon v1.02 (GOG.com)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, path, "GOG.com");
 		}
 #endif
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATAPOC
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, _T("."), "Catacomb Apocalypse v1.01 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, _T("."), "Local");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
 			memcpy(path, gog_catacombs_paths[i], sizeof(path));
 			BEL_Cross_safeandfastctstringcopy(path_gog_catacombs_prefix_ends[i], pathEnd, g_be_catacombs_gog_subdirnames_withdirsep[3]);
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, path, "Catacomb Apocalypse v1.01 (GOG.com)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, path, "GOG.com");
 		}
 #endif
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP10
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap10, _T("."), "Wolfenstein 3D Shareware v1.0 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap10, _T("."), "Local");
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP11
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap11, _T("."), "Wolfenstein 3D Shareware v1.1 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap11, _T("."), "Local");
 #endif
 #ifdef REFKEEN_HAS_VER_WL6AP11
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap11, _T("."), "Wolfenstein 3D 6-ep Apogee v1.1 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap12, _T("."), "Wolfenstein 3D Shareware v1.2 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap12, _T("."), "Wolfenstein 3D 6-ep Apogee v1.2 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap11, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap12, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap12, _T("."), "Local");
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP14
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap14, _T("."), "Wolfenstein 3D Shareware v1.4 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap14, _T("."), "Wolfenstein 3D 6-ep Apogee v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap14, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap14, _T("."), "Local");
 #endif
 #ifdef REFKEEN_HAS_VER_WL6GT14A
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14a, _T("."), "Wolfenstein 3D GT #1 v1.4 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6id14, _T("."), "Wolfenstein 3D id v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14a, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6id14, _T("."), "Local");
 #endif
 #ifdef REFKEEN_HAS_VER_WL6GT14B
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14b, _T("."), "Wolfenstein 3D GT #2 v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14b, _T("."), "Local");
 #endif
 
 #ifdef REFKEEN_HAS_VER_WL6AC14
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, _T("."), "Wolfenstein 3D Activision v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, _T("."), "Local");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_wolf3d_path[BE_CROSS_PATH_LEN_BOUND];
@@ -225,20 +225,20 @@ void BE_Cross_PrepareGameInstallations(void)
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		{
 			BEL_Cross_safeandfastctstringcopy(steam_wolf3d_path+_tcslen(steam_wolf3d_path), steam_wolf3d_path+sizeof(steam_wolf3d_path)/sizeof(TCHAR)-_tcslen(steam_wolf3d_path), L"\\base");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Wolfenstein 3D Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Steam");
 		}
 #elif (defined REFKEEN_PLATFORM_UNIX)
 		if (homeVar && *homeVar)
 		{
 #ifdef REFKEEN_PLATFORM_MACOS
 			BE_Cross_safeandfastcstringcopy_2strs(steam_wolf3d_path, steam_wolf3d_path+sizeof(steam_wolf3d_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common/Wolfenstein 3D/base");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Wolfenstein 3D Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Steam");
 #else
 			// They changed from SteamApps to steamapps at some point, so check both two
 			BE_Cross_safeandfastcstringcopy_2strs(steam_wolf3d_path, steam_wolf3d_path+sizeof(steam_wolf3d_path)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common/Wolfenstein 3D/base");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Wolfenstein 3D Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Steam");
 			BE_Cross_safeandfastcstringcopy_2strs(steam_wolf3d_path, steam_wolf3d_path+sizeof(steam_wolf3d_path)/sizeof(TCHAR), homeVar, "/.steam/steam/steamapps/common/Wolfenstein 3D/base");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Wolfenstein 3D Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Steam");
 #endif
 		}
 #endif // REFKEEN_PLATFORM
@@ -247,13 +247,13 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif // REFKEEN_HAS_VER_WL6AC14
 
 #ifdef REFKEEN_HAS_VER_SDMFG10
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sdmfg10, _T("."), "Spear of Destiny Demo v1.0 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sdmfg10, _T("."), "Local");
 #endif
 
 #ifdef REFKEEN_HAS_VER_SODAC14
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, _T("."), "Spear of Destiny Activision v1.4 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, _T("."), "Spear of Destiny M2 Activision v1.4 (Local)");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, _T("."), "Spear of Destiny M3 Activision v1.4 (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, _T("."), "Local");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, _T("."), "Local");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_sod_path[BE_CROSS_PATH_LEN_BOUND];
@@ -265,28 +265,28 @@ void BE_Cross_PrepareGameInstallations(void)
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		{
 			BEL_Cross_safeandfastctstringcopy(steam_sod_path+_tcslen(steam_sod_path), steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR)-_tcslen(steam_sod_path), L"\\base");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Spear of Destiny M2 Activision v1.4 (Steam)");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Spear of Destiny M3 Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Steam");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Steam");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Steam");
 		}
 #elif (defined REFKEEN_PLATFORM_UNIX)
 		if (homeVar && *homeVar)
 		{
 #ifdef REFKEEN_PLATFORM_MACOS
 			BE_Cross_safeandfastcstringcopy_2strs(steam_sod_path, steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common/Spear of Destiny/base");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Spear of Destiny M2 Activision v1.4 (Steam)");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Spear of Destiny M3 Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Steam");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Steam");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Steam");
 #else
 			// They changed from SteamApps to steamapps at some point, so check both two
 			BE_Cross_safeandfastcstringcopy_2strs(steam_sod_path, steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common/Spear of Destiny/base");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Spear of Destiny M2 Activision v1.4 (Steam)");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Spear of Destiny M3 Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Steam");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Steam");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Steam");
 			BE_Cross_safeandfastcstringcopy_2strs(steam_sod_path, steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR), homeVar, "/.steam/steam/steamapps/common/Spear of Destiny/base");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Spear of Destiny Activision v1.4 (Steam)");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Spear of Destiny M2 Activision v1.4 (Steam)");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Spear of Destiny M3 Activision v1.4 (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Steam");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Steam");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Steam");
 #endif
 		}
 #endif // REFKEEN_PLATFORM
@@ -295,7 +295,7 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif // REFKEEN_HAS_VER_SODAC14
 
 #ifdef REFKEEN_HAS_VER_N3DWT10
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, _T("."), "Super 3-D Noah's Ark (Local)");
+		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, _T("."), "Local");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_n3d_path[BE_CROSS_PATH_LEN_BOUND];
@@ -305,19 +305,19 @@ void BE_Cross_PrepareGameInstallations(void)
 		dwSize = sizeof(steam_n3d_path);
 		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 371180", L"INSTALLLOCATION", &dwType, steam_n3d_path, &dwSize);
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Super 3-D Noah's Ark (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Steam");
 #elif (defined REFKEEN_PLATFORM_UNIX)
 		if (homeVar && *homeVar)
 		{
 #ifdef REFKEEN_PLATFORM_MACOS
 			BE_Cross_safeandfastcstringcopy_2strs(steam_n3d_path, steam_n3d_path+sizeof(steam_n3d_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common/Super 3-D Noah's Ark");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Super 3-D Noah's Ark");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Steam");
 #else
 			// They changed from SteamApps to steamapps at some point, so check both two
 			BE_Cross_safeandfastcstringcopy_2strs(steam_n3d_path, steam_n3d_path+sizeof(steam_n3d_path)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common/Super 3-D Noah's Ark");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Super 3-D Noah's Ark (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Steam");
 			BE_Cross_safeandfastcstringcopy_2strs(steam_n3d_path, steam_n3d_path+sizeof(steam_n3d_path)/sizeof(TCHAR), homeVar, "/.steam/steam/steamapps/common/Super 3-D Noah's Ark");
-			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Super 3-D Noah's Ark (Steam)");
+			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Steam");
 #endif
 		}
 #endif // REFKEEN_PLATFORM
@@ -368,7 +368,7 @@ void BE_Cross_PrepareGameInstallations(void)
 		++dirWithoutRoot;
 		// Finally fill the path and conditionally add it
 		BEL_Cross_safeandfastcstringcopytoctstring(BEL_Cross_safeandfastctstringcopy_2strs(path, pathEnd, g_be_rootPaths[j], _T("/")), pathEnd, dirWithoutRoot);
-		BEL_Cross_ConditionallyAddGameInstallation(details, path, details->customInstDescription);
+		BEL_Cross_ConditionallyAddGameInstallation(details, path, NULL);
 	}
 	/*** To finish, apply a simple bubble sort on the game installations, by game version (done for visual consistency in the launcher) ***/
 	for (int count = g_be_gameinstallations_num - 1; count > 0; --count)

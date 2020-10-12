@@ -67,7 +67,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse100 = {
 	g_be_reqgameverfiles_kdreamse100,
 	g_be_exefiles_kdreamse100,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE100),
-	"Keen Dreams EGA v1.00 (Custom)",
+	"Keen Dreams EGA v1.00",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSE100
@@ -114,7 +114,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc100 = {
 	g_be_reqgameverfiles_kdreamsc100,
 	g_be_exefiles_kdreamsc100,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSC100),
-	"Keen Dreams CGA v1.00 (Custom)",
+	"Keen Dreams CGA v1.00",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSC100
@@ -172,7 +172,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
 	g_be_reqgameverfiles_kdreamse113,
 	g_be_exefiles_kdreamse113,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE113),
-	"Keen Dreams EGA v1.13 (Custom)",
+	"Keen Dreams EGA v1.13",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSE113
@@ -218,7 +218,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
 	g_be_reqgameverfiles_kdreamsc105,
 	g_be_exefiles_kdreamsc105,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSC105),
-	"Keen Dreams CGA v1.05 (Custom)",
+	"Keen Dreams CGA v1.05",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSC105
@@ -268,7 +268,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
 	g_be_reqgameverfiles_kdreamse193,
 	g_be_exefiles_kdreamse193,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE193),
-	"Keen Dreams EGA v1.93 (Custom)",
+	"Keen Dreams EGA v1.93",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSE193
@@ -315,7 +315,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse120 = {
 	g_be_reqgameverfiles_kdreamse120,
 	g_be_exefiles_kdreamse120,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMSE120),
-	"Keen Dreams EGA v1.20 (Custom)",
+	"Keen Dreams EGA v1.20",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_KDREAMSE120
@@ -360,7 +360,7 @@ static const BE_GameVerDetails_T g_be_gamever_kdreams2015 = {
 	g_be_reqgameverfiles_kdreams2015,
 	g_be_exefiles_kdreams2015,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_KDREAMS2015),
-	"Keen Dreams 2015 (Custom)",
+	"Keen Dreams 2015",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_DIGI_REQUIRED,
 	BE_GAMEVER_KDREAMS2015

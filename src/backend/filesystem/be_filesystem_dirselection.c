@@ -196,7 +196,7 @@ int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Error
 		}
 
 		const BE_GameVerDetails_T *details = g_be_gamever_ptrs[verId];
-		BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(details, g_be_dirSelection_currPath, details->customInstDescription, &errorMsgsArray[verId]);
+		BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(details, g_be_dirSelection_currPath, NULL, &errorMsgsArray[verId]);
 		if (g_be_gameinstallationsbyver[verId]) // Match found and added
 		{
 			TCHAR path[BE_CROSS_PATH_LEN_BOUND];

@@ -26,8 +26,10 @@
 #include "be_filesystem_tchar.h"
 #include "be_gamever.h"
 
+#define BE_GAMEINST_DESCRIPTION_LEN_BOUND 56
+
 typedef struct {
-	const char *descStr;
+	char descStr[BE_GAMEINST_DESCRIPTION_LEN_BOUND];
 	TCHAR instPath[BE_CROSS_PATH_LEN_BOUND];
 	TCHAR writableFilesPath[BE_CROSS_PATH_LEN_BOUND];
 	BE_GameVer_T verId;
@@ -40,12 +42,10 @@ extern int g_be_gameinstallations_num;
 extern const BE_GameInstallation_T *g_be_gameinstallationsbyver[BE_GAMEVER_LAST];
 extern const BE_GameInstallation_T *g_be_selectedGameInstallation;
 
-// ***ASSUMPTION: descStr points to a C string literal which is never modified nor deleted!!!***
 void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 	const BE_GameVerDetails_T *details, const TCHAR *searchdir,
 	const char *descStr, BE_TryAddGameInstallation_ErrorMsg_T *outErrMsg);
 
-// ***ASSUMPTION: Again, descStr points to a C string literal which is never modified nor deleted!!!***
 static inline void BEL_Cross_ConditionallyAddGameInstallation(
 	const BE_GameVerDetails_T *details, const TCHAR *searchdir,
 	const char *descStr)

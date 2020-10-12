@@ -43,7 +43,7 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ap14 = {
 	g_be_reqgameverfiles_wl6ap14,
 	g_be_exefiles_wl6ap14,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL6AP14),
-	"Wolfenstein 3D 6-ep Apogee v1.4 (Custom)",
+	"Wolfenstein 3D 6-ep Apogee v1.4",
 	REFKEEN_NS_ENCLOSE(wl1ap14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL6AP14
@@ -88,7 +88,7 @@ static const BE_GameVerDetails_T g_be_gamever_wl1ap14 = {
 	g_be_reqgameverfiles_wl1ap14,
 	g_be_exefiles_wl1ap14,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL1AP14),
-	"Wolfenstein 3D Shareware v1.4 (Custom)",
+	"Wolfenstein 3D Shareware v1.4",
 	REFKEEN_NS_ENCLOSE(wl1ap14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL1AP14

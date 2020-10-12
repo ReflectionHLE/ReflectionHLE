@@ -54,7 +54,7 @@ typedef struct {
 	const BE_GameFileDetails_T *reqFiles;
 	const BE_EXEFileDetails_T *exeFiles;
 	const TCHAR *writableFilesDir;
-	const char *customInstDescription;
+	const char *description;
 	void (**patcherFuncPtrs)(void);
 	int audioDeviceFlags;
 	BE_GameVer_T verId;

@@ -140,7 +140,7 @@ static const BE_GameVerDetails_T g_be_gamever_catabyss113 = {
 	g_be_reqgameverfiles_catabyss113,
 	g_be_exefiles_catabyss113,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATABYSS113),
-	"Catacomb Abyss v1.13 (Custom)",
+	"Catacomb Abyss v1.13",
 	REFKEEN_NS_ENCLOSE(catabyss, g_be_patcherfuncs_catabyss),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_CATABYSS113
@@ -244,7 +244,7 @@ static const BE_GameVerDetails_T g_be_gamever_catabyss124 = {
 	g_be_reqgameverfiles_catabyss124,
 	g_be_exefiles_catabyss124,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_CATABYSS124),
-	"Catacomb Abyss v1.24 (Custom)",
+	"Catacomb Abyss v1.24",
 	REFKEEN_NS_ENCLOSE(catabyss, g_be_patcherfuncs_catabyss),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
 	BE_GAMEVER_CATABYSS124
