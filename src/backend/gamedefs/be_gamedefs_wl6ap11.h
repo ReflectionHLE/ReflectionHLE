@@ -74,6 +74,29 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ap12 = {
 	BE_GAMEVER_WL6AP12
 };
 
+static const BE_GameFileDetails_T g_be_reqgameverfiles_wl3ap12[] = {
+	{"AUDIOHED.WL3", 1156, 0x56ac3db},
+	{"AUDIOT.WL3", 317049, 0x1585d305},
+	{"GAMEMAPS.WL3", 71141, 0x01a6b7d8},
+	{"MAPHEAD.WL3", 402, 0xc44efb79},
+	{"VGADICT.WL3", 1024, 0xd56f7e83},
+	{"VGAGRAPH.WL3", 300914, 0x9ae56a69},
+	{"VGAHEAD.WL3", 468, 0x6d312eb9},
+	{"VSWAP.WL3", 1265152, 0xdee68a15},
+	{"WOLF3D.EXE", 98402, 0xeeb3decc},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_wl3ap12 = {
+	g_be_reqgameverfiles_wl3ap12,
+	g_be_exefiles_wl6ap11,
+	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL3AP12),
+	"Wolfenstein 3D 3-ep Apogee v1.2",
+	REFKEEN_NS_ENCLOSE(wl6ap11, g_be_patcherfuncs),
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
+	BE_GAMEVER_WL3AP12
+};
+
 // Shareware v1.2
 
 static const BE_GameFileDetails_T g_be_reqgameverfiles_wl1ap12[] = {

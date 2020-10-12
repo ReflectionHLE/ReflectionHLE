@@ -49,6 +49,31 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ap14 = {
 	BE_GAMEVER_WL6AP14
 };
 
+// The same exe supports 3-episodes and 6-episodes data
+
+static const BE_GameFileDetails_T g_be_reqgameverfiles_wl3ap14[] = {
+	{"AUDIOHED.WL3", 1156, 0x056ac3db},
+	{"AUDIOT.WL3", 317049, 0x1585d305},
+	{"GAMEMAPS.WL3", 70957, 0x13568404},
+	{"MAPHEAD.WL3", 402, 0x7d9a2db7},
+	{"VGADICT.WL3", 1024, 0x039a249a},
+	{"VGAGRAPH.WL3", 331199, 0xfa10430e},
+	{"VGAHEAD.WL3", 477, 0xe52dccf5},
+	{"VSWAP.WL3", 1265152, 0xdee68a15},
+	{"WOLF3D.EXE", 110715, 0xfbe11eb3},
+	{0}
+};
+
+static const BE_GameVerDetails_T g_be_gamever_wl3ap14 = {
+	g_be_reqgameverfiles_wl3ap14,
+	g_be_exefiles_wl6ap14,
+	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL3AP14),
+	"Wolfenstein 3D 3-ep Apogee v1.4",
+	REFKEEN_NS_ENCLOSE(wl1ap14, g_be_patcherfuncs),
+	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
+	BE_GAMEVER_WL3AP14
+};
+
 // Shareware v1.4
 
 static const BE_GameFileDetails_T g_be_reqgameverfiles_wl1ap14[] = {

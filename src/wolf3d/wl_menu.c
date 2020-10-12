@@ -4770,7 +4770,7 @@ void ShootSnd(void)
 ///////////////////////////////////////////////////////////////////////////
 void CheckForEpisodes(void)
 {
-#if !REFKEEN_ENABLE_FILE_SEARCH // TODO: Assume it's WL1/SDM/SOD and files are found
+#if !REFKEEN_ENABLE_FILE_SEARCH // TODO: Assume matching files are found
 
 #ifdef SPEAR
 #ifndef SPEARDEMO
@@ -4783,19 +4783,25 @@ void CheckForEpisodes(void)
 	{
 #ifdef GAMEVER_NOAH3D
 		strcpy(extension,"N3D");
+#elif (defined REFKEEN_VER_WL6AP11)
+		strcpy(extension,(refkeen_current_gamever==BE_GAMEVER_WL3AP12)?"WL3":"WL6");
+#elif (defined REFKEEN_VER_WL1AP14)
+		strcpy(extension,(refkeen_current_gamever==BE_GAMEVER_WL3AP14)?"WL3":"WL6");
 #else
 		strcpy(extension,"WL6");
 #endif
 		NewEmenu[2].active =
 		NewEmenu[4].active =
-		NewEmenu[6].active =
-		NewEmenu[8].active =
-		NewEmenu[10].active =
 		EpisodeSelect[1] =
-		EpisodeSelect[2] =
-		EpisodeSelect[3] =
-		EpisodeSelect[4] =
-		EpisodeSelect[5] = 1;
+		EpisodeSelect[2] = 1;
+
+		if (extension[2] != '3')
+			NewEmenu[6].active =
+			NewEmenu[8].active =
+			NewEmenu[10].active =
+			EpisodeSelect[3] =
+			EpisodeSelect[4] =
+			EpisodeSelect[5] = 1;
 	}
 	else
 		strcpy(extension,"WL1");
