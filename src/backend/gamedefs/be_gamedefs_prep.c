@@ -57,6 +57,10 @@ void BE_Cross_PrepareGameInstallations(void)
 	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
 	TCHAR *pathEnd = path + sizeof(path)/sizeof(TCHAR);
 
+	// Try recognizing each supported game version in the current dir
+	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
+		BEL_Cross_ConditionallyAddGameInstallation(g_be_gamever_ptrs[i], _T("."), "Local");
+
 	if (!g_refKeenCfg.manualGameVerMode)
 	{
 		// A few common definitions
@@ -103,13 +107,6 @@ void BE_Cross_PrepareGameInstallations(void)
 		/*** Now handling each version separately ***/
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse100, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc100, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse113, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamsc105, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse193, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreamse120, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, _T("."), "Local");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_kdreams_path[BE_CROSS_PATH_LEN_BOUND];
@@ -137,12 +134,9 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif // REFKEEN_PLATFORM
 
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
-
 #endif // REFKEEN_HAS_VER_KDREAMS
 
 #ifdef REFKEEN_HAS_VER_CAT3D
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d100, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_cat3d122, _T("."), "Local");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
@@ -154,8 +148,6 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATABYSS
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss113, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catabyss124, _T("."), "Local");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
@@ -167,7 +159,6 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATARM
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catarm102, _T("."), "Local");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
@@ -179,7 +170,6 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATAPOC
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_catapoc101, _T("."), "Local");
 #ifdef BE_CHECK_GOG_INSTALLATIONS
 		for (int i = 0; i < numOfGogPathsToCheck; ++i)
 		{
@@ -189,31 +179,8 @@ void BE_Cross_PrepareGameInstallations(void)
 		}
 #endif
 #endif
-#ifdef REFKEEN_HAS_VER_WL1AP10
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap10, _T("."), "Local");
-#endif
-#ifdef REFKEEN_HAS_VER_WL1AP11
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap11, _T("."), "Local");
-#endif
-#ifdef REFKEEN_HAS_VER_WL6AP11
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap11, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap12, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap12, _T("."), "Local");
-#endif
-#ifdef REFKEEN_HAS_VER_WL1AP14
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl1ap14, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ap14, _T("."), "Local");
-#endif
-#ifdef REFKEEN_HAS_VER_WL6GT14A
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14a, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6id14, _T("."), "Local");
-#endif
-#ifdef REFKEEN_HAS_VER_WL6GT14B
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6gt14b, _T("."), "Local");
-#endif
 
 #ifdef REFKEEN_HAS_VER_WL6AC14
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, _T("."), "Local");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_wolf3d_path[BE_CROSS_PATH_LEN_BOUND];
@@ -246,14 +213,7 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 #endif // REFKEEN_HAS_VER_WL6AC14
 
-#ifdef REFKEEN_HAS_VER_SDMFG10
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sdmfg10, _T("."), "Local");
-#endif
-
 #ifdef REFKEEN_HAS_VER_SODAC14
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, _T("."), "Local");
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, _T("."), "Local");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_sod_path[BE_CROSS_PATH_LEN_BOUND];
@@ -295,7 +255,6 @@ void BE_Cross_PrepareGameInstallations(void)
 #endif // REFKEEN_HAS_VER_SODAC14
 
 #ifdef REFKEEN_HAS_VER_N3DWT10
-		BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, _T("."), "Local");
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 		TCHAR steam_n3d_path[BE_CROSS_PATH_LEN_BOUND];
