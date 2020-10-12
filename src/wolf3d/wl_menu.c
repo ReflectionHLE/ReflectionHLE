@@ -4783,6 +4783,8 @@ void CheckForEpisodes(void)
 	{
 #ifdef GAMEVER_NOAH3D
 		strcpy(extension,"N3D");
+#elif (defined REFKEEN_VER_WJ6IM14)
+		strcpy(extension,"WJ6");
 #elif (defined REFKEEN_VER_WL6AP11)
 		strcpy(extension,(refkeen_current_gamever==BE_GAMEVER_WL3AP12)?"WL3":"WL6");
 #elif (defined REFKEEN_VER_WL1AP14)
@@ -4811,8 +4813,15 @@ void CheckForEpisodes(void)
 	strcat(SaveName,extension);
 	strcat(PageFileName,extension);
 	strcat(audioname,extension);
-#if (!defined SPEAR) && (!defined GOODTIMES) && (!defined GAMEVER_NOAH3D) // REFKEEN: But not if unneeded
+	// REFKEEN: But not if unneeded
+#ifndef SPEAR
+#ifndef GOODTIMES
+#ifndef JAPAN
+#ifndef GAMEVER_NOAH3D
 	strcat(helpfilename,extension);
+#endif
+#endif
+#endif
 #endif
 	strcat(demoname,extension);
 #else // REFKEEN_ENABLE_FILE_SEARCH

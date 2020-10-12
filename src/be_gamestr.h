@@ -45,6 +45,9 @@
 #define BE_STR_GAMEVER_WL6GT14A "wl6gt14a"
 #define BE_STR_GAMEVER_WL6ID14 "wl6id14"
 #endif
+#ifdef REFKEEN_HAS_VER_WJ6IM14
+#define BE_STR_GAMEVER_WJ6IM14 "wj6im14"
+#endif
 #ifdef REFKEEN_HAS_VER_WL6GT14B
 #define BE_STR_GAMEVER_WL6GT14B "wl6gt14b"
 #endif

@@ -48,6 +48,9 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 	BE_STR_GAMEVER_WL6GT14A,
 	BE_STR_GAMEVER_WL6ID14,
 #endif
+#ifdef REFKEEN_HAS_VER_WJ6IM14
+	BE_STR_GAMEVER_WJ6IM14,
+#endif
 #ifdef REFKEEN_HAS_VER_WL6GT14B
 	BE_STR_GAMEVER_WL6GT14B,
 #endif
@@ -111,6 +114,9 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_WL6GT14A
 	"Wolfenstein 3D GT #1 v1.4",
 	"Wolfenstein 3D id v1.4",
+#endif
+#ifdef REFKEEN_HAS_VER_WJ6IM14
+	"Wolfenstein 3D Imagineer v1.4",
 #endif
 #ifdef REFKEEN_HAS_VER_WL6GT14B
 	"Wolfenstein 3D GT #2 v1.4",
@@ -192,6 +198,9 @@ const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 	&g_be_gamever_wl6gt14a,
 	&g_be_gamever_wl6id14,
 #endif
+#ifdef REFKEEN_HAS_VER_WJ6IM14
+	&g_be_gamever_wj6im14,
+#endif
 #ifdef REFKEEN_HAS_VER_WL6GT14B
 	&g_be_gamever_wl6gt14b,
 #endif
@@ -255,6 +264,9 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #ifdef REFKEEN_HAS_VER_WL6GT14A
 	g_be_reqgameverfiles_wl6gt14a,
 	g_be_reqgameverfiles_wl6id14,
+#endif
+#ifdef REFKEEN_HAS_VER_WJ6IM14
+	g_be_reqgameverfiles_wj6im14,
 #endif
 #ifdef REFKEEN_HAS_VER_WL6GT14B
 	g_be_reqgameverfiles_wl6gt14b,

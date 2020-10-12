@@ -15,6 +15,9 @@
 #ifdef REFKEEN_HAS_VER_WL6GT14A
 #include "be_gamedefs_wl6gt14a_id14.h"
 #endif
+#ifdef REFKEEN_HAS_VER_WJ6IM14
+#include "be_gamedefs_wj6im14.h"
+#endif
 #ifdef REFKEEN_HAS_VER_WL6GT14B
 #include "be_gamedefs_wl6gt14b.h"
 #endif
