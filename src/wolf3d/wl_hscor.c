@@ -245,7 +245,9 @@ if (!UPLOAD)
 		#if (GAMEVER_WOLFREV <= GV_WR_WL6GT14A)
 		//#if 0
 //#if (!defined UPLOAD) || ((GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
-if (!UPLOAD || ((GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_WL1AP10)))
+// REFKEEN: UPLOAD is now a variable, but this shouldn't be built for < v1.0
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+if (!UPLOAD || (GAMEVER_WOLFREV <= GV_WR_WL1AP10))
 {
 //#ifndef UPLOAD
 #ifndef SPEAR
@@ -276,6 +278,7 @@ if (!UPLOAD || ((GAMEVER_WOLFREV > GV_WR_WL920312) && (GAMEVER_WOLFREV <= GV_WR_
 #endif
 //#endif
 }
+#endif
 		#endif
 	}
 

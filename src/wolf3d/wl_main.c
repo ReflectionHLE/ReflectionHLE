@@ -2159,6 +2159,8 @@ void    DemoLoop (void)
 
 #ifndef DEMOTEST
 
+	// REFKEEN: UPLOAD is a now a var, but NonShareware migtt be undefined
+	#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 //	#ifndef UPLOAD
 	if (!UPLOAD)
 	{
@@ -2182,8 +2184,8 @@ void    DemoLoop (void)
 
 		#endif
 		#endif
-//	#endif
 	}
+	#endif
 
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
