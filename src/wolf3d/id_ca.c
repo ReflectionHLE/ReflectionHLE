@@ -405,14 +405,10 @@ id0_boolean_t CA_LoadFile (const id0_char_t *filename, memptr *ptr)
 	BE_FILE_T handle;
 	id0_long_t size;
 
-	// TODO (REFKEEN) - BE_Cross_open_readonly_for_reading makes sense for
-	// help files if ARTSEXTERN is not defined, while for demo files,
-	// it's rather BE_Cross_open_rewritable_for_reading which fits better
-	// if DEMOSEXTERN is undefined.
-	// The March 1992 prototype build is one such example.
-#if (!defined ARTSEXTERN) && (!defined DEMOSEXTERN)
-#error "Need to implement CA_LoadFile for no-ARTSEXTERN no-DEMOSEXTERN build"
-#endif
+	// TODO (REFKEEN) - Use just BE_Cross_open_readonly_for_reading
+	// for now, even for the March 1992 prototype, in which this
+	// function may theoretically be called for demo files.
+	// However, it's apparently impossible to record demos from the proto.
 	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(filename)))
 	//if ((handle = open(filename,O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		return false;
