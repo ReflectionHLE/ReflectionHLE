@@ -126,8 +126,7 @@ typedef enum {
 #endif // REFKEEN_USE_NS
 
 extern BE_GameVer_T refkeen_current_gamever;
-// These MUST have the same order as in the BE_GameVer_T enum
+// This MUST have the same order as in the BE_GameVer_T enum
 extern const char *refkeen_gamever_strs[BE_GAMEVER_LAST];
-extern const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST];
 
 #endif // BE_GAMEVER_H

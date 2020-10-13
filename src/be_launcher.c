@@ -875,7 +875,7 @@ void BE_Launcher_Start(void)
 		BE_Cross_safeandfastcstringcopy(
 			g_beSupportedGameVersionsMenu_GameVers_Labels[i],
 			g_beSupportedGameVersionsMenu_GameVers_Labels[i] + sizeof(g_beSupportedGameVersionsMenu_GameVers_Labels[i]),
-			refkeen_gamever_descriptions[i]
+			g_be_gamever_ptrs[i]->description
 		);
 	}
 
@@ -1081,7 +1081,7 @@ void BE_Launcher_Handler_SupportedGameVersionSelection(BEMenuItem **menuItemP)
 		BE_ST_QuickExit();
 	}
 
-	g_beGameVersionDetailsMenu.title = refkeen_gamever_descriptions[gameVer];
+	g_beGameVersionDetailsMenu.title = g_be_gamever_ptrs[gameVer]->description;
 	g_beGameVersionDetailsMenu.menuItems = g_beGameVersionDetailsMenuItemsPtrs;
 	char *label = g_beGameVersionDetailsMenuItemsStrsBuffer;
 	gameFileDetails = gameFileDetailsArray;
@@ -1249,7 +1249,7 @@ void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
 	{
 		// Do NOT clear resources, we stay in current directory; But do prepare this menu
 		for (int i = 0; i < BE_GAMEVER_LAST; ++i)
-			BE_Cross_safeandfastcstringcopy_3strs(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i], g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i] + sizeof(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i]), refkeen_gamever_descriptions[i], ":\n", errorMsgsArray[i]);
+			BE_Cross_safeandfastcstringcopy_3strs(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i], g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i] + sizeof(g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i]), g_be_gamever_ptrs[i]->description, ":\n", errorMsgsArray[i]);
 		BE_Launcher_PrepareMenu(&g_beSelectDirectoryNoGameFoundMenu);
 		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryNoGameFoundMenu);
 	}
