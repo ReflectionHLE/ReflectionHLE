@@ -1317,6 +1317,14 @@ asm	out	0x61,al
 //asm	popf
 }
 
+// REFKEEN: End the (GAMEVER_WOLFREV > GV_WR_WL920312) block
+// now because of SD_PCService
+#endif // GAMEVER_WOLFREV > GV_WR_WL920312
+
+// REFKEEN: This is needed for GAMEVER_WOLFREV > GV_WR_WL920312
+// build of SDL_PCService, which is used from id_sd_a.c
+void SDL_PCStopSound(void);
+
 #if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES // Also make function non-static
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1389,6 +1397,9 @@ SDL_PCService(void)
 	}
 }
 #endif // REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
+
+// REFKEEN: Start another (GAMEVER_WOLFREV > GV_WR_WL920312) block
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1878,7 +1889,7 @@ SDL_PCStopSound(void)
 //asm	pushf
 //asm	cli
 
-	(id0_long_t)pcSound = 0;
+	pcSound = 0;
 
 	BE_ST_PCSpeakerSetConstVal(0);
 #if 0
@@ -1905,7 +1916,7 @@ SDL_ShutPC(void)
 
 	pcSound = 0;
 
-	BE_ST_PCSpeakerSetConstVal(0)
+	BE_ST_PCSpeakerSetConstVal(0);
 #if 0
 asm	in	al,0x61		  	// Turn the speaker & gate off
 asm	and	al,0xfc			// ~3
