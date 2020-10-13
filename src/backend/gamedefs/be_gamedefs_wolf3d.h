@@ -1,5 +1,8 @@
 /* This header must be included *only* from be_gamedefs.h */
 
+#ifdef REFKEEN_HAS_VER_WL920312
+#include "be_gamedefs_wl920312.h"
+#endif
 #ifdef REFKEEN_HAS_VER_WL1AP10
 #include "be_gamedefs_wl1ap10.h"
 #endif

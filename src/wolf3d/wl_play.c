@@ -2002,7 +2002,9 @@ id0_word_t refkeen_compat_wl_play_objoffset;
 
 void RefKeen_Patch_wl_play(void)
 {
-#ifdef REFKEEN_VER_WL1AP10
+#ifdef REFKEEN_VER_WL920312
+	refkeen_compat_wl_play_objoffset = 0x9435;
+#elif (defined REFKEEN_VER_WL1AP10)
 	refkeen_compat_wl_play_objoffset = 0xB0B0;
 #elif (defined REFKEEN_VER_WL1AP11)
 	refkeen_compat_wl_play_objoffset = 0xA73A;

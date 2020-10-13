@@ -27,6 +27,9 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_CATAPOC
 	BE_STR_GAMEVER_CATAPOC101,
 #endif
+#ifdef REFKEEN_HAS_VER_WL920312
+	BE_STR_GAMEVER_WL920312,
+#endif
 #ifdef REFKEEN_HAS_VER_WL1AP10
 	BE_STR_GAMEVER_WL1AP10,
 #endif
@@ -93,6 +96,9 @@ const char *refkeen_gamever_descriptions[BE_GAMEVER_LAST] = {
 #endif
 #ifdef REFKEEN_HAS_VER_CATAPOC
 	"Catacomb Apocalypse v1.01",
+#endif
+#ifdef REFKEEN_HAS_VER_WL920312
+	"Wolfenstein 3D March '92 Prototype",
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP10
 	"Wolfenstein 3D Shareware v1.0",
@@ -177,6 +183,9 @@ const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_CATAPOC
 	&g_be_gamever_catapoc101,
 #endif
+#ifdef REFKEEN_HAS_VER_WL920312
+	&g_be_gamever_wl920312,
+#endif
 #ifdef REFKEEN_HAS_VER_WL1AP10
 	&g_be_gamever_wl1ap10,
 #endif
@@ -243,6 +252,9 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_CATAPOC
 	g_be_reqgameverfiles_catapoc101,
+#endif
+#ifdef REFKEEN_HAS_VER_WL920312
+	g_be_reqgameverfiles_wl920312,
 #endif
 #ifdef REFKEEN_HAS_VER_WL1AP10
 	g_be_reqgameverfiles_wl1ap10,
