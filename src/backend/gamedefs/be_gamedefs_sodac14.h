@@ -87,7 +87,7 @@ static const BE_GameVerDetails_T g_be_gamever_sd3ac14 = {
 	g_be_reqgameverfiles_sd3ac14,
 	g_be_exefiles_sodac14,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_SD3AC14),
-	"Spear of Destiny Activision v1.4",
+	"Spear of Destiny M3 Activision v1.4",
 	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_SD3AC14
