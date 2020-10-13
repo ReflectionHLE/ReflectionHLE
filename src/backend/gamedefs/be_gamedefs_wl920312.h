@@ -43,7 +43,7 @@ static const BE_GameVerDetails_T g_be_gamever_wl920312 = {
 	g_be_reqgameverfiles_wl920312,
 	g_be_exefiles_wl920312,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL920312),
-	"Wolfenstein 3D March '92 Prototype",
+	"Wolfenstein 3D March '92 Proto.",
 	REFKEEN_NS_ENCLOSE(wl920312, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL920312

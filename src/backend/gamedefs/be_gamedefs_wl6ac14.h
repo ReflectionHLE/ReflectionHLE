@@ -41,7 +41,7 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ac14 = {
 	g_be_reqgameverfiles_wl6ac14,
 	g_be_exefiles_wl6ac14,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WL6AC14),
-	"Wolfenstein 3D Activision v1.4",
+	"Wolfenstein 3D: Activision",
 	REFKEEN_NS_ENCLOSE(wl6ac14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WL6AC14

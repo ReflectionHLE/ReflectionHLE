@@ -41,7 +41,7 @@ static const BE_GameVerDetails_T g_be_gamever_wj6im14 = {
 	g_be_reqgameverfiles_wj6im14,
 	g_be_exefiles_wj6im14,
 	CSTR_TO_TCSTR(BE_STR_GAMEVER_WJ6IM14),
-	"Wolfenstein 3D Imagineer v1.4",
+	"Wolfenstein 3D: Imagineer",
 	REFKEEN_NS_ENCLOSE(wj6im14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
 	BE_GAMEVER_WJ6IM14
