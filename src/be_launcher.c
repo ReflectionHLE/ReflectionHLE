@@ -553,9 +553,15 @@ void BE_Launcher_HandleInput_ButtonPageUp(void)
 	g_be_launcher_currMenu->currPixYScroll -= BE_LAUNCHER_PIX_HEIGHT-BE_MENU_FIRST_ITEM_PIX_YPOS;
 	if (g_be_launcher_currMenu->currPixYScroll < 0)
 		g_be_launcher_currMenu->currPixYScroll = 0;
-	// HACK
+	// HACKS
 	g_be_launcher_selectedMenuItemPtr = NULL;
+	int pixYScroll = g_be_launcher_currMenu->currPixYScroll;
 	BE_Launcher_HandleInput_ButtonDown();
+	if (!g_be_launcher_selectedMenuItemPtr)
+	{
+		g_be_launcher_currMenu->currPixYScroll = pixYScroll;
+		BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
+	}
 }
 
 void BE_Launcher_HandleInput_ButtonPageDown(void)
@@ -566,9 +572,15 @@ void BE_Launcher_HandleInput_ButtonPageDown(void)
 	g_be_launcher_currMenu->currPixYScroll += BE_LAUNCHER_PIX_HEIGHT-BE_MENU_FIRST_ITEM_PIX_YPOS;
 	if (g_be_launcher_currMenu->currPixYScroll >= g_be_launcher_currMenu->pixYScrollUpperBound)
 		g_be_launcher_currMenu->currPixYScroll = g_be_launcher_currMenu->pixYScrollUpperBound-1;
-	// HACK
+	// HACKS
 	g_be_launcher_selectedMenuItemPtr = NULL;
+	int pixYScroll = g_be_launcher_currMenu->currPixYScroll;
 	BE_Launcher_HandleInput_ButtonUp();
+	if (!g_be_launcher_selectedMenuItemPtr)
+	{
+		g_be_launcher_currMenu->currPixYScroll = pixYScroll;
+		BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
+	}
 }
 
 void BE_Launcher_HandleInput_ButtonActivate(void)
