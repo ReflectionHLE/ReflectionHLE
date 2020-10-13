@@ -1259,7 +1259,7 @@ void VGAClearScreen (void)
 	for (int loopVar = (id0_byte_t)viewheight / 2; loopVar; --loopVar)
 	{
 // *** ALPHA RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
+#ifdef GAMEVER_NOAH3D
 		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, 0xd9, (id0_byte_t)(viewwidth/8)*2);
 #else
 		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, 0x19, (id0_byte_t)(viewwidth/8)*2);
