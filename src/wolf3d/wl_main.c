@@ -2027,7 +2027,9 @@ void Quit (const id0_char_t *error)
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 		if (tedlevel)
-			execlp("TED5.EXE","TED5.EXE","/LAUNCH",NULL);
+			// TODO (REFKEEN): Will we ever implement this?
+			BE_ST_ExitWithErrorMsg("Note: Reflection Wolfenstein 3D can't start TED5.EXE. Quitting.");
+//			execlp("TED5.EXE","TED5.EXE","/LAUNCH",NULL);
 #endif
 		BE_ST_clrscr();
 		// *** ACTIVISION RELEASES + ALPHA RESTORATION ***
