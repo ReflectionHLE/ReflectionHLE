@@ -27,6 +27,7 @@
 #include "wl_def.h"
 //#pragma hdrstop
 
+#if (GAMEVER_WOLFREV > GV_WR_WL920312) // REFKEEN: Disable all code for what doesn't need it
 REFKEEN_NS_B
 
 //==========================================================================
@@ -2722,3 +2723,4 @@ void CopyProtection(void)
 //===========================================================================
 
 REFKEEN_NS_E
+#endif // REFKEEN: Disable code when not required
