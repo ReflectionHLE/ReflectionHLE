@@ -571,7 +571,8 @@ void LoadLatchMem (void)
 	{
 		CA_CacheGrChunk (STARTTILE16+i);
 		src = (id0_byte_t id0_seg *)grsegs[STARTTILE16+i];
-		VL_MemToLatch (src,16,16,destoff);
+		// REFKEEN: Emulate NULL pointer dereference
+		VL_MemToLatch (src ? src : g_be_cross_dosZeroSeg,16,16,destoff);
 		destoff+=64;
 		if (src)
 			UNCACHEGRCHUNK (STARTTILE16+i);
