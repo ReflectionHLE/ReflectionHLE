@@ -79,7 +79,7 @@ void BE_Cross_PrepareGameInstallations(void)
 		TCHAR gog_catacombs_paths[1][BE_CROSS_PATH_LEN_BOUND];
 		dwType = 0;
 		dwSize = sizeof(gog_catacombs_paths[0]);
-		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.COM\\GOGCATACOMBSPACK", L"PATH", &dwType, gog_catacombs_paths[0], &dwSize);
+		status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\GOG.COM\\GOGCATACOMBSPACK"), _T("PATH"), &dwType, gog_catacombs_paths[0], &dwSize);
 		int numOfGogPathsToCheck = ((status == ERROR_SUCCESS) && (dwType == REG_SZ)) ? 1 : 0;
 		TCHAR *path_gog_catacombs_prefix_ends[1];
 		if (numOfGogPathsToCheck)
@@ -114,7 +114,7 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_PLATFORM_WINDOWS
 		dwType = 0;
 		dwSize = sizeof(steam_kdreams_path);
-		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 356200", L"INSTALLLOCATION", &dwType, steam_kdreams_path, &dwSize);
+		status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 356200"), _T("INSTALLLOCATION"), &dwType, steam_kdreams_path, &dwSize);
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_kdreams2015, steam_kdreams_path, "Steam");
 #elif (defined REFKEEN_PLATFORM_UNIX)
@@ -188,10 +188,10 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_PLATFORM_WINDOWS
 		dwType = 0;
 		dwSize = sizeof(steam_wolf3d_path);
-		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 2270", L"INSTALLLOCATION", &dwType, steam_wolf3d_path, &dwSize);
+		status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 2270"), _T("INSTALLLOCATION"), &dwType, steam_wolf3d_path, &dwSize);
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		{
-			BEL_Cross_safeandfastctstringcopy(steam_wolf3d_path+_tcslen(steam_wolf3d_path), steam_wolf3d_path+sizeof(steam_wolf3d_path)/sizeof(TCHAR)-_tcslen(steam_wolf3d_path), L"\\base");
+			BEL_Cross_safeandfastctstringcopy(steam_wolf3d_path+_tcslen(steam_wolf3d_path), steam_wolf3d_path+sizeof(steam_wolf3d_path)/sizeof(TCHAR)-_tcslen(steam_wolf3d_path), _T("\\base"));
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_wl6ac14, steam_wolf3d_path, "Steam");
 		}
 #elif (defined REFKEEN_PLATFORM_UNIX)
@@ -221,10 +221,10 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_PLATFORM_WINDOWS
 		dwType = 0;
 		dwSize = sizeof(steam_sod_path);
-		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 9000", L"INSTALLLOCATION", &dwType, steam_sod_path, &dwSize);
+		status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 9000"), _T("INSTALLLOCATION"), &dwType, steam_sod_path, &dwSize);
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		{
-			BEL_Cross_safeandfastctstringcopy(steam_sod_path+_tcslen(steam_sod_path), steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR)-_tcslen(steam_sod_path), L"\\base");
+			BEL_Cross_safeandfastctstringcopy(steam_sod_path+_tcslen(steam_sod_path), steam_sod_path+sizeof(steam_sod_path)/sizeof(TCHAR)-_tcslen(steam_sod_path), _T("\\base"));
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sodac14, steam_sod_path, "Steam");
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd2ac14, steam_sod_path, "Steam");
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_sd3ac14, steam_sod_path, "Steam");
@@ -262,7 +262,7 @@ void BE_Cross_PrepareGameInstallations(void)
 #ifdef REFKEEN_PLATFORM_WINDOWS
 		dwType = 0;
 		dwSize = sizeof(steam_n3d_path);
-		status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 371180", L"INSTALLLOCATION", &dwType, steam_n3d_path, &dwSize);
+		status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 371180"), _T("INSTALLLOCATION"), &dwType, steam_n3d_path, &dwSize);
 		if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 			BEL_Cross_ConditionallyAddGameInstallation(&g_be_gamever_n3dwt10, steam_n3d_path, "Steam");
 #elif (defined REFKEEN_PLATFORM_UNIX)

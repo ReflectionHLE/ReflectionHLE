@@ -36,10 +36,10 @@ BE_FILE_T BE_Cross_open_steamcfg_for_reading(void)
 
 	DWORD dwType = 0;
 	DWORD dwSize = sizeof(steam_config_path);
-	LSTATUS status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\VALVE\\STEAM", L"INSTALLPATH", &dwType, steam_config_path, &dwSize);
+	LSTATUS status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\VALVE\\STEAM"), _T("INSTALLPATH"), &dwType, steam_config_path, &dwSize);
 	if ((status != ERROR_SUCCESS) || (dwType != REG_SZ))
 		return NULL;
-	BEL_Cross_safeandfastctstringcopy(steam_config_path + _tcslen(steam_config_path), steam_config_path + sizeof(steam_config_path)/sizeof(TCHAR), L"\\config\\config.vdf");
+	BEL_Cross_safeandfastctstringcopy(steam_config_path + _tcslen(steam_config_path), steam_config_path + sizeof(steam_config_path)/sizeof(TCHAR), _T("\\config\\config.vdf"));
 
 #elif (defined REFKEEN_PLATFORM_UNIX)
 

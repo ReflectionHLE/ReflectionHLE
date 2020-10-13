@@ -29,7 +29,7 @@ void BEL_Cross_CloseDir(BE_DIR_T dir);
 static inline bool BEL_Cross_IsDir(const TCHAR *path)
 {
 #ifdef REFKEEN_PLATFORM_WINDOWS
-	return PathIsDirectoryW(path);
+	return PathIsDirectory(path);
 #endif
 #ifdef REFKEEN_PLATFORM_UNIX
 	struct stat info;

@@ -5,35 +5,35 @@
 #include <windows.h>
 
 typedef struct {
-	wchar_t *regex;
+	TCHAR *regex;
 	HANDLE handle;
-	WIN32_FIND_DATAW data;
+	WIN32_FIND_DATA data;
 } BE_DIR_S;
 
-BE_DIR_T BEL_Cross_OpenDir(const wchar_t *dirname)
+BE_DIR_T BEL_Cross_OpenDir(const TCHAR *dirname)
 {
 	BE_DIR_S *dir = (BE_DIR_S *)malloc(sizeof(BE_DIR_S));
 	if (!dir)
 		BE_ST_ExitWithErrorMsg("BEL_Cross_OpenDir: Out of memory!");
-	dir->regex = (wchar_t *)malloc(sizeof(wchar_t) * (wcslen(dirname) + wcslen(L"\\*") + 1));
+	dir->regex = (TCHAR *)malloc(sizeof(TCHAR) * (_tcslen(dirname) + _tcslen(_T("\\*")) + 1));
 	if (!dir->regex)
 		BE_ST_ExitWithErrorMsg("BEL_Cross_OpenDir: Out of memory!");
-	memcpy(dir->regex, dirname, sizeof(wchar_t) * (wcslen(dirname) + 1));
-	wcscpy(dir->regex, dirname);
-	wcscat(dir->regex, L"\\*");
+	memcpy(dir->regex, dirname, sizeof(TCHAR) * (_tcslen(dirname) + 1));
+	_tcscpy(dir->regex, dirname);
+	_tcscat(dir->regex, _T("\\*"));
 	dir->handle = INVALID_HANDLE_VALUE;
 	return dir;
 }
 
-wchar_t *BEL_Cross_ReadDir(BE_DIR_T dir)
+TCHAR *BEL_Cross_ReadDir(BE_DIR_T dir)
 {
 	BOOL result;
 	BE_DIR_S *d = (BE_DIR_S *)dir;
 	if (d->handle != INVALID_HANDLE_VALUE)
-		result = FindNextFileW(d->handle, &d->data);
+		result = FindNextFile(d->handle, &d->data);
 	else
 	{
-		d->handle = FindFirstFileW(d->regex, &d->data);
+		d->handle = FindFirstFile(d->regex, &d->data);
 		result = (d->handle != INVALID_HANDLE_VALUE);
 	}
 	return result ? d->data.cFileName : NULL;

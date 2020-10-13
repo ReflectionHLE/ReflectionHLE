@@ -33,7 +33,7 @@ TCHAR g_be_appDataPath[BE_CROSS_PATH_LEN_BOUND];
 TCHAR g_be_appNewCfgPath[BE_CROSS_PATH_LEN_BOUND];
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
-static const wchar_t *g_be_rootDrivePaths[] = {L"a:\\",L"b:\\",L"c:\\",L"d:\\",L"e:\\",L"f:\\",L"g:\\",L"h:\\",L"i:\\",L"j:\\",L"k:\\",L"l:\\",L"m:\\",L"n:\\",L"o:\\",L"p:\\",L"q:\\",L"r:\\",L"s:\\",L"t:\\",L"u:\\",L"v:\\",L"w:\\",L"x:\\",L"y:\\",L"z:\\"};
+static const TCHAR *g_be_rootDrivePaths[] = {_T("a:\\"),_T("b:\\"),_T("c:\\"),_T("d:\\"),_T("e:\\"),_T("f:\\"),_T("g:\\"),_T("h:\\"),_T("i:\\"),_T("j:\\"),_T("k:\\"),_T("l:\\"),_T("m:\\"),_T("n:\\"),_T("o:\\"),_T("p:\\"),_T("q:\\"),_T("r:\\"),_T("s:\\"),_T("t:\\"),_T("u:\\"),_T("v:\\"),_T("w:\\"),_T("x:\\"),_T("y:\\"),_T("z:\\")};
 static const char *g_be_rootDrivePathsNames[] = {"a:\\","b:\\","c:\\","d:\\","e:\\","f:\\","g:\\","h:\\","i:\\","j:\\","k:\\","l:\\","m:\\","n:\\","o:\\","p:\\","q:\\","r:\\","s:\\","t:\\","u:\\","v:\\","w:\\","x:\\","y:\\","z:\\"};
 #endif
 
@@ -43,25 +43,25 @@ extern const char *be_main_arg_newcfgdir;
 void BE_Cross_PrepareAppPaths(void)
 {
 #ifdef REFKEEN_PLATFORM_WINDOWS
-	const wchar_t *homeVar = _wgetenv(L"HOMEPATH");
-	const wchar_t *envVar = _wgetenv(L"APPDATA");
+	const TCHAR *homeVar = _tgetenv(_T("HOMEPATH"));
+	const TCHAR *envVar = _tgetenv(_T("APPDATA"));
 
 	// HACK - Ignore be_main_arg_datadir for now
 	if (envVar && *envVar)
 	{
-		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), envVar, L"\\reflection-keen");
+		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), envVar, _T("\\reflection-keen"));
 	}
 	else
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "APPDATA environment variable is not properly defined.\n");
 		if (homeVar && *homeVar)
 		{
-			BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, L"\\AppData\\Roaming\\reflection-keen");
+			BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, _T("\\AppData\\Roaming\\reflection-keen"));
 		}
 		else
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "HOMEPATH environment variable is not properly defined.\n");
-			BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), L".");
+			BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), _T("."));
 		}
 	}
 
@@ -99,14 +99,14 @@ void BE_Cross_PrepareAppPaths(void)
 	// Steam installation dir
 	dwType = 0;
 	dwSize = sizeof(path);
-	status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\VALVE\\STEAM", L"INSTALLPATH", &dwType, path, &dwSize);
+	status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\VALVE\\STEAM"), _T("INSTALLPATH"), &dwType, path, &dwSize);
 	if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
 	
 	// GOG.com installation dir
 	dwType = 0;
 	dwSize = sizeof(path);
-	status = SHGetValueW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\GOG.COM", L"DEFAULTPACKPATH", &dwType, path, &dwSize);
+	status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\GOG.COM"), _T("DEFAULTPACKPATH"), &dwType, path, &dwSize);
 	if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		BEL_Cross_AddRootPathIfDir(path, "gog", "GOG Games (default)");
 #endif
