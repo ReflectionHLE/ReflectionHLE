@@ -169,6 +169,12 @@ typedef	struct
 #define id0_huge
 #define id0_seg
 
+// For BE_ST_printf (Super 3-D Noah's Ark)
+#define ID0_PRId PRId16
+#define ID0_PRIl PRId32
+#define ID0_PRIlu PRIu32
+#define ID0_PRIX PRIX16
+
 extern id0_char_t *signon;
 
 REFKEEN_NS_E
