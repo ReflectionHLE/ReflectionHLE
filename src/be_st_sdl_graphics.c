@@ -2996,7 +2996,7 @@ static uint8_t *BEL_ST_printnumber(uint8_t *currMemByte, int64_t n, bool iscolor
 {
 	// 64 bit number can be up to 20 base-10 characters in length
 	char buffer[21] = {0};
-	char *c = &buffer[21];
+	char *c = &buffer[21]-1;
 
 	if (n < 0) // negative
 	{
@@ -3083,15 +3083,21 @@ static void BEL_ST_vprintf_impl(const char *format, va_list args, bool iscolored
 				}
 				break;
 			}
+			case 'u':
+				currMemByte = BEL_ST_printnumber(currMemByte, va_arg(args, unsigned int), iscolored);
+				break;
+			case 'd':
+				currMemByte = BEL_ST_printnumber(currMemByte, va_arg(args, int), iscolored);
+				break;
 			case 'l':
 			{
 				switch(*(++format))
 				{
 				case 'u':
-					currMemByte = BEL_ST_printnumber(currMemByte, va_arg(args, uint32_t), iscolored);
+					currMemByte = BEL_ST_printnumber(currMemByte, va_arg(args, unsigned long), iscolored);
 					break;
 				case 'd':
-					currMemByte = BEL_ST_printnumber(currMemByte, va_arg(args, int32_t), iscolored);
+					currMemByte = BEL_ST_printnumber(currMemByte, va_arg(args, long), iscolored);
 					break;
 				default:
 				{
