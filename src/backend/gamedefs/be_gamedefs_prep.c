@@ -219,16 +219,16 @@ static void BEL_Cross_CheckForKnownInstallations(void)
 
 
 #ifdef REFKEEN_HAS_VER_WL6AC14
-	const BE_GameVerDetails_T *wolf3dVers[] = {&g_be_gamever_wl6ac14, 0};
+	const BE_GameVerDetails_T *wolf3dactVers[] = {&g_be_gamever_wl6ac14, 0};
 
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 2270"),
-		_T("INSTALLLOCATION"), _T("\\base"), wolf3dVers, NULL, "Steam");
+		_T("INSTALLLOCATION"), _T("\\base"), wolf3dactVers, NULL, "Steam");
 #else
 	BEL_Cross_TryAddSteamInst(
-		homeVar, _T("/Wolfenstein 3D/base"), wolf3dVers, NULL, "Steam");
+		homeVar, _T("/Wolfenstein 3D/base"), wolf3dactVers, NULL, "Steam");
 #endif // PLATFORM
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
@@ -236,7 +236,7 @@ static void BEL_Cross_CheckForKnownInstallations(void)
 	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705046"),
 		_T("PATH"), _T(""),
-		wolf3dVers, NULL, "GOG.com");
+		wolf3dactVers, NULL, "GOG.com");
 #endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
 
 #endif // REFKEEN_HAS_VER_WL6AC14
