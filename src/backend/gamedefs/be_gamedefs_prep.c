@@ -221,6 +221,9 @@ static void BEL_Cross_CheckForKnownInstallations(void)
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	const BE_GameVerDetails_T *wolf3dapoVers[] = {&g_be_gamever_wl6ap14, 0};
 	BEL_Cross_TryAddRegistryInst(
+		_T("SOFTWARE\\3DREALMS\\WOLFENSTEIN 3D"), NULL, _T("\\Wolfenstein 3D"),
+		wolf3dapoVers, NULL, "3drealms.com");
+	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\3DREALMS\\ANTHOLOGY"), NULL, _T("\\Wolfenstein 3D"),
 		wolf3dapoVers, NULL, "3drealms.com");
 #endif
