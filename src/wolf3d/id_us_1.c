@@ -302,7 +302,7 @@ US_Startup(void)
 		   // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		   {
-		     BE_ST_printf("Warp to level %d\n", tedlevelnum+1);
+		     BE_ST_printf("Warp to level %" ID0_PRId "\n", tedlevelnum+1);
 		     tedlevel = true;
 		   }
 #else

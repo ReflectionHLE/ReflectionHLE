@@ -597,7 +597,7 @@ PML_StartupMainMem(void)
 		Quit(str);
 	}
 	else
-		BE_ST_printf("Main memory (%lukb)\n", (id0_long_t)MainPagesAvail<<2);
+		BE_ST_printf("Main memory (%" ID0_PRIlu "kb)\n", (id0_long_t)MainPagesAvail<<2);
 #else
 	if (MainPagesAvail < PMMinMainMem)
 		Quit("PM_SetupMainMem: Not enough main memory");
@@ -1545,12 +1545,12 @@ PM_Startup(void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 	if (EMSPresent)
-		BE_ST_printf("EMS detected (%lukb)\n", (id0_long_t)EMSPagesAvail<<2);
+		BE_ST_printf("EMS detected (%" ID0_PRIlu "kb)\n", (id0_long_t)EMSPagesAvail<<2);
 	else
 		BE_ST_printf("EMS not detected\n");
 
 	if (XMSPresent)
-		BE_ST_printf("XMS detected (%lukb)\n", (id0_long_t)XMSPagesAvail<<2);
+		BE_ST_printf("XMS detected (%" ID0_PRIlu "kb)\n", (id0_long_t)XMSPagesAvail<<2);
 	else
 		BE_ST_printf("XMS not detected\n");
 

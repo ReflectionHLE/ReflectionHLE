@@ -612,7 +612,7 @@ IN_Startup(void)
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		if (JoysPresent[i])
-			BE_ST_printf("Joystick %d detected\n", i+1);
+			BE_ST_printf("Joystick %" ID0_PRId " detected\n", i+1);
 	}
 #endif
 

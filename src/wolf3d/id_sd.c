@@ -3188,7 +3188,7 @@ SD_Startup(void)
 	if (AdLibPresent)
 		BE_ST_printf("AdLib detected\n");
 	if (SoundBlasterPresent)
-		BE_ST_printf("SoundBlaster detected (A%03X, I%d, D%d)\n", sbLocation+0x200, sbInterrupt, sbDMA);
+		BE_ST_printf("SoundBlaster detected (A%03" ID0_PRIX ", I% " ID0_PRId ", D%" ID0_PRId ")\n", sbLocation+0x200, sbInterrupt, sbDMA);
 	if (!AdLibPresent && !SoundBlasterPresent)
 		BE_ST_printf("No sound devices detected\n");
 #endif
