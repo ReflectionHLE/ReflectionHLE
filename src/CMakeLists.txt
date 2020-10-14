@@ -38,6 +38,7 @@ list(APPEND be_src
 
 if (WIN32)
 	list(APPEND be_src src/backend/filesystem/be_filesystem_dir_win32.c)
+	list(APPEND be_src src/backend/misc/be_misc_winreg.c)
 else ()
 	list(APPEND be_src src/backend/filesystem/be_filesystem_dir_unix.c)
 endif ()
