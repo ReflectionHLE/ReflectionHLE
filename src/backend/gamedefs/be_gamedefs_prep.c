@@ -217,6 +217,14 @@ static void BEL_Cross_CheckForKnownInstallations(void)
 #endif // (defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_MACOS)
 #endif // (defined REFKEEN_HAS_VER_CATACOMB_ALL) && (defined BE_CHECK_GOG_INSTALLATIONS)
 
+#ifdef REFKEEN_HAS_VER_WL1AP14
+#ifdef REFKEEN_PLATFORM_WINDOWS
+	const BE_GameVerDetails_T *wolf3dapoVers[] = {&g_be_gamever_wl6ap14, 0};
+	BEL_Cross_TryAddRegistryInst(
+		_T("SOFTWARE\\3DREALMS\\ANTHOLOGY"), NULL, _T("\\Wolfenstein 3D"),
+		wolf3dapoVers, NULL, "3drealms.com");
+#endif
+#endif
 
 #ifdef REFKEEN_HAS_VER_WL6AC14
 	const BE_GameVerDetails_T *wolf3dactVers[] = {&g_be_gamever_wl6ac14, 0};
