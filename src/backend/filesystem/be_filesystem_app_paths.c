@@ -99,14 +99,22 @@ void BE_Cross_PrepareAppPaths(void)
 	// Steam installation dir
 	dwType = 0;
 	dwSize = sizeof(path);
+#ifdef _WIN64
+	status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\WOW6432NODE\\VALVE\\STEAM"), _T("INSTALLPATH"), &dwType, path, &dwSize);
+#else
 	status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\VALVE\\STEAM"), _T("INSTALLPATH"), &dwType, path, &dwSize);
+#endif
 	if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
 	
 	// GOG.com installation dir
 	dwType = 0;
 	dwSize = sizeof(path);
+#ifdef _WIN64
+	status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\WOW6432NODE\\GOG.COM"), _T("DEFAULTPACKPATH"), &dwType, path, &dwSize);
+#else
 	status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\GOG.COM"), _T("DEFAULTPACKPATH"), &dwType, path, &dwSize);
+#endif
 	if ((status == ERROR_SUCCESS) && (dwType == REG_SZ))
 		BEL_Cross_AddRootPathIfDir(path, "gog", "GOG Games (default)");
 #endif
