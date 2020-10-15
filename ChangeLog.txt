@@ -2,24 +2,76 @@
 Changelog
 ---------
 
-TBA:
+Oct 16, 2020 (v0.31.0):
 
+* Support more than one possible filename for game data and EXE names.
+Following this, a file named "NOAH3D.EXE" can now be identified as
+a part of Super 3-D Noah's Ark, in addition to "NOAH3DOS.EXE".
+This refers just to the matching DOS executable.
+File integrity check is done using the size and crc32.
+* Additionally, again thanks to the above, support for the
+Spear of Destiny Mission Packs is now in. Reason it's related
+is that the file extension of the mission-specific game data can vary,
+depending on the game installation being in use and its current state.
+For all missions (including the original), .SOD and .SD4 are valid
+file extensions. Other allowed extensions: .SD1 for the base game,
+.SD2 for mission 2 and .SD3 for mission 3.
+* Note that as a side-effect, data integrity checks are now done for all
+game data (graphics, maps, sounds) read from the Wolfenstein 3D codebase.
+In addition to earlier uses of it, the hidden "manualgamevergame" setting
+can now be used to disable this, albeit this might make it impossible
+to properly start Super 3-D Noah's Ark or any of the Spear of Destiny
+missions, depending on the filenames.
+* Add support for more versions of Wolfenstein 3D, again by using code from
+gamesrc-ver-recreation. This covers Apogee 6-episodes versions 1.1, 1.2 and
+1.4, two GT Interactive releases, an id Software release, Apogee 3-episodes
+versions 1.2 and 1.4, an Imagineer version and the March '92 prototype.
+(Thanks to the wolf3denginepatches repository and Chris for assistance.)
+* Add detection of Wolfenstein 3D as it used to be offered via the
+last incarnation of 3drealms.com, either on its own or as a part
+of the 3D Realms Anthology. (Thanks Lunick.)
+* Add detection of Wolfenstein 3D, Spear of Destiny and Super 3-D Noah's Ark
+as currently available from GOG.com. (Thanks WayneCa and chungy.)
+* Improve detection of game installations which is done by inspecting
+the Windows Registry. Basically, this is now done by attempting to
+inspect data for 32-bit and 64-bit applications altogether, while
+additionally still trying to get data with SHGetValue as usual.
+* Wolf3D: The UPLOAD macro was replaced with an UPLOAD variable.
+* Internally rename the wl1ap12 namespace to wl6ap11, and do the same with
+other mentions of such strings. Most noticeable impact is probably
+that when separate Wolf3D EXEs are build, reflection-wl6ap11 is
+created instead of reflection-wl6ap12.
+* Typo fix: Do show "Wolfenstein 3D Shareware v1.4 (Local)" when referring
+to shareware v1.4, instead of mistakenly mentioning v1.2 in the string.
+* Use a bit shorter descriptions for certain Wolfenstein 3D and
+Spear of Destiny versions, so they can fit as launcher titles
+(BE_Launcher_Handler_SupportedGameVersionSelection).
+* Add high level XMS and EMS implementations, use them in Wolf3D's
+Page Manager, and also remove the REFKEEN_SIMPLIFIED/NOEMS/NOXMS
+implementations from Wolf3D. (Thanks Blzut3.)
+* Wolf3D: Following the removal of the REFKEEN_SIMPLIFIED-specific code
+from id_pm.c, pointers can now be appropriately converted in ShapeTest.
+* A small fix for using page up/down in the launcher while
+none of the menu items can be selected.
 * A couple of fixes for bugs introduced after the audio mixer refactoring,
 specific to runs without the audio subsystem.
 * Separate more audio and timing related code into more files, while reducing
-direct references to SDL (albeit it's still used in the same manners).
-* Further split the contents of be_cross_fs.c.
+direct references to SDL (albeit it's still used in the same manner).
+* Generally, continue splitting the contents of be_cross_fs.c and
+making other restructurings and differing changes related to this code.
 * Wolf3D: Fix a possible buffer overflow in US_CheckParm, reproduced by
 passing an argument with no alphabetical character. A good example is
 the second argument in the following arguments string: "-tedlevel 1".
 * Make the codebase more usable with Visual Studio.
-* Launcher: Add a missing comment about the impact
-of the scale type setting on the border porches.
+* Launcher: Add a missing comment about the impact of the
+scale type setting on the border porches.
 * Bug fix: Conditionally hide or show the mouse cursor after
 toggling fullscreen, depending on game-specific setups.
 * Fix an instance in which the in-game contents don't get
 appropriately resized after toggling fullscreen.
-* Other misc. changes.
+* Wolf3D: Make the mouse cursor usable while the game
+is paused, if a fullscreen isn't used.
+* Other misc. fixes/changes.
 
 Sep 28, 2020 (v0.30.1):
 
