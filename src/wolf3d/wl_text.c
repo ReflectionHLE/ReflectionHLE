@@ -887,7 +887,7 @@ id0_int_t		helpextern = T_HELPART;
 // *** S3DNA RESTORATION + ALPHA *** - No T_ENDART1,
 // and embedding extension + using char * in alpha (instead of char..[])
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-id0_char_t *helpfilename = "HELPART.WL1",
+const id0_char_t *helpfilename = "HELPART.WL1",
 	 *orderfilename = "ORDERART.WL1",
 	 *storyfilename = "STORYART.WL1",
 	 *orderfilename2 = "ORDERART.WL1", // Weird one
