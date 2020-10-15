@@ -90,8 +90,6 @@ static void show_command_line_help()
 
 int main(int argc, char **argv)
 {
-	BE_ST_InitCommon();
-
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 
 	// Parse arguments
@@ -196,6 +194,10 @@ int main(int argc, char **argv)
 		else
 			showHelp = true;
 	}
+
+	// Call this here, because be_main_arg_datadir/be_main_arg_newcfgdir
+	// may be referenced from an internally called function
+	BE_ST_InitCommon();
 
 	if (showHelp)
 	{
