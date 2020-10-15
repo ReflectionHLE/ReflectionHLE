@@ -154,10 +154,9 @@ void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 		{
 		case 2: // Match found
 			continue;
-		case 1: // Wrong file found in writableFilesPath: DELETE, then verify it's actually deleted (if there are multiple files differing just by case, this is an error, too.)
-		{
-			// Actually, there's a special case in which we don't delete and even accept the different file...
-			// Each EXE must be unmodified, though (used for version identification, and possibly also the extraction of embedded resources)
+		case 1: // Wrong file found in writableFilesPath: Generally refuse to continue.
+			// There's, however, a special case in which we proceed and even accept a different file...
+			// Each EXE must be unmodified, though (used for version identification, and possibly also the extraction of embedded resources).
 			// But it's also possible to have no EXE (e.g., Keen Dreams, 2015 release) so check this.
 			//
 			// KNOWN LIMITATION: Resources embedded in an EXE may *not* be modified.
@@ -172,23 +171,13 @@ void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 					continue;
 			}
 
-			_tremove(tempFullPath);
-			// FIXME: Rather modify BEL_Cross_CheckGameFileDetails to
-			// optionally fill the actual file name itself, and then
-			// try to re-open it, possibly with a different letter case.
-			// This whole seytup may generally be better, either way.
-			if (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, gameInstallation->writableFilesPath, NULL) >= 1)
-			{
-				snprintf(
-					errorMsg, sizeof(errorMsg),
-					"BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Cannot remove file with\n"
-					"unexpected contents! Alternatively, one such file has been removed, but there's\n"
-					"another one differing just by case, or with another matching name.\n"
-					"Possible filenames: %s", fileDetailsBuffer->filenames);
-				BE_ST_ExitWithErrorMsg(errorMsg);
-			}
+			snprintf(
+				errorMsg, sizeof(errorMsg),
+				"BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Found data\n"
+				"file with unexpected contents where it shouldn't be present!\n"
+				"Possible filenames: %s", fileDetailsBuffer->filenames);
+			BE_ST_ExitWithErrorMsg(errorMsg);
 			break;
-		}
 		}
 		// No match found (and possibly deleted wrong file from writableFilesPath), recheck in installation path
 		switch (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, searchdir, NULL))
