@@ -4,8 +4,7 @@ Reflection Keen is a project consisting of source ports of the
 following titles, all being inspired by the Chocolate Doom port:
 - Keen Dreams.
 - Catacomb 3-D (The Descent) and The Catacomb Adventure Series.
-- Wolfenstein 3D, Spear of Destiny (excluding the mission packs)
-and Super 3-D Noah's Ark (DOS version).
+- Wolfenstein 3D, Spear of Destiny and Super 3-D Noah's Ark (DOS version).
 
 ## Terms of use
 
@@ -54,4 +53,4 @@ the latter of which being done with Mingw-w64.
 
 ## Acknowledgements
 
-See AUTHORS.md
+See AUTHORS.md.
