@@ -77,7 +77,6 @@ typedef struct
 	struct
 	{
 		int actionMappings[BE_ST_CTRL_CFG_BUTMAP_AFTERLAST]; // Buttons/triggers
-		bool useDpad;
 		bool useLeftStick;
 		bool useRightStick;
 		bool analogMotion;

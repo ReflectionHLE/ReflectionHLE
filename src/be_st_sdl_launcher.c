@@ -539,6 +539,15 @@ static const char *g_be_controllerSettingsChoices_analogMotion[] = {"Keyboard", 
 static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem **menuItemP);
 #endif
 
+#ifdef REFKEEN_HAS_VER_KDREAMS // Differing descriptions for same actions
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Up, "Action - Up", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Down, "Action - Down", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+#else
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Up, "Action - Forward", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Down, "Action - Backward", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+#endif
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Left, "Action - Left", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Right, "Action - Right", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #ifdef REFKEEN_HAS_VER_KDREAMS
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Jump, "Action - Jump", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Throw, "Action - Throw", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
@@ -559,7 +568,6 @@ BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FuncKeys,
 #endif
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_DebugKeys, "Action - Debug keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 
-BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_Dpad, "Use d-pad for motion", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
@@ -570,6 +578,10 @@ BEMENUITEM_DEF_HANDLER(g_beControllerSettingsMenuItem_ImportMappingsFromSteam, "
 #endif
 
 static BEMenuItem *g_beControllerSettingsMenuItems[] = {
+	&g_beControllerSettingsMenuItem_Action_Up,
+	&g_beControllerSettingsMenuItem_Action_Down,
+	&g_beControllerSettingsMenuItem_Action_Left,
+	&g_beControllerSettingsMenuItem_Action_Right,
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	&g_beControllerSettingsMenuItem_Action_Jump,
 	&g_beControllerSettingsMenuItem_Action_Throw,
@@ -589,7 +601,6 @@ static BEMenuItem *g_beControllerSettingsMenuItems[] = {
 	&g_beControllerSettingsMenuItem_Action_FuncKeys,
 #endif
 	&g_beControllerSettingsMenuItem_Action_DebugKeys,
-	&g_beControllerSettingsMenuItem_Dpad,
 	&g_beControllerSettingsMenuItem_LeftStick,
 	&g_beControllerSettingsMenuItem_RightStick,
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
@@ -844,8 +855,6 @@ void BE_ST_Launcher_Prepare(void)
 	// Set AbsMouseMotion value
 	g_beInputSettingsMenuItem_AbsMouseMotion.choice = g_refKeenCfg.absMouseMotion;
 #endif
-	// Set Dpad value
-	g_beControllerSettingsMenuItem_Dpad.choice = g_refKeenCfg.altControlScheme.useDpad;
 	// Set LeftStick value
 	g_beControllerSettingsMenuItem_LeftStick.choice = g_refKeenCfg.altControlScheme.useLeftStick;
 	// Set RightStick value
@@ -855,6 +864,10 @@ void BE_ST_Launcher_Prepare(void)
 	g_beControllerSettingsMenuItem_AnalogMotion.choice = g_refKeenCfg.altControlScheme.analogMotion;
 #endif
 	/*** Set controller button bindings ***/
+	g_beControllerSettingsMenuItem_Action_Up.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP];
+	g_beControllerSettingsMenuItem_Action_Down.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN];
+	g_beControllerSettingsMenuItem_Action_Left.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT];
+	g_beControllerSettingsMenuItem_Action_Right.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT];
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	g_beControllerSettingsMenuItem_Action_Jump.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP];
 	g_beControllerSettingsMenuItem_Action_Throw.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW];
@@ -1013,13 +1026,16 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.touchInputDebugging = g_beInputSettingsMenuItem_TouchInputDebugging.choice;
 #endif
 
-	g_refKeenCfg.altControlScheme.useDpad = g_beControllerSettingsMenuItem_Dpad.choice;
 	g_refKeenCfg.altControlScheme.useLeftStick = g_beControllerSettingsMenuItem_LeftStick.choice;
 	g_refKeenCfg.altControlScheme.useRightStick = g_beControllerSettingsMenuItem_RightStick.choice;
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	g_refKeenCfg.altControlScheme.analogMotion = g_beControllerSettingsMenuItem_AnalogMotion.choice;
 #endif
 
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = g_beControllerSettingsMenuItem_Action_Up.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = g_beControllerSettingsMenuItem_Action_Down.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = g_beControllerSettingsMenuItem_Action_Left.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = g_beControllerSettingsMenuItem_Action_Right.choice;
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = g_beControllerSettingsMenuItem_Action_Jump.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = g_beControllerSettingsMenuItem_Action_Throw.choice;

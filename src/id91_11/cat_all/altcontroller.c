@@ -777,16 +777,17 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 };
 #endif
 
-static void CheckButtonMapping(int actionmapping, BE_ST_ControllerSingleMap **outmapptr, const BE_ST_ControllerSingleMap *inputmap)
+static bool CheckButtonMapping(int actionmapping, BE_ST_ControllerSingleMap **outmapptr, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_BUT_MAX))
 		*outmapptr = &g_ingame_altcontrol_mapping_gameplay.buttons[actionmapping];
 	else if ((actionmapping >= BE_ST_CTRL_BUT_MAX) && (BE_ST_CTRL_BUT_MAX < BE_ST_CTRL_BUT_MAX+2))
 		*outmapptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_BUT_MAX][1];
 	else
-		return;
+		return false;
 
 	**outmapptr = *inputmap;
+	return true;
 }
 
 void RefKeen_PrepareAltControllerScheme(void)
@@ -820,6 +821,41 @@ void RefKeen_PrepareAltControllerScheme(void)
 			// Game code shouldn't touch this
 			g_ingame_altcontrol_button1mappings[0] = NULL;
 		}
+	}
+
+	BE_ST_ControllerSingleMap gamemouseup    = {NULL, 1, -16, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap gamemousedown  = {NULL, 1,  16, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap gamemouseleft  = {NULL, 0, -16, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap gamemouseright = {NULL, 0,  16, BE_ST_CTRL_MAP_MOUSEMOTION};
+
+	// These ones are also adjusted in game
+	tempsinglemapping.val = BE_ST_SC_UP;
+	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP], currupmappingptr, &tempsinglemapping))
+	{
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+			**currupmappingptr = gamemouseup;
+		++currupmappingptr;
+	}
+	tempsinglemapping.val = BE_ST_SC_DOWN;
+	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN], currdownmappingptr, &tempsinglemapping))
+	{
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+			**currdownmappingptr = gamemousedown;
+		++currdownmappingptr;
+	}
+	tempsinglemapping.val = BE_ST_SC_LEFT;
+	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT], currleftmappingptr, &tempsinglemapping))
+	{
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+			**currleftmappingptr = gamemouseleft;
+		++currleftmappingptr;
+	}
+	tempsinglemapping.val = BE_ST_SC_RIGHT;
+	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT], currrightmappingptr, &tempsinglemapping))
+	{
+		if (g_refKeenCfg.altControlScheme.analogMotion)
+			**currrightmappingptr = gamemouseright;
+		++currrightmappingptr;
 	}
 
 	tempsinglemapping.val = BE_ST_SC_SPACE;
@@ -858,32 +894,6 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	g_beStControllerMappingDebugKeys.defaultMapping.otherMappingPtr = &g_ingame_altcontrol_mapping_gameplay;
 
-	BE_ST_ControllerSingleMap gamemouseup    = {NULL, 1, -16, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap gamemousedown  = {NULL, 1,  16, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap gamemouseleft  = {NULL, 0, -16, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap gamemouseright = {NULL, 0,  16, BE_ST_CTRL_MAP_MOUSEMOTION};
-
-	if (g_refKeenCfg.altControlScheme.useDpad)
-	{
-		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_UP];
-		*currdownmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_DOWN];
-		*currleftmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_LEFT];
-		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.buttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
-		if (g_refKeenCfg.altControlScheme.analogMotion)
-		{
-			**currupmappingptr++ = gamemouseup;
-			**currdownmappingptr++ = gamemousedown;
-			**currleftmappingptr++ = gamemouseleft;
-			**currrightmappingptr++ = gamemouseright;
-		}
-		else
-		{
-			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-		}
-	}
 	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{
 		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][0];

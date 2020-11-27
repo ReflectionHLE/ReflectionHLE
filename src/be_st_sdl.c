@@ -117,6 +117,10 @@ BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 //
 // HACK: If this is updated, also check g_sdlCfgEntries!!!
 static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
+	"altcontrolscheme_up=",
+	"altcontrolscheme_down=",
+	"altcontrolscheme_left=",
+	"altcontrolscheme_right=",
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	"altcontrolscheme_jump=",
 	"altcontrolscheme_throw=",
@@ -711,18 +715,6 @@ static void BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap(const char *keypr
 	g_refKeenCfg.altControlScheme.actionMappings[keyindex] = (sizeof(g_sdlControlSchemeKeyMapCfgVals)/sizeof(*g_sdlControlSchemeKeyMapCfgVals)) - 1; // SPECIAL - A way to toggle this off
 }
 
-static void BEL_ST_ParseSetting_AlternativeControlSchemeDpad(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.altControlScheme.useDpad = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.altControlScheme.useDpad = false;
-	}
-}
-
 static void BEL_ST_ParseSetting_AlternativeControlSchemeLeftStick(const char *keyprefix, const char *buffer)
 {
 	if (!strcmp(buffer, "true"))
@@ -837,6 +829,10 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
 
 	// HACK: Copy-paste... if this is updated, check g_sdlControlSchemeKeyMapCfgKeyPrefixes too!!!
+	{"altcontrolscheme_up=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_down=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_left=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_right=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	{"altcontrolscheme_jump=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_throw=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
@@ -857,7 +853,6 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #endif
 	{"altcontrolscheme_debugkeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 
-	{"altcontrolscheme_dpad=", &BEL_ST_ParseSetting_AlternativeControlSchemeDpad},
 	{"altcontrolscheme_lstick=", &BEL_ST_ParseSetting_AlternativeControlSchemeLeftStick},
 	{"altcontrolscheme_rstick=", &BEL_ST_ParseSetting_AlternativeControlSchemeRightStick},
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
@@ -917,6 +912,10 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.touchInputDebugging = false;
 	g_refKeenCfg.altControlScheme.isEnabled = true;
 
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = SDL_CONTROLLER_BUTTON_DPAD_UP;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = SDL_CONTROLLER_BUTTON_A;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = SDL_CONTROLLER_BUTTON_B;
@@ -937,7 +936,6 @@ static void BEL_ST_ParseConfig(void)
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = SDL_CONTROLLER_BUTTON_LEFTSTICK;
 
-	g_refKeenCfg.altControlScheme.useDpad = true;
 	g_refKeenCfg.altControlScheme.useLeftStick = true;
 	g_refKeenCfg.altControlScheme.useRightStick = false;
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
@@ -1043,7 +1041,6 @@ static void BEL_ST_SaveConfig(void)
 	{
 		fprintf(fp, "%s%s\n", g_sdlControlSchemeKeyMapCfgKeyPrefixes[keyindex], g_sdlControlSchemeKeyMapCfgVals[g_refKeenCfg.altControlScheme.actionMappings[keyindex]]);
 	}
-	fprintf(fp, "altcontrolscheme_dpad=%s\n", g_refKeenCfg.altControlScheme.useDpad ? "true" : "false");
 	fprintf(fp, "altcontrolscheme_lstick=%s\n", g_refKeenCfg.altControlScheme.useLeftStick ? "true" : "false");
 	fprintf(fp, "altcontrolscheme_rstick=%s\n", g_refKeenCfg.altControlScheme.useRightStick ? "true" : "false");
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION

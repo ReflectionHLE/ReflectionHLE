@@ -198,6 +198,10 @@ extern BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 // Used when loading controller scheme stuff from cfg
 enum {
 	BE_ST_CTRL_CFG_BUTMAP_BEFOREFIRST = -1, /* The actual first entry is to be numbered 0 */
+	BE_ST_CTRL_CFG_BUTMAP_UP,
+	BE_ST_CTRL_CFG_BUTMAP_DOWN,
+	BE_ST_CTRL_CFG_BUTMAP_LEFT,
+	BE_ST_CTRL_CFG_BUTMAP_RIGHT,
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	BE_ST_CTRL_CFG_BUTMAP_JUMP,
 	BE_ST_CTRL_CFG_BUTMAP_THROW,
