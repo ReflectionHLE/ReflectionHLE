@@ -378,7 +378,7 @@ void BE_ST_QuickExit(void)
 
 // Enumerated by SDL_GameControllerButton, for most
 static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
-	"a", "b", "x", "y", 0, 0, 0, "lstick", "rstick", "lshoulder", "rshoulder", 0, 0, 0, 0,
+	"a", "b", "x", "y", 0, 0, 0, "lstick", "rstick", "lshoulder", "rshoulder", "dpadup", "dpaddown", "dpadleft", "dpadright",
 	"ltrigger", "rtrigger", // Actually axes but these are added as extras
 	"" // for any entry which is not set
 };

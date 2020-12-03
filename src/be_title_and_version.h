@@ -22,8 +22,8 @@
 // Note that the "vX.Y.Z" format is important, since a makefile command parses
 // the string to fill the CFBundleVersion string in Info.plist (OS X/macOS specific)
 
-//#define REFKEEN_VERSION_STRING "Dev. Build"
-#define REFKEEN_VERSION_STRING "v0.31.0"
+#define REFKEEN_VERSION_STRING "Dev. Build"
+//#define REFKEEN_VERSION_STRING "v0.31.0"
 
 #define REFKEEN_TITLE_AND_VER_STRING REFKEEN_TITLE_STRING " " REFKEEN_VERSION_STRING
 

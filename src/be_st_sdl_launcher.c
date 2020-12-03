@@ -529,7 +529,7 @@ BEMenu g_beInputSettingsMenu = {
 
 /*** Controller settings menu ***/
 
-static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", NULL, NULL, NULL, NULL, "LTrigger", "RTrigger", "N/A"};
+static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", "DPad Up", "DPad Down", "DPad Left", "DPad Right", "LTrigger", "RTrigger", "N/A"};
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 static const char *g_be_controllerSettingsChoices_analogMotion[] = {"Keyboard", "Mouse", NULL};
 #endif
@@ -2727,6 +2727,10 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 					case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
 					case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
 					case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+					case SDL_CONTROLLER_BUTTON_DPAD_UP:
+					case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+					case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+					case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
 						choice = event.cbutton.button;
 						// Fall-through
 					default:
