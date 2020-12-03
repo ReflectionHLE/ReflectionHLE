@@ -4396,6 +4396,11 @@ void ReadAnyControl(ControlInfo *ci)
 ////////////////////////////////////////////////////////////////////
 id0_int_t Confirm(const id0_char_t GAMEVER_COND_FARPTR *string)
 {
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu_confirm);
+
 	soundnames whichsnd[2]={ESCPRESSEDSND,SHOOTSND}; // REFKEEN: For C++ build
 	// *** ALPHA RESTORATION ***
 	// Originally the code from the Message function was *hardcoded* here
@@ -4502,6 +4507,9 @@ id0_int_t Confirm(const id0_char_t GAMEVER_COND_FARPTR *string)
 		BE_ST_ShortSleep();
 	#endif
 
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
+
 	IN_ClearKeysDown();
 	SD_PlaySound(whichsnd[xit]);
 	return xit;
@@ -4515,6 +4523,11 @@ id0_int_t Confirm(const id0_char_t GAMEVER_COND_FARPTR *string)
 ////////////////////////////////////////////////////////////////////
 id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic)
 {
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu_confirm);
+
 	soundnames whichsnd[2]={ESCPRESSEDSND,SHOOTSND}; // REFKEEN: For C++ build
 	id0_int_t xit=0/*,whichsnd[2]={ESCPRESSEDSND,SHOOTSND}*/;
 
@@ -4563,6 +4576,9 @@ id0_int_t GetYorN(id0_int_t x,id0_int_t y,id0_int_t pic)
 	while(Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape])
 		BE_ST_ShortSleep();
 	#endif
+
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 
 	IN_ClearKeysDown();
 	SD_PlaySound(whichsnd[xit]);
