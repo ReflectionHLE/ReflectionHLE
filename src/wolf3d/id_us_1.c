@@ -747,6 +747,10 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 	LastASCII = key_None;
 	LastScan = sc_None;
 
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_beStControllerMappingTextInput);
+
 	while (!done)
 	{
 		if (cursorvis)
@@ -888,6 +892,9 @@ US_LineInput(id0_int_t x,id0_int_t y,id0_char_t *buf,id0_char_t *def,id0_boolean
 
 		VW_UpdateScreen();
 	}
+
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 
 	if (cursorvis)
 		USL_XORICursor(x,y,s,cursor);
