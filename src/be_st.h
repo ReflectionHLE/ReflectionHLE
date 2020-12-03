@@ -146,9 +146,11 @@ typedef struct {
 	void *miscData; // Used to store e.g., texture data
 } BE_ST_OnscreenTouchControl;
 
-// Same as above, but invisible (touch regions defined) and with some mapping...
+enum { BE_ST_TOUCH_CTRL_MAX_MAPS = 2 };
+
+// Same as above, but invisible (touch regions defined) and with some mappings...
 typedef struct {
-	BE_ST_ControllerSingleMap mapping;
+	BE_ST_ControllerSingleMap mappings[BE_ST_TOUCH_CTRL_MAX_MAPS];
 	const char **xpmImage;
 	int xpmWidth, xpmHeight;
 	int xpmPosX, xpmPosY;

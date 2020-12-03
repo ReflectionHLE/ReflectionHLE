@@ -1888,12 +1888,24 @@ static int BEL_ST_GetPointedTouchControlIndex(int x, int y)
 
 static void BEL_ST_HandleDefaultPointerActionInTouchControls(int touchControlIndex, bool isPressed)
 {
-	bool lastBinaryStatus = !isPressed;
-	BEL_ST_AltControlScheme_HandleEntry(
-		(touchControlIndex >= 0) ? &g_sdlControllerMappingActualCurr->touchMappings[touchControlIndex].mapping : &g_sdlControllerMappingActualCurr->defaultMapping,
-		isPressed ? g_sdlJoystickAxisMax : 0,
-		(touchControlIndex >= 0) ? &lastBinaryStatus : &g_sdlDefaultMappingBinaryState
-	);
+	int i = 0;
+	BE_ST_ControllerSingleMap *mapping;
+	if (touchControlIndex >= 0)
+		for (mapping = g_sdlControllerMappingActualCurr->touchMappings[touchControlIndex].mappings, i = 0;
+		     (mapping->mapClass != BE_ST_CTRL_MAP_NONE) && (i < BE_ST_TOUCH_CTRL_MAX_MAPS);
+		     ++mapping, ++i)
+		{
+			bool lastBinaryStatus = !isPressed;
+			BEL_ST_AltControlScheme_HandleEntry(
+				mapping,
+				isPressed ? g_sdlJoystickAxisMax : 0,
+				&lastBinaryStatus);
+		}
+	else
+		BEL_ST_AltControlScheme_HandleEntry(
+			&g_sdlControllerMappingActualCurr->defaultMapping,
+			isPressed ? g_sdlJoystickAxisMax : 0,
+			&g_sdlDefaultMappingBinaryState);
 }
 
 void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y)

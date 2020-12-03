@@ -634,16 +634,16 @@ void PrepareGamePlayControllerMapping(void)
 	for (singlemappingptr = g_ingame_altcontrol_rightmappings; *singlemappingptr; ++singlemappingptr)
 		(*singlemappingptr)->val = KbdDefs[0].right;
 	// HACK - The indices are hardcoded
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[0].mapping.val = KbdDefs[0].button0;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[1].mapping.val = KbdDefs[0].button1;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[2].mapping.val = KbdDefs[0].left;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[3].mapping.val = KbdDefs[0].right;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[4].mapping.val = KbdDefs[0].up;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[5].mapping.val = KbdDefs[0].down;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mapping.val = KbdDefs[0].upleft;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mapping.val = KbdDefs[0].upright;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mapping.val = KbdDefs[0].downleft;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mapping.val = KbdDefs[0].downright;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[0].mappings[0].val = KbdDefs[0].button0;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[1].mappings[0].val = KbdDefs[0].button1;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[2].mappings[0].val = KbdDefs[0].left;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[3].mappings[0].val = KbdDefs[0].right;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[4].mappings[0].val = KbdDefs[0].up;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[5].mappings[0].val = KbdDefs[0].down;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mappings[0].val = KbdDefs[0].upleft;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[0].val = KbdDefs[0].upright;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mappings[0].val = KbdDefs[0].downleft;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mappings[0].val = KbdDefs[0].downright;
 
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
 }

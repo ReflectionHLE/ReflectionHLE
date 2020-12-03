@@ -652,20 +652,20 @@ void PrepareGamePlayControllerMapping(void)
 	for (singlemappingptr = g_ingame_altcontrol_rightmappings; *singlemappingptr; ++singlemappingptr)
 		(*singlemappingptr)->val = dirscan[di_east];
 	// HACK - The indices are hardcoded
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[0].mapping.val = buttonscan[bt_attack];
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[1].mapping.val = buttonscan[bt_strafe];
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[2].mapping.val = dirscan[di_west];
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[3].mapping.val = dirscan[di_east];
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[4].mapping.val = dirscan[di_north];
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[5].mapping.val = dirscan[di_south];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[0].mappings[0].val = buttonscan[bt_attack];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[1].mappings[0].val = buttonscan[bt_strafe];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[2].mappings[0].val = dirscan[di_west];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[3].mappings[0].val = dirscan[di_east];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[4].mappings[0].val = dirscan[di_north];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[5].mappings[0].val = dirscan[di_south];
 #if 0 // Diagonal ...
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mapping.val = KbdDefs[0].upleft;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mapping.val = KbdDefs[0].upright;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mapping.val = KbdDefs[0].downleft;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mapping.val = KbdDefs[0].downright;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mappings[0].val = KbdDefs[0].upleft;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[0].val = KbdDefs[0].upright;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mappings[0].val = KbdDefs[0].downleft;
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mappings[0].val = KbdDefs[0].downright;
 #endif
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mapping.val = buttonscan[bt_use];
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mapping.val = buttonscan[bt_run];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mappings[0].val = buttonscan[bt_use];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[0].val = buttonscan[bt_run];
 	// HACK - Also hardcoded
 	g_ingame_altcontrol_mapping_weapons.buttons[BE_ST_CTRL_BUT_DPAD_DOWN] =
 		*g_ingame_altcontrol_buttonmappings[bt_readyknife];
