@@ -2492,6 +2492,10 @@ void wolf3d_exe_main (void)
 
 	//Patch386 (); // REFKEEN - Not needed
 
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 	InitGame ();
 
 	DemoLoop();
