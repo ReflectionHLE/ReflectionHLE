@@ -750,6 +750,11 @@ void ShowArticle (id0_char_t id0_far *article)
 	id0_unsigned_t	oldfontnumber;
 	id0_unsigned_t	temp;
 	id0_boolean_t 	newpage,firstpage;
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_help);
+
 
 	#ifdef JAPAN
 	pagenum = 1;
@@ -856,6 +861,9 @@ void ShowArticle (id0_char_t id0_far *article)
 		#endif
 
 	} while (LastScan != sc_Escape);
+
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 
 	// *** ALPHA RESTIRATION *** 
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
