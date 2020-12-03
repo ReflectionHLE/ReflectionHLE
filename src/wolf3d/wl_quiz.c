@@ -167,7 +167,6 @@ id0_int_t AskQuestion (id0_int_t question)
 		Quit (str);
 	}
 	// REFKEEN - Alternative controllers support
-	// TODO: Use a different mapping in the future
 	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;
 	BE_ST_AltControlScheme_Push();
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu);
