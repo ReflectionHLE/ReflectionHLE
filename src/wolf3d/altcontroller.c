@@ -103,22 +103,22 @@ static BE_ST_TouchControlSingleMap g_ingame_altcontrol_mapping_gameplay_touchmap
 	{{NULL, BE_ST_SC_DOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		analog_circle_bottom_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 	},
-#if 0
-... // TODO need to use double mappings here, diagonal ones won't do it
-	{{NULL, BE_ST_SC_HOME, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{{NULL, BE_ST_SC_UP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	  {NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE}},
 		analog_circle_topleft_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 	},
-	{{NULL, BE_ST_SC_PAGEUP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{{NULL, BE_ST_SC_UP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	  {NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE}},
 		analog_circle_topright_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 	},
-	{{NULL, BE_ST_SC_END, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{{NULL, BE_ST_SC_DOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	  {NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE}},
 		analog_circle_bottomleft_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 	},
-	{{NULL, BE_ST_SC_PAGEDOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{{NULL, BE_ST_SC_DOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	  {NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE}},
 		analog_circle_bottomright_input_xpm+5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-48-8
 	},
-...
-#endif
 	{{NULL, BE_ST_SC_SPACE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		button_use_xpm+5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-56-8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM-39-8
 	},
@@ -658,14 +658,19 @@ void PrepareGamePlayControllerMapping(void)
 	g_ingame_altcontrol_mapping_gameplay.touchMappings[3].mappings[0].val = dirscan[di_east];
 	g_ingame_altcontrol_mapping_gameplay.touchMappings[4].mappings[0].val = dirscan[di_north];
 	g_ingame_altcontrol_mapping_gameplay.touchMappings[5].mappings[0].val = dirscan[di_south];
-#if 0 // Diagonal ...
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mappings[0].val = KbdDefs[0].upleft;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[0].val = KbdDefs[0].upright;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mappings[0].val = KbdDefs[0].downleft;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mappings[0].val = KbdDefs[0].downright;
-#endif
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mappings[0].val = buttonscan[bt_use];
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[0].val = buttonscan[bt_run];
+
+	// Diagonal directions
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mappings[0].val = dirscan[di_north];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mappings[1].val = dirscan[di_west];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[0].val = dirscan[di_north];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[1].val = dirscan[di_east];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mappings[0].val = dirscan[di_south];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mappings[1].val = dirscan[di_west];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mappings[0].val = dirscan[di_south];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mappings[1].val = dirscan[di_east];
+
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[10].mappings[0].val = buttonscan[bt_use];
+	g_ingame_altcontrol_mapping_gameplay.touchMappings[11].mappings[0].val = buttonscan[bt_run];
 	// HACK - Also hardcoded
 	g_ingame_altcontrol_mapping_weapons.buttons[BE_ST_CTRL_BUT_DPAD_DOWN] =
 		*g_ingame_altcontrol_buttonmappings[bt_readyknife];
