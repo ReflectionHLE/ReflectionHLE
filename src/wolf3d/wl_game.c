@@ -1820,9 +1820,6 @@ void GameLoop (void)
 #ifdef MYPROFILE
 	clock_t start,end;
 #endif
-	// REFKEEN - Alternative controllers support
-	BE_ST_AltControlScheme_Push();
-	PrepareGamePlayControllerMapping();
 
 restartgame:
 	/// *** ALPHA RESTORATION ***
@@ -1906,8 +1903,14 @@ restart:
 		DrawLevel ();
 
 startplayloop:
+		// REFKEEN - Alternative controllers support
+		BE_ST_AltControlScheme_Push();
+		PrepareGamePlayControllerMapping();
+
 		PlayLoop ();
 
+		// REFKEEN - Alternative controllers support
+		BE_ST_AltControlScheme_Pop();
 #ifdef SPEAR
 		if (spearflag)
 		{
@@ -2019,8 +2022,7 @@ startplayloop:
 				MainMenu[viewscores].routine = CP_ViewScores;
 				#pragma warn +sus
 
-				goto popcontrolerscheme; // REFKEEN - Alternative controllers support
-				//return;
+				return;
 			}
 #endif
 
@@ -2043,8 +2045,7 @@ startplayloop:
 				MainMenu[viewscores].routine = CP_ViewScores;
 				#pragma warn +sus
 
-				goto popcontrolerscheme; // REFKEEN - Alternative controllers support
-				//return;
+				return;
 			}
 #endif
 
@@ -2165,8 +2166,7 @@ startplayloop:
 			#pragma warn +sus
 #endif
 
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
-			//return;
+			return;
 
 		case ex_victorious:
 
@@ -2222,8 +2222,7 @@ startplayloop:
 			#pragma warn +sus
 #endif
 
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
-			//return;
+			return;
 
 		// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -2234,10 +2233,6 @@ startplayloop:
 		}
 
 	} while (1);
-
-	// REFKEEN - Alternative controllers support
-popcontrolerscheme:
-	BE_ST_AltControlScheme_Pop();
 }
 
 REFKEEN_NS_E
