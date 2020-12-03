@@ -169,6 +169,10 @@ void AutoMap (void)
 {
 	id0_int_t	x,y;
 	id0_boolean_t		done;
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_help);
 
 	x = player->tilex - 20;
 	if (x < 0)
@@ -224,6 +228,8 @@ void AutoMap (void)
 
 	PM_CheckMainMem ();
 	lasttimecount = SD_GetTimeCount();
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 
 	if (MousePresent)
 		BE_ST_GetEmuAccuMouseMotion(NULL, NULL); // Clear accumulated mouse movement
