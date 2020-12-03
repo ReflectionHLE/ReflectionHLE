@@ -1767,7 +1767,7 @@ void Cmd_Use (void)
 		//
 			*(mapsegs[0]+farmapylookup[checky]+checkx) = player->areanumber + AREATILE;
 			tilemap[checkx][checky] = 0;
-			actorat[checkx][checky] = NULL;
+			actorat[checkx][checky] = 0;
 			SD_PlaySound (OPENDOORSND);
 		}
 	}
