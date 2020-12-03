@@ -125,9 +125,12 @@ static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
 	"altcontrolscheme_jump=",
 	"altcontrolscheme_throw=",
 	"altcontrolscheme_stats=",
-#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+#endif
+#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	"altcontrolscheme_fire=",
 	"altcontrolscheme_strafe=",
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	"altcontrolscheme_drink=",
 	"altcontrolscheme_bolt=", // Zapper in the Adventures Series
 	"altcontrolscheme_nuke=", // Xterminator in the Adventures Series
@@ -136,7 +139,18 @@ static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	"altcontrolscheme_scrolls=",
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	"altcontrolscheme_use=",
+	"altcontrolscheme_run=",
+	"altcontrolscheme_weapon1=",
+	"altcontrolscheme_weapon2=",
+	"altcontrolscheme_weapon3=",
+	"altcontrolscheme_weapon4=",
+	"altcontrolscheme_weapon5=",
+	"altcontrolscheme_weapon6=",
+	"altcontrolscheme_map=",
+#endif
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	"altcontrolscheme_funckeys=",
 #endif
 	"altcontrolscheme_debugkeys=",
@@ -837,9 +851,12 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"altcontrolscheme_jump=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_throw=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_stats=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+#endif
+#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	{"altcontrolscheme_fire=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_strafe=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	{"altcontrolscheme_drink=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_bolt=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 	{"altcontrolscheme_nuke=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
@@ -848,7 +865,18 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	{"altcontrolscheme_scrolls=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	{"altcontrolscheme_use=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_run=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_weapon1=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_weapon2=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_weapon3=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_weapon4=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_weapon5=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_weapon6=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	{"altcontrolscheme_map=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+#endif
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	{"altcontrolscheme_funckeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
 #endif
 	{"altcontrolscheme_debugkeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
@@ -912,17 +940,27 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.touchInputDebugging = false;
 	g_refKeenCfg.altControlScheme.isEnabled = true;
 
+#ifdef REFKEEN_HAS_VER_KDREAMS // Reserve the d-pad for weapons/feeds in Wolf3D/S3DNA
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = SDL_CONTROLLER_BUTTON_DPAD_UP;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+#else // FIXME: HACK (extra 2 are for triggers)
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = SDL_CONTROLLER_BUTTON_MAX+2;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = SDL_CONTROLLER_BUTTON_MAX+2;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = SDL_CONTROLLER_BUTTON_MAX+2;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = SDL_CONTROLLER_BUTTON_MAX+2;
+#endif
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = SDL_CONTROLLER_BUTTON_A;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = SDL_CONTROLLER_BUTTON_B;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = SDL_CONTROLLER_BUTTON_X;
-#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+#endif
+#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = SDL_CONTROLLER_BUTTON_B;
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = SDL_CONTROLLER_BUTTON_A;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT] = SDL_CONTROLLER_BUTTON_X;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = SDL_CONTROLLER_BUTTON_Y;
@@ -931,7 +969,18 @@ static void BEL_ST_ParseConfig(void)
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = SDL_CONTROLLER_BUTTON_MAX+1; // HACK for getting right trigger (technically an axis)
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE] = SDL_CONTROLLER_BUTTON_MAX+1; // HACK for getting right trigger (technically an axis)
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN] = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1] = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON3] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON4] = SDL_CONTROLLER_BUTTON_DPAD_UP;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON5] = SDL_CONTROLLER_BUTTON_X;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON6] = SDL_CONTROLLER_BUTTON_Y;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP] = SDL_CONTROLLER_BUTTON_A;
+#endif
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = SDL_CONTROLLER_BUTTON_MAX; // HACK for getting left trigger (technically an axis)
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = SDL_CONTROLLER_BUTTON_LEFTSTICK;

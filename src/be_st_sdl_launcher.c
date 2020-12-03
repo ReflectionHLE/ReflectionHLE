@@ -552,9 +552,12 @@ BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Right, "A
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Jump, "Action - Jump", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Throw, "Action - Throw", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Stats, "Action - Stats", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+#endif
+#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Fire, "Action - Fire", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Strafe, "Action - Strafe", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Drink, "Action - Drink", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Bolt, "Action - Bolt/Zapper", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Nuke, "Action - Nuke/Xterminator", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
@@ -563,7 +566,18 @@ BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FastTurn,
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Scrolls, "Action - Scrolls", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Use, "Action - Use", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Run, "Action - Run", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon1, "Action - Knife/Hand Feeding", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon2, "Action - Pistol/Small Feed Launcher", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon3, "Action - Machine Gun/Big Feed Launcher", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon4, "Action - Chain Gun/Super Feeder 5000", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon5, "Action - Cantaloupe Feeder", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon6, "Action - Watermelon Feeder", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Map, "Action - Automap (Super 3-D Noah's Ark)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+#endif
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FuncKeys, "Action - Function keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_DebugKeys, "Action - Debug keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
@@ -586,9 +600,12 @@ static BEMenuItem *g_beControllerSettingsMenuItems[] = {
 	&g_beControllerSettingsMenuItem_Action_Jump,
 	&g_beControllerSettingsMenuItem_Action_Throw,
 	&g_beControllerSettingsMenuItem_Action_Stats,
-#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+#endif
+#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	&g_beControllerSettingsMenuItem_Action_Fire,
 	&g_beControllerSettingsMenuItem_Action_Strafe,
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	&g_beControllerSettingsMenuItem_Action_Drink,
 	&g_beControllerSettingsMenuItem_Action_Bolt,
 	&g_beControllerSettingsMenuItem_Action_Nuke,
@@ -597,7 +614,18 @@ static BEMenuItem *g_beControllerSettingsMenuItems[] = {
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	&g_beControllerSettingsMenuItem_Action_Scrolls,
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	&g_beControllerSettingsMenuItem_Action_Use,
+	&g_beControllerSettingsMenuItem_Action_Run,
+	&g_beControllerSettingsMenuItem_Action_Weapon1,
+	&g_beControllerSettingsMenuItem_Action_Weapon2,
+	&g_beControllerSettingsMenuItem_Action_Weapon3,
+	&g_beControllerSettingsMenuItem_Action_Weapon4,
+	&g_beControllerSettingsMenuItem_Action_Weapon5,
+	&g_beControllerSettingsMenuItem_Action_Weapon6,
+	&g_beControllerSettingsMenuItem_Action_Map,
+#endif
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	&g_beControllerSettingsMenuItem_Action_FuncKeys,
 #endif
 	&g_beControllerSettingsMenuItem_Action_DebugKeys,
@@ -872,9 +900,12 @@ void BE_ST_Launcher_Prepare(void)
 	g_beControllerSettingsMenuItem_Action_Jump.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP];
 	g_beControllerSettingsMenuItem_Action_Throw.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW];
 	g_beControllerSettingsMenuItem_Action_Stats.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS];
-#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+#endif
+#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	g_beControllerSettingsMenuItem_Action_Fire.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE];
 	g_beControllerSettingsMenuItem_Action_Strafe.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE];
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	g_beControllerSettingsMenuItem_Action_Drink.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK];
 	g_beControllerSettingsMenuItem_Action_Bolt.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT];
 	g_beControllerSettingsMenuItem_Action_Nuke.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE];
@@ -883,7 +914,18 @@ void BE_ST_Launcher_Prepare(void)
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	g_beControllerSettingsMenuItem_Action_Scrolls.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS];
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	g_beControllerSettingsMenuItem_Action_Use.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE];
+	g_beControllerSettingsMenuItem_Action_Run.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN];
+	g_beControllerSettingsMenuItem_Action_Weapon1.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1];
+	g_beControllerSettingsMenuItem_Action_Weapon2.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2];
+	g_beControllerSettingsMenuItem_Action_Weapon3.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON3];
+	g_beControllerSettingsMenuItem_Action_Weapon4.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON4];
+	g_beControllerSettingsMenuItem_Action_Weapon5.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON5];
+	g_beControllerSettingsMenuItem_Action_Weapon6.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON6];
+	g_beControllerSettingsMenuItem_Action_Map.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP];
+#endif
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	g_beControllerSettingsMenuItem_Action_FuncKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS];
 #endif
 	g_beControllerSettingsMenuItem_Action_DebugKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS];
@@ -1040,9 +1082,12 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = g_beControllerSettingsMenuItem_Action_Jump.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = g_beControllerSettingsMenuItem_Action_Throw.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = g_beControllerSettingsMenuItem_Action_Stats.choice;
-#elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
+#endif
+#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = g_beControllerSettingsMenuItem_Action_Fire.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = g_beControllerSettingsMenuItem_Action_Strafe.choice;
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = g_beControllerSettingsMenuItem_Action_Drink.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT] = g_beControllerSettingsMenuItem_Action_Bolt.choice;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = g_beControllerSettingsMenuItem_Action_Nuke.choice;
@@ -1051,7 +1096,18 @@ void BE_ST_Launcher_Shutdown(void)
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = g_beControllerSettingsMenuItem_Action_Scrolls.choice;
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES)
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE] = g_beControllerSettingsMenuItem_Action_Use.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN] = g_beControllerSettingsMenuItem_Action_Run.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1] = g_beControllerSettingsMenuItem_Action_Weapon1.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2] = g_beControllerSettingsMenuItem_Action_Weapon2.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON3] = g_beControllerSettingsMenuItem_Action_Weapon3.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON4] = g_beControllerSettingsMenuItem_Action_Weapon4.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON5] = g_beControllerSettingsMenuItem_Action_Weapon5.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON6] = g_beControllerSettingsMenuItem_Action_Weapon6.choice;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP] = g_beControllerSettingsMenuItem_Action_Map.choice;
+#endif
+#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;
