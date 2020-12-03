@@ -602,6 +602,9 @@ IN_Startup(void)
 	if (MousePresent)
 		BE_ST_printf("Mouse detected\n");
 #endif
+	// REFKEEN - Alternative controllers support
+	UpdateAltControllerMappingsByMousePresence(MousePresent);
+	//
 
 	for (i = 0;i < MaxJoys;i++)
 	// *** S3DNA RESTORATION ***
@@ -925,9 +928,9 @@ id0_boolean_t IN_CheckAck (void)
 void IN_Ack (void)
 {
 	// REFKEEN - Alternative controllers support
-	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
 	BE_ST_AltControlScheme_Push();
-	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_menu);
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	IN_StartAck ();
 
