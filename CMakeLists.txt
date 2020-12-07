@@ -3,7 +3,7 @@ project(Reflection-Keen)
 
 function(add_refkeen_separate_target
 	name app_rc targets libraries sources shared_sources
-	include_dirs target_cc_flags common_cc_flags is_lib
+	include_dirs target_cc_flags unified_target_cc_flags is_lib
 )
 	foreach(MACRO ${target_cc_flags})
 		list(APPEND all_cc_flags ${MACRO})
@@ -11,7 +11,7 @@ function(add_refkeen_separate_target
 		list(APPEND all_cc_flags ${MACRO})
 	endforeach ()
 	if (is_lib)
-		set(all_cc_flags ${common_cc_flags} ${all_cc_flags})
+		set(all_cc_flags ${unified_target_cc_flags} ${all_cc_flags})
 		list(REMOVE_DUPLICATES "all_cc_flags")
 		string(REPLACE ";" " " all_cc_flags "${all_cc_flags}")
 		add_library(${name} STATIC ${sources})
