@@ -203,14 +203,14 @@ static void BEL_Cross_CheckForKnownInstallations(void)
 		catacombsMacPath,
 		catacombsMacPath+sizeof(catacombsMacPath)/sizeof(*catacombsMacPath),
 		catacombsMacInst);
-	BEL_Cross_TryAddInst_Common(catacombsMacPath, catacombVers, catacombSubdirs, "GOG.com");
+	BEL_Cross_TryAddInst_Common(&catacombsMacPath, catacombVers, catacombSubdirs, "GOG.com");
 	if (homeVar && *homeVar)
 	{
 		BEL_Cross_safeandfastctstringcopy_2strs(
 			catacombsMacPath,
 			catacombsMacPath+sizeof(catacombsMacPath)/sizeof(*catacombsMacPath),
 			homeVar, catacombsMacInst);
-		BEL_Cross_TryAddInst_Common(catacombsMacPath, catacombVers, catacombSubdirs, "GOG.com");
+		BEL_Cross_TryAddInst_Common(&catacombsMacPath, catacombVers, catacombSubdirs, "GOG.com");
 	}
 #endif
 
