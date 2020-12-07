@@ -32,14 +32,14 @@ function(add_refkeen_separate_target
 	target_include_directories(${name} PUBLIC ${include_dirs})
 endfunction()
 
-function(add_refkeen_unified_target name app_rc targets shared_sources cc_flags libraries)
+function(add_refkeen_unified_target name app_rc targets shared_sources common_cc_flags cc_flags libraries)
 	if (WIN32)
 		set(app_rc "rsrc/reflection-${app_rc}.rc")
 	else ()
 		set(app_rc)
 	endif ()
 	add_executable(${name} ${shared_sources} ${app_rc})
-	set_target_properties(${name} PROPERTIES COMPILE_FLAGS "${cc_flags}")
+	set_target_properties(${name} PROPERTIES COMPILE_FLAGS "${common_cc_flags} ${cc_flags}")
 	target_link_libraries(${name} ${libraries})
 	set(${targets} "${targets} ${name}" PARENT_SCOPE)
 endfunction()
@@ -293,13 +293,13 @@ if (BUILD_UNIFIED)
 	string(REPLACE ";" " " UNIFIED_CAT_GAME_PARAMS "${UNIFIED_CAT_GAME_PARAMS}")
 	add_refkeen_unified_target(
 		reflection-catacomb cat3d "${targets}"
-		"${be_src}" "${UNIFIED_CAT_GAME_PARAMS}"
+		"${be_src}" "${common_cc_flags}" "${UNIFIED_CAT_GAME_PARAMS}"
 		"${LIBRARIES};reflection-cat3d;reflection-catabyss;reflection-catarm;reflection-catapoc"
 	)
 	string(REPLACE ";" " " UNIFIED_WOLF3D_GAME_PARAMS "${UNIFIED_WOLF3D_GAME_PARAMS}")
 	add_refkeen_unified_target(
 		reflection-wolf3d wolf3d "${targets}"
-		"${be_src}" "${UNIFIED_WOLF3D_GAME_PARAMS}"
+		"${be_src}" "${common_cc_flags}" "${UNIFIED_WOLF3D_GAME_PARAMS}"
 		"${LIBRARIES};reflection-wl920312;reflection-wl1ap10;reflection-wl1ap11;reflection-wl6ap11;reflection-wl1ap14;reflection-wl6gt14a;reflection-wj6im14;reflection-wl6gt14b;reflection-wl6ac14;reflection-sdmfg10;reflection-sodac14;reflection-n3dwt10"
 	)
 endif ()
