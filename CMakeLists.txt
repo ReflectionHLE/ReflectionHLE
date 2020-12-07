@@ -98,6 +98,8 @@ endif ()
 
 configure_file(refkeen_config.h.in refkeen_config.h)
 
+include(CheckLibraryExists)
+
 set(LIBRARIES ${SDL2_LIBRARY} ${SPEEXDSP_LIBRARIES})
 check_library_exists(m pow "" LIBM)
 if (LIBM)
