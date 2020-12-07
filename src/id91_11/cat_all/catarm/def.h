@@ -39,7 +39,7 @@ REFKEEN_NS_B
 //
 // SOFTLIB GFX FILENAME
 //
-#define 	SLIB_GFX			"ARM_SLIB."EXT
+#define 	SLIB_GFX			"ARM_SLIB." EXT
 
 
 #define USE_INERT_LIST false

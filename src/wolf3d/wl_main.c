@@ -147,7 +147,7 @@ void ReadConfig(void)
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("CONFIG."EXTENSION)))
+	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading("CONFIG." EXTENSION)))
 //	if ( (file = open("CONFIG."EXTENSION,O_BINARY | O_RDONLY)) != -1)
 #else
 	if (BE_Cross_IsFileValid(file = BE_Cross_open_rewritable_for_reading(configname)))
@@ -326,7 +326,7 @@ void WriteConfig(void)
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	file = BE_Cross_open_rewritable_for_overwriting("CONFIG."EXTENSION);
+	file = BE_Cross_open_rewritable_for_overwriting("CONFIG." EXTENSION);
 //	file = open("CONFIG."EXTENSION,O_CREAT | O_BINARY | O_WRONLY,
 //				S_IREAD | S_IWRITE | S_IFREG);
 #else

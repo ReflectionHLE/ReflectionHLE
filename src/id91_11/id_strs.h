@@ -101,8 +101,8 @@
 #define S_MJUL		"Move Joystick to upper left"
 #define S_MJLR		"Move Joystick to lower right"
 
-#define S_USINGJ1	"USING "S_JOY1
-#define S_USINGJ2	"USING "S_JOY2
+#define S_USINGJ1	"USING " S_JOY1
+#define S_USINGJ2	"USING " S_JOY2
 #define S_TYPENAME	"Type name"
 #define S_ENTERACC	"Enter accepts"
 #define S_UNTITLED	"Untitled"
