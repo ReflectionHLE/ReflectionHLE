@@ -3,8 +3,9 @@ project(Reflection-Keen)
 
 function(add_refkeen_separate_target
 	name app_rc targets libraries sources shared_sources
-	include_dirs target_cc_flags unified_target_cc_flags is_lib
+	include_dirs common_cc_flags target_cc_flags unified_target_cc_flags is_lib
 )
+	set(all_cc_flags ${common_cc_flags})
 	foreach(MACRO ${target_cc_flags})
 		list(APPEND all_cc_flags ${MACRO})
 		string(REPLACE "_VER" "_HAS_VER" MACRO ${MACRO})
@@ -118,6 +119,7 @@ add_refkeen_separate_target(
 	reflection-kdreams kdreams "${targets}" "${LIBRARIES}"
 	"${kdreams_src}" "${be_src}"
 	"src/kdreams;src/kdreams/lscr"
+	"${common_cc_flags}"
 	"-DREFKEEN_VER_KDREAMS=1" "" 0
 )
 
@@ -131,6 +133,7 @@ add_refkeen_separate_target(
 	reflection-cat3d cat3d "${targets}" "${LIBRARIES}"
 	"${cat3d_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/cat3d"
+	"${common_cc_flags}"
 	"-DREFKEEN_VER_CAT3D=1;-DREFKEEN_VER_CATACOMB_ALL=1"
 	"${UNIFIED_CAT_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -139,6 +142,7 @@ add_refkeen_separate_target(
 	reflection-catabyss catabyss "${targets}" "${LIBRARIES}"
 	"${catabyss_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/catabyss"
+	"${common_cc_flags}"
 	"-DREFKEEN_VER_CATADVENTURES=1;-DREFKEEN_VER_CATABYSS=1;-DREFKEEN_VER_CATACOMB_ALL=1"
 	"${UNIFIED_CAT_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -147,6 +151,7 @@ add_refkeen_separate_target(
 	reflection-catarm catarm "${targets}" "${LIBRARIES}"
 	"${catarm_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/cat_late;src/id91_11/cat_all/catarm"
+	"${common_cc_flags}"
 	"-DREFKEEN_VER_CATADVENTURES=1;-DREFKEEN_VER_CATARM=1;-DREFKEEN_VER_CATACOMB_ALL=1"
 	"${UNIFIED_CAT_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -155,6 +160,7 @@ add_refkeen_separate_target(
 	reflection-catapoc catapoc "${targets}" "${LIBRARIES}"
 	"${catapoc_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/cat_late;src/id91_11/cat_all/catapoc"
+	"${common_cc_flags}"
 	"-DREFKEEN_VER_CATADVENTURES=1;-DREFKEEN_VER_CATAPOC=1;-DREFKEEN_VER_CATACOMB_ALL=1"
 	"${UNIFIED_CAT_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -179,6 +185,7 @@ add_refkeen_separate_target(
 	reflection-wl920312 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WL920312;-DGAMEVER_EXEDEF_WL920312=1;-DREFKEEN_VER_WL920312=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -187,6 +194,7 @@ add_refkeen_separate_target(
 	reflection-wl1ap10 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WL1AP10;-DGAMEVER_EXEDEF_WL1AP10=1;-DREFKEEN_VER_WL1AP10=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -195,6 +203,7 @@ add_refkeen_separate_target(
 	reflection-wl1ap11 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WL1AP11;-DGAMEVER_EXEDEF_WL1AP11=1;-DREFKEEN_VER_WL1AP11=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -203,6 +212,7 @@ add_refkeen_separate_target(
 	reflection-wl6ap11 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WL6AP11;-DGAMEVER_EXEDEF_WL6AP11=1;-DREFKEEN_VER_WL6AP11=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -211,6 +221,7 @@ add_refkeen_separate_target(
 	reflection-wl1ap14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WL1AP14;-DGAMEVER_EXEDEF_WL1AP14=1;-DREFKEEN_VER_WL1AP14=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -219,6 +230,7 @@ add_refkeen_separate_target(
 	reflection-wl6gt14a wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WL6GT14A;-DGAMEVER_EXEDEF_WL6GT14A=1;-DREFKEEN_VER_WL6GT14A=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -227,6 +239,7 @@ add_refkeen_separate_target(
 	reflection-wj6im14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WJ6IM14;-DGAMEVER_EXEDEF_WJ6IM14=1;-DREFKEEN_VER_WJ6IM14=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -235,6 +248,7 @@ add_refkeen_separate_target(
 	reflection-wl6gt14b wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WL6GT14B;-DGAMEVER_EXEDEF_WL6GT14B=1;-DREFKEEN_VER_WL6GT14B=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -243,6 +257,7 @@ add_refkeen_separate_target(
 	reflection-wl6ac14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=WL6AC14;-DGAMEVER_EXEDEF_WL6AC14=1;-DREFKEEN_VER_WL6AC14=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -251,6 +266,7 @@ add_refkeen_separate_target(
 	reflection-sdmfg10 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=SDMFG10;-DGAMEVER_EXEDEF_SDMFG10=1;-DREFKEEN_VER_SDMFG10=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -259,6 +275,7 @@ add_refkeen_separate_target(
 	reflection-sodac14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=SODAC14;-DGAMEVER_EXEDEF_SODAC14=1;-DREFKEEN_VER_SODAC14=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
@@ -267,6 +284,7 @@ add_refkeen_separate_target(
 	reflection-n3dwt10 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
+	"${common_cc_flags}"
 	"-DGAMEVER_EXEDEF=N3DWT10;-DGAMEVER_EXEDEF_N3DWT10=1;-DREFKEEN_VER_N3DWT10=1;-DREFKEEN_VER_WOLF3D_ALL=1"
 	"${UNIFIED_WOLF3D_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
