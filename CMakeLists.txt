@@ -95,6 +95,7 @@ list(REMOVE_DUPLICATES "all_src")
 
 if (BUILD_AS_CPP)
 	set_source_files_properties(${all_src} PROPERTIES LANGUAGE CXX)
+	set(common_cc_flags "-x c++")
 endif ()
 
 configure_file(refkeen_config.h.in refkeen_config.h)
