@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
+#include <stdbool.h>
 
 #include "be_filesystem_tchar.h"
 
