@@ -41,10 +41,11 @@ void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len);
 
 static void BEL_ST_MixerCallback(void *unused, Uint8 *stream, int len)
 {
-	BEL_ST_AudioMixerCallback((BE_ST_SndSample_T *)stream, len / sizeof(BE_ST_SndSample_T));
+	BEL_ST_AudioMixerCallback((BE_ST_SndSample_T *)stream,
+	                          len / (g_sdlAudioSpec.channels * sizeof(BE_ST_SndSample_T)));
 }
 
-bool BEL_ST_InitAudioSubsystem(int *freq, int *bufferLen)
+bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 {
 	SDL_AudioSpec spec;
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
@@ -58,7 +59,7 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *bufferLen)
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
 	spec.format = AUDIO_S16SYS;
 #endif
-	spec.channels = 1;
+	spec.channels = MIXER_DEFAULT_CHANNELS_COUNT;
 	// Should be some power-of-two roughly proportional to the sample rate; Using 1024 for 48000Hz.
 	for (spec.samples = 1; spec.samples < g_refKeenCfg.sndSampleRate/64; spec.samples *= 2)
 		;
@@ -92,6 +93,7 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *bufferLen)
 
 	// Size may be reported as "0" on Android
 	*freq = g_sdlAudioSpec.freq;
+	*channels = g_sdlAudioSpec.channels;
 	*bufferLen = g_sdlAudioSpec.size ?
 	             (g_sdlAudioSpec.size / sizeof(BE_ST_SndSample_T)) : g_sdlAudioSpec.samples;
 	return true;

@@ -47,7 +47,7 @@ static uint32_t g_be_audioMainThread_samplesRemainingForCallback;
 static uint32_t g_be_audioMainThread_lastCallTicks;
 static uint32_t g_be_audioMainThread_delayedSamples;
 
-int BEL_ST_PrepareMainThreadForAudio(int *freq, int expectedCallbackBufferLen)
+int BEL_ST_PrepareMainThreadForAudio(int *freq, int *channels, int expectedCallbackBufferLen)
 {
 	g_be_audioMainThread_lastCallTicks = BEL_ST_GetTicksMS();
 	g_be_audioMainThread_delayedSamples = 0;
@@ -73,6 +73,7 @@ int BEL_ST_PrepareMainThreadForAudio(int *freq, int expectedCallbackBufferLen)
 			BE_ST_ExitWithErrorMsg("BEL_ST_PrepareMainThreadForAudio: Out of memory! (Failed to allocate g_be_audioMainThread_samplesBuffer.)");
 		g_be_audioMainThread_samplesBufferLenOfPart = g_be_audioMainThread_freq;
 	}
+	*channels = 1;
 	return g_be_audioMainThread_samplesBufferLenOfPart;
 }
 

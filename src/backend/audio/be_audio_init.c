@@ -34,23 +34,23 @@ void BE_ST_InitAudio(void)
 	g_sdlEmulatedOPLChipReady = false;
 	int samplesForSourceBuffer;
 	int audioDeviceFlags = BE_Cross_GetSelectedGameVerAudioDeviceFlags();
-	int freq = 0, expectedCallbackBufferLen = 0;
+	int freq = 0, channels = 0, expectedCallbackBufferLen = 0;
 
 	if (g_refKeenCfg.sndSubSystem &&
-	    BEL_ST_InitAudioSubsystem(&freq, &expectedCallbackBufferLen))
+	    BEL_ST_InitAudioSubsystem(&freq, &channels, &expectedCallbackBufferLen))
 	{
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 		samplesForSourceBuffer =
-			BEL_ST_PrepareMainThreadForAudio(&freq, expectedCallbackBufferLen);
+			BEL_ST_PrepareMainThreadForAudio(&freq, &channels, expectedCallbackBufferLen);
 #else
 		samplesForSourceBuffer = 2*expectedCallbackBufferLen;
 #endif
 		g_sdlAudioSubsystemUp = true;
 	}
 	else
-		samplesForSourceBuffer = BEL_ST_PrepareMainThreadForAudio(&freq, 0);
+		samplesForSourceBuffer = BEL_ST_PrepareMainThreadForAudio(&freq, &channels, 0);
 
-	BEL_ST_AudioMixerInit(freq);
+	BEL_ST_AudioMixerInit(freq, channels);
 
 	if (((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR_REQUIRED) == BE_AUDIO_DEVICE_PCSPKR_REQUIRED) ||
 	    (g_sdlAudioSubsystemUp && ((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR) == BE_AUDIO_DEVICE_PCSPKR)))

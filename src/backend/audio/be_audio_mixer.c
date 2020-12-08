@@ -37,6 +37,7 @@ static struct
 	uint32_t offsetInSound;
 	int numSources;
 	int freq;
+	int channels;
 } g_stAudioMixer;
 
 static void BEL_ST_AudioMixerFreeSourceBuffers(BE_ST_AudioMixerSource *src)
@@ -80,12 +81,15 @@ finish:
 	BE_ST_UnlockAudioRecursively();
 }
 
-void BEL_ST_AudioMixerInit(int freq)
+void BEL_ST_AudioMixerInit(int freq, int channels)
 {
+	if ((channels != 1) && (channels != 2))
+		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerInitource: Unsupported channels count!");
 	g_stAudioMixer.offsetInSound = 0;
 	g_stAudioMixer.samplesPartNum = 0;
 	g_stAudioMixer.numSources = 0;
 	g_stAudioMixer.freq = freq;
+	g_stAudioMixer.channels = channels;
 }
 
 void BEL_ST_AudioMixerShutdown(void)
@@ -123,7 +127,7 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 {
 	int samplesToGenerate = len;
 	int samplesToGenerateNextTime = g_stAudioMixer.freq / 100; // ~10ms
-	int i, j;
+	int i, j, k;
 	BE_ST_AudioMixerSource *src;
 
 	BE_ST_LockAudioRecursively();
@@ -226,15 +230,16 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 		// Mix
 		if (samplesToOutput > 0)
 		{
-			memset(stream, 0, sizeof(BE_ST_SndSample_T) * samplesToOutput);
+			memset(stream, 0, sizeof(BE_ST_SndSample_T) * g_stAudioMixer.channels * samplesToOutput);
 			for (i = 0; i < g_stAudioMixer.numSources; ++i)
 			{
 				src = &g_stAudioMixer.sources[i];
 				if (src->skip)
 					continue;
 				BE_ST_SndSample_T *ptr = stream;
-				for (j = 0; j < samplesToOutput; ++j, ++ptr)
-					*ptr = (i * (*ptr) + src->out.buffer[j]) / (i + 1);
+				for (j = 0; j < samplesToOutput; ++j)
+					for (k = 0; k < g_stAudioMixer.channels; ++k, ++ptr)
+						*ptr = (i * (*ptr) + src->out.buffer[j]) / (i + 1);
 				if (samplesToOutput < src->out.num)
 				{
 					memmove(src->out.buffer,
@@ -245,7 +250,7 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 				else
 					src->out.num = 0;
 			}
-			stream += samplesToOutput;
+			stream += g_stAudioMixer.channels * samplesToOutput;
 			len -= samplesToOutput;
 			if (g_stAudioMixer.pendingSamples < samplesToOutput)
 				g_stAudioMixer.pendingSamples = 0;

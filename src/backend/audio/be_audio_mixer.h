@@ -36,7 +36,7 @@ typedef struct BE_ST_AudioMixerSource
 	bool skip;
 } BE_ST_AudioMixerSource;
 
-void BEL_ST_AudioMixerInit(int freq);
+void BEL_ST_AudioMixerInit(int freq, int channels);
 void BEL_ST_AudioMixerShutdown(void);
 void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len);
 void BEL_ST_AudioMixerUpdateFromPITRateWord(int_fast32_t rateVal);

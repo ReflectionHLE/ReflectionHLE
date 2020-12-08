@@ -40,11 +40,13 @@ typedef float BE_ST_SndSample_T;
 typedef int16_t BE_ST_SndSample_T;
 #endif
 
+#define MIXER_DEFAULT_CHANNELS_COUNT 2
+
 extern bool g_sdlEmulatedOPLChipReady;
 
 void BEL_ST_ResetOPLChip(void);
 
-bool BEL_ST_InitAudioSubsystem(int *freq, int *bufferLen);
+bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen);
 void BEL_ST_ShutdownAudioSubsystem(void);
 void BEL_ST_StartAudioSubsystem(void);
 
