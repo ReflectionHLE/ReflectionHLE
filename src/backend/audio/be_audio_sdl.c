@@ -30,7 +30,7 @@
 #ifdef REFKEEN_CONFIG_THREADS
 static SDL_mutex* g_sdlCallbackMutex = NULL;
 #endif
-static SDL_AudioSpec g_sdlAudioSpec;
+static int g_sdlAudioChannels;
 /*static*/ SDL_AudioDeviceID g_sdlAudioDevice;
 
 extern bool g_sdlAudioSubsystemUp;
@@ -42,12 +42,12 @@ void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len);
 static void BEL_ST_MixerCallback(void *unused, Uint8 *stream, int len)
 {
 	BEL_ST_AudioMixerCallback((BE_ST_SndSample_T *)stream,
-	                          len / (g_sdlAudioSpec.channels * sizeof(BE_ST_SndSample_T)));
+	                          len / (g_sdlAudioChannels * sizeof(BE_ST_SndSample_T)));
 }
 
 bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 {
-	SDL_AudioSpec desiredSpec;
+	SDL_AudioSpec desiredSpec, obtainedSpec;
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
@@ -72,7 +72,7 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 
 	desiredSpec.userdata = NULL;
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d, samples %u\n", (int)desiredSpec.freq, (unsigned int)desiredSpec.format, (int)desiredSpec.channels, (unsigned int)desiredSpec.samples);
-	g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &desiredSpec, &g_sdlAudioSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
+	g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &desiredSpec, &obtainedSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
 	if (g_sdlAudioDevice <= 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
@@ -89,13 +89,13 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 		return false;
 	}
 #endif
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, received spec: freq %d, format %u, channels %d, samples %u, size %u\n", (int)g_sdlAudioSpec.freq, (unsigned int)g_sdlAudioSpec.format, (int)g_sdlAudioSpec.channels, (unsigned int)g_sdlAudioSpec.samples, (unsigned int)g_sdlAudioSpec.size);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, received spec: freq %d, format %u, channels %d, samples %u, size %u\n", (int)obtainedSpec.freq, (unsigned int)obtainedSpec.format, (int)obtainedSpec.channels, (unsigned int)obtainedSpec.samples, (unsigned int)obtainedSpec.size);
 
 	// Size may be reported as "0" on Android
-	*freq = g_sdlAudioSpec.freq;
-	*channels = g_sdlAudioSpec.channels;
-	*bufferLen = g_sdlAudioSpec.size ?
-	             (g_sdlAudioSpec.size / sizeof(BE_ST_SndSample_T)) : g_sdlAudioSpec.samples;
+	*freq = obtainedSpec.freq;
+	*channels = g_sdlAudioChannels = obtainedSpec.channels;
+	*bufferLen = obtainedSpec.size ?
+	             (obtainedSpec.size / sizeof(BE_ST_SndSample_T)) : obtainedSpec.samples;
 	return true;
 }
 
