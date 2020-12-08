@@ -47,32 +47,32 @@ static void BEL_ST_MixerCallback(void *unused, Uint8 *stream, int len)
 
 bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 {
-	SDL_AudioSpec spec;
+	SDL_AudioSpec desiredSpec;
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
 		return false;
 	}
-	spec.freq = g_refKeenCfg.sndSampleRate;
+	desiredSpec.freq = g_refKeenCfg.sndSampleRate;
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
-	spec.format = AUDIO_F32SYS;
+	desiredSpec.format = AUDIO_F32SYS;
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
-	spec.format = AUDIO_S16SYS;
+	desiredSpec.format = AUDIO_S16SYS;
 #endif
-	spec.channels = MIXER_DEFAULT_CHANNELS_COUNT;
+	desiredSpec.channels = MIXER_DEFAULT_CHANNELS_COUNT;
 	// Should be some power-of-two roughly proportional to the sample rate; Using 1024 for 48000Hz.
-	for (spec.samples = 1; spec.samples < g_refKeenCfg.sndSampleRate/64; spec.samples *= 2)
+	for (desiredSpec.samples = 1; desiredSpec.samples < g_refKeenCfg.sndSampleRate/64; desiredSpec.samples *= 2)
 		;
 
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-	spec.callback = BEL_ST_InterThread_CallBack;
+	desiredSpec.callback = BEL_ST_InterThread_CallBack;
 #else
-	spec.callback = BEL_ST_MixerCallback;
+	desiredSpec.callback = BEL_ST_MixerCallback;
 #endif
 
-	spec.userdata = NULL;
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d, samples %u\n", (int)spec.freq, (unsigned int)spec.format, (int)spec.channels, (unsigned int)spec.samples);
-	g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &spec, &g_sdlAudioSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
+	desiredSpec.userdata = NULL;
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d, samples %u\n", (int)desiredSpec.freq, (unsigned int)desiredSpec.format, (int)desiredSpec.channels, (unsigned int)desiredSpec.samples);
+	g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &desiredSpec, &g_sdlAudioSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
 	if (g_sdlAudioDevice <= 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
