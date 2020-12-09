@@ -27,7 +27,7 @@ static void *g_sdlSoundEffectCurrPtr;
 static uint32_t g_sdlSoundEffectSamplesLeft;
 static int g_sdlSoundEffectBits;
 
-// Used for changing input sample rate
+// Used for changing input sample rate and checking if emulated SB Pro is "ready"
 static BE_ST_AudioMixerSource *g_sdlDigiMixerSource;
 
 void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits)
@@ -48,6 +48,11 @@ void BE_ST_StopSoundEffect(void)
 	g_sdlSoundEffectSamplesLeft = 0;
 
 	BE_ST_UnlockAudioRecursively();
+}
+
+bool BE_ST_IsEmulatedSBProReady(void)
+{
+	return g_sdlDigiMixerSource; // TODO: Also check mixer channels count?
 }
 
 // Helper function

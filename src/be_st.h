@@ -264,6 +264,7 @@ void BE_ST_StopDigiAudioInt(void);
 void BE_ST_LockAudioRecursively(void);
 void BE_ST_UnlockAudioRecursively(void);
 bool BE_ST_IsEmulatedOPLChipReady(void);
+bool BE_ST_IsEmulatedSBProReady(void);
 // WARNING about using BE_ST_PCSpeaker*:
 //
 // You MUST call BE_ST_LockAudioRecursively before calling any of these
