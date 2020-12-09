@@ -118,6 +118,7 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 	src->genSamples = genSamples;
 	src->out.size = maxNumOfOutSamples;
 	src->in.buffer = src->out.buffer = 0;
+	src->vol[0] = src->vol[1] = 1.0;
 
 	BE_ST_AudioMixerSetSourceFreq(src, freq);
 	return src;
@@ -230,16 +231,23 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 		// Mix
 		if (samplesToOutput > 0)
 		{
-			memset(stream, 0, sizeof(BE_ST_SndSample_T) * g_stAudioMixer.channels * samplesToOutput);
+			int channels = g_stAudioMixer.channels;
+			memset(stream, 0, sizeof(BE_ST_SndSample_T) * channels * samplesToOutput);
 			for (i = 0; i < g_stAudioMixer.numSources; ++i)
 			{
 				src = &g_stAudioMixer.sources[i];
 				if (src->skip)
 					continue;
 				BE_ST_SndSample_T *ptr = stream;
-				for (j = 0; j < samplesToOutput; ++j)
-					for (k = 0; k < g_stAudioMixer.channels; ++k, ++ptr)
-						*ptr = (i * (*ptr) + src->out.buffer[j]) / (i + 1);
+
+				if (channels == 1)
+					for (j = 0; j < samplesToOutput; ++j)
+						*ptr = (i * (*ptr) + src->out.buffer[j] * ((src->vol[0] + src->vol[1]) / 2.0f)) / (i + 1);
+				else
+					for (j = 0; j < samplesToOutput; ++j)
+						for (k = 0; k < channels; ++k, ++ptr)
+							*ptr = (i * (*ptr) + src->out.buffer[j] * src->vol[k]) / (i + 1);
+
 				if (samplesToOutput < src->out.num)
 				{
 					memmove(src->out.buffer,
@@ -250,7 +258,7 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 				else
 					src->out.num = 0;
 			}
-			stream += g_stAudioMixer.channels * samplesToOutput;
+			stream += channels * samplesToOutput;
 			len -= samplesToOutput;
 			if (g_stAudioMixer.pendingSamples < samplesToOutput)
 				g_stAudioMixer.pendingSamples = 0;

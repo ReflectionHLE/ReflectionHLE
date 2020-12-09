@@ -33,6 +33,7 @@ typedef struct BE_ST_AudioMixerSource
 	BESDLResamplingContext resamplingContext;
 	int numScaledSamplesToGenNextTime;
 	int freq;
+	float vol[2];
 	bool skip;
 } BE_ST_AudioMixerSource;
 

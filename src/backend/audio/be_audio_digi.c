@@ -98,6 +98,20 @@ void BE_ST_SetDigiSoundFreq(int freq)
 	BE_ST_AudioMixerSetSourceFreq(g_sdlDigiMixerSource, freq);
 }
 
+void BE_ST_SetDigiSoundVolumes(float lvol, float rvol)
+{
+	BE_ST_LockAudioRecursively();
+	g_sdlDigiMixerSource->vol[0] = lvol;
+	g_sdlDigiMixerSource->vol[1] = rvol;
+	BE_ST_UnlockAudioRecursively();
+}
+
+void BE_ST_GetDigiSoundVolumes(float *lvol, float *rvol)
+{
+	*lvol = g_sdlDigiMixerSource->vol[0];
+	*rvol = g_sdlDigiMixerSource->vol[1];
+}
+
 void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)
 {
 	if ((uint32_t)length >= g_sdlSoundEffectSamplesLeft)

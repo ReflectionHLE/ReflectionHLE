@@ -20,6 +20,7 @@
 #ifndef BE_ST_H
 #define BE_ST_H
 
+#include <math.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -286,6 +287,26 @@ static inline void BE_ST_SetDigiSoundFreqFromSBTimeValue(uint8_t timevalue)
 {
 	BE_ST_SetDigiSoundFreq(1000000 / (256 - timevalue));
 }
+
+// Sets digitized sound stereo channel volumes in the range of 0 to 1
+void BE_ST_SetDigiSoundVolumes(float lvol, float rvol);
+// A wrapper over BE_ST_SetDigiSoundVolumes which is used
+// for setting the volumes as done for the SB Pro in Wolf3D.
+// Two 4-bit volumes in the range 0-15 should be packed into a byte.
+static inline void BE_ST_SetDigiSBProSoundVolumes(uint8_t volBits)
+{
+	BE_ST_SetDigiSoundVolumes(exp(volBits>>4)/exp(15), exp(volBits&15)/exp(15));
+}
+
+// Same but for getting the volumes
+void BE_ST_GetDigiSoundVolumes(float *lvol, float *rvol);
+static inline uint8_t BE_ST_GetDigiSBProSoundVolumes(void)
+{
+	float lvol, rvol;
+	BE_ST_GetDigiSoundVolumes(&lvol, &rvol);
+	return ((int)(log(lvol) + 15.5) << 4) | (int)(log(rvol) + 15.5);
+}
+
 void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits);
 void BE_ST_StopSoundEffect(void);
 // Safe alternatives for Borland's sound and nosound functions from Catacomb Abyss' gelib.c
