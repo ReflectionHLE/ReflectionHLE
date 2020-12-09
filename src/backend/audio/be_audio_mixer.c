@@ -66,7 +66,7 @@ void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq)
 
 	src->in.buffer = (BE_ST_SndSample_T *)malloc(src->in.size * sizeof(BE_ST_SndSample_T));
 	if (!src->in.buffer)
-		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
+		BE_ST_ExitWithErrorMsg("BE_ST_AudioMixerSetSourceFreq: Out of memory!");
 
 	if (g_stAudioMixer.freq != freq)
 		BEL_ST_InitResampling(&src->resamplingContext,
@@ -74,7 +74,7 @@ void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq)
 
 	src->out.buffer = (BE_ST_SndSample_T *)malloc(src->out.size * sizeof(BE_ST_SndSample_T));
 	if (!src->out.buffer)
-		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerAddSource: Out of memory!");
+		BE_ST_ExitWithErrorMsg("BE_ST_AudioMixerSetSourceFreq: Out of memory!");
 finish:
 	BE_ST_LockAudioRecursively();
 	src->skip = false;
