@@ -697,8 +697,6 @@ SDL_SBPlaySample(id0_byte_t id0_huge *data,id0_longword_t len)
 static void
 SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 {
-	return; // TODO (REFKEEN) IMPLEMENT
-#if 0
 	id0_byte_t	v;
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
@@ -718,14 +716,16 @@ SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 //asm	cli
 #endif
 
+	BE_ST_SetDigiSBProSoundVolumes(v);
+#if 0
 	sbOut(sbpMixerAddr,sbpmVoiceVol);
 	sbOut(sbpMixerData,v);
+#endif
 
 	// *** PRE-V1.4 APOGEE RESTORATION ***
 	BE_ST_UnlockAudioRecursively(); // REFKEEN: Make this unconditional
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 //asm	popf
-#endif
 #endif
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
@@ -905,7 +905,7 @@ SDL_StartSB(void)
 		return;
 #endif
 
-#if 0 // REFKEEN: Do nothing for now
+#if 0 // REFKEEN (TODO): Simply inspect the digitized sounds' volumes for now
 	// Check to see if this is a SB Pro
 	sbOut(sbpMixerAddr,sbpmFMVol);
 	sbpOldFMMix = sbIn(sbpMixerData);
@@ -920,7 +920,10 @@ SDL_StartSB(void)
 	test = sbIn(sbpMixerData);
 	if (test == 0xbb)
 #endif
+#endif
+	if (BE_ST_IsEmulatedSBProReady())
 	{
+#if 0 // REFKEEN (TODO)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		sbOut(sbpMixerAddr,0x26);
@@ -929,9 +932,12 @@ SDL_StartSB(void)
 		sbOut(sbpMixerData,0xff);
 		test = sbIn(sbpMixerData);
 		if (test == 0xff)
+#endif
 		{
 			SBProPresent = true;
 
+			sbpOldVOCMix = BE_ST_GetDigiSBProSoundVolumes();
+#if 0
 			// Save old Voice output levels (SB Pro)
 			sbOut(sbpMixerAddr,sbpmVoiceVol);
 			sbpOldVOCMix = sbIn(sbpMixerData);
@@ -939,10 +945,10 @@ SDL_StartSB(void)
 			// Turn SB Pro stereo DAC off
 			sbOut(sbpMixerAddr,sbpmControl);
 			sbOut(sbpMixerData,0);				// 0=off,2=on
+#endif
 		}
 	}
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -956,17 +962,21 @@ SDL_ShutSB(void)
 	SDL_SBStopSample();
 
 	// *** ALPHA RESTORATION ***
-#if 0 // REFKEEN: Do nothing for now
-//#if (GAMEVER_WOLFREV > GV_WR_WL920312)
+#if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (SBProPresent)
 	{
+#if 0 // REFKEEN (TODO): Don't do so for now
 		// Restore FM output levels (SB Pro)
 		sbOut(sbpMixerAddr,sbpmFMVol);
 		sbOut(sbpMixerData,sbpOldFMMix);
+#endif
 
 		// Restore Voice output levels (SB Pro)
+		BE_ST_SetDigiSBProSoundVolumes(sbpOldVOCMix);
+#if 0
 		sbOut(sbpMixerAddr,sbpmVoiceVol);
 		sbOut(sbpMixerData,sbpOldVOCMix);
+#endif
 	}
 #endif
 
