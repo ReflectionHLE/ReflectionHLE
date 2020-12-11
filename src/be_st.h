@@ -296,7 +296,7 @@ void BE_ST_SetDigiSoundVolumes(float lvol, float rvol);
 // Two 4-bit volumes in the range 0-15 should be packed into a byte.
 static inline void BE_ST_SetDigiSBProSoundVolumes(uint8_t volBits)
 {
-	BE_ST_SetDigiSoundVolumes(exp(volBits>>4)/exp(15), exp(volBits&15)/exp(15));
+	BE_ST_SetDigiSoundVolumes(((volBits>>4)*(volBits>>4))/225.0f, ((volBits&15)*(volBits&15))/225.0f);
 }
 
 // Same but for getting the volumes
@@ -305,7 +305,7 @@ static inline uint8_t BE_ST_GetDigiSBProSoundVolumes(void)
 {
 	float lvol, rvol;
 	BE_ST_GetDigiSoundVolumes(&lvol, &rvol);
-	return ((int)(log(lvol) + 15.5) << 4) | (int)(log(rvol) + 15.5);
+	return ((int)(sqrt(lvol)*15.0 + 0.5) << 4) | ((int)(sqrt(rvol)*15.0 + 0.5));
 }
 
 void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits);
