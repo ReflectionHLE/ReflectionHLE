@@ -22,6 +22,7 @@
 #include "be_cross.h"
 #include "be_sound_device_flags.h"
 #include "be_st.h"
+#include "be_st_sdl_private.h" // For BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 #include "backend/audio/be_audio_main_thread.h"
 #include "backend/audio/be_audio_mixer.h"
 
