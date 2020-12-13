@@ -2022,7 +2022,7 @@ void SD_AddToTimeCount(id0_longword_t count)
 void SD_TimeCountWaitFromSrc(id0_longword_t src, id0_int_t ticks)
 {
 	id0_longword_t dst = src + ticks;
-	id0_long_t diff = (id0_long_t)(dst - TimeCount);
+	id0_long_t diff = (id0_long_t)(dst - SD_GetTimeCount());
 	if (diff <= 0)
 		return;
 	BE_ST_TimerIntCallsDelayWithOffset(t0CountTable[SoundMode]*(diff-1) + g_t0CountClone);

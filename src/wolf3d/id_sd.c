@@ -3798,7 +3798,7 @@ void SD_AddToTimeCount(id0_longword_t count)
 
 void SD_TimeCountWaitForDest(id0_longword_t dst)
 {
-	id0_long_t diff = (id0_long_t)(dst - TimeCount);
+	id0_long_t diff = (id0_long_t)(dst - SD_GetTimeCount());
 	if (diff <= 0)
 		return;
 	const int factor = TimerRate / TickBase;
