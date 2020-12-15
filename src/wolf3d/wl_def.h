@@ -1459,6 +1459,7 @@ void ClearSplitVWB (void);
 #ifdef GAMEVER_NOAH3D
 void Briefing (id0_int_t mission, id0_boolean_t credits);
 #endif
+void CopyProtection(void); // REFKEEN: Added declaration
 
 
 /*
