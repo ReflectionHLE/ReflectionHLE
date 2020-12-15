@@ -30,6 +30,12 @@
 #ifdef REFKEEN_HAS_VER_SDMFG10
 #include "be_gamedefs_sdmfg10.h"
 #endif
+#ifdef REFKEEN_HAS_VER_SODFG10
+#include "be_gamedefs_sodfg10.h"
+#endif
+#ifdef REFKEEN_HAS_VER_SODFG14
+#include "be_gamedefs_sodfg14.h"
+#endif
 #ifdef REFKEEN_HAS_VER_SODAC14
 #include "be_gamedefs_sodac14.h"
 #endif

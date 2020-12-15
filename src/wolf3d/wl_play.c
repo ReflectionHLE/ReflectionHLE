@@ -2020,6 +2020,10 @@ void RefKeen_Patch_wl_play(void)
 	refkeen_compat_wl_play_objoffset = 0xB51C;
 #elif (defined REFKEEN_VER_SDMFG10)
 	refkeen_compat_wl_play_objoffset = 0xA224;
+#elif (defined REFKEEN_VER_SODFG10)
+	refkeen_compat_wl_play_objoffset = 0xA4CC;
+#elif (defined REFKEEN_VER_SODFG14)
+	refkeen_compat_wl_play_objoffset = 0xA4BA;
 #elif (defined REFKEEN_VER_SODAC14)
 	refkeen_compat_wl_play_objoffset = 0xB312;
 #elif (defined REFKEEN_VER_N3DWT10)

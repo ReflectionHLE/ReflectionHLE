@@ -63,6 +63,16 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	BE_STR_GAMEVER_SDMFG10,
 #endif
+#ifdef REFKEEN_HAS_VER_SODFG10
+	BE_STR_GAMEVER_SODFG10,
+	BE_STR_GAMEVER_SD2FG10,
+	BE_STR_GAMEVER_SD3FG10,
+#endif
+#ifdef REFKEEN_HAS_VER_SODFG14
+	BE_STR_GAMEVER_SODFG14,
+	BE_STR_GAMEVER_SD2FG14,
+	BE_STR_GAMEVER_SD3FG14,
+#endif
 #ifdef REFKEEN_HAS_VER_SODAC14
 	BE_STR_GAMEVER_SODAC14,
 	BE_STR_GAMEVER_SD2AC14,
@@ -149,6 +159,16 @@ const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	&g_be_gamever_sdmfg10,
 #endif
+#ifdef REFKEEN_HAS_VER_SODFG10
+	&g_be_gamever_sodfg10,
+	&g_be_gamever_sd2fg10,
+	&g_be_gamever_sd3fg10,
+#endif
+#ifdef REFKEEN_HAS_VER_SODFG14
+	&g_be_gamever_sodfg14,
+	&g_be_gamever_sd2fg14,
+	&g_be_gamever_sd3fg14,
+#endif
 #ifdef REFKEEN_HAS_VER_SODAC14
 	&g_be_gamever_sodac14,
 	&g_be_gamever_sd2ac14,
@@ -218,6 +238,16 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_SDMFG10
 	g_be_reqgameverfiles_sdmfg10,
+#endif
+#ifdef REFKEEN_HAS_VER_SODFG10
+	g_be_reqgameverfiles_sodfg10,
+	g_be_reqgameverfiles_sd2fg10,
+	g_be_reqgameverfiles_sd3fg10,
+#endif
+#ifdef REFKEEN_HAS_VER_SODFG14
+	g_be_reqgameverfiles_sodfg14,
+	g_be_reqgameverfiles_sd2fg14,
+	g_be_reqgameverfiles_sd3fg14,
 #endif
 #ifdef REFKEEN_HAS_VER_SODAC14
 	g_be_reqgameverfiles_sodac14,
