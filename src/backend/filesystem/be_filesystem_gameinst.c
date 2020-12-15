@@ -139,8 +139,13 @@ void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 	// If used correctly then these SHOULD have enough space
 	BEL_Cross_safeandfastctstringcopy(gameInstallation->instPath, gameInstallation->instPath+sizeof(gameInstallation->instPath)/sizeof(TCHAR), searchdir);
 	gameInstallation->verId = details->verId;
+#if 1 // TODO (REFKEEN) Disable printing of descStr for now
+	snprintf(gameInstallation->descStr, sizeof(gameInstallation->descStr),
+	         "%s", details->description);
+#else
 	snprintf(gameInstallation->descStr, sizeof(gameInstallation->descStr),
 	         "%s (%s)", details->description, descStr ? descStr : "Custom");
+#endif
 
 	TCHAR tempFullPath[BE_CROSS_PATH_LEN_BOUND];
 
