@@ -235,8 +235,6 @@ extern statetype s_deathboom4;
 extern statetype s_deathboom5;
 extern statetype s_deathboom6;
 
-statetype * (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);
-
 static statetype *RefKeen_GetObjStatePtrFromDOSPointer_KDreamsE100(uint_fast32_t dosptr);
 static statetype *RefKeen_GetObjStatePtrFromDOSPointer_KDreamsC100(uint_fast32_t dosptr);
 static statetype *RefKeen_GetObjStatePtrFromDOSPointer_KDreamsE113(uint_fast32_t dosptr);
@@ -244,6 +242,7 @@ static statetype *RefKeen_GetObjStatePtrFromDOSPointer_KDreamsC105(uint_fast32_t
 static statetype *RefKeen_GetObjStatePtrFromDOSPointer_KDreamsE193(uint_fast32_t dosptr);
 static statetype *RefKeen_GetObjStatePtrFromDOSPointer_KDreamsE120(uint_fast32_t dosptr);
 
+statetype * (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);
 
 void RefKeen_FillObjStatesWithDOSPointers(void)
 {

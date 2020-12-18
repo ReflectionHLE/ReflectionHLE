@@ -235,10 +235,10 @@ extern statetype s_batpast;
 extern statetype s_batdie1;
 extern statetype s_batdie2;
 
-statetype * (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);
-
 static statetype *RefKeen_GetObjStatePtrFromDOSPointer_CatAbyss113(uint_fast32_t dosptr);
 static statetype *RefKeen_GetObjStatePtrFromDOSPointer_CatAbyss124(uint_fast32_t dosptr);
+
+statetype * (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);
 
 void RefKeen_FillObjStatesWithDOSPointers(void)
 {
