@@ -32,4 +32,20 @@ list(APPEND wolf3d_src
 	src/wolf3d/wl_state.c
 	src/wolf3d/wl_text.c
 	src/wolf3d/wolfhack.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl920312.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl1ap10.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl1ap11.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl6ap11.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl1ap12.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl1ap14.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl6ap14.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl6gt14.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wj6im14.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_wl6ac14.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_sdmfg10.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_sodfg10.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_sodfg14.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_sodac14.c
+	src/wolf3d/statetype_ptr/statetype_ptr_conversion_n3dwt10.c
 )
