@@ -948,6 +948,13 @@ typedef struct	statestruct
 	void	(*thinkptr) (struct objstruct *),(*actionptr) (struct objstruct *);
 	//void	(*think) (),(*action) ();
 	struct	statestruct	*next;
+	// (REFKEEN) Backwards compatibility:
+	// MUST follow all the rest of the members above. Given a statetype
+	// instance, stores what would be the 16-bit offset pointer in the dseg
+	// while using the original 16-bit DOS executable (corresponding version).
+	// This member must be the last so it doesn't have to be filled during
+	// compile-time (requires changes to struct initializations in a few places)
+	id0_word_t compatdospointer;
 } statetype;
 
 
