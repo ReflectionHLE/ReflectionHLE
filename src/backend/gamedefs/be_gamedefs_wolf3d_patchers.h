@@ -4,13 +4,13 @@
 
 void RefKeen_Patch_wl_main(void);
 void RefKeen_Patch_wl_play(void);
-//void RefKeen_FillObjStatesWithDOSPointers(void);
+void RefKeen_FillObjStatesWithDOSPointers(void);
 void RefKeen_PrepareAltControllerScheme(void);
 
 static void (*g_be_patcherfuncs[])(void) = {
 	RefKeen_Patch_wl_main,
 	RefKeen_Patch_wl_play,
-	/*RefKeen_FillObjStatesWithDOSPointers, */RefKeen_PrepareAltControllerScheme, 0
+	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
 };
 
 void wolf3d_exe_main(void);
