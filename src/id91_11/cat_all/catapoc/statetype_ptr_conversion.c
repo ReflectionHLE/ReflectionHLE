@@ -314,9 +314,9 @@ extern statetype s_force_field_die;
 extern statetype s_force_field_die1;
 extern statetype s_invis_wall_control;
 
-static statetype* RefKeen_GetObjStatePtrFromDOSPointer_CatApoc101(uint_fast32_t dosptr);
+static statetype *RefKeen_GetObjStatePtrFromDOSPointer_CatApoc101(uint_fast32_t dosptr);
 
-statetype* (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr) = RefKeen_GetObjStatePtrFromDOSPointer_CatApoc101;
+statetype * (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr) = RefKeen_GetObjStatePtrFromDOSPointer_CatApoc101;
 
 void RefKeen_FillObjStatesWithDOSPointers(void)
 {
@@ -609,7 +609,7 @@ void RefKeen_FillObjStatesWithDOSPointers(void)
 	s_invis_wall_control.compatdospointer = 0x1B870000 + g_farPtrExeLocSegOffset;
 }
 
-statetype* RefKeen_GetObjStatePtrFromDOSPointer_CatApoc101(uint_fast32_t dosptr)
+statetype *RefKeen_GetObjStatePtrFromDOSPointer_CatApoc101(uint_fast32_t dosptr)
 {
 	switch (dosptr - g_farPtrExeLocSegOffset)
 	{

@@ -297,9 +297,9 @@ extern statetype s_force_field_die;
 extern statetype s_force_field_die1;
 extern statetype s_skeleton_hanging;
 
-static statetype* RefKeen_GetObjStatePtrFromDOSPointer_CatArm102(uint_fast32_t dosptr);
+static statetype *RefKeen_GetObjStatePtrFromDOSPointer_CatArm102(uint_fast32_t dosptr);
 
-statetype* (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr) = RefKeen_GetObjStatePtrFromDOSPointer_CatArm102;
+statetype * (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr) = RefKeen_GetObjStatePtrFromDOSPointer_CatArm102;
 
 void RefKeen_FillObjStatesWithDOSPointers(void)
 {
@@ -577,7 +577,7 @@ void RefKeen_FillObjStatesWithDOSPointers(void)
 	s_skeleton_hanging.compatdospointer = 0x1B610000 + g_farPtrExeLocSegOffset;
 }
 
-static statetype* RefKeen_GetObjStatePtrFromDOSPointer_CatArm102(uint_fast32_t dosptr)
+static statetype *RefKeen_GetObjStatePtrFromDOSPointer_CatArm102(uint_fast32_t dosptr)
 {
 	switch (dosptr - g_farPtrExeLocSegOffset)
 	{

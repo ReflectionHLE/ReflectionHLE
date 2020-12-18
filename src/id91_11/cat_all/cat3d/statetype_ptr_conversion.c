@@ -125,10 +125,10 @@ extern statetype s_batdie2;
 extern statetype s_bounce1;
 extern statetype s_bounce2;
 
-statetype* (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);
+statetype * (*RefKeen_GetObjStatePtrFromDOSPointer)(uint_fast32_t dosptr);
 
-static statetype* RefKeen_GetObjStatePtrFromDOSPointer_Cat3D100(uint_fast32_t dosptr);
-static statetype* RefKeen_GetObjStatePtrFromDOSPointer_Cat3D122(uint_fast32_t dosptr);
+static statetype *RefKeen_GetObjStatePtrFromDOSPointer_Cat3D100(uint_fast32_t dosptr);
+static statetype *RefKeen_GetObjStatePtrFromDOSPointer_Cat3D122(uint_fast32_t dosptr);
 
 void RefKeen_FillObjStatesWithDOSPointers(void)
 {
@@ -350,7 +350,7 @@ void RefKeen_FillObjStatesWithDOSPointers(void)
 	}
 }
 
-static statetype* RefKeen_GetObjStatePtrFromDOSPointer_Cat3D100(uint_fast32_t dosptr)
+static statetype *RefKeen_GetObjStatePtrFromDOSPointer_Cat3D100(uint_fast32_t dosptr)
 {
 	switch (dosptr)
 	{
@@ -459,7 +459,7 @@ static statetype* RefKeen_GetObjStatePtrFromDOSPointer_Cat3D100(uint_fast32_t do
 	return NULL;
 }
 
-static statetype* RefKeen_GetObjStatePtrFromDOSPointer_Cat3D122(uint_fast32_t dosptr)
+static statetype *RefKeen_GetObjStatePtrFromDOSPointer_Cat3D122(uint_fast32_t dosptr)
 {
 	switch (dosptr)
 	{
