@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// New file used for preparing and converting statetype objects offset
+// New file used for preparing and converting pointers to states
 
 #include "def.h"
 
