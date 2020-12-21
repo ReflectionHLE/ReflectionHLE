@@ -140,9 +140,9 @@ jabunhack(void)
 
 // REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
 
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(activetype)
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(activetype)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(classtype)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(dirtype)
 
 static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 {
@@ -152,14 +152,14 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
-	return ((BE_Cross_write_activetype_To16LE(file, &o->active) == 2)
+	return ((BE_Cross_write_activetype_ToU16LE(file, &o->active) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
-	        && (BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
+	        && (BE_Cross_write_classtype_ToU16LE(file, &o->obclass) == 2)
 	        && (BE_Cross_writeInt16LE(file, &statedosoffset) == 2) // BACKWARDS COMPATIBILITY
 	        && (BE_Cross_writeInt8LE(file, &o->flags) == 1)
 	        && (BE_Cross_writeInt8LE(file, &dummy) == 1) // Padding due to word alignment in original code
 	        && (BE_Cross_writeInt32LE(file, &o->distance) == 4)
-	        && (BE_Cross_write_dirtype_To16LE(file, &o->dir) == 2)
+	        && (BE_Cross_write_dirtype_ToU16LE(file, &o->dir) == 2)
 	        && (BE_Cross_writeInt32LE(file, &o->x) == 4)
 	        && (BE_Cross_writeInt32LE(file, &o->y) == 4)
 	        && (BE_Cross_writeInt16LE(file, &o->tilex) == 2)
@@ -193,14 +193,14 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
-	if ((BE_Cross_read_activetype_From16LE(file, &o->active) != 2)
+	if ((BE_Cross_read_activetype_FromU16LE(file, &o->active) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->ticcount) != 2)
-	    || (BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
+	    || (BE_Cross_read_classtype_FromU16LE(file, &o->obclass) != 2)
 	    || (BE_Cross_readInt16LE(file, &statedosoffset) != 2) // BACKWARDS COMPATIBILITY
 	    || (BE_Cross_readInt8LE(file, &o->flags) != 1)
 	    || (BE_Cross_readInt8LE(file, &dummy) != 1) // Padding due to word alignment in original code
 	    || (BE_Cross_readInt32LE(file, &o->distance) != 4)
-	    || (BE_Cross_read_dirtype_From16LE(file, &o->dir) != 2)
+	    || (BE_Cross_read_dirtype_FromU16LE(file, &o->dir) != 2)
 	    || (BE_Cross_readInt32LE(file, &o->x) != 4)
 	    || (BE_Cross_readInt32LE(file, &o->y) != 4)
 	    || (BE_Cross_readInt16LE(file, &o->tilex) != 2)

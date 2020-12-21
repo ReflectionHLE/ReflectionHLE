@@ -335,8 +335,8 @@ size_t BE_Cross_write_booleans_To16LEBuffer(BE_FILE_T fp, const bool *ptr, size_
 size_t BE_Cross_write_booleans_To32LEBuffer(BE_FILE_T fp, const bool *ptr, size_t nbyte);
 
 // Template implementation of enum reads/writes
-#define BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ourSampleEnum) \
-size_t BE_Cross_read_ ## ourSampleEnum ## _From16LE (BE_FILE_T fp, ourSampleEnum *ptr) \
+#define BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(ourSampleEnum) \
+size_t BE_Cross_read_ ## ourSampleEnum ## _FromU16LE (BE_FILE_T fp, ourSampleEnum *ptr) \
 { \
 	uint16_t val; \
 	size_t bytesread = BE_Cross_readInt16LE(fp, &val); \
@@ -345,15 +345,15 @@ size_t BE_Cross_read_ ## ourSampleEnum ## _From16LE (BE_FILE_T fp, ourSampleEnum
 	return bytesread; \
 } \
 \
-size_t BE_Cross_write_ ## ourSampleEnum ## _To16LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
+size_t BE_Cross_write_ ## ourSampleEnum ## _ToU16LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
 { \
 	uint16_t val = (uint16_t)(*ptr); \
 	return BE_Cross_writeInt16LE(fp, &val); \
 }
 
 // Same but for 32-bit reads/writes
-#define BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(ourSampleEnum) \
-size_t BE_Cross_read_ ## ourSampleEnum ## _From32LE (BE_FILE_T fp, ourSampleEnum *ptr) \
+#define BE_CROSS_IMPLEMENT_FP_READWRITE_U32LE_FUNCS(ourSampleEnum) \
+size_t BE_Cross_read_ ## ourSampleEnum ## _FromU32LE (BE_FILE_T fp, ourSampleEnum *ptr) \
 { \
 	uint32_t val; \
 	size_t bytesread = fread(&val, 1, 4, fp); \
@@ -364,7 +364,7 @@ size_t BE_Cross_read_ ## ourSampleEnum ## _From32LE (BE_FILE_T fp, ourSampleEnum
 	return bytesread; \
 } \
 \
-size_t BE_Cross_write_ ## ourSampleEnum ## _To32LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
+size_t BE_Cross_write_ ## ourSampleEnum ## _ToU32LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
 { \
 	uint32_t val = BE_Cross_Swap32LE((uint32_t)(*ptr)); \
 	return fwrite(&val, 1, 4, fp); \

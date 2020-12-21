@@ -134,12 +134,12 @@ static	HighScore	Scores[MaxScores] =
 
 //	Internal routines
 
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(ControlType)
-BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(SDMode)
-BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(SMMode)
-BE_CROSS_IMPLEMENT_FP_READWRITE_32LE_FUNCS(ControlType)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(ControlType)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U32LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U32LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U32LE_FUNCS(ControlType)
 
 //	Public routines
 
@@ -313,9 +313,9 @@ USL_ReadConfig(void)
 			uint16_t sdl2Keys[sizeof(KeyboardDef)/sizeof(ScanCode)];
 			ScanCode *dosScancodePtr = (ScanCode *)(&(KbdDefs[0]));
 
-			BE_Cross_read_SDMode_From32LE(file, &sd);
-			BE_Cross_read_SMMode_From32LE(file, &sm);
-			BE_Cross_read_ControlType_From32LE(file, &ctl);
+			BE_Cross_read_SDMode_FromU32LE(file, &sd);
+			BE_Cross_read_SMMode_FromU32LE(file, &sm);
+			BE_Cross_read_ControlType_FromU32LE(file, &ctl);
 
 			// Convert scancodes from SDL2 to DOS
 			BE_Cross_readInt16LEBuffer(file, &sdl2Keys,sizeof(sdl2Keys));
@@ -328,9 +328,9 @@ USL_ReadConfig(void)
 		}
 		else
 		{
-			BE_Cross_read_SDMode_From16LE(file, &sd);
-			BE_Cross_read_SMMode_From16LE(file, &sm);
-			BE_Cross_read_ControlType_From16LE(file, &ctl);
+			BE_Cross_read_SDMode_FromU16LE(file, &sd);
+			BE_Cross_read_SMMode_FromU16LE(file, &sm);
+			BE_Cross_read_ControlType_FromU16LE(file, &ctl);
 			// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
 			BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
 		}
@@ -393,9 +393,9 @@ USL_WriteConfig(void)
 			uint16_t sdl2Keys[sizeof(KeyboardDef)/sizeof(ScanCode)];
 			ScanCode *dosScancodePtr = (ScanCode *)(&(KbdDefs[0]));
 
-			BE_Cross_write_SDMode_To32LE(file, &SoundMode);
-			BE_Cross_write_SMMode_To32LE(file, &MusicMode);
-			BE_Cross_write_ControlType_To32LE(file, &(Controls[0]));
+			BE_Cross_write_SDMode_ToU32LE(file, &SoundMode);
+			BE_Cross_write_SMMode_ToU32LE(file, &MusicMode);
+			BE_Cross_write_ControlType_ToU32LE(file, &(Controls[0]));
 
 			// Convert scancodes from DOS to SDL2
 			for (int i = 0; i < (int)(sizeof(KeyboardDef)/sizeof(ScanCode)); ++i, ++dosScancodePtr)
@@ -411,9 +411,9 @@ USL_WriteConfig(void)
 		}
 		else
 		{
-			BE_Cross_write_SDMode_To16LE(file, &SoundMode);
-			BE_Cross_write_SMMode_To16LE(file, &MusicMode);
-			BE_Cross_write_ControlType_To16LE(file, &(Controls[0]));
+			BE_Cross_write_SDMode_ToU16LE(file, &SoundMode);
+			BE_Cross_write_SMMode_ToU16LE(file, &MusicMode);
+			BE_Cross_write_ControlType_ToU16LE(file, &(Controls[0]));
 			BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
 		}
 #if 0

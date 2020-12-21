@@ -125,9 +125,9 @@ id0_char_t	configname[13]="CONFIG.";
 =============================================================================
 */
 
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDMode)
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SMMode)
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(SDSMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(SDMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(SMMode)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(SDSMode)
 
 /*
 ====================
@@ -166,9 +166,9 @@ void ReadConfig(void)
 			BE_Cross_readInt16LE(file, &Scores[i].episode);
 #endif
 		}
-		BE_Cross_read_SDMode_From16LE(file, &sd);
-		BE_Cross_read_SMMode_From16LE(file, &sm);
-		BE_Cross_read_SDSMode_From16LE(file, &sds);
+		BE_Cross_read_SDMode_FromU16LE(file, &sd);
+		BE_Cross_read_SMMode_FromU16LE(file, &sm);
+		BE_Cross_read_SDSMode_FromU16LE(file, &sds);
 
 		BE_Cross_read_boolean_From16LE(file, &mouseenabled);
 		BE_Cross_read_boolean_From16LE(file, &joystickenabled);
@@ -346,9 +346,9 @@ void WriteConfig(void)
 			BE_Cross_writeInt16LE(file, &Scores[i].episode);
 #endif
 		}
-		BE_Cross_write_SDMode_To16LE(file, &SoundMode);
-		BE_Cross_write_SMMode_To16LE(file, &MusicMode);
-		BE_Cross_write_SDSMode_To16LE(file, &DigiMode);
+		BE_Cross_write_SDMode_ToU16LE(file, &SoundMode);
+		BE_Cross_write_SMMode_ToU16LE(file, &MusicMode);
+		BE_Cross_write_SDSMode_ToU16LE(file, &DigiMode);
 
 		BE_Cross_write_boolean_To16LE(file, &mouseenabled);
 		BE_Cross_write_boolean_To16LE(file, &joystickenabled);

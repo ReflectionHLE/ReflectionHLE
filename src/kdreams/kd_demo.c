@@ -204,8 +204,8 @@ void StatusWindow (void)
 
 // REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
 
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(activetype)
-BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(activetype)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(classtype)
 
 static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 {
@@ -215,8 +215,8 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
-	return ((BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
-	        && (BE_Cross_write_activetype_To16LE(file, &o->active) == 2)
+	return ((BE_Cross_write_classtype_ToU16LE(file, &o->obclass) == 2)
+	        && (BE_Cross_write_activetype_ToU16LE(file, &o->active) == 2)
 	        && (BE_Cross_write_boolean_To16LE(file, &o->needtoreact) == 2)
 	        && (BE_Cross_write_boolean_To16LE(file, &o->needtoclip) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->nothink) == 2)
@@ -268,8 +268,8 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
-	if ((BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
-	    || (BE_Cross_read_activetype_From16LE(file, &o->active) != 2)
+	if ((BE_Cross_read_classtype_FromU16LE(file, &o->obclass) != 2)
+	    || (BE_Cross_read_activetype_FromU16LE(file, &o->active) != 2)
 	    || (BE_Cross_read_boolean_From16LE(file, &o->needtoreact) != 2)
 	    || (BE_Cross_read_boolean_From16LE(file, &o->needtoclip) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->nothink) != 2)
