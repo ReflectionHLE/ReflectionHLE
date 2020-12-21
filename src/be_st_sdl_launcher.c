@@ -807,8 +807,8 @@ void BE_ST_Launcher_Prepare(void)
 #endif
 	/*** Prepare displays list ***/
 	int nOfDisplays = SDL_GetNumVideoDisplays();
-	if (nOfDisplays >= (int)(sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums)))
-		nOfDisplays = sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums) - 1;
+	if (nOfDisplays >= (int)BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums))
+		nOfDisplays = BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums) - 1;
 	g_be_videoSettingsChoices_displayNums[nOfDisplays] = NULL;
 	g_beVideoSettingsMenuItem_DisplayNum.choice = g_refKeenCfg.displayNum;
 	if (g_beVideoSettingsMenuItem_DisplayNum.choice >= nOfDisplays)
@@ -841,7 +841,7 @@ void BE_ST_Launcher_Prepare(void)
 	// Set ScaleType value
 	g_beVideoSettingsMenuItem_ScaleType.choice = g_refKeenCfg.scaleType;
 	// Set ScaleFactor value
-	if ((g_refKeenCfg.scaleFactor <= 0) || (g_refKeenCfg.scaleFactor >= (int)(sizeof(g_be_videoSettingsChoices_scaleFactor)/sizeof(*g_be_videoSettingsChoices_scaleFactor))))
+	if ((g_refKeenCfg.scaleFactor <= 0) || (g_refKeenCfg.scaleFactor >= (int)BE_Cross_ArrayLen(g_be_videoSettingsChoices_scaleFactor)))
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = 0;
 	else
 		g_beVideoSettingsMenuItem_ScaleFactor.choice = g_refKeenCfg.scaleFactor-1;
@@ -855,7 +855,7 @@ void BE_ST_Launcher_Prepare(void)
 #endif
 	// Set SndSampleRate value
 	g_beSoundSettingsMenuItem_SndSampleRate.choice = 8; // FIXME - Better way to grab default off cfg
-	for (i = 0; i < (int)(sizeof(g_be_soundsSettingsChoices_sndSampleRateVals)/sizeof(*g_be_soundsSettingsChoices_sndSampleRateVals)); ++i)
+	for (i = 0; i < (int)BE_Cross_ArrayLen(g_be_soundsSettingsChoices_sndSampleRateVals); ++i)
 		if (g_be_soundsSettingsChoices_sndSampleRateVals[i] == g_refKeenCfg.sndSampleRate)
 		{
 			g_beSoundSettingsMenuItem_SndSampleRate.choice = i;
@@ -1380,7 +1380,7 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 	{
 		int displayNum = SDL_GetWindowDisplayIndex(g_sdlWindow);
 		// HUGE FIXME - Bad idea!!!
-		if (displayNum < (int)(sizeof(g_be_videoSettingsChoices_displayNums)/sizeof(*g_be_videoSettingsChoices_displayNums))) // Ignore last NULL entry
+		if (displayNum < (int)BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums)) // Ignore last NULL entry
 			if (1/*g_beVideoSettingsMenuItem_DisplayNum.choice != displayNum*/)
 			{
 				extern BEMenu *g_be_launcher_currMenu;
