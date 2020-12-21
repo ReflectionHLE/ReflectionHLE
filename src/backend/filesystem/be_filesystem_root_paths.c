@@ -32,7 +32,7 @@ void BEL_Cross_AddRootPath(const TCHAR *rootPath, const char *rootPathKey, const
 	if (g_be_rootPathsNum >= BE_CROSS_MAX_ROOT_PATHS)
 		BE_ST_ExitWithErrorMsg("BEL_Cross_AddRootPath: Too many root paths!");
 
-	BEL_Cross_safeandfastctstringcopy(g_be_rootPaths[g_be_rootPathsNum], g_be_rootPaths[g_be_rootPathsNum]+sizeof(g_be_rootPaths[g_be_rootPathsNum])/sizeof(TCHAR), rootPath);
+	BEL_Cross_safeandfastctstringcopy(g_be_rootPaths[g_be_rootPathsNum], g_be_rootPaths[g_be_rootPathsNum]+BE_Cross_ArrayLen(g_be_rootPaths[g_be_rootPathsNum]), rootPath);
 	g_be_rootPathsKeys[g_be_rootPathsNum] = rootPathKey;
 	g_be_rootPathsNames[g_be_rootPathsNum] = rootPathName;
 	++g_be_rootPathsNum;

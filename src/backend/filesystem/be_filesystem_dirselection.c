@@ -63,7 +63,7 @@ static const char **BEL_Cross_DirSelection_PrepareDirsAndGetNames(int *outNumOfS
 		return NULL;
 
 	TCHAR fullpath[BE_CROSS_PATH_LEN_BOUND];
-	TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
+	TCHAR *fullpathEnd = fullpath + BE_Cross_ArrayLen(fullpath);
 
 	int numOfSubDirs = 0;
 	int charsToAllocateForNames = 0;

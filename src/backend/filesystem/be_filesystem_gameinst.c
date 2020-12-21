@@ -137,7 +137,7 @@ void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 
 	BE_GameInstallation_T *gameInstallation = &g_be_gameinstallations[g_be_gameinstallations_num];
 	// If used correctly then these SHOULD have enough space
-	BEL_Cross_safeandfastctstringcopy(gameInstallation->instPath, gameInstallation->instPath+sizeof(gameInstallation->instPath)/sizeof(TCHAR), searchdir);
+	BEL_Cross_safeandfastctstringcopy(gameInstallation->instPath, gameInstallation->instPath+BE_Cross_ArrayLen(gameInstallation->instPath), searchdir);
 	gameInstallation->verId = details->verId;
 #if 1 // TODO (REFKEEN) Disable printing of descStr for now
 	snprintf(gameInstallation->descStr, sizeof(gameInstallation->descStr),
@@ -149,7 +149,7 @@ void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 
 	TCHAR tempFullPath[BE_CROSS_PATH_LEN_BOUND];
 
-	TCHAR *endPtr = gameInstallation->writableFilesPath + sizeof(gameInstallation->writableFilesPath)/sizeof(TCHAR);
+	TCHAR *endPtr = gameInstallation->writableFilesPath + BE_Cross_ArrayLen(gameInstallation->writableFilesPath);
 	BEL_Cross_safeandfastctstringcopy_3strs(gameInstallation->writableFilesPath, endPtr, g_be_appDataPath, _T("/"), details->writableFilesDir);
 
 	for (const BE_GameFileDetails_T *fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filenames; ++fileDetailsBuffer)

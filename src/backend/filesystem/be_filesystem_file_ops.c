@@ -50,7 +50,7 @@ BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 				BEL_Cross_CloseDir(dir);
 				return NULL;
 			}
-			TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
+			TCHAR *fullpathEnd = fullpath + BE_Cross_ArrayLen(fullpath);
 			BEL_Cross_safeandfastctstringcopy_3strs(fullpath, fullpathEnd, searchdir, _T("/"), d_name);
 
 			BEL_Cross_CloseDir(dir);
@@ -72,7 +72,7 @@ BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 
 	if (request != BE_FILE_REQUEST_OVERWRITE)
 		return NULL;
-	TCHAR *fullpathEnd = fullpath + sizeof(fullpath)/sizeof(TCHAR);
+	TCHAR *fullpathEnd = fullpath + BE_Cross_ArrayLen(fullpath);
 	TCHAR *fullpathPtr = BEL_Cross_safeandfastctstringcopy_2strs(fullpath, fullpathEnd, searchdir, _T("/"));
 	// Create actual new files with a lower case, just because that's a common pattern in Unix-like setups
 	// (basically a modified BE_Cross_safeandfastcstringcopy, also copying a narrow string to a wide string).

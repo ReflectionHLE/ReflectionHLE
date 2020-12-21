@@ -49,25 +49,25 @@ void BE_Cross_PrepareAppPaths(void)
 	// HACK - Ignore be_main_arg_datadir for now
 	if (envVar && *envVar)
 	{
-		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), envVar, _T("\\reflection-keen"));
+		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), envVar, _T("\\reflection-keen"));
 	}
 	else
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "APPDATA environment variable is not properly defined.\n");
 		if (homeVar && *homeVar)
 		{
-			BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, _T("\\AppData\\Roaming\\reflection-keen"));
+			BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, _T("\\AppData\\Roaming\\reflection-keen"));
 		}
 		else
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "HOMEPATH environment variable is not properly defined.\n");
-			BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), _T("."));
+			BEL_Cross_safeandfastctstringcopy(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), _T("."));
 		}
 	}
 
 	if (be_main_arg_newcfgdir)
 	{
-		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
+		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), be_main_arg_newcfgdir);
 	}
 	else // This is why be_main_arg_datadir has been ignored (using g_be_appDataPath as a temporary buffer)
 	{
@@ -76,7 +76,7 @@ void BE_Cross_PrepareAppPaths(void)
 
 	if (be_main_arg_datadir) // Now checking be_main_arg_datadir
 	{
-		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), be_main_arg_datadir);
+		BEL_Cross_safeandfastcstringcopytoctstring(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), be_main_arg_datadir);
 	}
 
 	/*** Root paths ***/
@@ -157,10 +157,10 @@ void BE_Cross_PrepareAppPaths(void)
 	const char *externalStoragePath = SDL_AndroidGetExternalStoragePath();
 	if (externalStoragePath && *externalStoragePath)
 	{
-		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), externalStoragePath, "/appdata");
+		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), externalStoragePath, "/appdata");
 		memcpy(g_be_appNewCfgPath, g_be_appDataPath, sizeof(g_be_appDataPath));
 		// Let's add this just in case (sdcard directory cannot be naively opened on Android 7.0)
-		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), externalStoragePath, "/user_gameinsts");
+		BE_Cross_safeandfastcstringcopy_2strs(path, path+BE_Cross_ArrayLen(path), externalStoragePath, "/user_gameinsts");
 		// In contrary to other root paths, we should create this one on first launch
 		BEL_Cross_mkdir(externalStoragePath); // Non-recursive
 		BEL_Cross_mkdir(path);
@@ -181,52 +181,52 @@ void BE_Cross_PrepareAppPaths(void)
 
 	if (be_main_arg_datadir)
 	{
-		BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), be_main_arg_datadir);
+		BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), be_main_arg_datadir);
 	}
 	else
 	{
 #ifdef REFKEEN_PLATFORM_MACOS
 		// FIXME - Handle sandboxing?
-		BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/reflection-keen");
+		BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, "/Library/Application Support/reflection-keen");
 #else
 		envVar = getenv("XDG_DATA_HOME");
 		if (envVar && *envVar)
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), envVar, "/reflection-keen");
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), envVar, "/reflection-keen");
 		}
 		else if (homeVar && *homeVar)
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), homeVar, "/.local/share/reflection-keen");
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, "/.local/share/reflection-keen");
 		}
 		else
 		{
-			BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+sizeof(g_be_appDataPath)/sizeof(TCHAR), ".");
+			BE_Cross_safeandfastcstringcopy(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), ".");
 		}
 #endif
 	}
 
 	if (be_main_arg_newcfgdir)
 	{
-		BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), be_main_arg_newcfgdir);
+		BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), be_main_arg_newcfgdir);
 	}
 	else
 	{
 #ifdef REFKEEN_PLATFORM_MACOS
 		// FIXME - Handle sandboxing?
-		BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/reflection-keen");
+		BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), homeVar, "/Library/Application Support/reflection-keen");
 #else
 		envVar = getenv("XDG_CONFIG_HOME");
 		if (envVar && *envVar)
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), envVar, "/reflection-keen");
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), envVar, "/reflection-keen");
 		}
 		else if (homeVar && *homeVar)
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), homeVar, "/.config/reflection-keen");
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), homeVar, "/.config/reflection-keen");
 		}
 		else
 		{
-			BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+sizeof(g_be_appNewCfgPath)/sizeof(TCHAR), ".");
+			BE_Cross_safeandfastcstringcopy(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), ".");
 		}
 #endif
 	}
@@ -241,14 +241,14 @@ void BE_Cross_PrepareAppPaths(void)
 		BEL_Cross_AddRootPathIfDir(homeVar, "home", "Home dir");
 #ifdef REFKEEN_PLATFORM_MACOS
 		// Steam installation dir
-		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam");
+		BE_Cross_safeandfastcstringcopy_2strs(path, path+BE_Cross_ArrayLen(path), homeVar, "/Library/Application Support/Steam");
 		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
 #else
 		// Steam installation dir
-		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/.steam/steam");
+		BE_Cross_safeandfastcstringcopy_2strs(path, path+BE_Cross_ArrayLen(path), homeVar, "/.steam/steam");
 		BEL_Cross_AddRootPathIfDir(path, "steam", "Steam (installation)");
 		// GOG.com installation dir
-		BE_Cross_safeandfastcstringcopy_2strs(path, path+sizeof(path)/sizeof(TCHAR), homeVar, "/GOG Games");
+		BE_Cross_safeandfastcstringcopy_2strs(path, path+BE_Cross_ArrayLen(path), homeVar, "/GOG Games");
 		BEL_Cross_AddRootPathIfDir(path, "gog", "GOG Games (default)");
 #endif
 	}
