@@ -157,7 +157,7 @@ id0_unsigned_t GetSkyGndColorDOSPtrFromNativePointer(id0_unsigned_t *colorPtr)
 	if (colorPtr == &debug_sky)
 		return 0xB9DB;
 	// REFKEEN - Let's assume here the pointer is properly aligned...
-	if ((colorPtr >= sky_lightning) && (colorPtr < sky_lightning+sizeof(sky_lightning)/sizeof(*sky_lightning)))
+	if ((colorPtr >= sky_lightning) && (colorPtr < sky_lightning+BE_Cross_ArrayLen(sky_lightning)))
 		return 0x18B4+(colorPtr-sky_lightning)*sizeof(*sky_lightning);
 	return 0;
 }
