@@ -370,6 +370,23 @@ size_t BE_Cross_write_ ## ourSampleEnum ## _ToU32LE (BE_FILE_T fp, const ourSamp
 	return fwrite(&val, 1, 4, fp); \
 }
 
+// Same but with signed ints
+#define BE_CROSS_IMPLEMENT_FP_READWRITE_S16LE_FUNCS(ourSampleEnum) \
+size_t BE_Cross_read_ ## ourSampleEnum ## _FromS16LE (BE_FILE_T fp, ourSampleEnum *ptr) \
+{ \
+	int16_t val; \
+	size_t bytesread = BE_Cross_readInt16LE(fp, &val); \
+	if (bytesread == 2) \
+		*ptr = (ourSampleEnum)val; \
+	return bytesread; \
+} \
+\
+size_t BE_Cross_write_ ## ourSampleEnum ## _ToS16LE (BE_FILE_T fp, const ourSampleEnum *ptr) \
+{ \
+	int16_t val = (int16_t)(*ptr); \
+	return BE_Cross_writeInt16LE(fp, &val); \
+}
+
 // Assuming segPtr is replacement for a 16-bit segment pointer, and offInSegPtr
 // is a replacement for an offset in this segment (pointing to a place in the
 // emulated segment), increases offInSegPtr by count with wrapping
