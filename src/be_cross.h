@@ -47,6 +47,8 @@ typedef enum BE_Log_Message_Class_T
 #define BE_Cross_TypedMin(T, x, y) ({T _x = (x), _y = (y); (_x < _y) ? _x : _y;})
 #endif
 
+#define BE_Cross_ArrayLen(x) (sizeof(x)/sizeof(*(x)))
+
 #define BE_Cross_Swap16(x) ((uint16_t)(((uint16_t)(x)<<8)|((uint16_t)(x)>>8)))
 
 #define BE_Cross_Swap32(x) ((uint32_t)(((uint32_t)(x)<<24)|(((uint32_t)(x)<<8)&0x00FF0000)|(((uint32_t)(x)>>8)&0x0000FF00)|((uint32_t)(x)>>24)))
