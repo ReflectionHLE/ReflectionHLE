@@ -56,7 +56,7 @@ static void BEL_Cross_TryAddInst_Common(
 	for (gameVer = gameVers, gameVerSubPath = gameVerSubPaths; *gameVer; ++gameVer)
 	{
 		if (gameVerSubPath)
-			BEL_Cross_safeandfastctstringcopy((*path)+len, (*path)+sizeof(*path)/sizeof(TCHAR)-len, *gameVerSubPath++);
+			BEL_Cross_safeandfastctstringcopy((*path)+len, (*path)+BE_Cross_ArrayLen(*path)-len, *gameVerSubPath++);
 		BEL_Cross_ConditionallyAddGameInstallation(*gameVer, *path, descStr);
 	}
 }
@@ -75,7 +75,7 @@ static void BEL_Cross_TryAddRegistryInst(
 		registryKey, registryValue, &checkedPaths, &numOfCheckedPaths);
 	for (i = 0; i < numOfCheckedPaths; ++i)
 	{
-		BEL_Cross_safeandfastctstringcopy(checkedPaths[i]+_tcslen(checkedPaths[i]), checkedPaths[i]+sizeof(checkedPaths[i])/sizeof(TCHAR)-_tcslen(checkedPaths[i]), subPath);
+		BEL_Cross_safeandfastctstringcopy(checkedPaths[i]+_tcslen(checkedPaths[i]), checkedPaths[i]+BE_Cross_ArrayLen(checkedPaths[i])-_tcslen(checkedPaths[i]), subPath);
 		BEL_Cross_TryAddInst_Common(&checkedPaths[i], gameVers, gameVerSubPaths, descStr);
 	}
 }
@@ -93,13 +93,13 @@ static void BEL_Cross_TryAddSteamInst(
 	if (homeVar && *homeVar)
 	{
 #ifdef REFKEEN_PLATFORM_MACOS
-		BE_Cross_safeandfastcstringcopy_3strs(checkedPath, checkedPath+sizeof(checkedPath)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/SteamApps/common", subPath);
+		BE_Cross_safeandfastcstringcopy_3strs(checkedPath, checkedPath+BE_Cross_ArrayLen(checkedPath), homeVar, "/Library/Application Support/Steam/SteamApps/common", subPath);
 		BEL_Cross_TryAddInst_Common(&checkedPath, gameVers, gameVerSubPaths, descStr);
 #else
 		// They changed from SteamApps to steamapps at some point, so check both
-		BE_Cross_safeandfastcstringcopy_3strs(checkedPath, checkedPath+sizeof(checkedPath)/sizeof(TCHAR), homeVar, "/.steam/steam/SteamApps/common", subPath);
+		BE_Cross_safeandfastcstringcopy_3strs(checkedPath, checkedPath+BE_Cross_ArrayLen(checkedPath), homeVar, "/.steam/steam/SteamApps/common", subPath);
 		BEL_Cross_TryAddInst_Common(&checkedPath, gameVers, gameVerSubPaths, descStr);
-		BE_Cross_safeandfastcstringcopy_3strs(checkedPath, checkedPath+sizeof(checkedPath)/sizeof(TCHAR), homeVar, "/.steam/steam/steamapps/common", subPath);
+		BE_Cross_safeandfastcstringcopy_3strs(checkedPath, checkedPath+BE_Cross_ArrayLen(checkedPath), homeVar, "/.steam/steam/steamapps/common", subPath);
 		BEL_Cross_TryAddInst_Common(&checkedPath, gameVers, gameVerSubPaths, descStr);
 #endif
 	}
@@ -201,14 +201,14 @@ static void BEL_Cross_CheckForKnownInstallations(void)
 	static const TCHAR *catacombsMacInst = _T("/Applications/Catacombs Pack/Catacomb Pack.app/Contents/Resources/Catacomb Pack.boxer/C 1 CATACOMB.harddisk");
 	BEL_Cross_safeandfastctstringcopy(
 		catacombsMacPath,
-		catacombsMacPath+sizeof(catacombsMacPath)/sizeof(*catacombsMacPath),
+		catacombsMacPath+BE_Cross_ArrayLen(catacombsMacPath),
 		catacombsMacInst);
 	BEL_Cross_TryAddInst_Common(&catacombsMacPath, catacombVers, catacombSubdirs, "GOG.com");
 	if (homeVar && *homeVar)
 	{
 		BEL_Cross_safeandfastctstringcopy_2strs(
 			catacombsMacPath,
-			catacombsMacPath+sizeof(catacombsMacPath)/sizeof(*catacombsMacPath),
+			catacombsMacPath+BE_Cross_ArrayLen(catacombsMacPath),
 			homeVar, catacombsMacInst);
 		BEL_Cross_TryAddInst_Common(&catacombsMacPath, catacombVers, catacombSubdirs, "GOG.com");
 	}
@@ -321,7 +321,7 @@ void BE_Cross_PrepareGameInstallations(void)
 	/*** Some misc. preparation ***/
 
 	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
-	TCHAR *pathEnd = path + sizeof(path)/sizeof(TCHAR);
+	TCHAR *pathEnd = path + BE_Cross_ArrayLen(path);
 
 	// Try recognizing each supported game version in the current dir
 	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
