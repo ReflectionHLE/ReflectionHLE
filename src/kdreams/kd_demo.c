@@ -204,20 +204,19 @@ void StatusWindow (void)
 
 // REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
 
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(activetype)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
 
 static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy = 0;
-	// for active enum (anonymous type)
-	id0_int_t activeint = (id0_int_t)(o->active);
 	// BACKWARDS COMPATIBILITY
 	id0_word_t statedosoffset = o->state ? o->state->compatdospointer : 0;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
 	return ((BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
-	        && (BE_Cross_writeInt16LE(file, &activeint) == 2)
+	        && (BE_Cross_write_activetype_To16LE(file, &o->active) == 2)
 	        && (BE_Cross_write_boolean_To16LE(file, &o->needtoreact) == 2)
 	        && (BE_Cross_write_boolean_To16LE(file, &o->needtoclip) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->nothink) == 2)
@@ -264,15 +263,13 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy;
-	// for active enum (anonymous type)
-	id0_int_t activeint;
 	// BACKWARDS COMPATIBILITY
 	id0_word_t statedosoffset;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
 	if ((BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
-	    || (BE_Cross_readInt16LE(file, &activeint) != 2)
+	    || (BE_Cross_read_activetype_From16LE(file, &o->active) != 2)
 	    || (BE_Cross_read_boolean_From16LE(file, &o->needtoreact) != 2)
 	    || (BE_Cross_read_boolean_From16LE(file, &o->needtoclip) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->nothink) != 2)
@@ -316,7 +313,6 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	)
 		return false;
 
-	o->active = (activetype)activeint;
 	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// ANOTHER SPECIAL CASE (for almost all creatures as flowers)
 	o->temp2stateptr = RefKeen_GetObjStatePtrFromDOSPointer(o->temp2);

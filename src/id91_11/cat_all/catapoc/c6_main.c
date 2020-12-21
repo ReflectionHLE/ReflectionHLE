@@ -191,14 +191,13 @@ id0_unsigned_t* GetSkyGndColorPtrFromDOSPointer(id0_unsigned_t dosOffset)
 
 // REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
 
+BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(activetype)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(classtype)
 BE_CROSS_IMPLEMENT_FP_READWRITE_16LE_FUNCS(dirtype)
 
 static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy = 0;
-	// for active enum (anonymous type)
-	id0_int_t activeint = (id0_int_t)(o->active);
 	// BACKWARDS COMPATIBILITY
 	id0_longword_t statedosfarptr = o->state ? o->state->compatdospointer : 0;
 	// Just tells if "o->next" is zero or not
@@ -220,7 +219,7 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	        && (BE_Cross_writeInt16LE(file, &isnext) == 2) // next
 	        && (BE_Cross_writeInt8LEBuffer(file, &dummy, 2) == 2) // prev
 		//
-		&& (BE_Cross_writeInt16LE(file, &activeint) == 2)
+	        && (BE_Cross_write_activetype_To16LE(file, &o->active) == 2)
 	        && (BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
 	        && (BE_Cross_writeInt8LE(file, &o->flags) == 1)
 	        && (BE_Cross_writeInt8LE(file, &dummy) == 1) // Padding due to word alignment in original code
@@ -241,8 +240,6 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 {
 	id0_int_t dummy;
-	// for active enum (anonymous type)
-	id0_int_t activeint;
 	// BACKWARDS COMPATIBILITY
 	id0_longword_t statedosfarptr;
 	// Just tells if "o->next" is zero or not
@@ -264,7 +261,7 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	    || (BE_Cross_readInt16LE(file, &isnext) != 2) // next
 	    || (BE_Cross_readInt8LEBuffer(file, &dummy, 2) != 2) // prev
 	    //
-	    || (BE_Cross_readInt16LE(file, &activeint) != 2)
+	    || (BE_Cross_read_activetype_From16LE(file, &o->active) != 2)
 	    || (BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
 	    || (BE_Cross_readInt8LE(file, &o->flags) != 1)
 	    || (BE_Cross_readInt8LE(file, &dummy) != 1) // Padding due to word alignment in original code
@@ -282,7 +279,6 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	)
 		return false;
 
-	o->active = (activetype)activeint;
 	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosfarptr);
 	// HACK: All we need to know is if next was originally NULL or not
 	o->next = isnext ? o : NULL;
