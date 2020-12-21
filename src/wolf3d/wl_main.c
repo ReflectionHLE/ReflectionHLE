@@ -523,7 +523,30 @@ id0_long_t DoChecksum(id0_byte_t id0_far *source,id0_unsigned_t size,id0_long_t 
 
  return checksum;
 }
+
+// REFKEEN: New wrapper
+id0_long_t DoChecksumInt16(id0_word_t val, id0_long_t checksum)
+{
+	return DoChecksum((id0_byte_t *)&val, sizeof(val), checksum);
+}
 #endif
+// TODO (REFKEEN) Move declarations to separate header later
+id0_long_t ChecksumInt16Buffer(id0_word_t a[], int n, id0_long_t checksum);
+id0_boolean_t SaveObject(BE_FILE_T file, const objtype *o);
+id0_boolean_t LoadObject(BE_FILE_T file, objtype *o);
+id0_boolean_t SaveGameState(BE_FILE_T file, const gametype *state);
+id0_boolean_t LoadGameState(BE_FILE_T file, gametype *state);
+id0_long_t ChecksumGameState(const gametype *state, id0_long_t checksum);
+id0_boolean_t SaveLevelRatios(BE_FILE_T file, const LRstruct *ratios, int n);
+id0_boolean_t LoadLevelRatios(BE_FILE_T file, LRstruct *ratios, int n);
+id0_long_t ChecksumLevelRatios(const LRstruct *ratios, int n, id0_long_t checksum);
+id0_boolean_t SaveStatObjects(BE_FILE_T file, const statobj_t *stats, int n);
+id0_boolean_t LoadStatObjects(BE_FILE_T file, statobj_t *stats, int n);
+id0_long_t ChecksumStatObjects(const statobj_t *stats, int n, id0_long_t checksum);
+
+id0_long_t SaveAndChecksumDoorObjects(BE_FILE_T file, const doorobj_t *doors, int n, id0_long_t checksum);
+id0_long_t LoadAndChecksumDoorObjects(BE_FILE_T file, doorobj_t *doors, int n, id0_long_t checksum);
+//
 
 
 /*
@@ -536,8 +559,6 @@ id0_long_t DoChecksum(id0_byte_t id0_far *source,id0_unsigned_t size,id0_long_t 
 
 id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 {
-	return false; // TODO IMPLEMENT
-#if 0
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming and free size verifications, plus a bit more
 
@@ -595,9 +616,11 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)&gamestate,sizeof(gamestate));
+	SaveGameState(file, &gamestate);
+//	CA_FarWrite (file,(void id0_far *)&gamestate,sizeof(gamestate));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&gamestate,sizeof(gamestate),checksum);
+	checksum = ChecksumGameState(&gamestate, checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&gamestate,sizeof(gamestate),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
@@ -606,100 +629,129 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 #if (defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 //#ifdef SPEAR
-	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*20);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
+	SaveLevelRatios(file, LevelRatios, 20);
+	checksum = ChecksumLevelRatios(LevelRatios, 20, checksum);
+//	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*20);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
 #elif (defined GAMEVER_NOAH3D)
-	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*30);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
+	SaveLevelRatios(file, LevelRatios, 30);
+	checksum = ChecksumLevelRatios(LevelRatios, 30, checksum);
+//	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*30);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
 #else
-	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*8);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
+	SaveLevelRatios(file, LevelRatios, 8);
+	checksum = ChecksumLevelRatios(LevelRatios, 8, checksum);
+//	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*8);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 #endif
-	CA_FarWrite (file,(void id0_far *)tilemap,sizeof(tilemap));
+	CA_FarWrite (file,(id0_byte_t id0_far *)tilemap,sizeof(tilemap));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	checksum = DoChecksum((id0_byte_t id0_far *)tilemap,sizeof(tilemap),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)actorat,sizeof(actorat));
+	BE_Cross_writeInt16LEBuffer(file, actorat, sizeof(actorat));
+//	CA_FarWrite (file,(void id0_far *)actorat,sizeof(actorat));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)actorat,sizeof(actorat),checksum);
+	checksum = ChecksumInt16Buffer((id0_word_t *)actorat, sizeof(actorat)/sizeof(actorat[0][0]), checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)actorat,sizeof(actorat),checksum);
 #endif
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarWrite (file,(void id0_far *)areaconnect,sizeof(areaconnect));
-	CA_FarWrite (file,(void id0_far *)areabyplayer,sizeof(areabyplayer));
+	CA_FarWrite (file,(id0_byte_t *)areaconnect,sizeof(areaconnect));
+	BE_Cross_write_booleans_To16LEBuffer(file, areabyplayer, 2*BE_Cross_ArrayLen(areabyplayer));
+//	CA_FarWrite (file,(void id0_far *)areabyplayer,sizeof(areabyplayer));
 #endif
 
 	for (ob = player ; ob ; ob=ob->next)
 	{
 	 DiskFlopAnim(x,y);
-	 CA_FarWrite (file,(void id0_far *)ob,sizeof(*ob));
+	 SaveObject(file, ob);
+//	 CA_FarWrite (file,(void id0_far *)ob,sizeof(*ob));
 	}
 	nullobj.active = ac_badobject;          // end of file marker
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)&nullobj,sizeof(nullobj));
+	SaveObject(file, &nullobj);
+//	CA_FarWrite (file,(void id0_far *)&nullobj,sizeof(nullobj));
 
 
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)&laststatobj,sizeof(laststatobj));
+	id0_word_t laststatobjoffset = COMPAT_STATOBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(laststatobj);
+	BE_Cross_writeInt16LE(file, &laststatobjoffset);
+//	CA_FarWrite (file,(void id0_far *)&laststatobj,sizeof(laststatobj));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&laststatobj,sizeof(laststatobj),checksum);
+	checksum = DoChecksumInt16(laststatobjoffset, checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&laststatobj,sizeof(laststatobj),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)statobjlist,sizeof(statobjlist));
+	SaveStatObjects(file, statobjlist, BE_Cross_ArrayLen(statobjlist));
+//	CA_FarWrite (file,(void id0_far *)statobjlist,sizeof(statobjlist));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)statobjlist,sizeof(statobjlist),checksum);
+	checksum = ChecksumStatObjects(statobjlist, BE_Cross_ArrayLen(statobjlist), checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)statobjlist,sizeof(statobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)doorposition,sizeof(doorposition));
+	BE_Cross_writeInt16LEBuffer(file, doorposition, sizeof(doorposition));
+//	CA_FarWrite (file,(void id0_far *)doorposition,sizeof(doorposition));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)doorposition,sizeof(doorposition),checksum);
+	checksum = ChecksumInt16Buffer(doorposition, BE_Cross_ArrayLen(doorposition), checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)doorposition,sizeof(doorposition),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)doorobjlist,sizeof(doorobjlist));
+	checksum = SaveAndChecksumDoorObjects(file, doorobjlist, BE_Cross_ArrayLen(doorobjlist), checksum);
+//	CA_FarWrite (file,(void id0_far *)doorobjlist,sizeof(doorobjlist));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)doorobjlist,sizeof(doorobjlist),checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)doorobjlist,sizeof(doorobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	CA_FarWrite (file,(void id0_far *)&pwallstate,sizeof(pwallstate));
+	BE_Cross_writeInt16LE(file, &pwallstate);
+//	CA_FarWrite (file,(void id0_far *)&pwallstate,sizeof(pwallstate));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallstate,sizeof(pwallstate),checksum);
+	checksum = DoChecksumInt16(pwallstate, checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwallstate,sizeof(pwallstate),checksum);
 #endif
-	CA_FarWrite (file,(void id0_far *)&pwallx,sizeof(pwallx));
+	BE_Cross_writeInt16LE(file, &pwallx);
+//	CA_FarWrite (file,(void id0_far *)&pwallx,sizeof(pwallx));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallx,sizeof(pwallx),checksum);
+	checksum = DoChecksumInt16(pwallx, checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwallx,sizeof(pwallx),checksum);
 #endif
-	CA_FarWrite (file,(void id0_far *)&pwally,sizeof(pwally));
+	BE_Cross_writeInt16LE(file, &pwally);
+//	CA_FarWrite (file,(void id0_far *)&pwally,sizeof(pwally));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwally,sizeof(pwally),checksum);
+	checksum = DoChecksumInt16(pwally, checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwally,sizeof(pwally),checksum);
 #endif
-	CA_FarWrite (file,(void id0_far *)&pwalldir,sizeof(pwalldir));
+	BE_Cross_writeInt16LE(file, &pwalldir);
+//	CA_FarWrite (file,(void id0_far *)&pwalldir,sizeof(pwalldir));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwalldir,sizeof(pwalldir),checksum);
+	checksum = DoChecksumInt16(pwalldir, checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwalldir,sizeof(pwalldir),checksum);
 #endif
-	CA_FarWrite (file,(void id0_far *)&pwallpos,sizeof(pwallpos));
+	BE_Cross_writeInt16LE(file, &pwallpos);
+//	CA_FarWrite (file,(void id0_far *)&pwallpos,sizeof(pwallpos));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallpos,sizeof(pwallpos),checksum);
+	checksum = DoChecksumInt16(pwallpos, checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwallpos,sizeof(pwallpos),checksum);
 #endif
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	//
 	// WRITE OUT CHECKSUM
 	//
-	CA_FarWrite (file,(void id0_far *)&checksum,sizeof(checksum));
+	BE_Cross_writeInt32LE(file, &checksum);
+//	CA_FarWrite (file,(void id0_far *)&checksum,sizeof(checksum));
 #endif
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 	return(true);
-#endif
 }
 
 //===========================================================================
@@ -714,8 +766,6 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 
 id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 {
-	return false; // TODO IMPLEMENT
-#if 0
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming, plus a bit more
 
@@ -730,9 +780,12 @@ id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 #endif
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)&gamestate,sizeof(gamestate));
+	LoadGameState(file, &gamestate);
+//	CA_FarRead (file,(void id0_far *)&gamestate,sizeof(gamestate));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&gamestate,sizeof(gamestate),checksum);
+	checksum = ChecksumGameState(&gamestate, checksum);
+	printf("checksum after reading gamestate %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&gamestate,sizeof(gamestate),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
@@ -741,49 +794,73 @@ id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 #if (defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 //#ifdef SPEAR
-	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*20);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
+	LoadLevelRatios(file, LevelRatios, 20);
+	checksum = ChecksumLevelRatios(LevelRatios, 20, checksum);
+//	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*20);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
 #elif (defined GAMEVER_NOAH3D)
-	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*30);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
+	LoadLevelRatios(file, LevelRatios, 30);
+	checksum = ChecksumLevelRatios(LevelRatios, 30, checksum);
+//	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*30);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
 #else
-	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*8);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
+	LoadLevelRatios(file, LevelRatios, 8);
+	checksum = ChecksumLevelRatios(LevelRatios, 8, checksum);
+//	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*8);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
 #endif
+	printf("checksum after reading level ratios %X\n", checksum);
 
 	DiskFlopAnim(x,y);
 #endif
 	SetupGameLevel ();
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)tilemap,sizeof(tilemap));
+	CA_FarRead (file,(id0_byte_t id0_far *)tilemap,sizeof(tilemap));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	checksum = DoChecksum((id0_byte_t id0_far *)tilemap,sizeof(tilemap),checksum);
+	printf("checksum after reading tilemap %X\n", checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)actorat,sizeof(actorat));
+	BE_Cross_readInt16LEBuffer(file, actorat, sizeof(actorat));
+//	CA_FarRead (file,(void id0_far *)actorat,sizeof(actorat));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)actorat,sizeof(actorat),checksum);
+	checksum = ChecksumInt16Buffer((id0_word_t *)actorat, sizeof(actorat)/sizeof(actorat[0][0]), checksum);
+	printf("checksum after reading actorat %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)actorat,sizeof(actorat),checksum);
 #endif
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarRead (file,(void id0_far *)areaconnect,sizeof(areaconnect));
-	CA_FarRead (file,(void id0_far *)areabyplayer,sizeof(areabyplayer));
+	CA_FarRead (file,(id0_byte_t *)areaconnect,sizeof(areaconnect));
+	BE_Cross_read_booleans_From16LEBuffer(file, areabyplayer, 2*BE_Cross_ArrayLen(areabyplayer));
+//	CA_FarRead (file,(void id0_far *)areabyplayer,sizeof(areabyplayer));
 #endif
 
 
 
 	InitActorList ();
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)player,sizeof(*player));
+	LoadObject(file, player);
+//	CA_FarRead (file,(void id0_far *)player,sizeof(*player));
 
 	while (1)
 	{
 	 DiskFlopAnim(x,y);
-		CA_FarRead (file,(void id0_far *)&nullobj,sizeof(nullobj));
+		LoadObject(file, &nullobj);
+//		CA_FarRead (file,(void id0_far *)&nullobj,sizeof(nullobj));
 		if (nullobj.active == ac_badobject)
 			break;
 		GetNewActor ();
+#if 1
+		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
+		objtype *next = newobj->next, *prev = newobj->prev;
+		memcpy (newobj,&nullobj,sizeof(nullobj));
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
+	 // don't copy over the links
+		newobj->next = next;
+		newobj->prev = prev;
+#endif
+#else
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 		memcpy (newobj,&nullobj,sizeof(nullobj));
@@ -791,58 +868,89 @@ id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 	 // don't copy over the links
 		memcpy (newobj,&nullobj,sizeof(nullobj)-4);
 #endif
+#endif
 	}
 
 
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)&laststatobj,sizeof(laststatobj));
+	id0_word_t laststatobjoffset;
+	BE_Cross_readInt16LE(file, &laststatobjoffset);
+	laststatobj = COMPAT_STATOBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(laststatobjoffset);
+//	CA_FarRead (file,(void id0_far *)&laststatobj,sizeof(laststatobj));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&laststatobj,sizeof(laststatobj),checksum);
+	checksum = DoChecksumInt16(laststatobjoffset, checksum);
+	printf("checksum after reading laststatobj %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&laststatobj,sizeof(laststatobj),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)statobjlist,sizeof(statobjlist));
+	LoadStatObjects(file, statobjlist, BE_Cross_ArrayLen(statobjlist));
+//	CA_FarRead (file,(void id0_far *)statobjlist,sizeof(statobjlist));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)statobjlist,sizeof(statobjlist),checksum);
+	checksum = ChecksumStatObjects(statobjlist, BE_Cross_ArrayLen(statobjlist), checksum);
+	printf("checksum after reading statobjlist %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)statobjlist,sizeof(statobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)doorposition,sizeof(doorposition));
+	BE_Cross_readInt16LEBuffer(file, doorposition, sizeof(doorposition));
+//	CA_FarRead (file,(void id0_far *)doorposition,sizeof(doorposition));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)doorposition,sizeof(doorposition),checksum);
+	checksum = ChecksumInt16Buffer(doorposition, BE_Cross_ArrayLen(doorposition), checksum);
+	printf("checksum after reading doorposition %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)doorposition,sizeof(doorposition),checksum);
 #endif
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)doorobjlist,sizeof(doorobjlist));
+	checksum = LoadAndChecksumDoorObjects(file, doorobjlist, BE_Cross_ArrayLen(doorobjlist), checksum);
+	printf("checksum after reading doorobjlist %X\n", checksum);
+//	CA_FarRead (file,(void id0_far *)doorobjlist,sizeof(doorobjlist));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)doorobjlist,sizeof(doorobjlist),checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)doorobjlist,sizeof(doorobjlist),checksum);
 #endif
 
 	DiskFlopAnim(x,y);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	CA_FarRead (file,(void id0_far *)&pwallstate,sizeof(pwallstate));
+	BE_Cross_readInt16LE(file, &pwallstate);
+//	CA_FarRead (file,(void id0_far *)&pwallstate,sizeof(pwallstate));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallstate,sizeof(pwallstate),checksum);
+	checksum = DoChecksumInt16(pwallstate, checksum);
+	printf("checksum after reading pwallstate %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwallstate,sizeof(pwallstate),checksum);
 #endif
-	CA_FarRead (file,(void id0_far *)&pwallx,sizeof(pwallx));
+	BE_Cross_readInt16LE(file, &pwallx);
+//	CA_FarRead (file,(void id0_far *)&pwallx,sizeof(pwallx));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallx,sizeof(pwallx),checksum);
+	checksum = DoChecksumInt16(pwallx, checksum);
+	printf("checksum after reading pwallx %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwallx,sizeof(pwallx),checksum);
 #endif
-	CA_FarRead (file,(void id0_far *)&pwally,sizeof(pwally));
+	BE_Cross_readInt16LE(file, &pwally);
+//	CA_FarRead (file,(void id0_far *)&pwally,sizeof(pwally));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwally,sizeof(pwally),checksum);
+	checksum = DoChecksumInt16(pwally, checksum);
+	printf("checksum after reading pwally %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwally,sizeof(pwally),checksum);
 #endif
-	CA_FarRead (file,(void id0_far *)&pwalldir,sizeof(pwalldir));
+	BE_Cross_readInt16LE(file, &pwalldir);
+//	CA_FarRead (file,(void id0_far *)&pwalldir,sizeof(pwalldir));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwalldir,sizeof(pwalldir),checksum);
+	checksum = DoChecksumInt16(pwalldir, checksum);
+	printf("checksum after reading pwalldir %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwalldir,sizeof(pwalldir),checksum);
 #endif
-	CA_FarRead (file,(void id0_far *)&pwallpos,sizeof(pwallpos));
+	BE_Cross_readInt16LE(file, &pwallpos);
+//	CA_FarRead (file,(void id0_far *)&pwallpos,sizeof(pwallpos));
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallpos,sizeof(pwallpos),checksum);
+	checksum = DoChecksumInt16(pwallpos, checksum);
+	printf("checksum after reading pwallpos %X\n", checksum);
+//	checksum = DoChecksum((id0_byte_t id0_far *)&pwallpos,sizeof(pwallpos),checksum);
 #endif
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarRead (file,(void id0_far *)&oldchecksum,sizeof(oldchecksum));
+	BE_Cross_readInt32LE(file, &oldchecksum);
+	printf("oldchecksum %X\n", oldchecksum);
+//	CA_FarRead (file,(void id0_far *)&oldchecksum,sizeof(oldchecksum));
 
 	if (oldchecksum != checksum)
 	{
@@ -874,7 +982,6 @@ id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 #endif
 
 	return true;
-#endif
 }
 
 //===========================================================================
