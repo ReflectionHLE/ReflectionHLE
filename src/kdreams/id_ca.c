@@ -819,7 +819,7 @@ void CAL_SetupMapFile (void)
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
 	mapfiletype id0_seg *tinfasmapfile = (mapfiletype id0_seg *)tinf;
 	tinfasmapfile->RLEWtag = BE_Cross_Swap16LE(tinfasmapfile->RLEWtag);
-	for (int i = 0; i < sizeof(tinfasmapfile->headeroffsets)/sizeof(*(tinfasmapfile->headeroffsets)); ++i)
+	for (int i = 0; i < BE_Cross_ArrayLen(tinfasmapfile->headeroffsets); ++i)
 	{
 		tinfasmapfile->headeroffsets[i] = BE_Cross_Swap32LE(tinfasmapfile->headeroffsets[i]);
 	}
@@ -1410,7 +1410,7 @@ void CAL_ExpandGrChunk (id0_int_t chunk, id0_byte_t id0_far *source)
 		{
 			fontstruct *font = (fontstruct *)(grsegs[chunk]);
 			font->height = BE_Cross_Swap16LE(font->height);
-			for (int i = 0; i < (int)(sizeof(font->location)/sizeof(*(font->location))); ++i)
+			for (int i = 0; i < (int)BE_Cross_ArrayLen(font->location); ++i)
 				font->location[i] = BE_Cross_Swap16LE(font->location[i]);
 		}
 #endif
@@ -2019,7 +2019,7 @@ static void RefKeen_Patch_Embedded_Resources(int audiodictsize, int audioheadsiz
 
 	mapfiletype *tinfasmapfile = (mapfiletype *)maphead;
 	tinfasmapfile->RLEWtag = BE_Cross_Swap16LE(tinfasmapfile->RLEWtag);
-	for (int i = 0; i < sizeof(tinfasmapfile->headeroffsets)/sizeof(*(tinfasmapfile->headeroffsets)); ++i)
+	for (int i = 0; i < BE_Cross_ArrayLen(tinfasmapfile->headeroffsets); ++i)
 	{
 		tinfasmapfile->headeroffsets[i] = BE_Cross_Swap32LE(tinfasmapfile->headeroffsets[i]);
 	}
