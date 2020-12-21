@@ -717,7 +717,7 @@ static void BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap(const char *keypr
 	{
 		BE_ST_ExitWithErrorMsg("BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap: Invalid config key!\n");
 	}
-	for (valindex = 0; valindex < (int)(sizeof(g_sdlControlSchemeKeyMapCfgVals)/sizeof(*g_sdlControlSchemeKeyMapCfgVals)); ++valindex)
+	for (valindex = 0; valindex < (int)BE_Cross_ArrayLen(g_sdlControlSchemeKeyMapCfgVals); ++valindex)
 	{
 		// Empty strings are used for SDL game controller buttons we wish to skip
 		if (g_sdlControlSchemeKeyMapCfgVals[valindex] && !strcmp(buffer, g_sdlControlSchemeKeyMapCfgVals[valindex]))
@@ -726,7 +726,7 @@ static void BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap(const char *keypr
 			return;
 		}
 	}
-	g_refKeenCfg.altControlScheme.actionMappings[keyindex] = (sizeof(g_sdlControlSchemeKeyMapCfgVals)/sizeof(*g_sdlControlSchemeKeyMapCfgVals)) - 1; // SPECIAL - A way to toggle this off
+	g_refKeenCfg.altControlScheme.actionMappings[keyindex] = BE_Cross_ArrayLen(g_sdlControlSchemeKeyMapCfgVals) - 1; // SPECIAL - A way to toggle this off
 }
 
 static void BEL_ST_ParseSetting_AlternativeControlSchemeLeftStick(const char *keyprefix, const char *buffer)
@@ -1013,7 +1013,7 @@ static void BEL_ST_ParseConfig(void)
 		{
 			buffer[len-1] = '\0';
 		}
-		for (int i = 0; i < (int)(sizeof(g_sdlCfgEntries)/sizeof(*g_sdlCfgEntries)); ++i)
+		for (int i = 0; i < (int)BE_Cross_ArrayLen(g_sdlCfgEntries); ++i)
 		{
 			if (!strncmp(g_sdlCfgEntries[i].cfgPrefix, buffer, strlen(g_sdlCfgEntries[i].cfgPrefix)))
 			{
