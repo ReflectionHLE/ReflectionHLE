@@ -39,7 +39,7 @@ BE_FILE_T BE_Cross_open_steamcfg_for_reading(void)
 	LSTATUS status = SHGetValue(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\VALVE\\STEAM"), _T("INSTALLPATH"), &dwType, steam_config_path, &dwSize);
 	if ((status != ERROR_SUCCESS) || (dwType != REG_SZ))
 		return NULL;
-	BEL_Cross_safeandfastctstringcopy(steam_config_path + _tcslen(steam_config_path), steam_config_path + sizeof(steam_config_path)/sizeof(TCHAR), _T("\\config\\config.vdf"));
+	BEL_Cross_safeandfastctstringcopy(steam_config_path + _tcslen(steam_config_path), steam_config_path + BE_Cross_ArrayLen(steam_config_path), _T("\\config\\config.vdf"));
 
 #elif (defined REFKEEN_PLATFORM_UNIX)
 
@@ -48,9 +48,9 @@ BE_FILE_T BE_Cross_open_steamcfg_for_reading(void)
 		return NULL;
 
 #ifdef REFKEEN_PLATFORM_MACOS
-	BE_Cross_safeandfastcstringcopy_2strs(steam_config_path, steam_config_path+sizeof(steam_config_path)/sizeof(TCHAR), homeVar, "/Library/Application Support/Steam/config/config.vdf");
+	BE_Cross_safeandfastcstringcopy_2strs(steam_config_path, steam_config_path+BE_Cross_ArrayLen(steam_config_path), homeVar, "/Library/Application Support/Steam/config/config.vdf");
 #else
-	BE_Cross_safeandfastcstringcopy_2strs(steam_config_path, steam_config_path+sizeof(steam_config_path)/sizeof(TCHAR), homeVar, "/.steam/steam/config/config.vdf");
+	BE_Cross_safeandfastcstringcopy_2strs(steam_config_path, steam_config_path+BE_Cross_ArrayLen(steam_config_path), homeVar, "/.steam/steam/config/config.vdf");
 #endif
 
 #endif // UNIX
