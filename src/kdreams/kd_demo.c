@@ -211,7 +211,7 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	id0_int_t dummy = 0;
 	// for active enum (anonymous type)
 	id0_int_t activeint = (id0_int_t)(o->active);
-	// BACKWARD COMPATIBILITY
+	// BACKWARDS COMPATIBILITY
 	id0_word_t statedosoffset = o->state ? o->state->compatdospointer : 0;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
@@ -231,7 +231,7 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	        && (BE_Cross_writeInt16LE(file, &o->yspeed) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->ticadjust) == 2)
-	        && (BE_Cross_writeInt16LE(file, &statedosoffset) == 2) // BACKWARD COMPATIBILITY
+	        && (BE_Cross_writeInt16LE(file, &statedosoffset) == 2) // BACKWARDS COMPATIBILITY
 	        && (BE_Cross_writeInt16LE(file, &o->shapenum) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->left) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->top) == 2)
@@ -266,7 +266,7 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	id0_int_t dummy;
 	// for active enum (anonymous type)
 	id0_int_t activeint;
-	// BACKWARD COMPATIBILITY
+	// BACKWARDS COMPATIBILITY
 	id0_word_t statedosoffset;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
@@ -286,7 +286,7 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	    || (BE_Cross_readInt16LE(file, &o->yspeed) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->ticcount) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->ticadjust) != 2)
-	    || (BE_Cross_readInt16LE(file, &statedosoffset) != 2) // BACKWARD COMPATIBILITY
+	    || (BE_Cross_readInt16LE(file, &statedosoffset) != 2) // BACKWARDS COMPATIBILITY
 	    || (BE_Cross_readInt16LE(file, &o->shapenum) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->left) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->top) != 2)
@@ -314,9 +314,8 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	    || (BE_Cross_readInt16LE(file, &isnext) != 2) // next
 	    || (BE_Cross_readInt16LE(file, &dummy) != 2) // prev
 	)
-	{
 		return false;
-	}
+
 	o->active = (activetype)activeint;
 	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// ANOTHER SPECIAL CASE (for almost all creatures as flowers)

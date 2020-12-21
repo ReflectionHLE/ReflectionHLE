@@ -199,13 +199,13 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	id0_int_t dummy = 0;
 	// for active enum (anonymous type)
 	id0_int_t activeint = (id0_int_t)(o->active);
-	// BACKWARD COMPATIBILITY
+	// BACKWARDS COMPATIBILITY
 	id0_longword_t statedosfarptr = o->state ? o->state->compatdospointer : 0;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
 	// Now writing
 	return ((BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
-	        && (BE_Cross_writeInt32LE(file, &statedosfarptr) == 4) // BACKWARD COMPATIBILITY
+	        && (BE_Cross_writeInt32LE(file, &statedosfarptr) == 4) // BACKWARDS COMPATIBILITY
 	        && (BE_Cross_writeInt32LE(file, &o->x) == 4)
 	        && (BE_Cross_writeInt32LE(file, &o->y) == 4)
 	        && (BE_Cross_writeInt16LE(file, &o->viewx) == 2)
@@ -243,13 +243,13 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	id0_int_t dummy;
 	// for active enum (anonymous type)
 	id0_int_t activeint;
-	// BACKWARD COMPATIBILITY
+	// BACKWARDS COMPATIBILITY
 	id0_longword_t statedosfarptr;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
 	// Now reading
 	if ((BE_Cross_readInt16LE(file, &o->ticcount) != 2)
-	    || (BE_Cross_readInt32LE(file, &statedosfarptr) != 4) // BACKWARD COMPATIBILITY
+	    || (BE_Cross_readInt32LE(file, &statedosfarptr) != 4) // BACKWARDS COMPATIBILITY
 	    || (BE_Cross_readInt32LE(file, &o->x) != 4)
 	    || (BE_Cross_readInt32LE(file, &o->y) != 4)
 	    || (BE_Cross_readInt16LE(file, &o->viewx) != 2)
@@ -280,9 +280,8 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	    || (BE_Cross_readInt16LE(file, &o->temp1) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->temp2) != 2)
 	)
-	{
 		return false;
-	}
+
 	o->active = (activetype)activeint;
 	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosfarptr);
 	// HACK: All we need to know is if next was originally NULL or not

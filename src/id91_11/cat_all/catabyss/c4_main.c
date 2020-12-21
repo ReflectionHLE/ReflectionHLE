@@ -148,7 +148,7 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	id0_int_t dummy = 0;
 	// for active enum (anonymous type)
 	id0_int_t activeint = (id0_int_t)(o->active);
-	// BACKWARD COMPATIBILITY
+	// BACKWARDS COMPATIBILITY
 	id0_word_t statedosoffset = o->state ? o->state->compatdospointer : 0;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext = o->next ? 1 : 0;
@@ -156,7 +156,7 @@ static id0_boolean_t SaveObject(BE_FILE_T file, objtype *o)
 	return ((BE_Cross_writeInt16LE(file, &activeint) == 2)
 	        && (BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
 	        && (BE_Cross_write_classtype_To16LE(file, &o->obclass) == 2)
-	        && (BE_Cross_writeInt16LE(file, &statedosoffset) == 2) // BACKWARD COMPATIBILITY
+	        && (BE_Cross_writeInt16LE(file, &statedosoffset) == 2) // BACKWARDS COMPATIBILITY
 	        && (BE_Cross_writeInt8LE(file, &o->flags) == 1)
 	        && (BE_Cross_writeInt8LE(file, &dummy) == 1) // Padding due to word alignment in original code
 	        && (BE_Cross_writeInt32LE(file, &o->distance) == 4)
@@ -191,7 +191,7 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	id0_int_t dummy;
 	// for active enum (anonymous type)
 	id0_int_t activeint;
-	// BACKWARD COMPATIBILITY
+	// BACKWARDS COMPATIBILITY
 	id0_word_t statedosoffset;
 	// Just tells if "o->next" is zero or not
 	id0_int_t isnext;
@@ -199,7 +199,7 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	if ((BE_Cross_readInt16LE(file, &activeint) != 2)
 	    || (BE_Cross_readInt16LE(file, &o->ticcount) != 2)
 	    || (BE_Cross_read_classtype_From16LE(file, &o->obclass) != 2)
-	    || (BE_Cross_readInt16LE(file, &statedosoffset) != 2) // BACKWARD COMPATIBILITY
+	    || (BE_Cross_readInt16LE(file, &statedosoffset) != 2) // BACKWARDS COMPATIBILITY
 	    || (BE_Cross_readInt8LE(file, &o->flags) != 1)
 	    || (BE_Cross_readInt8LE(file, &dummy) != 1) // Padding due to word alignment in original code
 	    || (BE_Cross_readInt32LE(file, &o->distance) != 4)
@@ -227,9 +227,8 @@ static id0_boolean_t LoadObject(BE_FILE_T file, objtype *o)
 	    || (BE_Cross_readInt16LE(file, &isnext) != 2) // next
 	    || (BE_Cross_readInt8LEBuffer(file, &dummy, 2) != 2) // prev
 	)
-	{
 		return false;
-	}
+
 	o->active = (activetype)activeint;
 	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosoffset);
 	// HACK: All we need to know is if next was originally NULL or not
