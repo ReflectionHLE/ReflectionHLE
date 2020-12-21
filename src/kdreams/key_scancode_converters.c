@@ -747,14 +747,14 @@ static const uint8_t g_sdl2ToDOSScancodeTable[] = {
 
 uint16_t RefKeen_TranslateScancodeFromDOSToSDL2(uint8_t scancode)
 {
-	if (scancode < sizeof(g_dosToSDL2ScancodeTable)/sizeof(*g_dosToSDL2ScancodeTable))
+	if (scancode < BE_Cross_ArrayLen(g_dosToSDL2ScancodeTable))
 		return g_dosToSDL2ScancodeTable[scancode];
 	return 0;
 }
 
 uint8_t RefKeen_TranslateScancodeFromSDL2ToDOS(uint16_t scancode)
 {
-	if (scancode < sizeof(g_sdl2ToDOSScancodeTable)/sizeof(*g_sdl2ToDOSScancodeTable))
+	if (scancode < BE_Cross_ArrayLen(g_sdl2ToDOSScancodeTable))
 		return g_sdl2ToDOSScancodeTable[scancode];
 	return 0;
 }
