@@ -1435,6 +1435,7 @@ void UpdatePaletteShifts (void);
 // may be declared as a bidimensional array of objtype pointers, but it is
 // also used to store plain 16-bit integers.
 
+// FIXME: sizeof(objtype) is WRONG; We need to use the correct sizes.
 #define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objlist)*sizeof(objtype)+refkeen_compat_wl_play_objoffset)):(id0_word_t)0)
 #define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objlist+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_wl_play_objoffset)/sizeof(objtype)):NULL)
 
@@ -1442,15 +1443,17 @@ extern id0_word_t refkeen_compat_wl_play_objoffset;
 
 // (REFKEEN) Similarly support writing laststatobj to saved game
 
-#define COMPAT_STATOBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-statobjlist)*sizeof(statobj_t)+refkeen_compat_wl_act1_statobjoffset)):(id0_word_t)0)
-#define COMPAT_STATOBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(statobjlist+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_wl_act1_statobjoffset)/sizeof(statobj_t)):NULL)
+#define COMPAT_STATOBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-statobjlist)*8+refkeen_compat_wl_act1_statobjoffset)):(id0_word_t)0)
+#define COMPAT_STATOBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(statobjlist+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_wl_act1_statobjoffset)/8):NULL)
+//#define COMPAT_STATOBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-statobjlist)*sizeof(statobj_t)+refkeen_compat_wl_act1_statobjoffset)):(id0_word_t)0)
+//#define COMPAT_STATOBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(statobjlist+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_wl_act1_statobjoffset)/sizeof(statobj_t)):NULL)
 
 extern id0_word_t refkeen_compat_wl_act1_statobjoffset;
 
 // (REFKEEN) Also the visspot field of statobj_t
 
-#define COMPAT_SPOTVIS_CONVERT_SPOT_PTR_TO_DOS_PTR(spotptr) ((spotptr)?((id0_word_t)((id0_word_t)((spotptr)-(id0_byte_t *)spotvis)+refkeen_compat_wl_play_spotvisoffset)):(id0_word_t)0)
-#define COMPAT_SPOTVIS_CONVERT_DOS_PTR_TO_SPOT_PTR(dosptr) ((dosptr)?((id0_byte_t *)spotvis+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_wl_play_spotvisoffset)):NULL)
+#define COMPAT_SPOTVIS_CONVERT_SPOT_PTR_TO_DOS_PTR(spotptr) ((spotptr)?((id0_word_t)((id0_word_t)((spotptr)-(id0_byte_t *)&spotvis[0][0])+refkeen_compat_wl_play_spotvisoffset)):(id0_word_t)0)
+#define COMPAT_SPOTVIS_CONVERT_DOS_PTR_TO_SPOT_PTR(dosptr) ((dosptr)?((id0_byte_t *)&spotvis[0][0]+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_wl_play_spotvisoffset)):NULL)
 
 extern id0_word_t refkeen_compat_wl_play_spotvisoffset;
 
