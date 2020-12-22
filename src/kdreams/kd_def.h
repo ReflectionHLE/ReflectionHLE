@@ -300,22 +300,21 @@ void 	GameLoop (void);
 // (REFKEEN) BACKWARDS COMPATIBILITY: At times, one of the temp members of
 // objstruct may store a 16-bit pointer with another object.
 
+#define COMPAT_OBJ_CONVERSION_SIZE 76
+
 #define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) \
 	(!(objptr) ? (id0_word_t)0 : \
 		((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? \
 			(id0_word_t)((objptr)-objarray+1) : \
-			((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+refkeen_compat_kd_play_objoffset)) \
+			((id0_word_t)((id0_word_t)((objptr)-objarray)*COMPAT_OBJ_CONVERSION_SIZE+refkeen_compat_kd_play_objoffset)) \
 	))
 
 #define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) \
 	(!(dosptr) ? NULL : \
 		((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? \
 			(objarray+(id0_word_t)(dosptr)-1) : \
-			(objarray+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_kd_play_objoffset)/sizeof(objtype)) \
+			(objarray+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_kd_play_objoffset)/COMPAT_OBJ_CONVERSION_SIZE) \
 	))
-
-//#define COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(objptr) ((objptr)?((id0_word_t)((id0_word_t)((objptr)-objarray)*sizeof(objtype)+refkeen_compat_kd_play_objoffset)):(id0_word_t)0)
-//#define COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(dosptr) ((dosptr)?(objarray+(id0_word_t)((id0_word_t)(dosptr)-refkeen_compat_kd_play_objoffset)/sizeof(objtype)):NULL)
 
 extern id0_word_t refkeen_compat_kd_play_objoffset;
 extern objtype objarray[MAXACTORS]; // FOR CONVERSIONS AS ABOVE (COMPATIBILITY) ONLY
