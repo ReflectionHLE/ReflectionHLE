@@ -1999,35 +1999,49 @@ void PlayLoop (void)
 
 // (REFKEEN) Used for patching version-specific stuff
 id0_word_t refkeen_compat_wl_play_objoffset;
+id0_word_t refkeen_compat_wl_play_spotvisoffset;
 
 void RefKeen_Patch_wl_play(void)
 {
 #ifdef REFKEEN_VER_WL920312
 	refkeen_compat_wl_play_objoffset = 0x9435;
+	refkeen_compat_wl_play_spotvisoffset = 0x842F;
 #elif (defined REFKEEN_VER_WL1AP10)
 	refkeen_compat_wl_play_objoffset = 0xB0B0;
+	refkeen_compat_wl_play_spotvisoffset = 0xA0AA;
 #elif (defined REFKEEN_VER_WL1AP11)
 	refkeen_compat_wl_play_objoffset = 0xA73A;
+	refkeen_compat_wl_play_spotvisoffset = 0x9734;
 #elif (defined REFKEEN_VER_WL6AP11)
 	refkeen_compat_wl_play_objoffset = UPLOAD ? 0xA74A : 0xA82A;
+	refkeen_compat_wl_play_spotvisoffset = UPLOAD ? 0x9744 : 0x9824;
 #elif (defined REFKEEN_VER_WL1AP14)
 	refkeen_compat_wl_play_objoffset = UPLOAD ? 0xAB6E : 0xAC4E;
+	refkeen_compat_wl_play_spotvisoffset = UPLOAD ? 0x9B68 : 0x9C48;
 #elif (defined REFKEEN_VER_WL6GT14A) || (defined REFKEEN_VER_WL6GT14B)
 	refkeen_compat_wl_play_objoffset = 0xAC46;
+	refkeen_compat_wl_play_spotvisoffset = 0x9C40;
 #elif (defined REFKEEN_VER_WJ6IM14)
 	refkeen_compat_wl_play_objoffset = 0xA8A0;
+	refkeen_compat_wl_play_spotvisoffset = 0x989A;
 #elif (defined REFKEEN_VER_WL6AC14)
 	refkeen_compat_wl_play_objoffset = 0xB51C;
+	refkeen_compat_wl_play_spotvisoffset = 0xA516;
 #elif (defined REFKEEN_VER_SDMFG10)
 	refkeen_compat_wl_play_objoffset = 0xA224;
+	refkeen_compat_wl_play_spotvisoffset = 0x921E;
 #elif (defined REFKEEN_VER_SODFG10)
 	refkeen_compat_wl_play_objoffset = 0xA4CC;
+	refkeen_compat_wl_play_spotvisoffset = 0x94C6;
 #elif (defined REFKEEN_VER_SODFG14)
 	refkeen_compat_wl_play_objoffset = 0xA4BA;
+	refkeen_compat_wl_play_spotvisoffset = 0x94B4;
 #elif (defined REFKEEN_VER_SODAC14)
 	refkeen_compat_wl_play_objoffset = 0xB312;
+	refkeen_compat_wl_play_spotvisoffset = 0xA30C;
 #elif (defined REFKEEN_VER_N3DWT10)
 	refkeen_compat_wl_play_objoffset = 0xA94A;
+	refkeen_compat_wl_play_spotvisoffset = 0x96BC;
 #endif
 }
 

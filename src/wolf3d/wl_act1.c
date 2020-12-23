@@ -1104,4 +1104,38 @@ void MovePWalls (void)
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
+// (REFKEEN) Used for patching version-specific stuff
+id0_word_t refkeen_compat_wl_act1_statobjoffset;
+
+void RefKeen_Patch_wl_act1(void)
+{
+#ifdef REFKEEN_VER_WL920312
+	refkeen_compat_wl_act1_statobjoffset = 0x67B6;
+#elif (defined REFKEEN_VER_WL1AP10)
+	refkeen_compat_wl_act1_statobjoffset = 0x84CC;
+#elif (defined REFKEEN_VER_WL1AP11)
+	refkeen_compat_wl_act1_statobjoffset = 0x7B3E;
+#elif (defined REFKEEN_VER_WL6AP11)
+	refkeen_compat_wl_act1_statobjoffset = UPLOAD ? 0x7B4E : 0x7C2E;
+#elif (defined REFKEEN_VER_WL1AP14)
+	refkeen_compat_wl_act1_statobjoffset = UPLOAD ? 0x7F5A : 0x803A;
+#elif (defined REFKEEN_VER_WL6GT14A) || (defined REFKEEN_VER_WL6GT14B)
+	refkeen_compat_wl_act1_statobjoffset = 0x804A;
+#elif (defined REFKEEN_VER_WJ6IM14)
+	refkeen_compat_wl_act1_statobjoffset = 0x7C7A;
+#elif (defined REFKEEN_VER_WL6AC14)
+	refkeen_compat_wl_act1_statobjoffset = 0x893C;
+#elif (defined REFKEEN_VER_SDMFG10)
+	refkeen_compat_wl_act1_statobjoffset = 0x765A;
+#elif (defined REFKEEN_VER_SODFG10)
+	refkeen_compat_wl_act1_statobjoffset = 0x78BA;
+#elif (defined REFKEEN_VER_SODFG14)
+	refkeen_compat_wl_act1_statobjoffset = 0x78AA;
+#elif (defined REFKEEN_VER_SODAC14)
+	refkeen_compat_wl_act1_statobjoffset = 0x853C;
+#elif (defined REFKEEN_VER_N3DWT10)
+	refkeen_compat_wl_act1_statobjoffset = 0x83C2;
+#endif
+}
+
 REFKEEN_NS_E
