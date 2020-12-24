@@ -26,6 +26,7 @@
 
 //#include <conio.h>
 #include "wl_def.h"
+#include "savedgames.h" // REFKEEN: New addition
 //#pragma hdrstop
 
 REFKEEN_NS_B
@@ -511,9 +512,7 @@ void DiskFlopAnim(id0_int_t x,id0_int_t y)
 }
 
 
-// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-// This isn't found in the v1.0 EXE
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+// REFKEEN: We technically also need the function in v1.0 or earlier now
 id0_long_t DoChecksum(id0_byte_t id0_far *source,id0_unsigned_t size,id0_long_t checksum)
 {
  id0_unsigned_t i;
@@ -523,7 +522,12 @@ id0_long_t DoChecksum(id0_byte_t id0_far *source,id0_unsigned_t size,id0_long_t 
 
  return checksum;
 }
-#endif
+
+// REFKEEN: New wrapper
+static id0_long_t DoChecksumInt16(id0_word_t val, id0_long_t checksum)
+{
+	return DoChecksum((id0_byte_t *)&val, sizeof(val), checksum);
+}
 
 
 /*
@@ -536,170 +540,105 @@ id0_long_t DoChecksum(id0_byte_t id0_far *source,id0_unsigned_t size,id0_long_t 
 
 id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 {
-	return false; // TODO IMPLEMENT
-#if 0
-	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
-	// Comment out anything to do with checksumming and free size verifications, plus a bit more
+	// REFKEEN: This function had multiple modifications:
+	// 1. Checksums are calculated independently of the game version,
+	// even if the final check is not necessarily written to file.
+	// 2. nullobj is initialized, so there's no use of uninitialized data.
+	// 3. Wrapper functions are used for writing the file, so it can have
+	// the exact layout expected by the matching DOS version.
+	// 4. No free disk space check is done.
 
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	// REFKEEN (TODO) Let's disable the available disk space check for now
-	id0_long_t checksum;
-//	struct diskfree_t dfree;
-//	id0_long_t avail,size,checksum;
-#endif
-	objtype *ob,nullobj;
-
-
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-#if 0 // REFKEEN: Disable for now
-	if (_dos_getdiskfree(0,&dfree))
-	  Quit("Error in _dos_getdiskfree call");
-
-	avail = (id0_long_t)dfree.avail_clusters *
-			dfree.bytes_per_sector *
-			dfree.sectors_per_cluster;
-
-	size = 0;
-	for (ob = player; ob ; ob=ob->next)
-	  size += sizeof(*ob);
-	size += sizeof(nullobj);
-
-	size += sizeof(gamestate) +
-			// *** S3DNA RESTORATION ***
-#ifdef GAMEVER_NOAH3D
-			sizeof(LRstruct)*30 +
-#else
-			sizeof(LRstruct)*8 +
-#endif
-			sizeof(tilemap) +
-			sizeof(actorat) +
-			sizeof(laststatobj) +
-			sizeof(statobjlist) +
-			sizeof(doorposition) +
-			sizeof(pwallstate) +
-			sizeof(pwallx) +
-			sizeof(pwally) +
-			sizeof(pwalldir) +
-			sizeof(pwallpos);
-
-	if (avail < size)
-	{
-	 Message(STR_NOSPACE1"\n"
-			 STR_NOSPACE2);
-	 return false;
-	}
-#endif
-
-	checksum = 0;
-#endif // GAMEVER_WOLFREV <= GV_WR_WL1AP10
-
+	id0_long_t checksum = 0;
+	objtype *ob, nullobj = {};
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)&gamestate,sizeof(gamestate));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&gamestate,sizeof(gamestate),checksum);
-#endif
+	checksum = SaveAndChecksumGameState(file, &gamestate, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing gamestate %X\n", checksum);
 
-	DiskFlopAnim(x,y);
 	// *** SHAREWARE V1.0 APOGEE + SOD (DEMO) V1.0+V1.4 FORMGEN + S3DNA RESTORATION ***
 	// LevelRatios should have 8 entries in these versions of SOD (like WL1/WL6) but don't write anything in Wolf3D v1.0
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+	DiskFlopAnim(x,y);
 #if (defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
-//#ifdef SPEAR
-	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*20);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
+	checksum = SaveAndChecksumLevelRatios(file, LevelRatios, 20, checksum);
 #elif (defined GAMEVER_NOAH3D)
-	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*30);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
+	checksum = SaveAndChecksumLevelRatios(file, LevelRatios, 30, checksum);
 #else
-	CA_FarWrite (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*8);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
+	checksum = SaveAndChecksumLevelRatios(file, LevelRatios, 8, checksum);
+#endif
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing LevelRatios %X\n", checksum);
 #endif
 
 	DiskFlopAnim(x,y);
-#endif
-	CA_FarWrite (file,(void id0_far *)tilemap,sizeof(tilemap));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+	CA_FarWrite (file,(id0_byte_t id0_far *)tilemap,sizeof(tilemap));
 	checksum = DoChecksum((id0_byte_t id0_far *)tilemap,sizeof(tilemap),checksum);
-#endif
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing tilemap %X\n", checksum);
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)actorat,sizeof(actorat));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)actorat,sizeof(actorat),checksum);
-#endif
+	BE_Cross_writeInt16LEBuffer(file, actorat, sizeof(actorat));
+	checksum = ChecksumInt16Buffer((id0_word_t *)actorat, sizeof(actorat)/sizeof(actorat[0][0]), checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing actorat %X\n", checksum);
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarWrite (file,(void id0_far *)areaconnect,sizeof(areaconnect));
-	CA_FarWrite (file,(void id0_far *)areabyplayer,sizeof(areabyplayer));
+	CA_FarWrite (file,(id0_byte_t *)areaconnect,sizeof(areaconnect));
+	BE_Cross_write_booleans_To16LEBuffer(file, areabyplayer, 2*BE_Cross_ArrayLen(areabyplayer));
 #endif
 
 	for (ob = player ; ob ; ob=ob->next)
 	{
 	 DiskFlopAnim(x,y);
-	 CA_FarWrite (file,(void id0_far *)ob,sizeof(*ob));
+	 SaveObject(file, ob);
 	}
 	nullobj.active = ac_badobject;          // end of file marker
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)&nullobj,sizeof(nullobj));
+	SaveObject(file, &nullobj);
 
 
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)&laststatobj,sizeof(laststatobj));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&laststatobj,sizeof(laststatobj),checksum);
-#endif
+	id0_word_t laststatobjoffset = COMPAT_STATOBJ_CONVERT_OBJ_PTR_TO_DOS_PTR(laststatobj);
+	BE_Cross_writeInt16LE(file, &laststatobjoffset);
+	checksum = DoChecksumInt16(laststatobjoffset, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing laststatobj %X\n", checksum);
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)statobjlist,sizeof(statobjlist));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)statobjlist,sizeof(statobjlist),checksum);
-#endif
+	checksum = SaveAndChecksumStatObjects(file, statobjlist, BE_Cross_ArrayLen(statobjlist), checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing statobjlist %X\n", checksum);
 
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)doorposition,sizeof(doorposition));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)doorposition,sizeof(doorposition),checksum);
-#endif
+	BE_Cross_writeInt16LEBuffer(file, doorposition, sizeof(doorposition));
+	checksum = ChecksumInt16Buffer(doorposition, BE_Cross_ArrayLen(doorposition), checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing doorposition %X\n", checksum);
 	DiskFlopAnim(x,y);
-	CA_FarWrite (file,(void id0_far *)doorobjlist,sizeof(doorobjlist));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)doorobjlist,sizeof(doorobjlist),checksum);
-#endif
+	checksum = SaveAndChecksumDoorObjects(file, doorobjlist, BE_Cross_ArrayLen(doorobjlist), checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing doorobjlist %X\n", checksum);
 
 	DiskFlopAnim(x,y);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	CA_FarWrite (file,(void id0_far *)&pwallstate,sizeof(pwallstate));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallstate,sizeof(pwallstate),checksum);
-#endif
-	CA_FarWrite (file,(void id0_far *)&pwallx,sizeof(pwallx));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallx,sizeof(pwallx),checksum);
-#endif
-	CA_FarWrite (file,(void id0_far *)&pwally,sizeof(pwally));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwally,sizeof(pwally),checksum);
-#endif
-	CA_FarWrite (file,(void id0_far *)&pwalldir,sizeof(pwalldir));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwalldir,sizeof(pwalldir),checksum);
-#endif
-	CA_FarWrite (file,(void id0_far *)&pwallpos,sizeof(pwallpos));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallpos,sizeof(pwallpos),checksum);
-#endif
+	BE_Cross_writeInt16LE(file, &pwallstate);
+	checksum = DoChecksumInt16(pwallstate, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing pwallstate %X\n", checksum);
+	BE_Cross_writeInt16LE(file, &pwallx);
+	checksum = DoChecksumInt16(pwallx, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing pwallx %X\n", checksum);
+	BE_Cross_writeInt16LE(file, &pwally);
+	checksum = DoChecksumInt16(pwally, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing pwally %X\n", checksum);
+	BE_Cross_writeInt16LE(file, &pwalldir);
+	checksum = DoChecksumInt16(pwalldir, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing pwalldir %X\n", checksum);
+	BE_Cross_writeInt16LE(file, &pwallpos);
+	checksum = DoChecksumInt16(pwallpos, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "SaveTheGame: Checksum after writing pwallpos %X\n", checksum);
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 	//
 	// WRITE OUT CHECKSUM
 	//
-	CA_FarWrite (file,(void id0_far *)&checksum,sizeof(checksum));
+	BE_Cross_writeInt32LE(file, &checksum);
 #endif
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
 	return(true);
-#endif
 }
 
 //===========================================================================
@@ -714,135 +653,127 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 
 id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 {
-	return false; // TODO IMPLEMENT
-#if 0
+	// REFKEEN: This function had multiple modifications:
+	// 1. Checksums are calculated independently of the game version,
+	// even if the final check is not necessarily read from file.
+	// 2. nullobj is initialized, so there's no use of uninitialized data.
+	// 3. Wrapper functions are used for reading the file, so it can have
+	// the exact layout expected by the matching DOS version.
+
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***
 	// Comment out anything to do with checksumming, plus a bit more
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	id0_long_t checksum,oldchecksum;
+	id0_long_t oldchecksum;
 #endif
-	objtype *ob,nullobj;
+	id0_long_t checksum = 0;
 
+	objtype *ob, nullobj = {};
 
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = 0;
-#endif
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)&gamestate,sizeof(gamestate));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&gamestate,sizeof(gamestate),checksum);
-#endif
+	checksum = LoadAndChecksumGameState(file, &gamestate, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading gamestate %X\n", checksum);
 
-	DiskFlopAnim(x,y);
 	// *** SHAREWARE V1.0 APOGEE + SOD (DEMO) V1.0+V1.4 FORMGEN + S3DNA RESTORATION ***
 	// LevelRatios should have 8 entries in these versions of SOD (like WL1/WL6) but don't read anything in Wolf3D v1.0
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+	DiskFlopAnim(x,y);
 #if (defined SPEAR) && (GAMEVER_WOLFREV > GV_WR_SODFG14A)
 //#ifdef SPEAR
-	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*20);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*20,checksum);
+	checksum = LoadAndChecksumLevelRatios(file, LevelRatios, 20, checksum);
 #elif (defined GAMEVER_NOAH3D)
-	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*30);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*30,checksum);
+	checksum = LoadAndChecksumLevelRatios(file, LevelRatios, 30, checksum);
 #else
-	CA_FarRead (file,(void id0_far *)&LevelRatios[0],sizeof(LRstruct)*8);
-	checksum = DoChecksum((id0_byte_t id0_far *)&LevelRatios[0],sizeof(LRstruct)*8,checksum);
+	checksum = LoadAndChecksumLevelRatios(file, LevelRatios, 8, checksum);
+#endif
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading LevelRatios %X\n", checksum);
 #endif
 
 	DiskFlopAnim(x,y);
-#endif
 	SetupGameLevel ();
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)tilemap,sizeof(tilemap));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
+	CA_FarRead (file,(id0_byte_t id0_far *)tilemap,sizeof(tilemap));
 	checksum = DoChecksum((id0_byte_t id0_far *)tilemap,sizeof(tilemap),checksum);
-#endif
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading tilemap %X\n", checksum);
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)actorat,sizeof(actorat));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)actorat,sizeof(actorat),checksum);
-#endif
+	BE_Cross_readInt16LEBuffer(file, actorat, sizeof(actorat));
+	checksum = ChecksumInt16Buffer((id0_word_t *)actorat, sizeof(actorat)/sizeof(actorat[0][0]), checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading actorat %X\n", checksum);
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarRead (file,(void id0_far *)areaconnect,sizeof(areaconnect));
-	CA_FarRead (file,(void id0_far *)areabyplayer,sizeof(areabyplayer));
+	CA_FarRead (file,(id0_byte_t *)areaconnect,sizeof(areaconnect));
+	BE_Cross_read_booleans_From16LEBuffer(file, areabyplayer, 2*BE_Cross_ArrayLen(areabyplayer));
 #endif
 
 
 
 	InitActorList ();
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)player,sizeof(*player));
+	LoadObject(file, player);
 
 	while (1)
 	{
 	 DiskFlopAnim(x,y);
-		CA_FarRead (file,(void id0_far *)&nullobj,sizeof(nullobj));
+		LoadObject(file, &nullobj);
 		if (nullobj.active == ac_badobject)
 			break;
 		GetNewActor ();
 		// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
+		objtype *next = newobj->next, *prev = newobj->prev;
+#endif
 		memcpy (newobj,&nullobj,sizeof(nullobj));
-#else
+#if (GAMEVER_WOLFREV > GV_WR_WL1AP11)
 	 // don't copy over the links
-		memcpy (newobj,&nullobj,sizeof(nullobj)-4);
+		newobj->next = next;
+		newobj->prev = prev;
 #endif
 	}
 
 
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)&laststatobj,sizeof(laststatobj));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&laststatobj,sizeof(laststatobj),checksum);
-#endif
+	id0_word_t laststatobjoffset;
+	BE_Cross_readInt16LE(file, &laststatobjoffset);
+	laststatobj = COMPAT_STATOBJ_CONVERT_DOS_PTR_TO_OBJ_PTR(laststatobjoffset);
+	checksum = DoChecksumInt16(laststatobjoffset, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading laststatobj %X\n", checksum);
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)statobjlist,sizeof(statobjlist));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)statobjlist,sizeof(statobjlist),checksum);
-#endif
+	checksum = LoadAndChecksumStatObjects(file, statobjlist, BE_Cross_ArrayLen(statobjlist), checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading statobjlist %X\n", checksum);
 
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)doorposition,sizeof(doorposition));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)doorposition,sizeof(doorposition),checksum);
-#endif
+	BE_Cross_readInt16LEBuffer(file, doorposition, sizeof(doorposition));
+	checksum = ChecksumInt16Buffer(doorposition, BE_Cross_ArrayLen(doorposition), checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading doorposition %X\n", checksum);
 	DiskFlopAnim(x,y);
-	CA_FarRead (file,(void id0_far *)doorobjlist,sizeof(doorobjlist));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)doorobjlist,sizeof(doorobjlist),checksum);
-#endif
+	checksum = LoadAndChecksumDoorObjects(file, doorobjlist, BE_Cross_ArrayLen(doorobjlist), checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading doorobjlist %X\n", checksum);
 
 	DiskFlopAnim(x,y);
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
-	CA_FarRead (file,(void id0_far *)&pwallstate,sizeof(pwallstate));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallstate,sizeof(pwallstate),checksum);
-#endif
-	CA_FarRead (file,(void id0_far *)&pwallx,sizeof(pwallx));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallx,sizeof(pwallx),checksum);
-#endif
-	CA_FarRead (file,(void id0_far *)&pwally,sizeof(pwally));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwally,sizeof(pwally),checksum);
-#endif
-	CA_FarRead (file,(void id0_far *)&pwalldir,sizeof(pwalldir));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwalldir,sizeof(pwalldir),checksum);
-#endif
-	CA_FarRead (file,(void id0_far *)&pwallpos,sizeof(pwallpos));
-#if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	checksum = DoChecksum((id0_byte_t id0_far *)&pwallpos,sizeof(pwallpos),checksum);
-#endif
+	BE_Cross_readInt16LE(file, &pwallstate);
+	checksum = DoChecksumInt16(pwallstate, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading pwallstate %X\n", checksum);
+	BE_Cross_readInt16LE(file, &pwallx);
+	checksum = DoChecksumInt16(pwallx, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading pwallx %X\n", checksum);
+	BE_Cross_readInt16LE(file, &pwally);
+	checksum = DoChecksumInt16(pwally, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading pwally %X\n", checksum);
+	BE_Cross_readInt16LE(file, &pwalldir);
+	checksum = DoChecksumInt16(pwalldir, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading pwalldir %X\n", checksum);
+	BE_Cross_readInt16LE(file, &pwallpos);
+	checksum = DoChecksumInt16(pwallpos, checksum);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "LoadTheGame: Checksum after reading pwallpos %X\n", checksum);
 
 #if (GAMEVER_WOLFREV > GV_WR_WL1AP10)
-	CA_FarRead (file,(void id0_far *)&oldchecksum,sizeof(oldchecksum));
+	BE_Cross_readInt32LE(file, &oldchecksum);
+	printf("LoadTheGame: oldchecksum %X\n", oldchecksum);
 
 	if (oldchecksum != checksum)
 	{
@@ -874,7 +805,6 @@ id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 #endif
 
 	return true;
-#endif
 }
 
 //===========================================================================
