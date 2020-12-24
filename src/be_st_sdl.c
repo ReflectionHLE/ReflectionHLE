@@ -2078,6 +2078,7 @@ void BE_ST_PollEvents(void)
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 			if (((event.key.keysym.scancode == SDL_SCANCODE_RETURN) ||
 			     (event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER)) &&
+			    !event.key.repeat &&
 			    ((event.key.keysym.mod & (KMOD_LALT|KMOD_RALT))
 #ifdef REFKEEN_PLATFORM_MACOS
 			     || (event.key.keysym.mod & (KMOD_LGUI|KMOD_RGUI))
