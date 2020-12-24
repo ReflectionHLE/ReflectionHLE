@@ -34,7 +34,7 @@
 REFKEEN_NS_B
 
 #define REFKEEN_ENABLE_FILE_SEARCH 0 // TODO (REFKEEN): Implement
-#define REFKEEN_ENABLE_GAME_SAVING 0 // TODO (REFKEEN): Implement
+#define REFKEEN_ENABLE_GAME_SAVING 1 // TODO (REFKEEN): Implement
 
 //
 // PRIVATE PROTOTYPES
@@ -3778,11 +3778,11 @@ void SetupControlPanel(void)
 		MainMenu[savegame].active=1;
 #endif
 
-#if REFKEEN_ENABLE_FILE_SEARCH
 	//
 	// SEE WHICH SAVE GAME FILES ARE AVAILABLE & READ STRING IN
 	//
 	strcpy(name,SaveName);
+#if REFKEEN_ENABLE_FILE_SEARCH
 	if (!findfirst(name,&f,0))
 		do
 		{
@@ -3797,9 +3797,25 @@ void SetupControlPanel(void)
 //				handle=open(f.ff_name,O_BINARY);
 				BE_Cross_readInt8LEBuffer(handle,temp,32);
 				BE_Cross_close(handle);
+				temp[31] = '\0'; // TODO (REFKEEN) Print error instead?
 				strcpy(&SaveGameNames[which][0],temp);
 			}
 		} while(!findnext(&f));
+#else // TODO (REFKEEN) Implement alternative
+	for (which = 0; which < 10; which++)
+	{
+		name[7] = which + '0';
+		BE_FILE_T handle = BE_Cross_open_rewritable_for_reading(name);
+		if (handle)
+		{
+			id0_char_t temp[32];
+			SaveGamesAvail[which]=1;
+			BE_Cross_readInt8LEBuffer(handle,temp,32);
+			BE_Cross_close(handle);
+			temp[31] = '\0'; // TODO (REFKEEN) Print error instead?
+			strcpy(&SaveGameNames[which][0],temp);
+		}
+	}
 #endif
 
 	//
