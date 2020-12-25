@@ -2,6 +2,38 @@
 Changelog
 ---------
 
+Dec 25, 2020 (v0.32.0):
+
+* KDreams, Catacombs (and Wolf3D): Make it possible
+to bind actions to a game controller's D-pad.
+* Wolf3D: Support game controllers, in a similar manner to
+what's already been covered for Keen Dreams and the Catacombs.
+Further add mappings for touch input.
+* Wolf3D: Support stereo panning. This might not be fully accurate,
+but hopefully, it's not that far.
+* Wolf3D: Support saved games. They should be read and written using the same
+formats as the original DOS versions. This may currently be buggy by nature.
+* SD_TimeCountWaitFromSrc/SD_TimeCountWaitForDest timing fix, applying to
+all games, but especially noticeable while playing back demos in Wolf3D.
+* Add support for Spear of Destiny FormGen version 1.0, as well as the
+variation of FormGen version 1.4 which is actually identified as "V1.4"
+in-game. Currently, the one mistakenly identified as "V1.0" won't be detected.
+The mission packs' data still needs to be the same as in the
+Activision version, thus e.g., including the UAC logs.
+* When game installations are shown in the launcher, don't print their
+locations for now. This might become more useful later, in case it will
+be possible to choose any of multiple game installations which otherwise
+match the same version (e.g., due to somewhat differing game data).
+It shouldn't matter as much for now.
+* A change that may potentially break saved games made
+with older versions of the KDreams and Catacombs ports:
+The macros COMPAT_OBJ_CONVERT_OBJ_PTR_TO_DOS_PTR and
+COMPAT_OBJ_CONVERT_DOS_PTR_TO_OBJ_PTR were fixed. The original sizes
+of the object structs, as present in the DOS executables from the 90s,
+are now used, instead of sizeof(objtype) from the source ports.
+* Other misc. fixes and modifications. Thanks to Blzut3 for
+assistance with a subset of the changes in this version.
+
 Oct 16, 2020 (v0.31.0):
 
 * Support more than one possible filename for game data and EXE names.
