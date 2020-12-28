@@ -1,10 +1,16 @@
-cmake_minimum_required(VERSION 2.8)
-project(Reflection-Keen)
+cmake_minimum_required(VERSION 2.8...3.19)
+project(Reflection-Keen VERSION 0.32.0)
+
+set(bundle_identifier_prefix "net.duke4.ny.refkeen")
+set(bundle_copyright "See README.md for copyright details")
 
 function(add_refkeen_separate_target
 	name app_rc targets libraries sources shared_sources
 	include_dirs common_cc_flags target_cc_flags unified_target_cc_flags is_lib
 )
+	string(REGEX MATCH "-.+$" name_suffix ${name})
+	string(SUBSTRING ${name_suffix} 1 -1 name_suffix)
+
 	set(all_cc_flags ${common_cc_flags})
 	foreach(MACRO ${target_cc_flags})
 		list(APPEND all_cc_flags ${MACRO})
@@ -18,30 +24,61 @@ function(add_refkeen_separate_target
 		add_library(${name} STATIC ${sources})
 		set_target_properties(${name} PROPERTIES COMPILE_FLAGS "${all_cc_flags}")
 	else ()
+		set(icns_file "reflection-${app_rc}.icns")
 		if (WIN32)
 			set(app_rc "rsrc/reflection-${app_rc}.rc")
+		elseif (APPLE)
+			set(app_rc "rsrc/${icns_file}")
+			set_source_files_properties(${app_rc} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 		else ()
 			set(app_rc)
 		endif ()
 		string(REPLACE ";" " " all_cc_flags "${all_cc_flags}")
-		add_executable(${name} ${sources} ${shared_sources} ${app_rc})
-		set_target_properties(${name} PROPERTIES COMPILE_FLAGS "${all_cc_flags}")
+		add_executable(${name} MACOSX_BUNDLE ${sources} ${shared_sources} ${app_rc})
+		set_target_properties(${name} PROPERTIES
+			COMPILE_FLAGS "${all_cc_flags}"
+			MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/rsrc/Info.plist"
+			MACOSX_BUNDLE_BUNDLE_NAME "ref${name_suffix}"
+			MACOSX_BUNDLE_ICON_FILE "${icns_file}"
+			MACOSX_BUNDLE_GUI_IDENTIFIER "${bundle_identifier_prefix}.${name}"
+			MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+			MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+			MACOSX_BUNDLE_COPYRIGHT "${bundle_copyright}"
+		)
 		target_link_libraries(${name} ${libraries})
-		set(${targets} "${targets} ${name}" PARENT_SCOPE)
+		list(APPEND targets ${name})
+		set(targets "${targets}" PARENT_SCOPE)
 	endif ()
 	target_include_directories(${name} PUBLIC ${include_dirs})
 endfunction()
 
 function(add_refkeen_unified_target name app_rc targets shared_sources common_cc_flags cc_flags libraries)
+	string(REGEX MATCH "-.+$" name_suffix ${name})
+	string(SUBSTRING ${name_suffix} 1 -1 name_suffix)
+
+	set(icns_file "reflection-${app_rc}.icns")
 	if (WIN32)
 		set(app_rc "rsrc/reflection-${app_rc}.rc")
+	elseif (APPLE)
+		set(app_rc "rsrc/${icns_file}")
+		set_source_files_properties(${app_rc} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 	else ()
 		set(app_rc)
 	endif ()
-	add_executable(${name} ${shared_sources} ${app_rc})
-	set_target_properties(${name} PROPERTIES COMPILE_FLAGS "${common_cc_flags} ${cc_flags}")
+	add_executable(${name} MACOSX_BUNDLE ${shared_sources} ${app_rc})
+	set_target_properties(${name} PROPERTIES
+		COMPILE_FLAGS "${common_cc_flags} ${cc_flags}"
+		MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/rsrc/Info.plist"
+		MACOSX_BUNDLE_BUNDLE_NAME "ref${name_suffix}"
+		MACOSX_BUNDLE_ICON_FILE "${icns_file}"
+		MACOSX_BUNDLE_GUI_IDENTIFIER "${bundle_identifier_prefix}.${name}"
+		MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+		MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+		MACOSX_BUNDLE_COPYRIGHT "${bundle_copyright}"
+	)
 	target_link_libraries(${name} ${libraries})
-	set(${targets} "${targets} ${name}" PARENT_SCOPE)
+	list(APPEND targets ${name})
+	set(targets "${targets}" PARENT_SCOPE)
 endfunction()
 
 include(CMakeDependentOption)
@@ -325,7 +362,17 @@ if (BUILD_UNIFIED)
 	)
 endif ()
 
-install(TARGETS ${targets})
-install(FILES "${PROJECT_BINARY_DIR}/refkeen_config.h"
-	DESTINATION include
+include(GNUInstallDirs)
+
+install(TARGETS ${targets}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	BUNDLE DESTINATION Applications
 )
+
+if (APPLE)
+	include(cmake/MacOSDependencyScan.cmake)
+	set(bundle_dependency_dirs "")
+	macos_dependency_scan(bundle_dependency_dirs ${targets})
+
+	install(CODE "set(bundle_dependency_dirs \"${bundle_dependency_dirs}\")" SCRIPT cmake/MacOSBundle.cmake)
+endif ()
