@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 2.8...3.19)
-project(Reflection-Keen VERSION 0.32.0)
+
+if (CMAKE_MINIMUM_REQUIRED_VERSION VERSION_LESS 3.0)
+	project(Reflection-Keen)
+else ()
+	project(Reflection-Keen VERSION 0.32.0)
+endif ()
 
 set(bundle_identifier_prefix "net.duke4.ny.refkeen")
 set(bundle_copyright "See README.md for copyright details")
