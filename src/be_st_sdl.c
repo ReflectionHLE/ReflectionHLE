@@ -2299,11 +2299,17 @@ void BE_ST_PollEvents(void)
 			int axisVal = event.caxis.value;
 			if ((axis < 0) || (axis >= BE_ST_CTRL_AXIS_MAX))
 				break;
-			// Note: We handle BOTH sides in case axisVal == 0, so "release/clear" events can be properly sent
-			if (axisVal <= 0)
-				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][0], -axisVal, &g_sdlControllersAxesStates[axis][0]);
-			if (axisVal >= 0)
-				if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][1], axisVal, &g_sdlControllersAxesStates[axis][1]))
+			// Note: We handle BOTH sides, in case axisVal == 0,
+			// or alternatively, the sign of axisVal changes, so
+			// "release/clear" events can be properly sent.
+			BEL_ST_AltControlScheme_HandleEntry(
+				&g_sdlControllerMappingActualCurr->axes[axis][0],
+				BE_Cross_TypedMax(int, -axisVal, 0),
+				&g_sdlControllersAxesStates[axis][0]);
+			if (!BEL_ST_AltControlScheme_HandleEntry(
+				&g_sdlControllerMappingActualCurr->axes[axis][1],
+				BE_Cross_TypedMax(int, axisVal, 0)
+				, &g_sdlControllersAxesStates[axis][1]))
 				{
 					// Special case for triggers, treated like digital buttons
 					if ((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
