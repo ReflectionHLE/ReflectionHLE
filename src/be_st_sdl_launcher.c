@@ -530,7 +530,7 @@ BEMenu g_beInputSettingsMenu = {
 
 /*** Controller settings menu ***/
 
-static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", "DPad Up", "DPad Down", "DPad Left", "DPad Right", "LTrigger", "RTrigger", "N/A"};
+static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", "DPad Up", "DPad Down", "DPad Left", "DPad Right", NULL, "Paddle 1", "Paddle 2", "Paddle 3", "Paddle 4", "LTrigger", "RTrigger", "N/A"};
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 static const char *g_be_controllerSettingsChoices_analogMotion[] = {"Keyboard", "Mouse", NULL};
 #endif
@@ -2656,6 +2656,8 @@ void BE_ST_Launcher_RunEventLoop(void)
 					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - SDL_CONTROLLER_AXIS_TRIGGERLEFT] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
+				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
+					break;
 				g_sdlControllerLastButtonPressed = event.cbutton.button;
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
@@ -2663,6 +2665,8 @@ void BE_ST_Launcher_RunEventLoop(void)
 				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, true);
 				break;
 			case SDL_CONTROLLERBUTTONUP:
+				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
+					break;
 				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
 					g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, false);
@@ -2739,7 +2743,7 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 
 	SDL_Event event;
 	bool keepRunning = true;
-	const int defaultChoice = SDL_CONTROLLER_BUTTON_MAX + 2/*triggers*/;
+	const int defaultChoice = BE_ST_CTRL_BUT_MAX + 2/*triggers*/;
 	int choice = defaultChoice;
 
 	while (keepRunning)
@@ -2784,32 +2788,22 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 					g_sdlLauncherTriggerBinaryStates[triggerNum] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
 					if (!prevBinaryState && g_sdlLauncherTriggerBinaryStates[triggerNum])
 					{
-						choice = SDL_CONTROLLER_BUTTON_MAX + triggerNum; // HACK
+						choice = BE_ST_CTRL_BUT_MAX + triggerNum; // HACK
 						keepRunning = false;
 					}
 				}
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
-				switch (event.cbutton.button)
+				if ((event.cbutton.button >= 0) &&
+				    (event.cbutton.button < BE_ST_CTRL_BUT_MAX) &&
+				    (event.cbutton.button != BE_ST_CTRL_BUT_BACK) &&
+				    (event.cbutton.button != BE_ST_CTRL_BUT_GUIDE) &&
+				    (event.cbutton.button != BE_ST_CTRL_BUT_START) &&
+				    (event.cbutton.button != BE_ST_CTRL_BUT_MISC1))
 				{
-					case SDL_CONTROLLER_BUTTON_A:
-					case SDL_CONTROLLER_BUTTON_B:
-					case SDL_CONTROLLER_BUTTON_X:
-					case SDL_CONTROLLER_BUTTON_Y:
-					case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-					case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-					case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-					case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-					case SDL_CONTROLLER_BUTTON_DPAD_UP:
-					case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-					case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-					case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-						choice = event.cbutton.button;
-						// Fall-through
-					default:
-						keepRunning = false;
-						break;
+					choice = event.cbutton.button;
 				}
+				keepRunning = false;
 				break;
 
 			case SDL_WINDOWEVENT:
@@ -3098,6 +3092,8 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - SDL_CONTROLLER_AXIS_TRIGGERLEFT] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
+				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
+					break;
 				g_sdlControllerLastButtonPressed = event.cbutton.button;
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
@@ -3106,6 +3102,8 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 					return confirmed;
 				break;
 			case SDL_CONTROLLERBUTTONUP:
+				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
+					break;
 				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
 					g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
 				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.cbutton.button, false, &confirmed))

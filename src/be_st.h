@@ -86,8 +86,8 @@ void BE_ST_ExitWithErrorMsg(const char *msg);
 
 
 /*** Alternative controller schemes ***/
-// The XInput Controller layout, using details given by the
-// SDL_GameController API, is used as a base for the controller layout.
+// The game controller layout, based on details given by the SDL_GameController
+// API (initially derived from the Xbox 360 controller layout).
 typedef enum {
 	BE_ST_CTRL_BUT_A = 0,
 	BE_ST_CTRL_BUT_B,
@@ -104,6 +104,11 @@ typedef enum {
 	BE_ST_CTRL_BUT_DPAD_DOWN,
 	BE_ST_CTRL_BUT_DPAD_LEFT,
 	BE_ST_CTRL_BUT_DPAD_RIGHT,
+	BE_ST_CTRL_BUT_MISC1, // Shouldn't be used, like the guide button
+	BE_ST_CTRL_BUT_PADDLE1,
+	BE_ST_CTRL_BUT_PADDLE2,
+	BE_ST_CTRL_BUT_PADDLE3,
+	BE_ST_CTRL_BUT_PADDLE4,
 	BE_ST_CTRL_BUT_MAX,
 } BE_ST_ControllerDigiButton;
 

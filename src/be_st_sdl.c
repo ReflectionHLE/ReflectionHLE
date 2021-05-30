@@ -61,9 +61,9 @@ SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS]; // Also used in launch
 SDL_JoystickID g_sdlJoysticksInstanceIds[BE_ST_MAXJOYSTICKS];
 
 /*** These represent button states, although a call to BEL_ST_AltControlScheme_CleanUp zeros these out ***/
-static bool g_sdlControllersButtonsStates[SDL_CONTROLLER_BUTTON_MAX];
+static bool g_sdlControllersButtonsStates[BE_ST_CTRL_BUT_MAX];
 // We may optionally use analog axes as buttons (e.g., using stick as arrow keys, triggers as buttons)
-static bool g_sdlControllersAxesStates[SDL_CONTROLLER_AXIS_MAX][2];
+static bool g_sdlControllersAxesStates[BE_ST_CTRL_AXIS_MAX][2];
 
 /*** These are similar states for a few mouse buttons, required as relative mouse mode is toggled on or off in the middle ***/
 bool g_sdlMouseButtonsStates[3];
@@ -396,7 +396,7 @@ void BE_ST_QuickExit(void)
 
 // Enumerated by SDL_GameControllerButton, for most
 static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
-	"a", "b", "x", "y", 0, 0, 0, "lstick", "rstick", "lshoulder", "rshoulder", "dpadup", "dpaddown", "dpadleft", "dpadright",
+	"a", "b", "x", "y", 0, 0, 0, "lstick", "rstick", "lshoulder", "rshoulder", "dpadup", "dpaddown", "dpadleft", "dpadright", 0, "paddle1", "paddle2", "paddle3", "paddle4",
 	"ltrigger", "rtrigger", // Actually axes but these are added as extras
 	"" // for any entry which is not set
 };
@@ -946,10 +946,10 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
 #else // FIXME: HACK (extra 2 are for triggers)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = SDL_CONTROLLER_BUTTON_MAX+2;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = SDL_CONTROLLER_BUTTON_MAX+2;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = SDL_CONTROLLER_BUTTON_MAX+2;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = SDL_CONTROLLER_BUTTON_MAX+2;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = BE_ST_CTRL_BUT_MAX+2;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = BE_ST_CTRL_BUT_MAX+2;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = BE_ST_CTRL_BUT_MAX+2;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = BE_ST_CTRL_BUT_MAX+2;
 #endif
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = SDL_CONTROLLER_BUTTON_A;
@@ -967,10 +967,10 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN] = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
 #endif
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = SDL_CONTROLLER_BUTTON_MAX+1; // HACK for getting right trigger (technically an axis)
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = BE_ST_CTRL_BUT_MAX+1; // HACK for getting right trigger (technically an axis)
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE] = SDL_CONTROLLER_BUTTON_MAX+1; // HACK for getting right trigger (technically an axis)
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE] = BE_ST_CTRL_BUT_MAX+1; // HACK for getting right trigger (technically an axis)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN] = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1] = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
@@ -981,7 +981,7 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP] = SDL_CONTROLLER_BUTTON_A;
 #endif
 #if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = SDL_CONTROLLER_BUTTON_MAX; // HACK for getting left trigger (technically an axis)
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = BE_ST_CTRL_BUT_MAX; // HACK for getting left trigger (technically an axis)
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = SDL_CONTROLLER_BUTTON_LEFTSTICK;
 
@@ -1722,12 +1722,12 @@ static void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 		}
 		// Simulate binary key/button/other action "releases" and clear button states.
 		// FIXME: Unfortunately this means a mistaken key release event can be sent, but hopefully it's less of an issue than an unexpected key press.
-		for (int but = 0; but < SDL_CONTROLLER_BUTTON_MAX; ++but)
+		for (int but = 0; but < BE_ST_CTRL_BUT_MAX; ++but)
 		{
 			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], 0, &g_sdlControllersButtonsStates[but]);
 		}
 		// Repeat with analog axes
-		for (int axis = 0; axis < SDL_CONTROLLER_AXIS_MAX; ++axis)
+		for (int axis = 0; axis < BE_ST_CTRL_AXIS_MAX; ++axis)
 		{
 			// Is pressed in the negative direction?
 			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][0], 0, &g_sdlControllersAxesStates[axis][0]);
@@ -2297,6 +2297,8 @@ void BE_ST_PollEvents(void)
 
 			int axis = event.caxis.axis;
 			int axisVal = event.caxis.value;
+			if ((axis < 0) || (axis >= BE_ST_CTRL_AXIS_MAX))
+				break;
 			// Note: We handle BOTH sides in case axisVal == 0, so "release/clear" events can be properly sent
 			if (axisVal <= 0)
 				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][0], -axisVal, &g_sdlControllersAxesStates[axis][0]);
@@ -2318,6 +2320,8 @@ void BE_ST_PollEvents(void)
 		{
 			bool isPressed = (event.type == SDL_CONTROLLERBUTTONDOWN);
 			int but = event.cbutton.button;
+			if ((but < 0) || (but >= BE_ST_CTRL_BUT_MAX))
+				break;
 
 			// Special handling for text input / debug keys
 			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
