@@ -941,10 +941,10 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.isEnabled = true;
 
 #ifdef REFKEEN_HAS_VER_KDREAMS // Reserve the d-pad for weapons/feeds in Wolf3D/S3DNA
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = SDL_CONTROLLER_BUTTON_DPAD_UP;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = BE_ST_CTRL_BUT_DPAD_UP;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = BE_ST_CTRL_BUT_DPAD_DOWN;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = BE_ST_CTRL_BUT_DPAD_LEFT;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = BE_ST_CTRL_BUT_DPAD_RIGHT;
 #else // FIXME: HACK (extra 2 are for triggers)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = BE_ST_CTRL_BUT_MAX+2;
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = BE_ST_CTRL_BUT_MAX+2;
@@ -952,38 +952,38 @@ static void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = BE_ST_CTRL_BUT_MAX+2;
 #endif
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = SDL_CONTROLLER_BUTTON_A;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = SDL_CONTROLLER_BUTTON_B;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = SDL_CONTROLLER_BUTTON_X;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = BE_ST_CTRL_BUT_A;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = BE_ST_CTRL_BUT_B;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = BE_ST_CTRL_BUT_X;
 #endif
 #if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = SDL_CONTROLLER_BUTTON_B;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = BE_ST_CTRL_BUT_LSHOULDER;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = BE_ST_CTRL_BUT_B;
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = SDL_CONTROLLER_BUTTON_A;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT] = SDL_CONTROLLER_BUTTON_X;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = SDL_CONTROLLER_BUTTON_Y;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN] = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = BE_ST_CTRL_BUT_A;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT] = BE_ST_CTRL_BUT_X;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = BE_ST_CTRL_BUT_Y;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN] = BE_ST_CTRL_BUT_RSHOULDER;
 #endif
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = BE_ST_CTRL_BUT_MAX+1; // HACK for getting right trigger (technically an axis)
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE] = BE_ST_CTRL_BUT_MAX+1; // HACK for getting right trigger (technically an axis)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN] = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1] = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2] = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON3] = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON4] = SDL_CONTROLLER_BUTTON_DPAD_UP;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON5] = SDL_CONTROLLER_BUTTON_X;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON6] = SDL_CONTROLLER_BUTTON_Y;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP] = SDL_CONTROLLER_BUTTON_A;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN] = BE_ST_CTRL_BUT_RSHOULDER;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1] = BE_ST_CTRL_BUT_DPAD_DOWN;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2] = BE_ST_CTRL_BUT_DPAD_RIGHT;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON3] = BE_ST_CTRL_BUT_DPAD_LEFT;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON4] = BE_ST_CTRL_BUT_DPAD_UP;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON5] = BE_ST_CTRL_BUT_X;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON6] = BE_ST_CTRL_BUT_Y;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP] = BE_ST_CTRL_BUT_A;
 #endif
 #if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = BE_ST_CTRL_BUT_MAX; // HACK for getting left trigger (technically an axis)
 #endif
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = SDL_CONTROLLER_BUTTON_LEFTSTICK;
+	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = BE_ST_CTRL_BUT_LSTICK;
 
 	g_refKeenCfg.altControlScheme.useLeftStick = true;
 	g_refKeenCfg.altControlScheme.useRightStick = false;
@@ -1764,13 +1764,13 @@ static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void)
 	{
 		extern void BEL_ST_PrepareToShowTextInputUI(void);
 		BEL_ST_PrepareToShowTextInputUI();
-		g_sdlOnScreenKeyboardLastPressedDirButton = SDL_CONTROLLER_BUTTON_INVALID;
+		g_sdlOnScreenKeyboardLastPressedDirButton = BE_ST_CTRL_BUT_INVALID;
 	}
 	else if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys)
 	{
 		extern void BEL_ST_PrepareToShowDebugKeysUI(void);
 		BEL_ST_PrepareToShowDebugKeysUI();
-		g_sdlOnScreenKeyboardLastPressedDirButton = SDL_CONTROLLER_BUTTON_INVALID;
+		g_sdlOnScreenKeyboardLastPressedDirButton = BE_ST_CTRL_BUT_INVALID;
 	}
 	else if (g_sdlControllerMappingActualCurr->showUi)
 	{
@@ -1865,24 +1865,24 @@ static void BEL_ST_AltControlScheme_HandleTextInputEvent(int but, bool isPressed
 	extern void BEL_ST_ToggleKeyPressInTextInputUI(bool toggle);
 	switch (but)
 	{
-	case SDL_CONTROLLER_BUTTON_DPAD_UP:
+	case BE_ST_CTRL_BUT_DPAD_UP:
 		if (isPressed)
 			BEL_ST_MoveUpInTextInputUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+	case BE_ST_CTRL_BUT_DPAD_DOWN:
 		if (isPressed)
 			BEL_ST_MoveDownInTextInputUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+	case BE_ST_CTRL_BUT_DPAD_LEFT:
 		if (isPressed)
 			BEL_ST_MoveLeftInTextInputUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+	case BE_ST_CTRL_BUT_DPAD_RIGHT:
 		if (isPressed)
 			BEL_ST_MoveRightInTextInputUI();
 		break;
 	// A few other special cases
-	case SDL_CONTROLLER_BUTTON_START:
+	case BE_ST_CTRL_BUT_START:
 		if (isPressed) // No need for !isPressed case since pause key send scancodes on release only (under DOS)
 		{
 			emulatedDOSKeyEvent dosKeyEvent;
@@ -1891,11 +1891,11 @@ static void BEL_ST_AltControlScheme_HandleTextInputEvent(int but, bool isPressed
 			BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
 		}
 		break;
-	case SDL_CONTROLLER_BUTTON_B:
-	case SDL_CONTROLLER_BUTTON_BACK:
+	case BE_ST_CTRL_BUT_B:
+	case BE_ST_CTRL_BUT_BACK:
 		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 		break;
-	case SDL_CONTROLLER_BUTTON_X:
+	case BE_ST_CTRL_BUT_X:
 		// Change shift state (or at least try to).
 		if (isPressed)
 			BEL_ST_ToggleShiftStateInTextInputUI();
@@ -1916,24 +1916,24 @@ static void BEL_ST_AltControlScheme_HandleDebugKeysEvent(int but, bool isPressed
 	extern void BEL_ST_ToggleKeyPressInDebugKeysUI(void);
 	switch (but)
 	{
-	case SDL_CONTROLLER_BUTTON_DPAD_UP:
+	case BE_ST_CTRL_BUT_DPAD_UP:
 		if (isPressed)
 			BEL_ST_MoveUpInDebugKeysUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+	case BE_ST_CTRL_BUT_DPAD_DOWN:
 		if (isPressed)
 			BEL_ST_MoveDownInDebugKeysUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+	case BE_ST_CTRL_BUT_DPAD_LEFT:
 		if (isPressed)
 			BEL_ST_MoveLeftInDebugKeysUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+	case BE_ST_CTRL_BUT_DPAD_RIGHT:
 		if (isPressed)
 			BEL_ST_MoveRightInDebugKeysUI();
 		break;
 	// A few other special cases
-	case SDL_CONTROLLER_BUTTON_START:
+	case BE_ST_CTRL_BUT_START:
 		if (isPressed) // No need for !isPressed case since pause key send scancodes on release only (under DOS)
 		{
 			emulatedDOSKeyEvent dosKeyEvent;
@@ -1942,8 +1942,8 @@ static void BEL_ST_AltControlScheme_HandleDebugKeysEvent(int but, bool isPressed
 			BEL_ST_HandleEmuKeyboardEvent(true, false, dosKeyEvent);
 		}
 		break;
-	case SDL_CONTROLLER_BUTTON_B:
-	case SDL_CONTROLLER_BUTTON_BACK:
+	case BE_ST_CTRL_BUT_B:
+	case BE_ST_CTRL_BUT_BACK:
 		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 		return;
 	default:
@@ -2346,22 +2346,22 @@ void BE_ST_PollEvents(void)
 				{
 					switch (but)
 					{
-					case SDL_CONTROLLER_BUTTON_DPAD_UP:
-					case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-					case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-					case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+					case BE_ST_CTRL_BUT_DPAD_UP:
+					case BE_ST_CTRL_BUT_DPAD_DOWN:
+					case BE_ST_CTRL_BUT_DPAD_LEFT:
+					case BE_ST_CTRL_BUT_DPAD_RIGHT:
 						g_sdlOnScreenKeyboardLastPressedDirButton = but;
 						g_sdlOnScreenKeyboardLastDirButtonPressTime = g_sdlLastPollEventsTime;
 						g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 						break;
 					default:
-						g_sdlOnScreenKeyboardLastPressedDirButton = SDL_CONTROLLER_BUTTON_INVALID;
+						g_sdlOnScreenKeyboardLastPressedDirButton = BE_ST_CTRL_BUT_INVALID;
 					}
 				}
 				else
 				{
 					if (but == g_sdlOnScreenKeyboardLastPressedDirButton)
-						g_sdlOnScreenKeyboardLastPressedDirButton = SDL_CONTROLLER_BUTTON_INVALID;
+						g_sdlOnScreenKeyboardLastPressedDirButton = BE_ST_CTRL_BUT_INVALID;
 				}
 			}
 			// Try the usual otherwise (similar, but not identical, handling done with analog axes, triggers included)
@@ -2417,7 +2417,7 @@ void BE_ST_PollEvents(void)
 	// Similar repeat for on-screen keyboard (directional movement only)
 	if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
 	{
-		if ((g_sdlOnScreenKeyboardLastPressedDirButton != SDL_CONTROLLER_BUTTON_INVALID) && (g_sdlLastPollEventsTime - g_sdlOnScreenKeyboardLastDirButtonPressTime >= g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay))
+		if ((g_sdlOnScreenKeyboardLastPressedDirButton != BE_ST_CTRL_BUT_INVALID) && (g_sdlLastPollEventsTime - g_sdlOnScreenKeyboardLastDirButtonPressTime >= g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay))
 		{
 			if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 				BEL_ST_AltControlScheme_HandleTextInputEvent(g_sdlOnScreenKeyboardLastPressedDirButton, true);

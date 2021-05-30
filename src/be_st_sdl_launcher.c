@@ -783,7 +783,7 @@ void BE_ST_Launcher_Prepare(void)
 			g_sdlControllers[i] = SDL_GameControllerOpen(i);
 
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
-	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 
 	// Check if there's a last chosen game version to show in main menu
 	for (i = 0; i < g_be_gameinstallations_num; ++i)
@@ -1608,7 +1608,7 @@ void BEL_ST_Launcher_ToggleTextSearch(void)
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
 
-	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
 	g_nOfTrackedFingers = 0;
@@ -1637,7 +1637,7 @@ void BEL_ST_Launcher_ToggleTextInput(void)
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
 
-	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
 	g_nOfTrackedFingers = 0;
@@ -1666,7 +1666,7 @@ void BEL_ST_Launcher_TurnTextSearchOff(void)
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
 
-	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
 	g_nOfTrackedFingers = 0;
@@ -1678,7 +1678,7 @@ void BEL_ST_Launcher_TurnTextInputOff(void)
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
 
-	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
 	g_nOfTrackedFingers = 0;
@@ -2355,29 +2355,29 @@ static void BEL_ST_Launcher_HandleTextSearchEvent(Uint8 but, bool isPressed)
 {
 	switch (but)
 	{
-	case SDL_CONTROLLER_BUTTON_DPAD_UP:
+	case BE_ST_CTRL_BUT_DPAD_UP:
 		if (isPressed)
 			BEL_ST_Launcher_MoveUpInTextSearchUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+	case BE_ST_CTRL_BUT_DPAD_DOWN:
 		if (isPressed)
 			BEL_ST_Launcher_MoveDownInTextSearchUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+	case BE_ST_CTRL_BUT_DPAD_LEFT:
 		if (isPressed)
 			BEL_ST_Launcher_MoveLeftInTextSearchUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+	case BE_ST_CTRL_BUT_DPAD_RIGHT:
 		if (isPressed)
 			BEL_ST_Launcher_MoveRightInTextSearchUI();
 		break;
 	// A few other special cases
-	case SDL_CONTROLLER_BUTTON_B:
-	case SDL_CONTROLLER_BUTTON_BACK:
+	case BE_ST_CTRL_BUT_B:
+	case BE_ST_CTRL_BUT_BACK:
 		if (isPressed)
 			BEL_ST_Launcher_HandleKeyPressEvent(SDL_SCANCODE_ESCAPE, g_sdlKeyboardUIIsShifted);
 		break;
-	case SDL_CONTROLLER_BUTTON_X:
+	case BE_ST_CTRL_BUT_X:
 		if (isPressed)
 			BEL_ST_Launcher_ToggleShiftStateInTextSearchUI();
 		break;
@@ -2392,7 +2392,7 @@ static void BEL_ST_Launcher_HandleTextSearchEvent(Uint8 but, bool isPressed)
 static void BEL_ST_Launcher_HandleControllerButtonEvent(Uint8 but, bool isPressed)
 {
 	// Special case (applies with and without on-screen keyboard)
-	if ((but == SDL_CONTROLLER_BUTTON_Y) && isPressed)
+	if ((but == BE_ST_CTRL_BUT_Y) && isPressed)
 	{
 		BEL_ST_Launcher_ToggleTextSearch();
 		return;
@@ -2409,29 +2409,29 @@ static void BEL_ST_Launcher_HandleControllerButtonEvent(Uint8 but, bool isPresse
 
 	switch (but)
 	{
-	case SDL_CONTROLLER_BUTTON_A:
+	case BE_ST_CTRL_BUT_A:
 		BE_Launcher_HandleInput_ButtonActivate();
 		break;
-	case SDL_CONTROLLER_BUTTON_B:
-	case SDL_CONTROLLER_BUTTON_BACK:
+	case BE_ST_CTRL_BUT_B:
+	case BE_ST_CTRL_BUT_BACK:
 		BE_Launcher_HandleInput_ButtonBack();
 		break;
-	case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+	case BE_ST_CTRL_BUT_LSHOULDER:
 		BE_Launcher_HandleInput_ButtonPageUp();
 		break;
-	case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+	case BE_ST_CTRL_BUT_RSHOULDER:
 		BE_Launcher_HandleInput_ButtonPageDown();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_UP:
+	case BE_ST_CTRL_BUT_DPAD_UP:
 		BE_Launcher_HandleInput_ButtonUp();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+	case BE_ST_CTRL_BUT_DPAD_DOWN:
 		BE_Launcher_HandleInput_ButtonDown();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+	case BE_ST_CTRL_BUT_DPAD_LEFT:
 		BE_Launcher_HandleInput_ButtonLeft();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+	case BE_ST_CTRL_BUT_DPAD_RIGHT:
 		BE_Launcher_HandleInput_ButtonRight();
 		break;
 	}
@@ -2534,7 +2534,7 @@ static void BEL_ST_Launcher_CheckCommonPointerPressCases(SDL_TouchID touchId, SD
 {
 	if (g_sdlLauncherTextSearchUIIsShown)
 	{
-		g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+		g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 		BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(touchId, fingerId, x, y);
 	}
 	else
@@ -2668,7 +2668,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
 				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
-					g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+					g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, false);
 				break;
 
@@ -2700,7 +2700,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 		BEL_ST_Launcher_CheckForExitFromEventsCallback();
 
 		// Emulate "key repeat" for keyboard/controller buttons
-		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != SDL_CONTROLLER_BUTTON_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
+		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != BE_ST_CTRL_BUT_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
 		{
 			g_sdlInputLastBinaryPressTime += g_sdlInputLastBinaryPressTimeDelay;
 			g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
@@ -2855,7 +2855,7 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 	g_sdlLauncherGfxCacheMarked = true;
 
 	memset(g_sdlLauncherTriggerBinaryStates, 0, sizeof(g_sdlLauncherTriggerBinaryStates));
-	g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 }
 
@@ -2904,29 +2904,29 @@ static bool BEL_ST_Launcher_HandleTextInputEvent(Uint8 but, bool isPressed, bool
 {
 	switch (but)
 	{
-	case SDL_CONTROLLER_BUTTON_DPAD_UP:
+	case BE_ST_CTRL_BUT_DPAD_UP:
 		if (isPressed)
 			BEL_ST_Launcher_MoveUpInTextInputUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+	case BE_ST_CTRL_BUT_DPAD_DOWN:
 		if (isPressed)
 			BEL_ST_Launcher_MoveDownInTextInputUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+	case BE_ST_CTRL_BUT_DPAD_LEFT:
 		if (isPressed)
 			BEL_ST_Launcher_MoveLeftInTextInputUI();
 		break;
-	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+	case BE_ST_CTRL_BUT_DPAD_RIGHT:
 		if (isPressed)
 			BEL_ST_Launcher_MoveRightInTextInputUI();
 		break;
 	// A few other special cases
-	case SDL_CONTROLLER_BUTTON_B:
-	case SDL_CONTROLLER_BUTTON_BACK:
+	case BE_ST_CTRL_BUT_B:
+	case BE_ST_CTRL_BUT_BACK:
 		if (isPressed)
 			return BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(SDL_SCANCODE_ESCAPE, g_sdlKeyboardUIIsShifted, pConfirmed);
 		break;
-	case SDL_CONTROLLER_BUTTON_X:
+	case BE_ST_CTRL_BUT_X:
 		if (isPressed)
 			BEL_ST_Launcher_ToggleShiftStateInTextInputUI();
 		break;
@@ -2940,7 +2940,7 @@ static bool BEL_ST_Launcher_HandleTextInputEvent(Uint8 but, bool isPressed, bool
 static bool BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(Uint8 but, bool isPressed, bool *pConfirmed)
 {
 	// Special case (applies with and without on-screen keyboard)
-	if ((but == SDL_CONTROLLER_BUTTON_Y) && isPressed)
+	if ((but == BE_ST_CTRL_BUT_Y) && isPressed)
 	{
 		BEL_ST_Launcher_ToggleTextInput();
 		return false;
@@ -2956,11 +2956,11 @@ static bool BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(Uint8 b
 
 	switch (but)
 	{
-	case SDL_CONTROLLER_BUTTON_A:
+	case BE_ST_CTRL_BUT_A:
 		BEL_ST_Launcher_ToggleTextInput();
 		break;
-	case SDL_CONTROLLER_BUTTON_B:
-	case SDL_CONTROLLER_BUTTON_BACK:
+	case BE_ST_CTRL_BUT_B:
+	case BE_ST_CTRL_BUT_BACK:
 		*pConfirmed = false;
 		return true;
 	}
@@ -2971,7 +2971,7 @@ static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(SDL_To
 {
 	if (g_sdlLauncherTextInputUIIsShown)
 	{
-		g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+		g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 		BEL_ST_Launcher_CheckPressedPointerInTextInputUI(touchId, fingerId, x, y);
 	}
 	else
@@ -3105,7 +3105,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
 				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
-					g_sdlControllerLastButtonPressed = SDL_CONTROLLER_BUTTON_INVALID;
+					g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.cbutton.button, false, &confirmed))
 					return confirmed;
 				break;
@@ -3138,7 +3138,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 		BEL_ST_Launcher_CheckForExitFromEventsCallback();
 
 		// Emulate "key repeat" for keyboard/controller buttons
-		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != SDL_CONTROLLER_BUTTON_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
+		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != BE_ST_CTRL_BUT_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
 		{
 			g_sdlInputLastBinaryPressTime += g_sdlInputLastBinaryPressTimeDelay;
 			g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
