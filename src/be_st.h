@@ -89,6 +89,7 @@ void BE_ST_ExitWithErrorMsg(const char *msg);
 // The game controller layout, based on details given by the SDL_GameController
 // API (initially derived from the Xbox 360 controller layout).
 typedef enum {
+	BE_ST_CTRL_BUT_INVALID = -1,
 	BE_ST_CTRL_BUT_A = 0,
 	BE_ST_CTRL_BUT_B,
 	BE_ST_CTRL_BUT_X,
