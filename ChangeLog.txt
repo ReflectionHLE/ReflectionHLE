@@ -2,6 +2,23 @@
 Changelog
 ---------
 
+Jun 6, 2021 (v0.32.1):
+
+* Redistributable application bundles can now be built for macOS with CMake.
+(Thanks to Blzut3 for this addition.)
+* Fix a possible crash, reproduced while binding an in-game action
+to a controller button in the launcher with SDL 2.0.14 (thanks chungy).
+This was a side-effect of an increase of SDL_CONTROLLER_BUTTON_MAX's value.
+* More generally, mentions of enumerated controller buttons and axes
+from SDL2 were replaced with equivalents defined in be_st.h. A few
+related range checks were further added.
+* The Xbox Elite controller's paddles can now be used as an additional
+alternative to buttons, in case SDL 2.0.14 or compatible is used.
+* Fix a significant usability problem with game controllers. When an
+axis' value changes sign, a proper "release" notification should now
+be sent for the original sign. Previously, the user could unexpectedly
+get stuck in a specific state, like a continuously rotating protagonist.
+
 Dec 25, 2020 (v0.32.0):
 
 * KDreams, Catacombs (and Wolf3D): Make it possible
