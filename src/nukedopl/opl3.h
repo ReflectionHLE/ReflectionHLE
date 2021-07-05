@@ -1,5 +1,5 @@
 /* Nuked OPL3
- * Copyright (C) 2013-2020 Alexey Khokholov (Nuke.YKT)
+ * Copyright (C) 2013-2021 Alexey Khokholov (Nuke.YKT)
  *
  * This file is part of Nuked OPL3.
  *
