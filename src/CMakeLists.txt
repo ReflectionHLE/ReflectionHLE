@@ -23,6 +23,7 @@ list(APPEND be_src
 	src/backend/timing/be_timing.c
 	src/backend/timing/be_timing_callback.c
 	src/backend/video/be_video_emu.c
+	src/backend/video/be_video_fonts.c
 	src/be_cross.c
 	src/be_cross_doszeroseg.c
 	src/be_cross_emm.c
@@ -30,7 +31,6 @@ list(APPEND be_src
 	src/be_cross_xmm.c
 	src/be_st_sdl.c
 	src/be_st_sdl_graphics.c
-	src/be_textmode_fonts.c
 	src/crc32/crc32.c
 	src/depklite/depklite.c
 	src/nukedopl/opl3.c
