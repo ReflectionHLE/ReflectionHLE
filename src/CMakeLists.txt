@@ -22,6 +22,7 @@ list(APPEND be_src
 	src/backend/startup/be_startup_embedded_data.c
 	src/backend/timing/be_timing.c
 	src/backend/timing/be_timing_callback.c
+	src/backend/video/be_video_emu.c
 	src/be_cross.c
 	src/be_cross_doszeroseg.c
 	src/be_cross_emm.c
