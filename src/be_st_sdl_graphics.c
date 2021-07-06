@@ -29,6 +29,7 @@
 #include "be_st_sdl_private.h"
 //#include "be_st_egavga_lookup_tables.h"
 #include "be_title_and_version.h"
+#include "backend/video/be_video.h"
 #include "backend/video/be_video_emu.h"
 
 // Some of these are also used in launcher
@@ -535,8 +536,10 @@ static const BE_ST_ScanCode_T g_sdlDOSScanCodeDebugKeysLayout[ALTCONTROLLER_DEBU
 
 
 // Colors in BGRA format/order for CGA mode 4 (on certain platforms)
-
-static const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
+#ifdef __cplusplus
+extern
+#endif
+const uint32_t g_sdlCGAGfxBGRAScreenColors[] = {
 	0xff000000/*black*/,
 	0xff00ffff/*light cyan*/,
 	0xffff00ff/*light magenta*/,

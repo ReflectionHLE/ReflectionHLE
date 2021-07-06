@@ -26,6 +26,7 @@
 extern bool g_sdlDoRefreshGfxOutput;
 extern const uint32_t g_sdlVGADefaultBGRAScreenColors[256];
 extern const uint32_t g_sdlEGABGRAScreenColors[16];
+extern const uint32_t g_sdlCGAGfxBGRAScreenColors[4];
 
 void BEL_ST_RecreateTexture(void);
 
