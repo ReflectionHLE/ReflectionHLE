@@ -20,7 +20,7 @@
 #ifndef BE_VIDEO
 #define BE_VIDEO
 
-#include "SDL.h" // TODO: Used for g_sdlWindow
+#include "SDL.h" // TODO: Used for g_sdlWindow, g_sdlRenderer
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -31,6 +31,8 @@ extern const uint32_t g_sdlEGABGRAScreenColors[16];
 extern const uint32_t g_sdlCGAGfxBGRAScreenColors[4];
 
 extern SDL_Window *g_sdlWindow;
+extern SDL_Renderer *g_sdlRenderer;
+extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
 
 void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
 void BEL_ST_RecreateMainTextures(void);

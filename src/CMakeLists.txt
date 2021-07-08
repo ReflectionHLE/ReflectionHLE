@@ -24,6 +24,7 @@ list(APPEND be_src
 	src/backend/timing/be_timing_callback.c
 	src/backend/video/be_video_emu.c
 	src/backend/video/be_video_fonts.c
+	src/backend/video/be_video_textures.c
 	src/backend/video/be_video_ui.c
 	src/be_cross.c
 	src/be_cross_doszeroseg.c
