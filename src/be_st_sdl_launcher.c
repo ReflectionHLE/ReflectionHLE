@@ -995,13 +995,9 @@ void BE_ST_Launcher_Shutdown(void)
 #endif
 
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextSearchTexture);
-	g_sdlLauncherTextSearchTexture = NULL;
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextInputTexture);
-	g_sdlLauncherTextInputTexture = NULL;
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
-	g_sdlTexture = NULL;
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
-	g_sdlTargetTexture = NULL;
 	// Nope - We may re-use window and renderer for game (seamless transition)
 #if 0
 	SDL_DestroyRenderer(g_sdlRenderer);
@@ -2492,7 +2488,6 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 			{
 				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set target texture as render target (disabling),\n%s\n", SDL_GetError());
 				BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
-				g_sdlTargetTexture = NULL;
 				goto refreshwithnorendertarget;
 			}
 			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);

@@ -373,10 +373,7 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *touchControl)
 {
 	if (touchControl->texture)
-	{
 		BEL_ST_SDLDestroyTextureWrapper(&touchControl->texture);
-		touchControl->texture = NULL;
-	}
 	int texWidth = touchControl->xpmWidth, texHeight = touchControl->xpmHeight;
 	BEL_ST_SDLCreateTextureWrapper(&touchControl->texture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, texWidth, texHeight, "nearest");
 	SDL_Texture *texture = touchControl->texture;
