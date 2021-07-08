@@ -33,7 +33,7 @@ extern const uint32_t g_sdlCGAGfxBGRAScreenColors[4];
 extern SDL_Window *g_sdlWindow;
 
 void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
-void BEL_ST_RecreateTexture(void);
+void BEL_ST_RecreateMainTextures(void);
 
 #endif
 

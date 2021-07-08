@@ -198,7 +198,7 @@ uint32_t BEL_ST_GetSDLRendererFlagsToSet(bool isLauncherWindow)
 	return flags;
 }
 
-void BEL_ST_RecreateTexture(void)
+void BEL_ST_RecreateMainTextures(void)
 {
 	if (g_sdlTexture)
 		BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
@@ -217,9 +217,9 @@ void BEL_ST_RecreateTexture(void)
 		// Try, if we fail then simply don't use this
 		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, g_sdlTexWidth*g_refKeenCfg.scaleFactor, g_sdlTexHeight*g_refKeenCfg.scaleFactor, "linear");
 		if (g_sdlTargetTexture)
-			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateTexture: SDL2 target texture created successfully\n");
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateMainTextures: SDL2 target texture created successfully\n");
 		else
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateTexture:  Failed to (re)create SDL2 target texture, continuing anyway\n%s\n", SDL_GetError());
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateMainTextures:  Failed to (re)create SDL2 target texture, continuing anyway\n%s\n", SDL_GetError());
 	}
 	else
 	{

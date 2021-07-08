@@ -533,7 +533,7 @@ void BE_ST_SetScreenMode(int mode)
 	}
 	g_sdlScreenMode = mode;
 	BEL_ST_SetGfxOutputRects(true);
-	BEL_ST_RecreateTexture();
+	BEL_ST_RecreateMainTextures();
 }
 
 void BE_ST_textcolor(int color)
