@@ -982,29 +982,10 @@ void BE_ST_Launcher_Shutdown(void)
 			g_sdlControllers[i] = NULL;
 		}
 
-	/* Poll events just in case (e.g., clean up old controller events) */
-	// Update (Sep 19 2016) - DON'T, we might miss newly attached game controllers and other events!
-#if 0
-	SDL_Event event;
-	bool doExit = false;
-	while (SDL_PollEvent(&event))
-	{
-		if (event.type == SDL_QUIT)
-			doExit = true;
-	}
-#endif
-
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextSearchTexture);
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextInputTexture);
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
-	// Nope - We may re-use window and renderer for game (seamless transition)
-#if 0
-	SDL_DestroyRenderer(g_sdlRenderer);
-	g_sdlRenderer = NULL;
-	SDL_DestroyWindow(g_sdlWindow);
-	g_sdlWindow = NULL;
-#endif
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	// BEFORE checking if we need to save anything, apply this HACK
@@ -1107,12 +1088,6 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;
-
-	// Update (Sep 19 2016) - Not doing this
-#if 0
-	if (doExit)
-		BE_ST_QuickExit();
-#endif
 }
 
 
