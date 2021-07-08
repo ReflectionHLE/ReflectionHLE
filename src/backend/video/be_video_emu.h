@@ -17,8 +17,8 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BE_VIDEO_EMU
-#define BE_VIDEO_EMU
+#ifndef BE_VIDEO_EMU_H
+#define BE_VIDEO_EMU_H
 
 #include "stdint.h"
 

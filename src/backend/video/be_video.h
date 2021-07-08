@@ -17,8 +17,8 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BE_VIDEO
-#define BE_VIDEO
+#ifndef BE_VIDEO_H
+#define BE_VIDEO_H
 
 #include "SDL.h" // TODO: Used for g_sdlWindow, g_sdlRenderer
 #include <stdbool.h>

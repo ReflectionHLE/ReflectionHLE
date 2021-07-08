@@ -17,8 +17,8 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BE_AUDIO_MIXER
-#define BE_AUDIO_MIXER
+#ifndef BE_AUDIO_MIXER_H
+#define BE_AUDIO_MIXER_H
 
 #include "be_audio_resampling.h"
 

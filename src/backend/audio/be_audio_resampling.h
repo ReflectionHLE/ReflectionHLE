@@ -17,8 +17,8 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BE_AUDIO_RESAMPLING
-#define BE_AUDIO_RESAMPLING
+#ifndef BE_AUDIO_RESAMPLING_H
+#define BE_AUDIO_RESAMPLING_H
 
 #include "be_audio_private.h"
 

@@ -17,8 +17,8 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BE_AUDIO_PRIVATE
-#define BE_AUDIO_PRIVATE
+#ifndef BE_AUDIO_PRIVATE_H
+#define BE_AUDIO_PRIVATE_H
 
 #include "refkeen_config.h"
 #include <stdbool.h>

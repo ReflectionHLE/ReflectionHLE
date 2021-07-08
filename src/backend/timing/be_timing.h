@@ -17,8 +17,8 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BE_TIMING
-#define BE_TIMING
+#ifndef BE_TIMING_H
+#define BE_TIMING_H
 
 #include "refkeen_config.h"
 

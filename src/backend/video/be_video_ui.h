@@ -17,8 +17,8 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BE_VIDEO_UI
-#define BE_VIDEO_UI
+#ifndef BE_VIDEO_UI_H
+#define BE_VIDEO_UI_H
 
 #include "SDL.h"
 #include <stdbool.h>
