@@ -176,26 +176,6 @@ static void BEL_ST_ConditionallyAddJoystick(int device_index);
 static void BEL_ST_ParseConfig(void);
 static void BEL_ST_SaveConfig(void);
 
-#ifdef REFKEEN_VER_KDREAMS
-#include "../rsrc/reflection-kdreams-icon-32x32.h"
-#elif defined REFKEEN_VER_CAT3D
-#include "../rsrc/reflection-cat3d-icon-32x32.h"
-#elif defined REFKEEN_VER_CATABYSS
-#include "../rsrc/reflection-catabyss-icon-32x32.h"
-#elif defined REFKEEN_VER_CATARM
-#include "../rsrc/reflection-catarm-icon-32x32.h"
-#elif defined REFKEEN_VER_CATAPOC
-#include "../rsrc/reflection-catapoc-icon-32x32.h"
-#elif defined REFKEEN_HAS_VER_CATACOMB_ALL
-#include "../rsrc/reflection-cat3d-icon-32x32.h"
-#elif defined REFKEEN_HAS_VER_WOLF3D_ALL
-#include "../rsrc/reflection-wolf3d-icon-32x32.h"
-#else
-#error "FATAL ERROR: No Ref port game macro is defined!"
-#endif
-
-
-SDL_Surface *g_be_sdl_windowIconSurface = NULL;
 
 #ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
 SDL_sem *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
@@ -220,10 +200,6 @@ void BE_ST_InitCommon(void)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL game controller subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
 	}
-
-	g_be_sdl_windowIconSurface = SDL_CreateRGBSurfaceFrom(RefKeen_Window_Icon, 32, 32, 8, 32, 0, 0, 0, 0);
-	SDL_SetPaletteColors(g_be_sdl_windowIconSurface->format->palette, RefKeen_Window_Icon_Palette, '0', 9);
-	SDL_SetColorKey(g_be_sdl_windowIconSurface, SDL_TRUE, SDL_MapRGB(g_be_sdl_windowIconSurface->format, 0xCC, 0xFF, 0xCC));
 
 	// MUST be called BEFORE parsing config (of course!)
 	BE_Cross_PrepareAppPaths();
@@ -306,7 +282,6 @@ void BE_ST_ShutdownAll(void)
 	BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITH_CURSOR);
 	BE_ST_ShutdownAudio();
 	BE_ST_ShutdownGfx();
-	SDL_FreeSurface(g_be_sdl_windowIconSurface);
 	SDL_Quit();
 }
 

@@ -24,10 +24,36 @@
 
 #include "SDL.h"
 
+#ifdef REFKEEN_VER_KDREAMS
+#include "../rsrc/reflection-kdreams-icon-32x32.h"
+#elif defined REFKEEN_VER_CAT3D
+#include "../rsrc/reflection-cat3d-icon-32x32.h"
+#elif defined REFKEEN_VER_CATABYSS
+#include "../rsrc/reflection-catabyss-icon-32x32.h"
+#elif defined REFKEEN_VER_CATARM
+#include "../rsrc/reflection-catarm-icon-32x32.h"
+#elif defined REFKEEN_VER_CATAPOC
+#include "../rsrc/reflection-catapoc-icon-32x32.h"
+#elif defined REFKEEN_HAS_VER_CATACOMB_ALL
+#include "../rsrc/reflection-cat3d-icon-32x32.h"
+#elif defined REFKEEN_HAS_VER_WOLF3D_ALL
+#include "../rsrc/reflection-wolf3d-icon-32x32.h"
+#else
+#error "FATAL ERROR: No Ref port game macro is defined!"
+#endif
+
 static SDL_Window *g_sdlWindow;
-// TODO: Make these static later
+// TODO: Make this static later
 SDL_Renderer *g_sdlRenderer;
-extern SDL_Surface *g_be_sdl_windowIconSurface;
+static SDL_Surface *g_be_sdl_windowIconSurface;
+
+static void BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon(void)
+{
+	SDL_DestroyRenderer(g_sdlRenderer);
+	g_sdlRenderer = NULL;
+	SDL_DestroyWindow(g_sdlWindow);
+	g_sdlWindow = NULL;
+}
 
 void BEL_ST_RecreateWindowAndRenderer(
 	int displayNo,
@@ -40,6 +66,13 @@ void BEL_ST_RecreateWindowAndRenderer(
 
 	int x = SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNo);
 	int y = SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNo);
+
+	if (!g_be_sdl_windowIconSurface)
+	{
+		g_be_sdl_windowIconSurface = SDL_CreateRGBSurfaceFrom(RefKeen_Window_Icon, 32, 32, 8, 32, 0, 0, 0, 0);
+		SDL_SetPaletteColors(g_be_sdl_windowIconSurface->format->palette, RefKeen_Window_Icon_Palette, '0', 9);
+		SDL_SetColorKey(g_be_sdl_windowIconSurface, SDL_TRUE, SDL_MapRGB(g_be_sdl_windowIconSurface->format, 0xCC, 0xFF, 0xCC));
+	}
 
 	if (g_sdlWindow)
 	{
@@ -57,7 +90,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 		)
 			goto setupforfullscreen;
 
-		BEL_ST_DestroyWindowAndRenderer();
+		BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon();
 	}
 
 	// HACK - Create non-fullscreen window and then set as fullscreen, if required.
@@ -107,10 +140,9 @@ setupforfullscreen:
 
 void BEL_ST_DestroyWindowAndRenderer(void)
 {
-	SDL_DestroyRenderer(g_sdlRenderer);
-	g_sdlRenderer = NULL;
-	SDL_DestroyWindow(g_sdlWindow);
-	g_sdlWindow = NULL;
+	BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon();
+	SDL_FreeSurface(g_be_sdl_windowIconSurface);
+	g_be_sdl_windowIconSurface = NULL;
 }
 
 BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLinear)
