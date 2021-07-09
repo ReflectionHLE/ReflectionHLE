@@ -20,7 +20,6 @@
 #ifndef BE_VIDEO_H
 #define BE_VIDEO_H
 
-#include "SDL.h" // TODO: Used for g_sdlRenderer
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -33,8 +32,6 @@ extern bool g_sdlForceGfxControlUiRefresh;
 extern const uint32_t g_sdlVGADefaultBGRAScreenColors[256];
 extern const uint32_t g_sdlEGABGRAScreenColors[16];
 extern const uint32_t g_sdlCGAGfxBGRAScreenColors[4];
-
-extern SDL_Renderer *g_sdlRenderer;
 
 void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
 
@@ -50,6 +47,7 @@ void BEL_ST_DestroyWindowAndRenderer(void);
 
 void BEL_ST_RenderClear(void);
 void BEL_ST_SetDrawColor(uint32_t color);
+void BEL_ST_SetDrawBlendMode(bool blend);
 void BEL_ST_RenderFill(const BE_ST_Rect *rect);
 void BEL_ST_UpdateWindow(void);
 

@@ -105,11 +105,12 @@ extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern BE_ST_Rect g_sdlAspectCorrectionBorderedRect;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
+
 // The window and renderer are shared ON PURPOSE:
-// - For seamless transition from launcher to game, if an SDL_WINDOW_FULLSCREEN_DESKTOP window is used with same features.
-// - Additionally, the renderer is shared since SDL_Texture ** pointers are managed from be_st_sdl_graphics.c (in case textures should be recreated).
-// - Also used to fetch the window's display number on quit, if g_refKeenCfg.rememberDisplayNum == true.
-extern SDL_Renderer *g_sdlRenderer;
+// - For seamless transition from launcher to game, if a borderless
+// fullscreen window is used with same features.
+// - Additionally, the renderer is shared, as texture pointers are
+
 // Similarly, this is also shared *on purpose* - for a HACK (guess if touch controls should be shown when game is started)
 extern bool g_sdlShowTouchUI;
 
@@ -2414,7 +2415,7 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 	if (g_refKeenCfg.touchInputDebugging)
 	{
 		BEL_ST_SetDrawColor(0xBFFF0000); // Includes some alpha
-		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_BLEND);
+		BEL_ST_SetDrawBlendMode(true);
 		BESDLLauncherTrackedFinger *trackedFinger = g_sdlTrackedFingers;
 		for (int i = 0; i < g_nOfTrackedFingers; ++i, ++trackedFinger)
 		{
@@ -2422,7 +2423,7 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 			BEL_ST_RenderFill(&rect);
 		}
 		BEL_ST_SetDrawColor(0xFF000000);
-		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_NONE);
+		BEL_ST_SetDrawBlendMode(false);
 	}
 
 	if (g_sdlLauncherTextSearchUIIsShown)

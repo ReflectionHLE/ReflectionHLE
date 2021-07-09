@@ -487,14 +487,14 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 	if (g_refKeenCfg.touchInputDebugging)
 	{
 		BEL_ST_SetDrawColor(0xBFFF0000); // Includes some alpha
-		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_BLEND);
+		BEL_ST_SetDrawBlendMode(true);
 		BESDLTrackedFinger *trackedFinger = g_sdlTrackedFingers;
 		for (int i = 0; i < g_nOfTrackedFingers; ++i, ++trackedFinger)
 		{
 			BE_ST_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
 			BEL_ST_RenderFill(&rect);
 		}
-		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_NONE);
+		BEL_ST_SetDrawBlendMode(false);
 	}
 
 	if (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)
