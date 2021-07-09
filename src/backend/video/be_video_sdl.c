@@ -34,9 +34,19 @@ BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLine
 	         w, h);
 }
 
+void BEL_ST_DestroyTexture(BE_ST_Texture *texture) { SDL_DestroyTexture(texture); }
+
 int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst)
 {
-	int ret = SDL_RenderCopy(g_sdlRenderer, texture, NULL, dst);
+	int ret;
+	if (dst)
+	{
+		SDL_Rect sdl_rect = {dst->x, dst->y, dst->w, dst->h};
+		ret = SDL_RenderCopy(g_sdlRenderer, texture, NULL, &sdl_rect);
+	}
+	else
+		ret = SDL_RenderCopy(g_sdlRenderer, texture, NULL, NULL);
+
 	if (ret)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderCopy failed,\n%s\n", SDL_GetError());
 	return ret;
@@ -52,6 +62,23 @@ void *BEL_ST_LockTexture(BE_ST_Texture *texture)
 		pixels = NULL;
 	}
 	return pixels;
+}
+
+void BEL_ST_UnlockTexture(BE_ST_Texture *texture) { SDL_UnlockTexture((SDL_Texture *)texture); }
+
+void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const void *pixels, int pitch)
+{
+	int ret;
+	if (rect)
+	{
+		SDL_Rect sdl_rect = {rect->x, rect->y, rect->w, rect->h};
+		ret = SDL_UpdateTexture(texture, &sdl_rect, pixels, pitch);
+	}
+	else
+		ret = SDL_UpdateTexture(texture, NULL, pixels, pitch);
+
+	if (ret)
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_UpdateTexture failed,\n%s\n", SDL_GetError());
 }
 
 int BEL_ST_SetRenderTarget(BE_ST_Texture *texture)
@@ -82,7 +109,8 @@ void BEL_ST_SetDrawColor(uint32_t color)
 
 void BEL_ST_RenderFill(const BE_ST_Rect *rect)
 {
-	if (SDL_RenderFillRect(g_sdlRenderer, rect))
+	SDL_Rect sdl_rect = {rect->x, rect->y, rect->w, rect->h};
+	if (SDL_RenderFillRect(g_sdlRenderer, &sdl_rect))
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderFillRect failed,\n%s\n", SDL_GetError());
 }
 

@@ -69,8 +69,8 @@
 // if touch controls should be shown or not (if "auto" is set for these)
 static Uint32 g_sdlLauncherLastEventType;
 
-static SDL_Rect g_sdlControllerLauncherTextSearchRect, g_sdlControllerLauncherTextInputRect;
-static SDL_Texture *g_sdlLauncherTextSearchTexture, *g_sdlLauncherTextInputTexture;
+static BE_ST_Rect g_sdlControllerLauncherTextSearchRect, g_sdlControllerLauncherTextInputRect;
+static BE_ST_Texture *g_sdlLauncherTextSearchTexture, *g_sdlLauncherTextInputTexture;
 static bool g_sdlLauncherTextSearchUIIsShown, g_sdlLauncherTextInputUIIsShown;
 
 // NOTE: More-or-less duplicated from be_st_sdl_graphics.c, but there may be
@@ -101,8 +101,8 @@ static int g_nOfTrackedFingers = 0;
 extern int g_sdlDebugFingerRectSideLen;
 extern const uint32_t g_sdlEGABGRAScreenColors[];
 extern SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS];
-extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
-extern SDL_Rect g_sdlAspectCorrectionBorderedRect;
+extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
+extern BE_ST_Rect g_sdlAspectCorrectionBorderedRect;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 // The window and renderer are shared ON PURPOSE:
@@ -1662,9 +1662,9 @@ static void BEL_ST_Launcher_ToggleTextSearchUIKey(int x, int y, bool isMarked, b
 
 	BEL_ST_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlIntScanCodeKeyboardUIStrs_Ptr[g_sdlIntScanCodeTextSearchLayout[y][x]], isMarked, isPressed);
 
-	SDL_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
+	BE_ST_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
 
-	SDL_UpdateTexture(g_sdlLauncherTextSearchTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
+	BEL_ST_UpdateTexture(g_sdlLauncherTextSearchTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
 }
 
 static void BEL_ST_Launcher_ToggleTextInputUIKey(int x, int y, bool isMarked, bool isPressed)
@@ -1673,9 +1673,9 @@ static void BEL_ST_Launcher_ToggleTextInputUIKey(int x, int y, bool isMarked, bo
 
 	BEL_ST_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlIntScanCodeKeyboardUIStrs_Ptr[g_sdlIntScanCodeTextInputLayout[y][x]], isMarked, isPressed);
 
-	SDL_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
+	BE_ST_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
 
-	SDL_UpdateTexture(g_sdlLauncherTextInputTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
+	BEL_ST_UpdateTexture(g_sdlLauncherTextInputTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
 }
 
 

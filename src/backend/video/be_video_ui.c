@@ -92,21 +92,21 @@ static bool g_sdlDebugKeysPressed[ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT][ALTCONTRO
 static const int g_sdlControllerFaceButtonsTextLocs[] = {19, 42, 36, 25, 2, 25, 19, 8};
 static const int g_sdlControllerDpadTextLocs[] = {15, 34, 28, 21, 2, 21, 15, 8};
 
-SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect, g_sdlControllerDebugKeysRect;
-SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture, *g_sdlDebugKeysTexture;
+BE_ST_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect, g_sdlControllerDebugKeysRect;
+BE_ST_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture, *g_sdlDebugKeysTexture;
 bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown, g_sdlDebugKeysUIIsShown, g_sdlTouchControlsAreShown;
 
 static int g_sdlFaceButtonsScanCodes[4], g_sdlDpadScanCodes[4];
 
-SDL_Rect g_sdlOnScreenTouchControlsRects[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
-SDL_Texture *g_sdlOnScreenTouchControlsTextures[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
+BE_ST_Rect g_sdlOnScreenTouchControlsRects[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
+BE_ST_Texture *g_sdlOnScreenTouchControlsTextures[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
 int g_sdlNumOfOnScreenTouchControls = 0;
-static SDL_Rect g_sdlInputTouchControlsRects[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
+static BE_ST_Rect g_sdlInputTouchControlsRects[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
 
 typedef struct {
 	const char **xpmImage;
 	int xpmWidth, xpmHeight;
-	SDL_Texture *texture;
+	BE_ST_Texture *texture;
 } BESDLCachedOnScreenTouchControl;
 
 static BESDLCachedOnScreenTouchControl g_sdlCachedOnScreenTouchControls[ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS];
@@ -251,7 +251,7 @@ static bool g_sdlSomeOnScreenControlWasAccessibleWithMouse = false; // Used inte
 }
 
 
-static void BEL_ST_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr, int len)
+static void BEL_ST_CreatePadTextureIfNeeded(BE_ST_Texture **padTexturePtrPtr, int len)
 {
 	if (*padTexturePtrPtr)
 	{
@@ -287,7 +287,7 @@ static void BEL_ST_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char
 	}
 }
 
-static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm, SDL_Texture **padTexturePtrPtr, bool *areButtonsShownPtr, const int *textLocs, int len)
+static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm, BE_ST_Texture **padTexturePtrPtr, bool *areButtonsShownPtr, const int *textLocs, int len)
 {
 	BEL_ST_CreatePadTextureIfNeeded(padTexturePtrPtr, len);
 
@@ -336,7 +336,7 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 	{
 		*currPtr &= 0xBFFFFFFF; // BGRA
 	}
-	SDL_UpdateTexture(*padTexturePtrPtr, NULL, pixels, 4*len);
+	BEL_ST_UpdateTexture(*padTexturePtrPtr, NULL, pixels, 4*len);
 	*areButtonsShownPtr = true;
 
 	g_sdlForceGfxControlUiRefresh = true;
@@ -377,7 +377,7 @@ static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *
 		BEL_ST_SDLDestroyTextureWrapper(&touchControl->texture);
 	int texWidth = touchControl->xpmWidth, texHeight = touchControl->xpmHeight;
 	BEL_ST_SDLCreateTextureWrapper(&touchControl->texture, texWidth, texHeight, false, false);
-	SDL_Texture *texture = touchControl->texture;
+	BE_ST_Texture *texture = touchControl->texture;
 	if (!texture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateTouchControlTexture: Failed to (re)create SDL2 touch control texture,\n%s\n", SDL_GetError());
@@ -420,7 +420,7 @@ static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *
 			*currPtr &= 0xBFFFFFFF; // Add some alpha channel
 		}
 	}
-	SDL_UpdateTexture(texture, NULL, pixels, 4*texWidth);
+	BEL_ST_UpdateTexture(texture, NULL, pixels, 4*texWidth);
 	free(pixels);
 }
 
@@ -582,7 +582,7 @@ static void BEL_ST_RedrawWholeTextInputUI(void)
 	// Simpler to do so outside the loop
 	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlKeyboardUISelectedKeyX) + ALTCONTROLLER_TEXTINPUT_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlKeyboardUISelectedKeyY), ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, g_sdlDOSScanCodeTextInputStrs_Ptr[(int)g_sdlDOSScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]], true, g_sdlTextInputIsKeyPressed);
 
-	SDL_UpdateTexture(g_sdlTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_TEXTINPUT_PIX_WIDTH);
+	BEL_ST_UpdateTexture(g_sdlTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_TEXTINPUT_PIX_WIDTH);
 }
 
 static void BEL_ST_RedrawWholeDebugKeysUI(void)
@@ -600,7 +600,7 @@ static void BEL_ST_RedrawWholeDebugKeysUI(void)
 	// Simpler to do so outside the loop
 	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlKeyboardUISelectedKeyX) + ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlKeyboardUISelectedKeyY), ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, g_sdlDOSScanCodeDebugKeysStrs[(int)g_sdlDOSScanCodeDebugKeysLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]], true, g_sdlDebugKeysPressed[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]);
 
-	SDL_UpdateTexture(g_sdlDebugKeysTexture, NULL, pixels, 4*ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH);
+	BEL_ST_UpdateTexture(g_sdlDebugKeysTexture, NULL, pixels, 4*ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH);
 }
 
 
@@ -653,9 +653,9 @@ static void BEL_ST_ToggleTextInputUIKey(int x, int y, bool isMarked, bool isPres
 
 	BEL_ST_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlDOSScanCodeTextInputStrs_Ptr[(int)g_sdlDOSScanCodeTextInputLayout[y][x]], isMarked, isPressed);
 
-	SDL_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
+	BE_ST_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
 
-	SDL_UpdateTexture(g_sdlTextInputTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
+	BEL_ST_UpdateTexture(g_sdlTextInputTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
 }
 
 static void BEL_ST_ToggleDebugKeysUIKey(int x, int y, bool isMarked, bool isPressed)
@@ -664,9 +664,9 @@ static void BEL_ST_ToggleDebugKeysUIKey(int x, int y, bool isMarked, bool isPres
 
 	BEL_ST_RedrawKeyToBuffer(pixels, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, g_sdlDOSScanCodeDebugKeysStrs[(int)g_sdlDOSScanCodeDebugKeysLayout[y][x]], isMarked, isPressed);
 
-	SDL_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
+	BE_ST_Rect outRect = {x*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, y*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT, ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH, ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT};
 
-	SDL_UpdateTexture(g_sdlDebugKeysTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
+	BEL_ST_UpdateTexture(g_sdlDebugKeysTexture, &outRect, pixels, 4*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH);
 }
 
 
@@ -1604,7 +1604,7 @@ void BEL_ST_SetTouchControlsRects(void)
 	if (((g_sdlControllerMappingActualCurr == NULL) || g_sdlControllerMappingActualCurr->touchMappings == NULL))
 		return;
 
-	SDL_Rect *currRect;
+	BE_ST_Rect *currRect;
 	int winWidth, winHeight;
 	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
 	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;

@@ -48,12 +48,12 @@ extern int g_nOfTrackedFingers;
 extern bool g_sdlShowControllerUI;
 extern bool g_sdlShowTouchUI;
 
-extern SDL_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect, g_sdlControllerDebugKeysRect;
-extern SDL_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture, *g_sdlDebugKeysTexture;
+extern BE_ST_Rect g_sdlControllerFaceButtonsRect, g_sdlControllerDpadRect, g_sdlControllerTextInputRect, g_sdlControllerDebugKeysRect;
+extern BE_ST_Texture *g_sdlFaceButtonsTexture, *g_sdlDpadTexture, *g_sdlTextInputTexture, *g_sdlDebugKeysTexture;
 extern bool g_sdlFaceButtonsAreShown, g_sdlDpadIsShown, g_sdlTextInputUIIsShown, g_sdlDebugKeysUIIsShown, g_sdlTouchControlsAreShown;
 
-extern SDL_Rect g_sdlOnScreenTouchControlsRects[];
-extern SDL_Texture *g_sdlOnScreenTouchControlsTextures[];
+extern BE_ST_Rect g_sdlOnScreenTouchControlsRects[];
+extern BE_ST_Texture *g_sdlOnScreenTouchControlsTextures[];
 extern int g_sdlNumOfOnScreenTouchControls;
 
 void BEL_ST_SetCommonUIRects(void);
