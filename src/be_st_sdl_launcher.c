@@ -739,8 +739,6 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void);
 
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void);
 
-void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int windowWidth, int windowHeight, int fullWidth, int fullHeight, Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
-
 void BE_ST_Launcher_Prepare(void)
 {
 	int i;
@@ -754,8 +752,9 @@ void BE_ST_Launcher_Prepare(void)
 	}
 
 	uint32_t rendererFlags = BEL_ST_GetSDLRendererFlagsToSet(true);
-	BEL_ST_RecreateSDLWindowAndRenderer(
-		SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0,
+	BEL_ST_RecreateWindowAndRenderer(
+		g_refKeenCfg.displayNum,
+		g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0,
 		((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) | ((g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE) ? SDL_WINDOW_RESIZABLE : 0),
 		-1, rendererFlags
 	);
@@ -2421,8 +2420,8 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 		BESDLLauncherTrackedFinger *trackedFinger = g_sdlTrackedFingers;
 		for (int i = 0; i < g_nOfTrackedFingers; ++i, ++trackedFinger)
 		{
-			SDL_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
-			SDL_RenderFillRect(g_sdlRenderer, &rect);
+			BE_ST_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
+			BEL_ST_RenderFill(&rect);
 		}
 		BEL_ST_SetDrawColor(0xFF000000);
 		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_NONE);
@@ -2434,7 +2433,7 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 		BEL_ST_RenderFromTexture(g_sdlLauncherTextInputTexture, &g_sdlControllerLauncherTextInputRect);
 
 
-        SDL_RenderPresent(g_sdlRenderer);
+        BEL_ST_UpdateWindow();
 }
 
 
@@ -2454,7 +2453,7 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 		}
 
 		BEL_ST_UnlockTexture(g_sdlTexture);
-		SDL_RenderClear(g_sdlRenderer);
+		BEL_ST_RenderClear();
 		if (g_sdlTargetTexture)
 		{
 			if (BEL_ST_SetRenderTarget(g_sdlTargetTexture) != 0)
@@ -2484,7 +2483,7 @@ refreshwithnorendertarget:
 		uint32_t currRefreshTicks = BEL_ST_GetTicksMS();
 		if (currRefreshTicks - g_be_sdlLastRefreshTicks >= 100)
 		{
-			SDL_RenderClear(g_sdlRenderer);
+			BEL_ST_RenderClear();
 
 			if (g_sdlTargetTexture)
 				BEL_ST_RenderFromTexture(g_sdlTargetTexture, &g_sdlAspectCorrectionBorderedRect);
@@ -2798,14 +2797,14 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 
 		BEL_ST_Launcher_CheckForExitFromEventsCallback();
 		BEL_ST_SleepMS(10);
-		SDL_RenderClear(g_sdlRenderer);
+		BEL_ST_RenderClear();
 
 		if (g_sdlTargetTexture)
 			BEL_ST_RenderFromTexture(g_sdlTargetTexture, &g_sdlAspectCorrectionBorderedRect);
 		else
 			BEL_ST_RenderFromTexture(g_sdlTexture, &g_sdlAspectCorrectionBorderedRect);
 
-		SDL_RenderPresent(g_sdlRenderer);
+		BEL_ST_UpdateWindow();
 	}
 
 	if (choice != defaultChoice)

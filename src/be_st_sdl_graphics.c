@@ -57,9 +57,6 @@ int g_sdlDebugFingerRectSideLen;
 
 extern const uint8_t g_vga_8x16TextFont[256*8*16];
 
-void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int windowWidth, int windowHeight, int fullWidth, int fullHeight, Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
-static void BEL_ST_CalcWindowDimsFromCfg(int *outWidth, int *outHeight);
-
 void BE_ST_InitGfx(void)
 {
 	if (g_refKeenCfg.sdlRendererDriver >= 0)
@@ -83,9 +80,11 @@ void BE_ST_InitGfx(void)
 		windowFlagsToSet |= SDL_WINDOW_RESIZABLE;
 
 	uint32_t rendererFlags = BEL_ST_GetSDLRendererFlagsToSet(false);
-	BEL_ST_RecreateSDLWindowAndRenderer(
-		SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum), SDL_WINDOWPOS_UNDEFINED_DISPLAY(g_refKeenCfg.displayNum),
-		windowWidthToSet, windowHeightToSet, g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlags
+	BEL_ST_RecreateWindowAndRenderer(
+		g_refKeenCfg.displayNum,
+		windowWidthToSet, windowHeightToSet,
+		g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight,
+		windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlags
 	);
 
 	BE_ST_SetScreenMode(3); // Includes BE_ST_Texture handling and output rects preparation
@@ -107,78 +106,6 @@ void BE_ST_ShutdownGfx(void)
 	g_sdlRenderer = NULL;
 	SDL_DestroyWindow(g_sdlWindow);
 	g_sdlWindow = NULL;
-}
-
-void BEL_ST_RecreateSDLWindowAndRenderer(int x, int y, int windowWidth, int windowHeight, int fullWidth, int fullHeight, Uint32 windowFlags, int driverIndex, Uint32 rendererFlags)
-{
-	static int prev_x, prev_y, prev_driverIndex;
-	static uint32_t prev_rendererFlags;
-
-	if (g_sdlWindow)
-	{
-		// This is a little bit of a hack:
-		// - x and y are compared to previous values, currently used to pick a display to use (in a multi-display setup).
-		// - Since the actual flags of a window may differ from what we requested (due to toggling fullscreen or any other reason),
-		// we support skipping window recreation only if fullscreen state did not change.
-		// - Renderer flags are compared to the previously requested flags.
-		// - Same is done with with renderer driver index. If -1 is used anywhere, this makes reuse of the same window more probable.
-		//
-		// However, if only the full screen resolution has changed, we update the window's display mode accordingly.
-		if ((x == prev_x) && (y == prev_y) &&
-		    ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP)) &&
-		    (driverIndex == prev_driverIndex) && (rendererFlags == prev_rendererFlags)
-		)
-			goto setupforfullscreen;
-
-		SDL_DestroyRenderer(g_sdlRenderer);
-		g_sdlRenderer = NULL;
-		SDL_DestroyWindow(g_sdlWindow);
-		g_sdlWindow = NULL;
-	}
-
-	// HACK - Create non-fullscreen window and then set as fullscreen, if required.
-	// Reason is this lets us set non-fullscreen window size (for fullscreen toggling).
-	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
-	// A hack for Android x86 on VirtualBox - Try creating an OpenGL ES 1.1 context instead of 2.0
-	if (!g_sdlWindow)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 window, forcing OpenGL (ES) version to 1.1 and retrying,\n%s\n", SDL_GetError());
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
-	}
-	if (!g_sdlWindow)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 window,\n%s\n", SDL_GetError());
-		exit(0);
-	}
-
-	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, driverIndex, rendererFlags);
-	if (!g_sdlRenderer)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateSDLWindowAndRenderer: Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
-		exit(0);
-	}
-
-	prev_x = x;
-	prev_y = y;
-	prev_driverIndex = driverIndex;
-	prev_rendererFlags = rendererFlags;
-
-setupforfullscreen:
-
-	// In case non-desktop fullscreen resolution is desired (even if window is currently *not* fullscreen);
-	// But do so AFTER creating renderer! (Looks like SDL_CreateRenderer may re-create the window.)
-	if (fullWidth && fullHeight)
-	{
-		SDL_DisplayMode mode;
-		SDL_GetWindowDisplayMode(g_sdlWindow, &mode);
-		mode.w = fullWidth;
-		mode.h = fullHeight;
-		SDL_SetWindowDisplayMode(g_sdlWindow, &mode);
-	}
-	SDL_SetWindowFullscreen(g_sdlWindow, windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP);
 }
 
 uint32_t BEL_ST_GetSDLRendererFlagsToSet(bool isLauncherWindow)
