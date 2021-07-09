@@ -13,4 +13,9 @@ void *BEL_ST_LockTexture(BE_ST_Texture *texture);
 static inline void BEL_ST_UnlockTexture(BE_ST_Texture *texture) { SDL_UnlockTexture(texture); }
 int BEL_ST_SetRenderTarget(BE_ST_Texture *texture);
 
+void BEL_ST_RenderClear(void);
+void BEL_ST_SetDrawColor(uint32_t color);
+void BEL_ST_RenderFill(const BE_ST_Rect *rect);
+void BEL_ST_UpdateWindow(void);
+
 #endif

@@ -768,7 +768,7 @@ void BE_ST_Launcher_Prepare(void)
 		exit(0);
 	}
 
-	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE); // For clears in refreshes
+	BEL_ST_SetDrawColor(0xFF000000); // For clears in refreshes
 	BEL_ST_Launcher_SetGfxOutputRects();
 
 	// Try, if we fail then simply don't use this
@@ -2416,7 +2416,7 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 
 	if (g_refKeenCfg.touchInputDebugging)
 	{
-		SDL_SetRenderDrawColor(g_sdlRenderer, 0xFF, 0x00, 0x00, 0xBF); // Includes some alpha
+		BEL_ST_SetDrawColor(0xBFFF0000); // Includes some alpha
 		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_BLEND);
 		BESDLLauncherTrackedFinger *trackedFinger = g_sdlTrackedFingers;
 		for (int i = 0; i < g_nOfTrackedFingers; ++i, ++trackedFinger)
@@ -2424,7 +2424,7 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 			SDL_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
 			SDL_RenderFillRect(g_sdlRenderer, &rect);
 		}
-		SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+		BEL_ST_SetDrawColor(0xFF000000);
 		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_NONE);
 	}
 

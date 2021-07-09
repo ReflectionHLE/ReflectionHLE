@@ -568,13 +568,13 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 
 	if (g_refKeenCfg.touchInputDebugging)
 	{
-		SDL_SetRenderDrawColor(g_sdlRenderer, 0xFF, 0x00, 0x00, 0xBF); // Includes some alpha
+		BEL_ST_SetDrawColor(0xBFFF0000); // Includes some alpha
 		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_BLEND);
 		BESDLTrackedFinger *trackedFinger = g_sdlTrackedFingers;
 		for (int i = 0; i < g_nOfTrackedFingers; ++i, ++trackedFinger)
 		{
-			SDL_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
-			SDL_RenderFillRect(g_sdlRenderer, &rect);
+			BE_ST_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
+			BEL_ST_RenderFill(&rect);
 		}
 		SDL_SetRenderDrawBlendMode(g_sdlRenderer, SDL_BLENDMODE_NONE);
 	}
@@ -604,7 +604,7 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 		}
 	}
 
-	SDL_RenderPresent(g_sdlRenderer);
+	BEL_ST_UpdateWindow();
 }
 
 static uint32_t g_be_sdlLastRefreshTicks = 0;
@@ -795,19 +795,16 @@ void BEL_ST_UpdateHostDisplay(void)
 
 dorefresh:
 
-	SDL_SetRenderDrawColor(g_sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	SDL_RenderClear(g_sdlRenderer);
-	SDL_SetRenderDrawColor(
-		g_sdlRenderer, (g_sdlEGALastBGRABorderColor>>16)&0xFF,
-		(g_sdlEGALastBGRABorderColor>>8)&0xFF,
-		g_sdlEGALastBGRABorderColor&0xFF, SDL_ALPHA_OPAQUE);
-	SDL_RenderFillRect(g_sdlRenderer, &g_sdlAspectCorrectionBorderedRect);
+	BEL_ST_SetDrawColor(0xFF000000);
+	BEL_ST_RenderClear();
+	BEL_ST_SetDrawColor(g_sdlEGALastBGRABorderColor);
+	BEL_ST_RenderFill(&g_sdlAspectCorrectionBorderedRect);
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 	{
-		SDL_SetRenderDrawColor(g_sdlRenderer, 0xFF, 0x00, 0x00, SDL_ALPHA_OPAQUE);
-		SDL_Rect rect = {g_sdlHostVirtualMouseCursorState[0]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorState[1]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorSideLen, g_sdlHostVirtualMouseCursorSideLen};
-		SDL_RenderFillRect(g_sdlRenderer, &rect);
+		BEL_ST_SetDrawColor(0xFFFF0000);
+		BE_ST_Rect rect = {g_sdlHostVirtualMouseCursorState[0]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorState[1]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorSideLen, g_sdlHostVirtualMouseCursorSideLen};
+		BEL_ST_RenderFill(&rect);
 	}
 #endif
 

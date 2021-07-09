@@ -66,3 +66,27 @@ int BEL_ST_SetRenderTarget(BE_ST_Texture *texture)
 	}
 	return ret;
 }
+
+void BEL_ST_RenderClear(void)
+{
+	if (SDL_RenderClear(g_sdlRenderer))
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderClear failed,\n%s\n", SDL_GetError());
+}
+
+void BEL_ST_SetDrawColor(uint32_t color)
+{
+	if (SDL_SetRenderDrawColor(
+	      g_sdlRenderer, (color>>16)&255, (color>>8)&255, color&255, color>>24))
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_SetRenderDrawColor failed,\n%s\n", SDL_GetError());
+}
+
+void BEL_ST_RenderFill(const BE_ST_Rect *rect)
+{
+	if (SDL_RenderFillRect(g_sdlRenderer, rect))
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderFillRect failed,\n%s\n", SDL_GetError());
+}
+
+void BEL_ST_UpdateWindow(void)
+{
+	SDL_RenderPresent(g_sdlRenderer);
+}
