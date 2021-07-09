@@ -23,6 +23,7 @@
 #include "SDL.h" // TODO: Used for g_sdlWindow, g_sdlRenderer
 #include <stdbool.h>
 #include <stdint.h>
+#include "be_video_sdl.h"
 
 extern bool g_sdlDoRefreshGfxOutput;
 extern bool g_sdlForceGfxControlUiRefresh;
@@ -32,7 +33,7 @@ extern const uint32_t g_sdlCGAGfxBGRAScreenColors[4];
 
 extern SDL_Window *g_sdlWindow;
 extern SDL_Renderer *g_sdlRenderer;
-extern SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
+extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 
 void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
 void BEL_ST_RecreateMainTextures(void);

@@ -1514,7 +1514,7 @@ static void BEL_ST_Launcher_CreateTextSearchTextureIfNeeded(void)
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode(g_sdlLauncherTextSearchTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	SDL_SetTextureBlendMode((SDL_Texture *)g_sdlLauncherTextSearchTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
 }
 
 static void BEL_ST_Launcher_CreateTextInputTextureIfNeeded(void)
@@ -1530,7 +1530,7 @@ static void BEL_ST_Launcher_CreateTextInputTextureIfNeeded(void)
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode(g_sdlLauncherTextInputTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	SDL_SetTextureBlendMode((SDL_Texture *)g_sdlLauncherTextInputTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
 }
 
 // borrowed from be_st_sdl_graphics.c
@@ -1551,7 +1551,7 @@ static void BEL_ST_Launcher_RedrawWholeTextSearchUI(void)
 	// Simpler to do so outside the loop
 	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlKeyboardUISelectedKeyX) + ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlKeyboardUISelectedKeyY), ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, g_sdlIntScanCodeKeyboardUIStrs_Ptr[g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]], true, g_sdlKeyboardUIIsKeyPressed);
 
-	SDL_UpdateTexture(g_sdlLauncherTextSearchTexture, NULL, pixels, 4*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH);
+	BEL_ST_UpdateTexture(g_sdlLauncherTextSearchTexture, NULL, pixels, 4*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH);
 }
 
 static void BEL_ST_Launcher_RedrawWholeTextInputUI(void)
@@ -1569,7 +1569,7 @@ static void BEL_ST_Launcher_RedrawWholeTextInputUI(void)
 	// Simpler to do so outside the loop
 	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlKeyboardUISelectedKeyX) + ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlKeyboardUISelectedKeyY), ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, g_sdlIntScanCodeKeyboardUIStrs_Ptr[g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]], true, g_sdlKeyboardUIIsKeyPressed);
 
-	SDL_UpdateTexture(g_sdlLauncherTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH);
+	BEL_ST_UpdateTexture(g_sdlLauncherTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH);
 }
 
 

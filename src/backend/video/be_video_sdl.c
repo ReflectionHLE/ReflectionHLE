@@ -21,6 +21,8 @@
 #include "be_title_and_version.h"
 #include "be_video_textures.h"
 
+#include "SDL.h"
+
 // TODO: Make these static later
 SDL_Window *g_sdlWindow;
 SDL_Renderer *g_sdlRenderer;
@@ -115,7 +117,10 @@ BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLine
 	         w, h);
 }
 
-void BEL_ST_DestroyTexture(BE_ST_Texture *texture) { SDL_DestroyTexture(texture); }
+void BEL_ST_DestroyTexture(BE_ST_Texture *texture)
+{
+	SDL_DestroyTexture((SDL_Texture *)texture);
+}
 
 int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst)
 {
@@ -123,10 +128,10 @@ int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst)
 	if (dst)
 	{
 		SDL_Rect sdl_rect = {dst->x, dst->y, dst->w, dst->h};
-		ret = SDL_RenderCopy(g_sdlRenderer, texture, NULL, &sdl_rect);
+		ret = SDL_RenderCopy(g_sdlRenderer, (SDL_Texture *)texture, NULL, &sdl_rect);
 	}
 	else
-		ret = SDL_RenderCopy(g_sdlRenderer, texture, NULL, NULL);
+		ret = SDL_RenderCopy(g_sdlRenderer, (SDL_Texture *)texture, NULL, NULL);
 
 	if (ret)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderCopy failed,\n%s\n", SDL_GetError());
@@ -137,7 +142,7 @@ void *BEL_ST_LockTexture(BE_ST_Texture *texture)
 {
 	void *pixels;
 	int pitch;
-	if (SDL_LockTexture(texture, NULL, &pixels, &pitch))
+	if (SDL_LockTexture((SDL_Texture *)texture, NULL, &pixels, &pitch))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_LockTexture failed,\n%s\n", SDL_GetError());
 		pixels = NULL;
@@ -145,7 +150,10 @@ void *BEL_ST_LockTexture(BE_ST_Texture *texture)
 	return pixels;
 }
 
-void BEL_ST_UnlockTexture(BE_ST_Texture *texture) { SDL_UnlockTexture((SDL_Texture *)texture); }
+void BEL_ST_UnlockTexture(BE_ST_Texture *texture)
+{
+	SDL_UnlockTexture((SDL_Texture *)texture);
+}
 
 void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const void *pixels, int pitch)
 {
@@ -153,10 +161,10 @@ void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const 
 	if (rect)
 	{
 		SDL_Rect sdl_rect = {rect->x, rect->y, rect->w, rect->h};
-		ret = SDL_UpdateTexture(texture, &sdl_rect, pixels, pitch);
+		ret = SDL_UpdateTexture((SDL_Texture *)texture, &sdl_rect, pixels, pitch);
 	}
 	else
-		ret = SDL_UpdateTexture(texture, NULL, pixels, pitch);
+		ret = SDL_UpdateTexture((SDL_Texture *)texture, NULL, pixels, pitch);
 
 	if (ret)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_UpdateTexture failed,\n%s\n", SDL_GetError());
@@ -164,7 +172,7 @@ void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const 
 
 int BEL_ST_SetRenderTarget(BE_ST_Texture *texture)
 {
-	int ret = SDL_SetRenderTarget(g_sdlRenderer, texture);
+	int ret = SDL_SetRenderTarget(g_sdlRenderer, (SDL_Texture *)texture);
 	if (ret)
 	{
 		if (texture)

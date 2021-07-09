@@ -1,13 +1,11 @@
 #ifndef BE_VIDEO_SDL
 #define BE_VIDEO_SDL
 
-#include "SDL.h"
-
 typedef struct BE_ST_Rect {
 	int x, y, w, h;
 } BE_ST_Rect;
 
-typedef SDL_Texture BE_ST_Texture;
+typedef void BE_ST_Texture;
 
 void BEL_ST_RecreateWindowAndRenderer(
 	int displayNo,
