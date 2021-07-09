@@ -20,12 +20,12 @@
 #ifndef BE_VIDEO_UI_H
 #define BE_VIDEO_UI_H
 
-#include "SDL.h"
 #include <stdbool.h>
+#include "be_video_sdl.h"
 
 typedef struct {
-	SDL_TouchID touchId;
-	SDL_FingerID fingerId;
+	BE_ST_TouchID touchId;
+	BE_ST_FingerID fingerId;
 	int lastX, lastY;
 	// Used in multiple mappings, but not necessarily all of them
 	bool isDefaultBinaryStateToggle;

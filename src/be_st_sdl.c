@@ -24,6 +24,7 @@
 
 #include "backend/audio/be_audio_main_thread.h"
 #include "backend/video/be_video_textures.h"
+#include "backend/video/be_video_ui.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_gamever.h"
@@ -1931,20 +1932,20 @@ static void BEL_ST_AltControlScheme_HandleDebugKeysEvent(int but, bool isPressed
  * (documentation of SDL_GetTouchDevice says 0 is returned for an invalid input index)
  */
 
-void BEL_ST_CheckPressedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckPressedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckMovedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckReleasedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckPressedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckMovedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckReleasedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId);
-void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, bool forceAbsoluteFingerPositioning);
-void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y);
-void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId);
+void BEL_ST_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckReleasedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckPressedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckMovedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckReleasedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckPressedPointerInControllerUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckMovedPointerInControllerUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckReleasedPointerInControllerUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId);
+void BEL_ST_CheckPressedPointerInTouchControls(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, bool forceAbsoluteFingerPositioning);
+void BEL_ST_CheckMovedPointerInTouchControls(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
+void BEL_ST_CheckReleasedPointerInTouchControls(BE_ST_TouchID touchId, BE_ST_FingerID fingerId);
 
-static bool BEL_ST_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static bool BEL_ST_CheckCommonPointerPressCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
 		return false;
@@ -1974,7 +1975,7 @@ static bool BEL_ST_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerI
 	return false;
 }
 
-static bool BEL_ST_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static bool BEL_ST_CheckCommonPointerReleaseCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
 		return false;
@@ -2004,7 +2005,7 @@ static bool BEL_ST_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_Finge
 	return false;
 }
 
-static bool BEL_ST_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static bool BEL_ST_CheckCommonPointerMoveCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
 		return false;

@@ -991,7 +991,7 @@ void BEL_ST_ToggleKeyPressInDebugKeysUI(void)
 
 /*** Pointer stuff common to all kinds of controller / touch input UI ***/
 
-static BESDLTrackedFinger *BEL_ST_ProcessAndGetPressedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static BESDLTrackedFinger *BEL_ST_ProcessAndGetPressedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	int i;
 	for (i = 0; i < g_nOfTrackedFingers; ++i)
@@ -1022,7 +1022,7 @@ static BESDLTrackedFinger *BEL_ST_ProcessAndGetPressedTrackedFinger(SDL_TouchID 
 	return trackedFinger;
 }
 
-static BESDLTrackedFinger *BEL_ST_ProcessAndGetMovedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static BESDLTrackedFinger *BEL_ST_ProcessAndGetMovedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	int i;
 	for (i = 0; i < g_nOfTrackedFingers; ++i)
@@ -1042,7 +1042,7 @@ static BESDLTrackedFinger *BEL_ST_ProcessAndGetMovedTrackedFinger(SDL_TouchID to
 	return trackedFinger;
 }
 
-static BESDLTrackedFinger *BEL_ST_GetReleasedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId)
+static BESDLTrackedFinger *BEL_ST_GetReleasedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId)
 {
 	int i;
 	for (i = 0; i < g_nOfTrackedFingers; ++i)
@@ -1083,7 +1083,7 @@ static void BEL_ST_UnmarkSelectedKeyInDebugKeysUI(void)
 }
 
 
-void BEL_ST_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger || trackedFinger->isDefaultBinaryStateToggle)
@@ -1115,7 +1115,7 @@ extern bool g_sdlDefaultMappingBinaryState;
 
 bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr);
 
-void BEL_ST_CheckPressedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -1141,7 +1141,7 @@ void BEL_ST_CheckPressedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID f
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-void BEL_ST_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckReleasedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_GetReleasedTrackedFinger(touchId, fingerId);
 	if (!trackedFinger)
@@ -1176,7 +1176,7 @@ void BEL_ST_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID 
 }
 
 
-void BEL_ST_CheckMovedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckMovedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger || trackedFinger->isDefaultBinaryStateToggle)
@@ -1203,7 +1203,7 @@ void BEL_ST_CheckMovedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fin
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-void BEL_ST_CheckPressedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckPressedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -1231,7 +1231,7 @@ void BEL_ST_CheckPressedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID f
 	g_sdlForceGfxControlUiRefresh = true;
 }
 
-void BEL_ST_CheckReleasedPointerInDebugKeysUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckReleasedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_GetReleasedTrackedFinger(touchId, fingerId);
 	if (!trackedFinger)
@@ -1315,7 +1315,7 @@ static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
 	return -1;
 }
 
-void BEL_ST_CheckPressedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckPressedPointerInControllerUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -1338,7 +1338,7 @@ void BEL_ST_CheckPressedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID 
 
 }
 
-void BEL_ST_CheckReleasedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId)
+void BEL_ST_CheckReleasedPointerInControllerUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_GetReleasedTrackedFinger(touchId, fingerId);
 	if (!trackedFinger)
@@ -1364,7 +1364,7 @@ void BEL_ST_CheckReleasedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID
 	}
 }
 
-void BEL_ST_CheckMovedPointerInControllerUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckMovedPointerInControllerUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger || trackedFinger->isDefaultBinaryStateToggle)
@@ -1441,7 +1441,7 @@ static void BEL_ST_HandleDefaultPointerActionInTouchControls(int touchControlInd
 
 extern int g_sdlEmuMouseButtonsState;
 
-void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, bool forceAbsoluteFingerPositioning)
+void BEL_ST_CheckPressedPointerInTouchControls(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, bool forceAbsoluteFingerPositioning)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -1461,7 +1461,7 @@ void BEL_ST_CheckPressedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID
 		BEL_ST_HandleDefaultPointerActionInTouchControls(touchControlIndex, true);
 }
 
-void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId)
+void BEL_ST_CheckReleasedPointerInTouchControls(BE_ST_TouchID touchId, BE_ST_FingerID fingerId)
 {
 	BESDLTrackedFinger* trackedFinger = BEL_ST_GetReleasedTrackedFinger(touchId, fingerId);
 	if (!trackedFinger)
@@ -1477,7 +1477,7 @@ void BEL_ST_CheckReleasedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerI
 	BEL_ST_RemoveTrackedFinger(trackedFinger);
 }
 
-void BEL_ST_CheckMovedPointerInTouchControls(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+void BEL_ST_CheckMovedPointerInTouchControls(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)

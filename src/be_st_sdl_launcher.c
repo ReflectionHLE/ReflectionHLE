@@ -25,6 +25,7 @@
 #include <string.h>
 #include "SDL.h"
 
+#include "backend/video/be_video_sdl.h"
 #include "backend/video/be_video_textures.h"
 #include "be_features.h"
 #include "be_st_launcher.h"
@@ -86,8 +87,8 @@ static bool g_sdlKeyboardUIIsKeyPressed, g_sdlKeyboardUIIsShifted;
 #define MAX_NUM_OF_TRACKED_FINGERS 10
 
 typedef struct {
-	SDL_TouchID touchId;
-	SDL_FingerID fingerId;
+	BE_ST_TouchID touchId;
+	BE_ST_FingerID fingerId;
 	int lastX, lastY;
 	struct {
 		int x, y;
@@ -2012,7 +2013,7 @@ static bool BEL_ST_Launcher_ToggleKeyPressInTextInputUI(bool toggle, bool *pConf
 
 /*** Pointer stuff common to all kinds of controller / touch input UI ***/
 
-static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	int i;
 	for (i = 0; i < g_nOfTrackedFingers; ++i)
@@ -2044,7 +2045,7 @@ static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetPressedTrackedFi
 	return trackedFinger;
 }
 
-static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	int i;
 	for (i = 0; i < g_nOfTrackedFingers; ++i)
@@ -2065,7 +2066,7 @@ static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetMovedTrackedFing
 	return trackedFinger;
 }
 
-static BESDLLauncherTrackedFinger *BEL_ST_Launcher_GetReleasedTrackedFinger(SDL_TouchID touchId, SDL_FingerID fingerId)
+static BESDLLauncherTrackedFinger *BEL_ST_Launcher_GetReleasedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId)
 {
 	int i;
 	for (i = 0; i < g_nOfTrackedFingers; ++i)
@@ -2112,7 +2113,7 @@ static void BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextInputUI(void)
 }
 
 
-static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -2140,7 +2141,7 @@ static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(SDL_TouchID touchId,
 	BE_ST_Launcher_MarkGfxCache();
 }
 
-static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -2166,7 +2167,7 @@ static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(SDL_TouchID touchI
 	BE_ST_Launcher_MarkGfxCache();
 }
 
-static void BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static void BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_GetReleasedTrackedFinger(touchId, fingerId);
 	if (!trackedFinger)
@@ -2192,7 +2193,7 @@ static void BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(SDL_TouchID touch
 }
 
 
-static void BEL_ST_Launcher_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static void BEL_ST_Launcher_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -2220,7 +2221,7 @@ static void BEL_ST_Launcher_CheckMovedPointerInTextInputUI(SDL_TouchID touchId, 
 	BE_ST_Launcher_MarkGfxCache();
 }
 
-static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
@@ -2246,7 +2247,7 @@ static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(SDL_TouchID touchId
 	BE_ST_Launcher_MarkGfxCache();
 }
 
-static bool BEL_ST_Launcher_CheckReleasedPointerInTextInputUI(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, bool *pConfirmed)
+static bool BEL_ST_Launcher_CheckReleasedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, bool *pConfirmed)
 {
 	bool ret = false;
 	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_GetReleasedTrackedFinger(touchId, fingerId);
@@ -2496,7 +2497,7 @@ refreshwithnorendertarget:
 }
 
 
-static void BEL_ST_Launcher_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
+static void BEL_ST_Launcher_CheckCommonPointerPressCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
 {
 	if (g_sdlLauncherTextSearchUIIsShown)
 	{
@@ -2510,7 +2511,7 @@ static void BEL_ST_Launcher_CheckCommonPointerPressCases(SDL_TouchID touchId, SD
 	}
 }
 
-static void BEL_ST_Launcher_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
+static void BEL_ST_Launcher_CheckCommonPointerReleaseCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
 {
 	if (g_sdlLauncherTextSearchUIIsShown)
 	{
@@ -2523,7 +2524,7 @@ static void BEL_ST_Launcher_CheckCommonPointerReleaseCases(SDL_TouchID touchId, 
 	}
 }
 
-static void BEL_ST_Launcher_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
+static void BEL_ST_Launcher_CheckCommonPointerMoveCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, uint32_t ticksBeforePoll)
 {
 	if (g_sdlLauncherTextSearchUIIsShown)
 	{
@@ -2930,7 +2931,7 @@ static bool BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(Uint8 b
 	return false;
 }
 
-static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	if (g_sdlLauncherTextInputUIIsShown)
 	{
@@ -2944,7 +2945,7 @@ static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(SDL_To
 	}
 }
 
-static bool BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y, bool *pConfirmed)
+static bool BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, bool *pConfirmed)
 {
 	if (g_sdlLauncherTextInputUIIsShown)
 	{
@@ -2958,7 +2959,7 @@ static bool BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(SDL_
 	}
 }
 
-static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(SDL_TouchID touchId, SDL_FingerID fingerId, int x, int y)
+static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	if (g_sdlLauncherTextInputUIIsShown)
 	{
