@@ -27,6 +27,7 @@ int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst);
 void *BEL_ST_LockTexture(BE_ST_Texture *texture);
 void BEL_ST_UnlockTexture(BE_ST_Texture *texture);
 void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const void *pixels, int pitch);
+void BEL_ST_SetTextureBlendMode(BE_ST_Texture *texture, bool blend);
 int BEL_ST_SetRenderTarget(BE_ST_Texture *texture);
 
 #endif

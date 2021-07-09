@@ -1512,7 +1512,7 @@ static void BEL_ST_Launcher_CreateTextSearchTextureIfNeeded(void)
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode((SDL_Texture *)g_sdlLauncherTextSearchTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	BEL_ST_SetTextureBlendMode(g_sdlLauncherTextSearchTexture, true);
 }
 
 static void BEL_ST_Launcher_CreateTextInputTextureIfNeeded(void)
@@ -1528,7 +1528,7 @@ static void BEL_ST_Launcher_CreateTextInputTextureIfNeeded(void)
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode((SDL_Texture *)g_sdlLauncherTextInputTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	BEL_ST_SetTextureBlendMode(g_sdlLauncherTextInputTexture, true);
 }
 
 // borrowed from be_st_sdl_graphics.c

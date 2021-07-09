@@ -208,6 +208,12 @@ void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const 
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_UpdateTexture failed,\n%s\n", SDL_GetError());
 }
 
+void BEL_ST_SetTextureBlendMode(BE_ST_Texture *texture, bool blend)
+{
+	if (SDL_SetTextureBlendMode((SDL_Texture *)texture, blend ? SDL_BLENDMODE_BLEND : SDL_BLENDMODE_NONE))
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_SetRenderTarget failed to set blend mode, blend == %d,\n%s\n", (int)blend, SDL_GetError());
+}
+
 int BEL_ST_SetRenderTarget(BE_ST_Texture *texture)
 {
 	int ret = SDL_SetRenderTarget(g_sdlRenderer, (SDL_Texture *)texture);
