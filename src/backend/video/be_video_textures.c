@@ -25,6 +25,10 @@
 #include "be_video_emu.h"
 #include "be_video_textures.h"
 
+// These might be implementation-dependent
+BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLinear);
+void BEL_ST_DestroyTexture(BE_ST_Texture *texture);
+
 void BEL_ST_RecreateMainTextures(void)
 {
 	if (g_sdlTexture)

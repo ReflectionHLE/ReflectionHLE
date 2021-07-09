@@ -22,6 +22,7 @@
 #include "be_st_sdl_private.h"
 #include "be_video.h"
 #include "be_video_emu.h"
+#include "be_video_textures.h"
 
 BEVideoEmuMem g_sdlVidMem;
 

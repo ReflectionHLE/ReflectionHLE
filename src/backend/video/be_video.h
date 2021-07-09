@@ -23,7 +23,10 @@
 #include "SDL.h" // TODO: Used for g_sdlRenderer
 #include <stdbool.h>
 #include <stdint.h>
-#include "be_video_sdl.h"
+
+typedef struct BE_ST_Rect {
+	int x, y, w, h;
+} BE_ST_Rect;
 
 extern bool g_sdlDoRefreshGfxOutput;
 extern bool g_sdlForceGfxControlUiRefresh;
@@ -32,10 +35,31 @@ extern const uint32_t g_sdlEGABGRAScreenColors[16];
 extern const uint32_t g_sdlCGAGfxBGRAScreenColors[4];
 
 extern SDL_Renderer *g_sdlRenderer;
-extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 
 void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
-void BEL_ST_RecreateMainTextures(void);
+
+// These might be implementation-dependent
+
+void BEL_ST_RecreateWindowAndRenderer(
+	int displayNo,
+	int windowWidth, int windowHeight,
+	int fullWidth, int fullHeight,
+	Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
+
+void BEL_ST_DestroyWindowAndRenderer(void);
+
+void BEL_ST_RenderClear(void);
+void BEL_ST_SetDrawColor(uint32_t color);
+void BEL_ST_RenderFill(const BE_ST_Rect *rect);
+void BEL_ST_UpdateWindow(void);
+
+void BEL_ST_SetWindowFullScreenToggle(bool fullScreen);
+bool BEL_ST_GetWindowFullScreenToggle(void);
+
+void BEL_ST_SetWindowSize(int w, int h);
+void BEL_ST_GetWindowSize(int *w, int *h);
+
+int BEL_ST_GetWindowDisplayNum(void);
 
 #endif
 
