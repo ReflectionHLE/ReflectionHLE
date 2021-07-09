@@ -15,8 +15,6 @@ void BEL_ST_RecreateWindowAndRenderer(
 	int fullWidth, int fullHeight,
 	Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
 
-static void BEL_ST_CalcWindowDimsFromCfg(int *outWidth, int *outHeight);
-
 BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLinear);
 void BEL_ST_DestroyTexture(BE_ST_Texture *texture);
 int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst);

@@ -44,6 +44,8 @@ static bool g_sdlIsSoftwareRendered;
 bool g_sdlDoRefreshGfxOutput;
 bool g_sdlForceGfxControlUiRefresh;
 
+static void BEL_ST_CalcWindowDimsFromCfg(int *outWidth, int *outHeight);
+
 void BE_ST_MarkGfxForUpdate(void)
 {
 	g_sdlDoRefreshGfxOutput = true;
