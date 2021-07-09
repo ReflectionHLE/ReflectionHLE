@@ -148,11 +148,15 @@ void BEL_ST_DestroyWindowAndRenderer(void)
 BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLinear)
 {
 	// TODO: Consider using SDL_TEXTUREACCESS_STATIC later
+	BE_ST_Texture *ret;
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, isLinear ? "linear" : "nearest");
-	return SDL_CreateTexture(
-	         g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888,
-	         isTarget ? SDL_TEXTUREACCESS_TARGET : SDL_TEXTUREACCESS_STREAMING,
-	         w, h);
+	ret = SDL_CreateTexture(
+	        g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888,
+	        isTarget ? SDL_TEXTUREACCESS_TARGET : SDL_TEXTUREACCESS_STREAMING,
+	        w, h);
+	if (!ret)
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_CreateTexture failed,\n%s\n", SDL_GetError());
+	return ret;
 }
 
 void BEL_ST_DestroyTexture(BE_ST_Texture *texture)

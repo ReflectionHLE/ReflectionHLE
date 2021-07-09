@@ -260,7 +260,7 @@ static void BEL_ST_CreatePadTextureIfNeeded(BE_ST_Texture **padTexturePtrPtr, in
 	BEL_ST_SDLCreateTextureWrapper(padTexturePtrPtr, len, len, false, false);
 	if (!(*padTexturePtrPtr))
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 pad texture,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 pad texture,\n");
 		//Destroy window and renderer?
 		exit(0);
 	}
@@ -544,7 +544,7 @@ static void BEL_ST_CreateTextInputTextureIfNeeded(void)
 	BEL_ST_SDLCreateTextureWrapper(&g_sdlTextInputTexture, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT, false, false);
 	if (!g_sdlTextInputTexture)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 text input texture,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 text input texture\n");
 		//Destroy window and renderer?
 		exit(0);
 	}
@@ -560,7 +560,7 @@ static void BEL_ST_CreateDebugKeysTextureIfNeeded(void)
 	BEL_ST_SDLCreateTextureWrapper(&g_sdlDebugKeysTexture, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT, false, false);
 	if (!g_sdlDebugKeysTexture)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 debug keys texture,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 debug keys texture,\n");
 		//Destroy window and renderer?
 		exit(0);
 	}
