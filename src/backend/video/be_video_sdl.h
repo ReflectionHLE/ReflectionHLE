@@ -13,6 +13,8 @@ void BEL_ST_RecreateWindowAndRenderer(
 	int fullWidth, int fullHeight,
 	Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
 
+void BEL_ST_DestroyWindowAndRenderer(void);
+
 BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLinear);
 void BEL_ST_DestroyTexture(BE_ST_Texture *texture);
 int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst);
@@ -25,5 +27,13 @@ void BEL_ST_RenderClear(void);
 void BEL_ST_SetDrawColor(uint32_t color);
 void BEL_ST_RenderFill(const BE_ST_Rect *rect);
 void BEL_ST_UpdateWindow(void);
+
+void BEL_ST_SetWindowFullScreenToggle(bool fullScreen);
+bool BEL_ST_GetWindowFullScreenToggle(void);
+
+void BEL_ST_SetWindowSize(int w, int h);
+void BEL_ST_GetWindowSize(int *w, int *h);
+
+int BEL_ST_GetWindowDisplayNum(void);
 
 #endif

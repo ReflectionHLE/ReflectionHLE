@@ -20,7 +20,7 @@
 #ifndef BE_VIDEO_H
 #define BE_VIDEO_H
 
-#include "SDL.h" // TODO: Used for g_sdlWindow, g_sdlRenderer
+#include "SDL.h" // TODO: Used for g_sdlRenderer
 #include <stdbool.h>
 #include <stdint.h>
 #include "be_video_sdl.h"
@@ -31,7 +31,6 @@ extern const uint32_t g_sdlVGADefaultBGRAScreenColors[256];
 extern const uint32_t g_sdlEGABGRAScreenColors[16];
 extern const uint32_t g_sdlCGAGfxBGRAScreenColors[4];
 
-extern SDL_Window *g_sdlWindow;
 extern SDL_Renderer *g_sdlRenderer;
 extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 

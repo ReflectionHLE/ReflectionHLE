@@ -109,7 +109,6 @@ extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 // - For seamless transition from launcher to game, if an SDL_WINDOW_FULLSCREEN_DESKTOP window is used with same features.
 // - Additionally, the renderer is shared since SDL_Texture ** pointers are managed from be_st_sdl_graphics.c (in case textures should be recreated).
 // - Also used to fetch the window's display number on quit, if g_refKeenCfg.rememberDisplayNum == true.
-extern SDL_Window *g_sdlWindow;
 extern SDL_Renderer *g_sdlRenderer;
 // Similarly, this is also shared *on purpose* - for a HACK (guess if touch controls should be shown when game is started)
 extern bool g_sdlShowTouchUI;
@@ -1344,12 +1343,11 @@ static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP)
 static void BEL_ST_Launcher_SetGfxOutputRects(void)
 {
 	int winWidth, winHeight;
-	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
-
+	BEL_ST_GetWindowSize(&winWidth, &winHeight);
 
 	if (g_refKeenCfg.rememberDisplayNum)
 	{
-		int displayNum = SDL_GetWindowDisplayIndex(g_sdlWindow);
+		int displayNum = BEL_ST_GetWindowDisplayNum();
 		// HUGE FIXME - Bad idea!!!
 		if (displayNum < (int)BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums)) // Ignore last NULL entry
 			if (1/*g_beVideoSettingsMenuItem_DisplayNum.choice != displayNum*/)

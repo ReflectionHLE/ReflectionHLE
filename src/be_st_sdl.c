@@ -159,7 +159,6 @@ static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
 };
 
 
-extern SDL_Window *g_sdlWindow;
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 extern bool g_sdlForceGfxControlUiRefresh;
 extern bool g_sdlShowControllerUI;
@@ -1049,9 +1048,8 @@ static void BEL_ST_SaveConfig(void)
 	fprintf(fp, "lastselectedgameexe=%s\n", g_refKeenCfg.lastSelectedGameExe);
 	fprintf(fp, "lastselectedgamever=%s\n", (g_refKeenCfg.lastSelectedGameVer != BE_GAMEVER_LAST) ? refkeen_gamever_strs[g_refKeenCfg.lastSelectedGameVer] : "");
 
-	// g_sdlWindow shouldn't be NULL, but just in case...
-	if (g_refKeenCfg.rememberDisplayNum && g_sdlWindow)
-		g_refKeenCfg.displayNum = SDL_GetWindowDisplayIndex(g_sdlWindow);
+	if (g_refKeenCfg.rememberDisplayNum)
+		g_refKeenCfg.displayNum = BEL_ST_GetWindowDisplayNum();
 
 	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
 	fprintf(fp, "rememberdisplaynum=%s\n", g_refKeenCfg.rememberDisplayNum ? "true" : "false");

@@ -104,10 +104,7 @@ void BE_ST_ShutdownGfx(void)
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlDebugKeysTexture);
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
-	SDL_DestroyRenderer(g_sdlRenderer);
-	g_sdlRenderer = NULL;
-	SDL_DestroyWindow(g_sdlWindow);
-	g_sdlWindow = NULL;
+	BEL_ST_DestroyWindowAndRenderer();
 }
 
 uint32_t BEL_ST_GetSDLRendererFlagsToSet(bool isLauncherWindow)
@@ -328,7 +325,7 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	int srcBorderedWidth = srcBorderLeft+srcWidth+srcBorderRight;
 	int srcBorderedHeight = srcBorderTop+srcHeight+srcBorderBottom;
 	int winWidth, winHeight;
-	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+	BEL_ST_GetWindowSize(&winWidth, &winHeight);
 
 	g_sdlLastReportedWindowWidth = winWidth;
 	g_sdlLastReportedWindowHeight = winHeight;
@@ -337,13 +334,13 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	{
 		// Special case - We may resize window based on mode, but only if
 		// allowResize == true (to prevent any possible infinite resizes loop)
-		if (allowResize && (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)))
+		if (allowResize && (!BE_ST_HostGfx_GetFullScreenToggle()))
 		{
 			if ((g_refKeenCfg.scaleFactor*srcBorderedWidth != winWidth) || (g_refKeenCfg.scaleFactor*srcBorderedHeight != winHeight))
 			{
-				SDL_SetWindowSize(g_sdlWindow, g_refKeenCfg.scaleFactor*srcBorderedWidth, g_refKeenCfg.scaleFactor*srcBorderedHeight);
+				BEL_ST_SetWindowSize(g_refKeenCfg.scaleFactor*srcBorderedWidth, g_refKeenCfg.scaleFactor*srcBorderedHeight);
 				// Not sure this will help, but still trying...
-				SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+				BEL_ST_GetWindowSize(&winWidth, &winHeight);
 			}
 		}
 
@@ -406,7 +403,7 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	}
 
 	// Save modified window size
-	if (!(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN))
+	if (!BE_ST_HostGfx_GetFullScreenToggle())
 	{
 		g_refKeenCfg.winWidth = winWidth;
 		g_refKeenCfg.winHeight = winHeight;
@@ -462,17 +459,9 @@ bool BE_ST_HostGfx_CanToggleFullScreen(void)
 #endif
 }
 
-bool BE_ST_HostGfx_GetFullScreenToggle(void)
-{
-	return ((SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN);
-}
-
 void BE_ST_HostGfx_SetFullScreenToggle(bool fullScreenToggle)
 {
-	if (fullScreenToggle)
-		SDL_SetWindowFullscreen(g_sdlWindow, (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP);
-	else
-		SDL_SetWindowFullscreen(g_sdlWindow, 0);
+	BEL_ST_SetWindowFullScreenToggle(fullScreenToggle);
 
 	g_refKeenCfg.isFullscreen = BE_ST_HostGfx_GetFullScreenToggle();
 	BEL_ST_SetGfxOutputRects(false);

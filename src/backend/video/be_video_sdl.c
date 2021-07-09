@@ -18,13 +18,14 @@
  */
  
 #include "be_cross.h"
+#include "be_st_sdl.h"
 #include "be_title_and_version.h"
 #include "be_video_textures.h"
 
 #include "SDL.h"
 
+static SDL_Window *g_sdlWindow;
 // TODO: Make these static later
-SDL_Window *g_sdlWindow;
 SDL_Renderer *g_sdlRenderer;
 extern SDL_Surface *g_be_sdl_windowIconSurface;
 
@@ -56,10 +57,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 		)
 			goto setupforfullscreen;
 
-		SDL_DestroyRenderer(g_sdlRenderer);
-		g_sdlRenderer = NULL;
-		SDL_DestroyWindow(g_sdlWindow);
-		g_sdlWindow = NULL;
+		BEL_ST_DestroyWindowAndRenderer();
 	}
 
 	// HACK - Create non-fullscreen window and then set as fullscreen, if required.
@@ -105,6 +103,14 @@ setupforfullscreen:
 		SDL_SetWindowDisplayMode(g_sdlWindow, &mode);
 	}
 	SDL_SetWindowFullscreen(g_sdlWindow, windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP);
+}
+
+void BEL_ST_DestroyWindowAndRenderer(void)
+{
+	SDL_DestroyRenderer(g_sdlRenderer);
+	g_sdlRenderer = NULL;
+	SDL_DestroyWindow(g_sdlWindow);
+	g_sdlWindow = NULL;
 }
 
 BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLinear)
@@ -203,7 +209,38 @@ void BEL_ST_RenderFill(const BE_ST_Rect *rect)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderFillRect failed,\n%s\n", SDL_GetError());
 }
 
+void BEL_ST_SetWindowFullScreenToggle(bool fullScreen)
+{
+	if (fullScreen)
+		SDL_SetWindowFullscreen(g_sdlWindow, (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	else
+		SDL_SetWindowFullscreen(g_sdlWindow, 0);
+}
+
+bool BE_ST_HostGfx_GetFullScreenToggle(void)
+{
+	return ((SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN);
+}
+
 void BEL_ST_UpdateWindow(void)
 {
 	SDL_RenderPresent(g_sdlRenderer);
+}
+
+void BEL_ST_SetWindowSize(int w, int h)
+{
+	SDL_SetWindowSize(g_sdlWindow, w, h);
+}
+
+void BEL_ST_GetWindowSize(int *w, int *h)
+{
+	SDL_GetWindowSize(g_sdlWindow, w, h);
+}
+
+int BEL_ST_GetWindowDisplayNum(void)
+{
+	int ret = SDL_GetWindowDisplayIndex(g_sdlWindow);
+	if (ret == -1)
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetWindowDisplayIndex failed,\n%s\n", SDL_GetError());
+	return ret;
 }

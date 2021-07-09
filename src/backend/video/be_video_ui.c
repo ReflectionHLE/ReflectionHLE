@@ -241,7 +241,7 @@ static bool g_sdlSomeOnScreenControlWasAccessibleWithMouse = false; // Used inte
 		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITHOUT_CURSOR);
 #endif
 	else if (
-		(SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN) ||
+		BE_ST_HostGfx_GetFullScreenToggle() ||
 		(g_refKeenCfg.mouseGrab == MOUSEGRAB_COMMONLY) ||
 		((g_refKeenCfg.mouseGrab == MOUSEGRAB_AUTO) && g_sdlControllerMappingActualCurr->grabMouse)
 	)
@@ -1569,7 +1569,7 @@ void BEL_ST_SetCommonUIRects(void)
 	// 4. Finally, try to be consistent with the positioning and
 	// sizes of touch controls (even though it's not necessary).
 	int winWidth, winHeight;
-	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+	BEL_ST_GetWindowSize(&winWidth, &winHeight);
 
 	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
 	g_sdlControllerFaceButtonsRect.w = g_sdlControllerFaceButtonsRect.h = 56*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
@@ -1606,7 +1606,7 @@ void BEL_ST_SetTouchControlsRects(void)
 
 	BE_ST_Rect *currRect;
 	int winWidth, winHeight;
-	SDL_GetWindowSize(g_sdlWindow, &winWidth, &winHeight);
+	BEL_ST_GetWindowSize(&winWidth, &winHeight);
 	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
 	{
 		BE_ST_OnscreenTouchControl *touchControl;
