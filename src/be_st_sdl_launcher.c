@@ -25,6 +25,7 @@
 #include <string.h>
 #include "SDL.h"
 
+#include "backend/video/be_video_textures.h"
 #include "be_features.h"
 #include "be_st_launcher.h"
 #include "be_st_sdl_private.h"
@@ -759,7 +760,7 @@ void BE_ST_Launcher_Prepare(void)
 		-1, rendererFlags
 	);
 
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, "nearest");
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, false, false);
 	if (!g_sdlTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture for launcher,\n%s\n", SDL_GetError());
@@ -772,7 +773,7 @@ void BE_ST_Launcher_Prepare(void)
 
 	// Try, if we fail then simply don't use this
 	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE)
-		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT, "linear");
+		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT, true, true);
 
 	/* Game controllers */
 	int nOfJoysticks = SDL_NumJoysticks();
@@ -1507,7 +1508,7 @@ static void BEL_ST_Launcher_CreateTextSearchTextureIfNeeded(void)
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextSearchTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_HEIGHT, "nearest");
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextSearchTexture, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_HEIGHT, false, false);
 	if (!g_sdlLauncherTextSearchTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 launcher text search texture,\n%s\n", SDL_GetError());
@@ -1523,7 +1524,7 @@ static void BEL_ST_Launcher_CreateTextInputTextureIfNeeded(void)
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextInputTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_HEIGHT, "nearest");
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextInputTexture, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_HEIGHT, false, false);
 	if (!g_sdlLauncherTextInputTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 launcher text input texture,\n%s\n", SDL_GetError());
@@ -2428,9 +2429,9 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 	}
 
 	if (g_sdlLauncherTextSearchUIIsShown)
-		SDL_RenderCopy(g_sdlRenderer, g_sdlLauncherTextSearchTexture, NULL, &g_sdlControllerLauncherTextSearchRect);
+		BEL_ST_RenderFromTexture(g_sdlLauncherTextSearchTexture, &g_sdlControllerLauncherTextSearchRect);
 	else if (g_sdlLauncherTextInputUIIsShown)
-		SDL_RenderCopy(g_sdlRenderer, g_sdlLauncherTextInputTexture, NULL, &g_sdlControllerLauncherTextInputRect);
+		BEL_ST_RenderFromTexture(g_sdlLauncherTextInputTexture, &g_sdlControllerLauncherTextInputRect);
 
 
         SDL_RenderPresent(g_sdlRenderer);
@@ -2445,35 +2446,32 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 	{
 		BEL_ST_SleepMS(1);
 		g_sdlLauncherGfxCacheMarked = false;
-		void *pixels;
-		int pitch;
-		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-		uint32_t *currPixPtr = (uint32_t *)pixels;
+		uint32_t *currPixPtr = (uint32_t *)BEL_ST_LockTexture(g_sdlTexture);
 		uint8_t *currPalPixPtr = g_sdlLauncherGfxCache;
 		for (int pixnum = 0; pixnum < BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
 		{
 			*currPixPtr = g_sdlEGABGRAScreenColors[*currPalPixPtr];
 		}
 
-		SDL_UnlockTexture(g_sdlTexture);
+		BEL_ST_UnlockTexture(g_sdlTexture);
 		SDL_RenderClear(g_sdlRenderer);
 		if (g_sdlTargetTexture)
 		{
-			if (SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture) != 0)
+			if (BEL_ST_SetRenderTarget(g_sdlTargetTexture) != 0)
 			{
-				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set target texture as render target (disabling),\n%s\n", SDL_GetError());
+				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set target texture as render target (disabling)\n");
 				BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
 				goto refreshwithnorendertarget;
 			}
-			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
-			if (SDL_SetRenderTarget(g_sdlRenderer, NULL) != 0)
-				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set default render target!\n%s\n", SDL_GetError());
-			SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+			BEL_ST_RenderFromTexture(g_sdlTexture, NULL);
+			if (BEL_ST_SetRenderTarget(NULL) != 0)
+				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set default render target!\n");
+			BEL_ST_RenderFromTexture(g_sdlTargetTexture, &g_sdlAspectCorrectionBorderedRect);
 		}
 		else
 		{
 refreshwithnorendertarget:
-			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+			BEL_ST_RenderFromTexture(g_sdlTexture, &g_sdlAspectCorrectionBorderedRect);
 		}
 		BEL_ST_Launcher_FinishHostDisplayUpdate();
 		g_be_sdlLastRefreshTicks = BEL_ST_GetTicksMS();
@@ -2489,9 +2487,9 @@ refreshwithnorendertarget:
 			SDL_RenderClear(g_sdlRenderer);
 
 			if (g_sdlTargetTexture)
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+				BEL_ST_RenderFromTexture(g_sdlTargetTexture, &g_sdlAspectCorrectionBorderedRect);
 			else
-				SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+				BEL_ST_RenderFromTexture(g_sdlTexture, &g_sdlAspectCorrectionBorderedRect);
 
 			BEL_ST_Launcher_FinishHostDisplayUpdate();
 			g_be_sdlLastRefreshTicks = currRefreshTicks;
@@ -2692,23 +2690,20 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 	BEL_ST_Launcher_TurnTextSearchOff();
 
 	// HACK - Refresh window and make sure none of it is filled with random data while waiting for button press
-	void *pixels;
-	int pitch;
-	SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-	uint32_t *currPixPtr = (uint32_t *)pixels;
+	uint32_t *currPixPtr = (uint32_t *)BEL_ST_LockTexture(g_sdlTexture);
 	uint8_t *currPalPixPtr = g_sdlLauncherGfxCache;
 	for (int pixnum = 0; pixnum < BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
 	{
 		*currPixPtr = g_sdlEGABGRAScreenColors[*currPalPixPtr];
 	}
 
-	SDL_UnlockTexture(g_sdlTexture);
+	BEL_ST_UnlockTexture(g_sdlTexture);
 
 	if (g_sdlTargetTexture)
 	{
-		SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture);
-		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
-		SDL_SetRenderTarget(g_sdlRenderer, NULL);
+		BEL_ST_SetRenderTarget(g_sdlTargetTexture);
+		BEL_ST_RenderFromTexture(g_sdlTexture, NULL);
+		BEL_ST_SetRenderTarget(NULL);
 	}
 
 	SDL_Event event;
@@ -2806,9 +2801,9 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 		SDL_RenderClear(g_sdlRenderer);
 
 		if (g_sdlTargetTexture)
-			SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+			BEL_ST_RenderFromTexture(g_sdlTargetTexture, &g_sdlAspectCorrectionBorderedRect);
 		else
-			SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionBorderedRect);
+			BEL_ST_RenderFromTexture(g_sdlTexture, &g_sdlAspectCorrectionBorderedRect);
 
 		SDL_RenderPresent(g_sdlRenderer);
 	}

@@ -24,6 +24,7 @@
 #include "be_st_sdl_private.h"
 #include "be_video.h"
 #include "be_video_emu.h"
+#include "be_video_textures.h"
 #include "be_video_ui.h"
 
 bool g_sdlShowControllerUI;
@@ -256,7 +257,7 @@ static void BEL_ST_CreatePadTextureIfNeeded(SDL_Texture **padTexturePtrPtr, int 
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(padTexturePtrPtr, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, len, len, "nearest");
+	BEL_ST_SDLCreateTextureWrapper(padTexturePtrPtr, len, len, false, false);
 	if (!(*padTexturePtrPtr))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 pad texture,\n%s\n", SDL_GetError());
@@ -375,7 +376,7 @@ static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *
 	if (touchControl->texture)
 		BEL_ST_SDLDestroyTextureWrapper(&touchControl->texture);
 	int texWidth = touchControl->xpmWidth, texHeight = touchControl->xpmHeight;
-	BEL_ST_SDLCreateTextureWrapper(&touchControl->texture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, texWidth, texHeight, "nearest");
+	BEL_ST_SDLCreateTextureWrapper(&touchControl->texture, texWidth, texHeight, false, false);
 	SDL_Texture *texture = touchControl->texture;
 	if (!texture)
 	{
@@ -540,7 +541,7 @@ static void BEL_ST_CreateTextInputTextureIfNeeded(void)
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlTextInputTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT, "nearest");
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlTextInputTexture, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT, false, false);
 	if (!g_sdlTextInputTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 text input texture,\n%s\n", SDL_GetError());
@@ -556,7 +557,7 @@ static void BEL_ST_CreateDebugKeysTextureIfNeeded(void)
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlDebugKeysTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT, "nearest");
+	BEL_ST_SDLCreateTextureWrapper(&g_sdlDebugKeysTexture, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT, false, false);
 	if (!g_sdlDebugKeysTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 debug keys texture,\n%s\n", SDL_GetError());

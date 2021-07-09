@@ -23,6 +23,7 @@
 #include "be_st_sdl_private.h"
 #include "be_video.h"
 #include "be_video_emu.h"
+#include "be_video_textures.h"
 
 void BEL_ST_RecreateMainTextures(void)
 {
@@ -33,7 +34,7 @@ void BEL_ST_RecreateMainTextures(void)
 	// Try using render target
 	if ((g_refKeenCfg.scaleFactor > 1) && g_refKeenCfg.isBilinear)
 	{
-		BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight, "nearest");
+		BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, g_sdlTexWidth, g_sdlTexHeight, false, false);
 		if (!g_sdlTexture)
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
@@ -41,7 +42,7 @@ void BEL_ST_RecreateMainTextures(void)
 			exit(0);
 		}
 		// Try, if we fail then simply don't use this
-		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, g_sdlTexWidth*g_refKeenCfg.scaleFactor, g_sdlTexHeight*g_refKeenCfg.scaleFactor, "linear");
+		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, g_sdlTexWidth*g_refKeenCfg.scaleFactor, g_sdlTexHeight*g_refKeenCfg.scaleFactor, true, true);
 		if (g_sdlTargetTexture)
 			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateMainTextures: SDL2 target texture created successfully\n");
 		else
@@ -50,7 +51,7 @@ void BEL_ST_RecreateMainTextures(void)
 	else
 	{
 		// Use just a single texture
-		BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, g_sdlTexWidth, g_sdlTexHeight, g_refKeenCfg.isBilinear ? "linear" : "nearest");
+		BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, g_sdlTexWidth, g_sdlTexHeight, false, g_refKeenCfg.isBilinear);
 		if (!g_sdlTexture)
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
@@ -60,27 +61,23 @@ void BEL_ST_RecreateMainTextures(void)
 	}
 }
 
-// This code piece exists in order to handle SDL_RENDER* events
-
 #define MAX_TEXTURES_POOL_SIZE 32
 
 typedef struct {
-	SDL_Texture **texturePtr;
-	const char *scaleQuality;
+	BE_ST_Texture **texturePtr;
+	int w, h;
+	bool isTarget, isLinear;
 } BESDLManagedTexture;
 
 static BESDLManagedTexture g_sdlManagedTexturesPool[MAX_TEXTURES_POOL_SIZE];
 static int g_sdlNumOfManagedTexturesInPool = 0;
 
-void BEL_ST_SDLCreateTextureWrapper(SDL_Texture **pTexture, Uint32 format, int access, int w, int h, const char *scaleQuality)
+void BEL_ST_SDLCreateTextureWrapper(BE_ST_Texture **pTexture, int w, int h, bool isTarget, bool isLinear)
 {
 	int i;
 	for (i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i)
 		if (g_sdlManagedTexturesPool[i].texturePtr == pTexture)
-		{
-			g_sdlManagedTexturesPool[i].scaleQuality = scaleQuality;
 			break;
-		}
 
 	if (i >= MAX_TEXTURES_POOL_SIZE)
 	{
@@ -89,18 +86,21 @@ void BEL_ST_SDLCreateTextureWrapper(SDL_Texture **pTexture, Uint32 format, int a
 		exit(0);
 	}
 
+	BESDLManagedTexture *managedTexture = &g_sdlManagedTexturesPool[i];
 	if (i == g_sdlNumOfManagedTexturesInPool)
 	{
-		BESDLManagedTexture *managedTexture = &g_sdlManagedTexturesPool[g_sdlNumOfManagedTexturesInPool++];
+		g_sdlNumOfManagedTexturesInPool++;
 		managedTexture->texturePtr = pTexture;
-		managedTexture->scaleQuality = scaleQuality;
 	}
+	managedTexture->w = w;
+	managedTexture->h = h;
+	managedTexture->isTarget = isTarget;
+	managedTexture->isLinear = isLinear;
 
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, scaleQuality);
-	*pTexture = SDL_CreateTexture(g_sdlRenderer, format, access, w, h);
+	*pTexture = BEL_ST_CreateARGBTexture(w, h, isTarget, isLinear);
 }
 
-void BEL_ST_SDLDestroyTextureWrapper(SDL_Texture **pTexture)
+void BEL_ST_SDLDestroyTextureWrapper(BE_ST_Texture **pTexture)
 {
 	if (*pTexture == NULL)
 		return;
@@ -113,27 +113,25 @@ void BEL_ST_SDLDestroyTextureWrapper(SDL_Texture **pTexture)
 			break;
 		}
 
-	SDL_DestroyTexture(*pTexture);
+	BEL_ST_DestroyTexture(*pTexture);
 	*pTexture = NULL;
 }
 
 void BEL_ST_RecreateAllTextures(void)
 {
-	Uint32 format;
-	int access, w, h;
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateAllTextures: Recreating textures\n");
 	BESDLManagedTexture *managedTexture = g_sdlManagedTexturesPool;
 	for (int i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i, ++managedTexture)
 	{
-		SDL_Texture **pTexture = managedTexture->texturePtr;
+		BE_ST_Texture **pTexture = managedTexture->texturePtr;
 		if (*pTexture == NULL)
 			continue;
 
-		SDL_QueryTexture(*pTexture, &format, &access, &w, &h);
-		SDL_DestroyTexture(*pTexture);
+		BEL_ST_DestroyTexture(*pTexture);
+		*pTexture = BEL_ST_CreateARGBTexture
+			(managedTexture->w, managedTexture->h,
+			 managedTexture->isTarget, managedTexture->isLinear);
 
-		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, managedTexture->scaleQuality);
-		*pTexture = SDL_CreateTexture(g_sdlRenderer, format, access, w, h);
 		if (*pTexture == NULL)
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateAllTextures: Failed to recreate SDL2 texture %d out of %d,\n%s\n", i+1, g_sdlNumOfManagedTexturesInPool, SDL_GetError());

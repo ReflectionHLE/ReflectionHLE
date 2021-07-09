@@ -23,6 +23,7 @@
 #include "SDL.h"
 
 #include "backend/audio/be_audio_main_thread.h"
+#include "backend/video/be_video_textures.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_gamever.h"

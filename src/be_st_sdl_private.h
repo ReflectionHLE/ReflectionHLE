@@ -61,18 +61,6 @@ void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSK
 void BEL_ST_ConditionallyShowAltInputPointer(void);
 void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode);
 uint32_t BEL_ST_GetSDLRendererFlagsToSet(bool islauncherWindow);
-// A set of texture management wrappers, used to support recreation of textures on an SDL_RENDER* event.
-//
-// ***WARNING*** - You MUST pass a pTexture value which is also used
-// to manage the texture later, and NOT store a copy of *pTexture in
-// another variable.
-//
-// ***WARNING 2*** - scaleQuality MUST be a C string literal; The string's characters ARE NOT copied!
-//
-// The thing is, that the SDL_Texture * values may be CHANGED at ANY MOMENT (due to an SDL_RENDER event).
-void BEL_ST_SDLCreateTextureWrapper(SDL_Texture **pTexture, Uint32 format, int access, int w, int h, const char *scaleQuality);
-void BEL_ST_SDLDestroyTextureWrapper(SDL_Texture **pTexture);
-void BEL_ST_RecreateAllTextures(void);
 
 extern SDL_Surface *g_be_sdl_windowIconSurface;
 // NOT NECESSARILY AVAILABLE FOR ALL GAMES!

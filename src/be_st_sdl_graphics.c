@@ -31,13 +31,12 @@
 #include "be_title_and_version.h"
 #include "backend/video/be_video.h"
 #include "backend/video/be_video_emu.h"
+#include "backend/video/be_video_textures.h"
 #include "backend/video/be_video_ui.h"
 
 // Some of these are also used in launcher
-SDL_Window *g_sdlWindow;
-SDL_Renderer *g_sdlRenderer;
-SDL_Texture *g_sdlTexture, *g_sdlTargetTexture;
-SDL_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
+BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
+BE_ST_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
 int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 
@@ -89,7 +88,7 @@ void BE_ST_InitGfx(void)
 		windowWidthToSet, windowHeightToSet, g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight, windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlags
 	);
 
-	BE_ST_SetScreenMode(3); // Includes SDL_Texture handling and output rects preparation
+	BE_ST_SetScreenMode(3); // Includes BE_ST_Texture handling and output rects preparation
 
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	g_sdlDoAbsMouseMotion = g_refKeenCfg.absMouseMotion;
@@ -583,25 +582,25 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 	if (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)
 	{
 		for (int i = 0; i < g_sdlNumOfOnScreenTouchControls; ++i)
-			SDL_RenderCopy(g_sdlRenderer, g_sdlOnScreenTouchControlsTextures[i], NULL, &g_sdlOnScreenTouchControlsRects[i]);
+			BEL_ST_RenderFromTexture(g_sdlOnScreenTouchControlsTextures[i], &g_sdlOnScreenTouchControlsRects[i]);
 	}
 	if (g_sdlShowControllerUI || g_sdlShowTouchUI)
 	{
 		if (g_sdlFaceButtonsAreShown)
 		{
-			SDL_RenderCopy(g_sdlRenderer, g_sdlFaceButtonsTexture, NULL, &g_sdlControllerFaceButtonsRect);
+			BEL_ST_RenderFromTexture(g_sdlFaceButtonsTexture, &g_sdlControllerFaceButtonsRect);
 		}
 		if (g_sdlDpadIsShown)
 		{
-			SDL_RenderCopy(g_sdlRenderer, g_sdlDpadTexture, NULL, &g_sdlControllerDpadRect);
+			BEL_ST_RenderFromTexture(g_sdlDpadTexture, &g_sdlControllerDpadRect);
 		}
 		if (g_sdlTextInputUIIsShown)
 		{
-			SDL_RenderCopy(g_sdlRenderer, g_sdlTextInputTexture, NULL, &g_sdlControllerTextInputRect);
+			BEL_ST_RenderFromTexture(g_sdlTextInputTexture, &g_sdlControllerTextInputRect);
 		}
 		if (g_sdlDebugKeysUIIsShown)
 		{
-			SDL_RenderCopy(g_sdlRenderer, g_sdlDebugKeysTexture, NULL, &g_sdlControllerDebugKeysRect);
+			BEL_ST_RenderFromTexture(g_sdlDebugKeysTexture, &g_sdlControllerDebugKeysRect);
 		}
 	}
 
@@ -635,10 +634,8 @@ void BEL_ST_UpdateHostDisplay(void)
 		/****** Do update ******/
 		wereBlinkingCharsShown = areBlinkingCharsShown;
 		wasBlinkingCursorShown = isBlinkingCursorShown;
-		void *pixels;
-		int pitch;
-		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-		uint32_t *screenPixelPtr = (uint32_t *)pixels;
+		uint32_t *screenPixelPtr = (uint32_t *)BEL_ST_LockTexture(g_sdlTexture);
+		uint32_t * const firstScreenPixelPtr = screenPixelPtr;
 		uint8_t currChar;
 		const uint8_t *currCharFontPtr;
 		uint32_t *currScrPixelPtr, currBackgroundColor, currCharColor;
@@ -686,7 +683,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		currCharColor = g_sdlEGABGRAScreenColors[g_sdlVidMem.text[1+((TXT_COLS_NUM*g_sdlTxtCursorPosY+g_sdlTxtCursorPosX)<<1)] & 15];
 		if (isBlinkingCursorShown)
 		{
-			screenPixelPtr = (uint32_t *)pixels+g_sdlTexWidth;
+			screenPixelPtr = firstScreenPixelPtr+g_sdlTexWidth;
 			screenPixelPtr += g_sdlTxtCursorPosY*VGA_TXT_CHAR_PIX_HEIGHT*g_sdlTexWidth;
 			screenPixelPtr += g_sdlTxtCursorPosX*VGA_TXT_CHAR_PIX_WIDTH;
 			// Out of 3 last scanlines of char, draw to the first 2.
@@ -708,10 +705,7 @@ void BEL_ST_UpdateHostDisplay(void)
 			return;
 		}
 		// That's easy now since there isn't a lot that can be done...
-		void *pixels;
-		int pitch;
-		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-		uint32_t *currPixPtr = (uint32_t *)pixels;
+		uint32_t *currPixPtr = (uint32_t *)BEL_ST_LockTexture(g_sdlTexture);
 		uint8_t *currPalPixPtr = g_sdlHostScrMem.cgaGfx;
 		for (int pixnum = 0; pixnum < GFX_TEX_WIDTH*GFX_TEX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
 		{
@@ -790,17 +784,14 @@ void BEL_ST_UpdateHostDisplay(void)
 				return;
 			}
 		}
-		void *pixels;
-		int pitch;
-		SDL_LockTexture(g_sdlTexture, NULL, &pixels, &pitch);
-		uint32_t *currPixPtr = (uint32_t *)pixels;
+		uint32_t *currPixPtr = (uint32_t *)BEL_ST_LockTexture(g_sdlTexture);
 		currPalPixPtr = g_sdlHostScrMem.egaGfx;
 		for (int pixnum = 0; pixnum < g_sdlTexWidth*GFX_TEX_HEIGHT; ++pixnum, ++currPixPtr, ++currPalPixPtr)
 			*currPixPtr = g_sdlEGACurrBGRAPalette[*currPalPixPtr];
 	}
 
 	g_sdlDoRefreshGfxOutput = false;
-	SDL_UnlockTexture(g_sdlTexture);
+	BEL_ST_UnlockTexture(g_sdlTexture);
 
 dorefresh:
 
@@ -822,21 +813,21 @@ dorefresh:
 
 	if (g_sdlTargetTexture)
 	{
-		if (SDL_SetRenderTarget(g_sdlRenderer, g_sdlTargetTexture) != 0)
+		if (BEL_ST_SetRenderTarget(g_sdlTargetTexture) != 0)
 		{
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_UpdateHostDisplay: Failed to set target texture as render target (disabling),\n%s\n", SDL_GetError());
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_UpdateHostDisplay: Failed to set target texture as render target (disabling)\n");
 			BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
 			goto refreshwithnorendertarget;
 		}
-		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
-		if (SDL_SetRenderTarget(g_sdlRenderer, NULL) != 0)
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_UpdateHostDisplay: Failed to set default render target!\n%s\n", SDL_GetError());
-		SDL_RenderCopy(g_sdlRenderer, g_sdlTargetTexture, NULL, &g_sdlAspectCorrectionRect);
+		BEL_ST_RenderFromTexture(g_sdlTexture, NULL);
+		if (BEL_ST_SetRenderTarget(NULL) != 0)
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_UpdateHostDisplay: Failed to set default render target!\n");
+		BEL_ST_RenderFromTexture(g_sdlTargetTexture, &g_sdlAspectCorrectionRect);
 	}
 	else
 	{
 refreshwithnorendertarget:
-		SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, &g_sdlAspectCorrectionRect);
+		BEL_ST_RenderFromTexture(g_sdlTexture, &g_sdlAspectCorrectionRect);
 	}
 
 	BEL_ST_FinishHostDisplayUpdate();
