@@ -30,8 +30,12 @@ Wolfenstein 3D codebases are released under the GNU GPLv2+. See gpl-2.0.txt.
 - The ported Wolfenstein 3D code is also available under the original
 terms for the Wolfenstein 3D sources from 1995. See id-wolf3d.txt.
 
-- The Reflection Keen back-end and Nuked OPL3 are released
-under the GNU LGPLv2.1+. See lgpl-2.1.txt.
+- The Reflection Keen back-end is released under the 3-Clause BSD License.
+See bsd-3-clause-template.txt for a general license template. For the exact
+contents you should consult the top of any relevant file from the source code,
+although the template's form was originally used as a base.
+
+- Nuked OPL3 is released under the GNU LGPLv2.1+. See lgpl-2.1.txt.
 
 - The included depklite implementation, a modification of ExeUnpacker,
 is released under the MIT License. See mit-opentesarena.txt for details.
