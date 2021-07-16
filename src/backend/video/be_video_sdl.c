@@ -52,8 +52,7 @@
 #endif
 
 static SDL_Window *g_sdlWindow;
-// TODO: Make this static later
-SDL_Renderer *g_sdlRenderer;
+static SDL_Renderer *g_sdlRenderer;
 static SDL_Surface *g_be_sdl_windowIconSurface;
 
 static void BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon(void)
