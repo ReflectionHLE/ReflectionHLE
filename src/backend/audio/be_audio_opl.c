@@ -58,7 +58,7 @@ void BEL_ST_SetOPLMixerSource(BE_ST_AudioMixerSource *src)
 
 void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length)
 {
-	Bit16s buffer[OPL_NUM_OF_SAMPLES * 2];
+	int16_t buffer[OPL_NUM_OF_SAMPLES * 2];
 	int i;
 
 	// length should be at least the max. samplesPerMusicTick
