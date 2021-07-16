@@ -60,33 +60,19 @@ void BE_ST_MarkGfxForUpdate(void)
 	g_sdlDoRefreshGfxOutput = true;
 }
 
-#if !SDL_VERSION_ATLEAST(2,0,0)
-#error "SDL <2.0 support is unimplemented!"
-#endif
-
 int g_sdlDebugFingerRectSideLen;
 
 extern const uint8_t g_vga_8x16TextFont[256*8*16];
 
 void BE_ST_InitGfx(void)
 {
-	if (g_refKeenCfg.sdlRendererDriver >= 0)
-	{
-		SDL_RendererInfo info;
-		SDL_GetRenderDriverInfo(g_refKeenCfg.sdlRendererDriver, &info);
-		g_sdlIsSoftwareRendered = (info.flags & SDL_RENDERER_SOFTWARE);
-	}
-	else
-	{
-		g_sdlIsSoftwareRendered = false;
-	}
-
 	uint32_t windowFlagsToSet = 0;
 	int windowWidthToSet, windowHeightToSet;
 	BEL_ST_CalcWindowDimsFromCfg(&windowWidthToSet, &windowHeightToSet);
 	if (g_refKeenCfg.isFullscreen)
 		windowFlagsToSet = (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
 
+	g_sdlIsSoftwareRendered = BEL_ST_IsConfiguredForSWRendering();
 	if (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling)
 		windowFlagsToSet |= SDL_WINDOW_RESIZABLE;
 
@@ -267,22 +253,18 @@ static void BEL_ST_CalcWindowDimsFromCfg(int *outWidth, int *outHeight)
 		}
 		else
 		{
-			SDL_DisplayMode mode;
-			SDL_GetDesktopDisplayMode(g_refKeenCfg.displayNum, &mode);
+			int w, h;
+			BEL_ST_GetDesktopDisplayDims(&w, &h);
 			// In the 200-lines modes on the VGA, where line doubling is in effect,
 			// and after adding the overscan borders, the aspect ratio for the whole output
 			// (after aspect correction i.e., multiplying height by 1.2) is 280:207.
-			if (207*mode.w < 280*mode.h) // Thinner than 280:207
-			{
-				mode.h = mode.w*207/280;
-			}
+			if (207*w < 280*h) // Thinner than 280:207
+				h = w*207/280;
 			else  // As wide as 280:207 at the least
-			{
-				mode.w = mode.h*280/207;
-			}
+				w = h*280/207;
 			// Just for the sake of it, using the golden ratio...
-			windowWidthToSet = mode.w*500/809;
-			windowHeightToSet = mode.h*500/809;
+			windowWidthToSet = w*500/809;
+			windowHeightToSet = h*500/809;
 		}
 	}
 

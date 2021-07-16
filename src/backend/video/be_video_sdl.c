@@ -294,10 +294,38 @@ void BEL_ST_GetWindowSize(int *w, int *h)
 	SDL_GetWindowSize(g_sdlWindow, w, h);
 }
 
+void BEL_ST_GetDesktopDisplayDims(int *w, int *h)
+{
+	SDL_DisplayMode mode;
+	if (SDL_GetDesktopDisplayMode(g_refKeenCfg.displayNum, &mode))
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetDesktopDisplayMode failed,\n%s\n", SDL_GetError());
+		*w = 640;
+		*h = 480;
+	}
+	else
+	{
+		*w = mode.w;
+		*h = mode.h;
+	}
+}
+
 int BEL_ST_GetWindowDisplayNum(void)
 {
 	int ret = SDL_GetWindowDisplayIndex(g_sdlWindow);
 	if (ret == -1)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetWindowDisplayIndex failed,\n%s\n", SDL_GetError());
 	return ret;
+}
+
+bool BEL_ST_IsConfiguredForSWRendering(void)
+{
+	if (g_refKeenCfg.sdlRendererDriver >= 0)
+	{
+		SDL_RendererInfo info;
+		if (!SDL_GetRenderDriverInfo(g_refKeenCfg.sdlRendererDriver, &info))
+			return (info.flags & SDL_RENDERER_SOFTWARE);
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetRenderDriverInfo failed,\n%s\n", SDL_GetError());
+	}
+	return false;
 }
