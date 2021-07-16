@@ -50,7 +50,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 	int displayNo,
 	int windowWidth, int windowHeight,
 	int fullWidth, int fullHeight,
-	Uint32 windowFlags, int driverIndex, Uint32 rendererFlags);
+	bool fullScreen, bool resizable, bool vsync, int driverIndex);
 
 void BEL_ST_DestroyWindowAndRenderer(void);
 
@@ -71,6 +71,7 @@ void BEL_ST_GetDesktopDisplayDims(int *w, int *h);
 int BEL_ST_GetWindowDisplayNum(void);
 
 bool BEL_ST_IsConfiguredForSWRendering(void);
+bool BEL_ST_IsVsyncPreferred(bool islauncherWindow);
 
 #endif
 

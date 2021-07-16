@@ -69,7 +69,6 @@ void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSKeyEvent keyEvent);
 void BEL_ST_ConditionallyShowAltInputPointer(void);
 void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode);
-uint32_t BEL_ST_GetSDLRendererFlagsToSet(bool islauncherWindow);
 
 extern SDL_Surface *g_be_sdl_windowIconSurface;
 // NOT NECESSARILY AVAILABLE FOR ALL GAMES!

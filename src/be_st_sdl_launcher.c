@@ -761,12 +761,13 @@ void BE_ST_Launcher_Prepare(void)
 		g_refKeenCfg.winHeight = 2*BE_LAUNCHER_PIX_HEIGHT;
 	}
 
-	uint32_t rendererFlags = BEL_ST_GetSDLRendererFlagsToSet(true);
+	bool vsync = BEL_ST_IsVsyncPreferred(true);
+	bool fullScreen = (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL);
+	bool resizable = (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE);
 	BEL_ST_RecreateWindowAndRenderer(
 		g_refKeenCfg.displayNum,
 		g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0,
-		((g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL) ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) | ((g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE) ? SDL_WINDOW_RESIZABLE : 0),
-		-1, rendererFlags
+		fullScreen, resizable, vsync, -1
 	);
 
 	BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, false, false);

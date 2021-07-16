@@ -66,22 +66,19 @@ extern const uint8_t g_vga_8x16TextFont[256*8*16];
 
 void BE_ST_InitGfx(void)
 {
-	uint32_t windowFlagsToSet = 0;
 	int windowWidthToSet, windowHeightToSet;
 	BEL_ST_CalcWindowDimsFromCfg(&windowWidthToSet, &windowHeightToSet);
-	if (g_refKeenCfg.isFullscreen)
-		windowFlagsToSet = (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
 
 	g_sdlIsSoftwareRendered = BEL_ST_IsConfiguredForSWRendering();
-	if (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling)
-		windowFlagsToSet |= SDL_WINDOW_RESIZABLE;
+	bool resizable = (!g_sdlIsSoftwareRendered || g_refKeenCfg.forceFullSoftScaling);
+	bool vsync = BEL_ST_IsVsyncPreferred(false);
 
-	uint32_t rendererFlags = BEL_ST_GetSDLRendererFlagsToSet(false);
 	BEL_ST_RecreateWindowAndRenderer(
 		g_refKeenCfg.displayNum,
 		windowWidthToSet, windowHeightToSet,
 		g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight,
-		windowFlagsToSet, g_refKeenCfg.sdlRendererDriver, rendererFlags
+		g_refKeenCfg.isFullscreen, resizable, vsync,
+		g_refKeenCfg.sdlRendererDriver
 	);
 
 	BE_ST_SetScreenMode(3); // Includes BE_ST_Texture handling and output rects preparation
@@ -102,20 +99,16 @@ void BE_ST_ShutdownGfx(void)
 	BEL_ST_DestroyWindowAndRenderer();
 }
 
-uint32_t BEL_ST_GetSDLRendererFlagsToSet(bool isLauncherWindow)
+bool BEL_ST_IsVsyncPreferred(bool isLauncherWindow)
 {
 	// Vanilla Keen Dreams and Keen 4-6 have no VSync in the CGA builds
-	uint32_t flags = SDL_RENDERER_ACCELERATED;
 #ifdef BE_ST_ADAPT_VSYNC_DEFAULT_TO_KDREAMS
-	if ((g_refKeenCfg.vSync == VSYNC_ON) ||
-	    ((g_refKeenCfg.vSync == VSYNC_AUTO) &&
-	     (isLauncherWindow || (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))))
-		flags |= SDL_RENDERER_PRESENTVSYNC;
+	return ((g_refKeenCfg.vSync == VSYNC_ON) ||
+	        ((g_refKeenCfg.vSync == VSYNC_AUTO) &&
+	         (isLauncherWindow || (refkeen_current_gamever != BE_GAMEVER_KDREAMSC105))));
 #else
-	if ((g_refKeenCfg.vSync == VSYNC_ON) || (g_refKeenCfg.vSync == VSYNC_AUTO))
-		flags |= SDL_RENDERER_PRESENTVSYNC;
+	return ((g_refKeenCfg.vSync == VSYNC_ON) || (g_refKeenCfg.vSync == VSYNC_AUTO));
 #endif
-	return flags;
 }
 
 

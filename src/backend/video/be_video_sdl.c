@@ -67,13 +67,21 @@ void BEL_ST_RecreateWindowAndRenderer(
 	int displayNo,
 	int windowWidth, int windowHeight,
 	int fullWidth, int fullHeight,
-	Uint32 windowFlags, int driverIndex, Uint32 rendererFlags)
+	bool fullScreen, bool resizable, bool vsync, int driverIndex)
 {
 	static int prev_x, prev_y, prev_driverIndex;
 	static uint32_t prev_rendererFlags;
 
 	int x = SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNo);
 	int y = SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNo);
+
+	uint32_t rendererFlags = SDL_RENDERER_ACCELERATED;
+	if (vsync)
+		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+
+	uint32_t windowFlags = resizable ? SDL_WINDOW_RESIZABLE : 0;
+	if (fullScreen)
+		windowFlags |= (fullWidth && fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
 
 	if (!g_be_sdl_windowIconSurface)
 	{
