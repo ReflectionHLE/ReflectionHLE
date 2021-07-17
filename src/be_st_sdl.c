@@ -32,6 +32,7 @@
 #include "SDL.h"
 
 #include "backend/audio/be_audio_main_thread.h"
+#include "backend/audio/be_audio_private.h"
 #include "backend/video/be_video_textures.h"
 #include "backend/video/be_video_ui.h"
 #include "be_cross.h"
@@ -607,7 +608,7 @@ static void BEL_ST_ParseSetting_SndSampleRate(const char *keyprefix, const char 
 {
 	g_refKeenCfg.sndSampleRate = atoi(buffer);
 	if (g_refKeenCfg.sndSampleRate <= 0)
-		g_refKeenCfg.sndSampleRate = 49716; // TODO - Shared define again
+		g_refKeenCfg.sndSampleRate = OPL_SAMPLE_RATE;
 }
 
 static void BEL_ST_ParseSetting_SoundSubSystem(const char *keyprefix, const char *buffer)
