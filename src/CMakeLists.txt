@@ -8,6 +8,8 @@ list(APPEND be_src
 	src/backend/audio/be_audio_pcspkr.c
 	src/backend/audio/be_audio_resampling.c
 	src/backend/audio/be_audio_sdl.c
+	src/backend/cfg/be_cfg.c
+	src/backend/cfg/be_cfg_sdl.c
 	src/backend/filesystem/be_filesystem_app_paths.c
 	src/backend/filesystem/be_filesystem_dirselection.c
 	src/backend/filesystem/be_filesystem_file.c
