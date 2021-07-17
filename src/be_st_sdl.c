@@ -125,7 +125,7 @@ const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr = &g_sdlControll
 BE_ST_ControllerMapping g_beStControllerMappingTextInput;
 BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 
-// The index is taken off the enum above so ENSURE THESE ARE CONSISTENT!
+// The index is taken off the button mappings enum, so ENSURE THESE ARE CONSISTENT!
 //
 // HACK: If this is updated, also check g_sdlCfgEntries!!!
 static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
