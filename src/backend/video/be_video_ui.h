@@ -31,6 +31,7 @@
 
 #include <stdbool.h>
 #include "be_video_sdl.h"
+#include "be_video_textures.h"
 
 typedef struct {
 	BE_ST_TouchID touchId;
@@ -65,6 +66,10 @@ extern BE_ST_Rect g_sdlOnScreenTouchControlsRects[];
 extern BE_ST_Texture *g_sdlOnScreenTouchControlsTextures[];
 extern int g_sdlNumOfOnScreenTouchControls;
 
+void BEL_ST_ConditionallyShowAltInputPointer(void);
+void BEL_ST_CheckPressedPointerInTouchControls(
+	BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y,
+	bool forceAbsoluteFingerPositioning);
 void BEL_ST_SetCommonUIRects(void);
 void BEL_ST_SetTouchControlsRects(void);
 

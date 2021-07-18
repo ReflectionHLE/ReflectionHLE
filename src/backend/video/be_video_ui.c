@@ -35,6 +35,8 @@
 #include "be_video_emu.h"
 #include "be_video_textures.h"
 #include "be_video_ui.h"
+#include "../input/be_input.h"
+#include "../input/be_input_controller_mappings.h"
 
 bool g_sdlShowControllerUI;
 bool g_sdlShowTouchUI;
@@ -219,14 +221,13 @@ static const BE_ST_ScanCode_T g_sdlDOSScanCodeDebugKeysLayout[ALTCONTROLLER_DEBU
 };
 
 
-extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 extern bool g_sdlMouseButtonsStates[3];
 extern int g_sdlEmuMouseButtonsState;
 
 
 static bool g_sdlSomeOnScreenControlWasAccessibleWithMouse = false; // Used internally in BEL_ST_ConditionallyShowAltInputPointer
 
-/*static*/ void BEL_ST_ConditionallyShowAltInputPointer(void)
+void BEL_ST_ConditionallyShowAltInputPointer(void)
 {
 	if (g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED)
 		return;
@@ -1450,7 +1451,9 @@ static void BEL_ST_HandleDefaultPointerActionInTouchControls(int touchControlInd
 
 extern int g_sdlEmuMouseButtonsState;
 
-void BEL_ST_CheckPressedPointerInTouchControls(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, bool forceAbsoluteFingerPositioning)
+void BEL_ST_CheckPressedPointerInTouchControls(
+	BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y,
+	bool forceAbsoluteFingerPositioning)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)

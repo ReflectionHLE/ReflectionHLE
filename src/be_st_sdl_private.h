@@ -42,11 +42,6 @@
 
 #define BEL_ST_GetTicksMS SDL_GetTicks
 
-#define BE_ST_MAXJOYSTICKS 8
-
-#define BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS 500
-#define BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS 40
-
 // Hack for compilation against SDL pre-2.0.4
 #ifndef SDL_RENDER_DEVICE_RESET
 #define SDL_RENDER_DEVICE_RESET 0x2001
@@ -54,23 +49,10 @@
 
 #define BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO 1
 
-typedef struct {
-	bool isSpecial; // Scancode of 0xE0 sent?
-	uint8_t dosScanCode;
-} emulatedDOSKeyEvent;
-
-typedef enum {
-	BE_ST_MOUSEMODE_ABS_WITH_CURSOR, BE_ST_MOUSEMODE_ABS_WITHOUT_CURSOR, BE_ST_MOUSEMODE_REL
-} BESDLMouseModeEnum;
-
 void BEL_ST_ForceHostDisplayUpdate(void);
 void BEL_ST_SetGfxOutputRects(bool allowResize);
 void BEL_ST_UpdateHostDisplay(void);
-void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSKeyEvent keyEvent);
-void BEL_ST_ConditionallyShowAltInputPointer(void);
-void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode);
 
-extern SDL_Surface *g_be_sdl_windowIconSurface;
 // NOT NECESSARILY AVAILABLE FOR ALL GAMES!
 extern bool g_sdlDoAbsMouseMotion;
 

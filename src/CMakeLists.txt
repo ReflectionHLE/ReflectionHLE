@@ -19,6 +19,10 @@ list(APPEND be_src
 	src/backend/filesystem/be_filesystem_root_paths.c
 	src/backend/gamedefs/be_gamedefs_accessors.c
 	src/backend/gamedefs/be_gamedefs_prep.c
+	src/backend/input/be_input.c
+	src/backend/input/be_input_controller_mappings.c
+	src/backend/input/be_input_sdl.c
+	src/backend/input/be_input_ui.c
 	src/backend/misc/be_misc_steamcfg.c
 	src/backend/startup/be_startup.c
 	src/backend/startup/be_startup_embedded_data.c

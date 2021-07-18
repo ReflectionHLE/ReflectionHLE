@@ -42,6 +42,7 @@
 #include "backend/video/be_video_emu.h"
 #include "backend/video/be_video_textures.h"
 #include "backend/video/be_video_ui.h"
+#include "../input/be_input_controller_mappings.h"
 
 // Some of these are also used in launcher
 BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
@@ -230,8 +231,6 @@ void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y)
 	g_sdlVirtualMouseCursorState[0] = x;
 	g_sdlVirtualMouseCursorState[1] = y;
 }
-
-extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 
 static void BEL_ST_CalcWindowDimsFromCfg(int *outWidth, int *outHeight)
 {
