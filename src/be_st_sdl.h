@@ -29,7 +29,9 @@
 #ifndef BE_ST_SDL_H
 #define BE_ST_SDL_H
 
+#include "be_features.h"
 #include "be_st.h"
+#include "refkeen_config.h"
 
 // WARNING: This struct is used by BE_ST_SDL ONLY (except for controller stuff)
 
