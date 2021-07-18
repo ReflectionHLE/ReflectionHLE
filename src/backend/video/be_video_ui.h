@@ -33,6 +33,8 @@
 #include "be_video_sdl.h"
 #include "be_video_textures.h"
 
+#define MAX_NUM_OF_TRACKED_FINGERS 10
+
 typedef struct {
 	BE_ST_TouchID touchId;
 	BE_ST_FingerID fingerId;
@@ -49,7 +51,7 @@ typedef struct {
 	} miscData;
 } BESDLTrackedFinger;
 
-extern BESDLTrackedFinger g_sdlTrackedFingers[];
+extern BESDLTrackedFinger g_sdlTrackedFingers[MAX_NUM_OF_TRACKED_FINGERS];
 extern int g_nOfTrackedFingers;
 
 // With alternative game controllers scheme, all UI is hidden

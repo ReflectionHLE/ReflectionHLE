@@ -94,23 +94,6 @@ static bool g_sdlKeyboardUISelectedKeyIsMarked;
 
 static bool g_sdlKeyboardUIIsKeyPressed, g_sdlKeyboardUIIsShifted;
 
-/* Tracked fingers definitions (multi-touch input) */
-
-// FIXME: Just re-use the ones common to the game if possible
-#define MAX_NUM_OF_TRACKED_FINGERS 10
-
-typedef struct {
-	BE_ST_TouchID touchId;
-	BE_ST_FingerID fingerId;
-	int lastX, lastY;
-	struct {
-		int x, y;
-	} key;
-} BESDLLauncherTrackedFinger;
-
-static BESDLLauncherTrackedFinger g_sdlLauncherTrackedFingers[MAX_NUM_OF_TRACKED_FINGERS];
-static int g_nOfLauncherTrackedFingers = 0;
-
 // Borrowed from other files
 extern int g_sdlDebugFingerRectSideLen;
 extern const uint32_t g_sdlEGABGRAScreenColors[];
@@ -988,6 +971,7 @@ void BE_ST_Launcher_Shutdown(void)
 {
 	/*** Free a few launcher-specific resources ***/
 	BE_Launcher_ClearDirSelectionMenu();
+
 	/*** Clear ST stuff ***/
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (g_sdlControllers[i])
@@ -995,6 +979,8 @@ void BE_ST_Launcher_Shutdown(void)
 			SDL_GameControllerClose(g_sdlControllers[i]);
 			g_sdlControllers[i] = NULL;
 		}
+
+	g_nOfTrackedFingers = 0;
 
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextSearchTexture);
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextInputTexture);
@@ -1595,7 +1581,7 @@ void BEL_ST_Launcher_ToggleTextSearch(void)
 	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
-	g_nOfLauncherTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 
 	if (!g_sdlLauncherTextSearchUIIsShown)
 		return;
@@ -1624,7 +1610,7 @@ void BEL_ST_Launcher_ToggleTextInput(void)
 	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
-	g_nOfLauncherTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 
 	if (!g_sdlLauncherTextInputUIIsShown)
 		return;
@@ -1653,7 +1639,7 @@ void BEL_ST_Launcher_TurnTextSearchOff(void)
 	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
-	g_nOfLauncherTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 }
 
 void BEL_ST_Launcher_TurnTextInputOff(void)
@@ -1665,7 +1651,7 @@ void BEL_ST_Launcher_TurnTextInputOff(void)
 	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 
-	g_nOfLauncherTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 }
 
 static void BEL_ST_Launcher_ToggleTextSearchUIKey(int x, int y, bool isMarked, bool isPressed)
@@ -1694,10 +1680,10 @@ static void BEL_ST_Launcher_ToggleTextInputUIKey(int x, int y, bool isMarked, bo
 static void BEL_ST_Launcher_ToggleOffAllTextSearchUIKeysTrackedbyFingers(void)
 {
 	int i;
-	for (i = 0; i < g_nOfLauncherTrackedFingers; ++i)
-		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlLauncherTrackedFingers[i].key.x, g_sdlLauncherTrackedFingers[i].key.y, false, false);
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlTrackedFingers[i].miscData.key.x, g_sdlTrackedFingers[i].miscData.key.y, false, false);
 
-	g_nOfLauncherTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
 }
@@ -1705,10 +1691,10 @@ static void BEL_ST_Launcher_ToggleOffAllTextSearchUIKeysTrackedbyFingers(void)
 static void BEL_ST_Launcher_ToggleOffAllTextInputUIKeysTrackedbyFingers(void)
 {
 	int i;
-	for (i = 0; i < g_nOfLauncherTrackedFingers; ++i)
-		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlLauncherTrackedFingers[i].key.x, g_sdlLauncherTrackedFingers[i].key.y, false, false);
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlTrackedFingers[i].miscData.key.x, g_sdlTrackedFingers[i].miscData.key.y, false, false);
 
-	g_nOfLauncherTrackedFingers = 0;
+	g_nOfTrackedFingers = 0;
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
 }
@@ -2026,26 +2012,26 @@ static bool BEL_ST_Launcher_ToggleKeyPressInTextInputUI(bool toggle, bool *pConf
 
 /*** Pointer stuff common to all kinds of controller / touch input UI ***/
 
-static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
+static BESDLTrackedFinger *BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	int i;
-	for (i = 0; i < g_nOfLauncherTrackedFingers; ++i)
-		if ((g_sdlLauncherTrackedFingers[i].touchId == touchId) && (g_sdlLauncherTrackedFingers[i].fingerId == fingerId))
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
 		{
 			if (g_refKeenCfg.touchInputDebugging)
 			{
-				g_sdlLauncherTrackedFingers[i].lastX = x;
-				g_sdlLauncherTrackedFingers[i].lastY = y;
+				g_sdlTrackedFingers[i].lastX = x;
+				g_sdlTrackedFingers[i].lastY = y;
 				//g_sdlForceGfxControlUiRefresh = true;
 				BE_ST_Launcher_MarkGfxCache();
 			}
 			return NULL; // In case of some mistaken double-tap of same finger
 		}
 
-	if (g_nOfLauncherTrackedFingers == MAX_NUM_OF_TRACKED_FINGERS)
+	if (g_nOfTrackedFingers == MAX_NUM_OF_TRACKED_FINGERS)
 		return NULL;
 
-	BESDLLauncherTrackedFinger *trackedFinger = &g_sdlLauncherTrackedFingers[g_nOfLauncherTrackedFingers++];
+	BESDLTrackedFinger *trackedFinger = &g_sdlTrackedFingers[g_nOfTrackedFingers++];
 	trackedFinger->touchId = touchId;
 	trackedFinger->fingerId = fingerId;
 	if (g_refKeenCfg.touchInputDebugging)
@@ -2058,17 +2044,17 @@ static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetPressedTrackedFi
 	return trackedFinger;
 }
 
-static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
+static BESDLTrackedFinger *BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	int i;
-	for (i = 0; i < g_nOfLauncherTrackedFingers; ++i)
-		if ((g_sdlLauncherTrackedFingers[i].touchId == touchId) && (g_sdlLauncherTrackedFingers[i].fingerId == fingerId))
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
 			break;
 
-	if (i == g_nOfLauncherTrackedFingers)
+	if (i == g_nOfTrackedFingers)
 		return NULL;
 
-	BESDLLauncherTrackedFinger *trackedFinger = &g_sdlLauncherTrackedFingers[i];
+	BESDLTrackedFinger *trackedFinger = &g_sdlTrackedFingers[i];
 	if (g_refKeenCfg.touchInputDebugging)
 	{
 		trackedFinger->lastX = x;
@@ -2079,19 +2065,19 @@ static BESDLLauncherTrackedFinger *BEL_ST_Launcher_ProcessAndGetMovedTrackedFing
 	return trackedFinger;
 }
 
-static BESDLLauncherTrackedFinger *BEL_ST_Launcher_GetReleasedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId)
+static BESDLTrackedFinger *BEL_ST_Launcher_GetReleasedTrackedFinger(BE_ST_TouchID touchId, BE_ST_FingerID fingerId)
 {
 	int i;
-	for (i = 0; i < g_nOfLauncherTrackedFingers; ++i)
-		if ((g_sdlLauncherTrackedFingers[i].touchId == touchId) && (g_sdlLauncherTrackedFingers[i].fingerId == fingerId))
-			return &g_sdlLauncherTrackedFingers[i];
+	for (i = 0; i < g_nOfTrackedFingers; ++i)
+		if ((g_sdlTrackedFingers[i].touchId == touchId) && (g_sdlTrackedFingers[i].fingerId == fingerId))
+			return &g_sdlTrackedFingers[i];
 
 	return NULL;
 }
 
-static void BEL_ST_Launcher_RemoveTrackedFinger(BESDLLauncherTrackedFinger *trackedFinger)
+static void BEL_ST_Launcher_RemoveTrackedFinger(BESDLTrackedFinger *trackedFinger)
 {
-	*trackedFinger = g_sdlLauncherTrackedFingers[--g_nOfLauncherTrackedFingers]; // Remove finger entry without moving the rest, except for maybe the last
+	*trackedFinger = g_sdlTrackedFingers[--g_nOfTrackedFingers]; // Remove finger entry without moving the rest, except for maybe the last
 	if (g_refKeenCfg.touchInputDebugging)
 		//g_sdlForceGfxControlUiRefresh = true;
 		BE_ST_Launcher_MarkGfxCache(); // Remove debugging finger mark from screen
@@ -2128,7 +2114,7 @@ static void BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextInputUI(void)
 
 static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
-	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
+	BESDLTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
 		return;
 
@@ -2142,12 +2128,12 @@ static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(BE_ST_TouchID touchI
 	int keyX = (x-g_sdlControllerLauncherTextSearchRect.x)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH/g_sdlControllerLauncherTextSearchRect.w;
 	int keyY = (y-g_sdlControllerLauncherTextSearchRect.y)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT/g_sdlControllerLauncherTextSearchRect.h;
 
-	if ((trackedFinger->key.x != keyX) || (trackedFinger->key.y != keyY))
+	if ((trackedFinger->miscData.key.x != keyX) || (trackedFinger->miscData.key.y != keyY))
 	{
-		BEL_ST_Launcher_ToggleTextSearchUIKey(trackedFinger->key.x, trackedFinger->key.y, false, false);
+		BEL_ST_Launcher_ToggleTextSearchUIKey(trackedFinger->miscData.key.x, trackedFinger->miscData.key.y, false, false);
 		BEL_ST_Launcher_ToggleTextSearchUIKey(keyX, keyY, true, false);
-		trackedFinger->key.x = keyX;
-		trackedFinger->key.y = keyY;
+		trackedFinger->miscData.key.x = keyX;
+		trackedFinger->miscData.key.y = keyY;
 	}
 
 	//g_sdlForceGfxControlUiRefresh = true;
@@ -2156,7 +2142,7 @@ static void BEL_ST_Launcher_CheckMovedPointerInTextSearchUI(BE_ST_TouchID touchI
 
 static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
-	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
+	BESDLTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
 		return;
 
@@ -2171,10 +2157,10 @@ static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(BE_ST_TouchID touc
 	BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextSearchUI();
 
 	// Normalize coordinates to keys
-	trackedFinger->key.x = (x-g_sdlControllerLauncherTextSearchRect.x)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH/g_sdlControllerLauncherTextSearchRect.w;
-	trackedFinger->key.y = (y-g_sdlControllerLauncherTextSearchRect.y)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT/g_sdlControllerLauncherTextSearchRect.h;
+	trackedFinger->miscData.key.x = (x-g_sdlControllerLauncherTextSearchRect.x)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH/g_sdlControllerLauncherTextSearchRect.w;
+	trackedFinger->miscData.key.y = (y-g_sdlControllerLauncherTextSearchRect.y)*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT/g_sdlControllerLauncherTextSearchRect.h;
 
-	BEL_ST_Launcher_ToggleTextSearchUIKey(trackedFinger->key.x, trackedFinger->key.y, true, false);
+	BEL_ST_Launcher_ToggleTextSearchUIKey(trackedFinger->miscData.key.x, trackedFinger->miscData.key.y, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
@@ -2182,12 +2168,12 @@ static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(BE_ST_TouchID touc
 
 static void BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
-	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_GetReleasedTrackedFinger(touchId, fingerId);
+	BESDLTrackedFinger *trackedFinger = BEL_ST_Launcher_GetReleasedTrackedFinger(touchId, fingerId);
 	if (!trackedFinger)
 		return;
 
-	int prevKeyX = trackedFinger->key.x;
-	int prevKeyY = trackedFinger->key.y;
+	int prevKeyX = trackedFinger->miscData.key.x;
+	int prevKeyY = trackedFinger->miscData.key.y;
 
 	BEL_ST_Launcher_RemoveTrackedFinger(trackedFinger);
 
@@ -2208,7 +2194,7 @@ static void BEL_ST_Launcher_CheckReleasedPointerInTextSearchUI(BE_ST_TouchID tou
 
 static void BEL_ST_Launcher_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
-	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
+	BESDLTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetMovedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
 		return;
 
@@ -2222,12 +2208,12 @@ static void BEL_ST_Launcher_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId
 	int keyX = (x-g_sdlControllerLauncherTextInputRect.x)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerLauncherTextInputRect.w;
 	int keyY = (y-g_sdlControllerLauncherTextInputRect.y)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerLauncherTextInputRect.h;
 
-	if ((trackedFinger->key.x != keyX) || (trackedFinger->key.y != keyY))
+	if ((trackedFinger->miscData.key.x != keyX) || (trackedFinger->miscData.key.y != keyY))
 	{
-		BEL_ST_Launcher_ToggleTextInputUIKey(trackedFinger->key.x, trackedFinger->key.y, false, false);
+		BEL_ST_Launcher_ToggleTextInputUIKey(trackedFinger->miscData.key.x, trackedFinger->miscData.key.y, false, false);
 		BEL_ST_Launcher_ToggleTextInputUIKey(keyX, keyY, true, false);
-		trackedFinger->key.x = keyX;
-		trackedFinger->key.y = keyY;
+		trackedFinger->miscData.key.x = keyX;
+		trackedFinger->miscData.key.y = keyY;
 	}
 
 	//g_sdlForceGfxControlUiRefresh = true;
@@ -2236,7 +2222,7 @@ static void BEL_ST_Launcher_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId
 
 static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
-	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
+	BESDLTrackedFinger *trackedFinger = BEL_ST_Launcher_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
 	if (!trackedFinger)
 		return;
 
@@ -2251,10 +2237,10 @@ static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(BE_ST_TouchID touch
 	BEL_ST_Launcher_UnmarkAndReleaseSelectedKeyInTextInputUI();
 
 	// Normalize coordinates to keys
-	trackedFinger->key.x = (x-g_sdlControllerLauncherTextInputRect.x)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerLauncherTextInputRect.w;
-	trackedFinger->key.y = (y-g_sdlControllerLauncherTextInputRect.y)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerLauncherTextInputRect.h;
+	trackedFinger->miscData.key.x = (x-g_sdlControllerLauncherTextInputRect.x)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH/g_sdlControllerLauncherTextInputRect.w;
+	trackedFinger->miscData.key.y = (y-g_sdlControllerLauncherTextInputRect.y)*ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT/g_sdlControllerLauncherTextInputRect.h;
 
-	BEL_ST_Launcher_ToggleTextInputUIKey(trackedFinger->key.x, trackedFinger->key.y, true, false);
+	BEL_ST_Launcher_ToggleTextInputUIKey(trackedFinger->miscData.key.x, trackedFinger->miscData.key.y, true, false);
 
 	//g_sdlForceGfxControlUiRefresh = true;
 	BE_ST_Launcher_MarkGfxCache();
@@ -2263,12 +2249,12 @@ static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(BE_ST_TouchID touch
 static bool BEL_ST_Launcher_CheckReleasedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y, bool *pConfirmed)
 {
 	bool ret = false;
-	BESDLLauncherTrackedFinger *trackedFinger = BEL_ST_Launcher_GetReleasedTrackedFinger(touchId, fingerId);
+	BESDLTrackedFinger *trackedFinger = BEL_ST_Launcher_GetReleasedTrackedFinger(touchId, fingerId);
 	if (!trackedFinger)
 		return ret;
 
-	int prevKeyX = trackedFinger->key.x;
-	int prevKeyY = trackedFinger->key.y;
+	int prevKeyX = trackedFinger->miscData.key.x;
+	int prevKeyY = trackedFinger->miscData.key.y;
 
 	BEL_ST_Launcher_RemoveTrackedFinger(trackedFinger);
 
@@ -2430,8 +2416,8 @@ static void BEL_ST_Launcher_FinishHostDisplayUpdate(void)
 	{
 		BEL_ST_SetDrawColor(0xBFFF0000); // Includes some alpha
 		BEL_ST_SetDrawBlendMode(true);
-		BESDLLauncherTrackedFinger *trackedFinger = g_sdlLauncherTrackedFingers;
-		for (int i = 0; i < g_nOfLauncherTrackedFingers; ++i, ++trackedFinger)
+		BESDLTrackedFinger *trackedFinger = g_sdlTrackedFingers;
+		for (int i = 0; i < g_nOfTrackedFingers; ++i, ++trackedFinger)
 		{
 			BE_ST_Rect rect = {trackedFinger->lastX-g_sdlDebugFingerRectSideLen/2, trackedFinger->lastY-g_sdlDebugFingerRectSideLen/2, g_sdlDebugFingerRectSideLen, g_sdlDebugFingerRectSideLen};
 			BEL_ST_RenderFill(&rect);

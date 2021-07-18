@@ -43,8 +43,6 @@ bool g_sdlShowTouchUI;
 
 /* Tracked fingers definitions (multi-touch input) */
 
-#define MAX_NUM_OF_TRACKED_FINGERS 10
-
 BESDLTrackedFinger g_sdlTrackedFingers[MAX_NUM_OF_TRACKED_FINGERS];
 int g_nOfTrackedFingers = 0;
 
