@@ -2570,19 +2570,19 @@ void BE_ST_Launcher_RunEventLoop(void)
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				BEL_ST_Launcher_CheckCommonPointerPressCases(0, 0, event.button.x, event.button.y, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y, ticksBeforePoll);
 				break;
 			case SDL_MOUSEBUTTONUP:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				BEL_ST_Launcher_CheckCommonPointerReleaseCases(0, 0, event.button.x, event.button.y, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y, ticksBeforePoll);
 				break;
 			case SDL_MOUSEMOTION:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				BEL_ST_Launcher_CheckCommonPointerMoveCases(0, 0, event.motion.x, event.motion.y, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, event.motion.x, event.motion.y, ticksBeforePoll);
 				break;
 			case SDL_MOUSEWHEEL:
 				BE_Launcher_HandleInput_PointerVScroll(-10*event.wheel.y, ticksBeforePoll);

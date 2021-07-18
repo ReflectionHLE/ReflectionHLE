@@ -9,4 +9,7 @@
 typedef SDL_TouchID BE_ST_TouchID;
 typedef SDL_FingerID BE_ST_FingerID;
 
+// One exception: It's assumed the following touch id may represent the mouse
+enum { BE_ST_MouseTouchID = 0 };
+
 #endif

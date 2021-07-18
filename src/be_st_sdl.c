@@ -613,7 +613,7 @@ void BE_ST_PollEvents(void)
 
 			BEL_ST_CheckForHidingTouchUI();
 
-			if (BEL_ST_CheckCommonPointerPressCases(0, 0, event.button.x, event.button.y))
+			if (BEL_ST_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
 				break;
 
 			if (event.button.button == SDL_BUTTON_LEFT)
@@ -634,7 +634,7 @@ void BE_ST_PollEvents(void)
 				g_sdlMouseButtonsStates[event.button.button-1] = false;
 			}
 
-			if (BEL_ST_CheckCommonPointerReleaseCases(0, 0, event.button.x, event.button.y))
+			if (BEL_ST_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
 				break;
 
 			if (event.button.button == SDL_BUTTON_LEFT)
@@ -648,7 +648,7 @@ void BE_ST_PollEvents(void)
 			if (event.button.which == SDL_TOUCH_MOUSEID)
 				break;
 
-			if (BEL_ST_CheckCommonPointerMoveCases(0, 0, event.motion.x, event.motion.y))
+			if (BEL_ST_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, event.motion.x, event.motion.y))
 				break;
 
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
