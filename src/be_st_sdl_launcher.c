@@ -491,6 +491,7 @@ BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_MouseGrab, "Mouse grab*\n(win
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion**", g_be_settingsChoices_boolean)
 #endif
+BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_STATIC(g_beInputSettingsMenuItem_MouseGrabComment,
 "* It's possible for mouse to be ungrabbed even if \"Commonly\" is chosen."
 );
@@ -510,6 +511,9 @@ static BEMenuItem *g_beInputSettingsMenuItems[] = {
 	&g_beInputSettingsMenuItem_MouseGrab,
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	&g_beInputSettingsMenuItem_AbsMouseMotion,
+#endif
+#ifdef BE_ST_ENABLE_SETTING_NOVERT
+	&g_beInputSettingsMenuItem_VertAnalogMotion,
 #endif
 	&g_beInputSettingsMenuItem_MouseGrabComment,
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
@@ -880,6 +884,10 @@ void BE_ST_Launcher_Prepare(void)
 	// Set AbsMouseMotion value
 	g_beInputSettingsMenuItem_AbsMouseMotion.choice = g_refKeenCfg.absMouseMotion;
 #endif
+#ifdef BE_ST_ENABLE_SETTING_NOVERT
+	// Set VertAnalogMotion value
+	g_beInputSettingsMenuItem_VertAnalogMotion.choice = !g_refKeenCfg.novert;
+#endif
 	// Set LeftStick value
 	g_beControllerSettingsMenuItem_LeftStick.choice = g_refKeenCfg.altControlScheme.useLeftStick;
 	// Set RightStick value
@@ -1039,6 +1047,9 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.mouseGrab = (MouseGrabSettingType)g_beInputSettingsMenuItem_MouseGrab.choice;
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	g_refKeenCfg.absMouseMotion = g_beInputSettingsMenuItem_AbsMouseMotion.choice;
+#endif
+#ifdef BE_ST_ENABLE_SETTING_NOVERT
+	g_refKeenCfg.novert = !g_beInputSettingsMenuItem_VertAnalogMotion.choice;
 #endif
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	g_refKeenCfg.touchInputToggle = (TouchInputSettingType)g_beInputSettingsMenuItem_TouchControls.choice;

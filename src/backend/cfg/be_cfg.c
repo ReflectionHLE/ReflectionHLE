@@ -431,6 +431,16 @@ static void BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion(const char 
 }
 #endif
 
+#ifdef BE_ST_ENABLE_SETTING_NOVERT
+static void BEL_ST_ParseSetting_Novert(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+		g_refKeenCfg.novert = true;
+	else if (!strcmp(buffer, "false"))
+		g_refKeenCfg.novert = false;
+}
+#endif
+
 // HACK (cfg file may be rewritten and we don't want to remove any setting)
 static bool g_sdlIsManualGameVerModeSettingRead = false;
 static void BEL_ST_ParseSetting_ManualGameVerMode(const char *keyprefix, const char *buffer)
@@ -555,6 +565,9 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	{"altcontrolscheme_analogmotion=", &BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion},
 #endif
+#ifdef BE_ST_ENABLE_SETTING_NOVERT
+	{"novert=", &BEL_ST_ParseSetting_Novert},
+#endif
 
 	{"manualgamevermode=", &BEL_ST_ParseSetting_ManualGameVerMode},
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG
@@ -659,6 +672,9 @@ void BEL_ST_ParseConfig(void)
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	g_refKeenCfg.altControlScheme.analogMotion = false;
 #endif
+#ifdef BE_ST_ENABLE_SETTING_NOVERT
+	g_refKeenCfg.novert = false;
+#endif
 
 	g_refKeenCfg.manualGameVerMode = false;
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG
@@ -753,6 +769,9 @@ void BEL_ST_SaveConfig(void)
 	fprintf(fp, "altcontrolscheme_rstick=%s\n", g_refKeenCfg.altControlScheme.useRightStick ? "true" : "false");
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	fprintf(fp, "altcontrolscheme_analogmotion=%s\n", g_refKeenCfg.altControlScheme.analogMotion ? "true" : "false");
+#endif
+#ifdef BE_ST_ENABLE_SETTING_NOVERT
+	fprintf(fp, "novert=%s\n", g_refKeenCfg.novert ? "true" : "false");
 #endif
 	if (g_sdlIsManualGameVerModeSettingRead)
 	{

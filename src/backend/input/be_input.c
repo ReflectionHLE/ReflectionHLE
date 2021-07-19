@@ -106,6 +106,8 @@ void BE_ST_GetEmuAccuMouseMotion(int16_t *optX, int16_t *optY)
 
 	int16_t dx = g_sdlEmuMouseMotionAccumulatedState[0] + g_sdlEmuMouseMotionFromJoystick[0];
 	int16_t dy = g_sdlEmuMouseMotionAccumulatedState[1] + g_sdlEmuMouseMotionFromJoystick[1];
+	if (g_refKeenCfg.novert)
+		dy = 0;
 
 	BE_ST_SetEmuMousePos(g_sdlEmuMouseCursorPos[0] + dx, g_sdlEmuMouseCursorPos[1] + dy);
 
