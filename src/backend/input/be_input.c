@@ -92,10 +92,13 @@ void BE_ST_SetEmuMousePos(int16_t x, int16_t y)
 		g_sdlEmuMouseCursorPos[1] = 0;
 	else if (g_sdlEmuMouseCursorPos[1] >= BE_ST_EMU_MOUSE_YRANGE)
 		g_sdlEmuMouseCursorPos[1] = BE_ST_EMU_MOUSE_YRANGE - 1;
+
+	g_sdlEmuMouseMotionAccumulatedState[0] = g_sdlEmuMouseMotionAccumulatedState[1] = 0;
 }
 
 void BE_ST_GetEmuMousePos(int16_t *x, int16_t *y)
 {
+	BE_ST_GetEmuAccuMouseMotion(NULL, NULL);
 	*x = g_sdlEmuMouseCursorPos[0];
 	*y = g_sdlEmuMouseCursorPos[1];
 }
@@ -115,8 +118,6 @@ void BE_ST_GetEmuAccuMouseMotion(int16_t *optX, int16_t *optY)
 		*optX = dx;
 	if (optY)
 		*optY = dy;
-
-	g_sdlEmuMouseMotionAccumulatedState[0] = g_sdlEmuMouseMotionAccumulatedState[1] = 0;
 }
 
 uint16_t BE_ST_GetEmuMouseButtons(void)
