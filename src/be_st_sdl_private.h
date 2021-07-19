@@ -49,11 +49,4 @@
 
 #define BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO 1
 
-void BEL_ST_ForceHostDisplayUpdate(void);
-void BEL_ST_SetGfxOutputRects(bool allowResize);
-void BEL_ST_UpdateHostDisplay(void);
-
-// NOT NECESSARILY AVAILABLE FOR ALL GAMES!
-extern bool g_sdlDoAbsMouseMotion;
-
 #endif // BE_ST_SDL_PRIVATE_H

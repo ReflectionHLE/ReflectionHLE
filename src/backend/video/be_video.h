@@ -42,7 +42,14 @@ extern const uint32_t g_sdlVGADefaultBGRAScreenColors[256];
 extern const uint32_t g_sdlEGABGRAScreenColors[16];
 extern const uint32_t g_sdlCGAGfxBGRAScreenColors[4];
 
+// NOT NECESSARILY AVAILABLE FOR ALL GAMES!
+extern bool g_sdlDoAbsMouseMotion;
+
 void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
+
+void BEL_ST_SetGfxOutputRects(bool allowResize);
+void BEL_ST_ForceHostDisplayUpdate(void);
+void BEL_ST_UpdateHostDisplay(void);
 
 // These might be implementation-dependent
 
