@@ -546,7 +546,7 @@ typedef enum BE_ST_ScanCode_T {
      BE_ST_SC_MAX = 0xFF,
 } BE_ST_ScanCode_T;
 
-// MUST be included here (since be_st_sdl.h depends on be_st.h)
-#include "be_st_sdl.h"
+// MUST be included here (since be_st_cfg.h depends on be_st.h)
+#include "be_st_cfg.h"
 
 #endif // BE_ST_H

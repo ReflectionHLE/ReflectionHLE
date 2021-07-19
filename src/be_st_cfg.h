@@ -26,14 +26,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef BE_ST_SDL_H
-#define BE_ST_SDL_H
+#ifndef BE_ST_CFG_H
+#define BE_ST_CFG_H
 
 #include "be_features.h"
 #include "be_st.h"
 #include "refkeen_config.h"
 
-// WARNING: This struct is used by BE_ST_SDL ONLY (except for controller stuff)
+// NOTE: This struct is generally used just in the Reflection Keen backend.
+// There might still be exceptions to this.
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
 #define BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
@@ -100,4 +101,4 @@ typedef struct
 
 extern RefKeenConfig g_refKeenCfg;
 
-#endif // BE_ST_SDL_H
+#endif

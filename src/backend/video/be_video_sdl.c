@@ -27,7 +27,7 @@
  */
  
 #include "be_cross.h"
-#include "be_st_sdl.h"
+#include "be_st_cfg.h"
 #include "be_title_and_version.h"
 #include "be_video_textures.h"
 
