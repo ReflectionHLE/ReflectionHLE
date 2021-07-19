@@ -28,12 +28,12 @@
  
 #include "refkeen_config.h" // MUST precede other contents due to macros
 
-#include "backend/filesystem/be_filesystem_app_paths.h"
-#include "backend/filesystem/be_filesystem_dir.h"
-#include "backend/filesystem/be_filesystem_file_ops.h"
-#include "backend/filesystem/be_filesystem_gameinst.h"
-#include "backend/filesystem/be_filesystem_mkdir.h"
-#include "backend/filesystem/be_filesystem_string_ops.h"
+#include "be_filesystem_app_paths.h"
+#include "be_filesystem_dir.h"
+#include "be_filesystem_file_ops.h"
+#include "be_filesystem_gameinst.h"
+#include "be_filesystem_mkdir.h"
+#include "be_filesystem_string_ops.h"
 
 BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 	const char *filename, BE_FileRequest_T request,

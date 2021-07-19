@@ -27,7 +27,7 @@
  */
 
 #include "refkeen.h"
-#include "backend/timing/be_timing.h"
+#include "../timing/be_timing.h"
 #include "be_audio_mixer.h"
 #include "be_audio_resampling.h"
 #include "be_st_sdl_private.h" // For BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO

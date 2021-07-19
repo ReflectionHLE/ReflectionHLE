@@ -33,8 +33,8 @@
 #include "be_cross.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
-#include "backend/audio/be_audio_mixer.h"
-#include "backend/audio/be_audio_private.h"
+#include "be_audio_mixer.h"
+#include "be_audio_private.h"
 
 #ifdef REFKEEN_CONFIG_THREADS
 static SDL_mutex* g_sdlCallbackMutex = NULL;

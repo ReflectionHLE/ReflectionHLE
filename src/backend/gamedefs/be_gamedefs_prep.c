@@ -31,21 +31,21 @@
 #include "be_gamever.h"
 #include "be_st.h" // For g_refKeenCfg
 
-#include "backend/filesystem/be_filesystem_app_paths.h"
-#include "backend/filesystem/be_filesystem_gameinst.h"
-#include "backend/filesystem/be_filesystem_root_paths.h"
-#include "backend/filesystem/be_filesystem_string_ops.h"
+#include "../filesystem/be_filesystem_app_paths.h"
+#include "../filesystem/be_filesystem_gameinst.h"
+#include "../filesystem/be_filesystem_root_paths.h"
+#include "../filesystem/be_filesystem_string_ops.h"
 #include "be_features.h"
 #include "be_sound_device_flags.h"
 
 #ifdef REFKEEN_PLATFORM_WINDOWS
-#include "backend/misc/be_misc_winreg.h"
+#include "../misc/be_misc_winreg.h"
 #endif
 
 // Use this in case x is a macro defined to be a narrow string literal
 #define CSTR_TO_TCSTR(x) _T(x)
 
-#include "backend/gamedefs/be_gamedefs.h"
+#include "be_gamedefs.h"
 
 #if ((defined REFKEEN_HAS_VER_CATACOMB_ALL) && \
      ((defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_MACOS))) || \

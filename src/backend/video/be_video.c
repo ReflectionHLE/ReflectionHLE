@@ -38,10 +38,10 @@
 #include "be_st_sdl_private.h"
 //#include "be_st_egavga_lookup_tables.h"
 #include "be_title_and_version.h"
-#include "backend/video/be_video.h"
-#include "backend/video/be_video_emu.h"
-#include "backend/video/be_video_textures.h"
-#include "backend/video/be_video_ui.h"
+#include "be_video.h"
+#include "be_video_emu.h"
+#include "be_video_textures.h"
+#include "be_video_ui.h"
 #include "../input/be_input_controller_mappings.h"
 
 // Some of these are also used in launcher

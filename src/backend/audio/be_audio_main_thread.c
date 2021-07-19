@@ -31,7 +31,7 @@
 
 #include "refkeen_config.h"
 
-#include "backend/audio/be_audio_mixer.h"
+#include "be_audio_mixer.h"
 #include "be_cross.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"

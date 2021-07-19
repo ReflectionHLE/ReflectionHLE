@@ -30,7 +30,7 @@
 #define BE_FILESYSTEM_GAMEINST_H
 
 #include "../gamedefs/be_gamedefs_structs.h"
-#include "backend/filesystem/be_filesystem_len_bounds.h"
+#include "be_filesystem_len_bounds.h"
 #include "be_cross.h"
 #include "be_filesystem_tchar.h"
 #include "be_gamever.h"

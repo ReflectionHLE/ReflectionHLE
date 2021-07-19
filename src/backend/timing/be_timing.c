@@ -26,8 +26,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "backend/atomic/be_atomic.h"
-#include "backend/audio/be_audio_mixer.h"
+#include "../atomic/be_atomic.h"
+#include "../audio/be_audio_mixer.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
 #include "be_timing.h"

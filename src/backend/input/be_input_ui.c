@@ -28,7 +28,7 @@
 
 #include "be_st.h"
 #include "be_input_controller_mappings.h"
-#include "../backend/video/be_video_ui.h"
+#include "../video/be_video_ui.h"
 
 void BEL_ST_DoHideTouchUI(void)
 {

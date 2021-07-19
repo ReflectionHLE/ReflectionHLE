@@ -26,8 +26,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "backend/audio/be_audio_private.h"
-#include "backend/video/be_video.h"
+#include "../audio/be_audio_private.h"
+#include "../video/be_video.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_gamever.h"
