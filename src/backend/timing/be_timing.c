@@ -28,6 +28,7 @@
 
 #include "../atomic/be_atomic.h"
 #include "../audio/be_audio_mixer.h"
+#include "../video/be_video.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
 #include "be_timing.h"
