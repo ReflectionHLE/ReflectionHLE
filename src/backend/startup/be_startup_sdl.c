@@ -31,11 +31,11 @@
 #include <string.h>
 #include "SDL.h"
 
-#include "backend/events/be_events_sdl.h"
-#include "backend/input/be_input.h"
-#include "backend/input/be_input_controller_mappings.h"
-#include "backend/input/be_input_sdl.h"
-#include "backend/video/be_video_ui.h"
+#include "../events/be_events_sdl.h"
+#include "../input/be_input.h"
+#include "../input/be_input_controller_mappings.h"
+#include "../input/be_input_sdl.h"
+#include "../video/be_video_ui.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_st_sdl_private.h"

@@ -27,6 +27,7 @@ list(APPEND be_src
 	src/backend/misc/be_misc_steamcfg.c
 	src/backend/startup/be_startup.c
 	src/backend/startup/be_startup_embedded_data.c
+	src/backend/startup/be_startup_sdl.c
 	src/backend/timing/be_timing.c
 	src/backend/timing/be_timing_callback.c
 	src/backend/video/be_video.c
@@ -40,7 +41,6 @@ list(APPEND be_src
 	src/be_cross_emm.c
 	src/be_cross_mem.c
 	src/be_cross_xmm.c
-	src/be_st_sdl.c
 	src/crc32/crc32.c
 	src/depklite/depklite.c
 	src/nukedopl/opl3.c
