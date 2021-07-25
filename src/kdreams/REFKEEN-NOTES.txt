@@ -1,0 +1,205 @@
+Preface
+=======
+
+This file, and related notes, intend to cover changes in behaviors and/or
+code structures to involved program, in comparison to the original versions.
+
+Please note that while the information given here might appear to be useful,
+any subset of it might be wrong and/or outdated at any given time.
+Regardless, it should still be a good way to show some of the
+technical problems with mimicking the original behaviors
+of a program, including vanilla bugs.
+
+General changes
+===============
+
+- Disabling unused code and definitions.
+
+- The occasional fix for an unaligned read/write,
+as well as other modifications done for portability.
+
+- Extended user input support mostly separate from the original code
+(game controllers, multi-touch).
+
+- There's currently no full emulation of EGA plane maintenance. Instead,
+routines that output to the desired planes are used. Macros like EGAWRITEMODE
+are no-ops.
+
+- Changes that assist with building code originally written in C as C++, or
+even just resolving what are technically undefined behaviors.
+One example is id_in.c:ASCIINames changing from a byte array to a char array,
+so we may define it with char literals without using separate casts.
+Another one is in id_us.c:USL_FindRect, originally using Motion
+enum variables as loop variables, now re-defined as int instead.
+
+- id_ca.* and more: Modifications for support of multiple versions,
+like CA_CacheMarks accepts an additional argument which is ignored,
+say, for Keen Dreams v1.00. Another example is GRMODE being
+a variable instead of a macro, plus fakecgamode.
+
+- id_mm.c was adjusted for the purpose of porting to modern platforms,
+while still trying to not change too much of the code.
+
+- id_sd* and more: Direct accesses to the TimeCount variable were adjusted
+for the purpose of getting a functional port.
+
+- id_sd.c: OPL delays are done via the separate game-agnostic code.
+As of writing this, they only impact the sound output, not in-game timing.
+
+- id_sd.c:SDL_ALPlaySound: Before an abnormal quit,
+BE_ST_UnlockAudioRecursively might be called even if "asm popf" was not
+originally used, just to make things safer and more usable in a source port.
+
+- id_sd.c:SDL_DetectAdLib: It simply checks if OPL emulation is needed
+and enabled now.
+
+- id_sd.c:SD_Startup will set SoundSourcePresent to false
+if ssNoCheck is false.
+
+- id_sd.c:SD_Startup will set SoundBlasterPresent to true if alNoCheck and
+sbNoCheck are false, and SDL_DetectAdLib returns true in AdLibPresent.
+
+- id_sd.c:SD_Shutdown: BE_ST_StopAudioAndTimerInt/BE_ST_StopDigiAudioInt is
+called earlier, just to make sure there's no deadlock while audio is "locked".
+
+- id_us.c: When used with the 2015 port's data, new settings like fullscreen
+toggle are read from the port's configuration, while ignoring the ones in
+KDREAMS.CFG. On the other hand, they're still written to KDREAMS.CFG.
+
+- id_us.c: For he 2015 port, scancodes are converted from SDL2 to DOS when
+reading config file; Same when writing, but in the opposite direction.
+Some information may get lost as a consequence.
+
+- id_us.c, kd_main.c: US_UpdateTextScreen is technically not a no-op anymore,
+not even in v1.05. On the other hand, the function isn't called in v1.05.
+
+- id_us.c:USL_HandleError has a few differences related to error number.
+Additionally, there's the lack of a clear replacement for sys_errlist,
+so an "unknown" error string is printed the port instead.
+
+- id_vw_ae.c:VWL_XORBuffer: Renamed from BufferToScreen, due to practically
+being used just for xor, and being more consistent with the CGA counterpart.
+
+- kd_demo.c:DemoLoop_New: When the code used for showing credits is in use,
+it's currently used exclusively for the 2015 port's data, so look for two
+credits screens.
+
+Bug fixes with no practical impacts on behaviors
+================================================
+
+- id_in.c:IN_ReadCursor technically had reads of uninitialized vars, later
+removed in Catacomb 3-D. These reads only existed for halving the values of
+the vars, though, and they were immediately replaced with updated values from
+the mouse, with no impact.
+
+- id_in.c:IN_ReadControl: Originally, realdelta could be uninitialized
+in case of demo playback, but this is never the case in Keen Dreams as
+originally released. The var is still initialized now, just in case.
+
+- id_mm.c:MM_FreePtr: Order of operands in while loop was swapped,
+fixing a possible null pointer dereference (observed while adding
+support for the 2015 port's data).
+
+- id_us.c:US_(C)Print: Modified to accept a string via a pointer to const,
+while not temporarily modifying it.
+
+- id_us.c:US_CPrintLine: Like US_Print, using an additional parameter.
+
+- id_us.c:US_ControlPanel: lasttime and lasti are not left uninitialized.
+In practice, FlushHelp was originally initialized to true, and may change
+to false only when approaching the first loop iteration, where this also
+leads to updates of lasttime and lasti.
+
+- id_us.c:US_ControlPanel: Also not left uninitialized is lastn.
+In practice, when inrect is set to true for the first time, lasti will differ
+from i (since lasti is set to -2), so lastn won't even be inspected.
+It'll still be set (to the value of n), so it should be covered.
+
+- id_us.c:US_DisplayHighScores: y is not left uninitialized. However, it may
+be read only if which != -1. In such a case, the loop will eventually reach an
+iteration i such that i == which, so y will be set to PrintY before it's read.
+
+- id_vw.c:VWL_MeasureString, id_vw_ac.c:VW_DrawPropString_CGA,
+id_vw_ae.c:VW_DrawPropString_EGA: Like US_Print, using an additional parameter.
+
+- id_vw.c:VWL_MeasureString,
+id_vw_ac.c:VW_DrawPropString_CGA, id_vw_ae.c:VW_DrawPropString_EGA:
+As in the Catacombs, cast each character to an unsigned byte.
+Reason is that for C++ compatibility (and reducing C warnings),
+the string was changed from a uint8_t pointer to a char pointer,
+so the values might be signed.
+
+kd_act1.c:ChangeState: Before inspecting state->rightshapenum, it is now
+verified that state is non-null. Originally, rightshapenum was in the first
+4 bytes of the state struct. The first 4 bytes of the null address with the
+original DOS versions were set to 0, unless mistakenly overwritten.
+
+kd_play.c:ClipToWalls: ob->state->pushtofloor would be read even if ob->state
+was null. In such a case, ob->state->pushtofloor would be a part of a small
+Borland C++ string, unless somehow overwritten. So, it is now checked if
+ob->state is null, in addition to checking that ob->state->pushtofloor is not.
+
+kd_play.c:DoActor: In addition to checking if state->progress == think
+(i.e., 2), it is now also checked that state is not-null. If it is, then due
+to the layout of statetype, it should differ unless overwritten.
+
+kd_play.c:DoActor: A check that state is non-null before reading state->tictime
+was similarly added. Additionally, newtics is compared to a magic value which
+should match the one following a null-pointer dereference, assuming that
+it wasn't modified earlier.
+Tthere's also another separate check that state is non-null, before accessing
+state->progress. If it were dereferenced with the original EXEs, it wouldn't be
+a valid progress enum value, anyway (assuming it wasn't overwritten).
+
+kd_play.c:StateMachine: state is again checked for being non-null before
+reading state->skippable. As usual, this should behave like the original
+EXEs if ((statetype *)0)->skippable isn't overwritten.
+
+Bugs fixes which might have impacts on behaviors
+================================================
+
+- id_sd.c:SD_SetSoundMode: result is now always initialized. Previously,
+it could be accessed while uninitialized if SD_SetSoundMode was called
+with sdm_AdLib, but AdLibPresent was false.
+
+- id_sd.c:SD_SetSoundMode: tableoffset is set to 0 if called with sdm_Off.
+In practice, there was no impact, due to SD_PlaySound checking if SoundMode
+is sdm_Off before reading SoundTable.
+
+- id_sd.c:SD_SetMusicMode: result is now always initialized. Previously,
+if could be accessed while uninitialized if SD_SetMusicMode was called
+with smm_AdLib, but AdLibPresent was false.
+
+- id_us.c:US_CheckParm: The while loop first checks if *parm is non-null.
+
+- id_us.c:USL_CtlDEButtonCustom: result is always initialized to false,
+ven if the user decided to quit, and then it might not matter at all
+in the original EXEs.
+
+- id_vw_ae.c:VW_SetScreen_EGA: The call to VW_WaitVBL may lead to different
+behaviors. Also, calling it before BE_ST_EGASetPelPanning, which would be
+closer to the original code in structure, was found to lead to horizontal
+scrolling glitches in the port.
+
+soft.c:BLoad could re-open a file via CA_LoadFile without closing an already
+open file for the same filename. The file is now closed beforehand.
+
+Changes for compatibility
+=========================
+
+- The statetype struct has an additional field for the original values
+of pointers to such states in the DOS versions, for the purpose of
+compatibility with original saved games.
+
+- id_rf.c: The map's info plane consist of 16-bit values, even for pointers to
+allanims array elements. The pointer values in use should match the originals
+for compatibility with saved games. They're converted when needed.
+
+- jam_io.*, loadscn2.c and possibly more: Uses of file handles were converted
+to our own contained around pointers to FILE. DEST_FILE/SRC_FILE may still be
+used internally, instead of DEST_FFILE/SRC_FFILE, for compatibility.
+
+- Like the allanims pointers, pointers to objects may be converted for
+compatibility.
+
+- statetype has temp2 and temp2stateptr for flowers.

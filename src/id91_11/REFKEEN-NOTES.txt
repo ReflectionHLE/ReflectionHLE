@@ -1,0 +1,129 @@
+Preface
+=======
+
+This file, and related notes, intend to cover changes in behaviors and/or
+code structures to involved program, in comparison to the original versions.
+
+Please note that while the information given here might appear to be useful,
+any subset of it might be wrong and/or outdated at any given time.
+Regardless, it should still be a good way to show some of the
+technical problems with mimicking the original behaviors
+of a program, including vanilla bugs.
+
+General changes
+===============
+
+- Disabling unused code and definitions.
+
+- The occasional fix for an unaligned read/write,
+as well as other modifications done for portability.
+
+- Extended user input support mostly separate from the original code
+(game controllers, multi-touch).
+
+- There's currently no full emulation of EGA plane maintenance. Instead,
+routines that output to the desired planes are used. Macros like EGAWRITEMODE
+are no-ops.
+
+- Changes that assist with building code originally written in C as C++,
+or even just resolving what are technically undefined behaviors.
+One example is id_in.c:ASCIINames changing from a byte array to a char array,
+so we may define it with char literals without using separate casts.
+
+- id_ca.* and more: Modifications for support of multiple versions.
+
+- id_mm.c was adjusted for the purpose of porting to modern platforms,
+while still trying to not change too much of the code.
+
+- id_sd* and more: Direct accesses to the TimeCount variable were adjusted
+for the purpose of getting a functional port.
+
+- id_sd.c: OPL delays are done via the separate game-agnostic code.
+As of writing this, they only impact the sound output, not in-game timing.
+
+- id_sd.c:SDL_DetectAdLib: It simply checks if OPL emulation is needed
+and enabled now.
+
+- id_sd.c:SD_Shutdown: BE_ST_StopAudioAndTimerInt/BE_ST_StopDigiAudioInt is
+called earlier, just to make sure there's no deadlock while audio is "locked".
+
+- id_us_1.c:US_FinishTextScreen: Code originally disabled in Catacomb 3D v1.22
+is technically re-enabled, but the function is actually not call at all
+for this version.
+
+- id_us_2.c:USL_HandleError has a few differences related to error number.
+Additionally, there's the lack of a clear replacement for sys_errlist,
+so an "unknown" error string is printed the port instead.
+
+- id_vw_ae.c:VWL_XORBuffer: Renamed from BufferToScreen, due to practically
+being used just for xor, and being more consistent with the CGA counterpart.
+The latter is actually more relevant for Keen Dreams.
+
+Bug fixes with no practical impacts on behaviors
+================================================
+
+- id_ca.c:GRFILEPOS would originally read 4 bytes from a buffer beginning
+at grstarts. However, grstarts represents an array of 3 bytes long integers.
+Just in case of a possible overflow, this was replaced with a copy of 3 bytes.
+
+- id_in.c:IN_ReadControl: Originally, realdelta could be uninitialized
+in case of demo playback for Catacomb 3D, but this is never the case in the
+game as originally released. The var is still initialized now, just in case.
+This fix was actually independently applied to the Adventure Series.
+
+- id_mm.c: The FREEBLOCK macro was modified, adding a check that x->useptr is
+non-null before modifying *x->useptr. Originally, if it were null, it'd just
+modify a few bytes at dseg:0000, which should already be set to 0,
+unless unexpectedly modified earlier.
+
+- id_us.c:US_(C)Print: Modified to accept a string via a pointer to const,
+while not temporarily modifying it.
+
+- id_us.c:US_CPrintLine: Like US_Print, using an additional parameter.
+
+- id_vw.c:VWL_MeasureString, id_vw_ae.c:VW_DrawPropString:
+Like US_Print, using an additional parameter.
+
+Bugs fixes which might have impacts on behaviors
+================================================
+
+- id_sd.c:SD_SetSoundMode: result is now always initialized. Previously,
+it could be accessed while uninitialized if SD_SetSoundMode was called
+with sdm_AdLib, but AdLibPresent was false.
+
+- id_sd.c:SD_SetSoundMode: tableoffset is set to 0 if called with sdm_Off.
+In practice, there was no impact, due to SD_PlaySound checking if SoundMode
+is sdm_Off before reading SoundTable.
+
+- id_sd.c:SD_SetMusicMode: result is now always initialized. Previously,
+if could be accessed while uninitialized if SD_SetMusicMode was called
+with smm_AdLib, but AdLibPresent was false.
+
+- id_us_1.c: ParmStrings and ParmStrings2 were originally not null-terminated,
+leading to possible overflows in calls to US_CheckParm from US_TextScreen and
+and US_Startup. They were null-terminated in the port.
+
+- id_us_1.c:US_CheckParm: The while loop first checks if *parm is non-null.
+
+- id_us_1.c:US_CPrintLine: It was found out to be called with a null pointer
+as the string from c4_play.c:PlayLoop, via DisplaySMsg(NULL,NULL).
+For now, this was fixed to replaced the pointer with an empty string.
+
+- id_vw_ae.c:VW_SetScreen: The call to VW_WaitVBL may lead to different
+behaviors. Also, calling it before BE_ST_EGASetPelPanning, which would be
+closer to the original code in structure, was found to lead to horizontal
+scrolling glitches in the Keen Dreams port.
+
+Changes for compatibility
+=========================
+
+- Instead of writing &PrintX to the saved game, the original 16-bit offset
+pointer value from the matching DOS EXE is written. The "oldtest" field
+was renamed "oldtestoffset" to clarify that. id_us_1.c:USL_CheckSavedGames
+similarly compares the loaded oldtestoffset value to the matching
+16-bit offset value of &PrintX.
+
+- id_vw_ae.c:VW_DrawTile8: It turned out that STARTTILE8 was unexpectedly wrong
+in Catacomb Abyss v1.13/v1.24, albeit only in the assembly code. An adjustment
+was added to the C port, even though STARTTILE8 is practically never used
+in Catacomb Abyss.
