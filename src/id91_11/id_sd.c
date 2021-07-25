@@ -1023,7 +1023,7 @@ SD_SetSoundMode(SDMode mode)
 id0_boolean_t
 SD_SetMusicMode(SMMode mode)
 {
-	id0_boolean_t	result;
+	id0_boolean_t	result = false; // REFKEEN: Always initialize this var
 
 	SD_FadeOutMusic();
 	while (SD_MusicPlaying())
@@ -1040,11 +1040,6 @@ SD_SetMusicMode(SMMode mode)
 		{
 			NeedsMusic = true;
 			result = true;
-		}
-		// (REFKEEN) Originally result was not set here to false, or anything, at all - undefined behaviors...
-		else
-		{
-			result = false;
 		}
 		break;
 	default:
