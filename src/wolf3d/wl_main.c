@@ -1461,7 +1461,7 @@ void DoJukebox(void)
 if (!UPLOAD)
 {
 //#ifndef UPLOAD
-	// REFKEEN: Use second isn't of hundredth of a sec
+	// REFKEEN: Use second instead of hundredth of a sec
 	int hour, min, sec;
 	BE_Cross_GetLocalTime_UNSAFE(&hour, &min, &sec);
 	start = (sec%3)*6;

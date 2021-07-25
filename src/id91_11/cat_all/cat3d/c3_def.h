@@ -518,7 +518,7 @@ extern	id0_unsigned_t	wallwidth	[VIEWWIDTH];
 //extern	id0_unsigned_t	wallseg		[VIEWWIDTH];
 extern	id0_byte_t	*wallseg		[VIEWWIDTH];
 extern	id0_unsigned_t	wallofs		[VIEWWIDTH];
-// REFKEEN - These arrays may actually be larger than VIEWDITH cells long,
+// REFKEEN - These arrays may actually be larger than VIEWWIDTH cells long,
 // and they're used just in C3_ASM.C anyway
 //extern	id0_unsigned_t	screenbyte	[VIEWWIDTH];
 //extern	id0_unsigned_t	screenbit	[VIEWWIDTH];
