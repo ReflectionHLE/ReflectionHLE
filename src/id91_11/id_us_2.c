@@ -653,8 +653,9 @@ USL_HandleError(id0_int_t num)
 		// REFKEEN:
 		// sys_errlist may be deprecated, but strerror is not reentrant
 		// and strerror_r is a bit nonnstandard, so just use this
-		strcat(buf,"Unknown (NOT IMPLEMENTED FOR SRCPORT)");
+		snprintf(buf, sizeof(buf), "Unrecognized error %d", (int)num);
 		//strerror_r(num, buf+(strlen(buf)+1), sizeof(buf)-(strlen(buf)+1));
+		//strcat(buf,sys_errlist[num]);
 
 	VW_HideCursor();
 

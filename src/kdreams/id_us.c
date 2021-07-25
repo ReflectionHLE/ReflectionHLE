@@ -1720,10 +1720,15 @@ USL_HandleError(id0_int_t num)
 		strcat(buf,"Unknown");
 	else if (num == ENOMEM)
 		strcat(buf,"Disk is Full");
-	//else if (num == EINVFMT)
-	//	strcat(buf,"File is Incomplete");
+	// FIXME (REFKEEN): Is that OK?
+	else if (num == 11/*EINVFMT*/)
+		strcat(buf,"File is Incomplete");
 	else
+		// REFKEEN:
+		// sys_errlist may be deprecated, but strerror is not reentrant
+		// and strerror_r is a bit nonnstandard, so just use this
 		snprintf(buf, sizeof(buf), "Unrecognized error %d", (int)num);
+		//strerror_r(num, buf+(strlen(buf)+1), sizeof(buf)-(strlen(buf)+1));
 		//strcat(buf,sys_errlist[num]);
 
 	VW_HideCursor();
