@@ -436,6 +436,18 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 	mmnew->useptr = baseptr;
 	mmnew->attributes = BASEATTRIBUTES;
 
+	if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
+	{
+		// Add a few more bytes as a workaround for vanilla bugs
+		// in places like CA_HuffExpand
+		*baseptr = malloc(size+16);
+		if (*baseptr == NULL)
+			Quit ("Out of memory!  Please make sure you have enough free memory.");
+		mmnew->next = mmrover->next;
+		mmrover->next = mmnew;
+		return;
+	}
+
 	for (search = 0; search<3; search++)
 	{
 	//
@@ -469,7 +481,7 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 
 		while (scan != endscan)
 		{
-			if ((refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) || (scan->start - startseg >= needed))
+			if (scan->start - startseg >= needed)
 			{
 			//
 			// got enough space between the end of lastscan and
@@ -478,19 +490,8 @@ void MM_GetPtr (memptr *baseptr,id0_unsigned_long_t size)
 			//
 				purge = lastscan->next;
 				lastscan->next = mmnew;
-				if (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015)
-				{
-					// Add a few more bytes as a workaround for vanilla bugs
-					// in places like CA_HuffExpand
-					*baseptr = malloc(size+16);
-					if (*baseptr == NULL)
-						Quit ("Out of memory!  Please make sure you have enough free memory.");
-				}
-				else
-				{
-					mmnew->start /*= *(id0_unsigned_t *)baseptr*/ = startseg;
-					*baseptr = BE_Cross_BGetPtrFromSeg(startseg);
-				}
+				mmnew->start /*= *(id0_unsigned_t *)baseptr*/ = startseg;
+				*baseptr = BE_Cross_BGetPtrFromSeg(startseg);
 				mmnew->next = scan;
 				while ( purge != scan)
 				{	// free the purgable block
