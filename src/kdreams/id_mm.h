@@ -37,7 +37,7 @@ void Quit (const id0_char_t *error);
 
 #define	BUFFERSIZE		0x1000		// miscelanious, allways available buffer
 
-#define MAXBLOCKS		1300
+extern id0_int_t	MAXBLOCKS; // REFKEEN: The macro was replaced with a var
 
 //==========================================================================
 

@@ -108,7 +108,8 @@ id0_boolean_t		mmstarted;
 void id0_far	*farheap;
 void		*nearheap;
 
-mmblocktype	id0_far mmblocks[MAXBLOCKS]
+mmblocktype	id0_far *mmblocks // REFKEEN: This is dynamically allocated for 2015 port's data
+//mmblocktype	id0_far mmblocks[MAXBLOCKS]
 			,id0_far *mmhead,id0_far *mmfree,id0_far *mmrover,id0_far *mmnew;
 
 //==========================================================================
@@ -903,4 +904,15 @@ void MM_SetAttributes (memptr *baseptr, id0_unsigned_t attributes)
 	} while (1);
 
 	mmrover->attributes = attributes;
+}
+
+// (REFKEEN) Used for patching version-specific stuff
+id0_int_t MAXBLOCKS;
+
+void RefKeen_Patch_id_mm(void)
+{
+	MAXBLOCKS = (refkeen_current_gamever == BE_GAMEVER_KDREAMS2015) ? 4096 : 1300;
+	mmblocks = (mmblocktype *)calloc(MAXBLOCKS, sizeof(*mmblocks));
+	if (!mmblocks)
+		BE_ST_ExitWithErrorMsg("RefKeen_Patch_id_mm: Out of memory!");
 }

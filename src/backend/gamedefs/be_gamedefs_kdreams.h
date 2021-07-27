@@ -1,6 +1,7 @@
 /* This header must be included *only* from be_gamedefs.h */
 
 void RefKeen_Patch_id_ca(void);
+void RefKeen_Patch_id_mm(void);
 void RefKeen_Patch_id_us(void);
 void RefKeen_Patch_id_rf(void);
 void RefKeen_Patch_id_rf_a(void);
@@ -15,7 +16,7 @@ void RefKeen_PrepareAltControllerScheme(void);
 
 // Note: RefKeen_Patch_id_ca MUST be first for Keen Dreams
 static void (*g_be_patcherfuncs_kdreams[])(void) = {
-	RefKeen_Patch_id_ca, RefKeen_Patch_id_us,
+	RefKeen_Patch_id_ca, RefKeen_Patch_id_mm, RefKeen_Patch_id_us,
 	RefKeen_Patch_id_rf, RefKeen_Patch_id_rf_a,
 	RefKeen_Patch_id_vw, RefKeen_Patch_id_vw_ac, RefKeen_Patch_id_vw_ae,
 	RefKeen_Patch_kd_demo, RefKeen_Patch_kd_keen, RefKeen_Patch_kd_play,
