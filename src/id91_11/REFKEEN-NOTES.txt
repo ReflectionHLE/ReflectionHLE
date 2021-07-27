@@ -36,7 +36,9 @@ so we may define it with char literals without using separate casts.
 while still trying to not change too much of the code.
 
 - id_sd* and more: Direct accesses to the TimeCount variable were adjusted
-for the purpose of getting a functional port.
+for the purpose of getting a functional port. Originally, TimeCount was
+incremented at a specific rate by a custom timer interrupt handler,
+set up to be periodically called by the hardware.
 
 - id_sd.c: OPL delays are done via the separate game-agnostic code.
 As of writing this, they only impact the sound output, not in-game timing.

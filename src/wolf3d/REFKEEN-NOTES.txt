@@ -43,7 +43,9 @@ with the 'think' enum value.
 modern platforms, while still trying to not change too much of the code.
 
 - id_sd* and more: Direct accesses to the TimeCount variable were adjusted
-for the purpose of getting a functional port.
+for the purpose of getting a functional port. Originally, TimeCount was
+incremented at a specific rate by a custom timer interrupt handler,
+set up to be periodically called by the hardware.
 
 - While porting id_sd_a.asm to C, a previously unused subset of
 id_sd.c was used again. A subset of the code had to be patched

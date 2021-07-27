@@ -35,8 +35,10 @@ to use the correct arguments list. It was also renamed from think to thinkptr
 for consistency with Keen Dreams, where it was required due to a conflict
 with the 'think' enum value.
 
-- Direct accesses to the TimeCount variable were adjusted
-for the purpose of getting a functional port.
+- Direct accesses to the TimeCount variable were adjusted for the purpose
+of getting a functional port. Originally, TimeCount was incremented
+at a specific rate by a custom timer interrupt handler,
+set up to be periodically called by the hardware.
 
 - c3_scale.c:DeplanePic (all episodes): Code structure was somewhat
 modified as a side-effect of porting from asm.
