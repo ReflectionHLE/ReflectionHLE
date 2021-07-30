@@ -2,6 +2,7 @@
 
 REFKEEN_NS_B_FOR(catabyss)
 
+void RefKeen_Patch_id_ca(void);
 void RefKeen_Patch_id_us(void);
 void RefKeen_Patch_c4_main(void);
 void RefKeen_Patch_c4_play(void);
@@ -12,7 +13,8 @@ void RefKeen_FillObjStatesWithDOSPointers(void);
 void RefKeen_PrepareAltControllerScheme(void);
 
 static void (*g_be_patcherfuncs_catabyss[])(void) = {
-	RefKeen_Patch_id_us, RefKeen_Patch_c4_main, RefKeen_Patch_c4_play,
+	RefKeen_Patch_id_ca, RefKeen_Patch_id_us,
+	RefKeen_Patch_c4_main, RefKeen_Patch_c4_play,
 	RefKeen_Patch_gelib, RefKeen_Patch_intro, RefKeen_Patch_slidecat,
 	RefKeen_FillObjStatesWithDOSPointers, RefKeen_PrepareAltControllerScheme, 0
 };

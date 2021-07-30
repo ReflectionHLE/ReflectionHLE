@@ -85,7 +85,13 @@ id0_byte_t 		id0_seg	*tinf;
 id0_int_t			mapon;
 
 id0_unsigned_t	id0_seg	*mapsegs[3];
+// REFKEEN: With one caveat, Catacomb Abyss v1.13 and 1.24 technically allow
+// loading one additional map. So, increase the mapheaderseg array by one.
+#ifdef REFKEEN_VER_CATABYSS
+maptype		id0_seg	*mapheaderseg[NUMMAPS+1];
+#else
 maptype		id0_seg	*mapheaderseg[NUMMAPS];
+#endif
 id0_byte_t		id0_seg	*audiosegs[NUMSNDCHUNKS];
 void		id0_seg	*grsegs[NUMCHUNKS];
 
@@ -1652,6 +1658,15 @@ void CA_CacheMap (id0_int_t mapnum)
 
 #endif // REFKEEN_VER_CATADVENTURES
 
+	/* REFKEEN: In Catacomb Abyss versions 1.13 and v1.24, it's
+	   possible to warp to map no. NUMMAPS. In the original codebase,
+	   mapheaderseg[NUMMAPS] technically overflows into textstarts[0].
+	   As ScanText resets textstarts[0] i.e., mapheaderseg[NUMMAPS] to
+	   0, it implies a memory leak. These behaviors are emulated here. */
+#ifdef REFKEEN_VER_CATABYSS
+	if (mapon == NUMMAPS)
+		mapheaderseg[mapon] = 0;
+#endif
 
 //
 // free up memory from last map
@@ -2259,5 +2274,23 @@ void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void)
 	}
 #endif
 }
+
+#ifdef REFKEEN_VER_CATABYSS
+// (REFKEEN) Used for patching version-specific stuff
+id0_word_t refkeen_compat_id_ca_grsegsoffset;
+
+void RefKeen_Patch_id_ca(void)
+{
+	switch (refkeen_current_gamever)
+	{
+	case BE_GAMEVER_CATABYSS113:
+		refkeen_compat_id_ca_grsegsoffset = 0x65BE;
+		break;
+	case BE_GAMEVER_CATABYSS124:
+		refkeen_compat_id_ca_grsegsoffset = 0x657E;
+		break;
+	}
+}
+#endif
 
 REFKEEN_NS_E

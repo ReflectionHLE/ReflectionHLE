@@ -81,7 +81,7 @@ extern	id0_byte_t 		id0_seg	*tinf;
 extern	id0_int_t			mapon;
 
 extern	id0_unsigned_t	id0_seg	*mapsegs[3];
-extern	maptype		id0_seg	*mapheaderseg[NUMMAPS];
+extern	maptype		id0_seg	*mapheaderseg[];
 extern	id0_byte_t		id0_seg	*audiosegs[NUMSNDCHUNKS];
 extern	void		id0_seg	*grsegs[NUMCHUNKS];
 
@@ -149,5 +149,9 @@ void CA_CacheGrChunk (id0_int_t chunk);
 void CA_CacheMap (id0_int_t mapnum);
 
 void CA_CacheMarks (const id0_char_t *title);
+
+// (REFKEEN) BACKWARDS COMPATIBILITY: This is used for
+// vanilla bug emulation in Catacomb Abyss.
+extern id0_word_t refkeen_compat_id_ca_grsegsoffset;
 
 REFKEEN_NS_E

@@ -124,6 +124,14 @@ Based on a written comment, this was reproduced from obj->tiley being set
 to a quite large value, like 65534, due to a right-shift of obj->y, with
 the signed value of -95792, by 16 bits.
 
+- c4_game.c:DrawEnterScreen (Catacomb Abyss): While the game, at least in
+versions 1.13 and 1.24, lets you warp to level 19, this would lead to an
+overflow in access to levelnames. So, the port now emulates the behaviors
+to a limited extend. If it's found that the referenced string was originally
+beginning at one of the elements of grsegs, and it was set to zero,
+then the behaviors are as if the level name was an empty string.
+Otherwise, the game is aborted with a new error message.
+
 gelib.c:GE_SaveGame (Catacomb Adv): Add missed closes of file handle.
 
 gelib.c:BLoad (Catacomb Abyss), ext_soft.c:ext_BLoad:

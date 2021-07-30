@@ -89,6 +89,15 @@ Like US_Print, using an additional parameter.
 Bugs fixes which might have impacts on behaviors
 ================================================
 
+- id_ca.c:mapheaderseg was increased by 1 element for Catacomb Abyss,
+and another related change was done. Catacomb Abyss, at least in versions
+1.13 and 1.24, lets you wrap to map 19, but caching it would lead
+to an overflow in mapheaderseg. This overflow would technically lead to
+a change of c4_game.c:textstarts[0]. As ScanText resets it to 0 later,
+this would lead to a memory leak for mapheaderseg[NUMMAPS].
+So, in the port, this array element is now explicitly reset
+to 0 from CA_CacheMap, instead of passing it to MM_SetPurge.
+
 - id_sd.c:SD_SetSoundMode: result is now always initialized. Previously,
 it could be accessed while uninitialized if SD_SetSoundMode was called
 with sdm_AdLib, but AdLibPresent was false.

@@ -538,12 +538,29 @@ void DrawEnterScreen (void)
 
 	bufferofs = displayofs = screenloc[screenpage];
 	VW_Bar(0,0,VIEWWIDTH,VIEWHEIGHT,0);
-	width = strlen(levelnames[gamestate.mapon]);
+	// REFKEEN: Try to emulate the behaviors in case
+	// levelnames[gamestate.mapon] leads to an overflow
+	const id0_char_t *name;
+	if (gamestate.mapon < BE_Cross_ArrayLen(levelnames))
+		name = levelnames[gamestate.mapon];
+	else
+	{
+		id0_unsigned_t offset = 2*(gamestate.mapon-BE_Cross_ArrayLen(levelnames));
+		offset = (id0_byte_t)levelnames[0][offset] +
+		         ((id0_byte_t)levelnames[0][offset+1] << 8);
+		if ((offset >= refkeen_compat_id_ca_grsegsoffset) &&
+		    (offset < refkeen_compat_id_ca_grsegsoffset + 2*NUMCHUNKS) &&
+		    !(offset % 2) && !grsegs[offset / 2])
+			name = "";
+		else
+			Quit("DrawEnterScreen: Can't get map name! (New non-vanilla check)");
+	}
+	width = strlen(name);
 	if (width < 20)
 		width = 20;
 	CenterWindow(width,5);
 	US_CPrint("\nYou have arrived at\n");
-	US_CPrint(levelnames[gamestate.mapon]);
+	US_CPrint(name);
 }
 
 //==========================================================================
