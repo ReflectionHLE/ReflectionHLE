@@ -184,6 +184,12 @@ mistakenly done while not passing the obj pointer in early versions of Wolf3D.
 These calls were changed to pass null instead. This would mimic common
 behaviors upon getting killed by the dog in Wolf3D v1.0.
 
+- wl_game.c:SetupGameLevel: In case mapheaderseg[gamestate.mapon] is a null
+pointer (probably due to the lack of a map), don't call CA_CacheMap, and
+imply show an error that the map isn't 64*64. Due to the layouts of the
+original EXEs, unless CA_CacheMap failed due to e.g., an unexpectedly
+large "expand" value, these would actually be the observed behaviors.
+
 - When wl_menu.c:SetupControlPanel reads a saved game name itself, it
 originally didn't null-terminate the string. strcpy could mistakenly
 be called with such a string, leading to technically undefined behaviors.

@@ -860,28 +860,42 @@ void SetupGameLevel (void)
 	else
 		US_InitRndT (true);
 
+	/* REFKEEN: Originally, if mapheaderseg[gamestate.mapon] were null,
+	   then there would be null pointer dereferences from CA_CacheMap
+	   and this function. There's also the risk that CA_CacheMap would
+	   try to Carmack-expand too much (invalid) map data, depending on
+	   factors like what was the expanded size read by CA_CacheMap.
+	   from a temporary buffer. Assuming execution would complete,
+	   though, mapwidth and mapheight would both differ from 64, due
+	   to the EXE layout. Therefore, this function would eventually
+	   abort with an error.
+	   For the source port, just show the error instead. */
+	if (mapheaderseg[gamestate.mapon])
+	{
 //
 // load the level
 //
-	// *** S3DNA + ALPHA RESTORATION ***
+		// *** S3DNA + ALPHA RESTORATION ***
 #if (defined GAMEVER_NOAH3D)
-	CA_CacheMap (gamestate.mapon);
+		CA_CacheMap (gamestate.mapon);
 
-	mapwidth = mapheaderseg[gamestate.mapon]->width;
-	mapheight = mapheaderseg[gamestate.mapon]->height;
+		mapwidth = mapheaderseg[gamestate.mapon]->width;
+		mapheight = mapheaderseg[gamestate.mapon]->height;
 #else
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	CA_CacheMap (gamestate.mapon);
+		CA_CacheMap (gamestate.mapon);
 #else
-	CA_CacheMap (gamestate.mapon+10*gamestate.episode);
-	mapon-=gamestate.episode*10;
+		CA_CacheMap (gamestate.mapon+10*gamestate.episode);
+		mapon-=gamestate.episode*10;
 #endif
 
-	mapwidth = mapheaderseg[mapon]->width;
-	mapheight = mapheaderseg[mapon]->height;
+		mapwidth = mapheaderseg[mapon]->width;
+		mapheight = mapheaderseg[mapon]->height;
 #endif
+	}
 
-	if (mapwidth != 64 || mapheight != 64)
+	// REFKEEN: As written above, simply show the error if there's no map
+	if (!mapheaderseg[gamestate.mapon] || mapwidth != 64 || mapheight != 64)
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		Quit ("SetupGameLevel(): Map not 64*64!");
