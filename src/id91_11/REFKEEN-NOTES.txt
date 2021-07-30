@@ -116,6 +116,15 @@ behaviors. Also, calling it before BE_ST_EGASetPelPanning, which would be
 closer to the original code in structure, was found to lead to horizontal
 scrolling glitches in the Keen Dreams port.
 
+Misc. technical changes from the original
+=========================================
+
+- id_ca.c:CA_CacheMap: If a newly cached map's header offset is non-negative
+but smaller than 8, quit with a message like the one used when the offset
+is negative. Without this, the behaviors that follow greatly depend on
+the memory layout. With the original exes, this could lead to
+a totally unrelated error message, or alternatively, a hang.
+
 Changes for compatibility
 =========================
 

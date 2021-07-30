@@ -1569,6 +1569,15 @@ void CA_CacheMap (id0_int_t mapnum)
 		if (pos<0)						// $FFFFFFFF start is a sparse map
 		  Quit ("CA_CacheMap: Tried to load a non existant map!");
 
+		/* REFKEEN: If pos was nonnegative but pointing at one of the
+		   first 8 bytes (consisting of the string "TED5v1.0"), then
+		   the behaviors that follow would originally depend on the
+		   memory layout. It could cover a totaly unrelated error
+		   message in a different function, or a hang of the game.
+		   In the source port, show a new error message instead. */
+		if (pos<8)
+		  Quit ("CA_CacheMap: Tried to load a non existant map! (New non-vanilla check)");
+
 		MM_GetPtr((memptr *)&mapheaderseg[mapnum],sizeof(maptype));
 		BE_Cross_seek(maphandle,pos,SEEK_SET);
 
