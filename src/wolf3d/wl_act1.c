@@ -25,6 +25,7 @@
 // WL_ACT1.C
 
 #include "wl_def.h"
+#include "wl_dobjl.h" // REFKEEN: Used for buffer overflow emulation
 //#pragma hdrstop
 
 REFKEEN_NS_B
@@ -572,10 +573,17 @@ void SpawnDoor (id0_int_t tilex, id0_int_t tiley, id0_boolean_t vertical, id0_in
 
 void OpenDoor (id0_int_t door)
 {
+#if REFKEEN_EMULATE_DOOROBJLIST_OVERFLOWS
+	if (DoorObjList_GetAction(door) == dr_open)
+		DoorObjList_SetTicCount(door, 0);			// reset open time
+	else
+		DoorObjList_SetAction(door, dr_opening);	// start it opening
+#else
 	if (doorobjlist[door].action == dr_open)
 		doorobjlist[door].ticcount = 0;			// reset open time
 	else
 		doorobjlist[door].action = dr_opening;	// start it opening
+#endif
 }
 
 
@@ -595,8 +603,13 @@ void CloseDoor (id0_int_t door)
 //
 // don't close on anything solid
 //
+#if REFKEEN_EMULATE_DOOROBJLIST_OVERFLOWS
+	tilex = DoorObjList_GetTileX(door);
+	tiley = DoorObjList_GetTileY(door);
+#else
 	tilex = doorobjlist[door].tilex;
 	tiley = doorobjlist[door].tiley;
+#endif
 
 	if (actorat[tilex][tiley])
 		return;
@@ -604,7 +617,11 @@ void CloseDoor (id0_int_t door)
 	if (player->tilex == tilex && player->tiley == tiley)
 		return;
 
+#if REFKEEN_EMULATE_DOOROBJLIST_OVERFLOWS
+	if (DoorObjList_GetVertical(door))
+#else
 	if (doorobjlist[door].vertical)
+#endif
 	{
 		if ( player->tiley == tiley )
 		{
@@ -620,7 +637,8 @@ void CloseDoor (id0_int_t door)
 		if (check && ((check->x-MINDIST) >> TILESHIFT) == tilex )
 			return;
 	}
-	else if (!doorobjlist[door].vertical)
+	else // REFKEEN: No need for this check
+//	else if (!doorobjlist[door].vertical)
 	{
 		if (player->tilex == tilex)
 		{
@@ -641,6 +659,13 @@ void CloseDoor (id0_int_t door)
 //
 // play door sound if in a connected area
 //
+#if REFKEEN_EMULATE_DOOROBJLIST_OVERFLOWS
+	area = *(mapsegs[0] + farmapylookup[tiley] + tilex) - AREATILE;
+	if (areabyplayer[area])
+		PlaySoundLocTile(CLOSEDOORSND,tilex,tiley);	// JAB
+
+	DoorObjList_SetAction(door, dr_closing);
+#else
 	area = *(mapsegs[0] + farmapylookup[doorobjlist[door].tiley]
 			+doorobjlist[door].tilex)-AREATILE;
 	if (areabyplayer[area])
@@ -649,6 +674,7 @@ void CloseDoor (id0_int_t door)
 	}
 
 	doorobjlist[door].action = dr_closing;
+#endif
 //
 // make the door space solid
 //
@@ -672,7 +698,11 @@ void OperateDoor (id0_int_t door)
 {
 	id0_int_t	lock;
 
+#if REFKEEN_EMULATE_DOOROBJLIST_OVERFLOWS
+	lock = DoorObjList_GetLock(door);
+#else
 	lock = doorobjlist[door].lock;
+#endif
 	if (lock >= dr_lock1 && lock <= dr_lock4)
 	{
 		if ( ! (gamestate.keys & (1 << (lock-dr_lock1) ) ) )
@@ -682,7 +712,11 @@ void OperateDoor (id0_int_t door)
 		}
 	}
 
+#if REFKEEN_EMULATE_DOOROBJLIST_OVERFLOWS
+	switch (DoorObjList_GetAction(door))
+#else
 	switch (doorobjlist[door].action)
+#endif
 	{
 	case dr_closed:
 	case dr_closing:
@@ -708,7 +742,8 @@ void OperateDoor (id0_int_t door)
 ===============
 */
 
-void DoorOpen (id0_int_t door)
+// REFKEEN: Function is static, clarifying it's called with a valid door index
+static void DoorOpen (id0_int_t door)
 {
 	if ( (doorobjlist[door].ticcount += tics) >= OPENTICS)
 		CloseDoor (door);
@@ -724,7 +759,8 @@ void DoorOpen (id0_int_t door)
 ===============
 */
 
-void DoorOpening (id0_int_t door)
+// REFKEEN: Function is static, clarifying it's called with a valid door index
+static void DoorOpening (id0_int_t door)
 {
 	id0_int_t		area1,area2;
 	id0_unsigned_t	id0_far	*map;
@@ -787,7 +823,8 @@ void DoorOpening (id0_int_t door)
 ===============
 */
 
-void DoorClosing (id0_int_t door)
+// REFKEEN: Function is static, clarifying it's called with a valid door index
+static void DoorClosing (id0_int_t door)
 {
 	id0_int_t		area1,area2,move;
 	id0_unsigned_t	id0_far	*map;

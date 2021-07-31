@@ -172,6 +172,12 @@ a loop over 16x16 tiles may try to read data from a null pointer at
 grsegs[STARTTILE16+i]. It is replaced with g_be_cross_dosZeroSeg
 in the port.
 
+- wl_act1.c: OperateDoor can mistakenly be called with an out-of-range
+door number, after pressing on a pushwall while it's being pushed.
+With the original exes, this can lead to buffer overflows in attempts to
+read from doorobjlist. The relevant behaviors are now emulated, to an extent.
+Certain values might be imperfectly converted, say a visspot pointer.
+
 - wl_act2.c: Early versions of Spawn* functions were mistakenly defined with
 a 'dir' param, although it wasn't actually filled on function call. Thus,
 it was technically undefined. A value of nodir is now assumed instead, while
