@@ -1025,6 +1025,7 @@ void UpdateAltControllerMappingsByMousePresence(bool withmouse)
 
 void PrepareGamePlayControllerMapping(void)
 {
+#if 0 // TODO: Let's try disabling this for now
 	BE_ST_ControllerSingleMap **singlemappingptr;
 
 	for (singlemappingptr = g_ingame_altcontrol_button0mappings; *singlemappingptr; ++singlemappingptr)
@@ -1050,6 +1051,7 @@ void PrepareGamePlayControllerMapping(void)
 	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[0].val = KbdDefs[0].upright;
 	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mappings[0].val = KbdDefs[0].downleft;
 	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mappings[0].val = KbdDefs[0].downright;
+#endif
 
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
 }

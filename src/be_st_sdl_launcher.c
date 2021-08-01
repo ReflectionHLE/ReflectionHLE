@@ -541,22 +541,22 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 #endif
 
 #ifdef REFKEEN_HAS_VER_KDREAMS // Differing descriptions for same actions
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Up, "Action - Up", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Down, "Action - Down", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Up, "Action - Default Up key (Up)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Down, "Action - Default Down key (Down)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #else
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Up, "Action - Forward", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Down, "Action - Backward", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Up, "Action - Default Forward key (Up)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Down, "Action - Default Backward key (Down)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Left, "Action - Left", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Right, "Action - Right", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Left, "Action - Default Left key (Left)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Right, "Action - Default Right key (Right)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #ifdef REFKEEN_HAS_VER_KDREAMS
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Jump, "Action - Jump", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Throw, "Action - Throw", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Jump, "Action - Default Jump key (Ctrl)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Throw, "Action - Default Throw key (Alt)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Stats, "Action - Stats", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
 #if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Fire, "Action - Fire", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Strafe, "Action - Strafe", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Fire, "Action - Default Fire key (Ctrl)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Strafe, "Action - Default Strafe key (Alt)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Drink, "Action - Drink", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
@@ -568,8 +568,8 @@ BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FastTurn,
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Scrolls, "Action - Scrolls", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Use, "Action - Use", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Run, "Action - Run", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Use, "Action - Default Use key (Space)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Run, "Action - Default Run key (RShift)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon1, "Action - Knife/Hand Feeding", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon2, "Action - Pistol/Small Feed Launcher", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon3, "Action - Machine Gun/Big Feed Launcher", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)

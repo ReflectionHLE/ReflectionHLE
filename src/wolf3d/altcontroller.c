@@ -637,6 +637,7 @@ void UpdateAltControllerMappingsByMousePresence(bool withmouse)
 
 void PrepareGamePlayControllerMapping(void)
 {
+#if 0 // TODO: Let's try disabling this for now
 	BE_ST_ControllerSingleMap **singlemappingptr;
 
 	for (int i = 0; i < NUMBUTTONS; ++i)
@@ -688,6 +689,7 @@ void PrepareGamePlayControllerMapping(void)
 #else
 	g_ingame_altcontrol_mapping_weapons.buttons[BE_ST_CTRL_BUT_Y].mapClass = BE_ST_CTRL_MAP_NONE;
 	g_ingame_altcontrol_mapping_weapons.buttons[BE_ST_CTRL_BUT_B].mapClass = BE_ST_CTRL_MAP_NONE;
+#endif
 #endif
 
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
