@@ -441,6 +441,16 @@ static void BEL_ST_ParseSetting_Novert(const char *keyprefix, const char *buffer
 }
 #endif
 
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+static void BEL_ST_ParseSetting_LowFPS(const char *keyprefix, const char *buffer)
+{
+	if (!strcmp(buffer, "true"))
+		g_refKeenCfg.lowFPS = true;
+	else if (!strcmp(buffer, "false"))
+		g_refKeenCfg.lowFPS = false;
+}
+#endif
+
 // HACK (cfg file may be rewritten and we don't want to remove any setting)
 static bool g_sdlIsManualGameVerModeSettingRead = false;
 static void BEL_ST_ParseSetting_ManualGameVerMode(const char *keyprefix, const char *buffer)
@@ -568,6 +578,9 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #ifdef BE_ST_ENABLE_SETTING_NOVERT
 	{"novert=", &BEL_ST_ParseSetting_Novert},
 #endif
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+	{"lowfps=", &BEL_ST_ParseSetting_LowFPS},
+#endif
 
 	{"manualgamevermode=", &BEL_ST_ParseSetting_ManualGameVerMode},
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG
@@ -675,6 +688,9 @@ void BEL_ST_ParseConfig(void)
 #ifdef BE_ST_ENABLE_SETTING_NOVERT
 	g_refKeenCfg.novert = false;
 #endif
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+	g_refKeenCfg.lowFPS = false;
+#endif
 
 	g_refKeenCfg.manualGameVerMode = false;
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG
@@ -772,6 +788,9 @@ void BEL_ST_SaveConfig(void)
 #endif
 #ifdef BE_ST_ENABLE_SETTING_NOVERT
 	fprintf(fp, "novert=%s\n", g_refKeenCfg.novert ? "true" : "false");
+#endif
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+	fprintf(fp, "lowfps=%s\n", g_refKeenCfg.lowFPS ? "true" : "false");
 #endif
 	if (g_sdlIsManualGameVerModeSettingRead)
 	{

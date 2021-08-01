@@ -95,6 +95,7 @@ typedef struct
 		bool isEnabled;
 	} altControlScheme;
 	bool novert;
+	bool lowFPS;
 	bool manualGameVerMode;
 	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
 } RefKeenConfig;

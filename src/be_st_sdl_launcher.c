@@ -333,11 +333,17 @@ BEMenu g_beSelectDirectoryNoGameFoundMenu = {
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_VideoSettings, "Video settings", &g_beVideoSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_SoundSettings, "Sound settings", &g_beSoundSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_InputSettings, "Input settings", &g_beInputSettingsMenu)
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_MiscSettings, "Miscellaneous", &g_beMiscSettingsMenu)
+#endif
 
 static BEMenuItem *g_beSettingsMenuItems[] = {
 	&g_beSettingsMenuItem_VideoSettings,
-	& g_beSettingsMenuItem_SoundSettings,
-	& g_beSettingsMenuItem_InputSettings,
+	&g_beSettingsMenuItem_SoundSettings,
+	&g_beSettingsMenuItem_InputSettings,
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+	&g_beSettingsMenuItem_MiscSettings,
+#endif
 	NULL
 };
 
@@ -698,6 +704,24 @@ static BEMenu g_beControllerMappingsFromSteamImportedSuccessfullyMenu = {
 };
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+/*** Miscellaneous menu ***/
+
+BEMENUITEM_DEF_SELECTION(g_beMiscSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
+
+static BEMenuItem *g_beMiscSettingsMenuItems[] = {
+	&g_beMiscSettingsMenuItem_LowFPS,
+	NULL
+};
+
+BEMenu g_beMiscSettingsMenu = {
+	"Miscellaneous",
+	&g_beSettingsMenu,
+	g_beMiscSettingsMenuItems,
+	// Ignore the rest
+};
+#endif
+
 /*** Show version menu ***/
 
 BEMENUITEM_DEF_STATIC(g_beShowVersionMenuItem_Description, REFKEEN_TITLE_AND_VER_STRING ",\na part of Reflection Keen.")
@@ -935,6 +959,11 @@ void BE_ST_Launcher_Prepare(void)
 #endif
 	g_beControllerSettingsMenuItem_Action_DebugKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS];
 
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+	// Set low LowFPS toggle
+	g_beMiscSettingsMenuItem_LowFPS.choice = g_refKeenCfg.lowFPS;
+#endif
+
 	/*** Prepare installed game versions menu ***/
 	BE_ST_Launcher_RefreshSelectGameMenuContents();
 
@@ -1099,6 +1128,10 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;
+
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+	g_refKeenCfg.lowFPS = g_beMiscSettingsMenuItem_LowFPS.choice;
+#endif
 }
 
 

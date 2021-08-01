@@ -923,6 +923,9 @@ void BE_Launcher_Start(void)
 	BE_Launcher_PrepareMenu(&g_beVideoSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beSoundSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beInputSettingsMenu);
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+	BE_Launcher_PrepareMenu(&g_beMiscSettingsMenu);
+#endif
 	BE_Launcher_PrepareMenu(&g_beControllerSettingsMenu);
 	BE_Launcher_PrepareMenu(&g_beShowVersionMenu);
 	BE_Launcher_PrepareMenu(&g_beQuitConfirmMenu);
