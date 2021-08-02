@@ -26,6 +26,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <string.h>
+
 #include "be_st.h"
 #include "be_st_egavga_lookup_tables.h"
 #include "be_st_sdl_private.h"

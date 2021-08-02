@@ -26,6 +26,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <string.h>
+
 #include "be_input.h"
 #include "be_input_controller_mappings.h"
 #include "../video/be_video_ui.h"

@@ -1,6 +1,8 @@
+#include <string.h>
+#include "SDL_render.h"
+
 #include "be_cross.h"
 #include "be_st.h"
-#include "SDL_render.h"
 
 void BEL_ST_ParseSetting_DisplayNum(const char *keyprefix, const char *buffer)
 {

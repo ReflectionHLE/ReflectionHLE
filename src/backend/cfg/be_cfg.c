@@ -26,6 +26,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <string.h>
+
 #include "../audio/be_audio_private.h"
 #include "../video/be_video.h"
 #include "be_cross.h"
