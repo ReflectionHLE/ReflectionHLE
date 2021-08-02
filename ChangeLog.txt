@@ -2,6 +2,55 @@
 Changelog
 ---------
 
+Aug 2, 2021 (v0.33.0):
+
+* Additional restructurings of game-agnostic code.
+* Nuked OPL3 is updated to the last revision.
+* Keen Dreams: Try to fix memory allocation problems
+while using the data from the 2015 port.
+* Keen Dreams, 3D Catacombs: For an uncached map, if the map header offset
+being read is nonnegative but smaller than 8, just quit with an appropriate
+error message. This fixes behaviors which greatly depend on the memory layout,
+including a possible hang.
+* Catacomb Abyss: Make it possible to warp to map 19, at least in general.
+Also fix crashes upon attempts to load map 20 or 21 by
+outputting a new error message.
+* 3D Catacombs, Wolfenstein 3D: Add a "novert" toggle, letting the user
+limit in-game mouse movements for turning/moving left and right.
+* Wolfenstein 3D: Add a "lowfps" toggle, used for explicitly lowering the
+frame rate. The purpose of this is controlling, to an extent, how far can
+pushwalls move. Reason is, they were intended to move for 2 tiles, but
+it turned out that they could move for 3 tiles as computers were
+becoming faster. The Fake Hitler's fireballs also turned out
+to move slower while the frame rate was higher.
+* Wolfenstein 3D: Emulate, to an extent, the consequences of a
+buffer overflow that follows a press on a pushwall while it's moving.
+This is basically a Vanilla Bug, in which such walls are operated as if
+they were doors, and unintentional changes to static objects may occur.
+* Wolfenstein 3D: Upon trying to load a non-existent level
+(say, in the March 1992 prototype), just report that the map isn't 64*64.
+This is mostly similar to the outputs of the original executables,
+while skipping potential undefined behaviors.
+* Wolfenstein 3D: Fix menu navigation with the mouse while using a window.
+* Change the way controller buttons get mapped under
+the modern controller scheme. Basically, rather than parsing
+the game's own configuration of keys and then using it as a base
+for the mappings, just use the game's default bindings internally.
+For instance, if a button was previously configured to be mapped
+to "Jump" in Keen Dreams, it'll now map to the Ctrl key instead.
+* Note that such buttons may internally get mapped to mouse buttons
+instead of keyboard keys, in case "Motion emulation mode" is set to
+"Mouse". The behaviors should remain unmodified in such a case.
+* Further note that the above-mentioned changes impact
+touch input, albeit the UI remains as-is.
+* Amend controller usability fix from v0.32.1 to work better
+when the setting "Motion Emulation Mode" is set to "Mouse".
+* Add REFKEEN-NOTES.txt files to the source tree, describing technical changes
+from the original versions of games, including cases in which such changes
+exist for the purpose of emulating vanilla bugs. The information was
+collected by looking for mentions of the word REFKEEN in the sources.
+* Other miscellaneous fixes.
+
 Jun 6, 2021 (v0.32.1):
 
 * Redistributable application bundles can now be built for macOS with CMake.
