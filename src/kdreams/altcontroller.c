@@ -541,16 +541,26 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	g_beStControllerMappingDebugKeys.defaultMapping.otherMappingPtr = &g_ingame_altcontrol_mapping_gameplay;
 
+	BE_ST_ControllerSingleMap gamekeyup    = {NULL, BE_ST_SC_UP,    0, BE_ST_CTRL_MAP_KEYSCANCODE};
+	BE_ST_ControllerSingleMap gamekeydown  = {NULL, BE_ST_SC_DOWN,  0, BE_ST_CTRL_MAP_KEYSCANCODE};
+	BE_ST_ControllerSingleMap gamekeyleft  = {NULL, BE_ST_SC_LEFT,  0, BE_ST_CTRL_MAP_KEYSCANCODE};
+	BE_ST_ControllerSingleMap gamekeyright = {NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE};
+
+	BE_ST_ControllerSingleMap mouseup    = {NULL, 1, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap mousedown  = {NULL, 1,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap mouseleft  = {NULL, 0, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
+	BE_ST_ControllerSingleMap mouseright = {NULL, 0,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
+
 	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{
 		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][0];
 		*currdownmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][1];
 		*currleftmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][0];
 		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][1];
-		(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-		(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-		(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-		(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+		**currupmappingptr++ = gamekeyup;
+		**currdownmappingptr++ = gamekeydown;
+		**currleftmappingptr++ = gamekeyleft;
+		**currrightmappingptr++ = gamekeyright;
 	}
 	if (g_refKeenCfg.altControlScheme.useRightStick)
 	{
@@ -558,16 +568,11 @@ void RefKeen_PrepareAltControllerScheme(void)
 		*currdownmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][1];
 		*currleftmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][0];
 		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][1];
-		(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-		(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-		(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-		(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+		**currupmappingptr++ = gamekeyup;
+		**currdownmappingptr++ = gamekeydown;
+		**currleftmappingptr++ = gamekeyleft;
+		**currrightmappingptr++ = gamekeyright;
 	}
-
-	BE_ST_ControllerSingleMap mouseup    = {NULL, 1, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mousedown  = {NULL, 1,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mouseleft  = {NULL, 0, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mouseright = {NULL, 0,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
 
 	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{

@@ -477,6 +477,11 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 	}
 
+	BE_ST_ControllerSingleMap gamekeyup    = {NULL, BE_ST_SC_UP,    0, BE_ST_CTRL_MAP_KEYSCANCODE};
+	BE_ST_ControllerSingleMap gamekeydown  = {NULL, BE_ST_SC_DOWN,  0, BE_ST_CTRL_MAP_KEYSCANCODE};
+	BE_ST_ControllerSingleMap gamekeyleft  = {NULL, BE_ST_SC_LEFT,  0, BE_ST_CTRL_MAP_KEYSCANCODE};
+	BE_ST_ControllerSingleMap gamekeyright = {NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE};
+
 	BE_ST_ControllerSingleMap gamemouseup    = {NULL, 1, -16, BE_ST_CTRL_MAP_MOUSEMOTION};
 	BE_ST_ControllerSingleMap gamemousedown  = {NULL, 1,  16, BE_ST_CTRL_MAP_MOUSEMOTION};
 	BE_ST_ControllerSingleMap gamemouseleft  = {NULL, 0, -16, BE_ST_CTRL_MAP_MOUSEMOTION};
@@ -566,10 +571,10 @@ void RefKeen_PrepareAltControllerScheme(void)
 		}
 		else
 		{
-			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			**currupmappingptr++ = gamekeyup;
+			**currdownmappingptr++ = gamekeydown;
+			**currleftmappingptr++ = gamekeyleft;
+			**currrightmappingptr++ = gamekeyright;
 		}
 	}
 	if (g_refKeenCfg.altControlScheme.useRightStick)
@@ -587,10 +592,10 @@ void RefKeen_PrepareAltControllerScheme(void)
 		}
 		else
 		{
-			(*currupmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currdownmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currleftmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			(*currrightmappingptr++)->mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			**currupmappingptr++ = gamekeyup;
+			**currdownmappingptr++ = gamekeydown;
+			**currleftmappingptr++ = gamekeyleft;
+			**currrightmappingptr++ = gamekeyright;
 		}
 	}
 	// Game code shouldn't touch these
