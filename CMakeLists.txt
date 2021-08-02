@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8...3.19)
 if (CMAKE_VERSION VERSION_LESS 3.12)
 	project(Reflection-Keen)
 else ()
-	project(Reflection-Keen VERSION 0.32.1)
+	project(Reflection-Keen VERSION 0.33.0)
 endif ()
 
 set(bundle_identifier_prefix "net.duke4.ny.refkeen")
