@@ -284,19 +284,21 @@ void BE_ST_PollEvents(void)
 
 			int axis = event.caxis.axis;
 			int axisVal = event.caxis.value;
+			int side = (axisVal < 0) ? 0 : 1;
 			if ((axis < 0) || (axis >= BE_ST_CTRL_AXIS_MAX))
 				break;
-			// Note: We handle BOTH sides, in case axisVal == 0,
-			// or alternatively, the sign of axisVal changes, so
-			// "release/clear" events can be properly sent.
+			/* Note: We handle BOTH sides, in case axisVal == 0,
+			 * or alternatively, the sign of axisVal changes, so
+			 * "release/clear" events can be properly sent.
+			 * Ensure the release always precedes the press, though. */
 			BEL_ST_AltControlScheme_HandleEntry(
-				&g_sdlControllerMappingActualCurr->axes[axis][0],
-				BE_Cross_TypedMax(int, -axisVal, 0),
-				&g_sdlControllersAxesStates[axis][0]);
+				&g_sdlControllerMappingActualCurr->axes[axis][1 - side],
+				0,
+				&g_sdlControllersAxesStates[axis][1 - side]);
 			if (!BEL_ST_AltControlScheme_HandleEntry(
-				&g_sdlControllerMappingActualCurr->axes[axis][1],
-				BE_Cross_TypedMax(int, axisVal, 0)
-				, &g_sdlControllersAxesStates[axis][1]))
+				&g_sdlControllerMappingActualCurr->axes[axis][side],
+				abs(axisVal),
+				&g_sdlControllersAxesStates[axis][side]))
 				{
 					// Special case for triggers, treated like digital buttons
 					if ((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
