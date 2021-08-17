@@ -44,7 +44,8 @@ REFKEEN_NS_B
 */
 
 ControlInfo	c;
-id0_boolean_t		running,slowturn;
+// REFKEEN: Omit set-but-unused slowturn var, as done in the later games
+id0_boolean_t		running; //,slowturn;
 
 id0_int_t			bordertime;
 // (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
@@ -381,10 +382,12 @@ void PollControls (void)
 			running = true;
 		else
 			running = false;
+#if 0 // REFKEEN: slowturn is unused
 		if (c.x>-48 && c.x<48)
 			slowturn = true;
 		else
 			slowturn = false;
+#endif
 	}
 	else
 	{
@@ -392,10 +395,12 @@ void PollControls (void)
 			running = true;
 		else
 			running = false;
+#if 0 // REFKEEN: slowturn is unused
 		if (c.button0)
 			slowturn = true;
 		else
 			slowturn = false;
+#endif
 	}
 }
 
