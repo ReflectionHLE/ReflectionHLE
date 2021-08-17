@@ -241,9 +241,13 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 		if (samplesToOutput > 0)
 		{
 			int channels = g_stAudioMixer.channels;
-			memset(stream, 0, sizeof(BE_ST_SndSample_T) * channels * samplesToOutput);
 
 			for (i = 0; i < samplesToOutput; ++i, stream += channels)
+			{
+				BE_ST_SndSamplesSum_T sums[2] = {
+					MIXER_SILENCE_SAMPLE,
+					MIXER_SILENCE_SAMPLE
+				};
 				for (j = 0; j < g_stAudioMixer.numSources; ++j)
 				{
 					src = &g_stAudioMixer.sources[j];
@@ -251,13 +255,17 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 						continue;
 
 					if (channels == 1)
-						*stream = (j * (*stream) + src->out.buffer[i] * ((src->vol[0] + src->vol[1]) / 2.0f)) / (j + 1);
+						sums[0] += src->out.buffer[i] * ((src->vol[0] + src->vol[1]) / 2.0f);
 					else
 					{
-						*stream = (j * (*stream) + src->out.buffer[i] * src->vol[0]) / (j + 1);
-						*(stream + 1) = (j * (*(stream + 1)) + src->out.buffer[i] * src->vol[1]) / (j + 1);
+						sums[0] += src->out.buffer[i] * src->vol[0];
+						sums[1] += src->out.buffer[i] * src->vol[1];
 					}
 				}
+				stream[0] = BEL_ST_SamplesSumClamp(sums[0]);
+				if (channels != 1)
+					stream[1] = BEL_ST_SamplesSumClamp(sums[1]);
+			}
 
 			for (j = 0; j < g_stAudioMixer.numSources; ++j)
 			{
