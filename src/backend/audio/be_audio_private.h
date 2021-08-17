@@ -32,6 +32,7 @@
 #include "refkeen_config.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "be_cross.h"
 
 #define PC_PIT_RATE 1193182
 
@@ -39,14 +40,26 @@
 
 #if (defined REFKEEN_RESAMPLER_LIBSAMPLERATE) || (defined REFKEEN_RESAMPLER_LIBRESAMPLE)
 #define MIXER_SAMPLE_FORMAT_FLOAT
+#define MIXER_SILENCE_SAMPLE 0.f
 #else
 #define MIXER_SAMPLE_FORMAT_SINT16
+#define MIXER_SILENCE_SAMPLE 0
 #endif
 
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
 typedef float BE_ST_SndSample_T;
+typedef float BE_ST_SndSamplesSum_T;
+static inline BE_ST_SndSample_T BEL_ST_SamplesSumClamp(BE_ST_SndSamplesSum_T sum)
+{
+	return BE_Cross_TypedClamp(float, sum, -1.f, 1.f);
+}
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
 typedef int16_t BE_ST_SndSample_T;
+typedef int32_t BE_ST_SndSamplesSum_T;
+static inline BE_ST_SndSample_T BEL_ST_SamplesSumClamp(BE_ST_SndSamplesSum_T sum)
+{
+	return BE_Cross_TypedClamp(int32_t, sum, -32768, 32767);
+}
 #endif
 
 #define MIXER_DEFAULT_CHANNELS_COUNT 2
