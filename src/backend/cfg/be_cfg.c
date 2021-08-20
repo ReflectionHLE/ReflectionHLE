@@ -315,6 +315,21 @@ static void BEL_ST_ParseSetting_OPLEmulation(const char *keyprefix, const char *
 	}
 }
 
+#ifdef BE_ST_ENABLE_SETTING_SB
+// FIXME: Should be defined in a better manner
+static const char *g_be_setting_sb_vals[] = {"off", "sb", "sbpro" ,"sb16"};
+
+static void BEL_ST_ParseSetting_SB(const char *keyprefix, const char *buffer)
+{
+	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_setting_sb_vals); ++i)
+		if (!strcmp(buffer, g_be_setting_sb_vals[i]))
+		{
+			g_refKeenCfg.sb = (SoundBlasterSettingType)i;
+			break;
+		}
+}
+#endif
+
 #ifndef REFKEEN_RESAMPLER_NONE
 static void BEL_ST_ParseSetting_UseResampler(const char *keyprefix, const char *buffer)
 {
@@ -524,6 +539,9 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 	{"sndsamplerate=", &BEL_ST_ParseSetting_SndSampleRate},
 	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
 	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
+#ifdef BE_ST_ENABLE_SETTING_SB
+	{"sbemu=", &BEL_ST_ParseSetting_SB},
+#endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	{"useresampler=", &BEL_ST_ParseSetting_UseResampler},
 #endif
@@ -626,6 +644,11 @@ void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.sndSampleRate = 48000; // 49716 may lead to unexpected behaviors on Android
 	g_refKeenCfg.sndSubSystem = true;
 	g_refKeenCfg.oplEmulation = true;
+#ifdef BE_ST_ENABLE_SETTING_SB
+	g_refKeenCfg.sb = SOUNDBLASTER_SB16;
+#else
+	g_refKeenCfg.sb = SOUNDBLASTER_OFF;
+#endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	g_refKeenCfg.useResampler = true;
 #endif
@@ -770,6 +793,9 @@ void BEL_ST_SaveConfig(void)
 	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
 	fprintf(fp, "sndsubsystem=%s\n", g_refKeenCfg.sndSubSystem ? "true" : "false");
 	fprintf(fp, "oplemulation=%s\n", g_refKeenCfg.oplEmulation ? "true" : "false");
+#ifdef BE_ST_ENABLE_SETTING_SB
+	fprintf(fp, "sbemu=%s\n", g_be_setting_sb_vals[g_refKeenCfg.sb]);
+#endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	fprintf(fp, "useresampler=%s\n", g_refKeenCfg.useResampler ? "true" : "false");
 #endif

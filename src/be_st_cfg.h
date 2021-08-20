@@ -44,6 +44,9 @@ typedef enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } VSyncSettingType;
 typedef enum { SCALE_ASPECT, SCALE_FILL } ScaleTypeSettingType;
 typedef enum { TOUCHINPUT_AUTO, TOUCHINPUT_OFF, TOUCHINPUT_FORCED } TouchInputSettingType;
 typedef enum { MOUSEGRAB_AUTO, MOUSEGRAB_OFF, MOUSEGRAB_COMMONLY } MouseGrabSettingType;
+typedef enum {
+	SOUNDBLASTER_OFF, SOUNDBLASTER_SB, SOUNDBLASTER_SBPRO, SOUNDBLASTER_SB16
+} SoundBlasterSettingType;
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
 #define LAUNCHER_EXE_ARGS_BUFFERLEN 80
@@ -81,6 +84,7 @@ typedef struct
 	int sndSampleRate;
 	bool sndSubSystem;
 	bool oplEmulation;
+	SoundBlasterSettingType sb;
 #ifndef REFKEEN_RESAMPLER_NONE
 	bool useResampler;
 #endif

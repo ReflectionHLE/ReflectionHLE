@@ -428,7 +428,13 @@ static const char *g_be_soundsSettingsChoices_sndSampleRate[] = {"8000","11025",
 
 BEMENUITEM_DEF_SLIDER(g_beSoundSettingsMenuItem_SndSampleRate, "Sound sample rate\n(in Hz)", g_be_soundsSettingsChoices_sndSampleRate)
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSubSystem, "Enable sound subsystem", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_OPLEmulation, "Enable OPL emulation", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_OPLEmulation, "OPL emulation", g_be_settingsChoices_boolean)
+
+#ifdef BE_ST_ENABLE_SETTING_SB
+static const char *g_be_soundSettingsChoices_sbType[] = {"None", "SB", "SB Pro", "SB 16"};
+
+BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SB, "Sound Blaster emulation", g_be_soundSettingsChoices_sbType)
+#endif
 
 #ifndef REFKEEN_RESAMPLER_NONE
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_UseResampler, "Use resampler", g_be_settingsChoices_boolean)
@@ -438,6 +444,9 @@ static BEMenuItem *g_beSoundSettingsMenuItems[] = {
 	&g_beSoundSettingsMenuItem_SndSampleRate,
 	&g_beSoundSettingsMenuItem_SndSubSystem,
 	&g_beSoundSettingsMenuItem_OPLEmulation,
+#ifdef BE_ST_ENABLE_SETTING_SB
+	&g_beSoundSettingsMenuItem_SB,
+#endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	&g_beSoundSettingsMenuItem_UseResampler,
 #endif
@@ -859,6 +868,10 @@ void BE_ST_Launcher_Prepare(void)
 	g_beSoundSettingsMenuItem_SndSubSystem.choice = g_refKeenCfg.sndSubSystem;
 	// Set OPLEmulation value
 	g_beSoundSettingsMenuItem_OPLEmulation.choice = g_refKeenCfg.oplEmulation;
+#ifdef BE_ST_ENABLE_SETTING_SB
+	// Set SB value
+	g_beSoundSettingsMenuItem_SB.choice = g_refKeenCfg.sb;
+#endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	// Set UseResampler value
 	g_beSoundSettingsMenuItem_UseResampler.choice = g_refKeenCfg.useResampler;
@@ -1024,6 +1037,9 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.sndSampleRate = g_be_soundsSettingsChoices_sndSampleRateVals[g_beSoundSettingsMenuItem_SndSampleRate.choice];
 	g_refKeenCfg.sndSubSystem = g_beSoundSettingsMenuItem_SndSubSystem.choice;
 	g_refKeenCfg.oplEmulation = g_beSoundSettingsMenuItem_OPLEmulation.choice;
+#ifdef BE_ST_ENABLE_SETTING_SB
+	g_refKeenCfg.sb = (SoundBlasterSettingType)g_beSoundSettingsMenuItem_SB.choice;
+#endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	g_refKeenCfg.useResampler = g_beSoundSettingsMenuItem_UseResampler.choice;
 #endif

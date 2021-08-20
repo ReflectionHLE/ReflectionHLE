@@ -730,6 +730,7 @@ SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 }
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 
+#if 0
 ///////////////////////////////////////////////////////////////////////////
 //
 //	SDL_CheckSB() - Checks to see if a SoundBlaster resides at a
@@ -739,8 +740,6 @@ SDL_PositionSBP(id0_int_t leftpos,id0_int_t rightpos)
 static id0_boolean_t
 SDL_CheckSB(id0_int_t port)
 {
-	return (true); // TODO (REFKEEN) make this configurable later
-#if 0
 	id0_int_t	i;
 
 	sbLocation = port << 4;		// Initialize stuff for later use
@@ -779,8 +778,8 @@ asm	loop usecloop
 	}
 	sbLocation = -1;						// Retry count exceeded - fail
 	return(false);
-#endif
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -793,6 +792,9 @@ asm	loop usecloop
 static id0_boolean_t
 SDL_DetectSoundBlaster(id0_int_t port)
 {
+	// REFKEEN - Just ask if we have any kind of SB emulation
+	return BE_ST_IsEmulatedSBReady();
+#if 0
 	id0_int_t	i;
 
 	if (port == 0)					// If user specifies default, use 2
@@ -825,6 +827,7 @@ SDL_DetectSoundBlaster(id0_int_t port)
 	}
 	else
 		return(SDL_CheckSB(port));	// User specified address or default
+#endif
 }
 
 // *** ALPHA RESTORATION ***

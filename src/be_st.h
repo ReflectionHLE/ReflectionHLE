@@ -279,6 +279,7 @@ void BE_ST_StopDigiAudioInt(void);
 void BE_ST_LockAudioRecursively(void);
 void BE_ST_UnlockAudioRecursively(void);
 bool BE_ST_IsEmulatedOPLChipReady(void);
+bool BE_ST_IsEmulatedSBReady(void);
 bool BE_ST_IsEmulatedSBProReady(void);
 // WARNING about using BE_ST_PCSpeaker*:
 //
@@ -304,24 +305,13 @@ static inline void BE_ST_SetDigiSoundFreqFromSBTimeValue(uint8_t timevalue)
 	BE_ST_SetDigiSoundFreq(1000000 / (256 - timevalue));
 }
 
-// Sets digitized sound stereo channel volumes in the range of 0 to 1
-void BE_ST_SetDigiSoundVolumes(float lvol, float rvol);
-// A wrapper over BE_ST_SetDigiSoundVolumes which is used
-// for setting the volumes as done for the SB Pro in Wolf3D.
+// This is used for setting digitized sound volumes for
+// stereo panning, as done for the SB Pro or SB 16 in Wolf3D.
 // Two 4-bit volumes in the range 0-15 should be packed into a byte.
-static inline void BE_ST_SetDigiSBProSoundVolumes(uint8_t volBits)
-{
-	BE_ST_SetDigiSoundVolumes(((volBits>>4)*(volBits>>4))/225.0f, ((volBits&15)*(volBits&15))/225.0f);
-}
+void BE_ST_SetDigiSBProSoundVolumes(uint8_t volBits);
 
 // Same but for getting the volumes
-void BE_ST_GetDigiSoundVolumes(float *lvol, float *rvol);
-static inline uint8_t BE_ST_GetDigiSBProSoundVolumes(void)
-{
-	float lvol, rvol;
-	BE_ST_GetDigiSoundVolumes(&lvol, &rvol);
-	return ((int)(sqrt(lvol)*15.0 + 0.5) << 4) | ((int)(sqrt(rvol)*15.0 + 0.5));
-}
+uint8_t BE_ST_GetDigiSBProSoundVolumes(void);
 
 void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits);
 void BE_ST_StopSoundEffect(void);

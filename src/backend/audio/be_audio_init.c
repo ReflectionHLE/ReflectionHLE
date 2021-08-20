@@ -73,7 +73,8 @@ void BE_ST_InitAudio(void)
 	}
 
 	if (((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI_REQUIRED) == BE_AUDIO_DEVICE_DIGI_REQUIRED) ||
-	    (g_sdlAudioSubsystemUp && ((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI) == BE_AUDIO_DEVICE_DIGI)))
+	    (g_sdlAudioSubsystemUp && (g_refKeenCfg.sb != SOUNDBLASTER_OFF) &&
+	     ((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI) == BE_AUDIO_DEVICE_DIGI)))
 		BEL_ST_SetDigiMixerSource(
 			BEL_ST_AudioMixerAddSource(
 				8000,
