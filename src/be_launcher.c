@@ -55,7 +55,15 @@
 #define BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND (2*(BE_LAUNCHER_PIX_WIDTH-1)/3-2*BE_MENU_CHAR_WIDTH)
 #define BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS (BE_LAUNCHER_SELECTION_LABEL_PIX_XPOS_UPPERBOUND+BE_MENU_CHAR_WIDTH)
 #define BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS (BE_LAUNCHER_PIX_WIDTH-1-BE_MENU_ITEM_MIN_TEXT_BORDER_PIX_SPACING-BE_MENU_CHAR_WIDTH)
-#define BE_LAUNCHER_SELECTION_BOX_PIX_XPOS (BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS-3)
+
+#define BE_LAUNCHER_BOX_PIX_XPOS (BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS-3)
+
+#define BE_LAUNCHER_SLIDER_PIX_XPOS (BE_LAUNCHER_BOX_PIX_XPOS+2)
+#define BE_LAUNCHER_SLIDER_PIX_WIDTH \
+	(BE_LAUNCHER_PIX_WIDTH - BE_LAUNCHER_BOX_PIX_XPOS - \
+	 2 * (BE_LAUNCHER_SLIDER_PIX_XPOS - BE_LAUNCHER_BOX_PIX_XPOS))
+#define BE_LAUNCHER_SLIDER_PIX_HEIGHT 12
+#define BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH BE_MENU_ITEM_MIN_INTERNAL_PIX_HEIGHT
 
 #define BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD 8 // Moving the pointer less than that leads to no effect
 
@@ -80,14 +88,17 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 	int noOfLabelLines = 1;
 
 	// A minor calculation and verification
-	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) || (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION))
+	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) ||
+	    (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) ||
+	    (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION) ||
+	    (menuItem->type == BE_MENUITEM_TYPE_SLIDER))
 	{
 		const char **choicePtr;
 		for (choicePtr = menuItem->choices; *choicePtr; ++choicePtr)
 		{
 			if (strlen(*choicePtr) >= (BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS-BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS)/BE_MENU_CHAR_WIDTH-1)
 			{
-				snprintf(error, sizeof(error), "BE_Launcher_PrepareMenuItem: Too long selection choice!\n%s", *choicePtr);
+				snprintf(error, sizeof(error), "BE_Launcher_PrepareMenuItem: Too long selection/slider choice!\n%s", *choicePtr);
 				BE_ST_ExitWithErrorMsg(error);
 			}
 		}
@@ -183,8 +194,10 @@ void BE_Launcher_PrepareMenu(BEMenu *menu)
 }
 
 
-// NOTE: Border doesn't include bottom-most row
-static void BEL_Launcher_DrawTopRect(int x, int y, int width, int height, int frameColor, int innerColor, int yFirstBound, int yEndBound)
+static void BEL_Launcher_DrawRect(
+	int x, int y, int width, int height,
+	int frameColor, int innerColor, int yFirstBound, int yEndBound,
+	bool drawBottomSeg)
 {
 	// Should use g_be_launcher_screenPtr wisely so we don't go out of buffer's bounds
 	// (just cause this can lead to undefined behaviors even without dereferencing)
@@ -208,6 +221,8 @@ static void BEL_Launcher_DrawTopRect(int x, int y, int width, int height, int fr
 	if (y < yFirstBound)
 		y = yFirstBound;
 
+	if (drawBottomSeg)
+		--yFirstBound;
 	uint8_t *pixPtr;
 	for (pixPtr = g_be_launcher_screenPtr + x + y*BE_LAUNCHER_PIX_WIDTH; y < actualEndY; ++y, pixPtr += BE_LAUNCHER_PIX_WIDTH)
 	{
@@ -215,7 +230,27 @@ static void BEL_Launcher_DrawTopRect(int x, int y, int width, int height, int fr
 		memset(pixPtr+1, innerColor, width-2);
 		*(pixPtr+width-1) = frameColor;
 	}
+	if (drawBottomSeg)
+		memset(pixPtr, frameColor, width);
+}
 
+// NOTE: Border doesn't include bottom-most row
+static void BEL_Launcher_DrawTopRect(
+	int x, int y, int width, int height,
+	int frameColor, int innerColor, int yFirstBound, int yEndBound)
+{
+	BEL_Launcher_DrawRect(
+		x, y, width, height,
+		frameColor, innerColor, yFirstBound, yEndBound, false);
+}
+
+static void BEL_Launcher_DrawBorderedRect(
+	int x, int y, int width, int height,
+	int frameColor, int innerColor, int yFirstBound, int yEndBound)
+{
+	BEL_Launcher_DrawRect(
+		x, y, width, height,
+		frameColor, innerColor, yFirstBound, yEndBound, true);
 }
 
 static void BEL_Launcher_DrawVertLine(int x, int y, int height, int color, int yFirstBound, int yEndBound)
@@ -331,6 +366,7 @@ static void BEL_Launcher_DrawMenuItemString(const char *str, int selectionYPos, 
 	case BE_MENUITEM_TYPE_SELECTION:
 	case BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER:
 	case BE_MENUITEM_TYPE_DYNAMIC_SELECTION:
+	case BE_MENUITEM_TYPE_SLIDER:
 		labelColor = (g_be_launcher_selectedMenuItemPtr && (menuItem == *g_be_launcher_selectedMenuItemPtr)) ? 15 : 12;
 		break;
 	default:
@@ -341,13 +377,42 @@ static void BEL_Launcher_DrawMenuItemString(const char *str, int selectionYPos, 
 
 	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER))
 	{
-		BEL_Launcher_DrawVertLine(BE_LAUNCHER_SELECTION_BOX_PIX_XPOS, menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll, menuItem->yPosPastEnd - menuItem->yPosStart, 2, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
+		BEL_Launcher_DrawVertLine(BE_LAUNCHER_BOX_PIX_XPOS, menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll, menuItem->yPosPastEnd - menuItem->yPosStart, 2, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 		BEL_Launcher_DrawString("\xAE", BE_LAUNCHER_SELECTION_LARROW_PIX_XPOS, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 		BEL_Launcher_DrawString("\xAF", BE_LAUNCHER_SELECTION_RARROW_PIX_XPOS, menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll, 14, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 	}
 
 	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) || (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION))
 		BEL_Launcher_DrawMenuItemString(menuItem->choices[menuItem->choice], menuItem->selectionYPos, 14);
+
+	if (menuItem->type == BE_MENUITEM_TYPE_SLIDER)
+	{
+		int offset = 0;
+		if (menuItem->nOfChoices > 1)
+			offset = menuItem->choice * \
+				(BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) / \
+				(menuItem->nOfChoices - 1);
+
+		BEL_Launcher_DrawVertLine(BE_LAUNCHER_BOX_PIX_XPOS, menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll, menuItem->yPosPastEnd - menuItem->yPosStart, 2, BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
+
+		BEL_Launcher_DrawBorderedRect(
+			BE_LAUNCHER_SLIDER_PIX_XPOS,
+			menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll - 1,
+			BE_LAUNCHER_SLIDER_PIX_WIDTH,
+			BE_LAUNCHER_SLIDER_PIX_HEIGHT,
+			14, 8, 
+			BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
+		
+		BEL_Launcher_DrawBorderedRect(
+			BE_LAUNCHER_SLIDER_PIX_XPOS + offset,
+			menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll - 1,
+			BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH,
+			BE_LAUNCHER_SLIDER_PIX_HEIGHT,
+			14, 4, 
+			BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
+		
+		BEL_Launcher_DrawMenuItemString(menuItem->choices[menuItem->choice], menuItem->selectionYPos - BE_MENU_CHAR_HEIGHT - 2, 14);
+	}
 
 	// HACK - Don't forget this!! (bottom of menu title)
 	if (menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll < BE_MENU_FIRST_ITEM_PIX_YPOS)
@@ -449,7 +514,10 @@ void BE_Launcher_HandleInput_ButtonLeft(void)
 		return;
 
 	BEMenuItem *menuItem = *g_be_launcher_selectedMenuItemPtr;
-	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER))
+	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) ||
+	    (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) ||
+	    ((menuItem->type == BE_MENUITEM_TYPE_SLIDER) &&
+	     (menuItem->choice > 0)))
 	{
 		g_be_launcher_wasAnySettingChanged = true;
 
@@ -472,7 +540,10 @@ void BE_Launcher_HandleInput_ButtonRight(void)
 		return;
 
 	BEMenuItem *menuItem = *g_be_launcher_selectedMenuItemPtr;
-	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER))
+	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) ||
+	    (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) ||
+	    ((menuItem->type == BE_MENUITEM_TYPE_SLIDER) &&
+	     (menuItem->choice < menuItem->nOfChoices - 1)))
 	{
 		g_be_launcher_wasAnySettingChanged = true;
 
@@ -672,6 +743,35 @@ static int g_be_launcher_pointerymotionrateper100ms;
 static uint32_t g_be_launcher_lastaccelarationupdateticks;
 static uint32_t g_be_launcher_lastrefreshvscrollticks;
 
+static void BEL_Launcher_HandleSliderUse_WithPointer(
+	int xpos, int ypos, BEMenuItem *menuItem)
+{
+	if (xpos < BE_LAUNCHER_SLIDER_PIX_XPOS ||
+	    ypos < menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll - 1 ||
+	    ypos >= menuItem->selectionYPos - g_be_launcher_currMenu->currPixYScroll - 1 + BE_LAUNCHER_SLIDER_PIX_HEIGHT)
+		return;
+
+	if (menuItem->nOfChoices == 1)
+		return;
+
+#if 1 
+	int offset = xpos - BE_LAUNCHER_SLIDER_PIX_XPOS;
+	menuItem->choice =
+		((2*offset - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) * (menuItem->nOfChoices-1) + \
+		 BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) / \
+		(2 * (BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH));
+#else
+	int offset = xpos - BE_LAUNCHER_SLIDER_PIX_XPOS;
+	offset +=
+		abs((BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) / \
+		    (menuItem->nOfChoices - 1) - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) / 2;
+	menuItem->choice =
+		offset * (menuItem->nOfChoices - 1) / \
+		(BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH);
+#endif
+	menuItem->choice = BE_Cross_TypedClamp(int, menuItem->choice, 0, menuItem->nOfChoices - 1);
+}
+
 void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinms)
 {
 	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
@@ -701,6 +801,11 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinm
 
 				if (prevMenuItemPP)
 					BEL_Launcher_DrawMenuItem(*prevMenuItemPP);
+
+				if ((*menuItemPP)->type == BE_MENUITEM_TYPE_SLIDER)
+					// ypos was changed above
+					BEL_Launcher_HandleSliderUse_WithPointer(xpos, g_be_launcher_lastpointery, *menuItemPP);
+
 				BEL_Launcher_DrawMenuItem(*menuItemPP);
 				return;
 			}
@@ -743,7 +848,7 @@ void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos, uint32_t ticksin
 		case BE_MENUITEM_TYPE_SELECTION:
 		case BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER:
 			// FIXME Move these to another places? (don't verify ptr is ok twice)
-			if ((g_be_launcher_startpointerx >= BE_LAUNCHER_SELECTION_BOX_PIX_XPOS) && (g_be_launcher_startpointerx < BE_LAUNCHER_SELECTION_BOX_PIX_XPOS + (BE_LAUNCHER_PIX_WIDTH-BE_LAUNCHER_SELECTION_BOX_PIX_XPOS)/2))
+			if ((g_be_launcher_startpointerx >= BE_LAUNCHER_BOX_PIX_XPOS) && (g_be_launcher_startpointerx < BE_LAUNCHER_BOX_PIX_XPOS + (BE_LAUNCHER_PIX_WIDTH-BE_LAUNCHER_BOX_PIX_XPOS)/2))
 				BE_Launcher_HandleInput_ButtonLeft();
 			else
 				BE_Launcher_HandleInput_ButtonRight();
