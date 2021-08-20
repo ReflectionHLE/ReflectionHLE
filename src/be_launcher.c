@@ -74,6 +74,7 @@ static uint8_t *g_be_launcher_screenPtr;
 
 /*static*/ BEMenu *g_be_launcher_currMenu;
 static BEMenuItem **g_be_launcher_selectedMenuItemPtr;
+static BEMenuItem **g_be_launcher_trackedSliderMenuItemPtr;
 
 bool g_be_launcher_wasAnySettingChanged;
 
@@ -459,6 +460,7 @@ static void BEL_Launcher_DrawMenuItems(BEMenu *menu)
 {
 	g_be_launcher_currMenu = menu;
 	g_be_launcher_selectedMenuItemPtr = menu->menuItems;
+	g_be_launcher_trackedSliderMenuItemPtr = NULL;
 	memset(g_be_launcher_screenPtr, 0, BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT); // Clear screen
 	BEL_Launcher_DrawMenuTitleItem(menu);
 	BEL_Launcher_DrawMenuItems(menu);
@@ -754,25 +756,17 @@ static void BEL_Launcher_HandleSliderUse_WithPointer(
 	if (menuItem->nOfChoices == 1)
 		return;
 
-#if 1 
 	int offset = xpos - BE_LAUNCHER_SLIDER_PIX_XPOS;
 	menuItem->choice =
 		((2*offset - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) * (menuItem->nOfChoices-1) + \
 		 BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) / \
 		(2 * (BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH));
-#else
-	int offset = xpos - BE_LAUNCHER_SLIDER_PIX_XPOS;
-	offset +=
-		abs((BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) / \
-		    (menuItem->nOfChoices - 1) - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH) / 2;
-	menuItem->choice =
-		offset * (menuItem->nOfChoices - 1) / \
-		(BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH);
-#endif
 	menuItem->choice = BE_Cross_TypedClamp(int, menuItem->choice, 0, menuItem->nOfChoices - 1);
+
+	BEL_Launcher_DrawMenuItem(menuItem);
 }
 
-void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinms)
+void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinms, bool isMouse)
 {
 	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
 	g_be_launcher_vscroll_currrateper100ms = 0;
@@ -789,6 +783,7 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinm
 	g_be_launcher_lastpointeryforcurrentratemeasurement = ypos;
 	g_be_launcher_lastpointerymeasurementticksinms = ticksinms;
 	g_be_launcher_pointerymotionrateper100ms = 0;
+	g_be_launcher_trackedSliderMenuItemPtr = NULL;
 
 	if (!g_be_launcher_back_button_pressed && !g_be_launcher_search_button_pressed && (xpos >= 0) && (xpos < BE_LAUNCHER_PIX_WIDTH) && (ypos >= BE_MENU_FIRST_ITEM_PIX_YPOS) && (ypos < BE_LAUNCHER_PIX_HEIGHT))
 	{
@@ -802,9 +797,18 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinm
 				if (prevMenuItemPP)
 					BEL_Launcher_DrawMenuItem(*prevMenuItemPP);
 
-				if ((*menuItemPP)->type == BE_MENUITEM_TYPE_SLIDER)
-					// ypos was changed above
-					BEL_Launcher_HandleSliderUse_WithPointer(xpos, g_be_launcher_lastpointery, *menuItemPP);
+				if (isMouse &&
+				    (*menuItemPP)->type == BE_MENUITEM_TYPE_SLIDER &&
+				    (xpos >= BE_LAUNCHER_SLIDER_PIX_XPOS))
+				{
+					g_be_launcher_trackedSliderMenuItemPtr = menuItemPP;
+					g_be_launcher_pointermotionactuallystarted = true;
+					// ypos was changed
+					BEL_Launcher_HandleSliderUse_WithPointer(
+						xpos, g_be_launcher_startpointery,
+						*menuItemPP);
+					return;
+				}
 
 				BEL_Launcher_DrawMenuItem(*menuItemPP);
 				return;
@@ -836,6 +840,12 @@ void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos, uint32_t ticksin
 		g_be_launcher_search_button_pressed = false;
 		BEL_Launcher_DrawSearchButtonLabel(g_be_launcher_search_button_pressed);
 		BE_Launcher_HandleInput_ButtonSearch();
+		return;
+	}
+
+	if (g_be_launcher_trackedSliderMenuItemPtr)
+	{
+		g_be_launcher_trackedSliderMenuItemPtr = NULL;
 		return;
 	}
 
@@ -882,6 +892,14 @@ void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinm
 				if ((xpos >= g_be_launcher_startpointerx-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (xpos <= g_be_launcher_startpointerx+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD))
 					return;
 			}
+			else if (g_be_launcher_selectedMenuItemPtr &&
+			         (*g_be_launcher_selectedMenuItemPtr)->type == BE_MENUITEM_TYPE_SLIDER &&
+				 (xpos >= BE_LAUNCHER_SLIDER_PIX_XPOS) &&
+			         ((xpos < g_be_launcher_startpointerx-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) ||
+			          (xpos > g_be_launcher_startpointerx+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD)))
+			{
+				g_be_launcher_trackedSliderMenuItemPtr = g_be_launcher_selectedMenuItemPtr;
+			}
 			else
 			{
 				if ((xpos >= -BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) && (xpos < BE_LAUNCHER_PIX_WIDTH+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD))
@@ -896,6 +914,12 @@ void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinm
 
 	g_be_launcher_search_button_pressed = false;
 	BEL_Launcher_DrawSearchButtonLabel(g_be_launcher_search_button_pressed);
+
+	if (g_be_launcher_trackedSliderMenuItemPtr)
+	{
+		BEL_Launcher_HandleSliderUse_WithPointer(xpos, ypos, *g_be_launcher_trackedSliderMenuItemPtr);
+		return;
+	}
 
 	g_be_launcher_selectedMenuItemPtr = NULL;
 	g_be_launcher_vscroll_currrateper100ms = 0;

@@ -98,7 +98,7 @@ void BE_Launcher_HandleInput_ButtonBack(void);
 void BE_Launcher_HandleInput_ButtonSearch(void);
 void BE_Launcher_HandleInput_ASCIIChar(char ch);
 
-void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinms);
+void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinms, bool isMouse);
 void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos, uint32_t ticksinms);
 void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinms);
 void BE_Launcher_HandleInput_PointerVScroll(int ydiff, uint32_t ticksinms);

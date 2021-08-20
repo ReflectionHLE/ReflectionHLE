@@ -2551,7 +2551,7 @@ static void BEL_ST_Launcher_CheckCommonPointerPressCases(BE_ST_TouchID touchId, 
 	else
 	{
 		BEL_ST_Launcher_NormalizePos(&x, &y);
-		BE_Launcher_HandleInput_PointerSelect(x, y, ticksBeforePoll);
+		BE_Launcher_HandleInput_PointerSelect(x, y, ticksBeforePoll, touchId == BE_ST_MouseTouchID);
 	}
 }
 
