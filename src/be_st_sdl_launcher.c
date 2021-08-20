@@ -123,11 +123,6 @@ static bool g_sdlLauncherTriggerBinaryStates[2];
 static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
 static bool g_sdlLauncherGfxCacheMarked = false;
 
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
-// Let's disable this for now since it may lead to problems on certain platforms, but keep the cfg field
-//#define BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-#endif
-
 #define BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN 10
 
 /*** Convenience macros - Note that the label *must* be a C string literal ***/
@@ -363,14 +358,6 @@ typedef struct {
 	int width, height;
 } BEMenuItemScreenResPair;
 
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-static BEMenuItemScreenResPair g_be_videoSettingsChoices_fullResolutionsVals[BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS];
-
-static char g_be_videoSettingsChoices_fullResolutionsStrs[BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS][BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN];
-// Need to add an additional desktop/default entry, plus NULL terminator
-static const char *g_be_videoSettingsChoices_fullResolutions[BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS+2];
-#endif
-
 static const char *g_be_videoSettingsChoices_displayNums[] = {"0","1","2","3","4","5","6","7",NULL};
 
 #define BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS 10
@@ -386,19 +373,10 @@ static const char *g_be_videoSettingsChoices_vSync[] = {"Auto","Off","On",NULL};
 static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default","Fullscreen","Software",NULL};
 #endif
 
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP);
-#endif
-
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Fullscreen, "Fullscreen", g_be_settingsChoices_boolean)
 #endif
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_FullscreenRes, "Fullscreen resolution", g_be_videoSettingsChoices_fullResolutions)
-BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums, &BEL_ST_Launcher_Handler_DisplayNum)
-#else
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums)
-#endif
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_RememberDisplayNum, "Remember last used display number", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_SDLRenderer, "SDL renderer", g_be_videoSettingsChoices_sdlRendererDrivers)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
@@ -419,9 +397,6 @@ BEMENUITEM_DEF_STATIC(g_beVideoSettingsMenuItem_SoftScalingComment,
 static BEMenuItem *g_beVideoSettingsMenuItems[] = {
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	&g_beVideoSettingsMenuItem_Fullscreen,
-#endif
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-	&g_beVideoSettingsMenuItem_FullscreenRes,
 #endif
 	&g_beVideoSettingsMenuItem_DisplayNum,
 	&g_beVideoSettingsMenuItem_RememberDisplayNum,
@@ -757,9 +732,6 @@ BEMenu g_beQuitConfirmMenu = {
 	// Ignore the rest
 };
 
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-static void BEL_ST_Launcher_ResetDisplayModes(int displayNum);
-#endif
 static void BEL_ST_Launcher_SetGfxOutputRects(void);
 
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void);
@@ -839,10 +811,6 @@ void BE_ST_Launcher_Prepare(void)
 	g_beVideoSettingsMenuItem_DisplayNum.choice = g_refKeenCfg.displayNum;
 	if (g_beVideoSettingsMenuItem_DisplayNum.choice >= nOfDisplays)
 		g_beVideoSettingsMenuItem_DisplayNum.choice = 0;
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-	/*** Prepare fullscreen resolutions list ***/
-	BEL_ST_Launcher_ResetDisplayModes(g_refKeenCfg.displayNum);
-#endif
 	// Set this related value
 	g_beVideoSettingsMenuItem_RememberDisplayNum.choice = g_refKeenCfg.rememberDisplayNum;
 	/*** Prepare SDL renderer drivers list ***/
@@ -1043,19 +1011,6 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.displayNum = g_beVideoSettingsMenuItem_DisplayNum.choice;
 	g_refKeenCfg.rememberDisplayNum = g_beVideoSettingsMenuItem_RememberDisplayNum.choice;
 
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-	if (g_beVideoSettingsMenuItem_FullscreenRes.choice > 0)
-	{
-		g_refKeenCfg.fullWidth = g_be_videoSettingsChoices_fullResolutionsVals[g_beVideoSettingsMenuItem_FullscreenRes.choice - 1].width;
-		g_refKeenCfg.fullHeight = g_be_videoSettingsChoices_fullResolutionsVals[g_beVideoSettingsMenuItem_FullscreenRes.choice - 1].height;
-	}
-	else
-	{
-		g_refKeenCfg.fullWidth = 0;
-		g_refKeenCfg.fullHeight = 0;
-	}
-#endif
-
 	g_refKeenCfg.sdlRendererDriver = g_beVideoSettingsMenuItem_SDLRenderer.choice - 1;
 	g_refKeenCfg.isBilinear = g_beVideoSettingsMenuItem_Bilinear.choice;
 	g_refKeenCfg.scaleType = (ScaleTypeSettingType)g_beVideoSettingsMenuItem_ScaleType.choice;
@@ -1201,40 +1156,6 @@ void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfEx
 }
 
 
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-static void BEL_ST_Launcher_ResetDisplayModes(int displayNum)
-{
-	int nOfDisplayModes = SDL_GetNumDisplayModes(displayNum);
-	if (nOfDisplayModes > BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS)
-		nOfDisplayModes = BE_LAUNCHER_MAX_NUM_OF_RESOLUTIONS;
-	g_beVideoSettingsMenuItem_FullscreenRes.choices[0] = "Desktop";
-	g_beVideoSettingsMenuItem_FullscreenRes.choice = 0;
-	int actualCounter = 0;
-	for (int i = 0; i < nOfDisplayModes; ++i)
-	{
-		SDL_DisplayMode mode;
-		SDL_GetDisplayMode(displayNum, i, &mode);
-		// Make sure there's no duplication (this is a possibility, at least when limiting ourselves just to width,height pairs)
-		int j;
-		for (j = 0; j < actualCounter; ++j)
-			if ((g_be_videoSettingsChoices_fullResolutionsVals[j].width == mode.w) && (g_be_videoSettingsChoices_fullResolutionsVals[j].height == mode.h))
-				break;
-		if (j < actualCounter)
-			continue; // Skip duplicated entry
-
-		g_be_videoSettingsChoices_fullResolutionsVals[actualCounter].width = mode.w;
-		g_be_videoSettingsChoices_fullResolutionsVals[actualCounter].height = mode.h;
-		snprintf(g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter], sizeof(g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter]), "%dx%d", mode.w, mode.h);
-		g_beVideoSettingsMenuItem_FullscreenRes.choices[actualCounter+1] =  g_be_videoSettingsChoices_fullResolutionsStrs[actualCounter];
-		if ((g_refKeenCfg.fullWidth == mode.w) && (g_refKeenCfg.fullHeight == mode.h))
-			g_beVideoSettingsMenuItem_FullscreenRes.choice = actualCounter+1;
-
-		++actualCounter;
-	}
-	g_beVideoSettingsMenuItem_FullscreenRes.choices[actualCounter+1] = NULL;
-}
-#endif
-
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void)
 {
 	// HACK
@@ -1370,14 +1291,6 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 
 void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem);
 
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-static void BEL_ST_Launcher_Handler_DisplayNum(BEMenuItem **menuItemP)
-{
-	BEL_ST_Launcher_ResetDisplayModes((*menuItemP)->choice);
-	BEL_Launcher_DrawMenuItem(&g_beVideoSettingsMenuItem_FullscreenRes);
-}
-#endif
-
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP)
 {
@@ -1401,16 +1314,8 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 				extern BEMenu *g_be_launcher_currMenu;
 
 				g_beVideoSettingsMenuItem_DisplayNum.choice = displayNum;
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-				BEL_ST_Launcher_ResetDisplayModes((*menuItemP)->choice);
-#endif
 				if (g_be_launcher_currMenu == &g_beVideoSettingsMenu)
-				{
-#ifdef BE_LAUNCHER_ENABLE_FULLSCREEN_RES_MENUITEM
-					BEL_Launcher_DrawMenuItem(&g_beVideoSettingsMenuItem_FullscreenRes);
-#endif
 					BEL_Launcher_DrawMenuItem(&g_beVideoSettingsMenuItem_DisplayNum);
-				}
 			}
 	}
 
