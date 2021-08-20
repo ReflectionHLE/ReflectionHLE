@@ -376,7 +376,7 @@ static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default","
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Fullscreen, "Fullscreen", g_be_settingsChoices_boolean)
 #endif
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums)
+BEMENUITEM_DEF_SLIDER(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_RememberDisplayNum, "Remember last used display number", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_SDLRenderer, "SDL renderer", g_be_videoSettingsChoices_sdlRendererDrivers)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
