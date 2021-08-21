@@ -908,7 +908,7 @@ SDL_StartSB(void)
 		return;
 #endif
 
-#if 0 // REFKEEN (TODO): Simply inspect the digitized sounds' volumes for now
+#if 0
 	// Check to see if this is a SB Pro
 	sbOut(sbpMixerAddr,sbpmFMVol);
 	sbpOldFMMix = sbIn(sbpMixerData);
@@ -926,12 +926,19 @@ SDL_StartSB(void)
 #endif
 	if (BE_ST_IsEmulatedSBProReady())
 	{
-#if 0 // REFKEEN (TODO)
+#ifdef GAMEVER_NOAH3D
+		BE_ST_SetLineInSBProSoundVolumes(0xa5);
+#endif
+#if 0
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 		sbOut(sbpMixerAddr,0x26);
 #endif
 		// Boost FM output levels to be equivilent with digitized output
+#endif
+		sbpOldFMMix = BE_ST_GetFMSBProSoundVolumes();
+		BE_ST_SetFMSBProSoundVolumes(0xff);
+#if 0
 		sbOut(sbpMixerData,0xff);
 		test = sbIn(sbpMixerData);
 		if (test == 0xff)
@@ -968,8 +975,9 @@ SDL_ShutSB(void)
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
 	if (SBProPresent)
 	{
-#if 0 // REFKEEN (TODO): Don't do so for now
 		// Restore FM output levels (SB Pro)
+		BE_ST_SetFMSBProSoundVolumes(sbpOldFMMix);
+#if 0
 		sbOut(sbpMixerAddr,sbpmFMVol);
 		sbOut(sbpMixerData,sbpOldFMMix);
 #endif
