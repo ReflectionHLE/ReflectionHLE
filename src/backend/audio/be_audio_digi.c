@@ -118,43 +118,14 @@ void BE_ST_SetDigiSoundFreq(int freq)
 	BE_ST_AudioMixerSetSourceFreq(g_sdlDigiMixerSource, freq);
 }
 
-static void BEL_ST_SetDigiSoundVolumes(float lvol, float rvol)
-{
-	if (g_refKeenCfg.sb < SOUNDBLASTER_SBPRO)
-	{
-		BE_Cross_LogMessage(
-			BE_LOG_MSG_NORMAL,
-			"BEL_ST_SetDigiSoundVolumes: Called without SB Pro features\n");
-		return;
-	}
-
-	BE_ST_LockAudioRecursively();
-	g_sdlDigiMixerSource->vol[0] = lvol;
-	g_sdlDigiMixerSource->vol[1] = rvol;
-	BE_ST_UnlockAudioRecursively();
-}
-
 void BE_ST_SetDigiSBProSoundVolumes(uint8_t volBits)
 {
-	uint8_t inVolBits = volBits;
-	if (g_refKeenCfg.sb < SOUNDBLASTER_SB16)
-		volBits |= 0x11;
-	BEL_ST_SetDigiSoundVolumes(
-		((volBits>>4)*(volBits>>4))/225.0f,
-		((volBits&15)*(volBits&15))/225.0f);
-}
-
-static void BEL_ST_GetDigiSoundVolumes(float *lvol, float *rvol)
-{
-	*lvol = g_sdlDigiMixerSource->vol[0];
-	*rvol = g_sdlDigiMixerSource->vol[1];
+	BEL_ST_SetSBProVolumesForSource(g_sdlDigiMixerSource, volBits);
 }
 
 uint8_t BE_ST_GetDigiSBProSoundVolumes(void)
 {
-	float lvol, rvol;
-	BEL_ST_GetDigiSoundVolumes(&lvol, &rvol);
-	return ((int)(sqrt(lvol)*15.0 + 0.5) << 4) | ((int)(sqrt(rvol)*15.0 + 0.5));
+	return BEL_ST_GetSBProVolumesFromSource(g_sdlDigiMixerSource);
 }
 
 void BEL_ST_GenDigiSamples(BE_ST_SndSample_T *stream, int length)

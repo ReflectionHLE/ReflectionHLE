@@ -58,4 +58,7 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 
 void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq);
 
+void BEL_ST_SetSBProVolumesForSource(BE_ST_AudioMixerSource *src, uint8_t volBits);
+uint8_t BEL_ST_GetSBProVolumesFromSource(const BE_ST_AudioMixerSource *src);
+
 #endif

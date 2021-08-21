@@ -133,6 +133,48 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 	return src;
 }
 
+static void BEL_ST_SetVolumesForSource(BE_ST_AudioMixerSource *src, float lvol, float rvol)
+{
+	if (!src)
+		BE_ST_ExitWithErrorMsg("BEL_ST_SetVolumesForSource: Called with null source!");
+
+	if (g_refKeenCfg.sb < SOUNDBLASTER_SBPRO)
+	{
+		BE_Cross_LogMessage(
+			BE_LOG_MSG_NORMAL,
+			"BEL_ST_SetDigiSoundVolumes: Called without SB Pro features\n");
+		return;
+	}
+
+	BE_ST_LockAudioRecursively();
+	src->vol[0] = lvol;
+	src->vol[1] = rvol;
+	BE_ST_UnlockAudioRecursively();
+}
+
+void BEL_ST_SetSBProVolumesForSource(BE_ST_AudioMixerSource *src, uint8_t volBits)
+{
+	uint8_t inVolBits = volBits;
+	if (g_refKeenCfg.sb < SOUNDBLASTER_SB16)
+		volBits |= 0x11;
+	BEL_ST_SetVolumesForSource(src,
+		((volBits>>4)*(volBits>>4))/225.0f,
+		((volBits&15)*(volBits&15))/225.0f);
+}
+
+static void BEL_ST_GetVolumesFromSource(const BE_ST_AudioMixerSource *src, float *lvol, float *rvol)
+{
+	*lvol = src->vol[0];
+	*rvol = src->vol[1];
+}
+
+uint8_t BEL_ST_GetSBProVolumesFromSource(const BE_ST_AudioMixerSource *src)
+{
+	float lvol, rvol;
+	BEL_ST_GetVolumesFromSource(src, &lvol, &rvol);
+	return ((int)(sqrt(lvol)*15.0 + 0.5) << 4) | ((int)(sqrt(rvol)*15.0 + 0.5));
+}
+
 void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 {
 	int samplesToGenerate = len;
