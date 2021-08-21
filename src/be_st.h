@@ -313,6 +313,13 @@ void BE_ST_SetDigiSBProSoundVolumes(uint8_t volBits);
 // Same but for getting the volumes
 uint8_t BE_ST_GetDigiSBProSoundVolumes(void);
 
+// Similar functions, but for the SB Pro's FM synthesis.
+void BE_ST_SetFMSBProSoundVolumes(uint8_t volBits);
+uint8_t BE_ST_GetFMSBProSoundVolumes(void);
+
+// Compatibility macro that was originally added for Super 3-D Noah's Ark
+#define BE_ST_SetLineInSBProSoundVolumes(volBits)
+
 void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits);
 void BE_ST_StopSoundEffect(void);
 // Safe alternatives for Borland's sound and nosound functions from Catacomb Abyss' gelib.c

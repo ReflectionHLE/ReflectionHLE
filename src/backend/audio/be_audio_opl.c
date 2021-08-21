@@ -54,6 +54,16 @@ void BEL_ST_SetOPLMixerSource(BE_ST_AudioMixerSource *src)
 	g_oplMixerSource = src;
 }
 
+void BE_ST_SetFMSBProSoundVolumes(uint8_t volBits)
+{
+	BEL_ST_SetSBProVolumesForSource(g_oplMixerSource, volBits);
+}
+
+uint8_t BE_ST_GetFMSBProSoundVolumes(void)
+{
+	return BEL_ST_GetSBProVolumesFromSource(g_oplMixerSource);
+}
+
 #define OPL_NUM_OF_SAMPLES 2048 // About 40ms of OPL sound data
 
 void BEL_ST_GenOPLSamples(BE_ST_SndSample_T *stream, int length)
