@@ -117,7 +117,7 @@ void BEL_ST_AudioMixerUpdateFromPITRateWord(int_fast32_t rateVal)
 }
 
 BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
-	int freq, int maxNumOfOutSamples,
+	int freq, int maxNumOfOutSamples, int userVolAsInt,
 	void (*genSamples)(BE_ST_SndSample_T *stream, int len))
 {
 	if (g_stAudioMixer.numSources == BE_ST_AUDIO_MIXER_MAX_SOURCES)
@@ -128,6 +128,8 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 	src->out.size = maxNumOfOutSamples;
 	src->in.buffer = src->out.buffer = 0;
 	src->vol[0] = src->vol[1] = 1.0;
+	src->userVol = (userVolAsInt == BE_AUDIO_VOL_MIN) ?
+	               0.0 : exp((userVolAsInt - BE_AUDIO_VOL_MAX)/4.0);
 
 	BE_ST_AudioMixerSetSourceFreq(src, freq);
 	return src;
@@ -297,11 +299,12 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 						continue;
 
 					if (channels == 1)
-						sums[0] += src->out.buffer[i] * ((src->vol[0] + src->vol[1]) / 2.0f);
+						sums[0] += src->out.buffer[i] * src->userVol *
+						           ((src->vol[0] + src->vol[1]) / 2.0f);
 					else
 					{
-						sums[0] += src->out.buffer[i] * src->vol[0];
-						sums[1] += src->out.buffer[i] * src->vol[1];
+						sums[0] += src->out.buffer[i] * src->userVol * src->vol[0];
+						sums[1] += src->out.buffer[i] * src->userVol * src->vol[1];
 					}
 				}
 				stream[0] = BEL_ST_SamplesSumClamp(sums[0]);

@@ -42,7 +42,7 @@ typedef struct BE_ST_AudioMixerSource
 	BESDLResamplingContext resamplingContext;
 	int numScaledSamplesToGenNextTime;
 	int freq;
-	float vol[2];
+	float vol[2], userVol;
 	bool skip;
 } BE_ST_AudioMixerSource;
 
@@ -53,7 +53,7 @@ void BEL_ST_AudioMixerUpdateFromPITRateWord(int_fast32_t rateVal);
 
 // Returns a pointer to a new source, which is invalidated after mixer shutdown
 BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
-	int freq, int maxNumOfOutSamples,
+	int freq, int maxNumOfOutSamples, int userVolAsInt,
 	void (*genSamples)(BE_ST_SndSample_T *stream, int len));
 
 void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq);

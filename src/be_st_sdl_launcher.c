@@ -132,6 +132,7 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 #define BEMENUITEM_DEF_HANDLER_LABELVAR(menuItemName, labelSize, handlerPtr) BEMENUITEM_DEF_LABELVAR(menuItemName, handlerPtr, NULL, NULL, labelSize, BE_MENUITEM_TYPE_HANDLER)
 #define BEMENUITEM_DEF_SELECTION_WITH_HANDLER(menuItemName, label, choices, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, NULL, label, BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER)
 #define BEMENUITEM_DEF_SLIDER(menuItemName, label, choices) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, choices, NULL, label, BE_MENUITEM_TYPE_SLIDER)
+#define BEMENUITEM_DEF_RANGE_SLIDER(menuItemName, label, nOfChoices) BEMENUITEM_DEF_GENERIC2(menuItemName, NULL, nOfChoices, NULL, label, BE_MENUITEM_TYPE_RANGE_SLIDER)
 #define BEMENUITEM_DEF_DYNAMIC_SELECTION(menuItemName, label, choices, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, NULL, label, BE_MENUITEM_TYPE_DYNAMIC_SELECTION)
 #define BEMENUITEM_DEF_STATIC(menuItemName, label) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, NULL, label, BE_MENUITEM_TYPE_STATIC)
 
@@ -139,6 +140,11 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 #define BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, menuPtr, label, type) \
 	static char menuItemName ## _label[] = label; \
 	static BEMenuItem menuItemName = {handlerPtr, choices, menuPtr, menuItemName ## _label, 0, 0, 0, 0, 0, 0, type};
+
+// Similar macro, but for BEMENUITEM_DEF_RANGE_SLIDER
+#define BEMENUITEM_DEF_GENERIC2(menuItemName, handlerPtr, nOfChoices, menuPtr, label, type) \
+	static char menuItemName ## _label[] = label; \
+	static BEMenuItem menuItemName = {handlerPtr, 0, menuPtr, menuItemName ## _label, 0, nOfChoices, 0, 0, 0, 0, type};
 
 // Same as above, but label is variable and we fill some room for it
 #define BEMENUITEM_DEF_LABELVAR(menuItemName, handlerPtr, choices, menuPtr, labelSize, type) \
@@ -426,6 +432,7 @@ BEMenu g_beVideoSettingsMenu = {
 static const int g_be_soundsSettingsChoices_sndSampleRateVals[] = {8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000, 49716, 96000, 192000};
 static const char *g_be_soundsSettingsChoices_sndSampleRate[] = {"8000","11025","12000","16000","22050","32000","44100","48000","49716","96000","192000",NULL};
 
+BEMENUITEM_DEF_TARGETMENU(g_beSoundSettingsMenuItem_DeviceVolumes, "Emulated device volumes", &g_beDeviceVolumesMenu)
 BEMENUITEM_DEF_SLIDER(g_beSoundSettingsMenuItem_SndSampleRate, "Sound sample rate\n(in Hz)", g_be_soundsSettingsChoices_sndSampleRate)
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSubSystem, "Enable sound subsystem", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_OPLEmulation, "OPL emulation", g_be_settingsChoices_boolean)
@@ -441,6 +448,7 @@ BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_UseResampler, "Use resampler"
 #endif
 
 static BEMenuItem *g_beSoundSettingsMenuItems[] = {
+	&g_beSoundSettingsMenuItem_DeviceVolumes,
 	&g_beSoundSettingsMenuItem_SndSampleRate,
 	&g_beSoundSettingsMenuItem_SndSubSystem,
 	&g_beSoundSettingsMenuItem_OPLEmulation,
@@ -457,6 +465,30 @@ BEMenu g_beSoundSettingsMenu = {
 	"Sounds settings",
 	&g_beSettingsMenu,
 	g_beSoundSettingsMenuItems,
+	// Ignore the rest
+};
+
+/*** Device volumes menu ***/
+
+BEMENUITEM_DEF_RANGE_SLIDER(g_beDeviceVolumesMenuItem_PCSpkVol, "PC speaker volume", BE_AUDIO_VOL_MAX - BE_AUDIO_VOL_MIN + 1)
+BEMENUITEM_DEF_RANGE_SLIDER(g_beDeviceVolumesMenuItem_OPLVol, "OPL volume", BE_AUDIO_VOL_MAX - BE_AUDIO_VOL_MIN + 1)
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+BEMENUITEM_DEF_RANGE_SLIDER(g_beDeviceVolumesMenuItem_DigiVol, "Digitized sound volume", BE_AUDIO_VOL_MAX - BE_AUDIO_VOL_MIN + 1)
+#endif
+
+static BEMenuItem *g_beDeviceVolumesMenuItems[] = {
+	&g_beDeviceVolumesMenuItem_PCSpkVol,
+	&g_beDeviceVolumesMenuItem_OPLVol,
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+	&g_beDeviceVolumesMenuItem_DigiVol,
+#endif
+	NULL
+};
+
+BEMenu g_beDeviceVolumesMenu = {
+	"Emulated device volumes",
+	&g_beSoundSettingsMenu,
+	g_beDeviceVolumesMenuItems,
 	// Ignore the rest
 };
 
@@ -941,6 +973,13 @@ void BE_ST_Launcher_Prepare(void)
 #endif
 	g_beControllerSettingsMenuItem_Action_DebugKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS];
 
+	// Set device volumes
+	g_beDeviceVolumesMenuItem_PCSpkVol.choice = g_refKeenCfg.pcSpkVol - BE_AUDIO_VOL_MIN;
+	g_beDeviceVolumesMenuItem_OPLVol.choice = g_refKeenCfg.oplVol - BE_AUDIO_VOL_MIN;
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+	g_beDeviceVolumesMenuItem_DigiVol.choice = g_refKeenCfg.digiVol - BE_AUDIO_VOL_MIN;
+#endif
+
 #ifdef BE_ST_ENABLE_SETTING_LOWFPS
 	// Set low LowFPS toggle
 	g_beMiscSettingsMenuItem_LowFPS.choice = g_refKeenCfg.lowFPS;
@@ -1100,6 +1139,12 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
 #endif
 	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;
+
+	g_refKeenCfg.pcSpkVol = g_beDeviceVolumesMenuItem_PCSpkVol.choice + BE_AUDIO_VOL_MIN;
+	g_refKeenCfg.oplVol = g_beDeviceVolumesMenuItem_OPLVol.choice + BE_AUDIO_VOL_MIN;
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+	g_refKeenCfg.digiVol = g_beDeviceVolumesMenuItem_DigiVol.choice + BE_AUDIO_VOL_MIN;
+#endif
 
 #ifdef BE_ST_ENABLE_SETTING_LOWFPS
 	g_refKeenCfg.lowFPS = g_beMiscSettingsMenuItem_LowFPS.choice;

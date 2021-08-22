@@ -92,6 +92,7 @@ static int BEL_Launcher_PrepareMenuItem(BEMenuItem *menuItem, int yPos)
 	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) ||
 	    (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) ||
 	    (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION) ||
+	    // RANGE_SLIDER has nOfChoices pre-calculated
 	    (menuItem->type == BE_MENUITEM_TYPE_SLIDER))
 	{
 		const char **choicePtr;
@@ -368,6 +369,7 @@ static void BEL_Launcher_DrawMenuItemString(const char *str, int selectionYPos, 
 	case BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER:
 	case BE_MENUITEM_TYPE_DYNAMIC_SELECTION:
 	case BE_MENUITEM_TYPE_SLIDER:
+	case BE_MENUITEM_TYPE_RANGE_SLIDER:
 		labelColor = (g_be_launcher_selectedMenuItemPtr && (menuItem == *g_be_launcher_selectedMenuItemPtr)) ? 15 : 12;
 		break;
 	default:
@@ -386,7 +388,8 @@ static void BEL_Launcher_DrawMenuItemString(const char *str, int selectionYPos, 
 	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) || (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) || (menuItem->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION))
 		BEL_Launcher_DrawMenuItemString(menuItem->choices[menuItem->choice], menuItem->selectionYPos, 14);
 
-	if (menuItem->type == BE_MENUITEM_TYPE_SLIDER)
+	if ((menuItem->type == BE_MENUITEM_TYPE_SLIDER) ||
+	    (menuItem->type == BE_MENUITEM_TYPE_RANGE_SLIDER))
 	{
 		int offset = 0;
 		if (menuItem->nOfChoices > 1)
@@ -412,7 +415,10 @@ static void BEL_Launcher_DrawMenuItemString(const char *str, int selectionYPos, 
 			14, 4, 
 			BE_MENU_FIRST_ITEM_PIX_YPOS, BE_LAUNCHER_PIX_HEIGHT);
 		
-		BEL_Launcher_DrawMenuItemString(menuItem->choices[menuItem->choice], menuItem->selectionYPos - BE_MENU_CHAR_HEIGHT - 2, 14);
+		if (menuItem->type == BE_MENUITEM_TYPE_SLIDER)
+			BEL_Launcher_DrawMenuItemString(
+				menuItem->choices[menuItem->choice],
+				menuItem->selectionYPos - BE_MENU_CHAR_HEIGHT - 2, 14);
 	}
 
 	// HACK - Don't forget this!! (bottom of menu title)
@@ -518,7 +524,8 @@ void BE_Launcher_HandleInput_ButtonLeft(void)
 	BEMenuItem *menuItem = *g_be_launcher_selectedMenuItemPtr;
 	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) ||
 	    (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) ||
-	    ((menuItem->type == BE_MENUITEM_TYPE_SLIDER) &&
+	    (((menuItem->type == BE_MENUITEM_TYPE_SLIDER) ||
+	      (menuItem->type == BE_MENUITEM_TYPE_RANGE_SLIDER)) &&
 	     (menuItem->choice > 0)))
 	{
 		g_be_launcher_wasAnySettingChanged = true;
@@ -544,7 +551,8 @@ void BE_Launcher_HandleInput_ButtonRight(void)
 	BEMenuItem *menuItem = *g_be_launcher_selectedMenuItemPtr;
 	if ((menuItem->type == BE_MENUITEM_TYPE_SELECTION) ||
 	    (menuItem->type == BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER) ||
-	    ((menuItem->type == BE_MENUITEM_TYPE_SLIDER) &&
+	    (((menuItem->type == BE_MENUITEM_TYPE_SLIDER) ||
+	      (menuItem->type == BE_MENUITEM_TYPE_RANGE_SLIDER)) &&
 	     (menuItem->choice < menuItem->nOfChoices - 1)))
 	{
 		g_be_launcher_wasAnySettingChanged = true;
@@ -798,7 +806,8 @@ void BE_Launcher_HandleInput_PointerSelect(int xpos, int ypos, uint32_t ticksinm
 					BEL_Launcher_DrawMenuItem(*prevMenuItemPP);
 
 				if (isMouse &&
-				    (*menuItemPP)->type == BE_MENUITEM_TYPE_SLIDER &&
+				    (((*menuItemPP)->type == BE_MENUITEM_TYPE_SLIDER) ||
+				     ((*menuItemPP)->type == BE_MENUITEM_TYPE_RANGE_SLIDER)) &&
 				    (xpos >= BE_LAUNCHER_SLIDER_PIX_XPOS))
 				{
 					g_be_launcher_trackedSliderMenuItemPtr = menuItemPP;
@@ -893,7 +902,8 @@ void BE_Launcher_HandleInput_PointerMotion(int xpos, int ypos, uint32_t ticksinm
 					return;
 			}
 			else if (g_be_launcher_selectedMenuItemPtr &&
-			         (*g_be_launcher_selectedMenuItemPtr)->type == BE_MENUITEM_TYPE_SLIDER &&
+			         (((*g_be_launcher_selectedMenuItemPtr)->type == BE_MENUITEM_TYPE_SLIDER) ||
+			          ((*g_be_launcher_selectedMenuItemPtr)->type == BE_MENUITEM_TYPE_RANGE_SLIDER)) &&
 				 (xpos >= BE_LAUNCHER_SLIDER_PIX_XPOS) &&
 			         ((xpos < g_be_launcher_startpointerx-BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD) ||
 			          (xpos > g_be_launcher_startpointerx+BE_LAUNCHER_POINTER_MOTION_PIX_THRESHOLD)))
@@ -1056,6 +1066,7 @@ void BE_Launcher_Start(void)
 	BE_Launcher_PrepareMenu(&g_beMiscSettingsMenu);
 #endif
 	BE_Launcher_PrepareMenu(&g_beControllerSettingsMenu);
+	BE_Launcher_PrepareMenu(&g_beDeviceVolumesMenu);
 	BE_Launcher_PrepareMenu(&g_beShowVersionMenu);
 	BE_Launcher_PrepareMenu(&g_beQuitConfirmMenu);
 

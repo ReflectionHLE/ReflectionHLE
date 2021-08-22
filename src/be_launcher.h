@@ -43,6 +43,7 @@ typedef enum {
 	BE_MENUITEM_TYPE_SELECTION_WITH_HANDLER,
 	BE_MENUITEM_TYPE_DYNAMIC_SELECTION,
 	BE_MENUITEM_TYPE_SLIDER,
+	BE_MENUITEM_TYPE_RANGE_SLIDER,
 	BE_MENUITEM_TYPE_TARGETMENU
 } BEMenuItemType;
 
@@ -82,7 +83,8 @@ extern BEMenu g_beMainMenu,
               g_beSelectInitialPathMenu, g_beSelectDirectoryMenu, g_beSelectDirectoryErrorMenu,
               g_beSelectDirectoryFoundGameMenu, g_beSelectDirectoryNoGameFoundMenu,
               g_beSettingsMenu, g_beVideoSettingsMenu, g_beSoundSettingsMenu,
-              g_beInputSettingsMenu, g_beMiscSettingsMenu, g_beControllerSettingsMenu,
+              g_beInputSettingsMenu, g_beMiscSettingsMenu,
+              g_beControllerSettingsMenu, g_beDeviceVolumesMenu,
               g_beShowVersionMenu, g_beQuitConfirmMenu;
 
 extern bool g_be_launcher_wasAnySettingChanged;

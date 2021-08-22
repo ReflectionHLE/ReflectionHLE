@@ -48,6 +48,8 @@ typedef enum {
 	SOUNDBLASTER_OFF, SOUNDBLASTER_SB, SOUNDBLASTER_SBPRO, SOUNDBLASTER_SB16
 } SoundBlasterSettingType;
 
+enum { BE_AUDIO_VOL_MIN = 0, BE_AUDIO_VOL_MAX = 15 };
+
 #ifdef REFKEEN_ENABLE_LAUNCHER
 #define LAUNCHER_EXE_ARGS_BUFFERLEN 80
 typedef enum { LAUNCHER_WINDOW_DEFAULT, LAUNCHER_WINDOW_FULL, LAUNCHER_WINDOW_SOFTWARE } LauncherWindowSettingType;
@@ -85,6 +87,7 @@ typedef struct
 	bool sndSubSystem;
 	bool oplEmulation;
 	SoundBlasterSettingType sb;
+	int pcSpkVol, oplVol, digiVol;
 #ifndef REFKEEN_RESAMPLER_NONE
 	bool useResampler;
 #endif

@@ -330,6 +330,29 @@ static void BEL_ST_ParseSetting_SB(const char *keyprefix, const char *buffer)
 }
 #endif
 
+static void BEL_ST_ParseSetting_PCSpkVol(const char *keyprefix, const char *buffer)
+{
+	int val = atoi(buffer);
+	if ((val >= BE_AUDIO_VOL_MIN) && (val <= BE_AUDIO_VOL_MAX))
+		g_refKeenCfg.pcSpkVol = val;
+}
+
+static void BEL_ST_ParseSetting_OPLVol(const char *keyprefix, const char *buffer)
+{
+	int val = atoi(buffer);
+	if ((val >= BE_AUDIO_VOL_MIN) && (val <= BE_AUDIO_VOL_MAX))
+		g_refKeenCfg.oplVol = val;
+}
+
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+static void BEL_ST_ParseSetting_DigiVol(const char *keyprefix, const char *buffer)
+{
+	int val = atoi(buffer);
+	if ((val >= BE_AUDIO_VOL_MIN) && (val <= BE_AUDIO_VOL_MAX))
+		g_refKeenCfg.digiVol = val;
+}
+#endif
+
 #ifndef REFKEEN_RESAMPLER_NONE
 static void BEL_ST_ParseSetting_UseResampler(const char *keyprefix, const char *buffer)
 {
@@ -542,6 +565,11 @@ static BESDLCfgEntry g_sdlCfgEntries[] = {
 #ifdef BE_ST_ENABLE_SETTING_SB
 	{"sbemu=", &BEL_ST_ParseSetting_SB},
 #endif
+	{"pcspkvol=", &BEL_ST_ParseSetting_PCSpkVol},
+	{"oplvol=", &BEL_ST_ParseSetting_OPLVol},
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+	{"digivol=", &BEL_ST_ParseSetting_DigiVol},
+#endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	{"useresampler=", &BEL_ST_ParseSetting_UseResampler},
 #endif
@@ -648,6 +676,11 @@ void BEL_ST_ParseConfig(void)
 	g_refKeenCfg.sb = SOUNDBLASTER_SB16;
 #else
 	g_refKeenCfg.sb = SOUNDBLASTER_OFF;
+#endif
+	g_refKeenCfg.pcSpkVol = BE_AUDIO_VOL_MAX;
+	g_refKeenCfg.oplVol = BE_AUDIO_VOL_MAX;
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+	g_refKeenCfg.digiVol = BE_AUDIO_VOL_MAX;
 #endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	g_refKeenCfg.useResampler = true;
@@ -795,6 +828,11 @@ void BEL_ST_SaveConfig(void)
 	fprintf(fp, "oplemulation=%s\n", g_refKeenCfg.oplEmulation ? "true" : "false");
 #ifdef BE_ST_ENABLE_SETTING_SB
 	fprintf(fp, "sbemu=%s\n", g_be_setting_sb_vals[g_refKeenCfg.sb]);
+#endif
+	fprintf(fp, "pcspkvol=%d\n", g_refKeenCfg.pcSpkVol);
+	fprintf(fp, "oplvol=%d\n", g_refKeenCfg.oplVol);
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+	fprintf(fp, "digivol=%d\n", g_refKeenCfg.digiVol);
 #endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	fprintf(fp, "useresampler=%s\n", g_refKeenCfg.useResampler ? "true" : "false");

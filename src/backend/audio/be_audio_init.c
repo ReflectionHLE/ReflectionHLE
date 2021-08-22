@@ -69,6 +69,7 @@ void BE_ST_InitAudio(void)
 		BEL_ST_AudioMixerAddSource(
 			freq,
 			samplesForSourceBuffer,
+			g_refKeenCfg.pcSpkVol,
 			BEL_ST_GenPCSpeakerSamples);
 	}
 
@@ -79,6 +80,7 @@ void BE_ST_InitAudio(void)
 			BEL_ST_AudioMixerAddSource(
 				8000,
 				samplesForSourceBuffer,
+				g_refKeenCfg.digiVol,
 				BEL_ST_GenDigiSamples));
 
 	if (g_sdlAudioSubsystemUp && g_refKeenCfg.oplEmulation &&
@@ -90,6 +92,7 @@ void BE_ST_InitAudio(void)
 				OPL_SAMPLE_RATE,
 				// Leave some room for calls to BE_ST_OPL2Write
 				2*samplesForSourceBuffer,
+				g_refKeenCfg.oplVol,
 				BEL_ST_GenOPLSamples));
 		g_sdlEmulatedOPLChipReady = true;
 	}
