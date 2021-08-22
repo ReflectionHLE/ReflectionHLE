@@ -31,9 +31,9 @@
 
 // Changing between 0 and max. possible value - too loud
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
-#define MIXER_SAMPLE_PCSPEAKER_TOP_VAL 0.75f
+#define MIXER_SAMPLE_PCSPEAKER_TOP_VAL 0.25f
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
-#define MIXER_SAMPLE_PCSPEAKER_TOP_VAL 24575
+#define MIXER_SAMPLE_PCSPEAKER_TOP_VAL 8192
 #endif
 
 static int g_be_pcSpeakerSampleFreq;
