@@ -2,6 +2,31 @@
 Changelog
 ---------
 
+Aug 24, 2021 (v0.33.1):
+* Identified as "Loud Edition" in-game, since changes related to audio mixing
+increased the default sound volumes, at least outside of the PC Speaker.
+* Nuked OPL3 is now at git revision bb5c8d08a85779c42b75c79d7b84f365a1b93b66.
+* Introduce slider UI for a few launcher settings.
+* Add a new Sound Blaster emulation option, currently relevant just for Wolf3D.
+Use SB for mono output, and SB Pro or SB 16 for stereo panning of
+digitized sounds. Note that it's more significant after choosing SB 16.
+* Volumes for SB stereo panning, and internally also for OPL emulation
+with relation to the SB Pro/16, are based on tables of dB values
+posted here by James-F: https://www.vogons.org/viewtopic.php?t=54269
+* Add user-accessible per-device volume controls, independent of what was
+described earlier (e.g., Wolf3D's stereo panning). Note that these volumes
+are configurable per-device.
+* In particular, you cannot separate the OPL (AdLib) volumes
+of music and sound effects in Catacomb 3-D or Wolfenstein 3D.
+* Also, before playing Keen Dreams using the data from the 2015 port,
+you should use the digitized sound volume slider. Reason is that
+the sound effects were re-recorded into digitized forms.
+* Balance the default PC Speaker volume, following the changes.
+* Fix a sound mixing bug. Previously, the more sound sources were added to
+the mixer, the quieter each of them would be in the mixed output. Instead
+of taking the average of the sources, take the sum and clamp the result.
+* Other miscellaneous changes.
+
 Aug 2, 2021 (v0.33.0):
 
 * Additional restructurings of game-agnostic code.
