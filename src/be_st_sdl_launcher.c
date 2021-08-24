@@ -438,7 +438,7 @@ BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SndSubSystem, "Enable sound s
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_OPLEmulation, "OPL emulation", g_be_settingsChoices_boolean)
 
 #ifdef BE_ST_ENABLE_SETTING_SB
-static const char *g_be_soundSettingsChoices_sbType[] = {"None", "SB", "SB Pro", "SB 16"};
+static const char *g_be_soundSettingsChoices_sbType[] = {"None", "SB", "SB Pro", "SB 16", NULL};
 
 BEMENUITEM_DEF_SELECTION(g_beSoundSettingsMenuItem_SB, "Sound Blaster emulation", g_be_soundSettingsChoices_sbType)
 #endif
