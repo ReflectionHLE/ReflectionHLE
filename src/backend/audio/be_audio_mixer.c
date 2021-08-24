@@ -178,13 +178,19 @@ void BEL_ST_SetSBProVolumesForSource(BE_ST_AudioMixerSource *src, uint8_t volBit
 		return;
 	}
 
+	bool mute = (volBits == 0);
 	if (g_refKeenCfg.sb < SOUNDBLASTER_SB16)
 		volBits |= 0x11;
 
 	BE_ST_LockAudioRecursively();
 	src->sbVolBits = volBits;
-	src->vol[0] = g_stAudioMixer.sbVolTable[volBits>>4];
-	src->vol[1] = g_stAudioMixer.sbVolTable[volBits&15];
+	if (mute)
+		src->vol[0] = src->vol[1] = 0.0;
+	else
+	{
+		src->vol[0] = g_stAudioMixer.sbVolTable[volBits>>4];
+		src->vol[1] = g_stAudioMixer.sbVolTable[volBits&15];
+	}
 	BE_ST_UnlockAudioRecursively();
 }
 
