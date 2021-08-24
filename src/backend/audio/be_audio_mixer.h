@@ -43,6 +43,7 @@ typedef struct BE_ST_AudioMixerSource
 	int numScaledSamplesToGenNextTime;
 	int freq;
 	float vol[2], userVol;
+	uint8_t sbVolBits;
 	bool skip;
 } BE_ST_AudioMixerSource;
 

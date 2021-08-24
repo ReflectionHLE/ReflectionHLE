@@ -34,11 +34,29 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* These tables are based on dB values described here by James-F:
+   https://www.vogons.org/viewtopic.php?t=54269 */
+
+static const float g_stSbProVolTable[16] = {
+	pow(10,-2.425), pow(10,-2.425), pow(10,-1.365), pow(10,-1.365),
+	pow(10,-1.075), pow(10,-1.075), pow(10,-0.785), pow(10,-0.785),
+	pow(10,-0.55),  pow(10,-0.55),  pow(10,-0.35),  pow(10,-0.35),
+	pow(10,-0.15),  pow(10,-0.15),  1,              1
+};
+
+static const float g_stSb16VolTable[16] = {
+	pow(10,-2.875), pow(10,-2.74), pow(10,-2.55), pow(10,-2.36),
+	pow(10,-2.16),  pow(10,-1.98), pow(10,-1.78), pow(10,-1.6),
+	pow(10,-1.4),   pow(10,-1.2),  pow(10,-1),    pow(10,-0.8),
+	pow(10,-0.6),   pow(10,-0.4),  pow(10,-0.2),  1
+};
+
 enum { BE_ST_AUDIO_MIXER_MAX_SOURCES = 4 };
 
 static struct
 {
 	BE_ST_AudioMixerSource sources[BE_ST_AUDIO_MIXER_MAX_SOURCES];
+	const float *sbVolTable;
 	uint64_t samplesPerPartTimesPITRate;
 	uint32_t samplesInCurrentPart;
 	uint32_t samplesPartNum;
@@ -99,6 +117,9 @@ void BEL_ST_AudioMixerInit(int freq, int channels)
 	g_stAudioMixer.numSources = 0;
 	g_stAudioMixer.freq = freq;
 	g_stAudioMixer.channels = channels;
+	g_stAudioMixer.sbVolTable =
+		(g_refKeenCfg.sb >= SOUNDBLASTER_SB16) ?
+		g_stSb16VolTable : g_stSbProVolTable;
 }
 
 void BEL_ST_AudioMixerShutdown(void)
@@ -127,7 +148,16 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 	src->genSamples = genSamples;
 	src->out.size = maxNumOfOutSamples;
 	src->in.buffer = src->out.buffer = 0;
-	src->vol[0] = src->vol[1] = 1.0;
+
+	if (g_refKeenCfg.sb < SOUNDBLASTER_SBPRO)
+		src->vol[0] = src->vol[1] = 1.0;
+	else
+	{
+		src->sbVolBits = (g_refKeenCfg.sb < SOUNDBLASTER_SB16) ? 0x99 : 0xCC;
+		src->vol[0] = g_stAudioMixer.sbVolTable[src->sbVolBits>>4];
+		src->vol[1] = g_stAudioMixer.sbVolTable[src->sbVolBits&15];
+	}
+
 	src->userVol = (userVolAsInt == BE_AUDIO_VOL_MIN) ?
 	               0.0 : exp((userVolAsInt - BE_AUDIO_VOL_MAX)/4.0);
 
@@ -135,46 +165,35 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 	return src;
 }
 
-static void BEL_ST_SetVolumesForSource(BE_ST_AudioMixerSource *src, float lvol, float rvol)
+void BEL_ST_SetSBProVolumesForSource(BE_ST_AudioMixerSource *src, uint8_t volBits)
 {
 	if (!src)
-		BE_ST_ExitWithErrorMsg("BEL_ST_SetVolumesForSource: Called with null source!");
+		BE_ST_ExitWithErrorMsg("BEL_ST_SetSBProVolumesForSource: Called with null source!");
 
 	if (g_refKeenCfg.sb < SOUNDBLASTER_SBPRO)
 	{
 		BE_Cross_LogMessage(
 			BE_LOG_MSG_NORMAL,
-			"BEL_ST_SetDigiSoundVolumes: Called without SB Pro features\n");
+			"BEL_ST_SetSBProVolumesForSource: Called without SB Pro features\n");
 		return;
 	}
 
-	BE_ST_LockAudioRecursively();
-	src->vol[0] = lvol;
-	src->vol[1] = rvol;
-	BE_ST_UnlockAudioRecursively();
-}
-
-void BEL_ST_SetSBProVolumesForSource(BE_ST_AudioMixerSource *src, uint8_t volBits)
-{
-	uint8_t inVolBits = volBits;
 	if (g_refKeenCfg.sb < SOUNDBLASTER_SB16)
 		volBits |= 0x11;
-	BEL_ST_SetVolumesForSource(src,
-		((volBits>>4)*(volBits>>4))/225.0f,
-		((volBits&15)*(volBits&15))/225.0f);
-}
 
-static void BEL_ST_GetVolumesFromSource(const BE_ST_AudioMixerSource *src, float *lvol, float *rvol)
-{
-	*lvol = src->vol[0];
-	*rvol = src->vol[1];
+	BE_ST_LockAudioRecursively();
+	src->sbVolBits = volBits;
+	src->vol[0] = g_stAudioMixer.sbVolTable[volBits>>4];
+	src->vol[1] = g_stAudioMixer.sbVolTable[volBits&15];
+	BE_ST_UnlockAudioRecursively();
 }
 
 uint8_t BEL_ST_GetSBProVolumesFromSource(const BE_ST_AudioMixerSource *src)
 {
-	float lvol, rvol;
-	BEL_ST_GetVolumesFromSource(src, &lvol, &rvol);
-	return ((int)(sqrt(lvol)*15.0 + 0.5) << 4) | ((int)(sqrt(rvol)*15.0 + 0.5));
+	BE_ST_LockAudioRecursively();
+	uint8_t volBits = src->sbVolBits;
+	BE_ST_UnlockAudioRecursively();
+	return volBits;
 }
 
 void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
