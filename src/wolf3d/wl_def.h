@@ -935,6 +935,7 @@ typedef enum {
 #endif
 } enemy_t;
 
+struct objstruct;
 
 typedef struct	statestruct
 {

@@ -508,7 +508,13 @@ void Victory (void)
 	tr /= 14;
 #endif
 	// *** SHAREWARE V1.0+1.1 APOGEE RESTORATION ***
-#if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
+	/* REFKEEN - In v1.0, where sec was defined as a 16-bit int,
+	   the usages of 415800 (if indeed present in v1.0's sources)
+	   were leading to overflows. So, emulate these here. */
+#if (GAMEVER_WOLFREV <= GV_WR_WL1AP10)
+	if ((id0_word_t)sec > 22854U)
+		sec = 22854U;
+#elif (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
 	if (sec > 415800)
 		sec = 415800;
 #endif
