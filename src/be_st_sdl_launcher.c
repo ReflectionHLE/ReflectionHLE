@@ -741,7 +741,7 @@ BEMenu g_beMiscSettingsMenu = {
 
 /*** Show version menu ***/
 
-BEMENUITEM_DEF_STATIC(g_beShowVersionMenuItem_Description, REFKEEN_TITLE_AND_VER_STRING ",\na part of Reflection Keen.")
+BEMENUITEM_DEF_STATIC(g_beShowVersionMenuItem_Description, REFKEEN_TITLE_AND_VER_STRING)
 
 static BEMenuItem *g_beShowVersionMenuItems[] = {
 	&g_beShowVersionMenuItem_Description,
