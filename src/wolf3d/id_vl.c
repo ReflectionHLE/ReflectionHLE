@@ -54,7 +54,8 @@ id0_unsigned_t	ylookup[MAXSCANLINES];
 id0_boolean_t		screenfaded;
 id0_unsigned_t	bordercolor;
 
-id0_boolean_t		fastpalette;				// if true, use outsb to set
+// REFKEEN: Variable isn't read
+//id0_boolean_t		fastpalette;				// if true, use outsb to set
 
 id0_byte_t		id0_far	palette1[256][3],id0_far palette2[256][3];
 
@@ -656,6 +657,7 @@ void VL_FadeIn (id0_int_t start, id0_int_t end, id0_byte_t id0_far *palette, id0
 =================
 */
 
+#if 0 // REFKEEN: fastpalette isn't read
 void VL_TestPaletteSet (void)
 {
 	id0_int_t	i;
@@ -670,6 +672,7 @@ void VL_TestPaletteSet (void)
 //	if (_fmemcmp (&palette1[0][0],&palette2[0][0],768))
 		fastpalette = false;
 }
+#endif
 
 
 /*

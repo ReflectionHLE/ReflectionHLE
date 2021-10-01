@@ -212,6 +212,7 @@ void VL_SizeTile8String (id0_char_t *str, id0_int_t *width, id0_int_t *height);
 void VL_DrawPropString (id0_char_t *str, id0_unsigned_t tile8ptr, id0_int_t printx, id0_int_t printy);
 void VL_SizePropString (id0_char_t *str, id0_int_t *width, id0_int_t *height, id0_char_t id0_far *font);
 
-void VL_TestPaletteSet (void);
+#define VL_TestPaletteSet() // REFKEEN: Variable fastpalette isn't read
+//void VL_TestPaletteSet (void);
 
 REFKEEN_NS_E
