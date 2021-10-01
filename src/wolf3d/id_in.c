@@ -627,6 +627,7 @@ IN_Startup(void)
 //	IN_Default() - Sets up default conditions for the Input Mgr
 //
 ///////////////////////////////////////////////////////////////////////////
+#if 0 // REFKEEN: Unused function
 void
 IN_Default(id0_boolean_t gotit,ControlType in)
 {
@@ -640,6 +641,7 @@ IN_Default(id0_boolean_t gotit,ControlType in)
 		in = ctrl_Keyboard1;
 	IN_SetControlType(0,in);
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
