@@ -99,7 +99,8 @@ id0_long_t	playerxmove,playerymove;
 // *** S3DNA RESTORATION ***
 struct atkinf
 {
-	id0_char_t	tics,attack,frame;		// attack is 1 for gun, 2 for knife
+	// REFKEEN: The type used to be char; It should be explicitly signed.
+	id0_signed_char_t	tics,attack,frame;		// attack is 1 for gun, 2 for knife
 }
 #ifdef GAMEVER_NOAH3D
 attackinfo[6][14] =

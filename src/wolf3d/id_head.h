@@ -60,10 +60,12 @@ typedef bool id0_boolean_t;
 //
 // Should be UNSIGNED for VWL_MeasureString (high scores table) in Keen Dreams
 // but SIGNED in Catacomb Abyss for which casting is done in VWL_MeasureString
-// (and Keen Dreams' loadscn2)
+// (and Keen Dreams' loadscn2). Should also be signed in Wolfenstein 3D for
+// the fields of struct atkinf.
 //
 // BUT, to reduce the amount of compilation warnings in C and errors in C++,
-// we still use plain char here, and fix Keen Dreams' VWL_MeasureString instead
+// we still use plain char here, and fix Keen Dreams' VWL_MeasureString
+// and Wolfenstein 3D's atkinf instead.
 typedef char id0_char_t;
 
 typedef uint8_t id0_unsigned_char_t;
