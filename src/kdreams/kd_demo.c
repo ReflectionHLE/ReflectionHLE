@@ -94,6 +94,7 @@ void NewGame (void)
 =====================
 */
 
+#if 0 // REFKEEN: Unused function
 id0_int_t WaitOrKey (id0_int_t vbls)
 {
 	while (vbls--)
@@ -108,6 +109,7 @@ id0_int_t WaitOrKey (id0_int_t vbls)
 	}
 	return 0;
 }
+#endif
 
 //===========================================================================
 
