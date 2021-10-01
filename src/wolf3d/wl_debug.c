@@ -63,7 +63,9 @@ id0_int_t DebugKeys (void);
 
 id0_int_t	maporgx;
 id0_int_t	maporgy;
-enum {mapview,tilemapview,actoratview,visview}	viewtype;
+// REFKEEN: Define viewtype as static.
+// Fixed a possible compilation warning for unnamed type.
+static enum {mapview,tilemapview,actoratview,visview}	viewtype;
 
 void ViewMap (void);
 

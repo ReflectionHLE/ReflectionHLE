@@ -42,12 +42,17 @@ REFKEEN_NS_B
 statobj_t	statobjlist[MAXSTATS],*laststatobj;
 
 
+// REFKEEN: Just define the struct as static.
+// Fixed a possible compilation warning for unnamed type.
+#if 0
 // *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
 struct _statinfo
 #else
 struct
 #endif
+#endif
+static struct
 {
 	id0_int_t		picnum;
 	stat_t	type;
