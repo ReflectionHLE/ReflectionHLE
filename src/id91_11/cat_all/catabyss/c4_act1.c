@@ -1000,8 +1000,9 @@ enum wskel_modes {ws_wall1,ws_wall2,ws_wall3,ws_exit};
 */
 void SpawnWallSkeleton(id0_int_t tilex, id0_int_t tiley)
 {
-	id0_char_t xofs[] = {0,0,-1,+1};
-	id0_char_t yofs[] = {-1,+1,0,0};
+	// REFKEEN: The type used to be char; It should be explicitly signed.
+	id0_signed_char_t xofs[] = {0,0,-1,+1};
+	id0_signed_char_t yofs[] = {-1,+1,0,0};
 
 	objtype *ob;
 	id0_int_t wallx=tilex,wally=tiley,wallbase,wallmode,loop;
