@@ -57,7 +57,8 @@ static void show_command_line_help()
 	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " - Command line arguments ***");
 	BE_ST_puts("");
 #ifdef REFKEEN_ENABLE_LAUNCHER
-	BE_ST_puts("Launcher is started unless any command line argument is passed.");
+	BE_ST_puts("To skip the launcher you can use -gamever <VER>,");
+	BE_ST_puts("or just -passorigargs with or without additional arguments.");
 	BE_ST_puts("");
 #endif
 	BE_ST_puts("List of possible command line arguments:");
@@ -70,9 +71,12 @@ static void show_command_line_help()
 	BE_ST_puts("-showslides: Show the hint book.");
 #endif
 #endif
-	BE_ST_puts("-passorigargs <...>: Pass all following arguments to the original game port.");
-	BE_ST_puts("-datadir <...>: Specify an alternative path for game data (separated by ver.).");
-	BE_ST_puts("-cfgdir <...>: Specify an alternative path for new cfg files (not old CONFIG).");
+	BE_ST_puts("-passorigargs <...>: Pass all following arguments to the game.");
+	BE_ST_puts("-datadir <...>: Specify an alternative location for modifiable");
+	BE_ST_puts("game files like saved games, separated by game version.");
+	BE_ST_puts("Miscellaneous txt files are also covered.");
+	BE_ST_puts("-cfgdir <...>: Specify an alternative path for Reflection Keen's");
+	BE_ST_puts("new cfg files, along with gamecontrollerdb.txt.");
 #ifdef REFKEEN_ENABLE_LAUNCHER
 	BE_ST_puts("-fulllauncher: Show a fullscreen launcher window.");
 	BE_ST_puts("-softlauncher: Show a software-rendered launcher window (not fullscreen).");
@@ -86,7 +90,7 @@ static void show_command_line_help()
 		if (gameVerVal < BE_GAMEVER_LAST-1)
 		{
 			BE_ST_printf("%s, ", refkeen_gamever_strs[gameVerVal]);
-			if (gameVerVal % 4 == 3) // HACK for line splitting
+			if (gameVerVal % 6 == 5) // HACK for line splitting
 				BE_ST_puts("");
 		}
 		else
