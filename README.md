@@ -43,6 +43,62 @@ is released under the MIT License. See mit-opentesarena.txt for details.
 - The included CRC-32 implementation is in the public domain. The same
 applies to the modified unlzexe source (based on UNLZEXE.DOC from v0.4).
 
+## How to run a game
+
+Note that Reflection Keen does not include game data, which you'll have to
+obtain separately.
+
+Depending on the environment (e.g., operating system) in which Reflection Keen
+is used, you might be able to use the Reflection Keen launcher and/or
+a command-line interface. Even if you prefer to skip the launcher,
+it may assist you when you want to tell Reflection Keen where
+to locate compatible game data.
+
+Reflection Keen may autodetect existing game
+installations in specific locations which are internally scanned.
+You can also use the launcher to add other locations with game installations.
+
+### Using an application icon or executable
+
+If you start Reflection Keen by pressing on an application icon or executable,
+the Reflection Keen launcher should appear. Here, you can see which
+game versions are supported, and which game files are required
+for each such version.
+
+In addition to autodetected game installations, you can use the launcher
+to select a directory with compatible game data. Once it's confirmed
+such data is found, it'll be remembered for later uses.
+
+Note that if you use an external launcher or shortcut which adds additional
+command-line arguments, this may change the behaviors. More details are
+given under following instructions for using a command-line interface.
+
+### Using a command-line interface
+
+You can also start Reflection Keen from a command-line interface,
+like Windows' Command Prompt. Doing so without passing additional arguments
+should generally be the same as using an application icon, albeit there
+can be differences that vary by the environment.
+
+If you pass at least one additional argument, a game can be started without
+going through the launcher, unless you use -fulllauncher or -softlauncher.
+
+If -passorigargs is used, the arguments that follow it are passed
+to the game as-is. The exact meanings of them can vary by the game.
+
+You can use -gamever <VER> for selecting a specific game version.
+
+To read about more options, you can use -? as the sole command-line argument.
+
+### Skipping the launcher
+
+If you simply want to start a game while skipping the launcher,
+you can use the command-line arguments -gamever <VER>,
+or alternatively, use -passorigargs with no other argument.
+
+Note that you should first make sure that Reflection Keen knows where to
+find compatible game data. See above for locating data via the launcher.
+
 ## How to build from the source code
 
 You will need CMake, a compatible C or C++ compiler and SDL2.
