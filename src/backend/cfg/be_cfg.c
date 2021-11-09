@@ -26,67 +26,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <string.h>
+#include <limits.h>
 
 #include "../audio/be_audio_private.h"
-#include "../video/be_video.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_gamever.h"
 #include "be_st.h"
 
 #define BE_ST_DEFAULT_FARPTRSEGOFFSET 0x14
-
-// The index is taken off the button mappings enum, so ENSURE THESE ARE CONSISTENT!
-//
-// HACK: If this is updated, also check g_sdlCfgEntries!!!
-static const char *g_sdlControlSchemeKeyMapCfgKeyPrefixes[] = {
-	"altcontrolscheme_up=",
-	"altcontrolscheme_down=",
-	"altcontrolscheme_left=",
-	"altcontrolscheme_right=",
-#ifdef REFKEEN_HAS_VER_KDREAMS
-	"altcontrolscheme_jump=",
-	"altcontrolscheme_throw=",
-	"altcontrolscheme_stats=",
-#endif
-#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	"altcontrolscheme_fire=",
-	"altcontrolscheme_strafe=",
-#endif
-#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	"altcontrolscheme_drink=",
-	"altcontrolscheme_bolt=", // Zapper in the Adventures Series
-	"altcontrolscheme_nuke=", // Xterminator in the Adventures Series
-	"altcontrolscheme_fastturn=",
-#endif
-#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	"altcontrolscheme_scrolls=",
-#endif
-#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	"altcontrolscheme_use=",
-	"altcontrolscheme_run=",
-	"altcontrolscheme_weapon1=",
-	"altcontrolscheme_weapon2=",
-	"altcontrolscheme_weapon3=",
-	"altcontrolscheme_weapon4=",
-	"altcontrolscheme_weapon5=",
-	"altcontrolscheme_weapon6=",
-	"altcontrolscheme_map=",
-#endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	"altcontrolscheme_funckeys=",
-#endif
-	"altcontrolscheme_debugkeys=",
-	0,
-};
-
-// Enumerated by SDL_GameControllerButton, for most
-static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
-	"a", "b", "x", "y", 0, 0, 0, "lstick", "rstick", "lshoulder", "rshoulder", "dpadup", "dpaddown", "dpadleft", "dpadright", 0, "paddle1", "paddle2", "paddle3", "paddle4",
-	"ltrigger", "rtrigger", // Actually axes but these are added as extras
-	"" // for any entry which is not set
-};
 
 RefKeenConfig g_refKeenCfg;
 
@@ -108,675 +56,365 @@ RefKeenConfig g_refKeenCfg;
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
 
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-static void BEL_ST_ParseSetting_FullScreen(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.isFullscreen = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.isFullscreen = false;
-	}
-}
-#endif
-
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
-static void BEL_ST_ParseSetting_FullRes(const char *keyprefix, const char *buffer)
-{
-	sscanf(buffer, "%dx%d", &g_refKeenCfg.fullWidth, &g_refKeenCfg.fullHeight);
-}
-#endif
-
-static void BEL_ST_ParseSetting_WindowRes(const char *keyprefix, const char *buffer)
-{
-	sscanf(buffer, "%dx%d", &g_refKeenCfg.winWidth, &g_refKeenCfg.winHeight);
-}
-
-#ifdef REFKEEN_ENABLE_LAUNCHER
-/*
-static void BEL_ST_ParseSetting_LauncherWindowRes(const char *keyprefix, const char *buffer)
-{
-	sscanf(buffer, "%dx%d", &g_refKeenCfg.launcherWinWidth, &g_refKeenCfg.launcherWinHeight);
-}
-*/
-static void BEL_ST_ParseSetting_LauncherWindowType(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "default"))
-	{
-		g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
-	}
-	else if (!strcmp(buffer, "full"))
-	{
-		g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_FULL;
-	}
-	else if (!strcmp(buffer, "software"))
-	{
-		g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_SOFTWARE;
-	}
-}
-
-static void BEL_ST_ParseSetting_LauncherExeArgs(const char *keyprefix, const char *buffer)
-{
-	BE_Cross_safeandfastcstringcopy(g_refKeenCfg.launcherExeArgs, g_refKeenCfg.launcherExeArgs+sizeof(g_refKeenCfg.launcherExeArgs), buffer);
-}
-#endif
-
-static void BEL_ST_ParseSetting_LastSelectedGameExe(const char *keyprefix, const char *buffer)
-{
-	BE_Cross_safeandfastcstringcopy(g_refKeenCfg.lastSelectedGameExe, g_refKeenCfg.lastSelectedGameExe+sizeof(g_refKeenCfg.lastSelectedGameExe), buffer);
-}
-
-static void BEL_ST_ParseSetting_LastSelectedGameVer(const char *keyprefix, const char *buffer)
-{
-	for (int i = 0; i < BE_GAMEVER_LAST; ++i)
-		if (!strcmp(buffer, refkeen_gamever_strs[i]))
-		{
-			g_refKeenCfg.lastSelectedGameVer = i;
-			break;
-		}
-}
-
-static void BEL_ST_ParseSetting_RememberDisplayNum(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.rememberDisplayNum = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.rememberDisplayNum = false;
-	}
-}
-
-static void BEL_ST_ParseSetting_VSync(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "on"))
-	{
-		g_refKeenCfg.vSync = VSYNC_ON;
-	}
-	else if (!strcmp(buffer, "off"))
-	{
-		g_refKeenCfg.vSync = VSYNC_OFF;
-	}
-	else if (!strcmp(buffer, "auto"))
-	{
-		g_refKeenCfg.vSync = VSYNC_AUTO;
-	}
-}
-
-static void BEL_ST_ParseSetting_Bilinear(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.isBilinear = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.isBilinear = false;
-	}
-}
-
-static void BEL_ST_ParseSetting_ScaleType(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "aspect"))
-	{
-		g_refKeenCfg.scaleType = SCALE_ASPECT;
-	}
-	else if (!strcmp(buffer, "fill"))
-	{
-		g_refKeenCfg.scaleType = SCALE_FILL;
-	}
-}
-
-static void BEL_ST_ParseSetting_ScaleFactor(const char *keyprefix, const char *buffer)
-{
-	g_refKeenCfg.scaleFactor = atoi(buffer);
-}
-
-static void BEL_ST_ParseSetting_ForceFullSoftScaling(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.forceFullSoftScaling = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.forceFullSoftScaling = false;
-	}
-}
-
-static void BEL_ST_ParseSetting_MouseGrab(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "commonly"))
-	{
-		g_refKeenCfg.mouseGrab = MOUSEGRAB_COMMONLY;
-	}
-	else if (!strcmp(buffer, "off"))
-	{
-		g_refKeenCfg.mouseGrab = MOUSEGRAB_OFF;
-	}
-	else if (!strcmp(buffer, "auto"))
-	{
-		g_refKeenCfg.mouseGrab = MOUSEGRAB_AUTO;
-	}
-}
-
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-static void BEL_ST_ParseSetting_AbsMouseMotion(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.absMouseMotion = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.absMouseMotion = false;
-	}
-}
-#endif
-
-static void BEL_ST_ParseSetting_SndInterThreadBufferRatio(const char *keyprefix, const char *buffer)
-{
-	g_refKeenCfg.sndInterThreadBufferRatio = atoi(buffer);
-	if (g_refKeenCfg.sndInterThreadBufferRatio <= 0)
-		g_refKeenCfg.sndInterThreadBufferRatio = 2;
-}
-
-static void BEL_ST_ParseSetting_SndSampleRate(const char *keyprefix, const char *buffer)
-{
-	g_refKeenCfg.sndSampleRate = atoi(buffer);
-	if (g_refKeenCfg.sndSampleRate <= 0)
-		g_refKeenCfg.sndSampleRate = OPL_SAMPLE_RATE;
-}
-
-static void BEL_ST_ParseSetting_SoundSubSystem(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.sndSubSystem = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.sndSubSystem = false;
-	}
-}
-
-static void BEL_ST_ParseSetting_OPLEmulation(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.oplEmulation = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.oplEmulation = false;
-	}
-}
-
-#ifdef BE_ST_ENABLE_SETTING_SB
-// FIXME: Should be defined in a better manner
-static const char *g_be_setting_sb_vals[] = {"off", "sb", "sbpro" ,"sb16"};
-
-static void BEL_ST_ParseSetting_SB(const char *keyprefix, const char *buffer)
-{
-	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_setting_sb_vals); ++i)
-		if (!strcmp(buffer, g_be_setting_sb_vals[i]))
-		{
-			g_refKeenCfg.sb = (SoundBlasterSettingType)i;
-			break;
-		}
-}
-#endif
-
-static void BEL_ST_ParseSetting_PCSpkVol(const char *keyprefix, const char *buffer)
-{
-	int val = atoi(buffer);
-	if ((val >= BE_AUDIO_VOL_MIN) && (val <= BE_AUDIO_VOL_MAX))
-		g_refKeenCfg.pcSpkVol = val;
-}
-
-static void BEL_ST_ParseSetting_OPLVol(const char *keyprefix, const char *buffer)
-{
-	int val = atoi(buffer);
-	if ((val >= BE_AUDIO_VOL_MIN) && (val <= BE_AUDIO_VOL_MAX))
-		g_refKeenCfg.oplVol = val;
-}
-
-#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
-static void BEL_ST_ParseSetting_DigiVol(const char *keyprefix, const char *buffer)
-{
-	int val = atoi(buffer);
-	if ((val >= BE_AUDIO_VOL_MIN) && (val <= BE_AUDIO_VOL_MAX))
-		g_refKeenCfg.digiVol = val;
-}
-#endif
-
-#ifndef REFKEEN_RESAMPLER_NONE
-static void BEL_ST_ParseSetting_UseResampler(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.useResampler = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.useResampler = false;
-	}
-}
-#endif
-
-#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-static void BEL_ST_ParseSetting_TouchInputToggle(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "auto"))
-	{
-		g_refKeenCfg.touchInputToggle = TOUCHINPUT_AUTO;
-	}
-	else if (!strcmp(buffer, "off"))
-	{
-		g_refKeenCfg.touchInputToggle = TOUCHINPUT_OFF;
-	}
-	else if (!strcmp(buffer, "forced"))
-	{
-		g_refKeenCfg.touchInputToggle = TOUCHINPUT_FORCED;
-	}
-}
-
-static void BEL_ST_ParseSetting_TouchInputDebugging(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.touchInputDebugging = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.touchInputDebugging = false;
-	}
-}
-#endif // REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-
-static void BEL_ST_ParseSetting_AlternativeControlScheme(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.altControlScheme.isEnabled = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.altControlScheme.isEnabled = false;
-	}
-}
-
-static void BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap(const char *keyprefix, const char *buffer)
-{
-	int keyindex, valindex;
-	for (keyindex = 0; keyindex < BE_ST_CTRL_CFG_BUTMAP_AFTERLAST; ++keyindex)
-	{
-		if (!strcmp(keyprefix, g_sdlControlSchemeKeyMapCfgKeyPrefixes[keyindex]))
-			break;
-	}
-	if (keyindex == BE_ST_CTRL_CFG_BUTMAP_AFTERLAST)
-	{
-		BE_ST_ExitWithErrorMsg("BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap: Invalid config key!\n");
-	}
-	for (valindex = 0; valindex < (int)BE_Cross_ArrayLen(g_sdlControlSchemeKeyMapCfgVals); ++valindex)
-	{
-		// Empty strings are used for SDL game controller buttons we wish to skip
-		if (g_sdlControlSchemeKeyMapCfgVals[valindex] && !strcmp(buffer, g_sdlControlSchemeKeyMapCfgVals[valindex]))
-		{
-			g_refKeenCfg.altControlScheme.actionMappings[keyindex] = valindex;
-			return;
-		}
-	}
-	g_refKeenCfg.altControlScheme.actionMappings[keyindex] = BE_Cross_ArrayLen(g_sdlControlSchemeKeyMapCfgVals) - 1; // SPECIAL - A way to toggle this off
-}
-
-static void BEL_ST_ParseSetting_AlternativeControlSchemeLeftStick(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.altControlScheme.useLeftStick = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.altControlScheme.useLeftStick = false;
-	}
-}
-
-static void BEL_ST_ParseSetting_AlternativeControlSchemeRightStick(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.altControlScheme.useRightStick = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.altControlScheme.useRightStick = false;
-	}
-}
-
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-static void BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.altControlScheme.analogMotion = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.altControlScheme.analogMotion = false;
-	}
-}
-#endif
-
-#ifdef BE_ST_ENABLE_SETTING_NOVERT
-static void BEL_ST_ParseSetting_Novert(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-		g_refKeenCfg.novert = true;
-	else if (!strcmp(buffer, "false"))
-		g_refKeenCfg.novert = false;
-}
-#endif
-
-#ifdef BE_ST_ENABLE_SETTING_LOWFPS
-static void BEL_ST_ParseSetting_LowFPS(const char *keyprefix, const char *buffer)
-{
-	if (!strcmp(buffer, "true"))
-		g_refKeenCfg.lowFPS = true;
-	else if (!strcmp(buffer, "false"))
-		g_refKeenCfg.lowFPS = false;
-}
-#endif
-
-// HACK (cfg file may be rewritten and we don't want to remove any setting)
-static bool g_sdlIsManualGameVerModeSettingRead = false;
-static void BEL_ST_ParseSetting_ManualGameVerMode(const char *keyprefix, const char *buffer)
-{
-	g_sdlIsManualGameVerModeSettingRead = true;
-	if (!strcmp(buffer, "true"))
-	{
-		g_refKeenCfg.manualGameVerMode = true;
-	}
-	else if (!strcmp(buffer, "false"))
-	{
-		g_refKeenCfg.manualGameVerMode = false;
-	}
-}
-
-#ifdef BE_CROSS_ENABLE_FARPTR_CFG
-// Same HACK again
-static bool g_sdlIsFarPtrSegOffsetSettingRead = false;
-
-static void BEL_ST_ParseSetting_FarPtrSegOffset(const char *keyprefix, const char *buffer)
-{
-	unsigned int segOffset;
-	g_sdlIsFarPtrSegOffsetSettingRead = true;
-	if (sscanf(buffer, "%X", &segOffset) == 1)
-	{
-		g_refKeenCfg.farPtrSegOffset = segOffset;
-	}
-}
-#endif
-
-// These ones are implementation-defined
-void BEL_ST_ParseSetting_DisplayNum(const char *keyprefix, const char *buffer);
-void BEL_ST_ParseSetting_SDLRendererDriver(const char *keyprefix, const char *buffer);
-void BEL_ST_SaveSDLRendererDriverToConfig(FILE *fp, const char *keyprefix, int driver);
+typedef enum {
+	BE_ST_CFG_VAL_ENUM,
+	BE_ST_CFG_VAL_HEX_INT,
+	BE_ST_CFG_VAL_INT,
+	BE_ST_CFG_VAL_DIMS,
+	BE_ST_CFG_VAL_STR,
+	BE_ST_CFG_VAL_DISPLAY_NUM,
+	BE_ST_CFG_VAL_SDL_RENDERER,
+} BE_ST_CFG_VAL_T;
 
 typedef struct {
-	const char *cfgPrefix; // Includes '=' sign
-	void (*handlerPtr)(const char *, const char *);
-} BESDLCfgEntry;
+	// Pointer to internal configuration value; Width of window dimensions.
+	void *setting;
+	// Height of window dimensions; Hidden setting marker otherwise.
+	void *ptraux;
+	// Configuration key
+	const char *key;
+	// Classification of configuration value
+	BE_ST_CFG_VAL_T valType;
+	// Values of variable meanings; An intptr one is
+	// allowed to hold a pointer, but doesn't have to.
+	int aux0;
+	intptr_t aux1, aux2;
+} BE_ST_CFG_Setting_T;
 
-static BESDLCfgEntry g_sdlCfgEntries[] = {
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-	{"fullscreen=", &BEL_ST_ParseSetting_FullScreen},
-#endif
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
-	{"fullres=", &BEL_ST_ParseSetting_FullRes},
-#endif
-	{"windowres=", &BEL_ST_ParseSetting_WindowRes},
+// Enumerated by SDL_GameControllerButton, for most
+static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
+	"a", "b", "x", "y", 0, 0, 0, "lstick", "rstick", "lshoulder", "rshoulder", "dpadup", "dpaddown", "dpadleft", "dpadright", 0, "paddle1", "paddle2", "paddle3", "paddle4",
+	"ltrigger", "rtrigger", // Actually axes but these are added as extras
+	"" // for any entry which is not set
+};
+
+// Enumerated by other enums, as well as "bool"
+static const char *g_be_setting_bool_vals[] = {"false", "true"};
 #ifdef REFKEEN_ENABLE_LAUNCHER
-//	{"launcherwindowres=", &BEL_ST_ParseSetting_LauncherWindowRes},
-	{"launcherwindowtype=", &BEL_ST_ParseSetting_LauncherWindowType},
-	{"launcherexeargs=", &BEL_ST_ParseSetting_LauncherExeArgs},
+static const char *g_be_setting_wintype_vals[] = {"default", "full", "software"};
 #endif
-	{"lastselectedgameexe=", &BEL_ST_ParseSetting_LastSelectedGameExe},
-	{"lastselectedgamever=", &BEL_ST_ParseSetting_LastSelectedGameVer},
-	{"displaynum=", &BEL_ST_ParseSetting_DisplayNum},
-	{"rememberdisplaynum=", &BEL_ST_ParseSetting_RememberDisplayNum},
-	{"sdlrenderer=", &BEL_ST_ParseSetting_SDLRendererDriver},
-	{"vsync=", &BEL_ST_ParseSetting_VSync},
-	{"bilinear=", &BEL_ST_ParseSetting_Bilinear},
-	{"scaletype=", &BEL_ST_ParseSetting_ScaleType},
-	{"scalefactor=", &BEL_ST_ParseSetting_ScaleFactor},
-	{"forcefullsoftscaling=", &BEL_ST_ParseSetting_ForceFullSoftScaling},
-	{"mousegrab=", &BEL_ST_ParseSetting_MouseGrab},
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	{"absmousemotion=", &BEL_ST_ParseSetting_AbsMouseMotion},
-#endif
-	{"sndinterthreadbufferratio=", &BEL_ST_ParseSetting_SndInterThreadBufferRatio},
-	{"sndsamplerate=", &BEL_ST_ParseSetting_SndSampleRate},
-	{"sndsubsystem=", &BEL_ST_ParseSetting_SoundSubSystem},
-	{"oplemulation=", &BEL_ST_ParseSetting_OPLEmulation},
+static const char *g_be_setting_vsync_vals[] = {"auto", "off", "on"};
+static const char *g_be_setting_scaletype_vals[] = {"aspect", "fill"};
+static const char *g_be_setting_mousegrab_vals[] = {"auto", "off", "commonly"};
 #ifdef BE_ST_ENABLE_SETTING_SB
-	{"sbemu=", &BEL_ST_ParseSetting_SB},
-#endif
-	{"pcspkvol=", &BEL_ST_ParseSetting_PCSpkVol},
-	{"oplvol=", &BEL_ST_ParseSetting_OPLVol},
-#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
-	{"digivol=", &BEL_ST_ParseSetting_DigiVol},
-#endif
-#ifndef REFKEEN_RESAMPLER_NONE
-	{"useresampler=", &BEL_ST_ParseSetting_UseResampler},
+static const char *g_be_setting_sb_vals[] = {"off", "sb", "sbpro" ,"sb16"};
 #endif
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-	{"touchinput=", &BEL_ST_ParseSetting_TouchInputToggle},
-	{"touchinputdebugging=", &BEL_ST_ParseSetting_TouchInputDebugging},
+static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 #endif
-	{"altcontrolscheme=", &BEL_ST_ParseSetting_AlternativeControlScheme},
 
-	// HACK: Copy-paste... if this is updated, check g_sdlControlSchemeKeyMapCfgKeyPrefixes too!!!
-	{"altcontrolscheme_up=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_down=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_left=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_right=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+#define DEF_ENUM(setting, key, strs, def) \
+	{&g_refKeenCfg.setting, 0, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
+#define DEF_INT(setting, key, def, min, max) \
+	{&g_refKeenCfg.setting, 0, key, BE_ST_CFG_VAL_INT, def, min, max},
+#define DEF_DIMS(width, height, key, defw, defh) \
+	{&g_refKeenCfg.width, &g_refKeenCfg.height, key, BE_ST_CFG_VAL_DIMS, defw, defh},
+#define DEF_STR(setting, key) \
+	{&g_refKeenCfg.setting, 0, key, BE_ST_CFG_VAL_STR, sizeof(g_refKeenCfg.setting)},
+#define DEF_CUSTOM_INT(setting, key, type, def) \
+	{&g_refKeenCfg.setting, 0, key, type, def},
+
+#define DEF_BOOL(setting, key, def) \
+	DEF_ENUM(setting, key, g_be_setting_bool_vals, def)
+
+#define DEF_ACTIONMAP_ENUM(index, key, def) \
+	DEF_ENUM(altControlScheme.actionMappings[index], key, g_sdlControlSchemeKeyMapCfgVals, def)
+
+#define DEF_HIDDEN_ENUM(setting, key, strs, def) \
+	{&g_refKeenCfg.setting, &g_refKeenCfg.setting, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
+
+#define DEF_HIDDEN_BOOL(setting, key, def) \
+	DEF_HIDDEN_ENUM(setting, key, g_be_setting_bool_vals, def)
+
+#define DEF_HIDDEN_HEX_INT(setting, key, def, min, max) \
+	{&g_refKeenCfg.setting, &g_refKeenCfg.setting, key, BE_ST_CFG_VAL_HEX_INT, def, min, max},
+
+
+static BE_ST_CFG_Setting_T g_be_st_settings[] = {
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
+	DEF_BOOL(isFullscreen, "fullscreen", false)
+#endif
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
+	DEF_DIMS(fullWidth, fullHeight, "fullres", 0, 0)
+#endif
+	DEF_DIMS(winWidth, winHeight, "windowres", 0, 0)
+#ifdef REFKEEN_ENABLE_LAUNCHER
+//	DEF_DIMS(launcherWinWidth, launcherWinHeight, "launcherwindowres", 0, 0)
+	DEF_ENUM(launcherWinType, "launcherwindowtype", g_be_setting_wintype_vals, LAUNCHER_WINDOW_DEFAULT)
+	DEF_STR(launcherExeArgs, "launcherexeargs")
+#endif
+	DEF_STR(lastSelectedGameExe, "lastselectedgameexe")
+	DEF_ENUM(lastSelectedGameVer, "lastselectedgamever", refkeen_gamever_strs, BE_GAMEVER_LAST)
+	DEF_CUSTOM_INT(displayNum, "displaynum", BE_ST_CFG_VAL_DISPLAY_NUM, 0)
+	DEF_BOOL(rememberDisplayNum, "rememberdisplaynum", true)
+	DEF_CUSTOM_INT(sdlRendererDriver, "sdlrenderer", BE_ST_CFG_VAL_SDL_RENDERER, -1)
+	DEF_ENUM(vSync, "vsync", g_be_setting_vsync_vals, VSYNC_OFF)
+	DEF_BOOL(isBilinear, "bilinear", true)
+	DEF_ENUM(scaleType, "scaletype", g_be_setting_scaletype_vals, SCALE_ASPECT)
+	DEF_INT(scaleFactor, "scalefactor", 2, 1, INT_MAX)
+	DEF_BOOL(forceFullSoftScaling, "forcefullsoftscaling", false)
+	DEF_ENUM(mouseGrab, "mousegrab", g_be_setting_mousegrab_vals, MOUSEGRAB_AUTO)
+#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
+	DEF_BOOL(absMouseMotion, "absmousemotion", false)
+#endif
+	DEF_INT(sndInterThreadBufferRatio, "sndinterthreadbufferratio", 2, 1, INT_MAX)
+	// 49716 may lead to unexpected behaviors on Android
+	DEF_INT(sndSampleRate, "sndsamplerate", 48000, 1, INT_MAX)
+	DEF_BOOL(sndSubSystem, "sndsubsystem", true)
+	DEF_BOOL(oplEmulation, "oplemulation", true)
+#ifdef BE_ST_ENABLE_SETTING_SB
+	DEF_ENUM(sb, "sbemu", g_be_setting_sb_vals, SOUNDBLASTER_SB16)
+#endif
+	DEF_INT(pcSpkVol, "pcspkvol", BE_AUDIO_VOL_MAX, BE_AUDIO_VOL_MIN, BE_AUDIO_VOL_MAX)
+	DEF_INT(oplVol, "oplvol", BE_AUDIO_VOL_MAX, BE_AUDIO_VOL_MIN, BE_AUDIO_VOL_MAX)
+#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
+	DEF_INT(digiVol, "digivol", BE_AUDIO_VOL_MAX, BE_AUDIO_VOL_MIN, BE_AUDIO_VOL_MAX)
+#endif
+#ifndef REFKEEN_RESAMPLER_NONE
+	DEF_BOOL(useResampler, "useresampler", true)
+#endif
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
+	#ifdef REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT
+	DEF_ENUM(touchInputToggle, "touchinput", g_be_setting_touchinput_vals, TOUCHINPUT_AUTO)
+	#else
+	DEF_ENUM(touchInputToggle, "touchinput", g_be_setting_touchinput_vals, TOUCHINPUT_OFF)
+	#endif
+	DEF_BOOL(touchInputDebugging, "touchinputdebugging", false)
+#endif
+	DEF_BOOL(altControlScheme.isEnabled, "altcontrolscheme", true)
+
+#ifdef REFKEEN_HAS_VER_KDREAMS // Reserve the d-pad for weapons/feeds in Wolf3D/S3DNA
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_UP, "altcontrolscheme_up", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_DOWN, "altcontrolscheme_down", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_LEFT, "altcontrolscheme_left", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_RIGHT, "altcontrolscheme_right", BE_ST_CTRL_BUT_DPAD_RIGHT)
+#else // FIXME: HACK (extra 2 are for triggers)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_UP, "altcontrolscheme_up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_DOWN, "altcontrolscheme_down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_LEFT, "altcontrolscheme_left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_RIGHT, "altcontrolscheme_right", BE_ST_CTRL_BUT_MAX+2)
+#endif
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	{"altcontrolscheme_jump=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_throw=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_stats=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_JUMP, "altcontrolscheme_jump", BE_ST_CTRL_BUT_A)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_THROW, "altcontrolscheme_throw", BE_ST_CTRL_BUT_B)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_STATS, "altcontrolscheme_stats", BE_ST_CTRL_BUT_X)
 #endif
 #if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	{"altcontrolscheme_fire=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_strafe=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_FIRE, "altcontrolscheme_fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_STRAFE, "altcontrolscheme_strafe", BE_ST_CTRL_BUT_B)
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	{"altcontrolscheme_drink=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_bolt=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_nuke=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_fastturn=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_DRINK, "altcontrolscheme_drink", BE_ST_CTRL_BUT_A)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_BOLT, "altcontrolscheme_bolt", BE_ST_CTRL_BUT_X)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_NUKE, "altcontrolscheme_nuke", BE_ST_CTRL_BUT_Y)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_FASTTURN, "altcontrolscheme_fastturn", BE_ST_CTRL_BUT_RSHOULDER)
 #endif
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	{"altcontrolscheme_scrolls=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	// HACK for getting right trigger (technically an axis)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_SCROLLS, "altcontrolscheme_scrolls", BE_ST_CTRL_BUT_MAX+1)
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	{"altcontrolscheme_use=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_run=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_weapon1=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_weapon2=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_weapon3=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_weapon4=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_weapon5=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_weapon6=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
-	{"altcontrolscheme_map=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	// HACK for getting right trigger (technically an axis)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_USE, "altcontrolscheme_use", BE_ST_CTRL_BUT_MAX+1)
+
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_RUN, "altcontrolscheme_run", BE_ST_CTRL_BUT_RSHOULDER)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON1, "altcontrolscheme_weapon1", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON2, "altcontrolscheme_weapon2", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON3, "altcontrolscheme_weapon3", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON4, "altcontrolscheme_weapon4", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON5, "altcontrolscheme_weapon5", BE_ST_CTRL_BUT_X)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON6, "altcontrolscheme_weapon6", BE_ST_CTRL_BUT_Y)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_MAP, "altcontrolscheme_map", BE_ST_CTRL_BUT_A)
 #endif
 #if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	{"altcontrolscheme_funckeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	// HACK for getting left trigger (technically an axis)
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS, "altcontrolscheme_funckeys", BE_ST_CTRL_BUT_MAX)
 #endif
-	{"altcontrolscheme_debugkeys=", &BEL_ST_ParseSetting_AlternativeControlSchemeKeyMap},
+	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS, "altcontrolscheme_debugkeys", BE_ST_CTRL_BUT_LSTICK)
 
-	{"altcontrolscheme_lstick=", &BEL_ST_ParseSetting_AlternativeControlSchemeLeftStick},
-	{"altcontrolscheme_rstick=", &BEL_ST_ParseSetting_AlternativeControlSchemeRightStick},
+	DEF_BOOL(altControlScheme.useLeftStick, "altcontrolscheme_lstick", true)
+	DEF_BOOL(altControlScheme.useRightStick, "altcontrolscheme_rstick", false)
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-	{"altcontrolscheme_analogmotion=", &BEL_ST_ParseSetting_AlternativeControlSchemeAnalogMotion},
+	DEF_BOOL(altControlScheme.analogMotion, "altcontrolscheme_analogmotion", false)
 #endif
+
 #ifdef BE_ST_ENABLE_SETTING_NOVERT
-	{"novert=", &BEL_ST_ParseSetting_Novert},
+	DEF_BOOL(novert, "novert", false)
 #endif
 #ifdef BE_ST_ENABLE_SETTING_LOWFPS
-	{"lowfps=", &BEL_ST_ParseSetting_LowFPS},
+	DEF_BOOL(lowFPS, "lowfps", false)
 #endif
-
-	{"manualgamevermode=", &BEL_ST_ParseSetting_ManualGameVerMode},
+	DEF_HIDDEN_BOOL(manualGameVerMode, "manualgamevermode", false)
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG
-	{"farptrsegoffset=", &BEL_ST_ParseSetting_FarPtrSegOffset},
+	DEF_HIDDEN_HEX_INT(farPtrSegOffset, "farptrsegoffset", BE_ST_DEFAULT_FARPTRSEGOFFSET, 0U, 65535U)
 #endif
 };
 
+// These ones are implementation-defined
+void BEL_ST_ParseSetting_DisplayNum(int *displayNum, const char *buffer);
+void BEL_ST_ParseSetting_SDLRendererDriver(int *driver, const char *buffer);
+void BEL_ST_SaveSDLRendererDriverToConfig(FILE *fp, const char *key, int driver);
 
+static void BEL_ST_SetConfigDefaults(void)
+{
+	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_st_settings); ++i)
+		switch (g_be_st_settings[i].valType)
+		{
+		case BE_ST_CFG_VAL_STR:
+			break;
+		case BE_ST_CFG_VAL_DIMS:
+			*(int *)g_be_st_settings[i].setting = g_be_st_settings[i].aux0;
+			*(int *)g_be_st_settings[i].ptraux = g_be_st_settings[i].aux1;
+			break;
+		default:
+			*(int *)g_be_st_settings[i].setting = g_be_st_settings[i].aux0;
+		}
+}
+
+static void BEL_ST_ParseEnum(int *val, const char *list[], int len, const char *buffer)
+{
+	for (int i = 0; i < len; ++i)
+		if (list[i] && !strcmp(buffer, list[i]))
+		{
+			*val = i;
+			break;
+		}
+}
+
+static void BEL_ST_WriteEnum(FILE *fp, const char *key, const char *list[], int len, int val)
+{
+	fprintf(fp, "%s=%s\n", key, ((val >= 0) && (val < len)) ? list[val] : "");
+}
+
+static void BEL_ST_ParseHexInt(int *val, int min, int max, const char *buffer)
+{
+	long ret = strtol(buffer, 0, 16);
+	if ((ret >= min) && (ret <= max))
+		*val = ret;
+}
+
+static void BEL_ST_WriteHexInt(FILE *fp, const char *key, int val)
+{
+	fprintf(fp, "%s=0x%x\n", key, val);
+}
+
+static void BEL_ST_ParseInt(int *val, int min, int max, const char *buffer)
+{
+	int ret = atoi(buffer);
+	if ((ret >= min) && (ret <= max))
+		*val = ret;
+}
+
+static void BEL_ST_WriteInt(FILE *fp, const char *key, int val)
+{
+	fprintf(fp, "%s=%d\n", key, val);
+}
+
+static void BEL_ST_ParseDims(int *w, int *h, const char *buffer)
+{
+	sscanf(buffer, "%dx%d", w, h);
+}
+
+static void BEL_ST_WriteDims(FILE *fp, const char *key, int w, int h)
+{
+	fprintf(fp, "%s=%dx%d\n", key, w, h);
+}
+
+static void BEL_ST_ParseString(char *val, int len, const char *buffer)
+{
+	BE_Cross_safeandfastcstringcopy(val, val + len, buffer);
+}
+
+static void BEL_ST_WriteString(FILE *fp, const char *key, const char *val)
+{
+	fprintf(fp, "%s=%s\n", key, val);
+}
+
+static void BEL_ST_ParseSetting(BE_ST_CFG_Setting_T *setting, const char *valStr)
+{
+	switch (setting->valType)
+	{
+	case BE_ST_CFG_VAL_ENUM:
+		BEL_ST_ParseEnum((int *)setting->setting, (const char **)setting->aux1, setting->aux2, valStr);
+		break;
+	case BE_ST_CFG_VAL_DIMS:
+		BEL_ST_ParseDims((int *)setting->setting, (int *)setting->ptraux, valStr);
+		break;
+	case BE_ST_CFG_VAL_HEX_INT:
+		BEL_ST_ParseHexInt((int *)setting->setting, setting->aux1, setting->aux2, valStr);
+		break;
+	case BE_ST_CFG_VAL_INT:
+		BEL_ST_ParseInt((int *)setting->setting, setting->aux1, setting->aux2, valStr);
+		break;
+	case BE_ST_CFG_VAL_DISPLAY_NUM:
+		BEL_ST_ParseSetting_DisplayNum((int *)setting->setting, valStr);
+		break;
+	case BE_ST_CFG_VAL_SDL_RENDERER:
+		BEL_ST_ParseSetting_SDLRendererDriver((int *)setting->setting, valStr);
+		break;
+	case BE_ST_CFG_VAL_STR:
+		BEL_ST_ParseString((char *)setting->setting, setting->aux0, valStr);
+		break;
+	}
+}
+
+static void BEL_ST_SaveSetting(FILE *fp, const BE_ST_CFG_Setting_T *setting)
+{
+	switch (setting->valType)
+	{
+	case BE_ST_CFG_VAL_ENUM:
+		BEL_ST_WriteEnum(fp, setting->key, (const char **)setting->aux1, setting->aux2, *(int *)setting->setting);
+		break;
+	case BE_ST_CFG_VAL_DIMS:
+		BEL_ST_WriteDims(fp, setting->key, *(int *)setting->setting, *(int *)setting->ptraux);
+		break;
+	case BE_ST_CFG_VAL_HEX_INT:
+		BEL_ST_WriteHexInt(fp, setting->key, *(int *)setting->setting);
+		break;
+	case BE_ST_CFG_VAL_INT:
+		BEL_ST_WriteInt(fp, setting->key, *(int *)setting->setting);
+		break;
+	case BE_ST_CFG_VAL_DISPLAY_NUM:
+		BEL_ST_WriteInt(fp, setting->key, *(int *)setting->setting);
+		break;
+	case BE_ST_CFG_VAL_SDL_RENDERER:
+		BEL_ST_SaveSDLRendererDriverToConfig(fp, setting->key, *(int *)setting->setting);
+		break;
+	case BE_ST_CFG_VAL_STR:
+		BEL_ST_WriteString(fp, setting->key, (const char *)setting->setting);
+		break;
+	}
+}
 
 void BEL_ST_ParseConfig(void)
 {
-	// Defaults
-	g_refKeenCfg.isFullscreen = false; // Always exists internally, regardless of REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-	g_refKeenCfg.fullWidth = 0;
-	g_refKeenCfg.fullHeight = 0;
-	g_refKeenCfg.winWidth = 0;
-	g_refKeenCfg.winHeight = 0;
-#ifdef REFKEEN_ENABLE_LAUNCHER
-/*
-	g_refKeenCfg.launcherWinWidth = 0;
-	g_refKeenCfg.launcherWinHeight = 0;
-*/
-	g_refKeenCfg.launcherExeArgs[0] = '\0';
-	g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_DEFAULT;
-#endif
-	g_refKeenCfg.lastSelectedGameExe[0] = '\0';
-	g_refKeenCfg.lastSelectedGameVer = BE_GAMEVER_LAST;
-	g_refKeenCfg.displayNum = 0;
-	g_refKeenCfg.rememberDisplayNum = true;
-	g_refKeenCfg.sdlRendererDriver = -1;
-	g_refKeenCfg.vSync = VSYNC_OFF;
-	g_refKeenCfg.isBilinear = true;
-	g_refKeenCfg.scaleType = SCALE_ASPECT;
-	g_refKeenCfg.scaleFactor = 2;
-	g_refKeenCfg.forceFullSoftScaling = false;
-	g_refKeenCfg.mouseGrab = MOUSEGRAB_AUTO;
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	g_refKeenCfg.absMouseMotion = false;
-#endif
-	g_refKeenCfg.sndInterThreadBufferRatio = 2;
-	g_refKeenCfg.sndSampleRate = 48000; // 49716 may lead to unexpected behaviors on Android
-	g_refKeenCfg.sndSubSystem = true;
-	g_refKeenCfg.oplEmulation = true;
-#ifdef BE_ST_ENABLE_SETTING_SB
-	g_refKeenCfg.sb = SOUNDBLASTER_SB16;
-#else
-	g_refKeenCfg.sb = SOUNDBLASTER_OFF;
-#endif
-	g_refKeenCfg.pcSpkVol = BE_AUDIO_VOL_MAX;
-	g_refKeenCfg.oplVol = BE_AUDIO_VOL_MAX;
-#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
-	g_refKeenCfg.digiVol = BE_AUDIO_VOL_MAX;
-#endif
-#ifndef REFKEEN_RESAMPLER_NONE
-	g_refKeenCfg.useResampler = true;
-#endif
-#if (defined REFKEEN_CONFIG_ENABLE_TOUCHINPUT) && (defined REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT)
-	g_refKeenCfg.touchInputToggle = TOUCHINPUT_AUTO;
-#else
-	g_refKeenCfg.touchInputToggle = TOUCHINPUT_OFF;
-#endif
-	g_refKeenCfg.touchInputDebugging = false;
-	g_refKeenCfg.altControlScheme.isEnabled = true;
-
-#ifdef REFKEEN_HAS_VER_KDREAMS // Reserve the d-pad for weapons/feeds in Wolf3D/S3DNA
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = BE_ST_CTRL_BUT_DPAD_UP;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = BE_ST_CTRL_BUT_DPAD_DOWN;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = BE_ST_CTRL_BUT_DPAD_LEFT;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = BE_ST_CTRL_BUT_DPAD_RIGHT;
-#else // FIXME: HACK (extra 2 are for triggers)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = BE_ST_CTRL_BUT_MAX+2;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = BE_ST_CTRL_BUT_MAX+2;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = BE_ST_CTRL_BUT_MAX+2;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = BE_ST_CTRL_BUT_MAX+2;
-#endif
-#ifdef REFKEEN_HAS_VER_KDREAMS
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = BE_ST_CTRL_BUT_A;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = BE_ST_CTRL_BUT_B;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = BE_ST_CTRL_BUT_X;
-#endif
-#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = BE_ST_CTRL_BUT_LSHOULDER;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = BE_ST_CTRL_BUT_B;
-#endif
-#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = BE_ST_CTRL_BUT_A;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT] = BE_ST_CTRL_BUT_X;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = BE_ST_CTRL_BUT_Y;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN] = BE_ST_CTRL_BUT_RSHOULDER;
-#endif
-#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = BE_ST_CTRL_BUT_MAX+1; // HACK for getting right trigger (technically an axis)
-#endif
-#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE] = BE_ST_CTRL_BUT_MAX+1; // HACK for getting right trigger (technically an axis)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN] = BE_ST_CTRL_BUT_RSHOULDER;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1] = BE_ST_CTRL_BUT_DPAD_DOWN;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2] = BE_ST_CTRL_BUT_DPAD_RIGHT;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON3] = BE_ST_CTRL_BUT_DPAD_LEFT;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON4] = BE_ST_CTRL_BUT_DPAD_UP;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON5] = BE_ST_CTRL_BUT_X;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON6] = BE_ST_CTRL_BUT_Y;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP] = BE_ST_CTRL_BUT_A;
-#endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = BE_ST_CTRL_BUT_MAX; // HACK for getting left trigger (technically an axis)
-#endif
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = BE_ST_CTRL_BUT_LSTICK;
-
-	g_refKeenCfg.altControlScheme.useLeftStick = true;
-	g_refKeenCfg.altControlScheme.useRightStick = false;
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-	g_refKeenCfg.altControlScheme.analogMotion = false;
-#endif
-#ifdef BE_ST_ENABLE_SETTING_NOVERT
-	g_refKeenCfg.novert = false;
-#endif
-#ifdef BE_ST_ENABLE_SETTING_LOWFPS
-	g_refKeenCfg.lowFPS = false;
-#endif
-
-	g_refKeenCfg.manualGameVerMode = false;
-#ifdef BE_CROSS_ENABLE_FARPTR_CFG
-	g_refKeenCfg.farPtrSegOffset = BE_ST_DEFAULT_FARPTRSEGOFFSET;
-#endif
+	BEL_ST_SetConfigDefaults();
 	// Try to load config
 	FILE *fp = BE_Cross_open_additionalfile_for_reading(REFKEEN_CONFIG_FILENAME);
 	if (!fp)
-	{
 		return;
-	}
+
 	char buffer[80];
 	while (fgets(buffer, sizeof(buffer), fp))
 	{
 		size_t len = strlen(buffer);
 		if (!len)
-		{
 			continue;
-		}
+		char *sep = strchr(buffer, '=');
+		if (!sep)
+			continue;
 		if (buffer[len-1] == '\n')
-		{
 			buffer[len-1] = '\0';
-		}
-		for (int i = 0; i < (int)BE_Cross_ArrayLen(g_sdlCfgEntries); ++i)
+		*sep = '\0';
+		for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_st_settings); ++i)
 		{
-			if (!strncmp(g_sdlCfgEntries[i].cfgPrefix, buffer, strlen(g_sdlCfgEntries[i].cfgPrefix)))
+			BE_ST_CFG_Setting_T *setting = &g_be_st_settings[i];
+			if (!strcmp(buffer, setting->key))
 			{
-				g_sdlCfgEntries[i].handlerPtr(g_sdlCfgEntries[i].cfgPrefix, buffer+strlen(g_sdlCfgEntries[i].cfgPrefix));
+				// Unhide a setting if it's hidden by default
+				if (setting->valType != BE_ST_CFG_VAL_DIMS)
+					setting->ptraux = 0;
+				BEL_ST_ParseSetting(setting, sep + 1);
 				break;
 			}
 		}
@@ -789,86 +427,14 @@ void BEL_ST_SaveConfig(void)
 	// Try to save current settings just in case (first time file is created or new fields added)
 	FILE *fp = BE_Cross_open_additionalfile_for_overwriting(REFKEEN_CONFIG_FILENAME);
 	if (!fp)
-	{
 		return;
-	}
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-	fprintf(fp, "fullscreen=%s\n", g_refKeenCfg.isFullscreen ? "true" : "false");
-#endif
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
-	fprintf(fp, "fullres=%dx%d\n", g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight);
-#endif
-	fprintf(fp, "windowres=%dx%d\n", g_refKeenCfg.winWidth, g_refKeenCfg.winHeight);
-#ifdef REFKEEN_ENABLE_LAUNCHER
-	//fprintf(fp, "launcherwindowres=%dx%d\n", g_refKeenCfg.launcherWinWidth, g_refKeenCfg.launcherWinHeight);
-	fprintf(fp, "launcherwindowtype=%s\n", g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_DEFAULT ? "default" : (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL ? "full" : "software"));
-	fprintf(fp, "launcherexeargs=%s\n", g_refKeenCfg.launcherExeArgs);
-#endif
-	fprintf(fp, "lastselectedgameexe=%s\n", g_refKeenCfg.lastSelectedGameExe);
-	fprintf(fp, "lastselectedgamever=%s\n", (g_refKeenCfg.lastSelectedGameVer != BE_GAMEVER_LAST) ? refkeen_gamever_strs[g_refKeenCfg.lastSelectedGameVer] : "");
 
-	if (g_refKeenCfg.rememberDisplayNum)
-		g_refKeenCfg.displayNum = BEL_ST_GetWindowDisplayNum();
-
-	fprintf(fp, "displaynum=%d\n", g_refKeenCfg.displayNum);
-	fprintf(fp, "rememberdisplaynum=%s\n", g_refKeenCfg.rememberDisplayNum ? "true" : "false");
-	BEL_ST_SaveSDLRendererDriverToConfig(fp, "sdlrenderer=", g_refKeenCfg.sdlRendererDriver);
-	fprintf(fp, "vsync=%s\n", (g_refKeenCfg.vSync == VSYNC_AUTO) ? "auto" : ((g_refKeenCfg.vSync == VSYNC_ON) ? "on" : "off"));
-	fprintf(fp, "bilinear=%s\n", g_refKeenCfg.isBilinear ? "true" : "false");
-	fprintf(fp, "scaletype=%s\n", (g_refKeenCfg.scaleType == SCALE_ASPECT) ? "aspect" : "fill");
-	fprintf(fp, "scalefactor=%d\n", g_refKeenCfg.scaleFactor);
-	fprintf(fp, "forcefullsoftscaling=%s\n", g_refKeenCfg.forceFullSoftScaling ? "true" : "false");
-	fprintf(fp, "mousegrab=%s\n", (g_refKeenCfg.mouseGrab == MOUSEGRAB_AUTO) ? "auto" : ((g_refKeenCfg.mouseGrab == MOUSEGRAB_COMMONLY) ? "commonly" : "off"));
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	fprintf(fp, "absmousemotion=%s\n", g_refKeenCfg.absMouseMotion ? "true" : "false");
-#endif
-	fprintf(fp, "sndinterthreadbufferratio=%d\n", g_refKeenCfg.sndInterThreadBufferRatio);
-	fprintf(fp, "sndsamplerate=%d\n", g_refKeenCfg.sndSampleRate);
-	fprintf(fp, "sndsubsystem=%s\n", g_refKeenCfg.sndSubSystem ? "true" : "false");
-	fprintf(fp, "oplemulation=%s\n", g_refKeenCfg.oplEmulation ? "true" : "false");
-#ifdef BE_ST_ENABLE_SETTING_SB
-	fprintf(fp, "sbemu=%s\n", g_be_setting_sb_vals[g_refKeenCfg.sb]);
-#endif
-	fprintf(fp, "pcspkvol=%d\n", g_refKeenCfg.pcSpkVol);
-	fprintf(fp, "oplvol=%d\n", g_refKeenCfg.oplVol);
-#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
-	fprintf(fp, "digivol=%d\n", g_refKeenCfg.digiVol);
-#endif
-#ifndef REFKEEN_RESAMPLER_NONE
-	fprintf(fp, "useresampler=%s\n", g_refKeenCfg.useResampler ? "true" : "false");
-#endif
-#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-	fprintf(fp, "touchinput=%s\n", (g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) ? "auto" : ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED) ? "forced" : "off"));
-	fprintf(fp, "touchinputdebugging=%s\n", g_refKeenCfg.touchInputDebugging ? "true" : "false");
-#endif
-	fprintf(fp, "altcontrolscheme=%s\n", g_refKeenCfg.altControlScheme.isEnabled ? "true" : "false");
-	// Go through an array of keys
-	for (int keyindex = 0; keyindex < BE_ST_CTRL_CFG_BUTMAP_AFTERLAST; ++keyindex)
+	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_st_settings); ++i)
 	{
-		fprintf(fp, "%s%s\n", g_sdlControlSchemeKeyMapCfgKeyPrefixes[keyindex], g_sdlControlSchemeKeyMapCfgVals[g_refKeenCfg.altControlScheme.actionMappings[keyindex]]);
+		const BE_ST_CFG_Setting_T *setting = &g_be_st_settings[i];
+		// Write setting only if it's not hidden
+		if ((setting->valType == BE_ST_CFG_VAL_DIMS) || !setting->ptraux)
+			BEL_ST_SaveSetting(fp, &g_be_st_settings[i]);
 	}
-	fprintf(fp, "altcontrolscheme_lstick=%s\n", g_refKeenCfg.altControlScheme.useLeftStick ? "true" : "false");
-	fprintf(fp, "altcontrolscheme_rstick=%s\n", g_refKeenCfg.altControlScheme.useRightStick ? "true" : "false");
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-	fprintf(fp, "altcontrolscheme_analogmotion=%s\n", g_refKeenCfg.altControlScheme.analogMotion ? "true" : "false");
-#endif
-#ifdef BE_ST_ENABLE_SETTING_NOVERT
-	fprintf(fp, "novert=%s\n", g_refKeenCfg.novert ? "true" : "false");
-#endif
-#ifdef BE_ST_ENABLE_SETTING_LOWFPS
-	fprintf(fp, "lowfps=%s\n", g_refKeenCfg.lowFPS ? "true" : "false");
-#endif
-	if (g_sdlIsManualGameVerModeSettingRead)
-	{
-		// This should be a relatively hidden setting
-		fprintf(fp, "manualgamevermode=%s\n", g_refKeenCfg.manualGameVerMode ? "true" : "false");
-	}
-#ifdef BE_CROSS_ENABLE_FARPTR_CFG
-	if (g_sdlIsFarPtrSegOffsetSettingRead)
-	{
-		// Another hidden setting
-		fprintf(fp, "farptrsegoffset=%X\n", g_refKeenCfg.farPtrSegOffset);
-	}
-#endif
 	fclose(fp);
 }
