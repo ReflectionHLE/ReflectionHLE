@@ -129,9 +129,7 @@ int main(int argc, char **argv)
 	while ((argc >= 2) && !showHelp)
 	{
 		if (!(*argv[1]))
-		{
 			showHelp = true;
-		}
 		else if (!BE_Cross_strcasecmp(1+argv[1], "gamever"))
 		{
 			if ((argc == 2) || !(*argv[2]))
@@ -139,11 +137,11 @@ int main(int argc, char **argv)
 				showHelp = true;
 				break;
 			}
+
 			for (selectedGameVerVal = 0; selectedGameVerVal < BE_GAMEVER_LAST; ++selectedGameVerVal)
-			{
 				if (!BE_Cross_strcasecmp(argv[2], refkeen_gamever_strs[selectedGameVerVal]))
 					break;
-			}
+
 			if (selectedGameVerVal == BE_GAMEVER_LAST)
 			{
 				showHelp = true;
@@ -213,9 +211,7 @@ int main(int argc, char **argv)
 	BE_ST_InitCommon();
 
 	if (showHelp)
-	{
 		show_command_line_help();
-	}
 	else
 	{
 		BE_Cross_PrepareGameInstallations();
@@ -223,21 +219,20 @@ int main(int argc, char **argv)
 		if (startLauncher)
 		{
 			BE_Launcher_Start();
+			BE_ST_ShutdownAll();
+			return 0;
 		}
-		else
 #endif
-		{
-			BE_Cross_InitGame(selectedGameVerVal);
+		BE_Cross_InitGame(selectedGameVerVal);
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-			extern void (*refkeen_game_exe_main_funcs[BE_GAMEVER_LAST])(void);
-			extern void (*refkeen_slidecat_exe_main_funcs[BE_GAMEVER_LAST])(void);
+		extern void (*refkeen_game_exe_main_funcs[BE_GAMEVER_LAST])(void);
+		extern void (*refkeen_slidecat_exe_main_funcs[BE_GAMEVER_LAST])(void);
 
-			BE_Cross_StartGame(argc, argv, showSlides ? refkeen_slidecat_exe_main_funcs[refkeen_current_gamever] :
-			                               (skipIntro ? refkeen_game_exe_main_funcs[refkeen_current_gamever] : NULL));
+		BE_Cross_StartGame(argc, argv, showSlides ? refkeen_slidecat_exe_main_funcs[refkeen_current_gamever] :
+		                               (skipIntro ? refkeen_game_exe_main_funcs[refkeen_current_gamever] : NULL));
 #else
-			BE_Cross_StartGame(argc, argv, NULL);
+		BE_Cross_StartGame(argc, argv, NULL);
 #endif
-		}
 	}
 
 #else // REFKEEN_CONFIG_ENABLE_CMDLINE
