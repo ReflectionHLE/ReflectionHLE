@@ -1065,26 +1065,26 @@ void BE_ST_Launcher_Shutdown(void)
 
 	g_refKeenCfg.sdlRendererDriver = g_beVideoSettingsMenuItem_SDLRenderer.choice - 1;
 	g_refKeenCfg.isBilinear = g_beVideoSettingsMenuItem_Bilinear.choice;
-	g_refKeenCfg.scaleType = (ScaleTypeSettingType)g_beVideoSettingsMenuItem_ScaleType.choice;
+	g_refKeenCfg.scaleType = g_beVideoSettingsMenuItem_ScaleType.choice;
 	g_refKeenCfg.scaleFactor = g_beVideoSettingsMenuItem_ScaleFactor.choice + 1;
-	g_refKeenCfg.vSync = (VSyncSettingType)g_beVideoSettingsMenuItem_VSync.choice;
+	g_refKeenCfg.vSync = g_beVideoSettingsMenuItem_VSync.choice;
 	g_refKeenCfg.forceFullSoftScaling = g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice;
 #ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
-	g_refKeenCfg.launcherWinType = (LauncherWindowSettingType)g_beVideoSettingsMenuItem_LauncherWindowType.choice;
+	g_refKeenCfg.launcherWinType = g_beVideoSettingsMenuItem_LauncherWindowType.choice;
 #endif
 
 	g_refKeenCfg.sndSampleRate = g_be_soundsSettingsChoices_sndSampleRateVals[g_beSoundSettingsMenuItem_SndSampleRate.choice];
 	g_refKeenCfg.sndSubSystem = g_beSoundSettingsMenuItem_SndSubSystem.choice;
 	g_refKeenCfg.oplEmulation = g_beSoundSettingsMenuItem_OPLEmulation.choice;
 #ifdef BE_ST_ENABLE_SETTING_SB
-	g_refKeenCfg.sb = (SoundBlasterSettingType)g_beSoundSettingsMenuItem_SB.choice;
+	g_refKeenCfg.sb = g_beSoundSettingsMenuItem_SB.choice;
 #endif
 #ifndef REFKEEN_RESAMPLER_NONE
 	g_refKeenCfg.useResampler = g_beSoundSettingsMenuItem_UseResampler.choice;
 #endif
 
 	g_refKeenCfg.altControlScheme.isEnabled = g_beInputSettingsMenuItem_ControllerScheme.choice;
-	g_refKeenCfg.mouseGrab = (MouseGrabSettingType)g_beInputSettingsMenuItem_MouseGrab.choice;
+	g_refKeenCfg.mouseGrab = g_beInputSettingsMenuItem_MouseGrab.choice;
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	g_refKeenCfg.absMouseMotion = g_beInputSettingsMenuItem_AbsMouseMotion.choice;
 #endif
@@ -1092,7 +1092,7 @@ void BE_ST_Launcher_Shutdown(void)
 	g_refKeenCfg.novert = !g_beInputSettingsMenuItem_VertAnalogMotion.choice;
 #endif
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-	g_refKeenCfg.touchInputToggle = (TouchInputSettingType)g_beInputSettingsMenuItem_TouchControls.choice;
+	g_refKeenCfg.touchInputToggle = g_beInputSettingsMenuItem_TouchControls.choice;
 	g_refKeenCfg.touchInputDebugging = g_beInputSettingsMenuItem_TouchInputDebugging.choice;
 #endif
 

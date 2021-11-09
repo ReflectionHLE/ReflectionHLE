@@ -57,53 +57,57 @@ typedef enum { LAUNCHER_WINDOW_DEFAULT, LAUNCHER_WINDOW_FULL, LAUNCHER_WINDOW_SO
 
 #define SELECTED_EXE_FILENAME_BUFFERLEN 13
 
+// This is only used for clarification;
+// int is used for compatibility with be_cfg.c.
+typedef int cfg_bool;
+
 typedef struct
 {
-	bool isFullscreen;
+	cfg_bool isFullscreen;
 	int fullWidth, fullHeight;
 	int winWidth, winHeight;
 #ifdef REFKEEN_ENABLE_LAUNCHER
 	// Now using just winWidth and winHeight due to seamless launcher->game transitions
 	//int launcherWinWidth, launcherWinHeight;
-	LauncherWindowSettingType launcherWinType;
+	int launcherWinType;
 	char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
 #endif
 	char lastSelectedGameExe[SELECTED_EXE_FILENAME_BUFFERLEN];
 	int lastSelectedGameVer;
 	int displayNum;
-	bool rememberDisplayNum;
+	cfg_bool rememberDisplayNum;
 	int sdlRendererDriver;
-	VSyncSettingType vSync;
-	bool isBilinear;
-	ScaleTypeSettingType scaleType;
+	int vSync;
+	cfg_bool isBilinear;
+	int scaleType;
 	int scaleFactor;
-	bool forceFullSoftScaling;
-	MouseGrabSettingType mouseGrab;
+	cfg_bool forceFullSoftScaling;
+	int mouseGrab;
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	bool absMouseMotion;
+	cfg_bool absMouseMotion;
 #endif
 	int sndInterThreadBufferRatio;
 	int sndSampleRate;
-	bool sndSubSystem;
-	bool oplEmulation;
-	SoundBlasterSettingType sb;
+	cfg_bool sndSubSystem;
+	cfg_bool oplEmulation;
+	int sb;
 	int pcSpkVol, oplVol, digiVol;
 #ifndef REFKEEN_RESAMPLER_NONE
-	bool useResampler;
+	cfg_bool useResampler;
 #endif
-	TouchInputSettingType touchInputToggle;
-	bool touchInputDebugging;
+	int touchInputToggle;
+	cfg_bool touchInputDebugging;
 	struct
 	{
 		int actionMappings[BE_ST_CTRL_CFG_BUTMAP_AFTERLAST]; // Buttons/triggers
-		bool useLeftStick;
-		bool useRightStick;
-		bool analogMotion;
-		bool isEnabled;
+		cfg_bool useLeftStick;
+		cfg_bool useRightStick;
+		cfg_bool analogMotion;
+		cfg_bool isEnabled;
 	} altControlScheme;
-	bool novert;
-	bool lowFPS;
-	bool manualGameVerMode;
+	cfg_bool novert;
+	cfg_bool lowFPS;
+	cfg_bool manualGameVerMode;
 	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
 } RefKeenConfig;
 
