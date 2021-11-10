@@ -30,6 +30,7 @@
 #include "be_launcher.h"
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 #include "be_title_and_version.h"
+#include "backend/video/be_video_emu.h" // TXT_COLS_NUM
 #endif
 
 #include "SDL_main.h"
@@ -49,7 +50,7 @@ const char *be_main_arg_newcfgdir = NULL;
 BE_GameVer_T refkeen_current_gamever;
 
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
-static void show_command_line_help()
+static void show_command_line_help(void)
 {
 	// HACK - For text mode emulation (and exit handler)
 	BE_ST_PrepareForGameStartupWithoutAudio();
@@ -63,6 +64,7 @@ static void show_command_line_help()
 #endif
 	BE_ST_puts("List of possible command line arguments:");
 	BE_ST_puts("-gamever <VER>: Select game version supported by this executable.");
+	BE_ST_puts("-listgamevers: Show a list of all game versions supported by this executable.");
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
 	BE_ST_puts("-skipintro: Skip what is found in the original intro EXE and start game.");
 #ifdef REFKEEN_HAS_VER_CATABYSS
@@ -83,20 +85,39 @@ static void show_command_line_help()
 #endif
 	BE_ST_puts("");
 	BE_ST_puts("Note: The path passed to -datadir or -cfgdir is assumed to exist.");
+
+	BE_ST_HandleExit(0);
+}
+
+static void show_game_vers(void)
+{
+	char buffer[TXT_COLS_NUM] = "", *ptr = buffer;
+	// HACK - For text mode emulation (and exit handler)
+	BE_ST_PrepareForGameStartupWithoutAudio();
+
+	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " ***");
 	BE_ST_puts("");
 	BE_ST_puts("Supported game versions:");
-	for (int gameVerVal = 0; gameVerVal < BE_GAMEVER_LAST; ++gameVerVal)
+	int gameVerVal = 0, attempt = 0;
+	while (gameVerVal < BE_GAMEVER_LAST)
 	{
-		if (gameVerVal < BE_GAMEVER_LAST-1)
+		int len = snprintf(ptr, sizeof(buffer) - (ptr - buffer),
+		                   "%s%s", refkeen_gamever_strs[gameVerVal],
+		                   (gameVerVal < BE_GAMEVER_LAST-1) ? ", " : ".");
+		if (len + (ptr - buffer) >= sizeof(buffer))
 		{
-			BE_ST_printf("%s, ", refkeen_gamever_strs[gameVerVal]);
-			if (gameVerVal % 6 == 5) // HACK for line splitting
-				BE_ST_puts("");
+			if (++attempt == 2)
+				BE_ST_ExitWithErrorMsg("show_game_vers: Unexpectedly long version string!");
+			*ptr = '\0';
+			BE_ST_puts(buffer);
+			ptr = buffer;
+			continue;
 		}
-		else
-			BE_ST_printf("%s.\n", refkeen_gamever_strs[gameVerVal]);
+		ptr += len;
+		++gameVerVal;
+		attempt = 0;
 	}
-
+	BE_ST_puts(buffer);
 	BE_ST_HandleExit(0);
 }
 #endif // REFKEEN_CONFIG_ENABLE_CMDLINE
@@ -106,7 +127,7 @@ int main(int argc, char **argv)
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 
 	// Parse arguments
-	bool showHelp = false;
+	bool showHelp = false, showGameVers = false;
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
 	bool skipIntro = false;
 	bool showSlides = false;
@@ -150,6 +171,11 @@ int main(int argc, char **argv)
 
 			argv += 2;
 			argc -= 2;
+		}
+		else if (!BE_Cross_strcasecmp(1+argv[1], "listgamevers"))
+		{
+			showGameVers = true;
+			break;
 		}
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
 		else if (!BE_Cross_strcasecmp(1+argv[1], "skipintro"))
@@ -212,6 +238,8 @@ int main(int argc, char **argv)
 
 	if (showHelp)
 		show_command_line_help();
+	else if (showGameVers)
+		show_game_vers();
 	else
 	{
 		BE_Cross_PrepareGameInstallations();
