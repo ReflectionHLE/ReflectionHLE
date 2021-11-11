@@ -31,6 +31,7 @@
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 #include "be_title_and_version.h"
 #include "backend/video/be_video_emu.h" // TXT_COLS_NUM
+#include "backend/gamedefs/be_gamedefs_structs.h"
 #endif
 
 #include "SDL_main.h"
@@ -65,14 +66,6 @@ static void show_command_line_help(void)
 	BE_ST_puts("List of possible command line arguments:");
 	BE_ST_puts("-gamever <VER>: Select game version supported by this executable.");
 	BE_ST_puts("-listgamevers: Show a list of all game versions supported by this executable.");
-#ifdef REFKEEN_HAS_VER_CATADVENTURES
-	BE_ST_puts("-skipintro: Skip what is found in the original intro EXE and start game.");
-#ifdef REFKEEN_HAS_VER_CATABYSS
-	BE_ST_puts("-showslides: Show the electronic catalog / hint book.");
-#else
-	BE_ST_puts("-showslides: Show the hint book.");
-#endif
-#endif
 	BE_ST_puts("-passorigargs <...>: Pass all following arguments to the game.");
 	BE_ST_puts("-datadir <...>: Specify an alternative location for modifiable");
 	BE_ST_puts("game files like saved games, separated by game version.");
@@ -89,36 +82,106 @@ static void show_command_line_help(void)
 	BE_ST_HandleExit(0);
 }
 
+static void game_vers_cached_print(
+	char (*buffer)[TXT_COLS_NUM], char **ptr,
+	const char *verStr, const char *subVerStr, const char *endMark)
+{
+	int attempt = 0, len;
+	while (1)
+	{
+		len = snprintf(*ptr, sizeof(*buffer) - (*ptr - *buffer),
+		               "%s%s%s%s", verStr,
+		               subVerStr ? ":" : "",
+		               subVerStr ? subVerStr : "", endMark);
+		if (len + (*ptr - *buffer) >= sizeof(*buffer))
+		{
+			if (++attempt == 2)
+				BE_ST_ExitWithErrorMsg("game_vers_cached_print: Unexpectedly long string!");
+			**ptr = '\0';
+			BE_ST_puts(*buffer);
+			*ptr = *buffer;
+			continue;
+		}
+		break;
+	}
+	*ptr += len;
+}
+
 static void show_game_vers(void)
 {
 	char buffer[TXT_COLS_NUM] = "", *ptr = buffer;
 	// HACK - For text mode emulation (and exit handler)
 	BE_ST_PrepareForGameStartupWithoutAudio();
 
-	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " ***");
+	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " - Supported game versions ***");
 	BE_ST_puts("");
-	BE_ST_puts("Supported game versions:");
-	int gameVerVal = 0, attempt = 0;
-	while (gameVerVal < BE_GAMEVER_LAST)
+	for (int gameVerVal = 0; gameVerVal < BE_GAMEVER_LAST; ++gameVerVal)
 	{
-		int len = snprintf(ptr, sizeof(buffer) - (ptr - buffer),
-		                   "%s%s", refkeen_gamever_strs[gameVerVal],
-		                   (gameVerVal < BE_GAMEVER_LAST-1) ? ", " : ".");
-		if (len + (ptr - buffer) >= sizeof(buffer))
-		{
-			if (++attempt == 2)
-				BE_ST_ExitWithErrorMsg("show_game_vers: Unexpectedly long version string!");
-			*ptr = '\0';
-			BE_ST_puts(buffer);
-			ptr = buffer;
-			continue;
-		}
-		ptr += len;
-		++gameVerVal;
-		attempt = 0;
+		bool wasPrinted = false;
+		const char *lastSubGameVerStr = NULL;
+
+		// Printing is technically postponed by one line, due to the
+		// need to decide if to end a string with a comma or a period
+		const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[gameVerVal]->exeFiles;
+		for (; exeFile->mainFuncPtr; ++exeFile)
+			if (exeFile->subGameVerStr)
+			{
+				game_vers_cached_print(
+					&buffer, &ptr,
+					refkeen_gamever_strs[gameVerVal],
+					lastSubGameVerStr, ", ");
+
+				lastSubGameVerStr = exeFile->subGameVerStr;
+			}
+
+		game_vers_cached_print(
+			&buffer, &ptr,
+			refkeen_gamever_strs[gameVerVal],
+			lastSubGameVerStr,
+			(gameVerVal < BE_GAMEVER_LAST - 1) ? ", " : ".");
 	}
 	BE_ST_puts(buffer);
 	BE_ST_HandleExit(0);
+}
+
+static bool parse_game_ver(char *arg, int *gameVer, void (**mainFuncPtr)(void))
+{
+	char *sep = strchr(arg, ':');
+	bool ret = false;
+	if (sep)
+		*sep = '\0';
+
+	int selectedGameVer;
+	for (selectedGameVer = 0; selectedGameVer < BE_GAMEVER_LAST; ++selectedGameVer)
+		if (!BE_Cross_strcasecmp(arg, refkeen_gamever_strs[selectedGameVer]))
+			break;
+
+	if (selectedGameVer < BE_GAMEVER_LAST)
+	{
+		if (sep)
+		{
+			const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[selectedGameVer]->exeFiles;
+			for (; exeFile->mainFuncPtr; ++exeFile)
+				if (exeFile->subGameVerStr &&
+				    !BE_Cross_strcasecmp(sep + 1, exeFile->subGameVerStr))
+				{
+					*gameVer = selectedGameVer;
+					*mainFuncPtr = exeFile->mainFuncPtr;
+					ret = true;
+					break;
+				}
+		}
+		else
+		{
+			*gameVer = selectedGameVer;
+			*mainFuncPtr = 0;
+			ret = true;
+		}
+	}
+
+	if (sep)
+		*sep = ':';
+	return ret;
 }
 #endif // REFKEEN_CONFIG_ENABLE_CMDLINE
 
@@ -128,11 +191,8 @@ int main(int argc, char **argv)
 
 	// Parse arguments
 	bool showHelp = false, showGameVers = false;
-#ifdef REFKEEN_HAS_VER_CATADVENTURES
-	bool skipIntro = false;
-	bool showSlides = false;
-#endif
 	int selectedGameVerVal = BE_GAMEVER_LAST;
+	void (*mainFuncPtr)(void);
 
 #ifdef REFKEEN_PLATFORM_MACOS
 	// A weird OS X hack, ignoring an argument possibly passed
@@ -159,11 +219,7 @@ int main(int argc, char **argv)
 				break;
 			}
 
-			for (selectedGameVerVal = 0; selectedGameVerVal < BE_GAMEVER_LAST; ++selectedGameVerVal)
-				if (!BE_Cross_strcasecmp(argv[2], refkeen_gamever_strs[selectedGameVerVal]))
-					break;
-
-			if (selectedGameVerVal == BE_GAMEVER_LAST)
+			if (!parse_game_ver(argv[2], &selectedGameVerVal, &mainFuncPtr))
 			{
 				showHelp = true;
 				break;
@@ -177,20 +233,6 @@ int main(int argc, char **argv)
 			showGameVers = true;
 			break;
 		}
-#ifdef REFKEEN_HAS_VER_CATADVENTURES
-		else if (!BE_Cross_strcasecmp(1+argv[1], "skipintro"))
-		{
-			skipIntro = true;
-			++argv;
-			--argc;
-		}
-		else if (!BE_Cross_strcasecmp(1+argv[1], "showslides"))
-		{
-			showSlides = true;
-			++argv;
-			--argc;
-		}
-#endif
 		else if (!BE_Cross_strcasecmp(1+argv[1], "passorigargs"))
 		{
 			// The remaining args will be passed to the
@@ -252,15 +294,7 @@ int main(int argc, char **argv)
 		}
 #endif
 		BE_Cross_InitGame(selectedGameVerVal);
-#ifdef REFKEEN_HAS_VER_CATADVENTURES
-		extern void (*refkeen_game_exe_main_funcs[BE_GAMEVER_LAST])(void);
-		extern void (*refkeen_slidecat_exe_main_funcs[BE_GAMEVER_LAST])(void);
-
-		BE_Cross_StartGame(argc, argv, showSlides ? refkeen_slidecat_exe_main_funcs[refkeen_current_gamever] :
-		                               (skipIntro ? refkeen_game_exe_main_funcs[refkeen_current_gamever] : NULL));
-#else
-		BE_Cross_StartGame(argc, argv, NULL);
-#endif
+		BE_Cross_StartGame(argc, argv, mainFuncPtr);
 	}
 
 #else // REFKEEN_CONFIG_ENABLE_CMDLINE
