@@ -55,6 +55,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_sodfg14[] = {
 	{
 		g_be_embeddedgamefiles_sodfg14,
 		NULL,
+		NULL,
 		"SPEAR.EXE",
 		&REFKEEN_NS_ENCLOSE(sodfg14, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(sodfg14, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),

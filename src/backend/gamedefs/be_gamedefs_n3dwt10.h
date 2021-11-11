@@ -26,6 +26,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_n3dwt10[] = {
 	{
 		g_be_embeddedgamefiles_n3dwt10,
 		NULL,
+		NULL,
 		"NOAH3D.EXE|NOAH3DOS.EXE",
 		&REFKEEN_NS_ENCLOSE(n3dwt10, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(n3dwt10, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),

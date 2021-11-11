@@ -27,6 +27,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_sdmfg10[] = {
 	{
 		g_be_embeddedgamefiles_sdmfg10,
 		NULL,
+		NULL,
 		"SOD.EXE",
 		&REFKEEN_NS_ENCLOSE(sdmfg10, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(sdmfg10, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),

@@ -85,6 +85,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 	{
 		NULL,
 		NULL,
+		NULL,
 		"CATARM.EXE",
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catarm, intro_exe_main),
 		NULL,
@@ -95,6 +96,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 	{
 		g_be_embeddedgamefiles_catarm102_armgame,
 		NULL,
+		"game",
 		"ARMGAME.EXE",
 		&REFKEEN_NS_ENCLOSE(catarm, armgame_exe_main),
 		&REFKEEN_NS_ENCLOSE(catarm, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
@@ -105,6 +107,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 	{
 		g_be_embeddedgamefiles_catarm102_hintcat,
 		"Catacomb Armageddon 3-D Hint Book v1.12",
+		"hintbook",
 		"HINTCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catarm, slidecat_exe_main),
 		&REFKEEN_NS_ENCLOSE(catarm, RefKeen_Load_Embedded_Resources_From_slidecat_exe),

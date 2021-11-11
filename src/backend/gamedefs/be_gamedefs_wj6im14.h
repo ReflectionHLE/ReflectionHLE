@@ -27,6 +27,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_wj6im14[] = {
 	{
 		g_be_embeddedgamefiles_wj6im14,
 		NULL,
+		NULL,
 		"WOLF3D_J.EXE",
 		&REFKEEN_NS_ENCLOSE(wj6im14, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(wj6im14, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),

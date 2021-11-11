@@ -50,7 +50,8 @@ typedef enum {
 
 typedef struct {
 	const BE_EmbeddedGameFileDetails_T *embeddedFiles;
-	const char *subDescription; // NULL if there's nothing to add
+	const char *subDescription; // For launcher, if non-null
+	const char *subGameVerStr; // Like subDescription, but for command-line
 	const char *exeNames; // NULL if all we want is a main function pointer
 	void (*mainFuncPtr)(void);
 	void (*embeddedFilesLoaderFuncPtr)(void);

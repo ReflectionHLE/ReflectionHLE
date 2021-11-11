@@ -54,6 +54,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse100[] = {
 	{
 		g_be_embeddedgamefiles_kdreamse100,
 		NULL,
+		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
@@ -100,6 +101,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_kdreamsc100[] =
 static const BE_EXEFileDetails_T g_be_exefiles_kdreamsc100[] = {
 	{
 		g_be_embeddedgamefiles_kdreamsc100,
+		NULL,
 		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
@@ -149,6 +151,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse113[] = {
 	{
 		g_be_embeddedgamefiles_kdreamse113,
 		NULL,
+		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
@@ -157,6 +160,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse113[] = {
 		false
 	},
 	{
+		NULL,
 		NULL,
 		NULL,
 		"LOADSCN.EXE",
@@ -204,6 +208,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_kdreamsc105[] =
 static const BE_EXEFileDetails_T g_be_exefiles_kdreamsc105[] = {
 	{
 		g_be_embeddedgamefiles_kdreamsc105,
+		NULL,
 		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
@@ -255,6 +260,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse193[] = {
 	{
 		g_be_embeddedgamefiles_kdreamse193,
 		NULL,
+		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
@@ -302,6 +308,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse120[] = {
 	{
 		g_be_embeddedgamefiles_kdreamse120,
 		NULL,
+		NULL,
 		"KDREAMS.EXE",
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
@@ -345,6 +352,7 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_kdreams2015[] = {
 
 static const BE_EXEFileDetails_T g_be_exefiles_kdreams2015[] = {
 	{
+		NULL,
 		NULL,
 		NULL,
 		NULL, // No EXE file

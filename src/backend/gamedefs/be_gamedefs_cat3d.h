@@ -42,6 +42,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_cat3d100[] = {
 	{
 		g_be_embeddedgamefiles_cat3d100,
 		NULL,
+		NULL,
 		"CAT3D.EXE",
 		&REFKEEN_NS_ENCLOSE(cat3d, cat3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(cat3d, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
@@ -86,6 +87,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_cat3d122[] = {
 static const BE_EXEFileDetails_T g_be_exefiles_cat3d122[] = {
 	{
 		g_be_embeddedgamefiles_cat3d122,
+		NULL,
 		NULL,
 		"CAT3D.EXE",
 		&REFKEEN_NS_ENCLOSE(cat3d, cat3d_exe_main),

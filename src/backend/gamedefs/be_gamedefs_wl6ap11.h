@@ -29,6 +29,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl6ap11[] = {
 	{
 		g_be_embeddedgamefiles_wl6ap11,
 		NULL,
+		NULL,
 		"WOLF3D.EXE",
 		&REFKEEN_NS_ENCLOSE(wl6ap11, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(wl6ap11, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
@@ -121,6 +122,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_wl1ap12[] = {
 static const BE_EXEFileDetails_T g_be_exefiles_wl1ap12[] = {
 	{
 		g_be_embeddedgamefiles_wl1ap12,
+		NULL,
 		NULL,
 		"WOLF3D.EXE",
 		&REFKEEN_NS_ENCLOSE(wl6ap11, wolf3d_exe_main),

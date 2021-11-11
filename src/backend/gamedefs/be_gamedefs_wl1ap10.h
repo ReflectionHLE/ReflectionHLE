@@ -27,6 +27,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl1ap10[] = {
 	{
 		g_be_embeddedgamefiles_wl1ap10,
 		NULL,
+		NULL,
 		"WOLF3D.EXE",
 		&REFKEEN_NS_ENCLOSE(wl1ap10, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(wl1ap10, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),

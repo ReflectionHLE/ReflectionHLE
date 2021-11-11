@@ -84,6 +84,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 	{
 		NULL,
 		NULL,
+		NULL,
 		"CATAPOC.EXE",
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catapoc, intro_exe_main),
 		NULL,
@@ -94,6 +95,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 	{
 		g_be_embeddedgamefiles_catapoc101_apocgame,
 		NULL,
+		"game",
 		"APOCGAME.EXE",
 		&REFKEEN_NS_ENCLOSE(catapoc, apocgame_exe_main),
 		&REFKEEN_NS_ENCLOSE(catapoc, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
@@ -104,6 +106,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 	{
 		g_be_embeddedgamefiles_catapoc101_hintcat,
 		"Catacomb Apocalypse 3-D Hint Book v1.13",
+		"hintbook",
 		"HINTCAT.EXE",
 		&REFKEEN_NS_ENCLOSE(catapoc, slidecat_exe_main),
 		&REFKEEN_NS_ENCLOSE(catapoc, RefKeen_Load_Embedded_Resources_From_slidecat_exe),
