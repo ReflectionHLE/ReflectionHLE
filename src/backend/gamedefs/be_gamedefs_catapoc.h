@@ -76,7 +76,7 @@ static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catapoc101_apoc
 };
 
 static const BE_EmbeddedGameFileDetails_T g_be_embeddedgamefiles_catapoc101_hintcat[] = {
-	{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6dd0},
+	{"TEXTSCN.SCN", 4000, 0xf7773f42, 0x6ef0},
 	{0}
 };
 
