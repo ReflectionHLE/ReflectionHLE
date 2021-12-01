@@ -921,6 +921,39 @@ LRstruct LevelRatios[8];
 LRstruct LevelRatios[20];
 #endif
 
+// REFKEEN: New sound hook for timing
+
+#ifdef GAMEVER_NOAH3D
+
+static void IncSoundHook (void)
+{
+	SD_PlaySound(D_INCSND);
+}
+
+#else
+
+static int soundHookCounter;
+static int soundHookSkipsDist;
+
+static void IncSoundHook (void)
+{
+	if (!SD_SoundPlaying())
+	{
+		soundHookCounter += soundHookSkipsDist;
+		SD_PlaySound(ENDBONUS1SND);
+	}
+}
+
+static int GetSoundHookCounter (void)
+{
+	BE_ST_LockAudioRecursively();
+	int x = soundHookCounter;
+	BE_ST_UnlockAudioRecursively();
+	return x;
+}
+
+#endif // GAMEVER_NOAH3D or not
+
 void LevelCompleted (void)
 {
 	#define VBLWAIT	30
@@ -1351,10 +1384,11 @@ void LevelCompleted (void)
 	//
 	if (timeleft)
 	{
+		SD_SetUserHook(IncSoundHook);
 		for (i=0;i<=timeleft;i++)
 		{
 			ShowBonus(bonus+(id0_long_t)i*PAR_AMOUNT);
-			SD_PlaySound(D_INCSND);
+//			SD_PlaySound(D_INCSND);
 			VW_UpdateScreen();
 			BJ_Breathe();
 			if (IN_CheckAck())
@@ -1362,7 +1396,8 @@ void LevelCompleted (void)
 			RollDelay();
 		}
 		VW_UpdateScreen();
-		SD_PlaySound(D_INCSND);
+		SD_SetUserHook(0);
+//		SD_PlaySound(D_INCSND);
 		while (SD_SoundPlaying())
 			BJ_BreatheWithShortDelay();
 	}
@@ -1396,18 +1431,20 @@ void LevelCompleted (void)
 	IN_StartAck();
 
 	#define RATIOXX		29
+	SD_SetUserHook(IncSoundHook);
 	for (i=0;i<=kr;i++)
 	{
 		BE_Cross_itoa_dec(i,tempstr);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,13,tempstr);
-		SD_PlaySound(D_INCSND);
+//		SD_PlaySound(D_INCSND);
 		VW_UpdateScreen();
 		BJ_Breathe();
 		if (IN_CheckAck())
 			goto done;
 		RollDelay();
 	}
+	SD_SetUserHook(0);
 
 	if (kr==100)
 	{
@@ -1423,25 +1460,28 @@ void LevelCompleted (void)
 		SD_StopSound();
 		SD_PlaySound(NOBONUSSND);
 	}
-	else
-		SD_PlaySound(D_INCSND);
+	// REFKEEN: Let IncSoundHook play the sound
+//	else
+//		SD_PlaySound(D_INCSND);
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
 		BJ_BreatheWithShortDelay();
 
+	SD_SetUserHook(IncSoundHook);
 	for (i=0;i<=tr;i++)
 	{
 		BE_Cross_itoa_dec(i,tempstr);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,15,tempstr);
-		SD_PlaySound(D_INCSND);
+//		SD_PlaySound(D_INCSND);
 		VW_UpdateScreen();
 		BJ_Breathe();
 		if (IN_CheckAck())
 			goto done;
 		RollDelay();
 	}
+	SD_SetUserHook(0);
 
 	if (tr==100)
 	{
@@ -1457,25 +1497,28 @@ void LevelCompleted (void)
 		SD_StopSound();
 		SD_PlaySound(NOBONUSSND);
 	}
-	else
-		SD_PlaySound(D_INCSND);
+	// REFKEEN: Let IncSoundHook play the sound
+//	else
+//		SD_PlaySound(D_INCSND);
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
 		BJ_BreatheWithShortDelay();
 
+	SD_SetUserHook(IncSoundHook);
 	for (i=0;i<=sr;i++)
 	{
 		BE_Cross_itoa_dec(i,tempstr);
 		x=RATIOXX-strlen(tempstr)*2;
 		Write(x,17,tempstr);
-		SD_PlaySound(D_INCSND);
+//		SD_PlaySound(D_INCSND);
 		VW_UpdateScreen();
 		BJ_Breathe();
 		if (IN_CheckAck())
 			goto done;
 		RollDelay();
 	}
+	SD_SetUserHook(0);
 
 	if (sr==100)
 	{
@@ -1491,8 +1534,9 @@ void LevelCompleted (void)
 		SD_StopSound();
 		SD_PlaySound(NOBONUSSND);
 	}
-	else
-		SD_PlaySound(D_INCSND);
+	// REFKEEN: Let IncSoundHook play the sound
+//	else
+//		SD_PlaySound(D_INCSND);
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
@@ -1502,6 +1546,7 @@ void LevelCompleted (void)
 	// JUMP STRAIGHT HERE IF KEY PRESSED
 	//
 	done:
+	SD_SetUserHook(0);
 
 	perfect = (kr==100)&&(tr==100)&&(sr==100);
 
@@ -1714,19 +1759,26 @@ void LevelCompleted (void)
 	 bonus=timeleft*PAR_AMOUNT;
 	 if (bonus)
 	 {
+	  soundHookCounter = 0;
+	  soundHookSkipsDist = PAR_AMOUNT/10;
+	  SD_SetUserHook(IncSoundHook);
 	  for (i=0;i<=timeleft;i++)
 	  {
 	   BE_Cross_ltoa_dec((id0_long_t)i*PAR_AMOUNT,tempstr);
 	   x=36-strlen(tempstr)*2;
 	   Write(x,7,tempstr);
-	   if (!(i%(PAR_AMOUNT/10)))
-		 SD_PlaySound(ENDBONUS1SND);
+//	   if (!(i%(PAR_AMOUNT/10)))
+//		 SD_PlaySound(ENDBONUS1SND);
 	   VW_UpdateScreen();
-	   while(SD_SoundPlaying())
+	   if (!(i%(PAR_AMOUNT/10)))
+	     while(GetSoundHookCounter() <= i)
 		 BJ_BreatheWithShortDelay();
+//	   while(SD_SoundPlaying())
+//		 BJ_BreatheWithShortDelay();
 	   if (IN_CheckAck())
 		 goto done;
 	  }
+	  SD_SetUserHook(0);
 
 	  VW_UpdateScreen();
 	  SD_PlaySound(ENDBONUS2SND);
@@ -1744,20 +1796,27 @@ void LevelCompleted (void)
 	 // KILL RATIO
 	 //
 	 ratio=kr;
+	 soundHookCounter = 0;
+	 soundHookSkipsDist = 10;
+	 SD_SetUserHook(IncSoundHook);
 	 for (i=0;i<=ratio;i++)
 	 {
 	  BE_Cross_itoa_dec(i,tempstr);
 	  x=RATIOXX-strlen(tempstr)*2;
 	  Write(x,14,tempstr);
-	  if (!(i%10))
-		SD_PlaySound(ENDBONUS1SND);
+//	  if (!(i%10))
+//		SD_PlaySound(ENDBONUS1SND);
 	  VW_UpdateScreen ();
-	  while(SD_SoundPlaying())
+	  if (!(i%10))
+	    while(GetSoundHookCounter() <= i)
 		BJ_BreatheWithShortDelay();
+//	  while(SD_SoundPlaying())
+//		BJ_BreatheWithShortDelay();
 
 	  if (IN_CheckAck())
 		goto done;
 	 }
+	 SD_SetUserHook(0);
 	 if (ratio==100)
 	 {
 	   VW_WaitVBL(VBLWAIT);
@@ -1788,21 +1847,28 @@ void LevelCompleted (void)
 	 // SECRET RATIO
 	 //
 	 ratio=sr;
+	 soundHookCounter = 0;
+	 soundHookSkipsDist = 10;
+	 SD_SetUserHook(IncSoundHook);
 	 for (i=0;i<=ratio;i++)
 	 {
 	  BE_Cross_itoa_dec(i,tempstr);
 	  x=RATIOXX-strlen(tempstr)*2;
 	  Write(x,16,tempstr);
-	  if (!(i%10))
-		SD_PlaySound(ENDBONUS1SND);
+//	  if (!(i%10))
+//		SD_PlaySound(ENDBONUS1SND);
 	  VW_UpdateScreen ();
-	  while(SD_SoundPlaying())
+	  if (!(i%10))
+	    while(GetSoundHookCounter() <= i)
 		BJ_BreatheWithShortDelay();
+//	  while(SD_SoundPlaying())
+//		BJ_BreatheWithShortDelay();
 	  BJ_Breathe();
 
 	  if (IN_CheckAck())
 		goto done;
 	 }
+	 SD_SetUserHook(0);
 	 if (ratio==100)
 	 {
 	   VW_WaitVBL(VBLWAIT);
@@ -1832,19 +1898,26 @@ void LevelCompleted (void)
 	 // TREASURE RATIO
 	 //
 	 ratio=tr;
+	 soundHookCounter = 0;
+	 soundHookSkipsDist = 10;
+	 SD_SetUserHook(IncSoundHook);
 	 for (i=0;i<=ratio;i++)
 	 {
 	  BE_Cross_itoa_dec(i,tempstr);
 	  x=RATIOXX-strlen(tempstr)*2;
 	  Write(x,18,tempstr);
-	  if (!(i%10))
-		SD_PlaySound(ENDBONUS1SND);
+//	  if (!(i%10))
+//		SD_PlaySound(ENDBONUS1SND);
 	  VW_UpdateScreen ();
-	  while(SD_SoundPlaying())
+	  if (!(i%10))
+	    while(GetSoundHookCounter() <= i)
 		BJ_BreatheWithShortDelay();
+//	  while(SD_SoundPlaying())
+//		BJ_BreatheWithShortDelay();
 	  if (IN_CheckAck())
 		goto done;
 	 }
+	 SD_SetUserHook(0);
 	 if (ratio==100)
 	 {
 	   VW_WaitVBL(VBLWAIT);
@@ -1874,6 +1947,7 @@ void LevelCompleted (void)
 	 // JUMP STRAIGHT HERE IF KEY PRESSED
 	 //
 	 done:
+	 SD_SetUserHook(0);
 
 	 BE_Cross_itoa_dec(kr,tempstr);
 	 x=RATIOXX-strlen(tempstr)*2;
