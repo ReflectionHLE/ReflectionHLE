@@ -808,8 +808,6 @@ void BJ_Breathe(void)
 	id0_int_t pics[2]={L_GUYPIC,L_GUY2PIC};
 
 
-	// REFKEEN TODO: Sleep might be a problem in S3DNA when used in loop with RollDelay
-	BE_ST_ShortSleep();
 	if (SD_GetTimeCount()>max)
 	{
 		which^=1;
@@ -832,7 +830,12 @@ void BJ_Breathe(void)
 	}
 }
 
-
+// REFKEEN: A thin wrapper over BJ_Breathe that also adds a short sleep
+static void BJ_BreatheWithShortDelay(void)
+{
+	BE_ST_ShortSleep();
+	BJ_Breathe();
+}
 
 // *** S3DNA RESTORATION ***
 // Additional functions for LevelCompleted
@@ -1296,18 +1299,17 @@ void LevelCompleted (void)
 		lasttime = SD_GetTimeCount();
 		do
 		{
-			BJ_Breathe();
+			BJ_BreatheWithShortDelay();
 			VW_UpdateScreen();
 			if (IN_CheckAck())
 				break;
-			BE_ST_ShortSleep();
 		} while (SD_GetTimeCount() - lasttime < 2*TickBase);
 
 		if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 			PicturePause();
 
 		while (SD_SoundPlaying())
-			BJ_Breathe();
+			BJ_BreatheWithShortDelay();
 	}
 	VWB_DrawPic(96,112,W_PARPIC);
 	Write(19,14,parTimes[gamestate.mapon].timestr);
@@ -1362,7 +1364,7 @@ void LevelCompleted (void)
 		VW_UpdateScreen();
 		SD_PlaySound(D_INCSND);
 		while (SD_SoundPlaying())
-			BJ_Breathe();
+			BJ_BreatheWithShortDelay();
 	}
 	else
 		SD_PlaySound(NOBONUSSND);
@@ -1372,7 +1374,7 @@ void LevelCompleted (void)
 	lasttime = SD_GetTimeCount();
 	do
 	{
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 		VW_UpdateScreen();
 		if (IN_CheckAck())
 			break;
@@ -1426,7 +1428,7 @@ void LevelCompleted (void)
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 
 	for (i=0;i<=tr;i++)
 	{
@@ -1460,7 +1462,7 @@ void LevelCompleted (void)
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 
 	for (i=0;i<=sr;i++)
 	{
@@ -1494,7 +1496,7 @@ void LevelCompleted (void)
 
 	VW_UpdateScreen();
 	while (SD_SoundPlaying())
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 
 	//
 	// JUMP STRAIGHT HERE IF KEY PRESSED
@@ -1545,7 +1547,7 @@ void LevelCompleted (void)
 	IN_StartAck();
 	SD_SetTimeCount(0);
 	while (!IN_CheckAck())
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 
 	if (Keyboard[sc_P] && MS_CheckParm(GAMEVER_WOLF3D_DEBUGPARM))
 		PicturePause();
@@ -1721,7 +1723,7 @@ void LevelCompleted (void)
 		 SD_PlaySound(ENDBONUS1SND);
 	   VW_UpdateScreen();
 	   while(SD_SoundPlaying())
-		 BJ_Breathe();
+		 BJ_BreatheWithShortDelay();
 	   if (IN_CheckAck())
 		 goto done;
 	  }
@@ -1729,7 +1731,7 @@ void LevelCompleted (void)
 	  VW_UpdateScreen();
 	  SD_PlaySound(ENDBONUS2SND);
 	  while(SD_SoundPlaying())
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 	 }
 
 
@@ -1751,7 +1753,7 @@ void LevelCompleted (void)
 		SD_PlaySound(ENDBONUS1SND);
 	  VW_UpdateScreen ();
 	  while(SD_SoundPlaying())
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 
 	  if (IN_CheckAck())
 		goto done;
@@ -1779,7 +1781,7 @@ void LevelCompleted (void)
 
 	 VW_UpdateScreen();
 	 while(SD_SoundPlaying())
-	   BJ_Breathe();
+	   BJ_BreatheWithShortDelay();
 
 
 	 //
@@ -1795,7 +1797,7 @@ void LevelCompleted (void)
 		SD_PlaySound(ENDBONUS1SND);
 	  VW_UpdateScreen ();
 	  while(SD_SoundPlaying())
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 	  BJ_Breathe();
 
 	  if (IN_CheckAck())
@@ -1823,7 +1825,7 @@ void LevelCompleted (void)
 	   SD_PlaySound(ENDBONUS2SND);
 	 VW_UpdateScreen();
 	 while(SD_SoundPlaying())
-	   BJ_Breathe();
+	   BJ_BreatheWithShortDelay();
 
 
 	 //
@@ -1839,7 +1841,7 @@ void LevelCompleted (void)
 		SD_PlaySound(ENDBONUS1SND);
 	  VW_UpdateScreen ();
 	  while(SD_SoundPlaying())
-		BJ_Breathe();
+		BJ_BreatheWithShortDelay();
 	  if (IN_CheckAck())
 		goto done;
 	 }
@@ -1865,7 +1867,7 @@ void LevelCompleted (void)
 	 SD_PlaySound(ENDBONUS2SND);
 	 VW_UpdateScreen();
 	 while(SD_SoundPlaying())
-	   BJ_Breathe();
+	   BJ_BreatheWithShortDelay();
 
 
 	 //
@@ -1952,7 +1954,7 @@ void LevelCompleted (void)
 	SD_SetTimeCount(0);
 	IN_StartAck();
 	while(!IN_CheckAck())
-	  BJ_Breathe();
+	  BJ_BreatheWithShortDelay();
 
 //
 // done
