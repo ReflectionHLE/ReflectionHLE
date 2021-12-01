@@ -185,7 +185,8 @@ static const	id0_char_t			*ParmStrings[] =
 #endif
 							id0_nil_t
 						};
-static	void			(*SoundUserHook)(void);
+// REFKEEN: Call SoundUserHook from id_sd_a.c, thus it's now non-static
+void			(*SoundUserHook)(void);
 // *** S3DNA RESTORATION ***
 // Apparently variables moved around here, while adding the MIDI handlers
 #ifdef GAMEVER_NOAH3D
@@ -3336,7 +3337,10 @@ SD_Shutdown(void)
 void
 SD_SetUserHook(void (* hook)(void))
 {
+	// REFKEEN: Add lock to make things safer
+	BE_ST_LockAudioRecursively();
 	SoundUserHook = hook;
+	BE_ST_UnlockAudioRecursively();
 }
 
 // *** ALPHA RESTORATION ***

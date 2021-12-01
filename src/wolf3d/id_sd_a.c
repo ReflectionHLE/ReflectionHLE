@@ -68,7 +68,7 @@ id0_boolean_t pcindicate;
 #endif
 
 // REFKEEN - We may use uint_fast16_t instead of id0_word_t
-//static uint_fast16_t count_time;
+static uint_fast16_t count_time;
 static uint_fast16_t count_fx;
 static uint_fast16_t extreme;
 
@@ -85,17 +85,20 @@ static void DOFX(void)
 	SDL_ALSoundService();
 }
 
-#if 0 // REFKEEN: LocalTime has no use and TimeCount is updated differently
+// REFKEEN: LocalTime has no use and TimeCount is updated differently.
+// But make use of SoundUserHook for the intermission screen.
+extern void (*SoundUserHook)(void);
+
 static void TIME(void)
 {
-	if (count_time >= 2)
+	if (!(count_time & 1) && SoundUserHook)
 	{
 //		++LocalTime;
-		++TimeCount;
-		count_time = 0;
+//		++TimeCount;
+//		count_time = 0;
+		SoundUserHook();
 	}
 }
-#endif
 
 #ifndef GAMEVER_NOAH3D // *** S3DNA + ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL920312)
@@ -153,10 +156,8 @@ void SDL_t0FastAsmService(void)
 	{
 		count_fx = 0;
 		DOFX();
-#if 0
 		++count_time;
 		TIME();
-#endif
 	}
 
 #ifdef GAMEVER_NOAH3D // *** S3DNA RESTORATION ***
@@ -176,10 +177,8 @@ void SDL_t0FastAsmService(void)
 //
 void SDL_t0SlowAsmService(void)
 {
-#if 0
 	++count_time;
 	TIME();
-#endif
 	if (pcSound || alSound)
 		DOFX();
 }
