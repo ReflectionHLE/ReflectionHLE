@@ -57,13 +57,12 @@ typedef enum { LAUNCHER_WINDOW_DEFAULT, LAUNCHER_WINDOW_FULL, LAUNCHER_WINDOW_SO
 
 #define SELECTED_EXE_FILENAME_BUFFERLEN 13
 
-// This is only used for clarification;
-// int is used for compatibility with be_cfg.c.
-typedef int cfg_bool;
+// Notes: Certain bool fields are actually int for compatibility with be_cfg.c.
+// Generally speaking, only a limited set of field types is used.
 
 typedef struct
 {
-	cfg_bool isFullscreen;
+	int/*bool*/ isFullscreen;
 	int fullWidth, fullHeight;
 	int winWidth, winHeight;
 #ifdef REFKEEN_ENABLE_LAUNCHER
@@ -75,39 +74,39 @@ typedef struct
 	char lastSelectedGameExe[SELECTED_EXE_FILENAME_BUFFERLEN];
 	int lastSelectedGameVer;
 	int displayNum;
-	cfg_bool rememberDisplayNum;
+	int/*bool*/ rememberDisplayNum;
 	int sdlRendererDriver;
 	int vSync;
-	cfg_bool isBilinear;
+	int/*bool*/ isBilinear;
 	int scaleType;
 	int scaleFactor;
-	cfg_bool forceFullSoftScaling;
+	int/*bool*/ forceFullSoftScaling;
 	int mouseGrab;
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	cfg_bool absMouseMotion;
+	int/*bool*/ absMouseMotion;
 #endif
 	int sndInterThreadBufferRatio;
 	int sndSampleRate;
-	cfg_bool sndSubSystem;
-	cfg_bool oplEmulation;
+	int/*bool*/ sndSubSystem;
+	int/*bool*/ oplEmulation;
 	int sb;
 	int pcSpkVol, oplVol, digiVol;
 #ifndef REFKEEN_RESAMPLER_NONE
-	cfg_bool useResampler;
+	int/*bool*/ useResampler;
 #endif
 	int touchInputToggle;
-	cfg_bool touchInputDebugging;
+	int/*bool*/ touchInputDebugging;
 	struct
 	{
 		int actionMappings[BE_ST_CTRL_CFG_BUTMAP_AFTERLAST]; // Buttons/triggers
-		cfg_bool useLeftStick;
-		cfg_bool useRightStick;
-		cfg_bool analogMotion;
-		cfg_bool isEnabled;
+		int/*bool*/ useLeftStick;
+		int/*bool*/ useRightStick;
+		int/*bool*/ analogMotion;
+		int/*bool*/ isEnabled;
 	} altControlScheme;
-	cfg_bool novert;
-	cfg_bool lowFPS;
-	cfg_bool manualGameVerMode;
+	int/*bool*/ novert;
+	int/*bool*/ lowFPS;
+	int/*bool*/ manualGameVerMode;
 	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
 } RefKeenConfig;
 
