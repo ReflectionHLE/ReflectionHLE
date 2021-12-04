@@ -6,6 +6,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
+        lang_arg: [-DBUILD_AS_CPP=OFF, -DBUILD_AS_CPP=ON]
         include:
         - os: macos-latest
           pkg_update_cmd: brew update
@@ -21,6 +22,6 @@ jobs:
         ${{ matrix.pkg_update_cmd }}
         ${{ matrix.pkg_install_cmd }}
     - name: Configure
-      run: cmake -B build
+      run: cmake -B build ${{ matrix.lang_arg }}
     - name: Build
       run: cmake --build build -j 2
