@@ -1,29 +1,25 @@
 name: CI
 on: [push, pull_request]
 jobs:
-  macos-build:
-    runs-on: macos-latest
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        include:
+        - os: macos-latest
+          pkg_update_cmd: brew update
+          pkg_install_cmd: brew install cmake sdl2 speexdsp
+        - os: ubuntu-latest
+          pkg_update_cmd: sudo apt-get update
+          pkg_install_cmd: sudo apt-get install cmake libsdl2-dev libspeexdsp-dev
     steps:
     - name: Check out the code
       uses: actions/checkout@v2
     - name: Install dependencies
       run: |
-        brew update
-        brew install cmake sdl2 speexdsp
-    - name: Configure
-      run: cmake -B build
-    - name: Build
-      run: cmake --build build -j 2
-
-  ubuntu-build:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out the code
-      uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install cmake libsdl2-dev libspeexdsp-dev
+        ${{ matrix.pkg_update_cmd }}
+        ${{ matrix.pkg_install_cmd }}
     - name: Configure
       run: cmake -B build
     - name: Build
