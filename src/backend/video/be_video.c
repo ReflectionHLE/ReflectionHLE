@@ -34,7 +34,7 @@
 #include "be_features.h"
 #include "be_gamever.h" // Enable VSync by default for EGA/VGA, not CGA
 #include "be_st.h"
-#include "be_st_launcher.h"
+#include "../launcher/be_st_launcher.h"
 #include "be_st_sdl_private.h"
 //#include "be_st_egavga_lookup_tables.h"
 #include "be_title_and_version.h"

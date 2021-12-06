@@ -27,7 +27,6 @@
  */
 
 #include "refkeen.h"
-#include "be_launcher.h"
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 #include "be_title_and_version.h"
 #include "backend/video/be_video_emu.h" // TXT_COLS_NUM
@@ -49,6 +48,8 @@ const char *be_main_arg_datadir = NULL;
 const char *be_main_arg_newcfgdir = NULL;
 
 BE_GameVer_T refkeen_current_gamever;
+
+void BE_Launcher_Start(void);
 
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 static void show_command_line_help(void)

@@ -28,7 +28,7 @@
 
 #include "be_cross.h"
 #include "be_st.h"
-#include "be_st_launcher.h"
+#include "../launcher/be_st_launcher.h"
 #include "be_st_sdl_private.h"
 #include "be_video.h"
 #include "be_video_emu.h"

@@ -55,5 +55,6 @@ else ()
 endif ()
 
 if (REFKEEN_ENABLE_LAUNCHER)
-	list(APPEND be_src src/be_launcher.c src/be_st_sdl_launcher.c)
+	list(APPEND be_src src/backend/launcher/be_launcher.c)
+	list(APPEND be_src src/backend/launcher/be_st_sdl_launcher.c)
 endif ()
