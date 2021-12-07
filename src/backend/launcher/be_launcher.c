@@ -1018,6 +1018,26 @@ static BEMenuItem g_beSelectDirectoryNoGameFoundMenu_GameVers_MenuItems[BE_GAMEV
 static char g_beSupportedGameVersionsMenu_GameVers_Labels[BE_GAMEVER_LAST][BE_MENU_STATIC_TEXT_MAX_ROW_STRLEN+1];
 static BEMenuItem g_beSupportedGameVersionsMenu_GameVers_MenuItems[BE_GAMEVER_LAST];
 
+static BEMenu *g_beMenusToPrepare[] = {
+	&g_beMainMenu,
+	&g_beSelectGameMenu,
+	//&g_beSelectGameExeMenu, // Dynamically adjusted
+	&g_beDisappearedGameHelpMenu,
+	&g_beSupportedGameVersionsMenu,
+	//&g_beGameVersionDetailsMenu, // Dynamically adjusted
+	&g_beSelectInitialPathMenu,
+	//&g_beSelectDirectoryMenu, // Dynamically adjusted
+	&g_beSelectDirectoryErrorMenu, &g_beSelectDirectoryFoundGameMenu,
+	&g_beSelectDirectoryNoGameFoundMenu,
+	&g_beSettingsMenu, &g_beVideoSettingsMenu, &g_beSoundSettingsMenu,
+	&g_beInputSettingsMenu,
+#ifdef BE_ST_ENABLE_SETTING_LOWFPS
+	&g_beMiscSettingsMenu,
+#endif
+	&g_beControllerSettingsMenu, &g_beDeviceVolumesMenu,
+	&g_beShowVersionMenu, &g_beQuitConfirmMenu,
+};
+
 void BE_Launcher_Start(void)
 {
 	BE_ST_Launcher_Prepare();
@@ -1048,27 +1068,8 @@ void BE_Launcher_Start(void)
 		menuItem->label = g_beSelectDirectoryNoGameFoundMenu_GameVers_Labels[i];
 	}
 
-	BE_Launcher_PrepareMenu(&g_beMainMenu);
-	BE_Launcher_PrepareMenu(&g_beSelectGameMenu);
-	BE_Launcher_PrepareMenu(&g_beDisappearedGameHelpMenu);
-	BE_Launcher_PrepareMenu(&g_beSupportedGameVersionsMenu);
-	//BE_Launcher_PrepareMenu(&g_beGameVersionDetailsMenu); // Dynamically adjusted
-	BE_Launcher_PrepareMenu(&g_beSelectInitialPathMenu);
-	//BE_Launcher_PrepareMenu(&g_beSelectDirectoryMenu); // Dynamically adjusted
-	BE_Launcher_PrepareMenu(&g_beSelectDirectoryErrorMenu);
-	BE_Launcher_PrepareMenu(&g_beSelectDirectoryFoundGameMenu);
-	BE_Launcher_PrepareMenu(&g_beSelectDirectoryNoGameFoundMenu);
-	BE_Launcher_PrepareMenu(&g_beSettingsMenu);
-	BE_Launcher_PrepareMenu(&g_beVideoSettingsMenu);
-	BE_Launcher_PrepareMenu(&g_beSoundSettingsMenu);
-	BE_Launcher_PrepareMenu(&g_beInputSettingsMenu);
-#ifdef BE_ST_ENABLE_SETTING_LOWFPS
-	BE_Launcher_PrepareMenu(&g_beMiscSettingsMenu);
-#endif
-	BE_Launcher_PrepareMenu(&g_beControllerSettingsMenu);
-	BE_Launcher_PrepareMenu(&g_beDeviceVolumesMenu);
-	BE_Launcher_PrepareMenu(&g_beShowVersionMenu);
-	BE_Launcher_PrepareMenu(&g_beQuitConfirmMenu);
+	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_beMenusToPrepare); ++i)
+		BE_Launcher_PrepareMenu(g_beMenusToPrepare[i]);
 
 	BEL_Launcher_SetCurrentMenu(&g_beMainMenu);
 
