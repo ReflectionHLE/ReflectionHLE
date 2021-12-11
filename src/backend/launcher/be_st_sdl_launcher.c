@@ -40,9 +40,18 @@
 #include "backend/video/be_video_sdl.h"
 #include "backend/video/be_video_textures.h"
 #include "be_features.h"
+#include "be_launcher_cfg.h"
+#include "be_launcher_cfg_sdl.h"
 #include "be_st_launcher.h"
 #include "be_st_sdl_private.h"
 #include "be_title_and_version.h"
+
+// In C++, const implies static, so we need to specify extern
+#ifdef __cplusplus
+#define BUFFLINKAGE extern
+#else
+#define BUFFLINKAGE
+#endif
 
 // HACK - Duplicated from be_st_sdl_graphics.c
 #define ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH 22
@@ -123,8 +132,6 @@ static bool g_sdlLauncherTriggerBinaryStates[2];
 static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
 static bool g_sdlLauncherGfxCacheMarked = false;
 
-#define BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN 10
-
 /*** Convenience macros - Note that the label *must* be a C string literal ***/
 #define BEMENUITEM_DEF_TARGETMENU(menuItemName, label, menuPtr) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, menuPtr, label, BE_MENUITEM_TYPE_TARGETMENU)
 #define BEMENUITEM_DEF_SELECTION(menuItemName, label, choices) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, choices, NULL, label, BE_MENUITEM_TYPE_SELECTION)
@@ -139,17 +146,17 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 // A little hack - Store a copy of the label string literal that can be modified
 #define BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, menuPtr, label, type) \
 	static char menuItemName ## _label[] = label; \
-	static BEMenuItem menuItemName = {handlerPtr, choices, menuPtr, menuItemName ## _label, 0, 0, 0, 0, 0, 0, type};
+	BEMenuItem menuItemName = {handlerPtr, choices, menuPtr, menuItemName ## _label, 0, 0, 0, 0, 0, 0, type};
 
 // Similar macro, but for BEMENUITEM_DEF_RANGE_SLIDER
 #define BEMENUITEM_DEF_GENERIC2(menuItemName, handlerPtr, nOfChoices, menuPtr, label, type) \
 	static char menuItemName ## _label[] = label; \
-	static BEMenuItem menuItemName = {handlerPtr, 0, menuPtr, menuItemName ## _label, 0, nOfChoices, 0, 0, 0, 0, type};
+	BEMenuItem menuItemName = {handlerPtr, 0, menuPtr, menuItemName ## _label, 0, nOfChoices, 0, 0, 0, 0, type};
 
 // Same as above, but label is variable and we fill some room for it
 #define BEMENUITEM_DEF_LABELVAR(menuItemName, handlerPtr, choices, menuPtr, labelSize, type) \
 	static char menuItemName ## _label[labelSize] = {0}; \
-	static BEMenuItem menuItemName = {handlerPtr, choices, menuPtr, menuItemName ## _label, 0, 0, 0, 0, 0, 0, type};
+	BEMenuItem menuItemName = {handlerPtr, choices, menuPtr, menuItemName ## _label, 0, 0, 0, 0, 0, 0, type};
 
 static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
@@ -364,11 +371,9 @@ typedef struct {
 	int width, height;
 } BEMenuItemScreenResPair;
 
-static const char *g_be_videoSettingsChoices_displayNums[] = {"0","1","2","3","4","5","6","7",NULL};
+const char *g_be_videoSettingsChoices_displayNums[] = {"0","1","2","3","4","5","6","7",NULL};
 
-#define BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS 10
-
-static char g_be_videoSettingsChoices_sdlRendererDriversStrs[BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS][BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN];
+char g_be_videoSettingsChoices_sdlRendererDriversStrs[BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS][BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN];
 // Need to add additional auto entry, plus NULL terminator
 static const char *g_be_videoSettingsChoices_sdlRendererDrivers[BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS+2];
 
@@ -429,8 +434,8 @@ BEMenu g_beVideoSettingsMenu = {
 
 /*** Sounds settings menu ***/
 
-static const int g_be_soundsSettingsChoices_sndSampleRateVals[] = {8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000, 49716, 96000, 192000};
-static const char *g_be_soundsSettingsChoices_sndSampleRate[] = {"8000","11025","12000","16000","22050","32000","44100","48000","49716","96000","192000",NULL};
+BUFFLINKAGE const int g_be_soundsSettingsChoices_sndSampleRateVals[] = {8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000, 49716, 96000, 192000};
+static const char *g_be_soundsSettingsChoices_sndSampleRate[12] = {"8000","11025","12000","16000","22050","32000","44100","48000","49716","96000","192000",NULL};
 
 BEMENUITEM_DEF_TARGETMENU(g_beSoundSettingsMenuItem_DeviceVolumes, "Emulated device volumes", &g_beDeviceVolumesMenu)
 BEMENUITEM_DEF_SLIDER(g_beSoundSettingsMenuItem_SndSampleRate, "Sound sample rate\n(in Hz)", g_be_soundsSettingsChoices_sndSampleRate)
@@ -840,150 +845,8 @@ void BE_ST_Launcher_Prepare(void)
 
 	BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(); // Set menu item label based on arguments string
 
-	// Set fullscreen value
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-	g_beVideoSettingsMenuItem_Fullscreen.choice = g_refKeenCfg.isFullscreen;
-#endif
-	/*** Prepare displays list ***/
-	int nOfDisplays = SDL_GetNumVideoDisplays();
-	if (nOfDisplays >= (int)BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums))
-		nOfDisplays = BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums) - 1;
-	g_be_videoSettingsChoices_displayNums[nOfDisplays] = NULL;
-	g_beVideoSettingsMenuItem_DisplayNum.choice = g_refKeenCfg.displayNum;
-	if (g_beVideoSettingsMenuItem_DisplayNum.choice >= nOfDisplays)
-		g_beVideoSettingsMenuItem_DisplayNum.choice = 0;
-	// Set this related value
-	g_beVideoSettingsMenuItem_RememberDisplayNum.choice = g_refKeenCfg.rememberDisplayNum;
-	/*** Prepare SDL renderer drivers list ***/
-	int nOfSDLRendererDrivers = SDL_GetNumRenderDrivers();
-	if (nOfSDLRendererDrivers > BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS)
-		nOfSDLRendererDrivers = BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS;
-	g_beVideoSettingsMenuItem_SDLRenderer.choices[0] = "auto";
-	g_beVideoSettingsMenuItem_SDLRenderer.choices[nOfSDLRendererDrivers+1] = NULL;
-	for (i = 0; i < nOfSDLRendererDrivers; ++i)
-	{
-		SDL_RendererInfo info;
-		SDL_GetRenderDriverInfo(i, &info);
-		snprintf(g_be_videoSettingsChoices_sdlRendererDriversStrs[i], sizeof(g_be_videoSettingsChoices_sdlRendererDriversStrs[i]), "%s", info.name);
-		g_beVideoSettingsMenuItem_SDLRenderer.choices[i+1] = g_be_videoSettingsChoices_sdlRendererDriversStrs[i];
-	}
-	if ((g_refKeenCfg.sdlRendererDriver < 0) || (g_refKeenCfg.sdlRendererDriver >= nOfSDLRendererDrivers))
-		g_beVideoSettingsMenuItem_SDLRenderer.choice = 0;
-	else
-		g_beVideoSettingsMenuItem_SDLRenderer.choice = g_refKeenCfg.sdlRendererDriver + 1;
-	// Set Bilinear value
-	g_beVideoSettingsMenuItem_Bilinear.choice = g_refKeenCfg.isBilinear;
-	// Set ScaleType value
-	g_beVideoSettingsMenuItem_ScaleType.choice = g_refKeenCfg.scaleType;
-	// Set ScaleFactor value
-	if ((g_refKeenCfg.scaleFactor <= 0) || (g_refKeenCfg.scaleFactor >= (int)BE_Cross_ArrayLen(g_be_videoSettingsChoices_scaleFactor)))
-		g_beVideoSettingsMenuItem_ScaleFactor.choice = 0;
-	else
-		g_beVideoSettingsMenuItem_ScaleFactor.choice = g_refKeenCfg.scaleFactor-1;
-	// Set VSync value
-	g_beVideoSettingsMenuItem_VSync.choice = g_refKeenCfg.vSync;
-	// Set ForceFullSoftScaling value
-	g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice = g_refKeenCfg.forceFullSoftScaling;
-#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
-	// Set LauncherWindowType value
-	g_beVideoSettingsMenuItem_LauncherWindowType.choice = g_refKeenCfg.launcherWinType;
-#endif
-	// Set SndSampleRate value
-	g_beSoundSettingsMenuItem_SndSampleRate.choice = 8; // FIXME - Better way to grab default off cfg
-	for (i = 0; i < (int)BE_Cross_ArrayLen(g_be_soundsSettingsChoices_sndSampleRateVals); ++i)
-		if (g_be_soundsSettingsChoices_sndSampleRateVals[i] == g_refKeenCfg.sndSampleRate)
-		{
-			g_beSoundSettingsMenuItem_SndSampleRate.choice = i;
-			break;
-		}
-	// Set SndSubSystem value
-	g_beSoundSettingsMenuItem_SndSubSystem.choice = g_refKeenCfg.sndSubSystem;
-	// Set OPLEmulation value
-	g_beSoundSettingsMenuItem_OPLEmulation.choice = g_refKeenCfg.oplEmulation;
-#ifdef BE_ST_ENABLE_SETTING_SB
-	// Set SB value
-	g_beSoundSettingsMenuItem_SB.choice = g_refKeenCfg.sb;
-#endif
-#ifndef REFKEEN_RESAMPLER_NONE
-	// Set UseResampler value
-	g_beSoundSettingsMenuItem_UseResampler.choice = g_refKeenCfg.useResampler;
-#endif
-	// Set ControllerScheme value
-	g_beInputSettingsMenuItem_ControllerScheme.choice = g_refKeenCfg.altControlScheme.isEnabled;
-#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-	// Set TouchControls value
-	g_beInputSettingsMenuItem_TouchControls.choice = g_refKeenCfg.touchInputToggle;
-	// Set TouchInputDebugging value
-	g_beInputSettingsMenuItem_TouchInputDebugging.choice = g_refKeenCfg.touchInputDebugging;
-#endif
-	// Set MouseGrab value
-	g_beInputSettingsMenuItem_MouseGrab.choice = g_refKeenCfg.mouseGrab;
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	// Set AbsMouseMotion value
-	g_beInputSettingsMenuItem_AbsMouseMotion.choice = g_refKeenCfg.absMouseMotion;
-#endif
-#ifdef BE_ST_ENABLE_SETTING_NOVERT
-	// Set VertAnalogMotion value
-	g_beInputSettingsMenuItem_VertAnalogMotion.choice = !g_refKeenCfg.novert;
-#endif
-	// Set LeftStick value
-	g_beControllerSettingsMenuItem_LeftStick.choice = g_refKeenCfg.altControlScheme.useLeftStick;
-	// Set RightStick value
-	g_beControllerSettingsMenuItem_RightStick.choice = g_refKeenCfg.altControlScheme.useRightStick;
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-	// Set AnalogMotion value
-	g_beControllerSettingsMenuItem_AnalogMotion.choice = g_refKeenCfg.altControlScheme.analogMotion;
-#endif
-	/*** Set controller button bindings ***/
-	g_beControllerSettingsMenuItem_Action_Up.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP];
-	g_beControllerSettingsMenuItem_Action_Down.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN];
-	g_beControllerSettingsMenuItem_Action_Left.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT];
-	g_beControllerSettingsMenuItem_Action_Right.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT];
-#ifdef REFKEEN_HAS_VER_KDREAMS
-	g_beControllerSettingsMenuItem_Action_Jump.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP];
-	g_beControllerSettingsMenuItem_Action_Throw.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW];
-	g_beControllerSettingsMenuItem_Action_Stats.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS];
-#endif
-#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	g_beControllerSettingsMenuItem_Action_Fire.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE];
-	g_beControllerSettingsMenuItem_Action_Strafe.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE];
-#endif
-#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	g_beControllerSettingsMenuItem_Action_Drink.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK];
-	g_beControllerSettingsMenuItem_Action_Bolt.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT];
-	g_beControllerSettingsMenuItem_Action_Nuke.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE];
-	g_beControllerSettingsMenuItem_Action_FastTurn.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN];
-#endif
-#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	g_beControllerSettingsMenuItem_Action_Scrolls.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS];
-#endif
-#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	g_beControllerSettingsMenuItem_Action_Use.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE];
-	g_beControllerSettingsMenuItem_Action_Run.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN];
-	g_beControllerSettingsMenuItem_Action_Weapon1.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1];
-	g_beControllerSettingsMenuItem_Action_Weapon2.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2];
-	g_beControllerSettingsMenuItem_Action_Weapon3.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON3];
-	g_beControllerSettingsMenuItem_Action_Weapon4.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON4];
-	g_beControllerSettingsMenuItem_Action_Weapon5.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON5];
-	g_beControllerSettingsMenuItem_Action_Weapon6.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON6];
-	g_beControllerSettingsMenuItem_Action_Map.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP];
-#endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	g_beControllerSettingsMenuItem_Action_FuncKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS];
-#endif
-	g_beControllerSettingsMenuItem_Action_DebugKeys.choice = g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS];
-
-	// Set device volumes
-	g_beDeviceVolumesMenuItem_PCSpkVol.choice = g_refKeenCfg.pcSpkVol - BE_AUDIO_VOL_MIN;
-	g_beDeviceVolumesMenuItem_OPLVol.choice = g_refKeenCfg.oplVol - BE_AUDIO_VOL_MIN;
-#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
-	g_beDeviceVolumesMenuItem_DigiVol.choice = g_refKeenCfg.digiVol - BE_AUDIO_VOL_MIN;
-#endif
-
-#ifdef BE_ST_ENABLE_SETTING_LOWFPS
-	// Set low LowFPS toggle
-	g_beMiscSettingsMenuItem_LowFPS.choice = g_refKeenCfg.lowFPS;
-#endif
+	/*** Prepare most of the launcher-accessible settings menu items ***/
+	BE_Launcher_ReadSettings();
 
 	/*** Prepare installed game versions menu ***/
 	BE_ST_Launcher_RefreshSelectGameMenuContents();
@@ -1057,98 +920,7 @@ void BE_ST_Launcher_Shutdown(void)
 	if (!g_be_launcher_wasAnySettingChanged)
 		return; // e.g., if there is a cfg value the launcher doesn't cope with (say, out of some range)
 
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-	g_refKeenCfg.isFullscreen = g_beVideoSettingsMenuItem_Fullscreen.choice;
-#endif
-	g_refKeenCfg.displayNum = g_beVideoSettingsMenuItem_DisplayNum.choice;
-	g_refKeenCfg.rememberDisplayNum = g_beVideoSettingsMenuItem_RememberDisplayNum.choice;
-
-	g_refKeenCfg.sdlRendererDriver = g_beVideoSettingsMenuItem_SDLRenderer.choice - 1;
-	g_refKeenCfg.isBilinear = g_beVideoSettingsMenuItem_Bilinear.choice;
-	g_refKeenCfg.scaleType = g_beVideoSettingsMenuItem_ScaleType.choice;
-	g_refKeenCfg.scaleFactor = g_beVideoSettingsMenuItem_ScaleFactor.choice + 1;
-	g_refKeenCfg.vSync = g_beVideoSettingsMenuItem_VSync.choice;
-	g_refKeenCfg.forceFullSoftScaling = g_beVideoSettingsMenuItem_ForceFullSoftScaling.choice;
-#ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
-	g_refKeenCfg.launcherWinType = g_beVideoSettingsMenuItem_LauncherWindowType.choice;
-#endif
-
-	g_refKeenCfg.sndSampleRate = g_be_soundsSettingsChoices_sndSampleRateVals[g_beSoundSettingsMenuItem_SndSampleRate.choice];
-	g_refKeenCfg.sndSubSystem = g_beSoundSettingsMenuItem_SndSubSystem.choice;
-	g_refKeenCfg.oplEmulation = g_beSoundSettingsMenuItem_OPLEmulation.choice;
-#ifdef BE_ST_ENABLE_SETTING_SB
-	g_refKeenCfg.sb = g_beSoundSettingsMenuItem_SB.choice;
-#endif
-#ifndef REFKEEN_RESAMPLER_NONE
-	g_refKeenCfg.useResampler = g_beSoundSettingsMenuItem_UseResampler.choice;
-#endif
-
-	g_refKeenCfg.altControlScheme.isEnabled = g_beInputSettingsMenuItem_ControllerScheme.choice;
-	g_refKeenCfg.mouseGrab = g_beInputSettingsMenuItem_MouseGrab.choice;
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	g_refKeenCfg.absMouseMotion = g_beInputSettingsMenuItem_AbsMouseMotion.choice;
-#endif
-#ifdef BE_ST_ENABLE_SETTING_NOVERT
-	g_refKeenCfg.novert = !g_beInputSettingsMenuItem_VertAnalogMotion.choice;
-#endif
-#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-	g_refKeenCfg.touchInputToggle = g_beInputSettingsMenuItem_TouchControls.choice;
-	g_refKeenCfg.touchInputDebugging = g_beInputSettingsMenuItem_TouchInputDebugging.choice;
-#endif
-
-	g_refKeenCfg.altControlScheme.useLeftStick = g_beControllerSettingsMenuItem_LeftStick.choice;
-	g_refKeenCfg.altControlScheme.useRightStick = g_beControllerSettingsMenuItem_RightStick.choice;
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-	g_refKeenCfg.altControlScheme.analogMotion = g_beControllerSettingsMenuItem_AnalogMotion.choice;
-#endif
-
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP] = g_beControllerSettingsMenuItem_Action_Up.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN] = g_beControllerSettingsMenuItem_Action_Down.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT] = g_beControllerSettingsMenuItem_Action_Left.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT] = g_beControllerSettingsMenuItem_Action_Right.choice;
-#ifdef REFKEEN_HAS_VER_KDREAMS
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_JUMP] = g_beControllerSettingsMenuItem_Action_Jump.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_THROW] = g_beControllerSettingsMenuItem_Action_Throw.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STATS] = g_beControllerSettingsMenuItem_Action_Stats.choice;
-#endif
-#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE] = g_beControllerSettingsMenuItem_Action_Fire.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE] = g_beControllerSettingsMenuItem_Action_Strafe.choice;
-#endif
-#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK] = g_beControllerSettingsMenuItem_Action_Drink.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT] = g_beControllerSettingsMenuItem_Action_Bolt.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE] = g_beControllerSettingsMenuItem_Action_Nuke.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN] = g_beControllerSettingsMenuItem_Action_FastTurn.choice;
-#endif
-#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS] = g_beControllerSettingsMenuItem_Action_Scrolls.choice;
-#endif
-#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_USE] = g_beControllerSettingsMenuItem_Action_Use.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RUN] = g_beControllerSettingsMenuItem_Action_Run.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON1] = g_beControllerSettingsMenuItem_Action_Weapon1.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON2] = g_beControllerSettingsMenuItem_Action_Weapon2.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON3] = g_beControllerSettingsMenuItem_Action_Weapon3.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON4] = g_beControllerSettingsMenuItem_Action_Weapon4.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON5] = g_beControllerSettingsMenuItem_Action_Weapon5.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_WEAPON6] = g_beControllerSettingsMenuItem_Action_Weapon6.choice;
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_MAP] = g_beControllerSettingsMenuItem_Action_Map.choice;
-#endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS] = g_beControllerSettingsMenuItem_Action_FuncKeys.choice;
-#endif
-	g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS] = g_beControllerSettingsMenuItem_Action_DebugKeys.choice;
-
-	g_refKeenCfg.pcSpkVol = g_beDeviceVolumesMenuItem_PCSpkVol.choice + BE_AUDIO_VOL_MIN;
-	g_refKeenCfg.oplVol = g_beDeviceVolumesMenuItem_OPLVol.choice + BE_AUDIO_VOL_MIN;
-#ifdef BE_ST_ENABLE_SETTING_DIGIVOL
-	g_refKeenCfg.digiVol = g_beDeviceVolumesMenuItem_DigiVol.choice + BE_AUDIO_VOL_MIN;
-#endif
-
-#ifdef BE_ST_ENABLE_SETTING_LOWFPS
-	g_refKeenCfg.lowFPS = g_beMiscSettingsMenuItem_LowFPS.choice;
-#endif
+	BE_Launcher_UpdateSettings();
 }
 
 
