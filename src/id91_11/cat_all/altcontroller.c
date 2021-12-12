@@ -801,9 +801,9 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
 	tempsinglemapping.val = BE_ST_SC_LCTRL; // Actually adjusted in game
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FIRE], &g_ingame_altcontrol_button0mappings[0], &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_FIRE], &g_ingame_altcontrol_button0mappings[0], &tempsinglemapping);
 	tempsinglemapping.val = BE_ST_SC_LALT; // Actually adjusted in game
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_STRAFE], &g_ingame_altcontrol_button1mappings[0], &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_STRAFE], &g_ingame_altcontrol_button1mappings[0], &tempsinglemapping);
 	// HACK: These two buttons overridden by mouse button mappings due to analog motion (hack for The Catacomb Adventures Series)
 	if (g_refKeenCfg.altControlScheme.analogMotion)
 	{
@@ -835,28 +835,28 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 	// These ones are also adjusted in game
 	tempsinglemapping.val = BE_ST_SC_UP;
-	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_UP], currupmappingptr, &tempsinglemapping))
+	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_UP], currupmappingptr, &tempsinglemapping))
 	{
 		if (g_refKeenCfg.altControlScheme.analogMotion)
 			**currupmappingptr = gamemouseup;
 		++currupmappingptr;
 	}
 	tempsinglemapping.val = BE_ST_SC_DOWN;
-	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DOWN], currdownmappingptr, &tempsinglemapping))
+	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_DOWN], currdownmappingptr, &tempsinglemapping))
 	{
 		if (g_refKeenCfg.altControlScheme.analogMotion)
 			**currdownmappingptr = gamemousedown;
 		++currdownmappingptr;
 	}
 	tempsinglemapping.val = BE_ST_SC_LEFT;
-	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_LEFT], currleftmappingptr, &tempsinglemapping))
+	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_LEFT], currleftmappingptr, &tempsinglemapping))
 	{
 		if (g_refKeenCfg.altControlScheme.analogMotion)
 			**currleftmappingptr = gamemouseleft;
 		++currleftmappingptr;
 	}
 	tempsinglemapping.val = BE_ST_SC_RIGHT;
-	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_RIGHT], currrightmappingptr, &tempsinglemapping))
+	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_RIGHT], currrightmappingptr, &tempsinglemapping))
 	{
 		if (g_refKeenCfg.altControlScheme.analogMotion)
 			**currrightmappingptr = gamemouseright;
@@ -864,33 +864,33 @@ void RefKeen_PrepareAltControllerScheme(void)
 	}
 
 	tempsinglemapping.val = BE_ST_SC_SPACE;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DRINK], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_DRINK], &tempsinglemappingptr, &tempsinglemapping);
 #ifdef REFKEEN_VER_CAT3D
 	tempsinglemapping.val = BE_ST_SC_B;
 #else
 	tempsinglemapping.val = BE_ST_SC_Z;
 #endif
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_BOLT], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_BOLT], &tempsinglemappingptr, &tempsinglemapping);
 	tempsinglemapping.val = BE_ST_SC_ENTER;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_NUKE], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_NUKE], &tempsinglemappingptr, &tempsinglemapping);
 #ifdef REFKEEN_VER_CAT3D
 	tempsinglemapping.val = BE_ST_SC_RSHIFT;
 #else
 	tempsinglemapping.val = BE_ST_SC_TAB;
 #endif
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FASTTURN], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_FASTTURN], &tempsinglemappingptr, &tempsinglemapping);
 
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_scrolls;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_SCROLLS], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_SCROLLS], &tempsinglemappingptr, &tempsinglemapping);
 #endif
 #ifdef REFKEEN_VER_CATADVENTURES
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
 #endif
 	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.actionMappings[BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
 
 	// HACK (leave US_LineInput this way)
 	g_beStControllerMappingTextInput.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;

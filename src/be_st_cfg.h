@@ -98,7 +98,15 @@ typedef struct
 	int/*bool*/ touchInputDebugging;
 	struct
 	{
-		int actionMappings[BE_ST_CTRL_CFG_BUTMAP_AFTERLAST]; // Buttons/triggers
+#ifdef REFKEEN_HAS_VER_KDREAMS
+		int kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+		int cat3dBinds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+		int wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
+#endif
 		int/*bool*/ useLeftStick;
 		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;

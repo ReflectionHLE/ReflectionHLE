@@ -143,6 +143,10 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 #define BEMENUITEM_DEF_DYNAMIC_SELECTION(menuItemName, label, choices, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, NULL, label, BE_MENUITEM_TYPE_DYNAMIC_SELECTION)
 #define BEMENUITEM_DEF_STATIC(menuItemName, label) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, NULL, label, BE_MENUITEM_TYPE_STATIC)
 
+// A special case of BEMENUITEM_DEF_DYNAMIC_SELECTION for binds
+#define BEMENUITEM_DEF_CTRL_BIND(suffix, label) \
+	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_ ## suffix, label, g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+
 // A little hack - Store a copy of the label string literal that can be modified
 #define BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, menuPtr, label, type) \
 	static char menuItemName ## _label[] = label; \
@@ -568,48 +572,60 @@ static const char *g_be_controllerSettingsChoices_analogMotion[] = {"Keyboard", 
 static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem **menuItemP);
 #endif
 
-#ifdef REFKEEN_HAS_VER_KDREAMS // Differing descriptions for same actions
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Up, "Action - Default Up key (Up)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Down, "Action - Default Down key (Down)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-#else
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Up, "Action - Default Forward key (Up)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Down, "Action - Default Backward key (Down)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-#endif
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Left, "Action - Default Left key (Left)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Right, "Action - Default Right key (Right)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 #ifdef REFKEEN_HAS_VER_KDREAMS
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Jump, "Action - Default Jump key (Ctrl)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Throw, "Action - Default Throw key (Alt)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Stats, "Action - Stats", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_STATIC(g_beControllerSettingsMenuItem_KDreams, "Keen Dreams binds")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Up, "Action - Default Up key (Up)")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Down, "Action - Default Down key (Down)")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Left, "Action - Default Left key (Left)")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Right, "Action - Default Right key (Right)")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Jump, "Action - Default Jump key (Ctrl)")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Throw, "Action - Default Jump key (Alt)")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Stats, "Action - Stats")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_FuncKeys, "Action - Function Keys")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_DebugKeys, "Action - Debug Keys")
 #endif
-#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Fire, "Action - Default Fire key (Ctrl)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Strafe, "Action - Default Strafe key (Alt)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-#endif
+
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Drink, "Action - Drink", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Bolt, "Action - Bolt/Zapper", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Nuke, "Action - Nuke/Xterminator", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FastTurn, "Action - Fast turn", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-#endif
+BEMENUITEM_DEF_STATIC(g_beControllerSettingsMenuItem_Cat3D, "Catacomb 3-D binds")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Up, "Action - Default Forward key (Up)")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Down, "Action - Default Backward key (Down)")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Left, "Action - Default Left key (Left)")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Right, "Action - Default Right key (Right)")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Fire, "Action - Default Fire key (Ctrl)")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Strafe, "Action - Default Strafe key (Alt)")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Drink, "Action - Drink")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Bolt, "Action - Bolt/Zapper")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Nuke, "Action - Nuke/Xterminator")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_FastTurn, "Action - Fast turn")
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Scrolls, "Action - Scrolls", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Scrolls, "Action - Scrolls")
 #endif
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_FuncKeys, "Action - Function keys")
+#endif
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_DebugKeys, "Action - Debug keys")
+#endif
+
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Use, "Action - Default Use key (Space)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Run, "Action - Default Run key (RShift)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon1, "Action - Knife/Hand Feeding", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon2, "Action - Pistol/Small Feed Launcher", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon3, "Action - Machine Gun/Big Feed Launcher", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon4, "Action - Chain Gun/Super Feeder 5000", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon5, "Action - Cantaloupe Feeder", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Weapon6, "Action - Watermelon Feeder", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_Map, "Action - Automap (Super 3-D Noah's Ark)", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+BEMENUITEM_DEF_STATIC(g_beControllerSettingsMenuItem_Wolf3D, "Wolfenstein 3-D binds")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Up, "Action - Default Forward key (Up)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Down, "Action - Default Backward key (Down)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Left, "Action - Default Left key (Left)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Right, "Action - Default Right key (Right)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Fire, "Action - Default Fire key (Ctrl)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Strafe, "Action - Default Strafe key (Alt)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Use, "Action - Default Use key (Space)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Run, "Action - Default Run key (RShift)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon1, "Action - Knife/Hand Feeding")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon2, "Action - Pistol/Small Feed Launcher")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon3, "Action - Machine Gun/Big Feed Launcher")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon4, "Action - Chain Gun/Super Feeder 5000")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon5, "Action - Cantaloupe Feeder")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon6, "Action - Watermelon Feeder")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Map, "Action - Automap (Super 3-D Noah's Ark)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_FuncKeys, "Action - Function keys")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_DebugKeys, "Action - Debug keys")
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_FuncKeys, "Action - Function keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
-#endif
-BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beControllerSettingsMenuItem_Action_DebugKeys, "Action - Debug keys", g_be_controllerSettingsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
@@ -621,43 +637,61 @@ BEMENUITEM_DEF_HANDLER(g_beControllerSettingsMenuItem_ImportMappingsFromSteam, "
 #endif
 
 static BEMenuItem *g_beControllerSettingsMenuItems[] = {
-	&g_beControllerSettingsMenuItem_Action_Up,
-	&g_beControllerSettingsMenuItem_Action_Down,
-	&g_beControllerSettingsMenuItem_Action_Left,
-	&g_beControllerSettingsMenuItem_Action_Right,
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	&g_beControllerSettingsMenuItem_Action_Jump,
-	&g_beControllerSettingsMenuItem_Action_Throw,
-	&g_beControllerSettingsMenuItem_Action_Stats,
+	&g_beControllerSettingsMenuItem_KDreams,
+	&g_beControllerSettingsMenuItem_Action_KDreams_Up,
+	&g_beControllerSettingsMenuItem_Action_KDreams_Down,
+	&g_beControllerSettingsMenuItem_Action_KDreams_Left,
+	&g_beControllerSettingsMenuItem_Action_KDreams_Right,
+	&g_beControllerSettingsMenuItem_Action_KDreams_Jump,
+	&g_beControllerSettingsMenuItem_Action_KDreams_Throw,
+	&g_beControllerSettingsMenuItem_Action_KDreams_Stats,
+	&g_beControllerSettingsMenuItem_Action_KDreams_FuncKeys,
+	&g_beControllerSettingsMenuItem_Action_KDreams_DebugKeys,
 #endif
-#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	&g_beControllerSettingsMenuItem_Action_Fire,
-	&g_beControllerSettingsMenuItem_Action_Strafe,
-#endif
+
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	&g_beControllerSettingsMenuItem_Action_Drink,
-	&g_beControllerSettingsMenuItem_Action_Bolt,
-	&g_beControllerSettingsMenuItem_Action_Nuke,
-	&g_beControllerSettingsMenuItem_Action_FastTurn,
-#endif
+	&g_beControllerSettingsMenuItem_Cat3D,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Up,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Down,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Left,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Right,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Fire,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Strafe,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Drink,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Bolt,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Nuke,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_FastTurn,
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	&g_beControllerSettingsMenuItem_Action_Scrolls,
+	&g_beControllerSettingsMenuItem_Action_Cat3D_Scrolls,
 #endif
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
+	&g_beControllerSettingsMenuItem_Action_Cat3D_FuncKeys,
+#endif
+	&g_beControllerSettingsMenuItem_Action_Cat3D_DebugKeys,
+#endif
+
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	&g_beControllerSettingsMenuItem_Action_Use,
-	&g_beControllerSettingsMenuItem_Action_Run,
-	&g_beControllerSettingsMenuItem_Action_Weapon1,
-	&g_beControllerSettingsMenuItem_Action_Weapon2,
-	&g_beControllerSettingsMenuItem_Action_Weapon3,
-	&g_beControllerSettingsMenuItem_Action_Weapon4,
-	&g_beControllerSettingsMenuItem_Action_Weapon5,
-	&g_beControllerSettingsMenuItem_Action_Weapon6,
-	&g_beControllerSettingsMenuItem_Action_Map,
+	&g_beControllerSettingsMenuItem_Wolf3D,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Up,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Down,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Left,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Right,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Fire,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Strafe,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Use,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Run,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Weapon1,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Weapon2,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Weapon3,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Weapon4,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Weapon5,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Weapon6,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_Map,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_FuncKeys,
+	&g_beControllerSettingsMenuItem_Action_Wolf3D_DebugKeys,
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	&g_beControllerSettingsMenuItem_Action_FuncKeys,
-#endif
-	&g_beControllerSettingsMenuItem_Action_DebugKeys,
+
 	&g_beControllerSettingsMenuItem_LeftStick,
 	&g_beControllerSettingsMenuItem_RightStick,
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
@@ -2591,8 +2625,10 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 
 	if (choice != defaultChoice)
 	{
-		for (BEMenuItem **menuItemP = g_beControllerSettingsMenu.menuItems; menuItemP != g_beControllerSettingsMenu.menuItems + BE_ST_CTRL_CFG_BUTMAP_AFTERLAST; ++menuItemP)
-			if ((*menuItemP != menuItem) && ((*menuItemP)->choice == choice))
+		for (BEMenuItem **menuItemP = g_beControllerSettingsMenu.menuItems; *menuItemP; ++menuItemP)
+			if ((*menuItemP != menuItem) &&
+			    ((*menuItemP)->type == BE_MENUITEM_TYPE_DYNAMIC_SELECTION) &&
+			    ((*menuItemP)->choice == choice))
 				(*menuItemP)->choice = defaultChoice; // Remove duplications
 	}
 	menuItem->choice = choice;

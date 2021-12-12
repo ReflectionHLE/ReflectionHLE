@@ -117,8 +117,14 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 #define DEF_BOOL(setting, key, def) \
 	DEF_ENUM(setting, key, g_be_setting_bool_vals, def)
 
-#define DEF_ACTIONMAP_ENUM(index, key, def) \
-	DEF_ENUM(altControlScheme.actionMappings[index], key, g_sdlControlSchemeKeyMapCfgVals, def)
+#define DEF_CTRL_BIND_KDREAMS_ENUM(i, key, def) \
+	DEF_ENUM(altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
+
+#define DEF_CTRL_BIND_CAT3D_ENUM(i, key, def) \
+	DEF_ENUM(altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
+
+#define DEF_CTRL_BIND_WOLF3D_ENUM(i, key, def) \
+	DEF_ENUM(altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_HIDDEN_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, &g_refKeenCfg.setting, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
@@ -183,54 +189,59 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #endif
 	DEF_BOOL(altControlScheme.isEnabled, "altcontrolscheme", true)
 
-#ifdef REFKEEN_HAS_VER_KDREAMS // Reserve the d-pad for weapons/feeds in Wolf3D/S3DNA
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_UP, "altcontrolscheme_up", BE_ST_CTRL_BUT_DPAD_UP)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_DOWN, "altcontrolscheme_down", BE_ST_CTRL_BUT_DPAD_DOWN)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_LEFT, "altcontrolscheme_left", BE_ST_CTRL_BUT_DPAD_LEFT)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_RIGHT, "altcontrolscheme_right", BE_ST_CTRL_BUT_DPAD_RIGHT)
-#else // FIXME: HACK (extra 2 are for triggers)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_UP, "altcontrolscheme_up", BE_ST_CTRL_BUT_MAX+2)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_DOWN, "altcontrolscheme_down", BE_ST_CTRL_BUT_MAX+2)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_LEFT, "altcontrolscheme_left", BE_ST_CTRL_BUT_MAX+2)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_RIGHT, "altcontrolscheme_right", BE_ST_CTRL_BUT_MAX+2)
-#endif
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_JUMP, "altcontrolscheme_jump", BE_ST_CTRL_BUT_A)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_THROW, "altcontrolscheme_throw", BE_ST_CTRL_BUT_B)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_STATS, "altcontrolscheme_stats", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BIND_KDREAMS_ENUM(UP, "padbind_kdreams_up", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_BIND_KDREAMS_ENUM(DOWN, "padbind_kdreams_down", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_BIND_KDREAMS_ENUM(LEFT, "padbind_kdreams_left", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_BIND_KDREAMS_ENUM(RIGHT, "padbind_kdreams_right", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_BIND_KDREAMS_ENUM(JUMP, "padbind_kdreams_jump", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BIND_KDREAMS_ENUM(THROW, "padbind_kdreams_throw", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BIND_KDREAMS_ENUM(STATS, "padbind_kdreams_stats", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BIND_KDREAMS_ENUM(FUNCKEYS, "padbind_kdreams_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_BIND_KDREAMS_ENUM(DEBUGKEYS, "padbind_kdreams_debugkeys", BE_ST_CTRL_BUT_LSTICK)
 #endif
-#if (defined REFKEEN_HAS_VER_CATACOMB_ALL) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_FIRE, "altcontrolscheme_fire", BE_ST_CTRL_BUT_LSHOULDER)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_STRAFE, "altcontrolscheme_strafe", BE_ST_CTRL_BUT_B)
-#endif
-#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_DRINK, "altcontrolscheme_drink", BE_ST_CTRL_BUT_A)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_BOLT, "altcontrolscheme_bolt", BE_ST_CTRL_BUT_X)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_NUKE, "altcontrolscheme_nuke", BE_ST_CTRL_BUT_Y)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_FASTTURN, "altcontrolscheme_fastturn", BE_ST_CTRL_BUT_RSHOULDER)
-#endif
-#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	// HACK for getting right trigger (technically an axis)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_SCROLLS, "altcontrolscheme_scrolls", BE_ST_CTRL_BUT_MAX+1)
-#endif
-#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	// HACK for getting right trigger (technically an axis)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_USE, "altcontrolscheme_use", BE_ST_CTRL_BUT_MAX+1)
 
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_RUN, "altcontrolscheme_run", BE_ST_CTRL_BUT_RSHOULDER)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON1, "altcontrolscheme_weapon1", BE_ST_CTRL_BUT_DPAD_DOWN)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON2, "altcontrolscheme_weapon2", BE_ST_CTRL_BUT_DPAD_RIGHT)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON3, "altcontrolscheme_weapon3", BE_ST_CTRL_BUT_DPAD_LEFT)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON4, "altcontrolscheme_weapon4", BE_ST_CTRL_BUT_DPAD_UP)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON5, "altcontrolscheme_weapon5", BE_ST_CTRL_BUT_X)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_WEAPON6, "altcontrolscheme_weapon6", BE_ST_CTRL_BUT_Y)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_MAP, "altcontrolscheme_map", BE_ST_CTRL_BUT_A)
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	// FIXME: HACK (extra 2 are for triggers)
+	DEF_CTRL_BIND_CAT3D_ENUM(UP, "padbind_cat3d_up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_CAT3D_ENUM(DOWN, "padbind_cat3d_down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_CAT3D_ENUM(LEFT, "padbind_cat3d_left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_CAT3D_ENUM(RIGHT, "padbind_cat3d_right", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_CAT3D_ENUM(FIRE, "padbind_cat3d_fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_BIND_CAT3D_ENUM(STRAFE, "padbind_cat3d_strafe", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BIND_CAT3D_ENUM(DRINK, "padbind_cat3d_drink", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BIND_CAT3D_ENUM(BOLT, "padbind_cat3d_bolt", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BIND_CAT3D_ENUM(NUKE, "padbind_cat3d_nuke", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_BIND_CAT3D_ENUM(FASTTURN, "padbind_cat3d_fastturn", BE_ST_CTRL_BUT_RSHOULDER)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
+	DEF_CTRL_BIND_CAT3D_ENUM(SCROLLS, "padbind_cat3d_scrolls", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
 #endif
-#if (defined REFKEEN_HAS_VER_KDREAMS) || (defined REFKEEN_HAS_VER_CATADVENTURES) || (defined REFKEEN_HAS_VER_WOLF3D_ALL)
-	// HACK for getting left trigger (technically an axis)
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_FUNCKEYS, "altcontrolscheme_funckeys", BE_ST_CTRL_BUT_MAX)
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
+	DEF_CTRL_BIND_CAT3D_ENUM(FUNCKEYS, "padbind_cat3d_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 #endif
-	DEF_ACTIONMAP_ENUM(BE_ST_CTRL_CFG_BUTMAP_DEBUGKEYS, "altcontrolscheme_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+	DEF_CTRL_BIND_CAT3D_ENUM(DEBUGKEYS, "padbind_cat3d_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+#endif
+
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	// FIXME: HACK (extra 2 are for triggers)
+	DEF_CTRL_BIND_WOLF3D_ENUM(UP, "padbind_wolf3d_up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_WOLF3D_ENUM(DOWN, "padbind_wolf3d_down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_WOLF3D_ENUM(LEFT, "padbind_wolf3d_left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_WOLF3D_ENUM(RIGHT, "padbind_wolf3d_right", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_WOLF3D_ENUM(FIRE, "padbind_wolf3d_fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_BIND_WOLF3D_ENUM(STRAFE, "padbind_wolf3d_strafe", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BIND_WOLF3D_ENUM(USE, "padbind_wolf3d_use", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
+	DEF_CTRL_BIND_WOLF3D_ENUM(RUN, "padbind_wolf3d_run", BE_ST_CTRL_BUT_RSHOULDER)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON1, "padbind_wolf3d_weapon1", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON2, "padbind_wolf3d_weapon2", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON3, "padbind_wolf3d_weapon3", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON4, "padbind_wolf3d_weapon4", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON5, "padbind_wolf3d_weapon5", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON6, "padbind_wolf3d_weapon6", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_BIND_WOLF3D_ENUM(MAP, "padbind_wolf3d_map", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BIND_WOLF3D_ENUM(FUNCKEYS, "padbind_wolf3d_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_BIND_WOLF3D_ENUM(DEBUGKEYS, "padbind_wolf3d_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+#endif
 
 	DEF_BOOL(altControlScheme.useLeftStick, "altcontrolscheme_lstick", true)
 	DEF_BOOL(altControlScheme.useRightStick, "altcontrolscheme_rstick", false)
