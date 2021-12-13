@@ -86,7 +86,7 @@ typedef enum {
 	BE_GAMEVER_LAST
 } BE_GameVer_T;
 
-#ifndef REFKEEN_USE_NS
+#ifndef REFKEEN_UNIFIED_BUILD
 
 #define REFKEEN_NS_B
 #define REFKEEN_NS_B_FOR(x)
@@ -137,7 +137,7 @@ typedef enum {
 #define REFKEEN_NS_B namespace n3dwt10 {
 #endif
 
-#endif // REFKEEN_USE_NS
+#endif // REFKEEN_UNIFIED_BUILD
 
 extern BE_GameVer_T refkeen_current_gamever;
 // This MUST have the same order as in the BE_GameVer_T enum
