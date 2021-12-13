@@ -33,7 +33,9 @@
 
 #include "SDL.h"
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_UNIFIED_BUILD
+#include "../rsrc/reflection-keen-icon-32x32.h"
+#elif defined REFKEEN_VER_KDREAMS
 #include "../rsrc/reflection-kdreams-icon-32x32.h"
 #elif defined REFKEEN_VER_CAT3D
 #include "../rsrc/reflection-cat3d-icon-32x32.h"

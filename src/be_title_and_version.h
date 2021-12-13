@@ -1,7 +1,9 @@
 #ifndef BE_TITLE_AND_VERSION_H
 #define BE_TITLE_AND_VERSION_H
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_UNIFIED_BUILD
+#define REFKEEN_TITLE_STRING "Reflection Keen"
+#elif (defined REFKEEN_VER_KDREAMS)
 #define REFKEEN_TITLE_STRING "Reflection Keen Dreams"
 #elif (defined REFKEEN_VER_CAT3D)
 #define REFKEEN_TITLE_STRING "Reflection Catacomb 3-D"

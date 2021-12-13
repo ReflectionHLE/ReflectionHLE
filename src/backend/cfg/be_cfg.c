@@ -38,7 +38,9 @@
 
 RefKeenConfig g_refKeenCfg;
 
-#ifdef REFKEEN_VER_KDREAMS
+#ifdef REFKEEN_UNIFIED_BUILD
+#define REFKEEN_CONFIG_FILENAME "reflection-keen.cfg"
+#elif defined REFKEEN_VER_KDREAMS
 #define REFKEEN_CONFIG_FILENAME "reflection-kdreams.cfg"
 #elif defined REFKEEN_VER_CAT3D
 #define REFKEEN_CONFIG_FILENAME "reflection-cat3d.cfg"
