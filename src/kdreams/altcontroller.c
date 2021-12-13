@@ -509,30 +509,30 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
 	tempsinglemapping.val = BE_ST_SC_LCTRL; // Actually adjusted in game
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_JUMP], &g_ingame_altcontrol_button0mappings[0], &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_JUMP], &g_ingame_altcontrol_button0mappings[0], &tempsinglemapping);
 	tempsinglemapping.val = BE_ST_SC_LALT; // Actually adjusted in game
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_THROW], &g_ingame_altcontrol_button1mappings[0], &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_THROW], &g_ingame_altcontrol_button1mappings[0], &tempsinglemapping);
 	tempsinglemapping.val = BE_ST_SC_SPACE;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_STATS], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_STATS], &tempsinglemappingptr, &tempsinglemapping);
 	// These ones are also adjusted in game
 	tempsinglemapping.val = BE_ST_SC_UP;
-	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_UP], currupmappingptr, &tempsinglemapping))
+	if (CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_UP], currupmappingptr, &tempsinglemapping))
 		++currupmappingptr;
 	tempsinglemapping.val = BE_ST_SC_DOWN;
-	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_DOWN], currdownmappingptr, &tempsinglemapping))
+	if (CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DOWN], currdownmappingptr, &tempsinglemapping))
 		++currdownmappingptr;
 	tempsinglemapping.val = BE_ST_SC_LEFT;
-	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_LEFT], currleftmappingptr, &tempsinglemapping))
+	if (CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_LEFT], currleftmappingptr, &tempsinglemapping))
 		++currleftmappingptr;
 	tempsinglemapping.val = BE_ST_SC_RIGHT;
-	if (CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_RIGHT], currrightmappingptr, &tempsinglemapping))
+	if (CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_RIGHT], currrightmappingptr, &tempsinglemapping))
 		++currrightmappingptr;
 
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
 	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
 
 	// HACK (leave US_LineInput this way)
 	g_beStControllerMappingTextInput.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;

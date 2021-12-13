@@ -446,22 +446,22 @@ void RefKeen_PrepareAltControllerScheme(void)
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
 	tempsinglemapping.val = BE_ST_SC_LCTRL;
 	CheckButtonMapping(
-		g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_FIRE],
+		g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FIRE],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&g_ingame_altcontrol_buttonmappings[bt_attack], &tempsinglemapping);
 	tempsinglemapping.val = BE_ST_SC_LALT;
 	CheckButtonMapping(
-		g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_STRAFE],
+		g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_STRAFE],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&g_ingame_altcontrol_buttonmappings[bt_strafe], &tempsinglemapping);
 	tempsinglemapping.val = BE_ST_SC_RSHIFT;
 	CheckButtonMapping(
-		g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_RUN],
+		g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_RUN],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&g_ingame_altcontrol_buttonmappings[bt_run], &tempsinglemapping);
 	tempsinglemapping.val = BE_ST_SC_SPACE;
 	CheckButtonMapping(
-		g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_USE],
+		g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_USE],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&g_ingame_altcontrol_buttonmappings[bt_use], &tempsinglemapping);
 
@@ -471,7 +471,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	{
 		tempsinglemapping.val = BE_ST_SC_1 + i;
 		CheckButtonMapping(
-			g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_WEAPON1 + i],
+			g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_WEAPON1 + i],
 			&g_ingame_altcontrol_mapping_gameplay,
 			&g_ingame_altcontrol_buttonmappings[i + bt_readyknife], &tempsinglemapping);
 
@@ -490,7 +490,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	// These ones are also adjusted in game
 	tempsinglemapping.val = BE_ST_SC_UP;
 	if (CheckButtonMapping(
-	    g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_UP],
+	    g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_UP],
 	    &g_ingame_altcontrol_mapping_gameplay,
 	    currupmappingptr, &tempsinglemapping))
 	{
@@ -500,7 +500,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	}
 	tempsinglemapping.val = BE_ST_SC_DOWN;
 	if (CheckButtonMapping(
-	    g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_DOWN],
+	    g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DOWN],
 	    &g_ingame_altcontrol_mapping_gameplay,
 	    currdownmappingptr, &tempsinglemapping))
 	{
@@ -510,7 +510,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	}
 	tempsinglemapping.val = BE_ST_SC_LEFT;
 	if (CheckButtonMapping(
-	    g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_LEFT],
+	    g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_LEFT],
 	    &g_ingame_altcontrol_mapping_gameplay,
 	    currleftmappingptr, &tempsinglemapping))
 	{
@@ -520,7 +520,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	}
 	tempsinglemapping.val = BE_ST_SC_RIGHT;
 	if (CheckButtonMapping(
-	    g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_RIGHT],
+	    g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_RIGHT],
 	    &g_ingame_altcontrol_mapping_gameplay,
 	    currrightmappingptr, &tempsinglemapping))
 	{
@@ -533,7 +533,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 #ifdef GAMEVER_NOAH3D
 	tempsinglemapping.val = BE_ST_SC_TAB;
 	CheckButtonMapping(
-		g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_MAP],
+		g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_MAP],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&tempsinglemappingptr, &tempsinglemapping);
 #endif
@@ -541,11 +541,11 @@ void RefKeen_PrepareAltControllerScheme(void)
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
 	CheckButtonMapping(
-		g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS],
+		g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&tempsinglemappingptr, &tempsinglemapping);
 	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
-	CheckButtonMapping(g_refKeenCfg.altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS],
+	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&tempsinglemappingptr, &tempsinglemapping);
 

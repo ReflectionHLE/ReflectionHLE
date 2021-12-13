@@ -118,13 +118,13 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 	DEF_ENUM(setting, key, g_be_setting_bool_vals, def)
 
 #define DEF_CTRL_BIND_KDREAMS_ENUM(i, key, def) \
-	DEF_ENUM(altControlScheme.kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_CTRL_BIND_CAT3D_ENUM(i, key, def) \
-	DEF_ENUM(altControlScheme.cat3dBinds[BE_ST_CTRL_BIND_CAT3D_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_CTRL_BIND_WOLF3D_ENUM(i, key, def) \
-	DEF_ENUM(altControlScheme.wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i], key, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_HIDDEN_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, &g_refKeenCfg.setting, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},

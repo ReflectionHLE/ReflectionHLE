@@ -98,15 +98,6 @@ typedef struct
 	int/*bool*/ touchInputDebugging;
 	struct
 	{
-#ifdef REFKEEN_HAS_VER_KDREAMS
-		int kdreamsBinds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
-#endif
-#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-		int cat3dBinds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
-#endif
-#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-		int wolf3dBinds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
-#endif
 		int/*bool*/ useLeftStick;
 		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;
@@ -116,6 +107,26 @@ typedef struct
 	int/*bool*/ lowFPS;
 	int/*bool*/ manualGameVerMode;
 	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
+
+	// Game specific settings
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	struct
+	{
+		int binds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
+	} kdreams;
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	struct
+	{
+		int binds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
+	} cat3d;
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	struct
+	{
+		int binds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
+	} wolf3d;
+#endif
 } RefKeenConfig;
 
 extern RefKeenConfig g_refKeenCfg;
