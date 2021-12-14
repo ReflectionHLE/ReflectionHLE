@@ -882,14 +882,14 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
-	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_scrolls;
+	tempsinglemapping.miscPtr = &g_ingame_altcontrol_mapping_scrolls;
 	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_SCROLLS], &tempsinglemappingptr, &tempsinglemapping);
 #endif
 #ifdef REFKEEN_VER_CATADVENTURES
-	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
+	tempsinglemapping.miscPtr = &g_ingame_altcontrol_mapping_funckeys;
 	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
 #endif
-	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
+	tempsinglemapping.miscPtr = &g_beStControllerMappingDebugKeys;
 	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
 
 	// HACK (leave US_LineInput this way)
@@ -897,7 +897,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingTextInput.defaultMapping.val = BE_ST_SC_ESC;
 	// HACK (hide debug keys this way)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
-	g_beStControllerMappingDebugKeys.defaultMapping.otherMappingPtr = &g_ingame_altcontrol_mapping_gameplay;
+	g_beStControllerMappingDebugKeys.defaultMapping.miscPtr = &g_ingame_altcontrol_mapping_gameplay;
 
 	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{

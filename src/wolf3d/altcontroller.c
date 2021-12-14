@@ -539,12 +539,12 @@ void RefKeen_PrepareAltControllerScheme(void)
 #endif
 
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
-	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
+	tempsinglemapping.miscPtr = &g_ingame_altcontrol_mapping_funckeys;
 	CheckButtonMapping(
 		g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&tempsinglemappingptr, &tempsinglemapping);
-	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
+	tempsinglemapping.miscPtr = &g_beStControllerMappingDebugKeys;
 	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS],
 		&g_ingame_altcontrol_mapping_gameplay,
 		&tempsinglemappingptr, &tempsinglemapping);
@@ -554,7 +554,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingTextInput.defaultMapping.val = BE_ST_SC_ESC;
 	// HACK (hide debug keys this way)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
-	g_beStControllerMappingDebugKeys.defaultMapping.otherMappingPtr = &g_ingame_altcontrol_mapping_gameplay;
+	g_beStControllerMappingDebugKeys.defaultMapping.miscPtr = &g_ingame_altcontrol_mapping_gameplay;
 
 	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{

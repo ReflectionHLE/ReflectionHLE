@@ -98,8 +98,10 @@ bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, i
 		return true;
 	case BE_ST_CTRL_MAP_OTHERMAPPING:
 		if (!prevBinaryStatus && (*lastBinaryStatusPtr))
-			BEL_ST_ReplaceControllerMapping(map->otherMappingPtr);
+			BEL_ST_ReplaceControllerMapping((BE_ST_ControllerMapping *)map->miscPtr);
 		return true; // Confirm either way
+	case BE_ST_CTRL_MAP_VALUESET:
+		*(int *)(map->miscPtr) = value;
 	}
 	return false;
 }

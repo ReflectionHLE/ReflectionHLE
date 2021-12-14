@@ -529,9 +529,9 @@ void RefKeen_PrepareAltControllerScheme(void)
 		++currrightmappingptr;
 
 	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
-	tempsinglemapping.otherMappingPtr = &g_ingame_altcontrol_mapping_funckeys;
+	tempsinglemapping.miscPtr = &g_ingame_altcontrol_mapping_funckeys;
 	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
-	tempsinglemapping.otherMappingPtr = &g_beStControllerMappingDebugKeys;
+	tempsinglemapping.miscPtr = &g_beStControllerMappingDebugKeys;
 	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
 
 	// HACK (leave US_LineInput this way)
@@ -539,7 +539,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingTextInput.defaultMapping.val = BE_ST_SC_ESC;
 	// HACK (hide debug keys this way)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
-	g_beStControllerMappingDebugKeys.defaultMapping.otherMappingPtr = &g_ingame_altcontrol_mapping_gameplay;
+	g_beStControllerMappingDebugKeys.defaultMapping.miscPtr = &g_ingame_altcontrol_mapping_gameplay;
 
 	BE_ST_ControllerSingleMap gamekeyup    = {NULL, BE_ST_SC_UP,    0, BE_ST_CTRL_MAP_KEYSCANCODE};
 	BE_ST_ControllerSingleMap gamekeydown  = {NULL, BE_ST_SC_DOWN,  0, BE_ST_CTRL_MAP_KEYSCANCODE};

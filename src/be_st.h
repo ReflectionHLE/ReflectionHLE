@@ -138,6 +138,7 @@ typedef enum {
 	BE_ST_CTRL_MAP_MOUSEBUTTON,
 	BE_ST_CTRL_MAP_MOUSEMOTION,
 	BE_ST_CTRL_MAP_OTHERMAPPING,
+	BE_ST_CTRL_MAP_VALUESET,
 	//BE_ST_CONTROLLER_MAPPING_TEXTINPUTTOGGLE,
 	//BE_ST_CONTROLLER_MAPPING_DEBUGKEYSTOGGLE,
 } BE_ST_ControllerSingleMapClass;
@@ -149,7 +150,9 @@ typedef enum {
 struct BE_ST_ControllerMapping;
 
 typedef struct {
-	const struct BE_ST_ControllerMapping *otherMappingPtr;
+	// For BE_ST_CTRL_MAP_OTHERMAPPING: Points at another mapping.
+	// For BE_ST_CTRL_MAP_VALUESET: Points at an integer to set as-is.
+	void *miscPtr;
 	int val;
 	int secondaryVal; // Used for mouse motion emulation
 	BE_ST_ControllerSingleMapClass mapClass;
