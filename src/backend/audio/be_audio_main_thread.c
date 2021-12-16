@@ -53,7 +53,7 @@ static uint32_t g_be_audioMainThread_samplesBufferLenOfPart;
 static uint32_t g_be_audioMainThread_samplesRemainingForCallback;
 #endif
 
-static uint32_t g_be_audioMainThread_lastCallTicks;
+uint32_t g_be_audioMainThread_lastCallTicks;
 static uint32_t g_be_audioMainThread_delayedSamples;
 
 int BEL_ST_PrepareMainThreadForAudio(int *freq, int *channels, int expectedCallbackBufferLen)

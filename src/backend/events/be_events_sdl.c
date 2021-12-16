@@ -33,6 +33,7 @@
 #include "../input/be_input_controller_mappings.h"
 #include "../input/be_input_sdl.h"
 #include "../input/be_input_ui.h"
+#include "../launcher/be_st_launcher.h"
 #include "be_st.h"
 #include "be_st_sdl_private.h"
 
@@ -436,6 +437,8 @@ void BE_ST_PollEvents(void)
 
 SDL_sem *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
 
+void BEL_ST_SaveConfig(void);
+
 void BEL_ST_CheckForExitFromEventsCallback(void)
 {
 	if (SDL_SemTryWait(g_sdlEventsCallbackToMainSem) == 0)
@@ -452,7 +455,7 @@ static uint32_t g_sdl_eventCallback_EnterBackgroundLastTicks;
 int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 {
 	extern SDL_AudioDeviceID g_sdlAudioDevice;
-	extern uint32_t g_sdlManualAudioCallbackCallLastTicks;
+	extern uint32_t g_be_audioMainThread_lastCallTicks;
 
 	switch (event->type)
 	{
@@ -472,7 +475,7 @@ int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 		return 0;
 	case SDL_APP_WILLENTERFOREGROUND:
 		// FIXME!!! - Hope this works well
-		g_sdlManualAudioCallbackCallLastTicks += (BEL_ST_GetTicksMS() - g_sdl_eventCallback_EnterBackgroundLastTicks);
+		g_be_audioMainThread_lastCallTicks += (BEL_ST_GetTicksMS() - g_sdl_eventCallback_EnterBackgroundLastTicks);
 		return 0;
 	case SDL_APP_DIDENTERFOREGROUND:
 		// HACK - These may be done from a different thread,
