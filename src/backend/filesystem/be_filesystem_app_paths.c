@@ -32,6 +32,7 @@
 #include "be_filesystem_root_paths.h"
 
 #ifdef REFKEEN_PLATFORM_ANDROID
+#include "be_filesystem_mkdir.h"
 #include <jni.h>
 // HACK - Adding a dependency on SDL2 for Android! (Used for external storage path, and for calling Java function)
 #include "SDL_system.h"
@@ -140,13 +141,13 @@ void BE_Cross_PrepareAppPaths(void)
 	// Prepare to call Javaj function
 	JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
 	jobject activity = (jobject)SDL_AndroidGetActivity();
-	jclass clazz = (*env)->GetObjectClass(env, activity);
-	jmethodID method_id = (*env)->GetMethodID(env, clazz, "requestReadExternalStoragePermission", "()I");
+	jclass clazz = env->GetObjectClass(activity);
+	jmethodID method_id = env->GetMethodID(clazz, "requestReadExternalStoragePermission", "()I");
 	// Do call it
-	bool haveReadPermission = (bool)((*env)->CallIntMethod(env, activity, method_id));
+	bool haveReadPermission = (bool)(env->CallIntMethod(activity, method_id));
 	// Clean up references
-	(*env)->DeleteLocalRef(env, activity);
-	(*env)->DeleteLocalRef(env, clazz);
+	env->DeleteLocalRef(activity);
+	env->DeleteLocalRef(clazz);
 
 	if (haveReadPermission)
 	{
