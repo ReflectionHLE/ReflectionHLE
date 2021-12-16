@@ -300,6 +300,7 @@ int main(int argc, char **argv)
 
 #else // REFKEEN_CONFIG_ENABLE_CMDLINE
 
+	BE_ST_InitCommon(); // We still need this, at least for reading cfg
 	BE_Cross_PrepareGameInstallations();
 	BE_Launcher_Start();
 
