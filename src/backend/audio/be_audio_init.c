@@ -49,13 +49,14 @@ void BE_ST_InitAudio(void)
 	if (g_refKeenCfg.sndSubSystem &&
 	    BEL_ST_InitAudioSubsystem(&freq, &channels, &expectedCallbackBufferLen))
 	{
+		// Must be set before calling BEL_ST_PrepareMainThreadForAudio
+		g_sdlAudioSubsystemUp = true;
 #ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
 		samplesForSourceBuffer =
 			BEL_ST_PrepareMainThreadForAudio(&freq, &channels, expectedCallbackBufferLen);
 #else
 		samplesForSourceBuffer = 2*expectedCallbackBufferLen;
 #endif
-		g_sdlAudioSubsystemUp = true;
 	}
 	else
 		samplesForSourceBuffer = BEL_ST_PrepareMainThreadForAudio(&freq, &channels, 0);
