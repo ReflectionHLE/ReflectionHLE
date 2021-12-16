@@ -47,6 +47,12 @@
 #define SDL_RENDER_DEVICE_RESET 0x2001
 #endif
 
+// Using the mutex on Android was found to be problematic, due to
+// context switches taking a bit more time.
+#ifdef REFKEEN_PLATFORM_ANDROID
+#define BE_ST_FILL_AUDIO_IN_MAIN_THREAD 1
+#else
 #define BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO 1
+#endif
 
 #endif // BE_ST_SDL_PRIVATE_H
