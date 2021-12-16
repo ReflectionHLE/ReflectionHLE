@@ -39,7 +39,11 @@ function(add_refkeen_separate_target
 			set(app_rc)
 		endif ()
 		string(REPLACE ";" " " all_cc_flags "${all_cc_flags}")
-		add_executable(${name} MACOSX_BUNDLE ${sources} ${shared_sources} ${app_rc})
+		if (CMAKE_SYSTEM_NAME STREQUAL "Android")
+			add_library(${name} SHARED ${sources} ${shared_sources})
+		else ()
+			add_executable(${name} MACOSX_BUNDLE ${sources} ${shared_sources} ${app_rc})
+		endif ()
 		set_target_properties(${name} PROPERTIES
 			COMPILE_FLAGS "${all_cc_flags}"
 			MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/rsrc/Info.plist"
@@ -70,7 +74,11 @@ function(add_refkeen_unified_target name app_rc targets shared_sources common_cc
 	else ()
 		set(app_rc)
 	endif ()
-	add_executable(${name} MACOSX_BUNDLE ${shared_sources} ${app_rc})
+	if (CMAKE_SYSTEM_NAME STREQUAL "Android")
+		add_library(${name} SHARED ${shared_sources})
+	else ()
+		add_executable(${name} MACOSX_BUNDLE ${shared_sources} ${app_rc})
+	endif ()
 	set_target_properties(${name} PROPERTIES
 		COMPILE_FLAGS "${common_cc_flags} ${cc_flags}"
 		MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/rsrc/Info.plist"
@@ -111,9 +119,16 @@ if (BUILD_UNIFIED)
 endif ()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
-find_package(SDL2 REQUIRED)
-find_package(SpeexDSP)
-include_directories(${SDL2_INCLUDE_DIR} ${SPEEXDSP_INCLUDE_DIRS})
+
+# We build our own copy of SDL2 for Android
+if (CMAKE_SYSTEM_NAME STREQUAL "Android")
+	find_library(SDL2 SDL2)
+	include_directories(src/android-project/app/jni/SDL/include)
+else ()
+	find_package(SDL2 REQUIRED)
+	find_package(SpeexDSP)
+	include_directories(${SDL2_INCLUDE_DIR} ${SPEEXDSP_INCLUDE_DIRS})
+endif ()
 
 if (SPEEXDSP_FOUND)
 	set(REFKEEN_RESAMPLER_LIBSPEEXDSP "1")
@@ -144,7 +159,12 @@ configure_file(refkeen_config.h.in refkeen_config.h)
 
 include(CheckLibraryExists)
 
-set(LIBRARIES ${SDL2_LIBRARY} ${SPEEXDSP_LIBRARIES})
+if (CMAKE_SYSTEM_NAME STREQUAL "Android")
+	set(LIBRARIES log SDL2 SDL2main)
+else ()
+	set(LIBRARIES ${SDL2_LIBRARY} ${SPEEXDSP_LIBRARIES})
+endif ()
+
 check_library_exists(m pow "" LIBM)
 if (LIBM)
 	set(LIBRARIES ${LIBRARIES} m)
@@ -364,10 +384,12 @@ endif ()
 
 include(GNUInstallDirs)
 
-install(TARGETS ${targets}
-	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-	BUNDLE DESTINATION Applications
-)
+if (NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
+	install(TARGETS ${targets}
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		BUNDLE DESTINATION Applications
+	)
+endif ()
 
 if (APPLE)
 	include(cmake/MacOSDependencyScan.cmake)
