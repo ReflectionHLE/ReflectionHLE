@@ -43,6 +43,7 @@
 extern bool g_sdlAudioSubsystemUp;
 extern bool g_sdlAudioInitDone;
 
+static int g_be_audioMainThread_channels;
 static int g_be_audioMainThread_freq;
 // If enabled, this buffer is actually split into two subbuffers:
 // One for main thread use, the other being shared with the audio callback thread.
@@ -65,10 +66,12 @@ int BEL_ST_PrepareMainThreadForAudio(int *freq, int *channels, int expectedCallb
 	if (g_sdlAudioSubsystemUp)
 	{
 		g_be_audioMainThread_samplesBufferLenOfPart = g_refKeenCfg.sndInterThreadBufferRatio * expectedCallbackBufferLen;
-		g_be_audioMainThread_samplesBuffer = (BE_ST_SndSample_T *)malloc(2*(g_be_audioMainThread_samplesBufferLenOfPart*sizeof(BE_ST_SndSample_T))); // Allocate TWO parts
+		// Allocate TWO parts, hence the multiplication by 2
+		g_be_audioMainThread_samplesBuffer = (BE_ST_SndSample_T *)malloc(2*(*channels)*sizeof(BE_ST_SndSample_T)*g_be_audioMainThread_samplesBufferLenOfPart);
 		if (!g_be_audioMainThread_samplesBuffer)
 			BE_ST_ExitWithErrorMsg("BEL_ST_PrepareMainThreadForAudio: Out of memory! (Failed to allocate g_be_audioMainThread_samplesBuffer.)");
 		g_be_audioMainThread_samplesRemainingForCallback = 0;
+		g_be_audioMainThread_channels = *channels;
 		g_be_audioMainThread_freq = *freq;
 	}
 	else
@@ -76,13 +79,13 @@ int BEL_ST_PrepareMainThreadForAudio(int *freq, int *channels, int expectedCallb
 	{
 		// If the audio subsystem is off, let us simulate a byte rate
 		// of 1000Hz (same as BEL_ST_GetTicksMS() time units)
+		*channels = g_be_audioMainThread_channels = 1;
 		*freq = g_be_audioMainThread_freq = NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM / sizeof(BE_ST_SndSample_T);
 		g_be_audioMainThread_samplesBuffer = (BE_ST_SndSample_T *)malloc(NUM_OF_BYTES_FOR_SOUND_CALLBACK_WITH_DISABLED_SUBSYSTEM);
 		if (!g_be_audioMainThread_samplesBuffer)
 			BE_ST_ExitWithErrorMsg("BEL_ST_PrepareMainThreadForAudio: Out of memory! (Failed to allocate g_be_audioMainThread_samplesBuffer.)");
 		g_be_audioMainThread_samplesBufferLenOfPart = g_be_audioMainThread_freq;
 	}
-	*channels = 1;
 	return g_be_audioMainThread_samplesBufferLenOfPart;
 }
 
@@ -128,7 +131,8 @@ void BE_ST_PrepareForManualAudioCallbackCall(void)
 		// and thus discarded some samples, they won't be covered here.
 		int samplesToCopy = BE_Cross_TypedMin(int, samplesPassed, g_be_audioMainThread_samplesBufferLenOfPart - g_be_audioMainThread_samplesRemainingForCallback);
 		// NOTE: We copy to the SECOND HALF of the buffer!
-		memcpy(g_be_audioMainThread_samplesBuffer + g_be_audioMainThread_samplesBufferLenOfPart + g_be_audioMainThread_samplesRemainingForCallback, g_be_audioMainThread_samplesBuffer, samplesToCopy * sizeof(BE_ST_SndSample_T));
+		memcpy(g_be_audioMainThread_samplesBuffer + g_be_audioMainThread_channels * (g_be_audioMainThread_samplesBufferLenOfPart + g_be_audioMainThread_samplesRemainingForCallback),
+		       g_be_audioMainThread_samplesBuffer, samplesToCopy * sizeof(BE_ST_SndSample_T) * g_be_audioMainThread_channels);
 		g_be_audioMainThread_samplesRemainingForCallback += samplesToCopy;
 		BE_ST_UnlockAudioRecursively();
 	}
@@ -142,15 +146,21 @@ void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len)
 {
 	BE_ST_LockAudioRecursively();
 
-	int samplesToCopy = BE_Cross_TypedMin(int, g_be_audioMainThread_samplesRemainingForCallback, len / sizeof(BE_ST_SndSample_T));
-	memcpy(stream, g_be_audioMainThread_samplesBuffer + g_be_audioMainThread_samplesBufferLenOfPart, samplesToCopy*sizeof(BE_ST_SndSample_T));
+	int samplesToCopy = BE_Cross_TypedMin(int, g_be_audioMainThread_samplesRemainingForCallback, len / (sizeof(BE_ST_SndSample_T) * g_be_audioMainThread_channels));
+	memcpy(stream,
+	       g_be_audioMainThread_samplesBuffer + g_be_audioMainThread_channels * g_be_audioMainThread_samplesBufferLenOfPart,
+	       samplesToCopy * sizeof(BE_ST_SndSample_T) * g_be_audioMainThread_channels);
 	// Shift remaining samples
-	memmove(g_be_audioMainThread_samplesBuffer + g_be_audioMainThread_samplesBufferLenOfPart, g_be_audioMainThread_samplesBuffer + g_be_audioMainThread_samplesBufferLenOfPart + samplesToCopy, (g_be_audioMainThread_samplesRemainingForCallback - samplesToCopy) * sizeof(BE_ST_SndSample_T));
+	memmove(g_be_audioMainThread_samplesBuffer + g_be_audioMainThread_channels * g_be_audioMainThread_samplesBufferLenOfPart,
+	        g_be_audioMainThread_samplesBuffer + g_be_audioMainThread_channels * (g_be_audioMainThread_samplesBufferLenOfPart + samplesToCopy),
+	        (g_be_audioMainThread_samplesRemainingForCallback - samplesToCopy) * sizeof(BE_ST_SndSample_T) * g_be_audioMainThread_channels);
 	g_be_audioMainThread_samplesRemainingForCallback -= samplesToCopy;
 
 	BE_ST_UnlockAudioRecursively();
 	// No need to have lock here
-	if (samplesToCopy < len / (int)sizeof(BE_ST_SndSample_T))
-		memset(stream + samplesToCopy * sizeof(BE_ST_SndSample_T), 0, len - samplesToCopy * sizeof(BE_ST_SndSample_T));
+	if (samplesToCopy < len / (sizeof(BE_ST_SndSample_T) * g_be_audioMainThread_channels))
+		memset(stream + samplesToCopy * sizeof(BE_ST_SndSample_T) * g_be_audioMainThread_channels,
+		       0,
+		       len - samplesToCopy * sizeof(BE_ST_SndSample_T) * g_be_audioMainThread_channels);
 }
 #endif
