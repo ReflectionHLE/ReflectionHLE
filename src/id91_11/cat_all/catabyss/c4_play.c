@@ -686,6 +686,17 @@ void PollControls (void)
 
 	}
 
+	// REFKEEN: New user input binds, based on code from Catacomb 3-D
+	if ((g_refKeenCfg.altControlScheme.analogMotion &&
+	     (g_binding_value_motionx || g_binding_value_motiony)))
+	{
+		if (control.x>120 || control.x<-120 || control.y>120 || control.y<-120)
+			running = true;
+		else
+			running = false;
+		return;
+	}
+
 	if (Keyboard[sc_V] || Keyboard[sc_Tab])
 		running = true;
 	else

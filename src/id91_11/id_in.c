@@ -853,6 +853,20 @@ register	KeyboardDef	*def;
 			break;
 		}
 #endif // Yes/No REFKEEN_VER_CATADVENTURES
+
+		// REFKEEN: New user input binds
+		if (g_binding_value_button[0])
+			buttons |= 1;
+		if (g_binding_value_button[1])
+			buttons |= 2;
+		if (g_refKeenCfg.novert) // Technically a patch impacting PollControls
+			g_binding_value_motiony = 0;
+		if (g_binding_value_motionx || g_binding_value_motiony)
+		{
+			dx = BE_Cross_TypedClamp(int, g_binding_value_motionx, -127, 127);
+			dy = BE_Cross_TypedClamp(int, g_binding_value_motiony, -127, 127);
+			realdelta = true;
+		}
 	}
 
 	if (realdelta)

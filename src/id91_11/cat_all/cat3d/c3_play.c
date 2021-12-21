@@ -376,9 +376,13 @@ void PollControls (void)
 
 	}
 
-	if (Controls[0]==ctrl_Joystick)
+	// REFKEEN: New user input binds
+	if (Controls[0]==ctrl_Joystick ||
+	    (g_refKeenCfg.altControlScheme.analogMotion &&
+	     (g_binding_value_motionx || g_binding_value_motiony)))
+//	if (Controls[0]==ctrl_Joystick)
 	{
-		if (c.x>120 || c.x <-120 || c.y>120 || c.y<-120)
+		if (c.x>120 || c.x<-120 || c.y>120 || c.y<-120)
 			running = true;
 		else
 			running = false;
