@@ -564,9 +564,6 @@ BEMenu g_beInputSettingsMenu = {
 /*** Controller settings menu ***/
 
 static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", "DPad Up", "DPad Down", "DPad Left", "DPad Right", NULL, "Paddle 1", "Paddle 2", "Paddle 3", "Paddle 4", "LTrigger", "RTrigger", "N/A"};
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-static const char *g_be_controllerSettingsChoices_analogMotion[] = {"Keyboard", "Mouse", NULL};
-#endif
 
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem **menuItemP);
@@ -574,12 +571,12 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
 BEMENUITEM_DEF_STATIC(g_beControllerSettingsMenuItem_KDreams, "Keen Dreams binds")
-BEMENUITEM_DEF_CTRL_BIND(KDreams_Up, "Action - Default Up key (Up)")
-BEMENUITEM_DEF_CTRL_BIND(KDreams_Down, "Action - Default Down key (Down)")
-BEMENUITEM_DEF_CTRL_BIND(KDreams_Left, "Action - Default Left key (Left)")
-BEMENUITEM_DEF_CTRL_BIND(KDreams_Right, "Action - Default Right key (Right)")
-BEMENUITEM_DEF_CTRL_BIND(KDreams_Jump, "Action - Default Jump key (Ctrl)")
-BEMENUITEM_DEF_CTRL_BIND(KDreams_Throw, "Action - Default Throw key (Alt)")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Up, "Action - Move/Look up")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Down, "Action - Move/Look down")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Left, "Action - Move left")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Right, "Action - Move right")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Jump, "Action - Jump")
+BEMENUITEM_DEF_CTRL_BIND(KDreams_Throw, "Action - Throw")
 BEMENUITEM_DEF_CTRL_BIND(KDreams_Stats, "Action - Stats")
 BEMENUITEM_DEF_CTRL_BIND(KDreams_FuncKeys, "Action - Function Keys")
 BEMENUITEM_DEF_CTRL_BIND(KDreams_DebugKeys, "Action - Debug Keys")
@@ -587,12 +584,12 @@ BEMENUITEM_DEF_CTRL_BIND(KDreams_DebugKeys, "Action - Debug Keys")
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 BEMENUITEM_DEF_STATIC(g_beControllerSettingsMenuItem_Cat3D, "Catacomb 3-D binds")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D_Up, "Action - Default Forward key (Up)")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D_Down, "Action - Default Backward key (Down)")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D_Left, "Action - Default Left key (Left)")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D_Right, "Action - Default Right key (Right)")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D_Fire, "Action - Default Fire key (Ctrl)")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D_Strafe, "Action - Default Strafe key (Alt)")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Up, "Action - Move forward")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Down, "Action - Move backward")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Left, "Action - Turn left")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Right, "Action - Turn right)")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Fire, "Action - Fire")
+BEMENUITEM_DEF_CTRL_BIND(Cat3D_Strafe, "Action - Strafe")
 BEMENUITEM_DEF_CTRL_BIND(Cat3D_Drink, "Action - Drink")
 BEMENUITEM_DEF_CTRL_BIND(Cat3D_Bolt, "Action - Bolt/Zapper")
 BEMENUITEM_DEF_CTRL_BIND(Cat3D_Nuke, "Action - Nuke/Xterminator")
@@ -608,14 +605,14 @@ BEMENUITEM_DEF_CTRL_BIND(Cat3D_DebugKeys, "Action - Debug keys")
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 BEMENUITEM_DEF_STATIC(g_beControllerSettingsMenuItem_Wolf3D, "Wolfenstein 3-D binds")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Up, "Action - Default Forward key (Up)")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Down, "Action - Default Backward key (Down)")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Left, "Action - Default Left key (Left)")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Right, "Action - Default Right key (Right)")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Fire, "Action - Default Fire key (Ctrl)")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Strafe, "Action - Default Strafe key (Alt)")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Use, "Action - Default Use key (Space)")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Run, "Action - Default Run key (RShift)")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Up, "Action - Move forward")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Down, "Action - Move backward")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Left, "Action - Turn left")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Right, "Action - Turn right")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Fire, "Action - Fire")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Strafe, "Action - Strafe")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Use, "Action - Use")
+BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Run, "Action - Run")
 BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon1, "Action - Weapon 1")
 BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon2, "Action - Weapon 2")
 BEMENUITEM_DEF_CTRL_BIND(Wolf3D_Weapon3, "Action - Weapon 3")
@@ -630,7 +627,7 @@ BEMENUITEM_DEF_CTRL_BIND(Wolf3D_DebugKeys, "Action - Debug keys")
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
-BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_AnalogMotion, "Motion emulation mode", g_be_controllerSettingsChoices_analogMotion)
+BEMENUITEM_DEF_SELECTION(g_beControllerSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
 #endif
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 BEMENUITEM_DEF_HANDLER(g_beControllerSettingsMenuItem_ImportMappingsFromSteam, "Import controller mappings from Steam\n(shouldn't override existing mappings)", &BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam)
