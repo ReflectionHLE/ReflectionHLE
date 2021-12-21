@@ -442,6 +442,15 @@ void PollJoystickButtons (void)
 }
 
 
+// REFKEEN: New user input binds
+static void PollUserBindsButtons (void)
+{
+	for (int i = 0; i < NUMBUTTONS; ++i)
+		if (g_binding_value_button[i])
+			buttonstate[i] = true;
+}
+
+
 /*
 ===================
 =
@@ -558,6 +567,43 @@ void PollJoystickMove (void)
 }
 
 
+// REFKEEN: New user input binds, mostly based on PollJoystickMove
+static void PollUserBindsMove (void)
+{
+	int x = g_binding_value_motionx, y = g_binding_value_motiony;
+	if (g_refKeenCfg.novert) // Technically a patch
+		y = 0;
+
+	if (g_refKeenCfg.altControlScheme.analogMotion)
+	{
+		controlx += x*JOYSCALE*tics;
+		controly += y*JOYSCALE*tics;
+	}
+	else if (buttonstate[bt_run])
+	{
+		if (x > 0)
+			controlx += RUNMOVE*tics;
+		else if (x < 0)
+			controlx -= RUNMOVE*tics;
+		if (y > 0)
+			controly += RUNMOVE*tics;
+		else if (y < 0)
+			controly -= RUNMOVE*tics;
+	}
+	else
+	{
+		if (x > 0)
+			controlx += BASEMOVE*tics;
+		else if (x < 0)
+			controlx -= BASEMOVE*tics;
+		if (y > 0)
+			controly += BASEMOVE*tics;
+		else if (y < 0)
+			controly -= BASEMOVE*tics;
+	}
+}
+
+
 /*
 ===================
 =
@@ -668,6 +714,8 @@ void PollControls (void)
 	if (joystickenabled)
 		PollJoystickButtons ();
 
+	PollUserBindsButtons (); // REFKEEN: New user input binds
+
 //
 // get movements
 //
@@ -678,6 +726,8 @@ void PollControls (void)
 
 	if (joystickenabled)
 		PollJoystickMove ();
+
+	PollUserBindsMove (); // REFKEEN: New user input binds
 
 //
 // bound movement to a maximum
