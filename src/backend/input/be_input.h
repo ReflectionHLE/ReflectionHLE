@@ -49,6 +49,8 @@ extern int g_sdlEmuMouseButtonsState;
 extern int16_t g_sdlEmuMouseMotionAccumulatedState[2];
 extern int16_t g_sdlEmuMouseCursorPos[2];
 extern int16_t g_sdlEmuMouseMotionFromJoystick[2];
+extern int16_t g_sdlEmuMouseMotionFromJoystick_Accu[2];
+extern uint32_t g_sdlEmuMouseMotionFromJoystick_LastTicksMS;
 extern int16_t g_sdlVirtualMouseCursorState[2]; // Used e.g., for touch input handling
 extern int g_sdlEmuJoyButtonsState;
 extern int16_t g_sdlEmuJoyMotionState[4];

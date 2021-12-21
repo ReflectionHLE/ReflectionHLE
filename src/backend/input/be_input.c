@@ -29,6 +29,7 @@
 #include "be_features.h"
 #include "be_input.h"
 #include "be_st.h"
+#include "be_st_sdl_private.h"
 
 uint32_t g_sdlLastPollEventsTime;
 
@@ -43,6 +44,8 @@ int g_sdlEmuMouseButtonsState;
 int16_t g_sdlEmuMouseMotionAccumulatedState[2];
 int16_t g_sdlEmuMouseCursorPos[2];
 int16_t g_sdlEmuMouseMotionFromJoystick[2];
+int16_t g_sdlEmuMouseMotionFromJoystick_Accu[2];
+uint32_t g_sdlEmuMouseMotionFromJoystick_LastTicksMS;
 int16_t g_sdlVirtualMouseCursorState[2];
 int g_sdlEmuJoyButtonsState;
 int16_t g_sdlEmuJoyMotionState[4];
@@ -107,8 +110,13 @@ void BE_ST_GetEmuAccuMouseMotion(int16_t *optX, int16_t *optY)
 {
 	BE_ST_PollEvents();
 
-	int16_t dx = g_sdlEmuMouseMotionAccumulatedState[0] + g_sdlEmuMouseMotionFromJoystick[0];
-	int16_t dy = g_sdlEmuMouseMotionAccumulatedState[1] + g_sdlEmuMouseMotionFromJoystick[1];
+	uint32_t ticks = BEL_ST_GetTicksMS();
+	uint32_t diff = ticks - g_sdlEmuMouseMotionFromJoystick_LastTicksMS;
+	int16_t dx = g_sdlEmuMouseMotionAccumulatedState[0] + (diff * g_sdlEmuMouseMotionFromJoystick[0] + g_sdlEmuMouseMotionFromJoystick_Accu[0]) / 4;
+	int16_t dy = g_sdlEmuMouseMotionAccumulatedState[1] + (diff * g_sdlEmuMouseMotionFromJoystick[1] + g_sdlEmuMouseMotionFromJoystick_Accu[1]) / 4;
+	g_sdlEmuMouseMotionFromJoystick_Accu[0] = (diff * g_sdlEmuMouseMotionFromJoystick[0] + g_sdlEmuMouseMotionFromJoystick_Accu[0]) % 4;
+	g_sdlEmuMouseMotionFromJoystick_Accu[1] = (diff * g_sdlEmuMouseMotionFromJoystick[1] + g_sdlEmuMouseMotionFromJoystick_Accu[1]) % 4;
+	g_sdlEmuMouseMotionFromJoystick_LastTicksMS = ticks;
 	if (g_refKeenCfg.novert)
 		dy = 0;
 

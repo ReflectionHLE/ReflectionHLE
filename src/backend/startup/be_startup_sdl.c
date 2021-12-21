@@ -131,6 +131,8 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 
 	g_sdlEmuMouseButtonsState = 0;
 	memset(g_sdlEmuMouseMotionFromJoystick, 0, sizeof(g_sdlEmuMouseMotionFromJoystick));
+	memset(g_sdlEmuMouseMotionFromJoystick_Accu, 0, sizeof(g_sdlEmuMouseMotionFromJoystick_Accu));
+	g_sdlEmuMouseMotionFromJoystick_LastTicksMS = BEL_ST_GetTicksMS();
 	g_sdlEmuJoyButtonsState = 0;
 	// A bit tricky, should be reported as centered *if* any joystick is connected (and *not* while using modern controller scheme)
 	// Note 1: A single controller may support up to all 4 axes
