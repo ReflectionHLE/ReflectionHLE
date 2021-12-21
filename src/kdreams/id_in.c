@@ -792,6 +792,17 @@ register	KeyboardDef	*def;
 			realdelta = true;
 			break;
 		}
+		// REFKEEN: New user input binds
+		if (g_binding_value_button[0])
+			buttons |= 1;
+		if (g_binding_value_button[1])
+			buttons |= 2;
+		if (g_binding_value_motionx || g_binding_value_motiony)
+		{
+			dx = BE_Cross_TypedClamp(int, g_binding_value_motionx, -127, 127);
+			dy = BE_Cross_TypedClamp(int, g_binding_value_motiony, -127, 127);
+			realdelta = true;
+		}
 	}
 
 	if (realdelta)

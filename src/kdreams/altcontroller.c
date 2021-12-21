@@ -52,10 +52,28 @@
 #include "../rsrc/analog_circle_bottomleft_input.xpm"
 #include "../rsrc/analog_circle_bottomright_input.xpm"
 
-BE_ST_ControllerSingleMap *g_ingame_altcontrol_button0mappings[2], *g_ingame_altcontrol_button1mappings[2],
-	*g_ingame_altcontrol_upmappings[4], *g_ingame_altcontrol_downmappings[4], *g_ingame_altcontrol_leftmappings[4], *g_ingame_altcontrol_rightmappings[4];
+int g_binding_value_button[2],
+    g_binding_value_motionx, g_binding_value_motiony;
 
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
+
+static const BE_ST_ControllerSingleMap
+       g_ingame_but_jump_map       = {&g_binding_value_button[0], 0, 127, BE_ST_CTRL_MAP_VALUESET},
+       g_ingame_but_throw_map      = {&g_binding_value_button[1], 0, 127, BE_ST_CTRL_MAP_VALUESET},
+       g_ingame_but_stats_map      = {NULL, BE_ST_SC_SPACE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+       g_ingame_but_up_map         = {&g_binding_value_motiony, 0, -127, BE_ST_CTRL_MAP_VALUESET},
+       g_ingame_but_down_map       = {&g_binding_value_motiony, 0, 127, BE_ST_CTRL_MAP_VALUESET},
+       g_ingame_but_left_map       = {&g_binding_value_motionx, 0, -127, BE_ST_CTRL_MAP_VALUESET},
+       g_ingame_but_right_map      = {&g_binding_value_motionx, 0, 127, BE_ST_CTRL_MAP_VALUESET},
+       g_ingame_but_back_map       = {NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+       g_ingame_but_pause_map      = {NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+       g_ingame_but_func_keys_map  = {&g_ingame_altcontrol_mapping_funckeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
+       g_ingame_but_debug_keys_map = {&g_beStControllerMappingDebugKeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
+       g_ingame_mouse_up_map       = {NULL, 1, -4, BE_ST_CTRL_MAP_MOUSEMOTION},
+       g_ingame_mouse_down_map     = {NULL, 1,  4, BE_ST_CTRL_MAP_MOUSEMOTION},
+       g_ingame_mouse_left_map     = {NULL, 0, -4, BE_ST_CTRL_MAP_MOUSEMOTION},
+       g_ingame_mouse_right_map    = {NULL, 0,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
+
 
 static BE_ST_OnscreenTouchControl g_ingame_altcontrol_mapping_gameplay_onscreentouchcontrols[] = {
 	{button_jump_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 39 - 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8},
@@ -70,51 +88,53 @@ static BE_ST_OnscreenTouchControl g_ingame_altcontrol_mapping_gameplay_onscreent
 };
 
 static BE_ST_TouchControlSingleMap g_ingame_altcontrol_mapping_gameplay_touchmappings[] = {
-	/*** Actually adjusted in-game ***/
-	{{NULL, BE_ST_SC_LCTRL, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_jump_map},
 	 button_jump_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 39 - 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8
 	},
-	{{NULL, BE_ST_SC_LALT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_throw_map},
 	 button_shoot_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 39 - 8
 	},
-	{{NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_left_map},
 	 analog_circle_left_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_right_map},
 	 analog_circle_right_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{NULL, BE_ST_SC_UP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_up_map},
 	 analog_circle_top_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{NULL, BE_ST_SC_DOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_down_map},
 	 analog_circle_bottom_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{NULL, BE_ST_SC_HOME, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_up_map,
+	  g_ingame_but_left_map},
 	 analog_circle_topleft_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{NULL, BE_ST_SC_PAGEUP, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_up_map,
+	  g_ingame_but_right_map},
 	 analog_circle_topright_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{NULL, BE_ST_SC_END, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_down_map,
+	  g_ingame_but_left_map},
 	 analog_circle_bottomleft_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{NULL, BE_ST_SC_PAGEDOWN, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_down_map,
+	  g_ingame_but_right_map},
 	 analog_circle_bottomright_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	/*** Not adjusted as above ***/
-	{{NULL, BE_ST_SC_SPACE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_stats_map},
 	 button_stats_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 56 - 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 39 - 8
 	},
-	{{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_back_map},
 	 button_back_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8, 2 + 8
 	},
-	{{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+	{{g_ingame_but_pause_map},
 	 button_pause_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 46 - 8, 2 + 8
 	},
-	{{&g_ingame_altcontrol_mapping_funckeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
+	{{g_ingame_but_func_keys_map},
 	 button_function_keys_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 46 - 8, 26 + 8
 	},
-	{{&g_beStControllerMappingDebugKeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
+	{{g_ingame_but_debug_keys_map},
 	 button_debug_keys_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8, 26 + 8
 	},
 	{0}
@@ -131,10 +151,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		{0},
 		{0},
 		// Back button
-		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		g_ingame_but_back_map,
 		{0},
 		// Start button
-		{NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
+		g_ingame_but_pause_map,
 		{0},
 		{0},
 		{0},
@@ -485,54 +505,25 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_help = {
 	false
 };
 
-static bool CheckButtonMapping(int actionmapping, BE_ST_ControllerSingleMap **outmapptr, const BE_ST_ControllerSingleMap *inputmap)
+static void CheckButtonMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_BUT_MAX))
-		*outmapptr = &g_ingame_altcontrol_mapping_gameplay.buttons[actionmapping];
+		g_ingame_altcontrol_mapping_gameplay.buttons[actionmapping] = *inputmap;
 	else if ((actionmapping >= BE_ST_CTRL_BUT_MAX) && (actionmapping < BE_ST_CTRL_BUT_MAX+2))
-		*outmapptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_BUT_MAX][1];
-	else
-		return false;
-
-	**outmapptr = *inputmap;
-	return true;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_BUT_MAX][1] = *inputmap;
 }
 
 void RefKeen_PrepareAltControllerScheme(void)
 {
-	BE_ST_ControllerSingleMap *tempsinglemappingptr;
-	BE_ST_ControllerSingleMap tempsinglemapping = {0};
-	BE_ST_ControllerSingleMap **currupmappingptr = g_ingame_altcontrol_upmappings;
-	BE_ST_ControllerSingleMap **currdownmappingptr = g_ingame_altcontrol_downmappings;
-	BE_ST_ControllerSingleMap **currleftmappingptr = g_ingame_altcontrol_leftmappings;
-	BE_ST_ControllerSingleMap **currrightmappingptr = g_ingame_altcontrol_rightmappings;
-
-	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-	tempsinglemapping.val = BE_ST_SC_LCTRL; // Actually adjusted in game
-	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_JUMP], &g_ingame_altcontrol_button0mappings[0], &tempsinglemapping);
-	tempsinglemapping.val = BE_ST_SC_LALT; // Actually adjusted in game
-	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_THROW], &g_ingame_altcontrol_button1mappings[0], &tempsinglemapping);
-	tempsinglemapping.val = BE_ST_SC_SPACE;
-	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_STATS], &tempsinglemappingptr, &tempsinglemapping);
-	// These ones are also adjusted in game
-	tempsinglemapping.val = BE_ST_SC_UP;
-	if (CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_UP], currupmappingptr, &tempsinglemapping))
-		++currupmappingptr;
-	tempsinglemapping.val = BE_ST_SC_DOWN;
-	if (CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DOWN], currdownmappingptr, &tempsinglemapping))
-		++currdownmappingptr;
-	tempsinglemapping.val = BE_ST_SC_LEFT;
-	if (CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_LEFT], currleftmappingptr, &tempsinglemapping))
-		++currleftmappingptr;
-	tempsinglemapping.val = BE_ST_SC_RIGHT;
-	if (CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_RIGHT], currrightmappingptr, &tempsinglemapping))
-		++currrightmappingptr;
-
-	tempsinglemapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
-	tempsinglemapping.miscPtr = &g_ingame_altcontrol_mapping_funckeys;
-	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS], &tempsinglemappingptr, &tempsinglemapping);
-	tempsinglemapping.miscPtr = &g_beStControllerMappingDebugKeys;
-	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS], &tempsinglemappingptr, &tempsinglemapping);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_JUMP], &g_ingame_but_jump_map);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_THROW], &g_ingame_but_throw_map);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_STATS], &g_ingame_but_stats_map);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_UP], &g_ingame_but_up_map);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DOWN], &g_ingame_but_down_map);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_LEFT], &g_ingame_but_left_map);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_RIGHT], &g_ingame_but_right_map);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS], &g_ingame_but_func_keys_map);
+	CheckButtonMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS], &g_ingame_but_debug_keys_map);
 
 	// HACK (leave US_LineInput this way)
 	g_beStControllerMappingTextInput.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
@@ -541,52 +532,34 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	g_beStControllerMappingDebugKeys.defaultMapping.miscPtr = &g_ingame_altcontrol_mapping_gameplay;
 
-	BE_ST_ControllerSingleMap gamekeyup    = {NULL, BE_ST_SC_UP,    0, BE_ST_CTRL_MAP_KEYSCANCODE};
-	BE_ST_ControllerSingleMap gamekeydown  = {NULL, BE_ST_SC_DOWN,  0, BE_ST_CTRL_MAP_KEYSCANCODE};
-	BE_ST_ControllerSingleMap gamekeyleft  = {NULL, BE_ST_SC_LEFT,  0, BE_ST_CTRL_MAP_KEYSCANCODE};
-	BE_ST_ControllerSingleMap gamekeyright = {NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE};
-
-	BE_ST_ControllerSingleMap mouseup    = {NULL, 1, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mousedown  = {NULL, 1,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mouseleft  = {NULL, 0, -4, BE_ST_CTRL_MAP_MOUSEMOTION};
-	BE_ST_ControllerSingleMap mouseright = {NULL, 0,  4, BE_ST_CTRL_MAP_MOUSEMOTION};
-
 	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{
-		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][0];
-		*currdownmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][1];
-		*currleftmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][0];
-		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][1];
-		**currupmappingptr++ = gamekeyup;
-		**currdownmappingptr++ = gamekeydown;
-		**currleftmappingptr++ = gamekeyleft;
-		**currrightmappingptr++ = gamekeyright;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][0] = g_ingame_but_up_map;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][1] = g_ingame_but_down_map;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_but_left_map;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_but_right_map;
 	}
 	if (g_refKeenCfg.altControlScheme.useRightStick)
 	{
-		*currupmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][0];
-		*currdownmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][1];
-		*currleftmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][0];
-		*currrightmappingptr = &g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][1];
-		**currupmappingptr++ = gamekeyup;
-		**currdownmappingptr++ = gamekeydown;
-		**currleftmappingptr++ = gamekeyleft;
-		**currrightmappingptr++ = gamekeyright;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][0] = g_ingame_but_up_map;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][1] = g_ingame_but_down_map;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][0] = g_ingame_but_left_map;
+		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][1] = g_ingame_but_right_map;
 	}
 
 	if (g_refKeenCfg.altControlScheme.useLeftStick)
 	{
-		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][0] = mouseup;
-		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][1] = mousedown;
-		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][0] = mouseleft;
-		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][1] = mouseright;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][0] = g_ingame_mouse_up_map;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][1] = g_ingame_mouse_down_map;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_mouse_left_map;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_mouse_right_map;
 	}
 	if (g_refKeenCfg.altControlScheme.useRightStick)
 	{
-		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][0] = mouseup;
-		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][1] = mousedown;
-		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][0] = mouseleft;
-		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][1] = mouseright;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][0] = g_ingame_mouse_up_map;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][1] = g_ingame_mouse_down_map;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][0] = g_ingame_mouse_left_map;
+		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RX][1] = g_ingame_mouse_right_map;
 	}
 
 	// Init touch controls UI (excludes UI picked in FinalizeControlPanelMappingsByMousePresence)
@@ -624,33 +597,5 @@ void UpdateGameplayMappingsByMousePresence(bool withmouse)
 
 void PrepareGamePlayControllerMapping(void)
 {
-#if 0 // TODO: Let's try disabling this for now
-	BE_ST_ControllerSingleMap **singlemappingptr;
-
-	for (singlemappingptr = g_ingame_altcontrol_button0mappings; *singlemappingptr; ++singlemappingptr)
-		(*singlemappingptr)->val = KbdDefs[0].button0;
-	for (singlemappingptr = g_ingame_altcontrol_button1mappings; *singlemappingptr; ++singlemappingptr)
-		(*singlemappingptr)->val = KbdDefs[0].button1;
-	for (singlemappingptr = g_ingame_altcontrol_upmappings; *singlemappingptr; ++singlemappingptr)
-		(*singlemappingptr)->val = KbdDefs[0].up;
-	for (singlemappingptr = g_ingame_altcontrol_downmappings; *singlemappingptr; ++singlemappingptr)
-		(*singlemappingptr)->val = KbdDefs[0].down;
-	for (singlemappingptr = g_ingame_altcontrol_leftmappings; *singlemappingptr; ++singlemappingptr)
-		(*singlemappingptr)->val = KbdDefs[0].left;
-	for (singlemappingptr = g_ingame_altcontrol_rightmappings; *singlemappingptr; ++singlemappingptr)
-		(*singlemappingptr)->val = KbdDefs[0].right;
-	// HACK - The indices are hardcoded
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[0].mappings[0].val = KbdDefs[0].button0;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[1].mappings[0].val = KbdDefs[0].button1;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[2].mappings[0].val = KbdDefs[0].left;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[3].mappings[0].val = KbdDefs[0].right;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[4].mappings[0].val = KbdDefs[0].up;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[5].mappings[0].val = KbdDefs[0].down;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[6].mappings[0].val = KbdDefs[0].upleft;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[7].mappings[0].val = KbdDefs[0].upright;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[8].mappings[0].val = KbdDefs[0].downleft;
-	g_ingame_altcontrol_mapping_gameplay.touchMappings[9].mappings[0].val = KbdDefs[0].downright;
-#endif
-
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
 }
