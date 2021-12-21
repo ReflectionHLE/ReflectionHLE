@@ -154,7 +154,7 @@ typedef struct {
 	// For BE_ST_CTRL_MAP_VALUESET: Points at an integer to set as-is.
 	void *miscPtr;
 	int val;
-	int secondaryVal; // Used for mouse motion emulation
+	int secondaryVal; // Used for BE_ST_CTRL_MAP_MOUSEMOTION/VALUESET
 	BE_ST_ControllerSingleMapClass mapClass;
 } BE_ST_ControllerSingleMap;
 
