@@ -33,7 +33,7 @@
 #include "be_st.h"
 #include "refkeen_config.h"
 
-// NOTE: This struct is generally used just in the Reflection Keen backend.
+// NOTE: These structs are generally used just in the Reflection Keen backend.
 // There might still be exceptions to this.
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
