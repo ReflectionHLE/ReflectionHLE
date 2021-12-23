@@ -57,18 +57,30 @@ int g_binding_value_button[2],
 
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 
+// Using macros for static variable definitions in compound structures,
+// along with separate mapping variables used elsewhere
+#define BUT_JUMP_MAP       &g_binding_value_button[0], 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_THROW_MAP      &g_binding_value_button[1], 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_STATS_MAP      NULL, BE_ST_SC_SPACE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
+#define BUT_UP_MAP         &g_binding_value_motiony, 0, -127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_DOWN_MAP       &g_binding_value_motiony, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_LEFT_MAP       &g_binding_value_motionx, 0, -127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_RIGHT_MAP      &g_binding_value_motionx, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
+#define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
+#define BUT_FUNC_KEYS_MAP  &g_ingame_altcontrol_mapping_funckeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING
+#define BUT_DEBUG_KEYS_MAP &g_beStControllerMappingDebugKeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING
+
 static const BE_ST_ControllerSingleMap
-       g_ingame_but_jump_map       = {&g_binding_value_button[0], 0, 127, BE_ST_CTRL_MAP_VALUESET},
-       g_ingame_but_throw_map      = {&g_binding_value_button[1], 0, 127, BE_ST_CTRL_MAP_VALUESET},
-       g_ingame_but_stats_map      = {NULL, BE_ST_SC_SPACE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-       g_ingame_but_up_map         = {&g_binding_value_motiony, 0, -127, BE_ST_CTRL_MAP_VALUESET},
-       g_ingame_but_down_map       = {&g_binding_value_motiony, 0, 127, BE_ST_CTRL_MAP_VALUESET},
-       g_ingame_but_left_map       = {&g_binding_value_motionx, 0, -127, BE_ST_CTRL_MAP_VALUESET},
-       g_ingame_but_right_map      = {&g_binding_value_motionx, 0, 127, BE_ST_CTRL_MAP_VALUESET},
-       g_ingame_but_back_map       = {NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-       g_ingame_but_pause_map      = {NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
-       g_ingame_but_func_keys_map  = {&g_ingame_altcontrol_mapping_funckeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
-       g_ingame_but_debug_keys_map = {&g_beStControllerMappingDebugKeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
+       g_ingame_but_jump_map       = {BUT_JUMP_MAP},
+       g_ingame_but_throw_map      = {BUT_THROW_MAP},
+       g_ingame_but_stats_map      = {BUT_STATS_MAP},
+       g_ingame_but_up_map         = {BUT_UP_MAP},
+       g_ingame_but_down_map       = {BUT_DOWN_MAP},
+       g_ingame_but_left_map       = {BUT_LEFT_MAP},
+       g_ingame_but_right_map      = {BUT_RIGHT_MAP},
+       g_ingame_but_func_keys_map  = {BUT_FUNC_KEYS_MAP},
+       g_ingame_but_debug_keys_map = {BUT_DEBUG_KEYS_MAP},
        g_ingame_mouse_up_map       = {NULL, 1, -4, BE_ST_CTRL_MAP_MOUSEMOTION},
        g_ingame_mouse_down_map     = {NULL, 1,  4, BE_ST_CTRL_MAP_MOUSEMOTION},
        g_ingame_mouse_left_map     = {NULL, 0, -4, BE_ST_CTRL_MAP_MOUSEMOTION},
@@ -88,53 +100,53 @@ static BE_ST_OnscreenTouchControl g_ingame_altcontrol_mapping_gameplay_onscreent
 };
 
 static BE_ST_TouchControlSingleMap g_ingame_altcontrol_mapping_gameplay_touchmappings[] = {
-	{{g_ingame_but_jump_map},
+	{{BUT_JUMP_MAP},
 	 button_jump_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 39 - 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8
 	},
-	{{g_ingame_but_throw_map},
+	{{BUT_THROW_MAP},
 	 button_shoot_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 39 - 8
 	},
-	{{g_ingame_but_left_map},
+	{{BUT_LEFT_MAP},
 	 analog_circle_left_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{g_ingame_but_right_map},
+	{{BUT_RIGHT_MAP},
 	 analog_circle_right_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{g_ingame_but_up_map},
+	{{BUT_UP_MAP},
 	 analog_circle_top_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{g_ingame_but_down_map},
+	{{BUT_DOWN_MAP},
 	 analog_circle_bottom_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{g_ingame_but_up_map,
-	  g_ingame_but_left_map},
+	{{BUT_UP_MAP,
+	  BUT_LEFT_MAP},
 	 analog_circle_topleft_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{g_ingame_but_up_map,
-	  g_ingame_but_right_map},
+	{{BUT_UP_MAP,
+	  BUT_RIGHT_MAP},
 	 analog_circle_topright_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{g_ingame_but_down_map,
-	  g_ingame_but_left_map},
+	{{BUT_DOWN_MAP,
+	  BUT_LEFT_MAP},
 	 analog_circle_bottomleft_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{g_ingame_but_down_map,
-	  g_ingame_but_right_map},
+	{{BUT_DOWN_MAP,
+	  BUT_RIGHT_MAP},
 	 analog_circle_bottomright_input_xpm + 5, 48, 48, 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 48 - 8
 	},
-	{{g_ingame_but_stats_map},
+	{{BUT_STATS_MAP},
 	 button_stats_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 56 - 8, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 39 - 8
 	},
-	{{g_ingame_but_back_map},
+	{{BUT_BACK_MAP},
 	 button_back_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8, 2 + 8
 	},
-	{{g_ingame_but_pause_map},
+	{{BUT_PAUSE_MAP},
 	 button_pause_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 46 - 8, 2 + 8
 	},
-	{{g_ingame_but_func_keys_map},
+	{{BUT_FUNC_KEYS_MAP},
 	 button_function_keys_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 46 - 8, 26 + 8
 	},
-	{{g_ingame_but_debug_keys_map},
+	{{BUT_DEBUG_KEYS_MAP},
 	 button_debug_keys_xpm + 5, 22, 22, BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM - 22 - 8, 26 + 8
 	},
 	{0}
@@ -151,10 +163,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		{0},
 		{0},
 		// Back button
-		g_ingame_but_back_map,
+		{BUT_BACK_MAP},
 		{0},
 		// Start button
-		g_ingame_but_pause_map,
+		{BUT_PAUSE_MAP},
 		{0},
 		{0},
 		{0},
