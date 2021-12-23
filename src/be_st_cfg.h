@@ -100,7 +100,12 @@ typedef struct
 		int/*bool*/ absMouseMotion;
 		int/*bool*/ useLeftStick;
 		int/*bool*/ useRightStick;
-		int binds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
+		struct
+		{
+			int key;
+			int mouse;
+			int pad;
+		} binds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
 	} kdreams;
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
@@ -110,7 +115,12 @@ typedef struct
 		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;
 		int/*bool*/ novert;
-		int binds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
+		struct
+		{
+			int key;
+			int mouse;
+			int pad;
+		} binds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
 	} cat3d;
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
@@ -121,7 +131,12 @@ typedef struct
 		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;
 		int/*bool*/ novert;
-		int binds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
+		struct
+		{
+			int key;
+			int mouse;
+			int pad;
+		} binds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
 	} wolf3d;
 #endif
 } RefKeenConfig;

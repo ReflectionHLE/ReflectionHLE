@@ -828,23 +828,23 @@ static void CheckButtonMapping(int actionmapping, const BE_ST_ControllerSingleMa
 
 void RefKeen_PrepareAltControllerScheme(void)
 {
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FIRE], &g_ingame_but_fire_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_STRAFE], &g_ingame_but_strafe_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_UP], &g_ingame_but_up_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DOWN], &g_ingame_but_down_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_LEFT], &g_ingame_but_left_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_RIGHT], &g_ingame_but_right_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DRINK], &g_ingame_but_drink_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_BOLT], &g_ingame_but_bolt_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_NUKE], &g_ingame_but_nuke_map);
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FASTTURN], &g_ingame_but_fastturn_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FIRE].pad, &g_ingame_but_fire_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_STRAFE].pad, &g_ingame_but_strafe_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_UP].pad, &g_ingame_but_up_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DOWN].pad, &g_ingame_but_down_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_LEFT].pad, &g_ingame_but_left_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_RIGHT].pad, &g_ingame_but_right_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DRINK].pad, &g_ingame_but_drink_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_BOLT].pad, &g_ingame_but_bolt_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_NUKE].pad, &g_ingame_but_nuke_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FASTTURN].pad, &g_ingame_but_fastturn_map);
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_SCROLLS], &g_ingame_but_scrolls_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_SCROLLS].pad, &g_ingame_but_scrolls_map);
 #endif
 #ifdef REFKEEN_VER_CATADVENTURES
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FUNCKEYS], &g_ingame_but_func_keys_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FUNCKEYS].pad, &g_ingame_but_func_keys_map);
 #endif
-	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS], &g_ingame_but_debug_keys_map);
+	CheckButtonMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS].pad, &g_ingame_but_debug_keys_map);
 
 	// HACK (leave US_LineInput this way)
 	g_beStControllerMappingTextInput.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
