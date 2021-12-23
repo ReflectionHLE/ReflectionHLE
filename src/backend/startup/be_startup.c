@@ -83,6 +83,33 @@ static void BEL_Cross_SelectGameInstallation(int gameVerVal, bool setVerOnly)
 		(*patcherFuncPtr)();
 }
 
+// Fill g_refKeenDynamicCfg based on the selected game version
+static void BEL_Cross_SetDynamicCfg(void)
+{
+	switch (g_be_gamever_ptrs[refkeen_current_gamever]->gameId)
+	{
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	case BE_GAME_KDREAMS:
+		g_refKeenDynamicCfg.absMouseMotion = g_refKeenCfg.absMouseMotion;
+		g_refKeenDynamicCfg.novert = false;
+		break;
+		break;
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	case BE_GAME_CATACOMB_ALL:
+		g_refKeenDynamicCfg.absMouseMotion = false;
+		g_refKeenDynamicCfg.novert = g_refKeenCfg.novert;
+		break;
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	case BE_GAME_WOLF3D_ALL:
+		g_refKeenDynamicCfg.absMouseMotion = false;
+		g_refKeenDynamicCfg.novert = g_refKeenCfg.novert;
+		break;
+#endif
+	}
+}
+
 // Here the magic happens - used to clear a portion of the stack before
 // changing to another "main" function (in case we get a loop).
 // In a way, this should be similar to C++ exception handling,
@@ -235,6 +262,7 @@ void BE_Cross_InitGame(int gameVerVal)
 	BEL_Cross_SelectGameInstallation(gameVerVal, true);
 	BE_ST_PrepareForGameStartupWithoutAudio(); // Some additional preparation required
 	BEL_Cross_SelectGameInstallation(gameVerVal, false);
+	BEL_Cross_SetDynamicCfg();
 	BE_ST_InitAudio(); // Do this now, since we can tell if we want digi audio out or not
 }
 

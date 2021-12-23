@@ -131,4 +131,13 @@ typedef struct
 
 extern RefKeenConfig g_refKeenCfg;
 
+// These ones are set on game startup, as they can be used by
+// game-agnostic code while still depending on the exact game
+typedef struct {
+	bool absMouseMotion;
+	bool novert;
+} RefkeenDynamicConfig;
+
+extern RefkeenDynamicConfig g_refKeenDynamicCfg;
+
 #endif

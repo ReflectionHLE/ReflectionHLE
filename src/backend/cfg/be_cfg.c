@@ -37,6 +37,7 @@
 #define BE_ST_DEFAULT_FARPTRSEGOFFSET 0x14
 
 RefKeenConfig g_refKeenCfg;
+RefkeenDynamicConfig g_refKeenDynamicCfg;
 
 #ifdef REFKEEN_UNIFIED_BUILD
 #define REFKEEN_CONFIG_FILENAME "reflection-keen.cfg"
