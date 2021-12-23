@@ -863,7 +863,7 @@ register	KeyboardDef	*def;
 				buttons |= 1;
 			if (g_binding_value_button[1])
 				buttons |= 2;
-			if (g_refKeenCfg.novert) // Technically a patch impacting PollControls
+			if (g_refKeenDynamicCfg.novert) // Technically a patch impacting PollControls
 				g_binding_value_motiony = 0;
 			if (g_binding_value_motionx || g_binding_value_motiony)
 			{

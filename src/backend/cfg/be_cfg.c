@@ -208,6 +208,7 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_BOOL(cat3d.useLeftStick, "cat3d_lstick", true)
 	DEF_BOOL(cat3d.useRightStick, "cat3d_rstick", false)
 	DEF_BOOL(cat3d.analogMotion, "cat3d_analogmotion", false)
+	DEF_BOOL(cat3d.novert, "cat3d_novert", false)
 	// FIXME: HACK (extra 2 are for triggers)
 	DEF_CTRL_BIND_CAT3D_ENUM(UP, "padbind_cat3d_up", BE_ST_CTRL_BUT_MAX+2)
 	DEF_CTRL_BIND_CAT3D_ENUM(DOWN, "padbind_cat3d_down", BE_ST_CTRL_BUT_MAX+2)
@@ -233,6 +234,7 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_BOOL(wolf3d.useLeftStick, "wolf3d_lstick", true)
 	DEF_BOOL(wolf3d.useRightStick, "wolf3d_rstick", false)
 	DEF_BOOL(wolf3d.analogMotion, "wolf3d_analogmotion", false)
+	DEF_BOOL(wolf3d.novert, "wolf3d_novert", false)
 	// FIXME: HACK (extra 2 are for triggers)
 	DEF_CTRL_BIND_WOLF3D_ENUM(UP, "padbind_wolf3d_up", BE_ST_CTRL_BUT_MAX+2)
 	DEF_CTRL_BIND_WOLF3D_ENUM(DOWN, "padbind_wolf3d_down", BE_ST_CTRL_BUT_MAX+2)
@@ -253,9 +255,6 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_CTRL_BIND_WOLF3D_ENUM(DEBUGKEYS, "padbind_wolf3d_debugkeys", BE_ST_CTRL_BUT_LSTICK)
 #endif
 
-#ifdef BE_ST_ENABLE_SETTING_NOVERT
-	DEF_BOOL(novert, "novert", false)
-#endif
 	DEF_HIDDEN_BOOL(manualGameVerMode, "manualgamevermode", false)
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG
 	DEF_HIDDEN_HEX_INT(farPtrSegOffset, "farptrsegoffset", BE_ST_DEFAULT_FARPTRSEGOFFSET, 0U, 65535U)

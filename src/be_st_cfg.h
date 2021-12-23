@@ -97,7 +97,6 @@ typedef struct
 	{
 		int/*bool*/ isEnabled;
 	} altControlScheme;
-	int/*bool*/ novert;
 	int/*bool*/ manualGameVerMode;
 	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
 
@@ -117,6 +116,7 @@ typedef struct
 		int/*bool*/ useLeftStick;
 		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;
+		int/*bool*/ novert;
 		int binds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
 	} cat3d;
 #endif
@@ -127,6 +127,7 @@ typedef struct
 		int/*bool*/ useLeftStick;
 		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;
+		int/*bool*/ novert;
 		int binds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
 	} wolf3d;
 #endif

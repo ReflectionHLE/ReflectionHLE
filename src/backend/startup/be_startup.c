@@ -98,13 +98,13 @@ static void BEL_Cross_SetDynamicCfg(void)
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	case BE_GAME_CATACOMB_ALL:
 		g_refKeenDynamicCfg.absMouseMotion = false;
-		g_refKeenDynamicCfg.novert = g_refKeenCfg.novert;
+		g_refKeenDynamicCfg.novert = g_refKeenCfg.cat3d.novert;
 		break;
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	case BE_GAME_WOLF3D_ALL:
 		g_refKeenDynamicCfg.absMouseMotion = false;
-		g_refKeenDynamicCfg.novert = g_refKeenCfg.novert;
+		g_refKeenDynamicCfg.novert = g_refKeenCfg.wolf3d.novert;
 		break;
 #endif
 	}

@@ -571,7 +571,7 @@ void PollJoystickMove (void)
 static void PollUserBindsMove (void)
 {
 	int x = g_binding_value_motionx, y = g_binding_value_motiony;
-	if (g_refKeenCfg.novert) // Technically a patch
+	if (g_refKeenDynamicCfg.novert) // Technically a patch
 		y = 0;
 
 	if (g_refKeenCfg.wolf3d.analogMotion)
