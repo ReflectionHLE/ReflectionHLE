@@ -723,9 +723,7 @@ BEMENUITEM_DEF_CTRL_BIND(Cat3D, FuncKeys, "Action - Function keys")
 BEMENUITEM_DEF_CTRL_BIND(Cat3D, DebugKeys, "Action - Debug keys")
 BEMENUITEM_DEF_SELECTION(g_beCat3DControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beCat3DControllerSettingsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION // TODO delete
 BEMENUITEM_DEF_SELECTION(g_beCat3DControllerSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
-#endif
 
 static BEMenuItem *g_beCat3DControllerSettingsMenuItems[] = {
 	&g_beCat3DControllerSettingsMenuItem_Action_Up,
@@ -764,9 +762,7 @@ BEMenu g_beCat3DControllerSettingsMenu = {
 /*** Wolfenstein 3D settings menu ***/
 
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_Wolf3DInputSettings, "Input settings: Wolfenstein 3D", &g_beWolf3DInputSettingsMenu)
-#ifdef BE_ST_ENABLE_SETTING_LOWFPS // TODO: Remove
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
-#endif
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
 	&g_beWolf3DSettingsMenuItem_Wolf3DInputSettings,
@@ -820,9 +816,7 @@ BEMENUITEM_DEF_CTRL_BIND(Wolf3D, FuncKeys, "Action - Function keys")
 BEMENUITEM_DEF_CTRL_BIND(Wolf3D, DebugKeys, "Action - Debug keys")
 BEMENUITEM_DEF_SELECTION(g_beWolf3DControllerSettingsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DControllerSettingsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION // TODO delete
 BEMENUITEM_DEF_SELECTION(g_beWolf3DControllerSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
-#endif
 
 static BEMenuItem *g_beWolf3DControllerSettingsMenuItems[] = {
 	&g_beWolf3DControllerSettingsMenuItem_Action_Up,
@@ -844,9 +838,7 @@ static BEMenuItem *g_beWolf3DControllerSettingsMenuItems[] = {
 	&g_beWolf3DControllerSettingsMenuItem_Action_DebugKeys,
 	&g_beWolf3DControllerSettingsMenuItem_LeftStick,
 	&g_beWolf3DControllerSettingsMenuItem_RightStick,
-#ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION // TODO delete
 	&g_beWolf3DControllerSettingsMenuItem_AnalogMotion,
-#endif
 	NULL
 };
 
