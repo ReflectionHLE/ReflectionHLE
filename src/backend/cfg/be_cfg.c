@@ -39,26 +39,6 @@
 RefKeenConfig g_refKeenCfg;
 RefkeenDynamicConfig g_refKeenDynamicCfg;
 
-#ifdef REFKEEN_UNIFIED_BUILD
-#define REFKEEN_CONFIG_FILENAME "reflection-keen.cfg"
-#elif defined REFKEEN_VER_KDREAMS
-#define REFKEEN_CONFIG_FILENAME "reflection-kdreams.cfg"
-#elif defined REFKEEN_VER_CAT3D
-#define REFKEEN_CONFIG_FILENAME "reflection-cat3d.cfg"
-#elif defined REFKEEN_VER_CATABYSS
-#define REFKEEN_CONFIG_FILENAME "reflection-catabyss.cfg"
-#elif defined REFKEEN_VER_CATARM
-#define REFKEEN_CONFIG_FILENAME "reflection-catarm.cfg"
-#elif defined REFKEEN_VER_CATAPOC
-#define REFKEEN_CONFIG_FILENAME "reflection-catapoc.cfg"
-#elif defined REFKEEN_HAS_VER_CATACOMB_ALL
-#define REFKEEN_CONFIG_FILENAME "reflection-catacomb.cfg"
-#elif defined REFKEEN_HAS_VER_WOLF3D_ALL // TODO: Optionally separate cfg per version?
-#define REFKEEN_CONFIG_FILENAME "reflection-wolf3d.cfg"
-#else
-#error "FATAL ERROR: No Ref port game macro is defined!"
-#endif
-
 typedef enum {
 	BE_ST_CFG_VAL_ENUM,
 	BE_ST_CFG_VAL_HEX_INT,
@@ -189,7 +169,14 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #endif
 	DEF_BOOL(altControlScheme.isEnabled, "altcontrolscheme", true)
 
+	DEF_HIDDEN_BOOL(manualGameVerMode, "manualgamevermode", false)
+#ifdef BE_CROSS_ENABLE_FARPTR_CFG
+	DEF_HIDDEN_HEX_INT(farPtrSegOffset, "farptrsegoffset", BE_ST_DEFAULT_FARPTRSEGOFFSET, 0U, 65535U)
+#endif
+};
+
 #ifdef REFKEEN_HAS_VER_KDREAMS
+static BE_ST_CFG_Setting_T g_be_st_kdreams_settings[] = {
 	DEF_BOOL(kdreams.absMouseMotion, "kdreams_absmousemotion", false)
 	DEF_BOOL(kdreams.useLeftStick, "kdreams_lstick", true)
 	DEF_BOOL(kdreams.useRightStick, "kdreams_rstick", false)
@@ -202,9 +189,11 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_CTRL_BIND_KDREAMS_ENUM(STATS, "padbind_kdreams_stats", BE_ST_CTRL_BUT_X)
 	DEF_CTRL_BIND_KDREAMS_ENUM(FUNCKEYS, "padbind_kdreams_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 	DEF_CTRL_BIND_KDREAMS_ENUM(DEBUGKEYS, "padbind_kdreams_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+};
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+static BE_ST_CFG_Setting_T g_be_st_cat3d_settings[] = {
 	DEF_BOOL(cat3d.useLeftStick, "cat3d_lstick", true)
 	DEF_BOOL(cat3d.useRightStick, "cat3d_rstick", false)
 	DEF_BOOL(cat3d.analogMotion, "cat3d_analogmotion", false)
@@ -227,9 +216,12 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_CTRL_BIND_CAT3D_ENUM(FUNCKEYS, "padbind_cat3d_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 #endif
 	DEF_CTRL_BIND_CAT3D_ENUM(DEBUGKEYS, "padbind_cat3d_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+};
 #endif
 
+
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+static BE_ST_CFG_Setting_T g_be_st_wolf3d_settings[] = {
 	DEF_BOOL(wolf3d.lowFPS, "wolf3d_lowfps", false)
 	DEF_BOOL(wolf3d.useLeftStick, "wolf3d_lstick", true)
 	DEF_BOOL(wolf3d.useRightStick, "wolf3d_rstick", false)
@@ -253,13 +245,8 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_CTRL_BIND_WOLF3D_ENUM(MAP, "padbind_wolf3d_map", BE_ST_CTRL_BUT_A)
 	DEF_CTRL_BIND_WOLF3D_ENUM(FUNCKEYS, "padbind_wolf3d_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 	DEF_CTRL_BIND_WOLF3D_ENUM(DEBUGKEYS, "padbind_wolf3d_debugkeys", BE_ST_CTRL_BUT_LSTICK)
-#endif
-
-	DEF_HIDDEN_BOOL(manualGameVerMode, "manualgamevermode", false)
-#ifdef BE_CROSS_ENABLE_FARPTR_CFG
-	DEF_HIDDEN_HEX_INT(farPtrSegOffset, "farptrsegoffset", BE_ST_DEFAULT_FARPTRSEGOFFSET, 0U, 65535U)
-#endif
 };
+#endif
 
 // These ones are implementation-defined
 void BEL_ST_ParseSetting_DisplayNum(int *displayNum, const char *buffer);
@@ -435,7 +422,16 @@ static void BEL_ST_ParseConfig(const char *name, BE_ST_CFG_Setting_T *settings, 
 
 void BEL_ST_ParseConfigFiles(void)
 {
-	BEL_ST_ParseConfig(REFKEEN_CONFIG_FILENAME, g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+	BEL_ST_ParseConfig("reflection-keen.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	BEL_ST_ParseConfig("reflection-cat3d.cfg", g_be_st_cat3d_settings, BE_Cross_ArrayLen(g_be_st_cat3d_settings));
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_settings));
+#endif
 }
 
 static void BEL_ST_SaveConfig(const char *name, const BE_ST_CFG_Setting_T *settings, int n)
@@ -457,5 +453,14 @@ static void BEL_ST_SaveConfig(const char *name, const BE_ST_CFG_Setting_T *setti
 
 void BEL_ST_SaveConfigFiles(void)
 {
-	BEL_ST_SaveConfig(REFKEEN_CONFIG_FILENAME, g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+	BEL_ST_SaveConfig("reflection-keen.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	BEL_ST_SaveConfig("reflection-kdreams.cfg", g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	BEL_ST_SaveConfig("reflection-cat3d.cfg", g_be_st_cat3d_settings, BE_Cross_ArrayLen(g_be_st_cat3d_settings));
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	BEL_ST_SaveConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_settings));
+#endif
 }
