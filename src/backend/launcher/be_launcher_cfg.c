@@ -110,7 +110,7 @@ extern BEMenuItem
 	g_beInputSettingsMenuItem_MouseGrab,
 	g_beInputSettingsMenuItem_TouchControls,
 	g_beInputSettingsMenuItem_TouchInputDebugging,
-	g_beKDreamsInputSettingsMenuItem_AbsMouseMotion,
+	g_beKDreamsSettingsMenuItem_AbsMouseMotion,
 	g_beKDreamsControllerSettingsMenuItem_Action_Up,
 	g_beKDreamsControllerSettingsMenuItem_Action_Down,
 	g_beKDreamsControllerSettingsMenuItem_Action_Left,
@@ -122,7 +122,7 @@ extern BEMenuItem
 	g_beKDreamsControllerSettingsMenuItem_Action_DebugKeys,
 	g_beKDreamsControllerSettingsMenuItem_LeftStick,
 	g_beKDreamsControllerSettingsMenuItem_RightStick,
-	g_beCat3DInputSettingsMenuItem_VertAnalogMotion,
+	g_beCat3DSettingsMenuItem_VertAnalogMotion,
 	g_beCat3DControllerSettingsMenuItem_Action_Up,
 	g_beCat3DControllerSettingsMenuItem_Action_Down,
 	g_beCat3DControllerSettingsMenuItem_Action_Left,
@@ -203,7 +203,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #endif
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	{&g_refKeenCfg.kdreams.absMouseMotion, &g_beKDreamsInputSettingsMenuItem_AbsMouseMotion},
+	{&g_refKeenCfg.kdreams.absMouseMotion, &g_beKDreamsSettingsMenuItem_AbsMouseMotion},
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_UP], &g_beKDreamsControllerSettingsMenuItem_Action_Up},
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DOWN], &g_beKDreamsControllerSettingsMenuItem_Action_Down},
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_LEFT], &g_beKDreamsControllerSettingsMenuItem_Action_Left},
@@ -218,7 +218,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	{&g_refKeenCfg.cat3d.novert, &g_beCat3DInputSettingsMenuItem_VertAnalogMotion,
+	{&g_refKeenCfg.cat3d.novert, &g_beCat3DSettingsMenuItem_VertAnalogMotion,
 		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_UP], &g_beCat3DControllerSettingsMenuItem_Action_Up},
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DOWN], &g_beCat3DControllerSettingsMenuItem_Action_Down},

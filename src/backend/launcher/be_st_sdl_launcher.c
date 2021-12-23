@@ -350,10 +350,10 @@ BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_VideoSettings, "Video settings", 
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_SoundSettings, "Sound settings", &g_beSoundSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_InputSettings, "Input settings (Common)", &g_beInputSettingsMenu)
 #ifdef REFKEEN_HAS_VER_KDREAMS
-BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_KDreamsInputSettings, "Input settings: Keen Dreams", &g_beKDreamsInputSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_KDreamsSettings, "Settings: Keen Dreams", &g_beKDreamsSettingsMenu)
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Cat3DInputSettings, "Input settings: Catacomb 3-D and later", &g_beCat3DInputSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Cat3DSettings, "Settings: Catacomb 3-D and later", &g_beCat3DSettingsMenu)
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Wolf3DSettings, "Settings: Wolfenstein 3D", &g_beWolf3DSettingsMenu)
@@ -364,10 +364,10 @@ static BEMenuItem *g_beSettingsMenuItems[] = {
 	&g_beSettingsMenuItem_SoundSettings,
 	&g_beSettingsMenuItem_InputSettings,
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	&g_beSettingsMenuItem_KDreamsInputSettings,
+	&g_beSettingsMenuItem_KDreamsSettings,
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	&g_beSettingsMenuItem_Cat3DInputSettings,
+	&g_beSettingsMenuItem_Cat3DSettings,
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	&g_beSettingsMenuItem_Wolf3DSettings,
@@ -622,27 +622,27 @@ static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X
 #ifdef REFKEEN_HAS_VER_KDREAMS
 /*** Keen Dreams input settings menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beKDreamsInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beKDreamsControllerSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beKDreamsControllerSettingsMenu)
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING // FIXME remove this macro
-BEMENUITEM_DEF_SELECTION(g_beKDreamsInputSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion*", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_STATIC(g_beKDreamsInputSettingsMenuItem_AbsMouseMotionComment,
+BEMENUITEM_DEF_SELECTION(g_beKDreamsSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion*", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_STATIC(g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
 "* If toggled off, mouse cursor motion behaviors are similar to original DOS versions. Otherwise it may move at a different rate, but be more convenient to use in windowed mode."
 );
 #endif
 
-static BEMenuItem *g_beKDreamsInputSettingsMenuItems[] = {
-	&g_beKDreamsInputSettingsMenuItem_ControllerSettings,
+static BEMenuItem *g_beKDreamsSettingsMenuItems[] = {
+	&g_beKDreamsSettingsMenuItem_ControllerSettings,
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING // TODO remove
-	&g_beKDreamsInputSettingsMenuItem_AbsMouseMotion,
-	&g_beKDreamsInputSettingsMenuItem_AbsMouseMotionComment,
+	&g_beKDreamsSettingsMenuItem_AbsMouseMotion,
+	&g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
 #endif
 	NULL
 };
 
-BEMenu g_beKDreamsInputSettingsMenu = {
-	"Input settings: Keen Dreams",
+BEMenu g_beKDreamsSettingsMenu = {
+	"Settings: Keen Dreams",
 	&g_beSettingsMenu,
-	g_beKDreamsInputSettingsMenuItems,
+	g_beKDreamsSettingsMenuItems,
 	// Ignore the rest
 };
 
@@ -677,7 +677,7 @@ static BEMenuItem *g_beKDreamsControllerSettingsMenuItems[] = {
 
 BEMenu g_beKDreamsControllerSettingsMenu = {
 	"Modern controller settings",
-	&g_beKDreamsInputSettingsMenu,
+	&g_beKDreamsSettingsMenu,
 	g_beKDreamsControllerSettingsMenuItems,
 	// Ignore the rest
 };
@@ -686,19 +686,19 @@ BEMenu g_beKDreamsControllerSettingsMenu = {
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 /*** Catacomb 3-D input settings menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beCat3DInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beCat3DControllerSettingsMenu)
-BEMENUITEM_DEF_SELECTION(g_beCat3DInputSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beCat3DControllerSettingsMenu)
+BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
-static BEMenuItem *g_beCat3DInputSettingsMenuItems[] = {
-	&g_beCat3DInputSettingsMenuItem_ControllerSettings,
-	&g_beCat3DInputSettingsMenuItem_VertAnalogMotion,
+static BEMenuItem *g_beCat3DSettingsMenuItems[] = {
+	&g_beCat3DSettingsMenuItem_ControllerSettings,
+	&g_beCat3DSettingsMenuItem_VertAnalogMotion,
 	NULL
 };
 
-BEMenu g_beCat3DInputSettingsMenu = {
-	"Input settings: Catacomb 3-D",
+BEMenu g_beCat3DSettingsMenu = {
+	"Settings: Catacomb 3-D",
 	&g_beSettingsMenu,
-	g_beCat3DInputSettingsMenuItems,
+	g_beCat3DSettingsMenuItems,
 	// Ignore the rest
 };
 
@@ -752,7 +752,7 @@ static BEMenuItem *g_beCat3DControllerSettingsMenuItems[] = {
 
 BEMenu g_beCat3DControllerSettingsMenu = {
 	"Modern controller settings",
-	&g_beCat3DInputSettingsMenu,
+	&g_beCat3DSettingsMenu,
 	g_beCat3DControllerSettingsMenuItems,
 	// Ignore the rest
 };
