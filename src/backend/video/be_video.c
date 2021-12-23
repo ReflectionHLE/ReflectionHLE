@@ -84,9 +84,7 @@ void BE_ST_InitGfx(void)
 
 	BE_ST_SetScreenMode(3); // Includes BE_ST_Texture handling and output rects preparation
 
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	g_sdlDoAbsMouseMotion = g_refKeenDynamicCfg.absMouseMotion;
-#endif
 }
 
 void BE_ST_ShutdownGfx(void)
@@ -265,11 +263,9 @@ static void BEL_ST_CalcWindowDimsFromCfg(int *outWidth, int *outHeight)
 }
 
 
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 bool g_sdlDoAbsMouseMotion;
 int g_sdlHostVirtualMouseCursorState[2];
 static int g_sdlHostVirtualMouseCursorSideLen;
-#endif
 
 void BEL_ST_SetGfxOutputRects(bool allowResize)
 {
@@ -404,11 +400,9 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	g_sdlDebugFingerRectSideLen = minWinDim/4;
 	BEL_ST_SetTouchControlsRects();
 
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	g_sdlHostVirtualMouseCursorState[0] = winWidth/2;
 	g_sdlHostVirtualMouseCursorState[1] = winHeight/2;
 	g_sdlHostVirtualMouseCursorSideLen = minWinDim/64;
-#endif
 }
 
 void BEL_ST_ForceHostDisplayUpdate(void)
@@ -456,12 +450,10 @@ void BE_ST_HostGfx_ToggleFullScreen(void)
 	BE_ST_HostGfx_SetFullScreenToggle(!BE_ST_HostGfx_GetFullScreenToggle());
 }
 
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle)
 {
 	g_sdlDoAbsMouseMotion = cursorToggle;
 }
-#endif
 
 static void BEL_ST_FinishHostDisplayUpdate(void)
 {
@@ -704,14 +696,12 @@ void BEL_ST_UpdateHostDisplay(void)
 	BEL_ST_RenderClear();
 	BEL_ST_SetDrawColor(g_sdlEGALastBGRABorderColor);
 	BEL_ST_RenderFill(&g_sdlAspectCorrectionBorderedRect);
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 	{
 		BEL_ST_SetDrawColor(0xFFFF0000);
 		BE_ST_Rect rect = {g_sdlHostVirtualMouseCursorState[0]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorState[1]-g_sdlHostVirtualMouseCursorSideLen/2, g_sdlHostVirtualMouseCursorSideLen, g_sdlHostVirtualMouseCursorSideLen};
 		BEL_ST_RenderFill(&rect);
 	}
-#endif
 
 	if (g_sdlTargetTexture)
 	{

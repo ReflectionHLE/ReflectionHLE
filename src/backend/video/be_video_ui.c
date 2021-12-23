@@ -244,10 +244,8 @@ void BEL_ST_ConditionallyShowAltInputPointer(void)
 
 	if (someOnScreenControlIsAccessibleWithMouse)
 		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITH_CURSOR);
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 	else if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 		BEL_ST_SetMouseMode(BE_ST_MOUSEMODE_ABS_WITHOUT_CURSOR);
-#endif
 	else if (
 		BE_ST_HostGfx_GetFullScreenToggle() ||
 		(g_refKeenCfg.mouseGrab == MOUSEGRAB_COMMONLY) ||

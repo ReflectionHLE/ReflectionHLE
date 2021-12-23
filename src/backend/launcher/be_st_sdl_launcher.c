@@ -623,19 +623,15 @@ static const char *g_be_controllerSettingsChoices_actionButton[] = {"A", "B", "X
 /*** Keen Dreams input settings menu ***/
 
 BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beKDreamsControllerSettingsMenu)
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING // FIXME remove this macro
 BEMENUITEM_DEF_SELECTION(g_beKDreamsSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion*", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_STATIC(g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
 "* If toggled off, mouse cursor motion behaviors are similar to original DOS versions. Otherwise it may move at a different rate, but be more convenient to use in windowed mode."
 );
-#endif
 
 static BEMenuItem *g_beKDreamsSettingsMenuItems[] = {
 	&g_beKDreamsSettingsMenuItem_ControllerSettings,
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING // TODO remove
 	&g_beKDreamsSettingsMenuItem_AbsMouseMotion,
 	&g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
-#endif
 	NULL
 };
 

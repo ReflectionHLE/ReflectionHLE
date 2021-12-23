@@ -36,10 +36,6 @@
 // NOTE: These structs are generally used just in the Reflection Keen backend.
 // There might still be exceptions to this.
 
-#ifdef REFKEEN_HAS_VER_KDREAMS
-#define BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-#endif
-
 typedef enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } VSyncSettingType;
 typedef enum { SCALE_ASPECT, SCALE_FILL } ScaleTypeSettingType;
 typedef enum { TOUCHINPUT_AUTO, TOUCHINPUT_OFF, TOUCHINPUT_FORCED } TouchInputSettingType;

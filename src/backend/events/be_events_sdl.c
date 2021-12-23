@@ -142,7 +142,6 @@ void BE_ST_PollEvents(void)
 			if (BEL_ST_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, event.motion.x, event.motion.y))
 				break;
 
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
 			if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 			{
 				void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
@@ -154,7 +153,6 @@ void BE_ST_PollEvents(void)
 				g_sdlForceGfxControlUiRefresh = true;
 			}
 			else
-#endif
 			{
 				g_sdlEmuMouseMotionAccumulatedState[0] += event.motion.xrel;
 				g_sdlEmuMouseMotionAccumulatedState[1] += event.motion.yrel;
