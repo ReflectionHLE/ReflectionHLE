@@ -1035,7 +1035,7 @@ static BEMenu *g_beMenusToPrepare[] = {
 	&g_beDeviceVolumesMenu,
 	&g_beKDreamsControllerSettingsMenu, &g_beCat3DControllerSettingsMenu,
 	&g_beWolf3DControllerSettingsMenu,
-	&g_beShowVersionMenu, &g_beQuitConfirmMenu
+	&g_beQuitConfirmMenu
 };
 
 void BE_Launcher_Start(void)

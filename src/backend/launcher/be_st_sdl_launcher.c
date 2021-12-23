@@ -173,7 +173,6 @@ BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer, 92/* HAC
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_SelectGame, "Select game", &g_beSelectGameMenu)
 BEMENUITEM_DEF_HANDLER(g_beMainMenuItem_SetArguments, "Set arguments for game *CURRENTLY SET*", &BE_Launcher_Handler_SetArgumentsForGame)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
-BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_ShowVersion, "Show version", &g_beShowVersionMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Quit, "Quit", &g_beQuitConfirmMenu)
 
 static BEMenuItem *g_beMainMenuItems[] = {
@@ -181,13 +180,12 @@ static BEMenuItem *g_beMainMenuItems[] = {
 	&g_beMainMenuItem_SelectGame,
 	&g_beMainMenuItem_SetArguments,
 	&g_beMainMenuItem_Settings,
-	&g_beMainMenuItem_ShowVersion,
 	&g_beMainMenuItem_Quit,
 	NULL
 };
 
 BEMenu g_beMainMenu = {
-	REFKEEN_TITLE_STRING,
+	REFKEEN_TITLE_AND_VER_STRING,
 	&g_beQuitConfirmMenu,
 	g_beMainMenuItems,
 	// Ignore the rest
@@ -829,22 +827,6 @@ BEMenu g_beWolf3DControllerSettingsMenu = {
 	// Ignore the rest
 };
 #endif // REFKEEN_HAS_VER_WOLF3D_ALL
-
-/*** Show version menu ***/
-
-BEMENUITEM_DEF_STATIC(g_beShowVersionMenuItem_Description, REFKEEN_TITLE_AND_VER_STRING)
-
-static BEMenuItem *g_beShowVersionMenuItems[] = {
-	&g_beShowVersionMenuItem_Description,
-	NULL
-};
-
-BEMenu g_beShowVersionMenu = {
-	"Version information",
-	&g_beMainMenu,
-	g_beShowVersionMenuItems,
-	// Ignore the rest
-};
 
 /*** Quit confirm menu ***/
 
