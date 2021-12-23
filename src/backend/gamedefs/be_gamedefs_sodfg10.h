@@ -71,7 +71,8 @@ static const BE_GameVerDetails_T g_be_gamever_sodfg10 = {
 	"Spear of Destiny Forgmen v1.0",
 	REFKEEN_NS_ENCLOSE(sodfg10, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_SODFG10
+	BE_GAMEVER_SODFG10,
+	BE_GAME_WOLF3D_ALL
 };
 
 static const BE_GameVerDetails_T g_be_gamever_sd2fg10 = {
@@ -81,7 +82,8 @@ static const BE_GameVerDetails_T g_be_gamever_sd2fg10 = {
 	"Spear of Destiny M2 Formgen v1.0",
 	REFKEEN_NS_ENCLOSE(sodfg10, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_SD2FG10
+	BE_GAMEVER_SD2FG10,
+	BE_GAME_WOLF3D_ALL
 };
 
 static const BE_GameVerDetails_T g_be_gamever_sd3fg10 = {
@@ -91,5 +93,6 @@ static const BE_GameVerDetails_T g_be_gamever_sd3fg10 = {
 	"Spear of Destiny M3 Formgen v1.0",
 	REFKEEN_NS_ENCLOSE(sodfg10, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_SD3FG10
+	BE_GAMEVER_SD3FG10,
+	BE_GAME_WOLF3D_ALL
 };

@@ -71,7 +71,8 @@ static const BE_GameVerDetails_T g_be_gamever_sodac14 = {
 	"Spear of Destiny: Activision",
 	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_SODAC14
+	BE_GAMEVER_SODAC14,
+	BE_GAME_WOLF3D_ALL
 };
 
 static const BE_GameVerDetails_T g_be_gamever_sd2ac14 = {
@@ -81,7 +82,8 @@ static const BE_GameVerDetails_T g_be_gamever_sd2ac14 = {
 	"Spear of Destiny M2: Activision",
 	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_SD2AC14
+	BE_GAMEVER_SD2AC14,
+	BE_GAME_WOLF3D_ALL
 };
 
 static const BE_GameVerDetails_T g_be_gamever_sd3ac14 = {
@@ -91,5 +93,6 @@ static const BE_GameVerDetails_T g_be_gamever_sd3ac14 = {
 	"Spear of Destiny M3: Activision",
 	REFKEEN_NS_ENCLOSE(sodac14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_SD3AC14
+	BE_GAMEVER_SD3AC14,
+	BE_GAME_WOLF3D_ALL
 };

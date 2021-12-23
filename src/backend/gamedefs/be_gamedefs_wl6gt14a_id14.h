@@ -81,7 +81,8 @@ static const BE_GameVerDetails_T g_be_gamever_wl6gt14a = {
 	"Wolfenstein 3D: GT #1",
 	REFKEEN_NS_ENCLOSE(wl6gt14a, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL6GT14A
+	BE_GAMEVER_WL6GT14A,
+	BE_GAME_WOLF3D_ALL
 };
 
 static const BE_GameVerDetails_T g_be_gamever_wl6id14 = {
@@ -91,5 +92,6 @@ static const BE_GameVerDetails_T g_be_gamever_wl6id14 = {
 	"Wolfenstein 3D: id",
 	REFKEEN_NS_ENCLOSE(wl6gt14a, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL6ID14
+	BE_GAMEVER_WL6ID14,
+	BE_GAME_WOLF3D_ALL
 };

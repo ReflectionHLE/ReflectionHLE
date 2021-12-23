@@ -45,5 +45,6 @@ static const BE_GameVerDetails_T g_be_gamever_wl1ap10 = {
 	"Wolfenstein 3D Shareware v1.0",
 	REFKEEN_NS_ENCLOSE(wl1ap10, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL1AP10
+	BE_GAMEVER_WL1AP10,
+	BE_GAME_WOLF3D_ALL
 };

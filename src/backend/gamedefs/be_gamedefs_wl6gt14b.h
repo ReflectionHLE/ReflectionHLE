@@ -45,5 +45,6 @@ static const BE_GameVerDetails_T g_be_gamever_wl6gt14b = {
 	"Wolfenstein 3D: GT #2",
 	REFKEEN_NS_ENCLOSE(wl6gt14b, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL6GT14B
+	BE_GAMEVER_WL6GT14B,
+	BE_GAME_WOLF3D_ALL
 };

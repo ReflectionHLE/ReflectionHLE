@@ -47,7 +47,8 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ap11 = {
 	"Wolfenstein 3D 6-ep Apogee v1.1",
 	REFKEEN_NS_ENCLOSE(wl6ap11, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL6AP11
+	BE_GAMEVER_WL6AP11,
+	BE_GAME_WOLF3D_ALL
 };
 
 // Registered v1.2 reused v1.1's exe
@@ -72,7 +73,8 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ap12 = {
 	"Wolfenstein 3D 6-ep Apogee v1.2",
 	REFKEEN_NS_ENCLOSE(wl6ap11, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL6AP12
+	BE_GAMEVER_WL6AP12,
+	BE_GAME_WOLF3D_ALL
 };
 
 static const BE_GameFileDetails_T g_be_reqgameverfiles_wl3ap12[] = {
@@ -95,7 +97,8 @@ static const BE_GameVerDetails_T g_be_gamever_wl3ap12 = {
 	"Wolfenstein 3D 3-ep Apogee v1.2",
 	REFKEEN_NS_ENCLOSE(wl6ap11, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL3AP12
+	BE_GAMEVER_WL3AP12,
+	BE_GAME_WOLF3D_ALL
 };
 
 // Shareware v1.2
@@ -141,5 +144,6 @@ static const BE_GameVerDetails_T g_be_gamever_wl1ap12 = {
 	"Wolfenstein 3D Shareware v1.2",
 	REFKEEN_NS_ENCLOSE(wl6ap11, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL1AP12
+	BE_GAMEVER_WL1AP12,
+	BE_GAME_WOLF3D_ALL
 };

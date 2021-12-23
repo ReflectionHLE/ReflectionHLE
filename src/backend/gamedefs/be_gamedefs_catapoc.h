@@ -124,5 +124,6 @@ static const BE_GameVerDetails_T g_be_gamever_catapoc101 = {
 	"Catacomb Apocalypse v1.01",
 	REFKEEN_NS_ENCLOSE(catapoc, g_be_patcherfuncs_catapoc),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
-	BE_GAMEVER_CATAPOC101
+	BE_GAMEVER_CATAPOC101,
+	BE_GAME_CATACOMB_ALL
 };

@@ -44,5 +44,6 @@ static const BE_GameVerDetails_T g_be_gamever_n3dwt10 = {
 	"Super 3-D Noah's Ark",
 	REFKEEN_NS_ENCLOSE(n3dwt10, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_N3DWT10
+	BE_GAMEVER_N3DWT10,
+	BE_GAME_WOLF3D_ALL
 };

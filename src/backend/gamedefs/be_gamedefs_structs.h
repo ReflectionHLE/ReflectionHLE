@@ -68,6 +68,7 @@ typedef struct {
 	void (**patcherFuncPtrs)(void);
 	int audioDeviceFlags;
 	BE_GameVer_T verId;
+	BE_Game_T gameId;
 } BE_GameVerDetails_T;
 
 extern const BE_GameVerDetails_T *g_be_gamever_ptrs[];

@@ -47,7 +47,8 @@ static const BE_GameVerDetails_T g_be_gamever_wl6ap14 = {
 	"Wolfenstein 3D 6-ep Apogee v1.4",
 	REFKEEN_NS_ENCLOSE(wl1ap14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL6AP14
+	BE_GAMEVER_WL6AP14,
+	BE_GAME_WOLF3D_ALL
 };
 
 // The same exe supports 3-episodes and 6-episodes data
@@ -72,7 +73,8 @@ static const BE_GameVerDetails_T g_be_gamever_wl3ap14 = {
 	"Wolfenstein 3D 3-ep Apogee v1.4",
 	REFKEEN_NS_ENCLOSE(wl1ap14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL3AP14
+	BE_GAMEVER_WL3AP14,
+	BE_GAME_WOLF3D_ALL
 };
 
 // Shareware v1.4
@@ -118,5 +120,6 @@ static const BE_GameVerDetails_T g_be_gamever_wl1ap14 = {
 	"Wolfenstein 3D Shareware v1.4",
 	REFKEEN_NS_ENCLOSE(wl1ap14, g_be_patcherfuncs),
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL | BE_AUDIO_DEVICE_DIGI,
-	BE_GAMEVER_WL1AP14
+	BE_GAMEVER_WL1AP14,
+	BE_GAME_WOLF3D_ALL
 };

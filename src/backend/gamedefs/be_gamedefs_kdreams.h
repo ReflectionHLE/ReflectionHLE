@@ -72,7 +72,8 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse100 = {
 	"Keen Dreams EGA v1.00",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
-	BE_GAMEVER_KDREAMSE100
+	BE_GAMEVER_KDREAMSE100,
+	BE_GAME_KDREAMS
 };
 
 /*** v1.00 CGA ***/
@@ -120,7 +121,8 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc100 = {
 	"Keen Dreams CGA v1.00",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
-	BE_GAMEVER_KDREAMSC100
+	BE_GAMEVER_KDREAMSC100,
+	BE_GAME_KDREAMS
 };
 
 /*** v1.13 (Shareware) ***/
@@ -180,7 +182,8 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse113 = {
 	"Keen Dreams EGA v1.13",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
-	BE_GAMEVER_KDREAMSE113
+	BE_GAMEVER_KDREAMSE113,
+	BE_GAME_KDREAMS
 };
 
 /*** v1.05 (CGA) ***/
@@ -227,7 +230,8 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamsc105 = {
 	"Keen Dreams CGA v1.05",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
-	BE_GAMEVER_KDREAMSC105
+	BE_GAMEVER_KDREAMSC105,
+	BE_GAME_KDREAMS
 };
 
 // Keen Dreams v1.93 and v1.20 actually share the exact same game data,
@@ -278,7 +282,8 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse193 = {
 	"Keen Dreams EGA v1.93",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
-	BE_GAMEVER_KDREAMSE193
+	BE_GAMEVER_KDREAMSE193,
+	BE_GAME_KDREAMS
 };
 
 /*** v1.20 (Shareware) ***/
@@ -326,7 +331,8 @@ static const BE_GameVerDetails_T g_be_gamever_kdreamse120 = {
 	"Keen Dreams EGA v1.20",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_PCSPKR_REQUIRED | BE_AUDIO_DEVICE_OPL,
-	BE_GAMEVER_KDREAMSE120
+	BE_GAMEVER_KDREAMSE120,
+	BE_GAME_KDREAMS
 };
 
 /*** 2015 edition - All files are external here ***/
@@ -372,5 +378,6 @@ static const BE_GameVerDetails_T g_be_gamever_kdreams2015 = {
 	"Keen Dreams 2015",
 	g_be_patcherfuncs_kdreams,
 	BE_AUDIO_DEVICE_DIGI_REQUIRED,
-	BE_GAMEVER_KDREAMS2015
+	BE_GAMEVER_KDREAMS2015,
+	BE_GAME_KDREAMS
 };
