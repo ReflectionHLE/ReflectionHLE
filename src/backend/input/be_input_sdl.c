@@ -32,7 +32,7 @@ void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode)
 
 void BEL_ST_ConditionallyAddJoystick(int device_index)
 {
-	if (!g_refKeenCfg.altControlScheme.isEnabled)
+	if (!g_refKeenCfg.altControlScheme)
 	{
 		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 			if (!g_sdlJoysticks[i])

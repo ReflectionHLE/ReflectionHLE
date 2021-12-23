@@ -93,10 +93,7 @@ typedef struct
 #endif
 	int touchInputToggle;
 	int/*bool*/ touchInputDebugging;
-	struct
-	{
-		int/*bool*/ isEnabled;
-	} altControlScheme;
+	int/*bool*/ altControlScheme;
 	int/*bool*/ manualGameVerMode;
 	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
 

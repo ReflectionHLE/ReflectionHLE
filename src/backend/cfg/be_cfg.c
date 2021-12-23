@@ -167,7 +167,7 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	#endif
 	DEF_BOOL(touchInputDebugging, "touchinputdebugging", false)
 #endif
-	DEF_BOOL(altControlScheme.isEnabled, "altcontrolscheme", true)
+	DEF_BOOL(altControlScheme, "altcontrolscheme", true)
 
 	DEF_HIDDEN_BOOL(manualGameVerMode, "manualgamevermode", false)
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG

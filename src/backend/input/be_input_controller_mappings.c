@@ -205,7 +205,7 @@ static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void)
 
 void BE_ST_AltControlScheme_Push(void)
 {
-	//if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
+	//if (!g_refKeenCfg.altControlScheme && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
 	//	return;
 
 	BEL_ST_AltControlScheme_CleanUp();
@@ -219,7 +219,7 @@ void BE_ST_AltControlScheme_Push(void)
 
 void BE_ST_AltControlScheme_Pop(void)
 {
-	//if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
+	//if (!g_refKeenCfg.altControlScheme && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
 	//	return;
 
 	BEL_ST_AltControlScheme_CleanUp();
@@ -251,7 +251,7 @@ void BE_ST_AltControlScheme_Reset(void)
 
 void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMapping *mapping)
 {
-	//if (!g_refKeenCfg.altControlScheme.isEnabled && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
+	//if (!g_refKeenCfg.altControlScheme && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
 	//	return;
 
 	BEL_ST_AltControlScheme_CleanUp();

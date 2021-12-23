@@ -233,7 +233,7 @@ void BE_ST_PollEvents(void)
 			BEL_ST_ConditionallyAddJoystick(event.jdevice.which);
 			break;
 		case SDL_JOYDEVICEREMOVED:
-			if (!g_refKeenCfg.altControlScheme.isEnabled)
+			if (!g_refKeenCfg.altControlScheme)
 			{
 				for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 				{
