@@ -437,13 +437,13 @@ void BE_ST_PollEvents(void)
 
 SDL_sem *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
 
-void BEL_ST_SaveConfig(void);
+void BEL_ST_SaveConfigFiles(void);
 
 void BEL_ST_CheckForExitFromEventsCallback(void)
 {
 	if (SDL_SemTryWait(g_sdlEventsCallbackToMainSem) == 0)
 	{
-		BEL_ST_SaveConfig(); // From BE_ST_QuickExit
+		BEL_ST_SaveConfigFiles(); // From BE_ST_QuickExit
 		SDL_SemPost(g_sdlMainToEventsCallbackSem);
 		SDL_SemWait(g_sdlEventsCallbackToMainSem); // Wait here "forever"
 	}

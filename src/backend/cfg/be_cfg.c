@@ -266,19 +266,19 @@ void BEL_ST_ParseSetting_DisplayNum(int *displayNum, const char *buffer);
 void BEL_ST_ParseSetting_SDLRendererDriver(int *driver, const char *buffer);
 void BEL_ST_SaveSDLRendererDriverToConfig(FILE *fp, const char *key, int driver);
 
-static void BEL_ST_SetConfigDefaults(void)
+static void BEL_ST_SetConfigDefaults(BE_ST_CFG_Setting_T *settings, int n)
 {
-	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_st_settings); ++i)
-		switch (g_be_st_settings[i].valType)
+	for (int i = 0; i < n; ++i)
+		switch (settings[i].valType)
 		{
 		case BE_ST_CFG_VAL_STR:
 			break;
 		case BE_ST_CFG_VAL_DIMS:
-			*(int *)g_be_st_settings[i].setting = g_be_st_settings[i].aux0;
-			*(int *)g_be_st_settings[i].ptraux = g_be_st_settings[i].aux1;
+			*(int *)settings[i].setting = settings[i].aux0;
+			*(int *)settings[i].ptraux = settings[i].aux1;
 			break;
 		default:
-			*(int *)g_be_st_settings[i].setting = g_be_st_settings[i].aux0;
+			*(int *)settings[i].setting = settings[i].aux0;
 		}
 }
 
@@ -397,11 +397,11 @@ static void BEL_ST_SaveSetting(FILE *fp, const BE_ST_CFG_Setting_T *setting)
 	}
 }
 
-void BEL_ST_ParseConfig(void)
+static void BEL_ST_ParseConfig(const char *name, BE_ST_CFG_Setting_T *settings, int n)
 {
-	BEL_ST_SetConfigDefaults();
+	BEL_ST_SetConfigDefaults(settings, n);
 	// Try to load config
-	FILE *fp = BE_Cross_open_additionalfile_for_reading(REFKEEN_CONFIG_FILENAME);
+	FILE *fp = BE_Cross_open_additionalfile_for_reading(name);
 	if (!fp)
 		return;
 
@@ -417,9 +417,9 @@ void BEL_ST_ParseConfig(void)
 		if (buffer[len-1] == '\n')
 			buffer[len-1] = '\0';
 		*sep = '\0';
-		for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_st_settings); ++i)
+		for (int i = 0; i < n; ++i)
 		{
-			BE_ST_CFG_Setting_T *setting = &g_be_st_settings[i];
+			BE_ST_CFG_Setting_T *setting = &settings[i];
 			if (!strcmp(buffer, setting->key))
 			{
 				// Unhide a setting if it's hidden by default
@@ -433,19 +433,29 @@ void BEL_ST_ParseConfig(void)
 	fclose(fp);
 }
 
-void BEL_ST_SaveConfig(void)
+void BEL_ST_ParseConfigFiles(void)
+{
+	BEL_ST_ParseConfig(REFKEEN_CONFIG_FILENAME, g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+}
+
+static void BEL_ST_SaveConfig(const char *name, const BE_ST_CFG_Setting_T *settings, int n)
 {
 	// Try to save current settings just in case (first time file is created or new fields added)
-	FILE *fp = BE_Cross_open_additionalfile_for_overwriting(REFKEEN_CONFIG_FILENAME);
+	FILE *fp = BE_Cross_open_additionalfile_for_overwriting(name);
 	if (!fp)
 		return;
 
-	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_st_settings); ++i)
+	for (int i = 0; i < n; ++i)
 	{
-		const BE_ST_CFG_Setting_T *setting = &g_be_st_settings[i];
+		const BE_ST_CFG_Setting_T *setting = &settings[i];
 		// Write setting only if it's not hidden
 		if ((setting->valType == BE_ST_CFG_VAL_DIMS) || !setting->ptraux)
-			BEL_ST_SaveSetting(fp, &g_be_st_settings[i]);
+			BEL_ST_SaveSetting(fp, &settings[i]);
 	}
 	fclose(fp);
+}
+
+void BEL_ST_SaveConfigFiles(void)
+{
+	BEL_ST_SaveConfig(REFKEEN_CONFIG_FILENAME, g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
 }

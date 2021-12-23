@@ -48,8 +48,8 @@ void BE_ST_InitTiming(void);
 void BE_ST_ShutdownAudio(void);
 void BE_ST_ShutdownGfx(void);
 void BEL_ST_ConditionallyAddJoystick(int device_index); // Implementation-specific
-void BEL_ST_ParseConfig(void);
-void BEL_ST_SaveConfig(void);
+void BEL_ST_ParseConfigFiles(void);
+void BEL_ST_SaveConfigFiles(void);
 
 
 void BE_ST_InitCommon(void)
@@ -76,7 +76,7 @@ void BE_ST_InitCommon(void)
 	// MUST be called BEFORE parsing config (of course!)
 	BE_Cross_PrepareAppPaths();
 
-	BEL_ST_ParseConfig();
+	BEL_ST_ParseConfigFiles();
 	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE any SDL_CONTROLLERDEVICEADDED event should arrive (so e.g., before SDL_PollEvent).
 	FILE *fp = BE_Cross_open_additionalfile_for_reading("gamecontrollerdb.txt");
 	if (fp)
@@ -224,7 +224,7 @@ void BE_ST_ExitWithErrorMsg(const char *msg)
 
 void BE_ST_QuickExit(void)
 {
-	BEL_ST_SaveConfig();
+	BEL_ST_SaveConfigFiles();
 	BE_ST_ShutdownAll();
 	exit(0);
 }
