@@ -4,19 +4,19 @@
 #ifdef REFKEEN_UNIFIED_BUILD
 #define REFKEEN_TITLE_STRING "Reflection Keen"
 #elif (defined REFKEEN_VER_KDREAMS)
-#define REFKEEN_TITLE_STRING "Reflection Keen Dreams"
+#define REFKEEN_TITLE_STRING "Reflection KDreams"
 #elif (defined REFKEEN_VER_CAT3D)
-#define REFKEEN_TITLE_STRING "Reflection Catacomb 3-D"
+#define REFKEEN_TITLE_STRING "Reflection Cat3D"
 #elif (defined REFKEEN_VER_CATABYSS)
-#define REFKEEN_TITLE_STRING "Reflection Catacomb Abyss"
+#define REFKEEN_TITLE_STRING "Reflection CatAbyss"
 #elif (defined REFKEEN_VER_CATARM)
-#define REFKEEN_TITLE_STRING "Reflection Catacomb Armageddon"
+#define REFKEEN_TITLE_STRING "Reflection CatArm"
 #elif (defined REFKEEN_VER_CATAPOC)
-#define REFKEEN_TITLE_STRING "Reflection Catacomb Apocalypse"
+#define REFKEEN_TITLE_STRING "Reflection CatApoc"
 #elif (defined REFKEEN_HAS_VER_CATACOMB_ALL)
-#define REFKEEN_TITLE_STRING "Reflection Catacomb"
+#define REFKEEN_TITLE_STRING "Reflection Cat3DAll"
 #elif (defined REFKEEN_HAS_VER_WOLF3D_ALL) // Even if just a specific version
-#define REFKEEN_TITLE_STRING "Reflection Wolfenstein 3D"
+#define REFKEEN_TITLE_STRING "Reflection Wolf3D"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
