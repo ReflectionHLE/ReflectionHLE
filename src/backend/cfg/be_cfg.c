@@ -177,74 +177,74 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
 static BE_ST_CFG_Setting_T g_be_st_kdreams_settings[] = {
-	DEF_BOOL(kdreams.absMouseMotion, "kdreams_absmousemotion", false)
-	DEF_BOOL(kdreams.useLeftStick, "kdreams_lstick", true)
-	DEF_BOOL(kdreams.useRightStick, "kdreams_rstick", false)
-	DEF_CTRL_BIND_KDREAMS_ENUM(UP, "padbind_kdreams_up", BE_ST_CTRL_BUT_DPAD_UP)
-	DEF_CTRL_BIND_KDREAMS_ENUM(DOWN, "padbind_kdreams_down", BE_ST_CTRL_BUT_DPAD_DOWN)
-	DEF_CTRL_BIND_KDREAMS_ENUM(LEFT, "padbind_kdreams_left", BE_ST_CTRL_BUT_DPAD_LEFT)
-	DEF_CTRL_BIND_KDREAMS_ENUM(RIGHT, "padbind_kdreams_right", BE_ST_CTRL_BUT_DPAD_RIGHT)
-	DEF_CTRL_BIND_KDREAMS_ENUM(JUMP, "padbind_kdreams_jump", BE_ST_CTRL_BUT_A)
-	DEF_CTRL_BIND_KDREAMS_ENUM(THROW, "padbind_kdreams_throw", BE_ST_CTRL_BUT_B)
-	DEF_CTRL_BIND_KDREAMS_ENUM(STATS, "padbind_kdreams_stats", BE_ST_CTRL_BUT_X)
-	DEF_CTRL_BIND_KDREAMS_ENUM(FUNCKEYS, "padbind_kdreams_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
-	DEF_CTRL_BIND_KDREAMS_ENUM(DEBUGKEYS, "padbind_kdreams_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+	DEF_BOOL(kdreams.absMouseMotion, "absmousemotion", false)
+	DEF_BOOL(kdreams.useLeftStick, "lstick", true)
+	DEF_BOOL(kdreams.useRightStick, "rstick", false)
+	DEF_CTRL_BIND_KDREAMS_ENUM(UP, "padbind_up", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_BIND_KDREAMS_ENUM(DOWN, "padbind_down", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_BIND_KDREAMS_ENUM(LEFT, "padbind_left", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_BIND_KDREAMS_ENUM(RIGHT, "padbind_right", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_BIND_KDREAMS_ENUM(JUMP, "padbind_jump", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BIND_KDREAMS_ENUM(THROW, "padbind_throw", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BIND_KDREAMS_ENUM(STATS, "padbind_stats", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BIND_KDREAMS_ENUM(FUNCKEYS, "padbind_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_BIND_KDREAMS_ENUM(DEBUGKEYS, "padbind_debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 static BE_ST_CFG_Setting_T g_be_st_cat3d_settings[] = {
-	DEF_BOOL(cat3d.useLeftStick, "cat3d_lstick", true)
-	DEF_BOOL(cat3d.useRightStick, "cat3d_rstick", false)
-	DEF_BOOL(cat3d.analogMotion, "cat3d_analogmotion", false)
-	DEF_BOOL(cat3d.novert, "cat3d_novert", false)
+	DEF_BOOL(cat3d.useLeftStick, "lstick", true)
+	DEF_BOOL(cat3d.useRightStick, "rstick", false)
+	DEF_BOOL(cat3d.analogMotion, "analogmotion", false)
+	DEF_BOOL(cat3d.novert, "novert", false)
 	// FIXME: HACK (extra 2 are for triggers)
-	DEF_CTRL_BIND_CAT3D_ENUM(UP, "padbind_cat3d_up", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_CAT3D_ENUM(DOWN, "padbind_cat3d_down", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_CAT3D_ENUM(LEFT, "padbind_cat3d_left", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_CAT3D_ENUM(RIGHT, "padbind_cat3d_right", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_CAT3D_ENUM(FIRE, "padbind_cat3d_fire", BE_ST_CTRL_BUT_LSHOULDER)
-	DEF_CTRL_BIND_CAT3D_ENUM(STRAFE, "padbind_cat3d_strafe", BE_ST_CTRL_BUT_B)
-	DEF_CTRL_BIND_CAT3D_ENUM(DRINK, "padbind_cat3d_drink", BE_ST_CTRL_BUT_A)
-	DEF_CTRL_BIND_CAT3D_ENUM(BOLT, "padbind_cat3d_bolt", BE_ST_CTRL_BUT_X)
-	DEF_CTRL_BIND_CAT3D_ENUM(NUKE, "padbind_cat3d_nuke", BE_ST_CTRL_BUT_Y)
-	DEF_CTRL_BIND_CAT3D_ENUM(FASTTURN, "padbind_cat3d_fastturn", BE_ST_CTRL_BUT_RSHOULDER)
+	DEF_CTRL_BIND_CAT3D_ENUM(UP, "padbind_up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_CAT3D_ENUM(DOWN, "padbind_down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_CAT3D_ENUM(LEFT, "padbind_left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_CAT3D_ENUM(RIGHT, "padbind_right", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_CAT3D_ENUM(FIRE, "padbind_fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_BIND_CAT3D_ENUM(STRAFE, "padbind_strafe", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BIND_CAT3D_ENUM(DRINK, "padbind_drink", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BIND_CAT3D_ENUM(BOLT, "padbind_bolt", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BIND_CAT3D_ENUM(NUKE, "padbind_nuke", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_BIND_CAT3D_ENUM(FASTTURN, "padbind_fastturn", BE_ST_CTRL_BUT_RSHOULDER)
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	DEF_CTRL_BIND_CAT3D_ENUM(SCROLLS, "padbind_cat3d_scrolls", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
+	DEF_CTRL_BIND_CAT3D_ENUM(SCROLLS, "padbind_scrolls", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
 #endif
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-	DEF_CTRL_BIND_CAT3D_ENUM(FUNCKEYS, "padbind_cat3d_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_BIND_CAT3D_ENUM(FUNCKEYS, "padbind_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 #endif
-	DEF_CTRL_BIND_CAT3D_ENUM(DEBUGKEYS, "padbind_cat3d_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+	DEF_CTRL_BIND_CAT3D_ENUM(DEBUGKEYS, "padbind_debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 static BE_ST_CFG_Setting_T g_be_st_wolf3d_settings[] = {
-	DEF_BOOL(wolf3d.lowFPS, "wolf3d_lowfps", false)
-	DEF_BOOL(wolf3d.useLeftStick, "wolf3d_lstick", true)
-	DEF_BOOL(wolf3d.useRightStick, "wolf3d_rstick", false)
-	DEF_BOOL(wolf3d.analogMotion, "wolf3d_analogmotion", false)
-	DEF_BOOL(wolf3d.novert, "wolf3d_novert", false)
+	DEF_BOOL(wolf3d.lowFPS, "lowfps", false)
+	DEF_BOOL(wolf3d.useLeftStick, "lstick", true)
+	DEF_BOOL(wolf3d.useRightStick, "rstick", false)
+	DEF_BOOL(wolf3d.analogMotion, "analogmotion", false)
+	DEF_BOOL(wolf3d.novert, "novert", false)
 	// FIXME: HACK (extra 2 are for triggers)
-	DEF_CTRL_BIND_WOLF3D_ENUM(UP, "padbind_wolf3d_up", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_WOLF3D_ENUM(DOWN, "padbind_wolf3d_down", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_WOLF3D_ENUM(LEFT, "padbind_wolf3d_left", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_WOLF3D_ENUM(RIGHT, "padbind_wolf3d_right", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_WOLF3D_ENUM(FIRE, "padbind_wolf3d_fire", BE_ST_CTRL_BUT_LSHOULDER)
-	DEF_CTRL_BIND_WOLF3D_ENUM(STRAFE, "padbind_wolf3d_strafe", BE_ST_CTRL_BUT_B)
-	DEF_CTRL_BIND_WOLF3D_ENUM(USE, "padbind_wolf3d_use", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
-	DEF_CTRL_BIND_WOLF3D_ENUM(RUN, "padbind_wolf3d_run", BE_ST_CTRL_BUT_RSHOULDER)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON1, "padbind_wolf3d_weapon1", BE_ST_CTRL_BUT_DPAD_DOWN)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON2, "padbind_wolf3d_weapon2", BE_ST_CTRL_BUT_DPAD_RIGHT)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON3, "padbind_wolf3d_weapon3", BE_ST_CTRL_BUT_DPAD_LEFT)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON4, "padbind_wolf3d_weapon4", BE_ST_CTRL_BUT_DPAD_UP)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON5, "padbind_wolf3d_weapon5", BE_ST_CTRL_BUT_X)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON6, "padbind_wolf3d_weapon6", BE_ST_CTRL_BUT_Y)
-	DEF_CTRL_BIND_WOLF3D_ENUM(MAP, "padbind_wolf3d_map", BE_ST_CTRL_BUT_A)
-	DEF_CTRL_BIND_WOLF3D_ENUM(FUNCKEYS, "padbind_wolf3d_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
-	DEF_CTRL_BIND_WOLF3D_ENUM(DEBUGKEYS, "padbind_wolf3d_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+	DEF_CTRL_BIND_WOLF3D_ENUM(UP, "padbind_up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_WOLF3D_ENUM(DOWN, "padbind_down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_WOLF3D_ENUM(LEFT, "padbind_left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_WOLF3D_ENUM(RIGHT, "padbind_right", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BIND_WOLF3D_ENUM(FIRE, "padbind_fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_BIND_WOLF3D_ENUM(STRAFE, "padbind_strafe", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BIND_WOLF3D_ENUM(USE, "padbind_use", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
+	DEF_CTRL_BIND_WOLF3D_ENUM(RUN, "padbind_run", BE_ST_CTRL_BUT_RSHOULDER)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON1, "padbind_weapon1", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON2, "padbind_weapon2", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON3, "padbind_weapon3", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON4, "padbind_weapon4", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON5, "padbind_weapon5", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON6, "padbind_weapon6", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_BIND_WOLF3D_ENUM(MAP, "padbind_map", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BIND_WOLF3D_ENUM(FUNCKEYS, "padbind_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_BIND_WOLF3D_ENUM(DEBUGKEYS, "padbind_debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 
