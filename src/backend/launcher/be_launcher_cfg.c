@@ -238,10 +238,9 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FUNCKEYS], &g_beCat3DControllerSettingsMenuItem_Action_FuncKeys},
 #endif
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS], &g_beCat3DControllerSettingsMenuItem_Action_DebugKeys},
-	// TODO: Split
 	{&g_refKeenCfg.cat3d.useLeftStick, &g_beCat3DControllerSettingsMenuItem_LeftStick},
 	{&g_refKeenCfg.cat3d.useRightStick, &g_beCat3DControllerSettingsMenuItem_RightStick},
-	{&g_refKeenCfg.altControlScheme.analogMotion, &g_beCat3DControllerSettingsMenuItem_AnalogMotion},
+	{&g_refKeenCfg.cat3d.analogMotion, &g_beCat3DControllerSettingsMenuItem_AnalogMotion},
 #endif
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
@@ -263,10 +262,9 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_MAP], &g_beWolf3DControllerSettingsMenuItem_Action_Map},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS], &g_beWolf3DControllerSettingsMenuItem_Action_FuncKeys},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS], &g_beWolf3DControllerSettingsMenuItem_Action_DebugKeys},
-	// TODO: Split
 	{&g_refKeenCfg.wolf3d.useLeftStick, &g_beWolf3DControllerSettingsMenuItem_LeftStick},
 	{&g_refKeenCfg.wolf3d.useRightStick, &g_beWolf3DControllerSettingsMenuItem_RightStick},
-	{&g_refKeenCfg.altControlScheme.analogMotion, &g_beWolf3DControllerSettingsMenuItem_AnalogMotion},
+	{&g_refKeenCfg.wolf3d.analogMotion, &g_beWolf3DControllerSettingsMenuItem_AnalogMotion},
 #endif
 
 	{&g_refKeenCfg.pcSpkVol, &g_beDeviceVolumesMenuItem_PCSpkVol,

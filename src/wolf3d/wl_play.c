@@ -574,7 +574,7 @@ static void PollUserBindsMove (void)
 	if (g_refKeenCfg.novert) // Technically a patch
 		y = 0;
 
-	if (g_refKeenCfg.altControlScheme.analogMotion)
+	if (g_refKeenCfg.wolf3d.analogMotion)
 	{
 		controlx += x*JOYSCALE*tics;
 		controly += y*JOYSCALE*tics;
