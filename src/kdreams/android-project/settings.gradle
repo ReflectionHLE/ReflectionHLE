@@ -1,2 +1,0 @@
-include ':app', ':lib'
-project(':lib').projectDir = new File('../../android-lib/app')
