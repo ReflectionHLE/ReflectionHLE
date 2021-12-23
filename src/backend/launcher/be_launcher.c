@@ -1030,11 +1030,16 @@ static BEMenu *g_beMenusToPrepare[] = {
 	&g_beSelectDirectoryErrorMenu, &g_beSelectDirectoryFoundGameMenu,
 	&g_beSelectDirectoryNoGameFoundMenu,
 	&g_beSettingsMenu, &g_beVideoSettingsMenu, &g_beSoundSettingsMenu,
-	&g_beInputSettingsMenu,
-	&g_beKDreamsSettingsMenu, &g_beCat3DSettingsMenu, &g_beWolf3DSettingsMenu,
-	&g_beDeviceVolumesMenu,
-	&g_beKDreamsControllerSettingsMenu, &g_beCat3DControllerSettingsMenu,
-	&g_beWolf3DControllerSettingsMenu,
+	&g_beInputSettingsMenu, &g_beDeviceVolumesMenu,
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	&g_beKDreamsSettingsMenu, &g_beKDreamsControllerSettingsMenu,
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	&g_beCat3DSettingsMenu, &g_beCat3DControllerSettingsMenu,
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	&g_beWolf3DControllerSettingsMenu, &g_beWolf3DSettingsMenu,
+#endif
 	&g_beQuitConfirmMenu
 };
 
