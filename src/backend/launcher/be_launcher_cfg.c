@@ -108,7 +108,6 @@ extern BEMenuItem
 	g_beSoundSettingsMenuItem_UseResampler,
 	g_beInputSettingsMenuItem_ControllerScheme,
 	g_beInputSettingsMenuItem_MouseGrab,
-	g_beInputSettingsMenuItem_VertAnalogMotion,
 	g_beInputSettingsMenuItem_TouchControls,
 	g_beInputSettingsMenuItem_TouchInputDebugging,
 	g_beKDreamsInputSettingsMenuItem_AbsMouseMotion,
@@ -123,6 +122,7 @@ extern BEMenuItem
 	g_beKDreamsControllerSettingsMenuItem_Action_DebugKeys,
 	g_beKDreamsControllerSettingsMenuItem_LeftStick,
 	g_beKDreamsControllerSettingsMenuItem_RightStick,
+	g_beCat3DInputSettingsMenuItem_VertAnalogMotion,
 	g_beCat3DControllerSettingsMenuItem_Action_Up,
 	g_beCat3DControllerSettingsMenuItem_Action_Down,
 	g_beCat3DControllerSettingsMenuItem_Action_Left,
@@ -140,6 +140,7 @@ extern BEMenuItem
 	g_beCat3DControllerSettingsMenuItem_RightStick,
 	g_beCat3DControllerSettingsMenuItem_AnalogMotion,
 	g_beWolf3DSettingsMenuItem_LowFPS,
+	g_beWolf3DInputSettingsMenuItem_VertAnalogMotion,
 	g_beWolf3DControllerSettingsMenuItem_Action_Up,
 	g_beWolf3DControllerSettingsMenuItem_Action_Down,
 	g_beWolf3DControllerSettingsMenuItem_Action_Left,
@@ -196,10 +197,6 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 
 	{&g_refKeenCfg.altControlScheme.isEnabled, &g_beInputSettingsMenuItem_ControllerScheme},
 	{&g_refKeenCfg.mouseGrab, &g_beInputSettingsMenuItem_MouseGrab},
-#ifdef BE_ST_ENABLE_SETTING_NOVERT
-	{&g_refKeenCfg.novert, &g_beInputSettingsMenuItem_VertAnalogMotion,
-		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
-#endif
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	{&g_refKeenCfg.touchInputToggle, &g_beInputSettingsMenuItem_TouchControls},
 	{&g_refKeenCfg.touchInputDebugging, &g_beInputSettingsMenuItem_TouchInputDebugging},
@@ -221,6 +218,8 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	{&g_refKeenCfg.novert, &g_beCat3DInputSettingsMenuItem_VertAnalogMotion,
+		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_UP], &g_beCat3DControllerSettingsMenuItem_Action_Up},
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DOWN], &g_beCat3DControllerSettingsMenuItem_Action_Down},
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_LEFT], &g_beCat3DControllerSettingsMenuItem_Action_Left},
@@ -245,6 +244,8 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	{&g_refKeenCfg.wolf3d.lowFPS, &g_beWolf3DSettingsMenuItem_LowFPS},
+	{&g_refKeenCfg.novert, &g_beWolf3DInputSettingsMenuItem_VertAnalogMotion,
+		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_UP], &g_beWolf3DControllerSettingsMenuItem_Action_Up},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DOWN], &g_beWolf3DControllerSettingsMenuItem_Action_Down},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_LEFT], &g_beWolf3DControllerSettingsMenuItem_Action_Left},

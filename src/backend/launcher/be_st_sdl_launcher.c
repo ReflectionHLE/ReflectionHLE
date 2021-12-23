@@ -537,7 +537,6 @@ BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch 
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
 #endif
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_MouseGrab, "Mouse grab*\n(windowed mode specific)", g_be_inputSettingsChoices_mouseGrab)
-BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 BEMENUITEM_DEF_HANDLER(g_beInputSettingsMenuItem_ImportMappingsFromSteam, "Import controller mappings from Steam\n(shouldn't override existing mappings)", &BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam)
 #endif
@@ -552,7 +551,6 @@ static BEMenuItem *g_beInputSettingsMenuItems[] = {
 	&g_beInputSettingsMenuItem_TouchInputDebugging,
 #endif
 	&g_beInputSettingsMenuItem_MouseGrab,
-	&g_beInputSettingsMenuItem_VertAnalogMotion,
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 	&g_beInputSettingsMenuItem_ImportMappingsFromSteam,
 #endif
@@ -689,9 +687,11 @@ BEMenu g_beKDreamsControllerSettingsMenu = {
 /*** Catacomb 3-D input settings menu ***/
 
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beCat3DControllerSettingsMenu)
+BEMENUITEM_DEF_SELECTION(g_beCat3DInputSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beCat3DInputSettingsMenuItems[] = {
 	&g_beCat3DInputSettingsMenuItem_ControllerSettings,
+	&g_beCat3DInputSettingsMenuItem_VertAnalogMotion,
 	NULL
 };
 
@@ -784,9 +784,11 @@ BEMenu g_beWolf3DSettingsMenu = {
 /*** Wolfenstein 3D input settings menu ***/
 
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beWolf3DControllerSettingsMenu)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DInputSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DInputSettingsMenuItems[] = {
 	&g_beWolf3DInputSettingsMenuItem_ControllerSettings,
+	&g_beWolf3DInputSettingsMenuItem_VertAnalogMotion,
 	NULL
 };
 
