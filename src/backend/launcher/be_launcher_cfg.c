@@ -140,7 +140,7 @@ extern BEMenuItem
 	g_beCat3DControllerSettingsMenuItem_RightStick,
 	g_beCat3DControllerSettingsMenuItem_AnalogMotion,
 	g_beWolf3DSettingsMenuItem_LowFPS,
-	g_beWolf3DInputSettingsMenuItem_VertAnalogMotion,
+	g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 	g_beWolf3DControllerSettingsMenuItem_Action_Up,
 	g_beWolf3DControllerSettingsMenuItem_Action_Down,
 	g_beWolf3DControllerSettingsMenuItem_Action_Left,
@@ -244,7 +244,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	{&g_refKeenCfg.wolf3d.lowFPS, &g_beWolf3DSettingsMenuItem_LowFPS},
-	{&g_refKeenCfg.wolf3d.novert, &g_beWolf3DInputSettingsMenuItem_VertAnalogMotion,
+	{&g_refKeenCfg.wolf3d.novert, &g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_UP], &g_beWolf3DControllerSettingsMenuItem_Action_Up},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DOWN], &g_beWolf3DControllerSettingsMenuItem_Action_Down},

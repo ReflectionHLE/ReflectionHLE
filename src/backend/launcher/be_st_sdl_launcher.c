@@ -761,12 +761,14 @@ BEMenu g_beCat3DControllerSettingsMenu = {
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 /*** Wolfenstein 3D settings menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_Wolf3DInputSettings, "Input settings: Wolfenstein 3D", &g_beWolf3DInputSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beWolf3DControllerSettingsMenu)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
-	&g_beWolf3DSettingsMenuItem_Wolf3DInputSettings,
+	&g_beWolf3DSettingsMenuItem_ControllerSettings,
 	&g_beWolf3DSettingsMenuItem_LowFPS,
+	&g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 	NULL
 };
 
@@ -774,24 +776,6 @@ BEMenu g_beWolf3DSettingsMenu = {
 	"Settings: Wolfenstein 3D",
 	&g_beSettingsMenu,
 	g_beWolf3DSettingsMenuItems,
-	// Ignore the rest
-};
-
-/*** Wolfenstein 3D input settings menu ***/
-
-BEMENUITEM_DEF_TARGETMENU(g_beWolf3DInputSettingsMenuItem_ControllerSettings, "Modern controller settings", &g_beWolf3DControllerSettingsMenu)
-BEMENUITEM_DEF_SELECTION(g_beWolf3DInputSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
-
-static BEMenuItem *g_beWolf3DInputSettingsMenuItems[] = {
-	&g_beWolf3DInputSettingsMenuItem_ControllerSettings,
-	&g_beWolf3DInputSettingsMenuItem_VertAnalogMotion,
-	NULL
-};
-
-BEMenu g_beWolf3DInputSettingsMenu = {
-	"Input settings: Wolfenstein 3D",
-	&g_beWolf3DSettingsMenu,
-	g_beWolf3DInputSettingsMenuItems,
 	// Ignore the rest
 };
 
@@ -844,7 +828,7 @@ static BEMenuItem *g_beWolf3DControllerSettingsMenuItems[] = {
 
 BEMenu g_beWolf3DControllerSettingsMenu = {
 	"Modern controller settings",
-	&g_beWolf3DInputSettingsMenu,
+	&g_beWolf3DSettingsMenu,
 	g_beWolf3DControllerSettingsMenuItems,
 	// Ignore the rest
 };

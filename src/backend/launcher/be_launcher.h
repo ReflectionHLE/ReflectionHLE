@@ -87,7 +87,7 @@ extern BEMenu g_beMainMenu,
               g_beKDreamsSettingsMenu, g_beCat3DSettingsMenu, g_beWolf3DSettingsMenu,
               g_beDeviceVolumesMenu,
               g_beKDreamsControllerSettingsMenu, g_beCat3DControllerSettingsMenu,
-              g_beWolf3DInputSettingsMenu, g_beWolf3DControllerSettingsMenu,
+              g_beWolf3DControllerSettingsMenu,
               g_beShowVersionMenu, g_beQuitConfirmMenu;
 
 extern bool g_be_launcher_wasAnySettingChanged;
