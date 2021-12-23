@@ -1541,7 +1541,7 @@ void DrawScaleds (void)
 //
 	numvisable = visptr-&vislist[0];
 
-	if (g_refKeenCfg.lowFPS)
+	if (g_refKeenCfg.wolf3d.lowFPS)
 		SD_TimeCountWaitTicks(DEMOTICS - 1 + (numvisable*2)/MAXVISABLE);
 
 	if (!numvisable)

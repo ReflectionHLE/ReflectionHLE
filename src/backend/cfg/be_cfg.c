@@ -224,6 +224,7 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #endif
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	DEF_BOOL(wolf3d.lowFPS, "wolf3d_lowfps", false)
 	// FIXME: HACK (extra 2 are for triggers)
 	DEF_CTRL_BIND_WOLF3D_ENUM(UP, "padbind_wolf3d_up", BE_ST_CTRL_BUT_MAX+2)
 	DEF_CTRL_BIND_WOLF3D_ENUM(DOWN, "padbind_wolf3d_down", BE_ST_CTRL_BUT_MAX+2)
@@ -252,9 +253,6 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 
 #ifdef BE_ST_ENABLE_SETTING_NOVERT
 	DEF_BOOL(novert, "novert", false)
-#endif
-#ifdef BE_ST_ENABLE_SETTING_LOWFPS
-	DEF_BOOL(lowFPS, "lowfps", false)
 #endif
 	DEF_HIDDEN_BOOL(manualGameVerMode, "manualgamevermode", false)
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG

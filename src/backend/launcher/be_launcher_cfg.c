@@ -246,7 +246,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #endif
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	{&g_refKeenCfg.lowFPS, &g_beWolf3DSettingsMenuItem_LowFPS}, // TODO: Move to wolf3d
+	{&g_refKeenCfg.wolf3d.lowFPS, &g_beWolf3DSettingsMenuItem_LowFPS},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_UP], &g_beWolf3DControllerSettingsMenuItem_Action_Up},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DOWN], &g_beWolf3DControllerSettingsMenuItem_Action_Down},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_LEFT], &g_beWolf3DControllerSettingsMenuItem_Action_Left},

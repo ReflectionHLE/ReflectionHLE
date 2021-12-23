@@ -101,7 +101,6 @@ typedef struct
 		int/*bool*/ isEnabled;
 	} altControlScheme;
 	int/*bool*/ novert;
-	int/*bool*/ lowFPS;
 	int/*bool*/ manualGameVerMode;
 	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
 
@@ -122,6 +121,7 @@ typedef struct
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	struct
 	{
+		int/*bool*/ lowFPS;
 		int binds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
 	} wolf3d;
 #endif
