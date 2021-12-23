@@ -348,7 +348,7 @@ BEMenu g_beSelectDirectoryNoGameFoundMenu = {
 
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_VideoSettings, "Video settings", &g_beVideoSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_SoundSettings, "Sound settings", &g_beSoundSettingsMenu)
-BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_InputSettings, "Input settings (Common)", &g_beInputSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_InputSettings, "Input settings", &g_beInputSettingsMenu)
 #ifdef REFKEEN_HAS_VER_KDREAMS
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_KDreamsSettings, "Settings: Keen Dreams", &g_beKDreamsSettingsMenu)
 #endif
