@@ -95,8 +95,6 @@ typedef struct
 	int/*bool*/ touchInputDebugging;
 	struct
 	{
-		int/*bool*/ useLeftStick;
-		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;
 		int/*bool*/ isEnabled;
 	} altControlScheme;
@@ -109,12 +107,16 @@ typedef struct
 	struct
 	{
 		int/*bool*/ absMouseMotion;
+		int/*bool*/ useLeftStick;
+		int/*bool*/ useRightStick;
 		int binds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
 	} kdreams;
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	struct
 	{
+		int/*bool*/ useLeftStick;
+		int/*bool*/ useRightStick;
 		int binds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
 	} cat3d;
 #endif
@@ -122,6 +124,8 @@ typedef struct
 	struct
 	{
 		int/*bool*/ lowFPS;
+		int/*bool*/ useLeftStick;
+		int/*bool*/ useRightStick;
 		int binds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
 	} wolf3d;
 #endif

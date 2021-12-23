@@ -191,6 +191,8 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	DEF_BOOL(kdreams.absMouseMotion, "kdreams_absmousemotion", false)
+	DEF_BOOL(kdreams.useLeftStick, "kdreams_lstick", true)
+	DEF_BOOL(kdreams.useRightStick, "kdreams_rstick", false)
 	DEF_CTRL_BIND_KDREAMS_ENUM(UP, "padbind_kdreams_up", BE_ST_CTRL_BUT_DPAD_UP)
 	DEF_CTRL_BIND_KDREAMS_ENUM(DOWN, "padbind_kdreams_down", BE_ST_CTRL_BUT_DPAD_DOWN)
 	DEF_CTRL_BIND_KDREAMS_ENUM(LEFT, "padbind_kdreams_left", BE_ST_CTRL_BUT_DPAD_LEFT)
@@ -203,6 +205,8 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	DEF_BOOL(cat3d.useLeftStick, "cat3d_lstick", true)
+	DEF_BOOL(cat3d.useRightStick, "cat3d_rstick", false)
 	// FIXME: HACK (extra 2 are for triggers)
 	DEF_CTRL_BIND_CAT3D_ENUM(UP, "padbind_cat3d_up", BE_ST_CTRL_BUT_MAX+2)
 	DEF_CTRL_BIND_CAT3D_ENUM(DOWN, "padbind_cat3d_down", BE_ST_CTRL_BUT_MAX+2)
@@ -225,6 +229,8 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	DEF_BOOL(wolf3d.lowFPS, "wolf3d_lowfps", false)
+	DEF_BOOL(wolf3d.useLeftStick, "wolf3d_lstick", true)
+	DEF_BOOL(wolf3d.useRightStick, "wolf3d_rstick", false)
 	// FIXME: HACK (extra 2 are for triggers)
 	DEF_CTRL_BIND_WOLF3D_ENUM(UP, "padbind_wolf3d_up", BE_ST_CTRL_BUT_MAX+2)
 	DEF_CTRL_BIND_WOLF3D_ENUM(DOWN, "padbind_wolf3d_down", BE_ST_CTRL_BUT_MAX+2)
@@ -245,8 +251,6 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_CTRL_BIND_WOLF3D_ENUM(DEBUGKEYS, "padbind_wolf3d_debugkeys", BE_ST_CTRL_BUT_LSTICK)
 #endif
 
-	DEF_BOOL(altControlScheme.useLeftStick, "altcontrolscheme_lstick", true)
-	DEF_BOOL(altControlScheme.useRightStick, "altcontrolscheme_rstick", false)
 #ifdef BE_ST_ENABLE_SETTING_ANALOGMOTION
 	DEF_BOOL(altControlScheme.analogMotion, "altcontrolscheme_analogmotion", false)
 #endif

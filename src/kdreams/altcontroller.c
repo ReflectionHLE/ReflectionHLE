@@ -532,14 +532,14 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	g_beStControllerMappingDebugKeys.defaultMapping.miscPtr = &g_ingame_altcontrol_mapping_gameplay;
 
-	if (g_refKeenCfg.altControlScheme.useLeftStick)
+	if (g_refKeenCfg.kdreams.useLeftStick)
 	{
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][0] = g_ingame_but_up_map;
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][1] = g_ingame_but_down_map;
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_but_left_map;
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_but_right_map;
 	}
-	if (g_refKeenCfg.altControlScheme.useRightStick)
+	if (g_refKeenCfg.kdreams.useRightStick)
 	{
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][0] = g_ingame_but_up_map;
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][1] = g_ingame_but_down_map;
@@ -547,14 +547,14 @@ void RefKeen_PrepareAltControllerScheme(void)
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RX][1] = g_ingame_but_right_map;
 	}
 
-	if (g_refKeenCfg.altControlScheme.useLeftStick)
+	if (g_refKeenCfg.kdreams.useLeftStick)
 	{
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][0] = g_ingame_mouse_up_map;
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LY][1] = g_ingame_mouse_down_map;
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_mouse_left_map;
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_mouse_right_map;
 	}
-	if (g_refKeenCfg.altControlScheme.useRightStick)
+	if (g_refKeenCfg.kdreams.useRightStick)
 	{
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][0] = g_ingame_mouse_up_map;
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_RY][1] = g_ingame_mouse_down_map;

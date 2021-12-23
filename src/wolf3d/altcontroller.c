@@ -491,7 +491,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingDebugKeys.defaultMapping.mapClass = BE_ST_CTRL_MAP_OTHERMAPPING;
 	g_beStControllerMappingDebugKeys.defaultMapping.miscPtr = &g_ingame_altcontrol_mapping_gameplay;
 
-	if (g_refKeenCfg.altControlScheme.useLeftStick)
+	if (g_refKeenCfg.wolf3d.useLeftStick)
 	{
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][0] = g_ingame_but_up_map;
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LY][1] = g_ingame_but_down_map;
@@ -503,7 +503,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_altcontrol_mapping_menu.buttons[BE_ST_CTRL_BUT_DPAD_LEFT];
 		g_ingame_altcontrol_mapping_menu.axes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_altcontrol_mapping_menu.buttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
 	}
-	if (g_refKeenCfg.altControlScheme.useRightStick)
+	if (g_refKeenCfg.wolf3d.useRightStick)
 	{
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][0] = g_ingame_but_up_map;
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_RY][1] = g_ingame_but_down_map;

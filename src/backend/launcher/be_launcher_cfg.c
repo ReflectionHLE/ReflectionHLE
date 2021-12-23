@@ -216,9 +216,8 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_STATS], &g_beKDreamsControllerSettingsMenuItem_Action_Stats},
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS], &g_beKDreamsControllerSettingsMenuItem_Action_FuncKeys},
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS], &g_beKDreamsControllerSettingsMenuItem_Action_DebugKeys},
-	// TODO: Split
-	{&g_refKeenCfg.altControlScheme.useLeftStick, &g_beKDreamsControllerSettingsMenuItem_LeftStick},
-	{&g_refKeenCfg.altControlScheme.useRightStick, &g_beKDreamsControllerSettingsMenuItem_RightStick},
+	{&g_refKeenCfg.kdreams.useLeftStick, &g_beKDreamsControllerSettingsMenuItem_LeftStick},
+	{&g_refKeenCfg.kdreams.useRightStick, &g_beKDreamsControllerSettingsMenuItem_RightStick},
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
@@ -240,8 +239,8 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #endif
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS], &g_beCat3DControllerSettingsMenuItem_Action_DebugKeys},
 	// TODO: Split
-	{&g_refKeenCfg.altControlScheme.useLeftStick, &g_beCat3DControllerSettingsMenuItem_LeftStick},
-	{&g_refKeenCfg.altControlScheme.useRightStick, &g_beCat3DControllerSettingsMenuItem_RightStick},
+	{&g_refKeenCfg.cat3d.useLeftStick, &g_beCat3DControllerSettingsMenuItem_LeftStick},
+	{&g_refKeenCfg.cat3d.useRightStick, &g_beCat3DControllerSettingsMenuItem_RightStick},
 	{&g_refKeenCfg.altControlScheme.analogMotion, &g_beCat3DControllerSettingsMenuItem_AnalogMotion},
 #endif
 
@@ -265,8 +264,8 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS], &g_beWolf3DControllerSettingsMenuItem_Action_FuncKeys},
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS], &g_beWolf3DControllerSettingsMenuItem_Action_DebugKeys},
 	// TODO: Split
-	{&g_refKeenCfg.altControlScheme.useLeftStick, &g_beWolf3DControllerSettingsMenuItem_LeftStick},
-	{&g_refKeenCfg.altControlScheme.useRightStick, &g_beWolf3DControllerSettingsMenuItem_RightStick},
+	{&g_refKeenCfg.wolf3d.useLeftStick, &g_beWolf3DControllerSettingsMenuItem_LeftStick},
+	{&g_refKeenCfg.wolf3d.useRightStick, &g_beWolf3DControllerSettingsMenuItem_RightStick},
 	{&g_refKeenCfg.altControlScheme.analogMotion, &g_beWolf3DControllerSettingsMenuItem_AnalogMotion},
 #endif
 
