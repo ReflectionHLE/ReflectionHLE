@@ -163,9 +163,6 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_INT(scaleFactor, "scalefactor", 2, 1, INT_MAX)
 	DEF_BOOL(forceFullSoftScaling, "forcefullsoftscaling", false)
 	DEF_ENUM(mouseGrab, "mousegrab", g_be_setting_mousegrab_vals, MOUSEGRAB_AUTO)
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	DEF_BOOL(absMouseMotion, "absmousemotion", false)
-#endif
 	DEF_INT(sndInterThreadBufferRatio, "sndinterthreadbufferratio", 2, 1, INT_MAX)
 	// 49716 may lead to unexpected behaviors on Android
 	DEF_INT(sndSampleRate, "sndsamplerate", 48000, 1, INT_MAX)
@@ -193,6 +190,7 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_BOOL(altControlScheme.isEnabled, "altcontrolscheme", true)
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
+	DEF_BOOL(kdreams.absMouseMotion, "kdreams_absmousemotion", false)
 	DEF_CTRL_BIND_KDREAMS_ENUM(UP, "padbind_kdreams_up", BE_ST_CTRL_BUT_DPAD_UP)
 	DEF_CTRL_BIND_KDREAMS_ENUM(DOWN, "padbind_kdreams_down", BE_ST_CTRL_BUT_DPAD_DOWN)
 	DEF_CTRL_BIND_KDREAMS_ENUM(LEFT, "padbind_kdreams_left", BE_ST_CTRL_BUT_DPAD_LEFT)

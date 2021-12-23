@@ -90,7 +90,7 @@ static void BEL_Cross_SetDynamicCfg(void)
 	{
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	case BE_GAME_KDREAMS:
-		g_refKeenDynamicCfg.absMouseMotion = g_refKeenCfg.absMouseMotion;
+		g_refKeenDynamicCfg.absMouseMotion = g_refKeenCfg.kdreams.absMouseMotion;
 		g_refKeenDynamicCfg.novert = false;
 		break;
 		break;
@@ -260,10 +260,15 @@ void BE_Cross_InitGame(int gameVerVal)
 	// is completed, this version may currently determine if VSync is enabled
 	// when AUTO is chosen (it's disabled for Keen Dreams with CGA graphics).
 	BEL_Cross_SelectGameInstallation(gameVerVal, true);
-	BE_ST_PrepareForGameStartupWithoutAudio(); // Some additional preparation required
-	BEL_Cross_SelectGameInstallation(gameVerVal, false);
+	// This has to be called after figuring out the game version,
+	// but also before BE_ST_InitGfx, if only due to reading absMouseMotion.
 	BEL_Cross_SetDynamicCfg();
-	BE_ST_InitAudio(); // Do this now, since we can tell if we want digi audio out or not
+	// Some additional preparation required
+	BE_ST_PrepareForGameStartupWithoutAudio();
+	// Now properly go through game installation selection
+	BEL_Cross_SelectGameInstallation(gameVerVal, false);
+	// Do this now, since we can tell if we want digi audio out or not
+	BE_ST_InitAudio();
 }
 
 void BE_Cross_StartGame(int argc, char **argv, void (*mainFuncPtr)(void))

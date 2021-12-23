@@ -82,9 +82,6 @@ typedef struct
 	int scaleFactor;
 	int/*bool*/ forceFullSoftScaling;
 	int mouseGrab;
-#ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	int/*bool*/ absMouseMotion;
-#endif
 	int sndInterThreadBufferRatio;
 	int sndSampleRate;
 	int/*bool*/ sndSubSystem;
@@ -112,6 +109,7 @@ typedef struct
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	struct
 	{
+		int/*bool*/ absMouseMotion;
 		int binds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
 	} kdreams;
 #endif

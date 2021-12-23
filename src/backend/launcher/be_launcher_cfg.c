@@ -206,7 +206,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #endif
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	{&g_refKeenCfg.absMouseMotion, &g_beKDreamsInputSettingsMenuItem_AbsMouseMotion}, // TODO: Move to kdreams
+	{&g_refKeenCfg.kdreams.absMouseMotion, &g_beKDreamsInputSettingsMenuItem_AbsMouseMotion},
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_UP], &g_beKDreamsControllerSettingsMenuItem_Action_Up},
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DOWN], &g_beKDreamsControllerSettingsMenuItem_Action_Down},
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_LEFT], &g_beKDreamsControllerSettingsMenuItem_Action_Left},

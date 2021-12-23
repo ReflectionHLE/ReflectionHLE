@@ -85,7 +85,7 @@ void BE_ST_InitGfx(void)
 	BE_ST_SetScreenMode(3); // Includes BE_ST_Texture handling and output rects preparation
 
 #ifdef BE_ST_SDL_ENABLE_ABSMOUSEMOTION_SETTING
-	g_sdlDoAbsMouseMotion = g_refKeenCfg.absMouseMotion;
+	g_sdlDoAbsMouseMotion = g_refKeenDynamicCfg.absMouseMotion;
 #endif
 }
 
