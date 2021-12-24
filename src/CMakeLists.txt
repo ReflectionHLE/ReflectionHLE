@@ -22,6 +22,7 @@ list(APPEND be_src
 	src/backend/gamedefs/be_gamedefs_prep.c
 	src/backend/input/be_input.c
 	src/backend/input/be_input_controller_mappings.c
+	src/backend/input/be_input_keytables.c
 	src/backend/input/be_input_sdl.c
 	src/backend/input/be_input_ui.c
 	src/backend/misc/be_misc_steamcfg.c
