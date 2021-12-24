@@ -35,6 +35,7 @@
 #include "SDL.h"
 
 #include "backend/input/be_input.h"
+#include "backend/input/be_input_keytables.h"
 #include "backend/input/be_input_sdl.h"
 #include "backend/video/be_video_ui.h"
 #include "backend/video/be_video_sdl.h"
@@ -146,8 +147,10 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 #define BEMENUITEM_DEF_DYNAMIC_SELECTION(menuItemName, label, choices, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, NULL, label, BE_MENUITEM_TYPE_DYNAMIC_SELECTION)
 #define BEMENUITEM_DEF_STATIC(menuItemName, label) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, NULL, label, BE_MENUITEM_TYPE_STATIC)
 
-// A special case of BEMENUITEM_DEF_DYNAMIC_SELECTION for binds
-#define BEMENUITEM_DEF_CTRL_BIND(game, suffix, label) \
+// A special case of BEMENUITEM_DEF_DYNAMIC_SELECTION for binds,
+// repeated accross differing kinds of binds for separate submenus
+#define BEMENUITEM_DEF_CTRL_BINDS(game, suffix, label) \
+	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## KeyBindsMenuItem_Action_ ## suffix, label, g_be_st_keyIdToNameMap, &BE_Launcher_Handler_KeyAction) \
 	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_be_padBindsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 
 // A little hack - Store a copy of the label string literal that can be modified
@@ -618,8 +621,9 @@ static BEMenu g_beControllerMappingsFromSteamImportedSuccessfullyMenu = {
 static const char *g_be_padBindsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", "DPad Up", "DPad Down", "DPad Left", "DPad Right", NULL, "Paddle 1", "Paddle 2", "Paddle 3", "Paddle 4", "LTrigger", "RTrigger", "N/A"};
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
-/*** Keen Dreams input settings menu ***/
+/*** Keen Dreams settings menu ***/
 
+BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beKDreamsKeyBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_PadBinds, "Modern controller binds", &g_beKDreamsPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beKDreamsSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion*", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_STATIC(g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
@@ -627,6 +631,7 @@ BEMENUITEM_DEF_STATIC(g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
 );
 
 static BEMenuItem *g_beKDreamsSettingsMenuItems[] = {
+	&g_beKDreamsSettingsMenuItem_KeyBinds,
 	&g_beKDreamsSettingsMenuItem_PadBinds,
 	&g_beKDreamsSettingsMenuItem_AbsMouseMotion,
 	&g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
@@ -640,17 +645,42 @@ BEMenu g_beKDreamsSettingsMenu = {
 	// Ignore the rest
 };
 
+/*** Keen Dreams definitions for all binds menus ***/
+
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Up, "Action - Move/Look up")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Down, "Action - Move/Look down")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Left, "Action - Move left")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Right, "Action - Move right")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Jump, "Action - Jump")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Throw, "Action - Throw")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Stats, "Action - Stats")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, FuncKeys, "Action - Function Keys")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, DebugKeys, "Action - Debug Keys")
+
+/*** Keen Dreams key binds menu ***/
+
+static BEMenuItem *g_beKDreamsKeyBindsMenuItems[] = {
+	&g_beKDreamsKeyBindsMenuItem_Action_Up,
+	&g_beKDreamsKeyBindsMenuItem_Action_Down,
+	&g_beKDreamsKeyBindsMenuItem_Action_Left,
+	&g_beKDreamsKeyBindsMenuItem_Action_Right,
+	&g_beKDreamsKeyBindsMenuItem_Action_Jump,
+	&g_beKDreamsKeyBindsMenuItem_Action_Throw,
+	&g_beKDreamsKeyBindsMenuItem_Action_Stats,
+	&g_beKDreamsKeyBindsMenuItem_Action_FuncKeys,
+	&g_beKDreamsKeyBindsMenuItem_Action_DebugKeys,
+	NULL
+};
+
+BEMenu g_beKDreamsKeyBindsMenu = {
+	"Keyboard overrides",
+	&g_beKDreamsSettingsMenu,
+	g_beKDreamsKeyBindsMenuItems,
+	// Ignore the rest
+};
+
 /*** Keen Dreams pad binds menu ***/
 
-BEMENUITEM_DEF_CTRL_BIND(KDreams, Up, "Action - Move/Look up")
-BEMENUITEM_DEF_CTRL_BIND(KDreams, Down, "Action - Move/Look down")
-BEMENUITEM_DEF_CTRL_BIND(KDreams, Left, "Action - Move left")
-BEMENUITEM_DEF_CTRL_BIND(KDreams, Right, "Action - Move right")
-BEMENUITEM_DEF_CTRL_BIND(KDreams, Jump, "Action - Jump")
-BEMENUITEM_DEF_CTRL_BIND(KDreams, Throw, "Action - Throw")
-BEMENUITEM_DEF_CTRL_BIND(KDreams, Stats, "Action - Stats")
-BEMENUITEM_DEF_CTRL_BIND(KDreams, FuncKeys, "Action - Function Keys")
-BEMENUITEM_DEF_CTRL_BIND(KDreams, DebugKeys, "Action - Debug Keys")
 BEMENUITEM_DEF_SELECTION(g_beKDreamsPadBindsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beKDreamsPadBindsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
 
@@ -678,12 +708,14 @@ BEMenu g_beKDreamsPadBindsMenu = {
 #endif // REFKEEN_HAS_VER_KDREAMS
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-/*** Catacomb 3-D input settings menu ***/
+/*** Catacomb 3-D settings menu ***/
 
+BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beCat3DKeyBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beCat3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beCat3DSettingsMenuItems[] = {
+	&g_beCat3DSettingsMenuItem_KeyBinds,
 	&g_beCat3DSettingsMenuItem_PadBinds,
 	&g_beCat3DSettingsMenuItem_VertAnalogMotion,
 	NULL
@@ -696,25 +728,59 @@ BEMenu g_beCat3DSettingsMenu = {
 	// Ignore the rest
 };
 
-/*** Catacomb 3-D pad binds menu ***/
+/*** Catacomb 3-D definitions for all binds menus ***/
 
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Up, "Action - Move forward")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Down, "Action - Move backward")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Left, "Action - Turn left")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Right, "Action - Turn right)")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Fire, "Action - Fire")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Strafe, "Action - Strafe")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Drink, "Action - Drink")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Bolt, "Action - Bolt/Zapper")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Nuke, "Action - Nuke/Xterminator")
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, FastTurn, "Action - Fast turn")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Up, "Action - Move forward")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Down, "Action - Move backward")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Left, "Action - Turn left")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Right, "Action - Turn right)")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Fire, "Action - Fire")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Strafe, "Action - Strafe")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Drink, "Action - Drink")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Bolt, "Action - Bolt/Zapper")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Nuke, "Action - Nuke/Xterminator")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, FastTurn, "Action - Fast turn")
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, Scrolls, "Action - Scrolls")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Scrolls, "Action - Scrolls")
 #endif
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, FuncKeys, "Action - Function keys")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, FuncKeys, "Action - Function keys")
 #endif
-BEMENUITEM_DEF_CTRL_BIND(Cat3D, DebugKeys, "Action - Debug keys")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, DebugKeys, "Action - Debug keys")
+
+/*** Catacomb 3-D key binds menu ***/
+
+static BEMenuItem *g_beCat3DKeyBindsMenuItems[] = {
+	&g_beCat3DKeyBindsMenuItem_Action_Up,
+	&g_beCat3DKeyBindsMenuItem_Action_Down,
+	&g_beCat3DKeyBindsMenuItem_Action_Left,
+	&g_beCat3DKeyBindsMenuItem_Action_Right,
+	&g_beCat3DKeyBindsMenuItem_Action_Fire,
+	&g_beCat3DKeyBindsMenuItem_Action_Strafe,
+	&g_beCat3DKeyBindsMenuItem_Action_Drink,
+	&g_beCat3DKeyBindsMenuItem_Action_Bolt,
+	&g_beCat3DKeyBindsMenuItem_Action_Nuke,
+	&g_beCat3DKeyBindsMenuItem_Action_FastTurn,
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
+	&g_beCat3DKeyBindsMenuItem_Action_Scrolls,
+#endif
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
+	&g_beCat3DKeyBindsMenuItem_Action_FuncKeys,
+#endif
+	&g_beCat3DKeyBindsMenuItem_Action_DebugKeys,
+	NULL
+};
+
+
+BEMenu g_beCat3DKeyBindsMenu = {
+	"Keyboard overrides",
+	&g_beCat3DSettingsMenu,
+	g_beCat3DKeyBindsMenuItems,
+	// Ignore the rest
+};
+
+/*** Catacomb 3-D pad binds menu ***/
+
 BEMENUITEM_DEF_SELECTION(g_beCat3DPadBindsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beCat3DPadBindsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beCat3DPadBindsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
@@ -755,11 +821,13 @@ BEMenu g_beCat3DPadBindsMenu = {
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 /*** Wolfenstein 3D settings menu ***/
 
+BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beWolf3DKeyBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beWolf3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
+	&g_beWolf3DSettingsMenuItem_KeyBinds,
 	&g_beWolf3DSettingsMenuItem_PadBinds,
 	&g_beWolf3DSettingsMenuItem_LowFPS,
 	&g_beWolf3DSettingsMenuItem_VertAnalogMotion,
@@ -773,25 +841,58 @@ BEMenu g_beWolf3DSettingsMenu = {
 	// Ignore the rest
 };
 
+/*** Wolfenstein 3D definitions for all binds menus ***/
+
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Up, "Action - Move forward")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Down, "Action - Move backward")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Left, "Action - Turn left")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Right, "Action - Turn right")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Fire, "Action - Fire")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Strafe, "Action - Strafe")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Use, "Action - Use")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Run, "Action - Run")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon1, "Action - Weapon 1")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon2, "Action - Weapon 2")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon3, "Action - Weapon 3")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon4, "Action - Weapon 4")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon5, "Action - Weapon 5")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon6, "Action - Weapon 6")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Map, "Action - Automap (Super 3-D Noah's Ark)")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, FuncKeys, "Action - Function keys")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, DebugKeys, "Action - Debug keys")
+
+/*** Wolfenstein 3D key binds menu ***/
+
+static BEMenuItem *g_beWolf3DKeyBindsMenuItems[] = {
+	&g_beWolf3DKeyBindsMenuItem_Action_Up,
+	&g_beWolf3DKeyBindsMenuItem_Action_Down,
+	&g_beWolf3DKeyBindsMenuItem_Action_Left,
+	&g_beWolf3DKeyBindsMenuItem_Action_Right,
+	&g_beWolf3DKeyBindsMenuItem_Action_Fire,
+	&g_beWolf3DKeyBindsMenuItem_Action_Strafe,
+	&g_beWolf3DKeyBindsMenuItem_Action_Use,
+	&g_beWolf3DKeyBindsMenuItem_Action_Run,
+	&g_beWolf3DKeyBindsMenuItem_Action_Weapon1,
+	&g_beWolf3DKeyBindsMenuItem_Action_Weapon2,
+	&g_beWolf3DKeyBindsMenuItem_Action_Weapon3,
+	&g_beWolf3DKeyBindsMenuItem_Action_Weapon4,
+	&g_beWolf3DKeyBindsMenuItem_Action_Weapon5,
+	&g_beWolf3DKeyBindsMenuItem_Action_Weapon6,
+	&g_beWolf3DKeyBindsMenuItem_Action_Map,
+	&g_beWolf3DKeyBindsMenuItem_Action_FuncKeys,
+	&g_beWolf3DKeyBindsMenuItem_Action_DebugKeys,
+	NULL
+};
+
+BEMenu g_beWolf3DKeyBindsMenu = {
+	"Keyboard overrides",
+	&g_beWolf3DSettingsMenu,
+	g_beWolf3DKeyBindsMenuItems,
+	// Ignore the rest
+};
+
 /*** Wolfenstein 3D pad binds menu ***/
 
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Up, "Action - Move forward")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Down, "Action - Move backward")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Left, "Action - Turn left")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Right, "Action - Turn right")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Fire, "Action - Fire")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Strafe, "Action - Strafe")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Use, "Action - Use")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Run, "Action - Run")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Weapon1, "Action - Weapon 1")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Weapon2, "Action - Weapon 2")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Weapon3, "Action - Weapon 3")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Weapon4, "Action - Weapon 4")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Weapon5, "Action - Weapon 5")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Weapon6, "Action - Weapon 6")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, Map, "Action - Automap (Super 3-D Noah's Ark)")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, FuncKeys, "Action - Function keys")
-BEMENUITEM_DEF_CTRL_BIND(Wolf3D, DebugKeys, "Action - Debug keys")
 BEMENUITEM_DEF_SELECTION(g_beWolf3DPadBindsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DPadBindsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DPadBindsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)

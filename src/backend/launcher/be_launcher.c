@@ -1032,13 +1032,13 @@ static BEMenu *g_beMenusToPrepare[] = {
 	&g_beSettingsMenu, &g_beVideoSettingsMenu, &g_beSoundSettingsMenu,
 	&g_beInputSettingsMenu, &g_beDeviceVolumesMenu,
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	&g_beKDreamsSettingsMenu, &g_beKDreamsPadBindsMenu,
+	&g_beKDreamsSettingsMenu, &g_beKDreamsKeyBindsMenu, &g_beKDreamsPadBindsMenu,
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	&g_beCat3DSettingsMenu, &g_beCat3DPadBindsMenu,
+	&g_beCat3DSettingsMenu, &g_beCat3DKeyBindsMenu, &g_beCat3DPadBindsMenu,
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	&g_beWolf3DPadBindsMenu, &g_beWolf3DSettingsMenu,
+	&g_beWolf3DSettingsMenu, &g_beWolf3DKeyBindsMenu, &g_beWolf3DPadBindsMenu,
 #endif
 	&g_beQuitConfirmMenu
 };
@@ -1440,6 +1440,11 @@ void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP)
 {
 	BE_ST_Launcher_Shutdown();
 	BE_ST_QuickExit();
+}
+
+void BE_Launcher_Handler_KeyAction(BEMenuItem **menuItemP)
+{
+	// TODO IMPLEMENT
 }
 
 void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP)
