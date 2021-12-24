@@ -10,8 +10,8 @@ void BE_ST_Launcher_Shutdown(void);
 void BE_ST_Launcher_RefreshSelectGameMenuContents(void);
 void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfExes);
 
-// Used by launcher for controller button selection
-void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem);
+// Used by launcher for user input binds
+void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, bool isPad);
 // Launcher loop
 void BE_ST_Launcher_RunEventLoop(void);
 

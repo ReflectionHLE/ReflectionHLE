@@ -2633,7 +2633,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 	}
 }
 
-void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
+void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, bool isPad)
 {
 	BEL_ST_Launcher_TurnTextSearchOff();
 
@@ -2656,7 +2656,7 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 
 	SDL_Event event;
 	bool keepRunning = true;
-	const int defaultChoice = BE_ST_CTRL_BUT_MAX + 2/*triggers*/;
+	const int defaultChoice = isPad ? BE_ST_CTRL_BUT_MAX + 2/*triggers*/ : 0;
 	int choice = defaultChoice;
 
 	while (keepRunning)
@@ -2672,6 +2672,11 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 			case SDL_KEYDOWN:
 				if (event.key.repeat)
 					break; // Ignore
+				if (!isPad &&
+				    (event.key.keysym.scancode > 0) && // We use 0 as a default
+				    (event.key.keysym.scancode < (int)BE_MAX_KEY_ID) &&
+				    g_be_st_keyIdToNameMap[event.key.keysym.scancode])
+					choice = event.key.keysym.scancode;
 				// Fall-through
 			case SDL_MOUSEBUTTONDOWN:
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
@@ -2707,7 +2712,8 @@ void BE_ST_Launcher_WaitForControllerButton(BEMenuItem *menuItem)
 				}
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
-				if ((event.cbutton.button >= 0) &&
+				if (isPad &&
+				    (event.cbutton.button >= 0) &&
 				    (event.cbutton.button < BE_ST_CTRL_BUT_MAX) &&
 				    (event.cbutton.button != BE_ST_CTRL_BUT_BACK) &&
 				    (event.cbutton.button != BE_ST_CTRL_BUT_GUIDE) &&

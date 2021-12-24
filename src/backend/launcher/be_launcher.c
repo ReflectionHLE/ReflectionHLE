@@ -1442,18 +1442,23 @@ void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP)
 	BE_ST_QuickExit();
 }
 
+static void BEL_Launcher_PrepareForGettingUserBind(BEMenuItem *menuItem, bool isPad)
+{
+	BEL_Launcher_DrawMenuItemString(menuItem->choices[menuItem->choice], menuItem->selectionYPos, 0); // Erase string
+	BEL_Launcher_DrawMenuItemString("Press...", menuItem->selectionYPos, 9); // Draw this one instead
+	BE_ST_Launcher_WaitForUserBind(menuItem, isPad);
+	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
+}
+
+
 void BE_Launcher_Handler_KeyAction(BEMenuItem **menuItemP)
 {
-	// TODO IMPLEMENT
+	BEL_Launcher_PrepareForGettingUserBind(*menuItemP, false);
 }
 
 void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP)
 {
-	BEMenuItem *menuItem = *menuItemP;
-	BEL_Launcher_DrawMenuItemString(menuItem->choices[menuItem->choice], menuItem->selectionYPos, 0); // Erase string
-	BEL_Launcher_DrawMenuItemString("Press...", menuItem->selectionYPos, 9); // Draw this one instead
-	BE_ST_Launcher_WaitForControllerButton(menuItem);
-	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
+	BEL_Launcher_PrepareForGettingUserBind(*menuItemP, true);
 }
 
 void BE_Launcher_ArgumentsEditing_MoveCursorToEdge(bool moveForward)
