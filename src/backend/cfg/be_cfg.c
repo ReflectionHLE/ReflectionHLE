@@ -29,6 +29,7 @@
 #include <limits.h>
 
 #include "../audio/be_audio_private.h"
+#include "../input/be_input_keytables.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_gamever.h"
@@ -100,14 +101,17 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 #define DEF_BOOL(setting, key, def) \
 	DEF_ENUM(setting, key, g_be_setting_bool_vals, def)
 
-#define DEF_CTRL_BIND_KDREAMS_ENUM(i, key, def) \
-	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].pad, key, g_sdlControlSchemeKeyMapCfgVals, def)
+#define DEF_CTRL_BINDS_KDREAMS_ENUMS(i, k, def) \
+	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].key, "keybind_" k, g_be_st_keyIdToNameMap, 0) \
+	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].pad, "padbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
-#define DEF_CTRL_BIND_CAT3D_ENUM(i, key, def) \
-	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].pad, key, g_sdlControlSchemeKeyMapCfgVals, def)
+#define DEF_CTRL_BINDS_CAT3D_ENUMS(i, k, def) \
+	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].key, "keybind_" k, g_be_st_keyIdToNameMap, 0) \
+	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].pad, "padbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
-#define DEF_CTRL_BIND_WOLF3D_ENUM(i, key, def) \
-	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, key, g_sdlControlSchemeKeyMapCfgVals, def)
+#define DEF_CTRL_BINDS_WOLF3D_ENUMS(i, k, def) \
+	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].key, "keybind_" k, g_be_st_keyIdToNameMap, 0) \
+	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, "padbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_HIDDEN_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, &g_refKeenCfg.setting, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
@@ -180,15 +184,15 @@ static BE_ST_CFG_Setting_T g_be_st_kdreams_settings[] = {
 	DEF_BOOL(kdreams.absMouseMotion, "absmousemotion", false)
 	DEF_BOOL(kdreams.useLeftStick, "lstick", true)
 	DEF_BOOL(kdreams.useRightStick, "rstick", false)
-	DEF_CTRL_BIND_KDREAMS_ENUM(UP, "padbind_up", BE_ST_CTRL_BUT_DPAD_UP)
-	DEF_CTRL_BIND_KDREAMS_ENUM(DOWN, "padbind_down", BE_ST_CTRL_BUT_DPAD_DOWN)
-	DEF_CTRL_BIND_KDREAMS_ENUM(LEFT, "padbind_left", BE_ST_CTRL_BUT_DPAD_LEFT)
-	DEF_CTRL_BIND_KDREAMS_ENUM(RIGHT, "padbind_right", BE_ST_CTRL_BUT_DPAD_RIGHT)
-	DEF_CTRL_BIND_KDREAMS_ENUM(JUMP, "padbind_jump", BE_ST_CTRL_BUT_A)
-	DEF_CTRL_BIND_KDREAMS_ENUM(THROW, "padbind_throw", BE_ST_CTRL_BUT_B)
-	DEF_CTRL_BIND_KDREAMS_ENUM(STATS, "padbind_stats", BE_ST_CTRL_BUT_X)
-	DEF_CTRL_BIND_KDREAMS_ENUM(FUNCKEYS, "padbind_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
-	DEF_CTRL_BIND_KDREAMS_ENUM(DEBUGKEYS, "padbind_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(UP, "up", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(DOWN, "down", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(LEFT, "left", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(RIGHT, "right", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(JUMP, "jump", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(THROW, "throw", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(STATS, "stats", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_BINDS_KDREAMS_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 
@@ -199,23 +203,23 @@ static BE_ST_CFG_Setting_T g_be_st_cat3d_settings[] = {
 	DEF_BOOL(cat3d.analogMotion, "analogmotion", false)
 	DEF_BOOL(cat3d.novert, "novert", false)
 	// FIXME: HACK (extra 2 are for triggers)
-	DEF_CTRL_BIND_CAT3D_ENUM(UP, "padbind_up", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_CAT3D_ENUM(DOWN, "padbind_down", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_CAT3D_ENUM(LEFT, "padbind_left", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_CAT3D_ENUM(RIGHT, "padbind_right", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_CAT3D_ENUM(FIRE, "padbind_fire", BE_ST_CTRL_BUT_LSHOULDER)
-	DEF_CTRL_BIND_CAT3D_ENUM(STRAFE, "padbind_strafe", BE_ST_CTRL_BUT_B)
-	DEF_CTRL_BIND_CAT3D_ENUM(DRINK, "padbind_drink", BE_ST_CTRL_BUT_A)
-	DEF_CTRL_BIND_CAT3D_ENUM(BOLT, "padbind_bolt", BE_ST_CTRL_BUT_X)
-	DEF_CTRL_BIND_CAT3D_ENUM(NUKE, "padbind_nuke", BE_ST_CTRL_BUT_Y)
-	DEF_CTRL_BIND_CAT3D_ENUM(FASTTURN, "padbind_fastturn", BE_ST_CTRL_BUT_RSHOULDER)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(UP, "up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(DOWN, "down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(LEFT, "left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(RIGHT, "right", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(FIRE, "fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(STRAFE, "strafe", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(DRINK, "drink", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(BOLT, "bolt", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(NUKE, "nuke", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(FASTTURN, "fastturn", BE_ST_CTRL_BUT_RSHOULDER)
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	DEF_CTRL_BIND_CAT3D_ENUM(SCROLLS, "padbind_scrolls", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
+	DEF_CTRL_BINDS_CAT3D_ENUMS(SCROLLS, "scrolls", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
 #endif
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-	DEF_CTRL_BIND_CAT3D_ENUM(FUNCKEYS, "padbind_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_BINDS_CAT3D_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 #endif
-	DEF_CTRL_BIND_CAT3D_ENUM(DEBUGKEYS, "padbind_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+	DEF_CTRL_BINDS_CAT3D_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 
@@ -228,23 +232,23 @@ static BE_ST_CFG_Setting_T g_be_st_wolf3d_settings[] = {
 	DEF_BOOL(wolf3d.analogMotion, "analogmotion", false)
 	DEF_BOOL(wolf3d.novert, "novert", false)
 	// FIXME: HACK (extra 2 are for triggers)
-	DEF_CTRL_BIND_WOLF3D_ENUM(UP, "padbind_up", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_WOLF3D_ENUM(DOWN, "padbind_down", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_WOLF3D_ENUM(LEFT, "padbind_left", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_WOLF3D_ENUM(RIGHT, "padbind_right", BE_ST_CTRL_BUT_MAX+2)
-	DEF_CTRL_BIND_WOLF3D_ENUM(FIRE, "padbind_fire", BE_ST_CTRL_BUT_LSHOULDER)
-	DEF_CTRL_BIND_WOLF3D_ENUM(STRAFE, "padbind_strafe", BE_ST_CTRL_BUT_B)
-	DEF_CTRL_BIND_WOLF3D_ENUM(USE, "padbind_use", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
-	DEF_CTRL_BIND_WOLF3D_ENUM(RUN, "padbind_run", BE_ST_CTRL_BUT_RSHOULDER)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON1, "padbind_weapon1", BE_ST_CTRL_BUT_DPAD_DOWN)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON2, "padbind_weapon2", BE_ST_CTRL_BUT_DPAD_RIGHT)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON3, "padbind_weapon3", BE_ST_CTRL_BUT_DPAD_LEFT)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON4, "padbind_weapon4", BE_ST_CTRL_BUT_DPAD_UP)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON5, "padbind_weapon5", BE_ST_CTRL_BUT_X)
-	DEF_CTRL_BIND_WOLF3D_ENUM(WEAPON6, "padbind_weapon6", BE_ST_CTRL_BUT_Y)
-	DEF_CTRL_BIND_WOLF3D_ENUM(MAP, "padbind_map", BE_ST_CTRL_BUT_A)
-	DEF_CTRL_BIND_WOLF3D_ENUM(FUNCKEYS, "padbind_funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
-	DEF_CTRL_BIND_WOLF3D_ENUM(DEBUGKEYS, "padbind_debugkeys", BE_ST_CTRL_BUT_LSTICK)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(UP, "up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(DOWN, "down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(LEFT, "left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(RIGHT, "right", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(FIRE, "fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(STRAFE, "strafe", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(USE, "use", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(RUN, "run", BE_ST_CTRL_BUT_RSHOULDER)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(WEAPON1, "weapon1", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(WEAPON2, "weapon2", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(WEAPON3, "weapon3", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(WEAPON4, "weapon4", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(WEAPON5, "weapon5", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(WEAPON6, "weapon6", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(MAP, "map", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_BINDS_WOLF3D_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 

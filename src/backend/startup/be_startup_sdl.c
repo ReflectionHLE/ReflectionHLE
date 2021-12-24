@@ -34,6 +34,7 @@
 #include "../events/be_events_sdl.h"
 #include "../input/be_input.h"
 #include "../input/be_input_controller_mappings.h"
+#include "../input/be_input_keytables.h"
 #include "../input/be_input_sdl.h"
 #include "../video/be_video_ui.h"
 #include "be_cross.h"
@@ -75,6 +76,9 @@ void BE_ST_InitCommon(void)
 
 	// MUST be called BEFORE parsing config (of course!)
 	BE_Cross_PrepareAppPaths();
+
+	// Also MUST be called before parsing binds from config
+	BEL_ST_InitKeyMap();
 
 	BEL_ST_ParseConfigFiles();
 	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE any SDL_CONTROLLERDEVICEADDED event should arrive (so e.g., before SDL_PollEvent).
