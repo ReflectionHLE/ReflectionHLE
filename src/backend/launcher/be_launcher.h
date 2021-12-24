@@ -84,9 +84,9 @@ extern BEMenu g_beMainMenu,
               g_beSelectDirectoryFoundGameMenu, g_beSelectDirectoryNoGameFoundMenu,
               g_beSettingsMenu, g_beVideoSettingsMenu, g_beSoundSettingsMenu,
               g_beInputSettingsMenu, g_beDeviceVolumesMenu,
-              g_beKDreamsSettingsMenu, g_beKDreamsControllerSettingsMenu,
-              g_beCat3DSettingsMenu, g_beCat3DControllerSettingsMenu,
-              g_beWolf3DSettingsMenu, g_beWolf3DControllerSettingsMenu,
+              g_beKDreamsSettingsMenu, g_beKDreamsPadBindsMenu,
+              g_beCat3DSettingsMenu, g_beCat3DPadBindsMenu,
+              g_beWolf3DSettingsMenu, g_beWolf3DPadBindsMenu,
               g_beQuitConfirmMenu;
 
 extern bool g_be_launcher_wasAnySettingChanged;

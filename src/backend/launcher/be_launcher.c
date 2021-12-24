@@ -1032,13 +1032,13 @@ static BEMenu *g_beMenusToPrepare[] = {
 	&g_beSettingsMenu, &g_beVideoSettingsMenu, &g_beSoundSettingsMenu,
 	&g_beInputSettingsMenu, &g_beDeviceVolumesMenu,
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	&g_beKDreamsSettingsMenu, &g_beKDreamsControllerSettingsMenu,
+	&g_beKDreamsSettingsMenu, &g_beKDreamsPadBindsMenu,
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	&g_beCat3DSettingsMenu, &g_beCat3DControllerSettingsMenu,
+	&g_beCat3DSettingsMenu, &g_beCat3DPadBindsMenu,
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	&g_beWolf3DControllerSettingsMenu, &g_beWolf3DSettingsMenu,
+	&g_beWolf3DPadBindsMenu, &g_beWolf3DSettingsMenu,
 #endif
 	&g_beQuitConfirmMenu
 };
