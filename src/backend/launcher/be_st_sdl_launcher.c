@@ -736,7 +736,7 @@ BEMenu g_beCat3DSettingsMenu = {
 BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Up, "Action - Move forward")
 BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Down, "Action - Move backward")
 BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Left, "Action - Turn left")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Right, "Action - Turn right)")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Right, "Action - Turn right")
 BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Fire, "Action - Fire")
 BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Strafe, "Action - Strafe")
 BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Drink, "Action - Drink")
