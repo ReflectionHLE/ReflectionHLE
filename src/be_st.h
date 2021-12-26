@@ -95,6 +95,9 @@ void BE_ST_ExitWithErrorMsg(const char *msg);
 
 
 /*** Alternative controller schemes ***/
+
+enum { BE_MAX_KEY_ID = 250 }; // A bound on host key ids
+
 // The game controller layout, based on details given by the SDL_GameController
 // API (initially derived from the Xbox 360 controller layout).
 typedef enum {
@@ -188,6 +191,8 @@ typedef struct BE_ST_ControllerMapping {
 	BE_ST_OnscreenTouchControl *onScreenTouchControls;
 	BE_ST_TouchControlSingleMap *touchMappings;
 
+	// FIXME: Consider migrating this to a list
+	BE_ST_ControllerSingleMap keys[BE_MAX_KEY_ID];
 	BE_ST_ControllerSingleMap buttons[BE_ST_CTRL_BUT_MAX];
 	BE_ST_ControllerSingleMap axes[BE_ST_CTRL_AXIS_MAX][2];
 	bool showUi;

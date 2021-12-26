@@ -34,6 +34,7 @@ extern uint32_t g_sdlLastPollEventsTime;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 
 /*** These represent button states, although a call to BEL_ST_AltControlScheme_CleanUp zeros these out ***/
+extern bool g_sdlKeyboardKeysStates[BE_MAX_KEY_ID];
 extern bool g_sdlControllersButtonsStates[BE_ST_CTRL_BUT_MAX];
 // We may optionally use analog axes as buttons (e.g., using stick as arrow keys, triggers as buttons)
 extern bool g_sdlControllersAxesStates[BE_ST_CTRL_AXIS_MAX][2];

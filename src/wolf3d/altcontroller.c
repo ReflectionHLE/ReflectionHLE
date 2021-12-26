@@ -195,6 +195,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 	g_ingame_altcontrol_mapping_gameplay_onscreentouchcontrols,
 	g_ingame_altcontrol_mapping_gameplay_touchmappings,
 	{
+	},
+	{
 		{0},
 		{0},
 		{0},
@@ -222,6 +224,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_weapons = {
 	{&g_ingame_altcontrol_mapping_gameplay, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
 	NULL,
 	NULL,
+	{
+	},
 	{
 		// Face buttons
 		{0},
@@ -277,6 +281,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help = {
 	g_ingame_altcontrol_mapping_help_onscreentouchcontrols,
 	g_ingame_altcontrol_mapping_help_touchmappings,
 	{
+	},
+	{
 		// Face buttons
 		{0},
 		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -307,6 +313,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys = {
 	NULL,
 	NULL,
 	{
+	},
+	{
 		// Face buttons
 		{NULL, BE_ST_SC_F7, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_F8, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -335,6 +343,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback = {
 	{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	NULL,
 	NULL,
+	{
+	},
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -404,6 +414,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu = {
 	g_ingame_altcontrol_mapping_menu_onscreentouchcontrols,
 	g_ingame_altcontrol_mapping_menu_touchmappings,
 	{
+	},
+	{
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -433,6 +445,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 	{0},
 	NULL,
 	NULL,
+	{
+	},
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_Y, 0, BE_ST_CTRL_MAP_KEYSCANCODE},

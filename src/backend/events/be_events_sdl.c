@@ -88,8 +88,28 @@ void BE_ST_PollEvents(void)
 			}
 			// Fall-through
 		case SDL_KEYUP:
-			BEL_ST_HandleEmuKeyboardEvent(event.type == SDL_KEYDOWN, false, sdlKeyMappings[event.key.keysym.scancode]);
+		{
+			bool isPressed = (event.type == SDL_KEYDOWN);
+			SDL_Scancode scancode = event.key.keysym.scancode;
+			if (scancode >= SDL_NUM_SCANCODES)
+				break;
+
+			// If there's no mapping, translate scancode and process as usual
+			if (g_sdlControllerMappingActualCurr->keys[scancode].mapClass == BE_ST_CTRL_MAP_NONE)
+			{
+				BEL_ST_HandleEmuKeyboardEvent(isPressed, false, sdlKeyMappings[scancode]);
+				break;
+			}
+
+			// Special handling for text input / debug keys
+			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
+				break; // FIXME: This currently does nothing
+
+			if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[scancode],
+			    g_sdlJoystickAxisMax*isPressed, &g_sdlKeyboardKeysStates[scancode]))
+				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 			break;
+		}
 
 		case SDL_MOUSEBUTTONDOWN:
 			if (event.button.which == SDL_TOUCH_MOUSEID)

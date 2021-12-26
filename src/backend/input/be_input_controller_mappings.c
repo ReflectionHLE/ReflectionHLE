@@ -138,10 +138,11 @@ void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 		}
 		// Simulate binary key/button/other action "releases" and clear button states.
 		// FIXME: Unfortunately this means a mistaken key release event can be sent, but hopefully it's less of an issue than an unexpected key press.
+		for (int key = 0; key < BE_MAX_KEY_ID; ++key)
+			if (g_sdlControllerMappingActualCurr->keys[key].mapClass != BE_ST_CTRL_MAP_NONE)
+				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[key], 0, &g_sdlKeyboardKeysStates[key]);
 		for (int but = 0; but < BE_ST_CTRL_BUT_MAX; ++but)
-		{
 			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], 0, &g_sdlControllersButtonsStates[but]);
-		}
 		// Repeat with analog axes
 		for (int axis = 0; axis < BE_ST_CTRL_AXIS_MAX; ++axis)
 		{
@@ -156,6 +157,7 @@ void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 	if (g_sdlDefaultMappingBinaryState)
 		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
 
+	memset(g_sdlKeyboardKeysStates, 0, sizeof(g_sdlKeyboardKeysStates));
 	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
 	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
 }
