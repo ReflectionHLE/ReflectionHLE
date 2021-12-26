@@ -90,7 +90,10 @@ static void BEL_Launcher_WriteNoVert(BESettingMenuItemPair *p)
 	*p->setting = !(p->menuItem->choice);
 }
 
-// Helper macro for menu item declarations related to binds
+// Helper macros for menu item declarations related to binds
+#define DECLARE_NONKEY_BINDS_MENUITEMS(Game, Suffix) \
+	g_be ## Game ## PadBindsMenuItem_Action_ ## Suffix,
+
 #define DECLARE_BINDS_MENUITEMS(Game, Suffix) \
 	g_be ## Game ## KeyBindsMenuItem_Action_ ## Suffix, \
 	g_be ## Game ## PadBindsMenuItem_Action_ ## Suffix,
@@ -123,8 +126,8 @@ extern BEMenuItem
 	DECLARE_BINDS_MENUITEMS(KDreams, Jump)
 	DECLARE_BINDS_MENUITEMS(KDreams, Throw)
 	DECLARE_BINDS_MENUITEMS(KDreams, Stats)
-	DECLARE_BINDS_MENUITEMS(KDreams, FuncKeys)
-	DECLARE_BINDS_MENUITEMS(KDreams, DebugKeys)
+	DECLARE_NONKEY_BINDS_MENUITEMS(KDreams, FuncKeys)
+	DECLARE_NONKEY_BINDS_MENUITEMS(KDreams, DebugKeys)
 	g_beKDreamsPadBindsMenuItem_LeftStick,
 	g_beKDreamsPadBindsMenuItem_RightStick,
 	g_beCat3DSettingsMenuItem_VertAnalogMotion,
@@ -138,9 +141,9 @@ extern BEMenuItem
 	DECLARE_BINDS_MENUITEMS(Cat3D, Bolt)
 	DECLARE_BINDS_MENUITEMS(Cat3D, Nuke)
 	DECLARE_BINDS_MENUITEMS(Cat3D, FastTurn)
-	DECLARE_BINDS_MENUITEMS(Cat3D, Scrolls)
-	DECLARE_BINDS_MENUITEMS(Cat3D, FuncKeys)
-	DECLARE_BINDS_MENUITEMS(Cat3D, DebugKeys)
+	DECLARE_NONKEY_BINDS_MENUITEMS(Cat3D, Scrolls)
+	DECLARE_NONKEY_BINDS_MENUITEMS(Cat3D, FuncKeys)
+	DECLARE_NONKEY_BINDS_MENUITEMS(Cat3D, DebugKeys)
 	g_beCat3DPadBindsMenuItem_LeftStick,
 	g_beCat3DPadBindsMenuItem_RightStick,
 	g_beCat3DPadBindsMenuItem_AnalogMotion,
@@ -161,8 +164,8 @@ extern BEMenuItem
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Weapon5)
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Weapon6)
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Map)
-	DECLARE_BINDS_MENUITEMS(Wolf3D, FuncKeys)
-	DECLARE_BINDS_MENUITEMS(Wolf3D, DebugKeys)
+	DECLARE_NONKEY_BINDS_MENUITEMS(Wolf3D, FuncKeys)
+	DECLARE_NONKEY_BINDS_MENUITEMS(Wolf3D, DebugKeys)
 	g_beWolf3DPadBindsMenuItem_LeftStick,
 	g_beWolf3DPadBindsMenuItem_RightStick,
 	g_beWolf3DPadBindsMenuItem_AnalogMotion,
@@ -171,13 +174,22 @@ extern BEMenuItem
 	g_beDeviceVolumesMenuItem_DigiVol;
 
 // Helper macros for definitions of pairs related to binds
+#define DEFINE_KDREAMS_NONKEY_BIND_PAIRS(Suffix, SUFFIX) \
+	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## SUFFIX].pad, &g_beKDreamsPadBindsMenuItem_Action_ ## Suffix},
+
 #define DEFINE_KDREAMS_BIND_PAIRS(Suffix, SUFFIX) \
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## SUFFIX].key, &g_beKDreamsKeyBindsMenuItem_Action_ ## Suffix}, \
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## SUFFIX].pad, &g_beKDreamsPadBindsMenuItem_Action_ ## Suffix},
 
+#define DEFINE_CAT3D_NONKEY_BIND_PAIRS(Suffix, SUFFIX) \
+	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## SUFFIX].pad, &g_beCat3DPadBindsMenuItem_Action_ ## Suffix},
+
 #define DEFINE_CAT3D_BIND_PAIRS(Suffix, SUFFIX) \
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## SUFFIX].key, &g_beCat3DKeyBindsMenuItem_Action_ ## Suffix}, \
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## SUFFIX].pad, &g_beCat3DPadBindsMenuItem_Action_ ## Suffix},
+
+#define DEFINE_WOLF3D_NONKEY_BIND_PAIRS(Suffix, SUFFIX) \
+	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## SUFFIX].pad, &g_beWolf3DPadBindsMenuItem_Action_ ## Suffix},
 
 #define DEFINE_WOLF3D_BIND_PAIRS(Suffix, SUFFIX) \
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## SUFFIX].key, &g_beWolf3DKeyBindsMenuItem_Action_ ## Suffix}, \
@@ -230,8 +242,8 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	DEFINE_KDREAMS_BIND_PAIRS(Jump, JUMP)
 	DEFINE_KDREAMS_BIND_PAIRS(Throw, THROW)
 	DEFINE_KDREAMS_BIND_PAIRS(Stats, STATS)
-	DEFINE_KDREAMS_BIND_PAIRS(FuncKeys, FUNCKEYS)
-	DEFINE_KDREAMS_BIND_PAIRS(DebugKeys, DEBUGKEYS)
+	DEFINE_KDREAMS_NONKEY_BIND_PAIRS(FuncKeys, FUNCKEYS)
+	DEFINE_KDREAMS_NONKEY_BIND_PAIRS(DebugKeys, DEBUGKEYS)
 	{&g_refKeenCfg.kdreams.useLeftStick, &g_beKDreamsPadBindsMenuItem_LeftStick},
 	{&g_refKeenCfg.kdreams.useRightStick, &g_beKDreamsPadBindsMenuItem_RightStick},
 #endif
@@ -250,12 +262,12 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	DEFINE_CAT3D_BIND_PAIRS(Nuke, NUKE)
 	DEFINE_CAT3D_BIND_PAIRS(FastTurn, FASTTURN)
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	DEFINE_CAT3D_BIND_PAIRS(Scrolls, SCROLLS)
+	DEFINE_CAT3D_NONKEY_BIND_PAIRS(Scrolls, SCROLLS)
 #endif
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-	DEFINE_CAT3D_BIND_PAIRS(FuncKeys, FUNCKEYS)
+	DEFINE_CAT3D_NONKEY_BIND_PAIRS(FuncKeys, FUNCKEYS)
 #endif
-	DEFINE_CAT3D_BIND_PAIRS(DebugKeys, DEBUGKEYS)
+	DEFINE_CAT3D_NONKEY_BIND_PAIRS(DebugKeys, DEBUGKEYS)
 	{&g_refKeenCfg.cat3d.useLeftStick, &g_beCat3DPadBindsMenuItem_LeftStick},
 	{&g_refKeenCfg.cat3d.useRightStick, &g_beCat3DPadBindsMenuItem_RightStick},
 	{&g_refKeenCfg.cat3d.analogMotion, &g_beCat3DPadBindsMenuItem_AnalogMotion},
@@ -280,8 +292,8 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	DEFINE_WOLF3D_BIND_PAIRS(Weapon5, WEAPON5)
 	DEFINE_WOLF3D_BIND_PAIRS(Weapon6, WEAPON6)
 	DEFINE_WOLF3D_BIND_PAIRS(Map, MAP)
-	DEFINE_WOLF3D_BIND_PAIRS(FuncKeys, FUNCKEYS)
-	DEFINE_WOLF3D_BIND_PAIRS(DebugKeys, DEBUGKEYS)
+	DEFINE_WOLF3D_NONKEY_BIND_PAIRS(FuncKeys, FUNCKEYS)
+	DEFINE_WOLF3D_NONKEY_BIND_PAIRS(DebugKeys, DEBUGKEYS)
 	{&g_refKeenCfg.wolf3d.useLeftStick, &g_beWolf3DPadBindsMenuItem_LeftStick},
 	{&g_refKeenCfg.wolf3d.useRightStick, &g_beWolf3DPadBindsMenuItem_RightStick},
 	{&g_refKeenCfg.wolf3d.analogMotion, &g_beWolf3DPadBindsMenuItem_AnalogMotion},

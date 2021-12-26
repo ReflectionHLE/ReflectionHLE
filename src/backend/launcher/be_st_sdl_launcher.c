@@ -147,8 +147,11 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 #define BEMENUITEM_DEF_DYNAMIC_SELECTION(menuItemName, label, choices, handlerPtr) BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, NULL, label, BE_MENUITEM_TYPE_DYNAMIC_SELECTION)
 #define BEMENUITEM_DEF_STATIC(menuItemName, label) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, NULL, label, BE_MENUITEM_TYPE_STATIC)
 
-// A special case of BEMENUITEM_DEF_DYNAMIC_SELECTION for binds,
-// repeated accross differing kinds of binds for separate submenus
+// Special cases of BEMENUITEM_DEF_DYNAMIC_SELECTION for binds,
+// repeated across differing kinds of binds for separate submenus
+#define BEMENUITEM_DEF_CTRL_NONKEY_BINDS(game, suffix, label) \
+	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_be_padBindsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+
 #define BEMENUITEM_DEF_CTRL_BINDS(game, suffix, label) \
 	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## KeyBindsMenuItem_Action_ ## suffix, label, g_be_st_keyIdToNameMap, &BE_Launcher_Handler_KeyAction) \
 	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_be_padBindsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
@@ -654,8 +657,8 @@ BEMENUITEM_DEF_CTRL_BINDS(KDreams, Right, "Action - Move right")
 BEMENUITEM_DEF_CTRL_BINDS(KDreams, Jump, "Action - Jump")
 BEMENUITEM_DEF_CTRL_BINDS(KDreams, Throw, "Action - Throw")
 BEMENUITEM_DEF_CTRL_BINDS(KDreams, Stats, "Action - Stats")
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, FuncKeys, "Action - Function Keys")
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, DebugKeys, "Action - Debug Keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(KDreams, FuncKeys, "Action - Function Keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(KDreams, DebugKeys, "Action - Debug Keys")
 
 /*** Keen Dreams key binds menu ***/
 
@@ -667,8 +670,8 @@ static BEMenuItem *g_beKDreamsKeyBindsMenuItems[] = {
 	&g_beKDreamsKeyBindsMenuItem_Action_Jump,
 	&g_beKDreamsKeyBindsMenuItem_Action_Throw,
 	&g_beKDreamsKeyBindsMenuItem_Action_Stats,
-	&g_beKDreamsKeyBindsMenuItem_Action_FuncKeys,
-	&g_beKDreamsKeyBindsMenuItem_Action_DebugKeys,
+//	&g_beKDreamsKeyBindsMenuItem_Action_FuncKeys,
+//	&g_beKDreamsKeyBindsMenuItem_Action_DebugKeys,
 	NULL
 };
 
@@ -741,12 +744,12 @@ BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Bolt, "Action - Bolt/Zapper")
 BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Nuke, "Action - Nuke/Xterminator")
 BEMENUITEM_DEF_CTRL_BINDS(Cat3D, FastTurn, "Action - Fast turn")
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Scrolls, "Action - Scrolls")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, Scrolls, "Action - Scrolls")
 #endif
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, FuncKeys, "Action - Function keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, FuncKeys, "Action - Function keys")
 #endif
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, DebugKeys, "Action - Debug keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, DebugKeys, "Action - Debug keys")
 
 /*** Catacomb 3-D key binds menu ***/
 
@@ -762,12 +765,12 @@ static BEMenuItem *g_beCat3DKeyBindsMenuItems[] = {
 	&g_beCat3DKeyBindsMenuItem_Action_Nuke,
 	&g_beCat3DKeyBindsMenuItem_Action_FastTurn,
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-	&g_beCat3DKeyBindsMenuItem_Action_Scrolls,
+//	&g_beCat3DKeyBindsMenuItem_Action_Scrolls,
 #endif
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-	&g_beCat3DKeyBindsMenuItem_Action_FuncKeys,
+//	&g_beCat3DKeyBindsMenuItem_Action_FuncKeys,
 #endif
-	&g_beCat3DKeyBindsMenuItem_Action_DebugKeys,
+//	&g_beCat3DKeyBindsMenuItem_Action_DebugKeys,
 	NULL
 };
 
@@ -858,8 +861,8 @@ BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon4, "Action - Weapon 4")
 BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon5, "Action - Weapon 5")
 BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon6, "Action - Weapon 6")
 BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Map, "Action - Automap (Super 3-D Noah's Ark)")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, FuncKeys, "Action - Function keys")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, DebugKeys, "Action - Debug keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Wolf3D, FuncKeys, "Action - Function keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Wolf3D, DebugKeys, "Action - Debug keys")
 
 /*** Wolfenstein 3D key binds menu ***/
 
@@ -879,8 +882,8 @@ static BEMenuItem *g_beWolf3DKeyBindsMenuItems[] = {
 	&g_beWolf3DKeyBindsMenuItem_Action_Weapon5,
 	&g_beWolf3DKeyBindsMenuItem_Action_Weapon6,
 	&g_beWolf3DKeyBindsMenuItem_Action_Map,
-	&g_beWolf3DKeyBindsMenuItem_Action_FuncKeys,
-	&g_beWolf3DKeyBindsMenuItem_Action_DebugKeys,
+//	&g_beWolf3DKeyBindsMenuItem_Action_FuncKeys,
+//	&g_beWolf3DKeyBindsMenuItem_Action_DebugKeys,
 	NULL
 };
 
