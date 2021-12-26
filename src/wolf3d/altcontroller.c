@@ -472,6 +472,12 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 	true
 };
 
+static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
+{
+	if (actionmapping > 0)
+		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping] = *inputmap;
+}
+
 static void CheckButtonMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_BUT_MAX))
@@ -480,24 +486,28 @@ static void CheckButtonMapping(int actionmapping, const BE_ST_ControllerSingleMa
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_BUT_MAX][1] = *inputmap;
 }
 
+static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
+{
+	CheckKeyMapping(g_refKeenCfg.wolf3d.binds[bind].key, inputmap);
+	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[bind].pad, inputmap);
+}
+
 void RefKeen_PrepareAltControllerScheme(void)
 {
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FIRE].pad, &g_ingame_but_fire_map);
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_STRAFE].pad, &g_ingame_but_strafe_map);
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_RUN].pad, &g_ingame_but_run_map);
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_USE].pad, &g_ingame_but_use_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_FIRE, &g_ingame_but_fire_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_STRAFE, &g_ingame_but_strafe_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_RUN, &g_ingame_but_run_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_USE, &g_ingame_but_use_map);
 
 	for (int i = 0; i < NUMBUTTONS - bt_readyknife; ++i)
-		CheckButtonMapping(
-			g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_WEAPON1 + i].pad,
-			&g_ingame_but_weapon_map[i]);
+		CheckMappings(BE_ST_CTRL_BIND_WOLF3D_WEAPON1 + i, &g_ingame_but_weapon_map[i]);
 
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_UP].pad, &g_ingame_but_up_map);
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DOWN].pad, &g_ingame_but_down_map);
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_LEFT].pad, &g_ingame_but_left_map);
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_RIGHT].pad, &g_ingame_but_right_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_UP, &g_ingame_but_up_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_DOWN, &g_ingame_but_down_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_LEFT, &g_ingame_but_left_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_RIGHT, &g_ingame_but_right_map);
 #ifdef GAMEVER_NOAH3D
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_MAP].pad, &g_ingame_but_map_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_MAP, &g_ingame_but_map_map);
 #endif
 	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS].pad, &g_ingame_but_func_keys_map);
 	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS].pad, &g_ingame_but_debug_keys_map);
