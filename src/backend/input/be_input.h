@@ -37,6 +37,7 @@ typedef struct {
 	// These represent button states, although a call
 	// to BEL_ST_AltControlScheme_CleanUp zeros these out
 	bool keys[BE_MAX_KEY_ID];
+	bool mbuttons[BE_ST_CTRL_BUT_MAX];
 	bool pbuttons[BE_ST_CTRL_BUT_MAX];
 	// We may opstionally use analog axes as buttons
 	// (e.g., using stick as arrow keys, triggers as buttons)

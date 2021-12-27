@@ -203,6 +203,7 @@ typedef struct BE_ST_ControllerMapping {
 
 	// FIXME: Consider migrating this to a list
 	BE_ST_ControllerSingleMap keys[BE_MAX_KEY_ID];
+	BE_ST_ControllerSingleMap mbuttons[BE_ST_CTRL_MOUSE_BUT_MAX];
 	BE_ST_ControllerSingleMap pbuttons[BE_ST_CTRL_BUT_MAX];
 	BE_ST_ControllerSingleMap paxes[BE_ST_CTRL_AXIS_MAX][2];
 	bool showUi;

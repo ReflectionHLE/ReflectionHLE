@@ -160,6 +160,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 	{
 	},
 	{
+	},
+	{
 		{0},
 		{0},
 		{0},
@@ -187,6 +189,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys = {
 	{&g_ingame_altcontrol_mapping_gameplay, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
 	NULL,
 	NULL,
+	{
+	},
 	{
 	},
 	{
@@ -223,6 +227,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_notenoughmemorytostart = {
 	{
 	},
 	{
+	},
+	{
 		// Face buttons
 		{NULL, BE_ST_SC_Q, 0, BE_ST_CTRL_MAP_KEYSCANCODE}, // Quit
 		{NULL, BE_ST_SC_C, 0, BE_ST_CTRL_MAP_KEYSCANCODE}, // Continue
@@ -251,6 +257,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback = {
 	{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	NULL,
 	NULL,
+	{
+	},
 	{
 	},
 	{
@@ -317,6 +325,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_simpledialog = {
 	{
 	},
 	{
+	},
+	{
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -361,6 +371,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_demoloop = {
 	{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	g_ingame_altcontrol_mapping_demoloop_onscreentouchcontrols,
 	g_ingame_altcontrol_mapping_demoloop_touchmappings,
+	{
+	},
 	{
 	},
 	{
@@ -448,6 +460,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu = {
 	{
 	},
 	{
+	},
+	{
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -504,6 +518,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_help = {
 	{0},
 	g_ingame_altcontrol_mapping_menu_help_onscreentouchcontrols,
 	g_ingame_altcontrol_mapping_menu_help_touchmappings,
+	{
+	},
 	{
 	},
 	{

@@ -236,6 +236,14 @@ void BEL_ST_ConditionallyShowAltInputPointer(void)
 	{
 		// Better reset these when on-screen controls usable by the mouse are shown/hidden.
 		// Since touchInputToggle differs from TOUCHINPUT_FORCED, this EXCLUDES the touch controls.
+
+		// First simulate "releases" of binded buttons
+		for (int but = 0; but < BE_ST_CTRL_MOUSE_BUT_MAX; ++but)
+		{
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->mbuttons[but], 0, &g_sdlInputbindStates.mbuttons[but]);
+			g_sdlInputbindStates.mbuttons[but] = 0;
+		}
+		// Now change these
 		g_sdlMouseButtonsStates[0] = g_sdlMouseButtonsStates[1] = g_sdlMouseButtonsStates[2] = 0;
 		g_sdlEmuMouseButtonsState = 0;
 	}

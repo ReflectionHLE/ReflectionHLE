@@ -137,6 +137,15 @@ void BE_ST_PollEvents(void)
 				if (BEL_ST_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
 					break;
 
+			if (g_sdlControllerMappingActualCurr->mbuttons[button].mapClass != BE_ST_CTRL_MAP_NONE)
+			{
+				if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->mbuttons[button],
+				    g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.mbuttons[button]))
+					BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
+				break;
+			}
+
+			// If there's no mapping, translate button and process as usual
 			if (event.button.button == SDL_BUTTON_LEFT)
 				bit = 1;
 			else if (event.button.button == SDL_BUTTON_RIGHT)

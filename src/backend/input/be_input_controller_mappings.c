@@ -141,6 +141,8 @@ void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 		for (int key = 0; key < BE_MAX_KEY_ID; ++key)
 			if (g_sdlControllerMappingActualCurr->keys[key].mapClass != BE_ST_CTRL_MAP_NONE)
 				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[key], 0, &g_sdlInputbindStates.keys[key]);
+		for (int but = 0; but < BE_ST_CTRL_MOUSE_BUT_MAX; ++but)
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->mbuttons[but], 0, &g_sdlInputbindStates.mbuttons[but]);
 		for (int but = 0; but < BE_ST_CTRL_BUT_MAX; ++but)
 			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->pbuttons[but], 0, &g_sdlInputbindStates.pbuttons[but]);
 		// Repeat with analog axes
