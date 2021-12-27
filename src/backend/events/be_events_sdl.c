@@ -115,15 +115,15 @@ void BE_ST_PollEvents(void)
 		case SDL_MOUSEBUTTONUP:
 		{
 			bool isPressed = (event.type == SDL_MOUSEBUTTONDOWN);
-			int bit = 0;
-			if (event.button.which == SDL_TOUCH_MOUSEID)
+			if ((event.button.which == SDL_TOUCH_MOUSEID) || (event.button.button < 1))
 				break;
 
-			if ((event.button.button >= 1) && (event.button.button <= 3))
+			int bit = 0, button = event.button.button - 1;
+			if (button < 3)
 			{
-				if (g_sdlMouseButtonsStates[event.button.button-1] == isPressed)
+				if (g_sdlMouseButtonsStates[button] == isPressed)
 					break; // Ignore (used in case pointer is shown/hidden)
-				g_sdlMouseButtonsStates[event.button.button-1] = isPressed;
+				g_sdlMouseButtonsStates[button] = isPressed;
 			}
 
 			if (isPressed)
