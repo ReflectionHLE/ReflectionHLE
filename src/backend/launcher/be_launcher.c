@@ -1032,13 +1032,16 @@ static BEMenu *g_beMenusToPrepare[] = {
 	&g_beSettingsMenu, &g_beVideoSettingsMenu, &g_beSoundSettingsMenu,
 	&g_beInputSettingsMenu, &g_beDeviceVolumesMenu,
 #ifdef REFKEEN_HAS_VER_KDREAMS
-	&g_beKDreamsSettingsMenu, &g_beKDreamsKeyBindsMenu, &g_beKDreamsPadBindsMenu,
+	&g_beKDreamsSettingsMenu, &g_beKDreamsKeyBindsMenu,
+	&g_beKDreamsMouseBindsMenu,&g_beKDreamsPadBindsMenu,
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-	&g_beCat3DSettingsMenu, &g_beCat3DKeyBindsMenu, &g_beCat3DPadBindsMenu,
+	&g_beCat3DSettingsMenu, &g_beCat3DKeyBindsMenu,
+	&g_beCat3DMouseBindsMenu, &g_beCat3DPadBindsMenu,
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-	&g_beWolf3DSettingsMenu, &g_beWolf3DKeyBindsMenu, &g_beWolf3DPadBindsMenu,
+	&g_beWolf3DSettingsMenu, &g_beWolf3DKeyBindsMenu,
+	&g_beWolf3DMouseBindsMenu, &g_beWolf3DPadBindsMenu,
 #endif
 	&g_beQuitConfirmMenu
 };
@@ -1454,6 +1457,11 @@ static void BEL_Launcher_PrepareForGettingUserBind(BEMenuItem *menuItem, bool is
 void BE_Launcher_Handler_KeyAction(BEMenuItem **menuItemP)
 {
 	BEL_Launcher_PrepareForGettingUserBind(*menuItemP, false);
+}
+
+void BE_Launcher_Handler_MouseAction(BEMenuItem **menuItemP)
+{
+	// TODO implement
 }
 
 void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP)

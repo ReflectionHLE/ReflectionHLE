@@ -150,11 +150,12 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 // Special cases of BEMENUITEM_DEF_DYNAMIC_SELECTION for binds,
 // repeated across differing kinds of binds for separate submenus
 #define BEMENUITEM_DEF_CTRL_NONKEY_BINDS(game, suffix, label) \
+	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## MouseBindsMenuItem_Action_ ## suffix, label, g_be_st_mouseFeatureIdToNameMap, &BE_Launcher_Handler_MouseAction) \
 	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_be_padBindsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
 
 #define BEMENUITEM_DEF_CTRL_BINDS(game, suffix, label) \
 	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## KeyBindsMenuItem_Action_ ## suffix, label, g_be_st_keyIdToNameMap, &BE_Launcher_Handler_KeyAction) \
-	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_be_padBindsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+	BEMENUITEM_DEF_CTRL_NONKEY_BINDS(game, suffix, label)
 
 // A little hack - Store a copy of the label string literal that can be modified
 #define BEMENUITEM_DEF_GENERIC(menuItemName, handlerPtr, choices, menuPtr, label, type) \
@@ -627,6 +628,7 @@ static const char *g_be_padBindsChoices_actionButton[] = {"A", "B", "X", "Y", NU
 /*** Keen Dreams settings menu ***/
 
 BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beKDreamsKeyBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_MouseBinds, "Mouse button overrides", &g_beKDreamsMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_PadBinds, "Modern controller binds", &g_beKDreamsPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beKDreamsSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion*", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_STATIC(g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
@@ -635,6 +637,7 @@ BEMENUITEM_DEF_STATIC(g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
 
 static BEMenuItem *g_beKDreamsSettingsMenuItems[] = {
 	&g_beKDreamsSettingsMenuItem_KeyBinds,
+	&g_beKDreamsSettingsMenuItem_MouseBinds,
 	&g_beKDreamsSettingsMenuItem_PadBinds,
 	&g_beKDreamsSettingsMenuItem_AbsMouseMotion,
 	&g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
@@ -682,6 +685,28 @@ BEMenu g_beKDreamsKeyBindsMenu = {
 	// Ignore the rest
 };
 
+/*** Keen Dreams mouse binds menu ***/
+
+static BEMenuItem *g_beKDreamsMouseBindsMenuItems[] = {
+	&g_beKDreamsMouseBindsMenuItem_Action_Up,
+	&g_beKDreamsMouseBindsMenuItem_Action_Down,
+	&g_beKDreamsMouseBindsMenuItem_Action_Left,
+	&g_beKDreamsMouseBindsMenuItem_Action_Right,
+	&g_beKDreamsMouseBindsMenuItem_Action_Jump,
+	&g_beKDreamsMouseBindsMenuItem_Action_Throw,
+	&g_beKDreamsMouseBindsMenuItem_Action_Stats,
+	&g_beKDreamsMouseBindsMenuItem_Action_FuncKeys,
+	&g_beKDreamsMouseBindsMenuItem_Action_DebugKeys,
+	NULL
+};
+
+BEMenu g_beKDreamsMouseBindsMenu = {
+	"Mouse button overrides",
+	&g_beKDreamsSettingsMenu,
+	g_beKDreamsMouseBindsMenuItems,
+	// Ignore the rest
+};
+
 /*** Keen Dreams pad binds menu ***/
 
 BEMENUITEM_DEF_SELECTION(g_beKDreamsPadBindsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
@@ -714,11 +739,13 @@ BEMenu g_beKDreamsPadBindsMenu = {
 /*** Catacomb 3-D settings menu ***/
 
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beCat3DKeyBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_MouseBinds, "Mouse button overrides", &g_beCat3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beCat3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beCat3DSettingsMenuItems[] = {
 	&g_beCat3DSettingsMenuItem_KeyBinds,
+	&g_beCat3DSettingsMenuItem_MouseBinds,
 	&g_beCat3DSettingsMenuItem_PadBinds,
 	&g_beCat3DSettingsMenuItem_VertAnalogMotion,
 	NULL
@@ -782,6 +809,37 @@ BEMenu g_beCat3DKeyBindsMenu = {
 	// Ignore the rest
 };
 
+/*** Catacomb 3-D mouse binds menu ***/
+
+static BEMenuItem *g_beCat3DMouseBindsMenuItems[] = {
+	&g_beCat3DMouseBindsMenuItem_Action_Up,
+	&g_beCat3DMouseBindsMenuItem_Action_Down,
+	&g_beCat3DMouseBindsMenuItem_Action_Left,
+	&g_beCat3DMouseBindsMenuItem_Action_Right,
+	&g_beCat3DMouseBindsMenuItem_Action_Fire,
+	&g_beCat3DMouseBindsMenuItem_Action_Strafe,
+	&g_beCat3DMouseBindsMenuItem_Action_Drink,
+	&g_beCat3DMouseBindsMenuItem_Action_Bolt,
+	&g_beCat3DMouseBindsMenuItem_Action_Nuke,
+	&g_beCat3DMouseBindsMenuItem_Action_FastTurn,
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
+	&g_beCat3DMouseBindsMenuItem_Action_Scrolls,
+#endif
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
+	&g_beCat3DMouseBindsMenuItem_Action_FuncKeys,
+#endif
+	&g_beCat3DMouseBindsMenuItem_Action_DebugKeys,
+	NULL
+};
+
+
+BEMenu g_beCat3DMouseBindsMenu = {
+	"Mouse button overrides",
+	&g_beCat3DSettingsMenu,
+	g_beCat3DMouseBindsMenuItems,
+	// Ignore the rest
+};
+
 /*** Catacomb 3-D pad binds menu ***/
 
 BEMENUITEM_DEF_SELECTION(g_beCat3DPadBindsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
@@ -825,12 +883,14 @@ BEMenu g_beCat3DPadBindsMenu = {
 /*** Wolfenstein 3D settings menu ***/
 
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beWolf3DKeyBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_MouseBinds, "Mouse button overrides", &g_beWolf3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beWolf3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
 	&g_beWolf3DSettingsMenuItem_KeyBinds,
+	&g_beWolf3DSettingsMenuItem_MouseBinds,
 	&g_beWolf3DSettingsMenuItem_PadBinds,
 	&g_beWolf3DSettingsMenuItem_LowFPS,
 	&g_beWolf3DSettingsMenuItem_VertAnalogMotion,
@@ -891,6 +951,36 @@ BEMenu g_beWolf3DKeyBindsMenu = {
 	"Keyboard overrides",
 	&g_beWolf3DSettingsMenu,
 	g_beWolf3DKeyBindsMenuItems,
+	// Ignore the rest
+};
+
+/*** Wolfenstein 3D mouse binds menu ***/
+
+static BEMenuItem *g_beWolf3DMouseBindsMenuItems[] = {
+	&g_beWolf3DMouseBindsMenuItem_Action_Up,
+	&g_beWolf3DMouseBindsMenuItem_Action_Down,
+	&g_beWolf3DMouseBindsMenuItem_Action_Left,
+	&g_beWolf3DMouseBindsMenuItem_Action_Right,
+	&g_beWolf3DMouseBindsMenuItem_Action_Fire,
+	&g_beWolf3DMouseBindsMenuItem_Action_Strafe,
+	&g_beWolf3DMouseBindsMenuItem_Action_Use,
+	&g_beWolf3DMouseBindsMenuItem_Action_Run,
+	&g_beWolf3DMouseBindsMenuItem_Action_Weapon1,
+	&g_beWolf3DMouseBindsMenuItem_Action_Weapon2,
+	&g_beWolf3DMouseBindsMenuItem_Action_Weapon3,
+	&g_beWolf3DMouseBindsMenuItem_Action_Weapon4,
+	&g_beWolf3DMouseBindsMenuItem_Action_Weapon5,
+	&g_beWolf3DMouseBindsMenuItem_Action_Weapon6,
+	&g_beWolf3DMouseBindsMenuItem_Action_Map,
+	&g_beWolf3DMouseBindsMenuItem_Action_FuncKeys,
+	&g_beWolf3DMouseBindsMenuItem_Action_DebugKeys,
+	NULL
+};
+
+BEMenu g_beWolf3DMouseBindsMenu = {
+	"Moust button overrides",
+	&g_beWolf3DSettingsMenu,
+	g_beWolf3DMouseBindsMenuItems,
 	// Ignore the rest
 };
 

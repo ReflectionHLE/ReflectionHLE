@@ -84,9 +84,12 @@ extern BEMenu g_beMainMenu,
               g_beSelectDirectoryFoundGameMenu, g_beSelectDirectoryNoGameFoundMenu,
               g_beSettingsMenu, g_beVideoSettingsMenu, g_beSoundSettingsMenu,
               g_beInputSettingsMenu, g_beDeviceVolumesMenu,
-              g_beKDreamsSettingsMenu, g_beKDreamsKeyBindsMenu, g_beKDreamsPadBindsMenu,
-              g_beCat3DSettingsMenu, g_beCat3DKeyBindsMenu, g_beCat3DPadBindsMenu,
-              g_beWolf3DSettingsMenu, g_beWolf3DKeyBindsMenu, g_beWolf3DPadBindsMenu,
+              g_beKDreamsSettingsMenu, g_beKDreamsKeyBindsMenu,
+              g_beKDreamsMouseBindsMenu, g_beKDreamsPadBindsMenu,
+              g_beCat3DSettingsMenu, g_beCat3DKeyBindsMenu,
+              g_beCat3DMouseBindsMenu, g_beCat3DPadBindsMenu,
+              g_beWolf3DSettingsMenu, g_beWolf3DKeyBindsMenu,
+              g_beWolf3DMouseBindsMenu, g_beWolf3DPadBindsMenu,
               g_beQuitConfirmMenu;
 
 extern bool g_be_launcher_wasAnySettingChanged;
@@ -121,6 +124,7 @@ void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_DirectorySelectionGoPrev(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_KeyAction(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_MouseAction(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP);
 
 void BE_Launcher_ArgumentsEditing_MoveCursorToEdge(bool moveForward);
