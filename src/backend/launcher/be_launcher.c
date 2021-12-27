@@ -833,6 +833,9 @@ void BE_Launcher_HandleInput_PointerRelease(int xpos, int ypos, uint32_t ticksin
 {
 	g_be_launcher_currInputStrSearchPtr = g_be_launcher_currInputStrSearch;
 
+	if (!g_be_launcher_pointer_in_use)
+		return;
+
 	g_be_launcher_pointer_in_use = false;
 	//g_be_launcher_lastpointery = ypos;
 
@@ -1569,6 +1572,9 @@ void BE_Launcher_ArgumentsEditing_HandleInput_PointerSelect(int xpos, int ypos)
 
 bool BE_Launcher_ArgumentsEditing_HandleInput_PointerRelease(int xpos, int ypos)
 {
+	if (!g_be_launcher_pointer_in_use)
+		return false;
+
 	g_be_launcher_pointer_in_use = false;
 
 	if (g_be_launcher_back_button_pressed)
