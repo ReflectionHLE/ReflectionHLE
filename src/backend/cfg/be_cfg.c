@@ -102,25 +102,28 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 	DEF_ENUM(setting, key, g_be_setting_bool_vals, def)
 
 #define DEF_CTRL_NONKEY_BINDS_KDREAMS_ENUMS(i, k, def) \
+	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, BE_ST_CTRL_MOUSE_BUT_INVALID) \
 	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_CTRL_BINDS_KDREAMS_ENUMS(i, k, def) \
 	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
-	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_CTRL_NONKEY_BINDS_KDREAMS_ENUMS(i, k, def)
 
 #define DEF_CTRL_NONKEY_BINDS_CAT3D_ENUMS(i, k, def) \
+	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, def) \
 	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_CTRL_BINDS_CAT3D_ENUMS(i, k, def) \
 	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
-	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_CTRL_NONKEY_BINDS_CAT3D_ENUMS(i, k, def)
 
 #define DEF_CTRL_NONKEY_BINDS_WOLF3D_ENUMS(i, k, def) \
+	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, def) \
 	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_CTRL_BINDS_WOLF3D_ENUMS(i, k, def) \
 	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
-	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_CTRL_NONKEY_BINDS_WOLF3D_ENUMS(i, k, def)
 
 #define DEF_HIDDEN_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, &g_refKeenCfg.setting, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
