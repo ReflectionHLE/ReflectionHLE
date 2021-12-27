@@ -112,49 +112,45 @@ void BE_ST_PollEvents(void)
 		}
 
 		case SDL_MOUSEBUTTONDOWN:
-			if (event.button.which == SDL_TOUCH_MOUSEID)
-				break;
-
-			if ((event.button.button >= 1) && (event.button.button <= 3))
-			{
-				if (g_sdlMouseButtonsStates[event.button.button-1])
-					break; // Ignore (used in case pointer is shown/hidden)
-				g_sdlMouseButtonsStates[event.button.button-1] = true;
-			}
-
-			BEL_ST_CheckForHidingTouchUI();
-
-			if (BEL_ST_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
-				break;
-
-			if (event.button.button == SDL_BUTTON_LEFT)
-				g_sdlEmuMouseButtonsState |= 1;
-			else if (event.button.button == SDL_BUTTON_RIGHT)
-				g_sdlEmuMouseButtonsState |= 2;
-			else if (event.button.button == SDL_BUTTON_MIDDLE)
-				g_sdlEmuMouseButtonsState |= 4;
-			break;
 		case SDL_MOUSEBUTTONUP:
+		{
+			bool isPressed = (event.type == SDL_MOUSEBUTTONDOWN);
+			int bit = 0;
 			if (event.button.which == SDL_TOUCH_MOUSEID)
 				break;
 
 			if ((event.button.button >= 1) && (event.button.button <= 3))
 			{
-				if (!g_sdlMouseButtonsStates[event.button.button-1])
+				if (g_sdlMouseButtonsStates[event.button.button-1] == isPressed)
 					break; // Ignore (used in case pointer is shown/hidden)
-				g_sdlMouseButtonsStates[event.button.button-1] = false;
+				g_sdlMouseButtonsStates[event.button.button-1] = isPressed;
 			}
 
-			if (BEL_ST_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
-				break;
+			if (isPressed)
+			{
+				BEL_ST_CheckForHidingTouchUI();
+
+				if (BEL_ST_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
+					break;
+			}
+			else
+				if (BEL_ST_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
+					break;
 
 			if (event.button.button == SDL_BUTTON_LEFT)
-				g_sdlEmuMouseButtonsState &= ~1;
+				bit = 1;
 			else if (event.button.button == SDL_BUTTON_RIGHT)
-				g_sdlEmuMouseButtonsState &= ~2;
+				bit = 2;
 			else if (event.button.button == SDL_BUTTON_MIDDLE)
-				g_sdlEmuMouseButtonsState &= ~4;
+				bit = 4;
+
+			if (isPressed)
+				g_sdlEmuMouseButtonsState |= bit;
+			else
+				g_sdlEmuMouseButtonsState &= ~bit;
 			break;
+		}
+
 		case SDL_MOUSEMOTION:
 			if (event.button.which == SDL_TOUCH_MOUSEID)
 				break;
