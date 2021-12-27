@@ -33,9 +33,7 @@
 
 uint32_t g_sdlLastPollEventsTime;
 
-bool g_sdlKeyboardKeysStates[BE_MAX_KEY_ID];
-bool g_sdlControllersButtonsStates[BE_ST_CTRL_BUT_MAX];
-bool g_sdlControllersAxesStates[BE_ST_CTRL_AXIS_MAX][2];
+BEInputBindsStates g_sdlInputbindStates;
 
 bool g_sdlMouseButtonsStates[3];
 

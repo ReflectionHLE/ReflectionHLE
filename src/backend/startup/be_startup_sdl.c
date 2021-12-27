@@ -118,9 +118,7 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 
 	//g_sdlControllerSchemeNeedsCleanUp = false;
 
-	memset(g_sdlKeyboardKeysStates, 0, sizeof(g_sdlKeyboardKeysStates));
-	memset(g_sdlControllersButtonsStates, 0, sizeof(g_sdlControllersButtonsStates));
-	memset(g_sdlControllersAxesStates, 0, sizeof(g_sdlControllersAxesStates));
+	memset(&g_sdlInputbindStates, 0, sizeof(g_sdlInputbindStates));
 
 	g_sdlShowControllerUI = false;
 

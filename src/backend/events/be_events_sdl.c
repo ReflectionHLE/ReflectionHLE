@@ -106,7 +106,7 @@ void BE_ST_PollEvents(void)
 				break; // FIXME: This currently does nothing
 
 			if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[scancode],
-			    g_sdlJoystickAxisMax*isPressed, &g_sdlKeyboardKeysStates[scancode]))
+			    g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.keys[scancode]))
 				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 			break;
 		}
@@ -313,11 +313,11 @@ void BE_ST_PollEvents(void)
 			BEL_ST_AltControlScheme_HandleEntry(
 				&g_sdlControllerMappingActualCurr->paxes[axis][1 - side],
 				0,
-				&g_sdlControllersAxesStates[axis][1 - side]);
+				&g_sdlInputbindStates.paxes[axis][1 - side]);
 			if (!BEL_ST_AltControlScheme_HandleEntry(
 				&g_sdlControllerMappingActualCurr->paxes[axis][side],
 				abs(axisVal),
-				&g_sdlControllersAxesStates[axis][side]))
+				&g_sdlInputbindStates.paxes[axis][side]))
 				{
 					// Special case for triggers, treated like digital buttons
 					if ((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
@@ -341,9 +341,9 @@ void BE_ST_PollEvents(void)
 			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
 			{
 				// Usually done from BEL_ST_AltControlScheme_HandleEntry
-				if (isPressed == g_sdlControllersButtonsStates[but])
+				if (isPressed == g_sdlInputbindStates.pbuttons[but])
 					break;
-				g_sdlControllersButtonsStates[but] = isPressed;
+				g_sdlInputbindStates.pbuttons[but] = isPressed;
 
 				if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 					BEL_ST_AltControlScheme_HandleTextInputEvent(but, isPressed);
@@ -373,7 +373,7 @@ void BE_ST_PollEvents(void)
 				}
 			}
 			// Try the usual otherwise (similar, but not identical, handling done with analog axes, triggers included)
-			else if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->pbuttons[but], g_sdlJoystickAxisMax*isPressed, &g_sdlControllersButtonsStates[but]))
+			else if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->pbuttons[but], g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.pbuttons[but]))
 			{
 				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 			}

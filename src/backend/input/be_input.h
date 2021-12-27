@@ -33,11 +33,17 @@ extern uint32_t g_sdlLastPollEventsTime;
 /*** Exact values might be implementation-defined ***/
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 
-/*** These represent button states, although a call to BEL_ST_AltControlScheme_CleanUp zeros these out ***/
-extern bool g_sdlKeyboardKeysStates[BE_MAX_KEY_ID];
-extern bool g_sdlControllersButtonsStates[BE_ST_CTRL_BUT_MAX];
-// We may optionally use analog axes as buttons (e.g., using stick as arrow keys, triggers as buttons)
-extern bool g_sdlControllersAxesStates[BE_ST_CTRL_AXIS_MAX][2];
+typedef struct {
+	// These represent button states, although a call
+	// to BEL_ST_AltControlScheme_CleanUp zeros these out
+	bool keys[BE_MAX_KEY_ID];
+	bool pbuttons[BE_ST_CTRL_BUT_MAX];
+	// We may opstionally use analog axes as buttons
+	// (e.g., using stick as arrow keys, triggers as buttons)
+	bool paxes[BE_ST_CTRL_AXIS_MAX][2];
+} BEInputBindsStates;
+
+extern BEInputBindsStates g_sdlInputbindStates;
 
 /*** These are similar states for a few mouse buttons, required as relative mouse mode is toggled on or off in the middle ***/
 extern bool g_sdlMouseButtonsStates[3];
