@@ -1445,28 +1445,28 @@ void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP)
 	BE_ST_QuickExit();
 }
 
-static void BEL_Launcher_PrepareForGettingUserBind(BEMenuItem *menuItem, bool isPad)
+static void BEL_Launcher_PrepareForGettingUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 {
 	BEL_Launcher_DrawMenuItemString(menuItem->choices[menuItem->choice], menuItem->selectionYPos, 0); // Erase string
 	BEL_Launcher_DrawMenuItemString("Press...", menuItem->selectionYPos, 9); // Draw this one instead
-	BE_ST_Launcher_WaitForUserBind(menuItem, isPad);
+	BE_ST_Launcher_WaitForUserBind(menuItem, menuBind);
 	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 }
 
 
 void BE_Launcher_Handler_KeyAction(BEMenuItem **menuItemP)
 {
-	BEL_Launcher_PrepareForGettingUserBind(*menuItemP, false);
+	BEL_Launcher_PrepareForGettingUserBind(*menuItemP, BE_MENUBIND_KEY);
 }
 
 void BE_Launcher_Handler_MouseAction(BEMenuItem **menuItemP)
 {
-	// TODO implement
+	BEL_Launcher_PrepareForGettingUserBind(*menuItemP, BE_MENUBIND_MOUSE);
 }
 
 void BE_Launcher_Handler_ControllerAction(BEMenuItem **menuItemP)
 {
-	BEL_Launcher_PrepareForGettingUserBind(*menuItemP, true);
+	BEL_Launcher_PrepareForGettingUserBind(*menuItemP, BE_MENUBIND_PAD);
 }
 
 void BE_Launcher_ArgumentsEditing_MoveCursorToEdge(bool moveForward)

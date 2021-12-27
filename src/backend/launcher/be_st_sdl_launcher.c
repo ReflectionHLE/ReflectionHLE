@@ -2726,7 +2726,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 	}
 }
 
-void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, bool isPad)
+void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 {
 	BEL_ST_Launcher_TurnTextSearchOff();
 
@@ -2749,7 +2749,10 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, bool isPad)
 
 	SDL_Event event;
 	bool keepRunning = true;
-	const int defaultChoice = isPad ? BE_ST_CTRL_BUT_MAX + 2/*triggers*/ : 0;
+	const int defaultChoice =
+		(menuBind == BE_MENUBIND_PAD) ? BE_ST_CTRL_BUT_MAX + 2/*triggers*/ :
+		(menuBind == BE_MENUBIND_MOUSE) ? BE_ST_CTRL_MOUSE_BUT_INVALID :
+		0;
 	int choice = defaultChoice;
 
 	while (keepRunning)
@@ -2765,18 +2768,24 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, bool isPad)
 			case SDL_KEYDOWN:
 				if (event.key.repeat)
 					break; // Ignore
-				if (!isPad &&
+				if ((menuBind == BE_MENUBIND_KEY) &&
 				    (event.key.keysym.scancode > 0) && // We use 0 as a default
 				    (event.key.keysym.scancode < (int)BE_MAX_KEY_ID) &&
 				    g_be_st_keyIdToNameMap[event.key.keysym.scancode])
 					choice = event.key.keysym.scancode;
-				// Fall-through
-			case SDL_MOUSEBUTTONDOWN:
-#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-			case SDL_FINGERDOWN:
 				keepRunning = false;
 				break;
+			case SDL_MOUSEBUTTONDOWN:
+				if ((menuBind == BE_MENUBIND_MOUSE) &&
+				    (event.button.button >= 1) &&
+				    (event.button.button < BE_ST_CTRL_MOUSE_BUT_MAX)) // Excludes BUT_INVALID
+					choice = event.button.button - 1;
+#ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
+				// Fall-through
+			case SDL_FINGERDOWN:
 #endif
+				keepRunning = false;
+				break;
 
 			case SDL_JOYDEVICEADDED:
 				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && SDL_IsGameController(event.jdevice.which))
@@ -2805,7 +2814,7 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, bool isPad)
 				}
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
-				if (isPad &&
+				if ((menuBind == BE_MENUBIND_PAD) &&
 				    (event.cbutton.button >= 0) &&
 				    (event.cbutton.button < BE_ST_CTRL_BUT_MAX) &&
 				    (event.cbutton.button != BE_ST_CTRL_BUT_BACK) &&

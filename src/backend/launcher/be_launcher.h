@@ -47,6 +47,12 @@ typedef enum {
 	BE_MENUITEM_TYPE_TARGETMENU
 } BEMenuItemType;
 
+typedef enum {
+	BE_MENUBIND_KEY,
+	BE_MENUBIND_MOUSE,
+	BE_MENUBIND_PAD
+} BEMenuBind;
+
 struct BEMenuItem;
 struct BEMenu;
 

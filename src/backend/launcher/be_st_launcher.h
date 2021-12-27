@@ -11,7 +11,7 @@ void BE_ST_Launcher_RefreshSelectGameMenuContents(void);
 void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfExes);
 
 // Used by launcher for user input binds
-void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, bool isPad);
+void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind);
 // Launcher loop
 void BE_ST_Launcher_RunEventLoop(void);
 
