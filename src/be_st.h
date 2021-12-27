@@ -98,6 +98,17 @@ void BE_ST_ExitWithErrorMsg(const char *msg);
 
 enum { BE_MAX_KEY_ID = 250 }; // A bound on host key ids
 
+// Mouse buttons, based on Windows API definitions
+typedef enum {
+	BE_ST_CTRL_MOUSE_BUT_LEFT = 0,
+	BE_ST_CTRL_MOUSE_BUT_MIDDLE,
+	BE_ST_CTRL_MOUSE_BUT_RIGHT,
+	BE_ST_CTRL_MOUSE_BUT_X1,
+	BE_ST_CTRL_MOUSE_BUT_X2,
+	BE_ST_CTRL_MOUSE_BUT_INVALID, // Used for default empty value
+	BE_ST_CTRL_MOUSE_BUT_MAX,
+} BE_ST_MouseButton;
+
 // The game controller layout, based on details given by the SDL_GameController
 // API (initially derived from the Xbox 360 controller layout).
 typedef enum {
