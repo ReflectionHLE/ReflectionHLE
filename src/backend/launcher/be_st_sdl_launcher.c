@@ -2751,7 +2751,7 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 	bool keepRunning = true;
 	const int defaultChoice =
 		(menuBind == BE_MENUBIND_PAD) ? BE_ST_CTRL_BUT_MAX + 2/*triggers*/ :
-		(menuBind == BE_MENUBIND_MOUSE) ? BE_ST_CTRL_MOUSE_BUT_INVALID :
+		(menuBind == BE_MENUBIND_MOUSE) ? BE_ST_CTRL_MOUSE_BUT_MAX :
 		0;
 	int choice = defaultChoice;
 
@@ -2778,7 +2778,7 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 			case SDL_MOUSEBUTTONDOWN:
 				if ((menuBind == BE_MENUBIND_MOUSE) &&
 				    (event.button.button >= 1) &&
-				    (event.button.button < BE_ST_CTRL_MOUSE_BUT_MAX)) // Excludes BUT_INVALID
+				    (event.button.button <= BE_ST_CTRL_MOUSE_BUT_MAX))
 					choice = event.button.button - 1;
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 				// Fall-through

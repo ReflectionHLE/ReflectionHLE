@@ -102,7 +102,7 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 	DEF_ENUM(setting, key, g_be_setting_bool_vals, def)
 
 #define DEF_CTRL_NONKEY_BINDS_KDREAMS_ENUMS(i, k, def) \
-	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, BE_ST_CTRL_MOUSE_BUT_INVALID) \
+	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, BE_ST_CTRL_MOUSE_BUT_MAX) \
 	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_CTRL_BINDS_KDREAMS_ENUMS(i, k, def) \

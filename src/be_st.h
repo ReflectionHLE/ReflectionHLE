@@ -105,8 +105,7 @@ typedef enum {
 	BE_ST_CTRL_MOUSE_BUT_RIGHT,
 	BE_ST_CTRL_MOUSE_BUT_X1,
 	BE_ST_CTRL_MOUSE_BUT_X2,
-	BE_ST_CTRL_MOUSE_BUT_INVALID, // Used for default empty value
-	BE_ST_CTRL_MOUSE_BUT_MAX,
+	BE_ST_CTRL_MOUSE_BUT_MAX // Also used for default empty value
 } BE_ST_MouseButton;
 
 // The game controller layout, based on details given by the SDL_GameController

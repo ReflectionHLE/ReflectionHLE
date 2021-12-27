@@ -126,10 +126,10 @@ struct {
 	{"RAlt", 230},
 };
 
-const char *g_be_st_keyIdToNameMap[BE_MAX_KEY_ID];
+const char *g_be_st_keyIdToNameMap[2+BE_MAX_KEY_ID];
 
 // Enumarated by SDL mouses buttons, for most
-const char *g_be_st_mouseFeatureIdToNameMap[1+BE_ST_CTRL_MOUSE_BUT_MAX] = {
+const char *g_be_st_mouseFeatureIdToNameMap[2+BE_ST_CTRL_MOUSE_BUT_MAX] = {
 	"Left", "Middle", "Right", "X1", "X2",
 	"", // Used for internal default
 	NULL // Used as a terminator for the launcher
