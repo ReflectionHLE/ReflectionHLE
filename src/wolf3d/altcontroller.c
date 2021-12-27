@@ -478,7 +478,7 @@ static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *
 		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping] = *inputmap;
 }
 
-static void CheckButtonMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
+static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_BUT_MAX))
 		g_ingame_altcontrol_mapping_gameplay.buttons[actionmapping] = *inputmap;
@@ -489,7 +489,7 @@ static void CheckButtonMapping(int actionmapping, const BE_ST_ControllerSingleMa
 static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
 {
 	CheckKeyMapping(g_refKeenCfg.wolf3d.binds[bind].key, inputmap);
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[bind].pad, inputmap);
+	CheckPadMapping(g_refKeenCfg.wolf3d.binds[bind].pad, inputmap);
 }
 
 void RefKeen_PrepareAltControllerScheme(void)
@@ -509,8 +509,8 @@ void RefKeen_PrepareAltControllerScheme(void)
 #ifdef GAMEVER_NOAH3D
 	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_MAP, &g_ingame_but_map_map);
 #endif
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS].pad, &g_ingame_but_func_keys_map);
-	CheckButtonMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS].pad, &g_ingame_but_debug_keys_map);
+	CheckPadMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS].pad, &g_ingame_but_func_keys_map);
+	CheckPadMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS].pad, &g_ingame_but_debug_keys_map);
 
 	BE_ST_ControllerSingleMap gamekeyup    = {NULL, BE_ST_SC_UP,    0, BE_ST_CTRL_MAP_KEYSCANCODE};
 	BE_ST_ControllerSingleMap gamekeydown  = {NULL, BE_ST_SC_DOWN,  0, BE_ST_CTRL_MAP_KEYSCANCODE};
