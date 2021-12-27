@@ -92,11 +92,12 @@ static void BEL_Launcher_WriteNoVert(BESettingMenuItemPair *p)
 
 // Helper macros for menu item declarations related to binds
 #define DECLARE_NONKEY_BINDS_MENUITEMS(Game, Suffix) \
+	g_be ## Game ## MouseBindsMenuItem_Action_ ## Suffix, \
 	g_be ## Game ## PadBindsMenuItem_Action_ ## Suffix,
 
 #define DECLARE_BINDS_MENUITEMS(Game, Suffix) \
 	g_be ## Game ## KeyBindsMenuItem_Action_ ## Suffix, \
-	g_be ## Game ## PadBindsMenuItem_Action_ ## Suffix,
+	DECLARE_NONKEY_BINDS_MENUITEMS(Game, Suffix)
 
 extern BEMenuItem
 	g_beVideoSettingsMenuItem_Fullscreen,
@@ -175,25 +176,28 @@ extern BEMenuItem
 
 // Helper macros for definitions of pairs related to binds
 #define DEFINE_KDREAMS_NONKEY_BIND_PAIRS(Suffix, SUFFIX) \
+	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## SUFFIX].mouse, &g_beKDreamsMouseBindsMenuItem_Action_ ## Suffix}, \
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## SUFFIX].pad, &g_beKDreamsPadBindsMenuItem_Action_ ## Suffix},
 
 #define DEFINE_KDREAMS_BIND_PAIRS(Suffix, SUFFIX) \
 	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## SUFFIX].key, &g_beKDreamsKeyBindsMenuItem_Action_ ## Suffix}, \
-	{&g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## SUFFIX].pad, &g_beKDreamsPadBindsMenuItem_Action_ ## Suffix},
+	DEFINE_KDREAMS_NONKEY_BIND_PAIRS(Suffix, SUFFIX)
 
 #define DEFINE_CAT3D_NONKEY_BIND_PAIRS(Suffix, SUFFIX) \
+	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## SUFFIX].mouse, &g_beCat3DMouseBindsMenuItem_Action_ ## Suffix}, \
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## SUFFIX].pad, &g_beCat3DPadBindsMenuItem_Action_ ## Suffix},
 
 #define DEFINE_CAT3D_BIND_PAIRS(Suffix, SUFFIX) \
 	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## SUFFIX].key, &g_beCat3DKeyBindsMenuItem_Action_ ## Suffix}, \
-	{&g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## SUFFIX].pad, &g_beCat3DPadBindsMenuItem_Action_ ## Suffix},
+	DEFINE_CAT3D_NONKEY_BIND_PAIRS(Suffix, SUFFIX)
 
 #define DEFINE_WOLF3D_NONKEY_BIND_PAIRS(Suffix, SUFFIX) \
+	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## SUFFIX].mouse, &g_beWolf3DMouseBindsMenuItem_Action_ ## Suffix}, \
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## SUFFIX].pad, &g_beWolf3DPadBindsMenuItem_Action_ ## Suffix},
 
 #define DEFINE_WOLF3D_BIND_PAIRS(Suffix, SUFFIX) \
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## SUFFIX].key, &g_beWolf3DKeyBindsMenuItem_Action_ ## Suffix}, \
-	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## SUFFIX].pad, &g_beWolf3DPadBindsMenuItem_Action_ ## Suffix},
+	DEFINE_WOLF3D_NONKEY_BIND_PAIRS(Suffix, SUFFIX)
 
 
 static BESettingMenuItemPair g_be_setting_pairs[] = {
