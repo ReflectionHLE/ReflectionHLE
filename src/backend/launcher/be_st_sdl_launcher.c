@@ -35,7 +35,7 @@
 #include "SDL.h"
 
 #include "backend/input/be_input.h"
-#include "backend/input/be_input_keytables.h"
+#include "backend/input/be_input_tables.h"
 #include "backend/input/be_input_sdl.h"
 #include "backend/video/be_video_ui.h"
 #include "backend/video/be_video_sdl.h"

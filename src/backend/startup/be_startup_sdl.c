@@ -34,7 +34,7 @@
 #include "../events/be_events_sdl.h"
 #include "../input/be_input.h"
 #include "../input/be_input_controller_mappings.h"
-#include "../input/be_input_keytables.h"
+#include "../input/be_input_tables.h"
 #include "../input/be_input_sdl.h"
 #include "../video/be_video_ui.h"
 #include "be_cross.h"

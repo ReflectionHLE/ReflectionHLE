@@ -1,6 +1,6 @@
 #include <assert.h>
 #include "be_cross.h"
-#include "be_input_keytables.h"
+#include "be_input_tables.h"
 
 // Used for mapping cfg-side key identifiers to internal integers.
 // It was originally made using SDL2 scancodes as a base.

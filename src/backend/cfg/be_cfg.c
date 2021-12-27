@@ -29,7 +29,7 @@
 #include <limits.h>
 
 #include "../audio/be_audio_private.h"
-#include "../input/be_input_keytables.h"
+#include "../input/be_input_tables.h"
 #include "be_cross.h"
 #include "be_features.h"
 #include "be_gamever.h"
