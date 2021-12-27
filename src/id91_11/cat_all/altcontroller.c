@@ -868,10 +868,15 @@ static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_BUT_MAX][1] = *inputmap;
 }
 
+static void CheckNonKeyMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
+{
+	CheckPadMapping(g_refKeenCfg.cat3d.binds[bind].pad, inputmap);
+}
+
 static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
 {
 	CheckKeyMapping(g_refKeenCfg.cat3d.binds[bind].key, inputmap);
-	CheckPadMapping(g_refKeenCfg.cat3d.binds[bind].pad, inputmap);
+	CheckNonKeyMappings(bind, inputmap);
 }
 
 void RefKeen_PrepareAltControllerScheme(void)
@@ -887,12 +892,12 @@ void RefKeen_PrepareAltControllerScheme(void)
 	CheckMappings(BE_ST_CTRL_BIND_CAT3D_NUKE, &g_ingame_but_nuke_map);
 	CheckMappings(BE_ST_CTRL_BIND_CAT3D_FASTTURN, &g_ingame_but_fastturn_map);
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
-	CheckPadMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_SCROLLS].pad, &g_ingame_but_scrolls_map);
+	CheckNonKeyMappings(BE_ST_CTRL_BIND_CAT3D_SCROLLS, &g_ingame_but_scrolls_map);
 #endif
 #ifdef REFKEEN_VER_CATADVENTURES
-	CheckPadMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FUNCKEYS].pad, &g_ingame_but_func_keys_map);
+	CheckNonKeyMappings(BE_ST_CTRL_BIND_CAT3D_FUNCKEYS, &g_ingame_but_func_keys_map);
 #endif
-	CheckPadMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS].pad, &g_ingame_but_debug_keys_map);
+	CheckNonKeyMappings(BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS, &g_ingame_but_debug_keys_map);
 
 	// HACK (leave US_LineInput this way)
 	g_beStControllerMappingTextInput.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;

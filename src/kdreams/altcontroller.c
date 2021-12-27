@@ -547,10 +547,15 @@ static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *
 		g_ingame_altcontrol_mapping_gameplay.axes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_BUT_MAX][1] = *inputmap;
 }
 
+static void CheckNonKeyMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
+{
+	CheckPadMapping(g_refKeenCfg.kdreams.binds[bind].pad, inputmap);
+}
+
 static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
 {
 	CheckKeyMapping(g_refKeenCfg.kdreams.binds[bind].key, inputmap);
-	CheckPadMapping(g_refKeenCfg.kdreams.binds[bind].pad, inputmap);
+	CheckNonKeyMappings(bind, inputmap);
 }
 
 void RefKeen_PrepareAltControllerScheme(void)
@@ -562,8 +567,8 @@ void RefKeen_PrepareAltControllerScheme(void)
 	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_DOWN, &g_ingame_but_down_map);
 	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_LEFT, &g_ingame_but_left_map);
 	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_RIGHT, &g_ingame_but_right_map);
-	CheckPadMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS].pad, &g_ingame_but_func_keys_map);
-	CheckPadMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS].pad, &g_ingame_but_debug_keys_map);
+	CheckNonKeyMappings(BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS, &g_ingame_but_func_keys_map);
+	CheckNonKeyMappings(BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS, &g_ingame_but_debug_keys_map);
 
 	// HACK (leave US_LineInput this way)
 	g_beStControllerMappingTextInput.defaultMapping.mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
