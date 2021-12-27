@@ -252,7 +252,7 @@ void CheckKeys (void)
 
 		// REFKEEN - Alternative controllers support
 		extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_soundoptions;
-		g_ingame_altcontrol_mapping_soundoptions.buttons[BE_ST_CTRL_BUT_X].mapClass = AdLibPresent ? BE_ST_CTRL_MAP_KEYSCANCODE : BE_ST_CTRL_MAP_NONE; // A bit of patching
+		g_ingame_altcontrol_mapping_soundoptions.pbuttons[BE_ST_CTRL_BUT_X].mapClass = AdLibPresent ? BE_ST_CTRL_MAP_KEYSCANCODE : BE_ST_CTRL_MAP_NONE; // A bit of patching
 		BE_ST_AltControlScheme_Push();
 		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_soundoptions);
 

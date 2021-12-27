@@ -351,16 +351,16 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 /*static*/ void BEL_ST_PrepareToShowControllerUI(const BE_ST_ControllerMapping *mapping)
 {
 	const int faceButtonsScancodes[4] = {
-		(mapping->buttons[BE_ST_CTRL_BUT_A].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_A].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_B].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_B].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_X].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_X].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_Y].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_Y].val : '\0'
+		(mapping->pbuttons[BE_ST_CTRL_BUT_A].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_A].val : '\0',
+		(mapping->pbuttons[BE_ST_CTRL_BUT_B].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_B].val : '\0',
+		(mapping->pbuttons[BE_ST_CTRL_BUT_X].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_X].val : '\0',
+		(mapping->pbuttons[BE_ST_CTRL_BUT_Y].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_Y].val : '\0'
 	};
 	const int dpadScancodes[4] = {
-		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_DPAD_DOWN].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_RIGHT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_DPAD_RIGHT].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_LEFT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_DPAD_LEFT].val : '\0',
-		(mapping->buttons[BE_ST_CTRL_BUT_DPAD_UP].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->buttons[BE_ST_CTRL_BUT_DPAD_UP].val : '\0'
+		(mapping->pbuttons[BE_ST_CTRL_BUT_DPAD_DOWN].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_DPAD_DOWN].val : '\0',
+		(mapping->pbuttons[BE_ST_CTRL_BUT_DPAD_RIGHT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_DPAD_RIGHT].val : '\0',
+		(mapping->pbuttons[BE_ST_CTRL_BUT_DPAD_LEFT].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_DPAD_LEFT].val : '\0',
+		(mapping->pbuttons[BE_ST_CTRL_BUT_DPAD_UP].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_DPAD_UP].val : '\0'
 	};
 	const int emptyScancodesArray[4] = {'\0'};
 

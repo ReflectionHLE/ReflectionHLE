@@ -142,14 +142,14 @@ void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 			if (g_sdlControllerMappingActualCurr->keys[key].mapClass != BE_ST_CTRL_MAP_NONE)
 				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[key], 0, &g_sdlKeyboardKeysStates[key]);
 		for (int but = 0; but < BE_ST_CTRL_BUT_MAX; ++but)
-			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], 0, &g_sdlControllersButtonsStates[but]);
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->pbuttons[but], 0, &g_sdlControllersButtonsStates[but]);
 		// Repeat with analog axes
 		for (int axis = 0; axis < BE_ST_CTRL_AXIS_MAX; ++axis)
 		{
 			// Is pressed in the negative direction?
-			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][0], 0, &g_sdlControllersAxesStates[axis][0]);
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->paxes[axis][0], 0, &g_sdlControllersAxesStates[axis][0]);
 			// Repeat with positive
-			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->axes[axis][1], 0, &g_sdlControllersAxesStates[axis][1]);
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->paxes[axis][1], 0, &g_sdlControllersAxesStates[axis][1]);
 		}
 	}
 

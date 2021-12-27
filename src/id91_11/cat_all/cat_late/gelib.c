@@ -1209,13 +1209,13 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 
 		if (*s)
 		{
-			g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-			g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].val = *s;
+			g_ingame_altcontrol_mapping_keychoice.pbuttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+			g_ingame_altcontrol_mapping_keychoice.pbuttons[controllerbutton].val = *s;
 			++s;
 		}
 		else
 		{
-			g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_NONE;
+			g_ingame_altcontrol_mapping_keychoice.pbuttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_NONE;
 		}
 	}
 	for (controllerbutton = BE_ST_CTRL_BUT_DPAD_UP; controllerbutton < BE_ST_CTRL_BUT_DPAD_UP + 4; ++controllerbutton)
@@ -1224,14 +1224,14 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 		{
 			if (*s != sc_Escape)
 			{
-				g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
-				g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].val = *s;
+				g_ingame_altcontrol_mapping_keychoice.pbuttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_KEYSCANCODE;
+				g_ingame_altcontrol_mapping_keychoice.pbuttons[controllerbutton].val = *s;
 				++s;
 				continue;
 			}
 			++s;
 		}
-		g_ingame_altcontrol_mapping_keychoice.buttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_NONE;
+		g_ingame_altcontrol_mapping_keychoice.pbuttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_NONE;
 	}
 	BE_ST_AltControlScheme_Push();
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_keychoice);

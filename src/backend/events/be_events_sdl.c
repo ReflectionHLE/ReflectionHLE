@@ -311,11 +311,11 @@ void BE_ST_PollEvents(void)
 			 * "release/clear" events can be properly sent.
 			 * Ensure the release always precedes the press, though. */
 			BEL_ST_AltControlScheme_HandleEntry(
-				&g_sdlControllerMappingActualCurr->axes[axis][1 - side],
+				&g_sdlControllerMappingActualCurr->paxes[axis][1 - side],
 				0,
 				&g_sdlControllersAxesStates[axis][1 - side]);
 			if (!BEL_ST_AltControlScheme_HandleEntry(
-				&g_sdlControllerMappingActualCurr->axes[axis][side],
+				&g_sdlControllerMappingActualCurr->paxes[axis][side],
 				abs(axisVal),
 				&g_sdlControllersAxesStates[axis][side]))
 				{
@@ -373,7 +373,7 @@ void BE_ST_PollEvents(void)
 				}
 			}
 			// Try the usual otherwise (similar, but not identical, handling done with analog axes, triggers included)
-			else if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->buttons[but], g_sdlJoystickAxisMax*isPressed, &g_sdlControllersButtonsStates[but]))
+			else if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->pbuttons[but], g_sdlJoystickAxisMax*isPressed, &g_sdlControllersButtonsStates[but]))
 			{
 				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 			}
