@@ -33,7 +33,7 @@
 #include "be_st.h"
 #include "refkeen_config.h"
 
-// NOTE: These structs are generally used just in the Reflection Keen backend.
+// NOTE: These structs are generally used just in the ReflectionHLE backend.
 // There might still be exceptions to this.
 
 typedef enum { VSYNC_AUTO, VSYNC_OFF, VSYNC_ON } VSyncSettingType;
