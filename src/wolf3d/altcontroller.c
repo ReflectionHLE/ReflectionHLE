@@ -489,13 +489,25 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if (actionmapping > 0)
+	{
 		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping] = *inputmap;
+		// FIXME: It's better to define mappings as a tree and traverse it instead
+		g_ingame_altcontrol_mapping_weapons.keys[actionmapping] = *inputmap;
+		g_ingame_altcontrol_mapping_funckeys.keys[actionmapping] = *inputmap;
+		g_beStControllerMappingDebugKeys.keys[actionmapping] = *inputmap;
+	}
 }
 
 static void CheckMouseMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_MOUSE_BUT_MAX))
+	{
 		g_ingame_altcontrol_mapping_gameplay.mbuttons[actionmapping] = *inputmap;
+		// FIXME: Again, better to traverse a tree
+		g_ingame_altcontrol_mapping_weapons.mbuttons[actionmapping] = *inputmap;
+		g_ingame_altcontrol_mapping_funckeys.mbuttons[actionmapping] = *inputmap;
+		g_beStControllerMappingDebugKeys.mbuttons[actionmapping] = *inputmap;
+	}
 }
 
 static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
