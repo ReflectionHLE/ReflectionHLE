@@ -492,6 +492,12 @@ static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *
 		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping] = *inputmap;
 }
 
+static void CheckMouseMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
+{
+	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_MOUSE_BUT_MAX))
+		g_ingame_altcontrol_mapping_gameplay.mbuttons[actionmapping] = *inputmap;
+}
+
 static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_BUT_MAX))
@@ -502,6 +508,7 @@ static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *
 
 static void CheckNonKeyMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
 {
+	CheckMouseMapping(g_refKeenCfg.wolf3d.binds[bind].mouse, inputmap);
 	CheckPadMapping(g_refKeenCfg.wolf3d.binds[bind].pad, inputmap);
 }
 
