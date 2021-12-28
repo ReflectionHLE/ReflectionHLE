@@ -120,7 +120,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 # We build our own copy of SDL2 for Android
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
 	find_library(SDL2 SDL2)
-	include_directories(src/android-project/app/jni/SDL/include)
+	include_directories(src/android-project/reflectionhle/jni/SDL/include)
 else ()
 	find_package(SDL2 REQUIRED)
 	find_package(SpeexDSP)
