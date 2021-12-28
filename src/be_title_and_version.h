@@ -2,7 +2,7 @@
 #define BE_TITLE_AND_VERSION_H
 
 #ifdef REFKEEN_UNIFIED_BUILD
-#define REFKEEN_TITLE_STRING "Reflection Keen"
+#define REFKEEN_TITLE_STRING "ReflectionHLE"
 #elif (defined REFKEEN_VER_KDREAMS)
 #define REFKEEN_TITLE_STRING "Reflection KDreams"
 #elif (defined REFKEEN_VER_CAT3D)

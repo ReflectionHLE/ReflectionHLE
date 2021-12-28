@@ -71,7 +71,7 @@ static void show_command_line_help(void)
 	BE_ST_puts("-datadir <...>: Specify an alternative location for modifiable");
 	BE_ST_puts("game files like saved games, separated by game version.");
 	BE_ST_puts("Miscellaneous txt files are also covered.");
-	BE_ST_puts("-cfgdir <...>: Specify an alternative path for Reflection Keen's");
+	BE_ST_puts("-cfgdir <...>: Specify an alternative path for ReflectionHLE's");
 	BE_ST_puts("new cfg files, along with gamecontrollerdb.txt.");
 #ifdef REFKEEN_ENABLE_LAUNCHER
 	BE_ST_puts("-fulllauncher: Show a fullscreen launcher window.");

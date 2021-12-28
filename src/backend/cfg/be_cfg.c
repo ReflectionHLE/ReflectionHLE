@@ -438,7 +438,7 @@ static void BEL_ST_ParseConfig(const char *name, BE_ST_CFG_Setting_T *settings, 
 
 void BEL_ST_ParseConfigFiles(void)
 {
-	BEL_ST_ParseConfig("reflection-keen.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+	BEL_ST_ParseConfig("reflectionhle.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
 #endif
@@ -469,7 +469,7 @@ static void BEL_ST_SaveConfig(const char *name, const BE_ST_CFG_Setting_T *setti
 
 void BEL_ST_SaveConfigFiles(void)
 {
-	BEL_ST_SaveConfig("reflection-keen.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+	BEL_ST_SaveConfig("reflectionhle.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	BEL_ST_SaveConfig("reflection-kdreams.cfg", g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
 #endif

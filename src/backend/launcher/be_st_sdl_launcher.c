@@ -233,7 +233,7 @@ BEMenu g_beSelectGameExeMenu = {
 /*** Disappeared game menu ***/
 
 BEMENUITEM_DEF_STATIC(g_beDisappearedGameHelpMenuItem_Explanation,
-"Reflection Keen can detect compatible DOS game versions from certain installations, including the Catacombs games from GOG.com. Once such a game installation is updated in any minor way, Reflection Keen may fail to locate it. These are the expected behaviors.\nAs an alternative, you can manually add a compatible game installation (if not yet listed)."
+"ReflectionHLE can detect compatible DOS game versions from certain installations, including the Catacombs games from GOG.com. Once such a game installation is updated in any minor way, ReflectionHLE may fail to locate it. These are the expected behaviors.\nAs an alternative, you can manually add a compatible game installation (if not yet listed)."
 );
 
 static BEMenuItem *g_beDisappearedGameHelpMenuItems[] = {

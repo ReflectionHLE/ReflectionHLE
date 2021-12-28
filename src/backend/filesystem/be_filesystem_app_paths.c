@@ -59,14 +59,14 @@ void BE_Cross_PrepareAppPaths(void)
 	// HACK - Ignore be_main_arg_datadir for now
 	if (envVar && *envVar)
 	{
-		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), envVar, _T("\\reflection-keen"));
+		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), envVar, _T("\\reflectionhle"));
 	}
 	else
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "APPDATA environment variable is not properly defined.\n");
 		if (homeVar && *homeVar)
 		{
-			BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, _T("\\AppData\\Roaming\\reflection-keen"));
+			BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, _T("\\AppData\\Roaming\\reflectionhle"));
 		}
 		else
 		{
@@ -197,16 +197,16 @@ void BE_Cross_PrepareAppPaths(void)
 	{
 #ifdef REFKEEN_PLATFORM_MACOS
 		// FIXME - Handle sandboxing?
-		BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, "/Library/Application Support/reflection-keen");
+		BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, "/Library/Application Support/reflectionhle");
 #else
 		envVar = getenv("XDG_DATA_HOME");
 		if (envVar && *envVar)
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), envVar, "/reflection-keen");
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), envVar, "/reflectionhle");
 		}
 		else if (homeVar && *homeVar)
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, "/.local/share/reflection-keen");
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), homeVar, "/.local/share/reflectionhle");
 		}
 		else
 		{
@@ -223,16 +223,16 @@ void BE_Cross_PrepareAppPaths(void)
 	{
 #ifdef REFKEEN_PLATFORM_MACOS
 		// FIXME - Handle sandboxing?
-		BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), homeVar, "/Library/Application Support/reflection-keen");
+		BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), homeVar, "/Library/Application Support/reflectionhle");
 #else
 		envVar = getenv("XDG_CONFIG_HOME");
 		if (envVar && *envVar)
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), envVar, "/reflection-keen");
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), envVar, "/reflectionhle");
 		}
 		else if (homeVar && *homeVar)
 		{
-			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), homeVar, "/.config/reflection-keen");
+			BE_Cross_safeandfastcstringcopy_2strs(g_be_appNewCfgPath, g_be_appNewCfgPath+BE_Cross_ArrayLen(g_be_appNewCfgPath), homeVar, "/.config/reflectionhle");
 		}
 		else
 		{

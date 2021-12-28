@@ -46,7 +46,7 @@
 #elif (defined REFKEEN_RESAMPLER_LIBSAMPLERATE)
 #include <samplerate.h>
 #else
-#error "FATAL ERROR: No recognized Reflection Keen resampler macro is defined!"
+#error "FATAL ERROR: No recognized ReflectionHLE resampler macro is defined!"
 #endif
 
 typedef struct
