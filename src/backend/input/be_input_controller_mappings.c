@@ -102,6 +102,7 @@ bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, i
 		return true; // Confirm either way
 	case BE_ST_CTRL_MAP_VALUESET:
 		*(int *)(map->miscPtr) = (value <= g_sdlJoystickAxisDeadZone) ? 0 : (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
+		return true;
 	}
 	return false;
 }
