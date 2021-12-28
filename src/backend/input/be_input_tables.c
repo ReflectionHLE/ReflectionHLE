@@ -135,6 +135,18 @@ const char *g_be_st_mouseFeatureIdToNameMap[2+BE_ST_CTRL_MOUSE_BUT_MAX] = {
 	NULL // Used as a terminator for the launcher
 };
 
+// Enumerated by SDL game controller buttons and axes, for most
+const char *g_be_st_padFeatureIdToNameMap[3+BE_ST_CTRL_BUT_MAX] = {
+	"A", "B", "X", "Y",
+	"", "", "", // Back, guide, start
+	"LStick", "RStick", "LShoulder", "RShoulder",
+	"DPadUp", "DPadDown", "DPadLeft", "DPadRight",
+	"", // Misc1
+	"Paddle1", "Paddle2", "Paddle3", "Paddle4",
+	"LTrigger", "RTrigger", // Axes which can be used as buttons
+	NULL // Used as a terminator for the launcher
+};
+
 void BEL_ST_InitKeyMap(void)
 {
 	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_keyPairs); ++i)

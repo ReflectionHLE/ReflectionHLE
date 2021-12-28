@@ -151,7 +151,7 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 // repeated across differing kinds of binds for separate submenus
 #define BEMENUITEM_DEF_CTRL_NONKEY_BINDS(game, suffix, label) \
 	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## MouseBindsMenuItem_Action_ ## suffix, label, g_be_st_mouseFeatureIdToNameMap, &BE_Launcher_Handler_MouseAction) \
-	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_be_padBindsChoices_actionButton, &BE_Launcher_Handler_ControllerAction)
+	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_be_st_padFeatureIdToNameMap, &BE_Launcher_Handler_ControllerAction)
 
 #define BEMENUITEM_DEF_CTRL_BINDS(game, suffix, label) \
 	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## KeyBindsMenuItem_Action_ ## suffix, label, g_be_st_keyIdToNameMap, &BE_Launcher_Handler_KeyAction) \
@@ -621,8 +621,6 @@ static BEMenu g_beControllerMappingsFromSteamImportedSuccessfullyMenu = {
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 /*** Common definitions for pad binds menus ***/
-
-static const char *g_be_padBindsChoices_actionButton[] = {"A", "B", "X", "Y", NULL, NULL, NULL, "LStick" ,"RStick", "LShoulder", "RShoulder", "DPad Up", "DPad Down", "DPad Left", "DPad Right", NULL, "Paddle 1", "Paddle 2", "Paddle 3", "Paddle 4", "LTrigger", "RTrigger", "N/A"};
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
 /*** Keen Dreams settings menu ***/

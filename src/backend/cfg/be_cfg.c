@@ -103,7 +103,7 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 
 #define DEF_CTRL_NONKEY_BINDS_KDREAMS_ENUMS(i, k, def) \
 	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, BE_ST_CTRL_MOUSE_BUT_MAX) \
-	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].pad, "pbind_" k, g_be_st_padFeatureIdToNameMap, def)
 
 #define DEF_CTRL_BINDS_KDREAMS_ENUMS(i, k, def) \
 	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
@@ -114,7 +114,7 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 
 #define DEF_CTRL_NONKEY_BINDS_CAT3D_ENUMS(i, k, def) \
 	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, def) \
-	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].pad, "pbind_" k, g_be_st_padFeatureIdToNameMap, def)
 
 #define DEF_CTRL_BINDS_CAT3D_ENUMS(i, k, def) \
 	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
@@ -125,7 +125,7 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 
 #define DEF_CTRL_NONKEY_BINDS_WOLF3D_ENUMS(i, k, def) \
 	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, def) \
-	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, "pbind_" k, g_be_st_padFeatureIdToNameMap, def)
 
 #define DEF_CTRL_BINDS_WOLF3D_ENUMS(i, k, def) \
 	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
