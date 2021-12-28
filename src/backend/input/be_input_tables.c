@@ -149,6 +149,11 @@ const char *g_be_st_padFeatureIdToNameMap[3+BE_ST_CTRL_BUT_MAX] = {
 
 void BEL_ST_InitKeyMap(void)
 {
+	// When the launcher prepares a menu using this, it stops at NULL
+	// during checks of string lengths. So, fill with empty strings.
+	for (int i = 0; i < BE_MAX_KEY_ID; ++i)
+		g_be_st_keyIdToNameMap[i] = "";
+
 	for (unsigned i = 0; i < BE_Cross_ArrayLen(g_be_keyPairs); ++i)
 	{
 		assert(g_be_keyPairs[i].id < BE_MAX_KEY_ID);
