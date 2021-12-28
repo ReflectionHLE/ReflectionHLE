@@ -11,7 +11,7 @@ android {
     compileSdkVersion 31
     defaultConfig {
         if (buildAsApplication) {
-            applicationId "net.duke4.ny.reflection_keen"
+            applicationId "com.reflectionhle"
         }
         minSdkVersion 16
         targetSdkVersion 31
@@ -57,7 +57,7 @@ android {
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith(".aar")) {
-                    def fileName = "net.duke4.ny.reflection_keen";
+                    def fileName = "com.reflectionhle";
                     output.outputFile = new File(outputFile.parent, fileName);
                 }
             }

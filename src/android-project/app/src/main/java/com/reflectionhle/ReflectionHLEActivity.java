@@ -1,4 +1,4 @@
-package net.duke4.ny.reflection_keen;
+package com.reflectionhle;
 
 import org.libsdl.app.SDLActivity; 
 import android.view.View;
@@ -9,7 +9,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 
-public class RefkeenActivity extends SDLActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class ReflectionHLEActivity extends SDLActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
 	private final int[] requestNotif = new int[1];
 
@@ -34,7 +34,7 @@ public class RefkeenActivity extends SDLActivity implements ActivityCompat.OnReq
 						@Override
 						public void run() {
 							AlertDialog.Builder builder = new AlertDialog.Builder(mSingleton);
-							builder.setMessage("Thanks for your interest in Reflection Keen. Allowing access to shared storage should let you select a supported game installation from more locations.");
+							builder.setMessage("Thanks for your interest in ReflectionHLE. Allowing access to shared storage should let you select a supported game installation from more locations.");
 							builder.setTitle("Access to shared storage requested");
 							builder.setNeutralButton("Continue", new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog, int id) {
@@ -91,6 +91,6 @@ public class RefkeenActivity extends SDLActivity implements ActivityCompat.OnReq
 
 	@Override
 	protected String[] getLibraries() {
-	        return new String[] { "SDL2", "reflection-keen" };
+	        return new String[] { "SDL2", "reflectionhle" };
 	}
 }

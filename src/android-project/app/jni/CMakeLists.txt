@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-project(reflection-keen)
+project(ReflectionHLE)
 
 # armeabi-v7a requires cpufeatures library
 # include(AndroidNdkModules)
@@ -10,6 +10,6 @@ project(reflection-keen)
 # SDL sources are in a subfolder/symlink named "SDL"
 add_subdirectory(SDL)
 
-# Reflection Keen sources are in a subfolder/symlink named "refkeen"
-add_subdirectory(refkeen)
+# ReflectionHLE sources are in a subfolder/symlink named "ReflectionHLE"
+add_subdirectory(ReflectionHLE)
 
