@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.8...3.19)
 
 if (CMAKE_VERSION VERSION_LESS 3.12)
-	project(Reflection-Keen)
+	project(ReflectionHLE)
 else ()
-	project(Reflection-Keen VERSION 0.33.1)
+	project(ReflectionHLE VERSION 0.33.1)
 endif ()
 
-set(bundle_identifier_prefix "net.duke4.ny.refkeen")
+set(bundle_identifier_prefix "com.reflectionhle")
 set(bundle_copyright "See README.md for copyright details")
 
-function(add_refkeen_separate_target
+function(add_refhle_separate_target
 	name app_rc targets libraries sources shared_sources
 	include_dirs common_cc_flags target_cc_flags unified_target_cc_flags is_lib
 )
@@ -61,13 +61,10 @@ function(add_refkeen_separate_target
 	target_include_directories(${name} PUBLIC ${include_dirs})
 endfunction()
 
-function(add_refkeen_unified_target name app_rc targets shared_sources common_cc_flags cc_flags libraries)
-	string(REGEX MATCH "-.+$" name_suffix ${name})
-	string(SUBSTRING ${name_suffix} 1 -1 name_suffix)
-
-	set(icns_file "reflection-${app_rc}.icns")
+function(add_refhle_unified_target name targets shared_sources common_cc_flags cc_flags libraries)
+	set(icns_file "${name}.icns")
 	if (WIN32)
-		set(app_rc "rsrc/reflection-${app_rc}.rc")
+		set(app_rc "rsrc/${name}.rc")
 	elseif (APPLE)
 		set(app_rc "rsrc/${icns_file}")
 		set_source_files_properties(${app_rc} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
@@ -82,7 +79,7 @@ function(add_refkeen_unified_target name app_rc targets shared_sources common_cc
 	set_target_properties(${name} PROPERTIES
 		COMPILE_FLAGS "${common_cc_flags} ${cc_flags}"
 		MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/rsrc/Info.plist"
-		MACOSX_BUNDLE_BUNDLE_NAME "ref${name_suffix}"
+		MACOSX_BUNDLE_BUNDLE_NAME "${name}"
 		MACOSX_BUNDLE_ICON_FILE "${icns_file}"
 		MACOSX_BUNDLE_GUI_IDENTIFIER "${bundle_identifier_prefix}.${name}"
 		MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
@@ -96,7 +93,7 @@ endfunction()
 
 include(CMakeDependentOption)
 
-option(BUILD_AS_CPP "Build Reflection Keen as C++ code" ON)
+option(BUILD_AS_CPP "Build ReflectionHLE as C++ code" ON)
 CMAKE_DEPENDENT_OPTION(
 	BUILD_UNIFIED "Build aggregated C++ EXEs covering multiple games/versions" ON
 	"BUILD_AS_CPP" OFF
@@ -136,7 +133,7 @@ else ()
 	set(REFKEEN_RESAMPLER_NONE "1")
 endif ()
 
-option(REFKEEN_ENABLE_LAUNCHER "Enable the Reflection Keen launcher" ON)
+option(REFKEEN_ENABLE_LAUNCHER "Enable the ReflectionHLE launcher" ON)
 
 include(src/CMakeLists.txt)
 include(src/kdreams/CMakeLists.txt)
@@ -202,7 +199,7 @@ set(UNIFIED_GAME_PARAMS
 	-DREFKEEN_HAS_VER_WOLF3D_ALL=1
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-kdreams kdreams "${targets}" "${LIBRARIES}"
 	"${kdreams_src}" "${be_src}"
 	"src/kdreams;src/kdreams/lscr"
@@ -211,7 +208,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-cat3d cat3d "${targets}" "${LIBRARIES}"
 	"${cat3d_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/cat3d"
@@ -220,7 +217,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-catabyss catabyss "${targets}" "${LIBRARIES}"
 	"${catabyss_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/catabyss"
@@ -229,7 +226,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-catarm catarm "${targets}" "${LIBRARIES}"
 	"${catarm_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/cat_late;src/id91_11/cat_all/catarm"
@@ -238,7 +235,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-catapoc catapoc "${targets}" "${LIBRARIES}"
 	"${catapoc_src}" "${be_src}"
 	"src/id91_11;src/id91_11/cat_all;src/id91_11/cat_all/external_restored;src/id91_11/cat_all/cat_late;src/id91_11/cat_all/catapoc"
@@ -247,7 +244,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wl920312 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -256,7 +253,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wl1ap10 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -265,7 +262,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wl1ap11 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -274,7 +271,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wl6ap11 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -283,7 +280,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wl1ap14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -292,7 +289,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wl6gt14a wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -301,7 +298,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wj6im14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -310,7 +307,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wl6gt14b wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -319,7 +316,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-wl6ac14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -328,7 +325,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-sdmfg10 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -337,7 +334,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-sodfg10 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -346,7 +343,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-sodfg14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -355,7 +352,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-sodac14 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -364,7 +361,7 @@ add_refkeen_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
-add_refkeen_separate_target(
+add_refhle_separate_target(
 	reflection-n3dwt10 wolf3d "${targets}" "${LIBRARIES}"
 	"${wolf3d_src}" "${be_src}"
 	"src/wolf3d"
@@ -375,8 +372,8 @@ add_refkeen_separate_target(
 
 if (BUILD_UNIFIED)
 	string(REPLACE ";" " " UNIFIED_GAME_PARAMS "${UNIFIED_GAME_PARAMS}")
-	add_refkeen_unified_target(
-		reflection-keen keen "${targets}"
+	add_refhle_unified_target(
+		reflectionhle "${targets}"
 		"${be_src}" "${common_cc_flags}" "${UNIFIED_GAME_PARAMS}"
 		"${LIBRARIES};reflection-kdreams;reflection-cat3d;reflection-catabyss;reflection-catarm;reflection-catapoc;reflection-wl920312;reflection-wl1ap10;reflection-wl1ap11;reflection-wl6ap11;reflection-wl1ap14;reflection-wl6gt14a;reflection-wj6im14;reflection-wl6gt14b;reflection-wl6ac14;reflection-sdmfg10;reflection-sodfg10;reflection-sodfg14;reflection-sodac14;reflection-n3dwt10"
 	)
