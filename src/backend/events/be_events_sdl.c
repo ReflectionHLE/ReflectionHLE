@@ -101,10 +101,6 @@ void BE_ST_PollEvents(void)
 				break;
 			}
 
-			// Special handling for text input / debug keys
-			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
-				break; // FIXME: This currently does nothing
-
 			if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[scancode],
 			    g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.keys[scancode]))
 				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
