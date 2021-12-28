@@ -230,7 +230,10 @@ void BEL_ST_ConditionallyShowAltInputPointer(void)
 	if (g_refKeenCfg.touchInputToggle == TOUCHINPUT_FORCED)
 		return;
 
-	bool someOnScreenControlIsAccessibleWithMouse = ((g_sdlShowControllerUI || g_sdlShowTouchUI) && (g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown/* || (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)*/));
+	bool someOnScreenControlIsAccessibleWithMouse = (
+		(g_sdlShowControllerUI || g_sdlShowTouchUI || g_sdlDebugKeysUIIsShown) &&
+		(g_sdlFaceButtonsAreShown || g_sdlDpadIsShown || g_sdlTextInputUIIsShown || g_sdlDebugKeysUIIsShown
+		 /* || (g_sdlShowTouchUI && g_sdlTouchControlsAreShown)*/));
 
 	if (someOnScreenControlIsAccessibleWithMouse != g_sdlSomeOnScreenControlWasAccessibleWithMouse)
 	{

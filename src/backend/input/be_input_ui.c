@@ -72,7 +72,7 @@ void BEL_ST_CheckReleasedPointerInTouchControls(BE_ST_TouchID touchId, BE_ST_Fin
 bool BEL_ST_CheckCommonPointerPressCases(
 	BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
-	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
+	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI && !g_sdlDebugKeysUIIsShown)
 		return false;
 
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
@@ -103,7 +103,7 @@ bool BEL_ST_CheckCommonPointerPressCases(
 bool BEL_ST_CheckCommonPointerReleaseCases(
 	BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
-	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
+	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI && !g_sdlDebugKeysUIIsShown)
 		return false;
 
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
@@ -134,7 +134,7 @@ bool BEL_ST_CheckCommonPointerReleaseCases(
 bool BEL_ST_CheckCommonPointerMoveCases(
 	BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
-	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI)
+	if (!g_sdlShowControllerUI && !g_sdlShowTouchUI && !g_sdlDebugKeysUIIsShown)
 		return false;
 
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)

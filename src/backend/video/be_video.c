@@ -477,7 +477,7 @@ static void BEL_ST_FinishHostDisplayUpdate(void)
 		for (int i = 0; i < g_sdlNumOfOnScreenTouchControls; ++i)
 			BEL_ST_RenderFromTexture(g_sdlOnScreenTouchControlsTextures[i], &g_sdlOnScreenTouchControlsRects[i]);
 	}
-	if (g_sdlShowControllerUI || g_sdlShowTouchUI)
+	if (g_sdlShowControllerUI || g_sdlShowTouchUI || g_sdlDebugKeysUIIsShown)
 	{
 		if (g_sdlFaceButtonsAreShown)
 		{
