@@ -109,6 +109,9 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
 	DEF_CTRL_NONKEY_BINDS_KDREAMS_ENUMS(i, k, def)
 
+#define DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(i, k, def) \
+	DEF_ENUM(kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_ ## i].pad, "altcontrolscheme_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+
 #define DEF_CTRL_NONKEY_BINDS_CAT3D_ENUMS(i, k, def) \
 	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, def) \
 	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
@@ -117,6 +120,9 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
 	DEF_CTRL_NONKEY_BINDS_CAT3D_ENUMS(i, k, def)
 
+#define DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(i, k, def) \
+	DEF_ENUM(cat3d.binds[BE_ST_CTRL_BIND_CAT3D_ ## i].pad, "altcontrolscheme_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+
 #define DEF_CTRL_NONKEY_BINDS_WOLF3D_ENUMS(i, k, def) \
 	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, def) \
 	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, "pbind_" k, g_sdlControlSchemeKeyMapCfgVals, def)
@@ -124,6 +130,9 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 #define DEF_CTRL_BINDS_WOLF3D_ENUMS(i, k, def) \
 	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
 	DEF_CTRL_NONKEY_BINDS_WOLF3D_ENUMS(i, k, def)
+
+#define DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(i, k, def) \
+	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, "altcontrolscheme_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
 #define DEF_HIDDEN_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, &g_refKeenCfg.setting, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
@@ -206,6 +215,20 @@ static BE_ST_CFG_Setting_T g_be_st_kdreams_settings[] = {
 	DEF_CTRL_NONKEY_BINDS_KDREAMS_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 	DEF_CTRL_NONKEY_BINDS_KDREAMS_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
+
+static BE_ST_CFG_Setting_T g_be_st_kdreams_legacy_settings[] = {
+	DEF_BOOL(kdreams.useLeftStick, "altcontroller_lstick", true)
+	DEF_BOOL(kdreams.useRightStick, "altcontroller_rstick", false)
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(UP, "up", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(DOWN, "down", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(LEFT, "left", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(RIGHT, "right", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(JUMP, "jump", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(THROW, "throw", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(STATS, "stats", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_LEGACY_BINDS_KDREAMS_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
+};
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
@@ -232,6 +255,31 @@ static BE_ST_CFG_Setting_T g_be_st_cat3d_settings[] = {
 	DEF_CTRL_NONKEY_BINDS_CAT3D_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 #endif
 	DEF_CTRL_NONKEY_BINDS_CAT3D_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
+};
+
+static BE_ST_CFG_Setting_T g_be_st_cat3d_legacy_settings[] = {
+	DEF_BOOL(cat3d.useLeftStick, "altcontroller_lstick", true)
+	DEF_BOOL(cat3d.useRightStick, "altcontroller_rstick", false)
+	DEF_BOOL(cat3d.analogMotion, "altcontroller_analogmotion", false)
+	DEF_BOOL(cat3d.novert, "novert", false) // Used to be in reflection-catacomb.cfg
+	// FIXME: HACK (extra 2 are for triggers)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(UP, "up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(DOWN, "down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(LEFT, "left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(RIGHT, "right", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(FIRE, "fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(STRAFE, "strafe", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(DRINK, "drink", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(BOLT, "bolt", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(NUKE, "nuke", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(FASTTURN, "fastturn", BE_ST_CTRL_BUT_RSHOULDER)
+#if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(SCROLLS, "scrolls", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
+#endif
+#ifdef REFKEEN_HAS_VER_CATADVENTURES
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+#endif
+	DEF_CTRL_LEGACY_BINDS_CAT3D_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 
@@ -261,6 +309,30 @@ static BE_ST_CFG_Setting_T g_be_st_wolf3d_settings[] = {
 	DEF_CTRL_BINDS_WOLF3D_ENUMS(MAP, "map", BE_ST_CTRL_BUT_A)
 	DEF_CTRL_NONKEY_BINDS_WOLF3D_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
 	DEF_CTRL_NONKEY_BINDS_WOLF3D_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
+};
+
+static BE_ST_CFG_Setting_T g_be_st_wolf3d_legacy_settings[] = {
+	DEF_BOOL(wolf3d.useLeftStick, "altcontroller_lstick", true)
+	DEF_BOOL(wolf3d.useRightStick, "altcontroller_rstick", false)
+	DEF_BOOL(wolf3d.analogMotion, "altcontroller_analogmotion", false)
+	// FIXME: HACK (extra 2 are for triggers)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(UP, "up", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(DOWN, "down", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(LEFT, "left", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(RIGHT, "right", BE_ST_CTRL_BUT_MAX+2)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(FIRE, "fire", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(STRAFE, "strafe", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(USE, "use", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(RUN, "run", BE_ST_CTRL_BUT_RSHOULDER)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(WEAPON1, "weapon1", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(WEAPON2, "weapon2", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(WEAPON3, "weapon3", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(WEAPON4, "weapon4", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(WEAPON5, "weapon5", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(WEAPON6, "weapon6", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(MAP, "map", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 
@@ -438,16 +510,26 @@ static void BEL_ST_ParseConfig(const char *name, BE_ST_CFG_Setting_T *settings, 
 
 void BEL_ST_ParseConfigFiles(void)
 {
-	BEL_ST_ParseConfig("reflectionhle.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+	// First two parsed files for each game cover legacy or relocated settings
 #ifdef REFKEEN_HAS_VER_KDREAMS
+	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_kdreams_legacy_settings, BE_Cross_ArrayLen(g_be_st_kdreams_legacy_settings));
+	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+
 	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	BEL_ST_ParseConfig("reflection-catacomb.cfg", g_be_st_cat3d_legacy_settings, BE_Cross_ArrayLen(g_be_st_cat3d_legacy_settings));
+	BEL_ST_ParseConfig("reflection-catacomb.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+
 	BEL_ST_ParseConfig("reflection-cat3d.cfg", g_be_st_cat3d_settings, BE_Cross_ArrayLen(g_be_st_cat3d_settings));
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_legacy_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_legacy_settings));
+	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+
 	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_settings));
 #endif
+	BEL_ST_ParseConfig("reflectionhle.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
 }
 
 static void BEL_ST_SaveConfig(const char *name, const BE_ST_CFG_Setting_T *settings, int n)
