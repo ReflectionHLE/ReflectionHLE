@@ -57,11 +57,11 @@ were open-sourced by Richard Mandel of Flat Rock Software.
 Wolfenstein 3D and Spear of Destiny were open-sourced
 by John Carmack while working for id Software in the 90s.
 
-## Reflection Keen programming
+## ReflectionHLE programming
 
 * Yoav N.
 
-## Reflection Keen contributors
+## ReflectionHLE contributors
 
 * Source code patches: Braden Obrzut
 * Application icon: Maxim Genis
@@ -85,7 +85,7 @@ harekiet, qbix79, finsterr, fanskapet, canadacow, c2woody, h-a-l-9000.
 Not only the DOSBox project makes it possible to (quite faithfully) play a ton
 of DOS games on more recent platforms, but its DBOPL emulator is used for AdLib
 emulation; This also applies to modern source ports, not just DOSBox itself.
-Reflection Keen itself originally made use of DBOPL as well. Furthermore,
+Originally, ReflectionHLE made use of DBOPL as well. Furthermore,
 while not necessarily intended for assistance with porting, the
 DOSBox debugger has surely (seriously) been very useful.
 
