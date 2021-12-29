@@ -2748,7 +2748,7 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 	SDL_Event event;
 	bool keepRunning = true;
 	const int defaultChoice =
-		(menuBind == BE_MENUBIND_PAD) ? BE_ST_CTRL_BUT_MAX + 2/*triggers*/ :
+		(menuBind == BE_MENUBIND_PAD) ? BE_ST_CTRL_BUT_BACK/*Unusable*/ :
 		(menuBind == BE_MENUBIND_MOUSE) ? BE_ST_CTRL_MOUSE_BUT_MAX :
 		0;
 	int choice = defaultChoice;
