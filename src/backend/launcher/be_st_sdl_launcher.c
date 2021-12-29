@@ -625,8 +625,8 @@ static BEMenu g_beControllerMappingsFromSteamImportedSuccessfullyMenu = {
 #ifdef REFKEEN_HAS_VER_KDREAMS
 /*** Keen Dreams settings menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beKDreamsKeyBindsMenu)
-BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_MouseBinds, "Mouse button overrides", &g_beKDreamsMouseBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_KeyBinds, "Keyboard overrides (experimental)", &g_beKDreamsKeyBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beKDreamsMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beKDreamsSettingsMenuItem_PadBinds, "Modern controller binds", &g_beKDreamsPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beKDreamsSettingsMenuItem_AbsMouseMotion, "Absolute mouse motion*", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_STATIC(g_beKDreamsSettingsMenuItem_AbsMouseMotionComment,
@@ -736,8 +736,8 @@ BEMenu g_beKDreamsPadBindsMenu = {
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 /*** Catacomb 3-D settings menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beCat3DKeyBindsMenu)
-BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_MouseBinds, "Mouse button overrides", &g_beCat3DMouseBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_KeyBinds, "Keyboard overrides (experimental)", &g_beCat3DKeyBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beCat3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beCat3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
 
@@ -880,8 +880,8 @@ BEMenu g_beCat3DPadBindsMenu = {
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 /*** Wolfenstein 3D settings menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_KeyBinds, "Keyboard overrides", &g_beWolf3DKeyBindsMenu)
-BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_MouseBinds, "Mouse button overrides", &g_beWolf3DMouseBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_KeyBinds, "Keyboard overrides (experimental)", &g_beWolf3DKeyBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beWolf3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beWolf3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
