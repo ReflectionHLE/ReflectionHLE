@@ -474,7 +474,6 @@ static void BEL_ST_SaveSetting(FILE *fp, const BE_ST_CFG_Setting_T *setting)
 
 static void BEL_ST_ParseConfig(const char *name, BE_ST_CFG_Setting_T *settings, int n)
 {
-	BEL_ST_SetConfigDefaults(settings, n);
 	// Try to load config
 	FILE *fp = BE_Cross_open_additionalfile_for_reading(name);
 	if (!fp)
@@ -510,20 +509,28 @@ static void BEL_ST_ParseConfig(const char *name, BE_ST_CFG_Setting_T *settings, 
 
 void BEL_ST_ParseConfigFiles(void)
 {
+	BEL_ST_SetConfigDefaults(g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+
 	// First two parsed files for each game cover legacy or relocated settings
 #ifdef REFKEEN_HAS_VER_KDREAMS
+	BEL_ST_SetConfigDefaults(g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
+
 	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_kdreams_legacy_settings, BE_Cross_ArrayLen(g_be_st_kdreams_legacy_settings));
 	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
 
 	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	BEL_ST_SetConfigDefaults(g_be_st_cat3d_settings, BE_Cross_ArrayLen(g_be_st_cat3d_settings));
+
 	BEL_ST_ParseConfig("reflection-catacomb.cfg", g_be_st_cat3d_legacy_settings, BE_Cross_ArrayLen(g_be_st_cat3d_legacy_settings));
 	BEL_ST_ParseConfig("reflection-catacomb.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
 
 	BEL_ST_ParseConfig("reflection-cat3d.cfg", g_be_st_cat3d_settings, BE_Cross_ArrayLen(g_be_st_cat3d_settings));
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	BEL_ST_SetConfigDefaults(g_be_st_wolf3d_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_settings));
+
 	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_legacy_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_legacy_settings));
 	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
 
