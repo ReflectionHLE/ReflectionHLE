@@ -33,6 +33,7 @@
 #include "backend/gamedefs/be_gamedefs_structs.h"
 #endif
 
+#include <string.h>
 #include "SDL_main.h"
 
 #if (!defined REFKEEN_ENABLE_LAUNCHER) && (!defined REFKEEN_CONFIG_ENABLE_CMDLINE)
