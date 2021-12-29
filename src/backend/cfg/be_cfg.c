@@ -67,9 +67,8 @@ typedef struct {
 
 // Enumerated by SDL_GameControllerButton, for most
 static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
-	"a", "b", "x", "y", 0, 0, 0, "lstick", "rstick", "lshoulder", "rshoulder", "dpadup", "dpaddown", "dpadleft", "dpadright", 0, "paddle1", "paddle2", "paddle3", "paddle4",
+	"a", "b", "x", "y", "", "", "", "lstick", "rstick", "lshoulder", "rshoulder", "dpadup", "dpaddown", "dpadleft", "dpadright", "", "paddle1", "paddle2", "paddle3", "paddle4",
 	"ltrigger", "rtrigger", // Actually axes but these are added as extras
-	"" // for any entry which is not set
 };
 
 // Enumerated by other enums, as well as "bool"
