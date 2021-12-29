@@ -5,7 +5,7 @@
 // Used for mapping cfg-side key identifiers to internal integers.
 // It was originally made using SDL2 scancodes as a base.
 
-struct {
+static struct {
 	const char *name;
 	int id;
 } g_be_keyPairs[] = {
