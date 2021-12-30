@@ -16,7 +16,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 31
         versionCode 1
-        versionName "1.0"
+        versionName "0.40.0"
         externalNativeBuild {
             // ndkBuild {
             //    arguments "APP_PLATFORM=android-16"

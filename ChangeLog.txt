@@ -2,6 +2,75 @@
 Changelog
 ---------
 
+Dec 31, 2021 (v0.40.0):
+
+The project is renamed "ReflectionHLE" as of this version.
+As a side-effect, users of earlier Reflection Keen versions will have to
+manually migrate older settings and saved games. See paths given below.
+
+Windows: %APPDATA%\reflection-keen => %APPDATA%\reflectionhle
+
+macOS: ~/Library/Application Support/reflection-keen
+=> ~/Library/Application Support/reflectionhle
+
+Linux - two paths (assuming $XDG_CONFIG_HOME and $XDG_DATA_HOME aren't set):
+~/.config/reflection-keen => ~/.config/reflectionhle
+~/.local/share/reflection-keen => ~/.local/share/reflectionhle
+
+* The project was renamed from "Reflection Keen" to "ReflectionHLE".
+* A single executable can now be used for running the supported games.
+It is identified as "ReflectionHLE".
+* Due to using one exe, the application icon had its game identifiers removed.
+* Additionally, the cfg file was split, with game-specific settings residing
+in their own separate cfg files. Some cfg key and value names were further
+renamed. Code was added for automatic migration of these from v0.33.1, but
+this does not cover the directories which store the cfg files and saved games.
+* The command-line options -skipintro and -showslides were removed. Instead,
+you can show the intro or slides with sub-gamever selection via -gamever.
+* Added the command-line option -listgamevers. It can be used for listing
+supported game versions, instead of -?, which doesn't do so anymore.
+* There's now experimental support for keyboard and mouse button overrides,
+applying to in-game actions during gameplay.
+* Note that these take a higher priority than in-game settings for the
+same keys. They also have a higher priority than hardcoded behaviors of them.
+For instance, it might be impossible to use a cheat code. You can still
+use a cheat code via the on-screen debug keys, though.
+* The on-screen keyboard with debug keys can now be displayed even
+if there's no use of touch input or any game controller.
+* Revert the impact of changes from v0.33.0 to the way controller buttons
+get mapped under the modern controller scheme. Instead of mapping to the
+default settings of a game, mapping is now done to the matching actions.
+For instance, in Keen Dreams, you can map a button to Jump instead
+of Ctrl (the default key for jumping in the original releases).
+This is still done in a different manner from versions preceding 0.33.0,
+as it's now less tied to the original games' keyboard settings.
+* As a side-effect, there are changes to the impacts of the analog motion
+toggles, even while using a D-pad. Additionally, the novert toggle should
+also impact vertical motion from a game controller or touch input.
+* Catacomb Abyss: Ensure it's possible to scroll through HELP.TXT using a game
+controller or touch input, even if movement keys were changed in config.abs.
+* General restructuring of the launcher's menus, following the support for
+multiple games from a single exe and the addition of key/button overrides.
+* Android builds are now possible again, albeit without audio resampling.
+Generally speaking, these builds should be considered less supported.
+* For technical reasons, sound output is done somewhat differently on Android.
+There may still be problems with audio, including delays.
+* Improvements to timing of sound playback during the intermission screen
+in Wolfenstein 3D, Spear of Destiny and Super 3-D Noah's Ark. This
+might be more noticeable while VSync is toggled on.
+* Launcher control bindings for Wolfenstein 3D and Super 3-D Noah's Ark:
+The weapons/feeders are now referred to by their numbers,
+instead of game-specific descriptions.
+* Emulation of mouse motion via game controllers was made
+less frame rate dependent.
+* Fix a typo impacting startup of Catacomb Apocalypse's hint book. The offset
+of a textual screen as present in the original exe was wrong. The bug was
+introduced during a refactor after the release of v0.30.1.
+This screen is actually used just in the electronic catalog of the supported
+shareware version of Catacomb Abyss, upon trying to print the catalog.
+* Catacombs, Wolf3D: Fix building in case "char" is an unsigned type.
+* Additional miscellaneous refactors, edits and fixes.
+
 Aug 24, 2021 (v0.33.1):
 * Identified as "Loud Edition" in-game, since changes related to audio mixing
 increased the default sound volumes, at least outside of the PC Speaker.
