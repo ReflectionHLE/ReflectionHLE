@@ -147,6 +147,18 @@ const char *g_be_st_padFeatureIdToNameMap[3+BE_ST_CTRL_BUT_MAX] = {
 	NULL // Used as a terminator for the launcher
 };
 
+bool BE_ST_IsValidPadButton(int padAction)
+{
+	return ((padAction >= 0) && (padAction < BE_ST_CTRL_BUT_MAX) &&
+	        *g_be_st_padFeatureIdToNameMap[padAction]);
+}
+
+bool BE_ST_IsValidPadAxis(int padAction)
+{
+	return ((padAction == BE_ST_CTRL_BUT_MAX) ||
+	        (padAction == BE_ST_CTRL_BUT_MAX+1));
+}
+
 void BEL_ST_InitKeyMap(void)
 {
 	// When the launcher prepares a menu using this, it stops at NULL

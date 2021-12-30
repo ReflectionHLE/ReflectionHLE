@@ -2813,15 +2813,8 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 				break;
 			case SDL_CONTROLLERBUTTONDOWN:
 				if ((menuBind == BE_MENUBIND_PAD) &&
-				    (event.cbutton.button >= 0) &&
-				    (event.cbutton.button < BE_ST_CTRL_BUT_MAX) &&
-				    (event.cbutton.button != BE_ST_CTRL_BUT_BACK) &&
-				    (event.cbutton.button != BE_ST_CTRL_BUT_GUIDE) &&
-				    (event.cbutton.button != BE_ST_CTRL_BUT_START) &&
-				    (event.cbutton.button != BE_ST_CTRL_BUT_MISC1))
-				{
+				    BE_ST_IsValidPadButton(event.cbutton.button))
 					choice = event.cbutton.button;
-				}
 				keepRunning = false;
 				break;
 

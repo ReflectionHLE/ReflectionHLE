@@ -145,6 +145,9 @@ typedef enum {
 	BE_ST_CTRL_AXIS_MAX,
 } BE_ST_ControllerAxis;
 
+bool BE_ST_IsValidPadButton(int padAction);
+bool BE_ST_IsValidPadAxis(int padAction);
+
 typedef enum {
 	BE_ST_CTRL_MAP_NONE = 0, // Should be set to 0 for e.g., default initializations
 	BE_ST_CTRL_MAP_KEYSCANCODE,

@@ -924,9 +924,9 @@ static void CheckMouseMapping(int actionmapping, const BE_ST_ControllerSingleMap
 
 static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
-	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_BUT_MAX))
+	if (BE_ST_IsValidPadButton(actionmapping))
 		g_ingame_altcontrol_mapping_gameplay.pbuttons[actionmapping] = *inputmap;
-	else if ((actionmapping >= BE_ST_CTRL_BUT_MAX) && (actionmapping < BE_ST_CTRL_BUT_MAX+2))
+	else if (BE_ST_IsValidPadAxis(actionmapping))
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_BUT_MAX][1] = *inputmap;
 }
 
