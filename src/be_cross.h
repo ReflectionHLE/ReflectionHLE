@@ -39,22 +39,13 @@
 // related macros), but this header may be the one included first
 #include "refkeen_config.h"
 
-#ifdef __cplusplus
-#include <algorithm>
-#endif
-
 typedef enum BE_Log_Message_Class_T
 {
 	BE_LOG_MSG_NORMAL, BE_LOG_MSG_WARNING, BE_LOG_MSG_ERROR
 } BE_Log_Message_Class_T;
 
-#ifdef __cplusplus
-#define BE_Cross_TypedMax(T, x, y) std::max<T>(x, y)
-#define BE_Cross_TypedMin(T, x, y) std::min<T>(x, y)
-#else
 #define BE_Cross_TypedMax(T, x, y) ({T _x = (x), _y = (y); (_x > _y) ? _x : _y;})
 #define BE_Cross_TypedMin(T, x, y) ({T _x = (x), _y = (y); (_x < _y) ? _x : _y;})
-#endif
 
 #define BE_Cross_TypedClamp(T, x, min, max) \
         BE_Cross_TypedMin(T, max, BE_Cross_TypedMax(T, min, x))
