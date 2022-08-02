@@ -30,10 +30,14 @@
 #define BE_AUDIO_MIXER_H
 
 #include "be_audio_resampling.h"
+#include "../threading/be_mutex.h"
 
 typedef struct BE_ST_AudioMixerSource
 {
 	void (*genSamples)(BE_ST_SndSample_T *stream, int length);
+	/* Deadlock prevention rule: When a thread locks this mutex,
+	   it must NOT lock another mutex before unlocking this one. */
+	BE_ST_Mutex_T *mutex;
 	struct
 	{
 		BE_ST_SndSample_T *buffer;

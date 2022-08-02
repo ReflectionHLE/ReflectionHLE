@@ -31,6 +31,7 @@
 #include "be_audio_mixer.h"
 #include "be_audio_resampling.h"
 #include "be_st_sdl_private.h" // For BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -85,9 +86,9 @@ static void BEL_ST_AudioMixerFreeSourceBuffers(BE_ST_AudioMixerSource *src)
 
 void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq)
 {
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(src->mutex);
 	src->skip = true;
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(src->mutex);
 
 	if (src->in.buffer)
 		BEL_ST_AudioMixerFreeSourceBuffers(src);
@@ -111,9 +112,9 @@ void BE_ST_AudioMixerSetSourceFreq(BE_ST_AudioMixerSource *src, int freq)
 	if (!src->out.buffer)
 		BE_ST_ExitWithErrorMsg("BE_ST_AudioMixerSetSourceFreq: Out of memory!");
 finish:
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(src->mutex);
 	src->skip = false;
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(src->mutex);
 }
 
 void BEL_ST_AudioMixerInit(int freq, int channels)
@@ -133,7 +134,10 @@ void BEL_ST_AudioMixerInit(int freq, int channels)
 void BEL_ST_AudioMixerShutdown(void)
 {
 	for (int i = 0; i < g_stAudioMixer.numSources; ++i)
+	{
+		BE_ST_FreeMutex(g_stAudioMixer.sources[i].mutex);
 		BEL_ST_AudioMixerFreeSourceBuffers(&g_stAudioMixer.sources[i]);
+	}
 }
 
 void BEL_ST_AudioMixerUpdateFromPITRateWord(int_fast32_t rateVal)
@@ -169,6 +173,9 @@ BE_ST_AudioMixerSource *BEL_ST_AudioMixerAddSource(
 	src->userVol = (userVolAsInt == BE_AUDIO_VOL_MIN) ?
 	               0.0 : exp((userVolAsInt - BE_AUDIO_VOL_MAX)/4.0);
 
+	src->mutex = BE_ST_CreateMutex();
+	assert(src->mutex);
+
 	BE_ST_AudioMixerSetSourceFreq(src, freq);
 	return src;
 }
@@ -190,7 +197,7 @@ void BEL_ST_SetSBProVolumesForSource(BE_ST_AudioMixerSource *src, uint8_t volBit
 	if (g_refKeenCfg.sb < SOUNDBLASTER_SB16)
 		volBits |= 0x11;
 
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(src->mutex);
 	src->sbVolBits = volBits;
 	if (mute)
 		src->vol[0] = src->vol[1] = 0.0;
@@ -199,14 +206,14 @@ void BEL_ST_SetSBProVolumesForSource(BE_ST_AudioMixerSource *src, uint8_t volBit
 		src->vol[0] = g_stAudioMixer.sbVolTable[volBits>>4];
 		src->vol[1] = g_stAudioMixer.sbVolTable[volBits&15];
 	}
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(src->mutex);
 }
 
 uint8_t BEL_ST_GetSBProVolumesFromSource(const BE_ST_AudioMixerSource *src)
 {
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(src->mutex);
 	uint8_t volBits = src->sbVolBits;
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(src->mutex);
 	return volBits;
 }
 
@@ -217,14 +224,13 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 	int i, j, k;
 	BE_ST_AudioMixerSource *src;
 
-	BE_ST_LockAudioRecursively();
-
 	while (len)
 	{
 		uint32_t processedInputSamples = g_stAudioMixer.pendingSamples;
 		samplesToGenerate -= processedInputSamples;
 		while (samplesToGenerate > 0)
 		{
+			BE_ST_LockAudioRecursively();
 			// Optionally make an inner callback back, possibly in game code
 			if (!g_stAudioMixer.offsetInSound && g_sdlTimerIntFuncPtr)
 			{
@@ -233,6 +239,7 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 				BE_ST_SET_TIMER_INT_COUNTER_INC();
 #endif
 			}
+			BE_ST_UnlockAudioRecursively();
 			// Now generate sound
 			uint32_t currNumOfSamples =
 				BE_Cross_TypedMin(
@@ -244,26 +251,29 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 			for (i = 0; i < g_stAudioMixer.numSources; ++i)
 			{
 				src = &g_stAudioMixer.sources[i];
-				if (src->skip)
-					continue;
-				uint32_t srcSamplesToGen = processedInputSamples;
-				srcSamplesToGen = srcSamplesToGen * src->freq + src->numScaledSamplesToGenNextTime;
-				src->numScaledSamplesToGenNextTime = srcSamplesToGen % g_stAudioMixer.freq;
-				srcSamplesToGen /= g_stAudioMixer.freq;
-				if (srcSamplesToGen > src->in.size)
+				BE_ST_LockMutexRecursively(src->mutex);
+				if (!src->skip)
 				{
-					BE_Cross_LogMessage(
-						BE_LOG_MSG_NORMAL,
-						"BEL_ST_AudioMixerCallback: Overflow for source %d; Want %u, have %u\n",
-						i, srcSamplesToGen, src->in.size);
-					srcSamplesToGen = src->in.size;
+					uint32_t srcSamplesToGen = processedInputSamples;
+					srcSamplesToGen = srcSamplesToGen * src->freq + src->numScaledSamplesToGenNextTime;
+					src->numScaledSamplesToGenNextTime = srcSamplesToGen % g_stAudioMixer.freq;
+					srcSamplesToGen /= g_stAudioMixer.freq;
+					if (srcSamplesToGen > src->in.size)
+					{
+						BE_Cross_LogMessage(
+							BE_LOG_MSG_NORMAL,
+							"BEL_ST_AudioMixerCallback: Overflow for source %d; Want %u, have %u\n",
+							i, srcSamplesToGen, src->in.size);
+						srcSamplesToGen = src->in.size;
+					}
+					if (srcSamplesToGen > src->in.num)
+					{
+						src->genSamples(&src->in.buffer[src->in.num],
+						                srcSamplesToGen - src->in.num);
+						src->in.num = srcSamplesToGen;
+					}
 				}
-				if (srcSamplesToGen > src->in.num)
-				{
-					src->genSamples(&src->in.buffer[src->in.num],
-					                srcSamplesToGen - src->in.num);
-					src->in.num = srcSamplesToGen;
-				}
+				BE_ST_UnlockMutexRecursively(src->mutex);
 			}
 			// We're done with current part for now
 			g_stAudioMixer.offsetInSound += currNumOfSamples;
@@ -285,33 +295,36 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 		for (i = 0; i < g_stAudioMixer.numSources; ++i)
 		{
 			src = &g_stAudioMixer.sources[i];
-			if (src->skip)
-				continue;
-			uint32_t consumed, produced;
-			uint32_t maxSamplesToOutput = BE_Cross_TypedMin(
-				uint32_t, len,
-				src->out.size - src->out.num);
-			if (g_stAudioMixer.freq != src->freq)
-				BEL_ST_DoResample(&src->resamplingContext,
-				                  &consumed, &produced,
-				                  src->in.buffer,
-				                  &src->out.buffer[src->out.num],
-				                  src->in.num, maxSamplesToOutput);
-			else
+			BE_ST_LockMutexRecursively(src->mutex);
+			if (!src->skip)
 			{
-				consumed = produced = BE_Cross_TypedMin(
-					uint32_t, maxSamplesToOutput, src->in.num);
-				memcpy(&src->out.buffer[src->out.num], src->in.buffer,
-				       sizeof(BE_ST_SndSample_T) * consumed);
+				uint32_t consumed, produced;
+				uint32_t maxSamplesToOutput = BE_Cross_TypedMin(
+					uint32_t, len,
+					src->out.size - src->out.num);
+				if (g_stAudioMixer.freq != src->freq)
+					BEL_ST_DoResample(&src->resamplingContext,
+					                  &consumed, &produced,
+					                  src->in.buffer,
+					                  &src->out.buffer[src->out.num],
+					                  src->in.num, maxSamplesToOutput);
+				else
+				{
+					consumed = produced = BE_Cross_TypedMin(
+						uint32_t, maxSamplesToOutput, src->in.num);
+					memcpy(&src->out.buffer[src->out.num], src->in.buffer,
+					       sizeof(BE_ST_SndSample_T) * consumed);
+				}
+				if ((consumed > 0) && (consumed < src->in.num))
+					memmove(src->in.buffer, &src->in.buffer[consumed],
+					        sizeof(BE_ST_SndSample_T) * (src->in.num - consumed));
+
+				src->in.num -= consumed;
+				src->out.num += produced;
+
+				samplesToOutput = BE_Cross_TypedMin(uint32_t, samplesToOutput, src->out.num);
 			}
-			if ((consumed > 0) && (consumed < src->in.num))
-				memmove(src->in.buffer, &src->in.buffer[consumed],
-				        sizeof(BE_ST_SndSample_T) * (src->in.num - consumed));
-
-			src->in.num -= consumed;
-			src->out.num += produced;
-
-			samplesToOutput = BE_Cross_TypedMin(uint32_t, samplesToOutput, src->out.num);
+			BE_ST_UnlockMutexRecursively(src->mutex);
 		}
 
 		// Mix
@@ -328,17 +341,19 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 				for (j = 0; j < g_stAudioMixer.numSources; ++j)
 				{
 					src = &g_stAudioMixer.sources[j];
-					if (src->skip)
-						continue;
-
-					if (channels == 1)
-						sums[0] += src->out.buffer[i] * src->userVol *
-						           ((src->vol[0] + src->vol[1]) / 2.0f);
-					else
+					BE_ST_LockMutexRecursively(src->mutex);
+					if (!src->skip)
 					{
-						sums[0] += src->out.buffer[i] * src->userVol * src->vol[0];
-						sums[1] += src->out.buffer[i] * src->userVol * src->vol[1];
+						if (channels == 1)
+							sums[0] += src->out.buffer[i] * src->userVol *
+							           ((src->vol[0] + src->vol[1]) / 2.0f);
+						else
+						{
+							sums[0] += src->out.buffer[i] * src->userVol * src->vol[0];
+							sums[1] += src->out.buffer[i] * src->userVol * src->vol[1];
+						}
 					}
+					BE_ST_UnlockMutexRecursively(src->mutex);
 				}
 				stream[0] = BEL_ST_SamplesSumClamp(sums[0]);
 				if (channels != 1)
@@ -348,18 +363,20 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 			for (j = 0; j < g_stAudioMixer.numSources; ++j)
 			{
 				src = &g_stAudioMixer.sources[j];
-				if (src->skip)
-					continue;
-
-				if (samplesToOutput < src->out.num)
+				BE_ST_LockMutexRecursively(src->mutex);
+				if (!src->skip)
 				{
-					memmove(src->out.buffer,
-					        &src->out.buffer[samplesToOutput],
-					        sizeof(BE_ST_SndSample_T) * (src->out.num - samplesToOutput));
-					src->out.num -= samplesToOutput;
+					if (samplesToOutput < src->out.num)
+					{
+						memmove(src->out.buffer,
+						        &src->out.buffer[samplesToOutput],
+						        sizeof(BE_ST_SndSample_T) * (src->out.num - samplesToOutput));
+						src->out.num -= samplesToOutput;
+					}
+					else
+						src->out.num = 0;
 				}
-				else
-					src->out.num = 0;
+				BE_ST_UnlockMutexRecursively(src->mutex);
 			}
 			len -= samplesToOutput;
 			if (g_stAudioMixer.pendingSamples < samplesToOutput)
@@ -377,5 +394,4 @@ void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 		}
 		samplesToGenerate = samplesToGenerateNextTime;
 	}
-	BE_ST_UnlockAudioRecursively();
 }

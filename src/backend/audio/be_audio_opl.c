@@ -93,7 +93,7 @@ void BE_ST_OPL2Write(uint8_t reg, uint8_t val)
 	if (!g_sdlEmulatedOPLChipReady)
 		return; // Wolf3D may call this function from wl_menu.c on quit
 
-	BE_ST_LockAudioRecursively(); // RECURSIVE lock
+	BE_ST_LockMutexRecursively(g_oplMixerSource->mutex); // RECURSIVE lock
 
 	// Per the AdLib manual, this function should simulate 6 reads
 	// of the register port after writing to it (3.3 microseconds),
@@ -120,5 +120,5 @@ void BE_ST_OPL2Write(uint8_t reg, uint8_t val)
 		g_oplMixerSource->in.num += length;
 	}
 
-	BE_ST_UnlockAudioRecursively(); // RECURSIVE unlock
+	BE_ST_UnlockMutexRecursively(g_oplMixerSource->mutex); // RECURSIVE lock
 }

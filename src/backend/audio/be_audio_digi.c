@@ -41,22 +41,22 @@ static BE_ST_AudioMixerSource *g_sdlDigiMixerSource;
 
 void BE_ST_PlaySoundEffect(void *data, int numOfSamples, int bits)
 {
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(g_sdlDigiMixerSource->mutex);
 
 	g_sdlSoundEffectCurrPtr = data;
 	g_sdlSoundEffectSamplesLeft = numOfSamples;
 	g_sdlSoundEffectBits = bits;
 
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(g_sdlDigiMixerSource->mutex);
 }
 
 void BE_ST_StopSoundEffect(void)
 {
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(g_sdlDigiMixerSource->mutex);
 
 	g_sdlSoundEffectSamplesLeft = 0;
 
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(g_sdlDigiMixerSource->mutex);
 }
 
 bool BE_ST_IsEmulatedSBReady(void)
@@ -96,16 +96,16 @@ static void BEL_ST_ConvertS16SamplesToOutputFormat(int16_t *inPtr, int16_t *outP
 
 void BE_ST_StartDigiAudioInt(void (*funcPtr)(void))
 {
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(g_sdlDigiMixerSource->mutex);
 	g_sdlDigiAudioIntFuncPtr = funcPtr;
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(g_sdlDigiMixerSource->mutex);
 }
 
 void BE_ST_StopDigiAudioInt(void)
 {
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(g_sdlDigiMixerSource->mutex);
 	g_sdlDigiAudioIntFuncPtr = 0;
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(g_sdlDigiMixerSource->mutex);
 }
 
 void BEL_ST_SetDigiMixerSource(BE_ST_AudioMixerSource *src)

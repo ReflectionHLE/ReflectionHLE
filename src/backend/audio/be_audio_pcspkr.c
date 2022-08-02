@@ -68,16 +68,16 @@ void BE_ST_PCSpeakerSetConstVal(bool isUp)
 
 void BE_ST_BSound(uint16_t frequency)
 {
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(g_pcSpeakerMixerSource->mutex);
 	BE_ST_PCSpeakerSetInvFreq(PC_PIT_RATE/(uint32_t)frequency);
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(g_pcSpeakerMixerSource->mutex);
 }
 
 void BE_ST_BNoSound(void)
 {
-	BE_ST_LockAudioRecursively();
+	BE_ST_LockMutexRecursively(g_pcSpeakerMixerSource->mutex);
 	BE_ST_PCSpeakerSetConstVal(0);
-	BE_ST_UnlockAudioRecursively();
+	BE_ST_UnlockMutexRecursively(g_pcSpeakerMixerSource->mutex);
 }
 
 void BEL_ST_SetPCSpeakerMixerSource(BE_ST_AudioMixerSource *src)
