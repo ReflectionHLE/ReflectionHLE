@@ -1,6 +1,6 @@
 /* Keen Dreams Source Code
  * Copyright (C) 2014 Javier M. Chavez
- * Copyright (C) 2016-2021 NY00123
+ * Copyright (C) 2016-2022 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

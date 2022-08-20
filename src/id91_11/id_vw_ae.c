@@ -1,6 +1,6 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
- * Copyright (C) 2014-2021 NY00123
+ * Copyright (C) 2014-2022 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
