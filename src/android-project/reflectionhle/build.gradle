@@ -67,5 +67,5 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.core:core:1.5.0"
 }
