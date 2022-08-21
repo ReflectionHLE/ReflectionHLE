@@ -54,16 +54,20 @@ static inline void BEL_ST_PCSpeakerSetBeepSample(bool isUp)
 // Frequency is about 1193182Hz/spkVal
 void BE_ST_PCSpeakerSetInvFreq(uint16_t spkInvFreq)
 {
+	BE_ST_LockMutexRecursively(g_pcSpeakerMixerSource->mutex);
 	g_sdlPCSpeakerConnected = true;
 	BEL_ST_PCSpeakerSetBeepSample(0);
 	g_sdlBeepHalfCycleCounter = 0;
 	g_sdlBeepHalfCycleCounterUpperBound = g_be_pcSpeakerSampleFreq * spkInvFreq;
+	BE_ST_UnlockMutexRecursively(g_pcSpeakerMixerSource->mutex);
 }
 
 void BE_ST_PCSpeakerSetConstVal(bool isUp)
 {
+	BE_ST_LockMutexRecursively(g_pcSpeakerMixerSource->mutex);
 	g_sdlPCSpeakerConnected = false;
 	BEL_ST_PCSpeakerSetBeepSample(isUp);
+	BE_ST_UnlockMutexRecursively(g_pcSpeakerMixerSource->mutex);
 }
 
 void BE_ST_BSound(uint16_t frequency)
