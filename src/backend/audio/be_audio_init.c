@@ -67,11 +67,12 @@ void BE_ST_InitAudio(void)
 	    (g_sdlAudioSubsystemUp && ((audioDeviceFlags & BE_AUDIO_DEVICE_PCSPKR) == BE_AUDIO_DEVICE_PCSPKR)))
 	{
 		BEL_ST_SetPCSpeakerSampleRate(freq);
-		BEL_ST_AudioMixerAddSource(
-			freq,
-			samplesForSourceBuffer,
-			g_refKeenCfg.pcSpkVol,
-			BEL_ST_GenPCSpeakerSamples);
+		BEL_ST_SetPCSpeakerMixerSource(
+			BEL_ST_AudioMixerAddSource(
+				freq,
+				samplesForSourceBuffer,
+				g_refKeenCfg.pcSpkVol,
+				BEL_ST_GenPCSpeakerSamples));
 	}
 
 	if (((audioDeviceFlags & BE_AUDIO_DEVICE_DIGI_REQUIRED) == BE_AUDIO_DEVICE_DIGI_REQUIRED) ||

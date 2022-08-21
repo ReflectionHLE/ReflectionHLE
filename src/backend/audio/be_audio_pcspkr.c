@@ -27,7 +27,7 @@
  */
 
 #include "refkeen.h"
-#include "be_audio_private.h"
+#include "be_audio_mixer.h"
 
 // Changing between 0 and max. possible value - too loud
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
@@ -41,6 +41,9 @@ static int g_be_pcSpeakerSampleFreq;
 static bool g_sdlPCSpeakerConnected = false;
 static BE_ST_SndSample_T g_sdlCurrentBeepSample;
 static uint32_t g_sdlBeepHalfCycleCounter, g_sdlBeepHalfCycleCounterUpperBound;
+
+// Used for locking resources
+static BE_ST_AudioMixerSource *g_pcSpeakerMixerSource;
 
 static inline void BEL_ST_PCSpeakerSetBeepSample(bool isUp)
 {
@@ -75,6 +78,11 @@ void BE_ST_BNoSound(void)
 	BE_ST_LockAudioRecursively();
 	BE_ST_PCSpeakerSetConstVal(0);
 	BE_ST_UnlockAudioRecursively();
+}
+
+void BEL_ST_SetPCSpeakerMixerSource(BE_ST_AudioMixerSource *src)
+{
+        g_pcSpeakerMixerSource = src;
 }
 
 void BEL_ST_SetPCSpeakerSampleRate(int rate)
