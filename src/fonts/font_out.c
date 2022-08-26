@@ -6,8 +6,8 @@
 #include <stdio.h>
 
 /* Change for the desired font. */
-#define FONT_FILENAME "VGA-ROM.F08"
-#define CHAR_HEIGHT_IN_PIX 8
+//#define FONT_FILENAME "VGA-ROM.F08"
+//#define CHAR_HEIGHT_IN_PIX 8
 /* Char width should always be 8 pixels; 8 bits per row in font file. */
 
 int main() {
@@ -18,7 +18,8 @@ int main() {
 		return 1;
 	}
 	while (!feof(fp)) {
-		fread(&column, CHAR_HEIGHT_IN_PIX, 1, fp);
+		if (fread(&column, CHAR_HEIGHT_IN_PIX, 1, fp) != 1)
+			break;
 		for (rownum=0, rowptr=column; rownum<CHAR_HEIGHT_IN_PIX; rownum++, rowptr++) {
 			printf("\n");
 			for (rowmask=7; rowmask>=0; rowmask--) {
