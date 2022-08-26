@@ -1,3 +1,9 @@
+/********************************************************************
+This fonts were automatically converted from VGA-ROM.F08, VGA-ROM.F14
+and VGA-ROM.F16. These are a part of a collection of public domain
+fonts, fntcol16.zip, prepared by Joseph (Yossi) Gil.
+********************************************************************/
+
 #include <stdint.h>
 
 // In C++, const implies static, so we need to specify extern

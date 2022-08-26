@@ -15,6 +15,8 @@
 
 ## Additional sources/data used for these ports
 
+- A few fonts from fntcol16.zip for text mode emulation and the launcher,
+after converting them.
 - Minor source code modifications, for reproduction of Catacomb 3-D v1.00 and
 The Catacomb Abyss v1.13.
 - Reconstructed source codes for INTRO.EXE/CATABYSS.EXE/CATARM.EXE/CATAPOC.EXE
