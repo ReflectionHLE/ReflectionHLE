@@ -1,0 +1,4 @@
+These are taken off an archive file named fntcol16.zip
+that can be found on the web.
+One place which seems to have it (as of November 23rd, 2012):
+http://ftp.sunet.se/pub/simtelnet/msdos/screen/
