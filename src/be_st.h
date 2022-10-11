@@ -174,6 +174,13 @@ typedef struct {
 	BE_ST_ControllerSingleMapClass mapClass;
 } BE_ST_ControllerSingleMap;
 
+// Basically an extension of BE_ST_ControllerSingleMap with an
+// optional pointer to bool, set to true while the mapping may be used.
+typedef struct {
+	BE_ST_ControllerSingleMap map;
+	bool *indicator;
+} BE_ST_ControllerKeyMap;
+
 typedef struct {
 	const char **xpmImage;
 	int xpmWidth, xpmHeight;
@@ -205,7 +212,7 @@ typedef struct BE_ST_ControllerMapping {
 	BE_ST_TouchControlSingleMap *touchMappings;
 
 	// FIXME: Consider migrating this to a list
-	BE_ST_ControllerSingleMap keys[BE_MAX_KEY_ID];
+	BE_ST_ControllerKeyMap keys[BE_MAX_KEY_ID];
 	BE_ST_ControllerSingleMap mbuttons[BE_ST_CTRL_MOUSE_BUT_MAX];
 	BE_ST_ControllerSingleMap pbuttons[BE_ST_CTRL_BUT_MAX];
 	BE_ST_ControllerSingleMap paxes[BE_ST_CTRL_AXIS_MAX][2];

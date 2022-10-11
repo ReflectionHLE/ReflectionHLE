@@ -553,10 +553,10 @@ static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *
 {
 	if (actionmapping > 0)
 	{
-		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping] = *inputmap;
+		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping].map = *inputmap;
 		// FIXME: It's better to define mappings as a tree and traverse it instead
-		g_ingame_altcontrol_mapping_funckeys.keys[actionmapping] = *inputmap;
-		g_beStControllerMappingDebugKeys.keys[actionmapping] = *inputmap;
+		g_ingame_altcontrol_mapping_funckeys.keys[actionmapping].map = *inputmap;
+		g_beStControllerMappingDebugKeys.keys[actionmapping].map = *inputmap;
 	}
 }
 

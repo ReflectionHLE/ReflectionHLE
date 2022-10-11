@@ -95,13 +95,13 @@ void BE_ST_PollEvents(void)
 				break;
 
 			// If there's no mapping, translate scancode and process as usual
-			if (g_sdlControllerMappingActualCurr->keys[scancode].mapClass == BE_ST_CTRL_MAP_NONE)
+			if (g_sdlControllerMappingActualCurr->keys[scancode].map.mapClass == BE_ST_CTRL_MAP_NONE)
 			{
 				BEL_ST_HandleEmuKeyboardEvent(isPressed, false, sdlKeyMappings[scancode]);
 				break;
 			}
 
-			if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[scancode],
+			if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[scancode].map,
 			    g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.keys[scancode]))
 				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
 			break;
