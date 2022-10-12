@@ -893,33 +893,13 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if (actionmapping > 0)
-	{
 		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping].map = *inputmap;
-		// FIXME: It's better to define mappings as a tree and traverse it instead
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
-		g_ingame_altcontrol_mapping_scrolls.keys[actionmapping].map = *inputmap;
-#endif
-#ifdef REFKEEN_VER_CATADVENTURES
-		g_ingame_altcontrol_mapping_funckeys.keys[actionmapping].map = *inputmap;
-#endif
-		g_beStControllerMappingDebugKeys.keys[actionmapping].map = *inputmap;
-	}
 }
 
 static void CheckMouseMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
 {
 	if ((actionmapping >= 0) && (actionmapping < BE_ST_CTRL_MOUSE_BUT_MAX))
-	{
 		g_ingame_altcontrol_mapping_gameplay.mbuttons[actionmapping] = *inputmap;
-		// FIXME: Again, better to traverse a tree
-#if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
-		g_ingame_altcontrol_mapping_scrolls.mbuttons[actionmapping] = *inputmap;
-#endif
-#ifdef REFKEEN_VER_CATADVENTURES
-		g_ingame_altcontrol_mapping_funckeys.mbuttons[actionmapping] = *inputmap;
-#endif
-		g_beStControllerMappingDebugKeys.mbuttons[actionmapping] = *inputmap;
-	}
 }
 
 static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
