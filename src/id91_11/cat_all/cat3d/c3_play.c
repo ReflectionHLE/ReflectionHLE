@@ -395,7 +395,8 @@ void PollControls (void)
 	}
 	else
 	{
-		if (Keyboard[sc_RShift])
+		if ((Keyboard[sc_RShift] && !g_keybind_used_fastturn)
+		    || g_binding_value_fastturn)
 			running = true;
 		else
 			running = false;

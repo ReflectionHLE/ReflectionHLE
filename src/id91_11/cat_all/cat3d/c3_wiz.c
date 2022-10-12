@@ -2169,13 +2169,19 @@ void	T_Player (objtype *ob)
 	// special actions
 	//
 
-	if ( (Keyboard[sc_Space] || Keyboard[sc_H]) && gamestate.body != MAXBODY)
+	if ((((Keyboard[sc_Space] || Keyboard[sc_H]) && !g_keybind_used_drink)
+	     || g_binding_value_drink)
+	     && gamestate.body != MAXBODY)
 		DrinkPotion ();
 
-	if (Keyboard[sc_B] && !boltsleft)
+	if (((Keyboard[sc_B] && !g_keybind_used_bolt)
+	     || g_binding_value_bolt)
+	    && !boltsleft)
 		CastBolt ();
 
-	if ( (Keyboard[sc_Enter] || Keyboard[sc_N]) && SD_GetTimeCount()-lastnuke > NUKETIME)
+	if ( (((Keyboard[sc_Enter] || Keyboard[sc_N]) && !g_keybind_used_nuke)
+	      || g_binding_value_nuke)
+	     && SD_GetTimeCount()-lastnuke > NUKETIME)
 		CastNuke ();
 
 	scroll = LastScan-2;

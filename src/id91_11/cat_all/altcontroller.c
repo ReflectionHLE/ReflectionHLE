@@ -66,10 +66,12 @@
 REFKEEN_NS_B
 
 int g_binding_value_button[2],
-    g_binding_value_motionx, g_binding_value_motiony;
+    g_binding_value_motionx, g_binding_value_motiony,
+    g_binding_value_drink, g_binding_value_bolt, g_binding_value_nuke, g_binding_value_fastturn;
 
 bool g_keybind_used_button[2],
-     g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right;
+     g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right,
+     g_keybind_used_drink, g_keybind_used_bolt, g_keybind_used_nuke, g_keybind_used_fastturn;
 
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_scrolls;
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
@@ -83,18 +85,12 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define BUT_LEFT_MAP       &g_binding_value_motionx, 0, -127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_RIGHT_MAP      &g_binding_value_motionx, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
-#define BUT_DRINK_MAP      NULL, BE_ST_SC_SPACE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
-#define BUT_NUKE_MAP       NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE
+#define BUT_DRINK_MAP      &g_binding_value_drink, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_BOLT_MAP       &g_binding_value_bolt, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_NUKE_MAP       &g_binding_value_nuke, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_FASTTURN_MAP   &g_binding_value_fastturn, 0, 127, BE_ST_CTRL_MAP_VALUESET
 
-#ifdef REFKEEN_VER_CAT3D
-#define BUT_BOLT_MAP       NULL, BE_ST_SC_B, 0, BE_ST_CTRL_MAP_KEYSCANCODE
-#define BUT_FASTTURN_MAP   NULL, BE_ST_SC_RSHIFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE
-#else
-#define BUT_BOLT_MAP       NULL, BE_ST_SC_Z, 0, BE_ST_CTRL_MAP_KEYSCANCODE
-#define BUT_FASTTURN_MAP   NULL, BE_ST_SC_TAB, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_FUNC_KEYS_MAP  &g_ingame_altcontrol_mapping_funckeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING
-#endif
-
 #define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_SCROLLS_MAP    &g_ingame_altcontrol_mapping_scrolls, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING
 #define BUT_DEBUG_KEYS_MAP &g_beStControllerMappingDebugKeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING
@@ -936,10 +932,10 @@ void RefKeen_PrepareAltControllerScheme(void)
 	CheckMappings(BE_ST_CTRL_BIND_CAT3D_DOWN, &g_ingame_but_down_map, &g_keybind_used_down);
 	CheckMappings(BE_ST_CTRL_BIND_CAT3D_LEFT, &g_ingame_but_left_map, &g_keybind_used_left);
 	CheckMappings(BE_ST_CTRL_BIND_CAT3D_RIGHT, &g_ingame_but_right_map, &g_keybind_used_right);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_DRINK, &g_ingame_but_drink_map, 0);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_BOLT, &g_ingame_but_bolt_map, 0);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_NUKE, &g_ingame_but_nuke_map, 0);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_FASTTURN, &g_ingame_but_fastturn_map, 0);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_DRINK, &g_ingame_but_drink_map, &g_keybind_used_drink);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_BOLT, &g_ingame_but_bolt_map, &g_keybind_used_bolt);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_NUKE, &g_ingame_but_nuke_map, &g_keybind_used_nuke);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_FASTTURN, &g_ingame_but_fastturn_map, &g_keybind_used_fastturn);
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_CAT3D_SCROLLS, &g_ingame_but_scrolls_map);
 #endif

@@ -1184,7 +1184,8 @@ void CheckKeys (void)
 
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	if (!mapmode && Keyboard[sc_Tab])
+	if (!mapmode &&
+	    ((Keyboard[sc_Tab] && !g_keybind_used_map) || g_binding_value_map))
 	{
 		AutoMap();
 		return;

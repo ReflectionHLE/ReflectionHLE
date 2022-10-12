@@ -214,7 +214,7 @@ void CheckKeys (void)
 //
 // space for status screen
 //
-	if (Keyboard[sc_Space])
+	if ((Keyboard[sc_Space] && !g_keybind_used_stats) || g_binding_value_stats)
 	{
 		StatusWindow ();
 		IN_ClearKeysDown();

@@ -66,6 +66,11 @@ int g_binding_value_button[NUMBUTTONS],
 bool g_keybind_used_button[NUMBUTTONS],
      g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right;
 
+#ifdef GAMEVER_NOAH3D
+int g_binding_value_map;
+bool g_keybind_used_map;
+#endif
+
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_weapons;
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 
@@ -79,7 +84,7 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define BUT_DOWN_MAP       &g_binding_value_motiony, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_LEFT_MAP       &g_binding_value_motionx, 0, -127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_RIGHT_MAP      &g_binding_value_motionx, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_MAP_MAP        NULL, BE_ST_SC_TAB, 0, BE_ST_CTRL_MAP_KEYSCANCODE
+#define BUT_MAP_MAP        &g_binding_value_map, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_WEAPONS_MAP    &g_ingame_altcontrol_mapping_weapons, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING
@@ -539,7 +544,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_LEFT, &g_ingame_but_left_map, &g_keybind_used_left);
 	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_RIGHT, &g_ingame_but_right_map, &g_keybind_used_right);
 #ifdef GAMEVER_NOAH3D
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_MAP, &g_ingame_but_map_map, 0);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_MAP, &g_ingame_but_map_map, &g_keybind_used_map);
 #endif
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS, &g_ingame_but_func_keys_map);
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS, &g_ingame_but_debug_keys_map);

@@ -729,7 +729,8 @@ void PollControls (void)
 		return;
 	}
 
-	if (Keyboard[sc_V] || Keyboard[sc_Tab])
+	if (((Keyboard[sc_V] || Keyboard[sc_Tab]) && !g_keybind_used_fastturn)
+	    || g_binding_value_fastturn)
 		running = true;
 	else
 		running = false;
@@ -1416,16 +1417,21 @@ void DisplayStatus (status_flags *stat_flag)
 	if (Keyboard[sc_Control] || control.button0)
 		temp_status = S_MISSLE;
 
-	if (Keyboard[sc_Z] && !Keyboard[sc_F10])
+	if (((Keyboard[sc_Z] && !g_keybind_used_bolt)
+	     || g_binding_value_bolt)
+	    && !Keyboard[sc_F10])
 		temp_status = S_ZAPPER;
 
-	if ((Keyboard[sc_X] && !Keyboard[sc_F10]) || Keyboard[sc_Enter])
+	if ((((Keyboard[sc_X] && !Keyboard[sc_F10]) || Keyboard[sc_Enter]) && !g_keybind_used_nuke)
+	    || (g_binding_value_nuke && !Keyboard[sc_F10]))
 		temp_status = S_XTER;
 
 	if (control.x)
 		temp_status = S_TURN;
 
-	if ((Keyboard[sc_V] || Keyboard[sc_Tab]) && control.x)
+	if ((((Keyboard[sc_V] || Keyboard[sc_Tab]) && !g_keybind_used_fastturn)
+	     || g_binding_value_fastturn)
+	    && control.x)
 		temp_status = S_QTURN;
 
 	if (Keyboard[sc_Alt] && control.x)

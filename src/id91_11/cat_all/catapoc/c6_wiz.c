@@ -3034,13 +3034,19 @@ void	T_Player (objtype *ob)
 	// special actions
 	//
 
-	if ((Keyboard[sc_Space] || Keyboard[sc_C]) && gamestate.body != MAXBODY)
+	if ((((Keyboard[sc_Space] || Keyboard[sc_C]) && !g_keybind_used_drink)
+	     || g_binding_value_drink)
+	     && gamestate.body != MAXBODY)
 		DrinkPotion ();
 
-	if (Keyboard[sc_Z] && !boltsleft)
+	if (((Keyboard[sc_Z] && !g_keybind_used_bolt)
+	     || g_binding_value_bolt)
+	    && !boltsleft)
 		CastBolt ();
 
-	if ( (Keyboard[sc_Enter] || Keyboard[sc_X]) && ((SD_GetTimeCount()-lastnuke > NUKETIME))) //|| (autofire)))
+	if ( (((Keyboard[sc_Enter] || Keyboard[sc_X]) && !g_keybind_used_nuke)
+	      || g_binding_value_nuke)
+	     && ((SD_GetTimeCount()-lastnuke > NUKETIME))) //|| (autofire)))
 		CastNuke ();
 
 #if 0
