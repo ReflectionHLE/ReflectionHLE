@@ -52,6 +52,13 @@ BE_ST_ControllerMapping g_beStControllerMappingTextInput;
 BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 
 
+static void BEL_ST_AltControllerScheme_ToggleIndicators(bool enabled)
+{
+	for (int key = 0; key < BE_MAX_KEY_ID; ++key)
+		if (g_sdlControllerMappingActualCurr->keys[key].indicator)
+			*g_sdlControllerMappingActualCurr->keys[key].indicator = enabled;
+}
+
 static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void);
 
 /* May be similar to PrepareControllerMapping, but a bit different:
@@ -79,6 +86,7 @@ static void BEL_ST_ReplaceControllerMapping(BE_ST_ControllerMapping *mapping)
 		BE_ST_ExitWithErrorMsg("BEL_ST_ReplaceControllerMapping: Mappings share different parents!\n");
 
 	g_sdlControllerMappingActualCurr = mapping;
+	BEL_ST_AltControllerScheme_ToggleIndicators(true);
 
 	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 
@@ -187,6 +195,7 @@ void BEL_ST_AltControlScheme_CleanUp(void)
 		return;
 
 	BEL_ST_AltControlScheme_ClearBinaryStates();
+	BEL_ST_AltControllerScheme_ToggleIndicators(false);
 
 	extern void BEL_ST_HideAltInputUI(void);
 	BEL_ST_HideAltInputUI();
@@ -256,6 +265,7 @@ void BE_ST_AltControlScheme_Pop(void)
 
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr;
 	BEL_ST_AltControlScheme_AbortIfHasParent("BE_ST_AltControlScheme_Pop: Popped a mapping with a parent!\n");
+	BEL_ST_AltControllerScheme_ToggleIndicators(true);
 
 	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 
@@ -271,6 +281,7 @@ void BE_ST_AltControlScheme_Reset(void)
 	g_sdlControllerMappingPtrsStack.endPtr = &g_sdlControllerMappingPtrsStack.stack[NUM_OF_CONTROLLER_MAPS_IN_STACK];
 	g_sdlControllerMappingActualCurr = g_sdlControllerMappingPtrsStack.stack[0];
 	BEL_ST_AltControlScheme_AbortIfHasParent("BE_ST_AltControlScheme_Reset: Reset to a mapping with a parent!\n");
+	BEL_ST_AltControllerScheme_ToggleIndicators(true);
 
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
@@ -283,6 +294,7 @@ void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMappi
 	BEL_ST_AltControlScheme_CleanUp();
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr = mapping;
 	BEL_ST_AltControlScheme_AbortIfHasParent("BE_ST_AltControlScheme_PrepareControllerMapping: Set a mapping with a parent!\n");
+	BEL_ST_AltControllerScheme_ToggleIndicators(true);
 
 	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 
