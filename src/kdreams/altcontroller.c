@@ -55,6 +55,9 @@
 int g_binding_value_button[2],
     g_binding_value_motionx, g_binding_value_motiony;
 
+bool g_keybind_used_button[2],
+     g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right;
+
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 
 // Using macros for static variable definitions in compound structures,
@@ -549,10 +552,13 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_help = {
 	false
 };
 
-static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
+static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap, bool *indicator)
 {
 	if (actionmapping > 0)
+	{
 		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping].map = *inputmap;
+		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping].indicator = indicator;
+	}
 }
 
 static void CheckMouseMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
@@ -575,21 +581,21 @@ static void CheckNonKeyMappings(int bind, const BE_ST_ControllerSingleMap *input
 	CheckPadMapping(g_refKeenCfg.kdreams.binds[bind].pad, inputmap);
 }
 
-static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
+static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap, bool *keyindicator)
 {
-	CheckKeyMapping(g_refKeenCfg.kdreams.binds[bind].key, inputmap);
+	CheckKeyMapping(g_refKeenCfg.kdreams.binds[bind].key, inputmap, keyindicator);
 	CheckNonKeyMappings(bind, inputmap);
 }
 
 void RefKeen_PrepareAltControllerScheme(void)
 {
-	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_JUMP, &g_ingame_but_jump_map);
-	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_THROW, &g_ingame_but_throw_map);
-	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_STATS, &g_ingame_but_stats_map);
-	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_UP, &g_ingame_but_up_map);
-	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_DOWN, &g_ingame_but_down_map);
-	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_LEFT, &g_ingame_but_left_map);
-	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_RIGHT, &g_ingame_but_right_map);
+	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_JUMP, &g_ingame_but_jump_map, &g_keybind_used_button[0]);
+	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_THROW, &g_ingame_but_throw_map ,&g_keybind_used_button[1]);
+	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_STATS, &g_ingame_but_stats_map, 0);
+	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_UP, &g_ingame_but_up_map, &g_keybind_used_up);
+	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_DOWN, &g_ingame_but_down_map, &g_keybind_used_down);
+	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_LEFT, &g_ingame_but_left_map, &g_keybind_used_left);
+	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_RIGHT, &g_ingame_but_right_map, &g_keybind_used_right);
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS, &g_ingame_but_func_keys_map);
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS, &g_ingame_but_debug_keys_map);
 

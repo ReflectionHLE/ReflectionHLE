@@ -375,7 +375,7 @@ void PollKeyboardButtons (void)
 	id0_int_t		i;
 
 	for (i=0;i<NUMBUTTONS;i++)
-		if (Keyboard[buttonscan[i]])
+		if (Keyboard[buttonscan[i]] && !g_keybind_used_button[i])
 			buttonstate[i] = true;
 }
 
@@ -463,24 +463,24 @@ void PollKeyboardMove (void)
 {
 	if (buttonstate[bt_run])
 	{
-		if (Keyboard[dirscan[di_north]])
+		if (Keyboard[dirscan[di_north]] && !g_keybind_used_up)
 			controly -= RUNMOVE*tics;
-		if (Keyboard[dirscan[di_south]])
+		if (Keyboard[dirscan[di_south]] && !g_keybind_used_down)
 			controly += RUNMOVE*tics;
-		if (Keyboard[dirscan[di_west]])
+		if (Keyboard[dirscan[di_west]] && !g_keybind_used_left)
 			controlx -= RUNMOVE*tics;
-		if (Keyboard[dirscan[di_east]])
+		if (Keyboard[dirscan[di_east]] && !g_keybind_used_right)
 			controlx += RUNMOVE*tics;
 	}
 	else
 	{
-		if (Keyboard[dirscan[di_north]])
+		if (Keyboard[dirscan[di_north]] && !g_keybind_used_up)
 			controly -= BASEMOVE*tics;
-		if (Keyboard[dirscan[di_south]])
+		if (Keyboard[dirscan[di_south]] && !g_keybind_used_down)
 			controly += BASEMOVE*tics;
-		if (Keyboard[dirscan[di_west]])
+		if (Keyboard[dirscan[di_west]] && !g_keybind_used_left)
 			controlx -= BASEMOVE*tics;
-		if (Keyboard[dirscan[di_east]])
+		if (Keyboard[dirscan[di_east]] && !g_keybind_used_right)
 			controlx += BASEMOVE*tics;
 	}
 }

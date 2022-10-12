@@ -764,19 +764,19 @@ register	KeyboardDef	*def;
 			else if (Keyboard[def->downright])
 				mx = motion_Right,my = motion_Down;
 
-			if (Keyboard[def->up])
+			if (Keyboard[def->up] && !g_keybind_used_up)
 				my = motion_Up;
-			else if (Keyboard[def->down])
+			else if (Keyboard[def->down] && !g_keybind_used_down)
 				my = motion_Down;
 
-			if (Keyboard[def->left])
+			if (Keyboard[def->left] && !g_keybind_used_left)
 				mx = motion_Left;
-			else if (Keyboard[def->right])
+			else if (Keyboard[def->right] && !g_keybind_used_right)
 				mx = motion_Right;
 
-			if (Keyboard[def->button0])
+			if (Keyboard[def->button0] && !g_keybind_used_button[0])
 				buttons += 1 << 0;
-			if (Keyboard[def->button1])
+			if (Keyboard[def->button1] && !g_keybind_used_button[1])
 				buttons += 1 << 1;
 			realdelta = false;
 			break;

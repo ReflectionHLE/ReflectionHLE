@@ -63,6 +63,9 @@ REFKEEN_NS_B
 int g_binding_value_button[NUMBUTTONS],
     g_binding_value_motionx, g_binding_value_motiony;
 
+bool g_keybind_used_button[NUMBUTTONS],
+     g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right;
+
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_weapons;
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 
@@ -486,10 +489,13 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 	true
 };
 
-static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
+static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap, bool *indicator)
 {
 	if (actionmapping > 0)
+	{
 		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping].map = *inputmap;
+		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping].indicator = indicator;
+	}
 }
 
 static void CheckMouseMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
@@ -512,28 +518,28 @@ static void CheckNonKeyMappings(int bind, const BE_ST_ControllerSingleMap *input
 	CheckPadMapping(g_refKeenCfg.wolf3d.binds[bind].pad, inputmap);
 }
 
-static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
+static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap, bool *keyindicator)
 {
-	CheckKeyMapping(g_refKeenCfg.wolf3d.binds[bind].key, inputmap);
+	CheckKeyMapping(g_refKeenCfg.wolf3d.binds[bind].key, inputmap, keyindicator);
 	CheckNonKeyMappings(bind, inputmap);
 }
 
 void RefKeen_PrepareAltControllerScheme(void)
 {
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_FIRE, &g_ingame_but_fire_map);
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_STRAFE, &g_ingame_but_strafe_map);
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_RUN, &g_ingame_but_run_map);
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_USE, &g_ingame_but_use_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_FIRE, &g_ingame_but_fire_map, &g_keybind_used_button[bt_attack]);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_STRAFE, &g_ingame_but_strafe_map, &g_keybind_used_button[bt_strafe]);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_RUN, &g_ingame_but_run_map, &g_keybind_used_button[bt_run]);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_USE, &g_ingame_but_use_map, &g_keybind_used_button[bt_use]);
 
 	for (int i = 0; i < NUMBUTTONS - bt_readyknife; ++i)
-		CheckMappings(BE_ST_CTRL_BIND_WOLF3D_WEAPON1 + i, &g_ingame_but_weapon_map[i]);
+		CheckMappings(BE_ST_CTRL_BIND_WOLF3D_WEAPON1 + i, &g_ingame_but_weapon_map[i], &g_keybind_used_button[i + bt_readyknife]);
 
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_UP, &g_ingame_but_up_map);
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_DOWN, &g_ingame_but_down_map);
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_LEFT, &g_ingame_but_left_map);
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_RIGHT, &g_ingame_but_right_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_UP, &g_ingame_but_up_map, &g_keybind_used_up);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_DOWN, &g_ingame_but_down_map, &g_keybind_used_down);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_LEFT, &g_ingame_but_left_map, &g_keybind_used_left);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_RIGHT, &g_ingame_but_right_map, &g_keybind_used_right);
 #ifdef GAMEVER_NOAH3D
-	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_MAP, &g_ingame_but_map_map);
+	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_MAP, &g_ingame_but_map_map, 0);
 #endif
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS, &g_ingame_but_func_keys_map);
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS, &g_ingame_but_debug_keys_map);

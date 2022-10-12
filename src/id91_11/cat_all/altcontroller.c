@@ -68,6 +68,9 @@ REFKEEN_NS_B
 int g_binding_value_button[2],
     g_binding_value_motionx, g_binding_value_motiony;
 
+bool g_keybind_used_button[2],
+     g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right;
+
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_scrolls;
 extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 
@@ -890,10 +893,13 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 };
 #endif
 
-static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
+static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap, bool *indicator)
 {
 	if (actionmapping > 0)
+	{
 		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping].map = *inputmap;
+		g_ingame_altcontrol_mapping_gameplay.keys[actionmapping].indicator = indicator;
+	}
 }
 
 static void CheckMouseMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap)
@@ -916,24 +922,24 @@ static void CheckNonKeyMappings(int bind, const BE_ST_ControllerSingleMap *input
 	CheckPadMapping(g_refKeenCfg.cat3d.binds[bind].pad, inputmap);
 }
 
-static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
+static void CheckMappings(int bind, const BE_ST_ControllerSingleMap *inputmap, bool *keyindicator)
 {
-	CheckKeyMapping(g_refKeenCfg.cat3d.binds[bind].key, inputmap);
+	CheckKeyMapping(g_refKeenCfg.cat3d.binds[bind].key, inputmap, keyindicator);
 	CheckNonKeyMappings(bind, inputmap);
 }
 
 void RefKeen_PrepareAltControllerScheme(void)
 {
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_FIRE, &g_ingame_but_fire_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_STRAFE, &g_ingame_but_strafe_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_UP, &g_ingame_but_up_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_DOWN, &g_ingame_but_down_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_LEFT, &g_ingame_but_left_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_RIGHT, &g_ingame_but_right_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_DRINK, &g_ingame_but_drink_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_BOLT, &g_ingame_but_bolt_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_NUKE, &g_ingame_but_nuke_map);
-	CheckMappings(BE_ST_CTRL_BIND_CAT3D_FASTTURN, &g_ingame_but_fastturn_map);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_FIRE, &g_ingame_but_fire_map, &g_keybind_used_button[0]);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_STRAFE, &g_ingame_but_strafe_map, &g_keybind_used_button[1]);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_UP, &g_ingame_but_up_map, &g_keybind_used_up);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_DOWN, &g_ingame_but_down_map, &g_keybind_used_down);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_LEFT, &g_ingame_but_left_map, &g_keybind_used_left);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_RIGHT, &g_ingame_but_right_map, &g_keybind_used_right);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_DRINK, &g_ingame_but_drink_map, 0);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_BOLT, &g_ingame_but_bolt_map, 0);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_NUKE, &g_ingame_but_nuke_map, 0);
+	CheckMappings(BE_ST_CTRL_BIND_CAT3D_FASTTURN, &g_ingame_but_fastturn_map, 0);
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_CAT3D_SCROLLS, &g_ingame_but_scrolls_map);
 #endif
