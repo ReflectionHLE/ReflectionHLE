@@ -54,12 +54,30 @@ BE_ST_ControllerMapping g_beStControllerMappingDebugKeys;
 
 static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void);
 
-// May be similar to PrepareControllerMapping, but a bit different:
-// Used in order to replace controller mapping with another one internally
-// (e.g., showing helper function keys during gameplay, or hiding such keys)
-void BEL_ST_ReplaceControllerMapping(const BE_ST_ControllerMapping *mapping)
+/* May be similar to PrepareControllerMapping, but a bit different:
+   Used in order to replace controller mapping with another one internally
+   (e.g., showing helper function keys during gameplay, or hiding such keys).
+
+   Keyboard and mouse overrides, however, are not replaced. Unless it was
+   the first mapping preceding a sequence of calls to this function, this
+   technically modifies its overrides, so it's marked to not be used in
+   any other manner later. */
+static void BEL_ST_ReplaceControllerMapping(BE_ST_ControllerMapping *mapping)
 {
 	BEL_ST_AltControlScheme_CleanUp();
+
+	memcpy(mapping->keys, g_sdlControllerMappingActualCurr->keys, sizeof(mapping->keys));
+	memcpy(mapping->mbuttons, g_sdlControllerMappingActualCurr->mbuttons, sizeof(mapping->mbuttons));
+
+	// We generally do want g_sdlControllerMappingActualCurr to be const...
+	if (!g_sdlControllerMappingActualCurr->parent)
+		((BE_ST_ControllerMapping *)g_sdlControllerMappingActualCurr)->parent = g_sdlControllerMappingActualCurr;
+	if (!mapping->parent)
+		mapping->parent = g_sdlControllerMappingActualCurr;
+
+	if (g_sdlControllerMappingActualCurr->parent != mapping->parent)
+		BE_ST_ExitWithErrorMsg("BEL_ST_ReplaceControllerMapping: Mappings share different parents!\n");
+
 	g_sdlControllerMappingActualCurr = mapping;
 
 	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
@@ -206,6 +224,13 @@ static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void)
 }
 
 
+static void BEL_ST_AltControlScheme_AbortIfHasParent(const char *msg)
+{
+	if (g_sdlControllerMappingActualCurr->parent &&
+	    g_sdlControllerMappingActualCurr->parent != g_sdlControllerMappingActualCurr)
+		BE_ST_ExitWithErrorMsg(msg);
+}
+
 void BE_ST_AltControlScheme_Push(void)
 {
 	//if (!g_refKeenCfg.altControlScheme && (g_refKeenCfg.touchInputToggle == TOUCHINPUT_OFF))
@@ -215,9 +240,7 @@ void BE_ST_AltControlScheme_Push(void)
 
 	++g_sdlControllerMappingPtrsStack.currPtr;
 	if (g_sdlControllerMappingPtrsStack.currPtr == g_sdlControllerMappingPtrsStack.endPtr)
-	{
 		BE_ST_ExitWithErrorMsg("BE_ST_AltControlScheme_Push: Out of stack bounds!\n");
-	}
 }
 
 void BE_ST_AltControlScheme_Pop(void)
@@ -228,12 +251,11 @@ void BE_ST_AltControlScheme_Pop(void)
 	BEL_ST_AltControlScheme_CleanUp();
 
 	if (g_sdlControllerMappingPtrsStack.currPtr == &g_sdlControllerMappingPtrsStack.stack[0])
-	{
 		BE_ST_ExitWithErrorMsg("BE_ST_AltControlScheme_Pop: Popped more than necessary!\n");
-	}
 	--g_sdlControllerMappingPtrsStack.currPtr;
 
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr;
+	BEL_ST_AltControlScheme_AbortIfHasParent("BE_ST_AltControlScheme_Pop: Popped a mapping with a parent!\n");
 
 	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 
@@ -248,6 +270,7 @@ void BE_ST_AltControlScheme_Reset(void)
 	g_sdlControllerMappingPtrsStack.currPtr = &g_sdlControllerMappingPtrsStack.stack[0];
 	g_sdlControllerMappingPtrsStack.endPtr = &g_sdlControllerMappingPtrsStack.stack[NUM_OF_CONTROLLER_MAPS_IN_STACK];
 	g_sdlControllerMappingActualCurr = g_sdlControllerMappingPtrsStack.stack[0];
+	BEL_ST_AltControlScheme_AbortIfHasParent("BE_ST_AltControlScheme_Reset: Reset to a mapping with a parent!\n");
 
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
@@ -259,6 +282,7 @@ void BE_ST_AltControlScheme_PrepareControllerMapping(const BE_ST_ControllerMappi
 
 	BEL_ST_AltControlScheme_CleanUp();
 	g_sdlControllerMappingActualCurr = *g_sdlControllerMappingPtrsStack.currPtr = mapping;
+	BEL_ST_AltControlScheme_AbortIfHasParent("BE_ST_AltControlScheme_PrepareControllerMapping: Set a mapping with a parent!\n");
 
 	BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 

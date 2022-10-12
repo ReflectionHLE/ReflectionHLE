@@ -219,6 +219,7 @@ typedef struct BE_ST_ControllerMapping {
 	bool showUi;
 	bool absoluteFingerPositioning;
 	bool grabMouse;
+	const struct BE_ST_ControllerMapping *parent; // A special mark used internally.
 } BE_ST_ControllerMapping;
 
 // Various controller schemes are saved in a stack, so it's straight-forward
