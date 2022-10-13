@@ -29,6 +29,7 @@
 #include "be_cross_emm.h"
 #include "be_cross_mem_internal.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #define EMS_PAGE_SIZE 0x4000

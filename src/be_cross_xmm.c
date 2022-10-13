@@ -29,6 +29,7 @@
 #include "be_cross_mem_internal.h"
 #include "be_cross_xmm.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 // We could set this to 65536 but the games we support only allocate one block
