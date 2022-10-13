@@ -570,35 +570,30 @@ void PollJoystickMove (void)
 // REFKEEN: New user input binds, mostly based on PollJoystickMove
 static void PollUserBindsMove (void)
 {
-	int x = g_binding_value_motionx, y = g_binding_value_motiony;
-	if (g_refKeenDynamicCfg.novert) // Technically a patch
-		y = 0;
+	controlx += g_binding_value_axisx*JOYSTICK*tics;
+	if (!g_refKeenDynamicCfg.novert) // Technically a patch
+		controly += g_binding_value_axisy*JOYSTICK*tics;
 
-	if (g_refKeenCfg.wolf3d.analogMotion)
+	if (buttonstate[bt_run])
 	{
-		controlx += x*JOYSCALE*tics;
-		controly += y*JOYSCALE*tics;
-	}
-	else if (buttonstate[bt_run])
-	{
-		if (x > 0)
+		if (g_binding_value_right)
 			controlx += RUNMOVE*tics;
-		else if (x < 0)
+		else if (g_binding_value_left)
 			controlx -= RUNMOVE*tics;
-		if (y > 0)
+		if (g_binding_value_down)
 			controly += RUNMOVE*tics;
-		else if (y < 0)
+		else if (g_binding_value_up)
 			controly -= RUNMOVE*tics;
 	}
 	else
 	{
-		if (x > 0)
+		if (g_binding_value_right)
 			controlx += BASEMOVE*tics;
-		else if (x < 0)
+		else if (g_binding_value_left)
 			controlx -= BASEMOVE*tics;
-		if (y > 0)
+		if (g_binding_value_down)
 			controly += BASEMOVE*tics;
-		else if (y < 0)
+		else if (g_binding_value_up)
 			controly -= BASEMOVE*tics;
 	}
 }

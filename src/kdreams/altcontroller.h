@@ -5,7 +5,7 @@
 
 // Used with BE_ST_CTRL_MAP_VALUESET mappings
 extern int g_binding_value_button[2], g_binding_value_stats,
-           g_binding_value_motionx, g_binding_value_motiony;
+           g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right;
 
 // Used with keyboard overrides
 extern bool g_keybind_used_button[2], g_keybind_used_stats,

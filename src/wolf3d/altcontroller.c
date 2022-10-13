@@ -61,7 +61,8 @@
 REFKEEN_NS_B
 
 int g_binding_value_button[NUMBUTTONS],
-    g_binding_value_motionx, g_binding_value_motiony;
+    g_binding_value_axisx, g_binding_value_axisy,
+    g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right;
 
 bool g_keybind_used_button[NUMBUTTONS],
      g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right;
@@ -80,10 +81,14 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define BUT_STRAFE_MAP     &g_binding_value_button[1], 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_RUN_MAP        &g_binding_value_button[2], 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_USE_MAP        &g_binding_value_button[3], 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_UP_MAP         &g_binding_value_motiony, 0, -127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_DOWN_MAP       &g_binding_value_motiony, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_LEFT_MAP       &g_binding_value_motionx, 0, -127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_RIGHT_MAP      &g_binding_value_motionx, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_UP_MAP         &g_binding_value_up, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_DOWN_MAP       &g_binding_value_down, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_LEFT_MAP       &g_binding_value_left, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_RIGHT_MAP      &g_binding_value_right, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_UP_MAP        &g_binding_value_axisy, 0, -127, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_DOWN_MAP      &g_binding_value_axisy, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_LEFT_MAP      &g_binding_value_axisx, 0, -127, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_RIGHT_MAP     &g_binding_value_axisx, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_MAP_MAP        &g_binding_value_map, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
@@ -110,6 +115,10 @@ static const BE_ST_ControllerSingleMap
        g_ingame_but_down_map       = {BUT_DOWN_MAP},
        g_ingame_but_left_map       = {BUT_LEFT_MAP},
        g_ingame_but_right_map      = {BUT_RIGHT_MAP},
+       g_ingame_axis_up_map        = {AXIS_UP_MAP},
+       g_ingame_axis_down_map      = {AXIS_DOWN_MAP},
+       g_ingame_axis_left_map      = {AXIS_LEFT_MAP},
+       g_ingame_axis_right_map     = {AXIS_RIGHT_MAP},
 #ifdef GAMEVER_NOAH3D
        g_ingame_but_map_map        = {BUT_MAP_MAP},
 #endif
@@ -494,6 +503,29 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 	true
 };
 
+static void SetMappingsForAxes(int x, int y)
+{
+	if (g_refKeenCfg.wolf3d.analogMotion)
+	{
+		g_ingame_altcontrol_mapping_gameplay.paxes[y][0] = g_ingame_axis_up_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[y][1] = g_ingame_axis_down_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[x][0] = g_ingame_axis_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[x][1] = g_ingame_axis_right_map;
+	}
+	else
+	{
+		g_ingame_altcontrol_mapping_gameplay.paxes[y][0] = g_ingame_but_up_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[y][1] = g_ingame_but_down_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[x][0] = g_ingame_but_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[x][1] = g_ingame_but_right_map;
+	}
+
+	g_ingame_altcontrol_mapping_menu.paxes[y][0] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_UP];
+	g_ingame_altcontrol_mapping_menu.paxes[y][1] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_DOWN];
+	g_ingame_altcontrol_mapping_menu.paxes[x][0] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_LEFT];
+	g_ingame_altcontrol_mapping_menu.paxes[x][1] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
+}
+
 static void CheckKeyMapping(int actionmapping, const BE_ST_ControllerSingleMap *inputmap, bool *indicator)
 {
 	if (actionmapping > 0)
@@ -567,29 +599,9 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_beStControllerMappingDebugKeys.defaultMapping.miscPtr = &g_ingame_altcontrol_mapping_gameplay;
 
 	if (g_refKeenCfg.wolf3d.useLeftStick)
-	{
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_LY][0] = g_ingame_but_up_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_LY][1] = g_ingame_but_down_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_but_left_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_but_right_map;
-
-		g_ingame_altcontrol_mapping_menu.paxes[BE_ST_CTRL_AXIS_LY][0] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_UP];
-		g_ingame_altcontrol_mapping_menu.paxes[BE_ST_CTRL_AXIS_LY][1] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_DOWN];
-		g_ingame_altcontrol_mapping_menu.paxes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_LEFT];
-		g_ingame_altcontrol_mapping_menu.paxes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
-	}
+		SetMappingsForAxes(BE_ST_CTRL_AXIS_LX, BE_ST_CTRL_AXIS_LY);
 	if (g_refKeenCfg.wolf3d.useRightStick)
-	{
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_RY][0] = g_ingame_but_up_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_RY][1] = g_ingame_but_down_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_RX][0] = g_ingame_but_left_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_RX][1] = g_ingame_but_right_map;
-
-		g_ingame_altcontrol_mapping_menu.paxes[BE_ST_CTRL_AXIS_LY][0] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_UP];
-		g_ingame_altcontrol_mapping_menu.paxes[BE_ST_CTRL_AXIS_LY][1] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_DOWN];
-		g_ingame_altcontrol_mapping_menu.paxes[BE_ST_CTRL_AXIS_LX][0] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_LEFT];
-		g_ingame_altcontrol_mapping_menu.paxes[BE_ST_CTRL_AXIS_LX][1] = g_ingame_altcontrol_mapping_menu.pbuttons[BE_ST_CTRL_BUT_DPAD_RIGHT];
-	}
+		SetMappingsForAxes(BE_ST_CTRL_AXIS_RX, BE_ST_CTRL_AXIS_RY);
 
 	// Init touch controls UI
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);

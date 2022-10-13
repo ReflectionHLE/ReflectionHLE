@@ -378,8 +378,7 @@ void PollControls (void)
 
 	// REFKEEN: New user input binds
 	if (Controls[0]==ctrl_Joystick ||
-	    (g_refKeenCfg.cat3d.analogMotion &&
-	     (g_binding_value_motionx || g_binding_value_motiony)))
+	    g_binding_value_axisx || g_binding_value_axisy)
 //	if (Controls[0]==ctrl_Joystick)
 	{
 		if (c.x>120 || c.x<-120 || c.y>120 || c.y<-120)

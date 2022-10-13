@@ -863,14 +863,26 @@ register	KeyboardDef	*def;
 				buttons |= 1;
 			if (g_binding_value_button[1])
 				buttons |= 2;
-			if (g_refKeenDynamicCfg.novert) // Technically a patch impacting PollControls
-				g_binding_value_motiony = 0;
-			if (g_binding_value_motionx || g_binding_value_motiony)
+			if (g_binding_value_axisx)
+				dx = BE_Cross_TypedClamp(int, g_binding_value_axisx, -127, 127);
+			// The novert check is technically a patch impacting PollControls
+			if (g_binding_value_axisy && !g_refKeenDynamicCfg.novert)
+				dy = BE_Cross_TypedClamp(int, g_binding_value_axisy, -127, 127);
+			if (g_binding_value_up || g_binding_value_down ||
+			    g_binding_value_left || g_binding_value_right)
 			{
-				dx = BE_Cross_TypedClamp(int, g_binding_value_motionx, -127, 127);
-				dy = BE_Cross_TypedClamp(int, g_binding_value_motiony, -127, 127);
-				realdelta = true;
+				if (g_binding_value_up)
+					dy = -127;
+				else if (g_binding_value_down)
+					dy = 127;
+
+				if (g_binding_value_left)
+					dx = -127;
+				else if (g_binding_value_right)
+					dx = 127;
 			}
+			if (dx || dy)
+				realdelta = true;
 #ifdef REFKEEN_VER_CATADVENTURES
 			// The Catacomb Abyss' DisplayText expects ctrl_Keyboard
 			if (dx || dy || buttons)

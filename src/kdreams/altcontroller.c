@@ -53,7 +53,7 @@
 #include "../rsrc/analog_circle_bottomright_input.xpm"
 
 int g_binding_value_button[2], g_binding_value_stats,
-    g_binding_value_motionx, g_binding_value_motiony;
+    g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right;
 
 bool g_keybind_used_button[2], g_keybind_used_stats,
      g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right;
@@ -65,10 +65,10 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define BUT_JUMP_MAP       &g_binding_value_button[0], 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_THROW_MAP      &g_binding_value_button[1], 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_STATS_MAP      &g_binding_value_stats, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_UP_MAP         &g_binding_value_motiony, 0, -127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_DOWN_MAP       &g_binding_value_motiony, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_LEFT_MAP       &g_binding_value_motionx, 0, -127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_RIGHT_MAP      &g_binding_value_motionx, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_UP_MAP         &g_binding_value_up, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_DOWN_MAP       &g_binding_value_down, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_LEFT_MAP       &g_binding_value_left, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_RIGHT_MAP      &g_binding_value_right, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_FUNC_KEYS_MAP  &g_ingame_altcontrol_mapping_funckeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING

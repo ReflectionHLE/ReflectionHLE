@@ -797,11 +797,21 @@ register	KeyboardDef	*def;
 			buttons |= 1;
 		if (g_binding_value_button[1])
 			buttons |= 2;
-		if (g_binding_value_motionx || g_binding_value_motiony)
+
+		if (g_binding_value_up || g_binding_value_down ||
+		    g_binding_value_left || g_binding_value_right)
 		{
-			dx = BE_Cross_TypedClamp(int, g_binding_value_motionx, -127, 127);
-			dy = BE_Cross_TypedClamp(int, g_binding_value_motiony, -127, 127);
-			realdelta = true;
+			if (g_binding_value_up)
+				my = motion_Up;
+			else if (g_binding_value_down)
+				my = motion_Down;
+
+			if (g_binding_value_left)
+				mx = motion_Left;
+			else if (g_binding_value_right)
+				mx = motion_Right;
+
+			realdelta = false;
 		}
 	}
 

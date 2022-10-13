@@ -6,7 +6,8 @@
 REFKEEN_NS_B
 
 extern int g_binding_value_button[],
-           g_binding_value_motionx, g_binding_value_motiony,
+           g_binding_value_axisx, g_binding_value_axisy,
+           g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right,
            g_binding_value_map;
 
 // Used with keyboard overrides
