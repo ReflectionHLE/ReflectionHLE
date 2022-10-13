@@ -355,13 +355,13 @@ BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_VideoSettings, "Video settings", 
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_SoundSettings, "Sound settings", &g_beSoundSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_InputSettings, "Input settings", &g_beInputSettingsMenu)
 #ifdef REFKEEN_HAS_VER_KDREAMS
-BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_KDreamsSettings, "Settings: Keen Dreams", &g_beKDreamsSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_KDreamsSettings, "Settings: KDreams", &g_beKDreamsSettingsMenu)
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
-BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Cat3DSettings, "Settings: Catacomb 3-D and later", &g_beCat3DSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Cat3DSettings, "Settings: Cat3D and later", &g_beCat3DSettingsMenu)
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
-BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Wolf3DSettings, "Settings: Wolfenstein 3D", &g_beWolf3DSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Wolf3DSettings, "Settings: Wolf3D, SOD, S3DNA", &g_beWolf3DSettingsMenu)
 #endif
 
 static BEMenuItem *g_beSettingsMenuItems[] = {
@@ -643,7 +643,7 @@ static BEMenuItem *g_beKDreamsSettingsMenuItems[] = {
 };
 
 BEMenu g_beKDreamsSettingsMenu = {
-	"Settings: Keen Dreams",
+	"Settings: KDreams",
 	&g_beSettingsMenu,
 	g_beKDreamsSettingsMenuItems,
 	// Ignore the rest
@@ -651,15 +651,15 @@ BEMenu g_beKDreamsSettingsMenu = {
 
 /*** Keen Dreams definitions for all binds menus ***/
 
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, Up, "Action - Move/Look up")
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, Down, "Action - Move/Look down")
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, Left, "Action - Move left")
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, Right, "Action - Move right")
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, Jump, "Action - Jump")
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, Throw, "Action - Throw")
-BEMENUITEM_DEF_CTRL_BINDS(KDreams, Stats, "Action - Stats")
-BEMENUITEM_DEF_CTRL_NONKEY_BINDS(KDreams, FuncKeys, "Action - Function Keys")
-BEMENUITEM_DEF_CTRL_NONKEY_BINDS(KDreams, DebugKeys, "Action - Debug Keys")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Up, "Move/Look up")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Down, "Move/Look down")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Left, "Move left")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Right, "Move right")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Jump, "Jump")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Throw, "Throw")
+BEMENUITEM_DEF_CTRL_BINDS(KDreams, Stats, "Stats")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(KDreams, FuncKeys, "Function keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(KDreams, DebugKeys, "Debug keys")
 
 /*** Keen Dreams key binds menu ***/
 
@@ -750,7 +750,7 @@ static BEMenuItem *g_beCat3DSettingsMenuItems[] = {
 };
 
 BEMenu g_beCat3DSettingsMenu = {
-	"Settings: Catacomb 3-D",
+	"Settings: Cat3D and later",
 	&g_beSettingsMenu,
 	g_beCat3DSettingsMenuItems,
 	// Ignore the rest
@@ -758,23 +758,23 @@ BEMenu g_beCat3DSettingsMenu = {
 
 /*** Catacomb 3-D definitions for all binds menus ***/
 
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Up, "Action - Move forward")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Down, "Action - Move backward")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Left, "Action - Turn left")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Right, "Action - Turn right")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Fire, "Action - Fire")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Strafe, "Action - Strafe")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Drink, "Action - Drink")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Bolt, "Action - Bolt/Zapper")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Nuke, "Action - Nuke/Xterminator")
-BEMENUITEM_DEF_CTRL_BINDS(Cat3D, FastTurn, "Action - Fast turn")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Up, "Move forward")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Down, "Move backward")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Left, "Turn left")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Right, "Turn right")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Fire, "Fire")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Strafe, "Strafe")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Drink, "Drink")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Bolt, "Bolt/Zapper")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, Nuke, "Nuke/Xterminator")
+BEMENUITEM_DEF_CTRL_BINDS(Cat3D, FastTurn, "Run (Cat3D), fast turn")
 #if (defined REFKEEN_HAS_VER_CAT3D) || (defined REFKEEN_HAS_VER_CATABYSS)
-BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, Scrolls, "Action - Scrolls")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, Scrolls, "Scrolls")
 #endif
 #ifdef REFKEEN_HAS_VER_CATADVENTURES
-BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, FuncKeys, "Action - Function keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, FuncKeys, "Function keys")
 #endif
-BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, DebugKeys, "Action - Debug keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Cat3D, DebugKeys, "Debug keys")
 
 /*** Catacomb 3-D key binds menu ***/
 
@@ -896,7 +896,7 @@ static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
 };
 
 BEMenu g_beWolf3DSettingsMenu = {
-	"Settings: Wolfenstein 3D",
+	"Settings: Wolf3D, SOD, S3DNA",
 	&g_beSettingsMenu,
 	g_beWolf3DSettingsMenuItems,
 	// Ignore the rest
@@ -904,23 +904,23 @@ BEMenu g_beWolf3DSettingsMenu = {
 
 /*** Wolfenstein 3D definitions for all binds menus ***/
 
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Up, "Action - Move forward")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Down, "Action - Move backward")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Left, "Action - Turn left")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Right, "Action - Turn right")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Fire, "Action - Fire")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Strafe, "Action - Strafe")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Use, "Action - Use")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Run, "Action - Run")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon1, "Action - Weapon 1")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon2, "Action - Weapon 2")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon3, "Action - Weapon 3")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon4, "Action - Weapon 4")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon5, "Action - Weapon 5")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon6, "Action - Weapon 6")
-BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Map, "Action - Automap (Super 3-D Noah's Ark)")
-BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Wolf3D, FuncKeys, "Action - Function keys")
-BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Wolf3D, DebugKeys, "Action - Debug keys")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Up, "Move forward")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Down, "Move backward")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Left, "Turn left")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Right, "Turn right")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Fire, "Fire")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Strafe, "Strafe")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Use, "Use")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Run, "Run")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon1, "Weapon 1")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon2, "Weapon 2")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon3, "Weapon 3")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon4, "Weapon 4")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon5, "Weapon 5 (S3DNA)")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Weapon6, "Weapon 6 (S3DNA)")
+BEMENUITEM_DEF_CTRL_BINDS(Wolf3D, Map, "Automap (S3DNA)")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Wolf3D, FuncKeys, "Function keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(Wolf3D, DebugKeys, "Debug keys")
 
 /*** Wolfenstein 3D key binds menu ***/
 
