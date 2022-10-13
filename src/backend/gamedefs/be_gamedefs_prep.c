@@ -260,8 +260,14 @@ static void BEL_Cross_CheckForWolf3DInstallations(const char *UNIX_SPECIFIC(home
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 #if (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
+	// Old location
 	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705046"),
+		_T("PATH"), _T(""),
+		wolf3dactVers, NULL, "GOG.com");
+	// New location
+	BEL_Cross_TryAddRegistryInst(
+		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705226"),
 		_T("PATH"), _T(""),
 		wolf3dactVers, NULL, "GOG.com");
 #endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
@@ -280,18 +286,33 @@ static void BEL_Cross_CheckForSODInstallations(const char *UNIX_SPECIFIC(homeVar
 	const TCHAR *sodSubdirs[] = {_T("/m1"), _T("/m2"), _T("/m3")};
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 #ifdef REFKEEN_PLATFORM_WINDOWS
+	// Old location
 	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 9000"),
 		_T("INSTALLLOCATION"), _T("\\base"), sodVers, NULL, "Steam");
+	// New location
+	BEL_Cross_TryAddRegistryInst(
+		_T("SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 2270"),
+		_T("INSTALLLOCATION"), _T("\\base"), sodVers, sodSubdirs, "Steam");
 #else
+	// Old location
 	BEL_Cross_TryAddSteamInst(
 		homeVar, _T("/Spear of Destiny/base"), sodVers, NULL, "Steam");
+	// New location
+	BEL_Cross_TryAddSteamInst(
+		homeVar, _T("/Wolfenstein 3D/base"), sodVers, sodSubdirs, "Steam");
 #endif // PLATFORM
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 #if (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
+	// Old location
 	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705126"),
+		_T("PATH"), _T(""),
+		sodVers, sodSubdirs, "GOG.com");
+	// New location
+	BEL_Cross_TryAddRegistryInst(
+		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705226"),
 		_T("PATH"), _T(""),
 		sodVers, sodSubdirs, "GOG.com");
 #endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
