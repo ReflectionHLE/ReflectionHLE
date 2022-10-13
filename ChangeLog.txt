@@ -2,6 +2,35 @@
 Changelog
 ---------
 
+TBA:
+
+* Keyboard overrides don't fully replace the original uses of the keys
+as of this version. For instance, if the launcher is used to select
+the key W for moving forward in Catacomb 3-D, it can still be used
+as a part of debug keys for warping to another level.
+On the other hand, the familiar functionality of the key otherwise used
+for the same in-game action will be disabled. To clarify for the example
+of moving forward, the key generally used for this purpose from
+Catacomb 3-D's own control panel (the Up arrow by default)
+will not actually be used for moving forward.
+Note that mouse button overrides are still full overrides and there's
+no change in behaviors as describe above.
+* Miscellaneous internal changes related to user input, related in part to
+keyboard overrides. One example is a bug fix, where pressing on a key
+moving Keen left, followed by another key moving Keen right, and then
+releasing one of the keys, would make Keen stop moving altogether.
+Also, as of this version, the analog motion is explicitly reserved for analog
+controller axes; novert impacts these, as well as ordinary mouse movement.
+* Use more locks for the audio mixer. This particularly
+helped resolving unexpected slowdowns in Android builds
+with BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO=1,
+during playback of digitized sounds in Wolf3D.
+* BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO=1 is used for Android again.
+* Other updates related to Android builds.
+* Made a few changes removing dependencies on libgcc and C++ libraries
+as long as we don't actually need any of them.
+* Other miscellaneous edits.
+
 Dec 31, 2021 (v0.40.0):
 
 The project is renamed "ReflectionHLE" as of this version.
