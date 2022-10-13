@@ -110,6 +110,7 @@ extern BEMenuItem
 	g_beVideoSettingsMenuItem_VSync,
 	g_beVideoSettingsMenuItem_ForceFullSoftScaling,
 	g_beVideoSettingsMenuItem_LauncherWindowType,
+	g_beVideoSettingsMenuItem_ShowEndoom,
 	g_beSoundSettingsMenuItem_SndSampleRate,
 	g_beSoundSettingsMenuItem_SndSubSystem,
 	g_beSoundSettingsMenuItem_OPLEmulation,
@@ -218,6 +219,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #ifdef REFKEEN_CONFIG_LAUNCHER_WINDOWTYPE_MENUITEM
 	{&g_refKeenCfg.launcherWinType, &g_beVideoSettingsMenuItem_LauncherWindowType},
 #endif
+	{&g_refKeenCfg.showEndoom, &g_beVideoSettingsMenuItem_ShowEndoom},
 
 	{&g_refKeenCfg.sndSampleRate, &g_beSoundSettingsMenuItem_SndSampleRate,
 		BEL_Launcher_ReadSampleRate, BEL_Launcher_WriteSampleRate},

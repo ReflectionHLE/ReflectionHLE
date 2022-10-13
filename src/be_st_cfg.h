@@ -77,6 +77,7 @@ typedef struct
 	int scaleType;
 	int scaleFactor;
 	int/*bool*/ forceFullSoftScaling;
+	int/*bool*/ showEndoom;
 	int mouseGrab;
 	int sndInterThreadBufferRatio;
 	int sndSampleRate;

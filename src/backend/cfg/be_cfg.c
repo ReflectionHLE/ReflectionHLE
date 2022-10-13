@@ -167,6 +167,7 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_ENUM(scaleType, "scaletype", g_be_setting_scaletype_vals, SCALE_ASPECT)
 	DEF_INT(scaleFactor, "scalefactor", 2, 1, INT_MAX)
 	DEF_BOOL(forceFullSoftScaling, "forcefullsoftscaling", false)
+	DEF_BOOL(showEndoom, "showendoom", true)
 	DEF_ENUM(mouseGrab, "mousegrab", g_be_setting_mousegrab_vals, MOUSEGRAB_AUTO)
 	DEF_INT(sndInterThreadBufferRatio, "sndinterthreadbufferratio", 2, 1, INT_MAX)
 	// 49716 may lead to unexpected behaviors on Android

@@ -165,7 +165,7 @@ void BE_ST_ShutdownAll(void)
 void BE_ST_HandleExit(int status)
 {
 	SDL_Event event;
-	bool keepRunning = true;
+	bool keepRunning = (status || g_refKeenCfg.showEndoom);
 
 	BEL_ST_AltControlScheme_CleanUp(); // Used for removal of any remaining controller UI (and possibly some more)
 

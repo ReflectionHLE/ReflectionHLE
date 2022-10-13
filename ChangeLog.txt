@@ -4,6 +4,11 @@ Changelog
 
 TBA:
 
+* Add a toggle for showing/hiding the ENDOOM screen on exit,
+currently identified in the launcher as "Wait for input on exit".
+Regardless of the toggle, it'll still appear in case of a nonzero exit code.
+Other screens specific to shareware versions of certain games might
+further keep appearing, or introduce their own delays.
 * Keyboard overrides don't fully replace the original uses of the keys
 as of this version. For instance, if the launcher is used to select
 the key W for moving forward in Catacomb 3-D, it can still be used
