@@ -277,6 +277,7 @@ static void BEL_Cross_CheckForSODInstallations(const char *UNIX_SPECIFIC(homeVar
 		&g_be_gamever_sd3ac14, 0
 	};
 
+	const TCHAR *sodSubdirs[] = {_T("/m1"), _T("/m2"), _T("/m3")};
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	BEL_Cross_TryAddRegistryInst(
@@ -289,20 +290,10 @@ static void BEL_Cross_CheckForSODInstallations(const char *UNIX_SPECIFIC(homeVar
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 #if (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
-	// Technically, just one mission should reside in each subdir, but since
-	// we already have all vers in an array, simply look for all of them
 	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705126"),
-		_T("PATH"), _T("\\M1"),
-		sodVers, NULL, "GOG.com");
-	BEL_Cross_TryAddRegistryInst(
-		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705126"),
-		_T("PATH"), _T("\\M2"),
-		sodVers, NULL, "GOG.com");
-	BEL_Cross_TryAddRegistryInst(
-		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705126"),
-		_T("PATH"), _T("\\M3"),
-		sodVers, NULL, "GOG.com");
+		_T("PATH"), _T(""),
+		sodVers, sodSubdirs, "GOG.com");
 #endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
 
 #endif // REFKEEN_HAS_VER_SODAC14
