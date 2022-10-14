@@ -2,7 +2,7 @@
 Changelog
 ---------
 
-TBA:
+Oct 14, 2022 (v0.40.1):
 
 * Add a toggle for showing/hiding the ENDOOM screen on exit,
 currently identified in the launcher as "Wait for input on exit".
