@@ -192,7 +192,7 @@ static BEMenuItem *g_beMainMenuItems[] = {
 };
 
 BEMenu g_beMainMenu = {
-	REFKEEN_TITLE_AND_VER_STRING,
+	REFKEEN_TITLE_AND_VER_SHORT_STRING,
 	&g_beQuitConfirmMenu,
 	g_beMainMenuItems,
 	// Ignore the rest

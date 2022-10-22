@@ -1,0 +1,1 @@
+#cmakedefine REFKEEN_GIT_ID "@REFKEEN_GIT_ID@"

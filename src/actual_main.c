@@ -58,7 +58,7 @@ static void show_command_line_help(void)
 	// HACK - For text mode emulation (and exit handler)
 	BE_ST_PrepareForGameStartupWithoutAudio();
 
-	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " - Command line arguments ***");
+	BE_ST_printf("*** %s - Command line arguments ***\n", REFKEEN_TITLE_AND_VER_STRING);
 	BE_ST_puts("");
 #ifdef REFKEEN_ENABLE_LAUNCHER
 	BE_ST_puts("To skip the launcher you can use -gamever <VER>,");
@@ -115,7 +115,7 @@ static void show_game_vers(void)
 	// HACK - For text mode emulation (and exit handler)
 	BE_ST_PrepareForGameStartupWithoutAudio();
 
-	BE_ST_puts("*** " REFKEEN_TITLE_AND_VER_STRING " - Supported game versions ***");
+	BE_ST_printf("*** %s - Supported game versions ***\n", REFKEEN_TITLE_AND_VER_STRING);
 	BE_ST_puts("");
 	for (int gameVerVal = 0; gameVerVal < BE_GAMEVER_LAST; ++gameVerVal)
 	{

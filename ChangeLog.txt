@@ -2,6 +2,10 @@
 Changelog
 ---------
 
+TBD:
+
+* Use a version identifier based on the git hash for dev builds.
+
 Oct 14, 2022 (v0.40.1):
 
 * Add a toggle for showing/hiding the ENDOOM screen on exit,

@@ -1,6 +1,8 @@
 #ifndef BE_TITLE_AND_VERSION_H
 #define BE_TITLE_AND_VERSION_H
 
+#include "be_git_id.h"
+
 #ifdef REFKEEN_UNIFIED_BUILD
 #define REFKEEN_TITLE_STRING "ReflectionHLE"
 #elif (defined REFKEEN_VER_KDREAMS)
@@ -21,11 +23,22 @@
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
 
-// Note that the "vX.Y.Z" format is important, since a makefile command parses
-// the string to fill the CFBundleVersion string in Info.plist (OS X/macOS specific)
-
 #define REFKEEN_VERSION_STRING "v0.40.1"
 
-#define REFKEEN_TITLE_AND_VER_STRING REFKEEN_TITLE_STRING " " REFKEEN_VERSION_STRING
+#ifdef REFKEEN_GIT_ID
+
+#define REFKEEN_TITLE_AND_VER_STRING \
+        REFKEEN_TITLE_STRING " " REFKEEN_VERSION_STRING "-" REFKEEN_GIT_ID
+#define REFKEEN_TITLE_AND_VER_SHORT_STRING \
+        REFKEEN_TITLE_STRING " " REFKEEN_GIT_ID
+
+#else
+
+#define REFKEEN_TITLE_AND_VER_STRING \
+        REFKEEN_TITLE_STRING " " REFKEEN_VERSION_STRING "-" REFKEEN_GIT_ID
+#define REFKEEN_TITLE_AND_VER_SHORT_STRING \
+        REFKEEN_TITLE_STRING " " REFKEEN_GIT_ID
+
+#endif // REFKEEN_GIT_ID
 
 #endif // BE_TITLE_AND_VERSION_H

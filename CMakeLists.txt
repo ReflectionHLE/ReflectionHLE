@@ -44,6 +44,7 @@ function(add_refhle_separate_target
 		else ()
 			add_executable(${name} MACOSX_BUNDLE ${sources} ${shared_sources} ${app_rc})
 		endif ()
+		add_dependencies(${name} GitId)
 		set_target_properties(${name} PROPERTIES
 			COMPILE_FLAGS "${all_cc_flags}"
 			MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/rsrc/Info.plist"
@@ -76,6 +77,7 @@ function(add_refhle_unified_target name targets shared_sources common_cc_flags c
 	else ()
 		add_executable(${name} MACOSX_BUNDLE ${shared_sources} ${app_rc})
 	endif ()
+	add_dependencies(${name} GitId)
 	set_target_properties(${name} PROPERTIES
 		COMPILE_FLAGS "${common_cc_flags} ${cc_flags}"
 		MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/rsrc/Info.plist"
@@ -142,6 +144,12 @@ include(src/id91_11/cat_all/catabyss/CMakeLists.txt)
 include(src/id91_11/cat_all/catarm/CMakeLists.txt)
 include(src/id91_11/cat_all/catapoc/CMakeLists.txt)
 include(src/wolf3d/CMakeLists.txt)
+
+# CMAKE_CURRENT_LIST_DIR isn't available in older versions of CMake
+get_filename_component(curr_list_dir ${CMAKE_CURRENT_LIST_FILE} PATH)
+add_custom_target(GitId
+                   COMMAND ${CMAKE_COMMAND} -DIN_FILE=${curr_list_dir}/be_git_id.h.in -DOUT_FILE=${PROJECT_BINARY_DIR}/be_git_id.h -P ${curr_list_dir}/cmake/GenReflectionHLEGitHash.cmake
+                   WORKING_DIRECTORY ${curr_list_dir})
 
 set(all_src ${be_src} ${kdreams_src} ${cat3d_src}
     ${catabyss_src} ${catarm_src} ${catapoc_src} ${wolf3d_src})
