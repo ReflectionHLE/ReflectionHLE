@@ -5,15 +5,29 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        target: [win64, win32, macos, linux]
         lang_arg: [-DBUILD_AS_CPP=OFF, -DBUILD_AS_CPP=ON]
         include:
-        - os: macos-latest
+        - target: win64
+          os: windows-latest
+          pkg_update_cmd:
+          pkg_install_cmd: vcpkg install sdl2 speexdsp --triplet=x64-windows
+          platform_args: -A x64 -DCMAKE_TOOLCHAIN_FILE="$Env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+        - target: win32
+          os: windows-latest
+          pkg_update_cmd:
+          pkg_install_cmd: vcpkg install sdl2 speexdsp --triplet=x86-windows
+          platform_args: -A Win32 -DCMAKE_TOOLCHAIN_FILE="$Env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+        - target: macos
+          os: macos-latest
           pkg_update_cmd: brew update
           pkg_install_cmd: brew install cmake sdl2 speexdsp
-        - os: ubuntu-latest
+          platform_args:
+        - target: linux
+          os: ubuntu-latest
           pkg_update_cmd: sudo apt-get update
           pkg_install_cmd: sudo apt-get install cmake libsdl2-dev libspeexdsp-dev
+          platform_args:
     steps:
     - name: Check out the code
       uses: actions/checkout@v3
@@ -22,6 +36,6 @@ jobs:
         ${{ matrix.pkg_update_cmd }}
         ${{ matrix.pkg_install_cmd }}
     - name: Configure
-      run: cmake -B build ${{ matrix.lang_arg }}
+      run: cmake -B build ${{ matrix.platform_args }} ${{ matrix.lang_arg }}
     - name: Build
       run: cmake --build build -j 2
