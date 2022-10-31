@@ -636,7 +636,7 @@ void RefKeen_FillObjStatesWithDOSPointers_NonWL1(void)
 	s_deathcam.compatdospointer = 0x2DD6;
 }
 
-void* RefKeen_GetObjStatePtrFromDOSPointer_NonWL1(uint_fast32_t dosptr)
+statetype *RefKeen_GetObjStatePtrFromDOSPointer_NonWL1(uint_fast32_t dosptr)
 {
 	switch (dosptr)
 	{

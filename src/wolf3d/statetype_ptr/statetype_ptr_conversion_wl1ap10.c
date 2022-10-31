@@ -500,7 +500,7 @@ void RefKeen_FillObjStatesWithDOSPointers_WL1(void)
 	s_bjjump4.compatdospointer = 0x374E;
 }
 
-void* RefKeen_GetObjStatePtrFromDOSPointer_WL1(uint_fast32_t dosptr)
+statetype *RefKeen_GetObjStatePtrFromDOSPointer_WL1(uint_fast32_t dosptr)
 {
 	switch (dosptr)
 	{

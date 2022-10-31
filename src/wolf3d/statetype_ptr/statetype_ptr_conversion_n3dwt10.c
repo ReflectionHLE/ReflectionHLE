@@ -550,7 +550,7 @@ void RefKeen_FillObjStatesWithDOSPointers_NonWL1(void)
 	s_mexplode3.compatdospointer = 0x3310;
 }
 
-void* RefKeen_GetObjStatePtrFromDOSPointer_NonWL1(uint_fast32_t dosptr)
+statetype *RefKeen_GetObjStatePtrFromDOSPointer_NonWL1(uint_fast32_t dosptr)
 {
 	switch (dosptr)
 	{
