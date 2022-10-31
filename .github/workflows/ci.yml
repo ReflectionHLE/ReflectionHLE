@@ -16,7 +16,7 @@ jobs:
           pkg_install_cmd: sudo apt-get install cmake libsdl2-dev libspeexdsp-dev
     steps:
     - name: Check out the code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install dependencies
       run: |
         ${{ matrix.pkg_update_cmd }}
