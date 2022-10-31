@@ -44,8 +44,15 @@ typedef enum BE_Log_Message_Class_T
 	BE_LOG_MSG_NORMAL, BE_LOG_MSG_WARNING, BE_LOG_MSG_ERROR
 } BE_Log_Message_Class_T;
 
+#ifdef _MSC_VER // FIXME: This implementation is risky
+#define BE_Cross_TypedMax(T, x, y) ((T)(x) > (T)(y) ? (T)(x) : (T)(y))
+#define BE_Cross_TypedMin(T, x, y) ((T)(x) < (T)(y) ? (T)(x) : (T)(y))
+#elif (defined __GNUC__)
 #define BE_Cross_TypedMax(T, x, y) ({T _x = (x), _y = (y); (_x > _y) ? _x : _y;})
 #define BE_Cross_TypedMin(T, x, y) ({T _x = (x), _y = (y); (_x < _y) ? _x : _y;})
+#else
+#error "Definitions of BE_Cross_TypedMax, BE_Cross_TypedMin are currently missing"
+#endif
 
 #define BE_Cross_TypedClamp(T, x, min, max) \
         BE_Cross_TypedMin(T, max, BE_Cross_TypedMax(T, min, x))
