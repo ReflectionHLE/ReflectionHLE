@@ -157,7 +157,11 @@ list(REMOVE_DUPLICATES "all_src")
 
 if (BUILD_AS_CPP)
 	set_source_files_properties(${all_src} PROPERTIES LANGUAGE CXX)
-	set(common_cc_flags "-fno-exceptions -x c++")
+	if (CMAKE_GENERATOR MATCHES "Visual Studio")
+		set(common_cc_flags "/TC")
+	else ()
+		set(common_cc_flags "-fno-exceptions -x c++")
+	endif ()
 endif ()
 
 configure_file(refkeen_config.h.in refkeen_config.h)
