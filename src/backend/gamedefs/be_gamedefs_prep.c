@@ -55,11 +55,13 @@
 #define BE_CHECK_GOG_INSTALLATIONS
 #endif
 
-// Use this for params specific to Unix, ignoring them otherwise
+// Use this for a single param specific to Unix, ignoring it otherwise
 #ifdef REFKEEN_PLATFORM_UNIX
-#define UNIX_SPECIFIC(x) x
+#define UNIX_SPECIFIC_PARAM(x) x
+#define UNIX_SPECIFIC_ARG(x) x
 #else
-#define UNIX_SPECIFIC(x)
+#define UNIX_SPECIFIC_PARAM(x) void
+#define UNIX_SPECIFIC_ARG(x)
 #endif
 
 static void BEL_Cross_TryAddInst_Common(
@@ -122,7 +124,7 @@ static void BEL_Cross_TryAddSteamInst(
 }
 #endif
 
-static void BEL_Cross_CheckForKDreamsInstallations(const char *UNIX_SPECIFIC(homeVar))
+static void BEL_Cross_CheckForKDreamsInstallations(UNIX_SPECIFIC_PARAM(const char *homeVar))
 {
 #ifdef REFKEEN_HAS_VER_KDREAMS
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
@@ -146,7 +148,7 @@ static void BEL_Cross_CheckForKDreamsInstallations(const char *UNIX_SPECIFIC(hom
 #endif // REFKEEN_HAS_VER_KDREAMS
 }
 
-static void BEL_Cross_CheckForCatacombsInstallations(const char *UNIX_SPECIFIC(homeVar))
+static void BEL_Cross_CheckForCatacombsInstallations(UNIX_SPECIFIC_PARAM(const char *homeVar))
 {
 #if (defined REFKEEN_HAS_VER_CATACOMB_ALL) && (defined BE_CHECK_GOG_INSTALLATIONS)
 #if (defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_MACOS)
@@ -231,7 +233,7 @@ static void BEL_Cross_CheckForCatacombsInstallations(const char *UNIX_SPECIFIC(h
 #endif // (defined REFKEEN_HAS_VER_CATACOMB_ALL) && (defined BE_CHECK_GOG_INSTALLATIONS)
 }
 
-static void BEL_Cross_CheckForWolf3DInstallations(const char *UNIX_SPECIFIC(homeVar))
+static void BEL_Cross_CheckForWolf3DInstallations(UNIX_SPECIFIC_PARAM(const char *homeVar))
 {
 #ifdef REFKEEN_HAS_VER_WL1AP14
 #ifdef REFKEEN_PLATFORM_WINDOWS
@@ -275,7 +277,7 @@ static void BEL_Cross_CheckForWolf3DInstallations(const char *UNIX_SPECIFIC(home
 #endif // REFKEEN_HAS_VER_WL6AC14
 }
 
-static void BEL_Cross_CheckForSODInstallations(const char *UNIX_SPECIFIC(homeVar))
+static void BEL_Cross_CheckForSODInstallations(UNIX_SPECIFIC_PARAM(const char *homeVar))
 {
 #ifdef REFKEEN_HAS_VER_SODAC14
 	const BE_GameVerDetails_T *sodVers[] = {
@@ -320,7 +322,7 @@ static void BEL_Cross_CheckForSODInstallations(const char *UNIX_SPECIFIC(homeVar
 #endif // REFKEEN_HAS_VER_SODAC14
 }
 
-static void BEL_Cross_CheckForS3DNAInstallations(const char *UNIX_SPECIFIC(homeVar))
+static void BEL_Cross_CheckForS3DNAInstallations(UNIX_SPECIFIC_PARAM(const char *homeVar))
 {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	const BE_GameVerDetails_T *noah3dVers[] = {&g_be_gamever_n3dwt10, 0};
@@ -350,14 +352,12 @@ static void BEL_Cross_CheckForKnownInstallations(void)
 {
 #ifdef REFKEEN_PLATFORM_UNIX // Including MACOS
 	const char *homeVar = getenv("HOME");
-#else
-	const char *homeVar = 0; // We make use of UNIX_SPECIFIC for this
 #endif
-	BEL_Cross_CheckForKDreamsInstallations(homeVar);
-	BEL_Cross_CheckForCatacombsInstallations(homeVar);
-	BEL_Cross_CheckForWolf3DInstallations(homeVar);
-	BEL_Cross_CheckForSODInstallations(homeVar);
-	BEL_Cross_CheckForS3DNAInstallations(homeVar);
+	BEL_Cross_CheckForKDreamsInstallations(UNIX_SPECIFIC_ARG(homeVar));
+	BEL_Cross_CheckForCatacombsInstallations(UNIX_SPECIFIC_ARG(homeVar));
+	BEL_Cross_CheckForWolf3DInstallations(UNIX_SPECIFIC_ARG(homeVar));
+	BEL_Cross_CheckForSODInstallations(UNIX_SPECIFIC_ARG(homeVar));
+	BEL_Cross_CheckForS3DNAInstallations(UNIX_SPECIFIC_ARG(homeVar));
 }
 
 void BE_Cross_PrepareGameInstallations(void)
