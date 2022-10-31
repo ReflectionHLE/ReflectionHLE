@@ -549,7 +549,8 @@ id0_boolean_t SaveTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 	// 4. No free disk space check is done.
 
 	id0_long_t checksum = 0;
-	objtype *ob, nullobj = {};
+	objtype *ob, nullobj;
+	memset(&nullobj, 0, sizeof(nullobj));
 
 	DiskFlopAnim(x,y);
 	checksum = SaveAndChecksumGameState(file, &gamestate, checksum);
@@ -668,7 +669,8 @@ id0_boolean_t LoadTheGame(BE_FILE_T file,id0_int_t x,id0_int_t y)
 #endif
 	id0_long_t checksum = 0;
 
-	objtype *ob, nullobj = {};
+	objtype *ob, nullobj;
+	memset(&nullobj, 0, sizeof(nullobj));
 
 
 	DiskFlopAnim(x,y);

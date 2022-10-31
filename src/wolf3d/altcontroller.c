@@ -211,10 +211,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 	{0},
 	g_ingame_altcontrol_mapping_gameplay_onscreentouchcontrols,
 	g_ingame_altcontrol_mapping_gameplay_touchmappings,
-	{
-	},
-	{
-	},
+	{0},
+	{0},
 	{
 		{0},
 		{0},
@@ -234,8 +232,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		{0},
 		{0},
 	},
-	{
-	},
+	{0},
 	false
 };
 
@@ -243,10 +240,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_weapons = {
 	{&g_ingame_altcontrol_mapping_gameplay, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
 	NULL,
 	NULL,
-	{
-	},
-	{
-	},
+	{0},
+	{0},
 	{
 		// Face buttons
 		{0},
@@ -267,8 +262,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_weapons = {
 		{NULL, BE_ST_SC_4, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_2, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
-	{
-	},
+	{0},
 	true
 };
 
@@ -301,10 +295,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help = {
 	{0},
 	g_ingame_altcontrol_mapping_help_onscreentouchcontrols,
 	g_ingame_altcontrol_mapping_help_touchmappings,
-	{
-	},
-	{
-	},
+	{0},
+	{0},
 	{
 		// Face buttons
 		{0},
@@ -326,8 +318,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help = {
 		{NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
-	{
-	},
+	{0},
 	false
 };
 
@@ -335,10 +326,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys = {
 	{&g_ingame_altcontrol_mapping_gameplay, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING},
 	NULL,
 	NULL,
-	{
-	},
-	{
-	},
+	{0},
+	{0},
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_F7, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -359,8 +348,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys = {
 		{NULL, BE_ST_SC_F3, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_F2, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
-	{
-	},
+	{0},
 	true
 };
 
@@ -368,10 +356,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback = {
 	{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	NULL,
 	NULL,
-	{
-	},
-	{
-	},
+	{0},
+	{0},
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -440,10 +426,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu = {
 	{0},
 	g_ingame_altcontrol_mapping_menu_onscreentouchcontrols,
 	g_ingame_altcontrol_mapping_menu_touchmappings,
-	{
-	},
-	{
-	},
+	{0},
+	{0},
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_ENTER, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -465,8 +449,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu = {
 		{NULL, BE_ST_SC_LEFT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 		{NULL, BE_ST_SC_RIGHT, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
-	{
-	},
+	{0},
 	false
 };
 
@@ -474,10 +457,8 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 	{0},
 	NULL,
 	NULL,
-	{
-	},
-	{
-	},
+	{0},
+	{0},
 	{
 		// Face buttons
 		{NULL, BE_ST_SC_Y, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
@@ -498,8 +479,7 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu_confirm = {
 		{0},
 		{0},
 	},
-	{
-	},
+	{0},
 	true
 };
 

@@ -250,10 +250,9 @@ BEMenu g_beDisappearedGameHelpMenu = {
 
 /*** Supported game versions menu ***/
 
-// Statically allocated, but filled later
-static BEMenuItem *g_beSupportedGameVersionsMenu_MenuItemsPtrs[BE_GAMEVER_LAST+1] = {
-	// All pointers are initialized to NULL, and the last entry shall always be NULL
-};
+// Statically allocated, but filled later.
+// All pointers are initialized to NULL, and the last entry shall always be NULL.
+static BEMenuItem *g_beSupportedGameVersionsMenu_MenuItemsPtrs[BE_GAMEVER_LAST+1];
 
 BEMenu g_beSupportedGameVersionsMenu = {
 	"Select game version for details",
