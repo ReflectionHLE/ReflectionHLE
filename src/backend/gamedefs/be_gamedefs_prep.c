@@ -269,7 +269,7 @@ static void BEL_Cross_CheckForWolf3DInstallations(UNIX_SPECIFIC_PARAM(const char
 		wolf3dactVers, NULL, "GOG.com");
 	// New location
 	BEL_Cross_TryAddRegistryInst(
-		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705226"),
+		_T("SOFTWARE\\GOG.COM\\GAMES\\1778420505"),
 		_T("PATH"), _T(""),
 		wolf3dactVers, NULL, "GOG.com");
 #endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
@@ -314,7 +314,7 @@ static void BEL_Cross_CheckForSODInstallations(UNIX_SPECIFIC_PARAM(const char *h
 		sodVers, sodSubdirs, "GOG.com");
 	// New location
 	BEL_Cross_TryAddRegistryInst(
-		_T("SOFTWARE\\GOG.COM\\GAMES\\1441705226"),
+		_T("SOFTWARE\\GOG.COM\\GAMES\\1778420505"),
 		_T("PATH"), _T(""),
 		sodVers, sodSubdirs, "GOG.com");
 #endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
