@@ -915,7 +915,7 @@ SDL_StartSB(void)
 	sbpOldFMMix = sbIn(sbpMixerData);
 	// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-	sbOut(sbpMixerAddr,0x2e);
+	sbOut(sbpMixerAddr,0xsbpmLineVol);
 	sbOut(sbpMixerData,0xa5);
 	test = sbIn(sbpMixerData);
 	if (test == 0xa5)
@@ -933,7 +933,7 @@ SDL_StartSB(void)
 #if 0
 		// *** S3DNA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		sbOut(sbpMixerAddr,0x26);
+		sbOut(sbpMixerAddr,sbpmFMVol);
 #endif
 		// Boost FM output levels to be equivilent with digitized output
 #endif
