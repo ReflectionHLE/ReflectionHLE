@@ -1,6 +1,6 @@
 /* Wolfenstein 3D Source Code
  * Copyright (C) 1993-1996 id Software, Inc.
- * Copyright (C) 2025-2022 NY00123
+ * Copyright (C) 2015-2022 NY00123
  *
  * This file is part of Wolfenstein 3D.
  *
