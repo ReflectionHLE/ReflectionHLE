@@ -212,20 +212,21 @@ int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Error
 			TCHAR * const pathEnd = path + BE_CROSS_PATH_LEN_BOUND;
 			BEL_Cross_safeandfastctstringcopy_4strs(path, pathEnd, g_be_appDataPath, _T("/"), details->writableFilesDir, _T(".txt"));
 			FILE *fp = _tfopen(path, _T("w"));
-			if (!fp)
+			if (fp)
 			{
-				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_DirSelection_TryAddGameInstallation: Can't add directory to txt file.\n");
-				break;
-			}
-
-			// HACK
+				// HACK
 #ifdef REFKEEN_PLATFORM_WINDOWS
-			fprintf(fp, "%s %ls\n", g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], 1+g_be_dirSelection_separatorPtrs[0]);
+				fprintf(fp, "%s %ls\n", g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], 1+g_be_dirSelection_separatorPtrs[0]);
 #else
-			fprintf(fp, "%s %s\n", g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], 1+g_be_dirSelection_separatorPtrs[0]);
+				fprintf(fp, "%s %s\n", g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], 1+g_be_dirSelection_separatorPtrs[0]);
 #endif
+				fclose(fp);
+			}
+			else
+				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_DirSelection_TryAddGameInstallation: Can't add directory to txt file.\n");
 
-			fclose(fp);
+
+			BEL_Cross_SortGameInstallations_ByVerId();
 			break; // Finish
 		}
 	}

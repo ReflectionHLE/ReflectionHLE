@@ -73,4 +73,7 @@ typedef struct {
 
 extern const BE_GameVerDetails_T *g_be_gamever_ptrs[];
 
+// FIXME: That doesn't belong here (unless header is renamed)
+void BEL_Cross_SortGameInstallations_ByVerId(void);
+
 #endif
