@@ -1,4 +1,4 @@
-/* Copyright (C) 2020-2021 Braden "Blzut3" Obrzut
+/* Copyright (C) 2020-2024 Braden "Blzut3" Obrzut
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
