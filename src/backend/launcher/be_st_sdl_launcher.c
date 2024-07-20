@@ -205,7 +205,7 @@ static BEMenuItem g_beSelectGameMenuItems[BE_GAME_LAST];
 static char g_beSelectGameMenuItemsStrs[BE_GAME_LAST][78]; // Should be MUTABLE strings for layout preparation
 static BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAME_LAST+4];
 
-BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_DisappearedGameHelp, "Help! An installed game disappeared from the list!", &g_beDisappearedGameHelpMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_DisappearedGameHelp, "Help! A game disappeared from the list!", &g_beDisappearedGameHelpMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_ShowSupportedGameVersions, "Show supported game versions", &g_beSupportedGameVersionsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_AddMissingGameVersion, "Add missing game version", &g_beSelectInitialPathMenu)
 
@@ -247,7 +247,7 @@ BEMenu g_beSelectGameExeMenu = {
 /*** Disappeared game menu ***/
 
 BEMENUITEM_DEF_STATIC(g_beDisappearedGameHelpMenuItem_Explanation,
-"ReflectionHLE can detect compatible DOS game versions from certain installations, including the Catacombs games from GOG.com. Once such a game installation is updated in any minor way, ReflectionHLE may fail to locate it. These are the expected behaviors.\nAs an alternative, you can manually add a compatible game installation (if not yet listed)."
+"ReflectionHLE can detect compatible DOS game versions from certain installations, like the Catacombs games from a GOG.com installer. Once such a game installation is updated in any minor way, ReflectionHLE may fail to locate it. These are expected behaviors.\nAs an alternative, you can manually add a compatible game installation (if not yet listed)."
 );
 
 static BEMenuItem *g_beDisappearedGameHelpMenuItems[] = {
@@ -256,7 +256,7 @@ static BEMenuItem *g_beDisappearedGameHelpMenuItems[] = {
 };
 
 BEMenu g_beDisappearedGameHelpMenu = {
-	"Where may a game disappear",
+	"Why may a game disappear",
 	&g_beSelectGameMenu,
 	g_beDisappearedGameHelpMenuItems,
 	// Ignore the rest
