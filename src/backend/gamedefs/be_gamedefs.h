@@ -1,4 +1,4 @@
-/* This header must be included *only* from be_cross_fs.c */
+/* This header must be included *only* from be_cross_prep.c */
 
 #include "be_gamestr.h"
 
