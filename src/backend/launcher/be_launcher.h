@@ -120,6 +120,7 @@ void BE_Launcher_RefreshVerticalScrolling(uint32_t ticksinms);
 
 void BE_Launcher_Handler_LastGameVerLaunch(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_GameSelect(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_GameLaunchWithChosenExe(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_SupportedGameVersionSelection(BEMenuItem **menuItemP);

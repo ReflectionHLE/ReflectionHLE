@@ -1213,9 +1213,21 @@ void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP)
 
 static int g_lastGameVerSelectedInMenu;
 
+void BE_Launcher_Handler_GameSelect(BEMenuItem **menuItemP)
+{
+	// FIXME: Better use a single compilation unit for the menu
+	extern int g_be_launcher_gameIds[];
+
+	int lastGameSelectedInMenu = g_be_launcher_gameIds[menuItemP - g_be_launcher_currMenu->menuItems];
+	BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(lastGameSelectedInMenu);
+}
+
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 {
-	g_lastGameVerSelectedInMenu = BE_Cross_GetGameVerFromInstallation(menuItemP - g_be_launcher_currMenu->menuItems);
+	// FIXME: Better use a single compilation unit for the menu
+	extern int g_be_launcher_gameVerIds[];
+
+	g_lastGameVerSelectedInMenu = g_be_launcher_gameVerIds[menuItemP - g_be_launcher_currMenu->menuItems];
 	int nOfExes = BE_Cross_GetAccessibleEXEsCountForGameVer(g_lastGameVerSelectedInMenu);
 	if (nOfExes == 1)
 		BEL_Launcher_DoLaunchGame(g_lastGameVerSelectedInMenu, BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(0, g_lastGameVerSelectedInMenu));

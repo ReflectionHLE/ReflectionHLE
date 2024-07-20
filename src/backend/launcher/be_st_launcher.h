@@ -8,6 +8,7 @@
 void BE_ST_Launcher_Prepare(void);
 void BE_ST_Launcher_Shutdown(void);
 void BE_ST_Launcher_RefreshSelectGameMenuContents(void);
+void BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(int gameId);
 void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfExes);
 
 // Used by launcher for user input binds

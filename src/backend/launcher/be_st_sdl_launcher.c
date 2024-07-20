@@ -34,6 +34,7 @@
 #include <string.h>
 #include "SDL.h"
 
+#include "backend/filesystem/be_filesystem_gameinst.h"
 #include "backend/input/be_input.h"
 #include "backend/input/be_input_tables.h"
 #include "backend/input/be_input_sdl.h"
@@ -200,9 +201,9 @@ BEMenu g_beMainMenu = {
 
 /*** Select game menu ***/
 
-static BEMenuItem g_beSelectGameMenuItems[BE_GAMEVER_LAST];
-static char g_beSelectGameMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
-static BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAMEVER_LAST+4];
+static BEMenuItem g_beSelectGameMenuItems[BE_GAME_LAST];
+static char g_beSelectGameMenuItemsStrs[BE_GAME_LAST][78]; // Should be MUTABLE strings for layout preparation
+static BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAME_LAST+4];
 
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_DisappearedGameHelp, "Help! An installed game disappeared from the list!", &g_beDisappearedGameHelpMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_ShowSupportedGameVersions, "Show supported game versions", &g_beSupportedGameVersionsMenu)
@@ -212,6 +213,19 @@ BEMenu g_beSelectGameMenu = {
 	"Select game",
 	&g_beMainMenu,
 	g_beSelectGameMenuItemsPtrs, // Array of menu items
+	// Ignore the rest
+};
+
+/*** Select game version menu ***/
+
+static BEMenuItem g_beSelectGameVerMenuItems[BE_GAMEVER_LAST];
+static char g_beSelectGameVerMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
+static BEMenuItem *g_beSelectGameVerMenuItemsPtrs[BE_GAMEVER_LAST+1];
+
+BEMenu g_beSelectGameVerMenu = {
+	"Select game version",
+	&g_beSelectGameMenu,
+	g_beSelectGameVerMenuItemsPtrs, // Array of menu items
 	// Ignore the rest
 };
 
@@ -225,7 +239,7 @@ static BEMenuItem *g_beSelectGameExeMenuItemsPtrs[MAX_NUM_OF_DISPLAYED_GAME_EXES
 
 BEMenu g_beSelectGameExeMenu = {
 	"Choose what to start",
-	&g_beSelectGameMenu,
+	&g_beSelectGameVerMenu,
 	g_beSelectGameExeMenuItemsPtrs, // Array of menu items
 	// Ignore the rest
 };
@@ -1109,7 +1123,7 @@ void BE_ST_Launcher_Prepare(void)
 	/*** Prepare most of the launcher-accessible settings menu items ***/
 	BE_Launcher_ReadSettings();
 
-	/*** Prepare installed game versions menu ***/
+	/*** Prepare installed games menu ***/
 	BE_ST_Launcher_RefreshSelectGameMenuContents();
 
 	/*** Prepare root paths menu ***/
@@ -1201,26 +1215,62 @@ static void BEL_ST_Launcher_CheckForExitFromEventsCallback(void)
 #define BEL_ST_Launcher_CheckForExitFromEventsCallback()
 #endif
 
+int g_be_launcher_gameIds[BE_GAME_LAST];
 
 void BE_ST_Launcher_RefreshSelectGameMenuContents(void)
 {
-	int i;
-	for (i = 0; i < g_be_gameinstallations_num; ++i)
+	int lastGameId = BE_GAME_LAST, i, j;
+	for (i = j = 0; i < g_be_gameinstallations_num; ++i)
 	{
-		g_beSelectGameMenuItemsPtrs[i] = &g_beSelectGameMenuItems[i];
-		g_beSelectGameMenuItems[i].handler = &BE_Launcher_Handler_GameLaunch;
-		snprintf(g_beSelectGameMenuItemsStrs[i], sizeof(g_beSelectGameMenuItemsStrs[i]), "%s", BE_Cross_GetGameInstallationDescription(i));
-		g_beSelectGameMenuItems[i].label = g_beSelectGameMenuItemsStrs[i];
-		g_beSelectGameMenuItems[i].type = BE_MENUITEM_TYPE_HANDLER;
+		int verId = BE_Cross_GetGameVerFromInstallation(i);
+		if (g_be_gamever_ptrs[verId]->gameId == lastGameId)
+			continue;
+
+		lastGameId = g_be_gamever_ptrs[verId]->gameId;
+		g_beSelectGameMenuItemsPtrs[j] = &g_beSelectGameMenuItems[j];
+		g_beSelectGameMenuItems[j].handler = &BE_Launcher_Handler_GameSelect;
+		snprintf(g_beSelectGameMenuItemsStrs[j], sizeof(g_beSelectGameMenuItemsStrs[j]), "%s", g_be_game_ptrs[lastGameId]->description);
+		g_beSelectGameMenuItems[j].label = g_beSelectGameMenuItemsStrs[j];
+		g_beSelectGameMenuItems[j].type = BE_MENUITEM_TYPE_HANDLER;
+
+		g_be_launcher_gameIds[j] = lastGameId;
+		++j;
 	}
-	g_beSelectGameMenuItemsPtrs[i++] = &g_beSelectGameMenuItem_DisappearedGameHelp;
-	g_beSelectGameMenuItemsPtrs[i++] = &g_beSelectGameMenuItem_ShowSupportedGameVersions;
+	g_beSelectGameMenuItemsPtrs[j++] = &g_beSelectGameMenuItem_DisappearedGameHelp;
+	g_beSelectGameMenuItemsPtrs[j++] = &g_beSelectGameMenuItem_ShowSupportedGameVersions;
 	if (g_be_gameinstallations_num < BE_GAMEVER_LAST)
-		g_beSelectGameMenuItemsPtrs[i++] = &g_beSelectGameMenuItem_AddMissingGameVersion;
-	g_beSelectGameMenuItemsPtrs[i] = NULL;
+		g_beSelectGameMenuItemsPtrs[j++] = &g_beSelectGameMenuItem_AddMissingGameVersion;
+	g_beSelectGameMenuItemsPtrs[j] = NULL;
 }
 
 void BEL_Launcher_SetCurrentMenu(BEMenu *menu);
+
+int g_be_launcher_gameVerIds[BE_GAMEVER_LAST];
+
+void BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(int gameId)
+{
+	int i, nVers;
+	for (i = nVers = 0; i < g_be_gameinstallations_num; ++i)
+	{
+		int verId = BE_Cross_GetGameVerFromInstallation(i);
+		if (g_be_gamever_ptrs[verId]->gameId != gameId)
+			continue;
+		g_beSelectGameVerMenuItemsPtrs[nVers] = &g_beSelectGameVerMenuItems[nVers];
+		g_beSelectGameVerMenuItems[nVers].handler = &BE_Launcher_Handler_GameLaunch;
+		snprintf(g_beSelectGameVerMenuItemsStrs[nVers],
+		         sizeof(g_beSelectGameVerMenuItemsStrs[nVers]), "%s",
+		         g_be_gamever_ptrs[verId]->description);
+		g_beSelectGameVerMenuItems[nVers].label = g_beSelectGameVerMenuItemsStrs[nVers];
+		g_beSelectGameVerMenuItems[nVers].type = BE_MENUITEM_TYPE_HANDLER;
+
+		g_be_launcher_gameVerIds[nVers] = verId;
+		++nVers;
+	}
+	g_beSelectGameVerMenuItemsPtrs[nVers] = NULL;
+
+	BE_Launcher_PrepareMenu(&g_beSelectGameVerMenu);
+	BEL_Launcher_SetCurrentMenu(&g_beSelectGameVerMenu);
+}
 
 void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfExes)
 {
