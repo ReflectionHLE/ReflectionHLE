@@ -381,3 +381,20 @@ static const BE_GameVerDetails_T g_be_gamever_kdreams2015 = {
 	BE_GAMEVER_KDREAMS2015,
 	BE_GAME_KDREAMS
 };
+
+static const BE_GameVerDetails_T *g_be_gamever_ptrs_kdreams[] = {
+	&g_be_gamever_kdreamse100,
+	&g_be_gamever_kdreamsc100,
+	&g_be_gamever_kdreamse113,
+	&g_be_gamever_kdreamsc105,
+	&g_be_gamever_kdreamse193,
+	&g_be_gamever_kdreamse120,
+	&g_be_gamever_kdreams2015
+};
+
+static const BE_GameDetails_T g_be_game_kdreams = {
+	"Keen Dreams",
+	g_be_gamever_ptrs_kdreams,
+	BE_Cross_ArrayLen(g_be_gamever_ptrs_kdreams),
+	BE_GAME_KDREAMS
+};

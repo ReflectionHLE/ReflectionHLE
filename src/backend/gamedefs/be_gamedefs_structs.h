@@ -71,7 +71,15 @@ typedef struct {
 	BE_Game_T gameId;
 } BE_GameVerDetails_T;
 
+typedef struct {
+	const char *description;
+	const BE_GameVerDetails_T * const *gameVerPtrs;
+	int numOfGameVers;
+	BE_Game_T gameId;
+} BE_GameDetails_T;
+
 extern const BE_GameVerDetails_T *g_be_gamever_ptrs[];
+extern const BE_GameDetails_T *g_be_game_ptrs[];
 
 // FIXME: That doesn't belong here (unless header is renamed)
 void BEL_Cross_SortGameInstallations_ByVerId(void);

@@ -87,18 +87,15 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_KDREAMS
 #include "be_gamedefs_kdreams.h"
 #endif
-#ifdef REFKEEN_HAS_VER_CAT3D
-#include "be_gamedefs_cat3d.h"
-#endif
-#ifdef REFKEEN_HAS_VER_CATADVENTURES
-#include "be_gamedefs_catadventures.h"
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+#include "be_gamedefs_catacomb_all.h"
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 #include "be_gamedefs_wolf3d.h"
 #endif
 
 
-// FIXME: This should probably be a part of a C file
+// FIXME: This and more should probably be a part of a C file
 const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	&g_be_gamever_kdreamse100,
@@ -256,5 +253,17 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	g_be_reqgameverfiles_n3dwt10,
+#endif
+};
+
+const BE_GameDetails_T *g_be_game_ptrs[] = {
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	&g_be_game_kdreams,
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	&g_be_game_catacomb_all,
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	&g_be_game_wolf3d_all,
 #endif
 };

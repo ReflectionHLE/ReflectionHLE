@@ -15,6 +15,7 @@ typedef enum {
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	BE_GAME_WOLF3D_ALL,
 #endif
+	BE_GAME_LAST
 } BE_Game_T;
 
 typedef enum {
