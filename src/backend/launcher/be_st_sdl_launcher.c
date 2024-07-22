@@ -219,7 +219,7 @@ BEMenu g_beSelectGameMenu = {
 static BEMenuItem g_beSelectGameVerMenuItems[BE_GAMEVER_LAST];
 static char g_beSelectGameVerMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
 
-BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_SetArguments, "Set arguments for game *CURRENTLY SET*", &BE_Launcher_Handler_SetArgumentsForGame)
+BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_SetArguments, "Set arguments:                        ", &BE_Launcher_Handler_SetArgumentsForGame)
 
 static BEMenuItem *g_beSelectGameVerMenuItemsPtrs[BE_GAMEVER_LAST+2] = {
 	&g_beSelectGameVerMenuItem_SetArguments // Only this menu item is known
@@ -1312,10 +1312,26 @@ void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId)
 	// HACK
 	const char (*exeArgs)[LAUNCHER_EXE_ARGS_BUFFERLEN] =
 	    BE_ST_Launcher_GetLauncherExeArgsForGame(gameId);
-	if ((*exeArgs)[0] != '\0')
-		strcpy(g_beSelectGameVerMenuItem_SetArguments.label + 23, "*CURRENTLY SET*");
+	// g_beSelectGameVerMenuItem_SetArguments_label is directly used
+	// instead of g_beSelectGameVerMenuItem_SetArguments.label, since
+	// it has a fixed buffer length.
+	const size_t labelLen =
+	    BE_Cross_ArrayLen(g_beSelectGameVerMenuItem_SetArguments_label),
+	  offset = 15, maxArgsLen = labelLen - offset - 1,
+	  exeArgsLen = strlen(*exeArgs);
+
+	if (exeArgsLen <= maxArgsLen)
+		strcpy(g_beSelectGameVerMenuItem_SetArguments_label + offset,
+		       *exeArgs);
 	else
-		strcpy(g_beSelectGameVerMenuItem_SetArguments.label + 23, "               ");
+	{
+		memcpy(g_beSelectGameVerMenuItem_SetArguments_label + offset,
+		       "...", 3);
+		BE_Cross_safeandfastcstringcopy(
+		  g_beSelectGameVerMenuItem_SetArguments_label + offset + 3,
+		  g_beSelectGameVerMenuItem_SetArguments_label + labelLen,
+		  *exeArgs + exeArgsLen - maxArgsLen + 3);
+	}
 }
 
 
