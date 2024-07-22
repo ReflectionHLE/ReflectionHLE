@@ -1089,13 +1089,39 @@ void BE_Launcher_Start(void)
 	BE_ST_Launcher_RunEventLoop();
 }
 
+char // Function returns a pointer to a fixed-size array
+(*BE_ST_Launcher_GetLauncherExeArgsForGame(int gameId))[LAUNCHER_EXE_ARGS_BUFFERLEN]
+{
+	switch (gameId)
+	{
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	case BE_GAME_KDREAMS:
+		return &g_refKeenCfg.kdreams.launcherExeArgs;
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	case BE_GAME_CATACOMB_ALL:
+		return &g_refKeenCfg.cat3d.launcherExeArgs;
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	case BE_GAME_WOLF3D_ALL:
+		return &g_refKeenCfg.wolf3d.launcherExeArgs;
+#endif
+	default:
+		BE_ST_ExitWithErrorMsg("BEL_ST_Launcher_GetLauncherExeArgsForGame: Unexpected game id!");
+	}
+	return NULL;
+}
+
 static void BEL_Launcher_DoLaunchGame(int gameVer, void (*mainFuncPtr)(void))
 {
 	BE_ST_Launcher_Shutdown();
 	int argc = 0;
+	int gameId = g_be_gamever_ptrs[gameVer]->gameId;
+	const char (*exeArgs)[LAUNCHER_EXE_ARGS_BUFFERLEN] =
+	    BE_ST_Launcher_GetLauncherExeArgsForGame(gameId);
 	// Making a copy since we modify this buffer (separating the arguments)
-	static char argsCopy[sizeof(g_refKeenCfg.launcherExeArgs)];
-	memcpy(argsCopy, g_refKeenCfg.launcherExeArgs, sizeof(argsCopy));
+	static char argsCopy[sizeof(*exeArgs)];
+	memcpy(argsCopy, exeArgs, sizeof(argsCopy));
 	char *argv[sizeof(argsCopy)/2+1];
 
 	argv[argc++] = NULL; // Currently unused
@@ -1167,10 +1193,20 @@ static void BEL_Launcher_RefreshArgumentsOffset(void)
 		g_beArgumentsStringToSet_charsOffsetOnScreen = BE_Cross_TypedMax(int, 0, BE_Cross_TypedMin(int, strlen(g_beArgumentsStringToSet) - BE_MENU_ARGUMENTS_TEXT_MAX_ROW_STRLEN, ptrDiff - BE_MENU_ARGUMENTS_TEXT_MAX_ROW_STRLEN + BE_MENU_ARGUMENTS_TEXT_CHARS_BEFORE_SCROLLING));
 }
 
+// FIXME: NOT for launching game if done outside of game selection menu.
+// Probably means this should be a menu property instead.
+static int g_lastGameSelectedInMenu;
+
+static int g_lastGameVerSelectedInMenu;
+
 void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP)
 {
+	int gameId = g_lastGameSelectedInMenu;
 	// HACK because we usually don't access g_refKeenCfg directly
-	memcpy(g_beArgumentsStringToSet, g_refKeenCfg.launcherExeArgs, sizeof(g_beArgumentsStringToSet));
+	char (*exeArgs)[LAUNCHER_EXE_ARGS_BUFFERLEN] =
+	    BE_ST_Launcher_GetLauncherExeArgsForGame(gameId);
+
+	memcpy(g_beArgumentsStringToSet, exeArgs, sizeof(g_beArgumentsStringToSet));
 	g_beArgumentsStringToSet_curPtr = g_beArgumentsStringToSet + strlen(g_beArgumentsStringToSet);
 	g_beArgumentsStringToSet_charsOffsetOnScreen = 0;
 	BEL_Launcher_RefreshArgumentsOffset();
@@ -1198,11 +1234,10 @@ void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP)
 	bool BEL_ST_SDL_Launcher_DoEditArguments(void);
 	if (BEL_ST_SDL_Launcher_DoEditArguments())
 	{
-		memcpy(g_refKeenCfg.launcherExeArgs, g_beArgumentsStringToSet, sizeof(g_beArgumentsStringToSet));
-		void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void);
-		BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel();
+		memcpy(exeArgs, g_beArgumentsStringToSet, sizeof(g_beArgumentsStringToSet));
+		void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId);
+		BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(gameId);
 	}
-
 
 	void BEL_ST_Launcher_TurnTextInputOff(void);
 	BEL_ST_Launcher_TurnTextInputOff();
@@ -1211,15 +1246,13 @@ void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP)
 }
 
 
-static int g_lastGameVerSelectedInMenu;
-
 void BE_Launcher_Handler_GameSelect(BEMenuItem **menuItemP)
 {
 	// FIXME: Better use a single compilation unit for the menu
 	extern int g_be_launcher_gameIds[];
 
-	int lastGameSelectedInMenu = g_be_launcher_gameIds[menuItemP - g_be_launcher_currMenu->menuItems];
-	BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(lastGameSelectedInMenu);
+	g_lastGameSelectedInMenu = g_be_launcher_gameIds[menuItemP - g_be_launcher_currMenu->menuItems];
+	BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(g_lastGameSelectedInMenu);
 }
 
 void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
@@ -1227,7 +1260,7 @@ void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 	// FIXME: Better use a single compilation unit for the menu
 	extern int g_be_launcher_gameVerIds[];
 
-	g_lastGameVerSelectedInMenu = g_be_launcher_gameVerIds[menuItemP - g_be_launcher_currMenu->menuItems];
+	g_lastGameVerSelectedInMenu = g_be_launcher_gameVerIds[menuItemP - g_be_launcher_currMenu->menuItems - 1];
 	int nOfExes = BE_Cross_GetAccessibleEXEsCountForGameVer(g_lastGameVerSelectedInMenu);
 	if (nOfExes == 1)
 		BEL_Launcher_DoLaunchGame(g_lastGameVerSelectedInMenu, BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(0, g_lastGameVerSelectedInMenu));

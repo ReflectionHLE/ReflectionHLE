@@ -179,14 +179,12 @@ static const char *g_be_settingsChoices_boolean[] = {"No","Yes",NULL};
 
 BEMENUITEM_DEF_HANDLER_LABELVAR(g_beMainMenuItem_PlayLastChosenGameVer, 92/* HACK to have enough room for string*/, &BE_Launcher_Handler_LastGameVerLaunch)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_SelectGame, "Select game", &g_beSelectGameMenu)
-BEMENUITEM_DEF_HANDLER(g_beMainMenuItem_SetArguments, "Set arguments for game *CURRENTLY SET*", &BE_Launcher_Handler_SetArgumentsForGame)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Settings, "Settings", &g_beSettingsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beMainMenuItem_Quit, "Quit", &g_beQuitConfirmMenu)
 
 static BEMenuItem *g_beMainMenuItems[] = {
 	&g_beMainMenuItem_PlayLastChosenGameVer, // Either this item's label is filled later, or the menu items array is shifted
 	&g_beMainMenuItem_SelectGame,
-	&g_beMainMenuItem_SetArguments,
 	&g_beMainMenuItem_Settings,
 	&g_beMainMenuItem_Quit,
 	NULL
@@ -220,7 +218,13 @@ BEMenu g_beSelectGameMenu = {
 
 static BEMenuItem g_beSelectGameVerMenuItems[BE_GAMEVER_LAST];
 static char g_beSelectGameVerMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
-static BEMenuItem *g_beSelectGameVerMenuItemsPtrs[BE_GAMEVER_LAST+1];
+
+BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_SetArguments, "Set arguments for game *CURRENTLY SET*", &BE_Launcher_Handler_SetArgumentsForGame)
+
+static BEMenuItem *g_beSelectGameVerMenuItemsPtrs[BE_GAMEVER_LAST+2] = {
+	&g_beSelectGameVerMenuItem_SetArguments // Only this menu item is known
+};
+
 
 BEMenu g_beSelectGameVerMenu = {
 	"Select game version",
@@ -1055,7 +1059,7 @@ BEMenu g_beQuitConfirmMenu = {
 
 static void BEL_ST_Launcher_SetGfxOutputRects(void);
 
-void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void);
+void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId);
 
 void BE_ST_Launcher_Prepare(void)
 {
@@ -1117,8 +1121,6 @@ void BE_ST_Launcher_Prepare(void)
 		}
 	if (i == g_be_gameinstallations_num)
 		g_beMainMenu.menuItems++; // Shift the menu items (effectively removing the item above)
-
-	BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(); // Set menu item label based on arguments string
 
 	/*** Prepare most of the launcher-accessible settings menu items ***/
 	BE_Launcher_ReadSettings();
@@ -1255,7 +1257,8 @@ void BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(int gameId)
 		int verId = BE_Cross_GetGameVerFromInstallation(i);
 		if (g_be_gamever_ptrs[verId]->gameId != gameId)
 			continue;
-		g_beSelectGameVerMenuItemsPtrs[nVers] = &g_beSelectGameVerMenuItems[nVers];
+		// The actual first menu item is used for setting arguments
+		g_beSelectGameVerMenuItemsPtrs[nVers+1] = &g_beSelectGameVerMenuItems[nVers];
 		g_beSelectGameVerMenuItems[nVers].handler = &BE_Launcher_Handler_GameLaunch;
 		snprintf(g_beSelectGameVerMenuItemsStrs[nVers],
 		         sizeof(g_beSelectGameVerMenuItemsStrs[nVers]), "%s",
@@ -1266,7 +1269,8 @@ void BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(int gameId)
 		g_be_launcher_gameVerIds[nVers] = verId;
 		++nVers;
 	}
-	g_beSelectGameVerMenuItemsPtrs[nVers] = NULL;
+	BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(gameId); // Set menu item label based on arguments string
+	g_beSelectGameVerMenuItemsPtrs[++nVers] = NULL;
 
 	BE_Launcher_PrepareMenu(&g_beSelectGameVerMenu);
 	BEL_Launcher_SetCurrentMenu(&g_beSelectGameVerMenu);
@@ -1299,14 +1303,19 @@ void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfEx
 	BEL_Launcher_SetCurrentMenu(&g_beSelectGameExeMenu);
 }
 
+// FIXME: Menu should probably reside in a single compilation unit.
+char // Function returns a pointer to a fixed-size array
+(*BE_ST_Launcher_GetLauncherExeArgsForGame(int gameId))[LAUNCHER_EXE_ARGS_BUFFERLEN];
 
-void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(void)
+void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId)
 {
 	// HACK
-	if (*g_refKeenCfg.launcherExeArgs != '\0')
-		strcpy(g_beMainMenuItem_SetArguments.label + 23, "*CURRENTLY SET*");
+	const char (*exeArgs)[LAUNCHER_EXE_ARGS_BUFFERLEN] =
+	    BE_ST_Launcher_GetLauncherExeArgsForGame(gameId);
+	if ((*exeArgs)[0] != '\0')
+		strcpy(g_beSelectGameVerMenuItem_SetArguments.label + 23, "*CURRENTLY SET*");
 	else
-		strcpy(g_beMainMenuItem_SetArguments.label + 23, "               ");
+		strcpy(g_beSelectGameVerMenuItem_SetArguments.label + 23, "               ");
 }
 
 

@@ -65,7 +65,6 @@ typedef struct
 	// Now using just winWidth and winHeight due to seamless launcher->game transitions
 	//int launcherWinWidth, launcherWinHeight;
 	int launcherWinType;
-	char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
 #endif
 	char lastSelectedGameExe[SELECTED_EXE_FILENAME_BUFFERLEN];
 	int lastSelectedGameVer;
@@ -107,6 +106,9 @@ typedef struct
 			int mouse;
 			int pad;
 		} binds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
+#ifdef REFKEEN_ENABLE_LAUNCHER
+		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
+#endif
 	} kdreams;
 #endif
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
@@ -122,6 +124,9 @@ typedef struct
 			int mouse;
 			int pad;
 		} binds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
+#ifdef REFKEEN_ENABLE_LAUNCHER
+		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
+#endif
 	} cat3d;
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
@@ -138,6 +143,9 @@ typedef struct
 			int mouse;
 			int pad;
 		} binds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
+#ifdef REFKEEN_ENABLE_LAUNCHER
+		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
+#endif
 	} wolf3d;
 #endif
 } RefKeenConfig;

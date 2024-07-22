@@ -155,7 +155,6 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #ifdef REFKEEN_ENABLE_LAUNCHER
 //	DEF_DIMS(launcherWinWidth, launcherWinHeight, "launcherwindowres", 0, 0)
 	DEF_ENUM(launcherWinType, "launcherwindowtype", g_be_setting_wintype_vals, LAUNCHER_WINDOW_DEFAULT)
-	DEF_STR(launcherExeArgs, "launcherexeargs")
 #endif
 	DEF_STR(lastSelectedGameExe, "lastselectedgameexe")
 	DEF_ENUM(lastSelectedGameVer, "lastselectedgamever", refkeen_gamever_strs, BE_GAMEVER_LAST)
@@ -202,7 +201,34 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 };
 
 #ifdef REFKEEN_HAS_VER_KDREAMS
+static BE_ST_CFG_Setting_T g_be_st_migrated_to_kdreams_legacy_settings[] = {
+#ifdef REFKEEN_ENABLE_LAUNCHER
+	DEF_STR(kdreams.launcherExeArgs, "launcherexeargs")
+#endif
+};
+#endif
+
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+static BE_ST_CFG_Setting_T g_be_st_migrated_to_cat3d_legacy_settings[] = {
+#ifdef REFKEEN_ENABLE_LAUNCHER
+	DEF_STR(cat3d.launcherExeArgs, "launcherexeargs")
+#endif
+};
+#endif
+
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+static BE_ST_CFG_Setting_T g_be_st_migrated_to_wolf3d_legacy_settings[] = {
+#ifdef REFKEEN_ENABLE_LAUNCHER
+	DEF_STR(wolf3d.launcherExeArgs, "launcherexeargs")
+#endif
+};
+#endif
+
+#ifdef REFKEEN_HAS_VER_KDREAMS
 static BE_ST_CFG_Setting_T g_be_st_kdreams_settings[] = {
+#ifdef REFKEEN_ENABLE_LAUNCHER
+	DEF_STR(kdreams.launcherExeArgs, "launcherexeargs")
+#endif
 	DEF_BOOL(kdreams.absMouseMotion, "absmousemotion", false)
 	DEF_BOOL(kdreams.useLeftStick, "lstick", true)
 	DEF_BOOL(kdreams.useRightStick, "rstick", false)
@@ -234,6 +260,9 @@ static BE_ST_CFG_Setting_T g_be_st_kdreams_legacy_settings[] = {
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 static BE_ST_CFG_Setting_T g_be_st_cat3d_settings[] = {
+#ifdef REFKEEN_ENABLE_LAUNCHER
+	DEF_STR(cat3d.launcherExeArgs, "launcherexeargs")
+#endif
 	DEF_BOOL(cat3d.useLeftStick, "lstick", true)
 	DEF_BOOL(cat3d.useRightStick, "rstick", false)
 	DEF_BOOL(cat3d.analogMotion, "analogmotion", false)
@@ -287,6 +316,9 @@ static BE_ST_CFG_Setting_T g_be_st_cat3d_legacy_settings[] = {
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 static BE_ST_CFG_Setting_T g_be_st_wolf3d_settings[] = {
+#ifdef REFKEEN_ENABLE_LAUNCHER
+	DEF_STR(wolf3d.launcherExeArgs, "launcherexeargs")
+#endif
 	DEF_BOOL(wolf3d.lowFPS, "lowfps", false)
 	DEF_BOOL(wolf3d.useLeftStick, "lstick", true)
 	DEF_BOOL(wolf3d.useRightStick, "rstick", false)
@@ -517,7 +549,9 @@ void BEL_ST_ParseConfigFiles(void)
 	BEL_ST_SetConfigDefaults(g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
 
 	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_kdreams_legacy_settings, BE_Cross_ArrayLen(g_be_st_kdreams_legacy_settings));
-	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+	BEL_ST_ParseConfig("reflectionhle.cfg", g_be_st_migrated_to_kdreams_legacy_settings,
+                           BE_Cross_ArrayLen(g_be_st_migrated_to_kdreams_legacy_settings));
+	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings)); // Also for legacy settings
 
 	BEL_ST_ParseConfig("reflection-kdreams.cfg", g_be_st_kdreams_settings, BE_Cross_ArrayLen(g_be_st_kdreams_settings));
 #endif
@@ -525,7 +559,9 @@ void BEL_ST_ParseConfigFiles(void)
 	BEL_ST_SetConfigDefaults(g_be_st_cat3d_settings, BE_Cross_ArrayLen(g_be_st_cat3d_settings));
 
 	BEL_ST_ParseConfig("reflection-catacomb.cfg", g_be_st_cat3d_legacy_settings, BE_Cross_ArrayLen(g_be_st_cat3d_legacy_settings));
-	BEL_ST_ParseConfig("reflection-catacomb.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+	BEL_ST_ParseConfig("reflectionhle.cfg", g_be_st_migrated_to_cat3d_legacy_settings,
+                           BE_Cross_ArrayLen(g_be_st_migrated_to_cat3d_legacy_settings));
+	BEL_ST_ParseConfig("reflection-catacomb.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings)); // Also for legacy settings
 
 	BEL_ST_ParseConfig("reflection-cat3d.cfg", g_be_st_cat3d_settings, BE_Cross_ArrayLen(g_be_st_cat3d_settings));
 #endif
@@ -533,7 +569,9 @@ void BEL_ST_ParseConfigFiles(void)
 	BEL_ST_SetConfigDefaults(g_be_st_wolf3d_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_settings));
 
 	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_legacy_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_legacy_settings));
-	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
+	BEL_ST_ParseConfig("reflectionhle.cfg", g_be_st_migrated_to_wolf3d_legacy_settings,
+                           BE_Cross_ArrayLen(g_be_st_migrated_to_wolf3d_legacy_settings));
+	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings)); // Also for legacy settings
 
 	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_settings));
 #endif
