@@ -29,6 +29,7 @@
 #ifndef BE_ST_CFG_H
 #define BE_ST_CFG_H
 
+#include "backend/filesystem/be_filesystem_len_bounds.h"
 #include "be_features.h"
 #include "be_st.h"
 #include "refkeen_config.h"
@@ -51,8 +52,6 @@ enum { BE_AUDIO_VOL_MIN = 0, BE_AUDIO_VOL_MAX = 15 };
 typedef enum { LAUNCHER_WINDOW_DEFAULT, LAUNCHER_WINDOW_FULL, LAUNCHER_WINDOW_SOFTWARE } LauncherWindowSettingType;
 #endif
 
-#define SELECTED_EXE_FILENAME_BUFFERLEN 13
-
 // Notes: Certain bool fields are actually int for compatibility with be_cfg.c.
 // Generally speaking, only a limited set of field types is used.
 
@@ -66,7 +65,7 @@ typedef struct
 	//int launcherWinWidth, launcherWinHeight;
 	int launcherWinType;
 #endif
-	char lastSelectedGameExe[SELECTED_EXE_FILENAME_BUFFERLEN];
+	char lastSelectedGameExe[BE_CROSS_DOS_FILENAME_LEN_BOUND];
 	int lastSelectedGameVer;
 	int displayNum;
 	int/*bool*/ rememberDisplayNum;
@@ -108,6 +107,7 @@ typedef struct
 		} binds[BE_ST_CTRL_BIND_KDREAMS_TOTAL];
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
+		char launcherModPath[BE_CROSS_PATH_LEN_BOUND];
 #endif
 	} kdreams;
 #endif
@@ -126,6 +126,7 @@ typedef struct
 		} binds[BE_ST_CTRL_BIND_CAT3D_TOTAL];
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
+		char launcherModPath[BE_CROSS_PATH_LEN_BOUND];
 #endif
 	} cat3d;
 #endif
@@ -145,6 +146,7 @@ typedef struct
 		} binds[BE_ST_CTRL_BIND_WOLF3D_TOTAL];
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
+		char launcherModPath[BE_CROSS_PATH_LEN_BOUND];
 #endif
 	} wolf3d;
 #endif

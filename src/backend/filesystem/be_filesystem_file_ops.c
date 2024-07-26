@@ -33,6 +33,7 @@
 #include "be_filesystem_file_ops.h"
 #include "be_filesystem_gameinst.h"
 #include "be_filesystem_mkdir.h"
+#include "be_filesystem_mods.h"
 #include "be_filesystem_string_ops.h"
 
 BE_FILE_T BEL_Cross_apply_file_action_in_dir(
@@ -128,10 +129,17 @@ BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
 {
 	char trimmedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
-	// Trying writableFilesPath first, and then instPath in case of failure
+	// Trying these folders with decreasing priorities:
+	// writableFilesPath, modPath, instPath.
 	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
 	if (fp)
 		return fp;
+	if (*g_be_modPath)
+	{
+		fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_modPath, NULL);
+		if (fp)
+			return fp;
+	}
 	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->instPath, NULL);
 }
 
@@ -143,6 +151,20 @@ BE_FILE_T BE_Cross_open_matching_readonly_for_reading(const char *filename)
 	const BE_GameVerDetails_T *details = g_be_gamever_ptrs[refkeen_current_gamever];
 	const BE_GameFileDetails_T *fileDetailsBuffer;
 	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
+	// Trying these folders with decreasing priorities:
+	// writableFilesPath, modPath, instPath.
+	//
+	// Do file matching with multiple allowed name+checksum combos only for
+	// instPath, otherwise behave like BE_Cross_open_readonly_for_reading.
+	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
+	if (fp)
+		return fp;
+	if (*g_be_modPath)
+	{
+		fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_modPath, NULL);
+		if (fp)
+			return fp;
+	}
 	// Get matching filenames list
 	// FIXME: BEL_Cross_OpenMatchingGameFileForReading will repeat going
 	// through details->reqFiles as of writing this, but for now,
@@ -164,10 +186,6 @@ BE_FILE_T BE_Cross_open_matching_readonly_for_reading(const char *filename)
 	}
 	if (!fileDetailsBuffer->filenames)
 		return BE_CROSS_NIL_FILE;
-	// Trying writableFilesPath first, and then instPath in case of failure
-	BE_FILE_T fp = BEL_Cross_OpenMatchingGameFileForReading(fileDetailsBuffer->filenames, g_be_selectedGameInstallation->writableFilesPath);
-	if (fp)
-		return fp;
 	return BEL_Cross_OpenMatchingGameFileForReading(fileDetailsBuffer->filenames, g_be_selectedGameInstallation->instPath);
 }
 

@@ -17,6 +17,7 @@ list(APPEND be_src
 	src/backend/filesystem/be_filesystem_file_ops.c
 	src/backend/filesystem/be_filesystem_file_lists.c
 	src/backend/filesystem/be_filesystem_gameinst.c
+	src/backend/filesystem/be_filesystem_mods.c
 	src/backend/filesystem/be_filesystem_root_paths.c
 	src/backend/gamedefs/be_gamedefs_accessors.c
 	src/backend/gamedefs/be_gamedefs_prep.c

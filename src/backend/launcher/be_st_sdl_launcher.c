@@ -220,9 +220,12 @@ static BEMenuItem g_beSelectGameVerMenuItems[BE_GAMEVER_LAST];
 static char g_beSelectGameVerMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
 
 BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_SetArguments, "Set arguments:                        ", &BE_Launcher_Handler_SetArgumentsForGame)
+BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_Mod, "Mod:                                  ", 0/*&BE_Launcher_Handler_SelectModDir*/)
 
-static BEMenuItem *g_beSelectGameVerMenuItemsPtrs[BE_GAMEVER_LAST+2] = {
-	&g_beSelectGameVerMenuItem_SetArguments // Only this menu item is known
+static BEMenuItem *g_beSelectGameVerMenuItemsPtrs[BE_GAMEVER_LAST+3] = {
+	// Only these menu items are known in advance
+	&g_beSelectGameVerMenuItem_SetArguments,
+	&g_beSelectGameVerMenuItem_Mod,
 };
 
 
@@ -1060,6 +1063,7 @@ BEMenu g_beQuitConfirmMenu = {
 static void BEL_ST_Launcher_SetGfxOutputRects(void);
 
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId);
+void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId);
 
 void BE_ST_Launcher_Prepare(void)
 {
@@ -1257,8 +1261,9 @@ void BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(int gameId)
 		int verId = BE_Cross_GetGameVerFromInstallation(i);
 		if (g_be_gamever_ptrs[verId]->gameId != gameId)
 			continue;
-		// The actual first menu item is used for setting arguments
-		g_beSelectGameVerMenuItemsPtrs[nVers+1] = &g_beSelectGameVerMenuItems[nVers];
+		// The actual first two menu items are used
+		// for setting arguments and selecting mod dir
+		g_beSelectGameVerMenuItemsPtrs[nVers+2] = &g_beSelectGameVerMenuItems[nVers];
 		g_beSelectGameVerMenuItems[nVers].handler = &BE_Launcher_Handler_GameLaunch;
 		snprintf(g_beSelectGameVerMenuItemsStrs[nVers],
 		         sizeof(g_beSelectGameVerMenuItemsStrs[nVers]), "%s",
@@ -1270,7 +1275,8 @@ void BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(int gameId)
 		++nVers;
 	}
 	BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(gameId); // Set menu item label based on arguments string
-	g_beSelectGameVerMenuItemsPtrs[++nVers] = NULL;
+	BEL_ST_Launcher_RefreshModMenuItemLabel(gameId); // Set menu item label based on set mod path
+	g_beSelectGameVerMenuItemsPtrs[nVers+2] = NULL;
 
 	BE_Launcher_PrepareMenu(&g_beSelectGameVerMenu);
 	BEL_Launcher_SetCurrentMenu(&g_beSelectGameVerMenu);
@@ -1304,8 +1310,12 @@ void BE_ST_Launcher_RefreshAndShowSelectGameExeMenuContents(int verId, int nOfEx
 }
 
 // FIXME: Menu should probably reside in a single compilation unit.
-char // Function returns a pointer to a fixed-size array
+
+// Functions return pointers to fixed-size arrays
+char
 (*BE_ST_Launcher_GetLauncherExeArgsForGame(int gameId))[LAUNCHER_EXE_ARGS_BUFFERLEN];
+char
+(*BE_ST_Launcher_GetModPathForGame(int gameId))[BE_CROSS_PATH_LEN_BOUND];
 
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId)
 {
@@ -1334,6 +1344,32 @@ void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId)
 	}
 }
 
+void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId)
+{
+	// HACK
+	const char (*modPath)[BE_CROSS_PATH_LEN_BOUND] =
+	    BE_ST_Launcher_GetModPathForGame(gameId);
+	// g_beSelectGameVerMenuItem_Mod_label is directly used
+	// instead of g_beSelectGameVerMenuItem_Mod.label, since
+	// it has a fixed buffer length.
+	const size_t labelLen =
+	    BE_Cross_ArrayLen(g_beSelectGameVerMenuItem_Mod_label),
+	  offset = 5, maxPathLen = labelLen - offset - 1,
+	  modPathLen = strlen(*modPath);
+
+	if (modPathLen <= maxPathLen)
+		strcpy(g_beSelectGameVerMenuItem_Mod_label + offset,
+		       *modPath);
+	else
+	{
+		memcpy(g_beSelectGameVerMenuItem_Mod_label + offset,
+		       "...", 3);
+		BE_Cross_safeandfastcstringcopy(
+		  g_beSelectGameVerMenuItem_Mod_label + offset + 3,
+		  g_beSelectGameVerMenuItem_Mod_label + labelLen,
+		  *modPath + modPathLen - maxPathLen + 3);
+	}
+}
 
 /*** SPECIAL - An extra SDL(2)-specific handler not defined in be_launcher.c ***/
 

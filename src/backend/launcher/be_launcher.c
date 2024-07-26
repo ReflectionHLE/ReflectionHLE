@@ -28,6 +28,7 @@
 
 #include "refkeen.h"
 #include "backend/filesystem/be_filesystem_gameinst.h"
+#include "backend/filesystem/be_filesystem_mods.h"
 #include "be_st_launcher.h"
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
@@ -1112,6 +1113,29 @@ char // Function returns a pointer to a fixed-size array
 	return NULL;
 }
 
+char // Function returns a pointer to a fixed-size array
+(*BE_ST_Launcher_GetModPathForGame(int gameId))[BE_CROSS_PATH_LEN_BOUND]
+{
+	switch (gameId)
+	{
+#ifdef REFKEEN_HAS_VER_KDREAMS
+	case BE_GAME_KDREAMS:
+		return &g_refKeenCfg.kdreams.launcherModPath;
+#endif
+#ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	case BE_GAME_CATACOMB_ALL:
+		return &g_refKeenCfg.cat3d.launcherModPath;
+#endif
+#ifdef REFKEEN_HAS_VER_WOLF3D_ALL
+	case BE_GAME_WOLF3D_ALL:
+		return &g_refKeenCfg.wolf3d.launcherModPath;
+#endif
+	default:
+		BE_ST_ExitWithErrorMsg("BEL_ST_Launcher_GetLauncherExeArgsForGame: Unexpected game id!");
+	}
+	return NULL;
+}
+
 static void BEL_Launcher_DoLaunchGame(int gameVer, void (*mainFuncPtr)(void))
 {
 	BE_ST_Launcher_Shutdown();
@@ -1142,6 +1166,7 @@ static void BEL_Launcher_DoLaunchGame(int gameVer, void (*mainFuncPtr)(void))
 		}
 	}
 	BE_Cross_InitGame(gameVer);
+	BE_Cross_SetModPath(*BE_ST_Launcher_GetModPathForGame(gameId));
 	BE_Cross_StartGame(argc, argv, mainFuncPtr);
 }
 
@@ -1260,7 +1285,7 @@ void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP)
 	// FIXME: Better use a single compilation unit for the menu
 	extern int g_be_launcher_gameVerIds[];
 
-	g_lastGameVerSelectedInMenu = g_be_launcher_gameVerIds[menuItemP - g_be_launcher_currMenu->menuItems - 1];
+	g_lastGameVerSelectedInMenu = g_be_launcher_gameVerIds[menuItemP - g_be_launcher_currMenu->menuItems - 2];
 	int nOfExes = BE_Cross_GetAccessibleEXEsCountForGameVer(g_lastGameVerSelectedInMenu);
 	if (nOfExes == 1)
 		BEL_Launcher_DoLaunchGame(g_lastGameVerSelectedInMenu, BE_Cross_GetAccessibleEXEFuncPtrForGameVerByIndex(0, g_lastGameVerSelectedInMenu));
