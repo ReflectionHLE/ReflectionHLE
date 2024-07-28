@@ -163,36 +163,22 @@ void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 
 	for (const BE_GameFileDetails_T *fileDetailsBuffer = details->reqFiles; fileDetailsBuffer->filenames; ++fileDetailsBuffer)
 	{
-		// Check in writableFilesPath first. If WRONG file is found, REMOVE(!)
-		switch (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, gameInstallation->writableFilesPath, &tempFullPath))
+		// Check at input path as passed to function
+		int ret = BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, searchdir, NULL);
+		if (ret != 2)
 		{
-		case 2: // Match found
-			continue;
-		case 1: // Wrong file found in writableFilesPath: Generally refuse to continue.
-			snprintf(
-				errorMsg, sizeof(errorMsg),
-				"BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Found data\n"
-				"file with unexpected contents where it shouldn't be present!\n"
-				"Possible filenames: %s", fileDetailsBuffer->filenames);
-			BE_ST_ExitWithErrorMsg(errorMsg);
-			break;
-		}
-		// No match found (and possibly deleted wrong file from writableFilesPath), recheck in installation path
-		switch (BEL_Cross_CheckGameFileDetails(fileDetailsBuffer, searchdir, NULL))
-		{
-		case 2: // Match found
-			continue;
-		case 1: // Wrong file found
-		default: // Matching file not found
 			if (outErrMsg)
-				BE_Cross_safeandfastcstringcopy_2strs(*outErrMsg, (*outErrMsg) + sizeof(*outErrMsg), "Wrong or missing file: ", fileDetailsBuffer->filenames);
+				BE_Cross_safeandfastcstringcopy_2strs(
+				  *outErrMsg, (*outErrMsg) + sizeof(*outErrMsg),
+				  (ret == 1) ? "Wrong file: " : "Missing file: ",
+				  fileDetailsBuffer->filenames);
 			return;
 		}
 	}
 
 	++g_be_gameinstallations_num; // We KNOW we have the required data at this point
 
-	// Create dirs in case we need just writableFilesPath (creation isn't recursive)
+	// Create dirs in case writableFilesPath does not exist (creation isn't recursive)
 	BEL_Cross_mkdir(g_be_appDataPath); // Non-recursive
 	BEL_Cross_mkdir(gameInstallation->writableFilesPath);
 
