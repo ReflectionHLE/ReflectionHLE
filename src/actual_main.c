@@ -29,8 +29,9 @@
 #include "refkeen.h"
 #ifdef REFKEEN_CONFIG_ENABLE_CMDLINE
 #include "be_title_and_version.h"
-#include "backend/video/be_video_emu.h" // TXT_COLS_NUM
+#include "backend/filesystem/be_filesystem_mods.h"
 #include "backend/gamedefs/be_gamedefs_structs.h"
+#include "backend/video/be_video_emu.h" // TXT_COLS_NUM
 #endif
 
 #include <string.h>
@@ -74,6 +75,7 @@ static void show_command_line_help(void)
 	BE_ST_puts("Miscellaneous txt files are also covered.");
 	BE_ST_puts("-cfgdir <...>: Specify an alternative path for ReflectionHLE's");
 	BE_ST_puts("new cfg files, along with gamecontrollerdb.txt.");
+	BE_ST_puts("-mod <...>: Specify location of a mod (does not apply to launcher).");
 #ifdef REFKEEN_ENABLE_LAUNCHER
 	BE_ST_puts("-fulllauncher: Show a fullscreen launcher window.");
 	BE_ST_puts("-softlauncher: Show a software-rendered launcher window (not fullscreen).");
@@ -194,6 +196,7 @@ int main(int argc, char **argv)
 	// Parse arguments
 	bool showHelp = false, showGameVers = false;
 	int selectedGameVerVal = BE_GAMEVER_LAST;
+	const char *modPath = 0;
 	void (*mainFuncPtr)(void);
 
 #ifdef REFKEEN_PLATFORM_MACOS
@@ -256,6 +259,18 @@ int main(int argc, char **argv)
 			argv += 2;
 			argc -= 2;
 		}
+		else if (!BE_Cross_strcasecmp(1+argv[1], "mod"))
+		{
+			if ((argc == 2) || !(*argv[2]))
+			{
+				showHelp = true;
+				break;
+			}
+			modPath = argv[2];
+
+			argv += 2;
+			argc -= 2;
+		}
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		else if (!BE_Cross_strcasecmp(1+argv[1], "fulllauncher"))
 		{
@@ -296,6 +311,7 @@ int main(int argc, char **argv)
 		}
 #endif
 		BE_Cross_InitGame(selectedGameVerVal);
+		BE_Cross_SetModPath(modPath);
 		BE_Cross_StartGame(argc, argv, mainFuncPtr);
 	}
 
