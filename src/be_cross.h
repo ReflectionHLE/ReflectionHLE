@@ -212,6 +212,7 @@ const char **BE_Cross_DirSelection_Start(int rootPathIndex, int *outNumOfSubDirs
 void BE_Cross_DirSelection_Finish(void); // Finish dir selection
 const char **BE_Cross_DirSelection_GetNext(int dirIndex, int *outNumOfSubDirs); // Enter dir by index into last array
 const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs); // Go up in the filesystem hierarchy
+void BE_Cross_DirSelection_FillLastSelectedPath(char *buffer, size_t len);
 
 
 /*** Use for game EXEs (main functions) selection ***/

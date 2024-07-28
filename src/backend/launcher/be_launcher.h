@@ -84,7 +84,8 @@ typedef struct BEMenu
 } BEMenu;
 
 extern BEMenu g_beMainMenu,
-              g_beSelectGameMenu, g_beSelectGameExeMenu, g_beDisappearedGameHelpMenu,
+              g_beSelectGameMenu, g_beSelectGameVerMenu,
+              g_beSelectGameExeMenu, g_beDisappearedGameHelpMenu,
               g_beSupportedGameVersionsMenu, g_beGameVersionDetailsMenu,
               g_beSelectInitialPathMenu, g_beSelectDirectoryMenu, g_beSelectDirectoryErrorMenu,
               g_beSelectDirectoryFoundGameMenu, g_beSelectDirectoryNoGameFoundMenu,
@@ -125,6 +126,8 @@ void BE_Launcher_Handler_GameLaunch(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_GameLaunchWithChosenExe(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_SupportedGameVersionSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_ReturnToSupportedGameVersionsMenu(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_StartDirSelection(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_StartModDirSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_RootPathSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP);

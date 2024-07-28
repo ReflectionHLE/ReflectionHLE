@@ -1025,6 +1025,7 @@ static BEMenuItem g_beSupportedGameVersionsMenu_GameVers_MenuItems[BE_GAMEVER_LA
 static BEMenu *g_beMenusToPrepare[] = {
 	&g_beMainMenu,
 	&g_beSelectGameMenu,
+	//&g_beSelectGameVerMenu, // Dynamically adjusted
 	//&g_beSelectGameExeMenu, // Dynamically adjusted
 	&g_beDisappearedGameHelpMenu,
 	&g_beSupportedGameVersionsMenu,
@@ -1384,6 +1385,23 @@ void BE_Launcher_Handler_ReturnToSupportedGameVersionsMenu(BEMenuItem **menuItem
 	BEL_Launcher_SetCurrentMenu(&g_beSupportedGameVersionsMenu);
 }
 
+void BE_Launcher_Handler_StartDirSelection(BEMenuItem **menuItemP)
+{
+	g_beSelectInitialPathMenu.backMenu = g_be_launcher_currMenu;
+	BEL_Launcher_SetCurrentMenu(&g_beSelectInitialPathMenu);
+}
+
+// FIXME: Whole menu's code should probably be in a single compilation unit
+void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId);
+
+void BE_Launcher_Handler_StartModDirSelection(BEMenuItem **menuItemP)
+{
+	// Reset cfg mod path first
+	**BE_ST_Launcher_GetModPathForGame(g_lastGameSelectedInMenu) = '\0';
+	BEL_ST_Launcher_RefreshModMenuItemLabel(g_lastGameSelectedInMenu);
+
+	BE_Launcher_Handler_StartDirSelection(menuItemP);
+}
 
 static BEMenuItem *g_beSelectDirectoryMenuItems;
 static BEMenuItem **g_beSelectDirectoryMenuItemsPtrs;
@@ -1475,7 +1493,7 @@ void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP)
 		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryErrorMenu);
 }
 
-void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
+static void BEL_Launcher_TryAddingGameDir(void)
 {
 	BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[BE_GAMEVER_LAST];
 	int gameVer = BE_Cross_DirSelection_TryAddGameInstallation(errorMsgsArray);
@@ -1499,6 +1517,25 @@ void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
 		BE_Launcher_PrepareMenu(&g_beSelectDirectoryNoGameFoundMenu);
 		BEL_Launcher_SetCurrentMenu(&g_beSelectDirectoryNoGameFoundMenu);
 	}
+}
+
+static void BEL_Launcher_FillLastSelectedPath(void)
+{
+	char (*modPath)[BE_CROSS_PATH_LEN_BOUND] =
+	    BE_ST_Launcher_GetModPathForGame(g_lastGameSelectedInMenu);
+	BE_Cross_DirSelection_FillLastSelectedPath(*modPath, sizeof(*modPath));
+	BE_ST_Launcher_RefreshAndShowSelectGameVerMenuContents(g_lastGameSelectedInMenu);
+}
+
+void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
+{
+	// FIXME: That doesn't exactly belong here.
+	if (g_beSelectInitialPathMenu.backMenu == &g_beSelectGameMenu)
+		BEL_Launcher_TryAddingGameDir();
+	else if (g_beSelectInitialPathMenu.backMenu == &g_beSelectGameVerMenu)
+		BEL_Launcher_FillLastSelectedPath();
+	else
+		BE_ST_ExitWithErrorMsg("BE_Launcher_Handler_DirectorySelectionConfirm: Unexpected call!");
 }
 
 void BE_Launcher_Handler_DirectorySelectionGoPrev(BEMenuItem **menuItemP)

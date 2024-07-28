@@ -56,6 +56,15 @@ static int g_be_dirSelection_rootPathIndex;
 static char *g_be_dirSelection_dirnamesBuffer = NULL;
 static char **g_be_dirSelection_dirnamesBufferPtrPtrs = NULL;
 
+void BE_Cross_DirSelection_FillLastSelectedPath(char *buffer, size_t len)
+{
+	// FIXME: Properly convert to UTF-8 on Windows
+	if (len >= BE_Cross_ArrayLen(g_be_dirSelection_currPath))
+		len = BE_Cross_ArrayLen(g_be_dirSelection_currPath);
+	for (size_t i = 0; i < len; ++i)
+		*buffer++ = g_be_dirSelection_currPath[i];
+}
+
 static void BEL_Cross_DirSelection_ClearResources(void)
 {
 	free(g_be_dirSelection_dirnamesBuffer);

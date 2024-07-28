@@ -205,7 +205,7 @@ static BEMenuItem *g_beSelectGameMenuItemsPtrs[BE_GAME_LAST+4];
 
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_DisappearedGameHelp, "Help! A game disappeared from the list!", &g_beDisappearedGameHelpMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_ShowSupportedGameVersions, "Show supported game versions", &g_beSupportedGameVersionsMenu)
-BEMENUITEM_DEF_TARGETMENU(g_beSelectGameMenuItem_AddMissingGameVersion, "Add missing game version", &g_beSelectInitialPathMenu)
+BEMENUITEM_DEF_HANDLER(g_beSelectGameMenuItem_AddMissingGameVersion, "Add missing game version", &BE_Launcher_Handler_StartDirSelection);
 
 BEMenu g_beSelectGameMenu = {
 	"Select game",
@@ -220,7 +220,7 @@ static BEMenuItem g_beSelectGameVerMenuItems[BE_GAMEVER_LAST];
 static char g_beSelectGameVerMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
 
 BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_SetArguments, "Set arguments:                        ", &BE_Launcher_Handler_SetArgumentsForGame)
-BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_Mod, "Mod:                                  ", 0/*&BE_Launcher_Handler_SelectModDir*/)
+BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_Mod, "Mod:                                  ", &BE_Launcher_Handler_StartModDirSelection);
 
 static BEMenuItem *g_beSelectGameVerMenuItemsPtrs[BE_GAMEVER_LAST+3] = {
 	// Only these menu items are known in advance
@@ -300,7 +300,7 @@ static char *g_beSelectInitialPathMenuItemsStrsBuffer;
 
 BEMenu g_beSelectInitialPathMenu = {
 	"Select initial path",
-	&g_beSelectGameMenu,
+	NULL/*&g_beSelectGameMenu*/, // Filled later
 	NULL, // Dynamically allocated, filled later
 	// Ignore the rest
 };
