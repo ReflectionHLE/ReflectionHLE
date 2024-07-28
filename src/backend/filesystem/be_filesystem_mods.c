@@ -9,6 +9,11 @@ TCHAR g_be_modPath[BE_CROSS_PATH_LEN_BOUND];
 
 void BE_Cross_SetModPath(const char *path)
 {
+	if (!path)
+	{
+		g_be_modPath[0] = _T('\0');
+		return;
+	}
 #ifdef REFKEEN_PLATFORM_WINDOWS
 	if (MultiByteToWideChar(CP_UTF8, 0, path, -1, g_be_modPath,
 	                         BE_Cross_ArrayLen(g_be_modPath)))
