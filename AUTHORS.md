@@ -7,7 +7,7 @@
 - The Catacomb Abyss v1.24 source code release.
 - The Catacomb Armageddon v1.02 source code release.
 - The Catacomb Apocalypse v1.01 source code release.
-- Wolfentein 3D and Spear of Destiny source code release.
+- Wolfenstein 3D and Spear of Destiny source code release.
 - The Nuked OPL3 emulator. (DOSBox' DBOPL was originally used.)
 - A CRC-32 implementation.
 - unlzexe v0.8.
@@ -25,9 +25,10 @@ and DEMOCAT.EXE/HINTCAT.EXE (Electronic Catalog / Hint book),
 a few DOS programs distributed with the Catacomb Adventure
 Series (or at least specific versions of the episodes).
 - Reconstructed source code for differing versions of Wolfenstein 3D and
-Spear of Destiny, as well as the one DOS version of Super 3-D Noah's Ark.
+Spear of Destiny, along with two versions of 3D Catacomb games
+and the one DOS version of Super 3-D Noah's Ark.
 
-As of Sep 26 2020, these can be found here:
+As of Jul 28 2024, these can be found here:
 https://bitbucket.org/gamesrc-ver-recreation/
 
 ## Keen Dreams open-source release
@@ -86,7 +87,7 @@ Originally started as a branch of CloneKeen known as CloneKeenPlus.
 harekiet, qbix79, finsterr, fanskapet, canadacow, c2woody, h-a-l-9000.
 Not only the DOSBox project makes it possible to (quite faithfully) play a ton
 of DOS games on more recent platforms, but its DBOPL emulator is used for AdLib
-emulation; This also applies to modern source ports, not just DOSBox itself.
+emulation; Other programs have had their uses of DBOPL over the years.
 Originally, ReflectionHLE made use of DBOPL as well. Furthermore,
 while not necessarily intended for assistance with porting, the
 DOSBox debugger has surely (seriously) been very useful.
@@ -94,9 +95,10 @@ DOSBox debugger has surely (seriously) been very useful.
 * Nuke.YKT for the Nuked OPL3 emulator. This emulator is one example
 of a project of him for which accuracy of behaviors is a high priority.
 Other examples: PCDoom (excluding the proprietary DMX sound library,
-instead using his own DMX wrapper backed by the Apogee Sound System),
-the EDuke32-based Rednukem, NBlood and PCExhumed ports,
-the latter of which being co-developed with Barry Duncan.
+instead using his own DMX wrapper backed by the Apogee Sound System) and
+various other source reconstruction efforts. A subset of these efforts
+was used for the EDuke32-based Rednukem, NBlood and PCExhumed ports,
+with the latter being co-developed with Barry Duncan.
 
 * Braden Obrzut, for earlier reverse-engineering work on Super 3-D Noah's Ark,
 which was used as a base for a DOS source reconstruction.
