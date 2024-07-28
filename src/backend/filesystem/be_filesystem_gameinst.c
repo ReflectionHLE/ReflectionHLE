@@ -169,22 +169,6 @@ void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 		case 2: // Match found
 			continue;
 		case 1: // Wrong file found in writableFilesPath: Generally refuse to continue.
-			// There's, however, a special case in which we proceed and even accept a different file...
-			// Each EXE must be unmodified, though (used for version identification, and possibly also the extraction of embedded resources).
-			// But it's also possible to have no EXE (e.g., Keen Dreams, 2015 release) so check this.
-			//
-			// KNOWN LIMITATION: Resources embedded in an EXE may *not* be modified.
-			if (g_refKeenCfg.manualGameVerMode)
-			{
-				const BE_EXEFileDetails_T *exeFileDetailsBuffer;
-				for (exeFileDetailsBuffer = details->exeFiles; exeFileDetailsBuffer->mainFuncPtr; ++exeFileDetailsBuffer)
-					if (!BE_Cross_strcasecmp(fileDetailsBuffer->filenames, exeFileDetailsBuffer->exeNames))
-						break;
-
-				if (!exeFileDetailsBuffer->mainFuncPtr) // fileDetailsBuffer does not refer to an EXE file, so it may be skipped
-					continue;
-			}
-
 			snprintf(
 				errorMsg, sizeof(errorMsg),
 				"BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg: Found data\n"
@@ -199,11 +183,7 @@ void BEL_Cross_ConditionallyAddGameInstallation_WithReturnedErrMsg(
 		case 2: // Match found
 			continue;
 		case 1: // Wrong file found
-			if (g_refKeenCfg.manualGameVerMode)
-				continue; // A special case again (where a wrong file is acceptable)
-			// Fall-through
-		default:
-			// (Matching, and in manual mode, also wrong) file not found, we cannot add a new game installation
+		default: // Matching file not found
 			if (outErrMsg)
 				BE_Cross_safeandfastcstringcopy_2strs(*outErrMsg, (*outErrMsg) + sizeof(*outErrMsg), "Wrong or missing file: ", fileDetailsBuffer->filenames);
 			return;

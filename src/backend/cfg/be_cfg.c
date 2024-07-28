@@ -194,7 +194,6 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #endif
 	DEF_BOOL(altControlScheme, "altcontrolscheme", true)
 
-	DEF_HIDDEN_BOOL(manualGameVerMode, "manualgamevermode", false)
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG
 	DEF_HIDDEN_HEX_INT(farPtrSegOffset, "farptrsegoffset", BE_ST_DEFAULT_FARPTRSEGOFFSET, 0U, 65535U)
 #endif

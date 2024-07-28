@@ -89,7 +89,6 @@ typedef struct
 	int touchInputToggle;
 	int/*bool*/ touchInputDebugging;
 	int/*bool*/ altControlScheme;
-	int/*bool*/ manualGameVerMode;
 	unsigned int farPtrSegOffset; // Actually used just in The Catacomb Armageddon/Apocalypse
 
 	// Game specific settings

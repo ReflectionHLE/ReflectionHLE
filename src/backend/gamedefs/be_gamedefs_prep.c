@@ -394,8 +394,7 @@ void BE_Cross_PrepareGameInstallations(void)
 		BEL_Cross_ConditionallyAddGameInstallation(g_be_gamever_ptrs[i], _T("."), "Local");
 
 	// Go over possible existing installations
-	if (!g_refKeenCfg.manualGameVerMode)
-		BEL_Cross_CheckForKnownInstallations();
+	BEL_Cross_CheckForKnownInstallations();
 
 	/*** Finally check any custom dir ***/
 	char buffer[2*BE_CROSS_PATH_LEN_BOUND];
