@@ -2475,9 +2475,6 @@ void RefKeen_Load_Embedded_Resources_From_wolf3d_exe(void)
 // REFKEEN: UPLOAD was changed into a variable
 id0_boolean_t UPLOAD; // REFKEEN: UPLOAD was changed into a variable
 
-// FIXME (REFKEEN): This doesn't belong here, and should eventually be removed
-BE_FILE_T (*ID_CA_File_Open_Handler)(const char *filename);
-
 void RefKeen_Patch_wl_main(void)
 {
 #if (GAMEVER_WOLFREV <= GV_WR_WL1AP11)
@@ -2498,10 +2495,6 @@ void RefKeen_Patch_wl_main(void)
 #endif
 #endif
 #endif
-	ID_CA_File_Open_Handler =
-		g_refKeenCfg.manualGameVerMode ?
-		BE_Cross_open_readonly_for_reading :
-		BE_Cross_open_matching_readonly_for_reading;
 }
 
 REFKEEN_NS_E

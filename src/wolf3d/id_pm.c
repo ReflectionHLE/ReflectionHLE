@@ -62,9 +62,6 @@ REFKEEN_NS_B
 	id0_word_t			ChunksInFile;
 	id0_word_t			PMSpriteStart,PMSoundStart;
 
-// FIXME (REFKEEN): This doesn't belong here, and should eventually be removed
-extern	BE_FILE_T (*ID_CA_File_Open_Handler)(const char *filename);
-
 //	General usage variables
 	id0_boolean_t			PMStarted;
 #if 0 // REFKEEN: Unused boolean variables
@@ -663,7 +660,7 @@ PML_OpenPageFile(void)
 	BE_ST_printf("Opening %s\n", PageFileName);
 #endif
 
-	PageFile = ID_CA_File_Open_Handler(PageFileName);
+	PageFile = BE_Cross_open_readonly_for_reading(PageFileName);
 //	PageFile = open(PageFileName,O_RDONLY + O_BINARY);
 	if (!BE_Cross_IsFileValid(PageFile))
 //	if (PageFile == -1)

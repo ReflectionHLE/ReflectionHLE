@@ -127,24 +127,6 @@ static void BEL_Cross_CreateTrimmedFilename(const char *inFilename, char (*outFi
 // Opens a read-only file for reading from a "search path" in a case-insensitive manner
 BE_FILE_T BE_Cross_open_readonly_for_reading(const char *filename)
 {
-	char trimmedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
-	BEL_Cross_CreateTrimmedFilename(filename, &trimmedFilename);
-	// Trying these folders with decreasing priorities:
-	// writableFilesPath, modPath, instPath.
-	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
-	if (fp)
-		return fp;
-	if (*g_be_modPath)
-	{
-		fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_modPath, NULL);
-		if (fp)
-			return fp;
-	}
-	return BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->instPath, NULL);
-}
-
-BE_FILE_T BE_Cross_open_matching_readonly_for_reading(const char *filename)
-{
 	char trimmedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND],
 	     checkedFilename[BE_CROSS_DOS_FILENAME_LEN_BOUND];
 	const char *filenames = NULL;
@@ -154,8 +136,8 @@ BE_FILE_T BE_Cross_open_matching_readonly_for_reading(const char *filename)
 	// Trying these folders with decreasing priorities:
 	// writableFilesPath, modPath, instPath.
 	//
-	// Do file matching with multiple allowed name+checksum combos only for
-	// instPath, otherwise behave like BE_Cross_open_readonly_for_reading.
+	// Do file matching with multiple allowed name+checksum combos
+	// only for instPath.
 	BE_FILE_T fp = BEL_Cross_apply_file_action_in_dir(trimmedFilename, BE_FILE_REQUEST_READ, g_be_selectedGameInstallation->writableFilesPath, NULL);
 	if (fp)
 		return fp;

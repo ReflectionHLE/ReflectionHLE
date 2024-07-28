@@ -108,9 +108,6 @@ id0_boolean_t		CA_Started = false;
 id0_char_t		audioname[13]="AUDIO.";
 #endif
 
-// FIXME (REFKEEN): This should eventually be removed
-extern BE_FILE_T (*ID_CA_File_Open_Handler)(const char *filename);
-
 /*
 =============================================================================
 
@@ -793,7 +790,7 @@ void CAL_SetupGrFile (void)
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(handle = ID_CA_File_Open_Handler(GREXT"DICT." EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT"DICT." EXTENSION)))
 	//if ((handle = open(GREXT"DICT."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open " GREXT"DICT." EXTENSION"!");
@@ -801,7 +798,7 @@ void CAL_SetupGrFile (void)
 	strcpy(fname,gdictname);
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(handle = ID_CA_File_Open_Handler(fname)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
 	//if ((handle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
@@ -817,7 +814,7 @@ void CAL_SetupGrFile (void)
 
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(handle = ID_CA_File_Open_Handler(GREXT"HEAD." EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT"HEAD." EXTENSION)))
 	//if ((handle = open(GREXT"HEAD."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open " GREXT"HEAD." EXTENSION"!");
@@ -825,7 +822,7 @@ void CAL_SetupGrFile (void)
 	strcpy(fname,gheadname);
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(handle = ID_CA_File_Open_Handler(fname)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
 	//if ((handle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
@@ -849,7 +846,7 @@ void CAL_SetupGrFile (void)
 //
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	grhandle = ID_CA_File_Open_Handler(GREXT"GRAPH." EXTENSION);
+	grhandle = BE_Cross_open_readonly_for_reading(GREXT"GRAPH." EXTENSION);
 	//grhandle = open(GREXT"GRAPH."EXTENSION, O_RDONLY | O_BINARY);
 	if (!BE_Cross_IsFileValid(grhandle))
 		Quit ("Cannot open " GREXT"GRAPH." EXTENSION"!");
@@ -857,7 +854,7 @@ void CAL_SetupGrFile (void)
 	strcpy(fname,gfilename);
 	strcat(fname,extension);
 
-	grhandle = ID_CA_File_Open_Handler(fname);
+	grhandle = BE_Cross_open_readonly_for_reading(fname);
 	//grhandle = open(fname, O_RDONLY | O_BINARY);
 	if (!BE_Cross_IsFileValid(grhandle))
 		CA_CannotOpen(fname);
@@ -919,7 +916,7 @@ void CAL_SetupMapFile (void)
 #ifndef MAPHEADERLINKED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(handle = ID_CA_File_Open_Handler("MAPHEAD." EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("MAPHEAD." EXTENSION)))
 	//if ((handle = open("MAPHEAD."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPHEAD." EXTENSION"!");
@@ -927,7 +924,7 @@ void CAL_SetupMapFile (void)
 	strcpy(fname,mheadname);
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(handle = ID_CA_File_Open_Handler(fname)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
 	//if ((handle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
@@ -959,7 +956,7 @@ void CAL_SetupMapFile (void)
 #ifdef CARMACIZED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(maphandle = ID_CA_File_Open_Handler("GAMEMAPS."EXTENSION)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("GAMEMAPS."EXTENSION)))
 	//if ((maphandle = open("GAMEMAPS."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open GAMEMAPS."EXTENSION"!");
@@ -967,7 +964,7 @@ void CAL_SetupMapFile (void)
 	strcpy(fname,"GAMEMAPS.");
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(maphandle = ID_CA_File_Open_Handler(fname)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading(fname)))
 	//if ((maphandle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
@@ -975,7 +972,7 @@ void CAL_SetupMapFile (void)
 #else
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(maphandle = ID_CA_File_Open_Handler("MAPTEMP." EXTENSION)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading("MAPTEMP." EXTENSION)))
 	//if ((maphandle = open("MAPTEMP."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open MAPTEMP." EXTENSION"!");
@@ -983,7 +980,7 @@ void CAL_SetupMapFile (void)
 	strcpy(fname,mfilename);
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(maphandle = ID_CA_File_Open_Handler(fname)))
+	if (!BE_Cross_IsFileValid(maphandle = BE_Cross_open_readonly_for_reading(fname)))
 	//if ((maphandle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
@@ -1046,7 +1043,7 @@ void CAL_SetupAudioFile (void)
 #ifndef AUDIOHEADERLINKED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(handle = ID_CA_File_Open_Handler("AUDIOHED." EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("AUDIOHED." EXTENSION)))
 	//if ((handle = open("AUDIOHED."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIOHED." EXTENSION"!");
@@ -1054,7 +1051,7 @@ void CAL_SetupAudioFile (void)
 	strcpy(fname,aheadname);
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(handle = ID_CA_File_Open_Handler(fname)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(fname)))
 	//if ((handle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
@@ -1077,7 +1074,7 @@ void CAL_SetupAudioFile (void)
 #ifndef AUDIOHEADERLINKED
 	// *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-	if (!BE_Cross_IsFileValid(audiohandle = ID_CA_File_Open_Handler("AUDIOT." EXTENSION)))
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIOT." EXTENSION)))
 	//if ((audiohandle = open("AUDIOT."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIOT." EXTENSION"!");
@@ -1085,13 +1082,13 @@ void CAL_SetupAudioFile (void)
 	strcpy(fname,afilename);
 	strcat(fname,extension);
 
-	if (!BE_Cross_IsFileValid(audiohandle = ID_CA_File_Open_Handler(fname)))
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading(fname)))
 	//if ((audiohandle = open(fname,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		CA_CannotOpen(fname);
 #endif
 #else
-	if (!BE_Cross_IsFileValid(audiohandle = ID_CA_File_Open_Handler("AUDIO."EXTENSION)))
+	if (!BE_Cross_IsFileValid(audiohandle = BE_Cross_open_readonly_for_reading("AUDIO."EXTENSION)))
 	//if ((audiohandle = open("AUDIO."EXTENSION,
 	//	 O_RDONLY | O_BINARY, S_IREAD)) == -1)
 		Quit ("Can't open AUDIO."EXTENSION"!");
