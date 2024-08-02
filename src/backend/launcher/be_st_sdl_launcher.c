@@ -219,8 +219,8 @@ BEMenu g_beSelectGameMenu = {
 static BEMenuItem g_beSelectGameVerMenuItems[BE_GAMEVER_LAST];
 static char g_beSelectGameVerMenuItemsStrs[BE_GAMEVER_LAST][78]; // Should be MUTABLE strings for layout preparation
 
-BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_SetArguments, "Set arguments:                        ", &BE_Launcher_Handler_SetArgumentsForGame)
-BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_Mod, "Mod:                                  ", &BE_Launcher_Handler_StartModDirSelection);
+BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_SetArguments, "Set arguments:                         ", &BE_Launcher_Handler_SetArgumentsForGame)
+BEMENUITEM_DEF_HANDLER(g_beSelectGameVerMenuItem_Mod, "Mod:                                   ", &BE_Launcher_Handler_StartModDirSelection);
 
 static BEMenuItem *g_beSelectGameVerMenuItemsPtrs[BE_GAMEVER_LAST+3] = {
 	// Only these menu items are known in advance
@@ -1354,12 +1354,15 @@ void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId)
 	// it has a fixed buffer length.
 	const size_t labelLen =
 	    BE_Cross_ArrayLen(g_beSelectGameVerMenuItem_Mod_label),
-	  offset = 5, maxPathLen = labelLen - offset - 1,
-	  modPathLen = strlen(*modPath);
+	  offset = 5, maxDirLen = labelLen - offset - 1;
+	const char *modDirPtr = strrchr(*modPath, '/');
+	modDirPtr = modDirPtr ? (modDirPtr + 1) : *modPath;
 
-	if (modPathLen <= maxPathLen)
+	const size_t modDirLen = strlen(*modPath) - (modDirPtr - *modPath);
+
+	if (modDirLen <= maxDirLen)
 		strcpy(g_beSelectGameVerMenuItem_Mod_label + offset,
-		       *modPath);
+		       modDirPtr);
 	else
 	{
 		memcpy(g_beSelectGameVerMenuItem_Mod_label + offset,
@@ -1367,8 +1370,10 @@ void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId)
 		BE_Cross_safeandfastcstringcopy(
 		  g_beSelectGameVerMenuItem_Mod_label + offset + 3,
 		  g_beSelectGameVerMenuItem_Mod_label + labelLen,
-		  *modPath + modPathLen - maxPathLen + 3);
+		  modDirPtr + modDirLen - maxDirLen + 3);
 	}
+	for (char *ptr = g_beSelectGameVerMenuItem_Mod_label; *ptr; ++ptr)
+		*ptr = BE_Cross_isascii(*ptr) ? *ptr : '?';
 }
 
 /*** SPECIAL - An extra SDL(2)-specific handler not defined in be_launcher.c ***/

@@ -128,6 +128,11 @@ static inline int BE_Cross_isupper(int c)
 	return ((c >= 'A') && (c <= 'Z'));
 }
 
+static bool BE_Cross_isascii(char c)
+{
+  return (((unsigned)c >= 32) && ((unsigned)c < 127));
+}
+
 int BE_Cross_strcasecmp(const char *s1, const char *s2);
 int BE_Cross_strncasecmp(const char *s1, const char *s2, size_t count);
 
