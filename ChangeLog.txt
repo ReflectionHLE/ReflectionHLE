@@ -4,6 +4,43 @@ Changelog
 
 TBD:
 
+* With emphasis on Wolfenstein 3D and derived games, proper support for
+modified game data is now present, almost 10 years after ReflectionHLE's
+initial release. That covers map packs and other modifications compatible
+with the original unmodified DOS executables.
+Directories with modified game data may either be selected from the launcher,
+or specified via command-line arguments. The latter are usable only
+if the launcher is skipped.
+For Spear of Destiny (including the mission packs), the .SOD file extension
+should be used for modified game data in order to be recognized, even if
+the base game's data uses a different extension (like .SD2 or .SD3).
+Modifications require compatible base game installations,
+even if originally made for shareware versions of Wolfenstein 3D.
+Further note that there might be incompatibilities with modified data
+(including map packs) that use behaviors depending on a game DOS exe's layout.
+* Other games might lack the scope of compatible modifications as available
+for Wolfenstein 3D and derived, due to having much less (if any) mods
+changing just the game data, as well as resources related to the
+data (like map header) being embedded in the DOS executables.
+* As a consequence of adding mod support, the hidden setting
+"manualgamevergame", originally introduced in November 2015, is now removed.
+It hadn't really been tested for years, either way.
+* Fix updated location of Wolf3D/SOD game data (thanks Blzut3).
+* Some other changes to game data file access logics. Modified files are now
+allowed not just from any selected mod dir, but also from the directory used
+for writing files like saved games.
+* Made compatible with Android 11 (API level 30)'s scoped storage.
+A different storage access permission is now requested on Android 11 and later.
+Technically speaking, a side-effect of this is allowing greater write access,
+even if ReflectionHLE has no need for it, but that's been a simple solution
+for now, at least for manually downloaded APK files.
+* Internally sort game installations by version id also after
+adding a new one from the launcher.
+* Split the launcher's game selection menu. Version is chosen after game now,
+with Wolfenstein 3D, Spear of Destiny and Super 3-D Noah's Ark falling under
+the category of a single "game".
+* Further split the launcher's command-line arguments for the games
+into a separate setting per game, as similarly done for mods.
 * Use a version identifier based on the git hash for dev builds.
 
 Oct 14, 2022 (v0.40.1):
