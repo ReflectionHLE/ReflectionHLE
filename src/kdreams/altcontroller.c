@@ -574,7 +574,12 @@ void RefKeen_PrepareAltControllerScheme(void)
 	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_DOWN, &g_ingame_but_down_map, &g_keybind_used_down);
 	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_LEFT, &g_ingame_but_left_map, &g_keybind_used_left);
 	CheckMappings(BE_ST_CTRL_BIND_KDREAMS_RIGHT, &g_ingame_but_right_map, &g_keybind_used_right);
+#ifdef BE_ST_ENABLE_SHORTCUTS_MOUSE_BINDS
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS, &g_ingame_but_func_keys_map);
+#else
+	CheckPadMapping(g_refKeenCfg.kdreams.binds[BE_ST_CTRL_BIND_KDREAMS_FUNCKEYS].pad,
+	                &g_ingame_but_func_keys_map);
+#endif
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_KDREAMS_DEBUGKEYS, &g_ingame_but_debug_keys_map);
 
 	// HACK (leave US_LineInput this way)

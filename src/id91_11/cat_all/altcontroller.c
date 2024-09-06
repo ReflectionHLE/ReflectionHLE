@@ -912,10 +912,20 @@ void RefKeen_PrepareAltControllerScheme(void)
 	CheckMappings(BE_ST_CTRL_BIND_CAT3D_NUKE, &g_ingame_but_nuke_map, &g_keybind_used_nuke);
 	CheckMappings(BE_ST_CTRL_BIND_CAT3D_FASTTURN, &g_ingame_but_fastturn_map, &g_keybind_used_fastturn);
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
+  #ifdef BE_ST_ENABLE_SHORTCUTS_MOUSE_BINDS
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_CAT3D_SCROLLS, &g_ingame_but_scrolls_map);
+  #else
+	CheckPadMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_SCROLLS].pad,
+	                &g_ingame_but_scrolls_map);
+  #endif
 #endif
 #ifdef REFKEEN_VER_CATADVENTURES
+  #ifdef BE_ST_ENABLE_SHORTCUTS_MOUSE_BINDS
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_CAT3D_FUNCKEYS, &g_ingame_but_func_keys_map);
+  #else
+	CheckPadMapping(g_refKeenCfg.cat3d.binds[BE_ST_CTRL_BIND_CAT3D_FUNCKEYS].pad,
+	                &g_ingame_but_func_keys_map);
+  #endif
 #endif
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_CAT3D_DEBUGKEYS, &g_ingame_but_debug_keys_map);
 

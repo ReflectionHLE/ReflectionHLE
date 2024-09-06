@@ -558,7 +558,12 @@ void RefKeen_PrepareAltControllerScheme(void)
 #ifdef GAMEVER_NOAH3D
 	CheckMappings(BE_ST_CTRL_BIND_WOLF3D_MAP, &g_ingame_but_map_map, &g_keybind_used_map);
 #endif
+#ifdef BE_ST_ENABLE_SHORTCUTS_MOUSE_BINDS
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS, &g_ingame_but_func_keys_map);
+#else
+	CheckPadMapping(g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_FUNCKEYS].pad,
+	                &g_ingame_but_func_keys_map);
+#endif
 	CheckNonKeyMappings(BE_ST_CTRL_BIND_WOLF3D_DEBUGKEYS, &g_ingame_but_debug_keys_map);
 
 	BE_ST_ControllerSingleMap gamekeyup    = {NULL, BE_ST_SC_UP,    0, BE_ST_CTRL_MAP_KEYSCANCODE};
