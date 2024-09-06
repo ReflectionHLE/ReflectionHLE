@@ -80,7 +80,7 @@ static void BEL_ST_ReplaceControllerMapping(BE_ST_ControllerMapping *mapping)
 	if (!g_sdlControllerMappingActualCurr->parent)
 		((BE_ST_ControllerMapping *)g_sdlControllerMappingActualCurr)->parent = g_sdlControllerMappingActualCurr;
 	if (!mapping->parent)
-		mapping->parent = g_sdlControllerMappingActualCurr;
+		mapping->parent = g_sdlControllerMappingActualCurr->parent;
 
 	if (g_sdlControllerMappingActualCurr->parent != mapping->parent)
 		BE_ST_ExitWithErrorMsg("BEL_ST_ReplaceControllerMapping: Mappings share different parents!\n");
