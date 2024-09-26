@@ -28,7 +28,7 @@ Series (or at least specific versions of the episodes).
 Spear of Destiny, along with two versions of 3D Catacomb games
 and the one DOS version of Super 3-D Noah's Ark.
 
-As of Jul 28 2024, these can be found here:
+As of Sep 26 2024, the additional sources in question may be found here:
 https://bitbucket.org/gamesrc-ver-recreation/
 
 ## Keen Dreams open-source release
@@ -52,13 +52,13 @@ and Chuck Naaden with additional support from:
 
 ## Catacombs open-source release
 
-The whole Catacombs series from the 90s, as well as Hovertank 3D,
+The whole Catacombs series from the 1990s, as well as Hovertank 3D,
 were open-sourced by Richard Mandel of Flat Rock Software.
 
 ## Wolfenstein 3D and Spear of Destiny open-source release
 
 Wolfenstein 3D and Spear of Destiny were open-sourced
-by John Carmack while working for id Software in the 90s.
+by John Carmack while working for id Software in the 1990s.
 
 ## ReflectionHLE programming
 
@@ -66,22 +66,39 @@ by John Carmack while working for id Software in the 90s.
 
 ## ReflectionHLE contributors
 
-* Source code patches: Braden Obrzut
-* Application icon: Maxim Genis
+* Braden Obrzut: Direct contributions to the ReflectionHLE code base,
+plus other additions brought up in order to build macOS bundles.
+* Maxim Genis: Application icon.
 
 ## Additional credits
 
 * David Gow, for a quite useful hint about memory wrapping for Keen Dreams,
-and having general earlier experience from working with him beforehand.
-Also done some research works on at least a couple of Keen games,
-and worked on the Handmade Penguin tutorial.
+plus having earlier experience from working with him beforehand. The latter
+was mainly (if not only) referring to the Omnispeak project, covering
+a source port of Commander Keen 4-6 based on reverse-engineering.
+Gow was doing related research works on at least a couple of
+Keen games and was also working on the Handmade Penguin tutorial.
 * adurdin, quantumg, keenrush, levellord, levellass and lemm for their
-differing research works on Keen games.
+differing research works on Keen games. Among other things, that includes
+patches for original DOS executables of Commander Keen games, as well as
+contributions that helped making three projects based on
+reverse-engineering possible. One is the aforementioned Omnispeak
+source port of Keen 4-6, worked on with Gow and lemm and also making use
+of earlier Keen 4 reverse engineering efforts of adurdin. The second one
+is NetKeen, based on earlier works as mentioned here and started by lemm,
+originally as a derivative of Keen 5. Aforementioned efforts involving
+Keen 4 reversing and NetKeen also contributed to Omnispeak's development.
+The third project to mention is Chocolate Keen, a source port of Keen 1-3
+based on reverse-engineering. ReflectionHLE's author started it, based on
+quantumg's works identifying various functions and lemm applying these works
+to assembly sources. lemm eventually contributed to Chocolate Keen directly.
 * Caitlin Shaw for CloneKeen, a reimplementation of Keen 1-3.
 * Gerhard Stein for Commander Genius, covering a few engines
 used as reimplementations of Keen 1-3 and Keen 4-6. Support
 for Keen Dreams was added using Reflection Keen Dreams.
-Originally started as a branch of CloneKeen known as CloneKeenPlus.
+Commander Genius was originally started as a branch
+of CloneKeen known as CloneKeenPlus. While less relevant to ReflectionHLE
+itself, decompression code was reused for Chocolate Keen (Keen 1-3).
 
 * Past and present members of the DOSBox team, or the following at the least:
 harekiet, qbix79, finsterr, fanskapet, canadacow, c2woody, h-a-l-9000.
@@ -118,12 +135,26 @@ unpack Keen Dreams v1.00 executables (originally packed using PKLITE).
 
 * John Carmack, John Romero, Jason Blochowiak, Tom Hall, Adrian Carmack and
 Robert Prince for their original works on Keen Dreams, Catacomb 3-D and
-Wolfenstein 3D, a lot of these used in the Catacomb Adventure Series later.
+Wolfenstein 3D, a lot of these used in the Catacomb Adventure Series
+and Super 3-D Noah's Ark later.
 * Kevin Cloud and Jay Wilbur for their contributions to Wolfenstein 3D.
 * Mike Maynard, James Row, Nolan Martin, Steven Maines, Carol Ludden,
 Jerry Jones, James Weiler and Judi Mangham for their additional works
 on the Catacomb Adventure Series.
+* Vance Kozik for Super 3-D Noah's Ark music, and Rebecca Ann Heineman for
+sound code as used in SNES versions of Wolfenstein 3D and Super 3-D Noah's Ark.
+More people potentially contributed to Super 3-D Noah's Ark development in
+other manners, but an exact complete list was not found as of writing this.
+* Shawn Green, testing the SNES version of Wolfenstein 3D which
+was used as a base for the original version of Super 3-D Noah's Ark,
+before porting the game from SNES to DOS. The person also
+contributed to the Jaguar port of Wolfenstein 3D.
+
+For reference, at least a small subset of code specific to the SNES port
+and what is more generally known as the Mac Family of Wolfenstein 3D ports
+eventually found its way into the DOS port of Super 3-D Noah's Ark.
+At times, a few features originally specific to the SNES port
+were re-implemented in other manners.
 
 * Apologizes to anybody not mentioned here who deserves a credit. Guess I can
 say to all of you, that you should be considered special here. :)
-

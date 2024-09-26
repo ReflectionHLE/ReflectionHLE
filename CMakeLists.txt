@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8...3.19)
 if (CMAKE_VERSION VERSION_LESS 3.12)
 	project(ReflectionHLE)
 else ()
-	project(ReflectionHLE VERSION 0.40.1)
+	project(ReflectionHLE VERSION 0.44.0)
 endif ()
 
 set(bundle_identifier_prefix "com.reflectionhle")

@@ -2,33 +2,41 @@
 Changelog
 ---------
 
-TBD:
+Sep 26, 2024 (v0.44.0): 10th anniversary release.
+
+This might be an opportunity to mention Arno, the maintainer of CatacombGL,
+who helped earlier with at least a few bug reports and additional feedbacks.
 
 * With emphasis on Wolfenstein 3D and derived games, proper support for
 modified game data is now present, almost 10 years after ReflectionHLE's
 initial release. That covers map packs and other modifications compatible
 with the original unmodified DOS executables.
-Directories with modified game data may either be selected from the launcher,
-or specified via command-line arguments. The latter are usable only
-if the launcher is skipped.
+Directories with modified game data may either be selected from
+the launcher, or specified via command-line arguments, including "-mod".
+The command-line arguments are usable only if the launcher is skipped.
 For Spear of Destiny (including the mission packs), the .SOD file extension
 should be used for modified game data in order to be recognized, even if
 the base game's data uses a different extension (like .SD2 or .SD3).
 Modifications require compatible base game installations,
 even if originally made for shareware versions of Wolfenstein 3D.
-Further note that there might be incompatibilities with modified data
-(including map packs) that use behaviors depending on a game DOS exe's layout.
+Further note that there might be incompatibilities with
+modified data (including map packs) reproducing behaviors
+dependent on the layout of a game's DOS exe.
 * Other games might lack the scope of compatible modifications as available
 for Wolfenstein 3D and derived, due to having much less (if any) mods
 changing just the game data, as well as resources related to the
-data (like map header) being embedded in the DOS executables.
+data (like map headers) being embedded in the DOS executables.
 * As a consequence of adding mod support, the hidden setting
-"manualgamevergame", originally introduced in November 2015, is now removed.
+"manualgamevermode", originally introduced in November 2015, is now removed.
 It hadn't really been tested for years, either way.
+* Nuked OPL3 is now at git revision cfedb09efc03f1d7b5fc1f04dd449d77d8c49d50.
 * Fix updated location of Wolf3D/SOD game data (thanks Blzut3).
 * Some other changes to game data file access logics. Modified files are now
 allowed not just from any selected mod dir, but also from the directory used
-for writing files like saved games.
+for writing files like saved games. Additionally, file integrity checks
+previously restricted to Spear of Destiny and its mission packs
+(due to possibly unknown file extensions, e.g., .SOD or .SD3)
+are used in general now, for unmodified game data.
 * Made compatible with Android 11 (API level 30)'s scoped storage.
 A different storage access permission is now requested on Android 11 and later.
 Technically speaking, a side-effect of this is allowing greater write access,
@@ -41,7 +49,18 @@ with Wolfenstein 3D, Spear of Destiny and Super 3-D Noah's Ark falling under
 the category of a single "game".
 * Further split the launcher's command-line arguments for the games
 into a separate setting per game, as similarly done for mods.
+* Misc. minor textual edits in the launcher.
 * Use a version identifier based on the git hash for dev builds.
+* Disable mouse binds used for showing controller UI that lets the user select
+a scroll in Catacomb 3-D/Abyss, as well as the UI for selecting a function key.
+By design, the given implementation won't show such UI if touch input isn't
+in use and no compatible game controller is detected.
+This also exposed an unexpected sanity check failure in the code,
+occurring upon trying to show debug keys with the mouse while another
+kind of controller UI is supposed to appear but does not.
+The sanity check failure was fixed. On the other hand, as the usefulness
+of the mouse binds isn't currently clear, it was decided to disable them.
+* Other miscellaneous changes.
 
 Oct 14, 2022 (v0.40.1):
 
