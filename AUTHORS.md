@@ -68,6 +68,7 @@ by John Carmack while working for id Software in the 1990s.
 
 * Braden Obrzut: Direct contributions to the ReflectionHLE code base,
 plus other additions brought up in order to build macOS bundles.
+* GoGoOtaku: Source code patches.
 * Maxim Genis: Application icon.
 
 ## Additional credits
