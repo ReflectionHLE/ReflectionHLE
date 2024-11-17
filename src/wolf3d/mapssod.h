@@ -1,3 +1,5 @@
+REFKEEN_NS_B
+
 ///////////////////////////////////////
 //
 // TED5 Map Header for SOD
@@ -31,3 +33,5 @@ typedef enum {
 		ANGEL_OF_DEATH_MAP,      // 20
 		LASTMAP
 	     } mapnames;
+
+REFKEEN_NS_E

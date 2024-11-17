@@ -1,3 +1,5 @@
+REFKEEN_NS_B
+
 ///////////////////////////////////////
 //
 // TED5 Map Header for WL6
@@ -71,3 +73,5 @@ typedef enum {
 		MAP4L10PATH_MAP,         // 60
 		LASTMAP
 	     } mapnames;
+
+REFKEEN_NS_E

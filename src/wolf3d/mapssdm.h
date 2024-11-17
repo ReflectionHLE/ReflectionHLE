@@ -1,3 +1,5 @@
+REFKEEN_NS_B
+
 ///////////////////////////////////////
 //
 // TED5 Map Header for SDM
@@ -12,3 +14,5 @@ typedef enum {
 		TUNNELS_2_MAP,           // 1
 		LASTMAP
 	     } mapnames;
+
+REFKEEN_NS_E
