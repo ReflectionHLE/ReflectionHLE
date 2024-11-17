@@ -611,6 +611,10 @@ void VL_FadeIn (id0_int_t start, id0_int_t end, id0_byte_t id0_far *palette, id0
 {
 	id0_int_t		i,j,delta;
 
+	// Prevent out-of-bound array access in loop
+	const id0_byte_t id0_far * const _palette1 = &palette1[0][0];
+	id0_byte_t id0_far * const _palette2 = &palette2[0][0];
+
 	VL_WaitVBL(1);
 	VL_GetPalette (&palette1[0][0]);
 	memcpy (&palette2[0][0],&palette1[0][0],sizeof(palette1));
@@ -626,8 +630,8 @@ void VL_FadeIn (id0_int_t start, id0_int_t end, id0_byte_t id0_far *palette, id0
 	{
 		for (j=start;j<=end;j++)
 		{
-			delta = palette[j]-palette1[0][j];
-			palette2[0][j] = palette1[0][j] + delta * i / steps;
+			delta = palette[j]-_palette1[j];
+			_palette2[j] = _palette1[j] + delta * i / steps;
 		}
 
 		VL_WaitVBL(1);
