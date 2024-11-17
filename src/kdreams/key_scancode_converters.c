@@ -21,7 +21,12 @@
 
 #include "id_heads.h"
 
-/*** SDL scancodes enum copied from SDL_scancode.h (SDL v2.0.2) ***/
+/**
+ * SDL scancodes enum copied from SDL_scancode.h (SDL v2.0.2)
+ *
+ * This represents the possible values for the 2015 Steam release.
+ * Updating this list would be counterproductive.
+ */
 
 /**
  *  \brief The SDL keyboard scancode representation.
@@ -387,7 +392,7 @@ typedef enum
 
     SDL_NUM_SCANCODES = 512 /**< not a key, just marks the number of scancodes
                                  for array bounds */
-} SDL_Scancode;
+} KD_SDL_Scancode;
 
 
 /*** Conversion tables ***/
