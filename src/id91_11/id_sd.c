@@ -1379,8 +1379,6 @@ SD_StartMusic(MusicGroup id0_far *music)
 void
 SD_FadeOutMusic(void)
 {
-	// REFKEEN - Original code does nothing (also in Keen Dreams and Catacomb 3D)...
-#if 0
 	switch (MusicMode)
 	{
 	case smm_AdLib:
@@ -1388,7 +1386,6 @@ SD_FadeOutMusic(void)
 		SD_MusicOff();
 		break;
 	}
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
