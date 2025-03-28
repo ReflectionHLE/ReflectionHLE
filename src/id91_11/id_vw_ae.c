@@ -1121,6 +1121,20 @@ ENDP
 
 void VWL_UpdateScreenBlocks (void)
 {
+	// REFKEEN: The Catacomb 3-D sources had UPDATEHIGH changed from 14 to
+	// 13 in ID_ASM.EQU. This edit was commented as a "hack for catacombs".
+	// C sources still used the value of 14, while this function,
+	// originally in an ASM file, was the sole one to use 13.
+	//
+	// In practice, in the case of Catacomb 3-D, this function
+	// seems to mainly have some importance for the control panel,
+	// alongside drawing FINALEPIC upon completing the campaign.
+	// Using a value of UPDATEHIGH lower than 13 will lead
+	// to subsets of these not being drawn.
+#ifdef CAT3D
+#undef UPDATEHIGH
+#define UPDATEHIGH 13 // hack for catacombs
+#endif
 	id0_byte_t *scanPtr = updateptr;
 	id0_byte_t *scanEndPtr = updateptr + UPDATEWIDE*UPDATEHIGH+1;
 	id0_word_t iterationsToDo = 0xFFFF; // definitely scan the entire thing

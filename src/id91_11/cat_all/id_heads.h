@@ -107,7 +107,8 @@ REFKEEN_NS_B
 
 #endif // REFKEEN_VER_CATADVENTURES
 
-#define CAT3D // REFKEEN: Yes, it's also defined for The Adventures (but unused)
+// REFKEEN: Yes, it's also defined for The Adventures (but unused, originally)
+#define CAT3D
 
 #define	TEXTGR	0
 #define	CGAGR	1
