@@ -1,5 +1,6 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +22,7 @@
 #define __ID_RF__
 
 #ifndef __ID_MM__
-#include "ID_MM.H"
+#include "id_mm.h"
 #endif
 
 /*
@@ -77,39 +78,41 @@ typedef enum {spritedraw,maskdraw} drawtype;
 */
 
 
-extern	boolean		compatability;			// crippled refresh for wierdo SVGAs
+extern	id0_boolean_t		compatability;			// crippled refresh for wierdo SVGAs
 
-extern	unsigned	tics;
-extern	long		lasttimecount;
+extern	id0_unsigned_t	tics;
+extern	id0_long_t		lasttimecount;
 
-extern	unsigned	originxglobal,originyglobal;
-extern	unsigned	originxtile,originytile;
-extern	unsigned	originxscreen,originyscreen;
+extern	id0_unsigned_t	originxglobal,originyglobal;
+extern	id0_unsigned_t	originxtile,originytile;
+extern	id0_unsigned_t	originxscreen,originyscreen;
 
-extern	unsigned	mapwidth,mapheight,mapbyteswide,mapwordswide
+extern	id0_unsigned_t	mapwidth,mapheight,mapbyteswide,mapwordswide
 					,mapbytesextra,mapwordsextra;
-extern	unsigned	mapbwidthtable[MAXMAPHEIGHT];
+extern	id0_unsigned_t	mapbwidthtable[MAXMAPHEIGHT];
 
-extern	unsigned	originxmin,originxmax,originymin,originymax;
+extern	id0_unsigned_t	originxmin,originxmax,originymin,originymax;
 
-extern	unsigned	masterofs;
+extern	id0_unsigned_t	masterofs;
 
 //
 // the floating update window is also used by the view manager for
 // double buffer tracking
 //
 
-extern	byte		*updateptr;				// current start of update window
+extern	id0_byte_t		*updateptr;				// current start of update window
 
 #if GRMODE == CGAGR
-extern	byte		*baseupdateptr;
+extern	id0_byte_t		*baseupdateptr;
 #endif
 
-extern unsigned	blockstarts[UPDATEWIDE*UPDATEHIGH];
-extern unsigned	updatemapofs[UPDATEWIDE*UPDATEHIGH];
-extern unsigned	uwidthtable[UPDATEHIGH];		// lookup instead of multiple
+extern id0_unsigned_t	blockstarts[UPDATEWIDE*UPDATEHIGH];
+extern id0_unsigned_t	updatemapofs[UPDATEWIDE*UPDATEHIGH];
+extern id0_unsigned_t	uwidthtable[UPDATEHIGH];		// lookup instead of multiple
 
-#define	UPDATETERMINATE	0x0301
+// REFKEEN - Not in use due to safe unaligned accesses fixes
+// (and no separate handling for Big-Endian is required)
+///#define	UPDATETERMINATE	0x0301
 
 /*
 =============================================================================
@@ -125,22 +128,22 @@ void RF_Shutdown (void);
 void RF_FixOfs (void);
 void RF_NewMap (void);
 void RF_MarkTileGraphics (void);
-void RF_SetScrollBlock (int x, int y, boolean horizontal);
-void RF_NewPosition (unsigned x, unsigned y);
-void RF_Scroll (int x, int y);
+void RF_SetScrollBlock (id0_int_t x, id0_int_t y, id0_boolean_t horizontal);
+void RF_NewPosition (id0_unsigned_t x, id0_unsigned_t y);
+void RF_Scroll (id0_int_t x, id0_int_t y);
 
-void RF_MapToMap (unsigned srcx, unsigned srcy,
-				  unsigned destx, unsigned desty,
-				  unsigned width, unsigned height);
-void RF_MemToMap (unsigned far *source, unsigned plane,
-				  unsigned destx, unsigned desty,
-				  unsigned width, unsigned height);
+void RF_MapToMap (id0_unsigned_t srcx, id0_unsigned_t srcy,
+				  id0_unsigned_t destx, id0_unsigned_t desty,
+				  id0_unsigned_t width, id0_unsigned_t height);
+void RF_MemToMap (id0_unsigned_t id0_far *source, id0_unsigned_t plane,
+				  id0_unsigned_t destx, id0_unsigned_t desty,
+				  id0_unsigned_t width, id0_unsigned_t height);
 
-void RF_ClearBlock (int	x, int y, int width, int height);
-void RF_RedrawBlock (int x, int y, int width, int height);
+void RF_ClearBlock (id0_int_t	x, id0_int_t y, id0_int_t width, id0_int_t height);
+void RF_RedrawBlock (id0_int_t x, id0_int_t y, id0_int_t width, id0_int_t height);
 
-void RF_PlaceSprite (void **user,unsigned globalx,unsigned globaly,
-	unsigned spritenumber, drawtype draw, int priority);
+void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
+	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority);
 void RF_RemoveSprite (void **user);
 
 void RF_CalcTics (void);
@@ -149,5 +152,5 @@ void RF_Refresh (void);
 void RF_ForceRefresh (void);
 void RF_SetRefreshHook (void (*func) (void) );
 
-unsigned RF_FindFreeBuffer (void);
+id0_unsigned_t RF_FindFreeBuffer (void);
 
