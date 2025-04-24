@@ -192,7 +192,9 @@ id0_byte_t		*updateptr,*baseupdateptr,						// current start of update window
 =============================================================================
 */
 
-//static		id0_char_t	scratch[20],str[20];
+#ifdef PROFILE // REFKEEN: Restricted to this condition, where they're relevant
+static		id0_char_t	scratch[20],str[20];
+#endif
 
 tiletype	allanims[MAXANIMTYPES];
 id0_unsigned_t	numanimchains;
@@ -1454,7 +1456,7 @@ void RFL_EraseBlocks_EGA (void)
 	id0_unsigned_t	pos,xtl,ytl,xth,yth,x,y;
 	id0_byte_t		*updatespot;
 	id0_unsigned_t	updatedelta;
-	//id0_unsigned_t	erasecount;
+	//id0_unsigned_t	erasecount; // REFKEEN: Define if PROFILE is
 
 #ifdef PROFILE
 	id0_unsigned_t erasecount = 0;
@@ -1567,7 +1569,7 @@ void RFL_UpdateSprites_EGA (void)
 	id0_unsigned_t dest;
 	id0_byte_t		*updatespot,*baseupdatespot;
 	id0_unsigned_t	updatedelta;
-	//id0_unsigned_t	updatecount;
+	//id0_unsigned_t	updatecount; // REFKEEN: Define if PROFILE is
 	id0_unsigned_t	height,sourceofs;
 
 #ifdef PROFILE
