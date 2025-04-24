@@ -23,6 +23,8 @@
 
 #include "id_heads.h"
 
+REFKEEN_NS_B
+
 //============================================================================
 
 #define TILESWIDE 21
@@ -538,3 +540,5 @@ void RefKeen_Patch_id_rf_a(void)
 	// GRMODE *must* be patched first
 	RFL_NewTile = (GRMODE == CGAGR) ? RFL_NewTile_CGA : RFL_NewTile_EGA;
 }
+
+REFKEEN_NS_E

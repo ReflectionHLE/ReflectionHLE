@@ -36,6 +36,8 @@ updated
 #include "id_heads.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -2906,3 +2908,5 @@ void RefKeen_Patch_id_rf(void)
 	}
 */
 }
+
+REFKEEN_NS_E

@@ -25,6 +25,8 @@
 #include "id_mm.h"
 #endif
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -154,3 +156,4 @@ void RF_SetRefreshHook (void (*func) (void) );
 
 id0_unsigned_t RF_FindFreeBuffer (void);
 
+REFKEEN_NS_E
