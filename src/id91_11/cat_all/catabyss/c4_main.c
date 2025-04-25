@@ -955,6 +955,8 @@ void SetupScaling (void)
 id0_boolean_t	showscorebox;
 //id0_int_t	showscorebox;
 
+// REFKEEN - Unused in Catacomb 3-D and later
+#if 0
 void RF_FixOfs (void)
 {
 }
@@ -962,7 +964,7 @@ void RF_FixOfs (void)
 void HelpScreens (void)
 {
 }
-
+#endif
 
 #if 0
 /*
