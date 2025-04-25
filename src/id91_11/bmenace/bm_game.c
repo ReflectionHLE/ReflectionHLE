@@ -1,0 +1,945 @@
+/* Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
+ * This file is loosely based on:
+ * Keen Dreams Source Code
+ * Copyright (C) 2014 Javier M. Chavez
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+#include "BM_DEF.H"
+#pragma hdrstop
+
+/////////////////////////////////////////////////////////////////////////////
+// initialized variables:
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef BETA
+static char piracymessage[] =
+	"Critical file FILE_ID.DIZ missing\n"
+	"or modified.  If you purchased the\n"
+	"game from Apogee simply reinstall\n"
+	"the game.  You can call Apogee at\n"
+	"(214) 278-5655 or refer to\n"
+	"Ordering Info for more details.\n";
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+// uninitialized variables:
+/////////////////////////////////////////////////////////////////////////////
+
+Sint16 mapon;	//originally declared in ID_CA.C
+static Uint16 fadecount;
+
+/////////////////////////////////////////////////////////////////////////////
+// local prototypes:
+/////////////////////////////////////////////////////////////////////////////
+
+static void FadeAndUnhook(void);
+
+/////////////////////////////////////////////////////////////////////////////
+// functions:
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+============================
+=
+= FreeGraphics
+=
+============================
+*/
+
+static void FreeGraphics(void)
+{
+	register Sint16 i;
+	for (i=STARTSPRITES; i<STARTSPRITES+NUMSPRITES; i++)
+	{
+		if (grsegs[i])
+		{
+			MM_SetPurge(&grsegs[i], true);
+		}
+	}
+	for (i=STARTTILE16; i<STARTEXTERNS; i++)
+	{
+		if (grsegs[i])
+		{
+			MM_SetPurge(&grsegs[i], true);
+		}
+	}
+}
+
+//===========================================================================
+
+/*
+=====================
+=
+= NewGame
+=
+= Set up new game to start from the beginning
+=
+=====================
+*/
+
+void NewGame(void)
+{
+#ifdef BETA
+	gamestate.mapon = 0;
+	gamestate.score = 0;
+	gamestate.nextextra = 20000;
+	gamestate.lives = 3;
+	gamestate.food = 0;
+	gamestate.autofire = 0;
+	memset(&gamestate.grenades, 0, sizeof(gamestate.grenades));
+	gamestate.ammo = 0;
+	gamestate.clips = 0;
+	gamestate.gotshard[0] = 0;
+	gamestate.gotshard[1] = 0;
+	gamestate.gotshard[2] = 0;
+	gamestate.gotshard[3] = 0;
+	gamestate.got_exitkey = false;
+	gamestate.specialkeys = 0;
+	gamestate.nukestate = 0;
+	gamestate.potions = 0;
+	gamestate.got_pill = false;
+	gamestate.savedhostage = false;
+#else
+	if (playstate != ex_loadedgame)
+	{
+		gamestate.mapon = 0;
+		gamestate.score = 0;
+		gamestate.nextextra = 20000;
+		gamestate.lives = 3;
+		gamestate.gems = 0;
+		gamestate.nukestate = 0;
+		gamestate.potions = 0;
+	}
+	gamestate.health = 4;
+	gamestate.autofire = 0;
+	gamestate.weapon = 0;
+	memset(&gamestate.grenades, 0, sizeof(gamestate.grenades));
+	gamestate.ammo = 0;
+	gamestate.clips = 0;
+	gamestate.gotshard[0] = 0;
+	gamestate.gotshard[1] = 0;
+	gamestate.gotshard[2] = 0;
+	gamestate.gotshard[3] = 0;
+	gamestate.got_exitkey = false;
+	gamestate.trianglekey = 0;
+	gamestate.specialkeys = 0;
+	gamestate.got_pill = false;
+	gamestate.savedhostage = false;
+	gamestate.got_warpgem = false;
+#endif
+}
+
+//===========================================================================
+
+/*
+============================
+=
+= GameOver
+=
+============================
+*/
+
+static void GameOver(void)
+{
+	VW_FixRefreshBuffer();
+	US_CenterWindow(16, 3);
+	US_PrintCentered("GAME OVER");
+	VW_UpdateScreen();
+	IN_ClearKeysDown();
+	IN_UserInput(4*TickBase, false);
+}
+
+//===========================================================================
+
+/*
+============================
+=
+= ResetGame
+=
+============================
+*/
+
+void ResetGame(void)
+{
+	Sint16 num;
+	boolean esc;
+
+	NewGame();
+	ca_levelnum--;
+	ca_levelbit >>= 1;
+	CA_ClearMarks();
+	ca_levelbit <<= 1;
+	ca_levelnum++;
+#ifndef BETA
+	if (restartgame != gd_Continue)
+	{
+		if (practicemode == true)
+		{
+			
+			oldmapon = gamestate.mapon;
+			VW_FixRefreshBuffer();
+			US_CenterWindow(26, 3);
+			PrintY += 6;
+			_fstrcpy(str, str_practiceprompt);
+			US_Print(str);
+			VW_UpdateScreen();
+			esc = !US_LineInput(px, py, str, NULL, true, 2, 0);
+			if (!esc)
+			{
+				num = atoi(str);
+				if (num > 0 && num <= 11)
+				{
+					gamestate.mapon = num-1;
+				}
+			}
+			practicemode = false;
+			practiceTimeLeft = 500;
+		}
+		else if (practiceTimeLeft >= 0)
+		{
+			practiceTimeLeft = -1;
+		}
+		playstate = ex_resetgame;
+	}
+	else if (loadedgame)
+	{
+		playstate = ex_loadedgame;
+		practiceTimeLeft = -1;
+	}
+	VW_FadeOut();
+#endif
+}
+
+//===========================================================================
+
+/*
+============================
+=
+= SaveTheGame
+=
+============================
+*/
+
+#define RLETAG 0xABCD
+
+boolean SaveTheGame(Sint16 handle)
+{
+#ifdef BETA
+	Uint16	i,compressed,expanded;
+	objtype	*ob;
+	memptr	bigbuffer;
+
+	gamestate.riding = NULL;
+
+	if (!CA_FarWrite(handle, (byte far *)&gamestate, sizeof(gamestate)))
+	{
+		return false;
+	}
+
+	expanded = mapwidth * mapheight * 2;
+	MM_GetPtr(&bigbuffer, expanded);
+
+	for (i = 0; i < MAPPLANES; i++)
+	{
+		compressed = CA_RLEWCompress(mapsegs[i], expanded, (Uint16 huge *)bigbuffer+1, RLETAG);
+		*(Uint16 huge *)bigbuffer = compressed;
+		if (!CA_FarWrite(handle, bigbuffer, compressed+2))
+		{
+			MM_FreePtr(&bigbuffer);
+			return false;
+		}
+	}
+	for (ob = player; ob; ob=ob->next)
+	{
+		if (!CA_FarWrite(handle, (byte far *)ob, sizeof(objtype)))
+		{
+			MM_FreePtr(&bigbuffer);
+			return false;
+		}
+	}
+	MM_FreePtr(&bigbuffer);
+	return true;
+#else
+	gametype savestate;
+
+	gamestate.riding = NULL;
+	practiceTimeLeft = -1;
+	practicemode = false;
+	memcpy(&savestate, &gamestate, sizeof(gamestate));
+	memset(&savestate.keys, 0, sizeof(gamestate.keys));
+	savestate.gotshard[0] = 0;
+	savestate.gotshard[1] = 0;
+	savestate.gotshard[2] = 0;
+	savestate.gotshard[3] = 0;
+	savestate.got_exitkey = false;
+	savestate.trianglekey = 0;
+	savestate.specialkeys = 0;
+	savestate.got_pill = false;
+	savestate.got_robopal = false;
+	savestate.savedhostage = false;
+	savestate.clips = 0;
+	savestate.ammo = 0;
+	savestate.weapon = 0;
+	memset(&savestate.grenades, 0, sizeof(savestate.grenades));
+	switch (savestate.difficulty)
+	{
+	case gd_Easy:
+		savestate.health = 8;
+		break;
+	case gd_Normal:
+		savestate.health = 4;
+		break;
+	case gd_Hard:
+		savestate.health = 4;
+		break;
+	default:
+		savestate.health = 4;
+		break;
+	}
+	colorseqnum = 0;
+	if (!CA_FarWrite(handle, (byte far *)&savestate, sizeof(savestate)))
+	{
+		return false;
+	}
+	return true;
+#endif	// ifdef BETA ... else ...
+}
+
+//===========================================================================
+
+/*
+============================
+=
+= LoadTheGame
+=
+============================
+*/
+
+boolean LoadTheGame(Sint16 handle)
+{
+#ifdef BETA
+	Uint16	i;
+	objtype	*prev,*next,*followed;
+	Uint16	compressed,expanded;
+	memptr	bigbuffer;
+
+	if (!CA_FarRead(handle, (byte far *)&gamestate, sizeof(gamestate)))
+	{
+		return false;
+	}
+
+	ca_levelbit >>= 1;
+	ca_levelnum--;
+	SetupGameLevel(false);
+	// BUG: ca_levelbit and ca_levelnum should be adjusted here and not after the
+	// mmerror check, otherwise a memory error would cause this routine to return
+	// with the wrong cache level and probably cause the program to crash with a
+	// CA_DownLevel error later on.
+	if (mmerror)
+	{
+		mmerror = false;
+		US_CenterWindow(20, 8);
+		PrintY += 20;
+		US_CPrint(str_nomemgame);
+		VW_UpdateScreen();
+		IN_Ack();
+		return false;
+	}
+	ca_levelbit <<= 1;
+	ca_levelnum++;
+
+	expanded = mapwidth * mapheight * 2;
+	MM_BombOnError(true);	// BUG: this should use false to avoid an instant crash
+	MM_GetPtr(&bigbuffer, expanded);
+	MM_BombOnError(false);	// BUG: this should use true to force an instant crash
+	if (mmerror)
+	{
+		mmerror = false;
+		US_CenterWindow(20, 8);
+		PrintY += 20;
+		US_CPrint(str_nomemgame);
+		VW_UpdateScreen();
+		IN_Ack();
+		return false;
+	}
+	for (i = 0; i < MAPPLANES; i++)
+	{
+		if (!CA_FarRead(handle, (byte far *)&compressed, sizeof(compressed)))
+		{
+			MM_FreePtr(&bigbuffer);
+			return false;
+		}
+		if (!CA_FarRead(handle, (byte far *)bigbuffer, compressed))
+		{
+			MM_FreePtr(&bigbuffer);
+			return false;
+		}
+		CA_RLEWexpand(bigbuffer, mapsegs[i], expanded, RLETAG);
+	}
+	MM_FreePtr(&bigbuffer);
+
+	InitObjArray();
+	new = player;
+	prev = new->prev;
+	next = new->next;
+	if (!CA_FarRead(handle, (byte far *)new, sizeof(objtype)))
+	{
+		return false;
+	}
+	new->prev = prev;
+	new->next = next;
+	new->needtoreact = true;
+	new->sprite = NULL;
+	new = scoreobj;
+	while (true)
+	{
+		prev = new->prev;
+		next = new->next;
+		if (!CA_FarRead(handle, (byte far *)new, sizeof(objtype)))
+		{
+			return false;
+		}
+		followed = new->next;
+		new->prev = prev;
+		new->next = next;
+		new->needtoreact = true;
+		new->sprite = NULL;
+		if (followed)
+		{
+			GetNewObj(false);
+		}
+		else
+		{
+			break;
+		}
+	}
+	*((Sint32*)&scoreobj->temp1) = -1;
+	scoreobj->temp3 = -1;
+	scoreobj->temp4 = -1;
+	return true;
+#else
+	if (!CA_FarRead(handle, (byte far *)&gamestate, sizeof(gamestate)))
+	{
+		return false;
+	}
+	playstate = ex_loadedgame;
+	player->health = gamestate.health;
+	practiceTimeLeft = -1;
+	practicemode = false;
+	return true;
+#endif	// ifdef BETA ... else ...
+}
+
+#undef RLETAG
+
+/*
+==========================
+=
+= DelayedFade
+=
+= Fades out and latches FadeAndUnhook onto the refresh
+=
+==========================
+*/
+
+static void DelayedFade(void)
+{
+	VW_FadeOut();
+	fadecount = 0;
+	RF_SetRefreshHook(FadeAndUnhook);
+}
+
+/*
+==========================
+=
+= FadeAndUnhook
+=
+= Latch this onto the refresh so the screen only gets faded in after two
+= refreshes.  This lets all actors draw themselves to both pages before
+= fading the screen in.
+=
+==========================
+*/
+
+static void FadeAndUnhook(void)
+{
+	if (++fadecount == 2)
+	{
+		VW_FadeIn();
+		RF_SetRefreshHook(NULL);
+		TimeCount = lasttimecount;
+	}
+}
+
+//===========================================================================
+
+
+/*
+==========================
+=
+= SetupGameLevel
+=
+= Load in map mapon and cache everything needed for it
+=
+==========================
+*/
+
+void SetupGameLevel(boolean loadnow)
+{
+#ifndef BETA
+	respawnx = 0;
+	respawny = 0;
+#endif
+	SD_FadeOutMusic();
+	CA_SetAllPurge();
+//
+// randomize if not a demo
+//
+	if (DemoMode)
+	{
+		US_InitRndT(false);
+		gamestate.difficulty = gd_Normal;
+	}
+	else
+	{
+		US_InitRndT(true);
+	}
+//
+// load the level header and three map planes
+//
+	CA_CacheMap(gamestate.mapon);
+//
+// let the refresh manager set up some variables
+//
+	RF_NewMap();
+//
+// decide which graphics are needed and spawn actors
+//
+	CA_ClearMarks();
+	ScanInfoPlane();
+	RF_MarkTileGraphics();
+//
+// have the caching manager load and purge stuff to make sure all marks
+// are in memory
+//
+	CA_LoadAllSounds();
+	if (loadnow)
+	{
+#ifdef BETA
+		if (scorescreenkludge)
+#else
+		if (scorescreenkludge || gamestate.mapon == 13)
+#endif
+		{
+			CA_CacheMarks(NULL);
+		}
+#ifndef BETA
+		else if (gamestate.mapon >= 20)
+		{
+			CA_CacheMarks("Secret Level");
+		}
+#endif
+		else if (DemoMode)
+		{
+			CA_CacheMarks("DEMO");
+		}
+		else
+		{
+			CA_CacheMarks(levelnames[mapon]);
+		}
+	}
+	if (loadnow)
+	{
+		DelayedFade();
+	}
+}
+
+//==========================================================================
+
+/*
+==========================
+=
+= RespawnPlayer
+=
+==========================
+*/
+
+static boolean RespawnPlayer(void)
+{
+#ifndef BETA
+	if (respawnx > 0 && respawny > 0)
+	{
+		player->y = respawny;
+		player->x = respawnx;
+		player->priority = 1;
+		player->needtoclip = cl_noclip;
+		ChangeState(player, &s_snakestand);
+		player->needtoclip = cl_midclip;
+		CenterActor(player);
+		ytry = 15;
+		player->obclass = playerobj;
+		player->active = yes;
+		player->needtoclip = cl_midclip;
+		switch (gamestate.difficulty)
+		{
+		case gd_Easy:
+			player->health = 8;
+			break;
+		case gd_Normal:
+			player->health = 4;
+			break;
+		case gd_Hard:
+			player->health = 2;
+			break;
+		default:
+			player->health = 4;
+			break;
+		}
+		gamestate.health = player->health;
+		invincibility = 50;
+		shuttlecooldown = 0;	//BETA leftovers
+		return true;
+	}
+	return false;
+#endif
+}
+
+//==========================================================================
+
+/*
+============================
+=
+= GameLoop
+=
+= A game has just started (after the cinematic or load game)
+=
+============================
+*/
+
+void GameLoop(void)
+{
+	Uint16 temp;
+
+#ifdef BETA
+	if (playstate == ex_loadedgame)
+	{
+		goto level_loop;
+	}
+reset_game:
+	gamestate.difficulty = restartgame;
+	restartgame = gd_Continue;
+#else
+check_loaded:
+	if (playstate != ex_loadedgame)
+	{
+		gamestate.difficulty = restartgame;
+	}
+	restartgame = gd_Continue;
+#endif
+
+start_level:
+	do
+	{
+		SetupGameLevel(true);
+level_loop:
+		colorseqnum = 0;
+		crusherstate = 0;
+#ifndef BETA
+		hintstate = 0;
+		bosshealth = 999;
+#endif
+		SD_WaitSoundDone();
+#ifdef BETA
+		if (DebugOk)
+		{
+			player->health = 8;
+		}
+#endif
+		PlayLoop();
+#ifdef BETA
+		if (playstate != ex_loadedgame)
+		{
+			memset(&gamestate.keys, 0, sizeof(gamestate.keys));
+			gamestate.gotshard[0] = 0;
+			gamestate.gotshard[1] = 0;
+			gamestate.gotshard[2] = 0;
+			gamestate.gotshard[3] = 0;
+			gamestate.got_exitkey = false;
+			gamestate.specialkeys = 0;
+			gamestate.got_pill = false;
+			gamestate.got_robopal = false;
+			gamestate.savedhostage = false;
+			colorseqnum = 0;
+		}
+#else
+		if (playstate == ex_died && gamestate.lives >= 0)
+		{
+			if (RespawnPlayer())
+			{
+				playstate = ex_stillplaying;
+				goto level_loop;
+			}
+		}
+		gamestate.health = player->health;
+		memset(&gamestate.keys, 0, sizeof(gamestate.keys));
+		gamestate.gotshard[0] = 0;
+		gamestate.gotshard[1] = 0;
+		gamestate.gotshard[2] = 0;
+		gamestate.gotshard[3] = 0;
+		gamestate.got_exitkey = false;
+		gamestate.trianglekey = 0;
+		gamestate.specialkeys = 0;
+		gamestate.got_pill = false;
+		gamestate.got_robopal = false;
+		gamestate.savedhostage = false;
+		gamestate.clips = 0;
+		gamestate.ammo = 0;
+		gamestate.weapon = 0;
+		memset(&gamestate.grenades, 0, sizeof(gamestate.grenades));
+		colorseqnum = 0;
+#endif	// ifdef BETA ... else ...
+		VW_FixRefreshBuffer();
+		if (tedlevel)
+		{
+			if (playstate == ex_loadedgame)
+			{
+				goto level_loop;
+			}
+			else if (playstate == ex_died)
+			{
+				goto start_level;
+			}
+			else
+			{
+				TEDDeath();
+			}
+		}
+		switch (playstate)
+		{
+#ifdef BETA
+		case ex_resetgame:
+			goto reset_game;
+		case ex_loadedgame:
+			goto level_loop;
+		case ex_died:
+			RespawnPlayer();
+			break;
+#else
+		case ex_resetgame:
+			goto check_loaded;
+		case ex_loadedgame:
+			goto check_loaded;
+#endif
+
+		case ex_completed:
+#ifndef BETA
+#if (!SHAREWARE) || (defined GMS_VERSION)
+			//
+			// show an error message and abort game when anti-piracy check failed
+			//
+			if (pirated)
+			{
+				VW_FixRefreshBuffer();
+				US_CenterWindow(35, 8);
+				PrintY += 2;
+				US_CPrint(piracymessage);
+				VW_UpdateScreen();
+				VW_WaitVBL(50);
+				IN_ClearKeysDown();
+				IN_Ack();
+				RF_ForceRefresh();
+				goto abort;
+			}
+#endif
+#if (SHAREWARE) || (defined GMS_VERSION)
+#ifdef GMS_VERSION
+			goto skip_wait_screen;
+#endif
+			if (gamestate.mapon >= 4 && gamestate.mapon < 11 && !DebugOk)
+			{
+				//
+				// show the registration screen for at least 30-60 seconds
+				//
+				timeleft = (gamestate.mapon-4)*5 + 30;
+				if (timeleft > 60)
+				{
+					timeleft = 60;
+				}
+				HelpScreens();
+skip_wait_screen:;
+			}
+#endif
+			if (gamestate.mapon > 13)
+			{
+				//
+				// user has completed a secret level, return to the previous level
+				// and continue the regular level sequence
+				//
+				switch (gamestate.mapon)
+				{
+#if (EPISODE == 1)
+				case 20:
+					gamestate.mapon = 2;
+					break;
+				case 21:
+					gamestate.mapon = 5;
+					break;
+				case 22:
+					gamestate.mapon = 8;
+					break;
+				case 23:
+					gamestate.mapon = 10;
+					break;
+#elif (EPISODE == 2)
+				case 20:
+					gamestate.mapon = 1;
+					break;
+				case 21:
+					gamestate.mapon = 3;
+					break;
+				case 22:
+					gamestate.mapon = 9;
+					break;
+#elif (EPISODE == 3)
+				case 20:
+					gamestate.mapon = 2;
+					break;
+				case 21:
+					gamestate.mapon = 8;
+					break;
+				case 22:
+					gamestate.mapon = 10;
+					break;
+#endif
+				}
+			}
+			if (gamestate.got_warpgem == true)
+			{
+				//
+				// warp to secret level
+				//
+				// REMEMBER: use level-1 because gamestate.mapon is increased below
+				//
+				switch (gamestate.mapon)
+				{
+#if (EPISODE == 1)
+				case 2:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 20-1;
+					gamestate.got_warpgem = false;
+					break;
+				case 5:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 21-1;
+					gamestate.got_warpgem = false;
+					break;
+				case 8:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 22-1;
+					gamestate.got_warpgem = false;
+					break;
+				case 10:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 23-1;
+					gamestate.got_warpgem = false;
+					break;
+#elif (EPISODE == 2)
+				case 1:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 20-1;
+					gamestate.got_warpgem = false;
+					break;
+				case 3:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 21-1;
+					gamestate.got_warpgem = false;
+					break;
+				case 9:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 22-1;
+					gamestate.got_warpgem = false;
+					break;
+#elif (EPISODE == 3)
+				case 2:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 20-1;
+					gamestate.got_warpgem = false;
+					break;
+				case 8:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 21-1;
+					gamestate.got_warpgem = false;
+					break;
+				case 10:
+					playstate = ex_stillplaying;
+					RunDemo(DEMO_LEVELWARP);
+					gamestate.mapon = 22-1;
+					gamestate.got_warpgem = false;
+					break;
+#endif
+				}
+			}
+#endif	// ifndef BETA
+			gamestate.mapon++;
+			if (gamestate.mapon == 12)
+			{
+				FreeGraphics();
+				RF_FixOfs();
+				VW_FixRefreshBuffer();
+				FinaleLayout();
+				CheckHighScore(gamestate.score, 0);
+				return;
+			}
+			if (storedemo && mapon == 2)
+			{
+				IN_ClearKeysDown();
+				return;
+			}
+			temp = bufferofs;
+			bufferofs = displayofs;
+			US_CenterWindow(15, 2);
+			PrintY += 2;
+			US_CPrint("One moment...\n\n");
+			bufferofs = temp;
+			break;
+			
+		case ex_abort:
+abort:
+			IN_ClearKeysDown();
+#ifndef BETA
+			StopMusic();
+			CA_SetAllPurge();
+#endif
+			return;
+		}
+	} while (gamestate.lives >= 0);
+	StopMusic();
+	CA_SetAllPurge();
+	GameOver();
+	CheckHighScore(gamestate.score, mapon);
+}
