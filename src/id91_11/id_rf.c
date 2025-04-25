@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -272,6 +275,14 @@ void RF_Startup (void)
 	id0_int_t i,x,y;
 	id0_unsigned_t	*blockstart;
 
+#if REFKEEN_ID_ENGINE_VER < REFKEEN_ID_ENGINE_VER_KEEN
+	//
+	// Keen 4-6 store the compatability setting in the game's config file.
+	// The setting is loaded from that file AFTER RF_Startup is executed,
+	// making this check useless (unless the config file doesn't exist).
+	// Instead, US_Startup now checks for that parameter after the config
+	// file has been read.
+	//
 	if (grmode == EGAGR)
 		for (i = 1;i < id0_argc;i++)
 			if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
@@ -279,6 +290,7 @@ void RF_Startup (void)
 				compatability = true;
 				break;
 			}
+#endif
 
 	for (i=0;i<PORTTILESHIGH;i++)
 		uwidthtable[i] = UPDATEWIDE*i;
@@ -290,8 +302,10 @@ void RF_Startup (void)
 
 
 
+#ifndef BIOMENACE
 	if (grmode == EGAGR)
 	{
+#endif
 		SX_T_SHIFT = 1;
 
 		baseupdatestart[0] = &update[0][UPDATESPARESIZE];
@@ -311,6 +325,7 @@ void RF_Startup (void)
 				*blockstart++ = SCREENWIDTH*16*y+x*TILEWIDTH;
 
 		xpanmask = 6;	// dont pan to odd pixels
+#ifndef BIOMENACE
 	}
 
 	else if (grmode == CGAGR)
@@ -327,6 +342,7 @@ void RF_Startup (void)
 			for (x=0;x<UPDATEWIDE;x++)
 				*blockstart++ = SCREENWIDTH*16*y+x*TILEWIDTH;
 	}
+#endif
 }
 
 
@@ -361,6 +377,11 @@ void RF_Shutdown (void)
 
 void RF_FixOfs (void)
 {
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+	screenstart[0] = 0;
+	screenstart[1] = SCREENSPACE;
+	screenstart[2] = SCREENSPACE*2;
+#endif
 	if (grmode == EGAGR)
 	{
 		screenpage = 0;
@@ -373,6 +394,9 @@ void RF_FixOfs (void)
 	}
 	else
 	{
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+		panx = pany = pansx = pansy = panadjust = 0;
+#endif
 		bufferofs = 0;
 		masterofs = 0x8000;
 	}
@@ -832,7 +856,13 @@ void RFL_AnimateTiles (void)
 // animate the lists of tiles
 //
 	anim = &allanims[0];
-	while (anim->current)
+#if 1
+	// original code:
+	while (anim->current)	//BUG: assumes that the final entry is never used!
+#else
+	// bugfix:
+	while (anim->current && anim < allanims+MAXANIMTYPES)
+#endif
 	{
 		anim->count-=tics;
 		while ( anim->count < 1)
@@ -1348,6 +1378,11 @@ void RFL_BoundNewOrigin (id0_unsigned_t orgx,id0_unsigned_t orgy)
 			orgx = (edge+1)*TILEGLOBAL;
 			break;
 		}
+		// BUG: 'edge <=originxtile+20' should only be used when orgx is NOT
+		// aligned on a tile boundary, otherwise 'edge < originxtile+20' should be
+		// used. (This is part of the reason why Levels 4, 16 and 17 of Keen 6
+		// show the hidden parts on the right side of the level when loading a
+		// saved game where Keen is near or inside the hidden area.)
 		if (edge>=originxtile+11 && edge <=originxtile+20)
 		{
 			orgx = (edge-20)*TILEGLOBAL;
@@ -1822,7 +1857,11 @@ void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 	// this is a brand new sprite, so allocate a block from the array
 
 		if (!spritefreeptr)
+#if (defined BIOMENACE) && !(defined BETA)
+			return;	// simply don't render the sprite instead of crashing the game!
+#else
 			Quit ("RF_PlaceSprite: No free spots in spritearray!");
+#endif
 
 		sprite = spritefreeptr;
 		spritefreeptr = spritefreeptr->nextsprite;

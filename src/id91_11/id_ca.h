@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -41,9 +44,11 @@ REFKEEN_NS_B
 //#define NOGRAPHICS
 //#define NOAUDIO
 
+#ifndef BIOMENACE //no files are linked in BioMenace!
 #define MAPHEADERLINKED
 #define GRHEADERLINKED
 #define AUDIOHEADERLINKED
+#endif
 
 #ifdef REFKEEN_VER_CAT3D
 
@@ -60,6 +65,30 @@ REFKEEN_NS_B
 #endif
 
 #define MAPPLANES	3
+
+#ifdef BIOMENACE //re-added the tile info defines for BioMenace
+//
+// tile info defines, as bytes after tinf the table starts
+//
+
+
+//
+// TILEINFO offsets
+//
+#define ANIM	402
+#define SPEED	(ANIMPEED+NUMTILE16)
+
+//
+// TILEINFOM offsets
+//
+#define NORTHWALL	(SPEED+NUMTILE16)
+#define EASTWALL	(NORTHWALL+NUMTILE16M)
+#define SOUTHWALL	(EASTWALL+NUMTILE16M)
+#define WESTWALL	(SOUTHWALL+NUMTILE16M)
+#define MANIM		(WESTWALL+NUMTILE16M)
+#define INTILE		(MANIM+NUMTILE16M)
+#define MSPEED		(INTILE+NUMTILE16M)
+#endif
 
 //===========================================================================
 

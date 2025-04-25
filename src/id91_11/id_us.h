@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,7 +52,11 @@ REFKEEN_NS_B
 #pragma pack(push, 1)
 
 #define	MaxHighName	57
+#ifdef CAT3D // REFKEEN: That was Cat3D-specific
 #define	MaxScores	7
+#else
+#define	MaxScores	8
+#endif
 typedef	struct
 		{
 			id0_char_t	name[MaxHighName + 1];
@@ -100,6 +107,9 @@ extern	id0_boolean_t		ingame,		// Set by game code if a game is in progress
 					abortgame,	// Set if a game load failed
 					loadedgame,	// Set if the current game was loaded
 					NoWait,
+#ifdef BIOMENACE
+					GameIsDirty, //this used to be internal, but it's global in BioMenace
+#endif
 					HighScoresDirty;
 extern	id0_char_t		*abortprogram;	// Set to error msg if program is dying
 extern	GameDiff	restartgame;	// Normally gd_Continue, else starts game
@@ -131,7 +141,11 @@ extern	void	US_Startup(void),
 				US_TextScreen(void),
 				US_UpdateTextScreen(void),
 				US_FinishTextScreen(void),
+#ifdef BIOMENACE
+				US_ControlPanel(id0_int_t type),
+#else
 				US_ControlPanel(void),
+#endif
 				US_DrawWindow(id0_word_t x,id0_word_t y,id0_word_t w,id0_word_t h),
 				US_CenterWindow(id0_word_t,id0_word_t),
 				US_SaveWindow(WindowRec *win),
@@ -140,14 +154,18 @@ extern	void	US_Startup(void),
 				US_SetPrintRoutines(void (*measure)(const id0_char_t id0_far *,const id0_char_t id0_far *,id0_word_t *,id0_word_t *),
 									void (*print)(const id0_char_t id0_far *,const id0_char_t id0_far *)),
 				US_PrintCentered(const id0_char_t *s),
+#ifdef BIOMENACE
+				US_CPrint(const id0_char_t id0_far *s),
+#else
 				US_CPrint(const id0_char_t *s),
+#endif
 				US_CPrintLine(const id0_char_t *s, const id0_char_t *optse),
 				US_Print(const id0_char_t *s),
 				US_PrintUnsigned(id0_longword_t n),
 				US_PrintSigned(id0_long_t n),
 				US_StartCursor(void),
 				US_ShutCursor(void),
-				US_ControlPanel(void),
+//				US_ControlPanel(void), // REFKEEN: Dup. declaration
 				US_CheckHighScore(id0_long_t score,id0_word_t other),
 				US_DisplayHighScores(id0_int_t which);
 extern	id0_boolean_t	US_UpdateCursor(void),

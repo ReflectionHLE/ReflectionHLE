@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -59,9 +62,23 @@ REFKEEN_NS_B
 		id0_boolean_t		Paused;
 		id0_char_t		LastASCII;
 		ScanCode	LastScan;
+#ifdef BIOMENACE
+		//BioMenace does not use diagonal movement
+		KeyboardDef	KbdDefs[MaxKbds] = {{0x1d,0x38,0,0x48,0,0x4b,0x4d,0,0x50,0}};
+#else
 		KeyboardDef	KbdDefs[MaxKbds] = {{0x1d,0x38,0x47,0x48,0x49,0x4b,0x4d,0x4f,0x50,0x51}};
+#endif
 		JoystickDef	JoyDefs[MaxJoys];
 		ControlType	Controls[MaxPlayers];
+
+#if 0 // REFKEEN: Looks unused
+//#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+		boolean	Latch;
+		long	MouseDownCount;
+		boolean	LatchedButton0[MaxPlayers];
+		boolean	LatchedButton1[MaxPlayers];
+#endif
+
 #ifndef REFKEEN_VER_CATADVENTURES
 		Demo		DemoMode = demo_Off;
 		id0_byte_t id0_seg	*DemoBuffer;
@@ -170,6 +187,10 @@ INL_KeyService(id0_byte_t k)
 	// (and there's no need to clear the key)
 
 	static id0_boolean_t special;
+#if 0 // REFKEEN: Looks unused
+//#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+	int player;
+#endif
 	id0_byte_t c;
 #if 0
 	k = inportb(0x60);	// Get the scan code
@@ -198,6 +219,30 @@ INL_KeyService(id0_byte_t k)
 			LastCode = CurCode;
 			CurCode = LastScan = k;
 			Keyboard[k] = true;
+
+#if 0 // REFKEEN: Looks unused
+//#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+			if (Latch)
+			{
+				for (player = 0; player < MaxPlayers; player++)
+				{
+					if (Controls[player] == ctrl_Keyboard1)
+					{
+						if (CurCode == KbdDefs[0].button0)
+							LatchedButton0[player] = true;
+						else if (CurCode == KbdDefs[0].button1)
+							LatchedButton1[player] = true;
+					}
+					else if (Controls[player] == ctrl_Keyboard1)	// BUG? should probably check for ctrl_Keyboard2 here...
+					{
+						if (CurCode == KbdDefs[1].button0)
+							LatchedButton0[player] = true;
+						else if (CurCode == KbdDefs[1].button1)
+							LatchedButton1[player] = true;
+					}
+				}
+			}
+#endif
 
 			if (special)
 				c = SpecialNames[k];
@@ -533,6 +578,77 @@ INL_ShutJoy(id0_word_t joy)
 
 //	Public routines
 
+#if 0 // REFKEEN: Looks unused
+//#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+///////////////////////////////////////////////////////////////////////////
+//
+//	IN_ClearButtonLatch() - Clears the button latch stuff
+//
+///////////////////////////////////////////////////////////////////////////
+void
+IN_ClearButtonLatch(void)
+{
+	int player;
+
+asm		pushf
+asm		cli
+
+	MouseDownCount = 0;
+
+	for (player = 0; player < MaxPlayers; player++)
+	{
+		LatchedButton0[player] = LatchedButton1[player] = 0;
+	}
+
+asm		popf
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	LatchSndHook() - Hook routine for joystick button latch
+//
+///////////////////////////////////////////////////////////////////////////
+void
+LatchSndHook(void)
+{
+	int player;
+	ControlType ctrl;
+	word buttons;
+
+	for (player = 0; player < MaxPlayers; player++)
+	{
+		ctrl = Controls[player];
+
+		if (ctrl == ctrl_Joystick1 || ctrl == ctrl_Joystick2)
+		{
+			buttons = INL_GetJoyButtons(ctrl - ctrl_Joystick1);
+
+			if (buttons & 1)
+				LatchedButton0[player] = true;
+			if (buttons & 2)
+				LatchedButton1[player] = true;
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+//	IN_LatchButtons() - Enables or disables button latch
+//
+///////////////////////////////////////////////////////////////////////////
+void IN_LatchButtons(boolean enabled)
+{
+	if (enabled)
+	{
+		Latch = false;
+		IN_ClearButtonLatch();
+	}
+
+	Latch = enabled;
+	SD_SetUserHook(Latch ? LatchSndHook : NULL);
+}
+#endif// REFKEEN_ID_ENGINE_VER
+
 ///////////////////////////////////////////////////////////////////////////
 //
 //	IN_Startup() - Starts up the Input Mgr
@@ -623,6 +739,7 @@ IN_Shutdown(void)
 void
 IN_SetKeyHook(void (*hook)())
 {
+	// BUG: interrupts should be disabled while setting INL_KeyHook!
 	INL_KeyHook = hook;
 }
 
@@ -669,6 +786,9 @@ void
 IN_ReadCursor(CursorInfo *info)
 {
 	id0_word_t	i,
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+			player,
+#endif
 			buttons;
 	id0_int_t		dx,dy;
 
@@ -687,6 +807,16 @@ IN_ReadCursor(CursorInfo *info)
 		if (!JoysPresent[i])
 			continue;
 
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+		for (player = 0;player < MaxPlayers; player++)
+		{
+			if (Controls[player] == ctrl_Joystick1+i)
+				goto joyok;
+		}
+		continue;
+
+joyok:
+#endif
 		buttons = INL_GetJoyButtons(i);
 		INL_GetJoyDelta(i,&dx,&dy,true);
 		dx /= 64;

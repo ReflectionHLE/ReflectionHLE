@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,17 +41,37 @@ extern  id0_boolean_t         showscorebox;
 #ifdef  KEEN
 extern  id0_boolean_t         oldshooting;
 extern  ScanCode        firescan;
+#elif defined (BIOMENACE)
+#ifdef BETA
+		ScanCode			firescan;
+#else
+		id0_boolean_t         helpmessages = true;
+		id0_boolean_t         practicemode = false;
+		ScanCode        grenadescan = sc_Enter;
+#endif
+		void StartMusic(id0_int_t num);
+extern id0_int_t practiceTimeLeft;
 #else
 // REFKEEN - Should be extern since it's already defined in ID_US_1.c
 extern	ScanCode        firescan;
+#endif
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_0
+		void USL_CheckSavedGames(void);
 #endif
 
 //      Global variables
 		id0_boolean_t         ingame,abortgame,loadedgame;
 		GameDiff        restartgame = gd_Continue;
+#ifdef BIOMENACE
+		id0_boolean_t         GameIsDirty; //this used to be internal, but it's global in BioMenace
+#endif
 
 //      Internal variables
+#ifndef BIOMENACE
 static  id0_boolean_t         GameIsDirty,
+#else
+	id9_boolean_t
+#endif
 					QuitToDos,
 					CtlPanelDone;
 
@@ -78,9 +101,15 @@ typedef enum
 			uc_Abort,
 			uc_Quit,
 			uc_Loaded,
+#ifdef BIOMENACE
+			uc_Saved,
+#endif
 			uc_SEasy,
 			uc_SNormal,
 			uc_SHard,
+#ifdef BIOMENACE
+			uc_SPractice,
+#endif
 		} UComm;
 typedef enum
 		{
@@ -133,12 +162,19 @@ typedef struct  UserItemGroup
 		} UserItemGroup;
 
 static  const id0_char_t            *BottomS1,*BottomS2,*BottomS3;
+#ifdef BIOMENACE
+static  id0_int_t             menutype;
+#endif
 static  UComm           Communication;
 static  ScanCode        *KeyMaps[] =
 					{
 						&KbdDefs[0].button0,
 						&KbdDefs[0].button1,
+#if (defined BIOMENACE) && !(defined BETA)
+						&grenadescan,
+#else
 						&firescan,
+#endif
 						&KbdDefs[0].upleft,
 						&KbdDefs[0].up,
 						&KbdDefs[0].upright,
@@ -162,7 +198,11 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 #ifdef KEEN
 				USL_TwoCustom(UserCall call,struct UserItem id0_far *item),
 #endif
+#ifdef BIOMENACE
+				USL_HelpCustom(UserCall call,struct UserItem id0_far *item);
+#else
 				USL_PongCustom(UserCall call,struct UserItem id0_far *item);
+#endif
 
 #define DefButton(key,text)                             uii_Button,ui_Normal,key,text
 #define DefRButton(key,text)                    uii_RadioButton,ui_Normal,key,text
@@ -181,6 +221,9 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 		{DefRButton(sc_N,"NO SOUND EFFECTS")},
 		{DefRButton(sc_P,"PC SPEAKER")},
 		{DefRButton(sc_A,"ADLIB/SOUNDBLASTER")},
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+		{DefRButton(sc_Q,"QUIET ADLIB/SOUNDBLASTER")},
+#endif
 		{uii_Bad}
 	};
 	UserItemGroup   id0_far soundgroup = {8,0,CP_SOUNDMENUPIC,sc_None,soundi};
@@ -200,6 +243,9 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 		{DefButton(sc_E,"BEGIN EASY GAME"),uc_SEasy},
 		{DefButton(sc_N,"BEGIN NORMAL GAME"),uc_SNormal},
 		{DefButton(sc_H,"BEGIN HARD GAME"),uc_SHard},
+#if (defined BIOMENACE) && !(defined BETA)
+		{DefButton(sc_P,"PRACTICE A LEVEL (15 sec)"),uc_SPractice},
+#endif
 		{uii_Bad}
 	};
 	UserItemGroup   id0_far newgamegroup = {8,0,CP_NEWGAMEMENUPIC,sc_None,newgamei,0,1};
@@ -207,32 +253,58 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 	// Load/Save game menu
 	UserItem id0_far loadsavegamei[] =
 	{
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+		{uii_Button,ui_Normal,sc_1},
+		{uii_Button,ui_Normal,sc_2},
+		{uii_Button,ui_Normal,sc_3},
+		{uii_Button,ui_Normal,sc_4},
+		{uii_Button,ui_Normal,sc_5},
+		{uii_Button,ui_Normal,sc_6},
+#else
 		{uii_Button,ui_Normal,sc_None},
 		{uii_Button,ui_Normal,sc_None},
 		{uii_Button,ui_Normal,sc_None},
 		{uii_Button,ui_Normal,sc_None},
 		{uii_Button,ui_Normal,sc_None},
 		{uii_Button,ui_Normal,sc_None},
+#endif
 		{uii_Bad}
 	};
 	UserItemGroup   id0_far loadgamegroup = {4,3,CP_LOADMENUPIC,sc_None,loadsavegamei,USL_LoadCustom};
 	UserItemGroup   id0_far savegamegroup = {4,3,CP_SAVEMENUPIC,sc_None,loadsavegamei,USL_SaveCustom};
 
 	// Options menu
+#ifdef BIOMENACE
+	UserItemGroup   id0_far compgroup = {0,0,0,sc_None,0,USL_CompCustom};
+	UserItemGroup   id0_far scoregroup = {0,0,0,sc_None,0,USL_ScoreCustom};
+	#ifndef BETA
+	UserItemGroup   id0_far helpgroup = {0,0,0,sc_None,0,USL_HelpCustom};
+	#endif
+	UserItem id0_far optionsi[] =
+	{
+		{DefFolder(sc_C,"",&compgroup)},
+		{DefFolder(sc_S,"",&scoregroup)},
+	#ifndef BETA
+		{DefFolder(sc_H,"",&helpgroup)},
+	#endif
+		{uii_Bad}
+	};
+#else
 	UserItemGroup   id0_far scoregroup = {0,0,(graphicnums)0,sc_None,0,USL_ScoreCustom};
 	UserItemGroup   id0_far compgroup = {0,0,(graphicnums)0,sc_None,0,USL_CompCustom};
-#ifdef KEEN
+	#ifdef KEEN
 	UserItemGroup   id0_far twogroup = {0,0,(graphicnums)0,sc_None,0,USL_TwoCustom};
-#endif
+	#endif
 	UserItem id0_far optionsi[] =
 	{
 		{DefFolder(sc_S,"",&scoregroup)},
 		{DefFolder(sc_C,"",&compgroup)},
-#ifdef KEEN
+	#ifdef KEEN
 		{DefFolder(sc_T,"",&twogroup)},
-#endif
+	#endif
 		{uii_Bad}
 	};
+#endif // BIOMENACE
 	UserItemGroup   id0_far optionsgroup = {8,0,CP_OPTIONSMENUPIC,sc_None,optionsi};
 
 	// Keyboard menu
@@ -251,6 +323,13 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 	UserItemGroup   id0_far keygroup = {0,0,CP_KEYMOVEMENTPIC,sc_None,keyi,USL_KeyCustom};
 	UserItem id0_far keybi[] =
 	{
+#ifdef  BIOMENACE
+		{DefButton(sc_J,"JUMP")},
+		{DefButton(sc_F,"FIRE")},
+	#ifndef BETA
+		{DefButton(sc_G,"GRENADE")},
+	#endif
+#endif
 #ifdef  KEEN
 		{DefButton(sc_J,"JUMP")},
 		{DefButton(sc_P,"POGO")},
@@ -284,15 +363,25 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 	{
 		{DefFolder(sc_S,"SOUND",&soundgroup)},
 		{DefFolder(sc_M,"MUSIC",&musicgroup)},
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+		{DefFolder(sc_O,"OPTIONS",&optionsgroup)},
+#endif
 		{uii_Folder,ui_Separated,sc_K,"USE KEYBOARD",uc_None,&keysgroup},
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+		{DefFolder(sc_1,"USE JOYSTICK #1",&joy1group)},
+		{DefFolder(sc_2,"USE JOYSTICK #2",&joy2group)},
+#else
 		{DefFolder(sc_None,"USE JOYSTICK #1",&joy1group)},
 		{DefFolder(sc_None,"USE JOYSTICK #2",&joy2group)},
+#endif
 		{uii_Bad}
 	};
 	UserItemGroup   id0_far configgroup = {8,0,CP_CONFIGMENUPIC,sc_None,configi,USL_ConfigCustom};
 
 	// Main menu
+#ifndef BIOMENACE
 	UserItemGroup   id0_far ponggroup = {0,0,(graphicnums)0,sc_None,0,USL_PongCustom};
+#endif
 	UserItem id0_far rooti[] =
 	{
 		{DefFolder(sc_N,"NEW GAME",&newgamegroup)},
@@ -301,7 +390,9 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 		{DefFolder(sc_C,"CONFIGURE",&configgroup)},
 		{DefButton(sc_R,id0_nil_t),uc_Return},        // Return to Game/Demo
 		{DefButton(sc_E,"END GAME"),uc_Abort},
+#ifndef BIOMENACE
 		{DefFolder(sc_B,"SKULL 'N' BONES",&ponggroup)},
+#endif
 		{DefButton(sc_Q,"QUIT"),uc_Quit},
 		{uii_Bad}
 	};
@@ -318,8 +409,30 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 static void
 USL_SetupStack(void)
 {
+#ifdef BIOMENACE
+	UserItemGroup id0_far *root;
+
+	switch (menutype)
+	{
+	case 0:
+		root = &rootgroup;
+		break;
+	case 1:
+		root = &savegamegroup;
+		break;
+	case 2:
+		root = &loadgamegroup;
+		break;
+	default:
+		Quit("USL_SetupStack: Unknown type");
+		break;
+	}
+	cstackptr = 0;
+	cardstack[0] = topcard = root;
+#else
 	cstackptr = 0;
 	cardstack[0] = topcard = &rootgroup;
+#endif
 }
 
 static void
@@ -427,7 +540,11 @@ USL_DrawCtlPanelContents(void)
 	x = topcard->x + CtlPanelSX;
 	if (x % 8)
 		x += 8 - (x % 8);
+#if (defined BIOMENACE) && !(defined BETA)
+	y = topcard->y + CtlPanelSY + 12 + 5;
+#else
 	y = topcard->y + CtlPanelSY + 12;
+#endif
 	for (item = topcard->items;item->type != uii_Bad;item++)
 	{
 		if (item->flags & ui_Separated)
@@ -496,7 +613,9 @@ USL_ShowLoadSave(const id0_char_t *s,const id0_char_t *name)
 
 	VW_UpdateScreen();
 
+#if REFKEEN_ID_ENGINE_VER < REFKEEN_ID_ENGINE_VER_KEEN
 	IN_UserInput(100, true);
+#endif
 }
 
 static id0_boolean_t
@@ -597,6 +716,59 @@ USL_ConfirmComm(UComm comm)
 		if (ingame && GameIsDirty)
 			dialog = true;
 		break;
+#ifdef BIOMENACE
+	case uc_Saved:
+		if (menutype != 1)
+		{
+			confirm = false;
+		}
+		break;
+	case uc_SEasy:
+	case uc_SNormal:
+	case uc_SHard:
+	#ifdef BETA
+		s1 = "YOU'RE IN A GAME";
+	#else
+		if (practiceTimeLeft > 0)
+		{
+			s1 = "LEAVING PRACTICE GAME";
+		}
+		else
+		{
+			s1 = "YOU'RE IN A GAME";
+		}
+	#endif
+		s2 = "PRESS Y FOR NEW GAME";
+		if (ingame && GameIsDirty)
+		{
+			dialog = true;
+		}
+		break;
+	#ifndef BETA
+	case uc_SPractice:
+		if (practiceTimeLeft > 0)
+		{
+			s1 = "LEAVING PRACTICE GAME";
+		}
+		else
+		{
+			s1 = "YOU'RE IN A GAME";
+		}
+		s2 = "PRESS Y FOR NEW GAME";
+		if (ingame && GameIsDirty && practiceTimeLeft <= 0)
+		{
+			dialog = true;
+		}
+		else
+		{
+			practicemode = true;
+		}
+		break;
+	#endif
+	}
+
+//	confirm = dialog? USL_CtlDialog(s1,s2,s3) : confirm;
+#else
 	case uc_SEasy:
 	case uc_SNormal:
 	case uc_SHard:
@@ -606,6 +778,8 @@ USL_ConfirmComm(UComm comm)
 			dialog = true;
 		break;
 	}
+	//confirm = dialog? USL_CtlDialog(s1,s2,s3) : true;
+#endif // BIOMENACE
 
 	// REFKEEN - Alternative controllers support
 	// (WARNING: Technically this belongs to USL_CtlDialog, but this is the only place where its returned value is actually checked)
@@ -617,12 +791,13 @@ USL_ConfirmComm(UComm comm)
 		confirm = USL_CtlDialog(s1,s2,s3);
 		BE_ST_AltControlScheme_Pop();
 	}
+#ifndef BIOMENACE
 	else
 	{
 		confirm = true;
 	}
+#endif
 
-	//confirm = dialog? USL_CtlDialog(s1,s2,s3) : true;
 	if (confirm)
 	{
 		Communication = comm;
@@ -687,14 +862,22 @@ USL_GenericCustom(UserCall call,UserItem id0_far *item)
 static void
 USL_SetOptionsText(void)
 {
+#ifdef BIOMENACE
+	optionsi[0].text = compatability? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
+	optionsi[1].text = showscorebox? "SCORE BOX (ON)" : "SCORE BOX (OFF)";
+	#ifndef BETA
+	optionsi[2].text = helpmessages? "HELP MESSAGES (ON)" : "HELP MESSAGES (OFF)";
+	#endif
+#else
 	optionsi[0].text = showscorebox? "SCORE BOX (ON)" : "SCORE BOX (OFF)";
 	optionsi[1].text = compatability? "SVGA COMPATIBILITY (ON)" : "SVGA COMPATIBILITY (OFF)";
-#ifdef KEEN
+	#ifdef KEEN
 	optionsi[2].text = oldshooting? "TWO-BUTTON FIRING (ON)" : "TWO-BUTTON FIRING (OFF)";
 
 	keybi[2].flags &= ~ui_Disabled;
 	if (oldshooting)
 		keybi[2].flags |= ui_Disabled;
+	#endif
 #endif
 }
 
@@ -711,6 +894,22 @@ USL_ScoreCustom(UserCall call,UserItem id0_far *item)
 	USL_SetOptionsText();
 	return(true);
 }
+
+#if (defined BIOMENACE) && !(defined BETA)
+//#pragma argsused
+static id0_boolean_t
+USL_HelpCustom(UserCall call,UserItem id0_far *item)
+{
+	if (call != uic_SetupCard)
+		return(false);
+
+	helpmessages ^= true;
+	USL_CtlDialog(helpmessages? "Help messages now on" : "Help messages now off",
+					"Press any key", id0_nil_t);
+	USL_SetOptionsText();
+	return(true);
+}
+#endif	//BIOMENACE
 
 //#pragma argsused
 static id0_boolean_t
@@ -823,7 +1022,11 @@ USL_CKSetKey(UserItem id0_far *item,id0_word_t i)
 			}
 		}
 		if (on)
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+			USL_CtlDialog("Key already used","Press any key",id0_nil_t);
+#else
 			USL_CtlDialog("Key already used","Press a key",id0_nil_t);
+#endif
 		else
 			*(KeyMaps[i]) = scan;
 	}
@@ -936,7 +1139,11 @@ USL_ConfigJoystick(id0_word_t joy)
 			maxx,maxy;
 
 	BottomS1 = BottomS2 = "";
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+	BottomS3 = "ESC to back out";
+#else
 	BottomS3 = "Esc to back out";
+#endif
 	USL_DrawCtlPanel();
 	x = CtlPanelSX + 60;
 	y = CtlPanelSY + 19;
@@ -951,7 +1158,11 @@ USL_ConfigJoystick(id0_word_t joy)
 		return(false);
 
 	USL_CJDraw("Move Joystick to lower right","and press button #2");
+#if (defined BIOMENACE) && !(defined BETA)
+	VWB_DrawTile8(x + 24,y + 8,TileBase + 10);
+#else
 	VWB_DrawTile8(x + 24,y + 8,TileBase - 25);
+#endif
 	VWB_DrawTile8(x + 40,y + 24,TileBase + 7);
 	VWB_DrawTile8(x + 8,y + 8,TileBase + 0);
 	VWB_DrawTile8(x + 8,y + 24,TileBase + 1);
@@ -1070,8 +1281,10 @@ USL_DoLoadGame(UserItem id0_far *item)
 		loadedgame = true;
 	game->present = true;
 
+#if !( (defined BIOMENACE) && !(defined BETA) )
 	if (loadedgame)
 		Paused = true;
+#endif
 
 	USL_DrawCtlPanel();
 }
@@ -1086,6 +1299,10 @@ USL_LoadCustom(UserCall call,UserItem id0_far *item)
 	switch (call)
 	{
 	case uic_SetupCard:
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_0
+		if (getenv("UID"))
+			USL_CheckSavedGames();
+#endif
 		for (i = 0;i < MaxSaveGames;i++)
 		{
 			if (Games[i].present)
@@ -1112,7 +1329,19 @@ USL_LoadCustom(UserCall call,UserItem id0_far *item)
 		result = true;
 		break;
 	case uic_Hit:
+#if (defined BIOMENACE) && !(defined BETA)
+		i = item - loadsavegamei;
+		if (Games[i].present)
+		{
+			USL_DoLoadGame(item);
+		}
+		else
+		{
+			SD_PlaySound(ACCESSDENIEDSND);
+		}
+#else
 		USL_DoLoadGame(item);
+#endif
 		result = true;
 		break;
 	}
@@ -1188,8 +1417,16 @@ USL_DoSaveGame(UserItem id0_far *item)
 	if (!game->present)
 		game->present = ok;
 
+#ifdef BIOMENACE
+	if (ok)
+	{
+		GameIsDirty = false;
+		USL_ConfirmComm(uc_Saved);
+	}
+#else
 	if (ok)
 		GameIsDirty = false;
+#endif
 	USL_SetupCard();
 }
 
@@ -1201,6 +1438,10 @@ USL_SaveCustom(UserCall call,UserItem id0_far *item)
 	switch (call)
 	{
 	case uic_SetupCard:
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_0
+		if (getenv("UID"))
+			USL_CheckSavedGames();
+#endif
 		for (i = 0;i < MaxSaveGames;i++)
 			loadsavegamei[i].flags &= ~ui_Disabled;
 		return(false);
@@ -1211,6 +1452,8 @@ USL_SaveCustom(UserCall call,UserItem id0_far *item)
 	}
 	return(USL_LoadCustom(call,item));
 }
+
+#ifndef BIOMENACE
 
 #define PaddleMinX      (CtlPanelSX + 3)
 #define PaddleMaxX      (CtlPanelEX - 15)
@@ -1424,6 +1667,7 @@ USL_PongCustom(UserCall call,struct UserItem id0_far *item)
 
 	return(true);
 }
+#endif	//BIOMENACE
 
 //      Flag management stuff
 static void
@@ -1544,7 +1788,14 @@ USL_UpLevel(void)
 {
 	if (!cstackptr)
 	{
+#ifdef BIOMENACE
+		if (menutype == 0)
+			USL_ConfirmComm(uc_Quit);
+		else
+			USL_ConfirmComm(uc_Return);
+#else
 		USL_ConfirmComm(uc_Quit);
+#endif
 		return;
 	}
 
@@ -1562,7 +1813,11 @@ USL_DoItem(void)
 
 	item = &topcard->items[topcard->cursor];
 	if (item->flags & ui_Disabled)
+#ifdef BIOMENACE
+		SD_PlaySound(ACCESSDENIEDSND);
+#else
 		SD_PlaySound(NOWAYSND);
+#endif
 	else
 	{
 		switch (item->type)
@@ -1584,18 +1839,37 @@ USL_DoItem(void)
 static void
 USL_SetControlValues(void)
 {
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+	int i = SoundMode;
+	if (i == sdm_AdLib && QuietFX)
+	{
+		i++;
+	}
+	USL_PushItem(&soundgroup,i,false);
+#else
 	USL_PushItem(&soundgroup,SoundMode,false);
+#endif
 	USL_PushItem(&musicgroup,MusicMode,false);
 	if (!AdLibPresent)
 	{
 		soundi[2].flags |= ui_Disabled; // AdLib sound effects
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+		soundi[3].flags |= ui_Disabled; // Quiet AdLib sound effects
+#endif
 		musici[1].flags |= ui_Disabled; // AdLib music
 	}
 
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+	if (!JoysPresent[0])
+		configi[4].flags |= ui_Disabled;
+	if (!JoysPresent[1])
+		configi[5].flags |= ui_Disabled;
+#else
 	if (!JoysPresent[0])
 		configi[3].flags |= ui_Disabled;
 	if (!JoysPresent[1])
 		configi[4].flags |= ui_Disabled;
+#endif
 
 	rooti[4].text = ingame? "RETURN TO GAME" : "RETURN TO DEMO";
 	if (!ingame)
@@ -1603,6 +1877,12 @@ USL_SetControlValues(void)
 		rooti[2].flags |= ui_Disabled;  // Save Game
 		rooti[5].flags |= ui_Disabled;  // End Game
 	}
+#if (defined BIOMENACE) && (!defined BETA)
+	if (practiceTimeLeft != -1)
+	{
+		rooti[2].flags |= ui_Disabled;  // Save Game
+	}
+#endif
 	rootgroup.cursor = ingame? 4 : 0;
 	USL_SetOptionsText();
 	// DEBUG - write the rest of this
@@ -1621,10 +1901,13 @@ USL_SetUpCtlPanel(void)
 
 	// Cache in all of the stuff for the control panel
 	CA_UpLevel();
+	// BUG: should call CA_ClearMarks() here to make sure we don't cache more than we need
 	for (i = CONTROLS_LUMP_START;i <= CONTROLS_LUMP_END;i++)
 		CA_MarkGrChunk(i);
+#ifndef BIOMENACE
 	for (i = PADDLE_LUMP_START;i <= PADDLE_LUMP_END;i++)
 		CA_MarkGrChunk(i);
+#endif
 	CA_MarkGrChunk(STARTFONT+1);            // Little font
 	CA_MarkGrChunk(CP_MENUMASKPICM);        // Mask for dialogs
 	CA_CacheMarks("Control Panel");
@@ -1634,9 +1917,11 @@ USL_SetUpCtlPanel(void)
 	fontnumber = 1;
 	US_SetPrintRoutines(VW_MeasurePropString,VWB_DrawPropString);
 	fontcolor = F_BLACK;
+#ifdef CAT3D // REFKEEN: See comments
 	VW_Bar (0,0,320,200,3); // CAT3D patch
-	// REFKEEN - Better comment this out in Catacomb 3-D (instead of having an empty stub)
-#ifndef CAT3D
+#else
+	VW_ClearVideo(3);
+	// REFKEEN - Better skip RF_FixOfs in Catacomb 3-D (instead of having an empty stub)
 	RF_FixOfs();
 #endif
 	VW_InitDoubleBuffer();
@@ -1659,6 +1944,9 @@ USL_HandleComm(UComm comm)
 	switch (comm)
 	{
 	case uc_Loaded:
+#ifdef BIOMENACE
+	case uc_Saved:
+#endif
 	case uc_Return:
 		break;
 	case uc_Abort:
@@ -1676,6 +1964,12 @@ USL_HandleComm(UComm comm)
 	case uc_SHard:
 		restartgame = gd_Hard;
 		break;
+#if (defined BIOMENACE) && !(defined BETA)
+	case uc_SPractice:
+		practicemode = true;
+		restartgame = gd_Easy;
+		break;
+#endif
 
 	default:
 		Quit("USL_HandleComm() - unknown");
@@ -1690,6 +1984,17 @@ USL_GetControlValues(void)
 
 	// DEBUG - write the rest of this
 	i = USL_FindPushedItem(&soundgroup);
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+	if (i == 3)
+	{
+		QuietFX = true;
+		i--;
+	}
+	else
+	{
+		QuietFX = false;
+	}
+#endif
 	if (i != SoundMode)
 		// REFKEEN - Casting to enum for C++ (hope it's ok!!)
 		SD_SetSoundMode((SDMode)i);
@@ -1734,7 +2039,11 @@ USL_TearDownCtlPanel(void)
 
 	IN_ClearKeysDown();
 	SD_WaitSoundDone();
+#ifdef CAT3D // REFKEEN: See comment
 	VW_Bar (0,0,320,200,3); // CAT3D patch
+#else
+	VW_ClearVideo(3);
+#endif
 	CA_DownLevel();
 	CA_LoadAllSounds();
 }
@@ -1746,7 +2055,11 @@ USL_TearDownCtlPanel(void)
 ///////////////////////////////////////////////////////////////////////////
 #define MoveMin 40
 void
+#ifdef BIOMENACE
+US_ControlPanel(int type)
+#else
 US_ControlPanel(void)
+#endif
 {
 	// REFKEEN - Alternative controllers support
 	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_menu;
@@ -1778,8 +2091,14 @@ extern void HelpScreens(void);
 	if ((LastScan < sc_F1) || (LastScan > sc_F10))
 		IN_ClearKeysDown();
 
+#ifdef BIOMENACE
+	menutype = type;
+#endif
 	USL_SetUpCtlPanel();
 	USL_DrawCtlPanel();
+#if (defined BIOMENACE) && !(defined BETA)
+	StartMusic(MUS_MENU);
+#endif
 
 	ydelta = 0;
 	for (CtlPanelDone = false,resetitem = on = true;!CtlPanelDone;)
@@ -1824,9 +2143,26 @@ extern void HelpScreens(void);
 				USL_UpLevel();
 				resetitem = true;
 				break;
+#if (defined BIOMENACE) && !(defined BETA)
+			case sc_M:
+				StartMusic(MUS_MENU);
+				break;
+			case sc_Space:
+			case sc_F2:
+			case sc_F3:
+			case sc_F4:
+			case sc_F5:
+			case sc_F6:
+			case sc_F7:
+			case sc_F8:
+			case sc_F9:
+			case sc_F10:
+			case sc_F11:
+			case sc_F12:	//BUG: sc_F12 is defined as 0x59, but the correct scan code is actually 0x58, so this will not recognize the F12 key
+#endif
 #ifndef KEEN6
 			case sc_F1:
-	// REFKEEN - Better comment this out in Catacomb 3-D (instead of having an empty stub)
+	// REFKEEN - Better skip HelpScreens in Catacomb 3-D (instead of having an empty stub)
 #ifndef CAT3D
 				HelpScreens();
 #endif
@@ -1904,6 +2240,12 @@ extern void HelpScreens(void);
 		BE_ST_ShortSleep();
 	}
 
+/*	BioMenace note:
+	You really should call StopMusic() or StartMusic(MUS_NO_MUSIC) here so that
+	USL_TearDownCtlPanel() can safely call CA_DownLevel() without risking
+	to run out of memory because the menu music is still playing and not
+	purgeable.
+*/
 	USL_TearDownCtlPanel();
 
 	BE_ST_AltControlScheme_Pop(); // REFKEEN - Alternative controllers support

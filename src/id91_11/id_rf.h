@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,16 +39,32 @@ REFKEEN_NS_B
 */
 
 #define	MINTICS				2
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+#define	MAXTICS				5
+#else
 #define	MAXTICS				6
+#endif
 #define DEMOTICS			3
 
 #define	MAPBORDER			2		// map border must be at least 1
 
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+#define	MAXSPRITES			60		// max tracked sprites
+#else
 #define	MAXSPRITES			50		// max tracked sprites
+#endif
 #define	MAXANIMTILES		90		// max animating tiles on screen
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+#define MAXANIMTYPES		62		// max different unique anim tiles on map
+#else
 #define MAXANIMTYPES		50		// max different unique anim tiles on map
+#endif
 
+#if (defined BIOMENACE) && !(defined BETA)
+#define	MAXMAPHEIGHT		250
+#else
 #define	MAXMAPHEIGHT		200
+#endif
 
 #define	PRIORITIES			4
 #define	MASKEDTILEPRIORITY	3		// planes go: 0,1,2,MTILES,3

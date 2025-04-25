@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -82,7 +85,9 @@ typedef struct
 */
 
 id0_byte_t 		id0_seg	*tinf;
+#ifndef BIOMENACE
 id0_int_t			mapon;
+#endif
 
 id0_unsigned_t	id0_seg	*mapsegs[3];
 // REFKEEN: With one caveat, Catacomb Abyss v1.13 and 1.24 technically allow
@@ -772,7 +777,7 @@ void CAL_SetupGrFile (void)
 	CAL_GetGrChunkLength(STRUCTPICM);		// position file pointer
 	MM_GetPtr(&compseg,chunkcomplen);
 	CA_FarRead (grhandle,(id0_byte_t *)compseg,chunkcomplen);
-	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)picmtable,NUMPICS*sizeof(pictabletype),grhuffman);
+	CAL_HuffExpand ((id0_byte_t *)compseg, (id0_byte_t id0_huge *)picmtable,NUMPICS*sizeof(pictabletype),grhuffman);	//BUG: should use NUMPICM instead of NUMPICS here!
 	MM_FreePtr(&compseg);
 	// REFKEEN - Big Endian support (including above vanilla bug with NUMPICS?)
 #ifdef REFKEEN_ARCH_BIG_ENDIAN
@@ -1796,6 +1801,16 @@ void CA_UpLevel (void)
 	if (ca_levelnum==7)
 		Quit ("CA_UpLevel: Up past level 7!");
 
+#ifdef BIOMENACE
+	//an inline version of CA_SetGrPurge() or CA_FreeGraphics():
+	{
+		int i;
+		for (int i=0;i<NUMCHUNKS;i++)
+			if (grsegs[i])
+				MM_SetPurge (&(memptr)grsegs[i],3);
+	}
+#endif
+
 	ca_levelbit<<=1;
 	ca_levelnum++;
 }
@@ -1981,6 +1996,7 @@ void	CAL_DialogDraw (const id0_char_t *title,id0_unsigned_t numcache)
 //
 // draw thermometer bar
 //
+#ifdef CAT3D
 	thx = homex + 8;
 	thy = homey + 32;
 	VWB_DrawTile8(thx,thy,0);		// CAT3D numbers
@@ -1995,6 +2011,20 @@ void	CAL_DialogDraw (const id0_char_t *title,id0_unsigned_t numcache)
 		VWB_DrawTile8(x,thy+8,4);
 		VWB_DrawTile8(x,thy+16,7);
 	}
+#else // REFKEEN: Resurrected for supporting BM
+	VWB_DrawTile8(thx,thy,11);		// KEEN numbers
+	VWB_DrawTile8(thx,thy+8,14);
+	VWB_DrawTile8(thx,thy+16,17);
+	VWB_DrawTile8(thx+17*8,thy,13);
+	VWB_DrawTile8(thx+17*8,thy+8,16);
+	VWB_DrawTile8(thx+17*8,thy+16,19);
+	for (x=thx+8;x<thx+17*8;x+=8)
+	{
+		VWB_DrawTile8(x,thy,12);
+		VWB_DrawTile8(x,thy+8,15);
+		VWB_DrawTile8(x,thy+16,18);
+	}
+#endif
 
 	thx += 4;		// first line location
 	thy += 5;

@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -606,6 +609,99 @@ mask10O:
 	MASKBYTE
 	SPRITELOOP	mask10O
 
+
+ENDP
+#endif
+
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+//============================================================================
+//
+// VW_InverseMask
+//
+// Draws a masked block shape to the screen.  bufferofs is NOT accounted for.
+// The mask comes first, then four planes of data.
+//
+//============================================================================
+void VW_InverseMask(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+	id0_unsigned_t wide,id0_unsigned_t height)
+{
+	// NOTE: Originally, all planes would be updated simultaneously.
+	id0_unsigned_t delta = linewidth-wide; // amount to add after drawing each line
+	// TODO (REFKEEN): Test this!
+	do
+	{
+		id0_byte_t *srcPtr = (id0_byte_t *)segm + ofs; // start back at the top of the mask
+		id0_unsigned_t egaDestOff = dest; // start at same place in all planes
+		id0_unsigned_t linesLeft = height; // scan lines to draw
+		// draw one plane
+		do
+		{
+			id0_unsigned_t colsLeft = wide;
+			do
+			{
+				BE_ST_EGAUpdateGFXByteInPlane(egaDestOff, (BE_ST_EGAFetchGFXByteFromPlane(egaDestOff, planenum) | (*srcPtr)), planenum);
+				++srcPtr;
+				++egaDestOff;
+				--colsLeft;
+			} while (colsLeft);
+			egaDestOff += linedelta;
+			--linesLeft;
+		} while (linesLeft);
+		// Go to next plane
+		++planenum;
+	} while (planenum != 4); // done all four planes?
+}
+#endif
+
+#if 0
+;============================================================================
+;
+; VW_InverseMask
+;
+; Draws a masked block shape to the screen.  bufferofs is NOT accounted for.
+; The mask comes first, then four planes of data.
+;
+;============================================================================
+
+PROC	VW_InverseMask	segm:WORD, ofs:WORD, dest:WORD, wide:WORD, height:WORD
+PUBLIC	VW_InverseMask
+USES	SI,DI
+
+	mov	dx,SC_INDEX
+	mov	ax,SC_MAPMASK+15*256
+	WORDOUT
+	mov	dx,GC_INDEX
+	mov	ax,GC_DATAROTATE+16*256		;set function = OR
+	WORDOUT
+
+	mov	es, [screenseg]
+	mov	ax, [wide]
+	mov	dx, [linewidth]
+	sub	dx, ax;
+	mov	ds, [segm]
+	mov	si, [ofs]
+	mov	di, [dest]
+	mov	bx, [height]
+@@yloop:
+	mov	cx, [wide]
+@@xloop:
+	lodsb
+	not	al
+	xchg	al, [es:di]
+	inc	di
+	loop	@@xloop
+	add	di, dx
+	dec	bx
+	jnz	@@yloop
+
+	mov	dx,GC_INDEX
+	mov	ax,GC_DATAROTATE+0*256		;set function = no change
+	WORDOUT
+
+	mov	ax,ss
+	mov	ds,ax					;restore turbo's data segment
+
+	ret
 
 ENDP
 #endif
@@ -1370,8 +1466,17 @@ ENDP
 //
 //==============
 
+#ifdef BIOMENACE
+	#ifdef VERSION_1_1
+	id0_word_t latchpel = 0;
+	#else
+	extern id0_word nopan, HackCount;
+	#endif
+#endif
+
 void 	VW_SetScreen (id0_unsigned_t CRTC, id0_unsigned_t pelpan)
 {
+	// TODO (REFKEEN) Finish this for BM, albeit not needed in practice?
 #if WAITFORVBL
 #if 0
 	mov	dx,STATUS_REGISTER_1
@@ -1636,6 +1741,10 @@ void ShiftPropChar(id0_word_t charnum)
 			SHIFTNOXOR
 		}
 		break;
+	default:
+		// REFKEEN: Originally, this could potentially lead
+		// to undefined behaviors.
+		Quit("ShitPropChar: Unexpected character size in bytes");
 	}
 }
 
@@ -1730,6 +1839,7 @@ void VW_DrawPropString (const id0_char_t id0_far *string, const id0_char_t id0_f
 
 DATASEG
 
+; BUG: index 0 of mshiftdrawtable should point to a ret instruction, not 0!
 mshiftdrawtable	dw      0,mshift1wide,mshift2wide,mshift3wide
 
 
@@ -1784,6 +1894,8 @@ PROC	ShiftMPropChar	NEAR
 	shr	si,1
 	shr	si,1
 	shr	si,1					;bytes the character is wide
+; BUG: si could be anything from 0 to 32 here, but the original mshiftdrawtable
+; only works correctly for values from 1 to 3!
 	shl	si,1                    ;*2 to look up in shiftdrawtable
 
 	mov	cx,[es:pcharheight]

@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -41,7 +44,11 @@ REFKEEN_NS_B
 #define	G_P_SHIFT		4	// global >> ?? = pixels
 
 #if GRMODE == EGAGR
+	#ifdef CAT3D // REFKEEN: That one was clearly Cat3D-specific
 #define	SCREENWIDTH		40
+	#else
+#define	SCREENWIDTH		64
+	#endif
 #define CHARWIDTH		1
 #define TILEWIDTH		2
 #define GRPLANES		4
@@ -241,6 +248,10 @@ extern	id0_int_t			px,py;
 extern	id0_byte_t		pdrawmode,fontcolor;
 
 extern	id0_int_t			bordercolor;
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_2
+extern	id0_boolean_t		nopan;
+#endif
+
 
 //
 // asm globals
@@ -306,6 +317,10 @@ void	VW_SetAtrReg (id0_int_t reg, id0_int_t value);
 
 void VW_MaskBlock(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 	id0_unsigned_t wide,id0_unsigned_t height,id0_unsigned_t planesize);
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+void VW_InverseMask(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
+	id0_unsigned_t wide,id0_unsigned_t height);
+#endif
 void VW_MemToScreen(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height);
 //void VW_MemToScreen2x(memptr source,id0_unsigned_t dest,id0_unsigned_t width,id0_unsigned_t height); // REFKEEN - Unused function from Catacomb Armageddon/Apocalypse (for VW_DrawPic2x)
 void VW_ScreenToMem(id0_unsigned_t source,memptr dest,id0_unsigned_t width,id0_unsigned_t height);

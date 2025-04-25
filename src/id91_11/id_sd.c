@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -89,6 +92,9 @@ static	id0_longword_t	TimeCount;
 	//id0_word_t		*SoundTable;	// Really * seg *SoundTable, but that don't work
 	id0_boolean_t		ssIsTandy;
 	id0_word_t		ssPort = 2;
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+	id0_boolean_t		QuietFX;
+#endif
 
 //	Internal variables
 static	id0_boolean_t			SD_Started;
@@ -180,7 +186,11 @@ SDL_SetTimer0(id0_word_t speed)
 static void
 SDL_SetIntsPerSec(id0_word_t ints)
 {
+#if (defined BIOMENACE) && !(defined BETA)
+	SDL_SetTimer0(1193000 / ints);
+#else
 	SDL_SetTimer0(1192030 / ints);
+#endif
 }
 
 /*** REFKEEN - UNUSED FUNCTIONS ***/
@@ -561,6 +571,9 @@ static void
 SDL_AlSetFXInst(Instrument id0_far *inst)
 {
 	id0_byte_t		c,m;
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+	id0_byte_t		scale;	// added for "quiet AdLib" mode
+#endif
 
 	m = modifiers[0];
 	c = carriers[0];
@@ -570,7 +583,18 @@ SDL_AlSetFXInst(Instrument id0_far *inst)
 	alOut(m + alSus,inst->mSus);
 	alOut(m + alWave,inst->mWave);
 	alOut(c + alChar,inst->cChar);
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+	scale = inst->cScale;
+	if (QuietFX)
+	{
+		scale = 0x3F-scale;
+		scale = (scale>>1) + (scale>>2);	// basically 'scale *= 0.75;'
+		scale = 0x3F-scale;
+	}
+	alOut(c + alScale,scale);
+#else
 	alOut(c + alScale,inst->cScale);
+#endif
 	alOut(c + alAttack,inst->cAttack);
 	alOut(c + alSus,inst->cSus);
 	alOut(c + alWave,inst->cWave);
@@ -1146,7 +1170,13 @@ SD_Default(id0_boolean_t gotit,SDMode sd,SMMode sm)
 	{
 		switch (sm)
 		{
-		case sdm_AdLib:
+#if (defined BIOMENACE) && (defined FIX_MUSIC_MEMORY_ISSUES)
+		//bugfix:
+		case smm_AdLib:
+#else
+		//original code:
+		case sdm_AdLib:		// BUG: this should use smm_AdLib!
+#endif
 			gotsm = AdLibPresent;
 			break;
 		}
@@ -1155,6 +1185,10 @@ SD_Default(id0_boolean_t gotit,SDMode sd,SMMode sm)
 	{
 		if (AdLibPresent)
 			sm = smm_AdLib;
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+		else
+			sm = smm_Off;
+#endif
 	}
 #if USE_MUSIC
 	if (sm != MusicMode)
@@ -1207,6 +1241,7 @@ SD_Shutdown(void)
 void
 SD_SetUserHook(void (* hook)(void))
 {
+	// BUG: interrupts should be disabled while setting SoundUserHook!
 	SoundUserHook = hook;
 }
 
@@ -1220,8 +1255,13 @@ SD_PlaySound(soundnames sound)
 {
 	SoundCommon	id0_far *s;
 
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+	if (SoundMode == sdm_Off)
+		return;
+#else
 	if ((SoundMode == sdm_Off) || (sound == -1))
 		return;
+#endif
 
 	//s = MK_FP(SoundTable[sound],0);
 	s = (SoundCommon id0_far *)(SoundTable[sound]);
@@ -1270,7 +1310,7 @@ SD_SoundPlaying(void)
 	}
 
 	if (result)
-		return(SoundNumber);
+		return(SoundNumber);	// BUG: this basically returns 'false' when sound 0 is playing!
 	else
 		return(false);
 }

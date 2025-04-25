@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,6 +61,9 @@ extern  id0_boolean_t         showscorebox;
 #ifdef  KEEN
 extern  id0_boolean_t         oldshooting;
 extern  ScanCode        firescan;
+#elif defined BIOMENACE
+extern  ScanCode        grenadescan;
+extern  boolean         helpmessages;
 #else
 		ScanCode        firescan;
 #endif
@@ -74,7 +80,11 @@ extern  ScanCode        firescan;
 #endif
 
 //      Internal variables
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+#define ConfigVersion   2
+#else
 #define ConfigVersion   1
+#endif
 
 // TODO (REFKEEN)
 // 1. Originally ParmStrings, ParmStrings2 were not terminated...
@@ -100,6 +110,7 @@ static  id0_boolean_t         US_Started;
 		SaveGame        Games[MaxSaveGames];
 		HighScore       Scores[MaxScores] =
 					{
+#ifdef CAT3D // REFKEEN: This was Cat3D-specific
 						{"Sir Lancelot",500,3},
 						{"",0},
 						{"",0},
@@ -107,6 +118,27 @@ static  id0_boolean_t         US_Started;
 						{"",0},
 						{"",0},
 						{"",0},
+#elif (defined BIOMENACE)
+	#ifdef BETA
+						{"Apogee Software - '92", 10000},
+						{"", 10000},
+						{"Jim Norwood", 10000},
+						{"George Broussard", 10000},
+						{"John Carmack", 10000},
+						{"Scott Miller", 10000},
+						{"ID Software", 10000},
+						{"", 10000}
+	#else
+						{"Apogee Software - '93", 10000},
+						{"", 10000},
+						{"Jim Norwood - Designer", 10000},
+						{"George Broussard - Producer", 10000},
+						{"Bobby Prince - Music", 10000},
+						{"Joe Siegler - BBS Support", 10000},
+						{"ID Software - Game Engine", 10000},
+						{"", 10000}
+	#endif
+#endif
 					};
 
 //      Internal routines
@@ -281,11 +313,21 @@ USL_ReadConfig(void)
 		BE_Cross_read_ControlType_FromU16LE(file, &ctl);
 		// KeyboardDef is a ScanCode array, and ScanCode is simply typedef-ed to be a byte
 		BE_Cross_readInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+#ifdef BIOMENACE
+		BE_Cross_read_boolean_From16LE(file, &compatability);
+		BE_Cross_read_boolean_From16LE(file, &QuietFX);
+	#ifndef BETA
+		BE_Cross_readInt8LE(file, &grenadescan);
+		BE_Cross_read_boolean_From16LE(file, &showscorebox);
+		BE_Cross_read_boolean_From16LE(file, &helpmessages);
+	#endif
+#else
 		BE_Cross_read_boolean_From16LE(file, &showscorebox);
 		BE_Cross_read_boolean_From16LE(file, &compatability);
-#ifdef KEEN
+	#ifdef KEEN
 		BE_Cross_read_boolean_From16LE(file, &oldshooting);
 		BE_Cross_readInt8LE(file, &firescan);
+	#endif
 #endif
 #if 0
 		read(file,sig,sizeof(EXTENSION));
@@ -300,11 +342,21 @@ USL_ReadConfig(void)
 		read(file,&sm,sizeof(sm));
 		read(file,&ctl,sizeof(ctl));
 		read(file,&(KbdDefs[0]),sizeof(KbdDefs[0]));
+#ifdef BIOMENACE
+		read(file,&compatability,sizeof(compatability));
+		read(file,&QuietFX,sizeof(QuietFX));
+#ifndef BETA
+		read(file,&grenadescan,sizeof(grenadescan));
+		read(file,&showscorebox,sizeof(showscorebox));
+		read(file,&helpmessages,sizeof(helpmessages));
+#endif
+#else
 		read(file,&showscorebox,sizeof(showscorebox));
 		read(file,&compatability,sizeof(compatability));
 #ifdef KEEN
 		read(file,&oldshooting,sizeof(oldshooting));
 		read(file,&firescan,sizeof(firescan));
+#endif
 #endif
 #endif
 		BE_Cross_close(file);
@@ -318,9 +370,11 @@ rcfailed:
 		sd = sdm_Off;
 		sm = smm_Off;
 		ctl = ctrl_Keyboard;
+#ifndef BIOMENACE
 		showscorebox = true;
-#ifdef KEEN
+	#ifdef KEEN
 		oldshooting = false;
+	#endif
 #endif
 
 		gotit = false;
@@ -360,19 +414,31 @@ USL_WriteConfig(void)
 		}
 		BE_Cross_write_SDMode_ToU16LE(file, &SoundMode);
 		BE_Cross_write_SMMode_ToU16LE(file, &MusicMode);
+#ifdef CAT3D // REFKEEN: Assume that was Cat3D-specific
 		if      // Hack
 		(
 			(Controls[0] == ctrl_Joystick1)
 		||      (Controls[0] == ctrl_Joystick2)
 		)
 			Controls[0] = ctrl_Keyboard;
+#endif
 		BE_Cross_write_ControlType_ToU16LE(file, &(Controls[0]));
 		BE_Cross_writeInt8LEBuffer(file, &(KbdDefs[0]),sizeof(KbdDefs[0]));
+#ifdef BIOMENACE
+		BE_Cross_write_boolean_To16LE(file, &compatability);
+		BE_Cross_write_boolean_To16LE(file, &QuietFX);
+	#ifndef BETA
+		BE_Cross_writeInt8LE(file, &grenadescan);
+		BE_Cross_write_boolean_To16LE(file, &showscorebox);
+		BE_Cross_write_boolean_To16LE(file, &helpmessages);
+	#endif
+#else
 		BE_Cross_write_boolean_To16LE(file, &showscorebox);
 		BE_Cross_write_boolean_To16LE(file, &compatability);
-#ifdef KEEN
+	#ifdef KEEN
 		BE_Cross_write_boolean_To16LE(file, &oldshooting);
 		BE_Cross_writeInt8LE(file, &firescan);
+	#endif
 #endif
 #if 0
 		write(file,EXTENSION,sizeof(EXTENSION));
@@ -380,6 +446,17 @@ USL_WriteConfig(void)
 		write(file,Scores,sizeof(HighScore) * MaxScores);
 		write(file,&SoundMode,sizeof(SoundMode));
 		write(file,&MusicMode,sizeof(MusicMode));
+#ifdef BIOMENACE
+		write(file,&(Controls[0]),sizeof(Controls[0]));
+		write(file,&(KbdDefs[0]),sizeof(KbdDefs[0]));
+		write(file,&compatability,sizeof(compatability));
+		write(file,&QuietFX,sizeof(QuietFX));
+#ifndef BETA
+		write(file,&grenadescan,sizeof(grenadescan));
+		write(file,&showscorebox,sizeof(showscorebox));
+		write(file,&helpmessages,sizeof(helpmessages));
+#endif
+#else
 		if      // Hack
 		(
 			(Controls[0] == ctrl_Joystick1)
@@ -395,6 +472,7 @@ USL_WriteConfig(void)
 		write(file,&firescan,sizeof(firescan));
 #endif
 #endif
+#endif
 		BE_Cross_close(file);
 	}
 }
@@ -405,7 +483,11 @@ USL_WriteConfig(void)
 //              & valid
 //
 ///////////////////////////////////////////////////////////////////////////
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_0
+void
+#else
 static void
+#endif
 USL_CheckSavedGames(void)
 {
 	id0_boolean_t         ok;
@@ -414,8 +496,10 @@ USL_CheckSavedGames(void)
 	BE_FILE_T                     file;
 	SaveGame        *game;
 
+#if REFKEEN_ID_ENGINE_VER < REFKEEN_ID_ENGINE_VER_K4_V1_0
 	USL_SaveGame = 0;
 	USL_LoadGame = 0;
+#endif
 
 	for (i = 0,game = Games;i < MaxSaveGames;i++,game++)
 	{
@@ -500,6 +584,10 @@ US_Startup(void)
 void
 US_Setup(void)
 {
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_0
+	USL_SaveGame = 0;
+	USL_LoadGame = 0;
+#endif
 	USL_CheckSavedGames();  // Check which saved games are present
 }
 
@@ -557,6 +645,32 @@ US_CheckParm(const id0_char_t *parm,const id0_char_t **strings)
 	}
 	return(-1);
 }
+
+#if 0 // REFKEEN: Unused for now
+//#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_0
+///////////////////////////////////////////////////////////////////////////
+//
+//      US_ParmPresent() - checks if a given string was passed as a command
+//              line parameter at startup
+//
+///////////////////////////////////////////////////////////////////////////
+boolean
+US_ParmPresent(const id0_char_t *arg)
+{
+	id0_int_t i;
+	const id0_char_t *strings[2];
+
+	strings[0] = arg;
+	strings[1] = NULL;
+
+	for (i=1; i<_argc; i++)
+	{
+		if (US_CheckParm(_argv[i], strings) != -1)
+			return true;
+	}
+	return false;
+}
+#endif
 
 // REFKEEN - Disable for The Catacomb 3-D Adventures, but not for Catacomb 3-D
 #ifndef REFKEEN_VER_CATADVENTURES
@@ -1023,6 +1137,43 @@ US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 //              supported.
 //
 ///////////////////////////////////////////////////////////////////////////
+#ifdef BIOMENACE
+void
+US_CPrint(const id0_char_t id0_far *s)
+{
+	// The BioMenace version accepts far pointers and therefore needs to copy
+	// the string into a temporary buffer in near memory, otherwise the string
+	// could not be measured and drawn with US_CPrintLine().
+	id0_char_t    buf[200], *ptr,c,*se;
+
+#if 0
+	// Note: It might be a good idea to quit with an error message when the
+	// length of the input string would exceed the length of the buffer, since
+	// copying a string that doesn't fit would corrupt the stack and might
+	// overwrite the return address, which could cause all kinds of problems!
+	if (_fstrlen(s) >= sizeof(buf)/sizeof(buf[0]))
+		Quit("US_CPrint: string too long!");
+#endif
+	strcpy/*_fstrcpy*/(buf, s);
+	ptr = buf;
+	while (*ptr)
+	{
+		se = ptr;
+		while ((c = *se) && (c != '\n'))
+			se++;
+		*se = '\0';
+
+		US_CPrintLine(ptr,NULL);
+
+		ptr = se;
+		if (c)
+		{
+			*se = c;
+			ptr++;
+		}
+	}
+}
+#else
 void
 US_CPrint(const id0_char_t *s)
 {
@@ -1052,6 +1203,7 @@ US_CPrint(const id0_char_t *s)
 		}
 	}
 }
+#endif // BIOMENACE
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1115,6 +1267,9 @@ US_DrawWindow(id0_word_t x,id0_word_t y,id0_word_t w,id0_word_t h)
 void
 US_CenterWindow(id0_word_t w,id0_word_t h)
 {
+#ifdef BIOMENACE
+	VW_FixRefreshBuffer();
+#endif
 	US_DrawWindow(((MaxX / 8) - w) / 2,((MaxY / 8) - h) / 2,w,h);
 }
 

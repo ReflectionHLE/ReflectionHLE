@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -519,6 +522,9 @@ void MML_UseSpace (id0_unsigned_t segstart, id0_unsigned_t seglength)
 	if (extra > 0)
 	{
 		GETNEWBLOCK;
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+		mmnew->useptr = NULL;
+#endif
 		mmnew->next = scan->next;
 		scan->next = mmnew;
 		mmnew->start = segstart+seglength;
@@ -613,6 +619,8 @@ void MM_Startup (void)
 //
 // get all available near conventional memory segments
 //
+#if 1
+	// the original code:
 	length=BE_Cross_Bcoreleft();
 	start = (void id0_far *)(nearheap = BE_Cross_Bmalloc(length));
 
@@ -628,6 +636,38 @@ void MM_Startup (void)
 #endif
 	MML_UseSpace (segstart,seglength);
 	mminfo.nearheap = length;
+#else	// REFKEEN note - Untested in the source port;
+	// the completely safe version:
+
+	// This code doesn't allocate more memory than we intend to make available.
+	// Using this version allows the code to give correct results when compiled
+	// with stack checking enabled. Using the original code above means the
+	// stack checks would pretty much always fail because this routine allocated
+	// ALL of the available near memory and didn't leave enough memory for the
+	// stack.
+
+	if ((length=BE_Cross_Bcoreleft()-(id0_long_t)SAVENEARHEAP) >= 32)	// allocating less than 32 bytes may cause errors
+	{
+		start = (void far *)(nearheap = BE_Cross_Bmalloc(length));
+
+		i = BE_Cross_GetPtrNormalizedOff(start); // REFKEEN - Offset is NORMALIZED, thus < 16
+		//i = FP_OFF(start)&15;
+		if (i != 0)
+		{
+			length -= 16-i;
+		}
+		seglength = length / 16;			// now in paragraphs
+		segstart = BE_Cross_GetPtrNormalizedSeg(start)+(BE_Cross_GetPtrNormalizedOff(start)+15)/16;
+//		segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;
+		MML_UseSpace (segstart,seglength);
+		mminfo.nearheap = length;
+	}
+	else
+	{
+		mminfo.nearheap = 0;
+		nearheap = NULL;
+	}
+#endif
 
 //
 // get all available far conventional memory segments
@@ -659,7 +699,7 @@ void MM_Startup (void)
 	mminfo.EMSmem = 0;
 	for (i = 1;i < id0_argc;i++)
 	{
-		if ( US_CheckParm(id0_argv[i],ParmStrings) == 0)
+		if ( US_CheckParm(id0_argv[i],ParmStrings) == 0)	// BUG: NOXMS is index 1, not 0
 			goto emsskip;				// param NOEMS
 	}
 
@@ -1096,7 +1136,11 @@ void MM_ShowMemory (void)
 		if (scan->attributes & LOCKBIT)
 			color = 12;		// red = locked
 		if (scan->start<=end)
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+			Quit ("MM_ShowMemory: Memory block order corrupted!");
+#else
 			Quit ("MM_ShowMemory: Memory block order currupted!");
+#endif
 		end = scan->start+scan->length-1;
 		VW_Hlin(scan->start,(id0_unsigned_t)end,0,color);
 		VW_Plot(scan->start,0,15);

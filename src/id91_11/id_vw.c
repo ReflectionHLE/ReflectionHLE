@@ -1,5 +1,8 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
+ *
  * Copyright (C) 2014-2025 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
@@ -69,6 +72,9 @@ pictabletype	id0_seg *picmtable;
 spritetabletype id0_seg *spritetable;
 
 id0_int_t			bordercolor;
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_2
+id0_boolean_t nopan;
+#endif
 
 /*
 =============================================================================
@@ -103,7 +109,17 @@ id0_unsigned_t	cursorspot;
 =======================
 */
 
-static	const id0_char_t *ParmStrings[] = {"HIDDENCARD",""};
+static	const id0_char_t *ParmStrings[] = {
+	"HIDDENCARD",
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_2
+	#if (defined BIOMENACE) && (defined VERSION_1_1)
+	"LATCHPEL"
+	#else
+	"NOPAN"
+	#endif
+#endif
+	""
+};
 
 void	VW_Startup (void)
 {
@@ -115,11 +131,30 @@ void	VW_Startup (void)
 	videocard = NOcard/*0*/;
 
 	for (i = 1;i < id0_argc;i++)
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_2
+	{
+		id0_int_t n = US_CheckParm(id0_argv[i],ParmStrings);
+		if (n == 0)
+		{
+			videocard = EGAcard;
+		}
+		else if (n == 1)
+		{
+#ifdef VERSION_1_1
+			extern id0_word_t latchpel;
+			latchpel = 1;
+#else
+			nopan = true;
+#endif
+		}
+	}
+#else
 		if (US_CheckParm(id0_argv[i],ParmStrings) == 0)
 		{
 			videocard = EGAcard;
 			break;
 		}
+#endif
 
 	if (!videocard)
 		videocard = VW_VideoID ();
@@ -127,8 +162,13 @@ void	VW_Startup (void)
 #if GRMODE == EGAGR
 	grmode = EGAGR;
 	if (videocard != EGAcard && videocard != VGAcard)
+	#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+Quit ("Improper video card!  If you really have an EGA/VGA card that I am not\n"
+	  "detecting, use the -HIDDENCARD command line parameter!");
+	#else
 Quit ("Improper video card!  If you really have an EGA/VGA card that I am not \n"
 	  "detecting, use the -HIDDENCARD command line parameter!");
+	#endif
 	EGAWRITEMODE(0);
 #endif
 
@@ -177,7 +217,9 @@ void VW_SetScreenMode (id0_int_t grmode)
 	switch (grmode)
 	{
 	  case TEXTGR:
+#if REFKEEN_ID_ENGINE_VER < REFKEEN_ID_ENGINE_VER_K6_V1_0
 		BE_ST_SetScreenMode(3);
+#endif
 		screenseg=BE_ST_GetTextModeMemoryPtr();
 		break;
 	  case CGAGR:
@@ -418,6 +460,7 @@ void VW_SetLineWidth (id0_int_t width)
 ====================
 */
 
+#if REFKEEN_ID_ENGINE_VER < REFKEEN_ID_ENGINE_VER_K6_V1_0
 void VW_SetSplitScreen (id0_int_t linenum)
 {
 	VW_WaitVBL (1);
@@ -441,6 +484,7 @@ void VW_SetSplitScreen (id0_int_t linenum)
 	}
 #endif
 }
+#endif
 
 //===========================================================================
 
@@ -459,13 +503,29 @@ void	VW_ClearVideo (id0_int_t color)
 	EGAMAPMASK(15);
 #endif
 
-#if GRMODE == EGAGR
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+	#if GRMODE == EGAGR
+//	color = (color << 8) & color;	//BUG? this sets color to 0 (FIX: use | instead of &)
+	#endif
+	#if GRMODE == CGAGR
+//	color = (color << 12) & (color << 8) & (color << 4) & color;	//BUG? this sets color to 0 (FIX: use | instead of &)
+	#endif
+	VW_WaitVBL(1);
+	// Taking advantage of the fact color is 0 in practice
+	#if GRMODE == EGAGR
+	BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(displayofs & ~1, 0, 0x8000*2);
+	#endif
+	#if GRMODE == CGAGR
+	BE_ST_CGAUpdateGFXBufferFrom4bitsPixel(displayofs & ~1, 0, 0x8000*2);
+	#endif
+#else
+	#if GRMODE == EGAGR
 	BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(0, color, 0xffff);
-#endif
-#if GRMODE == CGAGR
+	#endif
+	#if GRMODE == CGAGR
 	memset(screenseg, color, 0xffff);
+	#endif
 #endif
-
 
 #if GRMODE == EGAGR
 	EGAWRITEMODE(0);
@@ -1147,10 +1207,12 @@ void VW_HideCursor (void)
 
 void VW_MoveCursor (id0_int_t x, id0_int_t y)
 {
+#ifdef CAT3D // REFKEEN: This was Cat3D-specific
 	if (x>MAXCURSORX)
 		x=MAXCURSORX;
 	if (y>MAXCURSORY)
 		y=MAXCURSORY;			// catacombs hack to keep cursor on screen
+#endif
 
 	cursorx = x;
 	cursory = y;
@@ -1344,6 +1406,7 @@ void VW_UpdateScreen (void)
 #if GRMODE == EGAGR
 	VWL_UpdateScreenBlocks();
 
+	#ifdef CAT3D // REFKEEN: This was Cat3D-specific
 	// cat3d patch
 	memset(updateptr, 0, 2*(UPDATEWIDE*UPDATEHIGH/2)); // clear out the update matrix
 	// REFKEEN - Safe unaligned accesses
@@ -1352,6 +1415,7 @@ void VW_UpdateScreen (void)
 	//*(id0_unsigned_t *)(updateptr + UPDATEWIDE*PORTTILESHIGH) = UPDATETERMINATE;
 
 	BE_ST_SetScreenStartAddress(displayofs+panadjust); // Ported from ASM
+	#endif
 #endif
 #if GRMODE == CGAGR
 	VW_CGAFullUpdate();
@@ -1389,6 +1453,10 @@ void VWB_DrawTile8M (id0_int_t x, id0_int_t y, id0_int_t tile)
 
 void VWB_DrawTile16 (id0_int_t x, id0_int_t y, id0_int_t tile)
 {
+#if (defined BIOMENACE) && !(defined BETA)
+	if (tile == 0)
+		Quit("Null tile!");
+#endif
 	x+=pansx;
 	y+=pansy;
 	if (VW_MarkUpdateBlock (x&SCREENXMASK,y,(x&SCREENXMASK)+15,y+15))

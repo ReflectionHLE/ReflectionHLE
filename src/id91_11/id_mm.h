@@ -1,5 +1,7 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +31,11 @@ REFKEEN_NS_B
 
 #define	BUFFERSIZE		0x1000		// miscelanious, allways available buffer
 
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K6_V1_0
+#define MAXBLOCKS		1200
+#else
 #define MAXBLOCKS		600
+#endif
 
 
 //--------

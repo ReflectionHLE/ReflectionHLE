@@ -1,5 +1,7 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
+ * Reconstructed BioMenace Source Code
+ * Copyright (C) 2017-2025 K1n9_Duk3
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +78,7 @@ typedef	id0_byte_t		ScanCode;
 #define	sc_F9			0x43
 #define	sc_F10			0x44
 #define	sc_F11			0x57
-#define	sc_F12			0x59
+#define	sc_F12			0x59	// BUG: F12 uses scan code 0x58!
 
 #define	sc_A			0x1e
 #define	sc_B			0x30
@@ -104,6 +106,19 @@ typedef	id0_byte_t		ScanCode;
 #define	sc_X			0x2d
 #define	sc_Y			0x15
 #define	sc_Z			0x2c
+
+#if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_KEEN
+#define sc_1			0x02
+#define sc_2			0x03
+#define sc_3			0x04
+#define sc_4			0x05
+#define sc_5			0x06
+#define sc_6			0x07
+#define sc_7			0x08
+#define sc_8			0x09
+#define sc_9			0x0A
+#define sc_0			0x0B
+#endif
 
 #define	key_None		0
 #define	key_Return		0x0d

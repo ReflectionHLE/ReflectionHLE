@@ -40,6 +40,7 @@
 #include <stdbool.h>
 
 #define __ID_GLOB__
+#include "id_vers.h" // REFKEEN: Technically a new header to be included early
 
 //--------------------------------------------------------------------------
 
