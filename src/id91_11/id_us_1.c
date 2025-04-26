@@ -63,7 +63,7 @@ extern  id0_boolean_t         oldshooting;
 extern  ScanCode        firescan;
 #elif defined BIOMENACE
 extern  ScanCode        grenadescan;
-extern  boolean         helpmessages;
+extern  id0_boolean_t         helpmessages;
 #else
 		ScanCode        firescan;
 #endif

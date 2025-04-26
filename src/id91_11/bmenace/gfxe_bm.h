@@ -19,7 +19,7 @@
 #ifndef __GFX_H__
 #define __GFX_H__
 
-#include "VERSION.H"
+#include "version.h"
 
 //////////////////////////////////////
 //

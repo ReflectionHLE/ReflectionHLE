@@ -1,5 +1,6 @@
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2025 NY00123
  *
  * This file is primarily based on:
  * Wolfenstein 3-D Source Code
@@ -20,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // local defines:
@@ -77,7 +78,7 @@ static Sint16 pagenum;
 static Sint16 numpages;
 static Uint16 leftmargin[TEXTROWS];
 static Uint16 rightmargin[TEXTROWS];
-static char far *text;
+static const id0_char_t id0_far *text;
 static Sint16 rowon;
 static Sint16 picx;
 static Sint16 picy;
@@ -99,7 +100,7 @@ static Sint16 helpselection;
 */
 
 #ifndef BETA
-void HelpMessage(char far *message)
+void HelpMessage(const id0_char_t id0_far *message)
 {
 	if (!helpmessages || DemoMode)
 	{
@@ -222,8 +223,13 @@ static void TimedPicCommand(void)
 	ParseTimedCommand();
 	VW_WaitVBL(1);
 	VW_ScreenToScreen(bufferofs, displayofs, 40, 200);
+	SD_SetTimeCount(0);
+	// Comparison was a 16-bit unsigned one in practice
+	SD_TimeCountWaitForDest((Uint16)picdelay);
+#if 0
 	TimeCount = 0;
 	while (picdelay > TimeCount);
+#endif
 	VWB_DrawPic(picx & ~7, picy, picnum);
 }
 
@@ -650,8 +656,8 @@ static void BackPage(void)
 
 static void CacheLayoutGraphics(void)
 {
-	char	far *bombpoint, far *textstart;
-	char	ch;
+	const id0_char_t	id0_far *bombpoint, id0_far *textstart;
+	id0_char_t	ch;
 
 	textstart = text;
 	bombpoint = text+30000;
@@ -775,6 +781,7 @@ static Sint16 HelpMenu(void)
 			ydelta -= 40;
 			helpselection++;
 		}
+		BE_ST_ShortSleep();
 	} while (1);
 }
 
@@ -815,7 +822,7 @@ void HelpScreens(void)
 	VW_SetScreen(displayofs, 0);
 #ifndef BETA
 	StartMusic(MUS_LEVEL1);
-	TimeCount = 0;
+	SD_SetTimeCount(0);
 	timerdone = false;
 #endif
 	do
@@ -850,7 +857,8 @@ void HelpScreens(void)
 			StopMusic();
 #else
 			SD_FadeOutMusic();
-			while (SD_MusicPlaying());
+			while (SD_MusicPlaying())
+				BE_ST_ShortSleep();
 /*
 	Note:
 	It would be better to call StopMusic() before calling CA_DownLevel()
@@ -901,20 +909,24 @@ void HelpScreens(void)
 			LastScan = 0;
 			while (!LastScan)
 			{
+				BE_ST_ShortSleep();
 #ifndef BETA
-				if (TimeCount >= TickBase && timeleft != -1)
+				if (SD_GetTimeCount() >= TickBase && timeleft != -1)
 				{
 					LastScan = 0xFE;
 				}
 #endif
 			}
 #ifndef BETA
-			if (TimeCount >= TickBase && timeleft > -1)
+			if (SD_GetTimeCount() >= TickBase && timeleft > -1)
 			{
 				temp = displayofs;
 				displayofs = bufferofs;
 				bufferofs = temp;
-				TimeCount = 0;
+				// TODO: Reduce by TickBase instead? Behaviors
+				// might differ just a bit from the original
+				// executables for DOS.
+				SD_SetTimeCount(0);
 				UpdateTimer();
 				VW_SetScreen(bufferofs, 0);
 				temp = displayofs;
@@ -980,7 +992,8 @@ artdone:
 			VW_ClearVideo(BACKCOLOR);
 			RF_FixOfs();
 			SD_FadeOutMusic();
-			while (SD_MusicPlaying());
+			while (SD_MusicPlaying())
+				BE_ST_ShortSleep();
 /*
 	Note:
 	It would be better to call StopMusic() before calling CA_DownLevel()
@@ -1011,7 +1024,7 @@ artdone:
 
 void FinaleLayout(void)
 {
-	char _seg *textseg;
+	char id0_seg *textseg;
 	Sint16 i;
 
 	VW_ClearVideo(BACKCOLOR);

@@ -1,5 +1,6 @@
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2025 NY00123
  *
  * This file is loosely based on:
  * Keen Dreams Source Code
@@ -20,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -680,51 +681,28 @@ void SpawnScore(void)
 ======================
 */
 
-static void MemDrawChar(Sint16 char8, Uint8 far *dest, Uint16 width, Uint16 planesize)
+static void MemDrawChar(Sint16 char8, Uint8 id0_far *dest, Uint16 width, Uint16 planesize)
 {
-	Uint16 source = (Uint16)grsegs[STARTTILE8];	//this differs from Keen Dreams source
+	// Ported from ASM
 
-asm	mov	si,[char8]
-asm	shl	si,1
-asm	shl	si,1
-asm	shl	si,1
-asm	shl	si,1
-asm	shl	si,1		// index into char 8 segment
+	Uint8 *srcPtr = (Uint8 *)grsegs[STARTTILE8] + 32*char8;
+	Uint8 *destPtr;
 
-asm	mov	ds,[WORD PTR source]	//this differs from Keen Dreams source
-asm	mov	es,[WORD PTR dest+2]
+	for (Uint16 planeLoopVar = 4; planeLoopVar; --planeLoopVar)
+	{
+		destPtr = dest;
 
-asm	mov	cx,4		// draw four planes
-asm	mov	bx,[width]
-asm	dec	bx
+		*destPtr = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
+		*(destPtr += width) = *(srcPtr++);
 
-planeloop:
-
-asm	mov	di,[WORD PTR dest]
-
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-asm	add	di,bx
-asm	movsb
-
-asm	mov	ax,[planesize]
-asm	add	[WORD PTR dest],ax
-
-asm	loop	planeloop
-
-asm	mov	ax,ss
-asm	mov	ds,ax
+		dest += planesize;
+	}
 }
 
 /*
@@ -737,11 +715,11 @@ asm	mov	ds,ax
 
 static void ShiftScore (void)
 {
-	spritetabletype far *spr;
-	spritetype _seg *dest;
+	spritetabletype id0_far *spr;
+	spritetype id0_seg *dest;
 
 	spr = &spritetable[SCOREBOXSPR-STARTSPRITES];
-	dest = (spritetype _seg *)grsegs[SCOREBOXSPR];
+	dest = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 
 	CAL_ShiftSprite (FP_SEG(dest),dest->sourceoffset[0],
 		dest->sourceoffset[1],spr->width,spr->height,2);
@@ -775,9 +753,9 @@ void ResetScoreObj(void)
 void UpdateScorebox(objtype *ob)
 {
 	char buffer[10], *bufptr;
-	spritetype _seg *block;
-	Uint8 far *dest;
-	Uint8 far *dest2;
+	spritetype id0_seg *block;
+	Uint8 id0_far *dest;
+	Uint8 id0_far *dest2;
 	Uint16 isodd, len, width, planesize;
 	Uint16 amount;
 	boolean changed;
@@ -808,7 +786,7 @@ void UpdateScorebox(objtype *ob)
 		width = block->width[0];
 		planesize = block->planesize[0];
 #ifdef BETA
-		dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4 + 1;
+		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4 + 1;
 		ltoa(gamestate.score, buffer, 10);
 		len = strlen(buffer);
 		for (i=6; i>len; i--)
@@ -820,7 +798,7 @@ void UpdateScorebox(objtype *ob)
 			MemDrawChar((*(bufptr++))+1-'0', ++dest, width, planesize);
 		}
 #else
-		dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4;
+		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4;
 		if (practiceTimeLeft > 0)
 		{
 			ltoa(practiceTimeLeft/33, buffer, 10);
@@ -840,7 +818,7 @@ void UpdateScorebox(objtype *ob)
 		}
 		if (practiceTimeLeft > 0)
 		{
-			dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4 + 1;
+			dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4 + 1;
 			dest--;
 			for (i=1; i<6; i++)
 			{
@@ -868,7 +846,7 @@ void UpdateScorebox(objtype *ob)
 		block = grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
-		dest2 = dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4 + 8;
+		dest2 = dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4 + 8;
 		for (i=4; i>0; i--)
 		{
 			MemDrawChar(0, ++dest2, width, planesize);
@@ -938,7 +916,7 @@ void UpdateScorebox(objtype *ob)
 		block = grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
-		dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 4;
+		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 4;
 		if (gamestate.grenades.landmines > 0)
 		{
 			MemDrawChar(35, dest, width, planesize);
@@ -1002,7 +980,7 @@ void UpdateScorebox(objtype *ob)
 		block = grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
-		dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 5;
+		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 5;
 		if (amount > 99)
 		{
 			strcpy(buffer, "99");
@@ -1053,7 +1031,7 @@ void UpdateScorebox(objtype *ob)
 		block = grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
-		dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 9;
+		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 9;
 		if (gamestate.weapon == 0)
 		{
 			MemDrawChar(33, dest, width, planesize);
@@ -1090,7 +1068,7 @@ void UpdateScorebox(objtype *ob)
 		block = grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
-		dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 10;
+		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 10;
 		if (amount > 99)
 		{
 			strcpy(buffer, "99");
@@ -1146,7 +1124,7 @@ void UpdateScorebox(objtype *ob)
 		block = grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
-		dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 2;
+		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 2;
 		if (gamestate.lives > 9)
 		{
 			MemDrawChar(9+1, dest, width, planesize);
@@ -1228,7 +1206,7 @@ void UpdateScorebox(objtype *ob)
 			block = grsegs[SCOREBOXSPR];
 			width = block->width[0];
 			planesize = block->planesize[0];
-			dest2 = dest = (Uint8 far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + (width << 5) - 1;
+			dest2 = dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + (width << 5) - 1;
 			dest2 += 3;
 			if (bosshealth == 999)
 			{
@@ -2400,7 +2378,7 @@ void FragReact(objtype *ob)
 ======================
 */
 
-#pragma argsused
+//#pragma argsused
 void GrenadeExplosionThink(objtype *ob)
 {
 	SD_PlaySound(GRENADEXPLODESND);
@@ -2429,7 +2407,8 @@ void ThrowPower(Uint16 x, Uint16 y, Uint16 dir)
 	}
 	if (gamestate.grenades.landmines > 0)
 	{
-		SpawnLandmine(CONVERT_GLOBAL_TO_TILE(x), CONVERT_GLOBAL_TO_TILE(y));	//Note: args are ignored!
+		SpawnLandmine();
+//		SpawnLandmine(CONVERT_GLOBAL_TO_TILE(x), CONVERT_GLOBAL_TO_TILE(y));	//Note: args are ignored!
 		gamestate.grenades.landmines--;
 		ChangeState(player, &s_snakeplacemine);
 		return;
@@ -2966,9 +2945,9 @@ void ShotThink(objtype *ob)
 			&& ob->right > hit->left && ob->left < hit->right
 			&& ob->top < hit->bottom && ob->bottom > hit->top)
 		{
-			if (hit->state->contact)
+			if (hit->state->contactptr)
 			{
-				hit->state->contact(hit, ob);
+				hit->state->contactptr(hit, ob);
 				hit->needtoreact = true;
 				hit->active = yes;
 			}

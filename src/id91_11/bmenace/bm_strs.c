@@ -16,64 +16,65 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "VERSION.H"
-#pragma hdrstop
+#include "version.h"
+//#pragma hdrstop
+#include "id_heads.h" // Only for definitions like type being used
 
-char far str_easy[] = "easy";
-char far str_normal[] = "normal";
-char far str_hard[] = "hard";
-char far str_gameover[] = "Game Over!";
+const id0_char_t id0_far str_easy[] = "easy";
+const id0_char_t id0_far str_normal[] = "normal";
+const id0_char_t id0_far str_hard[] = "hard";
+const id0_char_t id0_far str_gameover[] = "Game Over!";
 
-char far str_nomemgame[] =
+const id0_char_t id0_far str_nomemgame[] =
 "Not enough memory\n"
 "to load game!";
 
-char far str_didntmakeit[] = "You didn't make it past";
-char far str_tryagain[] = "Try Again";
+const id0_char_t id0_far str_didntmakeit[] = "You didn't make it past";
+const id0_char_t id0_far str_tryagain[] = "Try Again";
 
-char far str_nomemlevel[] =
+const id0_char_t id0_far str_nomemlevel[] =
 "Insufficient memory\n"
 "to load level!";
 
-char far str_onemoment[] = "One moment";
-char far str_godmodeon[] = "God mode ON";
-char far str_godmodeoff[] = "God mode OFF";
-char far str_freeitems[] = "Free items!";
-char far str_jumpcheaton[] = "Jump cheat ON";
-char far str_jumpcheatoff[] = "Jump cheat OFF";
+const id0_char_t id0_far str_onemoment[] = "One moment";
+const id0_char_t id0_far str_godmodeon[] = "God mode ON";
+const id0_char_t id0_far str_godmodeoff[] = "God mode OFF";
+const id0_char_t id0_far str_freeitems[] = "Free items!";
+const id0_char_t id0_far str_jumpcheaton[] = "Jump cheat ON";
+const id0_char_t id0_far str_jumpcheatoff[] = "Jump cheat OFF";
 #ifdef BETA
-char far str_warpprompt[] = "  Warp to which level(1-12): ";
+const id0_char_t id0_far str_warpprompt[] = "  Warp to which level(1-12): ";
 #else
-char far str_warpprompt[] = "  Warp to which level(1-17): ";
-char far str_practiceprompt[] = "  Practice which level (1-11): ";
+const id0_char_t id0_far str_warpprompt[] = "  Warp to which level(1-17): ";
+const id0_char_t id0_far str_practiceprompt[] = "  Practice which level (1-11): ";
 #endif
-char far str_paused[] = "PAUSED";
-char far str_location[] = "LOCATION";
-char far str_score[] = "SCORE";
-char far str_extra[] = "EXTRA";
-char far str_keycards[] = "KEYCARDS";
-char far str_shards[] = "SHARDS";
-char far str_level[] = "LEVEL";
-char far str_leasy[] = "Easy";
-char far str_lnormal[] = "Normal";
-char far str_lhard[] = "Hard";
-char far str_keys[] = "KEYS";
-char far str_ammo[] = "AMMO";
-char far str_lives[] = "LIVES";
+const id0_char_t id0_far str_paused[] = "PAUSED";
+const id0_char_t id0_far str_location[] = "LOCATION";
+const id0_char_t id0_far str_score[] = "SCORE";
+const id0_char_t id0_far str_extra[] = "EXTRA";
+const id0_char_t id0_far str_keycards[] = "KEYCARDS";
+const id0_char_t id0_far str_shards[] = "SHARDS";
+const id0_char_t id0_far str_level[] = "LEVEL";
+const id0_char_t id0_far str_leasy[] = "Easy";
+const id0_char_t id0_far str_lnormal[] = "Normal";
+const id0_char_t id0_far str_lhard[] = "Hard";
+const id0_char_t id0_far str_keys[] = "KEYS";
+const id0_char_t id0_far str_ammo[] = "AMMO";
+const id0_char_t id0_far str_lives[] = "LIVES";
 #ifdef BETA
-char far str_potions[] = "POTIONS";
-char far str_food[] = "FOOD";
+const id0_char_t id0_far str_potions[] = "POTIONS";
+const id0_char_t id0_far str_food[] = "FOOD";
 #else
-char far str_clips[] = "CLIPS";
-char far str_gems[] = "GEMS";
+const id0_char_t id0_far str_clips[] = "CLIPS";
+const id0_char_t id0_far str_gems[] = "GEMS";
 #endif
-char far str_question[] = "???";
+const id0_char_t id0_far str_question[] = "???";
 
-char far str_nomemmusic[] =
+const id0_char_t id0_far str_nomemmusic[] =
 "Insufficient memory\n"
 "for background music!";
 
-char far str_forgothostage[] =
+const id0_char_t id0_far str_forgothostage[] =
 "Oh NO! You forgot to rescue the\n"
 "scientist being held prisoner\n"
 "here. You'd better go get him!\n"

@@ -1,5 +1,6 @@
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2025 NY00123
  *
  * This file is loosely based on:
  * Keen Dreams Source Code
@@ -20,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // uninitialized variables:
@@ -264,7 +265,7 @@ void RunDemo(Sint16 num)
 	CheckLastScan();
 #else
 	Uint16 demonum;
-	Uint16 far *demodata;
+	Uint16 id0_far *demodata;
 	gametype oldgamestate;
 	
 	demonum = num;
@@ -283,7 +284,8 @@ void RunDemo(Sint16 num)
 	DemoSize = demodata[1];
 	MM_GetPtr(&(memptr)DemoBuffer, DemoSize);
 	MM_SetLock(&(memptr)DemoBuffer, true);
-	_fmemcpy(DemoBuffer, ((char _seg *)(grsegs[num]))+4, DemoSize);
+	memcpy(DemoBuffer, ((id0_char_t id0_seg *)(grsegs[num]))+4, DemoSize);
+//	_fmemcpy(DemoBuffer, ((id0_char_t id0_seg *)(grsegs[num]))+4, DemoSize);
 	MM_FreePtr(&grsegs[num]);
 	IN_StartDemoPlayback(DemoBuffer, DemoSize);
 	SetupGameLevel(true);

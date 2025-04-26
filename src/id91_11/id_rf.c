@@ -1299,7 +1299,7 @@ void RF_MemToMap (id0_unsigned_t id0_far *source, id0_unsigned_t plane,
 	id0_int_t			x,y;
 	id0_unsigned_t	xspot,yspot;
 	id0_unsigned_t	linedelta,updatespot;
-	id0_unsigned_t	id0_far *dest,old,new;
+	id0_unsigned_t	id0_far *dest,old,newtile;
 	id0_boolean_t		changed;
 
 	RFL_RemoveAnimsInBlock (destx,desty,width,height);
@@ -1312,10 +1312,10 @@ void RF_MemToMap (id0_unsigned_t id0_far *source, id0_unsigned_t plane,
 		for (x=0;x<width;x++)
 		{
 			old = *dest;
-			new = *source++;
-			if (old != new)
+			newtile = *source++;
+			if (old != newtile)
 			{
-				*dest = new;
+				*dest = newtile;
 				changed = true;
 			}
 			else

@@ -19,7 +19,7 @@
 #ifndef __AUDIO_H__
 #define __AUDIO_H__
 
-#include "VERSION.H"
+#include "version.h"
 
 /////////////////////////////////////////////////
 //

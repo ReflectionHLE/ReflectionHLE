@@ -70,7 +70,7 @@ extern	ScanCode        firescan;
 #ifndef BIOMENACE
 static  id0_boolean_t         GameIsDirty,
 #else
-	id9_boolean_t
+	id0_boolean_t
 #endif
 					QuitToDos,
 					CtlPanelDone;
@@ -275,10 +275,10 @@ static  id0_boolean_t USL_ConfigCustom(UserCall call,struct UserItem id0_far *it
 
 	// Options menu
 #ifdef BIOMENACE
-	UserItemGroup   id0_far compgroup = {0,0,0,sc_None,0,USL_CompCustom};
-	UserItemGroup   id0_far scoregroup = {0,0,0,sc_None,0,USL_ScoreCustom};
+	UserItemGroup   id0_far compgroup = {0,0,(graphicnums)0,sc_None,0,USL_CompCustom};
+	UserItemGroup   id0_far scoregroup = {0,0,(graphicnums)0,sc_None,0,USL_ScoreCustom};
 	#ifndef BETA
-	UserItemGroup   id0_far helpgroup = {0,0,0,sc_None,0,USL_HelpCustom};
+	UserItemGroup   id0_far helpgroup = {0,0,(graphicnums)0,sc_None,0,USL_HelpCustom};
 	#endif
 	UserItem id0_far optionsi[] =
 	{

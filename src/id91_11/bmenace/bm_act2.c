@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -891,7 +891,7 @@ void SpawnWorm(Uint16 x, Uint16 y)
 ==================
 */
 
-#pragma argsused	// because it's empty in episode 3
+//#pragma argsused	// because it's empty in episode 3
 void SpawnPlasmaWorm(Uint16 x, Uint16 y)
 {
 	// Episode 3 has an empty function here, chances are it's SpawnPlasmaWorm.

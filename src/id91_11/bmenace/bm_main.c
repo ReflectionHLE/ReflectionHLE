@@ -1,5 +1,6 @@
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2025 NY00123
  *
  * This file is loosely based on:
  * Keen Dreams Source Code
@@ -20,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -165,6 +166,11 @@ static void InitGame(void)
 //
 // reclaim the memory from the linked in text screen
 //
+	// REFKEEN DIFFERENCE (FIXME: Should we "fix" this at all?)
+	// - Don't handle this, a bit more complicated with our setup and the
+	// difference is (probably) insignificant with well-defined behaviors
+	// anyway...
+#if 0
 	segstart = FP_SEG(&introscn);
 	seglength = 4000/16;
 	if (FP_OFF(&introscn))
@@ -173,6 +179,7 @@ static void InitGame(void)
 		seglength--;
 	}
 	MML_UseSpace (segstart,seglength);
+#endif
 	VW_SetScreenMode(GRMODE);
 	VW_ColorBorder(BLACK);
 	VW_ClearVideo(BLACK);
@@ -469,7 +476,7 @@ static void CheckCutFile(void)
 	register Sint16 ohandle, ihandle;
 	Sint16 handle;
 	Sint32 size;
-	void far *buffer;
+	void id0_far *buffer;
 
 	if ( (handle = open(FILE_GRAPH, O_BINARY|O_RDONLY)) != -1)
 	{
@@ -595,9 +602,10 @@ char *betaparm[] = {"slammer",""};
 char *betaparm[] = {"sewerman",""};	// not used in the final game
 #endif
 
-void main(void)
+void bmenace_exe_main(void)
 {
-#include "CHECKS.C"	// compile-time and run-time checks for portability
+// REFKEEN: Skip that
+//#include "CHECKS.C"	// compile-time and run-time checks for portability
 
 #ifdef BETA
 	if (!tedlevel)	// we haven't even run any code that could have set tedlevel to true!

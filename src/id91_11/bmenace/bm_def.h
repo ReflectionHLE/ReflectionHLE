@@ -1,5 +1,6 @@
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2025 NY00123
  *
  * This file is loosely based on:
  * Keen Dreams Source Code
@@ -23,9 +24,9 @@
 #ifndef __BM_DEF_H__
 #define __BM_DEF_H__
 
-#include <CONIO.H>
+//#include <CONIO.H>
 
-#include "ID_HEADS.H"
+#include "id_heads.h"
 
 /*
 =============================================================================
@@ -54,10 +55,10 @@
 
 #define ARRAYLENGTH(x) (sizeof(x)/sizeof(*(x)))
 
-#ifdef BETA
+#ifdef BETA // REFKEEN: Shouldn't matter in port anymore. Still documenting.
 #define FARSTATE statetype
 #else
-#define FARSTATE statetype far
+#define FARSTATE statetype id0_far
 #endif
 
 #define PLATFORMEDGE 23	//used as hitnorth or hitsouth value when hitting a blocking object
@@ -78,13 +79,17 @@
 =============================================================================
 */
 
+// REFKEEN: Let's use boolean instead of id0_boolean_t (at least for now?)
+// given the game code's usage of other integer types further below.
+typedef id0_boolean_t boolean;
+// REFKEEN: Even if not using SDL directly from game code, these are useful!
 //SDL-style integer types - just to make future SDL ports easier
-typedef unsigned int Uint16;
-typedef signed int Sint16;
-typedef unsigned char Uint8;
-typedef signed char Sint8;
-typedef unsigned long Uint32;
-typedef signed long Sint32;
+typedef uint16_t Uint16;
+typedef int16_t Sint16;
+typedef uint8_t Uint8;
+typedef int8_t Sint8;
+typedef uint32_t Uint32;
+typedef int32_t Sint32;
 //Note: only the game code (BM_*.C) uses these!
 
 typedef enum {
@@ -245,22 +250,31 @@ typedef enum {
 
 typedef enum {cl_noclip, cl_midclip, cl_fullclip} cliptype;
 
+// REFKEEN - enum types for fields should be outside struct if we want to
+// be able to build the same code as C++. It's also good for other reasons.
+typedef enum {step,slide,think,stepthink,slidethink} progresstype;
+typedef enum {push_none, push_down, push_up} pushtype;
+
 typedef struct statestruct
 {
 	Sint16 leftshapenum, rightshapenum;
-	enum {step,slide,think,stepthink,slidethink} progress;
+	progresstype progress;
+	//enum {step,slide,think,stepthink,slidethink} progress;
 	boolean skippable;
-	enum {push_none, push_down, push_up} pushtofloor;
+	pushtype pushtofloor;
+	//enum {push_none, push_down, push_up} pushtofloor;
 	Sint16 tictime;
 	Sint16 xmove;
 	Sint16 ymove;
-	void (*think) (struct objstruct*);
-	void (*contact) (struct objstruct*, struct objstruct*);
-	void (*react) (struct objstruct*);
+	// REFKEEN - Rename function pointers: think ==> thinkptr comes
+	// from conflict with the 'think' enum value for progress.
+	void (*thinkptr) (struct objstruct*);
+	void (*contactptr) (struct objstruct*, struct objstruct*);
+	void (*reactptr) (struct objstruct*);
 #ifdef BETA
 	struct statestruct *nextstate;
 #else
-	struct statestruct far *nextstate;
+	struct statestruct id0_far *nextstate;
 #endif
 } statetype;
 
@@ -411,7 +425,7 @@ void SizeText(char *text, Uint16 *width, Uint16 *height);
 void ShutdownId(void);
 void Quit(char *error);
 void TEDDeath(void);
-void main(void);
+void bmenace_exe_main(void);
 
 /*
 =============================================================================
@@ -421,45 +435,45 @@ void main(void);
 =============================================================================
 */
 
-extern char far str_easy[];
-extern char far str_normal[];
-extern char far str_hard[];
-extern char far str_gameover[];
-extern char far str_nomemgame[];
-extern char far str_didntmakeit[];
-extern char far str_tryagain[];
-extern char far str_nomemlevel[];
-extern char far str_onemoment[];
-extern char far str_godmodeon[];
-extern char far str_godmodeoff[];
-extern char far str_freeitems[];
-extern char far str_jumpcheaton[];
-extern char far str_jumpcheatoff[];
-extern char far str_warpprompt[];
-extern char far str_practiceprompt[];
-extern char far str_paused[];
-extern char far str_location[];
-extern char far str_score[];
-extern char far str_extra[];
-extern char far str_keycards[];
-extern char far str_shards[];
-extern char far str_level[];
-extern char far str_leasy[];
-extern char far str_lnormal[];
-extern char far str_lhard[];
-extern char far str_keys[];
-extern char far str_ammo[];
-extern char far str_lives[];
+extern const id0_char_t id0_far str_easy[];
+extern const id0_char_t id0_far str_normal[];
+extern const id0_char_t id0_far str_hard[];
+extern const id0_char_t id0_far str_gameover[];
+extern const id0_char_t id0_far str_nomemgame[];
+extern const id0_char_t id0_far str_didntmakeit[];
+extern const id0_char_t id0_far str_tryagain[];
+extern const id0_char_t id0_far str_nomemlevel[];
+extern const id0_char_t id0_far str_onemoment[];
+extern const id0_char_t id0_far str_godmodeon[];
+extern const id0_char_t id0_far str_godmodeoff[];
+extern const id0_char_t id0_far str_freeitems[];
+extern const id0_char_t id0_far str_jumpcheaton[];
+extern const id0_char_t id0_far str_jumpcheatoff[];
+extern const id0_char_t id0_far str_warpprompt[];
+extern const id0_char_t id0_far str_practiceprompt[];
+extern const id0_char_t id0_far str_paused[];
+extern const id0_char_t id0_far str_location[];
+extern const id0_char_t id0_far str_score[];
+extern const id0_char_t id0_far str_extra[];
+extern const id0_char_t id0_far str_keycards[];
+extern const id0_char_t id0_far str_shards[];
+extern const id0_char_t id0_far str_level[];
+extern const id0_char_t id0_far str_leasy[];
+extern const id0_char_t id0_far str_lnormal[];
+extern const id0_char_t id0_far str_lhard[];
+extern const id0_char_t id0_far str_keys[];
+extern const id0_char_t id0_far str_ammo[];
+extern const id0_char_t id0_far str_lives[];
 #ifdef BETA
-extern char far str_potions[];
-extern char far str_food[];
+extern const id0_char_t id0_far str_potions[];
+extern const id0_char_t id0_far str_food[];
 #else
-extern char far str_clips[];
-extern char far str_gems[];
+extern const id0_char_t id0_far str_clips[];
+extern const id0_char_t id0_far str_gems[];
 #endif
-extern char far str_question[];
-extern char far str_nomemmusic[];
-extern char far str_forgothostage[];
+extern const id0_char_t id0_far str_question[];
+extern const id0_char_t id0_far str_nomemmusic[];
+extern const id0_char_t id0_far str_forgothostage[];
 
 /*
 =============================================================================
@@ -469,7 +483,7 @@ extern char far str_forgothostage[];
 =============================================================================
 */
 
-void HelpMessage(char far *message);
+void HelpMessage(const id0_char_t id0_far *message);
 void HelpScreens(void);
 void FinaleLayout(void);
 
@@ -528,7 +542,7 @@ extern boolean throwkeyheld;
 extern objtype objarray[MAXACTORS];
 extern objtype *lastobj;
 extern objtype *objfreelist;
-extern objtype *new;
+extern objtype *newobj;
 extern objtype *player;
 extern objtype *scoreobj;
 extern Uint16 originxtilemax;
@@ -1343,7 +1357,8 @@ void SpawnAsteroid(Uint16 x, Uint16 y);
 
 extern FARSTATE s_landmine1;
 extern FARSTATE s_landmine2;
-void SpawnLandmine(Uint16 x, Uint16 y);
+void SpawnLandmine(void); // REFKEEN: Args were ignored.
+//void SpawnLandmine(Uint16 x, Uint16 y);
 void LandmineContact(objtype *ob, objtype *hit);
 void LandmineReact(objtype *ob);
 

@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -30,9 +30,9 @@
 void BadState(objtype *ob);
 
 FARSTATE s_nullstate = {0, 0, think, false, push_none, 0, 0, 0, NULL, NULL, NULL, NULL};
-#pragma warn -sus	//BadState is not a valid contact function. Nobody cares.
+//#pragma warn -sus	//BadState is not a valid contact function. Nobody cares.
 FARSTATE s_badstate  = {0, 0, think, false, push_none, 0, 0, 0, BadState, BadState, BadState, NULL};
-#pragma warn +sus
+//#pragma warn +sus
 
 Sint16 wallclip[8][16] = {			// the height of a given point in a tile
 { 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256},
@@ -121,11 +121,11 @@ static void MoveObjHoriz(objtype *ob, Sint16 xmove)
 
 static void PlayerBottomKludge(objtype *ob)
 {
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	Uint16 wall, clip, xpix;
 	Sint16 xmove, ymove;
 
-	map = (Uint16 far *)(mapsegs[1]) + mapbwidthtable[ob->tilebottom-1]/2;
+	map = (Uint16 id0_far *)(mapsegs[1]) + mapbwidthtable[ob->tilebottom-1]/2;
 	if (ob->xdir == 1)
 	{
 		xpix = 0;
@@ -174,11 +174,11 @@ static void PlayerBottomKludge(objtype *ob)
 
 static void PlayerTopKludge(objtype *ob)
 {
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	Uint16 xpix, wall, clip;
 	Sint16 move;
 
-	map = (Uint16 far *)(mapsegs[1]) + mapbwidthtable[ob->tiletop+1]/2;
+	map = (Uint16 id0_far *)(mapsegs[1]) + mapbwidthtable[ob->tiletop+1]/2;
 	if (ob->xdir == 1)
 	{
 		xpix = 0;
@@ -224,14 +224,14 @@ static void PlayerTopKludge(objtype *ob)
 
 static void ClipToEnds(objtype *ob)
 {
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	Uint16 wall, y, clip;
 	Sint16 totalmove, maxmove, move;
 	Uint16 midxpix;
 	
 	midxpix = CONVERT_GLOBAL_TO_PIXEL(ob->midx & 0xF0);
 	maxmove = -abs(midxmoved)-bottommoved-16;
-	map = (Uint16 far *)(mapsegs[1]) + (mapbwidthtable-1)[oldtilebottom]/2 + ob->tilemidx;
+	map = (Uint16 id0_far *)(mapsegs[1]) + (mapbwidthtable-1)[oldtilebottom]/2 + ob->tilemidx;
 	for (y=oldtilebottom-1; y <= ob->tilebottom; y++,map+=mapwidth)
 	{
 		if ((wall = tinf[*map + NORTHWALL]) != 0)
@@ -247,7 +247,7 @@ static void ClipToEnds(objtype *ob)
 		}
 	}
 	maxmove = abs(midxmoved)-topmoved+16;
-	map = (Uint16 far *)(mapsegs[1]) + (mapbwidthtable+1)[oldtiletop]/2 + ob->tilemidx;
+	map = (Uint16 id0_far *)(mapsegs[1]) + (mapbwidthtable+1)[oldtiletop]/2 + ob->tilemidx;
 	for (y=oldtiletop+1; y >= ob->tiletop; y--,map-=mapwidth)	// BUG: unsigned comparison - loop never ends if ob->tiletop is 0
 	{
 		if ((wall = tinf[*map + SOUTHWALL]) != 0)
@@ -279,7 +279,7 @@ static void ClipToEnds(objtype *ob)
 static void ClipToSides(objtype *ob)
 {
 	Sint16 move, y, top, bottom;
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	
 	top = ob->tiletop;
 	if (ob->hitsouth > 1)
@@ -293,7 +293,7 @@ static void ClipToSides(objtype *ob)
 	}
 	for (y=top; y<=bottom; y++)
 	{
-		map = (Uint16 far *)(mapsegs[1]) + mapbwidthtable[y]/2 + ob->tileleft;
+		map = (Uint16 id0_far *)(mapsegs[1]) + mapbwidthtable[y]/2 + ob->tileleft;
 		if ((ob->hiteast = tinf[*map+EASTWALL]) != 0)
 		{
 			move = CONVERT_TILE_TO_GLOBAL(ob->tileleft+1) - ob->left;
@@ -303,7 +303,7 @@ static void ClipToSides(objtype *ob)
 	}
 	for (y=top; y<=bottom; y++)
 	{
-		map = (Uint16 far *)(mapsegs[1]) + mapbwidthtable[y]/2 + ob->tileright;
+		map = (Uint16 id0_far *)(mapsegs[1]) + mapbwidthtable[y]/2 + ob->tileright;
 		if ((ob->hitwest = tinf[*map+WESTWALL]) != 0)
 		{
 			move = (CONVERT_TILE_TO_GLOBAL(ob->tileright)-1)-ob->right;
@@ -324,10 +324,10 @@ static void ClipToSides(objtype *ob)
 boolean CheckPosition(objtype *ob)
 {
 	Uint16 y;
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	Uint16 tile, x, rowdiff;
 	
-	map = (Uint16 far *)(mapsegs[1]) + mapbwidthtable[ob->tiletop]/2 + ob->tileleft;
+	map = (Uint16 id0_far *)(mapsegs[1]) + mapbwidthtable[ob->tiletop]/2 + ob->tileleft;
 	rowdiff = mapwidth-(ob->tileright-ob->tileleft+1);
 	for (y=ob->tiletop; y<=ob->tilebottom; y++,map+=rowdiff)
 	{
@@ -353,7 +353,7 @@ boolean CheckPosition(objtype *ob)
 
 boolean StatePositionOk(objtype *ob, FARSTATE *state)
 {
-	spritetabletype far *shape;
+	spritetabletype id0_far *shape;
 
 	if (ob->xdir > 0)
 	{
@@ -387,7 +387,7 @@ boolean StatePositionOk(objtype *ob, FARSTATE *state)
 
 static void CalcBounds(objtype *ob)
 {
-	spritetabletype far *shape;
+	spritetabletype id0_far *shape;
 
 	shape = &spritetable[ob->shapenum-STARTSPRITES];
 	ob->left = ob->x + shape->xl;
@@ -412,7 +412,7 @@ static void CalcBounds(objtype *ob)
 static void ClipToWalls(objtype *ob)
 {
 	Uint16 oldx, oldy;
-	spritetabletype far *shape;
+	spritetabletype id0_far *shape;
 	boolean pushed;
 
 	oldx = ob->x;
@@ -599,7 +599,7 @@ static void ClipToWalls(objtype *ob)
 static void FullClipToWalls(objtype *ob)
 {
 	Uint16 oldx, oldy, w, h;
-	spritetabletype far *shape;
+	spritetabletype id0_far *shape;
 
 	oldx = ob->x;
 	oldy = ob->y;
@@ -746,7 +746,7 @@ static void FullClipToWalls(objtype *ob)
 void PushObj(objtype *ob)
 {
 	Uint16 oldx, oldy;
-	spritetabletype far *shape;
+	spritetabletype id0_far *shape;
 	
 	oldx = ob->x;
 	oldy = ob->y;
@@ -1130,7 +1130,7 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 	state = ob->state;
 	if (state->progress == think)
 	{
-		if (state->think)
+		if (state->thinkptr)
 		{
 			if (ob->nothink)
 			{
@@ -1138,7 +1138,7 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 			}
 			else
 			{
-				state->think(ob);
+				state->thinkptr(ob);
 			}
 		}
 		return 0;
@@ -1158,7 +1158,7 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 				ytry += ob->ydir == 1? numtics*state->ymove : -numtics*state->ymove;
 			}
 		}
-		if ((state->progress == slidethink || state->progress == stepthink) && state->think)
+		if ((state->progress == slidethink || state->progress == stepthink) && state->thinkptr)
 		{
 			if (ob->nothink)
 			{
@@ -1166,7 +1166,7 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 			}
 			else
 			{
-				state->think(ob);
+				state->thinkptr(ob);
 			}
 		}
 		return 0;
@@ -1198,7 +1198,7 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 				ytry += ob->ydir == 1? state->ymove : -state->ymove;
 			}
 		}
-		if (state->think)
+		if (state->thinkptr)
 		{
 			if (ob->nothink)
 			{
@@ -1206,7 +1206,7 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 			}
 			else
 			{
-				state->think(ob);
+				state->thinkptr(ob);
 			}
 		}
 		if (state == ob->state)
@@ -1784,7 +1784,7 @@ void VelocityThink(objtype *ob)
 ===============
 */
 
-#pragma argsused
+//#pragma argsused
 static void LethalContact(objtype *ob, objtype *hit)
 {
 	if (hit == player)
@@ -1934,7 +1934,7 @@ static void R_WalkNormal(objtype *ob)
 ===============
 */
 
-#pragma argsused
+//#pragma argsused
 void BadState(objtype *ob)
 {
 	Quit("Object with bad state!");

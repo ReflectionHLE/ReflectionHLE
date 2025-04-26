@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /*
 =============================================================================
@@ -138,7 +138,7 @@ objtype *player;
 Sint16 inactivateleft;
 Sint16 inactivatetop;
 boolean upheld;
-objtype *new;
+objtype *newobj;
 Sint16 inactivateright;
 Sint16 inactivatebottom;
 objtype *lastobj;
@@ -636,7 +636,7 @@ static void ScrollScreen(objtype *ob)
 //
 // keep player at centerlevel on screen while player is walking or standing
 //
-	if (ob->state->contact == SnakeStandContact)
+	if (ob->state->contactptr == SnakeStandContact)
 	{
 		yscroll += ob->ymove;
 		bottom = originyglobal + yscroll + CONVERT_PIXEL_TO_GLOBAL(centerlevel);
@@ -806,9 +806,9 @@ void InitObjArray(void)
 // give the player and score the first free spots
 //
 	GetNewObj(false);
-	player = new;
+	player = newobj;
 	GetNewObj(false);
-	scoreobj = new;
+	scoreobj = newobj;
 }
 
 //===========================================================================
@@ -835,22 +835,22 @@ Sint16 GetNewObj(boolean usedummy)
 	{
 		if (usedummy)
 		{
-			new = &dummyobj;
+			newobj = &dummyobj;
 			return -1;
 		}
 		Quit("GetNewObj: No free spots in objarray!");
 	}
-	new = objfreelist;
-	objfreelist = new->prev;
-	memset(new, 0, sizeof(*new));
+	newobj = objfreelist;
+	objfreelist = newobj->prev;
+	memset(newobj, 0, sizeof(*newobj));
 	if (lastobj)
 	{
-		lastobj->next = new;
+		lastobj->next = newobj;
 	}
-	new->prev = lastobj;
-	new->active = yes;
-	new->needtoclip = cl_midclip;
-	lastobj = new;
+	newobj->prev = lastobj;
+	newobj->active = yes;
+	newobj->needtoclip = cl_midclip;
+	lastobj = newobj;
 	objectcount++;
 	return 0;
 }
@@ -1017,7 +1017,7 @@ void StartMusic(Uint16 num)
 		//mess with it when compressing memory blocks in MM_SortMem().
 		MM_SetLock(&(memptr)audiosegs[STARTMUSIC+song],true);
 #endif
-		SD_StartMusic((MusicGroup far *)audiosegs[STARTMUSIC+song]);
+		SD_StartMusic((MusicGroup id0_far *)audiosegs[STARTMUSIC+song]);
 	}
 }
 
@@ -1056,7 +1056,8 @@ void PlayLoop(void)
 	{
 		US_InitRndT(true);
 	}
-	TimeCount = lasttimecount = tics = 3;
+	SD_SetTimeCount(0);
+	lasttimecount = tics = 3;
 	ResetScoreObj();
 	do
 	{
@@ -1140,13 +1141,13 @@ void PlayLoop(void)
 						if (ob->right > ob2->left && ob->left < ob2->right
 							&& ob->top < ob2->bottom && ob->bottom > ob2->top)
 						{
-							if (ob->state->contact)
+							if (ob->state->contactptr)
 							{
-								ob->state->contact(ob, ob2);
+								ob->state->contactptr(ob, ob2);
 							}
-							if (ob2->state->contact)
+							if (ob2->state->contactptr)
 							{
-								ob2->state->contact(ob2, ob);
+								ob2->state->contactptr(ob2, ob);
 							}
 							if (ob->obclass == nothing)	//useless -- obclass is NOT set to nothing by RemoveObj
 							{
@@ -1193,10 +1194,10 @@ void PlayLoop(void)
 				}
 				continue;
 			}
-			if (ob->needtoreact && ob->state->react)
+			if (ob->needtoreact && ob->state->reactptr)
 			{
 				ob->needtoreact = false;
-				ob->state->react(ob);
+				ob->state->reactptr(ob);
 			}
 		}
 //
@@ -1267,7 +1268,7 @@ void PlayLoop(void)
 //
 		if (player->health > 0)
 		{
-			CheckInTiles(player);	//double check in case react() moved the player, I guess...
+			CheckInTiles(player);	//double check in case reactptr() moved the player, I guess...
 		}
 		
 		// I'm not quite sure what the following code was supposed to accomplish.
@@ -1300,7 +1301,7 @@ void PlayLoop(void)
 		if (singlestep)
 		{
 			VW_WaitVBL(14);	//reduces framerate to 5 fps on VGA or 4.3 fps on EGA cards
-			lasttimecount = TimeCount;
+			lasttimecount = SD_GetTimeCount();
 		}
 //
 // extra VBLs debug mode

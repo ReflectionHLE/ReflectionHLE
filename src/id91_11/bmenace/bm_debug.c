@@ -20,9 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <BIOS.H>
-#include "BM_DEF.H"
-#pragma hdrstop
+//#include <BIOS.H>
+#include "bm_def.h"
+//#pragma hdrstop
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -151,8 +151,8 @@ static void TestSprites(void)
 	Sint16 chunk, oldchunk;
 	Sint16 shift;
 	Uint16 infobottom, drawx;
-	spritetabletype far *info;
-	Uint8 _seg *block;
+	spritetabletype id0_far *info;
+	Uint8 id0_seg *block;
 	Uint16 size;
 	Uint16 scan;
 	Uint32 totalsize;
@@ -220,7 +220,7 @@ static void TestSprites(void)
 		}
 		else
 		{
-			size = ((spritetype far *)block)->sourceoffset[3] + ((spritetype far *)block)->planesize[3]*5;
+			size = ((spritetype id0_far *)block)->sourceoffset[3] + ((spritetype id0_far *)block)->planesize[3]*5;
 			size = (size + 15) & ~15;	//round up to multiples of 16
 			totalsize += size;	//useless: the value stored in 'totalsize' is never used
 			US_PrintUnsigned(size);
@@ -299,7 +299,8 @@ static void PicturePause(void)
 // wait for a key press, abort if it's not Enter
 //
 	IN_ClearKeysDown();
-	while (!LastScan);
+	while (!LastScan)
+		BE_ST_ShortSleep();
 	if (LastScan != sc_Enter)
 	{
 		IN_ClearKeysDown();
@@ -355,13 +356,15 @@ static void PicturePause(void)
 //
 // wait until user hits Escape
 //
-	while (((bioskey(0) >> 8) & 0xFF) != sc_Escape);
+	while ((BE_ST_BiosScanCode(0)) != sc_Escape)
+		BE_ST_ShortSleep();
+//	while (((bioskey(0) >> 8) & 0xFF) != sc_Escape);
 
 //
 // back to text mode and exit to DOS
 //
 	VW_Shutdown();
-	exit(0);
+	BE_ST_HandleExit(0);
 }
 
 /*
@@ -375,8 +378,8 @@ static void PicturePause(void)
 static void MaskOnTile(Uint16 dest, Uint16 source)
 {
 	Sint16 i;
-	Uint16 _seg *sourceseg;
-	Uint16 _seg *destseg;
+	Uint16 id0_seg *sourceseg;
+	Uint16 id0_seg *destseg;
 	Uint16 sourceval, maskindex, sourcemask;
 
 	sourceseg = (grsegs+STARTTILE16M)[source];
@@ -468,7 +471,7 @@ static void WallDebug(void)
 static boolean DebugKeys(void)
 {
 #if (defined VERSION_1_1_FREEWARE) || (defined BETA)
-	char buffer[50];
+	id0_char_t buffer[50];
 	Sint16 level, esc;
 
 	if (Keyboard[sc_B] && ingame)		// B = border color
@@ -735,7 +738,7 @@ static void UserCheat(void)
 
 void CheckKeys(void)
 {
-	char buffer[50];
+	id0_char_t buffer[50];
 	Sint16 esc;
 
 	if (screenfaded)			// don't do anything with a faded screen
@@ -751,7 +754,7 @@ void CheckKeys(void)
 		StatusWindow();
 		IN_ClearKeysDown();
 		RF_ForceRefresh();
-		lasttimecount = TimeCount;	// BUG: should be the other way around
+		lasttimecount = SD_GetTimeCount();	// BUG: should be the other way around
 	}
 
 //
@@ -762,7 +765,8 @@ void CheckKeys(void)
 		SD_MusicOff();
 		VW_FixRefreshBuffer();
 		US_CenterWindow(8, 3);
-		_fstrcpy(buffer, str_paused);
+		strcpy(buffer, str_paused);
+//		_fstrcpy(buffer, str_paused);
 		US_PrintCentered(buffer);
 		VW_UpdateScreen();
 		IN_Ack();
@@ -796,7 +800,7 @@ void CheckKeys(void)
 		}
 		IN_ClearKeysDown();
 		RF_ForceRefresh();
-		lasttimecount = TimeCount;
+		lasttimecount = SD_GetTimeCount();
 	}
 	
 //
@@ -905,7 +909,7 @@ void CheckKeys(void)
 			{
 				playstate = ex_loadedgame;
 			}
-			lasttimecount = TimeCount;
+			lasttimecount = SD_GetTimeCount();
 		}
 
 //
@@ -915,14 +919,15 @@ void CheckKeys(void)
 		{
 			VW_Shutdown();
 			SD_MusicOff();
-			cputs("C:>");
+			BE_ST_cputs("C:>");
 			IN_ClearKeysDown();
-			while (LastScan != sc_Escape);
+			while (LastScan != sc_Escape)
+				BE_ST_ShortSleep();
 			VW_SetScreenMode(GRMODE);
 			VW_ColorBorder(bordercolor);
 			RF_ForceRefresh();
 			IN_ClearKeysDown();
-			lasttimecount = TimeCount;
+			lasttimecount = SD_GetTimeCount();
 			SD_MusicOn();
 		}
 	}
@@ -944,7 +949,8 @@ void CheckKeys(void)
 		VW_FixRefreshBuffer();
 		US_CenterWindow(17, 3);
 		PrintY += 6;
-		_fstrcpy(buffer, "  CODE: ");
+		strcpy(buffer, "  CODE: ");
+		//_fstrcpy(buffer, "  CODE: ");
 		US_Print(buffer);
 		VW_UpdateScreen();
 		esc = !US_LineInput(px, py, buffer, NULL, true, 10, 0);
@@ -973,7 +979,7 @@ void CheckKeys(void)
 		if (DebugKeys())
 		{
 			RF_ForceRefresh();
-			lasttimecount = TimeCount;
+			lasttimecount = SD_GetTimeCount();
 		}
 	}
 
@@ -1067,7 +1073,7 @@ void EndDemoRecord(void)
 {
 	Sint16 handle;
 	boolean esc;
-	char filename[] = "DEMO?."EXTENSION;
+	id0_char_t filename[] = "DEMO?."EXTENSION;
 
 	IN_StopDemo();
 	VW_FixRefreshBuffer();

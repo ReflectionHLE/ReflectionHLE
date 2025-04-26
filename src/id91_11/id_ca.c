@@ -723,7 +723,7 @@ void CAL_SetupGrFile (void)
 //
 // load the data offsets from ???head.ext
 //
-	MM_GetPtr (&(memptr)grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
+	MM_GetPtr ((memptr *)&grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
 
 	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT"HEAD."EXTENSION)))
 	//if ((handle = open(GREXT"HEAD."EXTENSION,
@@ -1774,7 +1774,7 @@ void CA_CacheMap (id0_int_t mapnum)
 		//
 		// unRLEW, skipping expanded length
 		//
-		CA_RLEWexpand (source+1, *dest,size,
+		CA_RLEWexpand (source+1, (id0_unsigned_t *)(*dest),size,
 		((mapfiletype id0_seg *)tinf)->RLEWtag);
 #endif
 
@@ -1807,7 +1807,7 @@ void CA_UpLevel (void)
 		int i;
 		for (int i=0;i<NUMCHUNKS;i++)
 			if (grsegs[i])
-				MM_SetPurge (&(memptr)grsegs[i],3);
+				MM_SetPurge ((memptr *)&grsegs[i],3);
 	}
 #endif
 
@@ -2247,14 +2247,26 @@ void CA_CacheMarks (const id0_char_t *title)
 }
 
 // (REFKEEN) Used for loading data from DOS EXE (instead of hardcoding)
+#ifdef REFKEEN_VER_CATACOMB_ALL
 id0_long_t	*EGAhead;
 id0_byte_t	*EGAdict;
 id0_byte_t	*maphead;
 id0_byte_t	*audiohead;
 id0_byte_t	*audiodict;
+#endif
 
 id0_char_t	*introscn; // ID_US
 
+#ifdef REFKEEN_VER_BMENACE_ALL
+void RefKeen_Load_Embedded_Resources_From_bmenace_exe(void)
+{
+	if (!(introscn = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("INTROSCN.SCN", NULL)))
+		// Don't use quit, yet
+		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_bmenace_exe - Failed to load\ntextual intro screen.");
+}
+#endif
+
+#ifdef REFKEEN_VER_CATACOMB_ALL
 void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void)
 {
 	id0_word_t audiodictsize, GFXdictsize;
@@ -2304,6 +2316,7 @@ void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void)
 	}
 #endif
 }
+#endif // REFKEEN_VER_CATACOMB_ALL
 
 #ifdef REFKEEN_VER_CATABYSS
 // (REFKEEN) Used for patching version-specific stuff

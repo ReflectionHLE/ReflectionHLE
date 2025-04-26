@@ -1,5 +1,6 @@
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2025 NY00123
  *
  * This file is loosely based on:
  * Keen Dreams Source Code
@@ -20,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -247,7 +248,7 @@ boolean SaveTheGame(Sint16 handle)
 
 	gamestate.riding = NULL;
 
-	if (!CA_FarWrite(handle, (byte far *)&gamestate, sizeof(gamestate)))
+	if (!CA_FarWrite(handle, (id0_byte_t id0_far *)&gamestate, sizeof(gamestate)))
 	{
 		return false;
 	}
@@ -267,7 +268,7 @@ boolean SaveTheGame(Sint16 handle)
 	}
 	for (ob = player; ob; ob=ob->next)
 	{
-		if (!CA_FarWrite(handle, (byte far *)ob, sizeof(objtype)))
+		if (!CA_FarWrite(handle, (id0_byte_t id0_far *)ob, sizeof(objtype)))
 		{
 			MM_FreePtr(&bigbuffer);
 			return false;
@@ -313,7 +314,7 @@ boolean SaveTheGame(Sint16 handle)
 		break;
 	}
 	colorseqnum = 0;
-	if (!CA_FarWrite(handle, (byte far *)&savestate, sizeof(savestate)))
+	if (!CA_FarWrite(handle, (id0_byte_t id0_far *)&savestate, sizeof(savestate)))
 	{
 		return false;
 	}
@@ -339,7 +340,7 @@ boolean LoadTheGame(Sint16 handle)
 	Uint16	compressed,expanded;
 	memptr	bigbuffer;
 
-	if (!CA_FarRead(handle, (byte far *)&gamestate, sizeof(gamestate)))
+	if (!CA_FarRead(handle, (id0_byte_t id0_far *)&gamestate, sizeof(gamestate)))
 	{
 		return false;
 	}
@@ -380,12 +381,12 @@ boolean LoadTheGame(Sint16 handle)
 	}
 	for (i = 0; i < MAPPLANES; i++)
 	{
-		if (!CA_FarRead(handle, (byte far *)&compressed, sizeof(compressed)))
+		if (!CA_FarRead(handle, (id0_byte_t id0_far *)&compressed, sizeof(compressed)))
 		{
 			MM_FreePtr(&bigbuffer);
 			return false;
 		}
-		if (!CA_FarRead(handle, (byte far *)bigbuffer, compressed))
+		if (!CA_FarRead(handle, (id0_byte_t id0_far *)bigbuffer, compressed))
 		{
 			MM_FreePtr(&bigbuffer);
 			return false;
@@ -395,31 +396,31 @@ boolean LoadTheGame(Sint16 handle)
 	MM_FreePtr(&bigbuffer);
 
 	InitObjArray();
-	new = player;
-	prev = new->prev;
-	next = new->next;
-	if (!CA_FarRead(handle, (byte far *)new, sizeof(objtype)))
+	newobj = player;
+	prev = newobj->prev;
+	next = newobj->next;
+	if (!CA_FarRead(handle, (id0_byte_t id0_far *)newobj, sizeof(objtype)))
 	{
 		return false;
 	}
-	new->prev = prev;
-	new->next = next;
-	new->needtoreact = true;
-	new->sprite = NULL;
-	new = scoreobj;
+	newobj->prev = prev;
+	newobj->next = next;
+	newobj->needtoreact = true;
+	newobj->sprite = NULL;
+	newobj = scoreobj;
 	while (true)
 	{
-		prev = new->prev;
-		next = new->next;
-		if (!CA_FarRead(handle, (byte far *)new, sizeof(objtype)))
+		prev = newobj->prev;
+		next = newobj->next;
+		if (!CA_FarRead(handle, (id0_byte_t id0_far *)newobj, sizeof(objtype)))
 		{
 			return false;
 		}
-		followed = new->next;
-		new->prev = prev;
-		new->next = next;
-		new->needtoreact = true;
-		new->sprite = NULL;
+		followed = newobj->next;
+		newobj->prev = prev;
+		newobj->next = next;
+		newobj->needtoreact = true;
+		newobj->sprite = NULL;
 		if (followed)
 		{
 			GetNewObj(false);
@@ -434,7 +435,7 @@ boolean LoadTheGame(Sint16 handle)
 	scoreobj->temp4 = -1;
 	return true;
 #else
-	if (!CA_FarRead(handle, (byte far *)&gamestate, sizeof(gamestate)))
+	if (!CA_FarRead(handle, (id0_byte_t id0_far *)&gamestate, sizeof(gamestate)))
 	{
 		return false;
 	}
@@ -483,7 +484,7 @@ static void FadeAndUnhook(void)
 	{
 		VW_FadeIn();
 		RF_SetRefreshHook(NULL);
-		TimeCount = lasttimecount;
+		SD_SetTimeCount(lasttimecount);
 	}
 }
 

@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -1734,8 +1734,9 @@ FARSTATE s_landmine2 = {LANDMINE2SPR, LANDMINE2SPR, slide, false, push_none, 10,
 ==================
 */
 
-#pragma argsused	//both parameters are ignored!
-void SpawnLandmine(Uint16 x, Uint16 y)
+//#pragma argsused	//both parameters are ignored!
+//void SpawnLandmine(Uint16 x, Uint16 y)
+void SpawnLandmine(void)
 {
 	GetNewObj(true);
 	new->obclass = grenadeobj;
@@ -2363,6 +2364,7 @@ void GoliathReact(objtype *ob)
 	PLACESPRITE;
 }
 
+#if 0 // REFKEEN: Unused empty stub
 /*
 ==================
 =
@@ -2376,6 +2378,7 @@ void GoliathUNUSEDThink(objtype *ob)
 {
 	//empty!
 }
+#endif
 
 /*
 ==================

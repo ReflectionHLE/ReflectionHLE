@@ -1,5 +1,6 @@
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2025 NY00123
  *
  * This file is loosely based on:
  * Keen Dreams Source Code
@@ -20,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // local macros:
@@ -464,14 +465,15 @@ boolean CheckInteractiveTiles(objtype *ob)
 
 boolean CheckGrabPole(objtype *ob)
 {
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	Uint16 midx;
 
-	if (TimeCount < leavepoletime)
+	// REFKEEN - Looks like these are unsigned comparisons in original EXE
+	if (SD_GetTimeCount() < (Uint32)leavepoletime)
 	{
 		leavepoletime = 0;
 	}
-	else if (TimeCount - leavepoletime < 19)
+	else if (SD_GetTimeCount() - (Uint32)leavepoletime < 19)
 	{
 		return false;
 	}
@@ -526,7 +528,7 @@ boolean PoleActions(objtype *ob)
 		ob->state = &s_snakejump1;
 		ob->ydir = 1;
 		button0held = true;
-		leavepoletime = TimeCount;
+		leavepoletime = SD_GetTimeCount();
 		return true;
 	}
 	return false;
@@ -626,7 +628,7 @@ void SnakeThrow(objtype *ob)
 
 void SnakeTeleportThink(objtype *ob)
 {
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	Uint16 info;
 
 	if (teleported)
@@ -661,7 +663,7 @@ void SnakeTeleportThink(objtype *ob)
 void SnakeUseThink(objtype *ob)
 {
 	Uint16 intileinfo, tilem, nexttile, infoval, info_hi, info_lo, planeoffset;
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	Uint16 mapval, x, y;
 	Sint8 manim;
 	objtype *obj;
@@ -1041,7 +1043,7 @@ found_boss:
 =================
 */
 
-#pragma argsused
+//#pragma argsused
 void SnakeOpenDoorThink(objtype *ob)
 {
 	Uint16 srcx, srcy, info;
@@ -1852,7 +1854,7 @@ void SnakeDieThink(objtype *ob)
 =================
 */
 
-#pragma argsused
+//#pragma argsused
 void SnakeDeadThink(objtype *ob)
 {
 	playstate = ex_died;
@@ -2411,7 +2413,7 @@ void SnakeAirThink(objtype *ob)
 
 void SnakeLadderThink(objtype *ob)
 {
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	
 	if (PoleActions(ob))
 	{
@@ -2452,7 +2454,7 @@ void SnakeLadderThink(objtype *ob)
 
 void SnakeClimbThink(objtype *ob)
 {
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	
 	if (PoleActions(ob))
 	{
@@ -2494,7 +2496,7 @@ void SnakeClimbThink(objtype *ob)
 
 void CheckPole(objtype *ob)
 {
-	Uint16 far *map;
+	Uint16 id0_far *map;
 
 	if (PoleActions(ob))
 	{
@@ -3539,7 +3541,7 @@ void SnakeDieReact(objtype *ob)
 void CheckInTiles(objtype *ob)
 {
 	Uint16 tilex, tiley;
-	Uint16 far *map;
+	Uint16 id0_far *map;
 	Uint16 skipwidth, intileinfo;
 	
 #ifndef BETA

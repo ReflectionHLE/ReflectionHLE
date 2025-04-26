@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -682,12 +682,12 @@ void GoplatThink(objtype *ob)
 	ob->temp1 = INFOSPOT(tx,ty) - DIRARROWSTART;
 	if (ob->temp1 < arrow_North || ob->temp1 > arrow_None)
 	{
-		char errmsg[60] = "Goplat moved to a bad spot: ";
-		char buffer[5] = "";
+		id0_char_t errmsg[60] = "Goplat moved to a bad spot: ";
+		id0_char_t buffer[5] = "";
 
-		strcat(errmsg, itoa(ob->x, buffer, 16));
+		strcat(errmsg, BE_Cross_itoa_dec(ob->x, buffer));
 		strcat(errmsg, ",");
-		strcat(errmsg, itoa(ob->y, buffer, 16));
+		strcat(errmsg, BE_Cross_itoa_dec(ob->y, buffer));
 		Quit(errmsg);
 	}
 	amount -= ob->temp2;

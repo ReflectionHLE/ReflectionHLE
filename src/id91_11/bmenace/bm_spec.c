@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "BM_DEF.H"
-#pragma hdrstop
+#include "bm_def.h"
+//#pragma hdrstop
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -35,27 +35,27 @@
 enum
 {
 #define MAKELUMP(x) x##_LUMP
-#include "LUMPLIST.H"
+#include "lumplist.h"
 #undef MAKELUMP
 	NUMLUMPS
 };
 
 static Uint16 lumpstart[] = {
 #define MAKELUMP(x) x##_LUMP_START
-#include "LUMPLIST.H"
+#include "lumplist.h"
 #undef MAKELUMP
 };
 static Uint16 lumpend[] = {
 #define MAKELUMP(x) x##_LUMP_END
-#include "LUMPLIST.H"
+#include "lumplist.h"
 #undef MAKELUMP
 };
 
 
 #ifdef BETA
-char *levelnames[18] =
+const id0_char_t *levelnames[18] =
 #else
-char *levelnames[25] =
+const id0_char_t *levelnames[25] =
 #endif
 {
 #if EPISODE == 1
@@ -131,7 +131,7 @@ static boolean lumpneeded[NUMLUMPS];
 void ScanInfoPlane(void)
 {
 	Uint16 x, y, i, j, value;
-	Uint16 far *infoptr;
+	Uint16 id0_far *infoptr;
 
 	InitObjArray();
 	memset(lumpneeded, 0, sizeof(lumpneeded));
@@ -649,62 +649,62 @@ simply would not show any message windows at all.
 
 void HostageDialog(void)
 {
-	static char far msg_hostage0[] =
+	static const id0_char_t id0_far msg_hostage0[] =
 		"Somewhere in each level, there\n"
 		"is someone like me who holds a key\n"
 		"to each exit.  You must find them!\n";
-	static char far msg_hostage1[] =
+	static const id0_char_t id0_far msg_hostage1[] =
 		"Thanks for the key.  I'll use\n"
 		"this to go on to the next level\n"
 		"and rescue your friends.\n"
 		"\n";
-	static char far msg_hostage2[] =
+	static const id0_char_t id0_far msg_hostage2[] =
 		"Thank you. Dr. Mangle has captured\n"
 		"others like me. He said it would be\n"
 		"a trail for you to follow so that\n"
 		"you could find him and meet your\n"
 		"final fate. Be careful!\n"
 		"\n";
-	static char far msg_hostage3[] =
+	static const id0_char_t id0_far msg_hostage3[] =
 		"I'm gonna dust that little dweeb!\n"
 		"He can't do this and escape!\n"
 		"\n";
-	static char far msg_hostage4[] =
+	static const id0_char_t id0_far msg_hostage4[] =
 		"Thank you, Sir!\n"
 		"I can't believe what has\n"
 		"happened to our beautiful city!\n"
 		"They've destroyed everything!\n"
 		"Please!  You have to stop them!\n"
 		"\n";
-	static char far msg_hostage5[] =
+	static const id0_char_t id0_far msg_hostage5[] =
 		"Ya, it's really a pile!  I'll do\n"
 		"my best to clear these mutants out\n"
 		"of here. Mangle WON'T succeed!\n"
 		"\n";
-	static char far msg_hostage6[] =
+	static const id0_char_t id0_far msg_hostage6[] =
 		"Hey, be careful buddy! These\n"
 		"buildings are, excuse the pun,\n"
 		"crawling with, like, these weird\n"
 		"creature-things, man! Hey, WOW!\n"
 		"What a cool gun! Can I try it out?\n"
 		"\n";
-	static char far msg_hostage7[] =
+	static const id0_char_t id0_far msg_hostage7[] =
 		"Na, you'd probably shoot your foot\n"
 		"off or something. You'd better get\n"
 		"out of here before the mutants\n"
 		"come creeping back this way....\n"
 		"\n";
-	static char far msg_hostage8[] =
+	static const id0_char_t id0_far msg_hostage8[] =
 		"Aaaaaaaahhhhhhh! AAAAAAaaaahhhh!\n"
 		"Help! Those green things spit\n"
 		"slime on me!  I just know I will\n"
 		"dissolve or something, right?\n"
 		"\n";
-	static char far msg_hostage9[] =
+	static const id0_char_t id0_far msg_hostage9[] =
 		"Geez, take a valium or something!\n"
 		"You look all right to me....\n"
 		"\n";
-	static char far msg_hostage10[] =
+	static const id0_char_t id0_far msg_hostage10[] =
 		"Thank you, Mr. Logan!  I can't\n"
 		"wait to get home and take a nice,\n"
 		"hot bath!  I've been locked in\n"
@@ -712,43 +712,43 @@ void HostageDialog(void)
 		"someone to show up and get\n"
 		"me out of here.\n"
 		"\n";
-	static char far msg_hostage11[] =
+	static const id0_char_t id0_far msg_hostage11[] =
 		"Heh...Um, well, I hate to be the\n"
 		"one to give you the news...but...\n"
 		"there are no houses left in this\n"
 		"entire city.  Sorry...\n"
 		"\n";
-	static char far msg_hostage12[] =
+	static const id0_char_t id0_far msg_hostage12[] =
 		"WOW! What a light show!  I saw you\n"
 		"kick'n robotic butt a mile away!\n"
 		"I love this destruction stuff!\n"
 		"\n";
-	static char far msg_hostage13[] =
+	static const id0_char_t id0_far msg_hostage13[] =
 		"Ya, me too.  Those parachuting\n"
 		"robots were a new one on me.\n"
 		"Fun to kill though.\n"
 		"\n";
-	static char far msg_hostage14[] =
+	static const id0_char_t id0_far msg_hostage14[] =
 		"Mangle is somewhere in this\n"
 		"complex. Be very careful!  I've\n"
 		"seen him setting up all kinds of\n"
 		"traps around here.\n"
 		"He must be expecting you.\n"
 		"\n";
-	static char far msg_hostage15[] =
+	static const id0_char_t id0_far msg_hostage15[] =
 		"Yes, he knows I'm coming for him.\n"
 		"But he's not expecting what I'm\n"
 		"going to do to him when I\n"
 		"get my hands on him!\n"
 		"\n";
-	static char far msg_hostage16[] =
+	static const id0_char_t id0_far msg_hostage16[] =
 		"Thank God you're here!  I know\n"
 		"that Dr. Mangle is in the next\n"
 		"room waiting for you.  But be\n"
 		"careful!  Not everything is as\n"
 		"it seems.  I think it's a trap!\n"
 		"\n";
-	static char far msg_hostage17[] =
+	static const id0_char_t id0_far msg_hostage17[] =
 		"Thanks for the tip....  But I've\n"
 		"learned the way this creep works.\n"
 		"He's not going to get away with\n"
@@ -756,7 +756,7 @@ void HostageDialog(void)
 		"\n";
 
 	Sint16 i, first, count, oldmusic;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 	oldmusic = currentmusic;
 	switch (gamestate.mapon)
@@ -962,7 +962,7 @@ void HostageDialog(void)
 // This hint message is also used in BossDialog() below, so it must be declared
 // outside the HintDialog() function. This might indicate that the all the
 // message strings in this file were originally declared outside the functions.
-static char far msg_hint0[] =
+static const id0_char_t id0_far msg_hint0[] =
 	"If you have a SuperVGA graphics card\n"
 	"and experience video problems such\n"
 	"as garbage on the screen, select\n"
@@ -973,7 +973,7 @@ static char far msg_hint0[] =
 void HintDialog(void)
 {
 	Sint16 i, first, count;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 	switch (gamestate.mapon)
 	{
@@ -1024,63 +1024,63 @@ void HintDialog(void)
 
 void BossDialog(void)
 {
-	static char far msg_boss0[] =
+	static const id0_char_t id0_far msg_boss0[] =
 		"Greetings Mr. Logan!\n"
 		"You will never stop me!\n"
 		"I will kill you and toss\n"
 		"your bones to my critters.\n"
 		"\n";
-	static char far msg_boss1[] =
+	static const id0_char_t id0_far msg_boss1[] =
 		"And then the world will bow to the\n"
 		"will of Master Cain and Dr. Mangle!\n"
 		"Ha ha ha ha ha....\n"
 		"\n";
-	static char far msg_boss2[] =
+	static const id0_char_t id0_far msg_boss2[] =
 		"Well, well, well....Here we are,\n"
 		"Mr. Logan.  It has come down to just\n"
 		"you...and to me.  I hope you have\n"
 		"enjoyed the little party I've thrown\n"
 		"\n";
-	static char far msg_boss3[] =
+	static const id0_char_t id0_far msg_boss3[] =
 		"for you today.  I hope you've had fun\n"
 		"with my little friends. But now, I'm\n"
 		"afraid, it is time for you to die!\n"
 		"\n";
-	static char far msg_boss4[] =
+	static const id0_char_t id0_far msg_boss4[] =
 		"Mr. Logan, listen to me carefully.\n"
 		" *-COUGH-* I am beaten, I'm going to\n"
 		"die. *-ACK!-*, so I have nothing to\n"
 		"hide and I owe nothing to that creep,\n";
-	static char far msg_boss5[] =
+	static const id0_char_t id0_far msg_boss5[] =
 		"Master Cain. I only did this because\n"
 		"he promised me wealth and power, and\n"
 		"he also said he'd kill me if I didn't\n"
 		"help him. So you can see how I might\n";
-	static char far msg_boss6[] =
+	static const id0_char_t id0_far msg_boss6[] =
 		"be compelled to create these mutants\n"
 		"for him.  *-COUGH-* I have gotten\n"
 		"what I deserve for my crimes. But you\n"
 		"must stop Cain to stop this madness!\n";
-	static char far msg_boss7[] =
+	static const id0_char_t id0_far msg_boss7[] =
 		"There is an escape jet just through\n"
 		"that door. I've uploaded navigation\n"
 		"coordinates to get you to the next\n"
 		"lab.  Enter and destroy it to stop\n";
-	static char far msg_boss8[] =
+	static const id0_char_t id0_far msg_boss8[] =
 		"the production of the mutant army.\n"
 		"But be careful, a deadly computer\n"
 		"guards the whole complex.\n"
 		"You must then go on and find Cain's\n";
-	static char far msg_boss9[] =
+	static const id0_char_t id0_far msg_boss9[] =
 		"secret fortress. Seek him out and\n"
 		"destroy him or he will be a plague\n"
 		"of destruction to this earth!\n"
 		"Goodbye, Snake Logan, *-Hack-*,\n";
-	static char far msg_boss10[] =
+	static const id0_char_t id0_far msg_boss10[] =
 		"and good luck...you will need it.\n"
 		"*-Aaaaaarrrggg!-*  <sigh>.......\n"
 		"\n";
-	static char far msg_boss11[] =
+	static const id0_char_t id0_far msg_boss11[] =
 		"I am Skullman!  I shall kill\n"
 		"you and collect your skull as I\n"
 		"have with all these others!\n"
@@ -1088,7 +1088,7 @@ void BossDialog(void)
 		"\n";
 
 	Sint16 i, first, count;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 	switch (gamestate.mapon)
 	{
@@ -1190,7 +1190,7 @@ void BossDialog(void)
 
 void HostageDialog(void)
 {
-	static char far msg_hostage0[] =
+	static const id0_char_t id0_far msg_hostage0[] =
 		"Hey, thanks for rescuing me!\n"
 		"I thought those creatures were\n"
 		"going to have me for dinner!\n"
@@ -1203,14 +1203,14 @@ void HostageDialog(void)
 #endif
 		"Can you help them?\n"
 		"\n";
-	static char far msg_hostage1[] =
+	static const id0_char_t id0_far msg_hostage1[] =
 #ifdef BETA
 		"I think I can manage it...\n"
 #else
 		"I think I can manage it....\n"
 #endif
 		"\n";
-	static char far msg_hostage2[] =	// never actually used
+	static const id0_char_t id0_far msg_hostage2[] =	// never actually used
 		"A hero's life is filled with\n"
 #ifdef BETA
 		"many hardships...\n"
@@ -1218,7 +1218,7 @@ void HostageDialog(void)
 		"many hardships....\n"
 #endif
 		"\n";
-	static char far msg_hostage3[] =
+	static const id0_char_t id0_far msg_hostage3[] =
 #ifdef BETA
 		"Thankyou for rescuing me!\n"
 #else
@@ -1234,7 +1234,7 @@ void HostageDialog(void)
 #endif
 		"it's not going to be easy.\n"
 		"\n";
-	static char far msg_hostage4[] =
+	static const id0_char_t id0_far msg_hostage4[] =
 		"Don't worry, I'm getting used\n"
 #ifdef BETA
 		"to things not being easy.\n"
@@ -1244,7 +1244,7 @@ void HostageDialog(void)
 		"So, what's the plan?\n"
 #endif
 		"\n";
-	static char far msg_hostage5[] =
+	static const id0_char_t id0_far msg_hostage5[] =
 		"Before I was captured by these\n"
 		"ants, I had just completed a\n"
 #ifdef BETA
@@ -1255,12 +1255,12 @@ void HostageDialog(void)
 #endif
 		"You must find it!\n"
 		"\n";
-	static char far msg_hostage6[] =
+	static const id0_char_t id0_far msg_hostage6[] =
 		"Ok, I'm getting the general idea\n"
 		"here. Once I find this thing,\n"
 		"where should I detonate it?\n"
 		"\n";
-	static char far msg_hostage7[] =
+	static const id0_char_t id0_far msg_hostage7[] =
 #ifdef BETA
 		"The computer core is where the\n"
 		"main reactor is housed. Detonate\n"
@@ -1275,7 +1275,7 @@ void HostageDialog(void)
 		"two glowing red slots in it.\n"
 		"GOOD LUCK!\n"
 		"\n";
-	static char far msg_hostage8[] =
+	static const id0_char_t id0_far msg_hostage8[] =
 #ifdef BETA
 		"Hey, thanks buddy...\n"
 #else
@@ -1286,11 +1286,11 @@ void HostageDialog(void)
 		"She has tiny flying nymphs that\n"
 		"always protect her. Their sting\n"
 		"is deadly!";
-	static char far msg_hostage9[] =
+	static const id0_char_t id0_far msg_hostage9[] =
 		"Thanks for the tip!\n"
 		"I'll be careful.\n"
 		"\n";
-	static char far msg_hostage10[] =
+	static const id0_char_t id0_far msg_hostage10[] =
 #ifdef BETA
 		"Thanks for getting me outa here\n"
 #else
@@ -1300,24 +1300,24 @@ void HostageDialog(void)
 		"and go stop the fiendish plot of\n"
 		"Mortimer McMire!\n"
 		"\n";
-	static char far msg_hostage11[] =
+	static const id0_char_t id0_far msg_hostage11[] =
 #ifdef BETA
 		"No sweat Captain Keen....\n";
 #else
 		"No sweat, Captain Keen....\n";
 #endif
-	static char far msg_hostage12[] =
+	static const id0_char_t id0_far msg_hostage12[] =
 		"That's Commander Keen!\n"
 		"COMMANDER KEEN!\n"
 		"\n";
-	static char far msg_hostage13[] =
+	static const id0_char_t id0_far msg_hostage13[] =
 		"I think there is a nuclear bomb\n"
 		"somewhere in the next level!\n"
 		"\n";
-	static char far msg_hostage14[] =
+	static const id0_char_t id0_far msg_hostage14[] =
 		"Thanks, I've been looking for that!\n"
 		"\n";
-	static char far msg_hostage15[] =
+	static const id0_char_t id0_far msg_hostage15[] =
 		"Don't forget to find the nuclear\n"
 		"bomb before you leave this level.\n"
 #ifdef BETA
@@ -1328,7 +1328,7 @@ void HostageDialog(void)
 		"destroy this facility!\n"
 #endif
 		"\n";
-	static char far msg_hostage16[] =
+	static const id0_char_t id0_far msg_hostage16[] =
 #ifdef BETA
 		"Thanks sonny! I'm out of here.\n"
 		"Dr. Mangle said to tell you that\n"
@@ -1339,12 +1339,12 @@ void HostageDialog(void)
 		"he is waiting for your wimpy self\n"
 		"in the next room!\n"
 		"\n";
-	static char far msg_hostage17[] =
+	static const id0_char_t id0_far msg_hostage17[] =
 		"WIMPY!!!!!!!?\n"
 		"\n";
 
 	Sint16 i, first, count, oldmusic;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 #ifndef BETA
 	oldmusic = currentmusic;
@@ -1543,7 +1543,7 @@ void HostageDialog(void)
 
 void HintDialog(void)
 {
-	static char far msg_hint3[] =
+	static const id0_char_t id0_far msg_hint3[] =
 		"Hey! How did you get in here!\n"
 		"George! Did you leave that key\n"
 		"lying around again?\n"
@@ -1551,18 +1551,18 @@ void HintDialog(void)
 		"we might as well introduce\n"
 		"ourselves.\n"
 		"\n";
-	static char far msg_hint4[] =
+	static const id0_char_t id0_far msg_hint4[] =
 		"I'm Jim, and behind me is\n"
 		"George, and Scott is at the\n"
 		"computer. We run this game\n"
 		"from in here. If you promise\n";
-	static char far msg_hint5[] =
+	static const id0_char_t id0_far msg_hint5[] =
 		"not to tell about this place,\n"
 		"there are plenty of supplies\n"
 		"upstairs you can have to help\n"
 		"you on your way....\n"
 		"\n";
-	static char far msg_hint6[] =
+	static const id0_char_t id0_far msg_hint6[] =
 		"Who do you think you are\n"
 		"shooting at US!\n"
 		"We made this game!\n"
@@ -1573,10 +1573,10 @@ void HintDialog(void)
 		"EAT THIS LOGAN!!!\n"
 #endif
 		"\n";
-	static char far msg_hint0[] =
+	static const id0_char_t id0_far msg_hint0[] =
 		"Remember this color sequence:\n"
 		"Cyan, Red, Magenta, Green, Blue.\n";
-	static char far msg_hint1[] =
+	static const id0_char_t id0_far msg_hint1[] =
 		"You may want to write it down\n"
 		"on a piece of paper if you think\n"
 #ifdef BETA
@@ -1586,7 +1586,7 @@ void HintDialog(void)
 #endif
 		"\n";
 #ifndef BETA
-	static char far msg_hint7[] =
+	static const id0_char_t id0_far msg_hint7[] =
 		"If you have a SuperVGA graphics card\n"
 		"and experience video problems such\n"
 		"as garbage on the screen, select\n"
@@ -1596,7 +1596,7 @@ void HintDialog(void)
 #endif
 
 	Sint16 i, first, count;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 	switch (gamestate.mapon)
 	{
@@ -1697,81 +1697,81 @@ void HintDialog(void)
 
 void BossDialog(void)
 {
-	static char far msg_boss0[] =
+	static const id0_char_t id0_far msg_boss0[] =
 		"So, my little visitor has\n"
 		"come to see my newest\n"
 		"creations....\n"
 		"\n";
-	static char far msg_boss1[] =
+	static const id0_char_t id0_far msg_boss1[] =
 		"Well, take a good look at\n"
 		"them because these mutants\n"
 		"will be unstoppable when\n"
 		"they fully mature in\n"
 		"these incubators!\n"
 		"\n";
-	static char far msg_boss2[] =
+	static const id0_char_t id0_far msg_boss2[] =
 		"Don't bother trying to\n"
 		"destroy the incubators! You\n"
 		"can't! They're hooked up\n"
 		"directly into the main\n"
 		"core of the super computer!\n"
 		"\n";
-	static char far msg_boss3[] =
+	static const id0_char_t id0_far msg_boss3[] =
 		"But never mind all that!\n"
 		"My kamikaze mutants will\n"
 		"soon be the end of you!\n"
 		"\n";
 #ifdef BETA
-	static char far msg_boss4[] =
+	static const id0_char_t id0_far msg_boss4[] =
 		"So sorry I had to go before we\n"
 		"could meet in person! But I\n"
 		"had to move on...\n"
 		"We can't have you ruining\n"
 		"Master Cain's plans now can we?\n"
 		"\n";
-	static char far msg_boss5[] =
+	static const id0_char_t id0_far msg_boss5[] =
 		"Stopping me will not stop\n"
 		"Master Cain from taking over\n"
 		"this country...and eventually\n"
 		"the WORLD!!!\n"
 		"\n";
-	static char far msg_boss6[] =
+	static const id0_char_t id0_far msg_boss6[] =
 		"Soon my mutant army will be\n"
 		"unstoppable and your weak,\n"
 		"corrupt government will be on\n"
 		"it's knees, begging for mercy!\n"
 		"And then, all this will belong\n"
 		"\n";
-	static char far msg_boss7[] =
+	static const id0_char_t id0_far msg_boss7[] =
 		"to US! My master wants very much\n"
 		"to meet you... He has decided to\n"
 		"take care of you personally!\n"
 		"Enjoy your small victory now...\n";
-	static char far msg_boss8[] =
+	static const id0_char_t id0_far msg_boss8[] =
 		"IT WILL NOT BE LONG LIVED!!!\n"
 		"\n";
 #else
-	static char far msg_boss4[] =
+	static const id0_char_t id0_far msg_boss4[] =
 		"So, you've made it through all\n"
 		"of my traps. Now you must deal\n"
 		"with me personally! I am the\n"
 		"guardian of this fortress.\n"
 		"You will NOT defeat ME!\n"
 		"\n";
-	static char far msg_boss5[] =
+	static const id0_char_t id0_far msg_boss5[] =
 		"Stopping me will not stop\n"
 		"Master Cain from taking over\n"
 		"this country...and eventually\n"
 		"the WORLD!!!\n"
 		"\n";
-	static char far msg_boss6[] =
+	static const id0_char_t id0_far msg_boss6[] =
 		"Soon Cain's mutant army will be\n"
 		"unstoppable and your weak,\n"
 		"corrupt government will be on\n"
 		"its knees, begging for mercy!\n"
 		"And then, all this will belong\n"
 		"\n";
-	static char far msg_boss7[] =
+	static const id0_char_t id0_far msg_boss7[] =
 		"to US! Master Cain really wants\n"
 		"to meet you...but I'm afraid\n"
 		"you'll be quite dead when this\n"
@@ -1779,7 +1779,7 @@ void BossDialog(void)
 #endif
 
 	Sint16 i, first, count;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 	switch (gamestate.mapon)
 	{
@@ -1866,68 +1866,68 @@ void BossDialog(void)
 
 void HostageDialog(void)
 {
-	static char far msg_hostage0[] =
+	static const id0_char_t id0_far msg_hostage0[] =
 		"Oh, how did you find this place?\n"
 		"I thought we'd be stuck here\n"
 		"forever. Keep going, there are\n"
 		"a lot more of us to rescue.\n";
-	static char far msg_hostage1[] =
+	static const id0_char_t id0_far msg_hostage1[] =
 		"Don't worry, I will.\n"
 		"\n";
-	static char far msg_hostage2[] =
+	static const id0_char_t id0_far msg_hostage2[] =
 		"Watch out for cyborgs in the\n"
 		"next level. They carry rifles.\n";
-	static char far msg_hostage3[] =
+	static const id0_char_t id0_far msg_hostage3[] =
 		"Thank you, young man. I'm not\n"
 		"sure that you should venture any\n"
 		"further into this fortress!\n";
-	static char far msg_hostage4[] =
+	static const id0_char_t id0_far msg_hostage4[] =
 		"In the next room is the BIGGEST\n"
 		"robot I've ever seen! It will\n"
 		"most assuredly squash you into\n"
 		"oblivion!\n";
-	static char far msg_hostage5[] =
+	static const id0_char_t id0_far msg_hostage5[] =
 		"There must be a way past it!\n";
-	static char far msg_hostage6[] =
+	static const id0_char_t id0_far msg_hostage6[] =
 		"Don't approach it directly right\n"
 		"away. See if you can find\n"
 		"something to help you.\n";
-	static char far msg_hostage7[] =
+	static const id0_char_t id0_far msg_hostage7[] =
 		"Be really careful, dude! The\n"
 		"next levels are packed with\n"
 		"mutants and robots.\n";
-	static char far msg_hostage8[] =
+	static const id0_char_t id0_far msg_hostage8[] =
 		"Hey, I saw some cloaked figure\n"
 		"float through here earlier.\n"
 		"It looked really sinister and\n"
 		"had red glowing eyes.\n";
-	static char far msg_hostage9[] =
+	static const id0_char_t id0_far msg_hostage9[] =
 		"Hmm. I think I know who that is.\n";
-	static char far msg_hostage10[] =
+	static const id0_char_t id0_far msg_hostage10[] =
 		"Watch out! I've detected large\n"
 		"amounts of radiation in the\n"
 		"next level!\n";
-	static char far msg_hostage11[] =
+	static const id0_char_t id0_far msg_hostage11[] =
 		"Watch out for the computer\n"
 		"controlled laser defense systems\n"
 		"upstairs from here.\n";
-	static char far msg_hostage12[] =
+	static const id0_char_t id0_far msg_hostage12[] =
 		"Be careful of the robots in the\n"
 		"next level. They can kill you\n"
 		"even if you have taken an\n"
 		"invincibility potion!\n";
-	static char far msg_hostage13[] =
+	static const id0_char_t id0_far msg_hostage13[] =
 		"I saw that Cain creep run out\n"
 		"through that exit door over\n"
 		"there! I guess he got away.\n"
 		"Or...maybe he is waiting.\n";
-	static char far msg_hostage14[] =
+	static const id0_char_t id0_far msg_hostage14[] =
 		"I hope he is waiting, it's time\n"
 		"for him to pay for what he's\n"
 		"done! I won't let him escape!\n";
 
 	Sint16 i, first, count, oldmusic;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 	oldmusic = currentmusic;
 	switch (gamestate.mapon)
@@ -2106,13 +2106,13 @@ void HostageDialog(void)
 
 void HintDialog(void)
 {
-	static char far msg_hint0[] =
+	static const id0_char_t id0_far msg_hint0[] =
 		"You can't pass the radioactive\n"
 		"zone unless you find the anti-\n"
 		"radiation pill.\n";
 
 	Sint16 i, first, count;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 	switch (gamestate.mapon)
 	{
@@ -2161,28 +2161,28 @@ void HintDialog(void)
 
 void BossDialog(void)
 {
-	static char far msg_boss0[] =
+	static const id0_char_t id0_far msg_boss0[] =
 		"Ah, Snake Logan! You have proved\n"
 		"most troublesome to me, and for\n"
 		"that, I shall make sure that you\n"
 		"die a most PAINFUL death!\n";
-	static char far msg_boss1[] =
+	static const id0_char_t id0_far msg_boss1[] =
 		"I don't know how you've survived all\n"
 		"of the traps I've laid out for you,\n"
 		"but you'll not be escaping from ME!\n"
 		"I have been waiting a long time\n";
-	static char far msg_boss2[] =
+	static const id0_char_t id0_far msg_boss2[] =
 		"for this moment, and I am going to\n"
 		"enjoy very much getting rid of you\n"
 		"once and for all. Then there will\n"
 		"be nothing left to stand in my way!\n";
-	static char far msg_boss3[] =
+	static const id0_char_t id0_far msg_boss3[] =
 		"Now we shall see just how good\n"
 		"your fighting skills really are!\n"
 		"Aaahhh Ha Ha Ha Ha Ha Ha!\n";
 
 	Sint16 i, first, count;
-	char messagetext[200];
+	id0_char_t messagetext[200];
 
 	switch (gamestate.mapon)
 	{

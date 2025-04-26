@@ -42,10 +42,7 @@ extern id0_byte_t planenum;
 id0_unsigned_t screenstartcs; // in code segment for accesability
 
 
-// REFKEEN - GRMODE is a variable now, so EGA and CGA versions of functions
-// are defined for all time. Hence, they have been renamed.
-// Correct functions are selected based on game version.
-
+#if 0
 //#if GRMODE == CGAGR
 //============================================================================
 //
@@ -134,7 +131,7 @@ void RFL_NewTile_CGA (id0_unsigned_t updateoffset)
 #endif
 	}
 }
-//#endif
+#endif
 
 
 
@@ -145,7 +142,12 @@ void RFL_NewTile_CGA (id0_unsigned_t updateoffset)
 //
 //===========================================================================
 
+// REFKEEN: A side-effect of backporting from Keen Dreams,
+// for which CGA and EGA were both made supported from the same build.
+#define TILEWIDTH_EGA TILEWIDTH
 //#define TILEWIDTH_EGA 2 // REFKEEN - Already defined in id_vw.h
+#define SCREENWIDTH_EGA SCREENWIDTH
+#define RFL_NewTile_EGA RFL_NewTile
 
 //=================
 //
@@ -302,6 +304,7 @@ void RFL_UpdateTiles (void)
 			//============
 			++scanPtr; // we know the next tile is nothing
 			id0_word_t tileLoc = blockstarts[scanPtr-updateptr-2]; // start of tile location on screen
+#if 0
 			if (GRMODE == CGAGR)
 			{
 				id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
@@ -314,6 +317,7 @@ void RFL_UpdateTiles (void)
 				}
 				BE_Cross_WrappedToWrapped_MemCopy(screenseg, destPtr, srcPtr, TILEWIDTH_CGA);
 			}
+#endif
 			if (GRMODE == EGAGR)
 			{
 				id0_word_t egaDestOff = tileLoc+bufferofs; // dest in current screen
@@ -347,6 +351,7 @@ void RFL_UpdateTiles (void)
 		id0_word_t bytesPerRow = 2*(scanPtr - rowScanStartPtr);
 		id0_word_t tileLoc = blockstarts[rowScanStartPtr-updateptr-1]; // start of tile location
 
+#if 0
 		if (GRMODE == CGAGR)
 		{
 			id0_byte_t *destPtr = &screenseg[(id0_unsigned_t)(tileLoc+bufferofs)]; // dest in current screen
@@ -372,6 +377,7 @@ void RFL_UpdateTiles (void)
 				BE_Cross_Wrapped_Add(screenseg, &destPtr, TILEWIDTH_CGA/2);
 			}
 		}
+#endif
 
 		if (GRMODE == EGAGR)
 		{
@@ -449,6 +455,7 @@ void RFL_MaskForegroundTiles (void)
 			continue;
 		}
 
+#if 0
 		if (GRMODE == CGAGR)
 		{
 			//=================
@@ -491,6 +498,7 @@ void RFL_MaskForegroundTiles (void)
 #endif
 			}
 		}
+#endif
 
 		if (GRMODE == EGAGR)
 		{
@@ -532,6 +540,7 @@ void RFL_MaskForegroundTiles (void)
 	} while (true);
 }
 
+#if 0
 // (REFKEEN) Used for patching version-specific stuff
 void (*RFL_NewTile) (id0_unsigned_t updateoffset);
 
@@ -540,5 +549,6 @@ void RefKeen_Patch_id_rf_a(void)
 	// GRMODE *must* be patched first
 	RFL_NewTile = (GRMODE == CGAGR) ? RFL_NewTile_CGA : RFL_NewTile_EGA;
 }
+#endif
 
 REFKEEN_NS_E
