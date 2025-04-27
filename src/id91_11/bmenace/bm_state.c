@@ -1133,7 +1133,15 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 	FARSTATE *state;
 	
 	state = ob->state;
-	if (state->progress == think)
+	// REFKEEN: Vanilla BioMenace bug emulation (state may be 0).
+	//
+	// If state == NULL then, under DOS (with Borland C++ 2.0-3.1),
+	// state->progress is a part of a small Borland C++ string.
+	//
+	// As commented in StateMachine, this may actually cause a lock-up in
+	// BioMenace on vintage DOS machines, due to states being in far memory.
+	if (state && state->progress == think)
+//	if (state->progress == think)
 	{
 		if (state->thinkptr)
 		{
@@ -1149,9 +1157,21 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 		return 0;
 	}
 	ticcount = ob->ticcount+numtics;
-	if (state->tictime > ticcount || state->tictime == 0)
+	// REFKEEN: Vanilla BioMenace bug emulation (state may be 0)
+	// Magic number is based on what would occur if there were a
+	// null-pointer dereference, assuming the value was never overwritten.
+	//
+	// As commented in StateMachine, this may actually cause a lock-up in
+	// BioMenace on vintage DOS machines, due to states being in far memory.
+	if ((!state && ticcount < 0x2064) || (state->tictime > ticcount || state->tictime == 0))
+//	if (state->tictime > ticcount || state->tictime == 0)
 	{
 		ob->ticcount = ticcount;
+		// REFKEEN: Vanilla BioMenace bug (state may be 0)
+		// state->progress would differ from all compared values with
+		// the original DOS versions in that case, unless modified.
+		if (!state)
+			return 0;
 		if (state->progress == slide || state->progress == slidethink)
 		{
 			if (ob->xdir)
@@ -1258,7 +1278,15 @@ void StateMachine(objtype *ob)
 	//
 	// passed through to next state
 	//
-		if (!state->skippable && state->tictime <= excesstics)
+		// REFKEEN: Vanilla BioMenace bug fix (state may be 0).
+		// state->skippable would be true with the original EXEs if state
+		// was 0, unless modified earlier.
+		// Side-note: Inherited from the Keens, but not originally
+		// reproduced in them with the original DOS executables.
+		// That could change at times in BM with the migration to 32-bit
+		// far state pointers, e.g., upon shooting somewhere.
+		if (state && !state->skippable && state->tictime <= excesstics)
+//		if (!state->skippable && state->tictime <= excesstics)
 		{
 			excesstics = DoActor(ob, state->tictime-1);
 		}
