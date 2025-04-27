@@ -2205,6 +2205,9 @@ redraw:
 				break;
 
 			case maskdraw:
+#ifdef BIOMENACE
+				VW_InverseMask(grsegs[sprite->grseg], sourceofs, dest, sprite->width, height);
+#endif
 				break;
 
 			}

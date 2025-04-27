@@ -627,7 +627,7 @@ void VW_InverseMask(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 {
 	// NOTE: Originally, all planes would be updated simultaneously.
 	id0_unsigned_t delta = linewidth-wide; // amount to add after drawing each line
-	// TODO (REFKEEN): Test this!
+	int plane = 0;
 	do
 	{
 		id0_byte_t *srcPtr = (id0_byte_t *)segm + ofs; // start back at the top of the mask
@@ -639,17 +639,17 @@ void VW_InverseMask(memptr segm,id0_unsigned_t ofs,id0_unsigned_t dest,
 			id0_unsigned_t colsLeft = wide;
 			do
 			{
-				BE_ST_EGAUpdateGFXByteInPlane(egaDestOff, (BE_ST_EGAFetchGFXByteFromPlane(egaDestOff, planenum) | (*srcPtr)), planenum);
+				BE_ST_EGAUpdateGFXByteInPlane(egaDestOff, BE_ST_EGAFetchGFXByteFromPlane(egaDestOff, plane) | ~(*srcPtr), plane);
 				++srcPtr;
 				++egaDestOff;
 				--colsLeft;
 			} while (colsLeft);
-			egaDestOff += linedelta;
+			egaDestOff += delta;
 			--linesLeft;
 		} while (linesLeft);
 		// Go to next plane
-		++planenum;
-	} while (planenum != 4); // done all four planes?
+		++plane;
+	} while (plane != 4); // done all four planes?
 }
 #endif
 
