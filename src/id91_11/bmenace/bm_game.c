@@ -24,6 +24,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
 /////////////////////////////////////////////////////////////////////////////
@@ -197,7 +199,8 @@ void ResetGame(void)
 			VW_FixRefreshBuffer();
 			US_CenterWindow(26, 3);
 			PrintY += 6;
-			_fstrcpy(str, str_practiceprompt);
+			strcpy(str, str_practiceprompt);
+//			_fstrcpy(str, str_practiceprompt);
 			US_Print(str);
 			VW_UpdateScreen();
 			esc = !US_LineInput(px, py, str, NULL, true, 2, 0);
@@ -239,7 +242,7 @@ void ResetGame(void)
 
 #define RLETAG 0xABCD
 
-boolean SaveTheGame(Sint16 handle)
+boolean SaveTheGame(BE_FILE_T handle)
 {
 #ifdef BETA
 	Uint16	i,compressed,expanded;
@@ -332,7 +335,7 @@ boolean SaveTheGame(Sint16 handle)
 ============================
 */
 
-boolean LoadTheGame(Sint16 handle)
+boolean LoadTheGame(BE_FILE_T handle)
 {
 #ifdef BETA
 	Uint16	i;
@@ -944,3 +947,5 @@ abort:
 	GameOver();
 	CheckHighScore(gamestate.score, mapon);
 }
+
+REFKEEN_NS_E

@@ -24,6 +24,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // uninitialized variables:
 /////////////////////////////////////////////////////////////////////////////
@@ -247,8 +249,8 @@ void RunDemo(Sint16 num)
 	NewGame();
 	read(handle, &gamestate.mapon, sizeof(gamestate.mapon));
 	read(handle, &DemoSize, sizeof(DemoSize));
-	MM_GetPtr(&(memptr)DemoBuffer, DemoSize);
-	MM_SetLock(&(memptr)DemoBuffer, true);
+	MM_GetPtr((memptr *)&DemoBuffer, DemoSize);
+	MM_SetLock((memptr *)&DemoBuffer, true);
 	CA_FarRead(handle, DemoBuffer, DemoSize);
 	close(handle);
 	IN_StartDemoPlayback(DemoBuffer, DemoSize);
@@ -259,8 +261,8 @@ void RunDemo(Sint16 num)
 	}
 	PlayLoop();
 	IN_StopDemo();
-	MM_SetLock(&(memptr)DemoBuffer, false);	// not required, MM_FreePtr() can free locked buffers
-	MM_FreePtr(&(memptr)DemoBuffer);
+	MM_SetLock((memptr *)&DemoBuffer, false);	// not required, MM_FreePtr() can free locked buffers
+	MM_FreePtr((memptr *)&DemoBuffer);
 	CA_ClearMarks();
 	CheckLastScan();
 #else
@@ -279,11 +281,11 @@ void RunDemo(Sint16 num)
 	}
 	num += HIGHSCOREDEMO;
 	CA_CacheGrChunk(num);
-	demodata = grsegs[num];
+	demodata = (Uint16 id0_seg*)grsegs[num];
 	gamestate.mapon = demodata[0];
 	DemoSize = demodata[1];
-	MM_GetPtr(&(memptr)DemoBuffer, DemoSize);
-	MM_SetLock(&(memptr)DemoBuffer, true);
+	MM_GetPtr((memptr *)&DemoBuffer, DemoSize);
+	MM_SetLock((memptr *)&DemoBuffer, true);
 	memcpy(DemoBuffer, ((id0_char_t id0_seg *)(grsegs[num]))+4, DemoSize);
 //	_fmemcpy(DemoBuffer, ((id0_char_t id0_seg *)(grsegs[num]))+4, DemoSize);
 	MM_FreePtr(&grsegs[num]);
@@ -295,7 +297,7 @@ void RunDemo(Sint16 num)
 	}
 	PlayLoop();
 	IN_StopDemo();
-	MM_FreePtr(&(memptr)DemoBuffer);
+	MM_FreePtr((memptr *)DemoBuffer);
 	VW_FixRefreshBuffer();
 	CA_ClearMarks();
 	if (demonum != DEMO_APOGEE && demonum != DEMO_LEVELWARP)
@@ -336,12 +338,12 @@ void DrawHighScores(void)
 		PrintY = i*16+35;
 		PrintX = 40;
 		US_Print(entry->name);
-		ultoa(entry->score, buf, 10);
+		BE_Cross_ultoa_dec(entry->score, buf);
 		for (bufptr=buf; *bufptr; bufptr++)
 		{
 			*bufptr = *bufptr + 81;
 		}
-		USL_MeasureString(buf, &width, &height);
+		USL_MeasureString(buf, NULL, &width, &height);
 		PrintX = 280-width;
 		US_Print(buf);
 	}
@@ -415,3 +417,5 @@ void ShowHighScores(void)
 	RunDemo(DEMO_HIGHSCORE);
 	scorescreenkludge = false;
 }
+
+REFKEEN_NS_E

@@ -23,6 +23,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -171,7 +173,7 @@ static void PrintNumbers(Sint16 x, Sint16 y, Sint16 maxlen, Sint16 basetile, Sin
 	Sint16 len;
 	char buffer[20];
 
-	ltoa(number, buffer, 10);
+	BE_Cross_ltoa_dec(number, buffer);
 	len = strlen(buffer);
 	i = maxlen;
 	while (i>len)
@@ -223,7 +225,7 @@ static void DrawStatusWindow(void)
 		VWB_DrawTile8(x, i, 14);
 		VWB_DrawTile8(x+w, i, 16);
 	}
-	VWB_Bar(72, 24, 176, 136, LIGHTGRAY);
+	VWB_Bar(72, 24, 176, 136, BE_CGA_LIGHTGRAY);
 	
 //
 //	level name
@@ -234,15 +236,18 @@ static void DrawStatusWindow(void)
 	US_CPrint(str_location);
 	VWB_Bar(79, 38, 162, 20, WHITE);
 #ifdef BETA
-	_fstrcpy(buffer, levelnames[gamestate.mapon]);
+	strcpy(buffer, levelnames[gamestate.mapon]);
+//	_fstrcpy(buffer, levelnames[gamestate.mapon]);
 #else
 	if (gamestate.mapon < 20)
 	{
-		_fstrcpy(buffer, levelnames[gamestate.mapon]);
+		strcpy(buffer, levelnames[gamestate.mapon]);
+//		_fstrcpy(buffer, levelnames[gamestate.mapon]);
 	}
 	else
 	{
-		_fstrcpy(buffer, "Secret Level");
+		strcpy(buffer, "Secret Level");
+//		_fstrcpy(buffer, "Secret Level");
 	}
 #endif
 	SizeText(buffer, &width, &height);
@@ -298,7 +303,8 @@ static void DrawStatusWindow(void)
 //
 	PrintX = 80;
 	PrintY = 96;
-	_fstrcpy(buffer, str_shards);
+	strcpy(buffer, str_shards);
+//	_fstrcpy(buffer, str_shards);
 	US_Print(buffer);
 	VWB_Bar(127, 95, 34, 10, BLACK);
 	if (gamestate.gotshard[0])
@@ -342,7 +348,8 @@ static void DrawStatusWindow(void)
 //
 	PrintX = 184;
 	PrintY = 112;
-	_fstrcpy(buffer, str_food);
+	strcpy(buffer, str_food);
+//	_fstrcpy(buffer, str_food);
 	US_Print(buffer);
 	VWB_Bar(215, 111, 18, 10, BLACK);
 	PrintNumbers(216, 112, 2, 0, gamestate.food);
@@ -376,7 +383,8 @@ static void DrawStatusWindow(void)
 //
 	PrintX = 80;
 	PrintY = 128;
-	_fstrcpy(buffer, str_potions);
+	strcpy(buffer, str_potions);
+//	_fstrcpy(buffer, str_potions);
 	US_Print(buffer);
 	VWB_Bar(135, 127, 26, 10, BLACK);
 	PrintNumbers(144, 128, 2, 0, gamestate.potions);
@@ -388,7 +396,8 @@ static void DrawStatusWindow(void)
 //
 	PrintX = 184;
 	PrintY = 112;
-	_fstrcpy(buffer, str_gems);
+	strcpy(buffer, str_gems);
+//	_fstrcpy(buffer, str_gems);
 	US_Print(buffer);
 	VWB_Bar(215, 111, 18, 10, BLACK);
 	PrintNumbers(216, 112, 2, 0, gamestate.gems);
@@ -430,7 +439,8 @@ static void DrawStatusWindow(void)
 //
 	PrintX = 80;
 	PrintY = 128;
-	_fstrcpy(buffer, str_clips);
+	strcpy(buffer, str_clips);
+//	_fstrcpy(buffer, str_clips);
 	US_Print(buffer);
 	VWB_Bar(119, 127, 26, 10, BLACK);
 	if (gamestate.autofire == true && gamestate.ammo > 3)
@@ -1371,3 +1381,5 @@ void PlayLoop(void)
 	ingame = false;
 	StopMusic();
 }
+
+REFKEEN_NS_E

@@ -23,6 +23,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
 /////////////////////////////////////////////////////////////////////////////
@@ -174,12 +176,12 @@ void SpawnBonus(Uint16 x, Uint16 y, Uint16 num)
 
 	bonusindex = 0;
 	GetNewObj(false);
-	new->needtoclip = cl_noclip;
-	new->obclass = bonusobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
-	new->ydir = -1;
-	new->temp1 = num;
+	newobj->needtoclip = cl_noclip;
+	newobj->obclass = bonusobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->ydir = -1;
+	newobj->temp1 = num;
 	switch (num)
 	{
 #ifdef BETA
@@ -281,9 +283,9 @@ void SpawnBonus(Uint16 x, Uint16 y, Uint16 num)
 		break;
 #endif
 	}
-	new->temp2 = new->shapenum = bonusshape[bonusindex];
-	new->temp3 = new->temp2 + 2;
-	NewState(new, &s_bonus1);
+	newobj->temp2 = newobj->shapenum = bonusshape[bonusindex];
+	newobj->temp3 = newobj->temp2 + 2;
+	NewState(newobj, &s_bonus1);
 }
 
 /*
@@ -361,25 +363,25 @@ FARSTATE s_bug2 = {BUG2LSPR, BUG2RSPR, stepthink, false, push_none, 20, 0, 0, Bu
 void SpawnBug(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = bugobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 24);
-	new->xdir = 1;
-	new->shootable = true;
+	newobj->obclass = bugobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 24);
+	newobj->xdir = 1;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 2;
+	newobj->health = 2;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 4;
+		newobj->health = 4;
 		break;
 	default:
-		new->health = 2;
+		newobj->health = 2;
 		break;
 	}
 #endif
-	NewState(new, &s_bug1);
+	NewState(newobj, &s_bug1);
 }
 
 /*
@@ -471,26 +473,26 @@ FARSTATE s_bee2 = {BEE2LSPR, BEE2RSPR, stepthink, false, push_none, 1, 0, 0, Bee
 void SpawnBee(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = beeobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 24);
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
+	newobj->obclass = beeobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 24);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 1;
+	newobj->health = 1;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	default:
-		new->health = 1;
+		newobj->health = 1;
 		break;
 	}
 #endif
-	NewState(new, &s_bee1);
+	NewState(newobj, &s_bee1);
 }
 
 #if (EPISODE == 2)
@@ -508,27 +510,27 @@ FARSTATE s_nymph2 = {NYMPH2SPR, NYMPH2SPR, stepthink, false, push_none, 1, 0, 0,
 void SpawnNymph(objtype *ob)
 {
 	GetNewObj(false);
-	new->obclass = beeobj;
-	new->x = ob->x + 16*PIXGLOBAL;
-	new->y = ob->y + 24*PIXGLOBAL;
-	new->active = allways;
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
+	newobj->obclass = beeobj;
+	newobj->x = ob->x + 16*PIXGLOBAL;
+	newobj->y = ob->y + 24*PIXGLOBAL;
+	newobj->active = allways;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 1;
+	newobj->health = 1;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	default:
-		new->health = 1;
+		newobj->health = 1;
 		break;
 	}
 #endif
-	NewState(new, &s_nymph1);
+	NewState(newobj, &s_nymph1);
 }
 #endif	// (EPISODE == 2)
 
@@ -644,19 +646,19 @@ FARSTATE s_robopalteleport5 = {ROBOPAL3SPR, ROBOPAL3SPR, step, false, push_none,
 void SpawnRobopal(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->active = allways;
-	new->obclass = robopalobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 24);
-	new->xdir = 1;
-	new->ydir = 1;
-	new->temp7 = 0;
-	new->shootable = false;
+	newobj->active = allways;
+	newobj->obclass = robopalobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 24);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->temp7 = 0;
+	newobj->shootable = false;
 #ifdef BETA
-	new->priority = 3;
+	newobj->priority = 3;
 #endif
 	robopal_mustfire = false;
-	NewState(new, &s_robopalwait1);
+	NewState(newobj, &s_robopalwait1);
 }
 
 /*
@@ -858,25 +860,25 @@ FARSTATE s_plasmawormjump  = {PLASMAWORM1LSPR, PLASMAWORM1RSPR, think, false, pu
 void SpawnWorm(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = wormobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y) + -0x71;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_wormwalk1);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT() / 0x20;
-	new->shootable = true;
+	newobj->obclass = wormobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + -0x71;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_wormwalk1);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT() / 0x20;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 1;
+	newobj->health = 1;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	default:
-		new->health = 1;
+		newobj->health = 1;
 		break;
 	}
 #endif
@@ -897,23 +899,23 @@ void SpawnPlasmaWorm(Uint16 x, Uint16 y)
 	// Episode 3 has an empty function here, chances are it's SpawnPlasmaWorm.
 #if (EPISODE == 1)
 	GetNewObj(false);
-	new->obclass = wormobj;
-	new->priority = 2;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_plasmawormwalk1);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT() / 0x20;
-	new->shootable = true;
+	newobj->obclass = wormobj;
+	newobj->priority = 2;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_plasmawormwalk1);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT() / 0x20;
+	newobj->shootable = true;
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 10;
+		newobj->health = 10;
 		break;
 	default:
-		new->health = 5;
+		newobj->health = 5;
 		break;
 	}
 #endif
@@ -1157,27 +1159,27 @@ FARSTATE s_bluedeviljump  = {BLUEDEVILJUMPLSPR,  BLUEDEVILJUMPRSPR,  think, fals
 void SpawnBlueDevil(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = bluedevilobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 32);
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
+	newobj->obclass = bluedevilobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 32);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 3;
+	newobj->health = 3;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 6;
+		newobj->health = 6;
 		break;
 	default:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	}
 #endif
-	NewState(new, &s_bluedevilwalk1);
-	new->hitnorth = 1;
+	NewState(newobj, &s_bluedevilwalk1);
+	newobj->hitnorth = 1;
 }
 
 /*
@@ -1266,25 +1268,25 @@ FARSTATE s_kamikazedie2   = {KAMIKAZEDIE2SPR, KAMIKAZEDIE2SPR, step, true, push_
 void SpawnKamikaze(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = kamikazeobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y) + (15-TILEGLOBAL);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_kamikazestand1);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT()/32;
-	new->shootable = true;
+	newobj->obclass = kamikazeobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + (15-TILEGLOBAL);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_kamikazestand1);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT()/32;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 3;
+	newobj->health = 3;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 6;
+		newobj->health = 6;
 		break;
 	default:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	}
 #endif
@@ -1393,19 +1395,19 @@ FARSTATE s_trashbird2     = {TRASHBIRD2LSPR, TRASHBIRD2RSPR, stepthink, false, p
 void SpawnTrashBoss(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = trashbossobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 88);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_trashbossstand);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT()/32;
-	new->shootable = true;
+	newobj->obclass = trashbossobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 88);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_trashbossstand);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT()/32;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 100;
+	newobj->health = 100;
 #else
-	new->health = bosshealth = oldhealthbarlength = 100;
+	newobj->health = bosshealth = oldhealthbarlength = 100;
 	bossdiv = bosshealth / 20;
 #endif
 }
@@ -1567,34 +1569,34 @@ void TrashBossAttackThink(objtype *ob)
 
 	ob->needtoreact = true;
 	GetNewObj(true);
-	new->obclass = enemyshotobj;
+	newobj->obclass = enemyshotobj;
 	if (ob->xdir == 1)
 	{
-		new->x = ob->x + 40*PIXGLOBAL;
-		new->y = ob->y + 48*PIXGLOBAL;
+		newobj->x = ob->x + 40*PIXGLOBAL;
+		newobj->y = ob->y + 48*PIXGLOBAL;
 	}
 	else
 	{
-		new->x = ob->x + 8*PIXGLOBAL;
-		new->y = ob->y + 48*PIXGLOBAL;
+		newobj->x = ob->x + 8*PIXGLOBAL;
+		newobj->y = ob->y + 48*PIXGLOBAL;
 	}
-	new->xdir = ob->xdir;
-	new->ydir = 1;
-	new->xspeed = ob->xdir * 60 - (US_RndT() >> 4);
-	new->yspeed = -30;
-	new->active = removable;
+	newobj->xdir = ob->xdir;
+	newobj->ydir = 1;
+	newobj->xspeed = ob->xdir * 60 - (US_RndT() >> 4);
+	newobj->yspeed = -30;
+	newobj->active = removable;
 	randnum = US_RndT();
 	if (randnum < 85)
 	{
-		NewState(new, &s_trashcan1);
+		NewState(newobj, &s_trashcan1);
 	}
 	else if (randnum >= 85 && randnum < 170)
 	{
-		NewState(new, &s_trashapple1);
+		NewState(newobj, &s_trashapple1);
 	}
 	else if (randnum >= 170)
 	{
-		NewState(new, &s_trashbird1);
+		NewState(newobj, &s_trashbird1);
 	}
 	ob->nothink = 2;
 }
@@ -1621,22 +1623,22 @@ FARSTATE s_jumpbombfly3 = {JUMPBOMB4LSPR, JUMPBOMB4RSPR, stepthink, false, push_
 void SpawnJumpbomb(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = jumpbombobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y) + -0x71;
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_jumpbomb);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT() / 0x20;
-	new->shootable = true;
+	newobj->obclass = jumpbombobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + -0x71;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_jumpbomb);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT() / 0x20;
+	newobj->shootable = true;
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 10;
+		newobj->health = 10;
 		break;
 	default:
-		new->health = 5;
+		newobj->health = 5;
 		break;
 	}
 }
@@ -1741,23 +1743,23 @@ FARSTATE s_deviljump  = {DEVILWALK4LSPR, DEVILWALK4RSPR, think, false, push_none
 void SpawnDevil(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = devilobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 32);
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
+	newobj->obclass = devilobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 32);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 20;
+		newobj->health = 20;
 		break;
 	default:
-		new->health = 10;
+		newobj->health = 10;
 		break;
 	}
-	NewState(new, &s_devilwalk1);
-	new->hitnorth = 1;
+	NewState(newobj, &s_devilwalk1);
+	newobj->hitnorth = 1;
 }
 
 /*
@@ -1882,23 +1884,23 @@ FARSTATE s_hairyjump  = {HAIRYSTANDLSPR, HAIRYSTANDRSPR, think, false, push_none
 void SpawnHairy(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = hairyobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 32);
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
-	NewState(new, &s_hairywalk1);
+	newobj->obclass = hairyobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 32);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
+	NewState(newobj, &s_hairywalk1);
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 6;
+		newobj->health = 6;
 		break;
 	default:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	}
-	new->hitnorth = 1;
+	newobj->hitnorth = 1;
 }
 
 /*
@@ -2050,24 +2052,24 @@ FARSTATE s_punchyattack2 = {PUNCHYATTACK2LSPR, PUNCHYATTACK2RSPR, step, true, pu
 void SpawnPunchy(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = punchyobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 40);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_punchywalk1);
-	new->hitnorth = 1;
-	new->shootable = true;
+	newobj->obclass = punchyobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 40);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_punchywalk1);
+	newobj->hitnorth = 1;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 10;
+	newobj->health = 10;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 10;
+		newobj->health = 10;
 		break;
 	default:
-		new->health = 5;
+		newobj->health = 5;
 		break;
 	}
 #endif
@@ -2153,25 +2155,25 @@ FARSTATE s_gorpfall  = {GORPFALLLSPR, GORPFALLRSPR, think, false, push_none, 0, 
 void SpawnGorp(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = gorpobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_gorpceil1);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT() / 0x20;
-	new->shootable = true;
+	newobj->obclass = gorpobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_gorpceil1);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT() / 0x20;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 1;
+	newobj->health = 1;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	default:
-		new->health = 1;
+		newobj->health = 1;
 		break;
 	}
 #endif
@@ -2295,22 +2297,22 @@ FARSTATE s_slimerattack = {SLIMERATTACKSPR, SLIMERATTACKSPR, step, true, push_do
 void SpawnSlimer(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = slimerobj;
-	new->priority = 2;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_slimerwalk1);
-	new->hitnorth = 1;
-	new->shootable = true;
+	newobj->obclass = slimerobj;
+	newobj->priority = 2;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_slimerwalk1);
+	newobj->hitnorth = 1;
+	newobj->shootable = true;
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	default:
-		new->health = 1;
+		newobj->health = 1;
 		break;
 	}
 }
@@ -2367,23 +2369,23 @@ FARSTATE s_cyborgwalk4 = {CYBORG4LSPR, CYBORG4RSPR, step, false, push_down, 7, 1
 void SpawnCyborg(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = cyborgobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 40);
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
+	newobj->obclass = cyborgobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 40);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 15;
+		newobj->health = 15;
 		break;
 	default:
-		new->health = 10;
+		newobj->health = 10;
 		break;
 	}
-	NewState(new, &s_cyborgwalk1);
-	new->hitnorth = 1;
+	NewState(newobj, &s_cyborgwalk1);
+	newobj->hitnorth = 1;
 }
 
 /*
@@ -2412,9 +2414,11 @@ void CyborgWalkThink(objtype *ob)
 		{
 			return;
 		}
-		new->xspeed = ob->xdir * 60;
-		new->yspeed = 0;
+		newobj->xspeed = ob->xdir * 60;
+		newobj->yspeed = 0;
 		SD_PlaySound(SNAKESHOOTSND);
 	}
 }
 #endif	// (EPISODE == 3)
+
+REFKEEN_NS_E

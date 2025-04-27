@@ -123,6 +123,8 @@
 #define STARTTILE32M (STARTTILE32+NUMTILE32)
 #define STARTEXTERNS (STARTTILE32M+NUMTILE32M)
 
+REFKEEN_NS_B
+
 typedef enum {
 	LASTFONT = STARTPICS-1,
 	// Lump Start
@@ -1046,5 +1048,7 @@ typedef enum {
 #undef __BEACONLUMP__
 #undef __PLASMALUMP__
 #undef __CATERPILLARLUMP__
+
+REFKEEN_NS_E
 
 #endif //__GFX_H__

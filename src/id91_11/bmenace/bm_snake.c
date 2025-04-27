@@ -24,6 +24,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // local macros:
 /////////////////////////////////////////////////////////////////////////////
@@ -608,8 +610,8 @@ void SnakeThrow(objtype *ob)
 #endif
 	if (ob->state == &s_snakeairthrow2)
 	{
-		new->xspeed += ob->xspeed/2;
-		new->yspeed += ob->yspeed/2;
+		newobj->xspeed += ob->xspeed/2;
+		newobj->yspeed += ob->yspeed/2;
 		return;
 	}
 	Quit("SnakeThrow: Bad state!");
@@ -3778,3 +3780,5 @@ void HandleRiding(objtype *ob)
 	}
 	ob->hitnorth = PLATFORMEDGE;
 }
+
+REFKEEN_NS_E

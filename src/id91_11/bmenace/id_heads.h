@@ -56,6 +56,8 @@
 #include "gfxe_bm.h"
 #include "audiobm.h"
 
+REFKEEN_NS_B
+
 //--------------------------------------------------------------------------
 
 #define BIOMENACE	//this used to be CAT3D
@@ -141,6 +143,8 @@ typedef	struct
 
 extern id0_char_t *introscn;
 
+REFKEEN_NS_E
+
 #include "id_mm.h"
 #include "id_ca.h"
 #include "id_vw.h"
@@ -148,7 +152,10 @@ extern id0_char_t *introscn;
 #include "id_in.h"
 #include "id_sd.h"
 #include "id_us.h"
+#include "altcontroller.h" // REFKEEN: New addition
 
+REFKEEN_NS_B
 
 void	Quit (const id0_char_t *error);		// defined in user program
 
+REFKEEN_NS_E

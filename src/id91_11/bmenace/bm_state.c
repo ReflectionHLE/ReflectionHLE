@@ -23,6 +23,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
 /////////////////////////////////////////////////////////////////////////////
@@ -30,9 +32,11 @@
 void BadState(objtype *ob);
 
 FARSTATE s_nullstate = {0, 0, think, false, push_none, 0, 0, 0, NULL, NULL, NULL, NULL};
+#if 0 // REFKEEN: This is unused
 //#pragma warn -sus	//BadState is not a valid contact function. Nobody cares.
 FARSTATE s_badstate  = {0, 0, think, false, push_none, 0, 0, 0, BadState, BadState, BadState, NULL};
 //#pragma warn +sus
+#endif
 
 Sint16 wallclip[8][16] = {			// the height of a given point in a tile
 { 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256},
@@ -853,7 +857,8 @@ void ClipToSpriteSide(objtype *push, objtype *solid)
 
 void ClipToSpriteTop(objtype *push, objtype *solid)
 {
-	Sint16 temp, ymove, bottominto;
+	Sint16 /*temp, */ymove, bottominto;
+	pushtype temp;
 
 	ymove = push->ymove - solid->ymove;
 	bottominto = push->bottom - solid->top;
@@ -1926,6 +1931,7 @@ static void R_WalkNormal(objtype *ob)
 	PLACESPRITE;
 }
 
+#if 0 // REFKEEN: Unused
 /*
 ===============
 =
@@ -1939,3 +1945,6 @@ void BadState(objtype *ob)
 {
 	Quit("Object with bad state!");
 }
+#endif
+
+REFKEEN_NS_E

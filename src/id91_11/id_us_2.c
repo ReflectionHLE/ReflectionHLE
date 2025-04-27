@@ -49,7 +49,7 @@ extern  ScanCode        firescan;
 		id0_boolean_t         practicemode = false;
 		ScanCode        grenadescan = sc_Enter;
 #endif
-		void StartMusic(id0_int_t num);
+		void StartMusic(id0_word_t/*id0_int_t*/ num); // REFKEEN: Fix type
 extern id0_int_t practiceTimeLeft;
 #else
 // REFKEEN - Should be extern since it's already defined in ID_US_1.c
@@ -2056,7 +2056,7 @@ USL_TearDownCtlPanel(void)
 #define MoveMin 40
 void
 #ifdef BIOMENACE
-US_ControlPanel(int type)
+US_ControlPanel(id0_int_t type)
 #else
 US_ControlPanel(void)
 #endif

@@ -24,11 +24,13 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // local defines:
 /////////////////////////////////////////////////////////////////////////////
 
-#define BACKCOLOR BLUE
+#define BACKCOLOR BE_CGA_BLUE
 
 #define WORDLIMIT 80
 #define FONTHEIGHT 10
@@ -47,7 +49,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #ifdef BETA
-static char *textfiles[] =
+static const id0_char_t *textfiles[] =
 {
 	"HELPART.BH1",
 	"CONTRART.BH1",
@@ -143,8 +145,8 @@ void RipToEOL(void)
 
 static Sint16 ParseNumber(void)
 {
-	char c, buffer[80];
-	char *bufptr;
+	id0_char_t c, buffer[80];
+	id0_char_t *bufptr;
 
 //
 // scan until a number is found
@@ -343,7 +345,7 @@ static void HandleCommand(void)
 
 static void NewLine(void)
 {
-	char c;
+	id0_char_t c;
 
 	if (++rowon == TEXTROWS)
 	{
@@ -379,7 +381,7 @@ static void NewLine(void)
 
 static void HandleCtrls(void)
 {
-	char c;
+	id0_char_t c;
 
 	c = *(text++);			// get the character and advance
 	if (c == '\n')
@@ -400,7 +402,7 @@ static void HandleCtrls(void)
 static void HandleWord(void)
 {
 	Uint16 wwidth, wheight, newpos, wordindex;
-	char word[WORDLIMIT];
+	id0_char_t word[WORDLIMIT];
 
 	//
 	// copy the next word into [word]
@@ -420,7 +422,7 @@ static void HandleWord(void)
 	//
 	// see if it fits on this line
 	//
-	VW_MeasurePropString(word, &wwidth, &wheight);
+	VW_MeasurePropString(word, NULL, &wwidth, &wheight);
 	while (rightmargin[rowon] < px+wwidth)
 	{
 		NewLine();
@@ -434,7 +436,7 @@ static void HandleWord(void)
 	// print it
 	//
 	newpos = px+wwidth;
-	VWB_DrawPropString(word);
+	VWB_DrawPropString(word, NULL);
 	px = newpos;
 
 	//
@@ -460,22 +462,22 @@ static void DrawScores(void)
 {
 	Uint16 oldcolor, i;
 	Uint16 wwidth, wheight;
-	char numbuf[16], *ptr;
+	id0_char_t numbuf[16], *ptr;
 	HighScore *entry;
 
 	oldcolor = fontcolor;
-	fontcolor = YELLOW^BACKCOLOR;
+	fontcolor = BE_CGA_YELLOW^BACKCOLOR;
 	for (i=0, entry=&Scores[0]; i<8; i++, entry++)
 	{
 		PrintY = i*16 + 35;
 		PrintX = 40;
 		US_Print(entry->name);
-		ultoa(entry->score, numbuf, 10);
+		BE_Cross_ultoa_dec(entry->score, numbuf);
 		for (ptr = numbuf; *ptr; ptr++)
 		{
 			*ptr = *ptr + 81;
 		}
-		USL_MeasureString(numbuf, &wwidth, &wheight);
+		USL_MeasureString(numbuf, NULL, &wwidth, &wheight);
 		PrintX = 280-wwidth;
 		US_Print(numbuf);
 	}
@@ -506,16 +508,16 @@ static void UpdateTimer(void)
 	}
 	else
 	{
-		itoa(timeleft, str2, 10);
+		BE_Cross_itoa_dec(timeleft, str2);
 		strcat(str, str2);
 #if (EPISODE == 1)
 		SD_PlaySound(TIMERTICKSND);
 #endif
 	}
-	fontcolor = LIGHTRED^BACKCOLOR;
+	fontcolor = BE_CGA_LIGHTRED^BACKCOLOR;
 	py = 186;
 	px = 218;
-	VWB_DrawPropString(str);
+	VWB_DrawPropString(str, NULL);
 	fontcolor = oldcolor;
 }
 #endif	// ifndef BETA
@@ -534,10 +536,10 @@ static void UpdateTimer(void)
 static void PageLayout(boolean shownumber)
 {
 	Sint16 oldcolor, i;
-	char c;
+	id0_char_t c;
 
 	oldcolor = fontcolor;
-	fontcolor = YELLOW^BACKCOLOR;
+	fontcolor = BE_CGA_YELLOW^BACKCOLOR;
 //
 // clear the screen
 //
@@ -603,15 +605,15 @@ static void PageLayout(boolean shownumber)
 #else
 		strcpy(str, "Pg ");
 #endif
-		itoa(pagenum, str2, 10);
+		BE_Cross_itoa_dec(pagenum, str2);
 		strcat(str, str2);
 		strcat(str, " of ");
-		itoa(numpages, str2, 10);
+		BE_Cross_itoa_dec(numpages, str2);
 		strcat(str, str2);
-		fontcolor = LIGHTRED^BACKCOLOR;
+		fontcolor = BE_CGA_LIGHTRED^BACKCOLOR;
 		py = 186;
 		px = 218;
-		VWB_DrawPropString(str);
+		VWB_DrawPropString(str, NULL);
 	}
 	fontcolor = oldcolor;
 }
@@ -882,7 +884,7 @@ void HelpScreens(void)
 #else
 		pos = textchunks[pos];
 		CA_CacheGrChunk(pos);
-		text = grsegs[pos];
+		text = (const id0_char_t id0_far *)grsegs[pos];
 		// BUG: should lock grsegs[pos] to make sure it doesn't get moved around
 		// when caching the graphics
 #endif
@@ -1024,7 +1026,7 @@ artdone:
 
 void FinaleLayout(void)
 {
-	char id0_seg *textseg;
+	id0_char_t id0_seg *textseg;
 	Sint16 i;
 
 	VW_ClearVideo(BACKCOLOR);
@@ -1042,16 +1044,16 @@ void FinaleLayout(void)
 	if (gamestate.nukestate != 2)
 	{
 		CA_CacheGrChunk(BADENDINGTEXT);
-		textseg = grsegs[BADENDINGTEXT];
+		textseg = (id0_char_t id0_seg *)grsegs[BADENDINGTEXT];
 	}
 	else
 	{
 		CA_CacheGrChunk(ENDINGTEXT);
-		textseg = grsegs[ENDINGTEXT];
+		textseg = (id0_char_t id0_seg *)grsegs[ENDINGTEXT];
 	}
 #else
 	CA_CacheGrChunk(ENDINGTEXT);
-	textseg = grsegs[ENDINGTEXT];
+	textseg = (id0_char_t id0_seg *)grsegs[ENDINGTEXT];
 #endif
 	text = textseg;
 	CacheLayoutGraphics();
@@ -1112,3 +1114,5 @@ nextpage:;
 	RF_FixOfs();
 	CA_FreeGraphics();
 }
+
+REFKEEN_NS_E

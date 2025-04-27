@@ -24,6 +24,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
 /////////////////////////////////////////////////////////////////////////////
@@ -47,8 +49,8 @@ boolean pirated = false;
 /////////////////////////////////////////////////////////////////////////////
 
 Uint16 tedlevelnum;
-char str[80];
-char str2[20];
+id0_char_t str[80];
+id0_char_t str2[20];
 boolean storedemo;
 boolean tedlevel;
 #ifndef BETA
@@ -71,12 +73,12 @@ Uint16 currentmusic;
 =====================
 */
 
-void SizeText(char *text, Uint16 *width, Uint16 *height)
+void SizeText(const id0_char_t *text, Uint16 *width, Uint16 *height)
 {
-	register char *ptr;
-	char c;
+	register id0_char_t *ptr;
+	id0_char_t c;
 	Uint16 w, h;
-	char strbuf[80];
+	id0_char_t strbuf[80];
 
 	*width = *height = 0;
 	ptr = &strbuf[0];
@@ -85,7 +87,7 @@ void SizeText(char *text, Uint16 *width, Uint16 *height)
 		*(ptr++) = c;
 		if (c == '\n' || !*text)
 		{
-			USL_MeasureString(strbuf, &w, &h);	// BUG: strbuf may not have a terminating '\0' at the end!
+			USL_MeasureString(strbuf, NULL, &w, &h);	// BUG: strbuf may not have a terminating '\0' at the end!
 			*height += h;
 			if (*width < w)
 			{
@@ -138,7 +140,8 @@ static void InitGame(void)
 
 	US_TextScreen();
 #ifndef BETA
-	_setcursortype(_NOCURSOR);
+	BE_ST_ToggleTextCursor(false);
+	//_setcursortype(_NOCURSOR);
 #endif
 	MM_Startup();
 	VW_Startup();
@@ -195,15 +198,16 @@ static void InitGame(void)
 ==========================
 */
 
-void Quit(char *error)
+void Quit(const id0_char_t *error)
 {
-	Uint16 finscreen;
+	void *finscreen;
+	//Uint16 finscreen;
 	if (!error)
 	{
 		CA_SetAllPurge();
 #ifndef BETA
 		CA_CacheGrChunk(ORDERSCREEN);
-		finscreen = (Uint16)grsegs[ORDERSCREEN];
+		finscreen = grsegs[ORDERSCREEN];
 #endif
 	}
 	// BUG: VW_ClearVideo may brick the system if screenseg is 0
@@ -218,22 +222,27 @@ void Quit(char *error)
 		puts(error);
 		if (tedlevel)
 		{
-			getch();
-			execlp("TED5.EXE", "TED5.EXE", "/LAUNCH", NULL);
+			BE_ST_BiosScanCode(0);
+//			getch();
+			// REFKEEN - DISABLED
+			BE_ST_ExitWithErrorMsg("Sorry, but TED5.EXE cannot be launched from game in this source port.");
+//			execlp("TED5.EXE", "TED5.EXE", "/LAUNCH", NULL);
 		}
-		exit(1);
+		BE_ST_HandleExit(1);
 	}
 	if (!NoWait)
 	{
 #ifndef BETA
-		movedata(finscreen, 0, 0xB800, 0, 3780);
-		textmode(C80);
-		textcolor(WHITE);
-		textbackground(BLACK);
+		memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 3780);
+//		movedata(finscreen, 0, 0xB800, 0, 3780);
+		BE_ST_SetScreenMode(3);
+//		textmode(C80);
+		BE_ST_textcolor(BE_CGA_WHITE);
+		BE_ST_textbackground(BE_CGA_BLACK);
 #endif
-		gotoxy(1, 24);
+		BE_ST_gotoxy(1, 24);
 	}
-	exit(0);
+	BE_ST_HandleExit(0);
 }
 
 //===========================================================================
@@ -249,7 +258,9 @@ void Quit(char *error)
 void TEDDeath(void)
 {
 	ShutdownId();
-	execlp("TED5.EXE", "TED5.EXE", "/LAUNCH", NULL);
+	// REFKEEN - DISABLED
+	BE_ST_ExitWithErrorMsg("Sorry, but TED5.EXE cannot be launched from game in this source port.");
+	//execlp("TED5.EXE", "TED5.EXE", "/LAUNCH", NULL);
 	// BUG: should call exit(1); here in case starting TED5 fails
 }
 
@@ -280,7 +291,8 @@ without encountering "out of memory" crashes. See MEMORY.TXT for details.
 
 static void CheckMemory(void)
 {
-	Uint16 finscreen;
+	Uint8 *finscreen;
+//	Uint16 finscreen;
 
 	if (mminfo.nearheap+mminfo.farheap+mminfo.EMSmem+mminfo.XMSmem >= MINMEMORY)
 	{
@@ -292,15 +304,18 @@ static void CheckMemory(void)
 	puts("Not enough memory to run BioHazard!");
 #else
 	CA_CacheGrChunk (OUTOFMEM);
-	finscreen = (Uint16)grsegs[OUTOFMEM];
+	finscreen = (Uint8 *)grsegs[OUTOFMEM];
+//	finscreen = (Uint16)grsegs[OUTOFMEM];
 	ShutdownId();
-	movedata (finscreen,7,0xb800,0,3780);
-	textmode(C80);
-	textcolor(WHITE);
-	textbackground(BLACK);
+	memcpy(BE_ST_GetTextModeMemoryPtr(),finscreen+7,3780);
+//	movedata (finscreen,7,0xb800,0,3780);
+	BE_ST_SetScreenMode(3);
+//	textmode(C80);
+	BE_ST_textcolor(BE_CGA_WHITE);
+	BE_ST_textbackground(BE_CGA_BLACK);
 #endif
-	gotoxy (1,24);
-	exit(1);
+	BE_ST_gotoxy (1,24);
+	BE_ST_HandleExit(1);
 }
 
 //===========================================================================
@@ -313,7 +328,7 @@ static void CheckMemory(void)
 =====================
 */
 
-static char *ParmStrings[] = {"easy", "normal", "hard", ""};
+static const id0_char_t *ParmStrings[] = {"easy", "normal", "hard", ""};
 
 static void DemoLoop(void)
 {
@@ -335,12 +350,12 @@ static void DemoLoop(void)
 		CA_LoadAllSounds();
 		gamestate.mapon = tedlevelnum;
 		restartgame = gd_Normal;
-		for (i = 1;i < _argc;i++)
+		for (i = 1;i < id0_argc;i++)
 		{
-			if ( (level = US_CheckParm(_argv[i],ParmStrings)) == -1)
+			if ( (level = US_CheckParm(id0_argv[i],ParmStrings)) == -1)
 				continue;
 
-			restartgame = gd_Easy+level;
+			restartgame = (GameDiff)(gd_Easy+level);
 			break;
 		}
 		GameLoop();
@@ -467,12 +482,13 @@ static void DemoLoop(void)
 =====================
 */
 
-#define FILE_GR1 GREXT"1."EXTENSION
-#define FILE_GR2 GREXT"2."EXTENSION
-#define FILE_GRAPH GREXT"GRAPH."EXTENSION
+#define FILE_GR1 GREXT "1." EXTENSION
+#define FILE_GR2 GREXT "2." EXTENSION
+#define FILE_GRAPH GREXT "GRAPH." EXTENSION
 
 static void CheckCutFile(void)
 {
+#if 0 // REFKEEN TODO: Implement?
 	register Sint16 ohandle, ihandle;
 	Sint16 handle;
 	Sint32 size;
@@ -483,22 +499,22 @@ static void CheckCutFile(void)
 		close(handle);
 		return;
 	}
-	puts("Combining "FILE_GR1" and "FILE_GR2" into "FILE_GRAPH"...");
+	puts("Combining " FILE_GR1 " and " FILE_GR2 " into " FILE_GRAPH "...");
 	if (rename(FILE_GR1, FILE_GRAPH) == -1)
 	{
-		puts("Can't rename "FILE_GR1"!");
-		exit(1);
+		puts("Can't rename " FILE_GR1 "!");
+		BE_ST_HandleExit(1);
 	}
 	if ( (ohandle = open(FILE_GRAPH, O_BINARY|O_APPEND|O_WRONLY)) == -1)
 	{
-		puts("Can't open "FILE_GRAPH"!");
-		exit(1);
+		puts("Can't open " FILE_GRAPH "!");
+		BE_ST_HandleExit(1);
 	}
 	lseek(ohandle, 0, SEEK_END);
 	if ( (ihandle = open(FILE_GR2, O_BINARY|O_RDONLY)) == -1)
 	{
-		puts("Can't find "FILE_GR2"!");
-		exit(1);
+		puts("Can't find " FILE_GR2 "!");
+		BE_ST_HandleExit(1);
 	}
 	size = filelength(ihandle);
 	buffer = farmalloc(32000);
@@ -521,6 +537,7 @@ static void CheckCutFile(void)
 	close(ohandle);
 	close(ihandle);
 	unlink(FILE_GR2);
+#endif
 }
 
 //===========================================================================
@@ -536,9 +553,10 @@ static void CheckCutFile(void)
 #ifndef BETA
 static boolean CheckDIZ(void)
 {
-	register Sint16 handle, i;
-	char c1, c2;
-	char diztext[443] = 
+	BE_FILE_T handle;
+	register Sint16 i;
+	id0_char_t c1, c2;
+	const id0_char_t diztext[443] = 
 		"ллллВБА  THIS IS PIRATED SOFTWARE!  АБВлллл  "
 		"ллллллллллллллллллллллллллллллллллллллллллл  "
 		"THIS FILE IS NOT SHAREWARE -- it is ILLEGAL  "
@@ -549,26 +567,27 @@ static boolean CheckDIZ(void)
 		"лВБА OR CONTACT APOGEE: (214) 278-5655 АБВл  "
 		"IT IS ILLEGAL TO GET THIS FILE FROM A BBS!  "
 		"ллллллллллллллллллллллллллллллллллллллллллл  ";
-	char buffer[443];
+	id0_char_t buffer[443];
 
-	if ( (handle = open("file_id.diz", O_BINARY|O_RDONLY)) == -1)
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("file_id.diz")))
 	{
-		close(handle);
+		BE_Cross_close(handle);
 		return true;	// file is missing, game was pirated
 	}
-	if (filelength(handle) != 442)
+	if (BE_Cross_FileLengthFromHandle(handle) != 442)
 	{
-		close(handle);
+		BE_Cross_close(handle);
 		return true;	// wrong file size, game was pirated
 	}
-	if (read(handle, buffer, 442) == -1)
+	if (BE_Cross_readInt8LEBuffer(handle, buffer, 442) < 442)
+//	if (read(handle, buffer, 442) == -1)
 	{
-		close(handle);
+		BE_Cross_close(handle);
 		return true;	// hardware error, game was pirated (seriously?)
 	}
 	else
 	{
-		close(handle);
+		BE_Cross_close(handle);
 	}
 	for (i=0; i<442; i++)
 	{
@@ -597,9 +616,9 @@ static boolean CheckDIZ(void)
 */
 
 #ifdef BETA
-char *betaparm[] = {"slammer",""};
-#else
-char *betaparm[] = {"sewerman",""};	// not used in the final game
+const id0_char_t *betaparm[] = {"slammer",""};
+#elif 0 // REFKEEN: Disable
+id0_char_t *betaparm[] = {"sewerman",""};	// not used in the final game
 #endif
 
 void bmenace_exe_main(void)
@@ -621,7 +640,7 @@ void bmenace_exe_main(void)
 		if (today.da_day >= 15 && today.da_mon >= 8 && today.da_year >= 92)
 		{
 			printf("This beta version has expired. Thanks for your help.");
-			exit(0);
+			BE_ST_HandleExit(0);
 		}
 	}
 #elif (!SHAREWARE)
@@ -637,7 +656,7 @@ void bmenace_exe_main(void)
 		if (_argc <= 1)	// need at least 1 real parameter
 		{
 			printf("You are not authorized to play this game!\n");
-			exit(0);
+			BE_ST_HandleExit(0);
 		}
 		for (i=1; i<_argc; i++)
 		{
@@ -645,7 +664,7 @@ void bmenace_exe_main(void)
 			if (US_CheckParm(_argv[i], betaparm) != 0)
 			{
 				printf("You are not authorized to play this game!\n");
-				exit(0);
+				BE_ST_HandleExit(0);
 			}
 		}
 	}
@@ -654,8 +673,11 @@ void bmenace_exe_main(void)
 	CheckMemory();
 #ifndef BETA
 	gamestate._zero = 0;	//Note: this field is not used anywhere else
-	_setcursortype(_NORMALCURSOR);
+	BE_ST_ToggleTextCursor(true);
+	//_setcursortype(_NORMALCURSOR);
 #endif
 	DemoLoop();
 	Quit("Demo loop exited???");
 }
+
+REFKEEN_NS_E

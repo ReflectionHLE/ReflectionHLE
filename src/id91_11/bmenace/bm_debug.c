@@ -24,6 +24,7 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
 
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
@@ -180,7 +181,7 @@ static void TestSprites(void)
 			chunk = STARTSPRITES;
 		}
 		info = &spritetable[chunk-STARTSPRITES];
-		block = grsegs[chunk];
+		block = (Uint8 id0_seg *)grsegs[chunk];
 		VWB_Bar(infox, infoy, 40, infobottom-infoy, WHITE);
 		PrintX = infox;
 		PrintY = infoy;
@@ -382,8 +383,8 @@ static void MaskOnTile(Uint16 dest, Uint16 source)
 	Uint16 id0_seg *destseg;
 	Uint16 sourceval, maskindex, sourcemask;
 
-	sourceseg = (grsegs+STARTTILE16M)[source];
-	destseg = (grsegs+STARTTILE16M)[dest];
+	sourceseg = (Uint16 id0_seg *)(grsegs+STARTTILE16M)[source];
+	destseg = (Uint16 id0_seg *)(grsegs+STARTTILE16M)[dest];
 	for (i=0; i<64; i++)
 	{
 		maskindex = i & 15;
@@ -435,7 +436,7 @@ static void WallDebug(void)
 		if (val > 1)
 		{
 			strcpy(str, "WallDebug: East wall other than 1:");
-			itoa(i, str2, 10);
+			BE_Cross_itoa_dec(i, str2);
 			strcat(str, str2);
 			Quit(str);
 		}
@@ -447,7 +448,7 @@ static void WallDebug(void)
 		if (val > 1)
 		{
 			strcpy(str, "WallDebug: West wall other than 1:");
-			itoa(i, str2, 10);
+			BE_Cross_itoa_dec(i, str2);
 			strcat(str, str2);
 			Quit(str);
 		}
@@ -526,12 +527,14 @@ static boolean DebugKeys(void)
 		US_CenterWindow(12, 2);
 		if (godmode)
 		{
-			_fstrcpy(buffer, str_godmodeoff);
+			strcpy(buffer, str_godmodeoff);
+//			_fstrcpy(buffer, str_godmodeoff);
 			US_PrintCentered(buffer);
 		}
 		else
 		{
-			_fstrcpy(buffer, str_godmodeon);
+			strcpy(buffer, str_godmodeon);
+//			_fstrcpy(buffer, str_godmodeon);
 			US_PrintCentered(buffer);
 		}
 		VW_UpdateScreen();
@@ -566,12 +569,14 @@ static boolean DebugKeys(void)
 		US_CenterWindow(18, 3);
 		if (jumpcheat)
 		{
-			_fstrcpy(buffer, str_jumpcheaton);
+			strcpy(buffer, str_jumpcheaton);
+//			_fstrcpy(buffer, str_jumpcheaton);
 			US_PrintCentered(buffer);
 		}
 		else
 		{
-			_fstrcpy(buffer, str_jumpcheatoff);
+			strcpy(buffer, str_jumpcheatoff);
+//			_fstrcpy(buffer, str_jumpcheatoff);
 			US_PrintCentered(buffer);
 		}
 		VW_UpdateScreen();
@@ -652,7 +657,8 @@ static boolean DebugKeys(void)
 		VW_FixRefreshBuffer();
 		US_CenterWindow(26, 3);
 		PrintY += 6;
-		_fstrcpy(buffer, str_warpprompt);
+		strcpy(buffer, str_warpprompt);
+//		_fstrcpy(buffer, str_warpprompt);
 		US_Print(buffer);
 		VW_UpdateScreen();
 		esc = !US_LineInput(px, py, buffer, NULL, true, 2, 0);
@@ -1071,7 +1077,7 @@ void StartDemoRecord(void)
 
 void EndDemoRecord(void)
 {
-	Sint16 handle;
+	BE_FILE_T handle;
 	boolean esc;
 	id0_char_t filename[] = "DEMO?."EXTENSION;
 
@@ -1085,15 +1091,18 @@ void EndDemoRecord(void)
 	if (!esc && str[0] >= '0' && str[0] <= '9')
 	{
 		filename[4] = str[0];
-		handle = open(filename, O_BINARY|O_WRONLY|O_CREAT, S_IFREG|S_IREAD|S_IWRITE);
-		if (handle == -1)
+		handle = BE_Cross_open_rewritable_for_overwriting(filename);
+//		handle = open(filename, O_BINARY|O_WRONLY|O_CREAT, S_IFREG|S_IREAD|S_IWRITE);
+		if (!BE_Cross_IsFileValid(handle))
 		{
 			Quit("EndDemoRecord:  Cannot write demo file!");
 		}
-		write(handle, &mapon, sizeof(mapon));
-		write(handle, &DemoOffset, sizeof(DemoOffset));
+		BE_Cross_writeInt16LE(handle, &mapon);
+		BE_Cross_writeInt16LE(handle, &DemoOffset);
 		CA_FarWrite(handle, DemoBuffer, DemoOffset);
-		close(handle);
+		BE_Cross_close(handle);
 	}
 	IN_FreeDemoBuffer();
 }
+
+REFKEEN_NS_E

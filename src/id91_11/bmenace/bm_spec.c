@@ -23,6 +23,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
 /////////////////////////////////////////////////////////////////////////////
@@ -158,7 +160,7 @@ void ScanInfoPlane(void)
 			case 3:
 				SpawnWorm(x, y);
 				NEED(PINKWORM);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 4:
 #if (EPISODE == 1)
@@ -168,17 +170,17 @@ void ScanInfoPlane(void)
 				SpawnKamikaze(x, y);
 				NEED(KAMIKAZE);
 #endif
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 5:
 #if (EPISODE == 1)
 				SpawnPlasmaWorm(x, y);
 				NEED(PLASMAWORM);
-				new->active = no;
+				newobj->active = no;
 #elif (EPISODE == 2)
 				SpawnTrashBoss(x, y);
 				NEED(TRASHBOSS);
-				new->active = no;
+				newobj->active = no;
 #elif (EPISODE == 3)
 				SpawnHairy(x, y);
 				NEED(HAIRY);
@@ -188,7 +190,7 @@ void ScanInfoPlane(void)
 			case 6:
 				SpawnBug(x, y);
 				NEED(BUG);
-				new->active = no;
+				newobj->active = no;
 				break;
 #endif
 			case 7:
@@ -212,7 +214,7 @@ void ScanInfoPlane(void)
 			case 9:
 				SpawnBonus(x, y, 9);
 				NEED(PLAYER);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 10:
 				SpawnPunchy(x, y);
@@ -259,63 +261,63 @@ void ScanInfoPlane(void)
 #endif
 			case 16:
 				SpawnBonus(x, y, 16);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 17:
 				SpawnBonus(x, y, 17);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 18:
 				SpawnBonus(x, y, 18);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 19:
 				SpawnBonus(x, y, 19);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 20:
 				SpawnBonus(x, y, 20);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 21:
 				SpawnBonus(x, y, 21);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 22:
 				SpawnBonus(x, y, 22);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 23:
 				SpawnBonus(x, y, 23);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 24:
 				SpawnBonus(x, y, 24);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 25:
 				SpawnBonus(x, y, 25);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 26:
 				SpawnBonus(x, y, 26);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 27:
 				SpawnBonus(x, y, 27);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 28:
 				SpawnBonus(x, y, 28);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 29:
 				SpawnBonus(x, y, 29);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 30:
 				SpawnBonus(x, y, 30);
-				new->active = no;
+				newobj->active = no;
 				break;
 #if (EPISODE == 1)
 			case 31:
@@ -441,11 +443,11 @@ void ScanInfoPlane(void)
 #endif
 			case 52:
 				SpawnBonus(x, y, 52);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 53:
 				SpawnBonus(x, y, 53);
-				new->active = no;
+				newobj->active = no;
 				break;
 #ifdef BETA
 			case 54:
@@ -458,7 +460,7 @@ void ScanInfoPlane(void)
 #else
 			case 54:
 				SpawnBonus(x, y, 54);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 55:
 				SpawnBeacon(x, y);
@@ -476,7 +478,7 @@ void ScanInfoPlane(void)
 			case 67:
 			case 68:
 			case 69:
-				SpawnPlatform(x, y, value+(arrow_North-66));
+				SpawnPlatform(x, y, (arrowdirtype)(value+(arrow_North-66)));
 				NEED(PLATFORM);
 				break;
 #if (EPISODE != 2)
@@ -491,23 +493,23 @@ void ScanInfoPlane(void)
 				break;
 			case 75:
 				SpawnBonus(x, y, 75);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 76:
 				SpawnBonus(x, y, 76);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 77:
 				SpawnBonus(x, y, 77);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 78:
 				SpawnBonus(x, y, 78);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 79:
 				SpawnBonus(x, y, 79);
-				new->active = no;
+				newobj->active = no;
 				break;
 			case 80:
 				SpawnTank(x, y);
@@ -562,9 +564,9 @@ void ScanInfoPlane(void)
 				break;
 #endif
 			}
-			if (new->active != allways)
+			if (newobj->active != allways)
 			{
-				new->active = no;
+				newobj->active = no;
 			}
 		}
 	}
@@ -874,58 +876,58 @@ void HostageDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_hostage0);
+			strcpy(messagetext, msg_hostage0);
 			break;
 		case 1:
-			_fstrcpy(messagetext, msg_hostage1);
+			strcpy(messagetext, msg_hostage1);
 			break;
 		case 2:
-			_fstrcpy(messagetext, msg_hostage2);
+			strcpy(messagetext, msg_hostage2);
 			break;
 		case 3:
-			_fstrcpy(messagetext, msg_hostage3);
+			strcpy(messagetext, msg_hostage3);
 			break;
 		case 4:
-			_fstrcpy(messagetext, msg_hostage4);
+			strcpy(messagetext, msg_hostage4);
 			break;
 		case 5:
-			_fstrcpy(messagetext, msg_hostage5);
+			strcpy(messagetext, msg_hostage5);
 			break;
 		case 6:
-			_fstrcpy(messagetext, msg_hostage6);
+			strcpy(messagetext, msg_hostage6);
 			break;
 		case 7:
-			_fstrcpy(messagetext, msg_hostage7);
+			strcpy(messagetext, msg_hostage7);
 			break;
 		case 8:
-			_fstrcpy(messagetext, msg_hostage8);
+			strcpy(messagetext, msg_hostage8);
 			break;
 		case 9:
-			_fstrcpy(messagetext, msg_hostage9);
+			strcpy(messagetext, msg_hostage9);
 			break;
 		case 10:
-			_fstrcpy(messagetext, msg_hostage10);
+			strcpy(messagetext, msg_hostage10);
 			break;
 		case 11:
-			_fstrcpy(messagetext, msg_hostage11);
+			strcpy(messagetext, msg_hostage11);
 			break;
 		case 12:
-			_fstrcpy(messagetext, msg_hostage12);
+			strcpy(messagetext, msg_hostage12);
 			break;
 		case 13:
-			_fstrcpy(messagetext, msg_hostage13);
+			strcpy(messagetext, msg_hostage13);
 			break;
 		case 14:
-			_fstrcpy(messagetext, msg_hostage14);
+			strcpy(messagetext, msg_hostage14);
 			break;
 		case 15:
-			_fstrcpy(messagetext, msg_hostage15);
+			strcpy(messagetext, msg_hostage15);
 			break;
 		case 16:
-			_fstrcpy(messagetext, msg_hostage16);
+			strcpy(messagetext, msg_hostage16);
 			break;
 		case 17:
-			_fstrcpy(messagetext, msg_hostage17);
+			strcpy(messagetext, msg_hostage17);
 			break;
 		}
 		US_CPrint(messagetext);
@@ -995,7 +997,7 @@ void HintDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_hint0);
+			strcpy(messagetext, msg_hint0);
 			break;
 		}
 		US_CPrint(messagetext);
@@ -1119,44 +1121,44 @@ void BossDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_boss0);
+			strcpy(messagetext, msg_boss0);
 			break;
 		case 1:
-			_fstrcpy(messagetext, msg_boss1);
+			strcpy(messagetext, msg_boss1);
 			break;
 		case 2:
-			_fstrcpy(messagetext, msg_boss2);
+			strcpy(messagetext, msg_boss2);
 			break;
 		case 3:
-			_fstrcpy(messagetext, msg_boss3);
+			strcpy(messagetext, msg_boss3);
 			SD_PlaySound(GROWLSND);
 			break;
 		case 4:
-			_fstrcpy(messagetext, msg_boss4);
+			strcpy(messagetext, msg_boss4);
 			break;
 		case 5:
-			_fstrcpy(messagetext, msg_boss5);
+			strcpy(messagetext, msg_boss5);
 			break;
 		case 6:
-			_fstrcpy(messagetext, msg_boss6);
+			strcpy(messagetext, msg_boss6);
 			break;
 		case 7:
-			_fstrcpy(messagetext, msg_boss7);
+			strcpy(messagetext, msg_boss7);
 			break;
 		case 8:
-			_fstrcpy(messagetext, msg_boss8);
+			strcpy(messagetext, msg_boss8);
 			break;
 		case 9:
-			_fstrcpy(messagetext, msg_boss9);
+			strcpy(messagetext, msg_boss9);
 			break;
 		case 10:
-			_fstrcpy(messagetext, msg_boss10);
+			strcpy(messagetext, msg_boss10);
 			break;
 		case 11:
-			_fstrcpy(messagetext, msg_boss11);
+			strcpy(messagetext, msg_boss11);
 			break;
 		case 12:	// unreachable case
-			_fstrcpy(messagetext, msg_hint0);
+			strcpy(messagetext, msg_hint0);
 			break;
 		}
 		US_CPrint(messagetext);
@@ -1460,58 +1462,58 @@ void HostageDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_hostage0);
+			strcpy(messagetext, msg_hostage0);
 			break;
 		case 1:
-			_fstrcpy(messagetext, msg_hostage1);
+			strcpy(messagetext, msg_hostage1);
 			break;
 		case 2:	// unreachable case
-			_fstrcpy(messagetext, msg_hostage2);
+			strcpy(messagetext, msg_hostage2);
 			break;
 		case 3:
-			_fstrcpy(messagetext, msg_hostage3);
+			strcpy(messagetext, msg_hostage3);
 			break;
 		case 4:
-			_fstrcpy(messagetext, msg_hostage4);
+			strcpy(messagetext, msg_hostage4);
 			break;
 		case 5:
-			_fstrcpy(messagetext, msg_hostage5);
+			strcpy(messagetext, msg_hostage5);
 			break;
 		case 6:
-			_fstrcpy(messagetext, msg_hostage6);
+			strcpy(messagetext, msg_hostage6);
 			break;
 		case 7:
-			_fstrcpy(messagetext, msg_hostage7);
+			strcpy(messagetext, msg_hostage7);
 			break;
 		case 8:
-			_fstrcpy(messagetext, msg_hostage8);
+			strcpy(messagetext, msg_hostage8);
 			break;
 		case 9:
-			_fstrcpy(messagetext, msg_hostage9);
+			strcpy(messagetext, msg_hostage9);
 			break;
 		case 10:
-			_fstrcpy(messagetext, msg_hostage10);
+			strcpy(messagetext, msg_hostage10);
 			break;
 		case 11:
-			_fstrcpy(messagetext, msg_hostage11);
+			strcpy(messagetext, msg_hostage11);
 			break;
 		case 12:
-			_fstrcpy(messagetext, msg_hostage12);
+			strcpy(messagetext, msg_hostage12);
 			break;
 		case 13:
-			_fstrcpy(messagetext, msg_hostage13);
+			strcpy(messagetext, msg_hostage13);
 			break;
 		case 14:
-			_fstrcpy(messagetext, msg_hostage14);
+			strcpy(messagetext, msg_hostage14);
 			break;
 		case 15:
-			_fstrcpy(messagetext, msg_hostage15);
+			strcpy(messagetext, msg_hostage15);
 			break;
 		case 16:
-			_fstrcpy(messagetext, msg_hostage16);
+			strcpy(messagetext, msg_hostage16);
 			break;
 		case 17:
-			_fstrcpy(messagetext, msg_hostage17);
+			strcpy(messagetext, msg_hostage17);
 			break;
 		}
 		US_CPrint(messagetext);
@@ -1643,27 +1645,27 @@ void HintDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_hint0);
+			strcpy(messagetext, msg_hint0);
 			break;
 		case 1:
-			_fstrcpy(messagetext, msg_hint1);
+			strcpy(messagetext, msg_hint1);
 			break;
 		case 3:
-			_fstrcpy(messagetext, msg_hint3);
+			strcpy(messagetext, msg_hint3);
 			hintstate = 3;
 			break;
 		case 4:
-			_fstrcpy(messagetext, msg_hint4);
+			strcpy(messagetext, msg_hint4);
 			break;
 		case 5:
-			_fstrcpy(messagetext, msg_hint5);
+			strcpy(messagetext, msg_hint5);
 			break;
 		case 6:
-			_fstrcpy(messagetext, msg_hint6);
+			strcpy(messagetext, msg_hint6);
 			break;
 #ifndef BETA
 		case 7:
-			_fstrcpy(messagetext, msg_hint7);
+			strcpy(messagetext, msg_hint7);
 			break;
 #endif
 		}
@@ -1806,32 +1808,32 @@ void BossDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_boss0);
+			strcpy(messagetext, msg_boss0);
 			break;
 		case 1:
-			_fstrcpy(messagetext, msg_boss1);
+			strcpy(messagetext, msg_boss1);
 			break;
 		case 2:
-			_fstrcpy(messagetext, msg_boss2);
+			strcpy(messagetext, msg_boss2);
 			break;
 		case 3:
-			_fstrcpy(messagetext, msg_boss3);
+			strcpy(messagetext, msg_boss3);
 			break;
 		case 4:
-			_fstrcpy(messagetext, msg_boss4);
+			strcpy(messagetext, msg_boss4);
 			break;
 		case 5:
-			_fstrcpy(messagetext, msg_boss5);
+			strcpy(messagetext, msg_boss5);
 			break;
 		case 6:
-			_fstrcpy(messagetext, msg_boss6);
+			strcpy(messagetext, msg_boss6);
 			break;
 		case 7:
-			_fstrcpy(messagetext, msg_boss7);
+			strcpy(messagetext, msg_boss7);
 			break;
 #ifdef BETA
 		case 8:
-			_fstrcpy(messagetext, msg_boss8);
+			strcpy(messagetext, msg_boss8);
 			break;
 #endif
 		}
@@ -2036,49 +2038,49 @@ void HostageDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_hostage0);
+			strcpy(messagetext, msg_hostage0);
 			break;
 		case 1:
-			_fstrcpy(messagetext, msg_hostage1);
+			strcpy(messagetext, msg_hostage1);
 			break;
 		case 2:
-			_fstrcpy(messagetext, msg_hostage2);
+			strcpy(messagetext, msg_hostage2);
 			break;
 		case 3:
-			_fstrcpy(messagetext, msg_hostage3);
+			strcpy(messagetext, msg_hostage3);
 			break;
 		case 4:
-			_fstrcpy(messagetext, msg_hostage4);
+			strcpy(messagetext, msg_hostage4);
 			break;
 		case 5:
-			_fstrcpy(messagetext, msg_hostage5);
+			strcpy(messagetext, msg_hostage5);
 			break;
 		case 6:
-			_fstrcpy(messagetext, msg_hostage6);
+			strcpy(messagetext, msg_hostage6);
 			break;
 		case 7:
-			_fstrcpy(messagetext, msg_hostage7);
+			strcpy(messagetext, msg_hostage7);
 			break;
 		case 8:
-			_fstrcpy(messagetext, msg_hostage8);
+			strcpy(messagetext, msg_hostage8);
 			break;
 		case 9:
-			_fstrcpy(messagetext, msg_hostage9);
+			strcpy(messagetext, msg_hostage9);
 			break;
 		case 10:
-			_fstrcpy(messagetext, msg_hostage10);
+			strcpy(messagetext, msg_hostage10);
 			break;
 		case 11:
-			_fstrcpy(messagetext, msg_hostage11);
+			strcpy(messagetext, msg_hostage11);
 			break;
 		case 12:
-			_fstrcpy(messagetext, msg_hostage12);
+			strcpy(messagetext, msg_hostage12);
 			break;
 		case 13:
-			_fstrcpy(messagetext, msg_hostage13);
+			strcpy(messagetext, msg_hostage13);
 			break;
 		case 14:
-			_fstrcpy(messagetext, msg_hostage14);
+			strcpy(messagetext, msg_hostage14);
 			break;
 		}
 		US_CPrint(messagetext);
@@ -2134,7 +2136,7 @@ void HintDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_hint0);
+			strcpy(messagetext, msg_hint0);
 			break;
 		}
 		US_CPrint(messagetext);
@@ -2201,16 +2203,16 @@ void BossDialog(void)
 		switch (i)
 		{
 		case 0:
-			_fstrcpy(messagetext, msg_boss0);
+			strcpy(messagetext, msg_boss0);
 			break;
 		case 1:
-			_fstrcpy(messagetext, msg_boss1);
+			strcpy(messagetext, msg_boss1);
 			break;
 		case 2:
-			_fstrcpy(messagetext, msg_boss2);
+			strcpy(messagetext, msg_boss2);
 			break;
 		case 3:
-			_fstrcpy(messagetext, msg_boss3);
+			strcpy(messagetext, msg_boss3);
 			break;
 		}
 		US_CPrint(messagetext);
@@ -2225,3 +2227,5 @@ void BossDialog(void)
 }
 
 #endif
+
+REFKEEN_NS_E

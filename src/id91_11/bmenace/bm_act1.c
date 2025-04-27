@@ -23,6 +23,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
 /////////////////////////////////////////////////////////////////////////////
@@ -186,35 +188,35 @@ FARSTATE s_platform = {PLATFORMSPR, PLATFORMSPR, think, false, push_none, 0, 0, 
 void SpawnPlatform(Uint16 x, Uint16 y, arrowdirtype dir)
 {
 	GetNewObj(false);
-	new->obclass = platformobj;
-	new->active = allways;
+	newobj->obclass = platformobj;
+	newobj->active = allways;
 #if (EPISODE == 1)
-	new->priority = 1;
+	newobj->priority = 1;
 #else
-	new->priority = 0;
+	newobj->priority = 0;
 #endif
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
 	switch (dir)
 	{
 	case arrow_North:
-		new->xdir = 0;
-		new->ydir = -1;
+		newobj->xdir = 0;
+		newobj->ydir = -1;
 		break;
 	case arrow_East:
-		new->xdir = 1;
-		new->ydir = 0;
+		newobj->xdir = 1;
+		newobj->ydir = 0;
 		break;
 	case arrow_South:
-		new->xdir = 0;
-		new->ydir = 1;
+		newobj->xdir = 0;
+		newobj->ydir = 1;
 		break;
 	case arrow_West:
-		new->xdir = -1;
-		new->ydir = 0;
+		newobj->xdir = -1;
+		newobj->ydir = 0;
 		break;
 	}
-	NewState(new, &s_platform);
+	NewState(newobj, &s_platform);
 }
 
 #ifndef BETA
@@ -237,31 +239,31 @@ FARSTATE s_apogee = {APOGEESPR, APOGEESPR, think, false, push_none, 0, 0, 0, Pla
 void SpawnApogee(Uint16 x, Uint16 y, arrowdirtype dir)
 {
 	GetNewObj(false);
-	new->obclass = platformobj;
-	new->active = allways;
-	new->priority = 0;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->obclass = platformobj;
+	newobj->active = allways;
+	newobj->priority = 0;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
 	switch (dir)
 	{
 	case arrow_North:
-		new->xdir = 0;
-		new->ydir = -1;
+		newobj->xdir = 0;
+		newobj->ydir = -1;
 		break;
 	case arrow_East:
-		new->xdir = 1;
-		new->ydir = 0;
+		newobj->xdir = 1;
+		newobj->ydir = 0;
 		break;
 	case arrow_South:
-		new->xdir = 0;
-		new->ydir = 1;
+		newobj->xdir = 0;
+		newobj->ydir = 1;
 		break;
 	case arrow_West:
-		new->xdir = -1;
-		new->ydir = 0;
+		newobj->xdir = -1;
+		newobj->ydir = 0;
 		break;
 	}
-	NewState(new, &s_apogee);
+	NewState(newobj, &s_apogee);
 }
 #endif
 
@@ -358,18 +360,18 @@ FARSTATE s_shuttle = {SHUTTLESPR, SHUTTLESPR, think, false, push_none, 0, 0, 0, 
 void SpawnShuttle(Uint16 x, Uint16 y, arrowdirtype dir)
 {
 	GetNewObj(false);
-	new->obclass = shuttleobj;
-	new->active = allways;
-	new->priority = 0;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
-	new->xdir = 0;
-	new->ydir = 1;
-	new->needtoclip = cl_noclip;
-	NewState(new, &s_shuttle);
+	newobj->obclass = shuttleobj;
+	newobj->active = allways;
+	newobj->priority = 0;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->xdir = 0;
+	newobj->ydir = 1;
+	newobj->needtoclip = cl_noclip;
+	NewState(newobj, &s_shuttle);
 	INFOSPOT(x,y) = DIRARROWSTART+dir;
-	new->temp1 = dir;
-	new->temp2 = TILEGLOBAL;
+	newobj->temp1 = dir;
+	newobj->temp2 = TILEGLOBAL;
 }
 
 #endif
@@ -400,35 +402,35 @@ FARSTATE s_queen2 = {QUEEN2SPR, QUEEN2SPR, stepthink, false, push_none, 1, 0, 0,
 void SpawnQueen(Uint16 x, Uint16 y, arrowdirtype dir)
 {
 	GetNewObj(false);
-	new->obclass = queenobj;
-	new->active = allways;
-	new->priority = 3;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
-	new->xdir = 0;
-	new->ydir = 1;
-	new->needtoclip = cl_noclip;
+	newobj->obclass = queenobj;
+	newobj->active = allways;
+	newobj->priority = 3;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->xdir = 0;
+	newobj->ydir = 1;
+	newobj->needtoclip = cl_noclip;
 	INFOSPOT(x,y) = DIRARROWSTART+dir;
-	new->temp1 = dir;
-	new->temp2 = TILEGLOBAL;
-	new->temp7 = 20;
-	new->shootable = true;
+	newobj->temp1 = dir;
+	newobj->temp2 = TILEGLOBAL;
+	newobj->temp7 = 20;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 50;
+	newobj->health = 50;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 100;
+		newobj->health = 100;
 		break;
 	default:
-		new->health = 50;
+		newobj->health = 50;
 		break;
 	}
-	bosshealth = oldhealthbarlength = new->health;
+	bosshealth = oldhealthbarlength = newobj->health;
 	bossdiv = bosshealth / 20;
 #endif
-	NewState(new, &s_queen1);
+	NewState(newobj, &s_queen1);
 }
 
 /*
@@ -491,30 +493,30 @@ FARSTATE s_parabotfall  = {PARABOTFALLLSPR, PARABOTFALLRSPR, stepthink, false, p
 void SpawnHelicopter(Uint16 x, Uint16 y, arrowdirtype dir)
 {
 	GetNewObj(false);
-	new->obclass = helicopterobj;
-	new->active = allways;
-	new->priority = 3;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
-	new->xdir = 0;
-	new->ydir = 1;
-	new->needtoclip = cl_noclip;
-	new->shootable = true;
+	newobj->obclass = helicopterobj;
+	newobj->active = allways;
+	newobj->priority = 3;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->xdir = 0;
+	newobj->ydir = 1;
+	newobj->needtoclip = cl_noclip;
+	newobj->shootable = true;
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 50;
+		newobj->health = 50;
 		break;
 	default:
-		new->health = 25;
+		newobj->health = 25;
 		break;
 	}
-	new->temp6 = 15;
-	new->temp7 = 40;
-	NewState(new, &s_helicopter1);
+	newobj->temp6 = 15;
+	newobj->temp7 = 40;
+	NewState(newobj, &s_helicopter1);
 	INFOSPOT(x,y) = dir+DIRARROWSTART;
-	new->temp1 = dir;
-	new->temp2 = TILEGLOBAL;
+	newobj->temp1 = dir;
+	newobj->temp2 = TILEGLOBAL;
 }
 
 // implementation follows after GoplatThink()
@@ -549,51 +551,51 @@ FARSTATE s_caterpillarbody  = {CATERPILLARBODYSPR, CATERPILLARBODYSPR, think, fa
 void SpawnCaterpillar(Uint16 x, Uint16 y, arrowdirtype dir, Uint16 kind)
 {
 	GetNewObj(false);
-	new->obclass = caterpillarobj;
-	new->active = allways;
-	new->priority = 3;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = CONVERT_TILE_TO_GLOBAL(y);
-	new->xdir = 0;
-	new->ydir = 1;
-	new->needtoclip = cl_noclip;
+	newobj->obclass = caterpillarobj;
+	newobj->active = allways;
+	newobj->priority = 3;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y);
+	newobj->xdir = 0;
+	newobj->ydir = 1;
+	newobj->needtoclip = cl_noclip;
 	INFOSPOT(x,y) = DIRARROWSTART+dir;
-	new->temp1 = dir;
-	new->temp2 = TILEGLOBAL;
-	new->shootable = true;
+	newobj->temp1 = dir;
+	newobj->temp2 = TILEGLOBAL;
+	newobj->shootable = true;
 	if (kind == 0)
 	{
 #ifdef BETA
-		new->health = 25;
+		newobj->health = 25;
 #else
 		switch (gamestate.difficulty)
 		{
 		case gd_Hard:
-			new->health = 50;
+			newobj->health = 50;
 			break;
 		default:
-			new->health = 25;
+			newobj->health = 25;
 			break;
 		}
 #endif
-		NewState(new, &s_caterpillarhead1);
+		NewState(newobj, &s_caterpillarhead1);
 	}
 	else
 	{
 #ifdef BETA
-		new->health = 5;
+		newobj->health = 5;
 #else
 		switch (gamestate.difficulty)
 		{
 		case gd_Hard:
-			new->health = 10;
+			newobj->health = 10;
 			break;
 		default:
-			new->health = 5;
+			newobj->health = 5;
 			break;
 		}
 #endif
-		NewState(new, &s_caterpillarbody);
+		NewState(newobj, &s_caterpillarbody);
 	}
 }
 #endif	// (EPISODE == 1) ... else ...
@@ -759,25 +761,25 @@ void HelicopterSpawnParabot(objtype *ob)
 {
 	SD_PlaySound(RICOCHET1SND);
 	GetNewObj(true);
-	new->obclass = parabotobj;
-	new->priority = 2;
-	new->active = allways;
-	new->x = ob->x + 24*PIXGLOBAL;
-	new->y = ob->y + 8*PIXGLOBAL;
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
+	newobj->obclass = parabotobj;
+	newobj->priority = 2;
+	newobj->active = allways;
+	newobj->x = ob->x + 24*PIXGLOBAL;
+	newobj->y = ob->y + 8*PIXGLOBAL;
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 20;
+		newobj->health = 20;
 		break;
 	default:
-		new->health = 10;
+		newobj->health = 10;
 		break;
 	}
-	new->temp5 = 75;
-	NewState(new, &s_parabotfall);
+	newobj->temp5 = 75;
+	NewState(newobj, &s_parabotfall);
 }
 
 /*
@@ -936,26 +938,26 @@ FARSTATE s_cobraspit2   = {COBRASPIT2LSPR, COBRASPIT2RSPR, stepthink, false, pus
 void SpawnCobra(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = cobraobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 24);
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
+	newobj->obclass = cobraobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 24);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
 #ifdef BETA
-	new->health = 3;
+	newobj->health = 3;
 #else
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 6;
+		newobj->health = 6;
 		break;
 	default:
-		new->health = 3;
+		newobj->health = 3;
 		break;
 	}
 #endif
-	NewState(new, &s_cobrawalk1);
+	NewState(newobj, &s_cobrawalk1);
 }
 
 /*
@@ -982,23 +984,23 @@ void CobraRunThink(objtype *ob)
 void CobraAttackThink(objtype *ob)
 {
 	GetNewObj(true);
-	new->obclass = enemyshotobj;
+	newobj->obclass = enemyshotobj;
 	if (ob->xdir == 1)
 	{
-		new->x = ob->x + 24*PIXGLOBAL;
-		new->y = ob->y + 8*PIXGLOBAL;
+		newobj->x = ob->x + 24*PIXGLOBAL;
+		newobj->y = ob->y + 8*PIXGLOBAL;
 	}
 	else
 	{
-		new->x = ob->x;
-		new->y = ob->y + 8*PIXGLOBAL;
+		newobj->x = ob->x;
+		newobj->y = ob->y + 8*PIXGLOBAL;
 	}
-	new->xdir = ob->xdir;
-	new->ydir = 1;
-	new->xspeed = (ob->xdir * 40) - (US_RndT() >> 4);
-	new->yspeed = -20;
-	new->active = removable;
-	NewState(new, &s_cobraspit1);
+	newobj->xdir = ob->xdir;
+	newobj->ydir = 1;
+	newobj->xspeed = (ob->xdir * 40) - (US_RndT() >> 4);
+	newobj->yspeed = -20;
+	newobj->active = removable;
+	NewState(newobj, &s_cobraspit1);
 	ob->nothink = 2;
 }
 
@@ -1089,22 +1091,22 @@ FARSTATE s_sewermanspit2  = {SEWERMANSPIT2SPR, SEWERMANSPIT2SPR, stepthink, fals
 void SpawnSewerman(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = sewermanobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 48);
-	new->xdir = 1;
-	new->ydir = 1;
-	new->shootable = true;
+	newobj->obclass = sewermanobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 48);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	newobj->shootable = true;
 	switch (gamestate.difficulty)
 	{
 	case gd_Hard:
-		new->health = 30;
+		newobj->health = 30;
 		break;
 	default:
-		new->health = 15;
+		newobj->health = 15;
 		break;
 	}
-	NewState(new, &s_sewermanwalk1);
+	NewState(newobj, &s_sewermanwalk1);
 }
 
 /*
@@ -1118,23 +1120,23 @@ void SpawnSewerman(Uint16 x, Uint16 y)
 void SewermanAttackThink(objtype *ob)
 {
 	GetNewObj(true);
-	new->obclass = enemyshotobj;
+	newobj->obclass = enemyshotobj;
 	if (ob->xdir == 1)
 	{
-		new->x = ob->x + 24*PIXGLOBAL;
-		new->y = ob->y + 8*PIXGLOBAL;
+		newobj->x = ob->x + 24*PIXGLOBAL;
+		newobj->y = ob->y + 8*PIXGLOBAL;
 	}
 	else
 	{
-		new->x = ob->x;
-		new->y = ob->y + 8*PIXGLOBAL;
+		newobj->x = ob->x;
+		newobj->y = ob->y + 8*PIXGLOBAL;
 	}
-	new->xdir = ob->xdir;
-	new->ydir = 1;
-	new->xspeed = (ob->xdir * 30)-(US_RndT() >> 4);
-	new->yspeed = -20;
-	new->active = removable;
-	NewState(new, &s_sewermanspit1);
+	newobj->xdir = ob->xdir;
+	newobj->ydir = 1;
+	newobj->xspeed = (ob->xdir * 30)-(US_RndT() >> 4);
+	newobj->yspeed = -20;
+	newobj->active = removable;
+	NewState(newobj, &s_sewermanspit1);
 	ob->nothink = 2;
 }
 
@@ -1223,23 +1225,23 @@ FARSTATE s_hostage3stand2 = {HOSTAGE32SPR, HOSTAGE32SPR, step, false, push_down,
 void SpawnHostage(Uint16 x, Uint16 y, Uint16 type)
 {
 	GetNewObj(false);
-	new->obclass = hostageobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 40);
+	newobj->obclass = hostageobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 40);
 	switch (type)
 	{
 	case 0:
-		NewState(new, &s_hostage1stand1);
+		NewState(newobj, &s_hostage1stand1);
 		break;
 	case 1:
-		NewState(new, &s_hostage2stand1);
+		NewState(newobj, &s_hostage2stand1);
 		break;
 	case 2:
-		NewState(new, &s_hostage3stand1);
+		NewState(newobj, &s_hostage3stand1);
 		break;
 	}
-	new->hitnorth = 1;
-	new->shootable = false;
+	newobj->hitnorth = 1;
+	newobj->shootable = false;
 }
 #endif	// (EPISODE == 1)
 
@@ -1269,14 +1271,14 @@ FARSTATE s_keenstand2   = {KEEN2SPR, KEEN2SPR, step, false, push_down, 25, 0, 0,
 void SpawnJim(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = jimobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 40);
-	new->xdir = -1;
-	new->hitnorth = 1;
-	new->shootable = true;
-	new->active = removable;
-	NewState(new, &s_jimstand);
+	newobj->obclass = jimobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 40);
+	newobj->xdir = -1;
+	newobj->hitnorth = 1;
+	newobj->shootable = true;
+	newobj->active = removable;
+	NewState(newobj, &s_jimstand);
 }
 
 /*
@@ -1290,12 +1292,12 @@ void SpawnJim(Uint16 x, Uint16 y)
 void SpawnGeorge(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = decoobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 48);
-	new->xdir = -1;
-	NewState(new, &s_georgestand1);
-	new->hitnorth = 1;
+	newobj->obclass = decoobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 48);
+	newobj->xdir = -1;
+	NewState(newobj, &s_georgestand1);
+	newobj->hitnorth = 1;
 }
 
 /*
@@ -1309,12 +1311,12 @@ void SpawnGeorge(Uint16 x, Uint16 y)
 void SpawnKeen(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = hostageobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 32);
-	new->xdir = -1;
-	NewState(new, &s_keenstand1);
-	new->hitnorth = 1;
+	newobj->obclass = hostageobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 32);
+	newobj->xdir = -1;
+	NewState(newobj, &s_keenstand1);
+	newobj->hitnorth = 1;
 }
 
 /*
@@ -1367,8 +1369,8 @@ void JimAttackThink(objtype *ob)
 	{
 		return;
 	}
-	new->xspeed = ob->xdir * 60;
-	new->yspeed = 0;
+	newobj->xspeed = ob->xdir * 60;
+	newobj->yspeed = 0;
 	SD_PlaySound(SNAKESHOOTSND);
 }
 #endif	// (EPISODE == 2)
@@ -1400,15 +1402,15 @@ FARSTATE s_hostage3stand2 = {HOSTAGE32LSPR, HOSTAGE32RSPR, step, false, push_dow
 void SpawnHostage1(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = hostageobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 40);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_hostage1stand);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT() / 32;
-	new->shootable = false;
+	newobj->obclass = hostageobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 40);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_hostage1stand);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT() / 32;
+	newobj->shootable = false;
 }
 
 /*
@@ -1446,12 +1448,12 @@ void Hostage1Think(objtype *ob)
 void SpawnHostage2(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = hostageobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 40);
-	NewState(new, &s_hostage2stand1);
-	new->hitnorth = 1;
-	new->shootable = false;
+	newobj->obclass = hostageobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 40);
+	NewState(newobj, &s_hostage2stand1);
+	newobj->hitnorth = 1;
+	newobj->shootable = false;
 }
 
 /*
@@ -1481,15 +1483,15 @@ void Hostage2Think(objtype *ob)
 void SpawnHostage3(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = hostageobj;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 40);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_hostage3stand1);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT() / 32;
-	new->shootable = false;
+	newobj->obclass = hostageobj;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 40);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_hostage3stand1);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT() / 32;
+	newobj->shootable = false;
 }
 
 /*
@@ -1544,22 +1546,22 @@ FARSTATE s_bossheadmetal = {BOSSHEADMETALSPR, BOSSHEADMETALSPR, step, false, pus
 void SpawnBosshead(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = bossobj;
-	new->active = allways;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 32);
-	NewState(new, &s_bosshead1);
-	new->priority = 3;
-	new->shootable = false;
+	newobj->obclass = bossobj;
+	newobj->active = allways;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 32);
+	NewState(newobj, &s_bosshead1);
+	newobj->priority = 3;
+	newobj->shootable = false;
 #ifdef BETA
 	if (mapon == 11)
 	{
-		new->shootable = true;
-		new->health = 90;
+		newobj->shootable = true;
+		newobj->health = 90;
 	}
-	new->needtoclip = cl_noclip;
+	newobj->needtoclip = cl_noclip;
 #else
-	new->needtoclip = cl_noclip;
+	newobj->needtoclip = cl_noclip;
 	bossActive = false;
 #endif
 }
@@ -1683,8 +1685,8 @@ void BossheadMetalThink(objtype *ob)
 		{
 			return;
 		}
-		new->xspeed = ob->xdir * 60;
-		new->yspeed = 0;
+		newobj->xspeed = ob->xdir * 60;
+		newobj->yspeed = 0;
 		SD_PlaySound(SNAKESHOOTSND);
 	}
 	else if (randval > 250)
@@ -1745,18 +1747,18 @@ FARSTATE s_mangledead3  = {MANGLEDEADSPR, MANGLEDEADSPR, think, false, push_down
 void SpawnMangle(Uint16 x, Uint16 y)
 {
 	GetNewObj(false);
-	new->obclass = bossobj;
-	new->active = allways;
-	new->priority = 2;
-	new->x = CONVERT_TILE_TO_GLOBAL(x);
-	new->y = SPAWN_ADJUST_Y(y, 40);
-	new->xdir = 1;
-	new->ydir = 1;
-	NewState(new, &s_manglestand1);
-	new->hitnorth = 1;
-	new->ticcount = US_RndT() / 0x20;
-	new->shootable = false;
-	new->health = bosshealth = 200;
+	newobj->obclass = bossobj;
+	newobj->active = allways;
+	newobj->priority = 2;
+	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
+	newobj->y = SPAWN_ADJUST_Y(y, 40);
+	newobj->xdir = 1;
+	newobj->ydir = 1;
+	NewState(newobj, &s_manglestand1);
+	newobj->hitnorth = 1;
+	newobj->ticcount = US_RndT() / 0x20;
+	newobj->shootable = false;
+	newobj->health = bosshealth = 200;
 	oldhealthbarlength = -1;
 	bossdiv = bosshealth/20 - 1;	//BUG? see comments in UpdateScorebox()
 }
@@ -1806,18 +1808,18 @@ void MangleThink(objtype *ob)
 		{
 			return;
 		}
-		new->xspeed = ob->xdir * 60;
+		newobj->xspeed = ob->xdir * 60;
 		if (US_RndT() < 70)
 		{
-			new->yspeed = 0;
+			newobj->yspeed = 0;
 		}
 		else if (ob->temp1 & 1)	// never true (temp1 starts at 0 and never changes)
 		{
-			new->yspeed = 4;
+			newobj->yspeed = 4;
 		}
 		else
 		{
-			new->yspeed = -4;
+			newobj->yspeed = -4;
 		}
 		SD_PlaySound(LASERSND);
 	}
@@ -1903,3 +1905,5 @@ void MangleJumpReact(objtype *ob)
 	PLACESPRITE;
 }
 #endif	// (EPISODE == 1)
+
+REFKEEN_NS_E

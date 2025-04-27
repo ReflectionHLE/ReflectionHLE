@@ -28,6 +28,8 @@
 
 #include "id_heads.h"
 
+REFKEEN_NS_B
+
 /*
 =============================================================================
 
@@ -278,10 +280,14 @@ typedef struct statestruct
 #endif
 } statetype;
 
+// REFKEEN - enum type for active field should be outside struct if we want
+// to be able to build the same code as C++. It's also good for other reasons.
+typedef enum {no, yes, allways, removable} activetype;
+
 typedef struct objstruct
 {
 	classtype obclass;
-	enum {no, yes, allways, removable} active;
+	activetype active;
 	boolean needtoreact;
 	cliptype needtoclip;
 	Uint16 nothink;
@@ -414,16 +420,16 @@ extern Sint16 timeleft;
 extern boolean pirated;
 
 extern Uint16 tedlevelnum;
-extern char str[80];
-extern char str2[20];
+extern id0_char_t str[80];
+extern id0_char_t str2[20];
 extern boolean storedemo;
 extern boolean tedlevel;
 extern Uint16 currentmusic;
 extern Sint16 bossdiv;
 
-void SizeText(char *text, Uint16 *width, Uint16 *height);
+void SizeText(const id0_char_t *text, Uint16 *width, Uint16 *height);
 void ShutdownId(void);
-void Quit(char *error);
+void Quit(const id0_char_t *error);
 void TEDDeath(void);
 void bmenace_exe_main(void);
 
@@ -520,8 +526,8 @@ void ShowHighScores(void);
 
 void NewGame(void);
 void ResetGame(void);
-boolean SaveTheGame(Sint16 handle);
-boolean LoadTheGame(Sint16 handle);
+boolean SaveTheGame(BE_FILE_T handle);
+boolean LoadTheGame(BE_FILE_T handle);
 void SetupGameLevel(boolean loadnow);
 void GameLoop(void);
 
@@ -844,7 +850,7 @@ void SuperPlasmaboltReact(objtype *ob);
 =============================================================================
 */
 
-extern char *levelnames[];
+extern const id0_char_t *levelnames[];
 
 void ScanInfoPlane(void);
 void HostageDialog(void);
@@ -1538,5 +1544,6 @@ layout "cheat" anyway.
 */
 #endif	//!GMS_VERSION
 
+REFKEEN_NS_E
 
 #endif	//__BM_DEF_H__

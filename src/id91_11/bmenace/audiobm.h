@@ -30,6 +30,8 @@
 #define NUMSOUNDS     LASTSOUND
 #define NUMSNDCHUNKS  ((3*LASTSOUND)+LASTMUSIC)
 
+REFKEEN_NS_B
+
 //
 // Sound names & indexes
 //
@@ -202,5 +204,7 @@ typedef enum {
 	MUS_NO_MUSIC
 #endif
 } musicnum;
+
+REFKEEN_NS_E
 
 #endif

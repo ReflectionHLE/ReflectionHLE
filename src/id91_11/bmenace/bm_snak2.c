@@ -24,6 +24,8 @@
 #include "bm_def.h"
 //#pragma hdrstop
 
+REFKEEN_NS_B
+
 /////////////////////////////////////////////////////////////////////////////
 // initialized variables:
 /////////////////////////////////////////////////////////////////////////////
@@ -721,6 +723,15 @@ static void ShiftScore (void)
 	spr = &spritetable[SCOREBOXSPR-STARTSPRITES];
 	dest = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 
+	CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
+		(id0_byte_t *)dest+dest->sourceoffset[1],spr->width,spr->height,2);
+
+	CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
+		(id0_byte_t *)dest+dest->sourceoffset[2],spr->width,spr->height,4);
+
+	CAL_ShiftSprite ((id0_byte_t *)dest+dest->sourceoffset[0],
+		(id0_byte_t *)dest+dest->sourceoffset[3],spr->width,spr->height,6);
+#if 0
 	CAL_ShiftSprite (FP_SEG(dest),dest->sourceoffset[0],
 		dest->sourceoffset[1],spr->width,spr->height,2);
 
@@ -729,6 +740,7 @@ static void ShiftScore (void)
 
 	CAL_ShiftSprite (FP_SEG(dest),dest->sourceoffset[0],
 		dest->sourceoffset[3],spr->width,spr->height,6);
+#endif
 }
 
 void ResetScoreObj(void)
@@ -782,12 +794,12 @@ void UpdateScorebox(objtype *ob)
 #endif
 		)
 	{
-		block = grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 #ifdef BETA
 		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4 + 1;
-		ltoa(gamestate.score, buffer, 10);
+		BE_Cross_ltoa_dec(gamestate.score, buffer);
 		len = strlen(buffer);
 		for (i=6; i>len; i--)
 		{
@@ -801,11 +813,11 @@ void UpdateScorebox(objtype *ob)
 		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4;
 		if (practiceTimeLeft > 0)
 		{
-			ltoa(practiceTimeLeft/33, buffer, 10);
+			BE_Cross_ltoa_dec(practiceTimeLeft/33, buffer);
 		}
 		else
 		{
-			ltoa(gamestate.score, buffer, 10);
+			BE_Cross_ltoa_dec(gamestate.score, buffer);
 		}
 		len = strlen(buffer);
 		for (i=7; i>len; i--)
@@ -843,7 +855,7 @@ void UpdateScorebox(objtype *ob)
 		{
 			amount = 8;
 		}
-		block = grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest2 = dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*4 + 8;
@@ -913,7 +925,7 @@ void UpdateScorebox(objtype *ob)
 		// exactly the same as for the grenade number check below, so you could
 		// just merge this with the code below to save some space and avoid an
 		// extra sprite shift.
-		block = grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 4;
@@ -977,7 +989,7 @@ void UpdateScorebox(objtype *ob)
 #endif
 	if (ob->temp3 != amount)
 	{
-		block = grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 5;
@@ -987,7 +999,7 @@ void UpdateScorebox(objtype *ob)
 		}
 		else
 		{
-			ltoa(amount, buffer, 10);
+			BE_Cross_ltoa_dec(amount, buffer);
 		}
 		len = strlen(buffer);
 		for (i=2; i>len; i--)
@@ -1028,7 +1040,7 @@ void UpdateScorebox(objtype *ob)
 //
 	if (gamestate.weapon != ob->temp7)
 	{
-		block = grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 9;
@@ -1065,7 +1077,7 @@ void UpdateScorebox(objtype *ob)
 	}
 	if (ob->temp5 != amount)
 	{
-		block = grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 10;
@@ -1075,7 +1087,7 @@ void UpdateScorebox(objtype *ob)
 		}
 		else
 		{
-			ltoa(amount, buffer, 10);
+			BE_Cross_ltoa_dec(amount, buffer);
 		}
 		len = strlen(buffer);
 		for (i=2; i>len; i--)
@@ -1121,7 +1133,7 @@ void UpdateScorebox(objtype *ob)
 //
 	if (gamestate.lives != ob->temp4)
 	{
-		block = grsegs[SCOREBOXSPR];
+		block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 		width = block->width[0];
 		planesize = block->planesize[0];
 		dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + width*20 + 2;
@@ -1203,7 +1215,7 @@ void UpdateScorebox(objtype *ob)
 			{
 				amount = 1;
 			}
-			block = grsegs[SCOREBOXSPR];
+			block = (spritetype id0_seg *)grsegs[SCOREBOXSPR];
 			width = block->width[0];
 			planesize = block->planesize[0];
 			dest2 = dest = (Uint8 id0_far *)grsegs[SCOREBOXSPR] + block->sourceoffset[0] + planesize + (width << 5) - 1;
@@ -1430,8 +1442,8 @@ void HurtObject(objtype *ob, Sint16 damage)
 #if 0
 			// bugfix in case the key spawns where the player can't reach it:
 			// (this code assumes s_bonus2 uses FlyBonusThink, see BM_ACT2.C)
-			new->state = &s_bonus2;			// make the key fall
-			new->needtoclip = cl_midclip;	// don't let it fall through the floor
+			newobj->state = &s_bonus2;			// make the key fall
+			newobj->needtoclip = cl_midclip;	// don't let it fall through the floor
 #endif
 			StartMusic(MUS_VICTORY);
 			break;
@@ -1671,21 +1683,21 @@ chunks:
 void SpawnExplosion(Uint16 x, Uint16 y)
 {
 	GetNewObj(true);
-	new->obclass = decoobj;
-	new->active = removable;
-	new->x = x - 4*PIXGLOBAL;
-	new->y = y - 4*PIXGLOBAL;
-	new->priority = 3;
+	newobj->obclass = decoobj;
+	newobj->active = removable;
+	newobj->x = x - 4*PIXGLOBAL;
+	newobj->y = y - 4*PIXGLOBAL;
+	newobj->priority = 3;
 #ifdef BETA
-	NewState(new, &s_smallexplosion1);
+	NewState(newobj, &s_smallexplosion1);
 #else
 	if (gamestate.weapon == 3 || gamestate.weapon == 4)
 	{
-		NewState(new, &s_explosion1);
+		NewState(newobj, &s_explosion1);
 	}
 	else
 	{
-		NewState(new, &s_smallexplosion1);
+		NewState(newobj, &s_smallexplosion1);
 	}
 #endif
 }
@@ -1895,35 +1907,35 @@ void ChunkBloom(objtype *ob, Uint16 x, Uint16 y, Uint16 dir)
 
 	SD_PlaySound(CHUNKSPLATSND);
 	GetNewObj(true);
-	new->active = removable;
-	new->obclass = decoobj;
-	new->x = x;
-	new->y = y;
-	new->ydir = -1;
+	newobj->active = removable;
+	newobj->obclass = decoobj;
+	newobj->x = x;
+	newobj->y = y;
+	newobj->ydir = -1;
 	switch (dir)
 	{
 	case 0:
-		new->xdir = 1;
-		new->xspeed = 6;
-		new->yspeed = -30;
+		newobj->xdir = 1;
+		newobj->xspeed = 6;
+		newobj->yspeed = -30;
 		break;
 		
 	case 2:
-		new->xdir = 1;
-		new->xspeed = (US_RndT() / 8) + 10;	// (10..41)
-		new->yspeed = (US_RndT() / 8) - 20;	// (-20..11)
+		newobj->xdir = 1;
+		newobj->xspeed = (US_RndT() / 8) + 10;	// (10..41)
+		newobj->yspeed = (US_RndT() / 8) - 20;	// (-20..11)
 		break;
 		
 	case 4:
-		new->xdir = -1;
-		new->xspeed = -6;
-		new->yspeed = -30;
+		newobj->xdir = -1;
+		newobj->xspeed = -6;
+		newobj->yspeed = -30;
 		break;
 		
 	case 6:
-		new->xdir = -1;
-		new->xspeed = -10 - (US_RndT() / 8);	// (-41..-10)
-		new->yspeed = (US_RndT() / 8) - 20; 	// (-20..11)
+		newobj->xdir = -1;
+		newobj->xspeed = -10 - (US_RndT() / 8);	// (-41..-10)
+		newobj->yspeed = (US_RndT() / 8) - 20; 	// (-20..11)
 		break;
 		
 	default:
@@ -1955,25 +1967,25 @@ void ChunkBloom(objtype *ob, Uint16 x, Uint16 y, Uint16 dir)
 	case goliathobj:
 	case grenadebotobj:
 #endif
-		new->temp1 = 1;	// let ChunkReact know that it's a metal chunk
-		NewState(new, &s_metalchunk1);
+		newobj->temp1 = 1;	// let ChunkReact know that it's a metal chunk
+		NewState(newobj, &s_metalchunk1);
 		break;
 	default:
 #ifdef BETA
-		NewState(new, &s_chunk1);
+		NewState(newobj, &s_chunk1);
 #else
 		value = US_RndT();
 		if (value < 85)
 		{
-			NewState(new, &s_chunk1fly1);
+			NewState(newobj, &s_chunk1fly1);
 		}
 		else if (value > 85 && value < 170)
 		{
-			NewState(new, &s_chunkeye1);
+			NewState(newobj, &s_chunkeye1);
 		}
 		else
 		{
-			NewState(new, &s_chunk3fly1);
+			NewState(newobj, &s_chunk3fly1);
 		}
 #endif
 		break;
@@ -2149,50 +2161,50 @@ void FragBloom(Uint16 x, Uint16 y, Sint16 dir)
 #endif
 
 	GetNewObj(true);
-	new->active = removable;
-	new->obclass = explosionobj;
-	new->temp1 = -1;
-	new->temp2 = dir;
-	new->x = x;
-	new->y = y;
-	new->ydir = -1;
+	newobj->active = removable;
+	newobj->obclass = explosionobj;
+	newobj->temp1 = -1;
+	newobj->temp2 = dir;
+	newobj->x = x;
+	newobj->y = y;
+	newobj->ydir = -1;
 #ifndef BETA
 	if (dir >= FRAG_SIDEWAYS)
 	{
 		dir -= FRAG_SIDEWAYS;
-		new->spareplayer = true;
+		newobj->spareplayer = true;
 		speed = US_RndT()/4 + 15;
 	}
 	if (dir >= FRAG_SPAREPLAYER)
 	{
 		dir -= FRAG_SPAREPLAYER;
-		new->spareplayer = true;
+		newobj->spareplayer = true;
 	}
 #endif
 	switch (dir)
 	{
 	case dir_North:
-		new->xspeed = 0;
-		new->yspeed = -20;
+		newobj->xspeed = 0;
+		newobj->yspeed = -20;
 		break;
 	case dir_South:
-		new->xspeed = 0;
-		new->yspeed = 20;
+		newobj->xspeed = 0;
+		newobj->yspeed = 20;
 		break;
 	case dir_East:
-		new->xdir = 1;
-		new->xspeed = speed + 20;
-		new->yspeed = -20;
+		newobj->xdir = 1;
+		newobj->xspeed = speed + 20;
+		newobj->yspeed = -20;
 		break;
 	case dir_West:
-		new->xdir = -1;
-		new->xspeed = -20 - speed;
-		new->yspeed = -20;
+		newobj->xdir = -1;
+		newobj->xspeed = -20 - speed;
+		newobj->yspeed = -20;
 		break;
 	default:
 		Quit("FragBloom: Bad dir!");
 	}
-	NewState(new, &s_frag1);
+	NewState(newobj, &s_frag1);
 #ifdef BETA
 #undef speed
 #endif
@@ -2415,17 +2427,17 @@ void ThrowPower(Uint16 x, Uint16 y, Uint16 dir)
 	}
 #endif
 	GetNewObj(true);
-	new->obclass = grenadeobj;
-	new->active = allways;	//this is overwritten below
-	new->temp2 = dir;
-	new->x = x;
-	new->y = y;
-	new->ydir = -1;
+	newobj->obclass = grenadeobj;
+	newobj->active = allways;	//this is overwritten below
+	newobj->temp2 = dir;
+	newobj->x = x;
+	newobj->y = y;
+	newobj->ydir = -1;
 #ifndef BETA
 	if (gamestate.grenades.red > 0)
 	{
 		gamestate.grenades.red--;
-		new->temp7 = 1;
+		newobj->temp7 = 1;
 	}
 	else
 	{
@@ -2435,50 +2447,50 @@ void ThrowPower(Uint16 x, Uint16 y, Uint16 dir)
 	switch (dir)
 	{
 	case dir_East:
-		new->xspeed = 45;
-		new->yspeed = -16;
+		newobj->xspeed = 45;
+		newobj->yspeed = -16;
 #ifndef BETA
-		new->xdir = 1;
+		newobj->xdir = 1;
 #endif
 		break;
 	case dir_West:
-		new->xspeed = -45;
-		new->yspeed = -16;
+		newobj->xspeed = -45;
+		newobj->yspeed = -16;
 #ifndef BETA
-		new->xdir = -1;
+		newobj->xdir = -1;
 #endif
 		break;
 	default:
 		Quit("ThrowPower: Bad dir!");
 	}
-	new->temp1 = 9;
+	newobj->temp1 = 9;
 #ifdef BETA
-	new->active = removable;
-	NewState(new, &s_grenadeg1);
-	if (!StatePositionOk(new, &s_grenadeg1))
+	newobj->active = removable;
+	NewState(newobj, &s_grenadeg1);
+	if (!StatePositionOk(newobj, &s_grenadeg1))
 	{
-		new->hitnorth = 1;
+		newobj->hitnorth = 1;
 	}
 #else
-	new->spareplayer = true;
-	new->active = removable;
-	if (new->temp7)
+	newobj->spareplayer = true;
+	newobj->active = removable;
+	if (newobj->temp7)
 	{
 		//it's a red grenade
-		NewState(new, &s_grenader1);
-		new->active = allways;
-		if (!StatePositionOk(new, &s_grenader1))
+		NewState(newobj, &s_grenader1);
+		newobj->active = allways;
+		if (!StatePositionOk(newobj, &s_grenader1))
 		{
-			new->hitnorth = 1;
+			newobj->hitnorth = 1;
 		}
 	}
 	else
 	{
 		//it's a green grenade
-		NewState(new, &s_grenadeg1);
-		if (!StatePositionOk(new, &s_grenadeg1))
+		NewState(newobj, &s_grenadeg1);
+		if (!StatePositionOk(newobj, &s_grenadeg1))
 		{
-			new->hitnorth = 1;
+			newobj->hitnorth = 1;
 		}
 	}
 #endif
@@ -2746,26 +2758,26 @@ void GrenadeReact(objtype *ob)
 void SpawnShot(Uint16 x, Uint16 y, Sint16 xdir)
 {
 	GetNewObj(true);
-	new->x = x;
-	new->y = y;
-	new->priority = 0;
-	new->obclass = shotobj;
-	new->active = allways;
+	newobj->x = x;
+	newobj->y = y;
+	newobj->priority = 0;
+	newobj->obclass = shotobj;
+	newobj->active = allways;
 	SD_PlaySound(STUNRAYSND);
 	switch (xdir)
 	{
 	case 1:
-		new->xdir = 1;
-		new->ydir = 0;
+		newobj->xdir = 1;
+		newobj->ydir = 0;
 		break;
 	case -1:
-		new->xdir = -1;
-		new->ydir = 0;
+		newobj->xdir = -1;
+		newobj->ydir = 0;
 		break;
 	default:
 		Quit("SpawnShot: Bad dir!");
 	}
-	NewState(new, &s_robopalshot1);
+	NewState(newobj, &s_robopalshot1);
 }
 
 #ifndef BETA
@@ -2780,27 +2792,27 @@ void SpawnShot(Uint16 x, Uint16 y, Sint16 xdir)
 void SpawnLaserShot(Uint16 x, Uint16 y, Sint16 xdir)
 {
 	GetNewObj(true);
-	new->x = x;
-	new->y = y;
-	new->priority = 0;
-	new->obclass = shotobj;
-	new->active = allways;
+	newobj->x = x;
+	newobj->y = y;
+	newobj->priority = 0;
+	newobj->obclass = shotobj;
+	newobj->active = allways;
 	SD_PlaySound(LASERSND);
-	new->temp7 = 1;
+	newobj->temp7 = 1;
 	switch (xdir)
 	{
 	case 1:
-		new->xdir = 1;
-		new->ydir = 0;
+		newobj->xdir = 1;
+		newobj->ydir = 0;
 		break;
 	case -1:
-		new->xdir = -1;
-		new->ydir = 0;
+		newobj->xdir = -1;
+		newobj->ydir = 0;
 		break;
 	default:
 		Quit("SpawnLaserShot: Bad dir!");
 	}
-	NewState(new, &s_plasmabolt);
+	NewState(newobj, &s_plasmabolt);
 }
 
 /*
@@ -2814,27 +2826,27 @@ void SpawnLaserShot(Uint16 x, Uint16 y, Sint16 xdir)
 void SpawnSuperLaserShot(Uint16 x, Uint16 y, Sint16 xdir)
 {
 	GetNewObj(true);
-	new->x = x;
-	new->y = y;
-	new->priority = 2;
-	new->obclass = shotobj;
-	new->active = allways;
+	newobj->x = x;
+	newobj->y = y;
+	newobj->priority = 2;
+	newobj->obclass = shotobj;
+	newobj->active = allways;
 	SD_PlaySound(GRENADEXPLODESND);
-	new->temp7 = 0;
+	newobj->temp7 = 0;
 	switch(xdir)
 	{
 	case 1:
-		new->xdir = 1;
-		new->ydir = 0;
+		newobj->xdir = 1;
+		newobj->ydir = 0;
 		break;
 	case -1:
-		new->xdir = -1;
-		new->ydir = 0;
+		newobj->xdir = -1;
+		newobj->ydir = 0;
 		break;
 	default:
 		Quit("SpawnLaserShot: Bad dir!");
 	}
-	NewState(new, &s_superplasmabolt);
+	NewState(newobj, &s_superplasmabolt);
 }
 #endif	// ifndef BETA
 
@@ -2994,3 +3006,5 @@ void SuperPlasmaboltReact(objtype *ob)
 	PLACESPRITE;
 }
 #endif
+
+REFKEEN_NS_E
