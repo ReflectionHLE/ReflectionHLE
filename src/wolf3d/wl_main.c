@@ -1871,7 +1871,7 @@ resize:
 
 void Quit (const id0_char_t *error)
 {
-	id0_unsigned_t        finscreen;
+//	id0_unsigned_t        finscreen; // REFKEEN: Unused var
 	id0_byte_t *screen;
 //	memptr	screen;
 
