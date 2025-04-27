@@ -113,9 +113,9 @@ static	const id0_char_t *ParmStrings[] = {
 	"HIDDENCARD",
 #if REFKEEN_ID_ENGINE_VER >= REFKEEN_ID_ENGINE_VER_K4_V1_2
 	#if (defined BIOMENACE) && (defined VERSION_1_1)
-	"LATCHPEL"
+	"LATCHPEL",
 	#else
-	"NOPAN"
+	"NOPAN",
 	#endif
 #endif
 	""
