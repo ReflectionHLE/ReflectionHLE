@@ -1996,9 +1996,9 @@ void	CAL_DialogDraw (const id0_char_t *title,id0_unsigned_t numcache)
 //
 // draw thermometer bar
 //
-#ifdef CAT3D
 	thx = homex + 8;
 	thy = homey + 32;
+#ifdef CAT3D
 	VWB_DrawTile8(thx,thy,0);		// CAT3D numbers
 	VWB_DrawTile8(thx,thy+8,3);
 	VWB_DrawTile8(thx,thy+16,6);
