@@ -1244,9 +1244,13 @@ void RF_MapToMap (id0_unsigned_t srcx, id0_unsigned_t srcy,
 			p1 = *source1;
 			p2 = *source2;
 
-			dest0 = source0 + destofs;
+			// REFKEEN: Take in-segment wrapping into account!
+			dest0 = (id0_unsigned_t)((source0-mapsegs[0])+destofs) + mapsegs[0];
+			dest1 = (id0_unsigned_t)((source1-mapsegs[1])+destofs) + mapsegs[1];
+			dest2 = (id0_unsigned_t)((source2-mapsegs[2])+destofs) + mapsegs[2];
+/*			dest0 = source0 + destofs;
 			dest1 = source1 + destofs;
-			dest2 = source2 + destofs;
+			dest2 = source2 + destofs;*/
 
 //
 // only make a new tile if it is different
