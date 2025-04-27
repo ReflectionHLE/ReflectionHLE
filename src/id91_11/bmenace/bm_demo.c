@@ -297,7 +297,7 @@ void RunDemo(Sint16 num)
 	}
 	PlayLoop();
 	IN_StopDemo();
-	MM_FreePtr((memptr *)DemoBuffer);
+	MM_FreePtr((memptr *)&DemoBuffer);
 	VW_FixRefreshBuffer();
 	CA_ClearMarks();
 	if (demonum != DEMO_APOGEE && demonum != DEMO_LEVELWARP)
