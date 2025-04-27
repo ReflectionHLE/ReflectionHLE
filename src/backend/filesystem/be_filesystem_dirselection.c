@@ -229,10 +229,12 @@ int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Error
 			if (fp)
 			{
 				// HACK
+				// HACK 2: Taking care of root path '/' (not backslash)
+				int offset = _tcscmp(g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], _T("/")) ? 1 : 0;
 #ifdef REFKEEN_PLATFORM_WINDOWS
-				fprintf(fp, "%s %ls\n", g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], 1+g_be_dirSelection_separatorPtrs[0]);
+				fprintf(fp, "%s %ls\n", g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], offset+g_be_dirSelection_separatorPtrs[0]);
 #else
-				fprintf(fp, "%s %s\n", g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], 1+g_be_dirSelection_separatorPtrs[0]);
+				fprintf(fp, "%s %s\n", g_be_rootPathsKeys[g_be_dirSelection_rootPathIndex], offset+g_be_dirSelection_separatorPtrs[0]);
 #endif
 				fclose(fp);
 			}
