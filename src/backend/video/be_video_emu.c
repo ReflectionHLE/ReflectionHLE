@@ -695,16 +695,26 @@ static uint8_t *BEL_ST_printnumber(uint8_t *currMemByte, int64_t n, bool iscolor
 	return currMemByte;
 }
 
-void BE_ST_puts(const char *str)
+static void BE_ST_puts_impl(const char *str, bool iscolored, bool requirecrchar)
 {
 	uint8_t *currMemByte = g_sdlVidMem.text + 2*(g_sdlTxtCursorPosX+TXT_COLS_NUM*g_sdlTxtCursorPosY);
 	for (; *str; ++str)
 	{
-		currMemByte = BEL_ST_printchar(currMemByte, *str, false, false);
+		currMemByte = BEL_ST_printchar(currMemByte, *str, iscolored, requirecrchar);
 	}
-	BEL_ST_printchar(currMemByte, '\n', false, false);
+	BEL_ST_printchar(currMemByte, '\n', iscolored, requirecrchar);
 
 	g_sdlDoRefreshGfxOutput = true;
+}
+
+void BE_ST_puts(const char *str)
+{
+	BE_ST_puts_impl(str, false, false);
+}
+
+void BE_ST_cputs(const char *str)
+{
+	BE_ST_puts_impl(str, true, true);
 }
 
 static void BEL_ST_vprintf_impl(const char *format, va_list args, bool iscolored, bool requirecrchar);

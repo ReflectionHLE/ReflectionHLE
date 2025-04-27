@@ -371,6 +371,15 @@ static BE_ST_CFG_Setting_T g_be_st_wolf3d_legacy_settings[] = {
 };
 #endif
 
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+static BE_ST_CFG_Setting_T g_be_st_bmenace_settings[] = {
+#ifdef REFKEEN_ENABLE_LAUNCHER
+	DEF_STR(bmenace.launcherExeArgs, "launcherexeargs")
+	DEF_STR(bmenace.launcherModPath, "launchermod")
+#endif
+};
+#endif
+
 // These ones are implementation-defined
 void BEL_ST_ParseSetting_DisplayNum(int *displayNum, const char *buffer);
 void BEL_ST_ParseSetting_SDLRendererDriver(int *driver, const char *buffer);
@@ -577,6 +586,11 @@ void BEL_ST_ParseConfigFiles(void)
 
 	BEL_ST_ParseConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_settings));
 #endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	BEL_ST_SetConfigDefaults(g_be_st_bmenace_settings, BE_Cross_ArrayLen(g_be_st_bmenace_settings));
+
+	BEL_ST_ParseConfig("reflection-bmenace.cfg", g_be_st_bmenace_settings, BE_Cross_ArrayLen(g_be_st_bmenace_settings));
+#endif
 	BEL_ST_ParseConfig("reflectionhle.cfg", g_be_st_settings, BE_Cross_ArrayLen(g_be_st_settings));
 }
 
@@ -608,5 +622,8 @@ void BEL_ST_SaveConfigFiles(void)
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	BEL_ST_SaveConfig("reflection-wolf3d.cfg", g_be_st_wolf3d_settings, BE_Cross_ArrayLen(g_be_st_wolf3d_settings));
+#endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	BEL_ST_SaveConfig("reflection-bmenace.cfg", g_be_st_bmenace_settings, BE_Cross_ArrayLen(g_be_st_bmenace_settings));
 #endif
 }

@@ -15,6 +15,9 @@ typedef enum {
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	BE_GAME_WOLF3D_ALL,
 #endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	BE_GAME_BMENACE_ALL,
+#endif
 	BE_GAME_LAST
 } BE_Game_T;
 
@@ -96,6 +99,9 @@ typedef enum {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	BE_GAMEVER_N3DWT10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V11F
+	BE_GAMEVER_BM1V11F,
+#endif
 	BE_GAMEVER_LAST
 } BE_GameVer_T;
 
@@ -148,6 +154,8 @@ typedef enum {
 #define REFKEEN_NS_B namespace sodac14 {
 #elif (defined REFKEEN_VER_N3DWT10)
 #define REFKEEN_NS_B namespace n3dwt10 {
+#elif (defined REFKEEN_VER_BM1V11F)
+#define REFKEEN_NS_B namespace bm1v11f {
 #endif
 
 #endif // REFKEEN_UNIFIED_BUILD

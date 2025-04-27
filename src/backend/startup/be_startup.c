@@ -107,6 +107,12 @@ static void BEL_Cross_SetDynamicCfg(void)
 		g_refKeenDynamicCfg.novert = g_refKeenCfg.wolf3d.novert;
 		break;
 #endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	case BE_GAME_BMENACE_ALL:
+		g_refKeenDynamicCfg.absMouseMotion = false;
+		g_refKeenDynamicCfg.novert = false;
+		break;
+#endif
 	}
 }
 

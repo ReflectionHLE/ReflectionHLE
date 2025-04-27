@@ -10,6 +10,7 @@
 #define BE_STR_GAMEVER_KDREAMSE120 "kdreamse120"
 #define BE_STR_GAMEVER_KDREAMS2015 "kdreams2015"
 #endif
+
 #ifdef REFKEEN_HAS_VER_CAT3D
 #define BE_STR_GAMEVER_CAT3D100 "cat3d100"
 #define BE_STR_GAMEVER_CAT3D122 "cat3d122"
@@ -24,6 +25,7 @@
 #ifdef REFKEEN_HAS_VER_CATAPOC
 #define BE_STR_GAMEVER_CATAPOC101 "catapoc101"
 #endif
+
 #ifdef REFKEEN_HAS_VER_WL920312
 #define BE_STR_GAMEVER_WL920312 "wl920312"
 #endif
@@ -77,6 +79,10 @@
 #endif
 #ifdef REFKEEN_HAS_VER_N3DWT10
 #define BE_STR_GAMEVER_N3DWT10 "n3dwt10"
+#endif
+
+#ifdef REFKEEN_HAS_VER_BM1V11F
+#define BE_STR_GAMEVER_BM1V11F "bm1v11f"
 #endif
 
 #endif // BE_GAMESTR_H

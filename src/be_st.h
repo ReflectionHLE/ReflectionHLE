@@ -396,6 +396,27 @@ void BE_ST_ShutdownGfx(void);
 
 void BE_ST_MarkGfxForUpdate(void);
 
+// Names for the (M)CGA/Tandy/EGA/VGA's familiar 16-colors palette.
+// Used when a program already used comparable names before porting.
+enum {
+	BE_CGA_BLACK = 0,
+	BE_CGA_BLUE,
+	BE_CGA_GREEN,
+	BE_CGA_CYAN,
+	BE_CGA_RED,
+	BE_CGA_MAGENTA,
+	BE_CGA_BROWN,
+	BE_CGA_LIGHTGRAY,
+	BE_CGA_DARKGRAY,
+	BE_CGA_LIGHTBLUE,
+	BE_CGA_LIGHTGREEN,
+	BE_CGA_LIGHTCYAN,
+	BE_CGA_LIGHTRED,
+	BE_CGA_LIGHTMAGENTA,
+	BE_CGA_YELLOW,
+	BE_CGA_WHITE
+};
+
 // ***WARNING*** SEE WARNING BELOW BEFORE USING!!!
 //
 // Basically a replacement for B800:0000, points to a 80x25*2 bytes long
@@ -472,6 +493,7 @@ void BE_ST_RepeatCharWithColorAttributes(uint8_t ch, uint8_t attr, int count);
 // Replacements for functions that print to (emulated) text mode memory
 // (Note: Probably just partially implemented)
 void BE_ST_puts(const char *str);
+void BE_ST_cputs(const char *str);
 void BE_ST_printf(const char *str, ...);
 void BE_ST_vprintf(const char *str, va_list args);
 void BE_ST_cprintf(const char *str, ...); // Non-standard

@@ -81,6 +81,9 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	BE_STR_GAMEVER_N3DWT10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V11F
+	BE_STR_GAMEVER_BM1V11F,
+#endif
 };
 
 
@@ -92,6 +95,9 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 #include "be_gamedefs_wolf3d.h"
+#endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+#include "be_gamedefs_bmenace.h"
 #endif
 
 
@@ -174,6 +180,9 @@ const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	&g_be_gamever_n3dwt10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V11F
+	&g_be_gamever_bm1v11f,
+#endif
 };
 
 const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
@@ -254,6 +263,9 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	g_be_reqgameverfiles_n3dwt10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V11F
+	g_be_reqgameverfiles_bm1v11f,
+#endif
 };
 
 const BE_GameDetails_T *g_be_game_ptrs[] = {
@@ -265,5 +277,8 @@ const BE_GameDetails_T *g_be_game_ptrs[] = {
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	&g_be_game_wolf3d_all,
+#endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	&g_be_game_bmenace_all,
 #endif
 };

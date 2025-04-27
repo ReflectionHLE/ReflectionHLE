@@ -149,6 +149,15 @@ typedef struct
 #endif
 	} wolf3d;
 #endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	struct
+	{
+#ifdef REFKEEN_ENABLE_LAUNCHER
+		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
+		char launcherModPath[BE_CROSS_PATH_LEN_BOUND];
+#endif
+	} bmenace;
+#endif
 } RefKeenConfig;
 
 extern RefKeenConfig g_refKeenCfg;

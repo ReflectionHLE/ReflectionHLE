@@ -19,6 +19,8 @@
 #define REFKEEN_TITLE_STRING "Reflection Cat3DAll"
 #elif (defined REFKEEN_HAS_VER_WOLF3D_ALL) // Even if just a specific version
 #define REFKEEN_TITLE_STRING "Reflection Wolf3D"
+#elif (defined REFKEEN_HAS_VER_BMENACE_ALL)
+#define REFKEEN_TITLE_STRING "Reflection BMenace"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif

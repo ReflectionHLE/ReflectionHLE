@@ -1108,6 +1108,10 @@ char // Function returns a pointer to a fixed-size array
 	case BE_GAME_WOLF3D_ALL:
 		return &g_refKeenCfg.wolf3d.launcherExeArgs;
 #endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	case BE_GAME_BMENACE_ALL:
+		return &g_refKeenCfg.bmenace.launcherExeArgs;
+#endif
 	default:
 		BE_ST_ExitWithErrorMsg("BEL_ST_Launcher_GetLauncherExeArgsForGame: Unexpected game id!");
 	}
@@ -1130,6 +1134,10 @@ char // Function returns a pointer to a fixed-size array
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	case BE_GAME_WOLF3D_ALL:
 		return &g_refKeenCfg.wolf3d.launcherModPath;
+#endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	case BE_GAME_BMENACE_ALL:
+		return &g_refKeenCfg.bmenace.launcherModPath;
 #endif
 	default:
 		BE_ST_ExitWithErrorMsg("BEL_ST_Launcher_GetLauncherExeArgsForGame: Unexpected game id!");
