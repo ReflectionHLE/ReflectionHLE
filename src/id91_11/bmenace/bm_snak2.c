@@ -661,7 +661,7 @@ void SpawnScore(void)
 	scoreobj->obclass = decoobj;
 	scoreobj->active = allways;
 	scoreobj->needtoclip = cl_noclip;
-#if 1
+#if 0	/* REFKEEN: Indeed, let's use safer and more portable code here. */
 	//original code (might be unsafe):
 	*(Sint32*)(&scoreobj->temp1) = -1;
 #else
