@@ -483,6 +483,8 @@ void BE_ST_SetScreenMode(int mode)
 	g_overscanBorderColorIndex = 0;
 	g_sdlEGALastBGRABorderColor = g_sdlEGABGRAScreenColors[0];
 	BEL_ST_VGAForceRefresh();
+	bool doClear = !(mode & 128);
+	mode &= ~128;
 	switch (mode)
 	{
 	case 3:
@@ -497,7 +499,8 @@ void BE_ST_SetScreenMode(int mode)
 		g_sdlTxtColor = 7;
 		g_sdlTxtBackground = 0;
 		g_sdlTxtCursorEnabled = true;
-		BE_ST_clrscr();
+		if (doClear)
+			BE_ST_clrscr();
 		g_sdlTxtColor = origTxtColor;
 		g_sdlTxtBackground = origTxtBackground;
 		break;
@@ -505,7 +508,8 @@ void BE_ST_SetScreenMode(int mode)
 	case 4:
 		g_sdlTexWidth = GFX_TEX_WIDTH;
 		g_sdlTexHeight = GFX_TEX_HEIGHT;
-		memset(g_sdlHostScrMem.cgaGfx, 0, sizeof(g_sdlHostScrMem.cgaGfx));
+		if (doClear)
+			memset(g_sdlHostScrMem.cgaGfx, 0, sizeof(g_sdlHostScrMem.cgaGfx));
 		g_sdlHostScrMemCache.cgaGfx[0] = g_sdlHostScrMem.cgaGfx[0]^0xFF; // Force refresh
 		break;
 	case 0xD:
@@ -519,11 +523,8 @@ void BE_ST_SetScreenMode(int mode)
 		g_sdlPelPanning = 0;
 		g_sdlPixLineWidth = 8*40;
 		g_sdlSplitScreenLine = -1;
-		// HACK: Looks like this shouldn't be done if changing gfx->gfx
-		if ((mode == 0xD) && (g_sdlScreenMode != 0xE))
-		{
+		if (doClear)
 			memset(g_sdlVidMem.egaGfx, 0, sizeof(g_sdlVidMem.egaGfx));
-		}
 		memset(g_sdlHostScrMem.egaGfx, 0, sizeof(g_sdlHostScrMem.egaGfx));
 		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF; // Force refresh
 		break;
@@ -534,11 +535,8 @@ void BE_ST_SetScreenMode(int mode)
 		g_sdlPelPanning = 0;
 		g_sdlPixLineWidth = 8*80;
 		g_sdlSplitScreenLine = -1;
-		// HACK: Looks like this shouldn't be done if changing gfx->gfx
-		if (g_sdlScreenMode != 0xD)
-		{
+		if (doClear)
 			memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
-		}
 		memset(g_sdlHostScrMem.egaGfx,  0, sizeof(g_sdlHostScrMem.egaGfx));
 		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF; // Force refresh
 		break;

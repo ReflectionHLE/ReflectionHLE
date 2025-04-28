@@ -232,7 +232,7 @@ void VW_SetScreenMode (id0_int_t grmode)
 		MaxX=320;
 		MaxY=200;
 #endif
-		BE_ST_SetScreenMode(0xd/*|128 for EGA320GR, MDM*/);
+		BE_ST_SetScreenMode(0xd|128);
 		// REFKEEN no need to obtain screenseg
 		// - different EGA planes are accessed with new functions
 		break;
@@ -240,7 +240,7 @@ void VW_SetScreenMode (id0_int_t grmode)
 	  case EGA640GR:
 		MaxX=640;
 		MaxY=200;
-		BE_ST_SetScreenMode(0xe/*|128*/);
+		BE_ST_SetScreenMode(0xe|128);
 		// REFKEEN no need to obtain screenseg
 		// - different EGA planes are accessed with new functions
 		break;						 		// MDM end
