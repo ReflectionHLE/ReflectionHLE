@@ -189,13 +189,13 @@ void BE_ST_EGASetSplitScreen(int16_t linenum)
 
 void BE_ST_EGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t planeNum)
 {
-	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_egaplane_repeat[1 << planeNum]) | (g_be_st_lookup_linear_to_egaplane[srcVal] << planeNum);
+	g_sdlVidMem.A000.egaGfx[destOff] = (g_sdlVidMem.A000.egaGfx[destOff] & ~g_be_st_lookup_egaplane_repeat[1 << planeNum]) | (g_be_st_lookup_linear_to_egaplane[srcVal] << planeNum);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_ST_VGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t planeNum)
 {
-	g_sdlVidMem.gfxByByte[4*destOff + planeNum] = srcVal;
+	g_sdlVidMem.A000.gfxByByte[4*destOff + planeNum] = srcVal;
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -203,7 +203,7 @@ void BE_ST_VGAUpdateGFXByteInPlane(uint16_t destOff, uint8_t srcVal, uint16_t pl
 static void BEL_ST_LinearToEGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num, uint16_t planeNum)
 {
 	uint64_t planeInvRepeatedMask = ~g_be_st_lookup_egaplane_repeat[1 << planeNum];
-	uint64_t *planeDstPtr = &g_sdlVidMem.egaGfx[planeDstOff];
+	uint64_t *planeDstPtr = &g_sdlVidMem.A000.egaGfx[planeDstOff];
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
 	{
@@ -214,7 +214,7 @@ static void BEL_ST_LinearToEGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t 
 	{
 		for (int i = 0; i < bytesToEnd; ++i, ++planeDstPtr, ++linearSrc)
 			*planeDstPtr = ((*planeDstPtr) & planeInvRepeatedMask) | (g_be_st_lookup_linear_to_egaplane[*linearSrc] << planeNum);
-		planeDstPtr = g_sdlVidMem.egaGfx;
+		planeDstPtr = g_sdlVidMem.A000.egaGfx;
 		for (int i = 0; i < num-bytesToEnd; ++i, ++planeDstPtr, ++linearSrc)
 			*planeDstPtr = ((*planeDstPtr) & planeInvRepeatedMask) | (g_be_st_lookup_linear_to_egaplane[*linearSrc] << planeNum);
 	}
@@ -223,7 +223,7 @@ static void BEL_ST_LinearToEGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t 
 
 static void BEL_ST_LinearToVGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t *linearSrc, uint16_t num, uint16_t planeNum)
 {
-	uint8_t *planeDstPtr = &g_sdlVidMem.gfxByByte[4*planeDstOff + planeNum];
+	uint8_t *planeDstPtr = &g_sdlVidMem.A000.gfxByByte[4*planeDstOff + planeNum];
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
 	{
@@ -234,7 +234,7 @@ static void BEL_ST_LinearToVGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t 
 	{
 		for (int i = 0; i < bytesToEnd; ++i, planeDstPtr += 4, ++linearSrc)
 			*planeDstPtr = *linearSrc;
-		planeDstPtr = &g_sdlVidMem.gfxByByte[planeNum];
+		planeDstPtr = &g_sdlVidMem.A000.gfxByByte[planeNum];
 		for (int i = 0; i < num-bytesToEnd; ++i, planeDstPtr += 4, ++linearSrc)
 			*planeDstPtr = *linearSrc;
 	}
@@ -244,7 +244,7 @@ static void BEL_ST_LinearToVGAPlane_MemCopy(uint16_t planeDstOff, const uint8_t 
 // Based on BE_Cross_WrappedToLinear_MemCopy
 static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, uint16_t planeSrcOff, uint16_t num, uint16_t planeNum)
 {
-	const uint64_t *planeSrcPtr = &g_sdlVidMem.egaGfx[planeSrcOff];
+	const uint64_t *planeSrcPtr = &g_sdlVidMem.A000.egaGfx[planeSrcOff];
 	uint16_t bytesToEnd = 0x10000-planeSrcOff;
 	if (num <= bytesToEnd)
 	{
@@ -255,7 +255,7 @@ static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, uint16_t planeSr
 	{
 		for (int i = 0; i < bytesToEnd; ++i, ++linearDst, ++planeSrcPtr)
 			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planeNum);
-		planeSrcPtr = g_sdlVidMem.egaGfx;
+		planeSrcPtr = g_sdlVidMem.A000.egaGfx;
 		for (int i = 0; i < num-bytesToEnd; ++i, ++linearDst, ++planeSrcPtr)
 			*linearDst = BEL_ST_Lookup_EGAPlaneToLinear((*planeSrcPtr)>>planeNum);
 	}
@@ -267,7 +267,7 @@ static void BEL_ST_EGAPlaneToLinear_MemCopy(uint8_t *linearDst, uint16_t planeSr
 static void BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(
 	uint16_t planeDstOff, uint16_t planeSrcOff, uint16_t num, int pixelsPerAddr)
 {
-	uint8_t *vidMemPtr = g_sdlVidMem.gfxByByte;
+	uint8_t *vidMemPtr = g_sdlVidMem.A000.gfxByByte;
 	uint16_t srcBytesToEnd = 0x10000-planeSrcOff;
 	uint16_t dstBytesToEnd = 0x10000-planeDstOff;
 	if (num <= srcBytesToEnd)
@@ -342,7 +342,7 @@ static void BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(
 // A similar analogue of memset
 static void BEL_ST_EGAVGAPlane_MemSet(uint16_t planeDstOff, uint8_t value, uint16_t num, int pixelsPerAddr)
 {
-	uint8_t *vidMemPtr = g_sdlVidMem.gfxByByte;
+	uint8_t *vidMemPtr = g_sdlVidMem.A000.gfxByByte;
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
 	if (num <= bytesToEnd)
 	{
@@ -370,21 +370,21 @@ void BE_ST_VGAUpdateGFXBufferInPlane(uint16_t destOff, const uint8_t *srcPtr, ui
 
 void BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff)
 {
-	g_sdlVidMem.egaGfx[destOff] = g_sdlVidMem.egaGfx[srcOff];
+	g_sdlVidMem.A000.egaGfx[destOff] = g_sdlVidMem.A000.egaGfx[srcOff];
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Same as BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr but with a specific plane (added for Catacomb Abyss vanilla bug reproduction/workaround)
 void BE_ST_EGAUpdateGFXByteInPlaneScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t planeNum)
 {
-	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_egaplane_repeat[1<<planeNum]) | (g_sdlVidMem.egaGfx[srcOff] & g_be_st_lookup_egaplane_repeat[1<<planeNum]);
+	g_sdlVidMem.A000.egaGfx[destOff] = (g_sdlVidMem.A000.egaGfx[destOff] & ~g_be_st_lookup_egaplane_repeat[1<<planeNum]) | (g_sdlVidMem.A000.egaGfx[srcOff] & g_be_st_lookup_egaplane_repeat[1<<planeNum]);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 // Same as BE_ST_EGAUpdateGFXByteInAllPlanesScrToScr but picking specific bits out of each byte
 void BE_ST_EGAUpdateGFXBitsInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff, uint8_t bitsMask)
 {
-	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_egaplane_bitsmask[bitsMask]) | (g_sdlVidMem.egaGfx[srcOff] & g_be_st_lookup_egaplane_bitsmask[bitsMask]);
+	g_sdlVidMem.A000.egaGfx[destOff] = (g_sdlVidMem.A000.egaGfx[destOff] & ~g_be_st_lookup_egaplane_bitsmask[bitsMask]) | (g_sdlVidMem.A000.egaGfx[srcOff] & g_be_st_lookup_egaplane_bitsmask[bitsMask]);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -403,12 +403,12 @@ void BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcO
 
 uint8_t BE_ST_EGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum)
 {
-	return BEL_ST_Lookup_EGAPlaneToLinear(g_sdlVidMem.egaGfx[destOff]>>planeNum);
+	return BEL_ST_Lookup_EGAPlaneToLinear(g_sdlVidMem.A000.egaGfx[destOff]>>planeNum);
 }
 
 uint8_t BE_ST_VGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum)
 {
-	return g_sdlVidMem.gfxByByte[4*destOff + planeNum];
+	return g_sdlVidMem.A000.gfxByByte[4*destOff + planeNum];
 }
 
 void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planeNum)
@@ -419,14 +419,14 @@ void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_
 void BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(uint16_t destOff, uint8_t color, uint8_t bitsMask)
 {
 	color &= 0xF; // We may get a larger value in The Catacombs Armageddon (sky color)
-	g_sdlVidMem.egaGfx[destOff] = (g_sdlVidMem.egaGfx[destOff] & ~g_be_st_lookup_egaplane_bitsmask[bitsMask]) | (g_be_st_lookup_egaplane_repeat[color] & g_be_st_lookup_egaplane_bitsmask[bitsMask]);
+	g_sdlVidMem.A000.egaGfx[destOff] = (g_sdlVidMem.A000.egaGfx[destOff] & ~g_be_st_lookup_egaplane_bitsmask[bitsMask]) | (g_be_st_lookup_egaplane_repeat[color] & g_be_st_lookup_egaplane_bitsmask[bitsMask]);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
 void BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(uint16_t destOff, uint8_t color, uint8_t bitsMask)
 {
 	bitsMask &= 0xF; // TODO add assert instead?
-	g_sdlVidMem.vgaGfx[destOff] = (g_sdlVidMem.vgaGfx[destOff] & ~g_be_st_lookup_vgaplane_bitsmask[bitsMask]) | (g_be_st_lookup_vgaplane_repeat[color] & g_be_st_lookup_vgaplane_bitsmask[bitsMask]);
+	g_sdlVidMem.A000.vgaGfx[destOff] = (g_sdlVidMem.A000.vgaGfx[destOff] & ~g_be_st_lookup_vgaplane_bitsmask[bitsMask]) | (g_be_st_lookup_vgaplane_repeat[color] & g_be_st_lookup_vgaplane_bitsmask[bitsMask]);
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -445,7 +445,7 @@ void BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(uint16_t destOff, uint8_t color, uin
 
 void BE_ST_EGAXorGFXByteByPlaneMask(uint16_t destOff, uint8_t srcVal, uint16_t planeMask)
 {
-	g_sdlVidMem.egaGfx[destOff] ^= ((g_be_st_lookup_egaplane_repeat[planeMask] & g_be_st_lookup_egaplane_bitsmask[srcVal]));
+	g_sdlVidMem.A000.egaGfx[destOff] ^= ((g_be_st_lookup_egaplane_repeat[planeMask] & g_be_st_lookup_egaplane_bitsmask[srcVal]));
 	g_sdlDoRefreshGfxOutput = true;
 }
 
@@ -524,7 +524,7 @@ void BE_ST_SetScreenMode(int mode)
 		g_sdlPixLineWidth = 8*40;
 		g_sdlSplitScreenLine = -1;
 		if (doClear)
-			memset(g_sdlVidMem.egaGfx, 0, sizeof(g_sdlVidMem.egaGfx));
+			memset(g_sdlVidMem.A000.egaGfx, 0, sizeof(g_sdlVidMem.A000.egaGfx));
 		memset(g_sdlHostScrMem.egaGfx, 0, sizeof(g_sdlHostScrMem.egaGfx));
 		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF; // Force refresh
 		break;
@@ -536,7 +536,7 @@ void BE_ST_SetScreenMode(int mode)
 		g_sdlPixLineWidth = 8*80;
 		g_sdlSplitScreenLine = -1;
 		if (doClear)
-			memset(g_sdlVidMem.egaGfx,  0, sizeof(g_sdlVidMem.egaGfx));
+			memset(g_sdlVidMem.A000.egaGfx,  0, sizeof(g_sdlVidMem.A000.egaGfx));
 		memset(g_sdlHostScrMem.egaGfx,  0, sizeof(g_sdlHostScrMem.egaGfx));
 		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF; // Force refresh
 		break;

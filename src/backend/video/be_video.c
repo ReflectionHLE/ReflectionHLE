@@ -614,12 +614,12 @@ static bool BEL_ST_UpdateTextureForEGAVGAMode(void)
 		// REFKEEN - WARNING: Not checking if GFX_TEX_HEIGHT <= g_sdlPixLineWidth (but this isn't reproduced as of writing this)
 		int pixelsToEgaMemEnd = warpAroundOffset-currLineFirstPixelNum;
 		if (g_sdlTexWidth <= pixelsToEgaMemEnd)
-			memcpy(currPalPixPtr, (uint8_t *)g_sdlVidMem.egaGfx + currLineFirstPixelNum, g_sdlTexWidth);
+			memcpy(currPalPixPtr, (uint8_t *)g_sdlVidMem.A000.egaGfx + currLineFirstPixelNum, g_sdlTexWidth);
 		else
 		{
-			memcpy(currPalPixPtr, (uint8_t *)g_sdlVidMem.egaGfx + currLineFirstPixelNum, pixelsToEgaMemEnd);
+			memcpy(currPalPixPtr, (uint8_t *)g_sdlVidMem.A000.egaGfx + currLineFirstPixelNum, pixelsToEgaMemEnd);
 			currPalPixPtr += pixelsToEgaMemEnd;
-			memcpy(currPalPixPtr, g_sdlVidMem.egaGfx, g_sdlTexWidth - pixelsToEgaMemEnd);
+			memcpy(currPalPixPtr, g_sdlVidMem.A000.egaGfx, g_sdlTexWidth - pixelsToEgaMemEnd);
 		}
 
 		if (g_sdlSplitScreenLine == line)

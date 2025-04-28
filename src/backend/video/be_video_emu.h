@@ -61,10 +61,12 @@
 
 // We can use a union because the memory contents are refreshed on screen mode change
 // (well, not on change between modes 0xD and 0xE, both sharing planar A000:0000)
-typedef union BEVideoEmuMem {
-	uint64_t egaGfx[0x10000]; // Contents of A000:0000, de-planed (1 byte per pixel)
-	uint32_t vgaGfx[0x10000]; // Same but for 256-colors. Similarly linear.
-	uint8_t gfxByByte[0x80000]; // Same graphics data, accessible per byte.
+typedef struct BEVideoEmuMem {
+	union { // Contents of A000:0000, i.e., A0000
+		uint64_t egaGfx[0x10000]; // De-planed (1 byte per pixel).
+		uint32_t vgaGfx[0x10000]; // Same but for 256-colors. Similarly linear.
+		uint8_t gfxByByte[0x80000]; // Same graphics data, accessible per byte.
+	} A000;
 	uint8_t text[TXT_COLS_NUM*TXT_ROWS_NUM*2]; // Textual contents of B800:0000
 } BEVideoEmuMem;
 
