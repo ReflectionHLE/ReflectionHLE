@@ -235,7 +235,7 @@ void Quit(const id0_char_t *error)
 #ifndef BETA
 		memcpy(BE_ST_GetTextModeMemoryPtr(), finscreen, 3780);
 //		movedata(finscreen, 0, 0xB800, 0, 3780);
-		BE_ST_SetScreenMode(3);
+		BE_ST_SetScreenMode(3 | 128);
 //		textmode(C80);
 		BE_ST_textcolor(BE_CGA_WHITE);
 		BE_ST_textbackground(BE_CGA_BLACK);
@@ -309,7 +309,7 @@ static void CheckMemory(void)
 	ShutdownId();
 	memcpy(BE_ST_GetTextModeMemoryPtr(),finscreen+7,3780);
 //	movedata (finscreen,7,0xb800,0,3780);
-	BE_ST_SetScreenMode(3);
+	BE_ST_SetScreenMode(3 | 128);
 //	textmode(C80);
 	BE_ST_textcolor(BE_CGA_WHITE);
 	BE_ST_textbackground(BE_CGA_BLACK);
