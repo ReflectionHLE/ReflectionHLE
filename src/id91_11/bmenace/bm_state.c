@@ -1710,6 +1710,7 @@ void FrictionX(objtype *ob)
 	}
 }
 
+#if 0 // REFKEEN: Unused function. Note that it uses oldsign without init.
 /*
 ===============
 =
@@ -1743,7 +1744,8 @@ static void FrictionY(objtype *ob)
 		if (i & 1)
 		{
 			ob->yspeed += friction;
-			if ((ob->yspeed & 0x8000) != oldsign)	//BUG: oldsign is not initialized!
+			// REFKEEN: Cast to signed type (albeit not init... but function is not used)
+			if ((Sint16)(ob->yspeed & 0x8000) != oldsign)	//BUG: oldsign is not initialized!
 			{
 				ob->yspeed = 0;
 			}
@@ -1751,6 +1753,7 @@ static void FrictionY(objtype *ob)
 		ytry += ob->yspeed;
 	}
 }
+#endif
 
 //==========================================================================
 
