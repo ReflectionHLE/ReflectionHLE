@@ -33,7 +33,7 @@ REFKEEN_NS_B
 boolean debugUnlocked = false;
 #ifndef BETA
 boolean textdrawscores = false;
-Uint16 __unused__ = 0;
+//Uint16 __unused__ = 0; // REFKEEN: Unused
 Uint16 oldmapon = 0;
 Sint16 practiceTimeLeft = -1;
 Uint16 respawnx = 0;

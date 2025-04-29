@@ -72,14 +72,14 @@ FARSTATE s_snakeskeleton = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_none, 
 FARSTATE s_snakeskeleton = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_down, 20, 0, 0, NULL, SnakeStandContact, DrawReact, &s_snakestand};
 FARSTATE s_snakeshield1 = {SNAKESHIELD1LSPR, SNAKESHIELD1RSPR, stepthink, false, push_down, 10, 0, 0, SnakePauseThink, SnakeShieldContact, DrawReact, &s_snakeshield2};
 FARSTATE s_snakeshield2 = {SNAKESHIELD2LSPR, SNAKESHIELD2RSPR, stepthink, false, push_down, 10, 0, 0, SnakePauseThink, SnakeShieldContact, DrawReact, &s_snakeshield1};
-FARSTATE s_snakeUNUSED1 = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_none, 15, 0, 0, NULL, NULL, DrawReact, &s_snakestand};
+//FARSTATE s_snakeUNUSED1 = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_none, 15, 0, 0, NULL, NULL, DrawReact, &s_snakestand}; // REFKEEN: Unused
 #endif
 FARSTATE s_snakestand = {SNAKESTANDLSPR, SNAKESTANDRSPR, stepthink, false, push_down, 4, 0, 16, SnakePauseThink, SnakeStandContact, SnakeStandReact, &s_snakestand};
 #if (EPISODE == 2)
 FARSTATE s_snakewormstand = {SNAKEWORM1LSPR, SNAKEWORM1RSPR, stepthink, false, push_down, 4, 0, 16, SnakeWormStandThink, SnakeStandContact, SnakeWormStandReact, &s_snakewormstand};
 #endif
 FARSTATE s_snakestanduse = {SNAKESTANDLSPR, SNAKESTANDRSPR, step, false, push_down, 1, 0, 0, SnakeUseThink, NULL, SnakeStandReact, &s_snakestand};
-FARSTATE s_snakeUNUSED2 = {SNAKESTANDLSPR, SNAKESTANDRSPR, think, false, push_none, 0, 0, 0, SnakeSlideThink, NULL, DrawReact, NULL};
+//FARSTATE s_snakeUNUSED2 = {SNAKESTANDLSPR, SNAKESTANDRSPR, think, false, push_none, 0, 0, 0, SnakeSlideThink, NULL, DrawReact, NULL}; // REFKEEN: Unused
 FARSTATE s_snakeslide = {SNAKEUSESPR, SNAKEUSESPR, think, false, push_none, 0, 0, 0, SnakeSlideThink, NULL, DrawReact, NULL};
 #ifdef BETA
 void SnakeShuttleThink(objtype *ob);

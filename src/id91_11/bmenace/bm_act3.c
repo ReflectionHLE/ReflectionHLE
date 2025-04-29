@@ -2230,7 +2230,7 @@ FARSTATE s_goliathdie     = {GOLIATH1SPR, GOLIATH1SPR, stepthink, false, push_do
 FARSTATE s_goliathstand   = {GOLIATH1SPR, GOLIATH1SPR, step, false, push_down, 10, 0, 0, GoliathStandThink, NULL, DrawReact, &s_goliathstand};
 FARSTATE s_goliathwalk1   = {GOLIATH1SPR, GOLIATH1SPR, slide, false, push_down, 20, 8, 0, NULL, NULL, WalkReact, &s_goliathwalk2};
 FARSTATE s_goliathwalk2   = {GOLIATH2SPR, GOLIATH2SPR, slide, false, push_down, 20, 8, 0, GoliathWalkThink, NULL, WalkReact, &s_goliathwalk1};
-FARSTATE s_goliath_unused = {GOLIATH3SPR, GOLIATH3SPR, step, false, push_down, 7, 0, 0, GoliathUNUSEDThink, NULL, DrawReact, &s_goliathstand};
+//FARSTATE s_goliath_unused = {GOLIATH3SPR, GOLIATH3SPR, step, false, push_down, 7, 0, 0, GoliathUNUSEDThink, NULL, DrawReact, &s_goliathstand}; // REFKEEN: Unused state
 FARSTATE s_goliathattack1 = {GOLIATH1SPR, GOLIATH1SPR, step, false, push_down, 3, 0, 0, NULL, NULL, DrawReact, &s_goliathattack2};
 FARSTATE s_goliathattack2 = {GOLIATH3SPR, GOLIATH3SPR, step, false, push_down, 4, 0, 0, GoliathAttackThink, NULL, DrawReact, &s_goliathattack1};
 

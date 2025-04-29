@@ -658,10 +658,10 @@ extern FARSTATE s_snakedie2;
 extern FARSTATE s_snakeskeleton;
 extern FARSTATE s_snakeshield1;
 extern FARSTATE s_snakeshield2;
-extern FARSTATE s_snakeUNUSED1;
+//extern FARSTATE s_snakeUNUSED1; // REFKEEN: Unused
 extern FARSTATE s_snakestand;
 extern FARSTATE s_snakestanduse;
-extern FARSTATE s_snakeUNUSED2;
+//extern FARSTATE s_snakeUNUSED2; // REFKEEN: Unused
 extern FARSTATE s_snakeslide;
 extern FARSTATE s_snaketeleport1;
 extern FARSTATE s_snaketeleport2;
@@ -1409,14 +1409,14 @@ extern FARSTATE s_goliathdie;
 extern FARSTATE s_goliathstand;
 extern FARSTATE s_goliathwalk1;
 extern FARSTATE s_goliathwalk2;
-extern FARSTATE s_goliath_unused;
+//extern FARSTATE s_goliath_unused; // REFKEEN: Unused
 extern FARSTATE s_goliathattack1;
 extern FARSTATE s_goliathattack2;
 void SpawnGoliath(Uint16 x, Uint16 y);
 void GoliathStandThink(objtype *ob);
 void GoliathWalkThink(objtype *ob);
 void GoliathReact(objtype *ob);
-void GoliathUNUSEDThink(objtype *ob);
+//void GoliathUNUSEDThink(objtype *ob); // REFKEEN: Unused
 void GoliathAttackThink(objtype *ob);
 
 extern FARSTATE s_enemylandmine1;
