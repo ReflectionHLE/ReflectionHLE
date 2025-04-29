@@ -454,7 +454,7 @@ void ScanInfoPlane(void)
 			case 55:
 			case 56:
 			case 57:
-				SpawnShuttle(x, y, value+(arrow_North-54));
+				SpawnShuttle(x, y, (arrowdirtype)(value+(arrow_North-54)));
 				NEED(SHUTTLE);
 				break;
 #else
@@ -469,7 +469,7 @@ void ScanInfoPlane(void)
 #if (EPISODE == 3)
 			case 56:
 			case 57:
-				SpawnShuttle(x, y, value+(arrow_North-56));
+				SpawnShuttle(x, y, (arrowdirtype)(value+(arrow_North-56)));
 				NEED(SHUTTLE);
 				break;
 #endif
