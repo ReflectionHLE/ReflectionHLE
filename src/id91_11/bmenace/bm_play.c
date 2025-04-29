@@ -1066,7 +1066,7 @@ void PlayLoop(void)
 	{
 		US_InitRndT(true);
 	}
-	SD_SetTimeCount(0);
+	SD_SetTimeCount(3);
 	lasttimecount = tics = 3;
 	ResetScoreObj();
 	do
