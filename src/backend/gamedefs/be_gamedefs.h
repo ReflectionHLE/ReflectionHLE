@@ -84,6 +84,12 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_BM1V11F
 	BE_STR_GAMEVER_BM1V11F,
 #endif
+#ifdef REFKEEN_HAS_VER_BM2V11F
+	BE_STR_GAMEVER_BM2V11F,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V11F
+	BE_STR_GAMEVER_BM3V11F,
+#endif
 };
 
 
@@ -183,6 +189,12 @@ const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_BM1V11F
 	&g_be_gamever_bm1v11f,
 #endif
+#ifdef REFKEEN_HAS_VER_BM2V11F
+	&g_be_gamever_bm2v11f,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V11F
+	&g_be_gamever_bm3v11f,
+#endif
 };
 
 const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
@@ -265,6 +277,12 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_BM1V11F
 	g_be_reqgameverfiles_bm1v11f,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V11F
+	g_be_reqgameverfiles_bm2v11f,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V11F
+	g_be_reqgameverfiles_bm3v11f,
 #endif
 };
 

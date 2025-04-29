@@ -102,6 +102,12 @@ typedef enum {
 #ifdef REFKEEN_HAS_VER_BM1V11F
 	BE_GAMEVER_BM1V11F,
 #endif
+#ifdef REFKEEN_HAS_VER_BM2V11F
+	BE_GAMEVER_BM2V11F,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V11F
+	BE_GAMEVER_BM3V11F,
+#endif
 	BE_GAMEVER_LAST
 } BE_GameVer_T;
 
@@ -156,6 +162,10 @@ typedef enum {
 #define REFKEEN_NS_B namespace n3dwt10 {
 #elif (defined REFKEEN_VER_BM1V11F)
 #define REFKEEN_NS_B namespace bm1v11f {
+#elif (defined REFKEEN_VER_BM2V11F)
+#define REFKEEN_NS_B namespace bm2v11f {
+#elif (defined REFKEEN_VER_BM3V11F)
+#define REFKEEN_NS_B namespace bm3v11f {
 #endif
 
 #endif // REFKEEN_UNIFIED_BUILD

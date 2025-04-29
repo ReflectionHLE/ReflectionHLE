@@ -85,4 +85,12 @@
 #define BE_STR_GAMEVER_BM1V11F "bm1v11f"
 #endif
 
+#ifdef REFKEEN_HAS_VER_BM2V11F
+#define BE_STR_GAMEVER_BM2V11F "bm2v11f"
+#endif
+
+#ifdef REFKEEN_HAS_VER_BM3V11F
+#define BE_STR_GAMEVER_BM3V11F "bm3v11f"
+#endif
+
 #endif // BE_GAMESTR_H

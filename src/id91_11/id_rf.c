@@ -2943,16 +2943,18 @@ void RF_Refresh (void)
 
 void RefKeen_Patch_id_rf(void)
 {
-	// FIXME: Initially supporting one specific offset for now
-	refkeen_compat_id_rf_allanims_table_offset = 0xBDDC;
-/*
 	switch (refkeen_current_gamever)
 	{
-	case ...:
-		refkeen_compat_id_rf_allanims_table_offset = ..;
+	case BE_GAMEVER_BM1V11F:
+		refkeen_compat_id_rf_allanims_table_offset = 0xBDDC;
+		break;
+	case BE_GAMEVER_BM2V11F:
+		refkeen_compat_id_rf_allanims_table_offset = 0xBE30;
+		break;
+	case BE_GAMEVER_BM3V11F:
+		refkeen_compat_id_rf_allanims_table_offset = 0xB968;
 		break;
 	}
-*/
 }
 
 REFKEEN_NS_E

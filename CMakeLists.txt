@@ -212,6 +212,8 @@ set(UNIFIED_GAME_PARAMS
 	-DREFKEEN_HAS_VER_WOLF3D_ALL=1
 
 	-DREFKEEN_HAS_VER_BM1V11F=1
+	-DREFKEEN_HAS_VER_BM2V11F=1
+	-DREFKEEN_HAS_VER_BM3V11F=1
 	-DREFKEEN_HAS_VER_BMENACE_ALL=1
 )
 
@@ -395,12 +397,30 @@ add_refhle_separate_target(
 	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
 )
 
+add_refhle_separate_target(
+	reflection-bm2v11f bmenace "${targets}" "${LIBRARIES}"
+	"${bmenace_src}" "${be_src}"
+	"src/id91_11;src/id91_11/bmenace"
+	"${common_cc_flags}"
+	"-DREFKEEN_VER_BM2V11F=1;-DREFKEEN_VER_BMENACE_ALL=1"
+	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
+)
+
+add_refhle_separate_target(
+	reflection-bm3v11f bmenace "${targets}" "${LIBRARIES}"
+	"${bmenace_src}" "${be_src}"
+	"src/id91_11;src/id91_11/bmenace"
+	"${common_cc_flags}"
+	"-DREFKEEN_VER_BM3V11F=1;-DREFKEEN_VER_BMENACE_ALL=1"
+	"${UNIFIED_GAME_PARAMS}" "${BUILD_UNIFIED}"
+)
+
 if (BUILD_UNIFIED)
 	string(REPLACE ";" " " UNIFIED_GAME_PARAMS "${UNIFIED_GAME_PARAMS}")
 	add_refhle_unified_target(
 		reflectionhle "${targets}"
 		"${be_src}" "${common_cc_flags}" "${UNIFIED_GAME_PARAMS}"
-		"${LIBRARIES};reflection-kdreams;reflection-cat3d;reflection-catabyss;reflection-catarm;reflection-catapoc;reflection-wl920312;reflection-wl1ap10;reflection-wl1ap11;reflection-wl6ap11;reflection-wl1ap14;reflection-wl6gt14a;reflection-wj6im14;reflection-wl6gt14b;reflection-wl6ac14;reflection-sdmfg10;reflection-sodfg10;reflection-sodfg14;reflection-sodac14;reflection-n3dwt10;reflection-bm1v11f"
+		"${LIBRARIES};reflection-kdreams;reflection-cat3d;reflection-catabyss;reflection-catarm;reflection-catapoc;reflection-wl920312;reflection-wl1ap10;reflection-wl1ap11;reflection-wl6ap11;reflection-wl1ap14;reflection-wl6gt14a;reflection-wj6im14;reflection-wl6gt14b;reflection-wl6ac14;reflection-sdmfg10;reflection-sodfg10;reflection-sodfg14;reflection-sodac14;reflection-n3dwt10;reflection-bm1v11f;reflection-bm2v11f;reflection-bm3v11f"
 	)
 endif ()
 
