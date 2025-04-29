@@ -1700,7 +1700,8 @@ void FrictionX(objtype *ob)
 		if (i & 1)
 		{
 			ob->xspeed += friction;
-			if ((ob->xspeed & 0x8000) != oldsign)
+			// REFKEEN: Cast to signed type
+			if ((Sint16)(ob->xspeed & 0x8000) != oldsign)
 			{
 				ob->xspeed = 0;
 			}
