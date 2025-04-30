@@ -12,9 +12,9 @@ static const BE_GameFileDetails_T g_be_reqgameverfiles_bm2v11r[] = {
 	{"EGADICT.BM2", 1024, 0x1d5b8daa},
 	{"EGAGRAPH.BM2", 479241, 0x0633cb47},
 	{"EGAHEAD.BM2", 13947, 0xc3d8b425},
+	{"FILE_ID.DIZ", 442, 0xef56dbbc},
 	{"MAPHEAD.BM2", 21120, 0x89a765d5},
 	{"MAPTEMP.BM2", 196526, 0x67bfed4c},
-	{"FILE_ID.DIZ", 442, 0xef56dbbc},
 	{0}
 };
 
