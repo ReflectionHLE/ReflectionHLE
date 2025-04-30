@@ -219,7 +219,7 @@ void Quit(const id0_char_t *error)
 	ShutdownId();
 	if (error && *error)
 	{
-		puts(error);
+		BE_ST_puts(error);
 		if (tedlevel)
 		{
 			BE_ST_BiosScanCode(0);
@@ -301,7 +301,7 @@ static void CheckMemory(void)
 
 #ifdef BETA
 	ShutdownId();
-	puts("Not enough memory to run BioHazard!");
+	BE_ST_puts("Not enough memory to run BioHazard!");
 #else
 	CA_CacheGrChunk (OUTOFMEM);
 	finscreen = (Uint8 *)grsegs[OUTOFMEM];
@@ -499,21 +499,21 @@ static void CheckCutFile(void)
 		close(handle);
 		return;
 	}
-	puts("Combining " FILE_GR1 " and " FILE_GR2 " into " FILE_GRAPH "...");
+	BE_ST_puts("Combining " FILE_GR1 " and " FILE_GR2 " into " FILE_GRAPH "...");
 	if (rename(FILE_GR1, FILE_GRAPH) == -1)
 	{
-		puts("Can't rename " FILE_GR1 "!");
+		BE_ST_puts("Can't rename " FILE_GR1 "!");
 		BE_ST_HandleExit(1);
 	}
 	if ( (ohandle = open(FILE_GRAPH, O_BINARY|O_APPEND|O_WRONLY)) == -1)
 	{
-		puts("Can't open " FILE_GRAPH "!");
+		BE_ST_puts("Can't open " FILE_GRAPH "!");
 		BE_ST_HandleExit(1);
 	}
 	lseek(ohandle, 0, SEEK_END);
 	if ( (ihandle = open(FILE_GR2, O_BINARY|O_RDONLY)) == -1)
 	{
-		puts("Can't find " FILE_GR2 "!");
+		BE_ST_puts("Can't find " FILE_GR2 "!");
 		BE_ST_HandleExit(1);
 	}
 	size = filelength(ihandle);
