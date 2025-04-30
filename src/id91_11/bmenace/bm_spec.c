@@ -1626,7 +1626,15 @@ void HintDialog(void)
 #ifdef BETA
 	if (gamestate.mapon != 0)
 	{
-		StartMusic(20);	// BUG: This will cause a crash! (should probably use MUS_HOSTAGE instead)
+		// REFKEEN: Fix invalid music assignment leading to a crash,
+		// if option is enabled.
+		// It's possible the invalid assignment was correct before
+		// reducing episode 2 from 18 levels to 12, according to
+		// old beta testing notes found in README2.TXT file.
+		if (g_refKeenCfg.bmenace.betaFixes)
+			StartMusic(MUS_HOSTAGE);
+		else
+			StartMusic(20);	// BUG: This will cause a crash!
 	}
 #else
 	if (gamestate.mapon == 99)

@@ -627,7 +627,8 @@ void bmenace_exe_main(void)
 //#include "CHECKS.C"	// compile-time and run-time checks for portability
 
 #ifdef BETA
-	if (!tedlevel)	// we haven't even run any code that could have set tedlevel to true!
+	if (!g_refKeenCfg.bmenace.betaFixes) // REFKEEN: Rather check this instead.
+//	if (!tedlevel)	// we haven't even run any code that could have set tedlevel to true!
 	{
 		int year, month, day;
 //		struct date today;
@@ -652,7 +653,8 @@ void bmenace_exe_main(void)
 	CheckCutFile();
 	storedemo = false;	//Note: this is never set to any other value
 #ifdef BETA
-	if (!tedlevel)	// we still haven't run any code that could have set tedlevel to true!
+	if (!g_refKeenCfg.bmenace.betaFixes) // REFKEEN: Again, check this instead.
+//	if (!tedlevel)	// we still haven't run any code that could have set tedlevel to true!
 	{
 		register int i;
 		

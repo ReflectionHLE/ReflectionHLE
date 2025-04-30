@@ -187,6 +187,7 @@ extern BEMenuItem
 	g_beWolf3DPadBindsMenuItem_LeftStick,
 	g_beWolf3DPadBindsMenuItem_RightStick,
 	g_beWolf3DPadBindsMenuItem_AnalogMotion,
+	g_beBMenaceSettingsMenuItem_BetaFixes,
 	g_beDeviceVolumesMenuItem_PCSpkVol,
 	g_beDeviceVolumesMenuItem_OPLVol,
 	g_beDeviceVolumesMenuItem_DigiVol;
@@ -349,6 +350,10 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	{&g_refKeenCfg.wolf3d.useLeftStick, &g_beWolf3DPadBindsMenuItem_LeftStick},
 	{&g_refKeenCfg.wolf3d.useRightStick, &g_beWolf3DPadBindsMenuItem_RightStick},
 	{&g_refKeenCfg.wolf3d.analogMotion, &g_beWolf3DPadBindsMenuItem_AnalogMotion},
+#endif
+
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	{&g_refKeenCfg.bmenace.betaFixes, &g_beBMenaceSettingsMenuItem_BetaFixes},
 #endif
 
 	{&g_refKeenCfg.pcSpkVol, &g_beDeviceVolumesMenuItem_PCSpkVol,

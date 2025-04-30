@@ -377,6 +377,7 @@ static BE_ST_CFG_Setting_T g_be_st_bmenace_settings[] = {
 	DEF_STR(bmenace.launcherExeArgs, "launcherexeargs")
 	DEF_STR(bmenace.launcherModPath, "launchermod")
 #endif
+	DEF_BOOL(bmenace.betaFixes, "betafixes", true)
 };
 #endif
 

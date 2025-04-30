@@ -97,6 +97,7 @@ extern BEMenu g_beMainMenu,
               g_beCat3DMouseBindsMenu, g_beCat3DPadBindsMenu,
               g_beWolf3DSettingsMenu, g_beWolf3DKeyBindsMenu,
               g_beWolf3DMouseBindsMenu, g_beWolf3DPadBindsMenu,
+              g_beBMenaceSettingsMenu,
               g_beQuitConfirmMenu;
 
 extern bool g_be_launcher_wasAnySettingChanged;

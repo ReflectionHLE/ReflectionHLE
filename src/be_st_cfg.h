@@ -152,6 +152,7 @@ typedef struct
 #ifdef REFKEEN_HAS_VER_BMENACE_ALL
 	struct
 	{
+		int/*bool*/ betaFixes;
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
 		char launcherModPath[BE_CROSS_PATH_LEN_BOUND];

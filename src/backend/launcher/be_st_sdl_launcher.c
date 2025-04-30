@@ -389,6 +389,9 @@ BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Cat3DSettings, "Settings: Cat3D a
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Wolf3DSettings, "Settings: Wolf3D, SOD, S3DNA", &g_beWolf3DSettingsMenu)
 #endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_BMenaceSettings, "Settings: BioMenace", &g_beBMenaceSettingsMenu)
+#endif
 
 static BEMenuItem *g_beSettingsMenuItems[] = {
 	&g_beSettingsMenuItem_VideoSettings,
@@ -402,6 +405,9 @@ static BEMenuItem *g_beSettingsMenuItems[] = {
 #endif
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	&g_beSettingsMenuItem_Wolf3DSettings,
+#endif
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	&g_beSettingsMenuItem_BMenaceSettings,
 #endif
 	NULL
 };
@@ -1065,6 +1071,25 @@ BEMenu g_beWolf3DPadBindsMenu = {
 	// Ignore the rest
 };
 #endif // REFKEEN_HAS_VER_WOLF3D_ALL
+
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+/*** BioMenace settings menu ***/
+
+BEMENUITEM_DEF_SELECTION(g_beBMenaceSettingsMenuItem_BetaFixes, "1992-07 beta fixes (compatibility option)", g_be_settingsChoices_boolean)
+
+static BEMenuItem *g_beBMenaceSettingsMenuItems[] = {
+	&g_beBMenaceSettingsMenuItem_BetaFixes,
+	NULL
+};
+
+BEMenu g_beBMenaceSettingsMenu = {
+	"Settings: BioMenace",
+	&g_beSettingsMenu,
+	g_beBMenaceSettingsMenuItems,
+	// Ignore the rest
+};
+
+#endif // REFKEEN_HAS_VER_BMENACE_ALL
 
 /*** Quit confirm menu ***/
 
