@@ -1,5 +1,8 @@
 /* This header must be included *only* from be_gamedefs.h */
 
+#ifdef REFKEEN_HAS_VER_BH071592
+#include "be_gamedefs_bh071592.h"
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V10S
 #include "be_gamedefs_bm1v10s.h"
 #endif
@@ -38,6 +41,9 @@
 #endif
 
 static const BE_GameVerDetails_T *g_be_gamever_ptrs_bmenace_all[] = {
+#ifdef REFKEEN_HAS_VER_BH071592
+	&g_be_gamever_bh071592,
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V10S
 	&g_be_gamever_bm1v10s,
 #endif

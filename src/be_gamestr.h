@@ -81,6 +81,10 @@
 #define BE_STR_GAMEVER_N3DWT10 "n3dwt10"
 #endif
 
+#ifdef REFKEEN_HAS_VER_BH071592
+#define BE_STR_GAMEVER_BH071592 "bh071592"
+#endif
+
 #ifdef REFKEEN_HAS_VER_BM1V10S
 #define BE_STR_GAMEVER_BM1V10S "bm1v10s"
 #endif
