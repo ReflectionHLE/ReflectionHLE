@@ -261,9 +261,9 @@ boolean SaveTheGame(BE_FILE_T handle)
 
 	for (i = 0; i < MAPPLANES; i++)
 	{
-		compressed = CA_RLEWCompress(mapsegs[i], expanded, (Uint16 huge *)bigbuffer+1, RLETAG);
-		*(Uint16 huge *)bigbuffer = compressed;
-		if (!CA_FarWrite(handle, bigbuffer, compressed+2))
+		compressed = CA_RLEWCompress(mapsegs[i], expanded, (Uint16 id0_huge *)bigbuffer+1, RLETAG);
+		*(Uint16 id0_huge *)bigbuffer = compressed;
+		if (!CA_FarWrite(handle, (id0_byte_t id0_far *)bigbuffer, compressed+2))
 		{
 			MM_FreePtr(&bigbuffer);
 			return false;
@@ -394,7 +394,7 @@ boolean LoadTheGame(BE_FILE_T handle)
 			MM_FreePtr(&bigbuffer);
 			return false;
 		}
-		CA_RLEWexpand(bigbuffer, mapsegs[i], expanded, RLETAG);
+		CA_RLEWexpand((id0_unsigned_t *)bigbuffer, mapsegs[i], expanded, RLETAG);
 	}
 	MM_FreePtr(&bigbuffer);
 

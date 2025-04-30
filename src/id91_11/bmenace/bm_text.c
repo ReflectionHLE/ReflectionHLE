@@ -878,7 +878,7 @@ void HelpScreens(void)
 		// than we need
 #ifdef BETA
 		CA_LoadFile(textfiles[pos], &buffer);
-		text = buffer;
+		text = (id0_char_t id0_far *)buffer;
 		// BUG: should lock buffer to make sure it doesn't get moved around when
 		// caching the graphics
 #else
@@ -1039,7 +1039,7 @@ void FinaleLayout(void)
 	// BUG: the text's grsegs pointer should be locked to make sure it doesn't
 	// get moved around when caching the graphics
 #ifdef BETA
-	CA_LoadFile("ENDART.BH1", &(memptr)textseg);
+	CA_LoadFile("ENDART.BH1", (memptr *)&textseg);
 #elif (EPISODE == 2)
 	if (gamestate.nukestate != 2)
 	{
@@ -1093,7 +1093,7 @@ nextpage:;
 	}
 	StopMusic();
 #ifdef BETA
-	MM_FreePtr(&(memptr)textseg);
+	MM_FreePtr((memptr *)&textseg);
 #elif (EPISODE == 2)
 	if (gamestate.nukestate != 2)
 	{

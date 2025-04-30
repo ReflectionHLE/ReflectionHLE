@@ -235,24 +235,24 @@ void MiscScreen(Sint16 num)
 void RunDemo(Sint16 num)
 {
 #ifdef BETA
-	Sint16 handle;
+	BE_FILE_T handle;
 	char demofile[] = "DEMO?."EXTENSION;
 	
 	demofile[4] = num+'0';
-	handle = open(demofile, O_BINARY|O_RDONLY, S_IFREG|S_IREAD|S_IWRITE);
-	if (handle == -1)
+	handle = BE_Cross_open_readonly_for_reading(demofile);
+	if (!BE_Cross_IsFileValid(handle))
 	{
 		strcpy(str, "RunDemo:  Cannot open ");
 		strcat(str, demofile);
 		Quit(str);
 	}
 	NewGame();
-	read(handle, &gamestate.mapon, sizeof(gamestate.mapon));
-	read(handle, &DemoSize, sizeof(DemoSize));
+	BE_Cross_readInt16LE(handle, &gamestate.mapon);
+	BE_Cross_readInt16LE(handle, &DemoSize);
 	MM_GetPtr((memptr *)&DemoBuffer, DemoSize);
 	MM_SetLock((memptr *)&DemoBuffer, true);
 	CA_FarRead(handle, DemoBuffer, DemoSize);
-	close(handle);
+	BE_Cross_close(handle);
 	IN_StartDemoPlayback(DemoBuffer, DemoSize);
 	SetupGameLevel(true);
 	if (scorescreenkludge)

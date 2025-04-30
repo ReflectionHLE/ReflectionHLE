@@ -629,17 +629,20 @@ void bmenace_exe_main(void)
 #ifdef BETA
 	if (!tedlevel)	// we haven't even run any code that could have set tedlevel to true!
 	{
-		struct date today;
+		int year, month, day;
+//		struct date today;
 		
-		getdate(&today);
+		BE_Cross_GetLocalDate_UNSAFE(&year, &month, &day);
+//		getdate(&today);
 		// Note: This date check doesn't really work the way it was supposed to.
 		// The da_year value returned by getdate() would have been 1992, not 92,
 		// so the last part of the condition would always be true. And using an
 		// AND condition like this means the date will be considered too late
 		// on August 15 to August 31, but not on September 1 to September 14.
-		if (today.da_day >= 15 && today.da_mon >= 8 && today.da_year >= 92)
+		if (day >= 15 && month >= 8 && year >= 92)
+//		if (today.da_day >= 15 && today.da_mon >= 8 && today.da_year >= 92)
 		{
-			printf("This beta version has expired. Thanks for your help.");
+			BE_ST_printf("This beta version has expired. Thanks for your help.");
 			BE_ST_HandleExit(0);
 		}
 	}
@@ -653,17 +656,17 @@ void bmenace_exe_main(void)
 	{
 		register int i;
 		
-		if (_argc <= 1)	// need at least 1 real parameter
+		if (id0_argc <= 1)	// need at least 1 real parameter
 		{
-			printf("You are not authorized to play this game!\n");
+			BE_ST_printf("You are not authorized to play this game!\n");
 			BE_ST_HandleExit(0);
 		}
-		for (i=1; i<_argc; i++)
+		for (i=1; i<id0_argc; i++)
 		{
 			// ALL parameters passed to the game must match betaparm[0]
-			if (US_CheckParm(_argv[i], betaparm) != 0)
+			if (US_CheckParm(id0_argv[i], betaparm) != 0)
 			{
-				printf("You are not authorized to play this game!\n");
+				BE_ST_printf("You are not authorized to play this game!\n");
 				BE_ST_HandleExit(0);
 			}
 		}
