@@ -1470,7 +1470,8 @@ ENDP
 	#ifdef VERSION_1_1
 	id0_word_t latchpel = 0;
 	#else
-	extern id0_word nopan, HackCount;
+	extern id0_boolean_t nopan;
+	extern id0_word_t HackCount;
 	#endif
 #endif
 
