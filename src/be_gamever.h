@@ -99,6 +99,18 @@ typedef enum {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	BE_GAMEVER_N3DWT10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V10S
+	BE_GAMEVER_BM1V10S,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V10R
+	BE_GAMEVER_BM1V10R,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V10R
+	BE_GAMEVER_BM2V10R,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V10R
+	BE_GAMEVER_BM3V10R,
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V11S
 	BE_GAMEVER_BM1V11S,
 #endif
@@ -175,6 +187,14 @@ typedef enum {
 #define REFKEEN_NS_B namespace sodac14 {
 #elif (defined REFKEEN_VER_N3DWT10)
 #define REFKEEN_NS_B namespace n3dwt10 {
+#elif (defined REFKEEN_VER_BM1V10S)
+#define REFKEEN_NS_B namespace bm1v10s {
+#elif (defined REFKEEN_VER_BM1V10R)
+#define REFKEEN_NS_B namespace bm1v10r {
+#elif (defined REFKEEN_VER_BM2V10R)
+#define REFKEEN_NS_B namespace bm2v10r {
+#elif (defined REFKEEN_VER_BM3V10R)
+#define REFKEEN_NS_B namespace bm3v10r {
 #elif (defined REFKEEN_VER_BM1V11S)
 #define REFKEEN_NS_B namespace bm1v11s {
 #elif (defined REFKEEN_VER_BM1V11R)

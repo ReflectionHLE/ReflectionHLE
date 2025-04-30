@@ -1,16 +1,10 @@
 #ifndef __VERSION_H__
 #define __VERSION_H__
 
-#ifdef REFKEEN_VER_BM1V11S
+#if (defined REFKEEN_VER_BM1V10S) || (defined REFKEEN_VER_BM1V11S)
 #define SHAREWARE 1
-#define VERSION_1_1
-#endif
-
-#if (defined REFKEEN_VER_BM1V11R) || (defined REFKEEN_VER_BM2V11R) || (defined REFKEEN_VER_BM3V11R) || \
-    (defined REFKEEN_VER_BM1V11GM) || \
-    (defined REFKEEN_VER_BM1V11F) || (defined REFKEEN_VER_BM2V11F) || (defined REFKEEN_VER_BM3V11F)
+#else
 #define SHAREWARE 0
-#define VERSION_1_1
 #endif
 
 #ifdef REFKEEN_VER_BM1V11GM
@@ -21,14 +15,28 @@
 #define VERSION_1_1_FREEWARE
 #endif
 
+#if (defined REFKEEN_VER_BM1V10S) || (defined REFKEEN_VER_BM1V10R) || \
+    (defined REFKEEN_VER_BM2V10R) || (defined REFKEEN_VER_BM3V10R)
+#define VERSION_1_0
+#endif
+
 #if (defined REFKEEN_VER_BM1V11S) || (defined REFKEEN_VER_BM1V11R) || \
+    (defined REFKEEN_VER_BM2V11R) || (defined REFKEEN_VER_BM3V11R) || \
+    (defined GMS_VERSION) || (defined VERSION_1_1_FREEWARE)
+#define VERSION_1_1
+#endif
+
+#if (defined REFKEEN_VER_BM1V10S) || (defined REFKEEN_VER_BM1V10R) || \
+    (defined REFKEEN_VER_BM1V11S) || (defined REFKEEN_VER_BM1V11R) || \
     (defined REFKEEN_VER_BM1V11GM) || (defined REFKEEN_VER_BM1V11F)
 #define EPISODE 1
 #endif
-#if (defined REFKEEN_VER_BM2V11R) || (defined REFKEEN_VER_BM2V11F)
+#if (defined REFKEEN_VER_BM2V10R) || \
+    (defined REFKEEN_VER_BM2V11R) || (defined REFKEEN_VER_BM2V11F)
 #define EPISODE 2
 #endif
-#if (defined REFKEEN_VER_BM3V11R) || (defined REFKEEN_VER_BM3V11F)
+#if (defined REFKEEN_VER_BM3V10R) || \
+    (defined REFKEEN_VER_BM3V11R) || (defined REFKEEN_VER_BM3V11F)
 #define EPISODE 3
 #endif
 

@@ -2943,7 +2943,15 @@ void RF_Refresh (void)
 
 void RefKeen_Patch_id_rf(void)
 {
-#ifdef REFKEEN_VER_BM1V11S
+#ifdef REFKEEN_VER_BM1V10S
+	refkeen_compat_id_rf_allanims_table_offset = 0x288D;
+#elif (defined REFKEEN_VER_BM1V10R)
+	refkeen_compat_id_rf_allanims_table_offset = 0x2897;
+#elif (defined REFKEEN_VER_BM2V10R)
+	refkeen_compat_id_rf_allanims_table_offset = 0x28A7;
+#elif (defined REFKEEN_VER_BM3V10R)
+	refkeen_compat_id_rf_allanims_table_offset = 0x28D0;
+#elif (defined REFKEEN_VER_BM1V11S)
 	refkeen_compat_id_rf_allanims_table_offset = 0xBD0C;
 #elif (defined REFKEEN_VER_BM1V11R)
 	refkeen_compat_id_rf_allanims_table_offset = 0xBD5A;

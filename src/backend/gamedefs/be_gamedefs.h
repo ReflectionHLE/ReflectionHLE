@@ -81,6 +81,18 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	BE_STR_GAMEVER_N3DWT10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V10S
+	BE_STR_GAMEVER_BM1V10S,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V10R
+	BE_STR_GAMEVER_BM1V10R,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V10R
+	BE_STR_GAMEVER_BM2V10R,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V10R
+	BE_STR_GAMEVER_BM3V10R,
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V11S
 	BE_STR_GAMEVER_BM1V11S,
 #endif
@@ -201,6 +213,18 @@ const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	&g_be_gamever_n3dwt10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V10S
+	&g_be_gamever_bm1v10s,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V10R
+	&g_be_gamever_bm1v10r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V10R
+	&g_be_gamever_bm2v10r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V10R
+	&g_be_gamever_bm3v10r,
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V11S
 	&g_be_gamever_bm1v11s,
 #endif
@@ -304,6 +328,18 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	g_be_reqgameverfiles_n3dwt10,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V10S
+	g_be_reqgameverfiles_bm1v10s,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V10R
+	g_be_reqgameverfiles_bm1v10r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V10R
+	g_be_reqgameverfiles_bm2v10r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V10R
+	g_be_reqgameverfiles_bm3v10r,
 #endif
 #ifdef REFKEEN_HAS_VER_BM1V11S
 	g_be_reqgameverfiles_bm1v11s,

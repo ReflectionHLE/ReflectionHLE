@@ -1,5 +1,17 @@
 /* This header must be included *only* from be_gamedefs.h */
 
+#ifdef REFKEEN_HAS_VER_BM1V10S
+#include "be_gamedefs_bm1v10s.h"
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V10R
+#include "be_gamedefs_bm1v10r.h"
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V10R
+#include "be_gamedefs_bm2v10r.h"
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V10R
+#include "be_gamedefs_bm3v10r.h"
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V11S
 #include "be_gamedefs_bm1v11s.h"
 #endif
@@ -26,6 +38,18 @@
 #endif
 
 static const BE_GameVerDetails_T *g_be_gamever_ptrs_bmenace_all[] = {
+#ifdef REFKEEN_HAS_VER_BM1V10S
+	&g_be_gamever_bm1v10s,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V10R
+	&g_be_gamever_bm1v10r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V10R
+	&g_be_gamever_bm2v10r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V10R
+	&g_be_gamever_bm3v10r,
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V11S
 	&g_be_gamever_bm1v11s,
 #endif
