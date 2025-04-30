@@ -48,4 +48,3 @@ static const BE_GameVerDetails_T g_be_gamever_bm1v11f = {
 	BE_GAMEVER_BM1V11F,
 	BE_GAME_BMENACE_ALL
 };
-

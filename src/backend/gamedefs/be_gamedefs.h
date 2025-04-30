@@ -81,6 +81,21 @@ const char *refkeen_gamever_strs[BE_GAMEVER_LAST] = {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	BE_STR_GAMEVER_N3DWT10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V11S
+	BE_STR_GAMEVER_BM1V11S,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V11R
+	BE_STR_GAMEVER_BM1V11R,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V11R
+	BE_STR_GAMEVER_BM2V11R,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V11R
+	BE_STR_GAMEVER_BM3V11R,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V11GM
+	BE_STR_GAMEVER_BM1V11GM,
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V11F
 	BE_STR_GAMEVER_BM1V11F,
 #endif
@@ -186,6 +201,21 @@ const BE_GameVerDetails_T *g_be_gamever_ptrs[] = {
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	&g_be_gamever_n3dwt10,
 #endif
+#ifdef REFKEEN_HAS_VER_BM1V11S
+	&g_be_gamever_bm1v11s,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V11R
+	&g_be_gamever_bm1v11r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V11R
+	&g_be_gamever_bm2v11r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V11R
+	&g_be_gamever_bm3v11r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V11GM
+	&g_be_gamever_bm1v11gm,
+#endif
 #ifdef REFKEEN_HAS_VER_BM1V11F
 	&g_be_gamever_bm1v11f,
 #endif
@@ -274,6 +304,21 @@ const BE_GameFileDetails_T *g_be_gamefiledetails_ptrs[]  = {
 #endif
 #ifdef REFKEEN_HAS_VER_N3DWT10
 	g_be_reqgameverfiles_n3dwt10,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V11S
+	g_be_reqgameverfiles_bm1v11s,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V11R
+	g_be_reqgameverfiles_bm1v11r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V11R
+	g_be_reqgameverfiles_bm2v11r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V11R
+	g_be_reqgameverfiles_bm3v11r,
+#endif
+#ifdef REFKEEN_HAS_VER_BM1V11GM
+	g_be_reqgameverfiles_bm1v11gm,
 #endif
 #ifdef REFKEEN_HAS_VER_BM1V11F
 	g_be_reqgameverfiles_bm1v11f,

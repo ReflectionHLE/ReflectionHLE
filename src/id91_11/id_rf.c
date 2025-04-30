@@ -2943,18 +2943,23 @@ void RF_Refresh (void)
 
 void RefKeen_Patch_id_rf(void)
 {
-	switch (refkeen_current_gamever)
-	{
-	case BE_GAMEVER_BM1V11F:
-		refkeen_compat_id_rf_allanims_table_offset = 0xBDDC;
-		break;
-	case BE_GAMEVER_BM2V11F:
-		refkeen_compat_id_rf_allanims_table_offset = 0xBE30;
-		break;
-	case BE_GAMEVER_BM3V11F:
-		refkeen_compat_id_rf_allanims_table_offset = 0xB968;
-		break;
-	}
+#ifdef REFKEEN_VER_BM1V11S
+	refkeen_compat_id_rf_allanims_table_offset = 0xBD0C;
+#elif (defined REFKEEN_VER_BM1V11R)
+	refkeen_compat_id_rf_allanims_table_offset = 0xBD5A;
+#elif (defined REFKEEN_VER_BM2V11R)
+	refkeen_compat_id_rf_allanims_table_offset = 0xBDAE;
+#elif (defined REFKEEN_VER_BM3V11R)
+	refkeen_compat_id_rf_allanims_table_offset = 0xB8E6;
+#elif (defined REFKEEN_VER_BM1V11GM)
+	refkeen_compat_id_rf_allanims_table_offset = 0xB2DC;
+#elif (defined REFKEEN_VER_BM1V11F)
+	refkeen_compat_id_rf_allanims_table_offset = 0xBDDC;
+#elif (defined REFKEEN_VER_BM2V11F)
+	refkeen_compat_id_rf_allanims_table_offset = 0xBE30;
+#elif (defined REFKEEN_VER_BM3V11F)
+	refkeen_compat_id_rf_allanims_table_offset = 0xB968;
+#endif
 }
 
 REFKEEN_NS_E

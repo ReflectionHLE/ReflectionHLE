@@ -81,6 +81,26 @@
 #define BE_STR_GAMEVER_N3DWT10 "n3dwt10"
 #endif
 
+#ifdef REFKEEN_HAS_VER_BM1V11S
+#define BE_STR_GAMEVER_BM1V11S "bm1v11s"
+#endif
+
+#ifdef REFKEEN_HAS_VER_BM1V11R
+#define BE_STR_GAMEVER_BM1V11R "bm1v11r"
+#endif
+
+#ifdef REFKEEN_HAS_VER_BM2V11R
+#define BE_STR_GAMEVER_BM2V11R "bm2v11r"
+#endif
+
+#ifdef REFKEEN_HAS_VER_BM3V11R
+#define BE_STR_GAMEVER_BM3V11R "bm3v11r"
+#endif
+
+#ifdef REFKEEN_HAS_VER_BM1V11GM
+#define BE_STR_GAMEVER_BM1V11GM "bm1v11gm"
+#endif
+
 #ifdef REFKEEN_HAS_VER_BM1V11F
 #define BE_STR_GAMEVER_BM1V11F "bm1v11f"
 #endif
