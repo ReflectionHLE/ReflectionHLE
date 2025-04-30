@@ -217,10 +217,10 @@ void VW_SetScreenMode (id0_int_t grmode)
 	switch (grmode)
 	{
 	  case TEXTGR:
-#if REFKEEN_ID_ENGINE_VER < REFKEEN_ID_ENGINE_VER_K6_V1_0
 		BE_ST_SetScreenMode(3);
-#endif
+#if REFKEEN_ID_ENGINE_VER < REFKEEN_ID_ENGINE_VER_K6_V1_0
 		screenseg=BE_ST_GetTextModeMemoryPtr();
+#endif
 		break;
 	  case CGAGR:
 		BE_ST_SetScreenMode(4);
