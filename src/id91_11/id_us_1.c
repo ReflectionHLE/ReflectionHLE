@@ -1651,6 +1651,71 @@ void RefKeen_Patch_id_us(void)
 {
 	switch (refkeen_current_gamever)
 	{
+#ifdef REFKEEN_VER_BH071592
+	case BE_GAMEVER_BH071592:
+		refkeen_compat_id_us_printx_offset = 0xEA14;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM1V10S
+	case BE_GAMEVER_BM1V10S:
+		refkeen_compat_id_us_printx_offset = 0xD524;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM1V10R
+	case BE_GAMEVER_BM1V10R:
+		refkeen_compat_id_us_printx_offset = 0xD572;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM2V10R
+	case BE_GAMEVER_BM2V10R:
+		refkeen_compat_id_us_printx_offset = 0xD5CA;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM3V10R
+	case BE_GAMEVER_BM3V10R:
+		refkeen_compat_id_us_printx_offset = 0xD102;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM1V11S
+	case BE_GAMEVER_BM1V11S:
+		refkeen_compat_id_us_printx_offset = 0xD52E;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM1V11R
+	case BE_GAMEVER_BM1V11R:
+		refkeen_compat_id_us_printx_offset = 0xD57C;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM2V11R
+	case BE_GAMEVER_BM2V11R:
+		refkeen_compat_id_us_printx_offset = 0xD5D0;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM3V11R
+	case BE_GAMEVER_BM3V11R:
+		refkeen_compat_id_us_printx_offset = 0xD108;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM1V11GM
+	case BE_GAMEVER_BM1V11GM:
+		refkeen_compat_id_us_printx_offset = 0xC394;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM1V11F
+	case BE_GAMEVER_BM1V11F:
+		refkeen_compat_id_us_printx_offset = 0xD5FE;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM2V11F
+	case BE_GAMEVER_BM2V11F:
+		refkeen_compat_id_us_printx_offset = 0xD652;
+		break;
+#endif
+#ifdef REFKEEN_VER_BM3V11F
+	case BE_GAMEVER_BM3V11F:
+		refkeen_compat_id_us_printx_offset = 0xD18A;
+		break;
+#endif
 #ifdef REFKEEN_VER_CAT3D
 	case BE_GAMEVER_CAT3D100:
 		refkeen_compat_id_us_printx_offset = 0xA24E;
