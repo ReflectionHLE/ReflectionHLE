@@ -232,6 +232,152 @@ void ResetGame(void)
 
 //===========================================================================
 
+// REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
+// TODO: Not yet
+
+// Similar new methods for writing/reading game state
+static boolean SaveGameState(BE_FILE_T file, gametype *state)
+{
+	Uint16 ridingdosoffset = 0;
+	return ((BE_Cross_writeInt32LE(file, &state->score) == 4)
+	        && (BE_Cross_writeInt32LE(file, &state->nextextra) == 4)
+	        && (BE_Cross_writeInt16LE(file, &state->mapon) == 2)
+#ifdef BETA
+	        && (BE_Cross_writeInt16LE(file, &state->grenades.landmines) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->grenades.green) == 2)
+#else
+	        && (BE_Cross_writeInt8LE(file, &state->grenades.landmines) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->grenades.green) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->grenades.red) == 1)
+#endif
+	        && (BE_Cross_writeInt16LE(file, &state->keys.keycards) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->keys.keys) == 2)
+	        && (BE_Cross_writeInt16LEBuffer(file, state->gotshard, sizeof(state->gotshard)) == sizeof(state->gotshard))
+	        && (BE_Cross_writeInt16LE(file, &state->specialkeys) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->nukestate) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->got_pill) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->got_exitkey) == 2)
+#ifndef BETA
+	        && (BE_Cross_writeInt16LE(file, &state->trianglekey) == 2)
+#endif
+	        && (BE_Cross_write_boolean_To16LE(file, &state->got_robopal) == 2)
+#ifdef BETA
+	        && (BE_Cross_writeInt16LE(file, &state->potions) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->lives) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->food) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->difficulty) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->autofire) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->ammo) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->clips) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->savedhostage) == 2)
+#else
+	        && (BE_Cross_writeInt8LE(file, &state->potions) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->lives) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->gems) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->health) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->difficulty) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->autofire) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->ammo) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->clips) == 1)
+	        && (BE_Cross_writeInt8LE(file, &state->weapon) == 1)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->savedhostage) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->got_warpgem) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_grenade) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_machinegun) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_keycard) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_key) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_crystalshard) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_supergun) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_landmine) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_gem) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_firstaid) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_invincible) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_robopal) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_switchbridge) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_switchplat) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_colorsequence) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_opendoor) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_plasmabolts) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_warpgem) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &state->hint_beacon) == 2)
+	        && (BE_Cross_writeInt16LE(file, &state->_zero) == 2)
+#endif
+	        && (BE_Cross_writeInt16LE(file, &ridingdosoffset) == 2)
+	);
+}
+
+static boolean LoadGameState(BE_FILE_T file, gametype *state)
+{
+	state->riding = NULL; // TODO
+	Uint16 ridingdosoffset = 0;
+	return ((BE_Cross_readInt32LE(file, &state->score) == 4)
+	        && (BE_Cross_readInt32LE(file, &state->nextextra) == 4)
+	        && (BE_Cross_readInt16LE(file, &state->mapon) == 2)
+#ifdef BETA
+	        && (BE_Cross_readInt16LE(file, &state->grenades.landmines) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->grenades.green) == 2)
+#else
+	        && (BE_Cross_readInt8LE(file, &state->grenades.landmines) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->grenades.green) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->grenades.red) == 1)
+#endif
+	        && (BE_Cross_readInt16LE(file, &state->keys.keycards) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->keys.keys) == 2)
+	        && (BE_Cross_readInt16LEBuffer(file, state->gotshard, sizeof(state->gotshard)) == sizeof(state->gotshard))
+	        && (BE_Cross_readInt16LE(file, &state->specialkeys) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->nukestate) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->got_pill) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->got_exitkey) == 2)
+#ifndef BETA
+	        && (BE_Cross_readInt16LE(file, &state->trianglekey) == 2)
+#endif
+	        && (BE_Cross_read_boolean_From16LE(file, &state->got_robopal) == 2)
+#ifdef BETA
+	        && (BE_Cross_readInt16LE(file, &state->potions) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->lives) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->food) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->difficulty) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->autofire) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->ammo) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->clips) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->savedhostage) == 2)
+#else
+	        && (BE_Cross_readInt8LE(file, &state->potions) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->lives) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->gems) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->health) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->difficulty) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->autofire) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->ammo) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->clips) == 1)
+	        && (BE_Cross_readInt8LE(file, &state->weapon) == 1)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->savedhostage) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->got_warpgem) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_grenade) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_machinegun) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_keycard) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_key) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_crystalshard) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_supergun) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_landmine) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_gem) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_firstaid) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_invincible) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_robopal) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_switchbridge) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_switchplat) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_colorsequence) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_opendoor) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_plasmabolts) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_warpgem) == 2)
+	        && (BE_Cross_read_boolean_From16LE(file, &state->hint_beacon) == 2)
+	        && (BE_Cross_readInt16LE(file, &state->_zero) == 2)
+#endif
+	        && (BE_Cross_readInt16LE(file, &ridingdosoffset) == 2)
+		&& ((gamestate.riding = 0) == 0/*TODO*/)
+	);
+}
+
 /*
 ============================
 =
@@ -251,7 +397,8 @@ boolean SaveTheGame(BE_FILE_T handle)
 
 	gamestate.riding = NULL;
 
-	if (!CA_FarWrite(handle, (id0_byte_t id0_far *)&gamestate, sizeof(gamestate)))
+	// (REFKEEN) Writing fields one-by-one in a cross-platform manner
+	if (!SaveGameState(handle, &gamestate))
 	{
 		return false;
 	}
@@ -317,7 +464,8 @@ boolean SaveTheGame(BE_FILE_T handle)
 		break;
 	}
 	colorseqnum = 0;
-	if (!CA_FarWrite(handle, (id0_byte_t id0_far *)&savestate, sizeof(savestate)))
+	// (REFKEEN) Writing fields one-by-one in a cross-platform manner
+	if (!SaveGameState(handle, &savestate))
 	{
 		return false;
 	}
@@ -343,7 +491,8 @@ boolean LoadTheGame(BE_FILE_T handle)
 	Uint16	compressed,expanded;
 	memptr	bigbuffer;
 
-	if (!CA_FarRead(handle, (id0_byte_t id0_far *)&gamestate, sizeof(gamestate)))
+	// (REFKEEN) Reading fields one-by-one in a cross-platform manner
+	if (!LoadGameState(handle, &gamestate))
 	{
 		return false;
 	}
@@ -438,7 +587,8 @@ boolean LoadTheGame(BE_FILE_T handle)
 	scoreobj->temp4 = -1;
 	return true;
 #else
-	if (!CA_FarRead(handle, (id0_byte_t id0_far *)&gamestate, sizeof(gamestate)))
+	// (REFKEEN) Reading fields one-by-one in a cross-platform manner
+	if (!LoadGameState(handle, &gamestate))
 	{
 		return false;
 	}
