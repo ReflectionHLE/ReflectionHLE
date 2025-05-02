@@ -26,4 +26,5 @@ list(APPEND bmenace_src
 	src/id91_11/bmenace/bm_state.c
 	src/id91_11/bmenace/bm_strs.c
 	src/id91_11/bmenace/bm_text.c
+	src/id91_11/bmenace/statetype_ptr_conversion.c
 )

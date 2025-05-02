@@ -278,6 +278,15 @@ typedef struct statestruct
 #else
 	struct statestruct id0_far *nextstate;
 #endif
+	// (REFKEEN) Backwards compatibility:
+	// MUST follow all the rest of the members above. Given a statetype
+	// instance, stores what would be the 16-bit offset pointer in the dseg
+	// while using the original 16-bit DOS executable (corresponding version).
+	// This member must be the last so it doesn't have to be filled during
+	// compile-time (requires changes to struct initializations in a few places)
+#ifdef BETA
+	Uint16 compatdospointer;
+#endif
 } statetype;
 
 // REFKEEN - enum type for active field should be outside struct if we want
@@ -1475,6 +1484,8 @@ extern FARSTATE s_beacon4;
 void SpawnBeacon(Uint16 x, Uint16 y);
 void BeaconContact(objtype *ob, objtype *hit);
 
+// (REFKEEN) Backwards compatibility: Used for statetype offset conversions.
+extern statetype* RefKeen_GetObjStatePtrFromDOSPointer(uint_fast32_t dosptr);
 
 /*
 =============================================================================

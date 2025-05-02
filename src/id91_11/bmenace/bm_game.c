@@ -233,11 +233,158 @@ void ResetGame(void)
 //===========================================================================
 
 // REFKEEN - New cross-platform methods for reading/writing objects from/to saved games
-// TODO: Not yet
+
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(activetype)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(classtype)
+BE_CROSS_IMPLEMENT_FP_READWRITE_U16LE_FUNCS(cliptype)
+
+#ifdef BETA
+static boolean SaveObject(BE_FILE_T file, objtype *o)
+{
+	id0_int_t dummy = 0;
+	// BACKWARDS COMPATIBILITY
+	Uint16 statedosoffset = o->state ? o->state->compatdospointer : 0;
+	// Just tells if "o->next" is zero or not
+	Sint16 isnext = o->next ? 1 : 0;
+	// Now writing
+	return ((BE_Cross_write_classtype_ToU16LE(file, &o->obclass) == 2)
+	        && (BE_Cross_write_activetype_ToU16LE(file, &o->active) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &o->needtoreact) == 2)
+	        && (BE_Cross_write_cliptype_ToU16LE(file, &o->needtoclip) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->nothink) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->x) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->y) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->xdir) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->ydir) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->xmove) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->ymove) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->xspeed) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->yspeed) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->ticcount) == 2)
+	        && (BE_Cross_writeInt16LE(file, &statedosoffset) == 2) // BACKWARDS COMPATIBILITY
+	        && (BE_Cross_writeInt16LE(file, &o->shapenum) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->priority) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->left) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->top) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->right) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->bottom) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->midx) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->tileleft) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->tiletop) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->tileright) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->tilebottom) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->tilemidx) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->hitnorth) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->hiteast) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->hitsouth) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->hitwest) == 2)
+	        && (BE_Cross_write_boolean_To16LE(file, &o->shootable) == 2)
+#ifdef BETA
+	        && (BE_Cross_writeInt16LE(file, &o->health) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->white) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->_unknown) == 2)
+#else
+	        && (BE_Cross_write_boolean_To16LE(file, &o->spareplayer) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->health) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->white) == 2)
+#endif
+	        && (BE_Cross_writeInt16LE(file, &o->temp1) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->temp2) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->temp3) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->temp4) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->temp5) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->temp6) == 2)
+	        && (BE_Cross_writeInt16LE(file, &o->temp7) == 2)
+	        // No need to write sprite, prev pointers as-is,
+	        // these are ignored on loading. So write dummy value.
+	        // Furthermore, all we need to know about next on loading is
+	        // if it's zero or not.
+	        && (BE_Cross_writeInt16LE(file, &dummy) == 2) // sprite
+	        && (BE_Cross_writeInt16LE(file, &isnext) == 2) // next
+	        && (BE_Cross_writeInt16LE(file, &dummy) == 2) // prev
+	);
+}
+
+static boolean LoadObject(BE_FILE_T file, objtype *o)
+{
+	id0_int_t dummy;
+	// BACKWARDS COMPATIBILITY
+	id0_word_t statedosoffset;
+	// Just tells if "o->next" is zero or not
+	id0_int_t isnext;
+	// Now reading
+	if ((BE_Cross_read_classtype_FromU16LE(file, &o->obclass) != 2)
+	    || (BE_Cross_read_activetype_FromU16LE(file, &o->active) != 2)
+	    || (BE_Cross_read_boolean_From16LE(file, &o->needtoreact) != 2)
+	    || (BE_Cross_read_cliptype_FromU16LE(file, &o->needtoclip) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->nothink) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->x) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->y) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->xdir) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->ydir) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->xmove) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->ymove) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->xspeed) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->yspeed) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->ticcount) != 2)
+	    || (BE_Cross_readInt16LE(file, &statedosoffset) != 2) // BACKWARDS COMPATIBILITY
+	    || (BE_Cross_readInt16LE(file, &o->shapenum) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->priority) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->left) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->top) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->right) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->bottom) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->midx) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->tileleft) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->tiletop) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->tileright) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->tilebottom) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->tilemidx) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->hitnorth) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->hiteast) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->hitsouth) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->hitwest) != 2)
+	    || (BE_Cross_read_boolean_From16LE(file, &o->shootable) != 2)
+#ifdef BETA
+	    || (BE_Cross_readInt16LE(file, &o->health) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->white) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->_unknown) != 2)
+#else
+	    || (BE_Cross_read_boolean_From16LE(file, &o->spareplayer) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->health) != 2)
+	    || (BE_Cross_ReadInt16LE(file, &o->white) != 2)
+#endif
+	    || (BE_Cross_readInt16LE(file, &o->temp1) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->temp2) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->temp3) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->temp4) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->temp5) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->temp6) != 2)
+	    || (BE_Cross_readInt16LE(file, &o->temp7) != 2)
+	    // No need to read sprite, prev pointers as-is,
+	    // these are ignored on loading. So read dummy value.
+	    // Furthermore, all we need to know about next on loading is
+	    // if it's zero or not.
+	    || (BE_Cross_readInt16LE(file, &dummy) != 2) // sprite
+	    || (BE_Cross_readInt16LE(file, &isnext) != 2) // next
+	    || (BE_Cross_readInt16LE(file, &dummy) != 2) // prev
+	)
+		return false;
+
+	o->state = RefKeen_GetObjStatePtrFromDOSPointer(statedosoffset);
+	// HACK: All we need to know is if next was originally NULL or not
+	o->next = isnext ? o : NULL;
+	return true;
+}
+#endif // BETA
 
 // Similar new methods for writing/reading game state
 static boolean SaveGameState(BE_FILE_T file, gametype *state)
 {
+	// TODO: We don't seem to have a real need to convert pointers
+	// to objects, at least outside of the "riding" field here,
+	// so basically support only the value of 0 being written
+	// to the saved game (as occurring with the original executables).
 	Uint16 ridingdosoffset = 0;
 	return ((BE_Cross_writeInt32LE(file, &state->score) == 4)
 	        && (BE_Cross_writeInt32LE(file, &state->nextextra) == 4)
@@ -308,7 +455,11 @@ static boolean SaveGameState(BE_FILE_T file, gametype *state)
 
 static boolean LoadGameState(BE_FILE_T file, gametype *state)
 {
-	state->riding = NULL; // TODO
+	// TODO: We don't seem to have a real need to convert pointers
+	// to objects, at least outside of the "riding" field here,
+	// so basically support only the value of 0 being written
+	// to the saved game (as occurring with the original executables).
+	state->riding = NULL;
 	Uint16 ridingdosoffset = 0;
 	return ((BE_Cross_readInt32LE(file, &state->score) == 4)
 	        && (BE_Cross_readInt32LE(file, &state->nextextra) == 4)
@@ -374,7 +525,7 @@ static boolean LoadGameState(BE_FILE_T file, gametype *state)
 	        && (BE_Cross_readInt16LE(file, &state->_zero) == 2)
 #endif
 	        && (BE_Cross_readInt16LE(file, &ridingdosoffset) == 2)
-		&& ((gamestate.riding = 0) == 0/*TODO*/)
+		&& ((gamestate.riding = 0) == 0/*TODO - See comment further above*/)
 	);
 }
 
@@ -418,7 +569,8 @@ boolean SaveTheGame(BE_FILE_T handle)
 	}
 	for (ob = player; ob; ob=ob->next)
 	{
-		if (!CA_FarWrite(handle, (id0_byte_t id0_far *)ob, sizeof(objtype)))
+		// (REFKEEN) Writing fields one-by-one in a cross-platform manner
+		if (!SaveObject(handle, ob))
 		{
 			MM_FreePtr(&bigbuffer);
 			return false;
@@ -551,7 +703,8 @@ boolean LoadTheGame(BE_FILE_T handle)
 	newobj = player;
 	prev = newobj->prev;
 	next = newobj->next;
-	if (!CA_FarRead(handle, (id0_byte_t id0_far *)newobj, sizeof(objtype)))
+	// (REFKEEN) Writing fields one-by-one in a cross-platform manner
+	if (!LoadObject(handle, newobj))
 	{
 		return false;
 	}
@@ -564,7 +717,8 @@ boolean LoadTheGame(BE_FILE_T handle)
 	{
 		prev = newobj->prev;
 		next = newobj->next;
-		if (!CA_FarRead(handle, (id0_byte_t id0_far *)newobj, sizeof(objtype)))
+		// And again
+		if (!LoadObject(handle, newobj))
 		{
 			return false;
 		}
