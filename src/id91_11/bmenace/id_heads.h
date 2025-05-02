@@ -43,6 +43,9 @@
 #include <stdbool.h>
 
 #define __ID_GLOB__
+#include "id_vers.h" // REFKEEN: Technically a new header to be included early
+
+#define REFKEEN_ID_ENGINE_VER REFKEEN_ID_ENGINE_VER_K4_V1_2 // An estimation
 
 //--------------------------------------------------------------------------
 
