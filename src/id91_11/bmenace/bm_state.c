@@ -32,11 +32,10 @@ REFKEEN_NS_B
 void BadState(objtype *ob);
 
 FARSTATE s_nullstate = {0, 0, think, false, push_none, 0, 0, 0, NULL, NULL, NULL, NULL};
-#if 0 // REFKEEN: This is unused
 //#pragma warn -sus	//BadState is not a valid contact function. Nobody cares.
-FARSTATE s_badstate  = {0, 0, think, false, push_none, 0, 0, 0, BadState, BadState, BadState, NULL};
+FARSTATE s_badstate  = {0, 0, think, false, push_none, 0, 0, 0, BadState, (void (*)(struct objstruct*, struct objstruct*))BadState, BadState, NULL}; // REFKEEN: Unused, but keep for saved games
+//FARSTATE s_badstate  = {0, 0, think, false, push_none, 0, 0, 0, BadState, BadState, BadState, NULL};
 //#pragma warn +sus
-#endif
 
 Sint16 wallclip[8][16] = {			// the height of a given point in a tile
 { 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256, 256},
@@ -1963,7 +1962,7 @@ static void R_WalkNormal(objtype *ob)
 	PLACESPRITE;
 }
 
-#if 0 // REFKEEN: Unused
+#if 1 // REFKEEN: Unused, but keep for saved games
 /*
 ===============
 =

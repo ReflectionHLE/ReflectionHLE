@@ -658,10 +658,10 @@ extern FARSTATE s_snakedie2;
 extern FARSTATE s_snakeskeleton;
 extern FARSTATE s_snakeshield1;
 extern FARSTATE s_snakeshield2;
-//extern FARSTATE s_snakeUNUSED1; // REFKEEN: Unused
+extern FARSTATE s_snakeUNUSED1;
 extern FARSTATE s_snakestand;
 extern FARSTATE s_snakestanduse;
-//extern FARSTATE s_snakeUNUSED2; // REFKEEN: Unused
+extern FARSTATE s_snakeUNUSED2;
 extern FARSTATE s_snakeslide;
 extern FARSTATE s_snaketeleport1;
 extern FARSTATE s_snaketeleport2;
