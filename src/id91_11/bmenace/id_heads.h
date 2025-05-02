@@ -142,6 +142,8 @@ typedef	struct
 #define id0_huge
 #define id0_seg
 
+#define REFKEEN_USE_BYTE_ALIGNMENT 1 // For config file
+
 #endif
 
 extern id0_char_t *introscn;
