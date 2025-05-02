@@ -1598,7 +1598,7 @@ itoa(end-start,str,10);
 		{
 		case ex_abort:
 			FreeUpMemory ();
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 			//return;
 		case ex_resetgame:
 			NewGame();
@@ -1613,14 +1613,14 @@ itoa(end-start,str,10);
 			screenpage = 0;
 			bufferofs = 0;
 			status_flag = S_NONE/*0*/;
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 			//return;
 		}
 
 	} while (1);
 
 	// REFKEEN - Alternative controllers support
-popcontrolerscheme:
+popcontrollerscheme:
 	BE_ST_AltControlScheme_Pop();
 }
 

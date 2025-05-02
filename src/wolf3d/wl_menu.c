@@ -508,13 +508,13 @@ void US_ControlPanel(id0_byte_t scancode)
 		WindowH=200;
 		UNCACHEGRCHUNK(STARTFONT+1);
 		fontnumber=0;
-		goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+		goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 		//return;
 	}
 #else // GAMEVER_WOLFREV > GV_WR_WL920312
 	if (ingame)
 		if (CP_CheckQuick(scancode))
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 			//return;
 #endif
 
@@ -575,7 +575,7 @@ void US_ControlPanel(id0_byte_t scancode)
 			#ifdef SPEAR
 			UnCacheLump (OPTIONS_LUMP_START,OPTIONS_LUMP_END);
 			#endif
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 			//return;
 	}
 
@@ -739,7 +739,7 @@ void US_ControlPanel(id0_byte_t scancode)
 #endif
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 	// REFKEEN - Alternative controllers support
-popcontrolerscheme:
+popcontrollerscheme:
 	BE_ST_AltControlScheme_Pop();
 }
 

@@ -1239,7 +1239,7 @@ itoa(end-start,str,10);
 			NormalScreen ();
 			FreeUpMemory ();
 			CheckHighScore (gamestate.score,gamestate.mapon+1);
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 			//return;
 		case ex_warped:
 			FizzleOut (true);
@@ -1248,13 +1248,13 @@ itoa(end-start,str,10);
 				Victory ();
 				FreeUpMemory ();
 				CheckHighScore(gamestate.score,gamestate.mapon+1);
-				goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+				goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 				//return;
 			}
 			break;
 		case ex_abort:
 			FreeUpMemory ();
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 			//return;
 		case ex_resetgame:
 		case ex_loadedgame:
@@ -1263,14 +1263,14 @@ itoa(end-start,str,10);
 			Victory ();
 			FreeUpMemory();
 			CheckHighScore(gamestate.score,gamestate.mapon+1);
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 			//return;
 		}
 
 	} while (1);
 
 	// REFKEEN - Alternative controllers support
-popcontrolerscheme:
+popcontrollerscheme:
 	BE_ST_AltControlScheme_Pop();
 }
 

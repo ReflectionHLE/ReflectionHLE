@@ -1311,7 +1311,7 @@ itoa(end-start,str,10);
 		{
 		case ex_abort:
 			FreeUpMemory ();
-			goto popcontrolerscheme; // REFKEEN - Alternative controllers support
+			goto popcontrollerscheme; // REFKEEN - Alternative controllers support
 			//return;
 		case ex_resetgame:
 			NewGame();
@@ -1324,7 +1324,7 @@ itoa(end-start,str,10);
 	} while (1);
 
 	// REFKEEN - Alternative controllers support
-popcontrolerscheme:
+popcontrollerscheme:
 	BE_ST_AltControlScheme_Pop();
 }
 

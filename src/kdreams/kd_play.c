@@ -1902,7 +1902,7 @@ void HandleDeath (void)
 			gamestate.mapon = 0;		// exit to tuberia
 			IN_ClearKeysDown ();
 			// REFKEEN - Alternative controllers support
-			goto popcontrolerscheme;
+			goto popcontrollerscheme;
 			//return;
 		}
 
@@ -1913,7 +1913,7 @@ void HandleDeath (void)
 			if (selection)
 				gamestate.mapon = 0;		// exit to tuberia
 			// REFKEEN - Alternative controllers support
-			goto popcontrolerscheme;
+			goto popcontrollerscheme;
 			//return;
 		}
 		if (c.yaxis == -1 || LastScan == sc_UpArrow)
@@ -1924,7 +1924,7 @@ void HandleDeath (void)
 	} while (1);
 
 	// REFKEEN - Alternative controllers support
-popcontrolerscheme:
+popcontrollerscheme:
 	BE_ST_AltControlScheme_Pop();
 }
 
@@ -2019,7 +2019,7 @@ startlevel:
 
 		case resetgame:
 			// REFKEEN - Alternative controllers support
-			goto popcontrolerscheme;
+			goto popcontrollerscheme;
 			//return;
 
 		case victorious:
@@ -2041,7 +2041,7 @@ done:
 	VW_ClearVideo (FIRSTCOLOR);
 
 	// REFKEEN - Alternative controllers support
-popcontrolerscheme:
+popcontrollerscheme:
 	BE_ST_AltControlScheme_Pop();
 }
 
