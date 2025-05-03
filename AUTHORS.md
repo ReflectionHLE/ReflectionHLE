@@ -8,6 +8,7 @@
 - The Catacomb Armageddon v1.02 source code release.
 - The Catacomb Apocalypse v1.01 source code release.
 - Wolfenstein 3D and Spear of Destiny source code release.
+- Reconstructed BioMenace source code.
 - The Nuked OPL3 emulator. (DOSBox' DBOPL was originally used.)
 - A CRC-32 implementation.
 - unlzexe v0.8.
@@ -60,6 +61,20 @@ were open-sourced by Richard Mandel of Flat Rock Software.
 Wolfenstein 3D and Spear of Destiny were open-sourced
 by John Carmack while working for id Software in the 1990s.
 
+## Reconstructed BioMenace source code
+
+BioMenace, also known as Bio Menace, had its source code reconstructed
+thanks to Nikolai Wuttke-Hohendorf and `K1n9_Duk3`. The sources found
+in ReflectionHLE were ported from the codebase of `K1n9_Duk3`,
+who was the one to start first.
+That said, using earlier works of `K1n9_Duk3` as a base, Niko was
+the first to make public reconstructed BM sources matching episode 1,
+plus a subset of episode 2.
+`K1n9_Duk3` went back to the earlier reconstruction works after hearing of
+Niko's efforts, so a full reconstruction could be finished. Niko also brought
+the idea that using a make file instead of Borland C++ project files was
+feasible, also for accurate DOS EXEs recreation (at least in BioMenace's case).
+
 ## ReflectionHLE programming
 
 * Yoav N.
@@ -80,6 +95,7 @@ was mainly (if not only) referring to the Omnispeak project, covering
 a source port of Commander Keen 4-6 based on reverse-engineering.
 Gow was doing related research works on at least a couple of
 Keen games and was also working on the Handmade Penguin tutorial.
+
 * adurdin, quantumg, keenrush, levellord, levellass and lemm for their
 differing research works on Keen games. Among other things, that includes
 patches for original DOS executables of Commander Keen games, as well as
@@ -94,7 +110,9 @@ The third project to mention is Chocolate Keen, a source port of Keen 1-3
 based on reverse-engineering. ReflectionHLE's author started it, based on
 quantumg's works identifying various functions and lemm applying these works
 to assembly sources. lemm eventually contributed to Chocolate Keen directly.
+
 * Caitlin Shaw for CloneKeen, a reimplementation of Keen 1-3.
+
 * Gerhard Stein for Commander Genius, covering a few engines
 used as reimplementations of Keen 1-3 and Keen 4-6. Support
 for Keen Dreams was added using Reflection Keen Dreams.
@@ -137,16 +155,25 @@ unpack Keen Dreams v1.00 executables (originally packed using PKLITE).
 
 * John Carmack, John Romero, Jason Blochowiak, Tom Hall, Adrian Carmack and
 Robert Prince for their original works on Keen Dreams, Catacomb 3-D and
-Wolfenstein 3D, a lot of these used in the Catacomb Adventure Series
-and Super 3-D Noah's Ark later.
+Wolfenstein 3D, a lot of these used in the Catacomb Adventure Series,
+BioMenace and Super 3-D Noah's Ark later.
+
 * Kevin Cloud and Jay Wilbur for their contributions to Wolfenstein 3D.
+
 * Mike Maynard, James Row, Nolan Martin, Steven Maines, Carol Ludden,
 Jerry Jones, James Weiler and Judi Mangham for their additional works
 on the Catacomb Adventure Series.
+
+* James Norwood for the game BioMenace, including programming, artwork and
+level design, and Robert Prince for the game's sound track. According to
+the game's default high score entries, George Broussard was the producer
+and Joe Siegler was responsible for BBS support.
+
 * Vance Kozik for Super 3-D Noah's Ark music, and Rebecca Ann Heineman for
 sound code as used in SNES versions of Wolfenstein 3D and Super 3-D Noah's Ark.
 More people potentially contributed to Super 3-D Noah's Ark development in
 other manners, but an exact complete list was not found as of writing this.
+
 * Shawn Green, testing the SNES version of Wolfenstein 3D which
 was used as a base for the original version of Super 3-D Noah's Ark,
 before porting the game from SNES to DOS. The person also
