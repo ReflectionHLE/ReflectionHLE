@@ -712,10 +712,10 @@ void CAL_SetupGrFile (void)
 // load ???dict.ext (huffman dictionary for graphics files)
 //
 
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT"DICT."EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT "DICT." EXTENSION)))
 	//if ((handle = open(GREXT"DICT."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
-		Quit ("Can't open "GREXT"DICT."EXTENSION"!");
+		Quit ("Can't open " GREXT "DICT." EXTENSION "!");
 
 	BE_Cross_readInt16LEBuffer(handle, &grhuffman, sizeof(grhuffman));
 	BE_Cross_close(handle);
@@ -725,10 +725,10 @@ void CAL_SetupGrFile (void)
 //
 	MM_GetPtr ((memptr *)&grstarts,(NUMCHUNKS+1)*FILEPOSSIZE);
 
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT"HEAD."EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading(GREXT "HEAD." EXTENSION)))
 	//if ((handle = open(GREXT"HEAD."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
-		Quit ("Can't open "GREXT"HEAD."EXTENSION"!");
+		Quit ("Can't open " GREXT "HEAD." EXTENSION "!");
 
 	// REFKEEN - Hack for Big Endian (even though it may be useless)
 #ifdef THREEBYTEGRSTARTS
@@ -838,10 +838,10 @@ void CAL_SetupMapFile (void)
 // load maphead.ext (offsets and tileinfo for map file)
 //
 #ifndef MAPHEADERLINKED
-	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("MAPHEAD."EXTENSION)))
+	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("MAPHEAD." EXTENSION)))
 	//if ((handle = open("MAPHEAD."EXTENSION,
 	//	 O_RDONLY | O_BINARY, /*S_IREAD*/S_IRUSR)) == -1)
-		Quit ("Can't open MAPHEAD."EXTENSION"!");
+		Quit ("Can't open MAPHEAD." EXTENSION "!");
 	length = BE_Cross_FileLengthFromHandle(handle);
 	MM_GetPtr ((memptr *)&tinf,length);
 	CA_FarRead(handle, tinf, length);
