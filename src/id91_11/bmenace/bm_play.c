@@ -171,7 +171,7 @@ static void PrintNumbers(Sint16 x, Sint16 y, Sint16 maxlen, Sint16 basetile, Sin
 {
 	register Sint16 i;
 	Sint16 len;
-	char buffer[20];
+	id0_char_t buffer[20];
 
 	BE_Cross_ltoa_dec(number, buffer);
 	len = strlen(buffer);
@@ -202,7 +202,7 @@ static void DrawStatusWindow(void)
 {
 	Sint16 x, y, w, h, i;
 	Uint16 width, height;
-	char buffer[50];
+	id0_char_t buffer[50];
 
 //
 //	window frame and background

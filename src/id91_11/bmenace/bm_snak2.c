@@ -764,7 +764,7 @@ void ResetScoreObj(void)
 
 void UpdateScorebox(objtype *ob)
 {
-	char buffer[10], *bufptr;
+	id0_char_t buffer[10], *bufptr;
 	spritetype id0_seg *block;
 	Uint8 id0_far *dest;
 	Uint8 id0_far *dest2;

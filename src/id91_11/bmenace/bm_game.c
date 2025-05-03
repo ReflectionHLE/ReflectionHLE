@@ -31,7 +31,7 @@ REFKEEN_NS_B
 /////////////////////////////////////////////////////////////////////////////
 
 #ifndef BETA
-static char piracymessage[] =
+static id0_char_t piracymessage[] =
 	"Critical file FILE_ID.DIZ missing\n"
 	"or modified.  If you purchased the\n"
 	"game from Apogee simply reinstall\n"

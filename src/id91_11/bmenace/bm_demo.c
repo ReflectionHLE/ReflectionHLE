@@ -236,7 +236,7 @@ void RunDemo(Sint16 num)
 {
 #ifdef BETA
 	BE_FILE_T handle;
-	char demofile[] = "DEMO?." EXTENSION;
+	id0_char_t demofile[] = "DEMO?." EXTENSION;
 	
 	demofile[4] = num+'0';
 	handle = BE_Cross_open_readonly_for_reading(demofile);
@@ -324,11 +324,11 @@ void RunDemo(Sint16 num)
 void DrawHighScores(void)
 {
 	Uint16 i;
-	char *bufptr;
+	id0_char_t *bufptr;
 	Uint16 width, height;
 	HighScore *entry;
 	Uint16 oldbufferofs;
-	char buf[16];
+	id0_char_t buf[16];
 	
 	RF_NewPosition(0, 0);
 	oldbufferofs = bufferofs;
