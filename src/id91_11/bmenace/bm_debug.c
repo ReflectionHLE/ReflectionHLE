@@ -1079,7 +1079,7 @@ void EndDemoRecord(void)
 {
 	BE_FILE_T handle;
 	boolean esc;
-	id0_char_t filename[] = "DEMO?."EXTENSION;
+	id0_char_t filename[] = "DEMO?." EXTENSION;
 
 	IN_StopDemo();
 	VW_FixRefreshBuffer();

@@ -236,7 +236,7 @@ void RunDemo(Sint16 num)
 {
 #ifdef BETA
 	BE_FILE_T handle;
-	char demofile[] = "DEMO?."EXTENSION;
+	char demofile[] = "DEMO?." EXTENSION;
 	
 	demofile[4] = num+'0';
 	handle = BE_Cross_open_readonly_for_reading(demofile);
