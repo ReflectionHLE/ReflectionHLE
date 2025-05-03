@@ -1463,7 +1463,7 @@ void PollControls(void)
 #ifndef BETA
 	if (DemoMode != demo_Playback)
 	{
-		grenadeKeyDown = Keyboard[grenadescan];
+		grenadeKeyDown = (Keyboard[grenadescan] && !g_keybind_used_grenade) || g_binding_value_grenade;
 	}
 #endif
 	if (!upKeyDown)

@@ -1049,7 +1049,8 @@ static BEMenu *g_beMenusToPrepare[] = {
 	&g_beWolf3DMouseBindsMenu, &g_beWolf3DPadBindsMenu,
 #endif
 #ifdef REFKEEN_HAS_VER_BMENACE_ALL
-	&g_beBMenaceSettingsMenu,
+	&g_beBMenaceSettingsMenu, &g_beBMenaceKeyBindsMenu,
+	&g_beBMenaceMouseBindsMenu, &g_beBMenacePadBindsMenu,
 #endif
 	&g_beQuitConfirmMenu
 };

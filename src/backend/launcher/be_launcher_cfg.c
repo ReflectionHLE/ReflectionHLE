@@ -188,6 +188,24 @@ extern BEMenuItem
 	g_beWolf3DPadBindsMenuItem_RightStick,
 	g_beWolf3DPadBindsMenuItem_AnalogMotion,
 	g_beBMenaceSettingsMenuItem_BetaFixes,
+	DECLARE_BINDS_MENUITEMS(BMenace, Up)
+	DECLARE_BINDS_MENUITEMS(BMenace, Down)
+	DECLARE_BINDS_MENUITEMS(BMenace, Left)
+	DECLARE_BINDS_MENUITEMS(BMenace, Right)
+	DECLARE_BINDS_MENUITEMS(BMenace, Jump)
+	DECLARE_BINDS_MENUITEMS(BMenace, Shoot)
+	DECLARE_BINDS_MENUITEMS(BMenace, Stats)
+	DECLARE_BINDS_MENUITEMS(BMenace, Grenade)
+	DECLARE_BINDS_MENUITEMS(BMenace, LookUp)
+	DECLARE_BINDS_MENUITEMS(BMenace, LookDown)
+	DECLARE_BINDS_MENUITEMS(BMenace, ScoreBox)
+#ifdef BE_ST_ENABLE_SHORTCUTS_MOUSE_BINDS
+	DECLARE_MOUSE_BINDS_MENUITEM(BMenace, FuncKeys)
+#endif
+	DECLARE_PAD_BINDS_MENUITEM(BMenace, FuncKeys)
+	DECLARE_NONKEY_BINDS_MENUITEMS(BMenace, DebugKeys)
+	g_beBMenacePadBindsMenuItem_LeftStick,
+	g_beBMenacePadBindsMenuItem_RightStick,
 	g_beDeviceVolumesMenuItem_PCSpkVol,
 	g_beDeviceVolumesMenuItem_OPLVol,
 	g_beDeviceVolumesMenuItem_DigiVol;
@@ -234,6 +252,20 @@ extern BEMenuItem
 #define DEFINE_WOLF3D_BIND_PAIRS(Suffix, SUFFIX) \
 	{&g_refKeenCfg.wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## SUFFIX].key, &g_beWolf3DKeyBindsMenuItem_Action_ ## Suffix}, \
 	DEFINE_WOLF3D_NONKEY_BIND_PAIRS(Suffix, SUFFIX)
+
+#define DEFINE_BMENACE_MOUSE_BIND_PAIR(Suffix, SUFFIX) \
+	{&g_refKeenCfg.bmenace.binds[BE_ST_CTRL_BIND_BMENACE_ ## SUFFIX].mouse, &g_beBMenaceMouseBindsMenuItem_Action_ ## Suffix}, \
+
+#define DEFINE_BMENACE_PAD_BIND_PAIR(Suffix, SUFFIX) \
+	{&g_refKeenCfg.bmenace.binds[BE_ST_CTRL_BIND_BMENACE_ ## SUFFIX].pad, &g_beBMenacePadBindsMenuItem_Action_ ## Suffix},
+
+#define DEFINE_BMENACE_NONKEY_BIND_PAIRS(Suffix, SUFFIX) \
+	DEFINE_BMENACE_MOUSE_BIND_PAIR(Suffix,SUFFIX) \
+	DEFINE_BMENACE_PAD_BIND_PAIR(Suffix,SUFFIX)
+
+#define DEFINE_BMENACE_BIND_PAIRS(Suffix, SUFFIX) \
+	{&g_refKeenCfg.bmenace.binds[BE_ST_CTRL_BIND_BMENACE_ ## SUFFIX].key, &g_beBMenaceKeyBindsMenuItem_Action_ ## Suffix}, \
+	DEFINE_BMENACE_NONKEY_BIND_PAIRS(Suffix, SUFFIX)
 
 
 static BESettingMenuItemPair g_be_setting_pairs[] = {
@@ -354,6 +386,24 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 
 #ifdef REFKEEN_HAS_VER_BMENACE_ALL
 	{&g_refKeenCfg.bmenace.betaFixes, &g_beBMenaceSettingsMenuItem_BetaFixes},
+	DEFINE_BMENACE_BIND_PAIRS(Up, UP)
+	DEFINE_BMENACE_BIND_PAIRS(Down, DOWN)
+	DEFINE_BMENACE_BIND_PAIRS(Left, LEFT)
+	DEFINE_BMENACE_BIND_PAIRS(Right, RIGHT)
+	DEFINE_BMENACE_BIND_PAIRS(Jump, JUMP)
+	DEFINE_BMENACE_BIND_PAIRS(Shoot, SHOOT)
+	DEFINE_BMENACE_BIND_PAIRS(Stats, STATS)
+	DEFINE_BMENACE_BIND_PAIRS(Grenade, GRENADE)
+	DEFINE_BMENACE_BIND_PAIRS(LookUp, LOOKUP)
+	DEFINE_BMENACE_BIND_PAIRS(LookDown, LOOKDOWN)
+	DEFINE_BMENACE_BIND_PAIRS(ScoreBox, SCOREBOX)
+#ifdef BE_ST_ENABLE_SHORTCUTS_MOUSE_BINDS
+	DEFINE_BMENACE_MOUSE_BIND_PAIR(FuncKeys, FUNCKEYS)
+#endif
+	DEFINE_BMENACE_PAD_BIND_PAIR(FuncKeys, FUNCKEYS)
+	DEFINE_BMENACE_NONKEY_BIND_PAIRS(DebugKeys, DEBUGKEYS)
+	{&g_refKeenCfg.bmenace.useLeftStick, &g_beBMenacePadBindsMenuItem_LeftStick},
+	{&g_refKeenCfg.bmenace.useRightStick, &g_beBMenacePadBindsMenuItem_RightStick},
 #endif
 
 	{&g_refKeenCfg.pcSpkVol, &g_beDeviceVolumesMenuItem_PCSpkVol,

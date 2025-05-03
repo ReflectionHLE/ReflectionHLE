@@ -304,6 +304,25 @@ enum {
 };
 #endif
 
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+enum {
+	BE_ST_CTRL_BIND_BMENACE_UP,
+	BE_ST_CTRL_BIND_BMENACE_DOWN,
+	BE_ST_CTRL_BIND_BMENACE_LEFT,
+	BE_ST_CTRL_BIND_BMENACE_RIGHT,
+	BE_ST_CTRL_BIND_BMENACE_JUMP,
+	BE_ST_CTRL_BIND_BMENACE_SHOOT,
+	BE_ST_CTRL_BIND_BMENACE_STATS,
+	BE_ST_CTRL_BIND_BMENACE_GRENADE,
+	BE_ST_CTRL_BIND_BMENACE_LOOKUP,
+	BE_ST_CTRL_BIND_BMENACE_LOOKDOWN,
+	BE_ST_CTRL_BIND_BMENACE_SCOREBOX,
+	BE_ST_CTRL_BIND_BMENACE_FUNCKEYS,
+	BE_ST_CTRL_BIND_BMENACE_DEBUGKEYS,
+	BE_ST_CTRL_BIND_BMENACE_TOTAL
+};
+#endif
+
 // Set callback function, to be called when the app is shut down in a way
 // originally not supported by a given game, say clicking on a window's
 // "close" button. Can be used for saving settings.

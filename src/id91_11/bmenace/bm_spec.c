@@ -759,6 +759,9 @@ void HostageDialog(void)
 
 	Sint16 i, first, count, oldmusic;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	oldmusic = currentmusic;
 	switch (gamestate.mapon)
@@ -949,6 +952,8 @@ void HostageDialog(void)
 */
 	StopMusic();
 	StartMusic(oldmusic);
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 //==========================================================================
@@ -976,6 +981,9 @@ void HintDialog(void)
 {
 	Sint16 i, first, count;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	switch (gamestate.mapon)
 	{
@@ -1012,6 +1020,8 @@ void HintDialog(void)
 		StopMusic();
 		StartMusic(gamestate.mapon);
 	}
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 //==========================================================================
@@ -1091,6 +1101,9 @@ void BossDialog(void)
 
 	Sint16 i, first, count;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	switch (gamestate.mapon)
 	{
@@ -1170,6 +1183,8 @@ void BossDialog(void)
 	CA_DownLevel();
 	ResetScoreObj();
 	RF_ForceRefresh();
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 #elif (EPISODE == 2)
@@ -1347,6 +1362,9 @@ void HostageDialog(void)
 
 	Sint16 i, first, count, oldmusic;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 #ifndef BETA
 	oldmusic = currentmusic;
@@ -1531,6 +1549,8 @@ void HostageDialog(void)
 #else
 	StartMusic(oldmusic);
 #endif
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 //==========================================================================
@@ -1599,6 +1619,9 @@ void HintDialog(void)
 
 	Sint16 i, first, count;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	switch (gamestate.mapon)
 	{
@@ -1693,6 +1716,8 @@ void HintDialog(void)
 		StopMusic();
 		StartMusic(gamestate.mapon);
 	}
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 //==========================================================================
@@ -1790,6 +1815,9 @@ void BossDialog(void)
 
 	Sint16 i, first, count;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	switch (gamestate.mapon)
 	{
@@ -1854,6 +1882,8 @@ void BossDialog(void)
 	CA_DownLevel();
 	ResetScoreObj();
 	RF_ForceRefresh();
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 #elif (EPISODE == 3)
@@ -1938,6 +1968,9 @@ void HostageDialog(void)
 
 	Sint16 i, first, count, oldmusic;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	oldmusic = currentmusic;
 	switch (gamestate.mapon)
@@ -2102,6 +2135,8 @@ void HostageDialog(void)
 	ResetScoreObj();
 	StopMusic();
 	StartMusic(oldmusic);
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 //==========================================================================
@@ -2123,6 +2158,9 @@ void HintDialog(void)
 
 	Sint16 i, first, count;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	switch (gamestate.mapon)
 	{
@@ -2159,6 +2197,8 @@ void HintDialog(void)
 		StopMusic();
 		StartMusic(gamestate.mapon);
 	}
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 /*
@@ -2193,6 +2233,9 @@ void BossDialog(void)
 
 	Sint16 i, first, count;
 	id0_char_t messagetext[200];
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 
 	switch (gamestate.mapon)
 	{
@@ -2232,6 +2275,8 @@ void BossDialog(void)
 	CA_DownLevel();
 	ResetScoreObj();
 	RF_ForceRefresh();
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 
 #endif

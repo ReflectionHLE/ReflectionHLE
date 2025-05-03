@@ -755,7 +755,7 @@ void CheckKeys(void)
 //
 // Space for status screen
 //
-	if (Keyboard[sc_Space])
+	if ((Keyboard[sc_Space] && !g_keybind_used_stats) || g_binding_value_stats)
 	{
 		StatusWindow();
 		IN_ClearKeysDown();
@@ -784,7 +784,7 @@ void CheckKeys(void)
 //
 // BackSpace to toggle score box
 //
-	if (LastScan == sc_BackSpace)
+	if ((LastScan == sc_BackSpace && !g_keybind_used_scorebox) || g_binding_value_scorebox)
 	{
 		showscorebox ^= 1;
 		if (!showscorebox && scoreobj->sprite)
@@ -923,6 +923,10 @@ void CheckKeys(void)
 //
 		if (LastScan == sc_F9)
 		{
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Push();
+			BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 			VW_Shutdown();
 			SD_MusicOff();
 			BE_ST_cputs("C:>");
@@ -935,6 +939,8 @@ void CheckKeys(void)
 			IN_ClearKeysDown();
 			lasttimecount = SD_GetTimeCount();
 			SD_MusicOn();
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Pop();
 		}
 	}
 

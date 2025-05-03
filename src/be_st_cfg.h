@@ -153,6 +153,14 @@ typedef struct
 	struct
 	{
 		int/*bool*/ betaFixes;
+		int/*bool*/ useLeftStick;
+		int/*bool*/ useRightStick;
+		struct
+		{
+			int key;
+			int mouse;
+			int pad;
+		} binds[BE_ST_CTRL_BIND_BMENACE_TOTAL];
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		char launcherExeArgs[LAUNCHER_EXE_ARGS_BUFFERLEN];
 		char launcherModPath[BE_CROSS_PATH_LEN_BOUND];

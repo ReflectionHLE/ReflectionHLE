@@ -616,7 +616,8 @@ static void ScrollScreen(objtype *ob)
 //
 // handle "looking" up or down
 //
-	if (Keyboard[sc_PgUp] || (Keyboard[sc_RShift] && c.yaxis == -1))
+	if ((Keyboard[sc_PgUp] && !g_keybind_used_lookup) ||
+            (Keyboard[sc_RShift] && c.yaxis == -1) || g_binding_value_lookup)
 	{
 		if (centerlevel+tics > 157)
 		{
@@ -629,7 +630,8 @@ static void ScrollScreen(objtype *ob)
 		centerlevel += pix;
 		yscroll = CONVERT_PIXEL_TO_GLOBAL(-pix);
 	}
-	else if (Keyboard[sc_PgDn] || (Keyboard[sc_RShift] && c.yaxis == 1))
+	else if ((Keyboard[sc_PgDn] && !g_keybind_used_lookdown) ||
+                 (Keyboard[sc_RShift] && c.yaxis == 1) || g_binding_value_lookdown)
 	{
 		if (centerlevel-tics < 43)
 		{

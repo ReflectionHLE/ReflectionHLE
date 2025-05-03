@@ -160,6 +160,9 @@ void NewGame(void)
 
 static void GameOver(void)
 {
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 	VW_FixRefreshBuffer();
 	US_CenterWindow(16, 3);
 	US_PrintCentered("GAME OVER");
@@ -961,6 +964,10 @@ check_loaded:
 	restartgame = gd_Continue;
 #endif
 
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Push();
+	PrepareGamePlayControllerMapping();
+
 start_level:
 	do
 	{
@@ -1221,12 +1228,16 @@ skip_wait_screen:;
 				VW_FixRefreshBuffer();
 				FinaleLayout();
 				CheckHighScore(gamestate.score, 0);
-				return;
+				// REFKEEN - Alternative controllers support
+				goto popcontrollerscheme;
+				//return;
 			}
 			if (storedemo && mapon == 2)
 			{
 				IN_ClearKeysDown();
-				return;
+				// REFKEEN - Alternative controllers support
+				goto popcontrollerscheme;
+				//return;
 			}
 			temp = bufferofs;
 			bufferofs = displayofs;
@@ -1243,13 +1254,18 @@ abort:
 			StopMusic();
 			CA_SetAllPurge();
 #endif
-			return;
+			// REFKEEN - Alternative controllers support
+			goto popcontrollerscheme;
+			//return;
 		}
 	} while (gamestate.lives >= 0);
 	StopMusic();
 	CA_SetAllPurge();
 	GameOver();
 	CheckHighScore(gamestate.score, mapon);
+	// REFKEEN - Alternative controllers support
+popcontrollerscheme:
+	BE_ST_AltControlScheme_Pop();
 }
 
 REFKEEN_NS_E

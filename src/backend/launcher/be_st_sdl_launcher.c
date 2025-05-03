@@ -1075,9 +1075,15 @@ BEMenu g_beWolf3DPadBindsMenu = {
 #ifdef REFKEEN_HAS_VER_BMENACE_ALL
 /*** BioMenace settings menu ***/
 
+BEMENUITEM_DEF_TARGETMENU(g_beBMenaceSettingsMenuItem_KeyBinds, "Keyboard overrides (experimental)", &g_beBMenaceKeyBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beBMenaceSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beBMenaceMouseBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beBMenaceSettingsMenuItem_PadBinds, "Modern controller binds", &g_beBMenacePadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beBMenaceSettingsMenuItem_BetaFixes, "1992-07 beta fixes (compatibility option)", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beBMenaceSettingsMenuItems[] = {
+	&g_beBMenaceSettingsMenuItem_KeyBinds,
+	&g_beBMenaceSettingsMenuItem_MouseBinds,
+	&g_beBMenaceSettingsMenuItem_PadBinds,
 	&g_beBMenaceSettingsMenuItem_BetaFixes,
 	NULL
 };
@@ -1089,6 +1095,109 @@ BEMenu g_beBMenaceSettingsMenu = {
 	// Ignore the rest
 };
 
+/*** BioMenace definitions for all binds menus ***/
+
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, Up, "Move up")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, Down, "Move down")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, Left, "Move left")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, Right, "Move right")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, Jump, "Jump")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, Shoot, "Shoot")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, Stats, "Stats")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, Grenade, "Use grenade/landmine\n(outside of Jul 92 beta)")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, LookUp, "Look up")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, LookDown, "Look down")
+BEMENUITEM_DEF_CTRL_BINDS(BMenace, ScoreBox, "Toggle score box")
+#ifdef BE_ST_ENABLE_SHORTCUTS_MOUSE_BINDS
+BEMENUITEM_DEF_CTRL_MOUSE_BIND(BMenace, FuncKeys, "Function keys")
+#endif
+BEMENUITEM_DEF_CTRL_PAD_BIND(BMenace, FuncKeys, "Function keys")
+BEMENUITEM_DEF_CTRL_NONKEY_BINDS(BMenace, DebugKeys, "Debug keys")
+
+/*** BioMenace key binds menu ***/
+
+static BEMenuItem *g_beBMenaceKeyBindsMenuItems[] = {
+	&g_beBMenaceKeyBindsMenuItem_Action_Up,
+	&g_beBMenaceKeyBindsMenuItem_Action_Down,
+	&g_beBMenaceKeyBindsMenuItem_Action_Left,
+	&g_beBMenaceKeyBindsMenuItem_Action_Right,
+	&g_beBMenaceKeyBindsMenuItem_Action_Jump,
+	&g_beBMenaceKeyBindsMenuItem_Action_Shoot,
+	&g_beBMenaceKeyBindsMenuItem_Action_Stats,
+	&g_beBMenaceKeyBindsMenuItem_Action_Grenade,
+	&g_beBMenaceKeyBindsMenuItem_Action_LookUp,
+	&g_beBMenaceKeyBindsMenuItem_Action_LookDown,
+	&g_beBMenaceKeyBindsMenuItem_Action_ScoreBox,
+//	&g_beBMenaceKeyBindsMenuItem_Action_FuncKeys,
+//	&g_beBMenaceKeyBindsMenuItem_Action_DebugKeys,
+	NULL
+};
+
+BEMenu g_beBMenaceKeyBindsMenu = {
+	"Keyboard overrides",
+	&g_beBMenaceSettingsMenu,
+	g_beBMenaceKeyBindsMenuItems,
+	// Ignore the rest
+};
+
+/*** BioMenace mouse binds menu ***/
+
+static BEMenuItem *g_beBMenaceMouseBindsMenuItems[] = {
+	&g_beBMenaceMouseBindsMenuItem_Action_Up,
+	&g_beBMenaceMouseBindsMenuItem_Action_Down,
+	&g_beBMenaceMouseBindsMenuItem_Action_Left,
+	&g_beBMenaceMouseBindsMenuItem_Action_Right,
+	&g_beBMenaceMouseBindsMenuItem_Action_Jump,
+	&g_beBMenaceMouseBindsMenuItem_Action_Shoot,
+	&g_beBMenaceMouseBindsMenuItem_Action_Stats,
+	&g_beBMenaceMouseBindsMenuItem_Action_Grenade,
+	&g_beBMenaceMouseBindsMenuItem_Action_LookUp,
+	&g_beBMenaceMouseBindsMenuItem_Action_LookDown,
+	&g_beBMenaceMouseBindsMenuItem_Action_ScoreBox,
+#ifdef BE_ST_ENABLE_SHORTCUTS_MOUSE_BINDS
+	&g_beBMenaceMouseBindsMenuItem_Action_FuncKeys,
+#endif
+	&g_beBMenaceMouseBindsMenuItem_Action_DebugKeys,
+	NULL
+};
+
+BEMenu g_beBMenaceMouseBindsMenu = {
+	"Mouse button overrides",
+	&g_beBMenaceSettingsMenu,
+	g_beBMenaceMouseBindsMenuItems,
+	// Ignore the rest
+};
+
+/*** BioMenace pad binds menu ***/
+
+BEMENUITEM_DEF_SELECTION(g_beBMenacePadBindsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beBMenacePadBindsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
+
+static BEMenuItem *g_beBMenacePadBindsMenuItems[] = {
+	&g_beBMenacePadBindsMenuItem_Action_Up,
+	&g_beBMenacePadBindsMenuItem_Action_Down,
+	&g_beBMenacePadBindsMenuItem_Action_Left,
+	&g_beBMenacePadBindsMenuItem_Action_Right,
+	&g_beBMenacePadBindsMenuItem_Action_Jump,
+	&g_beBMenacePadBindsMenuItem_Action_Shoot,
+	&g_beBMenacePadBindsMenuItem_Action_Stats,
+	&g_beBMenacePadBindsMenuItem_Action_Grenade,
+	&g_beBMenacePadBindsMenuItem_Action_LookUp,
+	&g_beBMenacePadBindsMenuItem_Action_LookDown,
+	&g_beBMenacePadBindsMenuItem_Action_ScoreBox,
+	&g_beBMenacePadBindsMenuItem_Action_FuncKeys,
+	&g_beBMenacePadBindsMenuItem_Action_DebugKeys,
+	&g_beBMenacePadBindsMenuItem_LeftStick,
+	&g_beBMenacePadBindsMenuItem_RightStick,
+	NULL
+};
+
+BEMenu g_beBMenacePadBindsMenu = {
+	"Modern controller binds",
+	&g_beBMenaceSettingsMenu,
+	g_beBMenacePadBindsMenuItems,
+	// Ignore the rest
+};
 #endif // REFKEEN_HAS_VER_BMENACE_ALL
 
 /*** Quit confirm menu ***/

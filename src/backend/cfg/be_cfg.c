@@ -134,6 +134,17 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 #define DEF_CTRL_LEGACY_BINDS_WOLF3D_ENUMS(i, k, def) \
 	DEF_ENUM(wolf3d.binds[BE_ST_CTRL_BIND_WOLF3D_ ## i].pad, "altcontrolscheme_" k, g_sdlControlSchemeKeyMapCfgVals, def)
 
+#define DEF_CTRL_NONKEY_BINDS_BMENACE_ENUMS(i, k, def) \
+	DEF_ENUM(bmenace.binds[BE_ST_CTRL_BIND_BMENACE_ ## i].mouse, "mbind_" k, g_be_st_mouseFeatureIdToNameMap, BE_ST_CTRL_MOUSE_BUT_MAX) \
+	DEF_ENUM(bmenace.binds[BE_ST_CTRL_BIND_BMENACE_ ## i].pad, "pbind_" k, g_be_st_padFeatureIdToNameMap, def)
+
+#define DEF_CTRL_BINDS_BMENACE_ENUMS(i, k, def) \
+	DEF_ENUM(bmenace.binds[BE_ST_CTRL_BIND_BMENACE_ ## i].key, "kbind_" k, g_be_st_keyIdToNameMap, 0) \
+	DEF_CTRL_NONKEY_BINDS_BMENACE_ENUMS(i, k, def)
+
+#define DEF_CTRL_LEGACY_BINDS_BMENACE_ENUMS(i, k, def) \
+	DEF_ENUM(bmenace.binds[BE_ST_CTRL_BIND_BMENACE_ ## i].pad, "altcontrolscheme_" k, g_sdlControlSchemeKeyMapCfgVals, def)
+
 #define DEF_HIDDEN_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, &g_refKeenCfg.setting, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
 
@@ -378,6 +389,21 @@ static BE_ST_CFG_Setting_T g_be_st_bmenace_settings[] = {
 	DEF_STR(bmenace.launcherModPath, "launchermod")
 #endif
 	DEF_BOOL(bmenace.betaFixes, "betafixes", true)
+	DEF_BOOL(bmenace.useLeftStick, "lstick", true)
+	DEF_BOOL(bmenace.useRightStick, "rstick", false)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(UP, "up", BE_ST_CTRL_BUT_DPAD_UP)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(DOWN, "down", BE_ST_CTRL_BUT_DPAD_DOWN)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(LEFT, "left", BE_ST_CTRL_BUT_DPAD_LEFT)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(RIGHT, "right", BE_ST_CTRL_BUT_DPAD_RIGHT)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(JUMP, "jump", BE_ST_CTRL_BUT_A)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(SHOOT, "shoot", BE_ST_CTRL_BUT_LSHOULDER)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(STATS, "stats", BE_ST_CTRL_BUT_X)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(GRENADE, "grenade", BE_ST_CTRL_BUT_RSHOULDER)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(LOOKUP, "lookup", BE_ST_CTRL_BUT_Y)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(LOOKDOWN, "lookdown", BE_ST_CTRL_BUT_B)
+	DEF_CTRL_BINDS_BMENACE_ENUMS(SCOREBOX, "lookdown", BE_ST_CTRL_BUT_MAX+1) // HACK for right trigger
+	DEF_CTRL_NONKEY_BINDS_BMENACE_ENUMS(FUNCKEYS, "funckeys", BE_ST_CTRL_BUT_MAX) // HACK for left trigger
+	DEF_CTRL_NONKEY_BINDS_BMENACE_ENUMS(DEBUGKEYS, "debugkeys", BE_ST_CTRL_BUT_LSTICK)
 };
 #endif
 

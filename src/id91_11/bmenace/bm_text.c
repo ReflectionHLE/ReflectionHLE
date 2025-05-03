@@ -108,6 +108,11 @@ void HelpMessage(const id0_char_t id0_far *message)
 	{
 		return;
 	}
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 	VW_FixRefreshBuffer();
 	US_CenterWindow(35, 2);
 	PrintY += 2;
@@ -117,6 +122,8 @@ void HelpMessage(const id0_char_t id0_far *message)
 	IN_ClearKeysDown();
 	IN_Ack();
 	RF_ForceRefresh();
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_Pop();
 }
 #endif
 
@@ -822,6 +829,10 @@ void HelpScreens(void)
 	bufferofs = 0;
 	displayofs = 0x8000;
 	VW_SetScreen(displayofs, 0);
+	// REFKEEN - Alternative controllers support
+	extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_help;
+	BE_ST_AltControlScheme_Push();
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_help);
 #ifndef BETA
 	StartMusic(MUS_LEVEL1);
 	SD_SetTimeCount(0);
@@ -872,7 +883,9 @@ void HelpScreens(void)
 			StopMusic();
 			StartMusic(oldmusic);
 #endif
-			return;
+			// REFKEEN - Alternative controllers support
+			goto popcontrollerscheme;
+			//return;
 		}
 		// BUG: should call CA_ClearMarks() here to make sure we don't cache more
 		// than we need
@@ -1009,6 +1022,9 @@ artdone:
 		}
 #endif
 	} while (1);
+	// REFKEEN - Alternative controllers support
+popcontrollerscheme:
+	BE_ST_AltControlScheme_Pop();
 #ifndef BETA
 	return;
 #endif
@@ -1057,6 +1073,8 @@ void FinaleLayout(void)
 #endif
 	text = textseg;
 	CacheLayoutGraphics();
+	// REFKEEN - Alternative controllers support
+	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 #if (EPISODE == 1)
 	StartMusic(MUS_HIGHSCORELEVEL);
 #elif (EPISODE == 2)

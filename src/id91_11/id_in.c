@@ -993,11 +993,13 @@ register	KeyboardDef	*def;
 				buttons |= 1;
 			if (g_binding_value_button[1])
 				buttons |= 2;
+#ifdef REFKEEN_VER_CATACOMB_ALL // Unused in platformers as of writing this
 			if (g_binding_value_axisx)
 				dx = BE_Cross_TypedClamp(int, g_binding_value_axisx, -127, 127);
 			// The novert check is technically a patch impacting PollControls
 			if (g_binding_value_axisy && !g_refKeenDynamicCfg.novert)
 				dy = BE_Cross_TypedClamp(int, g_binding_value_axisy, -127, 127);
+#endif
 			if (g_binding_value_up || g_binding_value_down ||
 			    g_binding_value_left || g_binding_value_right)
 			{
@@ -1078,6 +1080,13 @@ IN_SetControlType(id0_int_t player,ControlType type)
 {
 	// DEBUG - check that requested type is present?
 	Controls[player] = type;
+#ifndef REFKEEN_VER_CATACOMB_ALL
+	// NOTE: Skipped for the 3D Catacombs, as these may use the mouse even
+	// if type is different, in case MousePresent is true on init.
+
+	// REFKEEN - Alternative controllers support
+	UpdateAltControllerMappingsByMousePresence(MousePresent && (type == ctrl_Mouse));
+#endif
 }
 
 #ifndef REFKEEN_VER_CATADVENTURES
