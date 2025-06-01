@@ -1145,7 +1145,15 @@ void MM_ShowMemory (void)
 		end = scan->start+scan->length-1;
 		VW_Hlin(scan->start,(id0_unsigned_t)end,0,color);
 		VW_Plot(scan->start,0,15);
-		if (scan->next->start > end+1)
+		// REFKEEN: Right before the loop's end, scan->next is a
+		// null pointer. The check of that was originally absent,
+		// thus leading to a null pointer dereference.
+		// scan->next was originally a far pointer. Exact contents
+		// of scan->next->start would depend on the value of the first
+		// two bytes at 0000:0000. Assuming a value of (unsigned) zero,
+		// comparison would probably evaluate to false.
+		if (scan->next && scan->next->start > end+1)
+//		if (scan->next->start > end+1)
 			VW_Hlin(end+1,scan->next->start,0,0);	// black = free
 
 #if 0
