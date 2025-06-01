@@ -1099,7 +1099,8 @@ void MM_SortMem (void)
 
 //==========================================================================
 
-#ifndef REFKEEN_VER_CATADVENTURES
+// REFKEEN: Also unused by Catacomb 3-D, not just the Adventure Series.
+#ifndef REFKEEN_VER_CATACOMBS_ALL
 /*
 =====================
 =
