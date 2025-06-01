@@ -8,7 +8,7 @@ This might be an opportunity to mention Arno, the maintainer of CatacombGL,
 who helped earlier with at least a few bug reports and additional feedbacks.
 
 * With emphasis on Wolfenstein 3D and derived games, proper support for
-modified game data is now present, almost 10 years after ReflectionHLE's
+modified game data is now present, 10 years after ReflectionHLE's
 initial release. That covers map packs and other modifications compatible
 with the original unmodified DOS executables.
 Directories with modified game data may either be selected from
