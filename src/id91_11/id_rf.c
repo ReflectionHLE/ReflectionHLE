@@ -822,7 +822,9 @@ void RFL_RemoveAnimsInBlock (id0_unsigned_t x, id0_unsigned_t y, id0_unsigned_t 
 	current = animhead;
 	while (current)
 	{
-		if (current->x - x < width && current->y - y < height)
+		// Comparisons were originally unsigned
+		if ((id0_unsigned_t)(current->x - x) < width &&
+		    (id0_unsigned_t)(current->y - y) < height)
 		{
 			*(void **)current->prevptr = current->nexttile;
 			if (current->nexttile)
