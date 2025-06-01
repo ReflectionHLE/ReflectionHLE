@@ -787,6 +787,9 @@ void SnakeUseThink(objtype *ob)
 #endif
 		RF_MemToMap(&nexttile, 1, ob->tilemidx, ob->tiletop+1, 1, 1);
 		SD_PlaySound(MANGLESND);
+		// REFKEEN - Alternative controllers support
+		BE_ST_AltControlScheme_Push();
+		BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 #ifdef BETA
 		gamestate.nukestate = 0;
 #else
@@ -801,6 +804,9 @@ void SnakeUseThink(objtype *ob)
 		IN_ClearKeysDown();
 		IN_Ack();
 		RF_ForceRefresh();
+		// REFKEEN - Alternative controllers support
+		BE_ST_AltControlScheme_Pop();
+
 		break;
 		
 	case INTILE_BOSSTRIGGER:
@@ -3050,6 +3056,10 @@ void SnakeContact(objtype *ob, objtype *hit)
 			hit->obclass = decoobj;
 			hit->priority = 3;
 #ifdef BETA
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Push();
+			BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 			VW_FixRefreshBuffer();
 			US_CenterWindow(35, 2);
 			PrintY += 2;
@@ -3059,6 +3069,8 @@ void SnakeContact(objtype *ob, objtype *hit)
 			IN_ClearKeysDown();
 			IN_Ack();
 			RF_ForceRefresh();
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Pop();
 #else
 			HelpMessage("Oh look! What a cute little nuclear bomb!\n");
 #endif
@@ -3072,6 +3084,10 @@ void SnakeContact(objtype *ob, objtype *hit)
 			hit->obclass = decoobj;
 			hit->priority = 3;
 #ifdef BETA
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Push();
+			BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 			VW_FixRefreshBuffer();
 			US_CenterWindow(30, 3);
 			PrintY += 2;
@@ -3081,6 +3097,8 @@ void SnakeContact(objtype *ob, objtype *hit)
 			IN_ClearKeysDown();
 			IN_Ack();
 			RF_ForceRefresh();
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Pop();
 #else
 			HelpMessage("It's an anti-radiation pill!\n");
 #endif

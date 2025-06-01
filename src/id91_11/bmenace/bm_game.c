@@ -1070,6 +1070,9 @@ level_loop:
 			//
 			if (pirated)
 			{
+				// REFKEEN - Alternative controllers support
+				BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
+
 				VW_FixRefreshBuffer();
 				US_CenterWindow(35, 8);
 				PrintY += 2;
