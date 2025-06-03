@@ -891,7 +891,11 @@ void SetupGameLevel(boolean loadnow)
 ==========================
 */
 
+#ifdef BETA // REFKEEN: Assume function was meant to be void in beta.
+static void RespawnPlayer(void)
+#else
 static boolean RespawnPlayer(void)
+#endif
 {
 #ifndef BETA
 	if (respawnx > 0 && respawny > 0)
