@@ -516,7 +516,7 @@ void	id0_near ScalePost (void)		// VGA version
 	{
 		ExecuteCompScale(linescale, destoff + 1, postsource + postsourceoff, mapmasks2[postx&3][postwidth-1]);
 		if (mapmasks3[postx&3][postwidth-1])
-			ExecuteCompScale(linescale, destoff + 2, postsource + postsourceoff, mapmasks2[postx&3][postwidth-1]);
+			ExecuteCompScale(linescale, destoff + 2, postsource + postsourceoff, mapmasks3[postx&3][postwidth-1]);
 	}
 #if 0
 	asm	mov	ax,SCREENSEG
