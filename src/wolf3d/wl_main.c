@@ -1674,6 +1674,7 @@ void InitGame (void)
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (!defined SPEARDEMO) && (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 //#ifndef SPEARDEMO
+	// REFKEEN: Added an artificial delay, granting chances to show jukebox.
 	BE_ST_Delay(250);
 	if (Keyboard[sc_M])
 	  DoJukebox();
