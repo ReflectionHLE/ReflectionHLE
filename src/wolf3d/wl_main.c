@@ -1674,7 +1674,7 @@ void InitGame (void)
 // *** SHAREWARE V1.0 APOGEE RESTORATION ***
 #if (!defined SPEARDEMO) && (GAMEVER_WOLFREV > GV_WR_WL1AP10)
 //#ifndef SPEARDEMO
-	BE_ST_ShortSleep();
+	BE_ST_Delay(250);
 	if (Keyboard[sc_M])
 	  DoJukebox();
 	else
