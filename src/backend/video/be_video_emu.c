@@ -340,7 +340,7 @@ static void BEL_ST_EGAVGAPlaneToAllPlanes_MemCopy(
 }
 
 // A similar analogue of memset
-static void BEL_ST_EGAVGAPlane_MemSet(uint16_t planeDstOff, uint8_t value, uint16_t num, int pixelsPerAddr)
+static void BEL_ST_EGAVGAPlane_MemSet(uint16_t planeDstOff, uint8_t value, uint32_t num, int pixelsPerAddr)
 {
 	uint8_t *vidMemPtr = g_sdlVidMem.A000.gfxByByte;
 	uint16_t bytesToEnd = 0x10000-planeDstOff;
@@ -437,9 +437,22 @@ void BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(uint16_t destOff, uint8_t color, uin
 	g_sdlDoRefreshGfxOutput = true;
 }
 
+void BE_ST_EGAUpdateGFXBufferFrom4bitsPixelInPairs(uint16_t destOff, uint8_t color, uint16_t pairsCount)
+{
+	color &= 0xF; // We may get a larger value in The Catacombs Armageddon (sky color)
+	BEL_ST_EGAVGAPlane_MemSet(destOff, color, 2*pairsCount, 8);
+	g_sdlDoRefreshGfxOutput = true;
+}
+
 void BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(uint16_t destOff, uint8_t color, uint16_t count)
 {
 	BEL_ST_EGAVGAPlane_MemSet(destOff, color, count, 4);
+	g_sdlDoRefreshGfxOutput = true;
+}
+
+void BE_ST_VGAUpdateGFXBufferFrom8bitsPixelInPairs(uint16_t destOff, uint8_t color, uint16_t pairsCount)
+{
+	BEL_ST_EGAVGAPlane_MemSet(destOff, color, 2*pairsCount, 4);
 	g_sdlDoRefreshGfxOutput = true;
 }
 

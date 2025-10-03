@@ -469,7 +469,10 @@ void BE_ST_VGAUpdateGFXBufferInPlane(uint16_t destOff, const uint8_t *srcPtr, ui
 void BE_ST_VGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcOff, uint16_t num);
 uint8_t BE_ST_VGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum);
 void BE_ST_VGAUpdateGFXBitsFrom8bitsPixel(uint16_t destOff, uint8_t color, uint8_t bitsMask);
+// NOTE: This accepts byte count, which CANNOT be 0x10000.
+// For pairs of bytes (possibly including 0x8000 pairs), use pairs version.
 void BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(uint16_t destOff, uint8_t color, uint16_t count);
+void BE_ST_VGAUpdateGFXBufferFrom8bitsPixelInPairs(uint16_t destOff, uint8_t color, uint16_t pairsCount);
 
 // 16-color graphics manipulations (say, EGA modes 0xD-0xE),
 // with a portion of the functions also applying to 256-color graphics
@@ -489,7 +492,11 @@ void BE_ST_EGAUpdateGFXBufferInAllPlanesScrToScr(uint16_t destOff, uint16_t srcO
 uint8_t BE_ST_EGAFetchGFXByteFromPlane(uint16_t destOff, uint16_t planeNum);
 void BE_ST_EGAFetchGFXBufferFromPlane(uint8_t *destPtr, uint16_t srcOff, uint16_t num, uint16_t planeNum);
 void BE_ST_EGAUpdateGFXBitsFrom4bitsPixel(uint16_t destOff, uint8_t color, uint8_t bitsMask);
+// NOTE: This accepts byte count, which CANNOT be 0x10000.
+// For pairs of bytes (possibly including 0x8000 pairs), use pairs version.
 void BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(uint16_t destOff, uint8_t color, uint16_t count);
+void BE_ST_EGAUpdateGFXBufferFrom4bitsPixelInPairs(uint16_t destOff, uint8_t color, uint16_t count);
+
 void BE_ST_EGAXorGFXByteByPlaneMask(uint16_t destOff, uint8_t srcVal, uint16_t planeMask);
 
 // 4-color graphics manipulations (e.g., CGA mode 4)
