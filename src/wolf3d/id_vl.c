@@ -216,10 +216,7 @@ void	VL_SetTextMode (void)
 
 void VL_ClearVideo (id0_byte_t color)
 {
-	// REFKEEN TODO: Allow 0x10000 from a single call?
-	// The original assembly code was doing 0x8000 stores of a 16-bit word
-	BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(0, color, 0x8000);
-	BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(0x8000, color, 0x8000);
+	BE_ST_VGAUpdateGFXBufferFrom8bitsPixelInPairs(0, color, 0x8000);
 #if 0
 asm	mov	dx,GC_INDEX
 asm	mov	al,GC_MODE
