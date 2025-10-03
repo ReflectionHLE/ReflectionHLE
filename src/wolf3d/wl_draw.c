@@ -1249,9 +1249,9 @@ void VGAClearScreen (void)
 	{
 // *** ALPHA RESTORATION ***
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
-		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, 0x1d, (id0_byte_t)(viewwidth/8)*2);
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixelInPairs(destOff, 0x1d, (id0_byte_t)(viewwidth/8));
 #else
-		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, ceiling, (id0_byte_t)(viewwidth/8)*2);
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixelInPairs(destOff, ceiling, (id0_byte_t)(viewwidth/8));
 #endif
 		destOff += (id0_byte_t)(viewwidth/8)*2 + (80 - viewwidth/4);
 	}
@@ -1260,9 +1260,9 @@ void VGAClearScreen (void)
 	{
 // *** ALPHA RESTORATION ***
 #ifdef GAMEVER_NOAH3D
-		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, 0xd9, (id0_byte_t)(viewwidth/8)*2);
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixelInPairs(destOff, 0xd9, (id0_byte_t)(viewwidth/8));
 #else
-		BE_ST_VGAUpdateGFXBufferFrom8bitsPixel(destOff, 0x19, (id0_byte_t)(viewwidth/8)*2);
+		BE_ST_VGAUpdateGFXBufferFrom8bitsPixelInPairs(destOff, 0x19, (id0_byte_t)(viewwidth/8));
 #endif
 		destOff += (id0_byte_t)(viewwidth/8)*2 + (80 - viewwidth/4);
 	}
