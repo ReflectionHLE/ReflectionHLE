@@ -513,10 +513,10 @@ void	VW_ClearVideo (id0_int_t color)
 	VW_WaitVBL(1);
 	// Taking advantage of the fact color is 0 in practice
 	#if GRMODE == EGAGR
-	BE_ST_EGAUpdateGFXBufferFrom4bitsPixel(displayofs & ~1, 0, 0x8000*2);
+	BE_ST_EGAUpdateGFXBufferFrom4bitsPixelInPairs(displayofs & ~1, 0, 0x8000);
 	#endif
 	#if GRMODE == CGAGR
-	BE_ST_CGAUpdateGFXBufferFrom4bitsPixel(displayofs & ~1, 0, 0x8000*2);
+	BE_ST_CGAUpdateGFXBufferFrom4bitsPixelInPairs(displayofs & ~1, 0, 0x8000);
 	#endif
 #else
 	#if GRMODE == EGAGR
