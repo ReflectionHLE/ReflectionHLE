@@ -2932,7 +2932,10 @@ SD_SetSoundMode(SDMode mode)
 	{
 	case sdm_Off:
 		// (REFKEEN) Originally tableoffset wasn't set here at all,
-		// leading to undefined behaviors in SD_PlaySound
+		// leading to undefined behaviors in SD_PlaySound.
+		// The inspected ID_SD.OBJ of 20 reconstructed executables
+		// showed tableoffset was stored to [bp-2]. That was probably
+		// the case in all of the devs' original 1990s executables.
 		tableoffset = 0;
 		NeedsDigitized = false;
 		result = true;
@@ -3411,10 +3414,6 @@ SD_PlaySound(soundnames sound)
 	//s = MK_FP(SoundTable[sound],0);
 	if ((SoundMode != sdm_Off) && !s)
 		Quit("SD_PlaySound() - Uncached sound");
-	// REFKEEN: Even if s is zero, it may still be dereferenced when
-	// there's a replacement digitized sound. While the length might be
-	// 0 in the EXE layout, the priority is not, so use a special struct.
-	s = s ? s : (SoundCommon *)audiosegs[0];
 
 	if ((DigiMode != sds_Off) && (DigiMap[sound] != -1))
 	{
@@ -3456,8 +3455,17 @@ SD_PlaySound(soundnames sound)
 			BE_ST_UnlockAudioRecursively();
 		//asm	popf
 #endif
+			// REFKEEN: If SoundMode == sdm_Off, then s might not
+			// point at a valid struct, yet still be dereferenced
+			// in case there's a replacement digitized sound.
+			// Good chances are none of the non-digitized
+			// sounds is cached, hence there's no index i
+			// for which audiosegs[i] is not a null pointer.
+			// So, we cannot just set s, e.g., to audiosegs[0].
+			// Use priority 0 as a fallback instead.
+			id0_word_t priority = s ? s->priority : 0;
 
-			if (s->priority < DigiPriority)
+			if (/*s->*/priority < DigiPriority)
 				GAMEVER_COND_RET(false);
 
 			// *** SHAREWARE V1.0 APOGEE + ALPHA RESTORATION ***
@@ -3471,7 +3479,7 @@ SD_PlaySound(soundnames sound)
 #endif
 #endif // GAMEVER_WOLFREV > GV_WR_WL920312
 			DigiNumber = sound;
-			DigiPriority = s->priority;
+			DigiPriority = /*s->*/priority;
 #if (GAMEVER_WOLFREV <= GV_WR_WL920312)
 			SD_PlayDigitized(DigiMap[sound]);
 #endif
