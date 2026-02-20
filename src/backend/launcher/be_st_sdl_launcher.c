@@ -1584,8 +1584,7 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 		fclose(cfgfp);
 		free(mappingfpinmem); // Possibly NULL
 		BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFromSteamFailedToImportMenu);
-		// Destroy window, renderer and more?
-		exit(0);
+		return;
 	}
 
 	if (mappingfpinmem)
