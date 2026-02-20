@@ -1,5 +1,3 @@
-/* Make sure you set the encoding to ANSI or OEM-US when editing this file. */
-
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
  * Copyright (C) 2025 NY00123
@@ -559,16 +557,24 @@ static boolean CheckDIZ(void)
 	register Sint16 i;
 	id0_char_t c1, c2;
 	const id0_char_t diztext[443] = 
-		"ллллВБА  THIS IS PIRATED SOFTWARE!  АБВлллл  "
-		"ллллллллллллллллллллллллллллллллллллллллллл  "
+		"\xdb\xdb\xdb\xdb\xb2\xb1\xb0"
+		       "  THIS IS PIRATED SOFTWARE!  "
+		               "\xb0\xb1\xb2\xdb\xdb\xdb\xdb  "
+		"\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb"
+		"\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb"
+		"\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb  "
 		"THIS FILE IS NOT SHAREWARE -- it is ILLEGAL  "
 		"and forbidden to upload this copyrighted  "
 		"software on bulletin boards.  If you see  "
 		"this message on a BBS, please request that  "
 		"the Sysop remove this software IMMEDIATELY.  "
-		"лВБА OR CONTACT APOGEE: (214) 278-5655 АБВл  "
+		"\xdb\xb2\xb1\xb0"
+		    " OR CONTACT APOGEE: (214) 278-5655 "
+		                           "\xb0\xb1\xb2\xdb  "
 		"IT IS ILLEGAL TO GET THIS FILE FROM A BBS!  "
-		"ллллллллллллллллллллллллллллллллллллллллллл  ";
+		"\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb"
+		"\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb"
+		"\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb\xdb  ";
 	id0_char_t buffer[443];
 
 	if (!BE_Cross_IsFileValid(handle = BE_Cross_open_readonly_for_reading("file_id.diz")))
