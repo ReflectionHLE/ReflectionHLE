@@ -33,14 +33,14 @@ REFKEEN_NS_B
 #ifdef BETA
 // List of all states
 extern statetype s_nullstate;
-extern statetype s_badstate; // Unused
+extern statetype s_badstate; // Unused, but defined for saved games
 extern statetype s_snakedie1;
 extern statetype s_snakedie2;
-extern statetype s_snakeUNUSED1; // Unused
+extern statetype s_snakeUNUSED1; // Unused, but defined for saved games
 extern statetype s_snakestand;
 extern statetype s_snakewormstand;
 extern statetype s_snakestanduse;
-extern statetype s_snakeUNUSED2; // Unused
+extern statetype s_snakeUNUSED2; // Unused, but defined for saved games
 extern statetype s_snakeslide;
 extern statetype s_snakeshuttle;
 extern statetype s_snaketeleport1;
@@ -287,14 +287,14 @@ void RefKeen_FillObjStatesWithDOSPointers(void)
 {
 #ifdef BETA
 	s_nullstate.compatdospointer = 0x06B4;
-	s_badstate.compatdospointer = 0x06D2; // Unused, hence not defined
+	s_badstate.compatdospointer = 0x06D2;
 	s_snakedie1.compatdospointer = 0x083C;
 	s_snakedie2.compatdospointer = 0x085A;
 	s_snakeUNUSED1.compatdospointer = 0x0878;
 	s_snakestand.compatdospointer = 0x0896;
 	s_snakewormstand.compatdospointer = 0x08B4;
 	s_snakestanduse.compatdospointer = 0x08D2;
-	s_snakeUNUSED2.compatdospointer = 0x08F0; // Unused, hence not defined
+	s_snakeUNUSED2.compatdospointer = 0x08F0;
 	s_snakeslide.compatdospointer = 0x090E;
 	s_snakeshuttle.compatdospointer = 0x092C;
 	s_snaketeleport1.compatdospointer = 0x094A;
@@ -544,14 +544,14 @@ statetype *RefKeen_GetObjStatePtrFromDOSPointer(uint_fast32_t dosptr)
 	switch (dosptr)
 	{
 	case 0x06B4: return &s_nullstate;
-//	case 0x06D2: return &s_badstate; // Unused, hence not defined
+	case 0x06D2: return &s_badstate;
 	case 0x083C: return &s_snakedie1;
 	case 0x085A: return &s_snakedie2;
 	case 0x0878: return &s_snakeUNUSED1;
 	case 0x0896: return &s_snakestand;
 	case 0x08B4: return &s_snakewormstand;
 	case 0x08D2: return &s_snakestanduse;
-	case 0x08F0: return &s_snakeUNUSED2; // Unused, hence not defined
+	case 0x08F0: return &s_snakeUNUSED2;
 	case 0x090E: return &s_snakeslide;
 	case 0x092C: return &s_snakeshuttle;
 	case 0x094A: return &s_snaketeleport1;
