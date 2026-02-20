@@ -75,7 +75,7 @@ Uint16 currentmusic;
 
 void SizeText(const id0_char_t *text, Uint16 *width, Uint16 *height)
 {
-	register id0_char_t *ptr;
+	/*register*/ id0_char_t *ptr;
 	id0_char_t c;
 	Uint16 w, h;
 	id0_char_t strbuf[80];
@@ -332,7 +332,7 @@ static const id0_char_t *ParmStrings[] = {"easy", "normal", "hard", ""};
 
 static void DemoLoop(void)
 {
-	register Sint16 i, state;
+	/*register*/ Sint16 i, state;
 	Sint16 level;
 #ifndef BETA
 	Sint16 var4 = 1;	//is initialized but never used
@@ -554,7 +554,7 @@ static void CheckCutFile(void)
 static boolean CheckDIZ(void)
 {
 	BE_FILE_T handle;
-	register Sint16 i;
+	/*register*/ Sint16 i;
 	id0_char_t c1, c2;
 	const id0_char_t diztext[443] = 
 		"\xdb\xdb\xdb\xdb\xb2\xb1\xb0"
@@ -667,7 +667,7 @@ void bmenace_exe_main(void)
 	if (!g_refKeenCfg.bmenace.betaFixes) // REFKEEN: Again, check this instead.
 //	if (!tedlevel)	// we still haven't run any code that could have set tedlevel to true!
 	{
-		register int i;
+		/*register*/ int i;
 		
 		if (id0_argc <= 1)	// need at least 1 real parameter
 		{

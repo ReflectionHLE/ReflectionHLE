@@ -786,7 +786,7 @@ void UpdateScorebox(objtype *ob)
 	Uint16 isodd, len, width, planesize;
 	Uint16 amount;
 	boolean changed;
-	register Uint16 i;
+	/*register*/ Uint16 i;
 
 	changed = false;
 	

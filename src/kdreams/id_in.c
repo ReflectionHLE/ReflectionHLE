@@ -724,7 +724,7 @@ IN_ReadControl(id0_int_t player,ControlInfo *info)
 			id0_int_t			dx,dy;
 			Motion		mx,my;
 			ControlType	type;
-register	KeyboardDef	*def;
+/*register*/	KeyboardDef	*def;
 
 	realdelta = false; // REFKEEN - Originally it can be used uninitialized (even though there's no demo playback in vanilla Keen Dreams...)
 	dx = dy = 0;

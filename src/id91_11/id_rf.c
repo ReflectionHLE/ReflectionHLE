@@ -1859,7 +1859,7 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority)
 {
-	spritelisttype	register *sprite,*next;
+	spritelisttype	/*register*/ *sprite,*next;
 	spritetabletype id0_far *spr;
 	spritetype id0_seg	*block;
 	id0_unsigned_t	shift,pixx;
@@ -2554,7 +2554,7 @@ void RF_Scroll (id0_int_t x, id0_int_t y)
 void RF_PlaceSprite (void **user,id0_unsigned_t globalx,id0_unsigned_t globaly,
 	id0_unsigned_t spritenumber, drawtype draw, id0_int_t priority)
 {
-	spritelisttype	register *sprite,*next;
+	spritelisttype	/*register*/ *sprite,*next;
 	spritetabletype id0_far *spr;
 	spritetype id0_seg	*block;
 	//id0_unsigned_t	shift,pixx;

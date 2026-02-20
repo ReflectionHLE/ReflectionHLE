@@ -67,7 +67,7 @@ static void FadeAndUnhook(void);
 
 static void FreeGraphics(void)
 {
-	register Sint16 i;
+	/*register*/ Sint16 i;
 	for (i=STARTSPRITES; i<STARTSPRITES+NUMSPRITES; i++)
 	{
 		if (grsegs[i])

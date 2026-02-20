@@ -169,7 +169,7 @@ boolean button1held;
 
 static void PrintNumbers(Sint16 x, Sint16 y, Sint16 maxlen, Sint16 basetile, Sint32 number)
 {
-	register Sint16 i;
+	/*register*/ Sint16 i;
 	Sint16 len;
 	id0_char_t buffer[20];
 

@@ -846,7 +846,7 @@ IN_ReadControl(id0_int_t player,ControlInfo *info)
 			id0_int_t			dx,dy;
 			Motion		mx,my;
 			ControlType	type;
-register	KeyboardDef	*def;
+/*register*/	KeyboardDef	*def;
 
 	dx = dy = 0;
 	mx = my = motion_None;
