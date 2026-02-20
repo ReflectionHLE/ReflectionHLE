@@ -862,7 +862,7 @@ void SpawnWorm(Uint16 x, Uint16 y)
 	GetNewObj(false);
 	newobj->obclass = wormobj;
 	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
-	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + -0x71;
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + ADJUST_FOR_YH(368);
 	newobj->xdir = 1;
 	newobj->ydir = 1;
 	NewState(newobj, &s_wormwalk1);
@@ -1270,7 +1270,7 @@ void SpawnKamikaze(Uint16 x, Uint16 y)
 	GetNewObj(false);
 	newobj->obclass = kamikazeobj;
 	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
-	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + (15-TILEGLOBAL);
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + ADJUST_FOR_YH(496);
 	newobj->xdir = 1;
 	newobj->ydir = 1;
 	NewState(newobj, &s_kamikazestand1);
@@ -1600,7 +1600,9 @@ void TrashBossAttackThink(objtype *ob)
 	}
 	ob->nothink = 2;
 }
+
 #else		// (EPISODE != 2) now!
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // JUMP BOMB
@@ -1625,7 +1627,7 @@ void SpawnJumpbomb(Uint16 x, Uint16 y)
 	GetNewObj(false);
 	newobj->obclass = jumpbombobj;
 	newobj->x = CONVERT_TILE_TO_GLOBAL(x);
-	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + -0x71;
+	newobj->y = CONVERT_TILE_TO_GLOBAL(y) + ADJUST_FOR_YH(368);
 	newobj->xdir = 1;
 	newobj->ydir = 1;
 	NewState(newobj, &s_jumpbomb);
@@ -2023,6 +2025,7 @@ void HairyJumpReact(objtype *ob)
 	}
 	PLACESPRITE;
 }
+
 #endif	// (EPISODE == 2) ... else ...
 
 //////////////////////////////////////////////////////////////////////////////

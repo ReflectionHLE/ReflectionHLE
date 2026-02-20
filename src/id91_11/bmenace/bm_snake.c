@@ -66,14 +66,12 @@ static Sint16 shieldtime = 0;
 
 FARSTATE s_snakedie1 = {SNAKEDIE1SPR, SNAKEDIE1SPR, think, false, push_none, 0, 0, 0, SnakeDieThink, NULL, SnakeDieReact, &s_snakedie2};
 FARSTATE s_snakedie2 = {SNAKEDIE2SPR, SNAKEDIE2SPR, step, false, push_none, 50, 0, 0, SnakeDeadThink, NULL, DrawReact, &s_snakedie2};
-#ifdef BETA
-FARSTATE s_snakeskeleton = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_none, 15, 0, 0, NULL, NULL, DrawReact, &s_snakestand};
-#else
+#ifndef BETA
 FARSTATE s_snakeskeleton = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_down, 20, 0, 0, NULL, SnakeStandContact, DrawReact, &s_snakestand};
 FARSTATE s_snakeshield1 = {SNAKESHIELD1LSPR, SNAKESHIELD1RSPR, stepthink, false, push_down, 10, 0, 0, SnakePauseThink, SnakeShieldContact, DrawReact, &s_snakeshield2};
 FARSTATE s_snakeshield2 = {SNAKESHIELD2LSPR, SNAKESHIELD2RSPR, stepthink, false, push_down, 10, 0, 0, SnakePauseThink, SnakeShieldContact, DrawReact, &s_snakeshield1};
-FARSTATE s_snakeUNUSED1 = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_none, 15, 0, 0, NULL, NULL, DrawReact, &s_snakestand}; // REFKEEN: Unused, but keep if will be relevant for saved games
 #endif
+FARSTATE s_snakeUNUSED1  = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_none, 15, 0, 0, NULL, NULL, DrawReact, &s_snakestand}; // REFKEEN: Unused, but keep if will be relevant for saved games
 FARSTATE s_snakestand = {SNAKESTANDLSPR, SNAKESTANDRSPR, stepthink, false, push_down, 4, 0, 16, SnakePauseThink, SnakeStandContact, SnakeStandReact, &s_snakestand};
 #if (EPISODE == 2)
 FARSTATE s_snakewormstand = {SNAKEWORM1LSPR, SNAKEWORM1RSPR, stepthink, false, push_down, 4, 0, 16, SnakeWormStandThink, SnakeStandContact, SnakeWormStandReact, &s_snakewormstand};
@@ -94,8 +92,34 @@ FARSTATE s_snaketeleport2 = {-1, -1, step, false, push_none, 1, 0, 0, SnakeTelep
 #endif
 FARSTATE s_snakeuse1 = {SNAKEUSESPR, SNAKEUSESPR, step, false, push_down, 8, 0, 0, SnakeUseThink, NULL, SnakeStandReact, &s_snakeuse2};
 FARSTATE s_snakeuse2 = {SNAKEUSESPR, SNAKEUSESPR, step, false, push_down, 8, 0, 0, NULL, NULL, SnakeStandReact, &s_snakestand};
+
 FARSTATE s_snakeopendoor1 = {SNAKEUSESPR, SNAKEUSESPR, step, false, push_down, 30, 0, 0, NULL, SnakeStandContact, SnakeStandReact, &s_snakeopendoor2};
 FARSTATE s_snakeopendoor2 = {SNAKEUSESPR, SNAKEUSESPR, step, false, push_down, 1, 0, 0, SnakeOpenDoorThink, SnakeStandContact, SnakeStandReact, &s_snakestand};
+// BUG: The states s_snakeopendoor1 and s_snakeopendoor2 should use NULL instead
+// of SnakeStandContact to prevent the player from getting killed in between
+// losing a key and actually opening the door that the key was supposed to
+// unlock. Setting the contact field to NULL *should* fix that problem for the
+// original enemy behavior code, except for the sinking crusher.
+//
+// There are several other possible solutions for this problem as well:
+//
+// - Modify HurtPlayer and KillPlayer to make sure Snake cannot get killed in
+//   these states. Alternatively add a second invincibility timer that will be
+//   started when Snake loses the key and that doesn't cause Snake's sprites to
+//   flash, similar to how the invincibility works in Keen 4-6. (Problem: Other
+//   interactions that change Snake into a different state could still interrupt
+//   the door opening state sequence and cause the player to lose the key
+//   without actually opening the door.)
+//
+// - Spawn a new object that takes care of opening the door after an appropriate
+//   delay. (Problem: There might be no object slot available for that.)
+//
+// - Let SnakeOpenDoorThink remove the respective key when the door tiles get
+//   replaced, instead of doing it too early in CheckInteractiveTiles. This
+//   approach might be the best solution for this problem because it would make
+//   it absolutely impossible for the player to get interrupted in any way in
+//   between losing the key and actually opening the door.
+
 #ifdef BETA
 FARSTATE s_snakeduck = {SNAKEDUCKFIRE1LSPR, SNAKEDUCKFIRE1RSPR, think, false, push_down, 0, 0, 0, SnakePauseThink, SnakeStandContact, SnakeStandReact, &s_snakeduck};
 #else
@@ -116,28 +140,47 @@ FARSTATE s_snakewormwalk2 = {SNAKEWORM2LSPR, SNAKEWORM2RSPR, slidethink, true, p
 FARSTATE s_snakethrow1 = {SNAKESTANDTHROW1LSPR, SNAKESTANDTHROW1RSPR, step, true, push_down, 20, 0, 0, NULL, SnakeStandContact, SnakeStandReact, &s_snakethrow2};
 FARSTATE s_snakethrow2 = {SNAKESTANDTHROW2LSPR, SNAKESTANDTHROW2RSPR, step, false, push_down, 10, 0, 0, SnakeThrow, SnakeStandContact, SnakeStandReact, &s_snakethrow3};
 FARSTATE s_snakethrow3 = {SNAKESTANDTHROW1LSPR, SNAKESTANDTHROW1RSPR, step, true, push_down, 6, 0, 0, NULL, SnakeStandContact, SnakeStandReact, &s_snakestand};
+
 #ifdef BETA
+
 FARSTATE s_snakeairthrow1 = {SNAKEAIRTHROW1LSPR, SNAKEAIRTHROW1RSPR, stepthink, false, push_none, 20, 0, 0, ProjectileThink, SnakeContact, SnakeAirReact, &s_snakeairthrow2};
 FARSTATE s_snakeairthrow2 = {SNAKEAIRTHROW2LSPR, SNAKEAIRTHROW2RSPR, step, false, push_none, 6, 0, 0, SnakeThrow, SnakeContact, SnakeAirReact, &s_snakeairthrow3};
 FARSTATE s_snakeairthrow3 = {SNAKEAIRTHROW1LSPR, SNAKEAIRTHROW1RSPR, stepthink, false, push_none, 10, 0, 0, ProjectileThink, SnakeContact, SnakeAirReact, &s_snakejump1};
 FARSTATE s_snakejump1 = {SNAKEJUMPLSPR, SNAKEJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakejump2};
 FARSTATE s_snakejump2 = {SNAKEJUMPLSPR, SNAKEJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakejump3};
-FARSTATE s_snakejump3 = {SNAKEJUMPLSPR, SNAKEJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakestand};
+#ifdef IMPROVED_JUMP_CHEAT
+FARSTATE s_snakejump3 = {SNAKEJUMPLSPR, SNAKEJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakejump3};
 #else
+FARSTATE s_snakejump3 = {SNAKEJUMPLSPR, SNAKEJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakestand};	// BUG: nextstate should be s_snakejump3!
+#endif
+
+#else	// not BETA
+
 FARSTATE s_snakeairthrow1 = {SNAKEAIRTHROW1LSPR, SNAKEAIRTHROW1RSPR, stepthink, false, push_none, 10, 0, 0, ProjectileThink, SnakeContact, SnakeAirReact, &s_snakeairthrow2};
 FARSTATE s_snakeairthrow2 = {SNAKEAIRTHROW2LSPR, SNAKEAIRTHROW2RSPR, step, false, push_none, 3, 0, 0, SnakeThrow, SnakeContact, SnakeAirReact, &s_snakeairthrow3};
 FARSTATE s_snakeairthrow3 = {SNAKEAIRTHROW1LSPR, SNAKEAIRTHROW1RSPR, stepthink, false, push_none, 10, 0, 0, ProjectileThink, SnakeContact, SnakeAirReact, &s_snakejump1};
 FARSTATE s_snakejump1 = {SNAKEAIRFIRE1LSPR, SNAKEAIRFIRE1RSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakejump2};
 FARSTATE s_snakejump2 = {SNAKEAIRFIRE1LSPR, SNAKEAIRFIRE1RSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakejump3};
-FARSTATE s_snakejump3 = {SNAKEAIRFIRE1LSPR, SNAKEAIRFIRE1RSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakestand};
+#ifdef IMPROVED_JUMP_CHEAT
+FARSTATE s_snakejump3 = {SNAKEAIRFIRE1LSPR, SNAKEAIRFIRE1RSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakejump3};
+#else
+FARSTATE s_snakejump3 = {SNAKEAIRFIRE1LSPR, SNAKEAIRFIRE1RSPR, think, false, push_none, 0, 0, 0, SnakeAirThink, SnakeContact, SnakeAirReact, &s_snakestand};	// BUG: nextstate should be s_snakejump3!
 #endif
+
+#endif	// ifdef BETA ... else ...
+
 #if (EPISODE == 2)
 FARSTATE s_snakewormair1 = {SNAKEWORMJUMPLSPR, SNAKEWORMJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeWormAirThink, SnakeContact, SnakeWormAirReact, &s_snakewormair2};
 FARSTATE s_snakewormair2 = {SNAKEWORMJUMPLSPR, SNAKEWORMJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeWormAirThink, SnakeContact, SnakeWormAirReact, &s_snakewormair3};
-FARSTATE s_snakewormair3 = {SNAKEWORMJUMPLSPR, SNAKEWORMJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeWormAirThink, SnakeContact, SnakeWormAirReact, &s_snakewormstand};
-FARSTATE s_snakewormattack = {SNAKEWORMATTACKLSPR, SNAKEWORMATTACKRSPR, step, false, push_down, 20, 0, 0, NULL, SnakeStandContact, DrawReact, &s_snakewormstand};
-FARSTATE s_snakewormairattack = {SNAKEWORMATTACKLSPR, SNAKEWORMATTACKRSPR, stepthink, false, push_none, 20, 0, 0, ProjectileThink, SnakeStandContact, SnakeWormAirReact, &s_snakewormair1};
+#ifdef IMPROVED_JUMP_CHEAT
+FARSTATE s_snakewormair3 = {SNAKEWORMJUMPLSPR, SNAKEWORMJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeWormAirThink, SnakeContact, SnakeWormAirReact, &s_snakewormair3};
+#else
+FARSTATE s_snakewormair3 = {SNAKEWORMJUMPLSPR, SNAKEWORMJUMPRSPR, think, false, push_none, 0, 0, 0, SnakeWormAirThink, SnakeContact, SnakeWormAirReact, &s_snakewormstand};	// BUG: nextstate should be s_snakewormair3!
 #endif
+FARSTATE s_snakewormattack = {SNAKEWORMATTACKLSPR, SNAKEWORMATTACKRSPR, step, false, push_down, 20, 0, 0, NULL, SnakeStandContact, DrawReact, &s_snakewormstand};
+FARSTATE s_snakewormairattack = {SNAKEWORMATTACKLSPR, SNAKEWORMATTACKRSPR, stepthink, false, push_none, 20, 0, 0, ProjectileThink, SnakeStandContact, SnakeWormAirReact, &s_snakewormair1};	// BUG? should use SnakeContact instead of SnakeStandContact to avoid screen shaking
+#endif	// EPISODE == 2
+
 FARSTATE s_snakestandfire1 = {SNAKESTANDFIRE1LSPR, SNAKESTANDFIRE1RSPR, step, false, push_down, 5, 0, 0, SnakeAttackThink, SnakeStandContact, DrawReact, &s_snakestandfire2};
 FARSTATE s_snakestandfire2 = {SNAKESTANDFIRE2LSPR, SNAKESTANDFIRE2RSPR, step, false, push_down, 5, 0, 0, SnakeFireThink, SnakeStandContact, DrawReact, &s_snakestandfire3};
 FARSTATE s_snakestandfire3 = {SNAKESTANDFIRE1LSPR, SNAKESTANDFIRE1RSPR, step, false, push_down, 5, 0, 0, NULL, SnakeStandContact, DrawReact, &s_snakestand};
@@ -388,7 +431,12 @@ boolean CheckInteractiveTiles(objtype *ob)
 				SD_PlaySound(ACCESSDENIEDSND);
 				return true;
 			}
-			gamestate.trianglekey--;
+			gamestate.trianglekey--;	// BUG: Taking away the key in here is unsafe!
+			// If any other code changes Snake into a different state before
+			// SnakeOpenDoor is executed, the key will be gone for good and the
+			// door will still be locked. It would be safer to let SnakeOpenDoor
+			// check the INTILE value of the door tile and then take away the
+			// respective key and open the door at the same time.
 		}
 		else
 #endif
@@ -401,7 +449,7 @@ boolean CheckInteractiveTiles(objtype *ob)
 				SD_PlaySound(ACCESSDENIEDSND);
 				return true;
 			}
-			gamestate.keys.keys--;
+			gamestate.keys.keys--;	// BUG: Taking away the key in here is unsafe! (see above)
 		}
 		ChangeState(ob, &s_snakeopendoor1);
 		upheld = true;
@@ -418,7 +466,7 @@ boolean CheckInteractiveTiles(objtype *ob)
 			SD_PlaySound(ACCESSDENIEDSND);
 			return true;
 		}
-		gamestate.specialkeys = 0;
+		gamestate.specialkeys = 0;	// BUG: Taking away the key in here is unsafe! (see above)
 		ChangeState(ob, &s_snakeopendoor1);
 		upheld = true;
 		return true;
@@ -891,6 +939,18 @@ found_boss:
 		}
 #ifdef BETA
 		SD_PlaySound(APOGEESND);
+		// Note: The original IMF music data contains some instructions that
+		// interfere with the playback of AdLib sound effects. The IMF data
+		// overwrites the instrument data for the first OPL channel (the one
+		// reserved for AdLib sound effects), which means any AdLib sound
+		// effect that is playing when a music track was just (re-)started will
+		// use the wrong instrument data for the rest of its duration. Since this
+		// code calls HintDialog(), which will start a new music track, and it
+		// has just started playing a sound effect, the music can prevent that
+		// effect from being played correctly when the game is set to AdLib
+		// sound effects. The same problem also occurs when the music loops
+		// around to the start, so this is really a bug in the data, not a bug in
+		// the code.
 #endif
 		hintstate = 1;
 		HintDialog();
@@ -1398,6 +1458,14 @@ void SnakeDuckAutofireThink(objtype *ob)
 
 void SnakeAirNofireThink(objtype *ob)
 {
+#ifdef IMPROVED_JUMP_CHEAT
+	if (jumpcheat && button0down)
+	{
+		ob->yspeed = -41;
+		jumptime = 16;
+		button0held = true;
+	}
+#endif
 	if (jumptime)
 	{
 		if (jumptime < tics)
@@ -1535,6 +1603,16 @@ void SnakeWormStandActions(objtype *ob)
 			ob->xdir = 1;
 		}
 	}
+	// Note: The following code is a bit buggy. Because the jump and fire buttons
+	// are only checked when not moving, it means there will be at least one
+	// frame of input lag if the player presses the direction key and the jump/
+	// fire button at the same time as the left/right key. And if the player is
+	// moving towards a wall, it means SnakeWormWalkReact() will immediately
+	// switch back to the standing worm state and the jump/fire buttons will be
+	// ignored completely because the code is stuck in a loop, switching back and
+	// forth between the standing and walking states. To fix that, you could call
+	// SnakeWormWalkThink(ob); directly after switching to the walking state.
+	// Similar code could be added when switching to the jumping state.
 	if (move)
 	{
 		xtry = ob->xdir << 4;
@@ -1654,6 +1732,14 @@ void SnakeWormWalkThink(objtype *ob)
 
 void SnakeWormAirThink(objtype *ob)
 {
+#ifdef IMPROVED_JUMP_CHEAT
+	if (jumpcheat && button0down)
+	{
+		ob->yspeed = -41;
+		jumptime = 16;
+		button0held = true;
+	}
+#endif
 	if (jumptime)
 	{
 		if (jumptime < tics)
@@ -1673,6 +1759,18 @@ void SnakeWormAirThink(objtype *ob)
 		{
 			jumptime = 0;
 		}
+
+		// Note: The following code was inherited from Keen Dreams, where all 3
+		// states of the jump sequence used separate sprites. That's not the case
+		// in BioMenace, which makes this code practically useless. It is only
+		// necessary in the beta version because the pink force fields cannot
+		// transform the player unless the player has reached the third state of
+		// the jump sequence (s_snakejump3 or s_snakewormair3).
+		//
+		// In combination with the improved jump cheat, this would cause some
+		// minor problems because the final jumping state's nextstate field points
+		// to the standing state. SnakeWormStandReact() would be executed mid-air,
+		// which would reset the player's xspeed value, among other things.
 		if (!jumptime)
 		{
 			ob->temp2 = 0;
@@ -1682,6 +1780,8 @@ void SnakeWormAirThink(objtype *ob)
 	else
 	{
 		DoGravity(ob);
+
+		// Note: The following code was inherited from Keen Dreams (see above).
 		if (ob->yspeed > 0 && ob->temp2 == 0)
 		{
 			ob->state = ob->state->nextstate;
@@ -2318,6 +2418,14 @@ void SnakeWalkThink(objtype *ob)
 
 void SnakeAirThink(objtype *ob)
 {
+#ifdef IMPROVED_JUMP_CHEAT
+	if (jumpcheat && button0down)
+	{
+		ob->yspeed = -41;
+		jumptime = 16;
+		button0held = true;
+	}
+#endif
 	if (jumptime)
 	{
 		if (jumptime < tics)
@@ -2337,6 +2445,17 @@ void SnakeAirThink(objtype *ob)
 		{
 			jumptime = 0;
 		}
+		// Note: The following code was inherited from Keen Dreams, where all 3
+		// states of the jump sequence used separate sprites. That's not the case
+		// in BioMenace, which makes this code practically useless. It is only
+		// necessary in the beta version because the pink force fields cannot
+		// transform the player unless the player has reached the third state of
+		// the jump sequence (s_snakejump3 or s_snakewormair3).
+		//
+		// In combination with the improved jump cheat, this would cause some
+		// minor problems because the final jumping state's nextstate field points
+		// to the standing state. SnakeStandReact() would be executed mid-air,
+		// which would reset the player's xspeed value, among other things.
 		if (!jumptime)
 		{
 			ob->temp2 = 0;
@@ -2346,6 +2465,7 @@ void SnakeAirThink(objtype *ob)
 	else
 	{
 		DoGravity(ob);
+		// Note: The following code was inherited from Keen Dreams (see above).
 		if (ob->yspeed > 0 && ob->temp2 == 0)
 		{
 			ob->state = ob->state->nextstate;
@@ -2515,7 +2635,7 @@ void CheckPole(objtype *ob)
 	{
 		ob->state = &s_snakejump3;
 		jumptime = 0;
-		ob->temp2 = 1;
+		ob->temp2 = 1;	// don't trigger another state transition in SnakeAirThink
 		ob->xspeed = polexspeed[c.xaxis+1];
 		ob->yspeed = 0;
 		ob->needtoclip = cl_midclip;	// leftover from Keen (Keen is noclipping on poles)
@@ -3122,6 +3242,21 @@ void SnakeContact(objtype *ob, objtype *hit)
 				gamestate.potions = 0;
 				invincibility = 1500;
 				StartMusic(MUS_INVINCIBLE);
+				// BUG: Starting a new music track might move memory buffers around!
+				// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+				// with animated tiles.
+
+				// Note: The original IMF music data contains some instructions that
+				// interfere with the playback of AdLib sound effects. The IMF data
+				// overwrites the instrument data for the first OPL channel (the one
+				// reserved for AdLib sound effects), which means any AdLib sound
+				// effect that is playing when a music track was just (re-)started
+				// will use the wrong instrument data for the rest of its duration.
+				// Since this code starts a new music track right after playing a
+				// sound effect, the music can prevent that effect from being played
+				// correctly when the game is set to AdLib sound effects. The same
+				// problem also occurs when the music loops around to the start, so
+				// this is really a bug in the data, not a bug in the code.
 			}
 #endif
 			hit->obclass = decoobj;
@@ -3330,6 +3465,7 @@ void SnakeWormStandReact(objtype *ob)
 	if (!ob->hitnorth)
 	{
 		ob->xspeed = ob->xdir * 8;
+		// BUG: should also set ob->yspeed to 0 here
 		ChangeState(ob, &s_snakewormair3);
 		ob->temp2 = 1;
 		jumptime = 0;
@@ -3376,7 +3512,11 @@ void SnakeWormAirReact(objtype *ob)
 	{
 		ob->xspeed = 0;
 	}
-	if (ob->hitsouth)
+	if (ob->hitsouth
+#ifdef IMPROVED_JUMP_CHEAT
+		&& !jumpcheat
+#endif
+		)
 	{
 		if (ob->hitsouth > 1)
 		{
@@ -3394,6 +3534,8 @@ void SnakeWormAirReact(objtype *ob)
 	}
 	if (ob->hitnorth && (ob->hitnorth != PLATFORMEDGE || jumptime == 0))
 	{
+		// Note: It would be a good idea to set ob->ymove to 0 in here as well
+		// to prevent the screen from shaking when the player lands.
 		ob->temp1 = ob->temp2 = 0;
 		ChangeState(ob, &s_snakewormstand);
 	}
@@ -3418,8 +3560,9 @@ void SnakeStandReact(objtype *ob)
 	if (!ob->hitnorth)
 	{
 		ob->xspeed = ob->xdir*8;
+		// BUG: should also set ob->yspeed to 0 here
 		ChangeState(ob, &s_snakejump3);
-		ob->temp2 = 1;
+		ob->temp2 = 1;	// don't trigger another state transition in SnakeAirThink
 		jumptime = 0;
 	}
 	PLACESPRITE;
@@ -3440,7 +3583,7 @@ void SnakeWalkReact(objtype *ob)
 		ob->xspeed = ob->xdir * 8;
 		ob->yspeed = 0;
 		ChangeState(ob, &s_snakejump3);
-		ob->temp2 = 1;
+		ob->temp2 = 1;	// don't trigger another state transition in SnakeAirThink
 		jumptime = 0;
 	}
 	else if (ob->hiteast || ob->hitwest)
@@ -3464,7 +3607,11 @@ void SnakeAirReact(objtype *ob)
 	{
 		ob->xspeed = 0;
 	}
-	if (ob->hitsouth)
+	if (ob->hitsouth
+#ifdef IMPROVED_JUMP_CHEAT
+		&& !jumpcheat
+#endif
+		)
 	{
 		if (ob->hitsouth > 1)
 		{
@@ -3482,6 +3629,9 @@ void SnakeAirReact(objtype *ob)
 	}
 	if (ob->hitnorth)
 	{
+		// Note: Keen 4-6 set ob->ymove to 0 right here to prevent the screen from
+		// shaking when the player lands.
+
 		if (ob->hitnorth != PLATFORMEDGE || jumptime == 0)
 		{
 			ob->temp1 = ob->temp2 = 0;
@@ -3774,14 +3924,14 @@ void HandleRiding(objtype *ob)
 		// isn't implemented in BioMenace's version of ID_RF.C. This made using
 		// NOPAN pretty much pointless for BioMenace, which could explain why the
 		// parameter was removed and replaced with LATCHPEL in v1.1.
-		ob->x &= ~0x7F;
-		ob->x |= plat->x & 0x7F;
+		ob->x &= ~SUBPIXELMASK(8);
+		ob->x |= plat->x & SUBPIXELMASK(8);
 	}
 	else
 	{
 		// EGA sprites can only move in multiples of 2 pixels left/right
 		// (assuming the sprite's shift values are set to 4).
-		ob->x |= plat->x & 0x1F;
+		ob->x |= plat->x & SUBPIXELMASK(2);
 		// BUG: The platform's alignment is applied without clearing the bits of
 		// the object's x position first. This doesn't cause any major problems
 		// in the original games, but it would need to be fixed when modifying

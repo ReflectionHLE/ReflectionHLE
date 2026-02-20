@@ -1144,15 +1144,25 @@ US_CPrintLine(const id0_char_t *s, const id0_char_t *optse)
 void
 US_CPrint(const id0_char_t id0_far *s)
 {
-	// The BioMenace version accepts far pointers and therefore needs to copy
-	// the string into a temporary buffer in near memory, otherwise the string
-	// could not be measured and drawn with US_CPrintLine().
+	// The BioMenace version accepts far pointers and therefore needs to copy the
+	// string into a temporary buffer in near memory, otherwise the string could
+	// not be processed by US_CPrintLine().
 	id0_char_t    buf[200], *ptr,c,*se;
 
+	// Note: USL_DrawString and USL_MeasureString are already able to accept far
+	// pointers, so modifying US_CPrintLine() to accept far pointers and then
+	// turning the 'ptr' and 'se' variables into far pointers as well would
+	// eliminate the need to copy the string into near memory in the first place.
+	// It would take a little longer to execute the code that scans for newline
+	// characters when far pointers are used, but speed shouldn't be all that
+	// important here anyway and the modification would eliminate the risk of
+	// exceeding the size of the buffer and corrupting the stack.
+
 #if 0
-	// Note: It might be a good idea to quit with an error message when the
-	// length of the input string would exceed the length of the buffer, since
-	// copying a string that doesn't fit would corrupt the stack and might
+	// Note: If you want to keep using near pointers and a temporary near copy of
+	// the string in here, it might be a good idea to quit with an error message
+	// when the length of the input string would exceed the length of the buffer,
+	// since copying a string that doesn't fit would corrupt the stack and might
 	// overwrite the return address, which could cause all kinds of problems!
 	if (_fstrlen(s) >= sizeof(buf)/sizeof(buf[0]))
 		Quit("US_CPrint: string too long!");

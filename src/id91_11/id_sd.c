@@ -802,7 +802,11 @@ SDL_DetectAdLib(void)
 	// to send some commands to the emulated OPL chip
 
 	// TODO (REFKEEN): Any way to handle this delay (if at all)?
-	//SDL_Delay(TimerDelay100);
+	//SDL_Delay(TimerDelay100);	// BUG: this may break AdLib detection on fast CPUs!
+	// Note: Simply waiting for two timer interrupts would be much safer and only
+	// takes a little bit longer than running SDL_Delay like this. And since you
+	// won't need SDL_Delay at all after this, you can also skip SDL_InitDelay
+	// at startup.
 
 	//status2 = readstat();
 	alOut(4,0x60);

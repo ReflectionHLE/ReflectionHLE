@@ -504,6 +504,21 @@ void SnakeContact(objtype *ob, objtype *hit)
 				gamestate.potions = 0;
 				invincibility = 1500;
 				StartMusic(MUS_INVINCIBLE);
+				// BUG: Starting a new music track might move memory buffers around!
+				// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+				// with animated tiles.
+
+				// Note: The original IMF music data contains some instructions that
+				// interfere with the playback of AdLib sound effects. The IMF data
+				// overwrites the instrument data for the first OPL channel (the one
+				// reserved for AdLib sound effects), which means any AdLib sound
+				// effect that is playing when a music track was just (re-)started
+				// will use the wrong instrument data for the rest of its duration.
+				// Since this code starts a new music track right after playing a
+				// sound effect, the music can prevent that effect from being played
+				// correctly when the game is set to AdLib sounds effects. The same
+				// problem also occurs when the music loops around to the start, so
+				// this is really a bug in the data, not a bug in the code.
 			}
 			hit->obclass = decoobj;
 			hit->priority = 3;
@@ -764,7 +779,7 @@ void ResetScoreObj(void)
 
 void UpdateScorebox(objtype *ob)
 {
-	id0_char_t buffer[10], *bufptr;
+	id0_char_t buffer[10], *bufptr;	// BUG: score might need up to 12 chars! ("-2147483648")
 	spritetype id0_seg *block;
 	Uint8 id0_far *dest;
 	Uint8 id0_far *dest2;
@@ -1411,6 +1426,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 #endif
 			SpawnBonus(ob->tilemidx, ob->tiletop, 18);	//regular key
 			StartMusic(MUS_VICTORY);
+			// BUG: Starting a new music track might move memory buffers around!
+			// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+			// with animated tiles.
 			break;
 			
 #endif
@@ -1446,6 +1464,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 			newobj->needtoclip = cl_midclip;	// don't let it fall through the floor
 #endif
 			StartMusic(MUS_VICTORY);
+			// BUG: Starting a new music track might move memory buffers around!
+			// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+			// with animated tiles.
 			break;
 			
 #endif
@@ -1479,6 +1500,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 			ob->shootable = false;
 			SpawnBonus(ob->tilemidx, ob->tiletop, 26);	//blue shard
 			StartMusic(MUS_VICTORY);
+			// BUG: Starting a new music track might move memory buffers around!
+			// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+			// with animated tiles.
 			skullmanstate = 1;	// Skullman is dead
 			bosshealth = 999;
 			break;
@@ -1523,6 +1547,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 				points = 0;
 				StopMusic();
 				StartMusic(gamestate.mapon);
+				// BUG: Starting a new music track might move memory buffers around!
+				// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+				// with animated tiles.
 				return;
 			}
 			
@@ -1531,6 +1558,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 			ob->shootable = false;
 			SpawnBonus(player->tilemidx, player->tiletop, 26);	//blue shard
 			StartMusic(MUS_VICTORY);
+			// BUG: Starting a new music track might move memory buffers around!
+			// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+			// with animated tiles.
 			break;
 
 #elif (EPISODE == 2)
@@ -1540,6 +1570,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 			bosshealth = 999;
 			SpawnBonus(player->tilemidx, player->tiletop, 26);	//blue shard
 			StartMusic(MUS_VICTORY);
+			// BUG: Starting a new music track might move memory buffers around!
+			// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+			// with animated tiles.
 			break;
 			
 		case jimobj:
@@ -1563,6 +1596,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 			bosshealth = 999;
 			SpawnBonus(player->tilemidx, player->tiletop, 26);	//blue shard
 			StartMusic(MUS_VICTORY);
+			// BUG: Starting a new music track might move memory buffers around!
+			// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+			// with animated tiles.
 			break;
 			
 		case cainobj:

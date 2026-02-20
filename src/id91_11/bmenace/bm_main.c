@@ -1,3 +1,5 @@
+/* Make sure you set the encoding to ANSI or OEM-US when editing this file. */
+
 /* Reconstructed BioMenace Source Code
  * Copyright (C) 2017-2025 K1n9_Duk3
  * Copyright (C) 2025 NY00123
@@ -211,8 +213,8 @@ void Quit(const id0_char_t *error)
 #endif
 	}
 	// BUG: VW_ClearVideo may brick the system if screenseg is 0
-	// (i.e. VW_SetScreenMode has not been executed) - this may
-	// happen if the code runs into an error during InitGame
+	// (i.e., if VW_SetScreenMode has not been executed yet) - this
+	// may happen if the code runs into an error during InitGame
 	// (EMS/XMS errors, files not found etc.)
 	VW_ClearVideo(BLACK);
 	VW_SetLineWidth(40);
@@ -597,8 +599,8 @@ static boolean CheckDIZ(void)
 		{
 			return true;	// not a match, game was pirated
 		}
-		// Note: A FILE_ID.DIZ that is 442 bytes and consists ENTIRELY of line
-		// breaks would be accepted as a valid file!
+		// Note: A FILE_ID.DIZ that is 442 bytes long and consists ENTIRELY of
+		// line breaks would be accepted as a valid file!
 	}
 	return false;	// not pirated
 }
@@ -621,10 +623,13 @@ const id0_char_t *betaparm[] = {"slammer",""};
 id0_char_t *betaparm[] = {"sewerman",""};	// not used in the final game
 #endif
 
+// REFKEEN: Skip that
+//#include "_CTCHECK.C"	// compile-time checks for portability
+
 void bmenace_exe_main(void)
 {
-// REFKEEN: Skip that
-//#include "CHECKS.C"	// compile-time and run-time checks for portability
+// REFKEEN: Also skip that
+//#include "_RTCHECK.C"	// run-time checks for portability
 
 #ifdef BETA
 	if (!g_refKeenCfg.bmenace.betaFixes) // REFKEEN: Rather check this instead.

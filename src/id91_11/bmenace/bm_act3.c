@@ -92,12 +92,23 @@ void ExplodeThink(objtype *ob)
 		if (ob->obclass == cainobj)
 		{
 			ob->temp7 = 100;	// leftover from earlier versions that used CainDeadThink
-			SD_PlaySound(GROWLSND);	//redundant
+			SD_PlaySound(GROWLSND);	//redundant (already played above)
 			ob->state = &s_caindead1;
 			ob->obclass = decoobj;
 			ob->hitnorth = 1;
 			ob->y += 2*TILEGLOBAL;
 			StartMusic(MUS_VICTORY);
+			// Note: The original IMF music data contains some instructions that
+			// interfere with the playback of AdLib sound effects. The IMF data
+			// overwrites the instrument data for the first OPL channel (the one
+			// reserved for AdLib sound effects), which means any AdLib sound
+			// effect that is playing when a music track was just (re-)started will
+			// use the wrong instrument data for the rest of its duration. Since
+			// this code starts a new music track right after playing a sound
+			// effect, the music can prevent that effect from being played
+			// correctly when the game is set to AdLib sound effects. The same
+			// problem also occurs when the music loops around to the start, so
+			// this is really a bug in the data, not a bug in the code.
 			return;
 		}
 #endif
@@ -714,6 +725,10 @@ void GuardStandThink(objtype *ob)
 	ob->needtoreact = true;
 	if (ob->health <= 0)
 	{
+		// This code will only get executed in episode 3 and in the beta. Even
+		// though the guard is a robot in episodes 2 and 3, the code in episode 2
+		// (and episode 1) will remove the guard as soon as its health reaches 0
+		// (see HurtObject in BM_SNAK2.C).
 		ob->temp1 = US_RndT() / 0x10;
 		ob->shootable = false;
 		ChangeState(ob, &s_guarddie);
@@ -838,6 +853,11 @@ void EnemyshotContact(objtype *ob, objtype *hit)
 	{
 		ob->y -= 8*PIXGLOBAL;
 		ChangeState(ob, &s_explosion1);
+		// BUG? This doesn't change the shot's obclass value into a harmless type,
+		// which means the exploded shot can still hurt the player. That's usually
+		// not a huge problem, because the game makes the player invincible for a
+		// short while after taking damage. But it can be a bit unfair if a shot
+		// hits the player right before the invincibility expires.
 		return;
 	}
 }
@@ -1792,6 +1812,8 @@ void LandmineContact(objtype *ob, objtype *hit)
 		FragBloom(ob->x-2*PIXGLOBAL, ob->y-8*PIXGLOBAL, FRAG_SPAREPLAYER+dir_West);
 		ob->obclass = explosionobj;
 		ob->temp6 = 1;	// ??? doesn't appear to be used for anything
+		// BUG? this doesn't set ob->spareplayer = true, which means
+		// the mine's explosion can hurt the player!
 		SD_PlaySound(GRENADEXPLODESND);
 		ChangeState(ob, &s_grenadeexplosion1);
 		ob->needtoclip = cl_midclip;
@@ -2994,7 +3016,7 @@ void CainGhostReact(objtype *ob)
 		}
 		ob->ydir = 1;
 	}
-	// bounce of walls:
+	// bounce off walls:
 	if (ob->hitwest)
 	{
 		ob->xdir = -1;
@@ -3023,6 +3045,9 @@ void CainDeadThink(objtype *ob)
 		BossDialog();
 		gamestate.mapon = 11;
 		StartMusic(MUS_VICTORY);
+		// BUG: Starting a new music track might move memory buffers around!
+		// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+		// with animated tiles.
 		ob->hitnorth = 1;
 	}
 }

@@ -131,7 +131,7 @@ typedef struct animtilestruct
 {
 	id0_unsigned_t	x,y,tile;
 	tiletype	*chain;
-	id0_unsigned_t	id0_far *mapplane;
+	id0_unsigned_t	id0_far *mapplane;	// BUG: far pointer might be invalid after a memory sort!
 	struct animtilestruct **prevptr,*nexttile;
 } animtiletype;
 
@@ -522,6 +522,9 @@ void RF_MarkTileGraphics (void)
 
 				if (tinf[SPEED+tile])
 				{
+					// BUG: tinf[ANIM+tile] is non-zero in this branch (see above),
+					// which means the following check can never evaluate to true and
+					// the error reporting code in the if-branch will never be used
 					if (!tinf[ANIM+tile])
 					{
 						strcpy (str,"RF_MarkTileGraphics: Background anim of 0:");
@@ -553,6 +556,12 @@ void RF_MarkTileGraphics (void)
 				next = tile+change;
 				while (change && next != tile)
 				{
+					// Note: This is where you should check for an ANIM value of 0
+					// if the tile that started the animation chain has a non-zero
+					// SPEED value. Animation chains that start with non-zero SPEED
+					// values will cause an infinite loop in RFL_AnimateTiles() if
+					// they lead to a non-animated tile (both ANIM and SPEED are 0).
+
 					CA_MarkGrChunk(STARTTILE16+next);
 					change = (id0_signed_char_t)(tinf[ANIM+next]);
 					next += change;
@@ -589,6 +598,9 @@ nextback:
 
 				if (tinf[MSPEED+tile])
 				{
+					// BUG: tinf[MANIM+tile] is non-zero in this branch (see above),
+					// which means the following check can never evaluate to true and
+					// the error reporting code in the if-branch will never be used
 					if (!tinf[MANIM+tile])
 					{
 						strcpy (str,"RF_MarkTileGraphics: Foreground anim of 0:");
@@ -622,6 +634,12 @@ nextback:
 				next = tile+change;
 				while (change && next != tile)
 				{
+					// Note: This is where you should check for a MANIM value of 0
+					// if the tile that started the animation chain has a non-zero
+					// MSPEED value. Animation chains that start with non-zero MSPEED
+					// values will cause an infinite loop in RFL_AnimateTiles() if
+					// they lead to a non-animated tile (both MANIM and MSPEED are 0).
+
 					CA_MarkGrChunk(STARTTILE16M+next);
 					change = (id0_signed_char_t)(tinf[MANIM+next]);
 					next += change;
@@ -1384,6 +1402,7 @@ void RFL_BoundNewOrigin (id0_unsigned_t orgx,id0_unsigned_t orgy)
 			orgx = (edge+1)*TILEGLOBAL;
 			break;
 		}
+
 		// BUG: 'edge <=originxtile+20' should only be used when orgx is NOT
 		// aligned on a tile boundary, otherwise 'edge < originxtile+20' should be
 		// used. (This is part of the reason why Levels 4, 16 and 17 of Keen 6
@@ -1404,6 +1423,12 @@ void RFL_BoundNewOrigin (id0_unsigned_t orgx,id0_unsigned_t orgy)
 			orgy = (edge+1)*TILEGLOBAL;
 			break;
 		}
+
+		// BUG: 'edge <=originytile+13' should only be used when orgy is NOT set
+		// to originymax, otherwise 'edge < originytile+13' should be used.
+		// (This is part of the reason why Level 10 of Keen 4 shows the hidden
+		// jaw breakers and the Mimrock at the bottom of the level when loading a
+		// saved game where Keen is near or inside the hidden area).
 		if (edge>=originytile+7 && edge <=originytile+13)
 		{
 			orgy = (edge-13)*TILEGLOBAL;
@@ -1411,6 +1436,23 @@ void RFL_BoundNewOrigin (id0_unsigned_t orgx,id0_unsigned_t orgy)
 		}
 	}
 
+	// Note: Both of the bugs mentioned above are caused by the automatic scroll
+	// blocks that got added by RF_NewMap taking priority over the scroll blocks
+	// placed by the level designer. Those scroll blocks are not required for
+	// RFL_BoundNewOrigin because this function uses originxmin and originxmax
+	// etc. anyway. But the scroll blocks ARE necessary for RFL_BoundScroll.
+	//
+	// The best way to fix these problems would be to remove the automatic scroll
+	// blocks and just make RFL_CalcOriginStuff always bound the new origin to
+	// the origin x/y min/max values.
+	//
+	// This would also avoid the most severe problems in Keen 4 Level 6, where
+	// there are not enough tiles between the scroll block and the bottom of the
+	// level, forcing the refresh manager to ignore one of them. The game can
+	// alternate between the two scroll blocks every time RF_ForceRefresh is
+	// called. If the origin always gets bound to maximum, it would at least
+	// prevent the game from displaying the "edge of map" tiles at the bottom of
+	// the level.
 
 	RFL_CalcOriginStuff (orgx,orgy);
 }

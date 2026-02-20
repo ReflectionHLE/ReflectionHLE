@@ -1237,7 +1237,7 @@ static Sint16 DoActor(objtype *ob, Sint16 numtics)
 		{
 			ob->state = state->nextstate;
 		}
-		else if (!ob->state)
+		else if (!ob->state)	// the 'else' is problematic (see below)
 		{
 			return 0;
 		}
@@ -1272,18 +1272,29 @@ void StateMachine(objtype *ob)
 		ob->ticcount = 0;		// start the new state at 0, then use excess
 		state = ob->state;
 	}
-	while (excesstics)
+
+	// BUG: state can be NULL after calling DoActor! Since state is a far pointer
+	// in BioMenace, the results of treating it like a valid state in the
+	// following loop vary depending on the system configuration and can have
+	// absolutely catastrophic effects. If you ever had the game locking up when
+	// firing your gun, it was most likely caused by this bug. Adding the line
+	// STACKS=9,256 to CONFIG.SYS usually made this bug less likely to cause a
+	// lockup. If you want to know more, read the LOCKUP.TXT file that should
+	// have come with this source code.
+
+	// You could argue that the problem actually lies in the DoActor code above.
+	// If DoActor was changed to ALWAYS return 0 when the object's state is NULL,
+	// it would not be necessary to check for a NULL state here. All you would
+	// have to change is to remove the 'else' in the 'else if (!ob->state)' line.
+
+	while (excesstics)	// add ' && state' to the condition to avoid problems!
 	{
 	//
 	// passed through to next state
 	//
-		// REFKEEN: Vanilla BioMenace bug fix (state may be 0).
+		// REFKEEN: Apply fix here for the case state is NULL.
 		// state->skippable would be true with the original EXEs if state
 		// was 0, unless modified earlier.
-		// Side-note: Inherited from the Keens, but not originally
-		// reproduced in them with the original DOS executables.
-		// That could change at times in BM with the migration to 32-bit
-		// far state pointers, e.g., upon shooting somewhere.
 		if (state && !state->skippable && state->tictime <= excesstics)
 //		if (!state->skippable && state->tictime <= excesstics)
 		{

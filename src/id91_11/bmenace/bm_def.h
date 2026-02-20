@@ -48,7 +48,18 @@ REFKEEN_NS_B
 #define CONVERT_PIXEL_TO_TILE(x)   ((x)>>(P_T_SHIFT))
 #define CONVERT_TILE_TO_PIXEL(x)   ((x)<<(P_T_SHIFT))
 
+// The following macro is used to adjust the spawn position of ground-based
+// actors. The h parameter gives the height of the sprite image in pixels.
+// This assumes that the origin is at the top of the sprite. This will put the
+// bottom end of the object's hit rectangle slightly above the ground tiles
+// (less than 1 pixel above the ground), but the NewState code should push
+// the object far enough to the ground if it needs to stick to the ground.
 #define SPAWN_ADJUST_Y(y, h) (CONVERT_TILE_TO_GLOBAL(y) + (CONVERT_PIXEL_TO_GLOBAL(16-(h))))
+
+// This macro adjusts a spawn position to place the sprite's bottom end DIRECTLY
+// above the top end of the tile below the infoplane icon. The yh value should
+// be taken directly from the Sprite Test window (F10+T).
+#define ADJUST_FOR_YH(yh) (TILEGLOBAL - 1 - (yh))
 
 #define MAPSPOT(p,x,y) (*(mapsegs[p]+mapbwidthtable[y]/2+x))
 #define BACKSPOT(x,y) MAPSPOT(0,x,y)
@@ -66,6 +77,8 @@ REFKEEN_NS_B
 #define PLATFORMEDGE 23	//used as hitnorth or hitsouth value when hitting a blocking object
 
 #define MAXPRIORITY	(PRIORITIES-1)
+
+#define SUBPIXELMASK(x) ((x)*PIXGLOBAL - 1)
 
 #define PLACESPRITE RF_PlaceSprite(&ob->sprite, ob->x, ob->y, ob->shapenum, \
 	ob->white!=0 ? maskdraw : spritedraw, ob->priority)

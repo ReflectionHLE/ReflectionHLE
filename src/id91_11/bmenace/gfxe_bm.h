@@ -504,7 +504,7 @@ typedef enum {
 	END_LUMP(BEE)
 #endif
 
-	//garg lump:
+	//gorp lump:
 	START_LUMP(GORP)
 	GORPCWALK1LSPR,              //249
 	GORPCWALK2LSPR,              //250
@@ -582,7 +582,7 @@ typedef enum {
 	END_LUMP(DEVIL)
 #endif
 
-	//plasmawom lump:
+	//plasmaworm lump:
 #if (EPISODE != 2)
 	START_LUMP(PLASMAWORM)
 	PLASMAWORM1LSPR,             //294

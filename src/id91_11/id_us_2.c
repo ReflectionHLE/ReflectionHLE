@@ -49,7 +49,7 @@ extern  ScanCode        firescan;
 		id0_boolean_t         practicemode = false;
 		ScanCode        grenadescan = sc_Enter;
 #endif
-		void StartMusic(id0_word_t/*id0_int_t*/ num); // REFKEEN: Fix type
+		void StartMusic(id0_unsigned_t num);
 extern id0_int_t practiceTimeLeft;
 #else
 // REFKEEN - Should be extern since it's already defined in ID_US_1.c

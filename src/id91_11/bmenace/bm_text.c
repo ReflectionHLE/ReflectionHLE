@@ -262,7 +262,7 @@ static void HandleCommand(void)
 		picx = ParseNumber();
 		picwidth = ParseNumber();
 		picheight = ParseNumber();
-		VWB_Bar(picx, picy, picwidth, picheight, 1);
+		VWB_Bar(picx, picy, picwidth, picheight, BACKCOLOR);
 		RipToEOL();
 		break;
 	case 'E':		// ^P is start of next page, ^E is end of file

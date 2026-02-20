@@ -1191,8 +1191,8 @@ void PlayLoop(void)
 				{
 					ob->white = 0;
 				}
-				// BUG: This should set needtoreact to true when white reaches 0 to
-				// make sure the object gets redrawn in the normal draw mode.
+				// BUG: This should set needtoreact to true when white reaches 0
+				// to make sure the object gets redrawn in the normal draw mode.
 			}
 			if (ob->tilebottom >= mapheight-1)
 			{
@@ -1265,10 +1265,21 @@ void PlayLoop(void)
 			if ((invincibility > 100 && invincibility < 102) || (invincibility < 100 && currentmusic != gamestate.mapon))
 			{
 				StartMusic(gamestate.mapon);
+				// BUG: Starting a new music track might move memory buffers around!
+				// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+				// with animated tiles.
 			}
 			// BUG: This will also cancel the victory music if the player had some
 			// invincibility when the boss died or if the player takes damage or
 			// uses the secret invincibility move any time after the boss died.
+			// It also interferes with the special music that is started when the
+			// player shoots Jim in the secret developer room in episode 2. The
+			// correct solution to avoid this problem would be to store the music
+			// number for the current level in a separate variable and ALWAYS use
+			// that variable instead of gamestate.mapon in all StartMusic calls.
+			// That new variable must also become part of the saved games. The
+			// "Foray in the Forest" source code uses this approach to allow
+			// persistent music changes in a level.
 #endif
 			if (invincibility <= 0)	//useless code (variable is unsigned)!
 			{

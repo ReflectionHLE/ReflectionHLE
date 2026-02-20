@@ -587,8 +587,8 @@ boolean SaveTheGame(BE_FILE_T handle)
 	gamestate.riding = NULL;
 	practiceTimeLeft = -1;
 	practicemode = false;
-	memcpy(&savestate, &gamestate, sizeof(gamestate));
-	memset(&savestate.keys, 0, sizeof(gamestate.keys));
+	memcpy(&savestate, &gamestate, sizeof(savestate));
+	memset(&savestate.keys, 0, sizeof(savestate.keys));
 	savestate.gotshard[0] = 0;
 	savestate.gotshard[1] = 0;
 	savestate.gotshard[2] = 0;
@@ -618,7 +618,7 @@ boolean SaveTheGame(BE_FILE_T handle)
 		savestate.health = 4;
 		break;
 	}
-	colorseqnum = 0;
+	colorseqnum = 0;	// BUG: shouldn't be set to 0 when saving
 	// (REFKEEN) Writing fields one-by-one in a cross-platform manner
 	if (!SaveGameState(handle, &savestate))
 	{
@@ -883,6 +883,22 @@ void SetupGameLevel(boolean loadnow)
 
 //==========================================================================
 
+#ifdef BETA
+/*
+==========================
+=
+= HandleDeath
+=
+==========================
+*/
+
+static void HandleDeath(void)
+{
+	// this is just an empty leftover from Keen Dreams and Keen 4-6
+}
+
+#else
+
 /*
 ==========================
 =
@@ -891,13 +907,8 @@ void SetupGameLevel(boolean loadnow)
 ==========================
 */
 
-#ifdef BETA // REFKEEN: Assume function was meant to be void in beta.
-static void RespawnPlayer(void)
-#else
 static boolean RespawnPlayer(void)
-#endif
 {
-#ifndef BETA
 	if (respawnx > 0 && respawny > 0)
 	{
 		player->y = respawny;
@@ -932,8 +943,9 @@ static boolean RespawnPlayer(void)
 		return true;
 	}
 	return false;
-#endif
 }
+
+#endif
 
 //==========================================================================
 
@@ -1057,7 +1069,7 @@ level_loop:
 		case ex_loadedgame:
 			goto level_loop;
 		case ex_died:
-			RespawnPlayer();
+			HandleDeath();
 			break;
 #else
 		case ex_resetgame:

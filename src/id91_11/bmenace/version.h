@@ -44,22 +44,11 @@
 #define EPISODE 3
 #endif
 
-//#define FIX_MUSIC_MEMORY_ISSUES       //make sure the music does not cause "out of memory" issues
+//-------------------------------
+// BUG-FIXES & IMPROVED FEATURES
+//-------------------------------
 
-#ifdef BETA
-#define EXTENSION "BH1"
-#elif (EPISODE == 1)
-#define EXTENSION "BM1"
-#elif (EPISODE == 2)
-#define EXTENSION "BM2"
-#elif (EPISODE == 3)
-#define EXTENSION "BM3"
-#else
-#error Unhandled Episode!
-#endif
-
-#if (defined VERSION_1_0) && (defined VERSION_1_1)
-#error You cannot use multiple game versions in one build!
-#endif
+//#define FIX_MUSIC_MEMORY_ISSUES	//make sure the music does not cause "out of memory" issues
+//#define IMPROVED_JUMP_CHEAT		//make jump cheat behave like in Keen 4-6
 
 #endif

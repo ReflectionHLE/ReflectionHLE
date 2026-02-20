@@ -59,6 +59,27 @@
 #include "gfxe_bm.h"
 #include "audiobm.h"
 
+// assign the default extension if no custom extension was defined in VERSION.H
+#ifndef EXTENSION
+
+#if (defined BETA)
+#define EXTENSION "BH1"
+#elif (EPISODE == 1)
+#define EXTENSION "BM1"
+#elif (EPISODE == 2)
+#define EXTENSION "BM2"
+#elif (EPISODE == 3)
+#define EXTENSION "BM3"
+#else
+#error Unhandled Episode!
+#endif
+
+#endif	// ifndef EXTENSION
+
+#if (defined VERSION_1_0) && (defined VERSION_1_1)
+#error You cannot use multiple game versions in one build!
+#endif
+
 REFKEEN_NS_B
 
 //--------------------------------------------------------------------------

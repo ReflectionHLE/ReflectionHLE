@@ -650,12 +650,9 @@ void MM_Startup (void)
 	{
 		start = (void far *)(nearheap = BE_Cross_Bmalloc(length));
 
-		i = BE_Cross_GetPtrNormalizedOff(start); // REFKEEN - Offset is NORMALIZED, thus < 16
-		//i = FP_OFF(start)&15;
-		if (i != 0)
-		{
-			length -= 16-i;
-		}
+		// REFKEEN: Offset is NORMALIZED, thus < 16
+		length -= (-BE_Cross_GetPtrNormalizedOff(start))&15;
+		//length -= (-FP_OFF(start))&15;	// don't waste 16 bytes when start is paragraph-aligned already
 		seglength = length / 16;			// now in paragraphs
 		segstart = BE_Cross_GetPtrNormalizedSeg(start)+(BE_Cross_GetPtrNormalizedOff(start)+15)/16;
 //		segstart = FP_SEG(start)+(FP_OFF(start)+15)/16;

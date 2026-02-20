@@ -603,6 +603,11 @@ buffer is not necessary in these dialog functions. The code effectively wastes
 # WARNING: You cannot use US_CPrint() on strings that are longer than 199     #
 # characters, no matter if that string is near or far! That will cause severe #
 # problems and will most likely result in a system crash.                     #
+#                                                                             #
+# I STRONGLY recommend that you modify the US_CPrint() and US_CPrintLine()    #
+# code in ID_US_1.C to accept far pointers without copying the string into a  #
+# temporary local (near) buffer. That would get rid of the length limitation. #
+# See ID_US_1.C for details.                                                  #
 ###############################################################################
 
 If you want to optimize the code a bit, you could replace
@@ -952,6 +957,10 @@ void HostageDialog(void)
 */
 	StopMusic();
 	StartMusic(oldmusic);
+	// BUG: Starting a new music track might move memory buffers around!
+	// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+	// with animated tiles.
+
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Pop();
 }
@@ -1019,6 +1028,9 @@ void HintDialog(void)
 	{
 		StopMusic();
 		StartMusic(gamestate.mapon);
+		// BUG: Starting a new music track might move memory buffers around!
+		// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+		// with animated tiles.
 	}
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Pop();
@@ -1549,6 +1561,10 @@ void HostageDialog(void)
 #else
 	StartMusic(oldmusic);
 #endif
+	// BUG: Starting a new music track might move memory buffers around!
+	// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+	// with animated tiles.
+
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Pop();
 }
@@ -1715,9 +1731,18 @@ void HintDialog(void)
 	{
 		StopMusic();
 		StartMusic(gamestate.mapon);
+		// BUG: Starting a new music track might move memory buffers around!
+		// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+		// with animated tiles.
 	}
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Pop();
+	// Note: This code tries to leave the highscore music playing after the
+	// level 99 message (Jim's response after being attacked), but that just
+	// won't work. As soon as the player gets hurt, the invincibility will
+	// cause the regular level music to be played again (see PlayLoop in
+	// BM_PLAY.C). And opening the main menu will also start the regular level
+	// music again when returning to the game.
 }
 
 //==========================================================================
@@ -2135,6 +2160,10 @@ void HostageDialog(void)
 	ResetScoreObj();
 	StopMusic();
 	StartMusic(oldmusic);
+	// BUG: Starting a new music track might move memory buffers around!
+	// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+	// with animated tiles.
+
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Pop();
 }
@@ -2196,6 +2225,9 @@ void HintDialog(void)
 	{
 		StopMusic();
 		StartMusic(gamestate.mapon);
+		// BUG: Starting a new music track might move memory buffers around!
+		// You should call RF_ForceRefresh or RF_NewPosition to avoid issues
+		// with animated tiles.
 	}
 	// REFKEEN - Alternative controllers support
 	BE_ST_AltControlScheme_Pop();
