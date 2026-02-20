@@ -71,7 +71,7 @@ FARSTATE s_snakeskeleton = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_down, 
 FARSTATE s_snakeshield1 = {SNAKESHIELD1LSPR, SNAKESHIELD1RSPR, stepthink, false, push_down, 10, 0, 0, SnakePauseThink, SnakeShieldContact, DrawReact, &s_snakeshield2};
 FARSTATE s_snakeshield2 = {SNAKESHIELD2LSPR, SNAKESHIELD2RSPR, stepthink, false, push_down, 10, 0, 0, SnakePauseThink, SnakeShieldContact, DrawReact, &s_snakeshield1};
 #endif
-FARSTATE s_snakeUNUSED1  = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_none, 15, 0, 0, NULL, NULL, DrawReact, &s_snakestand}; // REFKEEN: Unused, but keep if will be relevant for saved games
+FARSTATE s_snakeUNUSED1  = {SNAKEDIE1SPR, SNAKEDIE1SPR, step, false, push_none, 15, 0, 0, NULL, NULL, DrawReact, &s_snakestand}; // REFKEEN: Unused, but keep for saved games
 FARSTATE s_snakestand = {SNAKESTANDLSPR, SNAKESTANDRSPR, stepthink, false, push_down, 4, 0, 16, SnakePauseThink, SnakeStandContact, SnakeStandReact, &s_snakestand};
 #if (EPISODE == 2)
 FARSTATE s_snakewormstand = {SNAKEWORM1LSPR, SNAKEWORM1RSPR, stepthink, false, push_down, 4, 0, 16, SnakeWormStandThink, SnakeStandContact, SnakeWormStandReact, &s_snakewormstand};
