@@ -1572,8 +1572,16 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 			exit(0);
 		}
 
-		fread(mappingfpinmem, mappingfpsize, 1, mappingfp);
+		size_t count = fread(mappingfpinmem, mappingfpsize, 1, mappingfp);
 		fclose(mappingfp);
+
+		if (count != 1U)
+		{
+			fclose(cfgfp);
+			free(mappingfpinmem);
+			BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFromSteamFailedToImportMenu);
+			return;
+		}
 	}
 
 	// Let's overwrite file with old contents (if there are any),
