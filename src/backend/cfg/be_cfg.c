@@ -178,6 +178,7 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_BOOL(showEndoom, "showendoom", true)
 	DEF_ENUM(mouseGrab, "mousegrab", g_be_setting_mousegrab_vals, MOUSEGRAB_AUTO)
 	DEF_INT(sndInterThreadBufferRatio, "sndinterthreadbufferratio", 2, 1, INT_MAX)
+	DEF_BOOL(sndLowLatency, "sndlowlatency", false)
 	// 49716 may lead to unexpected behaviors on Android
 	DEF_INT(sndSampleRate, "sndsamplerate", 48000, 1, INT_MAX)
 	DEF_BOOL(sndSubSystem, "sndsubsystem", true)

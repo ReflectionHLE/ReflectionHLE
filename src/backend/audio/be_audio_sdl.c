@@ -69,6 +69,44 @@ static void BEL_ST_MixerCallback(void *unused_userdata, SDL_AudioStream *stream,
 	}
 }
 
+static void BEL_ST_LowLatencySetup(const SDL_AudioSpec *spec)
+{
+	// As of SDL 3.4 the device sample frames hint doesn't scale based on
+	// sample rate. SDL also at the time of writing has a minimum device
+	// sample rate of 44.1kHz. We could assume the current logic, but we can
+	// also open the device and query what sample rate we got. We do need to
+	// re-open it with adjusted latency.
+	SDL_AudioDeviceID dev = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, spec);
+	if (dev == 0)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot temporarily open SDL audio device for low latency probe,\n%s\n", SDL_GetError());
+		return;
+	}
+
+	int sampleRate;
+	SDL_AudioSpec devSpec;
+	if (SDL_GetAudioDeviceFormat(dev, &devSpec, NULL))
+	{
+		sampleRate = devSpec.freq;
+	}
+	else
+	{
+		// If we can't query the actual frequency then we can try just assuming
+		// we will get what we requested.
+		sampleRate = spec->freq;
+	}
+
+	SDL_CloseAudioDevice(dev);
+
+	// Hint that we want 700Hz callback timing
+	char* sampleFramesStr = NULL;
+	if (SDL_asprintf(&sampleFramesStr, "%d", sampleRate/700) != -1)
+	{
+		SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, sampleFramesStr);
+		SDL_free(sampleFramesStr);
+	}
+}
+
 bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 {
 	SDL_AudioSpec spec;
@@ -84,7 +122,10 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 	spec.format = SDL_AUDIO_S16;
 #endif
 	spec.channels = MIXER_DEFAULT_CHANNELS_COUNT;
-
+	if (g_refKeenCfg.sndLowLatency)
+	{
+		BEL_ST_LowLatencySetup(&spec);
+	}
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d\n", (int)spec.freq, (unsigned int)spec.format, (int)spec.channels);
 	g_sdlAudioStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, BEL_ST_MixerCallback, 0);
 	if (!g_sdlAudioStream)
@@ -103,11 +144,18 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 		return false;
 	}
 #endif
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized\n");
+	SDL_AudioSpec devSpec;
+	int sampleFrames;
+	if (!SDL_GetAudioDeviceFormat(SDL_GetAudioStreamDevice(g_sdlAudioStream), &devSpec, &sampleFrames))
+	{
+		devSpec = spec;
+		sampleFrames = g_refKeenCfg.sndSampleRate / 64; // An approximation
+	}
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, audio driver: %s, service rate: ~%fHz\n", SDL_GetCurrentAudioDriver(), (double)devSpec.freq / sampleFrames);
 
 	*freq = spec.freq;
 	*channels = g_sdlAudioChannels = spec.channels;
-	*bufferLen = g_refKeenCfg.sndSampleRate / 64; // An approximation
+	*bufferLen = sampleFrames;
 
 	return true;
 }

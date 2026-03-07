@@ -220,7 +220,7 @@ uint8_t BEL_ST_GetSBProVolumesFromSource(const BE_ST_AudioMixerSource *src)
 void BEL_ST_AudioMixerCallback(BE_ST_SndSample_T *stream, int len)
 {
 	int samplesToGenerate = len;
-	int samplesToGenerateNextTime = g_stAudioMixer.freq / 100; // ~10ms
+	int samplesToGenerateNextTime = BE_Cross_TypedMin(int, len, g_stAudioMixer.freq / 100); // ~10ms unless buffer is too small
 	int i, j, k;
 	BE_ST_AudioMixerSource *src;
 
