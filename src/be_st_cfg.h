@@ -88,6 +88,9 @@ typedef struct
 #ifndef REFKEEN_RESAMPLER_NONE
 	int/*bool*/ useResampler;
 #endif
+#ifdef REFKEEN_CONFIG_LPT_PASSTHROUGH
+	int/*bool*/ lptPassthrough;
+#endif
 	int touchInputToggle;
 	int/*bool*/ touchInputDebugging;
 	int/*bool*/ altControlScheme;

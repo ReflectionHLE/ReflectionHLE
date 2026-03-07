@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2026 NY00123
+/* Copyright (C) 2026 Braden "Blzut3" Obrzut
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,32 +26,17 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// This header should be used by be_st_sdl* code internally
+#include "be_misc_lpt.h"
 
-#ifndef BE_ST_SDL_PRIVATE_H
-#define BE_ST_SDL_PRIVATE_H
-
-#include <SDL3/SDL.h>
-
-#ifdef REFKEEN_PLATFORM_EMSCRIPTEN
-#include <emscripten.h>
-#define BEL_ST_SleepMS emscripten_sleep
-#else
-#define BEL_ST_SleepMS SDL_Delay
-#endif
-
-#define BEL_ST_CPUPauseInstruction SDL_CPUPauseInstruction
-
-static inline uint32_t BEL_ST_GetTicksMS()
+uint8_t BE_ST_LPTIn(BE_ST_LPTPort port)
 {
-	return SDL_GetTicks();
+	return BE_ST_GetLPTRegFromPort(port) == BE_LPT_STATUS ? BE_LPT_STATUS_DISCONNECTED : 0;
 }
 
-static inline uint64_t BEL_ST_GetTicksNS()
+void BE_ST_LPTOut(BE_ST_LPTPort port, uint8_t val)
 {
-	return SDL_GetTicksNS();
 }
 
-#define BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO 1
-
-#endif // BE_ST_SDL_PRIVATE_H
+void BE_ST_LPTRelease(BE_ST_LPTPort port)
+{
+}
