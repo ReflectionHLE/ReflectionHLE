@@ -201,6 +201,9 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #ifndef REFKEEN_RESAMPLER_NONE
 	DEF_BOOL(useResampler, "useresampler", true)
 #endif
+#ifdef REFKEEN_CONFIG_LPT_PASSTHROUGH
+	DEF_BOOL(lptPassthrough, "lptpassthrough", false)
+#endif
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	#ifdef REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT
 	DEF_ENUM(touchInputToggle, "touchinput", g_be_setting_touchinput_vals, TOUCHINPUT_AUTO)

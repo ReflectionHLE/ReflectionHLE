@@ -33,6 +33,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "backend/misc/be_misc_lpt.h"
 
 // On-screen touch controls are scaled such that the largest square
 // fitting in the window has the dimensions of 140x140 (scaled) pixels
@@ -526,6 +527,7 @@ void BE_ST_SetScreenStartAddressHiPart(uint8_t crtc_hi);
 void BE_ST_SetBorderColor(uint8_t color);
 void BE_ST_SetScreenMode(int mode);
 void BE_ST_WaitForNewVerticalRetraces(int16_t number);
+void BE_ST_DelayPrecise(uint64_t nsec);
 void BE_ST_ShortSleep(void);
 void BE_ST_Delay(uint16_t msec); // Replacement for delay from dos.h
 void BE_ST_textcolor(int color);

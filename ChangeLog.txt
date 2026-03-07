@@ -114,8 +114,13 @@ while porting Wolf3D's ScalePost from assembly.
 * dege-git: Added 250ms delay before testing jukebox easter egg in Wolf3D.
 * Wolf3D: Crash fix in case only digitized sounds
 are toggled. (Thanks mr-around!)
+* Wolf3D: Enabled support for hardware Disney Sound Source on Linux and
+Windows. Please refer to disney_sound_source.md for details.
 * Internal changes to behaviors of BE_ST_SetScreenMode when the bit value
 of 128 is set, with adjustments for the Catacomb Adventures' VW_SetScreenMode.
+* An option to request a low latency audio buffer has been added. This option
+is hidden in the config file as there's no particular reason to enable it
+besides it being required for the DSS to work properly.
 * Other misc. fixes/changes.
 
 Sep 26, 2024 (v0.44.0): 10th anniversary release.

@@ -1021,7 +1021,7 @@ SDL_SSStopSample(void)
 //asm	cli
 #endif
 
-	(id0_long_t)ssSample = 0;
+	ssSample = 0;
 
 	// *** ALPHA RESTORATION ***
 	BE_ST_UnlockAudioRecursively(); // REFKEEN: Make this unconditional
@@ -1045,20 +1045,30 @@ SDL_SSService(void)
 
 	while (ssSample)
 	{
+		if (BE_ST_LPTIn(ssStatus) & 0x40)	// Check to see if FIFO is currently empty
+			goto done;						// Nope - don't push any more data out
+#if 0
 	asm	mov		dx,[ssStatus]	// Check to see if FIFO is currently empty
 	asm	in		al,dx
 	asm	test	al,0x40
 	asm	jnz		done			// Nope - don't push any more data out
+#endif
 
 		v = *ssSample++;
 #if !REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
 		if (!(--ssLengthLeft))
 		{
-			(id0_long_t)ssSample = 0;
+			ssSample = 0;
 			SDL_DigitizedDone();
 		}
 #endif
 
+		BE_ST_LPTOut(ssData, v);		// Pump the value out
+		BE_ST_LPTOut(ssControl, ssOff);	// Pulse printer select
+		BE_ST_DelayPrecise(1000);
+		BE_ST_LPTOut(ssControl, ssOn);
+		BE_ST_DelayPrecise(2000);		// Delay a short while
+#if 0
 	asm	mov		dx,[ssData]		// Pump the value out
 	asm	mov		al,[v]
 	asm	out		dx,al
@@ -1073,16 +1083,16 @@ SDL_SSService(void)
 
 	asm	push	ax				// Delay a short while
 	asm	pop		ax
+	asm	push	ax
+	asm	pop		ax
+#endif
 #if REFKEEN_ENABLE_AND_PATCH_ID_SD_SERVICES
 		if (!(--ssLengthLeft))
 		{
-			(id0_long_t)ssSample = 0;
+			ssSample = 0;
 			SDL_DigitizedDone();
 			break;
 		}
-#else
-	asm	push	ax
-	asm	pop		ax
 #endif
 	}
 done:;
@@ -1135,7 +1145,10 @@ SDL_StartSS(void)
 	else
 		ssOff = 0x0c;				// For normal machines
 
+	BE_ST_LPTOut(ssControl,ssOn);	// Enable SS
+#if 0
 	outportb(ssControl,ssOn);		// Enable SS
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1146,7 +1159,13 @@ SDL_StartSS(void)
 static void
 SDL_ShutSS(void)
 {
+	BE_ST_LPTOut(ssControl,ssOff);
+#if 0
 	outportb(ssControl,ssOff);
+#endif
+
+	// REFKEEN: Release any claim held on the LPT port
+	BE_ST_LPTRelease(ssControl);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1168,6 +1187,21 @@ SDL_CheckSS(void)
 	while (TimeCount < lasttime + 4)
 		;
 
+	if (BE_ST_LPTIn(ssStatus) & 0x40)	// Check to see if FIFO is currently empty
+		goto checkdone;					// Nope - Sound Source not here
+
+	for (int cx = 32; cx; --cx)			// Force FIFO overflow (FIFO is 16 bytes)
+	{
+		BE_ST_LPTOut(ssData, 0x80);		// Pump a neutral value out
+		BE_ST_LPTOut(ssControl, ssOff);	// Pulse printer select
+		BE_ST_DelayPrecise(1000);
+		BE_ST_LPTOut(ssControl, ssOn);
+		BE_ST_DelayPrecise(2000);		// Delay a short while before we do this again
+	}
+
+	if (BE_ST_LPTIn(ssStatus) & 0x40)	// Is FIFO overflowed now?
+		goto checkdone;					// Nope, still not - Sound Source not here
+#if 0
 asm	mov		dx,[ssStatus]	// Check to see if FIFO is currently empty
 asm	in		al,dx
 asm	test	al,0x40
@@ -1198,6 +1232,7 @@ asm	mov		dx,[ssStatus]	// Is FIFO overflowed now?
 asm	in		al,dx
 asm	test	al,0x40
 asm	jz		checkdone		// Nope, still not - Sound Source not here
+#endif
 
 	present = true;			// Yes - it's here!
 

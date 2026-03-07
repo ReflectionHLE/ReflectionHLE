@@ -190,6 +190,19 @@ void BE_ST_WaitForNewVerticalRetraces(int16_t number)
 	BEL_ST_TicksDelayWithOffset(nextSdlTicks-currSdlTicks);
 }
 
+// Delays via a spin loop. This should be used as substitute for code which used
+// useless operations for very short timing requirements (e.g. bit banging the
+// parallel port). Operating systems can preempt so timing isn't guaranteed.
+void BE_ST_DelayPrecise(uint64_t nsec)
+{
+	// For our purposes SDL_DelayPrecise doesn't work since at least as of SDL
+	// 3.4 it will always perform a short sleep. We want to skip right to the
+	// spin loop portion.
+	uint64_t target = BEL_ST_GetTicksNS() + nsec;
+	while (BEL_ST_GetTicksNS() < target)
+		BEL_ST_CPUPauseInstruction();
+}
+
 // Call during a busy loop of some unknown duration (e.g., waiting for key press/release)
 void BE_ST_ShortSleep(void)
 {
