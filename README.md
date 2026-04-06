@@ -11,6 +11,7 @@ The source ports in question are:
 Catacomb 3-D (The Descent) and The Catacomb Adventure Series.
 - Reflection Wolfenstein 3D (Wolf3D), covering ports of Wolfenstein 3D,
 Spear of Destiny and Super 3-D Noah's Ark (DOS version).
+- Reflection BioMenace (BMenace), a port of BioMenace, aka Bio Menace.
 
 ## Terms of use
 
@@ -23,10 +24,11 @@ as a whole, as well as the differing components.
 Note that these terms do not cover any original game data,
 which should be obtained separately.
 
-The terms applying to the source ports (i.e., the executables):
+The terms applying to the source ports:
 
-- Reflection KDreams, Reflection Cat3D and Reflection Wolf3D
-are all released under the GNU GPLv2+. See gpl-2.0.txt for more details.
+- Reflection KDreams, Reflection Cat3D, Reflection Wolf3D
+and Reflection BMenace are all released under the GNU GPLv2+.
+See gpl-2.0.txt for more details.
 
 The terms applying to each component separately:
 
@@ -35,6 +37,15 @@ Wolfenstein 3D codebases are released under the GNU GPLv2+. See gpl-2.0.txt.
 
 - The ported Wolfenstein 3D code is also available under the original
 terms for the Wolfenstein 3D sources from 1995. See id-wolf3d.txt.
+
+- The reconstructed BioMenace sources, based in part on game and
+actor code from Keen Dreams, ID Engine files from Catacomb 3-D and the text
+view code from Wolfenstein 3D, had the GNU GPLv2+ assigned by `K1n9_Duk3`.
+These sources were further used under permission for a commercial project,
+BioMenace Remastered, while also applying the original licensed granted
+to Jim Norwood back in the 1990s.
+As for ReflectionHLE, The assumption was that the reconstructed
+sources could be used under the GNU GPLv2+. See gpl-2.0.txt.
 
 - The ReflectionHLE backend is released under the 3-Clause BSD License.
 See bsd-3-clause-template.txt for a general license template. For the exact
