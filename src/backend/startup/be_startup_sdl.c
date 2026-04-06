@@ -81,10 +81,20 @@ void BE_ST_InitCommon(void)
 	BEL_ST_InitKeyMap();
 
 	BEL_ST_ParseConfigFiles();
-	// This technically requires SDL 2.0.2, which has been available for a year now; Should be called BEFORE any SDL_CONTROLLERDEVICEADDED event should arrive (so e.g., before SDL_PollEvent).
+	// SDL_GameControllerAddMappingsFromFile exists, but we try
+	// opening the file from a specific path like other files.
 	FILE *fp = BE_Cross_open_additionalfile_for_reading("gamecontrollerdb.txt");
 	if (fp)
-		SDL_GameControllerAddMappingsFromRW(SDL_RWFromFP(fp, SDL_TRUE), 1);
+	{
+		int32_t size = BE_Cross_FileLengthFromHandle(fp);
+		void *buffer = malloc(size);
+		if (buffer && (fread(buffer, size, 1, fp) == 1U))
+			// Shall be called BEFORE any SDL_CONTROLLERDEVICEADDED
+			// event may arrive (so e.g., before SDL_PollEvent).
+			SDL_GameControllerAddMappingsFromRW(SDL_RWFromConstMem(buffer, size), 1);
+		free(buffer);
+		fclose(fp);
+	}
 
 	// HACK - If game is *not* started from launcher, TOUCHINPUT_AUTO has
 	// the same initial behaviors as TOUCHINPUT_OFF here (i.e., not showing touch UI).
