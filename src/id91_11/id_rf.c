@@ -1,9 +1,9 @@
 /* Catacomb 3-D Source Code
  * Copyright (C) 1993-2014 Flat Rock Software
  * Reconstructed BioMenace Source Code
- * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2017-2026 K1n9_Duk3
  *
- * Copyright (C) 2014-2025 NY00123
+ * Copyright (C) 2014-2026 NY00123
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

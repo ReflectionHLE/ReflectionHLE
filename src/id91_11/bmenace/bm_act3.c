@@ -1,5 +1,5 @@
 /* Reconstructed BioMenace Source Code
- * Copyright (C) 2017-2025 K1n9_Duk3
+ * Copyright (C) 2017-2026 K1n9_Duk3
  *
  * This file is loosely based on:
  * Keen Dreams Source Code
