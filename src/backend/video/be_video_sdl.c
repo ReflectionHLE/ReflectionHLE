@@ -66,7 +66,6 @@ static void BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon(void)
 }
 
 void BEL_ST_RecreateWindowAndRenderer(
-	int displayNo,
 	int windowWidth, int windowHeight,
 	int fullWidth, int fullHeight,
 	bool fullScreen, bool resizable, bool vsync, int driverIndex)
@@ -74,8 +73,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 	static int prev_x, prev_y, prev_driverIndex;
 	static uint32_t prev_rendererFlags;
 
-	int x = SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNo);
-	int y = SDL_WINDOWPOS_UNDEFINED_DISPLAY(displayNo);
+	int x = SDL_WINDOWPOS_UNDEFINED, y = x;
 
 	uint32_t rendererFlags = SDL_RENDERER_ACCELERATED;
 	if (vsync)
@@ -306,7 +304,7 @@ void BEL_ST_GetWindowSize(int *w, int *h)
 void BEL_ST_GetDesktopDisplayDims(int *w, int *h)
 {
 	SDL_DisplayMode mode;
-	if (SDL_GetDesktopDisplayMode(g_refKeenCfg.displayNum, &mode))
+	if (SDL_GetDesktopDisplayMode(0, &mode))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetDesktopDisplayMode failed,\n%s\n", SDL_GetError());
 		*w = 640;

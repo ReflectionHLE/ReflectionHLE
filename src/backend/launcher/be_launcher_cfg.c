@@ -35,7 +35,6 @@
 #ifdef REFKEEN_ENABLE_LAUNCHER
 
 // Implementation-defined handlers
-void BEL_Launcher_ReadDisplayNum(BESettingMenuItemPair *p);
 void BEL_Launcher_ReadRendererDriver(BESettingMenuItemPair *p);
 void BEL_Launcher_WriteRendererDriver(BESettingMenuItemPair *p);
 
@@ -107,7 +106,6 @@ static void BEL_Launcher_WriteNoVert(BESettingMenuItemPair *p)
 
 extern BEMenuItem
 	g_beVideoSettingsMenuItem_Fullscreen,
-	g_beVideoSettingsMenuItem_DisplayNum,
 	g_beVideoSettingsMenuItem_SDLRenderer,
 	g_beVideoSettingsMenuItem_Bilinear,
 	g_beVideoSettingsMenuItem_ScaleType,
@@ -271,7 +269,6 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	{&g_refKeenCfg.isFullscreen, &g_beVideoSettingsMenuItem_Fullscreen},
 #endif
-	{&g_refKeenCfg.displayNum, &g_beVideoSettingsMenuItem_DisplayNum, BEL_Launcher_ReadDisplayNum},
 
 	{&g_refKeenCfg.sdlRendererDriver, &g_beVideoSettingsMenuItem_SDLRenderer,
 		BEL_Launcher_ReadRendererDriver, BEL_Launcher_WriteRendererDriver},

@@ -32,17 +32,6 @@
 #include "be_launcher_cfg_sdl.h"
 #include "SDL.h"
 
-void BEL_Launcher_ReadDisplayNum(BESettingMenuItemPair *p)
-{
-	int nOfDisplays = SDL_GetNumVideoDisplays();
-	if (nOfDisplays >= (int)BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums))
-		nOfDisplays = BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums) - 1;
-	// Trim list of display numbers in the launcher
-	g_be_videoSettingsChoices_displayNums[nOfDisplays] = NULL;
-	// Set choice
-	p->menuItem->choice = BE_Cross_TypedClamp(int, *p->setting, 0, nOfDisplays - 1);
-}
-
 void BEL_Launcher_ReadRendererDriver(BESettingMenuItemPair *p)
 {
 	// Prepare list of renderer driversi and the launcher and then set choice

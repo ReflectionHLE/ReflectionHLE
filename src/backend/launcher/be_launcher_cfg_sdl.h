@@ -1,8 +1,6 @@
 #ifndef BE_LAUNCHER_CFG_SDL_H
 #define BE_LAUNCHER_CFG_SDL_H
 
-extern const char *g_be_videoSettingsChoices_displayNums[9];
-
 #define BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN 10
 #define BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS 10
 

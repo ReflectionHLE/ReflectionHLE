@@ -4,13 +4,6 @@
 #include "be_cross.h"
 #include "be_st.h"
 
-void BEL_ST_ParseSetting_DisplayNum(int *displayNum, const char *buffer)
-{
-	if (sscanf(buffer, "%d", displayNum) == 1)
-		if ((*displayNum < 0) || (*displayNum >= SDL_GetNumVideoDisplays()))
-			*displayNum = 0;
-}
-
 void BEL_ST_ParseSetting_SDLRendererDriver(int *driver, const char *buffer)
 {
 	SDL_RendererInfo info;

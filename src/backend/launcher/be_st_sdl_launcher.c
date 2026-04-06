@@ -427,8 +427,6 @@ typedef struct {
 	int width, height;
 } BEMenuItemScreenResPair;
 
-const char *g_be_videoSettingsChoices_displayNums[] = {"0","1","2","3","4","5","6","7",NULL};
-
 char g_be_videoSettingsChoices_sdlRendererDriversStrs[BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS][BE_LAUNCHER_MAX_CHOICE_STRBUFFLEN];
 // Need to add additional auto entry, plus NULL terminator
 static const char *g_be_videoSettingsChoices_sdlRendererDrivers[BE_LAUNCHER_MAX_NUM_OF_SDL_RENDERER_DRIVERS+2];
@@ -443,7 +441,6 @@ static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default","
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Fullscreen, "Fullscreen", g_be_settingsChoices_boolean)
 #endif
-BEMENUITEM_DEF_SLIDER(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_SDLRenderer, "SDL renderer", g_be_videoSettingsChoices_sdlRendererDrivers)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type*", g_be_videoSettingsChoices_scaleType)
@@ -465,7 +462,6 @@ static BEMenuItem *g_beVideoSettingsMenuItems[] = {
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	&g_beVideoSettingsMenuItem_Fullscreen,
 #endif
-	&g_beVideoSettingsMenuItem_DisplayNum,
 	&g_beVideoSettingsMenuItem_SDLRenderer,
 	&g_beVideoSettingsMenuItem_Bilinear,
 	&g_beVideoSettingsMenuItem_ScaleType,
@@ -1237,7 +1233,6 @@ void BE_ST_Launcher_Prepare(void)
 	bool fullScreen = (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL);
 	bool resizable = (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE);
 	BEL_ST_RecreateWindowAndRenderer(
-		g_refKeenCfg.displayNum,
 		g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0,
 		fullScreen, resizable, vsync, -1
 	);

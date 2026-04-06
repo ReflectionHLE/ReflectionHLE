@@ -75,7 +75,6 @@ void BE_ST_InitGfx(void)
 	bool vsync = BEL_ST_IsVsyncPreferred(false);
 
 	BEL_ST_RecreateWindowAndRenderer(
-		g_refKeenCfg.displayNum,
 		windowWidthToSet, windowHeightToSet,
 		g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight,
 		g_refKeenCfg.isFullscreen, resizable, vsync,

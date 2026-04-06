@@ -67,7 +67,6 @@ typedef struct
 #endif
 	char lastSelectedGameExe[BE_CROSS_DOS_FILENAME_LEN_BOUND];
 	int lastSelectedGameVer;
-	int displayNum;
 	int sdlRendererDriver;
 	int vSync;
 	int/*bool*/ isBilinear;
