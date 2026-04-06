@@ -2,6 +2,30 @@
 Changelog
 ---------
 
+TBD:
+
+* Added initial support for BioMenace, aka, Bio Menace.
+That covers all DOS versions known as of writing this, including
+the BioHazard July 1992 beta as re-released in February 2025.
+* BioMenace support should cover saved games and game controllers
+in this release, plus multi-touch input if anyone wants to give it a try.
+* Fix in launcher-side dir selection of '/', for operating systems like Linux.
+* Spear of Destiny: Fix "Forgmen" typo in the launcher.
+It should say Formgen now. (Thanks K1n9_Duk3!)
+* Fixes from GoGoOtaku for OOB array access in Wolf3D's VL_FadeIn
+(at least with potential loop optimizations) and two ODR violations.
+* dege-git's fix for a potential copy & paste error
+while porting Wolf3D's ScalePost from assembly.
+* dege-git: Added 250ms delay before testing jukebox easter egg in Wolf3D.
+* Wolf3D: Crash fix in case only digitized sounds
+are toggled. (Thanks mr-around!)
+* Launcher: Show related menu when failing to open gamecontrollerdb.txt
+for writing, instead of exiting immediately. Also check if read of
+an existing gamecontrollerdb.txt file succeeds.
+* Internal changes to behaviors of BE_ST_SetScreenMode when the bit value
+of 128 is set, with adjustments for the Catacomb Adventures' VW_SetScreenMode.
+* Other misc. fixes/changes.
+
 Sep 26, 2024 (v0.44.0): 10th anniversary release.
 
 This might be an opportunity to mention Arno, the maintainer of CatacombGL,
