@@ -170,7 +170,6 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_STR(lastSelectedGameExe, "lastselectedgameexe")
 	DEF_ENUM(lastSelectedGameVer, "lastselectedgamever", refkeen_gamever_strs, BE_GAMEVER_LAST)
 	DEF_CUSTOM_INT(displayNum, "displaynum", BE_ST_CFG_VAL_DISPLAY_NUM, 0)
-	DEF_BOOL(rememberDisplayNum, "rememberdisplaynum", true)
 	DEF_CUSTOM_INT(sdlRendererDriver, "sdlrenderer", BE_ST_CFG_VAL_SDL_RENDERER, -1)
 	DEF_ENUM(vSync, "vsync", g_be_setting_vsync_vals, VSYNC_OFF)
 	DEF_BOOL(isBilinear, "bilinear", true)

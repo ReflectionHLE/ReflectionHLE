@@ -444,7 +444,6 @@ static const char *g_be_videoSettingsChoices_launcherWindowType[] = {"Default","
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Fullscreen, "Fullscreen", g_be_settingsChoices_boolean)
 #endif
 BEMENUITEM_DEF_SLIDER(g_beVideoSettingsMenuItem_DisplayNum, "Display number", g_be_videoSettingsChoices_displayNums)
-BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_RememberDisplayNum, "Remember last used display number", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_SDLRenderer, "SDL renderer", g_be_videoSettingsChoices_sdlRendererDrivers)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_Bilinear, "Bilinear interpolation", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beVideoSettingsMenuItem_ScaleType, "Scale type*", g_be_videoSettingsChoices_scaleType)
@@ -467,7 +466,6 @@ static BEMenuItem *g_beVideoSettingsMenuItems[] = {
 	&g_beVideoSettingsMenuItem_Fullscreen,
 #endif
 	&g_beVideoSettingsMenuItem_DisplayNum,
-	&g_beVideoSettingsMenuItem_RememberDisplayNum,
 	&g_beVideoSettingsMenuItem_SDLRenderer,
 	&g_beVideoSettingsMenuItem_Bilinear,
 	&g_beVideoSettingsMenuItem_ScaleType,
@@ -1678,20 +1676,6 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 {
 	int winWidth, winHeight;
 	BEL_ST_GetWindowSize(&winWidth, &winHeight);
-
-	if (g_refKeenCfg.rememberDisplayNum)
-	{
-		int displayNum = BEL_ST_GetWindowDisplayNum();
-		// HUGE FIXME - Bad idea!!!
-		if (displayNum < (int)BE_Cross_ArrayLen(g_be_videoSettingsChoices_displayNums)) // Ignore last NULL entry
-			if (1/*g_beVideoSettingsMenuItem_DisplayNum.choice != displayNum*/)
-			{
-				g_beVideoSettingsMenuItem_DisplayNum.choice = displayNum;
-				if (g_be_launcher_currMenu == &g_beVideoSettingsMenu)
-					BEL_Launcher_DrawMenuItem(&g_beVideoSettingsMenuItem_DisplayNum);
-			}
-	}
-
 
 	g_sdlLastReportedWindowWidth = winWidth;
 	g_sdlLastReportedWindowHeight = winHeight;
