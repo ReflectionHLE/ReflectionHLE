@@ -48,7 +48,7 @@ void BE_ST_InitGfx(void);
 void BE_ST_InitTiming(void);
 void BE_ST_ShutdownAudio(void);
 void BE_ST_ShutdownGfx(void);
-void BEL_ST_ConditionallyAddJoystick(int device_index); // Implementation-specific
+void BEL_ST_FillJoysticksList(void); // Implementation-specific
 void BEL_ST_ParseConfigFiles(void);
 void BEL_ST_SaveConfigFiles(void);
 
@@ -132,12 +132,9 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 
 	g_sdlShowControllerUI = false;
 
-	// BEFORE checking for more joysticks being attached/removed in BE_ST_PollEvents, add what's currently available
-	int nOfJoysticks = SDL_NumJoysticks();
-	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
-		nOfJoysticks = BE_ST_MAXJOYSTICKS;
-	for (int i = 0; i < nOfJoysticks; ++i)
-		BEL_ST_ConditionallyAddJoystick(i);
+	// BEFORE checking for more joysticks being attached/removed
+	// in BE_ST_PollEvents, add what's currently available
+	BEL_ST_FillJoysticksList();
 
 	// Reset these first
 	memset(g_sdlEmuKeyboardStateByScanCode, 0, sizeof(g_sdlEmuKeyboardStateByScanCode));

@@ -30,6 +30,39 @@ void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode)
 	SDL_SetRelativeMouseMode((mode == BE_ST_MOUSEMODE_REL) ? SDL_TRUE : SDL_FALSE);
 }
 
+void BEL_ST_FillJoysticksList(void)
+{
+	int n_joysticks = SDL_NumJoysticks();
+	if (!g_refKeenCfg.altControlScheme)
+	{
+		for (int dev_index = 0, i = 0;
+		     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
+			if (!g_sdlJoysticks[i])
+			{
+				g_sdlJoysticks[i] = SDL_JoystickOpen(dev_index);
+				g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(g_sdlJoysticks[i]);
+				BEL_ST_CheckForHidingTouchUI();
+				++i;
+			}
+	}
+	else
+	{
+		for (int dev_index = 0, i = 0;
+		     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
+			if (!g_sdlControllers[i] && SDL_IsGameController(dev_index))
+			{
+				g_sdlControllers[i] = SDL_GameControllerOpen(dev_index);
+				g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i]));
+				++i;
+
+				g_sdlShowControllerUI = true;
+				g_sdlForceGfxControlUiRefresh = true;
+				BEL_ST_ConditionallyShowAltInputPointer();
+				BEL_ST_CheckForHidingTouchUI();
+			}
+	}
+}
+
 void BEL_ST_ConditionallyAddJoystick(int device_index)
 {
 	if (!g_refKeenCfg.altControlScheme)
