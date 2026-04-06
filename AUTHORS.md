@@ -140,6 +140,22 @@ with the latter being co-developed with Barry Duncan.
 * Braden Obrzut, for earlier reverse-engineering work on Super 3-D Noah's Ark,
 which was used as a base for a DOS source reconstruction.
 
+* Nikolai Wuttke-Hohendorf, who used reconstructed BioMenace sources
+prepared by `K1n9_Duk3` and him during development of BioMenace Remastered.
+That is a commercial remaster of BioMenace authorized by James Norwood
+and making use of Robert Prince's sound track with permission.
+A revision of the ReflectionHLE-based port was prepared by me
+in case it'd be useful as a reference for BioMenace Remastered.
+It had eventually not have that many uses, but Niko had
+at least one look and I made a few uses.
+
+* Bart Remmers, who offered me the opportunity
+to join the team working on BioMenace Remastered.
+
+* `K1n9_Duk3`, for testing BioMenace support back in 2025 and also
+telling me how to fix a bug involving tile animations appearing
+to stop upon opening a door.
+
 * Mitugu (Kou) Kurizono, David Kirschbaum, Toad Hall, Dan Lewis, Alan Modra,
 Vesselin Bontchev (and possibly others) for their contributions leading to
 unlzexe v0.8.
