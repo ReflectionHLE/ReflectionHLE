@@ -109,6 +109,7 @@ static bool g_sdlKeyboardUIIsKeyPressed, g_sdlKeyboardUIIsShifted;
 extern int g_sdlDebugFingerRectSideLen;
 extern const uint32_t g_sdlEGABGRAScreenColors[];
 extern SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS];
+extern SDL_JoystickID g_sdlJoysticksInstanceIds[BE_ST_MAXJOYSTICKS];
 extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern BE_ST_Rect g_sdlAspectCorrectionBorderedRect;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
@@ -1217,6 +1218,11 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void);
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId);
 void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId);
 
+static void BEL_ST_Launcher_FillJoysticksList(void);
+static void BEL_ST_Launcher_ClearJoysticksList(void);
+static void BEL_ST_Launcher_ConditionallyAddJoystick(int device_index);
+static void BEL_ST_Launcher_RemoveJoystickIfAdded(int device_id);
+
 void BE_ST_Launcher_Prepare(void)
 {
 	int i;
@@ -1253,12 +1259,7 @@ void BE_ST_Launcher_Prepare(void)
 		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT, true, true);
 
 	/* Game controllers */
-	int nOfJoysticks = SDL_NumJoysticks();
-	if (nOfJoysticks > BE_ST_MAXJOYSTICKS)
-		nOfJoysticks = BE_ST_MAXJOYSTICKS;
-	for (i = 0; i < nOfJoysticks; ++i)
-		if (SDL_IsGameController(i))
-			g_sdlControllers[i] = SDL_GameControllerOpen(i);
+	BEL_ST_Launcher_FillJoysticksList();
 
 	g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 	g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
@@ -1326,13 +1327,7 @@ void BE_ST_Launcher_Shutdown(void)
 	BE_Launcher_ClearDirSelectionMenu();
 
 	/*** Clear ST stuff ***/
-	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
-		if (g_sdlControllers[i])
-		{
-			SDL_GameControllerClose(g_sdlControllers[i]);
-			g_sdlControllers[i] = NULL;
-		}
-
+	BEL_ST_Launcher_ClearJoysticksList();
 	g_nOfTrackedFingers = 0;
 
 	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextSearchTexture);
@@ -1643,12 +1638,11 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 		fwrite(buffer, strlen(buffer), 1, mappingfp);
 		SDL_GameControllerAddMappingsFromRW(SDL_RWFromConstMem(buffer, strlen(buffer)), 1);
 	}
-	// Adding a mapping doesn't imply we'll get a "joystick/controller added" event,
-	// so manually add what's missing
-	int nJoysticksToScan = BE_Cross_TypedMin(int, SDL_NumJoysticks(), BE_ST_MAXJOYSTICKS);
-	for (int i = 0; i < nJoysticksToScan; ++i)
-		if (!g_sdlControllers[i] && SDL_IsGameController(i))
-			g_sdlControllers[i] = SDL_GameControllerOpen(i);
+	// Adding a mapping doesn't imply we'll get a
+	// "joystick/controller added" event, so manually add
+	// what's missing. Removing and re-adding looks simplest.
+	BEL_ST_Launcher_ClearJoysticksList();
+	BEL_ST_Launcher_FillJoysticksList();
 
 	BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFromSteamImportedSuccessfullyMenu);
 }
@@ -2907,16 +2901,10 @@ void BE_ST_Launcher_RunEventLoop(void)
 			 * (if loaded before init, the mappings seem to be deleted, otherwise SDL_CONTROLLERDEVICEADDED is just not spawned for these).
 			 */
 			case SDL_JOYDEVICEADDED:
-				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && !g_sdlControllers[event.jdevice.which] && SDL_IsGameController(event.jdevice.which))
-					g_sdlControllers[event.jdevice.which] = SDL_GameControllerOpen(event.jdevice.which);
+				BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
 				break;
 			case SDL_JOYDEVICEREMOVED:
-				for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
-					if (g_sdlControllers[i] && (SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i])) == event.jdevice.which))
-					{
-						SDL_GameControllerClose(g_sdlControllers[i]);
-						g_sdlControllers[i] = NULL;
-					}
+				BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
 				break;
 
 			case SDL_CONTROLLERAXISMOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
@@ -3047,16 +3035,10 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 				break;
 
 			case SDL_JOYDEVICEADDED:
-				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && SDL_IsGameController(event.jdevice.which))
-					g_sdlControllers[event.jdevice.which] = SDL_GameControllerOpen(event.jdevice.which);
+				BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
 				break;
 			case SDL_JOYDEVICEREMOVED:
-				for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
-					if (g_sdlControllers[i] && (SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i])) == event.jdevice.which))
-					{
-						SDL_GameControllerClose(g_sdlControllers[i]);
-						g_sdlControllers[i] = NULL;
-					}
+				BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
 				break;
 
 			case SDL_CONTROLLERAXISMOTION:
@@ -3350,16 +3332,10 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 #endif
 
 			case SDL_JOYDEVICEADDED:
-				if ((event.jdevice.which < BE_ST_MAXJOYSTICKS) && SDL_IsGameController(event.jdevice.which))
-					g_sdlControllers[event.jdevice.which] = SDL_GameControllerOpen(event.jdevice.which);
+				BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
 				break;
 			case SDL_JOYDEVICEREMOVED:
-				for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
-					if (g_sdlControllers[i] && (SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i])) == event.jdevice.which))
-					{
-						SDL_GameControllerClose(g_sdlControllers[i]);
-						g_sdlControllers[i] = NULL;
-					}
+				BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
 				break;
 
 			case SDL_CONTROLLERAXISMOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
@@ -3432,6 +3408,56 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 	}
 
 	return false;
+}
+
+// Adds as much game controllers for use as possible.
+// ASSUMES g_sdlControllers array is full of null pointers.
+static void BEL_ST_Launcher_FillJoysticksList(void)
+{
+	// Adding a mapping doesn't imply we'll get a
+	// "joystick/controller added" event so manually add what's missing.
+	int n_joysticks = SDL_NumJoysticks();
+	for (int dev_index = 0, i = 0;
+	     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
+		if (!g_sdlControllers[i] && SDL_IsGameController(dev_index))
+		{
+			g_sdlControllers[i] = SDL_GameControllerOpen(i);
+			g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i]));
+			++i;
+		}
+}
+
+static void BEL_ST_Launcher_ClearJoysticksList(void)
+{
+	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+		if (g_sdlControllers[i])
+		{
+			SDL_GameControllerClose(g_sdlControllers[i]);
+			g_sdlControllers[i] = NULL;
+		}
+}
+
+static void BEL_ST_Launcher_ConditionallyAddJoystick(int dev_index)
+{
+	if (!SDL_IsGameController(dev_index))
+		return;
+	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+		if (!g_sdlControllers[i])
+		{
+			g_sdlControllers[i] = SDL_GameControllerOpen(dev_index);
+			g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i]));
+			return;
+		}
+}
+
+static void BEL_ST_Launcher_RemoveJoystickIfAdded(int dev_id)
+{
+	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+		if (g_sdlControllers[i] && (g_sdlJoysticksInstanceIds[i] == dev_id))
+		{
+			SDL_GameControllerClose(g_sdlControllers[i]);
+			g_sdlControllers[i] = NULL;
+		}
 }
 
 #endif // REFKEEN_ENABLE_LAUNCHER
