@@ -31,10 +31,12 @@
 #include "be_filesystem_string_ops.h"
 #include "be_filesystem_root_paths.h"
 
+#include <stdlib.h>
+
 #ifdef REFKEEN_PLATFORM_ANDROID
 #include "be_filesystem_mkdir.h"
 #include <jni.h>
-// HACK - Adding a dependency on SDL2 for Android! (Used for external storage path, and for calling Java function)
+// HACK - Adding a dependency on SDL for Android! (Used for external storage path, and for calling Java function)
 #include <SDL3/SDL_system.h>
 #endif
 
@@ -130,7 +132,7 @@ void BE_Cross_PrepareAppPaths(void)
 #endif
 
 #ifdef REFKEEN_PLATFORM_ANDROID
-	// HACK - Adding a dependency on SDL2 for Android!
+	// HACK - Adding a dependency on SDL for Android!
 
 	// FIXME - These environment variables don't seem to be shown in any
 	// official documentation for Android, but at least EXTERNAL_STORAGE

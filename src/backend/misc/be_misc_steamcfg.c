@@ -35,6 +35,9 @@
 #ifdef REFKEEN_PLATFORM_WINDOWS
 #include <shlwapi.h>
 #endif
+#ifdef REFKEEN_PLATFORM_UNIX
+#include <stdlib.h>
+#endif
 
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 BE_FILE_T BE_Cross_open_steamcfg_for_reading(void)
