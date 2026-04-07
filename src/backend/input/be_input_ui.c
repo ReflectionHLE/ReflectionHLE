@@ -52,9 +52,7 @@ void BEL_ST_CheckForHidingTouchUI(void)
 	BEL_ST_DoHideTouchUI();
 }
 
-/* Shared with mouse and touch inputs, where mouse's touchId is 0
- * (documentation of SDL_GetTouchDevice says 0 is returned for an invalid input index)
- */
+// Shared with mouse and touch inputs, where mouse's touchId is 0
 
 void BEL_ST_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
 void BEL_ST_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y);
