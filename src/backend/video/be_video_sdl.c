@@ -334,10 +334,9 @@ bool BEL_ST_IsConfiguredForSWRendering(void)
 {
 	if (g_refKeenCfg.sdlRendererDriver >= 0)
 	{
-		SDL_RendererInfo info;
-		if (!SDL_GetRenderDriverInfo(g_refKeenCfg.sdlRendererDriver, &info))
-			return (info.flags & SDL_RENDERER_SOFTWARE);
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetRenderDriverInfo failed,\n%s\n", SDL_GetError());
+		const char *name = SDL_GetRenderDriver(g_refKeenCfg.sdlRendererDriver);
+		if (name)
+			return !strcmp(name, SDL_SOFTWARE_RENDERER);
 	}
 	return false;
 }

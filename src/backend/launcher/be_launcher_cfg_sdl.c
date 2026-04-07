@@ -42,9 +42,8 @@ void BEL_Launcher_ReadRendererDriver(BESettingMenuItemPair *p)
 	p->menuItem->choices[nOfSDLRendererDrivers+1] = NULL;
 	for (int i = 0; i < nOfSDLRendererDrivers; ++i)
 	{
-		SDL_RendererInfo info;
-		SDL_GetRenderDriverInfo(i, &info);
-		snprintf(g_be_videoSettingsChoices_sdlRendererDriversStrs[i], sizeof(g_be_videoSettingsChoices_sdlRendererDriversStrs[i]), "%s", info.name);
+		const char *name = SDL_GetRenderDriver(i);
+		snprintf(g_be_videoSettingsChoices_sdlRendererDriversStrs[i], sizeof(g_be_videoSettingsChoices_sdlRendererDriversStrs[i]), "%s", name);
 		p->menuItem->choices[i+1] = g_be_videoSettingsChoices_sdlRendererDriversStrs[i];
 	}
 
