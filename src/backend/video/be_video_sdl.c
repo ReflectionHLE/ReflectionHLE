@@ -337,3 +337,8 @@ bool BEL_ST_IsConfiguredForSWRendering(void)
 	}
 	return false;
 }
+
+void BEL_ST_SetRelativeMouseMode(bool relative)
+{
+	SDL_SetWindowRelativeMouseMode(g_sdlWindow, relative);
+}

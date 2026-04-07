@@ -16,6 +16,8 @@ SDL_JoystickID g_sdlJoysticksInstanceIds[BE_ST_MAXJOYSTICKS];
 
 static BESDLMouseModeEnum g_sdlMouseMode = BE_ST_MOUSEMODE_ABS_WITH_CURSOR;
 
+void BEL_ST_SetRelativeMouseMode(bool relative);
+
 void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode)
 {
 	if (g_sdlMouseMode == mode)
@@ -23,11 +25,11 @@ void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode)
 
 	g_sdlMouseMode = mode;
 	if (mode == BE_ST_MOUSEMODE_ABS_WITHOUT_CURSOR)
-		SDL_ShowCursor(false);
+		SDL_HideCursor();
 	else if (mode == BE_ST_MOUSEMODE_ABS_WITH_CURSOR)
-		SDL_ShowCursor(true);
+		SDL_ShowCursor();
 
-	SDL_SetRelativeMouseMode((mode == BE_ST_MOUSEMODE_REL) ? true : false);
+	BEL_ST_SetRelativeMouseMode((mode == BE_ST_MOUSEMODE_REL) ? true : false);
 }
 
 void BEL_ST_FillJoysticksList(void)
