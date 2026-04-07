@@ -139,8 +139,8 @@ void BE_Cross_PrepareAppPaths(void)
 	// We still need to check/ask for permission to access the storage, on Android 6.0 and later
 
 	// Prepare to call Javaj function
-	JNIEnv *env = (JNIEnv *)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
+	JNIEnv *env = (JNIEnv *)SDL_GetAndroidJNIEnv();
+	jobject activity = (jobject)SDL_GetAndroidActivity();
 	jclass clazz = env->GetObjectClass(activity);
 	jmethodID method_id = env->GetMethodID(clazz, "requestReadExternalStoragePermission", "()I");
 	// Do call it
@@ -164,7 +164,7 @@ void BE_Cross_PrepareAppPaths(void)
 
 	char path[BE_CROSS_PATH_LEN_BOUND];
 
-	const char *externalStoragePath = SDL_AndroidGetExternalStoragePath();
+	const char *externalStoragePath = SDL_GetAndroidExternalStoragePath();
 	if (externalStoragePath && *externalStoragePath)
 	{
 		BEL_Cross_safeandfastctstringcopy_2strs(g_be_appDataPath, g_be_appDataPath+BE_Cross_ArrayLen(g_be_appDataPath), externalStoragePath, "/appdata");

@@ -66,7 +66,7 @@ void BE_ST_InitCommon(void)
 	}
 
 	// SDL_INIT_CONTROLLER implies SDL_INIT_JOYSTICK
-	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) < 0)
+	if (SDL_InitSubSystem(SDL_INIT_GAMEPAD) < 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL game controller subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
 	}
@@ -78,7 +78,7 @@ void BE_ST_InitCommon(void)
 	BEL_ST_InitKeyMap();
 
 	BEL_ST_ParseConfigFiles();
-	// SDL_GameControllerAddMappingsFromFile exists, but we try
+	// SDL_AddGamepadMappingsFromFile exists, but we try
 	// opening the file from a specific path like other files.
 	FILE *fp = BE_Cross_open_additionalfile_for_reading("gamecontrollerdb.txt");
 	if (fp)
@@ -86,9 +86,9 @@ void BE_ST_InitCommon(void)
 		int32_t size = BE_Cross_FileLengthFromHandle(fp);
 		void *buffer = malloc(size);
 		if (buffer && (fread(buffer, size, 1, fp) == 1U))
-			// Shall be called BEFORE any SDL_CONTROLLERDEVICEADDED
+			// Shall be called BEFORE any SDL_EVENT_GAMEPAD_ADDED
 			// event may arrive (so e.g., before SDL_PollEvent).
-			SDL_GameControllerAddMappingsFromRW(SDL_RWFromConstMem(buffer, size), 1);
+			SDL_AddGamepadMappingsFromIO(SDL_IOFromConstMem(buffer, size), 1);
 		free(buffer);
 		fclose(fp);
 	}
@@ -182,30 +182,30 @@ void BE_ST_HandleExit(int status)
 			case SDL_WINDOWEVENT:
 				switch (event.window.event)
 				{
-				case SDL_WINDOWEVENT_RESIZED:
+				case SDL_EVENT_WINDOW_RESIZED:
 					BEL_ST_SetGfxOutputRects(false);
 					// Fall-through
-				case SDL_WINDOWEVENT_EXPOSED:
+				case SDL_EVENT_WINDOW_EXPOSED:
 					BEL_ST_ForceHostDisplayUpdate();
 					break;
 				}
 				break;
-			case SDL_RENDER_TARGETS_RESET:
-			case SDL_RENDER_DEVICE_RESET:
+			case SDL_EVENT_RENDER_TARGETS_RESET:
+			case SDL_EVENT_RENDER_DEVICE_RESET:
 				BEL_ST_RecreateAllTextures();
 				break;
-			case SDL_JOYHATMOTION:
+			case SDL_EVENT_JOYSTICK_HAT_MOTION:
 				if (event.jhat.value != SDL_HAT_CENTERED) // Otherwise ignore
 					keepRunning = false;
 				break;
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 				if (!event.key.repeat) // Otherwise ignore
 					keepRunning = false;
 				break;
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_JOYBUTTONDOWN:
-			case SDL_CONTROLLERBUTTONDOWN:
-			case SDL_QUIT:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+			case SDL_EVENT_QUIT:
 				keepRunning = false;
 				break;
 			default: ;

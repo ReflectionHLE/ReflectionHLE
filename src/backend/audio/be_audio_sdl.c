@@ -37,7 +37,7 @@
 #include "be_audio_private.h"
 
 #ifdef REFKEEN_CONFIG_THREADS
-static SDL_mutex* g_sdlCallbackMutex = NULL;
+static SDL_Mutex* g_sdlCallbackMutex = NULL;
 #endif
 static int g_sdlAudioChannels;
 /*static*/ SDL_AudioDeviceID g_sdlAudioDevice;
@@ -64,9 +64,9 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 	}
 	desiredSpec.freq = g_refKeenCfg.sndSampleRate;
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
-	desiredSpec.format = AUDIO_F32SYS;
+	desiredSpec.format = SDL_AUDIO_F32;
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
-	desiredSpec.format = AUDIO_S16SYS;
+	desiredSpec.format = SDL_AUDIO_S16;
 #endif
 	desiredSpec.channels = MIXER_DEFAULT_CHANNELS_COUNT;
 	// Should be some power-of-two roughly proportional to the sample rate; Using 1024 for 48000Hz.

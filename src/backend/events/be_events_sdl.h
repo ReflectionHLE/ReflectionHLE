@@ -7,7 +7,7 @@
 
 #include "SDL.h"
 
-extern SDL_sem *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
+extern SDL_Semaphore *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
 
 void BEL_ST_CheckForExitFromEventsCallback(void);
 int BEL_ST_EventsCallback(void *userdata, SDL_Event *event);

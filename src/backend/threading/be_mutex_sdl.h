@@ -2,9 +2,9 @@
 #define BE_MUTEX_SDL_H
 
 #include <assert.h>
-#include "SDL_mutex.h"
+#include "SDL_Mutex.h"
 
-typedef SDL_mutex BE_ST_Mutex_T;
+typedef SDL_Mutex BE_ST_Mutex_T;
 
 static inline BE_ST_Mutex_T *BE_ST_CreateMutex(void) { return SDL_CreateMutex(); }
 static inline void BE_ST_FreeMutex(BE_ST_Mutex_T *mutex) { SDL_DestroyMutex(mutex); }

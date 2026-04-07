@@ -108,7 +108,7 @@ static bool g_sdlKeyboardUIIsKeyPressed, g_sdlKeyboardUIIsShifted;
 // Borrowed from other files
 extern int g_sdlDebugFingerRectSideLen;
 extern const uint32_t g_sdlEGABGRAScreenColors[];
-extern SDL_GameController *g_sdlControllers[BE_ST_MAXJOYSTICKS];
+extern SDL_Gamepad *g_sdlControllers[BE_ST_MAXJOYSTICKS];
 extern SDL_JoystickID g_sdlJoysticksInstanceIds[BE_ST_MAXJOYSTICKS];
 extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern BE_ST_Rect g_sdlAspectCorrectionBorderedRect;
@@ -1338,7 +1338,7 @@ void BE_ST_Launcher_Shutdown(void)
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	// BEFORE checking if we need to save anything, apply this HACK
 	if (g_beInputSettingsMenuItem_TouchControls.choice == TOUCHINPUT_AUTO)
-		g_sdlShowTouchUI = ((g_sdlLauncherLastEventType == SDL_FINGERDOWN) || (g_sdlLauncherLastEventType == SDL_FINGERUP));
+		g_sdlShowTouchUI = ((g_sdlLauncherLastEventType == SDL_EVENT_FINGER_DOWN) || (g_sdlLauncherLastEventType == SDL_EVENT_FINGER_UP));
 	else
 		g_sdlShowTouchUI = (g_beInputSettingsMenuItem_TouchControls.choice == TOUCHINPUT_FORCED);
 #endif
@@ -1352,15 +1352,15 @@ void BE_ST_Launcher_Shutdown(void)
 
 
 #ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
-extern SDL_sem *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
+extern SDL_Semaphore *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
 
 static void BEL_ST_Launcher_CheckForExitFromEventsCallback(void)
 {
-	if (SDL_SemTryWait(g_sdlEventsCallbackToMainSem) == 0)
+	if (SDL_TryWaitSemaphore(g_sdlEventsCallbackToMainSem) == 0)
 	{
 		// Let's not call BE_ST_Launcher_Shutdown and/or BEL_ST_SaveConfig here
-		SDL_SemPost(g_sdlMainToEventsCallbackSem);
-		SDL_SemWait(g_sdlEventsCallbackToMainSem); // Wait here "forever"
+		SDL_SignalSemaphore(g_sdlMainToEventsCallbackSem);
+		SDL_WaitSemaphore(g_sdlEventsCallbackToMainSem); // Wait here "forever"
 	}
 }
 #else
@@ -1616,9 +1616,9 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 
 		// HACK
 		*guidend = '\0';
-		SDL_JoystickGUID sdlJoyGuid = SDL_JoystickGetGUIDFromString(substr);
+		SDL_GUID sdlJoyGuid = SDL_StringToGUID(substr);
 
-		char *mappingStr = SDL_GameControllerMappingForGUID(sdlJoyGuid);
+		char *mappingStr = SDL_GetGamepadMappingForGUID(sdlJoyGuid);
 		if (mappingStr)
 		{
 			SDL_free(mappingStr);
@@ -1636,7 +1636,7 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 		snprintf(buffer + movedChunkSize, sizeof(buffer) - movedChunkSize, "platform:%s,\n", SDL_GetPlatform());
 		// Finally write new mapping to file, and internally add it, too
 		fwrite(buffer, strlen(buffer), 1, mappingfp);
-		SDL_GameControllerAddMappingsFromRW(SDL_RWFromConstMem(buffer, strlen(buffer)), 1);
+		SDL_AddGamepadMappingsFromIO(SDL_IOFromConstMem(buffer, strlen(buffer)), 1);
 	}
 	// Adding a mapping doesn't imply we'll get a
 	// "joystick/controller added" event, so manually add
@@ -2848,70 +2848,70 @@ void BE_ST_Launcher_RunEventLoop(void)
 
 			switch (event.type)
 			{
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 				if (event.key.repeat)
 					break; // Ignore
 				g_sdlKeyboardLastKeyPressed = event.key.keysym.scancode;
-				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.keysym.mod & KMOD_SHIFT);
+				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.keysym.mod & SDL_KMOD_SHIFT);
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 				BEL_ST_Launcher_HandleKeyPressEvent(event.key.keysym.scancode, g_sdlKeyboardLastKeyPressedIsShifted);
 				break;
-			case SDL_KEYUP:
+			case SDL_EVENT_KEY_UP:
 				if (g_sdlKeyboardLastKeyPressed == event.key.keysym.scancode)
 					g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				break;
 
-			case SDL_MOUSEBUTTONDOWN:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
 				BEL_ST_Launcher_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y, ticksBeforePoll);
 				break;
-			case SDL_MOUSEBUTTONUP:
+			case SDL_EVENT_MOUSE_BUTTON_UP:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
 				BEL_ST_Launcher_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y, ticksBeforePoll);
 				break;
-			case SDL_MOUSEMOTION:
+			case SDL_EVENT_MOUSE_MOTION:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
 				BEL_ST_Launcher_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, event.motion.x, event.motion.y, ticksBeforePoll);
 				break;
-			case SDL_MOUSEWHEEL:
+			case SDL_EVENT_MOUSE_WHEEL:
 				BE_Launcher_HandleInput_PointerVScroll(-10*event.wheel.y, ticksBeforePoll);
 				break;
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-			case SDL_FINGERDOWN:
+			case SDL_EVENT_FINGER_DOWN:
 				BEL_ST_Launcher_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
-			case SDL_FINGERUP:
+			case SDL_EVENT_FINGER_UP:
 				BEL_ST_Launcher_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
-			case SDL_FINGERMOTION:
+			case SDL_EVENT_FINGER_MOTION:
 				BEL_ST_Launcher_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
 #endif
 
-			/* Don't use SDL_CONTROLLERDEVICEADDED with alternative controller schemes, and for the sake of consistency avoid SDL_CONTROLLERDEVICEREMOVED as well.
-			 * Reason is that on init, there is a problem handling controller mappings loaded from the database using SDL_CONTROLLERDEVICEADDED
-			 * (if loaded before init, the mappings seem to be deleted, otherwise SDL_CONTROLLERDEVICEADDED is just not spawned for these).
+			/* Don't use SDL_EVENT_GAMEPAD_ADDED with alternative controller schemes, and for the sake of consistency avoid SDL_EVENT_GAMEPAD_REMOVED as well.
+			 * Reason is that on init, there is a problem handling controller mappings loaded from the database using SDL_EVENT_GAMEPAD_ADDED
+			 * (if loaded before init, the mappings seem to be deleted, otherwise SDL_EVENT_GAMEPAD_ADDED is just not spawned for these).
 			 */
-			case SDL_JOYDEVICEADDED:
+			case SDL_EVENT_JOYSTICK_ADDED:
 				BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
 				break;
-			case SDL_JOYDEVICEREMOVED:
+			case SDL_EVENT_JOYSTICK_REMOVED:
 				BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
 				break;
 
-			case SDL_CONTROLLERAXISMOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
+			case SDL_EVENT_GAMEPAD_AXIS_MOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
 				if ((event.caxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.caxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
 					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - BE_ST_CTRL_AXIS_LTRIGGER] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
-			case SDL_CONTROLLERBUTTONDOWN:
+			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
 				g_sdlControllerLastButtonPressed = event.cbutton.button;
@@ -2920,7 +2920,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, true);
 				break;
-			case SDL_CONTROLLERBUTTONUP:
+			case SDL_EVENT_GAMEPAD_BUTTON_UP:
 				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
 				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
@@ -2930,23 +2930,23 @@ void BE_ST_Launcher_RunEventLoop(void)
 
 			case SDL_WINDOWEVENT:
 				switch (event.window.event)
-				case  SDL_WINDOWEVENT_RESIZED:
+				case  SDL_EVENT_WINDOW_RESIZED:
 				{
 					BEL_ST_Launcher_SetGfxOutputRects();
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				}
-				case SDL_WINDOWEVENT_EXPOSED:
+				case SDL_EVENT_WINDOW_EXPOSED:
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				break;
 
-			case SDL_RENDER_TARGETS_RESET:
-			case SDL_RENDER_DEVICE_RESET:
+			case SDL_EVENT_RENDER_TARGETS_RESET:
+			case SDL_EVENT_RENDER_DEVICE_RESET:
 				BEL_ST_RecreateAllTextures();
 				break;
 
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
 				break;
@@ -3012,7 +3012,7 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 
 			switch (event.type)
 			{
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 				if (event.key.repeat)
 					break; // Ignore
 				if ((menuBind == BE_MENUBIND_KEY) &&
@@ -3022,26 +3022,26 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 					choice = event.key.keysym.scancode;
 				keepRunning = false;
 				break;
-			case SDL_MOUSEBUTTONDOWN:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				if ((menuBind == BE_MENUBIND_MOUSE) &&
 				    (event.button.button >= 1) &&
 				    (event.button.button <= BE_ST_CTRL_MOUSE_BUT_MAX))
 					choice = event.button.button - 1;
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 				// Fall-through
-			case SDL_FINGERDOWN:
+			case SDL_EVENT_FINGER_DOWN:
 #endif
 				keepRunning = false;
 				break;
 
-			case SDL_JOYDEVICEADDED:
+			case SDL_EVENT_JOYSTICK_ADDED:
 				BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
 				break;
-			case SDL_JOYDEVICEREMOVED:
+			case SDL_EVENT_JOYSTICK_REMOVED:
 				BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
 				break;
 
-			case SDL_CONTROLLERAXISMOTION:
+			case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 				if ((event.caxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.caxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
 				{
 					int triggerNum = event.caxis.axis - BE_ST_CTRL_AXIS_LTRIGGER;
@@ -3054,7 +3054,7 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 					}
 				}
 				break;
-			case SDL_CONTROLLERBUTTONDOWN:
+			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 				if ((menuBind == BE_MENUBIND_PAD) &&
 				    BE_ST_IsValidPadButton(event.cbutton.button))
 					choice = event.cbutton.button;
@@ -3063,23 +3063,23 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 
 			case SDL_WINDOWEVENT:
 				switch (event.window.event)
-				case  SDL_WINDOWEVENT_RESIZED:
+				case  SDL_EVENT_WINDOW_RESIZED:
 				{
 					BEL_ST_Launcher_SetGfxOutputRects();
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				}
-				case SDL_WINDOWEVENT_EXPOSED:
+				case SDL_EVENT_WINDOW_EXPOSED:
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				break;
 
-			case SDL_RENDER_TARGETS_RESET:
-			case SDL_RENDER_DEVICE_RESET:
+			case SDL_EVENT_RENDER_TARGETS_RESET:
+			case SDL_EVENT_RENDER_DEVICE_RESET:
 				BEL_ST_RecreateAllTextures();
 				break;
 
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
 				break;
@@ -3282,36 +3282,36 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 
 			switch (event.type)
 			{
-			case SDL_KEYDOWN:
+			case SDL_EVENT_KEY_DOWN:
 				if (event.key.repeat)
 					break; // Ignore
 				// Otherwise some handler may be called
 				g_sdlKeyboardLastKeyPressed = event.key.keysym.scancode;
-				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.keysym.mod & KMOD_SHIFT);
+				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.keysym.mod & SDL_KMOD_SHIFT);
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 				if (BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(event.key.keysym.scancode, g_sdlKeyboardLastKeyPressedIsShifted, &confirmed))
 					return confirmed;
 				break;
-			case SDL_KEYUP:
+			case SDL_EVENT_KEY_UP:
 				if (g_sdlKeyboardLastKeyPressed == event.key.keysym.scancode)
 					g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				break;
 
-			case SDL_MOUSEBUTTONDOWN:
+			case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
 				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(0, 0, event.button.x, event.button.y);
 				break;
-			case SDL_MOUSEBUTTONUP:
+			case SDL_EVENT_MOUSE_BUTTON_UP:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
 				if (BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(0, 0, event.button.x, event.button.y, &confirmed))
 					return confirmed;
 				break;
-			case SDL_MOUSEMOTION:
+			case SDL_EVENT_MOUSE_MOTION:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
@@ -3319,30 +3319,30 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				break;
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-			case SDL_FINGERDOWN:
+			case SDL_EVENT_FINGER_DOWN:
 				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 				break;
-			case SDL_FINGERUP:
+			case SDL_EVENT_FINGER_UP:
 				if (BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, &confirmed))
 					return confirmed;
 				break;
-			case SDL_FINGERMOTION:
+			case SDL_EVENT_FINGER_MOTION:
 				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 				break;
 #endif
 
-			case SDL_JOYDEVICEADDED:
+			case SDL_EVENT_JOYSTICK_ADDED:
 				BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
 				break;
-			case SDL_JOYDEVICEREMOVED:
+			case SDL_EVENT_JOYSTICK_REMOVED:
 				BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
 				break;
 
-			case SDL_CONTROLLERAXISMOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
+			case SDL_EVENT_GAMEPAD_AXIS_MOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
 				if ((event.caxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.caxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
 					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - BE_ST_CTRL_AXIS_LTRIGGER] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
-			case SDL_CONTROLLERBUTTONDOWN:
+			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
 				g_sdlControllerLastButtonPressed = event.cbutton.button;
@@ -3352,7 +3352,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.cbutton.button, true, &confirmed))
 					return confirmed;
 				break;
-			case SDL_CONTROLLERBUTTONUP:
+			case SDL_EVENT_GAMEPAD_BUTTON_UP:
 				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
 				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
@@ -3363,23 +3363,23 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 
 			case SDL_WINDOWEVENT:
 				switch (event.window.event)
-				case  SDL_WINDOWEVENT_RESIZED:
+				case  SDL_EVENT_WINDOW_RESIZED:
 				{
 					BEL_ST_Launcher_SetGfxOutputRects();
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				}
-				case SDL_WINDOWEVENT_EXPOSED:
+				case SDL_EVENT_WINDOW_EXPOSED:
 					BE_ST_Launcher_MarkGfxCache();
 					break;
 				break;
 
-			case SDL_RENDER_TARGETS_RESET:
-			case SDL_RENDER_DEVICE_RESET:
+			case SDL_EVENT_RENDER_TARGETS_RESET:
+			case SDL_EVENT_RENDER_DEVICE_RESET:
 				BEL_ST_RecreateAllTextures();
 				break;
 
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				BE_ST_Launcher_Shutdown();
 				BE_ST_QuickExit();
 				break;
@@ -3419,10 +3419,10 @@ static void BEL_ST_Launcher_FillJoysticksList(void)
 	int n_joysticks = SDL_NumJoysticks();
 	for (int dev_index = 0, i = 0;
 	     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
-		if (!g_sdlControllers[i] && SDL_IsGameController(dev_index))
+		if (!g_sdlControllers[i] && SDL_IsGamepad(dev_index))
 		{
-			g_sdlControllers[i] = SDL_GameControllerOpen(i);
-			g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i]));
+			g_sdlControllers[i] = SDL_OpenGamepad(i);
+			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 			++i;
 		}
 }
@@ -3432,20 +3432,20 @@ static void BEL_ST_Launcher_ClearJoysticksList(void)
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (g_sdlControllers[i])
 		{
-			SDL_GameControllerClose(g_sdlControllers[i]);
+			SDL_CloseGamepad(g_sdlControllers[i]);
 			g_sdlControllers[i] = NULL;
 		}
 }
 
 static void BEL_ST_Launcher_ConditionallyAddJoystick(int dev_index)
 {
-	if (!SDL_IsGameController(dev_index))
+	if (!SDL_IsGamepad(dev_index))
 		return;
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (!g_sdlControllers[i])
 		{
-			g_sdlControllers[i] = SDL_GameControllerOpen(dev_index);
-			g_sdlJoysticksInstanceIds[i] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(g_sdlControllers[i]));
+			g_sdlControllers[i] = SDL_OpenGamepad(dev_index);
+			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 			return;
 		}
 }
@@ -3455,7 +3455,7 @@ static void BEL_ST_Launcher_RemoveJoystickIfAdded(int dev_id)
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (g_sdlControllers[i] && (g_sdlJoysticksInstanceIds[i] == dev_id))
 		{
-			SDL_GameControllerClose(g_sdlControllers[i]);
+			SDL_CloseGamepad(g_sdlControllers[i]);
 			g_sdlControllers[i] = NULL;
 		}
 }

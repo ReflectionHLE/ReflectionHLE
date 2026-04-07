@@ -62,14 +62,14 @@ void BE_ST_PollEvents(void)
 
 		switch (event.type)
 		{
-		case SDL_KEYDOWN:
+		case SDL_EVENT_KEY_DOWN:
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 			if (((event.key.keysym.scancode == SDL_SCANCODE_RETURN) ||
 			     (event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER)) &&
 			    !event.key.repeat &&
-			    ((event.key.keysym.mod & (KMOD_LALT|KMOD_RALT))
+			    ((event.key.keysym.mod & (SDL_KMOD_LALT|SDL_KMOD_RALT))
 #ifdef REFKEEN_PLATFORM_MACOS
-			     || (event.key.keysym.mod & (KMOD_LGUI|KMOD_RGUI))
+			     || (event.key.keysym.mod & (SDL_KMOD_LGUI|SDL_KMOD_RGUI))
 #endif
 			))
 			{
@@ -87,11 +87,11 @@ void BE_ST_PollEvents(void)
 					BEL_ST_DoHideTouchUI();
 			}
 			// Fall-through
-		case SDL_KEYUP:
+		case SDL_EVENT_KEY_UP:
 		{
-			bool isPressed = (event.type == SDL_KEYDOWN);
+			bool isPressed = (event.type == SDL_EVENT_KEY_DOWN);
 			SDL_Scancode scancode = event.key.keysym.scancode;
-			if (scancode >= SDL_NUM_SCANCODES)
+			if (scancode >= SDL_SCANCODE_COUNT)
 				break;
 
 			// Note that this translates scancode and processes it as usual even if code is mapped.
@@ -106,10 +106,10 @@ void BE_ST_PollEvents(void)
 			break;
 		}
 
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		case SDL_EVENT_MOUSE_BUTTON_UP:
 		{
-			bool isPressed = (event.type == SDL_MOUSEBUTTONDOWN);
+			bool isPressed = (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
 			if ((event.button.which == SDL_TOUCH_MOUSEID) || (event.button.button < 1))
 				break;
 
@@ -155,7 +155,7 @@ void BE_ST_PollEvents(void)
 			break;
 		}
 
-		case SDL_MOUSEMOTION:
+		case SDL_EVENT_MOUSE_MOTION:
 			if (event.button.which == SDL_TOUCH_MOUSEID)
 				break;
 
@@ -180,7 +180,7 @@ void BE_ST_PollEvents(void)
 			break;
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
-		case SDL_FINGERDOWN:
+		case SDL_EVENT_FINGER_DOWN:
 			if ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) && !g_sdlShowTouchUI)
 			{
 				g_sdlShowTouchUI = true;
@@ -204,15 +204,15 @@ void BE_ST_PollEvents(void)
 
 			BEL_ST_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
-		case SDL_FINGERUP:
+		case SDL_EVENT_FINGER_UP:
 			BEL_ST_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
-		case SDL_FINGERMOTION:
+		case SDL_EVENT_FINGER_MOTION:
 			BEL_ST_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
 #endif // REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 
-		case SDL_JOYAXISMOTION:
+		case SDL_EVENT_JOYSTICK_AXIS_MOTION:
 			for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 			{
 				if (g_sdlJoysticks[i] && (g_sdlJoysticksInstanceIds[i] == event.jaxis.which))
@@ -225,16 +225,16 @@ void BE_ST_PollEvents(void)
 				}
 			}
 			break;
-		case SDL_JOYBUTTONDOWN:
+		case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
 			BEL_ST_CheckForHidingTouchUI();
 			// Fall-through
-		case SDL_JOYBUTTONUP:
+		case SDL_EVENT_JOYSTICK_BUTTON_UP:
 			for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 			{
 				if (g_sdlJoysticks[i] && (g_sdlJoysticksInstanceIds[i] == event.jaxis.which))
 				{
 					int mask = (1 << ((event.jbutton.button + 2*i) % 4));
-					if (event.type == SDL_JOYBUTTONDOWN)
+					if (event.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN)
 						g_sdlEmuJoyButtonsState |= mask;
 					else
 						g_sdlEmuJoyButtonsState &= ~mask;
@@ -243,21 +243,21 @@ void BE_ST_PollEvents(void)
 			}
 			break;
 
-		/* Don't use SDL_CONTROLLERDEVICEADDED with alternative controller schemes, and for the sake of consistency avoid SDL_CONTROLLERDEVICEREMOVED as well.
-		 * Reason is that on init, there is a problem handling controller mappings loaded from the database using SDL_CONTROLLERDEVICEADDED
-		 * (if loaded before init, the mappings seem to be deleted, otherwise SDL_CONTROLLERDEVICEADDED is just not spawned for these).
+		/* Don't use SDL_EVENT_GAMEPAD_ADDED with alternative controller schemes, and for the sake of consistency avoid SDL_EVENT_GAMEPAD_REMOVED as well.
+		 * Reason is that on init, there is a problem handling controller mappings loaded from the database using SDL_EVENT_GAMEPAD_ADDED
+		 * (if loaded before init, the mappings seem to be deleted, otherwise SDL_EVENT_GAMEPAD_ADDED is just not spawned for these).
 		 */
-		case SDL_JOYDEVICEADDED:
+		case SDL_EVENT_JOYSTICK_ADDED:
 			BEL_ST_ConditionallyAddJoystick(event.jdevice.which);
 			break;
-		case SDL_JOYDEVICEREMOVED:
+		case SDL_EVENT_JOYSTICK_REMOVED:
 			if (!g_refKeenCfg.altControlScheme)
 			{
 				for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 				{
 					if (g_sdlJoysticks[i] && (g_sdlJoysticksInstanceIds[i] == event.jdevice.which))
 					{
-						SDL_JoystickClose(g_sdlJoysticks[i]);
+						SDL_CloseJoystick(g_sdlJoysticks[i]);
 						g_sdlJoysticks[i] = NULL;
 					}
 				}
@@ -272,7 +272,7 @@ void BE_ST_PollEvents(void)
 					{
 						if (g_sdlJoysticksInstanceIds[i] == event.jdevice.which)
 						{
-							SDL_GameControllerClose(g_sdlControllers[i]);
+							SDL_CloseGamepad(g_sdlControllers[i]);
 							g_sdlControllers[i] = NULL;
 							isAnyControllerDisconnected = true;
 						}
@@ -295,7 +295,7 @@ void BE_ST_PollEvents(void)
 			}
 			break;
 
-		case SDL_CONTROLLERAXISMOTION:
+		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 		{
 			// Do nothing if some on-screen keyboard is in use
 			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
@@ -327,12 +327,12 @@ void BE_ST_PollEvents(void)
 			break;
 		}
 
-		case SDL_CONTROLLERBUTTONDOWN:
+		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 			BEL_ST_CheckForHidingTouchUI();
 			// Fall-through
-		case SDL_CONTROLLERBUTTONUP:
+		case SDL_EVENT_GAMEPAD_BUTTON_UP:
 		{
-			bool isPressed = (event.type == SDL_CONTROLLERBUTTONDOWN);
+			bool isPressed = (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
 			int but = event.cbutton.button;
 			if ((but < 0) || (but >= BE_ST_CTRL_BUT_MAX))
 				break;
@@ -383,21 +383,21 @@ void BE_ST_PollEvents(void)
 		case SDL_WINDOWEVENT:
 			switch (event.window.event)
 			{
-			case SDL_WINDOWEVENT_RESIZED:
+			case SDL_EVENT_WINDOW_RESIZED:
 				BEL_ST_SetGfxOutputRects(false);
 				// Fall-through
-			case SDL_WINDOWEVENT_EXPOSED:
+			case SDL_EVENT_WINDOW_EXPOSED:
 				BEL_ST_ForceHostDisplayUpdate();
 				break;
 			}
 			break;
 
-		case SDL_RENDER_TARGETS_RESET:
-		case SDL_RENDER_DEVICE_RESET:
+		case SDL_EVENT_RENDER_TARGETS_RESET:
+		case SDL_EVENT_RENDER_DEVICE_RESET:
 			BEL_ST_RecreateAllTextures();
 			break;
 
-		case SDL_QUIT:
+		case SDL_EVENT_QUIT:
 			if (g_sdlAppQuitCallback)
 				g_sdlAppQuitCallback();
 			BE_ST_QuickExit();
@@ -453,17 +453,17 @@ void BE_ST_PollEvents(void)
 
 #ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
 
-SDL_sem *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
+SDL_Semaphore *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
 
 void BEL_ST_SaveConfigFiles(void);
 
 void BEL_ST_CheckForExitFromEventsCallback(void)
 {
-	if (SDL_SemTryWait(g_sdlEventsCallbackToMainSem) == 0)
+	if (SDL_TryWaitSemaphore(g_sdlEventsCallbackToMainSem) == 0)
 	{
 		BEL_ST_SaveConfigFiles(); // From BE_ST_QuickExit
-		SDL_SemPost(g_sdlMainToEventsCallbackSem);
-		SDL_SemWait(g_sdlEventsCallbackToMainSem); // Wait here "forever"
+		SDL_SignalSemaphore(g_sdlMainToEventsCallbackSem);
+		SDL_WaitSemaphore(g_sdlEventsCallbackToMainSem); // Wait here "forever"
 	}
 }
 
@@ -477,25 +477,25 @@ int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 
 	switch (event->type)
 	{
-	case SDL_APP_TERMINATING:
-	case SDL_APP_LOWMEMORY: // Let's just terminate the app in such a case
-		SDL_SemPost(g_sdlEventsCallbackToMainSem);
-		SDL_SemWait(g_sdlMainToEventsCallbackSem);
-		if (event->type != SDL_APP_TERMINATING)
+	case SDL_EVENT_TERMINATING:
+	case SDL_EVENT_LOW_MEMORY: // Let's just terminate the app in such a case
+		SDL_SignalSemaphore(g_sdlEventsCallbackToMainSem);
+		SDL_WaitSemaphore(g_sdlMainToEventsCallbackSem);
+		if (event->type != SDL_EVENT_TERMINATING)
 			exit(0);
 		return 0;
-	case SDL_APP_WILLENTERBACKGROUND:
+	case SDL_EVENT_WILL_ENTER_BACKGROUND:
 		if (g_sdlAudioSubsystemUp) // FIXME - Hope this works well
 			SDL_PauseAudioDevice(g_sdlAudioDevice, 1);
 		return 0;
-	case SDL_APP_DIDENTERBACKGROUND:
+	case SDL_EVENT_DID_ENTER_BACKGROUND:
 		g_sdl_eventCallback_EnterBackgroundLastTicks = BEL_ST_GetTicksMS();
 		return 0;
-	case SDL_APP_WILLENTERFOREGROUND:
+	case SDL_EVENT_WILL_ENTER_FOREGROUND:
 		// FIXME!!! - Hope this works well
 		g_be_audioMainThread_lastCallTicks += (BEL_ST_GetTicksMS() - g_sdl_eventCallback_EnterBackgroundLastTicks);
 		return 0;
-	case SDL_APP_DIDENTERFOREGROUND:
+	case SDL_EVENT_DID_ENTER_FOREGROUND:
 		// HACK - These may be done from a different thread,
 		// but should be relatively simple anyway
 		BEL_ST_ForceHostDisplayUpdate();

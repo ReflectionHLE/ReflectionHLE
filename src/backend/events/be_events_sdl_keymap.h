@@ -2,7 +2,7 @@
 
 #define emptyDOSKeyEvent {false, 0}
 
-const emulatedDOSKeyEvent sdlKeyMappings[SDL_NUM_SCANCODES] = {
+const emulatedDOSKeyEvent sdlKeyMappings[SDL_SCANCODE_COUNT] = {
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,

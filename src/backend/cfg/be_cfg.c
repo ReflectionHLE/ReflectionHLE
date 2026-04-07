@@ -65,7 +65,7 @@ typedef struct {
 	intptr_t aux1, aux2;
 } BE_ST_CFG_Setting_T;
 
-// Enumerated by SDL_GameControllerButton, for most
+// Enumerated by SDL_GamepadButton, for most
 static const char *g_sdlControlSchemeKeyMapCfgVals[] = {
 	"a", "b", "x", "y", "", "", "", "lstick", "rstick", "lshoulder", "rshoulder", "dpadup", "dpaddown", "dpadleft", "dpadright", "", "paddle1", "paddle2", "paddle3", "paddle4",
 	"ltrigger", "rtrigger", // Actually axes but these are added as extras

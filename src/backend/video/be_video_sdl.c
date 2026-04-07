@@ -87,7 +87,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 	{
 		g_be_sdl_windowIconSurface = SDL_CreateRGBSurfaceFrom(RefKeen_Window_Icon, 32, 32, 8, 32, 0, 0, 0, 0);
 		SDL_SetPaletteColors(g_be_sdl_windowIconSurface->format->palette, RefKeen_Window_Icon_Palette, '0', 9);
-		SDL_SetColorKey(g_be_sdl_windowIconSurface, SDL_TRUE, SDL_MapRGB(g_be_sdl_windowIconSurface->format, 0xCC, 0xFF, 0xCC));
+		SDL_SetSurfaceColorKey(g_be_sdl_windowIconSurface, true, SDL_MapRGB(g_be_sdl_windowIconSurface->format, 0xCC, 0xFF, 0xCC));
 	}
 
 	if (g_sdlWindow)
@@ -146,10 +146,10 @@ setupforfullscreen:
 	if (fullWidth && fullHeight)
 	{
 		SDL_DisplayMode mode;
-		SDL_GetWindowDisplayMode(g_sdlWindow, &mode);
+		SDL_GetWindowFullscreenMode(g_sdlWindow, &mode);
 		mode.w = fullWidth;
 		mode.h = fullHeight;
-		SDL_SetWindowDisplayMode(g_sdlWindow, &mode);
+		SDL_SetWindowFullscreenMode(g_sdlWindow, &mode);
 	}
 	SDL_SetWindowFullscreen(g_sdlWindow, windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP);
 }
@@ -157,7 +157,7 @@ setupforfullscreen:
 void BEL_ST_DestroyWindowAndRenderer(void)
 {
 	BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon();
-	SDL_FreeSurface(g_be_sdl_windowIconSurface);
+	SDL_DestroySurface(g_be_sdl_windowIconSurface);
 	g_be_sdl_windowIconSurface = NULL;
 }
 
@@ -186,13 +186,13 @@ int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst)
 	if (dst)
 	{
 		SDL_Rect sdl_rect = {dst->x, dst->y, dst->w, dst->h};
-		ret = SDL_RenderCopy(g_sdlRenderer, (SDL_Texture *)texture, NULL, &sdl_rect);
+		ret = SDL_RenderTexture(g_sdlRenderer, (SDL_Texture *)texture, NULL, &sdl_rect);
 	}
 	else
-		ret = SDL_RenderCopy(g_sdlRenderer, (SDL_Texture *)texture, NULL, NULL);
+		ret = SDL_RenderTexture(g_sdlRenderer, (SDL_Texture *)texture, NULL, NULL);
 
 	if (ret)
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderCopy failed,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderTexture failed,\n%s\n", SDL_GetError());
 	return ret;
 }
 
@@ -319,9 +319,9 @@ void BEL_ST_GetDesktopDisplayDims(int *w, int *h)
 
 int BEL_ST_GetWindowDisplayNum(void)
 {
-	int ret = SDL_GetWindowDisplayIndex(g_sdlWindow);
+	int ret = SDL_GetDisplayForWindow(g_sdlWindow);
 	if (ret == -1)
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetWindowDisplayIndex failed,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetDisplayForWindow failed,\n%s\n", SDL_GetError());
 	return ret;
 }
 
