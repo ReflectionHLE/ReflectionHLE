@@ -1237,10 +1237,11 @@ void BE_ST_Launcher_Prepare(void)
 
 	bool vsync = BEL_ST_IsVsyncPreferred(true);
 	bool fullScreen = (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL);
-	bool resizable = (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE);
+	bool software = (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE);
 	BEL_ST_RecreateWindowAndRenderer(
 		g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0,
-		fullScreen, resizable, vsync, -1
+		fullScreen, /*resizable*/!software, vsync,
+		software ? SDL_SOFTWARE_RENDERER : NULL
 	);
 
 	BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, false, false);

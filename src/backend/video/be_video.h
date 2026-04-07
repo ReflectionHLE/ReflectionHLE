@@ -56,7 +56,7 @@ void BEL_ST_UpdateHostDisplay(void);
 void BEL_ST_RecreateWindowAndRenderer(
 	int windowWidth, int windowHeight,
 	int fullWidth, int fullHeight,
-	bool fullScreen, bool resizable, bool vsync, int driverIndex);
+	bool fullScreen, bool resizable, bool vsync, const char *driver);
 
 void BEL_ST_DestroyWindowAndRenderer(void);
 

@@ -78,7 +78,7 @@ void BE_ST_InitGfx(void)
 		windowWidthToSet, windowHeightToSet,
 		g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight,
 		g_refKeenCfg.isFullscreen, resizable, vsync,
-		g_refKeenCfg.sdlRendererDriver
+		SDL_GetRenderDriver(g_refKeenCfg.sdlRendererDriver)
 	);
 
 	BE_ST_SetScreenMode(3); // Includes BE_ST_Texture handling and output rects preparation

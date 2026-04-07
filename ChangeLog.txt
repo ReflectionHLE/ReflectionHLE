@@ -14,6 +14,8 @@ which turned out to be mostly broken due to a backend/cfg
 related refactor from ReflectionHLE v0.40.0.
 It's unclear how useful were the settings, but it was simpler
 to remove these than adapting them for SDL3.
+* Fixed: If supported, software rendering
+should be used for the launcher when requested.
 * Fix in launcher-side dir selection of '/', for operating systems like Linux.
 * Spear of Destiny: Fix "Forgmen" typo in the launcher.
 It should say Formgen now. (Thanks K1n9_Duk3!)

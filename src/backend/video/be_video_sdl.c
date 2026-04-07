@@ -68,16 +68,12 @@ static void BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon(void)
 void BEL_ST_RecreateWindowAndRenderer(
 	int windowWidth, int windowHeight,
 	int fullWidth, int fullHeight,
-	bool fullScreen, bool resizable, bool vsync, int driverIndex)
+	bool fullScreen, bool resizable, bool vsync, const char *driver)
 {
-	static int prev_x, prev_y, prev_driverIndex;
-	static uint32_t prev_rendererFlags;
+	static int prev_x, prev_y
+	static const char *prev_driver;
 
 	int x = SDL_WINDOWPOS_UNDEFINED, y = x;
-
-	uint32_t rendererFlags = SDL_RENDERER_ACCELERATED;
-	if (vsync)
-		rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
 
 	uint32_t windowFlags = resizable ? SDL_WINDOW_RESIZABLE : 0;
 	if (fullScreen)
@@ -106,9 +102,9 @@ void BEL_ST_RecreateWindowAndRenderer(
 		// However, if only the full screen resolution has changed, we update the window's display mode accordingly.
 		if ((x == prev_x) && (y == prev_y) &&
 		    ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP)) &&
-		    (driverIndex == prev_driverIndex) && (rendererFlags == prev_rendererFlags)
+		    (driver == prev_driver)
 		)
-			goto setupforfullscreen;
+			goto finish;
 
 		BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon();
 	}
@@ -131,7 +127,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 	}
 
 	SDL_SetWindowIcon(g_sdlWindow, g_be_sdl_windowIconSurface);
-	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, driverIndex, rendererFlags);
+	g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, driver);
 	if (!g_sdlRenderer)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: Failed to create SDL2 renderer,\n%s\n", SDL_GetError());
@@ -140,10 +136,10 @@ void BEL_ST_RecreateWindowAndRenderer(
 
 	prev_x = x;
 	prev_y = y;
-	prev_driverIndex = driverIndex;
-	prev_rendererFlags = rendererFlags;
+	prev_driver = driver;
 
-setupforfullscreen:
+finish:
+	SDL_SetRenderVSync(g_sdlRenderer, vsync ? 1 : 0);
 
 	// In case non-desktop fullscreen resolution is desired (even if window is currently *not* fullscreen);
 	// But do so AFTER creating renderer! (Looks like SDL_CreateRenderer may re-create the window.)
