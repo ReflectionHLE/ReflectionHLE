@@ -85,7 +85,7 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 #endif
 	spec.channels = MIXER_DEFAULT_CHANNELS_COUNT;
 
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d\n", (int)desiredSpec.freq, (unsigned int)desiredSpec.format, (int)desiredSpec.channels);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d\n", (int)spec.freq, (unsigned int)spec.format, (int)spec.channels);
 	g_sdlAudioStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, BEL_ST_MixerCallback, 0);
 	if (!g_sdlAudioStream)
 	{
@@ -103,19 +103,18 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 		return false;
 	}
 #endif
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized, received spec: freq %d, format %u, channels %d, samples %u, size %u\n", (int)obtainedSpec.freq, (unsigned int)obtainedSpec.format, (int)obtainedSpec.channels, (unsigned int)obtainedSpec.samples, (unsigned int)obtainedSpec.size);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Audio subsystem initialized\n");
 
-	// Size may be reported as "0" on Android
-	*freq = obtainedSpec.freq;
-	*channels = g_sdlAudioChannels = obtainedSpec.channels;
-	*bufferLen = obtainedSpec.size ?
-	             (obtainedSpec.size / sizeof(BE_ST_SndSample_T)) : obtainedSpec.samples;
+	*freq = spec.freq;
+	*channels = g_sdlAudioChannels = spec.channels;
+	*bufferLen = g_refKeenCfg.sndSampleRate / 64; // An approximation
+
 	return true;
 }
 
 void BEL_ST_ShutdownAudioSubsystem(void)
 {
-	SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioDevice));
+	SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioStream));
 	BEL_ST_AudioMixerShutdown();
 #ifdef REFKEEN_CONFIG_THREADS
 	SDL_DestroyMutex(g_sdlCallbackMutex);
@@ -127,7 +126,7 @@ void BEL_ST_ShutdownAudioSubsystem(void)
 
 void BEL_ST_StartAudioSubsystem(void)
 {
-	SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioDevice));
+	SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioStream));
 }
 
 void BE_ST_LockAudioRecursively(void)
