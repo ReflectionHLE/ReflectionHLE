@@ -1,7 +1,7 @@
 #ifndef BE_INPUT_SDL_H
 #define BE_INPUT_SDL_H
 
-#include "SDL_gamecontroller.h"
+#include <SDL3/SDL_gamepad.h>
 
 #define BE_ST_MAXJOYSTICKS 8
 

@@ -1,4 +1,4 @@
-#include "SDL.h"
+#include <SDL3/SDL.h>
 #include "be_input.h"
 #include "be_input_sdl.h"
 #include "be_input_ui.h"

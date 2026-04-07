@@ -31,7 +31,7 @@
 #include "be_title_and_version.h"
 #include "be_video_textures.h"
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #ifdef REFKEEN_UNIFIED_BUILD
 #include "../rsrc/reflectionhle-icon-32x32.h"

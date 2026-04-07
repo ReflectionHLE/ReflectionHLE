@@ -35,7 +35,7 @@
 #endif
 
 #include <string.h>
-#include "SDL_main.h"
+#include <SDL3/SDL_main.h>
 
 #if (!defined REFKEEN_ENABLE_LAUNCHER) && (!defined REFKEEN_CONFIG_ENABLE_CMDLINE)
 #error "At least one of REFKEEN_ENABLE_LAUNCHER and REFKEEN_CONFIG_ENABLE_CMDLINE must be defined!"

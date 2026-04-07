@@ -5,7 +5,7 @@
 
 #ifdef REFKEEN_CONFIG_EVENTS_CALLBACK
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 extern SDL_Semaphore *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
 

@@ -1,7 +1,7 @@
 #ifndef BE_ATOMIC_SDL_H
 #define BE_ATOMIC_SDL_H
 
-#include "SDL_atomic.h"
+#include <SDL3/SDL_atomic.h>
 
 typedef SDL_AtomicInt BE_ST_AtomicInt_T;
 

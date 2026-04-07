@@ -32,7 +32,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #include "backend/filesystem/be_filesystem_gameinst.h"
 #include "backend/input/be_input.h"

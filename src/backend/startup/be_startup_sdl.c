@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #include "../events/be_events_sdl.h"
 #include "../input/be_input.h"

@@ -1,5 +1,5 @@
 #include <string.h>
-#include "SDL_render.h"
+#include <SDL3/SDL_render.h>
 
 #include "be_cross.h"
 #include "be_st.h"

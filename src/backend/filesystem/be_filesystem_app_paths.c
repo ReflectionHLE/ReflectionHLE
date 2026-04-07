@@ -35,7 +35,7 @@
 #include "be_filesystem_mkdir.h"
 #include <jni.h>
 // HACK - Adding a dependency on SDL2 for Android! (Used for external storage path, and for calling Java function)
-#include "SDL_system.h"
+#include <SDL3/SDL_system.h>
 #endif
 
 

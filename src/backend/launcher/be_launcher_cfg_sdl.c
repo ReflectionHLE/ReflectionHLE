@@ -30,7 +30,7 @@
 #include "be_features.h"
 #include "be_launcher_cfg.h"
 #include "be_launcher_cfg_sdl.h"
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 void BEL_Launcher_ReadRendererDriver(BESettingMenuItemPair *p)
 {
