@@ -42,11 +42,6 @@
 
 #define BEL_ST_GetTicksMS SDL_GetTicks
 
-// Hack for compilation against SDL pre-2.0.4
-#ifndef SDL_RENDER_DEVICE_RESET
-#define SDL_RENDER_DEVICE_RESET 0x2001
-#endif
-
 #define BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO 1
 
 #endif // BE_ST_SDL_PRIVATE_H
