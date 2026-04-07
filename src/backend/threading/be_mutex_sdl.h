@@ -2,7 +2,7 @@
 #define BE_MUTEX_SDL_H
 
 #include <assert.h>
-#include "SDL_Mutex.h"
+#include <SDL3/SDL_mutex.h>
 
 typedef SDL_Mutex BE_ST_Mutex_T;
 
