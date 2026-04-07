@@ -74,8 +74,6 @@ void BEL_ST_GetWindowSize(int *w, int *h);
 
 void BEL_ST_GetDesktopDisplayDims(int *w, int *h);
 
-int BEL_ST_GetWindowDisplayNum(void);
-
 bool BEL_ST_IsConfiguredForSWRendering(void);
 bool BEL_ST_IsVsyncPreferred(bool islauncherWindow);
 

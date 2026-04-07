@@ -65,6 +65,8 @@ static void BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon(void)
 	g_sdlWindow = NULL;
 }
 
+static SDL_DisplayID BEL_ST_GetWindowDisplayId(void);
+
 void BEL_ST_RecreateWindowAndRenderer(
 	int windowWidth, int windowHeight,
 	int fullWidth, int fullHeight,
@@ -77,7 +79,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 
 	uint32_t windowFlags = resizable ? SDL_WINDOW_RESIZABLE : 0;
 	if (fullScreen)
-		windowFlags |= (fullWidth && fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP;
+		windowFlags |= SDL_WINDOW_FULLSCREEN;
 
 	if (!g_be_sdl_windowIconSurface)
 	{
@@ -101,7 +103,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 		//
 		// However, if only the full screen resolution has changed, we update the window's display mode accordingly.
 		if ((x == prev_x) && (y == prev_y) &&
-		    ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP)) &&
+		    ((windowFlags & SDL_WINDOW_FULLSCREEN) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)) &&
 		    (driver == prev_driver)
 		)
 			goto finish;
@@ -111,14 +113,14 @@ void BEL_ST_RecreateWindowAndRenderer(
 
 	// HACK - Create non-fullscreen window and then set as fullscreen, if required.
 	// Reason is this lets us set non-fullscreen window size (for fullscreen toggling).
-	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
+	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN);
 	// A hack for Android x86 on VirtualBox - Try creating an OpenGL ES 1.1 context instead of 2.0
 	if (!g_sdlWindow)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: Failed to create SDL2 window, forcing OpenGL (ES) version to 1.1 and retrying,\n%s\n", SDL_GetError());
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN_DESKTOP);
+		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN);
 	}
 	if (!g_sdlWindow)
 	{
@@ -145,13 +147,23 @@ finish:
 	// But do so AFTER creating renderer! (Looks like SDL_CreateRenderer may re-create the window.)
 	if (fullWidth && fullHeight)
 	{
-		SDL_DisplayMode mode;
-		SDL_GetWindowFullscreenMode(g_sdlWindow, &mode);
-		mode.w = fullWidth;
-		mode.h = fullHeight;
-		SDL_SetWindowFullscreenMode(g_sdlWindow, &mode);
+		SDL_DisplayId display = BEL_ST_GetWindowDisplayId();
+		if (display)
+		{
+			SDL_DisplayMode *mode = SDL_GetDesktopDisplayMode(display);
+			if (!mode)
+				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: SDL_GetDesktopDisplayMode failed,\n%s\n", SDL_GetError());
+			else
+			{
+				SDL_DisplayMode newMode = *mode;
+				newMode.x = fullWidth;
+				newMode.y = fullHeidth;
+				if (!SDL_SetWindowFullscreenMode(g_sdlWindow, &newMode))
+					BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: SDL_SetWindowFullscreenMode failed,\n%s\n", SDL_GetError());
+			}
+		}
 	}
-	SDL_SetWindowFullscreen(g_sdlWindow, windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_SetWindowFullscreen(g_sdlWindow, windowFlags & SDL_WINDOW_FULLSCREEN);
 }
 
 void BEL_ST_DestroyWindowAndRenderer(void)
@@ -276,10 +288,7 @@ void BEL_ST_RenderFill(const BE_ST_Rect *rect)
 
 void BEL_ST_SetWindowFullScreenToggle(bool fullScreen)
 {
-	if (fullScreen)
-		SDL_SetWindowFullscreen(g_sdlWindow, (g_refKeenCfg.fullWidth && g_refKeenCfg.fullHeight) ? SDL_WINDOW_FULLSCREEN : SDL_WINDOW_FULLSCREEN_DESKTOP);
-	else
-		SDL_SetWindowFullscreen(g_sdlWindow, 0);
+	SDL_SetWindowFullscreen(g_sdlWindow, fullScreen);
 }
 
 bool BE_ST_HostGfx_GetFullScreenToggle(void)
@@ -304,24 +313,29 @@ void BEL_ST_GetWindowSize(int *w, int *h)
 
 void BEL_ST_GetDesktopDisplayDims(int *w, int *h)
 {
-	SDL_DisplayMode mode;
-	if (SDL_GetDesktopDisplayMode(0, &mode))
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetDesktopDisplayMode failed,\n%s\n", SDL_GetError());
-		*w = 640;
-		*h = 480;
-	}
+	SDL_DisplayID display = SDL_GetPrimaryDisplay();
+	if (!display)
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_GetDesktopDisplayDims: SDL_GetPrimaryDisplay failed,\n%s\n", SDL_GetError());
 	else
 	{
-		*w = mode.w;
-		*h = mode.h;
+		SDL_DisplayMode *mode = SDL_GetDesktopDisplayMode(display);
+		if (!mode)
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_GetDesktopDisplayDims: SDL_GetDesktopDisplayMode failed,\n%s\n", SDL_GetError());
+		else
+		{
+			*w = mode->w;
+			*h = mode->h;
+			return;
+		}
 	}
+	*w = 640;
+	*h = 480;
 }
 
-int BEL_ST_GetWindowDisplayNum(void)
+static SDL_DisplayID BEL_ST_GetWindowDisplayId(void)
 {
-	int ret = SDL_GetDisplayForWindow(g_sdlWindow);
-	if (ret == -1)
+	SDL_DisplayID ret = SDL_GetDisplayForWindow(g_sdlWindow);
+	if (!ret)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_GetDisplayForWindow failed,\n%s\n", SDL_GetError());
 	return ret;
 }
