@@ -40,7 +40,10 @@
 #define BEL_ST_SleepMS SDL_Delay
 #endif
 
-#define BEL_ST_GetTicksMS SDL_GetTicks
+static inline uint32_t BEL_ST_GetTicksMS()
+{
+	return SDL_GetTicks();
+}
 
 #define BE_ST_MANAGE_INT_CALLS_SEPARATELY_FROM_AUDIO 1
 
