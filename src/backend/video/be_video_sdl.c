@@ -139,17 +139,17 @@ finish:
 	// But do so AFTER creating renderer! (Looks like SDL_CreateRenderer may re-create the window.)
 	if (fullWidth && fullHeight)
 	{
-		SDL_DisplayId display = BEL_ST_GetWindowDisplayId();
+		SDL_DisplayID display = BEL_ST_GetWindowDisplayId();
 		if (display)
 		{
-			SDL_DisplayMode *mode = SDL_GetDesktopDisplayMode(display);
+			const SDL_DisplayMode *mode = SDL_GetDesktopDisplayMode(display);
 			if (!mode)
 				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: SDL_GetDesktopDisplayMode failed,\n%s\n", SDL_GetError());
 			else
 			{
 				SDL_DisplayMode newMode = *mode;
-				newMode.x = fullWidth;
-				newMode.y = fullHeidth;
+				newMode.w = fullWidth;
+				newMode.h = fullHeight;
 				if (!SDL_SetWindowFullscreenMode(g_sdlWindow, &newMode))
 					BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: SDL_SetWindowFullscreenMode failed,\n%s\n", SDL_GetError());
 			}
@@ -168,7 +168,7 @@ void BEL_ST_DestroyWindowAndRenderer(void)
 BE_ST_Texture *BEL_ST_CreateARGBTexture(int w, int h, bool isTarget, bool isLinear)
 {
 	// TODO: Consider using SDL_TEXTUREACCESS_STATIC later
-	BE_ST_Texture *ret = SDL_CreateTexture(
+	SDL_Texture *ret = SDL_CreateTexture(
 	      g_sdlRenderer, SDL_PIXELFORMAT_ARGB8888,
 	      isTarget ? SDL_TEXTUREACCESS_TARGET : SDL_TEXTUREACCESS_STREAMING,
 	      w, h);
@@ -190,8 +190,9 @@ int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst)
 	int ret;
 	if (dst)
 	{
-		SDL_Rect sdl_rect = {dst->x, dst->y, dst->w, dst->h};
-		ret = SDL_RenderTexture(g_sdlRenderer, (SDL_Texture *)texture, NULL, &sdl_rect);
+		SDL_FRect sdl_frect = {(float)dst->x, (float)dst->y,
+		                       (float)dst->w, (float)dst->h};
+		ret = SDL_RenderTexture(g_sdlRenderer, (SDL_Texture *)texture, NULL, &sdl_frect);
 	}
 	else
 		ret = SDL_RenderTexture(g_sdlRenderer, (SDL_Texture *)texture, NULL, NULL);
@@ -273,8 +274,9 @@ void BEL_ST_SetDrawBlendMode(bool blend)
 
 void BEL_ST_RenderFill(const BE_ST_Rect *rect)
 {
-	SDL_Rect sdl_rect = {rect->x, rect->y, rect->w, rect->h};
-	if (!SDL_RenderFillRect(g_sdlRenderer, &sdl_rect))
+	SDL_FRect sdl_frect = {(float)rect->x, (float)rect->y,
+	                       (float)rect->w, (float)rect->h};
+	if (!SDL_RenderFillRect(g_sdlRenderer, &sdl_frect))
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderFillRect failed,\n%s\n", SDL_GetError());
 }
 
@@ -310,7 +312,7 @@ void BEL_ST_GetDesktopDisplayDims(int *w, int *h)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_GetDesktopDisplayDims: SDL_GetPrimaryDisplay failed,\n%s\n", SDL_GetError());
 	else
 	{
-		SDL_DisplayMode *mode = SDL_GetDesktopDisplayMode(display);
+		const SDL_DisplayMode *mode = SDL_GetDesktopDisplayMode(display);
 		if (!mode)
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_GetDesktopDisplayDims: SDL_GetDesktopDisplayMode failed,\n%s\n", SDL_GetError());
 		else
