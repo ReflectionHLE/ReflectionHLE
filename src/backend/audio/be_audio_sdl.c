@@ -40,7 +40,7 @@
 static SDL_Mutex* g_sdlCallbackMutex = NULL;
 #endif
 static int g_sdlAudioChannels;
-/*static*/ SDL_AudioDeviceID g_sdlAudioDevice;
+/*static*/ SDL_AudioStream *g_sdlAudioStream;
 
 extern bool g_sdlAudioSubsystemUp;
 
@@ -48,43 +48,48 @@ extern bool g_sdlAudioSubsystemUp;
 void BEL_ST_InterThread_CallBack(void *unused, Uint8 *stream, int len);
 #endif
 
-static void BEL_ST_MixerCallback(void *unused, Uint8 *stream, int len)
+static void BEL_ST_MixerCallback(void *unused_userdata, SDL_AudioStream *stream,
+                                 int additional_amount, int unused_total_amount)
 {
-	BEL_ST_AudioMixerCallback((BE_ST_SndSample_T *)stream,
-	                          len / (g_sdlAudioChannels * sizeof(BE_ST_SndSample_T)));
+	if (additional_amount > 0)
+	{
+		Uint8 *data = SDL_stack_alloc(Uint8, additional_amount);
+		if (data)
+		{
+#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
+			BEL_ST_InterThread_CallBack(unused_userdata, data,
+			                            additional_amount);
+#else
+			BEL_ST_AudioMixerCallback((BE_ST_SndSample_T *)data,
+			                          additional_amount / (g_sdlAudioChannels * sizeof(BE_ST_SndSample_T)));
+#endif
+			SDL_PutAudioStreamData(stream, data, additional_amount);
+			SDL_stack_free(data);
+		}
+	}
 }
 
 bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 {
-	SDL_AudioSpec desiredSpec, obtainedSpec;
+	SDL_AudioSpec spec;
 	if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
 		return false;
 	}
-	desiredSpec.freq = g_refKeenCfg.sndSampleRate;
+	spec.freq = g_refKeenCfg.sndSampleRate;
 #ifdef MIXER_SAMPLE_FORMAT_FLOAT
-	desiredSpec.format = SDL_AUDIO_F32;
+	spec.format = SDL_AUDIO_F32;
 #elif (defined MIXER_SAMPLE_FORMAT_SINT16)
-	desiredSpec.format = SDL_AUDIO_S16;
+	spec.format = SDL_AUDIO_S16;
 #endif
-	desiredSpec.channels = MIXER_DEFAULT_CHANNELS_COUNT;
-	// Should be some power-of-two roughly proportional to the sample rate; Using 1024 for 48000Hz.
-	for (desiredSpec.samples = 1; desiredSpec.samples < g_refKeenCfg.sndSampleRate/64; desiredSpec.samples *= 2)
-		;
+	spec.channels = MIXER_DEFAULT_CHANNELS_COUNT;
 
-#ifdef BE_ST_FILL_AUDIO_IN_MAIN_THREAD
-	desiredSpec.callback = BEL_ST_InterThread_CallBack;
-#else
-	desiredSpec.callback = BEL_ST_MixerCallback;
-#endif
-
-	desiredSpec.userdata = NULL;
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d, samples %u\n", (int)desiredSpec.freq, (unsigned int)desiredSpec.format, (int)desiredSpec.channels, (unsigned int)desiredSpec.samples);
-	g_sdlAudioDevice = SDL_OpenAudioDevice(NULL, 0, &desiredSpec, &obtainedSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
-	if (g_sdlAudioDevice <= 0)
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Initializing audio subsystem, requested spec: freq %d, format %u, channels %d\n", (int)desiredSpec.freq, (unsigned int)desiredSpec.format, (int)desiredSpec.channels);
+	g_sdlAudioStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, BEL_ST_MixerCallback, 0);
+	if (!g_sdlAudioStream)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio device,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "Cannot open SDL audio stream,\n%s\n", SDL_GetError());
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		return false;
 	}
@@ -93,7 +98,7 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 	if (!g_sdlCallbackMutex)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Cannot create recursive mutex for SDL audio callback,\n%s\nClosing SDL audio subsystem\n", SDL_GetError());
-		SDL_CloseAudioDevice(g_sdlAudioDevice);
+		SDL_DestroyAudioStream(g_sdlAudioStream);
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		return false;
 	}
@@ -110,19 +115,19 @@ bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 
 void BEL_ST_ShutdownAudioSubsystem(void)
 {
-	SDL_PauseAudioDevice(g_sdlAudioDevice, 1);
+	SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioDevice));
 	BEL_ST_AudioMixerShutdown();
 #ifdef REFKEEN_CONFIG_THREADS
 	SDL_DestroyMutex(g_sdlCallbackMutex);
 	g_sdlCallbackMutex = NULL;
 #endif
-	SDL_CloseAudioDevice(g_sdlAudioDevice);
+	SDL_DestroyAudioStream(g_sdlAudioStream);
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
 void BEL_ST_StartAudioSubsystem(void)
 {
-	SDL_PauseAudioDevice(g_sdlAudioDevice, 0);
+	SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioDevice));
 }
 
 void BE_ST_LockAudioRecursively(void)

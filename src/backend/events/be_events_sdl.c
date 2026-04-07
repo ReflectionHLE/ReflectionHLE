@@ -472,7 +472,7 @@ static uint32_t g_sdl_eventCallback_EnterBackgroundLastTicks;
 
 int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 {
-	extern SDL_AudioDeviceID g_sdlAudioDevice;
+	extern SDL_AudioStream *g_sdlAudioStream;
 	extern uint32_t g_be_audioMainThread_lastCallTicks;
 
 	switch (event->type)
@@ -486,7 +486,7 @@ int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 		return 0;
 	case SDL_EVENT_WILL_ENTER_BACKGROUND:
 		if (g_sdlAudioSubsystemUp) // FIXME - Hope this works well
-			SDL_PauseAudioDevice(g_sdlAudioDevice, 1);
+			SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioStream));
 		return 0;
 	case SDL_EVENT_DID_ENTER_BACKGROUND:
 		g_sdl_eventCallback_EnterBackgroundLastTicks = BEL_ST_GetTicksMS();
@@ -503,7 +503,7 @@ int BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 		BE_ST_Launcher_MarkGfxCache();
 #endif
 		if (g_sdlAudioSubsystemUp) // FIXME - Hope this works well
-			SDL_PauseAudioDevice(g_sdlAudioDevice, 0);
+			SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioStream));
 		return 0;
 	default:
 		return 1; // Just send to SDL_PollEvent as usual
