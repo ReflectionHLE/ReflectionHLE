@@ -72,10 +72,7 @@ void BEL_ST_RecreateWindowAndRenderer(
 	int fullWidth, int fullHeight,
 	bool fullScreen, bool resizable, bool vsync, const char *driver)
 {
-	static int prev_x, prev_y
 	static const char *prev_driver;
-
-	int x = SDL_WINDOWPOS_UNDEFINED, y = x;
 
 	uint32_t windowFlags = resizable ? SDL_WINDOW_RESIZABLE : 0;
 	if (fullScreen)
@@ -95,15 +92,12 @@ void BEL_ST_RecreateWindowAndRenderer(
 	if (g_sdlWindow)
 	{
 		// This is a little bit of a hack:
-		// - x and y are compared to previous values, currently used to pick a display to use (in a multi-display setup).
 		// - Since the actual flags of a window may differ from what we requested (due to toggling fullscreen or any other reason),
 		// we support skipping window recreation only if fullscreen state did not change.
-		// - Renderer flags are compared to the previously requested flags.
-		// - Same is done with with renderer driver index. If -1 is used anywhere, this makes reuse of the same window more probable.
+		// - Renderer driver string pointer is also compared. If NULL is used anywhere, this makes reuse of the same window more probable.
 		//
 		// However, if only the full screen resolution has changed, we update the window's display mode accordingly.
-		if ((x == prev_x) && (y == prev_y) &&
-		    ((windowFlags & SDL_WINDOW_FULLSCREEN) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)) &&
+		if (((windowFlags & SDL_WINDOW_FULLSCREEN) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)) &&
 		    (driver == prev_driver)
 		)
 			goto finish;
@@ -113,14 +107,14 @@ void BEL_ST_RecreateWindowAndRenderer(
 
 	// HACK - Create non-fullscreen window and then set as fullscreen, if required.
 	// Reason is this lets us set non-fullscreen window size (for fullscreen toggling).
-	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN);
+	g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN);
 	// A hack for Android x86 on VirtualBox - Try creating an OpenGL ES 1.1 context instead of 2.0
 	if (!g_sdlWindow)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: Failed to create SDL2 window, forcing OpenGL (ES) version to 1.1 and retrying,\n%s\n", SDL_GetError());
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, x, y, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN);
+		g_sdlWindow = SDL_CreateWindow(REFKEEN_TITLE_AND_VER_STRING, windowWidth, windowHeight, windowFlags & ~SDL_WINDOW_FULLSCREEN);
 	}
 	if (!g_sdlWindow)
 	{
@@ -136,8 +130,6 @@ void BEL_ST_RecreateWindowAndRenderer(
 		exit(0);
 	}
 
-	prev_x = x;
-	prev_y = y;
 	prev_driver = driver;
 
 finish:
