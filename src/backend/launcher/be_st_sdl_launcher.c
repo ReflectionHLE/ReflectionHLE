@@ -2752,14 +2752,14 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 		BEL_ST_RenderClear();
 		if (g_sdlTargetTexture)
 		{
-			if (BEL_ST_SetRenderTarget(g_sdlTargetTexture) != 0)
+			if (!BEL_ST_SetRenderTarget(g_sdlTargetTexture))
 			{
 				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set target texture as render target (disabling)\n");
 				BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
 				goto refreshwithnorendertarget;
 			}
 			BEL_ST_RenderFromTexture(g_sdlTexture, NULL);
-			if (BEL_ST_SetRenderTarget(NULL) != 0)
+			if (!BEL_ST_SetRenderTarget(NULL))
 				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set default render target!\n");
 			BEL_ST_RenderFromTexture(g_sdlTargetTexture, &g_sdlAspectCorrectionBorderedRect);
 		}

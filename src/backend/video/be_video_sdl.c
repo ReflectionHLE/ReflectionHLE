@@ -185,9 +185,9 @@ void BEL_ST_DestroyTexture(BE_ST_Texture *texture)
 	SDL_DestroyTexture((SDL_Texture *)texture);
 }
 
-int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst)
+bool BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst)
 {
-	int ret;
+	bool ret;
 	if (dst)
 	{
 		SDL_FRect sdl_frect = {(float)dst->x, (float)dst->y,
@@ -197,7 +197,7 @@ int BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst)
 	else
 		ret = SDL_RenderTexture(g_sdlRenderer, (SDL_Texture *)texture, NULL, NULL);
 
-	if (ret)
+	if (!ret)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderTexture failed,\n%s\n", SDL_GetError());
 	return ret;
 }
@@ -221,7 +221,7 @@ void BEL_ST_UnlockTexture(BE_ST_Texture *texture)
 
 void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const void *pixels, int pitch)
 {
-	int ret;
+	bool ret;
 	if (rect)
 	{
 		SDL_Rect sdl_rect = {rect->x, rect->y, rect->w, rect->h};
@@ -230,7 +230,7 @@ void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const 
 	else
 		ret = SDL_UpdateTexture((SDL_Texture *)texture, NULL, pixels, pitch);
 
-	if (ret)
+	if (!ret)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_UpdateTexture failed,\n%s\n", SDL_GetError());
 }
 
@@ -240,10 +240,10 @@ void BEL_ST_SetTextureBlendMode(BE_ST_Texture *texture, bool blend)
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_SetTextureBlendMode failed to set blend mode, blend == %d,\n%s\n", (int)blend, SDL_GetError());
 }
 
-int BEL_ST_SetRenderTarget(BE_ST_Texture *texture)
+bool BEL_ST_SetRenderTarget(BE_ST_Texture *texture)
 {
-	int ret = SDL_SetRenderTarget(g_sdlRenderer, (SDL_Texture *)texture);
-	if (ret)
+	bool ret = SDL_SetRenderTarget(g_sdlRenderer, (SDL_Texture *)texture);
+	if (!ret)
 	{
 		if (texture)
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_SetRenderTarget failed to set render target,\n%s\n", SDL_GetError());
