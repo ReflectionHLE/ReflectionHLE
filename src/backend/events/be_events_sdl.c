@@ -459,7 +459,7 @@ void BEL_ST_SaveConfigFiles(void);
 
 void BEL_ST_CheckForExitFromEventsCallback(void)
 {
-	if (SDL_TryWaitSemaphore(g_sdlEventsCallbackToMainSem) == 0)
+	if (SDL_TryWaitSemaphore(g_sdlEventsCallbackToMainSem))
 	{
 		BEL_ST_SaveConfigFiles(); // From BE_ST_QuickExit
 		SDL_SignalSemaphore(g_sdlMainToEventsCallbackSem);

@@ -1356,7 +1356,7 @@ extern SDL_Semaphore *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSe
 
 static void BEL_ST_Launcher_CheckForExitFromEventsCallback(void)
 {
-	if (SDL_TryWaitSemaphore(g_sdlEventsCallbackToMainSem) == 0)
+	if (SDL_TryWaitSemaphore(g_sdlEventsCallbackToMainSem))
 	{
 		// Let's not call BE_ST_Launcher_Shutdown and/or BEL_ST_SaveConfig here
 		SDL_SignalSemaphore(g_sdlMainToEventsCallbackSem);

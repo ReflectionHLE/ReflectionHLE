@@ -57,7 +57,7 @@ static void BEL_ST_MixerCallback(void *unused, Uint8 *stream, int len)
 bool BEL_ST_InitAudioSubsystem(int *freq, int *channels, int *bufferLen)
 {
 	SDL_AudioSpec desiredSpec, obtainedSpec;
-	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
+	if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL audio system initialization failed,\n%s\n", SDL_GetError());
 		return false;

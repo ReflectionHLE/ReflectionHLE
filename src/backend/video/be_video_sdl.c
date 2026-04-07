@@ -200,7 +200,7 @@ void *BEL_ST_LockTexture(BE_ST_Texture *texture)
 {
 	void *pixels;
 	int pitch;
-	if (SDL_LockTexture((SDL_Texture *)texture, NULL, &pixels, &pitch))
+	if (!SDL_LockTexture((SDL_Texture *)texture, NULL, &pixels, &pitch))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_LockTexture failed,\n%s\n", SDL_GetError());
 		pixels = NULL;
@@ -230,7 +230,7 @@ void BEL_ST_UpdateTexture(BE_ST_Texture *texture, const BE_ST_Rect *rect, const 
 
 void BEL_ST_SetTextureBlendMode(BE_ST_Texture *texture, bool blend)
 {
-	if (SDL_SetTextureBlendMode((SDL_Texture *)texture, blend ? SDL_BLENDMODE_BLEND : SDL_BLENDMODE_NONE))
+	if (!SDL_SetTextureBlendMode((SDL_Texture *)texture, blend ? SDL_BLENDMODE_BLEND : SDL_BLENDMODE_NONE))
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_SetTextureBlendMode failed to set blend mode, blend == %d,\n%s\n", (int)blend, SDL_GetError());
 }
 
@@ -249,13 +249,13 @@ int BEL_ST_SetRenderTarget(BE_ST_Texture *texture)
 
 void BEL_ST_RenderClear(void)
 {
-	if (SDL_RenderClear(g_sdlRenderer))
+	if (!SDL_RenderClear(g_sdlRenderer))
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderClear failed,\n%s\n", SDL_GetError());
 }
 
 void BEL_ST_SetDrawColor(uint32_t color)
 {
-	if (SDL_SetRenderDrawColor(
+	if (!SDL_SetRenderDrawColor(
 	      g_sdlRenderer, (color>>16)&255, (color>>8)&255, color&255, color>>24))
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_SetRenderDrawColor failed,\n%s\n", SDL_GetError());
 }
@@ -269,7 +269,7 @@ void BEL_ST_SetDrawBlendMode(bool blend)
 void BEL_ST_RenderFill(const BE_ST_Rect *rect)
 {
 	SDL_Rect sdl_rect = {rect->x, rect->y, rect->w, rect->h};
-	if (SDL_RenderFillRect(g_sdlRenderer, &sdl_rect))
+	if (!SDL_RenderFillRect(g_sdlRenderer, &sdl_rect))
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_RenderFillRect failed,\n%s\n", SDL_GetError());
 }
 

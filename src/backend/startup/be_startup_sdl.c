@@ -59,14 +59,14 @@ void BE_ST_InitCommon(void)
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 #endif
 	// SDL_INIT_VIDEO implies SDL_INIT_EVENTS
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (!SDL_Init(SDL_INIT_VIDEO))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL backend initialization failed,\n%s\n", SDL_GetError());
 		exit(0);
 	}
 
 	// SDL_INIT_CONTROLLER implies SDL_INIT_JOYSTICK
-	if (SDL_InitSubSystem(SDL_INIT_GAMEPAD) < 0)
+	if (!SDL_InitSubSystem(SDL_INIT_GAMEPAD))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL game controller subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
 	}
