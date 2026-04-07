@@ -66,9 +66,6 @@ void BE_ST_InitCommon(void)
 #ifdef REFKEEN_CONFIG_REQUIRE_LANDSCAPE_ORIENTATION
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 #endif
-#ifdef REFKEEN_CONFIG_RESET_SDL_HINT_ACCELEROMETER_AS_JOYSTICK
-	SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
-#endif
 	if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL game controller subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
