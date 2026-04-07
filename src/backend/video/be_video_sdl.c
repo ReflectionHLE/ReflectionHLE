@@ -49,6 +49,8 @@
 #include "../rsrc/reflection-cat3d-icon-32x32.h"
 #elif defined REFKEEN_HAS_VER_WOLF3D_ALL
 #include "../rsrc/reflection-wolf3d-icon-32x32.h"
+#elif defined REFKEEN_HAS_VER_BMENACE_ALL
+#include "../rsrc/reflection-bmenace-icon-32x32.h"
 #else
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
