@@ -64,12 +64,12 @@ void BE_ST_PollEvents(void)
 		{
 		case SDL_EVENT_KEY_DOWN:
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-			if (((event.key.keysym.scancode == SDL_SCANCODE_RETURN) ||
-			     (event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER)) &&
+			if (((event.key.scancode == SDL_SCANCODE_RETURN) ||
+			     (event.key.scancode == SDL_SCANCODE_KP_ENTER)) &&
 			    !event.key.repeat &&
-			    ((event.key.keysym.mod & (SDL_KMOD_LALT|SDL_KMOD_RALT))
+			    ((event.key.mod & (SDL_KMOD_LALT|SDL_KMOD_RALT))
 #ifdef REFKEEN_PLATFORM_MACOS
-			     || (event.key.keysym.mod & (SDL_KMOD_LGUI|SDL_KMOD_RGUI))
+			     || (event.key.mod & (SDL_KMOD_LGUI|SDL_KMOD_RGUI))
 #endif
 			))
 			{
@@ -83,14 +83,14 @@ void BE_ST_PollEvents(void)
 			if ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) && g_sdlShowTouchUI)
 			{
 				// Ignore a few specific scancodes on Android
-				if (sdlKeyMappings[event.key.keysym.scancode].dosScanCode && (event.key.keysym.scancode != SDL_SCANCODE_SELECT) && (event.key.keysym.scancode != SDL_SCANCODE_AC_BACK))
+				if (sdlKeyMappings[event.key.scancode].dosScanCode && (event.key.scancode != SDL_SCANCODE_SELECT) && (event.key.scancode != SDL_SCANCODE_AC_BACK))
 					BEL_ST_DoHideTouchUI();
 			}
 			// Fall-through
 		case SDL_EVENT_KEY_UP:
 		{
 			bool isPressed = (event.type == SDL_EVENT_KEY_DOWN);
-			SDL_Scancode scancode = event.key.keysym.scancode;
+			SDL_Scancode scancode = event.key.scancode;
 			if (scancode >= SDL_SCANCODE_COUNT)
 				break;
 

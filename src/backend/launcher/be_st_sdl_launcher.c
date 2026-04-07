@@ -2851,14 +2851,14 @@ void BE_ST_Launcher_RunEventLoop(void)
 			case SDL_EVENT_KEY_DOWN:
 				if (event.key.repeat)
 					break; // Ignore
-				g_sdlKeyboardLastKeyPressed = event.key.keysym.scancode;
-				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.keysym.mod & SDL_KMOD_SHIFT);
+				g_sdlKeyboardLastKeyPressed = event.key.scancode;
+				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.mod & SDL_KMOD_SHIFT);
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-				BEL_ST_Launcher_HandleKeyPressEvent(event.key.keysym.scancode, g_sdlKeyboardLastKeyPressedIsShifted);
+				BEL_ST_Launcher_HandleKeyPressEvent(event.key.scancode, g_sdlKeyboardLastKeyPressedIsShifted);
 				break;
 			case SDL_EVENT_KEY_UP:
-				if (g_sdlKeyboardLastKeyPressed == event.key.keysym.scancode)
+				if (g_sdlKeyboardLastKeyPressed == event.key.scancode)
 					g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				break;
 
@@ -3011,10 +3011,10 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 				if (event.key.repeat)
 					break; // Ignore
 				if ((menuBind == BE_MENUBIND_KEY) &&
-				    (event.key.keysym.scancode > 0) && // We use 0 as a default
-				    (event.key.keysym.scancode < (int)BE_MAX_KEY_ID) &&
-				    g_be_st_keyIdToNameMap[event.key.keysym.scancode])
-					choice = event.key.keysym.scancode;
+				    (event.key.scancode > 0) && // We use 0 as a default
+				    (event.key.scancode < (int)BE_MAX_KEY_ID) &&
+				    g_be_st_keyIdToNameMap[event.key.scancode])
+					choice = event.key.scancode;
 				keepRunning = false;
 				break;
 			case SDL_EVENT_MOUSE_BUTTON_DOWN:
@@ -3276,15 +3276,15 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				if (event.key.repeat)
 					break; // Ignore
 				// Otherwise some handler may be called
-				g_sdlKeyboardLastKeyPressed = event.key.keysym.scancode;
-				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.keysym.mod & SDL_KMOD_SHIFT);
+				g_sdlKeyboardLastKeyPressed = event.key.scancode;
+				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.mod & SDL_KMOD_SHIFT);
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-				if (BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(event.key.keysym.scancode, g_sdlKeyboardLastKeyPressedIsShifted, &confirmed))
+				if (BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(event.key.scancode, g_sdlKeyboardLastKeyPressedIsShifted, &confirmed))
 					return confirmed;
 				break;
 			case SDL_EVENT_KEY_UP:
-				if (g_sdlKeyboardLastKeyPressed == event.key.keysym.scancode)
+				if (g_sdlKeyboardLastKeyPressed == event.key.scancode)
 					g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				break;
 
