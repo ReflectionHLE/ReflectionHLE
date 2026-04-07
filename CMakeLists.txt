@@ -119,14 +119,16 @@ endif ()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
-# We build our own copy of SDL2 for Android
+# We build our own copy of SDL3 for Android
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
-	find_library(SDL2 SDL2)
+	find_library(SDL3 SDL3)
 	include_directories(src/android-project/reflectionhle/jni/SDL/include)
 else ()
-	find_package(SDL2 REQUIRED)
+	find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
 	find_package(SpeexDSP)
-	include_directories(${SDL2_INCLUDE_DIR} ${SPEEXDSP_INCLUDE_DIRS})
+	# FIXME
+	include_directories(${SDL3_DIR}/../../../include ${SPEEXDSP_INCLUDE_DIRS})
+#	include_directories(${SPEEXDSP_INCLUDE_DIRS})
 endif ()
 
 if (SPEEXDSP_FOUND)
@@ -170,9 +172,9 @@ configure_file(refkeen_config.h.in refkeen_config.h)
 include(CheckLibraryExists)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
-	set(LIBRARIES log SDL2 SDL2main)
+	set(LIBRARIES log PRIVATE SDL3::SDL3)
 else ()
-	set(LIBRARIES ${SDL2_LIBRARY} ${SPEEXDSP_LIBRARIES})
+	set(LIBRARIES PRIVATE SDL3::SDL3 ${SPEEXDSP_LIBRARIES})
 endif ()
 
 check_library_exists(m pow "" LIBM)
