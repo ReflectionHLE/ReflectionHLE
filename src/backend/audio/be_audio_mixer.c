@@ -120,7 +120,7 @@ finish:
 void BEL_ST_AudioMixerInit(int freq, int channels)
 {
 	if ((channels != 1) && (channels != 2))
-		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerInitource: Unsupported channels count!");
+		BE_ST_ExitWithErrorMsg("BEL_ST_AudioMixerInitSource: Unsupported channels count!");
 	g_stAudioMixer.offsetInSound = 0;
 	g_stAudioMixer.samplesPartNum = 0;
 	g_stAudioMixer.numSources = 0;
