@@ -85,9 +85,13 @@ void BEL_ST_RecreateWindowAndRenderer(
 
 	if (!g_be_sdl_windowIconSurface)
 	{
-		g_be_sdl_windowIconSurface = SDL_CreateRGBSurfaceFrom(RefKeen_Window_Icon, 32, 32, 8, 32, 0, 0, 0, 0);
-		SDL_SetPaletteColors(g_be_sdl_windowIconSurface->format->palette, RefKeen_Window_Icon_Palette, '0', 9);
-		SDL_SetSurfaceColorKey(g_be_sdl_windowIconSurface, true, SDL_MapRGB(g_be_sdl_windowIconSurface->format, 0xCC, 0xFF, 0xCC));
+		g_be_sdl_windowIconSurface =
+		  SDL_CreateSurfaceFrom(32, 32,
+		                        SDL_GetPixelFormatForMasks(8,0,0,0,0),
+		                        RefKeen_Window_Icon, 32);
+
+		SDL_SetPaletteColors(SDL_GetSurfacePalette(g_be_sdl_windowIconSurface), RefKeen_Window_Icon_Palette, '0', 9);
+		SDL_SetSurfaceColorKey(g_be_sdl_windowIconSurface, true, SDL_MapSurfaceRGB(g_be_sdl_windowIconSurface, 0xCC, 0xFF, 0xCC));
 	}
 
 	if (g_sdlWindow)
