@@ -196,19 +196,19 @@ void BE_ST_PollEvents(void)
 					BEL_ST_AltControlScheme_ClearBinaryStates();
 				// Do take care of mouse cursor if there's a need to
 				if (g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
-					BEL_ST_CheckPressedPointerInTouchControls(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, true);
+					BEL_ST_CheckPressedPointerInTouchControls(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, true);
 				// Let's not trigger an immediate action when on-screen controls are shown, *if* there are any, which were *not* previously shown
 				if (g_sdlControllerMappingActualCurr->touchMappings || (!g_sdlShowControllerUI && g_sdlControllerMappingActualCurr->showUi))
 					break;
 			}
 
-			BEL_ST_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
+			BEL_ST_CheckCommonPointerPressCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
 		case SDL_EVENT_FINGER_UP:
-			BEL_ST_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
+			BEL_ST_CheckCommonPointerReleaseCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
 		case SDL_EVENT_FINGER_MOTION:
-			BEL_ST_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
+			BEL_ST_CheckCommonPointerMoveCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 			break;
 #endif // REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 
@@ -301,8 +301,8 @@ void BE_ST_PollEvents(void)
 			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
 				break;
 
-			int axis = event.caxis.axis;
-			int axisVal = event.caxis.value;
+			int axis = event.gaxis.axis;
+			int axisVal = event.gaxis.value;
 			int side = (axisVal < 0) ? 0 : 1;
 			if ((axis < 0) || (axis >= BE_ST_CTRL_AXIS_MAX))
 				break;
@@ -333,7 +333,7 @@ void BE_ST_PollEvents(void)
 		case SDL_EVENT_GAMEPAD_BUTTON_UP:
 		{
 			bool isPressed = (event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
-			int but = event.cbutton.button;
+			int but = event.gbutton.button;
 			if ((but < 0) || (but >= BE_ST_CTRL_BUT_MAX))
 				break;
 

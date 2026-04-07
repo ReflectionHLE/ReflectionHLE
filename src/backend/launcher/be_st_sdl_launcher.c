@@ -2887,13 +2887,13 @@ void BE_ST_Launcher_RunEventLoop(void)
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 			case SDL_EVENT_FINGER_DOWN:
-				BEL_ST_Launcher_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerPressCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
 			case SDL_EVENT_FINGER_UP:
-				BEL_ST_Launcher_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerReleaseCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
 			case SDL_EVENT_FINGER_MOTION:
-				BEL_ST_Launcher_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerMoveCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, ticksBeforePoll);
 				break;
 #endif
 
@@ -2909,24 +2909,24 @@ void BE_ST_Launcher_RunEventLoop(void)
 				break;
 
 			case SDL_EVENT_GAMEPAD_AXIS_MOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
-				if ((event.caxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.caxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
-					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - BE_ST_CTRL_AXIS_LTRIGGER] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
+				if ((event.gaxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.gaxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
+					g_sdlLauncherTriggerBinaryStates[event.gaxis.axis - BE_ST_CTRL_AXIS_LTRIGGER] = (event.gaxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
 			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
+				if ((event.gbutton.button < 0) || (event.gbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
-				g_sdlControllerLastButtonPressed = event.cbutton.button;
+				g_sdlControllerLastButtonPressed = event.gbutton.button;
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, true);
+				BEL_ST_Launcher_HandleControllerButtonEvent(event.gbutton.button, true);
 				break;
 			case SDL_EVENT_GAMEPAD_BUTTON_UP:
-				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
+				if ((event.gbutton.button < 0) || (event.gbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
-				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
+				if (g_sdlControllerLastButtonPressed == event.gbutton.button)
 					g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
-				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, false);
+				BEL_ST_Launcher_HandleControllerButtonEvent(event.gbutton.button, false);
 				break;
 
 			case SDL_EVENT_WINDOW_RESIZED:
@@ -3038,11 +3038,11 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 				break;
 
 			case SDL_EVENT_GAMEPAD_AXIS_MOTION:
-				if ((event.caxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.caxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
+				if ((event.gaxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.gaxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
 				{
-					int triggerNum = event.caxis.axis - BE_ST_CTRL_AXIS_LTRIGGER;
+					int triggerNum = event.gaxis.axis - BE_ST_CTRL_AXIS_LTRIGGER;
 					bool prevBinaryState = g_sdlLauncherTriggerBinaryStates[triggerNum];
-					g_sdlLauncherTriggerBinaryStates[triggerNum] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
+					g_sdlLauncherTriggerBinaryStates[triggerNum] = (event.gaxis.value >= g_sdlJoystickAxisBinaryThreshold);
 					if (!prevBinaryState && g_sdlLauncherTriggerBinaryStates[triggerNum])
 					{
 						choice = BE_ST_CTRL_BUT_MAX + triggerNum; // HACK
@@ -3052,8 +3052,8 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 				break;
 			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 				if ((menuBind == BE_MENUBIND_PAD) &&
-				    BE_ST_IsValidPadButton(event.cbutton.button))
-					choice = event.cbutton.button;
+				    BE_ST_IsValidPadButton(event.gbutton.button))
+					choice = event.gbutton.button;
 				keepRunning = false;
 				break;
 
@@ -3311,14 +3311,14 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 			case SDL_EVENT_FINGER_DOWN:
-				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
+				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 				break;
 			case SDL_EVENT_FINGER_UP:
-				if (BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, &confirmed))
+				if (BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight, &confirmed))
 					return confirmed;
 				break;
 			case SDL_EVENT_FINGER_MOTION:
-				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(event.tfinger.touchId, event.tfinger.fingerId, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
+				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(event.tfinger.touchID, event.tfinger.fingerID, event.tfinger.x * g_sdlLastReportedWindowWidth, event.tfinger.y * g_sdlLastReportedWindowHeight);
 				break;
 #endif
 
@@ -3330,25 +3330,25 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				break;
 
 			case SDL_EVENT_GAMEPAD_AXIS_MOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
-				if ((event.caxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.caxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
-					g_sdlLauncherTriggerBinaryStates[event.caxis.axis - BE_ST_CTRL_AXIS_LTRIGGER] = (event.caxis.value >= g_sdlJoystickAxisBinaryThreshold);
+				if ((event.gaxis.axis == BE_ST_CTRL_AXIS_LTRIGGER) || (event.gaxis.axis == BE_ST_CTRL_AXIS_RTRIGGER))
+					g_sdlLauncherTriggerBinaryStates[event.gaxis.axis - BE_ST_CTRL_AXIS_LTRIGGER] = (event.gaxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
 			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
+				if ((event.gbutton.button < 0) || (event.gbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
-				g_sdlControllerLastButtonPressed = event.cbutton.button;
+				g_sdlControllerLastButtonPressed = event.gbutton.button;
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.cbutton.button, true, &confirmed))
+				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.gbutton.button, true, &confirmed))
 					return confirmed;
 				break;
 			case SDL_EVENT_GAMEPAD_BUTTON_UP:
-				if ((event.cbutton.button < 0) || (event.cbutton.button >= BE_ST_CTRL_BUT_MAX))
+				if ((event.gbutton.button < 0) || (event.gbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
-				if (g_sdlControllerLastButtonPressed == event.cbutton.button)
+				if (g_sdlControllerLastButtonPressed == event.gbutton.button)
 					g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
-				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.cbutton.button, false, &confirmed))
+				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.gbutton.button, false, &confirmed))
 					return confirmed;
 				break;
 
