@@ -3406,7 +3406,7 @@ static void BEL_ST_Launcher_FillJoysticksList(void)
 	     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
 		if (!g_sdlControllers[i] && SDL_IsGamepad(dev_index))
 		{
-			g_sdlControllers[i] = SDL_OpenGamepad(i);
+			g_sdlControllers[i] = SDL_OpenGamepad(dev_index);
 			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 			++i;
 		}
