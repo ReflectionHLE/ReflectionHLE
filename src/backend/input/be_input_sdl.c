@@ -63,25 +63,25 @@ void BEL_ST_FillJoysticksList(void)
 	}
 }
 
-void BEL_ST_ConditionallyAddJoystick(int device_index)
+void BEL_ST_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 {
 	if (!g_refKeenCfg.altControlScheme)
 	{
 		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 			if (!g_sdlJoysticks[i])
 			{
-				g_sdlJoysticks[i] = SDL_OpenJoystick(device_index);
+				g_sdlJoysticks[i] = SDL_OpenJoystick(dev_id);
 				g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(g_sdlJoysticks[i]);
 				BEL_ST_CheckForHidingTouchUI();
 				break;
 			}
 	}
-	else if (SDL_IsGamepad(device_index))
+	else if (SDL_IsGamepad(dev_id))
 	{
 		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 			if (!g_sdlControllers[i])
 			{
-				g_sdlControllers[i] = SDL_OpenGamepad(device_index);
+				g_sdlControllers[i] = SDL_OpenGamepad(dev_id);
 				g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 
 				g_sdlShowControllerUI = true;

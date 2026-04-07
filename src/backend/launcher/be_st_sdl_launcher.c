@@ -1220,8 +1220,8 @@ void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId);
 
 static void BEL_ST_Launcher_FillJoysticksList(void);
 static void BEL_ST_Launcher_ClearJoysticksList(void);
-static void BEL_ST_Launcher_ConditionallyAddJoystick(int device_index);
-static void BEL_ST_Launcher_RemoveJoystickIfAdded(int device_id);
+static void BEL_ST_Launcher_ConditionallyAddJoystick(SDL_JoystickID dev_id);
+static void BEL_ST_Launcher_RemoveJoystickIfAdded(SDL_JoystickID dev_id);
 
 void BE_ST_Launcher_Prepare(void)
 {
@@ -3422,20 +3422,20 @@ static void BEL_ST_Launcher_ClearJoysticksList(void)
 		}
 }
 
-static void BEL_ST_Launcher_ConditionallyAddJoystick(int dev_index)
+static void BEL_ST_Launcher_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 {
-	if (!SDL_IsGamepad(dev_index))
+	if (!SDL_IsGamepad(dev_id))
 		return;
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (!g_sdlControllers[i])
 		{
-			g_sdlControllers[i] = SDL_OpenGamepad(dev_index);
+			g_sdlControllers[i] = SDL_OpenGamepad(dev_id);
 			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 			return;
 		}
 }
 
-static void BEL_ST_Launcher_RemoveJoystickIfAdded(int dev_id)
+static void BEL_ST_Launcher_RemoveJoystickIfAdded(SDL_JoystickID dev_id)
 {
 	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 		if (g_sdlControllers[i] && (g_sdlJoysticksInstanceIds[i] == dev_id))

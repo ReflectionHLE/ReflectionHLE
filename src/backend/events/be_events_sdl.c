@@ -39,7 +39,7 @@
 
 #include "be_events_sdl_keymap.h"
 
-void BEL_ST_ConditionallyAddJoystick(int device_index); // Implementation-specific
+void BEL_ST_ConditionallyAddJoystick(SDL_JoystickID dev_id); // Implementation-specific
 
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 
