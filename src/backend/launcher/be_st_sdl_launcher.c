@@ -2928,17 +2928,12 @@ void BE_ST_Launcher_RunEventLoop(void)
 				BEL_ST_Launcher_HandleControllerButtonEvent(event.cbutton.button, false);
 				break;
 
-			case SDL_WINDOWEVENT:
-				switch (event.window.event)
-				case  SDL_EVENT_WINDOW_RESIZED:
-				{
-					BEL_ST_Launcher_SetGfxOutputRects();
-					BE_ST_Launcher_MarkGfxCache();
-					break;
-				}
-				case SDL_EVENT_WINDOW_EXPOSED:
-					BE_ST_Launcher_MarkGfxCache();
-					break;
+			case SDL_EVENT_WINDOW_RESIZED:
+				BEL_ST_Launcher_SetGfxOutputRects();
+				BE_ST_Launcher_MarkGfxCache();
+				break;
+			case SDL_EVENT_WINDOW_EXPOSED:
+				BE_ST_Launcher_MarkGfxCache();
 				break;
 
 			case SDL_EVENT_RENDER_TARGETS_RESET:
@@ -3061,17 +3056,12 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 				keepRunning = false;
 				break;
 
-			case SDL_WINDOWEVENT:
-				switch (event.window.event)
-				case  SDL_EVENT_WINDOW_RESIZED:
-				{
-					BEL_ST_Launcher_SetGfxOutputRects();
-					BE_ST_Launcher_MarkGfxCache();
-					break;
-				}
-				case SDL_EVENT_WINDOW_EXPOSED:
-					BE_ST_Launcher_MarkGfxCache();
-					break;
+			case SDL_EVENT_WINDOW_RESIZED:
+				BEL_ST_Launcher_SetGfxOutputRects();
+				BE_ST_Launcher_MarkGfxCache();
+				break;
+			case SDL_EVENT_WINDOW_EXPOSED:
+				BE_ST_Launcher_MarkGfxCache();
 				break;
 
 			case SDL_EVENT_RENDER_TARGETS_RESET:
@@ -3361,17 +3351,12 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 					return confirmed;
 				break;
 
-			case SDL_WINDOWEVENT:
-				switch (event.window.event)
-				case  SDL_EVENT_WINDOW_RESIZED:
-				{
-					BEL_ST_Launcher_SetGfxOutputRects();
-					BE_ST_Launcher_MarkGfxCache();
-					break;
-				}
-				case SDL_EVENT_WINDOW_EXPOSED:
-					BE_ST_Launcher_MarkGfxCache();
-					break;
+			case SDL_EVENT_WINDOW_RESIZED:
+				BEL_ST_Launcher_SetGfxOutputRects();
+				BE_ST_Launcher_MarkGfxCache();
+				break;
+			case SDL_EVENT_WINDOW_EXPOSED:
+				BE_ST_Launcher_MarkGfxCache();
 				break;
 
 			case SDL_EVENT_RENDER_TARGETS_RESET:

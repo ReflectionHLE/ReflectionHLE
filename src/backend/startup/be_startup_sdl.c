@@ -179,16 +179,11 @@ void BE_ST_HandleExit(int status)
 		{
 			switch (event.type)
 			{
-			case SDL_WINDOWEVENT:
-				switch (event.window.event)
-				{
-				case SDL_EVENT_WINDOW_RESIZED:
-					BEL_ST_SetGfxOutputRects(false);
-					// Fall-through
-				case SDL_EVENT_WINDOW_EXPOSED:
-					BEL_ST_ForceHostDisplayUpdate();
-					break;
-				}
+			case SDL_EVENT_WINDOW_RESIZED:
+				BEL_ST_SetGfxOutputRects(false);
+				// Fall-through
+			case SDL_EVENT_WINDOW_EXPOSED:
+				BEL_ST_ForceHostDisplayUpdate();
 				break;
 			case SDL_EVENT_RENDER_TARGETS_RESET:
 			case SDL_EVENT_RENDER_DEVICE_RESET:
