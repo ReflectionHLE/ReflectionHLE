@@ -3399,14 +3399,18 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 // ASSUMES g_sdlControllers array is full of null pointers.
 static void BEL_ST_Launcher_FillJoysticksList(void)
 {
-	// Adding a mapping doesn't imply we'll get a
-	// "joystick/controller added" event so manually add what's missing.
-	int n_joysticks = SDL_NumJoysticks();
+	int n_joysticks;
+	SDL_JoystickID *joysticks = SDL_GetJoysticks(&n_joysticks);
+	if (!joysticks)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BEL_ST_Launcher_FillJoysticksList: SDL_GetJoysticks failed,\n%s\n", SDL_GetError());
+		return;
+	}
 	for (int dev_index = 0, i = 0;
 	     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
-		if (!g_sdlControllers[i] && SDL_IsGamepad(dev_index))
+		if (!g_sdlControllers[i] && SDL_IsGamepad(joysticks[dev_index]))
 		{
-			g_sdlControllers[i] = SDL_OpenGamepad(dev_index);
+			g_sdlControllers[i] = SDL_OpenGamepad(joysticks[dev_index]);
 			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 			++i;
 		}
