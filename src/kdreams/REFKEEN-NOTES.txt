@@ -68,7 +68,7 @@ called earlier, just to make sure there's no deadlock while audio is "locked".
 toggle are read from the port's configuration, while ignoring the ones in
 KDREAMS.CFG. On the other hand, they're still written to KDREAMS.CFG.
 
-- id_us.c: For he 2015 port, scancodes are converted from SDL2 to DOS when
+- id_us.c: For the 2015 port, scancodes are converted from SDL2 to DOS when
 reading config file; Same when writing, but in the opposite direction.
 Some information may get lost as a consequence.
 
