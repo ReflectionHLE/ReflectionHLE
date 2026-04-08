@@ -50,16 +50,16 @@ void BEL_ST_RecreateMainTextures(void)
 		BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, g_sdlTexWidth, g_sdlTexHeight, false, false);
 		if (!g_sdlTexture)
 		{
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create texture\n");
 			//Destroy window and renderer?
 			exit(0);
 		}
 		// Try, if we fail then simply don't use this
 		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, g_sdlTexWidth*g_refKeenCfg.scaleFactor, g_sdlTexHeight*g_refKeenCfg.scaleFactor, true, true);
 		if (g_sdlTargetTexture)
-			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateMainTextures: SDL2 target texture created successfully\n");
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateMainTextures: Target texture created successfully\n");
 		else
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateMainTextures:  Failed to (re)create SDL2 target texture, continuing anyway\n%s\n", SDL_GetError());
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateMainTextures:  Failed to (re)create target texture, continuing anyway\n");
 	}
 	else
 	{
@@ -67,7 +67,7 @@ void BEL_ST_RecreateMainTextures(void)
 		BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, g_sdlTexWidth, g_sdlTexHeight, false, g_refKeenCfg.isBilinear);
 		if (!g_sdlTexture)
 		{
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture,\n%s\n", SDL_GetError());
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create texture\n");
 			//Destroy window and renderer?
 			exit(0);
 		}
@@ -147,7 +147,7 @@ void BEL_ST_RecreateAllTextures(void)
 
 		if (*pTexture == NULL)
 		{
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateAllTextures: Failed to recreate SDL2 texture %d out of %d,\n%s\n", i+1, g_sdlNumOfManagedTexturesInPool, SDL_GetError());
+			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateAllTextures: Failed to recreate texture %d out of %d\n", i+1, g_sdlNumOfManagedTexturesInPool);
 			exit(1);
 		}
 		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateAllTextures: Recreated texture no %d out of %d\n", i+1, g_sdlNumOfManagedTexturesInPool);

@@ -1247,7 +1247,7 @@ void BE_ST_Launcher_Prepare(void)
 	BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, false, false);
 	if (!g_sdlTexture)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 texture for launcher,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create texture for launcher\n");
 		//Destroy window and renderer?
 		exit(0);
 	}
@@ -1806,7 +1806,7 @@ static void BEL_ST_Launcher_CreateTextSearchTextureIfNeeded(void)
 	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextSearchTexture, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_HEIGHT, false, false);
 	if (!g_sdlLauncherTextSearchTexture)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 launcher text search texture,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create launcher text search texture\n");
 		//Destroy window and renderer?
 		exit(0);
 	}
@@ -1822,7 +1822,7 @@ static void BEL_ST_Launcher_CreateTextInputTextureIfNeeded(void)
 	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextInputTexture, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_HEIGHT, false, false);
 	if (!g_sdlLauncherTextInputTexture)
 	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create SDL2 launcher text input texture,\n%s\n", SDL_GetError());
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create launcher text input texture\n");
 		//Destroy window and renderer?
 		exit(0);
 	}
