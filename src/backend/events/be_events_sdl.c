@@ -156,7 +156,7 @@ void BE_ST_PollEvents(void)
 		}
 
 		case SDL_EVENT_MOUSE_MOTION:
-			if (event.button.which == SDL_TOUCH_MOUSEID)
+			if (event.motion.which == SDL_TOUCH_MOUSEID)
 				break;
 
 			if (BEL_ST_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, event.motion.x, event.motion.y))
