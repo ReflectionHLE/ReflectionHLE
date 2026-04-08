@@ -115,7 +115,7 @@ const emulatedDOSKeyEvent sdlKeyMappings[SDL_SCANCODE_COUNT] = {
 
     {false,  BE_ST_SC_LESSTHAN}, // SDL_SCANCODE_NONUSBACKSLASH
 
-    // SDL 2-3 scancodes 101 to 223 (either actually defined or not) follow...
+    // SDL3 scancodes 101 to 223 (either actually defined or not) follow...
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
@@ -250,8 +250,20 @@ const emulatedDOSKeyEvent sdlKeyMappings[SDL_SCANCODE_COUNT] = {
     {false,  BE_ST_SC_RSHIFT}, // SDL_SCANCODE_RSHIFT
     {true,  BE_ST_SC_RALT}, // SDL_SCANCODE_RALT
 
-    // SDL 2-3 scancodes 231 to 269...
+    // SDL3 scancodes 231 to 281...
 
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
+    emptyDOSKeyEvent,
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
@@ -294,5 +306,5 @@ const emulatedDOSKeyEvent sdlKeyMappings[SDL_SCANCODE_COUNT] = {
 
     {false,  BE_ST_SC_ESC}, // SDL_SCANCODE_AC_BACK (for Android)
 
-    // More SDL 2.0 scancodes follow, but are ignored
+    // More SDL3 scancodes follow, but are ignored
 };
