@@ -93,15 +93,8 @@ void BEL_ST_RecreateWindowAndRenderer(
 
 	if (g_sdlWindow)
 	{
-		// This is a little bit of a hack:
-		// - Since the actual flags of a window may differ from what we requested (due to toggling fullscreen or any other reason),
-		// we support skipping window recreation only if fullscreen state did not change.
-		// - Renderer driver string pointer is also compared. If NULL is used anywhere, this makes reuse of the same window more probable.
-		//
-		// However, if only the full screen resolution has changed, we update the window's display mode accordingly.
-		if (((windowFlags & SDL_WINDOW_FULLSCREEN) == (SDL_GetWindowFlags(g_sdlWindow) & SDL_WINDOW_FULLSCREEN)) &&
-		    (driver == prev_driver)
-		)
+		// Reuse launcher's window if we can
+		if (driver == prev_driver)
 			goto finish;
 
 		BEL_ST_DestroyWindowAndRenderer_WithoutTheIcon();
