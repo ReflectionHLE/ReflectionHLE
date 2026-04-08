@@ -386,6 +386,12 @@ void BE_ST_PollEvents(void)
 		case SDL_EVENT_WINDOW_EXPOSED:
 			BEL_ST_ForceHostDisplayUpdate();
 			break;
+		case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+			BEL_ST_HandleFullScreenChange(true);
+			break;
+		case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+			BEL_ST_HandleFullScreenChange(false);
+			break;
 
 		case SDL_EVENT_RENDER_TARGETS_RESET:
 		case SDL_EVENT_RENDER_DEVICE_RESET:

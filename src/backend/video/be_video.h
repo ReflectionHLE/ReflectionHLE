@@ -50,6 +50,7 @@ void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
 void BEL_ST_SetGfxOutputRects(bool allowResize);
 void BEL_ST_ForceHostDisplayUpdate(void);
 void BEL_ST_UpdateHostDisplay(void);
+void BEL_ST_HandleFullScreenChange(bool isFullscreen);
 
 // These might be implementation-dependent
 

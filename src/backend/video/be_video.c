@@ -438,15 +438,18 @@ bool BE_ST_HostGfx_CanToggleFullScreen(void)
 void BE_ST_HostGfx_SetFullScreenToggle(bool fullScreenToggle)
 {
 	BEL_ST_SetWindowFullScreenToggle(fullScreenToggle);
-
-	g_refKeenCfg.isFullscreen = BE_ST_HostGfx_GetFullScreenToggle();
-	BEL_ST_SetGfxOutputRects(false);
-	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
 void BE_ST_HostGfx_ToggleFullScreen(void)
 {
-	BE_ST_HostGfx_SetFullScreenToggle(!BE_ST_HostGfx_GetFullScreenToggle());
+	BEL_ST_SetWindowFullScreenToggle(!BE_ST_HostGfx_GetFullScreenToggle());
+}
+
+void BEL_ST_HandleFullScreenChange(bool isFullscreen)
+{
+	g_refKeenCfg.isFullscreen = isFullscreen;
+	BEL_ST_SetGfxOutputRects(false);
+	BEL_ST_ConditionallyShowAltInputPointer();
 }
 
 void BE_ST_HostGfx_SetAbsMouseCursorToggle(bool cursorToggle)
