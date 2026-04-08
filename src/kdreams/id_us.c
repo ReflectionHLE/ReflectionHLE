@@ -3293,10 +3293,10 @@ USL_CtlGButtonCustom(UserCall call,id0_word_t i,id0_word_t n)
 
 		break;
 	case 1:
-		BE_ST_HostGfx_SetFullScreenToggle(!BE_ST_HostGfx_GetFullScreenToggle());
+		BE_ST_HostGfx_SetFullScreenToggle(TheItems[i][n].sel & ui_Selected);
 		break;
 	case 2:
-		BE_ST_HostGfx_SetAspectRatioToggle(!BE_ST_HostGfx_GetAspectRatioToggle());
+		BE_ST_HostGfx_SetAspectRatioToggle(!(TheItems[i][n].sel & ui_Selected));
 		break;
 	}
 
