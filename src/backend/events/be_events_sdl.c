@@ -63,41 +63,44 @@ void BE_ST_PollEvents(void)
 		switch (event.type)
 		{
 		case SDL_EVENT_KEY_DOWN:
-#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
-			if (((event.key.scancode == SDL_SCANCODE_RETURN) ||
-			     (event.key.scancode == SDL_SCANCODE_KP_ENTER)) &&
-			    !event.key.repeat &&
-			    ((event.key.mod & (SDL_KMOD_LALT|SDL_KMOD_RALT))
-#ifdef REFKEEN_PLATFORM_MACOS
-			     || (event.key.mod & (SDL_KMOD_LGUI|SDL_KMOD_RGUI))
-#endif
-			))
-			{
-				BE_ST_HostGfx_ToggleFullScreen();
-				break;
-			}
-#endif
-			if (event.key.repeat)
-				break; // Ignore (we emulate key repeat on our own)
-
-			if ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) && g_sdlShowTouchUI)
-			{
-				// Ignore a few specific scancodes on Android
-				if (sdlKeyMappings[event.key.scancode].dosScanCode && (event.key.scancode != SDL_SCANCODE_SELECT) && (event.key.scancode != SDL_SCANCODE_AC_BACK))
-					BEL_ST_DoHideTouchUI();
-			}
-			// Fall-through
 		case SDL_EVENT_KEY_UP:
 		{
-			bool isPressed = (event.type == SDL_EVENT_KEY_DOWN);
 			SDL_Scancode scancode = event.key.scancode;
-			if (scancode >= SDL_SCANCODE_COUNT)
+			if ((scancode < 0) || (scancode >= SDL_SCANCODE_COUNT))
 				break;
+			bool isPressed = (event.type == SDL_EVENT_KEY_DOWN);
+			if (isPressed)
+			{
+#ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
+				if (((scancode == SDL_SCANCODE_RETURN) ||
+				     (scancode == SDL_SCANCODE_KP_ENTER)) &&
+				    !event.key.repeat &&
+				    ((event.key.mod & (SDL_KMOD_LALT|SDL_KMOD_RALT))
+#ifdef REFKEEN_PLATFORM_MACOS
+				     || (event.key.mod & (SDL_KMOD_LGUI|SDL_KMOD_RGUI))
+#endif
+				))
+				{
+					BE_ST_HostGfx_ToggleFullScreen();
+					break;
+				}
+#endif
+				if (event.key.repeat)
+					break; // Ignore (we emulate key repeat on our own)
+
+				if ((g_refKeenCfg.touchInputToggle == TOUCHINPUT_AUTO) && g_sdlShowTouchUI)
+				{
+					// Ignore a few specific scancodes on Android
+					if (sdlKeyMappings[scancode].dosScanCode && (scancode != SDL_SCANCODE_SELECT) && (scancode != SDL_SCANCODE_AC_BACK))
+						BEL_ST_DoHideTouchUI();
+				}
+			}
 
 			// Note that this translates scancode and processes it as usual even if code is mapped.
 			BEL_ST_HandleEmuKeyboardEvent(isPressed, false, sdlKeyMappings[scancode]);
 
-			if (g_sdlControllerMappingActualCurr->keys[scancode].map.mapClass != BE_ST_CTRL_MAP_NONE)
+			if (((int)scancode < BE_MAX_KEY_ID) &&
+			    (g_sdlControllerMappingActualCurr->keys[scancode].map.mapClass != BE_ST_CTRL_MAP_NONE))
 			{
 				if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[scancode].map,
 				    g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.keys[scancode]))
