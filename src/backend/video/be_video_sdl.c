@@ -150,6 +150,9 @@ finish:
 			}
 		}
 	}
+	else
+		if (!SDL_SetWindowFullscreenMode(g_sdlWindow, NULL))
+				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: SDL_SetWindowFullscreenMode failed,\n%s\n", SDL_GetError());
 	SDL_SetWindowFullscreen(g_sdlWindow, windowFlags & SDL_WINDOW_FULLSCREEN);
 }
 
