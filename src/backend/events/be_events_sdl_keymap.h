@@ -115,7 +115,7 @@ const emulatedDOSKeyEvent sdlKeyMappings[SDL_SCANCODE_COUNT] = {
 
     {false,  BE_ST_SC_LESSTHAN}, // SDL_SCANCODE_NONUSBACKSLASH
 
-    // SDL 2.0 scancodes 101 to 223 (either actually defined or not) follow...
+    // SDL 2-3 scancodes 101 to 223 (either actually defined or not) follow...
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,
@@ -250,7 +250,7 @@ const emulatedDOSKeyEvent sdlKeyMappings[SDL_SCANCODE_COUNT] = {
     {false,  BE_ST_SC_RSHIFT}, // SDL_SCANCODE_RSHIFT
     {true,  BE_ST_SC_RALT}, // SDL_SCANCODE_RALT
 
-    // SDL 2.0 scancodes 231 to 269...
+    // SDL 2-3 scancodes 231 to 269...
 
     emptyDOSKeyEvent,
     emptyDOSKeyEvent,

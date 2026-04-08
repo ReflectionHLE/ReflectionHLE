@@ -74,10 +74,10 @@
 #define ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH (ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH*ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH)
 #define ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_HEIGHT (ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT*ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT)
 
-// Internally we use SDL2 scancodes for on-screen keyboards here,
+// Internally we use SDL2-3 scancodes for on-screen keyboards here,
 // but there are a few exceptions we make for convenience
 
-// Unused as of SDL v2.0.5
+// Unused as of SDL v3.4.4
 #define ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_LEFT 1
 #define ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_RIGHT 2
 #define ALTCONTROLLER_LAUNCHER_KEYBOARD_INTERNALCODE_SHIFT 3
@@ -1731,7 +1731,7 @@ static void BEL_ST_Launcher_NormalizePos(int *px, int *py)
 	*py = BE_LAUNCHER_PIX_HEIGHT*(*py-g_sdlAspectCorrectionBorderedRect.y)/g_sdlAspectCorrectionBorderedRect.h;
 }
 
-// Translates our internal key codes (usually the same as SDL2 scancodes) to SDL2 scancodes
+// Translates our internal key codes (usually the same as SDL scancodes) to SDL scancodes
 static int BEL_ST_Launcher_TranslateInternalKeyCode(int code)
 {
 	switch (code)
@@ -1752,14 +1752,14 @@ static int BEL_ST_Launcher_TranslateInternalKeyCode(int code)
 }
 
 // Internal codes names for on-screen keyboards in non-shifted state,
-// based on SDL2 scancodes, with a few exceptions (where our internal codes are used)
+// based on SDL scancodes, with a few exceptions (where our internal codes are used)
 
 static const char *g_sdlIntCodeKeyboardUINonShiftedStrs[] = {
 	NULL, "\x1B", "\x1A", "\x1E",
 	"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
 	"n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
 	"1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
-	"Ent", NULL, "\x11", "Del", "[_]", // Note: SDL2 scancode of Tab is reused for Del
+	"Ent", NULL, "\x11", "Del", "[_]", // Note: SDL scancode of Tab is reused for Del
 	"-", "=", "[", "]", "\\", "\x1B\x1B", ";", "'", "`", ",", ".", "/", // Note: SDL scancode of Non-US Hash is reused for Home
 	"\x1A\x1A", // Note: SDL scancode of Caps Lock is reused for End
 };
@@ -1769,7 +1769,7 @@ static const char *g_sdlIntCodeKeyboardUIShiftedStrs[] = {
 	"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
 	"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
 	"!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
-	"Ent", NULL, "\x11", "Del", "[_]", // Note: SDL2 scancode of Tab is reused for Del
+	"Ent", NULL, "\x11", "Del", "[_]", // Note: SDL scancode of Tab is reused for Del
 	"_", "+", "{", "}", "|", "\x1B\x1B", ":", "\"", "~", "<", ">", "?", // Note: SDL scancode of Non-US Hash is reused for Home
 	"\x1A\x1A", // Note: SDL scancode of Caps Lock is reused for End
 };
