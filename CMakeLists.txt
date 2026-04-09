@@ -167,6 +167,13 @@ if (BUILD_AS_CPP)
 	endif ()
 endif ()
 
+if (CMAKE_C_BYTE_ORDER STREQUAL "BIG_ENDIAN" OR CMAKE_CXX_BYTE_ORDER STREQUAL "BIG_ENDIAN")
+	set(REFKEEN_ARCH_BIG_ENDIAN "1")
+endif ()
+if (CMAKE_C_BYTE_ORDER STREQUAL "LITTLE_ENDIAN" OR CMAKE_CXX_BYTE_ORDER STREQUAL "LITTLE_ENDIAN")
+	set(REFKEEN_ARCH_LITTLE_ENDIAN "1")
+endif ()
+
 configure_file(refkeen_config.h.in refkeen_config.h)
 
 include(CheckLibraryExists)
