@@ -33,6 +33,8 @@
 #include "be_filesystem_string_ops.h"
 #include "be_filesystem_tchar.h"
 
+#include <string.h>
+
 // MICRO-OPTIMIZATION: Not needed for all games
 #ifdef BE_CROSS_ENABLE_SORTED_FILENAMES_FUNC
 int BE_Cross_GetSortedRewritableFilenames_AsUpperCase(char *outFilenames, int maxNum, int strLenBound, const char *suffix)

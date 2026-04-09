@@ -34,6 +34,8 @@
 #include "be_st.h"
 #include "crc32/crc32.h"
 
+#include <string.h>
+
 BE_GameInstallation_T g_be_gameinstallations[BE_CROSS_MAX_GAME_INSTALLATIONS];
 int g_be_gameinstallations_num;
 

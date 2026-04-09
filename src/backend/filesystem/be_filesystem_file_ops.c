@@ -36,6 +36,8 @@
 #include "be_filesystem_mods.h"
 #include "be_filesystem_string_ops.h"
 
+#include <string.h>
+
 BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 	const char *filename, BE_FileRequest_T request,
 	const TCHAR *searchdir, TCHAR (*outfullpath)[BE_CROSS_PATH_LEN_BOUND])

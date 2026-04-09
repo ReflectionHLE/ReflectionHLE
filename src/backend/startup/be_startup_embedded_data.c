@@ -35,6 +35,8 @@
 #include "be_st.h"
 #include "crc32/crc32.h"
 
+#include <string.h>
+
 #define REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS 1
 
 // Loads a file originally embedded into the EXE (for DOS) to a newly allocated
