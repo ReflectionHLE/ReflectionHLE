@@ -121,7 +121,7 @@ uint8_t BE_Cross_EMM_GetPageMapSize(void);
 
 typedef uint16_t BE_EMM_File;
 
-// Substitute for int 21h, ah = 43h handler. It is expected that devname be
+// Substitute for int 21h, ah = 3dh handler. It is expected that devname be
 // "EMMXXXX0". This does not actually implement file IO so the API is largely
 // a formality to keep calling code close to the original.
 BE_EMM_File BE_Cross_EMM_Open(const char* devname);
