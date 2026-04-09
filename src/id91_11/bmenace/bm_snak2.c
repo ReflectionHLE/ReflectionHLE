@@ -1488,7 +1488,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 			break;
 			
 		case bossobj:
-			points = 100000;	//BUG: 'points' is a 16 bit variable, so the value is clipped to 34464!
+			// REFKEEN: Use 16-bit value
+			points = 34464;
+//			points = 100000;	//BUG: 'points' is a 16 bit variable, so the value is clipped to 34464!
 			ob->shootable = false;
 			SD_PlaySound(GROWLSND);
 			ob->obclass = decoobj;
@@ -1554,7 +1556,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 			}
 			
 		case bossobj:
-			points = 100000;	//BUG: 'points' is a 16 bit variable, so the value is clipped to 34464!
+			// REFKEEN: Use 16-bit value
+			points = 34464;
+//			points = 100000;	//BUG: 'points' is a 16 bit variable, so the value is clipped to 34464!
 			ob->shootable = false;
 			SpawnBonus(player->tilemidx, player->tiletop, 26);	//blue shard
 			StartMusic(MUS_VICTORY);
@@ -1602,7 +1606,9 @@ void HurtObject(objtype *ob, Sint16 damage)
 			break;
 			
 		case cainobj:
-			points = 100000;	//BUG: 'points' is a 16 bit variable, so the value is clipped to 34464!
+			// REFKEEN: Use 16-bit value
+			points = 34464;
+//			points = 100000;	//BUG: 'points' is a 16 bit variable, so the value is clipped to 34464!
 			ob->shootable = false;
 			bosshealth = 999;
 			SpawnBonus(player->tilemidx, player->tiletop, 26);	//blue shard
