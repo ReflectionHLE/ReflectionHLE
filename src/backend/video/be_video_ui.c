@@ -30,13 +30,14 @@
 #include "be_features.h"
 #include "be_gamever.h" // Enable VSync by default for EGA/VGA, not CGA
 #include "be_st.h"
-#include "be_st_sdl_private.h"
 #include "be_video.h"
 #include "be_video_emu.h"
 #include "be_video_textures.h"
 #include "be_video_ui.h"
 #include "../input/be_input.h"
 #include "../input/be_input_controller_mappings.h"
+
+#include <stdlib.h>
 
 bool g_sdlShowControllerUI;
 bool g_sdlShowTouchUI;
@@ -281,7 +282,7 @@ static void BEL_ST_CreatePadTextureIfNeeded(BE_ST_Texture **padTexturePtrPtr, in
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode((SDL_Texture *)*padTexturePtrPtr, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	BEL_ST_SetTextureBlendMode(*padTexturePtrPtr, true); // Yes there's some Alpha
 }
 
 static void BEL_ST_RedrawTextToBuffer(uint32_t *picPtr, int picWidth, const char *text)
@@ -401,7 +402,7 @@ static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode((SDL_Texture *)texture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	BEL_ST_SetTextureBlendMode(texture, true); // Yes there's some Alpha
 	// Update texture
 	uint32_t *pixels = (uint32_t *)malloc(4*texWidth*texHeight);
 	if (pixels == NULL)
@@ -565,7 +566,7 @@ static void BEL_ST_CreateTextInputTextureIfNeeded(void)
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode((SDL_Texture *)g_sdlTextInputTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	BEL_ST_SetTextureBlendMode(g_sdlTextInputTexture, true); // Yes there's some Alpha
 }
 
 static void BEL_ST_CreateDebugKeysTextureIfNeeded(void)
@@ -581,7 +582,7 @@ static void BEL_ST_CreateDebugKeysTextureIfNeeded(void)
 		//Destroy window and renderer?
 		exit(0);
 	}
-	SDL_SetTextureBlendMode((SDL_Texture *)g_sdlDebugKeysTexture, SDL_BLENDMODE_BLEND); // Yes there's some Alpha
+	BEL_ST_SetTextureBlendMode(g_sdlDebugKeysTexture, true); // Yes there's some Alpha
 }
 
 static void BEL_ST_RedrawWholeTextInputUI(void)
