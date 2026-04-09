@@ -34,6 +34,14 @@
 #include "backend/video/be_video_emu.h" // TXT_COLS_NUM
 #endif
 
+// FIXME: Unfortuantely, we should do this before including SDL_main...
+#ifdef UNICODE
+#undef UNICODE
+#endif
+#ifdef _UNICODE
+#undef _UNICODE
+#endif
+
 #include <string.h>
 #include <SDL3/SDL_main.h>
 
