@@ -1,10 +1,6 @@
-cmake_minimum_required(VERSION 2.8...3.19)
+cmake_minimum_required(VERSION 3.5...3.19)
 
-if (CMAKE_VERSION VERSION_LESS 3.12)
-	project(ReflectionHLE)
-else ()
-	project(ReflectionHLE VERSION 0.44.0)
-endif ()
+project(ReflectionHLE VERSION 0.44.0)
 
 set(bundle_identifier_prefix "com.reflectionhle")
 set(bundle_copyright "See README.md for copyright details")
@@ -126,9 +122,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Android")
 else ()
 	find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3)
 	find_package(SpeexDSP)
-	# FIXME
-	include_directories(${SDL3_DIR}/../../../include ${SPEEXDSP_INCLUDE_DIRS})
-#	include_directories(${SPEEXDSP_INCLUDE_DIRS})
+	include_directories(${SPEEXDSP_INCLUDE_DIRS})
 endif ()
 
 if (SPEEXDSP_FOUND)
