@@ -26,9 +26,17 @@ jobs:
         - target: linux
           os: ubuntu-latest
           pkg_update_cmd: sudo apt-get update
-          pkg_install_cmd: sudo apt-get install cmake libsdl3-dev libspeexdsp-dev
+          pkg_install_cmd: sudo apt-get install cmake libspeexdsp-dev
+#          pkg_install_cmd: sudo apt-get install cmake libsdl3-dev libspeexdsp-dev
           platform_args:
     steps:
+    - name: Setup SDL
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      uses: libsdl-org/setup-sdl@main
+      id: sdl
+      with:
+        install-linux-dependencies: true
+        version: 3.2.30
     - name: Check out the code
       uses: actions/checkout@v3
     - name: Install dependencies
