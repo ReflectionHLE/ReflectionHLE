@@ -469,9 +469,12 @@ static void WallDebug(void)
 ================
 */
 
+// REFKEEN: Macro checks were inside the function body,
+// but return from function was missing. However, function
+// would never be called in such a case, practically speaking.
+#if (defined VERSION_1_1_FREEWARE) || (defined BETA)
 static boolean DebugKeys(void)
 {
-#if (defined VERSION_1_1_FREEWARE) || (defined BETA)
 	id0_char_t buffer[50];
 	Sint16 level, esc;
 
@@ -689,8 +692,8 @@ static boolean DebugKeys(void)
 		return false;
 	}
 	return false;
-#endif
 }
+#endif
 
 //===========================================================================
 
@@ -986,6 +989,8 @@ void CheckKeys(void)
 //
 // F10-? debug keys
 //
+	// REFKEEN: Added macro checks (fix to DebugKeys not returning value)
+#if (defined VERSION_1_1_FREEWARE) || (defined BETA)
 	if (DebugOk && Keyboard[sc_F10])
 	{
 		if (DebugKeys())
@@ -994,6 +999,7 @@ void CheckKeys(void)
 			lasttimecount = SD_GetTimeCount();
 		}
 	}
+	#endif
 
 //
 // Ctrl-S toggles sound (only in storedemo mode)
