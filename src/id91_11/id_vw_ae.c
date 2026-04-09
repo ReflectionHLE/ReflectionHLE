@@ -699,7 +699,7 @@ USES	SI,DI
 	WORDOUT
 
 	mov	ax,ss
-	mov	ds,ax					;restore turbo's data segment
+	mov	ds,ax					//restore turbo's data segment (UPDATE: Edited to C99/C++ style comment so compiler doesn't emit a warning)
 
 	ret
 
