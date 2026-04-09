@@ -572,6 +572,7 @@ extern boolean throwkeyheld;
 extern objtype objarray[MAXACTORS];
 extern objtype *lastobj;
 extern objtype *objfreelist;
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
 extern objtype *newobj;
 extern objtype *player;
 extern objtype *scoreobj;

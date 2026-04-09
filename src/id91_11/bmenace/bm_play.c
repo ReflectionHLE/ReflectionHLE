@@ -140,6 +140,7 @@ objtype *player;
 Sint16 inactivateleft;
 Sint16 inactivatetop;
 boolean upheld;
+// (REFKEEN) new has been renamed newobj since new is a reserved C++ keyword
 objtype *newobj;
 Sint16 inactivateright;
 Sint16 inactivatebottom;
