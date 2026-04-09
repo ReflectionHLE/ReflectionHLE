@@ -269,6 +269,8 @@ typedef enum {cl_noclip, cl_midclip, cl_fullclip} cliptype;
 // be able to build the same code as C++. It's also good for other reasons.
 typedef enum {step,slide,think,stepthink,slidethink} progresstype;
 typedef enum {push_none, push_down, push_up} pushtype;
+// REFKEEN - Used for C++ patches for function pointers in statetype
+struct objstruct;
 
 typedef struct statestruct
 {
