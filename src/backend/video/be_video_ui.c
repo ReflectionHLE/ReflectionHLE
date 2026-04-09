@@ -1588,7 +1588,7 @@ void BEL_ST_SetCommonUIRects(void)
 	// 4. Finally, try to be consistent with the positioning and
 	// sizes of touch controls (even though it's not necessary).
 	int winWidth, winHeight;
-	BEL_ST_GetWindowSize(&winWidth, &winHeight);
+	BEL_ST_GetWindowSizeInPixels(&winWidth, &winHeight);
 
 	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
 	g_sdlControllerFaceButtonsRect.w = g_sdlControllerFaceButtonsRect.h = 56*minWinDim/BE_ST_TOUCHCONTROL_MAX_WINDOW_DIM;
@@ -1625,7 +1625,7 @@ void BEL_ST_SetTouchControlsRects(void)
 
 	BE_ST_Rect *currRect;
 	int winWidth, winHeight;
-	BEL_ST_GetWindowSize(&winWidth, &winHeight);
+	BEL_ST_GetWindowSizeInPixels(&winWidth, &winHeight);
 	int minWinDim = (winWidth >= winHeight) ? winHeight : winWidth;
 	{
 		BE_ST_OnscreenTouchControl *touchControl;

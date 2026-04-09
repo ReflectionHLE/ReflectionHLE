@@ -180,6 +180,7 @@ void BE_ST_HandleExit(int status)
 			switch (event.type)
 			{
 			case SDL_EVENT_WINDOW_RESIZED:
+			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 				BEL_ST_SetGfxOutputRects(false);
 				// Fall-through
 			case SDL_EVENT_WINDOW_EXPOSED:

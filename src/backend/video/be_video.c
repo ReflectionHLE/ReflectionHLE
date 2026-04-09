@@ -49,6 +49,7 @@ BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 BE_ST_Rect g_sdlAspectCorrectionRect, g_sdlAspectCorrectionBorderedRect;
 
 int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
+float g_sdlLastReportedPixelDensity;
 
 static bool g_sdlIsSoftwareRendered;
 bool g_sdlDoRefreshGfxOutput;
@@ -303,10 +304,13 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	int srcBorderedWidth = srcBorderLeft+srcWidth+srcBorderRight;
 	int srcBorderedHeight = srcBorderTop+srcHeight+srcBorderBottom;
 	int winWidth, winHeight;
-	BEL_ST_GetWindowSize(&winWidth, &winHeight);
+	int winWidthInCoords, winHeightInCoords;
+	BEL_ST_GetWindowSizeInPixels(&winWidth, &winHeight);
+	BEL_ST_GetWindowSizeInCoords(&winWidthInCoords, &winHeightInCoords);
 
 	g_sdlLastReportedWindowWidth = winWidth;
 	g_sdlLastReportedWindowHeight = winHeight;
+	g_sdlLastReportedPixelDensity = BEL_ST_GetWindowPixelDensity();
 
 	if (g_sdlIsSoftwareRendered && !g_refKeenCfg.forceFullSoftScaling)
 	{
@@ -314,11 +318,12 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 		// allowResize == true (to prevent any possible infinite resizes loop)
 		if (allowResize && (!BE_ST_HostGfx_GetFullScreenToggle()))
 		{
-			if ((g_refKeenCfg.scaleFactor*srcBorderedWidth != winWidth) || (g_refKeenCfg.scaleFactor*srcBorderedHeight != winHeight))
+			if ((g_refKeenCfg.scaleFactor*srcBorderedWidth != winWidthInCoords) || (g_refKeenCfg.scaleFactor*srcBorderedHeight != winHeightInCoords))
 			{
-				BEL_ST_SetWindowSize(g_refKeenCfg.scaleFactor*srcBorderedWidth, g_refKeenCfg.scaleFactor*srcBorderedHeight);
+				BEL_ST_SetWindowSizeInCoords(g_refKeenCfg.scaleFactor*srcBorderedWidth, g_refKeenCfg.scaleFactor*srcBorderedHeight);
 				// Not sure this will help, but still trying...
-				BEL_ST_GetWindowSize(&winWidth, &winHeight);
+				BEL_ST_GetWindowSizeInPixels(&winWidth, &winHeight);
+				BEL_ST_GetWindowSizeInCoords(&winWidthInCoords, &winHeightInCoords);
 			}
 		}
 
@@ -383,8 +388,8 @@ void BEL_ST_SetGfxOutputRects(bool allowResize)
 	// Save modified window size
 	if (!BE_ST_HostGfx_GetFullScreenToggle())
 	{
-		g_refKeenCfg.winWidth = winWidth;
-		g_refKeenCfg.winHeight = winHeight;
+		g_refKeenCfg.winWidth = winWidthInCoords;
+		g_refKeenCfg.winHeight = winHeightInCoords;
 	}
 
 	// Finish with internal (non-bordered) rect

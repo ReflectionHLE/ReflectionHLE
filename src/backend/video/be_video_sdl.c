@@ -76,7 +76,12 @@ void BEL_ST_RecreateWindowAndRenderer(
 {
 	static const char *prev_driver;
 
-	uint32_t windowFlags = resizable ? SDL_WINDOW_RESIZABLE : 0;
+	uint32_t windowFlags = 0;
+	// If the window is not resizable, then chances are we enforce specific
+	// dimensions in pixels, hence a pixel density of 1 is preferred.
+	// There's also no pixel-measured equivalent of SDL_SetWindowSize.
+	if (resizable)
+		windowFlags |= SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 	if (fullScreen)
 		windowFlags |= SDL_WINDOW_FULLSCREEN;
 
@@ -145,6 +150,10 @@ finish:
 				SDL_DisplayMode newMode = *mode;
 				newMode.w = fullWidth;
 				newMode.h = fullHeight;
+				// Testing on Wayland during April 2026, that's
+				// all that was covered by the listed display
+				// modes, outside of the desktop display mode.
+				newMode.pixel_density = 1.0f;
 				if (!SDL_SetWindowFullscreenMode(g_sdlWindow, &newMode))
 					BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: SDL_SetWindowFullscreenMode failed,\n%s\n", SDL_GetError());
 			}
@@ -293,14 +302,24 @@ void BEL_ST_UpdateWindow(void)
 	SDL_RenderPresent(g_sdlRenderer);
 }
 
-void BEL_ST_SetWindowSize(int w, int h)
+void BEL_ST_SetWindowSizeInCoords(int w, int h)
 {
 	SDL_SetWindowSize(g_sdlWindow, w, h);
 }
 
-void BEL_ST_GetWindowSize(int *w, int *h)
+void BEL_ST_GetWindowSizeInCoords(int *w, int *h)
 {
 	SDL_GetWindowSize(g_sdlWindow, w, h);
+}
+
+void BEL_ST_GetWindowSizeInPixels(int *w, int *h)
+{
+	SDL_GetWindowSizeInPixels(g_sdlWindow, w, h);
+}
+
+float BEL_ST_GetWindowPixelDensity(void)
+{
+	return SDL_GetWindowPixelDensity(g_sdlWindow);
 }
 
 void BEL_ST_GetDesktopDisplayDims(int *w, int *h)

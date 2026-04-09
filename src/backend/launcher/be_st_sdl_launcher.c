@@ -114,6 +114,7 @@ extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern BE_ST_Rect g_sdlAspectCorrectionBorderedRect;
 extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
+extern float g_sdlLastReportedPixelDensity;
 
 // Shared with other launcher code
 extern BEMenu *g_be_launcher_currMenu;
@@ -1665,16 +1666,14 @@ static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP)
 static void BEL_ST_Launcher_SetGfxOutputRects(void)
 {
 	int winWidth, winHeight;
-	BEL_ST_GetWindowSize(&winWidth, &winHeight);
+	BEL_ST_GetWindowSizeInPixels(&winWidth, &winHeight);
 
 	g_sdlLastReportedWindowWidth = winWidth;
 	g_sdlLastReportedWindowHeight = winHeight;
+	g_sdlLastReportedPixelDensity = BEL_ST_GetWindowPixelDensity();
 
 	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_FULL)
-	{
-		g_refKeenCfg.winWidth = winWidth;
-		g_refKeenCfg.winHeight = winHeight;
-	}
+		BEL_ST_GetWindowSizeInCoords(&g_refKeenCfg.winWidth, &g_refKeenCfg.winHeight);
 
 	if (BE_LAUNCHER_PIX_HEIGHT*winWidth < BE_LAUNCHER_PIX_WIDTH*winHeight) // Thinner than BE_LAUNCHER_PIX_WIDTH:BE_LAUNCHER_PIX_HEIGHT
 	{
@@ -2867,19 +2866,19 @@ void BE_ST_Launcher_RunEventLoop(void)
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				BEL_ST_Launcher_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, event.button.x * g_sdlLastReportedPixelDensity, event.button.y * g_sdlLastReportedPixelDensity, ticksBeforePoll);
 				break;
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				BEL_ST_Launcher_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x * g_sdlLastReportedPixelDensity, event.button.y * g_sdlLastReportedPixelDensity, ticksBeforePoll);
 				break;
 			case SDL_EVENT_MOUSE_MOTION:
 				if (event.motion.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				BEL_ST_Launcher_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, event.motion.x, event.motion.y, ticksBeforePoll);
+				BEL_ST_Launcher_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, event.motion.x * g_sdlLastReportedPixelDensity, event.motion.y * g_sdlLastReportedPixelDensity, ticksBeforePoll);
 				break;
 			case SDL_EVENT_MOUSE_WHEEL:
 				BE_Launcher_HandleInput_PointerVScroll(-10*event.wheel.y, ticksBeforePoll);
@@ -2930,6 +2929,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				break;
 
 			case SDL_EVENT_WINDOW_RESIZED:
+			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 				BEL_ST_Launcher_SetGfxOutputRects();
 				BE_ST_Launcher_MarkGfxCache();
 				break;
@@ -3058,6 +3058,7 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 				break;
 
 			case SDL_EVENT_WINDOW_RESIZED:
+			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 				BEL_ST_Launcher_SetGfxOutputRects();
 				BE_ST_Launcher_MarkGfxCache();
 				break;
@@ -3293,20 +3294,20 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(0, 0, event.button.x, event.button.y);
+				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerPressCases(0, 0, event.button.x * g_sdlLastReportedPixelDensity, event.button.y * g_sdlLastReportedPixelDensity);
 				break;
 			case SDL_EVENT_MOUSE_BUTTON_UP:
 				if (event.button.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				if (BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(0, 0, event.button.x, event.button.y, &confirmed))
+				if (BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerReleaseCases(0, 0, event.button.x * g_sdlLastReportedPixelDensity, event.button.y * g_sdlLastReportedPixelDensity, &confirmed))
 					return confirmed;
 				break;
 			case SDL_EVENT_MOUSE_MOTION:
 				if (event.motion.which == SDL_TOUCH_MOUSEID)
 					break;
 
-				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(0, 0, event.motion.x, event.motion.y);
+				BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(0, 0, event.motion.x * g_sdlLastReportedPixelDensity, event.motion.y * g_sdlLastReportedPixelDensity);
 				break;
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
@@ -3353,6 +3354,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				break;
 
 			case SDL_EVENT_WINDOW_RESIZED:
+			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 				BEL_ST_Launcher_SetGfxOutputRects();
 				BE_ST_Launcher_MarkGfxCache();
 				break;

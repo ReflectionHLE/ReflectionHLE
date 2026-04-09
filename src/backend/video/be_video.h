@@ -70,8 +70,11 @@ void BEL_ST_UpdateWindow(void);
 void BEL_ST_SetWindowFullScreenToggle(bool fullScreen);
 bool BEL_ST_GetWindowFullScreenToggle(void);
 
-void BEL_ST_SetWindowSize(int w, int h);
-void BEL_ST_GetWindowSize(int *w, int *h);
+void BEL_ST_SetWindowSizeInCoords(int w, int h);
+void BEL_ST_GetWindowSizeInCoords(int *w, int *h);
+void BEL_ST_GetWindowSizeInPixels(int *w, int *h);
+
+float BEL_ST_GetWindowPixelDensity(void);
 
 void BEL_ST_GetDesktopDisplayDims(int *w, int *h);
 

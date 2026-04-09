@@ -4,16 +4,41 @@ Changelog
 
 TBD:
 
-* Added initial support for BioMenace, aka, Bio Menace.
-That covers all DOS versions known as of writing this, including
+Added initial support for BioMenace, aka, Bio Menace.
+* That covers all DOS versions known as of writing this, including
 the BioHazard July 1992 beta as re-released in February 2025.
 * BioMenace support should cover saved games and game controllers
 in this release, plus multi-touch input if anyone wants to give it a try.
+
+ReflectionHLE was migrated from the SDL2 library to SDL3.
 * Removed the setting "displaynum". Also removed "rememberdisplaynum",
 which turned out to be mostly broken due to a backend/cfg
 related refactor from ReflectionHLE v0.40.0.
 It's unclear how useful were the settings, but it was simpler
 to remove these than adapting them for SDL3.
+* There might be other changes in behaviors as a side-effect
+of the migration to SDL3.
+
+High DPI adaptations (partially SDL3-related):
+* When relevant, high DPI is enabled for rendering,
+impacting platforms and environments like macOS and Wayland.
+Note that does not apply to windows which are not user-resizable,
+which is usually the case for software rendering.
+* Further note that on some environments (like Wayland), the output image
+may have additional scaling applied if software rendering is requested
+while using a high DPI desktop resolution. Hence, there might still
+be a bit of image blurring, even with software rendering.
+That may be resolved by switching to hardware rendering (recommended)
+or manually forcing scaling for software rendering via the main cfg file
+(less recommended).
+* The window's dimensions present in the main cfg file are measured
+in coordinates/points on environments like macOS and Wayland, rather
+than pixels in case a high DPI desktop resolution is in use.
+* On the other hand, if a specific fullscreen resolution is forced from the
+cfg file, the resolution will be requested with the pixel density of 1.0,
+hence it's measured in pixels.
+
+Additional changes:
 * Fixed: If supported, software rendering
 should be used for the launcher when requested.
 * Fix in launcher-side dir selection of '/', for operating systems like Linux.

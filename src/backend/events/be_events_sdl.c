@@ -42,6 +42,7 @@
 void BEL_ST_ConditionallyAddJoystick(SDL_JoystickID dev_id); // Implementation-specific
 
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
+extern float g_sdlLastReportedPixelDensity;
 
 extern bool g_sdlAudioSubsystemUp;
 
@@ -124,15 +125,17 @@ void BE_ST_PollEvents(void)
 				g_sdlMouseButtonsStates[button] = isPressed;
 			}
 
+			int x = event.button.x * g_sdlLastReportedPixelDensity,
+			    y = event.button.y * g_sdlLastReportedPixelDensity;
 			if (isPressed)
 			{
 				BEL_ST_CheckForHidingTouchUI();
 
-				if (BEL_ST_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
+				if (BEL_ST_CheckCommonPointerPressCases(BE_ST_MouseTouchID, 0, x, y))
 					break;
 			}
 			else
-				if (BEL_ST_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, event.button.x, event.button.y))
+				if (BEL_ST_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, x, y))
 					break;
 
 			if (g_sdlControllerMappingActualCurr->mbuttons[button].mapClass != BE_ST_CTRL_MAP_NONE)
@@ -159,28 +162,32 @@ void BE_ST_PollEvents(void)
 		}
 
 		case SDL_EVENT_MOUSE_MOTION:
+		{
 			if (event.motion.which == SDL_TOUCH_MOUSEID)
 				break;
 
-			if (BEL_ST_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, event.motion.x, event.motion.y))
+			int x = event.motion.x * g_sdlLastReportedPixelDensity,
+			    y = event.motion.y * g_sdlLastReportedPixelDensity;
+			if (BEL_ST_CheckCommonPointerMoveCases(BE_ST_MouseTouchID, 0, x, y))
 				break;
 
 			if (g_sdlDoAbsMouseMotion && g_sdlControllerMappingActualCurr->absoluteFingerPositioning)
 			{
 				void BEL_ST_UpdateVirtualCursorPositionFromPointer(int x, int y);
-				BEL_ST_UpdateVirtualCursorPositionFromPointer(event.motion.x, event.motion.y);
+				BEL_ST_UpdateVirtualCursorPositionFromPointer(x, y);
 				// Update cursor shown in black bars
 				extern int g_sdlHostVirtualMouseCursorState[2];
-				g_sdlHostVirtualMouseCursorState[0] = event.motion.x;
-				g_sdlHostVirtualMouseCursorState[1] = event.motion.y;
+				g_sdlHostVirtualMouseCursorState[0] = x;
+				g_sdlHostVirtualMouseCursorState[1] = y;
 				g_sdlForceGfxControlUiRefresh = true;
 			}
 			else
 			{
-				g_sdlEmuMouseMotionAccumulatedState[0] += event.motion.xrel;
-				g_sdlEmuMouseMotionAccumulatedState[1] += event.motion.yrel;
+				g_sdlEmuMouseMotionAccumulatedState[0] += event.motion.xrel * g_sdlLastReportedPixelDensity;
+				g_sdlEmuMouseMotionAccumulatedState[1] += event.motion.yrel * g_sdlLastReportedPixelDensity;
 			}
 			break;
+		}
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 		case SDL_EVENT_FINGER_DOWN:
@@ -384,6 +391,7 @@ void BE_ST_PollEvents(void)
 		}
 
 		case SDL_EVENT_WINDOW_RESIZED:
+		case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
 			BEL_ST_SetGfxOutputRects(false);
 			// Fall-through
 		case SDL_EVENT_WINDOW_EXPOSED:
