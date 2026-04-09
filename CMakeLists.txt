@@ -161,6 +161,12 @@ if (BUILD_AS_CPP)
 	endif ()
 endif ()
 
+# Forcibly disable -fcommon, also for Darwin versions
+# where that's not the default
+if (NOT CMAKE_GENERATOR MATCHES "Visual Studio")
+		set(common_cc_flags "${common_cc_flags} -fno-common")
+endif ()
+
 if (CMAKE_C_BYTE_ORDER STREQUAL "BIG_ENDIAN" OR CMAKE_CXX_BYTE_ORDER STREQUAL "BIG_ENDIAN")
 	set(REFKEEN_ARCH_BIG_ENDIAN "1")
 endif ()
