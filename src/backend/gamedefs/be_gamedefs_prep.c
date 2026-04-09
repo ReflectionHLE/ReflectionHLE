@@ -47,6 +47,7 @@
 
 #include "be_gamedefs.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #if ((defined REFKEEN_HAS_VER_CATACOMB_ALL) && \

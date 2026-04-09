@@ -27,6 +27,7 @@
  */
 
 #include <limits.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../audio/be_audio_private.h"

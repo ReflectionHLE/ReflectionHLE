@@ -35,6 +35,7 @@
 #include "be_st.h"
 #include "crc32/crc32.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 #define REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS 1

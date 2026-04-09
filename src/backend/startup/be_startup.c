@@ -39,6 +39,7 @@
 #include "depklite/depklite.h"
 #endif
 
+#include <stdlib.h>
 #include <setjmp.h>
 
 unsigned char *g_be_current_exeImage;

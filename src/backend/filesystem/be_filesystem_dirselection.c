@@ -36,6 +36,7 @@
 #include "be_gamever.h"
 #include "be_st.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 int BE_Cross_DirSelection_GetNumOfRootPaths(void)
