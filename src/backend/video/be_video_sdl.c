@@ -276,8 +276,9 @@ void BEL_ST_SetDrawColor(uint32_t color)
 
 void BEL_ST_SetDrawBlendMode(bool blend)
 {
-	if (SDL_SetRenderDrawBlendMode(g_sdlRenderer, blend ? SDL_BLENDMODE_BLEND : SDL_BLENDMODE_NONE))
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_SetRenderDrawBlendMode failed to set blend mode, blend == %d,\n%s\n", (int)blend, SDL_GetError());
+	SDL_BlendMode blendMode = blend ? SDL_BLENDMODE_BLEND : SDL_BLENDMODE_NONE;
+	if (!SDL_SetRenderDrawBlendMode(g_sdlRenderer, blendMode))
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "SDL_SetRenderDrawBlendMode failed to set blend mode, blendMode == %d,\n%s\n", (int)blendMode);
 }
 
 void BEL_ST_RenderFill(const BE_ST_Rect *rect)
