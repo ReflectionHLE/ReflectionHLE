@@ -54,8 +54,13 @@
      ((defined REFKEEN_PLATFORM_WINDOWS) || (defined REFKEEN_PLATFORM_MACOS))) || \
     (((defined REFKEEN_HAS_VER_WL6AC14) || \
       (defined REFKEEN_HAS_VER_SODAC14) || \
-      (defined REFKEEN_HAS_VER_N3DWT10)) && (defined REFKEEN_PLATFORM_WINDOWS))
+      (defined REFKEEN_HAS_VER_N3DWT10)) && (defined REFKEEN_PLATFORM_WINDOWS)) || \
+     (defined REFKEEN_HAS_VER_BMENACE_ALL)
 #define BE_CHECK_GOG_INSTALLATIONS
+#endif
+
+#if ((defined REFKEEN_HAS_VER_BMENACE_ALL) && (defined REFKEEN_PLATFORM_WINDOWS))
+#define BE_CHECK_ZOOM_PLATFORM_INSTALLATIONS
 #endif
 
 // Use this for a single param specific to Unix, ignoring it otherwise
@@ -351,6 +356,49 @@ static void BEL_Cross_CheckForS3DNAInstallations(UNIX_SPECIFIC_PARAM(const char 
 #endif // REFKEEN_HAS_VER_N3DWT10
 }
 
+static void BEL_Cross_CheckForBMenaceInstallations(UNIX_SPECIFIC_PARAM(const char *homeVar))
+{
+#ifdef REFKEEN_HAS_VER_BMENACE_ALL
+	const BE_GameVerDetails_T *bmenaceVers[] = {
+#ifdef REFKEEN_HAS_VER_BM1V11F
+		&g_be_gamever_bm1v11f,
+#endif
+#ifdef REFKEEN_HAS_VER_BM2V11F
+		&g_be_gamever_bm2v11f,
+#endif
+#ifdef REFKEEN_HAS_VER_BM3V11F
+		&g_be_gamever_bm3v11f,
+#endif
+		0,
+	};
+
+#ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
+  #ifdef REFKEEN_PLATFORM_WINDOWS
+	BEL_Cross_TryAddRegistryInst(
+		_T("SOFTWARE\\MICROSOFT\\WINDOWS\\CURRENTVERSION\\UNINSTALL\\STEAM APP 358180"),
+		_T("INSTALLLOCATION"), _T("\\Bio Menace"), bmenaceVers, NULL, "Steam");
+  #else
+	BEL_Cross_TryAddSteamInst(
+		homeVar, _T("/Bio Menace/Bio Menace"), bmenaceVers, NULL, "Steam");
+  #endif // PLATFORM
+#endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
+
+#if (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
+	BEL_Cross_TryAddRegistryInst(
+		_T("SOFTWARE\\GOG.COM\\GAMES\\1449569170"), _T("PATH"), _T(""),
+		bmenaceVers, NULL, "GOG.com");
+#endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
+
+#if (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_ZOOM_PLATFORM_INSTALLATIONS)
+	// New location
+	BEL_Cross_TryAddRegistryInst(
+		_T("SOFTWARE\\ZOOM PLATFORM\\Bio Menace"), _T("InstallPath"), _T(""),
+		bmenaceVers, NULL, "Zoom Platform");
+#endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_ZOOM_PLATFORM_INSTALLATIONS)
+
+#endif // REFKEEN_HAS_VER_BMENACE_ALL
+}
+
 static void BEL_Cross_CheckForKnownInstallations(void)
 {
 #ifdef REFKEEN_PLATFORM_UNIX // Including MACOS
@@ -361,6 +409,7 @@ static void BEL_Cross_CheckForKnownInstallations(void)
 	BEL_Cross_CheckForWolf3DInstallations(UNIX_SPECIFIC_ARG(homeVar));
 	BEL_Cross_CheckForSODInstallations(UNIX_SPECIFIC_ARG(homeVar));
 	BEL_Cross_CheckForS3DNAInstallations(UNIX_SPECIFIC_ARG(homeVar));
+	BEL_Cross_CheckForBMenaceInstallations(UNIX_SPECIFIC_ARG(homeVar));
 }
 
 /* Apply a simple bubble sort on the game installations,
