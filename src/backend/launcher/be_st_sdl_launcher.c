@@ -139,6 +139,10 @@ static bool g_sdlLauncherTriggerBinaryStates[2];
 static uint8_t g_sdlLauncherGfxCache[BE_LAUNCHER_PIX_WIDTH*BE_LAUNCHER_PIX_HEIGHT]; // Launcher gets pointer to this for drawing
 static bool g_sdlLauncherGfxCacheMarked = false;
 
+// Dynamically adjusted by connected gamepads,
+// initially a copy of g_be_st_padFeatureIdToNameMap.
+static const char *g_sdlPadLauncherButtonNames[BE_Cross_ArrayLen(g_be_st_padFeatureIdToNameMap)];
+
 /*** Convenience macros - Note that the label *must* be a C string literal ***/
 #define BEMENUITEM_DEF_TARGETMENU(menuItemName, label, menuPtr) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, NULL, menuPtr, label, BE_MENUITEM_TYPE_TARGETMENU)
 #define BEMENUITEM_DEF_SELECTION(menuItemName, label, choices) BEMENUITEM_DEF_GENERIC(menuItemName, NULL, choices, NULL, label, BE_MENUITEM_TYPE_SELECTION)
@@ -156,7 +160,7 @@ static bool g_sdlLauncherGfxCacheMarked = false;
 	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## MouseBindsMenuItem_Action_ ## suffix, label, g_be_st_mouseFeatureIdToNameMap, &BE_Launcher_Handler_MouseAction) \
 
 #define BEMENUITEM_DEF_CTRL_PAD_BIND(game, suffix, label) \
-	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_be_st_padFeatureIdToNameMap, &BE_Launcher_Handler_ControllerAction)
+	BEMENUITEM_DEF_DYNAMIC_SELECTION(g_be ## game ## PadBindsMenuItem_Action_ ## suffix, label, g_sdlPadLauncherButtonNames, &BE_Launcher_Handler_ControllerAction)
 
 #define BEMENUITEM_DEF_CTRL_NONKEY_BINDS(game, suffix, label) \
 	BEMENUITEM_DEF_CTRL_MOUSE_BIND(game,suffix,label) \
@@ -1654,6 +1658,7 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 
 
 void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem);
+void BEL_Launcher_DrawMenuItems(BEMenu *menu);
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP)
@@ -2902,9 +2907,11 @@ void BE_ST_Launcher_RunEventLoop(void)
 			 */
 			case SDL_EVENT_JOYSTICK_ADDED:
 				BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
+				BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 				break;
 			case SDL_EVENT_JOYSTICK_REMOVED:
 				BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
+				BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 				break;
 
 			case SDL_EVENT_GAMEPAD_AXIS_MOTION: // Need this so a pressed trigger is ignored once user gets to choose a button for in-game action
@@ -2969,6 +2976,8 @@ void BE_ST_Launcher_RunEventLoop(void)
 	}
 }
 
+void BEL_Launcher_RedrawMenuStringForGettingUserBind(BEMenuItem *menuItem);
+
 void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 {
 	BEL_ST_Launcher_TurnTextSearchOff();
@@ -3031,10 +3040,15 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 				break;
 
 			case SDL_EVENT_JOYSTICK_ADDED:
-				BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
-				break;
 			case SDL_EVENT_JOYSTICK_REMOVED:
-				BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
+				if (event.type == SDL_EVENT_JOYSTICK_ADDED)
+					BEL_ST_Launcher_ConditionallyAddJoystick(event.jdevice.which);
+				else
+					BEL_ST_Launcher_RemoveJoystickIfAdded(event.jdevice.which);
+				BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
+				BEL_Launcher_RedrawMenuStringForGettingUserBind(menuItem);
+				BE_ST_Launcher_MarkGfxCache();
+				BEL_ST_Launcher_UpdateHostDisplay();
 				break;
 
 			case SDL_EVENT_GAMEPAD_AXIS_MOTION:
@@ -3398,18 +3412,57 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 	return false;
 }
 
+static void BEL_ST_Launcher_UpdatePadButtonLabels(SDL_Gamepad *gamepad)
+{
+	for (int i = 0; i < 4; ++i)
+		switch (SDL_GetGamepadButtonLabel(gamepad, (SDL_GamepadButton)i))
+		{
+		default:
+			g_sdlPadLauncherButtonNames[i] = g_be_st_padFeatureIdToNameMap[i];
+			break;
+		case SDL_GAMEPAD_BUTTON_LABEL_A:
+			g_sdlPadLauncherButtonNames[i] = "A";
+			break;
+		case SDL_GAMEPAD_BUTTON_LABEL_B:
+			g_sdlPadLauncherButtonNames[i] = "B";
+			break;
+		case SDL_GAMEPAD_BUTTON_LABEL_X:
+			g_sdlPadLauncherButtonNames[i] = "X";
+			break;
+		case SDL_GAMEPAD_BUTTON_LABEL_Y:
+			g_sdlPadLauncherButtonNames[i] = "Y";
+			break;
+		case SDL_GAMEPAD_BUTTON_LABEL_CROSS:
+			g_sdlPadLauncherButtonNames[i] = "X";
+			break;
+		case SDL_GAMEPAD_BUTTON_LABEL_CIRCLE:
+			g_sdlPadLauncherButtonNames[i] = "O";
+			break;
+		case SDL_GAMEPAD_BUTTON_LABEL_SQUARE:
+			g_sdlPadLauncherButtonNames[i] = "\xdb";
+			break;
+		case SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE:
+			g_sdlPadLauncherButtonNames[i] = "\x1e";
+			break;
+		}
+}
+
 // Adds as much game controllers for use as possible.
 // ASSUMES g_sdlControllers array is full of null pointers.
 static void BEL_ST_Launcher_FillJoysticksList(void)
 {
 	int n_joysticks;
 	SDL_JoystickID *joysticks = SDL_GetJoysticks(&n_joysticks);
+
+	memcpy(g_sdlPadLauncherButtonNames, g_be_st_padFeatureIdToNameMap, sizeof(g_be_st_padFeatureIdToNameMap));
+
 	if (!joysticks)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BEL_ST_Launcher_FillJoysticksList: SDL_GetJoysticks failed,\n%s\n", SDL_GetError());
 		return;
 	}
-	for (int dev_index = 0, i = 0;
+	int i = 0;
+	for (int dev_index = 0;
 	     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
 		if (!g_sdlControllers[i] && SDL_IsGamepad(joysticks[dev_index]))
 		{
@@ -3417,6 +3470,8 @@ static void BEL_ST_Launcher_FillJoysticksList(void)
 			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 			++i;
 		}
+	if (i > 0)
+		BEL_ST_Launcher_UpdatePadButtonLabels(g_sdlControllers[i - 1]);
 }
 
 static void BEL_ST_Launcher_ClearJoysticksList(void)
@@ -3438,18 +3493,30 @@ static void BEL_ST_Launcher_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 		{
 			g_sdlControllers[i] = SDL_OpenGamepad(dev_id);
 			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
+			BEL_ST_Launcher_UpdatePadButtonLabels(g_sdlControllers[i]);
 			return;
 		}
 }
 
 static void BEL_ST_Launcher_RemoveJoystickIfAdded(SDL_JoystickID dev_id)
 {
-	for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
-		if (g_sdlControllers[i] && (g_sdlJoysticksInstanceIds[i] == dev_id))
+	int i, last_connected = -1;
+	for (i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
+		if (g_sdlControllers[i])
 		{
-			SDL_CloseGamepad(g_sdlControllers[i]);
-			g_sdlControllers[i] = NULL;
+			if (g_sdlJoysticksInstanceIds[i] == dev_id)
+			{
+				SDL_CloseGamepad(g_sdlControllers[i]);
+				g_sdlControllers[i] = NULL;
+			}
+			else
+				last_connected = i;
 		}
+
+	if (last_connected < 0)
+		memcpy(g_sdlPadLauncherButtonNames, g_be_st_padFeatureIdToNameMap, sizeof(g_be_st_padFeatureIdToNameMap));
+	else
+		BEL_ST_Launcher_UpdatePadButtonLabels(g_sdlControllers[i]);
 }
 
 #endif // REFKEEN_ENABLE_LAUNCHER

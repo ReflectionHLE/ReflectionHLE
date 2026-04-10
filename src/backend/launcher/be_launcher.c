@@ -444,7 +444,7 @@ static bool BEL_Launcher_IsMenuItemBelowViewPort(BEMenuItem *menuItem)
 	return (menuItem->yPosStart - g_be_launcher_currMenu->currPixYScroll >= BE_LAUNCHER_PIX_HEIGHT);
 }
 
-static void BEL_Launcher_DrawMenuItems(BEMenu *menu)
+void BEL_Launcher_DrawMenuItems(BEMenu *menu)
 {
 	BEMenuItem **menuItemPP, *menuItemP;
 	for (menuItemPP = menu->menuItems, menuItemP = *menuItemPP; menuItemP; ++menuItemPP, menuItemP = *menuItemPP)
@@ -1567,10 +1567,15 @@ void BE_Launcher_Handler_MenuQuit(BEMenuItem **menuItemP)
 	BE_ST_QuickExit();
 }
 
-static void BEL_Launcher_PrepareForGettingUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
+void BEL_Launcher_RedrawMenuStringForGettingUserBind(BEMenuItem *menuItem)
 {
 	BEL_Launcher_DrawMenuItemString(menuItem->choices[menuItem->choice], menuItem->selectionYPos, 0); // Erase string
 	BEL_Launcher_DrawMenuItemString("Press...", menuItem->selectionYPos, 9); // Draw this one instead
+}
+
+static void BEL_Launcher_PrepareForGettingUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
+{
+	BEL_Launcher_RedrawMenuStringForGettingUserBind(menuItem);
 	BE_ST_Launcher_WaitForUserBind(menuItem, menuBind);
 	BEL_Launcher_DrawMenuItems(g_be_launcher_currMenu);
 }
