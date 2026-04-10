@@ -57,7 +57,7 @@
 #define REFKEEN_CONFIG_ENABLE_CMDLINE
 #endif
 
-// On the Mac, usage of multitouch trackpad may lead to SDL2
+// On the Mac, usage of multitouch trackpad may lead to SDL
 // finger events, and these should not be mistakenly
 // processed as touchscreen input
 #ifndef REFKEEN_PLATFORM_MACOS
@@ -65,8 +65,8 @@
 #endif
 
 #ifdef REFKEEN_PLATFORM_ANDROID
-// On some platforms e.g., OS X, usage of multitouch trackpad may lead
-// to SDL2 finger events, and these should not be mistakenly detected
+// On some platforms e.g., macOS, usage of multitouch trackpad may lead
+// to SDL finger events, and these should not be mistakenly detected
 // as touchscreen input (at least by default)
 #define REFKEEN_CONFIG_AUTODETECT_TOUCHINPUT_BY_DEFAULT
 

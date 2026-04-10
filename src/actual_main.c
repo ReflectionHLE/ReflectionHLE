@@ -208,7 +208,7 @@ int main(int argc, char **argv)
 	void (*mainFuncPtr)(void);
 
 #ifdef REFKEEN_PLATFORM_MACOS
-	// A weird OS X hack, ignoring an argument possibly passed
+	// A weird macOS hack, ignoring an argument possibly passed
 	// if the app is launched from Finder (or with "open" command)
 	if ((argc >= 2) && !strncmp(argv[1], "-psn_", 5))
 	{
