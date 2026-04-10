@@ -2,7 +2,7 @@
 
 ## Supported platforms differing from Android
 
-You will need CMake, a compatible C or C++ compiler and SDL2.
+You will need CMake, a compatible C or C++ compiler and SDL3.
 Additionally, SpeexDSP is required for audio resampling.
 
 While it should be possible to build the code as C,
@@ -14,6 +14,8 @@ the latter of which being done with Mingw-w64. It was
 further tested with Clang and LLVM for Linux.
 
 ## Android
+
+NOTE: Instructions apply to earlier SDL2-based revisions.
 
 This was only tested with building from Linux, but chances are
 the instructions should be mostly similar for other host platforms.
