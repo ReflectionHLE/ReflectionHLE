@@ -10,7 +10,7 @@
 extern SDL_Semaphore *g_sdlEventsCallbackToMainSem, *g_sdlMainToEventsCallbackSem;
 
 void BEL_ST_CheckForExitFromEventsCallback(void);
-int BEL_ST_EventsCallback(void *userdata, SDL_Event *event);
+bool BEL_ST_EventsCallback(void *userdata, SDL_Event *event);
 #endif
 
 #endif
