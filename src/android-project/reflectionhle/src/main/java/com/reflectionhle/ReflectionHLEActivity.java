@@ -113,6 +113,6 @@ public class ReflectionHLEActivity extends SDLActivity implements ActivityCompat
 
 	@Override
 	protected String[] getLibraries() {
-	        return new String[] { "SDL2", "reflectionhle" };
+	        return new String[] { "SDL3", "reflectionhle" };
 	}
 }
