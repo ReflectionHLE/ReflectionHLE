@@ -483,7 +483,7 @@ static int reloc90(FILE *ifile,unsigned char **obuffptrptr,long fpos) {
 	    rel_count++;
 	}
 	rel_seg += 0x1000;
-    } while(rel_seg!=(0xf000+0x1000));
+    } while(rel_seg!=0U/*(0xf000+0x1000)*/); // REFKEEN: 16-bit wraparound
     ohead[3]=rel_count;
     return(SUCCESS);
 }
