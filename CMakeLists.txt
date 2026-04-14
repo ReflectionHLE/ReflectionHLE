@@ -84,7 +84,7 @@ function(add_refhle_unified_target name targets shared_sources common_cc_flags c
 		MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
 		MACOSX_BUNDLE_COPYRIGHT "${bundle_copyright}"
 	)
-	target_link_libraries(${name} ${libraries})
+	target_link_libraries(${name} PRIVATE ${libraries})
 	list(APPEND targets ${name})
 	set(targets "${targets}" PARENT_SCOPE)
 endfunction()
