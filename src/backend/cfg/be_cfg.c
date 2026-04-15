@@ -158,6 +158,8 @@ static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	DEF_BOOL(isFullscreen, "fullscreen", false)
+#else
+	DEF_BOOL(isFullscreen, NULL, true)
 #endif
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
 	DEF_DIMS(fullWidth, fullHeight, "fullres", 0, 0)
@@ -165,7 +167,11 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_DIMS(winWidth, winHeight, "windowres", 0, 0)
 #ifdef REFKEEN_ENABLE_LAUNCHER
 //	DEF_DIMS(launcherWinWidth, launcherWinHeight, "launcherwindowres", 0, 0)
+  #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_TOGGLE
 	DEF_ENUM(launcherWinType, "launcherwindowtype", g_be_setting_wintype_vals, LAUNCHER_WINDOW_DEFAULT)
+  #else
+	DEF_ENUM(launcherWinType, NULL, g_be_setting_wintype_vals, LAUNCHER_WINDOW_FULL)
+  #endif
 #endif
 	DEF_STR(lastSelectedGameExe, "lastselectedgameexe")
 	DEF_ENUM(lastSelectedGameVer, "lastselectedgamever", refkeen_gamever_strs, BE_GAMEVER_LAST)
