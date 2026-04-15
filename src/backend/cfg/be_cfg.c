@@ -557,7 +557,7 @@ static void BEL_ST_ParseConfig(const char *name, BE_ST_CFG_Setting_T *settings, 
 		for (int i = 0; i < n; ++i)
 		{
 			BE_ST_CFG_Setting_T *setting = &settings[i];
-			if (!strcmp(buffer, setting->key))
+			if (setting->key && !strcmp(buffer, setting->key))
 			{
 				// Unhide a setting if it's hidden by default
 				if (setting->valType != BE_ST_CFG_VAL_DIMS)
@@ -623,8 +623,9 @@ static void BEL_ST_SaveConfig(const char *name, const BE_ST_CFG_Setting_T *setti
 	for (int i = 0; i < n; ++i)
 	{
 		const BE_ST_CFG_Setting_T *setting = &settings[i];
-		// Write setting only if it's not hidden
-		if ((setting->valType == BE_ST_CFG_VAL_DIMS) || !setting->ptraux)
+		// Write setting only if it's not hidden and has a key string
+		if (setting->key &&
+		    ((setting->valType == BE_ST_CFG_VAL_DIMS) || !setting->ptraux))
 			BEL_ST_SaveSetting(fp, &settings[i]);
 	}
 	fclose(fp);
