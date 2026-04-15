@@ -216,7 +216,7 @@ void BEL_ST_HandleEmuKeyboardEvent(bool isPressed, bool isRepeated, emulatedDOSK
 				g_sdlEmuKeyboardLastPressedScanCode = keyEvent.dosScanCode;
 				g_sdlEmuKeyboardLastPressedIsSpecial = keyEvent.isSpecial;
 				g_sdlEmuKeyboardLastScanCodePressTime = g_sdlLastPollEventsTime;
-				g_sdlEmuKeyboardLastScanCodePressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				g_sdlEmuKeyboardLastScanCodePressTimeDelay = BE_ST_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 			}
 		}
 		else

@@ -372,7 +372,7 @@ void BE_ST_PollEvents(void)
 					case BE_ST_CTRL_BUT_DPAD_RIGHT:
 						g_sdlOnScreenKeyboardLastPressedDirButton = but;
 						g_sdlOnScreenKeyboardLastDirButtonPressTime = g_sdlLastPollEventsTime;
-						g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+						g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay = BE_ST_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 						break;
 					default:
 						g_sdlOnScreenKeyboardLastPressedDirButton = BE_ST_CTRL_BUT_INVALID;
@@ -435,7 +435,7 @@ void BE_ST_PollEvents(void)
 		BEL_ST_HandleEmuKeyboardEvent(true, true, dosKeyEvent);
 
 		g_sdlEmuKeyboardLastScanCodePressTime += g_sdlEmuKeyboardLastScanCodePressTimeDelay;
-		g_sdlEmuKeyboardLastScanCodePressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
+		g_sdlEmuKeyboardLastScanCodePressTimeDelay = BE_ST_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
 	}
 
 	// Similar repeat for on-screen keyboard (directional movement only)
@@ -449,7 +449,7 @@ void BE_ST_PollEvents(void)
 				BEL_ST_AltControlScheme_HandleDebugKeysEvent(g_sdlOnScreenKeyboardLastPressedDirButton, true);
 
 			g_sdlOnScreenKeyboardLastDirButtonPressTime += g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay;
-			g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
+			g_sdlOnScreenKeyboardLastDirButtonPressTimeDelay = BE_ST_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
 		
 		}
 	}

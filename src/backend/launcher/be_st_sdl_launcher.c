@@ -2859,7 +2859,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				g_sdlKeyboardLastKeyPressed = event.key.scancode;
 				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.mod & SDL_KMOD_SHIFT);
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
-				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				g_sdlInputLastBinaryPressTimeDelay = BE_ST_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 				BEL_ST_Launcher_HandleKeyPressEvent(event.key.scancode, g_sdlKeyboardLastKeyPressedIsShifted);
 				break;
 			case SDL_EVENT_KEY_UP:
@@ -2924,7 +2924,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 				g_sdlControllerLastButtonPressed = event.gbutton.button;
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
-				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				g_sdlInputLastBinaryPressTimeDelay = BE_ST_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 				BEL_ST_Launcher_HandleControllerButtonEvent(event.gbutton.button, true);
 				break;
 			case SDL_EVENT_GAMEPAD_BUTTON_UP:
@@ -2962,7 +2962,7 @@ void BE_ST_Launcher_RunEventLoop(void)
 		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != BE_ST_CTRL_BUT_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
 		{
 			g_sdlInputLastBinaryPressTime += g_sdlInputLastBinaryPressTimeDelay;
-			g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
+			g_sdlInputLastBinaryPressTimeDelay = BE_ST_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
 
 			if (g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN)
 				BEL_ST_Launcher_HandleKeyPressEvent(g_sdlKeyboardLastKeyPressed, g_sdlKeyboardLastKeyPressedIsShifted);
@@ -3295,7 +3295,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				g_sdlKeyboardLastKeyPressed = event.key.scancode;
 				g_sdlKeyboardLastKeyPressedIsShifted = (event.key.mod & SDL_KMOD_SHIFT);
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
-				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				g_sdlInputLastBinaryPressTimeDelay = BE_ST_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 				if (BEL_ST_Launcher_ArgumentsEditing_HandleKeyPressEvent(event.key.scancode, g_sdlKeyboardLastKeyPressedIsShifted, &confirmed))
 					return confirmed;
 				break;
@@ -3354,7 +3354,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 				g_sdlControllerLastButtonPressed = event.gbutton.button;
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
-				g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
+				g_sdlInputLastBinaryPressTimeDelay = BE_ST_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
 				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.gbutton.button, true, &confirmed))
 					return confirmed;
 				break;
@@ -3394,7 +3394,7 @@ bool BEL_ST_SDL_Launcher_DoEditArguments(void)
 		if (((g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN) || (g_sdlControllerLastButtonPressed != BE_ST_CTRL_BUT_INVALID)) && (ticksBeforePoll - g_sdlInputLastBinaryPressTime >= g_sdlInputLastBinaryPressTimeDelay))
 		{
 			g_sdlInputLastBinaryPressTime += g_sdlInputLastBinaryPressTimeDelay;
-			g_sdlInputLastBinaryPressTimeDelay = BE_ST_SDL_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
+			g_sdlInputLastBinaryPressTimeDelay = BE_ST_CONTROLLER_DIGIACTION_REPEAT_RATE_MS;
 
 			bool ret;
 			if (g_sdlKeyboardLastKeyPressed != SDL_SCANCODE_UNKNOWN)
