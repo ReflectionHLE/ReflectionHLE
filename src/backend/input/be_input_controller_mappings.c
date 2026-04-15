@@ -99,6 +99,8 @@ bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, i
 	*lastBinaryStatusPtr = (value >= g_sdlJoystickAxisBinaryThreshold);
 	switch (map->mapClass)
 	{
+	case BE_ST_CTRL_MAP_NONE:
+		break;
 	case BE_ST_CTRL_MAP_KEYSCANCODE:
 	{
 		if (*lastBinaryStatusPtr != prevBinaryStatus)
