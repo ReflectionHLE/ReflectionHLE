@@ -1269,8 +1269,8 @@ void BE_Launcher_Handler_SetArgumentsForGame(BEMenuItem **menuItemP)
 
 	//BE_ST_Launcher_MarkGfxCache();
 
-	bool BEL_ST_SDL_Launcher_DoEditArguments(void);
-	if (BEL_ST_SDL_Launcher_DoEditArguments())
+	bool BEL_ST_Launcher_DoEditArguments(void);
+	if (BEL_ST_Launcher_DoEditArguments())
 	{
 		memcpy(exeArgs, g_beArgumentsStringToSet, sizeof(g_beArgumentsStringToSet));
 		void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId);

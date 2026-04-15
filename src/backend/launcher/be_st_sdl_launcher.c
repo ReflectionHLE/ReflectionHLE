@@ -3271,7 +3271,7 @@ static void BEL_ST_Launcher_ArgumentsEditing_CheckCommonPointerMoveCases(BE_ST_T
 	}
 }
 
-bool BEL_ST_SDL_Launcher_DoEditArguments(void)
+bool BEL_ST_Launcher_DoEditArguments(void)
 {
 	SDL_Event event;
 	bool confirmed;
