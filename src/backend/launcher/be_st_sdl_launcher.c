@@ -1249,7 +1249,7 @@ void BE_ST_Launcher_Prepare(void)
 		software ? SDL_SOFTWARE_RENDERER : NULL
 	);
 
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlTexture, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, false, false);
+	BEL_ST_CreateTextureWrapper(&g_sdlTexture, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, false, false);
 	if (!g_sdlTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create texture for launcher\n");
@@ -1262,7 +1262,7 @@ void BE_ST_Launcher_Prepare(void)
 
 	// Try, if we fail then simply don't use this
 	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE)
-		BEL_ST_SDLCreateTextureWrapper(&g_sdlTargetTexture, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT, true, true);
+		BEL_ST_CreateTextureWrapper(&g_sdlTargetTexture, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT, true, true);
 
 	/* Game controllers */
 	BEL_ST_Launcher_FillJoysticksList();
@@ -1336,10 +1336,10 @@ void BE_ST_Launcher_Shutdown(void)
 	BEL_ST_Launcher_ClearJoysticksList();
 	g_nOfTrackedFingers = 0;
 
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextSearchTexture);
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlLauncherTextInputTexture);
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlLauncherTextSearchTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlLauncherTextInputTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlTargetTexture);
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	// BEFORE checking if we need to save anything, apply this HACK
@@ -1807,7 +1807,7 @@ static void BEL_ST_Launcher_CreateTextSearchTextureIfNeeded(void)
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextSearchTexture, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_HEIGHT, false, false);
+	BEL_ST_CreateTextureWrapper(&g_sdlLauncherTextSearchTexture, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_HEIGHT, false, false);
 	if (!g_sdlLauncherTextSearchTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create launcher text search texture\n");
@@ -1823,7 +1823,7 @@ static void BEL_ST_Launcher_CreateTextInputTextureIfNeeded(void)
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlLauncherTextInputTexture, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_HEIGHT, false, false);
+	BEL_ST_CreateTextureWrapper(&g_sdlLauncherTextInputTexture, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_HEIGHT, false, false);
 	if (!g_sdlLauncherTextInputTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create launcher text input texture\n");
@@ -2759,7 +2759,7 @@ static void BEL_ST_Launcher_UpdateHostDisplay(void)
 			if (!BEL_ST_SetRenderTarget(g_sdlTargetTexture))
 			{
 				BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_Launcher_UpdateHostDisplay: Failed to set target texture as render target (disabling)\n");
-				BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
+				BEL_ST_DestroyTextureWrapper(&g_sdlTargetTexture);
 				goto refreshwithnorendertarget;
 			}
 			BEL_ST_RenderFromTexture(g_sdlTexture, NULL);

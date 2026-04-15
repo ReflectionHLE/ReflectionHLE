@@ -275,7 +275,7 @@ static void BEL_ST_CreatePadTextureIfNeeded(BE_ST_Texture **padTexturePtrPtr, in
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(padTexturePtrPtr, len, len, false, false);
+	BEL_ST_CreateTextureWrapper(padTexturePtrPtr, len, len, false, false);
 	if (!(*padTexturePtrPtr))
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create pad texture\n");
@@ -392,9 +392,9 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 static void BEL_ST_RecreateTouchControlTexture(BESDLCachedOnScreenTouchControl *touchControl)
 {
 	if (touchControl->texture)
-		BEL_ST_SDLDestroyTextureWrapper(&touchControl->texture);
+		BEL_ST_DestroyTextureWrapper(&touchControl->texture);
 	int texWidth = touchControl->xpmWidth, texHeight = touchControl->xpmHeight;
-	BEL_ST_SDLCreateTextureWrapper(&touchControl->texture, texWidth, texHeight, false, false);
+	BEL_ST_CreateTextureWrapper(&touchControl->texture, texWidth, texHeight, false, false);
 	BE_ST_Texture *texture = touchControl->texture;
 	if (!texture)
 	{
@@ -559,7 +559,7 @@ static void BEL_ST_CreateTextInputTextureIfNeeded(void)
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlTextInputTexture, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT, false, false);
+	BEL_ST_CreateTextureWrapper(&g_sdlTextInputTexture, ALTCONTROLLER_TEXTINPUT_PIX_WIDTH, ALTCONTROLLER_TEXTINPUT_PIX_HEIGHT, false, false);
 	if (!g_sdlTextInputTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create text input texture\n");
@@ -575,7 +575,7 @@ static void BEL_ST_CreateDebugKeysTextureIfNeeded(void)
 	{
 		return;
 	}
-	BEL_ST_SDLCreateTextureWrapper(&g_sdlDebugKeysTexture, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT, false, false);
+	BEL_ST_CreateTextureWrapper(&g_sdlDebugKeysTexture, ALTCONTROLLER_DEBUGKEYS_PIX_WIDTH, ALTCONTROLLER_DEBUGKEYS_PIX_HEIGHT, false, false);
 	if (!g_sdlDebugKeysTexture)
 	{
 		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create debug keys texture\n");

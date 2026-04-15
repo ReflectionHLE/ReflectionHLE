@@ -89,12 +89,12 @@ void BE_ST_InitGfx(void)
 
 void BE_ST_ShutdownGfx(void)
 {
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlFaceButtonsTexture);
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlDpadTexture);
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTextInputTexture);
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlDebugKeysTexture);
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTexture);
-	BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlFaceButtonsTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlDpadTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlTextInputTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlDebugKeysTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlTexture);
+	BEL_ST_DestroyTextureWrapper(&g_sdlTargetTexture);
 	BEL_ST_DestroyWindowAndRenderer();
 }
 
@@ -715,7 +715,7 @@ void BEL_ST_UpdateHostDisplay(void)
 		if (!BEL_ST_SetRenderTarget(g_sdlTargetTexture))
 		{
 			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_UpdateHostDisplay: Failed to set target texture as render target (disabling)\n");
-			BEL_ST_SDLDestroyTextureWrapper(&g_sdlTargetTexture);
+			BEL_ST_DestroyTextureWrapper(&g_sdlTargetTexture);
 			goto refreshwithnorendertarget;
 		}
 		BEL_ST_RenderFromTexture(g_sdlTexture, NULL);

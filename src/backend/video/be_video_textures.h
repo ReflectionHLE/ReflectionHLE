@@ -17,8 +17,8 @@ extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 // The thing is, that the BE_ST_Texture pointer values may
 // be CHANGED at ANY MOMENT (due to an SDL_RENDER event).
 
-void BEL_ST_SDLCreateTextureWrapper(BE_ST_Texture **pTexture, int w, int h, bool isTarget, bool isLinear);
-void BEL_ST_SDLDestroyTextureWrapper(BE_ST_Texture **pTexture);
+void BEL_ST_CreateTextureWrapper(BE_ST_Texture **pTexture, int w, int h, bool isTarget, bool isLinear);
+void BEL_ST_DestroyTextureWrapper(BE_ST_Texture **pTexture);
 void BEL_ST_RecreateMainTextures(void);
 void BEL_ST_RecreateAllTextures(void);
 
