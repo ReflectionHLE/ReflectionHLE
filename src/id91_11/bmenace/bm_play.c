@@ -1006,6 +1006,9 @@ void StartMusic(Uint16 num)
 		mmerror = false;
 		if (!DemoMode)
 		{
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Push();
+			BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_inackback);
 			US_CenterWindow(20, 8);
 			PrintY += 20;
 			US_CPrint(str_nomemmusic);
@@ -1021,6 +1024,8 @@ void StartMusic(Uint16 num)
 			{
 				VW_FadeOut();
 			}
+			// REFKEEN - Alternative controllers support
+			BE_ST_AltControlScheme_Pop();
 		}
 	}
 	else
