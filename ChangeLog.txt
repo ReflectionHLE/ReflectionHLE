@@ -19,6 +19,20 @@ to remove these than adapting them for SDL3.
 * There might be other changes in behaviors as a side-effect
 of the migration to SDL3.
 
+Gamepad / Game controller support (partially SDL3-related):
+- Support showing other gamepad labels in the launcher according to
+connected gamepads. That is done with SDL3's SDL_GetGamepadButtonLabel.
+The A-B-X-Y face buttons layout is still the default if no
+connected gamepad is detected or a button label is unknown,
+and the cfg files similarly keep using a-b-x-y.
+
+Android support (partially SDL3-related):
+- Minimum supported version changed to Android 5.0 (Lollipop, SDK version 21).
+- Fixed display of adaptive application icon.
+- System UI elements get hidden on supported devices.
+- The "fullscreen" and "launcherwindowtype" settings
+are not written to the main CFG file on Android anymore.
+
 High DPI adaptations (partially SDL3-related):
 * When relevant, high DPI is enabled for rendering,
 impacting platforms and environments like macOS and Wayland.
