@@ -486,6 +486,7 @@ void BEL_ST_CheckForExitFromEventsCallback(void)
 
 // Use this to catch a few special events here when required
 static uint32_t g_sdl_eventCallback_EnterBackgroundLastTicks;
+static bool g_sdl_eventCallback_destroyedTextures = false;
 
 bool BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 {
@@ -495,24 +496,44 @@ bool BEL_ST_EventsCallback(void *userdata, SDL_Event *event)
 	switch (event->type)
 	{
 	case SDL_EVENT_TERMINATING:
-	case SDL_EVENT_LOW_MEMORY: // Let's just terminate the app in such a case
+		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Callback SDL_EVENT_TERMINATING\n");
 		SDL_SignalSemaphore(g_sdlEventsCallbackToMainSem);
 		SDL_WaitSemaphore(g_sdlMainToEventsCallbackSem);
 		if (event->type != SDL_EVENT_TERMINATING)
 			exit(0);
 		return false;
+	case SDL_EVENT_LOW_MEMORY:
+		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Callback SDL_EVENT_LOW_MEMORY\n");
+		g_sdl_eventCallback_destroyedTextures = true;
+		BEL_ST_DestroyAllTextures();
+		return false;
 	case SDL_EVENT_WILL_ENTER_BACKGROUND:
+		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Callback SDL_EVENT_WILL_ENTER_BACKGROUND\n");
 		if (g_sdlAudioSubsystemUp) // FIXME - Hope this works well
 			SDL_PauseAudioDevice(SDL_GetAudioStreamDevice(g_sdlAudioStream));
 		return false;
 	case SDL_EVENT_DID_ENTER_BACKGROUND:
+		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Callback SDL_EVENT_DID_ENTER_BACKGROUND\n");
 		g_sdl_eventCallback_EnterBackgroundLastTicks = BEL_ST_GetTicksMS();
 		return false;
 	case SDL_EVENT_WILL_ENTER_FOREGROUND:
+		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Callback SDL_EVENT_WILL_ENTER_FOREGROUND\n");
+		if (g_sdl_eventCallback_destroyedTextures)
+		{
+			// Force recreation of textures from main thread
+			SDL_Event event = {0};
+			event.type = SDL_EVENT_RENDER_DEVICE_RESET;
+			// We have just one window to which access was
+			// restricted to one compilation unit at the time.
+			//event.render.windowID = g_sdlWindow;
+			SDL_PushEvent(&event);
+			g_sdl_eventCallback_destroyedTextures = false;
+		}
 		// FIXME!!! - Hope this works well
 		g_be_audioMainThread_lastCallTicks += (BEL_ST_GetTicksMS() - g_sdl_eventCallback_EnterBackgroundLastTicks);
 		return false;
 	case SDL_EVENT_DID_ENTER_FOREGROUND:
+		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "Callback SDL_EVENT_DID_ENTER_FOREGROUND\n");
 		// HACK - These may be done from a different thread,
 		// but should be relatively simple anyway
 		BEL_ST_ForceHostDisplayUpdate();
