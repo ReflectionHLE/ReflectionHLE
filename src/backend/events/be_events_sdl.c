@@ -42,6 +42,7 @@
 #include <stdlib.h>
 
 void BEL_ST_ConditionallyAddJoystick(SDL_JoystickID dev_id); // Implementation-specific
+void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void);
 
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 extern float g_sdlLastReportedPixelDensity;
@@ -408,7 +409,9 @@ void BE_ST_PollEvents(void)
 
 		case SDL_EVENT_RENDER_TARGETS_RESET:
 		case SDL_EVENT_RENDER_DEVICE_RESET:
-			BEL_ST_RecreateAllTextures();
+			BEL_ST_DestroyAllTextures();
+			BEL_ST_RecreateMainTextures();
+			BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls();
 			break;
 
 		case SDL_EVENT_QUIT:

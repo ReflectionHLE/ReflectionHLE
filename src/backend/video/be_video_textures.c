@@ -74,6 +74,13 @@ void BEL_ST_RecreateMainTextures(void)
 			exit(0);
 		}
 	}
+	// Refresh if textures are recreated due to a host-side event
+	g_sdlDoRefreshGfxOutput = true; // BE_ST_MarkGfxForUpdate();
+	// Also need to force refresh this way
+	if (g_sdlScreenMode == 4) // CGA graphics
+		g_sdlHostScrMemCache.cgaGfx[0] = g_sdlHostScrMem.cgaGfx[0]^0xFF;
+	else
+		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF;
 }
 
 #define MAX_TEXTURES_POOL_SIZE 32
@@ -132,9 +139,9 @@ void BEL_ST_DestroyTextureWrapper(BE_ST_Texture **pTexture)
 	*pTexture = NULL;
 }
 
-void BEL_ST_RecreateAllTextures(void)
+void BEL_ST_DestroyAllTextures(void)
 {
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateAllTextures: Recreating textures\n");
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_DestroyAllTextures: Destroying textures\n");
 	BESDLManagedTexture *managedTexture = g_sdlManagedTexturesPool;
 	for (int i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i, ++managedTexture)
 	{
@@ -143,26 +150,7 @@ void BEL_ST_RecreateAllTextures(void)
 			continue;
 
 		BEL_ST_DestroyTexture(*pTexture);
-		*pTexture = BEL_ST_CreateARGBTexture
-			(managedTexture->w, managedTexture->h,
-			 managedTexture->isTarget, managedTexture->isLinear);
-
-		if (*pTexture == NULL)
-		{
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateAllTextures: Failed to recreate texture %d out of %d\n", i+1, g_sdlNumOfManagedTexturesInPool);
-			exit(1);
-		}
-		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_RecreateAllTextures: Recreated texture no %d out of %d\n", i+1, g_sdlNumOfManagedTexturesInPool);
+		*pTexture = NULL;
 	}
-
-	BEL_ST_ForceHostDisplayUpdate();
-	g_sdlDoRefreshGfxOutput = true; // BE_ST_MarkGfxForUpdate();
-#ifdef REFKEEN_ENABLE_LAUNCHER
-	BE_ST_Launcher_MarkGfxCache();
-#endif
-	// Also need to force refresh this way
-	if (g_sdlScreenMode == 4) // CGA graphics
-		g_sdlHostScrMemCache.cgaGfx[0] = g_sdlHostScrMem.cgaGfx[0]^0xFF;
-	else
-		g_sdlHostScrMemCache.egaGfx[0] = g_sdlHostScrMem.egaGfx[0]^0xFF;
+	g_sdlNumOfManagedTexturesInPool = 0;
 }

@@ -1219,6 +1219,7 @@ BEMenu g_beQuitConfirmMenu = {
 };
 
 static void BEL_ST_Launcher_SetGfxOutputRects(void);
+static void BEL_ST_Launcher_RecreateMainTextures(void);
 
 void BEL_ST_Launcher_RefreshSetArgumentsMenuItemLabel(int gameId);
 void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId);
@@ -1227,6 +1228,11 @@ static void BEL_ST_Launcher_FillJoysticksList(void);
 static void BEL_ST_Launcher_ClearJoysticksList(void);
 static void BEL_ST_Launcher_ConditionallyAddJoystick(SDL_JoystickID dev_id);
 static void BEL_ST_Launcher_RemoveJoystickIfAdded(SDL_JoystickID dev_id);
+
+static void BEL_ST_Launcher_ToggleTextSearchUIKey(int x, int y, bool isMarked,
+                                                  bool isPressed);
+static void BEL_ST_Launcher_ToggleTextInputUIKey(int x, int y, bool isMarked,
+                                                 bool isPressed);
 
 void BE_ST_Launcher_Prepare(void)
 {
@@ -1249,20 +1255,10 @@ void BE_ST_Launcher_Prepare(void)
 		software ? SDL_SOFTWARE_RENDERER : NULL
 	);
 
-	BEL_ST_CreateTextureWrapper(&g_sdlTexture, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, false, false);
-	if (!g_sdlTexture)
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create texture for launcher\n");
-		//Destroy window and renderer?
-		exit(0);
-	}
+	BEL_ST_Launcher_RecreateMainTextures();
 
 	BEL_ST_SetDrawColor(0xFF000000); // For clears in refreshes
 	BEL_ST_Launcher_SetGfxOutputRects();
-
-	// Try, if we fail then simply don't use this
-	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE)
-		BEL_ST_CreateTextureWrapper(&g_sdlTargetTexture, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT, true, true);
 
 	/* Game controllers */
 	BEL_ST_Launcher_FillJoysticksList();
@@ -1719,6 +1715,22 @@ static void BEL_ST_Launcher_SetGfxOutputRects(void)
 	g_sdlDebugFingerRectSideLen = minWinDim/4;
 }
 
+static void BEL_ST_Launcher_RecreateMainTextures(void)
+{
+	BEL_ST_CreateTextureWrapper(&g_sdlTexture, BE_LAUNCHER_PIX_WIDTH, BE_LAUNCHER_PIX_HEIGHT, false, false);
+	if (!g_sdlTexture)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "Failed to (re)create texture for launcher\n");
+		//Destroy window and renderer?
+		exit(0);
+	}
+
+	// Try, if we fail then simply don't use this
+	if (g_refKeenCfg.launcherWinType != LAUNCHER_WINDOW_SOFTWARE)
+		BEL_ST_CreateTextureWrapper(&g_sdlTargetTexture, 2*BE_LAUNCHER_PIX_WIDTH, 2*BE_LAUNCHER_PIX_HEIGHT, true, true);
+
+}
+
 void BE_ST_Launcher_MarkGfxCache(void)
 {
 	g_sdlLauncherGfxCacheMarked = true;
@@ -1848,8 +1860,6 @@ static void BEL_ST_Launcher_RedrawWholeTextSearchUI(void)
 			BEL_ST_RedrawKeyToBuffer(currPtr, ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, g_sdlIntScanCodeKeyboardUIStrs_Ptr[g_sdlIntScanCodeTextSearchLayout[currKeyRow][currKeyCol]], false, false);
 		}
 	}
-	// Simpler to do so outside the loop
-	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlKeyboardUISelectedKeyX) + ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlKeyboardUISelectedKeyY), ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH, g_sdlIntScanCodeKeyboardUIStrs_Ptr[g_sdlIntScanCodeTextSearchLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]], true, g_sdlKeyboardUIIsKeyPressed);
 
 	BEL_ST_UpdateTexture(g_sdlLauncherTextSearchTexture, NULL, pixels, 4*ALTCONTROLLER_LAUNCHER_TEXTSEARCH_PIX_WIDTH);
 }
@@ -1866,8 +1876,6 @@ static void BEL_ST_Launcher_RedrawWholeTextInputUI(void)
 			BEL_ST_RedrawKeyToBuffer(currPtr, ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, g_sdlIntScanCodeKeyboardUIStrs_Ptr[g_sdlIntScanCodeTextInputLayout[currKeyRow][currKeyCol]], false, false);
 		}
 	}
-	// Simpler to do so outside the loop
-	BEL_ST_RedrawKeyToBuffer(pixels + (ALTCONTROLLER_KEYBOARD_KEY_PIXWIDTH*g_sdlKeyboardUISelectedKeyX) + ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH*(ALTCONTROLLER_KEYBOARD_KEY_PIXHEIGHT*g_sdlKeyboardUISelectedKeyY), ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH, g_sdlIntScanCodeKeyboardUIStrs_Ptr[g_sdlIntScanCodeTextInputLayout[g_sdlKeyboardUISelectedKeyY][g_sdlKeyboardUISelectedKeyX]], true, g_sdlKeyboardUIIsKeyPressed);
 
 	BEL_ST_UpdateTexture(g_sdlLauncherTextInputTexture, NULL, pixels, 4*ALTCONTROLLER_LAUNCHER_TEXTINPUT_PIX_WIDTH);
 }
@@ -1897,6 +1905,9 @@ void BEL_ST_Launcher_ToggleTextSearch(void)
 	g_sdlIntScanCodeKeyboardUIStrs_Ptr = g_sdlIntCodeKeyboardUINonShiftedStrs;
 
 	BEL_ST_Launcher_RedrawWholeTextSearchUI();
+	BEL_ST_Launcher_ToggleTextSearchUIKey(g_sdlKeyboardUISelectedKeyX,
+	                                      g_sdlKeyboardUISelectedKeyY,
+	                                      true, g_sdlKeyboardUIIsKeyPressed);
 	//g_sdlTextInputUIIsShown = true;
 
 	//BEL_ST_ConditionallyShowAltInputPointer();
@@ -1926,6 +1937,9 @@ void BEL_ST_Launcher_ToggleTextInput(void)
 	g_sdlIntScanCodeKeyboardUIStrs_Ptr = g_sdlIntCodeKeyboardUINonShiftedStrs;
 
 	BEL_ST_Launcher_RedrawWholeTextInputUI();
+	BEL_ST_Launcher_ToggleTextInputUIKey(g_sdlKeyboardUISelectedKeyX,
+	                                     g_sdlKeyboardUISelectedKeyY,
+	                                     true, g_sdlKeyboardUIIsKeyPressed);
 	//g_sdlTextInputUIIsShown = true;
 
 	//BEL_ST_ConditionallyShowAltInputPointer();
@@ -2946,7 +2960,13 @@ void BE_ST_Launcher_RunEventLoop(void)
 
 			case SDL_EVENT_RENDER_TARGETS_RESET:
 			case SDL_EVENT_RENDER_DEVICE_RESET:
-				BEL_ST_RecreateAllTextures();
+				BEL_ST_DestroyAllTextures();
+				BEL_ST_Launcher_RecreateMainTextures();
+				if (g_sdlLauncherTextSearchUIIsShown)
+				{
+					BEL_ST_Launcher_CreateTextSearchTextureIfNeeded();
+					BEL_ST_Launcher_RedrawWholeTextSearchUI();
+				}
 				break;
 
 			case SDL_EVENT_QUIT:
@@ -3082,7 +3102,8 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 
 			case SDL_EVENT_RENDER_TARGETS_RESET:
 			case SDL_EVENT_RENDER_DEVICE_RESET:
-				BEL_ST_RecreateAllTextures();
+				BEL_ST_DestroyAllTextures();
+				BEL_ST_Launcher_RecreateMainTextures();
 				break;
 
 			case SDL_EVENT_QUIT:
@@ -3378,7 +3399,13 @@ bool BEL_ST_Launcher_DoEditArguments(void)
 
 			case SDL_EVENT_RENDER_TARGETS_RESET:
 			case SDL_EVENT_RENDER_DEVICE_RESET:
-				BEL_ST_RecreateAllTextures();
+				BEL_ST_DestroyAllTextures();
+				BEL_ST_Launcher_RecreateMainTextures();
+				if (g_sdlLauncherTextInputUIIsShown)
+				{
+					BEL_ST_Launcher_CreateTextInputTextureIfNeeded();
+					BEL_ST_Launcher_RedrawWholeTextInputUI();
+				}
 				break;
 
 			case SDL_EVENT_QUIT:

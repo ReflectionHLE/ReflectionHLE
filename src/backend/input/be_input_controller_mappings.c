@@ -59,7 +59,7 @@ static void BEL_ST_AltControllerScheme_ToggleIndicators(bool enabled)
 			*g_sdlControllerMappingActualCurr->keys[key].indicator = enabled;
 }
 
-static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void);
+void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void);
 
 /* May be similar to PrepareControllerMapping, but a bit different:
    Used in order to replace controller mapping with another one internally
@@ -206,7 +206,7 @@ void BEL_ST_AltControlScheme_CleanUp(void)
 }
 
 
-static void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void)
+void BEL_ST_AltControlScheme_ConditionallyShowOnScreenControls(void)
 {
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 	{

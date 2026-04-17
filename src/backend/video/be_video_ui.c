@@ -486,7 +486,10 @@ void BEL_ST_PrepareToShowTouchControls(const BE_ST_ControllerMapping *mapping)
 		if (i == ALTCONTROLLER_MAX_NUM_OF_TOUCH_CONTROLS)
 			BE_ST_ExitWithErrorMsg("BEL_ST_PrepareToShowTouchControls: On-screen touch controls overflow!");
 
-		g_sdlOnScreenTouchControlsTextures[i] = ((BESDLCachedOnScreenTouchControl *)(touchControl->miscData))->texture;
+		BESDLCachedOnScreenTouchControl *cachedTouchControl = (BESDLCachedOnScreenTouchControl *)(touchControl->miscData);
+		if (!cachedTouchControl->texture)
+			BEL_ST_RecreateTouchControlTexture(cachedTouchControl);
+		g_sdlOnScreenTouchControlsTextures[i] = cachedTouchControl->texture;
 	}
 	g_sdlNumOfOnScreenTouchControls = i;
 

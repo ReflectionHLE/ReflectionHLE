@@ -20,7 +20,7 @@ extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 void BEL_ST_CreateTextureWrapper(BE_ST_Texture **pTexture, int w, int h, bool isTarget, bool isLinear);
 void BEL_ST_DestroyTextureWrapper(BE_ST_Texture **pTexture);
 void BEL_ST_RecreateMainTextures(void);
-void BEL_ST_RecreateAllTextures(void);
+void BEL_ST_DestroyAllTextures(void);
 
 // These might be implementation-dependent
 bool BEL_ST_RenderFromTexture(BE_ST_Texture *texture, const BE_ST_Rect *dst);

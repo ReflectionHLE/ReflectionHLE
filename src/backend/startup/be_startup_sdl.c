@@ -188,7 +188,8 @@ void BE_ST_HandleExit(int status)
 				break;
 			case SDL_EVENT_RENDER_TARGETS_RESET:
 			case SDL_EVENT_RENDER_DEVICE_RESET:
-				BEL_ST_RecreateAllTextures();
+				BEL_ST_DestroyAllTextures();
+				BEL_ST_RecreateMainTextures();
 				break;
 			case SDL_EVENT_JOYSTICK_HAT_MOTION:
 				if (event.jhat.value != SDL_HAT_CENTERED) // Otherwise ignore
