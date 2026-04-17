@@ -85,20 +85,14 @@ void BEL_ST_RecreateMainTextures(void)
 
 #define MAX_TEXTURES_POOL_SIZE 32
 
-typedef struct {
-	BE_ST_Texture **texturePtr;
-	int w, h;
-	bool isTarget, isLinear;
-} BESDLManagedTexture;
-
-static BESDLManagedTexture g_sdlManagedTexturesPool[MAX_TEXTURES_POOL_SIZE];
+static BE_ST_Texture **g_sdlManagedTexturesPool[MAX_TEXTURES_POOL_SIZE];
 static int g_sdlNumOfManagedTexturesInPool = 0;
 
 void BEL_ST_CreateTextureWrapper(BE_ST_Texture **pTexture, int w, int h, bool isTarget, bool isLinear)
 {
 	int i;
 	for (i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i)
-		if (g_sdlManagedTexturesPool[i].texturePtr == pTexture)
+		if (g_sdlManagedTexturesPool[i] == pTexture)
 			break;
 
 	if (i >= MAX_TEXTURES_POOL_SIZE)
@@ -108,16 +102,8 @@ void BEL_ST_CreateTextureWrapper(BE_ST_Texture **pTexture, int w, int h, bool is
 		exit(0);
 	}
 
-	BESDLManagedTexture *managedTexture = &g_sdlManagedTexturesPool[i];
 	if (i == g_sdlNumOfManagedTexturesInPool)
-	{
-		g_sdlNumOfManagedTexturesInPool++;
-		managedTexture->texturePtr = pTexture;
-	}
-	managedTexture->w = w;
-	managedTexture->h = h;
-	managedTexture->isTarget = isTarget;
-	managedTexture->isLinear = isLinear;
+		g_sdlManagedTexturesPool[g_sdlNumOfManagedTexturesInPool++] = pTexture;
 
 	*pTexture = BEL_ST_CreateARGBTexture(w, h, isTarget, isLinear);
 }
@@ -128,7 +114,7 @@ void BEL_ST_DestroyTextureWrapper(BE_ST_Texture **pTexture)
 		return;
 
 	for (int i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i)
-		if (g_sdlManagedTexturesPool[i].texturePtr == pTexture)
+		if (g_sdlManagedTexturesPool[i] == pTexture)
 		{
 			// Remove managed texture without moving the rest, except for maybe the last
 			g_sdlManagedTexturesPool[i] = g_sdlManagedTexturesPool[--g_sdlNumOfManagedTexturesInPool];
@@ -142,10 +128,9 @@ void BEL_ST_DestroyTextureWrapper(BE_ST_Texture **pTexture)
 void BEL_ST_DestroyAllTextures(void)
 {
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_DestroyAllTextures: Destroying textures\n");
-	BESDLManagedTexture *managedTexture = g_sdlManagedTexturesPool;
-	for (int i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i, ++managedTexture)
+	for (int i = 0; i < g_sdlNumOfManagedTexturesInPool; ++i)
 	{
-		BE_ST_Texture **pTexture = managedTexture->texturePtr;
+		BE_ST_Texture **pTexture = g_sdlManagedTexturesPool[i];
 		if (*pTexture == NULL)
 			continue;
 
