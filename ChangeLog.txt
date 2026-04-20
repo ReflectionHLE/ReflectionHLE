@@ -25,6 +25,13 @@ connected gamepads. That is done with SDL3's SDL_GetGamepadButtonLabel.
 The A-B-X-Y face buttons layout is still the default if no
 connected gamepad is detected or a button label is unknown,
 and the cfg files similarly keep using a-b-x-y.
+- Added a toggle for swapping what SDL3 refers to as a gamepad's south
+and east face buttons, matching PS gamepads' Cross and Circle buttons.
+That will also have an effect on touch input when on-screen face buttons
+appear on the bottom-right corner, as they should further appear
+while using a supported gamepad (under the moderm controller scheme).
+There are instances in which swapping won't have an effect, like
+when customizable gamepad binds used for gameplay have an effect.
 
 Android support (partially SDL3-related):
 - Minimum supported version changed to Android 5.0 (Lollipop, SDK version 21).

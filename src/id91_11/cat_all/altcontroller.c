@@ -245,7 +245,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		{0},
 	},
 	{0},
-	false
+	false,
+	false,
+	false,
+	true,
 };
 
 #if (defined REFKEEN_VER_CAT3D) || (defined REFKEEN_VER_CATABYSS)
@@ -276,7 +279,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_scrolls = {
 		{NULL, BE_ST_SC_2, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
 	{0},
-	true
+	true,
+	false,
+	false,
+	true,
 };
 #endif
 
@@ -365,7 +371,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys = {
 		{0}
 	},
 	{0},
-	true
+	true,
+	false,
+	false,
+	true,
 };
 
 BE_ST_ControllerMapping g_ingame_altcontrol_mapping_soundoptions = {
@@ -395,7 +404,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_soundoptions = {
 		{0}
 	},
 	{0},
-	true
+	true,
+	false,
+	false,
+	true,
 };
 
 BE_ST_ControllerMapping g_ingame_altcontrol_mapping_saveoverwriteconfirm = {

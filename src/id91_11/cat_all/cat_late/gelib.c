@@ -1233,6 +1233,10 @@ id0_char_t GetKeyChoice(const id0_char_t *choices,id0_boolean_t clear)
 		}
 		g_ingame_altcontrol_mapping_keychoice.pbuttons[controllerbutton].mapClass = BE_ST_CTRL_MAP_NONE;
 	}
+	g_ingame_altcontrol_mapping_keychoice.ignoreConfirmCancelSwap =
+	    g_ingame_altcontrol_mapping_keychoice.pbuttons[BE_ST_CTRL_BUT_A].val != sc_Space &&
+	    !(g_ingame_altcontrol_mapping_keychoice.pbuttons[BE_ST_CTRL_BUT_A].val == sc_Y &&
+	      g_ingame_altcontrol_mapping_keychoice.pbuttons[BE_ST_CTRL_BUT_B].val == sc_N);
 	BE_ST_AltControlScheme_Push();
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_keychoice);
 

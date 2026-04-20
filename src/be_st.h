@@ -219,8 +219,16 @@ typedef struct BE_ST_ControllerMapping {
 	bool showUi;
 	bool absoluteFingerPositioning;
 	bool grabMouse;
+	bool ignoreConfirmCancelSwap; // Ignore g_refkeenCfg.swapconfirmcancel
 	const struct BE_ST_ControllerMapping *parent; // A special mark used internally.
 } BE_ST_ControllerMapping;
+
+static inline int BE_ST_AltControlScheme_SwapPadButton(int button)
+{
+	if (button == BE_ST_CTRL_BUT_A) return BE_ST_CTRL_BUT_B;
+	if (button == BE_ST_CTRL_BUT_B) return BE_ST_CTRL_BUT_A;
+	return button;
+}
 
 // Various controller schemes are saved in a stack, so it's straight-forward
 // to revert to an arbitrary preceding scheme when desired.

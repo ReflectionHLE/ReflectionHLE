@@ -1035,7 +1035,7 @@ static BEMenu *g_beMenusToPrepare[] = {
 	&g_beSelectDirectoryErrorMenu, &g_beSelectDirectoryFoundGameMenu,
 	&g_beSelectDirectoryNoGameFoundMenu,
 	&g_beSettingsMenu, &g_beVideoSettingsMenu, &g_beSoundSettingsMenu,
-	&g_beInputSettingsMenu, &g_beDeviceVolumesMenu,
+	&g_beInputSettingsMenu, &g_beButtonsSwapConfirmMenu, &g_beDeviceVolumesMenu,
 #ifdef REFKEEN_HAS_VER_KDREAMS
 	&g_beKDreamsSettingsMenu, &g_beKDreamsKeyBindsMenu,
 	&g_beKDreamsMouseBindsMenu,&g_beKDreamsPadBindsMenu,

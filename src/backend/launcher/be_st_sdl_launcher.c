@@ -571,6 +571,9 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 #endif
 
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
+BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_SwapConfirmCancel,
+                          "Swap pad/touch buttons\nused to confirm/cancel",
+                          &g_beButtonsSwapConfirmMenu)
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_inputSettingsChoices_touchControls);
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
@@ -585,6 +588,7 @@ BEMENUITEM_DEF_STATIC(g_beInputSettingsMenuItem_MouseGrabComment,
 
 static BEMenuItem *g_beInputSettingsMenuItems[] = {
 	&g_beInputSettingsMenuItem_ControllerScheme,
+	&g_beInputSettingsMenuItem_SwapConfirmCancel,
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	&g_beInputSettingsMenuItem_TouchControls,
 	&g_beInputSettingsMenuItem_TouchInputDebugging,
@@ -601,6 +605,28 @@ BEMenu g_beInputSettingsMenu = {
 	"Input settings",
 	&g_beSettingsMenu,
 	g_beInputSettingsMenuItems,
+	// Ignore the rest
+};
+
+/*** Buttons swap confirm menu ***/
+
+static void BEL_ST_Launcher_Handler_DoToggleButtonsSwap(BEMenuItem **menuItemP);
+
+BEMENUITEM_DEF_HANDLER(g_beButtonsSwapConfirmMenuItem_Yes, "Yes",
+                       &BEL_ST_Launcher_Handler_DoToggleButtonsSwap)
+BEMENUITEM_DEF_TARGETMENU(g_beButtonsSwapConfirmMenuItem_No, "No",
+                           &g_beInputSettingsMenu)
+
+static BEMenuItem *g_beButtonsSwapConfirmMenuItems[] = {
+	&g_beButtonsSwapConfirmMenuItem_Yes,
+	&g_beButtonsSwapConfirmMenuItem_No,
+	NULL
+};
+
+BEMenu g_beButtonsSwapConfirmMenu = {
+	"Are you sure about that?",
+	&g_beInputSettingsMenu,
+	g_beButtonsSwapConfirmMenuItems,
 	// Ignore the rest
 };
 
@@ -1655,6 +1681,13 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 
 void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem);
 void BEL_Launcher_DrawMenuItems(BEMenu *menu);
+
+static void BEL_ST_Launcher_Handler_DoToggleButtonsSwap(BEMenuItem **menuItemP)
+{
+	// Apply this immediately, so the effect is observed in the launcher itself
+	g_refKeenCfg.swapConfirmCancel = !g_refKeenCfg.swapConfirmCancel;
+	BEL_Launcher_SetCurrentMenu(&g_beInputSettingsMenu);
+}
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP)
@@ -2933,21 +2966,31 @@ void BE_ST_Launcher_RunEventLoop(void)
 					g_sdlLauncherTriggerBinaryStates[event.gaxis.axis - BE_ST_CTRL_AXIS_LTRIGGER] = (event.gaxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
 			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+			{
 				if ((event.gbutton.button < 0) || (event.gbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
-				g_sdlControllerLastButtonPressed = event.gbutton.button;
+				int but = event.gbutton.button;
+				if (g_refKeenCfg.swapConfirmCancel)
+					but = BE_ST_AltControlScheme_SwapPadButton(but);
+				g_sdlControllerLastButtonPressed = but;
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-				BEL_ST_Launcher_HandleControllerButtonEvent(event.gbutton.button, true);
+				BEL_ST_Launcher_HandleControllerButtonEvent(but, true);
 				break;
+			}
 			case SDL_EVENT_GAMEPAD_BUTTON_UP:
+			{
 				if ((event.gbutton.button < 0) || (event.gbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
-				if (g_sdlControllerLastButtonPressed == event.gbutton.button)
+				int but = event.gbutton.button;
+				if (g_refKeenCfg.swapConfirmCancel)
+					but = BE_ST_AltControlScheme_SwapPadButton(but);
+				if (g_sdlControllerLastButtonPressed == but)
 					g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
-				BEL_ST_Launcher_HandleControllerButtonEvent(event.gbutton.button, false);
+				BEL_ST_Launcher_HandleControllerButtonEvent(but, false);
 				break;
+			}
 
 			case SDL_EVENT_WINDOW_RESIZED:
 			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
@@ -3370,23 +3413,33 @@ bool BEL_ST_Launcher_DoEditArguments(void)
 					g_sdlLauncherTriggerBinaryStates[event.gaxis.axis - BE_ST_CTRL_AXIS_LTRIGGER] = (event.gaxis.value >= g_sdlJoystickAxisBinaryThreshold);
 				break;
 			case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+			{
 				if ((event.gbutton.button < 0) || (event.gbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
-				g_sdlControllerLastButtonPressed = event.gbutton.button;
+				int but = event.gbutton.button;
+				if (g_refKeenCfg.swapConfirmCancel)
+					but = BE_ST_AltControlScheme_SwapPadButton(but);
+				g_sdlControllerLastButtonPressed = but;
 				g_sdlKeyboardLastKeyPressed = SDL_SCANCODE_UNKNOWN;
 				g_sdlInputLastBinaryPressTime = ticksBeforePoll;
 				g_sdlInputLastBinaryPressTimeDelay = BE_ST_CONTROLLER_DELAY_BEFORE_DIGIACTION_REPEAT_MS;
-				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.gbutton.button, true, &confirmed))
+				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(but, true, &confirmed))
 					return confirmed;
 				break;
+			}
 			case SDL_EVENT_GAMEPAD_BUTTON_UP:
+			{
 				if ((event.gbutton.button < 0) || (event.gbutton.button >= BE_ST_CTRL_BUT_MAX))
 					break;
-				if (g_sdlControllerLastButtonPressed == event.gbutton.button)
+				int but = event.gbutton.button;
+				if (g_refKeenCfg.swapConfirmCancel)
+					but = BE_ST_AltControlScheme_SwapPadButton(but);
+				if (g_sdlControllerLastButtonPressed == but)
 					g_sdlControllerLastButtonPressed = BE_ST_CTRL_BUT_INVALID;
-				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(event.gbutton.button, false, &confirmed))
+				if (BEL_ST_Launcher_ArgumentsEditing_HandleControllerButtonEvent(but, false, &confirmed))
 					return confirmed;
 				break;
+			}
 
 			case SDL_EVENT_WINDOW_RESIZED:
 			case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:

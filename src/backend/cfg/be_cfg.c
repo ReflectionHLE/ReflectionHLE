@@ -209,6 +209,7 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 	DEF_BOOL(touchInputDebugging, "touchinputdebugging", false)
 #endif
 	DEF_BOOL(altControlScheme, "altcontrolscheme", true)
+	DEF_BOOL(swapConfirmCancel, "swapconfirmcancel", false)
 
 #ifdef BE_CROSS_ENABLE_FARPTR_CFG
 	DEF_HIDDEN_HEX_INT(farPtrSegOffset, "farptrsegoffset", BE_ST_DEFAULT_FARPTRSEGOFFSET, 0U, 65535U)

@@ -213,7 +213,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_gameplay = {
 		{0},
 	},
 	{0},
-	false
+	false,
+	false,
+	false,
+	true,
 };
 
 BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys = {
@@ -243,7 +246,10 @@ BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys = {
 		{NULL, BE_ST_SC_F7, 0, BE_ST_CTRL_MAP_KEYSCANCODE},
 	},
 	{0},
-	true
+	true,
+	false,
+	false,
+	true,
 };
 
 static BE_ST_OnscreenTouchControl g_ingame_altcontrol_mapping_help_onscreentouchcontrols[] = {

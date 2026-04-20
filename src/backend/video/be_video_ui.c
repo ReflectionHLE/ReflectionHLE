@@ -362,9 +362,12 @@ static void BEL_ST_PrepareToShowOnePad(const int *scanCodes, const char **padXpm
 
 /*static*/ void BEL_ST_PrepareToShowControllerUI(const BE_ST_ControllerMapping *mapping)
 {
+	bool swapConfirmCancel = g_refKeenCfg.swapConfirmCancel && !mapping->ignoreConfirmCancelSwap;
+	int confirmButton = swapConfirmCancel ? BE_ST_CTRL_BUT_B : BE_ST_CTRL_BUT_A;
+	int cancelButton = swapConfirmCancel ? BE_ST_CTRL_BUT_A : BE_ST_CTRL_BUT_B;
 	const int faceButtonsScancodes[4] = {
-		(mapping->pbuttons[BE_ST_CTRL_BUT_A].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_A].val : '\0',
-		(mapping->pbuttons[BE_ST_CTRL_BUT_B].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_B].val : '\0',
+		(mapping->pbuttons[confirmButton].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[confirmButton].val : '\0',
+		(mapping->pbuttons[cancelButton].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[cancelButton].val : '\0',
 		(mapping->pbuttons[BE_ST_CTRL_BUT_X].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_X].val : '\0',
 		(mapping->pbuttons[BE_ST_CTRL_BUT_Y].mapClass == BE_ST_CTRL_MAP_KEYSCANCODE) ? mapping->pbuttons[BE_ST_CTRL_BUT_Y].val : '\0'
 	};
@@ -1292,6 +1295,8 @@ static int BEL_ST_GetControllerUIScanCodeFromPointer(int x, int y)
 	if ((x >= g_sdlControllerFaceButtonsRect.x) && (x < g_sdlControllerFaceButtonsRect.x+g_sdlControllerFaceButtonsRect.w)
 	    && (y >= g_sdlControllerFaceButtonsRect.y) && (y < g_sdlControllerFaceButtonsRect.y+g_sdlControllerFaceButtonsRect.h))
 	{
+		bool swapConfirmCancel = g_refKeenCfg.swapConfirmCancel &&
+		                         !g_sdlControllerMappingActualCurr->ignoreConfirmCancelSwap;
 		// Normalize coordinates to pad
 		x = (x-g_sdlControllerFaceButtonsRect.x)*ALTCONTROLLER_FACEBUTTONS_PIX_DIM/g_sdlControllerFaceButtonsRect.w;
 		y = (y-g_sdlControllerFaceButtonsRect.y)*ALTCONTROLLER_FACEBUTTONS_PIX_DIM/g_sdlControllerFaceButtonsRect.h;

@@ -350,6 +350,10 @@ void BE_ST_PollEvents(void)
 			if ((but < 0) || (but >= BE_ST_CTRL_BUT_MAX))
 				break;
 
+			if (g_refKeenCfg.swapConfirmCancel &&
+			    !g_sdlControllerMappingActualCurr->ignoreConfirmCancelSwap)
+				but = BE_ST_AltControlScheme_SwapPadButton(but);
+
 			// Special handling for text input / debug keys
 			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
 			{

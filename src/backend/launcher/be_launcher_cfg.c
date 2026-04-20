@@ -120,6 +120,7 @@ extern BEMenuItem
 	g_beSoundSettingsMenuItem_SB,
 	g_beSoundSettingsMenuItem_UseResampler,
 	g_beInputSettingsMenuItem_ControllerScheme,
+	g_beInputSettingsMenuItem_SwapConfirmCancel,
 	g_beInputSettingsMenuItem_MouseGrab,
 	g_beInputSettingsMenuItem_TouchControls,
 	g_beInputSettingsMenuItem_TouchInputDebugging,
@@ -295,6 +296,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #endif
 
 	{&g_refKeenCfg.altControlScheme, &g_beInputSettingsMenuItem_ControllerScheme},
+	{&g_refKeenCfg.swapConfirmCancel, &g_beInputSettingsMenuItem_SwapConfirmCancel},
 	{&g_refKeenCfg.mouseGrab, &g_beInputSettingsMenuItem_MouseGrab},
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 	{&g_refKeenCfg.touchInputToggle, &g_beInputSettingsMenuItem_TouchControls},
