@@ -396,7 +396,7 @@ BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Cat3DSettings, "Settings: Cat3D a
 BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_Wolf3DSettings, "Settings: Wolf3D, SOD, S3DNA", &g_beWolf3DSettingsMenu)
 #endif
 #ifdef REFKEEN_HAS_VER_BMENACE_ALL
-BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_BMenaceSettings, "Settings: BioMenace", &g_beBMenaceSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beSettingsMenuItem_BMenaceSettings, "Settings: BMenace", &g_beBMenaceSettingsMenu)
 #endif
 
 static BEMenuItem *g_beSettingsMenuItems[] = {
@@ -1115,7 +1115,7 @@ static BEMenuItem *g_beBMenaceSettingsMenuItems[] = {
 };
 
 BEMenu g_beBMenaceSettingsMenu = {
-	"Settings: BioMenace",
+	"Settings: BMenace",
 	&g_beSettingsMenu,
 	g_beBMenaceSettingsMenuItems,
 	// Ignore the rest
