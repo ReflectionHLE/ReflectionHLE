@@ -29,7 +29,6 @@
 
 /*** Touch input UI resource definitions ***/
 
-#include "../rsrc/button_confirm.xpm"
 #include "../rsrc/button_back.xpm"
 #include "../rsrc/button_debug_keys.xpm"
 #include "../rsrc/button_function_keys.xpm"
