@@ -44,6 +44,13 @@ Android support (partially SDL3-related):
 - System UI elements get hidden on supported devices.
 - The "fullscreen" and "launcherwindowtype" settings
 are not written to the main CFG file on Android anymore.
+- Finally fixed the banner for Android TV to say ReflectionHLE,
+instead of Reflection Keen. The older name had mistakenly
+been used since the migration to a single executable/package
+for all games, wth the Reflection Keen banner
+(part of December 2021's new Android tree shared with all games)
+added in a git commit just 8 days before announcing the
+project's rename to ReflectionHLE in the public.
 
 High DPI adaptations (partially SDL3-related):
 * When relevant, high DPI is enabled for rendering,
