@@ -19,7 +19,7 @@ to remove these than adapting them for SDL3.
 * There might be other changes in behaviors as a side-effect
 of the migration to SDL3.
 
-Gamepad / Game controller support (partially SDL3-related):
+User input changes (partially SDL3-related):
 - Support showing other gamepad labels in the launcher according to
 connected gamepads. That is done with SDL3's SDL_GetGamepadButtonLabel.
 The A-B-X-Y face buttons layout is still the default if no
@@ -32,6 +32,9 @@ appear on the bottom-right corner, as they should further appear
 while using a supported gamepad (under the moderm controller scheme).
 There are instances in which swapping won't have an effect, like
 when customizable gamepad binds used for gameplay have an effect.
+- With partial relation to the above, relocated a few other
+on-screen touch buttons in Keen Dreams' control panel
+and death dialog, plus Wolfenstein 3D's menus.
 
 Android support (partially SDL3-related):
 - Minimum supported version changed to Android 5.0 (Lollipop, SDK version 21).
