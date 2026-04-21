@@ -206,12 +206,13 @@ const char **BE_Cross_DirSelection_GetPrev(int *outNumOfSubDirs) // Go up in the
 
 
 // Attempt to add a game installation from currently selected dir;
-// Returns BE_GAMEVER_LAST if no new supported game version is found; Otherwise game version id is returned.
+// Returns a boolean stating if new supported game version has been found.
 // The given array is used in order to report an error for each checked version, in case of failure.
 //
 // Array MUST have at least BE_GAMEVER_LAST elements.
-int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[])
+bool BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[])
 {
+	bool ret = false;
 	int verId;
 	for (verId = 0; verId < BE_GAMEVER_LAST; ++verId)
 	{
@@ -245,9 +246,10 @@ int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Error
 				BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BE_Cross_DirSelection_TryAddGameInstallation: Can't add directory to txt file.\n");
 
 
-			BEL_Cross_SortGameInstallations_ByVerId();
-			break; // Finish
+			ret = true;
 		}
 	}
-	return verId;
+	if (ret)
+		BEL_Cross_SortGameInstallations_ByVerId();
+	return ret;
 }

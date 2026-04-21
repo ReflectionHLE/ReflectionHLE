@@ -355,7 +355,7 @@ static BEMenuItem *g_beSelectDirectoryFoundGameMenuItems[] = {
 };
 
 BEMenu g_beSelectDirectoryFoundGameMenu = {
-	"New compatible game found!",
+	"New compatible game(s) found!",
 	&g_beSelectGameMenu,
 	g_beSelectDirectoryFoundGameMenuItems,
 	// Ignore the rest

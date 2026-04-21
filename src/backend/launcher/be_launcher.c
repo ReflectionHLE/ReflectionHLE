@@ -1508,8 +1508,7 @@ void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP)
 static void BEL_Launcher_TryAddingGameDir(void)
 {
 	BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[BE_GAMEVER_LAST];
-	int gameVer = BE_Cross_DirSelection_TryAddGameInstallation(errorMsgsArray);
-	if (gameVer != BE_GAMEVER_LAST)
+	if (BE_Cross_DirSelection_TryAddGameInstallation(errorMsgsArray))
 	{
 		BE_ST_Launcher_RefreshSelectGameMenuContents();
 

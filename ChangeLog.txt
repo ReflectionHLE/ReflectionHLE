@@ -71,14 +71,22 @@ than pixels in case a high DPI desktop resolution is in use.
 cfg file, the resolution will be requested with the pixel density of 1.0,
 hence it's measured in pixels.
 
-Additional changes:
+More launcher-related changes:
+* Upon selecting a directory with more than one compatible game
+or game version, all of them may be added at once, instead of
+having to reselect the directory over and over again.
 * Fixed: If supported, software rendering
 should be used for the launcher when requested.
-* Command-line arguments won't lead to a skip of the launcher anymore,
-unless -gamever or -passorigargs is used.
+* Fixed: Command-line arguments won't lead to a skip of the
+launcher anymore, unless -gamever or -passorigargs is used.
 * Fix in launcher-side dir selection of '/', for operating systems like Linux.
 * Spear of Destiny: Fix "Forgmen" typo in the launcher.
 It should say Formgen now. (Thanks K1n9_Duk3!)
+* Launcher: Show related menu when failing to open gamecontrollerdb.txt
+for writing, instead of exiting immediately. Also check if read of
+an existing gamecontrollerdb.txt file succeeds.
+
+Additional changes:
 * Fixes from GoGoOtaku for OOB array access in Wolf3D's VL_FadeIn
 (at least with potential loop optimizations) and two ODR violations.
 * dege-git's fix for a potential copy & paste error
@@ -86,9 +94,6 @@ while porting Wolf3D's ScalePost from assembly.
 * dege-git: Added 250ms delay before testing jukebox easter egg in Wolf3D.
 * Wolf3D: Crash fix in case only digitized sounds
 are toggled. (Thanks mr-around!)
-* Launcher: Show related menu when failing to open gamecontrollerdb.txt
-for writing, instead of exiting immediately. Also check if read of
-an existing gamecontrollerdb.txt file succeeds.
 * Internal changes to behaviors of BE_ST_SetScreenMode when the bit value
 of 128 is set, with adjustments for the Catacomb Adventures' VW_SetScreenMode.
 * Other misc. fixes/changes.

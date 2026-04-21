@@ -244,11 +244,11 @@ int BE_Cross_GetSelectedGameVerAudioDeviceFlags(void);
 typedef char BE_TryAddGameInstallation_ErrorMsg_T[40];
 
 // Attempt to add a game installation from currently selected dir;
-// Returns BE_GAMEVER_LAST if no new supported game version is found; Otherwise game version id is returned.
+// Returns a boolean stating if new supported game version has been found.
 // The given array is used in order to report an error for each checked version, in case of failure.
 //
 // Array MUST have at least BE_GAMEVER_LAST elements.
-int BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[]);
+bool BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[]);
 
 // Often used as a replacement for file handles of type "int",
 // this one is given a different name so it's easy to swap in case of a need
