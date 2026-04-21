@@ -218,7 +218,7 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
-	bool startLauncher = (argc == 1);
+	bool startLauncher = true;
 #endif
 	while ((argc >= 2) && !showHelp)
 	{
@@ -238,6 +238,9 @@ int main(int argc, char **argv)
 				break;
 			}
 
+#ifdef REFKEEN_ENABLE_LAUNCHER
+			startLauncher = false;
+#endif
 			argv += 2;
 			argc -= 2;
 		}
@@ -248,6 +251,9 @@ int main(int argc, char **argv)
 		}
 		else if (!BE_Cross_strcasecmp(1+argv[1], "passorigargs"))
 		{
+#ifdef REFKEEN_ENABLE_LAUNCHER
+			startLauncher = false;
+#endif
 			// The remaining args will be passed to the
 			// original game code as-is
 			++argv;

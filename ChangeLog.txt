@@ -74,6 +74,8 @@ hence it's measured in pixels.
 Additional changes:
 * Fixed: If supported, software rendering
 should be used for the launcher when requested.
+* Command-line arguments won't lead to a skip of the launcher anymore,
+unless -gamever or -passorigargs is used.
 * Fix in launcher-side dir selection of '/', for operating systems like Linux.
 * Spear of Destiny: Fix "Forgmen" typo in the launcher.
 It should say Formgen now. (Thanks K1n9_Duk3!)
