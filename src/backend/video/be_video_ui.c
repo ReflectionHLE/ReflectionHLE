@@ -1149,6 +1149,12 @@ void BEL_ST_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_Finger
 	    || (y < g_sdlControllerTextInputRect.y) || (y >= g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h)
 	)
 	{
+		if ((x >= g_sdlControllerTextInputRect.x-g_sdlControllerTextInputRect.w/ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH) &&
+		    (x < g_sdlControllerTextInputRect.x+g_sdlControllerTextInputRect.w+g_sdlControllerTextInputRect.w/ALTCONTROLLER_TEXTINPUT_KEYS_WIDTH) &&
+		    (y >= g_sdlControllerTextInputRect.y-g_sdlControllerTextInputRect.h/ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT) &&
+		    (y < g_sdlControllerTextInputRect.y+g_sdlControllerTextInputRect.h+g_sdlControllerTextInputRect.h/ALTCONTROLLER_TEXTINPUT_KEYS_HEIGHT))
+			return; // Pressing near the keyboard should leave it
+
 		trackedFinger->isDefaultBinaryStateToggle = true;
 		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 		return;
@@ -1237,6 +1243,12 @@ void BEL_ST_CheckPressedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_Finger
 	    || (y < g_sdlControllerDebugKeysRect.y) || (y >= g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h)
 	)
 	{
+		if ((x >= g_sdlControllerDebugKeysRect.x-g_sdlControllerDebugKeysRect.w/ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH) &&
+		    (x < g_sdlControllerDebugKeysRect.x+g_sdlControllerDebugKeysRect.w+g_sdlControllerDebugKeysRect.w/ALTCONTROLLER_DEBUGKEYS_KEYS_WIDTH) &&
+		    (y >= g_sdlControllerDebugKeysRect.y-g_sdlControllerDebugKeysRect.h/ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT) &&
+		    (y < g_sdlControllerDebugKeysRect.y+g_sdlControllerDebugKeysRect.h+g_sdlControllerDebugKeysRect.h/ALTCONTROLLER_DEBUGKEYS_KEYS_HEIGHT))
+			return; // Pressing near the keyboard should leave it
+
 		trackedFinger->isDefaultBinaryStateToggle = true;
 		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
 		return;

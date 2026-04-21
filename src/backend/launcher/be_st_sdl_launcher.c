@@ -2497,6 +2497,12 @@ static void BEL_ST_Launcher_CheckPressedPointerInTextSearchUI(BE_ST_TouchID touc
 	if ((x < g_sdlControllerLauncherTextSearchRect.x) || (x >= g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w)
 	    || (y < g_sdlControllerLauncherTextSearchRect.y) || (y >= g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h))
 	{
+		if ((x >= g_sdlControllerLauncherTextSearchRect.x-g_sdlControllerLauncherTextSearchRect.w/ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH) &&
+		    (x < g_sdlControllerLauncherTextSearchRect.x+g_sdlControllerLauncherTextSearchRect.w+g_sdlControllerLauncherTextSearchRect.w/ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_WIDTH) &&
+		    (y >= g_sdlControllerLauncherTextSearchRect.y-g_sdlControllerLauncherTextSearchRect.h/ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT) &&
+		    (y < g_sdlControllerLauncherTextSearchRect.y+g_sdlControllerLauncherTextSearchRect.h+g_sdlControllerLauncherTextSearchRect.h/ALTCONTROLLER_LAUNCHER_TEXTSEARCH_KEYS_HEIGHT))
+			return; // Pressing near the keyboard should leave it
+
 		//BEL_ST_Launcher_RemoveTrackedFinger(trackedFinger);
 		BEL_ST_Launcher_TurnTextSearchOff();
 		return;
@@ -2577,6 +2583,12 @@ static void BEL_ST_Launcher_CheckPressedPointerInTextInputUI(BE_ST_TouchID touch
 	if ((x < g_sdlControllerLauncherTextInputRect.x) || (x >= g_sdlControllerLauncherTextInputRect.x+g_sdlControllerLauncherTextInputRect.w)
 	    || (y < g_sdlControllerLauncherTextInputRect.y) || (y >= g_sdlControllerLauncherTextInputRect.y+g_sdlControllerLauncherTextInputRect.h))
 	{
+		if ((x >= g_sdlControllerLauncherTextInputRect.x-g_sdlControllerLauncherTextInputRect.w/ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH) &&
+		    (x < g_sdlControllerLauncherTextInputRect.x+g_sdlControllerLauncherTextInputRect.w+g_sdlControllerLauncherTextInputRect.w/ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_WIDTH) &&
+		    (y >= g_sdlControllerLauncherTextInputRect.y-g_sdlControllerLauncherTextInputRect.h/ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT) &&
+		    (y < g_sdlControllerLauncherTextInputRect.y+g_sdlControllerLauncherTextInputRect.h+g_sdlControllerLauncherTextInputRect.h/ALTCONTROLLER_LAUNCHER_TEXTINPUT_KEYS_HEIGHT))
+			return; // Pressing near the keyboard should leave it
+
 		//BEL_ST_Launcher_RemoveTrackedFinger(trackedFinger);
 		BEL_ST_Launcher_TurnTextInputOff();
 		return;

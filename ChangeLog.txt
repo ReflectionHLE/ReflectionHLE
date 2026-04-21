@@ -35,6 +35,8 @@ when customizable gamepad binds used for gameplay have an effect.
 - With partial relation to the above, relocated a few other
 on-screen touch buttons in Keen Dreams' control panel
 and death dialog, plus Wolfenstein 3D's menus.
+- On-screen keyboard won't disappear if pressing nearby,
+using mouse or touch input.
 
 Android support (partially SDL3-related):
 - Minimum supported version changed to Android 5.0 (Lollipop, SDK version 21).
