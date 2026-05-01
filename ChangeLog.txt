@@ -74,8 +74,8 @@ project's rename to ReflectionHLE in the public.
 High DPI adaptations (partially SDL3-related):
 * When relevant, high DPI is enabled for rendering,
 impacting platforms and environments like macOS and Wayland.
-Note that does not apply to windows which are not user-resizable,
-which is usually the case for software rendering.
+Note that does not apply to windows which are not user-resizable.
+That is usually the case for software rendering.
 * Further note that on some environments (like Wayland), the output image
 may have additional scaling applied if software rendering is requested
 while using a high DPI desktop resolution. Hence, there might still
