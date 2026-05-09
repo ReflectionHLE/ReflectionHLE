@@ -42,7 +42,7 @@ terms for the Wolfenstein 3D sources from 1995. See id-wolf3d.txt.
 actor code from Keen Dreams, ID Engine files from Catacomb 3-D and the text
 view code from Wolfenstein 3D, had the GNU GPLv2+ assigned by `K1n9_Duk3`.
 These sources were further used under permission for a commercial project,
-BioMenace Remastered, while also applying the original licensed granted
+BioMenace Remastered, while also applying the original license granted
 to Jim Norwood back in the 1990s.
 As for ReflectionHLE, The assumption was that the reconstructed
 sources could be used under the GNU GPLv2+. See gpl-2.0.txt.
