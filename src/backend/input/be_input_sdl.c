@@ -47,22 +47,29 @@ void BEL_ST_FillJoysticksList(void)
 	{
 		for (int dev_index = 0, i = 0;
 		     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
+		{
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_FillJoysticksList: Found joystick %u\n", joysticks[dev_index]);
 			if (!g_sdlJoysticks[i])
 			{
 				g_sdlJoysticks[i] = SDL_OpenJoystick(joysticks[dev_index]);
 				g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(g_sdlJoysticks[i]);
+				BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_FillJoysticksList: Opened joystick %u\n", joysticks[dev_index]);
 				BEL_ST_CheckForHidingTouchUI();
 				++i;
 			}
+		}
 	}
 	else
 	{
 		for (int dev_index = 0, i = 0;
 		     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
+		{
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_FillJoysticksList: Found joystick %u\n", joysticks[dev_index]);
 			if (!g_sdlControllers[i] && SDL_IsGamepad(joysticks[dev_index]))
 			{
 				g_sdlControllers[i] = SDL_OpenGamepad(joysticks[dev_index]);
 				g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
+				BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_FillJoysticksList: Opened gamepad %u\n", joysticks[dev_index]);
 				++i;
 
 				g_sdlShowControllerUI = true;
@@ -70,6 +77,7 @@ void BEL_ST_FillJoysticksList(void)
 				BEL_ST_ConditionallyShowAltInputPointer();
 				BEL_ST_CheckForHidingTouchUI();
 			}
+		}
 	}
 }
 
@@ -82,6 +90,7 @@ void BEL_ST_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 			{
 				g_sdlJoysticks[i] = SDL_OpenJoystick(dev_id);
 				g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(g_sdlJoysticks[i]);
+				BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_ConditionallyAddJoystick: Opened joystick %u\n", dev_id);
 				BEL_ST_CheckForHidingTouchUI();
 				break;
 			}
@@ -93,6 +102,7 @@ void BEL_ST_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 			{
 				g_sdlControllers[i] = SDL_OpenGamepad(dev_id);
 				g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
+				BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_ConditionallyAddJoystick: Opened gamepad %u\n", dev_id);
 
 				g_sdlShowControllerUI = true;
 				g_sdlForceGfxControlUiRefresh = true;

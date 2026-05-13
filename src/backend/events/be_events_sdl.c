@@ -271,6 +271,7 @@ void BE_ST_PollEvents(void)
 					if (g_sdlJoysticks[i] && (g_sdlJoysticksInstanceIds[i] == event.jdevice.which))
 					{
 						SDL_CloseJoystick(g_sdlJoysticks[i]);
+						BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BE_ST_PollEvents: Closed joystick %u\n", event.jdevice.which);
 						g_sdlJoysticks[i] = NULL;
 					}
 				}
@@ -286,6 +287,7 @@ void BE_ST_PollEvents(void)
 						if (g_sdlJoysticksInstanceIds[i] == event.jdevice.which)
 						{
 							SDL_CloseGamepad(g_sdlControllers[i]);
+							BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BE_ST_PollEvents: Closed gamepad %u\n", event.jdevice.which);
 							g_sdlControllers[i] = NULL;
 							isAnyControllerDisconnected = true;
 						}

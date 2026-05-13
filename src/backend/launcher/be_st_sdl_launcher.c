@@ -3573,12 +3573,16 @@ static void BEL_ST_Launcher_FillJoysticksList(void)
 	int i = 0;
 	for (int dev_index = 0;
 	     dev_index < n_joysticks && i < BE_ST_MAXJOYSTICKS; ++dev_index)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_Launcher_FillJoysticksList: Found joystick %u\n", joysticks[dev_index]);
 		if (!g_sdlControllers[i] && SDL_IsGamepad(joysticks[dev_index]))
 		{
 			g_sdlControllers[i] = SDL_OpenGamepad(joysticks[dev_index]);
 			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_Launcher_FillJoysticksList: Opened gamepad %u\n", joysticks[dev_index]);
 			++i;
 		}
+	}
 	if (i > 0)
 		BEL_ST_Launcher_UpdatePadButtonLabels(g_sdlControllers[i - 1]);
 }
@@ -3589,6 +3593,7 @@ static void BEL_ST_Launcher_ClearJoysticksList(void)
 		if (g_sdlControllers[i])
 		{
 			SDL_CloseGamepad(g_sdlControllers[i]);
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_Launcher_ClearJoysticksList: Closed gamepad %u\n", g_sdlJoysticksInstanceIds[i]);
 			g_sdlControllers[i] = NULL;
 		}
 }
@@ -3603,6 +3608,7 @@ static void BEL_ST_Launcher_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 			g_sdlControllers[i] = SDL_OpenGamepad(dev_id);
 			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 			BEL_ST_Launcher_UpdatePadButtonLabels(g_sdlControllers[i]);
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_Launcher_ConditionallyAddJoystick: Opened gamepad %u\n", dev_id);
 			return;
 		}
 }
@@ -3616,6 +3622,7 @@ static void BEL_ST_Launcher_RemoveJoystickIfAdded(SDL_JoystickID dev_id)
 			if (g_sdlJoysticksInstanceIds[i] == dev_id)
 			{
 				SDL_CloseGamepad(g_sdlControllers[i]);
+				BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_Launcher_RemoveJoystickIfAdded: Closed gamepad %u\n", dev_id);
 				g_sdlControllers[i] = NULL;
 			}
 			else
