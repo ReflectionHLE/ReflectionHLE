@@ -576,7 +576,7 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
 BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_SwapConfirmCancel,
-                          "Swap pad/touch buttons\nused to confirm/cancel",
+                          "Swap confirm/cancel pad/touch buttons\n(Currently: ? to confirm, ? to cancel)",
                           &g_beButtonsSwapConfirmMenu)
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_inputSettingsChoices_touchControls);
@@ -1695,6 +1695,14 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 
 /******/
 
+static void BEL_ST_Launcher_UpdateConfirmCancelButtonLabels(void)
+{
+	int offset = g_refKeenCfg.swapConfirmCancel ? 14 : 0;
+	g_beInputSettingsMenuItem_SwapConfirmCancel.label[50 + offset] =
+	  g_sdlPadLauncherButtonNames[BE_ST_CTRL_BUT_A][0];
+	g_beInputSettingsMenuItem_SwapConfirmCancel.label[64 - offset] =
+	  g_sdlPadLauncherButtonNames[BE_ST_CTRL_BUT_B][0];
+}
 
 void BEL_Launcher_DrawMenuItem(BEMenuItem *menuItem);
 void BEL_Launcher_DrawMenuItems(BEMenu *menu);
@@ -1703,6 +1711,7 @@ static void BEL_ST_Launcher_Handler_DoToggleButtonsSwap(BEMenuItem **menuItemP)
 {
 	// Apply this immediately, so the effect is observed in the launcher itself
 	g_refKeenCfg.swapConfirmCancel = !g_refKeenCfg.swapConfirmCancel;
+	BEL_ST_Launcher_UpdateConfirmCancelButtonLabels();
 	BEL_Launcher_SetCurrentMenu(&g_beInputSettingsMenu);
 }
 
@@ -3585,6 +3594,7 @@ static void BEL_ST_Launcher_FillJoysticksList(void)
 	}
 	if (i > 0)
 		BEL_ST_Launcher_UpdatePadButtonLabels(g_sdlControllers[i - 1]);
+	BEL_ST_Launcher_UpdateConfirmCancelButtonLabels();
 }
 
 static void BEL_ST_Launcher_ClearJoysticksList(void)
@@ -3608,6 +3618,7 @@ static void BEL_ST_Launcher_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 			g_sdlControllers[i] = SDL_OpenGamepad(dev_id);
 			g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 			BEL_ST_Launcher_UpdatePadButtonLabels(g_sdlControllers[i]);
+			BEL_ST_Launcher_UpdateConfirmCancelButtonLabels();
 			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_Launcher_ConditionallyAddJoystick: Opened gamepad %u\n", dev_id);
 			return;
 		}
@@ -3633,6 +3644,7 @@ static void BEL_ST_Launcher_RemoveJoystickIfAdded(SDL_JoystickID dev_id)
 		memcpy(g_sdlPadLauncherButtonNames, g_be_st_padFeatureIdToNameMap, sizeof(g_be_st_padFeatureIdToNameMap));
 	else
 		BEL_ST_Launcher_UpdatePadButtonLabels(g_sdlControllers[i]);
+	BEL_ST_Launcher_UpdateConfirmCancelButtonLabels();
 }
 
 #endif // REFKEEN_ENABLE_LAUNCHER
