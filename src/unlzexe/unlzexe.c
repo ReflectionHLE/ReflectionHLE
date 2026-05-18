@@ -65,9 +65,11 @@ typedef uint8_t BYTE;
 static int rdhead(FILE *,int *);
 static int mkreltbl(FILE *,unsigned char *,int);
 static int unpack_image(FILE *,unsigned char *);
+static uint16_t get_extra_mem_para(void);
 //static void wrhead(unsigned char *);
 
-bool Unlzexe_unpack(FILE *ifile, unsigned char *obuff, int buffsize)
+bool Unlzexe_unpack(FILE *ifile, unsigned char *obuff, int buffsize,
+                    uint16_t *oextramempara)
 {
 	int ver;
 	if (rdhead(ifile,&ver) != SUCCESS)
@@ -76,6 +78,7 @@ bool Unlzexe_unpack(FILE *ifile, unsigned char *obuff, int buffsize)
 		return false;
 	if (unpack_image(ifile,obuff) != SUCCESS)
 		return false;
+	*oextramempara = get_extra_mem_para();
 	//wrhead(obuff);
 	return true;
 }
@@ -610,6 +613,14 @@ static int unpack_image(FILE *ifile,unsigned char *obuff){
     BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "unpack (unlzexe) - end\n");
     //printf("end\n");
     return(SUCCESS);
+}
+
+/* Implemented using a small subset of wrhead as a base */
+static uint16_t get_extra_mem_para(void) {
+    uint16_t min_para = ohead[5];
+    if (ihead[6]!=0)
+	min_para -= inf[5] + ((inf[6]+16-1)>>4) + 9;	/* v0.7 */
+    return min_para;
 }
 
 #if 0

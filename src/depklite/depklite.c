@@ -239,17 +239,33 @@ static const Node bitTree2[] =
 	LF(31),
 };
 
-bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
+bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize,
+                     uint16_t *oextramempara)
 {
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "depklite - unpacking...\n");
 
 	int32_t fileSize = BE_Cross_FileLengthFromHandle(fp);
-	// Offset of compressed data in the executable, which is 800
-	// for Keen Dreams v1.00 (KDREAMS.EXE), and 752 for The Elder Scrolls Arena (A.EXE).
+	// Offset of compressed data in the executable; 800 for Keen Dreams
+	// v1.00 (KDREAMS.EXE), and 752 for The Elder Scrolls Arena (A.EXE).
 	const int compressedDataOffset = 800;
 
 	Debug_check(fileSize >= compressedDataOffset, "depklite - Input file is unexpectedly too small!\n");
+	// Get the EXE header's first 12 bytes
+	uint16_t smallTempBuf[6];
+	fseek(fp, 0, SEEK_SET);
+	BE_Cross_readInt16LEBuffer(fp, smallTempBuf, sizeof(smallTempBuf));
+	Debug_check(fileSize>=(int32_t)smallTempBuf[1]+512*(smallTempBuf[2]-1),
+	            "depklite - Input file is unexpectedly trimmed!\n");
+	// Trim fileSize to the data that matters, excluding contents
+	// possibly appended to the EXE (like debug information).
+	fileSize = smallTempBuf[1]+512*(smallTempBuf[2]-1);
+	// Calculate image size in bytes.
+	// smallTempBuf[4] is the offset measured in paragraphs.
+	const int32_t imageSize = fileSize - 16 * smallTempBuf[4];
+	// Also get this figure
+	const int32_t minExtraMemNeeded = 16 * smallTempBuf[5];
 
+	// Prepare to decompress
 	uint8_t *compressedStart = (uint8_t *)malloc(fileSize - compressedDataOffset);
 	Debug_check(compressedStart, "depklite - Out of memory!\n");
 
@@ -368,5 +384,11 @@ bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize)
 	}
 
 	free(compressedStart);
+	// Estimate additional memory needed according to a run of UNP 4.12,
+	// as tested for Keen Dreams EGA v1.00. decompPtr-decompBuff
+	// is the size of the decompressed EXE's image in bytes.
+	// Returned value is measured in paragraphs,
+	// rounded up by adding 15 before the division.
+	*oextramempara = (minExtraMemNeeded - (decompPtr-decompBuff) + imageSize + 15) / 16;
 	return true;
 }

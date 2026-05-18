@@ -152,6 +152,7 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 	}
 
 	bool success;
+	uint16_t minExtraMemPara;
 	switch (g_be_current_exeFileDetails->compressionType)
 	{
 	case BE_EXECOMPRESSION_NONE:
@@ -159,16 +160,21 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 		uint16_t offsetInPages;
 		fseek(exeFp, 8, SEEK_SET);
 		BE_Cross_readInt16LE(exeFp, &offsetInPages);
+		BE_Cross_readInt16LE(exeFp, &minExtraMemPara);
 		fseek(exeFp, 16*offsetInPages, SEEK_SET);
 		success = (fread(g_be_current_exeImage, g_be_current_exeFileDetails->decompExeImageSize, 1, exeFp) == 1);
 		break;
 	}
 	case BE_EXECOMPRESSION_LZEXE9X:
-		success = Unlzexe_unpack(exeFp, g_be_current_exeImage, g_be_current_exeFileDetails->decompExeImageSize);
+		success = Unlzexe_unpack(exeFp, g_be_current_exeImage,
+		                         g_be_current_exeFileDetails->decompExeImageSize,
+		                         &minExtraMemPara);
 		break;
 #ifdef ENABLE_PKLITE
 	case BE_EXECOMPRESSION_PKLITE105:
-		success = depklite_unpack(exeFp, g_be_current_exeImage, g_be_current_exeFileDetails->decompExeImageSize);
+		success = depklite_unpack(exeFp, g_be_current_exeImage,
+		                          g_be_current_exeFileDetails->decompExeImageSize,
+		                          &minExtraMemPara);
 		break;
 #endif
 	}
@@ -183,6 +189,9 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 			"Filename: %s", g_be_current_exeFileDetails->exeNames);
 		BE_ST_ExitWithErrorMsg(errorMsg);
 	}
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_Cross_LoadEXEImageToMem: Unpacked EXE image loaded successfully\n");
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_Cross_LoadEXEImageToMem: EXE image size - %u bytes\n", g_be_current_exeFileDetails->decompExeImageSize);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_Cross_LoadEXEImageToMem: Estimated additional main memory needed - %u bytes\n", 16*minExtraMemPara);
 }
 
 static void BEL_Cross_FreeEXEImageFromMem(void)
