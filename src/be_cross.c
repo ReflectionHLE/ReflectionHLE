@@ -106,6 +106,14 @@ int BE_Cross_strncasecmp(const char *s1, const char *s2, size_t count)
 	return ((int)uc1 - (int)uc2);
 }
 
+void *BE_Cross_safeandfastmemcopy_strict(void *dest, void *destEnd, const void *src, size_t count)
+{
+	if ((char *)destEnd - (char *)dest < count)
+		return NULL;
+	memcpy(dest, src, count);
+	return (char *)dest + count; // WARNING: This differs from memcpy!
+}
+
 // Technically a little hack...
 #if BE_CROSS_ENABLE_FARPTR_CFG
 uint16_t BE_Cross_Compat_GetFarPtrRelocationSegOffset(void)

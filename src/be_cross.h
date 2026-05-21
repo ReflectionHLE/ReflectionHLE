@@ -182,6 +182,15 @@ static inline char *BE_Cross_safeandfastcstringcopy_4strs(char *dest, char *dest
 	return BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(BE_Cross_safeandfastcstringcopy(dest, destEnd, src0), destEnd, src1), destEnd, src2), destEnd, src3);
 }
 
+// A safe(r) memory copying function,
+// similar in idea to BE_Cross_safeandfastcstringcopy.
+// Function is strict in the sense that if there's no sufficient room
+// for copying characters, a null pointer will be returned instead
+//
+// Note that as in memcpy, pointers must be non-null
+// and the memory regions must not overlap.
+void *BE_Cross_safeandfastmemcopy_strict(void *dest, void *destEnd, const void *src, size_t count);
+
 
 // This one should be called early
 void BE_Cross_PrepareAppPaths(void);
