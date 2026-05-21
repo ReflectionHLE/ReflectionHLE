@@ -63,7 +63,7 @@ typedef uint16_t WORD;
 typedef uint8_t BYTE;
 
 static int rdhead(FILE *,int *);
-static int mkreltbl(FILE *,unsigned char *,int);
+static int mkreltbl(FILE *,int);
 static int unpack_image(FILE *,unsigned char *);
 static uint16_t get_extra_mem_para(void);
 //static void wrhead(unsigned char *);
@@ -74,7 +74,7 @@ bool Unlzexe_unpack(FILE *ifile, unsigned char *obuff, int buffsize,
 	int ver;
 	if (rdhead(ifile,&ver) != SUCCESS)
 		return false;
-	if (mkreltbl(ifile,obuff,ver) != SUCCESS)
+	if (mkreltbl(ifile,ver) != SUCCESS)
 		return false;
 	if (unpack_image(ifile,obuff) != SUCCESS)
 		return false;
@@ -162,7 +162,6 @@ void main(int argc,char **argv){
     }
     exit(EXIT_SUCCESS);
 }
-
 
 
 
@@ -407,14 +406,13 @@ static int rdhead(FILE *ifile ,int *ver){
     return FAILURE;
 }
 
-   static int reloc90(FILE *ifile,unsigned char **obuffptrptr,long fpos);
-   static int reloc91(FILE *ifile,unsigned char **obuffptrptr,long fpos);
+   static int reloc90(FILE *ifile,long *oexeoff,long fpos);
+   static int reloc91(FILE *ifile,long *oexeoff,long fpos);
 
 /* make relocation table */
-static int mkreltbl(FILE *ifile,unsigned char *obuff,int ver) {
+static int mkreltbl(FILE *ifile,int ver) {
     long fpos;
     int i;
-    unsigned char *obuffptr;
 
 /* v0.7 old code
  *  allocsize=((ihead[1]+16-1)>>4) + ((ihead[2]-1)<<5) - ihead[4] + ihead[5];
@@ -432,12 +430,15 @@ static int mkreltbl(FILE *ifile,unsigned char *obuff,int ver) {
     /* inf[6]:size of decompressor with  compressed relocation table (BYTE) */
     /* inf[7]:check sum of decompresser with compressd relocation table(Ver.0.90) */
     ohead[0x0c]=0x1c;		/* start position of relocation table */
-    obuffptr=obuff+0x1c;
+    // REFKEEN:
+    // No write of relocation table to ofile or obuff done.
+    // Only the EXE image is written. That said, remember offset for now.
+    long oexeoff = 0x1c;
     //fseek(ofile,0x1cL,SEEK_SET);
     switch(ver){
-    case 90: i=reloc90(ifile,&obuffptr,fpos);
+    case 90: i=reloc90(ifile,&oexeoff,fpos);
 	     break;
-    case 91: i=reloc91(ifile,&obuffptr,fpos);
+    case 91: i=reloc91(ifile,&oexeoff,fpos);
 	     break;
     default: i=FAILURE; break;
     }
@@ -446,7 +447,8 @@ static int mkreltbl(FILE *ifile,unsigned char *obuff,int ver) {
 	return (FAILURE);
     }
 
-    fpos=obuffptr-obuff;
+    // REFKEEN: No wrote to ofile/obuff, but use oexeoff.
+    fpos = oexeoff;
     //fpos=ftell(ofile);
 /* v0.7 old code
  *  i= (int) fpos & 0x1ff;
@@ -456,13 +458,13 @@ static int mkreltbl(FILE *ifile,unsigned char *obuff,int ver) {
     i= (0x200 - (int) fpos) & 0x1ff;	/* v0.7 */
     ohead[4]= (int) ((fpos+i)>>4);	/* v0.7 */
 
-    memset(obuffptr, 0, i);
+    // REFKEEN: No wrote to ofile/obuff
 //    for( ; i>0; i--)
 //	putc(0, ofile);
     return(SUCCESS);
 }
 /* for LZEXE ver 0.90 */
-static int reloc90(FILE *ifile,unsigned char **obuffptrptr,long fpos) {
+static int reloc90(FILE *ifile,long *oexeoff,long fpos) {
     uint16_t c;
     WORD rel_count=0;
     WORD rel_seg/*,rel_off*/;
@@ -472,55 +474,54 @@ static int reloc90(FILE *ifile,unsigned char **obuffptrptr,long fpos) {
     rel_seg=0;
     do{
 	if(feof(ifile) || ferror(ifile)/* || ferror(ofile)*/) return(FAILURE);
-        BE_Cross_readInt16LE(ifile, &c);
+	BE_Cross_readInt16LE(ifile, &c);
 	//c=getw(ifile);
+	// REFKEEN: No wrote to ofile/obuff, but update the offset
+	oexeoff += 4*c;
+	rel_count += c;
+/*
 	for(;c>0;c--) {
-            // Preserve original endianness (Little-Endian)
-            *(*obuffptrptr)++ = getc(ifile);
-            *(*obuffptrptr)++ = getc(ifile);
-            *(*obuffptrptr)++ = rel_seg&0xFF;
-            *(*obuffptrptr)++ = rel_seg>>8;
-	    //rel_off=getw(ifile);
-	    //putw(rel_off,ofile);
-	    //putw(rel_seg,ofile);
+	    rel_off=getw(ifile);
+	    putw(rel_off,ofile);
+	    putw(rel_seg,ofile);
 	    rel_count++;
 	}
+*/
 	rel_seg += 0x1000;
     } while(rel_seg!=0U/*(0xf000+0x1000)*/); // REFKEEN: 16-bit wraparound
     ohead[3]=rel_count;
     return(SUCCESS);
 }
 /* for LZEXE ver 0.91*/
-static int reloc91(FILE *ifile,unsigned char **obuffptrptr,long fpos) {
+static int reloc91(FILE *ifile,long *oexeoff,long fpos) {
     WORD span;
     WORD rel_count=0;
-    WORD rel_seg,rel_off;
+//    WORD rel_seg,rel_off;
 
     fseek(ifile,fpos+0x158,SEEK_SET);
 				/* 0x158=compressed relocation table address */
-    rel_off=0; rel_seg=0;
+//    rel_off=0; rel_seg=0;
     for(;;) {
 	if(feof(ifile) || ferror(ifile)/* || ferror(ofile)*/) return(FAILURE);
 	if((span=getc(ifile))==0) {
             BE_Cross_readInt16LE(ifile, &span);
 	    //span=getw(ifile);
 	    if(span==0){
-		rel_seg += 0x0fff;
+//		rel_seg += 0x0fff;
 		continue;
 	    } else if(span==1){
 		break;
 	    }
 	}
+	// REFKEEN: No wrote to ofile/obuff, but update the offset
+	oexeoff += 4;
+#if 0
 	rel_off += span;
 	rel_seg += (rel_off & ~0x0f)>>4;
 	rel_off &= 0x0f;
-        // Preserve original endianness (Little-Endian)
-        *(*obuffptrptr)++ = rel_off&0xFF;
-        *(*obuffptrptr)++ = rel_off>>8;
-        *(*obuffptrptr)++ = rel_seg&0xFF;
-        *(*obuffptrptr)++ = rel_seg>>8;
-	//putw(rel_off,ofile);
-	//putw(rel_seg,ofile);
+	putw(rel_off,ofile);
+	putw(rel_seg,ofile);
+#endif
 	rel_count++;
     }
     ohead[3]=rel_count;
