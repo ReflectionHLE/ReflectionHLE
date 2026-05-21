@@ -64,7 +64,7 @@ typedef uint8_t BYTE;
 
 static int rdhead(FILE *,int *);
 static int mkreltbl(FILE *,int);
-static int unpack_image(FILE *,unsigned char *);
+static int unpack_image(FILE *,unsigned char *,int);
 static uint16_t get_extra_mem_para(void);
 //static void wrhead(unsigned char *);
 
@@ -76,7 +76,7 @@ bool Unlzexe_unpack(FILE *ifile, unsigned char *obuff, int buffsize,
 		return false;
 	if (mkreltbl(ifile,ver) != SUCCESS)
 		return false;
-	if (unpack_image(ifile,obuff) != SUCCESS)
+	if (unpack_image(ifile,obuff,buffsize) != SUCCESS)
 		return false;
 	*oextramempara = get_extra_mem_para();
 	//wrhead(obuff);
@@ -540,7 +540,7 @@ static int getbit(bitstream *);
 
 /*---------------------*/
 /* decompressor routine */
-static int unpack_image(FILE *ifile,unsigned char *obuff){
+static int unpack_image(FILE *ifile,unsigned char *obuff,int buffsize){
     int len;
     int16_t span;
     long fpos;
@@ -552,7 +552,7 @@ static int unpack_image(FILE *ifile,unsigned char *obuff){
     fpos=((long)ihead[0x0b]-(long)inf[4]+(long)ihead[4])<<4;
     fseek(ifile,fpos,SEEK_SET);
     // REFKEEN - Don't change offset of pointer, we unpack image only
-    unsigned char *obuffptr = obuff;
+    void *obuffptr = obuff, *obuffend = obuff + buffsize;
     //fpos=(long)ohead[4]<<4;
     //unsigned char *obuffptr = obuff+fpos;
     //fseek(ofile,fpos,SEEK_SET);
@@ -564,8 +564,12 @@ static int unpack_image(FILE *ifile,unsigned char *obuff){
 	//if(ferror(ifile)) {printf("\nread error\n"); return(FAILURE); }
 	//if(ferror(ofile)) {printf("\nwrite error\n"); return(FAILURE); }
 	if(p-data>0x4000){
-	    memcpy(obuffptr,data,0x2000);
-	    obuffptr += 0x2000;
+	    obuffptr = BE_Cross_safeandfastmemcopy_strict(obuffptr,obuffend,
+	                                                  data,0x2000);
+	    if (!obuffptr){
+	        BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "unpack (unlzexe) - error: output EXE image larger than expected\n");
+	        return(FAILURE);
+	    }
 	    //fwrite(data,sizeof data[0],0x2000,ofile);
 	    p-=0x2000;
 	    memmove(data,data+0x2000,p-data);
@@ -605,8 +609,16 @@ static int unpack_image(FILE *ifile,unsigned char *obuff){
     if(p!=data)
 	//fwrite(data,sizeof data[0],p-data,ofile);
     {
-        memcpy(obuffptr,data,p-data);
-        obuffptr += (p-data);
+	obuffptr = BE_Cross_safeandfastmemcopy_strict(obuffptr,obuffend,
+	                                              data,p-data);
+	if (!obuffptr){
+	    BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "unpack (unlzexe) - error: output EXE image larger than expected\n");
+	    return(FAILURE);
+	}
+    }
+    if ((unsigned char *)obuffptr - obuff != buffsize){
+	BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "unpack (unlzexe) - error: output EXE image smaller than expected\n");
+	return(FAILURE);
     }
     // REFKEEN - Again, only the image is written here, so ignore fpos.
     // In fact, we don't even need loadsize.

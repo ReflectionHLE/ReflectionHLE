@@ -280,8 +280,7 @@ bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize,
 	memset(decompBuff, 0, buffsize);
 
 	// Current position for inserting decompressed data.
-	unsigned char *decompPtr = decompBuff;
-
+	unsigned char *decompPtr = decompBuff, *decompEnd = decompBuff+buffsize;
 
 	// A 16-bit array of compressed data.
 	getNextBitData.bitArray = BE_Cross_Swap16LE(*(uint16_t *)getNextBitData.getNextByteDat.compressedStart);
@@ -352,6 +351,12 @@ bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize,
 			const uint16_t offset = leastSigByte | (mostSigByte << 8);
 
 			// Finally, duplicate the decompressed data using the calculated offset and size.
+			if (decompEnd-decompPtr < copyCount) // Check this first
+			{
+			        BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "unpack (depklite - error: output EXE image larger than expected\n");
+				free(compressedStart);
+				return false;
+			}
 			// Note that memcpy or even memmove is NOT the right way,
 			// since overlaps are possible
 			unsigned char *duplicateBegin = decompPtr - offset;
@@ -366,6 +371,12 @@ bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize,
 			// Usage of "Decryption" mode isn't required for Keen Dreams v1.00
 #if 1
 			// Get next byte and then append it onto the decompressed data.
+			if (decompPtr == decompEnd) // Check this first
+			{
+			        BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "unpack (depklite) - error: output EXE image larger than expected\n");
+				free(compressedStart);
+				return false;
+			}
 			*decompPtr++ = getNextByte(&getNextBitData.getNextByteDat);
 #else
 			// "Decryption" mode.
@@ -384,11 +395,16 @@ bool depklite_unpack(FILE *fp, unsigned char *decompBuff, int buffsize,
 	}
 
 	free(compressedStart);
+	if (decompPtr - decompBuff != buffsize)
+	{
+	       BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "unpack (depklite) - error: output EXE image smaller than expected\n");
+		return false;
+	}
 	// Estimate additional memory needed according to a run of UNP 4.12,
 	// as tested for Keen Dreams EGA v1.00. decompPtr-decompBuff
 	// is the size of the decompressed EXE's image in bytes.
 	// Returned value is measured in paragraphs,
 	// rounded up by adding 15 before the division.
-	*oextramempara = (minExtraMemNeeded - (decompPtr-decompBuff) + imageSize + 15) / 16;
+	*oextramempara = (minExtraMemNeeded - buffsize + imageSize + 15) / 16;
 	return true;
 }
