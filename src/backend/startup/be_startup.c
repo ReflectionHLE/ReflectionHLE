@@ -189,9 +189,21 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 			"Filename: %s", g_be_current_exeFileDetails->exeNames);
 		BE_ST_ExitWithErrorMsg(errorMsg);
 	}
+
+	int decompExeExtraMem = g_be_current_exeFileDetails->decompExeExtraMem;
+	if (decompExeExtraMem != 16*minExtraMemPara)
+	{
+		free(g_be_current_exeImage);
+		snprintf(
+			errorMsg, sizeof(errorMsg),
+			"decompExeImage: Unexpected difference within the EXE, in extra memory required.\n"
+			"Filename: %s", g_be_current_exeFileDetails->exeNames);
+		BE_ST_ExitWithErrorMsg(errorMsg);
+	}
+
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_Cross_LoadEXEImageToMem: Unpacked EXE image loaded successfully\n");
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_Cross_LoadEXEImageToMem: EXE image size - %u bytes\n", g_be_current_exeFileDetails->decompExeImageSize);
-	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_Cross_LoadEXEImageToMem: Estimated additional main memory needed - %u bytes\n", 16*minExtraMemPara);
+	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_Cross_LoadEXEImageToMem: Estimated additional main memory needed - %u bytes\n", decompExeExtraMem);
 }
 
 static void BEL_Cross_FreeEXEImageFromMem(void)
