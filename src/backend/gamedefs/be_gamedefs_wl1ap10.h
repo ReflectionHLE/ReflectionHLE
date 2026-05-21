@@ -32,6 +32,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl1ap10[] = {
 		&REFKEEN_NS_ENCLOSE(wl1ap10, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(wl1ap10, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		296528 - 0x2400,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

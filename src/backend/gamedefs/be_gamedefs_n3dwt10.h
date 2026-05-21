@@ -31,6 +31,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_n3dwt10[] = {
 		&REFKEEN_NS_ENCLOSE(n3dwt10, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(n3dwt10, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		260736 - 0x3000,
+		0x0,
 		BE_EXECOMPRESSION_NONE,
 		false
 	},

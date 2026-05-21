@@ -59,6 +59,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse100[] = {
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
 		175424 - 0x1a00,
+		0x7b50,
 		BE_EXECOMPRESSION_PKLITE105,
 		false
 	},
@@ -108,6 +109,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamsc100[] = {
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
 		172896 - 0x1800,
+		0x7010,
 		BE_EXECOMPRESSION_PKLITE105,
 		false
 	},
@@ -158,6 +160,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse113[] = {
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
 		213536 - 0x1c00,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -169,6 +172,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse113[] = {
 		(void (*)(void))&loadscn2_main,
 		NULL,
 		17712 - 0x200,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		true
 	},
@@ -217,6 +221,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamsc105[] = {
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
 		202320 - 0x1800,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -269,6 +274,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse193[] = {
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
 		213200 - 0x1c00,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -318,6 +324,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreamse120[] = {
 		&kdreams_exe_main,
 		&RefKeen_Load_Embedded_Resources_From_kdreams_exe,
 		214912 - 0x1c00,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -364,6 +371,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_kdreams2015[] = {
 		NULL, // No EXE file
 		&kdreams_exe_main,
 		NULL, // No EXE file
+		0, // No EXE file
 		0, // No EXE file
 		BE_EXECOMPRESSION_NONE, // No EXE file
 		false

@@ -40,6 +40,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_bh071592[] = {
 		&REFKEEN_NS_ENCLOSE(bh071592, bmenace_exe_main),
 		&REFKEEN_NS_ENCLOSE(bh071592, RefKeen_Load_Embedded_Resources_From_bmenace_exe),
 		220848 - 0x2C00,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

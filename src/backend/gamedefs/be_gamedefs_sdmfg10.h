@@ -32,6 +32,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_sdmfg10[] = {
 		&REFKEEN_NS_ENCLOSE(sdmfg10, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(sdmfg10, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		246430 - 0x2200,
+		0xa250,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

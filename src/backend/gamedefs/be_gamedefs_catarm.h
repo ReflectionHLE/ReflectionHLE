@@ -90,6 +90,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catarm, intro_exe_main),
 		NULL,
 		36448 - 0x600,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -101,6 +102,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 		&REFKEEN_NS_ENCLOSE(catarm, armgame_exe_main),
 		&REFKEEN_NS_ENCLOSE(catarm, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
 		198304 - 0x2000,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -112,6 +114,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catarm102[] = {
 		&REFKEEN_NS_ENCLOSE(catarm, slidecat_exe_main),
 		&REFKEEN_NS_ENCLOSE(catarm, RefKeen_Load_Embedded_Resources_From_slidecat_exe),
 		39296 - 0x600,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

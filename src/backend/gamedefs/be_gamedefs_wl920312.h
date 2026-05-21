@@ -34,6 +34,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl920312[] = {
 		&REFKEEN_NS_ENCLOSE(wl920312, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(wl920312, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		269904 - 0x1A00,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

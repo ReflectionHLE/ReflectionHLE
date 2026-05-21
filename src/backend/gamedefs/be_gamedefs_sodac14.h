@@ -58,6 +58,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_sodac14[] = {
 		&REFKEEN_NS_ENCLOSE(sodac14, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(sodac14, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		266110 - 0x2400,
+		0xa940,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

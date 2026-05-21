@@ -32,6 +32,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_bm1v11f[] = {
 		&REFKEEN_NS_ENCLOSE(bm1v11f, bmenace_exe_main),
 		&REFKEEN_NS_ENCLOSE(bm1v11f, RefKeen_Load_Embedded_Resources_From_bmenace_exe),
 		237936 - 0x3800,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

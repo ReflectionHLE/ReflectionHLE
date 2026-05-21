@@ -103,6 +103,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catabyss, intro_exe_main),
 		NULL,
 		36560 - 0x600,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -114,6 +115,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		&REFKEEN_NS_ENCLOSE(catabyss, abysgame_exe_main),
 		&REFKEEN_NS_ENCLOSE(catabyss, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
 		201120 - 0x1a00,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -125,6 +127,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		&REFKEEN_NS_ENCLOSE(catabyss, slidecat_exe_main),
 		&REFKEEN_NS_ENCLOSE(catabyss, RefKeen_Load_Embedded_Resources_From_slidecat_exe),
 		62800 - 0x800,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -136,6 +139,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss113[] = {
 		&REFKEEN_NS_ENCLOSE(catabyss, loadscn_exe_main),
 		NULL,
 		28992 - 0x400,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -222,6 +226,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catabyss, intro_exe_main),
 		NULL,
 		36064 - 0x600,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -233,6 +238,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
 		&REFKEEN_NS_ENCLOSE(catabyss, abysgame_exe_main),
 		&REFKEEN_NS_ENCLOSE(catabyss, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
 		200848 - 0x1a00,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -244,6 +250,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catabyss124[] = {
 		&REFKEEN_NS_ENCLOSE(catabyss, slidecat_exe_main),
 		&REFKEEN_NS_ENCLOSE(catabyss, RefKeen_Load_Embedded_Resources_From_slidecat_exe),
 		39968 - 0x600,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

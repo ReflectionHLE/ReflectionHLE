@@ -89,6 +89,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 		(void (*)(void))&REFKEEN_NS_ENCLOSE(catapoc, intro_exe_main),
 		NULL,
 		40208 - 0x600,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -100,6 +101,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 		&REFKEEN_NS_ENCLOSE(catapoc, apocgame_exe_main),
 		&REFKEEN_NS_ENCLOSE(catapoc, RefKeen_Load_Embedded_Resources_From_catacombs_exe),
 		200064 - 0x2200,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
@@ -111,6 +113,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_catapoc101[] = {
 		&REFKEEN_NS_ENCLOSE(catapoc, slidecat_exe_main),
 		&REFKEEN_NS_ENCLOSE(catapoc, RefKeen_Load_Embedded_Resources_From_slidecat_exe),
 		39568 - 0x600,
+		0x0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

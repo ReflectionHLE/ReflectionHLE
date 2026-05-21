@@ -32,6 +32,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl6gt14b[] = {
 		&REFKEEN_NS_ENCLOSE(wl6gt14b, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(wl6gt14b, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		257518 - 0x2600,
+		0xa280,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},

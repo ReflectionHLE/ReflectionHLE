@@ -53,6 +53,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl6gt14a[] = {
 		&REFKEEN_NS_ENCLOSE(wl6gt14a, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(wl6gt14a, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		257774 - 0x2600,
+		0xa280,
 		BE_EXECOMPRESSION_NONE,
 		false
 	},
@@ -68,6 +69,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_wl6id14[] = {
 		&REFKEEN_NS_ENCLOSE(wl6gt14a, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(wl6gt14a, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		257774 - 0x2600,
+		0xa280,
 		BE_EXECOMPRESSION_NONE,
 		false
 	},

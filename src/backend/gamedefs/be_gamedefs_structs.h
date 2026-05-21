@@ -56,6 +56,7 @@ typedef struct {
 	void (*mainFuncPtr)(void);
 	void (*embeddedFilesLoaderFuncPtr)(void);
 	int decompExeImageSize;
+	int decompExeExtraMem;
 	BE_ExeCompression_T compressionType;
 	bool passArgsToMainFunc;
 } BE_EXEFileDetails_T;

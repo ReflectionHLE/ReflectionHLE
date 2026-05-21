@@ -60,6 +60,7 @@ static const BE_EXEFileDetails_T g_be_exefiles_sodfg14[] = {
 		&REFKEEN_NS_ENCLOSE(sodfg14, wolf3d_exe_main),
 		&REFKEEN_NS_ENCLOSE(sodfg14, RefKeen_Load_Embedded_Resources_From_wolf3d_exe),
 		255646 - 0x2400,
+		0xa2a0,
 		BE_EXECOMPRESSION_LZEXE9X,
 		false
 	},
