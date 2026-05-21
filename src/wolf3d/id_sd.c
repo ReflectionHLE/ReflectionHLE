@@ -1184,7 +1184,7 @@ SDL_CheckSS(void)
 	SDL_StartSS();
 
 	lasttime = TimeCount;
-	while (TimeCount < lasttime + 4)
+	while (SD_GetTimeCount() < lasttime + 4)
 		;
 
 	if (BE_ST_LPTIn(ssStatus) & 0x40)	// Check to see if FIFO is currently empty
