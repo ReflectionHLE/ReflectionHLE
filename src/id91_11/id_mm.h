@@ -113,6 +113,8 @@ id0_long_t MM_TotalFree (void);
 
 void MM_BombOnError (id0_boolean_t bomb);
 
+void MML_UseSpace (id0_unsigned_t segstart, id0_unsigned_t seglength);
+
 REFKEEN_NS_E
 
 #endif

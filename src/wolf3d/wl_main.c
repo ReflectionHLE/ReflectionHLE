@@ -1021,20 +1021,17 @@ void SignonScreen (void)                        // VGA version
 //
 // reclaim the memory from the linked in signon screen
 //
-	// REFKEEN DIFFERENCE (FIXME: Should we "fix" this at all?)
-	// - Don't handle this, a bit more complicated with our setup and the
-	// difference is (probably) insignificant with well-defined behaviors
-	// anyway...
-#if 0
-	segstart = FP_SEG(&introscn);
+	// REFKEEN - Offset is NORMALIZED, thus < 16
+	segstart = BE_Cross_GetPtrNormalizedSeg(introscn);
+//	segstart = FP_SEG(&introscn);
 	seglength = 64000/16;
-	if (FP_OFF(&introscn))
+	if (BE_Cross_GetPtrNormalizedOff(introscn))
+//	if (FP_OFF(&introscn))
 	{
 		segstart++;
 		seglength--;
 	}
 	MML_UseSpace (segstart,seglength);
-#endif
 }
 
 

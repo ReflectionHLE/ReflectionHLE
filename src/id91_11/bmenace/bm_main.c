@@ -135,7 +135,8 @@ void ShutdownId(void)
 
 static void InitGame(void)
 {
-	void MML_UseSpace (Uint16 segstart, Uint16 seglength);
+	// REFKEEN: Declaration from id_mm.h used for C++ namespaces
+	// void MML_UseSpace (Uint16 segstart, Uint16 seglength);
 	Uint16 segstart,seglength;
 
 	US_TextScreen();
@@ -169,20 +170,17 @@ static void InitGame(void)
 //
 // reclaim the memory from the linked in text screen
 //
-	// REFKEEN DIFFERENCE (FIXME: Should we "fix" this at all?)
-	// - Don't handle this, a bit more complicated with our setup and the
-	// difference is (probably) insignificant with well-defined behaviors
-	// anyway...
-#if 0
-	segstart = FP_SEG(&introscn);
+	// REFKEEN - Offset is NORMALIZED, thus < 16
+	segstart = BE_Cross_GetPtrNormalizedSeg(introscn);
+//	segstart = FP_SEG(&introscn);
 	seglength = 4000/16;
-	if (FP_OFF(&introscn))
+	if (BE_Cross_GetPtrNormalizedOff(introscn))
+//	if (FP_OFF(&introscn))
 	{
 		segstart++;
 		seglength--;
 	}
 	MML_UseSpace (segstart,seglength);
-#endif
 	VW_SetScreenMode(GRMODE);
 	VW_ColorBorder(BLACK);
 	VW_ClearVideo(BLACK);
