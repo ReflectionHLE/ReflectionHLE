@@ -65,7 +65,7 @@ void BE_Cross_free_mem_loaded_embedded_rsrc(void *ptr)
 	free(ptr);
 }
 
-void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize)
+static void *BEL_Cross_GetEmbeddedData(const char *name, uint32_t *pSize)
 {
 	const BE_EmbeddedGameFileDetails_T *embeddedFile = g_be_current_exeFileDetails->embeddedFiles;
 	if (embeddedFile)
@@ -73,55 +73,32 @@ void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize)
 			;
 
 	if (!embeddedFile || !(embeddedFile->fileDetails.filenames))
-		BE_ST_ExitWithErrorMsg("BE_Cross_BmallocFromEmbeddedData: Unrecognized embedded data name!");
+		BE_ST_ExitWithErrorMsg("BE_Cross_GetEmbeddedData: Unrecognized embedded data name!");
 
 #ifdef REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS
 	if (Crc32_ComputeBuf(0, g_be_current_exeImage + embeddedFile->offset, embeddedFile->fileDetails.filesize) != embeddedFile->fileDetails.crc32)
-		BE_ST_ExitWithErrorMsg("BE_Cross_BmallocFromEmbeddedData: Unexpectedly got the wrong CRC32!");
+		BE_ST_ExitWithErrorMsg("BE_Cross_GetEmbeddedData: Unexpectedly got the wrong CRC32!");
 #endif
 
 	if (pSize)
 		*pSize = embeddedFile->fileDetails.filesize;
 	return g_be_current_exeImage + embeddedFile->offset;
-#if 0 // TODO: That is not a separate malloc anymore!
-	void *ptr = BE_Cross_Bmalloc(embeddedFile->fileDetails.filesize);
-	if (ptr)
+}
+
+void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize)
+{
+	uint32_t size;
+	void *ptr = BEL_Cross_GetEmbeddedData(name, &size);
+	if (ptr && pSize)
 	{
-		memcpy(ptr, g_be_current_exeImage + embeddedFile->offset, embeddedFile->fileDetails.filesize);
-		if (pSize)
-			*pSize = embeddedFile->fileDetails.filesize;
+		if (size > 0xFFFFU)
+			BE_ST_ExitWithErrorMsg("BE_Cross_BmallocFromEmbeddedData: Got unexpectedly large data!");
+		*pSize = size;
 	}
 	return ptr;
-#endif
 }
 
 void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
 {
-	const BE_EmbeddedGameFileDetails_T *embeddedFile = g_be_current_exeFileDetails->embeddedFiles;
-	if (embeddedFile)
-		for (; embeddedFile->fileDetails.filenames && BE_Cross_strcasecmp(name, embeddedFile->fileDetails.filenames); ++embeddedFile)
-			;
-
-	if (!embeddedFile || !(embeddedFile->fileDetails.filenames))
-		BE_ST_ExitWithErrorMsg("BE_Cross_BfarmallocFromEmbeddedData: Unrecognized embedded data name!");
-
-#ifdef REFKEEN_ENABLE_EMBEDDED_FILES_CRC32_CHECKS
-	if (Crc32_ComputeBuf(0, g_be_current_exeImage + embeddedFile->offset, embeddedFile->fileDetails.filesize) != embeddedFile->fileDetails.crc32)
-		BE_ST_ExitWithErrorMsg("BE_Cross_BfarmallocFromEmbeddedData: Unexpectedly got the wrong CRC32!");
-#endif
-
-#if 1 // TODO: That is not a separate malloc anymore!
-	if (pSize)
-		*pSize = embeddedFile->fileDetails.filesize;
-	return g_be_current_exeImage + embeddedFile->offset;
-#else
-	void *ptr = BE_Cross_Bfarmalloc(embeddedFile->fileDetails.filesize);
-	if (ptr)
-	{
-		memcpy(ptr, g_be_current_exeImage + embeddedFile->offset, embeddedFile->fileDetails.filesize);
-		if (pSize)
-			*pSize = embeddedFile->fileDetails.filesize;
-	}
-	return ptr;
-#endif
+	return BEL_Cross_GetEmbeddedData(name, pSize);
 }
