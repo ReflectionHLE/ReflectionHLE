@@ -150,7 +150,8 @@ mmblocktype	id0_far mmblocks[MAXBLOCKS]
 
 id0_boolean_t		bombonerror;
 
-//id0_unsigned_t	totalEMSpages,freeEMSpages,EMSpageframe,EMSpagesmapped,EMShandle;
+id0_unsigned_t	totalEMSpages,freeEMSpages,EMSpageframe,EMSpagesmapped/*,EMShandle*/;
+BE_EMM_Handle EMShandle;
 
 //void		(* XMSaddr) (void);		// far pointer to XMS driver
 
@@ -162,9 +163,9 @@ id0_boolean_t		bombonerror;
 // local prototypes
 //
 
-//id0_boolean_t		MML_CheckForEMS (void);
-//void 		MML_ShutdownEMS (void);
-//void 		MM_MapEMS (void);
+id0_boolean_t		MML_CheckForEMS (void);
+void 		MML_ShutdownEMS (void);
+void 		MM_MapEMS (void);
 //id0_boolean_t 	MML_CheckForXMS (void);
 //void 		MML_ShutdownXMS (void);
 void		MML_UseSpace (id0_unsigned_t segstart, id0_unsigned_t seglength);
@@ -172,7 +173,6 @@ void 		MML_ClearBlock (void);
 
 //==========================================================================
 
-#if 0
 /*
 ======================
 =
@@ -187,30 +187,51 @@ id0_char_t	emmname[9] = "EMMXXXX0";
 
 id0_boolean_t MML_CheckForEMS (void)
 {
+	BE_EMM_File EMSDriver = BE_Cross_EMM_Open(emmname);	// try to open EMMXXXX0 device
+	if (!EMSDriver)
+		goto error;
+#if 0
 asm	mov	dx,OFFSET emmname[0]
 asm	mov	ax,0x3d00
 asm	int	0x21		// try to open EMMXXXX0 device
 asm	jc	error
+#endif
 
+	uint16_t EMSDriverInfo;
+	if (!BE_Cross_EMM_Ioctl_GetDeviceData(EMSDriver, &EMSDriverInfo))	// get device info
+		goto error;
+#if 0
 asm	mov	bx,ax
 asm	mov	ax,0x4400
 
 asm	int	0x21		// get device info
 asm	jc	error
+#endif
 
+	if ((EMSDriverInfo & 0x80) != 0x80)
+		goto error;
+#if 0
 asm	and	dx,0x80
 asm	jz	error
+#endif
 
+	if (!BE_Cross_EMM_Ioctl_GetStatus(EMSDriver))	// get status
+		goto error;
+#if 0
 asm	mov	ax,0x4407
 
 asm	int	0x21		// get status
 asm	jc	error
 asm	or	al,al
 asm	jz	error
+#endif
 
+	BE_Cross_EMM_Close(EMSDriver);	// close handle
+#if 0
 asm	mov	ah,0x3e
 asm	int	0x21		// close handle
 asm	jc	error
+#endif
 
 //
 // EMS is good
@@ -236,44 +257,80 @@ error:
 void MML_SetupEMS (void)
 {
 	id0_char_t	str[80],str2[10];
-	id0_unsigned_t	error;
+	id0_unsigned_t	error = 0; // REFKEEN: Init to 0 in case none is set
+	BE_EMM_AllocationInfo EMSpagecount;
 
 	totalEMSpages = freeEMSpages = EMSpageframe = EMSpagesmapped = 0;
 
-asm {
+//asm {
+	error = BE_Cross_EMM_GetStatus();	// make sure EMS hardware is present
+	if (error)
+		goto error;
+#if 0
 	mov	ah,EMS_STATUS
 	int	EMS_INT						// make sure EMS hardware is present
 	or	ah,ah
 	jnz	error
+#endif
 
+	error = BE_Cross_EMM_GetVersion();	// only work on EMS 3.2 or greater
+	if (error < 0x32U)
+		goto error;
+#if 0
 	mov	ah,EMS_VERSION
 	int	EMS_INT
 	or	ah,ah
 	jnz	error
 	cmp	al,0x32						// only work on ems 3.2 or greater
 	jb	error
+#endif
 
+	EMSpageframe = BE_Cross_EMM_GetPageFrame();	// find the page frame address
+	if (!EMSpageframe)
+		goto error;
+#if 0
 	mov	ah,EMS_GETFRAME
 	int	EMS_INT						// find the page frame address
 	or	ah,ah
 	jnz	error
 	mov	[EMSpageframe],bx
+#endif
 
+	EMSpagecount = BE_Cross_EMM_GetUnallocedPageCount();	// find out how much EMS is there
+	if (!EMSpagecount.pagesTotal)
+		goto error;
+	totalEMSpages = EMSpagecount.pagesTotal;
+	freeEMSpages = EMSpagecount.pagesAvailable;
+#if 0
 	mov	ah,EMS_GETPAGES
 	int	EMS_INT						// find out how much EMS is there
 	or	ah,ah
 	jnz	error
 	mov	[totalEMSpages],dx
 	mov	[freeEMSpages],bx
+#endif
+	if (!freeEMSpages)
+		goto noEMS;	// no EMS at all to allocate
+#if 0
 	or	bx,bx
 	jz	noEMS						// no EMS at all to allocate
+#endif
 
+	if (freeEMSpages > 4U)	// there is only 1,2,3,or 4 pages
+		freeEMSpages = 4;	// we can't use more than 4 pages
+#if 0
 	cmp	bx,4
 	jle	getpages					// there is only 1,2,3,or 4 pages
 	mov	bx,4						// we can't use more than 4 pages
-	}
+#endif
+//	}
 
 getpages:
+	EMSpagesmapped = freeEMSpages;
+        error = BE_Cross_EMM_AllocatePages(freeEMSpages, &EMShandle);	// allocate up to 64k of EMS
+	if (error != BE_EMM_NO_ERROR)
+                goto error;
+#if 0
 asm {
 	mov	[EMSpagesmapped],bx
 	mov	ah,EMS_ALLOCPAGES			// allocate up to 64k of EMS
@@ -282,12 +339,13 @@ asm {
 	jnz	error
 	mov	[EMShandle],dx
 	}
+#endif
 	return;
 
 error:
-	error = _AH;
+//	error = _AH;
 	strcpy (str,"MML_SetupEMS: EMS error 0x");
-	itoa(error,str2,16);
+	BE_Cross_itoa_hex(error,str2);
 	strcpy (str,str2);
 	Quit (str);
 
@@ -309,6 +367,9 @@ void MML_ShutdownEMS (void)
 	if (!EMShandle)
 		return;
 
+	if (BE_Cross_EMM_DeallocatePages(EMShandle) == BE_EMM_NO_ERROR)
+		goto ok;
+/*
 asm	{
 	mov	ah,EMS_FREEPAGES
 	mov	dx,[EMShandle]
@@ -316,6 +377,7 @@ asm	{
 	or	ah,ah
 	jz	ok
 	}
+*/
 
 	Quit ("MML_ShutdownEMS: Error freeing EMS!");
 
@@ -343,6 +405,11 @@ void MM_MapEMS (void)
 
 	for (i=0;i<EMSpagesmapped;i++)
 	{
+		error = BE_Cross_EMM_MapPage(EMShandle, i/*logical page*/,
+		                                        i/*physical page*/);
+		if (error != BE_EMM_NO_ERROR)
+			goto error;
+#if 0
 	asm	{
 		mov	ah,EMS_MAPPAGE
 		mov	bx,[i]			// logical page
@@ -352,20 +419,22 @@ void MM_MapEMS (void)
 		or	ah,ah
 		jnz	error
 		}
+#endif
 	}
 
 	return;
 
 error:
-	error = _AH;
+//	error = _AH;
 	strcpy (str,"MM_MapEMS: EMS error 0x");
-	itoa(error,str2,16);
+	BE_Cross_itoa_hex(error,str2);
 	strcpy (str,str2);
 	Quit (str);
 }
 
 //==========================================================================
 
+#if 0
 /*
 ======================
 =
@@ -579,8 +648,7 @@ void MML_ClearBlock (void)
 ===================
 */
 
-// REFKEEN - Let's disable XMS and EMS for now
-//static const id0_char_t *ParmStrings[] = {"noems","noxms",""};
+static const id0_char_t *ParmStrings[] = {"noems","noxms",""};
 
 void MM_Startup (void)
 {
@@ -687,9 +755,6 @@ void MM_Startup (void)
 	mminfo.mainmem = mminfo.nearheap + mminfo.farheap;
 
 
-	// REFKEEN - Let's disable XMS and EMS for now
-	mminfo.XMSmem = mminfo.EMSmem = 0;
-#if 0
 //
 // detect EMS and allocate up to 64K at page frame
 //
@@ -713,6 +778,7 @@ void MM_Startup (void)
 //
 emsskip:
 	mminfo.XMSmem = 0;
+#if 0 // REFKEEN: Let's disable XMS for now
 	for (i = 1;i < id0_argc;i++)
 	{
 		if ( US_CheckParm(id0_argv[i],ParmStrings) == 0)
@@ -751,9 +817,8 @@ void MM_Shutdown (void)
 
   BE_Cross_Bfarfree (farheap);
   BE_Cross_Bfree (nearheap);
-  // REFKEEN - Don't call these
-#if 0
   MML_ShutdownEMS ();
+#if 0 // REFKEEN: Don't call this
   MML_ShutdownXMS ();
 #endif
 }
