@@ -559,7 +559,13 @@ BEMenu g_beDeviceVolumesMenu = {
 
 /*** Input settings menu ***/
 
+static void BEL_ST_Launcher_Handler_AskToSwapConfirmCancelButton(BEMenuItem **menuItemP);
+
 static const char *g_be_inputSettingsChoices_controllerScheme[] = {"Classic", "Modern", NULL};
+// Using a separate mutable string here
+static char g_be_inputSettingsChoices_swapConfirmCancel_Str[] = "A / B";
+static const char *g_be_inputSettingsChoices_swapConfirmCancel[] = {g_be_inputSettingsChoices_swapConfirmCancel_Str, NULL};
+
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static const char *g_be_inputSettingsChoices_touchControls[] = {"Auto", "Off", "Forced", NULL};
 #endif
@@ -575,9 +581,7 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 #endif
 
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_ControllerScheme, "Game controller scheme", g_be_inputSettingsChoices_controllerScheme)
-BEMENUITEM_DEF_TARGETMENU(g_beInputSettingsMenuItem_SwapConfirmCancel,
-                          "Swap confirm/cancel pad/touch buttons\n(Currently: ? to confirm, ? to cancel)",
-                          &g_beButtonsSwapConfirmMenu)
+BEMENUITEM_DEF_DYNAMIC_SELECTION(g_beInputSettingsMenuItem_SwapConfirmCancel, "Confirm / Cancel pad buttons order (also impacts some touch UI)", g_be_inputSettingsChoices_swapConfirmCancel, BEL_ST_Launcher_Handler_AskToSwapConfirmCancelButton)
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch controls", g_be_inputSettingsChoices_touchControls);
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
@@ -628,7 +632,7 @@ static BEMenuItem *g_beButtonsSwapConfirmMenuItems[] = {
 };
 
 BEMenu g_beButtonsSwapConfirmMenu = {
-	"Are you sure about that?",
+	"Swap confirm / cancel buttons?",
 	&g_beInputSettingsMenu,
 	g_beButtonsSwapConfirmMenuItems,
 	// Ignore the rest
@@ -1695,12 +1699,17 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 
 /******/
 
+static void BEL_ST_Launcher_Handler_AskToSwapConfirmCancelButton(BEMenuItem **menuItemP)
+{
+	BEL_Launcher_SetCurrentMenu(&g_beButtonsSwapConfirmMenu);
+}
+
 static void BEL_ST_Launcher_UpdateConfirmCancelButtonLabels(void)
 {
-	int offset = g_refKeenCfg.swapConfirmCancel ? 14 : 0;
-	g_beInputSettingsMenuItem_SwapConfirmCancel.label[50 + offset] =
+	int offset = g_refKeenCfg.swapConfirmCancel ? 4 : 0;
+	g_be_inputSettingsChoices_swapConfirmCancel_Str[offset] =
 	  g_sdlPadLauncherButtonNames[BE_ST_CTRL_BUT_A][0];
-	g_beInputSettingsMenuItem_SwapConfirmCancel.label[64 - offset] =
+	g_be_inputSettingsChoices_swapConfirmCancel_Str[4 -offset] =
 	  g_sdlPadLauncherButtonNames[BE_ST_CTRL_BUT_B][0];
 }
 
