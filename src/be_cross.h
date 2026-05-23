@@ -111,6 +111,12 @@ static inline char *BE_Cross_itoa_dec(int16_t n, char *buffer)
 	return buffer;
 }
 
+static inline char *BE_Cross_itoa_hex(int16_t n, char *buffer)
+{
+	sprintf(buffer, "%" PRIx16, n);
+	return buffer;
+}
+
 // Used for debugging
 void BE_Cross_LogMessage(BE_Log_Message_Class_T msgClass, const char *format, ...);
 // More (possibly semi) standard C functions emulated,
