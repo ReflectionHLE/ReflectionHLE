@@ -521,10 +521,10 @@ static inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
 //
 // This can be done AS LONG AS a copy of the UNCOMPRESSED EXE IMAGE
 // is internally loaded to memory.
-void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize);
+void *BE_Cross_GetNearEmbeddedData(const char *name, uint16_t *pSize);
 
 // Same as above, but loads data to far memory
-void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize);
+void *BE_Cross_GetFarEmbeddedData(const char *name, uint32_t *pSize);
 
 // Use this in cases an original DOS program attempts to access contents of
 // segment no. 0 for some reason

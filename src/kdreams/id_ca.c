@@ -2140,30 +2140,30 @@ void RefKeen_Load_Embedded_Resources_From_kdreams_exe(void)
 	id0_byte_t **GFXdictptr = (GRMODE == CGAGR) ? &CGAdict : &EGAdict;
 	id0_long_t **GFXheadptr = (GRMODE == CGAGR) ? &CGAhead : &EGAhead;
 
-	if (!(audiodict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("AUDIODCT." EXTENSION, &audiodictsize)) ||
-	    !(audiohead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD." EXTENSION, &audioheadsize)) ||
+	if (!(audiodict = (id0_byte_t *)BE_Cross_GetNearEmbeddedData("AUDIODCT." EXTENSION, &audiodictsize)) ||
+	    !(audiohead = (id0_byte_t *)BE_Cross_GetFarEmbeddedData("AUDIOHHD." EXTENSION, &audioheadsize)) ||
 	    ((GRMODE == CGAGR) &&
 	     (
-	      !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("CGADICT." EXTENSION, &GFXdictsize)) ||
-	      !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("CGAHEAD." EXTENSION, &GFXheadsize))
+	      !(*GFXdictptr = (id0_byte_t *)BE_Cross_GetNearEmbeddedData("CGADICT." EXTENSION, &GFXdictsize)) ||
+	      !(*GFXheadptr = (id0_long_t *)BE_Cross_GetFarEmbeddedData("CGAHEAD." EXTENSION, &GFXheadsize))
 	     )
 	    ) ||
 	    ((GRMODE == EGAGR) &&
 	     (
-	      !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("EGADICT." EXTENSION, &GFXdictsize)) ||
-	      !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD." EXTENSION, &GFXheadsize))
+	      !(*GFXdictptr = (id0_byte_t *)BE_Cross_GetNearEmbeddedData("EGADICT." EXTENSION, &GFXdictsize)) ||
+	      !(*GFXheadptr = (id0_long_t *)BE_Cross_GetFarEmbeddedData("EGAHEAD." EXTENSION, &GFXheadsize))
 	     )
 
 	    ) ||
-	    !(mapdict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("MAPDICT." EXTENSION, &mapdictsize)) ||
-	    !(maphead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("MAPHEAD." EXTENSION, &mapheadsize)) ||
+	    !(mapdict = (id0_byte_t *)BE_Cross_GetNearEmbeddedData("MAPDICT." EXTENSION, &mapdictsize)) ||
+	    !(maphead = (id0_byte_t *)BE_Cross_GetFarEmbeddedData("MAPHEAD." EXTENSION, &mapheadsize)) ||
 
-	    !(gametext = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("GAMETEXT." EXTENSION, NULL)) ||
-	    !(context = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("CONTEXT." EXTENSION, NULL)) ||
-	    !(story = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("STORY." EXTENSION, NULL)) ||
+	    !(gametext = (id0_char_t *)BE_Cross_GetFarEmbeddedData("GAMETEXT." EXTENSION, NULL)) ||
+	    !(context = (id0_char_t *)BE_Cross_GetFarEmbeddedData("CONTEXT." EXTENSION, NULL)) ||
+	    !(story = (id0_char_t *)BE_Cross_GetFarEmbeddedData("STORY." EXTENSION, NULL)) ||
 
 	    ((current_gamever_int == 100) &&
-	     !(PIRACY = (id0_unsigned_char_t *)BE_Cross_BfarmallocFromEmbeddedData("PIRACY.BIN", NULL)) // A bit different from PIRACY.SCN
+	     !(PIRACY = (id0_unsigned_char_t *)BE_Cross_GetFarEmbeddedData("PIRACY.BIN", NULL)) // A bit different from PIRACY.SCN
 	    )
 	)
 		// Don't use quit, yet

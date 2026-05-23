@@ -2260,7 +2260,7 @@ id0_char_t	*introscn; // ID_US
 #ifdef REFKEEN_VER_BMENACE_ALL
 void RefKeen_Load_Embedded_Resources_From_bmenace_exe(void)
 {
-	if (!(introscn = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("INTROSCN.SCN", NULL)))
+	if (!(introscn = (id0_char_t *)BE_Cross_GetFarEmbeddedData("INTROSCN.SCN", NULL)))
 		// Don't use quit, yet
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_bmenace_exe - Failed to load\ntextual intro screen.");
 }
@@ -2275,14 +2275,14 @@ void RefKeen_Load_Embedded_Resources_From_catacombs_exe(void)
 	id0_byte_t **GFXdictptr = &EGAdict;
 	id0_long_t **GFXheadptr = &EGAhead;
 
-	if (!(audiodict = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("AUDIODCT." EXTENSION, &audiodictsize)) ||
-	    !(audiohead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("AUDIOHHD." EXTENSION, &audioheadsize)) ||
-	    !(*GFXdictptr = (id0_byte_t *)BE_Cross_BmallocFromEmbeddedData("EGADICT." EXTENSION, &GFXdictsize)) ||
-	    !(*GFXheadptr = (id0_long_t *)BE_Cross_BfarmallocFromEmbeddedData("EGAHEAD." EXTENSION, &GFXheadsize)) ||
-	    !(maphead = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("MTEMP.TMP", &mapheadsize))
+	if (!(audiodict = (id0_byte_t *)BE_Cross_GetNearEmbeddedData("AUDIODCT." EXTENSION, &audiodictsize)) ||
+	    !(audiohead = (id0_byte_t *)BE_Cross_GetFarEmbeddedData("AUDIOHHD." EXTENSION, &audioheadsize)) ||
+	    !(*GFXdictptr = (id0_byte_t *)BE_Cross_GetNearEmbeddedData("EGADICT." EXTENSION, &GFXdictsize)) ||
+	    !(*GFXheadptr = (id0_long_t *)BE_Cross_GetFarEmbeddedData("EGAHEAD." EXTENSION, &GFXheadsize)) ||
+	    !(maphead = (id0_byte_t *)BE_Cross_GetFarEmbeddedData("MTEMP.TMP", &mapheadsize))
 #ifdef REFKEEN_VER_CAT3D
 	    ||
-	    !(introscn = (id0_char_t *)BE_Cross_BfarmallocFromEmbeddedData("INTROSCN.SCN", NULL))
+	    !(introscn = (id0_char_t *)BE_Cross_GetFarEmbeddedData("INTROSCN.SCN", NULL))
 #endif
 	)
 		// Don't use quit, yet

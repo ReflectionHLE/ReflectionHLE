@@ -85,20 +85,20 @@ static void *BEL_Cross_GetEmbeddedData(const char *name, uint32_t *pSize)
 	return g_be_current_exeImage + embeddedFile->offset;
 }
 
-void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize)
+void *BE_Cross_GetNearEmbeddedData(const char *name, uint16_t *pSize)
 {
 	uint32_t size;
 	void *ptr = BEL_Cross_GetEmbeddedData(name, &size);
 	if (ptr && pSize)
 	{
 		if (size > 0xFFFFU)
-			BE_ST_ExitWithErrorMsg("BE_Cross_BmallocFromEmbeddedData: Got unexpectedly large data!");
+			BE_ST_ExitWithErrorMsg("BE_Cross_GetNearEmbeddedData: Got unexpectedly large data!");
 		*pSize = size;
 	}
 	return ptr;
 }
 
-void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
+void *BE_Cross_GetFarEmbeddedData(const char *name, uint32_t *pSize)
 {
 	return BEL_Cross_GetEmbeddedData(name, pSize);
 }

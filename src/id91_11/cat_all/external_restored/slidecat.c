@@ -832,7 +832,7 @@ id0_byte_t id0_far *textscn;
 
 void RefKeen_Load_Embedded_Resources_From_slidecat_exe(void)
 {
-	if (!(textscn = (id0_byte_t *)BE_Cross_BfarmallocFromEmbeddedData("TEXTSCN.SCN", NULL)))
+	if (!(textscn = (id0_byte_t *)BE_Cross_GetFarEmbeddedData("TEXTSCN.SCN", NULL)))
 		// Don't use quit, yet
 		BE_ST_ExitWithErrorMsg("RefKeen_Load_Embedded_Resources_From_slidecat_exe - Failed to load TEXTSCN.SCN.");
 }
