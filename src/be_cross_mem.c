@@ -51,13 +51,10 @@
 // memory managed *here* (rather than using native malloc function separately),
 // we had to increased available (far) memory.
 
-// The very first "segment" in the emulated space
-#define EMULATED_FIRST_SEG 0
 // Different portions of the space being emulated - start points
-#define EMULATED_NEAR_SEG (EMULATED_FIRST_SEG+EMULATED_FIRST_PARAGRAPHS)
-#define EMULATED_FAR_SEG (EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS+EMULATED_GAP_BETWEEN_HEAPS_PARAGRAPHS)
-// Used to obtain a pointer to some location in mmEmulatedMemSpace
-#define EMULATED_SEG_TO_PTR(seg) (mmEmulatedMemSpace+(seg)*16)
+uint32_t g_be_current_exeTotalMem;
+#define EMULATED_NEAR_OFFSET g_be_current_exeTotalMem
+#define EMULATED_FAR_OFFSET (EMULATED_NEAR_OFFSET + EMULATED_NEAR_SIZE)
 
 #ifdef _MSC_VER
 /*static*/ uint8_t __declspec(align(16)) g_be_emulatedMemSpace[EMULATED_CONVENTIONAL_SIZE + EMULATED_EMS_SIZE];
@@ -75,14 +72,16 @@ typedef struct {
 } BE_MemoryBlock_T;
 
 static int g_numOfNearBlocks, g_numOfFarBlocks;
-/*static*/ uint16_t g_nearBytesLeft = 16*EMULATED_NEAR_PARAGRAPHS;
-/*static*/ uint32_t g_farBytesLeft = 16*EMULATED_FAR_PARAGRAPHS;
+/*static*/ uint16_t g_nearBytesLeft;
+/*static*/ uint32_t g_farBytesLeft;
 static BE_MemoryBlock_T g_nearBlocks[MAX_NO_OF_BLOCKS_PER_CLASS], g_farBlocks[MAX_NO_OF_BLOCKS_PER_CLASS];
+
+unsigned char *g_be_current_exeImage = &g_be_emulatedMemSpace[EMULATED_PSP_SIZE];
 
 // FIXME - Maybe not the most efficient, but still working
 static void BE_Cross_RefreshNearBytesLeft(void)
 {
-	const uint8_t *prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_NEAR_SEG;
+	const uint8_t *prevBlockEnd = g_be_emulatedMemSpace + EMULATED_NEAR_OFFSET;
 	BE_MemoryBlock_T *block = g_nearBlocks;
 	g_nearBytesLeft = 0;
 	for (int i = 0; i < g_numOfNearBlocks; ++i, ++block)
@@ -90,13 +89,13 @@ static void BE_Cross_RefreshNearBytesLeft(void)
 		g_nearBytesLeft = BE_Cross_TypedMax(int, g_nearBytesLeft, block->ptr - prevBlockEnd);
 		prevBlockEnd = block->ptr + block->len;
 	}
-	const uint8_t * const endOfNearMem = g_be_emulatedMemSpace + 16*(EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS);
+	const uint8_t * const endOfNearMem = g_be_emulatedMemSpace + EMULATED_NEAR_OFFSET + EMULATED_NEAR_SIZE;
 	g_nearBytesLeft = BE_Cross_TypedMax(int, g_nearBytesLeft, endOfNearMem - prevBlockEnd);
 }
 
 static void BE_Cross_RefreshFarBytesLeft(void)
 {
-	const uint8_t *prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_FAR_SEG;
+	const uint8_t *prevBlockEnd = g_be_emulatedMemSpace + EMULATED_FAR_OFFSET;
 	BE_MemoryBlock_T *block = g_farBlocks;
 	g_farBytesLeft = 0;
 	for (int i = 0; i < g_numOfFarBlocks; ++i, ++block)
@@ -104,7 +103,7 @@ static void BE_Cross_RefreshFarBytesLeft(void)
 		g_farBytesLeft = BE_Cross_TypedMax(int, g_farBytesLeft, block->ptr - prevBlockEnd);
 		prevBlockEnd = block->ptr + block->len;
 	}
-	const uint8_t * const endOfFarMem = g_be_emulatedMemSpace + 16*(EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS);
+	const uint8_t * const endOfFarMem = g_be_emulatedMemSpace + EMULATED_CONVENTIONAL_SIZE;
 	g_farBytesLeft = BE_Cross_TypedMax(int, g_farBytesLeft, endOfFarMem - prevBlockEnd);
 }
 
@@ -116,7 +115,7 @@ void *BE_Cross_Bmalloc(uint16_t size)
 
 	if (g_numOfNearBlocks == MAX_NO_OF_BLOCKS_PER_CLASS)
 		goto outofmemory;
-	prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_NEAR_SEG;
+	prevBlockEnd = g_be_emulatedMemSpace + EMULATED_NEAR_OFFSET;
 	block = g_nearBlocks;
 	for (int i = 0; i < g_numOfNearBlocks; ++i, ++block)
 	{
@@ -129,7 +128,7 @@ void *BE_Cross_Bmalloc(uint16_t size)
 		prevBlockEnd = block->ptr + block->len;
 	}
 
-	endOfNearMem = g_be_emulatedMemSpace + 16*(EMULATED_NEAR_SEG+EMULATED_NEAR_PARAGRAPHS);
+	endOfNearMem = g_be_emulatedMemSpace + EMULATED_NEAR_OFFSET + EMULATED_NEAR_SIZE;
 	if (endOfNearMem - prevBlockEnd >= size) // Add a new block at the end
 	{
 addnewblock:
@@ -155,7 +154,7 @@ void *BE_Cross_Bfarmalloc(uint32_t size)
 
 	if (g_numOfFarBlocks == MAX_NO_OF_BLOCKS_PER_CLASS)
 		goto outofmemory;
-	prevBlockEnd = g_be_emulatedMemSpace + 16*EMULATED_FAR_SEG;
+	prevBlockEnd = g_be_emulatedMemSpace + EMULATED_FAR_OFFSET;
 	block = g_farBlocks;
 	for (int i = 0; i < g_numOfFarBlocks; ++i, ++block)
 	{
@@ -168,7 +167,7 @@ void *BE_Cross_Bfarmalloc(uint32_t size)
 		prevBlockEnd = block->ptr + block->len;
 	}
 
-	endOfFarMem = g_be_emulatedMemSpace + 16*(EMULATED_FAR_SEG+EMULATED_FAR_PARAGRAPHS);
+	endOfFarMem = g_be_emulatedMemSpace + EMULATED_CONVENTIONAL_SIZE;
 	if (endOfFarMem - prevBlockEnd >= size) // Add a new block at the end
 	{
 addnewblock:
@@ -225,6 +224,6 @@ void BE_Cross_Bfarfree(void *ptr)
 void BEL_Cross_ClearMemory(void)
 {
 	g_numOfNearBlocks = g_numOfFarBlocks = 0;
-	g_nearBytesLeft = 16*EMULATED_NEAR_PARAGRAPHS;
-	g_farBytesLeft = 16*EMULATED_FAR_PARAGRAPHS;
+	g_nearBytesLeft = EMULATED_NEAR_SIZE;
+	g_farBytesLeft = EMULATED_CONVENTIONAL_SIZE - g_be_current_exeTotalMem - g_nearBytesLeft;
 }

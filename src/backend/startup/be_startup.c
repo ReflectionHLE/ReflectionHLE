@@ -29,6 +29,7 @@
 #include "refkeen_config.h"
 #include "../filesystem/be_filesystem_gameinst.h"
 #include "../filesystem/be_filesystem_file_ops.h"
+#include "be_cross_mem_internal.h"
 #include "be_features.h"
 #include "be_gamever.h"
 #include "be_startup.h"
@@ -42,7 +43,6 @@
 #include <stdlib.h>
 #include <setjmp.h>
 
-unsigned char *g_be_current_exeImage;
 BE_EXEFileDetails_T const *g_be_current_exeFileDetails;
 
 // gameVer should be BE_GAMEVER_LAST if no specific version is desired
@@ -139,6 +139,7 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 		BE_ST_ExitWithErrorMsg(errorMsg);
 	}
 
+#if 0 // Now points at specific location
 	// FIXME - Use BE_Cross_Bmalloc/farmalloc and shuffle things around
 	g_be_current_exeImage = (unsigned char *)malloc(g_be_current_exeFileDetails->decompExeImageSize);
 	if (!g_be_current_exeImage)
@@ -150,6 +151,7 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 			"Possible filename: %s", g_be_current_exeFileDetails->exeNames);
 		BE_ST_ExitWithErrorMsg(errorMsg);
 	}
+#endif
 
 	bool success;
 	uint16_t minExtraMemPara;
@@ -206,10 +208,12 @@ static void BEL_Cross_LoadEXEImageToMem(void)
 	BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_Cross_LoadEXEImageToMem: Estimated additional main memory needed - %u bytes\n", decompExeExtraMem);
 }
 
+#if 0
 static void BEL_Cross_FreeEXEImageFromMem(void)
 {
 	free(g_be_current_exeImage);
 }
+#endif
 
 static void BEL_Cross_DoCallMainFunc(void)
 {
@@ -222,8 +226,14 @@ static void BEL_Cross_DoCallMainFunc(void)
 	{
 		BEL_Cross_LoadEXEImageToMem();
 		g_be_current_exeFileDetails->embeddedFilesLoaderFuncPtr();
-		BEL_Cross_FreeEXEImageFromMem();
+//		BEL_Cross_FreeEXEImageFromMem();
 	}
+
+	g_be_current_exeTotalMem = EMULATED_PSP_SIZE + g_be_current_exeFileDetails->decompExeImageSize + g_be_current_exeFileDetails->decompExeExtraMem;
+
+	// Note this does NOT work for memory not managed
+	// by us (e.g., simple calls to malloc)
+	BEL_Cross_ClearMemory();
 
 	be_lastSetMainFuncPtr = g_be_current_exeFileDetails->mainFuncPtr;
 	if (g_be_current_exeFileDetails->passArgsToMainFunc)
@@ -258,10 +268,6 @@ void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer
 			BE_ST_ExitWithErrorMsg("BE_Cross_Bexecv - Too many one-time functions called!");
 		g_be_oneTimeMainFuncs[g_be_numOfOneTimeMainFuncs++] = be_lastSetMainFuncPtr;
 	}
-
-	// Note this does NOT work for memory not managed by us (e.g., simple calls to malloc)
-	void BEL_Cross_ClearMemory(void);
-	BEL_Cross_ClearMemory();
 
 	g_be_argv = argv;
 	for (g_be_argc = 0; *argv; ++g_be_argc, ++argv)

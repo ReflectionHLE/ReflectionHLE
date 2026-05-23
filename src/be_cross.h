@@ -467,7 +467,10 @@ static inline uint32_t BE_Cross_Bfarcoreleft(void)
 	return g_farBytesLeft;
 }
 
-// Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
+// Use **ONLY* with:
+// - Memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc.
+// - Memory referenced by BE_Cross_EMM_GetPageFrame.
+// - Chunks of memory loaded from the original DOS EXE by ReflectionHLE.
 //
 // Somewhat similar to FP_SEG, *but* returns the segment of
 // the *normalized* pointer's form (where the offset is < 16)
@@ -477,7 +480,10 @@ static inline uint16_t BE_Cross_GetPtrNormalizedSeg(void *ptr)
 	return ((uint8_t *)ptr-g_be_emulatedMemSpace)/16;
 }
 
-// Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
+// Use **ONLY* with:
+// - Memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc.
+// - Memory referenced by BE_Cross_EMM_GetPageFrame.
+// - Chunks of memory loaded from the original DOS EXE by ReflectionHLE.
 //
 // Somewhat similar to FP_OFF, *but* returns the offset of
 // the *normalized* pointer's form (which is always < 16)
@@ -487,7 +493,11 @@ static inline uint16_t BE_Cross_GetPtrNormalizedOff(void *ptr)
 	return ((uint8_t *)ptr-g_be_emulatedMemSpace)%16;
 }
 
-// Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
+// Use **ONLY* with:
+// - Memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc.
+// - Memory referenced by BE_Cross_EMM_GetPageFrame.
+// - Chunks of memory loaded from the original DOS EXE by ReflectionHLE.
+//
 // Converts segment to given pointer (like MK_FP(seg, 0))
 static inline void *BE_Cross_BGetPtrFromSeg(uint16_t seg)
 {
@@ -495,7 +505,10 @@ static inline void *BE_Cross_BGetPtrFromSeg(uint16_t seg)
 	return g_be_emulatedMemSpace + seg*16;
 }
 
-// Use **ONLY* with memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc:
+// - Memory allocated by BE_Cross_Bmalloc/BE_Cross_Bfarmalloc.
+// - Memory referenced by BE_Cross_EMM_GetPageFrame.
+// - Chunks of memory loaded from the original DOS EXE by ReflectionHLE.
+//
 // A kind of a MK_FP replacement.
 static inline void *BE_Cross_BMK_FP(uint16_t seg, uint16_t off)
 {

@@ -80,6 +80,10 @@ void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize)
 		BE_ST_ExitWithErrorMsg("BE_Cross_BmallocFromEmbeddedData: Unexpectedly got the wrong CRC32!");
 #endif
 
+	if (pSize)
+		*pSize = embeddedFile->fileDetails.filesize;
+	return g_be_current_exeImage + embeddedFile->offset;
+#if 0 // TODO: That is not a separate malloc anymore!
 	void *ptr = BE_Cross_Bmalloc(embeddedFile->fileDetails.filesize);
 	if (ptr)
 	{
@@ -88,6 +92,7 @@ void *BE_Cross_BmallocFromEmbeddedData(const char *name, uint16_t *pSize)
 			*pSize = embeddedFile->fileDetails.filesize;
 	}
 	return ptr;
+#endif
 }
 
 void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
@@ -105,6 +110,11 @@ void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
 		BE_ST_ExitWithErrorMsg("BE_Cross_BfarmallocFromEmbeddedData: Unexpectedly got the wrong CRC32!");
 #endif
 
+#if 1 // TODO: That is not a separate malloc anymore!
+	if (pSize)
+		*pSize = embeddedFile->fileDetails.filesize;
+	return g_be_current_exeImage + embeddedFile->offset;
+#else
 	void *ptr = BE_Cross_Bfarmalloc(embeddedFile->fileDetails.filesize);
 	if (ptr)
 	{
@@ -113,4 +123,5 @@ void *BE_Cross_BfarmallocFromEmbeddedData(const char *name, uint32_t *pSize)
 			*pSize = embeddedFile->fileDetails.filesize;
 	}
 	return ptr;
+#endif
 }
