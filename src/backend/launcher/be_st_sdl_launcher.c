@@ -587,6 +587,7 @@ BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_TouchControls, "Enable touch 
 BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugging, "Touch input debugging", g_be_settingsChoices_boolean, &BEL_ST_Launcher_Handler_TouchInputDebugging);
 #endif
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_MouseGrab, "Mouse grab*\n(windowed mode specific)", g_be_inputSettingsChoices_mouseGrab)
+BEMENUITEM_DEF_HANDLER(g_beInputSettingsMenuItem_ImportMappingsFromTxt, "Import controller mappings from\ncustom gamecontrollerdb.txt file", &BE_Launcher_Handler_StartGameControllerDBDirSelection)
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 BEMENUITEM_DEF_HANDLER(g_beInputSettingsMenuItem_ImportMappingsFromSteam, "Import controller mappings from Steam", &BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam)
 #endif
@@ -602,6 +603,7 @@ static BEMenuItem *g_beInputSettingsMenuItems[] = {
 	&g_beInputSettingsMenuItem_TouchInputDebugging,
 #endif
 	&g_beInputSettingsMenuItem_MouseGrab,
+	&g_beInputSettingsMenuItem_ImportMappingsFromTxt,
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 	&g_beInputSettingsMenuItem_ImportMappingsFromSteam,
 #endif
@@ -638,55 +640,53 @@ BEMenu g_beButtonsSwapConfirmMenu = {
 	// Ignore the rest
 };
 
-#ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
-/*** Controller mappings from Steam not found menu ***/
+/*** Controller mappings from txt file / Steam not found menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsFromSteamNotFoundMenuItem_GoBack, "Go back", &g_beInputSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsNotFoundMenuItem_GoBack, "Go back", &g_beInputSettingsMenu)
 
-static BEMenuItem *g_beControllerMappingsFromSteamNotFoundMenuItems[] = {
-	&g_beControllerMappingsFromSteamNotFoundMenuItem_GoBack,
+static BEMenuItem *g_beControllerMappingsNotFoundMenuItems[] = {
+	&g_beControllerMappingsNotFoundMenuItem_GoBack,
 	NULL
 };
 
-static BEMenu g_beControllerMappingsFromSteamNotFoundMenu = {
+static BEMenu g_beControllerMappingsNotFoundMenu = {
 	"Can't find or open mappings",
 	&g_beInputSettingsMenu,
-	g_beControllerMappingsFromSteamNotFoundMenuItems,
+	g_beControllerMappingsNotFoundMenuItems,
 	// Ignore the rest
 };
 
-/*** Failure to import controller mappings from Steam menu ***/
+/*** Failure to import controller mappings menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsFromSteamFailedToImportMenuItem_GoBack, "Go back", &g_beInputSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsFailedToImportMenuItem_GoBack, "Go back", &g_beInputSettingsMenu)
 
-static BEMenuItem *g_beControllerMappingsFromSteamFailedToImportMenuItems[] = {
-	&g_beControllerMappingsFromSteamFailedToImportMenuItem_GoBack,
+static BEMenuItem *g_beControllerMappingsFailedToImportMenuItems[] = {
+	&g_beControllerMappingsFailedToImportMenuItem_GoBack,
 	NULL
 };
 
-static BEMenu g_beControllerMappingsFromSteamFailedToImportMenu = {
+static BEMenu g_beControllerMappingsFailedToImportMenu = {
 	"Failed to import mappings!",
 	&g_beInputSettingsMenu,
-	g_beControllerMappingsFromSteamFailedToImportMenuItems,
+	g_beControllerMappingsFailedToImportMenuItems,
 	// Ignore the rest
 };
 
-/*** Successfully imported controller mappings from Steam menu ***/
+/*** Successfully imported controller mappings menu ***/
 
-BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsFromSteamImportedSuccessfullyMenuItem_GoBack, "Go back", &g_beInputSettingsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beControllerMappingsImportedSuccessfullyMenuItem_GoBack, "Go back", &g_beInputSettingsMenu)
 
-static BEMenuItem *g_beControllerMappingsFromSteamImportedSuccessfullyMenuItems[] = {
-	&g_beControllerMappingsFromSteamImportedSuccessfullyMenuItem_GoBack,
+static BEMenuItem *g_beControllerMappingsImportedSuccessfullyMenuItems[] = {
+	&g_beControllerMappingsImportedSuccessfullyMenuItem_GoBack,
 	NULL
 };
 
-static BEMenu g_beControllerMappingsFromSteamImportedSuccessfullyMenu = {
+static BEMenu g_beControllerMappingsImportedSuccessfullyMenu = {
 	"Mappings imported successfully!",
 	&g_beInputSettingsMenu,
-	g_beControllerMappingsFromSteamImportedSuccessfullyMenuItems,
+	g_beControllerMappingsImportedSuccessfullyMenuItems,
 	// Ignore the rest
 };
-#endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
 /*** Common definitions for pad binds menus ***/
 
@@ -1362,11 +1362,9 @@ void BE_ST_Launcher_Prepare(void)
 	g_beSelectInitialPathMenuItemsPtrs[nOfRootPaths] = NULL;
 
 	/* Prepare a few menus *not* defined in be_launcher.h */
-#ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
-	BE_Launcher_PrepareMenu(&g_beControllerMappingsFromSteamNotFoundMenu);
-	BE_Launcher_PrepareMenu(&g_beControllerMappingsFromSteamFailedToImportMenu);
-	BE_Launcher_PrepareMenu(&g_beControllerMappingsFromSteamImportedSuccessfullyMenu);
-#endif
+	BE_Launcher_PrepareMenu(&g_beControllerMappingsNotFoundMenu);
+	BE_Launcher_PrepareMenu(&g_beControllerMappingsFailedToImportMenu);
+	BE_Launcher_PrepareMenu(&g_beControllerMappingsImportedSuccessfullyMenu);
 }
 
 
@@ -1571,20 +1569,55 @@ void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId)
 		*ptr = BE_Cross_isascii(*ptr) ? *ptr : '?';
 }
 
-/*** SPECIAL - An extra SDL(2)-specific handler not defined in be_launcher.c ***/
+/*** SPECIAL - Extra SDL-specific handlers not defined in be_launcher.c ***/
+/* TODO - Consider going over mappings from input and output files,
+ * and asking the user if it overwrite anything.
+ */
+
+void BEL_ST_Launcher_Handler_ImportControllerMappingsFromTxtFile(void)
+{
+	FILE *infp = BE_Cross_DirSelection_TryOpeningFileInSelectedPath("gamecontrollerdb.txt");
+	if (!infp)
+	{
+		BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsNotFoundMenu);
+		return;
+	}
+
+	// Append new mappings
+	// WARNING: This file is also opened in BINARY mode
+	FILE *outfp = BE_Cross_open_additionalfile_for_appending("gamecontrollerdb.txt");
+	if (!outfp)
+	{
+		fclose(infp);
+		BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFailedToImportMenu);
+		return;
+	}
+
+	char buffer[512];
+	while (fgets(buffer, sizeof(buffer), infp))
+	{
+		fwrite(buffer, strlen(buffer), 1, outfp);
+		SDL_AddGamepadMappingsFromIO(SDL_IOFromConstMem(buffer, strlen(buffer)), 1);
+	}
+	fclose(outfp);
+	fclose(infp);
+	// Adding a mapping doesn't imply we'll get a
+	// "joystick/controller added" event, so manually add
+	// what's missing. Removing and re-adding looks simplest.
+	BEL_ST_Launcher_ClearJoysticksList();
+	BEL_ST_Launcher_FillJoysticksList();
+
+	BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsImportedSuccessfullyMenu);
+}
 
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
-/* FIXME - This is incomplete! Go over mappings
- * from Steam config *and* refkeen mapping file,
- * and ask the user if it overwrite anything.
- */
 static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem **menuItemP)
 {
 	// WARNING: This opens file in BINARY mode, but that's ok
 	FILE *cfgfp = BE_Cross_open_steamcfg_for_reading();
 	if (!cfgfp)
 	{
-		BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFromSteamNotFoundMenu);
+		BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsNotFoundMenu);
 		return;
 	}
 
@@ -1594,7 +1627,7 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 	if (!mappingfp)
 	{
 		fclose(cfgfp);
-		BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFromSteamFailedToImportMenu);
+		BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFailedToImportMenu);
 		return;
 	}
 
@@ -1656,7 +1689,7 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 	BEL_ST_Launcher_ClearJoysticksList();
 	BEL_ST_Launcher_FillJoysticksList();
 
-	BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFromSteamImportedSuccessfullyMenu);
+	BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsImportedSuccessfullyMenu);
 }
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 

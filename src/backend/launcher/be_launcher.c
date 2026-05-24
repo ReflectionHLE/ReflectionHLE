@@ -1401,8 +1401,11 @@ void BE_Launcher_Handler_ReturnToSupportedGameVersionsMenu(BEMenuItem **menuItem
 	BEL_Launcher_SetCurrentMenu(&g_beSupportedGameVersionsMenu);
 }
 
+static const char *g_beSelectDirectoryMenuFileFilter;
+
 void BE_Launcher_Handler_StartDirSelection(BEMenuItem **menuItemP)
 {
+	g_beSelectDirectoryMenuFileFilter = 0;
 	g_beSelectInitialPathMenu.backMenu = g_be_launcher_currMenu;
 	BEL_Launcher_SetCurrentMenu(&g_beSelectInitialPathMenu);
 }
@@ -1417,6 +1420,12 @@ void BE_Launcher_Handler_StartModDirSelection(BEMenuItem **menuItemP)
 	BEL_ST_Launcher_RefreshModMenuItemLabel(g_lastGameSelectedInMenu);
 
 	BE_Launcher_Handler_StartDirSelection(menuItemP);
+}
+
+void BE_Launcher_Handler_StartGameControllerDBDirSelection(BEMenuItem **menuItemP)
+{
+	BE_Launcher_Handler_StartDirSelection(menuItemP);
+	g_beSelectDirectoryMenuFileFilter = "gamecontrollerdb.txt";
 }
 
 static BEMenuItem *g_beSelectDirectoryMenuItems;
@@ -1435,6 +1444,15 @@ static void BEL_Launcher_FillDirSelectionMenu(const char **dirNames, int numOfSu
 		BE_ST_QuickExit();
 	}
 
+	const char *ConfirmOrCancelStr = "Confirm";
+	if (g_beSelectDirectoryMenuFileFilter)
+	{
+		FILE *fp = BE_Cross_DirSelection_TryOpeningFileInSelectedPath(g_beSelectDirectoryMenuFileFilter);
+		if (fp)
+			fclose(fp);
+		else
+			ConfirmOrCancelStr = "Cancel";
+	}
 	g_beSelectDirectoryMenu.menuItems = g_beSelectDirectoryMenuItemsPtrs;
 	char *label = g_beSelectDirectoryMenuItemsStrsBuffer;
 	const char **dirNamePtr = dirNames;
@@ -1449,7 +1467,7 @@ static void BEL_Launcher_FillDirSelectionMenu(const char **dirNames, int numOfSu
 		{
 		case 0:
 			g_beSelectDirectoryMenuItems[i].handler = &BE_Launcher_Handler_DirectorySelectionConfirm;
-			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, "Confirm");
+			BE_Cross_safeandfastcstringcopy(label, label + BE_LAUNCHER_MENUITEM_STRBUFFER_LEN_BOUND, ConfirmOrCancelStr);
 			break;
 		case 1:
 			g_beSelectDirectoryMenuItems[i].handler = &BE_Launcher_Handler_DirectorySelectionGoPrev;
@@ -1544,11 +1562,20 @@ static void BEL_Launcher_FillLastSelectedPath(void)
 
 void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP)
 {
+	void BEL_ST_Launcher_Handler_ImportControllerMappingsFromTxtFile();
 	// FIXME: That doesn't exactly belong here.
 	if (g_beSelectInitialPathMenu.backMenu == &g_beSelectGameMenu)
 		BEL_Launcher_TryAddingGameDir();
 	else if (g_beSelectInitialPathMenu.backMenu == &g_beSelectGameVerMenu)
 		BEL_Launcher_FillLastSelectedPath();
+	else if (g_beSelectInitialPathMenu.backMenu == &g_beInputSettingsMenu)
+	{
+		// FIXME: That's even worse
+		if (!strcmp(g_beSelectDirectoryMenuItems[0].label, "Confirm"))
+			BEL_ST_Launcher_Handler_ImportControllerMappingsFromTxtFile();
+		else
+			BEL_Launcher_SetCurrentMenu(g_beSelectInitialPathMenu.backMenu);
+	}
 	else
 		BE_ST_ExitWithErrorMsg("BE_Launcher_Handler_DirectorySelectionConfirm: Unexpected call!");
 }

@@ -130,6 +130,7 @@ void BE_Launcher_Handler_SupportedGameVersionSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_ReturnToSupportedGameVersionsMenu(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_StartDirSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_StartModDirSelection(BEMenuItem **menuItemP);
+void BE_Launcher_Handler_StartGameControllerDBDirSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_RootPathSelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_DirectorySelection(BEMenuItem **menuItemP);
 void BE_Launcher_Handler_DirectorySelectionConfirm(BEMenuItem **menuItemP);
