@@ -72,7 +72,9 @@ BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 				return _tfopen(
 				    fullpath,
 				    (request == BE_FILE_REQUEST_OVERWRITE)
-				      ? _T("wb") : _T("rb"));
+				      ? _T("wb") :
+				    (request == BE_FILE_REQUEST_APPEND)
+				      ? _T("ab") : _T("rb"));
 			else
 			{
 				_tremove(fullpath);
@@ -82,7 +84,7 @@ BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 	}
 	BEL_Cross_CloseDir(dir);
 
-	if (request != BE_FILE_REQUEST_OVERWRITE)
+	if ((request != BE_FILE_REQUEST_APPEND) && (request != BE_FILE_REQUEST_OVERWRITE))
 		return NULL;
 	TCHAR *fullpathEnd = fullpath + BE_Cross_ArrayLen(fullpath);
 	TCHAR *fullpathPtr = BEL_Cross_safeandfastctstringcopy_2strs(fullpath, fullpathEnd, searchdir, _T("/"));
@@ -102,7 +104,8 @@ BE_FILE_T BEL_Cross_apply_file_action_in_dir(
 
 	if (outfullpath)
 		memcpy(*outfullpath, fullpath, sizeof(fullpath));
-	return _tfopen(fullpath, _T("wb"));
+	return _tfopen(fullpath,
+	               (request == BE_FILE_REQUEST_APPEND) ? _T("ab") : _T("wb"));
 }
 
 static void BEL_Cross_CreateTrimmedFilename(const char *inFilename, char (*outFileName)[BE_CROSS_DOS_FILENAME_LEN_BOUND])
@@ -209,4 +212,12 @@ BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename)
 	BEL_Cross_mkdir(g_be_appNewCfgPath); // Non-recursive
 
 	return BEL_Cross_apply_file_action_in_dir(filename, BE_FILE_REQUEST_OVERWRITE, g_be_appNewCfgPath, NULL);
+}
+
+BE_FILE_T BE_Cross_open_additionalfile_for_appending(const char *filename)
+{
+	// Do this just in case, but note that this isn't recursive
+	BEL_Cross_mkdir(g_be_appNewCfgPath); // Non-recursive
+
+	return BEL_Cross_apply_file_action_in_dir(filename, BE_FILE_REQUEST_APPEND, g_be_appNewCfgPath, NULL);
 }

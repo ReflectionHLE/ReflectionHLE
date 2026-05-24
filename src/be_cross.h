@@ -290,6 +290,7 @@ void BE_Cross_unlink_rewritable(const char *filename);
 // Used for NEW files not originating from the originals (like RefKeen cfg)
 BE_FILE_T BE_Cross_open_additionalfile_for_reading(const char *filename);
 BE_FILE_T BE_Cross_open_additionalfile_for_overwriting(const char *filename);
+BE_FILE_T BE_Cross_open_additionalfile_for_appending(const char *filename);
 
 // Should be shared
 static inline void BE_Cross_close(BE_FILE_T fp)

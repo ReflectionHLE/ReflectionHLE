@@ -34,7 +34,8 @@
 #include "be_filesystem_tchar.h"
 
 typedef enum {
-	BE_FILE_REQUEST_READ, BE_FILE_REQUEST_OVERWRITE, BE_FILE_REQUEST_DELETE
+	BE_FILE_REQUEST_READ, BE_FILE_REQUEST_OVERWRITE,
+	BE_FILE_REQUEST_APPEND, BE_FILE_REQUEST_DELETE
 } BE_FileRequest_T;
 
 // Attempts to apply a read, overwrite or delete request for a
