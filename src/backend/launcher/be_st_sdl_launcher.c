@@ -588,7 +588,7 @@ BEMENUITEM_DEF_SELECTION_WITH_HANDLER(g_beInputSettingsMenuItem_TouchInputDebugg
 #endif
 BEMENUITEM_DEF_SELECTION(g_beInputSettingsMenuItem_MouseGrab, "Mouse grab*\n(windowed mode specific)", g_be_inputSettingsChoices_mouseGrab)
 #ifdef REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
-BEMENUITEM_DEF_HANDLER(g_beInputSettingsMenuItem_ImportMappingsFromSteam, "Import controller mappings from Steam\n(shouldn't override existing mappings)", &BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam)
+BEMENUITEM_DEF_HANDLER(g_beInputSettingsMenuItem_ImportMappingsFromSteam, "Import controller mappings from Steam", &BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam)
 #endif
 BEMENUITEM_DEF_STATIC(g_beInputSettingsMenuItem_MouseGrabComment,
 "* It's possible for mouse to be ungrabbed even if \"Commonly\" is chosen."
