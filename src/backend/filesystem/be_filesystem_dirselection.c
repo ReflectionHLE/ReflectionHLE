@@ -253,3 +253,12 @@ bool BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_Erro
 		BEL_Cross_SortGameInstallations_ByVerId();
 	return ret;
 }
+
+FILE *BE_Cross_DirSelection_TryOpeningFileInSelectedPath(const char *name)
+{
+	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
+	TCHAR * const pathEnd = path + BE_CROSS_PATH_LEN_BOUND;
+	TCHAR *pathPtr = BEL_Cross_safeandfastctstringcopy_2strs(path, pathEnd, g_be_dirSelection_currPath, _T("/"));
+	BEL_Cross_safeandfastcstringcopytoctstring(pathPtr, pathEnd, name);
+	return _tfopen(path, _T("rb"));
+}

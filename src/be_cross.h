@@ -265,6 +265,9 @@ typedef char BE_TryAddGameInstallation_ErrorMsg_T[40];
 // Array MUST have at least BE_GAMEVER_LAST elements.
 bool BE_Cross_DirSelection_TryAddGameInstallation(BE_TryAddGameInstallation_ErrorMsg_T errorMsgsArray[]);
 
+// Try opening file from currently selected dir
+FILE *BE_Cross_DirSelection_TryOpeningFileInSelectedPath(const char *name);
+
 // Often used as a replacement for file handles of type "int",
 // this one is given a different name so it's easy to swap in case of a need
 typedef FILE * BE_FILE_T;
