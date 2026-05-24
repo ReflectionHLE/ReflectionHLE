@@ -1577,7 +1577,6 @@ void BEL_ST_Launcher_RefreshModMenuItemLabel(int gameId)
 /* FIXME - This is incomplete! Go over mappings
  * from Steam config *and* refkeen mapping file,
  * and ask the user if it overwrite anything.
- * Also, avoid from needing an "append" wrapper over _tfopen.
  */
 static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem **menuItemP)
 {
@@ -1589,54 +1588,16 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 		return;
 	}
 
+	// Append new mappings
 	// WARNING: This file is also opened in BINARY mode
-	// FIXME: Again, this is incomplete, for now we just
-	// read the file-as-is, then rewrite the contents and add
-	// more lines (we we don't need to add an "append" wrapper).
-	void *mappingfpinmem = NULL;
-	int32_t mappingfpsize = 0;
-	FILE *mappingfp = BE_Cross_open_additionalfile_for_reading("gamecontrollerdb.txt");
-	if (mappingfp)
-	{
-		mappingfpsize = BE_Cross_FileLengthFromHandle(mappingfp);
-		mappingfpinmem = malloc(mappingfpsize);
-		if (!mappingfpinmem)
-		{
-			fclose(mappingfp);
-			fclose(cfgfp);
-			BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BE_ST_Launcher_Handler_ImportControllerMappingsFromSteam: Out of memory!\n");
-			// Destroy window, renderer and more?
-			exit(0);
-		}
-
-		size_t count = fread(mappingfpinmem, mappingfpsize, 1, mappingfp);
-		fclose(mappingfp);
-
-		if (count != 1U)
-		{
-			fclose(cfgfp);
-			free(mappingfpinmem);
-			BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFromSteamFailedToImportMenu);
-			return;
-		}
-	}
-
-	// Let's overwrite file with old contents (if there are any),
-	// and then add new mappings (i.e., emulate file append)
-	mappingfp = BE_Cross_open_additionalfile_for_overwriting("gamecontrollerdb.txt");
+	FILE *mappingfp = BE_Cross_open_additionalfile_for_appending("gamecontrollerdb.txt");
 	if (!mappingfp)
 	{
 		fclose(cfgfp);
-		free(mappingfpinmem); // Possibly NULL
 		BEL_Launcher_SetCurrentMenu(&g_beControllerMappingsFromSteamFailedToImportMenu);
 		return;
 	}
 
-	if (mappingfpinmem)
-	{
-		fwrite(mappingfpinmem, mappingfpsize, 1, mappingfp);
-		free(mappingfpinmem);
-	}
 
 	char buffer[512];
 
