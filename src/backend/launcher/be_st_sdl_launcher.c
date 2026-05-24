@@ -1648,6 +1648,8 @@ static void BEL_ST_Launcher_Handler_ImportControllerMappingsFromSteam(BEMenuItem
 		fwrite(buffer, strlen(buffer), 1, mappingfp);
 		SDL_AddGamepadMappingsFromIO(SDL_IOFromConstMem(buffer, strlen(buffer)), 1);
 	}
+	fclose(mappingfp);
+	fclose(cfgfp);
 	// Adding a mapping doesn't imply we'll get a
 	// "joystick/controller added" event, so manually add
 	// what's missing. Removing and re-adding looks simplest.
