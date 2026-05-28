@@ -1658,6 +1658,31 @@ void PlayLoop (void)
 			VW_WaitVBL(14);
 			lasttimecount = SD_GetTimeCount();
 		}
+		// Workaround for a HandleDeath bug variation in Keen Dreams:
+		// - The original HandleDeath code does not clear LastScan
+		// in advance, and also not upon leaving the function.
+		// - Hence, again with that code, if player presses on sc_Space
+		// to return to level and then doesn't press on any other key
+		// before Keen's death, even if there are still
+		// remaining lives in-game, the function HandleDeath
+		// will unexpectedly abort immediately.
+		// - That is also the case if player uses joystick (or mouse)
+		// before HandleDeath, with the last pressed key being sc_Space.
+		//
+		// Without the following workaround, that would also apply
+		// with ReflectionHLE's expanded input devices support,
+		// including external keyboard rebinds
+		// (e.g., an override of sc_Space) and gamepad support.
+		if (g_binding_value_button[0] || g_binding_value_button[1] ||
+		    g_binding_value_stats ||
+		    g_binding_value_up || g_binding_value_down ||
+		    g_binding_value_left || g_binding_value_right)
+		{
+			if (LastScan == sc_Space || LastScan == sc_Escape)
+				LastScan = 0;
+		}
+		else if (g_keybind_used_stats && LastScan == sc_Space)
+			LastScan = 0;
 
 		CheckKeys();
 	} while (!loadedgame && !playstate);
