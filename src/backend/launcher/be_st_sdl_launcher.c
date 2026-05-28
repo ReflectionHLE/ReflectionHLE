@@ -3165,7 +3165,7 @@ void BE_ST_Launcher_WaitForUserBind(BEMenuItem *menuItem, BEMenuBind menuBind)
 					g_sdlLauncherTriggerBinaryStates[triggerNum] = (event.gaxis.value >= g_sdlJoystickAxisBinaryThreshold);
 					if (!prevBinaryState && g_sdlLauncherTriggerBinaryStates[triggerNum])
 					{
-						choice = BE_ST_CTRL_BUT_MAX + triggerNum; // HACK
+						choice = BE_ST_CTRL_EXTRA_BUT_LTRIGGER + triggerNum;
 						keepRunning = false;
 					}
 				}

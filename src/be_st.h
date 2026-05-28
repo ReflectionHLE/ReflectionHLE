@@ -134,6 +134,10 @@ typedef enum {
 	BE_ST_CTRL_BUT_PADDLE3,
 	BE_ST_CTRL_BUT_PADDLE4,
 	BE_ST_CTRL_BUT_MAX,
+	// Special extra enum values used for trigger axes, say in cfg files
+	BE_ST_CTRL_EXTRA_BUT_LTRIGGER = BE_ST_CTRL_BUT_MAX,
+	BE_ST_CTRL_EXTRA_BUT_RTRIGGER,
+	BE_ST_CTRL_EXTRA_BUT_MAX,
 } BE_ST_ControllerDigiButton;
 
 typedef enum {

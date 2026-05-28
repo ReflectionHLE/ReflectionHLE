@@ -135,8 +135,9 @@ const char *g_be_st_mouseFeatureIdToNameMap[2+BE_ST_CTRL_MOUSE_BUT_MAX] = {
 	NULL // Used as a terminator for the launcher
 };
 
-// Enumerated by SDL game controller buttons and axes, for most
-const char *g_be_st_padFeatureIdToNameMap[3+BE_ST_CTRL_BUT_MAX] = {
+// Enumerated by SDL gamepad buttons for most. Triggers are also added.
+const char *
+g_be_st_padFeatureIdToNameMap[1+BE_ST_CTRL_EXTRA_BUT_MAX] = {
 	"A", "B", "X", "Y",
 	"", "", "", // Back, guide, start
 	"LStick", "RStick", "LShoulder", "RShoulder",
@@ -155,8 +156,8 @@ bool BE_ST_IsValidPadButton(int padAction)
 
 bool BE_ST_IsValidPadAxis(int padAction)
 {
-	return ((padAction == BE_ST_CTRL_BUT_MAX) ||
-	        (padAction == BE_ST_CTRL_BUT_MAX+1));
+	return ((padAction == BE_ST_CTRL_EXTRA_BUT_LTRIGGER) ||
+	        (padAction == BE_ST_CTRL_EXTRA_BUT_RTRIGGER));
 }
 
 void BEL_ST_InitKeyMap(void)

@@ -8,7 +8,7 @@
 extern const char *g_be_st_keyIdToNameMap[2+BE_MAX_KEY_ID];
 extern const char *g_be_st_mouseFeatureIdToNameMap[2+BE_ST_CTRL_MOUSE_BUT_MAX];
 // Here, empty string is covered, but we also need the triggers and null terminator
-extern const char *g_be_st_padFeatureIdToNameMap[3+BE_ST_CTRL_BUT_MAX];
+extern const char *g_be_st_padFeatureIdToNameMap[1+BE_ST_CTRL_EXTRA_BUT_MAX];
 
 void BEL_ST_InitKeyMap(void);
 

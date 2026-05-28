@@ -556,7 +556,7 @@ static void CheckPadMapping(int actionmapping, const BE_ST_ControllerSingleMap *
 	if (BE_ST_IsValidPadButton(actionmapping))
 		g_ingame_altcontrol_mapping_gameplay.pbuttons[actionmapping] = *inputmap;
 	else if (BE_ST_IsValidPadAxis(actionmapping))
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_BUT_MAX][1] = *inputmap;
+		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_AXIS_LTRIGGER+actionmapping-BE_ST_CTRL_EXTRA_BUT_LTRIGGER][1] = *inputmap;
 }
 
 static void CheckNonKeyMappings(int bind, const BE_ST_ControllerSingleMap *inputmap)
