@@ -141,7 +141,8 @@ void BE_ST_PollEvents(void)
 				if (BEL_ST_CheckCommonPointerReleaseCases(BE_ST_MouseTouchID, 0, x, y))
 					break;
 
-			if (g_sdlControllerMappingActualCurr->mbuttons[button].mapClass != BE_ST_CTRL_MAP_NONE)
+			if ((button < BE_ST_CTRL_MOUSE_BUT_MAX) &&
+			    (g_sdlControllerMappingActualCurr->mbuttons[button].mapClass != BE_ST_CTRL_MAP_NONE))
 			{
 				if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->mbuttons[button],
 				    g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.mbuttons[button]))
