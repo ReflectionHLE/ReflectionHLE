@@ -56,6 +56,33 @@ void BE_ST_SetAppQuitCallback(void (*funcPtr)(void))
 	g_sdlAppQuitCallback = funcPtr;
 }
 
+static void BEL_ST_HandleAxisUpdateForMapping(int axis, int value)
+{
+	// Do nothing if some on-screen keyboard is in use
+	if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) ||
+	    (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
+		return;
+
+	int side = (value < 0) ? 0 : 1;
+	/* Note: We handle BOTH sides, in case value == 0,
+	 * or alternatively, the sign of value changes,
+	 * so "release/clear" events can be properly sent.
+	 * Ensure the release always precedes the press, though. */
+	BEL_ST_AltControlScheme_HandleEntry(
+		&g_sdlControllerMappingActualCurr->paxes[axis][1 - side],
+		0,
+		&g_sdlInputbindStates.paxes[axis][1 - side]);
+	if (!BEL_ST_AltControlScheme_HandleEntry(
+		&g_sdlControllerMappingActualCurr->paxes[axis][side],
+		abs(value),
+		&g_sdlInputbindStates.paxes[axis][side]))
+	{
+		// Special case for triggers, treated like digital buttons
+		if ((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
+			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping,
+			                                    value, &g_sdlDefaultMappingBinaryState);
+	}
+}
 
 void BE_ST_PollEvents(void)
 {
@@ -312,36 +339,13 @@ void BE_ST_PollEvents(void)
 			break;
 
 		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
-		{
-			// Do nothing if some on-screen keyboard is in use
-			if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) || (g_sdlControllerMappingActualCurr == &g_beStControllerMappingDebugKeys))
+			if ((event.gaxis.axis < 0) ||
+			    (event.gaxis.axis >= BE_ST_CTRL_AXIS_MAX))
 				break;
 
-			int axis = event.gaxis.axis;
-			int axisVal = event.gaxis.value;
-			int side = (axisVal < 0) ? 0 : 1;
-			if ((axis < 0) || (axis >= BE_ST_CTRL_AXIS_MAX))
-				break;
-			/* Note: We handle BOTH sides, in case axisVal == 0,
-			 * or alternatively, the sign of axisVal changes, so
-			 * "release/clear" events can be properly sent.
-			 * Ensure the release always precedes the press, though. */
-			BEL_ST_AltControlScheme_HandleEntry(
-				&g_sdlControllerMappingActualCurr->paxes[axis][1 - side],
-				0,
-				&g_sdlInputbindStates.paxes[axis][1 - side]);
-			if (!BEL_ST_AltControlScheme_HandleEntry(
-				&g_sdlControllerMappingActualCurr->paxes[axis][side],
-				abs(axisVal),
-				&g_sdlInputbindStates.paxes[axis][side]))
-				{
-					// Special case for triggers, treated like digital buttons
-					if ((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
-						BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, axisVal, &g_sdlDefaultMappingBinaryState);
-				}
-
+			BEL_ST_HandleAxisUpdateForMapping(event.gaxis.axis,
+			                                  event.gaxis.value);
 			break;
-		}
 
 		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 			BEL_ST_CheckForHidingTouchUI();
