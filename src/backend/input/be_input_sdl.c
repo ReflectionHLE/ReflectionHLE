@@ -112,3 +112,29 @@ void BEL_ST_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 			}
 	}
 }
+
+void BEL_ST_FillSensorsList(void)
+{
+	int n_sensors;
+	SDL_SensorID *sensors = SDL_GetSensors(&n_sensors);
+	if (!sensors)
+	{
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "BEL_ST_FillSensorsList: SDL_GetSensors failed,\n%s\n", SDL_GetError());
+		return;
+	}
+
+	for (int i = 0; i < n_sensors; ++i)
+		switch (SDL_GetSensorTypeForID(sensors[i]))
+		{
+		case SDL_SENSOR_ACCEL:
+		case SDL_SENSOR_GYRO:
+		case SDL_SENSOR_ACCEL_L:
+		case SDL_SENSOR_GYRO_L:
+		case SDL_SENSOR_ACCEL_R:
+		case SDL_SENSOR_GYRO_R:
+			SDL_OpenSensor(sensors[i]);
+			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_FillSensorsList: Opened sensor %u\n", sensors[i]);
+		default:
+			break;
+		}
+}

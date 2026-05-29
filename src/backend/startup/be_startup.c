@@ -281,6 +281,9 @@ void BE_Cross_InitGame(int gameVerVal)
 	BEL_Cross_SelectGameInstallation(gameVerVal, false);
 	// Do this now, since we can tell if we want digi audio out or not
 	BE_ST_InitAudio();
+	// Similarly call this after running patchers via
+	// BEL_Cross_SelectGameInstallation, inc. input mappings preparation.
+	BE_ST_InitSensors();
 }
 
 void BE_Cross_StartGame(int argc, char **argv, void (*mainFuncPtr)(void))

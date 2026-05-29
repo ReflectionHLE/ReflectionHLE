@@ -43,6 +43,7 @@
 void BE_ST_InitCommon(void); // Before game or launcher
 void BE_ST_PrepareForGameStartupWithoutAudio(void); // Before game, excludes the audio
 void BE_ST_InitAudio(void);
+void BE_ST_InitSensors(void);
 void BE_ST_ShutdownAll(void); // After game
 void BE_ST_HandleExit(int status); // Replacement for exit function (useful for displaying text screen)
 void BE_ST_QuickExit(void); // Where the usual exit handler isn't sufficient: Saves last settings, shutdowns subsystems and then exits immediately
@@ -148,6 +149,14 @@ typedef enum {
 	BE_ST_CTRL_AXIS_LTRIGGER,
 	BE_ST_CTRL_AXIS_RTRIGGER,
 	BE_ST_CTRL_AXIS_MAX,
+	// Sensor axes are also added here
+	BE_ST_CTRL_FULL_AXIS_ACCEL_X = BE_ST_CTRL_AXIS_MAX,
+	BE_ST_CTRL_FULL_AXIS_ACCEL_Y,
+	BE_ST_CTRL_FULL_AXIS_ACCEL_Z,
+	BE_ST_CTRL_FULL_AXIS_GYRO_X,
+	BE_ST_CTRL_FULL_AXIS_GYRO_Y,
+	BE_ST_CTRL_FULL_AXIS_GYRO_Z,
+	BE_ST_CTRL_FULL_AXIS_MAX,
 } BE_ST_ControllerAxis;
 
 bool BE_ST_IsValidPadButton(int padAction);
@@ -223,7 +232,7 @@ typedef struct BE_ST_ControllerMapping {
 	BE_ST_ControllerKeyMap keys[BE_MAX_KEY_ID];
 	BE_ST_ControllerSingleMap mbuttons[BE_ST_CTRL_MOUSE_BUT_MAX];
 	BE_ST_ControllerSingleMap pbuttons[BE_ST_CTRL_BUT_MAX];
-	BE_ST_ControllerSingleMap paxes[BE_ST_CTRL_AXIS_MAX][2];
+	BE_ST_ControllerSingleMap paxes[BE_ST_CTRL_FULL_AXIS_MAX][2];
 	bool showUi;
 	bool absoluteFingerPositioning;
 	bool grabMouse;

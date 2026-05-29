@@ -84,6 +84,50 @@ static void BEL_ST_HandleAxisUpdateForMapping(int axis, int value)
 	}
 }
 
+static void BEL_ST_ReorientSensorData(float (*data)[6])
+{
+	SDL_DisplayID displayId = SDL_GetPrimaryDisplay();
+	if (!displayId)
+		return;
+	// 0 - No change
+	// 1 - 180 degrees rotation
+	// 2 - 90 degrees clockwise direction
+	// 3 - 90 degrees anticlockwise direction
+	const int transformsTable[4][4] = {
+		{0, 1, 2, 3},
+		{1, 0, 3, 2},
+		{3, 2, 0, 1},
+		{2, 3, 1, 0},
+	};
+	SDL_DisplayOrientation naturalOrientation =
+	                         SDL_GetNaturalDisplayOrientation(displayId),
+	                       currentOrientation =
+	                         SDL_GetCurrentDisplayOrientation(displayId);
+	if (((int)naturalOrientation < 1) || ((int)naturalOrientation > 4) ||
+	    ((int)currentOrientation < 1) || ((int)currentOrientation > 4))
+		return;
+	float updated[2];
+	switch (transformsTable[naturalOrientation - 1][currentOrientation - 1])
+	{
+	case 1:
+		updated[0] = -(*data)[0];
+		updated[1] = -(*data)[1];
+		break;
+	case 2:
+		updated[0] = (*data)[1];
+		updated[1] = -(*data)[0];
+		break;
+	case 3:
+		updated[0] = -(*data)[1];
+		updated[1] = (*data)[0];
+		break;
+	default:
+		return;
+	}
+	(*data)[0] = updated[0];
+	(*data)[1] = updated[1];
+}
+
 void BE_ST_PollEvents(void)
 {
 	SDL_Event event;
@@ -337,6 +381,53 @@ void BE_ST_PollEvents(void)
 				}
 			}
 			break;
+
+		case SDL_EVENT_SENSOR_UPDATE:
+		{
+			SDL_SensorType sensorType =
+			               SDL_GetSensorTypeForID(event.sensor.which);
+			switch (sensorType)
+			{
+			case SDL_SENSOR_ACCEL:
+			case SDL_SENSOR_ACCEL_L:
+			case SDL_SENSOR_ACCEL_R:
+			case SDL_SENSOR_GYRO:
+			case SDL_SENSOR_GYRO_L:
+			case SDL_SENSOR_GYRO_R:
+			{
+				const bool isAccel = (sensorType == SDL_SENSOR_ACCEL) ||
+				                     (sensorType == SDL_SENSOR_ACCEL_L) ||
+				                     (sensorType == SDL_SENSOR_ACCEL_R);
+				const int axisX = isAccel ? BE_ST_CTRL_FULL_AXIS_ACCEL_X :
+				                            BE_ST_CTRL_FULL_AXIS_GYRO_X;
+				for (int i = 0; i < 3; ++i)
+				{
+					if (isAccel)
+						event.sensor.data[i] /= SDL_STANDARD_GRAVITY;
+					// Add more to the usual deadzone used
+					// in BEL_ST_AltControlScheme_HandleEntry
+					if (fabs(event.sensor.data[i]) <= 0.25f)
+						event.sensor.data[i] = 0;
+					else if (event.sensor.data[i] < 0.f)
+						event.sensor.data[i] = (event.sensor.data[i]+0.25f)/0.75f;
+					else
+						event.sensor.data[i] = (event.sensor.data[i]-0.25f)/0.75f;
+				}
+				BEL_ST_ReorientSensorData(&event.sensor.data);
+
+				BEL_ST_HandleAxisUpdateForMapping(axisX,
+				                                  g_sdlJoystickAxisMax * event.sensor.data[0]);
+				BEL_ST_HandleAxisUpdateForMapping(axisX + 1,
+				                                  g_sdlJoystickAxisMax * event.sensor.data[1]);
+				BEL_ST_HandleAxisUpdateForMapping(axisX + 2,
+				                                  g_sdlJoystickAxisMax * event.sensor.data[2]);
+				break;
+			}
+			default:
+				break;
+			}
+			break;
+		}
 
 		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 			if ((event.gaxis.axis < 0) ||

@@ -48,7 +48,10 @@ void BE_ST_InitGfx(void);
 void BE_ST_InitTiming(void);
 void BE_ST_ShutdownAudio(void);
 void BE_ST_ShutdownGfx(void);
-void BEL_ST_FillJoysticksList(void); // Implementation-specific
+// Implementation-specific
+void BEL_ST_FillJoysticksList(void);
+void BEL_ST_FillSensorsList(void);
+
 void BEL_ST_ParseConfigFiles(void);
 void BEL_ST_SaveConfigFiles(void);
 
@@ -154,6 +157,14 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 	// Events may gradually fill these, especially after messing with a mouse cursor, so reset AFTER poll
 	g_sdlEmuMouseMotionAccumulatedState[0] = g_sdlEmuMouseMotionAccumulatedState[1] = 0;
 	BE_ST_ResetEmuMouse();
+}
+
+void BE_ST_InitSensors(void)
+{
+	if (!SDL_InitSubSystem(SDL_INIT_SENSOR))
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL sensor subsystem initialization failed, disabled,\n%s\n", SDL_GetError());
+	else
+		BEL_ST_FillSensorsList();
 }
 
 void BE_ST_ShutdownAll(void)

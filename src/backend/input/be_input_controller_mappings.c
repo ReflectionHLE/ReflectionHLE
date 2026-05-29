@@ -175,7 +175,7 @@ void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 		for (int but = 0; but < BE_ST_CTRL_BUT_MAX; ++but)
 			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->pbuttons[but], 0, &g_sdlInputbindStates.pbuttons[but]);
 		// Repeat with analog axes
-		for (int axis = 0; axis < BE_ST_CTRL_AXIS_MAX; ++axis)
+		for (int axis = 0; axis < BE_ST_CTRL_FULL_AXIS_MAX; ++axis)
 		{
 			// Is pressed in the negative direction?
 			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->paxes[axis][0], 0, &g_sdlInputbindStates.paxes[axis][0]);

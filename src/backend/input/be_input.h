@@ -41,7 +41,7 @@ typedef struct {
 	bool pbuttons[BE_ST_CTRL_BUT_MAX];
 	// We may opstionally use analog axes as buttons
 	// (e.g., using stick as arrow keys, triggers as buttons)
-	bool paxes[BE_ST_CTRL_AXIS_MAX][2];
+	bool paxes[BE_ST_CTRL_FULL_AXIS_MAX][2];
 } BEInputBindsStates;
 
 extern BEInputBindsStates g_sdlInputbindStates;
