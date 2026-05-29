@@ -383,9 +383,12 @@ void BE_ST_PollEvents(void)
 			break;
 
 		case SDL_EVENT_SENSOR_UPDATE:
+		case SDL_EVENT_GAMEPAD_SENSOR_UPDATE:
 		{
-			SDL_SensorType sensorType =
-			               SDL_GetSensorTypeForID(event.sensor.which);
+			bool isGamepad = (event.type == SDL_EVENT_GAMEPAD_SENSOR_UPDATE);
+			int32_t sensorType = isGamepad ? event.gsensor.sensor :
+			                     SDL_GetSensorTypeForID(event.sensor.which);
+			float *data = isGamepad ? event.gsensor.data : event.sensor.data;
 			switch (sensorType)
 			{
 			case SDL_SENSOR_ACCEL:
@@ -403,24 +406,25 @@ void BE_ST_PollEvents(void)
 				for (int i = 0; i < 3; ++i)
 				{
 					if (isAccel)
-						event.sensor.data[i] /= SDL_STANDARD_GRAVITY;
+						data[i] /= SDL_STANDARD_GRAVITY;
 					// Add more to the usual deadzone used
 					// in BEL_ST_AltControlScheme_HandleEntry
-					if (fabs(event.sensor.data[i]) <= 0.25f)
-						event.sensor.data[i] = 0;
-					else if (event.sensor.data[i] < 0.f)
-						event.sensor.data[i] = (event.sensor.data[i]+0.25f)/0.75f;
+					if (fabs(data[i]) <= 0.25f)
+						data[i] = 0;
+					else if (data[i] < 0.f)
+						data[i] = (data[i]+0.25f)/0.75f;
 					else
-						event.sensor.data[i] = (event.sensor.data[i]-0.25f)/0.75f;
+						data[i] = (data[i]-0.25f)/0.75f;
 				}
-				BEL_ST_ReorientSensorData(&event.sensor.data);
+				if (!isGamepad)
+					BEL_ST_ReorientSensorData(&event.sensor.data);
 
 				BEL_ST_HandleAxisUpdateForMapping(axisX,
-				                                  g_sdlJoystickAxisMax * event.sensor.data[0]);
+				                                  g_sdlJoystickAxisMax * data[0]);
 				BEL_ST_HandleAxisUpdateForMapping(axisX + 1,
-				                                  g_sdlJoystickAxisMax * event.sensor.data[1]);
+				                                  g_sdlJoystickAxisMax * data[1]);
 				BEL_ST_HandleAxisUpdateForMapping(axisX + 2,
-				                                  g_sdlJoystickAxisMax * event.sensor.data[2]);
+				                                  g_sdlJoystickAxisMax * data[2]);
 				break;
 			}
 			default:
