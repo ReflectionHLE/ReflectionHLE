@@ -572,6 +572,7 @@ static const char *g_be_inputSettingsChoices_touchControls[] = {"Auto", "Off", "
 static const char *g_be_inputSettingsChoices_mouseGrab[] = {"Auto", "Off", "Commonly", NULL};
 // Actually for other input settings
 static const char *g_be_inputSettingsChoices_axisBind[] = {"Off", "Move", "Look", NULL};
+static const char *g_be_inputSettingsChoices_analogInputDevice[] = {"Off", "Mouse", "Gyroscope", NULL};
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP);
@@ -970,6 +971,7 @@ BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (com
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_Gyroscope, "Gyro turning/strafing (requires analog motion)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical mouse/pad analog motion toggle", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VREmulation, "Emulate VR input for Wolf3D v1.4 and SOD (skips demos and more)", g_be_inputSettingsChoices_analogInputDevice)
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
 	&g_beWolf3DSettingsMenuItem_KeyBinds,
@@ -979,6 +981,7 @@ static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
 	&g_beWolf3DSettingsMenuItem_AnalogMotion,
 	&g_beWolf3DSettingsMenuItem_Gyroscope,
 	&g_beWolf3DSettingsMenuItem_VertAnalogMotion,
+	&g_beWolf3DSettingsMenuItem_VREmulation,
 	NULL
 };
 

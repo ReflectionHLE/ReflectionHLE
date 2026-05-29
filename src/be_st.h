@@ -274,6 +274,13 @@ enum {
 	BE_ST_CTRL_AXIS_BIND_LOOK,
 };
 
+// Originally added for Wolfenstein 3D, but may potentially be useful elsewhere.
+enum {
+	BE_ST_CTRL_ANALOG_DEVICE_NONE,
+	BE_ST_CTRL_ANALOG_DEVICE_MOUSE,
+	BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE,
+};
+
 // Used when loading controller scheme stuff from cfg
 #ifdef REFKEEN_HAS_VER_KDREAMS
 enum {

@@ -1577,7 +1577,9 @@ void InitGame (void)
 	if (MS_CheckParm ("nofloors"))
 		nofloors = true;
 #elif (GAMEVER_WOLFREV > GV_WR_WL6AP11)
-	if (MS_CheckParm ("virtual"))
+	// REFKEEN: We check setting instead of param now
+	if (g_refKeenCfg.wolf3d.vrInputEmu != BE_ST_CTRL_ANALOG_DEVICE_NONE)
+//	if (MS_CheckParm ("virtual"))
 		virtualreality = true;
 	else
 		virtualreality = false;
@@ -1754,9 +1756,8 @@ close(profilehandle);
 	if (virtualreality)
 	{
 		NoWait = true;
-#if REFKEEN_WL_ENABLE_VR
-		geninterrupt(0x60);
-#endif
+		InitHelmet();
+//		geninterrupt(0x60);
 	}
 #endif
 }
@@ -1873,11 +1874,10 @@ void Quit (const id0_char_t *error)
 //	memptr	screen;
 
 	// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
-#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-#if REFKEEN_WL_ENABLE_VR
+#if 0 // REFKEEN: No need to do anything here
+//#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 	if (virtualreality)
 		geninterrupt(0x61);
-#endif
 #endif
 
 	// *** SHAREWARE V1.0 APOGEE RESTORATION ***

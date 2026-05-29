@@ -165,6 +165,7 @@ extern BEMenuItem
 	g_beWolf3DSettingsMenuItem_AnalogMotion,
 	g_beWolf3DSettingsMenuItem_Gyroscope,
 	g_beWolf3DSettingsMenuItem_VertAnalogMotion,
+	g_beWolf3DSettingsMenuItem_VREmulation,
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Up)
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Down)
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Left)
@@ -365,6 +366,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	{&g_refKeenCfg.wolf3d.useGyroscope, &g_beWolf3DSettingsMenuItem_Gyroscope},
 	{&g_refKeenCfg.wolf3d.novert, &g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
+	{&g_refKeenCfg.wolf3d.vrInputEmu, &g_beWolf3DSettingsMenuItem_VREmulation},
 	DEFINE_WOLF3D_BIND_PAIRS(Up, UP)
 	DEFINE_WOLF3D_BIND_PAIRS(Down, DOWN)
 	DEFINE_WOLF3D_BIND_PAIRS(Left, LEFT)

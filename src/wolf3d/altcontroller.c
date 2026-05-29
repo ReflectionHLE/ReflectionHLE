@@ -64,6 +64,10 @@ int g_binding_value_button[NUMBUTTONS],
     g_binding_value_axisx, g_binding_value_axisy,
     g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right;
 
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+int g_binding_value_axisvr;
+#endif
+
 bool g_keybind_used_button[NUMBUTTONS],
      g_keybind_used_up, g_keybind_used_down, g_keybind_used_left, g_keybind_used_right;
 
@@ -98,6 +102,8 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define AXIS_DOWN_MAP      &g_binding_value_axisy, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_LEFT_MAP      &g_binding_value_axisx, 0, -127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_RIGHT_MAP     &g_binding_value_axisx, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_VR_LEFT_MAP   &g_binding_value_axisvr, 0, -4, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_VR_RIGHT_MAP  &g_binding_value_axisvr, 0, 4, BE_ST_CTRL_MAP_VALUESET
 #define BUT_MAP_MAP        &g_binding_value_map, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
@@ -128,6 +134,10 @@ static const BE_ST_ControllerSingleMap
        g_ingame_axis_down_map      = {AXIS_DOWN_MAP},
        g_ingame_axis_left_map      = {AXIS_LEFT_MAP},
        g_ingame_axis_right_map     = {AXIS_RIGHT_MAP},
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+       g_ingame_axis_vr_left_map   = {AXIS_VR_LEFT_MAP},
+       g_ingame_axis_vr_right_map  = {AXIS_VR_RIGHT_MAP},
+#endif
 #ifdef GAMEVER_NOAH3D
        g_ingame_but_map_map        = {BUT_MAP_MAP},
 #endif
@@ -614,6 +624,14 @@ void RefKeen_PrepareAltControllerScheme(void)
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_axis_left_map;
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_axis_right_map;
 	}
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE)
+	{
+		// VR input emulation using the mouse is handled separately
+		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_axis_vr_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_axis_vr_right_map;
+	}
+#endif
 
 	// Init touch controls UI
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
@@ -632,5 +650,33 @@ void PrepareGamePlayControllerMapping(void)
 {
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
 }
+
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+static id0_int_t g_helmet_angle;
+
+void InitHelmet(void)
+{
+	g_helmet_angle = 0;
+}
+
+int32_t GetHelmetAngle(void)
+{
+	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE)
+	{
+		g_helmet_angle -= g_binding_value_axisvr;
+		g_binding_value_axisvr = 0;
+	}
+	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_MOUSE)
+	{
+		id0_int_t x, y;
+		BE_ST_GetEmuAccuMouseMotion(&x, &y);
+		g_helmet_angle -= x;
+	}
+	g_helmet_angle %= ANGLES;
+	if (g_helmet_angle < 0)
+		g_helmet_angle += ANGLES;
+	return g_helmet_angle;
+}
+#endif
 
 REFKEEN_NS_E

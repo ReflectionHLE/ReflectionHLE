@@ -716,6 +716,14 @@ void PollControls (void)
 //
 	PollKeyboardMove ();
 
+	// REFKEEN: Originally, menu got mouse input differently,
+	// while PollControls (this function) would not be called from
+	// other locations for the covered versions of Wolf3D and SOD.
+	// The Wolfenmaus driver allowed disabling vertical mouse movement,
+	// so the same is done here as well.
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+	if (g_refKeenCfg.wolf3d.vrInputEmu != BE_ST_CTRL_ANALOG_DEVICE_MOUSE)
+#endif
 	if (mouseenabled)
 		PollMouseMove ();
 
@@ -1921,15 +1929,14 @@ void PlayLoop (void)
 	{
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-#if REFKEEN_WL_ENABLE_VR
 		if (virtualreality)
 		{
-			helmetangle = peek (0x40,0xf0);
+			helmetangle = GetHelmetAngle();
+//			helmetangle = peek (0x40,0xf0);
 			player->angle += helmetangle;
 			if (player->angle >= ANGLES)
 				player->angle -= ANGLES;
 		}
-#endif
 #endif
 
 
@@ -2027,14 +2034,12 @@ void PlayLoop (void)
 
 		// *** PRE-V1.4 APOGEE + S3DNA RESTORATION ***
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-#if REFKEEN_WL_ENABLE_VR
 		if (virtualreality)
 		{
 			player->angle -= helmetangle;
 			if (player->angle < 0)
 				player->angle += ANGLES;
 		}
-#endif
 #endif
 
 	}while (!playstate && !startgame);

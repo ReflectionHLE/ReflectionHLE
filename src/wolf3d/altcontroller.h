@@ -2,11 +2,12 @@
 #define ALTCONTROLLER_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 REFKEEN_NS_B
 
 extern int g_binding_value_button[],
-           g_binding_value_axisx, g_binding_value_axisy,
+           g_binding_value_axisx, g_binding_value_axisy, g_binding_value_axisvr,
            g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right,
            g_binding_value_map;
 
@@ -17,6 +18,8 @@ extern bool g_keybind_used_button[],
 
 void PrepareGamePlayControllerMapping(void);
 void UpdateAltControllerMappingsByMousePresence(bool withmouse);
+void InitHelmet(void);
+int32_t GetHelmetAngle(void);
 
 REFKEEN_NS_E
 

@@ -87,6 +87,7 @@ static const char *g_be_setting_sb_vals[] = {"off", "sb", "sbpro" ,"sb16"};
 static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 #endif
 static const char *g_be_setting_axisbind_vals[] = {"off", "move", "look"};
+static const char *g_be_setting_analogdevice_vals[] = {"off", "mouse", "gyroscope"};
 
 #define DEF_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, 0, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
@@ -348,6 +349,7 @@ static BE_ST_CFG_Setting_T g_be_st_wolf3d_settings[] = {
 	DEF_BOOL(wolf3d.useRightStick, "rstick", false)
 	DEF_BOOL(wolf3d.analogMotion, "analogmotion", false)
 	DEF_BOOL(wolf3d.useGyroscope, "gyroscope", false)
+	DEF_ENUM(wolf3d.vrInputEmu, "vrinputemu", g_be_setting_analogdevice_vals, BE_ST_CTRL_ANALOG_DEVICE_NONE)
 	DEF_BOOL(wolf3d.novert, "novert", false)
 	// FIXME: HACK (extra 2 are for triggers)
 	DEF_CTRL_BINDS_WOLF3D_ENUMS(UP, "up", BE_ST_CTRL_BUT_GUIDE)
