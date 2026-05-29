@@ -812,12 +812,14 @@ BEMenu g_beKDreamsPadBindsMenu = {
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_KeyBinds, "Keyboard overrides (experimental)", &g_beCat3DKeyBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beCat3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beCat3DPadBindsMenu)
-BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_VertAnalogMotion, "Vertical mouse/pad analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beCat3DSettingsMenuItems[] = {
 	&g_beCat3DSettingsMenuItem_KeyBinds,
 	&g_beCat3DSettingsMenuItem_MouseBinds,
 	&g_beCat3DSettingsMenuItem_PadBinds,
+	&g_beCat3DSettingsMenuItem_AnalogMotion,
 	&g_beCat3DSettingsMenuItem_VertAnalogMotion,
 	NULL
 };
@@ -923,7 +925,6 @@ BEMenu g_beCat3DMouseBindsMenu = {
 
 BEMENUITEM_DEF_SELECTION(g_beCat3DPadBindsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beCat3DPadBindsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beCat3DPadBindsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beCat3DPadBindsMenuItems[] = {
 	&g_beCat3DPadBindsMenuItem_Action_Up,
@@ -945,7 +946,6 @@ static BEMenuItem *g_beCat3DPadBindsMenuItems[] = {
 	&g_beCat3DPadBindsMenuItem_Action_DebugKeys,
 	&g_beCat3DPadBindsMenuItem_LeftStick,
 	&g_beCat3DPadBindsMenuItem_RightStick,
-	&g_beCat3DPadBindsMenuItem_AnalogMotion,
 	NULL
 };
 
@@ -965,13 +965,15 @@ BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_KeyBinds, "Keyboard overrid
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beWolf3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beWolf3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical analog motion toggle", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical mouse/pad analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
 	&g_beWolf3DSettingsMenuItem_KeyBinds,
 	&g_beWolf3DSettingsMenuItem_MouseBinds,
 	&g_beWolf3DSettingsMenuItem_PadBinds,
 	&g_beWolf3DSettingsMenuItem_LowFPS,
+	&g_beWolf3DSettingsMenuItem_AnalogMotion,
 	&g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 	NULL
 };
@@ -1080,7 +1082,6 @@ BEMenu g_beWolf3DMouseBindsMenu = {
 
 BEMENUITEM_DEF_SELECTION(g_beWolf3DPadBindsMenuItem_LeftStick, "Use left stick", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DPadBindsMenuItem_RightStick, "Use right stick", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beWolf3DPadBindsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DPadBindsMenuItems[] = {
 	&g_beWolf3DPadBindsMenuItem_Action_Up,
@@ -1103,7 +1104,6 @@ static BEMenuItem *g_beWolf3DPadBindsMenuItems[] = {
 	&g_beWolf3DPadBindsMenuItem_Action_DebugKeys,
 	&g_beWolf3DPadBindsMenuItem_LeftStick,
 	&g_beWolf3DPadBindsMenuItem_RightStick,
-	&g_beWolf3DPadBindsMenuItem_AnalogMotion,
 	NULL
 };
 

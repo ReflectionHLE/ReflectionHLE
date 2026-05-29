@@ -139,6 +139,7 @@ extern BEMenuItem
 	DECLARE_NONKEY_BINDS_MENUITEMS(KDreams, DebugKeys)
 	g_beKDreamsPadBindsMenuItem_LeftStick,
 	g_beKDreamsPadBindsMenuItem_RightStick,
+	g_beCat3DSettingsMenuItem_AnalogMotion,
 	g_beCat3DSettingsMenuItem_VertAnalogMotion,
 	DECLARE_BINDS_MENUITEMS(Cat3D, Up)
 	DECLARE_BINDS_MENUITEMS(Cat3D, Down)
@@ -159,8 +160,8 @@ extern BEMenuItem
 	DECLARE_NONKEY_BINDS_MENUITEMS(Cat3D, DebugKeys)
 	g_beCat3DPadBindsMenuItem_LeftStick,
 	g_beCat3DPadBindsMenuItem_RightStick,
-	g_beCat3DPadBindsMenuItem_AnalogMotion,
 	g_beWolf3DSettingsMenuItem_LowFPS,
+	g_beWolf3DSettingsMenuItem_AnalogMotion,
 	g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Up)
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Down)
@@ -186,7 +187,6 @@ extern BEMenuItem
 	DECLARE_NONKEY_BINDS_MENUITEMS(Wolf3D, DebugKeys)
 	g_beWolf3DPadBindsMenuItem_LeftStick,
 	g_beWolf3DPadBindsMenuItem_RightStick,
-	g_beWolf3DPadBindsMenuItem_AnalogMotion,
 	g_beBMenaceSettingsMenuItem_BetaFixes,
 	DECLARE_BINDS_MENUITEMS(BMenace, Up)
 	DECLARE_BINDS_MENUITEMS(BMenace, Down)
@@ -326,6 +326,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #endif
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
+	{&g_refKeenCfg.cat3d.analogMotion, &g_beCat3DSettingsMenuItem_AnalogMotion},
 	{&g_refKeenCfg.cat3d.novert, &g_beCat3DSettingsMenuItem_VertAnalogMotion,
 		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
 	DEFINE_CAT3D_BIND_PAIRS(Up, UP)
@@ -353,11 +354,11 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	DEFINE_CAT3D_NONKEY_BIND_PAIRS(DebugKeys, DEBUGKEYS)
 	{&g_refKeenCfg.cat3d.useLeftStick, &g_beCat3DPadBindsMenuItem_LeftStick},
 	{&g_refKeenCfg.cat3d.useRightStick, &g_beCat3DPadBindsMenuItem_RightStick},
-	{&g_refKeenCfg.cat3d.analogMotion, &g_beCat3DPadBindsMenuItem_AnalogMotion},
 #endif
 
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	{&g_refKeenCfg.wolf3d.lowFPS, &g_beWolf3DSettingsMenuItem_LowFPS},
+	{&g_refKeenCfg.wolf3d.analogMotion, &g_beWolf3DSettingsMenuItem_AnalogMotion},
 	{&g_refKeenCfg.wolf3d.novert, &g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
 	DEFINE_WOLF3D_BIND_PAIRS(Up, UP)
@@ -384,7 +385,6 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	DEFINE_WOLF3D_NONKEY_BIND_PAIRS(DebugKeys, DEBUGKEYS)
 	{&g_refKeenCfg.wolf3d.useLeftStick, &g_beWolf3DPadBindsMenuItem_LeftStick},
 	{&g_refKeenCfg.wolf3d.useRightStick, &g_beWolf3DPadBindsMenuItem_RightStick},
-	{&g_refKeenCfg.wolf3d.analogMotion, &g_beWolf3DPadBindsMenuItem_AnalogMotion},
 #endif
 
 #ifdef REFKEEN_HAS_VER_BMENACE_ALL
