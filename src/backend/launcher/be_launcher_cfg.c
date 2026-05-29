@@ -140,6 +140,7 @@ extern BEMenuItem
 	g_beKDreamsPadBindsMenuItem_LeftStick,
 	g_beKDreamsPadBindsMenuItem_RightStick,
 	g_beCat3DSettingsMenuItem_AnalogMotion,
+	g_beCat3DSettingsMenuItem_Gyroscope,
 	g_beCat3DSettingsMenuItem_VertAnalogMotion,
 	DECLARE_BINDS_MENUITEMS(Cat3D, Up)
 	DECLARE_BINDS_MENUITEMS(Cat3D, Down)
@@ -162,6 +163,7 @@ extern BEMenuItem
 	g_beCat3DPadBindsMenuItem_RightStick,
 	g_beWolf3DSettingsMenuItem_LowFPS,
 	g_beWolf3DSettingsMenuItem_AnalogMotion,
+	g_beWolf3DSettingsMenuItem_Gyroscope,
 	g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Up)
 	DECLARE_BINDS_MENUITEMS(Wolf3D, Down)
@@ -327,6 +329,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 
 #ifdef REFKEEN_HAS_VER_CATACOMB_ALL
 	{&g_refKeenCfg.cat3d.analogMotion, &g_beCat3DSettingsMenuItem_AnalogMotion},
+	{&g_refKeenCfg.cat3d.useGyroscope, &g_beCat3DSettingsMenuItem_Gyroscope},
 	{&g_refKeenCfg.cat3d.novert, &g_beCat3DSettingsMenuItem_VertAnalogMotion,
 		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
 	DEFINE_CAT3D_BIND_PAIRS(Up, UP)
@@ -359,6 +362,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 #ifdef REFKEEN_HAS_VER_WOLF3D_ALL
 	{&g_refKeenCfg.wolf3d.lowFPS, &g_beWolf3DSettingsMenuItem_LowFPS},
 	{&g_refKeenCfg.wolf3d.analogMotion, &g_beWolf3DSettingsMenuItem_AnalogMotion},
+	{&g_refKeenCfg.wolf3d.useGyroscope, &g_beWolf3DSettingsMenuItem_Gyroscope},
 	{&g_refKeenCfg.wolf3d.novert, &g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 		BEL_Launcher_ReadNoVert, BEL_Launcher_WriteNoVert},
 	DEFINE_WOLF3D_BIND_PAIRS(Up, UP)

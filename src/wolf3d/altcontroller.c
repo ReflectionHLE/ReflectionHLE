@@ -609,6 +609,11 @@ void RefKeen_PrepareAltControllerScheme(void)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_LX, BE_ST_CTRL_AXIS_LY);
 	if (g_refKeenCfg.wolf3d.useRightStick)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_RX, BE_ST_CTRL_AXIS_RY);
+	if (g_refKeenCfg.wolf3d.useGyroscope && g_refKeenCfg.wolf3d.analogMotion)
+	{
+		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_axis_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_axis_right_map;
+	}
 
 	// Init touch controls UI
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);

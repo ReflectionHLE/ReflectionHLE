@@ -122,6 +122,7 @@ typedef struct
 		int/*bool*/ useLeftStick;
 		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;
+		int/*bool*/ useGyroscope;
 		int/*bool*/ novert;
 		struct
 		{
@@ -142,6 +143,7 @@ typedef struct
 		int/*bool*/ useLeftStick;
 		int/*bool*/ useRightStick;
 		int/*bool*/ analogMotion;
+		int/*bool*/ useGyroscope;
 		int/*bool*/ novert;
 		struct
 		{

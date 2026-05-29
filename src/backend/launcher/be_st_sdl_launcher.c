@@ -813,6 +813,7 @@ BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_KeyBinds, "Keyboard override
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beCat3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beCat3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_Gyroscope, "Gyro turning/strafing (requires analog motion)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_VertAnalogMotion, "Vertical mouse/pad analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beCat3DSettingsMenuItems[] = {
@@ -820,6 +821,7 @@ static BEMenuItem *g_beCat3DSettingsMenuItems[] = {
 	&g_beCat3DSettingsMenuItem_MouseBinds,
 	&g_beCat3DSettingsMenuItem_PadBinds,
 	&g_beCat3DSettingsMenuItem_AnalogMotion,
+	&g_beCat3DSettingsMenuItem_Gyroscope,
 	&g_beCat3DSettingsMenuItem_VertAnalogMotion,
 	NULL
 };
@@ -966,6 +968,7 @@ BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_MouseBinds, "Mouse button o
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beWolf3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_Gyroscope, "Gyro turning/strafing (requires analog motion)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical mouse/pad analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
@@ -974,6 +977,7 @@ static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
 	&g_beWolf3DSettingsMenuItem_PadBinds,
 	&g_beWolf3DSettingsMenuItem_LowFPS,
 	&g_beWolf3DSettingsMenuItem_AnalogMotion,
+	&g_beWolf3DSettingsMenuItem_Gyroscope,
 	&g_beWolf3DSettingsMenuItem_VertAnalogMotion,
 	NULL
 };

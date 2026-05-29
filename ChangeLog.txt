@@ -47,6 +47,7 @@ for emulation of keyboard's function keys, instead of face buttons.
 Main reason being increased consistency with other supported games.
 A subset of them should have greater preference for d-pad usage over face
 buttons at times, in order to improve support for devices with less buttons.
+- 3D Catacombs, Wolfenstein 3D: Support gyroscope turning/strafing.
 - Wolfenstein 3D: Reorder function keys as accessible from a gamepad's
 d-pad and face buttons (also on-screen), for improved consistency with
 other supported games. Also re-assigned on-screen face buttons used
