@@ -112,7 +112,7 @@ extern SDL_Gamepad *g_sdlControllers[BE_ST_MAXJOYSTICKS];
 extern SDL_JoystickID g_sdlJoysticksInstanceIds[BE_ST_MAXJOYSTICKS];
 extern BE_ST_Texture *g_sdlTexture, *g_sdlTargetTexture;
 extern BE_ST_Rect g_sdlAspectCorrectionBorderedRect;
-extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_sdlJoystickAxisMax, g_sdlJoystickAxisMaxMinusDeadZone;
+extern const int g_sdlJoystickAxisBinaryThreshold;
 extern int g_sdlLastReportedWindowWidth, g_sdlLastReportedWindowHeight;
 extern float g_sdlLastReportedPixelDensity;
 
