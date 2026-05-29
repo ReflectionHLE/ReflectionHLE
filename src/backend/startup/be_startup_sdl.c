@@ -65,11 +65,9 @@ void BE_ST_InitCommon(void)
 		exit(0);
 	}
 
-	// SDL_INIT_CONTROLLER implies SDL_INIT_JOYSTICK
+	// SDL_INIT_GAMEPAD implies SDL_INIT_JOYSTICK
 	if (!SDL_InitSubSystem(SDL_INIT_GAMEPAD))
-	{
-		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL game controller subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
-	}
+		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL gamepad subsystem initialization (including joystick subsystem) failed, disabled,\n%s\n", SDL_GetError());
 
 	// MUST be called BEFORE parsing config (of course!)
 	BE_Cross_PrepareAppPaths();
