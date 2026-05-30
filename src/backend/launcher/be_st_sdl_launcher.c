@@ -967,21 +967,21 @@ BEMenu g_beCat3DPadBindsMenu = {
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_KeyBinds, "Keyboard overrides (experimental)", &g_beWolf3DKeyBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beWolf3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beWolf3DPadBindsMenu)
+BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_VREmulation, "VR input emulation (Wolf3D v1.4, SOD)", &g_beWolf3DVREmulationMenu)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_Gyroscope, "Gyro turning/strafing (requires analog motion)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical mouse/pad analog motion toggle", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VREmulation, "Emulate VR input for Wolf3D v1.4 and SOD (skips demos and more)", g_be_inputSettingsChoices_analogInputDevice)
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
 	&g_beWolf3DSettingsMenuItem_KeyBinds,
 	&g_beWolf3DSettingsMenuItem_MouseBinds,
 	&g_beWolf3DSettingsMenuItem_PadBinds,
+	&g_beWolf3DSettingsMenuItem_VREmulation,
 	&g_beWolf3DSettingsMenuItem_LowFPS,
 	&g_beWolf3DSettingsMenuItem_AnalogMotion,
 	&g_beWolf3DSettingsMenuItem_Gyroscope,
 	&g_beWolf3DSettingsMenuItem_VertAnalogMotion,
-	&g_beWolf3DSettingsMenuItem_VREmulation,
 	NULL
 };
 
@@ -1120,6 +1120,23 @@ BEMenu g_beWolf3DPadBindsMenu = {
 	g_beWolf3DPadBindsMenuItems,
 	// Ignore the rest
 };
+
+/* Wolfenstein 3D VR input emulation menu ***/
+
+BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Toggle, "Emulate VR input for Wolf3D v1.4 and SOD (skips demos and more)", g_be_inputSettingsChoices_analogInputDevice)
+
+static BEMenuItem *g_beWolf3DVREmulationMenuItems[] = {
+	&g_beWolf3DVREmulationMenuItem_Toggle,
+	NULL
+};
+
+BEMenu g_beWolf3DVREmulationMenu = {
+	"VR input emulation",
+	&g_beWolf3DSettingsMenu,
+	g_beWolf3DVREmulationMenuItems,
+	// Ignore the rest
+};
+
 #endif // REFKEEN_HAS_VER_WOLF3D_ALL
 
 #ifdef REFKEEN_HAS_VER_BMENACE_ALL
