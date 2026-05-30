@@ -958,10 +958,12 @@ void RefKeen_PrepareAltControllerScheme(void)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_LX, BE_ST_CTRL_AXIS_LY);
 	if (g_refKeenCfg.cat3d.useRightStick)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_RX, BE_ST_CTRL_AXIS_RY);
+	bool doUseGyroscope = false;
 	if (g_refKeenCfg.cat3d.useGyroscope && g_refKeenCfg.cat3d.analogMotion)
 	{
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_accum_left_map;
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_accum_right_map;
+		doUseGyroscope = true;
 	}
 
 #ifdef REFKEEN_VER_CAT3D
@@ -993,6 +995,9 @@ void RefKeen_PrepareAltControllerScheme(void)
 	g_ingame_altcontrol_mapping_slidecat.pbuttons[BE_ST_CTRL_BUT_X].mapClass = (refkeen_current_gamever == BE_GAMEVER_CATABYSS113) ? BE_ST_CTRL_MAP_KEYSCANCODE : BE_ST_CTRL_MAP_NONE;
 #endif
 
+	// Ensure sensor is usable
+	if (doUseGyroscope)
+		BE_ST_AltControlScheme_DeclareSensorsUse(false, true);
 	// Init touch controls UI
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
 #ifdef REFKEEN_VER_CATADVENTURES

@@ -628,10 +628,12 @@ void RefKeen_PrepareAltControllerScheme(void)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_LX, BE_ST_CTRL_AXIS_LY);
 	if (g_refKeenCfg.wolf3d.useRightStick)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_RX, BE_ST_CTRL_AXIS_RY);
+	bool doUseGyroscope = false;
 	if (g_refKeenCfg.wolf3d.useGyroscope && g_refKeenCfg.wolf3d.analogMotion)
 	{
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_accum_left_map;
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_accum_right_map;
+		doUseGyroscope = true;
 	}
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE)
@@ -639,9 +641,13 @@ void RefKeen_PrepareAltControllerScheme(void)
 		// VR input emulation using the mouse is handled separately
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_accum_vr_left_map;
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_accum_vr_right_map;
+		doUseGyroscope = true;
 	}
 #endif
 
+	// Ensure sensor is usable
+	if (doUseGyroscope)
+		BE_ST_AltControlScheme_DeclareSensorsUse(false, true);
 	// Init touch controls UI
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_help.onScreenTouchControls);

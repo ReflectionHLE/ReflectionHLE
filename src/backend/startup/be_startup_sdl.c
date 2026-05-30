@@ -44,6 +44,8 @@
 extern bool g_sdlShowControllerUI;
 extern bool g_sdlShowTouchUI;
 
+extern bool g_stEnableAccel, g_stEnableGyro;
+
 void BE_ST_InitGfx(void);
 void BE_ST_InitTiming(void);
 void BE_ST_ShutdownAudio(void);
@@ -120,6 +122,7 @@ void BE_ST_InitCommon(void)
 
 void BE_ST_PrepareForGameStartupWithoutAudio(void)
 {
+	g_stEnableAccel = g_stEnableGyro = false;
 	BE_ST_InitGfx();
 	//BE_ST_InitAudio(); // Not yet, need to select game version (so have gfx ready for possible errors), and then check if we want digi audio output
 	BE_ST_InitTiming();
@@ -161,6 +164,9 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 
 void BE_ST_InitSensors(void)
 {
+	if (!g_stEnableAccel && !g_stEnableGyro)
+		return;
+
 	if (!SDL_InitSubSystem(SDL_INIT_SENSOR))
 		BE_Cross_LogMessage(BE_LOG_MSG_WARNING, "SDL sensor subsystem initialization failed, disabled,\n%s\n", SDL_GetError());
 	else

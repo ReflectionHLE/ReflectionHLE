@@ -17,6 +17,8 @@ SDL_JoystickID g_sdlJoysticksInstanceIds[BE_ST_MAXJOYSTICKS];
 
 static BESDLMouseModeEnum g_sdlMouseMode = BE_ST_MOUSEMODE_ABS_WITH_CURSOR;
 
+bool g_stEnableAccel, g_stEnableGyro;
+
 void BEL_ST_SetRelativeMouseMode(bool relative);
 
 void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode)
@@ -31,6 +33,12 @@ void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode)
 		SDL_ShowCursor();
 
 	BEL_ST_SetRelativeMouseMode((mode == BE_ST_MOUSEMODE_REL) ? true : false);
+}
+
+void BE_ST_AltControlScheme_DeclareSensorsUse(bool accel, bool gyro)
+{
+	g_stEnableAccel = accel;
+	g_stEnableGyro = gyro;
 }
 
 void BEL_ST_FillJoysticksList(void)

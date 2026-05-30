@@ -262,6 +262,10 @@ void BE_ST_AltControlScheme_UpdateVirtualMouseCursor(int x, int y);
 /*** Call this before entering game code (added for textures management) ***/
 void BE_ST_AltControlScheme_InitTouchControlsUI(BE_ST_OnscreenTouchControl *onScreenTouchControls);
 
+// Call this while setting up all controller mapping from game code,
+// in case sensor input may be used.
+void BE_ST_AltControlScheme_DeclareSensorsUse(bool accel, bool gyro);
+
 // HACK - Pass corresponding pointer to PrepareControllerMapping for on-screen keyboard
 // (can also be used to go from one mapping to another, e.g., showing debug keys in-game)
 extern BE_ST_ControllerMapping g_beStControllerMappingTextInput;
