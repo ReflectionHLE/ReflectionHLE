@@ -260,6 +260,8 @@ void BE_Cross_Bexecv(void (*mainFunc)(void), const char **argv, void (*finalizer
 	longjmp(g_be_mainFuncJumpBuffer, 0); // A little bit of magic
 }
 
+void BEL_ST_FillJoysticksList(void);
+
 void BE_Cross_InitGame(int gameVerVal)
 {
 	// FIXME: We have a problem:
@@ -281,8 +283,12 @@ void BE_Cross_InitGame(int gameVerVal)
 	BEL_Cross_SelectGameInstallation(gameVerVal, false);
 	// Do this now, since we can tell if we want digi audio out or not
 	BE_ST_InitAudio();
-	// Similarly call this after running patchers via
+	// Similarly call these after running patchers via
 	// BEL_Cross_SelectGameInstallation, inc. input mappings preparation.
+	//
+	// Note: BEL_ST_FillJoysticksList should be called BEFORE checking
+	// for more joysticks being attached/removed in BE_ST_PollEvents.
+	BEL_ST_FillJoysticksList();
 	BE_ST_InitSensors();
 }
 

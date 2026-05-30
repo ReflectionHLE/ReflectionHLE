@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <SDL3/SDL.h>
 #include "be_cross.h"
 #include "be_input.h"
@@ -41,6 +42,34 @@ void BE_ST_AltControlScheme_DeclareSensorsUse(bool accel, bool gyro)
 	g_stEnableGyro = gyro;
 }
 
+static void BEL_ST_EnableGamepadSensors(SDL_Gamepad *gamepad,
+                                        const SDL_SensorType (*sensorTypes)[3])
+{
+	for (unsigned i = 0; i < BE_Cross_ArrayLen(*sensorTypes); ++i)
+		if (SDL_GamepadHasSensor(gamepad, (*sensorTypes)[i]))
+			SDL_SetGamepadSensorEnabled(gamepad, (*sensorTypes)[i],
+			                            true);
+}
+
+static SDL_Gamepad *BEL_ST_OpenGamepadWrapper(SDL_JoystickID id)
+{
+	static const SDL_SensorType accelTypes[] = {
+		SDL_SENSOR_ACCEL, SDL_SENSOR_ACCEL_L, SDL_SENSOR_ACCEL_R
+	};
+	static const SDL_SensorType gyroTypes[] = {
+		SDL_SENSOR_GYRO, SDL_SENSOR_GYRO_L, SDL_SENSOR_GYRO_R
+	};
+
+	SDL_Gamepad *gamepad = SDL_OpenGamepad(id);
+	assert(gamepad);
+	if (g_stEnableAccel)
+		BEL_ST_EnableGamepadSensors(gamepad, &accelTypes);
+	if (g_stEnableGyro)
+		BEL_ST_EnableGamepadSensors(gamepad, &gyroTypes);
+
+	return gamepad;
+}
+
 void BEL_ST_FillJoysticksList(void)
 {
 	int n_joysticks;
@@ -75,7 +104,7 @@ void BEL_ST_FillJoysticksList(void)
 			BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_FillJoysticksList: Found joystick %u\n", joysticks[dev_index]);
 			if (!g_sdlControllers[i] && SDL_IsGamepad(joysticks[dev_index]))
 			{
-				g_sdlControllers[i] = SDL_OpenGamepad(joysticks[dev_index]);
+				g_sdlControllers[i] = BEL_ST_OpenGamepadWrapper(joysticks[dev_index]);
 				g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 				BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_FillJoysticksList: Opened gamepad %u\n", joysticks[dev_index]);
 				++i;
@@ -108,7 +137,7 @@ void BEL_ST_ConditionallyAddJoystick(SDL_JoystickID dev_id)
 		for (int i = 0; i < BE_ST_MAXJOYSTICKS; ++i)
 			if (!g_sdlControllers[i])
 			{
-				g_sdlControllers[i] = SDL_OpenGamepad(dev_id);
+				g_sdlControllers[i] = BEL_ST_OpenGamepadWrapper(dev_id);
 				g_sdlJoysticksInstanceIds[i] = SDL_GetJoystickID(SDL_GetGamepadJoystick(g_sdlControllers[i]));
 				BE_Cross_LogMessage(BE_LOG_MSG_NORMAL, "BEL_ST_ConditionallyAddJoystick: Opened gamepad %u\n", dev_id);
 

@@ -51,7 +51,6 @@ void BE_ST_InitTiming(void);
 void BE_ST_ShutdownAudio(void);
 void BE_ST_ShutdownGfx(void);
 // Implementation-specific
-void BEL_ST_FillJoysticksList(void);
 void BEL_ST_FillSensorsList(void);
 
 void BEL_ST_ParseConfigFiles(void);
@@ -132,10 +131,6 @@ void BE_ST_PrepareForGameStartupWithoutAudio(void)
 	memset(&g_sdlInputbindStates, 0, sizeof(g_sdlInputbindStates));
 
 	g_sdlShowControllerUI = false;
-
-	// BEFORE checking for more joysticks being attached/removed
-	// in BE_ST_PollEvents, add what's currently available
-	BEL_ST_FillJoysticksList();
 
 	// Reset these first
 	memset(g_sdlEmuKeyboardStateByScanCode, 0, sizeof(g_sdlEmuKeyboardStateByScanCode));
