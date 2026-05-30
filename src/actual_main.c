@@ -94,6 +94,13 @@ static void show_command_line_help(void)
 	BE_ST_HandleExit(0);
 }
 
+static void game_vers_print_last_row(char (*buffer)[TXT_COLS_NUM], char **ptr)
+{
+	**ptr = '\0';
+	BE_ST_puts(*buffer);
+	*ptr = *buffer;
+}
+
 static void game_vers_cached_print(
 	char (*buffer)[TXT_COLS_NUM], char **ptr,
 	const char *verStr, const char *subVerStr, const char *endMark)
@@ -109,9 +116,7 @@ static void game_vers_cached_print(
 		{
 			if (++attempt == 2)
 				BE_ST_ExitWithErrorMsg("game_vers_cached_print: Unexpectedly long string!");
-			**ptr = '\0';
-			BE_ST_puts(*buffer);
-			*ptr = *buffer;
+			game_vers_print_last_row(buffer, ptr);
 			continue;
 		}
 		break;
@@ -122,6 +127,7 @@ static void game_vers_cached_print(
 static void show_game_vers(void)
 {
 	char buffer[TXT_COLS_NUM] = "", *ptr = buffer;
+	BE_Game_T lastGameId;
 	// HACK - For text mode emulation (and exit handler)
 	BE_ST_PrepareForGameStartupWithoutAudio();
 
@@ -131,10 +137,18 @@ static void show_game_vers(void)
 	{
 		bool wasPrinted = false;
 		const char *lastSubGameVerStr = NULL;
+		const BE_GameVerDetails_T *gameVer = g_be_gamever_ptrs[gameVerVal];
+		if ((gameVerVal > 0) && (gameVer->gameId != lastGameId))
+		{
+			game_vers_print_last_row(&buffer, &ptr);
+			BE_ST_puts("");
+			ptr = buffer;
+		}
+		lastGameId = gameVer->gameId;
 
 		// Printing is technically postponed by one line, due to the
 		// need to decide if to end a string with a comma or a period
-		const BE_EXEFileDetails_T *exeFile = g_be_gamever_ptrs[gameVerVal]->exeFiles;
+		const BE_EXEFileDetails_T *exeFile = gameVer->exeFiles;
 		for (; exeFile->mainFuncPtr; ++exeFile)
 			if (exeFile->subGameVerStr)
 			{
