@@ -689,14 +689,14 @@ int32_t GetHelmetAngle(void)
 {
 	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE)
 	{
-		g_helmet_angle -= g_binding_value_vr;
+		g_helmet_angle -= g_binding_value_vr/(2*(13-mouseadjustment));
 		g_binding_value_vr = 0;
 	}
 	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_MOUSE)
 	{
 		id0_int_t x, y;
 		BE_ST_GetEmuAccuMouseMotion(&x, &y);
-		g_helmet_angle -= x;
+		g_helmet_angle -= x/(4*(13-mouseadjustment));
 	}
 	else // Analog stick
 		g_helmet_angle -= g_binding_value_vr;
