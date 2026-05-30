@@ -93,7 +93,9 @@ static void BEL_ST_ReplaceControllerMapping(BE_ST_ControllerMapping *mapping)
 	g_sdlControllerSchemeNeedsCleanUp = true;
 }
 
-bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr)
+bool BEL_ST_AltControlScheme_HandleAnyEntry(const BE_ST_ControllerSingleMap *map,
+                                            int value, bool *lastBinaryStatusPtr,
+                                            bool isAccum)
 {
 	bool prevBinaryStatus = *lastBinaryStatusPtr;
 	*lastBinaryStatusPtr = (value >= g_sdlJoystickAxisBinaryThreshold);
@@ -122,19 +124,35 @@ bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, i
 		}
 		return true;
 	case BE_ST_CTRL_MAP_MOUSEMOTION:
-		g_sdlEmuMouseMotionFromJoystick[map->val] = (value <= g_sdlJoystickAxisDeadZone) ? 0 : (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
+		value = (value <= g_sdlJoystickAxisDeadZone) ? 0 :
+		        (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
+		if (isAccum)
+			g_sdlEmuMouseMotionFromJoystick[map->val] += value;
+		else
+			g_sdlEmuMouseMotionFromJoystick[map->val] = value;
 		return true;
 	case BE_ST_CTRL_MAP_OTHERMAPPING:
 		if (!prevBinaryStatus && (*lastBinaryStatusPtr))
 			BEL_ST_ReplaceControllerMapping((BE_ST_ControllerMapping *)map->miscPtr);
 		return true; // Confirm either way
 	case BE_ST_CTRL_MAP_VALUESET:
-		*(int *)(map->miscPtr) = (value <= g_sdlJoystickAxisDeadZone) ? 0 : (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
+		value = (value <= g_sdlJoystickAxisDeadZone) ? 0 :
+		        (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
+		if (isAccum)
+			*(int *)(map->miscPtr) += value;
+		else
+			*(int *)(map->miscPtr) = value;
 		return true;
 	}
 	return false;
 }
 
+bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map,
+                                         int value, bool *lastBinaryStatusPtr)
+{
+	return BEL_ST_AltControlScheme_HandleAnyEntry(map, value,
+	                                              lastBinaryStatusPtr, false);
+}
 
 void BEL_ST_ReleasePressedKeysInTextInputUI(void);
 void BEL_ST_ReleasePressedKeysInDebugKeysUI(void);
@@ -144,6 +162,9 @@ void BEL_ST_ReleasePressedKeysInDebugKeysUI(void);
  */
 void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 {
+	// NOTE: This function is purposefully not checking if
+	// BEL_ST_AltControlScheme_HandleAccumEntry should be called.
+	// States are cleared here, so going through HandleEntry is simpler.
 	if (g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput)
 	{
 		BEL_ST_ReleasePressedKeysInTextInputUI();

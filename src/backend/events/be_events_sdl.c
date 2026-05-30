@@ -56,7 +56,7 @@ void BE_ST_SetAppQuitCallback(void (*funcPtr)(void))
 	g_sdlAppQuitCallback = funcPtr;
 }
 
-static void BEL_ST_HandleAxisUpdateForMapping(int axis, int value)
+static void BEL_ST_HandleAxisUpdateForMapping(bool isAccum, int axis, int value)
 {
 	// Do nothing if some on-screen keyboard is in use
 	if ((g_sdlControllerMappingActualCurr == &g_beStControllerMappingTextInput) ||
@@ -68,19 +68,19 @@ static void BEL_ST_HandleAxisUpdateForMapping(int axis, int value)
 	 * or alternatively, the sign of value changes,
 	 * so "release/clear" events can be properly sent.
 	 * Ensure the release always precedes the press, though. */
-	BEL_ST_AltControlScheme_HandleEntry(
+	BEL_ST_AltControlScheme_HandleAnyEntry(
 		&g_sdlControllerMappingActualCurr->paxes[axis][1 - side],
 		0,
-		&g_sdlInputbindStates.paxes[axis][1 - side]);
-	if (!BEL_ST_AltControlScheme_HandleEntry(
+		&g_sdlInputbindStates.paxes[axis][1 - side], isAccum);
+	if (!BEL_ST_AltControlScheme_HandleAnyEntry(
 		&g_sdlControllerMappingActualCurr->paxes[axis][side],
 		abs(value),
-		&g_sdlInputbindStates.paxes[axis][side]))
+		&g_sdlInputbindStates.paxes[axis][side], isAccum))
 	{
 		// Special case for triggers, treated like digital buttons
 		if ((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
-			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping,
-			                                    value, &g_sdlDefaultMappingBinaryState);
+			BEL_ST_AltControlScheme_HandleAnyEntry(&g_sdlControllerMappingActualCurr->defaultMapping,
+			                                       value, &g_sdlDefaultMappingBinaryState, isAccum);
 	}
 }
 
@@ -398,15 +398,16 @@ void BE_ST_PollEvents(void)
 			case SDL_SENSOR_GYRO_L:
 			case SDL_SENSOR_GYRO_R:
 			{
-				const bool isAccel = (sensorType == SDL_SENSOR_ACCEL) ||
-				                     (sensorType == SDL_SENSOR_ACCEL_L) ||
-				                     (sensorType == SDL_SENSOR_ACCEL_R);
-				const int axisX = isAccel ? BE_ST_CTRL_FULL_AXIS_ACCEL_X :
-				                            BE_ST_CTRL_FULL_AXIS_GYRO_X;
+				const bool isGyro = (sensorType == SDL_SENSOR_GYRO) ||
+				                    (sensorType == SDL_SENSOR_GYRO_L) ||
+				                    (sensorType == SDL_SENSOR_GYRO_R);
+				const int axisX = isGyro ? BE_ST_CTRL_FULL_AXIS_GYRO_X :
+				                           BE_ST_CTRL_FULL_AXIS_ACCEL_X;
 				for (int i = 0; i < 3; ++i)
 				{
-					if (isAccel)
+					if (!isGyro)
 						data[i] /= SDL_STANDARD_GRAVITY;
+#if 0
 					// Add more to the usual deadzone used
 					// in BEL_ST_AltControlScheme_HandleEntry
 					if (fabs(data[i]) <= 0.25f)
@@ -415,15 +416,16 @@ void BE_ST_PollEvents(void)
 						data[i] = (data[i]+0.25f)/0.75f;
 					else
 						data[i] = (data[i]-0.25f)/0.75f;
+#endif
 				}
 				if (!isGamepad)
 					BEL_ST_ReorientSensorData(&event.sensor.data);
 
-				BEL_ST_HandleAxisUpdateForMapping(axisX,
+				BEL_ST_HandleAxisUpdateForMapping(isGyro, axisX,
 				                                  g_sdlJoystickAxisMax * data[0]);
-				BEL_ST_HandleAxisUpdateForMapping(axisX + 1,
+				BEL_ST_HandleAxisUpdateForMapping(isGyro, axisX + 1,
 				                                  g_sdlJoystickAxisMax * data[1]);
-				BEL_ST_HandleAxisUpdateForMapping(axisX + 2,
+				BEL_ST_HandleAxisUpdateForMapping(isGyro, axisX + 2,
 				                                  g_sdlJoystickAxisMax * data[2]);
 				break;
 			}
@@ -438,7 +440,7 @@ void BE_ST_PollEvents(void)
 			    (event.gaxis.axis >= BE_ST_CTRL_AXIS_MAX))
 				break;
 
-			BEL_ST_HandleAxisUpdateForMapping(event.gaxis.axis,
+			BEL_ST_HandleAxisUpdateForMapping(false, event.gaxis.axis,
 			                                  event.gaxis.value);
 			break;
 
