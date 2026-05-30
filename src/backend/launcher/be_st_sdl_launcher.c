@@ -1124,9 +1124,11 @@ BEMenu g_beWolf3DPadBindsMenu = {
 /* Wolfenstein 3D VR input emulation menu ***/
 
 BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Toggle, "Emulate VR input for Wolf3D v1.4 and SOD (skips demos and more)", g_be_inputSettingsChoices_analogInputDevice)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_InvertStrafe, "Invert strafe toggle while emulating VR input", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DVREmulationMenuItems[] = {
 	&g_beWolf3DVREmulationMenuItem_Toggle,
+	&g_beWolf3DVREmulationMenuItem_InvertStrafe,
 	NULL
 };
 

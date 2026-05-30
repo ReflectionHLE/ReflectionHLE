@@ -190,6 +190,7 @@ extern BEMenuItem
 	g_beWolf3DPadBindsMenuItem_LeftStick,
 	g_beWolf3DPadBindsMenuItem_RightStick,
 	g_beWolf3DVREmulationMenuItem_Toggle,
+	g_beWolf3DVREmulationMenuItem_InvertStrafe,
 	g_beBMenaceSettingsMenuItem_BetaFixes,
 	DECLARE_BINDS_MENUITEMS(BMenace, Up)
 	DECLARE_BINDS_MENUITEMS(BMenace, Down)
@@ -391,6 +392,7 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	{&g_refKeenCfg.wolf3d.useLeftStick, &g_beWolf3DPadBindsMenuItem_LeftStick},
 	{&g_refKeenCfg.wolf3d.useRightStick, &g_beWolf3DPadBindsMenuItem_RightStick},
 	{&g_refKeenCfg.wolf3d.vrInputEmu, &g_beWolf3DVREmulationMenuItem_Toggle},
+	{&g_refKeenCfg.wolf3d.invertStrafe, &g_beWolf3DVREmulationMenuItem_InvertStrafe},
 #endif
 
 #ifdef REFKEEN_HAS_VER_BMENACE_ALL

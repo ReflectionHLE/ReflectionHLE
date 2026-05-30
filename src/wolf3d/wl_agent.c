@@ -272,7 +272,13 @@ void ControlMovement (objtype *ob)
 //
 // side to side move
 //
+#if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
+	// REFKEEN: New option added for VR, inverting the effect of bt_strafe
+	if (buttonstate[bt_strafe] !=
+	    (virtualreality && g_refKeenCfg.wolf3d.invertStrafe))
+#else
 	if (buttonstate[bt_strafe])
+#endif
 	{
 	//
 	// strafing

@@ -350,6 +350,7 @@ static BE_ST_CFG_Setting_T g_be_st_wolf3d_settings[] = {
 	DEF_BOOL(wolf3d.analogMotion, "analogmotion", false)
 	DEF_BOOL(wolf3d.useGyroscope, "gyroscope", false)
 	DEF_ENUM(wolf3d.vrInputEmu, "vrinputemu", g_be_setting_analogdevice_vals, BE_ST_CTRL_ANALOG_DEVICE_NONE)
+	DEF_BOOL(wolf3d.invertStrafe, "invertstrafe", false)
 	DEF_BOOL(wolf3d.novert, "novert", false)
 	// FIXME: HACK (extra 2 are for triggers)
 	DEF_CTRL_BINDS_WOLF3D_ENUMS(UP, "up", BE_ST_CTRL_BUT_GUIDE)

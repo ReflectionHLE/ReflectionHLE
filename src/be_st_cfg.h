@@ -145,6 +145,7 @@ typedef struct
 		int/*bool*/ analogMotion;
 		int/*bool*/ useGyroscope;
 		int vrInputEmu;
+		int/*bool*/ invertStrafe;
 		int/*bool*/ novert;
 		struct
 		{
