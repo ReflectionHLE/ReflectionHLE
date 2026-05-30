@@ -87,7 +87,7 @@ static const char *g_be_setting_sb_vals[] = {"off", "sb", "sbpro" ,"sb16"};
 static const char *g_be_setting_touchinput_vals[] = {"auto", "off", "forced"};
 #endif
 static const char *g_be_setting_axisbind_vals[] = {"off", "move", "look"};
-static const char *g_be_setting_analogdevice_vals[] = {"off", "mouse", "gyroscope"};
+static const char *g_be_setting_analogdevice_vals[] = {"off", "mouse", "lstick", "rstick", "gyroscope"};
 
 #define DEF_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, 0, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},

@@ -49,9 +49,10 @@ A subset of them should have greater preference for d-pad usage over face
 buttons at times, in order to improve support for devices with less buttons.
 - 3D Catacombs, Wolfenstein 3D: Support gyroscope turning/strafing.
 - Wolfenstein 3D v1.4 and all supported Spear of Destiny versions:
-Added VR input emulation for mouse and gyroscope devices, porting code
-originally guarded by the 'virtualreality' command-line argument and
-similar in idea to Blzut3's Wolfenmaus driver.
+Added VR input emulation via supported analog motion devices
+(mice, gamepads' analog sticks and gyroscopes), porting code
+originally guarded by the 'virtualreality' command-line argument
+and similar in idea to Blzut3's Wolfenmaus driver.
 With limitations similar to the driver in question, and covering just
 the aforementioned game versions, that also allows (to an extent)
 concurrent turning and strafing, i.e., WASD-style controls.

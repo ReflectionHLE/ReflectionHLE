@@ -572,7 +572,7 @@ static const char *g_be_inputSettingsChoices_touchControls[] = {"Auto", "Off", "
 static const char *g_be_inputSettingsChoices_mouseGrab[] = {"Auto", "Off", "Commonly", NULL};
 // Actually for other input settings
 static const char *g_be_inputSettingsChoices_axisBind[] = {"Off", "Move", "Look", NULL};
-static const char *g_be_inputSettingsChoices_analogInputDevice[] = {"Off", "Mouse", "Gyroscope", NULL};
+static const char *g_be_inputSettingsChoices_analogInputDevice[] = {"Off", "Mouse", "Left stick", "Right stick", "Gyroscope", NULL};
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP);

@@ -103,8 +103,8 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define AXIS_DOWN_MAP      &g_binding_value_axisy, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_LEFT_MAP      &g_binding_value_axisx, 0, -127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_RIGHT_MAP     &g_binding_value_axisx, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define AXIS_VR_LEFT_MAP   &g_binding_value_vr, 0, -4, BE_ST_CTRL_MAP_VALUESET
-#define AXIS_VR_RIGHT_MAP  &g_binding_value_vr, 0, 4, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_VR_LEFT_MAP   &g_binding_value_vr, 0, -5, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_VR_RIGHT_MAP  &g_binding_value_vr, 0, 5, BE_ST_CTRL_MAP_VALUESET
 #define ACCUM_LEFT_MAP     &g_binding_value_accumx, 0, -16, BE_ST_CTRL_MAP_VALUESET
 #define ACCUM_RIGHT_MAP    &g_binding_value_accumx, 0, 16, BE_ST_CTRL_MAP_VALUESET
 #define ACCUM_VR_LEFT_MAP  &g_binding_value_vr, 0, -16, BE_ST_CTRL_MAP_VALUESET
@@ -636,7 +636,18 @@ void RefKeen_PrepareAltControllerScheme(void)
 		doUseGyroscope = true;
 	}
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE)
+	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LSTICK ||
+	    g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_RSTICK)
+	{
+		int axisX =
+		    (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LSTICK) ?
+		    BE_ST_CTRL_AXIS_LX : BE_ST_CTRL_AXIS_RX;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisX][0] = g_ingame_axis_vr_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisX][1] = g_ingame_axis_vr_right_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisX+1][0].mapClass = BE_ST_CTRL_MAP_NONE;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisX+1][1].mapClass = BE_ST_CTRL_MAP_NONE;
+	}
+	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE)
 	{
 		// VR input emulation using the mouse is handled separately
 		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_accum_vr_left_map;
@@ -687,6 +698,9 @@ int32_t GetHelmetAngle(void)
 		BE_ST_GetEmuAccuMouseMotion(&x, &y);
 		g_helmet_angle -= x;
 	}
+	else // Analog stick
+		g_helmet_angle -= g_binding_value_vr;
+
 	g_helmet_angle %= ANGLES;
 	if (g_helmet_angle < 0)
 		g_helmet_angle += ANGLES;
