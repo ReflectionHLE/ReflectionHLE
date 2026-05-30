@@ -67,6 +67,7 @@ REFKEEN_NS_B
 
 int g_binding_value_button[2],
     g_binding_value_axisx, g_binding_value_axisy,
+    g_binding_value_accumx,
     g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right,
     g_binding_value_drink, g_binding_value_bolt, g_binding_value_nuke, g_binding_value_fastturn;
 
@@ -89,6 +90,8 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define AXIS_DOWN_MAP      &g_binding_value_axisy, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_LEFT_MAP      &g_binding_value_axisx, 0, -127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_RIGHT_MAP     &g_binding_value_axisx, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define ACCUM_LEFT_MAP     &g_binding_value_accumx, 0, -16, BE_ST_CTRL_MAP_VALUESET
+#define ACCUM_RIGHT_MAP    &g_binding_value_accumx, 0, 16, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_DRINK_MAP      &g_binding_value_drink, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BOLT_MAP       &g_binding_value_bolt, 0, 127, BE_ST_CTRL_MAP_VALUESET
@@ -111,6 +114,8 @@ static const BE_ST_ControllerSingleMap
        g_ingame_axis_down_map      = {AXIS_DOWN_MAP},
        g_ingame_axis_left_map      = {AXIS_LEFT_MAP},
        g_ingame_axis_right_map     = {AXIS_RIGHT_MAP},
+       g_ingame_accum_left_map     = {ACCUM_LEFT_MAP},
+       g_ingame_accum_right_map    = {ACCUM_RIGHT_MAP},
        g_ingame_but_drink_map      = {BUT_DRINK_MAP},
        g_ingame_but_nuke_map       = {BUT_NUKE_MAP},
        g_ingame_but_bolt_map       = {BUT_BOLT_MAP},
@@ -955,8 +960,8 @@ void RefKeen_PrepareAltControllerScheme(void)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_RX, BE_ST_CTRL_AXIS_RY);
 	if (g_refKeenCfg.cat3d.useGyroscope && g_refKeenCfg.cat3d.analogMotion)
 	{
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_axis_left_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_axis_right_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_accum_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_accum_right_map;
 	}
 
 #ifdef REFKEEN_VER_CAT3D
@@ -1019,6 +1024,13 @@ void UpdateAltControllerMappingsByMousePresence(bool withmouse)
 void PrepareGamePlayControllerMapping(void)
 {
 	BE_ST_AltControlScheme_PrepareControllerMapping(&g_ingame_altcontrol_mapping_gameplay);
+}
+
+int GetAccumulatedXMotion(void)
+{
+	int x = g_binding_value_accumx;
+	g_binding_value_accumx = 0;
+	return x;
 }
 
 REFKEEN_NS_E

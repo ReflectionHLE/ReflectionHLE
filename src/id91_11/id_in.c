@@ -993,13 +993,21 @@ IN_ReadControl(id0_int_t player,ControlInfo *info)
 				buttons |= 1;
 			if (g_binding_value_button[1])
 				buttons |= 2;
-#ifdef REFKEEN_VER_CATACOMB_ALL // Unused in platformers as of writing this
+
+			// Unused in platformers as of writing this
+#ifdef REFKEEN_VER_CATACOMB_ALL
+			// Catacomb 3-D gets data after call to this function.
+#ifndef REFKEEN_VER_CATADVENTURES
+			if (type == ctrl_Mouse)
+#endif
+				dx += GetAccumulatedXMotion();
+
 			if (g_binding_value_axisx)
-				dx = BE_Cross_TypedClamp(int, g_binding_value_axisx, -127, 127);
+				dx += BE_Cross_TypedClamp(int, g_binding_value_axisx, -127, 127);
 			// The novert check is technically a patch impacting PollControls
 			if (g_binding_value_axisy && !g_refKeenDynamicCfg.novert)
-				dy = BE_Cross_TypedClamp(int, g_binding_value_axisy, -127, 127);
-#endif
+				dy += BE_Cross_TypedClamp(int, g_binding_value_axisy, -127, 127);
+#endif // REFKEEN_VER_CATACOMB_ALL
 			if (g_binding_value_up || g_binding_value_down ||
 			    g_binding_value_left || g_binding_value_right)
 			{

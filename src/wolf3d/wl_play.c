@@ -596,6 +596,14 @@ static void PollUserBindsMove (void)
 		else if (g_binding_value_up)
 			controly -= BASEMOVE*tics;
 	}
+	// This one is rather based on PollMouseMove
+// *** ALPHA RESTORATION ***
+#if (GAMEVER_WOLFREV <= GV_WR_WL920312)
+	controlx += g_binding_value_accumx;
+#else
+	controlx += g_binding_value_accumx*10/(13-mouseadjustment);
+	g_binding_value_accumx = 0;
+#endif
 }
 
 

@@ -357,6 +357,7 @@ void PollControls (void)
 
 	IN_ReadControl(0,&c);
 
+	mousexmove = 0; // REFKEEN: Needed due to new user binds support
 	if (MousePresent)
 	{
 		buttons = BE_ST_GetEmuMouseButtons();
@@ -377,6 +378,7 @@ void PollControls (void)
 	}
 
 	// REFKEEN: New user input binds
+	mousexmove += GetAccumulatedXMotion();
 	if (Controls[0]==ctrl_Joystick ||
 	    g_binding_value_axisx || g_binding_value_axisy)
 //	if (Controls[0]==ctrl_Joystick)

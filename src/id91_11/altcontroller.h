@@ -8,6 +8,7 @@ REFKEEN_NS_B
 extern int g_binding_value_button[2], g_binding_value_stats, g_binding_value_grenade,
            g_binding_value_lookup, g_binding_value_lookdown, g_binding_value_scorebox,
            g_binding_value_axisx, g_binding_value_axisy,
+           g_binding_value_accumx,
            g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right,
            g_binding_value_drink, g_binding_value_bolt, g_binding_value_nuke, g_binding_value_fastturn;
 
@@ -21,6 +22,7 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_inackback;
 
 void PrepareGamePlayControllerMapping(void);
 void UpdateAltControllerMappingsByMousePresence(bool withmouse);
+int GetAccumulatedXMotion(void);
 
 REFKEEN_NS_E
 

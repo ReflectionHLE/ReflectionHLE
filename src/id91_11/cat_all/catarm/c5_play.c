@@ -697,6 +697,7 @@ void PollControls (void)
 
 	IN_ReadControl(0,&control);
 
+	mousexmove = 0; // REFKEEN: Needed due to new user binds support
 	if (MousePresent)
 	{
 		// (REFKEEN) Minor difference from vanilla Catacomb
@@ -717,7 +718,8 @@ void PollControls (void)
 
 	}
 
-	// REFKEEN: New user input binds, based on code from Catacomb 3-D
+	// REFKEEN: New user input binds, partially based on Catacomb 3-D code
+	mousexmove += GetAccumulatedXMotion();
 	if (g_binding_value_axisx || g_binding_value_axisy)
 	{
 		if (control.x>120 || control.x<-120 || control.y>120 || control.y<-120)
