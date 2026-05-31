@@ -156,6 +156,18 @@ typedef enum {
 	BE_ST_CTRL_FULL_AXIS_GYRO_X,
 	BE_ST_CTRL_FULL_AXIS_GYRO_Y,
 	BE_ST_CTRL_FULL_AXIS_GYRO_Z,
+	BE_ST_CTRL_FULL_AXIS_LACCEL_X,
+	BE_ST_CTRL_FULL_AXIS_LACCEL_Y,
+	BE_ST_CTRL_FULL_AXIS_LACCEL_Z,
+	BE_ST_CTRL_FULL_AXIS_LGYRO_X,
+	BE_ST_CTRL_FULL_AXIS_LGYRO_Y,
+	BE_ST_CTRL_FULL_AXIS_LGYRO_Z,
+	BE_ST_CTRL_FULL_AXIS_RACCEL_X,
+	BE_ST_CTRL_FULL_AXIS_RACCEL_Y,
+	BE_ST_CTRL_FULL_AXIS_RACCEL_Z,
+	BE_ST_CTRL_FULL_AXIS_RGYRO_X,
+	BE_ST_CTRL_FULL_AXIS_RGYRO_Y,
+	BE_ST_CTRL_FULL_AXIS_RGYRO_Z,
 	BE_ST_CTRL_FULL_AXIS_MAX,
 } BE_ST_ControllerAxis;
 
@@ -262,9 +274,18 @@ void BE_ST_AltControlScheme_UpdateVirtualMouseCursor(int x, int y);
 /*** Call this before entering game code (added for textures management) ***/
 void BE_ST_AltControlScheme_InitTouchControlsUI(BE_ST_OnscreenTouchControl *onScreenTouchControls);
 
+enum {
+	BE_ST_CTRL_SENSOR_MASK_ACCEL = 1,
+	BE_ST_CTRL_SENSOR_MASK_GYRO = 2,
+	BE_ST_CTRL_SENSOR_MASK_LACCEL = 4,
+	BE_ST_CTRL_SENSOR_MASK_LGYRO = 8,
+	BE_ST_CTRL_SENSOR_MASK_RACCEL = 16,
+	BE_ST_CTRL_SENSOR_MASK_RGYRO = 32,
+};
+
 // Call this while setting up all controller mapping from game code,
 // in case sensor input may be used.
-void BE_ST_AltControlScheme_DeclareSensorsUse(bool accel, bool gyro);
+void BE_ST_AltControlScheme_DeclareSensorsUse(int sensorsMask);
 
 // HACK - Pass corresponding pointer to PrepareControllerMapping for on-screen keyboard
 // (can also be used to go from one mapping to another, e.g., showing debug keys in-game)
@@ -284,7 +305,9 @@ enum {
 	BE_ST_CTRL_ANALOG_DEVICE_MOUSE,
 	BE_ST_CTRL_ANALOG_DEVICE_LSTICK,
 	BE_ST_CTRL_ANALOG_DEVICE_RSTICK,
-	BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE,
+	BE_ST_CTRL_ANALOG_DEVICE_GYRO,
+	BE_ST_CTRL_ANALOG_DEVICE_LGYRO,
+	BE_ST_CTRL_ANALOG_DEVICE_RGYRO,
 };
 
 // Used when loading controller scheme stuff from cfg

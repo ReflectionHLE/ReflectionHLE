@@ -401,8 +401,9 @@ void BE_ST_PollEvents(void)
 				const bool isGyro = (sensorType == SDL_SENSOR_GYRO) ||
 				                    (sensorType == SDL_SENSOR_GYRO_L) ||
 				                    (sensorType == SDL_SENSOR_GYRO_R);
-				const int axisX = isGyro ? BE_ST_CTRL_FULL_AXIS_GYRO_X :
-				                           BE_ST_CTRL_FULL_AXIS_ACCEL_X;
+				const int axisX =
+				        3 * (sensorType - SDL_SENSOR_ACCEL) +
+				        BE_ST_CTRL_FULL_AXIS_ACCEL_X;
 				for (int i = 0; i < 3; ++i)
 				{
 					if (!isGyro)

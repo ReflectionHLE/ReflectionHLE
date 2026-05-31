@@ -997,7 +997,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 
 	// Ensure sensor is usable
 	if (doUseGyroscope)
-		BE_ST_AltControlScheme_DeclareSensorsUse(false, true);
+		BE_ST_AltControlScheme_DeclareSensorsUse(BE_ST_CTRL_SENSOR_MASK_GYRO);
 	// Init touch controls UI
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
 #ifdef REFKEEN_VER_CATADVENTURES

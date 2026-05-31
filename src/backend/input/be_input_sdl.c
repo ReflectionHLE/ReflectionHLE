@@ -18,7 +18,7 @@ SDL_JoystickID g_sdlJoysticksInstanceIds[BE_ST_MAXJOYSTICKS];
 
 static BESDLMouseModeEnum g_sdlMouseMode = BE_ST_MOUSEMODE_ABS_WITH_CURSOR;
 
-bool g_stEnableAccel, g_stEnableGyro;
+int g_stRequestedSensorsMask;
 
 void BEL_ST_SetRelativeMouseMode(bool relative);
 
@@ -36,37 +36,22 @@ void BEL_ST_SetMouseMode(BESDLMouseModeEnum mode)
 	BEL_ST_SetRelativeMouseMode((mode == BE_ST_MOUSEMODE_REL) ? true : false);
 }
 
-void BE_ST_AltControlScheme_DeclareSensorsUse(bool accel, bool gyro)
+void BE_ST_AltControlScheme_DeclareSensorsUse(int sensorsMask)
 {
-	g_stEnableAccel = accel;
-	g_stEnableGyro = gyro;
-}
-
-static void BEL_ST_EnableGamepadSensors(SDL_Gamepad *gamepad,
-                                        const SDL_SensorType (*sensorTypes)[3])
-{
-	for (unsigned i = 0; i < BE_Cross_ArrayLen(*sensorTypes); ++i)
-		if (SDL_GamepadHasSensor(gamepad, (*sensorTypes)[i]))
-			SDL_SetGamepadSensorEnabled(gamepad, (*sensorTypes)[i],
-			                            true);
+	g_stRequestedSensorsMask = sensorsMask;
 }
 
 static SDL_Gamepad *BEL_ST_OpenGamepadWrapper(SDL_JoystickID id)
 {
-	static const SDL_SensorType accelTypes[] = {
-		SDL_SENSOR_ACCEL, SDL_SENSOR_ACCEL_L, SDL_SENSOR_ACCEL_R
-	};
-	static const SDL_SensorType gyroTypes[] = {
-		SDL_SENSOR_GYRO, SDL_SENSOR_GYRO_L, SDL_SENSOR_GYRO_R
-	};
-
 	SDL_Gamepad *gamepad = SDL_OpenGamepad(id);
 	assert(gamepad);
-	if (g_stEnableAccel)
-		BEL_ST_EnableGamepadSensors(gamepad, &accelTypes);
-	if (g_stEnableGyro)
-		BEL_ST_EnableGamepadSensors(gamepad, &gyroTypes);
-
+	for (int i = 0; i < 6; ++i)
+	{
+		SDL_SensorType type = (SDL_SensorType)(i + SDL_SENSOR_ACCEL);
+		if ((g_stRequestedSensorsMask & (1 << i)) &&
+		    SDL_GamepadHasSensor(gamepad, type))
+			SDL_SetGamepadSensorEnabled(gamepad, type, true);
+	}
 	return gamepad;
 }
 
