@@ -1149,8 +1149,6 @@ void BEL_ST_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID
 extern const int g_sdlJoystickAxisMax;
 extern bool g_sdlDefaultMappingBinaryState;
 
-bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr);
-
 void BEL_ST_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
 	BESDLTrackedFinger *trackedFinger = BEL_ST_ProcessAndGetPressedTrackedFinger(touchId, fingerId, x, y);
