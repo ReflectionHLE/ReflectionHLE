@@ -628,12 +628,15 @@ void RefKeen_PrepareAltControllerScheme(void)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_LX, BE_ST_CTRL_AXIS_LY);
 	if (g_refKeenCfg.wolf3d.useRightStick)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_RX, BE_ST_CTRL_AXIS_RY);
-	bool doUseGyroscope = false;
-	if (g_refKeenCfg.wolf3d.useGyroscope && g_refKeenCfg.wolf3d.analogMotion)
+	int sensorsMask = 0;
+	if (g_refKeenCfg.wolf3d.gyroscope && g_refKeenCfg.wolf3d.analogMotion)
 	{
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_accum_left_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_accum_right_map;
-		doUseGyroscope = true;
+		int deviceId =
+		    g_refKeenCfg.wolf3d.gyroscope-BE_ST_CTRL_GYRO_DEVICE_MAIN;
+		int axisY = BE_ST_CTRL_FULL_AXIS_GYRO_Y + 6 * deviceId;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisY][1] = g_ingame_accum_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisY][0] = g_ingame_accum_right_map;
+		sensorsMask |= (BE_ST_CTRL_SENSOR_MASK_GYRO << deviceId);
 	}
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
 	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LSTICK ||
@@ -647,18 +650,21 @@ void RefKeen_PrepareAltControllerScheme(void)
 		g_ingame_altcontrol_mapping_gameplay.paxes[axisX+1][0].mapClass = BE_ST_CTRL_MAP_NONE;
 		g_ingame_altcontrol_mapping_gameplay.paxes[axisX+1][1].mapClass = BE_ST_CTRL_MAP_NONE;
 	}
-	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYRO)
+	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYRO ||
+	         g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LGYRO ||
+	         g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_RGYRO)
 	{
+		int deviceId =
+		    g_refKeenCfg.wolf3d.vrInputEmu-BE_ST_CTRL_ANALOG_DEVICE_GYRO;
 		// VR input emulation using the mouse is handled separately
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_accum_vr_left_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_accum_vr_right_map;
-		doUseGyroscope = true;
+		int axisY = BE_ST_CTRL_FULL_AXIS_GYRO_Y + 6 * deviceId;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisY][1] = g_ingame_accum_vr_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisY][0] = g_ingame_accum_vr_right_map;
+		sensorsMask |= (BE_ST_CTRL_SENSOR_MASK_GYRO << deviceId);
 	}
 #endif
-
-	// Ensure sensor is usable
-	if (doUseGyroscope)
-		BE_ST_AltControlScheme_DeclareSensorsUse(BE_ST_CTRL_SENSOR_MASK_GYRO);
+	// Ensure sensors are usable
+	BE_ST_AltControlScheme_DeclareSensorsUse(sensorsMask);
 	// Init touch controls UI
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_help.onScreenTouchControls);
@@ -690,19 +696,20 @@ enum { ANGLESCALE = 20 }; // As In wl_agent.c
 int32_t GetHelmetAngle(void)
 {
 	id0_int_t frac;
-	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYRO)
-	{
-		frac = g_binding_value_vr*10/(13-mouseadjustment);
-		g_binding_value_vr = 0;
-	}
+	if ((g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LSTICK) ||
+	    (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_RSTICK))
+		frac = ANGLESCALE * g_binding_value_vr;
 	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_MOUSE)
 	{
 		id0_int_t x, y;
 		BE_ST_GetEmuAccuMouseMotion(&x, &y);
 		frac = x*10/(13-mouseadjustment);
 	}
-	else // Analog stick
-		frac = ANGLESCALE * g_binding_value_vr;
+	else // Gyroscope
+	{
+		frac = g_binding_value_vr*10/(13-mouseadjustment);
+		g_binding_value_vr = 0;
+	}
 
 	g_helmet_angle_frac += frac;
 	id0_int_t angleunits = g_helmet_angle_frac/ANGLESCALE;

@@ -299,6 +299,15 @@ enum {
 	BE_ST_CTRL_AXIS_BIND_LOOK,
 };
 
+// Originally added for Catacomb 3-D, Wolfenstein 3D and derived games,
+// but may potentially be useful elsewhere.
+enum {
+	BE_ST_CTRL_GYRO_DEVICE_NONE,
+	BE_ST_CTRL_GYRO_DEVICE_MAIN,
+	BE_ST_CTRL_GYRO_DEVICE_LEFT,
+	BE_ST_CTRL_GYRO_DEVICE_RIGHT,
+};
+
 // Originally added for Wolfenstein 3D, but may potentially be useful elsewhere.
 enum {
 	BE_ST_CTRL_ANALOG_DEVICE_NONE,

@@ -958,12 +958,15 @@ void RefKeen_PrepareAltControllerScheme(void)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_LX, BE_ST_CTRL_AXIS_LY);
 	if (g_refKeenCfg.cat3d.useRightStick)
 		SetMappingsForAxes(BE_ST_CTRL_AXIS_RX, BE_ST_CTRL_AXIS_RY);
-	bool doUseGyroscope = false;
-	if (g_refKeenCfg.cat3d.useGyroscope && g_refKeenCfg.cat3d.analogMotion)
+	int sensorsMask = 0;
+	if (g_refKeenCfg.cat3d.gyroscope && g_refKeenCfg.cat3d.analogMotion)
 	{
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][1] = g_ingame_accum_left_map;
-		g_ingame_altcontrol_mapping_gameplay.paxes[BE_ST_CTRL_FULL_AXIS_GYRO_Y][0] = g_ingame_accum_right_map;
-		doUseGyroscope = true;
+		int deviceId =
+		    g_refKeenCfg.cat3d.gyroscope-BE_ST_CTRL_GYRO_DEVICE_MAIN;
+		int axisY = BE_ST_CTRL_FULL_AXIS_GYRO_Y + 6 * deviceId;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisY][1] = g_ingame_accum_left_map;
+		g_ingame_altcontrol_mapping_gameplay.paxes[axisY][0] = g_ingame_accum_right_map;
+		sensorsMask |= (BE_ST_CTRL_SENSOR_MASK_GYRO << deviceId);
 	}
 
 #ifdef REFKEEN_VER_CAT3D
@@ -996,8 +999,7 @@ void RefKeen_PrepareAltControllerScheme(void)
 #endif
 
 	// Ensure sensor is usable
-	if (doUseGyroscope)
-		BE_ST_AltControlScheme_DeclareSensorsUse(BE_ST_CTRL_SENSOR_MASK_GYRO);
+	BE_ST_AltControlScheme_DeclareSensorsUse(sensorsMask);
 	// Init touch controls UI
 	BE_ST_AltControlScheme_InitTouchControlsUI(g_ingame_altcontrol_mapping_gameplay.onScreenTouchControls);
 #ifdef REFKEEN_VER_CATADVENTURES

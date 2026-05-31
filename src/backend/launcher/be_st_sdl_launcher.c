@@ -572,7 +572,8 @@ static const char *g_be_inputSettingsChoices_touchControls[] = {"Auto", "Off", "
 static const char *g_be_inputSettingsChoices_mouseGrab[] = {"Auto", "Off", "Commonly", NULL};
 // Actually for other input settings
 static const char *g_be_inputSettingsChoices_axisBind[] = {"Off", "Move", "Look", NULL};
-static const char *g_be_inputSettingsChoices_analogInputDevice[] = {"Off", "Mouse", "Left stick", "Right stick", "Gyroscope", NULL};
+static const char *g_be_inputSettingsChoices_gyroscopeDevice[] = {"Off", "Main gyro", "Left gyro", "Right gyro", NULL};
+static const char *g_be_inputSettingsChoices_analogInputDevice[] = {"Off", "Mouse", "Left stick", "Right stick", "Main gyro", "Left gyro", "Right gyro", NULL};
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP);
@@ -814,7 +815,7 @@ BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_KeyBinds, "Keyboard override
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_MouseBinds, "Mouse button overrides (experimental)", &g_beCat3DMouseBindsMenu)
 BEMENUITEM_DEF_TARGETMENU(g_beCat3DSettingsMenuItem_PadBinds, "Modern controller binds", &g_beCat3DPadBindsMenu)
 BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_Gyroscope, "Gyro turning/strafing (requires analog motion)", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_Gyroscope, "Gyro turning/strafing (requires analog motion)", g_be_inputSettingsChoices_gyroscopeDevice)
 BEMENUITEM_DEF_SELECTION(g_beCat3DSettingsMenuItem_VertAnalogMotion, "Vertical mouse/pad analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beCat3DSettingsMenuItems[] = {
@@ -970,7 +971,7 @@ BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_PadBinds, "Modern controlle
 BEMENUITEM_DEF_TARGETMENU(g_beWolf3DSettingsMenuItem_VREmulation, "VR input emulation (Wolf3D v1.4, SOD)", &g_beWolf3DVREmulationMenu)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_LowFPS, "Low frame rate (compatibility option)", g_be_settingsChoices_boolean)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_AnalogMotion, "Analog motion", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_Gyroscope, "Gyro turning/strafing (requires analog motion)", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_Gyroscope, "Gyro turning/strafing (requires analog motion)", g_be_inputSettingsChoices_gyroscopeDevice)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DSettingsMenuItem_VertAnalogMotion, "Vertical mouse/pad analog motion toggle", g_be_settingsChoices_boolean)
 
 static BEMenuItem *g_beWolf3DSettingsMenuItems[] = {
