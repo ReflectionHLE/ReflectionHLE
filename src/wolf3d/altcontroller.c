@@ -678,29 +678,36 @@ void PrepareGamePlayControllerMapping(void)
 }
 
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-static id0_int_t g_helmet_angle;
+static id0_int_t g_helmet_angle, g_helmet_angle_frac;
 
 void InitHelmet(void)
 {
-	g_helmet_angle = 0;
+	g_helmet_angle = g_helmet_angle_frac = 0;
 }
+
+enum { ANGLESCALE = 20 }; // As In wl_agent.c
 
 int32_t GetHelmetAngle(void)
 {
+	id0_int_t frac;
 	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYROSCOPE)
 	{
-		g_helmet_angle -= g_binding_value_vr/(2*(13-mouseadjustment));
+		frac = g_binding_value_vr*10/(13-mouseadjustment);
 		g_binding_value_vr = 0;
 	}
 	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_MOUSE)
 	{
 		id0_int_t x, y;
 		BE_ST_GetEmuAccuMouseMotion(&x, &y);
-		g_helmet_angle -= x/(4*(13-mouseadjustment));
+		frac = x*10/(13-mouseadjustment);
 	}
 	else // Analog stick
-		g_helmet_angle -= g_binding_value_vr;
+		frac = ANGLESCALE * g_binding_value_vr;
 
+	g_helmet_angle_frac += frac;
+	id0_int_t angleunits = g_helmet_angle_frac/ANGLESCALE;
+	g_helmet_angle_frac -= angleunits*ANGLESCALE;
+	g_helmet_angle -= angleunits;
 	g_helmet_angle %= ANGLES;
 	if (g_helmet_angle < 0)
 		g_helmet_angle += ANGLES;
