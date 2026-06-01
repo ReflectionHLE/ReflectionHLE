@@ -189,7 +189,9 @@ extern BEMenuItem
 	DECLARE_NONKEY_BINDS_MENUITEMS(Wolf3D, DebugKeys)
 	g_beWolf3DPadBindsMenuItem_LeftStick,
 	g_beWolf3DPadBindsMenuItem_RightStick,
-	g_beWolf3DVREmulationMenuItem_Toggle,
+	g_beWolf3DVREmulationMenuItem_Mouse,
+	g_beWolf3DVREmulationMenuItem_Stick,
+	g_beWolf3DVREmulationMenuItem_Gyro,
 	g_beWolf3DVREmulationMenuItem_InvertStrafe,
 	g_beBMenaceSettingsMenuItem_BetaFixes,
 	DECLARE_BINDS_MENUITEMS(BMenace, Up)
@@ -391,7 +393,9 @@ static BESettingMenuItemPair g_be_setting_pairs[] = {
 	DEFINE_WOLF3D_NONKEY_BIND_PAIRS(DebugKeys, DEBUGKEYS)
 	{&g_refKeenCfg.wolf3d.useLeftStick, &g_beWolf3DPadBindsMenuItem_LeftStick},
 	{&g_refKeenCfg.wolf3d.useRightStick, &g_beWolf3DPadBindsMenuItem_RightStick},
-	{&g_refKeenCfg.wolf3d.vrInputEmu, &g_beWolf3DVREmulationMenuItem_Toggle},
+	{&g_refKeenCfg.wolf3d.vrMouse, &g_beWolf3DVREmulationMenuItem_Mouse},
+	{&g_refKeenCfg.wolf3d.vrStick, &g_beWolf3DVREmulationMenuItem_Stick},
+	{&g_refKeenCfg.wolf3d.vrGyro, &g_beWolf3DVREmulationMenuItem_Gyro},
 	{&g_refKeenCfg.wolf3d.invertStrafe, &g_beWolf3DVREmulationMenuItem_InvertStrafe},
 #endif
 

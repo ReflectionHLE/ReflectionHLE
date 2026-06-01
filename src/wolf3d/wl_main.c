@@ -1578,7 +1578,9 @@ void InitGame (void)
 		nofloors = true;
 #elif (GAMEVER_WOLFREV > GV_WR_WL6AP11)
 	// REFKEEN: We check setting instead of param now
-	if (g_refKeenCfg.wolf3d.vrInputEmu != BE_ST_CTRL_ANALOG_DEVICE_NONE)
+	if (g_refKeenCfg.wolf3d.vrMouse ||
+	    (g_refKeenCfg.wolf3d.vrStick != BE_ST_CTRL_STICK_DEVICE_NONE) ||
+	    (g_refKeenCfg.wolf3d.vrGyro != BE_ST_CTRL_GYRO_DEVICE_NONE))
 //	if (MS_CheckParm ("virtual"))
 		virtualreality = true;
 	else

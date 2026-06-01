@@ -730,7 +730,7 @@ void PollControls (void)
 	// The Wolfenmaus driver allowed disabling vertical mouse movement,
 	// so the same is done here as well.
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-	if (g_refKeenCfg.wolf3d.vrInputEmu != BE_ST_CTRL_ANALOG_DEVICE_MOUSE)
+	if (!g_refKeenCfg.wolf3d.vrMouse)
 #endif
 	if (mouseenabled)
 		PollMouseMove ();

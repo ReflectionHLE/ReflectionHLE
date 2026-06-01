@@ -66,7 +66,7 @@ int g_binding_value_button[NUMBUTTONS],
     g_binding_value_up, g_binding_value_down, g_binding_value_left, g_binding_value_right;
 
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-int g_binding_value_vr;
+int g_binding_value_axisvr, g_binding_value_accumvr;
 #endif
 
 bool g_keybind_used_button[NUMBUTTONS],
@@ -103,12 +103,12 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define AXIS_DOWN_MAP      &g_binding_value_axisy, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_LEFT_MAP      &g_binding_value_axisx, 0, -127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_RIGHT_MAP     &g_binding_value_axisx, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define AXIS_VR_LEFT_MAP   &g_binding_value_vr, 0, -5, BE_ST_CTRL_MAP_VALUESET
-#define AXIS_VR_RIGHT_MAP  &g_binding_value_vr, 0, 5, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_VR_LEFT_MAP   &g_binding_value_axisvr, 0, -5, BE_ST_CTRL_MAP_VALUESET
+#define AXIS_VR_RIGHT_MAP  &g_binding_value_axisvr, 0, 5, BE_ST_CTRL_MAP_VALUESET
 #define ACCUM_LEFT_MAP     &g_binding_value_accumx, 0, -16, BE_ST_CTRL_MAP_VALUESET
 #define ACCUM_RIGHT_MAP    &g_binding_value_accumx, 0, 16, BE_ST_CTRL_MAP_VALUESET
-#define ACCUM_VR_LEFT_MAP  &g_binding_value_vr, 0, -16, BE_ST_CTRL_MAP_VALUESET
-#define ACCUM_VR_RIGHT_MAP &g_binding_value_vr, 0, 16, BE_ST_CTRL_MAP_VALUESET
+#define ACCUM_VR_LEFT_MAP  &g_binding_value_accumvr, 0, -16, BE_ST_CTRL_MAP_VALUESET
+#define ACCUM_VR_RIGHT_MAP &g_binding_value_accumvr, 0, 16, BE_ST_CTRL_MAP_VALUESET
 #define BUT_MAP_MAP        &g_binding_value_map, 0, 2, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
@@ -639,23 +639,18 @@ void RefKeen_PrepareAltControllerScheme(void)
 		sensorsMask |= (BE_ST_CTRL_SENSOR_MASK_GYRO << deviceId);
 	}
 #if (GAMEVER_WOLFREV > GV_WR_WL6AP11) && (!defined GAMEVER_NOAH3D)
-	if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LSTICK ||
-	    g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_RSTICK)
+	if (g_refKeenCfg.wolf3d.vrStick != BE_ST_CTRL_STICK_DEVICE_NONE)
 	{
 		int axisX =
-		    (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LSTICK) ?
-		    BE_ST_CTRL_AXIS_LX : BE_ST_CTRL_AXIS_RX;
+		    BE_ST_CTRL_AXIS_LX + 2 * (g_refKeenCfg.wolf3d.vrStick - 1);
 		g_ingame_altcontrol_mapping_gameplay.paxes[axisX][0] = g_ingame_axis_vr_left_map;
 		g_ingame_altcontrol_mapping_gameplay.paxes[axisX][1] = g_ingame_axis_vr_right_map;
 		g_ingame_altcontrol_mapping_gameplay.paxes[axisX+1][0].mapClass = BE_ST_CTRL_MAP_NONE;
 		g_ingame_altcontrol_mapping_gameplay.paxes[axisX+1][1].mapClass = BE_ST_CTRL_MAP_NONE;
 	}
-	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_GYRO ||
-	         g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LGYRO ||
-	         g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_RGYRO)
+	if (g_refKeenCfg.wolf3d.vrGyro != BE_ST_CTRL_GYRO_DEVICE_NONE)
 	{
-		int deviceId =
-		    g_refKeenCfg.wolf3d.vrInputEmu-BE_ST_CTRL_ANALOG_DEVICE_GYRO;
+		int deviceId = g_refKeenCfg.wolf3d.vrGyro - 1;
 		// VR input emulation using the mouse is handled separately
 		int axisY = BE_ST_CTRL_FULL_AXIS_GYRO_Y + 6 * deviceId;
 		g_ingame_altcontrol_mapping_gameplay.paxes[axisY][1] = g_ingame_accum_vr_left_map;
@@ -695,20 +690,19 @@ enum { ANGLESCALE = 20 }; // As In wl_agent.c
 
 int32_t GetHelmetAngle(void)
 {
-	id0_int_t frac;
-	if ((g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_LSTICK) ||
-	    (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_RSTICK))
-		frac = ANGLESCALE * g_binding_value_vr;
-	else if (g_refKeenCfg.wolf3d.vrInputEmu == BE_ST_CTRL_ANALOG_DEVICE_MOUSE)
+	id0_int_t frac = 0;
+	if (g_refKeenCfg.wolf3d.vrStick != BE_ST_CTRL_STICK_DEVICE_NONE)
+		frac += ANGLESCALE * g_binding_value_axisvr;
+	if (g_refKeenCfg.wolf3d.vrMouse)
 	{
 		id0_int_t x, y;
 		BE_ST_GetEmuAccuMouseMotion(&x, &y);
-		frac = x*10/(13-mouseadjustment);
+		frac += x*10/(13-mouseadjustment);
 	}
-	else // Gyroscope
+	if (g_refKeenCfg.wolf3d.vrGyro != BE_ST_CTRL_GYRO_DEVICE_NONE)
 	{
-		frac = g_binding_value_vr*10/(13-mouseadjustment);
-		g_binding_value_vr = 0;
+		frac += g_binding_value_accumvr*10/(13-mouseadjustment);
+		g_binding_value_accumvr = 0;
 	}
 
 	g_helmet_angle_frac += frac;

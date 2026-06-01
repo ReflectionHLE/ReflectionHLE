@@ -572,8 +572,8 @@ static const char *g_be_inputSettingsChoices_touchControls[] = {"Auto", "Off", "
 static const char *g_be_inputSettingsChoices_mouseGrab[] = {"Auto", "Off", "Commonly", NULL};
 // Actually for other input settings
 static const char *g_be_inputSettingsChoices_axisBind[] = {"Off", "Move", "Look", NULL};
+static const char *g_be_inputSettingsChoices_stickDevice[] = {"Off", "Left stick", "Right stick", NULL};
 static const char *g_be_inputSettingsChoices_gyroscopeDevice[] = {"Off", "Main gyro", "Left gyro", "Right gyro", NULL};
-static const char *g_be_inputSettingsChoices_analogInputDevice[] = {"Off", "Mouse", "Left stick", "Right stick", "Main gyro", "Left gyro", "Right gyro", NULL};
 
 #ifdef REFKEEN_CONFIG_ENABLE_TOUCHINPUT
 static void BEL_ST_Launcher_Handler_TouchInputDebugging(BEMenuItem **menuItemP);
@@ -1124,12 +1124,18 @@ BEMenu g_beWolf3DPadBindsMenu = {
 
 /* Wolfenstein 3D VR input emulation menu ***/
 
-BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Toggle, "Emulate VR input for Wolf3D v1.4 and SOD (skips demos and more)", g_be_inputSettingsChoices_analogInputDevice)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Mouse, "Mouse use", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Stick, "Analog stick", g_be_inputSettingsChoices_stickDevice)
+BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Gyro, "Gyroscope", g_be_inputSettingsChoices_gyroscopeDevice)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_InvertStrafe, "Invert strafe toggle while emulating VR input", g_be_settingsChoices_boolean)
+BEMENUITEM_DEF_STATIC(g_beWolf3DVREmulationMenuItem_Note, "Note: VR helmet input emulation\nis restricted to Wolf3D v1.4 and SOD.\nEnabling the feature further skips\ndemo loop and more.")
 
 static BEMenuItem *g_beWolf3DVREmulationMenuItems[] = {
-	&g_beWolf3DVREmulationMenuItem_Toggle,
+	&g_beWolf3DVREmulationMenuItem_Mouse,
+	&g_beWolf3DVREmulationMenuItem_Stick,
+	&g_beWolf3DVREmulationMenuItem_Gyro,
 	&g_beWolf3DVREmulationMenuItem_InvertStrafe,
+        &g_beWolf3DVREmulationMenuItem_Note,
 	NULL
 };
 
