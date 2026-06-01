@@ -241,7 +241,7 @@ void BEL_ST_ConditionallyShowAltInputPointer(void)
 		// Better reset these when on-screen controls usable by the mouse are shown/hidden.
 		// Since touchInputToggle differs from TOUCHINPUT_FORCED, this EXCLUDES the touch controls.
 
-		// First simulate "releases" of binded buttons
+		// First simulate "releases" of bound buttons
 		for (int but = 0; but < BE_ST_CTRL_MOUSE_BUT_MAX; ++but)
 		{
 			BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->mbuttons[but], 0, &g_sdlInputbindStates.mbuttons[but]);
@@ -1147,7 +1147,6 @@ void BEL_ST_CheckMovedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID
 }
 
 extern const int g_sdlJoystickAxisMax;
-extern bool g_sdlDefaultMappingBinaryState;
 
 void BEL_ST_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_FingerID fingerId, int x, int y)
 {
