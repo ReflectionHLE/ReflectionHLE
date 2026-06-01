@@ -80,12 +80,12 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 
 // Using macros for static variable definitions in compound structures,
 // along with separate mapping variables used elsewhere
-#define BUT_FIRE_MAP       &g_binding_value_button[0], 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_STRAFE_MAP     &g_binding_value_button[1], 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_UP_MAP         &g_binding_value_up, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_DOWN_MAP       &g_binding_value_down, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_LEFT_MAP       &g_binding_value_left, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_RIGHT_MAP      &g_binding_value_right, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_FIRE_MAP       &g_binding_value_button[0], 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_STRAFE_MAP     &g_binding_value_button[1], 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_UP_MAP         &g_binding_value_up, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_DOWN_MAP       &g_binding_value_down, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_LEFT_MAP       &g_binding_value_left, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_RIGHT_MAP      &g_binding_value_right, 0, 2, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_UP_MAP        &g_binding_value_axisy, 0, -127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_DOWN_MAP      &g_binding_value_axisy, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_LEFT_MAP      &g_binding_value_axisx, 0, -127, BE_ST_CTRL_MAP_VALUESET
@@ -93,10 +93,10 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define ACCUM_LEFT_MAP     &g_binding_value_accumx, 0, -16, BE_ST_CTRL_MAP_VALUESET
 #define ACCUM_RIGHT_MAP    &g_binding_value_accumx, 0, 16, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
-#define BUT_DRINK_MAP      &g_binding_value_drink, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_BOLT_MAP       &g_binding_value_bolt, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_NUKE_MAP       &g_binding_value_nuke, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_FASTTURN_MAP   &g_binding_value_fastturn, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_DRINK_MAP      &g_binding_value_drink, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_BOLT_MAP       &g_binding_value_bolt, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_NUKE_MAP       &g_binding_value_nuke, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_FASTTURN_MAP   &g_binding_value_fastturn, 0, 2, BE_ST_CTRL_MAP_VALUESET
 
 #define BUT_FUNC_KEYS_MAP  &g_ingame_altcontrol_mapping_funckeys, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING
 #define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE

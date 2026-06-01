@@ -82,23 +82,23 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 
 // Using macros for static variable definitions in compound structures,
 // along with separate mapping variables used elsewhere
-#define BUT_FIRE_MAP       &g_binding_value_button[0], 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_STRAFE_MAP     &g_binding_value_button[1], 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_RUN_MAP        &g_binding_value_button[2], 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_USE_MAP        &g_binding_value_button[3], 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_FIRE_MAP       &g_binding_value_button[0], 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_STRAFE_MAP     &g_binding_value_button[1], 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_RUN_MAP        &g_binding_value_button[2], 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_USE_MAP        &g_binding_value_button[3], 0, 2, BE_ST_CTRL_MAP_VALUESET
 
 // Scancodes are set for on-screen UI
-#define BUT_WEAPON1_MAP    &g_binding_value_button[4], BE_ST_SC_1, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_WEAPON2_MAP    &g_binding_value_button[5], BE_ST_SC_2, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_WEAPON3_MAP    &g_binding_value_button[6], BE_ST_SC_3, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_WEAPON4_MAP    &g_binding_value_button[7], BE_ST_SC_4, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_WEAPON5_MAP    &g_binding_value_button[8], BE_ST_SC_5, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_WEAPON6_MAP    &g_binding_value_button[9], BE_ST_SC_6, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_WEAPON1_MAP    &g_binding_value_button[4], BE_ST_SC_1, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_WEAPON2_MAP    &g_binding_value_button[5], BE_ST_SC_2, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_WEAPON3_MAP    &g_binding_value_button[6], BE_ST_SC_3, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_WEAPON4_MAP    &g_binding_value_button[7], BE_ST_SC_4, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_WEAPON5_MAP    &g_binding_value_button[8], BE_ST_SC_5, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_WEAPON6_MAP    &g_binding_value_button[9], BE_ST_SC_6, 2, BE_ST_CTRL_MAP_VALUESET
 
-#define BUT_UP_MAP         &g_binding_value_up, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_DOWN_MAP       &g_binding_value_down, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_LEFT_MAP       &g_binding_value_left, 0, 127, BE_ST_CTRL_MAP_VALUESET
-#define BUT_RIGHT_MAP      &g_binding_value_right, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_UP_MAP         &g_binding_value_up, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_DOWN_MAP       &g_binding_value_down, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_LEFT_MAP       &g_binding_value_left, 0, 2, BE_ST_CTRL_MAP_VALUESET
+#define BUT_RIGHT_MAP      &g_binding_value_right, 0, 2, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_UP_MAP        &g_binding_value_axisy, 0, -127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_DOWN_MAP      &g_binding_value_axisy, 0, 127, BE_ST_CTRL_MAP_VALUESET
 #define AXIS_LEFT_MAP      &g_binding_value_axisx, 0, -127, BE_ST_CTRL_MAP_VALUESET
@@ -109,7 +109,7 @@ extern BE_ST_ControllerMapping g_ingame_altcontrol_mapping_funckeys;
 #define ACCUM_RIGHT_MAP    &g_binding_value_accumx, 0, 16, BE_ST_CTRL_MAP_VALUESET
 #define ACCUM_VR_LEFT_MAP  &g_binding_value_vr, 0, -16, BE_ST_CTRL_MAP_VALUESET
 #define ACCUM_VR_RIGHT_MAP &g_binding_value_vr, 0, 16, BE_ST_CTRL_MAP_VALUESET
-#define BUT_MAP_MAP        &g_binding_value_map, 0, 127, BE_ST_CTRL_MAP_VALUESET
+#define BUT_MAP_MAP        &g_binding_value_map, 0, 2, BE_ST_CTRL_MAP_VALUESET
 #define BUT_BACK_MAP       NULL, BE_ST_SC_ESC, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_PAUSE_MAP      NULL, BE_ST_SC_PAUSE, 0, BE_ST_CTRL_MAP_KEYSCANCODE
 #define BUT_WEAPONS_MAP    &g_ingame_altcontrol_mapping_weapons, 0, 0, BE_ST_CTRL_MAP_OTHERMAPPING
