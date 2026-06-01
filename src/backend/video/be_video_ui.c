@@ -1165,7 +1165,7 @@ void BEL_ST_CheckPressedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_Finger
 			return; // Pressing near the keyboard should leave it
 
 		trackedFinger->isDefaultBinaryStateToggle = true;
-		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingState);
 		return;
 	}
 
@@ -1194,7 +1194,7 @@ void BEL_ST_CheckReleasedPointerInTextInputUI(BE_ST_TouchID touchId, BE_ST_Finge
 
 	if (isDefaultBinaryStateToggle)
 	{
-		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingState);
 		return;
 	}
 
@@ -1259,7 +1259,7 @@ void BEL_ST_CheckPressedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_Finger
 			return; // Pressing near the keyboard should leave it
 
 		trackedFinger->isDefaultBinaryStateToggle = true;
-		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingBinaryState);
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax, &g_sdlDefaultMappingState);
 		return;
 	}
 
@@ -1290,7 +1290,7 @@ void BEL_ST_CheckReleasedPointerInDebugKeysUI(BE_ST_TouchID touchId, BE_ST_Finge
 
 	if (isDefaultBinaryStateToggle)
 	{
-		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingState);
 		return;
 	}
 
@@ -1367,14 +1367,14 @@ static void BEL_ST_HandleDefaultPointerActionInControllerUI(int but, bool isPres
 		BEL_ST_AltControlScheme_HandleEntry(
 			&g_sdlControllerMappingActualCurr->defaultMapping,
 			isPressed ? g_sdlJoystickAxisMax : 0,
-			&g_sdlDefaultMappingBinaryState);
+			&g_sdlDefaultMappingState);
 	else if (but != BE_ST_CTRL_BUT_GUIDE)
 	{
-		bool lastBinaryStatus = !isPressed;
+		int32_t lastMappingState = isPressed ? 0 : g_sdlJoystickAxisMax;
 		BEL_ST_AltControlScheme_HandleEntry(
 			&g_sdlControllerMappingActualCurr->pbuttons[but],
-			isPressed ? g_sdlJoystickAxisMax : 0,
-			&lastBinaryStatus);
+			g_sdlJoystickAxisMax - lastMappingState,
+			&lastMappingState);
 	}
 }
 
@@ -1454,17 +1454,17 @@ static void BEL_ST_HandleDefaultPointerActionInTouchControls(int touchControlInd
 		     (mapping->mapClass != BE_ST_CTRL_MAP_NONE) && (i < BE_ST_TOUCH_CTRL_MAX_MAPS);
 		     ++mapping, ++i)
 		{
-			bool lastBinaryStatus = !isPressed;
+			int32_t lastMappingState = isPressed ? 0 : g_sdlJoystickAxisMax;
 			BEL_ST_AltControlScheme_HandleEntry(
 				mapping,
-				isPressed ? g_sdlJoystickAxisMax : 0,
-				&lastBinaryStatus);
+				g_sdlJoystickAxisMax - lastMappingState,
+				&lastMappingState);
 		}
 	else
 		BEL_ST_AltControlScheme_HandleEntry(
 			&g_sdlControllerMappingActualCurr->defaultMapping,
 			isPressed ? g_sdlJoystickAxisMax : 0,
-			&g_sdlDefaultMappingBinaryState);
+			&g_sdlDefaultMappingState);
 }
 
 extern int g_sdlEmuMouseButtonsState;

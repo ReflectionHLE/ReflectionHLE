@@ -37,7 +37,7 @@ BEInputBindsStates g_sdlInputbindStates;
 
 bool g_sdlMouseButtonsStates[3];
 
-bool g_sdlDefaultMappingBinaryState;
+int32_t g_sdlDefaultMappingState;
 
 int g_sdlEmuMouseButtonsState;
 int16_t g_sdlEmuMouseMotionAccumulatedState[2];

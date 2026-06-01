@@ -35,22 +35,23 @@ extern const int g_sdlJoystickAxisBinaryThreshold, g_sdlJoystickAxisDeadZone, g_
 
 typedef struct {
 	// These represent button states, although a call
-	// to BEL_ST_AltControlScheme_CleanUp zeros these out
-	bool keys[BE_MAX_KEY_ID];
-	bool mbuttons[BE_ST_CTRL_MOUSE_BUT_MAX];
-	bool pbuttons[BE_ST_CTRL_BUT_MAX];
-	// We may opstionally use analog axes as buttons
-	// (e.g., using stick as arrow keys, triggers as buttons)
-	bool paxes[BE_ST_CTRL_FULL_AXIS_MAX][2];
+	// to BEL_ST_AltControlScheme_CleanUp zeros these out.
+	int32_t keys[BE_MAX_KEY_ID];
+	int32_t mbuttons[BE_ST_CTRL_MOUSE_BUT_MAX];
+	int32_t pbuttons[BE_ST_CTRL_BUT_MAX];
+	// We may optionally use analog axes as buttons
+	// (e.g., using stick as arrow keys, triggers as buttons).
+	// That maintains adjusted values, otherwise.
+	int32_t paxes[BE_ST_CTRL_FULL_AXIS_MAX][2];
 } BEInputBindsStates;
 
 extern BEInputBindsStates g_sdlInputbindStates;
 
-/*** These are similar states for a few mouse buttons, required as relative mouse mode is toggled on or off in the middle ***/
-extern bool g_sdlMouseButtonsStates[3];
-
 /*** Another internal state, used for default mapping action ***/
-extern bool g_sdlDefaultMappingBinaryState;
+extern int32_t g_sdlDefaultMappingState;
+
+/*** Track host mouse button use; required as relative mouse mode is toggled on or off in the middle ***/
+extern bool g_sdlMouseButtonsStates[3];
 
 /*** Emulated mouse and joysticks states (mouse motion state is split for technical reasons) ***/
 extern int g_sdlEmuMouseButtonsState;

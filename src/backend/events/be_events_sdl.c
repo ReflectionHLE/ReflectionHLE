@@ -80,7 +80,7 @@ static void BEL_ST_HandleAxisUpdateForMapping(bool isAccum, int axis, int value)
 		// Special case for triggers, treated like digital buttons
 		if ((axis == BE_ST_CTRL_AXIS_LTRIGGER) || (axis == BE_ST_CTRL_AXIS_RTRIGGER))
 			BEL_ST_AltControlScheme_HandleAnyEntry(&g_sdlControllerMappingActualCurr->defaultMapping,
-			                                       value, &g_sdlDefaultMappingBinaryState, isAccum);
+			                                       value, &g_sdlDefaultMappingState, isAccum);
 	}
 }
 
@@ -179,7 +179,7 @@ void BE_ST_PollEvents(void)
 			{
 				if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->keys[scancode].map,
 				    g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.keys[scancode]))
-					BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
+					BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingState);
 			}
 			break;
 		}
@@ -217,7 +217,7 @@ void BE_ST_PollEvents(void)
 			{
 				if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->mbuttons[button],
 				    g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.mbuttons[button]))
-					BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
+					BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingState);
 				break;
 			}
 
@@ -497,7 +497,7 @@ void BE_ST_PollEvents(void)
 			// Try the usual otherwise (similar, but not identical, handling done with analog axes, triggers included)
 			else if (!BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->pbuttons[but], g_sdlJoystickAxisMax*isPressed, &g_sdlInputbindStates.pbuttons[but]))
 			{
-				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
+				BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingState);
 			}
 			break;
 		}

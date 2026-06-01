@@ -5,8 +5,8 @@
 
 extern const BE_ST_ControllerMapping *g_sdlControllerMappingActualCurr;
 
-bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr);
-bool BEL_ST_AltControlScheme_HandleAnyEntry(const BE_ST_ControllerSingleMap *map, int value, bool *lastBinaryStatusPtr, bool isAccum);
+bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map, int32_t value, int32_t *lastDeviceValuePtr);
+bool BEL_ST_AltControlScheme_HandleAnyEntry(const BE_ST_ControllerSingleMap *map, int32_t value, int32_t *lastDeviceValuePtr, bool isAccum);
 void BEL_ST_AltControlScheme_ClearBinaryStates(void);
 void BEL_ST_AltControlScheme_CleanUp(void);
 void BEL_ST_AltControlScheme_HandleTextInputEvent(int but, bool isPressed);

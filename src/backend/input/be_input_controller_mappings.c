@@ -94,30 +94,30 @@ static void BEL_ST_ReplaceControllerMapping(BE_ST_ControllerMapping *mapping)
 }
 
 bool BEL_ST_AltControlScheme_HandleAnyEntry(const BE_ST_ControllerSingleMap *map,
-                                            int value, bool *lastBinaryStatusPtr,
+                                            int32_t value, int32_t *lastMappingStatePtr,
                                             bool isAccum)
 {
-	bool prevBinaryStatus = *lastBinaryStatusPtr;
-	*lastBinaryStatusPtr = (value >= g_sdlJoystickAxisBinaryThreshold);
+	int32_t prevMappingState = *lastMappingStatePtr;
+	*lastMappingStatePtr = (value >= g_sdlJoystickAxisBinaryThreshold);
 	switch (map->mapClass)
 	{
 	case BE_ST_CTRL_MAP_NONE:
 		break;
 	case BE_ST_CTRL_MAP_KEYSCANCODE:
 	{
-		if (*lastBinaryStatusPtr != prevBinaryStatus)
+		if (*lastMappingStatePtr != prevMappingState)
 		{
 			emulatedDOSKeyEvent dosKeyEvent;
 			dosKeyEvent.isSpecial = false;
 			dosKeyEvent.dosScanCode = map->val;
-			BEL_ST_HandleEmuKeyboardEvent(*lastBinaryStatusPtr, false, dosKeyEvent);
+			BEL_ST_HandleEmuKeyboardEvent(*lastMappingStatePtr, false, dosKeyEvent);
 		}
 		return true;
 	}
 	case BE_ST_CTRL_MAP_MOUSEBUTTON:
-		if (*lastBinaryStatusPtr != prevBinaryStatus)
+		if (*lastMappingStatePtr != prevMappingState)
 		{
-			if (*lastBinaryStatusPtr)
+			if (*lastMappingStatePtr)
 				g_sdlEmuMouseButtonsState |= map->val;
 			else
 				g_sdlEmuMouseButtonsState &= ~map->val;
@@ -132,7 +132,7 @@ bool BEL_ST_AltControlScheme_HandleAnyEntry(const BE_ST_ControllerSingleMap *map
 			g_sdlEmuMouseMotionFromJoystick[map->val] = value;
 		return true;
 	case BE_ST_CTRL_MAP_OTHERMAPPING:
-		if (!prevBinaryStatus && (*lastBinaryStatusPtr))
+		if (!prevMappingState && (*lastMappingStatePtr))
 			BEL_ST_ReplaceControllerMapping((BE_ST_ControllerMapping *)map->miscPtr);
 		return true; // Confirm either way
 	case BE_ST_CTRL_MAP_VALUESET:
@@ -148,10 +148,10 @@ bool BEL_ST_AltControlScheme_HandleAnyEntry(const BE_ST_ControllerSingleMap *map
 }
 
 bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map,
-                                         int value, bool *lastBinaryStatusPtr)
+                                         int32_t value, int32_t *lastMappingStatePtr)
 {
 	return BEL_ST_AltControlScheme_HandleAnyEntry(map, value,
-	                                              lastBinaryStatusPtr, false);
+	                                              lastMappingStatePtr, false);
 }
 
 void BEL_ST_ReleasePressedKeysInTextInputUI(void);
@@ -206,8 +206,8 @@ void BEL_ST_AltControlScheme_ClearBinaryStates(void)
 	}
 
 	// Check this for ALL possible mappings
-	if (g_sdlDefaultMappingBinaryState)
-		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingBinaryState);
+	if (g_sdlDefaultMappingState)
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, 0, &g_sdlDefaultMappingState);
 
 	memset(&g_sdlInputbindStates, 0, sizeof(g_sdlInputbindStates));
 }
@@ -371,7 +371,7 @@ void BEL_ST_AltControlScheme_HandleTextInputEvent(int but, bool isPressed)
 		break;
 	case BE_ST_CTRL_BUT_B:
 	case BE_ST_CTRL_BUT_BACK:
-		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingState);
 		break;
 	case BE_ST_CTRL_BUT_X:
 		// Change shift state (or at least try to).
@@ -421,7 +421,7 @@ void BEL_ST_AltControlScheme_HandleDebugKeysEvent(int but, bool isPressed)
 		break;
 	case BE_ST_CTRL_BUT_B:
 	case BE_ST_CTRL_BUT_BACK:
-		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingBinaryState);
+		BEL_ST_AltControlScheme_HandleEntry(&g_sdlControllerMappingActualCurr->defaultMapping, g_sdlJoystickAxisMax*isPressed, &g_sdlDefaultMappingState);
 		return;
 	default:
 		// Select or deselect key from UI, IF actual button is pressed.
