@@ -98,53 +98,57 @@ bool BEL_ST_AltControlScheme_HandleAnyEntry(const BE_ST_ControllerSingleMap *map
                                             bool isAccum)
 {
 	int32_t prevMappingState = *lastMappingStatePtr;
-	*lastMappingStatePtr = (value >= g_sdlJoystickAxisBinaryThreshold);
 	switch (map->mapClass)
 	{
 	case BE_ST_CTRL_MAP_NONE:
-		break;
+		return false;
 	case BE_ST_CTRL_MAP_KEYSCANCODE:
 	{
-		if (*lastMappingStatePtr != prevMappingState)
+		if ((value >= g_sdlJoystickAxisBinaryThreshold) !=
+		    (prevMappingState >= g_sdlJoystickAxisBinaryThreshold))
 		{
 			emulatedDOSKeyEvent dosKeyEvent;
 			dosKeyEvent.isSpecial = false;
 			dosKeyEvent.dosScanCode = map->val;
-			BEL_ST_HandleEmuKeyboardEvent(*lastMappingStatePtr, false, dosKeyEvent);
+			BEL_ST_HandleEmuKeyboardEvent(value >= g_sdlJoystickAxisBinaryThreshold,
+			                              false, dosKeyEvent);
 		}
-		return true;
+		break;
 	}
 	case BE_ST_CTRL_MAP_MOUSEBUTTON:
-		if (*lastMappingStatePtr != prevMappingState)
+		if ((value >= g_sdlJoystickAxisBinaryThreshold) !=
+		    (prevMappingState >= g_sdlJoystickAxisBinaryThreshold))
 		{
-			if (*lastMappingStatePtr)
+			if (value >= g_sdlJoystickAxisBinaryThreshold)
 				g_sdlEmuMouseButtonsState |= map->val;
 			else
 				g_sdlEmuMouseButtonsState &= ~map->val;
 		}
-		return true;
+		break;
 	case BE_ST_CTRL_MAP_MOUSEMOTION:
 		value = (value <= g_sdlJoystickAxisDeadZone) ? 0 :
 		        (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
 		if (isAccum)
 			g_sdlEmuMouseMotionFromJoystick[map->val] += value;
-		else
+		else if (value != prevMappingState)
 			g_sdlEmuMouseMotionFromJoystick[map->val] = value;
-		return true;
+		break;
 	case BE_ST_CTRL_MAP_OTHERMAPPING:
-		if (!prevMappingState && (*lastMappingStatePtr))
+		if ((prevMappingState < g_sdlJoystickAxisBinaryThreshold) &&
+		    (value >= g_sdlJoystickAxisBinaryThreshold))
 			BEL_ST_ReplaceControllerMapping((BE_ST_ControllerMapping *)map->miscPtr);
-		return true; // Confirm either way
+		break; // Confirm either way
 	case BE_ST_CTRL_MAP_VALUESET:
 		value = (value <= g_sdlJoystickAxisDeadZone) ? 0 :
 		        (value - g_sdlJoystickAxisDeadZone) * map->secondaryVal / g_sdlJoystickAxisMaxMinusDeadZone;
 		if (isAccum)
 			*(int *)(map->miscPtr) += value;
-		else
+		else if (value != prevMappingState)
 			*(int *)(map->miscPtr) = value;
-		return true;
+		break;
 	}
-	return false;
+	*lastMappingStatePtr = value;
+	return true;
 }
 
 bool BEL_ST_AltControlScheme_HandleEntry(const BE_ST_ControllerSingleMap *map,
