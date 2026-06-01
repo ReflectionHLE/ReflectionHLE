@@ -11,9 +11,11 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.net.Uri;
 import android.provider.Settings;
+import android.util.Log;
 
 public class ReflectionHLEActivity extends SDLActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
+	private static final String TAG = "ReflectionHLE";
 	private final int[] requestNotif = new int[1];
 	private final Object alertNotif = new Object();
 
@@ -62,16 +64,21 @@ public class ReflectionHLEActivity extends SDLActivity implements ActivityCompat
 					waitForUIThread(alertNotif);
 				}
 
+				// Catch exceptions for both permissions. There seemed to be a problem on Android TV 12.
 				try {
-					Intent intent = new Intent();
-					intent.setAction(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+					Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
 					Uri uri = Uri.fromParts("package", this.getPackageName(), null);
 					intent.setData(uri);
 					startActivity(intent);
 				} catch (Exception e) {
-					Intent intent = new Intent();
-					intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-					startActivity(intent);
+					try {
+						Log.e(TAG, "requestReadExternalStoragePermission - Trying alternative permission after getting exception - " + e.toString());
+						Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+						startActivity(intent);
+					} catch (Exception e2) {
+						Log.e(TAG, "requestReadExternalStoragePermission - Asking for permission failed - " + e2.toString());
+						return 0;
+					}
 				}
 			}
 		} else if (android.os.Build.VERSION.SDK_INT >= 23) {
