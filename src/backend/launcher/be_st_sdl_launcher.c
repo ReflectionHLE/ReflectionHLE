@@ -1330,7 +1330,7 @@ void BE_ST_Launcher_Prepare(void)
 	bool fullScreen = (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_FULL);
 	bool software = (g_refKeenCfg.launcherWinType == LAUNCHER_WINDOW_SOFTWARE);
 	BEL_ST_RecreateWindowAndRenderer(
-		g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0,
+		g_refKeenCfg.winWidth, g_refKeenCfg.winHeight, 0, 0, 0.f,
 		fullScreen, /*resizable*/!software, vsync,
 		software ? SDL_SOFTWARE_RENDERER : NULL
 	);

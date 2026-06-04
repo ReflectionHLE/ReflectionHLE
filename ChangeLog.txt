@@ -4,17 +4,20 @@ Changelog
 
 TBD:
 
-Note that there were some changes to specific gamepad button assignments
-and on-screen touch controls, for at least a few reasons.
-See "User input changes" for more details. Sorry for any convenience.
+Note that there were multiple changes involving user input support,
+impacting gamepads and multitouch, but also having a few new additions.
+Further thanks to Blzut3 for some pre-release testing.
 
-Added initial support for BioMenace, aka, Bio Menace.
+Added initial support for BioMenace, aka, Bio Menace:
+* Preliminary port prepared in April 2025 from the reconstructed sources
+released by `K1n9_Duk3`, also for the possibility it would be useful
+as a reference for BioMenace Remastered.
 * That covers all DOS versions known as of writing this, including
 the BioHazard July 1992 beta as re-released in February 2025.
 * BioMenace support should cover saved games and game controllers
 in this release, plus multi-touch input if anyone wants to give it a try.
 
-ReflectionHLE was migrated from the SDL2 library to SDL3.
+ReflectionHLE was migrated from the SDL2 library to SDL3:
 * Removed the setting "displaynum". Also removed "rememberdisplaynum",
 which turned out to be mostly broken due to a backend/cfg
 related refactor from ReflectionHLE v0.40.0.
@@ -100,9 +103,14 @@ or manually forcing scaling for software rendering via the main cfg file
 * The window's dimensions present in the main cfg file are measured
 in coordinates/points on environments like macOS and Wayland, rather
 than pixels in case a high DPI desktop resolution is in use.
-* On the other hand, if a specific fullscreen resolution is forced from the
-cfg file, the resolution will be requested with the pixel density of 1.0,
-hence it's measured in pixels.
+* On the other hand, if a specific fullscreen resolution is forced from
+the cfg file, the resolution will be requested with the pixel density
+given by the fullscrpixdensity setting in case it differs from 0.0.
+Wayland seemed to use 1.0 in general as of checking that,
+while additionally allowing the desktop's pixel density
+in conjunction with its dimensions in coordinates/points.
+Supported value might change with the environment
+and/or screen resolution in general.
 
 More launcher-related changes:
 * Upon selecting a directory with more than one compatible game

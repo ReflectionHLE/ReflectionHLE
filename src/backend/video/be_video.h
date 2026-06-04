@@ -56,7 +56,7 @@ void BEL_ST_HandleFullScreenChange(bool isFullscreen);
 
 void BEL_ST_RecreateWindowAndRenderer(
 	int windowWidth, int windowHeight,
-	int fullWidth, int fullHeight,
+	int fullWidth, int fullHeight, float fullscreenPixelDensity,
 	bool fullScreen, bool resizable, bool vsync, const char *driver);
 
 void BEL_ST_DestroyWindowAndRenderer(void);

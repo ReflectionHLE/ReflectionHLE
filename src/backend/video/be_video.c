@@ -78,6 +78,7 @@ void BE_ST_InitGfx(void)
 	BEL_ST_RecreateWindowAndRenderer(
 		windowWidthToSet, windowHeightToSet,
 		g_refKeenCfg.fullWidth, g_refKeenCfg.fullHeight,
+		g_refKeenCfg.fullscreenPixelDensity,
 		g_refKeenCfg.isFullscreen, resizable, vsync,
 		SDL_GetRenderDriver(g_refKeenCfg.sdlRendererDriver)
 	);

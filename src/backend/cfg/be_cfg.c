@@ -44,6 +44,7 @@ RefkeenDynamicConfig g_refKeenDynamicCfg;
 
 typedef enum {
 	BE_ST_CFG_VAL_ENUM,
+	BE_ST_CFG_VAL_FLOAT,
 	BE_ST_CFG_VAL_HEX_INT,
 	BE_ST_CFG_VAL_INT,
 	BE_ST_CFG_VAL_DIMS,
@@ -64,6 +65,7 @@ typedef struct {
 	// allowed to hold a pointer, but doesn't have to.
 	int aux0;
 	intptr_t aux1, aux2;
+	float faux0, faux1, faux2;
 } BE_ST_CFG_Setting_T;
 
 // Enumerated by SDL_GamepadButton, for most
@@ -92,6 +94,9 @@ static const char *g_be_setting_gyroscope_vals[] = {"off", "main", "left", "righ
 
 #define DEF_ENUM(setting, key, strs, def) \
 	{&g_refKeenCfg.setting, 0, key, BE_ST_CFG_VAL_ENUM, def, (intptr_t)strs, BE_Cross_ArrayLen(strs)},
+#define DEF_FLOAT(setting, key, def, min, max) \
+	{&g_refKeenCfg.setting, 0, key, BE_ST_CFG_VAL_FLOAT, \
+	 0, 0, 0, def, min, max},
 #define DEF_INT(setting, key, def, min, max) \
 	{&g_refKeenCfg.setting, 0, key, BE_ST_CFG_VAL_INT, def, min, max},
 #define DEF_DIMS(width, height, key, defw, defh) \
@@ -166,6 +171,8 @@ static BE_ST_CFG_Setting_T g_be_st_settings[] = {
 #endif
 #ifdef REFKEEN_CONFIG_USER_FULLSCREEN_RES_SETTING
 	DEF_DIMS(fullWidth, fullHeight, "fullres", 0, 0)
+	DEF_FLOAT(fullscreenPixelDensity, "fullscrpixdensity", 0.f,
+	          -1024.f, 1024.f)
 #endif
 	DEF_DIMS(winWidth, winHeight, "windowres", 0, 0)
 #ifdef REFKEEN_ENABLE_LAUNCHER
@@ -443,6 +450,9 @@ static void BEL_ST_SetConfigDefaults(BE_ST_CFG_Setting_T *settings, int n)
 			*(int *)settings[i].setting = settings[i].aux0;
 			*(int *)settings[i].ptraux = settings[i].aux1;
 			break;
+		case BE_ST_CFG_VAL_FLOAT:
+			*(float *)settings[i].setting = settings[i].faux0;
+			break;
 		default:
 			*(int *)settings[i].setting = settings[i].aux0;
 		}
@@ -461,6 +471,18 @@ static void BEL_ST_ParseEnum(int *val, const char *list[], int len, const char *
 static void BEL_ST_WriteEnum(FILE *fp, const char *key, const char *list[], int len, int val)
 {
 	fprintf(fp, "%s=%s\n", key, ((val >= 0) && (val < len)) ? list[val] : "");
+}
+
+static void BEL_ST_ParseFloat(float *val, float min, float max, const char *buffer)
+{
+	float ret = atof(buffer);
+	if ((ret >= min) && (ret <= max))
+		*val = ret;
+}
+
+static void BEL_ST_WriteFloat(FILE *fp, const char *key, float val)
+{
+	fprintf(fp, "%s=%.6f\n", key, val);
 }
 
 static void BEL_ST_ParseHexInt(int *val, int min, int max, const char *buffer)
@@ -517,6 +539,9 @@ static void BEL_ST_ParseSetting(BE_ST_CFG_Setting_T *setting, const char *valStr
 	case BE_ST_CFG_VAL_DIMS:
 		BEL_ST_ParseDims((int *)setting->setting, (int *)setting->ptraux, valStr);
 		break;
+	case BE_ST_CFG_VAL_FLOAT:
+		BEL_ST_ParseFloat((float *)setting->setting, setting->faux1, setting->faux2, valStr);
+		break;
 	case BE_ST_CFG_VAL_HEX_INT:
 		BEL_ST_ParseHexInt((int *)setting->setting, setting->aux1, setting->aux2, valStr);
 		break;
@@ -541,6 +566,9 @@ static void BEL_ST_SaveSetting(FILE *fp, const BE_ST_CFG_Setting_T *setting)
 		break;
 	case BE_ST_CFG_VAL_DIMS:
 		BEL_ST_WriteDims(fp, setting->key, *(int *)setting->setting, *(int *)setting->ptraux);
+		break;
+	case BE_ST_CFG_VAL_FLOAT:
+		BEL_ST_WriteFloat(fp, setting->key, *(float *)setting->setting);
 		break;
 	case BE_ST_CFG_VAL_HEX_INT:
 		BEL_ST_WriteHexInt(fp, setting->key, *(int *)setting->setting);

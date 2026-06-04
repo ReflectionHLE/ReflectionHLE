@@ -72,7 +72,7 @@ static SDL_DisplayID BEL_ST_GetWindowDisplayId(void);
 
 void BEL_ST_RecreateWindowAndRenderer(
 	int windowWidth, int windowHeight,
-	int fullWidth, int fullHeight,
+	int fullWidth, int fullHeight, float fullscreenPixelDensity,
 	bool fullScreen, bool resizable, bool vsync, const char *driver)
 {
 	static const char *prev_driver;
@@ -151,10 +151,8 @@ finish:
 				SDL_DisplayMode newMode = *mode;
 				newMode.w = fullWidth;
 				newMode.h = fullHeight;
-				// Testing on Wayland during April 2026, that's
-				// all that was covered by the listed display
-				// modes, outside of the desktop display mode.
-				newMode.pixel_density = 1.0f;
+				if (fullscreenPixelDensity != 0.f)
+					newMode.pixel_density = fullscreenPixelDensity;
 				if (!SDL_SetWindowFullscreenMode(g_sdlWindow, &newMode))
 					BE_Cross_LogMessage(BE_LOG_MSG_ERROR, "BEL_ST_RecreateWindowAndRenderer: SDL_SetWindowFullscreenMode failed,\n%s\n", SDL_GetError());
 			}

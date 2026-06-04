@@ -57,6 +57,7 @@ typedef enum { LAUNCHER_WINDOW_DEFAULT, LAUNCHER_WINDOW_FULL, LAUNCHER_WINDOW_SO
 
 typedef struct
 {
+	float fullscreenPixelDensity;
 	int/*bool*/ isFullscreen;
 	int fullWidth, fullHeight;
 	int winWidth, winHeight;
