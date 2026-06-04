@@ -1,0 +1,106 @@
+Preface
+=======
+
+This file, and related notes, intend to cover changes in behaviors and/or
+code structures to involved program, in comparison to the original versions.
+
+Please note that while the information given here might appear to be useful,
+any subset of it might be wrong and/or outdated at any given time.
+Regardless, it should still be a good way to show some of the
+technical problems with mimicking the original behaviors
+of a program, including vanilla bugs.
+
+General changes
+===============
+
+- Disabling unused code and definitions.
+
+- The occasional fix for an unaligned read/write,
+as well as other modifications done for portability.
+
+- Extended user input support mostly separate from the original code
+(game controllers, multi-touch).
+
+- There's currently no full emulation of EGA plane maintenance. Instead,
+routines that output to the desired planes are used. Macros like EGAWRITEMODE
+are no-ops.
+
+- Changes that assist with building code originally written in C as C++, or
+even just resolving what are technically undefined behaviors.
+One example is renaming the variable "new" to "newobj",
+as "new" is a reserved keyword under C++.
+
+- Direct accesses to the TimeCount variable were adjusted for the purpose
+of getting a functional port. Originally, TimeCount was incremented
+at a specific rate by a custom timer interrupt handler,
+set up to be periodically called by the hardware.
+
+Bug fixes with no practical impacts on behaviors
+================================================
+
+bm_debug.c:DebugKeys: Function was defined to return a value, while being a
+no-op for versions differing from the July 1992 beta or 2005's freeware release.
+Return of value was also missing. Due to the presumed use of macros for
+selectively enabling compilation of the code, chances are the function
+was defined with non-void return type also when being a no-op.
+In practice, DebugKeys wouldn't be called from versions where it was a no-op.
+The debugUnlocked variable could not be set to true, thus neither could DebugOk.
+ReflectionHLE's fix was fully undefining DebugKeys for versions not calling it.
+
+Bug fixes which might have impacts on behaviors
+===============================================
+
+Note: The following three are under a different category here than
+where they were listed for Keen Dreams, due to most 1990s executables
+having states in far memory for BioMenace. In particular, under
+specific circumstances, matching DOS versions of BioMenace might
+hang on 1990s hardware, if worse behaviors are not reproduced.
+Reason being null-pointer dereferences via far pointers, given
+that versions of BioMenace later than the July 1992 beta
+had actors' states migrated to far memory.
+
+bm_state.c:DoActor: In addition to checking if state->progress == think
+(i.e., 2), it is also checked now that state is not-null. If it is, then
+due to the layout of statetype, it should differ unless overwritten.
+
+bm_state.c:DoActor: A check that state is non-null before reading state->tictime
+was similarly added. Additionally, newtics is compared to a magic value which
+should match the one following a null-pointer dereference, assuming that
+it wasn't modified earlier.
+There's also another separate check that state is non-null,
+before accessing state->progress. If it were dereferenced
+with the July 1992 beta's original EXE, it wouldn't be a
+valid progress enum value, anyway (assuming it wasn't overwritten).
+
+bm_state.c:StateMachine: state is again checked for being non-null before
+reading state->skippable. As usual, this should behave like the July 1992
+beta's original EXE if ((statetype *)0)->skippable isn't overwritten.
+
+Misc. technical changes from the original
+=========================================
+
+bm_main.c:TEDDeath: Now exiting with a descriptive textual message
+instead of attempting to transfer control to TED5.EXE.
+
+Changes for compatibility
+=========================
+
+- The statetype struct has an additional field for the original values
+of pointers to such states in the DOS versions, for the purpose of
+compatibility with original saved games for the July 1992 beta.
+They're needed just for the beta which still uses full save states,
+while under later DOS versions, the level is fully loaded from scratch
+(as if Snake Logan had entered it for the first time) upon loading a
+saved game. That change was related to states getting relocated
+to far memory during development of the game.
+
+- Pointers to objects may be converted for compatibility.
+
+- The July 1992 beta was released with a modified EXE, in addition to the
+original one. By default, the modifications are in effect from ReflectionHLE
+for the beta, but there's a single setting that allows toggling all of them off.
+One of the changes was a fix for a crash manifesting at two points, including
+the place where Snake may read the color sequence in the 3rd level.
+The other involved disabling a beta expiration date check.
+A 2025 re-release of the beta further removed the need to
+add the password "slammer" as a command-line argument.
