@@ -94,8 +94,8 @@ which was always set to false. So, valid_dir was appropriately increased.
 slidecat.c:slidecat_TrashProg: It is first checked that OutMsg is non-null
 before doing the same with *OutMsg.
 
-Bugs fixes which might have impacts on behaviors
-================================================
+Bug fixes which might have impacts on behaviors
+===============================================
 
 - c3_asm.c:ScaleWalls (all episodes): wallseg[colNum] might be a null seg
 pointer in the original EXEs. We kinda emulate the behaviors that follow
@@ -177,9 +177,6 @@ Misc. technical changes from the original
 
 c*_game.c:GameLoop (all episodes): Simulation of a short wait
 while loading, done by an additional call to VW_WaitVBL.
-
-c3_main.c:InitGame (Catacomb 3D): introscn's storage
-isn't used by MML_UseSpace.
 
 c*_main.c:TEDDeath (all episodes): Now exiting with a descriptive
 textual message instead of attempting to transfer control to TED5.EXE.

@@ -33,7 +33,7 @@ Another one is in id_us.c:USL_FindRect, originally using Motion
 enum variables as loop variables, now re-defined as int instead.
 
 - id_ca.* and more: Modifications for support of multiple versions,
-like CA_CacheMarks accepts an additional argument which is ignored,
+like CA_CacheMarks accepting an additional argument which is ignored,
 say, for Keen Dreams v1.00. Another example is GRMODE being
 a variable instead of a macro, plus fakecgamode.
 
@@ -142,14 +142,14 @@ Borland C++ string, unless somehow overwritten. So, it is now checked if
 ob->state is null, in addition to checking that ob->state->pushtofloor is not.
 
 kd_play.c:DoActor: In addition to checking if state->progress == think
-(i.e., 2), it is now also checked that state is not-null. If it is, then due
-to the layout of statetype, it should differ unless overwritten.
+(i.e., 2), it is also checked now that state is not-null. If it is, then
+due to the layout of statetype, it should differ unless overwritten.
 
 kd_play.c:DoActor: A check that state is non-null before reading state->tictime
 was similarly added. Additionally, newtics is compared to a magic value which
 should match the one following a null-pointer dereference, assuming that
 it wasn't modified earlier.
-Tthere's also another separate check that state is non-null, before accessing
+There's also another separate check that state is non-null, before accessing
 state->progress. If it were dereferenced with the original EXEs, it wouldn't be
 a valid progress enum value, anyway (assuming it wasn't overwritten).
 
@@ -157,8 +157,8 @@ kd_play.c:StateMachine: state is again checked for being non-null before
 reading state->skippable. As usual, this should behave like the original
 EXEs if ((statetype *)0)->skippable isn't overwritten.
 
-Bugs fixes which might have impacts on behaviors
-================================================
+Bug fixes which might have impacts on behaviors
+===============================================
 
 - id_sd.c:SD_SetSoundMode: result is now always initialized. Previously,
 it could be accessed while uninitialized if SD_SetSoundMode was called
@@ -175,7 +175,7 @@ with smm_AdLib, but AdLibPresent was false.
 - id_us.c:US_CheckParm: The while loop first checks if *parm is non-null.
 
 - id_us.c:USL_CtlDEButtonCustom: result is always initialized to false,
-ven if the user decided to quit, and then it might not matter at all
+even if the user decided to quit, and then it might not matter at all
 in the original EXEs.
 
 - id_vw_ae.c:VW_SetScreen_EGA: The call to VW_WaitVBL may lead to different
@@ -183,7 +183,19 @@ behaviors. Also, calling it before BE_ST_EGASetPelPanning, which would be
 closer to the original code in structure, was found to lead to horizontal
 scrolling glitches in the port.
 
-soft.c:BLoad could re-open a file via CA_LoadFile without closing an already
+- kd_play.c:PlayLoop: HandleDeath does not clear LastScan
+on call or exit from function. That may lead to the dialog
+disappearing immediately in case of LastScan being set
+to sc_Space/sc_Escape for a while in some manner.
+For example, if you re-enter the current level from one instance of the dialog
+by pressing on sc_Space, and Keen dies while not using the keyboard in any
+manner that changes LastScan beforehand (even if using mouse or joystick),
+then the dialog will be skipped.
+As a workaround applying to ReflectionHLE's expanded input devices support
+(including gamepads and extra key rebinds), some code was added
+to PlayLoop, conditionally resetting LastScan.
+
+- soft.c:BLoad could re-open a file via CA_LoadFile without closing an already
 open file for the same filename. The file is now closed beforehand.
 
 Misc. technical changes from the original
@@ -202,7 +214,7 @@ Changes for compatibility
 of pointers to such states in the DOS versions, for the purpose of
 compatibility with original saved games.
 
-- id_rf.c: The map's info plane consist of 16-bit values, even for pointers to
+- id_rf.c: The map's info plane consists of 16-bit values, even for pointers to
 allanims array elements. The pointer values in use should match the originals
 for compatibility with saved games. They're converted when needed.
 

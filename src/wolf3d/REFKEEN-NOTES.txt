@@ -72,8 +72,6 @@ just to make sure there's no deadlock while audio is "locked".
 
 - wl_main.c:SaveTheGame: Disk space check was disabled.
 
-- wl_main.c:InitGame: Storage of signon (introscn) isn't used by MML_UseSpace.
-
 - wl_main.c:DoJukebox: The exact manner in which the current time
 is used for calculating "start" is expected to differ.
 
@@ -133,8 +131,8 @@ This is now emulated by an addition of zeros and an empty string to the array.
 - wl_menu.c:SndMenu: Same as the MainMenu overflow,
 just with SndItems.amount not being reduced from 12.
 
-Bugs fixes which might have impacts on behaviors
-================================================
+Bug fixes which might have impacts on behaviors
+===============================================
 
 - id_sd.c:SD_SetSoundMode: result is now always initialized, even for the
 March 1992 version. Previously, it could be accessed while uninitialized
@@ -209,6 +207,11 @@ Originally, dest was MK_FP(SCREENSEG,bufferofs), where SCREENSEG is 0xa000.
 Now, though, this parameter is ignored, and special handling is present
 for expanding into the equivalent of VGA memory.
 
+- The functionality of what was originally the command-line argument
+"virtualreality" is supported via emulation with another input device,
+using a ReflectionHLE setting. That is similar in idea
+to Blzut3's Wolfenmaus driver.
+
 Purposed instances of vanilla bug emulation
 ===========================================
 
@@ -243,3 +246,8 @@ least while looking with the right viewing angle.
 
 - wl_main.c: In addition to handling the offsets of objects, additional code
 was added for properly calculating the checksums for saved games.
+
+- A new optional setting was added, allowing a kind of framerate limitation.
+Reason being higher framerates have unintentional impacts on gameplay, like
+a pushable wall moving for a distance of 3 tiles if possible instead of 2
+(at least outside of Super 3-D Noah's Ark, which got that fixed).

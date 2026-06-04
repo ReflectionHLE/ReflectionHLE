@@ -86,8 +86,8 @@ while not temporarily modifying it.
 - id_vw.c:VWL_MeasureString, id_vw_ae.c:VW_DrawPropString:
 Like US_Print, using an additional parameter.
 
-Bugs fixes which might have impacts on behaviors
-================================================
+Bug fixes which might have impacts on behaviors
+===============================================
 
 - id_ca.c:mapheaderseg was increased by 1 element for Catacomb Abyss,
 and another related change was done. Catacomb Abyss, at least in versions
@@ -97,6 +97,9 @@ a change of c4_game.c:textstarts[0]. As ScanText resets it to 0 later,
 this would lead to a memory leak for mapheaderseg[NUMMAPS].
 So, in the port, this array element is now explicitly reset
 to 0 from CA_CacheMap, instead of passing it to MM_SetPurge.
+
+- id_mm.c:MM_ShowMemory: Fixed a null pointer dereference, reproduced
+during the loop's last iteration as scan->next becomes a null pointer.
 
 - id_sd.c:SD_SetSoundMode: result is now always initialized. Previously,
 it could be accessed while uninitialized if SD_SetSoundMode was called
@@ -118,12 +121,12 @@ and US_Startup. They were null-terminated in the port.
 
 - id_us_1.c:US_CPrintLine: It was found out to be called with a null pointer
 as the string from c4_play.c:PlayLoop, via DisplaySMsg(NULL,NULL).
-For now, this was fixed to replaced the pointer with an empty string.
+For now, that was fixed by replacing the pointer with an empty string.
 
 - id_vw_ae.c:VW_SetScreen: The call to VW_WaitVBL may lead to different
 behaviors. Also, calling it before BE_ST_EGASetPelPanning, which would be
 closer to the original code in structure, was found to lead to horizontal
-scrolling glitches in the Keen Dreams port.
+scrolling glitches in the Keen Dreams and BioMenace ports.
 
 Misc. technical changes from the original
 =========================================
@@ -142,6 +145,10 @@ pointer value from the matching DOS EXE is written. The "oldtest" field
 was renamed "oldtestoffset" to clarify that. id_us_1.c:USL_CheckSavedGames
 similarly compares the loaded oldtestoffset value to the matching
 16-bit offset value of &PrintX.
+
+- id_rf.c: The map's info plane consists of 16-bit values, even for pointers to
+allanims array elements. The pointer values in use should match the originals
+for compatibility with saved games. They're converted when needed.
 
 - id_vw_ae.c:VW_DrawTile8: It turned out that STARTTILE8 was unexpectedly wrong
 in Catacomb Abyss v1.13/v1.24, albeit only in the assembly code. An adjustment
