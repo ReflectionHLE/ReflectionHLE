@@ -9,7 +9,8 @@
 - The Catacomb Apocalypse v1.01 source code release.
 - Wolfenstein 3D and Spear of Destiny source code release.
 - Reconstructed BioMenace source code.
-- The Nuked OPL3 emulator. (DOSBox' DBOPL was originally used.)
+- The Nuked OPL3 emulator in the fast fork under Nuked-OPL3-fast.
+(DOSBox' DBOPL was originally used.)
 - A CRC-32 implementation.
 - unlzexe v0.8.
 - depklite, a modification (mostly a C port) of ExeUnpacker from OpenTESArena.
@@ -136,6 +137,8 @@ instead using his own DMX wrapper backed by the Apogee Sound System) and
 various other source reconstruction efforts. A subset of these efforts
 was used for the EDuke32-based Rednukem, NBlood and PCExhumed ports,
 with the latter being co-developed with Barry Duncan.
+
+* Tony Gies, for preparing a fast Nuked OPL3 fork under Nuked-OPL3-fast.
 
 * Braden Obrzut, for earlier reverse-engineering work on Super 3-D Noah's Ark,
 which was used as a base for a DOS source reconstruction.

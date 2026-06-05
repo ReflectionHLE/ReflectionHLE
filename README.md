@@ -52,7 +52,7 @@ See bsd-3-clause-template.txt for a general license template. For the exact
 contents you should consult the top of any relevant file from the source code,
 although the template's form was originally used as a base.
 
-- Nuked OPL3 is released under the GNU LGPLv2.1+. See lgpl-2.1.txt.
+- Nuked-OPL3-fast is released under the GNU LGPLv2.1+. See lgpl-2.1.txt.
 
 - The included depklite implementation, a modification of ExeUnpacker,
 is released under the MIT License. See mit-opentesarena.txt for details.
