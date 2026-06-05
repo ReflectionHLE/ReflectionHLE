@@ -391,11 +391,33 @@ static void BEL_Cross_CheckForBMenaceInstallations(UNIX_SPECIFIC_PARAM(const cha
   #endif // PLATFORM
 #endif // REFKEEN_CONFIG_CHECK_FOR_STEAM_INSTALLATION
 
-#if (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
+#ifdef BE_CHECK_GOG_INSTALLATIONS
+  #if (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
 	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\GOG.COM\\GAMES\\1449569170"), _T("PATH"), _T(""),
 		bmenaceVers, NULL, "GOG.com");
-#endif // (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_GOG_INSTALLATIONS)
+  #elif (defined REFKEEN_PLATFORM_MACOS)
+	const TCHAR *basePath =
+	            _T("/Applications/Catacombs Pack.app/Contents/Resources/game");
+	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
+	BEL_Cross_safeandfastctstringcopy(path, path+BE_Cross_ArrayLen(path), basePath);
+	BEL_Cross_TryAddInst_Common(&path, bmenaceVers, NULL, "GOG.com");
+	if (homeVar && *homeVar)
+	{
+		BEL_Cross_safeandfastctstringcopy_2strs(path, path+BE_Cross_ArrayLen(path),
+		                                        homeVar, basePath);
+		BEL_Cross_TryAddInst_Common(&path, bmenaceVers, NULL, "GOG.com");
+	}
+  #else // PLATFORM
+	TCHAR path[BE_CROSS_PATH_LEN_BOUND];
+	if (homeVar && *homeVar)
+	{
+		BEL_Cross_safeandfastctstringcopy_2strs(path, path+BE_Cross_ArrayLen(path),
+		                                        homeVar, _T("/GOG Games/Bio Menace/data"));
+		BEL_Cross_TryAddInst_Common(&path, bmenaceVers, NULL, "GOG.com");
+	}
+  #endif // PLATFORM
+#endif // BE_CHECK_GOG_INSTALLATIONS
 
 #if (defined REFKEEN_PLATFORM_WINDOWS) && (defined BE_CHECK_ZOOM_PLATFORM_INSTALLATIONS)
 	// New location
