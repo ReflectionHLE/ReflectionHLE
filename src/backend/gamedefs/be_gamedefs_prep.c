@@ -177,23 +177,23 @@ static void BEL_Cross_CheckForCatacombsInstallations(UNIX_SPECIFIC_PARAM(const c
 		0,
 	};
 
-#ifdef REFKEEN_PLATFORM_WINDOWS
 	const TCHAR *catacombSubdirs[] = {
 #ifdef REFKEEN_HAS_VER_CAT3D
-		_T("\\Cat3D"),
+		_T("/Cat3D"),
 #endif
 #ifdef REFKEEN_HAS_VER_CATABYSS
-		_T("\\Abyss"),
+		_T("/Abyss"),
 #endif
 #ifdef REFKEEN_HAS_VER_CATARM
-		_T("\\Armageddon"),
+		_T("/Armageddon"),
 #endif
 #ifdef REFKEEN_HAS_VER_CATAPOC
-		_T("\\Apocalypse"),
+		_T("/Apocalypse"),
 #endif
 		0,
 	};
 
+#ifdef REFKEEN_PLATFORM_WINDOWS
 	// Old location
 	BEL_Cross_TryAddRegistryInst(
 		_T("SOFTWARE\\GOG.COM\\GOGCATACOMBSPACK"), _T("PATH"), _T(""),
@@ -205,7 +205,7 @@ static void BEL_Cross_CheckForCatacombsInstallations(UNIX_SPECIFIC_PARAM(const c
 #endif
 
 #ifdef REFKEEN_PLATFORM_MACOS
-	const TCHAR *catacombSubdirs[] = {
+	const TCHAR *catacombOldSubdirs[] = {
 #ifdef REFKEEN_HAS_VER_CAT3D
 		_T("/2CAT3D"),
 #endif
@@ -221,19 +221,27 @@ static void BEL_Cross_CheckForCatacombsInstallations(UNIX_SPECIFIC_PARAM(const c
 	};
 
 	TCHAR catacombsMacPath[BE_CROSS_PATH_LEN_BOUND];
-	static const TCHAR *catacombsMacInst = _T("/Applications/Catacombs Pack/Catacomb Pack.app/Contents/Resources/Catacomb Pack.boxer/C 1 CATACOMB.harddisk");
-	BEL_Cross_safeandfastctstringcopy(
-		catacombsMacPath,
-		catacombsMacPath+BE_Cross_ArrayLen(catacombsMacPath),
-		catacombsMacInst);
-	BEL_Cross_TryAddInst_Common(&catacombsMacPath, catacombVers, catacombSubdirs, "GOG.com");
-	if (homeVar && *homeVar)
+	const TCHAR *catacombsMacInst = _T("/Applications/Catacombs Pack.app/Contents/Resources/game"),
+	            *catacombsOldMacInst = _T("/Applications/Catacombs Pack/Catacomb Pack.app/Contents/Resources/Catacomb Pack.boxer/C 1 CATACOMB.harddisk");
+
+	const TCHAR *macInsts[] = {catacombsMacInst, catacombsOldMacInst};
+	const TCHAR **macSubdirsLists[] = {catacombSubdirs, catacombOldSubdirs};
+
+	for (int i = 0; i < 2; ++i)
 	{
-		BEL_Cross_safeandfastctstringcopy_2strs(
+		BEL_Cross_safeandfastctstringcopy(
 			catacombsMacPath,
 			catacombsMacPath+BE_Cross_ArrayLen(catacombsMacPath),
-			homeVar, catacombsMacInst);
-		BEL_Cross_TryAddInst_Common(&catacombsMacPath, catacombVers, catacombSubdirs, "GOG.com");
+			macInsts[i]);
+		BEL_Cross_TryAddInst_Common(&catacombsMacPath, catacombVers, macSubdirsLists[i], "GOG.com");
+		if (homeVar && *homeVar)
+		{
+			BEL_Cross_safeandfastctstringcopy_2strs(
+				catacombsMacPath,
+				catacombsMacPath+BE_Cross_ArrayLen(catacombsMacPath),
+				homeVar, macInsts[i]);
+			BEL_Cross_TryAddInst_Common(&catacombsMacPath, catacombVers, macSubdirsLists[i], "GOG.com");
+		}
 	}
 #endif
 
