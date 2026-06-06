@@ -2,20 +2,19 @@
 Changelog
 ---------
 
-TBD:
+Jun 6, 2026 (v0.66.0):
 
-Note that there were multiple changes involving user input support,
-impacting gamepads and multitouch, but also having a few new additions.
-Further thanks to Blzut3 for some pre-release testing.
+Thanks to Blzut3 for some pre-release testing,
+including support for macOS and input devices.
 
 Added initial support for BioMenace, aka, Bio Menace:
 * Preliminary port prepared in April 2025 from the reconstructed sources
 released by `K1n9_Duk3`, also for the possibility it would be useful
 as a reference for BioMenace Remastered.
-* That covers all DOS versions known as of writing this, including
-the BioHazard July 1992 beta as re-released in February 2025.
-* BioMenace support should cover saved games and game controllers
-in this release, plus multi-touch input if anyone wants to give it a try.
+* ReflectionHLE support covers all DOS versions known as of writing this,
+including the BioHazard July 1992 beta as re-released in February 2025.
+* BioMenace support should cover saved games and gamepads in
+this release, plus multi-touch input if anyone wants to give it a try.
 
 ReflectionHLE was migrated from the SDL2 library to SDL3:
 * Removed the setting "displaynum". Also removed "rememberdisplaynum",
@@ -27,18 +26,34 @@ to remove these than adapting them for SDL3.
 of the migration to SDL3.
 
 User input changes (partially SDL3-related):
+- 3D Catacombs, Wolfenstein 3D: Support gyroscope turning/strafing.
+- Wolfenstein 3D v1.4 and all supported Spear of Destiny versions:
+Added VR Helmet input emulation via supported analog motion devices
+(mice, gamepads' analog sticks and gyroscopes), porting code
+originally guarded by the 'virtualreality' command-line argument
+and similar in idea to Blzut3's Wolfenmaus driver.
+With limitations similar to ones Wolfenmaus has, and covering just
+the aforementioned game versions, that also allows (to an extent)
+concurrent turning and strafing, i.e., WASD-style controls.
+The 'virtualreality' feature was probably implemented
+for Alternate Worlds Technology at the time.
+There are still a few differences from Wolfenmaus as released in May 2026.
+For instance, while Wolfenmaus has gotten its own mouse
+sensitivity command-line option implemented for technical reasons,
+the ReflectionHLE port is using Wolf3D's mouse sensitivity setting
+directly if a mouse or gyroscope is used for VR input emulation.
 - Support showing other gamepad labels in the launcher according to
 connected gamepads. That is done with SDL3's SDL_GetGamepadButtonLabel.
-The A-B-X-Y face buttons layout is still the default if no
-connected gamepad is detected or a button label is unknown,
-and the cfg files similarly keep using a-b-x-y.
+The A-B-X-Y face buttons' labels are still shown as a default if no connected
+gamepad is detected, and the cfg files similarly keep using a-b-x-y.
+There's further no change to the names of other buttons.
 - Added a toggle for swapping what SDL3 refers to as a gamepad's south
 and east face buttons, matching PS gamepads' Cross and Circle buttons.
 That will also have an effect on touch input when on-screen face buttons
 appear on the bottom-right corner, as they should further appear
 while using a supported gamepad (under the modern controller scheme).
 There are instances in which swapping won't have an effect, like
-when customizable gamepad binds used for gameplay have an effect.
+when customizable gamepad binds defined for gameplay are used.
 - With partial relation to the above, relocated a few other
 on-screen touch buttons in Keen Dreams' control panel
 and death dialog, plus Wolfenstein 3D's menus.
@@ -50,24 +65,13 @@ for emulation of keyboard's function keys, instead of face buttons.
 Main reason being increased consistency with other supported games.
 A subset of them should have greater preference for d-pad usage over face
 buttons at times, in order to improve support for devices with less buttons.
-- 3D Catacombs, Wolfenstein 3D: Support gyroscope turning/strafing.
-- Wolfenstein 3D v1.4 and all supported Spear of Destiny versions:
-Added VR input emulation via supported analog motion devices
-(mice, gamepads' analog sticks and gyroscopes), porting code
-originally guarded by the 'virtualreality' command-line argument
-and similar in idea to Blzut3's Wolfenmaus driver.
-With limitations similar to the driver in question, and covering just
-the aforementioned game versions, that also allows (to an extent)
-concurrent turning and strafing, i.e., WASD-style controls.
-The 'virtualreality' feature was probably implemented
-for Alternate Worlds Technology at the time.
 - Wolfenstein 3D: Reorder function keys as accessible from a gamepad's
 d-pad and face buttons (also on-screen), for improved consistency with
 other supported games. Also re-assigned on-screen face buttons used
 for Super 3-D Noah's Ark cantaloupe and watermelon launchers (weapons 5-6),
 as a preparation for user input devices with less buttons.
 - Wolfenstein 3D: Support defining a gamepad button bind for selecting
-a weapon using on-screen UI (weapons carousel).
+a weapon using on-screen UI (a weapons carousel variation).
 - Wolfenstein 3D: Fixed on-screen d-pad or face button use for
 selecting a specific weapon not working as expected in case of previously
 defining a custom bind for a key used for selecting the matching weapon.
@@ -83,7 +87,7 @@ are not written to the main CFG file on Android anymore.
 - Finally fixed the banner for Android TV to say ReflectionHLE,
 instead of Reflection Keen. The older name had mistakenly
 been used since the migration to a single executable/package
-for all games, wth the Reflection Keen banner
+for all games, with the Reflection Keen banner
 (part of December 2021's new Android tree shared with all games)
 added in a git commit just 8 days before announcing the
 project's rename to ReflectionHLE in the public.
@@ -95,24 +99,24 @@ Note that does not apply to windows which are not user-resizable.
 That is usually the case for software rendering.
 * Further note that on some environments (like Wayland), the output image
 may have additional scaling applied if software rendering is requested
-while using a high DPI desktop resolution. Hence, there might still
+while using a high DPI desktop mode. Hence, there might still
 be a bit of image blurring, even with software rendering.
 That may be resolved by switching to hardware rendering (recommended)
-or manually forcing scaling for software rendering via the main cfg file
-(less recommended).
+or manually forcing scaling for software rendering via
+the main cfg file (less recommended).
 * The window's dimensions present in the main cfg file are measured
 in coordinates/points on environments like macOS and Wayland, rather
-than pixels in case a high DPI desktop resolution is in use.
-* On the other hand, if a specific fullscreen resolution is forced from
-the cfg file, the resolution will be requested with the pixel density
-given by the fullscrpixdensity setting in case it differs from 0.0.
+than pixels, in case a high DPI desktop mode is in use.
+* If a specific fullscreen resolution is forced from the cfg file,
+the resolution will be requested with the pixel density given by
+the fullscrpixdensity setting in case it differs from 0.0.
 Wayland seemed to use 1.0 in general as of checking that,
 while additionally allowing the desktop's pixel density
 in conjunction with its dimensions in coordinates/points.
 Supported value might change with the environment
 and/or screen resolution in general.
 
-Audio-related changes:
+Audio-related changes (low latency buffer implemented using SDL2, then ported):
 * Migrated Nuked OPL3 code to the fast fork under Nuked-OPL3-fast
 (git revision 3441d9f91485fb37c3091bd8bcbc794d7f2de9e5).
 * Wolf3D: Enabled support for hardware Disney Sound Source on Linux and
@@ -136,7 +140,7 @@ launcher anymore, unless -gamever or -passorigargs is used.
 * Spear of Destiny: Fix "Forgmen" typo in the launcher.
 It should say Formgen now. (Thanks K1n9_Duk3!)
 * Launcher: Show related menu when failing to open gamecontrollerdb.txt
-for writing, instead of exiting immediately. Also check if read of
+for writing, instead of exiting immediately. Also check if reading
 an existing gamecontrollerdb.txt file succeeds.
 
 Additional changes:
@@ -144,7 +148,7 @@ Additional changes:
 (at least with potential loop optimizations) and two ODR violations.
 * dege-git's fix for a potential copy & paste error
 while porting Wolf3D's ScalePost from assembly.
-* dege-git: Added 250ms delay before testing jukebox easter egg in Wolf3D.
+* dege-git: Added 250ms delay before testing jukebox Easter egg in Wolf3D.
 * Internal changes to behaviors of BE_ST_SetScreenMode when the bit value
 of 128 is set, with adjustments for the Catacomb Adventures' VW_SetScreenMode.
 * A few more file integrity checks are in use now when loading a

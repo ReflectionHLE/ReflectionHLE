@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5...3.19)
 
-project(ReflectionHLE VERSION 0.44.0)
+project(ReflectionHLE VERSION 0.66.0)
 
 set(bundle_identifier_prefix "com.reflectionhle")
 set(bundle_copyright "See README.md for copyright details")

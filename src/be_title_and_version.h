@@ -25,7 +25,7 @@
 #error "FATAL ERROR: No Ref port game macro is defined!"
 #endif
 
-#define REFKEEN_VERSION_STRING "v0.44.0"
+#define REFKEEN_VERSION_STRING "v0.66.0"
 
 #ifdef REFKEEN_GIT_ID
 

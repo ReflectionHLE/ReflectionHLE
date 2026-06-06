@@ -1128,7 +1128,7 @@ BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Mouse, "Mouse use", g_be_
 BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Stick, "Analog stick", g_be_inputSettingsChoices_stickDevice)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_Gyro, "Gyroscope", g_be_inputSettingsChoices_gyroscopeDevice)
 BEMENUITEM_DEF_SELECTION(g_beWolf3DVREmulationMenuItem_InvertStrafe, "Invert strafe toggle while emulating VR input", g_be_settingsChoices_boolean)
-BEMENUITEM_DEF_STATIC(g_beWolf3DVREmulationMenuItem_Note, "Note: VR helmet input emulation\nis restricted to Wolf3D v1.4 and SOD.\nEnabling the feature further skips\ndemo loop and more.")
+BEMENUITEM_DEF_STATIC(g_beWolf3DVREmulationMenuItem_Note, "Note: VR helmet input emulation\nis restricted to Wolf3D v1.4 and SOD.\nEnabling the feature further skips\ndemo loop and has other side-effects.")
 
 static BEMenuItem *g_beWolf3DVREmulationMenuItems[] = {
 	&g_beWolf3DVREmulationMenuItem_Mouse,
