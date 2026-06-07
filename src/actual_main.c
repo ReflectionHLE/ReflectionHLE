@@ -232,6 +232,7 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef REFKEEN_ENABLE_LAUNCHER
+	LauncherWindowSettingType launcherWinType;
 	bool startLauncher = true;
 #endif
 	while ((argc >= 2) && !showHelp)
@@ -302,14 +303,14 @@ int main(int argc, char **argv)
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		else if (!BE_Cross_strcasecmp(1+argv[1], "fulllauncher"))
 		{
-			g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_FULL;
+			launcherWinType = LAUNCHER_WINDOW_FULL;
 			startLauncher = true;
 			++argv;
 			--argc;
 		}
 		else if (!BE_Cross_strcasecmp(1+argv[1], "softlauncher"))
 		{
-			g_refKeenCfg.launcherWinType = LAUNCHER_WINDOW_SOFTWARE;
+			launcherWinType = LAUNCHER_WINDOW_SOFTWARE;
 			startLauncher = true;
 			++argv;
 			--argc;
@@ -333,6 +334,11 @@ int main(int argc, char **argv)
 #ifdef REFKEEN_ENABLE_LAUNCHER
 		if (startLauncher)
 		{
+			// Do this after BE_ST_InitCommon, due to internal call
+			// to BEL_ST_ParseConfigFiles that may change the value
+			// of g_refKeenCfg.launcherWinType.
+			if (launcherWinType != LAUNCHER_WINDOW_DEFAULT)
+				g_refKeenCfg.launcherWinType = launcherWinType;
 			BE_Launcher_Start();
 			BE_ST_ShutdownAll();
 			return 0;

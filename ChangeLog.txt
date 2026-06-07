@@ -2,6 +2,10 @@
 Changelog
 ---------
 
+Post-release:
+
+* Fix command-line arguments -fulllauncher, -softlauncher.
+
 Jun 6, 2026 (v0.66.0):
 
 Thanks to Blzut3 for some pre-release testing,
