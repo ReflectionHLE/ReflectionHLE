@@ -5,6 +5,7 @@ Changelog
 Post-release:
 
 * Fix command-line arguments -fulllauncher, -softlauncher.
+* Updated Nuked-OPL-fast to v1.8-fast.2.
 
 Jun 6, 2026 (v0.66.0):
 
