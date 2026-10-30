@@ -5,6 +5,9 @@ Changelog
 Post-release:
 
 * Fix command-line arguments -fulllauncher, -softlauncher.
+* Fix a change to a setting not being saved if updated in the launcher
+via a slider with mouse input, in case other changes are modified
+(thanks 2metragluposti).
 * Fix possible visual glitches by taking texture pitch into account
 (reproduced for text mode emulation after requesting a 720x400 sized texture).
 * Updated Nuked-OPL3-fast to v1.8-fast.3.

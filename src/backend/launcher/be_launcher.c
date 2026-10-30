@@ -776,6 +776,7 @@ static void BEL_Launcher_HandleSliderUse_WithPointer(
 		(2 * (BE_LAUNCHER_SLIDER_PIX_WIDTH - BE_LAUNCHER_SLIDER_HANDLE_PIX_WIDTH));
 	menuItem->choice = BE_Cross_TypedClamp(int, menuItem->choice, 0, menuItem->nOfChoices - 1);
 
+	g_be_launcher_wasAnySettingChanged = true;
 	BEL_Launcher_DrawMenuItem(menuItem);
 }
 
